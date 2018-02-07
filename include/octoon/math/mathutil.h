@@ -1,0 +1,302 @@
+﻿#ifndef OCTOON_MATHUTIL_H_
+#define OCTOON_MATHUTIL_H_
+
+#include <algorithm>
+#include <octoon/runtime/platform.h>
+
+namespace octoon
+{
+	namespace math
+	{
+		static constexpr float PI = 3.14159265358979323846f;
+		static constexpr float PI_2 = 6.28318530717958647692f;
+		static constexpr float PI_4 = 12.56637061435917295384f;
+		static constexpr float PI_8 = 25.13274122871834590768f;
+		static constexpr float PI_OVER_3 = 1.047197551196597746f;
+		static constexpr float PI_INV = 0.318309886183790671538f;
+		static constexpr float PI_INV_2 = 0.636619772367581343076f;
+
+		static constexpr float EPSILON = 0.001f;
+		static constexpr float EPSILON_E2 = 1E-2f;
+		static constexpr float EPSILON_E3 = 1E-3f;
+		static constexpr float EPSILON_E4 = 1E-4f;
+		static constexpr float EPSILON_E5 = 1E-5f;
+		static constexpr float EPSILON_E6 = 1E-6f;
+
+		template<typename T>
+		inline constexpr T wrap_pi(const T theta) noexcept
+		{
+			theta += PI;
+			theta -= std::floor(theta * math::PI_2);
+			theta -= PI;
+			return theta;
+		}
+
+		template<typename T>
+		inline constexpr T min(const T t1, const T t2) noexcept
+		{
+			return t1 < t2 ? t1 : t2;
+		}
+
+		template<typename T>
+		inline constexpr T max(const T t1, const T t2) noexcept
+		{
+			return t1 > t2 ? t1 : t2;
+		}
+
+		template<typename T>
+		inline constexpr T middle(const T t1, const T t2, const T t3) noexcept
+		{
+			if (t1 < t2)
+			{
+				if (t2 < t3)
+					return t2;
+				else
+					return t3;
+			}
+			else
+			{
+				if (t1 < t3)
+					return t1;
+				else
+					return t3;
+			}
+		}
+
+		template<typename T>
+		inline constexpr std::uint8_t bit_scan_reverse(T number) noexcept
+		{
+			std::uint8_t result = 0;
+			T n = 1;
+
+			for (; n < 32; n++)
+			{
+				T val = static_cast<T>(1) << n;
+
+				result++;
+
+				if (number & val)
+					break;
+			}
+
+			return result;
+		}
+
+		template<typename T>
+		inline constexpr T ceil_to_power_of_two(T number) noexcept
+		{
+			T input = number;
+			T result = bit_scan_reverse(number);
+			T test = ~(static_cast<T>(1) << result);
+
+			return test & input;
+		}
+
+		template<typename T>
+		inline constexpr T clamp(const T t, const T min, const T max) noexcept
+		{
+			return std::max(min, std::min(max, t));
+		}
+
+		template<typename T>
+		inline constexpr T saturate(const T v) noexcept
+		{
+			return clamp(v, 0.0f, 1.0f);
+		}
+
+		template<typename T>
+		inline constexpr T lerp(const T t1, const T t2, const T t3) noexcept
+		{
+			return t1 + (t2 - t1) * t3;
+		}
+
+		template<typename T>
+		inline constexpr T smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
+		{
+			return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
+		}
+
+		template<typename T>
+		inline constexpr T biLerp(const T x, const T y, const T q11, const T q12, const T q21, const T q22, const T x1, const T x2, const T y1, const T y2) noexcept
+		{
+			T r1 = smoothlerp(x, x1, x2, q11, q21);
+			T r2 = smoothlerp(x, x1, x2, q12, q22);
+
+			return smoothlerp(y, y1, y2, r1, r2);
+		}
+
+		template<typename T>
+		inline constexpr T triLerp(const T x, const T y, const T z, const T q000, const T q001, const T q010, const T q011, const T q100, const T q101, const T q110, const T q111, const T x1, const T x2, const T y1, const T y2, const T z1, const T z2) noexcept
+		{
+			T x00 = smoothlerp(x, x1, x2, q000, q100);
+			T x10 = smoothlerp(x, x1, x2, q010, q110);
+			T x01 = smoothlerp(x, x1, x2, q001, q101);
+			T x11 = smoothlerp(x, x1, x2, q011, q111);
+			T r0 = smoothlerp(y, y1, y2, x00, x01);
+			T r1 = smoothlerp(y, y1, y2, x10, x11);
+
+			return smoothlerp(z, z1, z2, r0, r1);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr bool equal(T a, T b, T epsilon) noexcept
+		{
+			return (a + epsilon) > b && (a - epsilon) < b;
+		}
+
+		template<typename T>
+		inline constexpr T radians(T x)
+		{
+			return x * math::PI / 180.0f;
+		}
+
+		template<typename T>
+		inline constexpr T degress(T x)
+		{
+			return x * 180.0f / math::PI;
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr void sinCos(T* returnSin, T* returnCos, T theta) noexcept
+		{
+			*returnSin = std::sin(theta);
+			*returnCos = std::cos(theta);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr T modf(T x, T* y) noexcept
+		{
+			T d;
+			T f = std::modf(x, &d);
+			*y = d;
+			return f;
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr T fraction(T v) noexcept
+		{
+			T intPart;
+			return std::modf(v, &intPart);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr T safe_acos(T x) noexcept
+		{
+			if (x <= -1.0f) { return math::PI; }
+			if (x >= 1.0f) { return 0.0f; }
+			return std::acos(x);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr T snorm2unorm(T x) noexcept
+		{
+			return x * 0.5f + 0.5f;
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		inline constexpr T unorm2snorm(T x) noexcept
+		{
+			return x * 2.0f - 1.0f;
+		}
+
+		inline float fast_exp2(float x) noexcept
+		{
+			constexpr float c[3] = { 5.79526f, 12.82461f, -2.88611f };
+
+			int e = int(round(x));
+			float t = x - e;
+			float m = (t * t + c[0] * t + c[1]) / (c[2] * t * c[1]);
+
+			return std::ldexp(m, e);
+		}
+
+		inline double fast_exp2(double x) noexcept
+		{
+			constexpr double c[3] = { 5.79526, 12.82461, -2.88611 };
+
+			int e = int(round(x));
+			double t = x - e;
+			double m = (t * t + c[0] * t + c[1]) / (c[2] * t * c[1]);
+
+			return std::ldexp(m, e);
+		}
+
+		inline constexpr float fast_rsqrt(float x) noexcept
+		{
+			float xhalf = 0.5f*x;
+			int i = *(int*)&x;
+			i = 0x5f3759df - (i >> 1);
+			x = *(float*)&i;
+			x = x * (1.5f - xhalf * x*x);
+			x = x * (1.5f - xhalf * x*x);
+			return x;
+		}
+
+		inline constexpr double fast_rsqrt(double y) noexcept
+		{
+			const double threehalfs = 1.5F;
+			double x2 = y * 0.5F;
+			long long i = *(long long*)&y;
+			i = 0x5fe6ec85e7de30dall - (i >> 1);
+			y = *(double*)&i;
+			y = y * (threehalfs - (x2*y*y));
+			y = y * (threehalfs - (x2*y*y));
+			return y;
+		}
+
+		template<typename T>
+		inline constexpr std::int8_t fpToInt8SNORM(T f) noexcept
+		{
+			return (std::int8_t)((1 << 7) * f);
+		}
+
+		template<typename T>
+		inline constexpr std::uint8_t fpToInt8UNORM(T f) noexcept
+		{
+			return (std::uint8_t)(f * 255);
+		}
+
+		template<typename T>
+		inline constexpr std::int16_t fpToInt16SNORM(T f) noexcept
+		{
+			return (std::int16_t)((1 << 15) * f);
+		}
+
+		template<typename T>
+		inline constexpr std::uint16_t fpToInt16UNORM(T f) noexcept
+		{
+			return (std::uint16_t)(f * 65535);
+		}
+
+		inline constexpr float fpFromIEEE(std::uint32_t raw) noexcept
+		{
+			return *reinterpret_cast<float*>(&raw);
+		}
+
+		inline constexpr std::uint32_t fpToIEEE(float fp) noexcept
+		{
+			return *reinterpret_cast<std::uint32_t*>(&fp);
+		}
+
+		inline constexpr double fpFromIEEE(std::uint64_t raw) noexcept
+		{
+			return *reinterpret_cast<double*>(&raw);
+		}
+
+		inline constexpr std::uint64_t fpToIEEE(double fp) noexcept
+		{
+			return *reinterpret_cast<std::uint64_t*>(&fp);
+		}
+
+		DLL_EXPORT void randomize() noexcept;
+		DLL_EXPORT void randomize(unsigned int) noexcept;
+		DLL_EXPORT int random(int min, int max) noexcept;
+		DLL_EXPORT float random(float min, float max) noexcept;
+		DLL_EXPORT double random(double min, double max) noexcept;
+
+		DLL_EXPORT std::uint32_t morton2(std::uint32_t x, std::uint32_t y) noexcept;
+		DLL_EXPORT std::uint32_t morton3(std::uint32_t x, std::uint32_t y, std::uint32_t z) noexcept;
+	}
+}
+
+#endif

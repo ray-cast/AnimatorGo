@@ -1,0 +1,13 @@
+Thumbs.db
+ehthumbs.db
+
+Desktop.ini
+
+CMakeSettings.json
+
+lib/_redist
+lib/binaries/
+
+build
+
+.vs

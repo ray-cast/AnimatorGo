@@ -24,7 +24,7 @@ namespace octoon
 				Matrix2x2(T mt00, T mt01, T mt10, T mt11) noexcept :a1(mt00), a2(mt01), b1(mt10), b2(mt11) {}
 				~Matrix2x2() = default;
 
-				Matrix2x2& set(T mt00, T mt01, T mt10, T mt11) noexcept
+				void set(T mt00, T mt01, T mt10, T mt11) noexcept
 				{
 					this->a1 = mt00; this->a2 = mt01;
 					this->b1 = mt10; this->b2 = mt11;
@@ -43,14 +43,12 @@ namespace octoon
 				void make_rotate(T x, T y, T z, T angle) noexcept { make_rotate(x, y, z, angle); }
 				void make_rotate(const Quaternion<T>& q) noexcept { make_rotate(q.x, q.y, q.z, q.w); }
 
-				void make_rotate(const Vector3<T>& axis, T angle) noexcept
+				void make_rotate(const Vector3<T>& axis, T theta) noexcept
 				{
+					Vector3<T> v = normalize(axis);
+
 					T c, s;
-
-					math::sinCos(&s, &c, degrees(angle));
-
-					Vector3<T> v = axis;
-					v.normalize();
+					math::sinCos(&s, &c, theta);
 
 					T x = v.x;
 					T y = v.y;
@@ -68,7 +66,7 @@ namespace octoon
 
 				void make_rotation_x(T theta) noexcept
 				{
-					T ang = degrees(theta);
+					T ang = theta;
 					T c, s;
 
 					sinCos(&s, &c, ang);
@@ -80,7 +78,7 @@ namespace octoon
 
 				void make_rotation_y(T theta) noexcept
 				{
-					T ang = degrees(theta);
+					T ang = theta;
 					T c, s;
 
 					sinCos(&s, &c, ang);
@@ -92,7 +90,7 @@ namespace octoon
 
 				void make_rotation_z(T theta) noexcept
 				{
-					T ang = degrees(theta);
+					T ang = theta;
 					T c, s;
 
 					sinCos(&s, &c, ang);

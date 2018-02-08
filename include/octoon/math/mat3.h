@@ -19,10 +19,7 @@ namespace octoon
 				typedef typename trait::type_addition<T>::reference reference;
 				typedef typename trait::type_addition<T>::const_reference const_reference;
 
-				Matrix3x3() noexcept
-				{
-				}
-
+				Matrix3x3() = default;
 				Matrix3x3(T _a1, T _a2, T _a3, T _b1, T _b2, T _b3, T _c1, T _c2, T _c3) noexcept
 					: a1(_a1), a2(_a2), a3(_a3)
 					, b1(_b1), b2(_b2), b3(_b3)
@@ -30,29 +27,20 @@ namespace octoon
 				{
 				}
 
-				Matrix3x3(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
-				{
-					this->multiplyMatrices(m1, m2);
-				}
+				Matrix3x3(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept { this->multiplyMatrices(m1, m2); }
+				Matrix3x3(const Vector3<T>& axis, T angle) noexcept { this->makeRotate(axis, angle); }
+				Matrix3x3(const Quaternion<T>& q) noexcept { this->makeRotate(q); }
 
-				Matrix3x3(const Vector3<T>& axis, T angle) noexcept
-				{
-					this->makeRotate(axis, angle);
-				}
-
-				explicit Matrix3x3(const Quaternion<T>& q) noexcept
-				{
-					this->makeRotate(q);
-				}
-
-				explicit Matrix3x3(const Matrix4x4<T>& m) noexcept
+				Matrix3x3(const Matrix4x4<T>& m) noexcept
 				{
 					a1 = m.a1; a2 = m.a2; a3 = m.a3;
 					b1 = m.b1; b2 = m.b2; b3 = m.b3;
 					c1 = m.c1; c2 = m.c2; c3 = m.c3;
 				}
 
-				template<typename S, typename = std::enable_if<!std::is_pointer<S>::value>>
+				~Matrix3x3() = default;
+
+				template<typename S, typename = std::enable_if_t<std::is_integral_v<S> || std::is_floating_point_v<S>>>
 				explicit operator Matrix3x3<S>() const noexcept
 				{
 					return Matrix3x3<S>(

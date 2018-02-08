@@ -10,7 +10,7 @@ namespace octoon
 	{
 		namespace detail
 		{
-			template <typename T>
+			template<typename T>
 			class Quaternion final
 			{
 			public:
@@ -62,10 +62,10 @@ namespace octoon
 
 				Quaternion<T>& make_rotate_x(T theta) noexcept
 				{
-					T thetaOver2 = radians(theta * 0.5f);
+					T thetaOver2 = theta * 0.5f;
 
-					w = cos(thetaOver2);
-					x = sin(thetaOver2);
+					w = std::cos(thetaOver2);
+					x = std::sin(thetaOver2);
 					y = 0.0f;
 					z = 0.0f;
 					return *this;
@@ -73,23 +73,23 @@ namespace octoon
 
 				Quaternion<T>& make_rotate_y(T theta) noexcept
 				{
-					T thetaOver2 = radians(theta * 0.5f);
+					T thetaOver2 = theta * 0.5f;
 
-					w = cos(thetaOver2);
+					w = std::cos(thetaOver2);
 					x = 0.0f;
-					y = sin(thetaOver2);
+					y = std::sin(thetaOver2);
 					z = 0.0f;
 					return *this;
 				}
 
 				Quaternion<T>& make_rotate_z(T theta) noexcept
 				{
-					T thetaOver2 = radians(theta * 0.5f);
+					T thetaOver2 = theta * 0.5f;
 
-					w = cos(thetaOver2);
+					w = std::cos(thetaOver2);
 					x = 0.0f;
 					y = 0.0f;
-					z = sin(thetaOver2);
+					z = std::sin(thetaOver2);
 					return *this;
 				}
 
@@ -98,9 +98,9 @@ namespace octoon
 					T sp, sb, sh;
 					T cp, cb, ch;
 
-					math::sinCos(&sp, &cp, (T)radians(euler.x) * 0.5f);
-					math::sinCos(&sh, &ch, (T)radians(euler.y) * 0.5f);
-					math::sinCos(&sb, &cb, (T)radians(euler.z) * 0.5f);
+					math::sinCos(&sp, &cp, (T)(euler.x * 0.5f));
+					math::sinCos(&sh, &ch, (T)(euler.y * 0.5f));
+					math::sinCos(&sb, &cb, (T)(euler.z * 0.5f));
 
 					x = cb * sp * ch + sb * cp * sh;
 					y = cb * cp * sh - sb * sp * ch;
@@ -115,9 +115,9 @@ namespace octoon
 					T sp, sb, sh;
 					T cp, cb, ch;
 
-					math::sinCos(&sp, &cp, (T)radians(euler.x) * 0.5f);
-					math::sinCos(&sh, &ch, (T)radians(euler.y) * 0.5f);
-					math::sinCos(&sb, &cb, (T)radians(euler.z) * 0.5f);
+					math::sinCos(&sp, &cp, (T)(euler.x * 0.5f));
+					math::sinCos(&sh, &ch, (T)(euler.y * 0.5f));
+					math::sinCos(&sb, &cb, (T)(euler.z * 0.5f));
 
 					x = sp * ch * cb - cp * sh * sb;
 					y = cp * sh * cb + sp * ch * sb;
@@ -129,10 +129,10 @@ namespace octoon
 
 				Quaternion<T>& make_rotate(const Vector3<T>& axis, T theta) noexcept
 				{
-					T thetaOver2 = radians(theta * 0.5f);
+					T thetaOver2 = theta * 0.5f;
 
-					T sin_a = sin(thetaOver2);
-					T cos_a = cos(thetaOver2);
+					T sin_a = std::sin(thetaOver2);
+					T cos_a = std::cos(thetaOver2);
 
 					x = axis.x * sin_a;
 					y = axis.y * sin_a;
@@ -179,25 +179,6 @@ namespace octoon
 					}
 
 					return *this;
-				}
-
-				constexpr T rotation_angle() const noexcept
-				{
-					return safe_acos(w) * T(2);
-				}
-
-				Vector3<T> rotation_axis() const noexcept
-				{
-					T sinThetaOver2Sq = 1.0f - w * w;
-
-					if (sinThetaOver2Sq <= 0.0f)
-					{
-						return Vector3<T>(1.0f, 0.0f, 0.0f);
-					}
-
-					T oneOverSinThetaOver2 = 1.0f / sqrt(sinThetaOver2Sq);
-
-					return Vector3<T>(x * oneOverSinThetaOver2, y * oneOverSinThetaOver2, z * oneOverSinThetaOver2);
 				}
 			};
 
@@ -288,6 +269,22 @@ namespace octoon
 		inline T length(const detail::Quaternion<T>& q) noexcept
 		{
 			return std::sqrt(length2(q));
+		}
+
+		template<typename T>
+		inline T angle(const detail::Quaternion<T>& q) noexcept
+		{
+			return math::safe_acos(q.w) * T(2);
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> axis(const detail::Quaternion<T>& q) noexcept
+		{
+			T sinThetaOver2Sq = 1.0f - q.w * q.w;
+			if (sinThetaOver2Sq <= 0.0f)
+				return detail::Vector3<T>::UnitX;
+
+			return detail::Vector3<T>(q.x, q.y, q.z) * (1.0f / std::sqrt(sinThetaOver2Sq));
 		}
 
 		template<typename T>
@@ -412,19 +409,18 @@ namespace octoon
 		inline detail::Vector3<T> rotate(const detail::Quaternion<T>& q, const detail::Vector3<T>& v) noexcept
 		{
 			detail::Quaternion<T> q1(v.x, v.y, v.z, 0.f);
-			detail::Quaternion<T> qinv = math::inverse(q);
-			detail::Quaternion<T> q2 = cross(q, math::cross(q1, qinv));
-			return Vector3<T>(q2.x, q2.y, q2.z);
+			detail::Quaternion<T> qinv = inverse(q);
+			detail::Quaternion<T> q2 = cross(q, cross(q1, qinv));
+			return detail::Vector3<T>(q2.x, q2.y, q2.z);
 		}
 
 		template<typename T>
 		inline detail::Vector3<T> eulerAngles(const detail::Quaternion<T>& q) noexcept
 		{
-			return Vector3<T>(
-				RAD_TO_DEG(ray::math::asin<T>(ray::math::clamp<T>(2.0f * (q.w * q.x - q.y * q.z), -1.0f, 1.0f))),
-				RAD_TO_DEG(ray::math::atan2<T>(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y))),
-				RAD_TO_DEG(ray::math::atan2<T>(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z)))
-				);
+			T x = math::asin<T>(math::saturate<T>(2.0f * (q.w * q.x - q.y * q.z)));
+			T y = math::atan2<T>(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+			T z = math::atan2<T>(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z));
+			return detail::Vector3<T>(x, y, z);
 		}
 	}
 }

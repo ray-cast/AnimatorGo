@@ -8,44 +8,44 @@ namespace octoon
 {
 	namespace math
 	{
-		static constexpr float PI = 3.14159265358979323846f;
-		static constexpr float PI_2 = 6.28318530717958647692f;
-		static constexpr float PI_4 = 12.56637061435917295384f;
-		static constexpr float PI_8 = 25.13274122871834590768f;
-		static constexpr float PI_OVER_3 = 1.047197551196597746f;
-		static constexpr float PI_INV = 0.318309886183790671538f;
-		static constexpr float PI_INV_2 = 0.636619772367581343076f;
+		constexpr float PI = 3.14159265358979323846f;
+		constexpr float PI_2 = 6.28318530717958647692f;
+		constexpr float PI_4 = 12.56637061435917295384f;
+		constexpr float PI_8 = 25.13274122871834590768f;
+		constexpr float PI_OVER_3 = 1.047197551196597746f;
+		constexpr float PI_INV = 0.318309886183790671538f;
+		constexpr float PI_INV_2 = 0.636619772367581343076f;
 
-		static constexpr float EPSILON = 0.001f;
-		static constexpr float EPSILON_E2 = 1E-2f;
-		static constexpr float EPSILON_E3 = 1E-3f;
-		static constexpr float EPSILON_E4 = 1E-4f;
-		static constexpr float EPSILON_E5 = 1E-5f;
-		static constexpr float EPSILON_E6 = 1E-6f;
+		constexpr float EPSILON = 0.001f;
+		constexpr float EPSILON_E2 = 1E-2f;
+		constexpr float EPSILON_E3 = 1E-3f;
+		constexpr float EPSILON_E4 = 1E-4f;
+		constexpr float EPSILON_E5 = 1E-5f;
+		constexpr float EPSILON_E6 = 1E-6f;
 
 		template<typename T>
-		inline constexpr T wrap_pi(const T theta) noexcept
+		constexpr T wrap_pi(const T theta) noexcept
 		{
-			theta += PI;
+			theta += math::PI;
 			theta -= std::floor(theta * math::PI_2);
-			theta -= PI;
+			theta -= math::PI;
 			return theta;
 		}
 
 		template<typename T>
-		inline constexpr T min(const T t1, const T t2) noexcept
+		constexpr T min(const T t1, const T t2) noexcept
 		{
 			return t1 < t2 ? t1 : t2;
 		}
 
 		template<typename T>
-		inline constexpr T max(const T t1, const T t2) noexcept
+		constexpr T max(const T t1, const T t2) noexcept
 		{
 			return t1 > t2 ? t1 : t2;
 		}
 
 		template<typename T>
-		inline constexpr T middle(const T t1, const T t2, const T t3) noexcept
+		constexpr T middle(const T t1, const T t2, const T t3) noexcept
 		{
 			if (t1 < t2)
 			{
@@ -64,7 +64,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline constexpr std::uint8_t bit_scan_reverse(T number) noexcept
+		constexpr std::uint8_t bit_scan_reverse(T number) noexcept
 		{
 			std::uint8_t result = 0;
 			T n = 1;
@@ -83,7 +83,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline constexpr T ceil_to_power_of_two(T number) noexcept
+		constexpr T ceil_to_power_of_two(T number) noexcept
 		{
 			T input = number;
 			T result = bit_scan_reverse(number);
@@ -93,31 +93,31 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline constexpr T clamp(const T t, const T min, const T max) noexcept
+		constexpr T clamp(const T t, const T min, const T max) noexcept
 		{
 			return std::max(min, std::min(max, t));
 		}
 
 		template<typename T>
-		inline constexpr T saturate(const T v) noexcept
+		constexpr T saturate(const T v) noexcept
 		{
 			return clamp(v, 0.0f, 1.0f);
 		}
 
 		template<typename T>
-		inline constexpr T lerp(const T t1, const T t2, const T t3) noexcept
+		constexpr T lerp(const T t1, const T t2, const T t3) noexcept
 		{
 			return t1 + (t2 - t1) * t3;
 		}
 
 		template<typename T>
-		inline constexpr T smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
+		constexpr T smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
 		{
 			return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
 		}
 
 		template<typename T>
-		inline constexpr T biLerp(const T x, const T y, const T q11, const T q12, const T q21, const T q22, const T x1, const T x2, const T y1, const T y2) noexcept
+		constexpr T biLerp(const T x, const T y, const T q11, const T q12, const T q21, const T q22, const T x1, const T x2, const T y1, const T y2) noexcept
 		{
 			T r1 = smoothlerp(x, x1, x2, q11, q21);
 			T r2 = smoothlerp(x, x1, x2, q12, q22);
@@ -126,7 +126,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline constexpr T triLerp(const T x, const T y, const T z, const T q000, const T q001, const T q010, const T q011, const T q100, const T q101, const T q110, const T q111, const T x1, const T x2, const T y1, const T y2, const T z1, const T z2) noexcept
+		constexpr T triLerp(const T x, const T y, const T z, const T q000, const T q001, const T q010, const T q011, const T q100, const T q101, const T q110, const T q111, const T x1, const T x2, const T y1, const T y2, const T z1, const T z2) noexcept
 		{
 			T x00 = smoothlerp(x, x1, x2, q000, q100);
 			T x10 = smoothlerp(x, x1, x2, q010, q110);
@@ -139,32 +139,32 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr bool equal(T a, T b, T epsilon) noexcept
+		constexpr bool equal(T a, T b, T epsilon) noexcept
 		{
 			return (a + epsilon) > b && (a - epsilon) < b;
 		}
 
 		template<typename T>
-		inline constexpr T radians(T x)
+		constexpr T radians(T x)
 		{
 			return x * math::PI / 180.0f;
 		}
 
 		template<typename T>
-		inline constexpr T degress(T x)
+		constexpr T degress(T x)
 		{
 			return x * 180.0f / math::PI;
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr void sinCos(T* returnSin, T* returnCos, T theta) noexcept
+		constexpr void sinCos(T* returnSin, T* returnCos, T theta) noexcept
 		{
 			*returnSin = std::sin(theta);
 			*returnCos = std::cos(theta);
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr T modf(T x, T* y) noexcept
+		constexpr T modf(T x, T* y) noexcept
 		{
 			T d;
 			T f = std::modf(x, &d);
@@ -173,14 +173,14 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr T fraction(T v) noexcept
+		constexpr T fraction(T v) noexcept
 		{
 			T intPart;
 			return std::modf(v, &intPart);
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr T safe_acos(T x) noexcept
+		constexpr T safe_acos(T x) noexcept
 		{
 			if (x <= -1.0f) { return math::PI; }
 			if (x >= 1.0f) { return 0.0f; }
@@ -188,13 +188,13 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr T snorm2unorm(T x) noexcept
+		constexpr T snorm2unorm(T x) noexcept
 		{
 			return x * 0.5f + 0.5f;
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		inline constexpr T unorm2snorm(T x) noexcept
+		constexpr T unorm2snorm(T x) noexcept
 		{
 			return x * 2.0f - 1.0f;
 		}
@@ -203,7 +203,7 @@ namespace octoon
 		{
 			constexpr float c[3] = { 5.79526f, 12.82461f, -2.88611f };
 
-			int e = int(round(x));
+			int e = int(std::round(x));
 			float t = x - e;
 			float m = (t * t + c[0] * t + c[1]) / (c[2] * t * c[1]);
 
@@ -214,14 +214,14 @@ namespace octoon
 		{
 			constexpr double c[3] = { 5.79526, 12.82461, -2.88611 };
 
-			int e = int(round(x));
+			int e = int(std::round(x));
 			double t = x - e;
 			double m = (t * t + c[0] * t + c[1]) / (c[2] * t * c[1]);
 
 			return std::ldexp(m, e);
 		}
 
-		inline constexpr float fast_rsqrt(float x) noexcept
+		constexpr float fast_rsqrt(float x) noexcept
 		{
 			float xhalf = 0.5f*x;
 			int i = *(int*)&x;
@@ -232,7 +232,7 @@ namespace octoon
 			return x;
 		}
 
-		inline constexpr double fast_rsqrt(double y) noexcept
+		constexpr double fast_rsqrt(double y) noexcept
 		{
 			const double threehalfs = 1.5F;
 			double x2 = y * 0.5F;
@@ -245,45 +245,45 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline constexpr std::int8_t fpToInt8SNORM(T f) noexcept
+		constexpr std::int8_t fpToInt8SNORM(T f) noexcept
 		{
 			return (std::int8_t)((1 << 7) * f);
 		}
 
 		template<typename T>
-		inline constexpr std::uint8_t fpToInt8UNORM(T f) noexcept
+		constexpr std::uint8_t fpToInt8UNORM(T f) noexcept
 		{
 			return (std::uint8_t)(f * 255);
 		}
 
 		template<typename T>
-		inline constexpr std::int16_t fpToInt16SNORM(T f) noexcept
+		constexpr std::int16_t fpToInt16SNORM(T f) noexcept
 		{
 			return (std::int16_t)((1 << 15) * f);
 		}
 
 		template<typename T>
-		inline constexpr std::uint16_t fpToInt16UNORM(T f) noexcept
+		constexpr std::uint16_t fpToInt16UNORM(T f) noexcept
 		{
 			return (std::uint16_t)(f * 65535);
 		}
 
-		inline constexpr float fpFromIEEE(std::uint32_t raw) noexcept
+		constexpr float fpFromIEEE(std::uint32_t raw) noexcept
 		{
 			return *reinterpret_cast<float*>(&raw);
 		}
 
-		inline constexpr std::uint32_t fpToIEEE(float fp) noexcept
+		constexpr std::uint32_t fpToIEEE(float fp) noexcept
 		{
 			return *reinterpret_cast<std::uint32_t*>(&fp);
 		}
 
-		inline constexpr double fpFromIEEE(std::uint64_t raw) noexcept
+		constexpr double fpFromIEEE(std::uint64_t raw) noexcept
 		{
 			return *reinterpret_cast<double*>(&raw);
 		}
 
-		inline constexpr std::uint64_t fpToIEEE(double fp) noexcept
+		constexpr std::uint64_t fpToIEEE(double fp) noexcept
 		{
 			return *reinterpret_cast<std::uint64_t*>(&fp);
 		}

@@ -68,6 +68,7 @@ namespace octoon
 					x = std::sin(thetaOver2);
 					y = 0.0f;
 					z = 0.0f;
+
 					return *this;
 				}
 
@@ -79,6 +80,7 @@ namespace octoon
 					x = 0.0f;
 					y = std::sin(thetaOver2);
 					z = 0.0f;
+
 					return *this;
 				}
 
@@ -90,6 +92,22 @@ namespace octoon
 					x = 0.0f;
 					y = 0.0f;
 					z = std::sin(thetaOver2);
+
+					return *this;
+				}
+
+				Quaternion<T>& make_rotate(const Vector3<T>& axis, T theta) noexcept
+				{
+					T thetaOver2 = theta * 0.5f;
+
+					T sin_a = std::sin(thetaOver2);
+					T cos_a = std::cos(thetaOver2);
+
+					w = cos_a;
+					x = axis.x * sin_a;
+					y = axis.y * sin_a;
+					z = axis.z * sin_a;
+
 					return *this;
 				}
 
@@ -124,20 +142,6 @@ namespace octoon
 					z = cp * ch * sb - sp * sh * cb;
 					w = cp * ch * cb + sp * sh * sb;
 
-					return *this;
-				}
-
-				Quaternion<T>& make_rotate(const Vector3<T>& axis, T theta) noexcept
-				{
-					T thetaOver2 = theta * 0.5f;
-
-					T sin_a = std::sin(thetaOver2);
-					T cos_a = std::cos(thetaOver2);
-
-					x = axis.x * sin_a;
-					y = axis.y * sin_a;
-					z = axis.z * sin_a;
-					w = cos_a;
 					return *this;
 				}
 
@@ -278,6 +282,15 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline detail::Vector3<T> eulerAngles(const detail::Quaternion<T>& q) noexcept
+		{
+			T x = std::asin(math::saturate<T>(2.0f * (q.w * q.x - q.y * q.z)));
+			T y = std::atan2(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+			T z = std::atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z));
+			return detail::Vector3<T>(x, y, z);
+		}
+
+		template<typename T>
 		inline detail::Vector3<T> axis(const detail::Quaternion<T>& q) noexcept
 		{
 			T sinThetaOver2Sq = 1.0f - q.w * q.w;
@@ -412,15 +425,6 @@ namespace octoon
 			detail::Quaternion<T> qinv = inverse(q);
 			detail::Quaternion<T> q2 = cross(q, cross(q1, qinv));
 			return detail::Vector3<T>(q2.x, q2.y, q2.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> eulerAngles(const detail::Quaternion<T>& q) noexcept
-		{
-			T x = math::asin<T>(math::saturate<T>(2.0f * (q.w * q.x - q.y * q.z)));
-			T y = math::atan2<T>(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
-			T z = math::atan2<T>(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z));
-			return detail::Vector3<T>(x, y, z);
 		}
 	}
 }

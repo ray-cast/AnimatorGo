@@ -459,7 +459,7 @@ namespace octoon
 
 				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
 				{
-					return this->make_rotate(rotate, translate);
+					return this->make_rotation(rotate, translate);
 				}
 
 				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate, const Vector3<T>& scale) noexcept
@@ -498,7 +498,7 @@ namespace octoon
 					if (scaling.y != T(0.0)) up /= scaling.y;
 					if (scaling.z != T(0.0)) forward /= scaling.z;
 
-					rotation.make_rotate(forward, up, right);
+					rotation.make_rotation(forward, up, right);
 					return *this;
 				}
 
@@ -508,7 +508,7 @@ namespace octoon
 					position.y = this->d2;
 					position.z = this->d3;
 
-					rotation.make_rotate(this->get_forward(), this->get_up(), this->get_right());
+					rotation.make_rotation(this->get_forward(), this->get_up(), this->get_right());
 					return *this;
 				}
 
@@ -1108,7 +1108,7 @@ namespace octoon
 			if (det == static_cast<T>(0.0))
 				return detail::Matrix4x4<T>::One;
 
-			invdet = 1.0f / det;
+			T invdet = 1.0f / det;
 
 			out.a1 = invdet * (m.b2 * m.c3 + m.b3 * -m.c2);
 			out.a2 = invdet * (m.c2 * m.a3 + m.c3 * -m.a2);

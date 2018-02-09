@@ -1,0 +1,4 @@
+#ifndef OCTOON_INPUT_GLFW_DEVICE_H_
+#define OCTOON_INPUT_GLFW_DEVICE_H_
+
+#endif

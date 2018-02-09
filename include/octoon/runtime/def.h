@@ -2,13 +2,13 @@
 #define OCTOON_DEF_H_
 
 #if defined(__cplusplus)
-#   define PROJECT_BEGIN namespace octoon {
-#   define PROJECT_END }
-#   define PROJECT ::octoon::
+#   define OCTOON_PROJECT_BEGIN namespace octoon {
+#   define OCTOON_PROJECT_END }
+#   define OCTOON_PROJECT ::octoon::
 #else
-#   define PROJECT_BEGIN
-#   define PROJECT_END
-#   define PROJECT
+#   define OCTOON_PROJECT_BEGIN
+#   define OCTOON_PROJECT_END
+#   define OCTOON_PROJECT
 #endif
 
 #if defined(_MSC_VER)

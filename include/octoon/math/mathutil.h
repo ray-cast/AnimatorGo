@@ -288,14 +288,14 @@ namespace octoon
 			return *reinterpret_cast<std::uint64_t*>(&fp);
 		}
 
-		DLL_EXPORT void randomize() noexcept;
-		DLL_EXPORT void randomize(unsigned int) noexcept;
-		DLL_EXPORT int random(int min, int max) noexcept;
-		DLL_EXPORT float random(float min, float max) noexcept;
-		DLL_EXPORT double random(double min, double max) noexcept;
+		OCTOON_EXPORT void randomize() noexcept;
+		OCTOON_EXPORT void randomize(unsigned int) noexcept;
+		OCTOON_EXPORT int random(int min, int max) noexcept;
+		OCTOON_EXPORT float random(float min, float max) noexcept;
+		OCTOON_EXPORT double random(double min, double max) noexcept;
 
-		DLL_EXPORT std::uint32_t morton2(std::uint32_t x, std::uint32_t y) noexcept;
-		DLL_EXPORT std::uint32_t morton3(std::uint32_t x, std::uint32_t y, std::uint32_t z) noexcept;
+		OCTOON_EXPORT std::uint32_t morton2(std::uint32_t x, std::uint32_t y) noexcept;
+		OCTOON_EXPORT std::uint32_t morton3(std::uint32_t x, std::uint32_t y, std::uint32_t z) noexcept;
 	}
 }
 

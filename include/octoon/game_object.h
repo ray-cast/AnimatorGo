@@ -29,9 +29,6 @@ namespace octoon
 		void setParent(const GameObjectPtr& parent) noexcept;
 		GameObject* getParent() const noexcept;
 
-		virtual GameScene* getGameScene() noexcept;
-		virtual const GameScene* getGameScene() const noexcept;
-
 		void addChild(GameObjectPtr& child) noexcept;
 		void removeChild(GameObjectPtr& child) noexcept;
 		void cleanupChildren() noexcept;
@@ -40,45 +37,6 @@ namespace octoon
 		std::size_t getChildCount() const noexcept;
 		GameObjects& getChildren() noexcept;
 		const GameObjects& getChildren() const noexcept;
-
-		void setTranslate(const math::float3& v) noexcept;
-		void setTranslateAccum(const math::float3& v) noexcept;
-		const math::float3& getTranslate() const noexcept;
-
-		void setScale(const math::float3& v) noexcept;
-		void setScaleAll(const float v) noexcept;
-		void setScaleAccum(const math::float3& v) noexcept;
-		const math::float3& getScale() const noexcept;
-
-		void setQuaternion(const math::Quaternion& quat) noexcept;
-		void setQuaternionAccum(const math::Quaternion& quat) noexcept;
-		const math::Quaternion& getQuaternion() const noexcept;
-
-		void setTransform(const math::float4x4& transform) noexcept;
-		void setTransformOnlyRotate(const math::float4x4& transform) noexcept;
-		const math::float4x4& getTransform() const noexcept;
-		const math::float4x4& getTransformInverse() const noexcept;
-
-		void setWorldTranslate(const math::float3& v) noexcept;
-		void setWorldTranslateAccum(const math::float3& v) noexcept;
-		const math::float3& getWorldTranslate() const noexcept;
-
-		void setWorldScale(const math::float3& v) noexcept;
-		void setWorldScaleAccum(const math::float3& v) noexcept;
-		const math::float3& getWorldScale() const noexcept;
-
-		void setWorldQuaternion(const math::Quaternion& quat) noexcept;
-		void setWorldQuaternionAccum(const math::Quaternion& quat) noexcept;
-		const math::Quaternion& getWorldQuaternion() const noexcept;
-
-		const math::float3& getRight() const noexcept;
-		const math::float3& getUpVector() const noexcept;
-		const math::float3& getForward() const noexcept;
-
-		void setWorldTransform(const math::float4x4& transform) noexcept;
-		void setWorldTransformOnlyRotate(const math::float4x4& transform) noexcept;
-		const math::float4x4& getWorldTransform() const noexcept;
-		const math::float4x4& getWorldTransformInverse() const noexcept;
 
 		void addComponent(const GameComponentPtr& component) except;
 		void addComponent(GameComponentPtr&& component) except;
@@ -108,10 +66,14 @@ namespace octoon
 
 		void destroy() noexcept;
 
+		virtual GameScene* getGameScene() noexcept;
+		virtual const GameScene* getGameScene() const noexcept;
+
 		GameObjectPtr clone() const except;
 
 	private:
-		friend GameObjectManager;
+		friend class GameObjectManager;
+		friend class TransformComponent;
 
 		void _onActivate() except;
 		void _onDeactivate() noexcept;
@@ -127,13 +89,6 @@ namespace octoon
 		void _onLayerChangeAfter() except;
 
 	private:
-		void _updateLocalChildren() const noexcept;
-		void _updateWorldChildren() const noexcept;
-		void _updateLocalTransform() const noexcept;
-		void _updateWorldTransform() const noexcept;
-		void _updateParentTransform() const noexcept;
-
-	private:
 		GameObject(const GameObject& copy) noexcept = delete;
 		GameObject& operator=(const GameObject& copy) noexcept = delete;
 
@@ -144,23 +99,6 @@ namespace octoon
 		std::size_t instanceID_;
 
 		std::string name_;
-
-		mutable math::float3 localTranslate_;
-		mutable math::float3 localScaling_;
-		mutable math::Quaternion localRotation_;
-
-		mutable math::float3 worldTranslate_;
-		mutable math::float3 worldScaling_;
-		mutable math::Quaternion worldRotation_;
-
-		mutable math::float4x4 localTransform_;
-		mutable math::float4x4 localTransformInverse_;
-
-		mutable math::float4x4 worldTransform_;
-		mutable math::float4x4 worldTransformInverse_;
-
-		mutable bool localNeedUpdates_;
-		mutable bool worldNeedUpdates_;
 
 		GameObjects children_;
 		GameObjectWeakPtr parent_;

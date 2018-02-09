@@ -37,7 +37,7 @@
 #ifndef OCTOON_GAME_SCENE_MANAGER_H_
 #define OCTOON_GAME_SCENE_MANAGER_H_
 
-#include <octoon/game_features.h>
+#include <octoon/game_feature.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
@@ -47,9 +47,6 @@ namespace octoon
 	public:
 		GameSceneManager() noexcept;
 		~GameSceneManager() noexcept;
-
-		bool open() noexcept;
-		void close() noexcept;
 
 		GameScenePtr findScene(const std::string& name) noexcept;
 		GameScenePtr findActiveScene(const std::string& name) noexcept;

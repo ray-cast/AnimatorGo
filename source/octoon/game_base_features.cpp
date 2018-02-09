@@ -1,4 +1,4 @@
-#include <octoon/game_base_features.h>
+#include "game_base_features.h"
 #include <octoon/game_object_manager.h>
 #include <octoon/game_scene_manager.h>
 
@@ -12,19 +12,6 @@ namespace octoon
 
 	GameBaseFeatures::~GameBaseFeatures() noexcept
 	{
-	}
-
-	void
-	GameBaseFeatures::onActivate() except
-	{
-		if (!GameSceneManager::instance()->open())
-			throw std::exception("GameSceneManager::instance() fail.");
-	}
-
-	void
-	GameBaseFeatures::onDeactivate() noexcept
-	{
-		GameSceneManager::instance()->close();
 	}
 
 	void

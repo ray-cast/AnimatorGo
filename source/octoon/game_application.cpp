@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "input_feature.h"
+#include "game_base_features.h"
 
 namespace octoon
 {
@@ -23,9 +24,7 @@ namespace octoon
 		: isInitialize_(false)
 		, gameServer_(nullptr)
 		, gameListener_(std::make_shared<GameAppListener>())
-		, workDir_("")
-		, engineDir_("../../octoon/")
-		, resourceBaseDir_("../../media/")
+
 	{
 		std::locale::global(std::locale(""));
 	}
@@ -78,7 +77,10 @@ namespace octoon
 			return false;
 
 		inputFeature_ = std::make_shared<InputFeature>(hwnd);
+		baseFeature_ = std::make_shared<GameBaseFeatures>();
+
 		this->addFeatures(inputFeature_);
+		this->addFeatures(baseFeature_);
 
 		isInitialize_ = true;
 		return isInitialize_;

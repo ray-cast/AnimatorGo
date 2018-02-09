@@ -1,7 +1,7 @@
 #ifndef OCTOON_INPUT_FEATURES_H_
 #define OCTOON_INPUT_FEATURES_H_
 
-#include <octoon/game_features.h>
+#include <octoon/game_feature.h>
 #include <octoon/input/input.h>
 
 namespace octoon

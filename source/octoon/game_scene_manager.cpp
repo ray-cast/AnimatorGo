@@ -11,17 +11,6 @@ namespace octoon
 	{
 	}
 
-	bool
-	GameSceneManager::open() noexcept
-	{
-		return true;
-	}
-
-	void
-	GameSceneManager::close() noexcept
-	{
-	}
-
 	void
 	GameSceneManager::_instanceScene(GameScene* entity, std::size_t& instanceID) noexcept
 	{

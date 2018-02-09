@@ -10,8 +10,6 @@ SET(OCTOON_LIST
     ${HEADER_PATH}/game_listener.h
     ${SOURCE_PATH}/game_object.cpp
     ${HEADER_PATH}/game_object.h
-    ${SOURCE_PATH}/game_base_features.cpp
-    ${HEADER_PATH}/game_base_features.h
     ${SOURCE_PATH}/game_object_manager.cpp
     ${HEADER_PATH}/game_object_manager.h
     ${SOURCE_PATH}/game_component.cpp
@@ -28,6 +26,14 @@ SET(OCTOON_LIST
 )
 SOURCE_GROUP("system\\app" FILES ${OCTOON_LIST})
 
+SET(BASE_FEATURES_LIST
+    ${HEADER_PATH}/transform_component.h
+    ${SOURCE_PATH}/transform_component.cpp
+    ${SOURCE_PATH}/game_base_features.cpp
+    ${SOURCE_PATH}/game_base_features.h
+)
+SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
+
 SET(INPUT_FEATURES_LIST
     ${SOURCE_PATH}/input_feature.h
     ${SOURCE_PATH}/input_feature.cpp
@@ -35,7 +41,7 @@ SET(INPUT_FEATURES_LIST
 SOURCE_GROUP("system\\input" FILES ${INPUT_FEATURES_LIST})
 
 ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
-ADD_LIBRARY(${LIB_NAME} STATIC ${OCTOON_LIST} ${INPUT_FEATURES_LIST})
+ADD_LIBRARY(${LIB_NAME} STATIC ${OCTOON_LIST} ${BASE_FEATURES_LIST} ${INPUT_FEATURES_LIST})
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-math)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-input)

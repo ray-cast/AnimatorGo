@@ -2,7 +2,7 @@
 #define OCTOON_GAME_OBJECT_MANAGER_H_
 
 #include <stack>
-#include <octoon/game_features.h>
+#include <octoon/game_feature.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon

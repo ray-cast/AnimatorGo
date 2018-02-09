@@ -7,7 +7,7 @@ namespace octoon
 {
 	class OCTOON_EXPORT GameComponent : public runtime::RttiInterface
 	{
-		OctoonDeclareSubInterface(GameComponent, MessageListener)
+		OctoonDeclareSubInterface(GameComponent, runtime::RttiInterface)
 	public:
 		GameComponent() noexcept;
 		virtual ~GameComponent() noexcept;
@@ -34,11 +34,11 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept = 0;
 
 	protected:
-		void addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-		void removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-
 		void addComponentDispatch(GameDispatchType type, GameComponent* component) noexcept;
+		void addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+
 		void removeComponentDispatch(GameDispatchType type, GameComponent* component) noexcept;
+		void removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
 
 	private:
 		virtual void onAttach() except;

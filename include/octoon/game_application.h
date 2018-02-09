@@ -43,15 +43,11 @@ namespace octoon
 	private:
 		bool isInitialize_;
 
-		std::string workDir_;
-		std::string engineDir_;
-		std::string resourceBaseDir_;
-		std::string downloadURL_;
-
 		GameServer* gameServer_;
 		GameListenerPtr gameListener_;
 
 		GameFeaturePtr inputFeature_;
+		GameFeaturePtr baseFeature_;
 	};
 }
 

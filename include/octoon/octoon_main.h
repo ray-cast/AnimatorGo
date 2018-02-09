@@ -34,8 +34,8 @@
 // | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // +----------------------------------------------------------------------
-#ifndef _H_RAY_MAIN_H_
-#define _H_RAY_MAIN_H_
+#ifndef OCTOON_MAIN_H_
+#define OCTOON_MAIN_H_
 
 #include "octoon.h"
 

@@ -77,10 +77,10 @@ namespace octoon
 		if (!_gameServer->open())
 			return false;
 
-		_inputFeature = std::make_shared<InputFeature>((input::WindHandle)hwnd);
+		_inputFeature = std::make_shared<InputFeature>(hwnd);
 		this->addFeatures(_inputFeature);
 
-		_isInitialize = this->start();
+		_isInitialize = true;
 		return _isInitialize;
 	}
 

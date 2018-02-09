@@ -477,6 +477,9 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 				return false;
 			}
 
+			if (!_gameApp->start())
+				return false;
+
 			onWindowFocus(_window, true);
 			onWindowResize(_window, w, h);
 			onWindowFramebufferResize(_window, framebuffer_w, framebuffer_h);
@@ -489,9 +492,6 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 					return false;
 				}
 			}
-
-			if (!_gameApp->start())
-				return false;
 
 			::glfwShowWindow(_window);
 			return true;

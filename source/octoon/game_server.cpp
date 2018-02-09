@@ -403,7 +403,7 @@ namespace octoon
 		if (_isActive)
 		{
 			if (_gameListener)
-				_gameListener->onMessage("GameServer : has already started.");
+				_gameListener->onMessage("GameServer : The server has been started.");
 
 			return true;
 		}
@@ -474,7 +474,7 @@ namespace octoon
 		else
 		{
 			if (_gameListener)
-				_gameListener->onMessage("GameServer : has already stopped.");
+				_gameListener->onMessage("GameServer : The server has been stoped.");
 		}
 	}
 

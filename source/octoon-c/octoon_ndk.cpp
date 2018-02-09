@@ -45,9 +45,9 @@
 
 #include <android_native_app_glue.h>
 
-octoon::GameApplicationPtr _gameApp;
-octoon::util::string _gameRootPath;
-octoon::util::string _gameScenePath;
+octoon::GameApplicationPtr g_gameApp;
+octoon::util::string g_gameRootPath;
+octoon::util::string g_gameScenePath;
 bool _isQuitRequest = false;
 android_app* _android_app = nullptr;
 
@@ -56,11 +56,11 @@ bool OctoonInit(const char* gamedir, const char* scenename) noexcept
 	if (gamedir)
 	{
 		if (octoon::fcntl::access(gamedir, 0) == 0)
-			_gameRootPath = octoon::util::directory(gamedir);
+			g_gameRootPath = octoon::util::directory(gamedir);
 	}
 
 	if (scenename)
-		_gameScenePath = scenename;
+		g_gameScenePath = scenename;
 
 	_isQuitRequest = false;
 
@@ -74,21 +74,21 @@ void OctoonTerminate() noexcept
 
 bool OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
-	_gameApp = std::make_shared<octoon::GameApplication>();
-	_gameApp->setFileService(true);
-	_gameApp->setFileServicePath(_gameRootPath);
+	g_gameApp = std::make_shared<octoon::GameApplication>();
+	g_gameApp->setFileService(true);
+	g_gameApp->setFileServicePath(g_gameRootPath);
 
 	if (w == 0)
 		w = _android_app->contentRect.right - _android_app->contentRect.left;
 	if (h == 0)
 		h = _android_app->contentRect.bottom - _android_app->contentRect.top;
 
-	if (!_gameApp->open(_android_app->window, w, h))
+	if (!g_gameApp->open(_android_app->window, w, h))
 		return false;
 
-	if (!_gameScenePath.empty())
+	if (!g_gameScenePath.empty())
 	{
-		if (!_gameApp->openScene(_gameScenePath))
+		if (!g_gameApp->openScene(g_gameScenePath))
 			return false;
 	}
 
@@ -97,10 +97,10 @@ bool OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 void OctoonCloseWindow() noexcept
 {
-	if (_gameApp)
+	if (g_gameApp)
 	{
-		_gameApp.reset();
-		_gameApp = nullptr;
+		g_gameApp.reset();
+		g_gameApp = nullptr;
 	}
 
 	_isQuitRequest = true;
@@ -113,8 +113,8 @@ bool OctoonIsQuitRequest() noexcept
 
 void OctoonUpdate() noexcept
 {
-	if (_gameApp)
-		_gameApp->update();
+	if (g_gameApp)
+		g_gameApp->update();
 }
 
 static int32_t onInputEvent(struct android_app* app, AInputEvent* event)

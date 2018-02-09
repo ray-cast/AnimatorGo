@@ -41,7 +41,7 @@ namespace octoon
 		if (_isInitialize)
 		{
 			if (_gameListener)
-				_gameListener->onMessage("Game Application has already opened.");
+				_gameListener->onMessage("Game Application has been opened.");
 
 			return false;
 		}

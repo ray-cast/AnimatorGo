@@ -46,10 +46,10 @@
 #include <android_native_app_glue.h>
 
 octoon::GameApplicationPtr gameApp_;
-octoon::util::string gameRootPath_;
-octoon::util::string gameScenePath_;
-bool _isQuitRequest = false;
-android_app* _android_app = nullptr;
+std::string gameRootPath_;
+std::string gameScenePath_;
+bool isQuitRequest_ = false;
+android_app* android_app_ = nullptr;
 
 bool OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
@@ -62,7 +62,7 @@ bool OctoonInit(const char* gamedir, const char* scenename) noexcept
 	if (scenename)
 		gameScenePath_ = scenename;
 
-	_isQuitRequest = false;
+	isQuitRequest_ = false;
 
 	return true;
 }
@@ -79,11 +79,11 @@ bool OctoonOpenWindow(const char* title, int w, int h) noexcept
 	gameApp_->setFileServicePath(gameRootPath_);
 
 	if (w == 0)
-		w = _android_app->contentRect.right - _android_app->contentRect.left;
+		w = android_app_->contentRect.right - android_app_->contentRect.left;
 	if (h == 0)
-		h = _android_app->contentRect.bottom - _android_app->contentRect.top;
+		h = android_app_->contentRect.bottom - android_app_->contentRect.top;
 
-	if (!gameApp_->open(_android_app->window, w, h))
+	if (!gameApp_->open(android_app_->window, w, h))
 		return false;
 
 	if (!gameScenePath_.empty())
@@ -103,12 +103,12 @@ void OctoonCloseWindow() noexcept
 		gameApp_ = nullptr;
 	}
 
-	_isQuitRequest = true;
+	isQuitRequest_ = true;
 }
 
 bool OctoonIsQuitRequest() noexcept
 {
-	return _isQuitRequest || _android_app->destroyRequested ? true : false;
+	return isQuitRequest_ || android_app_->destroyRequested ? true : false;
 }
 
 void OctoonUpdate() noexcept
@@ -209,9 +209,9 @@ void onAppCmd(struct android_app* app, int32_t cmd)
 
 void android_main(android_app* app)
 {
-	_android_app = app;
-	_android_app->onAppCmd = &onAppCmd;
-	_android_app->onInputEvent = &onInputEvent;
+	android_app_ = app;
+	android_app_->onAppCmd = &onAppCmd;
+	android_app_->onInputEvent = &onInputEvent;
 
 	ray_main(0, 0);
 }

@@ -138,35 +138,35 @@ namespace octoon
 		GameObject& operator=(const GameObject& copy) noexcept = delete;
 
 	private:
-		bool _active;
+		bool active_;
 
-		std::uint8_t _layer;
-		std::size_t _instanceID;
+		std::uint8_t layer_;
+		std::size_t instanceID_;
 
-		std::string _name;
+		std::string name_;
 
-		mutable math::float3 _localTranslate;
-		mutable math::float3 _localScaling;
-		mutable math::Quaternion _localRotation;
+		mutable math::float3 localTranslate_;
+		mutable math::float3 localScaling_;
+		mutable math::Quaternion localRotation_;
 
-		mutable math::float3 _worldTranslate;
-		mutable math::float3 _worldScaling;
-		mutable math::Quaternion _worldRotation;
+		mutable math::float3 worldTranslate_;
+		mutable math::float3 worldScaling_;
+		mutable math::Quaternion worldRotation_;
 
-		mutable math::float4x4 _localTransform;
-		mutable math::float4x4 _localTransformInverse;
+		mutable math::float4x4 localTransform_;
+		mutable math::float4x4 localTransformInverse_;
 
-		mutable math::float4x4 _worldTransform;
-		mutable math::float4x4 _worldTransformInverse;
+		mutable math::float4x4 worldTransform_;
+		mutable math::float4x4 worldTransformInverse_;
 
-		mutable bool _localNeedUpdates;
-		mutable bool _worldNeedUpdates;
+		mutable bool localNeedUpdates_;
+		mutable bool worldNeedUpdates_;
 
-		GameObjects _children;
-		GameObjectWeakPtr _parent;
+		GameObjects children_;
+		GameObjectWeakPtr parent_;
 
-		GameComponents _components;
-		std::vector<GameComponents> _dispatchComponents;
+		GameComponents components_;
+		std::vector<GameComponents> dispatchComponents_;
 	};
 }
 

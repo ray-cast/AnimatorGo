@@ -5,8 +5,8 @@ namespace octoon
 	OctoonImplementSubInterface(GameComponent, RttiInterface, "Component")
 
 	GameComponent::GameComponent() noexcept
-		: _active(true)
-		, _gameObject(nullptr)
+		: active_(true)
+		, gameObject_(nullptr)
 	{
 	}
 
@@ -18,100 +18,100 @@ namespace octoon
 	GameComponent::getComponent(const runtime::Rtti* type) const noexcept
 	{
 		assert(this->rtti() != type);
-		return _gameObject->getComponent(type);
+		return gameObject_->getComponent(type);
 	}
 
 	GameComponentPtr
 	GameComponent::getComponent(const runtime::Rtti& type) const noexcept
 	{
 		assert(this->rtti() != &type);
-		return _gameObject->getComponent(type);
+		return gameObject_->getComponent(type);
 	}
 
 	const GameComponents&
 	GameComponent::getComponents() const noexcept
 	{
-		return _gameObject->getComponents();
+		return gameObject_->getComponents();
 	}
 
 	void
 	GameComponent::addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
 	{
-		assert(_gameObject && component);
-		_gameObject->addComponentDispatch(type, component);
+		assert(gameObject_ && component);
+		gameObject_->addComponentDispatch(type, component);
 	}
 
 	void
 	GameComponent::removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
 	{
-		assert(_gameObject && component);
-		_gameObject->removeComponentDispatch(type, component);
+		assert(gameObject_ && component);
+		gameObject_->removeComponentDispatch(type, component);
 	}
 
 	void
 	GameComponent::addComponentDispatch(GameDispatchType type, GameComponent* component) noexcept
 	{
-		assert(_gameObject && component);
-		_gameObject->addComponentDispatch(type, component->cast_pointer<GameComponent>());
+		assert(gameObject_ && component);
+		gameObject_->addComponentDispatch(type, component->cast_pointer<GameComponent>());
 	}
 
 	void
 	GameComponent::removeComponentDispatch(GameDispatchType type, GameComponent* component) noexcept
 	{
-		assert(_gameObject && component);
-		_gameObject->removeComponentDispatch(type, component->cast_pointer<GameComponent>());
+		assert(gameObject_ && component);
+		gameObject_->removeComponentDispatch(type, component->cast_pointer<GameComponent>());
 	}
 
 	void
 	GameComponent::_setGameObject(GameObject* gameobj) noexcept
 	{
-		_gameObject = gameobj;
+		gameObject_ = gameobj;
 	}
 
 	GameObjectPtr
 	GameComponent::getGameObject() const noexcept
 	{
-		if (_gameObject)
-			return _gameObject->cast_pointer<GameObject>();
+		if (gameObject_)
+			return gameObject_->cast_pointer<GameObject>();
 		return nullptr;
 	}
 
 	void
 	GameComponent::setActive(bool active) except
 	{
-		if (_active != active)
+		if (active_ != active)
 		{
 			if (active)
 				this->onActivate();
 			else
 				this->onDeactivate();
 
-			_active = active;
+			active_ = active;
 		}
 	}
 
 	bool
 	GameComponent::getActive() const noexcept
 	{
-		return _active;
+		return active_;
 	}
 
 	void
 	GameComponent::setName(const std::string& name) noexcept
 	{
-		_name = name;
+		name_ = name;
 	}
 
 	void
 	GameComponent::setName(std::string&& name) noexcept
 	{
-		_name = std::move(name);
+		name_ = std::move(name);
 	}
 
 	const std::string&
 	GameComponent::getName() const noexcept
 	{
-		return _name;
+		return name_;
 	}
 
 	void

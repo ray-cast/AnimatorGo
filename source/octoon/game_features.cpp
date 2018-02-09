@@ -7,8 +7,8 @@ namespace octoon
 	OctoonImplementSubInterface(GameFeature, runtime::RttiInterface, "GameFeature")
 
 	GameFeature::GameFeature() noexcept
-		: _isActive(false)
-		, _gameServer(nullptr)
+		: isActive_(false)
+		, gameServer_(nullptr)
 	{
 	}
 
@@ -19,30 +19,30 @@ namespace octoon
 	void
 	GameFeature::setActive(bool active) except
 	{
-		if (_isActive != active)
+		if (isActive_ != active)
 		{
 			if (active)
 				this->onActivate();
 			else
 				this->onDeactivate();
 
-			_isActive = active;
+			isActive_ = active;
 		}
 	}
 	bool
 	GameFeature::getActive() noexcept
 	{
-		return _isActive;
+		return isActive_;
 	}
 
 	void
 	GameFeature::setGameListener(const GameListenerPtr& listener) noexcept
 	{
-		if (_gameListener != listener)
+		if (gameListener_ != listener)
 		{
 			this->onListenerChangeBefore();
 
-			_gameListener = listener;
+			gameListener_ = listener;
 
 			this->onListenerChangeAfter();
 		}
@@ -51,19 +51,19 @@ namespace octoon
 	const GameListenerPtr&
 	GameFeature::getGameListener() const noexcept
 	{
-		return _gameListener;
+		return gameListener_;
 	}
 
 	void
 	GameFeature::_setGameServer(GameServer* server) noexcept
 	{
-		_gameServer = server;
+		gameServer_ = server;
 	}
 
 	GameServer*
 	GameFeature::getGameServer() noexcept
 	{
-		return _gameServer;
+		return gameServer_;
 	}
 
 	void

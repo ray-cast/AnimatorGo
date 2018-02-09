@@ -68,13 +68,13 @@ namespace octoon
 	GameScene::GameScene() noexcept
 		: _root(std::make_unique<RootObject>(this))
 	{
-		GameSceneManager::instance()->_instanceScene(this, _instanceID);
+		GameSceneManager::instance()->_instanceScene(this, instanceID_);
 	}
 
 	GameScene::GameScene(const std::string& name) noexcept
-		: _name(name)
+		: name_(name)
 	{
-		GameSceneManager::instance()->_instanceScene(this, _instanceID);
+		GameSceneManager::instance()->_instanceScene(this, instanceID_);
 	}
 
 	GameScene::~GameScene() noexcept
@@ -107,38 +107,38 @@ namespace octoon
 	void
 	GameScene::setGameListener(const GameListenerPtr& listener) noexcept
 	{
-		if (_gameListener != listener)
-			_gameListener = listener;
+		if (gameListener_ != listener)
+			gameListener_ = listener;
 	}
 
 	GameListenerPtr
 	GameScene::getGameListener() const noexcept
 	{
-		return _gameListener;
+		return gameListener_;
 	}
 
 	void
 	GameScene::setName(std::string&& name) noexcept
 	{
-		_name = std::move(name);
+		name_ = std::move(name);
 	}
 
 	void
 	GameScene::setName(const std::string& name) noexcept
 	{
-		_name = name;
+		name_ = name;
 	}
 
 	const std::string&
 	GameScene::getName() const noexcept
 	{
-		return _name;
+		return name_;
 	}
 
 	std::size_t
 	GameScene::getInstanceID() const noexcept
 	{
-		return _instanceID;
+		return instanceID_;
 	}
 
 	GameObjectPtr

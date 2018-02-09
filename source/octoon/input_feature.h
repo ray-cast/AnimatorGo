@@ -49,7 +49,7 @@ namespace octoon
 
 	private:
 		input::InputPtr _input;
-		input::WindHandle _window;
+		input::WindHandle window_;
 	};
 }
 

@@ -46,10 +46,10 @@ namespace octoon
 
 	private:
 
-		bool _isActive;
+		bool isActive_;
 
-		GameServer* _gameServer;
-		GameListenerPtr _gameListener;
+		GameServer* gameServer_;
+		GameListenerPtr gameListener_;
 	};
 }
 

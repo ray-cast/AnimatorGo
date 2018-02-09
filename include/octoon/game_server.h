@@ -58,15 +58,15 @@ namespace octoon
 
 	private:
 
-		bool _isActive;
-		bool _isStopping;
-		bool _isQuitRequest;
+		bool isActive_;
+		bool isStopping_;
+		bool isQuitRequest_;
 
-		GameScenes _scenes;
-		GameFeatures _features;
+		GameScenes scenes_;
+		GameFeatures features_;
 
-		GameApplication* _gameApp;
-		GameListenerPtr _gameListener;
+		GameApplication* gameApp_;
+		GameListenerPtr gameListener_;
 	};
 }
 

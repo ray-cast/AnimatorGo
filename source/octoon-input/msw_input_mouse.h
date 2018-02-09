@@ -72,8 +72,8 @@ namespace octoon
 			MSWInputMouse& operator=(const MSWInputMouse&) = delete;
 
 		private:
-			bool _focusWindow;
-			WindHandle _window;
+			bool focusWindow_;
+			WindHandle window_;
 		};
 	}
 }

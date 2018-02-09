@@ -70,11 +70,11 @@ namespace octoon
 
 	private:
 
-		bool _hasEmptyActors;
+		bool hasEmptyActors_;
 
-		std::vector<std::size_t> _emptyLists;
-		std::vector<GameScene*> _instanceLists;
-		std::vector<GameScene*> _activeActors;
+		std::vector<std::size_t> emptyLists_;
+		std::vector<GameScene*> instanceLists_;
+		std::vector<GameScene*> activeActors_;
 	};
 }
 

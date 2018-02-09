@@ -47,16 +47,16 @@
 #include <iostream>
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-#define glfwGetWinHandle(window) glfwGetWin32Window(_window);
+#define glfwGetWinHandle(window) glfwGetWin32Window(window_);
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
-#define glfwGetWinHandle(window) glfwGetX11Window(_window);
+#define glfwGetWinHandle(window) glfwGetX11Window(window_);
 #elif defined(GLFW_EXPOSE_NATIVE_EGL)
-#define glfwGetWinHandle(window) glfwGetEGLSurface(_window);
+#define glfwGetWinHandle(window) glfwGetEGLSurface(window_);
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
-#define glfwGetWinHandle(window) glfwGetCocoaWindow(_window);
+#define glfwGetWinHandle(window) glfwGetCocoaWindow(window_);
 #endif
 
-GLFWwindow* _window = nullptr;
+GLFWwindow* window_ = nullptr;
 octoon::GameApplicationPtr _gameApp;
 octoon::input::InputMousePtr _inputMessage;
 
@@ -422,7 +422,7 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 
 bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
-	assert(!_gameApp && !_window);
+	assert(!_gameApp && !window_);
 
 	try
 	{
@@ -439,31 +439,31 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 		::glfwWindowHint(GLFW_VISIBLE, false);
 #endif
 
-		_window = ::glfwCreateWindow(w, h, title, nullptr, nullptr);
-		if (_window)
+		window_ = ::glfwCreateWindow(w, h, title, nullptr, nullptr);
+		if (window_)
 		{
-			::glfwSetWindowUserPointer(_window, &_gameApp);
-			::glfwSetWindowFocusCallback(_window, &onWindowFocus);
-			::glfwSetWindowCloseCallback(_window, &onWindowClose);
-			::glfwSetWindowSizeCallback(_window, &onWindowResize);
-			::glfwSetFramebufferSizeCallback(_window, &onWindowFramebufferResize);
-			::glfwSetMouseButtonCallback(_window, &onWindowMouseButton);
-			::glfwSetCursorPosCallback(_window, &onWindowMouseMotion);
-			::glfwSetKeyCallback(_window, &onWindowKey);
-			::glfwSetCharModsCallback(_window, &onWindowKeyChar);
-			::glfwSetScrollCallback(_window, &onWindowSchool);
-			::glfwSetDropCallback(_window, &onWindowDrop);
+			::glfwSetWindowUserPointer(window_, &_gameApp);
+			::glfwSetWindowFocusCallback(window_, &onWindowFocus);
+			::glfwSetWindowCloseCallback(window_, &onWindowClose);
+			::glfwSetWindowSizeCallback(window_, &onWindowResize);
+			::glfwSetFramebufferSizeCallback(window_, &onWindowFramebufferResize);
+			::glfwSetMouseButtonCallback(window_, &onWindowMouseButton);
+			::glfwSetCursorPosCallback(window_, &onWindowMouseMotion);
+			::glfwSetKeyCallback(window_, &onWindowKey);
+			::glfwSetCharModsCallback(window_, &onWindowKeyChar);
+			::glfwSetScrollCallback(window_, &onWindowSchool);
+			::glfwSetDropCallback(window_, &onWindowDrop);
 
 			auto screen = ::glfwGetVideoMode(::glfwGetPrimaryMonitor());
-			::glfwSetWindowPos(_window, (screen->width - w) >> 1, (screen->height - h) >> 1);
+			::glfwSetWindowPos(window_, (screen->width - w) >> 1, (screen->height - h) >> 1);
 
 			int widthMM, heightMM;
 			::glfwGetMonitorPhysicalSize(::glfwGetPrimaryMonitor(), &widthMM, &heightMM);
 
 			int framebuffer_w, framebuffer_h;
-			::glfwGetFramebufferSize(_window, &framebuffer_w, &framebuffer_h);
+			::glfwGetFramebufferSize(window_, &framebuffer_w, &framebuffer_h);
 
-			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(_window);
+			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(window_);
 
 			_gameApp = std::make_shared<octoon::GameApplication>();
 
@@ -480,9 +480,9 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			if (!_gameApp->start())
 				return false;
 
-			onWindowFocus(_window, true);
-			onWindowResize(_window, w, h);
-			onWindowFramebufferResize(_window, framebuffer_w, framebuffer_h);
+			onWindowFocus(window_, true);
+			onWindowResize(window_, w, h);
+			onWindowFramebufferResize(window_, framebuffer_w, framebuffer_h);
 
 			if (!_gameScenePath.empty())
 			{
@@ -493,7 +493,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 				}
 			}
 
-			::glfwShowWindow(_window);
+			::glfwShowWindow(window_);
 			return true;
 		}
 
@@ -514,10 +514,10 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 		_gameApp = nullptr;
 	}
 
-	if (_window)
+	if (window_)
 	{
-		::glfwDestroyWindow(_window);
-		_window = nullptr;
+		::glfwDestroyWindow(window_);
+		window_ = nullptr;
 	}
 
 	::glfwTerminate();
@@ -528,7 +528,7 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	if (!_gameApp)
 		return true;
 
-	if (glfwWindowShouldClose(_window) || _gameApp->isQuitRequest())
+	if (glfwWindowShouldClose(window_) || _gameApp->isQuitRequest())
 		return true;
 
 	return false;

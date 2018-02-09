@@ -32,11 +32,11 @@ namespace octoon
 		void _activeObject(GameObject* entity, bool active) noexcept;
 
 	private:
-		bool _hasEmptyActors;
+		bool hasEmptyActors_;
 
-		std::stack<std::size_t> _emptyLists;
-		std::vector<GameObject*> _instanceLists;
-		std::vector<GameObject*> _activeActors;
+		std::stack<std::size_t> emptyLists_;
+		std::vector<GameObject*> instanceLists_;
+		std::vector<GameObject*> activeActors_;
 	};
 }
 

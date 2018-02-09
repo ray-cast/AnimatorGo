@@ -49,7 +49,7 @@ namespace octoon
 
 		private:
 
-			bool _capture;
+			bool capture_;
 		};
 	}
 }

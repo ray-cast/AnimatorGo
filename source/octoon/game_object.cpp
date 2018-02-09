@@ -9,18 +9,18 @@ namespace octoon
 	OctoonImplementSubClass(GameObject, runtime::RttiInterface, "Object")
 
 	GameObject::GameObject() noexcept
-		: _active(false)
-		, _layer(0)
-		, _localScaling(math::float3::One)
-		, _localTranslate(math::float3::Zero)
-		, _localRotation(math::Quaternion::Zero)
-		, _worldScaling(math::float3::One)
-		, _worldTranslate(math::float3::Zero)
-		, _worldRotation(math::Quaternion::Zero)
-		, _localNeedUpdates(true)
-		, _worldNeedUpdates(true)
+		: active_(false)
+		, layer_(0)
+		, localScaling_(math::float3::One)
+		, localTranslate_(math::float3::Zero)
+		, localRotation_(math::Quaternion::Zero)
+		, worldScaling_(math::float3::One)
+		, worldTranslate_(math::float3::Zero)
+		, worldRotation_(math::Quaternion::Zero)
+		, localNeedUpdates_(true)
+		, worldNeedUpdates_(true)
 	{
-		GameObjectManager::instance()->_instanceObject(this, _instanceID);
+		GameObjectManager::instance()->_instanceObject(this, instanceID_);
 	}
 
 	GameObject::~GameObject() noexcept
@@ -34,39 +34,39 @@ namespace octoon
 	void
 	GameObject::setName(const std::string& name) noexcept
 	{
-		_name = name;
+		name_ = name;
 	}
 
 	void
 	GameObject::setName(std::string&& name) noexcept
 	{
-		_name = std::move(name);
+		name_ = std::move(name);
 	}
 
 	const std::string&
 	GameObject::getName() const noexcept
 	{
-		return _name;
+		return name_;
 	}
 
 	void
 	GameObject::setActive(bool active) except
 	{
-		if (_active != active)
+		if (active_ != active)
 		{
 			if (active)
 				this->_onActivate();
 			else
 				this->_onDeactivate();
 
-			_active = active;
+			active_ = active;
 		}
 	}
 
 	void
 	GameObject::setActiveUpwards(bool active) except
 	{
-		if (_active != active)
+		if (active_ != active)
 		{
 			if (active)
 				this->_onActivate();
@@ -77,41 +77,41 @@ namespace octoon
 			if (parent)
 				parent->setActiveUpwards(active);
 
-			_active = active;
+			active_ = active;
 		}
 	}
 
 	void
 	GameObject::setActiveDownwards(bool active) except
 	{
-		if (_active != active)
+		if (active_ != active)
 		{
 			if (active)
 				this->_onActivate();
 			else
 				this->_onDeactivate();
 
-			for (auto& it : _children)
+			for (auto& it : children_)
 				it->setActiveDownwards(active);
 
-			_active = active;
+			active_ = active;
 		}
 	}
 
 	bool
 	GameObject::getActive() const noexcept
 	{
-		return _active;
+		return active_;
 	}
 
 	void
 	GameObject::setLayer(std::uint8_t layer) noexcept
 	{
-		if (_layer != layer)
+		if (layer_ != layer)
 		{
 			this->_onLayerChangeBefore();
 
-			_layer = layer;
+			layer_ = layer;
 
 			this->_onLayerChangeAfter();
 		}
@@ -120,13 +120,13 @@ namespace octoon
 	std::uint8_t
 	GameObject::getLayer() const noexcept
 	{
-		return _layer;
+		return layer_;
 	}
 
 	std::size_t
 	GameObject::getInstanceID() const noexcept
 	{
-		return _instanceID;
+		return instanceID_;
 	}
 
 	void
@@ -134,29 +134,29 @@ namespace octoon
 	{
 		assert(this != parent.get());
 
-		auto _weak = _parent.lock();
+		auto _weak = parent_.lock();
 		if (_weak != parent)
 		{
 			this->_onMoveBefore();
 
 			if (_weak)
 			{
-				auto it = _weak->_children.begin();
-				auto end = _weak->_children.end();
+				auto it = _weak->children_.begin();
+				auto end = _weak->children_.end();
 
 				for (; it != end; ++it)
 				{
 					if ((*it).get() == this)
 					{
-						_weak->_children.erase(it);
+						_weak->children_.erase(it);
 						break;
 					}
 				}
 			}
 
-			_parent = parent;
+			parent_ = parent;
 			if (parent)
-				parent->_children.push_back(this->downcast_pointer<GameObject>());
+				parent->children_.push_back(this->downcast_pointer<GameObject>());
 
 			this->_updateWorldChildren();
 			this->_onMoveAfter();
@@ -166,7 +166,7 @@ namespace octoon
 	GameObject*
 	GameObject::getParent() const noexcept
 	{
-		return _parent.lock().get();
+		return parent_.lock().get();
 	}
 
 	GameScene*
@@ -199,8 +199,8 @@ namespace octoon
 	{
 		assert(entity);
 
-		auto it = _children.begin();
-		auto end = _children.end();
+		auto it = children_.begin();
+		auto end = children_.end();
 		for (; it != end; ++it)
 		{
 			if ((*it) == entity)
@@ -212,23 +212,23 @@ namespace octoon
 
 		if (it != end)
 		{
-			_children.erase(it);
+			children_.erase(it);
 		}
 	}
 
 	void
 	GameObject::cleanupChildren() noexcept
 	{
-		for (auto& it : _children)
+		for (auto& it : children_)
 			it.reset();
 
-		_children.clear();
+		children_.clear();
 	}
 
 	GameObjectPtr
 	GameObject::findChild(const std::string& name, bool recuse) noexcept
 	{
-		for (auto& it : _children)
+		for (auto& it : children_)
 		{
 			if (it->getName() == name)
 			{
@@ -238,7 +238,7 @@ namespace octoon
 
 		if (recuse)
 		{
-			for (auto& it : _children)
+			for (auto& it : children_)
 			{
 				auto result = it->findChild(name, recuse);
 				if (result)
@@ -254,30 +254,30 @@ namespace octoon
 	std::size_t
 	GameObject::getChildCount() const noexcept
 	{
-		return _children.size();
+		return children_.size();
 	}
 
 	GameObjects&
 	GameObject::getChildren() noexcept
 	{
-		return _children;
+		return children_;
 	}
 
 	const GameObjects&
 	GameObject::getChildren() const noexcept
 	{
-		return _children;
+		return children_;
 	}
 
 	void
 	GameObject::setTranslate(const math::float3& pos) noexcept
 	{
-		if (_localTranslate != pos)
+		if (localTranslate_ != pos)
 		{
 			this->_onMoveBefore();
 
-			_localTranslate = pos;
-			_localNeedUpdates = true;
+			localTranslate_ = pos;
+			localNeedUpdates_ = true;
 
 			this->_updateLocalChildren();
 			this->_onMoveAfter();
@@ -287,25 +287,25 @@ namespace octoon
 	void
 	GameObject::setTranslateAccum(const math::float3& v) noexcept
 	{
-		this->setTranslate(_localTranslate + v);
+		this->setTranslate(localTranslate_ + v);
 	}
 
 	const math::float3&
 	GameObject::getTranslate() const noexcept
 	{
 		_updateLocalTransform();
-		return _localTranslate;
+		return localTranslate_;
 	}
 
 	void
 	GameObject::setScale(const math::float3& scale) noexcept
 	{
-		if (_localScaling != scale)
+		if (localScaling_ != scale)
 		{
 			this->_onMoveBefore();
 
-			_localScaling = scale;
-			_localNeedUpdates = true;
+			localScaling_ = scale;
+			localNeedUpdates_ = true;
 
 			this->_updateLocalChildren();
 			this->_onMoveAfter();
@@ -321,25 +321,25 @@ namespace octoon
 	void
 	GameObject::setScaleAccum(const math::float3& scale) noexcept
 	{
-		this->setScale(_localScaling + scale);
+		this->setScale(localScaling_ + scale);
 	}
 
 	const math::float3&
 	GameObject::getScale() const noexcept
 	{
 		_updateLocalTransform();
-		return _localScaling;
+		return localScaling_;
 	}
 
 	void
 	GameObject::setQuaternion(const math::Quaternion& quat) noexcept
 	{
-		if (_localRotation != quat)
+		if (localRotation_ != quat)
 		{
 			this->_onMoveBefore();
 
-			_localRotation = quat;
-			_localNeedUpdates = true;
+			localRotation_ = quat;
+			localNeedUpdates_ = true;
 
 			this->_updateLocalChildren();
 			this->_onMoveAfter();
@@ -349,35 +349,35 @@ namespace octoon
 	void
 	GameObject::setQuaternionAccum(const math::Quaternion& quat) noexcept
 	{
-		this->setQuaternion(math::cross(quat, _localRotation));
+		this->setQuaternion(math::cross(quat, localRotation_));
 	}
 
 	const math::Quaternion&
 	GameObject::getQuaternion() const noexcept
 	{
 		_updateLocalTransform();
-		return _localRotation;
+		return localRotation_;
 	}
 
 	const math::float3&
 	GameObject::getRight() const noexcept
 	{
 		_updateLocalTransform();
-		return math::right(_localTransform);
+		return math::right(localTransform_);
 	}
 
 	const math::float3&
 	GameObject::getUpVector() const noexcept
 	{
 		_updateLocalTransform();
-		return math::up(_localTransform);
+		return math::up(localTransform_);
 	}
 
 	const math::float3&
 	GameObject::getForward() const noexcept
 	{
 		_updateLocalTransform();
-		return math::forward(_localTransform);
+		return math::forward(localTransform_);
 	}
 
 	void
@@ -385,8 +385,8 @@ namespace octoon
 	{
 		this->_onMoveBefore();
 
-		_localTransform = transform.get_transform(_localTranslate, _localRotation, _localScaling);
-		_localNeedUpdates = false;
+		localTransform_ = transform.get_transform(localTranslate_, localRotation_, localScaling_);
+		localNeedUpdates_ = false;
 
 		this->_updateLocalChildren();
 		this->_onMoveAfter();
@@ -397,9 +397,9 @@ namespace octoon
 	{
 		this->_onMoveBefore();
 
-		_localTransform = transform.get_transform_without_scaler(_localTranslate, _localRotation);
-		_localTransform.scale(_localScaling);
-		_localNeedUpdates = false;
+		localTransform_ = transform.get_transform_without_scaler(localTranslate_, localRotation_);
+		localTransform_.scale(localScaling_);
+		localNeedUpdates_ = false;
 
 		this->_updateLocalChildren();
 		this->_onMoveAfter();
@@ -409,25 +409,25 @@ namespace octoon
 	GameObject::getTransform() const noexcept
 	{
 		this->_updateLocalTransform();
-		return _localTransform;
+		return localTransform_;
 	}
 
 	const math::float4x4&
 	GameObject::getTransformInverse() const noexcept
 	{
 		this->_updateLocalTransform();
-		return _localTransformInverse;
+		return localTransformInverse_;
 	}
 
 	void
 	GameObject::setWorldTranslate(const math::float3& pos) noexcept
 	{
-		if (_worldTranslate != pos)
+		if (worldTranslate_ != pos)
 		{
 			this->_onMoveBefore();
 
-			_worldTranslate = pos;
-			_worldNeedUpdates = true;
+			worldTranslate_ = pos;
+			worldNeedUpdates_ = true;
 
 			this->_updateWorldChildren();
 			this->_onMoveAfter();
@@ -437,25 +437,25 @@ namespace octoon
 	void
 	GameObject::setWorldTranslateAccum(const math::float3& v) noexcept
 	{
-		this->setWorldTranslate(_worldTranslate + v);
+		this->setWorldTranslate(worldTranslate_ + v);
 	}
 
 	const math::float3&
 	GameObject::getWorldTranslate() const noexcept
 	{
 		_updateWorldTransform();
-		return _worldTranslate;
+		return worldTranslate_;
 	}
 
 	void
 	GameObject::setWorldScale(const math::float3& pos) noexcept
 	{
-		if (_worldScaling != pos)
+		if (worldScaling_ != pos)
 		{
 			this->_onMoveBefore();
 
-			_worldScaling = pos;
-			_worldNeedUpdates = true;
+			worldScaling_ = pos;
+			worldNeedUpdates_ = true;
 
 			this->_updateWorldChildren();
 			this->_onMoveAfter();
@@ -465,25 +465,25 @@ namespace octoon
 	void
 	GameObject::setWorldScaleAccum(const math::float3& scale) noexcept
 	{
-		this->setWorldScale(_worldScaling + scale);
+		this->setWorldScale(worldScaling_ + scale);
 	}
 
 	const math::float3&
 	GameObject::getWorldScale() const noexcept
 	{
 		_updateWorldTransform();
-		return _worldScaling;
+		return worldScaling_;
 	}
 
 	void
 	GameObject::setWorldQuaternion(const math::Quaternion& quat) noexcept
 	{
-		if (_worldRotation != quat)
+		if (worldRotation_ != quat)
 		{
 			this->_onMoveBefore();
 
-			_worldRotation = quat;
-			_worldNeedUpdates = true;
+			worldRotation_ = quat;
+			worldNeedUpdates_ = true;
 
 			this->_updateWorldChildren();
 			this->_onMoveAfter();
@@ -493,14 +493,14 @@ namespace octoon
 	void
 	GameObject::setWorldQuaternionAccum(const math::Quaternion& quat) noexcept
 	{
-		this->setQuaternion(math::cross(quat, _worldRotation));
+		this->setQuaternion(math::cross(quat, worldRotation_));
 	}
 
 	const math::Quaternion&
 	GameObject::getWorldQuaternion() const noexcept
 	{
 		_updateWorldTransform();
-		return _worldRotation;
+		return worldRotation_;
 	}
 
 	void
@@ -508,9 +508,9 @@ namespace octoon
 	{
 		this->_onMoveBefore();
 
-		_worldTransform = transform.get_transform(_worldTranslate, _worldRotation, _worldScaling);
-		_worldTransformInverse = math::transform_inverse(_worldTransform);
-		_worldNeedUpdates = false;
+		worldTransform_ = transform.get_transform(worldTranslate_, worldRotation_, worldScaling_);
+		worldTransformInverse_ = math::transform_inverse(worldTransform_);
+		worldNeedUpdates_ = false;
 
 		this->_updateWorldChildren();
 		this->_onMoveAfter();
@@ -521,11 +521,11 @@ namespace octoon
 	{
 		this->_onMoveBefore();
 
-		_worldTransform = transform.get_transform_without_scaler(_worldTranslate, _worldRotation);
-		_worldTransform.scale(_worldScaling);
-		_worldTransformInverse = math::transform_inverse(_worldTransform);
+		worldTransform_ = transform.get_transform_without_scaler(worldTranslate_, worldRotation_);
+		worldTransform_.scale(worldScaling_);
+		worldTransformInverse_ = math::transform_inverse(worldTransform_);
 
-		_worldNeedUpdates = false;
+		worldNeedUpdates_ = false;
 
 		this->_updateWorldChildren();
 		this->_onMoveAfter();
@@ -535,24 +535,24 @@ namespace octoon
 	GameObject::getWorldTransform() const noexcept
 	{
 		this->_updateWorldTransform();
-		return _worldTransform;
+		return worldTransform_;
 	}
 
 	const math::float4x4&
 	GameObject::getWorldTransformInverse() const noexcept
 	{
 		this->_updateWorldTransform();
-		return _worldTransformInverse;
+		return worldTransformInverse_;
 	}
 
 	void
 	GameObject::addComponent(const GameComponentPtr& gameComponent) except
 	{
 		assert(gameComponent);
-		assert(gameComponent->_gameObject == nullptr);
+		assert(gameComponent->gameObject_ == nullptr);
 
-		auto it = std::find(_components.begin(), _components.end(), gameComponent);
-		if (it == _components.end())
+		auto it = std::find(components_.begin(), components_.end(), gameComponent);
+		if (it == components_.end())
 		{
 			gameComponent->_setGameObject(this);
 			gameComponent->onAttach();
@@ -560,13 +560,13 @@ namespace octoon
 			if (this->getActive() && gameComponent->getActive())
 				gameComponent->onActivate();
 
-			for (auto& component : _components)
+			for (auto& component : components_)
 				gameComponent->onAttachComponent(component);
 
-			for (auto& component : _components)
+			for (auto& component : components_)
 				component->onAttachComponent(gameComponent);
 
-			_components.push_back(gameComponent);
+			components_.push_back(gameComponent);
 		}
 	}
 
@@ -580,17 +580,17 @@ namespace octoon
 	GameObject::removeComponent(const GameComponentPtr& gameComponent) noexcept
 	{
 		assert(gameComponent);
-		assert(gameComponent->_gameObject == this);
+		assert(gameComponent->gameObject_ == this);
 
-		auto it = std::find(_components.begin(), _components.end(), gameComponent);
-		if (it != _components.end())
+		auto it = std::find(components_.begin(), components_.end(), gameComponent);
+		if (it != components_.end())
 		{
-			_components.erase(it);
+			components_.erase(it);
 
-			for (auto& compoent : _components)
+			for (auto& compoent : components_)
 				compoent->onDetachComponent(gameComponent);
 
-			for (auto& component : _components)
+			for (auto& component : components_)
 				gameComponent->onDetachComponent(component);
 
 			if (this->getActive() && gameComponent->getActive())
@@ -606,15 +606,15 @@ namespace octoon
 	void
 	GameObject::cleanupComponents() noexcept
 	{
-		for (auto it = _components.begin(); it != _components.end();)
+		for (auto it = components_.begin(); it != components_.end();)
 		{
 			auto gameComponent = *it;
-			auto nextComponent = _components.erase(it);
+			auto nextComponent = components_.erase(it);
 
-			for (auto& compoent : _components)
+			for (auto& compoent : components_)
 				compoent->onDetachComponent(gameComponent);
 
-			for (auto& component : _components)
+			for (auto& component : components_)
 				gameComponent->onDetachComponent(component);
 
 			if (this->getActive() && (gameComponent)->getActive())
@@ -634,7 +634,7 @@ namespace octoon
 	{
 		assert(type);
 
-		for (auto& it : _components)
+		for (auto& it : components_)
 		{
 			if (it->isA(type))
 				return it;
@@ -654,9 +654,9 @@ namespace octoon
 	{
 		assert(type);
 
-		for (auto& it : _children)
+		for (auto& it : children_)
 		{
-			for (auto& component : it->_components)
+			for (auto& component : it->components_)
 			{
 				if (component->isA(type))
 					return component;
@@ -681,9 +681,9 @@ namespace octoon
 	{
 		assert(type);
 
-		for (auto& it : _children)
+		for (auto& it : children_)
 		{
-			for (auto& component : it->_components)
+			for (auto& component : it->components_)
 			{
 				if (component->isA(type))
 					components.push_back(component);
@@ -702,7 +702,7 @@ namespace octoon
 	const GameComponents&
 	GameObject::getComponents() const noexcept
 	{
-		return _components;
+		return components_;
 	}
 
 	void
@@ -710,10 +710,10 @@ namespace octoon
 	{
 		assert(component);
 
-		if (_dispatchComponents.empty())
-			_dispatchComponents.resize(GameDispatchType::GameDispatchTypeRangeSize);
+		if (dispatchComponents_.empty())
+			dispatchComponents_.resize(GameDispatchType::GameDispatchTypeRangeSize);
 
-		if (std::find(_dispatchComponents[type].begin(), _dispatchComponents[type].end(), component) != _dispatchComponents[type].end())
+		if (std::find(dispatchComponents_[type].begin(), dispatchComponents_[type].end(), component) != dispatchComponents_[type].end())
 			return;
 
 		if (this->getActive())
@@ -722,16 +722,16 @@ namespace octoon
 				type == GameDispatchType::GameDispatchTypeFrameBegin ||
 				type == GameDispatchType::GameDispatchTypeFrameEnd)
 			{
-				if (_dispatchComponents[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					_dispatchComponents[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					_dispatchComponents[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatchComponents_[GameDispatchType::GameDispatchTypeFrame].empty() &&
+					dispatchComponents_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
+					dispatchComponents_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, true);
 				}
 			}
 		}
 
-		_dispatchComponents[type].push_back(component);
+		dispatchComponents_[type].push_back(component);
 	}
 
 	void
@@ -739,11 +739,11 @@ namespace octoon
 	{
 		assert(component);
 
-		if (_dispatchComponents.empty())
+		if (dispatchComponents_.empty())
 			return;
 
-		auto it = std::find(_dispatchComponents[type].begin(), _dispatchComponents[type].end(), component);
-		if (it == _dispatchComponents[type].end())
+		auto it = std::find(dispatchComponents_[type].begin(), dispatchComponents_[type].end(), component);
+		if (it == dispatchComponents_[type].end())
 			return;
 
 		if (this->getActive())
@@ -752,16 +752,16 @@ namespace octoon
 				type == GameDispatchType::GameDispatchTypeFrameBegin ||
 				type == GameDispatchType::GameDispatchTypeFrameEnd)
 			{
-				if (_dispatchComponents[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					_dispatchComponents[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					_dispatchComponents[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatchComponents_[GameDispatchType::GameDispatchTypeFrame].empty() &&
+					dispatchComponents_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
+					dispatchComponents_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, false);
 				}
 			}
 		}
 
-		_dispatchComponents[type].erase(it);
+		dispatchComponents_[type].erase(it);
 	}
 
 	void
@@ -769,7 +769,7 @@ namespace octoon
 	{
 		assert(component);
 
-		for (auto& dispatch : _dispatchComponents)
+		for (auto& dispatch : dispatchComponents_)
 		{
 			auto it = std::find(dispatch.begin(), dispatch.end(), component);
 			if (it != dispatch.end())
@@ -789,14 +789,14 @@ namespace octoon
 	GameObject::clone() const except
 	{
 		auto instance = std::make_shared<GameObject>();
-		instance->setParent(_parent.lock());
+		instance->setParent(parent_.lock());
 		instance->setName(this->getName());
 		instance->setLayer(this->getLayer());
 		instance->setQuaternion(this->getQuaternion());
 		instance->setScale(this->getScale());
 		instance->setTranslate(this->getTranslate());
 
-		for (auto& it : _components)
+		for (auto& it : components_)
 			instance->addComponent(it->clone());
 
 		for (auto& it : this->getChildren())
@@ -808,9 +808,9 @@ namespace octoon
 	void
 	GameObject::_onFrameBegin() except
 	{
-		assert(!_dispatchComponents.empty());
+		assert(!dispatchComponents_.empty());
 
-		auto& components = _dispatchComponents[GameDispatchType::GameDispatchTypeFrameBegin];
+		auto& components = dispatchComponents_[GameDispatchType::GameDispatchTypeFrameBegin];
 		for (auto& it : components)
 			it->onFrameBegin();
 	}
@@ -818,9 +818,9 @@ namespace octoon
 	void
 	GameObject::_onFrame() except
 	{
-		assert(!_dispatchComponents.empty());
+		assert(!dispatchComponents_.empty());
 
-		auto& components = _dispatchComponents[GameDispatchType::GameDispatchTypeFrame];
+		auto& components = dispatchComponents_[GameDispatchType::GameDispatchTypeFrame];
 		for (auto& it : components)
 			it->onFrame();
 	}
@@ -828,9 +828,9 @@ namespace octoon
 	void
 	GameObject::_onFrameEnd() except
 	{
-		assert(!_dispatchComponents.empty());
+		assert(!dispatchComponents_.empty());
 
-		auto& components = _dispatchComponents[GameDispatchType::GameDispatchTypeFrameEnd];
+		auto& components = dispatchComponents_[GameDispatchType::GameDispatchTypeFrameEnd];
 		for (auto& it : components)
 			it->onFrameEnd();
 	}
@@ -838,17 +838,17 @@ namespace octoon
 	void
 	GameObject::_onActivate() except
 	{
-		for (auto& it : _components)
+		for (auto& it : components_)
 		{
 			if (it->getActive())
 				it->onActivate();
 		}
 
-		if (!_dispatchComponents.empty())
+		if (!dispatchComponents_.empty())
 		{
-			if (!_dispatchComponents[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!_dispatchComponents[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!_dispatchComponents[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatchComponents_[GameDispatchType::GameDispatchTypeFrame].empty() ||
+				!dispatchComponents_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
+				!dispatchComponents_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, true);
 			}
@@ -858,17 +858,17 @@ namespace octoon
 	void
 	GameObject::_onDeactivate() noexcept
 	{
-		if (!_dispatchComponents.empty())
+		if (!dispatchComponents_.empty())
 		{
-			if (!_dispatchComponents[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!_dispatchComponents[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!_dispatchComponents[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatchComponents_[GameDispatchType::GameDispatchTypeFrame].empty() ||
+				!dispatchComponents_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
+				!dispatchComponents_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, false);
 			}
 		}
 
-		for (auto& it : _components)
+		for (auto& it : components_)
 		{
 			if (it->getActive())
 				it->onDeactivate();
@@ -881,9 +881,9 @@ namespace octoon
 		if (!this->getActive())
 			return;
 
-		if (!_dispatchComponents.empty())
+		if (!dispatchComponents_.empty())
 		{
-			auto& components = _dispatchComponents[GameDispatchType::GameDispatchTypeMoveBefore];
+			auto& components = dispatchComponents_[GameDispatchType::GameDispatchTypeMoveBefore];
 			for (auto& it : components)
 			{
 				if (it->getActive())
@@ -891,7 +891,7 @@ namespace octoon
 			}
 		}
 
-		for (auto& it : _children)
+		for (auto& it : children_)
 		{
 			if (it->getActive())
 				it->_onMoveBefore();
@@ -904,9 +904,9 @@ namespace octoon
 		if (!this->getActive())
 			return;
 
-		if (!_dispatchComponents.empty())
+		if (!dispatchComponents_.empty())
 		{
-			auto& components = _dispatchComponents[GameDispatchType::GameDispatchTypeMoveAfter];
+			auto& components = dispatchComponents_[GameDispatchType::GameDispatchTypeMoveAfter];
 			for (auto& it : components)
 			{
 				if (it->getActive())
@@ -914,7 +914,7 @@ namespace octoon
 			}
 		}
 
-		for (auto& it : _children)
+		for (auto& it : children_)
 		{
 			if (it->getActive())
 				it->_onMoveAfter();
@@ -926,7 +926,7 @@ namespace octoon
 	{
 		if (this->getActive())
 		{
-			for (auto& it : _components)
+			for (auto& it : components_)
 			{
 				if (it->getActive())
 					it->onLayerChangeBefore();
@@ -939,7 +939,7 @@ namespace octoon
 	{
 		if (this->getActive())
 		{
-			for (auto& it : _components)
+			for (auto& it : components_)
 			{
 				if (it->getActive())
 					it->onLayerChangeAfter();
@@ -950,9 +950,9 @@ namespace octoon
 	void
 	GameObject::_updateLocalChildren() const noexcept
 	{
-		_worldNeedUpdates = true;
+		worldNeedUpdates_ = true;
 
-		for (auto& it : _children)
+		for (auto& it : children_)
 			it->_updateLocalChildren();
 	}
 
@@ -966,60 +966,60 @@ namespace octoon
 	void
 	GameObject::_updateLocalTransform() const noexcept
 	{
-		if (_localNeedUpdates)
+		if (localNeedUpdates_)
 		{
-			_localTransform.make_transform(_localTranslate, _localRotation, _localScaling);
-			_localTransformInverse = math::transform_inverse(_localTransform);
+			localTransform_.make_transform(localTranslate_, localRotation_, localScaling_);
+			localTransformInverse_ = math::transform_inverse(localTransform_);
 
-			_localNeedUpdates = false;
+			localNeedUpdates_ = false;
 		}
 	}
 
 	void
 	GameObject::_updateWorldTransform() const noexcept
 	{
-		if (_worldNeedUpdates)
+		if (worldNeedUpdates_)
 		{
-			if (_parent.lock())
+			if (parent_.lock())
 			{
-				auto& baseTransform = _parent.lock()->getWorldTransform();
-				_worldTransform = math::transform_multiply(baseTransform, this->getTransform());
-				_worldTransform.get_transform(_worldTranslate, _worldRotation, _worldScaling);
-				_worldTransformInverse = math::transform_inverse(_worldTransform);
+				auto& baseTransform = parent_.lock()->getWorldTransform();
+				worldTransform_ = math::transform_multiply(baseTransform, this->getTransform());
+				worldTransform_.get_transform(worldTranslate_, worldRotation_, worldScaling_);
+				worldTransformInverse_ = math::transform_inverse(worldTransform_);
 			}
 			else
 			{
-				_worldTranslate = _localTranslate;
-				_worldScaling = _localScaling;
-				_worldRotation = _localRotation;
-				_worldTransform.make_transform(_worldTranslate, _worldRotation, _worldScaling);
-				_worldTransformInverse = math::transform_inverse(_worldTransform);
+				worldTranslate_ = localTranslate_;
+				worldScaling_ = localScaling_;
+				worldRotation_ = localRotation_;
+				worldTransform_.make_transform(worldTranslate_, worldRotation_, worldScaling_);
+				worldTransformInverse_ = math::transform_inverse(worldTransform_);
 			}
 
-			_worldNeedUpdates = false;
+			worldNeedUpdates_ = false;
 		}
 	}
 
 	void
 	GameObject::_updateParentTransform() const noexcept
 	{
-		if (_worldNeedUpdates)
+		if (worldNeedUpdates_)
 		{
-			_worldTransform.make_transform(_worldTranslate, _worldRotation, _worldScaling);
-			_worldNeedUpdates = false;
+			worldTransform_.make_transform(worldTranslate_, worldRotation_, worldScaling_);
+			worldNeedUpdates_ = false;
 		}
 
-		if (_parent.lock())
+		if (parent_.lock())
 		{
-			auto& baseTransformInverse = _parent.lock()->getWorldTransformInverse();
-			_localTransform = math::transform_multiply(baseTransformInverse, _worldTransform);
-			_localTransform.get_transform(_localTranslate, _localRotation, _localScaling);
+			auto& baseTransformInverse = parent_.lock()->getWorldTransformInverse();
+			localTransform_ = math::transform_multiply(baseTransformInverse, worldTransform_);
+			localTransform_.get_transform(localTranslate_, localRotation_, localScaling_);
 		}
 		else
 		{
-			_localScaling = _worldScaling;
-			_localRotation = _worldRotation;
-			_localTranslate = _worldTranslate;
+			localScaling_ = worldScaling_;
+			localRotation_ = worldRotation_;
+			localTranslate_ = worldTranslate_;
 		}
 	}
 }

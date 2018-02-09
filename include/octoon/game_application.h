@@ -41,17 +41,17 @@ namespace octoon
 		GameApplication& operator=(const GameApplication&) noexcept = delete;
 
 	private:
-		bool _isInitialize;
+		bool isInitialize_;
 
-		std::string _workDir;
-		std::string _engineDir;
-		std::string _resourceBaseDir;
-		std::string _downloadURL;
+		std::string workDir_;
+		std::string engineDir_;
+		std::string resourceBaseDir_;
+		std::string downloadURL_;
 
-		GameServer* _gameServer;
-		GameListenerPtr _gameListener;
+		GameServer* gameServer_;
+		GameListenerPtr gameListener_;
 
-		GameFeaturePtr _inputFeature;
+		GameFeaturePtr inputFeature_;
 	};
 }
 

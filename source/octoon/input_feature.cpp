@@ -52,12 +52,12 @@ namespace octoon
 	};
 
 	InputFeature::InputFeature() noexcept
-		: _window(0)
+		: window_(0)
 	{
 	}
 
 	InputFeature::InputFeature(input::WindHandle hwnd) noexcept
-		: _window(hwnd)
+		: window_(hwnd)
 	{
 	}
 
@@ -100,7 +100,7 @@ namespace octoon
 			throw std::exception("Input::open() fail.");
 
 		_input->addInputListener(std::make_shared<InputEventListener>(*this));
-		_input->setCaptureObject(_window);
+		_input->setCaptureObject(window_);
 		_input->obtainCapture();
 	}
 

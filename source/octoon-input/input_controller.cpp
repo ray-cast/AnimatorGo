@@ -7,7 +7,7 @@ namespace octoon
 		OctoonImplementSubInterface(InputController, InputListener, "InputController")
 
 		InputController::InputController() noexcept
-			:_capture(true)
+			:capture_(true)
 		{
 		}
 
@@ -18,27 +18,27 @@ namespace octoon
 		void
 		InputController::obtainCapture() noexcept
 		{
-			if (!_capture)
+			if (!capture_)
 			{
 				this->onObtainCapture();
-				_capture = true;
+				capture_ = true;
 			}
 		}
 
 		void
 		InputController::releaseCapture() noexcept
 		{
-			if (_capture)
+			if (capture_)
 			{
 				this->onReleaseCapture();
-				_capture = false;
+				capture_ = false;
 			}
 		}
 
 		bool
 		InputController::capture() const noexcept
 		{
-			return _capture;
+			return capture_;
 		}
 
 		void

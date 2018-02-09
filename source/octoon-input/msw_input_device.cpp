@@ -269,7 +269,7 @@ namespace octoon
 		}
 
 		MSWInputDevice::MSWInputDevice() noexcept
-			: _window(nullptr)
+			: window_(nullptr)
 		{
 		}
 
@@ -281,13 +281,13 @@ namespace octoon
 		MSWInputDevice::setCaptureObject(WindHandle window) noexcept
 		{
 			assert(::IsWindow((HWND)window));
-			_window = (HWND)window;
+			window_ = (HWND)window;
 		}
 
 		WindHandle
 		MSWInputDevice::getCaptureObject() const noexcept
 		{
-			return _window;
+			return window_;
 		}
 
 		void
@@ -295,7 +295,7 @@ namespace octoon
 		{
 			MSG msg;
 
-			while (::PeekMessage(&msg, _window, 0, 0, PM_REMOVE | PM_QS_INPUT))
+			while (::PeekMessage(&msg, window_, 0, 0, PM_REMOVE | PM_QS_INPUT))
 			{
 				switch (msg.message)
 				{
@@ -324,7 +324,7 @@ namespace octoon
 					else
 					{
 						inputEvent.key.keysym.raw = msg.wParam;
-						inputEvent.key.keysym.sym = VirtualKeyToScanCode(_window, msg.wParam, msg.lParam);
+						inputEvent.key.keysym.sym = VirtualKeyToScanCode(window_, msg.wParam, msg.lParam);
 						if (msg.message == WM_KEYDOWN)
 							inputEvent.key.keysym.unicode = VirtualKeyToText(msg.wParam);
 						else
@@ -346,12 +346,12 @@ namespace octoon
 					inputEvent.motion.y = HIWORD(msg.lParam);
 					inputEvent.motion.xrel = pt.x;
 					inputEvent.motion.yrel = pt.y;
-					inputEvent.motion.state = _isButtonPress;
+					inputEvent.motion.state = isButtonPress_;
 					inputEvent.motion.timestamp = ::timeGetTime();
-					inputEvent.button.button = _button;
+					inputEvent.button.button = button_;
 
-					_mouseX = LOWORD(msg.lParam);
-					_mouseY = HIWORD(msg.lParam);
+					mouseX_ = LOWORD(msg.lParam);
+					mouseY_ = HIWORD(msg.lParam);
 
 					this->sendEvent(inputEvent);
 				}
@@ -365,20 +365,20 @@ namespace octoon
 					InputEvent inputEvent;
 					inputEvent.event = InputEvent::MouseButtonDown;
 					inputEvent.button.windowID = (std::uint64_t)msg.hwnd;
-					inputEvent.button.clicks = _isButtonPress = true;
-					inputEvent.button.x = _mouseX;
-					inputEvent.button.y = _mouseY;
+					inputEvent.button.clicks = isButtonPress_ = true;
+					inputEvent.button.x = mouseX_;
+					inputEvent.button.y = mouseY_;
 					inputEvent.button.timestamp = ::timeGetTime();
 					switch (msg.message)
 					{
 					case WM_LBUTTONDOWN:
-						_button = inputEvent.button.button = InputButton::LEFT;
+						button_ = inputEvent.button.button = InputButton::LEFT;
 						break;
 					case WM_MBUTTONDOWN:
-						_button = inputEvent.button.button = InputButton::MIDDLE;
+						button_ = inputEvent.button.button = InputButton::MIDDLE;
 						break;
 					case WM_RBUTTONDOWN:
-						_button = inputEvent.button.button = InputButton::RIGHT;
+						button_ = inputEvent.button.button = InputButton::RIGHT;
 						break;
 					}
 
@@ -393,20 +393,20 @@ namespace octoon
 
 					InputEvent inputEvent;
 					inputEvent.event = InputEvent::MouseButtonUp;
-					inputEvent.button.clicks = _isButtonPress = false;
-					inputEvent.button.x = _mouseX;
-					inputEvent.button.y = _mouseY;
+					inputEvent.button.clicks = isButtonPress_ = false;
+					inputEvent.button.x = mouseX_;
+					inputEvent.button.y = mouseY_;
 					inputEvent.button.timestamp = ::timeGetTime();
 					switch (msg.message)
 					{
 					case WM_LBUTTONUP:
-						_button = inputEvent.button.button = InputButton::LEFT;
+						button_ = inputEvent.button.button = InputButton::LEFT;
 						break;
 					case WM_MBUTTONUP:
-						_button = inputEvent.button.button = InputButton::MIDDLE;
+						button_ = inputEvent.button.button = InputButton::MIDDLE;
 						break;
 					case WM_RBUTTONUP:
-						_button = inputEvent.button.button = InputButton::RIGHT;
+						button_ = inputEvent.button.button = InputButton::RIGHT;
 						break;
 					default:
 						assert(false);

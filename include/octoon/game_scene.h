@@ -79,11 +79,11 @@ namespace octoon
 			GameScene* _scene;
 		};
 
-		std::string _name;
-		std::size_t _instanceID;
+		std::string name_;
+		std::size_t instanceID_;
 
 		GameObjectPtr  _root;
-		GameListenerPtr _gameListener;
+		GameListenerPtr gameListener_;
 	};
 }
 

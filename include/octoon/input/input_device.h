@@ -50,13 +50,13 @@ namespace octoon
 			typedef std::queue<InputEvent>  InputEvents;
 			typedef std::vector<InputListenerPtr> InputListeners;
 
-			InputEvents _events;
-			InputListeners _inputListeners;
+			InputEvents events_;
+			InputListeners inputListeners_;
 
-			bool _enableEventPosting;
+			bool enableEventPosting_;
 
-			std::mutex _mutex;
-			std::condition_variable _dispose;
+			std::mutex mutex_;
+			std::condition_variable dispose_;
 		};
 	}
 }

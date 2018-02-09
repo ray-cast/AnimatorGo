@@ -16,17 +16,17 @@ namespace octoon
 	{
 		assert(entity);
 
-		if (_emptyLists.empty())
+		if (emptyLists_.empty())
 		{
-			_instanceLists.push_back(entity);
-			instanceID = _instanceLists.size();
+			instanceLists_.push_back(entity);
+			instanceID = instanceLists_.size();
 		}
 		else
 		{
-			std::size_t _instanceID = _emptyLists.top();
-			_emptyLists.pop();
-			_instanceLists[_instanceID - 1] = entity;
-			instanceID = _instanceID;
+			std::size_t instanceID_ = emptyLists_.top();
+			emptyLists_.pop();
+			instanceLists_[instanceID_ - 1] = entity;
+			instanceID = instanceID_;
 		}
 	}
 
@@ -36,8 +36,8 @@ namespace octoon
 		assert(entity);
 
 		auto instanceID = entity->getInstanceID();
-		_instanceLists[instanceID - 1] = nullptr;
-		_emptyLists.push(instanceID);
+		instanceLists_[instanceID - 1] = nullptr;
+		emptyLists_.push(instanceID);
 		this->_activeObject(entity, false);
 	}
 
@@ -46,16 +46,16 @@ namespace octoon
 	{
 		if (active)
 		{
-			_activeActors.push_back(entity);
+			activeActors_.push_back(entity);
 		}
 		else
 		{
-			for (auto& actor : _activeActors)
+			for (auto& actor : activeActors_)
 			{
 				if (actor == entity)
 				{
 					actor = nullptr;
-					_hasEmptyActors = true;
+					hasEmptyActors_ = true;
 					break;
 				}
 			}
@@ -65,7 +65,7 @@ namespace octoon
 	GameObjectPtr
 	GameObjectManager::findObject(const std::string& name) noexcept
 	{
-		for (auto& it : _instanceLists)
+		for (auto& it : instanceLists_)
 		{
 			if (!it)
 				continue;
@@ -80,7 +80,7 @@ namespace octoon
 	GameObjectPtr
 	GameObjectManager::findActiveObject(const std::string& name) noexcept
 	{
-		for (auto& it : _activeActors)
+		for (auto& it : activeActors_)
 		{
 			if (!it)
 				continue;
@@ -104,7 +104,7 @@ namespace octoon
 	bool
 	GameObjectManager::activeObject(const std::string& name) noexcept
 	{
-		for (auto& it : _instanceLists)
+		for (auto& it : instanceLists_)
 		{
 			if (it)
 			{
@@ -122,43 +122,43 @@ namespace octoon
 	void
 	GameObjectManager::onFrameBegin() noexcept
 	{
-		for (std::size_t i = 0; i < _activeActors.size(); i++)
+		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
-			if (_activeActors[i])
-				_activeActors[i]->_onFrameBegin();
+			if (activeActors_[i])
+				activeActors_[i]->_onFrameBegin();
 		}
 	}
 
 	void
 	GameObjectManager::onFrame() noexcept
 	{
-		for (std::size_t i = 0; i < _activeActors.size(); i++)
+		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
-			if (_activeActors[i])
-				_activeActors[i]->_onFrame();
+			if (activeActors_[i])
+				activeActors_[i]->_onFrame();
 		}
 	}
 
 	void
 	GameObjectManager::onFrameEnd() noexcept
 	{
-		for (std::size_t i = 0; i < _activeActors.size(); i++)
+		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
-			if (_activeActors[i])
-				_activeActors[i]->_onFrameEnd();
+			if (activeActors_[i])
+				activeActors_[i]->_onFrameEnd();
 		}
 
-		if (_hasEmptyActors)
+		if (hasEmptyActors_)
 		{
-			for (auto it = _activeActors.begin(); it != _activeActors.end();)
+			for (auto it = activeActors_.begin(); it != activeActors_.end();)
 			{
 				if (!(*it))
-					it = _activeActors.erase(it);
+					it = activeActors_.erase(it);
 				else
 					++it;
 			}
 
-			_hasEmptyActors = false;
+			hasEmptyActors_ = false;
 		}
 	}
 }

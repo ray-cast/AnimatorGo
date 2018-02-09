@@ -65,8 +65,8 @@ namespace octoon
 			InputButton::mouse_t _lastX;
 			InputButton::mouse_t _lastY;
 
-			InputButton::mouse_t _mouseX;
-			InputButton::mouse_t _mouseY;
+			InputButton::mouse_t mouseX_;
+			InputButton::mouse_t mouseY_;
 
 			InputButton::mouse_t _centerX;
 			InputButton::mouse_t _centerY;
@@ -79,7 +79,7 @@ namespace octoon
 				bool doubleClick;
 			};
 
-			ButtonState _buttonState[InputButton::NumButtonCodes];
+			ButtonState buttonState_[InputButton::NumButtonCodes];
 		};
 	}
 }

@@ -39,7 +39,7 @@ namespace octoon
 				bool up;
 			};
 
-			KeyState _keyState[InputKey::NumKeyCodes];
+			KeyState keyState_[InputKey::NumKeyCodes];
 		};
 	}
 }

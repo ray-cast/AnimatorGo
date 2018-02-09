@@ -65,11 +65,11 @@ namespace octoon
 		void _setGameObject(GameObject* gameobj) noexcept;
 
 	private:
-		bool _active;
+		bool active_;
 
-		std::string _name;
+		std::string name_;
 
-		GameObject* _gameObject;
+		GameObject* gameObject_;
 	};
 }
 

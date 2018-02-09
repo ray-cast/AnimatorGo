@@ -46,14 +46,14 @@ namespace octoon
 		#define KEYUP(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
 
 		MSWInputMouse::MSWInputMouse() noexcept
-			: _focusWindow(false)
-			, _window(0)
+			: focusWindow_(false)
+			, window_(0)
 		{
 		}
 
 		MSWInputMouse::MSWInputMouse(WindHandle window) noexcept
-			: _focusWindow(false)
-			, _window(window)
+			: focusWindow_(false)
+			, window_(window)
 		{
 		}
 
@@ -66,7 +66,7 @@ namespace octoon
 		{
 			POINT pt;
 			::GetCursorPos(&pt);
-			::ScreenToClient(_window ? (HWND)_window : GetActiveWindow(), &pt);
+			::ScreenToClient(window_ ? (HWND)window_ : GetActiveWindow(), &pt);
 
 			x = pt.x;
 			y = pt.y;
@@ -141,13 +141,13 @@ namespace octoon
 		void
 		MSWInputMouse::onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
 		{
-			if (_focusWindow)
+			if (focusWindow_)
 			{
 				POINT pt;
 				pt.x = static_cast<LONG>(x);
 				pt.y = static_cast<LONG>(y);
 
-				::ClientToScreen((HWND)_window, &pt);
+				::ClientToScreen((HWND)window_, &pt);
 				::SetCursorPos(pt.x, pt.y);
 			}
 		}
@@ -159,14 +159,14 @@ namespace octoon
 			{
 			case InputEvent::GetFocus:
 			{
-				_window = (WindHandle)event.window.windowID;
-				_focusWindow = true;
+				window_ = (WindHandle)event.window.windowID;
+				focusWindow_ = true;
 			}
 			break;
 			case InputEvent::LostFocus:
 			{
-				_window = (WindHandle)event.window.windowID;
-				_focusWindow = false;
+				window_ = (WindHandle)event.window.windowID;
+				focusWindow_ = false;
 			}
 			break;
 			default:

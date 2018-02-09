@@ -25,24 +25,24 @@ namespace octoon
 	void
 	GameSceneManager::_instanceScene(GameScene* entity, std::size_t& instanceID) noexcept
 	{
-		if (_emptyLists.empty())
-			_instanceLists.push_back(entity);
+		if (emptyLists_.empty())
+			instanceLists_.push_back(entity);
 		else
 		{
-			std::size_t _instanceID = _emptyLists.back();
-			_emptyLists.pop_back();
-			_instanceLists[_instanceID - 1] = entity;
+			std::size_t instanceID_ = emptyLists_.back();
+			emptyLists_.pop_back();
+			instanceLists_[instanceID_ - 1] = entity;
 		}
 
-		instanceID = _instanceLists.size();
+		instanceID = instanceLists_.size();
 	}
 
 	void
 	GameSceneManager::_unsetScene(GameScene* entity) noexcept
 	{
 		auto instanceID = entity->getInstanceID();
-		_instanceLists[instanceID - 1] = nullptr;
-		_emptyLists.push_back(instanceID);
+		instanceLists_[instanceID - 1] = nullptr;
+		emptyLists_.push_back(instanceID);
 		this->_activeScene(entity, false);
 	}
 
@@ -51,17 +51,17 @@ namespace octoon
 	{
 		if (active)
 		{
-			_activeActors.push_back(entity);
+			activeActors_.push_back(entity);
 		}
 		else
 		{
-			std::size_t size = _activeActors.size();
+			std::size_t size = activeActors_.size();
 			for (std::size_t i = 0; i < size; i++)
 			{
-				if (_activeActors[i] == entity)
+				if (activeActors_[i] == entity)
 				{
-					_activeActors[i] = nullptr;
-					_hasEmptyActors = true;
+					activeActors_[i] = nullptr;
+					hasEmptyActors_ = true;
 					break;
 				}
 			}
@@ -71,7 +71,7 @@ namespace octoon
 	GameScenePtr
 	GameSceneManager::findScene(const std::string& name) noexcept
 	{
-		for (auto& it : _instanceLists)
+		for (auto& it : instanceLists_)
 		{
 			if (!it)
 				continue;
@@ -86,7 +86,7 @@ namespace octoon
 	GameScenePtr
 	GameSceneManager::findActiveScene(const std::string& name) noexcept
 	{
-		for (auto& it : _activeActors)
+		for (auto& it : activeActors_)
 		{
 			if (!it)
 				continue;
@@ -110,7 +110,7 @@ namespace octoon
 	bool
 	GameSceneManager::activeScene(const std::string& name) noexcept
 	{
-		for (auto& it : _instanceLists)
+		for (auto& it : instanceLists_)
 		{
 			if (!it)
 				continue;

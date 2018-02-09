@@ -70,14 +70,14 @@ namespace octoon
 
 		private:
 
-			HWND _window;
+			HWND window_;
 
-			bool _isButtonPress;
+			bool isButtonPress_;
 
-			int _button;
+			int button_;
 
-			int _mouseX;
-			int _mouseY;
+			int mouseX_;
+			int mouseY_;
 		};
 	}
 }

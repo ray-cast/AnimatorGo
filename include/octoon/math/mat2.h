@@ -20,39 +20,71 @@ namespace octoon
 				typedef typename trait::type_addition<T>::reference reference;
 				typedef typename trait::type_addition<T>::const_reference const_reference;
 
+				T a1, a2;
+				T b1, b2;
+
 				Matrix2x2() noexcept = default;
 				Matrix2x2(T mt00, T mt01, T mt10, T mt11) noexcept :a1(mt00), a2(mt01), b1(mt10), b2(mt11) {}
 				~Matrix2x2() = default;
 
-				void set(T mt00, T mt01, T mt10, T mt11) noexcept
+				Matrix2x2<T>& make_matrix(T mt00, T mt01, T mt10, T mt11) noexcept
 				{
 					this->a1 = mt00; this->a2 = mt01;
 					this->b1 = mt10; this->b2 = mt11;
 					return *this;
 				}
 
-				void scale(T x, T y) noexcept
+				Matrix2x2<T>& make_identity() noexcept
 				{
-					this->a1 *= x; this->a2 *= x;
-					this->b1 *= y; this->b2 *= y;
+					a1 = 1.0f; a2 = 0.0f;
+					b1 = 0.0f; b2 = 1.0f;
+					return *this;
 				}
 
-				void make_scale(T x, T y) noexcept { this->set(x, 0, 0, y); }
-				void make_scale(const Vector2<T>& sz) noexcept { this->set(sz.x, 0, 0, sz.y); }
+				Matrix2x2<T>& make_scale(T x, T y) noexcept { return this->make_matrix(x, 0, 0, y); }
+				Matrix2x2<T>& make_scale(const Vector2<T>& sz) noexcept { return this->make_matrix(sz.x, 0, 0, sz.y); }
 
-				void make_rotate(T x, T y, T z, T angle) noexcept { make_rotate(x, y, z, angle); }
-				void make_rotate(const Quaternion<T>& q) noexcept { make_rotate(q.x, q.y, q.z, q.w); }
+				Matrix2x2<T>& make_rotation(T x, T y, T z, T angle) noexcept { return make_rotation(x, y, z, angle); }
+				Matrix2x2<T>& make_rotation(const Quaternion<T>& q) noexcept { return make_rotation(q.x, q.y, q.z, q.w); }
 
-				void make_rotate(const Vector3<T>& axis, T theta) noexcept
+				Matrix2x2<T>& make_rotation_x(T theta) noexcept
 				{
-					Vector3<T> v = normalize(axis);
+					T ang = theta;
+					T c, s;
 
+					math::sinCos(&s, &c, ang);
+
+					return make_matrix(1, 0, 0, c);
+				}
+
+				Matrix2x2<T>& make_rotation_y(T theta) noexcept
+				{
+					T ang = theta;
+					T c, s;
+
+					math::sinCos(&s, &c, ang);
+
+					return make_matrix(c, 0, 0, 1);
+				}
+
+				Matrix2x2<T>& make_rotation_z(T theta) noexcept
+				{
+					T ang = theta;
+					T c, s;
+
+					math::sinCos(&s, &c, ang);
+
+					return make_matrix(c, -s, s, c);
+				}
+
+				Matrix2x2<T>& make_rotation(const Vector3<T>& axis, T theta) noexcept
+				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
 
-					T x = v.x;
-					T y = v.y;
-					T z = v.z;
+					T x = axis.x;
+					T y = axis.y;
+					T z = axis.z;
 
 					T t = 1 - c;
 					T tx = t * x, ty = t * y;
@@ -62,52 +94,21 @@ namespace octoon
 
 					this->b1 = (tx * y - s * z);
 					this->b2 = (ty * y + c);
+
+					return *this;
 				}
 
-				void make_rotation_x(T theta) noexcept
+				Matrix2x2<T>& multiply_scalar(T x, T y) noexcept
 				{
-					T ang = theta;
-					T c, s;
-
-					sinCos(&s, &c, ang);
-
-					set(
-						1, 0,
-						0, c);
-				}
-
-				void make_rotation_y(T theta) noexcept
-				{
-					T ang = theta;
-					T c, s;
-
-					sinCos(&s, &c, ang);
-
-					set(
-						c, 0,
-						0, 1);
-				}
-
-				void make_rotation_z(T theta) noexcept
-				{
-					T ang = theta;
-					T c, s;
-
-					sinCos(&s, &c, ang);
-
-					set(
-						c, -s,
-						s, c);
+					this->a1 *= x; this->a2 *= x;
+					this->b1 *= y; this->b2 *= y;
+					return *this;
 				}
 
 				pointer ptr() noexcept { return (pointer)this; }
 				const_pointer ptr() const noexcept { return (const_pointer)this; }
 				pointer data() noexcept { return (pointer)this; }
 				const_pointer data() const noexcept { return (const_pointer)this; }
-
-			private:
-				T a1, a2;
-				T b1, b2;
 			};
 		}
 	}

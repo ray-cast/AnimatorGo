@@ -33,10 +33,10 @@ namespace octoon
 
 				Vector3() = default;
 				Vector3(T xx, T yy, T zz) noexcept :x(xx), y(yy), z(zz) {}
-				Vector3(T xyz) noexcept : x(xyz), y(xyz), z(xyz) {}
-				Vector3(const T xyz[3]) noexcept : x(xyz[0]), y(xyz[1]), z(xyz[2]) {}
 				Vector3(T xx, const Vector2<T>& yz) noexcept : x(xx), y(yz.x), z(yz.y) {}
 				Vector3(const Vector2<T>& xy, T zz) noexcept : x(xy.x), y(xy.y), z(zz) {}
+				explicit Vector3(const T xyz[3]) noexcept : x(xyz[0]), y(xyz[1]), z(xyz[2]) {}
+				explicit Vector3(T xyz) noexcept : x(xyz), y(xyz), z(xyz) {}
 				~Vector3() = default;
 
 #pragma warning(push)
@@ -467,7 +467,7 @@ namespace octoon
 			T magSq = length2(v);
 			if (magSq > 0.0f)
 			{
-				T invSqrt = 1.0f / sqrt(magSq);
+				T invSqrt = 1.0f / std::sqrt(magSq);
 				return v * invSqrt;
 			}
 

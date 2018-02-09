@@ -43,24 +43,12 @@ namespace octoon
 		using Quaternion = detail::Quaternion<>;
 
 		// float
-		using Vector2f = detail::Vector2<float>;
-		using Vector3f = detail::Vector3<float>;
-		using Vector4f = detail::Vector4<float>;
-		using Matrix2x2f = detail::Matrix2x2<float>;
-		using Matrix3x3f = detail::Matrix3x3<float>;
-		using Matrix4x4f = detail::Matrix4x4<float>;
 		using float2x2 = detail::Matrix2x2<float>;
 		using float3x3 = detail::Matrix3x3<float>;
 		using float4x4 = detail::Matrix4x4<float>;
 		using Quaternionf = detail::Quaternion<float>;
 
 		// double
-		using Vector2d = detail::Vector2<double>;
-		using Vector3d = detail::Vector3<double>;
-		using Vector4d = detail::Vector4<double>;
-		using Matrix2x2d = detail::Matrix2x2<double>;
-		using Matrix3x3d = detail::Matrix3x3<double>;
-		using Matrix4x4d = detail::Matrix4x4<double>;
 		using double2x2 = detail::Matrix2x2<double>;
 		using double3x3 = detail::Matrix3x3<double>;
 		using double4x4 = detail::Matrix4x4<double>;

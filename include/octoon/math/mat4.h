@@ -12,7 +12,7 @@ namespace octoon
 		namespace detail
 		{
 			template<typename T>
-			class Matrix4x4
+			class Matrix4x4 final
 			{
 			public:
 				typedef typename trait::type_addition<T>::value_type value_type;
@@ -24,37 +24,42 @@ namespace octoon
 				static const Matrix4x4<T> Zero;
 				static const Matrix4x4<T> One;
 
-				T a1, a2, a3, a4;
-				T b1, b2, b3, b4;
-				T c1, c2, c3, c4;
-				T d1, d2, d3, d4;
+				union
+				{
+					struct
+					{
+						T a1, a2, a3, a4;
+						T b1, b2, b3, b4;
+						T c1, c2, c3, c4;
+						T d1, d2, d3, d4;
+					};
 
-				Matrix4x4() noexcept
+					struct
+					{
+						Vector4<T> right;
+						Vector4<T> up;
+						Vector4<T> forward;
+						Vector4<T> position;
+					};
+				};
+
+				Matrix4x4() = default;
+				Matrix4x4(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept { this->make_matrix(m1, m2); }
+				Matrix4x4(const Vector3<T>& axis, T angle, const Vector3<T>& translate) noexcept { this->make_rotation(axis, angle, translate); }
+				Matrix4x4(const Quaternion<T>& q, const Vector3<T>& translate) noexcept { this->make_rotation(q, translate); }
+				Matrix4x4(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
+					: a1(mt00), a2(mt01), a3(mt02), a4(mt03)
+					, b1(mt10), b2(mt11), b3(mt12), b4(mt13)
+					, c1(mt20), c2(mt21), c3(mt22), c4(mt23)
+					, d1(mt30), d2(mt31), d3(mt32), d4(mt33)
 				{
 				}
 
-				Matrix4x4(T _a1, T _a2, T _a3, T _a4, T _b1, T _b2, T _b3, T _b4, T _c1, T _c2, T _c3, T _c4, T _d1, T _d2, T _d3, T _d4) noexcept
-					: a1(_a1), a2(_a2), a3(_a3), a4(_a4)
-					, b1(_b1), b2(_b2), b3(_b3), b4(_b4)
-					, c1(_c1), c2(_c2), c3(_c3), c4(_c4)
-					, d1(_d1), d2(_d2), d3(_d3), d4(_d4)
-				{
-				}
+				explicit Matrix4x4(const Matrix3x3<T>& m) noexcept { this->make_matrix(m); }
 
-				Matrix4x4(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
-				{
-					this->multiplyMatrices(m1, m2);
-				}
+				~Matrix4x4() = default;
 
-				explicit Matrix4x4(const Matrix3x3<T>& m) noexcept
-				{
-					a1 = m.a1; a2 = m.a2; a3 = m.a3; a4 = 0.0f;
-					b1 = m.b1; b2 = m.b2; b3 = m.b3; b4 = 0.0f;
-					c1 = m.c1; c2 = m.c2; c3 = m.c3; c4 = 0.0f;
-					d1 = 0.0f; d2 = 0.0f; d3 = 0.0f; d4 = 1.0f;
-				}
-
-				template<typename S, typename = std::enable_if<!std::is_pointer<S>::value>>
+				template<typename S, typename = std::enable_if_t<std::is_integral_v<S> || std::is_floating_point_v<S>>>
 				explicit operator Matrix4x4<S>() const noexcept
 				{
 					return Matrix4x4<S>(
@@ -64,42 +69,29 @@ namespace octoon
 						static_cast<S>(d1), static_cast<S>(d2), static_cast<S>(d3), static_cast<S>(d4));
 				}
 
-				Matrix4x4& operator=(const Matrix3x3<T>& m) noexcept
-				{
-					a1 = m.a1; a2 = m.a2; a3 = m.a3; a4 = 0.0f;
-					b1 = m.b1; b2 = m.b2; b3 = m.b3; b4 = 0.0f;
-					c1 = m.c1; c2 = m.c2; c3 = m.c3; c4 = 0.0f;
-					d1 = 0.0f; d2 = 0.0f; d3 = 0.0f; d4 = 1.0f;
-				}
-
-				T& operator[](std::size_t n) noexcept
+				reference operator[](std::uint8_t n) noexcept
 				{
 					assert(n < 16);
 					return *((&a1) + n);
 				}
 
-				const T& operator[](std::size_t n) const noexcept
+				const_reference operator[](std::uint8_t n) const noexcept
 				{
 					assert(n < 16);
 					return *((&a1) + n);
 				}
 
-				explicit operator T*() noexcept
+				explicit operator pointer() noexcept
 				{
 					return this->ptr();
 				}
 
-				explicit operator const T*() const noexcept
+				explicit operator const_pointer() const noexcept
 				{
 					return this->ptr();
 				}
 
-				T* ptr() noexcept { return (T*)&a1; }
-				const T* ptr() const noexcept { return (const T*)&a1; }
-				T* data() noexcept { return (T*)&a1; }
-				const T* data() const noexcept { return (const T*)&a1; }
-
-				Matrix4x4<T>& set(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
+				Matrix4x4<T>& make_matrix(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
 				{
 					a1 = mt00; a2 = mt01; a3 = mt02; a4 = mt03;
 					b1 = mt10; b2 = mt11; b3 = mt12; b4 = mt13;
@@ -108,7 +100,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& set(const Matrix3x3<T>& m) noexcept
+				Matrix4x4<T>& make_matrix(const Matrix3x3<T>& m) noexcept
 				{
 					a1 = m.a1; a2 = m.a2; a3 = m.a3;
 					b1 = m.b1; b2 = m.b2; b3 = m.b3;
@@ -116,29 +108,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& set(std::uint8_t line, const Vector3<T>& v) noexcept
-				{
-					assert(line < 4);
-					((Vector3<T>&)(*(*this)[line])) = v;
-					return *this;
-				}
-
-				Matrix4x4<T>& set(std::uint8_t line, const Vector4<T>& v) noexcept
-				{
-					assert(line < 4);
-					((Vector4<T>&)(*(*this)[line])) = v;
-					return *this;
-				}
-
-				Matrix4x4<T>& set(const Vector3<T>& v1, const Vector3<T>& v2, const Vector3<T>& v3) noexcept
-				{
-					a1 = v1.x; a2 = v1.y; a3 = v1.z;
-					b1 = v2.x; b2 = v2.y; b3 = v2.z;
-					c1 = v3.x; c2 = v3.y; c3 = v3.z;
-					return *this;
-				}
-
-				Matrix4x4<T>& set(const Vector4<T>& v1, const Vector4<T>& v2, const Vector4<T>& v3, const Vector4<T>& v4) noexcept
+				Matrix4x4<T>& make_matrix(const Vector4<T>& v1, const Vector4<T>& v2, const Vector4<T>& v3, const Vector4<T>& v4) noexcept
 				{
 					a1 = v1.x; a2 = v1.y; a3 = v1.z; a4 = v1.w;
 					b1 = v2.x; b2 = v2.y; b3 = v2.z; b4 = v2.w;
@@ -147,35 +117,19 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& loadIdentity() noexcept
+				Matrix3x3<T>& make_identity() noexcept
 				{
-					set(1, 0, 0, 0,
-						0, 1, 0, 0,
-						0, 0, 1, 0,
-						0, 0, 0, 1);
+					a1 = 1.0f; a2 = 0.0f; a3 = 0.0f; a4 = 0.0f;
+					b1 = 0.0f; b2 = 1.0f; b3 = 0.0f; b4 = 0.0f;
+					c1 = 0.0f; c2 = 0.0f; c3 = 1.0f; c4 = 0.0f;
+					d1 = 0.0f; d2 = 0.0f; d3 = 0.0f; d4 = 1.0f;
 					return *this;
 				}
 
-				T determinant() const noexcept
+				Matrix4x4<T>& make_matrix(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
 				{
-					return
-						a1 * b2*c3*d4 - a1 * b2*c4*d3 + a1 * b3*c4*d2 - a1 * b3*c2*d4
-						+ a1 * b4*c2*d3 - a1 * b4*c3*d2 - a2 * b3*c4*d1 + a2 * b3*c1*d4
-						- a2 * b4*c1*d3 + a2 * b4*c3*d1 - a2 * b1*c3*d4 + a2 * b1*c4*d3
-						+ a3 * b4*c1*d2 - a3 * b4*c2*d1 + a3 * b1*c2*d4 - a3 * b1*c4*d2
-						+ a3 * b2*c4*d1 - a3 * b2*c1*d4 - a4 * b1*c2*d3 + a4 * b1*c3*d2
-						- a4 * b2*c3*d1 + a4 * b2*c1*d3 - a4 * b3*c1*d2 + a4 * b3*c2*d1;
-				}
+					assert(&m1 != this && &m2 != this);
 
-				Matrix4x4<T>& applyMatrix(const Matrix4x4<T>& m) noexcept
-				{
-					Matrix4x4 matrix(*this);
-					multiplyMatrices(matrix, m);
-					return *this;
-				}
-
-				Matrix4x4<T>& multiplyMatrices(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
-				{
 					this->a1 = m1.a1 * m2.a1 + m1.b1 * m2.a2 + m1.c1 * m2.a3 + m1.d1 * m2.a4;
 					this->a2 = m1.a2 * m2.a1 + m1.b2 * m2.a2 + m1.c2 * m2.a3 + m1.d2 * m2.a4;
 					this->a3 = m1.a3 * m2.a1 + m1.b3 * m2.a2 + m1.c3 * m2.a3 + m1.d3 * m2.a4;
@@ -198,19 +152,27 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& multiplyScalar(T scale) noexcept
+				T determinant() const noexcept
 				{
-					a1 *= scale; a2 *= scale; a3 *= scale; a4 *= scale;
-					b1 *= scale; b2 *= scale; b3 *= scale; b4 *= scale;
-					c1 *= scale; c2 *= scale; c3 *= scale; c4 *= scale;
-					d1 *= scale; d2 *= scale; d3 *= scale; d4 *= scale;
+					return a1 * b2*c3*d4 - a1 * b2*c4*d3 + a1 * b3*c4*d2 - a1 * b3*c2*d4
+						+ a1 * b4*c2*d3 - a1 * b4*c3*d2 - a2 * b3*c4*d1 + a2 * b3*c1*d4
+						- a2 * b4*c1*d3 + a2 * b4*c3*d1 - a2 * b1*c3*d4 + a2 * b1*c4*d3
+						+ a3 * b4*c1*d2 - a3 * b4*c2*d1 + a3 * b1*c2*d4 - a3 * b1*c4*d2
+						+ a3 * b2*c4*d1 - a3 * b2*c1*d4 - a4 * b1*c2*d3 + a4 * b1*c3*d2
+						- a4 * b2*c3*d1 + a4 * b2*c1*d3 - a4 * b3*c1*d2 + a4 * b3*c2*d1;
+				}
+
+				Matrix4x4<T>& applyMatrix(const Matrix4x4<T>& m) noexcept
+				{
+					Matrix4x4 matrix(*this);
+					make_matrix(matrix, m);
 					return *this;
 				}
 
-				Matrix4x4<T>& makeTranslate(const Vector2<T>& pt) noexcept { return makeTranslate(pt.x, pt.y, 0); }
-				Matrix4x4<T>& makeTranslate(const Vector3<T>& pt) noexcept { return makeTranslate(pt.x, pt.y, pt.z); }
-				Matrix4x4<T>& makeTranslate(T x, T y) noexcept { return makeTranslate(x, y, 0); }
-				Matrix4x4<T>& makeTranslate(T x, T y, T z) noexcept
+				Matrix4x4<T>& make_translate(const Vector2<T>& pt) noexcept { return make_translate(pt.x, pt.y, 0); }
+				Matrix4x4<T>& make_translate(const Vector3<T>& pt) noexcept { return make_translate(pt.x, pt.y, pt.z); }
+				Matrix4x4<T>& make_translate(T x, T y) noexcept { return make_translate(x, y, 0); }
+				Matrix4x4<T>& make_translate(T x, T y, T z) noexcept
 				{
 					set(1, 0, 0, 0,
 						0, 1, 0, 0,
@@ -219,16 +181,16 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& setTranslate(const Vector2<T>& pt) noexcept { return setTranslate(pt.x, pt.y); }
-				Matrix4x4<T>& setTranslate(const Vector3<T>& pt) noexcept { return setTranslate(pt.x, pt.y, pt.z); }
-				Matrix4x4<T>& setTranslate(T x, T y) noexcept
+				Matrix4x4<T>& set_translate(const Vector2<T>& pt) noexcept { return set_translate(pt.x, pt.y); }
+				Matrix4x4<T>& set_translate(const Vector3<T>& pt) noexcept { return set_translate(pt.x, pt.y, pt.z); }
+				Matrix4x4<T>& set_translate(T x, T y) noexcept
 				{
 					d1 = x;
 					d2 = y;
 					return *this;
 				}
 
-				Matrix4x4<T>& setTranslate(T x, T y, T z) noexcept
+				Matrix4x4<T>& set_translate(T x, T y, T z) noexcept
 				{
 					d1 = x;
 					d2 = y;
@@ -253,15 +215,15 @@ namespace octoon
 					return *this;
 				}
 
-				const Vector3<T>& getTranslate() const noexcept
+				const Vector3<T>& get_translate() const noexcept
 				{
 					return *(Vector3<T>*)&d1;
 				}
 
-				Matrix4x4<T>& makeScale(const Vector2<T>& sz) noexcept { return makeScale(sz.x, sz.y, 1.0f); }
-				Matrix4x4<T>& makeScale(const Vector3<T>& sz) noexcept { return makeScale(sz.x, sz.y, sz.z); }
-				Matrix4x4<T>& makeScale(T cx, T cy) noexcept { return makeScale(cx, cy, 1.0f); }
-				Matrix4x4<T>& makeScale(T x, T y, T z) noexcept
+				Matrix4x4<T>& make_scale(const Vector2<T>& sz) noexcept { return make_scale(sz.x, sz.y, 1.0f); }
+				Matrix4x4<T>& make_scale(const Vector3<T>& sz) noexcept { return make_scale(sz.x, sz.y, sz.z); }
+				Matrix4x4<T>& make_scale(T cx, T cy) noexcept { return make_scale(cx, cy, 1.0f); }
+				Matrix4x4<T>& make_scale(T x, T y, T z) noexcept
 				{
 					set(
 						x, 0, 0, 0,
@@ -277,19 +239,14 @@ namespace octoon
 				Matrix4x4<T>& scale(T cx, T cy) noexcept { return scale(cx, cy, 1.0f); }
 				Matrix4x4<T>& scale(T x, T y, T z) noexcept
 				{
-					a1 *= x;
-					a2 *= x;
-					a3 *= x;
-					b1 *= y;
-					b2 *= y;
-					b3 *= y;
-					c1 *= z;
-					c2 *= z;
-					c3 *= z;
+					a1 *= x; a2 *= x; a3 *= x;
+					b1 *= y; b2 *= y; b3 *= y;
+					c1 *= z; c2 *= z; c3 *= z;
+
 					return *this;
 				}
 
-				Vector3<T> getScale() const noexcept
+				Vector3<T> get_scale() const noexcept
 				{
 					Vector3<T> vRows[3] =
 					{
@@ -313,140 +270,101 @@ namespace octoon
 					return scaling;
 				}
 
-				Matrix4x4<T>& makeRotationX(T theta) noexcept
-				{
-					T c, s, ang = radians(theta);
-
-					math::sinCos(&s, &c, ang);
-
-					set(
-						1, 0, 0, 0,
-						0, c, -s, 0,
-						0, s, c, 0,
-						0, 0, 0, 1);
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makeRotationY(T theta) noexcept
-				{
-					T c, s, ang = radians(theta);
-
-					math::sinCos(&s, &c, ang);
-
-					set(
-						c, 0, s, 0,
-						0, 1, 0, 0,
-						-s, 0, c, 0,
-						0, 0, 0, 1);
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makeRotationZ(T theta) noexcept
-				{
-					T c, s, ang = radians(theta);
-
-					math::sinCos(&s, &c, ang);
-
-					set(
-						c, -s, 0, 0,
-						s, c, 0, 0,
-						0, 0, 1, 0,
-						0, 0, 0, 1);
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makeRotateXYZ(T eulerX, T eulerY, T eulerZ) noexcept
-				{
-					T sj, cj, si, ci, sh, ch;
-
-					math::sinCos(&si, &ci, radians(eulerX));
-					math::sinCos(&sj, &cj, radians(eulerY));
-					math::sinCos(&sh, &ch, radians(eulerZ));
-
-					T cc = ci * ch;
-					T cs = ci * sh;
-					T sc = si * ch;
-					T ss = si * sh;
-
-					a1 = cj * ch;
-					a2 = sj * sc - cs;
-					a3 = sj * cc + ss;
-					a4 = 0;
-
-					b1 = cj * sh;
-					b2 = sj * ss + cc;
-					b3 = sj * cs - sc;
-					b4 = 0;
-
-					c1 = -sj;
-					c2 = cj * si;
-					c3 = cj * ci;
-					c4 = 0;
-
-					d1 = 0;
-					d2 = 0;
-					d3 = 0;
-					d4 = 1;
-					return *this;
-				}
-
-				Matrix4x4<T>& makeRotate(const Vector3<T>& axis, T angle) noexcept
+				Matrix4x4<T>& make_rotation_x(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, radians(angle));
+					math::sinCos(&s, &c, theta);
+
+					a1 = 1; a2 = 0; a3 = 0; a4 = 0;
+					b1 = 0; b2 = c; b3 = s; b4 = 0;
+					c1 = 0; c2 =-s; c3 = c; c4 = 0;
+					d1 = 0; d2 = 0; d3 = 0; c4 = 1;
+
+					return *this;
+				}
+
+				Matrix4x4<T>& make_rotation_y(T theta) noexcept
+				{
+					T c, s;
+					math::sinCos(&s, &c, theta);
+
+					a1 = c; a2 = 0; a3 =-s; a4 = 0;
+					b1 = 0; b2 = 1; b3 = 0; b4 = 0;
+					c1 = s; c2 = 0; c3 = c; c4 = 0;
+					d1 = 0; d2 = 0; d3 = 0; c4 = 1;
+
+					return *this;
+				}
+
+				Matrix4x4<T>& make_rotation_z(T theta) noexcept
+				{
+					T c, s;
+					math::sinCos(&s, &c, theta);
+
+					a1 = c; a2 = s; a3 = 0; a4 = 0;
+					b1 =-s; b2 = c; b3 = 0; b4 = 0;
+					c1 = 0; c2 = 0; c3 = 1; c4 = 0;
+					d1 = 0; d2 = 0; d3 = 0; c4 = 1;
+
+					return *this;
+				}
+
+				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T angle, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				{
+					T c, s;
+					math::sinCos(&s, &c, theta);
 
 					T x = axis.x;
 					T y = axis.y;
 					T z = axis.z;
 
 					T t = 1 - c;
-					T tx = t * x, ty = t * y;
+					T tx = t * x;
+					T ty = t * y;
+					T tz = t * z;
 
 					a1 = (tx * x + c);
-					b1 = (tx * y + s * z);
-					c1 = (tx * z - s * y);
-					d1 = 0;
-
-					a2 = (tx * y - s * z);
-					b2 = (ty * y + c);
-					c2 = (ty * z + s * x);
-					d2 = 0;
-
-					a3 = (tx * z + s * y);
-					b3 = (ty * z - s * x);
-					c3 = (t * z * z + c);
-					d3 = 0;
-
+					a2 = (tx * y + s * z);
+					a3 = (tx * z - s * y);
 					a4 = 0;
+
+					b1 = (tx * y - s * z);
+					b2 = (ty * y + c);
+					b3 = (ty * z + s * x);
 					b4 = 0;
+
+					c1 = (tx * z + s * y);
+					c2 = (ty * z - s * x);
+					c3 = (tz * z + c);
 					c4 = 0;
-					d4 = 1;
+
+					d1 = translate.x;
+					d2 = translate.y;
+					d3 = translate.z;
+					d4 = T(1.0f);
 
 					return *this;
 				}
 
-				Matrix4x4<T>& makeRotate(const Quaternion<T>& q, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& make_rotation(const Quaternion<T>& q, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T xs = q.x * T(2.0f), ys = q.y * T(2.0f), zs = q.z * T(2.0f);
-					T xw = q.w * xs, yw = q.w * ys, zw = q.w * zs;
+					T wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
 					T xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
 					T yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
 
 					a1 = T(1.0f) - (yy + zz);
-					a2 = xy + zw;
-					a3 = xz - yw;
+					a2 = xy + wz;
+					a3 = xz - wy;
 					a4 = T(0.0f);
 
-					b1 = xy - zw;
+					b1 = xy - wz;
 					b2 = T(1.0f) - (xx + zz);
-					b3 = yz + xw;
+					b3 = yz + wx;
 					b4 = T(0.0f);
 
-					c1 = xz + yw;
-					c2 = yz - xw;
+					c1 = xz + wy;
+					c2 = yz - wx;
 					c3 = T(1.0f) - (xx + yy);
 					c4 = T(0.0f);
 
@@ -458,35 +376,31 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeRotate(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept
+				Matrix4x4<T>& make_rotation(const Vector3<T>& forward_, const Vector3<T>& up_, const Vector3<T>& right_, const Vector3<T>& translate_ = Vector3<T>::Zero) noexcept
 				{
-					a1 = right.x;
-					a2 = right.y;
-					a3 = right.z;
-					a4 = 0.0f;
+					this->right = Vector4<T>(right_, 0.0);
+					this->up = Vector4<T>(up_, 0.0);
+					this->forward = Vector4<T>(forward_, 0.0);
+					this->position = Vector4<T>(translate_, 1.0);
 
-					b1 = up.x;
-					b2 = up.y;
-					b3 = up.z;
-					b4 = 0.0f;
-
-					c1 = forward.x;
-					c2 = forward.y;
-					c3 = forward.z;
-					c4 = 0.0f;
-
-					d1 = 0.0f;
-					d2 = 0.0f;
-					d3 = 0.0f;
-					d4 = 1.0f;
 					return *this;
 				}
 
-				Quaternion<T> getRotate() const noexcept
+				Matrix4x4<T>& make_rotation(const Vector4<T>& forward_, const Vector4<T>& up_, const Vector4<T>& right_, const Vector4<T>& translate_ = Vector4<T>::UnitW) noexcept
 				{
-					auto right = this->getRight();
-					auto up = this->getUpVector();
-					auto forward = this->getForward();
+					this->right = right_;
+					this->up = up_;
+					this->forward = forward_;
+					this->position = translate_;
+
+					return *this;
+				}
+
+				Quaternion<T> get_rotate() const noexcept
+				{
+					const Vector3<T>& right = this->get_right();
+					const Vector3<T>& up = this->get_up();
+					const Vector3<T>& forward = this->get_forward();
 
 					Vector3<T> scaling;
 					scaling.x = math::length(right);
@@ -505,70 +419,65 @@ namespace octoon
 					if (scaling.y != T(0.0)) up /= scaling.y;
 					if (scaling.z != T(0.0)) forward /= scaling.z;
 
-					return Quaterniont<T>(forward, up, right);
+					return Quaternion<T>(forward, up, right);
 				}
 
-				const Vector3<T>& getRight() const noexcept
+				const Vector3<T>& get_right() const noexcept
 				{
 					return *(Vector3<T>*)&a1;
 				}
 
-				const Vector3<T>& getUpVector() const noexcept
+				const Vector3<T>& get_up() const noexcept
 				{
 					return *(Vector3<T>*)&b1;
 				}
 
-				const Vector3<T>& getForward() const noexcept
+				const Vector3<T>& get_forward() const noexcept
 				{
 					return *(Vector3<T>*)&c1;
 				}
 
-				Vector4<T> getAxisX() const noexcept
+				Vector4<T> get_axis_x() const noexcept
 				{
 					return Vector4<T>(a1, b1, c1, d1);
 				}
 
-				Vector4<T> getAxisY() const noexcept
+				Vector4<T> get_axis_y() const noexcept
 				{
 					return Vector4<T>(a2, b2, c2, d2);
 				}
 
-				Vector4<T> getAxisZ() const noexcept
+				Vector4<T> get_axis_z() const noexcept
 				{
 					return Vector4<T>(a3, b3, c3, d3);
 				}
 
-				Matrix4x4<T>& makeTransform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
+				Vector4<T> get_axis_w() const noexcept
 				{
-					return this->makeRotate(rotate, translate);
+					return Vector4<T>(a4, b4, c4, d4);
 				}
 
-				Matrix4x4<T>& makeTransform(const Vector3<T>& translate, const Quaternion<T>& rotate, const Vector3<T>& scale) noexcept
+				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
 				{
-					this->makeTransform(translate, rotate);
+					return this->make_rotate(rotate, translate);
+				}
+
+				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate, const Vector3<T>& scale) noexcept
+				{
+					this->make_transform(translate, rotate);
 					this->scale(scale);
 					return *this;
 				}
 
-				const Matrix4x4<T>& getTransformOnlyRotation(Vector3<T>& position, Quaternion<T>& rotation) const noexcept
+				const Matrix4x4<T>& get_transform(Vector3<T>& position, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
 				{
+					auto right = this->get_right();
+					auto up = this->get_up();
+					auto forward = this->get_forward();
+
 					position.x = this->d1;
 					position.y = this->d2;
 					position.z = this->d3;
-
-					rotation.makeRotate(this->getForward(), this->getUpVector(), this->getRight());
-					return *this;
-				}
-
-				const Matrix4x4<T>& getTransform(Vector3<T>& position, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
-				{
-					position.x = this->d1;
-					position.y = this->d2;
-					position.z = this->d3;
-
-					auto right = this->getRight();
-					auto up = this->getUpVector();
-					auto forward = this->getForward();
 
 					scaling.x = math::length(right);
 					scaling.y = math::length(up);
@@ -589,11 +498,21 @@ namespace octoon
 					if (scaling.y != T(0.0)) up /= scaling.y;
 					if (scaling.z != T(0.0)) forward /= scaling.z;
 
-					rotation.makeRotate(forward, up, right);
+					rotation.make_rotate(forward, up, right);
 					return *this;
 				}
 
-				Matrix4x4<T>& makeOrtho_lh(T width, T height, T zNear, T zFar) noexcept
+				const Matrix4x4<T>& get_transform_without_scaler(Vector3<T>& position, Quaternion<T>& rotation) const noexcept
+				{
+					position.x = this->d1;
+					position.y = this->d2;
+					position.z = this->d3;
+
+					rotation.make_rotate(this->get_forward(), this->get_up(), this->get_right());
+					return *this;
+				}
+
+				Matrix4x4<T>& make_ortho_lh(T width, T height, T zNear, T zFar) noexcept
 				{
 					T cx = 2.0f / width;
 					T cy = 2.0f / height;
@@ -608,7 +527,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeOrtho_lh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_ortho_lh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
 				{
 					T tx = -(right + left) / (right - left);
 					T ty = -(top + bottom) / (top - bottom);
@@ -625,7 +544,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeOrtho_rh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_ortho_rh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
 				{
 					T tx = -(right + left) / (right - left);
 					T ty = -(top + bottom) / (top - bottom);
@@ -642,7 +561,7 @@ namespace octoon
 					return *this;
 				}
 
-				bool getOrtho_rh(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
+				bool get_ortho_rh(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
 				{
 					if (a4 != 0.0 || b4 != 0.0 || c4 != 0.0 || c4 != 1.0) return false;
 
@@ -658,7 +577,7 @@ namespace octoon
 					return true;
 				}
 
-				Matrix4x4<T>& makeFrustumt_lh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_frustumt_lh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
 				{
 					T A = (left + right) / (left - right);
 					T B = (bottom + top) / (bottom - top);
@@ -675,7 +594,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeFrustumt_rh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_frustumt_rh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
 				{
 					T A = (right + left) / (right - left);
 					T B = (top + bottom) / (top - bottom);
@@ -692,7 +611,7 @@ namespace octoon
 					return *this;
 				}
 
-				bool getFrustumt_rh(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
+				bool get_frustumt_rh(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
 				{
 					if (a4 != 0.0 || b4 != 0.0 || c4 != -1.0 || c4 != 0.0)
 						return false;
@@ -712,7 +631,7 @@ namespace octoon
 					return true;
 				}
 
-				Matrix4x4<T>& makePerspective_fov_lh(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
+				Matrix4x4<T>& make_perspective_fov_lh(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 				{
 					const T h = 1.0f / tan(radians(fov * 0.5f));
 					const T w = h / aspect;
@@ -726,7 +645,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makePerspective_fov_rh(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
+				Matrix4x4<T>& make_perspective_fov_rh(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 				{
 					const T h = 1.0f / tan(radians(fov * 0.5f));
 					const T w = h / aspect;
@@ -740,7 +659,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makePerspective_off_center_lh(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
+				Matrix4x4<T>& make_perspective_off_center_lh(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
 				{
 					T tan_fovy = tan(radians(fovy * 0.5f));
 					T right = tan_fovy * aspectRatio * znear;
@@ -748,11 +667,11 @@ namespace octoon
 					T top = tan_fovy * znear;
 					T bottom = -top;
 
-					makeFrustumt_lh(left, right, bottom, top, znear, zfar);
+					make_frustumt_lh(left, right, bottom, top, znear, zfar);
 					return *this;
 				}
 
-				Matrix4x4<T>& makePerspective_off_center_rh(const T& fovy, const T& aspectRatio, const T& zNear, const T& zFar) noexcept
+				Matrix4x4<T>& make_perspective_off_center_rh(const T& fovy, const T& aspectRatio, const T& zNear, const T& zFar) noexcept
 				{
 					T tan_fovy = tan(radians(fovy * 0.5f));
 					T right = tan_fovy * aspectRatio * zNear;
@@ -760,19 +679,19 @@ namespace octoon
 					T top = tan_fovy * zNear;
 					T bottom = -top;
 
-					makeFrustumt_rh(left, right, bottom, top, zNear, zFar);
+					make_frustumt_rh(left, right, bottom, top, zNear, zFar);
 					return *this;
 				}
 
 				bool getPerspective_rh(T& fovy, T& aspectRatio, T& zNear, T& zFar) const noexcept
 				{
-					T right = 0.0;
-					T left = 0.0;
-					T top = 0.0;
-					T bottom = 0.0;
+					T right = 0;
+					T left = 0;
+					T top = 0;
+					T bottom = 0;
 
-					T temp_near = 0.0;
-					T temp_far = 0.0;
+					T temp_near = 0;
+					T temp_far = 0;
 
 					bool r = getFrustumt(left, right, bottom, top, temp_near, temp_far);
 
@@ -787,7 +706,7 @@ namespace octoon
 					return r;
 				}
 
-				Matrix4x4<T>& makeLookAt_lh(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
+				Matrix4x4<T>& make_lookat_lh(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
 				{
 					Vector3<T> x, y, z;
 
@@ -833,7 +752,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeLookAt_rh(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
+				Matrix4x4<T>& make_lookat_rh(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
 				{
 					Vector3<T> x, y, z;
 
@@ -879,7 +798,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeViewport(std::size_t left, std::size_t top, std::size_t width, std::size_t height) noexcept
+				Matrix4x4<T>& make_viewport(std::size_t left, std::size_t top, std::size_t width, std::size_t height) noexcept
 				{
 					T cx = (T)(width >> 1);
 					T cy = (T)(height >> 1);
@@ -893,6 +812,12 @@ namespace octoon
 
 					return *this;
 				}
+
+				pointer ptr() noexcept { return (pointer)&a1; }
+				const_pointer ptr() const noexcept { return (const_pointer)&a1; }
+
+				pointer data() noexcept { return (pointer)&a1; }
+				const_pointer data() const noexcept { return (const_pointer)&a1; }
 			};
 
 			template<typename T> const Matrix4x4<T> Matrix4x4<T>::Zero(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -989,12 +914,30 @@ namespace octoon
 		template<typename T>
 		inline detail::Matrix4x4<T>& operator*=(detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2) noexcept
 		{
-			m1.multiplyMatrices(m1, m2);
+			m1.make_matrix(m1, m2);
 			return m1;
 		}
 
 		template<typename T>
-		inline bool isIdentity(const detail::Matrix4x4<T>& m) noexcept
+		inline const detail::Vector3<T>& right(const detail::Matrix4x4<T>& m) noexcept
+		{
+			return *(detail::Vector3<T>*)&m.a1;
+		}
+
+		template<typename T>
+		inline const detail::Vector3<T>& up(const detail::Matrix4x4<T>& m) noexcept
+		{
+			return *(detail::Vector3<T>*)&m.b1;
+		}
+
+		template<typename T>
+		inline const detail::Vector3<T>& forward(const detail::Matrix4x4<T>& m) noexcept
+		{
+			return *(detail::Vector3<T>*)&m.c1;
+		}
+
+		template<typename T>
+		inline bool is_identity(const detail::Matrix4x4<T>& m) noexcept
 		{
 			constexpr T epsilon = static_cast<T>(EPSILON_E4);
 			return (
@@ -1013,79 +956,11 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool isOnlyTranslate(const detail::Matrix4x4<T>& m) noexcept
-		{
-			constexpr T epsilon = static_cast<T>(EPSILON_E4);
-			return (
-				m.a2 <= epsilon && m.a2 >= -epsilon &&
-				m.a3 <= epsilon && m.a3 >= -epsilon &&
-				m.b1 <= epsilon && m.b1 >= -epsilon &&
-				m.b3 <= epsilon && m.b3 >= -epsilon &&
-				m.c1 <= epsilon && m.c1 >= -epsilon &&
-				m.c2 <= epsilon && m.c2 >= -epsilon &&
-				m.a1 <= 1.f + epsilon && m.a1 >= 1.f - epsilon &&
-				m.b2 <= 1.f + epsilon && m.b2 >= 1.f - epsilon &&
-				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> invTranslateVector3(const detail::Matrix4x4<T>& m, const detail::Vector3<T>& v)
-		{
-			detail::Vector3<T> temp, result;
-			temp.x = v.x - m.d1;
-			temp.y = v.y - m.d2;
-			temp.z = v.z - m.d3;
-
-			result.x = temp.x * m.a1 + temp.y * m.a2 + temp.z * m.a3;
-			result.y = temp.x * m.b1 + temp.y * m.b2 + temp.z * m.b3;
-			result.z = temp.x * m.c1 + temp.y * m.c2 + temp.z * m.c3;
-			return result;
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> invRotateVector3(const detail::Matrix4x4<T>& m, const detail::Vector3<T>& v)
-		{
-			detail::Vector3<T> result;
-			result.x = v.x * m.a1 + v.y * m.a2 + v.z * m.a3;
-			result.y = v.x * m.b1 + v.y * m.b2 + v.z * m.b3;
-			result.z = v.x * m.c1 + v.y * m.c2 + v.z * m.c3;
-
-			return result;
-		}
-
-		template<typename T>
-		inline detail::Matrix4x4<T> transformMultiply(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2)
-		{
-			detail::Matrix4x4<T> out;
-			out.a1 = m1.a1 * m2.a1 + m1.b1 * m2.a2 + m1.c1 * m2.a3;
-			out.a2 = m1.a2 * m2.a1 + m1.b2 * m2.a2 + m1.c2 * m2.a3;
-			out.a3 = m1.a3 * m2.a1 + m1.b3 * m2.a2 + m1.c3 * m2.a3;
-			out.a4 = 0.0f;
-
-			out.b1 = m1.a1 * m2.b1 + m1.b1 * m2.b2 + m1.c1 * m2.b3;
-			out.b2 = m1.a2 * m2.b1 + m1.b2 * m2.b2 + m1.c2 * m2.b3;
-			out.b3 = m1.a3 * m2.b1 + m1.b3 * m2.b2 + m1.c3 * m2.b3;
-			out.b4 = 0.0f;
-
-			out.c1 = m1.a1 * m2.c1 + m1.b1 * m2.c2 + m1.c1 * m2.c3;
-			out.c2 = m1.a2 * m2.c1 + m1.b2 * m2.c2 + m1.c2 * m2.c3;
-			out.c3 = m1.a3 * m2.c1 + m1.b3 * m2.c2 + m1.c3 * m2.c3;
-			out.c4 = 0.0f;
-
-			out.d1 = m1.a1 * m2.d1 + m1.b1 * m2.d2 + m1.c1 * m2.d3 + m1.d1;
-			out.d2 = m1.a2 * m2.d1 + m1.b2 * m2.d2 + m1.c2 * m2.d3 + m1.d2;
-			out.d3 = m1.a3 * m2.d1 + m1.b3 * m2.d2 + m1.c3 * m2.d3 + m1.d3;
-			out.d4 = 1.0f;
-
-			return out;
-		}
-
-		template<typename T>
 		detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
-			detail::Vector3<T> x = m.getRight();
-			detail::Vector3<T> y = m.getUpVector();
-			detail::Vector3<T> z = m.getForward();
+			detail::Vector3<T> x = m.get_right();
+			detail::Vector3<T> y = m.get_up();
+			detail::Vector3<T> z = m.get_forward();
 
 			x = math::normalize(x);
 			y = math::normalize(y);
@@ -1154,7 +1029,75 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix4x4<T> transformInverse(const detail::Matrix4x4<T>& m) noexcept
+		inline bool is_only_translate(const detail::Matrix4x4<T>& m) noexcept
+		{
+			constexpr T epsilon = static_cast<T>(EPSILON_E4);
+			return (
+				m.a2 <= epsilon && m.a2 >= -epsilon &&
+				m.a3 <= epsilon && m.a3 >= -epsilon &&
+				m.b1 <= epsilon && m.b1 >= -epsilon &&
+				m.b3 <= epsilon && m.b3 >= -epsilon &&
+				m.c1 <= epsilon && m.c1 >= -epsilon &&
+				m.c2 <= epsilon && m.c2 >= -epsilon &&
+				m.a1 <= 1.f + epsilon && m.a1 >= 1.f - epsilon &&
+				m.b2 <= 1.f + epsilon && m.b2 >= 1.f - epsilon &&
+				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> inv_translate_vector3(const detail::Matrix4x4<T>& m, const detail::Vector3<T>& v)
+		{
+			detail::Vector3<T> temp, result;
+			temp.x = v.x - m.d1;
+			temp.y = v.y - m.d2;
+			temp.z = v.z - m.d3;
+
+			result.x = temp.x * m.a1 + temp.y * m.a2 + temp.z * m.a3;
+			result.y = temp.x * m.b1 + temp.y * m.b2 + temp.z * m.b3;
+			result.z = temp.x * m.c1 + temp.y * m.c2 + temp.z * m.c3;
+			return result;
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> inv_rotate_vector3(const detail::Matrix4x4<T>& m, const detail::Vector3<T>& v)
+		{
+			detail::Vector3<T> result;
+			result.x = v.x * m.a1 + v.y * m.a2 + v.z * m.a3;
+			result.y = v.x * m.b1 + v.y * m.b2 + v.z * m.b3;
+			result.z = v.x * m.c1 + v.y * m.c2 + v.z * m.c3;
+
+			return result;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> transform_multiply(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2)
+		{
+			detail::Matrix4x4<T> out;
+			out.a1 = m1.a1 * m2.a1 + m1.b1 * m2.a2 + m1.c1 * m2.a3;
+			out.a2 = m1.a2 * m2.a1 + m1.b2 * m2.a2 + m1.c2 * m2.a3;
+			out.a3 = m1.a3 * m2.a1 + m1.b3 * m2.a2 + m1.c3 * m2.a3;
+			out.a4 = 0;
+
+			out.b1 = m1.a1 * m2.b1 + m1.b1 * m2.b2 + m1.c1 * m2.b3;
+			out.b2 = m1.a2 * m2.b1 + m1.b2 * m2.b2 + m1.c2 * m2.b3;
+			out.b3 = m1.a3 * m2.b1 + m1.b3 * m2.b2 + m1.c3 * m2.b3;
+			out.b4 = 0;
+
+			out.c1 = m1.a1 * m2.c1 + m1.b1 * m2.c2 + m1.c1 * m2.c3;
+			out.c2 = m1.a2 * m2.c1 + m1.b2 * m2.c2 + m1.c2 * m2.c3;
+			out.c3 = m1.a3 * m2.c1 + m1.b3 * m2.c2 + m1.c3 * m2.c3;
+			out.c4 = 0;
+
+			out.d1 = m1.a1 * m2.d1 + m1.b1 * m2.d2 + m1.c1 * m2.d3 + m1.d1;
+			out.d2 = m1.a2 * m2.d1 + m1.b2 * m2.d2 + m1.c2 * m2.d3 + m1.d2;
+			out.d3 = m1.a3 * m2.d1 + m1.b3 * m2.d2 + m1.c3 * m2.d3 + m1.d3;
+			out.d4 = 1;
+
+			return out;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> transform_inverse(const detail::Matrix4x4<T>& m) noexcept
 		{
 			detail::Matrix4x4<T> out;
 
@@ -1185,12 +1128,12 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix4x4<T> transformInverseOnlyRotation(const detail::Matrix4x4<T>& m) noexcept
+		inline detail::Matrix4x4<T> transform_inverse_without_scaler(const detail::Matrix4x4<T>& m) noexcept
 		{
-			auto& right = m.getRight();
-			auto& up = m.getUpVector();
-			auto& forward = m.getForward();
-			auto translate = -math::invRotateVector3(m, m.getTranslate());
+			auto& right = m.get_right();
+			auto& up = m.get_up();
+			auto& forward = m.get_forward();
+			auto translate = -math::inv_rotate_vector3(m, m.get_translate());
 
 			return detail::Matrix4x4<T>(
 				right.x, up.x, forward.x, 0.0f,

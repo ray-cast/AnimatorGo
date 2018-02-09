@@ -45,16 +45,17 @@ namespace octoon
 					};
 				};
 
-				Vector4() noexcept {}
+				Vector4() = default;
 				Vector4(T xyz, T ww)  noexcept : x(xyz), y(xyz), z(xyz), w(ww) {}
 				Vector4(T xx, T yy, T zz, T ww = 1.0)  noexcept : x(xx), y(yy), z(zz), w(ww) {}
 				Vector4(T xx, const Vector3<T>& yzw) noexcept : x(xx), y(yzw.x), z(yzw.y), w(yzw.z) {}
 				Vector4(T xx, T yy, const Vector2<T>& zw) noexcept : x(xx), y(yy), z(zw.x), w(zw.y) {}
-				Vector4(T xyzw) noexcept : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
-				Vector4(const T xyzw[4]) noexcept : x(xyzw[0]), y(xyzw[1]), z(xyzw[2]), w(xyzw[3]) {}
 				Vector4(const Vector3<T>& v, T w)  noexcept : x(v.x), y(v.y), z(v.z), w(w) {}
 				Vector4(const Vector2<T>& xy, const Vector2<T>& zw) noexcept : x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
 				Vector4(const Vector2<T>& xy, T z, T w) noexcept : x(xy.x), y(xy.y), z(z), w(w) {}
+				explicit Vector4(T xyzw) noexcept : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
+				explicit Vector4(const T xyzw[4]) noexcept : x(xyzw[0]), y(xyzw[1]), z(xyzw[2]), w(xyzw[3]) {}
+				~Vector4() = default;
 
 				Vector4<T>& operator+=(T scale) noexcept { x += scale; y += scale; z += scale; w += scale; return *this; }
 				Vector4<T>& operator-=(T scale) noexcept { x -= scale; y -= scale; z -= scale; w -= scale; return *this; }

@@ -26,11 +26,12 @@ namespace octoon
 
 				Quaternion() = default;
 				Quaternion(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
-				Quaternion(const T xyzw[4]) noexcept : x(xyzw[0]), y(xyzw[1]), z(xyzw[2]), w(xyzw[3]) {}
-				Quaternion(const Quaternion& q) noexcept : x(q.x), y(q.y), z(q.z), w(q.w) {}
-				Quaternion(const Vector3<T>& axis, T angle) noexcept { this->make_rotate(axis, angle); }
-				Quaternion(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept { this->make_rotate(forward, up, right); }
-				Quaternion(const Vector3<T>& eulerXYZ) noexcept { this->make_rotate(eulerXYZ); }
+				Quaternion(const Vector3<T>& axis, T angle) noexcept { this->make_rotation(axis, angle); }
+				Quaternion(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept { this->make_rotation(forward, up, right); }
+				explicit Quaternion(const T xyzw[4]) noexcept : x(xyzw[0]), y(xyzw[1]), z(xyzw[2]), w(xyzw[3]) {}
+				explicit Quaternion(const Vector3<T>& eulerXYZ) noexcept { this->make_rotation(eulerXYZ); }
+				explicit Quaternion(const Matrix3x3<T>& m) noexcept { this->make_rotation(forward(m), up(m), right(m)); }
+				explicit Quaternion(const Matrix4x4<T>& m) noexcept { this->make_rotation(forward(m), up(m), right(m)); }
 				~Quaternion() = default;
 
 				Quaternion<T>& operator+=(const Quaternion<T>& v) noexcept { w += v.w; x += v.x; y += v.y; z += v.z; return *this; }
@@ -60,7 +61,7 @@ namespace octoon
 				Quaternion<T>& set(const Vector3<T>& v) noexcept { return this->set(v.x, v.y, v.z, T(1)); }
 				Quaternion<T>& set(const Vector4<T>& v) noexcept { return this->set(v.x, v.y, v.z, v.w); }
 
-				Quaternion<T>& make_rotate_x(T theta) noexcept
+				Quaternion<T>& make_rotation_x(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -72,7 +73,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate_y(T theta) noexcept
+				Quaternion<T>& make_rotation_y(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -84,7 +85,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate_z(T theta) noexcept
+				Quaternion<T>& make_rotation_z(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -96,7 +97,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate(const Vector3<T>& axis, T theta) noexcept
+				Quaternion<T>& make_rotation(const Vector3<T>& axis, T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -111,7 +112,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate(const Vector3<T>& euler) noexcept
+				Quaternion<T>& make_rotation(const Vector3<T>& euler) noexcept
 				{
 					T sp, sb, sh;
 					T cp, cb, ch;
@@ -128,7 +129,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate_zyx(const Vector3<T>& euler) noexcept
+				Quaternion<T>& make_rotation_zyx(const Vector3<T>& euler) noexcept
 				{
 					T sp, sb, sh;
 					T cp, cb, ch;
@@ -145,7 +146,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotate(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept
+				Quaternion<T>& make_rotation(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept
 				{
 					T t = 1 + right.x + up.y + forward.z;
 

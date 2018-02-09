@@ -31,8 +31,8 @@ namespace octoon
 
 				Vector2() = default;
 				Vector2(T xx, T yy) noexcept : x(xx), y(yy) {}
-				Vector2(T xy) noexcept : x(xy), y(xy) {}
-				Vector2(const T xy[2]) noexcept : x(xy[0]), y(xy[1]) {}
+				explicit Vector2(T xy) noexcept : x(xy), y(xy) {}
+				explicit Vector2(const T xy[2]) noexcept : x(xy[0]), y(xy[1]) {}
 				~Vector2() = default;
 
 				Vector2<T>& operator+=(T scale) noexcept { x += scale; y += scale; return *this; }

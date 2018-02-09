@@ -139,7 +139,7 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-		constexpr bool equal(T a, T b, T epsilon) noexcept
+		constexpr bool equal(T a, T b, T epsilon = EPSILON) noexcept
 		{
 			return (a + epsilon) > b && (a - epsilon) < b;
 		}

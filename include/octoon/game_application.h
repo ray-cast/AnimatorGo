@@ -47,6 +47,7 @@ namespace octoon
 
 		GameFeaturePtr inputFeature_;
 		GameFeaturePtr baseFeature_;
+		GameFeaturePtr guiFeature_;
 	};
 }
 

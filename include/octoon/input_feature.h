@@ -47,7 +47,7 @@ namespace octoon
 		InputFeature& operator=(const InputFeature&) = delete;
 
 	private:
-		input::InputPtr _input;
+		input::InputPtr input_;
 		input::WindHandle window_;
 	};
 }

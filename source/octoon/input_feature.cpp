@@ -1,4 +1,4 @@
-#include "input_feature.h"
+#include <octoon/input_feature.h>
 #include <octoon/input/input.h>
 
 namespace octoon
@@ -30,7 +30,7 @@ namespace octoon
 	{
 	public:
 		InputEventListener(InputFeature& input)
-			: _input(input)
+			: input_(input)
 		{
 		}
 
@@ -43,7 +43,7 @@ namespace octoon
 		InputEventListener& operator=(const InputEventListener&) noexcept = delete;
 
 	private:
-		InputFeature& _input;
+		InputFeature& input_;
 	};
 
 	InputFeature::InputFeature() noexcept
@@ -64,60 +64,60 @@ namespace octoon
 	InputFeature::setInput(input::InputPtr input) noexcept
 	{
 		assert(input);
-		_input = input;
+		input_ = input;
 	}
 
 	input::InputPtr
 	InputFeature::getInput() const noexcept
 	{
-		return _input;
+		return input_;
 	}
 
 	void
 	InputFeature::onActivate() except
 	{
-		_input = std::make_shared<input::DefaultInput>();
-		if (!_input->open())
+		input_ = std::make_shared<input::DefaultInput>();
+		if (!input_->open())
 			throw std::exception("Input::open() fail.");
 
-		_input->addInputListener(std::make_shared<InputEventListener>(*this));
-		_input->setCaptureObject(window_);
-		_input->obtainCapture();
+		input_->addInputListener(std::make_shared<InputEventListener>(*this));
+		input_->setCaptureObject(window_);
+		input_->obtainCapture();
 	}
 
 	void
 	InputFeature::onDeactivate() noexcept
 	{
-		assert(_input);
-		_input.reset();
+		assert(input_);
+		input_.reset();
 	}
 
 	void
 	InputFeature::onInputEvent(const input::InputEvent& event) noexcept
 	{
-		assert(_input);
-		_input->sendInputEvent(event);
+		assert(input_);
+		input_->sendInputEvent(event);
 	}
 
 	void
 	InputFeature::onFrameBegin() noexcept
 	{
-		assert(_input);
-		_input->updateBegin();
-		_input->update();
+		assert(input_);
+		input_->updateBegin();
+		input_->update();
 	}
 
 	void
 	InputFeature::onFrameEnd() noexcept
 	{
-		assert(_input);
-		_input->updateEnd();
+		assert(input_);
+		input_->updateEnd();
 	}
 
 	void
 	InputFeature::onReset() noexcept
 	{
-		assert(_input);
-		_input->reset();
+		assert(input_);
+		input_->reset();
 	}
 }

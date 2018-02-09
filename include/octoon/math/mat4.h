@@ -977,12 +977,12 @@ namespace octoon
 		detail::Matrix4x4<T> transpose(const detail::Matrix4x4<T>& _m) noexcept
 		{
 			detail::Matrix4x4<T> m = _m;
-			std::swap((T&)m.b1, (T&)m.a2);
-			std::swap((T&)m.c1, (T&)m.a3);
-			std::swap((T&)m.c2, (T&)m.b3);
-			std::swap((T&)m.d1, (T&)m.a4);
-			std::swap((T&)m.d2, (T&)m.b4);
-			std::swap((T&)m.d3, (T&)m.c4);
+			std::swap(m.b1, m.a2);
+			std::swap(m.c1, m.a3);
+			std::swap(m.c2, m.b3);
+			std::swap(m.d1, m.a4);
+			std::swap(m.d2, m.b4);
+			std::swap(m.d3, m.c4);
 
 			return m;
 		}
@@ -1101,28 +1101,28 @@ namespace octoon
 		{
 			detail::Matrix4x4<T> out;
 
-			T d = (m.a1 * m.b2 - m.a2 * m.b1) * (m.c3) - (m.a1 * m.b3 - m.a3 * m.b1) * (m.c2) + (m.a2 * m.b3 - m.a3 * m.b2) * (m.c1);
-			if (d == static_cast<T>(0.0))
+			T det = (m.a1 * m.b2 - m.a2 * m.b1) * (m.c3) - (m.a1 * m.b3 - m.a3 * m.b1) * (m.c2) + (m.a2 * m.b3 - m.a3 * m.b2) * (m.c1);
+			if (det == static_cast<T>(0.0))
 				return detail::Matrix4x4<T>::One;
 
-			d = 1.0f / d;
+			invdet = 1.0f / det;
 
-			out.a1 = d * (m.b2 * m.c3 + m.b3 * -m.c2);
-			out.a2 = d * (m.c2 * m.a3 + m.c3 * -m.a2);
-			out.a3 = d * (m.a2 * m.b3 - m.a3 * m.b2);
+			out.a1 = invdet * (m.b2 * m.c3 + m.b3 * -m.c2);
+			out.a2 = invdet * (m.c2 * m.a3 + m.c3 * -m.a2);
+			out.a3 = invdet * (m.a2 * m.b3 - m.a3 * m.b2);
 			out.a4 = 0.0f;
-			out.b1 = d * (m.b3 * m.c1 + m.b1 * -m.c3);
-			out.b2 = d * (m.c3 * m.a1 + m.c1 * -m.a3);
-			out.b3 = d * (m.a3 * m.b1 - m.a1 * m.b3);
+			out.b1 = invdet * (m.b3 * m.c1 + m.b1 * -m.c3);
+			out.b2 = invdet * (m.c3 * m.a1 + m.c1 * -m.a3);
+			out.b3 = invdet * (m.a3 * m.b1 - m.a1 * m.b3);
 			out.b4 = 0.0f;
-			out.c1 = d * (m.b1 * m.c2 + m.b2 * -m.c1);
-			out.c2 = d * (m.c1 * m.a2 + m.c2 * -m.a1);
-			out.c3 = d * (m.a1 * m.b2 - m.a2 * m.b1);
+			out.c1 = invdet * (m.b1 * m.c2 + m.b2 * -m.c1);
+			out.c2 = invdet * (m.c1 * m.a2 + m.c2 * -m.a1);
+			out.c3 = invdet * (m.a1 * m.b2 - m.a2 * m.b1);
 			out.c4 = 0.0f;
-			out.d1 = d * (m.b1 * (m.c3 * m.d2 - m.c2 * m.d3) + m.b2 * (m.c1 * m.d3 - m.c3 * m.d1) + m.b3 * (m.c2 * m.d1 - m.c1 * m.d2));
-			out.d2 = d * (m.c1 * (m.a3 * m.d2 - m.a2 * m.d3) + m.c2 * (m.a1 * m.d3 - m.a3 * m.d1) + m.c3 * (m.a2 * m.d1 - m.a1 * m.d2));
-			out.d3 = d * (m.d1 * (m.a3 * m.b2 - m.a2 * m.b3) + m.d2 * (m.a1 * m.b3 - m.a3 * m.b1) + m.d3 * (m.a2 * m.b1 - m.a1 * m.b2));
-			out.d4 = d * (m.a1 * (m.b2 * m.c3 - m.b3 * m.c2) + m.a2 * (m.b3 * m.c1 - m.b1 * m.c3) + m.a3 * (m.b1 * m.c2 - m.b2 * m.c1));
+			out.d1 = invdet * (m.b1 * (m.c3 * m.d2 - m.c2 * m.d3) + m.b2 * (m.c1 * m.d3 - m.c3 * m.d1) + m.b3 * (m.c2 * m.d1 - m.c1 * m.d2));
+			out.d2 = invdet * (m.c1 * (m.a3 * m.d2 - m.a2 * m.d3) + m.c2 * (m.a1 * m.d3 - m.a3 * m.d1) + m.c3 * (m.a2 * m.d1 - m.a1 * m.d2));
+			out.d3 = invdet * (m.d1 * (m.a3 * m.b2 - m.a2 * m.b3) + m.d2 * (m.a1 * m.b3 - m.a3 * m.b1) + m.d3 * (m.a2 * m.b1 - m.a1 * m.b2));
+			out.d4 = invdet * (m.a1 * (m.b2 * m.c3 - m.b3 * m.c2) + m.a2 * (m.b3 * m.c1 - m.b1 * m.c3) + m.a3 * (m.b1 * m.c2 - m.b2 * m.c1));
 
 			return out;
 		}

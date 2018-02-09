@@ -404,9 +404,9 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool isIdentity(const detail::Matrix3x3<T>& m) noexcept
+		inline bool is_identity(const detail::Matrix3x3<T>& m) noexcept
 		{
-			constexpr T epsilon = (T)EPSILON_E4;
+			constexpr T epsilon = EPSILON_E4;
 			return (
 				m.a2 <= epsilon && m.a2 >= -epsilon &&
 				m.a3 <= epsilon && m.a3 >= -epsilon &&
@@ -420,7 +420,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool isOnlyRotate(const detail::Matrix3x3<T>& m) noexcept
+		inline bool is_only_rotate(const detail::Matrix3x3<T>& m) noexcept
 		{
 			constexpr T epsilon = 10e-3f;
 			return (
@@ -436,17 +436,19 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix3x3<T> orthonormalize(const detail::Matrix3x3<T>& _m) noexcept
+		inline detail::Matrix3x3<T> orthonormalize(const detail::Matrix3x3<T>& m_) noexcept
 		{
 			detail::Matrix3x3<T> m;
-			detail::Vector3<T> x(_m.a1, _m.b1, _m.c1);
-			detail::Vector3<T> y(_m.a2, _m.b2, _m.c2);
+			detail::Vector3<T> x = m.get_right();
+			detail::Vector3<T> y = m.get_up();
 			detail::Vector3<T> z;
+
 			x = math::normalize(x);
 			z = math::cross(x, y);
 			z = math::normalize(z);
 			y = math::cross(z, x);
 			y = math::normalize(y);
+
 			m.a1 = x.x; m.a2 = x.y; m.a3 = x.z;
 			m.b1 = y.x; m.b2 = y.y; m.b3 = y.z;
 			m.c1 = z.x; m.c3 = z.y; m.c3 = z.z;
@@ -478,7 +480,7 @@ namespace octoon
 
 			T invdet = T(1.0) / det;
 
-			Matrix4x4<T> m;
+			detail::Matrix3x3<T> m;
 			m.a1 = invdet * (_m.b2 * _m.c3 - _m.b3 * _m.c2);
 			m.a2 = -invdet * (_m.a2 * _m.c3 - _m.a3 * _m.c2);
 			m.a3 = invdet * (_m.a2 * _m.b3 - _m.a3 * _m.b2);

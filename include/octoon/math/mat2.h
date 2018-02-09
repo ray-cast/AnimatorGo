@@ -20,8 +20,20 @@ namespace octoon
 				typedef typename trait::type_addition<T>::reference reference;
 				typedef typename trait::type_addition<T>::const_reference const_reference;
 
-				T a1, a2;
-				T b1, b2;
+				union
+				{
+					struct
+					{
+						T a1, a2;
+						T b1, b2;
+					};
+
+					struct
+					{
+						Vector2<T> right;
+						Vector2<T> up;
+					};
+				};
 
 				Matrix2x2() noexcept = default;
 				Matrix2x2(T mt00, T mt01, T mt10, T mt11) noexcept :a1(mt00), a2(mt01), b1(mt10), b2(mt11) {}
@@ -110,6 +122,22 @@ namespace octoon
 				pointer data() noexcept { return (pointer)this; }
 				const_pointer data() const noexcept { return (const_pointer)this; }
 			};
+		}
+
+		template<typename T>
+		inline bool operator==(const detail::Matrix2x2<T>& m1, const detail::Matrix2x2<T>& m2) noexcept
+		{
+			return
+				m1.a1 == m2.a1 && m1.a2 == m2.a2 &&
+				m1.b1 == m2.b1 && m1.b2 == m2.b2;
+		}
+
+		template<typename T>
+		inline bool operator!=(const detail::Matrix2x2<T>& m1, const detail::Matrix2x2<T>& m2) noexcept
+		{
+			return
+				m1.a1 != m2.a1 || m1.a2 != m2.a2 ||
+				m1.b1 != m2.b1 || m1.b2 != m2.b2;
 		}
 	}
 }

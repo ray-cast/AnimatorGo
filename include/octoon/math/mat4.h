@@ -958,13 +958,16 @@ namespace octoon
 		template<typename T>
 		detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
+			detail::Matrix3x3<T> m;
 			detail::Vector3<T> x = m.get_right();
 			detail::Vector3<T> y = m.get_up();
-			detail::Vector3<T> z = m.get_forward();
+			detail::Vector3<T> z;
 
 			x = math::normalize(x);
-			y = math::normalize(y);
+			z = math::cross(x, y);
 			z = math::normalize(z);
+			y = math::cross(z, x);
+			y = math::normalize(y);
 
 			return detail::Matrix4x4<T>(
 				x.x, x.y, x.z, 0.0f,

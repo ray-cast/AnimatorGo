@@ -185,20 +185,11 @@ namespace octoon
 		gameServer_->removeFeature(feature);
 	}
 
-	bool
+	void
 	GameApplication::sendInputEvent(const input::InputEvent& event) noexcept
 	{
-		if (inputFeature_)
-			return inputFeature_->downcast<InputFeature>()->sendInputEvent(event);
-		return false;
-	}
-
-	bool
-	GameApplication::postInputEvent(const input::InputEvent& event) noexcept
-	{
-		if (inputFeature_)
-			return inputFeature_->downcast<InputFeature>()->postInputEvent(event);
-		return false;
+		assert(gameServer_);
+		gameServer_->sendInputEvent(event);
 	}
 
 	void

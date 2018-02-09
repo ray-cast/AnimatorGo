@@ -1,4 +1,4 @@
-#include "game_base_features.h"
+#include <octoon/game_base_features.h>
 #include <octoon/game_object_manager.h>
 #include <octoon/game_scene_manager.h>
 

@@ -31,8 +31,7 @@ namespace octoon
 		bool addFeatures(GameFeaturePtr& feature) noexcept;
 		void removeFeatures(GameFeaturePtr& feature) noexcept;
 
-		bool sendInputEvent(const input::InputEvent& event) noexcept;
-		bool postInputEvent(const input::InputEvent& event) noexcept;
+		void sendInputEvent(const input::InputEvent& event) noexcept;
 
 		void update() noexcept;
 

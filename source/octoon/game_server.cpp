@@ -36,7 +36,7 @@
 // +----------------------------------------------------------------------
 #include <octoon/game_server.h>
 #include <octoon/game_scene.h>
-#include <octoon/game_features.h>
+#include <octoon/game_feature.h>
 #include <octoon/game_listener.h>
 
 namespace octoon
@@ -380,6 +380,13 @@ namespace octoon
 	GameServer::getGameFeatures() const noexcept
 	{
 		return features_;
+	}
+
+	void
+	GameServer::sendInputEvent(const input::InputEvent& event) noexcept
+	{
+		for (auto& feature : features_)
+			feature->onInputEvent(event);
 	}
 
 	void

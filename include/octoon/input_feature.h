@@ -31,12 +31,11 @@ namespace octoon
 		void setInput(input::InputPtr input) noexcept;
 		input::InputPtr getInput() const noexcept;
 
-		bool sendInputEvent(const input::InputEvent& event) noexcept;
-		bool postInputEvent(const input::InputEvent& event) noexcept;
-
 	private:
 		virtual void onActivate() except;
 		virtual void onDeactivate() noexcept;
+
+		virtual void onInputEvent(const input::InputEvent& event) noexcept;
 
 		virtual void onReset() noexcept;
 

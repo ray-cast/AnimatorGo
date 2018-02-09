@@ -37,6 +37,8 @@ namespace octoon
 		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
 		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
 
+		void sendInputEvent(const input::InputEvent& event) noexcept;
+
 		template<typename T>
 		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::getRtti())); }
 

@@ -31,15 +31,11 @@ namespace octoon
 	public:
 		InputEventListener(InputFeature& input)
 			: _input(input)
-			, _message(std::make_shared<InputMessage>())
 		{
 		}
 
 		void onInputEvent(const input::InputEvent& event) noexcept
 		{
-			_message->setEvent(event);
-
-			//_input.sendMessage(_message);
 		}
 
 	private:
@@ -48,7 +44,6 @@ namespace octoon
 
 	private:
 		InputFeature& _input;
-		std::shared_ptr<InputMessage> _message;
 	};
 
 	InputFeature::InputFeature() noexcept
@@ -78,20 +73,6 @@ namespace octoon
 		return _input;
 	}
 
-	bool
-	InputFeature::sendInputEvent(const input::InputEvent& event) noexcept
-	{
-		assert(_input);
-		return _input->sendInputEvent(event);
-	}
-
-	bool
-	InputFeature::postInputEvent(const input::InputEvent& event) noexcept
-	{
-		assert(_input);
-		return _input->postInputEvent(event);
-	}
-
 	void
 	InputFeature::onActivate() except
 	{
@@ -107,7 +88,15 @@ namespace octoon
 	void
 	InputFeature::onDeactivate() noexcept
 	{
+		assert(_input);
 		_input.reset();
+	}
+
+	void
+	InputFeature::onInputEvent(const input::InputEvent& event) noexcept
+	{
+		assert(_input);
+		_input->sendInputEvent(event);
 	}
 
 	void

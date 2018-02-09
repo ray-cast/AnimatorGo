@@ -11,6 +11,12 @@
 #   define OCTOON_PROJECT
 #endif
 
+#if defined(__cplusplus)
+#	define OCTOON_C_LINKAGE extern "C"
+#else
+#	define OCTOON_C_LINKAGE extern
+#endif
+
 #if defined(_MSC_VER)
 #   ifndef _VISUAL_STUDIO_
 #       define _VISUAL_STUDIO_ _MSC_VER

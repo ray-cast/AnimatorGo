@@ -121,23 +121,22 @@ namespace octoon
 				const_pointer ptr() const noexcept { return (const_pointer)this; }
 				pointer data() noexcept { return (pointer)this; }
 				const_pointer data() const noexcept { return (const_pointer)this; }
+
+			public:
+				friend bool operator==(const Matrix2x2<T>& m1, const Matrix2x2<T>& m2) noexcept
+				{
+					return
+						m1.a1 == m2.a1 && m1.a2 == m2.a2 &&
+						m1.b1 == m2.b1 && m1.b2 == m2.b2;
+				}
+
+				friend bool operator!=(const Matrix2x2<T>& m1, const Matrix2x2<T>& m2) noexcept
+				{
+					return
+						m1.a1 != m2.a1 || m1.a2 != m2.a2 ||
+						m1.b1 != m2.b1 || m1.b2 != m2.b2;
+				}
 			};
-		}
-
-		template<typename T>
-		inline bool operator==(const detail::Matrix2x2<T>& m1, const detail::Matrix2x2<T>& m2) noexcept
-		{
-			return
-				m1.a1 == m2.a1 && m1.a2 == m2.a2 &&
-				m1.b1 == m2.b1 && m1.b2 == m2.b2;
-		}
-
-		template<typename T>
-		inline bool operator!=(const detail::Matrix2x2<T>& m1, const detail::Matrix2x2<T>& m2) noexcept
-		{
-			return
-				m1.a1 != m2.a1 || m1.a2 != m2.a2 ||
-				m1.b1 != m2.b1 || m1.b2 != m2.b2;
 		}
 	}
 }

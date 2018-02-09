@@ -1,7 +1,5 @@
 #include <octoon/transform_component.h>
 
-using namespace octoon::math;
-
 namespace octoon
 {
 	OctoonImplementSubClass(TransformComponent, GameComponent, "TransformComponent")
@@ -68,7 +66,7 @@ namespace octoon
 	void
 	TransformComponent::setScaleAll(const float scale) noexcept
 	{
-		this->setScale(float3(scale, scale, scale));
+		this->setScale(math::float3(scale, scale, scale));
 	}
 
 	void

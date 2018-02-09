@@ -304,79 +304,73 @@ namespace octoon
 
 				pointer data() noexcept { return (pointer)&a1; }
 				const_pointer data() const noexcept { return (const_pointer)&a1; }
+
+			public:
+
+				friend bool operator==(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
+				{
+					return
+						m1.a1 == m2.a1 && m1.a2 == m2.a2 && m1.a3 == m2.a3 &&
+						m1.b1 == m2.b1 && m1.b2 == m2.b2 && m1.b3 == m2.b3 &&
+						m1.c1 == m2.c1 && m1.c2 == m2.c2 && m1.c3 == m2.c3;
+				}
+
+				friend bool operator!=(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
+				{
+					return
+						m1.a1 != m2.a1 || m1.a2 != m2.a2 || m1.a3 != m2.a3 ||
+						m1.b1 != m2.b1 || m1.b2 != m2.b2 || m1.b3 != m2.b3 ||
+						m1.c1 != m2.c1 || m1.c2 != m2.c2 || m1.c3 != m2.c3;
+				}
+
+				friend Vector3<T> operator*(const Vector3<T>& v, const Matrix3x3<T>& m) noexcept
+				{
+					return Vector3<T>(
+						m.a1 * v.x + m.a2 * v.y + m.a3 * v.z,
+						m.b1 * v.x + m.b2 * v.y + m.b3 * v.z,
+						m.c1 * v.x + m.c2 * v.y + m.c3 * v.z);
+				}
+
+				friend Vector3<T> operator*(const Matrix3x3<T>& m, const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>(
+						m.a1 * v.x + m.b1 * v.y + m.c1 * v.z,
+						m.a2 * v.x + m.b2 * v.y + m.c2 * v.z,
+						m.a3 * v.x + m.b3 * v.y + m.c3 * v.z);
+				}
+
+				friend Matrix3x3<T> operator*(const T& scale, const Matrix3x3<T>& m1) noexcept
+				{
+					Matrix3x3<T> m;
+					m.a1 = m1.a1 * scale; m.b1 = m1.b1 * scale; m.c1 = m1.c1 * scale;
+					m.a2 = m1.a2 * scale; m.b2 = m1.b2 * scale; m.c2 = m1.c2 * scale;
+					m.a3 = m1.a3 * scale; m.b3 = m1.b3 * scale; m.c3 = m1.c3 * scale;
+					return m;
+				}
+
+				friend Matrix3x3<T> operator*(const Matrix3x3<T>& m1, T& scale) noexcept
+				{
+					Matrix3x3<T> m;
+					m.a1 = m1.a1 * scale; m.b1 = m1.b1 * scale; m.c1 = m1.c1 * scale;
+					m.a2 = m1.a2 * scale; m.b2 = m1.b2 * scale; m.c2 = m1.c2 * scale;
+					m.a3 = m1.a3 * scale; m.b3 = m1.b3 * scale; m.c3 = m1.c3 * scale;
+					return m;
+				}
+
+				friend Matrix3x3<T> operator*(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
+				{
+					return Matrix3x3<T>(m1, m2);
+				}
+
+				friend Vector3<T>& operator*=(Vector3<T>& v, const Matrix3x3<T>& m) noexcept
+				{
+					v = v * m;
+					return v;
+				}
 			};
 
 			template<typename T> const Matrix3x3<T> Matrix3x3<T>::Zero(0, 0, 0, 0, 0, 0, 0, 0, 0);
 			template<typename T> const Matrix3x3<T> Matrix3x3<T>::One(1, 0, 0, 0, 1, 0, 0, 0, 1);
-		}
-
-		template<typename T>
-		inline bool operator==(const detail::Matrix3x3<T>& m1, const detail::Matrix3x3<T>& m2) noexcept
-		{
-			return
-				m1.a1 == m2.a1 && m1.a2 == m2.a2 && m1.a3 == m2.a3 &&
-				m1.b1 == m2.b1 && m1.b2 == m2.b2 && m1.b3 == m2.b3 &&
-				m1.c1 == m2.c1 && m1.c2 == m2.c2 && m1.c3 == m2.c3;
-		}
-
-		template<typename T>
-		inline bool operator!=(const detail::Matrix3x3<T>& m1, const detail::Matrix3x3<T>& m2) noexcept
-		{
-			return
-				m1.a1 != m2.a1 || m1.a2 != m2.a2 || m1.a3 != m2.a3 ||
-				m1.b1 != m2.b1 || m1.b2 != m2.b2 || m1.b3 != m2.b3 ||
-				m1.c1 != m2.c1 || m1.c2 != m2.c2 || m1.c3 != m2.c3;
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Vector3<T>& v, const detail::Matrix3x3<T>& m) noexcept
-		{
-			return Vector3<T>(
-				m.a1 * v.x + m.a2 * v.y + m.a3 * v.z,
-				m.b1 * v.x + m.b2 * v.y + m.b3 * v.z,
-				m.c1 * v.x + m.c2 * v.y + m.c3 * v.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Matrix3x3<T>& m, const detail::Vector3<T>& v) noexcept
-		{
-			return Vector3<T>(
-				m.a1 * v.x + m.b1 * v.y + m.c1 * v.z,
-				m.a2 * v.x + m.b2 * v.y + m.c2 * v.z,
-				m.a3 * v.x + m.b3 * v.y + m.c3 * v.z);
-		}
-
-		template<typename T>
-		inline detail::Matrix3x3<T> operator*(const T& scale, const detail::Matrix3x3<T>& m1) noexcept
-		{
-			Matrix3x3<T> m;
-			m.a1 = m1.a1 * scale; m.b1 = m1.b1 * scale; m.c1 = m1.c1 * scale;
-			m.a2 = m1.a2 * scale; m.b2 = m1.b2 * scale; m.c2 = m1.c2 * scale;
-			m.a3 = m1.a3 * scale; m.b3 = m1.b3 * scale; m.c3 = m1.c3 * scale;
-			return m;
-		}
-
-		template<typename T>
-		inline detail::Matrix3x3<T> operator*(const detail::Matrix3x3<T>& m1, T& scale) noexcept
-		{
-			Matrix3x3<T> m;
-			m.a1 = m1.a1 * scale; m.b1 = m1.b1 * scale; m.c1 = m1.c1 * scale;
-			m.a2 = m1.a2 * scale; m.b2 = m1.b2 * scale; m.c2 = m1.c2 * scale;
-			m.a3 = m1.a3 * scale; m.b3 = m1.b3 * scale; m.c3 = m1.c3 * scale;
-			return m;
-		}
-
-		template<typename T>
-		inline detail::Matrix3x3<T> operator*(const detail::Matrix3x3<T>& m1, const detail::Matrix3x3<T>& m2) noexcept
-		{
-			return Matrix3x3<T>(m1, m2);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T>& operator*=(detail::Vector3<T>& v, const detail::Matrix3x3<T>& m) noexcept
-		{
-			v = v * m;
-			return v;
 		}
 
 		template<typename T>

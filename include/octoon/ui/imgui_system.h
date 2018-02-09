@@ -15,7 +15,7 @@ namespace octoon
 			System() noexcept;
 			~System() noexcept;
 
-			bool open(void* _window, float dpi) except;
+			bool open(input::WindHandle _window, float dpi) except;
 			void close() noexcept;
 
 			bool injectMouseMove(float _absx, float _absy) noexcept;

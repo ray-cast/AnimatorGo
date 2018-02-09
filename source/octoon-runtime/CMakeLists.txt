@@ -6,6 +6,7 @@ SET(SOURCE_PATH ${OCTOON_SOURCE_PATH}/${LIB_OUTNAME})
 
 SET(CORE_LIST
 	${HEADER_PATH}/def.h
+	${HEADER_PATH}/json.h
 	${HEADER_PATH}/assert.h
 	${HEADER_PATH}/platform.h
 	${HEADER_PATH}/singleton.h

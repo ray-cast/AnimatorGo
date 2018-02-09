@@ -185,77 +185,60 @@ namespace octoon
 
 					return *this;
 				}
+
+			public:
+				friend bool operator==(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
+				{
+					return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
+				}
+
+				friend bool operator!=(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
+				{
+					return !(q1 == q2);
+				}
+
+				friend Quaternion<T> operator-(const Quaternion<T>& q) noexcept
+				{
+					return Quaternion<T>(-q.x, -q.y, -q.z, -q.w);
+				}
+
+				friend Quaternion<T> operator+(const Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				{
+					return Quaternion<T>(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+				}
+
+				friend Quaternion<T> operator/(const Quaternion<T>& q, T f) noexcept
+				{
+					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
+				}
+
+				friend Quaternion<T> operator/(T f, const Quaternion<T>& q) noexcept
+				{
+					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
+				}
+
+				template<typename ostream, typename T, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
+				friend ostream& operator << (ostream& os, const Quaternion<T>& v)
+				{
+					os << v.x << ", " << v.y << ", " << v.z << ", " << v.w;
+					return os;
+				}
+
+				template<typename istream, typename T, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
+				friend istream& operator >> (istream& is, Quaternion<T>& v)
+				{
+					is >> v.x;
+					is.ignore(2);
+					is >> v.y;
+					is.ignore(2);
+					is >> v.z;
+					is.ignore(2);
+					is >> v.w;
+					return is;
+				}
 			};
 
 			template<typename T> const Quaternion<T> Quaternion<T>::Zero = Quaternion<T>((T)0, (T)0, (T)0, (T)1);
-		}
-
-		template<typename T>
-		inline bool operator==(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
-		{
-			return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
-		}
-
-		template<typename T>
-		inline bool operator!=(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
-		{
-			return !(q1 == q2);
-		}
-
-		template<typename T>
-		inline detail::Quaternion<T> operator-(const detail::Quaternion<T>& q) noexcept
-		{
-			return detail::Quaternion<T>(-q.x, -q.y, -q.z, -q.w);
-		}
-
-		template <typename T>
-		inline detail::Quaternion<T> min(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
-		{
-			return detail::Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
-		}
-
-		template <typename T>
-		inline detail::Quaternion<T> max(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
-		{
-			return detail::Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
-		}
-
-		template<typename T>
-		inline detail::Quaternion<T> operator+(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
-		{
-			return detail::Quaternion<T>(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-		}
-
-		template<typename T>
-		inline detail::Quaternion<T> operator/(const detail::Quaternion<T>& q, T f) noexcept
-		{
-			return detail::Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
-		}
-
-		template<typename T>
-		inline detail::Quaternion<T> operator/(T f, const detail::Quaternion<T>& q) noexcept
-		{
-			return detail::Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
-		}
-
-		template<typename ostream, typename T, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
-		inline ostream& operator << (ostream& os, const detail::Quaternion<T>& v)
-		{
-			os << v.x << ", " << v.y << ", " << v.z << ", " << v.w;
-			return os;
-		}
-
-		template<typename istream, typename T, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
-		inline istream& operator >> (istream& is, detail::Quaternion<T>& v)
-		{
-			is >> v.x;
-			is.ignore(2);
-			is >> v.y;
-			is.ignore(2);
-			is >> v.z;
-			is.ignore(2);
-			is >> v.w;
-			return is;
 		}
 
 		template<typename T>
@@ -426,6 +409,18 @@ namespace octoon
 			detail::Quaternion<T> qinv = inverse(q);
 			detail::Quaternion<T> q2 = cross(q, cross(q1, qinv));
 			return detail::Vector3<T>(q2.x, q2.y, q2.z);
+		}
+
+		template<typename T>
+		inline detail::Quaternion<T> min(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
+		{
+			return Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+		}
+
+		template<typename T>
+		inline  detail::Quaternion<T> max(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
+		{
+			return Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 		}
 	}
 }

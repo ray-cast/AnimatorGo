@@ -18,7 +18,7 @@ namespace octoon
 		}
 
 		bool
-		System::open(void* _window, float dpi) except
+		System::open(input::WindHandle _window, float dpi) except
 		{
 			assert(_window);
 			assert(!_initialize);
@@ -33,8 +33,8 @@ namespace octoon
 			_imguiDockPath = "../../";
 			_imguiDockPath += "ui/imgui_dock.layout";
 
-			/*GuiStyle style;
-			setStyle(style);*/
+			GuiStyle style;
+			setStyle(style);
 
 			ImGuiIO& io = ImGui::GetIO();
 			io.ImeWindowHandle = _window;

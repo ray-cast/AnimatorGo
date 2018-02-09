@@ -159,6 +159,180 @@ namespace octoon
 				const_pointer ptr() const noexcept { return (const_pointer)this; }
 				pointer data() noexcept { return (pointer)this; }
 				const_pointer data() const noexcept { return (const_pointer)this; }
+
+			public:
+				friend bool operator==(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+				}
+
+				friend bool operator!=(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return !(v1 == v2);
+				}
+
+				friend bool operator==(const T value, const Vector3<T>& v) noexcept
+				{
+					return v.x == value && v.y == value && v.z == value;
+				}
+
+				friend bool operator!=(const T value, const Vector3<T>& v) noexcept
+				{
+					return v.x != value && v.y != value && v.z != value;
+				}
+
+				friend bool operator==(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x == value && v.y == value && v.z == value;
+				}
+
+				friend bool operator!=(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x != value || v.y != value || v.z != value;
+				}
+
+				friend bool operator<(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return v1.x < v2.x && v1.y < v2.y && v1.z < v2.z;
+				}
+
+				friend bool operator>(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return v1.x > v2.x && v1.y > v2.y && v1.z > v2.z;
+				}
+
+				friend bool operator<=(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return v1.x <= v2.x && v1.y <= v2.y && v1.z <= v2.z;
+				}
+
+				friend bool operator>=(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return v1.x >= v2.x && v1.y >= v2.y && v1.z >= v2.z;
+				}
+
+				friend bool operator<(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x < value && v.y < value && v.z < value;
+				}
+
+				friend bool operator>(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x > value && v.y > value && v.z > value;
+				}
+
+				friend bool operator<=(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x <= value && v.y <= value && v.z <= value;
+				}
+
+				friend bool operator>=(const Vector3<T>& v, const T value) noexcept
+				{
+					return v.x >= value && v.y >= value && v.z >= value;
+				}
+
+				friend bool operator<(const T value, const Vector3<T>& v) noexcept
+				{
+					return value < v.x && value < v.y && value < v.z;
+				}
+
+				friend bool operator>(const T value, const Vector3<T>& v) noexcept
+				{
+					return value > v.x && value > v.y && value > v.z;
+				}
+
+				friend bool operator<=(const T value, const Vector3<T>& v) noexcept
+				{
+					return value <= v.x && value <= v.y && value <= v.z;
+				}
+
+				friend bool operator>=(const T value, const Vector3<T>& v) noexcept
+				{
+					return value >= v.x && value >= v.y && value >= v.z;
+				}
+
+				friend Vector3<T> operator-(const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>(-v.x, -v.y, -v.z);
+				}
+
+				friend Vector3<T> operator+(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return Vector3<T>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+				}
+
+				friend Vector3<T> operator-(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return Vector3<T>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+				}
+
+				friend Vector3<T> operator*(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return Vector3<T>(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+				}
+
+				friend Vector3<T> operator/(const Vector3<T>& v1, const Vector3<T>& v2) noexcept
+				{
+					return Vector3<T>(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
+				}
+
+				friend Vector3<T> operator+(const Vector3<T>& v, const T value) noexcept
+				{
+					return Vector3<T>((v.x + value), (v.y + value), (v.z + value));
+				}
+
+				friend Vector3<T> operator-(const Vector3<T>& v, const T value) noexcept
+				{
+					return Vector3<T>((v.x - value), (v.y - value), (v.z - value));
+				}
+
+				friend Vector3<T> operator*(const Vector3<T>& v, const T value) noexcept
+				{
+					return Vector3<T>((v.x * value), (v.y * value), (v.z * value));
+				}
+
+				friend Vector3<T> operator/(const Vector3<T>& v, const T value) noexcept
+				{
+					return Vector3<T>((v.x / value), (v.y / value), (v.z / value));
+				}
+
+				friend Vector3<T> operator+(const T value, const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>((value + v.x), (value + v.y), (value + v.z));
+				}
+
+				friend Vector3<T> operator-(const T value, const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>((value - v.x), (value - v.y), (value - v.z));
+				}
+
+				friend Vector3<T> operator*(const T value, const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>((value * v.x), (value * v.y), (value * v.z));
+				}
+
+				friend Vector3<T> operator/(const T value, const Vector3<T>& v) noexcept
+				{
+					return Vector3<T>((value / v.x), (value / v.y), (value / v.z));
+				}
+
+				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
+				friend ostream& operator << (ostream& os, const Vector3<T>& v)
+				{
+					os << v.x << ", " << v.y << ", " << v.z;
+					return os;
+				}
+
+				template<typename istream, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
+				friend istream& operator >> (istream& is, Vector3<T>& v)
+				{
+					is >> v.x;
+					is.ignore(2);
+					is >> v.y;
+					is.ignore(2);
+					is >> v.z;
+					return is;
+				}
 			};
 
 			template<typename T> const Vector3<T> Vector3<T>::Zero = Vector3<T>((T)0, (T)0, (T)0);
@@ -169,210 +343,6 @@ namespace octoon
 			template<typename T> const Vector3<T> Vector3<T>::Right = Vector3<T>((T)1, (T)0, (T)0);
 			template<typename T> const Vector3<T> Vector3<T>::Up = Vector3<T>((T)0, (T)1, (T)0);
 			template<typename T> const Vector3<T> Vector3<T>::Forward = Vector3<T>((T)0, (T)0, (T)1);
-		}
-
-		template<typename T>
-		inline bool operator==(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
-		}
-
-		template<typename T>
-		inline bool operator!=(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return !(v1 == v2);
-		}
-
-		template<typename T>
-		inline bool operator==(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return v.x == value && v.y == value && v.z == value;
-		}
-
-		template<typename T>
-		inline bool operator!=(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return v.x != value && v.y != value && v.z != value;
-		}
-
-		template<typename T>
-		inline bool operator==(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x == value && v.y == value && v.z == value;
-		}
-
-		template<typename T>
-		inline bool operator!=(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x != value || v.y != value || v.z != value;
-		}
-
-		template<typename T>
-		inline bool operator<(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return v1.x < v2.x && v1.y < v2.y && v1.z < v2.z;
-		}
-
-		template<typename T>
-		inline bool operator>(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return v1.x > v2.x && v1.y > v2.y && v1.z > v2.z;
-		}
-
-		template<typename T>
-		inline bool operator<=(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return v1.x <= v2.x && v1.y <= v2.y && v1.z <= v2.z;
-		}
-
-		template<typename T>
-		inline bool operator>=(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return v1.x >= v2.x && v1.y >= v2.y && v1.z >= v2.z;
-		}
-
-		template<typename T>
-		inline bool operator<(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x < value && v.y < value && v.z < value;
-		}
-
-		template<typename T>
-		inline bool operator>(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x > value && v.y > value && v.z > value;
-		}
-
-		template<typename T>
-		inline bool operator<=(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x <= value && v.y <= value && v.z <= value;
-		}
-
-		template<typename T>
-		inline bool operator>=(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return v.x >= value && v.y >= value && v.z >= value;
-		}
-
-		template<typename T>
-		inline bool operator<(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return value < v.x && value < v.y && value < v.z;
-		}
-
-		template<typename T>
-		inline bool operator>(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return value > v.x && value > v.y && value > v.z;
-		}
-
-		template<typename T>
-		inline bool operator<=(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return value <= v.x && value <= v.y && value <= v.z;
-		}
-
-		template<typename T>
-		inline bool operator>=(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return value >= v.x && value >= v.y && value >= v.z;
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator-(const detail::Vector3<T>& v) noexcept
-		{
-			return detail::Vector3<T>(-v.x, -v.y, -v.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator+(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return detail::Vector3<T>(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator-(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return detail::Vector3<T>(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return detail::Vector3<T>(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator/(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
-		{
-			return detail::Vector3<T>(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator+(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return detail::Vector3<T>((v.x + value), (v.y + value), (v.z + value));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator-(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return detail::Vector3<T>((v.x - value), (v.y - value), (v.z - value));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return detail::Vector3<T>((v.x * value), (v.y * value), (v.z * value));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator/(const detail::Vector3<T>& v, const T value) noexcept
-		{
-			return detail::Vector3<T>((v.x / value), (v.y / value), (v.z / value));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator+(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return detail::Vector3<T>((value + v.x), (value + v.y), (value + v.z));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator-(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return detail::Vector3<T>((value - v.x), (value - v.y), (value - v.z));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return detail::Vector3<T>((value * v.x), (value * v.y), (value * v.z));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator/(const T value, const detail::Vector3<T>& v) noexcept
-		{
-			return detail::Vector3<T>((value / v.x), (value / v.y), (value / v.z));
-		}
-
-		template<typename ostream, typename T, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
-		inline ostream& operator << (ostream& os, const detail::Vector3<T>& v)
-		{
-			os << v.x << ", " << v.y << ", " << v.z;
-			return os;
-		}
-
-		template<typename istream, typename T, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
-		inline istream& operator >> (istream& is, detail::Vector3<T>& v)
-		{
-			is >> v.x;
-			is.ignore(2);
-			is >> v.y;
-			is.ignore(2);
-			is >> v.z;
-			return is;
 		}
 
 		template<typename T>

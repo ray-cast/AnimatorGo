@@ -104,6 +104,89 @@ namespace octoon
 				const_pointer ptr() const noexcept { return (const_pointer)this; }
 				pointer data() noexcept { return (pointer)this; }
 				const_pointer data() const noexcept { return (const_pointer)this; }
+
+			public:
+
+				friend bool operator==(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return v1.x == v2.x && v1.y == v2.y;
+				}
+
+				friend bool operator!=(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return !(v1 == v2);
+				}
+
+				friend Vector2<T> operator-(const Vector2<T>& v) noexcept
+				{
+					return Vector2<T>(-v.x, -v.y);
+				}
+
+				friend Vector2<T> operator+(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return Vector2<T>(v1.x + v2.x, v1.y + v2.y);
+				}
+
+				friend Vector2<T> operator-(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return Vector2<T>(v1.x - v2.x, v1.y - v2.y);
+				}
+
+				friend Vector2<T> operator*(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return Vector2<T>(v1.x * v2.x, v1.y * v2.y);
+				}
+
+				friend Vector2<T> operator/(const Vector2<T>& v1, const Vector2<T>& v2) noexcept
+				{
+					return Vector2<T>(v1.x / v2.x, v1.y / v2.y);
+				}
+
+				friend Vector2<T> operator+(const Vector2<T>& v, T scale) noexcept
+				{
+					return Vector2<T>(v.x + scale, v.y + scale);
+				}
+
+				friend Vector2<T> operator-(const Vector2<T>& v, T scale) noexcept
+				{
+					return Vector2<T>(v.x - scale, v.y - scale);
+				}
+
+				friend Vector2<T> operator*(const Vector2<T>& v, T scale) noexcept
+				{
+					return Vector2<T>(v.x * scale, v.y * scale);
+				}
+
+				friend Vector2<T> operator/(const Vector2<T>& v, T scale) noexcept
+				{
+					return Vector2<T>(v.x / scale, v.y / scale);
+				}
+
+				friend Vector2<T> operator*(T scale, const Vector2<T>& v) noexcept
+				{
+					return Vector2<T>(scale * v.x, scale * v.y);
+				}
+
+				friend Vector2<T> operator/(T scale, const Vector2<T>& v) noexcept
+				{
+					return Vector2<T>(scale / v.x, scale / v.y);
+				}
+
+				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
+				friend ostream& operator << (ostream& os, const Vector2<T>& v)
+				{
+					os << v.x << ", " << v.y;
+					return os;
+				}
+
+				template<typename istream, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
+				friend istream& operator >> (istream& is, Vector2<T>& v)
+				{
+					is >> v.x;
+					is.ignore(2);
+					is >> v.y;
+					return is;
+				}
 			};
 
 			template<typename T> const Vector2<T> Vector2<T>::Zero = Vector2<T>((T)0, (T)0);
@@ -112,100 +195,6 @@ namespace octoon
 			template<typename T> const Vector2<T> Vector2<T>::UnitY = Vector2<T>((T)0, (T)1);
 			template<typename T> const Vector2<T> Vector2<T>::Right = Vector2<T>((T)1, (T)0);
 			template<typename T> const Vector2<T> Vector2<T>::Forward = Vector2<T>((T)0, (T)1);
-		}
-
-		template <typename T>
-		inline bool operator==(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return v1.x == v2.x && v1.y == v2.y;
-		}
-
-		template <typename T>
-		inline bool operator!=(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return !(v1 == v2);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator-(const detail::Vector2<T>& v) noexcept
-		{
-			return detail::Vector2<T>(-v.x, -v.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator+(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return detail::Vector2<T>(v1.x + v2.x, v1.y + v2.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator-(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return detail::Vector2<T>(v1.x - v2.x, v1.y - v2.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator*(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return detail::Vector2<T>(v1.x * v2.x, v1.y * v2.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator/(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return detail::Vector2<T>(v1.x / v2.x, v1.y / v2.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator+(const detail::Vector2<T>& v, T scale) noexcept
-		{
-			return detail::Vector2<T>(v.x + scale, v.y + scale);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator-(const detail::Vector2<T>& v, T scale) noexcept
-		{
-			return detail::Vector2<T>(v.x - scale, v.y - scale);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator*(const detail::Vector2<T>& v, T scale) noexcept
-		{
-			return detail::Vector2<T>(v.x * scale, v.y * scale);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator/(const detail::Vector2<T>& v, T scale) noexcept
-		{
-			return detail::Vector2<T>(v.x / scale, v.y / scale);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator*(T scale, const detail::Vector2<T>& v) noexcept
-		{
-			return detail::Vector2<T>(scale * v.x, scale * v.y);
-		}
-
-		template <typename T>
-		inline detail::Vector2<T> operator/(T scale, const detail::Vector2<T>& v) noexcept
-		{
-			return detail::Vector2<T>(scale / v.x, scale / v.y);
-		}
-
-		template<typename ostream, typename T, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
-		inline ostream& operator << (ostream& os, const detail::Vector2<T>& v)
-		{
-			os << v.x << ", " << v.y;
-			return os;
-		}
-
-		template<typename istream, typename T, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
-		inline istream& operator >> (istream& is, detail::Vector2<T>& v)
-		{
-			is >> v.x;
-			is.ignore(2);
-			is >> v.y;
-			return is;
 		}
 
 		template<typename T>

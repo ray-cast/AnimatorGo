@@ -6,8 +6,6 @@
 #include <imgui_internal.h>
 #include <imgui_user.h>
 
-using namespace octoon::math;
-
 namespace octoon
 {
 	namespace imgui
@@ -1630,7 +1628,7 @@ namespace octoon
 			draw_list->AddLine(ImVec2(p.x, p.y + crossHairSize), ImVec2(p.x, p.y + 2), ImColor(255, 255, 255));
 			draw_list->AddLine(ImVec2(p.x, p.y - crossHairSize), ImVec2(p.x, p.y - 2), ImColor(255, 255, 255));
 
- invisibleButton("saturation_value_selector", size);
+			invisibleButton("saturation_value_selector", size);
 
 			if (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])
 			{

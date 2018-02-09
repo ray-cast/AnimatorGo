@@ -10,7 +10,7 @@
 #endif
 
 #if defined(_BUILD_PLATFORM_WINDOWS) || defined(_BUILD_PLATFORM_LINUX) || defined(_BUILD_PLATFORM_APPLE)
-#	if defined(_BUILD_DLL_EXPORT)
+#	if defined(OCTOON_BUILD_DLL_EXPORT)
 #		define OCTOON_EXPORT
 #	else
 #		define OCTOON_EXPORT

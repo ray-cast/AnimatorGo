@@ -818,104 +818,95 @@ namespace octoon
 
 				pointer data() noexcept { return (pointer)&a1; }
 				const_pointer data() const noexcept { return (const_pointer)&a1; }
+
+			public:
+
+				friend bool operator==(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
+				{
+					return
+						m1.a1 == m2.a1 && m1.a2 == m2.a2 && m1.a3 == m2.a3 && m1.a4 == m2.a4 &&
+						m1.b1 == m2.b1 && m1.b2 == m2.b2 && m1.b3 == m2.b3 && m1.b4 == m2.b4 &&
+						m1.c1 == m2.c1 && m1.c2 == m2.c2 && m1.c3 == m2.c3 && m1.c4 == m2.c4 &&
+						m1.d1 == m2.d1 && m1.d2 == m2.d2 && m1.d3 == m2.d3 && m1.d4 == m2.c4;
+				}
+
+				friend bool operator!=(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
+				{
+					return
+						m1.a1 != m2.a1 || m1.a2 != m2.a2 || m1.a3 != m2.a3 || m1.a4 != m2.a4 ||
+						m1.b1 != m2.b1 || m1.b2 != m2.b2 || m1.b3 != m2.b3 || m1.b4 != m2.b4 ||
+						m1.c1 != m2.c1 || m1.c2 != m2.c2 || m1.c3 != m2.c3 || m1.c4 != m2.c4 ||
+						m1.d1 != m2.d1 || m1.d2 != m2.d2 || m1.d3 != m2.d3 || m1.d4 != m2.c4;
+				}
+
+				friend Matrix4x4<T> operator*(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
+				{
+					return Matrix4x4<T>(m1, m2);
+				}
+
+				friend Vector3<T> operator*(const Vector3<T>& v, const Matrix4x4<T>& m) noexcept
+				{
+					T d = 1.0f / (m.d1 * v.x + m.d2 * v.y + m.d3 * v.z + m.d4);
+					return Vector3<T>(
+						(v.x * m.a1 + v.y * m.a2 + v.z * m.a3 + m.a4) * d,
+						(v.x * m.b1 + v.y * m.b2 + v.z * m.b3 + m.b4) * d,
+						(v.x * m.c1 + v.y * m.c2 + v.z * m.c3 + m.c4) * d);
+				}
+
+				friend Vector3<T> operator*(const Matrix4x4<T>& m, const Vector3<T>& v) noexcept
+				{
+					T d = 1.0f / (m.a4 * v.x + m.b4 * v.y + m.c4 * v.z + m.d4);
+					return Vector3<T>(
+						(v.x * m.a1 + v.y * m.b1 + v.z * m.c1 + m.d1) * d,
+						(v.x * m.a2 + v.y * m.b2 + v.z * m.c2 + m.d2) * d,
+						(v.x * m.a3 + v.y * m.b3 + v.z * m.c3 + m.d3) * d);
+				}
+
+				friend Vector3<T>& operator*=(const Matrix4x4<T>& m, Vector3<T>& v) noexcept
+				{
+					v = m * v;
+					return v;
+				}
+
+				friend Vector3<T>& operator*=(Vector3<T>& v, const Matrix4x4<T>& m) noexcept
+				{
+					v = v * m;
+					return v;
+				}
+
+				friend Vector4<T> operator*(const Vector4<T>& v, const Matrix4x4<T>& m) noexcept
+				{
+					return Vector4<T>(
+						m.a1 * v.x + m.a2 * v.y + m.a3 * v.z + v.w * m.a4,
+						m.b1 * v.x + m.b2 * v.y + m.b3 * v.z + v.w * m.b4,
+						m.c1 * v.x + m.c2 * v.y + m.c3 * v.z + v.w * m.c4,
+						m.d1 * v.x + m.d2 * v.y + m.d3 * v.z + v.w * m.d4);
+				}
+
+				friend Vector4<T> operator*(const Matrix4x4<T>& m, const Vector4<T>& v) noexcept
+				{
+					return Vector4<T>(
+						m.a1 * v.x + m.b1 * v.y + m.c1 * v.z + m.d1 * v.w,
+						m.a2 * v.x + m.b2 * v.y + m.c2 * v.z + m.d2 * v.w,
+						m.a3 * v.x + m.b3 * v.y + m.c3 * v.z + m.d3 * v.w,
+						m.a4 * v.x + m.b4 * v.y + m.c4 * v.z + m.d4 * v.w);
+				}
+
+				friend Vector4<T>& operator*=(Vector4<T>& v, const Matrix4x4<T>& m) noexcept
+				{
+					v = v * m;
+					return v;
+				}
+
+				friend Matrix4x4<T>& operator*=(Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
+				{
+					m1.make_matrix(m1, m2);
+					return m1;
+				}
 			};
 
 			template<typename T> const Matrix4x4<T> Matrix4x4<T>::Zero(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			template<typename T> const Matrix4x4<T> Matrix4x4<T>::One(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-		}
-
-		template <typename T>
-		inline bool operator==(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2) noexcept
-		{
-			return
-				m1.a1 == m2.a1 && m1.a2 == m2.a2 && m1.a3 == m2.a3 && m1.a4 == m2.a4 &&
-				m1.b1 == m2.b1 && m1.b2 == m2.b2 && m1.b3 == m2.b3 && m1.b4 == m2.b4 &&
-				m1.c1 == m2.c1 && m1.c2 == m2.c2 && m1.c3 == m2.c3 && m1.c4 == m2.c4 &&
-				m1.d1 == m2.d1 && m1.d2 == m2.d2 && m1.d3 == m2.d3 && m1.d4 == m2.c4;
-		}
-
-		template <typename T>
-		inline bool operator!=(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2) noexcept
-		{
-			return
-				m1.a1 != m2.a1 || m1.a2 != m2.a2 || m1.a3 != m2.a3 || m1.a4 != m2.a4 ||
-				m1.b1 != m2.b1 || m1.b2 != m2.b2 || m1.b3 != m2.b3 || m1.b4 != m2.b4 ||
-				m1.c1 != m2.c1 || m1.c2 != m2.c2 || m1.c3 != m2.c3 || m1.c4 != m2.c4 ||
-				m1.d1 != m2.d1 || m1.d2 != m2.d2 || m1.d3 != m2.d3 || m1.d4 != m2.c4;
-		}
-
-		template<typename T>
-		inline detail::Matrix4x4<T> operator*(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2) noexcept
-		{
-			return detail::Matrix4x4<T>(m1, m2);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Vector3<T>& v, const detail::Matrix4x4<T>& m) noexcept
-		{
-			T d = 1.0f / (m.d1 * v.x + m.d2 * v.y + m.d3 * v.z + m.d4);
-			return detail::Vector3<T>(
-				(v.x * m.a1 + v.y * m.a2 + v.z * m.a3 + m.a4) * d,
-				(v.x * m.b1 + v.y * m.b2 + v.z * m.b3 + m.b4) * d,
-				(v.x * m.c1 + v.y * m.c2 + v.z * m.c3 + m.c4) * d);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> operator*(const detail::Matrix4x4<T>& m, const detail::Vector3<T>& v) noexcept
-		{
-			T d = 1.0f / (m.a4 * v.x + m.b4 * v.y + m.c4 * v.z + m.d4);
-			return detail::Vector3<T>(
-				(v.x * m.a1 + v.y * m.b1 + v.z * m.c1 + m.d1) * d,
-				(v.x * m.a2 + v.y * m.b2 + v.z * m.c2 + m.d2) * d,
-				(v.x * m.a3 + v.y * m.b3 + v.z * m.c3 + m.d3) * d);
-		}
-
-		template<typename T>
-		inline detail::Vector3<T>& operator*=(const detail::Matrix4x4<T>& m, detail::Vector3<T>& v) noexcept
-		{
-			v = m * v;
-			return v;
-		}
-
-		template<typename T>
-		inline detail::Vector3<T>& operator*=(detail::Vector3<T>& v, const detail::Matrix4x4<T>& m) noexcept
-		{
-			v = v * m;
-			return v;
-		}
-
-		template<typename T>
-		inline detail::Vector4<T> operator*(const detail::Vector4<T>& v, const detail::Matrix4x4<T>& m) noexcept
-		{
-			return detail::Vector4<T>(
-				m.a1 * v.x + m.a2 * v.y + m.a3 * v.z + v.w * m.a4,
-				m.b1 * v.x + m.b2 * v.y + m.b3 * v.z + v.w * m.b4,
-				m.c1 * v.x + m.c2 * v.y + m.c3 * v.z + v.w * m.c4,
-				m.d1 * v.x + m.d2 * v.y + m.d3 * v.z + v.w * m.d4);
-		}
-
-		template<typename T>
-		inline detail::Vector4<T> operator*(const detail::Matrix4x4<T>& m, const detail::Vector4<T>& v) noexcept
-		{
-			return detail::Vector4<T>(
-				m.a1 * v.x + m.b1 * v.y + m.c1 * v.z + m.d1 * v.w,
-				m.a2 * v.x + m.b2 * v.y + m.c2 * v.z + m.d2 * v.w,
-				m.a3 * v.x + m.b3 * v.y + m.c3 * v.z + m.d3 * v.w,
-				m.a4 * v.x + m.b4 * v.y + m.c4 * v.z + m.d4 * v.w);
-		}
-
-		template<typename T>
-		inline detail::Vector4<T>& operator*=(detail::Vector4<T>& v, const detail::Matrix4x4<T>& m) noexcept
-		{
-			v = v * m;
-			return v;
-		}
-
-		template<typename T>
-		inline detail::Matrix4x4<T>& operator*=(detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2) noexcept
-		{
-			m1.make_matrix(m1, m2);
-			return m1;
 		}
 
 		template<typename T>

@@ -66,17 +66,17 @@ if(MSVC)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-set(ZLIB_PC ${LIBRARY_OUTPUT_PATH}/zlib.pc)
+set(ZLIB_PC ${OCTOON_LIBRARY_OUTPUT_PATH}/zlib.pc)
 
 if(NOT EXISTS ${ZLIB_PC})
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zlib.pc.cmakein ${ZLIB_PC} @ONLY)
 endif()
 
-if(NOT EXISTS ${LIBRARY_OUTPUT_PATH}/zconf.h)
-    configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein ${LIBRARY_OUTPUT_PATH}/zconf.h @ONLY)
+if(NOT EXISTS ${OCTOON_LIBRARY_OUTPUT_PATH}/zconf.h)
+    configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein ${OCTOON_LIBRARY_OUTPUT_PATH}/zconf.h @ONLY)
 endif()
 
-include_directories(${LIBRARY_OUTPUT_PATH} ${CMAKE_SOURCE_DIR})
+include_directories(${OCTOON_LIBRARY_OUTPUT_PATH} ${CMAKE_SOURCE_DIR})
 
 
 #============================================================================
@@ -84,7 +84,7 @@ include_directories(${LIBRARY_OUTPUT_PATH} ${CMAKE_SOURCE_DIR})
 #============================================================================
 
 set(ZLIB_PUBLIC_HDRS
-    ${LIBRARY_OUTPUT_PATH}/zconf.h
+    ${OCTOON_LIBRARY_OUTPUT_PATH}/zconf.h
     zlib.h
 )
 set(ZLIB_PRIVATE_HDRS

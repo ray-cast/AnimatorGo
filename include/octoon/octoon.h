@@ -21,7 +21,7 @@
 #	else
 #		define OCTOON_CALL
 #	endif
-#elif defined(OCTOON_BUILD_PLATFORM_ANDROID)
+#elif defined(OCTOON_BUILD_PLATFORM_JAVA)
 #	include <jni.h>
 #	ifndef OCTOON_EXPORT
 #		define OCTOON_EXPORT JNIEXPORT

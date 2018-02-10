@@ -30,15 +30,9 @@ SET(INPUT_CORE_LIST
 	${HEADER_PATH}/input_button.h
 	${SOURCE_PATH}/input_controller.cpp
 	${HEADER_PATH}/input_controller.h
-	${HEADER_PATH}/input_device.h
-	${SOURCE_PATH}/input_device.cpp
 	${HEADER_PATH}/input_event.h
 	${SOURCE_PATH}/input_event.cpp
 	${HEADER_PATH}/input_key.h
-	${HEADER_PATH}/input_keyboard.h
-	${SOURCE_PATH}/input_keyboard.cpp
-	${SOURCE_PATH}/input_mouse.cpp
-	${HEADER_PATH}/input_mouse.h
 	${HEADER_PATH}/input.h
 	${SOURCE_PATH}/input.cpp
 	${HEADER_PATH}/input_types.h

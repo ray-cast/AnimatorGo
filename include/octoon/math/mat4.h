@@ -519,10 +519,10 @@ namespace octoon
 					T cz = 1.0f / (zFar - zNear);
 					T tz = zNear / (zNear - zFar);
 
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, cz, 0.0,
-						0.0, 0.0, tz, 1.0);
+					make_matrix(cx, 0.0, 0.0, 0.0,
+								0.0, cy, 0.0, 0.0,
+								0.0, 0.0, cz, 0.0,
+								0.0, 0.0, tz, 1.0);
 
 					return *this;
 				}
@@ -536,10 +536,10 @@ namespace octoon
 					T cy = 2.0f / (top - bottom);
 					T cz = 1.0f / (zFar - zNear);
 
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, cz, 0.0,
-						tx, ty, tz, 1.0);
+					make_matrix(cx, 0.0, 0.0, 0.0,
+								0.0, cy, 0.0, 0.0,
+								0.0, 0.0, cz, 0.0,
+								tx, ty, tz, 1.0);
 
 					return *this;
 				}
@@ -553,10 +553,10 @@ namespace octoon
 					T cy = 2.0f / (top - bottom);
 					T cz = -2.0f / (zFar - zNear);
 
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, cz, 0.0,
-						tx, ty, tz, 1.0);
+					make_matrix(cx, 0.0, 0.0, 0.0,
+								0.0, cy, 0.0, 0.0,
+								0.0, 0.0, cz, 0.0,
+								tx, ty, tz, 1.0);
 
 					return *this;
 				}
@@ -586,10 +586,10 @@ namespace octoon
 					T cx = 2.0f * zNear / (right - left);
 					T cy = 2.0f * zNear / (top - bottom);
 
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, C, 1.0,
-						A, B, D, 0.0);
+					make_matrix(cx, 0.0, 0.0, 0.0,
+								0.0, cy, 0.0, 0.0,
+								0.0, 0.0, C, 1.0,
+								A, B, D, 0.0);
 
 					return *this;
 				}
@@ -603,10 +603,10 @@ namespace octoon
 					T cx = 2.0f * zNear / (right - left);
 					T cy = 2.0f * zNear / (top - bottom);
 
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, C, -1.0,
-						A, B, D, 0.0);
+					make_matrix(cx, 0.0, 0.0, 0.0,
+								0.0, cy, 0.0, 0.0,
+								0.0, 0.0, C, -1.0,
+								A, B, D, 0.0);
 
 					return *this;
 				}
@@ -637,10 +637,10 @@ namespace octoon
 					const T w = h / aspect;
 					const T q = farPlane / (farPlane - nearPlane);
 
-					set(w, 0, 0, 0,
-						0, h, 0, 0,
-						0, 0, q, 1,
-						0, 0, -nearPlane * q, 0);
+					make_matrix(w, 0, 0, 0,
+								0, h, 0, 0,
+								0, 0, q, 1,
+								0, 0, -nearPlane * q, 0);
 
 					return *this;
 				}
@@ -651,10 +651,10 @@ namespace octoon
 					const T w = h / aspect;
 					const T q = farPlane / (farPlane - nearPlane);
 
-					set(w, 0, 0, 0,
-						0, h, 0, 0,
-						0, 0, q, -1,
-						0, 0, nearPlane * q, 0);
+					make_matrix(w, 0, 0, 0,
+								0, h, 0, 0,
+								0, 0, q, -1,
+								0, 0, nearPlane * q, 0);
 
 					return *this;
 				}

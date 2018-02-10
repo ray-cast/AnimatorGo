@@ -1,5 +1,5 @@
-#ifndef _H_IMGUI_SYSTEM_H_
-#define _H_IMGUI_SYSTEM_H_
+#ifndef OCTOON_IMGUI_SYSTEM_H_
+#define OCTOON_IMGUI_SYSTEM_H_
 
 #include <octoon/ui/imgui.h>
 #include <octoon/input/input.h>

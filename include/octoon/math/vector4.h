@@ -41,7 +41,7 @@ namespace octoon
 
 					struct
 					{
-						T left, right, bottom, top;
+						T left, top, width, height;
 					};
 				};
 

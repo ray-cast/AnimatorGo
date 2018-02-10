@@ -1,5 +1,5 @@
-#ifndef _H_IMGUI_H_
-#define _H_IMGUI_H_
+#ifndef OCTOON_IMGUI_H_
+#define OCTOON_IMGUI_H_
 
 #include <octoon/math/math.h>
 

@@ -1,5 +1,5 @@
-#ifndef OCTOON_INPUT_MOUSE_BASE_H_
-#define OCTOON_INPUT_MOUSE_BASE_H_
+#ifndef OCTOON_IINPUT_MOUSE_H_
+#define OCTOON_IINPUT_MOUSE_H_
 
 #include <octoon/input/input_controller.h>
 #include <octoon/input/input_button.h>
@@ -8,12 +8,12 @@ namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT InputMouse : public InputController
+		class OCTOON_EXPORT IInputMouse : public InputController
 		{
-			OctoonDeclareSubInterface(InputMouse, InputController)
+			OctoonDeclareSubInterface(IInputMouse, InputController)
 		public:
-			InputMouse() noexcept;
-			virtual ~InputMouse() noexcept;
+			IInputMouse() noexcept = default;
+			virtual ~IInputMouse() = default;
 
 			virtual void lockMouse() noexcept = 0;
 			virtual void unlockMouse() noexcept = 0;
@@ -35,8 +35,8 @@ namespace octoon
 			virtual InputMousePtr clone() const noexcept = 0;
 
 		private:
-			InputMouse(const InputMouse&) noexcept = delete;
-			InputMouse& operator=(const InputMouse&) noexcept = delete;
+			IInputMouse(const IInputMouse&) noexcept = delete;
+			IInputMouse& operator=(const IInputMouse&) noexcept = delete;
 		};
 	}
 }

@@ -3,14 +3,14 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(octoon)
 
 # 项目文件路径
-SET(OCTOON_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "a path to octoon" FORCE)
-SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "a path to output dir" FORCE)
-SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "a path to octoon dependencies" FORCE)
-SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "a path to octoon sample" FORCE)
-SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "a path to octoon tools" FORCE)
-SET(OCTOON_PATH_ITNCLUDE ${OCTOON_PATH}/include CACHE STRING "a path to octoon header" FORCE)
-SET(OCTOON_PATH_HEADER ${OCTOON_PATH_ITNCLUDE}/octoon CACHE STRING "a path to octoon header" FORCE)
-SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "a path to octoon source" FORCE)
+SET(OCTOON_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "Adds a path to octoon" FORCE)
+SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir" FORCE)
+SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to octoon dependencies" FORCE)
+SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon sample" FORCE)
+SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
+SET(OCTOON_PATH_ITNCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
+SET(OCTOON_PATH_HEADER ${OCTOON_PATH_ITNCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
+SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 
 # 编译选项
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)       
@@ -36,7 +36,7 @@ SET(OCTOON_BUILD_PLATFORM ${PLATFORM} CACHE STRING
 "Specify the platform. Possible values:
   1 - Apple
   2 - Linux
-  3 - Adnroid
+  3 - Android
   4 - Windows
   5 - Java"
 )
@@ -102,10 +102,10 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_EXTENSIONS OFF)
 
 # 设置编译文件后缀
-SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "adds a postfix for debug-built libraries.")
+SET(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Adds a postfix for release-built libraries.")
-SET(CMAKE_RELWITHDEBINFO_POSTFIX "_RelWithDebugInfo" CACHE STRING "adds a postfix for ReleaseWithDebug-built libraries.")
-SET(CMAKE_MINSIZEREL_POSTFIX "_MinsizeRel" CACHE STRING "adds a postfix for MinsizeRelease-built libraries.")
+SET(CMAKE_RELWITHDEBINFO_POSTFIX "_RelWithDebugInfo" CACHE STRING "Adds a postfix for ReleaseWithDebug-built libraries.")
+SET(CMAKE_MINSIZEREL_POSTFIX "_MinsizeRel" CACHE STRING "Adds a postfix for MinsizeRelease-built libraries.")
 
 # 指定库文件输出路径
 SET(OCTOON_LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib/binaries/${PLATFORM_NAME}${LIBRARY_OUT_NAME} CACHE STRING "build path" FORCE)

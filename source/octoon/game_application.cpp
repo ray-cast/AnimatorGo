@@ -6,9 +6,15 @@
 
 #include <iostream>
 
-#include <octoon/input_feature.h>
+#if OCTOON_FEATURE_INPUT_ENABLE
+#	include <octoon/input_feature.h>
+#endif
+
 #include <octoon/game_base_features.h>
-#include <octoon/gui_feature.h>
+
+#if OCTOON_FEATURE_UI_ENABLE
+#	include <octoon/gui_feature.h>
+#endif
 
 namespace octoon
 {
@@ -77,13 +83,23 @@ namespace octoon
 		if (!gameServer_->open())
 			return false;
 
+#if OCTOON_FEATURE_INPUT_ENABLE
 		inputFeature_ = std::make_shared<InputFeature>(hwnd);
+#endif
 		baseFeature_ = std::make_shared<GameBaseFeatures>();
-		guiFeature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h, dpi);
 
+#if OCTOON_FEATURE_UI_ENABLE
+		guiFeature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h, dpi);
+#endif
+
+#if OCTOON_FEATURE_INPUT_ENABLE
 		this->addFeatures(inputFeature_);
+#endif
 		this->addFeatures(baseFeature_);
+
+#if OCTOON_FEATURE_UI_ENABLE
 		this->addFeatures(guiFeature_);
+#endif
 
 		isInitialize_ = true;
 		return isInitialize_;

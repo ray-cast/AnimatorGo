@@ -1,7 +1,7 @@
 #ifndef OCTOON_INPUT_DEVICE_H_
 #define OCTOON_INPUT_DEVICE_H_
 
-#include <octoon/input/input_device_base.h>
+#include <octoon/input/iinput_device.h>
 
 #include <queue>
 #include <thread>
@@ -11,9 +11,9 @@ namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT DefaultInputDevice : public InputDevice
+		class OCTOON_EXPORT DefaultInputDevice : public IInputDevice
 		{
-			OctoonDeclareSubInterface(DefaultInputDevice, InputDevice)
+			OctoonDeclareSubInterface(DefaultInputDevice, IInputDevice)
 		public:
 			DefaultInputDevice() noexcept;
 			virtual ~DefaultInputDevice() noexcept;

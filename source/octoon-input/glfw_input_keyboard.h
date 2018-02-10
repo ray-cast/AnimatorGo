@@ -18,8 +18,15 @@ namespace octoon
 			virtual InputKeyboardPtr clone() const noexcept;
 
 		private:
+			void onInputEvent(const InputEvent& event) noexcept;
+
+		private:
 			GLFWInputKeyboard(const GLFWInputKeyboard&) noexcept = delete;
 			GLFWInputKeyboard& operator=(const GLFWInputKeyboard&) noexcept = delete;
+
+		private:
+			bool focusWindow_;
+			WindHandle window_;
 		};
 	}
 }

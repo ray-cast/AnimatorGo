@@ -1,15 +1,15 @@
 #ifndef OCTOON_INPUT_MOUSE_H_
 #define OCTOON_INPUT_MOUSE_H_
 
-#include <octoon/input/input_mouse_base.h>
+#include <octoon/input/iinput_mouse.h>
 
 namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT DefaultInputMouse : public InputMouse
+		class OCTOON_EXPORT DefaultInputMouse : public IInputMouse
 		{
-			OctoonDeclareSubClass(DefaultInputMouse, InputMouse)
+			OctoonDeclareSubClass(DefaultInputMouse, IInputMouse)
 		public:
 			DefaultInputMouse() noexcept;
 			virtual ~DefaultInputMouse() noexcept;

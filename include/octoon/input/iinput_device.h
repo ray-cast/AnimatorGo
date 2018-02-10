@@ -7,12 +7,12 @@ namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT InputDevice : public runtime::RttiInterface
+		class OCTOON_EXPORT IInputDevice : public runtime::RttiInterface
 		{
 			OctoonDeclareSubInterface(DefaultInputDevice, runtime::RttiInterface)
 		public:
-			InputDevice() noexcept;
-			virtual ~InputDevice() noexcept;
+			IInputDevice() noexcept = default;
+			virtual ~IInputDevice() = default;
 
 			virtual void setCaptureObject(WindHandle window) noexcept = 0;
 			virtual WindHandle getCaptureObject() const noexcept = 0;
@@ -38,8 +38,8 @@ namespace octoon
 			virtual InputDevicePtr clone() const noexcept = 0;
 
 		private:
-			InputDevice(const InputDevice&) noexcept = delete;
-			InputDevice& operator=(const InputDevice&) noexcept = delete;
+			IInputDevice(const IInputDevice&) noexcept = delete;
+			IInputDevice& operator=(const IInputDevice&) noexcept = delete;
 		};
 	}
 }

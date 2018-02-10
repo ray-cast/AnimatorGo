@@ -1,15 +1,15 @@
 #ifndef OCTOON_INPUT_KEYBOARD_H_
 #define OCTOON_INPUT_KEYBOARD_H_
 
-#include <octoon/input/input_keyboard_base.h>
+#include <octoon/input/iinput_keyboard.h>
 
 namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT DefaultInputKeyboard : public InputKeyboard
+		class OCTOON_EXPORT DefaultInputKeyboard : public IInputKeyboard
 		{
-			OctoonDeclareSubInterface(DefaultInputKeyboard, InputKeyboard)
+			OctoonDeclareSubInterface(DefaultInputKeyboard, IInputKeyboard)
 		public:
 			DefaultInputKeyboard() noexcept;
 			virtual ~DefaultInputKeyboard() noexcept;

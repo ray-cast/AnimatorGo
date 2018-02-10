@@ -148,7 +148,7 @@ octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
 	case GLFW_KEY_LEFT_CONTROL: return octoon::input::InputKey::Code::LeftControl;
 	case GLFW_KEY_LEFT_ALT: return octoon::input::InputKey::Code::LeftAlt;
 	case GLFW_KEY_LEFT_SUPER: return octoon::input::InputKey::Code::LeftSuper;
-	case GLFW_KEY_RIGHT_SHIFT: return octoon::input::InputKey::Code::LeftSuper;
+	case GLFW_KEY_RIGHT_SHIFT: return octoon::input::InputKey::Code::RightShift;
 	case GLFW_KEY_RIGHT_CONTROL: return octoon::input::InputKey::Code::RightControl;
 	case GLFW_KEY_RIGHT_ALT: return octoon::input::InputKey::Code::RightAlt;
 	case GLFW_KEY_RIGHT_SUPER: return octoon::input::InputKey::Code::RightSuper;

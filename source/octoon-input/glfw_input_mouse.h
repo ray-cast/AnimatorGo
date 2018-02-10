@@ -28,8 +28,8 @@ namespace octoon
 			GLFWInputMouse& operator=(const GLFWInputMouse&) = delete;
 
 		private:
-			bool _focusWindow;
-			std::uint64_t _window;
+			bool focusWindow_;
+			WindHandle window_;
 		};
 	}
 }

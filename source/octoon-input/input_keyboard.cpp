@@ -4,7 +4,7 @@ namespace octoon
 {
 	namespace input
 	{
-		OctoonImplementSubInterface(DefaultInputKeyboard, InputKeyboard, "DefaultInputKeyboard")
+		OctoonImplementSubInterface(DefaultInputKeyboard, IInputKeyboard, "DefaultInputKeyboard")
 
 		DefaultInputKeyboard::DefaultInputKeyboard() noexcept
 		{

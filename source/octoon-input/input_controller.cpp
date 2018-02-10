@@ -4,7 +4,7 @@ namespace octoon
 {
 	namespace input
 	{
-		OctoonImplementSubInterface(InputController, InputListener, "InputController")
+		OctoonImplementSubInterface(InputController, IInputListener, "InputController")
 
 		InputController::InputController() noexcept
 			:capture_(true)

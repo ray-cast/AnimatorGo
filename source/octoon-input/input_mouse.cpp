@@ -4,7 +4,7 @@ namespace octoon
 {
 	namespace input
 	{
-		OctoonImplementSubInterface(DefaultInputMouse, InputMouse, "DefaultInputMouse")
+		OctoonImplementSubInterface(DefaultInputMouse, IInputMouse, "DefaultInputMouse")
 
 		DefaultInputMouse::DefaultInputMouse() noexcept
 			: mouseX_(0)

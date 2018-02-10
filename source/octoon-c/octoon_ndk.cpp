@@ -177,7 +177,7 @@ void android_main(android_app* app)
 	android_app_->onAppCmd = &onAppCmd;
 	android_app_->onInputEvent = &onInputEvent;
 
-	ray_main(0, 0);
+	octoon_main(0, 0);
 }
 
 #endif

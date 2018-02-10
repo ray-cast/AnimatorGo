@@ -7,12 +7,12 @@ namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT InputListener : public runtime::RttiInterface
+		class OCTOON_EXPORT IInputListener : public runtime::RttiInterface
 		{
-			OctoonDeclareSubInterface(InputListener, runtime::RttiInterface)
+			OctoonDeclareSubInterface(IInputListener, runtime::RttiInterface)
 		public:
-			InputListener() noexcept;
-			virtual ~InputListener() noexcept;
+			IInputListener() noexcept;
+			virtual ~IInputListener() noexcept;
 
 			virtual void onAttach() noexcept;
 			virtual void onDetach() noexcept;
@@ -20,13 +20,13 @@ namespace octoon
 			virtual void onInputEvent(const InputEvent& event) except = 0;
 
 		private:
-			InputListener(const InputListener&) noexcept = delete;
-			InputListener& operator=(const InputListener&)noexcept = delete;
+			IInputListener(const IInputListener&) noexcept = delete;
+			IInputListener& operator=(const IInputListener&)noexcept = delete;
 		};
 
-		class OCTOON_EXPORT InputController : public InputListener
+		class OCTOON_EXPORT InputController : public IInputListener
 		{
-			OctoonDeclareSubInterface(InputController, InputListener)
+			OctoonDeclareSubInterface(InputController, IInputListener)
 		public:
 			InputController() noexcept;
 			virtual ~InputController() noexcept;

@@ -1,20 +1,20 @@
 #ifndef OCTOON_INPUT_BASE_H_
 #define OCTOON_INPUT_BASE_H_
 
-#include <octoon/input/input_device_base.h>
-#include <octoon/input/input_keyboard_base.h>
-#include <octoon/input/input_mouse_base.h>
+#include <octoon/input/iinput_device.h>
+#include <octoon/input/iinput_keyboard.h>
+#include <octoon/input/iinput_mouse.h>
 
 namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT Input : public runtime::RttiInterface
+		class OCTOON_EXPORT IInput : public runtime::RttiInterface
 		{
-			OctoonDeclareSubInterface(Input, runtime::RttiInterface)
+			OctoonDeclareSubInterface(IInput, runtime::RttiInterface)
 		public:
-			Input() = default;
-			virtual ~Input() = default;
+			IInput() = default;
+			virtual ~IInput() = default;
 
 			virtual bool open() noexcept = 0;
 			virtual bool open(InputDevicePtr& device) noexcept = 0;
@@ -74,8 +74,8 @@ namespace octoon
 			virtual InputPtr clone() const noexcept = 0;
 
 		private:
-			Input(const Input&) noexcept = delete;
-			Input& operator=(const Input&) noexcept = delete;
+			IInput(const IInput&) noexcept = delete;
+			IInput& operator=(const IInput&) noexcept = delete;
 		};
 	}
 }

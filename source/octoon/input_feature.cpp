@@ -26,7 +26,7 @@ namespace octoon
 		return _event;
 	}
 
-	class InputEventListener : public input::InputListener
+	class InputEventListener : public input::IInputListener
 	{
 	public:
 		InputEventListener(InputFeature& input)

@@ -1,15 +1,15 @@
 #ifndef OCTOON_INPUT_H_
 #define OCTOON_INPUT_H_
 
-#include <octoon/input/input_base.h>
+#include <octoon/input/iinput.h>
 
 namespace octoon
 {
 	namespace input
 	{
-		class OCTOON_EXPORT DefaultInput final : public Input
+		class OCTOON_EXPORT DefaultInput final : public IInput
 		{
-			OctoonDeclareSubClass(DefaultInput, Input)
+			OctoonDeclareSubClass(DefaultInput, IInput)
 		public:
 			DefaultInput() noexcept;
 			~DefaultInput() noexcept;

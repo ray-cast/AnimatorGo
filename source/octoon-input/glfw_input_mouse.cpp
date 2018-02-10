@@ -6,7 +6,8 @@ namespace octoon
 	namespace input
 	{
 		GLFWInputMouse::GLFWInputMouse() noexcept
-			: _window(window)
+			: focusWindow_(false)
+			, window_(nullptr)
 		{
 		}
 
@@ -17,28 +18,22 @@ namespace octoon
 		void
 		GLFWInputMouse::onShowMouse() noexcept
 		{
-			if (_focusWindow)
-			{
-			   ::glfwSetInputMode((GLFWwindow*)_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			}
+			if (focusWindow_ && window_)
+			   ::glfwSetInputMode((GLFWwindow*)window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 
 		void
 		GLFWInputMouse::onHideMouse() noexcept
 		{
-			if (_focusWindow)
-			{
-			   ::glfwSetInputMode((GLFWwindow*)_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-			}
+			if (focusWindow_ && window_)
+			   ::glfwSetInputMode((GLFWwindow*)window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		}
 
 		void
 		GLFWInputMouse::onChangePosition(int x, int y) noexcept
 		{
-			if (_focusWindow)
-			{
-			   ::glfwSetCursorPos((GLFWwindow*)_window, x, y);
-			}
+			if (focusWindow_ && window_)
+			   ::glfwSetCursorPos((GLFWwindow*)window_, x, y);
 		}
 
 		void
@@ -50,14 +45,14 @@ namespace octoon
 			{
 			case InputEvent::GetFocus:
 			{
-				_window = event.window.windowID;
-				_focusWindow = true;
+				window_ = (GLFWwindow*)event.window.windowID;
+				focusWindow_ = true;
 			}
 			break;
 			case InputEvent::LostFocus:
 			{
-				_window = event.window.windowID;
-				_focusWindow = false;
+				window_ = (GLFWwindow*)event.window.windowID;
+				focusWindow_ = false;
 			}
 			break;
 			default:
@@ -68,7 +63,7 @@ namespace octoon
 		InputMousePtr
 		GLFWInputMouse::clone() const noexcept
 		{
-			return std::make_shared<GLFWInputMouse>(_window);
+			return std::make_shared<GLFWInputMouse>();
 		}
 	}
 }

@@ -1,9 +1,14 @@
 #include <octoon/input/input.h>
+#include <octoon/input/input_device.h>
 
-#if defined(_BUILD_PLATFORM_WINDOWS)
+#if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 #	include "msw_input_device.h"
 #	include "msw_input_keyboard.h"
 #	include "msw_input_mouse.h"
+#elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
+#	include "glfw_input_device.h"
+#	include "glfw_input_keyboard.h"
+#	include "glfw_input_mouse.h"
 #else
 #	include <octoon/input/input_device.h>
 #	include <octoon/input/input_keyboard.h>
@@ -14,7 +19,7 @@ namespace octoon
 {
 	namespace input
 	{
-		OctoonImplementSubClass(DefaultInput, Input, "DefaultInput")
+		OctoonImplementSubClass(DefaultInput, IInput, "DefaultInput")
 
 		DefaultInput::DefaultInput() noexcept
 		{
@@ -28,11 +33,19 @@ namespace octoon
 		bool
 		DefaultInput::open() noexcept
 		{
+#if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
+			_inputDevice = std::make_shared<MSWInputDevice>();
+
+			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
+#elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
+			_inputDevice = std::make_shared<GLFWInputDevice>();
+
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
+#else
 			_inputDevice = std::make_shared<DefaultInputDevice>();
-#if defined(_BUILD_PLATFORM_WINDOWS)
-			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
-			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
-#else
+
 			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
 			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
@@ -40,13 +53,21 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::open(InputDevicePtr& device) noexcept
+		DefaultInput::open(InputDevicePtr& device) noexcept
 		{
+#if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
+			_inputDevice = device ? device : std::make_shared<MSWInputDevice>();
+
+			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
+#elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
+			_inputDevice = device ? device : std::make_shared<GLFWInputDevice>();
+
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
+#else
 			_inputDevice = device ? device : std::make_shared<DefaultInputDevice>();
-#if defined(_BUILD_PLATFORM_WINDOWS)
-			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
-			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
-#else
+
 			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
 			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
@@ -54,13 +75,21 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::open(InputDevicePtr&& device) noexcept
+		DefaultInput::open(InputDevicePtr&& device) noexcept
 		{
-			_inputDevice = device ? std::move(device) : std::make_shared<DefaultInputDevice>();
-#if defined(_BUILD_PLATFORM_WINDOWS)
+#if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
+			_inputDevice = device ? std::move(device) : std::make_shared<MSWInputDevice>();
+
 			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
 			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
+#elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
+			_inputDevice = device ? std::move(device) : std::make_shared<GLFWInputDevice>();
+
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
 #else
+			_inputDevice = device ? std::move(device) : std::make_shared<DefaultInputDevice>();
+
 			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
 			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
@@ -68,7 +97,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::close() noexcept
+		DefaultInput::close() noexcept
 		{
 			if (_inputDevice)
 			{
@@ -92,14 +121,14 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::setCaptureObject(WindHandle window) noexcept
+		DefaultInput::setCaptureObject(WindHandle window) noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->setCaptureObject(window);
 		}
 
 		WindHandle
-			DefaultInput::getCaptureObject() const noexcept
+		DefaultInput::getCaptureObject() const noexcept
 		{
 			if (_inputDevice)
 				return _inputDevice->getCaptureObject();
@@ -107,7 +136,7 @@ namespace octoon
 		}
 
 		float
-			DefaultInput::getAxis(InputAxis::Code axis) const noexcept
+		DefaultInput::getAxis(InputAxis::Code axis) const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->getAxis(axis);
@@ -115,21 +144,21 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::setMousePos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		DefaultInput::setMousePos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
 		{
 			if (_mouseCaptureDevice)
 				_mouseCaptureDevice->setPosition(x, y);
 		}
 
 		void
-			DefaultInput::getMousePos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
+		DefaultInput::getMousePos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
 		{
 			if (_mouseCaptureDevice)
 				_mouseCaptureDevice->getPosition(x, y);
 		}
 
 		bool
-			DefaultInput::isKeyDown(InputKey::Code key) const noexcept
+		DefaultInput::isKeyDown(InputKey::Code key) const noexcept
 		{
 			if (_keyboardCaptureDevice)
 				return _keyboardCaptureDevice->isKeyDown(key);
@@ -138,7 +167,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isKeyUp(InputKey::Code key) const noexcept
+		DefaultInput::isKeyUp(InputKey::Code key) const noexcept
 		{
 			if (_keyboardCaptureDevice)
 				return _keyboardCaptureDevice->isKeyUp(key);
@@ -147,7 +176,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isKeyPressed(InputKey::Code key) const noexcept
+		DefaultInput::isKeyPressed(InputKey::Code key) const noexcept
 		{
 			if (_keyboardCaptureDevice)
 				return _keyboardCaptureDevice->isKeyPressed(key);
@@ -156,7 +185,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isButtonDown(InputButton::Code key) const noexcept
+		DefaultInput::isButtonDown(InputButton::Code key) const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->isButtonDown(key);
@@ -165,7 +194,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isButtonUp(InputButton::Code key) const noexcept
+		DefaultInput::isButtonUp(InputButton::Code key) const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->isButtonUp(key);
@@ -174,7 +203,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isButtonPressed(InputButton::Code key) const noexcept
+		DefaultInput::isButtonPressed(InputButton::Code key) const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->isButtonPressed(key);
@@ -183,7 +212,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::showCursor(bool show) noexcept
+		DefaultInput::showCursor(bool show) noexcept
 		{
 			if (_mouseCaptureDevice)
 			{
@@ -195,7 +224,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isShowCursor() const noexcept
+		DefaultInput::isShowCursor() const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->isShowMouse();
@@ -203,7 +232,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::lockCursor(bool lock) noexcept
+		DefaultInput::lockCursor(bool lock) noexcept
 		{
 			if (_mouseCaptureDevice)
 			{
@@ -215,7 +244,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::isLockedCursor() const noexcept
+		DefaultInput::isLockedCursor() const noexcept
 		{
 			if (_mouseCaptureDevice)
 				return _mouseCaptureDevice->isLockedMouse();
@@ -223,21 +252,21 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::obtainMouseCapture() noexcept
+		DefaultInput::obtainMouseCapture() noexcept
 		{
 			if (_mouseCaptureDevice && !_mouseCaptureDevice->capture())
 				_mouseCaptureDevice->obtainCapture();
 		}
 
 		void
-			DefaultInput::obtainKeyboardCapture() noexcept
+		DefaultInput::obtainKeyboardCapture() noexcept
 		{
 			if (_keyboardCaptureDevice && !_keyboardCaptureDevice->capture())
 				_keyboardCaptureDevice->obtainCapture();
 		}
 
 		void
-			DefaultInput::obtainMouseCapture(InputMousePtr& mouse) noexcept
+		DefaultInput::obtainMouseCapture(InputMousePtr& mouse) noexcept
 		{
 			if (_mouseCaptureDevice != mouse)
 			{
@@ -262,7 +291,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::obtainMouseCapture(InputMousePtr&& mouse) noexcept
+		DefaultInput::obtainMouseCapture(InputMousePtr&& mouse) noexcept
 		{
 			if (_mouseCaptureDevice != mouse)
 			{
@@ -287,7 +316,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::obtainKeyboardCapture(InputKeyboardPtr& keyboard) noexcept
+		DefaultInput::obtainKeyboardCapture(InputKeyboardPtr& keyboard) noexcept
 		{
 			if (_keyboardCaptureDevice != keyboard)
 			{
@@ -312,7 +341,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::obtainKeyboardCapture(InputKeyboardPtr&& keyboard) noexcept
+		DefaultInput::obtainKeyboardCapture(InputKeyboardPtr&& keyboard) noexcept
 		{
 			if (_keyboardCaptureDevice != keyboard)
 			{
@@ -337,35 +366,35 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::obtainCapture() noexcept
+		DefaultInput::obtainCapture() noexcept
 		{
 			this->obtainMouseCapture();
 			this->obtainKeyboardCapture();
 		}
 
 		void
-			DefaultInput::releaseMouseCapture() noexcept
+		DefaultInput::releaseMouseCapture() noexcept
 		{
 			if (_mouseCaptureDevice && _mouseCaptureDevice->capture())
 				_mouseCaptureDevice->releaseCapture();
 		}
 
 		void
-			DefaultInput::releaseKeyboardCapture() noexcept
+		DefaultInput::releaseKeyboardCapture() noexcept
 		{
 			if (_keyboardCaptureDevice && _keyboardCaptureDevice->capture())
 				_keyboardCaptureDevice->releaseCapture();
 		}
 
 		void
-			DefaultInput::releaseCapture() noexcept
+		DefaultInput::releaseCapture() noexcept
 		{
 			this->releaseMouseCapture();
 			this->releaseKeyboardCapture();
 		}
 
 		void
-			DefaultInput::reset() noexcept
+		DefaultInput::reset() noexcept
 		{
 			if (_mouseCaptureDevice)
 				_mouseCaptureDevice->onReset();
@@ -375,42 +404,42 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::addInputListener(InputListenerPtr& listener) noexcept
+		DefaultInput::addInputListener(InputListenerPtr& listener) noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->addInputListener(listener);
 		}
 
 		void
-			DefaultInput::addInputListener(InputListenerPtr&& listener) noexcept
+		DefaultInput::addInputListener(InputListenerPtr&& listener) noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->addInputListener(std::move(listener));
 		}
 
 		void
-			DefaultInput::removeInputListener(InputListenerPtr& listener) noexcept
+		DefaultInput::removeInputListener(InputListenerPtr& listener) noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->removeInputListener(listener);
 		}
 
 		void
-			DefaultInput::removeInputListener(InputListenerPtr&& listener) noexcept
+		DefaultInput::removeInputListener(InputListenerPtr&& listener) noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->removeInputListener(std::move(listener));
 		}
 
 		void
-			DefaultInput::clearInputListener() noexcept
+		DefaultInput::clearInputListener() noexcept
 		{
 			if (_inputDevice)
 				_inputDevice->clearInputListener();
 		}
 
 		bool
-			DefaultInput::sendInputEvent(const InputEvent& event) noexcept
+		DefaultInput::sendInputEvent(const InputEvent& event) noexcept
 		{
 			if (_inputDevice)
 				return _inputDevice->sendEvent(event);
@@ -418,7 +447,7 @@ namespace octoon
 		}
 
 		bool
-			DefaultInput::postInputEvent(const InputEvent& event) noexcept
+		DefaultInput::postInputEvent(const InputEvent& event) noexcept
 		{
 			if (_inputDevice)
 				return _inputDevice->postEvent(event);
@@ -426,7 +455,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::updateBegin() noexcept
+		DefaultInput::updateBegin() noexcept
 		{
 			if (_mouseCaptureDevice)
 				_mouseCaptureDevice->onFrameBegin();
@@ -436,7 +465,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::update() noexcept
+		DefaultInput::update() noexcept
 		{
 			if (!_inputDevice)
 				return;
@@ -449,7 +478,7 @@ namespace octoon
 		}
 
 		void
-			DefaultInput::updateEnd() noexcept
+		DefaultInput::updateEnd() noexcept
 		{
 			if (_mouseCaptureDevice && _mouseCaptureDevice->capture())
 				_mouseCaptureDevice->onFrameEnd();
@@ -459,7 +488,7 @@ namespace octoon
 		}
 
 		InputPtr
-			DefaultInput::clone() const noexcept
+		DefaultInput::clone() const noexcept
 		{
 			auto input = std::make_shared<DefaultInput>();
 			if (_inputDevice)

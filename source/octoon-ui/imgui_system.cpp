@@ -3,10 +3,37 @@
 #include <imgui.h>
 #include <imgui_dock.h>
 
+using namespace octoon::graphics;
+
 namespace octoon
 {
 	namespace imgui
 	{
+		const char* vert ="\
+		uniform float4x4 proj;\
+		void main(\
+			in float4 Position : POSITION0,\
+			in float4 Diffuse : COLOR0,\
+			in float4 Texcoord : TEXCOORD0,\
+			out float4 oDiffuse : TEXCOORD0,\
+			out float4 oTexcoord : TEXCOORD1,\
+			out float4 oPosition : SV_Position)\
+		{\
+			oDiffuse = Diffuse;\
+			oTexcoord = Texcoord;\
+			oPosition = mul(proj, float4(Position.xy, 0, 1));\
+		}";
+
+		const char* frag = "\
+		uniform texture2D decal;\
+		SamplerState LinearClamp {Filter = MIN_MAG_MIP_POINT; AddressU = CLAMP; AddressV = CLAMP;};\
+		float4 main(\
+			in float4 diffuse : TEXCOORD0,\
+			in float4 texcoord : TEXCOORD1) : SV_Target\
+		{\
+			return decal.Sample(LinearClamp, texcoord.xy) * diffuse;\
+		}";
+
 		System::System() noexcept
 			: initialize_(false)
 			, window_(nullptr)
@@ -55,49 +82,87 @@ namespace octoon
 			io.KeyMap[ImGuiKey_Y] = input::InputKey::Y;
 			io.KeyMap[ImGuiKey_Z] = input::InputKey::Z;
 
-			graphics::GraphicsDeviceDesc deviceDesc;
-			deviceDesc.setDeviceType(graphics::GraphicsDeviceType::GraphicsDeviceTypeOpenGL);
-			device_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
+			GraphicsDeviceDesc deviceDesc;
+			deviceDesc.setDeviceType(GraphicsDeviceType::OpenGL);
+			device_ = GraphicsSystem::instance()->createDevice(deviceDesc);
 			if (!device_)
 				return false;
 
-			graphics::GraphicsSwapchainDesc swapchainDesc;
+			GraphicsSwapchainDesc swapchainDesc;
 			swapchainDesc.setWindHandle(window);
 			swapchainDesc.setWidth(1);
 			swapchainDesc.setHeight(1);
-			swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::GraphicsSwapIntervalVsync);
+			swapchainDesc.setSwapInterval(GraphicsSwapInterval::Vsync);
 			swapchainDesc.setImageNums(2);
-			swapchainDesc.setColorFormat(graphics::GraphicsFormat::GraphicsFormatB8G8R8A8UNorm);
-			swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::GraphicsFormatD24UNorm_S8UInt);
+			swapchainDesc.setColorFormat(GraphicsFormat::B8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(GraphicsFormat::D24UNorm_S8UInt);
 			swapchain_ = device_->createSwapchain(swapchainDesc);
 			if (!swapchain_)
 				return false;
 
-			graphics::GraphicsContextDesc contextDesc;
+			GraphicsContextDesc contextDesc;
 			contextDesc.setSwapchain(swapchain_);
 			context_ = device_->createDeviceContext(contextDesc);
 			if (!context_)
 				return false;
 
-			graphics::GraphicsDataDesc dataDesc;
-			dataDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
-			dataDesc.setStream(0);
+			GraphicsDataDesc dataDesc;
+			dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
 			dataDesc.setStreamSize(0xFFF * sizeof(ImDrawVert));
-			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
+			dataDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
 
 			vbo_ = device_->createGraphicsData(dataDesc);
 			if (!vbo_)
 				return false;
 
-			graphics::GraphicsDataDesc elementDesc;
-			elementDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
-			elementDesc.setStream(0);
+			GraphicsDataDesc elementDesc;
+			elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
 			elementDesc.setStreamSize(0xFFF * sizeof(ImDrawIdx));
-			elementDesc.setUsage(graphics::GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
+			elementDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
 
 			ibo_ = device_->createGraphicsData(elementDesc);
 			if (!ibo_)
 				return false;
+
+			GraphicsProgramDesc programDesc;
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageVertexBit, vert)));
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFragmentBit, frag)));
+			auto program = device_->createProgram(programDesc);
+
+			GraphicsInputLayoutDesc layoutDesc;
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32B32SFloat, 0));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(1, "COLOR", 0, GraphicsFormat::R8G8B8A8UNorm, 0));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(2, "TEXCOORD", 0, GraphicsFormat::R32G32SFloat, 0));
+
+			GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
+			descriptor_set_layout.setUniformComponents(program->getActiveParams());
+
+			GraphicsColorBlend blend;
+			blend.setBlendSrc(GraphicsBlendFactor::SrcAlpha);
+			blend.setBlendDest(GraphicsBlendFactor::OneMinusSrcAlpha);
+
+			std::vector<GraphicsColorBlend> blends;
+			blends.push_back(blend);
+
+			GraphicsStateDesc stateDesc;
+			stateDesc.setColorBlends(std::move(blends));
+			stateDesc.setScissorTestEnable(false);
+			stateDesc.setPrimitiveType(GraphicsVertexType::TriangleList);
+
+			GraphicsPipelineDesc pipeline;
+			pipeline.setGraphicsInputLayout(device_->createInputLayout(layoutDesc));
+			pipeline.setGraphicsState(device_->createRenderState(stateDesc));
+			pipeline.setGraphicsProgram(std::move(program));
+			pipeline.setGraphicsDescriptorSetLayout(device_->createDescriptorSetLayout(descriptor_set_layout));
+
+			pipeline_ = device_->createRenderPipeline(pipeline);
+			if (!pipeline_)
+				return false;
+
+			GraphicsDescriptorSetDesc descriptor_set;
+			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+
+			descriptor_set_ = device_->createDescriptorSet(descriptor_set);
 
 			initialize_ = true;
 			return true;
@@ -242,7 +307,7 @@ namespace octoon
 			math::float4x4 project;
 			project.make_ortho_lh(0, w, h, 0, 0, 1);
 
-			// _materialProj->uniform4fmat(project);
+			descriptor_set_->getGraphicsUniformSets()[1]->uniform4fmat(project);
 		}
 
 		void
@@ -271,15 +336,15 @@ namespace octoon
 			io.Fonts->AddFontFromFileTTF(path, font_size, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-			graphics::GraphicsTextureDesc fontDesc;
+			GraphicsTextureDesc fontDesc;
 			fontDesc.setSize(width, height);
-			fontDesc.setTexDim(graphics::GraphicsTextureDim::GraphicsTextureDim2D);
-			fontDesc.setTexFormat(graphics::GraphicsFormat::GraphicsFormatR8G8B8A8UNorm);
+			fontDesc.setTexDim(GraphicsTextureDim::Texture2D);
+			fontDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
 			fontDesc.setStream(pixels);
 			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
-			fontDesc.setTexTiling(graphics::GraphicsImageTiling::GraphicsImageTilingLinear);
-			fontDesc.setSamplerFilter(graphics::GraphicsSamplerFilter::GraphicsSamplerFilterLinearMipmapLinear, graphics::GraphicsSamplerFilter::GraphicsSamplerFilterLinear);
-			fontDesc.setSamplerWrap(graphics::GraphicsSamplerWrap::GraphicsSamplerWrapClampToEdge);
+			fontDesc.setTexTiling(GraphicsImageTiling::Linear);
+			fontDesc.setSamplerFilter(GraphicsSamplerFilter::LinearMipmapLinear, GraphicsSamplerFilter::Linear);
+			fontDesc.setSamplerWrap(GraphicsSamplerWrap::ClampToEdge);
 
 			texture_ = device_->createTexture(fontDesc);
 			if (!texture_)
@@ -293,6 +358,8 @@ namespace octoon
 		void
 		System::render() noexcept
 		{
+			assert(vbo_ && ibo_);
+
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)
 				return;
@@ -302,10 +369,10 @@ namespace octoon
 			if (totalVertexSize == 0 || totalIndirectSize == 0)
 				return;
 
-			if (!vbo_ || vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
+			if (vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
 			{
-				graphics::GraphicsDataDesc dataDesc;
-				dataDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
+				GraphicsDataDesc dataDesc;
+				dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
 				dataDesc.setStream(0);
 				dataDesc.setStreamSize(totalVertexSize);
 				dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
@@ -315,10 +382,10 @@ namespace octoon
 				return;
 			}
 
-			if (!ibo_ || ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
+			if (ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
 			{
-				graphics::GraphicsDataDesc elementDesc;
-				elementDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
+				GraphicsDataDesc elementDesc;
+				elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
 				elementDesc.setStream(0);
 				elementDesc.setStreamSize(totalIndirectSize);
 				elementDesc.setUsage(ibo_->getGraphicsDataDesc().getUsage());
@@ -353,40 +420,42 @@ namespace octoon
 
 			context_->renderBegin();
 
-			context_->clearFramebuffer(0, graphics::GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3), 1, 0);
-			context_->setViewport(0, graphics::Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context_->setScissor(0, graphics::Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context_->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context_->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+
+			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4::One, 1, 0);
 
 			context_->setVertexBufferData(0, vbo_, 0);
-			context_->setIndexBufferData(ibo_, 0, graphics::GraphicsIndexType::GraphicsIndexTypeUInt16);
+			context_->setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
 
 			std::uint32_t vdx_buffer_offset = 0;
 			std::uint32_t idx_buffer_offset = 0;
 
-			/*for (int n = 0; n < drawData->CmdListsCount; n++)
+			for (int n = 0; n < drawData->CmdListsCount; n++)
 			{
 				const ImDrawList* cmd_list = drawData->CmdLists[n];
 
 				for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
 				{
-					auto texture = (graphics::GraphicsTexture*)pcmd->TextureId;
+					auto texture = (GraphicsTexture*)pcmd->TextureId;
 					if (texture)
-						_materialDecal->uniformTexture(texture->downcast_pointer<graphics::GraphicsTexture>());
+						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
 					else
-						_materialDecal->uniformTexture(nullptr);
+						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(nullptr);
 
 					ImVec4 scissor((int)pcmd->ClipRect.x, (int)pcmd->ClipRect.y, (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
 
-					context_->setScissor(0, graphics::Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+					context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+					context_->setRenderPipeline(pipeline_);
+					context_->setDescriptorSet(descriptor_set_);
 
-					//context_->setMaterialPass(_materialTech->getPass(0));
 					context_->drawIndexed(pcmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
 
 					idx_buffer_offset += pcmd->ElemCount;
 				}
 
 				vdx_buffer_offset += cmd_list->VtxBuffer.size();
-			}*/
+			}
 
 			context_->renderEnd();
 			context_->present();

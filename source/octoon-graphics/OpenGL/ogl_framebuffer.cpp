@@ -91,9 +91,9 @@ namespace octoon
 				auto type = textureComponents[i].getAttachType();
 				switch (type)
 				{
-				case GraphicsImageLayout::GraphicsImageLayoutGeneral:
+				case GraphicsImageLayout::General:
 					break;
-				case GraphicsImageLayout::GraphicsImageLayoutColorAttachmentOptimal:
+				case GraphicsImageLayout::ColorAttachmentOptimal:
 				{
 					GLint slot = GL_COLOR_ATTACHMENT0 + textureComponents[i].getAttachSlot();
 					GLint mipLevel = colorAttachments[drawCount].getBindingLevel();
@@ -105,8 +105,8 @@ namespace octoon
 					drawBuffers[drawCount++] = slot;
 				}
 				break;
-				case GraphicsImageLayout::GraphicsImageLayoutDepthStencilAttachmentOptimal:
-				case GraphicsImageLayout::GraphicsImageLayoutDepthStencilReadOnlyOptimal:
+				case GraphicsImageLayout::DepthStencilAttachmentOptimal:
+				case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
 				{
 					const auto& depthStencilAttachment = framebufferDesc.getDepthStencilAttachment();
 					if (!depthStencilAttachment.getBindingTexture())
@@ -141,15 +141,15 @@ namespace octoon
 						return false;
 					}
 				}
-				case GraphicsImageLayout::GraphicsImageLayoutShaderReadOnlyOptimal:
+				case GraphicsImageLayout::ShaderReadOnlyOptimal:
 					break;
-				case GraphicsImageLayout::GraphicsImageLayoutTransferSrcOptimal:
+				case GraphicsImageLayout::TransferSrcOptimal:
 					break;
-				case GraphicsImageLayout::GraphicsImageLayoutTransferDstOptimal:
+				case GraphicsImageLayout::TransferDstOptimal:
 					break;
-				case GraphicsImageLayout::GraphicsImageLayoutPreinitialized:
+				case GraphicsImageLayout::Preinitialized:
 					break;
-				case GraphicsImageLayout::GraphicsImageLayoutPresentSrcKhr:
+				case GraphicsImageLayout::PresentSrcKhr:
 					break;
 				default:
 					break;
@@ -189,11 +189,11 @@ namespace octoon
 			auto textureTarget = texture->getTarget();
 			auto& textureDesc = renderTexture->getGraphicsTextureDesc();
 
-			if (textureDesc.getTexDim() == GraphicsTextureDim::GraphicsTextureDim2DArray)
+			if (textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArray)
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, textureID, level, layer);
-			else if (textureDesc.getTexDim() == GraphicsTextureDim::GraphicsTextureDimCube)
+			else if (textureDesc.getTexDim() == GraphicsTextureDim::Cube)
 				glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureID, level);
-			else if (textureDesc.getTexDim() == GraphicsTextureDim::GraphicsTextureDimCubeArray)
+			else if (textureDesc.getTexDim() == GraphicsTextureDim::CubeArray)
 				glFramebufferTexture3D(GL_FRAMEBUFFER, attachment, textureTarget, textureID, level, layer);
 			else
 				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, textureTarget, textureID, level);

@@ -8,12 +8,12 @@ namespace octoon
 
 		GraphicsColorBlend::GraphicsColorBlend() noexcept
 			: _enable(false)
-			, _blendOp(GraphicsBlendOp::GraphicsBlendOpAdd)
-			, _blendAlphaOp(GraphicsBlendOp::GraphicsBlendOpAdd)
-			, _blendSrc(GraphicsBlendFactor::GraphicsBlendFactorSrcAlpha)
-			, _blendDest(GraphicsBlendFactor::GraphicsBlendFactorOneMinusSrcAlpha)
-			, _blendAlphaSrc(GraphicsBlendFactor::GraphicsBlendFactorSrcAlpha)
-			, _blendAlphaDest(GraphicsBlendFactor::GraphicsBlendFactorOneMinusSrcAlpha)
+			, _blendOp(GraphicsBlendOp::Add)
+			, _blendAlphaOp(GraphicsBlendOp::Add)
+			, _blendSrc(GraphicsBlendFactor::SrcAlpha)
+			, _blendDest(GraphicsBlendFactor::OneMinusSrcAlpha)
+			, _blendAlphaSrc(GraphicsBlendFactor::SrcAlpha)
+			, _blendAlphaDest(GraphicsBlendFactor::OneMinusSrcAlpha)
 			, _colorWriteMask(GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit)
 		{
 		}
@@ -131,34 +131,40 @@ namespace octoon
 			, _enableDepthBiasClamp(false)
 			, _enableStencil(false)
 			, _lineWidth(1.0f)
-			, _cullMode(GraphicsCullMode::GraphicsCullModeBack)
-			, _polygonMode(GraphicsPolygonMode::GraphicsPolygonModeSolid)
-			, _primitiveType(GraphicsVertexType::GraphicsVertexTypeTriangleList)
-			, _frontFace(GraphicsFrontFace::GraphicsFrontFaceCW)
+			, _cullMode(GraphicsCullMode::Back)
+			, _polygonMode(GraphicsPolygonMode::Solid)
+			, _primitiveType(GraphicsVertexType::TriangleList)
+			, _frontFace(GraphicsFrontFace::CW)
 			, _depthMin(0.0)
 			, _depthMax(1.0)
 			, _depthSlopeScaleBias(0)
 			, _depthBias(0)
-			, _depthFunc(GraphicsCompareFunc::GraphicsCompareFuncLequal)
+			, _depthFunc(GraphicsCompareFunc::Lequal)
 			, _stencilFrontRef(0)
 			, _stencilBackRef(0)
 			, _stencilFrontReadMask(0xFFFFFFFF)
 			, _stencilFrontWriteMask(0xFFFFFFFF)
 			, _stencilBackReadMask(0xFFFFFFFF)
 			, _stencilBackWriteMask(0xFFFFFFFF)
-			, _stencilFrontFunc(GraphicsCompareFunc::GraphicsCompareFuncAlways)
-			, _stencilBackFunc(GraphicsCompareFunc::GraphicsCompareFuncAlways)
-			, _stencilFrontFail(GraphicsStencilOp::GraphicsStencilOpKeep)
-			, _stencilFrontZFail(GraphicsStencilOp::GraphicsStencilOpKeep)
-			, _stencilFrontPass(GraphicsStencilOp::GraphicsStencilOpKeep)
-			, _stencilBackFail(GraphicsStencilOp::GraphicsStencilOpKeep)
-			, _stencilBackZFail(GraphicsStencilOp::GraphicsStencilOpKeep)
-			, _stencilBackPass(GraphicsStencilOp::GraphicsStencilOpKeep)
+			, _stencilFrontFunc(GraphicsCompareFunc::Always)
+			, _stencilBackFunc(GraphicsCompareFunc::Always)
+			, _stencilFrontFail(GraphicsStencilOp::Keep)
+			, _stencilFrontZFail(GraphicsStencilOp::Keep)
+			, _stencilFrontPass(GraphicsStencilOp::Keep)
+			, _stencilBackFail(GraphicsStencilOp::Keep)
+			, _stencilBackZFail(GraphicsStencilOp::Keep)
+			, _stencilBackPass(GraphicsStencilOp::Keep)
 		{
 		}
 
 		GraphicsStateDesc::~GraphicsStateDesc() noexcept
 		{
+		}
+
+		void
+		GraphicsStateDesc::setColorBlends(GraphicsColorBlends&& blends) noexcept
+		{
+			_blends = std::move(blends);
 		}
 
 		void

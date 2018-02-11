@@ -66,7 +66,7 @@ namespace octoon
 		GraphicsContextPtr
 		OGLDevice::createDeviceContext(const GraphicsContextDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto context = std::make_shared<OGLDeviceContext>();
 				context->setDevice(this->downcast_pointer<OGLDevice>());
@@ -103,7 +103,7 @@ namespace octoon
 		GraphicsDataPtr
 		OGLDevice::createGraphicsData(const GraphicsDataDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto data = std::make_shared<OGLGraphicsData>();
 				data->setDevice(this->downcast_pointer<OGLDevice>());
@@ -123,7 +123,7 @@ namespace octoon
 		GraphicsTexturePtr
 		OGLDevice::createTexture(const GraphicsTextureDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto texture = std::make_shared<OGLTexture>();
 				texture->setDevice(this->downcast_pointer<OGLDevice>());
@@ -153,7 +153,7 @@ namespace octoon
 		GraphicsFramebufferPtr
 		OGLDevice::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto framebuffer = std::make_shared<OGLFramebuffer>();
 				framebuffer->setDevice(this->downcast_pointer<OGLDevice>());
@@ -213,7 +213,7 @@ namespace octoon
 		GraphicsPipelinePtr
 		OGLDevice::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto pipeline = std::make_shared<OGLPipeline>();
 				pipeline->setDevice(this->downcast_pointer<OGLDevice>());
@@ -233,7 +233,7 @@ namespace octoon
 		GraphicsDescriptorSetPtr
 		OGLDevice::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				auto descriptorSet = std::make_shared<OGLDescriptorSet>();
 				descriptorSet->setDevice(this->downcast_pointer<OGLDevice>());
@@ -274,7 +274,7 @@ namespace octoon
 		void
 		OGLDevice::enableDebugControl(bool enable) noexcept
 		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 			{
 				for (auto& it : _deviceContexts)
 				{
@@ -283,7 +283,7 @@ namespace octoon
 						deviceContext->downcast<OGLDeviceContext>()->enableDebugControl(enable);
 				}
 			}
-			else if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGLCore)
+			else if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGLCore)
 			{
 				for (auto& it : _deviceContexts)
 				{
@@ -299,7 +299,7 @@ namespace octoon
 		{
 			assert(source);
 
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL)
 				source->downcast<OGLDescriptorSet>()->copy(descriptorCopyCount, descriptorCopies);
 			else
 				source->downcast<OGLCoreDescriptorSet>()->copy(descriptorCopyCount, descriptorCopies);

@@ -13,14 +13,14 @@ namespace octoon
 			, _layer(1)
 			, _mipBase(0)
 			, _mipLevel(1)
-			, _format(GraphicsFormat::GraphicsFormatUndefined)
-			, _dim(GraphicsTextureDim::GraphicsTextureDim2D)
-			, _filterMin(GraphicsSamplerFilter::GraphicsSamplerFilterLinear)
-			, _filterMag(GraphicsSamplerFilter::GraphicsSamplerFilterLinear)
-			, _wrap(GraphicsSamplerWrap::GraphicsSamplerWrapRepeat)
-			, _anis(GraphicsSamplerAnis::GraphicsSamplerAnis0)
+			, _format(GraphicsFormat::Undefined)
+			, _dim(GraphicsTextureDim::Texture2D)
+			, _filterMin(GraphicsSamplerFilter::Linear)
+			, _filterMag(GraphicsSamplerFilter::Linear)
+			, _wrap(GraphicsSamplerWrap::Repeat)
+			, _anis(GraphicsSamplerAnis::Anis0)
 			, _textureUsage(GraphicsViewUsageFlagBits::GraphicsViewUsageFlagBitsSampledBit)
-			, _tiling(GraphicsImageTiling::GraphicsImageTilingOptimal)
+			, _tiling(GraphicsImageTiling::Optimal)
 			, _data(nullptr)
 			, _dataSize(0)
 		{
@@ -77,14 +77,12 @@ namespace octoon
 		void
 		GraphicsTextureDesc::setTexFormat(GraphicsFormat format) noexcept
 		{
-			assert(format >= GraphicsFormat::GraphicsFormatBeginRange && format <= GraphicsFormat::GraphicsFormatEndRange);
 			_format = format;
 		}
 
 		void
 		GraphicsTextureDesc::setTexDim(GraphicsTextureDim dim) noexcept
 		{
-			assert(dim >= GraphicsTextureDim::GraphicsTextureDimBeginRange && dim <= GraphicsTextureDim::GraphicsTextureDimEndRange);
 			_dim = dim;
 		}
 

@@ -29,7 +29,7 @@ namespace octoon
 			template<typename T>
 			bool is_instance_of() const noexcept
 			{
-				return this->is_instance_of(T::getRtti());
+				return this->is_instance_of(T::get_rtti());
 			}
 
 			bool is_a(const Rtti* rtti) const noexcept;
@@ -40,7 +40,7 @@ namespace octoon
 			template<typename T>
 			bool is_a() const noexcept
 			{
-				return this->is_a(T::getRtti());
+				return this->is_a(T::get_rtti());
 			}
 
 			template<typename T>

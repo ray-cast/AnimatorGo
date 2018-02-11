@@ -168,7 +168,7 @@ namespace octoon
 
 			if (lastStateDesc.getCullMode() != _stateDesc.getCullMode())
 			{
-				if (_stateDesc.getCullMode() != GraphicsCullMode::GraphicsCullModeNone)
+				if (_stateDesc.getCullMode() != GraphicsCullMode::None)
 				{
 					GLenum mode = OGLTypes::asCullMode(_stateDesc.getCullMode());
 		#if _DEBUG
@@ -187,7 +187,7 @@ namespace octoon
 				else
 				{
 					glDisable(GL_CULL_FACE);
-					lastStateDesc.setCullMode(GraphicsCullMode::GraphicsCullModeNone);
+					lastStateDesc.setCullMode(GraphicsCullMode::None);
 				}
 			}
 

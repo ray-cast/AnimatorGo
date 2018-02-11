@@ -17,6 +17,7 @@ INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/OpenGL Core")
 INCLUDE_DIRECTORIES("${OCTOON_PATH_DEPENDENCIES}/HLSLCrossCompiler/include")
 
 SET(RENDERER_CORE
+    ${HEADER_PATH}/graphics.h
     ${HEADER_PATH}/graphics_child.h
     ${SOURCE_PATH}/graphics_child.cpp
     ${HEADER_PATH}/graphics_context.h

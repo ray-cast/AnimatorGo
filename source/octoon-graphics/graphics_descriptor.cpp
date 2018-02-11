@@ -10,22 +10,6 @@ namespace octoon
 		OctoonImplementSubInterface(GraphicsDescriptorSet, GraphicsChild, "GraphicsDescriptorSet")
 		OctoonImplementSubInterface(GraphicsDescriptorSetLayout, GraphicsChild, "GraphicsDescriptorSetLayout")
 
-		GraphicsUniformSet::GraphicsUniformSet() noexcept
-		{
-		}
-
-		GraphicsUniformSet::~GraphicsUniformSet() noexcept
-		{
-		}
-
-		GraphicsDescriptorSetLayoutDesc::GraphicsDescriptorSetLayoutDesc() noexcept
-		{
-		}
-
-		GraphicsDescriptorSetLayoutDesc::~GraphicsDescriptorSetLayoutDesc() noexcept
-		{
-		}
-
 		void
 		GraphicsDescriptorSetLayoutDesc::setUniformComponents(const GraphicsParams& component) noexcept
 		{
@@ -57,7 +41,7 @@ namespace octoon
 		}
 
 		GraphicsDescriptorPoolComponent::GraphicsDescriptorPoolComponent() noexcept
-			: _type(GraphicsUniformType::GraphicsUniformTypeNone)
+			: _type(GraphicsUniformType::None)
 			, _descriptorNums(0)
 		{
 		}

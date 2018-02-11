@@ -8,9 +8,9 @@ namespace octoon
 		OctoonImplementSubInterface(GraphicsFramebufferLayout, GraphicsChild, "GraphicsFramebufferLayout")
 
 		GraphicsAttachmentLayout::GraphicsAttachmentLayout() noexcept
-			: _type(GraphicsImageLayout::GraphicsImageLayoutUndefined)
+			: _type(GraphicsImageLayout::Undefined)
 			, _slot(0)
-			, _format(GraphicsFormat::GraphicsFormatUndefined)
+			, _format(GraphicsFormat::Undefined)
 		{
 		}
 
@@ -132,7 +132,7 @@ namespace octoon
 		void
 		GraphicsFramebufferLayoutDesc::addComponent(const GraphicsAttachmentLayout& component) noexcept
 		{
-			assert(component.getAttachFormat() != GraphicsFormat::GraphicsFormatUndefined);
+			assert(component.getAttachFormat() != GraphicsFormat::Undefined);
 			assert(std::find_if(_components.begin(), _components.end(), [&](const GraphicsAttachmentLayout& it) { return  it.getAttachSlot() == component.getAttachSlot(); }) == _components.end());
 			_components.push_back(component);
 		}

@@ -12,30 +12,29 @@ namespace octoon
 		OctoonImplementSubInterface(GraphicsProgram, GraphicsChild, "GraphicsProgram")
 
 		GraphicsShaderDesc::GraphicsShaderDesc() noexcept
-			: _lang(GraphicsShaderLang::GraphicsShaderLangNone)
-			, _model(GraphicsShaderModel::GraphicsShaderModel4X)
+			: _lang(GraphicsShaderLang::None)
+			, _model(GraphicsShaderModel::Level4X)
 			, _stage(GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit)
+			, _main("main")
 		{
 		}
 
-		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderLang lang, GraphicsShaderModel model, GraphicsShaderStageFlagBits stage, const std::string& code) noexcept
+		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlagBits stage, const std::string& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
 			: _bytecodes(code)
 			, _lang(lang)
 			, _model(model)
 			, _stage(stage)
+			, _main(entry_point)
 		{
 		}
 
-		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderLang lang, GraphicsShaderModel model, GraphicsShaderStageFlagBits stage, const std::vector<char>& code) noexcept
+		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlagBits stage, const std::vector<char>& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
 			: _lang(lang)
 			, _model(model)
 			, _stage(stage)
+			, _main(entry_point)
 		{
 			_bytecodes.insert(_bytecodes.begin(), code.begin(), code.end());
-		}
-
-		GraphicsShaderDesc::~GraphicsShaderDesc() noexcept
-		{
 		}
 
 		void
@@ -108,14 +107,6 @@ namespace octoon
 		GraphicsShaderDesc::getEntryPoint() const noexcept
 		{
 			return _main;
-		}
-
-		GraphicsProgramDesc::GraphicsProgramDesc() noexcept
-		{
-		}
-
-		GraphicsProgramDesc::~GraphicsProgramDesc() noexcept
-		{
 		}
 
 		bool

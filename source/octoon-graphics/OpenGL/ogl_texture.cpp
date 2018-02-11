@@ -320,19 +320,19 @@ namespace octoon
 		{
 			if (GLEW_EXT_texture_filter_anisotropic)
 			{
-				if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis1)
+				if (anis == GraphicsSamplerAnis::Anis1)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis2)
+				else if (anis == GraphicsSamplerAnis::Anis2)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis4)
+				else if (anis == GraphicsSamplerAnis::Anis4)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis8)
+				else if (anis == GraphicsSamplerAnis::Anis8)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis16)
+				else if (anis == GraphicsSamplerAnis::Anis16)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis32)
+				else if (anis == GraphicsSamplerAnis::Anis32)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 32);
-				else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis64)
+				else if (anis == GraphicsSamplerAnis::Anis64)
 					glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 64);
 			}
 

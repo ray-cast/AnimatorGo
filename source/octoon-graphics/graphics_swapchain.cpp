@@ -7,9 +7,9 @@ namespace octoon
 		OctoonImplementSubInterface(GraphicsSwapchain, GraphicsChild, "GraphicsSwapchain")
 
 		GraphicsSwapchainDesc::GraphicsSwapchainDesc() noexcept
-			: _format(GraphicsFormat::GraphicsFormatUndefined)
-			, _depthStencilFormat(GraphicsFormat::GraphicsFormatUndefined)
-			, _interval(GraphicsSwapInterval::GraphicsSwapIntervalFree)
+			: _format(GraphicsFormat::Undefined)
+			, _depthStencilFormat(GraphicsFormat::Undefined)
+			, _interval(GraphicsSwapInterval::Free)
 			, _imageNums(2)
 			, window_(0)
 			, width_(0)
@@ -84,12 +84,12 @@ namespace octoon
 		void
 		GraphicsSwapchainDesc::setDepthStencilFormat(GraphicsFormat format) noexcept
 		{
-			assert(format == GraphicsFormat::GraphicsFormatD16UNorm ||
-				format == GraphicsFormat::GraphicsFormatX8_D24UNormPack32 ||
-				format == GraphicsFormat::GraphicsFormatD32_SFLOAT ||
-				format == GraphicsFormat::GraphicsFormatD16UNorm_S8UInt ||
-				format == GraphicsFormat::GraphicsFormatD24UNorm_S8UInt ||
-				format == GraphicsFormat::GraphicsFormatD32_SFLOAT_S8UInt);
+			assert(format == GraphicsFormat::D16UNorm ||
+				format == GraphicsFormat::X8_D24UNormPack32 ||
+				format == GraphicsFormat::D32_SFLOAT ||
+				format == GraphicsFormat::D16UNorm_S8UInt ||
+				format == GraphicsFormat::D24UNorm_S8UInt ||
+				format == GraphicsFormat::D32_SFLOAT_S8UInt);
 			_depthStencilFormat = format;
 		}
 

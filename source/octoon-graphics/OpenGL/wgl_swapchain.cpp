@@ -136,19 +136,19 @@ namespace octoon
 		{
 			switch (interval)
 			{
-			case GraphicsSwapInterval::GraphicsSwapIntervalFree:
+			case GraphicsSwapInterval::Free:
 				if (!__wglSwapIntervalEXT(0))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Free) fail");
 				break;
-			case GraphicsSwapInterval::GraphicsSwapIntervalVsync:
+			case GraphicsSwapInterval::Vsync:
 				if (!__wglSwapIntervalEXT(1))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Vsync) fail");
 				break;
-			case GraphicsSwapInterval::GraphicsSwapIntervalFps30:
+			case GraphicsSwapInterval::Fps30:
 				if (!__wglSwapIntervalEXT(2))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps30) fail");
 				break;
-			case GraphicsSwapInterval::GraphicsSwapIntervalFps15:
+			case GraphicsSwapInterval::Fps15:
 				if (!__wglSwapIntervalEXT(3))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps15) fail");
 				break;
@@ -261,7 +261,7 @@ namespace octoon
 			}
 
 			auto colorFormat = swapchainDesc.getColorFormat();
-			if (colorFormat == GraphicsFormat::GraphicsFormatB8G8R8A8UNorm)
+			if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
 			{
 				pfd.cColorBits = 32;
 				pfd.cBlueBits = 8;
@@ -280,32 +280,32 @@ namespace octoon
 			}
 
 			auto depthStencilFormat = swapchainDesc.getDepthStencilFormat();
-			if (depthStencilFormat == GraphicsFormat::GraphicsFormatD16UNorm)
+			if (depthStencilFormat == GraphicsFormat::D16UNorm)
 			{
 				pfd.cDepthBits = 16;
 				pfd.cStencilBits = 0;
 			}
-			else if (depthStencilFormat == GraphicsFormat::GraphicsFormatX8_D24UNormPack32)
+			else if (depthStencilFormat == GraphicsFormat::X8_D24UNormPack32)
 			{
 				pfd.cDepthBits = 24;
 				pfd.cStencilBits = 0;
 			}
-			else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD32_SFLOAT)
+			else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT)
 			{
 				pfd.cDepthBits = 32;
 				pfd.cStencilBits = 0;
 			}
-			else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD16UNorm_S8UInt)
+			else if (depthStencilFormat == GraphicsFormat::D16UNorm_S8UInt)
 			{
 				pfd.cDepthBits = 16;
 				pfd.cStencilBits = 8;
 			}
-			else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD24UNorm_S8UInt)
+			else if (depthStencilFormat == GraphicsFormat::D24UNorm_S8UInt)
 			{
 				pfd.cDepthBits = 24;
 				pfd.cStencilBits = 8;
 			}
-			else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD32_SFLOAT_S8UInt)
+			else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT_S8UInt)
 			{
 				pfd.cDepthBits = 32;
 				pfd.cStencilBits = 8;
@@ -376,7 +376,7 @@ namespace octoon
 				int minor = 0;
 
 				auto deviceType = this->getDevice()->getGraphicsDeviceDesc().getDeviceType();
-				if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLCore)
+				if (deviceType == GraphicsDeviceType::OpenGLCore)
 				{
 					major = 4;
 					minor = 5;

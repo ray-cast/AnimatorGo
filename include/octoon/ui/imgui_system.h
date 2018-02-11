@@ -4,12 +4,7 @@
 #include <octoon/ui/imgui.h>
 #include <octoon/input/input.h>
 #include <octoon/runtime/singleton.h>
-#include <octoon/graphics/graphics_system.h>
-#include <octoon/graphics/graphics_device.h>
-#include <octoon/graphics/graphics_context.h>
-#include <octoon/graphics/graphics_swapchain.h>
-#include <octoon/graphics/graphics_data.h>
-#include <octoon/graphics/graphics_texture.h>
+#include <octoon/graphics/graphics.h>
 
 namespace octoon
 {
@@ -59,10 +54,12 @@ namespace octoon
 			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsDataPtr ibo_;
 			graphics::GraphicsTexturePtr texture_;
+			graphics::GraphicsDescriptorSetPtr descriptor_set_;
 
 			graphics::GraphicsDevicePtr device_;
 			graphics::GraphicsContextPtr context_;
 			graphics::GraphicsSwapchainPtr swapchain_;
+			graphics::GraphicsPipelinePtr pipeline_;
 		};
 	}
 }

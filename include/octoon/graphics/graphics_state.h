@@ -52,6 +52,7 @@ namespace octoon
 			GraphicsStateDesc() noexcept;
 			~GraphicsStateDesc() noexcept;
 
+			void setColorBlends(GraphicsColorBlends&& blends) noexcept;
 			void setColorBlends(const GraphicsColorBlends& blends) noexcept;
 			GraphicsColorBlends& getColorBlends() noexcept;
 			const GraphicsColorBlends& getColorBlends() const noexcept;

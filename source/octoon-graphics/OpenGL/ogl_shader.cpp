@@ -22,7 +22,7 @@ namespace octoon
 		OGLGraphicsAttribute::OGLGraphicsAttribute() noexcept
 			: _semanticIndex(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsFormat::GraphicsFormatUndefined)
+			, _type(GraphicsFormat::Undefined)
 		{
 		}
 
@@ -81,7 +81,7 @@ namespace octoon
 		OGLGraphicsUniform::OGLGraphicsUniform() noexcept
 			: _offset(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsUniformType::GraphicsUniformTypeNone)
+			, _type(GraphicsUniformType::None)
 			, _stageFlags(0)
 		{
 		}
@@ -165,7 +165,7 @@ namespace octoon
 		OGLGraphicsUniformBlock::OGLGraphicsUniformBlock() noexcept
 			: _size(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsUniformType::GraphicsUniformTypeUniformBuffer)
+			, _type(GraphicsUniformType::UniformBuffer)
 			, _stageFlags(0)
 		{
 		}
@@ -285,7 +285,7 @@ namespace octoon
 			}
 
 			std::string codes;
-			if (shaderDesc.getLanguage() == GraphicsShaderLang::GraphicsShaderLangHLSL)
+			if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSL)
 			{
 				if (!HlslCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), shaderDesc.getEntryPoint().data(), codes))
 				{
@@ -293,7 +293,7 @@ namespace octoon
 					return false;
 				}
 			}
-			else if (shaderDesc.getLanguage() == GraphicsShaderLang::GraphicsShaderLangHLSLbytecodes)
+			else if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSLbytecodes)
 			{
 				if (!HlslByteCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), codes))
 				{
@@ -708,7 +708,7 @@ namespace octoon
 				uniformblock->setName(nameUniformBlock.get());
 				uniformblock->setBindingPoint(location);
 				uniformblock->setBlockSize(size);
-				uniformblock->setType(GraphicsUniformType::GraphicsUniformTypeUniformBuffer);
+				uniformblock->setType(GraphicsUniformType::UniformBuffer);
 				uniformblock->setShaderStageFlags(GraphicsShaderStageFlagBits::GraphicsShaderStageAll);
 
 				for (GLint j = 0; j < count; j++)
@@ -733,40 +733,40 @@ namespace octoon
 		OGLProgram::toGraphicsFormat(GLenum type) noexcept
 		{
 			if (type == GL_BOOL)
-				return GraphicsFormat::GraphicsFormatR8UInt;
+				return GraphicsFormat::R8UInt;
 			else if (type == GL_UNSIGNED_INT)
-				return GraphicsFormat::GraphicsFormatR8UInt;
+				return GraphicsFormat::R8UInt;
 			else if (type == GL_UNSIGNED_INT_VEC2)
-				return GraphicsFormat::GraphicsFormatR8G8UInt;
+				return GraphicsFormat::R8G8UInt;
 			else if (type == GL_UNSIGNED_INT_VEC3)
-				return GraphicsFormat::GraphicsFormatR8G8B8UInt;
+				return GraphicsFormat::R8G8B8UInt;
 			else if (type == GL_UNSIGNED_INT_VEC4)
-				return GraphicsFormat::GraphicsFormatR8G8B8A8UInt;
+				return GraphicsFormat::R8G8B8A8UInt;
 			else if (type == GL_INT)
-				return GraphicsFormat::GraphicsFormatR8SInt;
+				return GraphicsFormat::R8SInt;
 			else if (type == GL_INT_VEC2)
-				return GraphicsFormat::GraphicsFormatR8G8SInt;
+				return GraphicsFormat::R8G8SInt;
 			else if (type == GL_INT_VEC3)
-				return GraphicsFormat::GraphicsFormatR8G8B8SInt;
+				return GraphicsFormat::R8G8B8SInt;
 			else if (type == GL_INT_VEC4)
-				return GraphicsFormat::GraphicsFormatR8G8B8A8SInt;
+				return GraphicsFormat::R8G8B8A8SInt;
 			else if (type == GL_FLOAT)
-				return GraphicsFormat::GraphicsFormatR32SFloat;
+				return GraphicsFormat::R32SFloat;
 			else if (type == GL_FLOAT_VEC2)
-				return GraphicsFormat::GraphicsFormatR32G32SFloat;
+				return GraphicsFormat::R32G32SFloat;
 			else if (type == GL_FLOAT_VEC3)
-				return GraphicsFormat::GraphicsFormatR32G32B32SFloat;
+				return GraphicsFormat::R32G32B32SFloat;
 			else if (type == GL_FLOAT_VEC4)
-				return GraphicsFormat::GraphicsFormatR32G32B32A32SFloat;
+				return GraphicsFormat::R32G32B32A32SFloat;
 			else if (type == GL_FLOAT_MAT2)
-				return GraphicsFormat::GraphicsFormatR32G32B32A32SFloat;
+				return GraphicsFormat::R32G32B32A32SFloat;
 			else if (type == GL_FLOAT_MAT3)
-				return GraphicsFormat::GraphicsFormatR32G32B32A32SFloat;
+				return GraphicsFormat::R32G32B32A32SFloat;
 			else if (type == GL_FLOAT_MAT4)
-				return GraphicsFormat::GraphicsFormatR32G32B32A32SFloat;
+				return GraphicsFormat::R32G32B32A32SFloat;
 			else
 			{
-				return GraphicsFormat::GraphicsFormatUndefined;
+				return GraphicsFormat::Undefined;
 			}
 		}
 
@@ -779,124 +779,124 @@ namespace octoon
 				type == GL_SAMPLER_CUBE ||
 				type == GL_SAMPLER_CUBE_MAP_ARRAY)
 			{
-				return GraphicsUniformType::GraphicsUniformTypeSamplerImage;
+				return GraphicsUniformType::SamplerImage;
 			}
 			else
 			{
 				bool isArray = strstr(name.c_str(), "[") != nullptr;
 				if (type == GL_BOOL)
 				{
-					return GraphicsUniformType::GraphicsUniformTypeBool;
+					return GraphicsUniformType::Bool;
 				}
 				else if (type == GL_UNSIGNED_INT)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeUIntArray;
+						return GraphicsUniformType::UIntArray;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeUInt;
+						return GraphicsUniformType::UInt;
 				}
 				else if (type == GL_UNSIGNED_INT_VEC2)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeUInt2Array;
+						return GraphicsUniformType::UInt2Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeUInt2;
+						return GraphicsUniformType::UInt2;
 				}
 				else if (type == GL_UNSIGNED_INT_VEC3)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeUInt3Array;
+						return GraphicsUniformType::UInt3Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeUInt3;
+						return GraphicsUniformType::UInt3;
 				}
 				else if (type == GL_UNSIGNED_INT_VEC4)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeUInt4Array;
+						return GraphicsUniformType::UInt4Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeUInt4;
+						return GraphicsUniformType::UInt4;
 				}
 				else if (type == GL_INT)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeIntArray;
+						return GraphicsUniformType::IntArray;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeInt;
+						return GraphicsUniformType::Int;
 				}
 				else if (type == GL_INT_VEC2)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeInt2Array;
+						return GraphicsUniformType::Int2Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeInt2;
+						return GraphicsUniformType::Int2;
 				}
 				else if (type == GL_INT_VEC3)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeInt3Array;
+						return GraphicsUniformType::Int3Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeInt3;
+						return GraphicsUniformType::Int3;
 				}
 				else if (type == GL_INT_VEC4)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeInt4Array;
+						return GraphicsUniformType::Int4Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeInt4;
+						return GraphicsUniformType::Int4;
 				}
 				else if (type == GL_FLOAT)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloatArray;
+						return GraphicsUniformType::FloatArray;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat;
+						return GraphicsUniformType::Float;
 				}
 				else if (type == GL_FLOAT_VEC2)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat2Array;
+						return GraphicsUniformType::Float2Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat2;
+						return GraphicsUniformType::Float2;
 				}
 				else if (type == GL_FLOAT_VEC3)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat3Array;
+						return GraphicsUniformType::Float3Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat3;
+						return GraphicsUniformType::Float3;
 				}
 				else if (type == GL_FLOAT_VEC4)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat4Array;
+						return GraphicsUniformType::Float4Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat4;
+						return GraphicsUniformType::Float4;
 				}
 				else if (type == GL_FLOAT_MAT2)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat2x2Array;
+						return GraphicsUniformType::Float2x2Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat2x2;
+						return GraphicsUniformType::Float2x2;
 				}
 				else if (type == GL_FLOAT_MAT3)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat3x3Array;
+						return GraphicsUniformType::Float3x3Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat3x3;
+						return GraphicsUniformType::Float3x3;
 				}
 				else if (type == GL_FLOAT_MAT4)
 				{
 					if (isArray)
-						return GraphicsUniformType::GraphicsUniformTypeFloat4x4Array;
+						return GraphicsUniformType::Float4x4Array;
 					else
-						return GraphicsUniformType::GraphicsUniformTypeFloat4x4;
+						return GraphicsUniformType::Float4x4;
 				}
 				else
 				{
 					assert(false);
-					return GraphicsUniformType::GraphicsUniformTypeNone;
+					return GraphicsUniformType::None;
 				}
 			}
 		}

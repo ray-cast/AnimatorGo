@@ -72,8 +72,8 @@ namespace octoon
 		class OCTOON_EXPORT GraphicsInputLayoutDesc final
 		{
 		public:
-			GraphicsInputLayoutDesc() noexcept;
-			~GraphicsInputLayoutDesc() noexcept;
+			GraphicsInputLayoutDesc() noexcept = default;
+			~GraphicsInputLayoutDesc() = default;
 
 			void addVertexLayout(const GraphicsVertexLayout& layout) noexcept;
 			void addVertexBinding(const GraphicsVertexBinding& binding) noexcept;

@@ -11,7 +11,7 @@ namespace octoon
 		{
 		public:
 			GraphicsSamplerDesc() noexcept;
-			GraphicsSamplerDesc(GraphicsSamplerWrap wrap, GraphicsSamplerFilter filter, GraphicsSamplerAnis anis = GraphicsSamplerAnis::GraphicsSamplerAnis0) noexcept;
+			GraphicsSamplerDesc(GraphicsSamplerWrap wrap, GraphicsSamplerFilter filter, GraphicsSamplerAnis anis = GraphicsSamplerAnis::Anis0) noexcept;
 			~GraphicsSamplerDesc() noexcept;
 
 			void setSamplerWrap(GraphicsSamplerWrap wrap) noexcept;

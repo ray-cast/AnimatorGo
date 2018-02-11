@@ -307,21 +307,21 @@ namespace octoon
 		bool
 		OGLCoreTexture::applySamplerAnis(GraphicsSamplerAnis anis) noexcept
 		{
-			if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis1)
+			if (anis == GraphicsSamplerAnis::Anis1)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis2)
+			else if (anis == GraphicsSamplerAnis::Anis2)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis4)
+			else if (anis == GraphicsSamplerAnis::Anis4)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis8)
+			else if (anis == GraphicsSamplerAnis::Anis8)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis16)
+			else if (anis == GraphicsSamplerAnis::Anis16)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis32)
+			else if (anis == GraphicsSamplerAnis::Anis32)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 32);
-			else if (anis == GraphicsSamplerAnis::GraphicsSamplerAnis64)
+			else if (anis == GraphicsSamplerAnis::Anis64)
 				glTextureParameteri(_texture, GL_TEXTURE_MAX_ANISOTROPY_EXT, 64);
-			else if (anis != GraphicsSamplerAnis::GraphicsSamplerAnis0)
+			else if (anis != GraphicsSamplerAnis::Anis0)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Can't support format with anisotropy.");
 				return false;

@@ -27,19 +27,19 @@ namespace octoon
 			GLenum target;
 
 			auto type = desc.getType();
-			if (type == GraphicsDataType::GraphicsDataTypeStorageVertexBuffer)
+			if (type == GraphicsDataType::StorageVertexBuffer)
 				target = GL_ARRAY_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageIndexBuffer)
+			else if (type == GraphicsDataType::StorageIndexBuffer)
 				target = GL_ELEMENT_ARRAY_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageTexelBuffer)
+			else if (type == GraphicsDataType::StorageTexelBuffer)
 				target = GL_TEXTURE_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageBuffer)
+			else if (type == GraphicsDataType::StorageBuffer)
 				target = GL_SHADER_STORAGE_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeUniformBuffer)
+			else if (type == GraphicsDataType::UniformBuffer)
 				target = GL_UNIFORM_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeIndirectBiffer)
+			else if (type == GraphicsDataType::IndirectBiffer)
 				target = GL_DRAW_INDIRECT_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeTransferSrc || type == GraphicsDataType::GraphicsDataTypeTransferSrc)
+			else if (type == GraphicsDataType::TransferSrc || type == GraphicsDataType::TransferSrc)
 				target = GL_TRANSFORM_FEEDBACK_BUFFER;
 			else
 			{
@@ -74,7 +74,7 @@ namespace octoon
 
 			glNamedBufferStorage(_buffer, desc.getStreamSize(), desc.getStream(), flags);
 
-			if (GLEW_NV_vertex_buffer_unified_memory && type == GraphicsDataType::GraphicsDataTypeStorageVertexBuffer)
+			if (GLEW_NV_vertex_buffer_unified_memory && type == GraphicsDataType::StorageVertexBuffer)
 			{
 				glGetNamedBufferParameterui64vNV(_buffer, GL_BUFFER_GPU_ADDRESS_NV, &_bufferAddr);
 				glMakeNamedBufferResidentNV(_buffer, GL_READ_ONLY);

@@ -90,9 +90,9 @@ namespace octoon
 					binding.slot = it.getVertexSlot();
 
 					auto divisor = it.getVertexDivisor();
-					if (divisor == GraphicsVertexDivisor::GraphicsVertexDivisorVertex)
+					if (divisor == GraphicsVertexDivisor::Vertex)
 						binding.divisor = 0;
-					else if (divisor == GraphicsVertexDivisor::GraphicsVertexDivisorInstance)
+					else if (divisor == GraphicsVertexDivisor::Instance)
 						binding.divisor = 1;
 					else
 					{

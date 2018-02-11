@@ -10,7 +10,7 @@ namespace octoon
 			: _data(nullptr)
 			, _dataSize(0)
 			, _usage(GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
-			, _type(GraphicsDataType::GraphicsDataTypeNone)
+			, _type(GraphicsDataType::None)
 		{
 		}
 

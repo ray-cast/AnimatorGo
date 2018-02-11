@@ -28,19 +28,19 @@ namespace octoon
 			_data = nullptr;
 
 			auto type = desc.getType();
-			if (type == GraphicsDataType::GraphicsDataTypeStorageVertexBuffer)
+			if (type == GraphicsDataType::StorageVertexBuffer)
 				_target = GL_ARRAY_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageIndexBuffer)
+			else if (type == GraphicsDataType::StorageIndexBuffer)
 				_target = GL_ELEMENT_ARRAY_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageTexelBuffer)
+			else if (type == GraphicsDataType::StorageTexelBuffer)
 				_target = GL_TEXTURE_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeStorageBuffer)
+			else if (type == GraphicsDataType::StorageBuffer)
 				_target = GL_SHADER_STORAGE_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeUniformBuffer)
+			else if (type == GraphicsDataType::UniformBuffer)
 				_target = GL_UNIFORM_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeIndirectBiffer)
+			else if (type == GraphicsDataType::IndirectBiffer)
 				_target = GL_DRAW_INDIRECT_BUFFER;
-			else if (type == GraphicsDataType::GraphicsDataTypeTransferSrc || type == GraphicsDataType::GraphicsDataTypeTransferSrc)
+			else if (type == GraphicsDataType::TransferSrc || type == GraphicsDataType::TransferSrc)
 				_target = GL_TRANSFORM_FEEDBACK_BUFFER;
 			else
 			{

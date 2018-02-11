@@ -109,8 +109,8 @@ namespace octoon
 			GraphicsDeviceType deviceType = deviceDesc.getDeviceType();
 
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL)
-			if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLCore ||
-				deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGL)
+			if (deviceType == GraphicsDeviceType::OpenGLCore ||
+				deviceType == GraphicsDeviceType::OpenGL)
 			{
 				auto device = std::make_shared<OGLDevice>();
 				if (device->setup(deviceDesc))
@@ -124,7 +124,7 @@ namespace octoon
 
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES2)
-			if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLES2)
+			if (deviceType == GraphicsDeviceType::OpenGLES2)
 			{
 				auto device = std::make_shared<EGL2Device>();
 				if (device->setup(deviceDesc))
@@ -137,8 +137,8 @@ namespace octoon
 			}
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES3)
-			if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLES3 ||
-				deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLES31)
+			if (deviceType == GraphicsDeviceType::OpenGLES3 ||
+				deviceType == GraphicsDeviceType::OpenGLES31)
 			{
 				auto device = std::make_shared<EGL3Device>();
 				if (device->setup(deviceDesc))
@@ -151,7 +151,7 @@ namespace octoon
 			}
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_VULKAN)
-			if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeVulkan)
+			if (deviceType == GraphicsDeviceType::Vulkan)
 			{
 				if (!VulkanSystem::instance()->open())
 					return false;

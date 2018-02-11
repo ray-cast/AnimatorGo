@@ -47,7 +47,7 @@ XGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 	}
 
 	auto colorFormat = swapchainDesc.getColorFormat();
-	if (colorFormat == GraphicsFormat::GraphicsFormatB8G8R8A8UNorm)
+	if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
 	{
 		att[index++] = GLX_RENDER_TYPE;
 		att[index++] = GLX_RGBA_BIT,
@@ -69,42 +69,42 @@ XGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 	}
 
 	auto depthStencilFormat = swapchainDesc.getDepthStencilFormat();
-	if (depthStencilFormat == GraphicsFormat::GraphicsFormatD16UNorm)
+	if (depthStencilFormat == GraphicsFormat::D16UNorm)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 16;
 		att[index++] = GLX_STENCIL_SIZE;
 		att[index++] = 0;
 	}
-	else if (depthStencilFormat == GraphicsFormat::GraphicsFormatX8_D24UNormPack32)
+	else if (depthStencilFormat == GraphicsFormat::X8_D24UNormPack32)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 24;
 		att[index++] = GLX_STENCIL_SIZE;
 		att[index++] = 0;
 	}
-	else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD32_SFLOAT)
+	else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 32;
 		att[index++] = GLX_STENCIL_SIZE;
 		att[index++] = 0;
 	}
-	else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD16UNorm_S8UInt)
+	else if (depthStencilFormat == GraphicsFormat::D16UNorm_S8UInt)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 16;
 		att[index++] = GLX_STENCIL_SIZE;
 		att[index++] = 8;
 	}
-	else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD24UNorm_S8UInt)
+	else if (depthStencilFormat == GraphicsFormat::D24UNorm_S8UInt)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 24;
 		att[index++] = GLX_STENCIL_SIZE;
 		att[index++] = 8;
 	}
-	else if (depthStencilFormat == GraphicsFormat::GraphicsFormatD32_SFLOAT_S8UInt)
+	else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT_S8UInt)
 	{
 		att[index++] = GLX_DEPTH_SIZE;
 		att[index++] = 32;
@@ -168,7 +168,7 @@ XGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 	attribs[index++] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
 
 	auto deviceType = this->getDevice()->getGraphicsDeviceDesc().getDeviceType();
-	if (deviceType == GraphicsDeviceType::GraphicsDeviceTypeOpenGLCore)
+	if (deviceType == GraphicsDeviceType::OpenGLCore)
 	{
 		attribs[index++] = GLX_CONTEXT_MAJOR_VERSION_ARB;
 		attribs[index++] = 4;

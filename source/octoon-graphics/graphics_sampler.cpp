@@ -7,9 +7,9 @@ namespace octoon
 		OctoonImplementSubInterface(GraphicsSampler, GraphicsChild, "GraphicsSampler")
 
 		GraphicsSamplerDesc::GraphicsSamplerDesc() noexcept
-			: _wrap(GraphicsSamplerWrap::GraphicsSamplerWrapRepeat)
-			, _filter(GraphicsSamplerFilter::GraphicsSamplerFilterNearest)
-			, _anis(GraphicsSamplerAnis::GraphicsSamplerAnis0)
+			: _wrap(GraphicsSamplerWrap::Repeat)
+			, _filter(GraphicsSamplerFilter::Nearest)
+			, _anis(GraphicsSamplerAnis::Anis0)
 		{
 		}
 

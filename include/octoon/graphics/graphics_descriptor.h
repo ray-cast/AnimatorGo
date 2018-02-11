@@ -28,8 +28,8 @@ namespace octoon
 		class OCTOON_EXPORT GraphicsDescriptorSetLayoutDesc final
 		{
 		public:
-			GraphicsDescriptorSetLayoutDesc() noexcept;
-			~GraphicsDescriptorSetLayoutDesc() noexcept;
+			GraphicsDescriptorSetLayoutDesc() noexcept = default;
+			~GraphicsDescriptorSetLayoutDesc() = default;
 
 			void addUniformComponent(GraphicsParamPtr component) noexcept;
 			void removeUniformComponent(GraphicsParamPtr component) noexcept;
@@ -80,8 +80,8 @@ namespace octoon
 		{
 			OctoonDeclareSubInterface(GraphicsUniformSet, runtime::RttiInterface)
 		public:
-			GraphicsUniformSet() noexcept;
-			virtual ~GraphicsUniformSet() noexcept;
+			GraphicsUniformSet() noexcept = default;
+			virtual ~GraphicsUniformSet() = default;
 
 			virtual void uniform1b(bool value) noexcept = 0;
 			virtual void uniform1i(std::int32_t i1) noexcept = 0;

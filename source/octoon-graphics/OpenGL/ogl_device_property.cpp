@@ -28,10 +28,10 @@ namespace octoon
 			swapchainDesc.setWindHandle(nullptr);
 			swapchainDesc.setWidth(1);
 			swapchainDesc.setHeight(1);
-			swapchainDesc.setSwapInterval(GraphicsSwapInterval::GraphicsSwapIntervalFree);
+			swapchainDesc.setSwapInterval(GraphicsSwapInterval::Free);
 			swapchainDesc.setImageNums(2);
-			swapchainDesc.setColorFormat(GraphicsFormat::GraphicsFormatB8G8R8A8UNorm);
-			swapchainDesc.setDepthStencilFormat(GraphicsFormat::GraphicsFormatD24UNorm_S8UInt);
+			swapchainDesc.setColorFormat(GraphicsFormat::B8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(GraphicsFormat::D24UNorm_S8UInt);
 
 		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 			WGLSwapchain swapchain;
@@ -453,235 +453,235 @@ namespace octoon
 		{
 			if (GLEW_VERSION_2_0 || GLEW_EXT_texture)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR4G4UNormPack8);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR4G4B4A4UNormPack16);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R4G4UNormPack8);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R4G4B4A4UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8A8UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16A16UNorm);
 			}
 
 			if (GLEW_VERSION_2_0 || GLEW_EXT_texture || GLEW_EXT_bgra)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB4G4R4A4UNormPack16);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB5G5R5A1UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8A8UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B4G4R4A4UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B5G5R5A1UNormPack16);
 			}
 
 			if (GLEW_VERSION_2_0 || GLEW_EXT_texture || GLEW_EXT_abgr)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA1R5G5B5UNormPack16);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA2R10G10B10UNormPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA2B10G10R10UNormPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8UNormPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A1R5G5B5UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A2R10G10B10UNormPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A2B10G10R10UNormPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8UNormPack32);
 			}
 
 			if (GLEW_EXT_texture_integer)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16A16UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16A16SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32A32UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32A32SInt);
 			}
 
 			if (GLEW_EXT_bgra && GLEW_EXT_texture_integer)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8A8SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8A8UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8A8SInt);
 			}
 
 			if (GLEW_EXT_abgr && GLEW_EXT_texture_integer)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8UIntPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SIntPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8UIntPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SIntPack32);
 			}
 
 			if (GLEW_ARB_texture_float)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16A16SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32B32A32SFloat);
 			}
 
 			if (GLEW_EXT_packed_float)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB10G11R11UFloatPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B10G11R11UFloatPack32);
 			}
 
 			if (GLEW_EXT_texture_shared_exponent)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatE5B9G9R9UFloatPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::E5B9G9R9UFloatPack32);
 			}
 
 			if (GLEW_ARB_texture_stencil8)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatS8UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::S8UInt);
 			}
 
 			if (GLEW_ARB_depth_texture)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatD16UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatX8_D24UNormPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatD32_SFLOAT);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::D16UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::X8_D24UNormPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::D32_SFLOAT);
 			}
 
 			if (GLEW_ARB_depth_buffer_float || GLEW_NV_depth_buffer_float)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatD32_SFLOAT_S8UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::D32_SFLOAT_S8UInt);
 			}
 
 			if (GLEW_EXT_packed_depth_stencil || GLEW_ARB_framebuffer_object)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatD24UNorm_S8UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::D24UNorm_S8UInt);
 			}
 
 			if (GLEW_ARB_texture_rgb10_a2ui)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA2B10G10R10UIntPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA2R10G10B10UIntPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A2B10G10R10UIntPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A2R10G10B10UIntPack32);
 			}
 
 			if (GLEW_EXT_texture_sRGB)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8SRGB);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8SRGB);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC1RGBSRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC1RGBASRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC3SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8SRGB);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8A8SRGB);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC1RGBSRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC1RGBASRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC3SRGBBlock);
 			}
 
 			if (GLEW_EXT_bgra && GLEW_EXT_texture_sRGB)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8SRGB);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8SRGB);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SRGBPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SRGBPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8SRGB);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8A8SRGB);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SRGBPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SRGBPack32);
 			}
 
 			if (GLEW_EXT_abgr && GLEW_EXT_texture_sRGB)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SRGBPack32);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SRGBPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SRGBPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SRGBPack32);
 			}
 
 			if (GLEW_ARB_texture_rg)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16UNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32SInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32SFloat);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32UInt);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR32G32SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16UNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32SInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32SFloat);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32UInt);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R32G32SFloat);
 			}
 
 			if (GLEW_EXT_texture_snorm)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R8G8B8A8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R16G16B16A16SNorm);
 			}
 
 			if (GLEW_EXT_bgra && GLEW_EXT_texture_snorm)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8SNorm);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8SNorm);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B8G8R8A8SNorm);
 			}
 
 			if (GLEW_EXT_bgra && GLEW_EXT_texture_snorm)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatA8B8G8R8SNormPack32);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::A8B8G8R8SNormPack32);
 			}
 
 			if (GLEW_EXT_texture_compression_s3tc)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC1RGBUNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC1RGBAUNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC3UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatBC5UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC1RGBUNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC1RGBAUNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC3UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::BC5UNormBlock);
 			}
 
 			if (GLEW_ARB_ES2_compatibility)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatR5G6B5UNormPack16);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatB5G6R5UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::R5G6B5UNormPack16);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::B5G6R5UNormPack16);
 			}
 
 			if (GLEW_ARB_ES3_compatibility)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8A1UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8A8UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatEACR11UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatEACR11SNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatEACR11G11UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatEACR11G11SNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8A1UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8A8UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::EACR11UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::EACR11SNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::EACR11G11UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::EACR11G11SNormBlock);
 			}
 
 			if (GLEW_ARB_ES3_compatibility && GL_EXT_texture_sRGB)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8A1SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatETC2R8G8B8A8SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8A1SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ETC2R8G8B8A8SRGBBlock);
 			}
 
 			if (GLEW_KHR_texture_compression_astc_ldr || GLEW_KHR_texture_compression_astc_hdr)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC4x4UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC5x4UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC5x5UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC6x5UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC6x6UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x5UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x6UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x8UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x5UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x6UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x8UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x10UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC12x10UNormBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC12x12UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC4x4UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC5x4UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC5x5UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC6x5UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC6x6UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x5UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x6UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x8UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x5UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x6UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x8UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x10UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC12x10UNormBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC12x12UNormBlock);
 			}
 
 			if ((GLEW_KHR_texture_compression_astc_ldr || GLEW_KHR_texture_compression_astc_hdr) && GL_EXT_texture_sRGB)
 			{
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC4x4SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC5x4SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC5x5SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC6x5SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC6x6SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x5SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x6SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC8x8SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x5SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x6SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x8SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC10x10SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC12x10SRGBBlock);
-				_deviceProperties.supportTextures.push_back(GraphicsFormat::GraphicsFormatASTC12x12SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC4x4SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC5x4SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC5x5SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC6x5SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC6x6SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x5SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x6SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC8x8SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x5SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x6SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x8SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC10x10SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC12x10SRGBBlock);
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::ASTC12x12SRGBBlock);
 			}
 
 			return true;
@@ -690,15 +690,15 @@ namespace octoon
 		bool
 		OGLDeviceProperty::initTextureDimSupports() noexcept
 		{
-			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::GraphicsTextureDim2D);
-			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::GraphicsTextureDim2DArray);
-			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::GraphicsTextureDimCube);
+			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2D);
+			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DArray);
+			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Cube);
 
 			if (GLEW_ARB_texture_cube_map_array)
-				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::GraphicsTextureDimCubeArray);
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::CubeArray);
 
 			if (GLEW_ARB_texture_storage)
-				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::GraphicsTextureDim3D);
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture3D);
 
 			return true;
 		}
@@ -706,92 +706,92 @@ namespace octoon
 		bool
 		OGLDeviceProperty::initVertexSupports() noexcept
 		{
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR8G8B8A8UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16SNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR16G16B16A16UNorm);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32SInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32UInt);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32SFloat);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32SFloat);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32SFloat);
-			_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR32G32B32A32SFloat);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8A8SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8A8UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8A8SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R8G8B8A8UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16A16SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16A16UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16A16SNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R16G16B16A16UNorm);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32A32SInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32A32UInt);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32SFloat);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32SFloat);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32SFloat);
+			_deviceProperties.supportAttribute.push_back(GraphicsFormat::R32G32B32A32SFloat);
 
 			if (GLEW_ARB_vertex_attrib_64bit || GLEW_EXT_vertex_attrib_64bit)
 			{
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64UInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64UInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64B64SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64B64UInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64B64A64SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatR64G64B64A64UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64B64SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64B64UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64B64A64SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::R64G64B64A64UInt);
 			}
 
 			if (GLEW_ARB_vertex_type_10f_11f_11f_rev)
 			{
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB10G11R11UFloatPack32);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B10G11R11UFloatPack32);
 			}
 
 			if (GLEW_ARB_vertex_type_2_10_10_10_rev)
 			{
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2R10G10B10SIntPack32);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2R10G10B10UIntPack32);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2R10G10B10UNormPack32);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2R10G10B10SIntPack32);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2R10G10B10UIntPack32);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2R10G10B10UNormPack32);
 
 				if (GLEW_ARB_vertex_array_bgra)
 				{
-					_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2B10G10R10SIntPack32);
-					_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2B10G10R10UIntPack32);
-					_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatA2B10G10R10UNormPack32);
+					_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2B10G10R10SIntPack32);
+					_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2B10G10R10UIntPack32);
+					_deviceProperties.supportAttribute.push_back(GraphicsFormat::A2B10G10R10UNormPack32);
 				}
 			}
 
 			if (GLEW_ARB_vertex_array_bgra)
 			{
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8UInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8SNorm);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8UNorm);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8SInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8UInt);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8SNorm);
-				_deviceProperties.supportAttribute.push_back(GraphicsFormat::GraphicsFormatB8G8R8A8UNorm);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8SNorm);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8UNorm);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8A8SInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8A8UInt);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8A8SNorm);
+				_deviceProperties.supportAttribute.push_back(GraphicsFormat::B8G8R8A8UNorm);
 			}
 
 			return true;

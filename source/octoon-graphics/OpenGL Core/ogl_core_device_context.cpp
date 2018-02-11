@@ -334,7 +334,7 @@ namespace octoon
 		{
 			assert(data);
 			assert(data->is_instance_of<OGLCoreGraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
+			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
 			assert(_vertexBuffers.size() > i);
 			assert(_glcontext->getActive());
 
@@ -360,8 +360,8 @@ namespace octoon
 		{
 			assert(data);
 			assert(data->is_instance_of<OGLCoreGraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
-			assert(indexType == GraphicsIndexType::GraphicsIndexTypeUInt16 || indexType == GraphicsIndexType::GraphicsIndexTypeUInt32);
+			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
+			assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
 			assert(_glcontext->getActive());
 
 			auto ibo = data->downcast_pointer<OGLCoreGraphicsData>();
@@ -451,7 +451,7 @@ namespace octoon
 					return;
 
 				auto type = layoutDesc.getComponents().at(i).getAttachType();
-				if (type == GraphicsImageLayout::GraphicsImageLayoutColorAttachmentOptimal)
+				if (type == GraphicsImageLayout::ColorAttachmentOptimal)
 				{
 					if (!(flags & GraphicsClearFlagBits::GraphicsClearFlagColorBit))
 						return;
@@ -459,8 +459,8 @@ namespace octoon
 					flags = GraphicsClearFlagBits::GraphicsClearFlagColorBit;
 					buffer = i;
 				}
-				else if (type == GraphicsImageLayout::GraphicsImageLayoutDepthStencilAttachmentOptimal ||
-					type == GraphicsImageLayout::GraphicsImageLayoutDepthStencilReadOnlyOptimal)
+				else if (type == GraphicsImageLayout::DepthStencilAttachmentOptimal ||
+					type == GraphicsImageLayout::DepthStencilReadOnlyOptimal)
 				{
 					if (!(flags & GraphicsClearFlagBits::GraphicsClearFlagDepthBit) &&
 						!(flags & GraphicsClearFlagBits::GraphicsClearFlagStencilBit))
@@ -571,22 +571,22 @@ namespace octoon
 				auto& attachment = layoutDesc.getComponents().at(i);
 				switch (attachment.getAttachType())
 				{
-				case GraphicsImageLayout::GraphicsImageLayoutColorAttachmentOptimal:
+				case GraphicsImageLayout::ColorAttachmentOptimal:
 				{
 					GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
 					glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
 				}
 				break;
-				case GraphicsImageLayout::GraphicsImageLayoutDepthStencilReadOnlyOptimal:
-				case GraphicsImageLayout::GraphicsImageLayoutDepthStencilAttachmentOptimal:
+				case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
+				case GraphicsImageLayout::DepthStencilAttachmentOptimal:
 				{
 					auto format = attachment.getAttachFormat();
-					if (format == GraphicsFormat::GraphicsFormatS8UInt)
+					if (format == GraphicsFormat::S8UInt)
 					{
 						GLenum attachments = GL_STENCIL_ATTACHMENT;
 						glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
 					}
-					else if (format == GraphicsFormat::GraphicsFormatD16UNorm || format == GraphicsFormat::GraphicsFormatX8_D24UNormPack32 || format == GraphicsFormat::GraphicsFormatD32_SFLOAT)
+					else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
 					{
 						GLenum attachments = GL_DEPTH_ATTACHMENT;
 						glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
@@ -711,7 +711,7 @@ namespace octoon
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
-			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeIndirectBiffer);
+			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::IndirectBiffer);
 
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, data->downcast<OGLCoreGraphicsData>()->getInstanceID());
 
@@ -730,7 +730,7 @@ namespace octoon
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
-			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeIndirectBiffer);
+			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::IndirectBiffer);
 
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, data->downcast<OGLCoreGraphicsData>()->getInstanceID());
 

@@ -15,51 +15,51 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	GameComponent::getComponent(const runtime::Rtti* type) const noexcept
+	GameComponent::get_component(const runtime::Rtti* type) const noexcept
 	{
 		assert(this->rtti() != type);
-		return gameObject_->getComponent(type);
+		return gameObject_->get_component(type);
 	}
 
 	GameComponentPtr
-	GameComponent::getComponent(const runtime::Rtti& type) const noexcept
+	GameComponent::get_component(const runtime::Rtti& type) const noexcept
 	{
 		assert(this->rtti() != &type);
-		return gameObject_->getComponent(type);
+		return gameObject_->get_component(type);
 	}
 
 	const GameComponents&
-	GameComponent::getComponents() const noexcept
+	GameComponent::get_components() const noexcept
 	{
-		return gameObject_->getComponents();
+		return gameObject_->get_components();
 	}
 
 	void
-	GameComponent::addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameComponent::add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
 	{
 		assert(gameObject_ && component);
-		gameObject_->addComponentDispatch(type, component);
+		gameObject_->add_component_dispatch(type, component);
 	}
 
 	void
-	GameComponent::removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameComponent::remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
 	{
 		assert(gameObject_ && component);
-		gameObject_->removeComponentDispatch(type, component);
+		gameObject_->remove_component_dispatch(type, component);
 	}
 
 	void
-	GameComponent::addComponentDispatch(GameDispatchType type, GameComponent* component) noexcept
+	GameComponent::add_component_dispatch(GameDispatchType type, GameComponent* component) noexcept
 	{
 		assert(gameObject_ && component);
-		gameObject_->addComponentDispatch(type, component->cast_pointer<GameComponent>());
+		gameObject_->add_component_dispatch(type, component->cast_pointer<GameComponent>());
 	}
 
 	void
-	GameComponent::removeComponentDispatch(GameDispatchType type, GameComponent* component) noexcept
+	GameComponent::remove_component_dispatch(GameDispatchType type, GameComponent* component) noexcept
 	{
 		assert(gameObject_ && component);
-		gameObject_->removeComponentDispatch(type, component->cast_pointer<GameComponent>());
+		gameObject_->remove_component_dispatch(type, component->cast_pointer<GameComponent>());
 	}
 
 	void
@@ -69,7 +69,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameComponent::getGameObject() const noexcept
+	GameComponent::get_game_object() const noexcept
 	{
 		if (gameObject_)
 			return gameObject_->cast_pointer<GameObject>();
@@ -77,105 +77,110 @@ namespace octoon
 	}
 
 	void
-	GameComponent::setActive(bool active) except
+	GameComponent::set_active(bool active) except
 	{
 		if (active_ != active)
 		{
 			if (active)
-				this->onActivate();
+				this->on_activate();
 			else
-				this->onDeactivate();
+				this->on_deactivate();
 
 			active_ = active;
 		}
 	}
 
 	bool
-	GameComponent::getActive() const noexcept
+	GameComponent::get_active() const noexcept
 	{
 		return active_;
 	}
 
 	void
-	GameComponent::setName(const std::string& name) noexcept
+	GameComponent::set_name(const std::string& name) noexcept
 	{
 		name_ = name;
 	}
 
 	void
-	GameComponent::setName(std::string&& name) noexcept
+	GameComponent::set_name(std::string&& name) noexcept
 	{
 		name_ = std::move(name);
 	}
 
 	const std::string&
-	GameComponent::getName() const noexcept
+	GameComponent::get_name() const noexcept
 	{
 		return name_;
 	}
 
 	void
-	GameComponent::onAttach() except
+	GameComponent::on_attach() except
 	{
 	}
 
 	void
-	GameComponent::onDetach() noexcept
+	GameComponent::on_detach() noexcept
 	{
 	}
 
 	void
-	GameComponent::onActivate() except
+	GameComponent::on_activate() except
 	{
 	}
 
 	void
-	GameComponent::onDeactivate() noexcept
+	GameComponent::on_deactivate() noexcept
 	{
 	}
 
 	void
-	GameComponent::onFrameBegin() except
+	GameComponent::on_frame_begin() except
 	{
 	}
 
 	void
-	GameComponent::onFrame() except
+	GameComponent::on_frame() except
 	{
 	}
 
 	void
-	GameComponent::onFrameEnd() except
+	GameComponent::on_frame_end() except
 	{
 	}
 
 	void
-	GameComponent::onMoveBefore() except
+	GameComponent::on_move_before() except
 	{
 	}
 
 	void
-	GameComponent::onMoveAfter() except
+	GameComponent::on_move_after() except
 	{
 	}
 
 	void
-	GameComponent::onLayerChangeBefore() except
+	GameComponent::on_layer_change_before() except
 	{
 	}
 
 	void
-	GameComponent::onLayerChangeAfter() except
+	GameComponent::on_layer_change_after() except
 	{
 	}
 
 	void
-	GameComponent::onAttachComponent(const GameComponentPtr& component) except
+	GameComponent::on_attach_component(const GameComponentPtr& component) except
 	{
 	}
 
 	void
-	GameComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+	GameComponent::on_detach_component(const GameComponentPtr& component) noexcept
+	{
+	}
+
+	void
+	GameComponent::on_gui() except
 	{
 	}
 }

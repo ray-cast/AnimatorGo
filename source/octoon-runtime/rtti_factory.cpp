@@ -23,19 +23,19 @@ namespace octoon
 		}
 
 		Rtti*
-		RttiFactory::getRTTI(const std::string& name) noexcept
+		RttiFactory::get_rtti(const std::string& name) noexcept
 		{
 			return rttiLists_[name];
 		}
 
 		Rtti*
-		RttiFactory::getRTTI(const char* name) noexcept
+		RttiFactory::get_rtti(const char* name) noexcept
 		{
 			return rttiLists_[name];
 		}
 
 		const Rtti*
-		RttiFactory::getRTTI(const std::string& name) const noexcept
+		RttiFactory::get_rtti(const std::string& name) const noexcept
 		{
 			auto it = rttiLists_.lower_bound(name);
 			for (; it != rttiLists_.end(); ++it)
@@ -45,7 +45,7 @@ namespace octoon
 		}
 
 		const Rtti*
-		RttiFactory::getRTTI(const char* name) const noexcept
+		RttiFactory::get_rtti(const char* name) const noexcept
 		{
 			auto it = rttiLists_.lower_bound(name);
 			for (; it != rttiLists_.end(); ++it)
@@ -55,30 +55,30 @@ namespace octoon
 		}
 
 		RttiInterfacePtr
-		RttiFactory::createObject(const char* name, const Rtti& base) const except
+		RttiFactory::create_object(const char* name, const Rtti& base) const except
 		{
 			assert(name);
 
-			auto rtti = this->getRTTI(name);
+			auto rtti = this->get_rtti(name);
 			if (!rtti)
 				return nullptr;
 
-			if (rtti->isDerivedFrom(base))
+			if (rtti->is_derived_from(base))
 				return rtti->create();
 
 			return nullptr;
 		}
 
 		RttiInterfacePtr
-		RttiFactory::createObject(const std::string& name, const Rtti& base) const except
+		RttiFactory::create_object(const std::string& name, const Rtti& base) const except
 		{
 			assert(!name.empty());
 
-			auto rtti = this->getRTTI(name);
+			auto rtti = this->get_rtti(name);
 			if (!rtti)
 				return nullptr;
 
-			if (rtti->isDerivedFrom(base))
+			if (rtti->is_derived_from(base))
 				return rtti->create();
 
 			return nullptr;

@@ -18,7 +18,7 @@ namespace octoon
 			virtual InputKeyboardPtr clone() const noexcept;
 
 		private:
-			void onInputEvent(const InputEvent& event) noexcept;
+			void on_input_event(const InputEvent& event) noexcept;
 
 		private:
 			GLFWInputKeyboard(const GLFWInputKeyboard&) noexcept = delete;

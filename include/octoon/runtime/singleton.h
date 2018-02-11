@@ -13,7 +13,7 @@ namespace octoon
 		public:
 			static T* instance() noexcept
 			{
-				return &_instance;
+				return &instance_;
 			}
 
 		protected:
@@ -25,10 +25,10 @@ namespace octoon
 			Singleton& operator=(const Singleton&) = delete;
 
 		private:
-			static T _instance;
+			static T instance_;
 		};
 
-		template<typename _Tx, typename _Ty> _Tx Singleton<_Tx, _Ty>::_instance;
+		template<typename _Tx, typename _Ty> _Tx Singleton<_Tx, _Ty>::instance_;
 	}
 }
 

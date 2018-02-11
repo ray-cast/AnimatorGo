@@ -49,19 +49,19 @@ namespace octoon
 		GameScene(const std::string& name) noexcept;
 		~GameScene() noexcept;
 
-		void setActive(bool active) except;
-		bool getActive() const noexcept;
+		void set_active(bool active) except;
+		bool get_active() const noexcept;
 
-		void setGameListener(const GameListenerPtr& listener) noexcept;
-		GameListenerPtr getGameListener() const noexcept;
+		void set_game_listener(const GameListenerPtr& listener) noexcept;
+		GameListenerPtr get_game_listener() const noexcept;
 
-		void setName(std::string&& name) noexcept;
-		void setName(const std::string& name) noexcept;
-		const std::string& getName() const noexcept;
+		void set_name(std::string&& name) noexcept;
+		void set_name(const std::string& name) noexcept;
+		const std::string& get_name() const noexcept;
 
-		std::size_t getInstanceID() const noexcept;
+		std::size_t get_instance_id() const noexcept;
 
-		GameObjectPtr getRootObject() const noexcept;
+		GameObjectPtr get_root_object() const noexcept;
 
 		GameScenePtr clone() const noexcept;
 
@@ -72,18 +72,18 @@ namespace octoon
 			RootObject(GameScene* scene) noexcept;
 			virtual ~RootObject() noexcept;
 
-			virtual GameScene* getGameScene() noexcept;
-			virtual const GameScene* getGameScene() const noexcept;
+			virtual GameScene* get_game_scene() noexcept;
+			virtual const GameScene* get_game_scene() const noexcept;
 
 		private:
-			GameScene* _scene;
+			GameScene* scene_;
 		};
 
 		std::string name_;
-		std::size_t instanceID_;
+		std::size_t instance_id_;
 
-		GameObjectPtr  _root;
-		GameListenerPtr gameListener_;
+		GameObjectPtr  root_;
+		GameListenerPtr game_listener_;
 	};
 }
 

@@ -23,14 +23,14 @@ namespace octoon
 
 			std::shared_ptr<class RttiInterface> create() const throw(std::bad_alloc);
 
-			const Rtti* getParent() const noexcept;
+			const Rtti* get_parent() const noexcept;
 
 			const std::string& type_name() const noexcept;
 
-			bool isDerivedFrom(const Rtti* other) const noexcept;
-			bool isDerivedFrom(const Rtti& other) const noexcept;
-			bool isDerivedFrom(const char* const name) const noexcept;
-			bool isDerivedFrom(const std::string& name) const noexcept;
+			bool is_derived_from(const Rtti* other) const noexcept;
+			bool is_derived_from(const Rtti& other) const noexcept;
+			bool is_derived_from(const char* const name) const noexcept;
+			bool is_derived_from(const std::string& name) const noexcept;
 
 		private:
 			std::string name_;

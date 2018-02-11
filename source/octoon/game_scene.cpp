@@ -8,7 +8,7 @@ namespace octoon
 	OctoonImplementSubClass(GameScene, runtime::RttiInterface, "GameScene")
 
 	GameScene::RootObject::RootObject(GameScene* scene) noexcept
-		: _scene(scene)
+		: scene_(scene)
 	{
 		assert(scene);
 	}
@@ -18,105 +18,105 @@ namespace octoon
 	}
 
 	GameScene*
-	GameScene::RootObject::getGameScene() noexcept
+	GameScene::RootObject::get_game_scene() noexcept
 	{
-		return _scene;
+		return scene_;
 	}
 
 	const GameScene*
-	GameScene::RootObject::getGameScene() const noexcept
+	GameScene::RootObject::get_game_scene() const noexcept
 	{
-		return _scene;
+		return scene_;
 	}
 
 	GameScene::GameScene() noexcept
-		: _root(std::make_unique<RootObject>(this))
+		: root_(std::make_unique<RootObject>(this))
 	{
-		GameSceneManager::instance()->_instanceScene(this, instanceID_);
+		GameSceneManager::instance()->_instanceScene(this, instance_id_);
 	}
 
 	GameScene::GameScene(const std::string& name) noexcept
 		: name_(name)
 	{
-		GameSceneManager::instance()->_instanceScene(this, instanceID_);
+		GameSceneManager::instance()->_instanceScene(this, instance_id_);
 	}
 
 	GameScene::~GameScene() noexcept
 	{
-		assert(_root.unique());
+		assert(root_.unique());
 
-		this->setActive(false);
-		_root.unique();
+		this->set_active(false);
+		root_.unique();
 
 		GameSceneManager::instance()->_unsetScene(this);
 	}
 
 	void
-	GameScene::setActive(bool active) except
+	GameScene::set_active(bool active) except
 	{
-		if (this->getActive() != active)
+		if (this->get_active() != active)
 		{
 			GameSceneManager::instance()->_activeScene(this, active);
 
-			_root->setActiveDownwards(active);
+			root_->set_active_downwards(active);
 		}
 	}
 
 	bool
-	GameScene::getActive() const noexcept
+	GameScene::get_active() const noexcept
 	{
-		return _root->getActive();
+		return root_->get_active();
 	}
 
 	void
-	GameScene::setGameListener(const GameListenerPtr& listener) noexcept
+	GameScene::set_game_listener(const GameListenerPtr& listener) noexcept
 	{
-		if (gameListener_ != listener)
-			gameListener_ = listener;
+		if (game_listener_ != listener)
+			game_listener_ = listener;
 	}
 
 	GameListenerPtr
-	GameScene::getGameListener() const noexcept
+	GameScene::get_game_listener() const noexcept
 	{
-		return gameListener_;
+		return game_listener_;
 	}
 
 	void
-	GameScene::setName(std::string&& name) noexcept
+	GameScene::set_name(std::string&& name) noexcept
 	{
 		name_ = std::move(name);
 	}
 
 	void
-	GameScene::setName(const std::string& name) noexcept
+	GameScene::set_name(const std::string& name) noexcept
 	{
 		name_ = name;
 	}
 
 	const std::string&
-	GameScene::getName() const noexcept
+	GameScene::get_name() const noexcept
 	{
 		return name_;
 	}
 
 	std::size_t
-	GameScene::getInstanceID() const noexcept
+	GameScene::get_instance_id() const noexcept
 	{
-		return instanceID_;
+		return instance_id_;
 	}
 
 	GameObjectPtr
-	GameScene::getRootObject() const noexcept
+	GameScene::get_root_object() const noexcept
 	{
-		return _root;
+		return root_;
 	}
 
 	GameScenePtr
 	GameScene::clone() const noexcept
 	{
 		auto scene = std::make_shared<GameScene>();
-		scene->setName(this->getName());
-		scene->_root = _root->clone();
+		scene->set_name(this->get_name());
+		scene->root_ = root_->clone();
 		return scene;
 	}
 }

@@ -12,62 +12,62 @@ namespace octoon
 		GameObject() noexcept;
 		virtual ~GameObject() noexcept;
 
-		void setName(const std::string& name) noexcept;
-		void setName(std::string&& name) noexcept;
-		const std::string& getName() const noexcept;
+		void set_name(const std::string& name) noexcept;
+		void set_name(std::string&& name) noexcept;
+		const std::string& get_name() const noexcept;
 
-		void setActive(bool active) except;
-		void setActiveUpwards(bool active) except;
-		void setActiveDownwards(bool active) except;
-		bool getActive() const noexcept;
+		void set_active(bool active) except;
+		void set_active_upwards(bool active) except;
+		void set_active_downwards(bool active) except;
+		bool get_active() const noexcept;
 
-		void setLayer(std::uint8_t layer) noexcept;
-		std::uint8_t getLayer() const noexcept;
+		void set_layer(std::uint8_t layer) noexcept;
+		std::uint8_t get_layer() const noexcept;
 
-		std::size_t getInstanceID() const noexcept;
+		std::size_t get_instance_id() const noexcept;
 
-		void setParent(const GameObjectPtr& parent) noexcept;
-		GameObject* getParent() const noexcept;
+		void set_parent(const GameObjectPtr& parent) noexcept;
+		GameObject* get_parent() const noexcept;
 
-		void addChild(GameObjectPtr& child) noexcept;
-		void removeChild(GameObjectPtr& child) noexcept;
-		void cleanupChildren() noexcept;
-		GameObjectPtr findChild(const std::string& name, bool recurse = true) noexcept;
+		void add_child(GameObjectPtr& child) noexcept;
+		void remove_child(GameObjectPtr& child) noexcept;
+		void cleanup_children() noexcept;
+		GameObjectPtr find_child(const std::string& name, bool recurse = true) noexcept;
 
-		std::size_t getChildCount() const noexcept;
-		GameObjects& getChildren() noexcept;
-		const GameObjects& getChildren() const noexcept;
+		std::size_t get_child_count() const noexcept;
+		GameObjects& get_children() noexcept;
+		const GameObjects& get_children() const noexcept;
 
-		void addComponent(const GameComponentPtr& component) except;
-		void addComponent(GameComponentPtr&& component) except;
-		void removeComponent(const GameComponentPtr& component) noexcept;
-		void cleanupComponents() noexcept;
-
-		template<typename T>
-		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }
-		GameComponentPtr getComponent(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr getComponent(const runtime::Rtti& type) const noexcept;
+		void add_component(const GameComponentPtr& component) except;
+		void add_component(GameComponentPtr&& component) except;
+		void remove_component(const GameComponentPtr& component) noexcept;
+		void cleanup_components() noexcept;
 
 		template<typename T>
-		std::shared_ptr<T> getComponentInChildren() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponentInChildren(T::RTTI)); }
-		GameComponentPtr getComponentInChildren(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr getComponentInChildren(const runtime::Rtti& type) const noexcept;
+		std::shared_ptr<T> get_component() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI)); }
+		GameComponentPtr get_component(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
 
 		template<typename T>
-		void getComponentsInChildren(GameComponents& components) const noexcept { this->getComponentsInChildren(T::RTTI, components); }
-		void getComponentsInChildren(const runtime::Rtti* type, GameComponents& components) const noexcept;
-		void getComponentsInChildren(const runtime::Rtti& type, GameComponents& components) const noexcept;
+		std::shared_ptr<T> get_component_in_children() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component_in_children(T::RTTI)); }
+		GameComponentPtr get_component_in_children(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr get_component_in_children(const runtime::Rtti& type) const noexcept;
 
-		const GameComponents& getComponents() const noexcept;
+		template<typename T>
+		void get_components_in_children(GameComponents& components) const noexcept { this->get_components_in_children(T::RTTI, components); }
+		void get_components_in_children(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void get_components_in_children(const runtime::Rtti& type, GameComponents& components) const noexcept;
 
-		void addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-		void removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-		void removeComponentDispatchs(const GameComponentPtr& component) noexcept;
+		const GameComponents& get_components() const noexcept;
+
+		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void remove_component_dispatchs(const GameComponentPtr& component) noexcept;
 
 		void destroy() noexcept;
 
-		virtual GameScene* getGameScene() noexcept;
-		virtual const GameScene* getGameScene() const noexcept;
+		virtual GameScene* get_game_scene() noexcept;
+		virtual const GameScene* get_game_scene() const noexcept;
 
 		GameObjectPtr clone() const except;
 
@@ -75,18 +75,20 @@ namespace octoon
 		friend class GameObjectManager;
 		friend class TransformComponent;
 
-		void _onActivate() except;
-		void _onDeactivate() noexcept;
+		void on_activate() except;
+		void on_deactivate() noexcept;
 
-		void _onFrameBegin() except;
-		void _onFrame() except;
-		void _onFrameEnd() except;
+		void on_frame_begin() except;
+		void on_frame() except;
+		void on_frame_end() except;
 
-		void _onMoveBefore() except;
-		void _onMoveAfter() except;
+		void on_move_before() except;
+		void on_move_after() except;
 
-		void _onLayerChangeBefore() except;
-		void _onLayerChangeAfter() except;
+		void on_layer_change_before() except;
+		void on_layer_change_after() except;
+
+		void on_gui() except;
 
 	private:
 		GameObject(const GameObject& copy) noexcept = delete;
@@ -96,7 +98,7 @@ namespace octoon
 		bool active_;
 
 		std::uint8_t layer_;
-		std::size_t instanceID_;
+		std::size_t instance_id_;
 
 		std::string name_;
 
@@ -104,7 +106,7 @@ namespace octoon
 		GameObjectWeakPtr parent_;
 
 		GameComponents components_;
-		std::vector<GameComponents> dispatchComponents_;
+		std::vector<GameComponents> dispatch_components_;
 	};
 }
 

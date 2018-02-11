@@ -60,21 +60,21 @@ namespace octoon
 				if (device)
 				{
 #if OCTOON_FEATURE_GRAPHICS_USE_OPENGL
-					if (device->isInstanceOf<OGLDevice>())
+					if (device->is_instance_of<OGLDevice>())
 					{
 						device->downcast<OGLDevice>()->enableDebugControl(enable);
 						return;
 					}
 #endif
 #if OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES2
-					if (device->isInstanceOf<EGL2Device>())
+					if (device->is_instance_of<EGL2Device>())
 					{
 						device->downcast<EGL2Device>()->enableDebugControl(enable);
 						return;
 					}
 #endif
 #if OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES3
-					if (device->isInstanceOf<EGL3Device>())
+					if (device->is_instance_of<EGL3Device>())
 					{
 						device->downcast<EGL3Device>()->enableDebugControl(enable);
 						return;
@@ -82,7 +82,7 @@ namespace octoon
 
 #endif
 #if OCTOON_FEATURE_GRAPHICS_USE_VULKAN
-					if (device->isInstanceOf<VulkanDevice>())
+					if (device->is_instance_of<VulkanDevice>())
 					{
 						if (enable)
 							VulkanSystem::instance()->startDebugControl();

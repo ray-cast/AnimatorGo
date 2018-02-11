@@ -10,29 +10,28 @@ namespace octoon
 		OctoonDeclareSubClass(GuiFeature, GameFeature)
 	public:
 		GuiFeature() noexcept;
-		GuiFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h, float dpi) noexcept;
+		GuiFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~GuiFeature() noexcept;
 
+		void set_viewport(std::uint32_t w, std::uint32_t h) noexcept;
+		void get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+
+		void set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept;
+		void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
+
 	private:
-		void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
-		void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void on_activate() except;
+		void on_deactivate() noexcept;
 
-		void setWindowFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
-		void getWindowFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void on_input_event(const input::InputEvent& event) noexcept;
 
-	private:
-		void onActivate() except;
-		void onDeactivate() noexcept;
-
-		void onInputEvent(const input::InputEvent& event) noexcept;
-
-		void onFrameBegin() noexcept;
-		void onFrame() noexcept;
-		void onFrameEnd() noexcept;
+		void on_frame_begin() noexcept;
+		void on_frame() noexcept;
+		void on_frame_end() noexcept;
 
 	private:
 		WindHandle window_;
-		float dpi_;
+
 		std::uint32_t width_;
 		std::uint32_t height_;
 		std::uint32_t framebuffer_w_;

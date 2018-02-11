@@ -16,21 +16,21 @@ namespace octoon
 		}
 
 		void
-		InputController::obtainCapture() noexcept
+		InputController::obtain_capture() noexcept
 		{
 			if (!capture_)
 			{
-				this->onObtainCapture();
+				this->on_obtain_capture();
 				capture_ = true;
 			}
 		}
 
 		void
-		InputController::releaseCapture() noexcept
+		InputController::release_capture() noexcept
 		{
 			if (capture_)
 			{
-				this->onReleaseCapture();
+				this->on_release_capture();
 				capture_ = false;
 			}
 		}
@@ -42,27 +42,27 @@ namespace octoon
 		}
 
 		void
-		InputController::onFrameBegin() noexcept
+		InputController::on_frame_begin() noexcept
 		{
 		}
 
 		void
-		InputController::onFrameEnd() noexcept
+		InputController::on_frame_end() noexcept
 		{
 		}
 
 		void
-		InputController::onObtainCapture() noexcept
+		InputController::on_obtain_capture() noexcept
 		{
 		}
 
 		void
-		InputController::onReleaseCapture() noexcept
+		InputController::on_release_capture() noexcept
 		{
 		}
 
 		void
-		InputController::onReset() noexcept
+		InputController::on_reset() noexcept
 		{
 		}
 	}

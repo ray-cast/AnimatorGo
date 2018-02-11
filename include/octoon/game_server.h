@@ -16,35 +16,35 @@ namespace octoon
 		bool open() noexcept;
 		void close() noexcept;
 
-		void setGameListener(const GameListenerPtr& listener) noexcept;
-		const GameListenerPtr& getGameListener() const noexcept;
+		void set_game_listener(const GameListenerPtr& listener) noexcept;
+		const GameListenerPtr& get_game_listener() const noexcept;
 
-		bool isActive() const noexcept;
-		bool isStopping() const noexcept;
-		bool isQuitRequest() const noexcept;
+		bool is_active() const noexcept;
+		bool is_stopped() const noexcept;
+		bool is_quit_request() const noexcept;
 
-		bool openScene(const std::string& sceneName) noexcept;
-		void closeScene(const std::string& sceneName) noexcept;
+		bool open_scene(const std::string& sceneName) noexcept;
+		void close_scene(const std::string& sceneName) noexcept;
 
-		bool addScene(const GameScenePtr& scene) noexcept;
-		void closeScene(const GameScenePtr& scene) noexcept;
+		bool add_scene(const GameScenePtr& scene) noexcept;
+		void close_scene(const GameScenePtr& scene) noexcept;
 
-		GameScenePtr findScene(const std::string& sceneName) noexcept;
-		const GameScenes& getScenes() const noexcept;
+		GameScenePtr find_scene(const std::string& sceneName) noexcept;
+		const GameScenes& get_scenes() const noexcept;
 
-		bool addFeature(GameFeaturePtr& features) noexcept;
-		void removeFeature(GameFeaturePtr& features) noexcept;
-		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
-		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
+		bool add_feature(GameFeaturePtr& features) noexcept;
+		void remove_feature(GameFeaturePtr& features) noexcept;
+		GameFeaturePtr get_feature(const runtime::Rtti& rtti) const noexcept;
+		GameFeaturePtr get_feature(const runtime::Rtti* rtti) const noexcept;
 
-		void sendInputEvent(const input::InputEvent& event) noexcept;
+		void send_input_event(const input::InputEvent& event) noexcept;
 
 		template<typename T>
-		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::getRtti())); }
+		std::shared_ptr<T> get_feature() const noexcept { return std::dynamic_pointer_cast<T>(this->get_feature(T::getRtti())); }
 
-		const GameFeatures& getGameFeatures() const noexcept;
+		const GameFeatures& get_features() const noexcept;
 
-		GameApplication* getGameApp() noexcept;
+		GameApplication* get_game_app() noexcept;
 
 		bool start() noexcept;
 		void stop() noexcept;
@@ -52,23 +52,22 @@ namespace octoon
 
 	private:
 		friend GameApplication;
-		void _setGameApp(GameApplication* app) noexcept;
+		void _set_game_app(GameApplication* app) noexcept;
 
 	private:
 		GameServer(const GameServer&) noexcept = delete;
 		GameServer& operator=(const GameServer&) noexcept = delete;
 
 	private:
-
-		bool isActive_;
-		bool isStopping_;
-		bool isQuitRequest_;
+		bool is_active_;
+		bool is_stopped_;
+		bool is_quit_request_;
 
 		GameScenes scenes_;
 		GameFeatures features_;
 
-		GameApplication* gameApp_;
-		GameListenerPtr gameListener_;
+		GameApplication* game_app_;
+		GameListenerPtr game_listener_;
 	};
 }
 

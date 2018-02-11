@@ -12,53 +12,55 @@ namespace octoon
 		GameComponent() noexcept;
 		virtual ~GameComponent() noexcept;
 
-		void setActive(bool active) except;
-		bool getActive() const noexcept;
+		void set_active(bool active) except;
+		bool get_active() const noexcept;
 
-		void setName(const std::string& name) noexcept;
-		void setName(std::string&& name) noexcept;
-		const std::string& getName() const noexcept;
+		void set_name(const std::string& name) noexcept;
+		void set_name(std::string&& name) noexcept;
+		const std::string& get_name() const noexcept;
 
-		GameObjectPtr getGameObject() const noexcept;
+		GameObjectPtr get_game_object() const noexcept;
 
-		GameComponentPtr getComponent(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr getComponent(const runtime::Rtti& type) const noexcept;
-		const GameComponents& getComponents() const noexcept;
+		GameComponentPtr get_component(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
+		const GameComponents& get_components() const noexcept;
 
 		template<typename T>
-		std::shared_ptr<T> getComponent() const noexcept
+		std::shared_ptr<T> get_component() const noexcept
 		{
-			return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI));
+			return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI));
 		}
 
 		virtual GameComponentPtr clone() const noexcept = 0;
 
 	protected:
-		void addComponentDispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void addComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void add_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
+		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
 
-		void removeComponentDispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void removeComponentDispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void remove_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
+		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
 
 	private:
-		virtual void onAttach() except;
-		virtual void onDetach() noexcept;
+		virtual void on_attach() except;
+		virtual void on_detach() noexcept;
 
-		virtual void onAttachComponent(const GameComponentPtr& component) except;
-		virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
+		virtual void on_attach_component(const GameComponentPtr& component) except;
+		virtual void on_detach_component(const GameComponentPtr& component) noexcept;
 
-		virtual void onActivate() except;
-		virtual void onDeactivate() noexcept;
+		virtual void on_activate() except;
+		virtual void on_deactivate() noexcept;
 
-		virtual void onFrameBegin() except;
-		virtual void onFrame() except;
-		virtual void onFrameEnd() except;
+		virtual void on_frame_begin() except;
+		virtual void on_frame() except;
+		virtual void on_frame_end() except;
 
-		virtual void onMoveBefore() except;
-		virtual void onMoveAfter() except;
+		virtual void on_move_before() except;
+		virtual void on_move_after() except;
 
-		virtual void onLayerChangeBefore() except;
-		virtual void onLayerChangeAfter() except;
+		virtual void on_layer_change_before() except;
+		virtual void on_layer_change_after() except;
+
+		virtual void on_gui() except;
 
 	private:
 		friend GameObject;

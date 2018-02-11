@@ -7,8 +7,8 @@ namespace octoon
 	OctoonImplementSubInterface(GameFeature, runtime::RttiInterface, "GameFeature")
 
 	GameFeature::GameFeature() noexcept
-		: isActive_(false)
-		, gameServer_(nullptr)
+		: is_active_(false)
+		, game_server_(nullptr)
 	{
 	}
 
@@ -17,107 +17,90 @@ namespace octoon
 	}
 
 	void
-	GameFeature::setActive(bool active) except
+	GameFeature::set_active(bool active) except
 	{
-		if (isActive_ != active)
+		if (is_active_ != active)
 		{
 			if (active)
-				this->onActivate();
+				this->on_activate();
 			else
-				this->onDeactivate();
+				this->on_deactivate();
 
-			isActive_ = active;
+			is_active_ = active;
 		}
 	}
 	bool
-	GameFeature::getActive() noexcept
+	GameFeature::get_active() noexcept
 	{
-		return isActive_;
+		return is_active_;
 	}
 
 	void
-	GameFeature::setGameListener(const GameListenerPtr& listener) noexcept
+	GameFeature::set_game_listener(const GameListenerPtr& listener) noexcept
 	{
-		if (gameListener_ != listener)
-		{
-			this->onListenerChangeBefore();
-
-			gameListener_ = listener;
-
-			this->onListenerChangeAfter();
-		}
+		game_listener_ = listener;
 	}
 
 	const GameListenerPtr&
-	GameFeature::getGameListener() const noexcept
+	GameFeature::get_game_listener() const noexcept
 	{
-		return gameListener_;
+		return game_listener_;
 	}
 
 	void
-	GameFeature::_setGameServer(GameServer* server) noexcept
+	GameFeature::_set_game_server(GameServer* server) noexcept
 	{
-		gameServer_ = server;
+		game_server_ = server;
 	}
 
 	GameServer*
-	GameFeature::getGameServer() noexcept
+	GameFeature::get_game_server() noexcept
 	{
-		return gameServer_;
+		return game_server_;
 	}
 
 	void
-	GameFeature::onActivate() except
-	{
-	}
-
-	void
-	GameFeature::onDeactivate() noexcept
+	GameFeature::on_activate() except
 	{
 	}
 
 	void
-	GameFeature::onListenerChangeBefore() noexcept
+	GameFeature::on_deactivate() noexcept
 	{
 	}
 
 	void
-	GameFeature::onListenerChangeAfter() noexcept
+	GameFeature::on_open_scene(const GameScenePtr& scene) except
 	{
 	}
 
 	void
-	GameFeature::onOpenScene(const GameScenePtr& scene) except
+	GameFeature::on_close_scene(const GameScenePtr& scene) noexcept
 	{
 	}
 
 	void
-	GameFeature::onCloseScene(const GameScenePtr& scene) noexcept
+	GameFeature::on_input_event(const input::InputEvent& event) noexcept
 	{
 	}
 
 	void
-	GameFeature::onInputEvent(const input::InputEvent& event) noexcept
+	GameFeature::on_reset() except
 	{
 	}
 
 	void
-	GameFeature::onReset() except
+	GameFeature::on_frame_begin() except
 	{
 	}
 
 	void
-	GameFeature::onFrameBegin() except
+	GameFeature::on_frame() except
 	{
 	}
 
 	void
-	GameFeature::onFrame() except
-	{
-	}
-
-	void
-	GameFeature::onFrameEnd() except
+	GameFeature::on_frame_end() except
 	{
 	}
 }

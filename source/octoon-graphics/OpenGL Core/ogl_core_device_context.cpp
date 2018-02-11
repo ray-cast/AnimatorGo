@@ -42,7 +42,7 @@ namespace octoon
 		OGLCoreDeviceContext::setup(const GraphicsContextDesc& desc) noexcept
 		{
 			assert(desc.getSwapchain());
-			assert(desc.getSwapchain()->isInstanceOf<OGLSwapchain>());
+			assert(desc.getSwapchain()->is_instance_of<OGLSwapchain>());
 
 			_glcontext = desc.getSwapchain()->downcast_pointer<OGLSwapchain>();
 			_glcontext->setActive(true);
@@ -275,7 +275,7 @@ namespace octoon
 		OGLCoreDeviceContext::setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept
 		{
 			assert(pipeline);
-			assert(pipeline->isInstanceOf<OGLCorePipeline>());
+			assert(pipeline->is_instance_of<OGLCorePipeline>());
 			assert(_glcontext->getActive());
 
 			auto glpipeline = pipeline->downcast_pointer<OGLCorePipeline>();
@@ -316,7 +316,7 @@ namespace octoon
 		OGLCoreDeviceContext::setDescriptorSet(const GraphicsDescriptorSetPtr& descriptorSet) noexcept
 		{
 			assert(descriptorSet);
-			assert(descriptorSet->isInstanceOf<OGLCoreDescriptorSet>());
+			assert(descriptorSet->is_instance_of<OGLCoreDescriptorSet>());
 			assert(_glcontext->getActive());
 
 			_descriptorSet = descriptorSet->downcast_pointer<OGLCoreDescriptorSet>();
@@ -333,7 +333,7 @@ namespace octoon
 		OGLCoreDeviceContext::setVertexBufferData(std::uint32_t i, const GraphicsDataPtr& data, std::intptr_t offset) noexcept
 		{
 			assert(data);
-			assert(data->isInstanceOf<OGLCoreGraphicsData>());
+			assert(data->is_instance_of<OGLCoreGraphicsData>());
 			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
 			assert(_vertexBuffers.size() > i);
 			assert(_glcontext->getActive());
@@ -359,7 +359,7 @@ namespace octoon
 		OGLCoreDeviceContext::setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset, GraphicsIndexType indexType) noexcept
 		{
 			assert(data);
-			assert(data->isInstanceOf<OGLCoreGraphicsData>());
+			assert(data->is_instance_of<OGLCoreGraphicsData>());
 			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
 			assert(indexType == GraphicsIndexType::GraphicsIndexTypeUInt16 || indexType == GraphicsIndexType::GraphicsIndexTypeUInt32);
 			assert(_glcontext->getActive());
@@ -387,7 +387,7 @@ namespace octoon
 		OGLCoreDeviceContext::generateMipmap(const GraphicsTexturePtr& texture) noexcept
 		{
 			assert(texture);
-			assert(texture->isInstanceOf<OGLCoreTexture>());
+			assert(texture->is_instance_of<OGLCoreTexture>());
 
 			auto gltexture = texture->downcast<OGLCoreTexture>();
 			auto textureID = gltexture->getInstanceID();
@@ -549,8 +549,8 @@ namespace octoon
 		OGLCoreDeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const Viewport& v1, const GraphicsFramebufferPtr& dest, const Viewport& v2) noexcept
 		{
 			assert(src);
-			assert(src->isInstanceOf<OGLCoreFramebuffer>());
-			assert(!dest || (dest && dest->isInstanceOf<OGLCoreFramebuffer>()));
+			assert(src->is_instance_of<OGLCoreFramebuffer>());
+			assert(!dest || (dest && dest->is_instance_of<OGLCoreFramebuffer>()));
 			assert(_glcontext->getActive());
 
 			auto readFramebuffer = src->downcast_pointer<OGLCoreFramebuffer>()->getInstanceID();

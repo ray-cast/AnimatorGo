@@ -21,16 +21,16 @@ namespace octoon
 	class GameAppListener final : public GameListener
 	{
 	public:
-		virtual void onMessage(const std::string& message) noexcept
+		virtual void on_message(const std::string& message) noexcept
 		{
 			std::cerr << message << std::endl;
 		}
 	};
 
 	GameApplication::GameApplication() noexcept
-		: isInitialize_(false)
-		, gameServer_(nullptr)
-		, gameListener_(std::make_shared<GameAppListener>())
+		: is_initialize_(false)
+		, game_server_(nullptr)
+		, game_listener_(std::make_shared<GameAppListener>())
 
 	{
 		std::locale::global(std::locale(""));
@@ -42,12 +42,12 @@ namespace octoon
 	}
 
 	bool
-	GameApplication::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h, float dpi) noexcept
+	GameApplication::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
 	{
-		if (isInitialize_)
+		if (is_initialize_)
 		{
-			if (gameListener_)
-				gameListener_->onMessage("Game Application has been opened.");
+			if (game_listener_)
+				game_listener_->on_message("Game Application has been opened.");
 
 			return false;
 		}
@@ -55,166 +55,166 @@ namespace octoon
 		auto local = setlocale(LC_ALL, "");
 		if (local)
 		{
-			if (gameListener_)
-				gameListener_->onMessage(std::string("Initializing : Local : ") + local);
+			if (game_listener_)
+				game_listener_->on_message(std::string("Initializing : Local : ") + local);
 		}
 
-		if (gameListener_)
-			gameListener_->onMessage("Initializing : Game Application.");
+		if (game_listener_)
+			game_listener_->on_message("Initializing : Game Application.");
 
-		if (gameListener_)
-			gameListener_->onMessage("Initializing : RTTI.");
+		if (game_listener_)
+			game_listener_->on_message("Initializing : RTTI.");
 
 		if (!runtime::RttiFactory::instance()->open())
 		{
-			if (gameListener_)
-				gameListener_->onMessage("Could not initialize with RTTI.");
+			if (game_listener_)
+				game_listener_->on_message("Could not initialize with RTTI.");
 
 			return false;
 		}
 
-		if (gameListener_)
-			gameListener_->onMessage("Initializing : Game Server.");
+		if (game_listener_)
+			game_listener_->on_message("Initializing : Game Server.");
 
-		gameServer_ = GameServer::instance();
-		gameServer_->_setGameApp(this);
-		gameServer_->setGameListener(gameListener_);
+		game_server_ = GameServer::instance();
+		game_server_->_set_game_app(this);
+		game_server_->set_game_listener(game_listener_);
 
-		if (!gameServer_->open())
+		if (!game_server_->open())
 			return false;
 
 #if OCTOON_FEATURE_INPUT_ENABLE
-		inputFeature_ = std::make_shared<InputFeature>(hwnd);
+		input_feature_ = std::make_shared<InputFeature>(hwnd);
 #endif
-		baseFeature_ = std::make_shared<GameBaseFeatures>();
+		base_feature_ = std::make_shared<GameBaseFeatures>();
 
 #if OCTOON_FEATURE_UI_ENABLE
-		guiFeature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h, dpi);
+		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
 #endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
-		this->addFeatures(inputFeature_);
+		this->add_feature(input_feature_);
 #endif
-		this->addFeatures(baseFeature_);
+		this->add_feature(base_feature_);
 
 #if OCTOON_FEATURE_UI_ENABLE
-		this->addFeatures(guiFeature_);
+		this->add_feature(gui_feature_);
 #endif
 
-		isInitialize_ = true;
-		return isInitialize_;
+		is_initialize_ = true;
+		return is_initialize_;
 	}
 
 	void
 	GameApplication::close() noexcept
 	{
-		if (gameListener_)
-			gameListener_->onMessage("Shutdown : Game Server.");
+		if (game_listener_)
+			game_listener_->on_message("Shutdown : Game Server.");
 
-		if (gameServer_)
+		if (game_server_)
 		{
-			gameServer_->close();
-			gameServer_ = nullptr;
+			game_server_->close();
+			game_server_ = nullptr;
 		}
 
-		if (gameListener_)
-			gameListener_->onMessage("Shutdown : IO Server.");
+		if (game_listener_)
+			game_listener_->on_message("Shutdown : IO Server.");
 	}
 
 	void
-	GameApplication::setGameListener(const GameListenerPtr& listener) noexcept
+	GameApplication::set_game_listener(const GameListenerPtr& listener) noexcept
 	{
-		gameServer_->setGameListener(listener);
+		game_server_->set_game_listener(listener);
 	}
 
 	const GameListenerPtr&
-	GameApplication::getGameListener() const noexcept
+	GameApplication::get_game_listener() const noexcept
 	{
-		return gameServer_->getGameListener();
+		return game_server_->get_game_listener();
 	}
 
 	bool
 	GameApplication::start() noexcept
 	{
-		if (gameServer_)
-			return gameServer_->start();
+		if (game_server_)
+			return game_server_->start();
 		return false;
 	}
 
 	void
 	GameApplication::stop() noexcept
 	{
-		if (gameServer_)
-			gameServer_->stop();
+		if (game_server_)
+			game_server_->stop();
 	}
 
 	bool
-	GameApplication::isQuitRequest() const noexcept
+	GameApplication::is_quit_request() const noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->isQuitRequest();
+		assert(game_server_);
+		return game_server_->is_quit_request();
 	}
 
 	bool
-	GameApplication::openScene(const GameScenePtr& scene) noexcept
+	GameApplication::open_scene(const GameScenePtr& scene) noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->addScene(scene);
+		assert(game_server_);
+		return game_server_->add_scene(scene);
 	}
 
 	bool
-	GameApplication::openScene(const std::string& name) noexcept
+	GameApplication::open_scene(const std::string& name) noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->openScene(name);
+		assert(game_server_);
+		return game_server_->open_scene(name);
 	}
 
 	void
-	GameApplication::closeScene(const GameScenePtr& name) noexcept
+	GameApplication::close_scene(const GameScenePtr& name) noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->closeScene(name);
+		assert(game_server_);
+		return game_server_->close_scene(name);
 	}
 
 	void
-	GameApplication::closeScene(const std::string& name) noexcept
+	GameApplication::close_scene(const std::string& name) noexcept
 	{
-		assert(gameServer_);
-		gameServer_->closeScene(name);
+		assert(game_server_);
+		game_server_->close_scene(name);
 	}
 
 	GameScenePtr
-	GameApplication::findScene(const std::string& name) noexcept
+	GameApplication::find_scene(const std::string& name) noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->findScene(name);
+		assert(game_server_);
+		return game_server_->find_scene(name);
 	}
 
 	bool
-	GameApplication::addFeatures(GameFeaturePtr& feature) noexcept
+	GameApplication::add_feature(GameFeaturePtr& feature) noexcept
 	{
-		assert(gameServer_);
-		return gameServer_->addFeature(feature);
+		assert(game_server_);
+		return game_server_->add_feature(feature);
 	}
 
 	void
-	GameApplication::removeFeatures(GameFeaturePtr& feature) noexcept
+	GameApplication::remove_feature(GameFeaturePtr& feature) noexcept
 	{
-		assert(gameServer_);
-		gameServer_->removeFeature(feature);
+		assert(game_server_);
+		game_server_->remove_feature(feature);
 	}
 
 	void
-	GameApplication::sendInputEvent(const input::InputEvent& event) noexcept
+	GameApplication::send_input_event(const input::InputEvent& event) noexcept
 	{
-		assert(gameServer_);
-		gameServer_->sendInputEvent(event);
+		assert(game_server_);
+		game_server_->send_input_event(event);
 	}
 
 	void
 	GameApplication::update() noexcept
 	{
-		assert(gameServer_);
-		gameServer_->update();
+		assert(game_server_);
+		game_server_->update();
 	}
 }

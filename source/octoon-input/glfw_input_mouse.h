@@ -21,7 +21,7 @@ namespace octoon
 
 			void onChangePosition(int x, int y) noexcept;
 
-			void onInputEvent(const InputEvent& event) noexcept;
+			void on_input_event(const InputEvent& event) noexcept;
 
 		private:
 			GLFWInputMouse(const GLFWInputMouse&) = delete;

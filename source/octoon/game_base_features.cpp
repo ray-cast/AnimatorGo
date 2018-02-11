@@ -15,23 +15,23 @@ namespace octoon
 	}
 
 	void
-	GameBaseFeatures::onFrameBegin() noexcept
+	GameBaseFeatures::on_frame_begin() noexcept
 	{
-		GameSceneManager::instance()->onFrameBegin();
-		GameObjectManager::instance()->onFrameBegin();
+		GameSceneManager::instance()->on_frame_begin();
+		GameObjectManager::instance()->on_frame_begin();
 	}
 
 	void
-	GameBaseFeatures::onFrame() noexcept
+	GameBaseFeatures::on_frame() noexcept
 	{
-		GameSceneManager::instance()->onFrame();
-		GameObjectManager::instance()->onFrame();
+		GameSceneManager::instance()->on_frame();
+		GameObjectManager::instance()->on_frame();
 	}
 
 	void
-	GameBaseFeatures::onFrameEnd() noexcept
+	GameBaseFeatures::on_frame_end() noexcept
 	{
-		GameSceneManager::instance()->onFrameEnd();
-		GameObjectManager::instance()->onFrameEnd();
+		GameSceneManager::instance()->on_frame_end();
+		GameObjectManager::instance()->on_frame_end();
 	}
 }

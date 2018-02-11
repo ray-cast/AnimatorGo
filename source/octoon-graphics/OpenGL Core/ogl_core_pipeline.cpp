@@ -29,10 +29,10 @@ namespace octoon
 			assert(pipelineDesc.getGraphicsProgram());
 			assert(pipelineDesc.getGraphicsInputLayout());
 			assert(pipelineDesc.getGraphicsDescriptorSetLayout());
-			assert(pipelineDesc.getGraphicsState()->isInstanceOf<OGLGraphicsState>());
-			assert(pipelineDesc.getGraphicsProgram()->isInstanceOf<OGLProgram>());
-			assert(pipelineDesc.getGraphicsInputLayout()->isInstanceOf<OGLInputLayout>());
-			assert(pipelineDesc.getGraphicsDescriptorSetLayout()->isInstanceOf<OGLDescriptorSetLayout>());
+			assert(pipelineDesc.getGraphicsState()->is_instance_of<OGLGraphicsState>());
+			assert(pipelineDesc.getGraphicsProgram()->is_instance_of<OGLProgram>());
+			assert(pipelineDesc.getGraphicsInputLayout()->is_instance_of<OGLInputLayout>());
+			assert(pipelineDesc.getGraphicsDescriptorSetLayout()->is_instance_of<OGLDescriptorSetLayout>());
 
 			std::uint16_t offset = 0;
 

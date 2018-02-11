@@ -19,55 +19,55 @@ namespace octoon
 			virtual bool open(InputDevicePtr&& device) noexcept;
 			virtual void close() noexcept;
 
-			virtual void setCaptureObject(WindHandle window) noexcept;
-			virtual WindHandle getCaptureObject() const noexcept;
+			virtual void set_capture_object(WindHandle window) noexcept;
+			virtual WindHandle get_capture_object() const noexcept;
 
-			virtual float getAxis(InputAxis::Code axis) const noexcept;
+			virtual float get_axis(InputAxis::Code axis) const noexcept;
 
-			virtual void setMousePos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept;
-			virtual void getMousePos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept;
+			virtual void set_mouse_pos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept;
+			virtual void get_mouse_pos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept;
 
-			virtual bool isKeyDown(InputKey::Code key) const noexcept;
-			virtual bool isKeyUp(InputKey::Code key) const noexcept;
-			virtual bool isKeyPressed(InputKey::Code key) const noexcept;
+			virtual bool is_key_down(InputKey::Code key) const noexcept;
+			virtual bool is_key_up(InputKey::Code key) const noexcept;
+			virtual bool is_key_pressed(InputKey::Code key) const noexcept;
 
-			virtual bool isButtonDown(InputButton::Code key) const noexcept;
-			virtual bool isButtonUp(InputButton::Code key) const noexcept;
-			virtual bool isButtonPressed(InputButton::Code key) const noexcept;
+			virtual bool is_button_down(InputButton::Code key) const noexcept;
+			virtual bool is_button_up(InputButton::Code key) const noexcept;
+			virtual bool is_button_pressed(InputButton::Code key) const noexcept;
 
-			virtual void showCursor(bool show) noexcept;
-			virtual bool isShowCursor() const noexcept;
+			virtual void show_cursor(bool show) noexcept;
+			virtual bool is_show_cursor() const noexcept;
 
-			virtual void lockCursor(bool lock) noexcept;
-			virtual bool isLockedCursor() const noexcept;
+			virtual void lock_cursor(bool lock) noexcept;
+			virtual bool is_locked_cursor() const noexcept;
 
-			virtual void obtainMouseCapture() noexcept;
-			virtual void obtainKeyboardCapture() noexcept;
+			virtual void obtain_mouse_capture() noexcept;
+			virtual void obtain_keyboard_capture() noexcept;
 
-			virtual void obtainMouseCapture(InputMousePtr& mouse) noexcept;
-			virtual void obtainMouseCapture(InputMousePtr&& mouse) noexcept;
-			virtual void obtainKeyboardCapture(InputKeyboardPtr& key) noexcept;
-			virtual void obtainKeyboardCapture(InputKeyboardPtr&& key) noexcept;
-			virtual void obtainCapture() noexcept;
+			virtual void obtain_mouse_capture(InputMousePtr& mouse) noexcept;
+			virtual void obtain_mouse_capture(InputMousePtr&& mouse) noexcept;
+			virtual void obtain_keyboard_capture(InputKeyboardPtr& key) noexcept;
+			virtual void obtain_keyboard_capture(InputKeyboardPtr&& key) noexcept;
+			virtual void obtain_capture() noexcept;
 
-			virtual void releaseMouseCapture() noexcept;
-			virtual void releaseKeyboardCapture() noexcept;
-			virtual void releaseCapture() noexcept;
+			virtual void release_mouse_capture() noexcept;
+			virtual void release_keyboard_capture() noexcept;
+			virtual void release_capture() noexcept;
 
 			virtual void reset() noexcept;
 
-			virtual void addInputListener(InputListenerPtr& listener) noexcept;
-			virtual void addInputListener(InputListenerPtr&& listener) noexcept;
-			virtual void removeInputListener(InputListenerPtr& listener) noexcept;
-			virtual void removeInputListener(InputListenerPtr&& listener) noexcept;
-			virtual void clearInputListener() noexcept;
+			virtual void add_input_listener(InputListenerPtr& listener) noexcept;
+			virtual void add_input_listener(InputListenerPtr&& listener) noexcept;
+			virtual void remove_input_listener(InputListenerPtr& listener) noexcept;
+			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept;
+			virtual void clear_input_listener() noexcept;
 
-			virtual bool sendInputEvent(const InputEvent& event) noexcept;
-			virtual bool postInputEvent(const InputEvent& event) noexcept;
+			virtual bool send_input_event(const InputEvent& event) noexcept;
+			virtual bool post_input_event(const InputEvent& event) noexcept;
 
-			virtual void updateBegin() noexcept;
+			virtual void update_begin() noexcept;
 			virtual void update() noexcept;
-			virtual void updateEnd() noexcept;
+			virtual void update_end() noexcept;
 
 			virtual InputPtr clone() const noexcept;
 
@@ -76,9 +76,9 @@ namespace octoon
 			DefaultInput& operator=(const DefaultInput&) noexcept = delete;
 
 		private:
-			InputDevicePtr _inputDevice;
-			InputMousePtr _mouseCaptureDevice;
-			InputKeyboardPtr _keyboardCaptureDevice;
+			InputDevicePtr input_device_;
+			InputMousePtr mouse_capture_device_;
+			InputKeyboardPtr keyboard_capture_device_;
 		};
 	}
 }

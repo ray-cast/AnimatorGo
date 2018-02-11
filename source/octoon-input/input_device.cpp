@@ -13,95 +13,95 @@ namespace octoon
 
 		DefaultInputDevice::~DefaultInputDevice() noexcept
 		{
-			this->clearInputListener();
+			this->clear_input_listener();
 		}
 
 		void
-		DefaultInputDevice::setCaptureObject(WindHandle window) noexcept
+		DefaultInputDevice::set_capture_object(WindHandle window) noexcept
 		{
 		}
 
 		WindHandle
-		DefaultInputDevice::getCaptureObject() const noexcept
+		DefaultInputDevice::get_capture_object() const noexcept
 		{
 			return nullptr;
 		}
 
 		void
-		DefaultInputDevice::enableEventPosting(bool enable) noexcept
+		DefaultInputDevice::enable_event_posting(bool enable) noexcept
 		{
 			enableEventPosting_ = enable;
 		}
 
 		bool
-		DefaultInputDevice::enableEventPosting() const noexcept
+		DefaultInputDevice::enable_event_posting() const noexcept
 		{
 			return enableEventPosting_;
 		}
 
 		void
-		DefaultInputDevice::addInputListener(InputListenerPtr& listener) noexcept
+		DefaultInputDevice::add_input_listener(InputListenerPtr& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
 			if (it == inputListeners_.end())
 			{
-				listener->onAttach();
+				listener->on_attach();
 				inputListeners_.push_back(listener);
 			}
 		}
 
 		void
-		DefaultInputDevice::addInputListener(InputListenerPtr&& listener) noexcept
+		DefaultInputDevice::add_input_listener(InputListenerPtr&& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
 			if (it == inputListeners_.end())
 			{
-				listener->onAttach();
+				listener->on_attach();
 				inputListeners_.push_back(std::move(listener));
 			}
 		}
 
 		void
-		DefaultInputDevice::removeInputListener(InputListenerPtr& listener) noexcept
+		DefaultInputDevice::remove_input_listener(InputListenerPtr& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
 			if (it != inputListeners_.end())
 			{
-				listener->onDetach();
+				listener->on_detach();
 				inputListeners_.erase(it);
 			}
 		}
 
 		void
-		DefaultInputDevice::removeInputListener(InputListenerPtr&& listener) noexcept
+		DefaultInputDevice::remove_input_listener(InputListenerPtr&& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
 			if (it != inputListeners_.end())
 			{
-				listener->onDetach();
+				listener->on_detach();
 				inputListeners_.erase(it);
 			}
 		}
 
 		void
-		DefaultInputDevice::clearInputListener() noexcept
+		DefaultInputDevice::clear_input_listener() noexcept
 		{
 			for (auto& listener : inputListeners_)
-				listener->onDetach();
+				listener->on_detach();
 			inputListeners_.clear();
 		}
 
 		bool
-		DefaultInputDevice::sendEvent(const InputEvent& event) noexcept
+		DefaultInputDevice::send_event(const InputEvent& event) noexcept
 		{
 			try
 			{
 				for (auto& it : inputListeners_)
-					it->onInputEvent(event);
+					it->on_input_event(event);
 				return true;
 			}
 			catch (...)
@@ -111,7 +111,7 @@ namespace octoon
 		}
 
 		bool
-		DefaultInputDevice::postEvent(const InputEvent& event) noexcept
+		DefaultInputDevice::post_event(const InputEvent& event) noexcept
 		{
 			if (enableEventPosting_)
 			{
@@ -126,13 +126,13 @@ namespace octoon
 		}
 
 		bool
-		DefaultInputDevice::peekEvents(InputEvent& event) noexcept
+		DefaultInputDevice::peek_events(InputEvent& event) noexcept
 		{
 			return true;
 		}
 
 		bool
-		DefaultInputDevice::pollEvents(InputEvent& event) noexcept
+		DefaultInputDevice::poll_events(InputEvent& event) noexcept
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
 			if (lock)
@@ -149,7 +149,7 @@ namespace octoon
 		}
 
 		bool
-		DefaultInputDevice::waitEvents(InputEvent& event) noexcept
+		DefaultInputDevice::wait_events(InputEvent& event) noexcept
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
 			if (events_.empty())
@@ -157,11 +157,11 @@ namespace octoon
 				dispose_.wait(lock);
 			}
 
-			return this->pollEvents(event);
+			return this->poll_events(event);
 		}
 
 		bool
-		DefaultInputDevice::waitEvents(InputEvent& event, int timeout) noexcept
+		DefaultInputDevice::wait_events(InputEvent& event, int timeout) noexcept
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
 			if (events_.empty())
@@ -169,11 +169,11 @@ namespace octoon
 				dispose_.wait_for(lock, std::chrono::milliseconds(timeout));
 			}
 
-			return this->pollEvents(event);
+			return this->poll_events(event);
 		}
 
 		void
-		DefaultInputDevice::flushEvent() noexcept
+		DefaultInputDevice::flush_event() noexcept
 		{
 			mutex_.lock();
 			events_ = std::queue<InputEvent>();

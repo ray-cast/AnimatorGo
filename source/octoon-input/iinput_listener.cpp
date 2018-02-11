@@ -7,12 +7,12 @@ namespace octoon
 		OctoonImplementSubInterface(IInputListener, runtime::RttiInterface, "IInputListener")
 
 		void
-		IInputListener::onAttach() noexcept
+		IInputListener::on_attach() noexcept
 		{
 		}
 
 		void
-		IInputListener::onDetach() noexcept
+		IInputListener::on_detach() noexcept
 		{
 		}
 	}

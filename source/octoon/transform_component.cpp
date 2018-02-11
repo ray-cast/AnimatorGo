@@ -5,14 +5,14 @@ namespace octoon
 	OctoonImplementSubClass(TransformComponent, GameComponent, "TransformComponent")
 
 	TransformComponent::TransformComponent() noexcept
-		: localScaling_(math::float3::One)
-		, localTranslate_(math::float3::Zero)
-		, localRotation_(math::Quaternion::Zero)
-		, worldScaling_(math::float3::One)
-		, worldTranslate_(math::float3::Zero)
-		, worldRotation_(math::Quaternion::Zero)
-		, localNeedUpdates_(true)
-		, worldNeedUpdates_(true)
+		: local_scaling_(math::float3::One)
+		, local_translate_(math::float3::Zero)
+		, local_rotation_(math::Quaternion::Zero)
+		, world_scaling_(math::float3::One)
+		, world_translate_(math::float3::Zero)
+		, world_rotation_(math::Quaternion::Zero)
+		, local_need_updates_(true)
+		, world_need_updates_(true)
 	{
 	}
 
@@ -21,279 +21,279 @@ namespace octoon
 	}
 
 	void
-	TransformComponent::setTranslate(const math::float3& pos) noexcept
+	TransformComponent::set_translate(const math::float3& pos) noexcept
 	{
-		if (localTranslate_ != pos)
+		if (local_translate_ != pos)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			localTranslate_ = pos;
-			localNeedUpdates_ = true;
+			local_translate_ = pos;
+			local_need_updates_ = true;
 
-			this->_updateLocalChildren();
-			this->_onMoveAfter();
+			this->update_local_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setTranslateAccum(const math::float3& v) noexcept
+	TransformComponent::set_translateAccum(const math::float3& v) noexcept
 	{
-		this->setTranslate(localTranslate_ + v);
+		this->set_translate(local_translate_ + v);
 	}
 
 	const math::float3&
-	TransformComponent::getTranslate() const noexcept
+	TransformComponent::get_translate() const noexcept
 	{
-		_updateLocalTransform();
-		return localTranslate_;
+		update_local_transform();
+		return local_translate_;
 	}
 
 	void
-	TransformComponent::setScale(const math::float3& scale) noexcept
+	TransformComponent::set_scale(const math::float3& scale) noexcept
 	{
-		if (localScaling_ != scale)
+		if (local_scaling_ != scale)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			localScaling_ = scale;
-			localNeedUpdates_ = true;
+			local_scaling_ = scale;
+			local_need_updates_ = true;
 
-			this->_updateLocalChildren();
-			this->_onMoveAfter();
+			this->update_local_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setScaleAll(const float scale) noexcept
+	TransformComponent::set_scale_all(const float scale) noexcept
 	{
-		this->setScale(math::float3(scale, scale, scale));
+		this->set_scale(math::float3(scale, scale, scale));
 	}
 
 	void
-	TransformComponent::setScaleAccum(const math::float3& scale) noexcept
+	TransformComponent::set_scale_accum(const math::float3& scale) noexcept
 	{
-		this->setScale(localScaling_ + scale);
+		this->set_scale(local_scaling_ + scale);
 	}
 
 	const math::float3&
-	TransformComponent::getScale() const noexcept
+	TransformComponent::get_scale() const noexcept
 	{
-		_updateLocalTransform();
-		return localScaling_;
+		update_local_transform();
+		return local_scaling_;
 	}
 
 	void
-	TransformComponent::setQuaternion(const math::Quaternion& quat) noexcept
+	TransformComponent::set_quaternion(const math::Quaternion& quat) noexcept
 	{
-		if (localRotation_ != quat)
+		if (local_rotation_ != quat)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			localRotation_ = quat;
-			localNeedUpdates_ = true;
+			local_rotation_ = quat;
+			local_need_updates_ = true;
 
-			this->_updateLocalChildren();
-			this->_onMoveAfter();
+			this->update_local_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setQuaternionAccum(const math::Quaternion& quat) noexcept
+	TransformComponent::set_quaternion_accum(const math::Quaternion& quat) noexcept
 	{
-		this->setQuaternion(math::cross(quat, localRotation_));
+		this->set_quaternion(math::cross(quat, local_rotation_));
 	}
 
 	const math::Quaternion&
-	TransformComponent::getQuaternion() const noexcept
+	TransformComponent::get_quaternion() const noexcept
 	{
-		_updateLocalTransform();
-		return localRotation_;
+		update_local_transform();
+		return local_rotation_;
 	}
 
 	const math::float3&
-	TransformComponent::getRight() const noexcept
+	TransformComponent::get_right() const noexcept
 	{
-		_updateLocalTransform();
-		return math::right(localTransform_);
+		update_local_transform();
+		return math::right(local_transform_);
 	}
 
 	const math::float3&
-	TransformComponent::getUpVector() const noexcept
+	TransformComponent::get_up() const noexcept
 	{
-		_updateLocalTransform();
-		return math::up(localTransform_);
+		update_local_transform();
+		return math::up(local_transform_);
 	}
 
 	const math::float3&
-	TransformComponent::getForward() const noexcept
+	TransformComponent::get_forward() const noexcept
 	{
-		_updateLocalTransform();
-		return math::forward(localTransform_);
+		update_local_transform();
+		return math::forward(local_transform_);
 	}
 
 	void
-	TransformComponent::setTransform(const math::float4x4& transform) noexcept
+	TransformComponent::set_transform(const math::float4x4& transform) noexcept
 	{
-		this->_onMoveBefore();
+		this->on_move_before();
 
-		localTransform_ = transform.get_transform(localTranslate_, localRotation_, localScaling_);
-		localNeedUpdates_ = false;
+		local_transform_ = transform.get_transform(local_translate_, local_rotation_, local_scaling_);
+		local_need_updates_ = false;
 
-		this->_updateLocalChildren();
-		this->_onMoveAfter();
+		this->update_local_children();
+		this->on_move_after();
 	}
 
 	void
-	TransformComponent::setTransformOnlyRotate(const math::float4x4& transform) noexcept
+	TransformComponent::set_transform_only_rotate(const math::float4x4& transform) noexcept
 	{
-		this->_onMoveBefore();
+		this->on_move_before();
 
-		localTransform_ = transform.get_transform_without_scaler(localTranslate_, localRotation_);
-		localTransform_.scale(localScaling_);
-		localNeedUpdates_ = false;
+		local_transform_ = transform.get_transform_without_scaler(local_translate_, local_rotation_);
+		local_transform_.scale(local_scaling_);
+		local_need_updates_ = false;
 
-		this->_updateLocalChildren();
-		this->_onMoveAfter();
+		this->update_local_children();
+		this->on_move_after();
 	}
 
 	const math::float4x4&
-	TransformComponent::getTransform() const noexcept
+	TransformComponent::get_transform() const noexcept
 	{
-		this->_updateLocalTransform();
-		return localTransform_;
+		this->update_local_transform();
+		return local_transform_;
 	}
 
 	const math::float4x4&
-	TransformComponent::getTransformInverse() const noexcept
+	TransformComponent::get_transform_inverse() const noexcept
 	{
-		this->_updateLocalTransform();
-		return localTransformInverse_;
+		this->update_local_transform();
+		return local_transform_inverse_;
 	}
 
 	void
-	TransformComponent::setWorldTranslate(const math::float3& pos) noexcept
+	TransformComponent::set_world_translate(const math::float3& pos) noexcept
 	{
-		if (worldTranslate_ != pos)
+		if (world_translate_ != pos)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			worldTranslate_ = pos;
-			worldNeedUpdates_ = true;
+			world_translate_ = pos;
+			world_need_updates_ = true;
 
-			this->_updateWorldChildren();
-			this->_onMoveAfter();
+			this->update_world_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setWorldTranslateAccum(const math::float3& v) noexcept
+	TransformComponent::set_world_translate_accum(const math::float3& v) noexcept
 	{
-		this->setWorldTranslate(worldTranslate_ + v);
+		this->set_world_translate(world_translate_ + v);
 	}
 
 	const math::float3&
-	TransformComponent::getWorldTranslate() const noexcept
+	TransformComponent::get_world_translate() const noexcept
 	{
-		_updateWorldTransform();
-		return worldTranslate_;
+		update_world_transform();
+		return world_translate_;
 	}
 
 	void
-	TransformComponent::setWorldScale(const math::float3& pos) noexcept
+	TransformComponent::set_world_scale(const math::float3& pos) noexcept
 	{
-		if (worldScaling_ != pos)
+		if (world_scaling_ != pos)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			worldScaling_ = pos;
-			worldNeedUpdates_ = true;
+			world_scaling_ = pos;
+			world_need_updates_ = true;
 
-			this->_updateWorldChildren();
-			this->_onMoveAfter();
+			this->update_world_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setWorldScaleAccum(const math::float3& scale) noexcept
+	TransformComponent::set_world_scaleAccum(const math::float3& scale) noexcept
 	{
-		this->setWorldScale(worldScaling_ + scale);
+		this->set_world_scale(world_scaling_ + scale);
 	}
 
 	const math::float3&
-	TransformComponent::getWorldScale() const noexcept
+	TransformComponent::get_world_scale() const noexcept
 	{
-		_updateWorldTransform();
-		return worldScaling_;
+		update_world_transform();
+		return world_scaling_;
 	}
 
 	void
-	TransformComponent::setWorldQuaternion(const math::Quaternion& quat) noexcept
+	TransformComponent::set_world_quaternion(const math::Quaternion& quat) noexcept
 	{
-		if (worldRotation_ != quat)
+		if (world_rotation_ != quat)
 		{
-			this->_onMoveBefore();
+			this->on_move_before();
 
-			worldRotation_ = quat;
-			worldNeedUpdates_ = true;
+			world_rotation_ = quat;
+			world_need_updates_ = true;
 
-			this->_updateWorldChildren();
-			this->_onMoveAfter();
+			this->update_world_children();
+			this->on_move_after();
 		}
 	}
 
 	void
-	TransformComponent::setWorldQuaternionAccum(const math::Quaternion& quat) noexcept
+	TransformComponent::set_world_quaternion_accum(const math::Quaternion& quat) noexcept
 	{
-		this->setQuaternion(math::cross(quat, worldRotation_));
+		this->set_quaternion(math::cross(quat, world_rotation_));
 	}
 
 	const math::Quaternion&
-	TransformComponent::getWorldQuaternion() const noexcept
+	TransformComponent::get_world_quaternion() const noexcept
 	{
-		_updateWorldTransform();
-		return worldRotation_;
+		update_world_transform();
+		return world_rotation_;
 	}
 
 	void
-	TransformComponent::setWorldTransform(const math::float4x4& transform) noexcept
+	TransformComponent::set_world_transform(const math::float4x4& transform) noexcept
 	{
-		this->_onMoveBefore();
+		this->on_move_before();
 
-		worldTransform_ = transform.get_transform(worldTranslate_, worldRotation_, worldScaling_);
-		worldTransformInverse_ = math::transform_inverse(worldTransform_);
-		worldNeedUpdates_ = false;
+		world_transform_ = transform.get_transform(world_translate_, world_rotation_, world_scaling_);
+		world_transform_inverse_ = math::transform_inverse(world_transform_);
+		world_need_updates_ = false;
 
-		this->_updateWorldChildren();
-		this->_onMoveAfter();
+		this->update_world_children();
+		this->on_move_after();
 	}
 
 	void
-	TransformComponent::setWorldTransformOnlyRotate(const math::float4x4& transform) noexcept
+	TransformComponent::set_world_transform_only_rotate(const math::float4x4& transform) noexcept
 	{
-		this->_onMoveBefore();
+		this->on_move_before();
 
-		worldTransform_ = transform.get_transform_without_scaler(worldTranslate_, worldRotation_);
-		worldTransform_.scale(worldScaling_);
-		worldTransformInverse_ = math::transform_inverse(worldTransform_);
+		world_transform_ = transform.get_transform_without_scaler(world_translate_, world_rotation_);
+		world_transform_.scale(world_scaling_);
+		world_transform_inverse_ = math::transform_inverse(world_transform_);
 
-		worldNeedUpdates_ = false;
+		world_need_updates_ = false;
 
-		this->_updateWorldChildren();
-		this->_onMoveAfter();
+		this->update_world_children();
+		this->on_move_after();
 	}
 
 	const math::float4x4&
-	TransformComponent::getWorldTransform() const noexcept
+	TransformComponent::get_world_transform() const noexcept
 	{
-		this->_updateWorldTransform();
-		return worldTransform_;
+		this->update_world_transform();
+		return world_transform_;
 	}
 
 	const math::float4x4&
-	TransformComponent::getWorldTransformInverse() const noexcept
+	TransformComponent::get_world_transform_inverse() const noexcept
 	{
-		this->_updateWorldTransform();
-		return worldTransformInverse_;
+		this->update_world_transform();
+		return world_transform_inverse_;
 	}
 
 	GameComponentPtr
@@ -303,92 +303,92 @@ namespace octoon
 	}
 
 	void
-	TransformComponent::_onMoveBefore() except
+	TransformComponent::on_move_before() except
 	{
-		this->getGameObject()->_onMoveBefore();
+		this->get_game_object()->on_move_before();
 	}
 
 	void
-	TransformComponent::_onMoveAfter() except
+	TransformComponent::on_move_after() except
 	{
-		this->getGameObject()->_onMoveAfter();
+		this->get_game_object()->on_move_after();
 	}
 
 	void
-	TransformComponent::_updateLocalChildren() const noexcept
+	TransformComponent::update_local_children() const noexcept
 	{
-		worldNeedUpdates_ = true;
+		world_need_updates_ = true;
 
-		for (auto& it : this->getGameObject()->getChildren())
-			it->getComponent<TransformComponent>()->_updateLocalChildren();
+		for (auto& it : this->get_game_object()->get_children())
+			it->get_component<TransformComponent>()->update_local_children();
 	}
 
 	void
-	TransformComponent::_updateWorldChildren() const noexcept
+	TransformComponent::update_world_children() const noexcept
 	{
-		this->_updateParentTransform();
-		this->_updateLocalChildren();
+		this->update_parent_transform();
+		this->update_local_children();
 	}
 
 	void
-	TransformComponent::_updateLocalTransform() const noexcept
+	TransformComponent::update_local_transform() const noexcept
 	{
-		if (localNeedUpdates_)
+		if (local_need_updates_)
 		{
-			localTransform_.make_transform(localTranslate_, localRotation_, localScaling_);
-			localTransformInverse_ = math::transform_inverse(localTransform_);
+			local_transform_.make_transform(local_translate_, local_rotation_, local_scaling_);
+			local_transform_inverse_ = math::transform_inverse(local_transform_);
 
-			localNeedUpdates_ = false;
+			local_need_updates_ = false;
 		}
 	}
 
 	void
-	TransformComponent::_updateWorldTransform() const noexcept
+	TransformComponent::update_world_transform() const noexcept
 	{
-		if (worldNeedUpdates_)
+		if (world_need_updates_)
 		{
-			auto parent = this->getGameObject()->getParent();
+			auto parent = this->get_game_object()->get_parent();
 			if (parent)
 			{
-				auto& baseTransform = parent->getComponent<TransformComponent>()->getWorldTransform();
-				worldTransform_ = math::transform_multiply(baseTransform, this->getTransform());
-				worldTransform_.get_transform(worldTranslate_, worldRotation_, worldScaling_);
-				worldTransformInverse_ = math::transform_inverse(worldTransform_);
+				auto& baseTransform = parent->get_component<TransformComponent>()->get_world_transform();
+				world_transform_ = math::transform_multiply(baseTransform, this->get_transform());
+				world_transform_.get_transform(world_translate_, world_rotation_, world_scaling_);
+				world_transform_inverse_ = math::transform_inverse(world_transform_);
 			}
 			else
 			{
-				worldTranslate_ = localTranslate_;
-				worldScaling_ = localScaling_;
-				worldRotation_ = localRotation_;
-				worldTransform_.make_transform(worldTranslate_, worldRotation_, worldScaling_);
-				worldTransformInverse_ = math::transform_inverse(worldTransform_);
+				world_translate_ = local_translate_;
+				world_scaling_ = local_scaling_;
+				world_rotation_ = local_rotation_;
+				world_transform_.make_transform(world_translate_, world_rotation_, world_scaling_);
+				world_transform_inverse_ = math::transform_inverse(world_transform_);
 			}
 
-			worldNeedUpdates_ = false;
+			world_need_updates_ = false;
 		}
 	}
 
 	void
-	TransformComponent::_updateParentTransform() const noexcept
+	TransformComponent::update_parent_transform() const noexcept
 	{
-		if (worldNeedUpdates_)
+		if (world_need_updates_)
 		{
-			worldTransform_.make_transform(worldTranslate_, worldRotation_, worldScaling_);
-			worldNeedUpdates_ = false;
+			world_transform_.make_transform(world_translate_, world_rotation_, world_scaling_);
+			world_need_updates_ = false;
 		}
 
-		auto parent = this->getGameObject()->getParent();
+		auto parent = this->get_game_object()->get_parent();
 		if (parent)
 		{
-			auto& baseTransformInverse = parent->getComponent<TransformComponent>()->getWorldTransformInverse();
-			localTransform_ = math::transform_multiply(baseTransformInverse, worldTransform_);
-			localTransform_.get_transform(localTranslate_, localRotation_, localScaling_);
+			auto& baseTransformInverse = parent->get_component<TransformComponent>()->get_world_transform_inverse();
+			local_transform_ = math::transform_multiply(baseTransformInverse, world_transform_);
+			local_transform_.get_transform(local_translate_, local_rotation_, local_scaling_);
 		}
 		else
 		{
-			localScaling_ = worldScaling_;
-			localRotation_ = worldRotation_;
-			localTranslate_ = worldTranslate_;
+			local_scaling_ = world_scaling_;
+			local_rotation_ = world_rotation_;
+			local_translate_ = world_translate_;
 		}
 	}
 }

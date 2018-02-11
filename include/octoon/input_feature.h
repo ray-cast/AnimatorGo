@@ -14,19 +14,16 @@ namespace octoon
 		InputFeature(input::WindHandle hwnd) noexcept;
 		virtual ~InputFeature() noexcept;
 
-		void setInput(input::InputPtr input) noexcept;
-		input::InputPtr getInput() const noexcept;
-
 	private:
-		virtual void onActivate() except;
-		virtual void onDeactivate() noexcept;
+		virtual void on_activate() except;
+		virtual void on_deactivate() noexcept;
 
-		virtual void onInputEvent(const input::InputEvent& event) noexcept;
+		virtual void on_input_event(const input::InputEvent& event) noexcept;
 
-		virtual void onReset() noexcept;
+		virtual void on_reset() noexcept;
 
-		virtual void onFrameBegin() noexcept;
-		virtual void onFrameEnd() noexcept;
+		virtual void on_frame_begin() noexcept;
+		virtual void on_frame_end() noexcept;
 
 	private:
 		InputFeature(const InputFeature&) = delete;

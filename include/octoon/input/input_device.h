@@ -18,26 +18,26 @@ namespace octoon
 			DefaultInputDevice() noexcept;
 			virtual ~DefaultInputDevice() noexcept;
 
-			virtual void setCaptureObject(WindHandle window) noexcept;
-			virtual WindHandle getCaptureObject() const noexcept;
+			virtual void set_capture_object(WindHandle window) noexcept;
+			virtual WindHandle get_capture_object() const noexcept;
 
-			virtual void enableEventPosting(bool enable) noexcept;
-			virtual bool enableEventPosting() const noexcept;
+			virtual void enable_event_posting(bool enable) noexcept;
+			virtual bool enable_event_posting() const noexcept;
 
-			virtual void addInputListener(InputListenerPtr& listener) noexcept;
-			virtual void addInputListener(InputListenerPtr&& listener) noexcept;
-			virtual void removeInputListener(InputListenerPtr& listener) noexcept;
-			virtual void removeInputListener(InputListenerPtr&& listener) noexcept;
-			virtual void clearInputListener() noexcept;
+			virtual void add_input_listener(InputListenerPtr& listener) noexcept;
+			virtual void add_input_listener(InputListenerPtr&& listener) noexcept;
+			virtual void remove_input_listener(InputListenerPtr& listener) noexcept;
+			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept;
+			virtual void clear_input_listener() noexcept;
 
-			virtual bool sendEvent(const InputEvent& event) noexcept;
-			virtual bool postEvent(const InputEvent& event) noexcept;
+			virtual bool send_event(const InputEvent& event) noexcept;
+			virtual bool post_event(const InputEvent& event) noexcept;
 
-			virtual bool peekEvents(InputEvent& event) noexcept;
-			virtual bool pollEvents(InputEvent& event) noexcept;
-			virtual bool waitEvents(InputEvent& event) noexcept;
-			virtual bool waitEvents(InputEvent& event, int timeout) noexcept;
-			virtual void flushEvent() noexcept;
+			virtual bool peek_events(InputEvent& event) noexcept;
+			virtual bool poll_events(InputEvent& event) noexcept;
+			virtual bool wait_events(InputEvent& event) noexcept;
+			virtual bool wait_events(InputEvent& event, int timeout) noexcept;
+			virtual void flush_event() noexcept;
 
 			virtual InputDevicePtr clone() const noexcept;
 
@@ -46,7 +46,6 @@ namespace octoon
 			DefaultInputDevice& operator=(const DefaultInputDevice&) noexcept = delete;
 
 		private:
-
 			typedef std::queue<InputEvent>  InputEvents;
 			typedef std::vector<InputListenerPtr> InputListeners;
 

@@ -8,7 +8,7 @@ namespace octoon
 
 		DefaultInputKeyboard::DefaultInputKeyboard() noexcept
 		{
-			std::memset(keyState_, 0, sizeof(keyState_));
+			std::memset(key_state_, 0, sizeof(key_state_));
 		}
 
 		DefaultInputKeyboard::~DefaultInputKeyboard() noexcept
@@ -16,24 +16,24 @@ namespace octoon
 		}
 
 		bool
-		DefaultInputKeyboard::isKeyDown(InputKey::Code key) const noexcept
+		DefaultInputKeyboard::is_key_down(InputKey::Code key) const noexcept
 		{
 			assert(key < InputKey::Code::NumKeyCodes);
-			return keyState_[key].down;
+			return key_state_[key].down;
 		}
 
 		bool
-		DefaultInputKeyboard::isKeyUp(InputKey::Code key) const noexcept
+		DefaultInputKeyboard::is_key_up(InputKey::Code key) const noexcept
 		{
 			assert(key < InputKey::Code::NumKeyCodes);
-			return keyState_[key].up;
+			return key_state_[key].up;
 		}
 
 		bool
-		DefaultInputKeyboard::isKeyPressed(InputKey::Code key) const noexcept
+		DefaultInputKeyboard::is_key_pressed(InputKey::Code key) const noexcept
 		{
 			assert(key < InputKey::Code::NumKeyCodes);
-			return keyState_[key].pressed;
+			return key_state_[key].pressed;
 		}
 
 		InputKeyboardPtr
@@ -43,11 +43,11 @@ namespace octoon
 		}
 
 		void
-		DefaultInputKeyboard::onFrameEnd() noexcept
+		DefaultInputKeyboard::on_frame_end() noexcept
 		{
 			for (std::size_t i = 0; i < InputKey::NumKeyCodes; i++)
 			{
-				auto& key = keyState_[i];
+				auto& key = key_state_[i];
 
 				if (key.up)
 					key.pressed = false;
@@ -58,9 +58,9 @@ namespace octoon
 		}
 
 		void
-		DefaultInputKeyboard::onObtainCapture() noexcept
+		DefaultInputKeyboard::on_obtain_capture() noexcept
 		{
-			for (auto& it : keyState_)
+			for (auto& it : key_state_)
 			{
 				it.down = false;
 				it.pressed = false;
@@ -69,9 +69,9 @@ namespace octoon
 		}
 
 		void
-		DefaultInputKeyboard::onReset() noexcept
+		DefaultInputKeyboard::on_reset() noexcept
 		{
-			for (auto& it : keyState_)
+			for (auto& it : key_state_)
 			{
 				it.down = false;
 				it.pressed = false;
@@ -80,13 +80,13 @@ namespace octoon
 		}
 
 		void
-		DefaultInputKeyboard::onInputEvent(const InputEvent& event) noexcept
+		DefaultInputKeyboard::on_input_event(const InputEvent& event) noexcept
 		{
 			switch (event.event)
 			{
 			case InputEvent::KeyDown:
 			{
-				auto& key = this->keyState_[event.key.keysym.sym];
+				auto& key = this->key_state_[event.key.keysym.sym];
 				if (!key.pressed)
 				{
 					key.down = true;
@@ -96,19 +96,19 @@ namespace octoon
 			break;
 			case InputEvent::KeyUp:
 			{
-				auto& key = this->keyState_[event.key.keysym.sym];
+				auto& key = this->key_state_[event.key.keysym.sym];
 				key.up = true;
 				key.pressed = false;
 			}
 			break;
 			case InputEvent::GetFocus:
-				this->obtainCapture();
+				this->obtain_capture();
 				break;
 			case InputEvent::LostFocus:
-				this->releaseCapture();
+				this->release_capture();
 				break;
 			case InputEvent::Reset:
-				this->onReset();
+				this->on_reset();
 				break;
 			default:
 				break;

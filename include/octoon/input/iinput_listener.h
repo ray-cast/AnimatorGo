@@ -14,10 +14,10 @@ namespace octoon
 			IInputListener() noexcept = default;
 			virtual ~IInputListener() = default;
 
-			virtual void onAttach() noexcept;
-			virtual void onDetach() noexcept;
+			virtual void on_attach() noexcept;
+			virtual void on_detach() noexcept;
 
-			virtual void onInputEvent(const InputEvent& event) except = 0;
+			virtual void on_input_event(const InputEvent& event) except = 0;
 
 		private:
 			IInputListener(const IInputListener&) noexcept = delete;

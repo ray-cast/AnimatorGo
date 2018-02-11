@@ -168,7 +168,7 @@ void onWindowResize(GLFWwindow* window, int w, int h)
 		event.change.h = h;
 		event.change.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 		event.change.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -182,7 +182,7 @@ void onWindowFramebufferResize(GLFWwindow* window, int w, int h)
 		event.change.h = h;
 		event.change.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 		event.change.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -194,7 +194,7 @@ void onWindowClose(GLFWwindow* window)
 		event.event = octoon::input::InputEvent::AppQuit;
 		event.window.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 		event.window.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -206,7 +206,7 @@ void onWindowFocus(GLFWwindow* window, int focus)
 		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
 		event.window.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 		event.window.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -227,7 +227,7 @@ void onWindowKey(GLFWwindow* window, int key, int scancode, int action, int mods
 		event.key.keysym.mod = mods;
 		event.key.keysym.unicode = 0;
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -248,7 +248,7 @@ void onWindowKeyChar(GLFWwindow* window, unsigned int unicode, int mods)
 		event.key.keysym.mod = mods;
 		event.key.keysym.unicode = unicode;
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -270,7 +270,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 		event.button.padding1 = 0;
 		event.button.which = 0;
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 
 		if (action == GLFW_RELEASE)
 		{
@@ -299,7 +299,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 					doubleClick.button.padding1 = 0;
 					doubleClick.button.which = 0;
 
-					gameApp_->sendInputEvent(doubleClick);
+					gameApp_->send_input_event(doubleClick);
 				}
 
 				clicks = false;
@@ -330,7 +330,7 @@ void onWindowMouseMotion(GLFWwindow* window, double x, double y)
 		event.motion.yrel = pt.y;
 #endif
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -343,7 +343,7 @@ void onWindowSchool(GLFWwindow* window, double x, double y)
 		event.wheel.timestamp = glfwGetTimerFrequency();
 		event.wheel.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -358,7 +358,7 @@ void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 		event.drop.files = file_utf8;
 		event.drop.windowID = (std::uint64_t)::glfwGetWinHandle(window);
 
-		gameApp_->sendInputEvent(event);
+		gameApp_->send_input_event(event);
 	}
 }
 
@@ -432,11 +432,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			gameApp_ = std::make_shared<octoon::GameApplication>();
 
-			// _gameApp->setFileService(true);
-			// _gameApp->setFileServiceListener(true);
-			// _gameApp->setFileServicePath(_gameRootPath);
-
-			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h, screen->width / (widthMM / 25.4f) / 100.0f))
+			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h))
 			{
 				OctoonCloseWindow();
 				return false;
@@ -451,7 +447,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			if (!gameScenePath_.empty())
 			{
-				if (!gameApp_->openScene(gameScenePath_))
+				if (!gameApp_->open_scene(gameScenePath_))
 				{
 					OctoonCloseWindow();
 					return false;
@@ -493,7 +489,7 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	if (!gameApp_)
 		return true;
 
-	if (glfwWindowShouldClose(window_) || gameApp_->isQuitRequest())
+	if (glfwWindowShouldClose(window_) || gameApp_->is_quit_request())
 		return true;
 
 	return false;

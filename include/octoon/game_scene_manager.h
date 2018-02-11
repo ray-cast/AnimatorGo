@@ -48,16 +48,16 @@ namespace octoon
 		GameSceneManager() noexcept;
 		~GameSceneManager() noexcept;
 
-		GameScenePtr findScene(const std::string& name) noexcept;
-		GameScenePtr findActiveScene(const std::string& name) noexcept;
+		GameScenePtr find_scene(const std::string& name) noexcept;
+		GameScenePtr find_actived_scene(const std::string& name) noexcept;
 
 		GameScenePtr instantiate(const std::string& name) except;
 
-		bool activeScene(const std::string& name) noexcept;
+		bool active_scene(const std::string& name) noexcept;
 
-		void onFrameBegin() noexcept;
-		void onFrame() noexcept;
-		void onFrameEnd() noexcept;
+		void on_frame_begin() noexcept;
+		void on_frame() noexcept;
+		void on_frame_end() noexcept;
 
 	private:
 		friend GameScene;
@@ -66,12 +66,11 @@ namespace octoon
 		void _activeScene(GameScene* entity, bool active) noexcept;
 
 	private:
+		bool has_empty_actors_;
 
-		bool hasEmptyActors_;
-
-		std::vector<std::size_t> emptyLists_;
-		std::vector<GameScene*> instanceLists_;
-		std::vector<GameScene*> activeActors_;
+		std::vector<std::size_t> empty_lists_;
+		std::vector<GameScene*> instance_lists_;
+		std::vector<GameScene*> active_actors_;
 	};
 }
 

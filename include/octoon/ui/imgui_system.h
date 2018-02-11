@@ -21,22 +21,26 @@ namespace octoon
 			System() noexcept;
 			~System() noexcept;
 
-			bool open(input::WindHandle window, float dpi) except;
+			bool open(input::WindHandle window) except;
 			void close() noexcept;
 
-			bool injectMouseMove(float absx, float absy) noexcept;
-			bool injectMousePress(float absx, float absy, input::InputButton::Code id) noexcept;
-			bool injectMouseRelease(float absx, float absy, input::InputButton::Code id) noexcept;
-			bool injectMouseWheel(float wheel) noexcept;
-			bool injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept;
-			bool injectKeyRelease(input::InputKey::Code key) noexcept;
-			bool injectWindowFocus(bool focus) noexcept;
+			bool inject_mouse_move(float absx, float absy) noexcept;
+			bool inject_mouse_press(float absx, float absy, input::InputButton::Code id) noexcept;
+			bool inject_mouse_release(float absx, float absy, input::InputButton::Code id) noexcept;
+			bool inject_mouse_wheel(float wheel) noexcept;
 
-			void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
-			void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+			bool inject_key_press(input::InputKey::Code key, wchar_t char_) noexcept;
+			bool inject_key_release(input::InputKey::Code key) noexcept;
 
-			void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
-			void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
+			bool inject_window_focus(bool focus) noexcept;
+
+			void set_viewport(std::uint32_t w, std::uint32_t h) noexcept;
+			void get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+
+			void set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept;
+			void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
+
+			bool load_font(const char* path, float font_size = 15) noexcept;
 
 			void render() noexcept;
 
@@ -56,9 +60,9 @@ namespace octoon
 			graphics::GraphicsDataPtr ibo_;
 			graphics::GraphicsTexturePtr texture_;
 
-			graphics::GraphicsDevicePtr graphicsDevice_;
-			graphics::GraphicsContextPtr graphicsContext_;
-			graphics::GraphicsSwapchainPtr graphicsSwapchain_;
+			graphics::GraphicsDevicePtr device_;
+			graphics::GraphicsContextPtr context_;
+			graphics::GraphicsSwapchainPtr swapchain_;
 		};
 	}
 }

@@ -12,76 +12,76 @@ namespace octoon
 		TransformComponent() noexcept;
 		~TransformComponent();
 
-		void setTranslate(const math::float3& v) noexcept;
-		void setTranslateAccum(const math::float3& v) noexcept;
-		const math::float3& getTranslate() const noexcept;
+		void set_translate(const math::float3& v) noexcept;
+		void set_translateAccum(const math::float3& v) noexcept;
+		const math::float3& get_translate() const noexcept;
 
-		void setScale(const math::float3& v) noexcept;
-		void setScaleAll(const float v) noexcept;
-		void setScaleAccum(const math::float3& v) noexcept;
-		const math::float3& getScale() const noexcept;
+		void set_scale(const math::float3& v) noexcept;
+		void set_scale_all(const float v) noexcept;
+		void set_scale_accum(const math::float3& v) noexcept;
+		const math::float3& get_scale() const noexcept;
 
-		void setQuaternion(const math::Quaternion& quat) noexcept;
-		void setQuaternionAccum(const math::Quaternion& quat) noexcept;
-		const math::Quaternion& getQuaternion() const noexcept;
+		void set_quaternion(const math::Quaternion& quat) noexcept;
+		void set_quaternion_accum(const math::Quaternion& quat) noexcept;
+		const math::Quaternion& get_quaternion() const noexcept;
 
-		void setTransform(const math::float4x4& transform) noexcept;
-		void setTransformOnlyRotate(const math::float4x4& transform) noexcept;
-		const math::float4x4& getTransform() const noexcept;
-		const math::float4x4& getTransformInverse() const noexcept;
+		void set_transform(const math::float4x4& transform) noexcept;
+		void set_transform_only_rotate(const math::float4x4& transform) noexcept;
+		const math::float4x4& get_transform() const noexcept;
+		const math::float4x4& get_transform_inverse() const noexcept;
 
-		void setWorldTranslate(const math::float3& v) noexcept;
-		void setWorldTranslateAccum(const math::float3& v) noexcept;
-		const math::float3& getWorldTranslate() const noexcept;
+		void set_world_translate(const math::float3& v) noexcept;
+		void set_world_translate_accum(const math::float3& v) noexcept;
+		const math::float3& get_world_translate() const noexcept;
 
-		void setWorldScale(const math::float3& v) noexcept;
-		void setWorldScaleAccum(const math::float3& v) noexcept;
-		const math::float3& getWorldScale() const noexcept;
+		void set_world_scale(const math::float3& v) noexcept;
+		void set_world_scaleAccum(const math::float3& v) noexcept;
+		const math::float3& get_world_scale() const noexcept;
 
-		void setWorldQuaternion(const math::Quaternion& quat) noexcept;
-		void setWorldQuaternionAccum(const math::Quaternion& quat) noexcept;
-		const math::Quaternion& getWorldQuaternion() const noexcept;
+		void set_world_quaternion(const math::Quaternion& quat) noexcept;
+		void set_world_quaternion_accum(const math::Quaternion& quat) noexcept;
+		const math::Quaternion& get_world_quaternion() const noexcept;
 
-		const math::float3& getRight() const noexcept;
-		const math::float3& getUpVector() const noexcept;
-		const math::float3& getForward() const noexcept;
+		const math::float3& get_right() const noexcept;
+		const math::float3& get_up() const noexcept;
+		const math::float3& get_forward() const noexcept;
 
-		void setWorldTransform(const math::float4x4& transform) noexcept;
-		void setWorldTransformOnlyRotate(const math::float4x4& transform) noexcept;
-		const math::float4x4& getWorldTransform() const noexcept;
-		const math::float4x4& getWorldTransformInverse() const noexcept;
+		void set_world_transform(const math::float4x4& transform) noexcept;
+		void set_world_transform_only_rotate(const math::float4x4& transform) noexcept;
+		const math::float4x4& get_world_transform() const noexcept;
+		const math::float4x4& get_world_transform_inverse() const noexcept;
 
 		virtual GameComponentPtr clone() const noexcept;
 
 	private:
-		void _onMoveBefore() except;
-		void _onMoveAfter() except;
+		void on_move_before() except;
+		void on_move_after() except;
 
 	private:
-		void _updateLocalChildren() const noexcept;
-		void _updateWorldChildren() const noexcept;
-		void _updateLocalTransform() const noexcept;
-		void _updateWorldTransform() const noexcept;
-		void _updateParentTransform() const noexcept;
+		void update_local_children() const noexcept;
+		void update_world_children() const noexcept;
+		void update_local_transform() const noexcept;
+		void update_world_transform() const noexcept;
+		void update_parent_transform() const noexcept;
 
 	private:
 
-		mutable math::float3 localTranslate_;
-		mutable math::float3 localScaling_;
-		mutable math::Quaternion localRotation_;
+		mutable math::float3 local_translate_;
+		mutable math::float3 local_scaling_;
+		mutable math::Quaternion local_rotation_;
 
-		mutable math::float3 worldTranslate_;
-		mutable math::float3 worldScaling_;
-		mutable math::Quaternion worldRotation_;
+		mutable math::float3 world_translate_;
+		mutable math::float3 world_scaling_;
+		mutable math::Quaternion world_rotation_;
 
-		mutable math::float4x4 localTransform_;
-		mutable math::float4x4 localTransformInverse_;
+		mutable math::float4x4 local_transform_;
+		mutable math::float4x4 local_transform_inverse_;
 
-		mutable math::float4x4 worldTransform_;
-		mutable math::float4x4 worldTransformInverse_;
+		mutable math::float4x4 world_transform_;
+		mutable math::float4x4 world_transform_inverse_;
 
-		mutable bool localNeedUpdates_;
-		mutable bool worldNeedUpdates_;
+		mutable bool local_need_updates_;
+		mutable bool world_need_updates_;
 	};
 }
 

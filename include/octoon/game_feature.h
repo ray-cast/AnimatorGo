@@ -12,46 +12,42 @@ namespace octoon
 		GameFeature() noexcept;
 		virtual ~GameFeature() noexcept;
 
-		void setActive(bool active)  except;
-		bool getActive() noexcept;
+		void set_active(bool active)  except;
+		bool get_active() noexcept;
 
-		void setGameListener(const GameListenerPtr& listener) noexcept;
-		const GameListenerPtr& getGameListener() const noexcept;
+		void set_game_listener(const GameListenerPtr& listener) noexcept;
+		const GameListenerPtr& get_game_listener() const noexcept;
 
-		GameServer* getGameServer() noexcept;
+		GameServer* get_game_server() noexcept;
 
 	protected:
-		virtual void onActivate() except;
-		virtual void onDeactivate() noexcept;
+		virtual void on_activate() except;
+		virtual void on_deactivate() noexcept;
 
-		virtual void onListenerChangeBefore() noexcept;
-		virtual void onListenerChangeAfter() noexcept;
+		virtual void on_open_scene(const GameScenePtr& scene) except;
+		virtual void on_close_scene(const GameScenePtr& scene) noexcept;
 
-		virtual void onOpenScene(const GameScenePtr& scene) except;
-		virtual void onCloseScene(const GameScenePtr& scene) noexcept;
+		virtual void on_input_event(const input::InputEvent& event) noexcept;
 
-		virtual void onInputEvent(const input::InputEvent& event) noexcept;
+		virtual void on_reset() except;
 
-		virtual void onReset() except;
-
-		virtual void onFrameBegin() except;
-		virtual void onFrame() except;
-		virtual void onFrameEnd() except;
+		virtual void on_frame_begin() except;
+		virtual void on_frame() except;
+		virtual void on_frame_end() except;
 
 	private:
 		friend GameServer;
-		void _setGameServer(GameServer* server) noexcept;
+		void _set_game_server(GameServer* server) noexcept;
 
 	private:
 		GameFeature(const GameFeature&) noexcept = delete;
 		GameFeature& operator=(const GameFeature&) noexcept = delete;
 
 	private:
+		bool is_active_;
 
-		bool isActive_;
-
-		GameServer* gameServer_;
-		GameListenerPtr gameListener_;
+		GameServer* game_server_;
+		GameListenerPtr game_listener_;
 	};
 }
 

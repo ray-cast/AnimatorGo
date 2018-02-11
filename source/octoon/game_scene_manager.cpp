@@ -14,24 +14,24 @@ namespace octoon
 	void
 	GameSceneManager::_instanceScene(GameScene* entity, std::size_t& instanceID) noexcept
 	{
-		if (emptyLists_.empty())
-			instanceLists_.push_back(entity);
+		if (empty_lists_.empty())
+			instance_lists_.push_back(entity);
 		else
 		{
-			std::size_t instanceID_ = emptyLists_.back();
-			emptyLists_.pop_back();
-			instanceLists_[instanceID_ - 1] = entity;
+			std::size_t instance_id_ = empty_lists_.back();
+			empty_lists_.pop_back();
+			instance_lists_[instance_id_ - 1] = entity;
 		}
 
-		instanceID = instanceLists_.size();
+		instanceID = instance_lists_.size();
 	}
 
 	void
 	GameSceneManager::_unsetScene(GameScene* entity) noexcept
 	{
-		auto instanceID = entity->getInstanceID();
-		instanceLists_[instanceID - 1] = nullptr;
-		emptyLists_.push_back(instanceID);
+		auto instanceID = entity->get_instance_id();
+		instance_lists_[instanceID - 1] = nullptr;
+		empty_lists_.push_back(instanceID);
 		this->_activeScene(entity, false);
 	}
 
@@ -40,17 +40,17 @@ namespace octoon
 	{
 		if (active)
 		{
-			activeActors_.push_back(entity);
+			active_actors_.push_back(entity);
 		}
 		else
 		{
-			std::size_t size = activeActors_.size();
+			std::size_t size = active_actors_.size();
 			for (std::size_t i = 0; i < size; i++)
 			{
-				if (activeActors_[i] == entity)
+				if (active_actors_[i] == entity)
 				{
-					activeActors_[i] = nullptr;
-					hasEmptyActors_ = true;
+					active_actors_[i] = nullptr;
+					has_empty_actors_ = true;
 					break;
 				}
 			}
@@ -58,14 +58,14 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameSceneManager::findScene(const std::string& name) noexcept
+	GameSceneManager::find_scene(const std::string& name) noexcept
 	{
-		for (auto& it : instanceLists_)
+		for (auto& it : instance_lists_)
 		{
 			if (!it)
 				continue;
 
-			if (it->getName() == name)
+			if (it->get_name() == name)
 				return it->downcast_pointer<GameScene>();
 		}
 
@@ -73,14 +73,14 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameSceneManager::findActiveScene(const std::string& name) noexcept
+	GameSceneManager::find_actived_scene(const std::string& name) noexcept
 	{
-		for (auto& it : activeActors_)
+		for (auto& it : active_actors_)
 		{
 			if (!it)
 				continue;
 
-			if (it->getName() == name && it->getActive())
+			if (it->get_name() == name && it->get_active())
 				return it->downcast_pointer<GameScene>();
 		}
 
@@ -90,23 +90,23 @@ namespace octoon
 	GameScenePtr
 	GameSceneManager::instantiate(const std::string& name) except
 	{
-		auto scene = this->findScene(name);
+		auto scene = this->find_scene(name);
 		if (scene)
 			return scene->clone();
 		return nullptr;
 	}
 
 	bool
-	GameSceneManager::activeScene(const std::string& name) noexcept
+	GameSceneManager::active_scene(const std::string& name) noexcept
 	{
-		for (auto& it : instanceLists_)
+		for (auto& it : instance_lists_)
 		{
 			if (!it)
 				continue;
 
-			if (it->getName() == name)
+			if (it->get_name() == name)
 			{
-				it->setActive(true);
+				it->set_active(true);
 				return true;
 			}
 		}
@@ -115,17 +115,17 @@ namespace octoon
 	}
 
 	void
-	GameSceneManager::onFrameBegin() noexcept
+	GameSceneManager::on_frame_begin() noexcept
 	{
 	}
 
 	void
-	GameSceneManager::onFrame() noexcept
+	GameSceneManager::on_frame() noexcept
 	{
 	}
 
 	void
-	GameSceneManager::onFrameEnd() noexcept
+	GameSceneManager::on_frame_end() noexcept
 	{
 	}
 }

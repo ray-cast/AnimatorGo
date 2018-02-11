@@ -17,11 +17,11 @@ namespace octoon
 
 			InputMousePtr clone() const noexcept;
 
-			void getPosition(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept;
+			void get_position(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept;
 
-			bool isButtonDown(InputButton::Code key) const noexcept;
-			bool isButtonUp(InputButton::Code key) const noexcept;
-			bool isButtonPressed(InputButton::Code key) const noexcept;
+			bool is_button_down(InputButton::Code key) const noexcept;
+			bool is_button_up(InputButton::Code key) const noexcept;
+			bool is_button_pressed(InputButton::Code key) const noexcept;
 
 		private:
 			void onShowMouse() noexcept;
@@ -29,7 +29,7 @@ namespace octoon
 
 			void onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept;
 
-			void onInputEvent(const InputEvent& event) noexcept;
+			void on_input_event(const InputEvent& event) noexcept;
 
 		private:
 			MSWInputMouse(const MSWInputMouse&) = delete;

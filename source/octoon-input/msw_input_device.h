@@ -14,14 +14,14 @@ namespace octoon
 			MSWInputDevice() noexcept;
 			~MSWInputDevice() noexcept;
 
-			virtual void setCaptureObject(WindHandle window) noexcept;
-			virtual WindHandle getCaptureObject() const noexcept;
+			virtual void set_capture_object(WindHandle window) noexcept;
+			virtual WindHandle get_capture_object() const noexcept;
 
-			virtual bool peekEvents(InputEvent& event) noexcept;
-			virtual bool pollEvents(InputEvent& event) noexcept;
-			virtual bool waitEvents(InputEvent& event) noexcept;
-			virtual bool waitEvents(InputEvent& event, int timeout) noexcept;
-			virtual void flushEvent() noexcept;
+			virtual bool peek_events(InputEvent& event) noexcept;
+			virtual bool poll_events(InputEvent& event) noexcept;
+			virtual bool wait_events(InputEvent& event) noexcept;
+			virtual bool wait_events(InputEvent& event, int timeout) noexcept;
+			virtual void flush_event() noexcept;
 
 			virtual InputDevicePtr clone() const noexcept;
 
@@ -40,8 +40,8 @@ namespace octoon
 
 			int button_;
 
-			int mouseX_;
-			int mouseY_;
+			int mouse_x_;
+			int mouse_y_;
 		};
 	}
 }

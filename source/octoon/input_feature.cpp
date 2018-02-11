@@ -13,7 +13,7 @@ namespace octoon
 		{
 		}
 
-		void onInputEvent(const input::InputEvent& event) noexcept
+		void on_input_event(const input::InputEvent& event) noexcept
 		{
 		}
 
@@ -40,61 +40,48 @@ namespace octoon
 	}
 
 	void
-	InputFeature::setInput(input::InputPtr input) noexcept
-	{
-		assert(input);
-		input_ = input;
-	}
-
-	input::InputPtr
-	InputFeature::getInput() const noexcept
-	{
-		return input_;
-	}
-
-	void
-	InputFeature::onActivate() except
+	InputFeature::on_activate() except
 	{
 		input_ = std::make_shared<input::DefaultInput>();
 		if (!input_->open())
 			throw std::exception("Input::open() fail.");
 
-		input_->addInputListener(std::make_shared<InputEventListener>(*this));
-		input_->setCaptureObject(window_);
-		input_->obtainCapture();
+		input_->add_input_listener(std::make_shared<InputEventListener>(*this));
+		input_->set_capture_object(window_);
+		input_->obtain_capture();
 	}
 
 	void
-	InputFeature::onDeactivate() noexcept
+	InputFeature::on_deactivate() noexcept
 	{
 		assert(input_);
 		input_.reset();
 	}
 
 	void
-	InputFeature::onInputEvent(const input::InputEvent& event) noexcept
+	InputFeature::on_input_event(const input::InputEvent& event) noexcept
 	{
 		assert(input_);
-		input_->sendInputEvent(event);
+		input_->send_input_event(event);
 	}
 
 	void
-	InputFeature::onFrameBegin() noexcept
+	InputFeature::on_frame_begin() noexcept
 	{
 		assert(input_);
-		input_->updateBegin();
+		input_->update_begin();
 		input_->update();
 	}
 
 	void
-	InputFeature::onFrameEnd() noexcept
+	InputFeature::on_frame_end() noexcept
 	{
 		assert(input_);
-		input_->updateEnd();
+		input_->update_end();
 	}
 
 	void
-	InputFeature::onReset() noexcept
+	InputFeature::on_reset() noexcept
 	{
 		assert(input_);
 		input_->reset();

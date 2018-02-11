@@ -1,4 +1,5 @@
 #include <octoon/ui/imgui_system.h>
+#include <octoon/graphics/graphics_system.h>
 
 #include <imgui.h>
 #include <imgui_dock.h>
@@ -8,7 +9,8 @@ namespace octoon
 	namespace imgui
 	{
 		System::System() noexcept
-			: _initialize(false)
+			: initialize_(false)
+			, window_(nullptr)
 		{
 		}
 
@@ -18,27 +20,27 @@ namespace octoon
 		}
 
 		bool
-		System::open(input::WindHandle _window, float dpi) except
+		System::open(input::WindHandle window, float dpi) except
 		{
-			assert(_window);
-			assert(!_initialize);
+			assert(window);
+			assert(!initialize_);
 
 #if _WINDOWS
-			assert(::IsWindow((HWND)_window));
+			assert(::IsWindow((HWND)window));
 #endif
 
-			_imguiPath = "../../";
-			_imguiPath += "ui/imgui.layout";
+			imguiPath_ = "../../";
+			imguiPath_ += "ui/imgui.layout";
 
-			_imguiDockPath = "../../";
-			_imguiDockPath += "ui/imgui_dock.layout";
+			imguiDockPath_ = "../../";
+			imguiDockPath_ += "ui/imgui_dock.layout";
 
 			GuiStyle style;
 			setStyle(style);
 
 			ImGuiIO& io = ImGui::GetIO();
-			io.ImeWindowHandle = _window;
-			io.IniFilename = _imguiPath.c_str();
+			io.ImeWindowHandle = window_ = window;
+			io.IniFilename = imguiPath_.c_str();
 			io.KeyMap[ImGuiKey_Tab] = input::InputKey::Tab;
 			io.KeyMap[ImGuiKey_LeftArrow] = input::InputKey::ArrowLeft;
 			io.KeyMap[ImGuiKey_RightArrow] = input::InputKey::ArrowRight;
@@ -68,82 +70,89 @@ namespace octoon
 
 			std::uint8_t* pixels;
 			int width, height;
-			io.Fonts->ClearFonts();
 
-			//io.Fonts->AddFontFromFileTTF("../../system/fonts/DroidSansFallback.ttf", 15.0f * dpi, 0, 0);
-			io.Fonts->AddFontFromFileTTF("../../system/fonts/DroidSansFallback.ttf", 15.0f * dpi, 0, &ranges[0]);
+			io.Fonts->ClearFonts();
+			io.Fonts->AddFontFromFileTTF("../../system/fonts/DroidSansFallback.ttf", 15.0f * dpi, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-			/*GraphicsTextureDesc fontDesc;
+			graphics::GraphicsDeviceDesc deviceDesc;
+			deviceDesc.setDeviceType(graphics::GraphicsDeviceType::GraphicsDeviceTypeOpenGL);
+			graphicsDevice_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
+			if (!graphicsDevice_)
+				return false;
+
+			graphics::GraphicsSwapchainDesc swapchainDesc;
+			swapchainDesc.setWindHandle(window);
+			swapchainDesc.setWidth(1);
+			swapchainDesc.setHeight(1);
+			swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::GraphicsSwapIntervalVsync);
+			swapchainDesc.setImageNums(2);
+			swapchainDesc.setColorFormat(graphics::GraphicsFormat::GraphicsFormatB8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::GraphicsFormatD24UNorm_S8UInt);
+			graphicsSwapchain_ = graphicsDevice_->createSwapchain(swapchainDesc);
+			if (!graphicsSwapchain_)
+				return false;
+
+			graphics::GraphicsContextDesc contextDesc;
+			contextDesc.setSwapchain(graphicsSwapchain_);
+			graphicsContext_ = graphicsDevice_->createDeviceContext(contextDesc);
+			if (!graphicsContext_)
+				return false;
+
+			graphics::GraphicsTextureDesc fontDesc;
 			fontDesc.setSize(width, height);
-			fontDesc.setTexDim(GraphicsTextureDim::GraphicsTextureDim2D);
-			fontDesc.setTexFormat(GraphicsFormat::GraphicsFormatR8G8B8A8UNorm);
+			fontDesc.setTexDim(graphics::GraphicsTextureDim::GraphicsTextureDim2D);
+			fontDesc.setTexFormat(graphics::GraphicsFormat::GraphicsFormatR8G8B8A8UNorm);
 			fontDesc.setStream(pixels);
 			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
-			fontDesc.setTexTiling(GraphicsImageTiling::GraphicsImageTilingLinear);
-			fontDesc.setSamplerFilter(GraphicsSamplerFilter::GraphicsSamplerFilterLinearMipmapLinear, GraphicsSamplerFilter::GraphicsSamplerFilterLinear);
-			fontDesc.setSamplerWrap(GraphicsSamplerWrap::GraphicsSamplerWrapClampToEdge);
-			_texture = RenderSystem::instance()->createTexture(fontDesc);
-			if (!_texture)
-			return false;
+			fontDesc.setTexTiling(graphics::GraphicsImageTiling::GraphicsImageTilingLinear);
+			fontDesc.setSamplerFilter(graphics::GraphicsSamplerFilter::GraphicsSamplerFilterLinearMipmapLinear, graphics::GraphicsSamplerFilter::GraphicsSamplerFilterLinear);
+			fontDesc.setSamplerWrap(graphics::GraphicsSamplerWrap::GraphicsSamplerWrapClampToEdge);
 
-			io.Fonts->TexID = (void*)_texture.get();
+			texture_ = graphicsDevice_->createTexture(fontDesc);
+			if (!texture_)
+				return false;
 
-			GraphicsDataDesc dataDesc;
-			dataDesc.setType(GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
+			io.Fonts->TexID = (void*)texture_.get();
+
+			graphics::GraphicsDataDesc dataDesc;
+			dataDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
 			dataDesc.setStream(0);
 			dataDesc.setStreamSize(4096 * sizeof(ImDrawVert));
-			dataDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
-			_vbo = RenderSystem::instance()->createGraphicsData(dataDesc);
-			if (!_vbo)
-			return false;
+			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
 
-			GraphicsDataDesc elementDesc;
-			elementDesc.setType(GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
+			vbo_ = graphicsDevice_->createGraphicsData(dataDesc);
+			if (!vbo_)
+				return false;
+
+			graphics::GraphicsDataDesc elementDesc;
+			elementDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
 			elementDesc.setStream(0);
 			elementDesc.setStreamSize(4096 * sizeof(ImDrawIdx));
-			elementDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
-			_ibo = RenderSystem::instance()->createGraphicsData(elementDesc);
-			if (!_ibo)
-			return false;
+			elementDesc.setUsage(graphics::GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
 
-			_material = RenderSystem::instance()->createMaterial("sys:fx/uilayout.fxml");
-			if (!_material)
-			return false;
+			ibo_ = graphicsDevice_->createGraphicsData(elementDesc);
+			if (!ibo_)
+				return false;
 
-			_materialTech = _material->getTech("IMGUI");
-			_materialDecal = _material->getParameter("decal");
-			_materialDecal->uniformTexture(_texture);
-
-			_materialProj = _material->getParameter("proj");*/
-
-			ImGui::LoadDock(_imguiDockPath.c_str());
-
-			_initialize = true;
+			initialize_ = true;
 			return true;
 		}
 
 		void
 		System::close() noexcept
 		{
-			/*_vbo.reset();
-			_ibo.reset();
-			_texture.reset();
-			_material.reset();
+			vbo_.reset();
+			ibo_.reset();
+			texture_.reset();
 
-			if (_initialize)
+			if (initialize_)
 			{
-			std::string path;
-			IoServer::instance()->getAssign("sys", path);
+				ImGui::ShutdownDock();
+				ImGui::Shutdown();
 
-			path += "ui/imgui_dock.layout";
-
-			ImGui::SaveDock(path.c_str());
-			ImGui::ShutdownDock();
-			ImGui::Shutdown();
-
-			_initialize = false;
-			}*/
+				initialize_ = false;
+			}
 		}
 
 		bool
@@ -262,13 +271,10 @@ namespace octoon
 			io.DisplayFramebufferScale.x = w;
 			io.DisplayFramebufferScale.y = h;
 
-			/*math::float4x4 project;
-			if (RenderSystem::instance()->getRenderSetting().deviceType == GraphicsDeviceType::GraphicsDeviceTypeVulkan)
-			project.makeOrtho_lh(0, w, 0, h, 0, 1);
-			else
-			project.makeOrtho_lh(0, w, h, 0, 0, 1);
+			math::float4x4 project;
+			project.make_ortho_lh(0, w, h, 0, 0, 1);
 
-			_materialProj->uniform4fmat(project);*/
+			// _materialProj->uniform4fmat(project);
 		}
 
 		void
@@ -280,98 +286,105 @@ namespace octoon
 		}
 
 		void
-		System::render(float delta) except
+		System::render() except
 		{
-			/*auto renderer = RenderSystem::instance();
-
 			auto drawData = ImGui::GetDrawData();
+			if (!drawData)
+				return;
 
 			std::size_t totalVertexSize = drawData->TotalVtxCount * sizeof(ImDrawVert);
 			std::size_t totalIndirectSize = drawData->TotalIdxCount * sizeof(ImDrawIdx);
 			if (totalVertexSize == 0 || totalIndirectSize == 0)
-			return;
+				return;
 
-			if (!_vbo || _vbo->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
+			if (!vbo_ || vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
 			{
-			GraphicsDataDesc dataDesc;
-			dataDesc.setType(GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
-			dataDesc.setStream(0);
-			dataDesc.setStreamSize(totalVertexSize);
-			dataDesc.setUsage(_vbo->getGraphicsDataDesc().getUsage());
-			_vbo = renderer->createGraphicsData(dataDesc);
-			if (!_vbo)
-			return;
+				graphics::GraphicsDataDesc dataDesc;
+				dataDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageVertexBuffer);
+				dataDesc.setStream(0);
+				dataDesc.setStreamSize(totalVertexSize);
+				dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
+
+				vbo_ = graphicsDevice_->createGraphicsData(dataDesc);
+				if (!vbo_)
+				return;
 			}
 
-			if (!_ibo || _ibo->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
+			if (!ibo_ || ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
 			{
-			GraphicsDataDesc elementDesc;
-			elementDesc.setType(GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
-			elementDesc.setStream(0);
-			elementDesc.setStreamSize(totalIndirectSize);
-			elementDesc.setUsage(_ibo->getGraphicsDataDesc().getUsage());
-			_ibo = renderer->createGraphicsData(elementDesc);
-			if (!_ibo)
-			return;
+				graphics::GraphicsDataDesc elementDesc;
+				elementDesc.setType(graphics::GraphicsDataType::GraphicsDataTypeStorageIndexBuffer);
+				elementDesc.setStream(0);
+				elementDesc.setStreamSize(totalIndirectSize);
+				elementDesc.setUsage(ibo_->getGraphicsDataDesc().getUsage());
+
+				ibo_ = graphicsDevice_->createGraphicsData(elementDesc);
+				if (!ibo_)
+					return;
 			}
 
 			ImDrawVert* vbo;
 			ImDrawIdx* ibo;
 
-			if (!_vbo->map(0, totalVertexSize, (void**)&vbo))
-			return;
+			if (!vbo_->map(0, totalVertexSize, (void**)&vbo))
+				return;
 
-			if (!_ibo->map(0, totalIndirectSize, (void**)&ibo))
-			return;
+			if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
+				return;
 
 			for (int n = 0; n < drawData->CmdListsCount; n++)
 			{
-			const ImDrawList* cmd_list = drawData->CmdLists[n];
-			std::memcpy(vbo, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert));
-			std::memcpy(ibo, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx));
-			vbo += cmd_list->VtxBuffer.size();
-			ibo += cmd_list->IdxBuffer.size();
+				const ImDrawList* cmd_list = drawData->CmdLists[n];
+				std::memcpy(vbo, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert));
+				std::memcpy(ibo, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx));
+				vbo += cmd_list->VtxBuffer.size();
+				ibo += cmd_list->IdxBuffer.size();
 			}
 
-			_vbo->unmap();
-			_ibo->unmap();
+			vbo_->unmap();
+			ibo_->unmap();
 
 			auto& io = ImGui::GetIO();
 
-			renderer->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4::Zero, 1, 0);
-			renderer->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			renderer->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			graphicsContext_->renderBegin();
 
-			renderer->setVertexBuffer(0, _vbo, 0);
-			renderer->setIndexBuffer(_ibo, 0, GraphicsIndexType::GraphicsIndexTypeUInt16);
+			graphicsContext_->clearFramebuffer(0, graphics::GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3), 1, 0);
+			graphicsContext_->setViewport(0, graphics::Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			graphicsContext_->setScissor(0, graphics::Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+
+			graphicsContext_->setVertexBufferData(0, vbo_, 0);
+			graphicsContext_->setIndexBufferData(ibo_, 0, graphics::GraphicsIndexType::GraphicsIndexTypeUInt16);
 
 			std::uint32_t vdx_buffer_offset = 0;
 			std::uint32_t idx_buffer_offset = 0;
 
-			for (int n = 0; n < drawData->CmdListsCount; n++)
+			/*for (int n = 0; n < drawData->CmdListsCount; n++)
 			{
-			const ImDrawList* cmd_list = drawData->CmdLists[n];
+				const ImDrawList* cmd_list = drawData->CmdLists[n];
 
-			for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
-			{
-			auto texture = (GraphicsTexture*)pcmd->TextureId;
-			if (texture)
-			_materialDecal->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
-			else
-			_materialDecal->uniformTexture(nullptr);
+				for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
+				{
+					auto texture = (graphics::GraphicsTexture*)pcmd->TextureId;
+					if (texture)
+						_materialDecal->uniformTexture(texture->downcast_pointer<graphics::GraphicsTexture>());
+					else
+						_materialDecal->uniformTexture(nullptr);
 
-			ImVec4 scissor((int)pcmd->ClipRect.x, (int)pcmd->ClipRect.y, (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+					ImVec4 scissor((int)pcmd->ClipRect.x, (int)pcmd->ClipRect.y, (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
 
-			renderer->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
-			renderer->setMaterialPass(_materialTech->getPass(0));
+					graphicsContext_->setScissor(0, graphics::Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
 
-			renderer->drawIndexed(pcmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
+					//graphicsContext_->setMaterialPass(_materialTech->getPass(0));
+					graphicsContext_->drawIndexed(pcmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
 
-			idx_buffer_offset += pcmd->ElemCount;
-			}
+					idx_buffer_offset += pcmd->ElemCount;
+				}
 
-			vdx_buffer_offset += cmd_list->VtxBuffer.size();
+				vdx_buffer_offset += cmd_list->VtxBuffer.size();
 			}*/
+
+			graphicsContext_->renderEnd();
+			graphicsContext_->present();
 		}
 	}
 }

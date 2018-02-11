@@ -4,6 +4,12 @@
 #include <octoon/ui/imgui.h>
 #include <octoon/input/input.h>
 #include <octoon/runtime/singleton.h>
+#include <octoon/graphics/graphics_system.h>
+#include <octoon/graphics/graphics_device.h>
+#include <octoon/graphics/graphics_context.h>
+#include <octoon/graphics/graphics_swapchain.h>
+#include <octoon/graphics/graphics_data.h>
+#include <octoon/graphics/graphics_texture.h>
 
 namespace octoon
 {
@@ -15,7 +21,7 @@ namespace octoon
 			System() noexcept;
 			~System() noexcept;
 
-			bool open(input::WindHandle _window, float dpi) except;
+			bool open(input::WindHandle window_, float dpi) except;
 			void close() noexcept;
 
 			bool injectMouseMove(float _absx, float _absy) noexcept;
@@ -32,28 +38,27 @@ namespace octoon
 			void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 			void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-			void render(float delta) except;
+			void render() except;
 
 		private:
 			System(const System&) noexcept = delete;
 			System& operator=(const System&) noexcept = delete;
 
 		private:
-			bool _initialize;
+			bool initialize_;
 
-			void* _window;
+			std::string imguiPath_;
+			std::string imguiDockPath_;
 
-			std::string _imguiPath;
-			std::string _imguiDockPath;
+			input::WindHandle window_;
 
-			/*MaterialPtr _material;
-			MaterialTechPtr _materialTech;
-			MaterialParamPtr _materialDecal;
-			MaterialParamPtr _materialProj;
+			graphics::GraphicsDataPtr vbo_;
+			graphics::GraphicsDataPtr ibo_;
+			graphics::GraphicsTexturePtr texture_;
 
-			GraphicsDataPtr _vbo;
-			GraphicsDataPtr _ibo;
-			GraphicsTexturePtr _texture;*/
+			graphics::GraphicsDevicePtr graphicsDevice_;
+			graphics::GraphicsContextPtr graphicsContext_;
+			graphics::GraphicsSwapchainPtr graphicsSwapchain_;
 		};
 	}
 }

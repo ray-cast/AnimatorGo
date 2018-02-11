@@ -1,35 +1,37 @@
 #include <octoon/gui_feature.h>
 
 #include <octoon/input_feature.h>
+#include <octoon/input/input_event.h>
 
 #include <octoon/game_server.h>
 #include <octoon/game_application.h>
-#include <octoon/input/input_event.h>
 
 #include <octoon/ui/imgui.h>
 #include <octoon/ui/imgui_system.h>
+
+#include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(GuiFeature, GameFeature, "GuiFeature")
 
 	GuiFeature::GuiFeature() noexcept
-		: _window(0)
-		, _width(0)
-		, _height(0)
-		, _framebuffer_w(0)
-		, _framebuffer_h(0)
-		, _dpi(1.0)
+		: window_(0)
+		, width_(0)
+		, height_(0)
+		, framebuffer_w_(0)
+		, framebuffer_h_(0)
+		, dpi_(1.0)
 	{
 	}
 
 	GuiFeature::GuiFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h, float dpi) noexcept
-		: _window(window)
-		, _width(w)
-		, _height(h)
-		, _framebuffer_w(framebuffer_w)
-		, _framebuffer_h(framebuffer_h)
-		, _dpi(dpi)
+		: window_(window)
+		, width_(w)
+		, height_(h)
+		, framebuffer_w_(framebuffer_w)
+		, framebuffer_h_(framebuffer_h)
+		, dpi_(dpi)
 	{
 	}
 
@@ -40,10 +42,10 @@ namespace octoon
 	void
 	GuiFeature::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 	{
-		if (_width != w || _height != h)
+		if (width_ != w || height_ != h)
 		{
-			_width = w;
-			_height = h;
+			width_ = w;
+			height_ = h;
 
 			imgui::System::instance()->setViewport(w, h);
 		}
@@ -58,10 +60,10 @@ namespace octoon
 	void
 	GuiFeature::setWindowFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 	{
-		if (_framebuffer_w != w || _framebuffer_h != h)
+		if (framebuffer_w_ != w || framebuffer_h_ != h)
 		{
-			_framebuffer_w = w;
-			_framebuffer_h = h;
+			framebuffer_w_ = w;
+			framebuffer_h_ = h;
 
 			imgui::System::instance()->setFramebufferScale(w, h);
 		}
@@ -76,11 +78,11 @@ namespace octoon
 	void
 	GuiFeature::onActivate() except
 	{
-		if (!imgui::System::instance()->open(_window, _dpi))
+		if (!imgui::System::instance()->open(window_, dpi_))
 			throw std::exception("GuiSystem::instance() fail");
 
-		imgui::System::instance()->setViewport(_width, _height);
-		imgui::System::instance()->setFramebufferScale(_framebuffer_w, _framebuffer_h);
+		imgui::System::instance()->setViewport(width_, height_);
+		imgui::System::instance()->setFramebufferScale(framebuffer_w_, framebuffer_h_);
 	}
 
 	void
@@ -133,5 +135,24 @@ namespace octoon
 		default:
 			return;
 		}
+	}
+
+	void
+	GuiFeature::onFrameBegin() noexcept
+	{
+		imgui::newFrame();
+		imgui::showTestWindow();
+	}
+
+	void
+	GuiFeature::onFrame() noexcept
+	{
+	}
+
+	void
+	GuiFeature::onFrameEnd() noexcept
+	{
+		imgui::render();
+		imgui::System::instance()->render();
 	}
 }

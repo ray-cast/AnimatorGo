@@ -3,28 +3,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(InputMessage, runtime::RttiInterface, "InputMessage")
 	OctoonImplementSubClass(InputFeature, GameFeature, "InputFeature")
-
-	InputMessage::InputMessage() noexcept
-	{
-	}
-
-	InputMessage::~InputMessage() noexcept
-	{
-	}
-
-	void
-	InputMessage::setEvent(const input::InputEvent& event) noexcept
-	{
-		_event = event;
-	}
-
-	const input::InputEvent&
-	InputMessage::getEvent() const noexcept
-	{
-		return _event;
-	}
 
 	class InputEventListener : public input::IInputListener
 	{

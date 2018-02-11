@@ -1,25 +1,11 @@
-#ifndef OCTOON_INPUT_FEATURES_H_
-#define OCTOON_INPUT_FEATURES_H_
+#ifndef OCTOON_INPUT_FEATURE_H_
+#define OCTOON_INPUT_FEATURE_H_
 
 #include <octoon/game_feature.h>
 #include <octoon/input/input.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT InputMessage final : public runtime::RttiInterface
-	{
-		OctoonDeclareSubClass(InputMessage, runtime::RttiInterface)
-	public:
-		InputMessage() noexcept;
-		~InputMessage() noexcept;
-
-		void setEvent(const input::InputEvent& event) noexcept;
-		const input::InputEvent& getEvent() const noexcept;
-
-	private:
-		input::InputEvent _event;
-	};
-
 	class OCTOON_EXPORT InputFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(InputFeature, GameFeature)

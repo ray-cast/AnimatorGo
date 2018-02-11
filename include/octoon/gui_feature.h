@@ -1,5 +1,5 @@
-#ifndef _H_GUI_FEATURE_H_
-#define _H_GUI_FEATURE_H_
+#ifndef OCTOON_GUI_FEATURE_H_
+#define OCTOON_GUI_FEATURE_H_
 
 #include <octoon/game_feature.h>
 
@@ -20,19 +20,23 @@ namespace octoon
 		void setWindowFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getWindowFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
+	private:
+		void onActivate() except;
+		void onDeactivate() noexcept;
+
 		void onInputEvent(const input::InputEvent& event) noexcept;
 
-	protected:
-		virtual void onActivate() except;
-		virtual void onDeactivate() noexcept;
+		void onFrameBegin() noexcept;
+		void onFrame() noexcept;
+		void onFrameEnd() noexcept;
 
 	private:
-		WindHandle _window;
-		float _dpi;
-		std::uint32_t _width;
-		std::uint32_t _height;
-		std::uint32_t _framebuffer_w;
-		std::uint32_t _framebuffer_h;
+		WindHandle window_;
+		float dpi_;
+		std::uint32_t width_;
+		std::uint32_t height_;
+		std::uint32_t framebuffer_w_;
+		std::uint32_t framebuffer_h_;
 	};
 }
 

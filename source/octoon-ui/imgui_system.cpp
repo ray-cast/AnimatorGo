@@ -1,5 +1,4 @@
 #include <octoon/ui/imgui_system.h>
-#include <octoon/graphics/graphics_system.h>
 
 #include <imgui.h>
 #include <imgui_dock.h>
@@ -193,44 +192,44 @@ namespace octoon
 		}
 
 		bool
-		System::injectKeyPress(input::InputKey::Code _key, wchar_t _char) noexcept
+		System::injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept
 		{
 			auto& io = ImGui::GetIO();
-			if (_key != input::InputKey::Code::None)
+			if (key != input::InputKey::Code::None)
 			{
-				if (_key == input::InputKey::Code::LeftControl)
+				if (key == input::InputKey::Code::LeftControl)
 					io.KeyCtrl = true;
-				else if (_key == input::InputKey::Code::LeftShift)
+				else if (key == input::InputKey::Code::LeftShift)
 					io.KeyShift = true;
-				else if (_key == input::InputKey::Code::LeftAlt)
+				else if (key == input::InputKey::Code::LeftAlt)
 					io.KeyAlt = true;
-				else if (_key == input::InputKey::Code::LeftSuper)
+				else if (key == input::InputKey::Code::LeftSuper)
 					io.KeySuper = true;
 
-				io.KeysDown[_key] = true;
+				io.KeysDown[key] = true;
 			}
 			else
 			{
-				io.AddInputCharacter(_char);
+				io.AddInputCharacter(char_);
 			}
 
 			return true;
 		}
 
 		bool
-		System::injectKeyRelease(input::InputKey::Code _key) noexcept
+		System::injectKeyRelease(input::InputKey::Code key) noexcept
 		{
 			auto& io = ImGui::GetIO();
-			if (_key == input::InputKey::Code::LeftControl)
+			if (key == input::InputKey::Code::LeftControl)
 				io.KeyCtrl = false;
-			else if (_key == input::InputKey::Code::LeftShift)
+			else if (key == input::InputKey::Code::LeftShift)
 				io.KeyShift = false;
-			else if (_key == input::InputKey::Code::LeftAlt)
+			else if (key == input::InputKey::Code::LeftAlt)
 				io.KeyAlt = false;
-			else if (_key == input::InputKey::Code::LeftSuper)
+			else if (key == input::InputKey::Code::LeftSuper)
 				io.KeySuper = false;
 
-			io.KeysDown[_key] = false;
+			io.KeysDown[key] = false;
 			return true;
 		}
 
@@ -286,7 +285,7 @@ namespace octoon
 		}
 
 		void
-		System::render() except
+		System::render() noexcept
 		{
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)

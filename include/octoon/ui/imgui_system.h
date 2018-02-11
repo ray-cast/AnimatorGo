@@ -21,15 +21,15 @@ namespace octoon
 			System() noexcept;
 			~System() noexcept;
 
-			bool open(input::WindHandle window_, float dpi) except;
+			bool open(input::WindHandle window, float dpi) except;
 			void close() noexcept;
 
-			bool injectMouseMove(float _absx, float _absy) noexcept;
-			bool injectMousePress(float _absx, float _absy, input::InputButton::Code _id) noexcept;
-			bool injectMouseRelease(float _absx, float _absy, input::InputButton::Code _id) noexcept;
+			bool injectMouseMove(float absx, float absy) noexcept;
+			bool injectMousePress(float absx, float absy, input::InputButton::Code id) noexcept;
+			bool injectMouseRelease(float absx, float absy, input::InputButton::Code id) noexcept;
 			bool injectMouseWheel(float wheel) noexcept;
-			bool injectKeyPress(input::InputKey::Code _key, wchar_t _char) noexcept;
-			bool injectKeyRelease(input::InputKey::Code _key) noexcept;
+			bool injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept;
+			bool injectKeyRelease(input::InputKey::Code key) noexcept;
 			bool injectWindowFocus(bool focus) noexcept;
 
 			void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
@@ -38,7 +38,7 @@ namespace octoon
 			void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 			void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-			void render() except;
+			void render() noexcept;
 
 		private:
 			System(const System&) noexcept = delete;

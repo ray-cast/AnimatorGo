@@ -15,13 +15,13 @@ namespace octoon
 			in float4 Position : POSITION0,\
 			in float4 Diffuse : COLOR0,\
 			in float4 Texcoord : TEXCOORD0,\
-			out float4 oDiffuse : TEXCOORD0,\
-			out float4 oTexcoord : TEXCOORD1,\
+			out float4 oTexcoord0 : TEXCOORD0,\
+			out float4 oTexcoord1 : TEXCOORD1,\
 			out float4 oPosition : SV_Position)\
 		{\
-			oDiffuse = Diffuse;\
-			oTexcoord = Texcoord;\
-			oPosition = mul(proj, float4(Position.xy, 0, 1));\
+			oTexcoord0 = Diffuse;\
+			oTexcoord1 = Texcoord;\
+			oPosition = mul(proj, Position);\
 		}";
 
 		const char* frag = "\
@@ -130,14 +130,16 @@ namespace octoon
 			auto program = device_->createProgram(programDesc);
 
 			GraphicsInputLayoutDesc layoutDesc;
-			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32B32SFloat, 0));
-			layoutDesc.addVertexLayout(GraphicsVertexLayout(1, "COLOR", 0, GraphicsFormat::R8G8B8A8UNorm, 0));
-			layoutDesc.addVertexLayout(GraphicsVertexLayout(2, "TEXCOORD", 0, GraphicsFormat::R32G32SFloat, 0));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "TEXCOORD", 0, GraphicsFormat::R32G32SFloat));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "COLOR", 0, GraphicsFormat::R8G8B8A8UNorm));
+			layoutDesc.addVertexBinding(GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 
 			GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
 			descriptor_set_layout.setUniformComponents(program->getActiveParams());
 
 			GraphicsColorBlend blend;
+			blend.setBlendEnable(true);
 			blend.setBlendSrc(GraphicsBlendFactor::SrcAlpha);
 			blend.setBlendDest(GraphicsBlendFactor::OneMinusSrcAlpha);
 
@@ -148,6 +150,8 @@ namespace octoon
 			stateDesc.setColorBlends(std::move(blends));
 			stateDesc.setScissorTestEnable(false);
 			stateDesc.setPrimitiveType(GraphicsVertexType::TriangleList);
+			stateDesc.setCullMode(GraphicsCullMode::None);
+			stateDesc.setDepthEnable(false);
 
 			GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(device_->createInputLayout(layoutDesc));
@@ -420,10 +424,10 @@ namespace octoon
 
 			context_->renderBegin();
 
+			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3,1.0), 1, 0);
+
 			context_->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 			context_->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-
-			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4::One, 1, 0);
 
 			context_->setVertexBufferData(0, vbo_, 0);
 			context_->setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
@@ -435,23 +439,24 @@ namespace octoon
 			{
 				const ImDrawList* cmd_list = drawData->CmdLists[n];
 
-				for (const ImDrawCmd* pcmd = cmd_list->CmdBuffer.begin(); pcmd != cmd_list->CmdBuffer.end(); pcmd++)
+				for (auto cmd = cmd_list->CmdBuffer.begin(); cmd != cmd_list->CmdBuffer.end(); cmd++)
 				{
-					auto texture = (GraphicsTexture*)pcmd->TextureId;
+					auto texture = (GraphicsTexture*)cmd->TextureId;
 					if (texture)
 						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
 					else
 						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(nullptr);
 
-					ImVec4 scissor((int)pcmd->ClipRect.x, (int)pcmd->ClipRect.y, (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
+					ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
 					context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+
 					context_->setRenderPipeline(pipeline_);
 					context_->setDescriptorSet(descriptor_set_);
 
-					context_->drawIndexed(pcmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
+					context_->drawIndexed(cmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
 
-					idx_buffer_offset += pcmd->ElemCount;
+					idx_buffer_offset += cmd->ElemCount;
 				}
 
 				vdx_buffer_offset += cmd_list->VtxBuffer.size();

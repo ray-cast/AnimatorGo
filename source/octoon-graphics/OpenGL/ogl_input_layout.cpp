@@ -18,6 +18,9 @@ namespace octoon
 		bool
 		OGLInputLayout::setup(const GraphicsInputLayoutDesc& inputLayoutDesc) noexcept
 		{
+			assert(!inputLayoutDesc.getVertexLayouts().empty());
+			assert(!inputLayoutDesc.getVertexBindings().empty());
+
 			_inputLayoutDesc = inputLayoutDesc;
 			return true;
 		}

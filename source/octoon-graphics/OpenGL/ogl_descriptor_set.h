@@ -14,6 +14,8 @@ namespace octoon
 			OGLGraphicsUniformSet() noexcept;
 			virtual ~OGLGraphicsUniformSet() noexcept;
 
+			const std::string& get_name() const noexcept;
+
 			void uniform1b(bool value) noexcept;
 			void uniform1i(std::int32_t i1) noexcept;
 			void uniform2i(const int2& value) noexcept;

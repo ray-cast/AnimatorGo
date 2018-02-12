@@ -56,6 +56,9 @@ namespace octoon
 			graphics::GraphicsTexturePtr texture_;
 			graphics::GraphicsDescriptorSetPtr descriptor_set_;
 
+			graphics::GraphicsUniformSetPtr proj_;
+			graphics::GraphicsUniformSetPtr decal_;
+
 			graphics::GraphicsDevicePtr device_;
 			graphics::GraphicsContextPtr context_;
 			graphics::GraphicsSwapchainPtr swapchain_;

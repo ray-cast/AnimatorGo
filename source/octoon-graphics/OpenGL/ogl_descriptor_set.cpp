@@ -21,6 +21,13 @@ namespace octoon
 		{
 		}
 
+		const std::string&
+		OGLGraphicsUniformSet::get_name() const noexcept
+		{
+			assert(_param);
+			return _param->getName();
+		}
+
 		void
 		OGLGraphicsUniformSet::uniform1b(bool value) noexcept
 		{

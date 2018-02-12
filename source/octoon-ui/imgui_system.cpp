@@ -148,7 +148,7 @@ namespace octoon
 
 			GraphicsStateDesc stateDesc;
 			stateDesc.setColorBlends(std::move(blends));
-			stateDesc.setScissorTestEnable(false);
+			stateDesc.setScissorTestEnable(true);
 			stateDesc.setPrimitiveType(GraphicsVertexType::TriangleList);
 			stateDesc.setCullMode(GraphicsCullMode::None);
 			stateDesc.setDepthEnable(false);
@@ -167,6 +167,14 @@ namespace octoon
 			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
 
 			descriptor_set_ = device_->createDescriptorSet(descriptor_set);
+			if (!descriptor_set_)
+				return false;
+
+			auto begin = descriptor_set_->getGraphicsUniformSets().begin();
+			auto end = descriptor_set_->getGraphicsUniformSets().end();
+
+			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "proj"; });
+			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "decal"; });
 
 			initialize_ = true;
 			return true;
@@ -311,7 +319,9 @@ namespace octoon
 			math::float4x4 project;
 			project.make_ortho_lh(0, w, h, 0, 0, 1);
 
-			descriptor_set_->getGraphicsUniformSets()[1]->uniform4fmat(project);
+			proj_->uniform4fmat(project);
+
+			swapchain_->setWindowResolution(w, h);
 		}
 
 		void
@@ -443,9 +453,9 @@ namespace octoon
 				{
 					auto texture = (GraphicsTexture*)cmd->TextureId;
 					if (texture)
-						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
+						decal_->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
 					else
-						descriptor_set_->getGraphicsUniformSets()[0]->uniformTexture(nullptr);
+						decal_->uniformTexture(nullptr);
 
 					ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 

@@ -301,6 +301,10 @@ namespace octoon
 					return false;
 				}
 			}
+			else
+			{
+				codes = shaderDesc.getByteCodes();
+			}
 
 			const char* source = codes.data();
 			glShaderSource(_instance, 1, &source, 0);

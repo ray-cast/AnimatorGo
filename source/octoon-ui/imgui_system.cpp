@@ -9,30 +9,31 @@ namespace octoon
 {
 	namespace imgui
 	{
-		const char* vert ="\
-		uniform float4x4 proj;\
-		void main(\
-			in float4 Position : POSITION0,\
-			in float4 Diffuse : COLOR0,\
-			in float4 Texcoord : TEXCOORD0,\
-			out float4 oTexcoord0 : TEXCOORD0,\
-			out float4 oTexcoord1 : TEXCOORD1,\
-			out float4 oPosition : SV_Position)\
-		{\
-			oTexcoord0 = Diffuse;\
-			oTexcoord1 = Texcoord;\
-			oPosition = mul(proj, Position);\
-		}";
+		const char* vert =
+			"#version 330\n"
+			"uniform mat4 proj;\n"
+			"layout(location  = 0) in vec4 POSITION0;\n"
+			"layout(location  = 1) in vec4 COLOR0;\n"
+			"layout(location  = 2) in vec4 TEXCOORD0;\n"
+			"out vec4 oTexcoord0;\n"
+			"out vec4 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"oTexcoord0 = COLOR0;\n"
+			"oTexcoord1 = TEXCOORD0;\n"
+			"gl_Position = proj * POSITION0;\n"
+			"}\n";
 
-		const char* frag = "\
-		uniform texture2D decal;\
-		SamplerState LinearClamp {Filter = MIN_MAG_MIP_POINT; AddressU = CLAMP; AddressV = CLAMP;};\
-		float4 main(\
-			in float4 diffuse : TEXCOORD0,\
-			in float4 texcoord : TEXCOORD1) : SV_Target\
-		{\
-			return decal.Sample(LinearClamp, texcoord.xy) * diffuse;\
-		}";
+		const char* frag =
+			"#version 330\n"
+			"uniform sampler2D decal;\n"
+			"layout(location  = 0) out vec4 oColor;\n"
+			"in vec4 oTexcoord0;\n"
+			"in vec4 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"	oColor = texture(decal, oTexcoord1.rg) * oTexcoord0;\n"
+			"}";
 
 		System::System() noexcept
 			: initialize_(false)
@@ -125,8 +126,8 @@ namespace octoon
 				return false;
 
 			GraphicsProgramDesc programDesc;
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageVertexBit, vert)));
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFragmentBit, frag)));
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageVertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
 			auto program = device_->createProgram(programDesc);
 
 			GraphicsInputLayoutDesc layoutDesc;

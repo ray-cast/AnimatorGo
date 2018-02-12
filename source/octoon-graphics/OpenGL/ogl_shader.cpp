@@ -285,6 +285,8 @@ namespace octoon
 			}
 
 			std::string codes;
+			const char* source = shaderDesc.getByteCodes().c_str();
+
 			if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSL)
 			{
 				if (!HlslCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), shaderDesc.getEntryPoint().data(), codes))
@@ -292,6 +294,8 @@ namespace octoon
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlsl to glsl.");
 					return false;
 				}
+
+				source = codes.data();
 			}
 			else if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSLbytecodes)
 			{
@@ -300,13 +304,10 @@ namespace octoon
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
 					return false;
 				}
-			}
-			else
-			{
-				codes = shaderDesc.getByteCodes();
+
+				source = codes.data();
 			}
 
-			const char* source = codes.data();
 			glShaderSource(_instance, 1, &source, 0);
 			glCompileShader(_instance);
 

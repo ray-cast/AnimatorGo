@@ -226,8 +226,8 @@ namespace octoon
 		void render() noexcept;
 		void shutdown() noexcept;
 
-		void show_userGuide() noexcept;
-		void show_styleEditor(GuiStyle* style = nullptr) noexcept;
+		void show_user_guide() noexcept;
+		void show_style_editor(GuiStyle* style = nullptr) noexcept;
 		void show_test_window(bool* isOpened = nullptr) noexcept;
 		void show_metrics_window(bool* isOpened = nullptr) noexcept;
 
@@ -312,9 +312,9 @@ namespace octoon
 		bool is_root_window_or_any_child_focused() noexcept;
 		bool is_root_window_or_any_child_hovered() noexcept;
 
-		bool is_rectVisible(const float2& size) noexcept;
+		bool is_rect_visible(const float2& size) noexcept;
 
-		bool is_posHoveringAnyWindow(const float2& pos) noexcept;
+		bool is_pos_hovering_any_window(const float2& pos) noexcept;
 
 		bool is_key_down(int key_index) noexcept;
 		bool is_key_pressed(int key_index, bool repeat = true) noexcept;
@@ -322,14 +322,14 @@ namespace octoon
 
 		bool is_mouse_down(int button) noexcept;
 		bool is_mouse_clicked(int button, bool repeat = false) noexcept;
-		bool is_mouse_doubleClicked(int button) noexcept;
+		bool is_mouse_double_clicked(int button) noexcept;
 		bool is_mouse_released(int button) noexcept;
-		bool is_mouse_hoveringWindow() noexcept;
-		bool is_mouse_hoveringAnyWindow() noexcept;
-		bool is_mouse_hoveringRect(const float2& min, const float2& max, bool clip = true) noexcept;
+		bool is_mouse_hovering_window() noexcept;
+		bool is_mouse_hovering_any_window() noexcept;
+		bool is_mouse_hovering_rect(const float2& min, const float2& max, bool clip = true) noexcept;
 		bool is_mouse_dragging(int button = 0, float lock_threshold = -1.0f) noexcept;
 
-		float get_contentRegionAvailWidth() noexcept;
+		float get_content_region_avail_width() noexcept;
 
 		float get_window_width() noexcept;
 		float get_window_height() noexcept;
@@ -348,13 +348,13 @@ namespace octoon
 
 		float2 get_window_pos() noexcept;
 		float2 get_window_size() noexcept;
-		float2 get_window_contentRegionMin() noexcept;
-		float2 get_window_contentRegionMax() noexcept;
+		float2 get_window_content_region_min() noexcept;
+		float2 get_window_content_region_max() noexcept;
 
 		float2 get_content_region_max() noexcept;
 		float2 get_content_region_avail() noexcept;
 
-		float2 get_displaySize() noexcept;
+		float2 get_display_size() noexcept;
 
 		void reset_mouse_drag_delta(int button = 0) noexcept;
 
@@ -378,12 +378,12 @@ namespace octoon
 		void          pop_style_var(int count = 1) noexcept;
 		float         get_font_size() noexcept;
 		float2        get_font_tex_uv_white_pixel() noexcept;
-		std::uint32_t getColorU32(GuiCol idx, float alpha_mul = 1.0f) noexcept;
-		std::uint32_t getColorU32(const float4& col) noexcept;
+		std::uint32_t get_color_u32(GuiCol idx, float alpha_mul = 1.0f) noexcept;
+		std::uint32_t get_color_u32(const float4& col) noexcept;
 
 		void  push_item_width(float item_width) noexcept;
 		void  pop_item_width() noexcept;
-		float calcItemWidth() noexcept;
+		float calc_item_width() noexcept;
 		void  push_text_wrap_pos(float wrap_pos_x = 0.0f) noexcept;
 		void  pop_text_wrap_pos() noexcept;
 		void  push_allow_keyboard_focus(bool v) noexcept;
@@ -402,7 +402,7 @@ namespace octoon
 		void indent(float indent_w = 0.0f) noexcept;
 		void unindent(float indent_w = 0.0f) noexcept;
 
-		void alignFirstTextHeightToWidgets() noexcept;
+		void align_first_text_height_to_widgets() noexcept;
 		float get_text_line_height() noexcept;
 		float get_text_line_height_with_spacing() noexcept;
 		float get_items_line_height_with_spacing() noexcept;

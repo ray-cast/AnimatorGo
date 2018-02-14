@@ -109,12 +109,12 @@ namespace octoon
 			ImGui::Shutdown();
 		}
 
-		void show_userGuide() noexcept
+		void show_user_guide() noexcept
 		{
 			ImGui::ShowUserGuide();
 		}
 
-		void show_styleEditor(GuiStyle* ref) noexcept
+		void show_style_editor(GuiStyle* ref) noexcept
 		{
 			static_assert(sizeof(GuiStyle) == sizeof(ImGuiStyle));
 			static_assert(offsetof(GuiStyle, Alpha) == offsetof(ImGuiStyle, Alpha));
@@ -243,17 +243,17 @@ namespace octoon
 			return ImVec2ToFloat2(ImGui::GetContentRegionAvail());
 		}
 
-		float get_contentRegionAvailWidth() noexcept
+		float get_content_region_avail_width() noexcept
 		{
 			return ImGui::GetContentRegionAvailWidth();
 		}
 
-		float2 get_window_contentRegionMin() noexcept
+		float2 get_window_content_region_min() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowContentRegionMin());
 		}
 
-		float2 get_window_contentRegionMax() noexcept
+		float2 get_window_content_region_max() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowContentRegionMax());
 		}
@@ -453,12 +453,12 @@ namespace octoon
 			return ImVec2ToFloat2(ImGui::GetFontTexUvWhitePixel());
 		}
 
-		std::uint32_t getColorU32(GuiCol idx, float alpha_mul) noexcept
+		std::uint32_t get_color_u32(GuiCol idx, float alpha_mul) noexcept
 		{
 			return ImGui::GetColorU32((ImGuiCol)idx, alpha_mul);
 		}
 
-		std::uint32_t getColorU32(const float4& col) noexcept
+		std::uint32_t get_color_u32(const float4& col) noexcept
 		{
 			return ImGui::GetColorU32((ImVec4&)col);
 		}
@@ -473,7 +473,7 @@ namespace octoon
 			ImGui::PopItemWidth();
 		}
 
-		float calcItemWidth() noexcept
+		float calc_item_width() noexcept
 		{
 			return ImGui::CalcItemWidth();
 		}
@@ -598,7 +598,7 @@ namespace octoon
 			return ImGui::SetCursorScreenPos((ImVec2&)pos);
 		}
 
-		void alignFirstTextHeightToWidgets() noexcept
+		void align_first_text_height_to_widgets() noexcept
 		{
 			ImGui::AlignFirstTextHeightToWidgets();
 		}
@@ -1399,12 +1399,12 @@ namespace octoon
 			return ImGui::IsRootWindowOrAnyChildHovered();
 		}
 
-		bool is_rectVisible(const float2& size) noexcept
+		bool is_rect_visible(const float2& size) noexcept
 		{
 			return ImGui::IsRectVisible((const ImVec2&)size);
 		}
 
-		bool is_posHoveringAnyWindow(const float2& pos) noexcept
+		bool is_pos_hovering_any_window(const float2& pos) noexcept
 		{
 			return ImGui::IsPosHoveringAnyWindow((const ImVec2&)pos);
 		}
@@ -1484,7 +1484,7 @@ namespace octoon
 			return ImGui::IsMouseClicked(button, repeat);
 		}
 
-		bool is_mouse_doubleClicked(int button) noexcept
+		bool is_mouse_double_clicked(int button) noexcept
 		{
 			return ImGui::IsMouseDoubleClicked(button);
 		}
@@ -1494,17 +1494,17 @@ namespace octoon
 			return ImGui::IsMouseReleased(button);
 		}
 
-		bool is_mouse_hoveringWindow() noexcept
+		bool is_mouse_hovering_window() noexcept
 		{
 			return ImGui::IsMouseHoveringWindow();
 		}
 
-		bool is_mouse_hoveringAnyWindow() noexcept
+		bool is_mouse_hovering_any_window() noexcept
 		{
 			return ImGui::IsMouseHoveringAnyWindow();
 		}
 
-		bool is_mouse_hoveringRect(const float2& min, const float2& max, bool clip) noexcept
+		bool is_mouse_hovering_rect(const float2& min, const float2& max, bool clip) noexcept
 		{
 			return ImGui::IsMouseHoveringRect((const ImVec2&)min, (const ImVec2&)max, clip);
 		}
@@ -1850,7 +1850,7 @@ namespace octoon
 			}
 		}
 
-		float2 get_displaySize() noexcept
+		float2 get_display_size() noexcept
 		{
 			return float2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 		}

@@ -333,7 +333,7 @@ void onWindowMouseMotion(GLFWwindow* window, double x, double y)
 	}
 }
 
-void onWindowSchool(GLFWwindow* window, double x, double y)
+void onWindowScrool(GLFWwindow* window, double x, double y)
 {
 	if (gameApp_)
 	{
@@ -424,7 +424,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			::glfwSetCursorPosCallback(window_, &onWindowMouseMotion);
 			::glfwSetKeyCallback(window_, &onWindowKey);
 			::glfwSetCharModsCallback(window_, &onWindowKeyChar);
-			::glfwSetScrollCallback(window_, &onWindowSchool);
+			::glfwSetScrollCallback(window_, &onWindowScrool);
 			::glfwSetDropCallback(window_, &onWindowDrop);
 
 			auto screen = ::glfwGetVideoMode(::glfwGetPrimaryMonitor());

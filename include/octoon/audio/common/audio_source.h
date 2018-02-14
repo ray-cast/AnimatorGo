@@ -1,16 +1,22 @@
 #ifndef OCTOON_AUDIO_SOURCE_H_
 #define OCTOON_AUDIO_SOURCE_H_
 
+
+#include <memory>
 #include <cstdint>
 #include <cstddef>
 
 #include <octoon/runtime/platform.h>
+#include <octoon/math/vector3.h>
+#include <octoon/math/mathfwd.h>
+
+#include <octoon/audio/common/audio_reader.h>
 
 namespace octoon
 {
 	namespace audio
 	{
-        struct OCTOON_EXPORT SoundClip
+        struct OCTOON_EXPORT AudioClip
         {
             std::size_t length;
             std::size_t samples;
@@ -18,36 +24,36 @@ namespace octoon
             std::uint16_t freq;
         };
 
-        class OCTOON_EXPORT SoundSource
+        class OCTOON_EXPORT AudioSource
         {
         public:
-            SoundSource() noexcept;
-            virtual ~SoundSource() noexcept;
+            AudioSource() noexcept;
+            virtual ~AudioSource() noexcept;
 
             virtual void open() noexcept = 0;
             virtual void close() noexcept = 0;
 
-            virtual void setSoundReader(SoundReaderPtr ptr) noexcept = 0;
-            virtual SoundReaderPtr getSoundBuffer() const noexcept = 0;
+            virtual void setSoundReader(std::shared_ptr<AudioReader> ptr) noexcept = 0;
+            virtual std::shared_ptr<AudioReader> getSoundBuffer() const noexcept = 0;
 
-            virtual void addSoundSourceListener(SoundSourceListener* listener) noexcept = 0;
-            virtual void removeSoundSourceListener(SoundSourceListener* listener) noexcept = 0;
+            virtual void addAudioSourceListener(AudioSourceListener* listener) noexcept = 0;
+            virtual void removeAudioSourceListener(AudioSourceListener* listener) noexcept = 0;
 
             virtual void setVolume(float volume) noexcept = 0;
             virtual void setMinVolume(float volume) noexcept = 0;
             virtual void setMaxVolume(float volume) noexcept = 0;
-            virtual void setTranslate(const float3& translate) noexcept = 0;
-            virtual void setVelocity(const float3& velocity) noexcept = 0;
-            virtual void setOrientation(const float3& forward, const float3& up) noexcept = 0;
+            virtual void setTranslate(const math::float3& translate) noexcept = 0;
+            virtual void setVelocity(const math::float3& velocity) noexcept = 0;
+            virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept = 0;
             virtual void setPitch(float pitch) noexcept = 0;
             virtual void setMaxDistance(float maxdis) noexcept = 0;
             virtual void setMinDistance(float mindis) noexcept = 0;
-            virtual void setSoundClip(const SoundClip& clip) noexcept = 0;
+            virtual void setAudioClip(const AudioClip& clip) noexcept = 0;
 
-            virtual void getTranslate(float3& translate) noexcept = 0;
-            virtual void getVelocity(float3& velocity) noexcept = 0;
-            virtual void getOrientation(float3& forward, float3& up) noexcept = 0;
-            virtual void getSoundClip(SoundClip& clip) const noexcept = 0;
+            virtual void getTranslate(math::float3& translate) noexcept = 0;
+            virtual void getVelocity(math::float3& velocity) noexcept = 0;
+            virtual void getOrientation(math::float3& forward, math::float3& up) noexcept = 0;
+            virtual void getAudioClip(AudioClip& clip) const noexcept = 0;
 
             virtual float getVolume() const noexcept = 0;
             virtual float getMinVolume() const noexcept = 0;

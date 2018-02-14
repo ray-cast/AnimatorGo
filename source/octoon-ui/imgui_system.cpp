@@ -381,96 +381,99 @@ namespace octoon
 
 			std::size_t totalVertexSize = drawData->TotalVtxCount * sizeof(ImDrawVert);
 			std::size_t totalIndirectSize = drawData->TotalIdxCount * sizeof(ImDrawIdx);
-			if (totalVertexSize == 0 || totalIndirectSize == 0)
-				return;
-
-			if (vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
+			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
-				GraphicsDataDesc dataDesc;
-				dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
-				dataDesc.setStream(0);
-				dataDesc.setStreamSize(totalVertexSize);
-				dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
+				if (vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
+				{
+					GraphicsDataDesc dataDesc;
+					dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
+					dataDesc.setStream(0);
+					dataDesc.setStreamSize(totalVertexSize);
+					dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
 
-				vbo_ = device_->createGraphicsData(dataDesc);
-				if (!vbo_)
-				return;
-			}
+					vbo_ = device_->createGraphicsData(dataDesc);
+					if (!vbo_)
+						return;
+				}
 
-			if (ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
-			{
-				GraphicsDataDesc elementDesc;
-				elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
-				elementDesc.setStream(0);
-				elementDesc.setStreamSize(totalIndirectSize);
-				elementDesc.setUsage(ibo_->getGraphicsDataDesc().getUsage());
+				if (ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
+				{
+					GraphicsDataDesc elementDesc;
+					elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
+					elementDesc.setStream(0);
+					elementDesc.setStreamSize(totalIndirectSize);
+					elementDesc.setUsage(ibo_->getGraphicsDataDesc().getUsage());
 
-				ibo_ = device_->createGraphicsData(elementDesc);
-				if (!ibo_)
+					ibo_ = device_->createGraphicsData(elementDesc);
+					if (!ibo_)
+						return;
+				}
+
+				ImDrawVert* vbo;
+				ImDrawIdx* ibo;
+
+				if (!vbo_->map(0, totalVertexSize, (void**)&vbo))
 					return;
+
+				if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
+					return;
+
+				for (int n = 0; n < drawData->CmdListsCount; n++)
+				{
+					const ImDrawList* cmd_list = drawData->CmdLists[n];
+					std::memcpy(vbo, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert));
+					std::memcpy(ibo, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx));
+					vbo += cmd_list->VtxBuffer.size();
+					ibo += cmd_list->IdxBuffer.size();
+				}
+
+				vbo_->unmap();
+				ibo_->unmap();
 			}
-
-			ImDrawVert* vbo;
-			ImDrawIdx* ibo;
-
-			if (!vbo_->map(0, totalVertexSize, (void**)&vbo))
-				return;
-
-			if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
-				return;
-
-			for (int n = 0; n < drawData->CmdListsCount; n++)
-			{
-				const ImDrawList* cmd_list = drawData->CmdLists[n];
-				std::memcpy(vbo, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.size() * sizeof(ImDrawVert));
-				std::memcpy(ibo, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx));
-				vbo += cmd_list->VtxBuffer.size();
-				ibo += cmd_list->IdxBuffer.size();
-			}
-
-			vbo_->unmap();
-			ibo_->unmap();
 
 			auto& io = ImGui::GetIO();
 
 			context_->renderBegin();
 
-			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3,1.0), 1, 0);
-
 			context_->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 			context_->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 
-			context_->setVertexBufferData(0, vbo_, 0);
-			context_->setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
+			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3,1.0), 1, 0);
 
-			std::uint32_t vdx_buffer_offset = 0;
-			std::uint32_t idx_buffer_offset = 0;
-
-			for (int n = 0; n < drawData->CmdListsCount; n++)
+			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
-				const ImDrawList* cmd_list = drawData->CmdLists[n];
+				context_->setVertexBufferData(0, vbo_, 0);
+				context_->setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
 
-				for (auto cmd = cmd_list->CmdBuffer.begin(); cmd != cmd_list->CmdBuffer.end(); cmd++)
+				std::uint32_t vdx_buffer_offset = 0;
+				std::uint32_t idx_buffer_offset = 0;
+
+				for (int n = 0; n < drawData->CmdListsCount; n++)
 				{
-					auto texture = (GraphicsTexture*)cmd->TextureId;
-					if (texture)
-						decal_->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
-					else
-						decal_->uniformTexture(nullptr);
+					const ImDrawList* cmd_list = drawData->CmdLists[n];
 
-					ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
+					for (auto cmd = cmd_list->CmdBuffer.begin(); cmd != cmd_list->CmdBuffer.end(); cmd++)
+					{
+						auto texture = (GraphicsTexture*)cmd->TextureId;
+						if (texture)
+							decal_->uniformTexture(texture->downcast_pointer<GraphicsTexture>());
+						else
+							decal_->uniformTexture(nullptr);
 
-					context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-					context_->setRenderPipeline(pipeline_);
-					context_->setDescriptorSet(descriptor_set_);
+						context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
 
-					context_->drawIndexed(cmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
+						context_->setRenderPipeline(pipeline_);
+						context_->setDescriptorSet(descriptor_set_);
 
-					idx_buffer_offset += cmd->ElemCount;
+						context_->drawIndexed(cmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
+
+						idx_buffer_offset += cmd->ElemCount;
+					}
+
+					vdx_buffer_offset += cmd_list->VtxBuffer.size();
 				}
-
-				vdx_buffer_offset += cmd_list->VtxBuffer.size();
 			}
 
 			context_->renderEnd();

@@ -1,11 +1,11 @@
 #include <octoon/octoon.h>
-#include <octoon/octoon_main.h>
 
 int main(int argc, const char* argv[])
 {
-	::OctoonInit(argv[0], "");
+	if (!::OctoonInit(argv[0], ""))
+		return 1;
 
-	if (::OctoonOpenWindow("Octoon Studio", 1768, 992))
+	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

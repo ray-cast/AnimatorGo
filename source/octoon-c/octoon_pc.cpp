@@ -1,6 +1,5 @@
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 #include <octoon/octoon.h>
-#include <octoon/octoon_main.h>
 
 #include <octoon/game_application.h>
 #include <octoon/input/input_event.h>
@@ -364,6 +363,10 @@ void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 
 bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
+#if GLFW_EXPOSE_NATIVE_WIN32
+	::SetConsoleOutputCP(CP_UTF8);
+#endif
+
 	if (gamedir)
 	{
 		char drive[3];
@@ -375,8 +378,13 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 #else
 		::_splitpath(gamedir, drive, dir, filename, ext);
 #endif
+
 		gameRootPath_ = drive;
 		gameRootPath_ += dir;
+
+#if GLFW_EXPOSE_NATIVE_WIN32
+		::SetCurrentDirectory(gameRootPath_.c_str());
+#endif
 	}
 
 	if (scenename)
@@ -506,43 +514,5 @@ void OCTOON_CALL OctoonUpdate() noexcept
 void OCTOON_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
-}
-
-int main(int argc, const char* argv[]) noexcept
-{
-	try
-	{
-#if GLFW_EXPOSE_NATIVE_WIN32
-		::SetConsoleOutputCP(CP_UTF8);
-#endif
-
-		if (argc != 0)
-		{
-			char drive[3];
-			char dir[MAX_PATH];
-			char filename[MAX_PATH];
-			char ext[MAX_PATH];
-#if GLFW_EXPOSE_NATIVE_WIN32
-			::_splitpath_s(argv[0], drive, 3, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
-#else
-			::_splitpath(path, drive, dir, filename, ext);
-#endif
-			gameRootPath_ = drive;
-			gameRootPath_ += dir;
-
-#if GLFW_EXPOSE_NATIVE_WIN32
-			::SetCurrentDirectory(gameRootPath_.c_str());
-#endif
-		}
-
-		return octoon_main(argc, argv);
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << e.what();
-		std::system("pause");
-
-		return 1;
-	}
 }
 #endif

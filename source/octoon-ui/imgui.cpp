@@ -94,7 +94,7 @@ namespace octoon
 			Colors[ImGuiCol_TextSelectedBg] = float4(0.7f, 0.7f, 0.7f, 0.35f);
 		}
 
-		void newFrame() noexcept
+		void new_frame() noexcept
 		{
 			ImGui::NewFrame();
 		}
@@ -109,12 +109,12 @@ namespace octoon
 			ImGui::Shutdown();
 		}
 
-		void showUserGuide() noexcept
+		void show_userGuide() noexcept
 		{
 			ImGui::ShowUserGuide();
 		}
 
-		void showStyleEditor(GuiStyle* ref) noexcept
+		void show_styleEditor(GuiStyle* ref) noexcept
 		{
 			static_assert(sizeof(GuiStyle) == sizeof(ImGuiStyle));
 			static_assert(offsetof(GuiStyle, Alpha) == offsetof(ImGuiStyle, Alpha));
@@ -147,7 +147,7 @@ namespace octoon
 				ImGui::ShowStyleEditor((ImGuiStyle*)&_defalutStyle);
 		}
 
-		void showTestWindow(bool* isOpened) noexcept
+		void show_test_window(bool* isOpened) noexcept
 		{
 			if (!isOpened)
 				ImGui::ShowTestWindow();
@@ -155,7 +155,7 @@ namespace octoon
 				ImGui::ShowTestWindow(isOpened);
 		}
 
-		void showMetricsWindow(bool* isOpened) noexcept
+		void show_metrics_window(bool* isOpened) noexcept
 		{
 			if (!isOpened)
 				ImGui::ShowMetricsWindow();
@@ -190,7 +190,7 @@ namespace octoon
 			ImGui::End();
 		}
 
-		bool beginChild(const char* str_id, const float2& size, bool border, GuiWindowFlags extraFlags) noexcept
+		bool begin_child(const char* str_id, const float2& size, bool border, GuiWindowFlags extraFlags) noexcept
 		{
 			if (!ImGui::BeginChild(str_id, (ImVec2&)size, border, extraFlags))
 			{
@@ -201,7 +201,7 @@ namespace octoon
 			return true;
 		}
 
-		bool beginChild(GuiID id, const float2& size, bool border, GuiWindowFlags extraFlags) noexcept
+		bool begin_child(GuiID id, const float2& size, bool border, GuiWindowFlags extraFlags) noexcept
 		{
 			if (!ImGui::BeginChild((ImGuiID)id, (ImVec2&)size, border, extraFlags))
 			{
@@ -212,227 +212,243 @@ namespace octoon
 			return true;
 		}
 
-		void endChild() noexcept
+		bool begin_child_frame(GuiID id, const float2& size, GuiWindowFlags extraFlags) noexcept
+		{
+			if (!ImGui::BeginChildFrame(id, (const ImVec2&)size, extraFlags))
+			{
+				ImGui::EndChildFrame();
+				return false;
+			}
+
+			return true;
+		}
+
+		void end_child() noexcept
 		{
 			return ImGui::EndChild();
 		}
 
-		float2 getContentRegionMax() noexcept
+		void end_child_frame() noexcept
+		{
+			return ImGui::EndChildFrame();
+		}
+
+		float2 get_content_region_max() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetContentRegionMax());
 		}
 
-		float2 getContentRegionAvail() noexcept
+		float2 get_content_region_avail() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetContentRegionAvail());
 		}
 
-		float getContentRegionAvailWidth() noexcept
+		float get_contentRegionAvailWidth() noexcept
 		{
 			return ImGui::GetContentRegionAvailWidth();
 		}
 
-		float2 getWindowContentRegionMin() noexcept
+		float2 get_window_contentRegionMin() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowContentRegionMin());
 		}
 
-		float2 getWindowContentRegionMax() noexcept
+		float2 get_window_contentRegionMax() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowContentRegionMax());
 		}
 
-		float getWindowContentRegionWidth() noexcept
+		float get_window_contentRegionWidth() noexcept
 		{
 			return ImGui::GetWindowContentRegionWidth();
 		}
 
-		float2 getWindowPos() noexcept
+		float2 get_window_pos() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowPos());
 		}
 
-		float2 getWindowSize() noexcept
+		float2 get_window_size() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetWindowSize());
 		}
 
-		float getWindowWidth() noexcept
+		float get_window_width() noexcept
 		{
 			return ImGui::GetWindowWidth();
 		}
 
-		float getWindowHeight() noexcept
+		float get_window_height() noexcept
 		{
 			return ImGui::GetWindowHeight();
 		}
 
-		bool isWindowCollapsed() noexcept
+		bool is_window_collapsed() noexcept
 		{
 			return ImGui::IsWindowCollapsed();
 		}
 
-		void setWindowFontScale(float scale) noexcept
+		void set_window_fontScale(float scale) noexcept
 		{
 			ImGui::SetWindowFontScale(scale);
 		}
 
-		void setNextWindowPos(const float2& pos, GuiSetCondFlags cond) noexcept
+		void set_next_window_pos(const float2& pos, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetNextWindowPos((const ImVec2&)pos, cond);
 		}
 
-		void setNextWindowPosCenter(GuiSetCondFlags cond) noexcept
+		void set_next_window_pos_center(GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetNextWindowPosCenter(cond);
 		}
 
-		void setNextWindowSize(const float2& size, GuiSetCondFlags cond) noexcept
+		void set_next_window_size(const float2& size, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetNextWindowSize((const ImVec2&)size);
 		}
 
-		void setNextWindowSizeConstraints(const float2& min, const float2& max) noexcept
+		void set_next_window_size_constraints(const float2& min, const float2& max) noexcept
 		{
 			ImGui::SetNextWindowSizeConstraints((const ImVec2&)min, (const ImVec2&)max);
 		}
 
-		void setNextWindowContentSize(const float2& size) noexcept
+		void set_next_window_content_size(const float2& size) noexcept
 		{
 			ImGui::SetNextWindowContentSize((const ImVec2&)size);
 		}
 
-		void setNextWindowContentWidth(float width) noexcept
+		void set_next_window_content_width(float width) noexcept
 		{
 			ImGui::SetNextWindowContentWidth(width);
 		}
 
-		void setNextWindowCollapsed(bool collapsed, GuiSetCondFlags cond) noexcept
+		void set_next_window_collapsed(bool collapsed, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetNextWindowCollapsed(collapsed, cond);
 		}
 
-		void setNextWindowFocus() noexcept
+		void set_next_window_focus() noexcept
 		{
 			ImGui::SetNextWindowFocus();
 		}
 
-		void setWindowPos(const float2& pos, GuiSetCondFlags cond) noexcept
+		void set_window_pos(const float2& pos, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowPos((const ImVec2&)pos, cond);
 		}
 
-		void setWindowSize(const float2& size, GuiSetCondFlags cond) noexcept
+		void set_window_size(const float2& size, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowSize((const ImVec2&)size, cond);
 		}
 
-		void setWindowCollapsed(bool collapsed, GuiSetCondFlags cond) noexcept
+		void set_window_collapsed(bool collapsed, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowCollapsed(collapsed, cond);
 		}
 
-		void setWindowFocus() noexcept
+		void set_window_focus() noexcept
 		{
 			ImGui::SetWindowFocus();
 		}
 
-		void setWindowPos(const char* name, const float2& pos, GuiSetCondFlags cond) noexcept
+		void set_window_pos(const char* name, const float2& pos, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowPos(name, (const ImVec2&)pos, cond);
 		}
 
-		void setWindowSize(const char* name, const float2& size, GuiSetCondFlags cond) noexcept
+		void set_window_size(const char* name, const float2& size, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowSize(name, (const ImVec2&)size, cond);
 		}
 
-		void setWindowCollapsed(const char* name, bool collapsed, GuiSetCondFlags cond) noexcept
+		void set_window_collapsed(const char* name, bool collapsed, GuiSetCondFlags cond) noexcept
 		{
 			ImGui::SetWindowCollapsed(name, collapsed, cond);
 		}
 
-		void setWindowFocus(const char* name) noexcept
+		void set_window_focus(const char* name) noexcept
 		{
 			ImGui::SetWindowFocus();
 		}
 
-		float getScrollX() noexcept
+		float get_scroll_x() noexcept
 		{
 			return ImGui::GetScrollX();
 		}
 
-		float getScrollY() noexcept
+		float get_scroll_y() noexcept
 		{
 			return ImGui::GetScrollY();
 		}
 
-		float getScrollMaxX() noexcept
+		float get_scroll_max_x() noexcept
 		{
 			return ImGui::GetScrollMaxX();
 		}
 
-		float getScrollMaxY() noexcept
+		float get_scroll_max_y() noexcept
 		{
 			return ImGui::GetScrollMaxY();
 		}
 
-		void setScrollX(float scroll_x) noexcept
+		void set_scroll_x(float scroll_x) noexcept
 		{
 			ImGui::SetScrollX(scroll_x);
 		}
 
-		void setScrollY(float scroll_y) noexcept
+		void set_scroll_y(float scroll_y) noexcept
 		{
 			ImGui::SetScrollY(scroll_y);
 		}
 
-		void setScrollHere(float center_y_ratio) noexcept
+		void set_scroll_here(float center_y_ratio) noexcept
 		{
 			ImGui::SetScrollHere(center_y_ratio);
 		}
 
-		void setScrollFromPosY(float pos_y, float center_y_ratio) noexcept
+		void set_scroll_from_pos_y(float pos_y, float center_y_ratio) noexcept
 		{
 			ImGui::SetScrollFromPosY(pos_y, center_y_ratio);
 		}
 
-		void setKeyboardFocusHere(int offset) noexcept
+		void set_keyboard_focus_here(int offset) noexcept
 		{
 			ImGui::SetKeyboardFocusHere(offset);
 		}
 
-		void pushStyleColor(GuiCol idx, const float4& col) noexcept
+		void push_style_color(GuiCol idx, const float4& col) noexcept
 		{
 			ImGui::PushStyleColor((ImGuiCol)idx, (ImVec4&)col);
 		}
 
-		void popStyleColor(int count) noexcept
+		void pop_style_color(int count) noexcept
 		{
 			ImGui::PopStyleColor(count);
 		}
 
-		void pushStyleVar(GuiStyleVar idx, float val) noexcept
+		void push_style_var(GuiStyleVar idx, float val) noexcept
 		{
 			ImGui::PushStyleVar((ImGuiStyleVar)idx, val);
 		}
 
-		void pushStyleVar(GuiStyleVar idx, const float2& val) noexcept
+		void push_style_var(GuiStyleVar idx, const float2& val) noexcept
 		{
 			ImGui::PushStyleVar((ImGuiStyleVar)idx, (ImVec2&)val);
 		}
 
-		void popStyleVar(int count) noexcept
+		void pop_style_var(int count) noexcept
 		{
 			ImGui::PopStyleVar(count);
 		}
 
-		float getFontSize() noexcept
+		float get_font_size() noexcept
 		{
 			return ImGui::GetFontSize();
 		}
 
-		float2 getFontTexUvWhitePixel() noexcept
+		float2 get_font_tex_uv_white_pixel() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetFontTexUvWhitePixel());
 		}
@@ -447,12 +463,12 @@ namespace octoon
 			return ImGui::GetColorU32((ImVec4&)col);
 		}
 
-		void pushItemWidth(float item_width) noexcept
+		void push_item_width(float item_width) noexcept
 		{
 			ImGui::PushItemWidth(item_width);
 		}
 
-		void popItemWidth() noexcept
+		void pop_item_width() noexcept
 		{
 			ImGui::PopItemWidth();
 		}
@@ -462,32 +478,32 @@ namespace octoon
 			return ImGui::CalcItemWidth();
 		}
 
-		void pushTextWrapPos(float wrap_pos_x) noexcept
+		void push_text_wrap_pos(float wrap_pos_x) noexcept
 		{
 			ImGui::PushTextWrapPos();
 		}
 
-		void popTextWrapPos() noexcept
+		void pop_text_wrap_pos() noexcept
 		{
 			ImGui::PopTextWrapPos();
 		}
 
-		void pushAllowKeyboardFocus(bool v) noexcept
+		void push_allow_keyboard_focus(bool v) noexcept
 		{
 			ImGui::PushAllowKeyboardFocus(v);
 		}
 
-		void popAllowKeyboardFocus() noexcept
+		void pop_allow_keyboard_focus() noexcept
 		{
 			ImGui::PopAllowKeyboardFocus();
 		}
 
-		void pushButtonRepeat(bool repeat) noexcept
+		void push_button_repeat(bool repeat) noexcept
 		{
 			ImGui::PushButtonRepeat(repeat);
 		}
 
-		void popButtonRepeat() noexcept
+		void pop_button_repeat() noexcept
 		{
 			ImGui::PopButtonRepeat();
 		}
@@ -497,12 +513,12 @@ namespace octoon
 			ImGui::Separator();
 		}
 
-		void sameLine(float pos_x, float spacing_w) noexcept
+		void same_line(float pos_x, float spacing_w) noexcept
 		{
 			ImGui::SameLine(pos_x, spacing_w);
 		}
 
-		void newLine() noexcept
+		void new_line() noexcept
 		{
 			ImGui::NewLine();
 		}
@@ -527,57 +543,57 @@ namespace octoon
 			ImGui::Unindent(indent_w);
 		}
 
-		void beginGroup() noexcept
+		void begin_group() noexcept
 		{
 			ImGui::BeginGroup();
 		}
 
-		void endGroup() noexcept
+		void end_group() noexcept
 		{
 			ImGui::EndGroup();
 		}
 
-		float2 getCursorPos() noexcept
+		float2 get_cursor_pos() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetCursorPos());
 		}
 
-		float getCursorPosX() noexcept
+		float get_cursor_pos_x() noexcept
 		{
 			return ImGui::GetCursorPosX();
 		}
 
-		float getCursorPosY() noexcept
+		float get_cursor_pos_y() noexcept
 		{
 			return ImGui::GetCursorPosY();
 		}
 
-		void setCursorPos(const float2& local_pos) noexcept
-		{
-			ImGui::SetCursorPos((ImVec2&)local_pos);
-		}
-
-		void setCursorPosX(float x) noexcept
-		{
-			ImGui::SetCursorPosX(x);
-		}
-
-		void setCursorPosY(float y) noexcept
-		{
-			ImGui::SetCursorPosY(y);
-		}
-
-		float2 getCursorStartPos() noexcept
+		float2 get_cursor_start_pos() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetCursorStartPos());
 		}
 
-		float2 getCursorScreenPos() noexcept
+		float2 get_cursor_screen_pos() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetCursorScreenPos());
 		}
 
-		void setCursorScreenPos(const float2& pos) noexcept
+		void set_cursor_pos(const float2& local_pos) noexcept
+		{
+			ImGui::SetCursorPos((ImVec2&)local_pos);
+		}
+
+		void set_cursor_pos_x(float x) noexcept
+		{
+			ImGui::SetCursorPosX(x);
+		}
+
+		void set_cursor_pos_y(float y) noexcept
+		{
+			ImGui::SetCursorPosY(y);
+		}
+
+		void set_cursor_screen_pos(const float2& pos) noexcept
 		{
 			return ImGui::SetCursorScreenPos((ImVec2&)pos);
 		}
@@ -587,17 +603,17 @@ namespace octoon
 			ImGui::AlignFirstTextHeightToWidgets();
 		}
 
-		float getTextLineHeight() noexcept
+		float get_text_line_height() noexcept
 		{
 			return ImGui::GetTextLineHeight();
 		}
 
-		float getTextLineHeightWithSpacing() noexcept
+		float get_text_line_height_with_spacing() noexcept
 		{
 			return ImGui::GetTextLineHeightWithSpacing();
 		}
 
-		float getItemsLineHeightWithSpacing() noexcept
+		float get_items_line_height_with_spacing() noexcept
 		{
 			return ImGui::GetItemsLineHeightWithSpacing();
 		}
@@ -607,37 +623,37 @@ namespace octoon
 			ImGui::Columns(count, id, border);
 		}
 
-		void pushID(const char* str_id_begin, const char* str_id_end) noexcept
+		void push_id(const char* str_id_begin, const char* str_id_end) noexcept
 		{
 			ImGui::PushID(str_id_begin, str_id_end);
 		}
 
-		void pushID(const void* ptr_id) noexcept
+		void push_id(const void* ptr_id) noexcept
 		{
 			ImGui::PushID(ptr_id);
 		}
 
-		void pushID(int int_id) noexcept
+		void push_id(int int_id) noexcept
 		{
 			ImGui::PushID(int_id);
 		}
 
-		void popID() noexcept
+		void pop_id() noexcept
 		{
 			ImGui::PopID();
 		}
 
-		GuiID getID(const char* str_id) noexcept
+		GuiID get_id(const char* str_id) noexcept
 		{
 			return ImGui::GetID(str_id);
 		}
 
-		GuiID getID(const char* str_id_begin, const char* str_id_end) noexcept
+		GuiID get_id(const char* str_id_begin, const char* str_id_end) noexcept
 		{
 			return ImGui::GetID(str_id_begin, str_id_end);
 		}
 
-		GuiID getID(const void* ptr_id) noexcept
+		GuiID get_id(const void* ptr_id) noexcept
 		{
 			return ImGui::GetID(ptr_id);
 		}
@@ -650,12 +666,12 @@ namespace octoon
 			va_end(args);
 		}
 
-		void textV(const char* fmt, va_list args) noexcept
+		void text_v(const char* fmt, va_list args) noexcept
 		{
 			ImGui::TextV(fmt, args);
 		}
 
-		void textColored(const float4& col, const char* fmt, ...) noexcept
+		void text_colored(const float4& col, const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -663,12 +679,12 @@ namespace octoon
 			va_end(args);
 		}
 
-		void textColoredV(const float4& col, const char* fmt, va_list args) noexcept
+		void text_colored_v(const float4& col, const char* fmt, va_list args) noexcept
 		{
 			ImGui::TextColoredV((ImVec4&)col, fmt, args);
 		}
 
-		void textDisabled(const char* fmt, ...) noexcept
+		void text_disabled(const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -676,12 +692,12 @@ namespace octoon
 			va_end(args);
 		}
 
-		void textDisabledV(const char* fmt, va_list args) noexcept
+		void text_disabled_v(const char* fmt, va_list args) noexcept
 		{
 			ImGui::TextDisabledV(fmt, args);
 		}
 
-		void textWrapped(const char* fmt, ...) noexcept
+		void text_wrapped(const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -689,17 +705,17 @@ namespace octoon
 			va_end(args);
 		}
 
-		void textWrappedV(const char* fmt, va_list args) noexcept
+		void text_wrapped_v(const char* fmt, va_list args) noexcept
 		{
 			ImGui::TextWrappedV(fmt, args);
 		}
 
-		void textUnformatted(const char* text, const char* text_end) noexcept
+		void text_unformatted(const char* text, const char* text_end) noexcept
 		{
 			ImGui::TextUnformatted(text, text_end);
 		}
 
-		void labelText(const char* label, const char* fmt, ...) noexcept
+		void label_text(const char* label, const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -707,7 +723,7 @@ namespace octoon
 			va_end(args);
 		}
 
-		void labelTextV(const char* label, const char* fmt, va_list args) noexcept
+		void label_text_v(const char* label, const char* fmt, va_list args) noexcept
 		{
 			ImGui::LabelTextV(label, fmt, args);
 		}
@@ -717,7 +733,7 @@ namespace octoon
 			ImGui::Bullet();
 		}
 
-		void bulletText(const char* fmt, ...) noexcept
+		void bullet_text(const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -725,7 +741,7 @@ namespace octoon
 			va_end(args);
 		}
 
-		void bulletTextV(const char* fmt, va_list args) noexcept
+		void bullet_text_v(const char* fmt, va_list args) noexcept
 		{
 			ImGui::BulletTextV(fmt, args);
 		}
@@ -735,12 +751,12 @@ namespace octoon
 			return ImGui::Button(label, (ImVec2&)size);
 		}
 
-		bool smallButton(const char* label) noexcept
+		bool small_button(const char* label) noexcept
 		{
 			return ImGui::SmallButton(label);
 		}
 
-		bool invisibleButton(const char* str_id, const float2& size) noexcept
+		bool invisible_button(const char* str_id, const float2& size) noexcept
 		{
 			return ImGui::InvisibleButton(str_id, (ImVec2&)size);
 		}
@@ -750,7 +766,7 @@ namespace octoon
 			ImGui::Image(user_texture_id, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, (ImVec4&)tint_col, (ImVec4&)border_col);
 		}
 
-		bool imageButton(GuiTextureID user_texture_id, const float2& size, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
+		bool image_button(GuiTextureID user_texture_id, const float2& size, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
 		{
 			return ImGui::ImageButton(user_texture_id, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, frame_padding, (ImVec4&)bg_col, (ImVec4&)tint_col);
 		}
@@ -760,17 +776,17 @@ namespace octoon
 			return ImGui::Checkbox(label, v);
 		}
 
-		bool checkboxFlags(const char* label, unsigned int* flags, unsigned int flags_value) noexcept
+		bool checkbox_flags(const char* label, unsigned int* flags, unsigned int flags_value) noexcept
 		{
 			return ImGui::CheckboxFlags(label, flags, flags_value);
 		}
 
-		bool radioButton(const char* label, bool active) noexcept
+		bool radio_button(const char* label, bool active) noexcept
 		{
 			return ImGui::RadioButton(label, active);
 		}
 
-		bool radioButton(const char* label, int* v, int v_button) noexcept
+		bool radio_button(const char* label, int* v, int v_button) noexcept
 		{
 			return ImGui::RadioButton(label, v, v_button);
 		}
@@ -780,15 +796,15 @@ namespace octoon
 			return ImGui::Combo(label, current_item, items, items_count, height_in_items);
 		}
 
-		bool comboWithRevert(const char* label, const char* revert, int* current_item, int _default, const char** items, int items_count, int height_in_items) noexcept
+		bool combo_with_revert(const char* label, const char* revert, int* current_item, int _default, const char** items, int items_count, int height_in_items) noexcept
 		{
 			bool change = ImGui::Combo(label, current_item, items, items_count, height_in_items);
 			if (*current_item != _default)
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(revert)) { *current_item = _default; change = false; };
-				popID();
+				pop_id();
 			}
 
 			return change;
@@ -804,212 +820,212 @@ namespace octoon
 			return ImGui::Combo(label, current_item, items_getter, data, items_count, height_in_items);
 		}
 
-		bool colorButton(const float4& col, bool small_height, bool outline_border) noexcept
+		bool color_button(const float4& col, bool small_height, bool outline_border) noexcept
 		{
 			return ImGui::ColorButton((ImVec4&)col, small_height, outline_border);
 		}
 
-		bool colorEdit3(const char* label, float col[3]) noexcept
+		bool color_edit3(const char* label, float col[3]) noexcept
 		{
 			return ImGui::ColorEdit3(label, col);
 		}
 
-		bool colorEdit4(const char* label, float col[4], bool show_alpha) noexcept
+		bool color_edit4(const char* label, float col[4], bool show_alpha) noexcept
 		{
 			return ImGui::ColorEdit4(label, col, show_alpha);
 		}
 
-		void colorEditMode(GuiColorEditMode mode) noexcept
+		void color_edit_mode(GuiColorEditMode mode) noexcept
 		{
 			ImGui::ColorEditMode((ImGuiColorEditMode)mode);
 		}
 
-		void plotLines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size, int stride) noexcept
+		void plot_lines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size, int stride) noexcept
 		{
 			ImGui::PlotLines(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, (ImVec2&)graph_size, stride);
 		}
 
-		void plotLines(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size) noexcept
+		void plot_lines(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size) noexcept
 		{
 			ImGui::PlotLines(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, (ImVec2&)graph_size);
 		}
 
-		void plotHistogram(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size, int stride) noexcept
+		void plot_histogram(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size, int stride) noexcept
 		{
 			ImGui::PlotHistogram(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, (ImVec2&)graph_size, stride);
 		}
 
-		void plotHistogram(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size) noexcept
+		void plot_histogram(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size) noexcept
 		{
 			ImGui::PlotHistogram(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max);
 		}
 
-		void progressBar(float fraction, const float2& size_arg, const char* overlay) noexcept
+		void progress_bar(float fraction, const float2& size_arg, const char* overlay) noexcept
 		{
 			ImGui::ProgressBar(fraction, (ImVec2&)size_arg, overlay);
 		}
 
-		bool dragFloat(const char* label, float* v, float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool drag_float(const char* label, float* v, float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloat(label, v, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragFloat2(const char* label, float v[2], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool drag_float2(const char* label, float v[2], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloat2(label, v, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragFloat3(const char* label, float v[3], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool drag_float3(const char* label, float v[3], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloat3(label, v, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragFloat4(const char* label, float v[4], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool drag_float4(const char* label, float v[4], float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloat4(label, v, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragFloatRange2(const char* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, const char* display_format, const char* display_format_max, float power) noexcept
+		bool drag_float_range2(const char* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, const char* display_format, const char* display_format_max, float power) noexcept
 		{
 			return ImGui::DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max);
 		}
 
-		bool dragInt(const char* label, int* v, float v_speed, int v_min, int v_max, const char* display_format) noexcept
+		bool drag_int(const char* label, int* v, float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragInt(label, v, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragInt2(const char* label, int v[2], float v_speed, int v_min, int v_max, const char* display_format) noexcept
+		bool drag_int2(const char* label, int v[2], float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragInt2(label, v, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragInt3(const char* label, int v[3], float v_speed, int v_min, int v_max, const char* display_format) noexcept
+		bool drag_int3(const char* label, int v[3], float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragInt3(label, v, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragInt4(const char* label, int v[4], float v_speed, int v_min, int v_max, const char* display_format) noexcept
+		bool drag_int4(const char* label, int v[4], float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragInt4(label, v, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* display_format, const char* display_format_max) noexcept
+		bool drag_int_range2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* display_format, const char* display_format_max) noexcept
 		{
 			return ImGui::DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format);
 		}
 
-		bool inputText(const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags) noexcept
+		bool input_text(const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags) noexcept
 		{
 			return ImGui::InputText(label, buf, buf_size, flags);
 		}
 
-		bool inputTextMultiline(const char* label, char* buf, size_t buf_size, const float2& size, GuiInputTextFlags flags) noexcept
+		bool input_text_multiline(const char* label, char* buf, size_t buf_size, const float2& size, GuiInputTextFlags flags) noexcept
 		{
 			return ImGui::InputTextMultiline(label, buf, buf_size, (const ImVec2&)size, flags);
 		}
 
-		bool inputFloat(const char* label, float* v, float step, float step_fast, int decimal_precision, GuiInputTextFlags extraFlags) noexcept
+		bool input_float(const char* label, float* v, float step, float step_fast, int decimal_precision, GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputFloat(label, v, step, step_fast, decimal_precision, extraFlags);
 		}
 
-		bool inputFloat2(const char* label, float v[2], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
+		bool input_float2(const char* label, float v[2], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputFloat2(label, v, decimal_precision, extraFlags);
 		}
 
-		bool inputFloat3(const char* label, float v[3], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
+		bool input_float3(const char* label, float v[3], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputFloat3(label, v, decimal_precision, extraFlags);
 		}
 
-		bool inputFloat4(const char* label, float v[4], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
+		bool input_float4(const char* label, float v[4], int decimal_precision, GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputFloat4(label, v, decimal_precision, extraFlags);
 		}
 
-		bool inputInt(const char* label, int* v, int step, int step_fast, GuiInputTextFlags extraFlags) noexcept
+		bool input_int(const char* label, int* v, int step, int step_fast, GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputInt(label, v, step, step_fast, extraFlags);
 		}
 
-		bool inputInt2(const char* label, int v[2], GuiInputTextFlags extraFlags) noexcept
+		bool input_int2(const char* label, int v[2], GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputInt2(label, v, extraFlags);
 		}
 
-		bool inputInt3(const char* label, int v[3], GuiInputTextFlags extraFlags) noexcept
+		bool input_int3(const char* label, int v[3], GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputInt3(label, v, extraFlags);
 		}
 
-		bool inputInt4(const char* label, int v[4], GuiInputTextFlags extraFlags) noexcept
+		bool input_int4(const char* label, int v[4], GuiInputTextFlags extraFlags) noexcept
 		{
 			return ImGui::InputInt4(label, v, extraFlags);
 		}
 
-		bool sliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool slider_float(const char* label, float* v, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::SliderFloat(label, v, v_min, v_max, display_format, power);
 		}
 
-		bool sliderFloat2(const char* label, float v[2], float v_min, float v_max, const char* display_format, float power) noexcept
+		bool slider_float2(const char* label, float v[2], float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::SliderFloat2(label, v, v_min, v_max, display_format, power);
 		}
 
-		bool sliderFloat3(const char* label, float v[3], float v_min, float v_max, const char* display_format, float power) noexcept
+		bool slider_float3(const char* label, float v[3], float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::SliderFloat3(label, v, v_min, v_max, display_format, power);
 		}
 
-		bool sliderFloat4(const char* label, float v[4], float v_min, float v_max, const char* display_format, float power) noexcept
+		bool slider_float4(const char* label, float v[4], float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::SliderFloat4(label, v, v_min, v_max, display_format, power);
 		}
 
-		bool sliderFloatv(const char* label, const float2& size, float* v, float v_min, float v_max, const char* display_format, float power) noexcept
+		bool slider_floatv(const char* label, const float2& size, float* v, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::VSliderFloat(label, (ImVec2&)size, v, v_min, v_max, display_format, power);
 		}
 
-		bool sliderAngle(const char* label, float* v_rad, float v_degrees_min, float v_degrees_max) noexcept
+		bool slider_angle(const char* label, float* v_rad, float v_degrees_min, float v_degrees_max) noexcept
 		{
 			return ImGui::SliderAngle(label, v_rad, v_degrees_min, v_degrees_max);
 		}
 
-		bool sliderInt(const char* label, int* v, int v_min, int v_max, const char* display_format) noexcept
+		bool slider_int(const char* label, int* v, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::SliderInt(label, v, v_min, v_max, display_format);
 		}
 
-		bool sliderInt2(const char* label, int v[2], int v_min, int v_max, const char* display_format) noexcept
+		bool slider_int2(const char* label, int v[2], int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::SliderInt2(label, v, v_min, v_max, display_format);
 		}
 
-		bool sliderInt3(const char* label, int v[3], int v_min, int v_max, const char* display_format) noexcept
+		bool slider_int3(const char* label, int v[3], int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::SliderInt3(label, v, v_min, v_max, display_format);
 		}
 
-		bool sliderInt4(const char* label, int v[4], int v_min, int v_max, const char* display_format) noexcept
+		bool slider_int4(const char* label, int v[4], int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::SliderInt4(label, v, v_min, v_max, display_format);
 		}
 
-		bool sliderIntv(const char* label, const float2& size, int* v, int v_min, int v_max, const char* display_format) noexcept
+		bool slider_intv(const char* label, const float2& size, int* v, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::VSliderInt(label, (ImVec2&)size, v, v_min, v_max, display_format);
 		}
 
-		bool treeNode(const char* label) noexcept
+		bool tree_node(const char* label) noexcept
 		{
 			return ImGui::TreeNode(label);
 		}
 
-		bool treeNode(const char* str_id, const char* fmt, ...) noexcept
+		bool tree_node(const char* str_id, const char* fmt, ...) noexcept
 		{
 			bool result = false;
 			va_list args;
@@ -1019,7 +1035,7 @@ namespace octoon
 			return result;
 		}
 
-		bool treeNode(const void* ptr_id, const char* fmt, ...) noexcept
+		bool tree_node(const void* ptr_id, const char* fmt, ...) noexcept
 		{
 			bool result = false;
 			va_list args;
@@ -1029,22 +1045,22 @@ namespace octoon
 			return result;
 		}
 
-		bool treeNodeV(const char* str_id, const char* fmt, va_list args) noexcept
+		bool tree_node_v(const char* str_id, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeExV(str_id, 0, fmt, args);
 		}
 
-		bool treeNodeV(const void* ptr_id, const char* fmt, va_list args) noexcept
+		bool tree_node_v(const void* ptr_id, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeExV(ptr_id, 0, fmt, args);
 		}
 
-		bool treeNodeEx(const char* label, GuiTreeNodeFlags flags) noexcept
+		bool tree_node_ex(const char* label, GuiTreeNodeFlags flags) noexcept
 		{
 			return ImGui::TreeNodeEx(label, flags);
 		}
 
-		bool treeNodeEx(const char* str_id, GuiTreeNodeFlags flags, const char* fmt, ...) noexcept
+		bool tree_node_ex(const char* str_id, GuiTreeNodeFlags flags, const char* fmt, ...) noexcept
 		{
 			bool result = false;
 			va_list args;
@@ -1054,7 +1070,7 @@ namespace octoon
 			return result;
 		}
 
-		bool treeNodeEx(const void* ptr_id, GuiTreeNodeFlags flags, const char* fmt, ...) noexcept
+		bool tree_node_ex(const void* ptr_id, GuiTreeNodeFlags flags, const char* fmt, ...) noexcept
 		{
 			bool result = false;
 			va_list args;
@@ -1064,52 +1080,52 @@ namespace octoon
 			return result;
 		}
 
-		bool treeNodeExV(const char* str_id, GuiTreeNodeFlags flags, const char* fmt, va_list args) noexcept
+		bool tree_node_ex_v(const char* str_id, GuiTreeNodeFlags flags, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeEx(str_id, flags, fmt, args);
 		}
 
-		bool treeNodeExV(const void* ptr_id, GuiTreeNodeFlags flags, const char* fmt, va_list args) noexcept
+		bool tree_node_ex_v(const void* ptr_id, GuiTreeNodeFlags flags, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeEx(ptr_id, flags, fmt, args);
 		}
 
-		void treePush(const char* str_id) noexcept
+		void tree_push(const char* str_id) noexcept
 		{
 			return ImGui::TreePush(str_id);
 		}
 
-		void treePush(const void* ptr_id) noexcept
+		void tree_push(const void* ptr_id) noexcept
 		{
 			return ImGui::TreePush(ptr_id);
 		}
 
-		void treePop() noexcept
+		void tree_pop() noexcept
 		{
 			return ImGui::TreePop();
 		}
 
-		void treeAdvanceToLabelPos() noexcept
+		void tree_advance_to_label_pos() noexcept
 		{
 			return ImGui::TreeAdvanceToLabelPos();
 		}
 
-		float getTreeNodeToLabelSpacing() noexcept
+		float get_tree_node_to_label_spacing() noexcept
 		{
 			return ImGui::GetTreeNodeToLabelSpacing();
 		}
 
-		void setNextTreeNodeOpen(bool is_open, GuiSetCondFlags cond) noexcept
+		void set_next_tree_node_open(bool is_open, GuiSetCondFlags cond) noexcept
 		{
 			return ImGui::SetNextTreeNodeOpen(is_open, cond);
 		}
 
-		bool collapsingHeader(const char* label, GuiTreeNodeFlags flags) noexcept
+		bool collapsing_header(const char* label, GuiTreeNodeFlags flags) noexcept
 		{
 			return ImGui::CollapsingHeader(label, flags);
 		}
 
-		bool collapsingHeader(const char* label, bool* isOpened, GuiTreeNodeFlags flags) noexcept
+		bool collapsing_header(const char* label, bool* isOpened, GuiTreeNodeFlags flags) noexcept
 		{
 			return ImGui::CollapsingHeader(label, isOpened, flags);
 		}
@@ -1124,27 +1140,27 @@ namespace octoon
 			return ImGui::Selectable(label, p_selected, flags, (const ImVec2&)size);
 		}
 
-		bool listBox(const char* label, int* current_item, const char** items, int items_count, int height_in_items) noexcept
+		bool list_box(const char* label, int* current_item, const char** items, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBox(label, current_item, items, items_count, height_in_items);
 		}
 
-		bool listBox(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items) noexcept
+		bool list_box(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBox(label, current_item, items_getter, data, items_count, height_in_items);
 		}
 
-		bool listBoxHeader(const char* label, const float2& size) noexcept
+		bool list_box_header(const char* label, const float2& size) noexcept
 		{
 			return ImGui::ListBoxHeader(label, (const ImVec2&)size);
 		}
 
-		bool listBoxHeader(const char* label, int items_count, int height_in_items) noexcept
+		bool list_box_header(const char* label, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBoxHeader(label, items_count, height_in_items);
 		}
 
-		void listBoxFooter() noexcept
+		void list_box_footer() noexcept
 		{
 			ImGui::ListBoxFooter();
 		}
@@ -1169,17 +1185,17 @@ namespace octoon
 			ImGui::Value(prefix, v, float_format);
 		}
 
-		void valueColor(const char* prefix, const float4& v) noexcept
+		void value_color(const char* prefix, const float4& v) noexcept
 		{
 			ImGui::ValueColor(prefix, (const ImVec4&)v);
 		}
 
-		void valueColor(const char* prefix, std::uint32_t v) noexcept
+		void value_color(const char* prefix, std::uint32_t v) noexcept
 		{
 			ImGui::ValueColor(prefix, v);
 		}
 
-		void setTooltip(const char* fmt, ...) noexcept
+		void set_tooltip(const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -1187,22 +1203,22 @@ namespace octoon
 			va_end(args);
 		}
 
-		void setTooltipV(const char* fmt, va_list args) noexcept
+		void set_tooltipV(const char* fmt, va_list args) noexcept
 		{
 			ImGui::SetTooltipV(fmt, args);
 		}
 
-		void beginTooltip() noexcept
+		void begin_tooltip() noexcept
 		{
 			ImGui::BeginTooltip();
 		}
 
-		void endTooltip() noexcept
+		void end_tooltip() noexcept
 		{
 			ImGui::EndTooltip();
 		}
 
-		bool beginMainMenuBar() noexcept
+		bool begin_main_menu_bar() noexcept
 		{
 			if (!ImGui::BeginMainMenuBar())
 			{
@@ -1213,52 +1229,47 @@ namespace octoon
 			return true;
 		}
 
-		void endMainMenuBar() noexcept
+		void end_main_menu_bar() noexcept
 		{
 			ImGui::EndMainMenuBar();
 		}
 
-		bool beginMenuBar() noexcept
+		bool begin_menu_bar() noexcept
 		{
 			return ImGui::BeginMenuBar();
 		}
 
-		void endMenuBar() noexcept
+		void end_menu_bar() noexcept
 		{
 			return ImGui::EndMenuBar();
 		}
 
-		bool beginMenu(const char* label, bool enabled) noexcept
+		bool begin_menu(const char* label, bool enabled) noexcept
 		{
 			return ImGui::BeginMenu(label, enabled);
 		}
 
-		void endMenu() noexcept
+		void end_menu() noexcept
 		{
 			return ImGui::EndMenu();
 		}
 
-		bool menuItem(const char* label, const char* shortcut, bool selected, bool enabled) noexcept
+		bool menu_item(const char* label, const char* shortcut, bool selected, bool enabled) noexcept
 		{
 			return ImGui::MenuItem(label, shortcut, selected, enabled);
 		}
 
-		bool menuItem(const char* label, const char* shortcut, bool* p_selected, bool enabled) noexcept
+		bool menu_item(const char* label, const char* shortcut, bool* p_selected, bool enabled) noexcept
 		{
 			return ImGui::MenuItem(label, shortcut, p_selected, enabled);
 		}
 
-		void openPopup(const char* str_id) noexcept
-		{
-			return ImGui::OpenPopup(str_id);
-		}
-
-		bool beginPopup(const char* str_id) noexcept
+		bool begin_popup(const char* str_id) noexcept
 		{
 			return ImGui::BeginPopup(str_id);
 		}
 
-		bool beginPopupModal(const char* name, bool* isOpened, GuiWindowFlags extraFlags) noexcept
+		bool begin_popup_modal(const char* name, bool* isOpened, GuiWindowFlags extraFlags) noexcept
 		{
 			if (!ImGui::BeginPopupModal(name, isOpened, extraFlags))
 			{
@@ -1268,175 +1279,164 @@ namespace octoon
 			return true;
 		}
 
-		bool beginPopupContextItem(const char* str_id, int mouse_button) noexcept
+		bool begin_popup_context_item(const char* str_id, int mouse_button) noexcept
 		{
 			return ImGui::BeginPopupContextItem(str_id, mouse_button);
 		}
 
-		bool beginPopupContextWindow(bool also_over_items, const char* str_id, int mouse_button) noexcept
+		bool begin_popup_context_window(bool also_over_items, const char* str_id, int mouse_button) noexcept
 		{
 			return ImGui::BeginPopupContextWindow(also_over_items, str_id, mouse_button);
 		}
 
-		bool beginPopupContextVoid(const char* str_id, int mouse_button) noexcept
+		bool begin_popup_context_void(const char* str_id, int mouse_button) noexcept
 		{
 			return ImGui::BeginPopupContextVoid(str_id, mouse_button);
 		}
 
-		void endPopup() noexcept
+		void open_popup(const char* str_id) noexcept
 		{
-			return ImGui::EndPopup();
+			return ImGui::OpenPopup(str_id);
 		}
 
-		void closeCurrentPopup() noexcept
+		void close_current_popup() noexcept
 		{
 			return ImGui::CloseCurrentPopup();
 		}
 
-		void pushClipRect(const float2& clip_rect_min, const float2& clip_rect_max, bool intersect_with_current_clip_rect) noexcept
+		void end_popup() noexcept
+		{
+			return ImGui::EndPopup();
+		}
+
+		void push_clip_rect(const float2& clip_rect_min, const float2& clip_rect_max, bool intersect_with_current_clip_rect) noexcept
 		{
 			return ImGui::PushClipRect((const ImVec2&)clip_rect_min, (const ImVec2&)clip_rect_max, intersect_with_current_clip_rect);
 		}
 
-		void popClipRect() noexcept
+		void pop_clip_rect() noexcept
 		{
 			return ImGui::PopClipRect();
 		}
 
-		bool isItemHovered() noexcept
+		bool is_item_hovered() noexcept
 		{
 			return ImGui::IsItemHovered();
 		}
 
-		bool isItemHoveredRect() noexcept
+		bool is_item_hovered_rect() noexcept
 		{
 			return ImGui::IsItemHoveredRect();
 		}
 
-		bool isItemActive() noexcept
+		bool is_item_active() noexcept
 		{
 			return ImGui::IsItemActive();
 		}
 
-		bool isItemClicked(int mouse_button) noexcept
+		bool is_item_clicked(int mouse_button) noexcept
 		{
 			return ImGui::IsItemClicked();
 		}
 
-		bool isItemVisible() noexcept
+		bool is_item_visible() noexcept
 		{
 			return ImGui::IsItemVisible();
 		}
 
-		bool isAnyItemHovered() noexcept
+		bool is_any_item_hovered() noexcept
 		{
 			return ImGui::IsAnyItemHovered();
 		}
 
-		bool isAnyItemActive() noexcept
+		bool is_any_item_active() noexcept
 		{
 			return ImGui::IsAnyItemActive();
 		}
 
-		float2 getItemRectMin() noexcept
+		float2 get_item_rect_min() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetItemRectMin());
 		}
 
-		float2 getItemRectMax() noexcept
+		float2 get_item_rect_max() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetItemRectMax());
 		}
 
-		float2 getItemRectSize() noexcept
+		float2 get_item_rect_size() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetItemRectSize());
 		}
 
-		void setItemAllowOverlap() noexcept
+		void set_item_allow_overlap() noexcept
 		{
 			return ImGui::SetItemAllowOverlap();
 		}
 
-		bool isWindowHovered() noexcept
+		bool is_window_hovered() noexcept
 		{
 			return ImGui::IsWindowHovered();
 		}
 
-		bool isWindowFocused() noexcept
+		bool is_window_focused() noexcept
 		{
 			return ImGui::IsWindowFocused();
 		}
 
-		bool isRootWindowFocused() noexcept
+		bool is_root_window_focused() noexcept
 		{
 			return ImGui::IsRootWindowFocused();
 		}
 
-		bool isRootWindowOrAnyChildFocused() noexcept
+		bool is_root_window_or_any_child_focused() noexcept
 		{
 			return ImGui::IsRootWindowOrAnyChildFocused();
 		}
 
-		bool isRootWindowOrAnyChildHovered() noexcept
+		bool is_root_window_or_any_child_hovered() noexcept
 		{
 			return ImGui::IsRootWindowOrAnyChildHovered();
 		}
 
-		bool isRectVisible(const float2& size) noexcept
+		bool is_rectVisible(const float2& size) noexcept
 		{
 			return ImGui::IsRectVisible((const ImVec2&)size);
 		}
 
-		bool isPosHoveringAnyWindow(const float2& pos) noexcept
+		bool is_posHoveringAnyWindow(const float2& pos) noexcept
 		{
 			return ImGui::IsPosHoveringAnyWindow((const ImVec2&)pos);
 		}
 
-		float getTime() noexcept
+		float get_time() noexcept
 		{
 			return ImGui::GetTime();
 		}
 
-		int getFrameCount() noexcept
+		int get_frame_count() noexcept
 		{
 			return ImGui::GetFrameCount();
 		}
 
-		const char* getStyleColName(GuiCol idx) noexcept
+		const char* get_style_col_name(GuiCol idx) noexcept
 		{
 			return ImGui::GetStyleColName((ImGuiCol)idx);
 		}
 
-		float2 calcItemRectClosestPoint(const float2& pos, bool on_edge, float outward) noexcept
+		float2 calc_item_rect_closest_point(const float2& pos, bool on_edge, float outward) noexcept
 		{
 			return ImVec2ToFloat2(ImGui::CalcItemRectClosestPoint((ImVec2&)(pos), on_edge, outward));
 		}
 
-		float2 calcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width) noexcept
+		float2 calc_text_size(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width) noexcept
 		{
 			return ImVec2ToFloat2(ImGui::CalcTextSize(text, text_end, hide_text_after_double_hash, wrap_width));
 		}
 
-		void calcListClipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end) noexcept
+		void calc_list_clipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end) noexcept
 		{
 			return ImGui::CalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end);
-		}
-
-		bool beginChildFrame(GuiID id, const float2& size, GuiWindowFlags extraFlags) noexcept
-		{
-			if (!ImGui::BeginChildFrame(id, (const ImVec2&)size, extraFlags))
-			{
-				ImGui::EndChildFrame();
-				return false;
-			}
-
-			return true;
-		}
-
-		void endChildFrame() noexcept
-		{
-			return ImGui::EndChildFrame();
 		}
 
 		float4 colorConvertU32ToFloat4(std::uint32_t in) noexcept
@@ -1449,107 +1449,107 @@ namespace octoon
 			return ImGui::ColorConvertFloat4ToU32((const ImVec4&)in);
 		}
 
-		void colorConvertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v) noexcept
+		void color_convertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v) noexcept
 		{
 			return ImGui::ColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v);
 		}
 
-		void colorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b) noexcept
+		void color_convertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b) noexcept
 		{
 			return ImGui::ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b);
 		}
 
-		bool isKeyDown(int key_index) noexcept
+		bool is_key_down(int key_index) noexcept
 		{
 			return ImGui::IsKeyDown(key_index);
 		}
 
-		bool isKeyPressed(int key_index, bool repeat) noexcept
+		bool is_key_pressed(int key_index, bool repeat) noexcept
 		{
 			return ImGui::IsKeyPressed(key_index, repeat);
 		}
 
-		bool isKeyReleased(int key_index) noexcept
+		bool is_key_released(int key_index) noexcept
 		{
 			return ImGui::IsKeyReleased(key_index);
 		}
 
-		bool isMouseDown(int button) noexcept
+		bool is_mouse_down(int button) noexcept
 		{
 			return ImGui::IsMouseDown(button);
 		}
 
-		bool isMouseClicked(int button, bool repeat) noexcept
+		bool is_mouse_clicked(int button, bool repeat) noexcept
 		{
 			return ImGui::IsMouseClicked(button, repeat);
 		}
 
-		bool isMouseDoubleClicked(int button) noexcept
+		bool is_mouse_doubleClicked(int button) noexcept
 		{
 			return ImGui::IsMouseDoubleClicked(button);
 		}
 
-		bool isMouseReleased(int button) noexcept
+		bool is_mouse_released(int button) noexcept
 		{
 			return ImGui::IsMouseReleased(button);
 		}
 
-		bool isMouseHoveringWindow() noexcept
+		bool is_mouse_hoveringWindow() noexcept
 		{
 			return ImGui::IsMouseHoveringWindow();
 		}
 
-		bool isMouseHoveringAnyWindow() noexcept
+		bool is_mouse_hoveringAnyWindow() noexcept
 		{
 			return ImGui::IsMouseHoveringAnyWindow();
 		}
 
-		bool isMouseHoveringRect(const float2& min, const float2& max, bool clip) noexcept
+		bool is_mouse_hoveringRect(const float2& min, const float2& max, bool clip) noexcept
 		{
 			return ImGui::IsMouseHoveringRect((const ImVec2&)min, (const ImVec2&)max, clip);
 		}
 
-		bool isMouseDragging(int button, float lock_threshold) noexcept
+		bool is_mouse_dragging(int button, float lock_threshold) noexcept
 		{
 			return ImGui::IsMouseDragging();
 		}
 
-		float2 getMousePos() noexcept
+		float2 get_mouse_pos() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetMousePos());
 		}
 
-		float2 getMousePosOnOpeningCurrentPopup() noexcept
+		float2 get_mouse_pos_on_opening_current_popup() noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetMousePosOnOpeningCurrentPopup());
 		}
 
-		float2 getMouseDragDelta(int button, float lock_threshold) noexcept
+		float2 get_mouse_drag_delta(int button, float lock_threshold) noexcept
 		{
 			return ImVec2ToFloat2(ImGui::GetMouseDragDelta());
 		}
 
-		void resetMouseDragDelta(int button) noexcept
+		void reset_mouse_drag_delta(int button) noexcept
 		{
 			return ImGui::ResetMouseDragDelta();
 		}
 
-		void setCursorIcon(GuiMouseCursor type) noexcept
+		void set_cursor_icon(GuiMouseCursor type) noexcept
 		{
 			return ImGui::SetMouseCursor((ImGuiMouseCursor)type);
 		}
 
-		void captureKeyboardFromApp(bool capture) noexcept
+		void capture_keyboard_from_app(bool capture) noexcept
 		{
 			return ImGui::CaptureKeyboardFromApp(capture);
 		}
 
-		void captureMouseFromApp(bool capture) noexcept
+		void capture_mouse_from_app(bool capture) noexcept
 		{
 			return ImGui::CaptureMouseFromApp(capture);
 		}
 
-		bool colorPicker3(const char* label, float col[3], const float2& size, float hueSize, float crossHairSize) noexcept
+		bool color_picker3(const char* label, float col[3], const float2& size, float hueSize, float crossHairSize) noexcept
 		{
 			// thanks to : https://github.com/ocornut/imgui/issues/346
 			bool value_changed = false;
@@ -1627,7 +1627,7 @@ namespace octoon
 			draw_list->AddLine(ImVec2(p.x, p.y + crossHairSize), ImVec2(p.x, p.y + 2), ImColor(255, 255, 255));
 			draw_list->AddLine(ImVec2(p.x, p.y - crossHairSize), ImVec2(p.x, p.y - 2), ImColor(255, 255, 255));
 
-			invisibleButton("saturation_value_selector", size);
+			invisible_button("saturation_value_selector", size);
 
 			if (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])
 			{
@@ -1668,13 +1668,13 @@ namespace octoon
 			return value_changed | ImGui::ColorEdit3(label, col);
 		}
 
-		bool colorPicker3WithRevert(const char* label, const char* name, float col[3], const float _default[3], const float2& size, float hueSize, float crossHairSize) noexcept
+		bool color_picker3_with_revert(const char* label, const char* name, float col[3], const float _default[3], const float2& size, float hueSize, float crossHairSize) noexcept
 		{
-			bool change = colorPicker3(label, col, size, hueSize, crossHairSize);
+			bool change = color_picker3(label, col, size, hueSize, crossHairSize);
 			if (!math::equal(col[0], _default[0]) || !math::equal(col[1], _default[1]) || !math::equal(col[2], _default[2]))
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					col[0] = _default[0];
@@ -1683,52 +1683,52 @@ namespace octoon
 					change = false;
 				};
 
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderFloatWithRevert(const char* label, const char* name, float* v, float _default, float _min, float _max, const char* display_format, float power) noexcept
+		bool slider_float_with_revert(const char* label, const char* name, float* v, float _default, float _min, float _max, const char* display_format, float power) noexcept
 		{
-			bool change = sliderFloat(label, v, _min, _max, display_format, power);
+			bool change = slider_float(label, v, _min, _max, display_format, power);
 			if (!math::equal(*v, _default))
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderFloat2WithRevert(const char* label, const char* name, float v[2], const float _default[2], float _min, float _max, const char* display_format, float power) noexcept
+		bool slider_float2_with_revert(const char* label, const char* name, float v[2], const float _default[2], float _min, float _max, const char* display_format, float power) noexcept
 		{
-			bool change = sliderFloat2(label, v, _min, _max, display_format);
+			bool change = slider_float2(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
 					v[1] = _default[1];
 					change = false;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderFloat3WithRevert(const char* label, const char* name, float v[3], const float _default[3], float _min, float _max, const char* display_format, float power) noexcept
+		bool slider_float3_with_revert(const char* label, const char* name, float v[3], const float _default[3], float _min, float _max, const char* display_format, float power) noexcept
 		{
-			bool change = sliderFloat2(label, v, _min, _max, display_format);
+			bool change = slider_float2(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1736,19 +1736,19 @@ namespace octoon
 					v[2] = _default[2];
 					change = false;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderFloat4WithRevert(const char* label, const char* name, float v[4], const float _default[4], float _min, float _max, const char* display_format, float power) noexcept
+		bool slider_float4_with_revert(const char* label, const char* name, float v[4], const float _default[4], float _min, float _max, const char* display_format, float power) noexcept
 		{
-			bool change = sliderFloat4(label, v, _min, _max, display_format);
+			bool change = slider_float4(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1757,52 +1757,52 @@ namespace octoon
 					v[3] = _default[3];
 					change = false;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderIntWithRevert(const char* label, const char* name, int* v, int _default, int _min, int _max, const char* display_format) noexcept
+		bool slider_int_with_revert(const char* label, const char* name, int* v, int _default, int _min, int _max, const char* display_format) noexcept
 		{
-			bool change = sliderInt(label, v, _min, _max, display_format);
+			bool change = slider_int(label, v, _min, _max, display_format);
 			if (v[0] != _default)
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderInt2WithRevert(const char* label, const char* name, int* v, const int _default[2], int _min, int _max, const char* display_format) noexcept
+		bool slider_int2_with_revert(const char* label, const char* name, int* v, const int _default[2], int _min, int _max, const char* display_format) noexcept
 		{
-			bool change = sliderInt2(label, v, _min, _max, display_format);
+			bool change = slider_int2(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
 					v[1] = _default[1];
 					change = true;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderInt3WithRevert(const char* label, const char* name, int* v, const int _default[3], int _min, int _max, const char* display_format) noexcept
+		bool slider_int3_with_revert(const char* label, const char* name, int* v, const int _default[3], int _min, int _max, const char* display_format) noexcept
 		{
-			bool change = sliderInt3(label, v, _min, _max, display_format);
+			bool change = slider_int3(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1810,19 +1810,19 @@ namespace octoon
 					v[2] = _default[2];
 					change = true;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		bool sliderInt4WithRevert(const char* label, const char* name, int* v, const int _default[4], int _min, int _max, const char* display_format) noexcept
+		bool slider_int4_with_revert(const char* label, const char* name, int* v, const int _default[4], int _min, int _max, const char* display_format) noexcept
 		{
-			bool change = sliderInt4(label, v, _min, _max, display_format);
+			bool change = slider_int4(label, v, _min, _max, display_format);
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
-				sameLine();
-				pushID(std::hash<const char*>{}(label));
+				same_line();
+				push_id(std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1831,13 +1831,13 @@ namespace octoon
 					v[3] = _default[3];
 					change = true;
 				};
-				popID();
+				pop_id();
 			}
 
 			return change;
 		}
 
-		void helpMarker(const char* text, const char* desc) noexcept
+		void help_marker(const char* text, const char* desc) noexcept
 		{
 			ImGui::TextDisabled("(?)");
 			if (ImGui::IsItemHovered())
@@ -1850,12 +1850,12 @@ namespace octoon
 			}
 		}
 
-		float2 getDisplaySize() noexcept
+		float2 get_displaySize() noexcept
 		{
 			return float2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 		}
 
-		void setStyle(const GuiStyle& newStyle) noexcept
+		void set_style(const GuiStyle& newStyle) noexcept
 		{
 			static_assert(sizeof(ImGuiStyle::Colors) == sizeof(GuiStyle::Colors));
 
@@ -1897,17 +1897,17 @@ namespace octoon
 			std::memcpy(&style.Colors, newStyle.Colors, sizeof(style.Colors));
 		}
 
-		const GuiStyle& getStyleDefault() noexcept
+		const GuiStyle& get_style_default() noexcept
 		{
 			return _defalutStyle;
 		}
 
-		void rootDock(const float2& pos, const float2& size)
+		void root_dock(const float2& pos, const float2& size)
 		{
 			ImGui::RootDock((const ImVec2&)pos, (const ImVec2&)size);
 		}
 
-		bool beginDock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size)
+		bool begin_dock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size)
 		{
 			if (!ImGui::BeginDock(label, opened, extra_flags, (ImVec2&)default_size))
 			{
@@ -1918,60 +1918,60 @@ namespace octoon
 			return true;
 		}
 
-		void endDock()
+		void end_dock()
 		{
 			ImGui::EndDock();
 		}
 
-		void setDockActive()
+		void set_dock_active()
 		{
 			ImGui::SetDockActive();
 		}
 
-		bool dragFloatNEx(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power)
+		bool drag_floatn_ex(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power)
 		{
 			return ImGui::DragFloatNEx(labels, v, components, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragIntNEx(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format)
+		bool drag_intn_ex(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format)
 		{
 			return ImGui::DragIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragUIntNEx(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format)
+		bool drag_uIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format)
 		{
 			return ImGui::DragUIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		void renderFrameEx(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness)
+		void render_frame_ex(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness)
 		{
 			ImGui::RenderFrameEx((ImVec2&)p_min, (ImVec2&)p_max, border, rounding, thickness);
 		}
 
-		bool beginToolbar(const char* str_id, const float2& screen_pos, const float2& size)
+		bool begin_toolbar(const char* str_id, const float2& screen_pos, const float2& size)
 		{
 			return ImGui::BeginToolbar(str_id, (ImVec2&)screen_pos, (ImVec2&)size);
 		}
 
-		void endToolbar()
+		void end_toolbar()
 		{
 			ImGui::EndToolbar();
 		}
 
-		bool toolbarButton(GuiTextureID texture, const char* tooltip, bool selected, bool enabled)
+		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled)
 		{
 			return ImGui::ToolbarButton(texture, tooltip, selected, enabled);
 		}
 
-		bool imageButtonEx(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled)
+		bool image_button_ex(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled)
 		{
 			return ImGui::ImageButtonEx(texture, (ImVec2&)size, tooltip, selected, enabled);
 		}
 
-		bool imageButtonEx(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_ex(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
 		{
 			if (enabled)
-				return imageButton(texture, size, uv0, uv1, frame_padding, bg_col, tint_col);
+				return image_button(texture, size, uv0, uv1, frame_padding, bg_col, tint_col);
 			else
 			{
 				image(texture, size + float2(frame_padding * 2.0f, frame_padding * 2.0f), uv0, uv1, tint_col, bg_col);
@@ -1979,17 +1979,17 @@ namespace octoon
 			}
 		}
 
-		bool imageButtonWithAspectAndLabel(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags)
+		bool image_button_with_aspect_and_label(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags)
 		{
 			return ImGui::ImageButtonWithAspectAndLabel(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, selected, edit_label, label, buf, buf_size, flags);
 		}
 
-		bool imageButtonAndLabel(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_and_label(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
 		{
 			ImGuiWindow* window = ImGui::GetCurrentWindow();
 			ImGui::BeginGroup();
 
-			bool chlick = imageButtonEx(texture, size, true, uv0, uv1, frame_padding, bg_col, tint_col);
+			bool chlick = image_button_ex(texture, size, true, uv0, uv1, frame_padding, bg_col, tint_col);
 
 			if (selected)
 			{
@@ -2018,17 +2018,20 @@ namespace octoon
 			return chlick;
 		}
 
-		void imageWithAspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col)
+		void image_with_aspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col)
 		{
 			ImGui::ImageWithAspect(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)size, (ImVec2&)uv0, (ImVec4&)tint_col, (ImVec4&)border_col);
 		}
 
-		void labelTextEx(const char* label, const char* fmt, ...)
+		void label_text_ex(const char* label, const char* fmt, ...)
 		{
-			//ImGui::LabelTextEx(label, fmt, ...);
+			va_list args;
+			va_start(args, fmt);
+			ImGui::LabelTextEx(label, fmt, args);
+			va_end(args);
 		}
 
-		void labelTextExV(const char* label, const char* fmt, va_list args)
+		void label_text_ex_v(const char* label, const char* fmt, va_list args)
 		{
 			ImGui::LabelTextExV(label, fmt, args);
 		}

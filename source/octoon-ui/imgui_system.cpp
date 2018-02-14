@@ -58,7 +58,7 @@ namespace octoon
 #endif
 
 			GuiStyle style;
-			setStyle(style);
+			set_style(style);
 
 			ImGuiIO& io = ImGui::GetIO();
 			io.ImeWindowHandle = window_ = window;

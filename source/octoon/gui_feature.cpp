@@ -144,8 +144,8 @@ namespace octoon
 	void
 	GuiFeature::on_frame_begin() noexcept
 	{
-		imgui::newFrame();
-		imgui::showTestWindow();
+		imgui::new_frame();
+		imgui::show_test_window();
 	}
 
 	void

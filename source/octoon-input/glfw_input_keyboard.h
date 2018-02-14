@@ -13,7 +13,7 @@ namespace octoon
 			GLFWInputKeyboard() noexcept;
 			virtual ~GLFWInputKeyboard() noexcept;
 
-			virtual bool getKeyState(InputKey::Code key) const noexcept;
+			virtual bool get_key_state(InputKey::Code key) const noexcept;
 
 			virtual InputKeyboardPtr clone() const noexcept;
 

@@ -16,10 +16,10 @@ namespace octoon
 			InputMousePtr clone() const noexcept;
 
 		private:
-			void onShowMouse() noexcept;
-			void onHideMouse() noexcept;
+			void on_show_mouse() noexcept;
+			void on_hide_mouse() noexcept;
 
-			void onChangePosition(int x, int y) noexcept;
+			void on_change_position(int x, int y) noexcept;
 
 			void on_input_event(const InputEvent& event) noexcept;
 

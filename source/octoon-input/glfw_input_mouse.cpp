@@ -16,30 +16,30 @@ namespace octoon
 		}
 
 		void
-		GLFWInputMouse::onShowMouse() noexcept
+		GLFWInputMouse::on_show_mouse() noexcept
 		{
 			if (focusWindow_ && window_)
 			   ::glfwSetInputMode((GLFWwindow*)window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 
 		void
-		GLFWInputMouse::onHideMouse() noexcept
+		GLFWInputMouse::on_hide_mouse() noexcept
 		{
 			if (focusWindow_ && window_)
 			   ::glfwSetInputMode((GLFWwindow*)window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		}
 
 		void
-		GLFWInputMouse::onChangePosition(int x, int y) noexcept
+		GLFWInputMouse::on_change_position(int x, int y) noexcept
 		{
 			if (focusWindow_ && window_)
 			   ::glfwSetCursorPos((GLFWwindow*)window_, x, y);
 		}
 
 		void
-		GLFWInputMouse::onInputEvent(const InputEvent& event) noexcept
+		GLFWInputMouse::on_input_event(const InputEvent& event) noexcept
 		{
-			DefaultInputMouse::onInputEvent(event);
+			DefaultInputMouse::on_input_event(event);
 
 			switch (event.event)
 			{

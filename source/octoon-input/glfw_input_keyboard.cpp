@@ -147,7 +147,7 @@ namespace octoon
 		}
 
 		bool
-		GLFWInputKeyboard::getKeyState(InputKey::Code key) const noexcept
+		GLFWInputKeyboard::get_key_state(InputKey::Code key) const noexcept
 		{
 			if (!window_)
 				return false;
@@ -155,9 +155,9 @@ namespace octoon
 		}
 
 		void
-		GLFWInputKeyboard::onInputEvent(const InputEvent& event) noexcept
+		GLFWInputKeyboard::on_input_event(const InputEvent& event) noexcept
 		{
-			GLFWInputKeyboard::onInputEvent(event);
+			DefaultInputKeyboard::on_input_event(event);
 
 			switch (event.event)
 			{

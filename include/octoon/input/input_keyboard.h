@@ -20,7 +20,7 @@ namespace octoon
 
 			virtual InputKeyboardPtr clone() const noexcept;
 
-		private:
+		protected:
 			virtual void on_frame_end() noexcept;
 			virtual void on_obtain_capture() noexcept;
 			virtual void on_reset() noexcept;

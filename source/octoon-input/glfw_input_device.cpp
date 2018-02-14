@@ -150,7 +150,7 @@ namespace octoon
 				event.change.h = h;
 				event.change.windowID = (std::uint64_t)window;
 				event.change.timestamp = ::glfwGetTimerFrequency();
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace octoon
 				event.change.h = h;
 				event.change.windowID = (std::uint64_t)window;
 				event.change.timestamp = ::glfwGetTimerFrequency();
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -178,7 +178,7 @@ namespace octoon
 				event.event = octoon::input::InputEvent::AppQuit;
 				event.window.windowID = (std::uint64_t)window;
 				event.window.timestamp = ::glfwGetTimerFrequency();
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace octoon
 				event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
 				event.window.windowID = (std::uint64_t)window;
 				event.window.timestamp = ::glfwGetTimerFrequency();
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -213,7 +213,7 @@ namespace octoon
 				event.key.keysym.mod = mods;
 				event.key.keysym.unicode = 0;
 
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -235,7 +235,7 @@ namespace octoon
 				event.key.keysym.mod = mods;
 				event.key.keysym.unicode = unicode;
 
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -258,7 +258,7 @@ namespace octoon
 				event.button.padding1 = 0;
 				event.button.which = 0;
 
-				input->sendEvent(event);
+				input->send_event(event);
 
 				if (action == GLFW_RELEASE)
 				{
@@ -287,7 +287,7 @@ namespace octoon
 							doubleClick.button.padding1 = 0;
 							doubleClick.button.which = 0;
 
-							input->sendEvent(doubleClick);
+							input->send_event(doubleClick);
 						}
 
 						clicks = false;
@@ -319,7 +319,7 @@ namespace octoon
 				event.motion.yrel = pt.y;
 #endif
 
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -333,7 +333,7 @@ namespace octoon
 				event.wheel.timestamp = glfwGetTimerFrequency();
 				event.wheel.windowID = (std::uint64_t)window;
 
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -349,7 +349,7 @@ namespace octoon
 				event.drop.files = file_utf8;
 				event.drop.windowID = (std::uint64_t)window;
 
-				input->sendEvent(event);
+				input->send_event(event);
 			}
 		}
 
@@ -363,11 +363,11 @@ namespace octoon
 		}
 
 		void
-		GLFWInputDevice::setCaptureObject(WindHandle window) noexcept
+		GLFWInputDevice::set_capture_object(WindHandle window) noexcept
 		{
 			if (window_ != window)
 			{
-				GLFWwindow* hwnd = (GLFWwindow*)window;
+				GLFWwindow* hwnd = (GLFWwindow*)::GetProp((HWND)window, "GLFWwindow");
 				::glfwSetWindowUserPointer(hwnd, this);
 				::glfwSetWindowFocusCallback(hwnd, &onWindowFocus);
 				::glfwSetWindowCloseCallback(hwnd, &onWindowClose);
@@ -385,7 +385,7 @@ namespace octoon
 		}
 
 		WindHandle
-		GLFWInputDevice::getCaptureObject() const noexcept
+		GLFWInputDevice::get_capture_object() const noexcept
 		{
 			return window_;
 		}
@@ -396,38 +396,38 @@ namespace octoon
 		}
 
 		bool
-		GLFWInputDevice::peekEvents(InputEvent& event) noexcept
+		GLFWInputDevice::peek_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::peekEvents(event);
+			return DefaultInputDevice::peek_events(event);
 		}
 
 		bool
-		GLFWInputDevice::pollEvents(InputEvent& event) noexcept
+		GLFWInputDevice::poll_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::pollEvents(event);
+			return DefaultInputDevice::poll_events(event);
 		}
 
 		bool
-		GLFWInputDevice::waitEvents(InputEvent& event) noexcept
+		GLFWInputDevice::wait_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::pollEvents(event);
+			return DefaultInputDevice::poll_events(event);
 		}
 
 		bool
-		GLFWInputDevice::waitEvents(InputEvent& event, int time) noexcept
+		GLFWInputDevice::wait_events(InputEvent& event, int time) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::waitEvents(event, time);
+			return DefaultInputDevice::wait_events(event, time);
 		}
 
 		void
-		GLFWInputDevice::flushEvent() noexcept
+		GLFWInputDevice::flush_event() noexcept
 		{
 			this->update();
-			DefaultInputDevice::flushEvent();
+			DefaultInputDevice::flush_event();
 		}
 
 		InputDevicePtr

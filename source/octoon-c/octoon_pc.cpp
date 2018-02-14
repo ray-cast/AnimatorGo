@@ -441,13 +441,10 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			gameApp_ = std::make_shared<octoon::GameApplication>();
 
 			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h))
-			{
-				OctoonCloseWindow();
-				return false;
-			}
+				throw std::exception("GameApplication::open() failed");
 
 			if (!gameApp_->start())
-				return false;
+				throw std::exception("GameApplication::start() failed");
 
 			onWindowFocus(window_, true);
 			onWindowResize(window_, w, h);
@@ -456,10 +453,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			if (!gameScenePath_.empty())
 			{
 				if (!gameApp_->open_scene(gameScenePath_))
-				{
-					OctoonCloseWindow();
-					return false;
-				}
+					throw std::exception("GameApplication::open_scene() failed");
 			}
 
 			::glfwShowWindow(window_);

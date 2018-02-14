@@ -1,4 +1,4 @@
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include <octoon/octoon.h>
 
 #include <octoon/game_application.h>

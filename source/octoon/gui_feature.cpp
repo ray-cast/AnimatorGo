@@ -145,12 +145,15 @@ namespace octoon
 	GuiFeature::on_frame_begin() noexcept
 	{
 		imgui::new_frame();
-		imgui::show_test_window();
 	}
 
 	void
 	GuiFeature::on_frame() noexcept
 	{
+		static bool isOpened = true;
+		if (isOpened)
+			imgui::show_test_window(&isOpened);
+
 		GameObjectManager::instance()->on_gui();
 	}
 

@@ -5,7 +5,6 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_NAME})
 
 SET(PLATFORM_LIST
     ${HEADER_PATH}/octoon.h
-    ${HEADER_PATH}/octoon_main.h
     ${SOURCE_PATH}/octoon_pc.cpp
     ${SOURCE_PATH}/octoon_ndk.cpp
     ${SOURCE_PATH}/octoon_jni.cpp

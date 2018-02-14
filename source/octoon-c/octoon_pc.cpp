@@ -465,6 +465,10 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 	catch (...)
 	{
 		OctoonCloseWindow();
+
+		gameApp_.reset();
+		gameApp_ = nullptr;
+
 		return false;
 	}
 }

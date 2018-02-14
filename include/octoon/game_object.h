@@ -38,27 +38,30 @@ namespace octoon
 		GameObjects& get_children() noexcept;
 		const GameObjects& get_children() const noexcept;
 
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameComponent, T>>>
+		void add_component() except { this->add_component(std::make_shared<T>()); }
 		void add_component(const GameComponentPtr& component) except;
 		void add_component(GameComponentPtr&& component) except;
-		void remove_component(const GameComponentPtr& component) noexcept;
-		void cleanup_components() noexcept;
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameComponent, T>>>
 		std::shared_ptr<T> get_component() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI)); }
 		GameComponentPtr get_component(const runtime::Rtti* type) const noexcept;
 		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameComponent, T>>>
 		std::shared_ptr<T> get_component_in_children() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component_in_children(T::RTTI)); }
 		GameComponentPtr get_component_in_children(const runtime::Rtti* type) const noexcept;
 		GameComponentPtr get_component_in_children(const runtime::Rtti& type) const noexcept;
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameComponent, T>>>
 		void get_components_in_children(GameComponents& components) const noexcept { this->get_components_in_children(T::RTTI, components); }
 		void get_components_in_children(const runtime::Rtti* type, GameComponents& components) const noexcept;
 		void get_components_in_children(const runtime::Rtti& type, GameComponents& components) const noexcept;
 
 		const GameComponents& get_components() const noexcept;
+
+		void remove_component(const GameComponentPtr& component) noexcept;
+		void cleanup_components() noexcept;
 
 		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
 		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;

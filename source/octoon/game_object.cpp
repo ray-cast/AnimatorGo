@@ -13,7 +13,7 @@ namespace octoon
 	{
 		GameObjectManager::instance()->_instanceObject(this, instance_id_);
 
-		this->add_component(std::make_shared<TransformComponent>());
+		this->add_component<TransformComponent>();
 	}
 
 	GameObject::~GameObject() noexcept

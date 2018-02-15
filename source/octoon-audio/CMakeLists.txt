@@ -5,13 +5,20 @@ SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_NAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 
 SET(AUDIO_LIST
-	${HEADER_PATH}/common/audio_source.h
-    ${SOURCE_PATH}/audio_source.cpp
+    ${HEADER_PATH}/common/audio_buffer.h
+    ${HEADER_PATH}/common/audio_device.h
+    ${HEADER_PATH}/common/audio_listener.h
+    ${HEADER_PATH}/common/audio_reader.h
+    ${HEADER_PATH}/common/audio_source.h
+    ${SOURCE_PATH}/common/audio_source.cpp
+    ${HEADER_PATH}/common/audio_types.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${AUDIO_LIST})
 
 ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
 ADD_LIBRARY(${LIB_OUTNAME} STATIC ${AUDIO_LIST})
+
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} OpenAL)
 
 IF(OCTOON_BUILD_PLATFORM_ANDROID)
     TARGET_LINK_LIBRARIES (${LIB_OUTNAME} PRIVATE m)

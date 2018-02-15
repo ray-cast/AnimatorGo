@@ -21,8 +21,8 @@ namespace octoon
             virtual std::uint8_t getBufferChannelCount() const noexcept = 0;
             virtual std::size_t getBufferTotalSamples() const noexcept = 0;
 
-            virtual SoundFormat getBufferType() const noexcept = 0;
-            virtual SoundFrequency getBufferFrequency() const noexcept = 0;
+            virtual AudioFormat getBufferType() const noexcept = 0;
+            virtual AudioFrequency getBufferFrequency() const noexcept = 0;
         };
     }
 }

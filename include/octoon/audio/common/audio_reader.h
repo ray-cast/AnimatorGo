@@ -1,12 +1,16 @@
 #ifndef OCTOON_AUDIO_READER_H_
 #define OCTOON_AUDIO_READER_H_
 
+#include <memory>
+
 #include <cstdint>
 #include <cstddef>
 
 #include <octoon/runtime/platform.h>
 
 #include <octoon/audio/common/audio_buffer.h>
+#include <octoon/audio/common/audio_types.h>
+#include <octoon/audio/common/audio_reader.h>
 
 namespace octoon
 {
@@ -24,13 +28,13 @@ namespace octoon
             std::uint8_t getBufferChannelCount() const noexcept;
             std::size_t getBufferTotalSamples() const noexcept;
 
-            SoundFormat getBufferType() const noexcept;
-            SoundFrequency getBufferFrequency() const noexcept;
+            AudioFormat getBufferType() const noexcept;
+            AudioFrequency getBufferFrequency() const noexcept;
 
-            virtual AudioReaderPtr clone() const noexcept = 0;
+            virtual std::shared_ptr<AudioReader> clone() const noexcept = 0;
 
         private:
-            SoundBuffer* _buf;
+            AudioBuffer* _buf;
         };
     }
 }

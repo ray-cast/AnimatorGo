@@ -6,9 +6,13 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 
 SET(AUDIO_LIST
     ${HEADER_PATH}/common/audio_buffer.h
+    ${SOURCE_PATH}/common/audio_buffer.cpp
     ${HEADER_PATH}/common/audio_device.h
+    ${SOURCE_PATH}/common/audio_device.cpp
     ${HEADER_PATH}/common/audio_listener.h
+    ${SOURCE_PATH}/common/audio_listener.cpp
     ${HEADER_PATH}/common/audio_reader.h
+    ${SOURCE_PATH}/common/audio_reader.cpp
     ${HEADER_PATH}/common/audio_source.h
     ${SOURCE_PATH}/common/audio_source.cpp
     ${HEADER_PATH}/common/audio_types.h

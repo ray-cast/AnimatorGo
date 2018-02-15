@@ -1,7 +1,11 @@
 #ifndef OCTOON_AUDIO_BUFFER_H_
 #define OCTOON_AUDIO_BUFFER_H_
 
+#include <cstdint>
+#include <cstddef>
+
 #include <octoon/runtime/platform.h>
+#include <octoon/audio/common/audio_types.h>
 
 
 namespace octoon

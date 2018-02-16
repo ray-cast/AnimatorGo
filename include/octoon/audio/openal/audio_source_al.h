@@ -29,43 +29,43 @@ namespace octoon
             virtual void open() noexcept override;
             virtual void close() noexcept override;
 
-            virtual void set_audio_reader(std::shared_ptr<AudioReader> ptr) noexcept;
-            virtual std::shared_ptr<AudioReader> get_audio_buffer() const noexcept;
+            virtual void set_audio_reader(std::shared_ptr<AudioReader> ptr) noexcept override;
+            virtual std::shared_ptr<AudioReader> get_audio_buffer() const noexcept override;
 
-            virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept;
-            virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept;
+            virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept override;
+            virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept override;
 
-            virtual void set_volume(float volume) noexcept;
-            virtual void set_min_volume(float volume) noexcept;
-            virtual void set_max_volume(float volume) noexcept;
-            virtual void set_translate(const math::float3& translate) noexcept;
-            virtual void set_velocity(const math::float3& velocity) noexcept;
-            virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept;
-            virtual void set_pitch(float pitch) noexcept;
-            virtual void set_max_distance(float maxdis) noexcept;
-            virtual void set_min_distance(float mindis) noexcept;
-            virtual void set_audio_clip(const AudioClip& clip) noexcept;
+            virtual void set_volume(float volume) noexcept override;
+            virtual void set_min_volume(float volume) noexcept override;
+            virtual void set_max_volume(float volume) noexcept override;
+            virtual void set_translate(const math::float3& translate) noexcept override;
+            virtual void set_velocity(const math::float3& velocity) noexcept override;
+            virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept override;
+            virtual void set_pitch(float pitch) noexcept override;
+            virtual void set_max_distance(float maxdis) noexcept override;
+            virtual void set_min_distance(float mindis) noexcept override;
+            virtual void set_audio_clip(const AudioClip& clip) noexcept override;
 
-            virtual void get_translate(math::float3& translate) noexcept;
-            virtual void get_velocity(math::float3& velocity) noexcept;
-            virtual void get_orientation(math::float3& forward, math::float3& up) noexcept;
-            virtual void get_audio_clip(AudioClip& clip) const noexcept;
+            virtual void get_translate(math::float3& translate) noexcept override;
+            virtual void get_velocity(math::float3& velocity) noexcept override;
+            virtual void get_orientation(math::float3& forward, math::float3& up) noexcept override;
+            virtual void get_audio_clip(AudioClip& clip) const noexcept override;
 
-            virtual float get_volume() const noexcept;
-            virtual float get_min_volume() const noexcept;
-            virtual float get_max_volume() const noexcept;
-            virtual float get_pitch() const noexcept;
-            virtual float get_max_distance() const noexcept;
-            virtual float get_min_distance() const noexcept;
+            virtual float get_volume() const noexcept override;
+            virtual float get_min_volume() const noexcept override;
+            virtual float get_max_volume() const noexcept override;
+            virtual float get_pitch() const noexcept override;
+            virtual float get_max_distance() const noexcept override;
+            virtual float get_min_distance() const noexcept override;
 
-            virtual void play(bool play) noexcept;
-            virtual void loop(bool loop) noexcept;
-            virtual void pause() noexcept;
+            virtual void play(bool play) noexcept override;
+            virtual void loop(bool loop) noexcept override;
+            virtual void pause() noexcept override;
 
-            virtual bool is_playing() const noexcept;
-            virtual bool is_stopped() const noexcept;
-            virtual bool is_paused() const noexcept;
-            virtual bool is_loop() const noexcept;
+            virtual bool is_playing() const noexcept override;
+            virtual bool is_stopped() const noexcept override;
+            virtual bool is_paused() const noexcept override;
+            virtual bool is_loop() const noexcept override;
 
         private:
 

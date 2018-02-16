@@ -17,6 +17,7 @@
 #include <octoon/audio/common/audio_source_listener.h>
 
 #include <octoon/audio/openal/audio_types_al.h>
+#include <octoon/audio/openal/audio_source_al.h>
 
 namespace octoon
 {
@@ -26,18 +27,18 @@ namespace octoon
         {
         public:
             AudioDeviceAL() noexcept;
-            virtual ~AudioDeviceAL() noexcept;
+            virtual ~AudioDeviceAL() noexcept override;
 
-            virtual bool open() noexcept;
-            virtual void close() noexcept;
+            virtual bool open() noexcept override;
+            virtual void close() noexcept override;
 
-            virtual bool is_open() const noexcept;
+            virtual bool is_open() const noexcept override;
 
-            virtual void set_distance_model(bool enable) noexcept;
-            virtual bool get_distance_model() const noexcept;
+            virtual void set_distance_model(bool enable) noexcept override;
+            virtual bool get_distance_model() const noexcept override;
 
-            virtual std::shared_ptr<AudioSource> create_audio_source();
-            virtual std::shared_ptr<AudioListener> create_audio_listener() noexcept;
+            virtual std::shared_ptr<AudioSource> create_audio_source() override;
+            virtual std::shared_ptr<AudioListener> create_audio_listener() noexcept override;
 
         private:
             bool _distance_model;

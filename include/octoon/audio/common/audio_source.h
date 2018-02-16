@@ -11,6 +11,7 @@
 #include <octoon/math/mathfwd.h>
 
 #include <octoon/audio/common/audio_reader.h>
+#include <octoon/audio/common/audio_source_listener.h>
 
 namespace octoon
 {

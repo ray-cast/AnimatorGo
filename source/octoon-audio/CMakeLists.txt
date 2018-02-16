@@ -15,6 +15,8 @@ SET(AUDIO_LIST
     ${SOURCE_PATH}/common/audio_reader.cpp
     ${HEADER_PATH}/common/audio_source.h
     ${SOURCE_PATH}/common/audio_source.cpp
+    ${HEADER_PATH}/common/audio_source_listener.h
+    ${SOURCE_PATH}/common/audio_source_listener.cpp
     ${HEADER_PATH}/common/audio_types.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${AUDIO_LIST})

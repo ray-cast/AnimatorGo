@@ -1,5 +1,3 @@
-
-
 #ifndef OCTOON_AUDIO_SOURCE_AL_H_
 #define OCTOON_AUDIO_SOURCE_AL_H_
 
@@ -14,6 +12,9 @@
 
 #include <octoon/audio/common/audio_reader.h>
 #include <octoon/audio/common/audio_source.h>
+#include <octoon/audio/common/audio_source_listener.h>
+
+#include <octoon/audio/openal/audio_types_al.h>
 
 namespace octoon
 {
@@ -28,72 +29,72 @@ namespace octoon
             virtual void open() noexcept override;
             virtual void close() noexcept override;
 
-            virtual void setSoundReader(SoundReaderPtr ptr) noexcept;
-            virtual SoundReaderPtr getSoundBuffer() const noexcept;
+            virtual void set_audio_reader(std::shared_ptr<AudioReader> ptr) noexcept;
+            virtual std::shared_ptr<AudioReader> get_audio_buffer() const noexcept;
 
-            virtual void addSoundSourceListener(SoundSourceListener* listener) noexcept;
-            virtual void removeSoundSourceListener(SoundSourceListener* listener) noexcept;
+            virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept;
+            virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept;
 
-            virtual void setVolume(float volume) noexcept;
-            virtual void setMinVolume(float volume) noexcept;
-            virtual void setMaxVolume(float volume) noexcept;
-            virtual void setTranslate(const math::float3& translate) noexcept;
-            virtual void setVelocity(const math::float3& velocity) noexcept;
-            virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept;
-            virtual void setPitch(float pitch) noexcept;
-            virtual void setMaxDistance(float maxdis) noexcept;
-            virtual void setMinDistance(float mindis) noexcept;
-            virtual void setSoundClip(const SoundClip& clip) noexcept;
+            virtual void set_volume(float volume) noexcept;
+            virtual void set_min_volume(float volume) noexcept;
+            virtual void set_max_volume(float volume) noexcept;
+            virtual void set_translate(const math::float3& translate) noexcept;
+            virtual void set_velocity(const math::float3& velocity) noexcept;
+            virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept;
+            virtual void set_pitch(float pitch) noexcept;
+            virtual void set_max_distance(float maxdis) noexcept;
+            virtual void set_min_distance(float mindis) noexcept;
+            virtual void set_audio_clip(const AudioClip& clip) noexcept;
 
-            virtual void getTranslate(math::float3& translate) noexcept;
-            virtual void getVelocity(math::float3& velocity) noexcept;
-            virtual void getOrientation(math::float3& forward, math::float3& up) noexcept;
-            virtual void getSoundClip(AudioClip& clip) const noexcept;
+            virtual void get_translate(math::float3& translate) noexcept;
+            virtual void get_velocity(math::float3& velocity) noexcept;
+            virtual void get_orientation(math::float3& forward, math::float3& up) noexcept;
+            virtual void get_audio_clip(AudioClip& clip) const noexcept;
 
-            virtual float getVolume() const noexcept;
-            virtual float getMinVolume() const noexcept;
-            virtual float getMaxVolume() const noexcept;
-            virtual float getPitch() const noexcept;
-            virtual float getMaxDistance() const noexcept;
-            virtual float getMinDistance() const noexcept;
+            virtual float get_volume() const noexcept;
+            virtual float get_min_volume() const noexcept;
+            virtual float get_max_volume() const noexcept;
+            virtual float get_pitch() const noexcept;
+            virtual float get_max_distance() const noexcept;
+            virtual float get_min_distance() const noexcept;
 
             virtual void play(bool play) noexcept;
             virtual void loop(bool loop) noexcept;
             virtual void pause() noexcept;
 
-            virtual bool isPlaying() const noexcept;
-            virtual bool isStopped() const noexcept;
-            virtual bool isPaused() const noexcept;
-            virtual bool isLoop() const noexcept;
+            virtual bool is_playing() const noexcept;
+            virtual bool is_stopped() const noexcept;
+            virtual bool is_paused() const noexcept;
+            virtual bool is_loop() const noexcept;
 
         private:
 
-            void _playStart() noexcept;
-            void _playEnd() noexcept;
+            void _play_start() noexcept;
+            void _play_end() noexcept;
 
-            void _initSoundStream() noexcept;
-            void _clearSoundQueue() noexcept;
-            void _updateSoundQueue() noexcept;
+            void _init_audio_stream() noexcept;
+            void _clear_audio_queue() noexcept;
+            void _update_audio_queue() noexcept;
 
         private:
 
-            bool _isLoop;
-            bool _isPlaying;
-            bool _isPlayEnd;
+            bool _is_loop;
+            bool _is_playing;
+            bool _is_play_end;
 
-            ALuint  _alSource;
-            ALuint  _alBuffer[2];
-            ALsizei _alBufferSize;
-            ALenum  _alFormat;
+            ALuint  _al_source;
+            ALuint  _al_buffer[2];
+            ALsizei _al_buffer_size;
+            ALenum  _al_format;
 
-            ALsizei _alSampleLength;
-            ALsizei _alSampleLengthTotal;
+            ALsizei _al_sample_length;
+            ALsizei _al_sample_length_total;
 
             std::vector<char> _data;
-            std::vector<SoundSourceListener*> _listeners;
+            std::vector<AudioSourceListener*> _listeners;
 
-            SoundClip _soundClip;
-            SoundReaderPtr _soundReader;
+            AudioClip _audio_clip;
+            std::shared_ptr<AudioReader> _audio_reader;
         };
 	}
 }

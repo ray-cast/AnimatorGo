@@ -6,38 +6,6 @@
 
 namespace octoon {
 namespace io {
-// LocalDir
-
-LocalDir::LocalDir(const std::string& base_dir) noexcept :
-  base_dir_(base_dir) {
-}
-const std::string&
-LocalDir::canonicalize(const std::string& rel_path) const noexcept {
-  std::string rv;
-  if (rv.back() != '/') {
-    rv.reserve(base_dir_.size() + 1 + rel_path.size());
-    rv.append(base_dir_);
-    rv.push_back('/');
-    rv.append(rel_path);
-  } else {
-    rv.reserve(base_dir_.size() + rel_path.size());
-    rv.append(base_dir_);
-    rv.append(rel_path);
-  }
-  return rv;
-}
-
-// ZipArchive
-
-ZipArchive::ZipArchive(const std::string& zip_file) :
-  unzipper_(zip_file) {
-}
-std::vector<uint8_t>
-ZipArchive::extract(const std::string& file) noexcept {
-  std::vector<uint8_t> buf;
-  assert(unzipper_.extractEntryToMemory(file, buf));
-  return buf;
-}
 
 // Orl
 
@@ -72,11 +40,11 @@ Orl::is_valid() const {
   return colon_pos_ > 0 && // `virtual_dir` not empty.
     orl_.size() > colon_pos_ + 1; // `path` not empty.
 }
-const std::string&
+std::string
 Orl::virtual_dir() const {
   return orl_.substr(0, colon_pos_);
 }
-const std::string&
+std::string
 Orl::path() const {
   return orl_.substr(colon_pos_ + 1);
 }
@@ -137,6 +105,14 @@ FileSystem::get(const Orl& orl) const {
   } else {
     return nullptr;
   }
+}
+
+std::shared_ptr<FileSystem> FileSystem::instance() noexcept {
+  static std::shared_ptr<FileSystem> fs;
+  if (fs == nullptr) {
+    fs = std::make_shared<FileSystem>();
+  }
+  return fs;
 }
 
 } // namespace io

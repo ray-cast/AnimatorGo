@@ -5,48 +5,22 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "zipper/unzipper.h"
 
-#include "octoon/runtime/rtti.h"
-#include "octoon/runtime/rtti_interface.h"
-#include "octoon/io/mstream.h"
+#include "octoon/io/fstream.h"
 
 namespace octoon {
 namespace io {
+
 /*
  * A virtual directory in `FileSystem`. Different variants of virtual
  * directories are distinguished by URI scheme.
  */
-class VirtualDir : public runtime::RttiInterface {
-  OctoonDeclareSubInterface(VirtualDir, runtime::RttiInterface);
+class VirtualDir {
+ public:
+  virtual std::unique_ptr<stream> open(const Orl& orl,
+                                       const OpenOptions& options) = 0;
 };
 using VirtualDirPtr = std::shared_ptr<VirtualDir>;
-
-/*
- * Local directory mapped directly to a virtual directory.
- */
-class LocalDir: public VirtualDir {
-  OctoonDeclareSubClass(LocalDir, VirtualDir);
- public:
-  LocalDir(const std::string& base_dir) noexcept;
-  const std::string& canonicalize(const std::string& rel_path) const noexcept;
- private:
-  std::string base_dir_;
-};
-using LocalDirPtr = std::shared_ptr<LocalDir>;
-
-/*
- * Zip archive as a virtual directory.
- */
-class ZipArchive : public VirtualDir {
-  OctoonDeclareSubClass(ZipArchive, VirtualDir);
- public:
-  ZipArchive(const std::string& zip_file);
-  std::vector<uint8_t> extract(const std::string& file) noexcept;
- private:
-  zipper::Unzipper unzipper_;
-};
-using ZipArchivePtr = std::shared_ptr<ZipArchive>;
 
 /*
  * ORL -> Octoon Resource Locator.
@@ -66,8 +40,8 @@ struct Orl {
 
   bool is_valid() const;
 
-  const std::string& virtual_dir() const;
-  const std::string& path() const;
+  std::string virtual_dir() const;
+  std::string path() const;
   
   const std::string& as_string() const;
  private:
@@ -89,10 +63,34 @@ class FileSystem {
   VirtualDirPtr unreg(const std::string& path);
   VirtualDirPtr get(const Orl& orl) const;
 
+  static std::shared_ptr<FileSystem> instance() noexcept;
+
  private:
   std::map<std::string, std::shared_ptr<VirtualDir>> registry_;
 };
 using FilesystemPtr = std::shared_ptr<FileSystem>;
+
+/*
+ * Options instructing virtual directories how to construct streams.
+ */
+struct OpenOptions {
+public:
+  OpenOptions() = default;
+  OpenOptions(const OpenOptions&) = default;
+  OpenOptions(OpenOptions&&) = default;
+  OpenOptions& operator=(const OpenOptions&) = default;
+
+  OpenOptions& read();
+  OpenOptions& write();
+  OpenOptions& truncate();
+  OpenOptions& create();
+  OpenOptions& append();
+
+  struct {
+    bool read, write, truncate, create, append;
+  } options;
+};
+
 
 } // namaspace io
 } // namaspace octoon

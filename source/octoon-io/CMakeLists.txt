@@ -7,14 +7,16 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/contrib/zipper)
 
 SET(IO_LIST
+	${HEADER_PATH}/stream.h
+	${SOURCE_PATH}/stream.cpp
 	${HEADER_PATH}/mstream.h
 	${SOURCE_PATH}/mstream.cpp
 	${HEADER_PATH}/fstream.h
 	${SOURCE_PATH}/fstream.cpp
-	${HEADER_PATH}/zstream.h
-	${SOURCE_PATH}/zstream.cpp
 	${HEADER_PATH}/filesystem.h
 	${SOURCE_PATH}/filesystem.cpp
+	${HEADER_PATH}/virtual_dirs.h
+	${SOURCE_PATH}/virtual_dirs.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${IO_LIST})
 

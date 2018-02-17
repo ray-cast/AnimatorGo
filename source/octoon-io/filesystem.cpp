@@ -85,13 +85,13 @@ Orl::as_string() const {
   return orl_;
 }
 
-// Filesystem
+// FileSystem
 void
-Filesystem::reg(const std::string& vpath, VirtualDirPtr vdir) {
+FileSystem::reg(const std::string& vpath, VirtualDirPtr vdir) {
   registry_.insert(std::make_pair(vpath, vdir));
 }
 VirtualDirPtr
-Filesystem::unreg(const std::string& vdir) {
+FileSystem::unreg(const std::string& vdir) {
   auto it = registry_.find(vdir);
   auto ptr = std::move(it->second);
   registry_.erase(it);
@@ -130,7 +130,7 @@ sanitize_path(const std::string& path) {
   return rv;
 }
 VirtualDirPtr
-Filesystem::get(const Orl& orl) const {
+FileSystem::get(const Orl& orl) const {
   auto it = registry_.find(orl.virtual_dir());
   if (it != registry_.end()) {
     return it->second;

@@ -14,7 +14,7 @@
 namespace octoon {
 namespace io {
 /*
- * A virtual directory in `Filesystem`. Different variants of virtual
+ * A virtual directory in `FileSystem`. Different variants of virtual
  * directories are distinguished by URI scheme.
  */
 class VirtualDir : public runtime::RttiInterface {
@@ -76,10 +76,10 @@ struct Orl {
 };
 
 /*
- * A `Filesystem` is a namespace for Octoon instance to seek for resources in
+ * A `FileSystem` is a namespace for Octoon instance to seek for resources in
  * local storage, at remote host, or in compressed archive. 
  */
-class Filesystem {
+class FileSystem {
  public:
   /*
    * Register an entry to the filesystem, so that the file contained in that
@@ -92,7 +92,7 @@ class Filesystem {
  private:
   std::map<std::string, std::shared_ptr<VirtualDir>> registry_;
 };
-using FilesystemPtr = std::shared_ptr<Filesystem>;
+using FilesystemPtr = std::shared_ptr<FileSystem>;
 
 } // namaspace io
 } // namaspace octoon

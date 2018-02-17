@@ -29,7 +29,7 @@ namespace octoon
             virtual bool get_distance_model() const noexcept = 0;
 
             virtual std::shared_ptr<AudioSource> create_audio_source() = 0;
-            virtual std::shared_ptr<AudioListener> create_audio_listener() noexcept = 0;
+            virtual std::shared_ptr<AudioListener> get_audio_listener() noexcept = 0;
         };
     }
 }

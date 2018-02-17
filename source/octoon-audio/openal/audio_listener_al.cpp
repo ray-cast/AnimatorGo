@@ -18,14 +18,12 @@ namespace octoon
             this->close();
         }
 
-        bool
-        AudioListenerAL::open() noexcept
+        bool AudioListenerAL::open() noexcept
         {
             return true;
         }
 
-        void
-        AudioListenerAL::close() noexcept
+        void AudioListenerAL::close() noexcept
         {
         }
 

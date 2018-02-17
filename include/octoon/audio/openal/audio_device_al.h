@@ -38,13 +38,14 @@ namespace octoon
             virtual bool get_distance_model() const noexcept override;
 
             virtual std::shared_ptr<AudioSource> create_audio_source() override;
-            virtual std::shared_ptr<AudioListener> create_audio_listener() noexcept override;
+            virtual std::shared_ptr<AudioListener> get_audio_listener() noexcept override;
 
         private:
             bool _distance_model;
 
             ALCdevice*      _device;
             ALCcontext*     _context;
+            std::shared_ptr<AudioListener> _audio_listener;
         };
 	}
 }

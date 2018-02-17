@@ -12,6 +12,7 @@ namespace octoon
         AudioDeviceAL::AudioDeviceAL() noexcept
             : _device(nullptr)
             , _context(nullptr)
+            , _audio_listener(new AudioListener())
         {
         }
 
@@ -30,11 +31,15 @@ namespace octoon
             if (!::alcMakeContextCurrent(_context))
                 return false;
 
+            _audio_listener->open();
+
             return true;
         }
 
         void AudioDeviceAL::close() noexcept
         {
+            _audio_listener->close();
+
             ::alcMakeContextCurrent(AL_NONE);
 
             if (_context)
@@ -77,9 +82,9 @@ namespace octoon
             return std::make_shared<AudioSourceAL>();
         }
 
-        std::shared_ptr<AudioListener> AudioDeviceAL::create_audio_listener() noexcept
+        std::shared_ptr<AudioListener> AudioDeviceAL::get_audio_listener() noexcept
         {
-            return std::make_shared<AudioListenerAL>();
+            return _audio_listener;
         }
     }
 }

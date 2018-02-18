@@ -22,8 +22,8 @@ namespace octoon
             AudioReader(AudioBuffer* buf) noexcept;
             virtual ~AudioReader() noexcept;
 
-            bool open(StreamReaderPtr stream) noexcept;
-            bool access(StreamReader& stream) const noexcept;
+            bool open(std::shared_ptr<std::istream> stream) noexcept;
+            bool access(std::istream& stream) const noexcept;
 
             std::uint8_t get_buffer_channel_count() const noexcept;
             std::size_t get_buffer_total_samples() const noexcept;

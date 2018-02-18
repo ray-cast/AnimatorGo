@@ -1,6 +1,7 @@
 #ifndef OCTOON_AUDIO_BUFFER_H_
 #define OCTOON_AUDIO_BUFFER_H_
 
+#include <iostream>
 #include <cstdint>
 #include <cstddef>
 
@@ -18,9 +19,9 @@ namespace octoon
             AudioBuffer() noexcept;
             virtual ~AudioBuffer() noexcept;
 
-            virtual bool open(StreamReaderPtr stream) noexcept = 0;
+            virtual bool open(std::shared_ptr<std::istream> stream) noexcept = 0;
 
-            virtual bool access(StreamReader& stream) const noexcept = 0;
+            virtual bool access(std::istream& stream) const noexcept = 0;
 
             virtual std::uint8_t get_buffer_channel_count() const noexcept = 0;
             virtual std::size_t get_buffer_total_samples() const noexcept = 0;

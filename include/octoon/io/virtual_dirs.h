@@ -3,7 +3,6 @@
 #ifndef OCTOON_IO_VIRTUAL_DIRS_H_
 #define OCTOON_IO_VIRTUAL_DIRS_H_
 #include "octoon/io/filesystem.h"
-#include "zipper/unzipper.h"
 
 namespace octoon {
 namespace io {
@@ -27,10 +26,12 @@ using LocalDirPtr = std::shared_ptr<LocalDir>;
 class ZipArchive : public VirtualDir {
 public:
   ZipArchive(const std::string& zip_file);
+  ~ZipArchive();
   std::unique_ptr<stream> open(const Orl& orl,
                                const OpenOptions& options) override;
 private:
-  zipper::Unzipper unzipper_;
+  // Hide unzipper.
+  void* unzipper_;
 };
 using ZipArchivePtr = std::shared_ptr<ZipArchive>;
 

@@ -9,19 +9,18 @@ namespace io {
 
 // Orl
 
-Orl::Orl(const std::string& orl) :
-  orl_(),
-  colon_pos_() {
+bool Orl::parse(const std::string& orl, Orl& out) {
   size_t vdir_size = orl.find(':');
   if (vdir_size == orl.size()) {
-    return;
+    return false;
   }
   size_t path_size = orl.size() - vdir_size - 1;
   if (vdir_size == 0 || path_size == 0) {
-    return;
+    return false;
   }
-  orl_ = orl;
-  colon_pos_ = vdir_size;
+  out.orl_ = orl;
+  out.colon_pos_ = vdir_size;
+  return true;
 }
 Orl::Orl(const std::string& vdir, const std::string& path) :
   orl_(),

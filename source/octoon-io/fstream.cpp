@@ -56,7 +56,7 @@ fstream::operator=(fstream&& rv) noexcept {
 bool
 fstream::open(const Orl& orl, const OpenOptions& options) {
   auto vdir = fs_->get(orl);
-  inner_ = vdir->open(orl.path(), options);
+  inner_ = vdir->open(orl, options);
   return inner_ == nullptr;
 }
 void

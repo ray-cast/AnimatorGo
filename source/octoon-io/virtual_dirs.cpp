@@ -4,6 +4,7 @@
 #include <cassert>
 #include "octoon/io/virtual_dirs.h"
 #include "octoon/io/mstream.h"
+#include "zipper/unzipper.h"
 
 namespace octoon {
 namespace io {
@@ -103,7 +104,7 @@ std::unique_ptr<stream>
 LocalDir::open(const Orl& orl, const OpenOptions& options) {
   std::string rv;
   auto path = orl.path();
-  if (rv.back() != '/') {
+  if (path.back() != '/') {
     rv.reserve(base_dir_.size() + 1 + path.size());
     rv.append(base_dir_);
     rv.push_back('/');
@@ -121,12 +122,16 @@ LocalDir::open(const Orl& orl, const OpenOptions& options) {
 // ZipArchive
 
 ZipArchive::ZipArchive(const std::string& zip_file) :
-  unzipper_(zip_file) {
+  unzipper_(new zipper::Unzipper(zip_file)) {
+}
+ZipArchive::~ZipArchive() {
+  delete unzipper_;
 }
 std::unique_ptr<stream>
 ZipArchive::open(const Orl& orl, const OpenOptions& options) {
   std::vector<uint8_t> buf;
-  assert(unzipper_.extractEntryToMemory(orl.path(), buf));
+  assert(reinterpret_cast<zipper::Unzipper*>(unzipper_)
+    ->extractEntryToMemory(orl.path(), buf));
   return std::make_unique<mstream>(buf);
 }
 

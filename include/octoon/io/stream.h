@@ -102,7 +102,7 @@ protected:
     hint_ = hint;
   }
 private:
-  const char* hint_;
+  const char* hint_ = "";
 };
 
 

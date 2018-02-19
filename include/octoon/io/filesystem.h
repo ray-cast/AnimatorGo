@@ -35,10 +35,10 @@ struct Orl {
   Orl() = default;
   Orl(const Orl& lv) = default;
   Orl(Orl&& rv) = default;
-  Orl(const std::string& orl);
   Orl(const std::string& vdir, const std::string& path);
 
   bool is_valid() const;
+  static bool parse(const std::string& orl, Orl& out);
 
   std::string virtual_dir() const;
   std::string path() const;

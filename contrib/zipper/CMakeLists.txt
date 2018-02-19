@@ -40,7 +40,6 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt")
 endif()
 
 # version number needs to be calculated correctly
-MATH(EXPR ZIPPER_VERSION_NUMERIC "${ZIPPER_VERSION_MAJOR} * 10000 + ${ZIPPER_VERSION_MINOR} * 100 + ${ZIPPER_VERSION_PATCH}" )
 set(PACKAGE_VERSION "${ZIPPER_VERSION_MAJOR}.${ZIPPER_VERSION_MINOR}.${ZIPPER_VERSION_PATCH}${ZIPPER_VERSION_RELEASE}")
 set(PACKAGE_NAME "Zipper")
 
@@ -345,47 +344,19 @@ endif()
 
 option(BUILD_STATIC_VERSION "Build the static version of the library." ON)
 if (BUILD_STATIC_VERSION)
-  add_library (${ZIPPER_LIBRARY}-static STATIC ${ZIPPER_SOURCES} ${MINIZIP_SOURCES})
+  add_library (${ZIPPER_LIBRARY} STATIC ${ZIPPER_SOURCES} ${MINIZIP_SOURCES})
   
-  target_link_libraries(${ZIPPER_LIBRARY}-static ${LIBZ_LIBRARY} ${EXTRA_LIBS})
+  target_link_libraries(${ZIPPER_LIBRARY} ${LIBZ_LIBRARY} ${EXTRA_LIBS})
   
-  INSTALL(TARGETS ${ZIPPER_LIBRARY}-static
+  INSTALL(TARGETS ${ZIPPER_LIBRARY}
           RUNTIME DESTINATION bin
           LIBRARY DESTINATION lib
           ARCHIVE DESTINATION lib
   )
 endif()
 
-
 file(GLOB ZIPPER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/zipper/*.h ${CMAKE_CURRENT_SOURCE_DIR}/minizip/*.h  )
 install(FILES 
         ${ZIPPER_HEADERS}
         DESTINATION include/zipper
 )
-
-message(STATUS "
-----------------------------------------------------------------------
-Zipper version ${PACKAGE_VERSION}
-----------------------------------------------------------------------
-
-   Configured on host '${HOSTNAME}'
-     host type                       = ${CMAKE_SYSTEM_NAME}
-     host operating system           = ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}
-     host CPU architecture           = ${CMAKE_SYSTEM_PROCESSOR}
-
-   General build flags:
-     CC                              = ${CMAKE_C_COMPILER}
-     CXX                             = ${CMAKE_CXX_COMPILER}
-     CPPFLAGS                        = ${BUILD_DEFINITIONS}
-     CFLAGS                          = ${CMAKE_C_FLAGS}
-     CXXFLAGS                        = ${CMAKE_CXX_FLAGS}
-     LDFLAGS                         = ${CMAKE_EXE_LINKER_FLAGS}
-
-   Zlib library configuration:
-     Zlib library                    = ${LIBZ_LIBRARY}
-     Zlib include dir                = ${LIBZ_INCLUDE_DIR}
-
-   Other configuration settings:
-     Installation $prefix            = ${CMAKE_INSTALL_PREFIX}
-     ")
-

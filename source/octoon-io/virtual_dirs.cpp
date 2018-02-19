@@ -113,6 +113,11 @@ base_dir_(base_dir) {
 std::unique_ptr<stream>
 LocalDir::open(const Orl& orl, const OpenOptions& options) {
   auto rv_stream = std::make_unique<detail::LocalFileStream>();
+  auto parent = orl.parent();
+  // Create missing segments.
+  if (exists(parent) == ItemType::NA) {
+    std::filesystem::create_directories(make_path(parent));
+  }
   if (rv_stream->open(make_path(orl), options)) {
     return rv_stream;
   } else {

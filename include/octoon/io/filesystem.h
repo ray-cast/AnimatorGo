@@ -94,6 +94,8 @@ struct Orl {
   const std::string& path() const;
   
   std::string to_string() const;
+
+  Orl Orl::parent() const;
  private:
   std::string vdir_, path_;
 };

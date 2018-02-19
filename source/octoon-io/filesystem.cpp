@@ -85,6 +85,10 @@ Orl::to_string() const {
   out.append(path_);
   return out;
 }
+Orl
+Orl::parent() const {
+  return Orl(vdir_, path_.substr(0, path_.find_last_of("/", path_.size())));
+}
 
 // FileSystem
 void

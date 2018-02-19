@@ -27,6 +27,9 @@ class fstream : public stream {
    * and `can_seek()` SHOULD report according to the capabilities inquired in
    * `options`. Actual reports depends on implementation of virtual directories
    * resources are in. If failed, these reports are always `false`.
+   * 
+   * Any attempt to open a already-opened stream are allowed. After
+   * re-opening, all information about the previous opening state is lost.
    *
    * Returns:
    *   `true` on success.

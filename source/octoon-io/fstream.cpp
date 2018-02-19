@@ -55,6 +55,7 @@ fstream::operator=(fstream&& rv) noexcept {
 
 bool
 fstream::open(const Orl& orl, const OpenOptions& options) {
+  inner_ = nullptr; // Re-open should stash the previous one.
   auto vdir = fs_->get(orl);
   inner_ = vdir->open(orl, options);
   return inner_ == nullptr;

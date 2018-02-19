@@ -13,13 +13,13 @@ public:
 		if (actual == expect)
 		{
 			UnitTest::Results.Last().State = TestState::Passed;
-			*UnitTest::Results.Last().Log << "[Passed]";
+			*UnitTest::Results.Last().Log << "[Assertion passed]" << std::endl;
 		}
 		else
 		{
 			UnitTest::Results.Last().State = TestState::Failed;
 			*UnitTest::Results.Last().Log << "[Assertion failed] Expected: `" <<
-				expect << "`; actual: " << actual << ".";
+				expect << "`; actual: `" << actual << "`." << std::endl;
 		}
 	}
 
@@ -28,13 +28,13 @@ public:
 		if (actual != expect)
 		{
 			UnitTest::Results.Last().State = TestState::Passed;
-			*UnitTest::Results.Last().Log << "[Passed]";
+			*UnitTest::Results.Last().Log << "[Assertion passed]" << std::endl;
 		}
 		else
 		{
 			UnitTest::Results.Last().State = TestState::Failed;
 			*UnitTest::Results.Last().Log << "[Assertion failed] Expected: `" <<
-				expect << "`; actual: " << actual << ".";
+				expect << "`; actual: `" << actual << "`." << std::endl;
 		}
 	}
 };

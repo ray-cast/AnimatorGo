@@ -10,10 +10,12 @@ namespace octoon
 	AudioSourceComponent::AudioSourceComponent() noexcept
 		:audio_source(std::make_shared<audio::AudioSourceAL>())
 	{
+		audio_source->open();
 	}
 
 	AudioSourceComponent::~AudioSourceComponent() noexcept
 	{
+		audio_source->close();
 	}
 
 	void AudioSourceComponent::set_volume(float volume) noexcept

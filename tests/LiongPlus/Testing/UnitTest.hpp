@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include "../DateTime.hpp"
 
 #ifndef __FUNCTIONW__
 #define __FUNCTIONW__ __FUNCTION__
@@ -16,6 +17,17 @@
 
 namespace LiongPlus {
 namespace Testing {
+
+class Logger
+{
+public:
+	static void Log(std::string label, std::string msg);
+
+	static void Info(std::string msg);
+	static void Warn(std::string msg);
+	static void Excp(std::string msg);
+	static void Sver(std::string msg);
+};
 
 enum class TestState
 {
@@ -41,6 +53,10 @@ public:
 
 protected:
 	void Unit(const std::string& name, std::function<void()> unit);
+	// Return `true` if assertion failed.
+	static bool Assert(bool condition, const char* description = "");
+	// Return `true` if assumption failed.
+	static bool Assume(bool condition, const char* description = "");
 };
 
 struct TestResult
@@ -93,5 +109,10 @@ private:
 	static std::vector<TestResult> _Results;
 };
 
-} // namespace LiongPlus
 } // namespace Testing
+} // namespace LiongPlus
+
+#define ASSERT(condition) if (Assert(condition)) { return; }
+#define ASSERT_RICH(condition, description) if (Assert(condition, description)) { return; }
+#define ASSUME(condition) if (Assume(condition)) { return; }
+#define ASSUME_RICH(condition, description) if (Assume(condition, description)) { return; }

@@ -1,5 +1,7 @@
 #include <iostream>
+#include <thread>
 #include "LiongPlus/Testing/UnitTest.hpp"
+#include <chrono>
 
 using namespace LiongPlus::Testing;
 
@@ -10,7 +12,7 @@ int main() {
 
   test_octoon_io();
 
-  std::cout << UnitTest::Summary() << std::endl << std::flush;
+  std::cout << UnitTest::Summary() << std::endl;
 
   return 0;
 }

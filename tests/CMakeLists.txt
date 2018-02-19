@@ -12,7 +12,6 @@ SET(SOURCE_PATH ${OCTOON_PATH_TESTS})
 SET(TESTS_SOURCES
     ${SOURCE_PATH}/LiongPlus/DateTime.cpp
     ${SOURCE_PATH}/LiongPlus/Testing/UnitTest.cpp
-    ${SOURCE_PATH}/LiongPlus/Testing/Logger.cpp
 
     ${SOURCE_PATH}/octoon-io.cpp
 
@@ -28,5 +27,6 @@ TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE zlib)
 
 # Copy test environment.
 file(COPY ${OCTOON_PATH_TESTS}/testenv DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${OCTOON_PATH_TESTS}/Reset-TestEnv.ps1 DESTINATION ${CMAKE_BINARY_DIR})
 
 SET_TARGET_ATTRIBUTE(${LIB_OUTNAME} "tests")

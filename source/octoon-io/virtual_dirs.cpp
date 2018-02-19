@@ -111,14 +111,24 @@ LocalDir::LocalDir(const std::string& base_dir) noexcept :
 base_dir_(base_dir) {
 }
 std::unique_ptr<stream>
-LocalDir::open(const Orl& orl, const OpenOptions& options) {
+LocalDir::open(const Orl& orl, const OpenOptions& opts) {
   auto rv_stream = std::make_unique<detail::LocalFileStream>();
   auto parent = orl.parent();
-  // Create missing segments.
-  if (exists(parent) == ItemType::NA) {
-    std::filesystem::create_directories(make_path(parent));
+  auto file_path = make_path(orl);
+  // Check if the file exists.
+  if (exists(orl) == ItemType::NA) {
+    // Make sure it can create files and directories.
+    if (!opts.options.write || !opts.options.create) {
+      return nullptr;
+    }
+    // Create missing segments.
+    if (exists(parent) == ItemType::NA &&
+      !std::filesystem::create_directories(make_path(parent))) {
+      return nullptr;
+    }
   }
-  if (rv_stream->open(make_path(orl), options)) {
+  // Open the file.
+  if (rv_stream->open(make_path(orl), opts)) {
     return rv_stream;
   } else {
     return nullptr;
@@ -158,7 +168,7 @@ std::string
 LocalDir::make_path(const Orl& orl) const {
   std::string rv;
   auto path = orl.path();
-  if (path.back() != '/') {
+  if (path.size() > 0 && path.back() != '/') {
     rv.reserve(base_dir_.size() + 1 + path.size());
     rv.append(base_dir_);
     rv.push_back('/');
@@ -195,9 +205,13 @@ ZipArchive::open(const Orl& orl, const OpenOptions& opts) {
   if (opts.options.write) {
     return nullptr;
   }
-  if (unzipper_ == nullptr) return nullptr;
-  assert(reinterpret_cast<zipper::Unzipper*>(unzipper_)
-    ->extractEntryToMemory(orl.path(), buf));
+  if (unzipper_ == nullptr) {
+    return nullptr;
+  }
+  if (!reinterpret_cast<zipper::Unzipper*>(unzipper_)
+    ->extractEntryToMemory(orl.path(), buf)) {
+    return nullptr;
+  }
   return std::make_unique<mstream>(buf);
 }
 bool
@@ -206,10 +220,20 @@ ZipArchive::remove(const Orl& orl, ItemType type) {
 }
 ItemType
 ZipArchive::exists(const Orl& orl) {
-  if (entries_ == nullptr) return ItemType::NA;  
+  if (entries_ == nullptr) {
+    return ItemType::NA;
+  }
+  auto size = orl.path().size();
   for (auto entry : *(std::vector<zipper::ZipEntry>*)entries_) {
-    if (entry.name == orl.path()) {
-      return ItemType::File;
+    if (entry.name.size() == size) {
+      if (entry.name == orl.path()) {
+        return ItemType::File;
+      }
+    } else if (entry.name.size() == size + 1) {
+      if (std::string_view(entry.name.data(), size) == orl.path() &&
+        entry.name.back() == '/') {
+        return ItemType::Directory;
+      }
     }
   }
   return ItemType::NA;

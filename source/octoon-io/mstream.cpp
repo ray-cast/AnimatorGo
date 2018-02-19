@@ -46,13 +46,14 @@ size_t mstream::read(uint8_t* buf, size_t size) {
   // There is enough bytes to write.
   if (buf_size - pos_ > size) {
     actual_copyable = size;
+    std::memcpy(buf, buffer_.data() + pos_, actual_copyable);
     pos_ += size;
   // Bytes not enough, write all we can have.
   } else {
     actual_copyable = buf_size - pos_;
+    std::memcpy(buf, buffer_.data() + pos_, actual_copyable);
     pos_ = buf_size;
   }
-  std::memcpy(buf, buffer_.data() + pos_, actual_copyable);
   return actual_copyable;
 }
 size_t mstream::write(const uint8_t* buf, size_t size) {

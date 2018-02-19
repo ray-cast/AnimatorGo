@@ -25,8 +25,7 @@ private:
 using LocalDirPtr = std::shared_ptr<LocalDir>;
 
 /*
- * Zip archive as a virtual directory. Tests about directories inside any zip
- * file are N/A.
+ * Zip archive as a virtual directory.
  *
  * **NOTE** Zip archives are always read-only. Any non-read options set true
  * will lead to rejection.

@@ -113,5 +113,36 @@ std::shared_ptr<FileSystem> FileSystem::instance() noexcept {
   return fs;
 }
 
+// OpenOptions
+
+OpenOptions&
+OpenOptions::read() {
+  options.read = true;
+  return *this;
+}
+OpenOptions&
+OpenOptions::write() {
+  options.write = true;
+  return *this;
+}
+OpenOptions&
+OpenOptions::truncate() {
+  options.write = true;
+  options.truncate = true;
+  return *this;
+}
+OpenOptions&
+OpenOptions::create() {
+  options.write = true;
+  options.create = true;
+  return *this;
+}
+OpenOptions&
+OpenOptions::append() {
+  options.write = true;
+  options.append = true;
+  return *this;
+}
+
 } // namespace io
 } // namespace octoon

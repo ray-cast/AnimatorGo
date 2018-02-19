@@ -7,34 +7,6 @@
 namespace octoon {
 namespace io {
 
-// OpenOptions
-
-OpenOptions&
-OpenOptions::read() {
-  options.read = true;
-  return *this;
-}
-OpenOptions&
-OpenOptions::write() {
-  options.write = true;
-  return *this;
-}
-OpenOptions&
-OpenOptions::truncate() {
-  options.truncate = true;
-  return *this;
-}
-OpenOptions&
-OpenOptions::create() {
-  options.create = true;
-  return *this;
-}
-OpenOptions&
-OpenOptions::append() {
-  options.append = true;
-  return *this;
-}
-
 // fstream
 
 fstream::fstream() noexcept :

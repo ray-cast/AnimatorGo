@@ -1,6 +1,7 @@
 // File: virtual_dirs.h
 // Author: PENGUINLIONG
 #include <fstream>
+#include <filesystem>
 #include <cassert>
 #include "octoon/io/virtual_dirs.h"
 #include "octoon/io/mstream.h"
@@ -19,14 +20,16 @@ translate_opts(const OpenOptions& opts) {
   if (opts.options.read) {
     rv |= std::ios_base::in;
   }
-  if (opts.options.write || opts.options.create) {
+  if (opts.options.write)
     rv |= std::ios_base::out;
-  }
-  if (opts.options.append) {
-    rv |= std::ios_base::app;
-  }
-  if (opts.options.truncate) {
-    rv |= std::ios_base::trunc;
+    // `opts.options.create` is not checked, since `std::ios_base::out` always
+    // try to create the file.
+    if (opts.options.append) {
+      rv |= std::ios_base::app;
+    }
+    if (opts.options.truncate) {
+      rv |= std::ios_base::trunc;
+    }
   }
   return rv;
 }
@@ -45,7 +48,7 @@ public:
     return opts_.options.read;
   }
   bool can_write() {
-    return opts_.options.write || opts_.options.create;
+    return opts_.options.write;
   }
   bool can_seek() {
     return true;
@@ -102,6 +105,45 @@ base_dir_(base_dir) {
 }
 std::unique_ptr<stream>
 LocalDir::open(const Orl& orl, const OpenOptions& options) {
+  auto rv_stream = std::make_unique<detail::LocalFileStream>();
+  if (rv_stream->open(make_path(orl), options)) {
+    return rv_stream;
+  } else {
+    return nullptr;
+  }
+}
+bool
+LocalDir::remove(const Orl& orl, ItemType type) {
+  auto path = make_path(orl);
+  auto status = std::filesystem::status(path);
+  if (std::filesystem::file_type::not_found) {
+    return false;
+  }
+  if (type == ItemType::File &&
+    status.type() == std::filesystem::file_type::regular) {
+    return std::filesystem::remove(path);
+  }
+  if (type == ItemType::Directory &&
+    status.type() == std::filesystem::file_type::directory) {
+    return std::filesystem::remove_all(path);
+  }
+  return false;
+}
+bool
+LocalDir::exists(const Orl& orl) {
+  auto status = std::filesystem::status(make_path(orl));
+  switch (status.type()) {
+   case std::filesystem::file_type::regular:
+    return ItemType::File;
+   case std::filesystem::file_type::directory:
+    return ItemType::Directory;
+   default:
+    return ItemType::NA;
+  }
+}
+
+std::string
+LocalDir::make_path(const Orl& orl) const {
   std::string rv;
   auto path = orl.path();
   if (path.back() != '/') {
@@ -114,25 +156,48 @@ LocalDir::open(const Orl& orl, const OpenOptions& options) {
     rv.append(base_dir_);
     rv.append(path);
   }
-  auto rv_stream = std::make_unique<detail::LocalFileStream>();
-  rv_stream->open(path, options);
-  return rv_stream;
+  return rv;
 }
 
 // ZipArchive
 
 ZipArchive::ZipArchive(const std::string& zip_file) :
-  unzipper_(new zipper::Unzipper(zip_file)) {
+  unzipper_(nullptr),
+  entries_(nullptr) {
+  try {
+    unzipper_ = new zipper::Unzipper(zip_file);
+  } catch (const std::exception&) {
+  }
+  entries_ = new std::vector<zipper::ZipEntry>(std::move(unzipper_.entries()));
 }
 ZipArchive::~ZipArchive() {
-  delete unzipper_;
+  delete ((zipper::Unzipper*)unzipper_);
+  delete ((std::vector<zipper::ZipEntry>*)entries_);
 }
 std::unique_ptr<stream>
-ZipArchive::open(const Orl& orl, const OpenOptions& options) {
+ZipArchive::open(const Orl& orl, const OpenOptions& opts) {
   std::vector<uint8_t> buf;
+  // Zip archives are read-only.
+  if (opts.options.write) {
+    return nullptr;
+  }
+  if (unzipper_ == nullptr) return nullptr;
   assert(reinterpret_cast<zipper::Unzipper*>(unzipper_)
     ->extractEntryToMemory(orl.path(), buf));
   return std::make_unique<mstream>(buf);
+}
+bool
+ZipArchive::remove(const Orl& orl, ItemType type) {
+  return false;
+}
+ItemType
+ZipArchive::exists(const Orl& orl) {
+  for (auto entry : entries) {
+    if (entry.name == orl.path()) {
+      return ItemType::File;
+    }
+  }
+  return ItemType::NA;
 }
 
 } // namespace io

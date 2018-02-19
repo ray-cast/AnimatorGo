@@ -12,24 +12,49 @@ namespace octoon {
 namespace io {
 
 /*
+ * File system item types supported by `octoon-io`. This type is used to ensure
+ * all FS operations are adopted as expected. `NA` stands for 'not available',
+ * meaning that the file was not found or of a type out of capability of
+ * `octoon-io`.
+ */
+enum class ItemType {
+  File,
+  Directory,
+  NA
+};
+
+/*
  * A virtual directory in `FileSystem`. Different variants of virtual
  * directories are distinguished by URI scheme.
  */
 class VirtualDir {
  public:
   /*
-   * Open a file in current virtual directory.
+   * Open a file in current virtual directory. For writing, all hierarchy of
+   * absent directory will be created. This operation targets files only.
+   *
+   * Returns:
+   *   A pointer to general stream created if succeeded. `nullptr` otherwise.
+   *
    */
   virtual std::unique_ptr<stream> open(const Orl& orl,
                                        const OpenOptions& options) = 0;
   /*
-   * Remove a file in current virtual directory.
+   * Remove an item in current virtual directory if and only if it has the
+   * corresponding `type`. Type `NA` is always rejected.
+   *
+   * Returns:
+   *   `true` if the file located at `orl` is successfully removed or the file
+   *   doesn't exist.
    */
-  virtual bool remove(const Orl& orl) = 0;
+  virtual bool remove(const Orl& orl, ItemType type = ItemType::File) = 0;
   /*
    * Test if a file exists in current virtual directory.
+   *
+   * Returns:
+   *   Type of file found via `orl`. `Unknown` if the item doesn't exist.
    */
-  virtual bool exists(const Orl& orl) = 0;
+  virtual ItemType exists(const Orl& orl) = 0;
 };
 using VirtualDirPtr = std::shared_ptr<VirtualDir>;
 
@@ -106,6 +131,11 @@ public:
 
   OpenOptions& read();
   OpenOptions& write();
+  /*
+   * The following flags depends on `write`. Any call to these helpers will
+   * automatically set `write` to true. If `write` is `false`, any `VirtualDir`
+   * SHOULD NOT check the following flags.
+   */
   OpenOptions& truncate();
   OpenOptions& create();
   OpenOptions& append();

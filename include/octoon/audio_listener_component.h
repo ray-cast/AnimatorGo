@@ -14,9 +14,20 @@ namespace octoon
 		AudioListenerComponent() noexcept;
 		~AudioListenerComponent();
 
-		virtual GameComponentPtr clone() const noexcept;
+		void set_volume(float volume) noexcept;
+        float get_volume() const noexcept;
 
+        void set_translate(const math::float3& translate) noexcept;
+        void set_velocity(const math::float3& velocity) noexcept;
+        void set_orientation(const math::float3& forward, const math::float3& up) noexcept;
+
+        void get_translate(math::float3& translate) noexcept;
+        void get_velocity(math::float3& velocity) noexcept;
+        void get_orientation(math::float3& forward, math::float3& up) noexcept;
+
+		virtual GameComponentPtr clone() const noexcept;
 	private:
+		std::shared_ptr<audio::AudioListener> audio_listener;
 	};
 }
 

@@ -1,4 +1,5 @@
 #include <octoon/game_component.h>
+#include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
 {
@@ -112,6 +113,12 @@ namespace octoon
 	GameComponent::get_name() const noexcept
 	{
 		return name_;
+	}
+
+	GameComponentPtr
+	GameComponent::instantiate(GameComponent* component) except
+	{
+		return octoon::runtime::rtti::instantiate(component);
 	}
 
 	void

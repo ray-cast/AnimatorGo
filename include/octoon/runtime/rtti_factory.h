@@ -62,27 +62,40 @@ namespace octoon
 		namespace rtti
 		{
 			template<typename T>
-			std::shared_ptr<T> make_shared(const std::string& name)
+			inline std::shared_ptr<T> make_shared(const std::string& name)
 			{
 				return RttiFactory::instance()->make_shared<T>(name);
 			}
 
 			template<typename T>
-			std::shared_ptr<T> make_shared(const char* name)
+			inline std::shared_ptr<T> make_shared(const char* name)
 			{
 				return RttiFactory::instance()->make_shared<T>(name);
 			}
 
 			template<typename T>
-			std::unique_ptr<T> make_unique(const std::string& name)
+			inline std::unique_ptr<T> make_unique(const std::string& name)
 			{
 				return RttiFactory::instance()->make_unique<T>(name);
 			}
 
 			template<typename T>
-			std::unique_ptr<T> make_unique(const char* name)
+			inline std::unique_ptr<T> make_unique(const char* name)
 			{
 				return RttiFactory::instance()->make_unique<T>(name);
+			}
+
+			template<typename T, typename = std::enable_if_t<std::is_base_of_v<RttiInterface, T>>>
+			inline std::shared_ptr<T> instantiate(const T* self)
+			{
+				assert(self);
+				return self->rtti()->create()->downcast_pointer<T>();
+			}
+
+			template<typename T, typename = std::enable_if_t<std::is_base_of_v<RttiInterface, T>>>
+			inline std::shared_ptr<T> instantiate(const T& self)
+			{
+				return instantiate(&self);
 			}
 		}
 	}

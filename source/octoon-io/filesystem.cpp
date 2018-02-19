@@ -19,15 +19,18 @@ sanitize_path(const std::string& path) {
 #endif
     switch (next - beg) {
      case 0: // Ignore Empty segment.
+      beg = next + 1;
       continue;
      case 1: // Ignore `.` segment.
       if (path[beg] == '.') {
+        beg = next + 1;
         continue;
       }
       break;
      case 2: // Met `..`, trace back to parent.
       if (path[beg] == '.' && path[beg + 1] == '.') {
           rv.resize(rv.find_last_of("/", rv.size()));
+          beg = next + 1;
         continue;
       }
       break;

@@ -29,8 +29,11 @@ bool
 fstream::open(const Orl& orl, const OpenOptions& options) {
   inner_ = nullptr; // Re-open should stash the previous one.
   auto vdir = fs_->get(orl);
+  if (vdir == nullptr) {
+    return false;
+  }
   inner_ = vdir->open(orl, options);
-  return inner_ == nullptr;
+  return inner_ != nullptr;
 }
 void
 fstream::close() {
@@ -40,15 +43,15 @@ fstream::close() {
 
 bool
 fstream::can_read() {
-  return true;
+  return inner_ != nullptr && inner_->can_read();
 }
 bool
 fstream::can_write() {
-  return true;
+  return inner_ != nullptr && inner_->can_write();
 }
 bool
 fstream::can_seek() {
-  return true;
+  return inner_ != nullptr && inner_->can_seek();
 }
 
 size_t

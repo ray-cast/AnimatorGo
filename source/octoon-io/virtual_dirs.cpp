@@ -7,6 +7,13 @@
 #include "octoon/io/mstream.h"
 #include "zipper/unzipper.h"
 
+namespace std {
+namespace filesystem {
+// Expose symbols.
+using namespace std::experimental::filesystem;
+}
+}
+
 namespace octoon {
 namespace io {
 
@@ -20,7 +27,7 @@ translate_opts(const OpenOptions& opts) {
   if (opts.options.read) {
     rv |= std::ios_base::in;
   }
-  if (opts.options.write)
+  if (opts.options.write) {
     rv |= std::ios_base::out;
     // `opts.options.create` is not checked, since `std::ios_base::out` always
     // try to create the file.
@@ -115,21 +122,21 @@ LocalDir::open(const Orl& orl, const OpenOptions& options) {
 bool
 LocalDir::remove(const Orl& orl, ItemType type) {
   auto path = make_path(orl);
-  auto status = std::filesystem::status(path);
-  if (std::filesystem::file_type::not_found) {
+  auto status = std::filesystem::status(path).type();
+  if (status == std::filesystem::file_type::not_found) {
     return false;
   }
   if (type == ItemType::File &&
-    status.type() == std::filesystem::file_type::regular) {
+    status == std::filesystem::file_type::regular) {
     return std::filesystem::remove(path);
   }
   if (type == ItemType::Directory &&
-    status.type() == std::filesystem::file_type::directory) {
+    status == std::filesystem::file_type::directory) {
     return std::filesystem::remove_all(path);
   }
   return false;
 }
-bool
+ItemType
 LocalDir::exists(const Orl& orl) {
   auto status = std::filesystem::status(make_path(orl));
   switch (status.type()) {
@@ -166,9 +173,11 @@ ZipArchive::ZipArchive(const std::string& zip_file) :
   entries_(nullptr) {
   try {
     unzipper_ = new zipper::Unzipper(zip_file);
+    entries_ = new std::vector<zipper::ZipEntry>(
+      std::move(((zipper::Unzipper*)unzipper_)->entries())
+    );
   } catch (const std::exception&) {
   }
-  entries_ = new std::vector<zipper::ZipEntry>(std::move(unzipper_.entries()));
 }
 ZipArchive::~ZipArchive() {
   delete ((zipper::Unzipper*)unzipper_);
@@ -192,7 +201,8 @@ ZipArchive::remove(const Orl& orl, ItemType type) {
 }
 ItemType
 ZipArchive::exists(const Orl& orl) {
-  for (auto entry : entries) {
+  if (entries_ == nullptr) return ItemType::NA;  
+  for (auto entry : *(std::vector<zipper::ZipEntry>*)entries_) {
     if (entry.name == orl.path()) {
       return ItemType::File;
     }

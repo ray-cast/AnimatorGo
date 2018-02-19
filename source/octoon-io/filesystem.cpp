@@ -7,6 +7,38 @@
 namespace octoon {
 namespace io {
 
+std::string
+sanitize_path(const std::string& path) {
+  std::string rv;
+  size_t beg = 0;
+  size_t next = 0;
+#ifdef OCTOON_BUILD_PLATFORM_WINDOWS
+  while ((next = path.find_first_of("/\\", beg)) != std::string::npos) {
+#else
+  while ((next = path.find_first_of('/', beg)) != std::string::npos) {
+#endif
+    switch (next - beg) {
+     case 0: // Ignore Empty segment.
+      continue;
+     case 1: // Ignore `.` segment.
+      if (path[beg] == '.') {
+        continue;
+      }
+      break;
+     case 2: // Met `..`, trace back to parent.
+      if (path[beg] == '.' && path[beg + 1] == '.') {
+          rv.resize(rv.find_last_of("/", rv.size()));
+        continue;
+      }
+      break;
+    }
+    rv.push_back('/');
+    rv.append(beg, next);
+    beg = next + 1; // Search from the next char to '/'.
+  }
+  return rv;
+}
+
 // Orl
 
 bool Orl::parse(const std::string& orl, Orl& out) {
@@ -14,42 +46,41 @@ bool Orl::parse(const std::string& orl, Orl& out) {
   if (vdir_size == orl.size()) {
     return false;
   }
-  size_t path_size = orl.size() - vdir_size - 1;
-  if (vdir_size == 0 || path_size == 0) {
+  auto san_vdir = sanitize_path(orl.substr(0, vdir_size));
+  if (san_vdir.size() == 0) {
     return false;
   }
-  out.orl_ = orl;
-  out.colon_pos_ = vdir_size;
+  size_t path_size = orl.size() - vdir_size - 1;
+  auto san_path = sanitize_path(orl.substr(vdir_size + 1, path_size));
+  if (san_path.size() == 0 || san_path.front() == '/') {
+    return false;
+  }
+  out = Orl(san_vdir, san_path);
   return true;
 }
 Orl::Orl(const std::string& vdir, const std::string& path) :
-  orl_(),
-  colon_pos_() {
-  if (vdir.size() == 0 || path.size() == 0) {
-    return;
-  }
-  orl_.reserve(vdir.size() + 1 + path.size());
-  orl_.append(vdir);
-  orl_.push_back(':');
-  orl_.append(path);
-  colon_pos_ = vdir.size();
+  vdir_(vdir),
+  path_(path) {
 }
 bool
 Orl::is_valid() const {
-  return colon_pos_ > 0 && // `virtual_dir` not empty.
-    orl_.size() > colon_pos_ + 1; // `path` not empty.
-}
-std::string
-Orl::virtual_dir() const {
-  return orl_.substr(0, colon_pos_);
-}
-std::string
-Orl::path() const {
-  return orl_.substr(colon_pos_ + 1);
+  return vdir_.size() && path_.size() && path_.front() != '/';
 }
 const std::string&
-Orl::as_string() const {
-  return orl_;
+Orl::virtual_dir() const {
+  return vdir_;
+}
+const std::string&
+Orl::path() const {
+  return path_;
+}
+std::string
+Orl::to_string() const {
+  std::string out;
+  out.append(vdir_);
+  out.push_back(':');
+  out.append(path_);
+  return out;
 }
 
 // FileSystem
@@ -63,38 +94,6 @@ FileSystem::unreg(const std::string& vdir) {
   auto ptr = std::move(it->second);
   registry_.erase(it);
   return ptr;
-}
-std::string
-sanitize_path(const std::string& path) {
-  std::string rv;
-  auto pos = path.begin();
-  auto end = path.end();
-  if (*pos != '/') {
-    rv += "/";
-  } else {
-    ++pos;
-  }
-  while (pos != end) {
-    auto next_slash = std::find(pos, end, '/');
-    switch (std::distance(pos, next_slash)) {
-     case 1:
-      if (*pos == '.') {
-        continue;
-      }
-      break;
-     case 2:
-      if (*pos == '.' && *(pos + 1) == '.') {
-          rv.resize(rv.find_last_of("/", rv.size()));
-        continue;
-      }
-      break;
-    }
-    rv.push_back('/');
-    rv.append(pos, next_slash);
-    pos = next_slash;
-    ++pos;
-  }
-  return rv;
 }
 VirtualDirPtr
 FileSystem::get(const Orl& orl) const {

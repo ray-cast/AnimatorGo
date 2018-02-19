@@ -17,8 +17,19 @@ namespace io {
  */
 class VirtualDir {
  public:
+  /*
+   * Open a file in current virtual directory.
+   */
   virtual std::unique_ptr<stream> open(const Orl& orl,
                                        const OpenOptions& options) = 0;
+  /*
+   * Remove a file in current virtual directory.
+   */
+  virtual bool remove(const Orl& orl) = 0;
+  /*
+   * Test if a file exists in current virtual directory.
+   */
+  virtual bool exists(const Orl& orl) = 0;
 };
 using VirtualDirPtr = std::shared_ptr<VirtualDir>;
 
@@ -29,6 +40,9 @@ using VirtualDirPtr = std::shared_ptr<VirtualDir>;
  * that virtual directory, separated by a colon (`:`). For example:
  * `app-data:images/background12.png` represents file `images/background12.png`
  * in virtual directory `app-data`.
+ * 
+ * ORL's path part must be a relative one. A absolute path will be rejected when
+ * parsing.
  */
 struct Orl {
  public:
@@ -37,16 +51,26 @@ struct Orl {
   Orl(Orl&& rv) = default;
   Orl(const std::string& vdir, const std::string& path);
 
+  Orl& operator=(const Orl& lv) = default;
+
   bool is_valid() const;
+  /*
+   * Parse a ORL string into a perfectly valid ORL object.
+   * 
+   * Paths will be sanitized to protect from path traversal attack. So it's
+   * recommended to use `parse()` to create ORL objects.
+   * 
+   * Returns:
+   *   True if the string is a valid, parsable ORL; otherwise, false.
+   */
   static bool parse(const std::string& orl, Orl& out);
 
-  std::string virtual_dir() const;
-  std::string path() const;
+  const std::string& virtual_dir() const;
+  const std::string& path() const;
   
-  const std::string& as_string() const;
+  std::string to_string() const;
  private:
-  std::string orl_;
-  size_t colon_pos_;
+  std::string vdir_, path_;
 };
 
 /*

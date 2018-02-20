@@ -1,0 +1,13 @@
+#ifndef OCTOON_IMAGE_DEF_H_
+#define OCTOON_IMAGE_DEF_H_
+
+#include <octoon/runtime/platform.h>
+
+#define OCTOON_BUILD_BMP_HANDLER  1
+#define OCTOON_BUILD_DDS_HANDLER  1
+#define OCTOON_BUILD_JPG_HANDLER  1
+#define OCTOON_BUILD_PNG_HANDLER  1
+#define OCTOON_BUILD_TGA_HANDLER  1
+#define OCTOON_BUILD_HDR_HANDLER  1
+
+#endif

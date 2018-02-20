@@ -14,8 +14,8 @@ namespace octoon
 		bool open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		void close() noexcept;
 
-		bool start() noexcept;
-		void stop() noexcept;
+		void set_active(bool active) except;
+		bool get_active() const noexcept;
 
 		void set_game_listener(const GameListenerPtr& listener) noexcept;
 		const GameListenerPtr& get_game_listener() const noexcept;
@@ -28,7 +28,7 @@ namespace octoon
 		void close_scene(const std::string& name) noexcept;
 		GameScenePtr find_scene(const std::string& name) noexcept;
 
-		bool add_feature(GameFeaturePtr& feature) noexcept;
+		void add_feature(GameFeaturePtr& feature) except;
 		void remove_feature(GameFeaturePtr& feature) noexcept;
 
 		void send_input_event(const input::InputEvent& event) noexcept;
@@ -45,6 +45,7 @@ namespace octoon
 		GameServer* game_server_;
 		GameListenerPtr game_listener_;
 
+		GameFeaturePtr timer_feature_;
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
 		GameFeaturePtr gui_feature_;

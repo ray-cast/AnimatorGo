@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#	include <octoon/timer_feature.h>
+
 #if OCTOON_FEATURE_INPUT_ENABLE
 #	include <octoon/input_feature.h>
 #endif
@@ -77,25 +79,36 @@ namespace octoon
 			game_listener_->on_message("Initializing : Game Server.");
 
 		game_server_ = GameServer::instance();
-		game_server_->_set_game_app(this);
+		game_server_->set_game_app(this);
 		game_server_->set_game_listener(game_listener_);
 
-		if (!game_server_->open())
-			return false;
+#if OCTOON_FEATURE_TIMER_ENABLE
+		timer_feature_ = std::make_shared<TimerFeature>();
+#endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
 		input_feature_ = std::make_shared<InputFeature>(hwnd);
 #endif
+
+#if OCTOON_FEATURE_BASE_ENABLE
 		base_feature_ = std::make_shared<GameBaseFeatures>();
+#endif
 
 #if OCTOON_FEATURE_UI_ENABLE
 		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
 #endif
 
+#if OCTOON_FEATURE_TIMER_ENABLE
+		this->add_feature(timer_feature_);
+#endif
+
 #if OCTOON_FEATURE_INPUT_ENABLE
 		this->add_feature(input_feature_);
 #endif
+
+#if OCTOON_FEATURE_BASE_ENABLE
 		this->add_feature(base_feature_);
+#endif
 
 #if OCTOON_FEATURE_UI_ENABLE
 		this->add_feature(gui_feature_);
@@ -113,12 +126,26 @@ namespace octoon
 
 		if (game_server_)
 		{
-			game_server_->close();
+			game_server_->cleanup_all();
 			game_server_ = nullptr;
 		}
 
 		if (game_listener_)
 			game_listener_->on_message("Shutdown : IO Server.");
+	}
+
+	void
+	GameApplication::set_active(bool active) except
+	{
+		assert(game_server_);
+		game_server_->set_active(active);
+	}
+
+	bool
+	GameApplication::get_active() const noexcept
+	{
+		assert(game_server_);
+		return game_server_->get_active();
 	}
 
 	void
@@ -131,21 +158,6 @@ namespace octoon
 	GameApplication::get_game_listener() const noexcept
 	{
 		return game_server_->get_game_listener();
-	}
-
-	bool
-	GameApplication::start() noexcept
-	{
-		if (game_server_)
-			return game_server_->start();
-		return false;
-	}
-
-	void
-	GameApplication::stop() noexcept
-	{
-		if (game_server_)
-			game_server_->stop();
 	}
 
 	bool
@@ -190,11 +202,11 @@ namespace octoon
 		return game_server_->find_scene(name);
 	}
 
-	bool
-	GameApplication::add_feature(GameFeaturePtr& feature) noexcept
+	void
+	GameApplication::add_feature(GameFeaturePtr& feature) except
 	{
 		assert(game_server_);
-		return game_server_->add_feature(feature);
+		game_server_->add_feature(feature);
 	}
 
 	void

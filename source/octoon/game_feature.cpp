@@ -7,7 +7,7 @@ namespace octoon
 	OctoonImplementSubInterface(GameFeature, runtime::RttiInterface, "GameFeature")
 
 	GameFeature::GameFeature() noexcept
-		: is_active_(false)
+		: is_actived_(false)
 		, game_server_(nullptr)
 	{
 	}
@@ -19,37 +19,56 @@ namespace octoon
 	void
 	GameFeature::set_active(bool active) except
 	{
-		if (is_active_ != active)
+		if (is_actived_ != active)
 		{
 			if (active)
 				this->on_activate();
 			else
 				this->on_deactivate();
 
-			is_active_ = active;
+			is_actived_ = active;
 		}
 	}
 	bool
 	GameFeature::get_active() noexcept
 	{
-		return is_active_;
-	}
-
-	void
-	GameFeature::set_game_listener(const GameListenerPtr& listener) noexcept
-	{
-		game_listener_ = listener;
+		return is_actived_;
 	}
 
 	const GameListenerPtr&
 	GameFeature::get_game_listener() const noexcept
 	{
-		return game_listener_;
+		assert(game_server_);
+		return game_server_->get_game_listener();
+	}
+
+	GameFeaturePtr
+	GameFeature::get_feature(const runtime::Rtti* type) const noexcept
+	{
+		assert(game_server_);
+		assert(this->rtti() != type);
+		return game_server_->get_feature(type);
+	}
+
+	GameFeaturePtr
+	GameFeature::get_feature(const runtime::Rtti& type) const noexcept
+	{
+		assert(game_server_);
+		assert(this->rtti() != &type);
+		return game_server_->get_feature(type);
+	}
+
+	const GameFeatures&
+	GameFeature::get_featurs() const noexcept
+	{
+		assert(game_server_);
+		return game_server_->get_features();
 	}
 
 	void
 	GameFeature::_set_game_server(GameServer* server) noexcept
 	{
+		assert(!game_server_);
 		game_server_ = server;
 	}
 

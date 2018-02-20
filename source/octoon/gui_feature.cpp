@@ -12,6 +12,8 @@
 
 #include <octoon/runtime/rtti_factory.h>
 
+#include <octoon/timer_feature.h>
+
 namespace octoon
 {
 	OctoonImplementSubClass(GuiFeature, GameFeature, "GuiFeature")

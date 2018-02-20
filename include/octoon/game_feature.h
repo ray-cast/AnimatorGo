@@ -7,7 +7,7 @@ namespace octoon
 {
 	class OCTOON_EXPORT GameFeature : public runtime::RttiInterface
 	{
-		OctoonDeclareSubInterface(GameFeature, MessageListener)
+		OctoonDeclareSubInterface(GameFeature, runtime::RttiInterface)
 	public:
 		GameFeature() noexcept;
 		virtual ~GameFeature() noexcept;
@@ -15,8 +15,13 @@ namespace octoon
 		void set_active(bool active)  except;
 		bool get_active() noexcept;
 
-		void set_game_listener(const GameListenerPtr& listener) noexcept;
 		const GameListenerPtr& get_game_listener() const noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameFeature, T>>>
+		std::shared_ptr<T> get_feature() const noexcept { return std::dynamic_pointer_cast<T>(this->get_feature(T::RTTI)); }
+		GameFeaturePtr get_feature(const runtime::Rtti* rtti) const noexcept;
+		GameFeaturePtr get_feature(const runtime::Rtti& rtti) const noexcept;
+		const GameFeatures& get_featurs() const noexcept;
 
 		GameServer* get_game_server() noexcept;
 
@@ -44,7 +49,7 @@ namespace octoon
 		GameFeature& operator=(const GameFeature&) noexcept = delete;
 
 	private:
-		bool is_active_;
+		bool is_actived_;
 
 		GameServer* game_server_;
 		GameListenerPtr game_listener_;

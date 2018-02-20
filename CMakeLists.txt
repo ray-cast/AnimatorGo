@@ -8,8 +8,8 @@ SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir"
 SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to octoon dependencies" FORCE)
 SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon sample" FORCE)
 SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
-SET(OCTOON_PATH_ITNCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
-SET(OCTOON_PATH_HEADER ${OCTOON_PATH_ITNCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
+SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
+SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 
 # 编译选项

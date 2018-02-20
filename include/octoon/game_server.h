@@ -43,14 +43,14 @@ namespace octoon
 		const GameFeatures& get_features() const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameFeature, T>>>
-		void remove_feature() noexcept { this->remove_feature(T::getRtti()); }
+		void remove_feature() noexcept { this->remove_feature(T::RTTI); }
 		void remove_feature(const runtime::Rtti* rtti) noexcept;
 		void remove_feature(const runtime::Rtti& rtti) noexcept;
 		void remove_feature(const GameFeaturePtr& feature) noexcept;
 
 		void cleanup_all() noexcept;
-		void cleanup_scene() noexcept;
-		void cleanup_feature() noexcept;
+		void cleanup_scenes() noexcept;
+		void cleanup_features() noexcept;
 
 		void send_input_event(const input::InputEvent& event) noexcept;
 

@@ -182,7 +182,7 @@ namespace octoon
 	}
 
 	void
-	GameServer::cleanup_scene() noexcept
+	GameServer::cleanup_scenes() noexcept
 	{
 		for (auto& it : scenes_)
 		{
@@ -327,12 +327,12 @@ namespace octoon
 	void
 	GameServer::cleanup_all() noexcept
 	{
-		this->cleanup_scene();
-		this->cleanup_feature();
+		this->cleanup_scenes();
+		this->cleanup_features();
 	}
 
 	void
-	GameServer::cleanup_feature() noexcept
+	GameServer::cleanup_features() noexcept
 	{
 		for (auto& it : features_)
 		{

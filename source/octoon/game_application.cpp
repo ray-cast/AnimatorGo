@@ -6,13 +6,17 @@
 
 #include <iostream>
 
+#if OCTOON_FEATURE_TIMER_ENABLE
 #	include <octoon/timer_feature.h>
+#endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
 #	include <octoon/input_feature.h>
 #endif
 
-#include <octoon/game_base_features.h>
+#if OCTOON_FEATURE_BASE_ENABLE
+#	include <octoon/game_base_features.h>
+#endif
 
 #if OCTOON_FEATURE_UI_ENABLE
 #	include <octoon/gui_feature.h>

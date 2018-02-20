@@ -5,10 +5,10 @@
 #include <cstdint>
 #include <vector>
 #include <iostream>
+#include <octoon/runtime/platform.h>
 
 namespace octoon {
 namespace io {
-
 constexpr size_t DEFAULT_BUFFER_SIZE = 8 * 1024;
 
 enum class SeekOrigin {
@@ -18,7 +18,7 @@ enum class SeekOrigin {
 class stream;
 
 namespace detail {
-class StdStreamExt final :
+class OCTOON_EXPORT StdStreamExt final :
   public std::iostream,
   public std::streambuf {
   friend stream;
@@ -37,7 +37,7 @@ private:
 /*
  * Base of all Octoon stream types. Provide fundamental I/O functionalities.
  */
-class stream {
+class OCTOON_EXPORT stream {
 public:
   using std_stream = detail::StdStreamExt;
 
@@ -104,10 +104,7 @@ protected:
 private:
   const char* hint_ = "";
 };
-
-
 } // namespace io
 } // namespace octoon
-
 
 #endif // OCTOON_IO_STREAM_H_

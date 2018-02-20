@@ -10,7 +10,7 @@ SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon
 SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
 SET(OCTOON_PATH_TESTS ${OCTOON_PATH}/tests CACHE STRING "Adds a path to octoon tests" FORCE)
 SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
-SET(OCTOON_PATH_HEADER ${OCTOON_PATH_ITNCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
+SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 
 # 编译选项

@@ -8,12 +8,11 @@
 
 namespace octoon {
 namespace io {
-
 struct Orl;
 struct OpenOptions;
 class FileSystem;
 
-class fstream : public stream {
+class OCTOON_EXPORT fstream : public stream {
  public:
   fstream() noexcept;
   fstream(const fstream&) noexcept = delete;
@@ -27,7 +26,7 @@ class fstream : public stream {
    * and `can_seek()` SHOULD report according to the capabilities inquired in
    * `options`. Actual reports depends on implementation of virtual directories
    * resources are in. If failed, these reports are always `false`.
-   * 
+   *
    * Any attempt to open a already-opened stream are allowed. After
    * re-opening, all information about the previous opening state is lost.
    *
@@ -49,7 +48,6 @@ class fstream : public stream {
   std::shared_ptr<FileSystem> fs_;
   std::unique_ptr<stream> inner_;
 };
-
 } // namespace io
 } // namespace octoon
 

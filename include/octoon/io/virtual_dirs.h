@@ -6,11 +6,10 @@
 
 namespace octoon {
 namespace io {
-
 /*
  * Local directory mapped directly to a virtual directory.
  */
-class LocalDir : public VirtualDir {
+class OCTOON_EXPORT LocalDir : public VirtualDir {
 public:
   LocalDir(const std::string& base_dir) noexcept;
   std::unique_ptr<stream> open(const Orl& orl,
@@ -30,7 +29,7 @@ using LocalDirPtr = std::shared_ptr<LocalDir>;
  * **NOTE** Zip archives are always read-only. Any non-read options set true
  * will lead to rejection.
  */
-class ZipArchive : public VirtualDir {
+class OCTOON_EXPORT ZipArchive : public VirtualDir {
 public:
   ZipArchive(const std::string& zip_file);
   ~ZipArchive();
@@ -39,12 +38,12 @@ public:
   bool remove(const Orl& orl, ItemType type = ItemType::File) override;
   ItemType exists(const Orl& orl) override;
 private:
+
   // Hide unzipper.
   void* unzipper_;
   void* entries_;
 };
 using ZipArchivePtr = std::shared_ptr<ZipArchive>;
-
 } // namespace io
 } // namespace octoon
 

@@ -31,7 +31,8 @@ namespace octoon
 			return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI));
 		}
 
-		static GameComponentPtr instantiate(GameComponent* component) except;
+		static GameComponentPtr instantiate(const GameComponent* component) except;
+		static GameComponentPtr instantiate(const GameComponent& component) except;
 
 		virtual GameComponentPtr clone() const noexcept = 0;
 

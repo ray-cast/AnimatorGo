@@ -30,7 +30,7 @@ namespace octoon
 
 			void reset() noexcept;
 
-			void sleep(float fps) const noexcept;
+			void sleep_for_fps(float fps) const noexcept;
 
 			void update() noexcept;
 

@@ -88,7 +88,7 @@ namespace octoon
 		}
 
 		void
-		Timer::sleep(float fps) const noexcept
+		Timer::sleep_for_fps(float fps) const noexcept
 		{
 			double first = CLOCKS_PER_SEC / fps;
 			double second = this->delta() * CLOCKS_PER_SEC;

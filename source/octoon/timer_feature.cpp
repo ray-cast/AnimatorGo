@@ -70,9 +70,9 @@ namespace octoon
 	}
 
 	void
-	TimerFeature::sleep(float fps) const noexcept
+	TimerFeature::sleep_for_fps(float fps) const noexcept
 	{
-		 Timer::instance()->sleep(fps);
+		 Timer::instance()->sleep_for_fps(fps);
 	}
 
 	void

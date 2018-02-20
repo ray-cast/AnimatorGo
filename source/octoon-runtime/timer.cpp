@@ -28,12 +28,6 @@ namespace octoon
 		}
 
 		float
-		Timer::startTime() const noexcept
-		{
-			return start_time_;
-		}
-
-		float
 		Timer::elapsed() const noexcept
 		{
 			return float(std::clock()) / CLOCKS_PER_SEC - start_time_;
@@ -58,25 +52,31 @@ namespace octoon
 		}
 
 		float
-		Timer::averageFps() const noexcept
+		Timer::average_fps() const noexcept
 		{
 			return average_fps_;
 		}
 
 		float
-		Timer::appTime() const noexcept
-		{
-			return app_time_;
-		}
-
-		float
-		Timer::frameTime() const noexcept
+		Timer::delta() const noexcept
 		{
 			return frame_time_;
 		}
 
 		float
-		Timer::delta() const noexcept
+		Timer::app_time() const noexcept
+		{
+			return app_time_;
+		}
+
+		float
+		Timer::start_time() const noexcept
+		{
+			return start_time_;
+		}
+
+		float
+		Timer::frame_time() const noexcept
 		{
 			return frame_time_;
 		}

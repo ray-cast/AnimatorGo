@@ -15,17 +15,18 @@ namespace octoon
 			Timer() noexcept;
 			~Timer() noexcept;
 
-			float startTime() const noexcept;
+			float fps() const noexcept;
+			float average_fps() const noexcept;
+
+			float app_time() const noexcept;
+			float start_time() const noexcept;
+			float frame_time() const noexcept;
+
+			float delta() const noexcept;
 
 			float elapsed() const noexcept;
 			float elapsed_max() const noexcept;
 			float elapsed_min() const noexcept;
-
-			float fps() const noexcept;
-			float averageFps() const noexcept;
-			float appTime() const noexcept;
-			float frameTime() const noexcept;
-			float delta() const noexcept;
 
 			void reset() noexcept;
 

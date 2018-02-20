@@ -443,8 +443,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h))
 				throw std::exception("GameApplication::open() failed");
 
-			if (!gameApp_->start())
-				throw std::exception("GameApplication::start() failed");
+			gameApp_->set_active(true);
 
 			onWindowFocus(window_, true);
 			onWindowResize(window_, w, h);

@@ -299,7 +299,10 @@ namespace octoon
 	GameComponentPtr
 	TransformComponent::clone() const noexcept
 	{
-		return std::make_shared<TransformComponent>();
+		auto component = std::make_shared<TransformComponent>();
+		component->set_transform(this->get_transform());
+		component->set_world_transform(this->get_world_transform());
+		return component;
 	}
 
 	void

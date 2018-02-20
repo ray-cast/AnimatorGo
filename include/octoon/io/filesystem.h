@@ -10,7 +10,6 @@
 
 namespace octoon {
 namespace io {
-
 /*
  * File system item types supported by `octoon-io`. This type is used to ensure
  * all FS operations are adopted as expected. `NA` stands for 'not available',
@@ -27,7 +26,7 @@ enum class ItemType {
  * A virtual directory in `FileSystem`. Different variants of virtual
  * directories are distinguished by URI scheme.
  */
-class VirtualDir {
+class OCTOON_EXPORT VirtualDir {
  public:
   /*
    * Open a file in current virtual directory. For writing, all hierarchy of
@@ -65,11 +64,11 @@ using VirtualDirPtr = std::shared_ptr<VirtualDir>;
  * that virtual directory, separated by a colon (`:`). For example:
  * `app-data:images/background12.png` represents file `images/background12.png`
  * in virtual directory `app-data`.
- * 
+ *
  * ORL's path part must be a relative one. A absolute path will be rejected when
  * parsing.
  */
-struct Orl {
+struct OCTOON_EXPORT Orl {
  public:
   Orl() = default;
   Orl(const Orl& lv) = default;
@@ -81,10 +80,10 @@ struct Orl {
   bool is_valid() const;
   /*
    * Parse a ORL string into a perfectly valid ORL object.
-   * 
+   *
    * Paths will be sanitized to protect from path traversal attack. So it's
    * recommended to use `parse()` to create ORL objects.
-   * 
+   *
    * Returns:
    *   True if the string is a valid, parsable ORL; otherwise, false.
    */
@@ -92,7 +91,7 @@ struct Orl {
 
   const std::string& virtual_dir() const;
   const std::string& path() const;
-  
+
   std::string to_string() const;
 
   Orl Orl::parent() const;
@@ -102,9 +101,9 @@ struct Orl {
 
 /*
  * A `FileSystem` is a namespace for Octoon instance to seek for resources in
- * local storage, at remote host, or in compressed archive. 
+ * local storage, at remote host, or in compressed archive.
  */
-class FileSystem {
+class OCTOON_EXPORT FileSystem {
  public:
   /*
    * Register an entry to the filesystem, so that the file contained in that
@@ -124,7 +123,7 @@ using FilesystemPtr = std::shared_ptr<FileSystem>;
 /*
  * Options instructing virtual directories how to construct streams.
  */
-struct OpenOptions {
+struct OCTOON_EXPORT OpenOptions {
 public:
   OpenOptions() = default;
   OpenOptions(const OpenOptions&) = default;
@@ -146,8 +145,6 @@ public:
     bool read, write, truncate, create, append;
   } options;
 };
-
-
 } // namaspace io
 } // namaspace octoon
 

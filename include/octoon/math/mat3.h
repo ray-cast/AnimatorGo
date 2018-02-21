@@ -257,7 +257,7 @@ namespace octoon
 				{
 					this->right = right_;
 					this->up = up_;
-					this->forward = forward_
+					this->forward = forward_;
 					return *this;
 				}
 

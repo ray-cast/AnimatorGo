@@ -118,9 +118,12 @@ namespace octoon
 		using Uint2Array = std::vector<uint2>;
 		using Uint3Array = std::vector<uint3>;
 		using Uint4Array = std::vector<uint4>;
-		using Vector2Array = std::vector<Vector2>;
-		using Vector3Array = std::vector<Vector3>;
-		using Vector4Array = std::vector<Vector4>;
+		template<typename T>
+		using Vector2Array = std::vector<Vector2<T>>;
+		template<typename T>
+		using Vector3Array = std::vector<Vector3<T>>;
+		template<typename T>
+		using Vector4Array = std::vector<Vector4<T>>;
 		using FloatArray = std::vector<float> ;
 		using Float2Array = std::vector<float2>;
 		using Float3Array = std::vector<float3>;

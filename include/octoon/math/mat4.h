@@ -309,7 +309,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T angle, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T theta, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -949,7 +949,6 @@ namespace octoon
 		template<typename T>
 		detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
-			detail::Matrix3x3<T> m;
 			detail::Vector3<T> x = m.get_right();
 			detail::Vector3<T> y = m.get_up();
 			detail::Vector3<T> z;

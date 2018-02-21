@@ -639,13 +639,13 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 		inline detail::Vector4<T> snorm2unorm(const detail::Vector4<T>& v) noexcept
 		{
-			return V * 0.5f + 0.5f;
+			return v * 0.5f + 0.5f;
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 		inline detail::Vector4<T> unorm2snorm(const detail::Vector4<T>& v) noexcept
 		{
-			return V * 2.0f - 1.0f;
+			return v * 2.0f - 1.0f;
 		}
 
 		template <typename T>

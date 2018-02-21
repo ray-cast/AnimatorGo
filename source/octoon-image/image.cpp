@@ -1,8 +1,9 @@
 #include <octoon/image/image.h>
 #include <octoon/image/image_util.h>
-#include <octoon/math/math.h>
 
 #include "image_all.h"
+
+#include <algorithm>
 
 namespace octoon
 {

@@ -1,6 +1,8 @@
 ﻿#ifndef OCTOON_MATHUTIL_H_
 #define OCTOON_MATHUTIL_H_
 
+#include <cmath>
+#include <cfloat>
 #include <algorithm>
 #include <octoon/runtime/platform.h>
 

@@ -116,9 +116,16 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	GameComponent::instantiate(GameComponent* component) except
+	GameComponent::instantiate(const GameComponent* component) except
 	{
+		assert(component);
 		return octoon::runtime::rtti::instantiate(component);
+	}
+
+	GameComponentPtr
+	GameComponent::instantiate(const GameComponent& component) except
+	{
+		return instantiate(&component);
 	}
 
 	void

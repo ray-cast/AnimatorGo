@@ -15,15 +15,15 @@ namespace octoon
 		virtual ~InputFeature() noexcept;
 
 	private:
-		virtual void on_activate() except;
-		virtual void on_deactivate() noexcept;
+		virtual void on_activate() except override;
+		virtual void on_deactivate() noexcept override;
 
-		virtual void on_input_event(const input::InputEvent& event) noexcept;
+		virtual void on_input_event(const input::InputEvent& event) noexcept override;
 
-		virtual void on_reset() noexcept;
+		virtual void on_reset() noexcept override;
 
-		virtual void on_frame_begin() noexcept;
-		virtual void on_frame_end() noexcept;
+		virtual void on_frame_begin() noexcept override;
+		virtual void on_frame_end() noexcept override;
 
 	private:
 		InputFeature(const InputFeature&) = delete;

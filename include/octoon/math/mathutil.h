@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cfloat>
+#include <cstdint>
 #include <algorithm>
 #include <octoon/runtime/platform.h>
 

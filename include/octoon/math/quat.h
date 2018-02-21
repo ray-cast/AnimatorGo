@@ -217,15 +217,15 @@ namespace octoon
 					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
 				}
 
-				template<typename ostream, typename S, std::enable_if_t<trait::has_left_shift<ostream, S>::value, int> = 0>
-				friend ostream& operator << (ostream& os, const Quaternion<S>& v)
+				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
+				friend ostream& operator << (ostream& os, const Quaternion<T>& v)
 				{
 					os << v.x << ", " << v.y << ", " << v.z << ", " << v.w;
 					return os;
 				}
 
-				template<typename istream, typename S, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
-				friend istream& operator >> (istream& is, Quaternion<S>& v)
+				template<typename istream, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
+				friend istream& operator >> (istream& is, Quaternion<T>& v)
 				{
 					is >> v.x;
 					is.ignore(2);

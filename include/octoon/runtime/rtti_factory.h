@@ -89,7 +89,7 @@ namespace octoon
 			inline std::shared_ptr<T> instantiate(const T* self)
 			{
 				assert(self);
-				return std::dynamic_pointer_cast(self->rtti()->create());
+				return std::dynamic_pointer_cast<T>(self->rtti()->create());
 			}
 
 			template<typename T, typename = std::enable_if_t<std::is_base_of_v<RttiInterface, T>>>

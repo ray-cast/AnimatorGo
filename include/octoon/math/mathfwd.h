@@ -34,20 +34,13 @@ namespace octoon
 		}
 
 		// default
-		template<typename T>
-		using Vector2 = detail::Vector2<T>;
-		template<typename T>
-		using Vector3 = detail::Vector3<T>;
-		template<typename T>
-		using Vector4 = detail::Vector4<T>;
-		template<typename T>
-		using Matrix2x2 = detail::Matrix2x2<T>;
-		template<typename T>
-		using Matrix3x3 = detail::Matrix3x3<T>;
-		template<typename T>
-		using Matrix4x4 = detail::Matrix4x4<T>;
-		template<typename T>
-		using Quaternion = detail::Quaternion<T>;
+		using Vector2 = detail::Vector2<float>;
+		using Vector3 = detail::Vector3<float>;
+		using Vector4 = detail::Vector4<float>;
+		using Matrix2x2 = detail::Matrix2x2<float>;
+		using Matrix3x3 = detail::Matrix3x3<float>;
+		using Matrix4x4 = detail::Matrix4x4<float>;
+		using Quaternion = detail::Quaternion<float>;
 
 		// float
 		using float2x2 = detail::Matrix2x2<float>;
@@ -118,12 +111,9 @@ namespace octoon
 		using Uint2Array = std::vector<uint2>;
 		using Uint3Array = std::vector<uint3>;
 		using Uint4Array = std::vector<uint4>;
-		template<typename T>
-		using Vector2Array = std::vector<Vector2<T>>;
-		template<typename T>
-		using Vector3Array = std::vector<Vector3<T>>;
-		template<typename T>
-		using Vector4Array = std::vector<Vector4<T>>;
+		using Vector2Array = std::vector<Vector2>;
+		using Vector3Array = std::vector<Vector3>;
+		using Vector4Array = std::vector<Vector4>;
 		using FloatArray = std::vector<float> ;
 		using Float2Array = std::vector<float2>;
 		using Float3Array = std::vector<float3>;

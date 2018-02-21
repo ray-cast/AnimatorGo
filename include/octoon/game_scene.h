@@ -36,8 +36,8 @@ namespace octoon
 			RootObject(GameScene* scene) noexcept;
 			virtual ~RootObject() noexcept;
 
-			virtual GameScene* get_game_scene() noexcept;
-			virtual const GameScene* get_game_scene() const noexcept;
+			virtual GameScene* get_game_scene() noexcept override;
+			virtual const GameScene* get_game_scene() const noexcept override;
 
 		private:
 			GameScene* scene_;

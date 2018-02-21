@@ -146,6 +146,27 @@ namespace octoon
 		return transform_inverse_;
 	}
 
+	const math::float3&
+	TransformComponent::get_right() const noexcept
+	{
+		update_world_transform();
+		return math::right(transform_);
+	}
+
+	const math::float3&
+	TransformComponent::get_up() const noexcept
+	{
+		update_world_transform();
+		return math::up(transform_);
+	}
+
+	const math::float3&
+	TransformComponent::get_forward() const noexcept
+	{
+		update_world_transform();
+		return math::forward(transform_);
+	}
+
 	void
 	TransformComponent::set_local_translate(const math::float3& pos) noexcept
 	{
@@ -273,27 +294,6 @@ namespace octoon
 	{
 		this->update_local_transform();
 		return local_transform_inverse_;
-	}
-
-	const math::float3&
-	TransformComponent::get_right() const noexcept
-	{
-		update_world_transform();
-		return math::right(transform_);
-	}
-
-	const math::float3&
-	TransformComponent::get_up() const noexcept
-	{
-		update_world_transform();
-		return math::up(transform_);
-	}
-
-	const math::float3&
-	TransformComponent::get_forward() const noexcept
-	{
-		update_world_transform();
-		return math::forward(transform_);
 	}
 
 	GameComponentPtr

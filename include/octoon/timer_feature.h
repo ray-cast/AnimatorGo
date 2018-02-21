@@ -2,6 +2,7 @@
 #define OCTOON_TIMER_FEATURE_H_
 
 #include <octoon/game_feature.h>
+#include <octoon/runtime/timer.h>
 
 namespace octoon
 {
@@ -28,14 +29,17 @@ namespace octoon
 		void sleep_for_fps(float fps) const noexcept;
 
 	private:
-		void on_activate() except;
-		void on_deactivate() noexcept;
+		void on_activate() except override;
+		void on_deactivate() noexcept override;
 
-		void on_frame_begin() noexcept;
+		void on_frame_begin() noexcept override;
 
 	private:
 		TimerFeature(const TimerFeature&) = delete;
 		TimerFeature& operator=(const TimerFeature&) = delete;
+
+	private:
+		std::shared_ptr<runtime::Timer> timer_;
 	};
 }
 

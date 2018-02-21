@@ -2,6 +2,7 @@
 // Author: PENGUINLIONG
 #include <cassert>
 #include <utility>
+#include <cstring>
 #include "octoon/io/mstream.h"
 
 namespace octoon {

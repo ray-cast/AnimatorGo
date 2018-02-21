@@ -3,6 +3,8 @@
 #include <imgui.h>
 #include <imgui_dock.h>
 
+#include <cstring> // std::memcpy
+
 using namespace octoon::graphics;
 
 namespace octoon

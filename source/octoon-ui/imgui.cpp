@@ -5,6 +5,8 @@
 #include <imgui_internal.h>
 #include <imgui_user.h>
 
+#include <cstring> // std::memcpy
+
 namespace octoon
 {
 	namespace imgui

@@ -20,6 +20,8 @@ SET(CORE_LIST
 	${HEADER_PATH}/rtti_macros.h
 	${HEADER_PATH}/timer.h
 	${SOURCE_PATH}/timer.cpp
+	${HEADER_PATH}/except.h
+	${SOURCE_PATH}/except.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

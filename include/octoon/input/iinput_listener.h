@@ -11,8 +11,8 @@ namespace octoon
 		{
 			OctoonDeclareSubInterface(IInputListener, runtime::RttiInterface)
 		public:
-			IInputListener() noexcept = default;
-			virtual ~IInputListener() = default;
+			IInputListener() noexcept;
+			virtual ~IInputListener();
 
 			virtual void on_attach() noexcept;
 			virtual void on_detach() noexcept;

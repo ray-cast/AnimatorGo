@@ -1,4 +1,5 @@
 #include <octoon/input/input_mouse.h>
+#include <cstring> // std::memset
 
 namespace octoon
 {

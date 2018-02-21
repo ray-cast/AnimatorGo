@@ -55,7 +55,7 @@ namespace octoon
 				auto location = it->getGraphicsParam()->getBindingPoint();
 				switch (type)
 				{
-				case GraphicsUniformType::Bool:
+				case GraphicsUniformType::Boolean:
 					glProgramUniform1i(program, location, it->getBool());
 					break;
 				case GraphicsUniformType::Int:
@@ -202,7 +202,7 @@ namespace octoon
 					auto type = activeUniformSet->getGraphicsParam()->getType();
 					switch (type)
 					{
-					case GraphicsUniformType::Bool:
+					case GraphicsUniformType::Boolean:
 						(*it)->uniform1b(activeUniformSet->getBool());
 						break;
 					case GraphicsUniformType::Int:

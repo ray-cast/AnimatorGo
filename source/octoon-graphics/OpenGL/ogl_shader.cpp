@@ -9,6 +9,8 @@
 #	include <d3dcompiler.h>
 #endif
 
+#include <cstring>
+
 namespace octoon
 {
 	namespace graphics
@@ -81,7 +83,7 @@ namespace octoon
 		OGLGraphicsUniform::OGLGraphicsUniform() noexcept
 			: _offset(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsUniformType::None)
+			, _type(GraphicsUniformType::Null)
 			, _stageFlags(0)
 		{
 		}
@@ -793,7 +795,7 @@ namespace octoon
 				bool isArray = strstr(name.c_str(), "[") != nullptr;
 				if (type == GL_BOOL)
 				{
-					return GraphicsUniformType::Bool;
+					return GraphicsUniformType::Boolean;
 				}
 				else if (type == GL_UNSIGNED_INT)
 				{
@@ -903,7 +905,7 @@ namespace octoon
 				else
 				{
 					assert(false);
-					return GraphicsUniformType::None;
+					return GraphicsUniformType::Null;
 				}
 			}
 		}

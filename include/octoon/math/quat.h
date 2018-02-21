@@ -414,13 +414,13 @@ namespace octoon
 		template<typename T>
 		inline detail::Quaternion<T> min(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
 		{
-			return Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+			return detail::Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 		}
 
 		template<typename T>
 		inline  detail::Quaternion<T> max(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
 		{
-			return Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+			return detail::Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 		}
 	}
 }

@@ -10,6 +10,7 @@
 #include <octoon/ui/imgui.h>
 #include <octoon/ui/imgui_system.h>
 
+#include <octoon/runtime/except.h>
 #include <octoon/runtime/rtti_factory.h>
 
 #include <octoon/timer_feature.h>
@@ -80,10 +81,10 @@ namespace octoon
 	GuiFeature::on_activate() except
 	{
 		if (!imgui::System::instance()->open(window_))
-			throw std::exception("GuiSystem::open() fail");
+			throw runtime::failure("GuiSystem::open() fail");
 
 		if (!imgui::System::instance()->load_font("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
-			throw std::exception("GuiSystem::load_font() fail");
+			throw runtime::failure("GuiSystem::load_font() fail");
 
 		imgui::System::instance()->set_viewport(width_, height_);
 		imgui::System::instance()->set_framebuffer_scale(framebuffer_w_, framebuffer_h_);

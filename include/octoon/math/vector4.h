@@ -765,7 +765,7 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 		inline detail::Vector4<T> floor(const detail::Vector4<T>& v) noexcept
 		{
-			return Vector4<T>(std::floor(v.x), std::floor(v.y), std::floor(v.z), std::floor(v.w));
+			return detail::Vector4<T>(std::floor(v.x), std::floor(v.y), std::floor(v.z), std::floor(v.w));
 		}
 	}
 }

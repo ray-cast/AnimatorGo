@@ -2,10 +2,12 @@
 #include "ogl_device.h"
 
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-#include "wgl_swapchain.h"
+#	include "wgl_swapchain.h"
 #endif
 
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 OCTOON_C_LINKAGE OCTOON_EXPORT DWORD NvOptimusEnablement = 0x00000001;
+#endif
 
 namespace octoon
 {

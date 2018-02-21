@@ -30,6 +30,7 @@ namespace octoon
 		GameObject* get_parent() const noexcept;
 
 		void add_child(GameObjectPtr& child) noexcept;
+		void add_child(GameObjectPtr&& child) noexcept;
 		void remove_child(GameObjectPtr& child) noexcept;
 		void cleanup_children() noexcept;
 		GameObjectPtr find_child(const std::string& name, bool recurse = true) noexcept;

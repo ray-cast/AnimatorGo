@@ -29,6 +29,10 @@ namespace octoon
 		const math::float4x4& get_transform() const noexcept;
 		const math::float4x4& get_transform_inverse() const noexcept;
 
+		const math::float3& get_right() const noexcept;
+		const math::float3& get_up() const noexcept;
+		const math::float3& get_forward() const noexcept;
+
 		void set_local_translate(const math::float3& v) noexcept;
 		void set_local_translate_accum(const math::float3& v) noexcept;
 		const math::float3& get_local_translate() const noexcept;
@@ -47,15 +51,11 @@ namespace octoon
 		const math::float4x4& get_local_transform() const noexcept;
 		const math::float4x4& get_local_transform_inverse() const noexcept;
 
-		const math::float3& get_right() const noexcept;
-		const math::float3& get_up() const noexcept;
-		const math::float3& get_forward() const noexcept;
-
 		virtual GameComponentPtr clone() const noexcept;
 
 	private:
-		void on_move_before() except;
-		void on_move_after() except;
+		void on_move_before() except override;
+		void on_move_after() except override;
 
 	private:
 		void update_local_children() const noexcept;

@@ -94,7 +94,7 @@ namespace octoon
 			double second = this->delta() * CLOCKS_PER_SEC;
 			if (first > second)
 			{
-				int sleep = (int)round(first - second);
+				int sleep = (int)std::round(first - second);
 				if (sleep > 0)
 				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(sleep));

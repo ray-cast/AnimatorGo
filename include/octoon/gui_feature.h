@@ -20,14 +20,14 @@ namespace octoon
 		void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
 	private:
-		void on_activate() except;
-		void on_deactivate() noexcept;
+		void on_activate() except override;
+		void on_deactivate() noexcept override;
 
-		void on_input_event(const input::InputEvent& event) noexcept;
+		void on_input_event(const input::InputEvent& event) noexcept override;
 
-		void on_frame_begin() noexcept;
-		void on_frame() noexcept;
-		void on_frame_end() noexcept;
+		void on_frame_begin() noexcept override;
+		void on_frame() noexcept override;
+		void on_frame_end() noexcept override;
 
 	private:
 		WindHandle window_;

@@ -3,13 +3,13 @@
 
 #include <ctime>
 #include <memory>
-#include <octoon/runtime/singleton.h>
+#include <octoon/runtime/platform.h>
 
 namespace octoon
 {
 	namespace runtime
 	{
-		class OCTOON_EXPORT Timer final : public Singleton<Timer>
+		class OCTOON_EXPORT Timer final
 		{
 		public:
 			Timer() noexcept;
@@ -54,8 +54,6 @@ namespace octoon
 
 			float fps_array_[10];
 		};
-
-		typedef std::shared_ptr<class Timer> TimerPtr;
 	}
 }
 

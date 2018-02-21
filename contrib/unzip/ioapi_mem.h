@@ -46,7 +46,7 @@ typedef struct ourmemory_s {
     int grow;         /* Growable memory buffer */
 } ourmemory_t;
 
-void fill_memory_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def, ourmemory_t *ourmem));
+ZEXTERN void ZEXPORT fill_memory_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def, ourmemory_t *ourmem));
 
 #ifdef __cplusplus
 }

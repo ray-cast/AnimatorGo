@@ -26,7 +26,6 @@ namespace octoon
 			return val_;
 		}
 
-
 		failure::failure(const error_code& code) noexcept
 			: code_(code)
 		{
@@ -43,31 +42,27 @@ namespace octoon
 		{
 		}
 
-		failure::failure(const char* msg, const char* stack, const error_code& code) noexcept
-			: message_(msg)
-			, stack_(stack)
-			, code_(code)
-		{
-		}
-
 		failure::failure(const std::string& msg, const error_code& code) noexcept
 			: message_(msg)
 			, code_(code)
 		{
 		}
 
-		failure::failure(const std::string& msg, const std::string& stack, const error_code& code) noexcept
-			: message_(msg)
-			, stack_(stack)
+		failure::failure(std::string&& msg, const error_code& code) noexcept
+			: message_(std::move(msg))
 			, code_(code)
+		{
+		}
+
+		failure::failure(std::string&& msg, error_code&& code) noexcept
+			: message_(std::move(msg))
+			, code_(std::move(code))
 		{
 		}
 
 		failure::failure(failure&& move) noexcept
 			: message_(std::move(move.message_))
-			, stack_(std::move(move.stack_))
 			, code_(std::move(move.code_))
-			, info_(std::move(move.info_))
 		{
 		}
 
@@ -75,22 +70,16 @@ namespace octoon
 		{
 		}
 
-		const char*
+		const std::string&
 		failure::message() const noexcept
 		{
-			return message_.c_str();
-		}
-
-		const char*
-		failure::stack() const noexcept
-		{
-			return stack_.c_str();
+			return message_;
 		}
 
 		const char*
 		failure::what() const noexcept
 		{
-			return info_.c_str();
+			return message_.c_str();
 		}
 
 		const error_code&

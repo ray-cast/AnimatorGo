@@ -46,14 +46,13 @@ namespace octoon
 			failure(const error_code& code) noexcept;
 			failure(const error_code::int_type& code) noexcept;
 			failure(const char* msg, const error_code& code = error_code::none) noexcept;
-			failure(const char* msg, const char* stack, const error_code& code = error_code::none) noexcept;
 			failure(const std::string& msg, const error_code& code = error_code::none) noexcept;
-			failure(const std::string& msg, const std::string& stack, const error_code& code = error_code::none) noexcept;
+			failure(std::string&& msg, const error_code& code = error_code::none) noexcept;
+			failure(std::string&& msg, error_code&&) noexcept;
 			failure(failure&& move) noexcept;
 			virtual ~failure() noexcept;
 
-			const char* message() const noexcept;
-			const char* stack() const noexcept;
+			const std::string& message() const noexcept;
 			const char* what() const noexcept override;
 
 			const error_code& code() const noexcept override;
@@ -63,9 +62,7 @@ namespace octoon
 			failure& operator=(const failure&) noexcept = delete;
 
 		private:
-			std::string info_;
 			std::string message_;
-			std::string stack_;
 			error_code code_;
 		};
 	}

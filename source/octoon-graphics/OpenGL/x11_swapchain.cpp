@@ -1,5 +1,6 @@
 #ifdef OCTOON_BUILD_PLATFORM_LINUX
 #include "x11_swapchain.h"
+#include "ogl_device.h"
 
 namespace octoon
 {

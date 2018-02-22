@@ -14,7 +14,7 @@ namespace octoon
 		}
 
 		RttiInterfacePtr
-		Rtti::create() const throw(std::bad_alloc)
+		Rtti::create() const except //throw(std::bad_alloc)
 		{
 			assert(construct_);
 			return std::shared_ptr<RttiInterface>(construct_());

@@ -19,6 +19,8 @@
 #include "ogl_core_graphics_data.h"
 #include "ogl_core_pipeline.h"
 
+#include <stdarg.h>
+
 namespace octoon
 {
 	namespace graphics

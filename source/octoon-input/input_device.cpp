@@ -1,4 +1,5 @@
 #include <octoon/input/input_device.h>
+#include <algorithm> // std::find
 
 namespace octoon
 {

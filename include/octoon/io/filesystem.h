@@ -94,7 +94,7 @@ struct OCTOON_EXPORT Orl {
 
   std::string to_string() const;
 
-  Orl Orl::parent() const;
+  Orl parent() const;
  private:
   std::string vdir_, path_;
 };

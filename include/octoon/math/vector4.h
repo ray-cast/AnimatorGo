@@ -1,8 +1,8 @@
 #ifndef OCTOON_VECTOR4_H_
 #define OCTOON_VECTOR4_H_
 
-#include <octoon/math/mathfwd.h>
 #include <octoon/math/trait.h>
+#include <octoon/math/mathfwd.h>
 
 namespace octoon
 {
@@ -77,7 +77,7 @@ namespace octoon
 				Vector4<T>& operator/=(const Vector4<T>& rt) noexcept { x *= rt.x; y *= rt.y; z *= rt.z; w *= rt.w; return *this; }
 				Vector4<T>& operator*=(const Vector4<T>& rt) noexcept { x /= rt.x; y /= rt.y; z /= rt.z; w /= rt.w; return *this; }
 
-				template<typename S, typename = std::enable_if_t<std::is_integral_v<S> || std::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<std::is_integral<S>::value || std::is_floating_point<S>::value>>
 				explicit operator Vector4<S>() const noexcept
 				{
 					return Vector4<S>(static_cast<S>(x), static_cast<S>(y), static_cast<S>(z), static_cast<S>(w));
@@ -548,13 +548,13 @@ namespace octoon
 			return dot(v, v);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline T length(const detail::Vector4<T>& v) noexcept
 		{
 			return std::sqrt(length2(v));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline T distance(const detail::Vector4<T>& v1, const detail::Vector4<T>& v2) noexcept
 		{
 			return length(v1 - v2);
@@ -623,7 +623,7 @@ namespace octoon
 			return clamp(v, T(0), T(1));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> normalize(const detail::Vector4<T>& v) noexcept
 		{
 			T magSq = length2(v);
@@ -636,16 +636,16 @@ namespace octoon
 			return v;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> snorm2unorm(const detail::Vector4<T>& v) noexcept
 		{
-			return V * 0.5f + 0.5f;
+			return v * 0.5f + 0.5f;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> unorm2snorm(const detail::Vector4<T>& v) noexcept
 		{
-			return V * 2.0f - 1.0f;
+			return v * 2.0f - 1.0f;
 		}
 
 		template <typename T>
@@ -666,85 +666,85 @@ namespace octoon
 			return detail::Vector4<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z), std::abs(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> cos(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::cos(v.x), std::cos(v.y), std::cos(v.z), std::cos(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> sin(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::sin(v.x), std::sin(v.y), std::sin(v.z), std::sin(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> tan(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::tan(v.x), std::tan(v.y), std::tan(v.z), std::tan(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> acos(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::acos(v.x), std::acos(v.y), std::acos(v.z), std::acos(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> asin(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::asin(v.x), std::asin(v.y), std::asin(v.z), std::asin(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> atan(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::atan(v.x), std::atan(v.y), std::atan(v.z), std::atan(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> exp(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::exp(v.x), std::exp(v.y), std::exp(v.z), std::exp(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> exp2(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::exp2(v.x), std::exp2(v.y), std::exp2(v.z), std::exp2(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> log(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::log(v.x), std::log(v.y), std::log(v.z), std::log(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> log2(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::log2(v.x), std::log2(v.y), std::log2(v.z), std::log2(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> log10(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::log10(v.x), std::log10(v.y), std::log10(v.z), std::log10(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> sqrt(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::sqrt(v.x), std::sqrt(v.y), std::sqrt(v.z), std::sqrt(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> pow(const detail::Vector4<T>& v1, T scale) noexcept
 		{
 			return detail::Vector4<T>(std::pow(v1.x, scale), std::pow(v1.y, scale), std::pow(v1.z, scale), std::pow(v1.w, scale));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> pow(const detail::Vector4<T>& v1, const detail::Vector4<T>& v2) noexcept
 		{
 			return detail::Vector4<T>(std::pow(v1.x, v2.x), std::pow(v1.y, v2.y), std::pow(v1.z, v2.z), std::pow(v1.w, v2.w));
@@ -756,16 +756,16 @@ namespace octoon
 			return detail::Vector4<T>(random(min.x, max.x), random(min.y, max.y), random(min.z, max.z), random(min.w, max.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> ceil(const detail::Vector4<T>& v) noexcept
 		{
 			return detail::Vector4<T>(std::ceil(v.x), std::ceil(v.y), std::ceil(v.z), std::ceil(v.w));
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Vector4<T> floor(const detail::Vector4<T>& v) noexcept
 		{
-			return Vector4<T>(std::floor(v.x), std::floor(v.y), std::floor(v.z), std::floor(v.w));
+			return detail::Vector4<T>(std::floor(v.x), std::floor(v.y), std::floor(v.z), std::floor(v.w));
 		}
 	}
 }

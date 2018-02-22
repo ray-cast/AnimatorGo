@@ -30,19 +30,19 @@ namespace octoon
 		GameScenePtr find_scene(const std::string& scene_name) noexcept;
 		const GameScenes& get_scenes() const noexcept;
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameFeature, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		void add_feature() except { this->add_feature(std::make_shared<T>()); }
 		void add_feature(const GameFeaturePtr& component) except;
 		void add_feature(GameFeaturePtr&& component) except;
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameFeature, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		std::shared_ptr<T> get_feature() const noexcept { return std::dynamic_pointer_cast<T>(this->get_feature(T::RTTI)); }
 		GameFeaturePtr get_feature(const runtime::Rtti* rtti) const noexcept;
 		GameFeaturePtr get_feature(const runtime::Rtti& rtti) const noexcept;
 
 		const GameFeatures& get_features() const noexcept;
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of_v<GameFeature, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		void remove_feature() noexcept { this->remove_feature(T::RTTI); }
 		void remove_feature(const runtime::Rtti* rtti) noexcept;
 		void remove_feature(const runtime::Rtti& rtti) noexcept;

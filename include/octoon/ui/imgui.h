@@ -579,7 +579,7 @@ namespace octoon
 		void color_convertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b) noexcept;
 
 		bool color_picker3(const char* label, float col[3], const float2& size = float2(160.f, 150.f), float hueSize = 12.0f, float crossHairSize = 7.0f) noexcept;
-		bool color_picker3_with_revert(const char* label, const char* name, float col[3], const float default[3], const float2& size = float2(160.f, 150.f), float hueSize = 12.0f, float crossHairSize = 7.0f) noexcept;
+		bool color_picker3_with_revert(const char* label, const char* name, float col[3], const float default_[3], const float2& size = float2(160.f, 150.f), float hueSize = 12.0f, float crossHairSize = 7.0f) noexcept;
 
 		void help_marker(const char* text, const char* desc) noexcept;
 

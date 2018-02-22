@@ -7,5 +7,6 @@
 #include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 #include <octoon/math/vector4.h>
+#include <octoon/math/quat.h>
 
 #endif

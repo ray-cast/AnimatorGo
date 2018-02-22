@@ -43,10 +43,9 @@ namespace octoon
 
 	GameScene::~GameScene() noexcept
 	{
-		assert(root_.unique());
+		assert(root_.use_count() == 1);
 
 		this->set_active(false);
-		root_.unique();
 
 		GameSceneManager::instance()->_unsetScene(this);
 	}

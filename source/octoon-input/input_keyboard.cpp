@@ -1,4 +1,5 @@
 #include <octoon/input/input_keyboard.h>
+#include <cstring> // std::memset
 
 namespace octoon
 {

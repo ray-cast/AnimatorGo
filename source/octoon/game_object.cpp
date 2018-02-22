@@ -187,6 +187,13 @@ namespace octoon
 	}
 
 	void
+	GameObject::add_child(GameObjectPtr&& entity) noexcept
+	{
+		assert(entity);
+		entity->set_parent(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
+	}
+
+	void
 	GameObject::remove_child(GameObjectPtr& entity) noexcept
 	{
 		assert(entity);

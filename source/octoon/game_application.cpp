@@ -27,7 +27,7 @@ namespace octoon
 	class GameAppListener final : public GameListener
 	{
 	public:
-		virtual void on_message(const std::string& message) noexcept
+		virtual void on_message(const std::string& message) noexcept override
 		{
 			std::cerr << message << std::endl;
 		}

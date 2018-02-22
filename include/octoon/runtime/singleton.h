@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace runtime
 	{
-		template<typename T, typename = std::enable_if_t<std::is_class_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_class<T>::value>>
 		class Singleton
 		{
 		public:

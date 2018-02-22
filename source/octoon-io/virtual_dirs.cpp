@@ -43,7 +43,7 @@ translate_opts(const OpenOptions& opts) {
 class LocalFileStream : public stream {
 public:
   bool open(const std::string& path, const OpenOptions& opts) {
-    inner_.open(path, translate_opts(opts));
+    inner_.open(path, static_cast<std::ios_base::open_mode>(translate_opts(opts)));
     if (inner_.is_open()) {
       opts_ = opts;
       return true;

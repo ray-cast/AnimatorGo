@@ -9,6 +9,8 @@
 #	include <d3dcompiler.h>
 #endif
 
+#include <cstring>
+
 namespace octoon
 {
 	namespace graphics
@@ -81,7 +83,7 @@ namespace octoon
 		OGLGraphicsUniform::OGLGraphicsUniform() noexcept
 			: _offset(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsUniformType::None)
+			, _type(GraphicsUniformType::Null)
 			, _stageFlags(0)
 		{
 		}
@@ -349,7 +351,7 @@ namespace octoon
 		OGLShader::HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, const std::string& main, std::string& out)
 		{
 		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-			const char* profile;
+			const char* profile = nullptr;
 			if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit)
 				profile = "vs_4_0";
 			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit)
@@ -358,6 +360,8 @@ namespace octoon
 				profile = "gs_4_0";
 			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit)
 				profile = "cs_4_0";
+			else
+				assert(false);
 
 			ID3DBlob* binary = nullptr;
 			ID3DBlob* error = nullptr;
@@ -791,7 +795,7 @@ namespace octoon
 				bool isArray = strstr(name.c_str(), "[") != nullptr;
 				if (type == GL_BOOL)
 				{
-					return GraphicsUniformType::Bool;
+					return GraphicsUniformType::Boolean;
 				}
 				else if (type == GL_UNSIGNED_INT)
 				{
@@ -901,7 +905,7 @@ namespace octoon
 				else
 				{
 					assert(false);
-					return GraphicsUniformType::None;
+					return GraphicsUniformType::Null;
 				}
 			}
 		}

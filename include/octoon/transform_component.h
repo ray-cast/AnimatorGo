@@ -51,7 +51,7 @@ namespace octoon
 		const math::float4x4& get_local_transform() const noexcept;
 		const math::float4x4& get_local_transform_inverse() const noexcept;
 
-		virtual GameComponentPtr clone() const noexcept;
+		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
 		void on_move_before() except override;

@@ -34,13 +34,13 @@ namespace octoon
 		}
 
 		// default
-		using Vector2 = detail::Vector2<>;
-		using Vector3 = detail::Vector3<>;
-		using Vector4 = detail::Vector4<>;
-		using Matrix2x2 = detail::Matrix2x2<>;
-		using Matrix3x3 = detail::Matrix3x3<>;
-		using Matrix4x4 = detail::Matrix4x4<>;
-		using Quaternion = detail::Quaternion<>;
+		using Vector2 = detail::Vector2<float>;
+		using Vector3 = detail::Vector3<float>;
+		using Vector4 = detail::Vector4<float>;
+		using Matrix2x2 = detail::Matrix2x2<float>;
+		using Matrix3x3 = detail::Matrix3x3<float>;
+		using Matrix4x4 = detail::Matrix4x4<float>;
+		using Quaternion = detail::Quaternion<float>;
 
 		// float
 		using float2x2 = detail::Matrix2x2<float>;

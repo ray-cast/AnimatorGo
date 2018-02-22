@@ -59,7 +59,7 @@ namespace octoon
 
 				~Matrix4x4() = default;
 
-				template<typename S, typename = std::enable_if_t<std::is_integral_v<S> || std::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<std::is_integral<S>::value || std::is_floating_point<S>::value>>
 				explicit operator Matrix4x4<S>() const noexcept
 				{
 					return Matrix4x4<S>(
@@ -309,7 +309,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T angle, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T theta, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -469,19 +469,19 @@ namespace octoon
 					return *this;
 				}
 
-				const Matrix4x4<T>& get_transform(Vector3<T>& position, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
+				const Matrix4x4<T>& get_transform(Vector3<T>& translate, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
 				{
-					auto right = this->get_right();
-					auto up = this->get_up();
-					auto forward = this->get_forward();
+					auto right_ = this->get_right();
+					auto up_ = this->get_up();
+					auto forward_ = this->get_forward();
 
-					position.x = this->d1;
-					position.y = this->d2;
-					position.z = this->d3;
+					translate.x = this->d1;
+					translate.y = this->d2;
+					translate.z = this->d3;
 
-					scaling.x = math::length(right);
-					scaling.y = math::length(up);
-					scaling.z = math::length(forward);
+					scaling.x = math::length(right_);
+					scaling.y = math::length(up_);
+					scaling.z = math::length(forward_);
 
 					T det = (this->a1 * this->b2 - this->a2 * this->b1) * (this->c3) -
 						(this->a1 * this->b3 - this->a3 * this->b1) * (this->c2) +
@@ -494,19 +494,19 @@ namespace octoon
 						scaling.z = -scaling.z;
 					}
 
-					if (scaling.x != T(0.0)) right /= scaling.x;
-					if (scaling.y != T(0.0)) up /= scaling.y;
-					if (scaling.z != T(0.0)) forward /= scaling.z;
+					if (scaling.x != T(0.0)) right_ /= scaling.x;
+					if (scaling.y != T(0.0)) up_ /= scaling.y;
+					if (scaling.z != T(0.0)) forward_ /= scaling.z;
 
-					rotation.make_rotation(forward, up, right);
+					rotation.make_rotation(forward_, up_, right_);
 					return *this;
 				}
 
-				const Matrix4x4<T>& get_transform_without_scaler(Vector3<T>& position, Quaternion<T>& rotation) const noexcept
+				const Matrix4x4<T>& get_transform_without_scaler(Vector3<T>& translate, Quaternion<T>& rotation) const noexcept
 				{
-					position.x = this->d1;
-					position.y = this->d2;
-					position.z = this->d3;
+					translate.x = this->d1;
+					translate.y = this->d2;
+					translate.z = this->d3;
 
 					rotation.make_rotation(this->get_forward(), this->get_up(), this->get_right());
 					return *this;
@@ -527,12 +527,12 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_ortho_lh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_ortho_lh(T left, T _right, T bottom, T top, T zNear, T zFar) noexcept
 				{
-					T tx = -(right + left) / (right - left);
+					T tx = -(_right + left) / (_right - left);
 					T ty = -(top + bottom) / (top - bottom);
 					T tz = -zNear / (zFar - zNear);
-					T cx = 2.0f / (right - left);
+					T cx = 2.0f / (_right - left);
 					T cy = 2.0f / (top - bottom);
 					T cz = 1.0f / (zFar - zNear);
 
@@ -949,7 +949,6 @@ namespace octoon
 		template<typename T>
 		detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
-			detail::Matrix3x3<T> m;
 			detail::Vector3<T> x = m.get_right();
 			detail::Vector3<T> y = m.get_up();
 			detail::Vector3<T> z;

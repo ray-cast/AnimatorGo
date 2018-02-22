@@ -646,8 +646,8 @@ namespace octoon
 
 		enum class GraphicsUniformType : std::uint8_t
 		{
-			None = 0,
-			Bool = 1,
+			Null = 0,
+			Boolean = 1,
 			Int = 5,
 			Int2 = 6,
 			Int3 = 7,

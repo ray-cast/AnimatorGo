@@ -3,12 +3,14 @@
 
 #include <octoon/game_application.h>
 #include <octoon/input/input_event.h>
+#include <octoon/runtime/except.h>
 
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
 #include <chrono>
 #include <iostream>
+#include <cstring>
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
 #define glfwGetWinHandle(window) glfwGetWin32Window(window_);
@@ -18,6 +20,12 @@
 #define glfwGetWinHandle(window) glfwGetEGLSurface(window_);
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
 #define glfwGetWinHandle(window) glfwGetCocoaWindow(window_);
+#endif
+
+#undef None
+
+#ifndef MAX_PATH
+#	define MAX_PATH 260
 #endif
 
 GLFWwindow* window_ = nullptr;
@@ -361,6 +369,61 @@ void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 	}
 }
 
+#ifndef GLFW_EXPOSE_NATIVE_WIN32
+void _split_whole_name(const char *whole_name, char *fname, char *ext)  
+{  
+	const char *p_ext;  
+  
+	p_ext = rindex(whole_name, '.');  
+	if (NULL != p_ext)  
+	{  
+		strcpy(ext, p_ext);  
+		snprintf(fname, p_ext - whole_name + 1, "%s", whole_name);  
+	}  
+	else  
+	{  
+		ext[0] = '\0';  
+		strcpy(fname, whole_name);  
+	}  
+}  
+
+void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)  
+{  
+	const char *p_whole_name;  
+  
+	drive[0] = '\0';  
+	if (NULL == path)  
+	{  
+		dir[0] = '\0';  
+		fname[0] = '\0';  
+		ext[0] = '\0';  
+		return;  
+	}  
+  
+	if ('/' == path[strlen(path)])  
+	{  
+		strcpy(dir, path);  
+		fname[0] = '\0';  
+		ext[0] = '\0';  
+		return;  
+	}  
+  
+	p_whole_name = rindex(path, '/');  
+	if (NULL != p_whole_name)  
+	{  
+		p_whole_name++;  
+		_split_whole_name(p_whole_name, fname, ext);  
+  
+		snprintf(dir, p_whole_name - path, "%s", path);  
+	}  
+	else  
+	{  
+		_split_whole_name(path, fname, ext);  
+		dir[0] = '\0';  
+	}  
+}  
+#endif
+
 bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
 #if GLFW_EXPOSE_NATIVE_WIN32
@@ -441,7 +504,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			gameApp_ = std::make_shared<octoon::GameApplication>();
 
 			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h))
-				throw std::exception("GameApplication::open() failed");
+				throw octoon::runtime::failure("GameApplication::open() failed");
 
 			gameApp_->set_active(true);
 
@@ -452,7 +515,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			if (!gameScenePath_.empty())
 			{
 				if (!gameApp_->open_scene(gameScenePath_))
-					throw std::exception("GameApplication::open_scene() failed");
+					throw octoon::runtime::failure("GameApplication::open_scene() failed");
 			}
 
 			::glfwShowWindow(window_);

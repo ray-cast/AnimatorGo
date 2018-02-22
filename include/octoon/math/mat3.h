@@ -94,7 +94,7 @@ namespace octoon
 					return *((&a1) + n);
 				}
 
-				template<typename S, typename = std::enable_if_t<std::is_integral_v<S> || std::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<std::is_integral<S>::value || std::is_floating_point<S>::value>>
 				explicit operator Matrix3x3<S>() const noexcept
 				{
 					return Matrix3x3<S>(

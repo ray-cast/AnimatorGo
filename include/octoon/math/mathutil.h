@@ -141,7 +141,7 @@ namespace octoon
 			return smoothlerp(z, z1, z2, r0, r1);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr bool equal(T a, T b, T epsilon = EPSILON) noexcept
 		{
 			return (a + epsilon) > b && (a - epsilon) < b;
@@ -159,14 +159,14 @@ namespace octoon
 			return x * 180.0f / math::PI;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr void sinCos(T* returnSin, T* returnCos, T theta) noexcept
 		{
 			*returnSin = std::sin(theta);
 			*returnCos = std::cos(theta);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T modf(T x, T* y) noexcept
 		{
 			T d;
@@ -175,14 +175,14 @@ namespace octoon
 			return f;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T fraction(T v) noexcept
 		{
 			T intPart;
 			return std::modf(v, &intPart);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T safe_acos(T x) noexcept
 		{
 			if (x <= -1.0f) { return math::PI; }
@@ -190,13 +190,13 @@ namespace octoon
 			return std::acos(x);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T snorm2unorm(T x) noexcept
 		{
 			return x * 0.5f + 0.5f;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T unorm2snorm(T x) noexcept
 		{
 			return x * 2.0f - 1.0f;

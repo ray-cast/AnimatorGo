@@ -1,8 +1,8 @@
 #ifndef OCTOON_QUATERNION_H_
 #define OCTOON_QUATERNION_H_
 
-#include <octoon/math/mathfwd.h>
 #include <octoon/math/trait.h>
+#include <octoon/math/mathfwd.h>
 
 namespace octoon
 {

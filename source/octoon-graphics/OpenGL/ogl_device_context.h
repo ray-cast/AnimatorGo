@@ -27,13 +27,13 @@ namespace octoon
 			const Scissor& getScissor(std::uint32_t i) const noexcept;
 
 			void setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept;
-			std::uint32_t getStencilCompareMask(GraphicsStencilFaceFlagBits face) noexcept;
+			std::uint32_t getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept;
 
 			void setStencilReference(GraphicsStencilFaceFlags face, std::uint32_t reference) noexcept;
-			std::uint32_t getStencilReference(GraphicsStencilFaceFlagBits face) noexcept;
+			std::uint32_t getStencilReference(GraphicsStencilFaceFlags face) noexcept;
 
 			void setStencilWriteMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept;
-			std::uint32_t getStencilWriteMask(GraphicsStencilFaceFlagBits face) noexcept;
+			std::uint32_t getStencilWriteMask(GraphicsStencilFaceFlags face) noexcept;
 
 			void setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept;
 			GraphicsPipelinePtr getRenderPipeline() const noexcept;

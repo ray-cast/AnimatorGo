@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT GameServer final : public runtime::RttiInterface, public runtime::Singleton<GameServer>
+	class OCTOON_EXPORT GameServer final : public runtime::RttiInterface
 	{
 		OctoonDeclareSubClass(GameServer, runtime::RttiInterface)
 	public:

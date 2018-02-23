@@ -6,6 +6,8 @@
 #include <octoon/runtime/singleton.h>
 #include <octoon/graphics/graphics.h>
 
+struct ImGuiContext;
+
 namespace octoon
 {
 	namespace imgui
@@ -37,7 +39,8 @@ namespace octoon
 
 			bool load_font(const char* path, float font_size = 15) noexcept;
 
-			void render() noexcept;
+			void render_begin() noexcept;
+			void render_end() noexcept;
 
 		private:
 			System(const System&) noexcept = delete;
@@ -48,6 +51,8 @@ namespace octoon
 
 			std::string imguiPath_;
 			std::string imguiDockPath_;
+
+			ImGuiContext* ui_context_;
 
 			input::WindHandle window_;
 

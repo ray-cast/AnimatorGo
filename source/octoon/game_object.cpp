@@ -117,7 +117,7 @@ namespace octoon
 	}
 
 	std::size_t
-	GameObject::get_instance_id() const noexcept
+	GameObject::id() const noexcept
 	{
 		return instance_id_;
 	}

@@ -49,14 +49,14 @@ namespace octoon
 			width_ = w;
 			height_ = h;
 
-			imgui::System::instance()->set_viewport(w, h);
+			system_->set_viewport(w, h);
 		}
 	}
 
 	void
 	GuiFeature::get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		imgui::System::instance()->get_viewport(w, h);
+		system_->get_viewport(w, h);
 	}
 
 	void
@@ -67,35 +67,37 @@ namespace octoon
 			framebuffer_w_ = w;
 			framebuffer_h_ = h;
 
-			imgui::System::instance()->set_framebuffer_scale(w, h);
+			system_->set_framebuffer_scale(w, h);
 		}
 	}
 
 	void
 	GuiFeature::get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		imgui::System::instance()->get_framebuffer_scale(w, h);
+		system_->get_framebuffer_scale(w, h);
 	}
 
 	void
 	GuiFeature::on_activate() except
 	{
-		if (!imgui::System::instance()->open(window_))
-			throw runtime::failure("GuiSystem::open() fail");
+		system_ = std::make_unique<imgui::System>();
 
-		if (!imgui::System::instance()->load_font("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
-			throw runtime::failure("GuiSystem::load_font() fail");
+		if (!system_->open(window_))
+			throw runtime::runtime_error::create("GuiSystem::open() fail", runtime::error_code::none);
 
-		imgui::System::instance()->set_viewport(width_, height_);
-		imgui::System::instance()->set_framebuffer_scale(framebuffer_w_, framebuffer_h_);
+		if (!system_->load_font("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
+			throw runtime::runtime_error::create("GuiSystem::load_font() fail", runtime::error_code::none);
+
+		system_->set_viewport(width_, height_);
+		system_->set_framebuffer_scale(framebuffer_w_, framebuffer_h_);
 	}
 
 	void
 	GuiFeature::on_deactivate() noexcept
 	{
-		imgui::System::instance()->get_viewport(width_, height_);
-		imgui::System::instance()->get_framebuffer_scale(framebuffer_w_, framebuffer_h_);
-		imgui::System::instance()->close();
+		system_->get_viewport(width_, height_);
+		system_->get_framebuffer_scale(framebuffer_w_, framebuffer_h_);
+		system_.reset();
 	}
 
 	void
@@ -104,40 +106,40 @@ namespace octoon
 		switch (event.event)
 		{
 		case input::InputEvent::MouseMotion:
-			imgui::System::instance()->inject_mouse_move(event.motion.x, event.motion.y);
+			system_->inject_mouse_move(event.motion.x, event.motion.y);
 			break;
 		case input::InputEvent::MouseButtonDown:
-			imgui::System::instance()->inject_mouse_press(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
+			system_->inject_mouse_press(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
 			break;
 		case input::InputEvent::MouseButtonUp:
-			imgui::System::instance()->inject_mouse_release(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
+			system_->inject_mouse_release(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
 			break;
 		case input::InputEvent::KeyDown:
-			imgui::System::instance()->inject_key_press((input::InputKey::Code)event.key.keysym.sym, event.key.keysym.unicode);
+			system_->inject_key_press((input::InputKey::Code)event.key.keysym.sym, event.key.keysym.unicode);
 			break;
 		case input::InputEvent::KeyUp:
-			imgui::System::instance()->inject_key_release((input::InputKey::Code)event.key.keysym.sym);
+			system_->inject_key_release((input::InputKey::Code)event.key.keysym.sym);
 			break;
 		case input::InputEvent::Character:
-			imgui::System::instance()->inject_key_press(input::InputKey::Code::None, event.key.keysym.unicode);
+			system_->inject_key_press(input::InputKey::Code::None, event.key.keysym.unicode);
 			break;
 		case input::InputEvent::LostFocus:
-			imgui::System::instance()->inject_window_focus(false);
+			system_->inject_window_focus(false);
 			break;
 		case input::InputEvent::GetFocus:
-			imgui::System::instance()->inject_window_focus(true);
+			system_->inject_window_focus(true);
 			break;
 		case input::InputEvent::MouseWheelUp:
-			imgui::System::instance()->inject_mouse_wheel(1.0f);
+			system_->inject_mouse_wheel(1.0f);
 			break;
 		case input::InputEvent::MouseWheelDown:
-			imgui::System::instance()->inject_mouse_wheel(-1.0f);
+			system_->inject_mouse_wheel(-1.0f);
 			break;
 		case input::InputEvent::SizeChange:
-			imgui::System::instance()->set_viewport(event.change.w, event.change.h);
+			system_->set_viewport(event.change.w, event.change.h);
 			break;
 		case input::InputEvent::SizeChangeDPI:
-			imgui::System::instance()->set_framebuffer_scale(event.change.w, event.change.h);
+			system_->set_framebuffer_scale(event.change.w, event.change.h);
 			break;
 		default:
 			return;
@@ -147,7 +149,7 @@ namespace octoon
 	void
 	GuiFeature::on_frame_begin() noexcept
 	{
-		imgui::new_frame();
+		system_->render_begin();
 	}
 
 	void
@@ -163,7 +165,6 @@ namespace octoon
 	void
 	GuiFeature::on_frame_end() noexcept
 	{
-		imgui::render();
-		imgui::System::instance()->render();
+		system_->render_end();
 	}
 }

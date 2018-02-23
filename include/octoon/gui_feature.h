@@ -5,6 +5,11 @@
 
 namespace octoon
 {
+	namespace imgui
+	{
+		class System;
+	}
+
 	class GuiFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(GuiFeature, GameFeature)
@@ -36,6 +41,8 @@ namespace octoon
 		std::uint32_t height_;
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
+
+		std::unique_ptr<imgui::System> system_;
 	};
 }
 

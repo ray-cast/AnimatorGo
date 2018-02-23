@@ -29,7 +29,7 @@ namespace octoon
 	void
 	GameSceneManager::_unsetScene(GameScene* entity) noexcept
 	{
-		auto instanceID = entity->get_instance_id();
+		auto instanceID = entity->id();
 		instance_lists_[instanceID - 1] = nullptr;
 		empty_lists_.push_back(instanceID);
 		this->_activeScene(entity, false);

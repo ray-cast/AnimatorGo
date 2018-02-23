@@ -14,12 +14,12 @@ namespace octoon
 		GraphicsShaderDesc::GraphicsShaderDesc() noexcept
 			: _lang(GraphicsShaderLang::None)
 			, _model(GraphicsShaderModel::Level4X)
-			, _stage(GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit)
+			, _stage(GraphicsShaderStageFlagBits::VertexBit)
 			, _main("main")
 		{
 		}
 
-		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlagBits stage, const std::string& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
+		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlags stage, const std::string& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
 			: _bytecodes(code)
 			, _lang(lang)
 			, _model(model)
@@ -28,7 +28,7 @@ namespace octoon
 		{
 		}
 
-		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlagBits stage, const std::vector<char>& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
+		GraphicsShaderDesc::GraphicsShaderDesc(GraphicsShaderStageFlags stage, const std::vector<char>& code, const char* entry_point, GraphicsShaderLang lang, GraphicsShaderModel model) noexcept
 			: _lang(lang)
 			, _model(model)
 			, _stage(stage)
@@ -62,12 +62,12 @@ namespace octoon
 		}
 
 		void
-		GraphicsShaderDesc::setStage(GraphicsShaderStageFlagBits stage) noexcept
+		GraphicsShaderDesc::setStage(GraphicsShaderStageFlags stage) noexcept
 		{
 			_stage = stage;
 		}
 
-		GraphicsShaderStageFlagBits
+		GraphicsShaderStageFlags
 		GraphicsShaderDesc::getStage()const noexcept
 		{
 			return _stage;

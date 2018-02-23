@@ -24,7 +24,7 @@ namespace octoon
 		void set_layer(std::uint8_t layer) noexcept;
 		std::uint8_t get_layer() const noexcept;
 
-		std::size_t get_instance_id() const noexcept;
+		std::size_t id() const noexcept;
 
 		void set_parent(const GameObjectPtr& parent) noexcept;
 		GameObject* get_parent() const noexcept;

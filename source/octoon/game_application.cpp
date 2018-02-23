@@ -2,6 +2,7 @@
 #include <octoon/game_server.h>
 #include <octoon/game_listener.h>
 
+#include <octoon/runtime/except.h>
 #include <octoon/runtime/rtti_factory.h>
 
 #include <iostream>
@@ -34,12 +35,17 @@ namespace octoon
 	};
 
 	GameApplication::GameApplication() noexcept
-		: is_initialize_(false)
-		, game_server_(nullptr)
+		: game_server_(nullptr)
 		, game_listener_(std::make_shared<GameAppListener>())
 
 	{
 		std::locale::global(std::locale(""));
+	}
+
+	GameApplication::GameApplication(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
+		: GameApplication()
+	{
+		this->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 	}
 
 	GameApplication::~GameApplication() noexcept
@@ -47,42 +53,30 @@ namespace octoon
 		this->close();
 	}
 
-	bool
-	GameApplication::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
+	void
+	GameApplication::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
 	{
-		if (is_initialize_)
+		if (game_server_)
 		{
-			if (game_listener_)
-				game_listener_->on_message("Game Application has been opened.");
-
-			return false;
+			this->on_message("Game Application has been opened.");
+			return;
 		}
 
-		auto local = setlocale(LC_ALL, "");
-		if (local)
-		{
-			if (game_listener_)
-				game_listener_->on_message(std::string("Initializing : Local : ") + local);
-		}
-
-		if (game_listener_)
-			game_listener_->on_message("Initializing : Game Application.");
-
-		if (game_listener_)
-			game_listener_->on_message("Initializing : RTTI.");
+		this->on_message("Initializing : Game Application.");
+		this->on_message(std::string("Initializing : Local : ") + ::setlocale(LC_ALL, ""));
+		this->on_message("Initializing : RTTI.");
 
 		if (!runtime::RttiFactory::instance()->open())
 		{
 			if (game_listener_)
 				game_listener_->on_message("Could not initialize with RTTI.");
 
-			return false;
+			throw runtime::runtime_error::create("Could not initialize with RTTI.");
 		}
 
-		if (game_listener_)
-			game_listener_->on_message("Initializing : Game Server.");
+		this->on_message("Initializing : Game Server.");
 
-		game_server_ = GameServer::instance();
+		game_server_ = std::make_shared<GameServer>();
 		game_server_->set_game_app(this);
 		game_server_->set_game_listener(game_listener_);
 
@@ -117,120 +111,147 @@ namespace octoon
 #if OCTOON_FEATURE_UI_ENABLE
 		this->add_feature(gui_feature_);
 #endif
-
-		is_initialize_ = true;
-		return is_initialize_;
 	}
 
 	void
 	GameApplication::close() noexcept
 	{
-		if (game_listener_)
-			game_listener_->on_message("Shutdown : Game Server.");
+		this->on_message("Shutdown : Game Server.");
 
 		if (game_server_)
-		{
-			game_server_->cleanup_all();
-			game_server_ = nullptr;
-		}
-
-		if (game_listener_)
-			game_listener_->on_message("Shutdown : IO Server.");
+			game_server_.reset();
 	}
 
 	void
 	GameApplication::set_active(bool active) except
 	{
-		assert(game_server_);
-		game_server_->set_active(active);
+		if (game_server_)
+			game_server_->set_active(active);
+		else
+			throw runtime::runtime_error::create("please call open() before set_active()");
 	}
 
 	bool
 	GameApplication::get_active() const noexcept
 	{
-		assert(game_server_);
-		return game_server_->get_active();
+		return game_server_ ? game_server_->get_active() : false;
 	}
 
 	void
-	GameApplication::set_game_listener(const GameListenerPtr& listener) noexcept
+	GameApplication::set_game_listener(const GameListenerPtr& listener) except
 	{
-		game_server_->set_game_listener(listener);
+		if (game_server_)
+			game_server_->set_game_listener(listener);
+		else
+			throw runtime::runtime_error::create("please call open() before set_game_listener()");
 	}
 
-	const GameListenerPtr&
+	GameListenerPtr
 	GameApplication::get_game_listener() const noexcept
 	{
-		return game_server_->get_game_listener();
+		assert(game_server_);
+		return game_server_ ? game_server_->get_game_listener() : nullptr;
 	}
 
 	bool
 	GameApplication::is_quit_request() const noexcept
 	{
 		assert(game_server_);
-		return game_server_->is_quit_request();
+		return game_server_ ? game_server_->is_quit_request() : true;
 	}
 
 	bool
-	GameApplication::open_scene(const GameScenePtr& scene) noexcept
+	GameApplication::open_scene(const GameScenePtr& scene) except
 	{
-		assert(game_server_);
-		return game_server_->add_scene(scene);
+		if (game_server_)
+			return game_server_->add_scene(scene);
+		else
+			throw runtime::runtime_error::create("please call open() before open_scene()");
 	}
 
 	bool
-	GameApplication::open_scene(const std::string& name) noexcept
+	GameApplication::open_scene(const std::string& name) except
 	{
-		assert(game_server_);
-		return game_server_->open_scene(name);
+		if (game_server_)
+			return game_server_->open_scene(name);
+		else
+			throw runtime::runtime_error::create("please call open() before open_scene()");
 	}
 
 	void
 	GameApplication::close_scene(const GameScenePtr& name) noexcept
 	{
 		assert(game_server_);
-		return game_server_->close_scene(name);
+
+		if (game_server_)
+			game_server_->close_scene(name);
 	}
 
 	void
 	GameApplication::close_scene(const std::string& name) noexcept
 	{
 		assert(game_server_);
-		game_server_->close_scene(name);
+
+		if (game_server_)
+			game_server_->close_scene(name);
 	}
 
 	GameScenePtr
 	GameApplication::find_scene(const std::string& name) noexcept
 	{
 		assert(game_server_);
-		return game_server_->find_scene(name);
+		return game_server_ ? game_server_->find_scene(name) : nullptr;
 	}
 
 	void
-	GameApplication::add_feature(GameFeaturePtr& feature) except
+	GameApplication::add_feature(const GameFeaturePtr& feature) except
 	{
-		assert(game_server_);
-		game_server_->add_feature(feature);
+		if (game_server_)
+			game_server_->add_feature(feature);
+		else
+			throw runtime::runtime_error::create("please call open() before add_feature()");
 	}
 
 	void
-	GameApplication::remove_feature(GameFeaturePtr& feature) noexcept
+	GameApplication::add_feature(GameFeaturePtr&& feature) except
 	{
-		assert(game_server_);
-		game_server_->remove_feature(feature);
+		if (game_server_)
+			game_server_->add_feature(feature);
+		else
+			throw runtime::runtime_error::create("please call open() before add_feature()");
 	}
 
 	void
-	GameApplication::send_input_event(const input::InputEvent& event) noexcept
+	GameApplication::remove_feature(const GameFeaturePtr& feature) except
 	{
-		assert(game_server_);
-		game_server_->send_input_event(event);
+		if (game_server_)
+			game_server_->remove_feature(feature);
+		else
+			throw runtime::runtime_error::create("please call open() before remove_feature()");
 	}
 
 	void
-	GameApplication::update() noexcept
+	GameApplication::send_input_event(const input::InputEvent& event) except
 	{
-		assert(game_server_);
-		game_server_->update();
+		if (game_server_)
+			game_server_->send_input_event(event);
+		else
+			throw runtime::runtime_error::create("please call open() before send_input_event()");
+	}
+
+	void
+	GameApplication::update() except
+	{
+		if (game_server_)
+			game_server_->update();
+		else
+			throw runtime::runtime_error::create("please call open() before update()");
+	}
+
+	void
+	GameApplication::on_message(const std::string& message) noexcept
+	{
+		if (game_listener_)
+			game_listener_->on_message(message);
 	}
 }

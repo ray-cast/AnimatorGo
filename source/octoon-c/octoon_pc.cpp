@@ -30,7 +30,6 @@
 
 GLFWwindow* window_ = nullptr;
 octoon::GameApplicationPtr gameApp_;
-octoon::input::InputMousePtr inputMessage_;
 
 std::string gameRootPath_;
 std::string gameScenePath_;
@@ -243,7 +242,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 				auto now = std::chrono::system_clock::now();
 				double diff_ms = std::chrono::duration <double, std::milli>(now - before).count();
 				if (diff_ms > 10 && diff_ms < 200)
-					gameApp_->do_window_mouse_double_click(hwnd, octoon::input::InputButton::Mouse0 + button, mouseX, mouseY);
+					gameApp_->do_window_mouse_button_double_click(hwnd, octoon::input::InputButton::Mouse0 + button, mouseX, mouseY);
 
 				clicks = false;
 			}
@@ -407,10 +406,9 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 			gameApp_ = std::make_shared<octoon::GameApplication>();
 			gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 			gameApp_->set_active(true);
-
-			onWindowFocus(window_, true);
-			onWindowResize(window_, w, h);
-			onWindowFramebufferResize(window_, framebuffer_w, framebuffer_h);
+			gameApp_->do_window_focus(hwnd, true);
+			gameApp_->do_window_resize(hwnd, w, h);
+			gameApp_->do_window_framebuffer_resize(hwnd, framebuffer_w, framebuffer_h);
 
 			if (!gameScenePath_.empty())
 			{

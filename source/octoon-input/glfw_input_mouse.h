@@ -13,7 +13,7 @@ namespace octoon
 			GLFWInputMouse() noexcept;
 			~GLFWInputMouse() noexcept;
 
-			InputMousePtr clone() const noexcept;
+			IInputMousePtr clone() const noexcept;
 
 		private:
 			void on_show_mouse() noexcept;

@@ -140,7 +140,7 @@ namespace octoon
 			DefaultInputMouse::on_input_event(event);
 		}
 
-		InputMousePtr
+		IInputMousePtr
 		MSWInputMouse::clone() const noexcept
 		{
 			return std::make_shared<MSWInputMouse>();

@@ -421,7 +421,7 @@ namespace octoon
 			DefaultInputDevice::flush_event();
 		}
 
-		InputDevicePtr
+		IInputDevicePtr
 		MSWInputDevice::clone() const noexcept
 		{
 			return std::make_shared<MSWInputDevice>();

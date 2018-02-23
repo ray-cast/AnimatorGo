@@ -23,7 +23,7 @@ namespace octoon
 			virtual bool wait_events(InputEvent& event, int timeout) noexcept override;
 			virtual void flush_event() noexcept;
 
-			virtual InputDevicePtr clone() const noexcept override;
+			virtual IInputDevicePtr clone() const noexcept override;
 
 		private:
 			void update() noexcept;

@@ -194,7 +194,7 @@ namespace octoon
 			}
 		}
 
-		InputKeyboardPtr
+		IInputKeyboardPtr
 		GLFWInputKeyboard::clone() const noexcept
 		{
 			return std::make_shared<GLFWInputKeyboard>();

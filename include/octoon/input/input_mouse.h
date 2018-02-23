@@ -31,7 +31,7 @@ namespace octoon
 			bool is_button_up(InputButton::Code key) const noexcept override;
 			bool is_button_pressed(InputButton::Code key) const noexcept override;
 
-			InputMousePtr clone() const noexcept;
+			IInputMousePtr clone() const noexcept;
 
 		protected:
 			virtual void on_frame_begin() noexcept override;

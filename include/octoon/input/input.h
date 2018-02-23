@@ -15,8 +15,8 @@ namespace octoon
 			virtual ~DefaultInput() noexcept;
 
 			virtual bool open() noexcept override;
-			virtual bool open(InputDevicePtr& device) noexcept override;
-			virtual bool open(InputDevicePtr&& device) noexcept override;
+			virtual bool open(const IInputDevicePtr& device) noexcept override;
+			virtual bool open(IInputDevicePtr&& device) noexcept override;
 			virtual void close() noexcept override;
 
 			virtual void set_capture_object(WindHandle window) noexcept override;
@@ -44,10 +44,10 @@ namespace octoon
 			virtual void obtain_mouse_capture() noexcept override;
 			virtual void obtain_keyboard_capture() noexcept override;
 
-			virtual void obtain_mouse_capture(InputMousePtr& mouse) noexcept override;
-			virtual void obtain_mouse_capture(InputMousePtr&& mouse) noexcept override;
-			virtual void obtain_keyboard_capture(InputKeyboardPtr& key) noexcept override;
-			virtual void obtain_keyboard_capture(InputKeyboardPtr&& key) noexcept override;
+			virtual void obtain_mouse_capture(const IInputMousePtr& mouse) noexcept override;
+			virtual void obtain_mouse_capture(IInputMousePtr&& mouse) noexcept override;
+			virtual void obtain_keyboard_capture(const IInputKeyboardPtr& key) noexcept override;
+			virtual void obtain_keyboard_capture(IInputKeyboardPtr&& key) noexcept override;
 			virtual void obtain_capture() noexcept override;
 
 			virtual void release_mouse_capture() noexcept override;
@@ -56,10 +56,10 @@ namespace octoon
 
 			virtual void reset() noexcept override;
 
-			virtual void add_input_listener(InputListenerPtr& listener) noexcept override;
-			virtual void add_input_listener(InputListenerPtr&& listener) noexcept override;
-			virtual void remove_input_listener(InputListenerPtr& listener) noexcept override;
-			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept override;
+			virtual void add_input_listener(const IInputListenerPtr& listener) noexcept override;
+			virtual void add_input_listener(IInputListenerPtr&& listener) noexcept override;
+			virtual void remove_input_listener(const IInputListenerPtr& listener) noexcept override;
+			virtual void remove_input_listener(IInputListenerPtr&& listener) noexcept override;
 			virtual void clear_input_listener() noexcept override;
 
 			virtual bool send_input_event(const InputEvent& event) noexcept override;
@@ -69,16 +69,16 @@ namespace octoon
 			virtual void update() noexcept override;
 			virtual void update_end() noexcept override;
 
-			virtual InputPtr clone() const noexcept override;
+			virtual IInputPtr clone() const noexcept override;
 
 		private:
 			DefaultInput(const DefaultInput&) noexcept = delete;
 			DefaultInput& operator=(const DefaultInput&) noexcept = delete;
 
 		private:
-			InputDevicePtr input_device_;
-			InputMousePtr mouse_capture_device_;
-			InputKeyboardPtr keyboard_capture_device_;
+			IInputDevicePtr input_device_;
+			IInputMousePtr mouse_capture_device_;
+			IInputKeyboardPtr keyboard_capture_device_;
 		};
 	}
 }

@@ -8,11 +8,11 @@ namespace octoon
 {
 	namespace input
 	{
-		typedef std::shared_ptr<class IInputListener> InputListenerPtr;
-		typedef std::shared_ptr<class IInputKeyboard> InputKeyboardPtr;
-		typedef std::shared_ptr<class IInputMouse> InputMousePtr;
-		typedef std::shared_ptr<class IInputDevice> InputDevicePtr;
-		typedef std::shared_ptr<class IInput> InputPtr;
+		typedef std::shared_ptr<class IInputListener> IInputListenerPtr;
+		typedef std::shared_ptr<class IInputKeyboard> IInputKeyboardPtr;
+		typedef std::shared_ptr<class IInputMouse> IInputMousePtr;
+		typedef std::shared_ptr<class IInputDevice> IInputDevicePtr;
+		typedef std::shared_ptr<class IInput> IInputPtr;
 
 		typedef void* WindHandle;
 	}

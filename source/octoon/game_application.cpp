@@ -257,7 +257,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_resize(WindHandle window, int w, int h) except
+	GameApplication::do_window_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::SizeChange;
@@ -270,7 +270,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_framebuffer_resize(WindHandle window, int w, int h) except
+	GameApplication::do_window_framebuffer_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::SizeChangeDPI;
@@ -303,7 +303,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_key_down(WindHandle window, int key, int scancode, int mods) except
+	GameApplication::do_window_key_down(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
@@ -322,7 +322,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_key_up(WindHandle window, int key, int scancode, int mods) except
+	GameApplication::do_window_key_up(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyUp;
@@ -341,7 +341,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_key_press(WindHandle window, int key, int scancode, int mods) except
+	GameApplication::do_window_key_press(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
@@ -360,7 +360,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_key_char(WindHandle window, unsigned int unicode, int mods) except
+	GameApplication::do_window_key_char(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Character;
@@ -379,7 +379,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_button_down(WindHandle window, int button, float x, float y) except
+	GameApplication::do_window_mouse_button_down(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDown;
@@ -396,7 +396,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_button_up(WindHandle window, int button, float x, float y) except
+	GameApplication::do_window_mouse_button_up(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonUp;
@@ -413,7 +413,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_double_click(WindHandle window, int button, float x, float y) except
+	GameApplication::do_window_mouse_button_double_click(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDoubleClick;
@@ -457,7 +457,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_drop(WindHandle window, int count, const char** file_utf8) except
+	GameApplication::do_window_drop(WindHandle window, std::uint32_t count, const char** file_utf8) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Drop;

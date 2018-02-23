@@ -145,7 +145,7 @@ namespace octoon
 			return button_state_[key].pressed;
 		}
 
-		InputMousePtr
+		IInputMousePtr
 		DefaultInputMouse::clone() const noexcept
 		{
 			return std::make_shared<DefaultInputMouse>();

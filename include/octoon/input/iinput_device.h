@@ -17,10 +17,10 @@ namespace octoon
 			virtual void set_capture_object(WindHandle window) noexcept = 0;
 			virtual WindHandle get_capture_object() const noexcept = 0;
 
-			virtual void add_input_listener(InputListenerPtr& listener) noexcept = 0;
-			virtual void add_input_listener(InputListenerPtr&& listener) noexcept = 0;
-			virtual void remove_input_listener(InputListenerPtr& listener) noexcept = 0;
-			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept = 0;
+			virtual void add_input_listener(const IInputListenerPtr& listener) noexcept = 0;
+			virtual void add_input_listener(IInputListenerPtr&& listener) noexcept = 0;
+			virtual void remove_input_listener(const IInputListenerPtr& listener) noexcept = 0;
+			virtual void remove_input_listener(IInputListenerPtr&& listener) noexcept = 0;
 			virtual void clear_input_listener() noexcept = 0;
 
 			virtual void enable_event_posting(bool enable) noexcept = 0;
@@ -35,7 +35,7 @@ namespace octoon
 			virtual bool wait_events(InputEvent& event, int timeout) noexcept = 0;
 			virtual void flush_event() noexcept = 0;
 
-			virtual InputDevicePtr clone() const noexcept = 0;
+			virtual IInputDevicePtr clone() const noexcept = 0;
 
 		private:
 			IInputDevice(const IInputDevice&) noexcept = delete;

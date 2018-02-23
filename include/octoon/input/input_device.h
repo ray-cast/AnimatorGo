@@ -24,10 +24,10 @@ namespace octoon
 			virtual void enable_event_posting(bool enable) noexcept override;
 			virtual bool enable_event_posting() const noexcept override;
 
-			virtual void add_input_listener(InputListenerPtr& listener) noexcept override;
-			virtual void add_input_listener(InputListenerPtr&& listener) noexcept override;
-			virtual void remove_input_listener(InputListenerPtr& listener) noexcept override;
-			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept override;
+			virtual void add_input_listener(const IInputListenerPtr& listener) noexcept override;
+			virtual void add_input_listener(IInputListenerPtr&& listener) noexcept override;
+			virtual void remove_input_listener(const IInputListenerPtr& listener) noexcept override;
+			virtual void remove_input_listener(IInputListenerPtr&& listener) noexcept override;
 			virtual void clear_input_listener() noexcept override;
 
 			virtual bool send_event(const InputEvent& event) noexcept override;
@@ -39,7 +39,7 @@ namespace octoon
 			virtual bool wait_events(InputEvent& event, int timeout) noexcept override;
 			virtual void flush_event() noexcept override;
 
-			virtual InputDevicePtr clone() const noexcept override;
+			virtual IInputDevicePtr clone() const noexcept override;
 
 		private:
 			DefaultInputDevice(const DefaultInputDevice&) noexcept = delete;
@@ -47,7 +47,7 @@ namespace octoon
 
 		private:
 			typedef std::queue<InputEvent>  InputEvents;
-			typedef std::vector<InputListenerPtr> InputListeners;
+			typedef std::vector<IInputListenerPtr> InputListeners;
 
 			InputEvents events_;
 			InputListeners inputListeners_;

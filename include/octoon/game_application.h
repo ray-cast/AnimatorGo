@@ -1,6 +1,7 @@
 #ifndef OCTOON_APPLICATION_H_
 #define OCTOON_APPLICATION_H_
 
+#include <chrono>
 #include <octoon/game_types.h>
 
 namespace octoon
@@ -69,6 +70,8 @@ namespace octoon
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
 		GameFeaturePtr gui_feature_;
+
+		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};
 }
 

@@ -38,7 +38,7 @@ namespace octoon
 	GameApplication::GameApplication() noexcept
 		: game_server_(nullptr)
 		, game_listener_(std::make_shared<GameAppListener>())
-
+		, start_time_(std::chrono::high_resolution_clock::now())
 	{
 		std::locale::global(std::locale(""));
 	}
@@ -264,7 +264,7 @@ namespace octoon
 		event.change.w = w;
 		event.change.h = h;
 		event.change.windowID = (std::uint64_t)window;
-		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 
 		this->send_input_event(event);
 	}
@@ -277,7 +277,7 @@ namespace octoon
 		event.change.w = w;
 		event.change.h = h;
 		event.change.windowID = (std::uint64_t)window;
-		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 
 		this->send_input_event(event);
 	}
@@ -288,7 +288,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::AppQuit;
 		event.window.windowID = (std::uint64_t)window;
-		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		this->send_input_event(event);
 	}
 
@@ -298,7 +298,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
 		event.window.windowID = (std::uint64_t)window;
-		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		this->send_input_event(event);
 	}
 
@@ -308,7 +308,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
 		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.key.padding2 = 0;
 		event.key.padding3 = 0;
 		event.key.repeat = false;
@@ -327,7 +327,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyUp;
 		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.key.padding2 = 0;
 		event.key.padding3 = 0;
 		event.key.repeat = false;
@@ -346,7 +346,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
 		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.key.padding2 = 0;
 		event.key.padding3 = 0;
 		event.key.repeat = true;
@@ -365,7 +365,7 @@ namespace octoon
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Character;
 		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.key.padding2 = 0;
 		event.key.padding3 = 0;
 		event.key.repeat = 0;
@@ -387,7 +387,7 @@ namespace octoon
 		event.button.clicks = true;
 		event.button.x = x;
 		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.button.windowID = (std::uint64_t)window;
 		event.button.padding1 = 0;
 		event.button.which = 0;
@@ -404,7 +404,7 @@ namespace octoon
 		event.button.clicks = false;
 		event.button.x = x;
 		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.button.windowID = (std::uint64_t)window;
 		event.button.padding1 = 0;
 		event.button.which = 0;
@@ -421,7 +421,7 @@ namespace octoon
 		event.button.clicks = true;
 		event.button.x = x;
 		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.button.windowID = (std::uint64_t)window;
 		event.button.padding1 = 0;
 		event.button.which = 0;
@@ -438,7 +438,7 @@ namespace octoon
 		event.motion.y = y;
 		event.motion.xrel = x;
 		event.motion.yrel = y;
-		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.motion.state = false;
 		event.motion.windowID = (std::uint64_t)window;
 
@@ -450,7 +450,7 @@ namespace octoon
 	{
 		octoon::input::InputEvent event;
 		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
-		event.wheel.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.wheel.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.wheel.windowID = (std::uint64_t)window;
 
 		this->send_input_event(event);
@@ -461,7 +461,7 @@ namespace octoon
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Drop;
-		event.drop.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.drop.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.drop.count = count;
 		event.drop.files = file_utf8;
 		event.drop.windowID = (std::uint64_t)window;

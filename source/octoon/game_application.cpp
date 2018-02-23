@@ -138,7 +138,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::set_game_listener(GameListenerPtr&& listener) except
+	GameApplication::set_game_listener(GameListenerPtr&& listener) noexcept
 	{
 		if (game_listener_ != listener)
 		{
@@ -150,7 +150,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::set_game_listener(const GameListenerPtr& listener) except
+	GameApplication::set_game_listener(const GameListenerPtr& listener) noexcept
 	{
 		if (game_listener_ != listener)
 		{

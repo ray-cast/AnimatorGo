@@ -799,7 +799,7 @@ namespace octoon
 			if (*current_item != _default)
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(revert)) { *current_item = _default; change = false; };
 				pop_id();
 			}
@@ -1593,8 +1593,8 @@ namespace octoon
 					{
 						float s0 = (float)x / (float)step;
 						float s1 = (float)(x + 1) / (float)step;
-						float v0 = 1.0 - (float)(y) / (float)step;
-						float v1 = 1.0 - (float)(y + 1) / (float)step;
+						float v0 = 1.0f - (float)(y) / (float)step;
+						float v1 = 1.0f - (float)(y + 1) / (float)step;
 
 						ImGui::ColorConvertHSVtoRGB(hue, s0, v0, c00.x, c00.y, c00.z);
 						ImGui::ColorConvertHSVtoRGB(hue, s1, v0, c10.x, c10.y, c10.z);
@@ -1656,7 +1656,7 @@ namespace octoon
 				value_changed = true;
 			}
 
-			color = ImColor::HSV(hue > 0 ? hue : 1e-6, saturation > 0 ? saturation : 1e-6, value > 0 ? value : 1e-6);
+			color = ImColor::HSV(hue > 0 ? hue : 1e-6f, saturation > 0 ? saturation : 1e-6f, value > 0 ? value : 1e-6f);
 
 			col[0] = ImClamp(color.Value.x, 0.0f, 1.0f);
 			col[1] = ImClamp(color.Value.y, 0.0f, 1.0f);
@@ -1671,7 +1671,7 @@ namespace octoon
 			if (!math::equal(col[0], _default[0]) || !math::equal(col[1], _default[1]) || !math::equal(col[2], _default[2]))
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					col[0] = _default[0];
@@ -1692,7 +1692,7 @@ namespace octoon
 			if (!math::equal(*v, _default))
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
 				pop_id();
 			}
@@ -1706,7 +1706,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1725,7 +1725,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1745,7 +1745,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1766,7 +1766,7 @@ namespace octoon
 			if (v[0] != _default)
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
 				pop_id();
 			}
@@ -1780,7 +1780,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1799,7 +1799,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1819,7 +1819,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];

@@ -11,182 +11,200 @@ namespace octoon
 		using float3 = math::float3;
 		using float4 = math::float4;
 
-		enum GuiCol
+		enum class GuiCol
 		{
-			GuiColText,
-			GuiColTextDisabled,
-			GuiColWindowBg,
-			GuiColChildWindowBg,
-			GuiColPopupBg,
-			GuiColBorder,
-			GuiColBorderShadow,
-			GuiColFrameBg,
-			GuiColFrameBgHovered,
-			GuiColFrameBgActive,
-			GuiColTitleBg,
-			GuiColTitleBgCollapsed,
-			GuiColTitleBgActive,
-			GuiColMenuBarBg,
-			GuiColScrollbarBg,
-			GuiColScrollbarGrab,
-			GuiColScrollbarGrabHovered,
-			GuiColScrollbarGrabActive,
-			GuiColComboBg,
-			GuiColCheckMark,
-			GuiColSliderGrab,
-			GuiColSliderGrabActive,
-			GuiColButton,
-			GuiColButtonHovered,
-			GuiColButtonActive,
-			GuiColHeader,
-			GuiColHeaderHovered,
-			GuiColHeaderActive,
-			GuiColColumn,
-			GuiColColumnHovered,
-			GuiColColumnActive,
-			GuiColResizeGrip,
-			GuiColResizeGripHovered,
-			GuiColResizeGripActive,
-			GuiColCloseButton,
-			GuiColCloseButtonHovered,
-			GuiColCloseButtonActive,
-			GuiColPlotLines,
-			GuiColPlotLinesHovered,
-			GuiColPlotHistogram,
-			GuiColPlotHistogramHovered,
-			GuiColTextSelectedBg,
-			GuiColModalWindowDarkening,  // darken entire screen when a modal window is active
-			GuiColCOUNT
+			Text,
+			TextDisabled,
+			WindowBg,
+			ChildWindowBg,
+			PopupBg,
+			Border,
+			BorderShadow,
+			FrameBg,
+			FrameBgHovered,
+			FrameBgActive,
+			TitleBg,
+			TitleBgCollapsed,
+			TitleBgActive,
+			MenuBarBg,
+			ScrollbarBg,
+			ScrollbarGrab,
+			ScrollbarGrabHovered,
+			ScrollbarGrabActive,
+			ComboBg,
+			CheckMark,
+			SliderGrab,
+			SliderGrabActive,
+			Button,
+			ButtonHovered,
+			ButtonActive,
+			Header,
+			HeaderHovered,
+			HeaderActive,
+			Column,
+			ColumnHovered,
+			ColumnActive,
+			ResizeGrip,
+			ResizeGripHovered,
+			ResizeGripActive,
+			CloseButton,
+			CloseButtonHovered,
+			CloseButtonActive,
+			PlotLines,
+			PlotLinesHovered,
+			PlotHistogram,
+			PlotHistogramHovered,
+			TextSelectedBg,
+			ModalWindowDarkening,  // darken entire screen when a modal window is active
+			Count_
 		};
 
-		enum GuiInputTextFlagBits
+		struct GuiInputTextFlagBits
 		{
-			GuiInputTextFlagCharsDecimalBit = 1 << 0,
-			GuiInputTextFlagCharsHexadecimalBit = 1 << 1,
-			GuiInputTextFlagCharsUppercaseBit = 1 << 2,
-			GuiInputTextFlagCharsNoBlankBit = 1 << 3,
-			GuiInputTextFlagAutoSelectAllBit = 1 << 4,
-			GuiInputTextFlagEnterReturnsTrueBit = 1 << 5,
-			GuiInputTextFlagCallbackCompletionBit = 1 << 6,
-			GuiInputTextFlagCallbackHistoryBit = 1 << 7,
-			GuiInputTextFlagCallbackAlwaysBit = 1 << 8,
-			GuiInputTextFlagCallbackCharFilterBit = 1 << 9,
-			GuiInputTextFlagAllowTabInputBit = 1 << 10,
-			GuiInputTextFlagCtrlEnterForNewLineBit = 1 << 11,
-			GuiInputTextFlagNoHorizontalScrollBit = 1 << 12,
-			GuiInputTextFlagAlwaysInsertModeBit = 1 << 13,
-			GuiInputTextFlagReadOnlyBit = 1 << 14,
-			GuiInputTextFlagPasswordBit = 1 << 15,
+			enum Flags
+			{
+				CharsDecimalBit = 1 << 0,
+				CharsHexadecimalBit = 1 << 1,
+				CharsUppercaseBit = 1 << 2,
+				CharsNoBlankBit = 1 << 3,
+				AutoSelectAllBit = 1 << 4,
+				EnterReturnsTrueBit = 1 << 5,
+				CallbackCompletionBit = 1 << 6,
+				CallbackHistoryBit = 1 << 7,
+				CallbackAlwaysBit = 1 << 8,
+				CallbackCharFilterBit = 1 << 9,
+				AllowTabInputBit = 1 << 10,
+				CtrlEnterForNewLineBit = 1 << 11,
+				NoHorizontalScrollBit = 1 << 12,
+				AlwaysInsertModeBit = 1 << 13,
+				ReadOnlyBit = 1 << 14,
+				PasswordBit = 1 << 15
+			};
 		};
 
 		typedef std::uint32_t GuiInputTextFlags;
 
-		enum GuiWindowFlagBits
+		struct GuiWindowFlagBits
 		{
-			GuiWindowFlagNoTitleBarBit = 1 << 0,
-			GuiWindowFlagNoResizeBit = 1 << 1,
-			GuiWindowFlagNoMoveBit = 1 << 2,
-			GuiWindowFlagNoScrollbarBit = 1 << 3,
-			GuiWindowFlagNoScrollWithMouseBit = 1 << 4,
-			GuiWindowFlagNoCollapseBit = 1 << 5,
-			GuiWindowFlagAlwaysAutoResizeBit = 1 << 6,
-			GuiWindowFlagShowBordersBit = 1 << 7,
-			GuiWindowFlagNoSavedSettingsBit = 1 << 8,
-			GuiWindowFlagNoInputsBit = 1 << 9,
-			GuiWindowFlagMenuBarBit = 1 << 10,
-			GuiWindowFlagHorizontalScrollbarBit = 1 << 11,
-			GuiWindowFlagNoFocusOnAppearingBit = 1 << 12,
-			GuiWindowFlagNoBringToFrontOnFocusBit = 1 << 13,
-			GuiWindowFlagAlwaysVerticalScrollbarBit = 1 << 14,
-			GuiWindowFlagAlwaysHorizontalScrollbarBit = 1 << 15,
-			GuiWindowFlagAlwaysUseWindowPaddingBit = 1 << 16
+			enum Flags
+			{
+				NoTitleBarBit = 1 << 0,
+				NoResizeBit = 1 << 1,
+				NoMoveBit = 1 << 2,
+				NoScrollbarBit = 1 << 3,
+				NoScrollWithMouseBit = 1 << 4,
+				NoCollapseBit = 1 << 5,
+				AlwaysAutoResizeBit = 1 << 6,
+				ShowBordersBit = 1 << 7,
+				NoSavedSettingsBit = 1 << 8,
+				NoInputsBit = 1 << 9,
+				MenuBarBit = 1 << 10,
+				HorizontalScrollbarBit = 1 << 11,
+				NoFocusOnAppearingBit = 1 << 12,
+				NoBringToFrontOnFocusBit = 1 << 13,
+				AlwaysVerticalScrollbarBit = 1 << 14,
+				AlwaysHorizontalScrollbarBit = 1 << 15,
+				AlwaysUseWindowPaddingBit = 1 << 16
+			};
 		};
 
 		typedef std::uint32_t GuiWindowFlags;
 
-		enum GuiAlignFlagBits
+		struct GuiAlignFlagBits
 		{
-			GuiAlignFlagLeftBit = 1 << 0,
-			GuiAlignFlagCenterBit = 1 << 1,
-			GuiAlignFlagRightBit = 1 << 2,
-			GuiAlignFlagTopBit = 1 << 3,
-			GuiAlignFlagVCenterBit = 1 << 4,
-			GuiAlignFlagDefaultBit = GuiAlignFlagLeftBit | GuiAlignFlagTopBit
+			enum Flags
+			{
+				LeftBit = 1 << 0,
+				CenterBit = 1 << 1,
+				RightBit = 1 << 2,
+				TopBit = 1 << 3,
+				VCenterBit = 1 << 4,
+				DefaultBit = LeftBit | TopBit
+			};
 		};
 
 		typedef std::uint32_t GuiAlignFlags;
 
-		enum GuiSetCondFlagBits
+		struct GuiSetCondFlagBits
 		{
-			GuiSetCondFlagAlwaysBit = 1 << 0,
-			GuiSetCondFlagOnceBit = 1 << 1,
-			GuiSetCondFlagFirstUseEverBit = 1 << 2,
-			GuiSetCondFlagAppearingBit = 1 << 3
+			enum Flags
+			{
+				AlwaysBit = 1 << 0,
+				OnceBit = 1 << 1,
+				FirstUseEverBit = 1 << 2,
+				AppearingBit = 1 << 3
+			};
 		};
 
 		typedef std::uint32_t GuiSetCondFlags;
 
-		enum GuiTreeNodeFlagBits
+		struct GuiTreeNodeFlagBits
 		{
-			GuiTreeNodeFlagSelectedBit = 1 << 0,
-			GuiTreeNodeFlagFramedBit = 1 << 1,
-			GuiTreeNodeFlagAllowOverlapModeBit = 1 << 2,
-			GuiTreeNodeFlagNoTreePushOnOpenBit = 1 << 3,
-			GuiTreeNodeFlagNoAutoOpenOnLogBit = 1 << 4,
-			GuiTreeNodeFlagDefaultOpenBit = 1 << 5,
-			GuiTreeNodeFlagOpenOnDoubleClickBit = 1 << 6,
-			GuiTreeNodeFlagOpenOnArrowBit = 1 << 7,
-			GuiTreeNodeFlagLeafBit = 1 << 8,
-			GuiTreeNodeFlagBulletBit = 1 << 9,
-			GuiTreeNodeFlagCollapsingHeaderBit = GuiTreeNodeFlagFramedBit | GuiTreeNodeFlagNoAutoOpenOnLogBit
+			enum Flags
+			{
+				SelectedBit = 1 << 0,
+				FramedBit = 1 << 1,
+				AllowOverlapModeBit = 1 << 2,
+				NoTreePushOnOpenBit = 1 << 3,
+				NoAutoOpenOnLogBit = 1 << 4,
+				DefaultOpenBit = 1 << 5,
+				OpenOnDoubleClickBit = 1 << 6,
+				OpenOnArrowBit = 1 << 7,
+				LeafBit = 1 << 8,
+				BulletBit = 1 << 9,
+				CollapsingHeaderBit = FramedBit | NoAutoOpenOnLogBit
+			};
 		};
 
 		typedef std::uint32_t GuiTreeNodeFlags;
 
-		enum GuiSelectableFlagBits
+		struct GuiSelectableFlagBits
 		{
-			GuiSelectableFlagDontClosePopupsBit = 1 << 0,
-			GuiSelectableFlagSpanAllColumnsBit = 1 << 1,
-			GuiSelectableFlagAllowDoubleClickBit = 1 << 2
+			enum Flags
+			{
+				DontClosePopupsBit = 1 << 0,
+				SpanAllColumnsBit = 1 << 1,
+				AllowDoubleClickBit = 1 << 2
+			};
 		};
 
 		typedef std::uint32_t GuiSelectableFlags;
 
 		enum class GuiMouseCursor
 		{
-			GuiMouseCursorArrow = 0,
-			GuiMouseCursorTextInput,         // When hovering over InputText, etc.
-			GuiMouseCursorMove,              // Unused
-			GuiMouseCursorResizeNS,          // Unused
-			GuiMouseCursorResizeEW,          // When hovering over a column
-			GuiMouseCursorResizeNESW,        // Unused
-			GuiMouseCursorResizeNWSE,        // When hovering over the bottom-right corner of a window
-			GuiMouseCursorCount_
+			Arrow = 0,
+			TextInput,         // When hovering over InputText, etc.
+			Move,              // Unused
+			ResizeNS,          // Unused
+			ResizeEW,          // When hovering over a column
+			ResizeNESW,        // Unused
+			ResizeNWSE,        // When hovering over the bottom-right corner of a window
+			Count_
 		};
 
 		enum class GuiColorEditMode
 		{
-			GuiColorEditModeUserSelect = -2,
-			GuiColorEditModeUserSelectShowButton = -1,
-			GuiColorEditModeRGB = 0,
-			GuiColorEditModeHSV = 1,
-			GuiColorEditModeHEX = 2
+			UserSelect = -2,
+			UserSelectShowButton = -1,
+			RGB = 0,
+			HSV = 1,
+			HEX = 2
 		};
 
 		enum class GuiStyleVar
 		{
-			GuiStyleVarAlpha,               // float
-			GuiStyleVarWindowPadding,       // float2
-			GuiStyleVarWindowRounding,      // float
-			GuiStyleVarWindowMinSize,       // float2
-			GuiStyleVarChildWindowRounding, // float
-			GuiStyleVarFramePadding,        // float2
-			GuiStyleVarFrameRounding,       // float
-			GuiStyleVarItemSpacing,         // float2
-			GuiStyleVarItemInnerSpacing,    // float2
-			GuiStyleVarIndentSpacing,       // float
-			GuiStyleVarGrabMinSize,         // float
-			GuiStyleVarButtonTextAlign
+			Alpha,               // float
+			WindowPadding,       // float2
+			WindowRounding,      // float
+			WindowMinSize,       // float2
+			ChildWindowRounding, // float
+			FramePadding,        // float2
+			FrameRounding,       // float
+			ItemSpacing,         // float2
+			ItemInnerSpacing,    // float2
+			IndentSpacing,       // float
+			GrabMinSize,         // float
+			ButtonTextAlign
 		};
 
 		struct OCTOON_EXPORT GuiStyle
@@ -214,7 +232,7 @@ namespace octoon
 			bool        AntiAliasedLines;
 			bool        AntiAliasedShapes;
 			float       CurveTessellationTol;
-			float4      Colors[(int)GuiCol::GuiColCOUNT];
+			float4      Colors[(int)GuiCol::Count_];
 
 			GuiStyle() noexcept;
 		};

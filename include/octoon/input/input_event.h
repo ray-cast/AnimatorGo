@@ -85,7 +85,7 @@ namespace octoon
 		struct JoyButtonEvent {};
 		struct JoyDeviceEvent {};
 
-		class OCTOON_EXPORT InputEvent final
+		class InputEvent final
 		{
 		public:
 			enum Type

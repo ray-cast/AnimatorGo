@@ -164,7 +164,7 @@ namespace octoon
 	GameApplication::open_scene(const GameScenePtr& scene) except
 	{
 		if (game_server_)
-			game_server_->add_scene(scene);
+			return game_server_->add_scene(scene);
 		else
 			throw runtime::runtime_error::create("please call open() before open_scene()");
 	}
@@ -173,7 +173,7 @@ namespace octoon
 	GameApplication::open_scene(const std::string& name) except
 	{
 		if (game_server_)
-			game_server_->open_scene(name);
+			return game_server_->open_scene(name);
 		else
 			throw runtime::runtime_error::create("please call open() before open_scene()");
 	}

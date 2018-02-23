@@ -504,13 +504,13 @@ namespace octoon
 			return stream_->_flag;
 		}
 
-		char*&
+		char*
 		File::ptr()  noexcept
 		{
 			return stream_->_ptr;
 		}
 
-		char*&
+		char*
 		File::base() noexcept
 		{
 			return stream_->_base;

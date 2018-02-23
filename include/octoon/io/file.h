@@ -36,8 +36,8 @@ namespace octoon
 			streamsize write(const void* buf, streamsize size) noexcept;
 
 			int flag() noexcept;
-			char*& ptr() noexcept;
-			char*& base() noexcept;
+			char* ptr() noexcept;
+			char* base() noexcept;
 			streamsize cnt() noexcept;
 
 			void swap(File& other) noexcept;

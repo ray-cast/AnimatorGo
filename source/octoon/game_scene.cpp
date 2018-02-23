@@ -99,13 +99,13 @@ namespace octoon
 	}
 
 	std::size_t
-	GameScene::get_instance_id() const noexcept
+	GameScene::id() const noexcept
 	{
 		return instance_id_;
 	}
 
-	GameObjectPtr
-	GameScene::get_root_object() const noexcept
+	const GameObjectPtr&
+	GameScene::root() const noexcept
 	{
 		return root_;
 	}

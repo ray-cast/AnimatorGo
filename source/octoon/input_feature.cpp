@@ -45,7 +45,7 @@ namespace octoon
 	{
 		input_ = std::make_shared<input::DefaultInput>();
 		if (!input_->open())
-			throw runtime::failure("Input::open() fail.");
+			throw runtime::runtime_error::create("Input::open() fail.");
 
 		input_->add_input_listener(std::make_shared<InputEventListener>(*this));
 		input_->set_capture_object(window_);

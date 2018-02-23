@@ -42,6 +42,7 @@ namespace octoon
 			, window_(nullptr)
 			, imguiPath_("../../ui/imgui.layout")
 			, imguiDockPath_("../../ui/imgui_dock.layout")
+			, ui_context_(nullptr)
 		{
 		}
 
@@ -58,6 +59,9 @@ namespace octoon
 #if _WINDOWS
 			assert(::IsWindow((HWND)window));
 #endif
+
+			ui_context_ = ImGui::CreateContext();
+			ImGui::SetCurrentContext(ui_context_);
 
 			GuiStyle style;
 			set_style(style);
@@ -200,6 +204,12 @@ namespace octoon
 				ImGui::Shutdown();
 
 				initialize_ = false;
+			}
+
+			if (ui_context_)
+			{
+				ImGui::DestroyContext(ui_context_);
+				ui_context_ = nullptr;
 			}
 		}
 
@@ -373,9 +383,18 @@ namespace octoon
 		}
 
 		void
-		System::render() noexcept
+		System::render_begin() noexcept
+		{
+			ImGui::SetCurrentContext(ui_context_);
+			ImGui::NewFrame();
+		}
+
+		void
+		System::render_end() noexcept
 		{
 			assert(vbo_ && ibo_);
+
+			ImGui::Render();
 
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)

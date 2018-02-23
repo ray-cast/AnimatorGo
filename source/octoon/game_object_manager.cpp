@@ -35,7 +35,7 @@ namespace octoon
 	{
 		assert(entity);
 
-		auto instanceID = entity->get_instance_id();
+		auto instanceID = entity->id();
 		instance_lists_[instanceID - 1] = nullptr;
 		empty_lists_.push(instanceID);
 		this->_activeObject(entity, false);

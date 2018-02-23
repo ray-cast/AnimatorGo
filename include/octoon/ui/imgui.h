@@ -223,7 +223,6 @@ namespace octoon
 		typedef std::uint32_t GuiID;
 
 		void new_frame() noexcept;
-		void render() noexcept;
 		void shutdown() noexcept;
 
 		void show_user_guide() noexcept;

@@ -23,9 +23,9 @@ namespace octoon
 		void set_name(const std::string& name) noexcept;
 		const std::string& get_name() const noexcept;
 
-		std::size_t get_instance_id() const noexcept;
+		std::size_t id() const noexcept;
 
-		GameObjectPtr get_root_object() const noexcept;
+		const GameObjectPtr& root() const noexcept;
 
 		GameScenePtr clone() const noexcept;
 

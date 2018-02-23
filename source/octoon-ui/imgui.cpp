@@ -101,11 +101,6 @@ namespace octoon
 			ImGui::NewFrame();
 		}
 
-		void render() noexcept
-		{
-			ImGui::Render();
-		}
-
 		void shutdown() noexcept
 		{
 			ImGui::Shutdown();

@@ -2,6 +2,7 @@
 // Author: PENGUINLIONG
 #ifndef OCTOON_IO_MSTREAM_H_
 #define OCTOON_IO_MSTREAM_H_
+
 #include <mutex>
 #include "octoon/io/stream.h"
 
@@ -15,14 +16,14 @@ namespace octoon
 			mstream() noexcept;
 			mstream(const mstream&) = delete;
 			mstream(mstream&& rv) noexcept;
-			mstream(size_t capacity) noexcept;
+			mstream(std::size_t capacity) noexcept;
 			mstream(std::vector<uint8_t> buffer) noexcept;
 
 			mstream& operator=(mstream&& rv) noexcept;
 
-			bool can_read() override final;
-			bool can_write() override final;
-			bool can_seek() override final;
+			bool can_read() noexcept override final;
+			bool can_write() noexcept override final;
+			bool can_seek() noexcept override final;
 
 			size_t read(uint8_t* buf, size_t size) override final;
 			size_t write(const uint8_t* buf, size_t size) override final;

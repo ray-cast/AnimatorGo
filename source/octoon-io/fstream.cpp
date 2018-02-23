@@ -2,70 +2,86 @@
 // Author: PENGUINLIONG
 #include <cassert>
 #include "octoon/io/fstream.h"
-#include "octoon/io/filesystem.h"
+#include "octoon/io/ioserver.h"
 
-namespace octoon {
-namespace io {
+namespace octoon
+{
+	namespace io
+	{
+		fstream::fstream() noexcept
+			: fs_(IoServer::instance())
+		{
+		}
 
-// fstream
+		fstream::fstream(std::shared_ptr<IoServer> fs) noexcept
+			: fs_(fs)
+		{
+		}
 
-fstream::fstream() noexcept :
-  fs_(FileSystem::instance()) {
-}
-fstream::fstream(std::shared_ptr<FileSystem> fs) noexcept :
-  fs_(fs) {
-}
-fstream::fstream(fstream&& rv) noexcept :
-  fs_(std::move(rv.fs_)) {
-}
+		fstream::fstream(fstream&& rv) noexcept
+			: fs_(std::move(rv.fs_))
+		{
+		}
 
-fstream&
-fstream::operator=(fstream&& rv) noexcept {
-  fs_ = std::move(rv.fs_);
-  return *this;
-}
+		fstream&
+		fstream::operator=(fstream&& rv) noexcept
+		{
+			fs_ = std::move(rv.fs_);
+			return *this;
+		}
 
-bool
-fstream::open(const Orl& orl, const OpenOptions& options) {
-  inner_ = nullptr; // Re-open should stash the previous one.
-  auto vdir = fs_->get(orl);
-  if (vdir == nullptr) {
-    return false;
-  }
-  inner_ = vdir->open(orl, options);
-  return inner_ != nullptr;
-}
-void
-fstream::close() {
-  inner_ = nullptr;
-}
+		bool
+		fstream::open(const Orl& orl, const OpenOptions& options)
+		{
+			inner_ = nullptr; // Re-open should stash the previous one.
+			auto vdir = fs_->get_archive(orl);
+			if (vdir == nullptr) {
+				return false;
+			}
+			inner_ = vdir->open(orl, options);
+			return inner_ != nullptr;
+		}
 
+		void
+		fstream::close()
+		{
+			inner_ = nullptr;
+		}
 
-bool
-fstream::can_read() {
-  return inner_ != nullptr && inner_->can_read();
-}
-bool
-fstream::can_write() {
-  return inner_ != nullptr && inner_->can_write();
-}
-bool
-fstream::can_seek() {
-  return inner_ != nullptr && inner_->can_seek();
-}
+		bool
+		fstream::can_read()
+		{
+			return inner_ != nullptr && inner_->can_read();
+		}
 
-size_t
-fstream::read(uint8_t* buf, size_t size) {
-  return inner_->read(buf, size);
-}
-size_t
-fstream::write(const uint8_t* buf, size_t size) {
-  return inner_->write(buf, size);
-}
-bool
-fstream::seek(long dist, SeekOrigin ori) {
-  return inner_->seek(dist, ori);
-}
+		bool
+		fstream::can_write()
+		{
+			return inner_ != nullptr && inner_->can_write();
+		}
 
-} // namespace io
-} // namespace octoon
+		bool
+		fstream::can_seek()
+		{
+			return inner_ != nullptr && inner_->can_seek();
+		}
+
+		std::size_t
+		fstream::read(uint8_t* buf, std::size_t size)
+		{
+			return inner_->read(buf, size);
+		}
+
+		std::size_t
+		fstream::write(const uint8_t* buf, std::size_t size)
+		{
+			return inner_->write(buf, size);
+		}
+
+		bool
+		fstream::seek(long dist, SeekOrigin ori)
+		{
+			return inner_->seek(dist, ori);
+		}
+	}
+}

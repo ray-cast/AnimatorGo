@@ -39,18 +39,23 @@ namespace octoon
 
 	typedef void* WindHandle;
 
-	enum GameDispatchType : std::uint8_t
+	struct GameDispatchType
 	{
-		GameDispatchTypeFrameBegin,
-		GameDispatchTypeFrame,
-		GameDispatchTypeFrameEnd,
-		GameDispatchTypeGui,
-		GameDispatchTypeMoveBefore,
-		GameDispatchTypeMoveAfter,
-		GameDispatchTypeBeginRange = GameDispatchTypeFrameBegin,
-		GameDispatchTypeEndRange = GameDispatchTypeMoveAfter,
-		GameDispatchTypeRangeSize = (GameDispatchTypeEndRange - GameDispatchTypeBeginRange + 1),
+		enum Type
+		{
+			FrameBegin,
+			Frame,
+			FrameEnd,
+			Gui,
+			MoveBefore,
+			MoveAfter,
+			BeginRange_ = FrameBegin,
+			EndRange_ = MoveAfter,
+			RangeSize_ = (EndRange_ - BeginRange_ + 1),
+		};
 	};
+
+	typedef std::uint8_t GameDispatchTypes;
 }
 
 #endif

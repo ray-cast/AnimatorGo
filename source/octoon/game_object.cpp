@@ -429,25 +429,25 @@ namespace octoon
 	}
 
 	void
-	GameObject::add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameObject::add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
 	{
 		assert(component);
 
 		if (dispatch_components_.empty())
-			dispatch_components_.resize(GameDispatchType::GameDispatchTypeRangeSize);
+			dispatch_components_.resize(GameDispatchType::RangeSize_);
 
 		if (std::find(dispatch_components_[type].begin(), dispatch_components_[type].end(), component) != dispatch_components_[type].end())
 			return;
 
 		if (this->get_active())
 		{
-			if (type == GameDispatchType::GameDispatchTypeFrame ||
-				type == GameDispatchType::GameDispatchTypeFrameBegin ||
-				type == GameDispatchType::GameDispatchTypeFrameEnd)
+			if (type == GameDispatchType::Frame ||
+				type == GameDispatchType::FrameBegin ||
+				type == GameDispatchType::FrameEnd)
 			{
-				if (dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatch_components_[GameDispatchType::Frame].empty() &&
+					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
+					dispatch_components_[GameDispatchType::FrameEnd].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, true);
 				}
@@ -458,7 +458,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameObject::remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
 	{
 		assert(component);
 
@@ -471,13 +471,13 @@ namespace octoon
 
 		if (this->get_active())
 		{
-			if (type == GameDispatchType::GameDispatchTypeFrame ||
-				type == GameDispatchType::GameDispatchTypeFrameBegin ||
-				type == GameDispatchType::GameDispatchTypeFrameEnd)
+			if (type == GameDispatchType::Frame ||
+				type == GameDispatchType::FrameBegin ||
+				type == GameDispatchType::FrameEnd)
 			{
-				if (dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatch_components_[GameDispatchType::Frame].empty() &&
+					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
+					dispatch_components_[GameDispatchType::FrameEnd].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, false);
 				}
@@ -530,7 +530,7 @@ namespace octoon
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin];
+		auto& components = dispatch_components_[GameDispatchType::FrameBegin];
 		for (auto& it : components)
 			it->on_frame_begin();
 	}
@@ -540,7 +540,7 @@ namespace octoon
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrame];
+		auto& components = dispatch_components_[GameDispatchType::Frame];
 		for (auto& it : components)
 			it->on_frame();
 	}
@@ -550,7 +550,7 @@ namespace octoon
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd];
+		auto& components = dispatch_components_[GameDispatchType::FrameEnd];
 		for (auto& it : components)
 			it->on_frame_end();
 	}
@@ -566,9 +566,9 @@ namespace octoon
 
 		if (!dispatch_components_.empty())
 		{
-			if (!dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
+				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
+				!dispatch_components_[GameDispatchType::FrameEnd].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, true);
 			}
@@ -580,9 +580,9 @@ namespace octoon
 	{
 		if (!dispatch_components_.empty())
 		{
-			if (!dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
+				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
+				!dispatch_components_[GameDispatchType::FrameEnd].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, false);
 			}
@@ -629,7 +629,7 @@ namespace octoon
 
 		if (!dispatch_components_.empty())
 		{
-			auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeMoveBefore];
+			auto& components = dispatch_components_[GameDispatchType::MoveBefore];
 			for (auto& it : components)
 			{
 				if (it->get_active())
@@ -652,7 +652,7 @@ namespace octoon
 
 		if (!dispatch_components_.empty())
 		{
-			auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeMoveAfter];
+			auto& components = dispatch_components_[GameDispatchType::MoveAfter];
 			for (auto& it : components)
 			{
 				if (it->get_active())
@@ -672,7 +672,7 @@ namespace octoon
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeGui];
+		auto& components = dispatch_components_[GameDispatchType::Gui];
 		for (auto& it : components)
 			it->on_gui();
 	}

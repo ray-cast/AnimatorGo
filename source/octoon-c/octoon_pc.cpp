@@ -268,7 +268,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 		octoon::input::InputEvent event;
 		event.event = action == GLFW_PRESS ? octoon::input::InputEvent::MouseButtonDown : octoon::input::InputEvent::MouseButtonUp;
-		event.button.button = octoon::input::InputButton::MOUSE0 + button;
+		event.button.button = octoon::input::InputButton::Mouse0 + button;
 		event.button.clicks = action == GLFW_PRESS ? true : false;
 		event.button.x = mouseX;
 		event.button.y = mouseY;
@@ -297,7 +297,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 				{
 					octoon::input::InputEvent doubleClick;
 					doubleClick.event = octoon::input::InputEvent::MouseButtonDoubleClick;
-					doubleClick.button.button = octoon::input::InputButton::MOUSE0 + button;
+					doubleClick.button.button = octoon::input::InputButton::Mouse0 + button;
 					doubleClick.button.clicks = true;
 					doubleClick.button.x = mouseX;
 					doubleClick.button.y = mouseY;

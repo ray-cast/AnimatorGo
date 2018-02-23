@@ -19,8 +19,9 @@ namespace octoon
 		void set_active(bool active) except;
 		bool get_active() const noexcept;
 
+		void set_game_listener(GameListenerPtr&& listener) except;
 		void set_game_listener(const GameListenerPtr& listener) except;
-		GameListenerPtr get_game_listener() const noexcept;
+		const GameListenerPtr& get_game_listener() const noexcept;
 
 		bool is_quit_request() const noexcept;
 

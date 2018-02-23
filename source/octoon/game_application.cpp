@@ -69,8 +69,7 @@ namespace octoon
 
 		if (!runtime::RttiFactory::instance()->open())
 		{
-			if (game_listener_)
-				game_listener_->on_message("Could not initialize with RTTI.");
+			this->on_message("Could not initialize with RTTI.");
 
 			throw runtime::runtime_error::create("Could not initialize with RTTI.");
 		}
@@ -139,19 +138,37 @@ namespace octoon
 	}
 
 	void
-	GameApplication::set_game_listener(const GameListenerPtr& listener) except
+	GameApplication::set_game_listener(GameListenerPtr&& listener) except
 	{
-		if (game_server_)
-			game_server_->set_game_listener(listener);
-		else
-			throw runtime::runtime_error::create("please call open() before set_game_listener()");
+		if (game_listener_ != listener)
+		{
+			if (game_server_)
+				game_server_->set_game_listener(listener);
+			else
+				throw runtime::runtime_error::create("please call open() before set_game_listener()");
+
+			game_listener_ = game_server_->get_game_listener();
+		}
 	}
 
-	GameListenerPtr
+	void
+	GameApplication::set_game_listener(const GameListenerPtr& listener) except
+	{
+		if (game_listener_ != listener)
+		{
+			if (game_server_)
+				game_server_->set_game_listener(listener);
+			else
+				throw runtime::runtime_error::create("please call open() before set_game_listener()");
+
+			game_listener_ = game_server_->get_game_listener();
+		}
+	}
+
+	const GameListenerPtr&
 	GameApplication::get_game_listener() const noexcept
 	{
-		assert(game_server_);
-		return game_server_ ? game_server_->get_game_listener() : nullptr;
+		return game_listener_;
 	}
 
 	bool

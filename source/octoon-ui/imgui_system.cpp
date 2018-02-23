@@ -400,6 +400,8 @@ namespace octoon
 			if (!drawData)
 				return;
 
+			context_->renderBegin();
+
 			std::size_t totalVertexSize = drawData->TotalVtxCount * sizeof(ImDrawVert);
 			std::size_t totalIndirectSize = drawData->TotalIdxCount * sizeof(ImDrawIdx);
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
@@ -414,7 +416,10 @@ namespace octoon
 
 					vbo_ = device_->createGraphicsData(dataDesc);
 					if (!vbo_)
+					{
+						context_->renderEnd();
 						return;
+					}
 				}
 
 				if (ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
@@ -427,17 +432,26 @@ namespace octoon
 
 					ibo_ = device_->createGraphicsData(elementDesc);
 					if (!ibo_)
+					{
+						context_->renderEnd();
 						return;
+					}
 				}
 
 				ImDrawVert* vbo;
 				ImDrawIdx* ibo;
 
 				if (!vbo_->map(0, totalVertexSize, (void**)&vbo))
+				{
+					context_->renderEnd();
 					return;
+				}
 
 				if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
+				{
+					context_->renderEnd();
 					return;
+				}
 
 				for (int n = 0; n < drawData->CmdListsCount; n++)
 				{
@@ -453,8 +467,6 @@ namespace octoon
 			}
 
 			auto& io = ImGui::GetIO();
-
-			context_->renderBegin();
 
 			context_->setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 			context_->setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));

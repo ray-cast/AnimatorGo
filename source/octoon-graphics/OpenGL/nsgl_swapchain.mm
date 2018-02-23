@@ -9,8 +9,6 @@ namespace octoon
 	{
 		OctoonImplementSubClass(NSGLSwapchain, GraphicsSwapchain, "NSGLSwapchain")
 
-		NSGLSwapchain* NSGLSwapchain::_swapchain = nullptr;
-
 		NSGLSwapchain::NSGLSwapchain() noexcept
 			: _isActive(false)
 			, _major(3)
@@ -75,28 +73,27 @@ namespace octoon
 		void
 		NSGLSwapchain::setActive(bool active) noexcept
 		{
-			if (_isActive != active)
+			static thread_local NSGLSwapchain* _swapchain = nullptr;
+
+			if (active)
 			{
-				if (active)
-				{
-					if (_swapchain)
-						_swapchain->setActive(false);
+				if (_swapchain && _swapchain != this)
+					_swapchain->setActive(false);
 
-					NSOpenGLContext* context = (NSOpenGLContext*)this->_context;
-					[context makeCurrentContext];
+				NSOpenGLContext* context = (NSOpenGLContext*)this->_context;
+				[context makeCurrentContext];
 
-					_swapchain = this;
-				}
-				else
-				{
-					[NSOpenGLContext clearCurrentContext];
-
-					if (_swapchain == this)
-						_swapchain = nullptr;
-				}
-
-				_isActive = active;
+				_swapchain = this;
 			}
+			else
+			{
+				[NSOpenGLContext clearCurrentContext];
+
+				if (_swapchain == this)
+					_swapchain = nullptr;
+			}
+
+			_isActive = active;
 		}
 
 		bool

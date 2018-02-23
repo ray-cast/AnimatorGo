@@ -41,6 +41,18 @@ namespace octoon
 	}
 
 	void
+	GameServer::set_game_listener(GameListenerPtr&& listener) noexcept
+	{
+		if (game_listener_ != listener)
+		{
+			for (auto& it : scenes_)
+				it->set_game_listener(listener);
+
+			game_listener_ = std::move(listener);
+		}
+	}
+
+	void
 	GameServer::set_game_listener(const GameListenerPtr& listener) noexcept
 	{
 		if (game_listener_ != listener)

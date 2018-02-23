@@ -1,6 +1,7 @@
 #ifndef OCTOON_APPLICATION_H_
 #define OCTOON_APPLICATION_H_
 
+#include <chrono>
 #include <octoon/game_types.h>
 
 namespace octoon
@@ -18,8 +19,9 @@ namespace octoon
 		void set_active(bool active) except;
 		bool get_active() const noexcept;
 
-		void set_game_listener(const GameListenerPtr& listener) except;
-		GameListenerPtr get_game_listener() const noexcept;
+		void set_game_listener(GameListenerPtr&& listener) noexcept;
+		void set_game_listener(const GameListenerPtr& listener) noexcept;
+		const GameListenerPtr& get_game_listener() const noexcept;
 
 		bool is_quit_request() const noexcept;
 
@@ -69,6 +71,8 @@ namespace octoon
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
 		GameFeaturePtr gui_feature_;
+
+		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};
 }
 

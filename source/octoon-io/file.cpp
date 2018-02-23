@@ -3,6 +3,18 @@
 
 #include <limits>
 
+#ifndef _IOMYBUF
+#    define _IOMYBUF 0x0008
+#endif
+
+#ifndef _IOEOF
+#   define _IOEOF 0x0010
+#endif
+
+#ifndef _IOERR
+#   define _IOERR 0x0020
+#endif
+
 namespace octoon
 {
 	namespace io

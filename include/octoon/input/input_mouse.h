@@ -24,14 +24,14 @@ namespace octoon
 
 			float get_axis(InputAxis::Code axis) const noexcept override;
 
-			void set_position(InputButton::mouse_t x, InputButton::mouse_t y) noexcept override;
-			void get_position(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept override;
+			void set_position(InputButton::Type x, InputButton::Type y) noexcept override;
+			void get_position(InputButton::Type& x, InputButton::Type& y) const noexcept override;
 
 			bool is_button_down(InputButton::Code key) const noexcept override;
 			bool is_button_up(InputButton::Code key) const noexcept override;
 			bool is_button_pressed(InputButton::Code key) const noexcept override;
 
-			InputMousePtr clone() const noexcept;
+			IInputMousePtr clone() const noexcept;
 
 		protected:
 			virtual void on_frame_begin() noexcept override;
@@ -48,7 +48,7 @@ namespace octoon
 			virtual void onShowMouse() noexcept;
 			virtual void onHideMouse() noexcept;
 
-			virtual void onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept;
+			virtual void onChangePosition(InputButton::Type x, InputButton::Type y) noexcept;
 
 		private:
 			DefaultInputMouse(const DefaultInputMouse&) noexcept = delete;
@@ -62,14 +62,14 @@ namespace octoon
 			float mouse_axis_x_;
 			float mouse_axis_y_;
 
-			InputButton::mouse_t last_x_;
-			InputButton::mouse_t last_y_;
+			InputButton::Type last_x_;
+			InputButton::Type last_y_;
 
-			InputButton::mouse_t mouse_x_;
-			InputButton::mouse_t mouse_y_;
+			InputButton::Type mouse_x_;
+			InputButton::Type mouse_y_;
 
-			InputButton::mouse_t center_x_;
-			InputButton::mouse_t center_y_;
+			InputButton::Type center_x_;
+			InputButton::Type center_y_;
 
 			struct ButtonState
 			{

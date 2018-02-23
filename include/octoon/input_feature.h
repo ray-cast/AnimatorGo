@@ -2,7 +2,7 @@
 #define OCTOON_INPUT_FEATURE_H_
 
 #include <octoon/game_feature.h>
-#include <octoon/input/input.h>
+#include <octoon/input/iinput.h>
 
 namespace octoon
 {
@@ -30,7 +30,7 @@ namespace octoon
 		InputFeature& operator=(const InputFeature&) = delete;
 
 	private:
-		input::InputPtr input_;
+		input::IInputPtr input_;
 		input::WindHandle window_;
 	};
 }

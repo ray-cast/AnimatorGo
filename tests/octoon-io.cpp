@@ -2,20 +2,25 @@
 // Author: PENGUINLIONG
 #include <vector>
 #include <string>
-#include "octoon/io/filesystem.h"
+
+#include "octoon/io/ioserver.h"
 #include "octoon/io/fstream.h"
-#include "octoon/io/virtual_dirs.h"
+#include "octoon/io/zarchive.h"
+#include "octoon/io/farchive.h"
+
 #include "LiongPlus/Testing/UnitTest.hpp"
 
 using namespace LiongPlus::Testing;
 using namespace octoon::io;
 
-class OctoonIoTestObject : public TestObject {
+class OctoonIoTestObject : public TestObject
+{
   void Prepare() override {
+
     // Prepare virtual directories.
-    auto inst = FileSystem::instance();
-    inst->reg("dir", std::make_shared<LocalDir>("./testenv/io/octoon-file"));
-    inst->reg("zip", std::make_shared<ZipArchive>("./testenv/io/octoon-zip.zip"));
+    auto inst = IoServer::instance();
+    inst->mount_archive("dir", std::make_shared<farchive>("./testenv/io/octoon-file"));
+    inst->mount_archive("zip", std::make_shared<zarchive>("./testenv/io/octoon-zip.zip"));
   }
 
   static Orl gen_read_orl(size_t index) {
@@ -33,6 +38,7 @@ class OctoonIoTestObject : public TestObject {
     static std::vector<std::string> orls = {
       "dir:write.txt",
       "dir:created-dir/write.txt"
+
       // `ZipArchive` doesn't allow writing.
     };
     Orl out;
@@ -56,14 +62,14 @@ class OctoonIoTestObject : public TestObject {
   static void test_fstream_read(size_t orl_idx) {
     Logger::Info("Read test starts. Constructing `fstream`...");
     fstream file;
-    
+
     Logger::Info("Opening file...");
     ASSERT(file.open(gen_read_orl(orl_idx), OpenOptions().read()));
     std::string buf(4, 0);
 
     Logger::Info("Reading from file...");
     ASSERT(file.read((uint8_t*)buf.data(), buf.capacity()) == 4);
-    
+
     Logger::Info("Asserts.");
     ASSERT(buf == "Test");
   }
@@ -75,17 +81,17 @@ class OctoonIoTestObject : public TestObject {
     auto file_name = gen_write_orl(orl_idx);
     ASSERT(file.open(file_name, OpenOptions().create()));
     std::string write_buf = "Test";
-    
+
     Logger::Info("Writing to file...");
     ASSERT(file.write((const uint8_t*)write_buf.data(), write_buf.size()) == 4);
 
     Logger::Info("Opening file...");
     ASSERT(file.open(file_name, OpenOptions().read()));
     std::string read_buf(4, 0);
-    
+
     Logger::Info("Reading back from file...");
     ASSERT(file.read((uint8_t*)read_buf.data(), read_buf.capacity()));
-    
+
     Logger::Info("Asserts about reading.");
     ASSERT(read_buf == "Test");
     file.close();
@@ -102,15 +108,15 @@ class OctoonIoTestObject : public TestObject {
   }
   static void test_file_exists(size_t orl_idx) {
     auto orl = gen_read_orl(orl_idx);
-    auto inst = FileSystem::instance();
-    ASSERT(inst->get(orl)->exists(orl) == ItemType::File);
+    auto inst = IoServer::instance();
+    ASSERT(inst->get_archive(orl)->exists(orl) == ItemType::File);
   }
   static void test_dir_exists(size_t orl_idx) {
     auto orl = gen_dir_orl(orl_idx);
-    auto inst = FileSystem::instance();
-    ASSERT(inst->get(orl)->exists(orl) == ItemType::Directory);
+    auto inst = IoServer::instance();
+    ASSERT(inst->get_archive(orl)->exists(orl) == ItemType::Directory);
   }
-  
+
   void Test() override {
 
     // `Orl`.
@@ -174,18 +180,18 @@ class OctoonIoTestObject : public TestObject {
 
     Unit("fail_remove_file_wrong_type", []{
       auto orl = gen_write_orl(0);
-      ASSERT(!FileSystem::instance()->get(orl)->remove(orl, ItemType::Directory));
-      ASSERT(FileSystem::instance()->get(orl)->exists(orl) == ItemType::File);
+      ASSERT(!IoServer::instance()->get_archive(orl)->remove(orl, ItemType::Directory));
+      ASSERT(IoServer::instance()->get_archive(orl)->exists(orl) == ItemType::File);
     });
     Unit("test_remove_file", []{
       auto orl = gen_write_orl(0);
-      ASSERT(FileSystem::instance()->get(orl)->remove(orl, ItemType::File));
-      ASSERT(FileSystem::instance()->get(orl)->exists(orl) == ItemType::NA);
+      ASSERT(IoServer::instance()->get_archive(orl)->remove(orl, ItemType::File));
+      ASSERT(IoServer::instance()->get_archive(orl)->exists(orl) == ItemType::NA);
     });
     Unit("test_remove_dir_with_file", [] {
       auto orl = gen_write_orl(1).parent();
-      ASSERT(FileSystem::instance()->get(orl)->remove(orl, ItemType::Directory));
-      ASSERT(FileSystem::instance()->get(orl)->exists(orl) == ItemType::NA);
+      ASSERT(IoServer::instance()->get_archive(orl)->remove(orl, ItemType::Directory));
+      ASSERT(IoServer::instance()->get_archive(orl)->exists(orl) == ItemType::NA);
     });
   }
 };

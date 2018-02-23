@@ -33,8 +33,6 @@ SET(INPUT_CORE_LIST
 	${HEADER_PATH}/input_event.h
 	${SOURCE_PATH}/input_event.cpp
 	${HEADER_PATH}/input_key.h
-	${HEADER_PATH}/input.h
-	${SOURCE_PATH}/input.cpp
 	${HEADER_PATH}/input_types.h
 	${HEADER_PATH}/input_ps3.h
 	${HEADER_PATH}/input_xbox.h
@@ -62,6 +60,8 @@ SET(INPUT_DEFAULT_LIST
 	${SOURCE_PATH}/input_keyboard.cpp
 	${HEADER_PATH}/input_mouse.h
 	${SOURCE_PATH}/input_mouse.cpp
+	${HEADER_PATH}/input.h
+	${SOURCE_PATH}/input.cpp
 )
 SOURCE_GROUP("input\\default" FILES ${INPUT_DEFAULT_LIST})
 

@@ -147,11 +147,27 @@ namespace octoon
 		}
 
 		bool
-		GLFWInputKeyboard::get_key_state(InputKey::Code key) const noexcept
+		GLFWInputKeyboard::is_key_down(InputKey::Code key) const noexcept
 		{
 			if (!window_)
 				return false;
-			return ::glfwGetKey((GLFWwindow*)window_, InputKeyToVirtualKey(key)) == GLFW_PRESS ? true : false;;
+			return ::glfwGetKey((GLFWwindow*)window_, InputKeyToVirtualKey(key)) == GLFW_PRESS ? true : false;
+		}
+
+		bool
+		GLFWInputKeyboard::is_key_up(InputKey::Code key) const noexcept
+		{
+			if (!window_)
+				return false;
+			return ::glfwGetKey((GLFWwindow*)window_, InputKeyToVirtualKey(key)) == GLFW_PRESS ? false : true;
+		}
+
+		bool
+		GLFWInputKeyboard::is_key_pressed(InputKey::Code key) const noexcept
+		{
+			if (!window_)
+				return false;
+			return ::glfwGetKey((GLFWwindow*)window_, InputKeyToVirtualKey(key)) == GLFW_REPEAT ? true : false;
 		}
 
 		void
@@ -178,7 +194,7 @@ namespace octoon
 			}
 		}
 
-		InputKeyboardPtr
+		IInputKeyboardPtr
 		GLFWInputKeyboard::clone() const noexcept
 		{
 			return std::make_shared<GLFWInputKeyboard>();

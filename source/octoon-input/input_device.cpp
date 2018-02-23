@@ -41,7 +41,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputDevice::add_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInputDevice::add_input_listener(const IInputListenerPtr& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
@@ -53,7 +53,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputDevice::add_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInputDevice::add_input_listener(IInputListenerPtr&& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
@@ -65,7 +65,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputDevice::remove_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInputDevice::remove_input_listener(const IInputListenerPtr& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
@@ -77,7 +77,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputDevice::remove_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInputDevice::remove_input_listener(IInputListenerPtr&& listener) noexcept
 		{
 			assert(listener);
 			auto it = std::find(inputListeners_.begin(), inputListeners_.end(), listener);
@@ -181,7 +181,7 @@ namespace octoon
 			mutex_.unlock();
 		}
 
-		InputDevicePtr
+		IInputDevicePtr
 		DefaultInputDevice::clone() const noexcept
 		{
 			return std::make_shared<DefaultInputDevice>();

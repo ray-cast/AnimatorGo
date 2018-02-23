@@ -17,7 +17,6 @@
 
 namespace LiongPlus {
 namespace Testing {
-
 class Logger
 {
 public:
@@ -53,8 +52,10 @@ public:
 
 protected:
 	void Unit(const std::string& name, std::function<void()> unit);
+
 	// Return `true` if assertion failed.
 	static bool Assert(bool condition, const char* description = "");
+
 	// Return `true` if assumption failed.
 	static bool Assume(bool condition, const char* description = "");
 };
@@ -92,6 +93,11 @@ public:
 			_Results.push_back(result);
 		}
 
+		void Add(TestResult&& result)
+		{
+			_Results.push_back(std::move(result));
+		}
+
 		TestResult& Last()
 		{
 			return _Results.back();
@@ -99,6 +105,7 @@ public:
 	} Results;
 
 	static void Test(TestObject& obj);
+	static void Test(TestObject&& obj);
 
 	static void RunUnit(std::function<void(void)> unit);
 
@@ -108,7 +115,6 @@ private:
 	static std::mutex _Mutex;
 	static std::vector<TestResult> _Results;
 };
-
 } // namespace Testing
 } // namespace LiongPlus
 

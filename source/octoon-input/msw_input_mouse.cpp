@@ -26,7 +26,7 @@ namespace octoon
 		}
 
 		void
-		MSWInputMouse::getPosition(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
+		MSWInputMouse::get_position(InputButton::Type& x, InputButton::Type& y) const noexcept
 		{
 			POINT pt;
 			::GetCursorPos(&pt);
@@ -37,18 +37,18 @@ namespace octoon
 		}
 
 		bool
-		MSWInputMouse::isButtonDown(InputButton::Code key) const noexcept
+		MSWInputMouse::is_button_down(InputButton::Code key) const noexcept
 		{
-			bool down = DefaultInputMouse::isButtonDown(key);
+			bool down = DefaultInputMouse::is_button_down(key);
 			if (down)
 			{
 				switch (key)
 				{
-				case InputButton::LEFT:
+				case InputButton::Left:
 					return KEYUP(VK_LBUTTON) ? false : true;
-				case InputButton::RIGHT:
+				case InputButton::Right:
 					return KEYUP(VK_RBUTTON) ? false : true;
-				case InputButton::MIDDLE:
+				case InputButton::Middle:
 					return KEYUP(VK_MBUTTON) ? false : true;
 				default:
 					return down;
@@ -59,34 +59,34 @@ namespace octoon
 		}
 
 		bool
-		MSWInputMouse::isButtonUp(InputButton::Code key) const noexcept
+		MSWInputMouse::is_button_up(InputButton::Code key) const noexcept
 		{
 			switch (key)
 			{
-			case InputButton::LEFT:
+			case InputButton::Left:
 				return KEYUP(VK_LBUTTON);
-			case InputButton::RIGHT:
+			case InputButton::Right:
 				return KEYUP(VK_RBUTTON);
-			case InputButton::MIDDLE:
+			case InputButton::Middle:
 				return KEYUP(VK_MBUTTON);
 			default:
-				return DefaultInputMouse::isButtonUp(key);
+				return DefaultInputMouse::is_button_up(key);
 			}
 		}
 
 		bool
-		MSWInputMouse::isButtonPressed(InputButton::Code key) const noexcept
+		MSWInputMouse::is_button_pressed(InputButton::Code key) const noexcept
 		{
 			switch (key)
 			{
-			case InputButton::LEFT:
+			case InputButton::Left:
 				return KEYDOWN(VK_LBUTTON);
-			case InputButton::RIGHT:
+			case InputButton::Right:
 				return KEYDOWN(VK_RBUTTON);
-			case InputButton::MIDDLE:
+			case InputButton::Middle:
 				return KEYDOWN(VK_MBUTTON);
 			default:
-				return DefaultInputMouse::isButtonDown(key);
+				return DefaultInputMouse::is_button_pressed(key);
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace octoon
 		}
 
 		void
-		MSWInputMouse::onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		MSWInputMouse::onChangePosition(InputButton::Type x, InputButton::Type y) noexcept
 		{
 			if (focusWindow_)
 			{
@@ -117,7 +117,7 @@ namespace octoon
 		}
 
 		void
-		MSWInputMouse::onInputEvent(const InputEvent& event) noexcept
+		MSWInputMouse::on_input_event(const InputEvent& event) noexcept
 		{
 			switch (event.event)
 			{
@@ -137,10 +137,10 @@ namespace octoon
 				break;
 			}
 
-			DefaultInputMouse::onInputEvent(event);
+			DefaultInputMouse::on_input_event(event);
 		}
 
-		InputMousePtr
+		IInputMousePtr
 		MSWInputMouse::clone() const noexcept
 		{
 			return std::make_shared<MSWInputMouse>();

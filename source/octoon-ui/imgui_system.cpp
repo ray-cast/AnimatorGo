@@ -456,8 +456,8 @@ namespace octoon
 
 			context_->renderBegin();
 
-			context_->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context_->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context_->setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context_->setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 
 			context_->clearFramebuffer(0, GraphicsClearFlagBits::ColorBit, float4(0.1,0.2,0.3,1.0), 1, 0);
 
@@ -483,7 +483,7 @@ namespace octoon
 
 						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-						context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+						context_->setScissor(0, uint4(scissor.x, scissor.y, scissor.z, scissor.w));
 
 						context_->setRenderPipeline(pipeline_);
 						context_->setDescriptorSet(descriptor_set_);

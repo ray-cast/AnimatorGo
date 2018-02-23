@@ -15,9 +15,9 @@ namespace octoon
 			MSWInputMouse(WindHandle window) noexcept;
 			~MSWInputMouse() noexcept;
 
-			InputMousePtr clone() const noexcept;
+			IInputMousePtr clone() const noexcept;
 
-			void get_position(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept;
+			void get_position(InputButton::Type& x, InputButton::Type& y) const noexcept;
 
 			bool is_button_down(InputButton::Code key) const noexcept;
 			bool is_button_up(InputButton::Code key) const noexcept;
@@ -27,7 +27,7 @@ namespace octoon
 			void onShowMouse() noexcept;
 			void onHideMouse() noexcept;
 
-			void onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept;
+			void onChangePosition(InputButton::Type x, InputButton::Type y) noexcept;
 
 			void on_input_event(const InputEvent& event) noexcept;
 

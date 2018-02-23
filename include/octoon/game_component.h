@@ -37,11 +37,11 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept = 0;
 
 	protected:
-		void add_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void add_component_dispatch(GameDispatchTypes type, GameComponent* component) noexcept;
+		void add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
 
-		void remove_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void remove_component_dispatch(GameDispatchTypes type, GameComponent* component) noexcept;
+		void remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
 
 	private:
 		virtual void on_attach() except;

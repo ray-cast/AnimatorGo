@@ -31,11 +31,11 @@ namespace octoon
 			virtual void renderBegin() noexcept = 0;
 			virtual void renderEnd() noexcept = 0;
 
-			virtual void setViewport(std::uint32_t i, const Viewport& viewport) noexcept = 0;
-			virtual const Viewport& getViewport(std::uint32_t i) const noexcept = 0;
+			virtual void setViewport(std::uint32_t i, const float4& viewport) noexcept = 0;
+			virtual const float4& getViewport(std::uint32_t i) const noexcept = 0;
 
-			virtual void setScissor(std::uint32_t i, const Scissor& scissor) noexcept = 0;
-			virtual const Scissor& getScissor(std::uint32_t i) const noexcept = 0;
+			virtual void setScissor(std::uint32_t i, const uint4& scissor) noexcept = 0;
+			virtual const uint4& getScissor(std::uint32_t i) const noexcept = 0;
 
 			virtual void setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept = 0;
 			virtual std::uint32_t getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept = 0;

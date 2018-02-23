@@ -14,19 +14,19 @@ namespace octoon
 			GLFWInputDevice() noexcept;
 			~GLFWInputDevice() noexcept;
 
-			virtual void set_capture_object(WindHandle window) noexcept;
-			virtual WindHandle get_capture_object() const noexcept;
+			virtual void set_capture_object(WindHandle window) noexcept override;
+			virtual WindHandle get_capture_object() const noexcept override;
 
-			virtual bool peek_events(InputEvent& event) noexcept;
-			virtual bool poll_events(InputEvent& event) noexcept;
-			virtual bool wait_events(InputEvent& event) noexcept;
-			virtual bool wait_events(InputEvent& event, int timeout) noexcept;
+			virtual bool peek_events(InputEvent& event) noexcept override;
+			virtual bool poll_events(InputEvent& event) noexcept override;
+			virtual bool wait_events(InputEvent& event) noexcept override;
+			virtual bool wait_events(InputEvent& event, int timeout) noexcept override;
 			virtual void flush_event() noexcept;
 
-			virtual InputDevicePtr clone() const noexcept;
+			virtual IInputDevicePtr clone() const noexcept override;
 
 		private:
-			virtual void update() noexcept;
+			void update() noexcept;
 
 		private:
 			GLFWInputDevice(const GLFWInputDevice&) noexcept = delete;

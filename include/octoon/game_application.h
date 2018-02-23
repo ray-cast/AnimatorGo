@@ -37,6 +37,21 @@ namespace octoon
 
 		void send_input_event(const input::InputEvent& event) except;
 
+		void do_window_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
+		void do_window_framebuffer_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
+		void do_window_close(WindHandle window) except;
+		void do_window_focus(WindHandle window, bool focus) except;
+		void do_window_key_down(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void do_window_key_up(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void do_window_key_press(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void do_window_key_char(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except;
+		void do_window_mouse_button_down(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void do_window_mouse_button_up(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void do_window_mouse_button_double_click(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void do_window_mouse_motion(WindHandle window, float x, float y) except;
+		void do_window_scrool(WindHandle window, float x, float y) except;
+		void do_window_drop(WindHandle window, std::uint32_t count, const char** file_utf8) except;
+
 		void update() except;
 
 	protected:

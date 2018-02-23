@@ -30,7 +30,7 @@ namespace octoon
 		GameScenePtr clone() const noexcept;
 
 	private:
-		class RootObject : public GameObject
+		class RootObject final : public GameObject
 		{
 		public:
 			RootObject(GameScene* scene) noexcept;

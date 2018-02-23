@@ -26,8 +26,8 @@ namespace octoon
 
 			virtual float get_axis(InputAxis::Code axis) const noexcept = 0;
 
-			virtual void set_mouse_pos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept = 0;
-			virtual void get_mouse_pos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept = 0;
+			virtual void set_mouse_pos(InputButton::Type x, InputButton::Type y) noexcept = 0;
+			virtual void get_mouse_pos(InputButton::Type& x, InputButton::Type& y) const noexcept = 0;
 
 			virtual bool is_key_down(InputKey::Code key) const noexcept = 0;
 			virtual bool is_key_up(InputKey::Code key) const noexcept = 0;

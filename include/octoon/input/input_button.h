@@ -10,28 +10,28 @@ namespace octoon
 		class InputButton
 		{
 		public:
-			using mouse_t = float;
+			using Type = float;
 
 			enum Code
 			{
-				LEFT,
-				RIGHT,
-				MIDDLE,
+				Left = 0,
+				Right,
+				Middle,
 
-				MOUSE0 = 0,
-				MOUSE1,
-				MOUSE2,
-				MOUSE3,
-				MOUSE4,
-				MOUSE5,
-				MOUSE6,
-				MOUSE7,
-				MOUSE8,
-				MOUSEWHEEL,
-				MOUSEX,
-				MOUSEY,
-				MOUSEZ,
-				MOUSELAST,
+				Mouse0 = Left,
+				Mouse1 = Right,
+				Mouse2 = Middle,
+				Mouse3,
+				Mouse4,
+				Mouse5,
+				Mouse6,
+				Mouse7,
+				Mouse8,
+				MouseWheel,
+				MouseX,
+				MouseY,
+				MouseZ,
+				MouseLast,
 
 				NumButtonCodes,
 			};

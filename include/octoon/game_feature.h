@@ -12,7 +12,7 @@ namespace octoon
 		GameFeature() noexcept;
 		virtual ~GameFeature() noexcept;
 
-		void set_active(bool active)  except;
+		void set_active(bool active) except;
 		bool get_active() noexcept;
 
 		const GameListenerPtr& get_game_listener() const noexcept;

@@ -19,9 +19,6 @@ namespace octoon
 		using uint3 = math::uint3;
 		using uint4 = math::uint4;
 
-		using Scissor = math::uint4;
-		using Viewport = math::float4;
-
 		using float1 = math::float1;
 		using float2 = math::float2;
 		using float3 = math::float3;

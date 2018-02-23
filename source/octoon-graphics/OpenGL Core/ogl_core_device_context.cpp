@@ -106,7 +106,7 @@ namespace octoon
 		}
 
 		void
-		OGLCoreDeviceContext::setViewport(std::uint32_t i, const Viewport& view) noexcept
+		OGLCoreDeviceContext::setViewport(std::uint32_t i, const float4& view) noexcept
 		{
 			assert(_glcontext->getActive());
 
@@ -117,14 +117,14 @@ namespace octoon
 			}
 		}
 
-		const Viewport&
+		const float4&
 		OGLCoreDeviceContext::getViewport(std::uint32_t i) const noexcept
 		{
 			return _viewports[i];
 		}
 
 		void
-		OGLCoreDeviceContext::setScissor(std::uint32_t i, const Scissor& scissor) noexcept
+		OGLCoreDeviceContext::setScissor(std::uint32_t i, const uint4& scissor) noexcept
 		{
 			assert(_glcontext->getActive());
 
@@ -141,7 +141,7 @@ namespace octoon
 			}
 		}
 
-		const Scissor&
+		const uint4&
 		OGLCoreDeviceContext::getScissor(std::uint32_t i) const noexcept
 		{
 			return _scissors[i];
@@ -413,7 +413,7 @@ namespace octoon
 					std::uint32_t viewportCount = std::max<std::uint32_t>(1, static_cast<std::uint32_t>(colorAttachment.size()));
 					for (std::uint32_t i = 0; i < viewportCount; i++)
 					{
-						this->setViewport(i, Viewport(0.0f, 0.0f, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
+						this->setViewport(i, float4(0.0f, 0.0f, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
 
 						glScissorIndexed(i, _scissors[i].left, framebufferDesc.getHeight() - _scissors[i].height - _scissors[i].top, _scissors[i].width, _scissors[i].height);
 					}
@@ -546,7 +546,7 @@ namespace octoon
 		}
 
 		void
-		OGLCoreDeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const Viewport& v1, const GraphicsFramebufferPtr& dest, const Viewport& v2) noexcept
+		OGLCoreDeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept
 		{
 			assert(src);
 			assert(src->is_instance_of<OGLCoreFramebuffer>());
@@ -921,8 +921,8 @@ namespace octoon
 
 			auto& deviceProperties = this->getDevice()->getGraphicsDeviceProperty().getGraphicsDeviceProperties();
 			_vertexBuffers.resize(deviceProperties.maxVertexInputBindings);
-			_viewports.resize(deviceProperties.maxViewports, Viewport(0, 0, 0, 0));
-			_scissors.resize(deviceProperties.maxViewports, Scissor(0, 0, 0, 0));
+			_viewports.resize(deviceProperties.maxViewports, float4::Zero);
+			_scissors.resize(deviceProperties.maxViewports, uint4::Zero);
 			_clearColor.resize(deviceProperties.maxFramebufferColorAttachments, float4(0.0f, 0.0f, 0.0f, 0.0f));
 
 			GraphicsColorBlends blends(deviceProperties.maxFramebufferColorAttachments);

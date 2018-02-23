@@ -14,6 +14,7 @@ namespace octoon
 
 	GameFeature::~GameFeature() noexcept
 	{
+		assert(!is_actived_);
 	}
 
 	void

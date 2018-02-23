@@ -64,8 +64,8 @@ namespace octoon
 		void remove_component(const GameComponentPtr& component) noexcept;
 		void cleanup_components() noexcept;
 
-		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
+		void remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
 		void remove_component_dispatchs(const GameComponentPtr& component) noexcept;
 
 		void destroy() noexcept;

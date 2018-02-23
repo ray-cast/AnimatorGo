@@ -242,14 +242,14 @@ namespace octoon
 		}
 
 		void
-		MSWInputDevice::setCaptureObject(WindHandle window) noexcept
+		MSWInputDevice::set_capture_object(WindHandle window) noexcept
 		{
 			assert(::IsWindow((HWND)window));
 			window_ = (HWND)window;
 		}
 
 		WindHandle
-		MSWInputDevice::getCaptureObject() const noexcept
+		MSWInputDevice::get_capture_object() const noexcept
 		{
 			return window_;
 		}
@@ -295,7 +295,7 @@ namespace octoon
 							inputEvent.key.keysym.unicode = 0;
 					}
 
-					this->sendEvent(inputEvent);
+					this->send_event(inputEvent);
 				}
 				break;
 				case WM_MOUSEMOVE:
@@ -314,10 +314,10 @@ namespace octoon
 					inputEvent.motion.timestamp = ::timeGetTime();
 					inputEvent.button.button = button_;
 
-					mouseX_ = LOWORD(msg.lParam);
-					mouseY_ = HIWORD(msg.lParam);
+					mouse_x_ = LOWORD(msg.lParam);
+					mouse_y_ = HIWORD(msg.lParam);
 
-					this->sendEvent(inputEvent);
+					this->send_event(inputEvent);
 				}
 				break;
 				case WM_LBUTTONDOWN:
@@ -330,23 +330,23 @@ namespace octoon
 					inputEvent.event = InputEvent::MouseButtonDown;
 					inputEvent.button.windowID = (std::uint64_t)msg.hwnd;
 					inputEvent.button.clicks = isButtonPress_ = true;
-					inputEvent.button.x = mouseX_;
-					inputEvent.button.y = mouseY_;
+					inputEvent.button.x = mouse_x_;
+					inputEvent.button.y = mouse_y_;
 					inputEvent.button.timestamp = ::timeGetTime();
 					switch (msg.message)
 					{
 					case WM_LBUTTONDOWN:
-						button_ = inputEvent.button.button = InputButton::LEFT;
+						button_ = inputEvent.button.button = InputButton::Left;
 						break;
 					case WM_MBUTTONDOWN:
-						button_ = inputEvent.button.button = InputButton::MIDDLE;
+						button_ = inputEvent.button.button = InputButton::Middle;
 						break;
 					case WM_RBUTTONDOWN:
-						button_ = inputEvent.button.button = InputButton::RIGHT;
+						button_ = inputEvent.button.button = InputButton::Right;
 						break;
 					}
 
-					this->sendEvent(inputEvent);
+					this->send_event(inputEvent);
 				}
 				break;
 				case WM_LBUTTONUP:
@@ -358,25 +358,25 @@ namespace octoon
 					InputEvent inputEvent;
 					inputEvent.event = InputEvent::MouseButtonUp;
 					inputEvent.button.clicks = isButtonPress_ = false;
-					inputEvent.button.x = mouseX_;
-					inputEvent.button.y = mouseY_;
+					inputEvent.button.x = mouse_x_;
+					inputEvent.button.y = mouse_y_;
 					inputEvent.button.timestamp = ::timeGetTime();
 					switch (msg.message)
 					{
 					case WM_LBUTTONUP:
-						button_ = inputEvent.button.button = InputButton::LEFT;
+						button_ = inputEvent.button.button = InputButton::Left;
 						break;
 					case WM_MBUTTONUP:
-						button_ = inputEvent.button.button = InputButton::MIDDLE;
+						button_ = inputEvent.button.button = InputButton::Middle;
 						break;
 					case WM_RBUTTONUP:
-						button_ = inputEvent.button.button = InputButton::RIGHT;
+						button_ = inputEvent.button.button = InputButton::Right;
 						break;
 					default:
 						assert(false);
 					}
 
-					this->sendEvent(inputEvent);
+					this->send_event(inputEvent);
 				}
 				break;
 				}
@@ -387,38 +387,38 @@ namespace octoon
 		}
 
 		bool
-		MSWInputDevice::peekEvents(InputEvent& event) noexcept
+		MSWInputDevice::peek_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::peekEvents(event);
+			return DefaultInputDevice::peek_events(event);
 		}
 
 		bool
-		MSWInputDevice::pollEvents(InputEvent& event) noexcept
+		MSWInputDevice::poll_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::pollEvents(event);
+			return DefaultInputDevice::poll_events(event);
 		}
 
 		bool
-		MSWInputDevice::waitEvents(InputEvent& event) noexcept
+		MSWInputDevice::wait_events(InputEvent& event) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::pollEvents(event);
+			return DefaultInputDevice::poll_events(event);
 		}
 
 		bool
-		MSWInputDevice::waitEvents(InputEvent& event, int time) noexcept
+		MSWInputDevice::wait_events(InputEvent& event, int time) noexcept
 		{
 			this->update();
-			return DefaultInputDevice::waitEvents(event, time);
+			return DefaultInputDevice::wait_events(event, time);
 		}
 
 		void
-		MSWInputDevice::flushEvent() noexcept
+		MSWInputDevice::flush_event() noexcept
 		{
 			this->update();
-			DefaultInputDevice::flushEvent();
+			DefaultInputDevice::flush_event();
 		}
 
 		InputDevicePtr

@@ -25,8 +25,8 @@ namespace octoon
 
 			virtual float get_axis(InputAxis::Code axis) const noexcept = 0;
 
-			virtual void set_position(InputButton::mouse_t x, InputButton::mouse_t y) noexcept = 0;
-			virtual void get_position(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept = 0;
+			virtual void set_position(InputButton::Type x, InputButton::Type y) noexcept = 0;
+			virtual void get_position(InputButton::Type& x, InputButton::Type& y) const noexcept = 0;
 
 			virtual bool is_button_down(InputButton::Code key) const noexcept = 0;
 			virtual bool is_button_up(InputButton::Code key) const noexcept = 0;

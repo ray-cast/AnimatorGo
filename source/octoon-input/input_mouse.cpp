@@ -113,7 +113,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputMouse::set_position(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		DefaultInputMouse::set_position(InputButton::Type x, InputButton::Type y) noexcept
 		{
 			mouse_x_ = x;
 			mouse_y_ = y;
@@ -121,7 +121,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputMouse::get_position(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
+		DefaultInputMouse::get_position(InputButton::Type& x, InputButton::Type& y) const noexcept
 		{
 			x = mouse_x_;
 			y = mouse_y_;
@@ -226,7 +226,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInputMouse::onChangePosition(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		DefaultInputMouse::onChangePosition(InputButton::Type x, InputButton::Type y) noexcept
 		{
 		}
 
@@ -281,7 +281,7 @@ namespace octoon
 				last_x_ = mouse_x_;
 				last_y_ = mouse_y_;
 
-				auto& key = this->button_state_[InputButton::MOUSEWHEEL];
+				auto& key = this->button_state_[InputButton::MouseWheel];
 				key.up = false;
 				key.down = true;
 				key.pressed = false;
@@ -294,7 +294,7 @@ namespace octoon
 				last_x_ = mouse_x_;
 				last_y_ = mouse_y_;
 
-				auto& key = this->button_state_[InputButton::MOUSEWHEEL];
+				auto& key = this->button_state_[InputButton::MouseWheel];
 				key.up = true;
 				key.pressed = false;
 				key.down = false;
@@ -317,8 +317,8 @@ namespace octoon
 				break;
 			case InputEvent::SizeChange:
 			{
-				center_x_ = static_cast<InputButton::mouse_t>(event.change.w >> 1);
-				center_y_ = static_cast<InputButton::mouse_t>(event.change.h >> 1);
+				center_x_ = static_cast<InputButton::Type>(event.change.w >> 1);
+				center_y_ = static_cast<InputButton::Type>(event.change.h >> 1);
 			}
 			break;
 			default:

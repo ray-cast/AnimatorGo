@@ -144,14 +144,14 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::set_mouse_pos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		DefaultInput::set_mouse_pos(InputButton::Type x, InputButton::Type y) noexcept
 		{
 			if (mouse_capture_device_)
 				mouse_capture_device_->set_position(x, y);
 		}
 
 		void
-		DefaultInput::get_mouse_pos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
+		DefaultInput::get_mouse_pos(InputButton::Type& x, InputButton::Type& y) const noexcept
 		{
 			if (mouse_capture_device_)
 				mouse_capture_device_->get_position(x, y);

@@ -7,21 +7,40 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/contrib/zipper)
 
 SET(IO_LIST
+	${HEADER_PATH}/fcntl.h
+	${HEADER_PATH}/file.h
+	${SOURCE_PATH}/file.cpp
+	${HEADER_PATH}/iosbase.h
+	${SOURCE_PATH}/iosbase.cpp
+	${HEADER_PATH}/ioserver.h
+	${SOURCE_PATH}/ioserver.cpp
+	${HEADER_PATH}/ori.h
+	${SOURCE_PATH}/ori.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\core FILES ${IO_LIST})
+
+SET(STREAM_LIST
 	${HEADER_PATH}/stream.h
 	${SOURCE_PATH}/stream.cpp
 	${HEADER_PATH}/mstream.h
 	${SOURCE_PATH}/mstream.cpp
 	${HEADER_PATH}/fstream.h
 	${SOURCE_PATH}/fstream.cpp
-	${HEADER_PATH}/filesystem.h
-	${SOURCE_PATH}/filesystem.cpp
-	${HEADER_PATH}/virtual_dirs.h
-	${SOURCE_PATH}/virtual_dirs.cpp
 )
-SOURCE_GROUP(${LIB_NAME} FILES ${IO_LIST})
+SOURCE_GROUP(${LIB_NAME}\\stream FILES ${STREAM_LIST})
+
+SET(ARCHIVE_LIST
+	${HEADER_PATH}/archive.h
+	${SOURCE_PATH}/archive.cpp
+	${HEADER_PATH}/zarchive.h
+	${SOURCE_PATH}/zarchive.cpp
+	${HEADER_PATH}/farchive.h
+	${SOURCE_PATH}/farchive.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\archive FILES ${ARCHIVE_LIST})
 
 ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
-ADD_LIBRARY(${LIB_OUTNAME} SHARED ${IO_LIST})
+ADD_LIBRARY(${LIB_OUTNAME} SHARED ${IO_LIST} ${STREAM_LIST} ${ARCHIVE_LIST})
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE zipper)
 

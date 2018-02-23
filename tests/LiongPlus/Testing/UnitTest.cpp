@@ -13,7 +13,6 @@ std::mutex UnitTest::_Mutex;
 std::vector<TestResult> UnitTest::_Results;
 UnitTest::ResultsObject UnitTest::Results;
 
-
 void Logger::Log(std::string label, std::string msg) {
   *UnitTest::Results.Last().Log << DateTime::GetRfc3339(time(nullptr)) << " " << label << " " << msg << std::endl;
 }
@@ -80,15 +79,13 @@ bool TestObject::Assert(bool condition, const char* description) {
   return !condition;
 }
 bool TestObject::Assume(bool condition, const char* description) {
-  if (condition) {      
+  if (condition) {
     UnitTest::Results.Last().State = TestState::Skipped;
     *UnitTest::Results.Last().Log << "[INVALID INPUT] " <<
       description << std::endl;
   }
   return !condition;
 }
-
-
 
 TestResult::TestResult() :
   Log(std::make_shared<std::stringstream>()),
@@ -129,12 +126,16 @@ bool TestResult::operator==(TestResult& value) {
   return Name == value.Name;
 }
 
-
-
 void UnitTest::Test(TestObject& obj) {
   obj.Prepare();
   obj.Test();
   obj.CleanUp();
+}
+
+void UnitTest::Test(TestObject&& obj) {
+	obj.Prepare();
+	obj.Test();
+	obj.CleanUp();
 }
 
 void UnitTest::RunUnit(std::function<void(void)> unit) {
@@ -156,7 +157,7 @@ void UnitTest::RunUnit(std::function<void(void)> unit) {
 }
 
 std::string UnitTest::Summary() {
-  std::lock_guard<std::mutex> guard(_Mutex);  
+  std::lock_guard<std::mutex> guard(_Mutex);
   long passed = 0;
   for (auto& result : _Results) {
     if (result.State == TestState::Passed) {
@@ -174,6 +175,6 @@ std::vector<int> UnitTest::ListResultId(TestState state) {
     }
   }
   return list;
-} 
+}
 } // namespace Testing
 } // namespace LiongPlus

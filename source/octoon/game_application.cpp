@@ -144,10 +144,8 @@ namespace octoon
 		{
 			if (game_server_)
 				game_server_->set_game_listener(listener);
-			else
-				throw runtime::runtime_error::create("please call open() before set_game_listener()");
 
-			game_listener_ = game_server_->get_game_listener();
+			game_listener_ = std::move(listener);
 		}
 	}
 
@@ -158,10 +156,8 @@ namespace octoon
 		{
 			if (game_server_)
 				game_server_->set_game_listener(listener);
-			else
-				throw runtime::runtime_error::create("please call open() before set_game_listener()");
 
-			game_listener_ = game_server_->get_game_listener();
+			game_listener_ = listener;
 		}
 	}
 

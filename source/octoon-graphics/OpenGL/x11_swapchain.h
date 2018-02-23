@@ -53,8 +53,6 @@ namespace octoon
 
 			GraphicsSwapchainDesc _swapchainDesc;
 			GraphicsDeviceWeakPtr _device;
-
-			static XGLSwapchain* _swapchain;
 		};
 	}
 }

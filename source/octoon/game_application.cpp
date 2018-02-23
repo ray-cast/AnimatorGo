@@ -379,7 +379,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_button_down(WindHandle window, int button, double x, double y) except
+	GameApplication::do_window_mouse_button_down(WindHandle window, int button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDown;
@@ -396,7 +396,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_button_up(WindHandle window, int button, double x, double y) except
+	GameApplication::do_window_mouse_button_up(WindHandle window, int button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonUp;
@@ -413,7 +413,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_double_click(WindHandle window, int button, double x, double y) except
+	GameApplication::do_window_mouse_double_click(WindHandle window, int button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDoubleClick;
@@ -430,7 +430,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_mouse_motion(WindHandle window, double x, double y) except
+	GameApplication::do_window_mouse_motion(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseMotion;
@@ -446,7 +446,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::do_window_scrool(WindHandle window, double x, double y) except
+	GameApplication::do_window_scrool(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;

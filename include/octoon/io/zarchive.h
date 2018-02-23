@@ -20,10 +20,10 @@ namespace octoon
 		public:
 			zarchive(const std::string& zip_file);
 			~zarchive();
-			std::unique_ptr<stream> open(const Orl& orl,
-				const OpenOptions& options) override;
+			std::unique_ptr<stream> open(const Orl& orl, const OpenOptions& options) override;
 			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
 			ItemType exists(const Orl& orl) override;
+
 		private:
 
 			// Hide unzipper.

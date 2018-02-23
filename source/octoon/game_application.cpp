@@ -6,6 +6,7 @@
 #include <octoon/runtime/rtti_factory.h>
 
 #include <iostream>
+#include <chrono>
 
 #if OCTOON_FEATURE_TIMER_ENABLE
 #	include <octoon/timer_feature.h>
@@ -253,5 +254,218 @@ namespace octoon
 	{
 		if (game_listener_)
 			game_listener_->on_message(message);
+	}
+
+	void
+	GameApplication::do_window_resize(WindHandle window, int w, int h) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::SizeChange;
+		event.change.w = w;
+		event.change.h = h;
+		event.change.windowID = (std::uint64_t)window;
+		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_framebuffer_resize(WindHandle window, int w, int h) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::SizeChangeDPI;
+		event.change.w = w;
+		event.change.h = h;
+		event.change.windowID = (std::uint64_t)window;
+		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_close(WindHandle window) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::AppQuit;
+		event.window.windowID = (std::uint64_t)window;
+		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_focus(WindHandle window, bool focus) except
+	{
+		octoon::input::InputEvent event;
+		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
+		event.window.windowID = (std::uint64_t)window;
+		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_key_down(WindHandle window, int key, int scancode, int mods) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::KeyDown;
+		event.key.windowID = (std::uint64_t)window;
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.padding2 = 0;
+		event.key.padding3 = 0;
+		event.key.repeat = false;
+		event.key.state = true;
+		event.key.keysym.raw = scancode;
+		event.key.keysym.sym = key;
+		event.key.keysym.mod = mods;
+		event.key.keysym.unicode = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_key_up(WindHandle window, int key, int scancode, int mods) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::KeyUp;
+		event.key.windowID = (std::uint64_t)window;
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.padding2 = 0;
+		event.key.padding3 = 0;
+		event.key.repeat = false;
+		event.key.state = false;
+		event.key.keysym.raw = scancode;
+		event.key.keysym.sym = key;
+		event.key.keysym.mod = mods;
+		event.key.keysym.unicode = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_key_press(WindHandle window, int key, int scancode, int mods) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::KeyDown;
+		event.key.windowID = (std::uint64_t)window;
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.padding2 = 0;
+		event.key.padding3 = 0;
+		event.key.repeat = true;
+		event.key.state = false;
+		event.key.keysym.raw = scancode;
+		event.key.keysym.sym = key;
+		event.key.keysym.mod = mods;
+		event.key.keysym.unicode = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_key_char(WindHandle window, unsigned int unicode, int mods) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::Character;
+		event.key.windowID = (std::uint64_t)window;
+		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.key.padding2 = 0;
+		event.key.padding3 = 0;
+		event.key.repeat = 0;
+		event.key.state = true;
+		event.key.keysym.raw = 0;
+		event.key.keysym.sym = 0;
+		event.key.keysym.mod = mods;
+		event.key.keysym.unicode = unicode;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_mouse_button_down(WindHandle window, int button, double x, double y) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::MouseButtonDown;
+		event.button.button = button;
+		event.button.clicks = true;
+		event.button.x = x;
+		event.button.y = y;
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.windowID = (std::uint64_t)window;
+		event.button.padding1 = 0;
+		event.button.which = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_mouse_button_up(WindHandle window, int button, double x, double y) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::MouseButtonUp;
+		event.button.button = button;
+		event.button.clicks = false;
+		event.button.x = x;
+		event.button.y = y;
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.windowID = (std::uint64_t)window;
+		event.button.padding1 = 0;
+		event.button.which = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_mouse_double_click(WindHandle window, int button, double x, double y) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::MouseButtonDoubleClick;
+		event.button.button = button;
+		event.button.clicks = true;
+		event.button.x = x;
+		event.button.y = y;
+		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.button.windowID = (std::uint64_t)window;
+		event.button.padding1 = 0;
+		event.button.which = 0;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_mouse_motion(WindHandle window, double x, double y) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::MouseMotion;
+		event.motion.x = x;
+		event.motion.y = y;
+		event.motion.xrel = x;
+		event.motion.yrel = y;
+		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.motion.state = false;
+		event.motion.windowID = (std::uint64_t)window;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_scrool(WindHandle window, double x, double y) except
+	{
+		octoon::input::InputEvent event;
+		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
+		event.wheel.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.wheel.windowID = (std::uint64_t)window;
+
+		this->send_input_event(event);
+	}
+
+	void
+	GameApplication::do_window_drop(WindHandle window, int count, const char** file_utf8) except
+	{
+		octoon::input::InputEvent event;
+		event.event = octoon::input::InputEvent::Drop;
+		event.drop.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		event.drop.count = count;
+		event.drop.files = file_utf8;
+		event.drop.windowID = (std::uint64_t)window;
+
+		this->send_input_event(event);
 	}
 }

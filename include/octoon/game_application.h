@@ -37,6 +37,21 @@ namespace octoon
 
 		void send_input_event(const input::InputEvent& event) except;
 
+		void do_window_resize(WindHandle window, int w, int h) except;
+		void do_window_framebuffer_resize(WindHandle window, int w, int h) except;
+		void do_window_close(WindHandle window) except;
+		void do_window_focus(WindHandle window, bool focus) except;
+		void do_window_key_down(WindHandle window, int key, int scancode, int mods) except;
+		void do_window_key_up(WindHandle window, int key, int scancode, int mods) except;
+		void do_window_key_press(WindHandle window, int key, int scancode, int mods) except;
+		void do_window_key_char(WindHandle window, unsigned int unicode, int mods) except;
+		void do_window_mouse_button_down(WindHandle window, int button, double x, double y) except;
+		void do_window_mouse_button_up(WindHandle window, int button, double x, double y) except;
+		void do_window_mouse_motion(WindHandle window, double x, double y) except;
+		void do_window_mouse_double_click(WindHandle window, int button, double x, double y) except;
+		void do_window_scrool(WindHandle window, double x, double y) except;
+		void do_window_drop(WindHandle window, int count, const char** file_utf8) except;
+
 		void update() except;
 
 	protected:

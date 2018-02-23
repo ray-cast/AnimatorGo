@@ -166,16 +166,16 @@ namespace octoon
 		}
 
 		GLenum
-		OGLTypes::asShaderStage(GraphicsShaderStageFlagBits stage) noexcept
+		OGLTypes::asShaderStage(GraphicsShaderStageFlags stage) noexcept
 		{
 			switch (stage)
 			{
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit:         return GL_VERTEX_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit:       return GL_FRAGMENT_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit:        return GL_COMPUTE_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit:       return GL_GEOMETRY_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageTessControlBit:    return GL_TESS_CONTROL_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageTessEvaluationBit: return GL_TESS_EVALUATION_SHADER;
+			case GraphicsShaderStageFlagBits::VertexBit:         return GL_VERTEX_SHADER;
+			case GraphicsShaderStageFlagBits::FragmentBit:       return GL_FRAGMENT_SHADER;
+			case GraphicsShaderStageFlagBits::ComputeBit:        return GL_COMPUTE_SHADER;
+			case GraphicsShaderStageFlagBits::GeometryBit:       return GL_GEOMETRY_SHADER;
+			case GraphicsShaderStageFlagBits::TessControlBit:    return GL_TESS_CONTROL_SHADER;
+			case GraphicsShaderStageFlagBits::TessEvaluationBit: return GL_TESS_EVALUATION_SHADER;
 			default:
 				assert(false);
 				return GL_INVALID_ENUM;

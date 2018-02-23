@@ -57,19 +57,19 @@ namespace octoon
 			auto usage = desc.getUsage();
 
 			GLbitfield flags = GL_MAP_READ_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+			if (usage & GraphicsUsageFlagBits::ReadBit)
 				flags |= GL_MAP_READ_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit)
+			if (usage & GraphicsUsageFlagBits::WriteBit)
 				flags |= GL_MAP_WRITE_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagPersistentBit)
+			if (usage & GraphicsUsageFlagBits::PersistentBit)
 				flags |= GL_MAP_PERSISTENT_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagCoherentBit)
+			if (usage & GraphicsUsageFlagBits::CoherentBit)
 				flags |= GL_MAP_COHERENT_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagFlushExplicitBit)
+			if (usage & GraphicsUsageFlagBits::FlushExplicitBit)
 				flags |= GL_MAP_FLUSH_EXPLICIT_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagDynamicStorageBit)
+			if (usage & GraphicsUsageFlagBits::DynamicStorageBit)
 				flags |= GL_DYNAMIC_STORAGE_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagClientStorageBit)
+			if (usage & GraphicsUsageFlagBits::ClientStorageBit)
 				flags |= GL_CLIENT_STORAGE_BIT;
 
 			glNamedBufferStorage(_buffer, desc.getStreamSize(), desc.getStream(), flags);
@@ -118,21 +118,21 @@ namespace octoon
 			GLbitfield flags = 0;
 
 			auto usage = _desc.getUsage();
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+			if (usage & GraphicsUsageFlagBits::ReadBit)
 				flags |= GL_MAP_READ_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit)
+			if (usage & GraphicsUsageFlagBits::WriteBit)
 				flags |= GL_MAP_WRITE_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagPersistentBit)
+			if (usage & GraphicsUsageFlagBits::PersistentBit)
 				flags |= GL_MAP_PERSISTENT_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagCoherentBit)
+			if (usage & GraphicsUsageFlagBits::CoherentBit)
 				flags |= GL_MAP_COHERENT_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagFlushExplicitBit)
+			if (usage & GraphicsUsageFlagBits::FlushExplicitBit)
 				flags |= GL_MAP_FLUSH_EXPLICIT_BIT;
 
-			if (!_data && usage & GraphicsUsageFlagBits::GraphicsUsageFlagPersistentBit)
+			if (!_data && usage & GraphicsUsageFlagBits::PersistentBit)
 				_data = glMapNamedBuffer(_buffer, flags);
 
-			if (_data && usage & GraphicsUsageFlagBits::GraphicsUsageFlagPersistentBit)
+			if (_data && usage & GraphicsUsageFlagBits::PersistentBit)
 			{
 				*data = (std::uint8_t*)_data + offset;
 				return true;
@@ -146,7 +146,7 @@ namespace octoon
 		OGLCoreGraphicsData::unmap() noexcept
 		{
 			auto usage = _desc.getUsage();
-			if (!(usage & GraphicsUsageFlagBits::GraphicsUsageFlagPersistentBit))
+			if (!(usage & GraphicsUsageFlagBits::PersistentBit))
 				glUnmapNamedBuffer(_buffer);
 			_data = nullptr;
 		}

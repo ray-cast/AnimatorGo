@@ -45,10 +45,10 @@ namespace octoon
 					destBlend.setBlendEnable(false);
 				}
 
-				if (destBlend.getColorWriteMask() != GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit)
+				if (destBlend.getColorWriteMask() != GraphicsColorMaskFlagBits::RGBABit)
 				{
 					glColorMaski(i, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-					destBlend.setColorWriteMask(GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit);
+					destBlend.setColorWriteMask(GraphicsColorMaskFlagBits::RGBABit);
 				}
 			}
 
@@ -122,10 +122,10 @@ namespace octoon
 				{
 					auto flags = srcBlend.getColorWriteMask();
 
-					GLboolean r = flags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRedBit ? GL_TRUE : GL_FALSE;
-					GLboolean g = flags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagGreendBit ? GL_TRUE : GL_FALSE;
-					GLboolean b = flags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagBlurBit ? GL_TRUE : GL_FALSE;
-					GLboolean a = flags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagAlphaBit ? GL_TRUE : GL_FALSE;
+					GLboolean r = flags & GraphicsColorMaskFlagBits::RedBit ? GL_TRUE : GL_FALSE;
+					GLboolean g = flags & GraphicsColorMaskFlagBits::GreendBit ? GL_TRUE : GL_FALSE;
+					GLboolean b = flags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
+					GLboolean a = flags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
 
 					glColorMaski(i, r, g, b, a);
 

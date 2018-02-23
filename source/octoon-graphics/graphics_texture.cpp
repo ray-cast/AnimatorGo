@@ -19,7 +19,7 @@ namespace octoon
 			, _filterMag(GraphicsSamplerFilter::Linear)
 			, _wrap(GraphicsSamplerWrap::Repeat)
 			, _anis(GraphicsSamplerAnis::Anis0)
-			, _textureUsage(GraphicsViewUsageFlagBits::GraphicsViewUsageFlagBitsSampledBit)
+			, _textureUsage(GraphicsViewUsageFlagBits::SampledBit)
 			, _tiling(GraphicsImageTiling::Optimal)
 			, _data(nullptr)
 			, _dataSize(0)

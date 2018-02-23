@@ -261,14 +261,17 @@ namespace octoon
 			RevSubtract = 2,
 		};
 
-		enum GraphicsColorMaskFlagBits
+		struct GraphicsColorMaskFlagBits
 		{
-			GraphicsColorMaskFlagRedBit = 1,
-			GraphicsColorMaskFlagGreendBit = 2,
-			GraphicsColorMaskFlagBlurBit = 4,
-			GraphicsColorMaskFlagAlphaBit = 8,
-			GraphicsColorMaskFlagRGBBit = GraphicsColorMaskFlagRedBit | GraphicsColorMaskFlagGreendBit | GraphicsColorMaskFlagBlurBit,
-			GraphicsColorMaskFlagRGBABit = GraphicsColorMaskFlagRedBit | GraphicsColorMaskFlagGreendBit | GraphicsColorMaskFlagBlurBit | GraphicsColorMaskFlagAlphaBit
+			enum Flags
+			{
+				RedBit = 1,
+				GreendBit = 2,
+				BlurBit = 4,
+				AlphaBit = 8,
+				RGBBit = RedBit | GreendBit | BlurBit,
+				RGBABit = RedBit | GreendBit | BlurBit | AlphaBit
+			};
 		};
 
 		typedef std::uint32_t GraphicsColorMaskFlags;
@@ -305,24 +308,30 @@ namespace octoon
 			DecrWrap = 6,
 		};
 
-		enum GraphicsStencilFaceFlagBits
+		struct GraphicsStencilFaceFlagBits
 		{
-			GraphicsStencilFaceFrontBit = 1,
-			GraphicsStencilFaceBackBit = 2,
-			GraphicsStencilFaceAllBit = 0x7FFFFFFF
+			enum Flags
+			{
+				FrontBit = 1,
+				BackBit = 2,
+				AllBit = 0x7FFFFFFF
+			};
 		};
 
 		typedef std::uint32_t GraphicsStencilFaceFlags;
 
-		enum GraphicsClearFlagBits
+		struct GraphicsClearFlagBits
 		{
-			GraphicsClearFlagColorBit = 1,
-			GraphicsClearFlagDepthBit = 2,
-			GraphicsClearFlagStencilBit = 4,
-			GraphicsClearFlagColorDepthBit = GraphicsClearFlagColorBit | GraphicsClearFlagDepthBit,
-			GraphicsClearFlagColorStencilBit = GraphicsClearFlagColorBit | GraphicsClearFlagStencilBit,
-			GraphicsClearFlagDepthStencilBit = GraphicsClearFlagDepthBit | GraphicsClearFlagStencilBit,
-			GraphicsClearFlagAllBit = GraphicsClearFlagColorBit | GraphicsClearFlagDepthBit | GraphicsClearFlagStencilBit
+			enum Flags
+			{
+				ColorBit = 1,
+				DepthBit = 2,
+				StencilBit = 4,
+				ColorDepthBit = ColorBit | DepthBit,
+				ColorStencilBit = ColorBit | StencilBit,
+				DepthStencilBit = DepthBit | StencilBit,
+				AllBit = ColorBit | DepthBit | StencilBit
+			};
 		};
 
 		typedef std::uint32_t GraphicsClearFlags;
@@ -555,15 +564,18 @@ namespace octoon
 			LinearMipmapLinear = 5,
 		};
 
-		enum GraphicsSampleFlagBits
+		struct GraphicsSampleFlagBits
 		{
-			GraphicsSampleFlag1Bit = 0x00000001,
-			GraphicsSampleFlag2Bit = 0x00000002,
-			GraphicsSampleFlag4Bit = 0x00000004,
-			GraphicsSampleFlag8Bit = 0x00000008,
-			GraphicsSampleFlag16Bit = 0x00000010,
-			GraphicsSampleFlag32Bit = 0x00000020,
-			GraphicsSampleFlag64Bit = 0x00000040,
+			enum Flags
+			{
+				bit1 = 0x00000001,
+				bit2 = 0x00000002,
+				bit4 = 0x00000004,
+				bit8 = 0x00000008,
+				bit16 = 0x00000010,
+				bit32 = 0x00000020,
+				bit64 = 0x00000040,
+			};
 		};
 
 		typedef std::uint32_t GraphicsSampleFlags;
@@ -609,20 +621,23 @@ namespace octoon
 			UInt32 = 2,
 		};
 
-		enum GraphicsShaderStageFlagBits
+		struct GraphicsShaderStageFlagBits
 		{
-			GraphicsShaderStageNoneBit = 0x0,
-			GraphicsShaderStageVertexBit = 0x1,
-			GraphicsShaderStageFragmentBit = 0x2,
-			GraphicsShaderStageGeometryBit = 0x4,
-			GraphicsShaderStageComputeBit = 0x8,
-			GraphicsShaderStageTessEvaluationBit = 0x10,
-			GraphicsShaderStageTessControlBit = 0x20,
-			GraphicsShaderStageAll = 0x7FFFFFFF,
-			GraphicsShaderStageBitCount = 7,
-			GraphicsShaderStageBeginBit = GraphicsShaderStageNoneBit,
-			GraphicsShaderStageEndBit = GraphicsShaderStageTessControlBit,
-			GraphicsShaderStageFlagBitsMaxEnum = 0x7FFFFFFF
+			enum Flags
+			{
+				NoneBit = 0x0,
+				VertexBit = 0x1,
+				FragmentBit = 0x2,
+				GeometryBit = 0x4,
+				ComputeBit = 0x8,
+				TessEvaluationBit = 0x10,
+				TessControlBit = 0x20,
+				All = 0x7FFFFFFF,
+				BitCount = 7,
+				BeginBit = NoneBit,
+				EndBit = TessControlBit,
+				FlagBitsMaxEnum = 0x7FFFFFFF
+			};
 		};
 
 		typedef std::uint32_t GraphicsShaderStageFlags;
@@ -712,38 +727,47 @@ namespace octoon
 			Linear = 2,
 		};
 
-		enum GraphicsViewUsageFlagBits
+		struct GraphicsViewUsageFlagBits
 		{
-			GraphicsViewUsageFlagBitsTransferSrcBit = 0x00000001,
-			GraphicsViewUsageFlagBitsTransferDstBit = 0x00000002,
-			GraphicsViewUsageFlagBitsSampledBit = 0x00000004,
-			GraphicsViewUsageFlagBitsStorageBit = 0x00000008,
-			GraphicsViewUsageFlagBitsColorAttachmentBit = 0x00000010,
-			GraphicsViewUsageFlagBitsDepthStencilAttachmentBit = 0x00000020,
-			GraphicsViewUsageFlagBitsTransientAttachmentBit = 0x00000040,
-			GraphicsViewUsageFlagBitsInputAttachmentBit = 0x00000080,
+			enum Flags
+			{
+				TransferSrcBit = 0x00000001,
+				TransferDstBit = 0x00000002,
+				SampledBit = 0x00000004,
+				StorageBit = 0x00000008,
+				ColorAttachmentBit = 0x00000010,
+				DepthStencilAttachmentBit = 0x00000020,
+				TransientAttachmentBit = 0x00000040,
+				InputAttachmentBit = 0x00000080,
+			};
 		};
 
 		typedef std::uint32_t GraphicsViewUsageFlags;
 
-		enum GraphicsUsageFlagBits
+		struct GraphicsUsageFlagBits
 		{
-			GraphicsUsageFlagReadBit = 0x00000001,
-			GraphicsUsageFlagWriteBit = 0x00000002,
-			GraphicsUsageFlagPersistentBit = 0x00000004,
-			GraphicsUsageFlagCoherentBit = 0x00000008,
-			GraphicsUsageFlagFlushExplicitBit = 0x00000010,
-			GraphicsUsageFlagDynamicStorageBit = 0x00000020,
-			GraphicsUsageFlagClientStorageBit = 0x00000040
+			enum Flags
+			{
+				ReadBit = 0x00000001,
+				WriteBit = 0x00000002,
+				PersistentBit = 0x00000004,
+				CoherentBit = 0x00000008,
+				FlushExplicitBit = 0x00000010,
+				DynamicStorageBit = 0x00000020,
+				ClientStorageBit = 0x00000040
+			};
 		};
 
 		typedef std::uint32_t GraphicsUsageFlags;
 
-		enum GraphicsAccessFlagBits
+		struct GraphicsAccessFlagBits
 		{
-			GraphicsAccessFlagMapReadBit = 0x00000001,
-			GraphicsAccessFlagMapWriteBit = 0x00000002,
-			GraphicsAccessFlagUnsynchronizedBit = 0x00000004
+			enum Flags
+			{
+				MapReadBit = 0x00000001,
+				MapWriteBit = 0x00000002,
+				UnsynchronizedBit = 0x00000004
+			};
 		};
 
 		typedef std::uint32_t GraphicsAccessFlags;
@@ -756,10 +780,13 @@ namespace octoon
 			Copy = 3,
 		};
 
-		enum GraphicsCommandQueueFlagBits : std::uint8_t
+		struct GraphicsCommandQueueFlagBits
 		{
-			GraphicsCommandQueueFlagNoneBit = 0,
-			GraphicsCommandQueueFlagDisableGpuTimeOutBit = 0x1
+			enum Flags
+			{
+				NoneBit = 0,
+				DisableGpuTimeOutBit = 0x1
+			};
 		};
 
 		typedef std::uint32_t GraphicsCommandQueueFlags;
@@ -770,10 +797,13 @@ namespace octoon
 			High = 1,
 		};
 
-		enum GraphicsCommandPoolFlagBits
+		struct GraphicsCommandPoolFlagBits
 		{
-			GraphicsCommandPoolFlagTransientBit = 0x00000001,
-			GraphicsCommandPoolFlagResetCommandBufferBit = 0x00000002
+			enum Flags
+			{
+				TransientBit = 0x00000001,
+				ResetCommandBufferBit = 0x00000002
+			};
 		};
 
 		typedef std::uint32_t GraphicsCommandPoolFlags;

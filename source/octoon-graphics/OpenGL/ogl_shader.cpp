@@ -352,13 +352,13 @@ namespace octoon
 		{
 		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 			const char* profile = nullptr;
-			if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit)
+			if (stage == GraphicsShaderStageFlagBits::VertexBit)
 				profile = "vs_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit)
+			else if (stage == GraphicsShaderStageFlagBits::FragmentBit)
 				profile = "ps_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit)
+			else if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				profile = "gs_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit)
+			else if (stage == GraphicsShaderStageFlagBits::ComputeBit)
 				profile = "cs_4_0";
 			else
 				assert(false);
@@ -421,11 +421,11 @@ namespace octoon
 		OGLShader::HlslByteCodes2GLSL(GraphicsShaderStageFlags stage, const char* codes, std::string& out)
 		{
 			std::uint32_t flags = HLSLCC_FLAG_COMBINE_TEXTURE_SAMPLERS | HLSLCC_FLAG_INOUT_APPEND_SEMANTIC_NAMES | HLSLCC_FLAG_DISABLE_GLOBALS_STRUCT;
-			if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit)
+			if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				flags = HLSLCC_FLAG_GS_ENABLED;
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageTessControlBit)
+			else if (stage == GraphicsShaderStageFlagBits::TessControlBit)
 				flags = HLSLCC_FLAG_TESS_ENABLED;
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageTessEvaluationBit)
+			else if (stage == GraphicsShaderStageFlagBits::TessEvaluationBit)
 				flags = HLSLCC_FLAG_TESS_ENABLED;
 
 			GLSLShader shader;
@@ -641,7 +641,7 @@ namespace octoon
 				uniform->setName(nameUniform.substr(0, std::min((std::size_t)length, nameUniform.find('['))));
 				uniform->setBindingPoint(location);
 				uniform->setType(toGraphicsUniformType(nameUniform, type));
-				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::GraphicsShaderStageAll);
+				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
 
 				if (type == GL_SAMPLER_2D ||
 					type == GL_SAMPLER_3D ||
@@ -718,7 +718,7 @@ namespace octoon
 				uniformblock->setBindingPoint(location);
 				uniformblock->setBlockSize(size);
 				uniformblock->setType(GraphicsUniformType::UniformBuffer);
-				uniformblock->setShaderStageFlags(GraphicsShaderStageFlagBits::GraphicsShaderStageAll);
+				uniformblock->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
 
 				for (GLint j = 0; j < count; j++)
 				{

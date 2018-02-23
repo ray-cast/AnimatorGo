@@ -14,7 +14,7 @@ namespace octoon
 			, _blendDest(GraphicsBlendFactor::OneMinusSrcAlpha)
 			, _blendAlphaSrc(GraphicsBlendFactor::SrcAlpha)
 			, _blendAlphaDest(GraphicsBlendFactor::OneMinusSrcAlpha)
-			, _colorWriteMask(GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit)
+			, _colorWriteMask(GraphicsColorMaskFlagBits::RGBABit)
 		{
 		}
 

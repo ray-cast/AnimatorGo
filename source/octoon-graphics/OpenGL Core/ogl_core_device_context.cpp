@@ -150,7 +150,7 @@ namespace octoon
 		void
 		OGLCoreDeviceContext::setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
 		{
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
 				if (_stateCaptured.getStencilFrontReadMask() != mask)
 				{
@@ -165,7 +165,7 @@ namespace octoon
 					_stateCaptured.setStencilFrontReadMask(mask);
 				}
 			}
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit)
+			if (face & GraphicsStencilFaceFlagBits::BackBit)
 			{
 				if (_stateCaptured.getStencilBackReadMask() != mask)
 				{
@@ -183,11 +183,11 @@ namespace octoon
 		}
 
 		std::uint32_t
-		OGLCoreDeviceContext::getStencilCompareMask(GraphicsStencilFaceFlagBits face) noexcept
+		OGLCoreDeviceContext::getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept
 		{
-			assert(face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit || face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit);
+			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
-			if (face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face == GraphicsStencilFaceFlagBits::FrontBit)
 				return _stateCaptured.getStencilFrontReadMask();
 			else
 				return _stateCaptured.getStencilBackReadMask();
@@ -196,7 +196,7 @@ namespace octoon
 		void
 		OGLCoreDeviceContext::setStencilReference(GraphicsStencilFaceFlags face, std::uint32_t reference) noexcept
 		{
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
 				if (_stateCaptured.getStencilFrontRef() != reference)
 				{
@@ -211,7 +211,7 @@ namespace octoon
 					_stateCaptured.setStencilFrontRef(reference);
 				}
 			}
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit)
+			if (face & GraphicsStencilFaceFlagBits::BackBit)
 			{
 				if (_stateCaptured.getStencilBackRef() != reference)
 				{
@@ -229,11 +229,11 @@ namespace octoon
 		}
 
 		std::uint32_t
-		OGLCoreDeviceContext::getStencilReference(GraphicsStencilFaceFlagBits face) noexcept
+		OGLCoreDeviceContext::getStencilReference(GraphicsStencilFaceFlags face) noexcept
 		{
-			assert(face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit || face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit);
+			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
-			if (face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face == GraphicsStencilFaceFlagBits::FrontBit)
 				return _stateCaptured.getStencilFrontRef();
 			else
 				return _stateCaptured.getStencilBackRef();
@@ -242,7 +242,7 @@ namespace octoon
 		void
 		OGLCoreDeviceContext::setStencilWriteMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
 		{
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
 				if (_stateCaptured.getStencilFrontWriteMask() != mask)
 				{
@@ -250,7 +250,7 @@ namespace octoon
 					_stateCaptured.setStencilFrontWriteMask(mask);
 				}
 			}
-			if (face & GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit)
+			if (face & GraphicsStencilFaceFlagBits::BackBit)
 			{
 				if (_stateCaptured.getStencilBackWriteMask() != mask)
 				{
@@ -261,11 +261,11 @@ namespace octoon
 		}
 
 		std::uint32_t
-		OGLCoreDeviceContext::getStencilWriteMask(GraphicsStencilFaceFlagBits face) noexcept
+		OGLCoreDeviceContext::getStencilWriteMask(GraphicsStencilFaceFlags face) noexcept
 		{
-			assert(face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit || face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceBackBit);
+			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
-			if (face == GraphicsStencilFaceFlagBits::GraphicsStencilFaceFrontBit)
+			if (face == GraphicsStencilFaceFlagBits::FrontBit)
 				return _stateCaptured.getStencilFrontWriteMask();
 			else
 				return _stateCaptured.getStencilBackWriteMask();
@@ -453,17 +453,17 @@ namespace octoon
 				auto type = layoutDesc.getComponents().at(i).getAttachType();
 				if (type == GraphicsImageLayout::ColorAttachmentOptimal)
 				{
-					if (!(flags & GraphicsClearFlagBits::GraphicsClearFlagColorBit))
+					if (!(flags & GraphicsClearFlagBits::ColorBit))
 						return;
 
-					flags = GraphicsClearFlagBits::GraphicsClearFlagColorBit;
+					flags = GraphicsClearFlagBits::ColorBit;
 					buffer = i;
 				}
 				else if (type == GraphicsImageLayout::DepthStencilAttachmentOptimal ||
 					type == GraphicsImageLayout::DepthStencilReadOnlyOptimal)
 				{
-					if (!(flags & GraphicsClearFlagBits::GraphicsClearFlagDepthBit) &&
-						!(flags & GraphicsClearFlagBits::GraphicsClearFlagStencilBit))
+					if (!(flags & GraphicsClearFlagBits::DepthBit) &&
+						!(flags & GraphicsClearFlagBits::StencilBit))
 					{
 						return;
 					}
@@ -478,7 +478,7 @@ namespace octoon
 					glScissor(0, 0, _glcontext->getGraphicsSwapchainDesc().getWidth(), _glcontext->getGraphicsSwapchainDesc().getHeight());
 			}
 
-			if (flags & GraphicsClearFlagBits::GraphicsClearFlagDepthBit)
+			if (flags & GraphicsClearFlagBits::DepthBit)
 			{
 				auto depthWriteEnable = _stateCaptured.getDepthWriteEnable();
 				if (!depthWriteEnable)
@@ -486,7 +486,7 @@ namespace octoon
 					glDepthMask(GL_TRUE);
 				}
 
-				if (flags & GraphicsClearFlagBits::GraphicsClearFlagStencilBit)
+				if (flags & GraphicsClearFlagBits::StencilBit)
 				{
 					GLint s = stencil;
 					GLfloat f = depth;
@@ -503,7 +503,7 @@ namespace octoon
 					glDepthMask(GL_FALSE);
 				}
 			}
-			else if (flags & GraphicsClearFlagBits::GraphicsClearFlagStencilBit)
+			else if (flags & GraphicsClearFlagBits::StencilBit)
 			{
 				GLint s = stencil;
 				glClearBufferiv(GL_STENCIL, buffer, &s);
@@ -511,19 +511,19 @@ namespace octoon
 			else
 			{
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
-				if (colorWriteFlags != GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit)
+				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
 				{
 					glColorMaski(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 				}
 
 				glClearBufferfv(GL_COLOR, buffer, color.ptr());
 
-				if (colorWriteFlags != GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRGBABit)
+				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
 				{
-					GLboolean r = colorWriteFlags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagRedBit ? GL_TRUE : GL_FALSE;
-					GLboolean g = colorWriteFlags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagGreendBit ? GL_TRUE : GL_FALSE;
-					GLboolean b = colorWriteFlags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagBlurBit ? GL_TRUE : GL_FALSE;
-					GLboolean a = colorWriteFlags & GraphicsColorMaskFlagBits::GraphicsColorMaskFlagAlphaBit ? GL_TRUE : GL_FALSE;
+					GLboolean r = colorWriteFlags & GraphicsColorMaskFlagBits::RedBit ? GL_TRUE : GL_FALSE;
+					GLboolean g = colorWriteFlags & GraphicsColorMaskFlagBits::GreendBit ? GL_TRUE : GL_FALSE;
+					GLboolean b = colorWriteFlags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
+					GLboolean a = colorWriteFlags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
 					glColorMaski(buffer, r, g, b, a);
 				}
 			}

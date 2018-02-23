@@ -802,19 +802,19 @@ namespace octoon
 		bool
 		OGLDeviceProperty::initShaderSupports() noexcept
 		{
-			_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit);
-			_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit);
+			_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::VertexBit);
+			_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::FragmentBit);
 
 			if (GLEW_ARB_geometry_shader4)
-				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit);
+				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GeometryBit);
 
 			if (GLEW_ARB_compute_shader)
-				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit);
+				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::ComputeBit);
 
 			if (GLEW_ARB_tessellation_shader)
 			{
-				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageTessControlBit);
-				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GraphicsShaderStageTessEvaluationBit);
+				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::TessControlBit);
+				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::TessEvaluationBit);
 			}
 
 			return true;

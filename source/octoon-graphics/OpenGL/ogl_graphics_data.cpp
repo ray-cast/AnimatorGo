@@ -51,11 +51,11 @@ namespace octoon
 			GLenum flags = GL_STATIC_DRAW;
 
 			auto usage = desc.getUsage();
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+			if (usage & GraphicsUsageFlagBits::ReadBit)
 				flags = GL_STATIC_DRAW;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit)
+			if (usage & GraphicsUsageFlagBits::WriteBit)
 			{
-				if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+				if (usage & GraphicsUsageFlagBits::ReadBit)
 					flags = GL_DYNAMIC_READ;
 				else
 					flags = GL_DYNAMIC_DRAW;
@@ -100,9 +100,9 @@ namespace octoon
 			GLbitfield flags = 0;
 
 			auto usage = _desc.getUsage();
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+			if (usage & GraphicsUsageFlagBits::ReadBit)
 				flags |= GL_MAP_READ_BIT;
-			if (usage & GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit)
+			if (usage & GraphicsUsageFlagBits::WriteBit)
 				flags |= GL_MAP_WRITE_BIT;
 
 			_data = *data = glMapBufferRange(_target, offset, count, flags);

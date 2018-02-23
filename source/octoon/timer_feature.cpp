@@ -1,3 +1,4 @@
+#if defined(OCTOON_FEATURE_TIMER_ENABLE)
 #include <octoon/timer_feature.h>
 
 namespace octoon
@@ -92,3 +93,4 @@ namespace octoon
 		timer_->update();
 	}
 }
+#endif

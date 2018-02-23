@@ -1,3 +1,4 @@
+#if defined(OCTOON_FEATURE_INPUT_ENABLE)
 #include <octoon/gui_feature.h>
 
 #include <octoon/input_feature.h>
@@ -168,3 +169,4 @@ namespace octoon
 		system_->render_end();
 	}
 }
+#endif

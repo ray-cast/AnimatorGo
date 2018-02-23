@@ -67,6 +67,7 @@ namespace octoon
 		GameServerPtr game_server_;
 		GameListenerPtr game_listener_;
 
+		GameFeaturePtr io_feature_;
 		GameFeaturePtr timer_feature_;
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;

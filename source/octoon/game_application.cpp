@@ -8,6 +8,10 @@
 #include <iostream>
 #include <chrono>
 
+#if OCTOON_FEATURE_IO_ENABLE
+#	include <octoon/io_feature.h>
+#endif
+
 #if OCTOON_FEATURE_TIMER_ENABLE
 #	include <octoon/timer_feature.h>
 #endif
@@ -80,6 +84,10 @@ namespace octoon
 		game_server_->set_game_app(this);
 		game_server_->set_game_listener(game_listener_);
 
+#if OCTOON_FEATURE_IO_ENABLE
+		io_feature_ = std::make_shared<IOFeature>();
+#endif
+
 #if OCTOON_FEATURE_TIMER_ENABLE
 		timer_feature_ = std::make_shared<TimerFeature>();
 #endif
@@ -94,6 +102,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_UI_ENABLE
 		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
+#endif
+
+#if OCTOON_FEATURE_IO_ENABLE
+		this->add_feature(io_feature_);
 #endif
 
 #if OCTOON_FEATURE_TIMER_ENABLE

@@ -138,7 +138,7 @@ namespace octoon
 		private:
 		  const char* hint_ = "";
 		};
-	} // namespace io
-} // namespace octoon
+	}
+}
 
 #endif

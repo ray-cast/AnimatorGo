@@ -303,11 +303,11 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::AABB<T> transform(const detail::AABB<T>& aabb_, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			assert(!empty());
 
-			detail::AABB<T> aabb_ = aabb_;
+			detail::AABB<T> aabb_ = aabb;
 			aabb_.min.x = aabb_.max.x = translate.x;
 			aabb_.min.y = aabb_.max.y = translate.y;
 			aabb_.min.z = aabb_.max.z = translate.z;
@@ -336,7 +336,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::AABB<T> transform(const detail::AABB<T>& aabb_, const detail::Matrix4x4<T>& m) noexcept
+		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
 		{
 			assert(!empty());
 
@@ -349,8 +349,8 @@ namespace octoon
 			{
 				for (std::uint8_t j = 0; j < 3; j++)
 				{
-					T e = m[j * 4 + i] * aabb_.min[j];
-					T f = m[j * 4 + i] * aabb_.max[j];
+					T e = m[j * 4 + i] * aabb.min[j];
+					T f = m[j * 4 + i] * aabb.max[j];
 
 					if (e < f)
 					{

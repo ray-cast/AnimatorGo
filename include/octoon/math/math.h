@@ -8,5 +8,6 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/vector4.h>
 #include <octoon/math/quat.h>
+#include <octoon/math/boundingbox.h>
 
 #endif

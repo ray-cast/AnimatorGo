@@ -567,13 +567,13 @@ namespace octoon
 		}
 
 		template <typename T>
-		inline T min(const detail::Vector4<T>& v) noexcept
+		inline T min4(const detail::Vector4<T>& v) noexcept
 		{
 			return std::min(std::min(std::min(v.x, v.y), v.z), v.w);
 		}
 
 		template <typename T>
-		inline T max(const detail::Vector4<T>& v) noexcept
+		inline T max4(const detail::Vector4<T>& v) noexcept
 		{
 			return std::max(std::max(std::max(v.x, v.y), v.z), v.w);
 		}

@@ -14,6 +14,9 @@ SET(MATH_LIST
 	${HEADER_PATH}/quat.h
 	${HEADER_PATH}/math.h
 	${HEADER_PATH}/trait.h
+	${HEADER_PATH}/AABB.h
+	${HEADER_PATH}/sphere.h
+	${HEADER_PATH}/boundingbox.h
 	${HEADER_PATH}/mathfwd.h
     ${HEADER_PATH}/mathutil.h
     ${SOURCE_PATH}/mathutil.cpp

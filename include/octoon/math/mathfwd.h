@@ -31,6 +31,15 @@ namespace octoon
 
 			template<typename T = float>
 			class Quaternion;
+
+			template<typename T = float>
+			class AABB;
+
+			template<typename T = float>
+			class Sphere;
+
+			template<typename T = float>
+			class BoundingBox;
 		}
 
 		// default
@@ -41,18 +50,27 @@ namespace octoon
 		using Matrix3x3 = detail::Matrix3x3<float>;
 		using Matrix4x4 = detail::Matrix4x4<float>;
 		using Quaternion = detail::Quaternion<float>;
+		using AABB = detail::AABB<float>;
+		using Sphere = detail::Sphere<float>;
+		using BoundingBox = detail::BoundingBox<float>;
 
 		// float
 		using float2x2 = detail::Matrix2x2<float>;
 		using float3x3 = detail::Matrix3x3<float>;
 		using float4x4 = detail::Matrix4x4<float>;
 		using Quaternionf = detail::Quaternion<float>;
+		using AABBf = detail::AABB<float>;
+		using Spheref = detail::Sphere<float>;
+		using BoundingBoxf = detail::BoundingBox<float>;
 
 		// double
 		using double2x2 = detail::Matrix2x2<double>;
 		using double3x3 = detail::Matrix3x3<double>;
 		using double4x4 = detail::Matrix4x4<double>;
 		using Quaterniond = detail::Quaternion<double>;
+		using AABBd = detail::AABB<double>;
+		using Sphered = detail::Sphere<float>;
+		using BoundingBoxd = detail::BoundingBox<float>;
 
 		// char
 		using char1 = std::int8_t;

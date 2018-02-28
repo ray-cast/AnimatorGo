@@ -334,12 +334,12 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 
 	if (gamedir)
 	{
-		char drive[3];
+		char drive[MAX_PATH];
 		char dir[MAX_PATH];
 		char filename[MAX_PATH];
 		char ext[MAX_PATH];
 #if GLFW_EXPOSE_NATIVE_WIN32
-		::_splitpath_s(gamedir, drive, 3, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
+		::_splitpath_s(gamedir, drive, MAX_PATH, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
 #else
 		::_splitpath(gamedir, drive, dir, filename, ext);
 #endif

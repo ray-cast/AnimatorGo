@@ -10,7 +10,7 @@ namespace octoon
 		class System;
 	}
 
-	class GuiFeature final : public GameFeature
+	class OCTOON_EXPORT GuiFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(GuiFeature, GameFeature)
 	public:

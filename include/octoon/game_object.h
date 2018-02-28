@@ -50,6 +50,11 @@ namespace octoon
 		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void get_components(GameComponents& components) const noexcept { this->get_components(T::RTTI, components); }
+		void get_components(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void get_components(const runtime::Rtti& type, GameComponents& components) const noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
 		std::shared_ptr<T> get_component_in_children() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component_in_children(T::RTTI)); }
 		GameComponentPtr get_component_in_children(const runtime::Rtti* type) const noexcept;
 		GameComponentPtr get_component_in_children(const runtime::Rtti& type) const noexcept;

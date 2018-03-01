@@ -49,26 +49,32 @@ namespace octoon
 		  return rv;
 		}
 
-		Orl::Orl(const std::string& vdir, const std::string& path)
+		Orl::Orl(const std::string& vdir, const std::string& path) noexcept
 			: vdir_(vdir)
 			, path_(path)
 		{
 		}
 
+		Orl::Orl(std::string&& vdir, std::string&& path) noexcept
+			: vdir_(std::move(vdir))
+			, path_(std::move(path))
+		{
+		}
+
 		bool
-		Orl::is_valid() const
+		Orl::is_valid() const noexcept
 		{
 			return vdir_.size() && path_.front() != '/';
 		}
 
 		const std::string&
-		Orl::virtual_dir() const
+		Orl::virtual_dir() const noexcept
 		{
 			return vdir_;
 		}
 
 		const std::string&
-		Orl::path() const
+		Orl::path() const noexcept
 		{
 			return path_;
 		}
@@ -77,41 +83,39 @@ namespace octoon
 		Orl::parse(const std::string& orl, Orl& out)
 		{
 			size_t vdir_size = orl.find(':');
-			if (vdir_size == std::string::npos || vdir_size == 0) {
+			if (vdir_size == std::string::npos || vdir_size == 0)
 				return false;
-			}
 
 			auto vdir = orl.substr(0, vdir_size);
 			size_t path_size = orl.size() - vdir_size - 1;
 			auto path = sanitize_path(orl.substr(vdir_size + 1, path_size));
 
-			if (path.size() > 0 && path.front() == '/') {
-			return false;
-			}
+			if (path.size() > 0 && path.front() == '/')
+				return false;
 
 			out = Orl(vdir, path);
 			return true;
 		}
 
 		std::string
-		Orl::to_string() const
+		Orl::to_string() const noexcept
 		{
 			std::string out;
 			out.append(vdir_);
 			out.push_back(':');
 			out.append(path_);
+
 			return out;
 		}
 
 		Orl
-		Orl::parent() const
+		Orl::parent() const noexcept
 		{
-		  auto end = path_.find_last_of("/", path_.size());
-		  if (end == std::string::npos) {
-			return Orl(vdir_, "");
-		  } else {
-			return Orl(vdir_, path_.substr(0, end));
-		  }
+			auto end = path_.find_last_of("/", path_.size());
+			if (end == std::string::npos)
+				return Orl(vdir_, "");
+			else
+				return Orl(vdir_, path_.substr(0, end));
 		}
 	}
 }

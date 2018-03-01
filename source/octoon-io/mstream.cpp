@@ -3,12 +3,14 @@
 #include <cassert>
 #include <utility>
 #include <cstring>
-#include "octoon/io/mstream.h"
+#include <octoon/io/mstream.h>
 
 namespace octoon
 {
 	namespace io
 	{
+		constexpr size_t DEFAULT_BUFFER_SIZE = 8 * 1024;
+
 		mstream::mstream() noexcept
 			: buffer_(DEFAULT_BUFFER_SIZE)
 		{
@@ -40,19 +42,19 @@ namespace octoon
 		}
 
 		bool
-		mstream::can_read() noexcept
+		mstream::can_read() const noexcept
 		{
 			return true;
 		}
 
 		bool
-		mstream::can_write() noexcept
+		mstream::can_write() const noexcept
 		{
 			return true;
 		}
 
 		bool
-		mstream::can_seek() noexcept
+		mstream::can_seek() const noexcept
 		{
 			return true;
 		}
@@ -91,26 +93,29 @@ namespace octoon
 			return size;
 		}
 
-		bool mstream::seek(long dist, SeekOrigin ori)
+		bool mstream::seek(long dist, ios_base::seek_dir seek)
 		{
 			size_t base = 0;
-			switch (ori)
+			switch (seek)
 			{
-			case octoon::io::SeekOrigin::Start:
+			case ios_base::beg:
 				base = 0;
 				break;
-			case octoon::io::SeekOrigin::End:
+			case ios_base::end:
 				base = pos_;
 				break;
-			case octoon::io::SeekOrigin::Current:
+			case ios_base::cur:
 				base = buffer_.size();
 				break;
 			}
-			size_t resultant = base + dist;
-			if (resultant >= 0 && resultant <= buffer_.size()) {
+
+			std::size_t resultant = base + dist;
+			if (resultant >= 0 && resultant <= buffer_.size())
+			{
 				pos_ = resultant;
 				return true;
 			}
+
 			return false;
 		}
 

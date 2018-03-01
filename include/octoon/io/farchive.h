@@ -3,7 +3,7 @@
 #ifndef OCTOON_IO_FARCHIVE_H_
 #define OCTOON_IO_FARCHIVE_H_
 
-#include "octoon/io/ioserver.h"
+#include <octoon/io/ioserver.h>
 
 namespace octoon
 {
@@ -16,7 +16,8 @@ namespace octoon
 		{
 		public:
 			farchive(const std::string& base_dir) noexcept;
-			std::unique_ptr<stream> open(const Orl& orl, const OpenOptions& options) override;
+			std::unique_ptr<stream> open(const Orl& orl, const ios_base::open_mode mode) override;
+
 			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
 			ItemType exists(const Orl& orl) override;
 

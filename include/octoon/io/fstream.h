@@ -5,17 +5,16 @@
 
 #include <memory>
 
-#include "octoon/io/stream.h"
+#include <octoon/io/ori.h>
+#include <octoon/io/stream.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		struct Orl;
-		struct OpenOptions;
 		class IoServer;
 
-		class OCTOON_EXPORT fstream : public stream
+		class OCTOON_EXPORT fstream final : public stream
 		{
 		public:
 			fstream() noexcept;
@@ -37,21 +36,21 @@ namespace octoon
 			* Returns:
 			*   `true` on success.
 			*/
-			bool open(const Orl& orl, const OpenOptions& options);
-			void close();
+			bool open(const Orl& orl, const ios_base::open_mode mode) noexcept;
+			void close() noexcept;
 
-			bool can_read() override final;
-			bool can_write() override final;
-			bool can_seek() override final;
+			bool can_read() const noexcept override;
+			bool can_write() const noexcept override;
+			bool can_seek() const noexcept override;
 
 			std::size_t read(uint8_t* buf, std::size_t size) override final;
 			std::size_t write(const uint8_t* buf, std::size_t size) override final;
 
-			bool seek(long dist, SeekOrigin ori = SeekOrigin::Current) override final;
+			bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) override final;
 
 		private:
 			std::shared_ptr<IoServer> fs_;
-			std::unique_ptr<stream> inner_;
+			std::unique_ptr<stream> stream_;
 		};
 	}
 }

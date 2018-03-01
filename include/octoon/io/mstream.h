@@ -4,7 +4,7 @@
 #define OCTOON_IO_MSTREAM_H_
 
 #include <mutex>
-#include "octoon/io/stream.h"
+#include <octoon/io/stream.h>
 
 namespace octoon
 {
@@ -21,13 +21,13 @@ namespace octoon
 
 			mstream& operator=(mstream&& rv) noexcept;
 
-			bool can_read() noexcept override final;
-			bool can_write() noexcept override final;
-			bool can_seek() noexcept override final;
+			bool can_read() const noexcept override final;
+			bool can_write() const noexcept override final;
+			bool can_seek() const noexcept override final;
 
 			size_t read(uint8_t* buf, size_t size) override final;
 			size_t write(const uint8_t* buf, size_t size) override final;
-			bool seek(long dist, SeekOrigin ori = SeekOrigin::Current) override final;
+			bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) override final;
 
 			std::vector<uint8_t> into_buffer() noexcept;
 

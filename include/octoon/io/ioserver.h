@@ -1,7 +1,7 @@
 // File: IoServer.h
 // Author: PENGUINLIONG
-#ifndef OCTOON_IO_FILESYSTEM_H_
-#define OCTOON_IO_FILESYSTEM_H_
+#ifndef OCTOON_IO_SERVER_H_
+#define OCTOON_IO_SERVER_H_
 
 #include <map>
 #include <memory>
@@ -29,7 +29,7 @@ namespace octoon
 			*/
 			void mount_archive(const std::string& vpath, const archive_pointer& entry);
 			void mount_archive(const std::string& vpath, archive_pointer&& entry);
-			void mount_archive(const std::string&& vpath, archive_pointer&& entry);
+			void mount_archive(std::string&& vpath, archive_pointer&& entry);
 
 			archive_pointer unmount_archive(const std::string& path);
 
@@ -43,4 +43,4 @@ namespace octoon
 	}
 }
 
-#endif // OCTOON_IO_FILESYSTEM_H_
+#endif

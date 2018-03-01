@@ -3,8 +3,9 @@
 #include <fstream>
 #include <filesystem>
 #include <cassert>
-#include "octoon/io/farchive.h"
-#include "octoon/io/mstream.h"
+
+#include <octoon/io/farchive.h>
+#include <octoon/io/mstream.h>
 
 namespace std
 {
@@ -20,108 +21,106 @@ namespace octoon
 	{
 		namespace detail
 		{
-			unsigned int
-			translate_opts(const OpenOptions& opts)
-			{
-				unsigned int rv = std::ios_base::binary;
-				if (opts.options.read) {
-					rv |= std::ios_base::in;
-				}
-				if (opts.options.write) {
-					rv |= std::ios_base::out;
-
-					// `opts.options.create` is not checked, since `std::ios_base::out` always
-					// try to create the file.
-					if (opts.options.append) {
-						rv |= std::ios_base::app;
-					}
-					if (opts.options.truncate) {
-						rv |= std::ios_base::trunc;
-					}
-				}
-				return rv;
-			}
-
 			class LocalFileStream : public stream
 			{
 			public:
-				bool open(const std::string& path, const OpenOptions& opts)
+				bool open(const std::string& path, const ios_base::open_mode mode) noexcept
 				{
-					inner_.open(path, static_cast<std::ios_base::open_mode>(translate_opts(opts)));
-					if (inner_.is_open()) {
-						opts_ = opts;
-						return true;
-					}
-					else {
+					std::ios_base::open_mode openmode = std::ios_base::binary;
+					if (mode & ios_base::in)
+						openmode |= std::ios_base::in;
+
+					if (mode & ios_base::out)
+						openmode |= std::ios_base::out;
+
+					if (mode & ios_base::app)
+						openmode |= std::ios_base::app;
+
+					if (mode & ios_base::trunc)
+						openmode |= std::ios_base::trunc;
+
+					stream_.open(path, openmode);
+					if (!stream_.is_open())
 						return false;
-					}
+
+					opts_ = mode;
+					return true;
 				}
 
-				bool can_read()
+				bool can_read() const noexcept
 				{
-					return opts_.options.read;
+					return opts_ & ios_base::in;
 				}
 
-				bool can_write()
+				bool can_write() const noexcept
 				{
-					return opts_.options.write;
+					return opts_ & ios_base::out;
 				}
 
-				bool can_seek()
+				bool can_seek() const noexcept
 				{
 					return true;
 				}
 
-				size_t read(uint8_t* buf, size_t size)
+				std::size_t read(uint8_t* buf, std::size_t size) noexcept
 				{
-					try {
-						inner_.read((char*)buf, size);
+					try
+					{
+						stream_.read((char*)buf, size);
 					}
-					catch (const std::ios_base::failure&) {
+					catch (const std::ios_base::failure&)
+					{
 						return 0;
 					}
-					inner_.seekp(inner_.tellg(), std::ios_base::beg);
-					return inner_.gcount();
+
+					stream_.seekp(stream_.tellg(), std::ios_base::beg);
+					return stream_.gcount();
 				}
 
-				size_t write(const uint8_t* buf, size_t size)
+				std::size_t write(const uint8_t* buf, std::size_t size) noexcept
 				{
-					try {
-						inner_.write((char*)buf, size);
+					try
+					{
+						stream_.write((char*)buf, size);
 					}
-					catch (const std::ios_base::failure&) {
+					catch (const std::ios_base::failure&)
+					{
 						return 0;
 					}
-					inner_.seekg(inner_.tellp(), std::ios_base::beg);
+
+					stream_.seekg(stream_.tellp(), std::ios_base::beg);
 					return size;
 				}
 
-				bool seek(long dist, SeekOrigin ori)
+				bool seek(long dist, ios_base::seek_dir seek) noexcept
 				{
-					try {
-						switch (ori) {
-						case octoon::io::SeekOrigin::Start:
-							inner_.seekg(dist, std::ios_base::beg);
-							inner_.seekp(dist, std::ios_base::beg);
+					try
+					{
+						switch (seek)
+						{
+						case ios_base::beg:
+							stream_.seekg(dist, std::ios_base::beg);
+							stream_.seekp(dist, std::ios_base::beg);
 							break;
-						case octoon::io::SeekOrigin::End:
-							inner_.seekg(dist, std::ios_base::end);
-							inner_.seekp(dist, std::ios_base::end);
+						case ios_base::end:
+							stream_.seekg(dist, std::ios_base::end);
+							stream_.seekp(dist, std::ios_base::end);
 							break;
-						case octoon::io::SeekOrigin::Current:
-							inner_.seekg(dist, std::ios_base::cur);
-							inner_.seekp(dist, std::ios_base::cur);
+						case ios_base::cur:
+							stream_.seekg(dist, std::ios_base::cur);
+							stream_.seekp(dist, std::ios_base::cur);
 							break;
 						}
 						return true;
 					}
-					catch (const std::ios_base::failure&) {
+					catch (const std::ios_base::failure&)
+					{
 						return false;
 					}
 				}
 			private:
-				std::fstream inner_;
-				OpenOptions opts_;
+				std::fstream stream_;
+				ios_base::open_mode opts_;
 			};
 		}
 
@@ -131,17 +130,17 @@ namespace octoon
 		}
 
 		std::unique_ptr<stream>
-		farchive::open(const Orl& orl, const OpenOptions& opts)
+		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
 			auto rv_stream = std::make_unique<detail::LocalFileStream>();
 			auto parent = orl.parent();
 			auto file_path = make_path(orl);
 
 			// Check if the file exists.
-			if (exists(orl) == ItemType::NA) {
-
+			if (exists(orl) == ItemType::NA)
+			{
 				// Make sure it can create files and directories.
-				if (!opts.options.write || !opts.options.create) {
+				if (!(opts | ios_base::out) || !(opts | ios_base::trunc)) {
 					return nullptr;
 				}
 
@@ -184,7 +183,8 @@ namespace octoon
 		farchive::exists(const Orl& orl)
 		{
 			auto status = std::filesystem::status(make_path(orl));
-			switch (status.type()) {
+			switch (status.type())
+			{
 			case std::filesystem::file_type::regular:
 				return ItemType::File;
 			case std::filesystem::file_type::directory:
@@ -199,17 +199,20 @@ namespace octoon
 		{
 			std::string rv;
 			auto path = orl.path();
-			if (path.size() > 0 && path.back() != '/') {
+			if (path.size() > 0 && path.back() != '/')
+			{
 				rv.reserve(base_dir_.size() + 1 + path.size());
 				rv.append(base_dir_);
 				rv.push_back('/');
 				rv.append(path);
 			}
-			else {
+			else
+			{
 				rv.reserve(base_dir_.size() + path.size());
 				rv.append(base_dir_);
 				rv.append(path);
 			}
+
 			return rv;
 		}
 	}

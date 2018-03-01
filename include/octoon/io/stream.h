@@ -13,41 +13,6 @@ namespace octoon
 {
 	namespace io
 	{
-		constexpr size_t DEFAULT_BUFFER_SIZE = 8 * 1024;
-
-		enum class SeekOrigin
-		{
-		  Start, End, Current
-		};
-
-		/*
-		* Options instructing virtual directories how to construct streams.
-		*/
-		struct OCTOON_EXPORT OpenOptions
-		{
-		public:
-			OpenOptions() = default;
-			OpenOptions(const OpenOptions&) = default;
-			OpenOptions(OpenOptions&&) = default;
-			OpenOptions& operator=(const OpenOptions&) = default;
-
-			OpenOptions& read();
-			OpenOptions& write();
-			/*
-			* The following flags depends on `write`. Any call to these helpers will
-			* automatically set `write` to true. If `write` is `false`, any `archive`
-			* SHOULD NOT check the following flags.
-			*/
-			OpenOptions& truncate();
-			OpenOptions& create();
-			OpenOptions& append();
-
-			struct
-			{
-				bool read, write, truncate, create, append;
-			} options;
-		};
-
 		class stream;
 
 		namespace detail
@@ -78,15 +43,15 @@ namespace octoon
 		  /*
 		   * Report the current stream's capability of reading.
 		   */
-		  virtual bool can_read() = 0;
+		  virtual bool can_read() const noexcept = 0;
 		  /*
 		   * Report the current stream's capability of writing.
 		   */
-		  virtual bool can_write() = 0;
+		  virtual bool can_write() const noexcept = 0;
 		  /*
 		   * Report the current stream's capability of seeking.
 		   */
-		  virtual bool can_seek() = 0;
+		  virtual bool can_seek() const noexcept = 0;
 
 		  /*
 		   * Read from source of the current stream and write all written data into
@@ -115,7 +80,7 @@ namespace octoon
 		   *   `true` if the operation was finished successfully; `false` otherwise. On
 		   *   failure, the internal position will not change.
 		   */
-		  virtual bool seek(long dist, SeekOrigin ori = SeekOrigin::Current) = 0;
+		  virtual bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) = 0;
 
 		  /*
 		   * Get the last hint. A hint can be more than an error; any sort or

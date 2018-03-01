@@ -21,7 +21,7 @@ namespace octoon
 		}
 
 		void
-		IoServer::mount_archive(const std::string&& vpath, archive_pointer&& vdir)
+		IoServer::mount_archive(std::string&& vpath, archive_pointer&& vdir)
 		{
 			registry_.insert(std::make_pair(std::move(vpath), std::move(vdir)));
 		}

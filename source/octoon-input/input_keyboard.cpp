@@ -37,7 +37,7 @@ namespace octoon
 			return key_state_[key].pressed;
 		}
 
-		InputKeyboardPtr
+		IInputKeyboardPtr
 		DefaultInputKeyboard::clone() const noexcept
 		{
 			return std::make_shared<DefaultInputKeyboard>();

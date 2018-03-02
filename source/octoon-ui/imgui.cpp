@@ -1899,12 +1899,12 @@ namespace octoon
 			return _defalutStyle;
 		}
 
-		void root_dock(const float2& pos, const float2& size)
+		void root_dock(const float2& pos, const float2& size) noexcept
 		{
 			ImGui::RootDock((const ImVec2&)pos, (const ImVec2&)size);
 		}
 
-		bool begin_dock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size)
+		bool begin_dock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size) noexcept
 		{
 			if (!ImGui::BeginDock(label, opened, extra_flags, (ImVec2&)default_size))
 			{
@@ -1915,57 +1915,57 @@ namespace octoon
 			return true;
 		}
 
-		void end_dock()
+		void end_dock() noexcept
 		{
 			ImGui::EndDock();
 		}
 
-		void set_dock_active()
+		void set_dock_active() noexcept
 		{
 			ImGui::SetDockActive();
 		}
 
-		bool drag_floatn_ex(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power)
+		bool drag_floatn_ex(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloatNEx(labels, v, components, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool drag_intn_ex(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format)
+		bool drag_intn_ex(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		bool drag_uIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format)
+		bool drag_uIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragUIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		void render_frame_ex(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness)
+		void render_frame_ex(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness) noexcept
 		{
 			ImGui::RenderFrameEx((ImVec2&)p_min, (ImVec2&)p_max, border, rounding, thickness);
 		}
 
-		bool begin_toolbar(const char* str_id, const float2& screen_pos, const float2& size)
+		bool begin_toolbar(const char* str_id, const float2& screen_pos, const float2& size) noexcept
 		{
 			return ImGui::BeginToolbar(str_id, (ImVec2&)screen_pos, (ImVec2&)size);
 		}
 
-		void end_toolbar()
+		void end_toolbar() noexcept
 		{
 			ImGui::EndToolbar();
 		}
 
-		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled)
+		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled) noexcept
 		{
 			return ImGui::ToolbarButton(texture, tooltip, selected, enabled);
 		}
 
-		bool image_button_ex(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled)
+		bool image_button_ex(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled) noexcept
 		{
 			return ImGui::ImageButtonEx(texture, (ImVec2&)size, tooltip, selected, enabled);
 		}
 
-		bool image_button_ex(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_ex(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
 		{
 			if (enabled)
 				return image_button(texture, size, uv0, uv1, frame_padding, bg_col, tint_col);
@@ -1976,12 +1976,12 @@ namespace octoon
 			}
 		}
 
-		bool image_button_with_aspect_and_label(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags)
+		bool image_button_with_aspect_and_label(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags) noexcept
 		{
 			return ImGui::ImageButtonWithAspectAndLabel(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, selected, edit_label, label, buf, buf_size, flags);
 		}
 
-		bool image_button_and_label(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_and_label(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
 		{
 			ImGui::BeginGroup();
 
@@ -2014,12 +2014,12 @@ namespace octoon
 			return chlick;
 		}
 
-		void image_with_aspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col)
+		void image_with_aspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col) noexcept
 		{
 			ImGui::ImageWithAspect(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)size, (ImVec2&)uv0, (ImVec4&)tint_col, (ImVec4&)border_col);
 		}
 
-		void label_text_ex(const char* label, const char* fmt, ...)
+		void label_text_ex(const char* label, const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -2027,7 +2027,7 @@ namespace octoon
 			va_end(args);
 		}
 
-		void label_text_ex_v(const char* label, const char* fmt, va_list args)
+		void label_text_ex_v(const char* label, const char* fmt, va_list args) noexcept
 		{
 			ImGui::LabelTextExV(label, fmt, args);
 		}

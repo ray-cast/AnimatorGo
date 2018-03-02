@@ -19,7 +19,7 @@ namespace octoon
 			virtual bool is_key_up(InputKey::Code key) const noexcept;
 			virtual bool is_key_pressed(InputKey::Code key) const noexcept;
 
-			virtual InputKeyboardPtr clone() const noexcept;
+			virtual IInputKeyboardPtr clone() const noexcept;
 
 		private:
 			MSWInputKeyboard(const MSWInputKeyboard&) noexcept = delete;

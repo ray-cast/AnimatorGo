@@ -18,7 +18,7 @@ namespace octoon
 			virtual bool is_key_up(InputKey::Code key) const noexcept = 0;
 			virtual bool is_key_pressed(InputKey::Code key) const noexcept = 0;
 
-			virtual InputKeyboardPtr clone() const noexcept = 0;
+			virtual IInputKeyboardPtr clone() const noexcept = 0;
 
 		private:
 			IInputKeyboard(const IInputKeyboard&) noexcept = delete;

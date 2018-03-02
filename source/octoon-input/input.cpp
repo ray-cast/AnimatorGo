@@ -53,7 +53,7 @@ namespace octoon
 		}
 
 		bool
-		DefaultInput::open(InputDevicePtr& device) noexcept
+		DefaultInput::open(const IInputDevicePtr& device) noexcept
 		{
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 			input_device_ = device ? device : std::make_shared<MSWInputDevice>();
@@ -75,7 +75,7 @@ namespace octoon
 		}
 
 		bool
-		DefaultInput::open(InputDevicePtr&& device) noexcept
+		DefaultInput::open(IInputDevicePtr&& device) noexcept
 		{
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 			input_device_ = device ? std::move(device) : std::make_shared<MSWInputDevice>();
@@ -266,7 +266,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::obtain_mouse_capture(InputMousePtr& mouse) noexcept
+		DefaultInput::obtain_mouse_capture(const IInputMousePtr& mouse) noexcept
 		{
 			if (mouse_capture_device_ != mouse)
 			{
@@ -291,7 +291,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::obtain_mouse_capture(InputMousePtr&& mouse) noexcept
+		DefaultInput::obtain_mouse_capture(IInputMousePtr&& mouse) noexcept
 		{
 			if (mouse_capture_device_ != mouse)
 			{
@@ -316,7 +316,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::obtain_keyboard_capture(InputKeyboardPtr& keyboard) noexcept
+		DefaultInput::obtain_keyboard_capture(const IInputKeyboardPtr& keyboard) noexcept
 		{
 			if (keyboard_capture_device_ != keyboard)
 			{
@@ -341,7 +341,7 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::obtain_keyboard_capture(InputKeyboardPtr&& keyboard) noexcept
+		DefaultInput::obtain_keyboard_capture(IInputKeyboardPtr&& keyboard) noexcept
 		{
 			if (keyboard_capture_device_ != keyboard)
 			{
@@ -404,28 +404,28 @@ namespace octoon
 		}
 
 		void
-		DefaultInput::add_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInput::add_input_listener(const IInputListenerPtr& listener) noexcept
 		{
 			if (input_device_)
 				input_device_->add_input_listener(listener);
 		}
 
 		void
-		DefaultInput::add_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInput::add_input_listener(IInputListenerPtr&& listener) noexcept
 		{
 			if (input_device_)
 				input_device_->add_input_listener(std::move(listener));
 		}
 
 		void
-		DefaultInput::remove_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInput::remove_input_listener(const IInputListenerPtr& listener) noexcept
 		{
 			if (input_device_)
 				input_device_->remove_input_listener(listener);
 		}
 
 		void
-		DefaultInput::remove_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInput::remove_input_listener(IInputListenerPtr&& listener) noexcept
 		{
 			if (input_device_)
 				input_device_->remove_input_listener(std::move(listener));
@@ -487,7 +487,7 @@ namespace octoon
 				keyboard_capture_device_->on_frame_end();
 		}
 
-		InputPtr
+		IInputPtr
 		DefaultInput::clone() const noexcept
 		{
 			auto input = std::make_shared<DefaultInput>();

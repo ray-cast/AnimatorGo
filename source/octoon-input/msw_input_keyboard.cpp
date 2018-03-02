@@ -32,7 +32,7 @@ namespace octoon
 			return DefaultInputKeyboard::is_key_pressed(key);
 		}
 
-		InputKeyboardPtr
+		IInputKeyboardPtr
 		MSWInputKeyboard::clone() const noexcept
 		{
 			return std::make_shared<MSWInputKeyboard>();

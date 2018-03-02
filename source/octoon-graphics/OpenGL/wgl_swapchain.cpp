@@ -86,29 +86,26 @@ namespace octoon
 		{
 			static thread_local WGLSwapchain* _swapchain = nullptr;
 
-			if (_isActive != active)
+			if (active)
 			{
-				if (active)
-				{
-					if (_swapchain)
-						_swapchain->setActive(false);
+				if (_swapchain && _swapchain != this)
+					_swapchain->setActive(false);
 
-					if (!::wglMakeCurrent(_hdc, _context))
-						this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
+				if (!::wglMakeCurrent(_hdc, _context))
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
 
-					_swapchain = this;
-				}
-				else
-				{
-					if (!::wglMakeCurrent(0, 0))
-						this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
-
-					if (_swapchain == this)
-						_swapchain = nullptr;
-				}
-
-				_isActive = active;
+				_swapchain = this;
 			}
+			else
+			{
+				if (!::wglMakeCurrent(0, 0))
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
+
+				if (_swapchain == this)
+					_swapchain = nullptr;
+			}
+
+			_isActive = active;
 		}
 
 		bool

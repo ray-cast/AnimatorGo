@@ -47,7 +47,7 @@ namespace octoon
 #    if defined(__WINDOWS__)
 #        define __wopen    POSIX(wopen)
 #        define __wstat    POSIX(wstat64)
-#        define __tell      POSIX(telli64)
+#        define __tell     POSIX(telli64)
 #    endif
 #else
 #   define __stat   POSIX(stat64)
@@ -56,26 +56,16 @@ namespace octoon
 #    if defined(__WINDOWS__)
 #        define __wopen    POSIX(wopen)
 #        define __wstat    POSIX(wstat64)
-#        define __tell      POSIX(tell)
+#        define __tell     POSIX(tell)
 #    endif
-#endif
-
-#ifndef _IOMYBUF
-#    define _IOMYBUF 0x0008
-#endif
-
-#ifndef _IOEOF
-#   define _IOEOF 0x0010
-#endif
-
-#ifndef _IOERR
-#   define _IOERR 0x0020
 #endif
 
 	namespace io
 	{
 		namespace fcntl
 		{
+			constexpr int PATHLIMIT = 4096;
+
 			enum POSIXPERMISSIONS
 			{
 				PP_IXOTH = 1,

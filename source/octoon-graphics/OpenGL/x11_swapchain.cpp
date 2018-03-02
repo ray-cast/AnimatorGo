@@ -12,8 +12,6 @@ namespace octoon
 		PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = nullptr;
 		PFNGLXMAKECONTEXTCURRENTPROC glXMakeContextCurrent = nullptr;
 
-		XGLSwapchain* XGLSwapchain::_swapchain = nullptr;
-
 		XGLSwapchain::XGLSwapchain() noexcept
 			: _isActive(false)
 		{
@@ -254,28 +252,27 @@ namespace octoon
 		void
 		XGLSwapchain::setActive(bool active) noexcept
 		{
-			if (_isActive != active)
+			static thread_local XGLSwapchain* _swapchain = nullptr;
+
+			if (active)
 			{
-				if (active)
-				{
-					if (_swapchain)
-						_swapchain->setActive(false);
+				if (_swapchain && _swapchain != this)
+					_swapchain->setActive(false);
 
-					if (!glXMakeContextCurrent(_display, _window, _window, _glc))
-						this->getDevice()->downcast<OGLDevice>()->message("Failed to make context");
+				if (!glXMakeContextCurrent(_display, _window, _window, _glc))
+					this->getDevice()->downcast<OGLDevice>()->message("Failed to make context");
 
-					_swapchain = this;
-				}
-				else
-				{
-					if (_swapchain == this)
-						_swapchain = nullptr;
-
-					glXMakeContextCurrent(_display, 0, 0, 0);
-				}
-
-				_isActive = active;
+				_swapchain = this;
 			}
+			else
+			{
+				if (_swapchain == this)
+					_swapchain = nullptr;
+
+				glXMakeContextCurrent(_display, 0, 0, 0);
+			}
+
+			_isActive = active;
 		}
 
 		bool

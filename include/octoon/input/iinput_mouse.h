@@ -32,7 +32,7 @@ namespace octoon
 			virtual bool is_button_up(InputButton::Code key) const noexcept = 0;
 			virtual bool is_button_pressed(InputButton::Code key) const noexcept = 0;
 
-			virtual InputMousePtr clone() const noexcept = 0;
+			virtual IInputMousePtr clone() const noexcept = 0;
 
 		private:
 			IInputMouse(const IInputMouse&) noexcept = delete;

@@ -17,8 +17,8 @@ namespace octoon
 			virtual ~IInput() = default;
 
 			virtual bool open() noexcept = 0;
-			virtual bool open(InputDevicePtr& device) noexcept = 0;
-			virtual bool open(InputDevicePtr&& device) noexcept = 0;
+			virtual bool open(const IInputDevicePtr& device) noexcept = 0;
+			virtual bool open(IInputDevicePtr&& device) noexcept = 0;
 			virtual void close() noexcept = 0;
 
 			virtual void set_capture_object(WindHandle window) noexcept = 0;
@@ -46,10 +46,10 @@ namespace octoon
 			virtual void obtain_mouse_capture() noexcept = 0;
 			virtual void obtain_keyboard_capture() noexcept = 0;
 
-			virtual void obtain_mouse_capture(InputMousePtr& mouse) noexcept = 0;
-			virtual void obtain_mouse_capture(InputMousePtr&& mouse) noexcept = 0;
-			virtual void obtain_keyboard_capture(InputKeyboardPtr& key) noexcept = 0;
-			virtual void obtain_keyboard_capture(InputKeyboardPtr&& key) noexcept = 0;
+			virtual void obtain_mouse_capture(const IInputMousePtr& mouse) noexcept = 0;
+			virtual void obtain_mouse_capture(IInputMousePtr&& mouse) noexcept = 0;
+			virtual void obtain_keyboard_capture(const IInputKeyboardPtr& key) noexcept = 0;
+			virtual void obtain_keyboard_capture(IInputKeyboardPtr&& key) noexcept = 0;
 			virtual void obtain_capture() noexcept = 0;
 
 			virtual void release_mouse_capture() noexcept = 0;
@@ -58,10 +58,10 @@ namespace octoon
 
 			virtual void reset() noexcept = 0;
 
-			virtual void add_input_listener(InputListenerPtr& listener) noexcept = 0;
-			virtual void add_input_listener(InputListenerPtr&& listener) noexcept = 0;
-			virtual void remove_input_listener(InputListenerPtr& listener) noexcept = 0;
-			virtual void remove_input_listener(InputListenerPtr&& listener) noexcept = 0;
+			virtual void add_input_listener(const IInputListenerPtr& listener) noexcept = 0;
+			virtual void add_input_listener(IInputListenerPtr&& listener) noexcept = 0;
+			virtual void remove_input_listener(const IInputListenerPtr& listener) noexcept = 0;
+			virtual void remove_input_listener(IInputListenerPtr&& listener) noexcept = 0;
 			virtual void clear_input_listener() noexcept = 0;
 
 			virtual bool send_input_event(const InputEvent& event) noexcept = 0;
@@ -71,7 +71,7 @@ namespace octoon
 			virtual void update() noexcept = 0;
 			virtual void update_end() noexcept = 0;
 
-			virtual InputPtr clone() const noexcept = 0;
+			virtual IInputPtr clone() const noexcept = 0;
 
 		private:
 			IInput(const IInput&) noexcept = delete;

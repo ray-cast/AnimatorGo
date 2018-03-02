@@ -430,7 +430,7 @@ namespace octoon
 			DefaultInputDevice::flush_event();
 		}
 
-		InputDevicePtr
+		IInputDevicePtr
 		GLFWInputDevice::clone() const noexcept
 		{
 			return std::make_shared<GLFWInputDevice>();

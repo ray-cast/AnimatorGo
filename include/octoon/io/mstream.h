@@ -10,31 +10,31 @@ namespace octoon
 {
 	namespace io
 	{
-		class OCTOON_EXPORT mstream : public stream
+		class OCTOON_EXPORT mstream final : public stream
 		{
 		public:
 			mstream() noexcept;
 			mstream(const mstream&) = delete;
 			mstream(mstream&& rv) noexcept;
 			mstream(std::size_t capacity) noexcept;
-			mstream(std::vector<uint8_t> buffer) noexcept;
+			mstream(std::vector<std::uint8_t> buffer) noexcept;
 
 			mstream& operator=(mstream&& rv) noexcept;
 
-			bool can_read() const noexcept override final;
-			bool can_write() const noexcept override final;
-			bool can_seek() const noexcept override final;
+			bool can_read() const noexcept override;
+			bool can_write() const noexcept override;
+			bool can_seek() const noexcept override;
 
-			size_t read(uint8_t* buf, size_t size) override final;
-			size_t write(const uint8_t* buf, size_t size) override final;
-			bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) override final;
+			std::size_t read(std::uint8_t* buf, std::size_t size) override;
+			std::size_t write(const uint8_t* buf, std::size_t size) override;
+			bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) override;
 
-			std::vector<uint8_t> into_buffer() noexcept;
+			std::vector<std::uint8_t> into_buffer() noexcept;
 
 		private:
-			std::vector<uint8_t> buffer_;
+			std::size_t pos_;
 			std::mutex lock_;
-			size_t pos_;
+			std::vector<std::uint8_t> buffer_;
 		};
 	}
 }

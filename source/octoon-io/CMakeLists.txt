@@ -26,6 +26,8 @@ SET(STREAM_LIST
 	${SOURCE_PATH}/mstream.cpp
 	${HEADER_PATH}/fstream.h
 	${SOURCE_PATH}/fstream.cpp
+	${HEADER_PATH}/vfstream.h
+	${SOURCE_PATH}/vfstream.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\stream FILES ${STREAM_LIST})
 

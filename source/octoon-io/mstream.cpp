@@ -27,7 +27,7 @@ namespace octoon
 		{
 		}
 
-		mstream::mstream(std::vector<uint8_t> buffer) noexcept
+		mstream::mstream(std::vector<std::uint8_t> buffer) noexcept
 			: buffer_(buffer)
 			, pos_(0)
 		{
@@ -60,7 +60,7 @@ namespace octoon
 		}
 
 		std::size_t
-		mstream::read(uint8_t* buf, size_t size)
+		mstream::read(std::uint8_t* buf, std::size_t size)
 		{
 			std::lock_guard<std::mutex> guard(lock_);
 			auto buf_size = buffer_.size();
@@ -83,7 +83,7 @@ namespace octoon
 		}
 
 		std::size_t
-		mstream::write(const uint8_t* buf, size_t size)
+		mstream::write(const std::uint8_t* buf, std::size_t size)
 		{
 			std::lock_guard<std::mutex> guard(lock_);
 
@@ -119,7 +119,7 @@ namespace octoon
 			return false;
 		}
 
-		std::vector<uint8_t>
+		std::vector<std::uint8_t>
 		mstream::into_buffer() noexcept
 		{
 			return std::move(buffer_);

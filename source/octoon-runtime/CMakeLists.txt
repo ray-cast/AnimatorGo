@@ -22,6 +22,8 @@ SET(CORE_LIST
 	${SOURCE_PATH}/timer.cpp
 	${HEADER_PATH}/except.h
 	${SOURCE_PATH}/except.cpp
+	${HEADER_PATH}/string.h
+	${SOURCE_PATH}/string.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

@@ -65,6 +65,7 @@ namespace octoon
 
 		enum { _Openprot = 0x40 };
 
+		static const streamsize PATHLIMIT = 4096;
 		static const streamoff _BADOFF = (streamoff)-1;
 
 	public:

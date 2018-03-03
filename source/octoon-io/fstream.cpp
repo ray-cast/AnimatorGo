@@ -1,6 +1,6 @@
 // File: fstream.cpp
 // Author: PENGUINLIONG
-#include <cassert>
+
 #include <octoon/io/fstream.h>
 
 namespace octoon

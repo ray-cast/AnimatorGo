@@ -7,39 +7,18 @@
 #include <iostream>
 
 #include <octoon/io/iosbase.h>
-#include <octoon/runtime/platform.h>
+#include <octoon/io/stream_buf.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		class stream;
-
-		namespace detail
-		{
-			class OCTOON_EXPORT StdStreamExt final : public std::iostream, public std::streambuf
-			{
-			  friend stream;
-			public:
-			  StdStreamExt(stream* src) noexcept;
-			  StdStreamExt(const StdStreamExt&) = delete;
-			  StdStreamExt(StdStreamExt&&) noexcept;
-			  int overflow(int c) override final;
-			  int underflow() override final;
-
-			private:
-			  stream* src_;
-			};
-		}
-
 		/*
 		 * Base of all Octoon stream types. Provide fundamental I/O functionalities.
 		 */
-		class OCTOON_EXPORT stream
+		class OCTOON_EXPORT stream : public ios_base
 		{
 		public:
-		  using std_stream = detail::StdStreamExt;
-
 		  /*
 		   * Report the current stream's capability of reading.
 		   */
@@ -82,26 +61,18 @@ namespace octoon
 		   */
 		  virtual bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) = 0;
 
-		  /*
-		   * Get the last hint. A hint can be more than an error; any sort or
-		   * information about the last operation can be reported.
-		   */
-		  const char* last_hint();
+		  stream_buf* rdbuf() const noexcept;
+		  void set_rdbuf(stream_buf* buf) noexcept;
 
-		  /*
-		   * Allow manipulation of stream in the style recommended by C++ standard, using
-		   * `operator>>` and `operator<<`.
-		   */
-		  std_stream as_std();
+		  void set_open_mode(ios_base::openmode mode) noexcept;
+		  ios_base::openmode get_open_mode() const noexcept;
+
 		protected:
-		  /*
-		   * Set the last hint.
-		   */
-		  void set_last_hint(const char* hint) {
-			hint_ = hint;
-		  }
+			void _init(stream_buf* _buf, ios_base::openmode mode) noexcept;
+
 		private:
-		  const char* hint_ = "";
+			stream_buf * _strbuf;
+			ios_base::openmode _mode;
 		};
 	}
 }

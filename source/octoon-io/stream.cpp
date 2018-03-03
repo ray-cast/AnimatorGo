@@ -1,55 +1,39 @@
-#include <utility>
-#include "octoon/io/stream.h"
+#include <octoon/io/stream.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		namespace detail
+		stream_buf*
+		stream::rdbuf() const noexcept
 		{
-			StdStreamExt::StdStreamExt(stream* src) noexcept
-				: std::iostream(this)
-				, src_(src)
-			{
-			}
-
-			StdStreamExt::StdStreamExt(StdStreamExt&& rv) noexcept
-				: std::iostream(this)
-				, src_(rv.src_)
-			{
-			}
-
-			int
-			StdStreamExt::overflow(int c)
-			{
-				uint8_t byte = (uint8_t)c;
-				if (src_->write(&byte, 1))
-					return c;
-				else
-					return EOF;
-			}
-
-			int
-			StdStreamExt::underflow()
-			{
-				uint8_t byte;
-				if (src_->read(&byte, 1))
-					return byte;
-				else
-					return EOF;
-			}
+			return _strbuf;
 		}
 
-		const char*
-		stream::last_hint()
+		void
+		stream::set_rdbuf(stream_buf* buf) noexcept
 		{
-			return hint_;
+			_strbuf = buf;
 		}
 
-		detail::StdStreamExt
-		stream::as_std()
+		void
+		stream::_init(stream_buf* _buf, ios_base::openmode mode) noexcept
 		{
-			return detail::StdStreamExt(this);
+			this->set_rdbuf(_buf);
+			_mode = mode;
+			ios_base::_init();
+		}
+
+		void
+		stream::set_open_mode(ios_base::openmode mode) noexcept
+		{
+			_mode = mode;
+		}
+
+		ios_base::openmode
+		stream::get_open_mode() const noexcept
+		{
+			return _mode;
 		}
 	}
 }

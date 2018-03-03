@@ -4,7 +4,7 @@
 #include <string>
 
 #include "octoon/io/ioserver.h"
-#include "octoon/io/fstream.h"
+#include "octoon/io/vfstream.h"
 #include "octoon/io/zarchive.h"
 #include "octoon/io/farchive.h"
 
@@ -61,10 +61,10 @@ class OctoonIoTestObject : public TestObject
   }
   static void test_fstream_read(size_t orl_idx) {
     Logger::Info("Read test starts. Constructing `fstream`...");
-    fstream file;
+    vfstream file;
 
     Logger::Info("Opening file...");
-    ASSERT(file.open(gen_read_orl(orl_idx), OpenOptions().read()));
+    ASSERT(file.open(gen_read_orl(orl_idx), octoon::ios_base::in));
     std::string buf(4, 0);
 
     Logger::Info("Reading from file...");
@@ -75,18 +75,18 @@ class OctoonIoTestObject : public TestObject
   }
   static void test_fstream_write(size_t orl_idx) {
     Logger::Info("Write test starts. Constructing `fstream`...");
-    fstream file;
+    vfstream file;
 
     Logger::Info("Opening file in write mode...");
     auto file_name = gen_write_orl(orl_idx);
-    ASSERT(file.open(file_name, OpenOptions().create()));
+    ASSERT(file.open(file_name, octoon::ios_base::in | octoon::ios_base::out));
     std::string write_buf = "Test";
 
     Logger::Info("Writing to file...");
     ASSERT(file.write((const uint8_t*)write_buf.data(), write_buf.size()) == 4);
 
     Logger::Info("Opening file...");
-    ASSERT(file.open(file_name, OpenOptions().read()));
+    ASSERT(file.open(file_name, octoon::ios_base::in));
     std::string read_buf(4, 0);
 
     Logger::Info("Reading back from file...");
@@ -168,9 +168,9 @@ class OctoonIoTestObject : public TestObject
     // `fstream` write.
 
     Unit("fail_fstream_write_check_no_creation", [] {
-      fstream file;
+      vfstream file;
       auto file_name = gen_write_orl(0);
-      ASSERT(!file.open(file_name, OpenOptions().write()));
+      ASSERT(!file.open(file_name, octoon::ios_base::out));
     });
 
     Unit("test_fstream_write_local_dir_file",        []{ test_fstream_write(0); });

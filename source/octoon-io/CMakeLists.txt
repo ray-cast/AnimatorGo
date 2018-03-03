@@ -22,6 +22,14 @@ SOURCE_GROUP(${LIB_NAME}\\core FILES ${IO_LIST})
 SET(STREAM_LIST
 	${HEADER_PATH}/stream.h
 	${SOURCE_PATH}/stream.cpp
+	${HEADER_PATH}/stream_buf.h
+	${SOURCE_PATH}/stream_buf.cpp
+	${HEADER_PATH}/istream.h
+	${SOURCE_PATH}/istream.cpp
+	${HEADER_PATH}/ostream.h
+	${SOURCE_PATH}/ostream.cpp
+	${HEADER_PATH}/iostream.h
+	${SOURCE_PATH}/iostream.cpp
 	${HEADER_PATH}/mstream.h
 	${SOURCE_PATH}/mstream.cpp
 	${HEADER_PATH}/fstream.h

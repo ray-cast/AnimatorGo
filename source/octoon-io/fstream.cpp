@@ -7,106 +7,289 @@ namespace octoon
 {
 	namespace io
 	{
+		ifstream::ifstream() noexcept
+			: istream(&file_)
+		{
+		}
+
+		ifstream::ifstream(const char* path, const ios_base::open_mode mode) noexcept
+			: istream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ifstream::ifstream(const wchar_t* path, const ios_base::open_mode mode) noexcept
+			: istream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ifstream::ifstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: istream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ifstream::ifstream(const std::wstring& path, const ios_base::open_mode mode) noexcept
+			: istream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ifstream::~ifstream() noexcept
+		{
+			this->close();
+		}
+
 		bool
+		ifstream::is_open() const noexcept
+		{
+			return this->rdbuf()->is_open();
+		}
+
+		ifstream&
+		ifstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ifstream&
+		ifstream::open(const wchar_t* path, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ifstream&
+		ifstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			return this->open(path.c_str(), mode);
+		}
+
+		ifstream&
+		ifstream::open(const std::wstring& path, const ios_base::open_mode mode) noexcept
+		{
+			return this->open(path.c_str(), mode);
+		}
+
+		ifstream&
+		ifstream::close() noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				if (!file_.close())
+					this->setstate(failbit);
+			}
+
+			return (*this);
+		}
+
+		ofstream::ofstream() noexcept
+			: ostream(&file_)
+		{
+		}
+
+		ofstream::ofstream(const char* path, const ios_base::open_mode mode) noexcept
+			: ostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ofstream::ofstream(const wchar_t* path, const ios_base::open_mode mode) noexcept
+			: ostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ofstream::ofstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: ostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ofstream::ofstream(const std::wstring& path, const ios_base::open_mode mode) noexcept
+			: ostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		ofstream::~ofstream() noexcept
+		{
+			this->close();
+		}
+
+		bool
+		ofstream::is_open() const noexcept
+		{
+			return this->rdbuf()->is_open();
+		}
+
+		ofstream&
+		ofstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ofstream&
+		ofstream::open(const wchar_t* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ofstream&
+		ofstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			return this->open(path.c_str(), mode);
+		}
+
+		ofstream&
+		ofstream::open(const std::wstring& path, const ios_base::open_mode mode) noexcept
+		{
+			return this->open(path.c_str(), mode);
+		}
+
+		ofstream&
+		ofstream::close() noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				if (!file_.close())
+					this->setstate(failbit);
+			}
+
+			return (*this);
+		}
+
+		fstream::fstream() noexcept
+			: iostream(&file_)
+		{
+		}
+
+		fstream::fstream(const char* path, const ios_base::open_mode mode) noexcept
+			: iostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		fstream::fstream(const wchar_t* path, const ios_base::open_mode mode) noexcept
+			: iostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		fstream::fstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: iostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		fstream::fstream(const std::wstring& path, const ios_base::open_mode mode) noexcept
+			: iostream(&file_)
+		{
+			this->open(path, mode);
+		}
+
+		fstream::~fstream() noexcept
+		{
+			this->close();
+		}
+
+		fstream&
+		fstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		fstream&
+		fstream::open(const wchar_t* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				if (!file_.open(path, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		fstream&
 		fstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
 		{
-			std::ios_base::open_mode openmode = std::ios_base::binary;
-			if (mode & ios_base::in)
-				openmode |= std::ios_base::in;
+			return this->open(path.c_str(), mode);
+		}
 
-			if (mode & ios_base::out)
-				openmode |= std::ios_base::out;
-
-			if (mode & ios_base::app)
-				openmode |= std::ios_base::app;
-
-			if (mode & ios_base::trunc)
-				openmode |= std::ios_base::trunc;
-
-			stream_.open(path, openmode);
-			if (!stream_.is_open())
-				return false;
-
-			opts_ = mode;
-			return true;
+		fstream&
+		fstream::open(const std::wstring& path, const ios_base::open_mode mode) noexcept
+		{
+			return this->open(path.c_str(), mode);
 		}
 
 		bool
-		fstream::can_read() const noexcept
+		fstream::is_open() const noexcept
 		{
-			return opts_ & ios_base::in;
+			return this->rdbuf()->is_open();
 		}
 
-		bool
-		fstream::can_write() const noexcept
+		fstream&
+		fstream::close() noexcept
 		{
-			return opts_ & ios_base::out;
-		}
-
-		bool
-		fstream::can_seek() const noexcept
-		{
-			return true;
-		}
-
-		std::size_t
-		fstream::read(uint8_t* buf, std::size_t size) noexcept
-		{
-			try
+			const isentry ok(this);
+			if (ok)
 			{
-				stream_.read((char*)buf, size);
-			}
-			catch (const std::ios_base::failure&)
-			{
-				return 0;
+				if (!file_.close())
+					this->setstate(failbit);
 			}
 
-			stream_.seekp(stream_.tellg(), std::ios_base::beg);
-			return stream_.gcount();
-		}
-
-		std::size_t
-		fstream::write(const uint8_t* buf, std::size_t size) noexcept
-		{
-			try
-			{
-				stream_.write((char*)buf, size);
-			}
-			catch (const std::ios_base::failure&)
-			{
-				return 0;
-			}
-
-			stream_.seekg(stream_.tellp(), std::ios_base::beg);
-			return size;
-		}
-
-		bool
-		fstream::seek(long dist, ios_base::seek_dir seek) noexcept
-		{
-			try
-			{
-				switch (seek)
-				{
-				case ios_base::beg:
-					stream_.seekg(dist, std::ios_base::beg);
-					stream_.seekp(dist, std::ios_base::beg);
-					break;
-				case ios_base::end:
-					stream_.seekg(dist, std::ios_base::end);
-					stream_.seekp(dist, std::ios_base::end);
-					break;
-				case ios_base::cur:
-					stream_.seekg(dist, std::ios_base::cur);
-					stream_.seekp(dist, std::ios_base::cur);
-					break;
-				}
-				return true;
-			}
-			catch (const std::ios_base::failure&)
-			{
-				return false;
-			}
+			return (*this);
 		}
 	}
 }

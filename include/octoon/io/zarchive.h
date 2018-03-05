@@ -21,7 +21,7 @@ namespace octoon
 			zarchive(const std::string& zip_file);
 			~zarchive();
 
-			std::unique_ptr<stream> open(const Orl& orl, const ios_base::open_mode options) override;
+			std::unique_ptr<istream> open(const Orl& orl, const ios_base::open_mode options) override;
 			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
 			ItemType exists(const Orl& orl) override;
 

@@ -20,20 +20,7 @@ namespace octoon
 		stream::_init(stream_buf* _buf, ios_base::openmode mode) noexcept
 		{
 			this->set_rdbuf(_buf);
-			_mode = mode;
-			ios_base::_init();
-		}
-
-		void
-		stream::set_open_mode(ios_base::openmode mode) noexcept
-		{
-			_mode = mode;
-		}
-
-		ios_base::openmode
-		stream::get_open_mode() const noexcept
-		{
-			return _mode;
+			ios_base::_init(mode);
 		}
 	}
 }

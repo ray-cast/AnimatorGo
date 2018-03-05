@@ -24,7 +24,7 @@ namespace octoon
 			delete ((std::vector<zipper::ZipEntry>*)entries_);
 		}
 
-		std::unique_ptr<stream>
+		std::unique_ptr<istream>
 		zarchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
 			std::vector<uint8_t> buf;
@@ -39,7 +39,7 @@ namespace octoon
 			if (!reinterpret_cast<zipper::Unzipper*>(unzipper_)->extractEntryToMemory(orl.path(), buf))
 				return nullptr;
 
-			return std::make_unique<mstream>(buf);
+			return std::make_unique<mstream>(buf, opts);
 		}
 
 		bool

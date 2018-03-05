@@ -9,94 +9,92 @@ namespace octoon
 {
 	namespace io
 	{
-		constexpr size_t DEFAULT_BUFFER_SIZE = 8 * 1024;
-
-		mstream::mstream() noexcept
-			: buffer_(DEFAULT_BUFFER_SIZE)
+		membuf::membuf() noexcept
 		{
 		}
 
-		mstream::mstream(mstream&& rv) noexcept
-			: buffer_(std::move(rv.buffer_))
-			, pos_(rv.pos_)
+		membuf::membuf(std::size_t capacity) noexcept
 		{
+			this->open(capacity);
 		}
 
-		mstream::mstream(std::size_t capacity) noexcept
-			: buffer_(capacity)
+		membuf::membuf(std::vector<std::uint8_t>&& buffer) noexcept
 		{
+			this->open(std::move(buffer));
 		}
 
-		mstream::mstream(std::vector<std::uint8_t> buffer) noexcept
-			: buffer_(buffer)
-			, pos_(0)
+		membuf::membuf(const std::vector<std::uint8_t>& buffer) noexcept
 		{
+			this->open(buffer);
 		}
 
-		mstream&
-		mstream::operator=(mstream&& rv) noexcept
+		membuf::~membuf() noexcept
 		{
-			buffer_ = std::move(rv.buffer_);
-			pos_ = std::move(rv.pos_);
-			return *this;
 		}
 
 		bool
-		mstream::can_read() const noexcept
+		membuf::is_open() const noexcept
 		{
-			return true;
+			return !buffer_.empty();
 		}
 
-		bool
-		mstream::can_write() const noexcept
+		void
+		membuf::open(std::size_t capacity) noexcept
 		{
-			return true;
+			buffer_.resize(capacity);
 		}
 
-		bool
-		mstream::can_seek() const noexcept
+		void
+		membuf::open(std::vector<std::uint8_t>&& buffer) noexcept
 		{
-			return true;
+			buffer_ = std::move(buffer_);
 		}
 
-		std::size_t
-		mstream::read(std::uint8_t* buf, std::size_t size)
+		void
+		membuf::open(const std::vector<std::uint8_t>& buffer) noexcept
+		{
+			buffer_ = buffer;
+		}
+
+		streamsize
+		membuf::read(char* str, std::streamsize cnt) noexcept
 		{
 			std::lock_guard<std::mutex> guard(lock_);
 			auto buf_size = buffer_.size();
 			std::size_t actual_copyable;
 
 			// There is enough bytes to write.
-			if (buf_size - pos_ > size) {
-				actual_copyable = size;
-				std::memcpy(buf, buffer_.data() + pos_, actual_copyable);
-				pos_ += size;
+			if (buf_size - pos_ > cnt) {
+				actual_copyable = cnt;
+				std::memcpy(str, buffer_.data() + pos_, actual_copyable);
+				pos_ += cnt;
 
 				// Bytes not enough, write all we can have.
 			}
 			else {
 				actual_copyable = buf_size - pos_;
-				std::memcpy(buf, buffer_.data() + pos_, actual_copyable);
+				std::memcpy(str, buffer_.data() + pos_, actual_copyable);
 				pos_ = buf_size;
 			}
 			return actual_copyable;
 		}
 
-		std::size_t
-		mstream::write(const std::uint8_t* buf, std::size_t size)
+		streamsize
+		membuf::write(const char* str, std::streamsize cnt) noexcept
 		{
 			std::lock_guard<std::mutex> guard(lock_);
 
 			// Re-allocation is required to store incoming data.
-			buffer_.reserve(pos_ + size);
-			std::memcpy(buffer_.data() + pos_, buf, size);
-			return size;
+			buffer_.reserve(pos_ + cnt);
+			std::memcpy(buffer_.data() + pos_, str, cnt);
+			return cnt;
 		}
 
-		bool mstream::seek(long dist, ios_base::seek_dir seek)
+		streamoff
+		membuf::seekg(ios_base::off_type pos, ios_base::seekdir dir) noexcept
 		{
 			size_t base = 0;
-			switch (seek)
+			switch (dir)
 			{
 			case ios_base::beg:
 				base = 0;
@@ -109,7 +107,7 @@ namespace octoon
 				break;
 			}
 
-			std::size_t resultant = base + dist;
+			std::size_t resultant = base + pos;
 			if (resultant >= 0 && resultant <= buffer_.size())
 			{
 				pos_ = resultant;
@@ -119,10 +117,110 @@ namespace octoon
 			return false;
 		}
 
-		std::vector<std::uint8_t>
-		mstream::into_buffer() noexcept
+		streamoff
+		membuf::tellg() noexcept
 		{
-			return std::move(buffer_);
+			return pos_;
+		}
+
+		streamsize
+		membuf::size() const noexcept
+		{
+			return buffer_.size();
+		}
+
+		int
+		membuf::flush() noexcept
+		{
+			return 0;
+		}
+
+		bool
+		membuf::close() noexcept
+		{
+			buffer_.clear();
+			return true;
+		}
+
+		mstream::mstream() noexcept
+			: istream(&buf_)
+		{
+		}
+
+		mstream::mstream(std::size_t capacity, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(capacity, mode);
+		}
+
+		mstream::mstream( std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(std::move(buffer), mode);
+		}
+
+		mstream::mstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(buffer, mode);
+		}
+
+		bool
+		mstream::is_open() const noexcept
+		{
+			return buf_.is_open();
+		}
+
+		mstream&
+		mstream::open(std::size_t capacity, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				buf_.open(capacity);
+				this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		mstream&
+		mstream::open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				buf_.open(std::move(buffer));
+				this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		mstream&
+		mstream::open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				buf_.open(buffer);
+				this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		mstream&
+		mstream::close() noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				if (!buf_.close())
+					this->setstate(failbit);
+			}
+
+			return (*this);
 		}
 	}
 }

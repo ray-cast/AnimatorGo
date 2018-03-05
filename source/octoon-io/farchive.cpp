@@ -25,10 +25,10 @@ namespace octoon
 		{
 		}
 
-		std::unique_ptr<stream>
+		std::unique_ptr<istream>
 		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
-			auto rv_stream = std::make_unique<fstream>();
+			auto rv_stream = std::make_unique<ifstream>();
 			auto parent = orl.parent();
 			auto file_path = make_path(orl);
 

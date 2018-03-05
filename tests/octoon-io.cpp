@@ -64,7 +64,7 @@ class OctoonIoTestObject : public TestObject
     vfstream file;
 
     Logger::Info("Opening file...");
-    ASSERT(file.open(gen_read_orl(orl_idx), octoon::ios_base::in));
+    ASSERT(file.open(gen_read_orl(orl_idx), octoon::io::ios_base::in));
     std::string buf(4, 0);
 
     Logger::Info("Reading from file...");
@@ -79,14 +79,14 @@ class OctoonIoTestObject : public TestObject
 
     Logger::Info("Opening file in write mode...");
     auto file_name = gen_write_orl(orl_idx);
-    ASSERT(file.open(file_name, octoon::ios_base::in | octoon::ios_base::out));
+    ASSERT(file.open(file_name, octoon::io::ios_base::in | octoon::io::ios_base::out));
     std::string write_buf = "Test";
 
     Logger::Info("Writing to file...");
     ASSERT(file.write((const uint8_t*)write_buf.data(), write_buf.size()) == 4);
 
     Logger::Info("Opening file...");
-    ASSERT(file.open(file_name, octoon::ios_base::in));
+    ASSERT(file.open(file_name, octoon::io::ios_base::in));
     std::string read_buf(4, 0);
 
     Logger::Info("Reading back from file...");
@@ -170,7 +170,7 @@ class OctoonIoTestObject : public TestObject
     Unit("fail_fstream_write_check_no_creation", [] {
       vfstream file;
       auto file_name = gen_write_orl(0);
-      ASSERT(!file.open(file_name, octoon::ios_base::out));
+      ASSERT(!file.open(file_name, octoon::io::ios_base::out));
     });
 
     Unit("test_fstream_write_local_dir_file",        []{ test_fstream_write(0); });

@@ -4,37 +4,64 @@
 #define OCTOON_IO_MSTREAM_H_
 
 #include <mutex>
-#include <octoon/io/stream.h>
+#include <octoon/io/iostream.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		class OCTOON_EXPORT mstream final : public stream
+		class membuf final : public stream_buf
 		{
 		public:
-			mstream() noexcept;
-			mstream(const mstream&) = delete;
-			mstream(mstream&& rv) noexcept;
-			mstream(std::size_t capacity) noexcept;
-			mstream(std::vector<std::uint8_t> buffer) noexcept;
+			membuf() noexcept;
+			membuf(std::size_t capacity) noexcept;
+			membuf(std::vector<std::uint8_t>&& buffer) noexcept;
+			membuf(const std::vector<std::uint8_t>& buffer) noexcept;
+			~membuf() noexcept;
 
-			mstream& operator=(mstream&& rv) noexcept;
+			bool is_open() const noexcept;
 
-			bool can_read() const noexcept override;
-			bool can_write() const noexcept override;
-			bool can_seek() const noexcept override;
+			void open(std::size_t capacity) noexcept;
+			void open(std::vector<std::uint8_t>&& buffer) noexcept;
+			void open(const std::vector<std::uint8_t>& buffer) noexcept;
 
-			std::size_t read(std::uint8_t* buf, std::size_t size) override;
-			std::size_t write(const uint8_t* buf, std::size_t size) override;
-			bool seek(long dist, ios_base::seek_dir seek = ios_base::cur) override;
+			bool close() noexcept;
 
-			std::vector<std::uint8_t> into_buffer() noexcept;
+			streamsize read(char* str, std::streamsize cnt) noexcept;
+			streamsize write(const char* str, std::streamsize cnt) noexcept;
+
+			streamoff seekg(ios_base::off_type pos, ios_base::seekdir dir) noexcept;
+			streamoff tellg() noexcept;
+
+			streamsize size() const noexcept;
+
+			int flush() noexcept;
 
 		private:
 			std::size_t pos_;
 			std::mutex lock_;
 			std::vector<std::uint8_t> buffer_;
+		};
+
+		class OCTOON_EXPORT mstream final : public istream
+		{
+		public:
+			mstream() noexcept;
+			mstream(const mstream&) = delete;
+			mstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			mstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			mstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			bool is_open() const noexcept;
+
+			mstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			mstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			mstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			mstream& close() noexcept;
+
+		private:
+			membuf buf_;
 		};
 	}
 }

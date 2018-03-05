@@ -8,7 +8,7 @@
 #include <string>
 
 #include <octoon/io/ori.h>
-#include <octoon/io/stream.h>
+#include <octoon/io/istream.h>
 
 namespace octoon
 {
@@ -45,7 +45,7 @@ namespace octoon
 			*   A pointer to general stream created if succeeded. `nullptr` otherwise.
 			*
 			*/
-			virtual std::unique_ptr<stream> open(const Orl& orl, const ios_base::open_mode mode) = 0;
+			virtual std::unique_ptr<istream> open(const Orl& orl, const ios_base::open_mode mode) = 0;
 
 			/*
 			* Remove an item in current virtual directory if and only if it has the

@@ -28,11 +28,12 @@ namespace octoon
 			Orl() = default;
 			Orl(const Orl& lv) = default;
 			Orl(Orl&& rv) = default;
-			Orl(const std::string& vdir, const std::string& path);
+			Orl(const std::string& vdir, const std::string& path) noexcept;
+			Orl(std::string&& vdir, std::string&& path) noexcept;
 
 			Orl& operator=(const Orl& lv) = default;
 
-			bool is_valid() const;
+			bool is_valid() const noexcept;
 			/*
 			* Parse a ORL string into a perfectly valid ORL object.
 			*
@@ -44,12 +45,12 @@ namespace octoon
 			*/
 			static bool parse(const std::string& orl, Orl& out);
 
-			const std::string& virtual_dir() const;
-			const std::string& path() const;
+			const std::string& virtual_dir() const noexcept;
+			const std::string& path() const noexcept;
 
-			std::string to_string() const;
+			std::string to_string() const noexcept;
 
-			Orl parent() const;
+			Orl parent() const noexcept;
 
 		private:
 			std::string vdir_;

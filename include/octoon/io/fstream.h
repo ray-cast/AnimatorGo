@@ -1,57 +1,92 @@
-// File: fstream.h
-// Author: PENGUINLIONG
 #ifndef OCTOON_IO_FSTREAM_H_
 #define OCTOON_IO_FSTREAM_H_
 
-#include <memory>
-
-#include "octoon/io/stream.h"
+#include <octoon/io/file_buf.h>
+#include <octoon/io/iostream.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		struct Orl;
-		struct OpenOptions;
-		class IoServer;
+		class OCTOON_EXPORT ifstream final : public istream
+		{
+		public:
+			ifstream() noexcept;
+			ifstream(const char* path, const ios_base::open_mode mode) noexcept;
+			ifstream(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			ifstream(const std::string& path, const ios_base::open_mode mode) noexcept;
+			ifstream(const std::wstring& path, const ios_base::open_mode mode) noexcept;
+			~ifstream() noexcept;
 
-		class OCTOON_EXPORT fstream : public stream
+			ifstream& open(const char* path, const ios_base::open_mode mode) noexcept;
+			ifstream& open(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			ifstream& open(const std::string& path, const ios_base::open_mode mode) noexcept;
+			ifstream& open(const std::wstring& path, const ios_base::open_mode mode) noexcept;
+
+			ifstream& close() noexcept;
+
+			bool is_open() const noexcept;
+
+		private:
+			ifstream(const ifstream&) = delete;
+			ifstream& operator=(const ifstream&) = delete;
+
+		private:
+			filebuf file_;
+		};
+
+		class OCTOON_EXPORT ofstream final : public ostream
+		{
+		public:
+			ofstream() noexcept;
+			ofstream(const char* path, const ios_base::open_mode mode) noexcept;
+			ofstream(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			ofstream(const std::string& path, const ios_base::open_mode mode) noexcept;
+			ofstream(const std::wstring& path, const ios_base::open_mode mode) noexcept;
+			~ofstream() noexcept;
+
+			ofstream& open(const char* path, const ios_base::open_mode mode) noexcept;
+			ofstream& open(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			ofstream& open(const std::string& path, const ios_base::open_mode mode) noexcept;
+			ofstream& open(const std::wstring& path, const ios_base::open_mode mode) noexcept;
+
+			ofstream& close() noexcept;
+
+			bool is_open() const noexcept;
+
+		private:
+			ofstream(const ofstream&) = delete;
+			ofstream& operator=(const ofstream&) = delete;
+
+		private:
+			filebuf file_;
+		};
+
+		class OCTOON_EXPORT fstream final : public iostream
 		{
 		public:
 			fstream() noexcept;
-			fstream(const fstream&) noexcept = delete;
-			fstream(fstream&&) noexcept;
-			fstream(std::shared_ptr<IoServer> fs) noexcept;
+			fstream(const char* path, const ios_base::open_mode mode) noexcept;
+			fstream(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			fstream(const std::string& path, const ios_base::open_mode mode) noexcept;
+			fstream(const std::wstring& path, const ios_base::open_mode mode) noexcept;
+			~fstream() noexcept;
 
-			fstream& operator=(fstream&&) noexcept;
+			fstream& open(const char* path, const ios_base::open_mode mode) noexcept;
+			fstream& open(const wchar_t* path, const ios_base::open_mode mode) noexcept;
+			fstream& open(const std::string& path, const ios_base::open_mode mode) noexcept;
+			fstream& open(const std::wstring& path, const ios_base::open_mode mode) noexcept;
 
-			/*
-			* Try to open the specified resource. If success, `can_read()`, `can_write()`
-			* and `can_seek()` SHOULD report according to the capabilities inquired in
-			* `options`. Actual reports depends on implementation of virtual directories
-			* resources are in. If failed, these reports are always `false`.
-			*
-			* Any attempt to open a already-opened stream are allowed. After
-			* re-opening, all information about the previous opening state is lost.
-			*
-			* Returns:
-			*   `true` on success.
-			*/
-			bool open(const Orl& orl, const OpenOptions& options);
-			void close();
+			fstream& close() noexcept;
 
-			bool can_read() override final;
-			bool can_write() override final;
-			bool can_seek() override final;
-
-			std::size_t read(uint8_t* buf, std::size_t size) override final;
-			std::size_t write(const uint8_t* buf, std::size_t size) override final;
-
-			bool seek(long dist, SeekOrigin ori = SeekOrigin::Current) override final;
+			bool is_open() const noexcept;
 
 		private:
-			std::shared_ptr<IoServer> fs_;
-			std::unique_ptr<stream> inner_;
+			fstream(const fstream&) = delete;
+			fstream& operator=(const fstream&) = delete;
+
+		private:
+			filebuf file_;
 		};
 	}
 }

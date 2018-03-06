@@ -3,38 +3,83 @@
 #ifndef OCTOON_IO_MSTREAM_H_
 #define OCTOON_IO_MSTREAM_H_
 
-#include <mutex>
-#include "octoon/io/stream.h"
+#include <octoon/io/iostream.h>
+#include <octoon/io/membuf.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		class OCTOON_EXPORT mstream : public stream
+		class OCTOON_EXPORT imstream final : public istream
+		{
+		public:
+			imstream() noexcept;
+			imstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			imstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			imstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			bool is_open() const noexcept;
+
+			imstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			imstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			imstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			imstream& close() noexcept;
+
+		private:
+			imstream(const imstream&) = delete;
+			imstream& operator=(const imstream&) = delete;
+
+		private:
+			membuf buf_;
+		};
+
+		class OCTOON_EXPORT omstream final : public ostream
+		{
+		public:
+			omstream() noexcept;
+			omstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			omstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			omstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			bool is_open() const noexcept;
+
+			omstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			omstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			omstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+
+			omstream& close() noexcept;
+
+		private:
+			omstream(const omstream&) = delete;
+			omstream& operator=(const omstream&) = delete;
+
+		private:
+			membuf buf_;
+		};
+
+		class OCTOON_EXPORT mstream final : public iostream
 		{
 		public:
 			mstream() noexcept;
-			mstream(const mstream&) = delete;
-			mstream(mstream&& rv) noexcept;
-			mstream(std::size_t capacity) noexcept;
-			mstream(std::vector<uint8_t> buffer) noexcept;
+			mstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			mstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			mstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
 
-			mstream& operator=(mstream&& rv) noexcept;
+			bool is_open() const noexcept;
 
-			bool can_read() noexcept override final;
-			bool can_write() noexcept override final;
-			bool can_seek() noexcept override final;
+			mstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
+			mstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
+			mstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
 
-			size_t read(uint8_t* buf, size_t size) override final;
-			size_t write(const uint8_t* buf, size_t size) override final;
-			bool seek(long dist, SeekOrigin ori = SeekOrigin::Current) override final;
-
-			std::vector<uint8_t> into_buffer() noexcept;
+			mstream& close() noexcept;
 
 		private:
-			std::vector<uint8_t> buffer_;
-			std::mutex lock_;
-			size_t pos_;
+			mstream(const mstream&) = delete;
+			mstream& operator=(const mstream&) = delete;
+
+		private:
+			membuf buf_;
 		};
 	}
 }

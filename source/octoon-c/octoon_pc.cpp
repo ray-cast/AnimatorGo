@@ -4,6 +4,7 @@
 #include <octoon/game_application.h>
 #include <octoon/input/input_event.h>
 #include <octoon/runtime/except.h>
+#include <octoon/io/fcntl.h>
 
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
@@ -271,61 +272,6 @@ void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 		gameApp_->do_window_drop(hwnd, count, file_utf8);
 }
 
-#ifndef GLFW_EXPOSE_NATIVE_WIN32
-void _split_whole_name(const char *whole_name, char *fname, char *ext)
-{
-	const char *p_ext;
-
-	p_ext = rindex(whole_name, '.');
-	if (NULL != p_ext)
-	{
-		strcpy(ext, p_ext);
-		snprintf(fname, p_ext - whole_name + 1, "%s", whole_name);
-	}
-	else
-	{
-		ext[0] = '\0';
-		strcpy(fname, whole_name);
-	}
-}
-
-void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
-{
-	const char *p_whole_name;
-
-	drive[0] = '\0';
-	if (NULL == path)
-	{
-		dir[0] = '\0';
-		fname[0] = '\0';
-		ext[0] = '\0';
-		return;
-	}
-
-	if ('/' == path[strlen(path)])
-	{
-		strcpy(dir, path);
-		fname[0] = '\0';
-		ext[0] = '\0';
-		return;
-	}
-
-	p_whole_name = rindex(path, '/');
-	if (NULL != p_whole_name)
-	{
-		p_whole_name++;
-		_split_whole_name(p_whole_name, fname, ext);
-
-		snprintf(dir, p_whole_name - path, "%s", path);
-	}
-	else
-	{
-		_split_whole_name(path, fname, ext);
-		dir[0] = '\0';
-	}
-}
-#endif
-
 bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
 #if GLFW_EXPOSE_NATIVE_WIN32
@@ -338,11 +284,7 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 		char dir[MAX_PATH];
 		char filename[MAX_PATH];
 		char ext[MAX_PATH];
-#if GLFW_EXPOSE_NATIVE_WIN32
-		::_splitpath_s(gamedir, drive, MAX_PATH, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
-#else
-		::_splitpath(gamedir, drive, dir, filename, ext);
-#endif
+		octoon::io::fcntl::splitpath(gamedir, drive, dir, filename, ext);
 
 		gameRootPath_ = drive;
 		gameRootPath_ += dir;

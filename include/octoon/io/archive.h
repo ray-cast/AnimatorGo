@@ -3,9 +3,7 @@
 #ifndef OCTOON_IO_ARCHIVE_H_
 #define OCTOON_IO_ARCHIVE_H_
 
-#include <map>
 #include <memory>
-#include <string>
 
 #include <octoon/io/ori.h>
 #include <octoon/io/istream.h>

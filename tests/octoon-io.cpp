@@ -4,7 +4,7 @@
 #include <string>
 
 #include "octoon/io/ioserver.h"
-#include "octoon/io/vfstream.h"
+#include "octoon/io/vstream.h"
 #include "octoon/io/zarchive.h"
 #include "octoon/io/farchive.h"
 
@@ -61,7 +61,7 @@ class OctoonIoTestObject : public TestObject
   }
   static void test_vfstream_read(size_t orl_idx) {
     Logger::Info("Read test starts. Constructing `vfstream`...");
-    vfstream file;
+    vstream file;
 
     Logger::Info("Opening file...");
     ASSERT(file.open(gen_read_orl(orl_idx), octoon::io::ios_base::in));
@@ -75,7 +75,7 @@ class OctoonIoTestObject : public TestObject
   }
   static void test_vfstream_write(size_t orl_idx) {
     Logger::Info("Write test starts. Constructing `vfstream`...");
-    vfstream file;
+    vstream file;
 
     Logger::Info("Opening file in write mode...");
     auto file_name = gen_write_orl(orl_idx);
@@ -168,7 +168,7 @@ class OctoonIoTestObject : public TestObject
     // `vfstream` write.
 
     Unit("fail_fstream_write_check_no_creation", [] {
-      vfstream file;
+      vstream file;
       auto file_name = gen_write_orl(0);
       ASSERT(!file.open(file_name, octoon::io::ios_base::out));
     });

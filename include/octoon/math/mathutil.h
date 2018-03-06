@@ -176,6 +176,20 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		constexpr T frac(T v) noexcept
+		{
+			T intPart;
+			return std::modf(v, &intPart);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		constexpr T fract(T v) noexcept
+		{
+			T intPart;
+			return std::modf(v, &intPart);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		constexpr T fraction(T v) noexcept
 		{
 			T intPart;

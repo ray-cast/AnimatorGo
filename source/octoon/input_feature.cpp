@@ -1,3 +1,4 @@
+#if defined(OCTOON_FEATURE_INPUT_ENABLE)
 #include <octoon/input_feature.h>
 #include <octoon/input/input.h>
 #include <octoon/runtime/except.h>
@@ -88,3 +89,4 @@ namespace octoon
 		input_->reset();
 	}
 }
+#endif

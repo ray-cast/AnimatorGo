@@ -29,6 +29,48 @@ namespace octoon
 		return gameObject_->get_component(type);
 	}
 
+	void
+	GameComponent::get_components(const runtime::Rtti* type, GameComponents& components) const noexcept
+	{
+		assert(this->rtti() != type);
+		return gameObject_->get_components(type, components);
+	}
+
+	void
+	GameComponent::get_components(const runtime::Rtti& type, GameComponents& components) const noexcept
+	{
+		assert(this->rtti() != &type);
+		return gameObject_->get_components(type, components);
+	}
+
+	GameComponentPtr
+	GameComponent::get_component_in_children(const runtime::Rtti* type) const noexcept
+	{
+		assert(this->rtti() != type);
+		return gameObject_->get_component_in_children(type);
+	}
+
+	GameComponentPtr
+	GameComponent::get_component_in_children(const runtime::Rtti& type) const noexcept
+	{
+		assert(this->rtti() != &type);
+		return gameObject_->get_component_in_children(type);
+	}
+
+	void
+	GameComponent::get_components_in_children(const runtime::Rtti* type, GameComponents& components) const noexcept
+	{
+		assert(this->rtti() != type);
+		return gameObject_->get_components_in_children(type, components);
+	}
+
+	void
+	GameComponent::get_components_in_children(const runtime::Rtti& type, GameComponents& components) const noexcept
+	{
+		assert(this->rtti() != &type);
+		return gameObject_->get_components_in_children(type, components);
+	}
+
 	const GameComponents&
 	GameComponent::get_components() const noexcept
 	{

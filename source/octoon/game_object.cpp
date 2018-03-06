@@ -372,6 +372,24 @@ namespace octoon
 		return this->get_component(&type);
 	}
 
+	void
+	GameObject::get_components(const runtime::Rtti* type, GameComponents& components) const noexcept
+	{
+		assert(type);
+
+		for (auto& it : components_)
+		{
+			if (it->is_a(type))
+				components.push_back(it);
+		}
+	}
+
+	void
+	GameObject::get_components(const runtime::Rtti& type, GameComponents& components) const noexcept
+	{
+		this->get_components(&type, components);
+	}
+
 	GameComponentPtr
 	GameObject::get_component_in_children(const runtime::Rtti* type) const noexcept
 	{

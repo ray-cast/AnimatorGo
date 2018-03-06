@@ -86,11 +86,11 @@ namespace octoon
 		#endif
 
 			if (mode & ios_base::in && mode & ios_base::out)
-				flags |= O_RDWR;
+				flags |= O_RDWR | O_CREAT;
 			else if (mode & ios_base::in)
 				flags |= O_RDONLY;
 			else if (mode & ios_base::out)
-				flags |= O_WRONLY | O_CREAT | O_TRUNC;
+				flags |= O_WRONLY | O_TRUNC;
 
 			if (mode & ios_base::app)     flags |= O_APPEND;
 			if (mode & ios_base::trunc)   flags |= O_TRUNC;
@@ -118,11 +118,11 @@ namespace octoon
 		#endif
 
 			if (mode & ios_base::in && mode & ios_base::out)
-				flags |= O_RDWR;
+				flags |= O_RDWR | O_CREAT;
 			else if (mode & ios_base::in)
 				flags |= O_RDONLY;
 			else if (mode & ios_base::out)
-				flags |= O_WRONLY | O_CREAT;
+				flags |= O_WRONLY | O_TRUNC;
 
 			if (mode & ios_base::app)     flags |= O_APPEND;
 			if (mode & ios_base::trunc)   flags |= O_TRUNC;

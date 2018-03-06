@@ -14,15 +14,15 @@ namespace octoon
 		{
 		public:
 			imstream() noexcept;
-			imstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			imstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			imstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			imstream(std::size_t capacity, const ios_base::open_mode mode = ios_base::in) noexcept;
+			imstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::in) noexcept;
+			imstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::in) noexcept;
 
 			bool is_open() const noexcept;
 
-			imstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			imstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			imstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			imstream& open(std::size_t capacity, const ios_base::open_mode mode = ios_base::in) noexcept;
+			imstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::in) noexcept;
+			imstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::in) noexcept;
 
 			imstream& close() noexcept;
 
@@ -38,15 +38,15 @@ namespace octoon
 		{
 		public:
 			omstream() noexcept;
-			omstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			omstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			omstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			omstream(std::size_t capacity, const ios_base::open_mode mode = ios_base::out) noexcept;
+			omstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::out) noexcept;
+			omstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::out) noexcept;
 
 			bool is_open() const noexcept;
 
-			omstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			omstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			omstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			omstream& open(std::size_t capacity, const ios_base::open_mode mode = ios_base::out) noexcept;
+			omstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::out) noexcept;
+			omstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::out) noexcept;
 
 			omstream& close() noexcept;
 
@@ -62,15 +62,15 @@ namespace octoon
 		{
 		public:
 			mstream() noexcept;
-			mstream(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			mstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			mstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			mstream(std::size_t capacity, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
+			mstream(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
+			mstream(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
 
 			bool is_open() const noexcept;
 
-			mstream& open(std::size_t capacity, const ios_base::open_mode mode) noexcept;
-			mstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode) noexcept;
-			mstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode) noexcept;
+			mstream& open(std::size_t capacity, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
+			mstream& open(std::vector<std::uint8_t>&& buffer, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
+			mstream& open(const std::vector<std::uint8_t>& buffer, const ios_base::open_mode mode = ios_base::in | ios_base::out) noexcept;
 
 			mstream& close() noexcept;
 

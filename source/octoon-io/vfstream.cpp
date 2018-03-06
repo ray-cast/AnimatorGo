@@ -9,6 +9,24 @@ namespace octoon
 		{
 		}
 
+		ivfstream::ivfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(orl, mode);
+		}
+
+		ivfstream::ivfstream(const char* path, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
+		ivfstream::ivfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: istream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
 		ivfstream::ivfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: istream(&buf_)
 			, filesystem_(filesystem)
@@ -27,6 +45,46 @@ namespace octoon
 			const isentry ok(this);
 			if (ok)
 			{
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ivfstream&
+		ivfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ivfstream&
+		ivfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			const isentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
 				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
 
 				if (!buf_.open(fs, orl, mode))
@@ -61,6 +119,24 @@ namespace octoon
 		{
 		}
 
+		ovfstream::ovfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+			: ostream(&buf_)
+		{
+			this->open(orl, mode);
+		}
+
+		ovfstream::ovfstream(const char* path, const ios_base::open_mode mode) noexcept
+			: ostream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
+		ovfstream::ovfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: ostream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
 		ovfstream::ovfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: ostream(&buf_)
 			, filesystem_(filesystem)
@@ -79,6 +155,46 @@ namespace octoon
 			const osentry ok(this);
 			if (ok)
 			{
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ovfstream&
+		ovfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		ovfstream&
+		ovfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
 				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
 
 				if (!buf_.open(fs, orl, mode))
@@ -113,6 +229,24 @@ namespace octoon
 		{
 		}
 
+		vfstream::vfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+			: iostream(&buf_)
+		{
+			this->open(orl, mode);
+		}
+
+		vfstream::vfstream(const char* path, const ios_base::open_mode mode) noexcept
+			: iostream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
+		vfstream::vfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+			: iostream(&buf_)
+		{
+			this->open(path, mode);
+		}
+
 		vfstream::vfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: iostream(&buf_)
 			, filesystem_(filesystem)
@@ -131,6 +265,46 @@ namespace octoon
 			const osentry ok(this);
 			if (ok)
 			{
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		vfstream&
+		vfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
+				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
+
+				if (!buf_.open(fs, orl, mode))
+					this->setstate(ios_base::failbit, mode);
+				else
+					this->clear(ios_base::goodbit, mode);
+			}
+
+			return (*this);
+		}
+
+		vfstream&
+		vfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			const osentry ok(this);
+			if (ok)
+			{
+				Orl orl;
+				Orl::parse(path, orl);
+
 				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
 
 				if (!buf_.open(fs, orl, mode))

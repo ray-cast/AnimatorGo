@@ -28,6 +28,10 @@ namespace octoon
 			bool is_open() const noexcept;
 
 		private:
+			ifstream(const ifstream&) = delete;
+			ifstream& operator=(const ifstream&) = delete;
+
+		private:
 			filebuf file_;
 		};
 
@@ -51,6 +55,10 @@ namespace octoon
 			bool is_open() const noexcept;
 
 		private:
+			ofstream(const ofstream&) = delete;
+			ofstream& operator=(const ofstream&) = delete;
+
+		private:
 			filebuf file_;
 		};
 
@@ -72,6 +80,10 @@ namespace octoon
 			fstream& close() noexcept;
 
 			bool is_open() const noexcept;
+
+		private:
+			fstream(const fstream&) = delete;
+			fstream& operator=(const fstream&) = delete;
 
 		private:
 			filebuf file_;

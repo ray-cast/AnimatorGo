@@ -13,11 +13,15 @@ namespace octoon
 		/*
 		* Local directory mapped directly to a virtual directory.
 		*/
-		class OCTOON_EXPORT farchive : public archive
+		class OCTOON_EXPORT farchive final : public archive
 		{
 		public:
+			farchive(const char* base_dir) noexcept;
+			farchive(std::string&& base_dir) noexcept;
 			farchive(const std::string& base_dir) noexcept;
-			std::unique_ptr<istream> open(const Orl& orl, const ios_base::open_mode mode) override;
+			~farchive() noexcept = default;
+
+			std::unique_ptr<stream_buf> open(const Orl& orl, const ios_base::open_mode mode) override;
 
 			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
 			ItemType exists(const Orl& orl) override;

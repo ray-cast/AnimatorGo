@@ -20,17 +20,27 @@ namespace octoon
 {
 	namespace io
 	{
+		farchive::farchive(const char* base_dir) noexcept
+			: base_dir_(base_dir)
+		{
+		}
+
+		farchive::farchive(std::string&& base_dir) noexcept
+			: base_dir_(std::move(base_dir))
+		{
+		}
+
 		farchive::farchive(const std::string& base_dir) noexcept
 			: base_dir_(base_dir)
 		{
 		}
 
-		std::unique_ptr<istream>
+		std::unique_ptr<stream_buf>
 		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
-			auto rv_stream = std::make_unique<ifstream>();
-			auto parent = orl.parent();
+			auto file = std::make_unique<filebuf>();
 			auto file_path = make_path(orl);
+			auto parent = orl.parent();
 
 			// Check if the file exists.
 			if (exists(orl) == ItemType::NA)
@@ -47,8 +57,8 @@ namespace octoon
 			}
 
 			// Open the file.
-			if (rv_stream->open(make_path(orl), opts))
-				return rv_stream;
+			if (file->open(make_path(orl), opts))
+				return file;
 			else
 				return nullptr;
 		}

@@ -4,13 +4,29 @@
 #include <zipper/unzipper.h>
 
 #include <octoon/io/zarchive.h>
-#include <octoon/io/mstream.h>
+#include <octoon/io/membuf.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		zarchive::zarchive(const std::string& zip_file)
+		zarchive::zarchive(const char* zip_file) except
+			: unzipper_(nullptr)
+			, entries_(nullptr)
+		{
+			unzipper_ = new zipper::Unzipper(zip_file);
+			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
+		}
+
+		zarchive::zarchive(std::string&& zip_file) except
+			: unzipper_(nullptr)
+			, entries_(nullptr)
+		{
+			unzipper_ = new zipper::Unzipper(zip_file);
+			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
+		}
+
+		zarchive::zarchive(const std::string& zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -24,7 +40,7 @@ namespace octoon
 			delete ((std::vector<zipper::ZipEntry>*)entries_);
 		}
 
-		std::unique_ptr<istream>
+		std::unique_ptr<stream_buf>
 		zarchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
 			std::vector<uint8_t> buf;
@@ -39,7 +55,7 @@ namespace octoon
 			if (!reinterpret_cast<zipper::Unzipper*>(unzipper_)->extractEntryToMemory(orl.path(), buf))
 				return nullptr;
 
-			return std::make_unique<mstream>(buf, opts);
+			return std::make_unique<membuf>(buf);
 		}
 
 		bool

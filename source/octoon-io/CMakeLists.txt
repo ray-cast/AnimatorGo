@@ -38,6 +38,10 @@ SET(STREAM_LIST
 	${SOURCE_PATH}/vfstream.cpp
 	${HEADER_PATH}/file_buf.h
 	${SOURCE_PATH}/file_buf.cpp
+	${HEADER_PATH}/membuf.h
+	${SOURCE_PATH}/membuf.cpp
+	${HEADER_PATH}/virtual_buf.h
+	${SOURCE_PATH}/virtual_buf.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\stream FILES ${STREAM_LIST})
 

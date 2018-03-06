@@ -30,6 +30,18 @@ namespace octoon
 			return _file.open(filename, mode) ? true : false;
 		}
 
+		bool
+		filebuf::open(const std::string& filename, ios_base::openmode mode) noexcept
+		{
+			return _file.open(filename, mode) ? true : false;
+		}
+
+		bool
+		filebuf::open(const std::wstring& filename, ios_base::openmode mode) noexcept
+		{
+			return _file.open(filename, mode) ? true : false;
+		}
+
 		streamsize
 		filebuf::read(char* str, std::streamsize cnt) noexcept
 		{

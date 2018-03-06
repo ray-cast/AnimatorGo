@@ -16,9 +16,11 @@ namespace octoon
 		class OCTOON_EXPORT stream : public ios_base
 		{
 		public:
+			stream() noexcept = default;
+			virtual ~stream() noexcept = default;
 
-		  stream_buf* rdbuf() const noexcept;
-		  void set_rdbuf(stream_buf* buf) noexcept;
+			stream_buf* rdbuf() const noexcept;
+			void set_rdbuf(stream_buf* buf) noexcept;
 
 		protected:
 			void _init(stream_buf* _buf, ios_base::openmode mode) noexcept;

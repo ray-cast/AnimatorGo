@@ -18,10 +18,12 @@ namespace octoon
 		class OCTOON_EXPORT zarchive : public archive
 		{
 		public:
-			zarchive(const std::string& zip_file);
-			~zarchive();
+			zarchive(const char* zip_file) except;
+			zarchive(std::string&& zip_file) except;
+			zarchive(const std::string& zip_file) except;
+			~zarchive() noexcept;
 
-			std::unique_ptr<istream> open(const Orl& orl, const ios_base::open_mode options) override;
+			std::unique_ptr<stream_buf> open(const Orl& orl, const ios_base::open_mode options) override;
 			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
 			ItemType exists(const Orl& orl) override;
 

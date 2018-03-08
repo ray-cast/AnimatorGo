@@ -1,46 +1,46 @@
-#include <octoon/io/vfstream.h>
+#include <octoon/io/vstream.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		ivfstream::ivfstream() noexcept
+		ivstream::ivstream() noexcept
 			: istream(&buf_)
 		{
 		}
 
-		ivfstream::ivfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+		ivstream::ivstream(const Orl& orl, const ios_base::open_mode mode) noexcept
 			: istream(&buf_)
 		{
 			this->open(orl, mode);
 		}
 
-		ivfstream::ivfstream(const char* path, const ios_base::open_mode mode) noexcept
+		ivstream::ivstream(const char* path, const ios_base::open_mode mode) noexcept
 			: istream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		ivfstream::ivfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+		ivstream::ivstream(const std::string& path, const ios_base::open_mode mode) noexcept
 			: istream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		ivfstream::ivfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
+		ivstream::ivstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: istream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		ivfstream::ivfstream(const std::shared_ptr<IoServer>& filesystem) noexcept
+		ivstream::ivstream(const std::shared_ptr<IoServer>& filesystem) noexcept
 			: istream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		ivfstream&
-		ivfstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
+		ivstream&
+		ivstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
 		{
 			const isentry ok(this);
 			if (ok)
@@ -56,8 +56,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ivfstream&
-		ivfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		ivstream&
+		ivstream::open(const char* path, const ios_base::open_mode mode) noexcept
 		{
 			const isentry ok(this);
 			if (ok)
@@ -76,8 +76,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ivfstream&
-		ivfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		ivstream&
+		ivstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
 		{
 			const isentry ok(this);
 			if (ok)
@@ -96,8 +96,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ivfstream&
-		ivfstream::close() noexcept
+		ivstream&
+		ivstream::close() noexcept
 		{
 			const isentry ok(this);
 			if (ok)
@@ -109,48 +109,48 @@ namespace octoon
 		}
 
 		bool
-		ivfstream::is_open() const noexcept
+		ivstream::is_open() const noexcept
 		{
 			return this->rdbuf()->is_open();
 		}
 
-		ovfstream::ovfstream() noexcept
+		ovstream::ovstream() noexcept
 			: ostream(&buf_)
 		{
 		}
 
-		ovfstream::ovfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+		ovstream::ovstream(const Orl& orl, const ios_base::open_mode mode) noexcept
 			: ostream(&buf_)
 		{
 			this->open(orl, mode);
 		}
 
-		ovfstream::ovfstream(const char* path, const ios_base::open_mode mode) noexcept
+		ovstream::ovstream(const char* path, const ios_base::open_mode mode) noexcept
 			: ostream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		ovfstream::ovfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+		ovstream::ovstream(const std::string& path, const ios_base::open_mode mode) noexcept
 			: ostream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		ovfstream::ovfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
+		ovstream::ovstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: ostream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		ovfstream::ovfstream(const std::shared_ptr<IoServer>& filesystem) noexcept
+		ovstream::ovstream(const std::shared_ptr<IoServer>& filesystem) noexcept
 			: ostream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		ovfstream&
-		ovfstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
+		ovstream&
+		ovstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -166,8 +166,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ovfstream&
-		ovfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		ovstream&
+		ovstream::open(const char* path, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -186,8 +186,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ovfstream&
-		ovfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		ovstream&
+		ovstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -206,8 +206,8 @@ namespace octoon
 			return (*this);
 		}
 
-		ovfstream&
-		ovfstream::close() noexcept
+		ovstream&
+		ovstream::close() noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -219,48 +219,48 @@ namespace octoon
 		}
 
 		bool
-		ovfstream::is_open() const noexcept
+		ovstream::is_open() const noexcept
 		{
 			return this->rdbuf()->is_open();
 		}
 
-		vfstream::vfstream() noexcept
+		vstream::vstream() noexcept
 			: iostream(&buf_)
 		{
 		}
 
-		vfstream::vfstream(const Orl& orl, const ios_base::open_mode mode) noexcept
+		vstream::vstream(const Orl& orl, const ios_base::open_mode mode) noexcept
 			: iostream(&buf_)
 		{
 			this->open(orl, mode);
 		}
 
-		vfstream::vfstream(const char* path, const ios_base::open_mode mode) noexcept
+		vstream::vstream(const char* path, const ios_base::open_mode mode) noexcept
 			: iostream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		vfstream::vfstream(const std::string& path, const ios_base::open_mode mode) noexcept
+		vstream::vstream(const std::string& path, const ios_base::open_mode mode) noexcept
 			: iostream(&buf_)
 		{
 			this->open(path, mode);
 		}
 
-		vfstream::vfstream(std::shared_ptr<IoServer>&& filesystem) noexcept
+		vstream::vstream(std::shared_ptr<IoServer>&& filesystem) noexcept
 			: iostream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		vfstream::vfstream(const std::shared_ptr<IoServer>& filesystem) noexcept
+		vstream::vstream(const std::shared_ptr<IoServer>& filesystem) noexcept
 			: iostream(&buf_)
 			, filesystem_(filesystem)
 		{
 		}
 
-		vfstream&
-		vfstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
+		vstream&
+		vstream::open(const Orl& orl, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -276,8 +276,8 @@ namespace octoon
 			return (*this);
 		}
 
-		vfstream&
-		vfstream::open(const char* path, const ios_base::open_mode mode) noexcept
+		vstream&
+		vstream::open(const char* path, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -296,8 +296,8 @@ namespace octoon
 			return (*this);
 		}
 
-		vfstream&
-		vfstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		vstream&
+		vstream::open(const std::string& path, const ios_base::open_mode mode) noexcept
 		{
 			const osentry ok(this);
 			if (ok)
@@ -316,8 +316,8 @@ namespace octoon
 			return (*this);
 		}
 
-		vfstream&
-		vfstream::close() noexcept
+		vstream&
+		vstream::close() noexcept
 		{
 			const isentry ok(this);
 			if (ok)
@@ -329,7 +329,7 @@ namespace octoon
 		}
 
 		bool
-		vfstream::is_open() const noexcept
+		vstream::is_open() const noexcept
 		{
 			return this->rdbuf()->is_open();
 		}

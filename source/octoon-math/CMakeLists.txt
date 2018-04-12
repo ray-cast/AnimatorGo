@@ -22,6 +22,8 @@ SET(MATH_LIST
 	${HEADER_PATH}/mathfwd.h
     ${HEADER_PATH}/mathutil.h
     ${SOURCE_PATH}/mathutil.cpp
+	${HEADER_PATH}/perlin_noise.h
+	${SOURCE_PATH}/perlin_noise.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${MATH_LIST})
 

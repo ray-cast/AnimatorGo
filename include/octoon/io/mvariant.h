@@ -2,6 +2,7 @@
 #define OCTOON_VARIANT_H
 
 #include <string>
+#include <iostream>
 #include <utility>
 #include <exception>
 #include <variant>
@@ -102,6 +103,59 @@ namespace octoon
 		}
 	};
 
+	// dynamic type op
+	template<typename T, typename ...Types> struct DynamicTypeOp;
+
+	template<typename T>
+	struct DynamicTypeOp<T>
+	{
+		template <typename ...TArgs>
+		static void assign(variant<TArgs...>& lhs, const variant<TArgs...>& rhs)
+		{
+			return;
+		}
+
+		template <typename ...TArgs>
+		static bool nothrow_copy_constructible_or_not_nothrow_move_constructible(const variant<TArgs...>& rhs)
+		{
+			return false;
+		}
+	};
+
+	template<typename T, typename ...Types>
+	struct DynamicTypeOp
+	{
+		template <typename ...TArgs>
+		static void assign(variant<TArgs...>& lhs, const variant<TArgs...>& rhs)
+		{
+			if (typeid(T).hash_code() == lhs.hash_id)
+			{
+				lhs.get<T>() = rhs.get<T>();
+			}
+			else
+			{
+				DynamicTypeOp<Types...>::assign(lhs, rhs);
+			}
+		}
+
+		template <typename ...TArgs>
+		static bool nothrow_copy_constructible_or_not_nothrow_move_constructible(const variant<TArgs...>& rhs)
+		{
+			if (typeid(T).hash_code() == rhs.hash_id)
+			{
+				if (std::is_nothrow_copy_constructible<T>::value || std::is_nothrow_move_constructible<T>::value)
+					return true;
+				else
+					return false;
+			}
+			else
+			{
+				return DynamicTypeOp<Types...>::nothrow_copy_constructible_or_not_nothrow_move_constructible(rhs);
+			}
+		}
+	};
+	
+
 	//variant_alternative
 	template <size_t I, class... Types>
 	struct variant_alternative;
@@ -145,7 +199,48 @@ namespace octoon
 
 		variant& operator=(const variant& rhs)
 		{
+			if (valueless_by_exception() && rhs.valueless_by_exception()) return *this;
+			if (!valueless_by_exception() && rhs.valueless_by_exception())
+			{
+				destroy();
+				is_valueless = true;
+			}
+			else if (rhs.hash_id == hash_id)
+			{
+				DynamicTypeOp<TArgs...>::assign(*this, rhs);
+			}
+			else if (DynamicTypeOp<TArgs...>::nothrow_copy_constructible_or_not_nothrow_move_constructible(rhs))
+			{
+				//this->emplace<rhs.index()>(get<rhs.index()>(rhs));
+			}
+			else
+			{
+				//this->operator=(variant(rhs));
+			}
+			return *this;
+		}
 
+		variant& operator=(variant& rhs)
+		{
+			if (valueless_by_exception() && rhs.valueless_by_exception()) return *this;
+			if (!valueless_by_exception() && rhs.valueless_by_exception())
+			{
+				destroy();
+				is_valueless = true;
+			}
+			else if (rhs.hash_id == hash_id)
+			{
+				DynamicTypeOp<TArgs...>::assign(*this, rhs);
+			}
+			else if (DynamicTypeOp<TArgs...>::nothrow_copy_constructible_or_not_nothrow_move_constructible(rhs))
+			{
+				//this->emplace<rhs.index()>(get<rhs.index()>(rhs));
+			}
+			else
+			{
+				//this->operator=(variant(rhs));
+			}
+			return *this;
 		}
 
 		variant& operator=(variant&& rhs) noexcept
@@ -208,6 +303,19 @@ namespace octoon
 		{
 			Destroy<TArgs...>::destroy(hash_id, data);
 		}
+
+		template <typename T>
+		T& get(void)
+		{
+			return *reinterpret_cast<T *>((void *)data);
+		}
+
+		template <typename T>
+		const T& get(void) const
+		{
+			return *reinterpret_cast<T *>((void *)data);
+		}
+		
 	private:
 		bool is_valueless;
 		std::size_t hash_id;
@@ -244,6 +352,9 @@ namespace octoon
 		friend constexpr const T& get(const variant<Types...>& v);
 		template <class T, class... Types>
 		friend constexpr const T&& get(const variant<Types...>&& v);
+
+		// friend class
+		template<typename T, typename ...Types> friend struct DynamicTypeOp;
 	};
 
 	// get

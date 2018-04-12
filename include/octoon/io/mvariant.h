@@ -153,13 +153,21 @@ namespace octoon
 
 		}
 
-		/*template <class T> variant& operator=(T&& t) noexcept
+		template <class T> variant& operator=(T&& t) noexcept
 		{
-			if (TypeExist<T, Types...>::is_exist)
+			if (typeid(std::remove_reference<T>::type).hash_code() == hash_id)
 			{
-
+				*reinterpret_cast<typename std::remove_reference<T>::type *>(data) = std::forward<T>(t);
 			}
-		}*/
+			else
+			{
+				is_valueless = false;
+				hash_id = typeid(std::remove_reference<T>::type).hash_code();
+				index_id = TypeExist<std::remove_reference<T>::type, TArgs...>::index;
+				*reinterpret_cast<typename std::remove_reference<T>::type *>(data) = std::forward<T>(t);
+			}
+			return *this;
+		}
 
 		constexpr std::size_t index() const noexcept { return index_id; }
 
@@ -209,24 +217,24 @@ namespace octoon
 
 		// friend get
 		template <std::size_t I, class... Types>
-		friend constexpr std::variant_alternative_t<
-			I, std::variant<Types...>
-		>& get(std::variant<Types...>& v);
+		friend constexpr variant_alternative_t<
+			I, variant<Types...>
+		>& get(variant<Types...>& v);
 
 		template <std::size_t I, class... Types>
-		friend constexpr std::variant_alternative_t<
-			I, std::variant<Types...>
-		>&& get(std::variant<Types...>&& v);
+		friend constexpr variant_alternative_t<
+			I, variant<Types...>
+		>&& get(variant<Types...>&& v);
 
 		template <std::size_t I, class... Types>
-		friend constexpr std::variant_alternative_t<
-			I, std::variant<Types...>
-		> const& get(const std::variant<Types...>& v);
+		friend constexpr variant_alternative_t<
+			I, variant<Types...>
+		> const& get(const variant<Types...>& v);
 
 		template <std::size_t I, class... Types>
-		friend constexpr std::variant_alternative_t<
-			I, std::variant<Types...>
-		>&& get(std::variant<Types...>&& v);
+		friend constexpr variant_alternative_t<
+			I, variant<Types...>
+		>&& get(variant<Types...>&& v);
 
 		template <class T, class... Types>
 		friend constexpr T& get(variant<Types...>& v);
@@ -240,9 +248,9 @@ namespace octoon
 
 	// get
 	template <std::size_t I, class... Types>
-	constexpr std::variant_alternative_t<
-		I, std::variant<Types...>
-	>& get(std::variant<Types...>& v)
+	constexpr variant_alternative_t<
+		I, variant<Types...>
+	>& get(variant<Types...>& v)
 	{
 		if (I == v.index_id)
 			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
@@ -251,9 +259,9 @@ namespace octoon
 	}
 
 	template <std::size_t I, class... Types>
-	constexpr std::variant_alternative_t<
-		I, std::variant<Types...>
-	>&& get(std::variant<Types...>&& v)
+	constexpr variant_alternative_t<
+		I, variant<Types...>
+	>&& get(variant<Types...>&& v)
 	{
 		if (I == v.index_id)
 			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
@@ -262,8 +270,8 @@ namespace octoon
 	}
 
 	template <std::size_t I, class... Types>
-	constexpr std::variant_alternative_t<
-		I, std::variant<Types...>
+	constexpr variant_alternative_t<
+		I, variant<Types...>
 	> const& get(const std::variant<Types...>& v)
 	{
 		if (I == v.index_id)
@@ -273,9 +281,9 @@ namespace octoon
 	}
 
 	template <std::size_t I, class... Types>
-	constexpr std::variant_alternative_t<
-		I, std::variant<Types...>
-	> const&& get(const std::variant<Types...>&& v)
+	constexpr variant_alternative_t<
+		I, variant<Types...>
+	> const&& get(const variant<Types...>&& v)
 	{
 		if (I == v.index_id)
 			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);

@@ -45,6 +45,8 @@ namespace octoon
 #define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(TextureTypeLightmap, N)
 #define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(TextureTypeReflection, N)
 
+#define TEXTURE_ARRAY_COUNT 4
+
 		class AnimationProperty;
 		class TextureProperty;
 		class CameraProperty;

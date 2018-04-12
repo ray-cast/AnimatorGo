@@ -99,6 +99,11 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
+				void encapsulate(const BoundingBox<T>& bound) noexcept
+				{
+					sphere_.encapsulate(bound.sphere_);
+				}
+
 				void transform(const Matrix3x3<T>& m, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					aabb_.transform(m, translate);

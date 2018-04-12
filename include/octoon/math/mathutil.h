@@ -216,6 +216,21 @@ namespace octoon
 			return x * 2.0f - 1.0f;
 		}
 
+		inline float hash_float(float x, float y, float z) noexcept
+		{
+			return x + y * (1.0f / 255.0f) + z * (1.0f / 65025.0f);
+		}
+
+		inline double hash_double(double x, double y, double z) noexcept
+		{
+			return x + y * (1.0f / 255.0f) + z * (1.0f / 65025.0f);
+		}
+
+		inline float abs(float v) noexcept
+		{
+			return std::abs(v);
+		}
+
 		inline float cos(float v) noexcept
 		{
 			return std::cos(v);

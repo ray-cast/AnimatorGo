@@ -6,6 +6,7 @@
 #include <octoon/model/combine_mesh.h>
 
 #include <octoon/math/mathfwd.h>
+#include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 #include <octoon/math/boundingbox.h>
 
@@ -130,14 +131,14 @@ namespace octoon
 		{
 			MeshSubset() noexcept;
 			MeshSubset(std::uint32_t startVertices, std::uint32_t startIndices, std::uint32_t _indicesCount, std::uint32_t _verticesOffset, std::uint32_t _indicesOffset) noexcept;
-
-			std::uint32_t offsetVertices;
-			std::uint32_t offsetIndices;
+			
+			std::uint32_t startVertices;
+			std::uint32_t startIndices;
 
 			std::uint32_t indicesCount;
 
-			std::uint32_t startIndices;
-			std::uint32_t startVertices;
+			std::uint32_t offsetVertices;
+			std::uint32_t offsetIndices;
 
 			::octoon::math::BoundingBox boundingBox;
 		};
@@ -236,7 +237,7 @@ namespace octoon
 			::octoon::math::Float3Array _vertices;
 			::octoon::math::Float3Array _normals;
 			::octoon::math::Float4Array _colors;
-			::octoon::math::Float2Array _texcoords[4];
+			::octoon::math::Float2Array _texcoords[TEXTURE_ARRAY_COUNT];
 			::octoon::math::Float4Array _tangents;
 			VertexWeights _weights;
 			::octoon::math::Float4x4Array _bindposes;

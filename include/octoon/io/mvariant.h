@@ -2,10 +2,22 @@
 #define OCTOON_VARIANT_H
 
 #include <string>
+#include <utility>
+#include <exception>
+#include <variant>
 #include <cstddef>
 
 namespace octoon
 {
+	// exception
+	class bad_variant_access : public std::exception
+	{
+
+	};
+
+	template <typename ...TArgs>
+	class variant;
+
 	// MaxSizeType
 	template <typename T, typename ...TS> struct MaxSizeType;
 
@@ -27,13 +39,42 @@ namespace octoon
 	template <typename U, typename T>
 	struct TypeExist<U, T>
 	{
-		static constexpr bool value = std::is_same<U, T>::value;
+		static constexpr bool is_exist = std::is_same<U, T>::value;
+		static constexpr std::size_t index = 0;
 	};
 
 	template <typename U, typename T, typename ...TS>
 	struct TypeExist<U, T, TS...>
 	{
-		static constexpr bool value = std::is_same<U, T>::value || TypeExist<U, TS...>::value;
+		static constexpr bool is_exist = std::is_same<U, T>::value ? true : TypeExist<U, TS...>::is_exist;
+		static constexpr std::size_t index = std::is_same<U, T>::value ? 0 : TypeExist<U, TS...>::index + 1;
+	};
+
+	// FindTypeByIndex
+	template <std::size_t I, std::size_t idx, bool equal, typename T, typename ...TS> struct FindTypeByIndexImpl;
+
+	template <std::size_t I, std::size_t idx, bool equal, typename T>
+	struct FindTypeByIndexImpl<I, idx, equal, T>
+	{
+		using type = T;
+	};
+
+	template <std::size_t I, std::size_t idx, typename T, typename ...TS>
+	struct FindTypeByIndexImpl<I, idx, true, T, TS...>
+	{
+		using type = T;
+	};
+
+	template <std::size_t I, std::size_t idx, typename T, typename ...TS>
+	struct FindTypeByIndexImpl<I, idx, false, T, TS...>
+	{
+		using type = typename FindTypeByIndexImpl <I, idx + 1, I == idx + 1, TS...>::type;
+	};
+
+	template <std::size_t I, typename ...TS>
+	struct FindTypeByIndex
+	{
+		using type = typename FindTypeByIndexImpl<I, 0, I == 0, TS...>::type;
 	};
 
 	// Destroy
@@ -61,6 +102,31 @@ namespace octoon
 		}
 	};
 
+	//variant_alternative
+	template <size_t I, class... Types>
+	struct variant_alternative;
+
+	template <size_t I, class... Types>
+	struct variant_alternative<I, variant<Types...>>
+	{
+		using type = typename FindTypeByIndex<I, Types...>::type;
+	};
+	template <size_t I, class T> class variant_alternative<I, const T>
+	{
+		using type = std::size_t;
+	};
+	template <size_t I, class T> class variant_alternative<I, volatile T>
+	{
+		using type = std::size_t;
+	};
+	template <size_t I, class T> class variant_alternative<I, const volatile T>
+	{
+		using type = std::size_t;
+	};
+
+	template <size_t I, class T>
+	using variant_alternative_t = typename variant_alternative<I, T>::type;
+
 	// variant
 	template<class ...TArgs>
 	class variant
@@ -76,22 +142,179 @@ namespace octoon
 		{
 			destroy();
 		}
+
+		variant& operator=(const variant& rhs)
+		{
+
+		}
+
+		variant& operator=(variant&& rhs) noexcept
+		{
+
+		}
+
+		/*template <class T> variant& operator=(T&& t) noexcept
+		{
+			if (TypeExist<T, Types...>::is_exist)
+			{
+
+			}
+		}*/
+
+		constexpr std::size_t index() const noexcept { return index_id; }
+
+		constexpr bool valueless_by_exception() const noexcept { return is_valueless; }
+
+		void swap(variant& rhs) noexcept
+		{
+			if (valueless_by_exception() && rhs.valueless_by_exception()) return;
+			if (hash_id == rhs.hash_id)
+			{
+				//std::swap(octoon::get<typename FindTypeByIndex<I, Types...>::type>(*this),octoon:get<typename FindTypeByIndex<I, Types...>::type>(rhs));
+			}
+			else
+			{
+				std::size_t max_size = MaxSizeType<TArgs...>::size;
+				unsigned char tmp[MaxSizeType<TArgs...>::size] = { 0 };
+				std::swap(is_valueless, rhs.is_valueless);
+				std::swap(hash_id, rhs.hash_id);
+				std::swap(index_id, rhs.index_id);
+				std::copy(data, data + max_size, tmp);
+				std::copy(rhs.data, rhs.data + max_size, data);
+				std::copy(tmp, tmp + max_size, rhs.data);
+			}
+		}
+
+		
 	private:
 		template <typename T, typename ...Args>
 		constexpr void construct(void)
 		{
 			new(data)T;
+			is_valueless = true;
 			hash_id = typeid(T).hash_code();
+			index_id = 0;
 		}
 
 		constexpr void destroy(void) noexcept
 		{
 			Destroy<TArgs...>::destroy(hash_id, data);
 		}
-	public:
+	private:
+		bool is_valueless;
 		std::size_t hash_id;
+		std::size_t index_id;
 		unsigned char data[MaxSizeType<TArgs...>::size] = { 0 };
+
+
+		// friend get
+		template <std::size_t I, class... Types>
+		friend constexpr std::variant_alternative_t<
+			I, std::variant<Types...>
+		>& get(std::variant<Types...>& v);
+
+		template <std::size_t I, class... Types>
+		friend constexpr std::variant_alternative_t<
+			I, std::variant<Types...>
+		>&& get(std::variant<Types...>&& v);
+
+		template <std::size_t I, class... Types>
+		friend constexpr std::variant_alternative_t<
+			I, std::variant<Types...>
+		> const& get(const std::variant<Types...>& v);
+
+		template <std::size_t I, class... Types>
+		friend constexpr std::variant_alternative_t<
+			I, std::variant<Types...>
+		>&& get(std::variant<Types...>&& v);
+
+		template <class T, class... Types>
+		friend constexpr T& get(variant<Types...>& v);
+		template <class T, class... Types>
+		friend constexpr T&& get(variant<Types...>&& v);
+		template <class T, class... Types>
+		friend constexpr const T& get(const variant<Types...>& v);
+		template <class T, class... Types>
+		friend constexpr const T&& get(const variant<Types...>&& v);
 	};
+
+	// get
+	template <std::size_t I, class... Types>
+	constexpr std::variant_alternative_t<
+		I, std::variant<Types...>
+	>& get(std::variant<Types...>& v)
+	{
+		if (I == v.index_id)
+			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
+		else
+			throw bad_variant_access();
+	}
+
+	template <std::size_t I, class... Types>
+	constexpr std::variant_alternative_t<
+		I, std::variant<Types...>
+	>&& get(std::variant<Types...>&& v)
+	{
+		if (I == v.index_id)
+			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
+		else
+			throw bad_variant_access();
+	}
+
+	template <std::size_t I, class... Types>
+	constexpr std::variant_alternative_t<
+		I, std::variant<Types...>
+	> const& get(const std::variant<Types...>& v)
+	{
+		if (I == v.index_id)
+			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
+		else
+			throw bad_variant_access();
+	}
+
+	template <std::size_t I, class... Types>
+	constexpr std::variant_alternative_t<
+		I, std::variant<Types...>
+	> const&& get(const std::variant<Types...>&& v)
+	{
+		if (I == v.index_id)
+			return *reinterpret_cast<typename FindTypeByIndex<I, Types...>::type *>(v.data);
+		else
+			throw bad_variant_access();
+	}
+
+	template <class T, class... Types>
+	constexpr T& get(variant<Types...>& v)
+	{
+		if (TypeExist<T, Types...>::is_exist && TypeExist<T, Types...>::index == v.index_id)
+			return *reinterpret_cast<T*>(v.data);
+		else
+			throw bad_variant_access();
+	}
+	template <class T, class... Types>
+	constexpr T&& get(variant<Types...>&& v)
+	{
+		if (TypeExist<T, Types...>::is_exist && TypeExist<T, Types...>::index == v.index_id)
+			return *reinterpret_cast<T*>(v.data);
+		else
+			throw bad_variant_access();
+	}
+	template <class T, class... Types>
+	constexpr const T& get(const variant<Types...>& v)
+	{
+		if (TypeExist<T, Types...>::is_exist && TypeExist<T, Types...>::index == v.index_id)
+			return *reinterpret_cast<T*>(v.data);
+		else
+			throw bad_variant_access();
+	}
+	template <class T, class... Types>
+	constexpr const T&& get(const variant<Types...>&& v)
+	{
+		if (TypeExist<T, Types...>::is_exist && TypeExist<T, Types...>::index == v.index_id)
+			return *reinterpret_cast<T*>(v.data);
+		else
+			throw bad_variant_access();
+	}
 }
 
 #endif // OCTOON_VARIANT_H

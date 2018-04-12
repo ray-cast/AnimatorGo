@@ -24,22 +24,22 @@ namespace octoon
 #define PMX_BONE_AXIS     1 << 10
 #define PMX_BONE_ROTATE   1 << 11
 
-		typedef ::octoon::math::Vector2  PmxVector2;
-		typedef ::octoon::math::Vector3  PmxVector3;
-		typedef ::octoon::math::Vector4  PmxVector4;
+		typedef octoon::math::Vector2  PmxVector2;
+		typedef octoon::math::Vector3  PmxVector3;
+		typedef octoon::math::Vector4  PmxVector4;
 
-		typedef ::octoon::math::Vector3  PmxColor3;
-		typedef ::octoon::math::Vector4  PmxColor4;
-		typedef ::octoon::math::float3x3 PmxFloat3x3;
-		typedef ::octoon::math::float4x4 PmxFloat4x4;
+		typedef octoon::math::Vector3  PmxColor3;
+		typedef octoon::math::Vector4  PmxColor4;
+		typedef octoon::math::float3x3 PmxFloat3x3;
+		typedef octoon::math::float4x4 PmxFloat4x4;
 
-		typedef wchar_t                  PmxChar;
-		typedef std::int8_t              PmxInt8;
-		typedef std::uint8_t             PmxUInt8;
-		typedef std::uint16_t            PmxUInt16;
-		typedef std::uint32_t            PmxUInt32;
+		typedef wchar_t                PmxChar;
+		typedef std::int8_t            PmxInt8;
+		typedef std::uint8_t           PmxUInt8;
+		typedef std::uint16_t          PmxUInt16;
+		typedef std::uint32_t          PmxUInt32;
 
-		typedef float                    PmxFloat;
+		typedef float                  PmxFloat;
 
 		enum PmxVertexSkinningType : std::uint8_t
 		{
@@ -227,10 +227,10 @@ namespace octoon
 			PmxUInt32 morphCount;
 
 			PmxUInt16 morphIndex;
-			PmxFloat	 morphRate;
+			PmxFloat  morphRate;
 
-			std::vector<PmxMorphVertex>  vertexList;
-			std::vector<PmxMorphBone> boneList;
+			std::vector<PmxMorphVertex>   vertexList;
+			std::vector<PmxMorphBone>     boneList;
 			std::vector<PmxMorphTexcoord> texcoordList;
 			std::vector<PmxMorphMaterial> materialList;
 		};
@@ -257,9 +257,9 @@ namespace octoon
 
 			PmxUInt32 bone;
 
-			PmxUInt8 group;
+			PmxUInt8  group;
 			PmxUInt16 groupMask;
-			PmxUInt8 shape; // 0:Circle 1:Square 2:Capsule
+			PmxUInt8  shape; // 0:Circle 1:Square 2:Capsule
 
 			PmxVector3 scale;
 			PmxVector3 position;

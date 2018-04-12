@@ -37,11 +37,11 @@ namespace octoon
 			void setName(const std::string& name) noexcept;
 			const std::string& getName() const noexcept;
 
-			void setPosition(const ::octoon::math::Vector3& position) noexcept;
-			const ::octoon::math::Vector3& getPosition() const noexcept;
+			void setPosition(const octoon::math::Vector3& position) noexcept;
+			const octoon::math::Vector3& getPosition() const noexcept;
 
-			void setRotation(const ::octoon::math::Quaternion& position) noexcept;
-			const ::octoon::math::Quaternion& getRotation() const noexcept;
+			void setRotation(const octoon::math::Quaternion& position) noexcept;
+			const octoon::math::Quaternion& getRotation() const noexcept;
 
 			void setBoneIndex(const std::int32_t) noexcept;
 			std::int32_t getBoneIndex() const noexcept;
@@ -58,8 +58,8 @@ namespace octoon
 			std::int32_t _bone;
 			std::int32_t _frame;
 
-			::octoon::math::Vector3 _position;
-			::octoon::math::Quaternion _rotation;
+			octoon::math::Vector3 _position;
+			octoon::math::Quaternion _rotation;
 			Interpolation _interpolation;
 		};
 
@@ -108,7 +108,7 @@ namespace octoon
 			void updateIK() noexcept;
 
 			MotionSegment findMotionSegment(int frame, const std::vector<std::size_t>& motions) noexcept;
-			void interpolateMotion(::octoon::math::Quaternion& rotation, ::octoon::math::Vector3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept;
+			void interpolateMotion(octoon::math::Quaternion& rotation, octoon::math::Vector3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept;
 
 		private:
 			AnimationProperty(const AnimationProperty&) = delete;
@@ -117,7 +117,7 @@ namespace octoon
 		private:
 			void updateIK(Bones& _bones, const IKAttr& ik) noexcept;
 			void updateBones(const Bones& _bones) noexcept;
-			void updateTransform(Bone& bone, const float3& translate, const ::octoon::math::Quaternion& rotate) noexcept;
+			void updateTransform(Bone& bone, const float3& translate, const octoon::math::Quaternion& rotate) noexcept;
 
 		private:
 

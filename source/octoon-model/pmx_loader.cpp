@@ -494,9 +494,9 @@ namespace octoon
 					}
 				}
 
-				material->set(MATKEY_COLOR_DIFFUSE, ::octoon::math::srgb2linear(it.Diffuse));
-				material->set(MATKEY_COLOR_AMBIENT, ::octoon::math::srgb2linear(it.Ambient));
-				material->set(MATKEY_COLOR_SPECULAR, ::octoon::math::srgb2linear(it.Specular));
+				material->set(MATKEY_COLOR_DIFFUSE, octoon::math::srgb2linear(it.Diffuse));
+				material->set(MATKEY_COLOR_AMBIENT, octoon::math::srgb2linear(it.Ambient));
+				material->set(MATKEY_COLOR_SPECULAR, octoon::math::srgb2linear(it.Specular));
 				material->set(MATKEY_OPACITY, it.Opacity);
 				material->set(MATKEY_SHININESS, it.Shininess / 255.0f);
 
@@ -706,7 +706,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(::octoon::io::ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(octoon::io::ostream& stream, const Pmx& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1089,7 +1089,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(::octoon::io::ostream& stream, const Model& model) noexcept
+		bool PmxLoader::doSave(octoon::io::ostream& stream, const Model& model) noexcept
 		{
 			return false;
 		}

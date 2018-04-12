@@ -9,7 +9,6 @@ namespace octoon
 {
 	namespace model
 	{
-
 		BoneAnimation::BoneAnimation() noexcept
 			: _bone(0)
 			, _frame(-1)

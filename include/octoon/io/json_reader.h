@@ -4,25 +4,25 @@
 #include <string>
 #include <cstdint>
 #include <octoon/io/text_reader.h>
+#include <octoon/io/stream_reader.h>
 #include <octoon/io/istream.h>
+#include <octoon/runtime/json/json.hpp>
 
 namespace octoon
 {
     namespace io
     {
-        class JsonReader
+        class JsonReader : public StreamReader
         {
+            using JsonObject = nlohmann::json;
         public:
             JsonReader(istream &stream);
 
-            virtual void close();
-            virtual int peek();
-            virtual int read();
-            virtual void read(char *str, std::int32_t begin, std::int32_t end);
-            virtual std::string readLine();
-            virtual std::string readToEnd();
+            JsonObject parse();
+
         private:
-            istream& base_stream;
+	        JsonReader(const JsonReader&) noexcept = delete;
+	        JsonReader& operator=(const JsonReader&) noexcept = delete;
         };
     }
 }

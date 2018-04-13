@@ -2,7 +2,9 @@
 #define OCTOON_SERIALIZABLE_H
 
 #include <octoon/io/istream.h>
+#include <octoon/io/binary_reader.h>
 #include <octoon/io/ostream.h>
+#include <octoon/io/binary_writer.h>
 
 namespace octoon
 {
@@ -11,8 +13,7 @@ namespace octoon
         class serializable
         {
         public:
-            virtual void serialize(istream& in);
-            virtual void deserialize(ostream& out);
+            virtual void serialize(BinaryWriter& out) = 0;
         };
     }
 }

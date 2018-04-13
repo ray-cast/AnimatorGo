@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <octoon/io/istream.h>
+#include <octoon/io/endian.h>
 
 namespace octoon
 {
@@ -12,11 +13,11 @@ namespace octoon
         {
         public:
             BinaryReader(istream & stream);
-            void close();
+
             char peekChar();
             char read();
-            void read(char*, std::int32_t,std::int32_t);
-            bool readBoolean();
+            void read(char* c, std::int32_t begin, std::int32_t size);
+            bool readBool();
             char readChar();
 
             float readFloat();
@@ -25,7 +26,6 @@ namespace octoon
             std::int32_t readInt32();
             std::int64_t readInt64();
             
-            std::string readString();
             std::uint16_t readUInt16();
             std::uint32_t readUInt32();
             std::uint64_t readUInt64();
@@ -35,6 +35,7 @@ namespace octoon
 			BinaryReader & operator=(const BinaryReader&) = delete;
 			BinaryReader(const BinaryReader&) = delete;
         private:
+            EndianType endian_type;
             istream base_stream;
         };
     }

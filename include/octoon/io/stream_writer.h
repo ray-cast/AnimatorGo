@@ -42,7 +42,6 @@ namespace octoon
             virtual void writeLine(std::string v);
 
         protected:
-            char new_line;
             ostream base_stream;
         };
     }

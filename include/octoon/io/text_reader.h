@@ -20,6 +20,8 @@ namespace octoon
         private:
 			TextReader & operator=(const TextReader&) = delete;
 			TextReader(const TextReader&) = delete;
+        protected:
+            char new_line;
         };
     }
 }

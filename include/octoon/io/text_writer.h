@@ -16,7 +16,7 @@ namespace octoon
 
             virtual void write(bool v) = 0;
             virtual void write(char v) = 0;
-            virtual void write(char* v, std::int32_t begin, std::int32_t end) = 0;
+            virtual void write(char* v, std::int32_t begin, std::int32_t count) = 0;
             virtual void write(float v) = 0;
             virtual void write(double v) = 0;
             virtual void write(std::int16_t v) = 0;
@@ -29,7 +29,7 @@ namespace octoon
 
             virtual void writeLine(bool v) = 0;
             virtual void writeLine(char v) = 0;
-            virtual void writeLine(char* v, std::int32_t begin, std::int32_t end) = 0;
+            virtual void writeLine(char* v, std::int32_t begin, std::int32_t count) = 0;
             virtual void writeLine(float v) = 0;
             virtual void writeLine(double v) = 0;
             virtual void writeLine(std::int16_t v) = 0;
@@ -44,7 +44,7 @@ namespace octoon
 			TextWriter(const TextWriter&) = delete;
 
         protected:
-            std::string new_line;
+            char new_line;
         };
     }
 }

@@ -21,7 +21,6 @@ namespace octoon
             virtual std::string readLine();
             virtual std::string readToEnd();
         private:
-            char new_line;
             istream& base_stream;
         };
     }

@@ -2,6 +2,7 @@
 #define OCTOON_SINGLETON_H_
 
 #include <octoon/runtime/platform.h>
+#include <type_traits>
 
 namespace octoon
 {

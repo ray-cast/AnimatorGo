@@ -594,13 +594,13 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_frustumt_rh(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Matrix4x4<T>& make_frustumt_rh(T left, T right_, T bottom, T top, T zNear, T zFar) noexcept
 				{
-					T A = (right + left) / (right - left);
+					T A = (right_ + left) / (right_ - left);
 					T B = (top + bottom) / (top - bottom);
 					T C = (zFar > DBL_MAX) ? -1.0f : -(zFar + zNear) / (zFar - zNear);
-					T D = (zFar > DBL_MAX) ? -zNear : -2.0 * zFar * zNear / (zFar - zNear);
-					T cx = 2.0f * zNear / (right - left);
+					T D = (zFar > DBL_MAX) ? -zNear : -2.0f * zFar * zNear / (zFar - zNear);
+					T cx = 2.0f * zNear / (right_ - left);
 					T cy = 2.0f * zNear / (top - bottom);
 
 					make_matrix(cx, 0.0, 0.0, 0.0,
@@ -674,12 +674,12 @@ namespace octoon
 				Matrix4x4<T>& make_perspective_off_center_rh(const T& fovy, const T& aspectRatio, const T& zNear, const T& zFar) noexcept
 				{
 					T tan_fovy = tan(radians(fovy * 0.5f));
-					T right = tan_fovy * aspectRatio * zNear;
-					T left = -right;
+					T _right = tan_fovy * aspectRatio * zNear;
+					T left = -_right;
 					T top = tan_fovy * zNear;
 					T bottom = -top;
 
-					make_frustumt_rh(left, right, bottom, top, zNear, zFar);
+					make_frustumt_rh(left, _right, bottom, top, zNear, zFar);
 					return *this;
 				}
 
@@ -989,7 +989,7 @@ namespace octoon
 			if (det == static_cast<T>(0.0))
 			{
 				const T nan = std::numeric_limits<T>::quiet_NaN();
-				m.set
+				m.make_matrix
 				(
 					nan, nan, nan, nan,
 					nan, nan, nan, nan,

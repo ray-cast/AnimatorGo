@@ -1,0 +1,59 @@
+SET(LIB_NAME video)
+SET(LIB_OUTNAME octoon-${LIB_NAME})
+
+SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_NAME})
+SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
+
+SET(VIDEO_GRAPHICS_LIST
+	${HEADER_PATH}/render_object.h
+	${SOURCE_PATH}/render_object.cpp
+	${HEADER_PATH}/render_scene.h
+	${SOURCE_PATH}/render_scene.cpp
+	${HEADER_PATH}/render_system.h
+	${SOURCE_PATH}/render_system.cpp
+	${HEADER_PATH}/render_types.h
+)
+SOURCE_GROUP(${LIB_NAME}  FILES ${VIDEO_GRAPHICS_LIST})
+
+SET(VIDEO_CAMERA_LIST
+	${HEADER_PATH}/camera.h
+	${SOURCE_PATH}/camera.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\camera  FILES ${VIDEO_CAMERA_LIST})
+
+SET(VIDEO_MATERIAL_LIST
+	${HEADER_PATH}/material.h
+	${SOURCE_PATH}/material.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
+
+SET(VIDEO_GEOMETRY_LIST
+	${HEADER_PATH}/geometry.h
+	${SOURCE_PATH}/geometry.cpp
+	${HEADER_PATH}/mesh.h
+	${SOURCE_PATH}/mesh.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\geometry  FILES ${VIDEO_GEOMETRY_LIST})
+
+SET(VIDEO_TEXT_LIST
+	${HEADER_PATH}/text_contour.h
+	${SOURCE_PATH}/text_contour.cpp
+	${HEADER_PATH}/text_file.h
+	${SOURCE_PATH}/text_file.cpp
+	${HEADER_PATH}/text_material.h
+	${SOURCE_PATH}/text_material.cpp
+	${HEADER_PATH}/text_system.h
+	${SOURCE_PATH}/text_system.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\text  FILES ${VIDEO_TEXT_LIST})
+
+ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
+ADD_LIBRARY(${LIB_OUTNAME} STATIC 
+	${VIDEO_GRAPHICS_LIST}
+	${VIDEO_CAMERA_LIST}
+	${VIDEO_MATERIAL_LIST}
+	${VIDEO_GEOMETRY_LIST}
+	${VIDEO_GRAPHICS_VIDEO_LIST}
+)
+
+SET_TARGET_ATTRIBUTE(${LIB_OUTNAME} "core")

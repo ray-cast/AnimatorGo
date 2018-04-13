@@ -34,6 +34,20 @@ SET(BASE_FEATURES_LIST
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
+SET(VIDEO_FEATURES_LIST
+    ${HEADER_PATH}/camera_component.h
+    ${SOURCE_PATH}/camera_component.cpp
+    ${HEADER_PATH}/renderer.h
+    ${SOURCE_PATH}/renderer.cpp
+    ${HEADER_PATH}/point_renderer.h
+    ${SOURCE_PATH}/point_renderer.cpp
+    ${HEADER_PATH}/line_renderer.h
+    ${SOURCE_PATH}/line_renderer.cpp
+    ${HEADER_PATH}/mesh_renderer.h
+    ${SOURCE_PATH}/mesh_renderer.cpp
+)
+SOURCE_GROUP("system\\video" FILES ${VIDEO_FEATURES_LIST})
+
 SET(INPUT_FEATURES_LIST
     ${HEADER_PATH}/input_feature.h
     ${SOURCE_PATH}/input_feature.cpp
@@ -66,10 +80,12 @@ ADD_LIBRARY(${LIB_NAME} SHARED
     ${GUI_FEATURES_LIST}
     ${TIMER_FEATURES_LIST}
     ${IO_FEATURES_LIST}
+    ${VIDEO_FEATURES_LIST}
 )
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-math)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-runtime)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-video)
 
 IF(OCTOON_FEATURE_IO_ENABLE)
     TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-io)

@@ -146,6 +146,15 @@ namespace octoon
 		using double2x2Array = std::vector<double2x2>;
 		using double3x3Array = std::vector<double3x3>;
 		using double4x4Array = std::vector<double4x4>;
+
+		using floats = std::vector<float>;
+		using float2s = std::vector<float2>;
+		using float3s = std::vector<float3>;
+		using float4s = std::vector<float4>;
+		using doubles = std::vector<double>;
+		using double2s = std::vector<double2>;
+		using double3s = std::vector<double3>;
+		using double4s = std::vector<double4>;
 	}
 }
 

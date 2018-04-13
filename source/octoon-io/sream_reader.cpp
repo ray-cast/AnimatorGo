@@ -7,7 +7,7 @@ namespace octoon
     namespace io
     {
         StreamReader::StreamReader(istream &stream)
-            :new_line("\n"), base_stream(stream)
+            :base_stream(stream)
         {
         }
 
@@ -16,17 +16,17 @@ namespace octoon
 
         }
 
-        int read()
+        int StreamReader::read()
         {
             char rst;
             base_stream.read(&rst, sizeof(char));
             return rst;
         }
-        void read(char *str, std::int32_t begin, std::int32_t count)
+        void StreamReader::read(char *str, std::int32_t begin, std::int32_t count)
         {
             base_stream.read(str + begin, count);
         }
-        std::string readLine()
+        std::string StreamReader::readLine()
         {
             std::string result;
             char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];
@@ -47,7 +47,7 @@ namespace octoon
 
             return result;
         }
-        std::string readToEnd()
+        std::string StreamReader::readToEnd()
         {
             std::string result;
             char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];

@@ -12,6 +12,8 @@ namespace octoon
         class TextReader
         {
         public:
+            TextReader();
+            virtual ~TextReader();
             virtual int peek() = 0;
             virtual int read() = 0;
             virtual void read(char *str, std::int32_t begin, std::int32_t end) = 0;

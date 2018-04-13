@@ -10,7 +10,7 @@ namespace octoon
 {
     namespace io
     {
-        class StreamWriter
+        class StreamWriter:public TextWriter
         {
         public:
         	StreamWriter(ostream &stream);
@@ -42,7 +42,7 @@ namespace octoon
             virtual void writeLine(std::string v);
 
         protected:
-            ostream base_stream;
+            ostream& base_stream;
         };
     }
 }

@@ -2,6 +2,7 @@
 #define OCTOON_STRING_WRITER_H
 
 #include <string>
+#include <sstream>
 #include <cstdint>
 #include <octoon/io/istream.h>
 #include <octoon/io/text_writer.h>
@@ -10,15 +11,14 @@ namespace octoon
 {
     namespace io
     {
-        class StringWriter
+        class StringWriter : public TextWriter
         {
         public:
-        	StringWriter(std::string str);
+        	StringWriter(std::string &str);
 
-            virtual void close();
             virtual void write(bool v);
             virtual void write(char v);
-            virtual void write(char* v, std::int32_t begin, std::int32_t end);
+            virtual void write(char* v, std::int32_t begin, std::int32_t count);
             virtual void write(float v);
             virtual void write(double v);
             virtual void write(std::int16_t v);
@@ -31,7 +31,7 @@ namespace octoon
 
             virtual void writeLine(bool v);
             virtual void writeLine(char v);
-            virtual void writeLine(char* v, std::int32_t begin, std::int32_t end);
+            virtual void writeLine(char* v, std::int32_t begin, std::int32_t count);
             virtual void writeLine(float v);
             virtual void writeLine(double v);
             virtual void writeLine(std::int16_t v);
@@ -43,8 +43,7 @@ namespace octoon
             virtual void writeLine(std::string v);
 
         protected:
-            std::string new_line;
-            std::string string_buf;
+            std::string& string_buf;
         };
     }
 }

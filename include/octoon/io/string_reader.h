@@ -2,6 +2,7 @@
 #define OCTOON_STRING_READER_H
 
 #include <string>
+#include <sstream>
 #include <cstdint>
 #include <octoon/io/text_reader.h>
 #include <octoon/io/istream.h>
@@ -10,7 +11,7 @@ namespace octoon
 {
     namespace io
     {
-        class StringReader
+        class StringReader : public TextReader
         {
         public:
             StringReader(const std::string &str);
@@ -18,11 +19,11 @@ namespace octoon
             virtual void close();
             virtual int peek();
             virtual int read();
-            virtual void read(char *str, std::int32_t begin, std::int32_t end);
+            virtual void read(char *str, std::int32_t begin, std::int32_t count);
             virtual std::string readLine();
             virtual std::string readToEnd();
         private:
-            std::string string_buf;
+            std::stringstream string_buf;
         };
     }
 }

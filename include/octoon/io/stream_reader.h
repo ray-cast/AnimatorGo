@@ -10,7 +10,7 @@ namespace octoon
 {
     namespace io
     {
-        class StreamReader
+        class StreamReader:public TextReader
         {
         public:
             StreamReader(istream &stream);

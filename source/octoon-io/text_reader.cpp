@@ -4,5 +4,12 @@ namespace octoon
 {
     namespace io
     {
+        TextReader::TextReader()
+            :new_line('\n')
+        {
+        }
+        ~TextReader()
+        {
+        }
     }
 }

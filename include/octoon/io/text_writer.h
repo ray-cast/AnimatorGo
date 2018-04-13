@@ -13,6 +13,7 @@ namespace octoon
         {
         public:
         	TextWriter();
+            virtual ~TextWriter();
 
             virtual void write(bool v) = 0;
             virtual void write(char v) = 0;

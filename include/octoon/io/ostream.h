@@ -14,7 +14,7 @@ namespace octoon
 			virtual ~ostream() noexcept;
 
 			ostream& write(const char* str, std::streamsize cnt) noexcept;
-			ostream& write(const char* str, streamsize size, streamsize cnt) noexcept;
+			ostream& write(const char* str, std::streamsize size, std::streamsize cnt) noexcept;
 
 			ostream& seekg(ios_base::off_type pos) noexcept;
 			ostream& seekg(ios_base::off_type pos, ios_base::seekdir dir) noexcept;

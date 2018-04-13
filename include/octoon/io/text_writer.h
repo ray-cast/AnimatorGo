@@ -14,7 +14,6 @@ namespace octoon
         public:
         	TextWriter();
 
-            virtual void close() = 0;
             virtual void write(bool v) = 0;
             virtual void write(char v) = 0;
             virtual void write(char* v, std::int32_t begin, std::int32_t end) = 0;

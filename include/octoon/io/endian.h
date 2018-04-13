@@ -2,10 +2,10 @@
 #define OCTOON_ENDIAN_H
 
 #include <utility>
+#include <mutex>
+#include <algorithm>
 #include <cstdint>
 #include <cstddef>
-#include <mutex>
-
 
 namespace octoon
 {
@@ -34,12 +34,12 @@ namespace octoon
 
         inline bool isLE()
         {
-            uint16_t i(1);
+            std::uint16_t i(1);
             return *(reinterpret_cast<const char *>(&i)) != 0;
         }
         inline bool isBE()
         {
-            uint16_t i(1);
+            std::uint16_t i(1);
             return *(reinterpret_cast<const char *>(&i)) == 0;
         }
 
@@ -49,6 +49,8 @@ namespace octoon
         public:
             static T swap(T t)
             {
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
+                std::reverse(data, data + sizeof(T));
                 return t;
             }
         };
@@ -67,7 +69,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 std::swap(data[0], data[1]);
                 return t;
             }
@@ -78,7 +80,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 std::swap(data[0], data[3]);
                 std::swap(data[1], data[2]);
                 return t;
@@ -90,7 +92,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 std::swap(data[0], data[7]);
                 std::swap(data[1], data[6]);
                 std::swap(data[2], data[5]);
@@ -104,7 +106,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 std::swap(data[0], data[15]);
                 std::swap(data[1], data[14]);
                 std::swap(data[2], data[13]);
@@ -122,7 +124,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 for (int i = 0; i < 16; ++i)
                 {
                     std::swap(data[i], data[31 - i]);
@@ -136,7 +138,7 @@ namespace octoon
         public:
             static T swap(T t)
             {
-                uint8_t * data = reinterpret_cast<uint8_t *>(&t);
+                std::uint8_t * data = reinterpret_cast<std::uint8_t *>(&t);
                 for (int i = 0; i < 32; ++i)
                 {
                     std::swap(data[i], data[63 - i]);

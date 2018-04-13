@@ -15,10 +15,9 @@ namespace octoon
         public:
         	StreamWriter(ostream &stream);
 
-            virtual void close();
             virtual void write(bool v);
             virtual void write(char v);
-            virtual void write(char* v, std::int32_t begin, std::int32_t end);
+            virtual void write(char* v, std::int32_t begin, std::int32_t count);
             virtual void write(float v);
             virtual void write(double v);
             virtual void write(std::int16_t v);
@@ -31,7 +30,7 @@ namespace octoon
 
             virtual void writeLine(bool v);
             virtual void writeLine(char v);
-            virtual void writeLine(char* v, std::int32_t begin, std::int32_t end);
+            virtual void writeLine(char* v, std::int32_t begin, std::int32_t count);
             virtual void writeLine(float v);
             virtual void writeLine(double v);
             virtual void writeLine(std::int16_t v);
@@ -43,7 +42,7 @@ namespace octoon
             virtual void writeLine(std::string v);
 
         protected:
-            std::string new_line;
+            char new_line;
             ostream base_stream;
         };
     }

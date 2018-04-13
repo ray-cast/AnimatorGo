@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <octoon/io/ostream.h>
+#include <octoon/io/endian.h>
 
 namespace octoon
 {
@@ -13,16 +14,16 @@ namespace octoon
         public:
             BinaryWriter(ostream& stream);
 
-            void close();
             void write(bool v);
             void write(char v);
-            void write(unsigned char v);
-            void write(char* v, std::int32_t begin, std::int32_t end);
+            void write(char* v, std::int32_t begin, std::int32_t count);
             void write(float v);
             void write(double v);
+
             void write(std::int16_t v);
             void write(std::int32_t v);
             void write(std::int64_t v);
+
             void write(std::uint16_t v);
             void write(std::uint32_t v);
             void write(std::uint64_t v);
@@ -32,7 +33,8 @@ namespace octoon
 			BinaryWriter(const BinaryWriter&) = delete;
 
         private:
-            ostream base_stream;
+            EndianType endian_type;
+            ostream& base_stream;
         };
     }
 }

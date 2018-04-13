@@ -15,13 +15,13 @@ namespace octoon
         public:
             StreamReader(istream &stream);
 
-            virtual void close();
             virtual int peek();
             virtual int read();
-            virtual void read(char *str, std::int32_t begin, std::int32_t end);
+            virtual void read(char *str, std::int32_t begin, std::int32_t count);
             virtual std::string readLine();
             virtual std::string readToEnd();
         private:
+            char new_line;
             istream& base_stream;
         };
     }

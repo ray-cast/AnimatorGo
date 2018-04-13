@@ -45,6 +45,8 @@ namespace octoon
         {
             float v;
             base_stream.read(reinterpret_cast<char *>(&v), 1 * sizeof(float));
+            if (endian_type != Endian::getEndian())
+                SwapEndian<float>::swap(v);
             return v;
         }
 
@@ -52,6 +54,8 @@ namespace octoon
         {
             double v;
             base_stream.read(reinterpret_cast<char *>(&v), 1 * sizeof(double));
+            if (endian_type != Endian::getEndian())
+                SwapEndian<double>::swap(v);
             return v;
         }
 

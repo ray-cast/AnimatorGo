@@ -12,7 +12,7 @@ namespace octoon
         class BinaryReader
         {
         public:
-            BinaryReader(istream & stream);
+            BinaryReader(istream& stream);
 
             char peekChar();
             char read();
@@ -36,7 +36,7 @@ namespace octoon
 			BinaryReader(const BinaryReader&) = delete;
         private:
             EndianType endian_type;
-            istream base_stream;
+            istream& base_stream;
         };
     }
 }

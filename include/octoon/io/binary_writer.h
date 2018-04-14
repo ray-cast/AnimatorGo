@@ -9,7 +9,7 @@ namespace octoon
 {
     namespace io
     {
-        class BinaryWriter
+        class OCTOON_EXPORT BinaryWriter
         {
         public:
             BinaryWriter(ostream& stream);

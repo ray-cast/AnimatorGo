@@ -9,12 +9,12 @@ namespace octoon
 {
     namespace io
     {
-        class TextReader
+        class OCTOON_EXPORT TextReader
         {
         public:
             TextReader();
             virtual ~TextReader();
-            virtual int peek() = 0;
+
             virtual int read() = 0;
             virtual void read(char *str, std::int32_t begin, std::int32_t end) = 0;
             virtual std::string readLine() = 0;

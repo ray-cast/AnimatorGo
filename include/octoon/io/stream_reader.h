@@ -10,12 +10,11 @@ namespace octoon
 {
     namespace io
     {
-        class StreamReader:public TextReader
+        class OCTOON_EXPORT StreamReader:public TextReader
         {
         public:
             StreamReader(istream &stream);
 
-            virtual int peek();
             virtual int read();
             virtual void read(char *str, std::int32_t begin, std::int32_t count);
             virtual std::string readLine();

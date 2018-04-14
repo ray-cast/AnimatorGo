@@ -9,7 +9,7 @@ namespace octoon
         {
         }
 
-        ~TextWriter()
+		TextWriter::~TextWriter()
         {
         }
     }

@@ -9,11 +9,7 @@ namespace octoon
         {
             endian_type = Endian::getEndian();
         }
-
-        char BinaryReader::peekChar()
-        {
-        }
-
+        
         char BinaryReader::read()
         {
             char c;

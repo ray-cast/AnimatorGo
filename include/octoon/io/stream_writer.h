@@ -10,7 +10,7 @@ namespace octoon
 {
     namespace io
     {
-        class StreamWriter:public TextWriter
+        class OCTOON_EXPORT StreamWriter:public TextWriter
         {
         public:
         	StreamWriter(ostream &stream);

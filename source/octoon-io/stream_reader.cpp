@@ -11,11 +11,6 @@ namespace octoon
         {
         }
 
-        int StreamReader::peek()
-        {
-
-        }
-
         int StreamReader::read()
         {
             char rst;
@@ -30,7 +25,7 @@ namespace octoon
         {
             std::string result;
             char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];
-            while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE))
+            while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE - 1))
             {
                 char * begin = buffer;
                 char * end = buffer + base_stream.gcount();
@@ -45,14 +40,20 @@ namespace octoon
                 }
             }
 
+			buffer[base_stream.gcount()] = '\0';
+			result.append(buffer);
+
             return result;
         }
         std::string StreamReader::readToEnd()
         {
             std::string result;
             char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];
-            while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE))
+            while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE - 1))
                 result.append(buffer, base_stream.gcount());
+
+			buffer[base_stream.gcount()] = '\0';
+			result.append(buffer);
 
             return result;
         }

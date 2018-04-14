@@ -12,14 +12,14 @@ namespace octoon
 {
     namespace io
     {
-        class JsonReader : public StreamReader
+        class OCTOON_EXPORT JsonReader : public StreamReader
         {
-            using JsonObject = nlohmann::json;
+		public:
+			using JsonObject = nlohmann::json;
         public:
             JsonReader(istream &stream);
 
-            JsonObject parse();
-
+            JsonObject readJson();
         private:
 	        JsonReader(const JsonReader&) noexcept = delete;
 	        JsonReader& operator=(const JsonReader&) noexcept = delete;

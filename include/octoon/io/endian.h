@@ -17,21 +17,6 @@ namespace octoon
             LittleEndian
         };
 
-        class Endian
-        {
-        public:
-            static EndianType getEndian()
-            {
-                std::call_once(oc, [&] () { 
-                    if (isLE()) type = EndianType::LittleEndian;
-                    else type = EndianType::BigEndian; });
-                return type;
-            }
-        private:
-            static std::once_flag oc;
-            static EndianType type;
-        };
-
         inline bool isLE()
         {
             std::uint16_t i(1);
@@ -146,6 +131,21 @@ namespace octoon
                 return t;
             }
         };
+
+		class Endian
+		{
+		public:
+			static EndianType getEndian()
+			{
+				std::call_once(oc, [&]() {
+					if (isLE()) type = EndianType::LittleEndian;
+					else type = EndianType::BigEndian; });
+				return type;
+			}
+		private:
+			static std::once_flag oc;
+			static EndianType type;
+		};
     }
 }
 

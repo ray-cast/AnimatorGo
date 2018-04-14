@@ -9,12 +9,11 @@ namespace octoon
 {
     namespace io
     {
-        class BinaryReader
+        class OCTOON_EXPORT BinaryReader
         {
         public:
             BinaryReader(istream& stream);
 
-            char peekChar();
             char read();
             void read(char* c, std::int32_t begin, std::int32_t size);
             bool readBool();

@@ -11,13 +11,11 @@ namespace octoon
 {
     namespace io
     {
-        class StringReader : public TextReader
+        class OCTOON_EXPORT StringReader : public TextReader
         {
         public:
             StringReader(const std::string &str);
 
-            virtual void close();
-            virtual int peek();
             virtual int read();
             virtual void read(char *str, std::int32_t begin, std::int32_t count);
             virtual std::string readLine();

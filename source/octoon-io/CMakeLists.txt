@@ -56,15 +56,8 @@ SET(ARCHIVE_LIST
 SOURCE_GROUP(${LIB_NAME}\\archive FILES ${ARCHIVE_LIST})
 
 SET(SERIALIZATION_LIST
-	${HEADER_PATH}/serialization.h
-	${SOURCE_PATH}/serialization.cpp
-	${HEADER_PATH}/serialization_buf.h
-	${SOURCE_PATH}/serialization_buf.cpp
-	${HEADER_PATH}/deserialization.h
-	${SOURCE_PATH}/deserialization.cpp
-	${HEADER_PATH}/variant.h
-	${SOURCE_PATH}/variant.cpp
 	${HEADER_PATH}/endian.h
+	${SOURCE_PATH}/endian.cpp
 	${HEADER_PATH}/binary_reader.h
 	${SOURCE_PATH}/binary_reader.cpp
 	${HEADER_PATH}/binary_writer.h
@@ -83,6 +76,8 @@ SET(SERIALIZATION_LIST
 	${SOURCE_PATH}/string_writer.cpp
 	${HEADER_PATH}/json_reader.h
 	${SOURCE_PATH}/json_reader.cpp
+	${HEADER_PATH}/json_writer.h
+	${SOURCE_PATH}/json_writer.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\serialization FILES ${SERIALIZATION_LIST})
 

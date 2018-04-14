@@ -11,11 +11,6 @@ namespace octoon
         {
         }
 
-        int StringReader::peek()
-        {
-
-        }
-
         int StringReader::read()
         {
             char c;

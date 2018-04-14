@@ -9,7 +9,7 @@ namespace octoon
         {
         }
 
-        JsonReader::JsonObject JsonReader::parse()
+        JsonReader::JsonObject JsonReader::readJson()
         {
             std::string data = this->readToEnd();
             JsonObject json = nlohmann::json::parse(data.begin(), data.end());

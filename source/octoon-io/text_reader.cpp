@@ -8,7 +8,7 @@ namespace octoon
             :new_line('\n')
         {
         }
-        ~TextReader()
+        TextReader::~TextReader()
         {
         }
     }

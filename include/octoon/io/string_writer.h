@@ -11,7 +11,7 @@ namespace octoon
 {
     namespace io
     {
-        class StringWriter : public TextWriter
+        class OCTOON_EXPORT StringWriter : public TextWriter
         {
         public:
         	StringWriter(std::string &str);

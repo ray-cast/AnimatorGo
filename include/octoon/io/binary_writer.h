@@ -1,5 +1,5 @@
-#ifndef OCTOON_BINARYWRITER_H
-#define OCTOON_BINARYWRITER_H
+#ifndef OCTOON_BINARYWRITER_H_
+#define OCTOON_BINARYWRITER_H_
 
 #include <cstdint>
 #include <octoon/io/ostream.h>

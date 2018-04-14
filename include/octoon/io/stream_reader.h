@@ -1,5 +1,5 @@
-#ifndef OCTOON_STREAM_READER_H
-#define OCTOON_STREAM_READER_H
+#ifndef OCTOON_STREAM_READER_H_
+#define OCTOON_STREAM_READER_H_
 
 #include <string>
 #include <algorithm>

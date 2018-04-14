@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_READER_H
-#define OCTOON_TEXT_READER_H
+#ifndef OCTOON_TEXT_READER_H_
+#define OCTOON_TEXT_READER_H_
 
 #include <string>
 #include <cstdint>

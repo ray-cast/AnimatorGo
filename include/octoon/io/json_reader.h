@@ -1,5 +1,5 @@
-#ifndef OCTOON_JSON_READER_H
-#define OCTOON_JSON_READER_H
+#ifndef OCTOON_JSON_READER_H_
+#define OCTOON_JSON_READER_H_
 
 #include <string>
 #include <cstdint>

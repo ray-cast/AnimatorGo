@@ -1,5 +1,5 @@
-#ifndef OCTOON_STRING_READER_H
-#define OCTOON_STRING_READER_H
+#ifndef OCTOON_STRING_READER_H_
+#define OCTOON_STRING_READER_H_
 
 #include <string>
 #include <algorithm>

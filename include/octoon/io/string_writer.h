@@ -1,5 +1,5 @@
-#ifndef OCTOON_STRING_WRITER_H
-#define OCTOON_STRING_WRITER_H
+#ifndef OCTOON_STRING_WRITER_H_
+#define OCTOON_STRING_WRITER_H_
 
 #include <string>
 #include <sstream>

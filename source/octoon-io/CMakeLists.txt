@@ -63,7 +63,26 @@ SET(SERIALIZATION_LIST
 	${HEADER_PATH}/deserialization.h
 	${SOURCE_PATH}/deserialization.cpp
 	${HEADER_PATH}/variant.h
-    ${SOURCE_PATH}/variant.cpp
+	${SOURCE_PATH}/variant.cpp
+	${HEADER_PATH}/endian.h
+	${HEADER_PATH}/binary_reader.h
+	${SOURCE_PATH}/binary_reader.cpp
+	${HEADER_PATH}/binary_writer.h
+	${SOURCE_PATH}/binary_writer.cpp
+	${HEADER_PATH}/text_reader.h
+	${SOURCE_PATH}/text_reader.cpp
+	${HEADER_PATH}/text_writer.h
+	${SOURCE_PATH}/text_writer.cpp
+	${HEADER_PATH}/stream_reader.h
+	${SOURCE_PATH}/stream_reader.cpp
+	${HEADER_PATH}/stream_writer.h
+	${SOURCE_PATH}/stream_writer.cpp
+	${HEADER_PATH}/string_reader.h
+	${SOURCE_PATH}/string_reader.cpp
+	${HEADER_PATH}/string_writer.h
+	${SOURCE_PATH}/string_writer.cpp
+	${HEADER_PATH}/json_reader.h
+	${SOURCE_PATH}/json_reader.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\serialization FILES ${SERIALIZATION_LIST})
 

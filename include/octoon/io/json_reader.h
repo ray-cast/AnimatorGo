@@ -17,9 +17,9 @@ namespace octoon
 		public:
 			using JsonObject = nlohmann::json;
         public:
-            JsonReader(istream &stream);
+            JsonReader(istream &stream) noexcept;
 
-            JsonObject readJson();
+            JsonObject readJson() except;
         private:
 	        JsonReader(const JsonReader&) noexcept = delete;
 	        JsonReader& operator=(const JsonReader&) noexcept = delete;

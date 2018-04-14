@@ -12,8 +12,8 @@ namespace octoon
         class OCTOON_EXPORT TextWriter
         {
         public:
-        	TextWriter();
-            virtual ~TextWriter();
+        	TextWriter() noexcept;
+            virtual ~TextWriter() noexcept;
 
             virtual void write(bool v) = 0;
             virtual void write(char v) = 0;

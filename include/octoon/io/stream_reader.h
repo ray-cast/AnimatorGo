@@ -13,12 +13,12 @@ namespace octoon
         class OCTOON_EXPORT StreamReader:public TextReader
         {
         public:
-            StreamReader(istream &stream);
+            StreamReader(istream &stream) noexcept;
 
-            virtual int read();
-            virtual void read(char *str, std::int32_t begin, std::int32_t count);
-            virtual std::string readLine();
-            virtual std::string readToEnd();
+            virtual int read() except override;
+            virtual void read(char *str, std::int32_t begin, std::int32_t count) except override;
+            virtual std::string readLine() except override;
+            virtual std::string readToEnd() except override;
         private:
             istream& base_stream;
         };

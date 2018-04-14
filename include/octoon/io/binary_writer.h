@@ -12,22 +12,23 @@ namespace octoon
         class OCTOON_EXPORT BinaryWriter
         {
         public:
-            BinaryWriter(ostream& stream);
+            BinaryWriter(ostream& stream) noexcept;
 
-            void write(bool v);
-            void write(char v);
-            void write(char* v, std::int32_t begin, std::int32_t count);
-            void write(float v);
-            void write(double v);
+            void write(bool v) except;
+            void write(char v) except;
+            void write(char* v, std::int32_t begin, std::int32_t count) except;
+            void write(float v) except;
+            void write(double v) except;
 
-            void write(std::int16_t v);
-            void write(std::int32_t v);
-            void write(std::int64_t v);
+            void write(std::int16_t v) except;
+            void write(std::int32_t v) except;
+            void write(std::int64_t v) except;
 
-            void write(std::uint16_t v);
-            void write(std::uint32_t v);
-            void write(std::uint64_t v);
-        
+            void write(std::uint16_t v) except;
+            void write(std::uint32_t v) except;
+            void write(std::uint64_t v) except;
+
+            istream& baseStream() noexcept { return base_stream; }
         private:
 			BinaryWriter & operator=(const BinaryWriter&) = delete;
 			BinaryWriter(const BinaryWriter&) = delete;

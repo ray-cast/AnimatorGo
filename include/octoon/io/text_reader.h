@@ -13,17 +13,17 @@ namespace octoon
         {
         public:
             TextReader();
-            virtual ~TextReader();
+            virtual ~TextReader() noexcept;
 
-            virtual int read() = 0;
-            virtual void read(char *str, std::int32_t begin, std::int32_t end) = 0;
-            virtual std::string readLine() = 0;
-            virtual std::string readToEnd() = 0;
+            virtual int read() except = 0;
+            virtual void read(char *str, std::int32_t begin, std::int32_t count) except = 0;
+            virtual std::string readLine() except = 0;
+            virtual std::string readToEnd() except = 0;
         private:
 			TextReader & operator=(const TextReader&) = delete;
 			TextReader(const TextReader&) = delete;
         protected:
-            char new_line;
+            std::string new_line;
         };
     }
 }

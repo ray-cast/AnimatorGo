@@ -4,12 +4,12 @@ namespace octoon
 {
     namespace io
     {
-        TextWriter::TextWriter()
-            :new_line('\n')
+        TextWriter::TextWriter() noexcept
+            :new_line("\n")
         {
         }
 
-		TextWriter::~TextWriter()
+		TextWriter::~TextWriter() noexcept
         {
         }
     }

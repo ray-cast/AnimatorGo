@@ -15,10 +15,10 @@ namespace octoon
         public:
 			using JsonObject = nlohmann::json;
         public:
-        	JsonWriter(ostream &stream);
+        	JsonWriter(ostream &stream) noexcept;
 
-            void write(JsonObject v);
-            void writeLine(JsonObject v);
+            void write(JsonObject v) except;
+            void writeLine(JsonObject v) except;
         private:
 	        JsonWriter(const JsonWriter&) noexcept = delete;
 	        JsonWriter& operator=(const JsonWriter&) noexcept = delete;

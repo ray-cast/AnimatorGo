@@ -13,33 +13,33 @@ namespace octoon
         class OCTOON_EXPORT StreamWriter:public TextWriter
         {
         public:
-        	StreamWriter(ostream &stream);
+        	StreamWriter(ostream &stream) noexcept;
 
-            virtual void write(bool v);
-            virtual void write(char v);
-            virtual void write(char* v, std::int32_t begin, std::int32_t count);
-            virtual void write(float v);
-            virtual void write(double v);
-            virtual void write(std::int16_t v);
-            virtual void write(std::int32_t v);
-            virtual void write(std::int64_t v);
-            virtual void write(std::uint16_t v);
-            virtual void write(std::uint32_t v);
-            virtual void write(std::uint64_t v);
-            virtual void write(std::string v);
+            virtual void write(bool v) except override;
+            virtual void write(char v) except override;
+            virtual void write(char* v, std::int32_t begin, std::int32_t count) except override;
+            virtual void write(float v) except override;
+            virtual void write(double v) except override;
+            virtual void write(std::int16_t v) except override;
+            virtual void write(std::int32_t v) except override;
+            virtual void write(std::int64_t v) except override;
+            virtual void write(std::uint16_t v) except override;
+            virtual void write(std::uint32_t v) except override;
+            virtual void write(std::uint64_t v) except override;
+            virtual void write(std::string v) except override;
 
-            virtual void writeLine(bool v);
-            virtual void writeLine(char v);
-            virtual void writeLine(char* v, std::int32_t begin, std::int32_t count);
-            virtual void writeLine(float v);
-            virtual void writeLine(double v);
-            virtual void writeLine(std::int16_t v);
-            virtual void writeLine(std::int32_t v);
-            virtual void writeLine(std::int64_t v);
-            virtual void writeLine(std::uint16_t v);
-            virtual void writeLine(std::uint32_t v);
-            virtual void writeLine(std::uint64_t v);
-            virtual void writeLine(std::string v);
+            virtual void writeLine(bool v) except override;
+            virtual void writeLine(char v) except override;
+            virtual void writeLine(char* v, std::int32_t begin, std::int32_t count) except override;
+            virtual void writeLine(float v) except override;
+            virtual void writeLine(double v) except override;
+            virtual void writeLine(std::int16_t v) except override;
+            virtual void writeLine(std::int32_t v) except override;
+            virtual void writeLine(std::int64_t v) except override;
+            virtual void writeLine(std::uint16_t v) except override;
+            virtual void writeLine(std::uint32_t v) except override;
+            virtual void writeLine(std::uint64_t v) except override;
+            virtual void writeLine(std::string v) except override;
 
         protected:
             ostream& base_stream;

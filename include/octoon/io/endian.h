@@ -17,15 +17,23 @@ namespace octoon
             LittleEndian
         };
 
-        inline bool isLE()
+        constexpr inline bool isLE()
         {
+#ifdef __GNUC__
+            return __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__;
+#else
             std::uint16_t i(1);
             return *(reinterpret_cast<const char *>(&i)) != 0;
+#endif
         }
-        inline bool isBE()
+        constexpr inline bool isBE()
         {
+#ifdef __GNUC__
+            return __BYTE_ORDER__==__ORDER_BIG_ENDIAN__;
+#else
             std::uint16_t i(1);
             return *(reinterpret_cast<const char *>(&i)) == 0;
+#endif
         }
 
         template<class T, int Tsize = sizeof(T)>
@@ -135,12 +143,17 @@ namespace octoon
 		class Endian
 		{
 		public:
-			static EndianType getEndian()
+			static constexpr EndianType getEndian()
 			{
-				std::call_once(oc, [&]() {
+#ifdef __GNUC__
+            if(__BYTE_ORDER__==__ORDER_BIG_ENDIAN__) return EndianType::LittleEndian;
+            else EndianType::BigEndian;
+#else
+                std::call_once(oc, [&]() {
 					if (isLE()) type = EndianType::LittleEndian;
 					else type = EndianType::BigEndian; });
 				return type;
+#endif	
 			}
 		private:
 			static std::once_flag oc;

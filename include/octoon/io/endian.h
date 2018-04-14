@@ -143,7 +143,7 @@ namespace octoon
 		class Endian
 		{
 		public:
-			static constexpr EndianType getEndian()
+			static EndianType getEndian()
 			{
 #ifdef __GNUC__
             if(__BYTE_ORDER__==__ORDER_BIG_ENDIAN__) return EndianType::LittleEndian;

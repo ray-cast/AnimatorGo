@@ -28,28 +28,31 @@ namespace octoon
         std::string
         StreamReader::readLine()
         {
-            std::string result;
-            char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];
-            while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE - 1))
-            {
-                char * begin = buffer;
-                char * end = buffer + base_stream.gcount();
-                char * it = std::search(begin, end, new_line.c_str(), new_line.c_str() + new_line.size());
-                if(it == end)
-                {
-                    result.append(buffer, base_stream.gcount());
-                }
-                else
-                {
-                    result.append(buffer, it);
-                }
-            }
+			std::string result;
+			char buffer[OCTOON_IO_STREAMREADER_BUFFER_SIZE];
+			while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE - 1))
+			{
+				result.append(buffer, base_stream.gcount());
+				const char * it = std::search(result.c_str(), result.c_str() + result.size(),
+					new_line.c_str(), new_line.c_str() + new_line.size());
+				if (it != result.c_str() + result.size())
+				{
+					result.resize(it - result.c_str());
+					return result;
+				}
+			}
 
-			buffer[base_stream.gcount()] = '\0';
-			result.append(buffer);
+			result.append(buffer, base_stream.gcount());
+			const char * it = std::search(result.c_str(), result.c_str() + result.size(),
+				new_line.c_str(), new_line.c_str() + new_line.size());
+			if (it != result.c_str() + result.size())
+			{
+				result.resize(it - result.c_str());
+			}
 
-            return result;
+			return result;
         }
+
         std::string
         StreamReader::readToEnd()
         {
@@ -58,8 +61,7 @@ namespace octoon
             while (base_stream.read(buffer, OCTOON_IO_STREAMREADER_BUFFER_SIZE - 1))
                 result.append(buffer, base_stream.gcount());
 
-			buffer[base_stream.gcount()] = '\0';
-			result.append(buffer);
+			result.append(buffer, base_stream.gcount());
 
             return result;
         }

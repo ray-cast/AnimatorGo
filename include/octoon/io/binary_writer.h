@@ -28,7 +28,7 @@ namespace octoon
             void write(std::uint32_t v) except;
             void write(std::uint64_t v) except;
 
-            istream& baseStream() noexcept { return base_stream; }
+            ostream& baseStream() noexcept { return base_stream; }
         private:
 			BinaryWriter & operator=(const BinaryWriter&) = delete;
 			BinaryWriter(const BinaryWriter&) = delete;

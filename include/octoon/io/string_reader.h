@@ -2,6 +2,7 @@
 #define OCTOON_STRING_READER_H
 
 #include <string>
+#include <algorithm>
 #include <sstream>
 #include <cstdint>
 #include <octoon/io/text_reader.h>

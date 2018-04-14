@@ -12,7 +12,7 @@ namespace octoon
         class OCTOON_EXPORT TextReader
         {
         public:
-            TextReader();
+            TextReader() noexcept;
             virtual ~TextReader() noexcept;
 
             virtual int read() except = 0;

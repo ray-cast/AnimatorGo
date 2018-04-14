@@ -45,7 +45,7 @@ namespace octoon
 			TextWriter(const TextWriter&) = delete;
 
         protected:
-            char new_line;
+            std::string new_line;
         };
     }
 }

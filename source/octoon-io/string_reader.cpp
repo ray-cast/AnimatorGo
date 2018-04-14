@@ -30,24 +30,25 @@ namespace octoon
         {
             std::string result;
             char buffer[OCTOON_IO_STRINGREADER_BUFFER_SIZE];
-            while (base_stream.read(buffer, OCTOON_IO_STRINGREADER_BUFFER_SIZE - 1))
+            while (string_buf.read(buffer, OCTOON_IO_STRINGREADER_BUFFER_SIZE - 1))
             {
-                char * begin = buffer;
-                char * end = buffer + base_stream.gcount();
-                char * it = std::search(begin, end, new_line.c_str(), new_line.c_str() + new_line.size());
-                
-                if(it == end)
-                {
-                    result.append(buffer, base_stream.gcount());
-                }
-                else
-                {
-                    result.append(buffer, it);
-                }
+				result.append(buffer, string_buf.gcount());
+				const char * it = std::search(result.c_str(), result.c_str() + result.size(),
+					new_line.c_str(), new_line.c_str() + new_line.size());
+				if (it != result.c_str() + result.size())
+				{
+					result.resize(it - result.c_str());
+					return result;
+				}
             }
 
-			buffer[base_stream.gcount()] = '\0';
-			result.append(buffer);
+			result.append(buffer, string_buf.gcount());
+			const char * it = std::search(result.c_str(), result.c_str() + result.size(),
+				new_line.c_str(), new_line.c_str() + new_line.size());
+			if (it != result.c_str() + result.size())
+			{
+				result.resize(it - result.c_str());
+			}
 
             return result;
         }
@@ -60,8 +61,7 @@ namespace octoon
             while (string_buf.read(buffer, OCTOON_IO_STRINGREADER_BUFFER_SIZE - 1))
                 result.append(buffer, string_buf.gcount());
 
-            buffer[base_stream.gcount()] = '\0';
-			result.append(buffer);
+			result.append(buffer, string_buf.gcount());
 
             return result;
         }

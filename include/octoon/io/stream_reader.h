@@ -2,6 +2,7 @@
 #define OCTOON_STREAM_READER_H
 
 #include <string>
+#include <algorithm>
 #include <cstdint>
 #include <octoon/io/text_reader.h>
 #include <octoon/io/istream.h>

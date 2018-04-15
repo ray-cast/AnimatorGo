@@ -19,7 +19,7 @@ namespace octoon
 
 		class OCTOON_EXPORT RenderObject : public runtime::RttiInterface
 		{
-			OctoonDeclareSubInterface(RenderObject, common::RttiInterface)
+			OctoonDeclareSubInterface(RenderObject, runtime::RttiInterface)
 		public:
 			RenderObject() noexcept;
 			virtual ~RenderObject() noexcept;

@@ -7,32 +7,32 @@
 
 namespace octoon
 {
-	namespace render
+	namespace video
 	{
-		FontFile::FontFile() noexcept
+		TextFile::TextFile() noexcept
 			: font_(nullptr)
 		{
 		}
 
-		FontFile::FontFile(const char* fontpath) noexcept(false)
+		TextFile::TextFile(const char* fontpath) noexcept(false)
 			: font_(nullptr)
 		{
 			this->open(fontpath);
 		}
 
-		FontFile::FontFile(const std::uint8_t* stream, std::size_t size) noexcept(false)
+		TextFile::TextFile(const std::uint8_t* stream, std::size_t size) noexcept(false)
 			: font_(nullptr)
 		{
 			this->open(stream, size);
 		}
 
-		FontFile::~FontFile() noexcept
+		TextFile::~TextFile() noexcept
 		{
 			this->close();
 		}
 
 		void
-		FontFile::open(const char* fontpath) noexcept(false)
+		TextFile::open(const char* fontpath) noexcept(false)
 		{
 			assert(fontpath);
 
@@ -40,7 +40,7 @@ namespace octoon
 				this->close();
 
 			FT_Face face = nullptr;
-			FT_Library library = (FT_Library)FontSystem::instance()->getLibrary();
+			FT_Library library = (FT_Library)TextSystem::instance()->getLibrary();
 
 			if (::FT_New_Face(library, fontpath, 0, &face))
 				throw runtime::runtime_error::create("FT_New_Face() failed (there is probably a problem with your font file.", 2);
@@ -52,7 +52,7 @@ namespace octoon
 		}
 
 		void
-		FontFile::open(const std::uint8_t* stream, std::size_t size) noexcept(false)
+		TextFile::open(const std::uint8_t* stream, std::size_t size) noexcept(false)
 		{
 			assert(stream);
 
@@ -60,7 +60,7 @@ namespace octoon
 				this->close();
 
 			FT_Face face = nullptr;
-			FT_Library library = (FT_Library)FontSystem::instance()->getLibrary();
+			FT_Library library = (FT_Library)TextSystem::instance()->getLibrary();
 
 			if (::FT_New_Memory_Face(library, stream, size, 0, &face))
 				throw runtime::runtime_error::create("FT_New_Memory_Face() failed (there is probably a problem with your stream.", 2);
@@ -71,7 +71,7 @@ namespace octoon
 		}
 
 		void
-		FontFile::close() noexcept
+		TextFile::close() noexcept
 		{
 			if (font_)
 			{
@@ -83,13 +83,13 @@ namespace octoon
 		}
 
 		const std::string&
-		FontFile::getFontPath() const noexcept
+		TextFile::getFontPath() const noexcept
 		{
 			return fontpath_;
 		}
 
 		void*
-		FontFile::getFont() const noexcept
+		TextFile::getFont() const noexcept
 		{
 			return font_;
 		}

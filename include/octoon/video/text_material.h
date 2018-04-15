@@ -5,14 +5,14 @@
 
 namespace octoon
 {
-	namespace render
+	namespace video
 	{
-		class OCTOON_EXPORT FontMaterial final
+		class OCTOON_EXPORT TextMaterial final
 		{
 		public:
-			FontMaterial() noexcept;
-			FontMaterial(std::uint32_t width, std::uint32_t height, float lean = 0.0f) noexcept;
-			~FontMaterial() noexcept;
+			TextMaterial() noexcept;
+			TextMaterial(std::uint32_t width, std::uint32_t height, float lean = 0.0f) noexcept;
+			~TextMaterial() noexcept;
 
 			void setWidth(std::uint32_t width) noexcept;
 			void setHeight(std::uint32_t height) noexcept;
@@ -26,8 +26,8 @@ namespace octoon
 			float getExtrude() const noexcept;
 
 		private:
-			FontMaterial(const FontMaterial&) = delete;
-			FontMaterial& operator=(const FontMaterial&) = delete;
+			TextMaterial(const TextMaterial&) = delete;
+			TextMaterial& operator=(const TextMaterial&) = delete;
 
 		private:
 			float lean_;

@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_EFFECT_H_
-#define OCTOON_TEXT_EFFECT_H_
+#ifndef OCTOON_TEXT_SYSTEM_H_
+#define OCTOON_TEXT_SYSTEM_H_
 
 #include <octoon/runtime/singleton.h>
 
@@ -17,7 +17,7 @@ namespace octoon
 			void close() noexcept;
 
 		private:
-			friend class FontFile;
+			friend class TextFile;
 			friend class EntityObject;
 			void* getLibrary() const noexcept;
 

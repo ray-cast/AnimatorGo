@@ -5,15 +5,15 @@
 
 namespace octoon
 {
-	namespace render
+	namespace video
 	{
-		class OCTOON_EXPORT FontFile final
+		class OCTOON_EXPORT TextFile final
 		{
 		public:
-			FontFile() noexcept;
-			FontFile(const char* fontpath) noexcept(false);
-			FontFile(const std::uint8_t* stream, std::size_t size) noexcept(false);
-			~FontFile() noexcept;
+			TextFile() noexcept;
+			TextFile(const char* fontpath) noexcept(false);
+			TextFile(const std::uint8_t* stream, std::size_t size) noexcept(false);
+			~TextFile() noexcept;
 
 			void open(const char* fontpath) noexcept(false);
 			void open(const std::uint8_t* stream, std::size_t size) noexcept(false);
@@ -26,8 +26,8 @@ namespace octoon
 			void* getFont() const noexcept;
 
 		private:
-			FontFile(const FontFile&) = delete;
-			FontFile& operator=(const FontFile&) = delete;
+			TextFile(const TextFile&) = delete;
+			TextFile& operator=(const TextFile&) = delete;
 
 		private:
 			void* font_;

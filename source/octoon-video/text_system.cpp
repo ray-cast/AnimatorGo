@@ -6,20 +6,20 @@
 
 namespace octoon
 {
-	namespace render
+	namespace video
 	{
-		FontSystem::FontSystem() noexcept
+		TextSystem::TextSystem() noexcept
 			: library_(nullptr)
 		{
 		}
 
-		FontSystem::~FontSystem() noexcept
+		TextSystem::~TextSystem() noexcept
 		{
 			this->close();
 		}
 
 		void
-		FontSystem::setup() noexcept(false)
+		TextSystem::setup() noexcept(false)
 		{
 			if (library_ == nullptr)
 			{
@@ -33,7 +33,7 @@ namespace octoon
 		}
 
 		void
-		FontSystem::close() noexcept
+		TextSystem::close() noexcept
 		{
 			if (library_)
 			{
@@ -43,7 +43,7 @@ namespace octoon
 		}
 
 		void*
-		FontSystem::getLibrary() const noexcept
+		TextSystem::getLibrary() const noexcept
 		{
 			return library_;
 		}

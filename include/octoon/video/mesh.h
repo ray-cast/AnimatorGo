@@ -1,7 +1,7 @@
 #ifndef OCTOON_MESH_H_
 #define OCTOON_MESH_H_
 
-#include <octoon/math/math.h>
+#include <octoon/video/render_types.h>
 
 namespace octoon
 {

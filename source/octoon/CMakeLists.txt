@@ -31,6 +31,8 @@ SET(BASE_FEATURES_LIST
     ${SOURCE_PATH}/transform_component.cpp
     ${HEADER_PATH}/game_base_features.h
     ${SOURCE_PATH}/game_base_features.cpp
+    ${HEADER_PATH}/mesh_filter_component.h
+    ${SOURCE_PATH}/mesh_filter_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 

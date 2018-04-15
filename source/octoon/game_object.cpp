@@ -447,7 +447,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
+	GameObject::add_component_dispatch(GameDispatchTypes type, GameComponent* component) noexcept
 	{
 		assert(component);
 
@@ -476,7 +476,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
+	GameObject::remove_component_dispatch(GameDispatchTypes type, const GameComponent* component) noexcept
 	{
 		assert(component);
 
@@ -512,7 +512,7 @@ namespace octoon
 
 		for (auto& dispatch : dispatch_components_)
 		{
-			auto it = std::find(dispatch.begin(), dispatch.end(), component);
+			auto it = std::find(dispatch.begin(), dispatch.end(), component.get());
 			if (it != dispatch.end())
 				dispatch.erase(it);
 		}

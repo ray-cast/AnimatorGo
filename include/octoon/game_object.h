@@ -69,16 +69,19 @@ namespace octoon
 		void remove_component(const GameComponentPtr& component) noexcept;
 		void cleanup_components() noexcept;
 
-		void add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void remove_component_dispatchs(const GameComponentPtr& component) noexcept;
-
 		void destroy() noexcept;
 
 		virtual GameScene* get_game_scene() noexcept;
 		virtual const GameScene* get_game_scene() const noexcept;
 
 		GameObjectPtr clone() const except;
+
+	private:
+		friend class GameComponent;
+
+		void add_component_dispatch(GameDispatchTypes type, GameComponent* component) noexcept;
+		void remove_component_dispatch(GameDispatchTypes type, const GameComponent* component) noexcept;
+		void remove_component_dispatchs(const GameComponentPtr& component) noexcept;
 
 	private:
 		friend class GameObjectManager;
@@ -115,7 +118,7 @@ namespace octoon
 		GameObjectWeakPtr parent_;
 
 		GameComponents components_;
-		std::vector<GameComponents> dispatch_components_;
+		std::vector<GameComponentRaws> dispatch_components_;
 	};
 }
 

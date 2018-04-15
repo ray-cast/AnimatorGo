@@ -36,6 +36,7 @@ namespace octoon
 	typedef std::vector<GameObjectPtr> GameObjects;
 	typedef std::vector<GameComponentPtr> GameComponents;
 	typedef std::vector<GameFeaturePtr> GameFeatures;
+	typedef std::vector<GameComponent*> GameComponentRaws;
 
 	typedef void* WindHandle;
 

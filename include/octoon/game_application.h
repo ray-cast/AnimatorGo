@@ -72,6 +72,7 @@ namespace octoon
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
 		GameFeaturePtr gui_feature_;
+		GameFeaturePtr video_feature_;
 
 		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};

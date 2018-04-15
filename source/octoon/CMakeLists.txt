@@ -47,6 +47,8 @@ SET(VIDEO_FEATURES_LIST
     ${SOURCE_PATH}/line_renderer.cpp
     ${HEADER_PATH}/mesh_renderer.h
     ${SOURCE_PATH}/mesh_renderer.cpp
+    ${HEADER_PATH}/video_feature.h
+    ${SOURCE_PATH}/video_feature.cpp
 )
 SOURCE_GROUP("system\\video" FILES ${VIDEO_FEATURES_LIST})
 

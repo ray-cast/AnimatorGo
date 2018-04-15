@@ -28,6 +28,10 @@
 #	include <octoon/gui_feature.h>
 #endif
 
+#if OCTOON_FEATURE_VIDEO_ENABLE
+#	include <octoon/video_feature.h>
+#endif
+
 namespace octoon
 {
 	class GameAppListener final : public GameListener
@@ -104,6 +108,10 @@ namespace octoon
 		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
 #endif
 
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		video_feature_ = std::make_shared<VideoFeature>(w, h);
+#endif
+
 #if OCTOON_FEATURE_IO_ENABLE
 		this->add_feature(io_feature_);
 #endif
@@ -118,6 +126,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_BASE_ENABLE
 		this->add_feature(base_feature_);
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->add_feature(video_feature_);
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE

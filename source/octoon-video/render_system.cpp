@@ -41,10 +41,10 @@ namespace octoon
 		void
 		RenderSystem::render() noexcept
 		{
-			glViewport(0, 0, width_, height_);
-
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
+				glViewport(0, 0, width_, height_);
+
 				auto& clearColor = camera->getClearColor();
 				glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

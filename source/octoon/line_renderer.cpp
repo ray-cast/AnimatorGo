@@ -1,4 +1,5 @@
 #include <octoon/line_renderer.h>
+#include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/game_object.h>
 
@@ -42,8 +43,7 @@ namespace octoon
 		auto transform = this->get_component<TransformComponent>();
 
 		geometry_->setActive(true);
-
-		// geometry_->setMesh(this->get_component<Mesh>());
+		geometry_->setMesh(this->get_component<MeshFilterComponent>()->getMesh());
 		geometry_->setTransform(transform->get_transform(), transform->get_transform_inverse());
 	}
 

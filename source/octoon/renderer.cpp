@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubInterface(Renderer, GameComponent, "FontRenderer")
+	OctoonImplementSubInterface(Renderer, GameComponent, "Renderer")
 
 	Renderer::Renderer() noexcept
 	{

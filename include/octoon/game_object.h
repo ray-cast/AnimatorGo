@@ -12,71 +12,71 @@ namespace octoon
 		GameObject() noexcept;
 		virtual ~GameObject() noexcept;
 
-		void set_name(const std::string& name) noexcept;
-		void set_name(std::string&& name) noexcept;
-		const std::string& get_name() const noexcept;
+		void setName(const std::string& name) noexcept;
+		void setName(std::string&& name) noexcept;
+		const std::string& getName() const noexcept;
 
-		void set_active(bool active) except;
-		void set_active_upwards(bool active) except;
-		void set_active_downwards(bool active) except;
-		bool get_active() const noexcept;
+		void setActive(bool active) except;
+		void setActiveUpwards(bool active) except;
+		void setActiveDownwards(bool active) except;
+		bool getActive() const noexcept;
 
-		void set_layer(std::uint8_t layer) noexcept;
-		std::uint8_t get_layer() const noexcept;
+		void setLayer(std::uint8_t layer) noexcept;
+		std::uint8_t getLayer() const noexcept;
 
 		std::size_t id() const noexcept;
 
-		void set_parent(const GameObjectPtr& parent) noexcept;
-		GameObject* get_parent() const noexcept;
+		void setParent(const GameObjectPtr& parent) noexcept;
+		GameObject* getParent() const noexcept;
 
-		void add_child(GameObjectPtr& child) noexcept;
-		void add_child(GameObjectPtr&& child) noexcept;
-		void remove_child(GameObjectPtr& child) noexcept;
-		void cleanup_children() noexcept;
-		GameObjectPtr find_child(const std::string& name, bool recurse = true) noexcept;
+		void addChild(GameObjectPtr& child) noexcept;
+		void addChild(GameObjectPtr&& child) noexcept;
+		void removeChild(GameObjectPtr& child) noexcept;
+		void cleanupChildren() noexcept;
+		GameObjectPtr findChild(const std::string& name, bool recurse = true) noexcept;
 
-		std::size_t get_child_count() const noexcept;
-		GameObjects& get_children() noexcept;
-		const GameObjects& get_children() const noexcept;
-
-		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		void add_component() except { this->add_component(std::make_shared<T>()); }
-		void add_component(const GameComponentPtr& component) except;
-		void add_component(GameComponentPtr&& component) except;
+		std::size_t getChildCount() const noexcept;
+		GameObjects& getChildren() noexcept;
+		const GameObjects& getChildren() const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		std::shared_ptr<T> get_component() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI)); }
-		GameComponentPtr get_component(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
+		void addComponent() except { this->addComponent(std::make_shared<T>()); }
+		void addComponent(const GameComponentPtr& component) except;
+		void addComponent(GameComponentPtr&& component) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		void get_components(GameComponents& components) const noexcept { this->get_components(T::RTTI, components); }
-		void get_components(const runtime::Rtti* type, GameComponents& components) const noexcept;
-		void get_components(const runtime::Rtti& type, GameComponents& components) const noexcept;
+		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }
+		GameComponentPtr getComponent(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr getComponent(const runtime::Rtti& type) const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		std::shared_ptr<T> get_component_in_children() const noexcept { return std::dynamic_pointer_cast<T>(this->get_component_in_children(T::RTTI)); }
-		GameComponentPtr get_component_in_children(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr get_component_in_children(const runtime::Rtti& type) const noexcept;
+		void getComponents(GameComponents& components) const noexcept { this->getComponents(T::RTTI, components); }
+		void getComponents(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void getComponents(const runtime::Rtti& type, GameComponents& components) const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		void get_components_in_children(GameComponents& components) const noexcept { this->get_components_in_children(T::RTTI, components); }
-		void get_components_in_children(const runtime::Rtti* type, GameComponents& components) const noexcept;
-		void get_components_in_children(const runtime::Rtti& type, GameComponents& components) const noexcept;
+		std::shared_ptr<T> getComponentInChildren() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponentInChildren(T::RTTI)); }
+		GameComponentPtr getComponentInChildren(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr getComponentInChildren(const runtime::Rtti& type) const noexcept;
 
-		const GameComponents& get_components() const noexcept;
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void getComponentsInChildren(GameComponents& components) const noexcept { this->getComponentsInChildren(T::RTTI, components); }
+		void getComponentsInChildren(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void getComponentsInChildren(const runtime::Rtti& type, GameComponents& components) const noexcept;
 
-		void remove_component(const GameComponentPtr& component) noexcept;
-		void cleanup_components() noexcept;
+		const GameComponents& getComponents() const noexcept;
 
-		void add_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void remove_component_dispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void remove_component_dispatchs(const GameComponentPtr& component) noexcept;
+		void removeComponent(const GameComponentPtr& component) noexcept;
+		void cleanupComponents() noexcept;
+
+		void addComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
+		void removeComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
+		void removeComponentDispatchs(const GameComponentPtr& component) noexcept;
 
 		void destroy() noexcept;
 
-		virtual GameScene* get_game_scene() noexcept;
-		virtual const GameScene* get_game_scene() const noexcept;
+		virtual GameScene* getGameScene() noexcept;
+		virtual const GameScene* getGameScene() const noexcept;
 
 		GameObjectPtr clone() const except;
 
@@ -84,20 +84,20 @@ namespace octoon
 		friend class GameObjectManager;
 		friend class TransformComponent;
 
-		void on_activate() except;
-		void on_deactivate() noexcept;
+		void onActivate() except;
+		void onDeactivate() noexcept;
 
-		void on_frame_begin() except;
-		void on_frame() except;
-		void on_frame_end() except;
+		void onFrameBegin() except;
+		void onFrame() except;
+		void onFrameEnd() except;
 
-		void on_move_before() except;
-		void on_move_after() except;
+		void onMoveBefore() except;
+		void onMoveAfter() except;
 
-		void on_layer_change_before() except;
-		void on_layer_change_after() except;
+		void onLayerChangeBefore() except;
+		void onLayerChangeAfter() except;
 
-		void on_gui() except;
+		void onGui() except;
 
 	private:
 		GameObject(const GameObject& copy) noexcept = delete;

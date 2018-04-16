@@ -13,18 +13,18 @@ namespace octoon
 		GameObjectManager() noexcept;
 		~GameObjectManager() noexcept;
 
-		GameObjectPtr find_object(const std::string& name) noexcept;
-		GameObjectPtr find_active_object(const std::string& name) noexcept;
+		GameObjectPtr findObject(const std::string& name) noexcept;
+		GameObjectPtr findActiveObject(const std::string& name) noexcept;
 
 		GameObjectPtr instantiate(const std::string& name) noexcept;
 
-		bool active_object(const std::string& name) noexcept;
+		bool activeObject(const std::string& name) noexcept;
 
-		void on_frame_begin() noexcept;
-		void on_frame() noexcept;
-		void on_frame_end() noexcept;
+		void onFrameBegin() noexcept;
+		void onFrame() noexcept;
+		void onFrameEnd() noexcept;
 
-		void on_gui() noexcept;
+		void onGui() noexcept;
 
 	private:
 		friend GameObject;

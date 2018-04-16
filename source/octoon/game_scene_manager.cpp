@@ -58,14 +58,14 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameSceneManager::find_scene(const std::string& name) noexcept
+	GameSceneManager::findScene(const std::string& name) noexcept
 	{
 		for (auto& it : instance_lists_)
 		{
 			if (!it)
 				continue;
 
-			if (it->get_name() == name)
+			if (it->getName() == name)
 				return it->downcast_pointer<GameScene>();
 		}
 
@@ -73,14 +73,14 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameSceneManager::find_actived_scene(const std::string& name) noexcept
+	GameSceneManager::findActivedScene(const std::string& name) noexcept
 	{
 		for (auto& it : active_actors_)
 		{
 			if (!it)
 				continue;
 
-			if (it->get_name() == name && it->get_active())
+			if (it->getName() == name && it->getActive())
 				return it->downcast_pointer<GameScene>();
 		}
 
@@ -90,23 +90,23 @@ namespace octoon
 	GameScenePtr
 	GameSceneManager::instantiate(const std::string& name) except
 	{
-		auto scene = this->find_scene(name);
+		auto scene = this->findScene(name);
 		if (scene)
 			return scene->clone();
 		return nullptr;
 	}
 
 	bool
-	GameSceneManager::active_scene(const std::string& name) noexcept
+	GameSceneManager::activeScene(const std::string& name) noexcept
 	{
 		for (auto& it : instance_lists_)
 		{
 			if (!it)
 				continue;
 
-			if (it->get_name() == name)
+			if (it->getName() == name)
 			{
-				it->set_active(true);
+				it->setActive(true);
 				return true;
 			}
 		}
@@ -115,17 +115,17 @@ namespace octoon
 	}
 
 	void
-	GameSceneManager::on_frame_begin() noexcept
+	GameSceneManager::onFrameBegin() noexcept
 	{
 	}
 
 	void
-	GameSceneManager::on_frame() noexcept
+	GameSceneManager::onFrame() noexcept
 	{
 	}
 
 	void
-	GameSceneManager::on_frame_end() noexcept
+	GameSceneManager::onFrameEnd() noexcept
 	{
 	}
 }

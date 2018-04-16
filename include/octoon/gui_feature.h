@@ -18,21 +18,21 @@ namespace octoon
 		GuiFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~GuiFeature() noexcept;
 
-		void set_viewport(std::uint32_t w, std::uint32_t h) noexcept;
-		void get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
+		void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-		void set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept;
-		void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
+		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
 	private:
-		void on_activate() except override;
-		void on_deactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		void on_input_event(const input::InputEvent& event) noexcept override;
+		void onInputEvent(const input::InputEvent& event) noexcept override;
 
-		void on_frame_begin() noexcept override;
-		void on_frame() noexcept override;
-		void on_frame_end() noexcept override;
+		void onFrameBegin() noexcept override;
+		void onFrame() noexcept override;
+		void onFrameEnd() noexcept override;
 
 	private:
 		WindHandle window_;

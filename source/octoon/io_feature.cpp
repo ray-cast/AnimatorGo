@@ -17,29 +17,29 @@ namespace octoon
 	}
 
 	void
-	IOFeature::on_activate() except
+	IOFeature::onActivate() except
 	{
 		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(system_path_));
 	}
 
 	void
-	IOFeature::on_deactivate() noexcept
+	IOFeature::onDeactivate() noexcept
 	{
 		io::IoServer::instance()->unmount_archive("sys");
 	}
 
 	void
-	IOFeature::on_frame_begin() noexcept
+	IOFeature::onFrameBegin() noexcept
 	{
 	}
 
 	void
-	IOFeature::on_frame() noexcept
+	IOFeature::onFrame() noexcept
 	{
 	}
 
 	void
-	IOFeature::on_frame_end() noexcept
+	IOFeature::onFrameEnd() noexcept
 	{
 	}
 }

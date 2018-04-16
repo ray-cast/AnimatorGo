@@ -14,25 +14,25 @@ namespace octoon
 		~TimerFeature() noexcept;
 
 		float fps() const noexcept;
-		float average_fps() const noexcept;
+		float averageFps() const noexcept;
 
-		float app_time() const noexcept;
-		float start_time() const noexcept;
-		float frame_time() const noexcept;
+		float appTime() const noexcept;
+		float startTime() const noexcept;
+		float frameTime() const noexcept;
 
 		float delta() const noexcept;
 
 		float elapsed() const noexcept;
-		float elapsed_max() const noexcept;
-		float elapsed_min() const noexcept;
+		float elapsedMax() const noexcept;
+		float elapsedMin() const noexcept;
 
-		void sleep_for_fps(float fps) const noexcept;
+		void sleepForFps(float fps) const noexcept;
 
 	private:
-		void on_activate() except override;
-		void on_deactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		void on_frame_begin() noexcept override;
+		void onFrameBegin() noexcept override;
 
 	private:
 		TimerFeature(const TimerFeature&) = delete;

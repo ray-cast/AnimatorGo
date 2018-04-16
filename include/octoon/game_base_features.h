@@ -13,9 +13,9 @@ namespace octoon
 		~GameBaseFeatures() noexcept;
 
 	private:
-		virtual void on_frame_begin() noexcept override;
-		virtual void on_frame() noexcept override;
-		virtual void on_frame_end() noexcept override;
+		virtual void onFrameBegin() noexcept override;
+		virtual void onFrame() noexcept override;
+		virtual void onFrameEnd() noexcept override;
 	};
 }
 

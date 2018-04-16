@@ -12,7 +12,7 @@ namespace octoon
 		GameListener() noexcept = default;
 		virtual ~GameListener() = default;
 
-		virtual void on_message(const std::string& message) noexcept = 0;
+		virtual void onMessage(const std::string& message) noexcept = 0;
 	};
 }
 

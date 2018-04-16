@@ -16,48 +16,48 @@ namespace octoon
 		void open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
 		void close() noexcept;
 
-		void set_active(bool active) except;
-		bool get_active() const noexcept;
+		void setActive(bool active) except;
+		bool getActive() const noexcept;
 
-		void set_game_listener(GameListenerPtr&& listener) noexcept;
-		void set_game_listener(const GameListenerPtr& listener) noexcept;
-		const GameListenerPtr& get_game_listener() const noexcept;
+		void setGameListener(GameListenerPtr&& listener) noexcept;
+		void setGameListener(const GameListenerPtr& listener) noexcept;
+		const GameListenerPtr& getGameListener() const noexcept;
 
-		bool is_quit_request() const noexcept;
+		bool isQuitRequest() const noexcept;
 
-		bool open_scene(const GameScenePtr& scene) except;
-		bool open_scene(const std::string& name) except;
-		void close_scene(const GameScenePtr& name) noexcept;
-		void close_scene(const std::string& name) noexcept;
-		GameScenePtr find_scene(const std::string& name) noexcept;
+		bool openScene(const GameScenePtr& scene) except;
+		bool openScene(const std::string& name) except;
+		void closeScene(const GameScenePtr& name) noexcept;
+		void closeScene(const std::string& name) noexcept;
+		GameScenePtr findScene(const std::string& name) noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		void add_feature() except { this->add_feature(std::make_shared<T>()); }
-		void add_feature(const GameFeaturePtr& feature) except;
-		void add_feature(GameFeaturePtr&& feature) except;
-		void remove_feature(const GameFeaturePtr& feature) except;
+		void addFeature() except { this->add_feature(std::make_shared<T>()); }
+		void addFeature(const GameFeaturePtr& feature) except;
+		void addFeature(GameFeaturePtr&& feature) except;
+		void removeFeature(const GameFeaturePtr& feature) except;
 
-		void send_input_event(const input::InputEvent& event) except;
+		void sendInputEvent(const input::InputEvent& event) except;
 
-		void do_window_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
-		void do_window_framebuffer_resize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
-		void do_window_close(WindHandle window) except;
-		void do_window_focus(WindHandle window, bool focus) except;
-		void do_window_key_down(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
-		void do_window_key_up(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
-		void do_window_key_press(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
-		void do_window_key_char(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except;
-		void do_window_mouse_button_down(WindHandle window, std::uint8_t input_button, float x, float y) except;
-		void do_window_mouse_button_up(WindHandle window, std::uint8_t input_button, float x, float y) except;
-		void do_window_mouse_button_double_click(WindHandle window, std::uint8_t input_button, float x, float y) except;
-		void do_window_mouse_motion(WindHandle window, float x, float y) except;
-		void do_window_scrool(WindHandle window, float x, float y) except;
-		void do_window_drop(WindHandle window, std::uint32_t count, const char** file_utf8) except;
+		void doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
+		void doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
+		void doWindowClose(WindHandle window) except;
+		void doWindowFocus(WindHandle window, bool focus) except;
+		void doWindowKeyDown(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void doWindowKeyUp(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void doWindowKeyPress(WindHandle window, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods) except;
+		void doWindowKeyChar(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except;
+		void doWindowMouseButtonDown(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void doWindowMouseButtonUp(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void doWindowMouseButtonDoubleClick(WindHandle window, std::uint8_t input_button, float x, float y) except;
+		void doWindowMouseMotion(WindHandle window, float x, float y) except;
+		void doWindowScrool(WindHandle window, float x, float y) except;
+		void doWindowDrop(WindHandle window, std::uint32_t count, const char** file_utf8) except;
 
 		void update() except;
 
 	protected:
-		virtual void on_message(const std::string& message) noexcept;
+		virtual void onMessage(const std::string& message) noexcept;
 
 	private:
 		GameApplication(const GameApplication&) noexcept = delete;

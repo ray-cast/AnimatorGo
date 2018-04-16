@@ -11,7 +11,7 @@ namespace octoon
 
 	TimerFeature::~TimerFeature() noexcept
 	{
-		assert(timer_ == nullptr); // check on_deactivate();
+		assert(timer_ == nullptr); // check onDeactivate();
 	}
 
 	float
@@ -21,25 +21,25 @@ namespace octoon
 	}
 
 	float
-	TimerFeature::average_fps() const noexcept
+	TimerFeature::averageFps() const noexcept
 	{
 		return timer_->average_fps();
 	}
 
 	float
-	TimerFeature::start_time() const noexcept
+	TimerFeature::startTime() const noexcept
 	{
 		return timer_->start_time();
 	}
 
 	float
-	TimerFeature::app_time() const noexcept
+	TimerFeature::appTime() const noexcept
 	{
 		return timer_->app_time();
 	}
 
 	float
-	TimerFeature::frame_time() const noexcept
+	TimerFeature::frameTime() const noexcept
 	{
 		return timer_->frame_time();
 	}
@@ -57,38 +57,38 @@ namespace octoon
 	}
 
 	float
-	TimerFeature::elapsed_max() const noexcept
+	TimerFeature::elapsedMax() const noexcept
 	{
 		return timer_->elapsed_max();
 	}
 
 	float
-	TimerFeature::elapsed_min() const noexcept
+	TimerFeature::elapsedMin() const noexcept
 	{
 		return timer_->elapsed_min();
 	}
 
 	void
-	TimerFeature::sleep_for_fps(float fps) const noexcept
+	TimerFeature::sleepForFps(float fps) const noexcept
 	{
 		 timer_->sleep_for_fps(fps);
 	}
 
 	void
-	TimerFeature::on_activate() except
+	TimerFeature::onActivate() except
 	{
 		timer_ = std::make_shared<runtime::Timer>();
 		timer_->reset();
 	}
 
 	void
-	TimerFeature::on_deactivate() noexcept
+	TimerFeature::onDeactivate() noexcept
 	{
 		timer_.reset();
 	}
 
 	void
-	TimerFeature::on_frame_begin() noexcept
+	TimerFeature::onFrameBegin() noexcept
 	{
 		timer_->update();
 	}

@@ -63,14 +63,14 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObjectManager::find_object(const std::string& name) noexcept
+	GameObjectManager::findObject(const std::string& name) noexcept
 	{
 		for (auto& it : instance_lists_)
 		{
 			if (!it)
 				continue;
 
-			if (it->get_name() == name)
+			if (it->getName() == name)
 				return it->downcast_pointer<GameObject>();
 		}
 
@@ -78,14 +78,14 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObjectManager::find_active_object(const std::string& name) noexcept
+	GameObjectManager::findActiveObject(const std::string& name) noexcept
 	{
 		for (auto& it : active_actors_)
 		{
 			if (!it)
 				continue;
 
-			if (it->get_name() == name && it->get_active())
+			if (it->getName() == name && it->getActive())
 				return it->downcast_pointer<GameObject>();
 		}
 
@@ -95,22 +95,22 @@ namespace octoon
 	GameObjectPtr
 	GameObjectManager::instantiate(const std::string& name) noexcept
 	{
-		auto object = this->find_object(name);
+		auto object = this->findObject(name);
 		if (object)
 			return object->clone();
 		return nullptr;
 	}
 
 	bool
-	GameObjectManager::active_object(const std::string& name) noexcept
+	GameObjectManager::activeObject(const std::string& name) noexcept
 	{
 		for (auto& it : instance_lists_)
 		{
 			if (it)
 			{
-				if (it->get_name() == name)
+				if (it->getName() == name)
 				{
-					it->set_active(true);
+					it->setActive(true);
 					return true;
 				}
 			}
@@ -120,32 +120,32 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::on_frame_begin() noexcept
+	GameObjectManager::onFrameBegin() noexcept
 	{
 		for (std::size_t i = 0; i < active_actors_.size(); i++)
 		{
 			if (active_actors_[i])
-				active_actors_[i]->on_frame_begin();
+				active_actors_[i]->onFrameBegin();
 		}
 	}
 
 	void
-	GameObjectManager::on_frame() noexcept
+	GameObjectManager::onFrame() noexcept
 	{
 		for (std::size_t i = 0; i < active_actors_.size(); i++)
 		{
 			if (active_actors_[i])
-				active_actors_[i]->on_frame();
+				active_actors_[i]->onFrame();
 		}
 	}
 
 	void
-	GameObjectManager::on_frame_end() noexcept
+	GameObjectManager::onFrameEnd() noexcept
 	{
 		for (std::size_t i = 0; i < active_actors_.size(); i++)
 		{
 			if (active_actors_[i])
-				active_actors_[i]->on_frame_end();
+				active_actors_[i]->onFrameEnd();
 		}
 
 		if (has_empty_actors_)
@@ -163,12 +163,12 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::on_gui() noexcept
+	GameObjectManager::onGui() noexcept
 	{
 		for (std::size_t i = 0; i < active_actors_.size(); i++)
 		{
 			if (active_actors_[i])
-				active_actors_[i]->on_gui();
+				active_actors_[i]->onGui();
 		}
 	}
 }

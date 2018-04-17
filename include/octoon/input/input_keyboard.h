@@ -14,18 +14,18 @@ namespace octoon
 			DefaultInputKeyboard() noexcept;
 			virtual ~DefaultInputKeyboard() noexcept;
 
-			virtual bool is_key_down(InputKey::Code key) const noexcept override;
-			virtual bool is_key_up(InputKey::Code key) const noexcept override;
-			virtual bool is_key_pressed(InputKey::Code key) const noexcept override;
+			virtual bool isKeyDown(InputKey::Code key) const noexcept override;
+			virtual bool isKeyUp(InputKey::Code key) const noexcept override;
+			virtual bool isKeyPressed(InputKey::Code key) const noexcept override;
 
 			virtual IInputKeyboardPtr clone() const noexcept;
 
 		protected:
-			virtual void on_frame_end() noexcept override;
-			virtual void on_obtain_capture() noexcept override;
-			virtual void on_reset() noexcept override;
+			virtual void onFrameEnd() noexcept override;
+			virtual void onObtainCapture() noexcept override;
+			virtual void onReset() noexcept override;
 
-			virtual void on_input_event(const InputEvent& event) noexcept override;
+			virtual void onInputEvent(const InputEvent& event) noexcept override;
 
 		private:
 			DefaultInputKeyboard(const DefaultInputKeyboard&) noexcept = delete;

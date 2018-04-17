@@ -48,9 +48,9 @@ namespace octoon
 		if (!input_->open())
 			throw runtime::runtime_error::create("Input::open() fail.");
 
-		input_->add_input_listener(std::make_shared<InputEventListener>(*this));
-		input_->set_capture_object(window_);
-		input_->obtain_capture();
+		input_->addInputListener(std::make_shared<InputEventListener>(*this));
+		input_->setCaptureObject(window_);
+		input_->obtainCapture();
 	}
 
 	void
@@ -64,14 +64,14 @@ namespace octoon
 	InputFeature::onInputEvent(const input::InputEvent& event) noexcept
 	{
 		assert(input_);
-		input_->send_input_event(event);
+		input_->sendInputEvent(event);
 	}
 
 	void
 	InputFeature::onFrameBegin() noexcept
 	{
 		assert(input_);
-		input_->update_begin();
+		input_->updateBegin();
 		input_->update();
 	}
 
@@ -79,7 +79,7 @@ namespace octoon
 	InputFeature::onFrameEnd() noexcept
 	{
 		assert(input_);
-		input_->update_end();
+		input_->updateEnd();
 	}
 
 	void

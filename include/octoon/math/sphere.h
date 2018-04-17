@@ -55,6 +55,15 @@ namespace octoon
 					radius = 0;
 					center = Vector3<T>::Zero;
 				}
+
+				AABB<T> aabb() const
+				{
+					Vector3<T> min = center;
+					min -= radius;
+					Vector3<T> max = center;
+					max += radius;
+					return AABB<T>{ min, max };
+				}
 			};
 
 			template<typename T> const Sphere<T> Sphere<T>::Empty(Vector3<T>::Zero, 0);

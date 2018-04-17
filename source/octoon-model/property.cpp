@@ -1216,8 +1216,8 @@ namespace octoon
 				hasIndices |= !mesh->getIndicesArray().empty();
 				hasWeight |= !mesh->getWeightArray().empty();
 
-				for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
-					hasTexcoord[i] |= !mesh->getTexcoordArray().empty();
+				for (std::uint8_t j = 0; j < TEXTURE_ARRAY_COUNT; j++)
+					hasTexcoord[j] |= !mesh->getTexcoordArray().empty();
 			}
 
 			for (std::size_t i = 0; i < numInstance; i++)
@@ -1232,11 +1232,11 @@ namespace octoon
 				if (hasIndices) if (mesh->getIndicesArray().empty()) return false;
 				if (hasWeight) if (mesh->getWeightArray().empty()) return false;
 
-				for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				for (std::uint8_t j = 0; j < TEXTURE_ARRAY_COUNT; j++)
 				{
-					if (hasTexcoord[i])
+					if (hasTexcoord[j])
 					{
-						if (mesh->getTexcoordArray(i).empty())
+						if (mesh->getTexcoordArray(j).empty())
 							return false;
 					}
 				}
@@ -1266,10 +1266,10 @@ namespace octoon
 				if (hasWeight)   std::memcpy(&_weights[offsetVertices], mesh->_weights.data(), mesh->_weights.size());
 				if (hasIndices)  std::memcpy(&_indices[offsetVertices], mesh->_indices.data(), mesh->_indices.size());
 
-				for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				for (std::uint8_t j = 0; j < TEXTURE_ARRAY_COUNT; j++)
 				{
-					if (hasTexcoord[i])
-						std::memcpy(&_texcoords[i][offsetVertices], mesh->_texcoords[i].data(), mesh->_texcoords[i].size());
+					if (hasTexcoord[j])
+						std::memcpy(&_texcoords[j][offsetVertices], mesh->_texcoords[j].data(), mesh->_texcoords[j].size());
 				}
 
 				offsetVertices += mesh->getNumVertices();
@@ -1535,12 +1535,12 @@ namespace octoon
 
 			for (std::size_t i = 0; i < _normals.size(); i++)
 			{
-				auto& n = _normals[i];
-				auto& t = tan1[i];
+				auto& nor = _normals[i];
+				auto& tan = tan1[i];
 
-				float handedness = math::dot(math::cross(n, t), tan2[i]) < 0.0f ? 1.0f : -1.0f;
+				float handedness = math::dot(math::cross(nor, tan), tan2[i]) < 0.0f ? 1.0f : -1.0f;
 
-				_tangents[i] = float4(math::normalize(t - n * math::dot(n, t)), handedness);
+				_tangents[i] = float4(math::normalize(tan - nor * math::dot(nor, tan)), handedness);
 			}
 		}
 
@@ -1583,7 +1583,7 @@ namespace octoon
 				it.boundingBox.encapsulate(_vertices.data(), _indices.data() + it.startIndices, it.indicesCount);
 
 			for (auto& it : _meshSubsets)
-				_boundingBox.encapsulate(it.boundingBox);
+				_boundingBox.encapsulate(it.boundingBox.sphere());
 		}
 	}
 }

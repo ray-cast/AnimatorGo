@@ -2,6 +2,7 @@
 #define OCTOON_PMX_LOADER_H_
 
 #include <octoon/model/loader.h>
+#include <octoon/model/pmx.h>
 
 namespace octoon
 {

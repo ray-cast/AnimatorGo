@@ -117,7 +117,7 @@ namespace octoon
 		private:
 			void updateIK(Bones& _bones, const IKAttr& ik) noexcept;
 			void updateBones(const Bones& _bones) noexcept;
-			void updateTransform(Bone& bone, const float3& translate, const octoon::math::Quaternion& rotate) noexcept;
+			void updateTransform(Bone& bone, const octoon::math::float3& translate, const octoon::math::Quaternion& rotate) noexcept;
 
 		private:
 

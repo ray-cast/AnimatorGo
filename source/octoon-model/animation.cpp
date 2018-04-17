@@ -441,7 +441,7 @@ namespace octoon
 			{
 				float x11 = xa * ct;
 				float x12 = xa + (xb - xa) * ct;
-				float x13 = xb + (1.0 - xb) * ct;
+				float x13 = xb + (1.0f - xb) * ct;
 
 				float x21 = x11 + (x12 - x11) * ct;
 				float x22 = x12 + (x13 - x12) * ct;
@@ -452,7 +452,7 @@ namespace octoon
 				{
 					float y11 = ya * ct;
 					float y12 = ya + (yb - ya) * ct;
-					float y13 = yb + (1.0 - yb) * ct;
+					float y13 = yb + (1.0f - yb) * ct;
 
 					float y21 = y11 + (y12 - y11) * ct;
 					float y22 = y12 + (y13 - y12) * ct;
@@ -489,7 +489,7 @@ namespace octoon
 				auto& anim1 = this->getBoneAnimation(motions[ms.m1]);
 
 				int diff = anim1.getFrameNo() - anim0.getFrameNo();
-				float a0 = frame - anim0.getFrameNo();
+				float a0 = static_cast<float>(frame - anim0.getFrameNo());
 				float ratio = a0 / diff;
 
 				float tx = BezierEval(anim0.getInterpolation().interpX, ratio);

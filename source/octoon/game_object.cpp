@@ -151,6 +151,7 @@ namespace octoon
 			if (parent)
 				parent->children_.push_back(this->downcast_pointer<GameObject>());
 
+			this->getComponent<TransformComponent>()->updateLocalChildren();
 			this->onMoveAfter();
 		}
 	}

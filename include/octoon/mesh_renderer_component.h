@@ -36,7 +36,7 @@ namespace octoon
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;
 
 	private:
-		MeshFilter::OnMeshReplaceEvent onMeshReplaceEvent_;
+		MeshFilterComponent::OnMeshReplaceEvent onMeshReplaceEvent_;
 		video::GeometryPtr geometry_;
 	};
 }

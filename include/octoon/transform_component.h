@@ -62,6 +62,7 @@ namespace octoon
 		void onMoveAfter() except override;
 
 	private:
+		friend GameObject;
 		void updateLocalChildren() const noexcept;
 		void updateWorldChildren() const noexcept;
 		void updateLocalTransform() const noexcept;

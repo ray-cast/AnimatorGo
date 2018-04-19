@@ -2,28 +2,28 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(MeshFilter, GameComponent, "MeshFilter")
+	OctoonImplementSubClass(MeshFilterComponent, GameComponent, "MeshFilter")
 
-	MeshFilter::MeshFilter() noexcept
+	MeshFilterComponent::MeshFilterComponent() noexcept
 	{
 	}
 
-	MeshFilter::MeshFilter(video::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(video::MeshPtr&& mesh) noexcept
 	{
 		this->setMesh(std::move(mesh));
 	}
 
-	MeshFilter::MeshFilter(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const video::MeshPtr& mesh) noexcept
 	{
 		this->setMesh(mesh);
 	}
 
-	MeshFilter::~MeshFilter() noexcept
+	MeshFilterComponent::~MeshFilterComponent() noexcept
 	{
 	}
 
 	void
-	MeshFilter::setMesh(video::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::setMesh(video::MeshPtr&& mesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -33,7 +33,7 @@ namespace octoon
 	}
 
 	void
-	MeshFilter::setMesh(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::setMesh(const video::MeshPtr& mesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -43,19 +43,19 @@ namespace octoon
 	}
 
 	const video::MeshPtr&
-	MeshFilter::getMesh() const noexcept
+	MeshFilterComponent::getMesh() const noexcept
 	{
 		return mesh_;
 	}
 
 	void
-	MeshFilter::addMeshListener(OnMeshReplaceEvent* func) noexcept
+	MeshFilterComponent::addMeshListener(OnMeshReplaceEvent* func) noexcept
 	{
 		delegates_.push_back(func);
 	}
 
 	void
-	MeshFilter::removeMeshListener(const OnMeshReplaceEvent* func) noexcept
+	MeshFilterComponent::removeMeshListener(const OnMeshReplaceEvent* func) noexcept
 	{
 		auto it = std::find(delegates_.begin(), delegates_.end(), func);
 		if (it != delegates_.end())
@@ -63,15 +63,15 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	MeshFilter::clone() const noexcept
+	MeshFilterComponent::clone() const noexcept
 	{
-		auto instance = std::make_shared<MeshFilter>();
+		auto instance = std::make_shared<MeshFilterComponent>();
 		instance->setMesh(mesh_ ? mesh_->clone() : nullptr);
 		return instance;
 	}
 
 	void
-	MeshFilter::onMeshReplace(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::onMeshReplace(const video::MeshPtr& mesh) noexcept
 	{
 		for (auto& it : delegates_)
 			(*it)(mesh);

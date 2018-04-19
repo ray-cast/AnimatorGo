@@ -38,7 +38,7 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter, this);
 
 		auto transform = this->getComponent<TransformComponent>();
-		auto meshFilter = this->getComponent<MeshFilter>();
+		auto meshFilter = this->getComponent<MeshFilterComponent>();
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setDrawType(video::DrawType::Points);
@@ -60,18 +60,18 @@ namespace octoon
 	void
 	PointRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
 	{
-		if (component->isInstanceOf<MeshFilter>())
+		if (component->isInstanceOf<MeshFilterComponent>())
 		{
 			onMeshReplaceEvent_ = std::bind(&PointRendererComponent::onMeshReplace, this, std::placeholders::_1);
-			component->downcast<MeshFilter>()->addMeshListener(&onMeshReplaceEvent_);
+			component->downcast<MeshFilterComponent>()->addMeshListener(&onMeshReplaceEvent_);
 		}
 	}
 
 	void
 	PointRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
 	{
-		if (component->isInstanceOf<MeshFilter>())
-			component->downcast<MeshFilter>()->removeMeshListener(&onMeshReplaceEvent_);
+		if (component->isInstanceOf<MeshFilterComponent>())
+			component->downcast<MeshFilterComponent>()->removeMeshListener(&onMeshReplaceEvent_);
 	}
 
 	void

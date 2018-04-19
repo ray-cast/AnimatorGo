@@ -7,18 +7,18 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT MeshFilter : public GameComponent
+	class OCTOON_EXPORT MeshFilterComponent : public GameComponent
 	{
-		OctoonDeclareSubClass(MeshFilter, RenderComponent)
+		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
 	public:
 		typedef std::function<void(const video::MeshPtr&)> OnMeshReplaceEvent;
 		typedef std::vector<OnMeshReplaceEvent*> OnMeshReplaceEvents;
 
 	public:
-		MeshFilter() noexcept;
-		MeshFilter(video::MeshPtr&& mesh) noexcept;
-		MeshFilter(const video::MeshPtr& mesh) noexcept;
-		virtual ~MeshFilter() noexcept;
+		MeshFilterComponent() noexcept;
+		MeshFilterComponent(video::MeshPtr&& mesh) noexcept;
+		MeshFilterComponent(const video::MeshPtr& mesh) noexcept;
+		virtual ~MeshFilterComponent() noexcept;
 
 		void setMesh(video::MeshPtr&& mesh) noexcept;
 		void setMesh(const video::MeshPtr& mesh) noexcept;
@@ -33,8 +33,8 @@ namespace octoon
 		virtual void onMeshReplace(const video::MeshPtr& mesh) noexcept;
 
 	private:
-		MeshFilter(const MeshFilter&) = delete;
-		MeshFilter& operator=(const MeshFilter&) = delete;
+		MeshFilterComponent(const MeshFilterComponent&) = delete;
+		MeshFilterComponent& operator=(const MeshFilterComponent&) = delete;
 
 	private:
 		video::MeshPtr mesh_;

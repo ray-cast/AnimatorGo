@@ -1,4 +1,6 @@
 #include <octoon/octoon.h>
+#include <octoon/io/fstream.h>
+#include <iostream>
 
 int main(int argc, const char* argv[])
 {

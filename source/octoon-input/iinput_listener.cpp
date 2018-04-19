@@ -15,12 +15,12 @@ namespace octoon
 		}
 
 		void
-		IInputListener::on_attach() noexcept
+		IInputListener::onAttach() noexcept
 		{
 		}
 
 		void
-		IInputListener::on_detach() noexcept
+		IInputListener::onDetach() noexcept
 		{
 		}
 	}

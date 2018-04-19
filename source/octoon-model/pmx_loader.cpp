@@ -559,10 +559,10 @@ namespace octoon
 						weight.weight2 = v.weight.weight2;
 						weight.weight3 = v.weight.weight3;
 						weight.weight4 = v.weight.weight4;
-						weight.bone1 = v.weight.bone1;
-						weight.bone2 = v.weight.bone2;
-						weight.bone3 = v.weight.bone3;
-						weight.bone4 = v.weight.bone4;
+						weight.bone1 = static_cast<uint8_t>(v.weight.bone1);
+						weight.bone2 = static_cast<uint8_t>(v.weight.bone2);
+						weight.bone3 = static_cast<uint8_t>(v.weight.bone3);
+						weight.bone4 = static_cast<uint8_t>(v.weight.bone4);
 
 						weights.push_back(weight);
 					}
@@ -626,7 +626,7 @@ namespace octoon
 					if (it.Flag & PMX_BONE_IK)
 					{
 						IKAttr attr;
-						attr.boneIndex = index;
+						attr.boneIndex = static_cast<uint16_t>(index);
 						attr.targetBoneIndex = it.IKTargetBoneIndex;
 						attr.chainLength = it.IKLinkCount;
 						attr.iterations = it.IKLoopCount;

@@ -12,37 +12,37 @@ namespace octoon
 		GameFeature() noexcept;
 		virtual ~GameFeature() noexcept;
 
-		void set_active(bool active) except;
-		bool get_active() noexcept;
+		void setActive(bool active) except;
+		bool getActive() noexcept;
 
-		const GameListenerPtr& get_game_listener() const noexcept;
+		const GameListenerPtr& getGameListener() const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		std::shared_ptr<T> get_feature() const noexcept { return std::dynamic_pointer_cast<T>(this->get_feature(T::RTTI)); }
-		GameFeaturePtr get_feature(const runtime::Rtti* rtti) const noexcept;
-		GameFeaturePtr get_feature(const runtime::Rtti& rtti) const noexcept;
-		const GameFeatures& get_featurs() const noexcept;
+		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
+		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
+		const GameFeatures& getFeaturs() const noexcept;
 
-		GameServer* get_game_server() noexcept;
+		GameServer* getGameServer() noexcept;
 
 	protected:
-		virtual void on_activate() except;
-		virtual void on_deactivate() noexcept;
+		virtual void onActivate() except;
+		virtual void onDeactivate() noexcept;
 
-		virtual void on_open_scene(const GameScenePtr& scene) except;
-		virtual void on_close_scene(const GameScenePtr& scene) noexcept;
+		virtual void onOpenScene(const GameScenePtr& scene) except;
+		virtual void onCloseScene(const GameScenePtr& scene) noexcept;
 
-		virtual void on_input_event(const input::InputEvent& event) noexcept;
+		virtual void onInputEvent(const input::InputEvent& event) noexcept;
 
-		virtual void on_reset() except;
+		virtual void onReset() except;
 
-		virtual void on_frame_begin() except;
-		virtual void on_frame() except;
-		virtual void on_frame_end() except;
+		virtual void onFrameBegin() except;
+		virtual void onFrame() except;
+		virtual void onFrameEnd() except;
 
 	private:
 		friend GameServer;
-		void _set_game_server(GameServer* server) noexcept;
+		void _setGameServer(GameServer* server) noexcept;
 
 	private:
 		GameFeature(const GameFeature&) noexcept = delete;

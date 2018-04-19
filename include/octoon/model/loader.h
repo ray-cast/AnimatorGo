@@ -15,6 +15,7 @@ namespace octoon
 		class ModelLoader
 		{
 		public:
+			ModelLoader() = default;
 			virtual ~ModelLoader() noexcept = default;
 
 			virtual bool doCanLoad(octoon::io::istream& stream) noexcept = 0;

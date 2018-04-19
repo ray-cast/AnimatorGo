@@ -21,37 +21,37 @@ namespace octoon
 
 			bool add(Rtti* rtti) noexcept;
 
-			Rtti* get_rtti(const char* name) noexcept;
-			Rtti* get_rtti(const std::string& name) noexcept;
+			Rtti* getRtti(const char* name) noexcept;
+			Rtti* getRtti(const std::string& name) noexcept;
 
-			const Rtti* get_rtti(const char* name) const noexcept;
-			const Rtti* get_rtti(const std::string& name) const noexcept;
+			const Rtti* getRtti(const char* name) const noexcept;
+			const Rtti* getRtti(const std::string& name) const noexcept;
 
-			RttiInterfacePtr create_object(const char*, const Rtti& base) const except;
-			RttiInterfacePtr create_object(const std::string& name, const Rtti& base) const except;
+			RttiInterfacePtr createInstance(const char*, const Rtti& base) const except;
+			RttiInterfacePtr createInstance(const std::string& name, const Rtti& base) const except;
 
 			template<typename T>
 			std::shared_ptr<T> make_shared(const std::string& name)
 			{
-				return std::dynamic_pointer_cast<T>(this->create_object(name, T::RTTI));
+				return std::dynamic_pointer_cast<T>(this->createInstance(name, T::RTTI));
 			}
 
 			template<typename T>
 			std::shared_ptr<T> make_shared(const char* name)
 			{
-				return std::dynamic_pointer_cast<T>(this->create_object(name, T::RTTI));
+				return std::dynamic_pointer_cast<T>(this->createInstance(name, T::RTTI));
 			}
 
 			template<typename T>
 			std::unique_ptr<T> make_unique(const std::string& name)
 			{
-				return std::dynamic_pointer_cast<T>(this->create_object(name, T::RTTI));
+				return std::dynamic_pointer_cast<T>(this->createInstance(name, T::RTTI));
 			}
 
 			template<typename T>
 			std::unique_ptr<T> make_unique(const char* name)
 			{
-				return std::dynamic_pointer_cast<T>(this->create_object(name, T::RTTI));
+				return std::dynamic_pointer_cast<T>(this->createInstance(name, T::RTTI));
 			}
 
 		private:

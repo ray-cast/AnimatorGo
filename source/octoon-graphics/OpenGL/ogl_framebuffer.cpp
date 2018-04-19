@@ -63,7 +63,7 @@ namespace octoon
 		{
 			assert(GL_NONE == _fbo);
 			assert(framebufferDesc.getGraphicsFramebufferLayout());
-			assert(framebufferDesc.getGraphicsFramebufferLayout()->is_instance_of<OGLFramebufferLayout>());
+			assert(framebufferDesc.getGraphicsFramebufferLayout()->isInstanceOf<OGLFramebufferLayout>());
 			assert(framebufferDesc.getWidth() > 0 && framebufferDesc.getHeight() > 0);
 
 			glGenFramebuffers(1, &_fbo);

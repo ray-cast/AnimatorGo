@@ -13,12 +13,12 @@ namespace octoon
 		~IOFeature() noexcept;
 
 	private:
-		void on_activate() except override;
-		void on_deactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		void on_frame_begin() noexcept override;
-		void on_frame() noexcept override;
-		void on_frame_end() noexcept override;
+		void onFrameBegin() noexcept override;
+		void onFrame() noexcept override;
+		void onFrameEnd() noexcept override;
 
 	private:
 		std::string system_path_;

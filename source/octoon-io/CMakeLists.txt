@@ -55,8 +55,34 @@ SET(ARCHIVE_LIST
 )
 SOURCE_GROUP(${LIB_NAME}\\archive FILES ${ARCHIVE_LIST})
 
+SET(SERIALIZATION_LIST
+	${HEADER_PATH}/endian.h
+	${SOURCE_PATH}/endian.cpp
+	${HEADER_PATH}/binary_reader.h
+	${SOURCE_PATH}/binary_reader.cpp
+	${HEADER_PATH}/binary_writer.h
+	${SOURCE_PATH}/binary_writer.cpp
+	${HEADER_PATH}/text_reader.h
+	${SOURCE_PATH}/text_reader.cpp
+	${HEADER_PATH}/text_writer.h
+	${SOURCE_PATH}/text_writer.cpp
+	${HEADER_PATH}/stream_reader.h
+	${SOURCE_PATH}/stream_reader.cpp
+	${HEADER_PATH}/stream_writer.h
+	${SOURCE_PATH}/stream_writer.cpp
+	${HEADER_PATH}/string_reader.h
+	${SOURCE_PATH}/string_reader.cpp
+	${HEADER_PATH}/string_writer.h
+	${SOURCE_PATH}/string_writer.cpp
+	${HEADER_PATH}/json_reader.h
+	${SOURCE_PATH}/json_reader.cpp
+	${HEADER_PATH}/json_writer.h
+	${SOURCE_PATH}/json_writer.cpp
+)
+SOURCE_GROUP(${LIB_NAME}\\serialization FILES ${SERIALIZATION_LIST})
+
 ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
-ADD_LIBRARY(${LIB_OUTNAME} SHARED ${IO_LIST} ${STREAM_LIST} ${ARCHIVE_LIST})
+ADD_LIBRARY(${LIB_OUTNAME} SHARED ${IO_LIST} ${STREAM_LIST} ${ARCHIVE_LIST} ${SERIALIZATION_LIST})
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE zipper)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-runtime)

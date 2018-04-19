@@ -50,10 +50,8 @@ namespace octoon
 
 	protected:
 		void addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept;
-		void addComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-
 		void removeComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept;
-		void removeComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
+		void removeComponentDispatchs(GameComponent* component) noexcept;
 
 	private:
 		virtual void onAttach() except;

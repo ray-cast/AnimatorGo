@@ -226,7 +226,7 @@ namespace octoon
 	{
 		assert(feature);
 
-		auto it = octoon::runtime::find_if(features_, [feature](const GameFeaturePtr& it) { return feature->is_instance_of(it->rtti()); });
+		auto it = octoon::runtime::find_if(features_, [feature](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
 		if (it != features_.end())
 		{
 			if (game_listener_)
@@ -272,7 +272,7 @@ namespace octoon
 
 		for (auto& it : features_)
 		{
-			if (it->is_instance_of(rtti))
+			if (it->isInstanceOf(rtti))
 				return it;
 		}
 
@@ -294,7 +294,7 @@ namespace octoon
 	void
 	GameServer::removeFeature(const runtime::Rtti* rtti) noexcept
 	{
-		auto it = octoon::runtime::find_if(features_, [rtti](const GameFeaturePtr& it) { return it->is_instance_of(rtti); });
+		auto it = octoon::runtime::find_if(features_, [rtti](const GameFeaturePtr& it) { return it->isInstanceOf(rtti); });
 		if (it != features_.end())
 		{
 			if (game_listener_)

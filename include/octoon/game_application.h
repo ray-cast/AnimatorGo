@@ -31,8 +31,8 @@ namespace octoon
 		void closeScene(const std::string& name) noexcept;
 		GameScenePtr findScene(const std::string& name) noexcept;
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		void addFeature() except { this->add_feature(std::make_shared<T>()); }
+		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		void addFeature(Args&&... args) except { this->addFeature(std::make_shared<T>(std::forward<Args>(args)...)); }
 		void addFeature(const GameFeaturePtr& feature) except;
 		void addFeature(GameFeaturePtr&& feature) except;
 		void removeFeature(const GameFeaturePtr& feature) except;

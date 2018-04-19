@@ -39,8 +39,8 @@ namespace octoon
 		GameObjects& getChildren() noexcept;
 		const GameObjects& getChildren() const noexcept;
 
-		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		void addComponent() except { this->addComponent(std::make_shared<T>()); }
+		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void addComponent(Args&&... args) noexcept(false) { this->addComponent(std::make_shared<T>(std::forward<Args>(args)...)); }
 		void addComponent(const GameComponentPtr& component) except;
 		void addComponent(GameComponentPtr&& component) except;
 
@@ -66,12 +66,12 @@ namespace octoon
 
 		const GameComponents& getComponents() const noexcept;
 
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void removeComponent() noexcept { this->removeComponent(T::RTTI); }
+		void removeComponent(const runtime::Rtti* type) noexcept;
+		void removeComponent(const runtime::Rtti& type) noexcept;
 		void removeComponent(const GameComponentPtr& component) noexcept;
 		void cleanupComponents() noexcept;
-
-		void addComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void removeComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept;
-		void removeComponentDispatchs(const GameComponentPtr& component) noexcept;
 
 		void destroy() noexcept;
 
@@ -79,6 +79,12 @@ namespace octoon
 		virtual const GameScene* getGameScene() const noexcept;
 
 		GameObjectPtr clone() const except;
+
+	private:
+		friend class GameComponent;
+		void addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept;
+		void removeComponentDispatch(GameDispatchTypes type, const GameComponent* component) noexcept;
+		void removeComponentDispatchs(const GameComponent* component) noexcept;
 
 	private:
 		friend class GameObjectManager;
@@ -115,7 +121,7 @@ namespace octoon
 		GameObjectWeakPtr parent_;
 
 		GameComponents components_;
-		std::vector<GameComponents> dispatch_components_;
+		std::vector<GameComponentRaws> dispatch_components_;
 	};
 }
 

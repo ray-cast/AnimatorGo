@@ -78,31 +78,24 @@ namespace octoon
 	}
 
 	void
-	GameComponent::addComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
+	GameComponent::addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept
 	{
 		assert(gameObject_ && component);
 		gameObject_->addComponentDispatch(type, component);
 	}
 
 	void
-	GameComponent::removeComponentDispatch(GameDispatchTypes type, const GameComponentPtr& component) noexcept
+	GameComponent::removeComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept
 	{
 		assert(gameObject_ && component);
 		gameObject_->removeComponentDispatch(type, component);
 	}
 
 	void
-	GameComponent::addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept
+	GameComponent::removeComponentDispatchs(GameComponent* component) noexcept
 	{
 		assert(gameObject_ && component);
-		gameObject_->addComponentDispatch(type, component->cast_pointer<GameComponent>());
-	}
-
-	void
-	GameComponent::removeComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept
-	{
-		assert(gameObject_ && component);
-		gameObject_->removeComponentDispatch(type, component->cast_pointer<GameComponent>());
+		gameObject_->removeComponentDispatchs(component);
 	}
 
 	void

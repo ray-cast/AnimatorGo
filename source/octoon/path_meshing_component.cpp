@@ -4,6 +4,7 @@
 #include <octoon/runtime/except.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/runtime/json.h>
 
 #include <json/json.h>
 

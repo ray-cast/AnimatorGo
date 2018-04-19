@@ -1,4 +1,4 @@
-#if defined(OCTOON_FEATURE_INPUT_ENABLE)
+#if defined(OCTOON_FEATURE_UI_ENABLE)
 #include <octoon/gui_feature.h>
 
 #include <octoon/input_feature.h>

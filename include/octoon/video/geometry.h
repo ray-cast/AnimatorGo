@@ -24,6 +24,10 @@ namespace octoon
 			void setMesh(const MeshPtr& mesh) noexcept;
 			const MeshPtr& getMesh() const noexcept;
 
+			void setMaterial(MaterialPtr&& material) noexcept;
+			void setMaterial(const MaterialPtr& material) noexcept;
+			const MaterialPtr& getMaterial() const noexcept;
+
 			void setDrawType(DrawType type) noexcept;
 			DrawType getDrawType() const noexcept;
 
@@ -36,6 +40,7 @@ namespace octoon
 			std::intptr_t _vertexOffset;
 			std::intptr_t _indexOffset;
 
+			MaterialPtr material_;
 			DrawType drawType_;
 			GraphicsIndexType indexType_;
 		};

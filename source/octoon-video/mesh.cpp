@@ -84,6 +84,12 @@ namespace octoon
 			return colors_;
 		}
 
+		MeshPtr
+		Mesh::clone() const noexcept
+		{
+			return std::make_shared<Mesh>();
+		}
+
 		void
 		Mesh::computeVerticeNormals() noexcept
 		{

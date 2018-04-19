@@ -49,11 +49,11 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void on_activate() noexcept override;
-		virtual void on_deactivate() noexcept override;
+		virtual void onActivate() noexcept override;
+		virtual void onDeactivate() noexcept override;
 
-		virtual void on_move_before() noexcept override;
-		virtual void on_move_after() noexcept override;
+		virtual void onMoveBefore() noexcept override;
+		virtual void onMoveAfter() noexcept override;
 
 		virtual void onRenderObjectPre(const video::Camera& camera) noexcept override;
 		virtual void onRenderObjectPost(const video::Camera& camera) noexcept override;

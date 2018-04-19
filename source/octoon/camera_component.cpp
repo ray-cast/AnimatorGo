@@ -195,33 +195,33 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::on_activate() noexcept
+	CameraComponent::onActivate() noexcept
 	{
-		this->add_component_dispatch(GameDispatchType::MoveAfter, this);
+		this->addComponentDispatch(GameDispatchType::MoveAfter, this);
 
-		auto transform = this->get_component<TransformComponent>();
+		auto transform = this->getComponent<TransformComponent>();
 		camera_->setActive(true);
-		camera_->setTransform(transform->get_transform(), transform->get_transform_inverse());
+		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
 	}
 
 	void
-	CameraComponent::on_deactivate() noexcept
+	CameraComponent::onDeactivate() noexcept
 	{
-		this->remove_component_dispatch(GameDispatchType::MoveAfter, this);
+		this->removeComponentDispatch(GameDispatchType::MoveAfter, this);
 
 		camera_->setActive(false);
 	}
 
 	void
-	CameraComponent::on_move_before() noexcept
+	CameraComponent::onMoveBefore() noexcept
 	{
 	}
 
 	void
-	CameraComponent::on_move_after() noexcept
+	CameraComponent::onMoveAfter() noexcept
 	{
-		auto transform = this->get_component<TransformComponent>();
-		camera_->setTransform(transform->get_transform(), transform->get_transform_inverse());
+		auto transform = this->getComponent<TransformComponent>();
+		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
 	}
 
 	void

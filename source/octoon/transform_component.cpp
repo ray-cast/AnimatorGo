@@ -299,21 +299,21 @@ namespace octoon
 	const math::float3&
 	TransformComponent::getLocalRight() const noexcept
 	{
-		update_local_transform();
+		updateLocalTransform();
 		return math::right(local_transform_);
 	}
 
 	const math::float3&
 	TransformComponent::getLocalUp() const noexcept
 	{
-		update_local_transform();
+		updateLocalTransform();
 		return math::up(local_transform_);
 	}
 
 	const math::float3&
 	TransformComponent::getLocalForward() const noexcept
 	{
-		update_local_transform();
+		updateLocalTransform();
 		return math::forward(local_transform_);
 	}
 

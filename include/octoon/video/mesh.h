@@ -29,6 +29,8 @@ namespace octoon
 			math::float3s& getNormalArray() noexcept;
 			const math::float3s& getNormalArray() const noexcept;
 
+			MeshPtr clone() const noexcept;
+
 			void computeVerticeNormals() noexcept;
 
 		private:

@@ -5,16 +5,21 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT Material final
+	namespace video
 	{
-	public:
-		Material() noexcept;
-		~Material() noexcept;
+		class OCTOON_EXPORT Material
+		{
+		public:
+			Material() noexcept;
+			~Material() noexcept;
 
-	private:
-		Material(const Material&) = delete;
-		Material& operator=(const Material&) = delete;
-	};
+			virtual MaterialPtr clone() const noexcept;
+
+		private:
+			Material(const Material&) = delete;
+			Material& operator=(const Material&) = delete;
+		};
+	}
 }
 
 #endif

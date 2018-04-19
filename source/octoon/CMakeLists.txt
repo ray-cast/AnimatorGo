@@ -39,8 +39,8 @@ SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 SET(VIDEO_FEATURES_LIST
     ${HEADER_PATH}/camera_component.h
     ${SOURCE_PATH}/camera_component.cpp
-    ${HEADER_PATH}/renderer_component.h
-    ${SOURCE_PATH}/renderer_component.cpp
+    ${HEADER_PATH}/render_component.h
+    ${SOURCE_PATH}/render_component.cpp
     ${HEADER_PATH}/point_renderer_component.h
     ${SOURCE_PATH}/point_renderer_component.cpp
     ${HEADER_PATH}/line_renderer_component.h

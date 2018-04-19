@@ -5,35 +5,23 @@ namespace octoon
 	namespace video
 	{
 		TextMaterial::TextMaterial() noexcept
-			: charWidth_(12)
-			, charHeight_(12)
-			, lean_(0.0f)
+			: lean_(0.0f)
 			, extrude_(1.0f)
+			, translate_(math::float3::Zero)
+			, mode_(TextShaingMode::PureColor)
 		{
+			colors_[TextColor::FrontColor] = math::float3::One;
+			colors_[TextColor::SideColor] = math::float3::Zero;
 		}
 
-		TextMaterial::TextMaterial(std::uint32_t width, std::uint32_t height, float lean) noexcept
-			: charWidth_(width)
-			, charHeight_(height)
-			, lean_(lean)
+		TextMaterial::TextMaterial(float lean) noexcept
+			: lean_(lean)
 			, extrude_(1.0f)
 		{
 		}
 
 		TextMaterial::~TextMaterial() noexcept
 		{
-		}
-
-		void
-		TextMaterial::setWidth(std::uint32_t width) noexcept
-		{
-			charWidth_ = width;
-		}
-
-		void
-		TextMaterial::setHeight(std::uint32_t height) noexcept
-		{
-			charHeight_ = height;
 		}
 
 		void
@@ -48,16 +36,23 @@ namespace octoon
 			extrude_ = extrude;
 		}
 
-		std::uint32_t
-		TextMaterial::getWidth() const noexcept
+		void
+		TextMaterial::setTextColor(TextColor::Type which, const math::float3& colors) noexcept
 		{
-			return charWidth_;
+			assert(which >= TextColor::BeginRange_ && which <= TextColor::EndRange_);
+			colors_[which] = colors;
 		}
 
-		std::uint32_t
-		TextMaterial::getHeight() const noexcept
+		void
+		TextMaterial::setShaingMode(TextShaingMode mode) noexcept
 		{
-			return charHeight_;
+			mode_ = mode;
+		}
+
+		void
+		TextMaterial::setTranslate(const math::float3& translate) noexcept
+		{
+			translate_ = translate;
 		}
 
 		float
@@ -70,6 +65,38 @@ namespace octoon
 		TextMaterial::getExtrude() const noexcept
 		{
 			return extrude_;
+		}
+
+		TextShaingMode
+		TextMaterial::getShaingMode() const noexcept
+		{
+			return mode_;
+		}
+
+		const math::float3&
+		TextMaterial::getTranslate() const noexcept
+		{
+			return translate_;
+		}
+
+		const math::float3&
+		TextMaterial::getTextColor(TextColor::Type which) const noexcept
+		{
+			assert(which >= TextColor::BeginRange_ && which <= TextColor::EndRange_);
+			return colors_[which];
+		}
+
+		MaterialPtr
+		TextMaterial::clone() const noexcept
+		{
+			auto instance = std::make_shared<TextMaterial>();
+			instance->setShaingMode(this->getShaingMode());
+			instance->setExtrude(this->getExtrude());
+			instance->setLean(this->getLean());
+			instance->setTextColor(TextColor::FrontColor, this->getTextColor(TextColor::FrontColor));
+			instance->setTextColor(TextColor::SideColor, this->getTextColor(TextColor::SideColor));
+
+			return instance;
 		}
 	}
 }

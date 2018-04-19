@@ -2,11 +2,20 @@
 
 namespace octoon
 {
-	Material::Material() noexcept
+	namespace video
 	{
-	}
+		Material::Material() noexcept
+		{
+		}
 
-	Material::~Material() noexcept
-	{
+		Material::~Material() noexcept
+		{
+		}
+
+		MaterialPtr
+		Material::clone() const noexcept
+		{
+			return std::make_shared<Material>();
+		}
 	}
 }

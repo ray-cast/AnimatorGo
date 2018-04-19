@@ -109,7 +109,7 @@ namespace octoon
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		video_feature_ = std::make_shared<VideoFeature>(w, h);
+		video_feature_ = std::make_shared<VideoFeature>(hwnd, w, h, w, h);
 #endif
 
 #if OCTOON_FEATURE_IO_ENABLE
@@ -129,7 +129,7 @@ namespace octoon
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		this->add_feature(video_feature_);
+		this->addFeature(video_feature_);
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE

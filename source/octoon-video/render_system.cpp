@@ -337,10 +337,17 @@ namespace octoon
 
 			param.cmap = XCreateColormap(param.dpy, RootWindow(param.dpy, param.vi->screen), param.vi->visual, AllocNone);
 
-			XSetWindowAttributes swa;
-			swa.border_pixel = 0;
-			swa.colormap = param.cmap;
-			param.wnd = XCreateWindow(param.dpy, RootWindow(param.dpy, param.vi->screen), 0, 0, 1, 1, 0, param.vi->depth, InputOutput, param.vi->visual, CWBorderPixel | CWColormap, &swa);
+			if (hwnd)
+			{
+				XSetWindowAttributes swa;
+				swa.border_pixel = 0;
+				swa.colormap = param.cmap;
+				param.wnd = XCreateWindow(param.dpy, RootWindow(param.dpy, param.vi->screen), 0, 0, 1, 1, 0, param.vi->depth, InputOutput, param.vi->visual, CWBorderPixel | CWColormap, &swa);
+			}
+			else
+			{
+				param.wnd = (Window)wnd;
+			}
 
 			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
 				throw runtime::runtime_error::create("glXMakeCurrent() fail");
@@ -351,7 +358,7 @@ namespace octoon
 			if (::glxewInit() != GLEW_OK)
 				throw runtime::runtime_error::create("glxewInit() fail");
 
-			GLXContext oldCtx = param.ctx;
+			/*GLXContext oldCtx = param.ctx;
 			int FBConfigAttrs[] = { GLX_FBCONFIG_ID, 0, GL_NONE };
 			if (glXQueryContext(param.dpy, oldCtx, GLX_FBCONFIG_ID, &FBConfigAttrs[1]))
 				throw runtime::runtime_error::create("glXQueryContext() fail");
@@ -377,7 +384,7 @@ namespace octoon
 			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
 				throw runtime::runtime_error::create("glXMakeCurrent() fail");
 
-			glXDestroyContext(param.dpy, oldCtx);
+			glXDestroyContext(param.dpy, oldCtx);*/
 		}
 
 		void

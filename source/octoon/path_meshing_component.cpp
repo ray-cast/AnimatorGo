@@ -5,7 +5,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 
-// #include <json/json.h>
+#include <json/json.h>
 
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, Ò»¸öµã£Ûx,y]
@@ -121,12 +121,12 @@ namespace octoon
 	void
 	PathMeshingComponent::updateContour(const std::string& json) noexcept(false)
 	{
-		/*Json::Value root;
+		Json::Value root;
 		Json::Reader reader;
 
 		if (json.empty())
 		{
-			this->getComponent<MeshFilter>()->setMesh(std::make_shared<video::Mesh>());
+			this->setMesh(std::make_shared<video::Mesh>());
 			return;
 		}
 
@@ -230,6 +230,6 @@ namespace octoon
 		contourGroup_->buildMeshes(*mesh);
 
 		this->setMesh(std::move(mesh));
-		this->getComponent<Transform>()->setLocalTranslate(center);*/
+		this->getComponent<TransformComponent>()->setLocalTranslate(center);
 	}
 }

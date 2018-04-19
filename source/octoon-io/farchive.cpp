@@ -1,13 +1,14 @@
 // File: virtual_dirs.h
 // Author: PENGUINLIONG
 #include <fstream>
-#include <filesystem>
 #include <cassert>
 
 #include <octoon/io/farchive.h>
 #include <octoon/io/mstream.h>
 #include <octoon/io/fstream.h>
 
+#ifndef __linux
+#include <filesystem>
 namespace std
 {
 	namespace filesystem
@@ -15,6 +16,7 @@ namespace std
 		using namespace std::experimental::filesystem;
 	}
 }
+#endif
 
 namespace octoon
 {
@@ -38,6 +40,7 @@ namespace octoon
 		std::unique_ptr<stream_buf>
 		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
+#ifndef __linux
 			auto file = std::make_unique<filebuf>();
 			auto file_path = make_path(orl);
 			auto parent = orl.parent();
@@ -61,11 +64,15 @@ namespace octoon
 				return file;
 			else
 				return nullptr;
+#else
+			return nullptr;
+#endif
 		}
 
 		bool
 		farchive::remove(const Orl& orl, ItemType type)
 		{
+#ifndef __linux
 			auto path = make_path(orl);
 			auto status = std::filesystem::status(path).type();
 			if (status == std::filesystem::file_type::not_found) {
@@ -80,11 +87,15 @@ namespace octoon
 				return std::filesystem::remove_all(path);
 			}
 			return false;
+#else
+			return false;
+#endif
 		}
 
 		ItemType
 		farchive::exists(const Orl& orl)
 		{
+#ifndef __linux
 			auto status = std::filesystem::status(make_path(orl));
 			switch (status.type())
 			{
@@ -95,6 +106,9 @@ namespace octoon
 			default:
 				return ItemType::NA;
 			}
+#else
+			return ItemType::NA;
+#endif
 		}
 
 		std::string
@@ -119,4 +133,4 @@ namespace octoon
 			return rv;
 		}
 	}
-} 
+}

@@ -53,9 +53,9 @@ namespace octoon
 			{
 				att[index++] = GLX_RENDER_TYPE;
 				att[index++] = GLX_RGBA_BIT,
-					att[index++] = GLX_X_VISUAL_TYPE;
+				att[index++] = GLX_X_VISUAL_TYPE;
 				att[index++] = GLX_TRUE_COLOR,
-					att[index++] = GLX_RED_SIZE;
+				att[index++] = GLX_RED_SIZE;
 				att[index++] = 8;
 				att[index++] = GLX_GREEN_SIZE;
 				att[index++] = 8;

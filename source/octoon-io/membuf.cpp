@@ -1,4 +1,5 @@
 #include <octoon/io/membuf.h>
+#include <cstring>
 
 namespace octoon
 {

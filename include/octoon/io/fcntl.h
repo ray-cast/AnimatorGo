@@ -17,6 +17,7 @@
 #	include <sys/fcntl.h>
 #	include <unistd.h>
 #	include <dirent.h>
+#	include <strings.h>
 #endif
 
 namespace octoon

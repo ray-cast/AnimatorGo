@@ -12,6 +12,9 @@ namespace octoon
 {
 	namespace model
 	{
+#ifndef MAX_PATH
+#	define MAX_PATH 256
+#endif
 
 #define PMX_VERSION_2_0   2.0
 #define PMX_BONE_INDEX    1 << 0
@@ -80,7 +83,6 @@ namespace octoon
 			std::vector<PmxChar> englishModelName;
 			std::vector<PmxChar> englishCommentName;
 		};
-
 
 		struct PmxBoneWeight
 		{
@@ -324,4 +326,3 @@ namespace octoon
 	}
 }
 #endif // !OCTOON_PMX_H_
-

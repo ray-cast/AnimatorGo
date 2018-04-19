@@ -25,7 +25,7 @@ namespace octoon
 		{
 			assert(_texture == GL_NONE);
 
-			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim(), textureDesc.isMultiSample());
+			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim(), textureDesc.getTexMultisample() > 0);
 			if (target == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture target.");
@@ -138,32 +138,48 @@ namespace octoon
 					else
 						glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-					for (GLsizei mip = mipBase; mip < mipBase + mipLevel; mip++)
+					if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 					{
-						GLsizei w = std::max(width / (1 << mip), 1);
-						GLsizei h = std::max(height / (1 << mip), 1);
-						GLsizei mipSize = w * h * pixelSize;
-						GLsizei layerBase = textureDesc.getLayerBase() + 1;
-						GLsizei layerLevel = textureDesc.getLayerNums();
-
-						for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
+						if (target == GL_TEXTURE_2D_MULTISAMPLE)
+							glTextureStorage2DMultisample(_texture, textureDesc.getTexMultisample(), internalFormat, width, height, GL_FALSE);
+						else
 						{
-							if (target == GL_TEXTURE_2D || target == GL_TEXTURE_2D_MULTISAMPLE)
+							GLsizei layerBase = textureDesc.getLayerBase() + 1;
+							GLsizei layerLevel = textureDesc.getLayerNums();
+
+							for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
+								glTextureStorage3DMultisample(_texture, textureDesc.getTexMultisample(), internalFormat, width, height, layer, GL_FALSE);
+						}
+					}
+					else
+					{
+						for (GLsizei mip = mipBase; mip < mipBase + mipLevel; mip++)
+						{
+							GLsizei w = std::max(width / (1 << mip), 1);
+							GLsizei h = std::max(height / (1 << mip), 1);
+							GLsizei mipSize = w * h * pixelSize;
+							GLsizei layerBase = textureDesc.getLayerBase() + 1;
+							GLsizei layerLevel = textureDesc.getLayerNums();
+
+							for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
 							{
-								glTextureSubImage2D(_texture, mip, 0, 0, w, h, format, type, (char*)stream + offset);
-								offset += mipSize;
-							}
-							else
-							{
-								if (target == GL_TEXTURE_CUBE_MAP || target == GL_TEXTURE_CUBE_MAP_ARRAY)
+								if (target == GL_TEXTURE_2D)
 								{
-									glTextureSubImage3D(_texture, mip, 0, 0, 0, w, h, 6 * layer, format, type, (char*)stream + offset);
-									offset += mipSize * 6;
+									glTextureSubImage2D(_texture, mip, 0, 0, w, h, format, type, (char*)stream + offset);
+									offset += mipSize;
 								}
 								else
 								{
-									glTextureSubImage3D(_texture, mip, 0, 0, 0, w, h, depth * layer, format, type, (char*)stream + offset);
-									offset += mipSize * depth;
+									if (target == GL_TEXTURE_CUBE_MAP || target == GL_TEXTURE_CUBE_MAP_ARRAY)
+									{
+										glTextureSubImage3D(_texture, mip, 0, 0, 0, w, h, 6 * layer, format, type, (char*)stream + offset);
+										offset += mipSize * 6;
+									}
+									else
+									{
+										glTextureSubImage3D(_texture, mip, 0, 0, 0, w, h, depth * layer, format, type, (char*)stream + offset);
+										offset += mipSize * depth;
+									}
 								}
 							}
 						}

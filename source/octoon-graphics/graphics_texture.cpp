@@ -8,7 +8,6 @@ namespace octoon
 
 		GraphicsTextureDesc::GraphicsTextureDesc() noexcept
 			: _size(0, 0, 1)
-			, _multisample(false)
 			, _layerBase(0)
 			, _layer(1)
 			, _mipBase(0)
@@ -23,6 +22,7 @@ namespace octoon
 			, _tiling(GraphicsImageTiling::Optimal)
 			, _data(nullptr)
 			, _dataSize(0)
+			, _samples(0)
 		{
 		}
 
@@ -98,6 +98,12 @@ namespace octoon
 			_textureUsage = flags;
 		}
 
+		void
+		GraphicsTextureDesc::setTexMultisample(std::uint32_t samples) noexcept
+		{
+			_samples = samples;
+		}
+
 		GraphicsFormat
 		GraphicsTextureDesc::getTexFormat() const noexcept
 		{
@@ -120,6 +126,12 @@ namespace octoon
 		GraphicsTextureDesc::getTexTiling() const noexcept
 		{
 			return _tiling;
+		}
+
+		std::uint32_t
+		GraphicsTextureDesc::getTexMultisample() const noexcept
+		{
+			return _samples;
 		}
 
 		void
@@ -175,18 +187,6 @@ namespace octoon
 		GraphicsTextureDesc::getSamplerAnis() const noexcept
 		{
 			return _anis;
-		}
-
-		void
-		GraphicsTextureDesc::setMultisample(bool enable) noexcept
-		{
-			_multisample = enable;
-		}
-
-		bool
-		GraphicsTextureDesc::isMultiSample() const noexcept
-		{
-			return _multisample;
 		}
 
 		void

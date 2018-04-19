@@ -21,7 +21,7 @@ namespace octoon
 		}
 
 		const Rtti*
-		Rtti::get_parent() const noexcept
+		Rtti::getParent() const noexcept
 		{
 			return parent_;
 		}
@@ -33,11 +33,11 @@ namespace octoon
 		}
 
 		bool
-		Rtti::is_derived_from(const Rtti* other) const noexcept
+		Rtti::isDerivedFrom(const Rtti* other) const noexcept
 		{
 			assert(other);
 
-			for (const Rtti* cur = this; cur != 0; cur = cur->get_parent())
+			for (const Rtti* cur = this; cur != 0; cur = cur->getParent())
 			{
 				if (cur == other)
 				{
@@ -49,15 +49,15 @@ namespace octoon
 		}
 
 		bool
-		Rtti::is_derived_from(const Rtti& other) const noexcept
+		Rtti::isDerivedFrom(const Rtti& other) const noexcept
 		{
-			return this->is_derived_from(&other);
+			return this->isDerivedFrom(&other);
 		}
 
 		bool
-		Rtti::is_derived_from(const std::string& name) const noexcept
+		Rtti::isDerivedFrom(const std::string& name) const noexcept
 		{
-			for (const Rtti* cur = this; cur != 0; cur = cur->get_parent())
+			for (const Rtti* cur = this; cur != 0; cur = cur->getParent())
 			{
 				if (cur->name_ == name)
 				{
@@ -69,9 +69,9 @@ namespace octoon
 		}
 
 		bool
-		Rtti::is_derived_from(const char* const name) const noexcept
+		Rtti::isDerivedFrom(const char* const name) const noexcept
 		{
-			for (const Rtti* cur = this; cur != 0; cur = cur->get_parent())
+			for (const Rtti* cur = this; cur != 0; cur = cur->getParent())
 			{
 				if (cur->name_ == name)
 				{

@@ -121,7 +121,7 @@ namespace octoon
 		using double4 = detail::Vector4<double>;
 
 		// array
-		using IntArray = std::vector<int>;
+		using Int1Array = std::vector<int1>;
 		using Int2Array = std::vector<int2>;
 		using Int3Array = std::vector<int3>;
 		using Int4Array = std::vector<int4>;
@@ -132,20 +132,43 @@ namespace octoon
 		using Vector2Array = std::vector<Vector2>;
 		using Vector3Array = std::vector<Vector3>;
 		using Vector4Array = std::vector<Vector4>;
-		using FloatArray = std::vector<float> ;
+		using Float1Array = std::vector<float1>;
 		using Float2Array = std::vector<float2>;
 		using Float3Array = std::vector<float3>;
 		using Float4Array = std::vector<float4>;
-		using DoubleArray = std::vector<double>;
+		using Double1Array = std::vector<double1>;
 		using Double2Array = std::vector<double2>;
 		using Double3Array = std::vector<double3>;
 		using Double4Array = std::vector<double4>;
 		using Float2x2Array = std::vector<float2x2>;
 		using Float3x3Array = std::vector<float3x3>;
 		using Float4x4Array = std::vector<float4x4>;
-		using double2x2Array = std::vector<double2x2>;
-		using double3x3Array = std::vector<double3x3>;
-		using double4x4Array = std::vector<double4x4>;
+		using Double2x2Array = std::vector<double2x2>;
+		using Double3x3Array = std::vector<double3x3>;
+		using Double4x4Array = std::vector<double4x4>;
+
+		using int1s = std::vector<int1>;
+		using int2s = std::vector<int2>;
+		using int3s = std::vector<int3>;
+		using int4s = std::vector<int4>;
+		using uint1s = std::vector<uint1>;
+		using uint2s = std::vector<uint2>;
+		using uint3s = std::vector<uint3>;
+		using uint4s = std::vector<uint4>;
+		using float1s = std::vector<float1>;
+		using float2s = std::vector<float2>;
+		using float3s = std::vector<float3>;
+		using float4s = std::vector<float4>;
+		using double1s = std::vector<double1>;
+		using double2s = std::vector<double2>;
+		using double3s = std::vector<double3>;
+		using double4s = std::vector<double4>;
+		using float2x2s = std::vector<float2x2>;
+		using float3x3s = std::vector<float3x3>;
+		using float4x4s = std::vector<float4x4>;
+		using double2x2s = std::vector<double2x2>;
+		using double3x3s = std::vector<double3x3>;
+		using double4x4s = std::vector<double4x4>;
 	}
 }
 

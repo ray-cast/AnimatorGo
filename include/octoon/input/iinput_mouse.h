@@ -15,22 +15,22 @@ namespace octoon
 			IInputMouse() noexcept = default;
 			virtual ~IInputMouse() = default;
 
-			virtual void lock_mouse() noexcept = 0;
-			virtual void unlock_mouse() noexcept = 0;
-			virtual bool is_locked_mouse() const noexcept = 0;
+			virtual void lockMouse() noexcept = 0;
+			virtual void unlockMouse() noexcept = 0;
+			virtual bool isLockedMouse() const noexcept = 0;
 
-			virtual void show_mouse() noexcept = 0;
-			virtual void hide_mouse() noexcept = 0;
-			virtual bool is_show_mouse() noexcept = 0;
+			virtual void showMouse() noexcept = 0;
+			virtual void hideMouse() noexcept = 0;
+			virtual bool isShowMouse() noexcept = 0;
 
-			virtual float get_axis(InputAxis::Code axis) const noexcept = 0;
+			virtual float getAxis(InputAxis::Code axis) const noexcept = 0;
 
-			virtual void set_position(InputButton::Type x, InputButton::Type y) noexcept = 0;
-			virtual void get_position(InputButton::Type& x, InputButton::Type& y) const noexcept = 0;
+			virtual void setPosition(InputButton::Type x, InputButton::Type y) noexcept = 0;
+			virtual void getPosition(InputButton::Type& x, InputButton::Type& y) const noexcept = 0;
 
-			virtual bool is_button_down(InputButton::Code key) const noexcept = 0;
-			virtual bool is_button_up(InputButton::Code key) const noexcept = 0;
-			virtual bool is_button_pressed(InputButton::Code key) const noexcept = 0;
+			virtual bool isButtonDown(InputButton::Code key) const noexcept = 0;
+			virtual bool isButtonUp(InputButton::Code key) const noexcept = 0;
+			virtual bool isButtonPressed(InputButton::Code key) const noexcept = 0;
 
 			virtual IInputMousePtr clone() const noexcept = 0;
 

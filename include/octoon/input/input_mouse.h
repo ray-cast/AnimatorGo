@@ -14,35 +14,35 @@ namespace octoon
 			DefaultInputMouse() noexcept;
 			virtual ~DefaultInputMouse() noexcept;
 
-			void lock_mouse() noexcept override;
-			void unlock_mouse() noexcept override;
-			bool is_locked_mouse() const noexcept override;
+			void lockMouse() noexcept override;
+			void unlockMouse() noexcept override;
+			bool isLockedMouse() const noexcept override;
 
-			void show_mouse() noexcept override;
-			void hide_mouse() noexcept override;
-			bool is_show_mouse() noexcept override;
+			void showMouse() noexcept override;
+			void hideMouse() noexcept override;
+			bool isShowMouse() noexcept override;
 
-			float get_axis(InputAxis::Code axis) const noexcept override;
+			float getAxis(InputAxis::Code axis) const noexcept override;
 
-			void set_position(InputButton::Type x, InputButton::Type y) noexcept override;
-			void get_position(InputButton::Type& x, InputButton::Type& y) const noexcept override;
+			void setPosition(InputButton::Type x, InputButton::Type y) noexcept override;
+			void getPosition(InputButton::Type& x, InputButton::Type& y) const noexcept override;
 
-			bool is_button_down(InputButton::Code key) const noexcept override;
-			bool is_button_up(InputButton::Code key) const noexcept override;
-			bool is_button_pressed(InputButton::Code key) const noexcept override;
+			bool isButtonDown(InputButton::Code key) const noexcept override;
+			bool isButtonUp(InputButton::Code key) const noexcept override;
+			bool isButtonPressed(InputButton::Code key) const noexcept override;
 
 			IInputMousePtr clone() const noexcept;
 
 		protected:
-			virtual void on_frame_begin() noexcept override;
-			virtual void on_frame_end() noexcept override;
+			virtual void onFrameBegin() noexcept override;
+			virtual void onFrameEnd() noexcept override;
 
-			virtual void on_obtain_capture() noexcept override;
-			virtual void on_release_capture() noexcept override;
+			virtual void onObtainCapture() noexcept override;
+			virtual void onReleaseCapture() noexcept override;
 
-			virtual void on_reset() noexcept override;
+			virtual void onReset() noexcept override;
 
-			virtual void on_input_event(const InputEvent& event) noexcept override;
+			virtual void onInputEvent(const InputEvent& event) noexcept override;
 
 		protected:
 			virtual void onShowMouse() noexcept;

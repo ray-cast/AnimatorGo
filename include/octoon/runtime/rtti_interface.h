@@ -21,39 +21,39 @@ namespace octoon
 			RttiInterface() = default;
 			virtual ~RttiInterface() = default;
 
-			bool is_instance_of(const Rtti* rtti) const noexcept;
-			bool is_instance_of(const Rtti& rtti) const noexcept;
-			bool is_instance_of(const char* const className) const noexcept;
-			bool is_instance_of(const std::string& className) const noexcept;
+			bool isInstanceOf(const Rtti* rtti) const noexcept;
+			bool isInstanceOf(const Rtti& rtti) const noexcept;
+			bool isInstanceOf(const char* const className) const noexcept;
+			bool isInstanceOf(const std::string& className) const noexcept;
 
 			template<typename T>
-			bool is_instance_of() const noexcept
+			bool isInstanceOf() const noexcept
 			{
-				return this->is_instance_of(T::get_rtti());
+				return this->isInstanceOf(T::getRtti());
 			}
 
-			bool is_a(const Rtti* rtti) const noexcept;
-			bool is_a(const Rtti& rtti) const noexcept;
-			bool is_a(const char* const rttiName) const noexcept;
-			bool is_a(const std::string& rttiName) const noexcept;
+			bool isA(const Rtti* rtti) const noexcept;
+			bool isA(const Rtti& rtti) const noexcept;
+			bool isA(const char* const rttiName) const noexcept;
+			bool isA(const std::string& rttiName) const noexcept;
 
 			template<typename T>
-			bool is_a() const noexcept
+			bool isA() const noexcept
 			{
-				return this->is_a(T::get_rtti());
+				return this->isA(T::getRtti());
 			}
 
 			template<typename T>
 			T* upcast() noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return dynamic_cast<T*>(this);
 			}
 
 			template<typename T>
 			T* downcast() noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return dynamic_cast<T*>(this);
 			}
 
@@ -66,14 +66,14 @@ namespace octoon
 			template<typename T>
 			const T* upcast() const noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return dynamic_cast<const T*>(this);
 			}
 
 			template<typename T>
 			const T* downcast() const noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return dynamic_cast<const T*>(this);
 			}
 
@@ -86,42 +86,42 @@ namespace octoon
 			template<typename T>
 			std::shared_ptr<T> upcast_pointer() noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<T>(this->shared_from_this());
 			}
 
 			template<typename T>
 			std::shared_ptr<T> downcast_pointer() noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<T>(this->shared_from_this());
 			}
 
 			template<typename T>
 			std::shared_ptr<T> cast_pointer() noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<T>(this->shared_from_this());
 			}
 
 			template<typename T>
 			std::shared_ptr<const T> upcast_pointer() const noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<const T>(this->shared_from_this());
 			}
 
 			template<typename T>
 			std::shared_ptr<const T> downcast_pointer() const noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<const T>(this->shared_from_this());
 			}
 
 			template<typename T>
 			std::shared_ptr<const T> cast_pointer() const noexcept
 			{
-				assert(this->is_a<T>());
+				assert(this->isA<T>());
 				return std::dynamic_pointer_cast<const T>(this->shared_from_this());
 			}
 		};

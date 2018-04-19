@@ -109,8 +109,7 @@ namespace octoon
 		RenderSystem::render() noexcept
 		{
 #if defined(__WINDOWS__)
-
-			//wglMakeCurrent(glcontext_.hdc, glcontext_.context);
+			wglMakeCurrent(glcontext_.hdc, glcontext_.context);
 #elif defined(__LINUX__)
 			glXMakeCurrent(glcontext_.dpy, glcontext_.wnd, glcontext_.ctx);
 #elif defined(__APPLY__)
@@ -208,6 +207,8 @@ namespace octoon
 					}
 				}
 			}
+
+			SwapBuffers(glcontext_.hdc);
 		}
 
 #if defined(__WINDOWS__)

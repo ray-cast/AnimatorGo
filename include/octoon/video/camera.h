@@ -72,7 +72,6 @@ namespace octoon
 
 			CameraType cameraType_;
 
-			mutable math::float4x4 view_;
 			mutable math::float4x4 viewProject_;
 			mutable math::float4x4 viewProjectInverse_;
 			mutable math::float4x4 project_;

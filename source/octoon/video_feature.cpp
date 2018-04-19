@@ -57,7 +57,7 @@ namespace octoon
 	void
 	VideoFeature::onActivate() except
 	{
-		video::RenderSystem::instance()->setup(framebuffer_w_, framebuffer_h_);
+		video::RenderSystem::instance()->setup(window_, framebuffer_w_, framebuffer_h_);
 	}
 
 	void

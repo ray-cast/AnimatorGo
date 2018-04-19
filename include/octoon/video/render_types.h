@@ -66,6 +66,8 @@ namespace octoon
 		};
 
 		typedef std::uint32_t TextColors;
+
+		typedef void* WindHandle;
 	}
 }
 

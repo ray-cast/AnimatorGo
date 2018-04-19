@@ -45,15 +45,21 @@ namespace octoon
 			this->close();
 		}
 
+		RenderSystem*
+		RenderSystem::instance() noexcept
+		{
+			return runtime::Singleton<RenderSystem>::instance();
+		}
+
 		void
-		RenderSystem::setup(std::uint32_t w, std::uint32_t h) noexcept
+		RenderSystem::setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) noexcept
 		{
 			TextSystem::instance()->setup();
 
 			width_ = w;
 			height_ = h;
 
-			this->setupGLEnvironment(glcontext_);
+			this->setupGLEnvironment(glcontext_, hwnd);
 
 			glGenTextures(1, &colorTexture_);
 			glBindTexture(GL_TEXTURE_2D, colorTexture_);
@@ -116,7 +122,7 @@ namespace octoon
 			CGLSetCurrentContext(glcontext_.ctx);
 #endif
 
-			glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
+			//glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
 
 			glViewport(0, 0, width_, height_);
 
@@ -213,20 +219,28 @@ namespace octoon
 
 #if defined(__WINDOWS__)
 		void
-		RenderSystem::setupGLEnvironment(CreateParam& param) noexcept(false)
+		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false)
 		{
-			WNDCLASSEXA wc;
-			std::memset(&wc, 0, sizeof(wc));
-			wc.cbSize = sizeof(wc);
-			wc.hInstance = param.hinstance = ::GetModuleHandle(NULL);
-			wc.lpfnWndProc = ::DefWindowProc;
-			wc.lpszClassName = "TEXT3DWin32OpenGLWindow";
-			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-			if (!::RegisterClassEx(&wc))
-				throw runtime::runtime_error::create("RegisterClassEx() fail");
+			if (hwnd == nullptr)
+			{
+				WNDCLASSEXA wc;
+				std::memset(&wc, 0, sizeof(wc));
+				wc.cbSize = sizeof(wc);
+				wc.hInstance = param.hinstance = ::GetModuleHandle(NULL);
+				wc.lpfnWndProc = ::DefWindowProc;
+				wc.lpszClassName = "OctoonWin32OpenGLWindow";
+				wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+				if (!::RegisterClassEx(&wc))
+					throw runtime::runtime_error::create("RegisterClassEx() fail");
 
-			DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME;
-			param.hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "OGL", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
+				DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME;
+				param.hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "OGL", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
+			}
+			else
+			{
+				param.hwnd = (HWND)hwnd;
+			}
+
 			if (!param.hwnd)
 				throw runtime::runtime_error::create("CreateWindowEx() fail");
 
@@ -261,7 +275,7 @@ namespace octoon
 			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
 			__wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)::wglGetProcAddress("wglChoosePixelFormatARB");
 
-			::wglMakeCurrent(param.hdc, NULL);
+			/*::wglMakeCurrent(param.hdc, NULL);
 			::wglDeleteContext(param.context);
 
 			const int attribList[] =
@@ -277,7 +291,7 @@ namespace octoon
 			if (!param.context)
 				throw runtime::runtime_error::create("wglMakeCurrent() fail");
 
-			wglMakeCurrent(param.hdc, param.context);
+			wglMakeCurrent(param.hdc, param.context);*/
 		}
 
 		void
@@ -301,7 +315,7 @@ namespace octoon
 		}
 #elif defined(__LINUX__)
 		void
-		RenderSystem::setupGLEnvironment(CreateParam& param) noexcept(false)
+		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false)
 		{
 			param.dpy = XOpenDisplay(NULL);
 
@@ -378,7 +392,7 @@ namespace octoon
 		}
 #elif defined(__APPLE__)
 		void
-		RenderSystem::setupGLEnvironment(CreateParam& param) noexcept
+		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept
 		{
 			param.octx = CGLGetCurrentContext();
 			if (!param.octx)

@@ -14,13 +14,15 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT RenderSystem final : public runtime::Singleton<RenderSystem>
+		class OCTOON_EXPORT RenderSystem final
 		{
 		public:
 			RenderSystem() noexcept;
 			~RenderSystem() noexcept;
 
-			void setup(std::uint32_t w, std::uint32_t h) noexcept;
+			static RenderSystem* instance() noexcept;
+
+			void setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) noexcept;
 			void close() noexcept;
 
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
@@ -79,7 +81,7 @@ namespace octoon
 #endif
 
 		private:
-			void setupGLEnvironment(CreateParam& param) noexcept(false);
+			void setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false);
 			void closeGLEnvironment(const CreateParam& param) noexcept;
 
 		private:

@@ -11,7 +11,7 @@ namespace octoon
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
-			, znear_(0.0f)
+			, znear_(0.01f)
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
 			, clearColor_(math::float4(0.0f, 0.0f, 0.0f, 1.0f))
@@ -224,7 +224,7 @@ namespace octoon
 		const math::float4&
 		Camera::getPixelViewport() const noexcept
 		{
-			std::uint32_t width = 1376, height = 768;
+			std::uint32_t width = 1920, height = 1080;
 			RenderSystem::instance()->getFramebufferSize(width, height);
 
 			math::float4 result;
@@ -271,7 +271,7 @@ namespace octoon
 		void
 		Camera::_updatePerspective() const noexcept
 		{
-			std::uint32_t width, height;
+			std::uint32_t width = 1920, height = 1080;
 			RenderSystem::instance()->getFramebufferSize(width, height);
 
 			float ratio = (float)width / height;

@@ -1,104 +1,104 @@
-#include <text3d/text_meshing.h>
-#include <text3d/entity_object.h>
-#include <text3d/transform.h>
-#include <text3d/mesh_renderer.h>
-#include <text3d/renderer/mesh.h>
-#include <text3d/renderer/text_file.h>
-#include <text3d/renderer/text_contour_group.h>
-#include <text3d/common/except.h>
+#include <octoon/text_meshing_component.h>
+#include <octoon/game_object.h>
+#include <octoon/transform_component.h>
+#include <octoon/mesh_renderer_component.h>
+#include <octoon/video/mesh.h>
+#include <octoon/video/text_file.h>
+#include <octoon/video/text_contour_group.h>
+#include <octoon/runtime/except.h>
 
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
 
-namespace text3d
+namespace octoon
 {
-	Text3dImplementSubClass(TextMeshing, MeshFilter, "TextMeshing")
+	OctoonImplementSubClass(TextMeshingComponent, MeshFilterComponent, "TextMeshingComponent")
 
-	TextMeshing::TextMeshing() noexcept
+	TextMeshingComponent::TextMeshingComponent() noexcept
 		: font_(nullptr)
 		, bezierSteps_(6)
 	{
 	}
 
-	TextMeshing::~TextMeshing() noexcept
+	TextMeshingComponent::~TextMeshingComponent() noexcept
 	{
 	}
 
 	void
-	TextMeshing::setFont(render::TextFilePtr&& font) noexcept
+	TextMeshingComponent::setFont(video::TextFilePtr&& font) noexcept
 	{
 		font_ = std::move(font);
 	}
 
 	void
-	TextMeshing::setFont(const render::TextFilePtr& font) noexcept
+	TextMeshingComponent::setFont(const video::TextFilePtr& font) noexcept
 	{
 		font_ = font;
 	}
 
-	const render::TextFilePtr&
-	TextMeshing::getFont() const noexcept
+	const video::TextFilePtr&
+	TextMeshingComponent::getFont() const noexcept
 	{
 		return font_;
 	}
 
 	void
-	TextMeshing::setText(std::wstring&& text) noexcept
+	TextMeshingComponent::setText(std::wstring&& text) noexcept
 	{
 		string_ = std::move(text);
 
-		if (this->getActive() && this->getEntityObject()->getActive())
+		if (this->getActive() && this->getGameObject()->getActive())
 			this->buildContours(string_);
 	}
 
 	void
-	TextMeshing::setText(const std::wstring& text) noexcept
+	TextMeshingComponent::setText(const std::wstring& text) noexcept
 	{
 		string_ = text;
 
-		if (this->getActive() && this->getEntityObject()->getActive())
+		if (this->getActive() && this->getGameObject()->getActive())
 			this->buildContours(string_);
 	}
 
 	const std::wstring&
-	TextMeshing::getText() const noexcept
+	TextMeshingComponent::getText() const noexcept
 	{
 		return string_;
 	}
 
 	void
-	TextMeshing::setBezierSteps(std::uint16_t bezierSteps) noexcept
+	TextMeshingComponent::setBezierSteps(std::uint16_t bezierSteps) noexcept
 	{
 		bezierSteps_ = bezierSteps;
 	}
 
 	std::uint16_t
-	TextMeshing::getBezierSteps() const noexcept
+	TextMeshingComponent::getBezierSteps() const noexcept
 	{
 		return bezierSteps_;
 	}
 
 	void
-	TextMeshing::onActivate() noexcept(false)
+	TextMeshingComponent::onActivate() noexcept(false)
 	{
 		if (!string_.empty())
 			this->buildContours(string_);
 	}
 
 	void
-	TextMeshing::onDeactivate() noexcept
+	TextMeshingComponent::onDeactivate() noexcept
 	{
-		this->getEntityObject()->cleanupChildren();
+		this->getGameObject()->cleanupChildren();
 	}
 
 	void
-	TextMeshing::buildContours(const std::wstring& string) noexcept(false)
+	TextMeshingComponent::buildContours(const std::wstring& string) noexcept(false)
 	{
 		if (!font_)
-			throw common::null_reference::create("please call setFont() before process()");
+			throw runtime::null_reference::create("please call setFont() before process()");
 
 		if (::FT_Set_Pixel_Sizes((FT_Face)(font_->getFont()), 12, 12))
-			throw common::runtime_error::create("FT_Set_Char_Size() failed (there is probably a problem with your font size", 3);
+			throw runtime::runtime_error::create("FT_Set_Char_Size() failed (there is probably a problem with your font size", 3);
 
 		FT_Face ftface = (FT_Face)font_->getFont();
 
@@ -108,14 +108,14 @@ namespace text3d
 		{
 			FT_UInt index = FT_Get_Char_Index(ftface, ch);
 			if (::FT_Load_Glyph(ftface, index, FT_LOAD_DEFAULT))
-				throw common::runtime_error::create("FT_Load_Glyph failed.");
+				throw runtime::runtime_error::create("FT_Load_Glyph failed.");
 
 			FT_Glyph glyph;
 			if (::FT_Get_Glyph(ftface->glyph, &glyph))
-				throw common::runtime_error::create("FT_Get_Glyph failed.");
+				throw runtime::runtime_error::create("FT_Get_Glyph failed.");
 
 			if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-				throw common::runtime_error::create("Invalid Glyph Format.");
+				throw runtime::runtime_error::create("Invalid Glyph Format.");
 
 			this->addContours(ftface->glyph, offset, bezierSteps_);
 
@@ -124,9 +124,9 @@ namespace text3d
 	}
 
 	void
-	TextMeshing::addContours(const void* glyph_, float offset, std::uint16_t bezierSteps) noexcept
+	TextMeshingComponent::addContours(const void* glyph_, float offset, std::uint16_t bezierSteps) noexcept
 	{
-		auto addPoints = [](render::TextContour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
+		auto addPoints = [](video::TextContour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
 		{
 			math::float3 prev;
 			math::float3 cur(contour[(n - 1) % n].x / 64.0f, contour[(n - 1) % n].y / 64.0f, 0.0);
@@ -188,23 +188,23 @@ namespace text3d
 
 		auto glyph = (FT_GlyphSlot)glyph_;
 
-		auto object = std::make_shared<EntityObject>();
-		object->addComponent<MeshFilter>(std::make_shared<render::Mesh>());
-		object->getComponent<Transform>()->setTranslate(math::float3(offset + glyph->bitmap_left, 0.0, 0.0));
+		auto object = std::make_shared<GameObject>();
+		object->addComponent<MeshFilterComponent>(std::make_shared<video::Mesh>());
+		object->getComponent<TransformComponent>()->setTranslate(math::float3(offset + glyph->bitmap_left, 0.0, 0.0));
 
-		auto renderer = this->getComponent<Renderer>();
+		auto renderer = this->getComponent<RenderComponent>();
 		if (renderer)
 		{
-			auto copy = renderer->clone()->downcast_pointer<Renderer>();
+			auto copy = renderer->clone()->downcast_pointer<RenderComponent>();
 			copy->setMaterial(renderer->getMaterial());
 			object->addComponent(copy);
 		}
 
-		render::TextContours contours(glyph->outline.n_contours);
+		video::TextContours contours(glyph->outline.n_contours);
 
 		for (std::size_t startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
 		{
-			auto contour = std::make_unique<render::TextContour>();
+			auto contour = std::make_unique<video::TextContour>();
 
 			addPoints(*contour, &glyph->outline.points[startIndex], &glyph->outline.tags[startIndex], (glyph->outline.contours[i] - startIndex) + 1, bezierSteps);
 
@@ -213,17 +213,17 @@ namespace text3d
 			contours[i] = std::move(contour);
 		}
 
-		auto group = std::make_shared<render::TextContourGroup>();
+		auto group = std::make_shared<video::TextContourGroup>();
 		group->setContours(std::move(contours));
-		group->buildMeshes(*object->getComponent<MeshFilter>()->getMesh());
+		group->buildMeshes(*object->getComponent<MeshFilterComponent>()->getMesh());
 
-		this->getEntityObject()->addChild(std::move(object));
+		this->getGameObject()->addChild(std::move(object));
 	}
 
-	EntityComponentPtr
-	TextMeshing::clone() const noexcept
+	GameComponentPtr
+	TextMeshingComponent::clone() const noexcept
 	{
-		auto instance = std::make_shared<TextMeshing>();
+		auto instance = std::make_shared<TextMeshingComponent>();
 		instance->setFont(this->getFont());
 		instance->setText(this->getText());
 		instance->setBezierSteps(this->getBezierSteps());

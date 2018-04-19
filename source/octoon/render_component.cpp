@@ -1,5 +1,4 @@
 #include <octoon/render_component.h>
-#include <octoon/runtime/except.h>
 
 namespace octoon
 {

@@ -113,6 +113,21 @@ namespace octoon
 				: exception(what_arg, code)
 			{}
 		};
+
+		class null_reference : public exception
+		{
+		public:
+			static null_reference create(const std::string& what_arg, const error_code& code = error_code::none)
+			{
+				std::string w = exception::name("null_reference", code) + what_arg;
+				return null_reference(w, code);
+			}
+
+		private:
+			null_reference(const std::string& what_arg, const error_code& code)
+				: exception(what_arg, code)
+			{}
+		};
 	}
 }
 

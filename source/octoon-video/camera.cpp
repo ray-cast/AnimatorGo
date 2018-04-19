@@ -1,4 +1,5 @@
 #include <octoon/video/camera.h>
+#include <octoon/video/render_system.h>
 
 namespace octoon
 {
@@ -224,23 +225,16 @@ namespace octoon
 		Camera::getPixelViewport() const noexcept
 		{
 			std::uint32_t width = 1376, height = 768;
-
-			/*if (_pipelineFramebuffer->getFramebuffer())
-			{
-				width = _pipelineFramebuffer->getFramebuffer()->getGraphicsFramebufferDesc().getWidth();
-				height = _pipelineFramebuffer->getFramebuffer()->getGraphicsFramebufferDesc().getHeight();
-			}
-			else
-			{
-				RenderSystem::instance()->getFramebufferSize(width, height);
-			}*/
+			RenderSystem::instance()->getFramebufferSize(width, height);
 
 			math::float4 result;
 			result.x = viewport_.x * width;
 			result.y = viewport_.y * height;
 			result.z = viewport_.z * width;
 			result.w = viewport_.w * height;
-			return result;
+			screen_ = result;
+
+			return screen_;
 		}
 
 		void
@@ -262,28 +256,25 @@ namespace octoon
 		void
 		Camera::_updateOrtho() const noexcept
 		{
-			project_.make_ortho_lh(ortho_.x, ortho_.y, ortho_.z, ortho_.w, znear_, zfar_);
+			std::uint32_t width = 1920, height = 1080;
+			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			auto left = width * ortho_.x;
+			auto right = width * ortho_.y;
+			auto bottom = height * ortho_.z;
+			auto top = height * ortho_.w;
+
+			project_.make_ortho_lh(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
 		Camera::_updatePerspective() const noexcept
 		{
-			float ratio = 1.0;
+			std::uint32_t width, height;
+			RenderSystem::instance()->getFramebufferSize(width, height);
 
-			/*std::uint32_t width, height;
-
-			if (_pipelineFramebuffer->getFramebuffer())
-			{
-				width = _pipelineFramebuffer->getFramebuffer()->getGraphicsFramebufferDesc().getWidth();
-				height = _pipelineFramebuffer->getFramebuffer()->getGraphicsFramebufferDesc().getHeight();
-			}
-			else
-			{
-				RenderSystem::instance()->getFramebufferSize(width, height);
-			}
-
-			ratio = (float)width / height;*/
+			float ratio = (float)width / height;
 
 			project_.make_perspective_off_center_rh(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);

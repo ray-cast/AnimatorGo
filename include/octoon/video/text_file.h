@@ -5,6 +5,8 @@
 
 namespace octoon
 {
+	class TextMeshingComponent;
+
 	namespace video
 	{
 		class OCTOON_EXPORT TextFile final
@@ -22,7 +24,8 @@ namespace octoon
 			const std::string& getFontPath() const noexcept;
 
 		private:
-			friend class FontTextMeshing;
+			friend class TextMeshing;
+			friend  TextMeshingComponent;
 			void* getFont() const noexcept;
 
 		private:

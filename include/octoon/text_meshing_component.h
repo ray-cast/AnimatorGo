@@ -1,21 +1,21 @@
-#ifndef TEXT3D_TEXT_MESHING_H_
-#define TEXT3D_TEXT_MESHING_H_
+#ifndef OCTOON_TEXT_MESHING_COMPONENT_H_
+#define OCTOON_TEXT_MESHING_COMPONENT_H_
 
-#include <text3d/mesh_filter.h>
-#include <text3d/renderer/render_types.h>
+#include <octoon/mesh_filter_component.h>
+#include <octoon/video/render_types.h>
 
-namespace text3d
+namespace octoon
 {
-	class TEXT3D_EXPORT TextMeshing final : public MeshFilter
+	class OCTOON_EXPORT TextMeshingComponent final : public MeshFilterComponent
 	{
-		Text3dDeclareSubClass(TextMeshing, MeshFilter)
+		OctoonDeclareSubClass(TextMeshingComponent, MeshFilterComponent)
 	public:
-		TextMeshing() noexcept;
-		virtual ~TextMeshing() noexcept;
+		TextMeshingComponent() noexcept;
+		virtual ~TextMeshingComponent() noexcept;
 
-		void setFont(render::TextFilePtr&& font) noexcept;
-		void setFont(const render::TextFilePtr& font) noexcept;
-		const render::TextFilePtr& getFont() const noexcept;
+		void setFont(video::TextFilePtr&& font) noexcept;
+		void setFont(const video::TextFilePtr& font) noexcept;
+		const video::TextFilePtr& getFont() const noexcept;
 
 		void setText(std::wstring&& font) noexcept;
 		void setText(const std::wstring& font) noexcept;
@@ -24,7 +24,7 @@ namespace text3d
 		void setBezierSteps(std::uint16_t bezierSteps) noexcept;
 		std::uint16_t getBezierSteps() const noexcept;
 
-		virtual EntityComponentPtr clone() const noexcept override;
+		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
 		virtual void onActivate() noexcept(false);
@@ -35,14 +35,14 @@ namespace text3d
 		void addContours(const void* glyph, float offset, std::uint16_t bezierSteps) noexcept;
 
 	private:
-		TextMeshing(const TextMeshing&) = delete;
-		TextMeshing& operator=(const TextMeshing&) = delete;
+		TextMeshingComponent(const TextMeshingComponent&) = delete;
+		TextMeshingComponent& operator=(const TextMeshingComponent&) = delete;
 
 	private:
 		std::wstring string_;
 		std::uint16_t bezierSteps_;
 
-		render::TextFilePtr font_;
+		video::TextFilePtr font_;
 	};
 }
 

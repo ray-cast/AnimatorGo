@@ -19,6 +19,8 @@ namespace octoon
 			void setNormalArray(const math::float3s& array) noexcept;
 			void setColorArray(math::float3s&& array) noexcept;
 			void setColorArray(const math::float3s& array) noexcept;
+			void setIndicesArray(math::uint32s&& array) noexcept;
+			void setIndicesArray(const math::uint32s& array) noexcept;
 
 			math::float3s& getVertexArray() noexcept;
 			const math::float3s& getVertexArray() const noexcept;
@@ -28,6 +30,9 @@ namespace octoon
 
 			math::float3s& getNormalArray() noexcept;
 			const math::float3s& getNormalArray() const noexcept;
+
+			math::uint32s& getIndicesArray() noexcept;
+			const math::uint32s& getIndicesArray() const noexcept;
 
 			MeshPtr clone() const noexcept;
 
@@ -41,6 +46,7 @@ namespace octoon
 			math::float3s vertices_;
 			math::float3s normals_;
 			math::float3s colors_;
+			math::uint32s indices_;
 		};
 	}
 }

@@ -48,6 +48,18 @@ namespace octoon
 			colors_ = array;
 		}
 
+		void
+		Mesh::setIndicesArray(math::uint32s&& array) noexcept
+		{
+			indices_ = std::move(array);
+		}
+
+		void
+		Mesh::setIndicesArray(const math::uint32s& array) noexcept
+		{
+			indices_ = array;
+		}
+
 		math::float3s&
 		Mesh::getVertexArray() noexcept
 		{
@@ -82,6 +94,18 @@ namespace octoon
 		Mesh::getColorArray() const noexcept
 		{
 			return colors_;
+		}
+
+		math::uint32s&
+		Mesh::getIndicesArray() noexcept
+		{
+			return indices_;
+		}
+
+		const math::uint32s&
+		Mesh::getIndicesArray() const noexcept
+		{
+			return indices_;
 		}
 
 		MeshPtr

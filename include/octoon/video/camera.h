@@ -68,6 +68,7 @@ namespace octoon
 			math::float4 ortho_;
 			math::float4 clearColor_;
 			math::float4 viewport_;
+			mutable math::float4 screen_;
 
 			CameraType cameraType_;
 

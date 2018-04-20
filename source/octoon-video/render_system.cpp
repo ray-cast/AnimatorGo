@@ -230,27 +230,30 @@ namespace octoon
 					default:
 						break;
 					}
-				}
-			}
 
-			if (winhandle_)
-			{
+					if (camera->getCameraOrder() == CameraOrder::Main)
+					{
+						if (winhandle_)
+						{
 #if defined(__linux)
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+							glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
 #else
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
+							glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
 #endif
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-			}
+							glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+							glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+						}
 
 #if defined(__WINDOWS__)
-			SwapBuffers(glcontext_.hdc);
+						::SwapBuffers(glcontext_.hdc);
 #elif defined(__LINUX__)
-			glXSwapBuffers(glcontext_.dpy, glcontext_.wnd);
+						::glXSwapBuffers(glcontext_.dpy, glcontext_.wnd);
 #elif defined(__APPLY__)
-#error 1
+#	error "Cannot supported yet"
 #endif
+					}
+				}
+			}
 		}
 
 #if defined(__WINDOWS__)

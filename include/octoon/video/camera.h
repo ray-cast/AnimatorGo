@@ -27,7 +27,10 @@ namespace octoon
 			float getFar() const noexcept;
 			float getRatio() const noexcept;
 
+			void setCameraOrder(CameraOrder order) noexcept;
 			void setCameraType(CameraType type) noexcept;
+
+			CameraOrder getCameraOrder() const noexcept;
 			CameraType getCameraType() const noexcept;
 
 			math::float3 worldToScreen(const math::float3& pos) const noexcept;
@@ -70,6 +73,7 @@ namespace octoon
 			math::float4 viewport_;
 			mutable math::float4 screen_;
 
+			CameraOrder cameraOrder_;
 			CameraType cameraType_;
 
 			mutable math::float4x4 viewProject_;

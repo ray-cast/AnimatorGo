@@ -29,6 +29,13 @@ namespace octoon
 		typedef std::vector<Camera*> CameraRaws;
 		typedef std::vector<RenderObject*> RenderObjectRaws;
 
+		enum class CameraOrder
+		{
+			Custom,
+			Main,
+			UI
+		};
+
 		enum class CameraType
 		{
 			Ortho,

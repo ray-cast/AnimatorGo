@@ -26,7 +26,10 @@ namespace octoon
 		float getFar() const noexcept;
 		float getRatio() const noexcept;
 
+		void setCameraOrder(video::CameraOrder order) noexcept;
 		void setCameraType(video::CameraType type) noexcept;
+
+		video::CameraOrder getCameraOrder() const noexcept;
 		video::CameraType getCameraType() const noexcept;
 
 		math::float3 worldToScreen(const math::float3& pos) const noexcept;

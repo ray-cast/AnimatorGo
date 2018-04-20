@@ -15,6 +15,7 @@ namespace octoon
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
 			, clearColor_(math::float4(0.0f, 0.0f, 0.0f, 1.0f))
+			, cameraOrder_(CameraOrder::Custom)
 			, cameraType_(CameraType::Perspective)
 			, needUpdateViewProject_(true)
 			, project_(math::float4x4::One)
@@ -238,6 +239,12 @@ namespace octoon
 		}
 
 		void
+		Camera::setCameraOrder(CameraOrder order) noexcept
+		{
+			cameraOrder_ = order;
+		}
+
+		void
 		Camera::setCameraType(CameraType type) noexcept
 		{
 			if (cameraType_ != type)
@@ -245,6 +252,12 @@ namespace octoon
 				needUpdateViewProject_= true;
 				cameraType_ = type;
 			}
+		}
+
+		CameraOrder
+		Camera::getCameraOrder() const noexcept
+		{
+			return cameraOrder_;
 		}
 
 		CameraType

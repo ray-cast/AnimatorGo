@@ -83,9 +83,21 @@ namespace octoon
 	}
 
 	void
+	CameraComponent::setCameraOrder(video::CameraOrder order) noexcept
+	{
+		camera_->setCameraOrder(order);
+	}
+
+	void
 	CameraComponent::setCameraType(video::CameraType type) noexcept
 	{
 		camera_->setCameraType(type);
+	}
+
+	video::CameraOrder
+	CameraComponent::getCameraOrder() const noexcept
+	{
+		return camera_->getCameraOrder();
 	}
 
 	video::CameraType

@@ -34,10 +34,13 @@ namespace octoon
 			: width_(0)
 			, height_(0)
 			, fbo_(0)
-			, colorTexture_(0)
 			, fboMSAA_(0)
+			, colorTexture_(0)
 			, colorTextureMSAA_(0)
+			, depthTexture_(0)
+			, depthTextureMSAA_(0)
 		{
+			memset(&glcontext_, 0, sizeof(glcontext_));
 		}
 
 		RenderSystem::~RenderSystem() noexcept
@@ -58,6 +61,7 @@ namespace octoon
 
 			width_ = w;
 			height_ = h;
+			winhandle_ = hwnd;
 
 			this->setupGLEnvironment(glcontext_, hwnd);
 
@@ -66,6 +70,21 @@ namespace octoon
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
+			glGenTextures(1, &depthTexture_);
+			glBindTexture(GL_TEXTURE_2D, depthTexture_);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glGenFramebuffers(1, &fbo_);
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture_, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture_, 0);
+
+			assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#if !defined(__linux)
 			glGenTextures(1, &colorTextureMSAA_);
 			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorTextureMSAA_);
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, w, h, GL_TRUE);
@@ -76,19 +95,15 @@ namespace octoon
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, w, h, GL_TRUE);
 			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-			glGenFramebuffers(1, &fbo_);
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture_, 0);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 			glGenFramebuffers(1, &fboMSAA_);
 			glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorTextureMSAA_, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, depthTextureMSAA_, 0);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-			assert(status == GL_FRAMEBUFFER_COMPLETE);
+			assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
 		}
 
 		void
@@ -122,7 +137,11 @@ namespace octoon
 			CGLSetCurrentContext(glcontext_.ctx);
 #endif
 
-			//glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
+#if defined(__linux)
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+#else
+			glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
+#endif
 
 			glViewport(0, 0, width_, height_);
 
@@ -214,7 +233,13 @@ namespace octoon
 				}
 			}
 
+#if defined(__WINDOWS__)
 			SwapBuffers(glcontext_.hdc);
+#elif defined(__LINUX__)
+			glXSwapBuffers(glcontext_.dpy, glcontext_.wnd);
+#elif defined(__APPLY__)
+#error 1
+#endif
 		}
 
 #if defined(__WINDOWS__)
@@ -318,55 +343,56 @@ namespace octoon
 		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false)
 		{
 			param.dpy = XOpenDisplay(NULL);
-
 			if (!param.dpy)
-				throw runtime::runtime_error::create("XOpenDisplay() fail");
+				throw common::runtime_error::create("XOpenDisplay() fail");
 
 			int erb, evb;
 			if (!glXQueryExtension(param.dpy, &erb, &evb))
-				throw runtime::runtime_error::create("glXQueryExtension() fail");
+				throw common::runtime_error::create("glXQueryExtension() fail");
 
-			int attrib[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GL_NONE };
+			int attrib[] = { GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, GL_NONE };
 			param.vi = glXChooseVisual(param.dpy, DefaultScreen(param.dpy), attrib);
 			if (!param.vi)
-				throw runtime::runtime_error::create("glXChooseVisual() fail");
+				throw common::runtime_error::create("glXChooseVisual() fail");
 
 			param.ctx = glXCreateContext(param.dpy, param.vi, GL_NONE, true);
 			if (!param.ctx)
-				throw runtime::runtime_error::create("glXCreateContext() fail");
+				throw common::runtime_error::create("glXCreateContext() fail");
 
 			param.cmap = XCreateColormap(param.dpy, RootWindow(param.dpy, param.vi->screen), param.vi->visual, AllocNone);
 
-			if (hwnd)
+			if (!hwnd)
 			{
 				XSetWindowAttributes swa;
 				swa.border_pixel = 0;
 				swa.colormap = param.cmap;
 				param.wnd = XCreateWindow(param.dpy, RootWindow(param.dpy, param.vi->screen), 0, 0, 1, 1, 0, param.vi->depth, InputOutput, param.vi->visual, CWBorderPixel | CWColormap, &swa);
+
+				XMapWindow(param.dpy, param.wnd);
 			}
 			else
 			{
-				param.wnd = (Window)wnd;
+				param.wnd = (Window)hwnd;
 			}
 
 			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
-				throw runtime::runtime_error::create("glXMakeCurrent() fail");
+				throw common::runtime_error::create("glXMakeCurrent() fail");
 
 			if (::glewInit() != GLEW_OK)
-				throw runtime::runtime_error::create("glewInit() fail");
+				throw common::runtime_error::create("glewInit() fail");
 
 			if (::glxewInit() != GLEW_OK)
-				throw runtime::runtime_error::create("glxewInit() fail");
+				throw common::runtime_error::create("glxewInit() fail");
 
 			/*GLXContext oldCtx = param.ctx;
 			int FBConfigAttrs[] = { GLX_FBCONFIG_ID, 0, GL_NONE };
 			if (glXQueryContext(param.dpy, oldCtx, GLX_FBCONFIG_ID, &FBConfigAttrs[1]))
-				throw runtime::runtime_error::create("glXQueryContext() fail");
+			throw common::runtime_error::create("glXQueryContext() fail");
 
 			int nelems = 0;
 			param.config = glXChooseFBConfig(param.dpy, param.vi->screen, FBConfigAttrs, &nelems);
 			if (nelems < 1)
-				throw runtime::runtime_error::create("glXChooseFBConfig() fail");
+			throw common::runtime_error::create("glXChooseFBConfig() fail");
 
 			int contextAttrs[20];
 			contextAttrs[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
@@ -379,10 +405,10 @@ namespace octoon
 
 			param.ctx = glXCreateContextAttribsARB(param.dpy, *param.config, 0, true, contextAttrs);
 			if (!param.ctx)
-				throw runtime::runtime_error::create("glXCreateContextAttribsARB() fail");
+			throw common::runtime_error::create("glXCreateContextAttribsARB() fail");
 
 			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
-				throw runtime::runtime_error::create("glXMakeCurrent() fail");
+			throw common::runtime_error::create("glXMakeCurrent() fail");
 
 			glXDestroyContext(param.dpy, oldCtx);*/
 		}

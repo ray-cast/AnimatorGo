@@ -86,6 +86,8 @@ namespace octoon
 
 		private:
 			CreateParam glcontext_;
+
+			WindHandle winhandle_;
 			std::uint32_t width_, height_;
 
 			math::float3s vertices_;
@@ -93,6 +95,7 @@ namespace octoon
 
 			std::uint32_t fbo_;
 			std::uint32_t colorTexture_;
+			std::uint32_t depthTexture_;
 
 			std::uint32_t fboMSAA_;
 			std::uint32_t colorTextureMSAA_;

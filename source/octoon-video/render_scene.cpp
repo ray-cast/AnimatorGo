@@ -5,6 +5,8 @@ namespace octoon
 {
 	namespace video
 	{
+		OctoonImplementSingleton(RenderScene)
+
 		RenderScene::RenderScene() noexcept
 		{
 		}

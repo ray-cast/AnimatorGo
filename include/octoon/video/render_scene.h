@@ -8,8 +8,9 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT RenderScene final : public runtime::Singleton<RenderScene>
+		class OCTOON_EXPORT RenderScene final
 		{
+			OctoonDeclareSingleton(RenderScene)
 		public:
 			RenderScene() noexcept;
 			~RenderScene() noexcept;
@@ -21,6 +22,10 @@ namespace octoon
 			void addRenderObject(RenderObject* object) noexcept;
 			void removeRenderObject(RenderObject* object) noexcept;
 			const RenderObjectRaws& getRenderObjects() const noexcept;
+
+		private:
+			RenderScene(const RenderScene&) = delete;
+			RenderScene& operator=(const RenderScene&) = delete;
 
 		private:
 			CameraRaws cameras_;

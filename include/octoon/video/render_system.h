@@ -16,11 +16,10 @@ namespace octoon
 	{
 		class OCTOON_EXPORT RenderSystem final
 		{
+			OctoonDeclareSingleton(RenderSystem)
 		public:
 			RenderSystem() noexcept;
 			~RenderSystem() noexcept;
-
-			static RenderSystem* instance() noexcept;
 
 			void setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) noexcept;
 			void close() noexcept;
@@ -83,6 +82,10 @@ namespace octoon
 		private:
 			void setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false);
 			void closeGLEnvironment(const CreateParam& param) noexcept;
+
+		private:
+			RenderSystem(const RenderSystem&) = delete;
+			RenderSystem& operator=(const RenderSystem&) = delete;
 
 		private:
 			CreateParam glcontext_;

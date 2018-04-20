@@ -33,4 +33,15 @@ namespace octoon
 	}
 }
 
+#define OctoonDeclareSingleton(type) \
+public:\
+    static type* instance();\
+private:
+
+#define OctoonImplementSingleton(type) \
+type* type::instance() \
+{\
+    return runtime::Singleton<type>::instance();\
+}
+
 #endif

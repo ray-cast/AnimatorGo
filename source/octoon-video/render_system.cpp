@@ -30,6 +30,8 @@ namespace octoon
 {
 	namespace video
 	{
+		OctoonImplementSingleton(RenderSystem)
+
 		RenderSystem::RenderSystem() noexcept
 			: width_(0)
 			, height_(0)
@@ -46,12 +48,6 @@ namespace octoon
 		RenderSystem::~RenderSystem() noexcept
 		{
 			this->close();
-		}
-
-		RenderSystem*
-		RenderSystem::instance() noexcept
-		{
-			return runtime::Singleton<RenderSystem>::instance();
 		}
 
 		void

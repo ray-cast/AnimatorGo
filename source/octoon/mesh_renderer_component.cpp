@@ -35,7 +35,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::MoveAfter, this);
+		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
 		auto transform = this->getComponent<TransformComponent>();
 		auto meshFilter = this->getComponent<MeshFilterComponent>();
@@ -51,7 +51,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::MoveAfter, this);
+		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		if (geometry_)
 			geometry_->setActive(false);

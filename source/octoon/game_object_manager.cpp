@@ -46,6 +46,7 @@ namespace octoon
 	{
 		if (active)
 		{
+			assert(std::find(activeActors_.begin(), activeActors_.end(), entity) == activeActors_.end());
 			activeActors_.push_back(entity);
 		}
 		else

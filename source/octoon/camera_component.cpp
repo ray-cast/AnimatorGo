@@ -197,7 +197,7 @@ namespace octoon
 	void
 	CameraComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::MoveAfter, this);
+		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
 		auto transform = this->getComponent<TransformComponent>();
 		camera_->setActive(true);
@@ -207,7 +207,7 @@ namespace octoon
 	void
 	CameraComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::MoveAfter, this);
+		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		camera_->setActive(false);
 	}

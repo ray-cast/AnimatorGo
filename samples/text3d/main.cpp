@@ -1,11 +1,11 @@
 #include <octoon/octoon.h>
 
-#include <string>
 #include <octoon/video/text_material.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/path_meshing_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/transform_component.h>
 
 const std::string chars[] =
 {
@@ -18,31 +18,58 @@ const std::string chars[] =
 	R"({"paths":[{"points":[[610.59,445.03,8],[610.59,452.27,3],[608.31,458.38,3],[603.74,463.38,3],[599.17,468.38,3],[593.02,470.88,3],[585.27,470.88,3],[578.04,470.88,3],[572.21,468.17,3],[567.80,462.73,3],[563.38,457.30,3],[561.17,449.67,3],[561.17,439.84,3],[561.17,430.06,3],[563.58,422.20,3],[568.38,416.27,3],[573.19,410.34,3],[579.55,407.37,3],[587.47,407.37,3],[594.36,407.37,3],[599.93,409.69,3],[604.20,414.32,3],[608.46,418.95,3],[610.59,424.45,3],[610.59,430.81,3],[610.59,430.81,3],[610.59,445.03,3],[610.59,445.03,3],[610.59,445.03,9]],"w":0.00,"h":0.00},{"points":[[617.09,403.21,8],[617.09,403.21,3],[610.59,403.21,3],[610.59,403.21,3],[610.59,403.21,3],[610.59,414.58,3],[610.59,414.58,3],[610.59,414.58,3],[610.33,414.58,3],[610.33,414.58,3],[605.57,405.83,3],[597.91,401.46,3],[587.34,401.46,3],[577.47,401.46,3],[569.52,405.09,3],[563.48,412.34,3],[557.44,419.59,3],[554.42,428.93,3],[554.42,440.36,3],[554.42,451.83,3],[557.21,460.77,3],[562.80,467.18,3],[568.38,473.59,3],[575.59,476.79,3],[584.42,476.79,3],[596.02,476.79,3],[604.66,471.90,3],[610.33,462.11,3],[610.33,462.11,3],[610.59,462.11,3],[610.59,462.11,3],[610.59,462.11,3],[610.59,471.47,3],[610.59,471.47,3],[610.59,492.42,3],[600.68,502.90,3],[580.85,502.90,3],[574.10,502.90,3],[566.93,500.80,3],[559.35,496.60,3],[559.35,496.60,3],[559.35,503.29,3],[559.35,503.29,3],[566.67,506.92,3],[573.79,508.74,3],[580.72,508.74,3],[593.15,508.74,3],[602.31,505.61,3],[608.22,499.36,3],[614.13,493.10,3],[617.09,483.22,3],[617.09,469.71,3],[617.09,469.71,3],[617.09,403.21,3],[617.09,403.21,3],[617.09,403.21,9]],"w":0.00,"h":0.00}],"w":0.00,"h":0.00,"x":0.00,"y":0.00,"ft":0})"
 };
 
+class AutoRotation : public octoon::GameComponent
+{
+public:
+	void onActivate() override
+	{
+		this->addComponentDispatch(octoon::GameDispatchType::Frame);
+	}
+
+	void onDeactivate() noexcept override
+	{
+		this->removeComponentDispatch(octoon::GameDispatchType::Frame);
+	}
+
+	void onFrame() override
+	{
+		this->getComponent<octoon::TransformComponent>()->setLocalQuaternionAccum(octoon::math::Quaternion().make_rotation_y(0.01f));
+	}
+
+	octoon::GameComponentPtr clone() const noexcept
+	{
+		return std::make_shared<AutoRotation>();
+	}
+};
+
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
 
-	auto material = std::make_shared<octoon::video::TextMaterial>();
-	material->setLean(0.0f);
-	material->setExtrude(1.0f);
-	material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
-	material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
-
-	auto camera = std::make_shared<octoon::GameObject>();
-	camera->addComponent<octoon::CameraComponent>();
-	camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
-	camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
-	camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-
-	auto object = std::make_shared<octoon::GameObject>();
-	object->addComponent<octoon::PathMeshingComponent>(chars[0]);
-	object->addComponent<octoon::MeshRendererComponent>(material);
-
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
+		auto material = std::make_shared<octoon::video::TextMaterial>();
+		material->setLean(0.0f);
+		material->setExtrude(1.0f);
+		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
+		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
+
+		auto camera = std::make_shared<octoon::GameObject>();
+		camera->addComponent<octoon::CameraComponent>();
+		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
+		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
+		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+
+		auto object = std::make_shared<octoon::GameObject>();
+		object->addComponent<octoon::PathMeshingComponent>(chars[0]);
+		object->addComponent<octoon::MeshRendererComponent>(material);
+		object->addComponent<AutoRotation>();
+
 		while (!::OctoonIsQuitRequest())
+		{
 			::OctoonUpdate();
+		}
 	}
 
 	::OctoonTerminate();

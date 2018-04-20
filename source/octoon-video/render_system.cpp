@@ -233,6 +233,17 @@ namespace octoon
 				}
 			}
 
+			if (winhandle_)
+			{
+#if defined(__linux)
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+#else
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
+#endif
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			}
+
 #if defined(__WINDOWS__)
 			SwapBuffers(glcontext_.hdc);
 #elif defined(__LINUX__)
@@ -309,7 +320,7 @@ namespace octoon
 			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
 			__wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)::wglGetProcAddress("wglChoosePixelFormatARB");
 
-			::wglMakeCurrent(param.hdc, NULL);
+			/*::wglMakeCurrent(param.hdc, NULL);
 			::wglDeleteContext(param.context);
 
 			const int attribList[] =
@@ -325,7 +336,7 @@ namespace octoon
 			if (!param.context)
 				throw runtime::runtime_error::create("wglMakeCurrent() fail");
 
-			wglMakeCurrent(param.hdc, param.context);
+			wglMakeCurrent(param.hdc, param.context);*/
 		}
 
 		void

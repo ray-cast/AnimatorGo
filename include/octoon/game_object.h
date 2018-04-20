@@ -40,7 +40,7 @@ namespace octoon
 		const GameObjects& getChildren() const noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
-		void addComponent(Args&&... args) noexcept(false) { this->addComponent(std::make_shared<T>(std::forward<Args>(args)...)); }
+		std::shared_ptr<T> addComponent(Args&&... args) noexcept(false) { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addComponent(t); return t; }
 		void addComponent(const GameComponentPtr& component) except;
 		void addComponent(GameComponentPtr&& component) except;
 

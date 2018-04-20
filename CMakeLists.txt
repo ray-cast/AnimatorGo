@@ -8,6 +8,7 @@ SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir"
 SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to octoon dependencies" FORCE)
 SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon sample" FORCE)
 SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
+SET(OCTOON_PATH_SAMPLES ${OCTOON_PATH}/samples CACHE STRING "Adds a path to octoon samples" FORCE)
 SET(OCTOON_PATH_TESTS ${OCTOON_PATH}/tests CACHE STRING "Adds a path to octoon tests" FORCE)
 SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
@@ -263,6 +264,9 @@ ADD_SUBDIRECTORY(source)
 
 # 工具
 ADD_SUBDIRECTORY(tools)
+
+# 工具
+ADD_SUBDIRECTORY(samples)
 
 # 单元测试
 IF(OCTOON_BUILD_TESTS)

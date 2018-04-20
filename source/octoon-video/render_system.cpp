@@ -279,10 +279,19 @@ namespace octoon
 			pfd.nVersion = 1;
 			pfd.cColorBits = 32;
 			pfd.cRedBits = pfd.cGreenBits = pfd.cBlueBits = pfd.cAlphaBits = 8;
+			pfd.cDepthBits = 24;
+			pfd.cStencilBits = 8;
 			pfd.iPixelType = PFD_TYPE_RGBA;
 			pfd.dwFlags |= PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
 
-			if (!::SetPixelFormat(param.hdc, ::ChoosePixelFormat(param.hdc, &pfd), &pfd))
+			auto pixelFormat = ::ChoosePixelFormat(param.hdc, &pfd);
+			if (!pixelFormat)
+				throw runtime::runtime_error::create("ChoosePixelFormat() fail");
+
+			if (!::DescribePixelFormat(param.hdc, pixelFormat, sizeof(pfd), &pfd))
+				throw runtime::runtime_error::create("DescribePixelFormat() fail");
+
+			if (!::SetPixelFormat(param.hdc, pixelFormat, &pfd))
 				throw runtime::runtime_error::create("SetPixelFormat() fail");
 
 			param.context = ::wglCreateContext(param.hdc);
@@ -300,7 +309,7 @@ namespace octoon
 			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
 			__wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)::wglGetProcAddress("wglChoosePixelFormatARB");
 
-			/*::wglMakeCurrent(param.hdc, NULL);
+			::wglMakeCurrent(param.hdc, NULL);
 			::wglDeleteContext(param.context);
 
 			const int attribList[] =
@@ -316,7 +325,7 @@ namespace octoon
 			if (!param.context)
 				throw runtime::runtime_error::create("wglMakeCurrent() fail");
 
-			wglMakeCurrent(param.hdc, param.context);*/
+			wglMakeCurrent(param.hdc, param.context);
 		}
 
 		void

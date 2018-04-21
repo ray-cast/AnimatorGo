@@ -508,7 +508,8 @@ namespace octoon
 				GLint s = stencil;
 				glClearBufferiv(GL_STENCIL, buffer, &s);
 			}
-			else
+
+			if (flags & GraphicsClearFlagBits::ColorBit)
 			{
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)

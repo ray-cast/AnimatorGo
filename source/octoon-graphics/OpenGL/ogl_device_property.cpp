@@ -89,7 +89,8 @@ namespace octoon
 			wc.cbSize = sizeof(wc);
 			wc.hInstance = param.hinstance = ::GetModuleHandle(NULL);
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.lpszClassName = "OGL";
+			wc.lpszClassName = "OctoonWin32OpenGLWindow";
+			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 			if (!::RegisterClassEx(&wc))
 				return false;
 

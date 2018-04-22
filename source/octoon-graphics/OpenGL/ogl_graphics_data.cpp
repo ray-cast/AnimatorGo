@@ -64,6 +64,7 @@ namespace octoon
 			glGenBuffers(1, &_buffer);
 			glBindBuffer(_target, _buffer);
 			glBufferData(_target, desc.getStreamSize(), desc.getStream(), flags);
+			glBindBuffer(_target, 0);
 
 			return true;
 		}

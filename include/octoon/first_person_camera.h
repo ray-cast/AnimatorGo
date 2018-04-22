@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	class FirstPersonCameraComponent : public GameComponent
+	class OCTOON_EXPORT FirstPersonCameraComponent : public GameComponent
 	{
 		OctoonDeclareSubClass(FirstPersonCameraComponent, GameComponent)
 	public:

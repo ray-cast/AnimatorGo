@@ -26,10 +26,30 @@ PFNWGLCHOOSEPIXELFORMATARBPROC __wglChoosePixelFormatARB;
 #	include <OpenGL/CGLTypes.h>
 #endif
 
+using namespace octoon::graphics;
+
 namespace octoon
 {
 	namespace video
 	{
+		const char* vert =
+			"#version 330\n"
+			"uniform mat4 proj;\n"
+			"uniform mat4 model;\n"
+			"layout(location  = 0) in vec4 POSITION0;\n"
+			"void main()\n"
+			"{\n"
+			"gl_Position = proj * model * POSITION0;\n"
+			"}\n";
+
+		const char* frag =
+			"#version 330\n"
+			"layout(location  = 0) out vec4 oColor;\n"
+			"void main()\n"
+			"{\n"
+			"	oColor = vec4(0.0,1.0,0.0,0.0);\n"
+			"}";
+
 		OctoonImplementSingleton(RenderSystem)
 
 		RenderSystem::RenderSystem() noexcept
@@ -42,7 +62,6 @@ namespace octoon
 			, depthTexture_(0)
 			, depthTextureMSAA_(0)
 		{
-			memset(&glcontext_, 0, sizeof(glcontext_));
 		}
 
 		RenderSystem::~RenderSystem() noexcept
@@ -59,7 +78,80 @@ namespace octoon
 			height_ = h;
 			winhandle_ = hwnd;
 
-			this->setupGLEnvironment(glcontext_, hwnd);
+			graphics::GraphicsDeviceDesc deviceDesc;
+			deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL);
+			device_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
+			if (!device_)
+				return;
+
+			graphics::GraphicsSwapchainDesc swapchainDesc;
+			swapchainDesc.setWindHandle(winhandle_);
+			swapchainDesc.setWidth(1);
+			swapchainDesc.setHeight(1);
+			swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::Vsync);
+			swapchainDesc.setImageNums(2);
+			swapchainDesc.setColorFormat(graphics::GraphicsFormat::B8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::D24UNorm_S8UInt);
+			swapchain_ = device_->createSwapchain(swapchainDesc);
+			if (!swapchain_)
+				return;
+
+			graphics::GraphicsContextDesc contextDesc;
+			contextDesc.setSwapchain(swapchain_);
+			context_ = device_->createDeviceContext(contextDesc);
+			if (!context_)
+				return;
+
+			graphics::GraphicsDataDesc dataDesc;
+			dataDesc.setType(graphics::GraphicsDataType::StorageVertexBuffer);
+			dataDesc.setStreamSize(0xFFF);
+			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::WriteBit);
+
+			vbo_ = device_->createGraphicsData(dataDesc);
+			if (!vbo_)
+				return;
+
+			GraphicsProgramDesc programDesc;
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", GraphicsShaderLang::GLSL)));
+			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", GraphicsShaderLang::GLSL)));
+			auto program = device_->createProgram(programDesc);
+
+			GraphicsInputLayoutDesc layoutDesc;
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexBinding(GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
+
+			GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
+			descriptor_set_layout.setUniformComponents(program->getActiveParams());
+
+			GraphicsStateDesc stateDesc;
+			stateDesc.setPrimitiveType(GraphicsVertexType::TriangleList);
+			stateDesc.setCullMode(GraphicsCullMode::None);
+			stateDesc.setDepthEnable(true);
+
+			GraphicsPipelineDesc pipeline;
+			pipeline.setGraphicsInputLayout(device_->createInputLayout(layoutDesc));
+			pipeline.setGraphicsState(device_->createRenderState(stateDesc));
+			pipeline.setGraphicsProgram(std::move(program));
+			pipeline.setGraphicsDescriptorSetLayout(device_->createDescriptorSetLayout(descriptor_set_layout));
+
+			pipeline_ = device_->createRenderPipeline(pipeline);
+			if (!pipeline_)
+				return ;
+
+			GraphicsDescriptorSetDesc descriptorSet;
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+
+			descriptorSet_ = device_->createDescriptorSet(descriptorSet);
+			if (!descriptorSet_)
+				return;
+
+			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
+			auto end = descriptorSet_->getGraphicsUniformSets().end();
+
+			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
+
+			::glewInit();
 
 			glGenTextures(1, &colorTexture_);
 			glBindTexture(GL_TEXTURE_2D, colorTexture_);
@@ -105,7 +197,7 @@ namespace octoon
 		void
 		RenderSystem::close() noexcept
 		{
-			this->closeGLEnvironment(glcontext_);
+			TextSystem::instance()->close();
 		}
 
 		void
@@ -125,32 +217,22 @@ namespace octoon
 		void
 		RenderSystem::render() noexcept
 		{
-#if defined(__WINDOWS__)
-			wglMakeCurrent(glcontext_.hdc, glcontext_.context);
-#elif defined(__LINUX__)
-			glXMakeCurrent(glcontext_.dpy, glcontext_.wnd, glcontext_.ctx);
-#elif defined(__APPLY__)
-			CGLSetCurrentContext(glcontext_.ctx);
-#endif
-
-#if defined(__linux)
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
-#else
-			glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
-#endif
-
-			glViewport(0, 0, width_, height_);
+			context_->renderBegin();
 
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-				auto& clearColor = camera->getClearColor();
-				glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#if defined(__linux)
+				glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+#else
 
-				glMatrixMode(GL_PROJECTION);
-				glLoadMatrixf(camera->getViewProjection().ptr());
+				glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
+#endif
+				context_->setViewport(0, camera->getPixelViewport());
+				context_->clearFramebuffer(0, octoon::graphics::GraphicsClearFlagBits::AllBit, camera->getClearColor(), 1.0f, 0);
+				context_->setRenderPipeline(pipeline_);
+				context_->setDescriptorSet(descriptorSet_);
 
-				glEnable(GL_DEPTH_TEST);
+				proj_->uniform4fmat(camera->getViewProjection());
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
@@ -168,325 +250,45 @@ namespace octoon
 						continue;
 
 					vertices_ = mesh->getVertexArray();
-					colors_.resize(vertices_.size());
-
-					auto& direction = textMaterial->getTranslate();
-					if (direction != math::float3::Zero)
+					if (vbo_->getGraphicsDataDesc().getStreamSize() < vertices_.size() * sizeof(math::float3))
 					{
-						for (auto& it : vertices_)
+						GraphicsDataDesc dataDesc;
+						dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
+						dataDesc.setStream((std::uint8_t*)vertices_.data());
+						dataDesc.setStreamSize(vertices_.size() * sizeof(math::float3));
+						dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
+
+						vbo_ = device_->createGraphicsData(dataDesc);
+						if (!vbo_)
 						{
-							if (it.z == 0.0f)
-								it += direction;
+							context_->renderEnd();
+							return;
 						}
 					}
 
-					auto extrude = textMaterial->getExtrude();
-					if (extrude != 1.0f)
+					model_->uniform4fmat(geometry->getTransform());
+
+					context_->setVertexBufferData(0, vbo_, 0);
+					context_->draw(vertices_.size(), 1, 0, 0);
+				}
+
+				if (camera->getCameraOrder() == CameraOrder::Main)
+				{
+					if (winhandle_)
 					{
-						for (auto& it : vertices_)
-							it.z *= textMaterial->getExtrude();
-					}
-
-					auto lean = textMaterial->getLean();
-					if (lean != 0.0f)
-					{
-						for (auto& it : vertices_)
-							it.x -= it.y * textMaterial->getLean();
-					}
-
-					auto& normals = mesh->getNormalArray();
-					for (std::size_t i = 0; i < normals.size(); i++)
-					{
-						if (std::abs(normals[i].z) > 0.999)
-							colors_[i] = textMaterial->getTextColor(video::TextColor::FrontColor);
-						else
-							colors_[i] = textMaterial->getTextColor(video::TextColor::SideColor);
-					}
-
-					glMatrixMode(GL_MODELVIEW);
-					glLoadMatrixf(geometry->getTransform().ptr());
-
-					glEnableClientState(GL_COLOR_ARRAY);
-					glEnableClientState(GL_VERTEX_ARRAY);
-
-					glColorPointer(3, GL_FLOAT, 0, colors_.data());
-					glVertexPointer(3, GL_FLOAT, 0, vertices_.data());
-
-					switch (geometry->getDrawType())
-					{
-					case video::DrawType::Points:
-						glDrawArrays(GL_POINTS, 0, mesh->getVertexArray().size());
-						break;
-					case video::DrawType::Lines:
-						glDrawArrays(GL_LINES, 0, mesh->getVertexArray().size());
-						break;
-					case video::DrawType::Triangles:
-						glDrawArrays(GL_TRIANGLES, 0, mesh->getVertexArray().size());
-						break;
-					default:
-						break;
-					}
-
-					if (camera->getCameraOrder() == CameraOrder::Main)
-					{
-						if (winhandle_)
-						{
 #if defined(__linux)
-							glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+						glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
 #else
-							glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
+						glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
 #endif
-							glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-							glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-						}
-
-#if defined(__WINDOWS__)
-						::SwapBuffers(glcontext_.hdc);
-#elif defined(__LINUX__)
-						::glXSwapBuffers(glcontext_.dpy, glcontext_.wnd);
-#elif defined(__APPLY__)
-#	error "Cannot supported yet"
-#endif
+						glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+						glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 					}
 				}
 			}
+
+			context_->renderEnd();
+			context_->present();
 		}
-
-#if defined(__WINDOWS__)
-		void
-		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false)
-		{
-			if (hwnd == nullptr)
-			{
-				WNDCLASSEXA wc;
-				std::memset(&wc, 0, sizeof(wc));
-				wc.cbSize = sizeof(wc);
-				wc.hInstance = param.hinstance = ::GetModuleHandle(NULL);
-				wc.lpfnWndProc = ::DefWindowProc;
-				wc.lpszClassName = "OctoonWin32OpenGLWindow";
-				wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-				if (!::RegisterClassEx(&wc))
-					throw runtime::runtime_error::create("RegisterClassEx() fail");
-
-				DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_THICKFRAME;
-				param.hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "OGL", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
-			}
-			else
-			{
-				param.hwnd = (HWND)hwnd;
-			}
-
-			if (!param.hwnd)
-				throw runtime::runtime_error::create("CreateWindowEx() fail");
-
-			param.hdc = ::GetDC(param.hwnd);
-			if (!param.hdc)
-				throw runtime::runtime_error::create("GetDC() fail");
-
-			PIXELFORMATDESCRIPTOR pfd;
-			std::memset(&pfd, 0, sizeof(pfd));
-			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-			pfd.nVersion = 1;
-			pfd.cColorBits = 32;
-			pfd.cRedBits = pfd.cGreenBits = pfd.cBlueBits = pfd.cAlphaBits = 8;
-			pfd.cDepthBits = 24;
-			pfd.cStencilBits = 8;
-			pfd.iPixelType = PFD_TYPE_RGBA;
-			pfd.dwFlags |= PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER;
-
-			auto pixelFormat = ::ChoosePixelFormat(param.hdc, &pfd);
-			if (!pixelFormat)
-				throw runtime::runtime_error::create("ChoosePixelFormat() fail");
-
-			if (!::DescribePixelFormat(param.hdc, pixelFormat, sizeof(pfd), &pfd))
-				throw runtime::runtime_error::create("DescribePixelFormat() fail");
-
-			if (!::SetPixelFormat(param.hdc, pixelFormat, &pfd))
-				throw runtime::runtime_error::create("SetPixelFormat() fail");
-
-			param.context = ::wglCreateContext(param.hdc);
-			if (!param.context)
-				throw runtime::runtime_error::create("wglCreateContext() fail");
-
-			if (!::wglMakeCurrent(param.hdc, param.context))
-				throw runtime::runtime_error::create("wglMakeCurrent() fail");
-
-			if (::glewInit() != GLEW_OK)
-				throw runtime::runtime_error::create("glewInit() fail");
-
-			__wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)::wglGetProcAddress("wglSwapIntervalEXT");
-			__wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)::wglGetProcAddress("wglGetPixelFormatAttribivARB");
-			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
-			__wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)::wglGetProcAddress("wglChoosePixelFormatARB");
-
-			/*::wglMakeCurrent(param.hdc, NULL);
-			::wglDeleteContext(param.context);
-
-			const int attribList[] =
-			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-				WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
-				0,0
-			};
-
-			param.context = __wglCreateContextAttribsARB(param.hdc, 0, attribList);
-			if (!param.context)
-				throw runtime::runtime_error::create("wglMakeCurrent() fail");
-
-			wglMakeCurrent(param.hdc, param.context);*/
-		}
-
-		void
-		RenderSystem::closeGLEnvironment(const CreateParam& param) noexcept
-		{
-			if (param.context)
-			{
-				::wglDeleteContext(param.context);
-			}
-
-			if (param.hwnd)
-			{
-				if (param.hdc) ReleaseDC(param.hwnd, param.hdc);
-				::DestroyWindow(param.hwnd);
-			}
-
-			if (param.hinstance)
-			{
-				::UnregisterClass("TEXT3DWin32OpenGLWindow", param.hinstance);
-			}
-		}
-#elif defined(__LINUX__)
-		void
-		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false)
-		{
-			param.dpy = XOpenDisplay(NULL);
-			if (!param.dpy)
-				throw common::runtime_error::create("XOpenDisplay() fail");
-
-			int erb, evb;
-			if (!glXQueryExtension(param.dpy, &erb, &evb))
-				throw common::runtime_error::create("glXQueryExtension() fail");
-
-			int attrib[] = { GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, GL_NONE };
-			param.vi = glXChooseVisual(param.dpy, DefaultScreen(param.dpy), attrib);
-			if (!param.vi)
-				throw common::runtime_error::create("glXChooseVisual() fail");
-
-			param.ctx = glXCreateContext(param.dpy, param.vi, GL_NONE, true);
-			if (!param.ctx)
-				throw common::runtime_error::create("glXCreateContext() fail");
-
-			param.cmap = XCreateColormap(param.dpy, RootWindow(param.dpy, param.vi->screen), param.vi->visual, AllocNone);
-
-			if (!hwnd)
-			{
-				XSetWindowAttributes swa;
-				swa.border_pixel = 0;
-				swa.colormap = param.cmap;
-				param.wnd = XCreateWindow(param.dpy, RootWindow(param.dpy, param.vi->screen), 0, 0, 1, 1, 0, param.vi->depth, InputOutput, param.vi->visual, CWBorderPixel | CWColormap, &swa);
-
-				XMapWindow(param.dpy, param.wnd);
-			}
-			else
-			{
-				param.wnd = (Window)hwnd;
-			}
-
-			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
-				throw common::runtime_error::create("glXMakeCurrent() fail");
-
-			if (::glewInit() != GLEW_OK)
-				throw common::runtime_error::create("glewInit() fail");
-
-			if (::glxewInit() != GLEW_OK)
-				throw common::runtime_error::create("glxewInit() fail");
-
-			/*GLXContext oldCtx = param.ctx;
-			int FBConfigAttrs[] = { GLX_FBCONFIG_ID, 0, GL_NONE };
-			if (glXQueryContext(param.dpy, oldCtx, GLX_FBCONFIG_ID, &FBConfigAttrs[1]))
-			throw common::runtime_error::create("glXQueryContext() fail");
-
-			int nelems = 0;
-			param.config = glXChooseFBConfig(param.dpy, param.vi->screen, FBConfigAttrs, &nelems);
-			if (nelems < 1)
-			throw common::runtime_error::create("glXChooseFBConfig() fail");
-
-			int contextAttrs[20];
-			contextAttrs[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
-			contextAttrs[1] = 3;
-			contextAttrs[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
-			contextAttrs[3] = 1;
-			contextAttrs[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
-			contextAttrs[5] = GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-			contextAttrs[6] = GL_NONE;
-
-			param.ctx = glXCreateContextAttribsARB(param.dpy, *param.config, 0, true, contextAttrs);
-			if (!param.ctx)
-			throw common::runtime_error::create("glXCreateContextAttribsARB() fail");
-
-			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
-			throw common::runtime_error::create("glXMakeCurrent() fail");
-
-			glXDestroyContext(param.dpy, oldCtx);*/
-		}
-
-		void
-		RenderSystem::closeGLEnvironment(const CreateParam& param) noexcept
-		{
-			if (param.dpy && param.ctx) glXDestroyContext(param.dpy, param.ctx);
-			if (param.dpy && param.wnd) XDestroyWindow(param.dpy, param.wnd);
-			if (param.dpy && param.cmap) XFreeColormap(param.dpy, param.cmap);
-			if (param.vi) XFree(param.vi);
-			if (param.config) XFree(param.config);
-			if (param.dpy) XCloseDisplay(param.dpy);
-		}
-#elif defined(__APPLE__)
-		void
-		RenderSystem::setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept
-		{
-			param.octx = CGLGetCurrentContext();
-			if (!param.octx)
-				throw runtime::runtime_error::create("CGLGetCurrentContext() fail");
-
-			std::size_t index = 0;
-			CGLPixelFormatAttribute contextAttrs[20];
-			contextAttrs[index++] = kCGLPFAAccelerated;
-			contextAttrs[index++] = kCGLPFAOpenGLProfile;
-			contextAttrs[index++] = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
-			contextAttrs[index++] = (CGLPixelFormatAttribute)0;
-
-			GLint npix;
-			CGLPixelFormatObj pf;
-			CGLError error = CGLChoosePixelFormat(contextAttrs, &pf, &npix);
-			if (error)
-				throw runtime::runtime_error::create("CGLChoosePixelFormat() fail");
-
-			error = CGLCreateContext(pf, NULL, &param.ctx);
-			if (error)
-				throw runtime::runtime_error::create("CGLCreateContext() fail");
-
-			CGLReleasePixelFormat(pf);
-			error = CGLSetCurrentContext(param.ctx);
-			if (error)
-				throw runtime::runtime_error::create("CGLSetCurrentContext() fail");
-		}
-
-		void
-		RenderSystem::closeGLEnvironment(const CreateParam& param) noexcept
-		{
-			if (param.octx)
-			{
-				CGLSetCurrentContext(param.octx);
-			}
-
-			if (param.ctx)
-			{
-				CGLReleaseContext(param.ctx);
-			}
-		}
-
-		#endif
 	}
 }

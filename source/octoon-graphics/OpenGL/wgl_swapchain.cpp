@@ -397,7 +397,7 @@ namespace octoon
 				attribs[index++] = WGL_CONTEXT_PROFILE_MASK_ARB;
 				attribs[index++] = mask;
 
-				attribs[index] = 0;
+				attribs[index++] = 0;
 				attribs[index] = 0;
 
 				_context = __wglCreateContextAttribsARB(_hdc, nullptr, attribs);

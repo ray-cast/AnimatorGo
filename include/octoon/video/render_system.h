@@ -3,12 +3,7 @@
 
 #include <octoon/runtime/singleton.h>
 #include <octoon/video/render_types.h>
-
-#if defined(__LINUX__)
-#	include <X11/Xlib.h>
-#	include <GL/glew.h>
-#	include <GL/glxew.h>
-#endif
+#include <octoon/graphics/graphics.h>
 
 namespace octoon
 {
@@ -29,66 +24,11 @@ namespace octoon
 
 			void render() noexcept;
 
-#if defined(__WINDOWS__)
-			struct CreateParam
-			{
-				HWND hwnd;
-				HDC hdc;
-				HINSTANCE hinstance;
-				HGLRC context;
-
-				CreateParam()
-					: hwnd(nullptr)
-					, hdc(nullptr)
-					, hinstance(nullptr)
-					, context(nullptr)
-				{
-				}
-			};
-#elif defined(__LINUX__)
-			struct CreateParam
-			{
-				Display* dpy;
-				XVisualInfo* vi;
-				GLXContext ctx;
-				Colormap cmap;
-				Window wnd;
-				GLXFBConfig* config;
-
-				CreateParam()
-					: dpy(nullptr)
-					, vi(nullptr)
-					, ctx(nullptr)
-					, cmap(0)
-					, wnd(0)
-					, config(0)
-				{
-				}
-			};
-#elif defined(__APPLE__)
-			struct CreateParam
-			{
-				CGLContextObj ctx;
-				CGLContextObj octx;
-
-				CreateParam()
-					: ctx(nullptr)
-					, ctx(nullptr)
-				{
-				}
-			};
-#endif
-
-		private:
-			void setupGLEnvironment(CreateParam& param, WindHandle hwnd) noexcept(false);
-			void closeGLEnvironment(const CreateParam& param) noexcept;
-
 		private:
 			RenderSystem(const RenderSystem&) = delete;
 			RenderSystem& operator=(const RenderSystem&) = delete;
 
 		private:
-			CreateParam glcontext_;
 
 			WindHandle winhandle_;
 			std::uint32_t width_, height_;
@@ -103,6 +43,19 @@ namespace octoon
 			std::uint32_t fboMSAA_;
 			std::uint32_t colorTextureMSAA_;
 			std::uint32_t depthTextureMSAA_;
+
+			graphics::GraphicsDataPtr vbo_;
+			graphics::GraphicsDataPtr ibo_;
+			graphics::GraphicsTexturePtr texture_;
+			graphics::GraphicsDescriptorSetPtr descriptorSet_;
+
+			graphics::GraphicsUniformSetPtr proj_;
+			graphics::GraphicsUniformSetPtr model_;
+
+			graphics::GraphicsDevicePtr device_;
+			graphics::GraphicsContextPtr context_;
+			graphics::GraphicsSwapchainPtr swapchain_;
+			graphics::GraphicsPipelinePtr pipeline_;
 		};
 	}
 }

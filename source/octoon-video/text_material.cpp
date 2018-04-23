@@ -6,40 +6,42 @@ namespace octoon
 {
 	namespace video
 	{
-		const char* vert =
-			"#version 330\n"
-			"uniform mat4 proj;\n"
-			"uniform mat4 model;\n"
-			"uniform float extrude;\n"
-			"uniform float lean;\n"
-			"uniform vec3 frontColor;\n"
-			"uniform vec3 sideColor;\n"
-			"uniform vec3 translate;\n"
-			"layout(location  = 0) in vec4 POSITION0;\n"
-			"layout(location  = 1) in vec4 NORMAL0;\n"
-			"out vec3 oTexcoord0;\n"
-			"void main()\n"
-			"{\n"
-			"vec4 P = POSITION0;\n"
-			"P.x -= P.y * lean;\n"
-			"P.z *= extrude;\n"
-			"P.xyz += translate;\n"
-			"if (abs(NORMAL0.z) > 0.5)\n"
-			"oTexcoord0 = frontColor;\n"
-			"else\n"
-			"oTexcoord0 = sideColor;\n"
-			"gl_Position = proj * model * P;\n"
-			"}\n";
+		const char* vert =R"(#version 330
+			uniform mat4 proj;
+			uniform mat4 model;
+			uniform float extrude;
+			uniform float lean;
+			uniform vec3 frontColor;
+			uniform vec3 sideColor;
+			uniform vec3 translate;
 
-		const char* frag =
-			"#version 330\n"
-			"uniform sampler2D decal;\n"
-			"layout(location  = 0) out vec4 oColor;\n"
-			"in vec3 oTexcoord0;\n"
-			"void main()\n"
-			"{\n"
-			"	oColor = vec4(oTexcoord0, 1.0f);\n"
-			"}";
+			layout(location  = 0) in vec4 POSITION0;
+			layout(location  = 1) in vec4 NORMAL0;
+
+			out vec3 oTexcoord0;
+
+			void main()
+			{
+				vec4 P = POSITION0;
+				P.x -= P.y * lean;
+				P.z *= extrude;
+				P.xyz += translate;
+
+				if (abs(NORMAL0.z) > 0.5)
+					oTexcoord0 = frontColor;
+				else
+					oTexcoord0 = sideColor;
+
+				gl_Position = proj * model * P;
+			})";
+
+		const char* frag = R"(#version 330
+			layout(location  = 0) out vec4 fragColor;
+			in vec3 oTexcoord0;
+			void main()
+			{
+				fragColor = vec4(oTexcoord0, 1.0f);
+			})";
 
 		TextMaterial::TextMaterial() except
 		{

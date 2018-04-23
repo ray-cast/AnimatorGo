@@ -29,28 +29,26 @@ namespace octoon
 			RenderSystem& operator=(const RenderSystem&) = delete;
 
 		private:
-
-			WindHandle winhandle_;
 			std::uint32_t width_, height_;
-
-			math::float3s vertices_;
-			math::float3s colors_;
 
 			graphics::GraphicsFramebufferPtr fbo_;
 			graphics::GraphicsFramebufferPtr fboMSAA_;
 
 			graphics::GraphicsTexturePtr colorTexture_;
-			graphics::GraphicsTexturePtr  depthTexture_;
-			graphics::GraphicsTexturePtr  colorTextureMSAA_;
-			graphics::GraphicsTexturePtr  depthTextureMSAA_;
+			graphics::GraphicsTexturePtr depthTexture_;
+			graphics::GraphicsTexturePtr colorTextureMSAA_;
+			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			graphics::GraphicsDataPtr vbo_;
-			graphics::GraphicsDataPtr ibo_;
 			graphics::GraphicsTexturePtr texture_;
 			graphics::GraphicsDescriptorSetPtr descriptorSet_;
 
 			graphics::GraphicsUniformSetPtr proj_;
 			graphics::GraphicsUniformSetPtr model_;
+			graphics::GraphicsUniformSetPtr lean_;
+			graphics::GraphicsUniformSetPtr extrude_;
+			graphics::GraphicsUniformSetPtr frontColor_;
+			graphics::GraphicsUniformSetPtr sideColor_;
 
 			graphics::GraphicsDevicePtr device_;
 			graphics::GraphicsContextPtr context_;

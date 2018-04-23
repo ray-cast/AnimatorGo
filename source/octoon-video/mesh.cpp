@@ -128,7 +128,7 @@ namespace octoon
 				auto ab = a - b;
 				auto ac = a - c;
 
-				auto n = math::normalize(math::cross(ab, ac));
+				auto n = math::normalize(math::cross(ac, ab));
 
 				normals_[i + 0] = n;
 				normals_[i + 1] = n;

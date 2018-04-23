@@ -16,18 +16,33 @@ namespace octoon
 			"#version 330\n"
 			"uniform mat4 proj;\n"
 			"uniform mat4 model;\n"
+			"uniform float extrude;\n"
+			"uniform float lean;\n"
+			"uniform vec3 frontColor;\n"
+			"uniform vec3 sideColor;\n"
 			"layout(location  = 0) in vec4 POSITION0;\n"
+			"layout(location  = 1) in vec4 NORMAL0;\n"
+			"out vec3 oTexcoord0;\n"
 			"void main()\n"
 			"{\n"
-			"gl_Position = proj * model * POSITION0;\n"
+			"vec4 P = POSITION0;\n"
+			"P.x -= P.y * lean;\n"
+			"P.z *= extrude;\n"
+			"if (abs(NORMAL0.z) > 0.5)\n"
+				"oTexcoord0 = frontColor;\n"
+			"else\n"
+				"oTexcoord0 = sideColor;\n"
+			"gl_Position = proj * model * P;\n"
 			"}\n";
 
 		const char* frag =
 			"#version 330\n"
+			"uniform sampler2D decal;\n"
 			"layout(location  = 0) out vec4 oColor;\n"
+			"in vec3 oTexcoord0;\n"
 			"void main()\n"
 			"{\n"
-			"	oColor = vec4(0.0,1.0,0.0,0.0);\n"
+			"	oColor = vec4(oTexcoord0, 1.0f);\n"
 			"}";
 
 		OctoonImplementSingleton(RenderSystem)
@@ -56,7 +71,6 @@ namespace octoon
 
 			width_ = w;
 			height_ = h;
-			winhandle_ = hwnd;
 
 			graphics::GraphicsDeviceDesc deviceDesc;
 			deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL);
@@ -65,7 +79,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsSwapchainDesc swapchainDesc;
-			swapchainDesc.setWindHandle(winhandle_);
+			swapchainDesc.setWindHandle(hwnd);
 			swapchainDesc.setWidth(w);
 			swapchainDesc.setHeight(h);
 			swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::Vsync);
@@ -98,6 +112,7 @@ namespace octoon
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "NORMAL", 0, GraphicsFormat::R32G32B32SFloat));
 			layoutDesc.addVertexBinding(GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 
 			GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
@@ -124,12 +139,15 @@ namespace octoon
 			descriptorSet_ = device_->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;
-
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
+			lean_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "lean"; });
+			extrude_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "extrude"; });
+			frontColor_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "frontColor"; });
+			sideColor_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "sideColor"; });
 
 			graphics::GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
@@ -236,13 +254,15 @@ namespace octoon
 					if (!textMaterial)
 						continue;
 
-					vertices_ = mesh->getVertexArray();
-					if (vbo_->getGraphicsDataDesc().getStreamSize() < vertices_.size() * sizeof(math::float3))
+					auto& vertices = mesh->getVertexArray();
+					auto& normals = mesh->getNormalArray();
+
+					if (vbo_->getGraphicsDataDesc().getStreamSize() < normals.size() * sizeof(math::float3))
 					{
 						GraphicsDataDesc dataDesc;
 						dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
-						dataDesc.setStream((std::uint8_t*)vertices_.data());
-						dataDesc.setStreamSize(vertices_.size() * sizeof(math::float3));
+						dataDesc.setStream(0);
+						dataDesc.setStreamSize(vertices.size() * sizeof(math::float3) * 2);
 						dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
 
 						vbo_ = device_->createGraphicsData(dataDesc);
@@ -251,25 +271,46 @@ namespace octoon
 							context_->renderEnd();
 							return;
 						}
+
+						math::float3* data = nullptr;
+						if (vbo_->map(0, vertices.size() * sizeof(math::float3) * 2, (void**)&data))
+						{
+							auto v = data;
+							for (auto& it : vertices)
+							{
+								*v = it;
+								v += 2;
+							}
+
+							auto n = ++data;
+							for (auto& it : normals)
+							{
+								*n = it;
+								n += 2;
+							}
+
+							vbo_->unmap();
+						}
 					}
 
+					frontColor_->uniform3f(textMaterial->getTextColor(TextColor::FrontColor));
+					sideColor_->uniform3f(textMaterial->getTextColor(TextColor::SideColor));
+					lean_->uniform1f(textMaterial->getLean());
+					extrude_->uniform1f(textMaterial->getExtrude());
 					model_->uniform4fmat(geometry->getTransform());
 
 					context_->setVertexBufferData(0, vbo_, 0);
-					context_->draw(vertices_.size(), 1, 0, 0);
+					context_->draw(vertices.size(), 1, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
-					if (winhandle_)
-					{
 						auto& v = camera->getPixelViewport();
 #if (__linux)
 						context_->blitFramebuffer(fbo_, v, nullptr, v);
 #else
 						context_->blitFramebuffer(fboMSAA_, v, nullptr, v);
 #endif
-					}
 				}
 			}
 

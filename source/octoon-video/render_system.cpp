@@ -1,9 +1,10 @@
 #include <octoon/video/render_system.h>
 #include <octoon/video/camera.h>
 #include <octoon/video/geometry.h>
+#include <octoon/video/material.h>
 #include <octoon/video/render_scene.h>
 #include <octoon/video/text_system.h>
-#include <octoon/video/text_material.h>
+
 #include <octoon/runtime/except.h>
 
 using namespace octoon::graphics;
@@ -12,39 +13,6 @@ namespace octoon
 {
 	namespace video
 	{
-		const char* vert =
-			"#version 330\n"
-			"uniform mat4 proj;\n"
-			"uniform mat4 model;\n"
-			"uniform float extrude;\n"
-			"uniform float lean;\n"
-			"uniform vec3 frontColor;\n"
-			"uniform vec3 sideColor;\n"
-			"layout(location  = 0) in vec4 POSITION0;\n"
-			"layout(location  = 1) in vec4 NORMAL0;\n"
-			"out vec3 oTexcoord0;\n"
-			"void main()\n"
-			"{\n"
-			"vec4 P = POSITION0;\n"
-			"P.x -= P.y * lean;\n"
-			"P.z *= extrude;\n"
-			"if (abs(NORMAL0.z) > 0.5)\n"
-				"oTexcoord0 = frontColor;\n"
-			"else\n"
-				"oTexcoord0 = sideColor;\n"
-			"gl_Position = proj * model * P;\n"
-			"}\n";
-
-		const char* frag =
-			"#version 330\n"
-			"uniform sampler2D decal;\n"
-			"layout(location  = 0) out vec4 oColor;\n"
-			"in vec3 oTexcoord0;\n"
-			"void main()\n"
-			"{\n"
-			"	oColor = vec4(oTexcoord0, 1.0f);\n"
-			"}";
-
 		OctoonImplementSingleton(RenderSystem)
 
 		RenderSystem::RenderSystem() noexcept
@@ -95,51 +63,6 @@ namespace octoon
 			context_ = device_->createDeviceContext(contextDesc);
 			if (!context_)
 				return;
-
-			GraphicsProgramDesc programDesc;
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", GraphicsShaderLang::GLSL)));
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", GraphicsShaderLang::GLSL)));
-			auto program = device_->createProgram(programDesc);
-
-			GraphicsInputLayoutDesc layoutDesc;
-			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32B32SFloat));
-			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "NORMAL", 0, GraphicsFormat::R32G32B32SFloat));
-			layoutDesc.addVertexBinding(GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
-
-			GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
-			descriptor_set_layout.setUniformComponents(program->getActiveParams());
-
-			GraphicsStateDesc stateDesc;
-			stateDesc.setPrimitiveType(GraphicsVertexType::TriangleList);
-			stateDesc.setCullMode(GraphicsCullMode::None);
-			stateDesc.setDepthEnable(true);
-
-			GraphicsPipelineDesc pipeline;
-			pipeline.setGraphicsInputLayout(device_->createInputLayout(layoutDesc));
-			pipeline.setGraphicsState(device_->createRenderState(stateDesc));
-			pipeline.setGraphicsProgram(std::move(program));
-			pipeline.setGraphicsDescriptorSetLayout(device_->createDescriptorSetLayout(descriptor_set_layout));
-
-			pipeline_ = device_->createRenderPipeline(pipeline);
-			if (!pipeline_)
-				return ;
-
-			GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
-
-			descriptorSet_ = device_->createDescriptorSet(descriptorSet);
-			if (!descriptorSet_)
-				return;
-
-			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
-			auto end = descriptorSet_->getGraphicsUniformSets().end();
-
-			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			lean_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "lean"; });
-			extrude_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "extrude"; });
-			frontColor_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "frontColor"; });
-			sideColor_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "sideColor"; });
 
 			graphics::GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
@@ -317,8 +240,6 @@ namespace octoon
 #endif
 				context_->setViewport(0, camera->getPixelViewport());
 				context_->clearFramebuffer(0, octoon::graphics::GraphicsClearFlagBits::ColorDepthBit, camera->getClearColor(), 1.0f, 0);
-				context_->setRenderPipeline(pipeline_);
-				context_->setDescriptorSet(descriptorSet_);
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
@@ -331,18 +252,13 @@ namespace octoon
 					if (!material)
 						continue;
 
-					auto textMaterial = std::dynamic_pointer_cast<TextMaterial>(material);
-					if (!textMaterial)
-						continue;
+					material->setTransform(geometry->getTransform());
+					material->setViewProjection(camera->getViewProjection());
 
-					proj_->uniform4fmat(camera->getViewProjection());
-					frontColor_->uniform3f(textMaterial->getTextColor(TextColor::FrontColor));
-					sideColor_->uniform3f(textMaterial->getTextColor(TextColor::SideColor));
-					lean_->uniform1f(textMaterial->getLean());
-					extrude_->uniform1f(textMaterial->getExtrude());
-					model_->uniform4fmat(geometry->getTransform());
-
+					context_->setRenderPipeline(material->getPipeline());
+					context_->setDescriptorSet(material->getDescriptorSet());
 					context_->setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+
 					context_->draw(mesh->getVertexArray().size(), 1, 0, 0);
 				}
 

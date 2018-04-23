@@ -2,6 +2,7 @@
 #define OCTOON_TEXT_MATERIAL_H_
 
 #include <octoon/video/material.h>
+#include <octoon/graphics/graphics.h>
 
 namespace octoon
 {
@@ -10,22 +11,27 @@ namespace octoon
 		class OCTOON_EXPORT TextMaterial final : public Material
 		{
 		public:
-			TextMaterial() noexcept;
-			TextMaterial(float lean) noexcept;
+			TextMaterial() except;
 			~TextMaterial() noexcept;
+
+			void setup() except;
+
+			void setTransform(const math::float4x4& m) noexcept override;
+			void setViewProjection(const math::float4x4& vp) noexcept override;
+
+			graphics::GraphicsPipelinePtr getPipeline() const noexcept override;
+			graphics::GraphicsDescriptorSetPtr getDescriptorSet() const noexcept override;
 
 			void setLean(float lean) noexcept;
 			void setExtrude(float extrude) noexcept;
-			void setTextColor(TextColor::Type which, const math::float3& colors) noexcept;
-			void setShaingMode(TextShaingMode mode) noexcept;
+			void setTextColor(TextColor::Type which, const math::float3& colors) except;
 			void setTranslate(const math::float3& translate) noexcept;
 
 			float getLean() const noexcept;
 			float getExtrude() const noexcept;
-			TextShaingMode getShaingMode() const noexcept;
 			const math::float3& getTranslate() const noexcept;
 
-			const math::float3& getTextColor(TextColor::Type which) const noexcept;
+			const math::float3& getTextColor(TextColor::Type which) const except;
 
 			MaterialPtr clone() const noexcept override;
 
@@ -34,12 +40,16 @@ namespace octoon
 			TextMaterial& operator=(const TextMaterial&) = delete;
 
 		private:
-			TextShaingMode mode_;
+			graphics::GraphicsPipelinePtr pipeline_;
+			graphics::GraphicsDescriptorSetPtr descriptorSet_;
 
-			math::float1 lean_;
-			math::float1 extrude_;
-			math::float3 translate_;
-			math::float3 colors_[TextColor::RangeSize_];
+			graphics::GraphicsUniformSetPtr proj_;
+			graphics::GraphicsUniformSetPtr model_;
+			graphics::GraphicsUniformSetPtr translate_;
+			graphics::GraphicsUniformSetPtr lean_;
+			graphics::GraphicsUniformSetPtr extrude_;
+			graphics::GraphicsUniformSetPtr frontColor_;
+			graphics::GraphicsUniformSetPtr sideColor_;
 		};
 	}
 }

@@ -54,19 +54,10 @@ namespace octoon
 			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			graphics::GraphicsTexturePtr texture_;
-			graphics::GraphicsDescriptorSetPtr descriptorSet_;
-
-			graphics::GraphicsUniformSetPtr proj_;
-			graphics::GraphicsUniformSetPtr model_;
-			graphics::GraphicsUniformSetPtr lean_;
-			graphics::GraphicsUniformSetPtr extrude_;
-			graphics::GraphicsUniformSetPtr frontColor_;
-			graphics::GraphicsUniformSetPtr sideColor_;
 
 			graphics::GraphicsDevicePtr device_;
 			graphics::GraphicsContextPtr context_;
 			graphics::GraphicsSwapchainPtr swapchain_;
-			graphics::GraphicsPipelinePtr pipeline_;
 		};
 	}
 }

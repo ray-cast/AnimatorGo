@@ -11,11 +11,5 @@ namespace octoon
 		Material::~Material() noexcept
 		{
 		}
-
-		MaterialPtr
-		Material::clone() const noexcept
-		{
-			return std::make_shared<Material>();
-		}
 	}
 }

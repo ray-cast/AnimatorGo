@@ -96,15 +96,6 @@ namespace octoon
 			if (!context_)
 				return;
 
-			graphics::GraphicsDataDesc dataDesc;
-			dataDesc.setType(graphics::GraphicsDataType::StorageVertexBuffer);
-			dataDesc.setStreamSize(0xFFF);
-			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::WriteBit);
-
-			vbo_ = device_->createGraphicsData(dataDesc);
-			if (!vbo_)
-				return;
-
 			GraphicsProgramDesc programDesc;
 			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", GraphicsShaderLang::GLSL)));
 			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", GraphicsShaderLang::GLSL)));
@@ -139,6 +130,7 @@ namespace octoon
 			descriptorSet_ = device_->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;
+
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
@@ -220,6 +212,97 @@ namespace octoon
 			h = height_;
 		}
 
+		GraphicsInputLayoutPtr
+		RenderSystem::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createInputLayout(desc);
+		}
+
+		GraphicsDataPtr
+		RenderSystem::createGraphicsData(const GraphicsDataDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createGraphicsData(desc);
+		}
+
+		GraphicsTexturePtr
+		RenderSystem::createTexture(const GraphicsTextureDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createTexture(desc);
+		}
+
+		GraphicsSamplerPtr
+		RenderSystem::createSampler(const GraphicsSamplerDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createSampler(desc);
+		}
+
+		GraphicsFramebufferPtr
+		RenderSystem::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createFramebuffer(desc);
+		}
+
+		GraphicsFramebufferLayoutPtr
+		RenderSystem::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createFramebufferLayout(desc);
+		}
+
+		GraphicsShaderPtr
+		RenderSystem::createShader(const GraphicsShaderDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createShader(desc);
+		}
+
+		GraphicsProgramPtr
+		RenderSystem::createProgram(const GraphicsProgramDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createProgram(desc);
+		}
+
+		GraphicsStatePtr
+		RenderSystem::createRenderState(const GraphicsStateDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createRenderState(desc);
+		}
+
+		GraphicsPipelinePtr
+		RenderSystem::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createRenderPipeline(desc);
+		}
+
+		GraphicsDescriptorSetPtr
+		RenderSystem::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createDescriptorSet(desc);
+		}
+
+		GraphicsDescriptorSetLayoutPtr
+		RenderSystem::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createDescriptorSetLayout(desc);
+		}
+
+		GraphicsDescriptorPoolPtr
+		RenderSystem::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
+		{
+			assert(device_);
+			return device_->createDescriptorPool(desc);
+		}
+
 		void
 		RenderSystem::render() noexcept
 		{
@@ -237,8 +320,6 @@ namespace octoon
 				context_->setRenderPipeline(pipeline_);
 				context_->setDescriptorSet(descriptorSet_);
 
-				proj_->uniform4fmat(camera->getViewProjection());
-
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
@@ -254,53 +335,15 @@ namespace octoon
 					if (!textMaterial)
 						continue;
 
-					auto& vertices = mesh->getVertexArray();
-					auto& normals = mesh->getNormalArray();
-
-					if (vbo_->getGraphicsDataDesc().getStreamSize() < normals.size() * sizeof(math::float3))
-					{
-						GraphicsDataDesc dataDesc;
-						dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
-						dataDesc.setStream(0);
-						dataDesc.setStreamSize(vertices.size() * sizeof(math::float3) * 2);
-						dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
-
-						vbo_ = device_->createGraphicsData(dataDesc);
-						if (!vbo_)
-						{
-							context_->renderEnd();
-							return;
-						}
-
-						math::float3* data = nullptr;
-						if (vbo_->map(0, vertices.size() * sizeof(math::float3) * 2, (void**)&data))
-						{
-							auto v = data;
-							for (auto& it : vertices)
-							{
-								*v = it;
-								v += 2;
-							}
-
-							auto n = ++data;
-							for (auto& it : normals)
-							{
-								*n = it;
-								n += 2;
-							}
-
-							vbo_->unmap();
-						}
-					}
-
+					proj_->uniform4fmat(camera->getViewProjection());
 					frontColor_->uniform3f(textMaterial->getTextColor(TextColor::FrontColor));
 					sideColor_->uniform3f(textMaterial->getTextColor(TextColor::SideColor));
 					lean_->uniform1f(textMaterial->getLean());
 					extrude_->uniform1f(textMaterial->getExtrude());
 					model_->uniform4fmat(geometry->getTransform());
 
-					context_->setVertexBufferData(0, vbo_, 0);
-					context_->draw(vertices.size(), 1, 0, 0);
+					context_->setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+					context_->draw(mesh->getVertexArray().size(), 1, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)

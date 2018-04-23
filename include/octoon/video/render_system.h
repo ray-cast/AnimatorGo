@@ -22,6 +22,20 @@ namespace octoon
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
 			void getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept;
 
+			graphics::GraphicsInputLayoutPtr createInputLayout(const graphics::GraphicsInputLayoutDesc& desc) noexcept;
+			graphics::GraphicsDataPtr createGraphicsData(const graphics::GraphicsDataDesc& desc) noexcept;
+			graphics::GraphicsTexturePtr createTexture(const graphics::GraphicsTextureDesc& desc) noexcept;
+			graphics::GraphicsSamplerPtr createSampler(const graphics::GraphicsSamplerDesc& desc) noexcept;
+			graphics::GraphicsFramebufferPtr createFramebuffer(const graphics::GraphicsFramebufferDesc& desc) noexcept;
+			graphics::GraphicsFramebufferLayoutPtr createFramebufferLayout(const graphics::GraphicsFramebufferLayoutDesc& desc) noexcept;
+			graphics::GraphicsShaderPtr createShader(const graphics::GraphicsShaderDesc& desc) noexcept;
+			graphics::GraphicsProgramPtr createProgram(const graphics::GraphicsProgramDesc& desc) noexcept;
+			graphics::GraphicsStatePtr createRenderState(const graphics::GraphicsStateDesc& desc) noexcept;
+			graphics::GraphicsPipelinePtr createRenderPipeline(const graphics::GraphicsPipelineDesc& desc) noexcept;
+			graphics::GraphicsDescriptorSetPtr createDescriptorSet(const graphics::GraphicsDescriptorSetDesc& desc) noexcept;
+			graphics::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const graphics::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
+			graphics::GraphicsDescriptorPoolPtr createDescriptorPool(const graphics::GraphicsDescriptorPoolDesc& desc) noexcept;
+
 			void render() noexcept;
 
 		private:
@@ -39,7 +53,6 @@ namespace octoon
 			graphics::GraphicsTexturePtr colorTextureMSAA_;
 			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
-			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsTexturePtr texture_;
 			graphics::GraphicsDescriptorSetPtr descriptorSet_;
 

@@ -52,7 +52,7 @@ int main(int argc, const char* argv[])
 	{
 		auto material = std::make_shared<octoon::video::TextMaterial>();
 		material->setLean(0.0f);
-		material->setExtrude(1.0f);
+		material->setExtrude(5.0f);
 		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
 

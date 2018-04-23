@@ -3,6 +3,7 @@
 
 #include <octoon/video/mesh.h>
 #include <octoon/video/render_object.h>
+#include <octoon/graphics/graphics_data.h>
 
 namespace octoon
 {
@@ -24,6 +25,8 @@ namespace octoon
 			void setMesh(const MeshPtr& mesh) noexcept;
 			const MeshPtr& getMesh() const noexcept;
 
+			graphics::GraphicsDataPtr getVertexBuffer() const noexcept;
+
 			void setMaterial(MaterialPtr&& material) noexcept;
 			void setMaterial(const MaterialPtr& material) noexcept;
 			const MaterialPtr& getMaterial() const noexcept;
@@ -43,6 +46,8 @@ namespace octoon
 			MaterialPtr material_;
 			DrawType drawType_;
 			GraphicsIndexType indexType_;
+			graphics::GraphicsDataPtr vertices_;
+			graphics::GraphicsDataPtr indices_;
 		};
 	}
 }

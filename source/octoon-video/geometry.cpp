@@ -1,5 +1,6 @@
 #include <octoon/video/geometry.h>
 #include <octoon/video/camera.h>
+#include <octoon/video/render_system.h>
 
 namespace octoon
 {
@@ -66,6 +67,37 @@ namespace octoon
 		void
 		Geometry::setMesh(const MeshPtr& mesh) noexcept
 		{
+			auto& vertices = mesh->getVertexArray();
+			auto& normals = mesh->getNormalArray();
+
+			graphics::GraphicsDataDesc dataDesc;
+			dataDesc.setType(graphics::GraphicsDataType::StorageVertexBuffer);
+			dataDesc.setStream(0);
+			dataDesc.setStreamSize(vertices.size() * sizeof(math::float3) * 2);
+			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::WriteBit);
+
+			vertices_ = RenderSystem::instance()->createGraphicsData(dataDesc);
+
+			math::float3* data = nullptr;
+			if (vertices_->map(0, vertices.size() * sizeof(math::float3) * 2, (void**)&data))
+			{
+				auto v = data;
+				for (auto& it : vertices)
+				{
+					*v = it;
+					v += 2;
+				}
+
+				auto n = ++data;
+				for (auto& it : normals)
+				{
+					*n = it;
+					n += 2;
+				}
+
+				vertices_->unmap();
+			}
+
 			mesh_ = mesh;
 		}
 
@@ -73,6 +105,12 @@ namespace octoon
 		Geometry::getMesh() const noexcept
 		{
 			return mesh_;
+		}
+
+		graphics::GraphicsDataPtr
+		Geometry::getVertexBuffer() const noexcept
+		{
+			return vertices_;
 		}
 
 		void

@@ -90,7 +90,7 @@ namespace octoon
 
 			void setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr&& layout) noexcept;
 			void setGraphicsFramebufferLayout(const GraphicsFramebufferLayoutPtr& layout) noexcept;
-			GraphicsFramebufferLayoutPtr getGraphicsFramebufferLayout() const noexcept;
+			GraphicsFramebufferLayoutPtr getFramebufferLayout() const noexcept;
 
 		private:
 			std::uint32_t _width;

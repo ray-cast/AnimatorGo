@@ -36,13 +36,13 @@ namespace octoon
 			math::float3s vertices_;
 			math::float3s colors_;
 
-			std::uint32_t fbo_;
-			std::uint32_t colorTexture_;
-			std::uint32_t depthTexture_;
+			graphics::GraphicsFramebufferPtr fbo_;
+			graphics::GraphicsFramebufferPtr fboMSAA_;
 
-			std::uint32_t fboMSAA_;
-			std::uint32_t colorTextureMSAA_;
-			std::uint32_t depthTextureMSAA_;
+			graphics::GraphicsTexturePtr colorTexture_;
+			graphics::GraphicsTexturePtr  depthTexture_;
+			graphics::GraphicsTexturePtr  colorTextureMSAA_;
+			graphics::GraphicsTexturePtr  depthTextureMSAA_;
 
 			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsDataPtr ibo_;

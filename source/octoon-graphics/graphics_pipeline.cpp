@@ -86,7 +86,7 @@ namespace octoon
 		}
 
 		GraphicsFramebufferLayoutPtr
-		GraphicsPipelineDesc::getGraphicsFramebufferLayout() const noexcept
+		GraphicsPipelineDesc::getFramebufferLayout() const noexcept
 		{
 			return _framebufferLayout;
 		}

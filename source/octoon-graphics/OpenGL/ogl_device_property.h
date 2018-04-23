@@ -73,7 +73,7 @@ namespace octoon
 #endif
 
 		private:
-			bool setupGLEnvironment(CreateParam& param) noexcept;
+			void setupGLEnvironment(CreateParam& param) noexcept(false);
 			void closeGLEnvironment(const CreateParam& param) noexcept;
 
 			bool initDeviceProperties() noexcept;

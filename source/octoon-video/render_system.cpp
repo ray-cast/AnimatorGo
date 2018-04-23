@@ -6,26 +6,6 @@
 #include <octoon/video/text_material.h>
 #include <octoon/runtime/except.h>
 
-#if __WINDOWS__
-#include <GL/glew.h>
-#include <GL/wglew.h>
-
-typedef BOOL(GLAPIENTRY * PFNWGLSWAPINTERVALEXTPROC) (int interval);
-typedef HGLRC(GLAPIENTRY * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShareContext, const int* attribList);
-typedef BOOL(GLAPIENTRY * PFNWGLGETPIXELFORMATATTRIBIVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
-typedef BOOL(WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int* piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
-
-PFNWGLSWAPINTERVALEXTPROC __wglSwapIntervalEXT;
-PFNWGLCREATECONTEXTATTRIBSARBPROC   __wglCreateContextAttribsARB;
-PFNWGLGETPIXELFORMATATTRIBIVARBPROC __wglGetPixelFormatAttribivARB;
-PFNWGLCHOOSEPIXELFORMATARBPROC __wglChoosePixelFormatARB;
-#elif __LINUX__
-#	include <X11/Xlib.h>
-#elif __APPLE__
-#	include <OpenGL/OpenGL.h>
-#	include <OpenGL/CGLTypes.h>
-#endif
-
 using namespace octoon::graphics;
 
 namespace octoon
@@ -86,8 +66,8 @@ namespace octoon
 
 			graphics::GraphicsSwapchainDesc swapchainDesc;
 			swapchainDesc.setWindHandle(winhandle_);
-			swapchainDesc.setWidth(1);
-			swapchainDesc.setHeight(1);
+			swapchainDesc.setWidth(w);
+			swapchainDesc.setHeight(h);
 			swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::Vsync);
 			swapchainDesc.setImageNums(2);
 			swapchainDesc.setColorFormat(graphics::GraphicsFormat::B8G8R8A8UNorm);
@@ -151,46 +131,54 @@ namespace octoon
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
 
-			::glewInit();
+			graphics::GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexFormat(graphics::GraphicsFormat::R8G8B8A8UNorm);
+			colorTexture_ = device_->createTexture(colorTextureDesc);
 
-			glGenTextures(1, &colorTexture_);
-			glBindTexture(GL_TEXTURE_2D, colorTexture_);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			graphics::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexFormat(graphics::GraphicsFormat::X8_D24UNormPack32);
+			depthTexture_ = device_->createTexture(depthTextureDesc);
 
-			glGenTextures(1, &depthTexture_);
-			glBindTexture(GL_TEXTURE_2D, depthTexture_);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			graphics::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, graphics::GraphicsFormat::R8G8B8A8UNorm));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, graphics::GraphicsFormat::X8_D24UNormPack32));
 
-			glGenFramebuffers(1, &fbo_);
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture_, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture_, 0);
+			graphics::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(graphics::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(graphics::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-			assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			fbo_ = device_->createFramebuffer(framebufferDesc);
 
 #if !defined(__linux)
-			glGenTextures(1, &colorTextureMSAA_);
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorTextureMSAA_);
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, w, h, GL_TRUE);
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+			graphics::GraphicsTextureDesc colorTextureDescMSAA;
+			colorTextureDescMSAA.setWidth(w);
+			colorTextureDescMSAA.setHeight(h);
+			colorTextureDescMSAA.setTexMultisample(4);
+			colorTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::R8G8B8A8UNorm);
+			colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
 
-			glGenTextures(1, &depthTextureMSAA_);
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, depthTextureMSAA_);
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT24, w, h, GL_TRUE);
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+			graphics::GraphicsTextureDesc depthTextureDescMSAA;
+			depthTextureDescMSAA.setWidth(w);
+			depthTextureDescMSAA.setHeight(h);
+			depthTextureDescMSAA.setTexMultisample(4);
+			depthTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::X8_D24UNormPack32);
+			depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
 
-			glGenFramebuffers(1, &fboMSAA_);
-			glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorTextureMSAA_, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, depthTextureMSAA_, 0);
+			graphics::GraphicsFramebufferDesc framebufferDescMSAA;
+			framebufferDescMSAA.setWidth(w);
+			framebufferDescMSAA.setHeight(h);
+			framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDescMSAA.setDepthStencilAttachment(graphics::GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
+			framebufferDescMSAA.addColorAttachment(graphics::GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
 
-			assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
 #endif
 		}
 
@@ -221,14 +209,13 @@ namespace octoon
 
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-#if defined(__linux)
-				glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+#if (__linux)
+				context_->setFramebuffer(fbo_);
 #else
-
-				glBindFramebuffer(GL_FRAMEBUFFER, fboMSAA_);
+				context_->setFramebuffer(fboMSAA_);
 #endif
 				context_->setViewport(0, camera->getPixelViewport());
-				context_->clearFramebuffer(0, octoon::graphics::GraphicsClearFlagBits::AllBit, camera->getClearColor(), 1.0f, 0);
+				context_->clearFramebuffer(0, octoon::graphics::GraphicsClearFlagBits::ColorDepthBit, camera->getClearColor(), 1.0f, 0);
 				context_->setRenderPipeline(pipeline_);
 				context_->setDescriptorSet(descriptorSet_);
 
@@ -276,13 +263,12 @@ namespace octoon
 				{
 					if (winhandle_)
 					{
-#if defined(__linux)
-						glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+						auto& v = camera->getPixelViewport();
+#if (__linux)
+						context_->blitFramebuffer(fbo_, v, nullptr, v);
 #else
-						glBindFramebuffer(GL_READ_FRAMEBUFFER, fboMSAA_);
+						context_->blitFramebuffer(fboMSAA_, v, nullptr, v);
 #endif
-						glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-						glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 					}
 				}
 			}

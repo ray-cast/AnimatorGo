@@ -57,17 +57,20 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = textureDesc.getMipNums();
 
-			if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
-				return false;
+			if (textureDesc.getTexMultisample() == 0)
+			{
+				if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
+					return false;
 
-			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-				return false;
+				if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
+					return false;
 
-			if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
-				return false;
+				if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
+					return false;
 
-			if (!applyMipmapLimit(target, mipBase, mipLevel))
-				return false;
+				if (!applyMipmapLimit(target, mipBase, mipLevel))
+					return false;
+			}
 
 			const char* stream = (const char*)textureDesc.getStream();
 			if (OGLTypes::isCompressedTexture(textureDesc.getTexFormat()))

@@ -16,7 +16,7 @@ namespace octoon
 			RenderSystem() noexcept;
 			~RenderSystem() noexcept;
 
-			void setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) noexcept;
+			void setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) except;
 			void close() noexcept;
 
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
@@ -52,8 +52,6 @@ namespace octoon
 			graphics::GraphicsTexturePtr depthTexture_;
 			graphics::GraphicsTexturePtr colorTextureMSAA_;
 			graphics::GraphicsTexturePtr depthTextureMSAA_;
-
-			graphics::GraphicsTexturePtr texture_;
 
 			graphics::GraphicsDevicePtr device_;
 			graphics::GraphicsContextPtr context_;

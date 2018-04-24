@@ -33,7 +33,7 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) noexcept
+		RenderSystem::setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) except
 		{
 			TextSystem::instance()->setup();
 

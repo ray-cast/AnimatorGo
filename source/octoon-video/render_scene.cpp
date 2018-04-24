@@ -22,7 +22,14 @@ namespace octoon
 
 			auto it = std::find(cameras_.begin(), cameras_.end(), camera);
 			if (it == cameras_.end())
+			{
 				cameras_.push_back(camera);
+
+				std::sort(cameras_.begin(), cameras_.end(), [](const Camera* a, const Camera* b)
+				{
+					return a->getCameraOrder() < b->getCameraOrder();
+				});
+			}
 		}
 
 		void
@@ -32,10 +39,7 @@ namespace octoon
 
 			auto it = std::find(cameras_.begin(), cameras_.end(), camera);
 			if (it != cameras_.end())
-			{
 				cameras_.erase(it);
-				return;
-			}
 		}
 
 		const CameraRaws&

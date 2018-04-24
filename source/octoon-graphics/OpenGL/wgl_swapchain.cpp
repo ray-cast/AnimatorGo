@@ -134,19 +134,19 @@ namespace octoon
 			switch (interval)
 			{
 			case GraphicsSwapInterval::Free:
-				if (!__wglSwapIntervalEXT(0))
+				if (!wglSwapIntervalEXT(0))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Free) fail");
 				break;
 			case GraphicsSwapInterval::Vsync:
-				if (!__wglSwapIntervalEXT(1))
+				if (!wglSwapIntervalEXT(1))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Vsync) fail");
 				break;
 			case GraphicsSwapInterval::Fps30:
-				if (!__wglSwapIntervalEXT(2))
+				if (!wglSwapIntervalEXT(2))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps30) fail");
 				break;
 			case GraphicsSwapInterval::Fps15:
-				if (!__wglSwapIntervalEXT(3))
+				if (!wglSwapIntervalEXT(3))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps15) fail");
 				break;
 			default:
@@ -357,7 +357,7 @@ namespace octoon
 		bool
 		WGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
-			if (!__wglCreateContextAttribsARB)
+			if (!wglCreateContextAttribsARB)
 				_context = wglCreateContext(_hdc);
 			else
 			{
@@ -400,7 +400,7 @@ namespace octoon
 				attribs[index++] = 0;
 				attribs[index] = 0;
 
-				_context = __wglCreateContextAttribsARB(_hdc, nullptr, attribs);
+				_context = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
 			}
 
 			if (!_context)
@@ -409,12 +409,9 @@ namespace octoon
 				return false;
 			}
 
-			if (__wglCreateContextAttribsARB)
-			{
-				this->setActive(true);
-				this->setSwapInterval(swapchainDesc.getSwapInterval());
-				this->setActive(false);
-			}
+			this->setActive(true);
+			this->setSwapInterval(swapchainDesc.getSwapInterval());
+			this->setActive(false);
 
 			return true;
 		}

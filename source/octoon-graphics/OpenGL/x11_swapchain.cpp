@@ -298,7 +298,8 @@ namespace octoon
 		void
 		XGLSwapchain::setSwapInterval(GraphicsSwapInterval interval) noexcept
 		{
-			glXSwapIntervalEXT(_display, _window, (int)interval);
+			if (glXSwapIntervalEXT)
+				glXSwapIntervalEXT(_display, _window, (int)interval);
 			_swapchainDesc.setSwapInterval(interval);
 		}
 

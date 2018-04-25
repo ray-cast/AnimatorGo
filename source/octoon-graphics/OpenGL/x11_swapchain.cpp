@@ -14,6 +14,12 @@ namespace octoon
 
 		XGLSwapchain::XGLSwapchain() noexcept
 			: _isActive(false)
+			, _window(0)
+			, _display(nullptr)
+			, _vi(nullptr)
+			, _cmap(0)
+			, _glc(nullptr)
+			, _cfg(nullptr)
 		{
 		}
 
@@ -208,6 +214,30 @@ namespace octoon
 			}
 
 			_window = (Window)swapchainDesc.getWindHandle();
+			if (!_window)
+			{
+				int attrib[] = { GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, GL_NONE };
+				_vi = glXChooseVisual(_display, DefaultScreen(_display), attrib);
+				if (!_vi)
+				{
+					this->getDevice()->downcast<OGLDevice>()->message("glXChooseVisual() fail.");
+					return false;
+				}
+
+				_cmap = XCreateColormap(_display, RootWindow(_display, _vi->screen), _vi->visual, AllocNone);
+				if (!_cmap)
+				{
+					this->getDevice()->downcast<OGLDevice>()->message("XCreateColormap() fail.");
+					return false;
+				}
+
+				XSetWindowAttributes swa;
+				swa.border_pixel = 0;
+				swa.colormap = _cmap;
+				_window = XCreateWindow(_display, RootWindow(_display, _vi->screen), 0, 0, 1, 1, 0, _vi->depth, InputOutput, _vi->visual, CWBorderPixel | CWColormap, &swa);
+
+				XMapWindow(_display, _window);
+			}
 
 			if (!glXMakeContextCurrent)
 			{
@@ -219,9 +249,12 @@ namespace octoon
 				}
 			}
 
-			this->setActive(true);
-			this->setSwapInterval(swapchainDesc.getSwapInterval());
-			this->setActive(false);
+			if (swapchainDesc.getWindHandle())
+			{
+				this->setActive(true);
+				this->setSwapInterval(swapchainDesc.getSwapInterval());
+				this->setActive(false);
+			}
 
 			_swapchainDesc = swapchainDesc;
 			return true;
@@ -240,6 +273,24 @@ namespace octoon
 			{
 				glXDestroyContext(_display, _glc);
 				_glc = nullptr;
+			}
+
+			if (!_swapchainDesc.getWindHandle() && _window)
+			{
+				XDestroyWindow(_display, _window);
+				_window = 0;
+			}
+
+			if (_cmap)
+			{
+				XFreeColormap(_display, _cmap);
+				_cmap = 0;
+			}
+
+			if (_vi)
+			{
+				XFree(_vi);
+				_vi = 0;
 			}
 
 			if (_display)
@@ -298,8 +349,12 @@ namespace octoon
 		void
 		XGLSwapchain::setSwapInterval(GraphicsSwapInterval interval) noexcept
 		{
-			if (glXSwapIntervalEXT)
-				glXSwapIntervalEXT(_display, _window, (int)interval);
+			if (_window)
+			{
+				if (glXSwapIntervalEXT)
+					glXSwapIntervalEXT(_display, _window, (int)interval);
+			}
+
 			_swapchainDesc.setSwapInterval(interval);
 		}
 

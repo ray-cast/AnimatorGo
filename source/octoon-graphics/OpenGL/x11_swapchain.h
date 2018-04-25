@@ -47,6 +47,8 @@ namespace octoon
 
 			Window _window;
 			Display* _display;
+			XVisualInfo* _vi;
+			Colormap _cmap;
 
 			GLXContext _glc;
 			GLXFBConfig* _cfg;

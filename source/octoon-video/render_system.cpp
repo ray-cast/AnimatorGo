@@ -8,6 +8,7 @@
 #include <octoon/runtime/except.h>
 
 #include <png.h>
+#include <cstring>
 
 using namespace octoon::graphics;
 

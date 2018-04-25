@@ -890,7 +890,7 @@ namespace octoon
 				glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV);
 			}
 
-			auto& deviceProperties = this->getDevice()->getGraphicsDeviceProperty().getGraphicsDeviceProperties();
+			auto& deviceProperties = this->getDevice()->getDeviceProperty().getDeviceProperties();
 			_vertexBuffers.resize(deviceProperties.maxVertexInputBindings);
 			_viewports.resize(deviceProperties.maxViewports, float4::Zero);
 			_scissors.resize(deviceProperties.maxViewports, uint4::Zero);

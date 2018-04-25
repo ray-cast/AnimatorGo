@@ -92,30 +92,33 @@ namespace octoon
 
 			fbo_ = device_->createFramebuffer(framebufferDesc);
 
-#if !defined(__linux)
-			graphics::GraphicsTextureDesc colorTextureDescMSAA;
-			colorTextureDescMSAA.setWidth(w);
-			colorTextureDescMSAA.setHeight(h);
-			colorTextureDescMSAA.setTexMultisample(4);
-			colorTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::R8G8B8A8UNorm);
-			colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
+			if (device_->getDeviceProperty().getDeviceProperties().isTextureDimSupport(graphics::GraphicsTextureDim::Texture2DMultisample))
+			{
+				graphics::GraphicsTextureDesc colorTextureDescMSAA;
+				colorTextureDescMSAA.setWidth(w);
+				colorTextureDescMSAA.setHeight(h);
+				colorTextureDescMSAA.setTexMultisample(4);
+				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				colorTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::R8G8B8A8UNorm);
+				colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
 
-			graphics::GraphicsTextureDesc depthTextureDescMSAA;
-			depthTextureDescMSAA.setWidth(w);
-			depthTextureDescMSAA.setHeight(h);
-			depthTextureDescMSAA.setTexMultisample(4);
-			depthTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::X8_D24UNormPack32);
-			depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
+				graphics::GraphicsTextureDesc depthTextureDescMSAA;
+				depthTextureDescMSAA.setWidth(w);
+				depthTextureDescMSAA.setHeight(h);
+				depthTextureDescMSAA.setTexMultisample(4);
+				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				depthTextureDescMSAA.setTexFormat(graphics::GraphicsFormat::X8_D24UNormPack32);
+				depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
 
-			graphics::GraphicsFramebufferDesc framebufferDescMSAA;
-			framebufferDescMSAA.setWidth(w);
-			framebufferDescMSAA.setHeight(h);
-			framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
-			framebufferDescMSAA.setDepthStencilAttachment(graphics::GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
-			framebufferDescMSAA.addColorAttachment(graphics::GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
+				graphics::GraphicsFramebufferDesc framebufferDescMSAA;
+				framebufferDescMSAA.setWidth(w);
+				framebufferDescMSAA.setHeight(h);
+				framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDescMSAA.setDepthStencilAttachment(graphics::GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
+				framebufferDescMSAA.addColorAttachment(graphics::GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
 
-			fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
-#endif
+				fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
+			}
 		}
 
 		void
@@ -236,11 +239,11 @@ namespace octoon
 
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-#if (__linux)
-				context_->setFramebuffer(fbo_);
-#else
-				context_->setFramebuffer(fboMSAA_);
-#endif
+				if (fboMSAA_)
+					context_->setFramebuffer(fboMSAA_);
+				else
+					context_->setFramebuffer(fbo_);
+
 				context_->setViewport(0, camera->getPixelViewport());
 				context_->clearFramebuffer(0, octoon::graphics::GraphicsClearFlagBits::ColorDepthBit, camera->getClearColor(), 1.0f, 0);
 
@@ -267,12 +270,12 @@ namespace octoon
 
 				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
-						auto& v = camera->getPixelViewport();
-#if (__linux)
-						context_->blitFramebuffer(fbo_, v, nullptr, v);
-#else
+					auto& v = camera->getPixelViewport();
+
+					if (fboMSAA_)
 						context_->blitFramebuffer(fboMSAA_, v, nullptr, v);
-#endif
+					else
+						context_->blitFramebuffer(fbo_, v, nullptr, v);
 				}
 			}
 
@@ -285,10 +288,11 @@ namespace octoon
 		{
 			context_->renderBegin();
 
-#if !defined(__linux)
-			math::float4 v(0, 0, fboMSAA_->getGraphicsFramebufferDesc().getWidth(), fboMSAA_->getGraphicsFramebufferDesc().getHeight());
-			context_->blitFramebuffer(fboMSAA_, v, fbo_, v);
-#endif
+			if (fboMSAA_)
+			{
+				math::float4 v(0, 0, fboMSAA_->getGraphicsFramebufferDesc().getWidth(), fboMSAA_->getGraphicsFramebufferDesc().getHeight());
+				context_->blitFramebuffer(fboMSAA_, v, fbo_, v);
+			}
 
 			std::uint32_t iw = (width - x);
 			std::uint32_t ih = (height - y);

@@ -633,6 +633,12 @@ namespace octoon
 			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DArray);
 			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Cube);
 
+			if (GL_ARB_texture_multisample)
+			{
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DMultisample);
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DArrayMultisample);
+			}
+
 			if (GLEW_ARB_texture_cube_map_array)
 				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::CubeArray);
 
@@ -758,7 +764,7 @@ namespace octoon
 		}
 
 		const GraphicsDeviceProperties&
-		OGLDeviceProperty::getGraphicsDeviceProperties() const noexcept
+		OGLDeviceProperty::getDeviceProperties() const noexcept
 		{
 			return _deviceProperties;
 		}

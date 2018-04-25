@@ -141,7 +141,7 @@ namespace octoon
 			GraphicsDeviceProperty() noexcept;
 			virtual ~GraphicsDeviceProperty() noexcept;
 
-			virtual const GraphicsDeviceProperties& getGraphicsDeviceProperties() const noexcept = 0;
+			virtual const GraphicsDeviceProperties& getDeviceProperties() const noexcept = 0;
 
 		private:
 			GraphicsDeviceProperty(const GraphicsDeviceProperty&) = delete;

@@ -147,6 +147,7 @@ namespace octoon
 			auto& textureDesc = renderTexture->getGraphicsTextureDesc();
 
 			if (textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArray ||
+				textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArrayMultisample ||
 				textureDesc.getTexDim() == GraphicsTextureDim::Cube ||
 				textureDesc.getTexDim() == GraphicsTextureDim::CubeArray)
 			{

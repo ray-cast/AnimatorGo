@@ -25,7 +25,7 @@ namespace octoon
 		{
 			assert(_texture == GL_NONE);
 
-			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim(), textureDesc.getTexMultisample() > 0);
+			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim());
 			if (target == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture target.");
@@ -53,17 +53,20 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = textureDesc.getMipNums();
 
-			if (!applySamplerWrap(textureDesc.getSamplerWrap()))
-				return false;
+			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
+			{
+				if (!applySamplerWrap(textureDesc.getSamplerWrap()))
+					return false;
 
-			if (!applySamplerFilter(textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-				return false;
+				if (!applySamplerFilter(textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
+					return false;
 
-			if (!applySamplerAnis(textureDesc.getSamplerAnis()))
-				return false;
+				if (!applySamplerAnis(textureDesc.getSamplerAnis()))
+					return false;
 
-			if (!applyMipmapLimit(mipBase, mipLevel))
-				return false;
+				if (!applyMipmapLimit(mipBase, mipLevel))
+					return false;
+			}
 
 			if (target == GL_TEXTURE_2D)
 				glTextureStorage2D(_texture, mipLevel, internalFormat, width, height);

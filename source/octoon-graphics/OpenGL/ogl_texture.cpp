@@ -27,7 +27,7 @@ namespace octoon
 		{
 			assert(_texture == GL_NONE);
 
-			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim(), textureDesc.getTexMultisample() > 0);
+			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim());
 			if (target == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture target");
@@ -57,7 +57,7 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = textureDesc.getMipNums();
 
-			if (textureDesc.getTexMultisample() == 0)
+			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 			{
 				if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
 					return false;

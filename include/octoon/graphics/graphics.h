@@ -14,5 +14,6 @@
 #include <octoon/graphics/graphics_input_layout.h>
 #include <octoon/graphics/graphics_descriptor.h>
 #include <octoon/graphics/graphics_pipeline.h>
+#include <octoon/graphics/graphics_device_property.h>
 
 #endif

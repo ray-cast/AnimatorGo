@@ -19,7 +19,7 @@ namespace octoon
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
 			GraphicsDevicePtr getDevice() noexcept;
 
-			const GraphicsDeviceProperties& getGraphicsDeviceProperties() const noexcept;
+			const GraphicsDeviceProperties& getDeviceProperties() const noexcept;
 
 		private:
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)

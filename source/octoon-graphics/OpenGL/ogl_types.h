@@ -133,7 +133,7 @@ namespace octoon
 			static GLenum asVertexFormat(GraphicsFormat format) noexcept;
 			static GLenum asIndexType(GraphicsIndexType type) noexcept;
 			static GLenum asShaderStage(GraphicsShaderStageFlags type) noexcept;
-			static GLenum asTextureTarget(GraphicsTextureDim mapping, bool multisampler) noexcept;
+			static GLenum asTextureTarget(GraphicsTextureDim mapping) noexcept;
 			static GLenum asTextureFormat(GraphicsFormat format) noexcept;
 			static GLenum asTextureType(GraphicsFormat format) noexcept;
 			static GLenum asTextureInternalFormat(GraphicsFormat format) noexcept;

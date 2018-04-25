@@ -7,6 +7,8 @@
 
 #include <octoon/runtime/except.h>
 
+#include <png.h>
+
 using namespace octoon::graphics;
 
 namespace octoon
@@ -275,6 +277,90 @@ namespace octoon
 
 			context_->renderEnd();
 			context_->present();
+		}
+
+		void
+		RenderSystem::saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
+		{
+			context_->renderBegin();
+
+#if !defined(__linux)
+			math::float4 v(x, y, width, height);
+			context_->blitFramebuffer(fboMSAA_, v, fbo_, v);
+#endif
+
+			auto texture = fbo_->getGraphicsFramebufferDesc().getColorAttachments().at(0).getBindingTexture();
+			std::vector<std::uint32_t> pixels((width - x) * (height - y));
+
+			void* data = nullptr;
+			if (texture->map(x, y, width, height, 0, &data))
+			{
+				std::memcpy(pixels.data(), data, pixels.size() * sizeof(std::uint32_t));
+				texture->unmap();
+			}
+
+			for (std::uint32_t y = 0; y < height / 2; y++)
+			{
+				for (std::uint32_t x = 0; x < width; x++)
+					std::swap(pixels[y * width + x], pixels[(height - y - 1) * width + x]);
+			}
+
+			context_->renderEnd();
+
+			png_infop info_ptr = nullptr;
+			png_structp png_ptr = nullptr;
+
+			FILE* png_file = ::fopen(filepath, "wb");
+			if (!png_file)
+				throw runtime::runtime_error::create(std::string("failed to create file with ") + filepath);
+
+			try
+			{
+				png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+				if (!png_ptr)
+					throw runtime::runtime_error::create(std::string("png_create_write_struct() failed"));
+
+				info_ptr = png_create_info_struct(png_ptr);
+				if (!info_ptr)
+					throw runtime::runtime_error::create(std::string("png_create_info_struct() failed"));
+
+				if (setjmp(png_jmpbuf(png_ptr)))
+					throw runtime::runtime_error::create(std::string("setjmp() failed"));
+
+				png_init_io(png_ptr, png_file);
+				png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+				auto palette = std::make_unique<png_color[]>(PNG_MAX_PALETTE_LENGTH);
+				if (!palette)
+					throw runtime::runtime_error::create(std::string("png_malloc() failed"));
+
+				png_set_strip_16(png_ptr);
+				png_set_packing(png_ptr);
+				png_set_PLTE(png_ptr, info_ptr, palette.get(), PNG_MAX_PALETTE_LENGTH);
+
+				png_write_info(png_ptr, info_ptr);
+
+				auto rows = std::make_unique<png_bytep[]>(height);
+				for (std::uint32_t i = 0; i < height; ++i)
+					rows[i] = (png_bytep)(pixels.data() + (height - i - 1) * width);
+
+				png_write_image(png_ptr, rows.get());
+				png_write_end(png_ptr, info_ptr);
+
+				png_destroy_write_struct(&png_ptr, &info_ptr);
+				fclose(png_file);
+			}
+			catch (const std::exception& e)
+			{
+				::fclose(png_file);
+
+				if (info_ptr)
+					png_destroy_write_struct(&png_ptr, nullptr);
+				else
+					png_destroy_write_struct(&png_ptr, &info_ptr);
+
+				throw e;
+			}
 		}
 	}
 }

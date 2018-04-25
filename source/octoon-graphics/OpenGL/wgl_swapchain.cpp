@@ -177,7 +177,8 @@ namespace octoon
 		void
 		WGLSwapchain::present() noexcept
 		{
-			SwapBuffers(_hdc);
+			if (_swapchainDesc.getWindHandle())
+				::SwapBuffers(_hdc);
 		}
 
 		bool
@@ -204,13 +205,14 @@ namespace octoon
 				WNDCLASSEXA wc;
 				std::memset(&wc, 0, sizeof(wc));
 				wc.cbSize = sizeof(wc);
-				wc.hInstance = _hinstance = ::GetModuleHandle(NULL);
+				wc.hInstance = ::GetModuleHandle(NULL);
 				wc.lpfnWndProc = ::DefWindowProc;
 				wc.lpszClassName = "OGL";
 				if (!::RegisterClassEx(&wc))
 					return false;
 
-				_hwnd = CreateWindowEx(WS_EX_APPWINDOW, "OGL", "OGL", 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
+				DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+				_hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "OGL", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
 				if (!_hwnd)
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("CreateWindowEx() fail");

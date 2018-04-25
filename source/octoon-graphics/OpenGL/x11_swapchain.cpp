@@ -312,7 +312,8 @@ namespace octoon
 		void
 		XGLSwapchain::present() noexcept
 		{
-			glXSwapBuffers(_display, _window);
+			if (_swapchainDesc.getWindHandle())
+				::glXSwapBuffers(_display, _window);
 		}
 
 		const GraphicsSwapchainDesc&

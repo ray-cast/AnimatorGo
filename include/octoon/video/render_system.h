@@ -38,6 +38,8 @@ namespace octoon
 
 			void render() noexcept;
 
+			void saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
+
 		private:
 			RenderSystem(const RenderSystem&) = delete;
 			RenderSystem& operator=(const RenderSystem&) = delete;

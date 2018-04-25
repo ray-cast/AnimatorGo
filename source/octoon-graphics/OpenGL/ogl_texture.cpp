@@ -277,7 +277,8 @@ namespace octoon
 		void
 		OGLTexture::unmap() noexcept
 		{
-			glUnmapNamedBuffer(_pbo);
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
+			glUnmapBuffer(_target);
 		}
 
 		GLenum

@@ -95,5 +95,11 @@ namespace octoon
 	{
 		video::RenderSystem::instance()->render();
 	}
+
+	void
+	VideoFeature::saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
+	{
+		video::RenderSystem::instance()->saveAsPNG(filepath, x, y, width, height);
+	}
 }
 #endif

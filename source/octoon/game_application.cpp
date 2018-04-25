@@ -259,6 +259,21 @@ namespace octoon
 			throw runtime::runtime_error::create("please call open() before addFeature()");
 	}
 
+	GameFeaturePtr
+	GameApplication::getFeature(const runtime::Rtti* type) const except
+	{
+		if (game_server_)
+			return game_server_->getFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before getFeature()");
+	}
+
+	GameFeaturePtr
+	GameApplication::getFeature(const runtime::Rtti& type) const except
+	{
+		return this->getFeature(&type);
+	}
+
 	void
 	GameApplication::removeFeature(const GameFeaturePtr& feature) except
 	{
@@ -275,6 +290,18 @@ namespace octoon
 			game_server_->sendInputEvent(event);
 		else
 			throw runtime::runtime_error::create("please call open() before sendInputEvent()");
+	}
+
+	void
+	GameApplication::start() except
+	{
+		this->setActive(true);
+	}
+
+	void
+	GameApplication::stop() noexcept
+	{
+		this->setActive(false);
 	}
 
 	void
@@ -473,8 +500,8 @@ namespace octoon
 		event.event = octoon::input::InputEvent::MouseMotion;
 		event.motion.x = x;
 		event.motion.y = y;
-		event.motion.xrel = x;
-		event.motion.yrel = y;
+		event.motion.xrel = (std::uint32_t)x;
+		event.motion.yrel = (std::uint32_t)y;
 		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.motion.state = false;
 		event.motion.windowID = (std::uint64_t)window;

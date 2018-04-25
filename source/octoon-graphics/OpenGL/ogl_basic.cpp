@@ -358,11 +358,7 @@ namespace octoon
 
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-		PFNWGLSWAPINTERVALEXTPROC __wglSwapIntervalEXT;
-		PFNWGLCREATECONTEXTATTRIBSARBPROC   __wglCreateContextAttribsARB;
-		PFNWGLGETPIXELFORMATATTRIBIVARBPROC __wglGetPixelFormatAttribivARB;
-#elif defined(OCTOON_BUILD_OPENGL_ES)
+#if defined(OCTOON_BUILD_OPENGL_ES)
 #	define GetProcAddress dlsym
 #endif
 
@@ -747,15 +743,7 @@ namespace octoon
 			__glViewport = (PFNGLVIEWPORT)::GetProcAddress(opengl32, "glViewport");
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-			__wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)::wglGetProcAddress("wglSwapIntervalEXT");
-			__wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)::wglGetProcAddress("wglGetPixelFormatAttribivARB");
-			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
-
-			initGLExtention = __wglCreateContextAttribsARB ? true : false;
-#else
 			initGLExtention = true;
-#endif
 
 			return initGLExtention;
 		}

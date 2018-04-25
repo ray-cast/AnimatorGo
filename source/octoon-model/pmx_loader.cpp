@@ -7,6 +7,8 @@
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
 
+#include <cstring>
+
 using namespace octoon::io;
 using namespace octoon::math;
 

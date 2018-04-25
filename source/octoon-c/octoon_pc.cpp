@@ -14,13 +14,13 @@
 #include <cstring>
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-#define glfwGetWinHandle(window) glfwGetWin32Window(window_)
+#define glfwGetWinHandle(window) glfwGetWin32Window(window)
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
-#define glfwGetWinHandle(window) glfwGetX11Window(window_)
+#define glfwGetWinHandle(window) glfwGetX11Window(window)
 #elif defined(GLFW_EXPOSE_NATIVE_EGL)
-#define glfwGetWinHandle(window) glfwGetEGLSurface(window_)
+#define glfwGetWinHandle(window) glfwGetEGLSurface(window)
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
-#define glfwGetWinHandle(window) glfwGetCocoaWindow(window_)
+#define glfwGetWinHandle(window) glfwGetCocoaWindow(window)
 #endif
 
 #undef None

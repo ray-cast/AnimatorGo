@@ -107,8 +107,8 @@ namespace octoon
 			return clamp(v, 0.0f, 1.0f);
 		}
 
-		template<typename T>
-		constexpr T lerp(const T t1, const T t2, const T t3) noexcept
+		template<typename _Tx, typename _Ty>
+		constexpr _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
 		{
 			return t1 + (t2 - t1) * t3;
 		}

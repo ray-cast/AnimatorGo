@@ -525,10 +525,12 @@ namespace octoon
 		enum class GraphicsTextureDim : std::uint8_t
 		{
 			Texture2D = 0,
-			Texture2DArray = 1,
-			Texture3D = 2,
-			Cube = 3,
-			CubeArray = 4,
+			Texture2DMultisample = 1,
+			Texture2DArrayMultisample = 2,
+			Texture2DArray = 3,
+			Texture3D = 4,
+			Cube = 5,
+			CubeArray = 6,
 		};
 
 		enum class GraphicsSamplerAnis : std::uint8_t

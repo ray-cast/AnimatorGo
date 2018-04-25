@@ -1040,18 +1040,6 @@ namespace octoon
 
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-
-		typedef BOOL(GLAPIENTRY * PFNWGLSWAPINTERVALEXTPROC) (int interval);
-		typedef HGLRC(GLAPIENTRY * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShareContext, const int* attribList);
-		typedef BOOL(GLAPIENTRY * PFNWGLGETPIXELFORMATATTRIBIVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
-
-		extern PFNWGLSWAPINTERVALEXTPROC __wglSwapIntervalEXT;
-		extern PFNWGLCREATECONTEXTATTRIBSARBPROC   __wglCreateContextAttribsARB;
-		extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC __wglGetPixelFormatAttribivARB;
-
-#endif
-
 		bool initGLExtenstion() noexcept;
 	}
 }

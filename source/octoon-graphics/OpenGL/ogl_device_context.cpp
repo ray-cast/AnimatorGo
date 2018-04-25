@@ -121,7 +121,14 @@ namespace octoon
 
 			if (_viewports[i] != view)
 			{
-				glViewportIndexedf(i, view.left, view.top, view.width, view.height);
+				if (i == 0)
+					glViewport(view.left, view.top, view.width, view.height);
+				else
+				{
+					if (glViewportIndexedf)
+						glViewportIndexedf(i, view.left, view.top, view.width, view.height);
+				}
+
 				_viewports[i] = view;
 			}
 		}
@@ -145,7 +152,14 @@ namespace octoon
 				else
 					height = _glcontext->getGraphicsSwapchainDesc().getHeight();
 
-				glScissorIndexed(i, scissor.left, height - scissor.height - scissor.top, scissor.width, scissor.height);
+				if (i == 0)
+					glScissor(scissor.left, height - scissor.height - scissor.top, scissor.width, scissor.height);
+				else
+				{
+					if (glScissorIndexed)
+						glScissorIndexed(i, scissor.left, height - scissor.height - scissor.top, scissor.width, scissor.height);
+				}
+
 				_scissors[i] = scissor;
 			}
 		}
@@ -448,7 +462,10 @@ namespace octoon
 					{
 						this->setViewport(i, float4(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight()));
 
-						glScissorIndexed(i, _scissors[i].left, framebufferDesc.getHeight() - _scissors[i].height - _scissors[i].top, _scissors[i].width, _scissors[i].height);
+						if (glScissorIndexed)
+							glScissorIndexed(i, _scissors[i].left, framebufferDesc.getHeight() - _scissors[i].height - _scissors[i].top, _scissors[i].width, _scissors[i].height);
+						else
+							glScissor(_scissors[i].left, framebufferDesc.getHeight() - _scissors[i].height - _scissors[i].top, _scissors[i].width, _scissors[i].height);
 					}
 
 					_framebuffer = framebuffer;
@@ -464,41 +481,11 @@ namespace octoon
 		}
 
 		void
-		OGLDeviceContext::setFramebufferClear(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
-		{
-		}
-
-		void
 		OGLDeviceContext::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
 		{
 			assert(_glcontext->getActive());
 
-			GLint buffer = 0;
-			if (_framebuffer)
-			{
-				const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getGraphicsFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
-				if (layoutDesc.getComponents().size() <= i)
-					return;
-
-				auto type = layoutDesc.getComponents().at(i).getAttachType();
-				if (type == GraphicsImageLayout::ColorAttachmentOptimal)
-				{
-					if (!(flags & GraphicsClearFlagBits::ColorBit))
-						return;
-
-					flags = GraphicsClearFlagBits::ColorBit;
-					buffer = i;
-				}
-				else if (type == GraphicsImageLayout::DepthStencilAttachmentOptimal ||
-					type == GraphicsImageLayout::DepthStencilReadOnlyOptimal)
-				{
-					if (!(flags & GraphicsClearFlagBits::DepthBit) &&
-						!(flags & GraphicsClearFlagBits::StencilBit))
-					{
-						return;
-					}
-				}
-			}
+			GLint buffer = i;
 
 			if (_stateCaptured.getScissorTestEnable())
 			{
@@ -538,7 +525,8 @@ namespace octoon
 				GLint s = stencil;
 				glClearBufferiv(GL_STENCIL, buffer, &s);
 			}
-			else
+
+			if (flags & GraphicsClearFlagBits::ColorBit)
 			{
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
@@ -589,6 +577,8 @@ namespace octoon
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
 
 			glBlitFramebuffer(v1.left, v1.top, v1.width, v1.height, v2.left, v2.top, v2.width, v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+			_framebuffer = nullptr;
 		}
 
 		void
@@ -597,7 +587,7 @@ namespace octoon
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getGraphicsFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
+			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
 			if (layoutDesc.getComponents().size() > i)
 			{
 				auto& attachment = layoutDesc.getComponents().at(i);
@@ -700,7 +690,12 @@ namespace octoon
 			{
 				GLenum drawType = OGLTypes::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
-					glDrawArraysInstanced(drawType, startVertice, numVertices, numInstances);
+				{
+					if (numInstances == 1)
+						glDrawArrays(drawType, startVertice, numVertices);
+					else
+						glDrawArraysInstanced(drawType, startVertice, numVertices, numInstances);
+				}
 				else
 					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
 			}
@@ -738,9 +733,26 @@ namespace octoon
 
 				GLenum drawType = OGLTypes::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
-					glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
+				{
+					if (startVertice == 0)
+					{
+						if (glDrawElementsInstanced)
+							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
+						else
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support glDrawElementsInstanced.");
+					}
+					else
+					{
+						if (glDrawElementsInstancedBaseVertex)
+							glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
+						else
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
+					}
+				}
 				else
+				{
 					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
+				}
 			}
 		}
 
@@ -792,12 +804,6 @@ namespace octoon
 		bool
 		OGLDeviceContext::checkSupport() noexcept
 		{
-			if (!GLEW_ARB_draw_elements_base_vertex)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
-				return false;
-			}
-
 			if (!GLEW_ARB_uniform_buffer_object)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_uniform_buffer_object.");
@@ -922,7 +928,7 @@ namespace octoon
 				glBindVertexArrayAPPLE(_globalVao);
 			}
 
-			auto& deviceProperties = this->getDevice()->getGraphicsDeviceProperty().getGraphicsDeviceProperties();
+			auto& deviceProperties = this->getDevice()->getDeviceProperty().getDeviceProperties();
 			_vertexBuffers.resize(deviceProperties.maxVertexInputBindings);
 			_viewports.resize(deviceProperties.maxViewports, float4(0, 0, 0, 0));
 			_scissors.resize(deviceProperties.maxViewports, uint4(0, 0, 0, 0));

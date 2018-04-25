@@ -1,10 +1,10 @@
 #include "ogl_shader.h"
 #include "ogl_device.h"
 
-#define EXCLUDE_PSTDINT
-#include <hlslcc.hpp>
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#	define EXCLUDE_PSTDINT
+#	include <hlslcc.hpp>
 
-#if defined(__WINDOWS__)
 #	include <sstream>
 #	include <d3dcompiler.h>
 #endif
@@ -291,6 +291,7 @@ namespace octoon
 
 			if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSL)
 			{
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 				if (!HlslCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), shaderDesc.getEntryPoint().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlsl to glsl.");
@@ -298,9 +299,14 @@ namespace octoon
 				}
 
 				source = codes.data();
+#else
+				this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
+				return false;
+#endif
 			}
 			else if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSLbytecodes)
 			{
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 				if (!HlslByteCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
@@ -308,6 +314,10 @@ namespace octoon
 				}
 
 				source = codes.data();
+#else
+				this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
+				return false;
+#endif
 			}
 
 			glShaderSource(_instance, 1, &source, 0);
@@ -350,7 +360,7 @@ namespace octoon
 		bool
 		OGLShader::HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, const std::string& main, std::string& out)
 		{
-		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
+		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 			const char* profile = nullptr;
 			if (stage == GraphicsShaderStageFlagBits::VertexBit)
 				profile = "vs_4_0";
@@ -420,6 +430,7 @@ namespace octoon
 		bool
 		OGLShader::HlslByteCodes2GLSL(GraphicsShaderStageFlags stage, const char* codes, std::string& out)
 		{
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 			std::uint32_t flags = HLSLCC_FLAG_COMBINE_TEXTURE_SAMPLERS | HLSLCC_FLAG_INOUT_APPEND_SEMANTIC_NAMES | HLSLCC_FLAG_DISABLE_GLOBALS_STRUCT;
 			if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				flags = HLSLCC_FLAG_GS_ENABLED;
@@ -448,6 +459,9 @@ namespace octoon
 				FreeGLSLShader(&shader);
 				return false;
 			}
+#else
+			return false;
+#endif
 		}
 
 		const GraphicsShaderDesc&

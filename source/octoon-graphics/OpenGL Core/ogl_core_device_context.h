@@ -50,7 +50,6 @@ namespace octoon
 			void generateMipmap(const GraphicsTexturePtr& texture) noexcept;
 
 			void setFramebuffer(const GraphicsFramebufferPtr& target) noexcept;
-			void setFramebufferClear(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept;
 			void clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept;
 			void discardFramebuffer(std::uint32_t i) noexcept;
 			void blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept;

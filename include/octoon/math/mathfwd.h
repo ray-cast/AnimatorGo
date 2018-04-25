@@ -39,6 +39,9 @@ namespace octoon
 			class Sphere;
 
 			template<typename T = float>
+			class Triangle;
+
+			template<typename T = float>
 			class BoundingBox;
 		}
 
@@ -52,6 +55,7 @@ namespace octoon
 		using Quaternion = detail::Quaternion<float>;
 		using AABB = detail::AABB<float>;
 		using Sphere = detail::Sphere<float>;
+		using Triangle = detail::Triangle<float>;
 		using BoundingBox = detail::BoundingBox<float>;
 
 		// float
@@ -169,6 +173,11 @@ namespace octoon
 		using double2x2s = std::vector<double2x2>;
 		using double3x3s = std::vector<double3x3>;
 		using double4x4s = std::vector<double4x4>;
+
+		using uint8s = std::vector<std::uint8_t>;
+		using uint16s = std::vector<std::uint16_t>;
+		using uint32s = std::vector<std::uint32_t>;
+		using uint64s = std::vector<std::uint64_t>;
 	}
 }
 

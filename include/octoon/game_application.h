@@ -35,6 +35,12 @@ namespace octoon
 		void addFeature(Args&&... args) except { this->addFeature(std::make_shared<T>(std::forward<Args>(args)...)); }
 		void addFeature(const GameFeaturePtr& feature) except;
 		void addFeature(GameFeaturePtr&& feature) except;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
+		GameFeaturePtr getFeature(const runtime::Rtti* type) const except;
+		GameFeaturePtr getFeature(const runtime::Rtti& type) const except;
+
 		void removeFeature(const GameFeaturePtr& feature) except;
 
 		void sendInputEvent(const input::InputEvent& event) except;
@@ -54,6 +60,9 @@ namespace octoon
 		void doWindowScrool(WindHandle window, float x, float y) except;
 		void doWindowDrop(WindHandle window, std::uint32_t count, const char** file_utf8) except;
 
+		void start() except;
+		void stop() noexcept;
+
 		void update() except;
 
 	protected:
@@ -71,7 +80,9 @@ namespace octoon
 		GameFeaturePtr timer_feature_;
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
+		GameFeaturePtr graphics_feature_;
 		GameFeaturePtr gui_feature_;
+		GameFeaturePtr video_feature_;
 
 		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};

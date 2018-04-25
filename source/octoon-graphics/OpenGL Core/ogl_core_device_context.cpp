@@ -434,41 +434,11 @@ namespace octoon
 		}
 
 		void
-		OGLCoreDeviceContext::setFramebufferClear(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
-		{
-		}
-
-		void
 		OGLCoreDeviceContext::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
 		{
 			assert(_glcontext->getActive());
 
-			GLint buffer = 0;
-			if (_framebuffer)
-			{
-				const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getGraphicsFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
-				if (layoutDesc.getComponents().size() <= i)
-					return;
-
-				auto type = layoutDesc.getComponents().at(i).getAttachType();
-				if (type == GraphicsImageLayout::ColorAttachmentOptimal)
-				{
-					if (!(flags & GraphicsClearFlagBits::ColorBit))
-						return;
-
-					flags = GraphicsClearFlagBits::ColorBit;
-					buffer = i;
-				}
-				else if (type == GraphicsImageLayout::DepthStencilAttachmentOptimal ||
-					type == GraphicsImageLayout::DepthStencilReadOnlyOptimal)
-				{
-					if (!(flags & GraphicsClearFlagBits::DepthBit) &&
-						!(flags & GraphicsClearFlagBits::StencilBit))
-					{
-						return;
-					}
-				}
-			}
+			GLint buffer = i;
 
 			if (_stateCaptured.getScissorTestEnable())
 			{
@@ -508,7 +478,8 @@ namespace octoon
 				GLint s = stencil;
 				glClearBufferiv(GL_STENCIL, buffer, &s);
 			}
-			else
+
+			if (flags & GraphicsClearFlagBits::ColorBit)
 			{
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
@@ -565,7 +536,7 @@ namespace octoon
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getGraphicsFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
+			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
 			if (layoutDesc.getComponents().size() > i)
 			{
 				auto& attachment = layoutDesc.getComponents().at(i);
@@ -919,7 +890,7 @@ namespace octoon
 				glEnableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV);
 			}
 
-			auto& deviceProperties = this->getDevice()->getGraphicsDeviceProperty().getGraphicsDeviceProperties();
+			auto& deviceProperties = this->getDevice()->getDeviceProperty().getDeviceProperties();
 			_vertexBuffers.resize(deviceProperties.maxVertexInputBindings);
 			_viewports.resize(deviceProperties.maxViewports, float4::Zero);
 			_scissors.resize(deviceProperties.maxViewports, uint4::Zero);

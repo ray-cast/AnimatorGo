@@ -2,6 +2,7 @@
 #define OCTOON_SINGLETON_H_
 
 #include <octoon/runtime/platform.h>
+#include <type_traits>
 
 namespace octoon
 {
@@ -30,6 +31,17 @@ namespace octoon
 
 		template<typename _Tx, typename _Ty> _Tx Singleton<_Tx, _Ty>::instance_;
 	}
+}
+
+#define OctoonDeclareSingleton(type) \
+public:\
+    static type* instance();\
+private:
+
+#define OctoonImplementSingleton(type) \
+type* type::instance() \
+{\
+    return runtime::Singleton<type>::instance();\
 }
 
 #endif

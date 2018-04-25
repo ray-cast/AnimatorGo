@@ -123,9 +123,17 @@ namespace octoon
 		void
 		OGLPipeline::apply() noexcept
 		{
-			for (auto& it : _bindings)
+			if (glVertexAttribDivisor)
 			{
-				glVertexAttribDivisor(it.index, it.divisor);
+				for (auto& it : _bindings)
+					glVertexAttribDivisor(it.index, it.divisor);
+			}
+			else
+			{
+				for (auto& it : _bindings)
+				{
+					assert(it.divisor == 0);
+				}
 			}
 		}
 

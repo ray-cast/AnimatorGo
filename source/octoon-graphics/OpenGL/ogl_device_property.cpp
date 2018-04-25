@@ -1,6 +1,8 @@
 #include "ogl_device_property.h"
 #include "ogl_device.h"
 
+#include <octoon/runtime/except.h>
+
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 #	include "wgl_swapchain.h"
 #endif
@@ -26,38 +28,22 @@ namespace octoon
 		{
 			assert(_device.lock());
 
-			GraphicsSwapchainDesc swapchainDesc;
-			swapchainDesc.setWindHandle(nullptr);
-			swapchainDesc.setWidth(1);
-			swapchainDesc.setHeight(1);
-			swapchainDesc.setSwapInterval(GraphicsSwapInterval::Free);
-			swapchainDesc.setImageNums(2);
-			swapchainDesc.setColorFormat(GraphicsFormat::B8G8R8A8UNorm);
-			swapchainDesc.setDepthStencilFormat(GraphicsFormat::D24UNorm_S8UInt);
-
-		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-			WGLSwapchain swapchain;
-			swapchain.setDevice(this->getDevice());
-
-			if (!swapchain.setup(swapchainDesc))
+			try
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("init WGLSwapchain fail");
-				return false;
+				CreateParam params;
+				this->setupGLEnvironment(params);
+
+				if (!initGLExtenstion())
+					throw runtime::runtime_error::create("initGLExtenstion fail");
+
+				if (!initDeviceProperties())
+					throw runtime::runtime_error::create("initDeviceProperties fail");
+
+				this->closeGLEnvironment(params);
 			}
-
-			swapchain.setActive(true);
-		#endif
-
-			if (!initGLExtenstion())
+			catch (const std::exception& e)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("initGLExtenstion fail");
-				return false;
-			}
-
-			if (!initDeviceProperties())
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("initDeviceProperties fail");
-				return false;
+				this->getDevice()->downcast<OGLDevice>()->message(e.what());
 			}
 
 			return true;
@@ -81,31 +67,26 @@ namespace octoon
 		}
 
 		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-		bool
-		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept
+		void
+		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept(false)
 		{
 			WNDCLASSEXA wc;
 			std::memset(&wc, 0, sizeof(wc));
 			wc.cbSize = sizeof(wc);
 			wc.hInstance = param.hinstance = ::GetModuleHandle(NULL);
 			wc.lpfnWndProc = ::DefWindowProc;
-			wc.lpszClassName = "OGL";
+			wc.lpszClassName = "OctoonWin32OpenGLWindow";
+			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 			if (!::RegisterClassEx(&wc))
-				return false;
+				throw runtime::runtime_error::create("RegisterClassEx() fail");
 
-			param.hwnd = CreateWindowEx(WS_EX_APPWINDOW, "OGL", "OGL", 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
+			param.hwnd = CreateWindowEx(WS_EX_APPWINDOW, "OctoonWin32OpenGLWindow", "OGL", 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
 			if (!param.hwnd)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("CreateWindowEx() fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("CreateWindowEx() fail");
 
 			param.hdc = ::GetDC(param.hwnd);
 			if (!param.hdc)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("GetDC() fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("GetDC() fail");
 
 			PIXELFORMATDESCRIPTOR pfd;
 			std::memset(&pfd, 0, sizeof(pfd));
@@ -115,37 +96,20 @@ namespace octoon
 
 			int pixelFormat = ::ChoosePixelFormat(param.hdc, &pfd);
 			if (!pixelFormat)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("ChoosePixelFormat() fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("ChoosePixelFormat() fail");
 
 			if (!::DescribePixelFormat(param.hdc, pixelFormat, sizeof(pfd), &pfd))
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("DescribePixelFormat() fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("DescribePixelFormat() fail");
 
 			if (!::SetPixelFormat(param.hdc, pixelFormat, &pfd))
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("SetPixelFormat() fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("SetPixelFormat() fail");
 
 			param.context = ::wglCreateContext(param.hdc);
 			if (!param.context)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("wglCreateContext fail");
-				return false;
-			}
+				throw runtime::runtime_error::create("wglCreateContext fail");
 
 			if (!::wglMakeCurrent(param.hdc, param.context))
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent fail");
-				return false;
-			}
-
-			return true;
+				throw runtime::runtime_error::create("wglMakeCurrent fail");
 		}
 
 		void
@@ -168,21 +132,25 @@ namespace octoon
 			}
 		}
 		#elif defined(OCTOON_BUILD_PLATFORM_LINUX)
-		bool
-		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept
+		void
+		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept(false)
 		{
 			param.dpy = XOpenDisplay(NULL);
-			if (!param.dpy) return false;
+			if (!param.dpy)
+				throw runtime::runtime_error::create("XOpenDisplay() fail");
 
 			int erb, evb;
-			if (!glXQueryExtension(param.dpy, &erb, &evb)) return false;
+			if (!glXQueryExtension(param.dpy, &erb, &evb))
+				throw runtime::runtime_error::create("glXQueryExtension() fail");
 
-			int attrib[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GL_NONE };
+			int attrib[] = { GLX_RGBA, GLX_RED_SIZE, 8, GLX_GREEN_SIZE, 8, GLX_BLUE_SIZE, 8, GL_NONE, GL_NONE };
 			param.vi = glXChooseVisual(param.dpy, DefaultScreen(param.dpy), attrib);
-			if (!param.vi) return false;
+			if (!param.vi)
+				throw runtime::runtime_error::create("glXChooseVisual() fail");
 
 			param.ctx = glXCreateContext(param.dpy, param.vi, GL_NONE, true);
-			if (!param.ctx) return false;
+			if (!param.ctx)
+				throw runtime::runtime_error::create("glXCreateContext() fail");
 
 			param.cmap = XCreateColormap(param.dpy, RootWindow(param.dpy, param.vi->screen), param.vi->visual, AllocNone);
 
@@ -191,36 +159,16 @@ namespace octoon
 			swa.colormap = param.cmap;
 			param.wnd = XCreateWindow(param.dpy, RootWindow(param.dpy, param.vi->screen), 0, 0, 1, 1, 0, param.vi->depth, InputOutput, param.vi->visual, CWBorderPixel | CWColormap, &swa);
 
-			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx)) return false;
+			XMapWindow(param.dpy, param.wnd);
 
-			if (::glxewInit() != GLEW_OK) return false;
+			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx))
+				throw runtime::runtime_error::create("glXMakeCurrent() fail");
 
-			GLXContext oldCtx = param.ctx;
-			int FBConfigAttrs[] = { GLX_FBCONFIG_ID, 0, GL_NONE };
-			if (glXQueryContext(param.dpy, oldCtx, GLX_FBCONFIG_ID, &FBConfigAttrs[1]))
-				return false;
+			if (::glewInit() != GLEW_OK)
+				throw runtime::runtime_error::create("glewInit() fail");
 
-			int nelems = 0;
-			param.config = glXChooseFBConfig(param.dpy, param.vi->screen, FBConfigAttrs, &nelems);
-			if (nelems < 1)
-				return false;
-
-			int contextAttrs[20];
-			contextAttrs[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
-			contextAttrs[1] = 3;
-			contextAttrs[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
-			contextAttrs[3] = 3;
-			contextAttrs[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
-			contextAttrs[5] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-			contextAttrs[6] = GL_NONE;
-
-			param.ctx = glXCreateContextAttribsARB(param.dpy, *param.config, 0, true, contextAttrs);
-			if (!param.ctx) return false;
-
-			if (!glXMakeCurrent(param.dpy, param.wnd, param.ctx)) return false;
-
-			glXDestroyContext(param.dpy, oldCtx);
-			return true;
+			if (::glxewInit() != GLEW_OK)
+				throw runtime::runtime_error::create("glxewInit() fail");
 		}
 
 		void
@@ -234,8 +182,8 @@ namespace octoon
 			if (param.dpy) XCloseDisplay(param.dpy);
 		}
 		#elif defined(OCTOON_BUILD_PLATFORM_APPLE)
-		bool
-		OGLDeviceProperty::setupCGLEnvironment(CreateParam& param) noexcept
+		void
+		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept(false)
 		{
 			param.octx = CGLGetCurrentContext();
 			if (!param.octx)
@@ -252,28 +200,17 @@ namespace octoon
 				CGLPixelFormatObj pf;
 				CGLError error = CGLChoosePixelFormat(contextAttrs, &pf, &npix);
 				if (error)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("CGLChoosePixelFormat() fail");
-					return false;
-				}
+					throw runtime::runtime_error::create("CGLChoosePixelFormat() fail");
 
 				error = CGLCreateContext(pf, NULL, &param.ctx);
 				if (error)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("CGLCreateContext() fail");
-					return false;
-				}
+					throw runtime::runtime_error::create("CGLCreateContext() fail");
 
 				CGLReleasePixelFormat(pf);
 				error = CGLSetCurrentContext(param.ctx);
 				if (error)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("CGLSetCurrentContext() fail");
-					return false;
-				}
+					throw runtime::runtime_error::create("CGLSetCurrentContext() fail");
 			}
-
-			return true;
 		}
 
 		void
@@ -696,6 +633,12 @@ namespace octoon
 			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DArray);
 			_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Cube);
 
+			if (GL_ARB_texture_multisample)
+			{
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DMultisample);
+				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::Texture2DArrayMultisample);
+			}
+
 			if (GLEW_ARB_texture_cube_map_array)
 				_deviceProperties.supportTextureDims.push_back(GraphicsTextureDim::CubeArray);
 
@@ -821,7 +764,7 @@ namespace octoon
 		}
 
 		const GraphicsDeviceProperties&
-		OGLDeviceProperty::getGraphicsDeviceProperties() const noexcept
+		OGLDeviceProperty::getDeviceProperties() const noexcept
 		{
 			return _deviceProperties;
 		}

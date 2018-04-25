@@ -296,6 +296,27 @@ namespace octoon
 		return local_transform_inverse_;
 	}
 
+	const math::float3&
+	TransformComponent::getLocalRight() const noexcept
+	{
+		updateLocalTransform();
+		return math::right(local_transform_);
+	}
+
+	const math::float3&
+	TransformComponent::getLocalUp() const noexcept
+	{
+		updateLocalTransform();
+		return math::up(local_transform_);
+	}
+
+	const math::float3&
+	TransformComponent::getLocalForward() const noexcept
+	{
+		updateLocalTransform();
+		return math::forward(local_transform_);
+	}
+
 	GameComponentPtr
 	TransformComponent::clone() const noexcept
 	{

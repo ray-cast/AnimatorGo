@@ -46,7 +46,7 @@ namespace octoon
 
 			virtual void copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept = 0;
 
-			virtual const GraphicsDeviceProperty& getGraphicsDeviceProperty() const noexcept = 0;
+			virtual const GraphicsDeviceProperty& getDeviceProperty() const noexcept = 0;
 			virtual const GraphicsDeviceDesc& getGraphicsDeviceDesc() const noexcept = 0;
 
 		private:

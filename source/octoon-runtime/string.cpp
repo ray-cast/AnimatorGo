@@ -2,6 +2,7 @@
 #include <cmath>
 #include <locale>
 #include <limits.h>
+#include <cstring>
 
 // the operation specific directory separator
 #ifndef __WINDOWS__
@@ -173,8 +174,8 @@ namespace octoon
 
 				do
 				{
-					c1 = util::tolower(*s1++);
-					c2 = util::tolower(*s2++);
+					c1 = tolower(*s1++);
+					c2 = tolower(*s2++);
 				} while (c1 && (c1 == c2));
 
 				return c1 - c2;
@@ -195,8 +196,8 @@ namespace octoon
 
 				do
 				{
-					c1 = util::tolower(*s1++);
-					c2 = util::tolower(*s2++);
+					c1 = tolower(*s1++);
+					c2 = tolower(*s2++);
 				} while (c1 && (c1 == c2));
 
 				return c1 - c2;
@@ -221,8 +222,8 @@ namespace octoon
 					if (p++ >= n)
 						return 0;
 
-					c1 = util::tolower(*s1++);
-					c2 = util::tolower(*s2++);
+					c1 = tolower(*s1++);
+					c2 = tolower(*s2++);
 				} while (c1 && (c1 == c2));
 
 				return c1 - c2;
@@ -245,8 +246,8 @@ namespace octoon
 					if (p++ >= n)
 						return 0;
 
-					c1 = util::tolower(*s1++);
-					c2 = util::tolower(*s2++);
+					c1 = tolower(*s1++);
+					c2 = tolower(*s2++);
 				} while (c1 && (c1 == c2));
 
 				return c1 - c2;
@@ -1223,33 +1224,31 @@ namespace octoon
 				return std::wstring(path.c_str(), path.size() - length);
 			}
 
+#if __WINDOWS__
 			std::string filename(std::string::const_pointer path)
 			{
 				char drive[3];
 				char dir[MAX_PATH];
 				char filename[MAX_PATH];
 				char ext[MAX_PATH];
-#if __WINDOWS__
 				::_splitpath_s(path, drive, 3, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
-#else
-				::_splitpath(path, drive, dir, filename, ext);
-#endif
+
 				return filename;
 			}
+#endif
 
+#if __WINDOWS__
 			std::wstring filename(std::wstring::const_pointer path)
 			{
 				wchar_t drive[3];
 				wchar_t dir[MAX_PATH];
 				wchar_t filename[MAX_PATH];
 				wchar_t ext[MAX_PATH];
-#if __WINDOWS__
 				::_wsplitpath_s(path, drive, 3, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
-#else
-				::_wsplitpath(path, drive, dir, filename, ext);
-#endif
+
 				return filename;
 			}
+#endif
 
 			std::size_t ext_name(const char* in, char* out, std::size_t maxLength)
 			{

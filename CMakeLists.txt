@@ -8,13 +8,14 @@ SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir"
 SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to octoon dependencies" FORCE)
 SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon sample" FORCE)
 SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
+SET(OCTOON_PATH_SAMPLES ${OCTOON_PATH}/samples CACHE STRING "Adds a path to octoon samples" FORCE)
 SET(OCTOON_PATH_TESTS ${OCTOON_PATH}/tests CACHE STRING "Adds a path to octoon tests" FORCE)
 SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 
 # 编译选项
-OPTION(OCTOON_BUILD_NO_TESTS "ON to disable test binary generation" OFF)
+OPTION(OCTOON_BUILD_TESTS "ON to disable test binary generation" OFF)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)
 OPTION(OCTOON_BUILD_DEBUG_MODE "ON for debug or OFF for release" ON)
 OPTION(OCTOON_BUILD_MUTILTHREAD_DLL "ON for /MD OFF for /MT" ON)
@@ -158,7 +159,6 @@ IF(MINGW OR CMAKE_GENERATOR MATCHES "Unix")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wignored-qualifiers")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -finput-charset=utf-8")
 
 	IF(UNIX)
@@ -264,7 +264,10 @@ ADD_SUBDIRECTORY(source)
 # 工具
 ADD_SUBDIRECTORY(tools)
 
+# 工具
+ADD_SUBDIRECTORY(samples)
+
 # 单元测试
-IF(NOT OCTOON_BUILD_NO_TESTS)
+IF(OCTOON_BUILD_TESTS)
 	ADD_SUBDIRECTORY(tests)
 ENDIF()

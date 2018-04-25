@@ -51,6 +51,10 @@ namespace octoon
 		const math::float4x4& getLocalTransform() const noexcept;
 		const math::float4x4& getLocalTransformInverse() const noexcept;
 
+		const math::float3& getLocalRight() const noexcept;
+		const math::float3& getLocalUp() const noexcept;
+		const math::float3& getLocalForward() const noexcept;
+
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -58,6 +62,7 @@ namespace octoon
 		void onMoveAfter() except override;
 
 	private:
+		friend GameObject;
 		void updateLocalChildren() const noexcept;
 		void updateWorldChildren() const noexcept;
 		void updateLocalTransform() const noexcept;

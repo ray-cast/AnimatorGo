@@ -1,10 +1,10 @@
 #include <octoon/math/perlin_noise.h>
+#include <cstring>
 
 namespace octoon
 {
 	namespace math
 	{
-
 #define F2 0.3660254037844386f
 #define G2 0.21132486540518713f
 #define F3 (1.0f / 3.0f)

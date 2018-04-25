@@ -13,6 +13,7 @@ SET(MATH_LIST
 	${HEADER_PATH}/mat4.h
 	${HEADER_PATH}/quat.h
 	${HEADER_PATH}/math.h
+	${HEADER_PATH}/triangle.h
 	${HEADER_PATH}/trait.h
 	${HEADER_PATH}/AABB.h
 	${HEADER_PATH}/sphere.h

@@ -18,6 +18,8 @@ SET(CORE_LIST
 	${HEADER_PATH}/rtti_factory.h
 	${SOURCE_PATH}/rtti_factory.cpp
 	${HEADER_PATH}/rtti_macros.h
+	${HEADER_PATH}/rtti_singleton.h
+	${SOURCE_PATH}/rtti_singleton.cpp
 	${HEADER_PATH}/timer.h
 	${SOURCE_PATH}/timer.cpp
 	${HEADER_PATH}/except.h

@@ -1593,8 +1593,8 @@ namespace octoon
 					{
 						float s0 = (float)x / (float)step;
 						float s1 = (float)(x + 1) / (float)step;
-						float v0 = 1.0f - (float)(y) / (float)step;
-						float v1 = 1.0f - (float)(y + 1) / (float)step;
+						float v0 = 1.0 - (float)(y) / (float)step;
+						float v1 = 1.0 - (float)(y + 1) / (float)step;
 
 						ImGui::ColorConvertHSVtoRGB(hue, s0, v0, c00.x, c00.y, c00.z);
 						ImGui::ColorConvertHSVtoRGB(hue, s1, v0, c10.x, c10.y, c10.z);
@@ -1624,7 +1624,7 @@ namespace octoon
 			draw_list->AddLine(ImVec2(p.x, p.y + crossHairSize), ImVec2(p.x, p.y + 2), ImColor(255, 255, 255));
 			draw_list->AddLine(ImVec2(p.x, p.y - crossHairSize), ImVec2(p.x, p.y - 2), ImColor(255, 255, 255));
 
-			invisible_button("saturation_value_selector", size);
+			ImGui::InvisibleButton("saturation_value_selector", ImVec2(size.x, size.y));
 
 			if (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])
 			{
@@ -1656,7 +1656,7 @@ namespace octoon
 				value_changed = true;
 			}
 
-			color = ImColor::HSV(hue > 0 ? hue : 1e-6f, saturation > 0 ? saturation : 1e-6f, value > 0 ? value : 1e-6f);
+			color = ImColor::HSV(hue > 0 ? hue : 1e-6, saturation > 0 ? saturation : 1e-6, value > 0 ? value : 1e-6);
 
 			col[0] = ImClamp(color.Value.x, 0.0f, 1.0f);
 			col[1] = ImClamp(color.Value.y, 0.0f, 1.0f);

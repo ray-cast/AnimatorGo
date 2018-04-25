@@ -24,8 +24,16 @@
 #	include <octoon/game_base_features.h>
 #endif
 
+#if OCTOON_FEATURE_GRAPHICS_ENABLE
+#	include <octoon/graphics_feature.h>
+#endif
+
 #if OCTOON_FEATURE_UI_ENABLE
 #	include <octoon/gui_feature.h>
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+#	include <octoon/video_feature.h>
 #endif
 
 namespace octoon
@@ -100,8 +108,16 @@ namespace octoon
 		base_feature_ = std::make_shared<GameBaseFeatures>();
 #endif
 
+#if OCTOON_FEATURE_BASE_ENABLE
+		graphics_feature_ = std::make_shared<GraphicsFeature>(hwnd, w, h);
+#endif
+
 #if OCTOON_FEATURE_UI_ENABLE
 		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		video_feature_ = std::make_shared<VideoFeature>(w, h);
 #endif
 
 #if OCTOON_FEATURE_IO_ENABLE
@@ -118,6 +134,14 @@ namespace octoon
 
 #if OCTOON_FEATURE_BASE_ENABLE
 		this->addFeature(base_feature_);
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(graphics_feature_);
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(video_feature_);
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE
@@ -247,6 +271,21 @@ namespace octoon
 			throw runtime::runtime_error::create("please call open() before addFeature()");
 	}
 
+	GameFeaturePtr
+	GameApplication::getFeature(const runtime::Rtti* type) const except
+	{
+		if (game_server_)
+			return game_server_->getFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before getFeature()");
+	}
+
+	GameFeaturePtr
+	GameApplication::getFeature(const runtime::Rtti& type) const except
+	{
+		return this->getFeature(&type);
+	}
+
 	void
 	GameApplication::removeFeature(const GameFeaturePtr& feature) except
 	{
@@ -263,6 +302,18 @@ namespace octoon
 			game_server_->sendInputEvent(event);
 		else
 			throw runtime::runtime_error::create("please call open() before sendInputEvent()");
+	}
+
+	void
+	GameApplication::start() except
+	{
+		this->setActive(true);
+	}
+
+	void
+	GameApplication::stop() noexcept
+	{
+		this->setActive(false);
 	}
 
 	void
@@ -461,8 +512,8 @@ namespace octoon
 		event.event = octoon::input::InputEvent::MouseMotion;
 		event.motion.x = x;
 		event.motion.y = y;
-		event.motion.xrel = x;
-		event.motion.yrel = y;
+		event.motion.xrel = (std::uint32_t)x;
+		event.motion.yrel = (std::uint32_t)y;
 		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
 		event.motion.state = false;
 		event.motion.windowID = (std::uint64_t)window;

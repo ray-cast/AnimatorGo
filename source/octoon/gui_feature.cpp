@@ -1,4 +1,4 @@
-#if defined(OCTOON_FEATURE_INPUT_ENABLE)
+#if defined(OCTOON_FEATURE_UI_ENABLE)
 #include <octoon/gui_feature.h>
 
 #include <octoon/input_feature.h>
@@ -15,6 +15,7 @@
 #include <octoon/runtime/rtti_factory.h>
 
 #include <octoon/timer_feature.h>
+#include <octoon/graphics_feature.h>
 
 namespace octoon
 {
@@ -83,7 +84,11 @@ namespace octoon
 	{
 		system_ = std::make_unique<imgui::System>();
 
-		if (!system_->open(window_))
+		auto graphics = this->getFeature<GraphicsFeature>();
+		if (!graphics)
+			throw runtime::runtime_error::create("failure to get feature with graphics", runtime::error_code::none);
+
+		if (!system_->open(window_, graphics->getDevice()))
 			throw runtime::runtime_error::create("GuiSystem::open() fail", runtime::error_code::none);
 
 		if (!system_->load_font("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
@@ -150,23 +155,22 @@ namespace octoon
 	void
 	GuiFeature::onFrameBegin() noexcept
 	{
-		system_->render_begin();
+		system_->newFrame();
 	}
 
 	void
 	GuiFeature::onFrame() noexcept
 	{
-		static bool isOpened = true;
-		if (isOpened)
-			imgui::show_test_window(&isOpened);
-
 		GameObjectManager::instance()->onGui();
+
+		auto graphics = this->getFeature<GraphicsFeature>();
+		if (graphics)
+			system_->render(*graphics->getContext());
 	}
 
 	void
 	GuiFeature::onFrameEnd() noexcept
 	{
-		system_->render_end();
 	}
 }
 #endif

@@ -8,7 +8,7 @@ namespace octoon
 	OctoonImplementSubClass(GameObject, runtime::RttiInterface, "Object")
 
 	GameObject::GameObject() noexcept
-		: active_(false)
+		: active_(true)
 		, layer_(0)
 	{
 		GameObjectManager::instance()->_instanceObject(this, instance_id_);
@@ -151,6 +151,7 @@ namespace octoon
 			if (parent)
 				parent->children_.push_back(this->downcast_pointer<GameObject>());
 
+			this->getComponent<TransformComponent>()->updateLocalChildren();
 			this->onMoveAfter();
 		}
 	}

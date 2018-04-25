@@ -15,7 +15,7 @@ LINK_DIRECTORIES(${OCTOON_LIBRARY_OUTPUT_PATH})
 
 OPTION(OCTOON_FEATURE_IO_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_BASE_ENABLE "On for enable off for disable" ON)
-OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" ON)
+OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" OFF)
 OPTION(OCTOON_FEATURE_INPUT_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_TIMER_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_MODEL_ENABLE "On for enable off for disable" ON)

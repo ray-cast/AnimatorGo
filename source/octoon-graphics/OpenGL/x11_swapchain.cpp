@@ -69,7 +69,7 @@ namespace octoon
 			att[index++] = GLX_RENDER_TYPE,
 			att[index++] = GLX_RGBA_BIT,
 			att[index++] = GLX_X_VISUAL_TYPE;
-			att[index++] = GLX_TRUE_COLOR,
+			att[index++] = GLX_TRUE_COLOR;
 
 			if (swapchainDesc.getImageNums() == 2)
 			{

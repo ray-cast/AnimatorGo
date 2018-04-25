@@ -733,9 +733,26 @@ namespace octoon
 
 				GLenum drawType = OGLTypes::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
-					glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
+				{
+					if (startVertice > 0)
+					{
+						if (glDrawElementsInstanced)
+							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
+						else
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support glDrawElementsInstanced.");
+					}
+					else
+					{
+						if (glDrawElementsInstancedBaseVertex)
+							glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
+						else
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
+					}
+				}
 				else
+				{
 					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
+				}
 			}
 		}
 
@@ -787,12 +804,6 @@ namespace octoon
 		bool
 		OGLDeviceContext::checkSupport() noexcept
 		{
-			if (!GLEW_ARB_draw_elements_base_vertex)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
-				return false;
-			}
-
 			if (!GLEW_ARB_uniform_buffer_object)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_uniform_buffer_object.");

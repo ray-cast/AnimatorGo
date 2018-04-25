@@ -8,10 +8,6 @@ namespace octoon
 	{
 		OctoonImplementSubClass(XGLSwapchain, GraphicsSwapchain, "XGLSwapchain")
 
-		PFNGLXCHOOSEFBCONFIGPROC glXChooseFBConfig = nullptr;
-		PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = nullptr;
-		PFNGLXMAKECONTEXTCURRENTPROC glXMakeContextCurrent = nullptr;
-
 		XGLSwapchain::XGLSwapchain() noexcept
 			: _isActive(false)
 			, _window(0)
@@ -40,6 +36,29 @@ namespace octoon
 				return false;
 			}
 
+			_display = ::XOpenDisplay(NULL);
+			if (_display == nullptr)
+			{
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot connect to X server");
+				return false;
+			}
+
+			if (!initSurface(swapchainDesc))
+				return false;
+
+			int glx_major, glx_minor;
+			if (!glXQueryVersion(_display, &glx_major, &glx_minor))
+			{
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot query GLX version");
+				return false;
+			}
+
+			if ((glx_major == 1) && (glx_minor < 3) || (glx_major < 1))
+			{
+				this->getDevice()->downcast<OGLDevice>()->message("GLX version 1.3 is required");
+				return false;
+			}
+
 			GLint index = 0;
 
 			int att[80];
@@ -57,8 +76,7 @@ namespace octoon
 			auto colorFormat = swapchainDesc.getColorFormat();
 			if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
 			{
-				att[index++] = GLX_RENDER_TYPE;
-				att[index++] = GLX_RGBA_BIT,
+				att[index++] = GLX_RGBA,
 				att[index++] = GLX_X_VISUAL_TYPE;
 				att[index++] = GLX_TRUE_COLOR,
 				att[index++] = GLX_RED_SIZE;
@@ -72,7 +90,7 @@ namespace octoon
 			}
 			else
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Can't support color format");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
 				return false;
 			}
 
@@ -128,36 +146,6 @@ namespace octoon
 			att[index++] = 0;
 			att[index++] = 0;
 
-			_display = ::XOpenDisplay(NULL);
-			if (_display == nullptr)
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot connect to X server");
-				return false;
-			}
-
-			int glx_major, glx_minor;
-			if (!glXQueryVersion(_display, &glx_major, &glx_minor))
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot query GLX version");
-				return false;
-			}
-
-			if ((glx_major == 1) && (glx_minor < 3) || (glx_major < 1))
-			{
-				this->getDevice()->downcast<OGLDevice>()->message("GLX version 1.3 is required");
-				return false;
-			}
-
-			if (!glXChooseFBConfig)
-			{
-				glXChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress((const GLubyte *)"glXChooseFBConfig");
-				if (!glXChooseFBConfig)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("Failed to get glXChooseFBConfig.");
-					return false;
-				}
-			}
-
 			int fbcount = 0;
 			_cfg = glXChooseFBConfig(_display, 0, att, &fbcount);
 			if (!_cfg)
@@ -169,8 +157,10 @@ namespace octoon
 			index = 0;
 
 			GLint attribs[80];
+#if __DEBUG__
 			attribs[index++] = GLX_CONTEXT_FLAGS_ARB;
 			attribs[index++] = GLX_CONTEXT_DEBUG_BIT_ARB;
+#endif
 
 			attribs[index++] = GLX_CONTEXT_PROFILE_MASK_ARB;
 			attribs[index++] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
@@ -196,16 +186,6 @@ namespace octoon
 			attribs[index++] = GL_NONE;
 			attribs[index++] = GL_NONE;
 
-			if (!glXCreateContextAttribsARB)
-			{
-				glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddress((const GLubyte *)"glXCreateContextAttribsARB");
-				if (!glXCreateContextAttribsARB)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("Failed to get glXCreateContextAttribsARB.");
-					return false;
-				}
-			}
-
 			_glc = glXCreateContextAttribsARB(_display, *_cfg, 0, true, attribs);
 			if (!_glc)
 			{
@@ -213,10 +193,107 @@ namespace octoon
 				return false;
 			}
 
+			if (swapchainDesc.getWindHandle())
+			{
+				this->setActive(true);
+				this->setSwapInterval(swapchainDesc.getSwapInterval());
+				this->setActive(false);
+			}
+
+			_swapchainDesc = swapchainDesc;
+			return true;
+		}
+
+		bool
+		XGLSwapchain::initSurface(const GraphicsSwapchainDesc& swapchainDesc)
+		{
 			_window = (Window)swapchainDesc.getWindHandle();
 			if (!_window)
 			{
-				int attrib[] = { GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, GL_NONE };
+				int index = 0;
+				int attrib[80];
+
+				if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
+				{
+					attrib[index++] = GLX_RGBA;
+					attrib[index++] = GLX_RED_SIZE;
+					attrib[index++] = 8;
+					attrib[index++] = GLX_GREEN_SIZE;
+					attrib[index++] = 8;
+					attrib[index++] = GLX_BLUE_SIZE;
+					attrib[index++] = 8;
+					attrib[index++] = GLX_ALPHA_SIZE;
+					attrib[index++] = 8;
+				}
+				else if (colorFormat == GraphicsFormat::B8G8R8UNorm)
+				{
+					attrib[index++] = GLX_BUFFER_SIZE;
+					attrib[index++] = 24;
+					attrib[index++] = GLX_RED_SIZE;
+					attrib[index++] = 8;
+					attrib[index++] = GLX_GREEN_SIZE;
+					attrib[index++] = 8;
+					attrib[index++] = GLX_BLUE_SIZE;
+					attrib[index++] = 8;
+				}
+				else
+				{
+					this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
+					return false;
+				}
+
+				auto depthStencilFormat = swapchainDesc.getDepthStencilFormat();
+				if (depthStencilFormat == GraphicsFormat::D16UNorm)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 16;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::X8_D24UNormPack32)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 24;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 32;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D16UNorm_S8UInt)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 16;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 8;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D24UNorm_S8UInt)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 24;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 8;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT_S8UInt)
+				{
+					attrib[index++] = GLX_DEPTH_SIZE;
+					attrib[index++] = 32;
+					attrib[index++] = GLX_STENCIL_SIZE;
+					attrib[index++] = 8;
+				}
+				else
+				{
+					this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
+					return false;
+				}
+
+				att[index++] = GL_NONE;
+				att[index++] = GL_NONE;
+
 				_vi = glXChooseVisual(_display, DefaultScreen(_display), attrib);
 				if (!_vi)
 				{
@@ -239,24 +316,6 @@ namespace octoon
 				XMapWindow(_display, _window);
 			}
 
-			if (!glXMakeContextCurrent)
-			{
-				glXMakeContextCurrent = (PFNGLXMAKECONTEXTCURRENTPROC)glXGetProcAddress((const GLubyte *)"glXMakeContextCurrent");
-				if (!glXMakeContextCurrent)
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("Failed to get glXMakeContextCurrent.");
-					return false;
-				}
-			}
-
-			if (swapchainDesc.getWindHandle())
-			{
-				this->setActive(true);
-				this->setSwapInterval(swapchainDesc.getSwapInterval());
-				this->setActive(false);
-			}
-
-			_swapchainDesc = swapchainDesc;
 			return true;
 		}
 

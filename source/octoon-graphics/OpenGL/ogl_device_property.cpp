@@ -143,7 +143,7 @@ namespace octoon
 			if (!glXQueryExtension(param.dpy, &erb, &evb))
 				throw runtime::runtime_error::create("glXQueryExtension() fail");
 
-			int attrib[] = { GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, GL_NONE };
+			int attrib[] = { GLX_RGBA, GLX_RED_SIZE, 8, GLX_GREEN_SIZE, 8, GLX_BLUE_SIZE, 8, GL_NONE, GL_NONE };
 			param.vi = glXChooseVisual(param.dpy, DefaultScreen(param.dpy), attrib);
 			if (!param.vi)
 				throw runtime::runtime_error::create("glXChooseVisual() fail");

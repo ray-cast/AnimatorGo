@@ -367,9 +367,9 @@ namespace octoon
 				int mask = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 				int flags = 0;
 
-		#if _DEBUG
+#if __DEBUG__
 				flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
-		#endif
+#endif
 
 				int major = 0;
 				int minor = 0;

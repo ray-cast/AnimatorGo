@@ -31,7 +31,7 @@ namespace octoon
 			const GraphicsSwapchainDesc& getGraphicsSwapchainDesc() const noexcept;
 
 		private:
-			static void initPixelFormat() noexcept;
+			bool initSurface(const GraphicsSwapchainDesc& swapchainDesc);
 
 		private:
 			friend class OGLDevice;

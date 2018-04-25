@@ -8,6 +8,8 @@
 #include <octoon/transform_component.h>
 #include <octoon/first_person_camera.h>
 
+#include <octoon/ui/imgui.h>
+
 const std::string chars[] =
 {
 	R"({"paths":[{"points":[[602.54,436.40,8],[602.54,436.40,3],[602.54,443.41,3],[602.54,443.41,3],[602.54,451.51,3],[600.25,458.11,3],[595.66,463.22,3],[591.07,468.33,3],[585.33,470.88,3],[578.45,470.88,3],[573.38,470.88,3],[569.43,469.51,3],[566.60,466.76,3],[563.76,464.01,3],[562.34,460.51,3],[562.34,456.27,3],[562.34,450.81,3],[563.87,446.89,3],[566.92,444.48,3],[569.97,442.08,3],[575.27,440.34,3],[582.80,439.26,3],[582.80,439.26,3],[602.54,436.40,3],[602.54,436.40,3],[602.54,436.40,9]],"w":0.00,"h":0.00},{"points":[[608.97,475.04,8],[608.97,475.04,3],[608.97,428.35,3],[608.97,428.35,3],[608.97,419.60,3],[606.96,412.93,3],[602.93,408.34,3],[598.90,403.76,3],[593.19,401.46,3],[585.79,401.46,3],[581.76,401.46,3],[577.46,402.21,3],[572.90,403.70,3],[568.33,405.19,3],[564.72,407.00,3],[562.08,409.12,3],[562.08,409.12,3],[562.08,416.92,3],[562.08,416.92,3],[569.57,410.55,3],[577.26,407.37,3],[585.14,407.37,3],[596.74,407.37,3],[602.54,415.08,3],[602.54,430.49,3],[602.54,430.49,3],[580.46,433.80,3],[580.46,433.80,3],[563.84,436.40,3],[555.52,443.97,3],[555.52,456.53,3],[555.52,462.38,3],[557.52,467.21,3],[561.50,471.04,3],[565.48,474.88,3],[570.89,476.79,3],[577.73,476.79,3],[583.06,476.79,3],[587.91,475.33,3],[592.28,472.41,3],[596.65,469.49,3],[599.99,465.58,3],[602.28,460.69,3],[602.28,460.69,3],[602.54,460.69,3],[602.54,460.69,3],[602.54,460.69,3],[602.54,475.04,3],[602.54,475.04,3],[602.54,475.04,3],[608.97,475.04,3],[608.97,475.04,3],[608.97,475.04,9]],"w":0.00,"h":0.00}],"w":0.00,"h":0.00,"x":0.00,"y":0.00,"ft":0})",
@@ -19,17 +21,27 @@ const std::string chars[] =
 	R"({"paths":[{"points":[[610.59,445.03,8],[610.59,452.27,3],[608.31,458.38,3],[603.74,463.38,3],[599.17,468.38,3],[593.02,470.88,3],[585.27,470.88,3],[578.04,470.88,3],[572.21,468.17,3],[567.80,462.73,3],[563.38,457.30,3],[561.17,449.67,3],[561.17,439.84,3],[561.17,430.06,3],[563.58,422.20,3],[568.38,416.27,3],[573.19,410.34,3],[579.55,407.37,3],[587.47,407.37,3],[594.36,407.37,3],[599.93,409.69,3],[604.20,414.32,3],[608.46,418.95,3],[610.59,424.45,3],[610.59,430.81,3],[610.59,430.81,3],[610.59,445.03,3],[610.59,445.03,3],[610.59,445.03,9]],"w":0.00,"h":0.00},{"points":[[617.09,403.21,8],[617.09,403.21,3],[610.59,403.21,3],[610.59,403.21,3],[610.59,403.21,3],[610.59,414.58,3],[610.59,414.58,3],[610.59,414.58,3],[610.33,414.58,3],[610.33,414.58,3],[605.57,405.83,3],[597.91,401.46,3],[587.34,401.46,3],[577.47,401.46,3],[569.52,405.09,3],[563.48,412.34,3],[557.44,419.59,3],[554.42,428.93,3],[554.42,440.36,3],[554.42,451.83,3],[557.21,460.77,3],[562.80,467.18,3],[568.38,473.59,3],[575.59,476.79,3],[584.42,476.79,3],[596.02,476.79,3],[604.66,471.90,3],[610.33,462.11,3],[610.33,462.11,3],[610.59,462.11,3],[610.59,462.11,3],[610.59,462.11,3],[610.59,471.47,3],[610.59,471.47,3],[610.59,492.42,3],[600.68,502.90,3],[580.85,502.90,3],[574.10,502.90,3],[566.93,500.80,3],[559.35,496.60,3],[559.35,496.60,3],[559.35,503.29,3],[559.35,503.29,3],[566.67,506.92,3],[573.79,508.74,3],[580.72,508.74,3],[593.15,508.74,3],[602.31,505.61,3],[608.22,499.36,3],[614.13,493.10,3],[617.09,483.22,3],[617.09,469.71,3],[617.09,469.71,3],[617.09,403.21,3],[617.09,403.21,3],[617.09,403.21,9]],"w":0.00,"h":0.00}],"w":0.00,"h":0.00,"x":0.00,"y":0.00,"ft":0})"
 };
 
-class AutoRotation : public octoon::GameComponent
+class TextController : public octoon::GameComponent
 {
 public:
+	TextController()
+	{
+	}
+
+	TextController(octoon::video::TextMaterialPtr material)
+		: material_(material)
+	{
+	}
+
 	void onActivate() override
 	{
 		this->addComponentDispatch(octoon::GameDispatchType::Frame);
+		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 	}
 
 	void onDeactivate() noexcept override
 	{
-		this->removeComponentDispatch(octoon::GameDispatchType::Frame);
+		this->removeComponentDispatchs();
 	}
 
 	void onFrame() override
@@ -37,10 +49,34 @@ public:
 		this->getComponent<octoon::TransformComponent>()->setLocalQuaternionAccum(octoon::math::Quaternion().make_rotation_y(0.01f));
 	}
 
+	void onGui() except override
+	{
+		static octoon::math::float1 lern = 0.0f;
+		static octoon::math::float1 extrude = 2.0f;
+		static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
+		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
+
+		octoon::imgui::begin("Control");
+		octoon::imgui::set_window_size(octoon::imgui::float2(300, 600));
+		octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
+		octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
+		octoon::imgui::color_picker3("##FrontColor", frontColor.ptr());
+		octoon::imgui::color_picker3("##SideColor", frontColor.ptr());
+		octoon::imgui::end();
+
+		material_->setLean(lern);
+		material_->setExtrude(extrude);
+		material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
+		material_->setTextColor(octoon::video::TextColor::SideColor, frontColor);
+	}
+
 	octoon::GameComponentPtr clone() const noexcept
 	{
-		return std::make_shared<AutoRotation>();
+		return std::make_shared<TextController>();
 	}
+
+private:
+	octoon::video::TextMaterialPtr material_;
 };
 
 int main(int argc, const char* argv[])
@@ -67,7 +103,7 @@ int main(int argc, const char* argv[])
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::PathMeshingComponent>(chars[0]);
 		object->addComponent<octoon::MeshRendererComponent>(material);
-		object->addComponent<AutoRotation>();
+		object->addComponent<TextController>(material);
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

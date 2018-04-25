@@ -1109,11 +1109,7 @@ namespace octoon
 				}
 			}
 
-		#if defined(OCTOON_BUILD_PLATFORM_LINUX)
-			return true;
-		#else
 			return success;
-		#endif
 		}
 	}
 }

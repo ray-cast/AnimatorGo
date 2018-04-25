@@ -411,9 +411,12 @@ namespace octoon
 				return false;
 			}
 
-			this->setActive(true);
-			this->setSwapInterval(swapchainDesc.getSwapInterval());
-			this->setActive(false);
+			if (swapchainDesc.getWindHandle())
+			{
+				this->setActive(true);
+				this->setSwapInterval(swapchainDesc.getSwapInterval());
+				this->setActive(false);
+			}
 
 			return true;
 		}

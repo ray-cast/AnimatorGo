@@ -258,7 +258,7 @@ namespace octoon
 
 			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
 
-			GLsizei mapSize = w * h * num;
+			GLsizei mapSize = _textureDesc.getWidth() * _textureDesc.getHeight() * num;
 			if (_pboSize < mapSize)
 			{
 				glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_STREAM_READ);
@@ -269,7 +269,7 @@ namespace octoon
 			glGetTexImage(_target, mipLevel, format, type, 0);
 
 			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
-			data += (y * _textureDesc.getWidth() * num) * x;
+			*(std::uint8_t*)data += (y * _textureDesc.getWidth() * num) + x * num;
 
 			return *data ? true : false;
 		}

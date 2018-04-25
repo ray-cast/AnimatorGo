@@ -56,18 +56,31 @@ public:
 		static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
 		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
 
-		octoon::imgui::begin("Control");
-		octoon::imgui::set_window_size(octoon::imgui::float2(300, 600));
-		octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
-		octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
-		octoon::imgui::color_picker3("##FrontColor", frontColor.ptr());
-		octoon::imgui::color_picker3("##SideColor", frontColor.ptr());
-		octoon::imgui::end();
+		if (octoon::imgui::begin("Material"))
+		{
+			octoon::imgui::set_window_size(octoon::imgui::float2(300, 600), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
+			octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
+			octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
 
-		material_->setLean(lern);
-		material_->setExtrude(extrude);
-		material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
-		material_->setTextColor(octoon::video::TextColor::SideColor, frontColor);
+			if (octoon::imgui::tree_node_ex("front color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				octoon::imgui::color_picker3("##FrontColor", frontColor.ptr());
+				octoon::imgui::tree_pop();
+			}
+
+			if (octoon::imgui::tree_node_ex("side color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				octoon::imgui::color_picker3("##SideColor", sideColor.ptr());
+				octoon::imgui::tree_pop();
+			}
+
+			octoon::imgui::end();
+
+			material_->setLean(lern);
+			material_->setExtrude(extrude);
+			material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
+			material_->setTextColor(octoon::video::TextColor::SideColor, sideColor);
+		}
 	}
 
 	octoon::GameComponentPtr clone() const noexcept

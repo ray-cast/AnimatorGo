@@ -405,7 +405,10 @@ namespace octoon
 					return;
 
 				if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
+				{
+					vbo_->unmap();
 					return;
+				}
 
 				for (int n = 0; n < drawData->CmdListsCount; n++)
 				{

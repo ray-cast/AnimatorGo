@@ -734,7 +734,7 @@ namespace octoon
 				GLenum drawType = OGLTypes::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
 				{
-					if (startVertice > 0)
+					if (startVertice == 0)
 					{
 						if (glDrawElementsInstanced)
 							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);

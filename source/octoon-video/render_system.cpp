@@ -36,34 +36,13 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) except
+		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
 			TextSystem::instance()->setup();
 
 			width_ = w;
 			height_ = h;
-
-			GraphicsDeviceDesc deviceDesc;
-			deviceDesc.setDeviceType(GraphicsDeviceType::OpenGL);
-			device_ = GraphicsSystem::instance()->createDevice(deviceDesc);
-
-			GraphicsSwapchainDesc swapchainDesc;
-			swapchainDesc.setWindHandle(hwnd);
-			swapchainDesc.setWidth(w);
-			swapchainDesc.setHeight(h);
-			swapchainDesc.setSwapInterval(GraphicsSwapInterval::Vsync);
-			swapchainDesc.setImageNums(2);
-			swapchainDesc.setColorFormat(GraphicsFormat::B8G8R8A8UNorm);
-			swapchainDesc.setDepthStencilFormat(GraphicsFormat::D24UNorm_S8UInt);
-			swapchain_ = device_->createSwapchain(swapchainDesc);
-			if (!swapchain_)
-				throw runtime::runtime_error::create("createSwapchain() failed");
-
-			GraphicsContextDesc contextDesc;
-			contextDesc.setSwapchain(swapchain_);
-			context_ = device_->createDeviceContext(contextDesc);
-			if (!context_)
-				throw runtime::runtime_error::create("createDeviceContext() failed");
+			device_ = device;
 
 			GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
@@ -243,19 +222,17 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::render() noexcept
+		RenderSystem::render(graphics::GraphicsContext& context) noexcept
 		{
-			context_->renderBegin();
-
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
 				if (fboMSAA_)
-					context_->setFramebuffer(fboMSAA_);
+					context.setFramebuffer(fboMSAA_);
 				else
-					context_->setFramebuffer(fbo_);
+					context.setFramebuffer(fbo_);
 
-				context_->setViewport(0, camera->getPixelViewport());
-				context_->clearFramebuffer(0, GraphicsClearFlagBits::ColorDepthBit, camera->getClearColor(), 1.0f, 0);
+				context.setViewport(0, camera->getPixelViewport());
+				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
@@ -271,11 +248,11 @@ namespace octoon
 					material->setTransform(geometry->getTransform());
 					material->setViewProjection(camera->getViewProjection());
 
-					context_->setRenderPipeline(material->getPipeline());
-					context_->setDescriptorSet(material->getDescriptorSet());
-					context_->setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+					context.setRenderPipeline(material->getPipeline());
+					context.setDescriptorSet(material->getDescriptorSet());
+					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
 
-					context_->draw(mesh->getVertexArray().size(), 1, 0, 0);
+					context.draw(mesh->getVertexArray().size(), 1, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)
@@ -283,25 +260,22 @@ namespace octoon
 					auto& v = camera->getPixelViewport();
 
 					if (fboMSAA_)
-						context_->blitFramebuffer(fboMSAA_, v, nullptr, v);
+						context.blitFramebuffer(fboMSAA_, v, nullptr, v);
 					else
-						context_->blitFramebuffer(fbo_, v, nullptr, v);
+						context.blitFramebuffer(fbo_, v, nullptr, v);
 				}
 			}
-
-			context_->renderEnd();
-			context_->present();
 		}
 
 		void
-		RenderSystem::saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
+		RenderSystem::saveAsPNG(graphics::GraphicsContext& context, const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
 		{
-			context_->renderBegin();
+			context.renderBegin();
 
 			if (fboMSAA_)
 			{
 				math::float4 v(0, 0, fboMSAA_->getGraphicsFramebufferDesc().getWidth(), fboMSAA_->getGraphicsFramebufferDesc().getHeight());
-				context_->blitFramebuffer(fboMSAA_, v, fbo_, v);
+				context.blitFramebuffer(fboMSAA_, v, fbo_, v);
 			}
 
 			std::uint32_t iw = (width - x);
@@ -317,13 +291,13 @@ namespace octoon
 				texture->unmap();
 			}
 
+			context.renderEnd();
+
 			for (std::uint32_t iy = 0; iy < ih / 2; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < iw; ix++)
 					std::swap(pixels[iy * iw + ix], pixels[(ih - iy - 1) * iw + ix]);
 			}
-
-			context_->renderEnd();
 
 			png_infop info_ptr = nullptr;
 			png_structp png_ptr = nullptr;

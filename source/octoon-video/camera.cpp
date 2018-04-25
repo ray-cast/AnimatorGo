@@ -7,7 +7,7 @@ namespace octoon
 	{
 		OctoonImplementSubClass(Camera, runtime::RttiInterface, "Camera")
 
-		Camera::Camera() noexcept
+			Camera::Camera() noexcept
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
@@ -22,6 +22,7 @@ namespace octoon
 			, projectInverse_(math::float4x4::One)
 			, viewProject_(math::float4x4::One)
 			, viewProjectInverse_(math::float4x4::One)
+			, clearflags_(graphics::GraphicsClearFlagBits::AllBit)
 		{
 		}
 
@@ -239,6 +240,12 @@ namespace octoon
 		}
 
 		void
+		Camera::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
+		{
+			clearflags_ = clearflags;
+		}
+
+		void
 		Camera::setCameraOrder(CameraOrder order) noexcept
 		{
 			cameraOrder_ = order;
@@ -264,6 +271,12 @@ namespace octoon
 		Camera::getCameraType() const noexcept
 		{
 			return cameraType_;
+		}
+
+		graphics::GraphicsClearFlags
+		Camera::getClearFlags() const noexcept
+		{
+			return clearflags_;
 		}
 
 		void

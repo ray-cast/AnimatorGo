@@ -16,7 +16,7 @@ namespace octoon
 			RenderSystem() noexcept;
 			~RenderSystem() noexcept;
 
-			void setup(WindHandle hwnd, std::uint32_t w, std::uint32_t h) except;
+			void setup(const graphics::GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except;
 			void close() noexcept;
 
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
@@ -36,9 +36,9 @@ namespace octoon
 			graphics::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const graphics::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
 			graphics::GraphicsDescriptorPoolPtr createDescriptorPool(const graphics::GraphicsDescriptorPoolDesc& desc) noexcept;
 
-			void render() noexcept;
+			void render(graphics::GraphicsContext& context) noexcept;
 
-			void saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
+			void saveAsPNG(graphics::GraphicsContext& context, const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
 
 		private:
 			RenderSystem(const RenderSystem&) = delete;
@@ -56,8 +56,6 @@ namespace octoon
 			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			graphics::GraphicsDevicePtr device_;
-			graphics::GraphicsContextPtr context_;
-			graphics::GraphicsSwapchainPtr swapchain_;
 		};
 	}
 }

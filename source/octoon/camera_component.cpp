@@ -83,6 +83,12 @@ namespace octoon
 	}
 
 	void
+	CameraComponent::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
+	{
+		camera_->setClearFlags(clearflags);
+	}
+
+	void
 	CameraComponent::setCameraOrder(video::CameraOrder order) noexcept
 	{
 		camera_->setCameraOrder(order);
@@ -104,6 +110,12 @@ namespace octoon
 	CameraComponent::getCameraType() const noexcept
 	{
 		return camera_->getCameraType();
+	}
+
+	graphics::GraphicsClearFlags
+	CameraComponent::getClearFlags() const noexcept
+	{
+		return camera_->getClearFlags();
 	}
 
 	math::float3

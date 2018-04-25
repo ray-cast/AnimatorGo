@@ -59,7 +59,7 @@ int main(int argc, const char* argv[])
 		auto camera = std::make_shared<octoon::GameObject>();
 		camera->addComponent<octoon::CameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
+		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->addComponent<octoon::FirstPersonCameraComponent>();

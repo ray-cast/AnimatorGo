@@ -47,6 +47,20 @@ public:
 
 int main(int argc, const char* argv[])
 {
+#if _WINDOWS
+	char drive[MAX_PATH];
+	char dir[MAX_PATH];
+	char filename[MAX_PATH];
+	char ext[MAX_PATH];
+	_splitpath(argv[0], drive, dir, filename, ext);
+
+	std::string root;
+	root += drive;
+	root += dir;
+
+	::SetCurrentDirectory(root.c_str());
+#endif
+
 	int w = 1920, h = 1080;
 
 	auto app = std::make_shared<octoon::GameApplication>();

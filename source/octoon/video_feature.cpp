@@ -8,6 +8,7 @@
 #include <octoon/game_application.h>
 #include <octoon/game_object_manager.h>
 
+#include <octoon/graphics_feature.h>
 #include <octoon/video/render_system.h>
 
 namespace octoon
@@ -15,19 +16,13 @@ namespace octoon
 	OctoonImplementSubClass(VideoFeature, GameFeature, "VideoFeature")
 
 	VideoFeature::VideoFeature() noexcept
-		: window_(0)
-		, width_(0)
-		, height_(0)
-		, framebuffer_w_(0)
+		: framebuffer_w_(0)
 		, framebuffer_h_(0)
 	{
 	}
 
-	VideoFeature::VideoFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
-		: window_(window)
-		, width_(w)
-		, height_(h)
-		, framebuffer_w_(framebuffer_w)
+	VideoFeature::VideoFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
+		: framebuffer_w_(framebuffer_w)
 		, framebuffer_h_(framebuffer_h)
 	{
 	}
@@ -57,7 +52,9 @@ namespace octoon
 	void
 	VideoFeature::onActivate() except
 	{
-		video::RenderSystem::instance()->setup(window_, framebuffer_w_, framebuffer_h_);
+		auto graphics = this->getFeature<GraphicsFeature>();
+		if (graphics)
+			video::RenderSystem::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
 	}
 
 	void
@@ -88,18 +85,22 @@ namespace octoon
 	void
 	VideoFeature::onFrame() noexcept
 	{
+		auto graphics = this->getFeature<GraphicsFeature>();
+		if (graphics)
+			video::RenderSystem::instance()->render(*graphics->getContext());
 	}
 
 	void
 	VideoFeature::onFrameEnd() noexcept
 	{
-		video::RenderSystem::instance()->render();
 	}
 
 	void
 	VideoFeature::saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
 	{
-		video::RenderSystem::instance()->saveAsPNG(filepath, x, y, width, height);
+		auto graphics = this->getFeature<GraphicsFeature>();
+		if (graphics)
+			video::RenderSystem::instance()->saveAsPNG(*graphics->getContext(), filepath, x, y, width, height);
 	}
 }
 #endif

@@ -80,6 +80,7 @@ namespace octoon
 		GameFeaturePtr timer_feature_;
 		GameFeaturePtr input_feature_;
 		GameFeaturePtr base_feature_;
+		GameFeaturePtr graphics_feature_;
 		GameFeaturePtr gui_feature_;
 		GameFeaturePtr video_feature_;
 

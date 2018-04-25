@@ -2,6 +2,7 @@
 #define OCTOON_VIDEO_CAMERA_H_
 
 #include <octoon/video/render_object.h>
+#include <octoon/graphics/graphics_types.h>
 
 namespace octoon
 {
@@ -27,11 +28,13 @@ namespace octoon
 			float getFar() const noexcept;
 			float getRatio() const noexcept;
 
+			void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
 			void setCameraOrder(CameraOrder order) noexcept;
 			void setCameraType(CameraType type) noexcept;
 
 			CameraOrder getCameraOrder() const noexcept;
 			CameraType getCameraType() const noexcept;
+			graphics::GraphicsClearFlags getClearFlags() const noexcept;
 
 			math::float3 worldToScreen(const math::float3& pos) const noexcept;
 			math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -75,6 +78,8 @@ namespace octoon
 
 			CameraOrder cameraOrder_;
 			CameraType cameraType_;
+
+			graphics::GraphicsClearFlags clearflags_;
 
 			mutable math::float4x4 viewProject_;
 			mutable math::float4x4 viewProjectInverse_;

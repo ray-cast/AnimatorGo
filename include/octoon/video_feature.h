@@ -10,7 +10,7 @@ namespace octoon
 		OctoonDeclareSubClass(VideoFeature, GameFeature)
 	public:
 		VideoFeature() noexcept;
-		VideoFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
+		VideoFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~VideoFeature() noexcept;
 
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
@@ -29,10 +29,6 @@ namespace octoon
 		void onFrameEnd() noexcept override;
 
 	private:
-		WindHandle window_;
-
-		std::uint32_t width_;
-		std::uint32_t height_;
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
 	};

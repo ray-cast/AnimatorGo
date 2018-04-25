@@ -24,6 +24,10 @@
 #	include <octoon/game_base_features.h>
 #endif
 
+#if OCTOON_FEATURE_GRAPHICS_ENABLE
+#	include <octoon/graphics_feature.h>
+#endif
+
 #if OCTOON_FEATURE_UI_ENABLE
 #	include <octoon/gui_feature.h>
 #endif
@@ -104,12 +108,16 @@ namespace octoon
 		base_feature_ = std::make_shared<GameBaseFeatures>();
 #endif
 
+#if OCTOON_FEATURE_BASE_ENABLE
+		graphics_feature_ = std::make_shared<GraphicsFeature>(hwnd, w, h);
+#endif
+
 #if OCTOON_FEATURE_UI_ENABLE
 		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		video_feature_ = std::make_shared<VideoFeature>(hwnd, w, h, w, h);
+		video_feature_ = std::make_shared<VideoFeature>(w, h);
 #endif
 
 #if OCTOON_FEATURE_IO_ENABLE
@@ -126,6 +134,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_BASE_ENABLE
 		this->addFeature(base_feature_);
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(graphics_feature_);
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE

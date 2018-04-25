@@ -54,7 +54,6 @@ namespace octoon
 		bool
 		System::open(input::WindHandle window) except
 		{
-			assert(window);
 			assert(!initialize_);
 #if _WINDOWS
 			assert(::IsWindow((HWND)window));

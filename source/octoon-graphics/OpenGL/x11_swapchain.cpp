@@ -66,6 +66,10 @@ namespace octoon
 			att[index++] = GL_TRUE;
 			att[index++] = GLX_DRAWABLE_TYPE;
 			att[index++] = GLX_WINDOW_BIT;
+			att[index++] = GLX_RENDER_TYPE,
+			att[index++] = GLX_RGBA_BIT,
+			att[index++] = GLX_X_VISUAL_TYPE;
+			att[index++] = GLX_TRUE_COLOR,
 
 			if (swapchainDesc.getImageNums() == 2)
 			{
@@ -76,9 +80,6 @@ namespace octoon
 			auto colorFormat = swapchainDesc.getColorFormat();
 			if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
 			{
-				att[index++] = GLX_RGBA,
-				att[index++] = GLX_X_VISUAL_TYPE;
-				att[index++] = GLX_TRUE_COLOR,
 				att[index++] = GLX_RED_SIZE;
 				att[index++] = 8;
 				att[index++] = GLX_GREEN_SIZE;
@@ -86,6 +87,15 @@ namespace octoon
 				att[index++] = GLX_BLUE_SIZE;
 				att[index++] = 8;
 				att[index++] = GLX_ALPHA_SIZE;
+				att[index++] = 8;
+			}
+			else if (colorFormat == GraphicsFormat::B8G8R8UNorm)
+			{
+				att[index++] = GLX_RED_SIZE;
+				att[index++] = 8;
+				att[index++] = GLX_GREEN_SIZE;
+				att[index++] = 8;
+				att[index++] = GLX_BLUE_SIZE;
 				att[index++] = 8;
 			}
 			else
@@ -213,6 +223,7 @@ namespace octoon
 				int index = 0;
 				int attrib[80];
 
+				auto colorFormat = swapchainDesc.getColorFormat();
 				if (colorFormat == GraphicsFormat::B8G8R8A8UNorm)
 				{
 					attrib[index++] = GLX_RGBA;
@@ -291,8 +302,8 @@ namespace octoon
 					return false;
 				}
 
-				att[index++] = GL_NONE;
-				att[index++] = GL_NONE;
+				attrib[index++] = GL_NONE;
+				attrib[index++] = GL_NONE;
 
 				_vi = glXChooseVisual(_display, DefaultScreen(_display), attrib);
 				if (!_vi)

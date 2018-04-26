@@ -15,23 +15,22 @@ namespace octoon
 		{
 			Text,
 			TextDisabled,
-			WindowBg,
-			ChildWindowBg,
-			PopupBg,
+			WindowBg,              // Background of normal windows
+			ChildBg,               // Background of child windows
+			PopupBg,               // Background of popups, menus, tooltips windows
 			Border,
 			BorderShadow,
-			FrameBg,
+			FrameBg,               // Background of checkbox, radio button, plot, slider, text input
 			FrameBgHovered,
 			FrameBgActive,
 			TitleBg,
-			TitleBgCollapsed,
 			TitleBgActive,
+			TitleBgCollapsed,
 			MenuBarBg,
 			ScrollbarBg,
 			ScrollbarGrab,
 			ScrollbarGrabHovered,
 			ScrollbarGrabActive,
-			ComboBg,
 			CheckMark,
 			SliderGrab,
 			SliderGrabActive,
@@ -41,21 +40,21 @@ namespace octoon
 			Header,
 			HeaderHovered,
 			HeaderActive,
-			Column,
-			ColumnHovered,
-			ColumnActive,
+			Separator,
+			SeparatorHovered,
+			SeparatorActive,
 			ResizeGrip,
 			ResizeGripHovered,
 			ResizeGripActive,
-			CloseButton,
-			CloseButtonHovered,
-			CloseButtonActive,
 			PlotLines,
 			PlotLinesHovered,
 			PlotHistogram,
 			PlotHistogramHovered,
 			TextSelectedBg,
-			ModalWindowDarkening,  // darken entire screen when a modal window is active
+			ModalWindowDarkening,  // darken/colorize entire screen behind a modal window, when one is active
+			DragDropTarget,
+			NavHighlight,          // gamepad/keyboard: current highlighted item
+			NavWindowingHighlight, // gamepad/keyboard: when holding NavMenu to focus/move/resize windows
 			Count_
 		};
 
@@ -191,6 +190,42 @@ namespace octoon
 			HEX = 2
 		};
 
+		struct GuiColorEditFlagBits
+		{
+			enum Flags
+			{
+				NoAlpha = 1 << 1,   //              // ColorEdit, ColorPicker, ColorButton: ignore Alpha component (read 3 components from the input pointer).
+				NoPicker = 1 << 2,   //              // ColorEdit: disable picker when clicking on colored square.
+				NoOptions = 1 << 3,   //              // ColorEdit: disable toggling options menu when right-clicking on inputs/small preview.
+				NoSmallPreview = 1 << 4,   //              // ColorEdit, ColorPicker: disable colored square preview next to the inputs. (e.g. to show only the inputs)
+				NoInputs = 1 << 5,   //              // ColorEdit, ColorPicker: disable inputs sliders/text widgets (e.g. to show only the small preview colored square).
+				NoTooltip = 1 << 6,   //              // ColorEdit, ColorPicker, ColorButton: disable tooltip when hovering the preview.
+				NoLabel = 1 << 7,   //              // ColorEdit, ColorPicker: disable display of inline text label (the label is still forwarded to the tooltip and picker).
+				NoSidePreview = 1 << 8,   //              // ColorPicker: disable bigger color preview on right side of the picker, use small colored square preview instead.
+
+				// User Options (right-click on widget to change some of them). You can set application defaults using SetColorEditOptions(). The idea is that you probably don't want to override them in most of your calls, let the user choose and/or call SetColorEditOptions() during startup.
+				AlphaBar = 1 << 9,   //              // ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.
+				AlphaPreview = 1 << 10,  //              // ColorEdit, ColorPicker, ColorButton: display preview as a transparent color over a checkerboard, instead of opaque.
+				AlphaPreviewHalf = 1 << 11,  //              // ColorEdit, ColorPicker, ColorButton: display half opaque / half checkerboard, instead of opaque.
+				HDR = 1 << 12,  //              // (WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in RGBA edition (note: you probably want to use ImGuiColorEditFlags_Float flag as well).
+				RGB = 1 << 13,  // [Inputs]     // ColorEdit: choose one among RGB/HSV/HEX. ColorPicker: choose any combination using RGB/HSV/HEX.
+				HSV = 1 << 14,  // [Inputs]     // "
+				HEX = 1 << 15,  // [Inputs]     // "
+				Uint8 = 1 << 16,  // [DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0..255.
+				Float = 1 << 17,  // [DataType]   // ColorEdit, ColorPicker, ColorButton: _display_ values formatted as 0.0f..1.0f floats instead of 0..255 integers. No round-trip of value via integers.
+				PickerHueBar = 1 << 18,  // [PickerMode] // ColorPicker: bar for Hue, rectangle for Sat/Value.
+				PickerHueWheel = 1 << 19,  // [PickerMode] // ColorPicker: wheel for Hue, triangle for Sat/Value.
+
+				// [Internal] Masks
+				InputsMask = RGB | HSV | HEX,
+				DataTypeMask = Uint8 | Float,
+				PickerMask = PickerHueWheel | PickerHueBar,
+				OptionsDefault = Uint8 | RGB | PickerHueBar    // Change application default using SetColorEditOptions()
+			};
+		};
+
+		typedef std::uint32_t GuiColorEditFlags;
+
 		enum class GuiStyleVar
 		{
 			Alpha,               // float
@@ -209,29 +244,35 @@ namespace octoon
 
 		struct OCTOON_EXPORT GuiStyle
 		{
-			float       Alpha;
-			float2      WindowPadding;
-			float2      WindowMinSize;
-			float       WindowRounding;
-			float2	    WindowTitleAlign;
-			float       ChildWindowRounding;
-			float2      FramePadding;
-			float       FrameRounding;
-			float2      ItemSpacing;
-			float2      ItemInnerSpacing;
-			float2      TouchExtraPadding;
-			float       IndentSpacing;
-			float       ColumnsMinSpacing;
-			float       ScrollbarSize;
-			float       ScrollbarRounding;
-			float       GrabMinSize;
-			float       GrabRounding;
-			float2      ButtonTextAlign;
-			float2      DisplayWindowPadding;
-			float2      DisplaySafeAreaPadding;
-			bool        AntiAliasedLines;
-			bool        AntiAliasedShapes;
-			float       CurveTessellationTol;
+		  	float       Alpha;                      // Global alpha applies to everything in ImGui.
+		    float2      WindowPadding;              // Padding within a window.
+		    float       WindowRounding;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows.
+		    float       WindowBorderSize;           // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+		    float2      WindowMinSize;              // Minimum window size. This is a global setting. If you want to constraint individual windows, use SetNextWindowSizeConstraints().
+		    float2      WindowTitleAlign;           // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+		    float       ChildRounding;              // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
+		    float       ChildBorderSize;            // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+		    float       PopupRounding;              // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
+		    float       PopupBorderSize;            // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+		    float2      FramePadding;               // Padding within a framed rectangle (used by most widgets).
+		    float       FrameRounding;              // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+		    float       FrameBorderSize;            // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+		    float2      ItemSpacing;                // Horizontal and vertical spacing between widgets/lines.
+		    float2      ItemInnerSpacing;           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+		    float2      TouchExtraPadding;          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+		    float       IndentSpacing;              // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+		    float       ColumnsMinSpacing;          // Minimum horizontal spacing between two columns.
+		    float       ScrollbarSize;              // Width of the vertical scrollbar, Height of the horizontal scrollbar.
+		    float       ScrollbarRounding;          // Radius of grab corners for scrollbar.
+		    float       GrabMinSize;                // Minimum width/height of a grab box for slider/scrollbar.
+		    float       GrabRounding;               // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+		    float2      ButtonTextAlign;            // Alignment of button text when button is larger than text. Defaults to (0.5f,0.5f) for horizontally+vertically centered.
+		    float2      DisplayWindowPadding;       // Window positions are clamped to be visible within the display area by at least this amount. Only covers regular windows.
+		    float2      DisplaySafeAreaPadding;     // If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
+		    float       MouseCursorScale;           // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
+		    bool        AntiAliasedLines;           // Enable anti-aliasing on lines/borders. Disable if you are really tight on CPU/GPU.
+		    bool        AntiAliasedFill;            // Enable anti-aliasing on filled shapes (rounded rectangles, circles, etc.)
+		    float       CurveTessellationTol;       // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
 			float4      Colors[(int)GuiCol::Count_];
 
 			GuiStyle() noexcept;
@@ -241,11 +282,10 @@ namespace octoon
 		typedef std::uint32_t GuiID;
 
 		OCTOON_EXPORT void new_frame() noexcept;
-		OCTOON_EXPORT void shutdown() noexcept;
 
 		OCTOON_EXPORT void show_user_guide() noexcept;
 		OCTOON_EXPORT void show_style_editor(GuiStyle* style = nullptr) noexcept;
-		OCTOON_EXPORT void show_test_window(bool* isOpened = nullptr) noexcept;
+		OCTOON_EXPORT void show_test_window() noexcept;
 		OCTOON_EXPORT void show_metrics_window(bool* isOpened = nullptr) noexcept;
 
 		OCTOON_EXPORT bool begin(const char* name, bool* isOpened = nullptr, GuiWindowFlags flags = 0) noexcept;
@@ -283,7 +323,7 @@ namespace octoon
 		OCTOON_EXPORT bool begin_popup(const char* str_id) noexcept;
 		OCTOON_EXPORT bool begin_popup_modal(const char* name, bool* isOpened = nullptr, GuiWindowFlags extraFlags = 0) noexcept;
 		OCTOON_EXPORT bool begin_popup_context_item(const char* str_id, int mouse_button = 1) noexcept;
-		OCTOON_EXPORT bool begin_popup_context_window(bool also_over_items = true, const char* str_id = nullptr, int mouse_button = 1) noexcept;
+		OCTOON_EXPORT bool begin_popup_context_window(const char* str_id = nullptr, int mouse_button = 1, bool also_over_items = true) noexcept;
 		OCTOON_EXPORT bool begin_popup_context_void(const char* str_id = nullptr, int mouse_button = 1) noexcept;
 
 		OCTOON_EXPORT void open_popup(const char* str_id) noexcept;
@@ -477,10 +517,9 @@ namespace octoon
 		OCTOON_EXPORT bool combo(const char* label, int* current_item, const char* items_separated_by_zeros, int height_in_items = -1) noexcept;
 		OCTOON_EXPORT bool combo(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items = -1) noexcept;
 
-		OCTOON_EXPORT bool color_button(const float4& col, bool small_height = false, bool outline_border = true) noexcept;
+		OCTOON_EXPORT bool color_button(const char* desc_id, const float4& col, GuiColorEditFlags flags = 0, float2 size = float2(0, 0)) noexcept;
 		OCTOON_EXPORT bool color_edit3(const char* label, float col[3]) noexcept;
 		OCTOON_EXPORT bool color_edit4(const char* label, float col[4], bool show_alpha = true) noexcept;
-		OCTOON_EXPORT void color_edit_mode(GuiColorEditMode mode) noexcept;
 
 		OCTOON_EXPORT void plot_lines(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = nullptr, float scale_min = FLT_MAX, float scale_max = FLT_MAX, const float2& graph_size = float2::Zero, int stride = sizeof(float)) noexcept;
 		OCTOON_EXPORT void plot_lines(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = nullptr, float scale_min = FLT_MAX, float scale_max = FLT_MAX, const float2& graph_size = float2::Zero) noexcept;
@@ -566,8 +605,6 @@ namespace octoon
 		OCTOON_EXPORT void value(const char* prefix, int v) noexcept;
 		OCTOON_EXPORT void value(const char* prefix, unsigned int v) noexcept;
 		OCTOON_EXPORT void value(const char* prefix, float v, const char* float_format = nullptr) noexcept;
-		OCTOON_EXPORT void value_color(const char* prefix, const float4& v) noexcept;
-		OCTOON_EXPORT void value_color(const char* prefix, std::uint32_t v) noexcept;
 
 		OCTOON_EXPORT float2 get_item_rect_min() noexcept;
 		OCTOON_EXPORT float2 get_item_rect_max() noexcept;
@@ -595,8 +632,8 @@ namespace octoon
 		OCTOON_EXPORT void color_convertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v) noexcept;
 		OCTOON_EXPORT void color_convertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b) noexcept;
 
-		OCTOON_EXPORT bool color_picker3(const char* label, float col[3], const float2& size = float2(160.f, 150.f), float hueSize = 12.0f, float crossHairSize = 7.0f) noexcept;
-		OCTOON_EXPORT bool color_picker3_with_revert(const char* label, const char* name, float col[3], const float default_[3], const float2& size = float2(160.f, 150.f), float hueSize = 12.0f, float crossHairSize = 7.0f) noexcept;
+		OCTOON_EXPORT bool color_picker3(const char* label, float col[3], GuiColorEditFlags flags = 0);
+		OCTOON_EXPORT bool color_picker4(const char* label, float col[4], GuiColorEditFlags flags = 0, const float* ref_col = NULL);
 
 		OCTOON_EXPORT void help_marker(const char* text, const char* desc) noexcept;
 

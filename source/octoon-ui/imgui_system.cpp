@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_dock.h>
+#include <imgui_internal.h>
 
 #include <cstring> // std::memcpy
 
@@ -171,7 +172,7 @@ namespace octoon
 			if (initialize_)
 			{
 				ImGui::ShutdownDock();
-				ImGui::Shutdown();
+				ImGui::Shutdown(ui_context_);
 
 				initialize_ = false;
 			}

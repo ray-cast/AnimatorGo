@@ -58,7 +58,7 @@ public:
 		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
 		static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
 
-		auto& transform = this->getComponent<octoon::TransformComponent>();
+		auto transform = this->getComponent<octoon::TransformComponent>();
 
 		if (octoon::imgui::begin("Material"))
 		{
@@ -93,13 +93,13 @@ public:
 
 			if (octoon::imgui::tree_node_ex("front color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::imgui::color_picker3("##FrontColor", frontColor.ptr());
+				octoon::imgui::color_picker3("##FrontColor", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview | octoon::imgui::GuiColorEditFlagBits::PickerHueWheel);
 				octoon::imgui::tree_pop();
 			}
 
 			if (octoon::imgui::tree_node_ex("side color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::imgui::color_picker3("##SideColor", sideColor.ptr());
+				octoon::imgui::color_picker3("##SideColor", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview | octoon::imgui::GuiColorEditFlagBits::PickerHueWheel);
 				octoon::imgui::tree_pop();
 			}
 
@@ -116,17 +116,17 @@ public:
 		auto& project = camera_->getComponent<octoon::CameraComponent>()->getProjection();
 		auto model = transform->getLocalTransform();
 
-		static octoon::imgui::guizmo::OPERATION mCurrentGizmoOperation(octoon::imgui::guizmo::ROTATE);
+		static octoon::imgui::guizmo::OPERATION op(octoon::imgui::guizmo::ROTATE);
 		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::Q))
-			mCurrentGizmoOperation = octoon::imgui::guizmo::TRANSLATE;
+			op = octoon::imgui::guizmo::TRANSLATE;
 		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::W))
-			mCurrentGizmoOperation = octoon::imgui::guizmo::ROTATE;
+			op = octoon::imgui::guizmo::ROTATE;
 		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::E))
-			mCurrentGizmoOperation = octoon::imgui::guizmo::SCALE;
+			op = octoon::imgui::guizmo::SCALE;
 
 		octoon::imgui::guizmo::BeginFrame();
 		octoon::imgui::guizmo::SetRect(0, 0, octoon::imgui::get_display_size().x, octoon::imgui::get_display_size().y);
-		octoon::imgui::guizmo::Manipulate(view.ptr(), project.ptr(), mCurrentGizmoOperation, octoon::imgui::guizmo::MODE::LOCAL, model.ptr());
+		octoon::imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op, octoon::imgui::guizmo::MODE::LOCAL, model.ptr());
 
 		transform->setLocalTransform(model);
 	}
@@ -161,6 +161,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
+		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, -100));
 
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::PathMeshingComponent>(chars[0]);

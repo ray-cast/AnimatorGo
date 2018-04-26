@@ -28,8 +28,9 @@ public:
 	{
 	}
 
-	TextController(octoon::video::TextMaterialPtr material)
+	TextController(octoon::GameObjectPtr camera, octoon::video::TextMaterialPtr material)
 		: material_(material)
+		, camera_(camera)
 	{
 	}
 
@@ -46,7 +47,7 @@ public:
 
 	void onFrame() override
 	{
-		this->getComponent<octoon::TransformComponent>()->setLocalQuaternionAccum(octoon::math::Quaternion().make_rotation_y(0.01f));
+		//this->getComponent<octoon::TransformComponent>()->setLocalQuaternionAccum(octoon::math::Quaternion().make_rotation_y(0.01f));
 	}
 
 	void onGui() except override
@@ -55,12 +56,40 @@ public:
 		static octoon::math::float1 extrude = 2.0f;
 		static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
 		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
+		static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
+
+		auto& transform = this->getComponent<octoon::TransformComponent>();
 
 		if (octoon::imgui::begin("Material"))
 		{
-			octoon::imgui::set_window_size(octoon::imgui::float2(300, 600), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
-			octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
-			octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
+			octoon::imgui::set_window_size(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
+
+			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				octoon::math::float3 matrixTranslation = transform->getLocalTranslate();
+				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getLocalQuaternion()));
+				octoon::math::float3 matrixScale = transform->getLocalScale();
+
+				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
+				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
+				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
+
+				transform->setLocalTranslate(matrixTranslation);
+
+				transform->setLocalQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
+				transform->setLocalScale(matrixScale);
+
+				octoon::imgui::tree_pop();
+			}
+
+			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
+				octoon::imgui::drag_float3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
+
+				octoon::imgui::tree_pop();
+			}
 
 			if (octoon::imgui::tree_node_ex("front color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
@@ -80,7 +109,26 @@ public:
 			material_->setExtrude(extrude);
 			material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
 			material_->setTextColor(octoon::video::TextColor::SideColor, sideColor);
+			material_->setTranslate(translate);
 		}
+
+		auto& view = camera_->getComponent<octoon::CameraComponent>()->getView();
+		auto& project = camera_->getComponent<octoon::CameraComponent>()->getProjection();
+		auto model = transform->getLocalTransform();
+
+		static octoon::imgui::guizmo::OPERATION mCurrentGizmoOperation(octoon::imgui::guizmo::ROTATE);
+		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::Q))
+			mCurrentGizmoOperation = octoon::imgui::guizmo::TRANSLATE;
+		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::W))
+			mCurrentGizmoOperation = octoon::imgui::guizmo::ROTATE;
+		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::E))
+			mCurrentGizmoOperation = octoon::imgui::guizmo::SCALE;
+
+		octoon::imgui::guizmo::BeginFrame();
+		octoon::imgui::guizmo::SetRect(0, 0, octoon::imgui::get_display_size().x, octoon::imgui::get_display_size().y);
+		octoon::imgui::guizmo::Manipulate(view.ptr(), project.ptr(), mCurrentGizmoOperation, octoon::imgui::guizmo::MODE::LOCAL, model.ptr());
+
+		transform->setLocalTransform(model);
 	}
 
 	octoon::GameComponentPtr clone() const noexcept
@@ -89,6 +137,7 @@ public:
 	}
 
 private:
+	octoon::GameObjectPtr camera_;
 	octoon::video::TextMaterialPtr material_;
 };
 
@@ -116,7 +165,7 @@ int main(int argc, const char* argv[])
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::PathMeshingComponent>(chars[0]);
 		object->addComponent<octoon::MeshRendererComponent>(material);
-		object->addComponent<TextController>(material);
+		object->addComponent<TextController>(camera, material);
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

@@ -4,6 +4,7 @@
 #include <imgui_dock.h>
 #include <imgui_internal.h>
 #include <imgui_user.h>
+#include <ImGuizmo.h>
 
 #include <cstring> // std::memcpy
 
@@ -2030,6 +2031,54 @@ namespace octoon
 		void label_text_ex_v(const char* label, const char* fmt, va_list args) noexcept
 		{
 			ImGui::LabelTextExV(label, fmt, args);
+		}
+
+		namespace guizmo
+		{
+			void SetDrawlist()
+			{
+				ImGuizmo::SetDrawlist();
+			}
+
+			void BeginFrame()
+			{
+				ImGuizmo::BeginFrame();
+			}
+
+			bool IsOver()
+			{
+				return ImGuizmo::IsOver();
+			}
+
+			bool IsUsing()
+			{
+				return ImGuizmo::IsUsing();
+			}
+
+			void Enable(bool enable)
+			{
+				ImGuizmo::Enable(enable);
+			}
+
+			void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale)
+			{
+				ImGuizmo::DecomposeMatrixToComponents(matrix, translation, rotation, scale);
+			}
+
+			void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix)
+			{
+				ImGuizmo::RecomposeMatrixFromComponents(translation, rotation, scale, matrix);
+			}
+
+			void SetRect(float x, float y, float width, float height)
+			{
+				ImGuizmo::SetRect(x, y, width, height);
+			}
+
+			void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
+			{
+				ImGuizmo::Manipulate(view, projection, (ImGuizmo::OPERATION)operation, (ImGuizmo::MODE)mode, matrix, deltaMatrix, snap, localBounds, boundsSnap);
+			}
 		}
 	}
 }

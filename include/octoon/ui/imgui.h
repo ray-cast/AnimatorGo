@@ -649,17 +649,17 @@ namespace octoon
 
 		namespace guizmo
 		{
-			enum OPERATION
+			enum Operation
 			{
-				TRANSLATE,
-				ROTATE,
-				SCALE
+				Translate,
+				Rotation,
+				Scale
 			};
 
-			enum MODE
+			enum Mode
 			{
-				LOCAL,
-				WORLD
+				Local,
+				World
 			};
 
 			OCTOON_EXPORT void SetDrawlist();
@@ -668,12 +668,9 @@ namespace octoon
 			OCTOON_EXPORT bool IsUsing();
 			OCTOON_EXPORT void Enable(bool enable);
 
-			OCTOON_EXPORT void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
-			OCTOON_EXPORT void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
-
 			OCTOON_EXPORT void SetRect(float x, float y, float width, float height);
 
-			OCTOON_EXPORT void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
+			OCTOON_EXPORT void Manipulate(const float *view, const float *projection, Operation operation, Mode mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
 		};
 	}
 }

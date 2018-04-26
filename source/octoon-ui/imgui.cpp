@@ -1907,22 +1907,12 @@ namespace octoon
 				ImGuizmo::Enable(enable);
 			}
 
-			void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale)
-			{
-				ImGuizmo::DecomposeMatrixToComponents(matrix, translation, rotation, scale);
-			}
-
-			void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix)
-			{
-				ImGuizmo::RecomposeMatrixFromComponents(translation, rotation, scale, matrix);
-			}
-
 			void SetRect(float x, float y, float width, float height)
 			{
 				ImGuizmo::SetRect(x, y, width, height);
 			}
 
-			void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
+			void Manipulate(const float *view, const float *projection, Operation operation, Mode mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
 			{
 				ImGuizmo::Manipulate(view, projection, (ImGuizmo::OPERATION)operation, (ImGuizmo::MODE)mode, matrix, deltaMatrix, snap, localBounds, boundsSnap);
 			}

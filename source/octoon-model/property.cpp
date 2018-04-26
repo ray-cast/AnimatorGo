@@ -412,29 +412,29 @@ namespace octoon
 			return count;
 		}
 
-		void MeshProperty::setVertexArray(const Float3Array& array) noexcept
+		void MeshProperty::setVertexArray(const float3s& array) noexcept
 		{
 			_vertices = array;
 		}
 
-		void MeshProperty::setNormalArray(const Float3Array& array) noexcept
+		void MeshProperty::setNormalArray(const float3s& array) noexcept
 		{
 			_normals = array;
 		}
 
-		void MeshProperty::setColorArray(const Float4Array& array) noexcept
+		void MeshProperty::setColorArray(const float4s& array) noexcept
 		{
 			_colors = array;
 		}
 
-		void MeshProperty::setTangentArray(const Float4Array& array) noexcept
+		void MeshProperty::setTangentArray(const float4s& array) noexcept
 		{
 			_tangents = array;
 		}
 
-		void MeshProperty::setTexcoordArray(const Float2Array& array, std::uint8_t n) noexcept
+		void MeshProperty::setTexcoordArray(const float2s& array, std::uint8_t n) noexcept
 		{
-			assert(n < sizeof(_texcoords) / sizeof(Float2Array));
+			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			_texcoords[n] = array;
 		}
 
@@ -443,7 +443,7 @@ namespace octoon
 			_indices = array;
 		}
 
-		void MeshProperty::setBindposes(const Float4x4Array& array) noexcept
+		void MeshProperty::setBindposes(const float4x4s& array) noexcept
 		{
 			_bindposes = array;
 		}
@@ -458,30 +458,30 @@ namespace octoon
 			_weights = array;
 		}
 
-		void MeshProperty::setVertexArray(Float3Array&& array) noexcept
+		void MeshProperty::setVertexArray(float3s&& array) noexcept
 		{
 			_vertices = std::move(array);
 		}
 
 		void
-			MeshProperty::setNormalArray(Float3Array&& array) noexcept
+			MeshProperty::setNormalArray(float3s&& array) noexcept
 		{
 			_normals = std::move(array);
 		}
 
-		void MeshProperty::setColorArray(Float4Array&& array) noexcept
+		void MeshProperty::setColorArray(float4s&& array) noexcept
 		{
 			_colors = std::move(array);
 		}
 
-		void MeshProperty::setTangentArray(Float4Array&& array) noexcept
+		void MeshProperty::setTangentArray(float4s&& array) noexcept
 		{
 			_tangents = std::move(array);
 		}
 
-		void MeshProperty::setTexcoordArray(Float2Array&& array, std::uint8_t n) noexcept
+		void MeshProperty::setTexcoordArray(float2s&& array, std::uint8_t n) noexcept
 		{
-			assert(n < sizeof(_texcoords) / sizeof(Float2Array));
+			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			_texcoords[n] = std::move(array);
 		}
 
@@ -495,7 +495,7 @@ namespace octoon
 			_weights = std::move(array);
 		}
 
-		void MeshProperty::setBindposes(Float4x4Array&& array) noexcept
+		void MeshProperty::setBindposes(float4x4s&& array) noexcept
 		{
 			_bindposes = std::move(array);
 		}
@@ -505,29 +505,29 @@ namespace octoon
 			_meshSubsets = std::move(subsets);
 		}
 
-		Float3Array& MeshProperty::getVertexArray() noexcept
+		float3s& MeshProperty::getVertexArray() noexcept
 		{
 			return _vertices;
 		}
 
-		Float3Array& MeshProperty::getNormalArray() noexcept
+		float3s& MeshProperty::getNormalArray() noexcept
 		{
 			return _normals;
 		}
 
-		Float4Array& MeshProperty::getTangentArray() noexcept
+		float4s& MeshProperty::getTangentArray() noexcept
 		{
 			return _tangents;
 		}
 
-		Float4Array& MeshProperty::getColorArray() noexcept
+		float4s& MeshProperty::getColorArray() noexcept
 		{
 			return _colors;
 		}
 
-		Float2Array& MeshProperty::getTexcoordArray(std::uint8_t n) noexcept
+		float2s& MeshProperty::getTexcoordArray(std::uint8_t n) noexcept
 		{
-			assert(n < sizeof(_texcoords) / sizeof(Float2Array));
+			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			return _texcoords[n];
 		}
 
@@ -541,7 +541,7 @@ namespace octoon
 			return _indices;
 		}
 
-		Float4x4Array& MeshProperty::getBindposes() noexcept
+		float4x4s& MeshProperty::getBindposes() noexcept
 		{
 			return _bindposes;
 		}
@@ -551,29 +551,29 @@ namespace octoon
 			return _meshSubsets;
 		}
 
-		const Float3Array& MeshProperty::getVertexArray() const noexcept
+		const float3s& MeshProperty::getVertexArray() const noexcept
 		{
 			return _vertices;
 		}
 
-		const Float3Array& MeshProperty::getNormalArray() const noexcept
+		const float3s& MeshProperty::getNormalArray() const noexcept
 		{
 			return _normals;
 		}
 
-		const Float4Array& MeshProperty::getTangentArray() const noexcept
+		const float4s& MeshProperty::getTangentArray() const noexcept
 		{
 			return _tangents;
 		}
 
-		const Float4Array& MeshProperty::getColorArray() const noexcept
+		const float4s& MeshProperty::getColorArray() const noexcept
 		{
 			return _colors;
 		}
 
-		const Float2Array& MeshProperty::getTexcoordArray(std::uint8_t n) const noexcept
+		const float2s& MeshProperty::getTexcoordArray(std::uint8_t n) const noexcept
 		{
-			assert(n < sizeof(_texcoords) / sizeof(Float2Array));
+			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			return _texcoords[n];
 		}
 
@@ -582,7 +582,7 @@ namespace octoon
 			return _weights;
 		}
 
-		const Float4x4Array& MeshProperty::getBindposes() const noexcept
+		const float4x4s& MeshProperty::getBindposes() const noexcept
 		{
 			return _bindposes;
 		}
@@ -609,14 +609,14 @@ namespace octoon
 
 		void MeshProperty::clear() noexcept
 		{
-			_vertices = Float3Array();
-			_normals = Float3Array();
-			_colors = Float4Array();
-			_tangents = Float4Array();
+			_vertices = float3s();
+			_normals = float3s();
+			_colors = float4s();
+			_tangents = float4s();
 			_indices = Uint1Array();
 
 			for (std::size_t i = 0; i < 8; i++)
-				_texcoords[i] = Float2Array();
+				_texcoords[i] = float2s();
 		}
 
 		MeshPropertyPtr MeshProperty::clone() noexcept
@@ -647,8 +647,8 @@ namespace octoon
 
 				float segment = thetaStart + i / segments * thetaLength;
 
-				v.x = radius * octoon::math::cos(segment);
-				v.y = radius * octoon::math::sin(segment);
+				v.x = radius * math::cos(segment);
+				v.y = radius * math::sin(segment);
 				v.z = 0;
 
 				_vertices.push_back(v);
@@ -1040,9 +1040,9 @@ namespace octoon
 					float v = (float)(y) / heightSegments;
 
 					Vector3 vertex;
-					vertex.x = -radius * octoon::math::sin(thetaStart + v * thetaLength) * octoon::math::cos(phiStart + u * phiLength);
-					vertex.y = radius * octoon::math::cos(thetaStart + v * thetaLength);
-					vertex.z = radius * octoon::math::sin(thetaStart + v * thetaLength) * octoon::math::sin(phiStart + u * phiLength);
+					vertex.x = -radius * math::sin(thetaStart + v * thetaLength) * math::cos(phiStart + u * phiLength);
+					vertex.y = radius * math::cos(thetaStart + v * thetaLength);
+					vertex.z = radius * math::sin(thetaStart + v * thetaLength) * math::sin(phiStart + u * phiLength);
 
 					_vertices.push_back(vertex);
 					_normals.push_back(math::normalize(vertex));
@@ -1061,13 +1061,13 @@ namespace octoon
 					std::uint32_t v3 = vertices[(y + 1) * (widthSegments + 1) + x];
 					std::uint32_t v4 = vertices[(y + 1) * (widthSegments + 1) + x + 1];
 
-					if (octoon::math::abs((_vertices)[v2].y) == radius)
+					if (math::abs((_vertices)[v2].y) == radius)
 					{
 						_indices.push_back(v2);
 						_indices.push_back(v3);
 						_indices.push_back(v4);
 					}
-					else if (octoon::math::abs((_vertices)[v3].y) == radius)
+					else if (math::abs((_vertices)[v3].y) == radius)
 					{
 						_indices.push_back(v2);
 						_indices.push_back(v1);
@@ -1094,7 +1094,7 @@ namespace octoon
 		{
 			this->clear();
 
-			float tanFovy_2 = octoon::math::tan(fovy * PI / 360.0f);
+			float tanFovy_2 = math::tan(fovy * PI / 360.0f);
 
 			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
 			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
@@ -1149,7 +1149,7 @@ namespace octoon
 				float sin;
 				float cos;
 
-				octoon::math::sinCos(&sin, &cos, thetaStart + i * segment);
+				math::sinCos(&sin, &cos, thetaStart + i * segment);
 
 				Vector3 v;
 				v.x = radius * cos;
@@ -1297,16 +1297,16 @@ namespace octoon
 
 			std::map<std::pair<float, float>, std::uint32_t> vectorMap;
 
-			Float3Array changeVertex;
-			Float3Array changeNormal;
+			float3s changeVertex;
+			float3s changeNormal;
 
 			for (auto& it : _indices)
 			{
 				const Vector3& v = (_vertices)[it];
 				const Vector3& n = (_normals)[it];
 
-				float vkey = octoon::math::hash_float(v.x, v.y, v.z);
-				float nkey = octoon::math::hash_float(n.z, n.y, n.x);
+				float vkey = math::hash_float(v.x, v.y, v.z);
+				float nkey = math::hash_float(n.z, n.y, n.x);
 
 				std::uint32_t value = vectorMap[std::make_pair(vkey, nkey)];
 				if (value == 0)
@@ -1328,7 +1328,7 @@ namespace octoon
 			_normals.swap(changeNormal);
 		}
 
-		void MeshProperty::computeFaceNormals(Float3Array& faceNormals) noexcept
+		void MeshProperty::computeFaceNormals(float3s& faceNormals) noexcept
 		{
 			assert(!_vertices.empty() && !_indices.empty());
 
@@ -1389,12 +1389,12 @@ namespace octoon
 				it = math::normalize(it);
 		}
 
-		void MeshProperty::computeVertexNormals(const Float3Array& faceNormals) noexcept
+		void MeshProperty::computeVertexNormals(const float3s& faceNormals) noexcept
 		{
 			assert(faceNormals.size() == _vertices.size());
 			assert(!_vertices.empty() && !_indices.empty());
 
-			Float3Array normal;
+			float3s normal;
 			normal.resize(_vertices.size());
 			std::memset(normal.data(), 0, normal.size() * sizeof(float3));
 
@@ -1545,7 +1545,7 @@ namespace octoon
 			}
 		}
 
-		void MeshProperty::computeTangentQuats(Float4Array& tangentQuat) const noexcept
+		void MeshProperty::computeTangentQuats(float4s& tangentQuat) const noexcept
 		{
 			assert(_tangents.size() > 1);
 			assert(_tangents.size() == _normals.size());

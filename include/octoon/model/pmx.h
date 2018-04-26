@@ -27,14 +27,14 @@ namespace octoon
 #define PMX_BONE_AXIS     1 << 10
 #define PMX_BONE_ROTATE   1 << 11
 
-		typedef octoon::math::Vector2  PmxVector2;
-		typedef octoon::math::Vector3  PmxVector3;
-		typedef octoon::math::Vector4  PmxVector4;
+		typedef math::Vector2  PmxVector2;
+		typedef math::Vector3  PmxVector3;
+		typedef math::Vector4  PmxVector4;
 
-		typedef octoon::math::Vector3  PmxColor3;
-		typedef octoon::math::Vector4  PmxColor4;
-		typedef octoon::math::float3x3 PmxFloat3x3;
-		typedef octoon::math::float4x4 PmxFloat4x4;
+		typedef math::Vector3  PmxColor3;
+		typedef math::Vector4  PmxColor4;
+		typedef math::float3x3 PmxFloat3x3;
+		typedef math::float4x4 PmxFloat4x4;
 
 		typedef wchar_t                PmxChar;
 		typedef std::int8_t            PmxInt8;

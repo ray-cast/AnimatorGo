@@ -496,9 +496,9 @@ namespace octoon
 					}
 				}
 
-				material->set(MATKEY_COLOR_DIFFUSE, octoon::math::srgb2linear(it.Diffuse));
-				material->set(MATKEY_COLOR_AMBIENT, octoon::math::srgb2linear(it.Ambient));
-				material->set(MATKEY_COLOR_SPECULAR, octoon::math::srgb2linear(it.Specular));
+				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
+				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
+				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
 				material->set(MATKEY_OPACITY, it.Opacity);
 				material->set(MATKEY_SHININESS, it.Shininess / 255.0f);
 
@@ -541,9 +541,9 @@ namespace octoon
 
 			if (pmx.numVertices > 0 && pmx.numIndices > 0 && pmx.numMaterials > 0)
 			{
-				Float3Array vertices;
-				Float3Array normals;
-				Float2Array texcoords;
+				float3s vertices;
+				float3s normals;
+				float2s texcoords;
 				VertexWeights weights;
 
 				for (std::uint32_t i = 0; i < pmx.numVertices; i++)
@@ -708,7 +708,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(octoon::io::ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(io::ostream& stream, const Pmx& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1091,7 +1091,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(octoon::io::ostream& stream, const Model& model) noexcept
+		bool PmxLoader::doSave(io::ostream& stream, const Model& model) noexcept
 		{
 			return false;
 		}

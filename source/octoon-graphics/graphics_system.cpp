@@ -19,6 +19,8 @@ namespace octoon
 {
 	namespace graphics
 	{
+		OctoonImplementSingleton(GraphicsSystem)
+
 		GraphicsSystem::GraphicsSystem() noexcept
 			: _debugMode(false)
 		{

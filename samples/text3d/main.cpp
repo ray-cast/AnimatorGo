@@ -88,18 +88,9 @@ public:
 				octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
 				octoon::imgui::drag_float3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
 
-				octoon::imgui::tree_pop();
-			}
+				octoon::imgui::color_picker3("front color", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("side color", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
-			if (octoon::imgui::tree_node_ex("front color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
-			{
-				octoon::imgui::color_picker3("##FrontColor", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview | octoon::imgui::GuiColorEditFlagBits::PickerHueWheel);
-				octoon::imgui::tree_pop();
-			}
-
-			if (octoon::imgui::tree_node_ex("side color", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
-			{
-				octoon::imgui::color_picker3("##SideColor", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview | octoon::imgui::GuiColorEditFlagBits::PickerHueWheel);
 				octoon::imgui::tree_pop();
 			}
 

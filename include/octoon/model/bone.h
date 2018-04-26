@@ -50,8 +50,7 @@ namespace octoon
 			std::vector<IKChild> child;
 		};
 
-
-		class Bone final
+		class OCTOON_EXPORT Bone final
 		{
 		public:
 			Bone() noexcept;

@@ -11,12 +11,12 @@ namespace octoon
 {
 	namespace model
 	{
-		class Model final
+		class OCTOON_EXPORT Model final
 		{
 		public:
 			typedef std::shared_ptr<ModelLoader>      MyLoader;
 
-			typedef std::vector<MeshPropertyPtr>      MeshList;
+			typedef std::vector<MeshPtr>      MeshList;
 			typedef std::vector<BonePtr>              BoneList;
 			typedef std::vector<IKAttrPtr>            IKList;
 			typedef std::vector<RigidbodyPropertyPtr> RigidbodyList;
@@ -31,7 +31,7 @@ namespace octoon
 			Model() noexcept;
 			~Model() noexcept;
 
-			void addMesh(MeshPropertyPtr& mesh)            noexcept;
+			void addMesh(MeshPtr& mesh)            noexcept;
 			void addBone(BonePtr& bone)					   noexcept;
 			void addIK(IKAttrPtr& ik)                      noexcept;
 			void addRigidbody(RigidbodyPropertyPtr& body)  noexcept;
@@ -42,7 +42,7 @@ namespace octoon
 			void addLight(LightPropertyPtr& light)         noexcept;
 			void addCamera(CameraPropertyPtr& camera)      noexcept;
 
-			void addMesh(MeshPropertyPtr&& mesh)           noexcept;
+			void addMesh(MeshPtr&& mesh)           noexcept;
 			void addBone(BonePtr&& bone)				   noexcept;
 			void addIK(IKAttrPtr&& ik)                     noexcept;
 			void addRigidbody(RigidbodyPropertyPtr&& body) noexcept;

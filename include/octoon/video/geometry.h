@@ -1,8 +1,8 @@
 #ifndef OCTOON_GEOMETRY_H_
 #define OCTOON_GEOMETRY_H_
 
-#include <octoon/video/mesh.h>
 #include <octoon/video/render_object.h>
+#include <octoon/model/mesh.h>
 #include <octoon/graphics/graphics_data.h>
 
 namespace octoon
@@ -22,10 +22,11 @@ namespace octoon
 			void setReceiveShadow(bool enable) noexcept;
 			bool getReceiveShadow() const noexcept;
 
-			void setMesh(const MeshPtr& mesh) noexcept;
-			const MeshPtr& getMesh() const noexcept;
+			void setMesh(const model::MeshPtr& mesh) noexcept;
+			const model::MeshPtr& getMesh() const noexcept;
 
 			graphics::GraphicsDataPtr getVertexBuffer() const noexcept;
+			graphics::GraphicsDataPtr getIndexBuffer() const noexcept;
 
 			void setMaterial(MaterialPtr&& material) noexcept;
 			void setMaterial(const MaterialPtr& material) noexcept;
@@ -35,7 +36,7 @@ namespace octoon
 			DrawType getDrawType() const noexcept;
 
 		private:
-			MeshPtr mesh_;
+			model::MeshPtr mesh_;
 
 			bool isCastShadow_;
 			bool isReceiveShadow_;

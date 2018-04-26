@@ -21,6 +21,8 @@ SET(MODEL_LIST
 	${HEADER_PATH}/pmx.h
 	${HEADER_PATH}/pmx_loader.h
 	${SOURCE_PATH}/pmx_loader.cpp
+	${HEADER_PATH}/mesh.h
+	${SOURCE_PATH}/mesh.cpp
 	${HEADER_PATH}/property.h
 	${SOURCE_PATH}/property.cpp
 )

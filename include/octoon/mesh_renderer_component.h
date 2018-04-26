@@ -28,7 +28,7 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onMeshReplace(const video::MeshPtr& mesh) noexcept;
+		void onMeshReplace(const model::MeshPtr& mesh) noexcept;
 		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 	private:

@@ -1,5 +1,5 @@
 #include <octoon/path_meshing_component.h>
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 #include <octoon/video/text_contour_group.h>
 #include <octoon/runtime/except.h>
 #include <octoon/mesh_filter_component.h>
@@ -127,7 +127,7 @@ namespace octoon
 
 		if (json.empty())
 		{
-			this->setMesh(std::make_shared<video::Mesh>());
+			this->setMesh(std::make_shared<model::Mesh>());
 			return;
 		}
 
@@ -221,7 +221,7 @@ namespace octoon
 			contours.push_back(std::move(contour));
 		}
 
-		auto mesh = std::make_shared<video::Mesh>();
+		auto mesh = std::make_shared<model::Mesh>();
 
 		math::float3 center;
 

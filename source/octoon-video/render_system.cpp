@@ -251,8 +251,13 @@ namespace octoon
 					context.setRenderPipeline(material->getPipeline());
 					context.setDescriptorSet(material->getDescriptorSet());
 					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+					context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
 
-					context.draw(mesh->getVertexArray().size(), 1, 0, 0);
+					auto& indices = mesh->getIndicesArray();
+					if (indices.empty())
+						context.draw(mesh->getVertexArray().size(), 1, 0, 0);
+					else
+						context.drawIndexed(indices.size(), 1, 0, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)

@@ -12,10 +12,10 @@ namespace octoon
 		{
 		public:
 			CombineMesh() noexcept;
-			CombineMesh(const MeshPropertyPtr mesh, const math::float4x4& transform = math::float4x4::One) noexcept;
+			CombineMesh(const MeshPtr mesh, const math::float4x4& transform = math::float4x4::One) noexcept;
 
-			void setMesh(MeshPropertyPtr other) noexcept;
-			MeshPropertyPtr getMesh() const noexcept;
+			void setMesh(MeshPtr other) noexcept;
+			MeshPtr getMesh() const noexcept;
 
 			void setTransform(const math::float4x4& m) noexcept;
 			const math::float4x4& getTransform() const noexcept;
@@ -23,7 +23,7 @@ namespace octoon
 			void makeTransform(const math::float3& translate, const math::Quaternion& quat, const math::float3& scale) noexcept;
 
 		private:
-			MeshPropertyPtr _mesh;
+			MeshPtr _mesh;
 			math::float4x4 _transform;
 		};
 	}

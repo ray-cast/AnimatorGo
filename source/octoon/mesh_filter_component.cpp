@@ -8,12 +8,12 @@ namespace octoon
 	{
 	}
 
-	MeshFilterComponent::MeshFilterComponent(video::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(model::MeshPtr&& mesh) noexcept
 	{
 		this->setMesh(std::move(mesh));
 	}
 
-	MeshFilterComponent::MeshFilterComponent(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const model::MeshPtr& mesh) noexcept
 	{
 		this->setMesh(mesh);
 	}
@@ -23,7 +23,7 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::setMesh(video::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::setMesh(model::MeshPtr&& mesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -33,7 +33,7 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::setMesh(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::setMesh(const model::MeshPtr& mesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -42,7 +42,7 @@ namespace octoon
 		}
 	}
 
-	const video::MeshPtr&
+	const model::MeshPtr&
 	MeshFilterComponent::getMesh() const noexcept
 	{
 		return mesh_;
@@ -71,7 +71,7 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::onMeshReplace(const video::MeshPtr& mesh) noexcept
+	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
 		for (auto& it : delegates_)
 			(*it)(mesh);

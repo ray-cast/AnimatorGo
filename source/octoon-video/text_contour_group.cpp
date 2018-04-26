@@ -1,5 +1,5 @@
 #include <octoon/video/text_contour_group.h>
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 
 #include <cstring>
 #include <iostream>
@@ -194,7 +194,7 @@ namespace octoon
 		}
 
 		void
-		TextContourGroup::buildMeshes(Mesh& mesh) noexcept
+		TextContourGroup::buildMeshes(model::Mesh& mesh) noexcept
 		{
 			math::float3s tris(this->countOfPoints() * 2 * sizeof(math::Triangle) / sizeof(math::float3));
 			math::float3* trisData = tris.data();
@@ -279,7 +279,7 @@ namespace octoon
 				}
 			}
 
-			mesh.computeVerticeNormals();
+			mesh.computeVertexNormals();
 		}
 	}
 }

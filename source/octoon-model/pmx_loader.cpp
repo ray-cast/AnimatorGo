@@ -1,6 +1,7 @@
 #include <octoon/model/pmx_loader.h>
 #include <octoon/model/pmx.h>
 #include <octoon/model/modtypes.h>
+#include <octoon/model/mesh.h>
 #include <octoon/model/property.h>
 #include <octoon/model/model.h>
 
@@ -585,24 +586,38 @@ namespace octoon
 						return false;
 				}
 
-				MeshSubsets subsets;
-				std::size_t startIndices = 0;
+				PmxUInt32 startIndices = 0;
 
 				for (auto& it : pmx.materials)
 				{
-					subsets.push_back(MeshSubset(0, startIndices, it.FaceCount, 0, 0));
+					MeshPtr mesh = std::make_shared<Mesh>();
+
+					float3s vertices_(it.FaceCount);
+					float3s normals_(it.FaceCount);
+					float2s texcoords_(it.FaceCount);
+					VertexWeights weights_(it.FaceCount);
+					uint1s indices_(it.FaceCount);
+
+					for (auto i = startIndices; i < it.FaceCount; i++)
+					{
+						auto index = indices[i];
+						vertices_[i] = vertices[index];
+						normals_[i] = normals[index];
+						texcoords_[i] = texcoords[index];
+						weights_[i] = weights[index];
+						indices_[i] = i;
+					}
+
+					mesh->setVertexArray(std::move(vertices_));
+					mesh->setNormalArray(std::move(normals_));
+					mesh->setTexcoordArray(std::move(texcoords_));
+					mesh->setWeightArray(std::move(weights_));
+					mesh->setIndicesArray(std::move(indices_));
+
 					startIndices += it.FaceCount;
+
+					model.addMesh(std::move(mesh));
 				}
-
-				MeshPropertyPtr mesh = std::make_shared<MeshProperty>();
-				mesh->setVertexArray(std::move(vertices));
-				mesh->setNormalArray(std::move(normals));
-				mesh->setTexcoordArray(std::move(texcoords));
-				mesh->setWeightArray(std::move(weights));
-				mesh->setIndicesArray(std::move(indices));
-				mesh->setMeshSubsets(std::move(subsets));
-
-				model.addMesh(std::move(mesh));
 			}
 
 			if (pmx.numBones > 1)

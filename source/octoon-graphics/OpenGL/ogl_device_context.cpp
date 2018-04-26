@@ -402,23 +402,29 @@ namespace octoon
 		void
 		OGLDeviceContext::setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset, GraphicsIndexType indexType) noexcept
 		{
-			assert(data);
-			assert(data->isInstanceOf<OGLGraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
-			assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
-			assert(_glcontext->getActive());
-
-			auto ibo = data->downcast_pointer<OGLGraphicsData>();
-			if (_indexBuffer != ibo)
+			if (data)
 			{
-				::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo->getInstanceID());
-				_indexBuffer = ibo;
+				assert(data->isInstanceOf<OGLGraphicsData>());
+				assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
+				assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
+				assert(_glcontext->getActive());
+
+				auto ibo = data->downcast_pointer<OGLGraphicsData>();
+				if (_indexBuffer != ibo)
+				{
+					::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo->getInstanceID());
+					_indexBuffer = ibo;
+				}
+
+				_indexType = OGLTypes::asIndexType(indexType);
+				_indexOffset = offset;
+
+				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
 			}
-
-			_indexType = OGLTypes::asIndexType(indexType);
-			_indexOffset = offset;
-
-			if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
+			else
+			{
+				_indexBuffer = nullptr;
+			}
 		}
 
 		GraphicsDataPtr

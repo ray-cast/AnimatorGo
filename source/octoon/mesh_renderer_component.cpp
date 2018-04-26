@@ -90,7 +90,7 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMeshReplace(const video::MeshPtr& mesh) noexcept
+	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
 		if (geometry_)
 			geometry_->setMesh(mesh);

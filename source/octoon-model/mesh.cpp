@@ -2,6 +2,7 @@
 #include <octoon/math/perlin_noise.h>
 
 #include <map>
+#include <cstring>
 
 using namespace octoon::math;
 

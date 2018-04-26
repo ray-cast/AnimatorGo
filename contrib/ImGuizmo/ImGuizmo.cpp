@@ -897,7 +897,7 @@ namespace ImGuizmo
          if(radiusAxis > gContext.mRadiusSquareCenter)
            gContext.mRadiusSquareCenter = radiusAxis;
 
-         drawList->AddPolyline(circlePos, halfCircleSegmentCount, colors[3 - axis], false, 2);
+         drawList->AddPolyline(circlePos, halfCircleSegmentCount, colors[3 - axis], false, 3);
       }
       drawList->AddCircle(worldToPos(gContext.mModel.v.position, gContext.mViewProjection), gContext.mRadiusSquareCenter, colors[0], 64, 3.f);
 
@@ -1374,7 +1374,7 @@ namespace ImGuizmo
             continue;
 
          float distance = localPos.Length() / gContext.mScreenFactor;
-         if (distance > 0.9f && distance < 1.1f)
+         if (distance > 0.85f && distance < 1.15f)
             type = ROTATE_X + i;
       }
 

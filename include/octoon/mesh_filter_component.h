@@ -16,7 +16,9 @@ namespace octoon
 
 	public:
 		MeshFilterComponent() noexcept;
+		MeshFilterComponent(model::Mesh&& mesh) noexcept;
 		MeshFilterComponent(model::MeshPtr&& mesh) noexcept;
+		MeshFilterComponent(const model::Mesh& mesh) noexcept;
 		MeshFilterComponent(const model::MeshPtr& mesh) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 

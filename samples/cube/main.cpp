@@ -138,10 +138,9 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<octoon::MeshFilterComponent>(std::make_shared<octoon::model::Mesh>(octoon::model::makeCube(1.0, 1.0, 1.0)));
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<CubeController>(camera, material);
-		object->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

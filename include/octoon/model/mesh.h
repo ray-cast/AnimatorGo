@@ -21,6 +21,7 @@ namespace octoon
 		public:
 			Mesh() noexcept;
 			Mesh(Mesh&& mesh) noexcept;
+			Mesh(const Mesh& mesh) noexcept;
 			~Mesh() noexcept;
 
 			void setName(const std::string& name) noexcept;
@@ -117,7 +118,7 @@ namespace octoon
 			math::BoundingBox _boundingBox;
 		};
 
-inline 		Mesh makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI) noexcept
+		inline Mesh makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI) noexcept
 		{
 			Mesh mesh;
 			mesh.makeCircle(radius, segments, thetaStart, thetaLength);

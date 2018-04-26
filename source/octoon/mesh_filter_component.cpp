@@ -8,6 +8,16 @@ namespace octoon
 	{
 	}
 
+	MeshFilterComponent::MeshFilterComponent(model::Mesh&& mesh) noexcept
+	{
+		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)));
+	}
+
+	MeshFilterComponent::MeshFilterComponent(const model::Mesh& mesh) noexcept
+	{
+		this->setMesh(std::make_shared<model::Mesh>(mesh));
+	}
+
 	MeshFilterComponent::MeshFilterComponent(model::MeshPtr&& mesh) noexcept
 	{
 		this->setMesh(std::move(mesh));

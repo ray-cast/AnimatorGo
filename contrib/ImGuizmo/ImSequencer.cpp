@@ -2,10 +2,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
-
 namespace ImSequencer
 {
-
 	static bool SequencerAddDelButton(ImDrawList* draw_list, ImVec2 pos, bool add = true)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -52,13 +50,12 @@ namespace ImSequencer
 		int controlHeight = (sequenceCount + 1) * ItemHeight;
 		int frameCount = sequence->GetFrameCount();
 
-
 		if (expanded && !*expanded)
 		{
 			ImGui::InvisibleButton("canvas", ImVec2(canvas_size.x - canvas_pos.x, (float)ItemHeight));
 			draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
 			char tmps[512];
-			sprintf_s(tmps, sizeof(tmps), "%d Frames / %d entries", frameCount, sequenceCount);
+			sprintf(tmps, "%d Frames / %d entries", frameCount, sequenceCount);
 			draw_list->AddText(ImVec2(canvas_pos.x + 26, canvas_pos.y + 2), 0xFFFFFFFF, tmps);
 		}
 		else
@@ -88,7 +85,6 @@ namespace ImSequencer
 				if (*currentFrame >= frameCount)
 					*currentFrame = frameCount - 1;
 			}
-			
 
 			//header
 			draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
@@ -132,7 +128,7 @@ namespace ImSequencer
 
 			// clipping rect so items bars are not visible in the legend on the left when scrolled
 			draw_list->PushClipRect(ImVec2(canvas_pos.x + legendWidth, canvas_pos.y), ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + controlHeight));
-			
+
 			// slots background
 			for (int i = 0; i < sequenceCount; i++)
 			{
@@ -155,18 +151,18 @@ namespace ImSequencer
 				int px = (int)canvas_pos.x + i * framePixelWidth + legendWidth - firstFrameUsed * framePixelWidth;
 				int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
 				int tiretEnd = baseIndex ? controlHeight : ItemHeight;
-				
+
 				if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth))
 				{
 					draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
 
 					draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)ItemHeight), ImVec2((float)px, canvas_pos.y + (float)controlHeight - 1), 0x30606060, 1);
 				}
-				
+
 				if (baseIndex)
 				{
 					char tmps[512];
-					sprintf_s(tmps, sizeof(tmps), "%d", (i == frameCount) ? i : (i / 10));
+					sprintf(tmps, "%d", (i == frameCount) ? i : (i / 10));
 					draw_list->AddText(ImVec2((float)px + 3.f, canvas_pos.y), 0xFFBBBBBB, tmps);
 				}
 			}
@@ -191,7 +187,7 @@ namespace ImSequencer
 				ImVec2 slotP1(pos.x + *start * framePixelWidth, pos.y + 2);
 				ImVec2 slotP2(pos.x + *end * framePixelWidth + framePixelWidth, pos.y + ItemHeight - 2);
 				unsigned int slotColor = color | 0xFF000000;
-				
+
 				if (slotP1.x <= (canvas_size.x + canvas_pos.x) && slotP1.x >= (canvas_pos.x + legendWidth))
 				{
 					draw_list->AddRectFilled(slotP1, slotP2, slotColor, 2);
@@ -227,6 +223,7 @@ namespace ImSequencer
 					}
 				}
 			}
+
 			//ImGui::PopClipRect();
 
 			// moving
@@ -277,6 +274,7 @@ namespace ImSequencer
 				draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, canvas_pos.y + controlHeight), 0x402A2AFF, 4);
 			}
 			draw_list->PopClipRect();
+
 			// copy paste
 			if (sequenceOptions&SEQUENCER_COPYPASTE)
 			{
@@ -301,10 +299,12 @@ namespace ImSequencer
 					sequence->Paste();
 				}
 			}
+
 			//
 			if (hasScrollBar)
 			{
 				int scrollBarStartHeight = controlHeight - scrollBarHeight;
+
 				// ratio = number of frames visible in control / number to total frames
 				int visibleFrameCount = (int)floorf((canvas_size.x - legendWidth) / framePixelWidth);
 				float barWidthRatio = visibleFrameCount / (float)frameCount;
@@ -327,7 +327,6 @@ namespace ImSequencer
 				draw_list->AddRectFilled(scrollBarC, scrollBarD, inScrollBar ? 0xFF606060 : 0xFF505050, 2);
 			}
 		}
-
 
 		ImGui::EndGroup();
 

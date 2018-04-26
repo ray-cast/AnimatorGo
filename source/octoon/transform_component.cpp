@@ -321,8 +321,8 @@ namespace octoon
 	TransformComponent::clone() const noexcept
 	{
 		auto component = std::make_shared<TransformComponent>();
-		component->setLocalTransform(this->getLocalTransform());
 		component->setTransform(this->getTransform());
+		component->setLocalTransform(this->getLocalTransform());
 		return component;
 	}
 

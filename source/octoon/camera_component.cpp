@@ -214,6 +214,8 @@ namespace octoon
 		instance->setClearColor(this->getClearColor());
 		instance->setViewport(this->getViewport());
 		instance->setCameraType(this->getCameraType());
+		instance->setCameraOrder(this->getCameraOrder());
+		instance->setClearFlags(this->getClearFlags());
 
 		return instance;
 	}

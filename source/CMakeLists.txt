@@ -18,7 +18,7 @@ OPTION(OCTOON_FEATURE_INPUT_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_TIMER_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_MODEL_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_GRAPHICS_ENABLE "On for enable off for disable" ON)
-OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" OFF)
+OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_VIDEO_ENABLE "On for enable off for disable" ON)
 
 # runtime libraries

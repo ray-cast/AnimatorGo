@@ -8,8 +8,9 @@ namespace octoon
 {
 	namespace graphics
 	{
-		class OCTOON_EXPORT GraphicsSystem final : public runtime::Singleton<GraphicsSystem>
+		class OCTOON_EXPORT GraphicsSystem final
 		{
+			OctoonDeclareSingleton(GraphicsSystem)
 		public:
 			GraphicsSystem() noexcept;
 			~GraphicsSystem() noexcept;

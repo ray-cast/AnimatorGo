@@ -25,7 +25,8 @@ namespace octoon
 				vec4 P = POSITION0;
 				P.x -= P.y * lean;
 				P.z *= extrude;
-				P.xyz += translate;
+				if (P.z == 0)
+					P.xyz += translate;
 
 				if (abs(NORMAL0.z) > 0.5)
 					oTexcoord0 = frontColor;

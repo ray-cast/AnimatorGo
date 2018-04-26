@@ -94,6 +94,5 @@ namespace octoon
 		{
 			return _transform;
 		}
-
 	}
 }

@@ -1,5 +1,5 @@
 #include <octoon/video/text_meshing.h>
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 #include <octoon/video/text_file.h>
 #include <octoon/video/text_contour_group.h>
 #include <octoon/runtime/except.h>

@@ -1,7 +1,7 @@
 #ifndef OCTOON_MESH_FILTER_COMPONENT_H_
 #define OCTOON_MESH_FILTER_COMPONENT_H_
 
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 #include <octoon/game_component.h>
 #include <functional>
 
@@ -11,18 +11,20 @@ namespace octoon
 	{
 		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
 	public:
-		typedef std::function<void(const video::MeshPtr&)> OnMeshReplaceEvent;
+		typedef std::function<void(const model::MeshPtr&)> OnMeshReplaceEvent;
 		typedef std::vector<OnMeshReplaceEvent*> OnMeshReplaceEvents;
 
 	public:
 		MeshFilterComponent() noexcept;
-		MeshFilterComponent(video::MeshPtr&& mesh) noexcept;
-		MeshFilterComponent(const video::MeshPtr& mesh) noexcept;
+		MeshFilterComponent(model::Mesh&& mesh) noexcept;
+		MeshFilterComponent(model::MeshPtr&& mesh) noexcept;
+		MeshFilterComponent(const model::Mesh& mesh) noexcept;
+		MeshFilterComponent(const model::MeshPtr& mesh) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 
-		void setMesh(video::MeshPtr&& mesh) noexcept;
-		void setMesh(const video::MeshPtr& mesh) noexcept;
-		const video::MeshPtr& getMesh() const noexcept;
+		void setMesh(model::MeshPtr&& mesh) noexcept;
+		void setMesh(const model::MeshPtr& mesh) noexcept;
+		const model::MeshPtr& getMesh() const noexcept;
 
 		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
 		void removeMeshListener(const OnMeshReplaceEvent* func) noexcept;
@@ -30,14 +32,14 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onMeshReplace(const video::MeshPtr& mesh) noexcept;
+		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:
 		MeshFilterComponent(const MeshFilterComponent&) = delete;
 		MeshFilterComponent& operator=(const MeshFilterComponent&) = delete;
 
 	private:
-		video::MeshPtr mesh_;
+		model::MeshPtr mesh_;
 		OnMeshReplaceEvents delegates_;
 	};
 }

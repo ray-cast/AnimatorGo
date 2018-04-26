@@ -35,8 +35,8 @@ namespace octoon
 
 			float angleWeight;
 
-			octoon::math::float3 minimumDegrees;
-			octoon::math::float3 maximumDegrees;
+			math::float3 minimumDegrees;
+			math::float3 maximumDegrees;
 		};
 
 		class IKAttr
@@ -50,8 +50,7 @@ namespace octoon
 			std::vector<IKChild> child;
 		};
 
-
-		class Bone final
+		class OCTOON_EXPORT Bone final
 		{
 		public:
 			Bone() noexcept;
@@ -64,20 +63,20 @@ namespace octoon
 			void setParent(std::int16_t parent) noexcept;
 			std::int16_t getParent() const noexcept;
 
-			void setPosition(const octoon::math::float3& position) noexcept;
-			const octoon::math::float3& getPosition() const noexcept;
+			void setPosition(const math::float3& position) noexcept;
+			const math::float3& getPosition() const noexcept;
 
-			void setRotation(const octoon::math::Quaternion& rotate) noexcept;
-			const octoon::math::Quaternion& getRotation() const noexcept;
+			void setRotation(const math::Quaternion& rotate) noexcept;
+			const math::Quaternion& getRotation() const noexcept;
 
-			void setScaling(const octoon::math::float3& scale) noexcept;
-			const octoon::math::float3& getScaling() const noexcept;
+			void setScaling(const math::float3& scale) noexcept;
+			const math::float3& getScaling() const noexcept;
 
-			void setLocalTransform(const octoon::math::Matrix4x4& transform) noexcept;
-			const octoon::math::Matrix4x4& getLocalTransform() const noexcept;
+			void setLocalTransform(const math::Matrix4x4& transform) noexcept;
+			const math::Matrix4x4& getLocalTransform() const noexcept;
 
-			void setTransform(const octoon::math::Matrix4x4& transform) noexcept;
-			const octoon::math::Matrix4x4& getTransform() const noexcept;
+			void setTransform(const math::Matrix4x4& transform) noexcept;
+			const math::Matrix4x4& getTransform() const noexcept;
 
 		private:
 			std::string _name;
@@ -86,12 +85,12 @@ namespace octoon
 
 			std::int16_t _parent;
 
-			octoon::math::float3 _translate;
-			octoon::math::float3 _scaling;
-			octoon::math::Quaternion _rotation;
+			math::float3 _translate;
+			math::float3 _scaling;
+			math::Quaternion _rotation;
 
-			octoon::math::float4x4 _transform;
-			octoon::math::float4x4 _localTransform;
+			math::float4x4 _transform;
+			math::float4x4 _localTransform;
 		};
 	}
 }

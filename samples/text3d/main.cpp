@@ -159,6 +159,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<TextController>(camera, material);
 		object->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
+		object->getComponent<octoon::TransformComponent>()->setLocalQuaternion(octoon::math::Quaternion().make_rotation_x(octoon::math::radians(180)));
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

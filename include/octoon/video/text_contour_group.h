@@ -2,7 +2,7 @@
 #define OCTOON_TEXT_CONTOUR_GROUP_H_
 
 #include <octoon/math/math.h>
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 #include <octoon/video/text_contour.h>
 
 namespace octoon
@@ -33,7 +33,7 @@ namespace octoon
 
 			void normalize(math::float3& center) noexcept;
 
-			void buildMeshes(Mesh& mesh) noexcept;
+			void buildMeshes(model::Mesh& mesh) noexcept;
 
 			TextContourGroupPtr clone() const noexcept;
 

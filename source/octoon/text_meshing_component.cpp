@@ -2,7 +2,7 @@
 #include <octoon/game_object.h>
 #include <octoon/transform_component.h>
 #include <octoon/mesh_renderer_component.h>
-#include <octoon/video/mesh.h>
+#include <octoon/model/mesh.h>
 #include <octoon/video/text_file.h>
 #include <octoon/video/text_contour_group.h>
 #include <octoon/runtime/except.h>
@@ -189,7 +189,7 @@ namespace octoon
 		auto glyph = (FT_GlyphSlot)glyph_;
 
 		auto object = std::make_shared<GameObject>();
-		object->addComponent<MeshFilterComponent>(std::make_shared<video::Mesh>());
+		object->addComponent<MeshFilterComponent>(std::make_shared<model::Mesh>());
 		object->getComponent<TransformComponent>()->setTranslate(math::float3(offset + glyph->bitmap_left, 0.0, 0.0));
 
 		auto renderer = this->getComponent<RenderComponent>();

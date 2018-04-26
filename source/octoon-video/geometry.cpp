@@ -65,7 +65,7 @@ namespace octoon
 		}
 
 		void
-		Geometry::setMesh(const MeshPtr& mesh) noexcept
+		Geometry::setMesh(const model::MeshPtr& mesh) noexcept
 		{
 			if (mesh)
 			{
@@ -99,12 +99,24 @@ namespace octoon
 
 					vertices_->unmap();
 				}
+
+				auto& indices = mesh->getIndicesArray();
+				if (!indices.empty())
+				{
+					graphics::GraphicsDataDesc indiceDesc;
+					indiceDesc.setType(graphics::GraphicsDataType::StorageIndexBuffer);
+					indiceDesc.setStream((std::uint8_t*)indices.data());
+					indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
+					indiceDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
+
+					indices_ = RenderSystem::instance()->createGraphicsData(indiceDesc);
+				}
 			}
 
 			mesh_ = mesh;
 		}
 
-		const MeshPtr&
+		const model::MeshPtr&
 		Geometry::getMesh() const noexcept
 		{
 			return mesh_;
@@ -114,6 +126,12 @@ namespace octoon
 		Geometry::getVertexBuffer() const noexcept
 		{
 			return vertices_;
+		}
+
+		graphics::GraphicsDataPtr
+		Geometry::getIndexBuffer() const noexcept
+		{
+			return indices_;
 		}
 
 		void

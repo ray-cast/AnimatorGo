@@ -10,18 +10,18 @@ namespace octoon
 		{
 		}
 
-		CombineMesh::CombineMesh(const MeshPropertyPtr mesh, const float4x4 & transform) noexcept
+		CombineMesh::CombineMesh(const MeshPtr mesh, const float4x4 & transform) noexcept
 			: _mesh(mesh)
 			, _transform(transform)
 		{
 		}
 
-		void CombineMesh::setMesh(MeshPropertyPtr other) noexcept
+		void CombineMesh::setMesh(MeshPtr other) noexcept
 		{
 			_mesh = other;
 		}
 
-		MeshPropertyPtr CombineMesh::getMesh() const noexcept
+		MeshPtr CombineMesh::getMesh() const noexcept
 		{
 			return _mesh;
 		}

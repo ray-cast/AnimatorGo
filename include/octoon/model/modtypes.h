@@ -6,11 +6,6 @@
 
 #include <octoon/math/mathfwd.h>
 
-namespace octoon
-{
-	namespace model
-	{
-
 #define MATKEY_NAME               "?mat.name",0,0
 #define MATKEY_TWOSIDED           "$mat.twosided",0,0
 #define MATKEY_SHADING_MODEL      "$mat.shadingm",0,0
@@ -47,11 +42,15 @@ namespace octoon
 
 #define TEXTURE_ARRAY_COUNT 4
 
+namespace octoon
+{
+	namespace model
+	{
 		class AnimationProperty;
 		class TextureProperty;
 		class CameraProperty;
 		class LightProperty;
-		class MeshProperty;
+		class Mesh;
 		class MaterialProperty;
 
 		class Model;
@@ -66,7 +65,7 @@ namespace octoon
 		typedef std::shared_ptr<TextureProperty> TexturePropertyPtr;
 		typedef std::shared_ptr<CameraProperty> CameraPropertyPtr;
 		typedef std::shared_ptr<LightProperty> LightPropertyPtr;
-		typedef std::shared_ptr<MeshProperty> MeshPropertyPtr;
+		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<MaterialProperty> MaterialPropertyPtr;
 
 		typedef std::shared_ptr<Model> ModelPtr;
@@ -77,7 +76,7 @@ namespace octoon
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;
-		typedef std::vector<MeshPropertyPtr> MeshPropertys;
+		typedef std::vector<MeshPtr> Meshes;
 		typedef std::vector<Bone> Bones;
 		typedef std::vector<IKAttr> InverseKinematics;
 		typedef std::vector<CombineMesh> CombineMeshes;

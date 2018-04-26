@@ -1,6 +1,7 @@
 #include <octoon/model/pmx_loader.h>
 #include <octoon/model/pmx.h>
 #include <octoon/model/modtypes.h>
+#include <octoon/model/mesh.h>
 #include <octoon/model/property.h>
 #include <octoon/model/model.h>
 
@@ -496,9 +497,9 @@ namespace octoon
 					}
 				}
 
-				material->set(MATKEY_COLOR_DIFFUSE, octoon::math::srgb2linear(it.Diffuse));
-				material->set(MATKEY_COLOR_AMBIENT, octoon::math::srgb2linear(it.Ambient));
-				material->set(MATKEY_COLOR_SPECULAR, octoon::math::srgb2linear(it.Specular));
+				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
+				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
+				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
 				material->set(MATKEY_OPACITY, it.Opacity);
 				material->set(MATKEY_SHININESS, it.Shininess / 255.0f);
 
@@ -541,9 +542,9 @@ namespace octoon
 
 			if (pmx.numVertices > 0 && pmx.numIndices > 0 && pmx.numMaterials > 0)
 			{
-				Float3Array vertices;
-				Float3Array normals;
-				Float2Array texcoords;
+				float3s vertices;
+				float3s normals;
+				float2s texcoords;
 				VertexWeights weights;
 
 				for (std::uint32_t i = 0; i < pmx.numVertices; i++)
@@ -585,24 +586,38 @@ namespace octoon
 						return false;
 				}
 
-				MeshSubsets subsets;
-				std::size_t startIndices = 0;
+				PmxUInt32 startIndices = 0;
 
 				for (auto& it : pmx.materials)
 				{
-					subsets.push_back(MeshSubset(0, startIndices, it.FaceCount, 0, 0));
+					MeshPtr mesh = std::make_shared<Mesh>();
+
+					float3s vertices_(it.FaceCount);
+					float3s normals_(it.FaceCount);
+					float2s texcoords_(it.FaceCount);
+					VertexWeights weights_(it.FaceCount);
+					uint1s indices_(it.FaceCount);
+
+					for (auto i = startIndices; i < it.FaceCount; i++)
+					{
+						auto index = indices[i];
+						vertices_[i] = vertices[index];
+						normals_[i] = normals[index];
+						texcoords_[i] = texcoords[index];
+						weights_[i] = weights[index];
+						indices_[i] = i;
+					}
+
+					mesh->setVertexArray(std::move(vertices_));
+					mesh->setNormalArray(std::move(normals_));
+					mesh->setTexcoordArray(std::move(texcoords_));
+					mesh->setWeightArray(std::move(weights_));
+					mesh->setIndicesArray(std::move(indices_));
+
 					startIndices += it.FaceCount;
+
+					model.addMesh(std::move(mesh));
 				}
-
-				MeshPropertyPtr mesh = std::make_shared<MeshProperty>();
-				mesh->setVertexArray(std::move(vertices));
-				mesh->setNormalArray(std::move(normals));
-				mesh->setTexcoordArray(std::move(texcoords));
-				mesh->setWeightArray(std::move(weights));
-				mesh->setIndicesArray(std::move(indices));
-				mesh->setMeshSubsets(std::move(subsets));
-
-				model.addMesh(std::move(mesh));
 			}
 
 			if (pmx.numBones > 1)
@@ -708,7 +723,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(octoon::io::ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(io::ostream& stream, const Pmx& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1091,7 +1106,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(octoon::io::ostream& stream, const Model& model) noexcept
+		bool PmxLoader::doSave(io::ostream& stream, const Model& model) noexcept
 		{
 			return false;
 		}

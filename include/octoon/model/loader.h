@@ -18,11 +18,11 @@ namespace octoon
 			ModelLoader() = default;
 			virtual ~ModelLoader() noexcept = default;
 
-			virtual bool doCanLoad(octoon::io::istream& stream) noexcept = 0;
+			virtual bool doCanLoad(io::istream& stream) noexcept = 0;
 			virtual bool doCanLoad(const std::string& type) noexcept = 0;
 			virtual bool doCanLoad(const char* type) noexcept = 0;
-			virtual bool doLoad(octoon::io::istream& stream, Model& model) noexcept = 0;
-			virtual bool doSave(octoon::io::ostream& stream, const Model& model) noexcept = 0;
+			virtual bool doLoad(io::istream& stream, Model& model) noexcept = 0;
+			virtual bool doSave(io::ostream& stream, const Model& model) noexcept = 0;
 
 		private:
 			ModelLoader(const ModelLoader&) = delete;

@@ -11,12 +11,12 @@ namespace octoon
 {
 	namespace model
 	{
-		class Model final
+		class OCTOON_EXPORT Model final
 		{
 		public:
 			typedef std::shared_ptr<ModelLoader>      MyLoader;
 
-			typedef std::vector<MeshPropertyPtr>      MeshList;
+			typedef std::vector<MeshPtr>      MeshList;
 			typedef std::vector<BonePtr>              BoneList;
 			typedef std::vector<IKAttrPtr>            IKList;
 			typedef std::vector<RigidbodyPropertyPtr> RigidbodyList;
@@ -31,7 +31,7 @@ namespace octoon
 			Model() noexcept;
 			~Model() noexcept;
 
-			void addMesh(MeshPropertyPtr& mesh)            noexcept;
+			void addMesh(MeshPtr& mesh)            noexcept;
 			void addBone(BonePtr& bone)					   noexcept;
 			void addIK(IKAttrPtr& ik)                      noexcept;
 			void addRigidbody(RigidbodyPropertyPtr& body)  noexcept;
@@ -42,7 +42,7 @@ namespace octoon
 			void addLight(LightPropertyPtr& light)         noexcept;
 			void addCamera(CameraPropertyPtr& camera)      noexcept;
 
-			void addMesh(MeshPropertyPtr&& mesh)           noexcept;
+			void addMesh(MeshPtr&& mesh)           noexcept;
 			void addBone(BonePtr&& bone)				   noexcept;
 			void addIK(IKAttrPtr&& ik)                     noexcept;
 			void addRigidbody(RigidbodyPropertyPtr&& body) noexcept;
@@ -92,15 +92,15 @@ namespace octoon
 
 			void clear() noexcept;
 
-			bool load(octoon::io::fstream& file, const char* type = nullptr) noexcept;
-			bool save(octoon::io::fstream& file, const char* type = "pmx") noexcept;
+			bool load(io::fstream& file, const char* type = nullptr) noexcept;
+			bool save(io::fstream& file, const char* type = "pmx") noexcept;
 
 			bool emptyLoader() const noexcept;
 			bool addLoader(MyLoader loader) noexcept;
 			bool removeLoader(MyLoader loader) noexcept;
 			bool find(const char* type, MyLoader& loader) const noexcept;
-			bool find(octoon::io::istream& file, MyLoader& loader) const noexcept;
-			bool find(octoon::io::istream& file, const char* type, MyLoader& loader) const noexcept;
+			bool find(io::istream& file, MyLoader& loader) const noexcept;
+			bool find(io::istream& file, const char* type, MyLoader& loader) const noexcept;
 
 		private:
 			Model& operator=(const Model&) noexcept = delete;

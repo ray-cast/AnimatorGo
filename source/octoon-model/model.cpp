@@ -51,7 +51,7 @@ namespace octoon
 			_cameras.clear();
 		}
 
-		void Model::addMesh(MeshPropertyPtr& mesh) noexcept
+		void Model::addMesh(MeshPtr& mesh) noexcept
 		{
 			_meshes.push_back(mesh);
 		}
@@ -101,7 +101,7 @@ namespace octoon
 			_cameras.push_back(camera);
 		}
 
-		void Model::addMesh(MeshPropertyPtr&& mesh) noexcept
+		void Model::addMesh(MeshPtr&& mesh) noexcept
 		{
 			_meshes.push_back(std::move(mesh));
 		}

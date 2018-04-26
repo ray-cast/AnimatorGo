@@ -6,8 +6,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/runtime/json.h>
 
-#include <json/json.h>
-
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, 一个点［x,y]
 #define POD_TT_PRIM_QSPLINE 2	// qudratic bezier to, 三个点［[controlX,controlY]，[endX,endY]］
@@ -120,44 +118,35 @@ namespace octoon
 	}
 
 	void
-	PathMeshingComponent::updateContour(const std::string& json) noexcept(false)
+	PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	{
-		Json::Value root;
-		Json::Reader reader;
-
-		if (json.empty())
+		if (data.empty())
 		{
 			this->setMesh(std::make_shared<model::Mesh>());
 			return;
 		}
 
-		if (!reader.parse(json, root))
-			throw runtime::runtime_error::create("failed to parse json");
-
-		Json::Value& paths = root.optJSONArray("paths");
-		int pathsLength = paths.length();
+		auto reader = json::parse(data);
 
 		video::TextContours contours;
 
-		for (int i = 0; i < pathsLength; i++)
+		for (auto& path : reader["paths"])
 		{
-			Json::Value* prev = nullptr;
-			Json::Value* cur = nullptr;
-			Json::Value& points = paths.opt(i).optJSONArray("points");
-
-			int length = points.length();
+			json::pointer prev = nullptr;
+			json::pointer cur = nullptr;
+			json::reference points = path["points"];
 
 			auto contour = std::make_unique<video::TextContour>();
 
-			for (int index = 0; index < length; index++)
+			for (int index = 0; index < points.size(); index++)
 			{
-				cur = &points.opt(index);
+				cur = &points[index];
 
-				switch (cur->opt(2).asUInt())
+				switch (cur->at(2).get<json::number_unsigned_t>())
 				{
 				case POD_TT_PRIM_LINE:
 				{
-					contour->addPoints(math::float3(cur->opt(0).asFloat(), cur->opt(1).asFloat(), 0));
+					contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
 					prev = cur;
 				}
 				break;
@@ -165,11 +154,11 @@ namespace octoon
 				{
 					auto& p1 = *prev;
 					auto& p2 = *cur;
-					auto& p3 = points.opt(index + 1);
+					auto& p3 = points[index + 1];
 
-					math::float3 A(p1.opt(0).asFloat(), p1.opt(1).asFloat(), 0.0);
-					math::float3 B(p2.opt(0).asFloat(), p2.opt(1).asFloat(), 0.0);
-					math::float3 C(p3.opt(0).asFloat(), p3.opt(1).asFloat(), 0.0);
+					math::float3 A(p1[0].get<json::number_float_t>(), p1[1].get<json::number_float_t>(), 0.0);
+					math::float3 B(p2[0].get<json::number_float_t>(), p2[1].get<json::number_float_t>(), 0.0);
+					math::float3 C(p3[0].get<json::number_float_t>(), p3[1].get<json::number_float_t>(), 0.0);
 
 					contour->addPoints(A, B, C, bezierSteps_);
 
@@ -182,13 +171,13 @@ namespace octoon
 				{
 					auto& p1 = *prev;
 					auto& p2 = *cur;
-					auto& p3 = points.opt(index + 1);
-					auto& p4 = points.opt(index + 2);
+					auto& p3 = points[index + 1];
+					auto& p4 = points[index + 2];
 
-					math::float3 A(p1.opt(0).asFloat(), p1.opt(1).asFloat(), 0.0);
-					math::float3 B(p2.opt(0).asFloat(), p2.opt(1).asFloat(), 0.0);
-					math::float3 C(p3.opt(0).asFloat(), p3.opt(1).asFloat(), 0.0);
-					math::float3 D(p4.opt(0).asFloat(), p4.opt(1).asFloat(), 0.0);
+					math::float3 A(p1[0].get<json::number_float_t>(), p1[1].get<json::number_float_t>(), 0.0);
+					math::float3 B(p2[0].get<json::number_float_t>(), p2[1].get<json::number_float_t>(), 0.0);
+					math::float3 C(p3[0].get<json::number_float_t>(), p3[1].get<json::number_float_t>(), 0.0);
+					math::float3 D(p4[0].get<json::number_float_t>(), p4[1].get<json::number_float_t>(), 0.0);
 
 					contour->addPoints(A, B, C, D, bezierSteps_);
 
@@ -199,21 +188,20 @@ namespace octoon
 				break;
 				case POD_TT_PRIM_MOVE:
 				{
-					contour->addPoints(math::float3(cur->opt(0).asFloat(), cur->opt(1).asFloat(), 0));
+					contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
 					prev = cur;
 				}
 				break;
 				case POD_TT_PRIM_CLOSE:
 				{
-					contour->addPoints(math::float3(cur->opt(0).asFloat(), cur->opt(1).asFloat(), 0));
+					contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
 					contour->addPoints(contour->at(0));
 
 					prev = cur;
 				}
 				break;
 				default:
-					throw runtime::runtime_error::create("invalid type of bezier");
-					break;
+					throw runtime::runtime_error::create("invalid bezier type");
 				}
 			}
 

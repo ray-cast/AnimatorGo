@@ -1,17 +1,19 @@
-#ifndef OCTOON_APPLICATION_H_
-#define OCTOON_APPLICATION_H_
+#ifndef OCTOON_GAME_APP_H_
+#define OCTOON_GAME_APP_H_
 
 #include <chrono>
 #include <octoon/game_types.h>
+#include <octoon/runtime/singleton.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT GameApplication
+	class OCTOON_EXPORT GameApp final
 	{
+		OctoonDeclareSingleton(GameApp)
 	public:
-		GameApplication() noexcept;
-		GameApplication(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
-		virtual ~GameApplication() noexcept;
+		GameApp() noexcept;
+		GameApp(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
+		virtual ~GameApp() noexcept;
 
 		void open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
 		void close() noexcept;
@@ -73,8 +75,8 @@ namespace octoon
 		virtual void onMessage(const std::string& message) noexcept;
 
 	private:
-		GameApplication(const GameApplication&) noexcept = delete;
-		GameApplication& operator=(const GameApplication&) noexcept = delete;
+		GameApp(const GameApp&) noexcept = delete;
+		GameApp& operator=(const GameApp&) noexcept = delete;
 
 	private:
 		GameServerPtr game_server_;

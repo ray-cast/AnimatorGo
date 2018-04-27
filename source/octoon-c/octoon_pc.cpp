@@ -1,7 +1,7 @@
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include <octoon/octoon.h>
 
-#include <octoon/game_application.h>
+#include <octoon/game_app.h>
 #include <octoon/input/input_event.h>
 #include <octoon/runtime/except.h>
 #include <octoon/io/fcntl.h>
@@ -30,7 +30,7 @@
 #endif
 
 GLFWwindow* window_ = nullptr;
-octoon::GameApplicationPtr gameApp_;
+octoon::GameApp* gameApp_;
 
 std::string gameRootPath_;
 std::string gameScenePath_;
@@ -345,7 +345,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(window_);
 
-			gameApp_ = std::make_shared<octoon::GameApplication>();
+			gameApp_ = octoon::GameApp::instance();
 			gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 			gameApp_->setActive(true);
 			gameApp_->doWindowFocus(hwnd, true);
@@ -368,7 +368,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 	{
 		OctoonCloseWindow();
 
-		gameApp_.reset();
+		gameApp_->close();
 		gameApp_ = nullptr;
 
 		return false;
@@ -379,7 +379,7 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 {
 	if (gameApp_)
 	{
-		gameApp_.reset();
+		gameApp_->close();
 		gameApp_ = nullptr;
 	}
 

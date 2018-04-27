@@ -1,7 +1,7 @@
 #include <octoon/octoon.h>
 
 #include <octoon/game_object.h>
-#include <octoon/game_application.h>
+#include <octoon/game_app.h>
 #include <octoon/camera_component.h>
 #include <octoon/path_meshing_component.h>
 #include <octoon/mesh_renderer_component.h>
@@ -62,7 +62,7 @@ int main(int argc, const char* argv[])
 
 	int w = 1920, h = 1080;
 
-	auto app = std::make_shared<octoon::GameApplication>();
+	auto app = octoon::GameApp::instance();
 	app->open(nullptr, w, h, w, h);
 	app->start();
 

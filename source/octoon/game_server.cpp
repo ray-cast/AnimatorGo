@@ -371,12 +371,12 @@ namespace octoon
 	}
 
 	void
-	GameServer::setGameApp(GameApplication* app) noexcept
+	GameServer::setGameApp(GameApp* app) noexcept
 	{
 		game_app_ = app;
 	}
 
-	GameApplication*
+	GameApp*
 	GameServer::getGameApp() noexcept
 	{
 		return game_app_;

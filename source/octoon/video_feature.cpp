@@ -4,8 +4,8 @@
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
 
+#include <octoon/game_app.h>
 #include <octoon/game_server.h>
-#include <octoon/game_application.h>
 #include <octoon/game_object_manager.h>
 
 #include <octoon/graphics_feature.h>

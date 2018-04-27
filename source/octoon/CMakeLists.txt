@@ -6,8 +6,8 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_NAME})
 INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/json)
 
 SET(OCTOON_LIST
-	${SOURCE_PATH}/game_application.cpp
-	${HEADER_PATH}/game_application.h
+	${SOURCE_PATH}/game_app.cpp
+	${HEADER_PATH}/game_app.h
 	${SOURCE_PATH}/game_listener.cpp
 	${HEADER_PATH}/game_listener.h
 	${SOURCE_PATH}/game_object.cpp

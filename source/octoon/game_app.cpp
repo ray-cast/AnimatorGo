@@ -1,4 +1,4 @@
-#include <octoon/game_application.h>
+#include <octoon/game_app.h>
 #include <octoon/game_server.h>
 #include <octoon/game_listener.h>
 
@@ -38,6 +38,8 @@
 
 namespace octoon
 {
+	OctoonImplementSingleton(GameApp)
+
 	class GameAppListener final : public GameListener
 	{
 	public:
@@ -47,7 +49,7 @@ namespace octoon
 		}
 	};
 
-	GameApplication::GameApplication() noexcept
+	GameApp::GameApp() noexcept
 		: game_server_(nullptr)
 		, game_listener_(std::make_shared<GameAppListener>())
 		, start_time_(std::chrono::high_resolution_clock::now())
@@ -55,19 +57,19 @@ namespace octoon
 		std::locale::global(std::locale(""));
 	}
 
-	GameApplication::GameApplication(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
-		: GameApplication()
+	GameApp::GameApp(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
+		: GameApp()
 	{
 		this->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 	}
 
-	GameApplication::~GameApplication() noexcept
+	GameApp::~GameApp() noexcept
 	{
 		this->close();
 	}
 
 	void
-	GameApplication::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
+	GameApp::open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except
 	{
 		if (game_server_)
 		{
@@ -93,64 +95,36 @@ namespace octoon
 		game_server_->setGameListener(game_listener_);
 
 #if OCTOON_FEATURE_IO_ENABLE
-		io_feature_ = std::make_shared<IOFeature>();
+		this->addFeature(std::make_shared<IOFeature>());
 #endif
 
 #if OCTOON_FEATURE_TIMER_ENABLE
-		timer_feature_ = std::make_shared<TimerFeature>();
+		this->addFeature(std::make_shared<TimerFeature>());
 #endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
-		input_feature_ = std::make_shared<InputFeature>(hwnd);
+		this->addFeature(std::make_shared<InputFeature>(hwnd));
 #endif
 
 #if OCTOON_FEATURE_BASE_ENABLE
-		base_feature_ = std::make_shared<GameBaseFeatures>();
+		this->addFeature(std::make_shared<GameBaseFeatures>());
 #endif
 
-#if OCTOON_FEATURE_BASE_ENABLE
-		graphics_feature_ = std::make_shared<GraphicsFeature>(hwnd, w, h);
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(std::make_shared<GraphicsFeature>(hwnd, w, h));
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(std::make_shared<VideoFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE
-		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		video_feature_ = std::make_shared<VideoFeature>(w, h);
-#endif
-
-#if OCTOON_FEATURE_IO_ENABLE
-		this->addFeature(io_feature_);
-#endif
-
-#if OCTOON_FEATURE_TIMER_ENABLE
-		this->addFeature(timer_feature_);
-#endif
-
-#if OCTOON_FEATURE_INPUT_ENABLE
-		this->addFeature(input_feature_);
-#endif
-
-#if OCTOON_FEATURE_BASE_ENABLE
-		this->addFeature(base_feature_);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(graphics_feature_);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(video_feature_);
-#endif
-
-#if OCTOON_FEATURE_UI_ENABLE
-		this->addFeature(gui_feature_);
+		this->addFeature(std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
 #endif
 	}
 
 	void
-	GameApplication::close() noexcept
+	GameApp::close() noexcept
 	{
 		this->onMessage("Shutdown : Game Server.");
 
@@ -159,7 +133,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::setActive(bool active) except
+	GameApp::setActive(bool active) except
 	{
 		if (game_server_)
 			game_server_->setActive(active);
@@ -168,13 +142,13 @@ namespace octoon
 	}
 
 	bool
-	GameApplication::getActive() const noexcept
+	GameApp::getActive() const noexcept
 	{
 		return game_server_ ? game_server_->getActive() : false;
 	}
 
 	void
-	GameApplication::setGameListener(GameListenerPtr&& listener) noexcept
+	GameApp::setGameListener(GameListenerPtr&& listener) noexcept
 	{
 		if (game_listener_ != listener)
 		{
@@ -186,7 +160,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::setGameListener(const GameListenerPtr& listener) noexcept
+	GameApp::setGameListener(const GameListenerPtr& listener) noexcept
 	{
 		if (game_listener_ != listener)
 		{
@@ -198,20 +172,20 @@ namespace octoon
 	}
 
 	const GameListenerPtr&
-	GameApplication::getGameListener() const noexcept
+	GameApp::getGameListener() const noexcept
 	{
 		return game_listener_;
 	}
 
 	bool
-	GameApplication::isQuitRequest() const noexcept
+	GameApp::isQuitRequest() const noexcept
 	{
 		assert(game_server_);
 		return game_server_ ? game_server_->isQuitRequest() : true;
 	}
 
 	bool
-	GameApplication::openScene(const GameScenePtr& scene) except
+	GameApp::openScene(const GameScenePtr& scene) except
 	{
 		if (game_server_)
 			return game_server_->addScene(scene);
@@ -220,7 +194,7 @@ namespace octoon
 	}
 
 	bool
-	GameApplication::openScene(const std::string& name) except
+	GameApp::openScene(const std::string& name) except
 	{
 		if (game_server_)
 			return game_server_->openScene(name);
@@ -229,7 +203,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::closeScene(const GameScenePtr& name) noexcept
+	GameApp::closeScene(const GameScenePtr& name) noexcept
 	{
 		assert(game_server_);
 
@@ -238,7 +212,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::closeScene(const std::string& name) noexcept
+	GameApp::closeScene(const std::string& name) noexcept
 	{
 		assert(game_server_);
 
@@ -247,14 +221,14 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameApplication::findScene(const std::string& name) noexcept
+	GameApp::findScene(const std::string& name) noexcept
 	{
 		assert(game_server_);
 		return game_server_ ? game_server_->findScene(name) : nullptr;
 	}
 
 	void
-	GameApplication::addFeature(const GameFeaturePtr& feature) except
+	GameApp::addFeature(const GameFeaturePtr& feature) except
 	{
 		if (game_server_)
 			game_server_->addFeature(feature);
@@ -263,7 +237,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::addFeature(GameFeaturePtr&& feature) except
+	GameApp::addFeature(GameFeaturePtr&& feature) except
 	{
 		if (game_server_)
 			game_server_->addFeature(feature);
@@ -272,7 +246,7 @@ namespace octoon
 	}
 
 	GameFeaturePtr
-	GameApplication::getFeature(const runtime::Rtti* type) const except
+	GameApp::getFeature(const runtime::Rtti* type) const except
 	{
 		if (game_server_)
 			return game_server_->getFeature(type);
@@ -281,13 +255,31 @@ namespace octoon
 	}
 
 	GameFeaturePtr
-	GameApplication::getFeature(const runtime::Rtti& type) const except
+	GameApp::getFeature(const runtime::Rtti& type) const except
 	{
 		return this->getFeature(&type);
 	}
 
 	void
-	GameApplication::removeFeature(const GameFeaturePtr& feature) except
+	GameApp::removeFeature(const runtime::Rtti* type) except
+	{
+		if (game_server_)
+			game_server_->removeFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before removeFeature()");
+	}
+
+	void
+	GameApp::removeFeature(const runtime::Rtti& type) except
+	{
+		if (game_server_)
+			game_server_->removeFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before removeFeature()");
+	}
+
+	void
+	GameApp::removeFeature(const GameFeaturePtr& feature) except
 	{
 		if (game_server_)
 			game_server_->removeFeature(feature);
@@ -296,7 +288,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::sendInputEvent(const input::InputEvent& event) except
+	GameApp::sendInputEvent(const input::InputEvent& event) except
 	{
 		if (game_server_)
 			game_server_->sendInputEvent(event);
@@ -305,19 +297,19 @@ namespace octoon
 	}
 
 	void
-	GameApplication::start() except
+	GameApp::start() except
 	{
 		this->setActive(true);
 	}
 
 	void
-	GameApplication::stop() noexcept
+	GameApp::stop() noexcept
 	{
 		this->setActive(false);
 	}
 
 	void
-	GameApplication::update() except
+	GameApp::update() except
 	{
 		if (game_server_)
 			game_server_->update();
@@ -326,14 +318,14 @@ namespace octoon
 	}
 
 	void
-	GameApplication::onMessage(const std::string& message) noexcept
+	GameApp::onMessage(const std::string& message) noexcept
 	{
 		if (game_listener_)
 			game_listener_->onMessage(message);
 	}
 
 	void
-	GameApplication::doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
+	GameApp::doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::SizeChange;
@@ -346,7 +338,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
+	GameApp::doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::SizeChangeDPI;
@@ -359,7 +351,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowClose(WindHandle window) except
+	GameApp::doWindowClose(WindHandle window) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::AppQuit;
@@ -369,7 +361,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowFocus(WindHandle window, bool focus) except
+	GameApp::doWindowFocus(WindHandle window, bool focus) except
 	{
 		octoon::input::InputEvent event;
 		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
@@ -379,7 +371,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowKeyDown(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyDown(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
@@ -398,7 +390,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowKeyUp(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyUp(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyUp;
@@ -417,7 +409,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowKeyPress(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyPress(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::KeyDown;
@@ -436,7 +428,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowKeyChar(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except
+	GameApp::doWindowKeyChar(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Character;
@@ -455,7 +447,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowMouseButtonDown(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonDown(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDown;
@@ -472,7 +464,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowMouseButtonUp(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonUp(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonUp;
@@ -489,7 +481,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowMouseButtonDoubleClick(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonDoubleClick(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseButtonDoubleClick;
@@ -506,7 +498,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowMouseMotion(WindHandle window, float x, float y) except
+	GameApp::doWindowMouseMotion(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::MouseMotion;
@@ -522,7 +514,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowScrool(WindHandle window, float x, float y) except
+	GameApp::doWindowScrool(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
@@ -533,7 +525,7 @@ namespace octoon
 	}
 
 	void
-	GameApplication::doWindowDrop(WindHandle window, std::uint32_t count, const char** file_utf8) except
+	GameApp::doWindowDrop(WindHandle window, std::uint32_t count, const char** file_utf8) except
 	{
 		octoon::input::InputEvent event;
 		event.event = octoon::input::InputEvent::Drop;

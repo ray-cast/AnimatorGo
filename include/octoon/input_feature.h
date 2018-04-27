@@ -14,6 +14,8 @@ namespace octoon
 		InputFeature(input::WindHandle hwnd) noexcept;
 		virtual ~InputFeature() noexcept;
 
+		const input::IInputPtr& getInput() const noexcept;
+
 	private:
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;

@@ -492,11 +492,13 @@ namespace octoon
 		{
 			if (type == GameDispatchType::Frame ||
 				type == GameDispatchType::FrameBegin ||
-				type == GameDispatchType::FrameEnd)
+				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::Gui)
 			{
 				if (dispatch_components_[GameDispatchType::Frame].empty() &&
 					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::FrameEnd].empty())
+					dispatch_components_[GameDispatchType::FrameEnd].empty() &&
+					dispatch_components_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, true);
 				}
@@ -522,11 +524,13 @@ namespace octoon
 		{
 			if (type == GameDispatchType::Frame ||
 				type == GameDispatchType::FrameBegin ||
-				type == GameDispatchType::FrameEnd)
+				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::Gui)
 			{
 				if (dispatch_components_[GameDispatchType::Frame].empty() &&
 					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::FrameEnd].empty())
+					dispatch_components_[GameDispatchType::FrameEnd].empty() &&
+					dispatch_components_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, false);
 				}
@@ -617,7 +621,8 @@ namespace octoon
 		{
 			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
 				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::FrameEnd].empty())
+				!dispatch_components_[GameDispatchType::FrameEnd].empty() ||
+				!dispatch_components_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, true);
 			}
@@ -631,7 +636,8 @@ namespace octoon
 		{
 			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
 				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::FrameEnd].empty())
+				!dispatch_components_[GameDispatchType::FrameEnd].empty()||
+				!dispatch_components_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, false);
 			}

@@ -33,7 +33,7 @@ namespace octoon
 			WindowTitleAlign = float2(0.5f, 0.5f);
 			ChildRounding = 0.0f;
 			ChildBorderSize = 0.0f;
-			FramePadding = float2(0, 3);
+			FramePadding = float2(3, 3);
 			FrameRounding = 8.0f;
 			ItemSpacing = float2(8, 4);
 			ItemInnerSpacing = float2(4, 4);
@@ -748,6 +748,11 @@ namespace octoon
 		bool invisible_button(const char* str_id, const float2& size) noexcept
 		{
 			return ImGui::InvisibleButton(str_id, (ImVec2&)size);
+		}
+
+		bool arrow_button(const char* str_id, GuiDir dir)
+		{
+			return ImGui::ArrowButton(str_id, (ImGuiDir)dir);
 		}
 
 		void image(GuiTextureID user_texture_id, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col) noexcept

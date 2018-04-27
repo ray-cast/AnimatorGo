@@ -41,6 +41,12 @@ namespace octoon
 	{
 	}
 
+	const input::IInputPtr&
+	InputFeature::getInput() const noexcept
+	{
+		return input_;
+	}
+
 	void
 	InputFeature::onActivate() except
 	{

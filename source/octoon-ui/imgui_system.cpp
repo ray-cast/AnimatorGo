@@ -40,7 +40,6 @@ namespace octoon
 
 		System::System() noexcept
 			: initialize_(false)
-			, window_(nullptr)
 			, imguiPath_("../../ui/imgui.layout")
 			, imguiDockPath_("../../ui/imgui_dock.layout")
 			, ui_context_(nullptr)
@@ -64,7 +63,7 @@ namespace octoon
 			set_style(style);
 
 			ImGuiIO& io = ImGui::GetIO();
-			io.ImeWindowHandle = window_ = window;
+			io.ImeWindowHandle = window;
 			io.IniFilename = imguiPath_.c_str();
 			io.KeyMap[ImGuiKey_Tab] = input::InputKey::Tab;
 			io.KeyMap[ImGuiKey_LeftArrow] = input::InputKey::ArrowLeft;

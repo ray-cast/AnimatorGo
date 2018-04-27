@@ -12,6 +12,7 @@ namespace octoon
 		FirstPersonCameraComponent() noexcept;
 		~FirstPersonCameraComponent() noexcept;
 
+		void upCamera(float speed) noexcept;
 		void yawCamera(float speed) noexcept;
 		void moveCamera(float speed) noexcept;
 		void rotateCamera(float angle, const math::float3& axis) noexcept;

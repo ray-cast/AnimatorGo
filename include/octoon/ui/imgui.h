@@ -242,6 +242,15 @@ namespace octoon
 			ButtonTextAlign
 		};
 
+		enum class GuiDir
+		{
+			None = -1,
+			Left = 0,
+			Right = 1,
+			Up = 2,
+			Down = 3,
+		};
+
 		struct OCTOON_EXPORT GuiStyle
 		{
 		  	float       Alpha;                      // Global alpha applies to everything in ImGui.
@@ -497,6 +506,7 @@ namespace octoon
 		OCTOON_EXPORT bool button(const char* label, const float2& size = float2::Zero) noexcept;
 		OCTOON_EXPORT bool small_button(const char* label) noexcept;
 		OCTOON_EXPORT bool invisible_button(const char* str_id, const float2& size) noexcept;
+		OCTOON_EXPORT bool arrow_button(const char* str_id, GuiDir dir);
 
 		OCTOON_EXPORT void image(GuiTextureID user_texture_id, const float2& size, const float2& uv0 = float2::Zero, const float2& uv1 = float2(1, 1), const float4& tint_col = float4(1, 1, 1, 1), const float4& border_col = float4(0, 0, 0, 0)) noexcept;
 		OCTOON_EXPORT bool image_button(GuiTextureID user_texture_id, const float2& size, const float2& uv0 = float2::Zero, const float2& uv1 = float2(1, 1), int frame_padding = -1, const float4& bg_col = float4(0, 0, 0, 0), const float4& tint_col = float4(1, 1, 1, 1)) noexcept;

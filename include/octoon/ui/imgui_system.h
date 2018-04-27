@@ -55,8 +55,6 @@ namespace octoon
 
 			ImGuiContext* ui_context_;
 
-			input::WindHandle window_;
-
 			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsDataPtr ibo_;
 			graphics::GraphicsTexturePtr texture_;

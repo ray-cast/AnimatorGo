@@ -8,7 +8,7 @@ namespace octoon
 {
 	class GameServer;
 	class GameFeature;
-	class GameApplication;
+	class GameApp;
 	class GameScene;
 	class GameSceneManager;
 	class GameListener;
@@ -22,7 +22,7 @@ namespace octoon
 	typedef std::shared_ptr<GameComponent> GameComponentPtr;
 	typedef std::shared_ptr<GameFeature> GameFeaturePtr;
 	typedef std::shared_ptr<GameServer> GameServerPtr;
-	typedef std::shared_ptr<GameApplication> GameApplicationPtr;
+	typedef std::shared_ptr<GameApp> GameApplicationPtr;
 
 	typedef std::weak_ptr<GameScene> GameSceneWeakPtr;
 	typedef std::weak_ptr<GameListener> GameListenerWeakPtr;
@@ -30,7 +30,7 @@ namespace octoon
 	typedef std::weak_ptr<GameComponent> GameComponentWeakPtr;
 	typedef std::weak_ptr<GameFeature> GameFeatureWeakPtr;
 	typedef std::weak_ptr<GameServer> GameServerWeakPtr;
-	typedef std::weak_ptr<GameApplication> GameApplicationWeakPtr;
+	typedef std::weak_ptr<GameApp> GameApplicationWeakPtr;
 
 	typedef std::vector<GameScenePtr> GameScenes;
 	typedef std::vector<GameObjectPtr> GameObjects;

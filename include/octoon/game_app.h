@@ -1,17 +1,19 @@
-#ifndef OCTOON_APPLICATION_H_
-#define OCTOON_APPLICATION_H_
+#ifndef OCTOON_GAME_APP_H_
+#define OCTOON_GAME_APP_H_
 
 #include <chrono>
 #include <octoon/game_types.h>
+#include <octoon/runtime/singleton.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT GameApplication
+	class OCTOON_EXPORT GameApp final
 	{
+		OctoonDeclareSingleton(GameApp)
 	public:
-		GameApplication() noexcept;
-		GameApplication(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
-		virtual ~GameApplication() noexcept;
+		GameApp() noexcept;
+		GameApp(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
+		virtual ~GameApp() noexcept;
 
 		void open(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;
 		void close() noexcept;
@@ -41,6 +43,10 @@ namespace octoon
 		GameFeaturePtr getFeature(const runtime::Rtti* type) const except;
 		GameFeaturePtr getFeature(const runtime::Rtti& type) const except;
 
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		void removeFeature() noexcept { this->removeFeature(T::RTTI); }
+		void removeFeature(const runtime::Rtti* type) except;
+		void removeFeature(const runtime::Rtti& type) except;
 		void removeFeature(const GameFeaturePtr& feature) except;
 
 		void sendInputEvent(const input::InputEvent& event) except;
@@ -69,20 +75,12 @@ namespace octoon
 		virtual void onMessage(const std::string& message) noexcept;
 
 	private:
-		GameApplication(const GameApplication&) noexcept = delete;
-		GameApplication& operator=(const GameApplication&) noexcept = delete;
+		GameApp(const GameApp&) noexcept = delete;
+		GameApp& operator=(const GameApp&) noexcept = delete;
 
 	private:
 		GameServerPtr game_server_;
 		GameListenerPtr game_listener_;
-
-		GameFeaturePtr io_feature_;
-		GameFeaturePtr timer_feature_;
-		GameFeaturePtr input_feature_;
-		GameFeaturePtr base_feature_;
-		GameFeaturePtr graphics_feature_;
-		GameFeaturePtr gui_feature_;
-		GameFeaturePtr video_feature_;
 
 		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};

@@ -55,7 +55,7 @@ namespace octoon
 
 		void sendInputEvent(const input::InputEvent& event) noexcept;
 
-		GameApplication* getGameApp() noexcept;
+		GameApp* getGameApp() noexcept;
 
 		void update() noexcept;
 
@@ -64,8 +64,8 @@ namespace octoon
 		void onDeactivate() noexcept;
 
 	private:
-		friend GameApplication;
-		void setGameApp(GameApplication* app) noexcept;
+		friend GameApp;
+		void setGameApp(GameApp* app) noexcept;
 
 	private:
 		GameServer(const GameServer&) noexcept = delete;
@@ -78,7 +78,7 @@ namespace octoon
 		GameScenes scenes_;
 		GameFeatures features_;
 
-		GameApplication* game_app_;
+		GameApp* game_app_;
 		GameListenerPtr game_listener_;
 	};
 }

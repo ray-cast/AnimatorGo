@@ -1,11 +1,11 @@
 #include <octoon/first_person_camera.h>
 #include <octoon/game_server.h>
+#include <octoon/game_app.h>
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
 #include <octoon/timer_feature.h>
-#include <octoon/ui/imgui.h>
 
 namespace octoon
 {
@@ -16,8 +16,8 @@ namespace octoon
 		, _gravity(15)
 		, _maxVelocityChange(1.0)
 		, _jumpHeight(10)
-		, _sensitivityX(150)
-		, _sensitivityY(150)
+		, _sensitivityX(2.0)
+		, _sensitivityY(2.0)
 	{
 	}
 
@@ -44,25 +44,47 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onFrame() noexcept
 	{
-		// float delta = TimerFeature::instance()->delta();
-		/*float step = _speed;// *delta;
+		float delta = GameApp::instance()->getFeature<TimerFeature>()->delta();
+		float step = _speed * delta;
 
-		if (imgui::is_key_pressed(input::InputKey::Code::LeftShift))
-			step *= 3;
+		auto inputFeature = GameApp::instance()->getFeature<InputFeature>();
+		if (inputFeature)
+		{
+			auto input = inputFeature->getInput();
+			if (input)
+			{
+				if (input->isKeyPressed(input::InputKey::Code::LeftShift))
+					step *= 3;
 
-		if (imgui::is_key_pressed(input::InputKey::Code::W))
-			moveCamera(step);
+				if (input->isKeyPressed(input::InputKey::Code::W))
+					moveCamera(-step);
 
-		if (imgui::is_key_pressed(input::InputKey::Code::A))
-			yawCamera(-step);
+				if (input->isKeyPressed(input::InputKey::Code::S))
+					moveCamera(step);
 
-		if (imgui::is_key_pressed(input::InputKey::Code::S))
-			moveCamera(-step);
+				if (input->isKeyPressed(input::InputKey::Code::A))
+					yawCamera(-step);
 
-		if (imgui::is_key_pressed(input::InputKey::Code::D))
-			yawCamera(step);
+				if (input->isKeyPressed(input::InputKey::Code::D))
+					yawCamera(step);
 
-		//rotateCamera(input->getAxis(input::InputAxis::Horizontal), input->getAxis(input::InputAxis::Vertical));*/
+				if (input->isKeyPressed(input::InputKey::Code::Q))
+					upCamera(-step);
+
+				if (input->isKeyPressed(input::InputKey::Code::E))
+					upCamera(step);
+
+				if (input->isButtonPressed(input::InputButton::Code::Right))
+					rotateCamera(input->getAxis(input::InputAxis::Horizontal), input->getAxis(input::InputAxis::Vertical));
+			}
+		}
+	}
+
+	void
+	FirstPersonCameraComponent::upCamera(float speed) noexcept
+	{
+		const math::float3& up = this->getGameObject()->getComponent<TransformComponent>()->getLocalUp();
+		this->getGameObject()->getComponent<TransformComponent>()->setTranslateAccum(up * speed);
 	}
 
 	void
@@ -82,19 +104,20 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::rotateCamera(float angle, const math::float3& axis) noexcept
 	{
-		math::Quaternion quat(axis, angle);
+		math::Quaternion quat(axis, math::radians(angle));
 		this->getGameObject()->getComponent<TransformComponent>()->setQuaternionAccum(quat);
 	}
 
 	void
 	FirstPersonCameraComponent::rotateCamera(float axisX, float axisY) noexcept
 	{
-		float angleY = axisX * _sensitivityX;
-		float angleX = axisY * _sensitivityY;
+		float angleY = -axisX * _sensitivityX;
+		float angleX = -axisY * _sensitivityY;
 
 		math::float3 euler(math::euler_angles(this->getGameObject()->getComponent<TransformComponent>()->getLocalQuaternion()));
 
-		float angle = angleX + euler.x;
+		float angle = angleX + math::degress(euler.x);
+
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
 			rotateCamera(angleX, this->getGameObject()->getComponent<TransformComponent>()->getLocalRight());
 

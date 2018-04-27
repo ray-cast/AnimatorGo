@@ -1,12 +1,11 @@
 #include <octoon/octoon.h>
 
 #include <octoon/game_object.h>
-#include <octoon/game_application.h>
+#include <octoon/game_app.h>
 #include <octoon/camera_component.h>
 #include <octoon/path_meshing_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/first_person_camera.h>
 #include <octoon/video_feature.h>
 #include <octoon/video/text_material.h>
 
@@ -63,13 +62,12 @@ int main(int argc, const char* argv[])
 
 	int w = 1920, h = 1080;
 
-	auto app = std::make_shared<octoon::GameApplication>();
+	auto app = octoon::GameApp::instance();
 	app->open(nullptr, w, h, w, h);
 	app->start();
 
 	auto material = std::make_shared<octoon::video::TextMaterial>();
 	material->setLean(0.0f);
-	material->setExtrude(5.0f);
 	material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 	material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
 
@@ -79,7 +77,6 @@ int main(int argc, const char* argv[])
 	camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
 	camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
 	camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-	camera->addComponent<octoon::FirstPersonCameraComponent>();
 
 	auto object = std::make_shared<octoon::GameObject>();
 	object->addComponent<octoon::PathMeshingComponent>(chars[0]);

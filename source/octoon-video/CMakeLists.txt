@@ -26,6 +26,10 @@ SOURCE_GROUP(${LIB_NAME}\\camera  FILES ${VIDEO_CAMERA_LIST})
 SET(VIDEO_MATERIAL_LIST
 	${HEADER_PATH}/material.h
 	${SOURCE_PATH}/material.cpp
+	${HEADER_PATH}/phong_material.h
+	${SOURCE_PATH}/phong_material.cpp
+	${HEADER_PATH}/blinn_material.h
+	${SOURCE_PATH}/blinn_material.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
 

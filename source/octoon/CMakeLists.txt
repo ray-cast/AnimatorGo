@@ -6,8 +6,8 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_NAME})
 INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/json)
 
 SET(OCTOON_LIST
-	${SOURCE_PATH}/game_application.cpp
-	${HEADER_PATH}/game_application.h
+	${SOURCE_PATH}/game_app.cpp
+	${HEADER_PATH}/game_app.h
 	${SOURCE_PATH}/game_listener.cpp
 	${HEADER_PATH}/game_listener.h
 	${SOURCE_PATH}/game_object.cpp
@@ -72,6 +72,8 @@ IF(OCTOON_FEATURE_UI_ENABLE)
 SET(GUI_FEATURES_LIST
 	${HEADER_PATH}/gui_feature.h
 	${SOURCE_PATH}/gui_feature.cpp
+	${HEADER_PATH}/guizmo_component.h
+	${SOURCE_PATH}/guizmo_component.cpp
 )
 SOURCE_GROUP("system\\gui" FILES ${GUI_FEATURES_LIST})
 ENDIF()

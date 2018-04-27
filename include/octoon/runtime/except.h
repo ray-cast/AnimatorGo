@@ -128,6 +128,21 @@ namespace octoon
 				: exception(what_arg, code)
 			{}
 		};
+
+		class not_implemented : public exception
+		{
+		public:
+			static not_implemented create(const std::string& what_arg, const error_code& code = error_code::none)
+			{
+				std::string w = exception::name("not_implemented", code) + what_arg;
+				return not_implemented(w, code);
+			}
+
+		private:
+			not_implemented(const std::string& what_arg, const error_code& code)
+				: exception(what_arg, code)
+			{}
+		};
 	}
 }
 

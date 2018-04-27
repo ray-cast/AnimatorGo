@@ -23,12 +23,10 @@ namespace octoon
 			graphics::GraphicsDescriptorSetPtr getDescriptorSet() const noexcept override;
 
 			void setLean(float lean) noexcept;
-			void setExtrude(float extrude) noexcept;
 			void setTextColor(TextColor::Type which, const math::float3& colors) except;
 			void setTranslate(const math::float3& translate) noexcept;
 
 			float getLean() const noexcept;
-			float getExtrude() const noexcept;
 			const math::float3& getTranslate() const noexcept;
 
 			const math::float3& getTextColor(TextColor::Type which) const except;
@@ -47,7 +45,6 @@ namespace octoon
 			graphics::GraphicsUniformSetPtr model_;
 			graphics::GraphicsUniformSetPtr translate_;
 			graphics::GraphicsUniformSetPtr lean_;
-			graphics::GraphicsUniformSetPtr extrude_;
 			graphics::GraphicsUniformSetPtr frontColor_;
 			graphics::GraphicsUniformSetPtr sideColor_;
 		};

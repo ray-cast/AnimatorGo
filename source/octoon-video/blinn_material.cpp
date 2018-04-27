@@ -1,4 +1,4 @@
-#include <octoon/video/phong_material.h>
+#include <octoon/video/blinn_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
 
@@ -6,13 +6,13 @@ namespace octoon
 {
 	namespace video
 	{
-		PhongMaterial::PhongMaterial() except
+		BlinnMaterial::BlinnMaterial() except
 		{
 			this->setup();
 		}
 
 		void
-		PhongMaterial::setup() except
+		BlinnMaterial::setup() except
 		{
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
@@ -51,10 +51,9 @@ namespace octoon
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
 				vec3 H = normalize(V + lightDir);
-				vec3 R = -reflect(N, lightDir);
 
 				float nl = max(0.0f, dot(N, lightDir));
-				float spec = pow(max(0, dot(R, V)), pow(4096, shininess));
+				float spec = pow(max(0, dot(N, H)), pow(4096, shininess));
 
 				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
 			})";
@@ -108,86 +107,86 @@ namespace octoon
 			ambientColor_->uniform3f(math::float3::Zero);
 		}
 
-		PhongMaterial::~PhongMaterial() noexcept
+		BlinnMaterial::~BlinnMaterial() noexcept
 		{
 		}
 
 		void
-		PhongMaterial::setTransform(const math::float4x4& m) noexcept
+		BlinnMaterial::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		PhongMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		BlinnMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		graphics::GraphicsPipelinePtr
-		PhongMaterial::getPipeline() const noexcept
+		BlinnMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		graphics::GraphicsDescriptorSetPtr
-		PhongMaterial::getDescriptorSet() const noexcept
+		BlinnMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
 		void
-		PhongMaterial::setLightDir(const math::float3& dir) noexcept
+		BlinnMaterial::setLightDir(const math::float3& dir) noexcept
 		{
 			lightDir_->uniform3f(dir);
 		}
 
 		void
-		PhongMaterial::setBaseColor(const math::float3& color) noexcept
+		BlinnMaterial::setBaseColor(const math::float3& color) noexcept
 		{
 			baseColor_->uniform3f(color);
 		}
 
 		void
-		PhongMaterial::setAmbientColor(const math::float3& color) noexcept
+		BlinnMaterial::setAmbientColor(const math::float3& color) noexcept
 		{
 			ambientColor_->uniform3f(color);
 		}
 
 		void
-		PhongMaterial::setShininess(float shininess) noexcept
+		BlinnMaterial::setShininess(float shininess) noexcept
 		{
 			shininess_->uniform1f(shininess);
 		}
 
 		const math::float3&
-		PhongMaterial::getLightDir() const noexcept
+		BlinnMaterial::getLightDir() const noexcept
 		{
 			return lightDir_->getFloat3();
 		}
 
 		const math::float3&
-		PhongMaterial::getBaseColor() const noexcept
+		BlinnMaterial::getBaseColor() const noexcept
 		{
 			return baseColor_->getFloat3();
 		}
 
 		const math::float3&
-		PhongMaterial::getAmbientColor() const noexcept
+		BlinnMaterial::getAmbientColor() const noexcept
 		{
 			return ambientColor_->getFloat3();
 		}
 
 		float
-		PhongMaterial::getShininess() const noexcept
+		BlinnMaterial::getShininess() const noexcept
 		{
 			return shininess_->getFloat();
 		}
 
 		MaterialPtr
-		PhongMaterial::clone() const noexcept
+		BlinnMaterial::clone() const noexcept
 		{
-			auto instance = std::make_shared<PhongMaterial>();
+			auto instance = std::make_shared<BlinnMaterial>();
 			instance->setLightDir(this->getLightDir());
 
 			return instance;

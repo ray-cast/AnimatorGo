@@ -34,6 +34,7 @@ public:
 
 	void onGui() except override
 	{
+		static octoon::math::float1 shininess = 0.0f;
 		static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
 		static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
 		static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
@@ -69,11 +70,14 @@ public:
 				octoon::imgui::color_picker3("Base color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 				octoon::imgui::color_picker3("Ambient color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
+				octoon::imgui::drag_float("Shininess", &shininess, 0.01f, 0.0f, 1.0f);
+
 				lightDir = octoon::math::normalize(lightDir);
 
 				material_->setLightDir(lightDir);
 				material_->setBaseColor(baseColor);
 				material_->setAmbientColor(ambientColor);
+				material_->setShininess(shininess);
 
 				octoon::imgui::tree_pop();
 			}

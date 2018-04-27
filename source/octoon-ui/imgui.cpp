@@ -750,6 +750,11 @@ namespace octoon
 			return ImGui::InvisibleButton(str_id, (ImVec2&)size);
 		}
 
+		bool arrow_button(const char* str_id, GuiDir dir)
+		{
+			return ImGui::ArrowButton(str_id, (ImGuiDir)dir);
+		}
+
 		void image(GuiTextureID user_texture_id, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col) noexcept
 		{
 			ImGui::Image(user_texture_id, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, (ImVec4&)tint_col, (ImVec4&)border_col);

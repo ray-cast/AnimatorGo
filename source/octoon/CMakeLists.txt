@@ -72,6 +72,8 @@ IF(OCTOON_FEATURE_UI_ENABLE)
 SET(GUI_FEATURES_LIST
 	${HEADER_PATH}/gui_feature.h
 	${SOURCE_PATH}/gui_feature.cpp
+	${HEADER_PATH}/guizmo_component.h
+	${SOURCE_PATH}/guizmo_component.cpp
 )
 SOURCE_GROUP("system\\gui" FILES ${GUI_FEATURES_LIST})
 ENDIF()

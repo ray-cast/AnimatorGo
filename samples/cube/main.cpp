@@ -6,6 +6,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/first_person_camera.h>
+#include <octoon/guizmo_component.h>
 
 #include <octoon/ui/imgui.h>
 
@@ -16,9 +17,8 @@ public:
 	{
 	}
 
-	CubeController(octoon::GameObjectPtr camera, octoon::video::TextMaterialPtr material)
+	CubeController(octoon::video::TextMaterialPtr& material)
 		: material_(material)
-		, camera_(camera)
 	{
 	}
 
@@ -85,24 +85,6 @@ public:
 
 			octoon::imgui::end();
 		}
-
-		auto& view = camera_->getComponent<octoon::CameraComponent>()->getView();
-		auto& project = camera_->getComponent<octoon::CameraComponent>()->getProjection();
-		auto model = transform->getLocalTransform();
-
-		static octoon::imgui::guizmo::Operation op(octoon::imgui::guizmo::Rotation);
-		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::Q))
-			op = octoon::imgui::guizmo::Translate;
-		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::W))
-			op = octoon::imgui::guizmo::Rotation;
-		if (octoon::imgui::is_key_pressed(octoon::input::InputKey::Code::E))
-			op = octoon::imgui::guizmo::Scale;
-
-		octoon::imgui::guizmo::BeginFrame();
-		octoon::imgui::guizmo::SetRect(0, 0, octoon::imgui::get_display_size().x, octoon::imgui::get_display_size().y);
-		octoon::imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op, octoon::imgui::guizmo::Mode::Local, model.ptr());
-
-		transform->setLocalTransform(model);
 	}
 
 	octoon::GameComponentPtr clone() const noexcept
@@ -140,7 +122,8 @@ int main(int argc, const char* argv[])
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
-		object->addComponent<CubeController>(camera, material);
+		object->addComponent<octoon::GuizmoComponent>(camera);
+		object->addComponent<CubeController>(material);
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

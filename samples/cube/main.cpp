@@ -1,6 +1,6 @@
 #include <octoon/octoon.h>
 
-#include <octoon/video/text_material.h>
+#include <octoon/video/phong_material.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/mesh_renderer_component.h>
@@ -16,7 +16,7 @@ public:
 	{
 	}
 
-	CubeController(octoon::video::TextMaterialPtr& material)
+	CubeController(std::shared_ptr<octoon::video::PhongMaterial>& material)
 		: material_(material)
 	{
 	}
@@ -34,11 +34,9 @@ public:
 
 	void onGui() except override
 	{
-		static octoon::math::float1 lern = 0.0f;
-		static octoon::math::float1 extrude = 1.0f;
-		static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
-		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
-		static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
+		static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
+		static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
+		static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
 
 		auto transform = this->getComponent<octoon::TransformComponent>();
 
@@ -66,18 +64,16 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
-				octoon::imgui::drag_float("extrude", &extrude, 1.0f, 0.0f, 50.0f);
-				octoon::imgui::drag_float3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
+				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
 
-				octoon::imgui::color_picker3("front color", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-				octoon::imgui::color_picker3("side color", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("Base color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("Ambient color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
-				material_->setLean(lern);
-				material_->setExtrude(extrude);
-				material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
-				material_->setTextColor(octoon::video::TextColor::SideColor, sideColor);
-				material_->setTranslate(translate);
+				lightDir = octoon::math::normalize(lightDir);
+
+				material_->setLightDir(lightDir);
+				material_->setBaseColor(baseColor);
+				material_->setAmbientColor(ambientColor);
 
 				octoon::imgui::tree_pop();
 			}
@@ -93,7 +89,7 @@ public:
 
 private:
 	octoon::GameObjectPtr camera_;
-	octoon::video::TextMaterialPtr material_;
+	std::shared_ptr<octoon::video::PhongMaterial> material_;
 };
 
 int main(int argc, const char* argv[])
@@ -103,12 +99,6 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto material = std::make_shared<octoon::video::TextMaterial>();
-		material->setLean(0.0f);
-		material->setExtrude(1.0f);
-		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
-		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
-
 		auto camera = std::make_shared<octoon::GameObject>();
 		camera->addComponent<octoon::CameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
@@ -116,6 +106,8 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
+
+		auto material = std::make_shared<octoon::video::PhongMaterial>();
 
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));

@@ -17,10 +17,6 @@ namespace octoon
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
 			uniform mat4 model;
-			uniform float lean;
-			uniform vec3 frontColor;
-			uniform vec3 sideColor;
-			uniform vec3 translate;
 
 			layout(location  = 0) in vec4 POSITION0;
 			layout(location  = 1) in vec4 NORMAL0;
@@ -29,25 +25,23 @@ namespace octoon
 
 			void main()
 			{
-				vec4 P = POSITION0;
-				P.x -= P.y * lean;
-				if (P.z == 0)
-					P.xyz += translate;
-
-				if (abs(NORMAL0.z) > 0.5)
-					oTexcoord0 = frontColor;
-				else
-					oTexcoord0 = sideColor;
-
-				gl_Position = proj * model * P;
+				oTexcoord0 = normalize(NORMAL0.xyz);
+				gl_Position = proj * model * POSITION0;
 			})";
 
 			const char* frag = R"(#version 330
+
+			uniform vec3 lightDir;
+			uniform vec3 baseColor;
+			uniform vec3 ambientColor;
+
 			layout(location  = 0) out vec4 fragColor;
 			in vec3 oTexcoord0;
+
 			void main()
 			{
-				fragColor = vec4(oTexcoord0, 1.0f);
+				float nl = max(0.0f, dot(oTexcoord0, lightDir));
+				fragColor = vec4(pow(pow(ambientColor, vec3(2.2f)) + pow(baseColor, vec3(2.2f)) * nl, vec3(1.0f / 2.2f)), 1.0f);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -87,12 +81,14 @@ namespace octoon
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
-			translate_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "translate"; });
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			lean_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lean"; });
-			frontColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "frontColor"; });
-			sideColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "sideColor"; });
+			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
+			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
+			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
+
+			baseColor_->uniform3f(math::float3::One);
+			ambientColor_->uniform3f(math::float3::Zero);
 		}
 
 		PhongMaterial::~PhongMaterial() noexcept
@@ -124,67 +120,46 @@ namespace octoon
 		}
 
 		void
-		PhongMaterial::setLean(float lean) noexcept
+		PhongMaterial::setLightDir(const math::float3& dir) noexcept
 		{
-			lean_->uniform1f(lean);
+			lightDir_->uniform3f(dir);
 		}
 
 		void
-		PhongMaterial::setTextColor(TextColor::Type which, const math::float3& colors) except
+		PhongMaterial::setBaseColor(const math::float3& color) noexcept
 		{
-			switch (which)
-			{
-			case octoon::video::TextColor::FrontColor:
-				frontColor_->uniform3f(colors);
-				break;
-			case octoon::video::TextColor::SideColor:
-				sideColor_->uniform3f(colors);
-				break;
-			default:
-				throw runtime::out_of_range::create("Unknown enum type of text color");
-			}
+			baseColor_->uniform3f(color);
 		}
 
 		void
-		PhongMaterial::setTranslate(const math::float3& translate) noexcept
+		PhongMaterial::setAmbientColor(const math::float3& color) noexcept
 		{
-			translate_->uniform3f(translate);
-		}
-
-		float
-		PhongMaterial::getLean() const noexcept
-		{
-			return lean_->getFloat();
+			ambientColor_->uniform3f(color);
 		}
 
 		const math::float3&
-		PhongMaterial::getTranslate() const noexcept
+		PhongMaterial::getLightDir() const noexcept
 		{
-			return translate_->getFloat3();
+			return lightDir_->getFloat3();
 		}
 
 		const math::float3&
-		PhongMaterial::getTextColor(TextColor::Type which) const except
+		PhongMaterial::getBaseColor() const noexcept
 		{
-			switch (which)
-			{
-			case octoon::video::TextColor::FrontColor:
-				return frontColor_->getFloat3();
-			case octoon::video::TextColor::SideColor:
-				return sideColor_->getFloat3();
-			default:
-				throw runtime::out_of_range::create("Unknown enum type of text color");
-			}
+			return baseColor_->getFloat3();
+		}
+
+		const math::float3&
+		PhongMaterial::getAmbientColor() const noexcept
+		{
+			return ambientColor_->getFloat3();
 		}
 
 		MaterialPtr
 		PhongMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<PhongMaterial>();
-			instance->setTranslate(this->getTranslate());
-			instance->setLean(this->getLean());
-			instance->setTextColor(TextColor::FrontColor, this->getTextColor(TextColor::FrontColor));
-			instance->setTextColor(TextColor::SideColor, this->getTextColor(TextColor::SideColor));
+			instance->setLightDir(this->getLightDir());
 
 			return instance;
 		}

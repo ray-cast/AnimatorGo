@@ -7,6 +7,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
+#include <octoon/first_person_camera.h>
 
 #include <octoon/ui/imgui.h>
 
@@ -138,6 +139,7 @@ int main(int argc, const char* argv[])
 
 		auto camera = std::make_shared<octoon::GameObject>();
 		camera->addComponent<octoon::CameraComponent>();
+		camera->addComponent<octoon::FirstPersonCameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);

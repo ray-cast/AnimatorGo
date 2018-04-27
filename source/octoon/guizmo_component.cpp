@@ -41,11 +41,11 @@ namespace octoon
 			auto model = transform->getLocalTransform();
 
 			static imgui::guizmo::Operation op(imgui::guizmo::Rotation);
-			if (imgui::is_key_pressed(input::InputKey::Code::Q))
+			if (imgui::is_key_pressed(input::InputKey::Code::Key1))
 				op = imgui::guizmo::Translate;
-			if (imgui::is_key_pressed(input::InputKey::Code::W))
+			if (imgui::is_key_pressed(input::InputKey::Code::Key2))
 				op = imgui::guizmo::Rotation;
-			if (imgui::is_key_pressed(input::InputKey::Code::E))
+			if (imgui::is_key_pressed(input::InputKey::Code::Key3))
 				op = imgui::guizmo::Scale;
 
 			imgui::guizmo::BeginFrame();

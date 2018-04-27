@@ -69,10 +69,23 @@ namespace octoon
 				if (imgui::is_key_pressed(input::InputKey::Code::D))
 					yawCamera(step);
 
-				if (input->isButtonPressed(input::InputButton::Code::Left))
+				if (imgui::is_key_pressed(input::InputKey::Code::Q))
+					upCamera(-step);
+
+				if (imgui::is_key_pressed(input::InputKey::Code::E))
+					upCamera(step);
+
+				if (input->isButtonPressed(input::InputButton::Code::Right))
 					rotateCamera(input->getAxis(input::InputAxis::Horizontal), input->getAxis(input::InputAxis::Vertical));
 			}
 		}
+	}
+
+	void
+	FirstPersonCameraComponent::upCamera(float speed) noexcept
+	{
+		const math::float3& up = this->getGameObject()->getComponent<TransformComponent>()->getLocalUp();
+		this->getGameObject()->getComponent<TransformComponent>()->setTranslateAccum(up * speed);
 	}
 
 	void

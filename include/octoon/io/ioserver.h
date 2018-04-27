@@ -20,8 +20,9 @@ namespace octoon
 		* A `IoServer` is a namespace for Octoon instance to seek for resources in
 		* local storage, at remote host, or in compressed archive.
 		*/
-		class OCTOON_EXPORT IoServer : public runtime::Singleton<IoServer>
+		class OCTOON_EXPORT IoServer final
 		{
+			OctoonDeclareSingleton(IoServer)
 		public:
 			/*
 			* Register an entry to the IoServer, so that the file contained in that

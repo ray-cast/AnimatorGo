@@ -8,6 +8,8 @@ namespace octoon
 {
 	namespace io
 	{
+		OctoonImplementSingleton(IoServer);
+
 		void
 		IoServer::mount_archive(const std::string& vpath, const archive_pointer& vdir)
 		{

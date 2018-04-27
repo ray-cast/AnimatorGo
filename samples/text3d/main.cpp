@@ -97,13 +97,13 @@ public:
 				static bool clockwise = true;
 
 				const char* items[] = { "2", "4", "6", "8", "10", "12"};
-				if (octoon::imgui::combo("combo", &item_current, items, 6))
+				if (octoon::imgui::combo("Bezier Steps", &item_current, items, 6))
 				{
 					this->getComponent<octoon::PathMeshingComponent>()->setBezierSteps((item_current + 1) * 2);
 					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
 				}
 
-				if (octoon::imgui::checkbox("clockwise", &clockwise))
+				if (octoon::imgui::checkbox("Clockwise", &clockwise))
 				{
 					this->getComponent<octoon::PathMeshingComponent>()->setClockwise(clockwise);
 					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);

@@ -20,18 +20,21 @@ namespace octoon
 
 	PathMeshingComponent::PathMeshingComponent() noexcept
 		: bezierSteps_(6)
+		, clockwise_(true)
 	{
 	}
 
-	PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps) noexcept
+	PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps, bool clockwise) noexcept
 		: bezierSteps_(6)
+		, clockwise_(clockwise)
 	{
 		this->setBezierPath(json);
 		this->setBezierSteps(bezierSteps);
 	}
 
-	PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps) noexcept
+	PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps, bool clockwise) noexcept
 		: bezierSteps_(6)
+		, clockwise_(clockwise)
 	{
 		this->setBezierPath(json);
 		this->setBezierSteps(bezierSteps);
@@ -76,6 +79,8 @@ namespace octoon
 	void
 	PathMeshingComponent::setBezierSteps(std::uint16_t bezierSteps) noexcept
 	{
+		assert(bezierSteps > 0);
+
 		if (bezierSteps_ != bezierSteps)
 		{
 			bezierSteps_ = bezierSteps;
@@ -93,6 +98,25 @@ namespace octoon
 	PathMeshingComponent::getBezierSteps() const noexcept
 	{
 		return bezierSteps_;
+	}
+
+	void
+	PathMeshingComponent::setClockwise(bool clockwise) noexcept
+	{
+		clockwise_ = clockwise;
+
+		if (this->getActive())
+		{
+			auto object = this->getGameObject();
+			if (object && object->getActive())
+				this->updateContour(json_);
+		}
+	}
+
+	bool
+	PathMeshingComponent::getClockwise() const noexcept
+	{
+		return clockwise_;
 	}
 
 	void
@@ -205,7 +229,7 @@ namespace octoon
 				}
 			}
 
-			contour->isClockwise(true);
+			contour->isClockwise(clockwise_);
 			contours.push_back(std::move(contour));
 		}
 

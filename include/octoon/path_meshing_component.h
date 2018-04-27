@@ -11,8 +11,8 @@ namespace octoon
 		OctoonDeclareSubClass(PathMeshingComponent, MeshFilterComponent)
 	public:
 		PathMeshingComponent() noexcept;
-		PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps = 8) noexcept;
-		PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps = 8) noexcept;
+		PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps = 8, bool clockwise = true) noexcept;
+		PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps = 8, bool clockwise = true) noexcept;
 		virtual ~PathMeshingComponent() noexcept;
 
 		void setBezierPath(std::string&& json) noexcept;
@@ -21,6 +21,9 @@ namespace octoon
 
 		void setBezierSteps(std::uint16_t bezierSteps) noexcept;
 		std::uint16_t getBezierSteps() const noexcept;
+
+		void setClockwise(bool clockwise) noexcept;
+		bool getClockwise() const noexcept;
 
 		virtual GameComponentPtr clone() const noexcept override;
 
@@ -36,6 +39,7 @@ namespace octoon
 		PathMeshingComponent& operator=(const PathMeshingComponent&) = delete;
 
 	private:
+		bool clockwise_;
 		std::string json_;
 		std::uint16_t bezierSteps_;
 	};

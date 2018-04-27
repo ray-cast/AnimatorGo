@@ -60,7 +60,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
 	{
-		if (component->isInstanceOf<MeshFilterComponent>())
+		if (component->isA<MeshFilterComponent>())
 		{
 			onMeshReplaceEvent_ = std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1);
 			component->downcast<MeshFilterComponent>()->addMeshListener(&onMeshReplaceEvent_);
@@ -70,7 +70,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
 	{
-		if (component->isInstanceOf<MeshFilterComponent>())
+		if (component->isA<MeshFilterComponent>())
 			component->downcast<MeshFilterComponent>()->removeMeshListener(&onMeshReplaceEvent_);
 	}
 

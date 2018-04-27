@@ -45,11 +45,6 @@ public:
 
 	void onGui() except override
 	{
-		static octoon::math::float1 lern = 0.0f;
-		static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
-		static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
-		static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
-
 		auto transform = this->getComponent<octoon::TransformComponent>();
 
 		if (octoon::imgui::begin("Material"))
@@ -76,6 +71,11 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
+				static octoon::math::float1 lern = 0.0f;
+				static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
+				static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
+				static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
+
 				octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
 				octoon::imgui::drag_float3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
 
@@ -86,6 +86,27 @@ public:
 				material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
 				material_->setTextColor(octoon::video::TextColor::SideColor, sideColor);
 				material_->setTranslate(translate);
+
+				octoon::imgui::tree_pop();
+			}
+
+			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				static int item_current = 3;
+				static bool clockwise = true;
+
+				const char* items[] = { "2", "4", "6", "8", "10", "12"};
+				if (octoon::imgui::combo("combo", &item_current, items, 6))
+				{
+					this->getComponent<octoon::PathMeshingComponent>()->setBezierSteps((item_current + 1) * 2);
+					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
+				}
+
+				if (octoon::imgui::checkbox("clockwise", &clockwise))
+				{
+					this->getComponent<octoon::PathMeshingComponent>()->setClockwise(clockwise);
+					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
+				}
 
 				octoon::imgui::tree_pop();
 			}

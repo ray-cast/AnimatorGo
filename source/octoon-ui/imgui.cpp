@@ -33,7 +33,7 @@ namespace octoon
 			WindowTitleAlign = float2(0.5f, 0.5f);
 			ChildRounding = 0.0f;
 			ChildBorderSize = 0.0f;
-			FramePadding = float2(0, 3);
+			FramePadding = float2(3, 3);
 			FrameRounding = 8.0f;
 			ItemSpacing = float2(8, 4);
 			ItemInnerSpacing = float2(4, 4);

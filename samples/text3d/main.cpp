@@ -6,7 +6,6 @@
 #include <octoon/path_meshing_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/first_person_camera.h>
 #include <octoon/guizmo_component.h>
 
 #include <octoon/ui/imgui.h>
@@ -29,25 +28,19 @@ public:
 	{
 	}
 
-	TextController(octoon::video::TextMaterialPtr material)
+	TextController(const octoon::video::TextMaterialPtr& material)
 		: material_(material)
 	{
 	}
 
 	void onActivate() override
 	{
-		this->addComponentDispatch(octoon::GameDispatchType::Frame);
 		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 	}
 
 	void onDeactivate() noexcept override
 	{
 		this->removeComponentDispatchs();
-	}
-
-	void onFrame() override
-	{
-		//this->getComponent<octoon::TransformComponent>()->setLocalQuaternionAccum(octoon::math::Quaternion().make_rotation_y(0.01f));
 	}
 
 	void onGui() except override
@@ -122,7 +115,7 @@ int main(int argc, const char* argv[])
 	{
 		auto material = std::make_shared<octoon::video::TextMaterial>();
 		material->setLean(0.0f);
-		material->setExtrude(5.0f);
+		material->setExtrude(2.0f);
 		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
 
@@ -132,7 +125,6 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
 		auto object = std::make_shared<octoon::GameObject>();

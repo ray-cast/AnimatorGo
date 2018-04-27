@@ -41,6 +41,10 @@ namespace octoon
 		GameFeaturePtr getFeature(const runtime::Rtti* type) const except;
 		GameFeaturePtr getFeature(const runtime::Rtti& type) const except;
 
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		void removeFeature() noexcept { this->removeFeature(T::RTTI); }
+		void removeFeature(const runtime::Rtti* type) except;
+		void removeFeature(const runtime::Rtti& type) except;
 		void removeFeature(const GameFeaturePtr& feature) except;
 
 		void sendInputEvent(const input::InputEvent& event) except;
@@ -75,14 +79,6 @@ namespace octoon
 	private:
 		GameServerPtr game_server_;
 		GameListenerPtr game_listener_;
-
-		GameFeaturePtr io_feature_;
-		GameFeaturePtr timer_feature_;
-		GameFeaturePtr input_feature_;
-		GameFeaturePtr base_feature_;
-		GameFeaturePtr graphics_feature_;
-		GameFeaturePtr gui_feature_;
-		GameFeaturePtr video_feature_;
 
 		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
 	};

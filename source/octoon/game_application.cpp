@@ -93,59 +93,31 @@ namespace octoon
 		game_server_->setGameListener(game_listener_);
 
 #if OCTOON_FEATURE_IO_ENABLE
-		io_feature_ = std::make_shared<IOFeature>();
+		this->addFeature(std::make_shared<IOFeature>());
 #endif
 
 #if OCTOON_FEATURE_TIMER_ENABLE
-		timer_feature_ = std::make_shared<TimerFeature>();
+		this->addFeature(std::make_shared<TimerFeature>());
 #endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
-		input_feature_ = std::make_shared<InputFeature>(hwnd);
+		this->addFeature(std::make_shared<InputFeature>(hwnd));
 #endif
 
 #if OCTOON_FEATURE_BASE_ENABLE
-		base_feature_ = std::make_shared<GameBaseFeatures>();
+		this->addFeature(std::make_shared<GameBaseFeatures>());
 #endif
 
-#if OCTOON_FEATURE_BASE_ENABLE
-		graphics_feature_ = std::make_shared<GraphicsFeature>(hwnd, w, h);
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(std::make_shared<GraphicsFeature>(hwnd, w, h));
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(std::make_shared<VideoFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE
-		gui_feature_ = std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		video_feature_ = std::make_shared<VideoFeature>(w, h);
-#endif
-
-#if OCTOON_FEATURE_IO_ENABLE
-		this->addFeature(io_feature_);
-#endif
-
-#if OCTOON_FEATURE_TIMER_ENABLE
-		this->addFeature(timer_feature_);
-#endif
-
-#if OCTOON_FEATURE_INPUT_ENABLE
-		this->addFeature(input_feature_);
-#endif
-
-#if OCTOON_FEATURE_BASE_ENABLE
-		this->addFeature(base_feature_);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(graphics_feature_);
-#endif
-
-#if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(video_feature_);
-#endif
-
-#if OCTOON_FEATURE_UI_ENABLE
-		this->addFeature(gui_feature_);
+		this->addFeature(std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
 #endif
 	}
 
@@ -284,6 +256,24 @@ namespace octoon
 	GameApplication::getFeature(const runtime::Rtti& type) const except
 	{
 		return this->getFeature(&type);
+	}
+
+	void
+	GameApplication::removeFeature(const runtime::Rtti* type) except
+	{
+		if (game_server_)
+			game_server_->removeFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before removeFeature()");
+	}
+
+	void
+	GameApplication::removeFeature(const runtime::Rtti& type) except
+	{
+		if (game_server_)
+			game_server_->removeFeature(type);
+		else
+			throw runtime::runtime_error::create("please call open() before removeFeature()");
 	}
 
 	void

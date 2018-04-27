@@ -2,6 +2,7 @@
 #define OCTOON_GUIZMO_COMPONENT_H_
 
 #include <octoon/game_component.h>
+#include <octoon/ui/imgui.h>
 
 namespace octoon
 {
@@ -22,6 +23,7 @@ namespace octoon
 
 	private:
 		GameObjectPtr camera_;
+		imgui::guizmo::Operation op_;
 	};
 }
 

@@ -6,7 +6,6 @@
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
 #include <octoon/timer_feature.h>
-#include <octoon/ui/imgui.h>
 
 namespace octoon
 {
@@ -54,25 +53,25 @@ namespace octoon
 			auto input = inputFeature->getInput();
 			if (input)
 			{
-				if (imgui::is_key_pressed(input::InputKey::Code::LeftShift))
+				if (input->isKeyPressed(input::InputKey::Code::LeftShift))
 					step *= 3;
 
-				if (imgui::is_key_pressed(input::InputKey::Code::W))
+				if (input->isKeyPressed(input::InputKey::Code::W))
 					moveCamera(-step);
 
-				if (imgui::is_key_pressed(input::InputKey::Code::S))
+				if (input->isKeyPressed(input::InputKey::Code::S))
 					moveCamera(step);
 
-				if (imgui::is_key_pressed(input::InputKey::Code::A))
+				if (input->isKeyPressed(input::InputKey::Code::A))
 					yawCamera(-step);
 
-				if (imgui::is_key_pressed(input::InputKey::Code::D))
+				if (input->isKeyPressed(input::InputKey::Code::D))
 					yawCamera(step);
 
-				if (imgui::is_key_pressed(input::InputKey::Code::Q))
+				if (input->isKeyPressed(input::InputKey::Code::Q))
 					upCamera(-step);
 
-				if (imgui::is_key_pressed(input::InputKey::Code::E))
+				if (input->isKeyPressed(input::InputKey::Code::E))
 					upCamera(step);
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))

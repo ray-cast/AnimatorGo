@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_MATERIAL_H_
-#define OCTOON_TEXT_MATERIAL_H_
+#ifndef OCTOON_PHONG_MATERIAL_H_
+#define OCTOON_PHONG_MATERIAL_H_
 
 #include <octoon/video/material.h>
 #include <octoon/graphics/graphics.h>
@@ -8,11 +8,11 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT TextMaterial final : public Material
+		class OCTOON_EXPORT PhongMaterial final : public Material
 		{
 		public:
-			TextMaterial() except;
-			~TextMaterial() noexcept;
+			PhongMaterial() except;
+			~PhongMaterial() noexcept;
 
 			void setup() except;
 
@@ -34,8 +34,8 @@ namespace octoon
 			MaterialPtr clone() const noexcept override;
 
 		private:
-			TextMaterial(const TextMaterial&) = delete;
-			TextMaterial& operator=(const TextMaterial&) = delete;
+			PhongMaterial(const PhongMaterial&) = delete;
+			PhongMaterial& operator=(const PhongMaterial&) = delete;
 
 		private:
 			graphics::GraphicsPipelinePtr pipeline_;

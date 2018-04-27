@@ -1,4 +1,4 @@
-#include <octoon/video/text_material.h>
+#include <octoon/video/phong_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
 
@@ -6,13 +6,13 @@ namespace octoon
 {
 	namespace video
 	{
-		TextMaterial::TextMaterial() except
+		PhongMaterial::PhongMaterial() except
 		{
 			this->setup();
 		}
 
 		void
-		TextMaterial::setup() except
+		PhongMaterial::setup() except
 		{
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
@@ -95,42 +95,42 @@ namespace octoon
 			sideColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "sideColor"; });
 		}
 
-		TextMaterial::~TextMaterial() noexcept
+		PhongMaterial::~PhongMaterial() noexcept
 		{
 		}
 
 		void
-		TextMaterial::setTransform(const math::float4x4& m) noexcept
+		PhongMaterial::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		TextMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		PhongMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		graphics::GraphicsPipelinePtr
-		TextMaterial::getPipeline() const noexcept
+		PhongMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		graphics::GraphicsDescriptorSetPtr
-		TextMaterial::getDescriptorSet() const noexcept
+		PhongMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
 		void
-		TextMaterial::setLean(float lean) noexcept
+		PhongMaterial::setLean(float lean) noexcept
 		{
 			lean_->uniform1f(lean);
 		}
 
 		void
-		TextMaterial::setTextColor(TextColor::Type which, const math::float3& colors) except
+		PhongMaterial::setTextColor(TextColor::Type which, const math::float3& colors) except
 		{
 			switch (which)
 			{
@@ -146,25 +146,25 @@ namespace octoon
 		}
 
 		void
-		TextMaterial::setTranslate(const math::float3& translate) noexcept
+		PhongMaterial::setTranslate(const math::float3& translate) noexcept
 		{
 			translate_->uniform3f(translate);
 		}
 
 		float
-		TextMaterial::getLean() const noexcept
+		PhongMaterial::getLean() const noexcept
 		{
 			return lean_->getFloat();
 		}
 
 		const math::float3&
-		TextMaterial::getTranslate() const noexcept
+		PhongMaterial::getTranslate() const noexcept
 		{
 			return translate_->getFloat3();
 		}
 
 		const math::float3&
-		TextMaterial::getTextColor(TextColor::Type which) const except
+		PhongMaterial::getTextColor(TextColor::Type which) const except
 		{
 			switch (which)
 			{
@@ -178,9 +178,9 @@ namespace octoon
 		}
 
 		MaterialPtr
-		TextMaterial::clone() const noexcept
+		PhongMaterial::clone() const noexcept
 		{
-			auto instance = std::make_shared<TextMaterial>();
+			auto instance = std::make_shared<PhongMaterial>();
 			instance->setTranslate(this->getTranslate());
 			instance->setLean(this->getLean());
 			instance->setTextColor(TextColor::FrontColor, this->getTextColor(TextColor::FrontColor));

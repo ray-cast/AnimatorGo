@@ -211,13 +211,13 @@ namespace octoon
 
 					math::Triangle t1;
 					t1.a = math::float3(p1.x, p1.y, -1.0f);
-					t1.b = math::float3(p2.x, p2.y, 0.0f);
-					t1.c = math::float3(p1.x, p1.y, 0.0f);
+					t1.b = math::float3(p2.x, p2.y, 1.0f);
+					t1.c = math::float3(p1.x, p1.y, 1.0f);
 
 					math::Triangle t2;
 					t2.a = math::float3(p1.x, p1.y, -1.0f);
 					t2.b = math::float3(p2.x, p2.y, -1.0f);
-					t2.c = math::float3(p2.x, p2.y, 0.0f);
+					t2.c = math::float3(p2.x, p2.y, 1.0f);
 
 					std::memcpy(trisData + written, t1.ptr(), sizeof(math::Triangle));
 					std::memcpy(trisData + written + sizeof(math::Triangle) / sizeof(math::float3), t2.ptr(), sizeof(math::Triangle));
@@ -262,7 +262,7 @@ namespace octoon
 								auto& d = vertices[index++];
 								d[0] = p1.x;
 								d[1] = p1.y;
-								d[2] = p1.z - face;
+								d[2] = p1.z + face ? -1.0 : 1.0;
 
 								gluTessVertex(tobj, d.ptr(), d.ptr());
 							}
@@ -280,6 +280,7 @@ namespace octoon
 			}
 
 			mesh.computeVertexNormals();
+			mesh.computeBoundingBox();
 		}
 	}
 }

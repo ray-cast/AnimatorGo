@@ -135,8 +135,10 @@ namespace octoon
 	PathMeshingComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<PathMeshingComponent>();
-		instance->setBezierSteps(this->getBezierSteps());
+		instance->setName(this->getName());
+		instance->setClockwise(this->getClockwise());
 		instance->setBezierPath(this->getBezierPath());
+		instance->setBezierSteps(this->getBezierSteps());
 
 		return instance;
 	}

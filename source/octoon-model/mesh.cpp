@@ -50,27 +50,32 @@ namespace octoon
 		{
 		}
 
-		void Mesh::setName(const std::string& name) noexcept
+		void
+		Mesh::setName(const std::string& name) noexcept
 		{
 			_name = name;
 		}
 
-		const std::string& Mesh::getName() const noexcept
+		const std::string&
+		Mesh::getName() const noexcept
 		{
 			return _name;
 		}
 
-		std::size_t Mesh::getNumVertices() const noexcept
+		std::size_t
+		Mesh::getNumVertices() const noexcept
 		{
 			return _vertices.size();
 		}
 
-		std::size_t Mesh::getNumIndices() const noexcept
+		std::size_t
+		Mesh::getNumIndices() const noexcept
 		{
 			return _indices.size();
 		}
 
-		std::size_t Mesh::getTexcoordNums() const noexcept
+		std::size_t
+		Mesh::getTexcoordNums() const noexcept
 		{
 			std::size_t count = 0;
 			for (auto& it : _texcoords)
@@ -82,182 +87,216 @@ namespace octoon
 			return count;
 		}
 
-		void Mesh::setVertexArray(const float3s& array) noexcept
+		void
+		Mesh::setVertexArray(const float3s& array) noexcept
 		{
 			_vertices = array;
 		}
 
-		void Mesh::setNormalArray(const float3s& array) noexcept
+		void
+		Mesh::setNormalArray(const float3s& array) noexcept
 		{
 			_normals = array;
 		}
 
-		void Mesh::setColorArray(const float4s& array) noexcept
+		void
+		Mesh::setColorArray(const float4s& array) noexcept
 		{
 			_colors = array;
 		}
 
-		void Mesh::setTangentArray(const float4s& array) noexcept
+		void
+		Mesh::setTangentArray(const float4s& array) noexcept
 		{
 			_tangents = array;
 		}
 
-		void Mesh::setTexcoordArray(const float2s& array, std::uint8_t n) noexcept
+		void
+		Mesh::setTexcoordArray(const float2s& array, std::uint8_t n) noexcept
 		{
 			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			_texcoords[n] = array;
 		}
 
-		void Mesh::setIndicesArray(const Uint1Array& array) noexcept
+		void
+		Mesh::setIndicesArray(const Uint1Array& array) noexcept
 		{
 			_indices = array;
 		}
 
-		void Mesh::setBindposes(const float4x4s& array) noexcept
+		void
+		Mesh::setBindposes(const float4x4s& array) noexcept
 		{
 			_bindposes = array;
 		}
 
-		void Mesh::setWeightArray(const VertexWeights& array) noexcept
+		void
+		Mesh::setWeightArray(const VertexWeights& array) noexcept
 		{
 			_weights = array;
 		}
 
-		void Mesh::setVertexArray(float3s&& array) noexcept
+		void
+		Mesh::setVertexArray(float3s&& array) noexcept
 		{
 			_vertices = std::move(array);
 		}
 
 		void
-			Mesh::setNormalArray(float3s&& array) noexcept
+		Mesh::setNormalArray(float3s&& array) noexcept
 		{
 			_normals = std::move(array);
 		}
 
-		void Mesh::setColorArray(float4s&& array) noexcept
+		void
+		Mesh::setColorArray(float4s&& array) noexcept
 		{
 			_colors = std::move(array);
 		}
 
-		void Mesh::setTangentArray(float4s&& array) noexcept
+		void
+		Mesh::setTangentArray(float4s&& array) noexcept
 		{
 			_tangents = std::move(array);
 		}
 
-		void Mesh::setTexcoordArray(float2s&& array, std::uint8_t n) noexcept
+		void
+		Mesh::setTexcoordArray(float2s&& array, std::uint8_t n) noexcept
 		{
 			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			_texcoords[n] = std::move(array);
 		}
 
-		void Mesh::setIndicesArray(Uint1Array&& array) noexcept
+		void
+		Mesh::setIndicesArray(Uint1Array&& array) noexcept
 		{
 			_indices = std::move(array);
 		}
 
-		void Mesh::setWeightArray(VertexWeights&& array) noexcept
+		void
+		Mesh::setWeightArray(VertexWeights&& array) noexcept
 		{
 			_weights = std::move(array);
 		}
 
-		void Mesh::setBindposes(float4x4s&& array) noexcept
+		void
+		Mesh::setBindposes(float4x4s&& array) noexcept
 		{
 			_bindposes = std::move(array);
 		}
 
-		float3s& Mesh::getVertexArray() noexcept
+		float3s&
+		Mesh::getVertexArray() noexcept
 		{
 			return _vertices;
 		}
 
-		float3s& Mesh::getNormalArray() noexcept
+		float3s&
+		Mesh::getNormalArray() noexcept
 		{
 			return _normals;
 		}
 
-		float4s& Mesh::getTangentArray() noexcept
+		float4s&
+		Mesh::getTangentArray() noexcept
 		{
 			return _tangents;
 		}
 
-		float4s& Mesh::getColorArray() noexcept
+		float4s&
+		Mesh::getColorArray() noexcept
 		{
 			return _colors;
 		}
 
-		float2s& Mesh::getTexcoordArray(std::uint8_t n) noexcept
+		float2s&
+		Mesh::getTexcoordArray(std::uint8_t n) noexcept
 		{
 			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			return _texcoords[n];
 		}
 
-		VertexWeights& Mesh::getWeightArray() noexcept
+		VertexWeights&
+		Mesh::getWeightArray() noexcept
 		{
 			return _weights;
 		}
 
-		Uint1Array& Mesh::getIndicesArray() noexcept
+		Uint1Array&
+		Mesh::getIndicesArray() noexcept
 		{
 			return _indices;
 		}
 
-		float4x4s& Mesh::getBindposes() noexcept
+		float4x4s&
+		Mesh::getBindposes() noexcept
 		{
 			return _bindposes;
 		}
 
-		const float3s& Mesh::getVertexArray() const noexcept
+		const float3s&
+		Mesh::getVertexArray() const noexcept
 		{
 			return _vertices;
 		}
 
-		const float3s& Mesh::getNormalArray() const noexcept
+		const float3s&
+		Mesh::getNormalArray() const noexcept
 		{
 			return _normals;
 		}
 
-		const float4s& Mesh::getTangentArray() const noexcept
+		const float4s&
+		Mesh::getTangentArray() const noexcept
 		{
 			return _tangents;
 		}
 
-		const float4s& Mesh::getColorArray() const noexcept
+		const float4s&
+		Mesh::getColorArray() const noexcept
 		{
 			return _colors;
 		}
 
-		const float2s& Mesh::getTexcoordArray(std::uint8_t n) const noexcept
+		const float2s&
+		Mesh::getTexcoordArray(std::uint8_t n) const noexcept
 		{
 			assert(n < sizeof(_texcoords) / sizeof(float2s));
 			return _texcoords[n];
 		}
 
-		const VertexWeights& Mesh::getWeightArray() const noexcept
+		const VertexWeights&
+		Mesh::getWeightArray() const noexcept
 		{
 			return _weights;
 		}
 
-		const float4x4s& Mesh::getBindposes() const noexcept
+		const float4x4s&
+		Mesh::getBindposes() const noexcept
 		{
 			return _bindposes;
 		}
 
-		const Bones& Mesh::getBoneArray(const Bones& array) const noexcept
+		const Bones&
+		Mesh::getBoneArray(const Bones& array) const noexcept
 		{
 			return _bones;
 		}
 
-		const Uint1Array& Mesh::getIndicesArray() const noexcept
+		const Uint1Array&
+		Mesh::getIndicesArray() const noexcept
 		{
 			return _indices;
 		}
 
-		const BoundingBox& Mesh::getBoundingBox() const noexcept
+		const BoundingBox&
+		Mesh::getBoundingBox() const noexcept
 		{
 			return _boundingBox;
 		}
 
-		void Mesh::clear() noexcept
+		void
+		Mesh::clear() noexcept
 		{
 			_vertices = float3s();
 			_normals = float3s();
@@ -269,7 +308,8 @@ namespace octoon
 				_texcoords[i] = float2s();
 		}
 
-		MeshPtr Mesh::clone() noexcept
+		MeshPtr
+		Mesh::clone() noexcept
 		{
 			auto mesh = std::make_shared<Mesh>();
 			mesh->setName(this->getName());
@@ -286,7 +326,8 @@ namespace octoon
 			return mesh;
 		}
 
-		void Mesh::makeCircle(float radius, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
+		void
+		Mesh::makeCircle(float radius, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
 		{
 			this->clear();
 
@@ -323,7 +364,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makePlane(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
+		void
+		Mesh::makePlane(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 		{
 			this->clear();
 
@@ -382,7 +424,7 @@ namespace octoon
 		}
 
 		void
-			Mesh::makePlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
+		Mesh::makePlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
 		{
 			if (clear)
 				this->clear();
@@ -459,7 +501,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::makePlaneWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
+		void
+		Mesh::makePlaneWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
 		{
 			if (clear)
 				this->clear();
@@ -540,7 +583,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::makeFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
+		void
+		Mesh::makeFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 		{
 			this->clear();
 			this->makePlane(width, height, 0, widthSegments, 0, heightSegments, 'x', 'z', 1.0, 1.0);
@@ -549,7 +593,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeNoise(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
+		void
+		Mesh::makeNoise(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 		{
 			this->clear();
 
@@ -616,7 +661,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeCube(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
+		void
+		Mesh::makeCube(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
 		{
 			this->clear();
 
@@ -635,7 +681,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeCubeWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
+		void
+		Mesh::makeCubeWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
 		{
 			this->clear();
 
@@ -654,7 +701,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeRing(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart, float thetaLength) noexcept
+		void
+		Mesh::makeRing(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart, float thetaLength) noexcept
 		{
 			this->clear();
 
@@ -675,7 +723,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::makeSphere(float radius, std::uint32_t widthSegments, std::uint32_t heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength) noexcept
+		void
+		Mesh::makeSphere(float radius, std::uint32_t widthSegments, std::uint32_t heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength) noexcept
 		{
 			this->clear();
 
@@ -739,7 +788,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeVolumes(float fovy, float znear, float zfar) noexcept
+		void
+		Mesh::makeVolumes(float fovy, float znear, float zfar) noexcept
 		{
 			this->clear();
 
@@ -778,7 +828,8 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		void Mesh::makeCone(float radius, float height, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
+		void
+		Mesh::makeCone(float radius, float height, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
 		{
 			this->clear();
 
@@ -837,7 +888,44 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
-		bool Mesh::combineMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
+		bool
+		Mesh::combineMeshes(const Mesh& mesh, bool force) noexcept
+		{
+			if (!force)
+			{
+				if (_vertices.empty() != mesh._vertices.empty()) return false;
+				if (_normals.empty() != mesh._normals.empty()) return false;
+				if (_colors.empty() != mesh._colors.empty()) return false;
+				if (_tangents.empty() != mesh._tangents.empty()) return false;
+				if (_bindposes.empty() != mesh._bindposes.empty()) return false;
+				if (_indices.empty() != mesh._indices.empty()) return false;
+				if (_bones.empty() != mesh._bones.empty()) return false;
+				if (_weights.empty() != mesh._weights.empty()) return false;
+
+				for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				{
+					if (_texcoords[i].empty() != mesh._texcoords[i].empty())
+						return false;
+				}
+			}
+
+			_vertices.insert(_vertices.end(), mesh._vertices.begin(), mesh._vertices.end());
+			_normals.insert(_normals.end(), mesh._normals.begin(), mesh._normals.end());
+			_colors.insert(_colors.end(), mesh._colors.begin(), mesh._colors.end());
+			_tangents.insert(_tangents.end(), mesh._tangents.begin(), mesh._tangents.end());
+			_bindposes.insert(_bindposes.end(), mesh._bindposes.begin(), mesh._bindposes.end());
+			_indices.insert(_indices.end(), mesh._indices.begin(), mesh._indices.end());
+			_bones.insert(_bones.end(), mesh._bones.begin(), mesh._bones.end());
+			_weights.insert(_weights.end(), mesh._weights.begin(), mesh._weights.end());
+
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				_texcoords[i].insert(_texcoords[i].end(), mesh._texcoords[i].begin(), mesh._texcoords[i].end());
+
+			return true;
+		}
+
+		bool
+		Mesh::combineMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
 		{
 			this->clear();
 
@@ -931,12 +1019,14 @@ namespace octoon
 			return true;
 		}
 
-		bool Mesh::combineMeshes(const CombineMeshes& instances, bool merge) noexcept
+		bool
+		Mesh::combineMeshes(const CombineMeshes& instances, bool merge) noexcept
 		{
 			return this->combineMeshes(instances.data(), instances.size(), merge);
 		}
 
-		void Mesh::mergeVertices() noexcept
+		void
+		Mesh::mergeVertices() noexcept
 		{
 			if (_vertices.empty())
 				return;
@@ -977,7 +1067,8 @@ namespace octoon
 			_normals.swap(changeNormal);
 		}
 
-		void Mesh::computeFaceNormals(float3s& faceNormals) noexcept
+		void
+		Mesh::computeFaceNormals(float3s& faceNormals) noexcept
 		{
 			assert(!_vertices.empty() && !_indices.empty());
 
@@ -1005,7 +1096,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::computeVertexNormals() noexcept
+		void
+		Mesh::computeVertexNormals() noexcept
 		{
 			assert(!_vertices.empty());
 
@@ -1055,7 +1147,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::computeVertexNormals(const float3s& faceNormals) noexcept
+		void
+		Mesh::computeVertexNormals(const float3s& faceNormals) noexcept
 		{
 			assert(faceNormals.size() == _vertices.size());
 			assert(!_vertices.empty() && !_indices.empty());
@@ -1082,7 +1175,8 @@ namespace octoon
 			_normals.swap(normal);
 		}
 
-		void Mesh::computeVertexNormals(std::size_t width, std::size_t height) noexcept
+		void
+		Mesh::computeVertexNormals(std::size_t width, std::size_t height) noexcept
 		{
 			Vector3 left;
 			Vector3 right;
@@ -1148,7 +1242,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::computeTangents(std::uint8_t n) noexcept
+		void
+		Mesh::computeTangents(std::uint8_t n) noexcept
 		{
 			assert(!_texcoords[n].empty());
 
@@ -1211,7 +1306,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::computeTangentQuats(float4s& tangentQuat) const noexcept
+		void
+		Mesh::computeTangentQuats(float4s& tangentQuat) const noexcept
 		{
 			assert(_tangents.size() > 1);
 			assert(_tangents.size() == _normals.size());
@@ -1239,7 +1335,8 @@ namespace octoon
 			}
 		}
 
-		void Mesh::computeBoundingBox() noexcept
+		void
+		Mesh::computeBoundingBox() noexcept
 		{
 			_boundingBox.reset();
 

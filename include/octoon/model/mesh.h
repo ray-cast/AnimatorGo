@@ -82,6 +82,7 @@ namespace octoon
 			void makeVolumes(float fovy, float znear, float zfar) noexcept;
 			void makeCone(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
 
+			bool combineMeshes(const Mesh& mesh, bool force = false) noexcept;
 			bool combineMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
 			bool combineMeshes(const CombineMeshes& instances, bool merge) noexcept;
 

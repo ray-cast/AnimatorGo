@@ -34,6 +34,8 @@ SET(VIDEO_MATERIAL_LIST
 	${SOURCE_PATH}/blinn_material.cpp
 	${HEADER_PATH}/ggx_material.h
 	${SOURCE_PATH}/ggx_material.cpp
+	${HEADER_PATH}/line_material.h
+	${SOURCE_PATH}/line_material.cpp
 	${HEADER_PATH}/text_material.h
 	${SOURCE_PATH}/text_material.cpp
 )

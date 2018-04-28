@@ -41,7 +41,10 @@ namespace octoon
 			std::uint16_t pixelSize_;
 		};
 
-		OCTOON_EXPORT model::Mesh makeText(const TextMeshing& params, std::wstring&& string) noexcept(false);
+		OCTOON_EXPORT TextContourGroups makeTextContours(const TextMeshing& params, const std::wstring& string) noexcept(false);
+
+		OCTOON_EXPORT model::Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false);
+		OCTOON_EXPORT model::Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false);
 	}
 }
 

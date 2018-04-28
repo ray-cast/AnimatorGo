@@ -103,7 +103,7 @@ namespace octoon
 			return instance;
 		}
 
-		model::Mesh makeText(const TextMeshing& params, std::wstring&& string) noexcept(false)
+		TextContourGroups makeTextContours(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
@@ -136,10 +136,10 @@ namespace octoon
 					{
 					case FT_Curve_Tag_On:
 						contours.addPoints(cur);
-					break;
+						break;
 					case FT_Curve_Tag_Cubic:
 						contours.addPoints(prev, cur, next, math::float3(contour[(i + 2) % n].x / 64.0f, contour[(i + 2) % n].y / 64.0f, 0.0f), bezierSteps);
-					break;
+						break;
 					case FT_Curve_Tag_Conic:
 					{
 						math::float3 prev2 = prev, next2 = next;
@@ -220,8 +220,21 @@ namespace octoon
 				offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
 			}
 
-			model::Mesh mesh = makeText(groups);
+			return groups;
+		}
+
+		model::Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		{
+			model::Mesh mesh = makeText(makeTextContours(params, std::move(string)));
 			mesh.computeVertexNormals();
+			mesh.computeBoundingBox();
+
+			return mesh;
+		}
+
+		model::Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		{
+			model::Mesh mesh = makeTextWireframe(makeTextContours(params, std::move(string)));
 			mesh.computeBoundingBox();
 
 			return mesh;

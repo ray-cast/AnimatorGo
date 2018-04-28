@@ -43,6 +43,9 @@ namespace octoon
 
 		OCTOON_EXPORT model::Mesh makeText(const TextContourGroup& group) noexcept;
 		OCTOON_EXPORT model::Mesh makeText(const TextContourGroups& groups) noexcept;
+
+		OCTOON_EXPORT model::Mesh makeTextWireframe(const TextContourGroup& group) noexcept;
+		OCTOON_EXPORT model::Mesh makeTextWireframe(const TextContourGroups& groups) noexcept;
 	}
 }
 

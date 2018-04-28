@@ -123,13 +123,13 @@ namespace octoon
 			proj_->uniform4fmat(vp);
 		}
 
-		graphics::GraphicsPipelinePtr
+		const graphics::GraphicsPipelinePtr&
 		BlinnMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
-		graphics::GraphicsDescriptorSetPtr
+		const graphics::GraphicsDescriptorSetPtr&
 		BlinnMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;

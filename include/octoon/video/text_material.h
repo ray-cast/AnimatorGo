@@ -19,8 +19,8 @@ namespace octoon
 			void setTransform(const math::float4x4& m) noexcept override;
 			void setViewProjection(const math::float4x4& vp) noexcept override;
 
-			graphics::GraphicsPipelinePtr getPipeline() const noexcept override;
-			graphics::GraphicsDescriptorSetPtr getDescriptorSet() const noexcept override;
+			const graphics::GraphicsPipelinePtr& getPipeline() const noexcept override;
+			const graphics::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
 
 			void setLean(float lean) noexcept;
 			void setTextColor(TextColor::Type which, const math::float3& colors) except;

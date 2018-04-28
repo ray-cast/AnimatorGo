@@ -1,7 +1,6 @@
 #include <octoon/octoon.h>
 
 #include <octoon/video/text_material.h>
-#include <octoon/video/text_meshing.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/path_meshing_component.h>

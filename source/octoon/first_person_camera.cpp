@@ -16,8 +16,8 @@ namespace octoon
 		, _gravity(15)
 		, _maxVelocityChange(1.0)
 		, _jumpHeight(10)
-		, _sensitivityX(5.0)
-		, _sensitivityY(5.0)
+		, _sensitivityX(1.0)
+		, _sensitivityY(1.0)
 	{
 	}
 
@@ -75,7 +75,7 @@ namespace octoon
 					upCamera(step);
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))
-					rotateCamera(input->getAxis(input::InputAxis::Horizontal) * step, input->getAxis(input::InputAxis::Vertical) * step);
+					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);
 			}
 		}
 	}

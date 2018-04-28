@@ -34,8 +34,8 @@ SET(VIDEO_MATERIAL_LIST
 	${SOURCE_PATH}/blinn_material.cpp
 	${HEADER_PATH}/ggx_material.h
 	${SOURCE_PATH}/ggx_material.cpp
-	${HEADER_PATH}/text_meshing.h
-	${SOURCE_PATH}/text_meshing.cpp
+	${HEADER_PATH}/text_material.h
+	${SOURCE_PATH}/text_material.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
 
@@ -52,8 +52,9 @@ SET(VIDEO_TEXT_LIST
 	${SOURCE_PATH}/text_contour_group.cpp
 	${HEADER_PATH}/text_file.h
 	${SOURCE_PATH}/text_file.cpp
-	${HEADER_PATH}/text_material.h
-	${SOURCE_PATH}/text_material.cpp
+	${HEADER_PATH}/text_meshing.h
+	${SOURCE_PATH}/text_meshing.cpp
+
 	${HEADER_PATH}/text_system.h
 	${SOURCE_PATH}/text_system.cpp
 )

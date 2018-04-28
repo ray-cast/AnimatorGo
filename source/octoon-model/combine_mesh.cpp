@@ -16,12 +16,12 @@ namespace octoon
 		{
 		}
 
-		void CombineMesh::setMesh(MeshPtr other) noexcept
+		void CombineMesh::setMesh(const MeshPtr& other) noexcept
 		{
 			_mesh = other;
 		}
 
-		MeshPtr CombineMesh::getMesh() const noexcept
+		const MeshPtr& CombineMesh::getMesh() const noexcept
 		{
 			return _mesh;
 		}

@@ -30,6 +30,8 @@ SET(VIDEO_MATERIAL_LIST
 	${SOURCE_PATH}/phong_material.cpp
 	${HEADER_PATH}/blinn_material.h
 	${SOURCE_PATH}/blinn_material.cpp
+	${HEADER_PATH}/ggx_material.h
+	${SOURCE_PATH}/ggx_material.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
 

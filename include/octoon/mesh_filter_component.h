@@ -22,6 +22,7 @@ namespace octoon
 		MeshFilterComponent(const model::MeshPtr& mesh) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 
+		void setMesh(model::Mesh&& mesh) noexcept;
 		void setMesh(model::MeshPtr&& mesh) noexcept;
 		void setMesh(const model::MeshPtr& mesh) noexcept;
 		const model::MeshPtr& getMesh() const noexcept;

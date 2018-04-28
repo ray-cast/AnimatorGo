@@ -233,14 +233,15 @@ namespace octoon
 			contours.push_back(std::move(contour));
 		}
 
-		auto mesh = std::make_shared<model::Mesh>();
-
 		math::float3 center;
 
 		auto contourGroup_ = std::make_shared<video::TextContourGroup>();
 		contourGroup_->setContours(std::move(contours));
 		contourGroup_->normalize(center);
-		contourGroup_->buildMeshes(*mesh);
+
+		auto mesh = video::makeText(*contourGroup_);
+		mesh.computeVertexNormals();
+		mesh.computeBoundingBox();
 
 		this->setMesh(std::move(mesh));
 		this->getComponent<TransformComponent>()->setLocalTranslate(center);

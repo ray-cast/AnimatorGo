@@ -5,26 +5,31 @@ namespace octoon
 	namespace video
 	{
 		TextContour::TextContour() noexcept
+			: clockwise_(false)
 		{
 		}
 
 		TextContour::TextContour(const math::float3s& points) noexcept
+			: TextContour()
 		{
 			for (auto& it : points_)
 				this->addPoints(it);
 		}
 
 		TextContour::TextContour(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept
+			: TextContour()
 		{
 			this->addPoints(pt1, pt2, steps);
 		}
 
 		TextContour::TextContour(const math::float3& a, const math::float3& b, const math::float3& c, std::uint16_t bezierSteps) noexcept
+			: TextContour()
 		{
 			this->addPoints(a, b, c, bezierSteps);
 		}
 
 		TextContour::TextContour(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& d, std::uint16_t bezierSteps) noexcept
+			: TextContour()
 		{
 			this->addPoints(a, b, c, bezierSteps);
 		}
@@ -57,13 +62,6 @@ namespace octoon
 		TextContour::count() const noexcept
 		{
 			return points_.size();
-		}
-
-		void
-		TextContour::clear() noexcept
-		{
-			clockwise_ = false;
-			points_.clear();
 		}
 
 		void

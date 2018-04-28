@@ -29,8 +29,6 @@ namespace octoon
 
 			std::size_t count() const noexcept;
 
-			void clear() noexcept;
-
 			void isClockwise(bool clockwise) noexcept;
 			bool isClockwise() const noexcept;
 

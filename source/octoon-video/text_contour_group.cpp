@@ -75,6 +75,11 @@ namespace octoon
 			this->setContours(std::move(contour));
 		}
 
+		TextContourGroup::TextContourGroup(const TextContours& contour) noexcept
+		{
+			this->setContours(contour);
+		}
+
 		TextContourGroup::~TextContourGroup() noexcept
 		{
 		}
@@ -134,22 +139,6 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		void
-		TextContourGroup::clear() noexcept
-		{
-			contours_.clear();
-		}
-
-		void
-		TextContourGroup::scale(float scaler) noexcept
-		{
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-					it *= scaler;
-			}
-		}
-
 		std::size_t
 		TextContourGroup::countOfPoints() const noexcept
 		{
@@ -193,16 +182,17 @@ namespace octoon
 			return instance;
 		}
 
-		void
-		TextContourGroup::buildMeshes(model::Mesh& mesh) noexcept
+		model::Mesh makeText(const TextContourGroup& group) noexcept
 		{
-			math::float3s tris(this->countOfPoints() * 2 * sizeof(math::Triangle) / sizeof(math::float3));
+			model::Mesh mesh;
+
+			math::float3s tris(group.countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
-			for (std::size_t written = 0, i = 0; i < this->count(); ++i)
+			for (std::size_t written = 0, i = 0; i < group.count(); ++i)
 			{
-				TextContour& contour = this->at(i);
+				const TextContour& contour = group.at(i);
 
 				for (std::size_t n = 0; n < contour.count() - 1; ++n)
 				{
@@ -244,15 +234,15 @@ namespace octoon
 					gluTessNormal(tobj, 0.0f, 0.0f, 0.0f);
 
 					std::size_t index = 0;
-					std::vector<math::double3> vertices(this->countOfPoints() * 2);
+					std::vector<math::double3> vertices(group.countOfPoints() * 2);
 
 					for (std::uint8_t face = 0; face < 2; face++)
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (std::size_t j = 0; j < this->count(); ++j)
+						for (std::size_t j = 0; j < group.count(); ++j)
 						{
-							TextContour& it = this->at(j);
+							const TextContour& it = group.at(j);
 
 							gluTessBeginContour(tobj);
 
@@ -279,8 +269,100 @@ namespace octoon
 				}
 			}
 
-			mesh.computeVertexNormals();
-			mesh.computeBoundingBox();
+			return mesh;
+		}
+
+		model::Mesh makeText(const TextContourGroups& groups) noexcept
+		{
+			model::Mesh mesh;
+
+			for (auto& group : groups)
+			{
+				math::float3s tris(group->countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
+				math::float3* trisData = tris.data();
+				math::float3s& trisMesh = mesh.getVertexArray();
+
+				for (std::size_t written = 0, i = 0; i < group->count(); ++i)
+				{
+					const TextContour& contour = group->at(i);
+
+					for (std::size_t n = 0; n < contour.count() - 1; ++n)
+					{
+						auto p1 = contour.at(n);
+						auto p2 = contour.at(n + 1);
+
+						math::Triangle t1;
+						t1.a = math::float3(p1.x, p1.y, -1.0f);
+						t1.b = math::float3(p2.x, p2.y, 1.0f);
+						t1.c = math::float3(p1.x, p1.y, 1.0f);
+
+						math::Triangle t2;
+						t2.a = math::float3(p1.x, p1.y, -1.0f);
+						t2.b = math::float3(p2.x, p2.y, -1.0f);
+						t2.c = math::float3(p2.x, p2.y, 1.0f);
+
+						std::memcpy(trisData + written, t1.ptr(), sizeof(math::Triangle));
+						std::memcpy(trisData + written + sizeof(math::Triangle) / sizeof(math::float3), t2.ptr(), sizeof(math::Triangle));
+
+						written += sizeof(math::Triangle) / sizeof(math::float3) * 2;
+					}
+
+					trisMesh.insert(trisMesh.end(), tris.begin(), tris.end());
+
+					if (contour.isClockwise())
+					{
+						GLUtesselator* tobj = gluNewTess();
+
+						gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
+						gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
+						gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
+						gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
+						gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
+						gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
+
+						gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
+						gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
+
+						gluTessNormal(tobj, 0.0f, 0.0f, 0.0f);
+
+						std::size_t index = 0;
+						std::vector<math::double3> vertices(group->countOfPoints() * 2);
+
+						for (std::uint8_t face = 0; face < 2; face++)
+						{
+							gluTessBeginPolygon(tobj, nullptr);
+
+							for (std::size_t j = 0; j < group->count(); ++j)
+							{
+								const TextContour& it = group->at(j);
+
+								gluTessBeginContour(tobj);
+
+								for (std::size_t p = 0; p < it.count() - 1; ++p)
+								{
+									auto& p1 = it.at(p);
+									auto& d = vertices[index++];
+									d[0] = p1.x;
+									d[1] = p1.y;
+									d[2] = p1.z + face ? -1.0 : 1.0;
+
+									gluTessVertex(tobj, d.ptr(), d.ptr());
+								}
+
+								gluTessEndContour(tobj);
+							}
+
+							gluTessEndPolygon(tobj);
+
+							trisMesh.insert(trisMesh.end(), g_tris.begin(), g_tris.end());
+						}
+
+						gluDeleteTess(tobj);
+					}
+				}
+			}
+
+			return mesh;
 		}
 	}
 }

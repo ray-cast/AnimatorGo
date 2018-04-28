@@ -14,6 +14,7 @@ namespace octoon
 		public:
 			TextContourGroup() noexcept;
 			TextContourGroup(TextContours&& contour) noexcept;
+			TextContourGroup(const TextContours& contour) noexcept;
 			virtual ~TextContourGroup() noexcept;
 
 			void setContours(TextContours&& contour) noexcept;
@@ -28,12 +29,7 @@ namespace octoon
 			std::size_t count() const noexcept;
 			std::size_t countOfPoints() const noexcept;
 
-			void clear() noexcept;
-			void scale(float scaler) noexcept;
-
 			void normalize(math::float3& center) noexcept;
-
-			void buildMeshes(model::Mesh& mesh) noexcept;
 
 			TextContourGroupPtr clone() const noexcept;
 
@@ -44,6 +40,9 @@ namespace octoon
 		private:
 			TextContours contours_;
 		};
+
+		OCTOON_EXPORT model::Mesh makeText(const TextContourGroup& group) noexcept;
+		OCTOON_EXPORT model::Mesh makeText(const TextContourGroups& groups) noexcept;
 	}
 }
 

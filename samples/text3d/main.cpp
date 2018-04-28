@@ -1,6 +1,7 @@
 #include <octoon/octoon.h>
 
 #include <octoon/video/text_material.h>
+#include <octoon/video/text_meshing.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/path_meshing_component.h>
@@ -8,7 +9,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/first_person_camera.h>
-
 #include <octoon/ui/imgui.h>
 
 const std::string chars[] =
@@ -147,12 +147,17 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<octoon::PathMeshingComponent>(chars[0]);
+		object->addComponent<octoon::MeshFilterComponent>(octoon::video::makeText(octoon::video::TextMeshing(u8"C:/Windows/Fonts/msyh.ttf", 72), L"滚滚长江东逝水"));
+		object->addComponent<octoon::MeshRendererComponent>(material);
+		object->addComponent<octoon::GuizmoComponent>(camera);
+		object->addComponent<TextController>(material);
+
+		/*object->addComponent<octoon::PathMeshingComponent>(chars[0]);
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);
 		object->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
-		object->getComponent<octoon::TransformComponent>()->setLocalQuaternion(octoon::math::Quaternion().make_rotation_x(octoon::math::radians(180)));
+		object->getComponent<octoon::TransformComponent>()->setLocalQuaternion(octoon::math::Quaternion().make_rotation_x(octoon::math::radians(180)));*/
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

@@ -14,6 +14,35 @@ namespace octoon
 		TextMeshing::TextMeshing() noexcept
 			: font_(nullptr)
 			, bezierSteps_(6)
+			, pixelSize_(12)
+		{
+		}
+
+		TextMeshing::TextMeshing(const char* path, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+			: font_(std::make_shared<TextFile>(path))
+			, bezierSteps_(bezierSteps)
+			, pixelSize_(pixelsSize)
+		{
+		}
+
+		TextMeshing::TextMeshing(const std::string& path, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+			: font_(std::make_shared<TextFile>(path.c_str()))
+			, bezierSteps_(bezierSteps)
+			, pixelSize_(pixelsSize)
+		{
+		}
+
+		TextMeshing::TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+			: font_(std::move(font))
+			, bezierSteps_(bezierSteps)
+			, pixelSize_(pixelsSize)
+		{
+		}
+
+		TextMeshing::TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+			: font_(std::move(font))
+			, bezierSteps_(bezierSteps)
+			, pixelSize_(pixelsSize)
 		{
 		}
 
@@ -40,24 +69,6 @@ namespace octoon
 		}
 
 		void
-		TextMeshing::setText(std::wstring&& text) noexcept
-		{
-			string_ = std::move(text);
-		}
-
-		void
-		TextMeshing::setText(const std::wstring& text) noexcept
-		{
-			string_ = text;
-		}
-
-		const std::wstring&
-		TextMeshing::getText() const noexcept
-		{
-			return string_;
-		}
-
-		void
 		TextMeshing::setBezierSteps(std::uint16_t bezierSteps) noexcept
 		{
 			bezierSteps_ = bezierSteps;
@@ -70,41 +81,35 @@ namespace octoon
 		}
 
 		void
-		TextMeshing::buildContours(const std::wstring& string) noexcept(false)
+		TextMeshing::setPixelsSize(std::uint16_t pixelsSize) noexcept
 		{
-			if (!font_)
-				throw runtime::null_reference::create("please call setFont() before process()");
-
-			if (::FT_Set_Pixel_Sizes((FT_Face)(font_->getFont()), 12, 12))
-				throw runtime::runtime_error::create("FT_Set_Char_Size() failed (there is probably a problem with your font size", 3);
-
-			FT_Face ftface = (FT_Face)font_->getFont();
-
-			float offset = 0;
-
-			for (auto& ch : string)
-			{
-				FT_UInt index = FT_Get_Char_Index(ftface, ch);
-				if (::FT_Load_Glyph(ftface, index, FT_LOAD_DEFAULT))
-					throw runtime::runtime_error::create("FT_Load_Glyph failed.");
-
-				FT_Glyph glyph;
-				if (::FT_Get_Glyph(ftface->glyph, &glyph))
-					throw runtime::runtime_error::create("FT_Get_Glyph failed.");
-
-				if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-					throw runtime::runtime_error::create("Invalid Glyph Format.");
-
-				this->createContours(ftface->glyph, offset, bezierSteps_);
-
-				offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
-			}
+			pixelSize_ = pixelsSize;
 		}
 
-		TextContourGroupPtr
-		TextMeshing::createContours(const void* glyph_, float offset, std::uint16_t bezierSteps) noexcept
+		std::uint16_t
+		TextMeshing::getPixelsSize() const noexcept
 		{
-			auto addPoints = [](TextContour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
+			return pixelSize_;
+		}
+
+		TextMeshingPtr
+		TextMeshing::clone() const noexcept
+		{
+			auto instance = std::make_shared<TextMeshing>();
+			instance->setFont(this->getFont());
+			instance->setPixelsSize(this->getPixelsSize());
+			instance->setBezierSteps(this->getBezierSteps());
+
+			return instance;
+		}
+
+		model::Mesh makeText(const TextMeshing& params, std::wstring&& string) noexcept(false)
+		{
+			assert(params.getFont());
+			assert(params.getPixelsSize() > 0);
+			assert(params.getBezierSteps() > 1);
+
+			auto addPoints = [](video::TextContour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
 			{
 				math::float3 prev;
 				math::float3 cur(contour[(n - 1) % n].x / 64.0f, contour[(n - 1) % n].y / 64.0f, 0.0);
@@ -130,9 +135,10 @@ namespace octoon
 					switch (FT_CURVE_TAG(tags[i]))
 					{
 					case FT_Curve_Tag_On:
-					{
 						contours.addPoints(cur);
-					}
+					break;
+					case FT_Curve_Tag_Cubic:
+						contours.addPoints(prev, cur, next, math::float3(contour[(i + 2) % n].x / 64.0f, contour[(i + 2) % n].y / 64.0f, 0.0f), bezierSteps);
 					break;
 					case FT_Curve_Tag_Conic:
 					{
@@ -150,13 +156,6 @@ namespace octoon
 						contours.addPoints(prev2, cur, next2, bezierSteps);
 					}
 					break;
-					case FT_Curve_Tag_Cubic:
-					{
-						contours.addPoints(prev, cur, next, math::float3(contour[(i + 2) % n].x / 64.0f, contour[(i + 2) % n].y / 64.0f, 0.0f), bezierSteps);
-					}
-					break;
-					default:
-						break;
 					}
 				}
 
@@ -164,42 +163,68 @@ namespace octoon
 				contours.isClockwise(angle < 0.0f);
 			};
 
-			auto glyph = (FT_GlyphSlot)glyph_;
-
-			TextContours contours(glyph->outline.n_contours);
-
-			for (std::size_t startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
+			auto addContours = [&](const FT_GlyphSlot glyph, float offset, std::uint16_t bezierSteps)
 			{
-				auto contour = std::make_unique<TextContour>();
+				video::TextContours contours(glyph->outline.n_contours);
 
-				addPoints(*contour, &glyph->outline.points[startIndex], &glyph->outline.tags[startIndex], (glyph->outline.contours[i] - startIndex) + 1, bezierSteps);
+				for (short i = 0; i < glyph->outline.n_contours; i++)
+					contours[i] = std::make_unique<video::TextContour>();
 
-				startIndex = glyph->outline.contours[i] + 1;
+				for (std::size_t startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
+				{
+					auto points = &glyph->outline.points[startIndex];
+					auto tags = &glyph->outline.tags[startIndex];
+					auto index = (glyph->outline.contours[i] - startIndex) + 1;
 
-				contours.push_back(std::move(contour));
+					startIndex = glyph->outline.contours[i] + 1;
+
+					addPoints(*contours[i], points, tags, index, bezierSteps);
+				}
+
+				for (auto& contour : contours)
+				{
+					for (auto& pt : contour->points())
+						pt.x += offset;
+				}
+
+				auto group = std::make_shared<video::TextContourGroup>();
+				group->setContours(std::move(contours));
+
+				return group;
+			};
+
+			if (::FT_Set_Pixel_Sizes((FT_Face)(params.getFont()->getFont()), params.getPixelsSize(), params.getPixelsSize()))
+				throw runtime::runtime_error::create("FT_Set_Char_Size() failed (there is probably a problem with your font size", 3);
+
+			FT_Face ftface = (FT_Face)params.getFont()->getFont();
+
+			auto offset = ftface->glyph->advance.x;
+
+			video::TextContourGroups groups;
+
+			for (auto& ch : string)
+			{
+				FT_UInt index = FT_Get_Char_Index(ftface, ch);
+				if (::FT_Load_Glyph(ftface, index, FT_LOAD_DEFAULT))
+					throw runtime::runtime_error::create("FT_Load_Glyph failed.");
+
+				FT_Glyph glyph;
+				if (::FT_Get_Glyph(ftface->glyph, &glyph))
+					throw runtime::runtime_error::create("FT_Get_Glyph failed.");
+
+				if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
+					throw runtime::runtime_error::create("Invalid Glyph Format.");
+
+				groups.push_back(addContours(ftface->glyph, offset, params.getBezierSteps()));
+
+				offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
 			}
 
-			for (auto& contour : contours)
-			{
-				for (auto& it : contour->points())
-					it.x += offset + glyph->bitmap_left;
-			}
+			model::Mesh mesh = makeText(groups);
+			mesh.computeVertexNormals();
+			mesh.computeBoundingBox();
 
-			auto group = std::make_shared<TextContourGroup>();
-			group->setContours(std::move(contours));
-
-			return group;
-		}
-
-		TextMeshingPtr
-		TextMeshing::clone() const noexcept
-		{
-			auto instance = std::make_shared<TextMeshing>();
-			instance->setFont(this->getFont());
-			instance->setText(this->getText());
-			instance->setBezierSteps(this->getBezierSteps());
-
-			return instance;
+			return mesh;
 		}
 	}
 }

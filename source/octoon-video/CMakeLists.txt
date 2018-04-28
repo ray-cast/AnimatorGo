@@ -1,6 +1,8 @@
 SET(LIB_NAME video)
 SET(LIB_OUTNAME octoon-${LIB_NAME})
 
+INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/freetype-2.9/devel)
+INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/freetype-2.9/include)
 INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/libpng)
 
 SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_NAME})
@@ -32,6 +34,8 @@ SET(VIDEO_MATERIAL_LIST
 	${SOURCE_PATH}/blinn_material.cpp
 	${HEADER_PATH}/ggx_material.h
 	${SOURCE_PATH}/ggx_material.cpp
+	${HEADER_PATH}/text_meshing.h
+	${SOURCE_PATH}/text_meshing.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
 
@@ -48,8 +52,6 @@ SET(VIDEO_TEXT_LIST
 	${SOURCE_PATH}/text_contour_group.cpp
 	${HEADER_PATH}/text_file.h
 	${SOURCE_PATH}/text_file.cpp
-	${HEADER_PATH}/text_meshing.h
-	${SOURCE_PATH}/text_meshing.cpp
 	${HEADER_PATH}/text_material.h
 	${SOURCE_PATH}/text_material.cpp
 	${HEADER_PATH}/text_system.h

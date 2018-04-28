@@ -23,9 +23,6 @@ namespace octoon
 
 			const std::string& getFontPath() const noexcept;
 
-		private:
-			friend class TextMeshing;
-			friend  TextMeshingComponent;
 			void* getFont() const noexcept;
 
 		private:

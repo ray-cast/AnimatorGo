@@ -27,7 +27,7 @@ namespace octoon
 		constexpr float EPSILON_E6 = 1E-6f;
 
 		template<typename T>
-		constexpr T wrap_pi(const T theta) noexcept
+		constexpr auto wrap_pi(const T theta) noexcept
 		{
 			theta += math::PI;
 			theta -= std::floor(theta * math::PI_2);
@@ -114,7 +114,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr T smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
+		constexpr auto smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
 		{
 			return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
 		}
@@ -148,15 +148,15 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr T radians(T x)
+		constexpr auto radians(T x) noexcept
 		{
-			return x * math::PI / 180.0f;
+			return (x * math::PI / 180.0f);
 		}
 
 		template<typename T>
-		constexpr T degress(T x)
+		constexpr auto degress(T x) noexcept
 		{
-			return x * 180.0f / math::PI;
+			return (x * 180.0f / math::PI);
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>

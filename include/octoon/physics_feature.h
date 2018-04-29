@@ -5,7 +5,7 @@
 
 #include <octoon/game_feature.h>
 
-
+#include <PxPhysicsAPI.h>
 
 namespace octoon
 {
@@ -35,6 +35,16 @@ namespace octoon
 	private:
 		PhysicsFeature(const PhysicsFeature&) = delete;
 		PhysicsFeature& operator=(const PhysicsFeature&) = delete;
+
+	private:
+		bool recordMemoryAllocations = true;
+
+		physx::PxDefaultErrorCallback gDefaultErrorCallback;
+		physx::PxDefaultAllocator gDefaultAllocatorCallback;
+		physx::PxFoundation* foundation;
+		physx::PxPvd* pvd;
+		physx::PxPhysics* physics;
+		physx::PxCooking* cooking;
     };
 }
 

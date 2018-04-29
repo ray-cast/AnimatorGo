@@ -13,6 +13,28 @@ namespace octoon
     
 	PhysicsFeature::PhysicsFeature() noexcept
 	{
+		foundation = physx::PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
+		if (!foundation)
+			physx::fatalError("PxCreateFoundation failed!");
+
+		bool recordMemoryAllocations = true;
+
+		pvd = physx::PxCreatePvd(*foundation);
+		physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+		pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+
+		physics = physx::PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
+			physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
+		if (!physics)
+			physx::fatalError("PxCreatePhysics failed!");
+
+		cooking = physx::PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
+		if (!cooking)
+			physx::fatalError("PxCreateCooking failed!");
+
+
+		if (!physx::PxInitExtensions(*physics, pvd))
+			physx::fatalError("PxInitExtensions failed!");
 
 	}
 
@@ -21,23 +43,8 @@ namespace octoon
 
 	}
 
-	std::shared_ptr<b2World> PhysicsFeature::getWorld() noexcept
-	{
-		return world;
-	}
-
     void PhysicsFeature::onActivate() except
     {
-		// get gravity
-		math::Vector2 g = Physics::getGravity();
-		b2Vec2 gravity;
-		gravity.Set(g.x, g.y);
-
-
-		world = std::make_unique<b2World>(gravity);
-
-		world->SetAllowSleeping(true);
-		world->SetWarmStarting(true);
     }
 
     void PhysicsFeature::onDeactivate() noexcept

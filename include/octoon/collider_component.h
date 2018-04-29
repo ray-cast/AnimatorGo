@@ -32,7 +32,6 @@ namespace octoon
             virtual void onCollisionStay() = 0;
         
         protected:
-            b2Fixture *collider;
 
         private:
             float bounciness; // Get the bounciness used by the collider.

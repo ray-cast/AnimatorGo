@@ -6,7 +6,6 @@ namespace octoon
 	OctoonImplementSubInterface(Collider, GameComponent, "Collider")
 
     Collider::Collider() noexcept
-        :collider(nullptr)
     {
 
     }
@@ -19,10 +18,6 @@ namespace octoon
     void Collider::setBounciness(float b) noexcept
     {
         bounciness = b;
-        if(collider)
-        {
-            collider->SetRestitution(bounciness);
-        }
     }
 
     float Collider::getBounciness() const noexcept
@@ -33,10 +28,6 @@ namespace octoon
     void Collider::setDensity(float d) noexcept
     {
         density = d;
-        if(collider)
-        {
-            collider->SetDensity(density);
-        }
     }
 
     float Collider::getDensity() const noexcept
@@ -47,10 +38,6 @@ namespace octoon
     void Collider::setFriction(float f) noexcept
     {
         friction = f;
-        if(collider)
-        {
-            collider->SetFriction(friction);
-        }
     }
 
     float Collider::getFriction() const noexcept

@@ -1,0 +1,14 @@
+﻿  PxWindowsPvdDelayLoadHook.cpp
+  PxProfileEventImpl.cpp
+  PxPvd.cpp
+  PxPvdDataStream.cpp
+  PxPvdDefaultFileTransport.cpp
+  PxPvdDefaultSocketTransport.cpp
+  PxPvdImpl.cpp
+  PxPvdMemClient.cpp
+  PxPvdObjectModelMetaData.cpp
+  PxPvdObjectRegistrar.cpp
+  PxPvdProfileZoneClient.cpp
+  PxPvdUserRenderer.cpp
+    正在创建库 ./../../../lib/vc15win32/PxPvdSDKDEBUG_x86.lib 和对象 ./../../../lib/vc15win32/PxPvdSDKDEBUG_x86.exp
+  PxPvdSDK.vcxproj -> D:\库文件\PhysX-3.4-master\PxShared\src\compiler\vc15win32\./../../../bin/vc15win32\PxPvdSDKDEBUG_x86.dll

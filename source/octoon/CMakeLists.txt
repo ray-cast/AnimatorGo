@@ -98,6 +98,18 @@ SET(IO_FEATURES_LIST
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 
+SET(PHYSICS_FEATURES_LIST
+	${HEADER_PATH}/physics.h
+	${SOURCE_PATH}/physics.cpp
+	${HEADER_PATH}/physics_feature.h
+	${SOURCE_PATH}/physics_feature.cpp
+	${HEADER_PATH}/physics_material.h
+	${SOURCE_PATH}/physics_material.cpp
+	${HEADER_PATH}/rigidbody_component.h
+	${SOURCE_PATH}/rigidbody_component.cpp
+)
+SOURCE_GROUP("system\\physics" FILES ${IO_FEATURES_LIST})
+
 ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
 ADD_LIBRARY(${LIB_NAME} SHARED 
 	${OCTOON_LIST} 

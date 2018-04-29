@@ -240,18 +240,18 @@ namespace octoon
 			return groups;
 		}
 
-		model::Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
-			model::Mesh mesh = makeMesh(makeTextContours(params, std::move(string)), params.getThickness());
+			Mesh mesh = makeMesh(makeTextContours(params, std::move(string)), params.getThickness());
 			mesh.computeVertexNormals();
 			mesh.computeBoundingBox();
 
 			return mesh;
 		}
 
-		model::Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
-			model::Mesh mesh = makeMeshWireframe(makeTextContours(params, std::move(string)), params.getThickness());
+			Mesh mesh = makeMeshWireframe(makeTextContours(params, std::move(string)), params.getThickness());
 			mesh.computeBoundingBox();
 
 			return mesh;

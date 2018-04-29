@@ -182,9 +182,9 @@ namespace octoon
 			return instance;
 		}
 
-		model::Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
+		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
 		{
-			model::Mesh mesh;
+			Mesh mesh;
 
 			math::float3s tris(group.countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
 			math::float3* trisData = tris.data();
@@ -272,9 +272,9 @@ namespace octoon
 			return mesh;
 		}
 
-		model::Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
+		Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
 		{
-			model::Mesh mesh;
+			Mesh mesh;
 
 			for (auto& group : groups)
 				mesh.combineMeshes(makeMesh(*group), true);
@@ -282,9 +282,9 @@ namespace octoon
 			return mesh;
 		}
 
-		model::Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
 		{
-			model::Mesh mesh;
+			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
 
@@ -314,9 +314,9 @@ namespace octoon
 			return mesh;
 		}
 
-		model::Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
+		Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
 		{
-			model::Mesh mesh;
+			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
 

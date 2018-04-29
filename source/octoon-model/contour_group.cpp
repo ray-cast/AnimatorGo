@@ -31,35 +31,8 @@ namespace octoon
 
 		void APIENTRY vertexCallback(GLvoid* vertex)
 		{
-			static int count = 0;
-			static math::Triangle g_tri;
-
-			const GLdouble *d;
-			d = (GLdouble *)vertex;
-
-			if (count == 0)
-			{
-				g_tri.a.x = d[0];
-				g_tri.a.y = d[1];
-				g_tri.a.z = d[2];
-				count++;
-			}
-			else if (count == 1)
-			{
-				g_tri.c.x = d[0];
-				g_tri.c.y = d[1];
-				g_tri.c.z = d[2];
-				count++;
-			}
-			else if (count == 2)
-			{
-				g_tri.b = math::float3(d[0], d[1], d[2]);
-
-				g_tris.push_back(g_tri.a);
-				g_tris.push_back(g_tri.b);
-				g_tris.push_back(g_tri.c);
-				count = 0;
-			}
+			const GLdouble *d = (GLdouble *)vertex;
+			g_tris.emplace_back((float)d[0], (float)d[1], (float)d[2]);
 		}
 
 		void APIENTRY combineCallback(GLdouble coords[3], GLdouble* points[4], GLfloat weight[4], GLdouble* dataOut[3])

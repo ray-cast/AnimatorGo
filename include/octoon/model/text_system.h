@@ -7,8 +7,9 @@ namespace octoon
 {
 	namespace model
 	{
-		class OCTOON_EXPORT TextSystem final : public runtime::Singleton<TextSystem>
+		class OCTOON_EXPORT TextSystem final
 		{
+			OctoonDeclareSingleton(TextSystem)
 		public:
 			TextSystem() noexcept;
 			~TextSystem() noexcept;

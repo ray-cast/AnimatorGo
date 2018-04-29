@@ -8,6 +8,8 @@ namespace octoon
 {
 	namespace model
 	{
+		OctoonImplementSingleton(TextSystem)
+
 		TextSystem::TextSystem() noexcept
 			: library_(nullptr)
 		{

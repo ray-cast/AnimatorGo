@@ -3,7 +3,7 @@
 #include <octoon/video/geometry.h>
 #include <octoon/video/material.h>
 #include <octoon/video/render_scene.h>
-#include <octoon/video/text_system.h>
+#include <octoon/model/text_system.h>
 
 #include <octoon/runtime/except.h>
 
@@ -38,7 +38,7 @@ namespace octoon
 		void
 		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
-			TextSystem::instance()->setup();
+			model::TextSystem::instance()->setup();
 
 			device_ = device;
 			this->setFramebufferSize(w, h);
@@ -47,7 +47,7 @@ namespace octoon
 		void
 		RenderSystem::close() noexcept
 		{
-			TextSystem::instance()->close();
+			model::TextSystem::instance()->close();
 		}
 
 		void

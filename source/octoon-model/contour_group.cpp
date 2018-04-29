@@ -70,12 +70,12 @@ namespace octoon
 		{
 		}
 
-		ContourGroup::ContourGroup(TextContours&& contour) noexcept
+		ContourGroup::ContourGroup(Contours&& contour) noexcept
 		{
 			this->setContours(std::move(contour));
 		}
 
-		ContourGroup::ContourGroup(const TextContours& contour) noexcept
+		ContourGroup::ContourGroup(const Contours& contour) noexcept
 		{
 			this->setContours(contour);
 		}
@@ -85,15 +85,15 @@ namespace octoon
 		}
 
 		void
-		ContourGroup::setContours(TextContours&& contour) noexcept
+		ContourGroup::setContours(Contours&& contour) noexcept
 		{
 			contours_ = std::move(contour);
 		}
 
 		void
-		ContourGroup::setContours(const TextContours& textContour) noexcept
+		ContourGroup::setContours(const Contours& textContour) noexcept
 		{
-			TextContours contours;
+			Contours contours;
 
 			for (auto& it : textContour)
 			{
@@ -107,13 +107,13 @@ namespace octoon
 			contours_ = std::move(contours);
 		}
 
-		TextContours&
+		Contours&
 		ContourGroup::getContours() noexcept
 		{
 			return contours_;
 		}
 
-		const TextContours&
+		const Contours&
 		ContourGroup::getContours() const noexcept
 		{
 			return contours_;

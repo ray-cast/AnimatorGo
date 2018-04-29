@@ -182,7 +182,7 @@ namespace octoon
 
 			auto addContours = [&](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
 			{
-				TextContours contours(glyph->outline.n_contours);
+				Contours contours(glyph->outline.n_contours);
 
 				for (short i = 0; i < glyph->outline.n_contours; i++)
 					contours[i] = std::make_unique<Contour>();

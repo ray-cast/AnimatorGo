@@ -154,7 +154,7 @@ namespace octoon
 
 		auto reader = json::parse(data);
 
-		model::TextContours contours;
+		model::Contours contours;
 
 		for (auto& path : reader["paths"])
 		{

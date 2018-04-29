@@ -13,18 +13,18 @@ namespace octoon
 		{
 		public:
 			ContourGroup() noexcept;
-			ContourGroup(TextContours&& contour) noexcept;
-			ContourGroup(const TextContours& contour) noexcept;
+			ContourGroup(Contours&& contour) noexcept;
+			ContourGroup(const Contours& contour) noexcept;
 			virtual ~ContourGroup() noexcept;
 
-			void setContours(TextContours&& contour) noexcept;
-			void setContours(const TextContours& contour) noexcept;
+			void setContours(Contours&& contour) noexcept;
+			void setContours(const Contours& contour) noexcept;
 
 			Contour& at(std::size_t index) noexcept;
 			const Contour& at(std::size_t index) const noexcept;
 
-			TextContours& getContours() noexcept;
-			const TextContours& getContours() const noexcept;
+			Contours& getContours() noexcept;
+			const Contours& getContours() const noexcept;
 
 			std::size_t count() const noexcept;
 			std::size_t countOfPoints() const noexcept;
@@ -38,7 +38,7 @@ namespace octoon
 			ContourGroup& operator=(const ContourGroup&) = delete;
 
 		private:
-			TextContours contours_;
+			Contours contours_;
 		};
 
 		OCTOON_EXPORT model::Mesh makeMesh(const ContourGroup& group, float thickness = 1.0f) noexcept;

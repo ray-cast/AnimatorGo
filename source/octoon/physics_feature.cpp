@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <octoon/physics_feature.h>
 #include <octoon/physics.h>
 #include <octoon/math/math.h>
@@ -13,28 +15,32 @@ namespace octoon
     
 	PhysicsFeature::PhysicsFeature() noexcept
 	{
-		foundation = physx::PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
+		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
 		if (!foundation)
-			physx::fatalError("PxCreateFoundation failed!");
+			throw std::runtime_error("PxCreateFoundation failed!");
 
 		bool recordMemoryAllocations = true;
 
 		pvd = physx::PxCreatePvd(*foundation);
-		physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+		physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 		pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
-		physics = physx::PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
+		physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
 			physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
 		if (!physics)
-			physx::fatalError("PxCreatePhysics failed!");
+			throw std::runtime_error("PxCreatePhysics failed!");
 
-		cooking = physx::PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
+		physx::PxTolerancesScale scale;
+		scale.length = 1;
+		scale.speed = 1;
+
+		cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
 		if (!cooking)
-			physx::fatalError("PxCreateCooking failed!");
+			throw std::runtime_error("PxCreateCooking failed!");
 
 
-		if (!physx::PxInitExtensions(*physics, pvd))
-			physx::fatalError("PxInitExtensions failed!");
+		if (!PxInitExtensions(*physics, pvd))
+			throw std::runtime_error("PxInitExtensions failed!");
 
 	}
 

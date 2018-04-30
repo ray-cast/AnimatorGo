@@ -1,3 +1,0 @@
-﻿  PsFastXml.cpp
-LINK : warning LNK4044: 无法识别的选项“/INCREMENTAL:NO”；已忽略
-  PsFastXml.vcxproj -> D:\库文件\PhysX-3.4-master\PxShared\src\compiler\vc15win32\./../../../lib/vc15win32\PsFastXml_x86.lib

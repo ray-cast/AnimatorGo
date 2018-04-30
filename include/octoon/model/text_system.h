@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_SYSTEM_H_
-#define OCTOON_TEXT_SYSTEM_H_
+#ifndef OCTOON_MODEL_TEXT_SYSTEM_H_
+#define OCTOON_MODEL_TEXT_SYSTEM_H_
 
 #include <octoon/runtime/singleton.h>
 

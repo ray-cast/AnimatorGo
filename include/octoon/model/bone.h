@@ -1,5 +1,5 @@
-#ifndef OCTOON_BONE_H_
-#define OCTOON_BONE_H_
+#ifndef OCTOON_MODEL_BONE_H_
+#define OCTOON_MODEL_BONE_H_
 
 #include <octoon/model/modtypes.h>
 

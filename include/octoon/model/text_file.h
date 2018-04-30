@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_FILE_H_
-#define OCTOON_TEXT_FILE_H_
+#ifndef OCTOON_MODEL_TEXT_FILE_H_
+#define OCTOON_MODEL_TEXT_FILE_H_
 
 #include <octoon/model/modtypes.h>
 

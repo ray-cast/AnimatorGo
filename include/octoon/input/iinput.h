@@ -5,6 +5,8 @@
 #include <octoon/input/iinput_keyboard.h>
 #include <octoon/input/iinput_mouse.h>
 
+#include <string>
+
 namespace octoon
 {
 	namespace input
@@ -28,6 +30,8 @@ namespace octoon
 
 			virtual void setMousePos(InputButton::Type x, InputButton::Type y) noexcept = 0;
 			virtual void getMousePos(InputButton::Type& x, InputButton::Type& y) const noexcept = 0;
+
+			virtual bool isInput(const std::string& id) const = 0;
 
 			virtual bool isKeyDown(InputKey::Code key) const noexcept = 0;
 			virtual bool isKeyUp(InputKey::Code key) const noexcept = 0;

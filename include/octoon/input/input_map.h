@@ -16,9 +16,17 @@ namespace octoon
 		public:
 			friend class DefaultInput;
 
+			static void bind(const std::string& id, InputKey::Code code);
+			static void bind(const std::string& id, InputButton::Code code);
 			static void bind(const std::string& id, const InputOp& ops);
-			static void bind(const std::string& id, const InputOp& ops1, const InputOp& ops2);
 
+			static void bind(const std::string& id, const InputOp& ops, InputKey::Code code);
+			static void bind(const std::string& id, const InputOp& ops, InputButton::Code code);
+
+			static void bind(const std::string& id, InputKey::Code code, const InputOp& ops);
+			static void bind(const std::string& id, InputButton::Code code, const InputOp& ops);
+
+			static void bind(const std::string& id, const InputOp& ops1, const InputOp& ops2);
 		private:
 			InputMap() = delete;
 			InputMap(const InputMap&) = delete;

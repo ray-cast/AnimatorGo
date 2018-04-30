@@ -14,14 +14,10 @@ SOURCE_GROUP("Sources" FILES ${SOURCES_LIST})
 
 IF(WIN32)
     ADD_LIBRARY(PhysX3CharacterKinematic SHARED ${HEADERS_LIST} ${SOURCES_LIST})
-
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PRIVATE PhysX3Extensions)
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PRIVATE PhysX3Common)
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PRIVATE PxFoundation)
 ELSE()
    	ADD_LIBRARY(PhysX3CharacterKinematic ${HEADERS_LIST} ${SOURCES_LIST})
-
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PhysX3Extensions)
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PhysX3Common)
-    TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PxFoundation)
 ENDIF()
+
+TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PhysX3Extensions)
+TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PhysX3Common)
+TARGET_LINK_LIBRARIES(PhysX3CharacterKinematic PUBLIC PxFoundation)

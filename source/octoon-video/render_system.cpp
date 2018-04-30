@@ -3,7 +3,6 @@
 #include <octoon/video/geometry.h>
 #include <octoon/video/material.h>
 #include <octoon/video/render_scene.h>
-#include <octoon/model/text_system.h>
 
 #include <octoon/runtime/except.h>
 
@@ -38,8 +37,6 @@ namespace octoon
 		void
 		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
-			model::TextSystem::instance()->setup();
-
 			device_ = device;
 			this->setFramebufferSize(w, h);
 		}
@@ -47,7 +44,6 @@ namespace octoon
 		void
 		RenderSystem::close() noexcept
 		{
-			model::TextSystem::instance()->close();
 		}
 
 		void
@@ -176,10 +172,6 @@ namespace octoon
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
-					auto mesh = geometry->getMesh();
-					if (!mesh)
-						continue;
-
 					auto material = geometry->getMaterial();
 					if (!material)
 						continue;
@@ -192,11 +184,11 @@ namespace octoon
 					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
 					context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
 
-					auto& indices = mesh->getIndicesArray();
-					if (indices.empty())
-						context.draw(mesh->getVertexArray().size(), 1, 0, 0);
+					auto indices = geometry->getNumIndices();
+					if (indices > 0)
+						context.drawIndexed(indices, 1, 0, 0, 0);
 					else
-						context.drawIndexed(indices.size(), 1, 0, 0, 0);
+						context.draw(geometry->getNumVertices(), 1, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)

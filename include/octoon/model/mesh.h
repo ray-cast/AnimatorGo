@@ -4,11 +4,7 @@
 #include <octoon/model/modtypes.h>
 #include <octoon/model/bone.h>
 #include <octoon/model/combine_mesh.h>
-
-#include <octoon/math/mathfwd.h>
-#include <octoon/math/vector2.h>
-#include <octoon/math/vector3.h>
-#include <octoon/math/boundingbox.h>
+#include <octoon/math/math.h>
 
 #include <string>
 

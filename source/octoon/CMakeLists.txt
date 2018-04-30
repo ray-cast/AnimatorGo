@@ -46,10 +46,6 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/first_person_camera.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
-	${HEADER_PATH}/point_renderer_component.h
-	${SOURCE_PATH}/point_renderer_component.cpp
-	${HEADER_PATH}/line_renderer_component.h
-	${SOURCE_PATH}/line_renderer_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
 	${HEADER_PATH}/path_meshing_component.h

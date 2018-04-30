@@ -5,7 +5,7 @@
 
 #include <octoon/game_feature.h>
 
-#include "PxPhysicsAPI.h"
+#include <PxPhysicsAPI.h>
 
 namespace octoon
 {

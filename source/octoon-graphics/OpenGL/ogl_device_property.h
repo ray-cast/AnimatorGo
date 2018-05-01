@@ -19,7 +19,7 @@ namespace octoon
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
 			GraphicsDevicePtr getDevice() noexcept;
 
-			const GraphicsDeviceProperties& getGraphicsDeviceProperties() const noexcept;
+			const GraphicsDeviceProperties& getDeviceProperties() const noexcept;
 
 		private:
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
@@ -73,7 +73,7 @@ namespace octoon
 #endif
 
 		private:
-			bool setupGLEnvironment(CreateParam& param) noexcept;
+			void setupGLEnvironment(CreateParam& param) noexcept(false);
 			void closeGLEnvironment(const CreateParam& param) noexcept;
 
 			bool initDeviceProperties() noexcept;

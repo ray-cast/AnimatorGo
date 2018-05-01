@@ -1,0 +1,6 @@
+#ifndef OCTOON_MODDEF_H_
+#define OCTOON_MODDEF_H_
+
+#define OCTOON_BUILD_PMX_MODEL 1
+
+#endif // !OCTOON_MODDEF_H_

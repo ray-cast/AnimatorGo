@@ -13,10 +13,18 @@ SET(MATH_LIST
 	${HEADER_PATH}/mat4.h
 	${HEADER_PATH}/quat.h
 	${HEADER_PATH}/math.h
+	${HEADER_PATH}/triangle.h
 	${HEADER_PATH}/trait.h
+	${HEADER_PATH}/AABB.h
+	${HEADER_PATH}/sphere.h
+	${HEADER_PATH}/boundingbox.h
+	${HEADER_PATH}/hammersley.h
+	${HEADER_PATH}/montecarlo.h
 	${HEADER_PATH}/mathfwd.h
     ${HEADER_PATH}/mathutil.h
     ${SOURCE_PATH}/mathutil.cpp
+	${HEADER_PATH}/perlin_noise.h
+	${SOURCE_PATH}/perlin_noise.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${MATH_LIST})
 

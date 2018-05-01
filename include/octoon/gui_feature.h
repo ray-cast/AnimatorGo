@@ -5,7 +5,12 @@
 
 namespace octoon
 {
-	class GuiFeature final : public GameFeature
+	namespace imgui
+	{
+		class System;
+	}
+
+	class OCTOON_EXPORT GuiFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(GuiFeature, GameFeature)
 	public:
@@ -13,21 +18,21 @@ namespace octoon
 		GuiFeature(WindHandle window, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~GuiFeature() noexcept;
 
-		void set_viewport(std::uint32_t w, std::uint32_t h) noexcept;
-		void get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
+		void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-		void set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept;
-		void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
+		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
+		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
 	private:
-		void on_activate() except;
-		void on_deactivate() noexcept;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		void on_input_event(const input::InputEvent& event) noexcept;
+		void onInputEvent(const input::InputEvent& event) noexcept override;
 
-		void on_frame_begin() noexcept;
-		void on_frame() noexcept;
-		void on_frame_end() noexcept;
+		void onFrameBegin() noexcept override;
+		void onFrame() noexcept override;
+		void onFrameEnd() noexcept override;
 
 	private:
 		WindHandle window_;
@@ -36,6 +41,8 @@ namespace octoon
 		std::uint32_t height_;
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
+
+		std::unique_ptr<imgui::System> system_;
 	};
 }
 

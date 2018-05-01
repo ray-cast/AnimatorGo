@@ -166,16 +166,16 @@ namespace octoon
 		}
 
 		GLenum
-		OGLTypes::asShaderStage(GraphicsShaderStageFlagBits stage) noexcept
+		OGLTypes::asShaderStage(GraphicsShaderStageFlags stage) noexcept
 		{
 			switch (stage)
 			{
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit:         return GL_VERTEX_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit:       return GL_FRAGMENT_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit:        return GL_COMPUTE_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit:       return GL_GEOMETRY_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageTessControlBit:    return GL_TESS_CONTROL_SHADER;
-			case GraphicsShaderStageFlagBits::GraphicsShaderStageTessEvaluationBit: return GL_TESS_EVALUATION_SHADER;
+			case GraphicsShaderStageFlagBits::VertexBit:         return GL_VERTEX_SHADER;
+			case GraphicsShaderStageFlagBits::FragmentBit:       return GL_FRAGMENT_SHADER;
+			case GraphicsShaderStageFlagBits::ComputeBit:        return GL_COMPUTE_SHADER;
+			case GraphicsShaderStageFlagBits::GeometryBit:       return GL_GEOMETRY_SHADER;
+			case GraphicsShaderStageFlagBits::TessControlBit:    return GL_TESS_CONTROL_SHADER;
+			case GraphicsShaderStageFlagBits::TessEvaluationBit: return GL_TESS_EVALUATION_SHADER;
 			default:
 				assert(false);
 				return GL_INVALID_ENUM;
@@ -183,45 +183,20 @@ namespace octoon
 		}
 
 		GLenum
-		OGLTypes::asTextureTarget(GraphicsTextureDim target, bool multisampler) noexcept
+		OGLTypes::asTextureTarget(GraphicsTextureDim target) noexcept
 		{
-			if (target == GraphicsTextureDim::Texture2D)
+			switch (target)
 			{
-				if (multisampler)
-					return GL_TEXTURE_2D_MULTISAMPLE;
-				else
-					return GL_TEXTURE_2D;
+			case GraphicsTextureDim::Texture2D:					return GL_TEXTURE_2D;
+			case GraphicsTextureDim::Texture2DMultisample:		return GL_TEXTURE_2D_MULTISAMPLE;
+			case GraphicsTextureDim::Texture2DArrayMultisample:	return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+			case GraphicsTextureDim::Texture2DArray:			return GL_TEXTURE_2D_ARRAY;
+			case GraphicsTextureDim::Texture3D:					return GL_TEXTURE_3D;
+			case GraphicsTextureDim::Cube:						return GL_TEXTURE_CUBE_MAP;
+			case GraphicsTextureDim::CubeArray:					return GL_TEXTURE_CUBE_MAP_ARRAY;
+			default:
+				return GL_INVALID_ENUM;
 			}
-			else if (target == GraphicsTextureDim::Texture3D)
-			{
-				if (!multisampler)
-					return GL_TEXTURE_3D;
-				else
-					return GL_INVALID_ENUM;
-			}
-			else if (target == GraphicsTextureDim::Texture2DArray)
-			{
-				if (multisampler)
-					return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-				else
-					return GL_TEXTURE_2D_ARRAY;
-			}
-			else if (target == GraphicsTextureDim::Cube)
-			{
-				if (!multisampler)
-					return GL_TEXTURE_CUBE_MAP;
-				else
-					return GL_INVALID_ENUM;
-			}
-			else if (target == GraphicsTextureDim::CubeArray)
-			{
-				if (!multisampler)
-					return GL_TEXTURE_CUBE_MAP_ARRAY;
-				else
-					return GL_INVALID_ENUM;
-			}
-
-			return GL_INVALID_ENUM;
 		}
 
 		GLenum
@@ -1134,11 +1109,7 @@ namespace octoon
 				}
 			}
 
-		#if defined(OCTOON_BUILD_PLATFORM_LINUX)
-			return true;
-		#else
 			return success;
-		#endif
 		}
 	}
 }

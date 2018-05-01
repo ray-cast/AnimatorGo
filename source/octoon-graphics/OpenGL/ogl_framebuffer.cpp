@@ -62,8 +62,8 @@ namespace octoon
 		OGLFramebuffer::setup(const GraphicsFramebufferDesc& framebufferDesc) noexcept
 		{
 			assert(GL_NONE == _fbo);
-			assert(framebufferDesc.getGraphicsFramebufferLayout());
-			assert(framebufferDesc.getGraphicsFramebufferLayout()->is_instance_of<OGLFramebufferLayout>());
+			assert(framebufferDesc.getFramebufferLayout());
+			assert(framebufferDesc.getFramebufferLayout()->isInstanceOf<OGLFramebufferLayout>());
 			assert(framebufferDesc.getWidth() > 0 && framebufferDesc.getHeight() > 0);
 
 			glGenFramebuffers(1, &_fbo);
@@ -78,7 +78,7 @@ namespace octoon
 			GLenum drawCount = 0;
 			GLenum drawBuffers[GL_COLOR_ATTACHMENT15 - GL_COLOR_ATTACHMENT0];
 
-			const auto& textureComponents = framebufferDesc.getGraphicsFramebufferLayout()->getGraphicsFramebufferLayoutDesc().getComponents();
+			const auto& textureComponents = framebufferDesc.getFramebufferLayout()->getGraphicsFramebufferLayoutDesc().getComponents();
 			const auto& colorAttachments = framebufferDesc.getColorAttachments();
 			if (colorAttachments.size() > (sizeof(drawBuffers) / sizeof(drawBuffers[0])))
 			{
@@ -157,10 +157,12 @@ namespace octoon
 			}
 
 			glDrawBuffers(drawCount, drawBuffers);
+			bool error = OGLCheck::checkError();
+
 			glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 
 			_framebufferDesc = framebufferDesc;
-			return OGLCheck::checkError();
+			return error;
 		}
 
 		void
@@ -189,7 +191,7 @@ namespace octoon
 			auto textureTarget = texture->getTarget();
 			auto& textureDesc = renderTexture->getGraphicsTextureDesc();
 
-			if (textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArray)
+			if (textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArray || textureDesc.getTexDim() == GraphicsTextureDim::Texture2DArrayMultisample)
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, textureID, level, layer);
 			else if (textureDesc.getTexDim() == GraphicsTextureDim::Cube)
 				glFramebufferTexture(GL_FRAMEBUFFER, attachment, textureID, level);

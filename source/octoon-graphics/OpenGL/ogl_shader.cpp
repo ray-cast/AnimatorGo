@@ -1,13 +1,15 @@
 #include "ogl_shader.h"
 #include "ogl_device.h"
 
-#define EXCLUDE_PSTDINT
-#include <hlslcc.hpp>
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#	define EXCLUDE_PSTDINT
+#	include <hlslcc.hpp>
 
-#if defined(__WINDOWS__)
 #	include <sstream>
 #	include <d3dcompiler.h>
 #endif
+
+#include <cstring>
 
 namespace octoon
 {
@@ -81,7 +83,7 @@ namespace octoon
 		OGLGraphicsUniform::OGLGraphicsUniform() noexcept
 			: _offset(0)
 			, _bindingPoint(GL_INVALID_INDEX)
-			, _type(GraphicsUniformType::None)
+			, _type(GraphicsUniformType::Null)
 			, _stageFlags(0)
 		{
 		}
@@ -289,6 +291,7 @@ namespace octoon
 
 			if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSL)
 			{
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 				if (!HlslCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), shaderDesc.getEntryPoint().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlsl to glsl.");
@@ -296,9 +299,14 @@ namespace octoon
 				}
 
 				source = codes.data();
+#else
+				this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
+				return false;
+#endif
 			}
 			else if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSLbytecodes)
 			{
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 				if (!HlslByteCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
@@ -306,6 +314,10 @@ namespace octoon
 				}
 
 				source = codes.data();
+#else
+				this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
+				return false;
+#endif
 			}
 
 			glShaderSource(_instance, 1, &source, 0);
@@ -348,16 +360,18 @@ namespace octoon
 		bool
 		OGLShader::HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, const std::string& main, std::string& out)
 		{
-		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-			const char* profile;
-			if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageVertexBit)
+		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+			const char* profile = nullptr;
+			if (stage == GraphicsShaderStageFlagBits::VertexBit)
 				profile = "vs_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageFragmentBit)
+			else if (stage == GraphicsShaderStageFlagBits::FragmentBit)
 				profile = "ps_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit)
+			else if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				profile = "gs_4_0";
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageComputeBit)
+			else if (stage == GraphicsShaderStageFlagBits::ComputeBit)
 				profile = "cs_4_0";
+			else
+				assert(false);
 
 			ID3DBlob* binary = nullptr;
 			ID3DBlob* error = nullptr;
@@ -416,12 +430,13 @@ namespace octoon
 		bool
 		OGLShader::HlslByteCodes2GLSL(GraphicsShaderStageFlags stage, const char* codes, std::string& out)
 		{
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 			std::uint32_t flags = HLSLCC_FLAG_COMBINE_TEXTURE_SAMPLERS | HLSLCC_FLAG_INOUT_APPEND_SEMANTIC_NAMES | HLSLCC_FLAG_DISABLE_GLOBALS_STRUCT;
-			if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageGeometryBit)
+			if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				flags = HLSLCC_FLAG_GS_ENABLED;
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageTessControlBit)
+			else if (stage == GraphicsShaderStageFlagBits::TessControlBit)
 				flags = HLSLCC_FLAG_TESS_ENABLED;
-			else if (stage == GraphicsShaderStageFlagBits::GraphicsShaderStageTessEvaluationBit)
+			else if (stage == GraphicsShaderStageFlagBits::TessEvaluationBit)
 				flags = HLSLCC_FLAG_TESS_ENABLED;
 
 			GLSLShader shader;
@@ -444,6 +459,9 @@ namespace octoon
 				FreeGLSLShader(&shader);
 				return false;
 			}
+#else
+			return false;
+#endif
 		}
 
 		const GraphicsShaderDesc&
@@ -637,7 +655,7 @@ namespace octoon
 				uniform->setName(nameUniform.substr(0, std::min((std::size_t)length, nameUniform.find('['))));
 				uniform->setBindingPoint(location);
 				uniform->setType(toGraphicsUniformType(nameUniform, type));
-				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::GraphicsShaderStageAll);
+				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
 
 				if (type == GL_SAMPLER_2D ||
 					type == GL_SAMPLER_3D ||
@@ -714,7 +732,7 @@ namespace octoon
 				uniformblock->setBindingPoint(location);
 				uniformblock->setBlockSize(size);
 				uniformblock->setType(GraphicsUniformType::UniformBuffer);
-				uniformblock->setShaderStageFlags(GraphicsShaderStageFlagBits::GraphicsShaderStageAll);
+				uniformblock->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
 
 				for (GLint j = 0; j < count; j++)
 				{
@@ -791,7 +809,7 @@ namespace octoon
 				bool isArray = strstr(name.c_str(), "[") != nullptr;
 				if (type == GL_BOOL)
 				{
-					return GraphicsUniformType::Bool;
+					return GraphicsUniformType::Boolean;
 				}
 				else if (type == GL_UNSIGNED_INT)
 				{
@@ -901,7 +919,7 @@ namespace octoon
 				else
 				{
 					assert(false);
-					return GraphicsUniformType::None;
+					return GraphicsUniformType::Null;
 				}
 			}
 		}

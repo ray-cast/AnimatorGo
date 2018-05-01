@@ -15,24 +15,24 @@ namespace octoon
 		}
 
 		bool
-		MSWInputKeyboard::isKeyDown(InputKey::Code key) const noexcept
+		MSWInputKeyboard::is_key_down(InputKey::Code key) const noexcept
 		{
-			return DefaultInputKeyboard::isKeyDown(key);
+			return DefaultInputKeyboard::is_key_down(key);
 		}
 
 		bool
-		MSWInputKeyboard::isKeyUp(InputKey::Code key) const noexcept
+		MSWInputKeyboard::is_key_up(InputKey::Code key) const noexcept
 		{
-			return DefaultInputKeyboard::isKeyUp(key);
+			return DefaultInputKeyboard::is_key_up(key);
 		}
 
 		bool
-		MSWInputKeyboard::isKeyPressed(InputKey::Code key) const noexcept
+		MSWInputKeyboard::is_key_pressed(InputKey::Code key) const noexcept
 		{
-			return DefaultInputKeyboard::isKeyPressed(key);
+			return DefaultInputKeyboard::is_key_pressed(key);
 		}
 
-		InputKeyboardPtr
+		IInputKeyboardPtr
 		MSWInputKeyboard::clone() const noexcept
 		{
 			return std::make_shared<MSWInputKeyboard>();

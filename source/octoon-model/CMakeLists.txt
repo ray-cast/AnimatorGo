@@ -1,0 +1,38 @@
+SET(LIB_NAME model)
+SET(LIB_OUTNAME octoon-${LIB_NAME})
+
+SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_NAME})
+SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
+
+SET(MODEL_LIST
+	${HEADER_PATH}/animation.h
+	${SOURCE_PATH}/animation.cpp
+	${HEADER_PATH}/bone.h
+	${SOURCE_PATH}/bone.cpp
+	${HEADER_PATH}/combine_mesh.h
+	${SOURCE_PATH}/combine_mesh.cpp
+	${HEADER_PATH}/loader.h
+	${HEADER_PATH}/modall.h
+	${SOURCE_PATH}/modall.cpp
+	${HEADER_PATH}/moddef.h
+	${HEADER_PATH}/model.h
+	${SOURCE_PATH}/model.cpp
+	${HEADER_PATH}/modtypes.h
+	${HEADER_PATH}/pmx.h
+	${HEADER_PATH}/pmx_loader.h
+	${SOURCE_PATH}/pmx_loader.cpp
+	${HEADER_PATH}/mesh.h
+	${SOURCE_PATH}/mesh.cpp
+	${HEADER_PATH}/property.h
+	${SOURCE_PATH}/property.cpp
+)
+
+SOURCE_GROUP(${LIB_NAME} FILES ${MODEL_LIST})
+
+ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
+ADD_LIBRARY(${LIB_OUTNAME} STATIC ${MODEL_LIST})
+
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-io)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-math)
+
+SET_TARGET_ATTRIBUTE(${LIB_OUTNAME} "core")

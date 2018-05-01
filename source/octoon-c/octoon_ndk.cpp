@@ -38,7 +38,7 @@ void OctoonTerminate() noexcept
 
 bool OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
-	gameApp_ = std::make_shared<octoon::GameApplication>();
+	gameApp_ = std::make_shared<octoon::GameApp>();
 	gameApp_->setFileService(true);
 	gameApp_->setFileServicePath(gameRootPath_);
 

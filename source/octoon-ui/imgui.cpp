@@ -4,6 +4,9 @@
 #include <imgui_dock.h>
 #include <imgui_internal.h>
 #include <imgui_user.h>
+#include <ImGuizmo.h>
+
+#include <cstring> // std::memcpy
 
 namespace octoon
 {
@@ -28,8 +31,9 @@ namespace octoon
 			WindowMinSize = float2(32, 32);
 			WindowRounding = 9.0f;
 			WindowTitleAlign = float2(0.5f, 0.5f);
-			ChildWindowRounding = 0.0f;
-			FramePadding = float2(0, 3);
+			ChildRounding = 0.0f;
+			ChildBorderSize = 0.0f;
+			FramePadding = float2(3, 3);
 			FrameRounding = 8.0f;
 			ItemSpacing = float2(8, 4);
 			ItemInnerSpacing = float2(4, 4);
@@ -44,7 +48,7 @@ namespace octoon
 			DisplayWindowPadding = float2(9, 22);
 			DisplaySafeAreaPadding = float2(4, 4);
 			AntiAliasedLines = true;
-			AntiAliasedShapes = true;
+			AntiAliasedFill = true;
 			CurveTessellationTol = 1.25f;
 
 			Colors[ImGuiCol_MenuBarBg] = float4(0.3f, 0.3f, 0.31f, 1.0f);
@@ -60,9 +64,6 @@ namespace octoon
 			Colors[ImGuiCol_Button] = float4(0.0f, 0.4f, 0.66f, 1.0f);
 			Colors[ImGuiCol_ButtonHovered] = float4(0.0f, 0.5f, 1.0f, 1.0f);
 			Colors[ImGuiCol_ButtonActive] = float4(1.0, 0.6, 0.0, 1.0);
-			Colors[ImGuiCol_CloseButton] = float4(0.2f, 0.5f, 1.0f, 0.5f);
-			Colors[ImGuiCol_CloseButtonHovered] = float4(0.2f, 0.5f, 1.0f, 0.7f);
-			Colors[ImGuiCol_CloseButtonActive] = float4(0.2f, 0.5f, 1.0f, 1.0f);
 			Colors[ImGuiCol_CheckMark] = float4(0.0, 0.6, 1.0, 0.75f);
 			Colors[ImGuiCol_ScrollbarBg] = float4(0.20f, 0.20, 0.20f, 0.60f);
 			Colors[ImGuiCol_ScrollbarGrab] = float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -80,7 +81,6 @@ namespace octoon
 			Colors[ImGuiCol_ChildWindowBg] = float4(0.00f, 0.00f, 0.00f, 0.00f);
 			Colors[ImGuiCol_Border] = float4(0.70f, 0.70f, 0.70f, 0.125f);
 			Colors[ImGuiCol_BorderShadow] = float4(0.00f, 0.00f, 0.00f, 0.00f);
-			Colors[ImGuiCol_ComboBg] = float4(0.20f, 0.20f, 0.20f, 0.99f);
 			Colors[ImGuiCol_Column] = float4(0.50f, 0.50f, 0.50f, 1.00f);
 			Colors[ImGuiCol_ColumnHovered] = float4(0.70f, 0.60f, 0.60f, 1.00f);
 			Colors[ImGuiCol_ColumnActive] = float4(0.90f, 0.70f, 0.70f, 1.00f);
@@ -99,16 +99,6 @@ namespace octoon
 			ImGui::NewFrame();
 		}
 
-		void render() noexcept
-		{
-			ImGui::Render();
-		}
-
-		void shutdown() noexcept
-		{
-			ImGui::Shutdown();
-		}
-
 		void show_user_guide() noexcept
 		{
 			ImGui::ShowUserGuide();
@@ -116,30 +106,32 @@ namespace octoon
 
 		void show_style_editor(GuiStyle* ref) noexcept
 		{
-			static_assert(sizeof(GuiStyle) == sizeof(ImGuiStyle));
-			static_assert(offsetof(GuiStyle, Alpha) == offsetof(ImGuiStyle, Alpha));
-			static_assert(offsetof(GuiStyle, WindowPadding) == offsetof(ImGuiStyle, WindowPadding));
-			static_assert(offsetof(GuiStyle, WindowMinSize) == offsetof(ImGuiStyle, WindowMinSize));
-			static_assert(offsetof(GuiStyle, WindowRounding) == offsetof(ImGuiStyle, WindowRounding));
-			static_assert(offsetof(GuiStyle, WindowTitleAlign) == offsetof(ImGuiStyle, WindowTitleAlign));
-			static_assert(offsetof(GuiStyle, ChildWindowRounding) == offsetof(ImGuiStyle, ChildWindowRounding));
-			static_assert(offsetof(GuiStyle, FramePadding) == offsetof(ImGuiStyle, FramePadding));
-			static_assert(offsetof(GuiStyle, FrameRounding) == offsetof(ImGuiStyle, FrameRounding));
-			static_assert(offsetof(GuiStyle, ItemSpacing) == offsetof(ImGuiStyle, ItemSpacing));
-			static_assert(offsetof(GuiStyle, ItemInnerSpacing) == offsetof(ImGuiStyle, ItemInnerSpacing));
-			static_assert(offsetof(GuiStyle, TouchExtraPadding) == offsetof(ImGuiStyle, TouchExtraPadding));
-			static_assert(offsetof(GuiStyle, IndentSpacing) == offsetof(ImGuiStyle, IndentSpacing));
-			static_assert(offsetof(GuiStyle, ColumnsMinSpacing) == offsetof(ImGuiStyle, ColumnsMinSpacing));
-			static_assert(offsetof(GuiStyle, ScrollbarSize) == offsetof(ImGuiStyle, ScrollbarSize));
-			static_assert(offsetof(GuiStyle, ScrollbarRounding) == offsetof(ImGuiStyle, ScrollbarRounding));
-			static_assert(offsetof(GuiStyle, GrabMinSize) == offsetof(ImGuiStyle, GrabMinSize));
-			static_assert(offsetof(GuiStyle, GrabRounding) == offsetof(ImGuiStyle, GrabRounding));
-			static_assert(offsetof(GuiStyle, ButtonTextAlign) == offsetof(ImGuiStyle, ButtonTextAlign));
-			static_assert(offsetof(GuiStyle, DisplayWindowPadding) == offsetof(ImGuiStyle, DisplayWindowPadding));
-			static_assert(offsetof(GuiStyle, DisplaySafeAreaPadding) == offsetof(ImGuiStyle, DisplaySafeAreaPadding));
-			static_assert(offsetof(GuiStyle, AntiAliasedLines) == offsetof(ImGuiStyle, AntiAliasedLines));
-			static_assert(offsetof(GuiStyle, AntiAliasedShapes) == offsetof(ImGuiStyle, AntiAliasedShapes));
-			static_assert(offsetof(GuiStyle, CurveTessellationTol) == offsetof(ImGuiStyle, CurveTessellationTol));
+			static_assert(sizeof(GuiStyle) == sizeof(ImGuiStyle), "");
+			static_assert(offsetof(GuiStyle, Alpha) == offsetof(ImGuiStyle, Alpha), "");
+			static_assert(offsetof(GuiStyle, WindowPadding) == offsetof(ImGuiStyle, WindowPadding), "");
+			static_assert(offsetof(GuiStyle, WindowRounding) == offsetof(ImGuiStyle, WindowRounding), "");
+			static_assert(offsetof(GuiStyle, WindowBorderSize) == offsetof(ImGuiStyle, WindowBorderSize), "");
+			static_assert(offsetof(GuiStyle, WindowMinSize) == offsetof(ImGuiStyle, WindowMinSize), "");
+			static_assert(offsetof(GuiStyle, WindowTitleAlign) == offsetof(ImGuiStyle, WindowTitleAlign), "");
+			static_assert(offsetof(GuiStyle, ChildRounding) == offsetof(ImGuiStyle, ChildRounding), "");
+			static_assert(offsetof(GuiStyle, ChildBorderSize) == offsetof(ImGuiStyle, ChildBorderSize), "");
+			static_assert(offsetof(GuiStyle, FramePadding) == offsetof(ImGuiStyle, FramePadding), "");
+			static_assert(offsetof(GuiStyle, FrameRounding) == offsetof(ImGuiStyle, FrameRounding), "");
+			static_assert(offsetof(GuiStyle, ItemSpacing) == offsetof(ImGuiStyle, ItemSpacing), "");
+			static_assert(offsetof(GuiStyle, ItemInnerSpacing) == offsetof(ImGuiStyle, ItemInnerSpacing), "");
+			static_assert(offsetof(GuiStyle, TouchExtraPadding) == offsetof(ImGuiStyle, TouchExtraPadding), "");
+			static_assert(offsetof(GuiStyle, IndentSpacing) == offsetof(ImGuiStyle, IndentSpacing), "");
+			static_assert(offsetof(GuiStyle, ColumnsMinSpacing) == offsetof(ImGuiStyle, ColumnsMinSpacing), "");
+			static_assert(offsetof(GuiStyle, ScrollbarSize) == offsetof(ImGuiStyle, ScrollbarSize), "");
+			static_assert(offsetof(GuiStyle, ScrollbarRounding) == offsetof(ImGuiStyle, ScrollbarRounding), "");
+			static_assert(offsetof(GuiStyle, GrabMinSize) == offsetof(ImGuiStyle, GrabMinSize), "");
+			static_assert(offsetof(GuiStyle, GrabRounding) == offsetof(ImGuiStyle, GrabRounding), "");
+			static_assert(offsetof(GuiStyle, ButtonTextAlign) == offsetof(ImGuiStyle, ButtonTextAlign), "");
+			static_assert(offsetof(GuiStyle, DisplayWindowPadding) == offsetof(ImGuiStyle, DisplayWindowPadding), "");
+			static_assert(offsetof(GuiStyle, DisplaySafeAreaPadding) == offsetof(ImGuiStyle, DisplaySafeAreaPadding), "");
+			static_assert(offsetof(GuiStyle, AntiAliasedLines) == offsetof(ImGuiStyle, AntiAliasedLines), "");
+			static_assert(offsetof(GuiStyle, AntiAliasedFill) == offsetof(ImGuiStyle, AntiAliasedFill), "");
+			static_assert(offsetof(GuiStyle, CurveTessellationTol) == offsetof(ImGuiStyle, CurveTessellationTol), "");
 
 			if (ref)
 				ImGui::ShowStyleEditor((ImGuiStyle*)ref);
@@ -147,12 +139,9 @@ namespace octoon
 				ImGui::ShowStyleEditor((ImGuiStyle*)&_defalutStyle);
 		}
 
-		void show_test_window(bool* isOpened) noexcept
+		void show_test_window() noexcept
 		{
-			if (!isOpened)
-				ImGui::ShowTestWindow();
-			else
-				ImGui::ShowTestWindow(isOpened);
+			ImGui::ShowTestWindow();
 		}
 
 		void show_metrics_window(bool* isOpened) noexcept
@@ -761,6 +750,11 @@ namespace octoon
 			return ImGui::InvisibleButton(str_id, (ImVec2&)size);
 		}
 
+		bool arrow_button(const char* str_id, GuiDir dir)
+		{
+			return ImGui::ArrowButton(str_id, (ImGuiDir)dir);
+		}
+
 		void image(GuiTextureID user_texture_id, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col) noexcept
 		{
 			ImGui::Image(user_texture_id, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, (ImVec4&)tint_col, (ImVec4&)border_col);
@@ -802,7 +796,7 @@ namespace octoon
 			if (*current_item != _default)
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(revert)) { *current_item = _default; change = false; };
 				pop_id();
 			}
@@ -820,9 +814,9 @@ namespace octoon
 			return ImGui::Combo(label, current_item, items_getter, data, items_count, height_in_items);
 		}
 
-		bool color_button(const float4& col, bool small_height, bool outline_border) noexcept
+		bool color_button(const char* desc_id, const float4& col, GuiColorEditFlags flags, float2 size) noexcept
 		{
-			return ImGui::ColorButton((ImVec4&)col, small_height, outline_border);
+			return ImGui::ColorButton(desc_id, (ImVec4&)col, flags, ImVec2(size.x, size.y));
 		}
 
 		bool color_edit3(const char* label, float col[3]) noexcept
@@ -833,11 +827,6 @@ namespace octoon
 		bool color_edit4(const char* label, float col[4], bool show_alpha) noexcept
 		{
 			return ImGui::ColorEdit4(label, col, show_alpha);
-		}
-
-		void color_edit_mode(GuiColorEditMode mode) noexcept
-		{
-			ImGui::ColorEditMode((ImGuiColorEditMode)mode);
 		}
 
 		void plot_lines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, const float2& graph_size, int stride) noexcept
@@ -1185,16 +1174,6 @@ namespace octoon
 			ImGui::Value(prefix, v, float_format);
 		}
 
-		void value_color(const char* prefix, const float4& v) noexcept
-		{
-			ImGui::ValueColor(prefix, (const ImVec4&)v);
-		}
-
-		void value_color(const char* prefix, std::uint32_t v) noexcept
-		{
-			ImGui::ValueColor(prefix, v);
-		}
-
 		void set_tooltip(const char* fmt, ...) noexcept
 		{
 			va_list args;
@@ -1284,9 +1263,9 @@ namespace octoon
 			return ImGui::BeginPopupContextItem(str_id, mouse_button);
 		}
 
-		bool begin_popup_context_window(bool also_over_items, const char* str_id, int mouse_button) noexcept
+		bool begin_popup_context_window(const char* str_id, int mouse_button, bool also_over_items) noexcept
 		{
-			return ImGui::BeginPopupContextWindow(also_over_items, str_id, mouse_button);
+			return ImGui::BeginPopupContextWindow(str_id, mouse_button, also_over_items);
 		}
 
 		bool begin_popup_context_void(const char* str_id, int mouse_button) noexcept
@@ -1421,7 +1400,7 @@ namespace octoon
 
 		const char* get_style_col_name(GuiCol idx) noexcept
 		{
-			return ImGui::GetStyleColName((ImGuiCol)idx);
+			return ImGui::GetStyleColorName((ImGuiCol)idx);
 		}
 
 		float2 calc_item_rect_closest_point(const float2& pos, bool on_edge, float outward) noexcept
@@ -1549,144 +1528,14 @@ namespace octoon
 			return ImGui::CaptureMouseFromApp(capture);
 		}
 
-		bool color_picker3(const char* label, float col[3], const float2& size, float hueSize, float crossHairSize) noexcept
+		bool color_picker3(const char* label, float col[3], GuiColorEditFlags flags )
 		{
-			// thanks to : https://github.com/ocornut/imgui/issues/346
-			bool value_changed = false;
-
-			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-			ImVec2 picker_pos = ImGui::GetCursorScreenPos();
-
-			ImColor color(col[0], col[1], col[2]);
-			ImColor colors[] = { ImColor(255, 0, 0), ImColor(255, 255, 0), ImColor(0, 255, 0), ImColor(0, 255, 255), ImColor(0, 0, 255), ImColor(255, 0, 255), ImColor(255, 0, 0) };
-
-			for (int i = 0; i < 6; ++i)
-			{
-				draw_list->AddRectFilledMultiColor(
-					ImVec2(picker_pos.x + size.x + 10, picker_pos.y + i * (size.y / 6)),
-					ImVec2(picker_pos.x + size.x + 10 + hueSize,
-						picker_pos.y + (i + 1) * (size.y / 6)),
-					colors[i],
-					colors[i],
-					colors[i + 1],
-					colors[i + 1]);
-			}
-
-			float hue, saturation, value;
-			ImGui::ColorConvertRGBtoHSV(color.Value.x, color.Value.y, color.Value.z, hue, saturation, value);
-
-			draw_list->AddLine(
-				ImVec2(picker_pos.x + size.x + 8, picker_pos.y + hue * size.y),
-				ImVec2(picker_pos.x + size.x + 12 + hueSize, picker_pos.y + hue * size.y),
-				ImColor(255, 255, 255));
-
-			{
-				const int step = 5;
-				ImVec2 pos = ImVec2(0, 0);
-
-				ImVec4 c00(1, 1, 1, 1);
-				ImVec4 c10(1, 1, 1, 1);
-				ImVec4 c01(1, 1, 1, 1);
-				ImVec4 c11(1, 1, 1, 1);
-
-				for (int y = 0; y < step; y++)
-				{
-					for (int x = 0; x < step; x++)
-					{
-						float s0 = (float)x / (float)step;
-						float s1 = (float)(x + 1) / (float)step;
-						float v0 = 1.0 - (float)(y) / (float)step;
-						float v1 = 1.0 - (float)(y + 1) / (float)step;
-
-						ImGui::ColorConvertHSVtoRGB(hue, s0, v0, c00.x, c00.y, c00.z);
-						ImGui::ColorConvertHSVtoRGB(hue, s1, v0, c10.x, c10.y, c10.z);
-						ImGui::ColorConvertHSVtoRGB(hue, s0, v1, c01.x, c01.y, c01.z);
-						ImGui::ColorConvertHSVtoRGB(hue, s1, v1, c11.x, c11.y, c11.z);
-
-						draw_list->AddRectFilledMultiColor(
-							ImVec2(picker_pos.x + pos.x, picker_pos.y + pos.y),
-							ImVec2(picker_pos.x + pos.x + size.x / step, picker_pos.y + pos.y + size.y / step),
-							ImGui::ColorConvertFloat4ToU32(c00),
-							ImGui::ColorConvertFloat4ToU32(c10),
-							ImGui::ColorConvertFloat4ToU32(c11),
-							ImGui::ColorConvertFloat4ToU32(c01));
-
-						pos.x += size.x / step;
-					}
-					pos.x = 0;
-					pos.y += size.y / step;
-				}
-			}
-
-			float x = saturation * size.x;
-			float y = (1 - value) * size.y;
-			ImVec2 p(picker_pos.x + x, picker_pos.y + y);
-			draw_list->AddLine(ImVec2(p.x - crossHairSize, p.y), ImVec2(p.x - 2, p.y), ImColor(255, 255, 255));
-			draw_list->AddLine(ImVec2(p.x + crossHairSize, p.y), ImVec2(p.x + 2, p.y), ImColor(255, 255, 255));
-			draw_list->AddLine(ImVec2(p.x, p.y + crossHairSize), ImVec2(p.x, p.y + 2), ImColor(255, 255, 255));
-			draw_list->AddLine(ImVec2(p.x, p.y - crossHairSize), ImVec2(p.x, p.y - 2), ImColor(255, 255, 255));
-
-			invisible_button("saturation_value_selector", size);
-
-			if (ImGui::IsItemActive() && ImGui::GetIO().MouseDown[0])
-			{
-				ImVec2 mouse_pos_in_canvas = ImVec2(ImGui::GetIO().MousePos.x - picker_pos.x, ImGui::GetIO().MousePos.y - picker_pos.y);
-
-				/**/ if (mouse_pos_in_canvas.x < 0) mouse_pos_in_canvas.x = 0;
-				else if (mouse_pos_in_canvas.x >= size.x - 1) mouse_pos_in_canvas.x = size.x - 1;
-
-				/**/ if (mouse_pos_in_canvas.y < 0) mouse_pos_in_canvas.y = 0;
-				else if (mouse_pos_in_canvas.y >= size.y - 1) mouse_pos_in_canvas.y = size.y - 1;
-
-				value = 1 - (mouse_pos_in_canvas.y / (size.y - 1));
-				saturation = mouse_pos_in_canvas.x / (size.x - 1);
-				value_changed = true;
-			}
-
-			ImGui::SetCursorScreenPos(ImVec2(picker_pos.x + size.x + 10, picker_pos.y));
-			ImGui::InvisibleButton("hue_selector", ImVec2(hueSize, size.y));
-
-			if ((ImGui::IsItemHovered() || ImGui::IsItemActive()) && ImGui::GetIO().MouseDown[0])
-			{
-				ImVec2 mouse_pos_in_canvas = ImVec2(ImGui::GetIO().MousePos.x - picker_pos.x, ImGui::GetIO().MousePos.y - picker_pos.y);
-
-				/* Previous horizontal bar will represent hue=1 (bottom) as hue=0 (top). Since both colors are red, we clamp at (-2, above edge) to avoid visual continuities */
-				/**/ if (mouse_pos_in_canvas.y < 0) mouse_pos_in_canvas.y = 0;
-				else if (mouse_pos_in_canvas.y >= size.y - 2) mouse_pos_in_canvas.y = size.y - 2;
-
-				hue = mouse_pos_in_canvas.y / (size.y - 1);
-				value_changed = true;
-			}
-
-			color = ImColor::HSV(hue > 0 ? hue : 1e-6, saturation > 0 ? saturation : 1e-6, value > 0 ? value : 1e-6);
-
-			col[0] = ImClamp(color.Value.x, 0.0f, 1.0f);
-			col[1] = ImClamp(color.Value.y, 0.0f, 1.0f);
-			col[2] = ImClamp(color.Value.z, 0.0f, 1.0f);
-
-			return value_changed | ImGui::ColorEdit3(label, col);
+			return ImGui::ColorPicker3(label, col, flags);
 		}
 
-		bool color_picker3_with_revert(const char* label, const char* name, float col[3], const float _default[3], const float2& size, float hueSize, float crossHairSize) noexcept
+		bool color_picker4(const char* label, float col[4], GuiColorEditFlags flags, const float* ref_col)
 		{
-			bool change = color_picker3(label, col, size, hueSize, crossHairSize);
-			if (!math::equal(col[0], _default[0]) || !math::equal(col[1], _default[1]) || !math::equal(col[2], _default[2]))
-			{
-				same_line();
-				push_id(std::hash<const char*>{}(label));
-				if (button(name))
-				{
-					col[0] = _default[0];
-					col[1] = _default[1];
-					col[2] = _default[2];
-					change = false;
-				};
-
-				pop_id();
-			}
-
-			return change;
+			return ImGui::ColorPicker4(label, col, flags, ref_col);
 		}
 
 		bool slider_float_with_revert(const char* label, const char* name, float* v, float _default, float _min, float _max, const char* display_format, float power) noexcept
@@ -1695,7 +1544,7 @@ namespace octoon
 			if (!math::equal(*v, _default))
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
 				pop_id();
 			}
@@ -1709,7 +1558,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1728,7 +1577,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1748,7 +1597,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1769,7 +1618,7 @@ namespace octoon
 			if (v[0] != _default)
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name)) { *v = _default; change = true; };
 				pop_id();
 			}
@@ -1783,7 +1632,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1802,7 +1651,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1822,7 +1671,7 @@ namespace octoon
 			if (v[0] != _default[0] || v[1] != _default[1] || v[2] != _default[2] || v[3] != _default[3])
 			{
 				same_line();
-				push_id(std::hash<const char*>{}(label));
+				push_id((int)std::hash<const char*>{}(label));
 				if (button(name))
 				{
 					v[0] = _default[0];
@@ -1857,7 +1706,7 @@ namespace octoon
 
 		void set_style(const GuiStyle& newStyle) noexcept
 		{
-			static_assert(sizeof(ImGuiStyle::Colors) == sizeof(GuiStyle::Colors));
+			static_assert(sizeof(ImGuiStyle::Colors) == sizeof(GuiStyle::Colors), "");
 
 			ImGuiStyle& style = ImGui::GetStyle();
 			style.Alpha = newStyle.Alpha;
@@ -1868,7 +1717,8 @@ namespace octoon
 			style.WindowRounding = newStyle.WindowRounding;
 			style.WindowTitleAlign.x = newStyle.WindowTitleAlign.x;
 			style.WindowTitleAlign.y = newStyle.WindowTitleAlign.y;
-			style.ChildWindowRounding = newStyle.ChildWindowRounding;
+			style.ChildBorderSize = newStyle.ChildBorderSize;
+			style.ChildRounding = newStyle.ChildRounding;
 			style.FramePadding.x = newStyle.FramePadding.x;
 			style.FramePadding.y = newStyle.FramePadding.y;
 			style.FrameRounding = newStyle.FrameRounding;
@@ -1891,7 +1741,7 @@ namespace octoon
 			style.DisplaySafeAreaPadding.x = newStyle.DisplaySafeAreaPadding.x;
 			style.DisplaySafeAreaPadding.y = newStyle.DisplaySafeAreaPadding.y;
 			style.AntiAliasedLines = newStyle.AntiAliasedLines;
-			style.AntiAliasedShapes = newStyle.AntiAliasedShapes;
+			style.AntiAliasedFill = newStyle.AntiAliasedFill;
 			style.CurveTessellationTol = newStyle.CurveTessellationTol;
 
 			std::memcpy(&style.Colors, newStyle.Colors, sizeof(style.Colors));
@@ -1902,12 +1752,12 @@ namespace octoon
 			return _defalutStyle;
 		}
 
-		void root_dock(const float2& pos, const float2& size)
+		void root_dock(const float2& pos, const float2& size) noexcept
 		{
 			ImGui::RootDock((const ImVec2&)pos, (const ImVec2&)size);
 		}
 
-		bool begin_dock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size)
+		bool begin_dock(const char* label, bool* opened, GuiWindowFlags extra_flags, const float2& default_size) noexcept
 		{
 			if (!ImGui::BeginDock(label, opened, extra_flags, (ImVec2&)default_size))
 			{
@@ -1918,57 +1768,57 @@ namespace octoon
 			return true;
 		}
 
-		void end_dock()
+		void end_dock() noexcept
 		{
 			ImGui::EndDock();
 		}
 
-		void set_dock_active()
+		void set_dock_active() noexcept
 		{
 			ImGui::SetDockActive();
 		}
 
-		bool drag_floatn_ex(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power)
+		bool drag_floatn_ex(const char* labels[], float* v, int components, float v_speed, float v_min, float v_max, const char* display_format, float power) noexcept
 		{
 			return ImGui::DragFloatNEx(labels, v, components, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool drag_intn_ex(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format)
+		bool drag_intn_ex(const char* labels[], int* v, int components, float v_speed, int v_min, int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		bool drag_uIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format)
+		bool drag_uIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed, unsigned int v_min, unsigned int v_max, const char* display_format) noexcept
 		{
 			return ImGui::DragUIntNEx(labels, v, components, v_speed, v_min, v_max, display_format);
 		}
 
-		void render_frame_ex(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness)
+		void render_frame_ex(const float2& p_min, const float2& p_max, bool border, float rounding, float thickness) noexcept
 		{
 			ImGui::RenderFrameEx((ImVec2&)p_min, (ImVec2&)p_max, border, rounding, thickness);
 		}
 
-		bool begin_toolbar(const char* str_id, const float2& screen_pos, const float2& size)
+		bool begin_toolbar(const char* str_id, const float2& screen_pos, const float2& size) noexcept
 		{
 			return ImGui::BeginToolbar(str_id, (ImVec2&)screen_pos, (ImVec2&)size);
 		}
 
-		void end_toolbar()
+		void end_toolbar() noexcept
 		{
 			ImGui::EndToolbar();
 		}
 
-		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled)
+		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled) noexcept
 		{
 			return ImGui::ToolbarButton(texture, tooltip, selected, enabled);
 		}
 
-		bool image_button_ex(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled)
+		bool image_button_ex(GuiTextureID texture, const float2& size, const char* tooltip, bool selected, bool enabled) noexcept
 		{
 			return ImGui::ImageButtonEx(texture, (ImVec2&)size, tooltip, selected, enabled);
 		}
 
-		bool image_button_ex(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_ex(GuiTextureID texture, const float2& size, bool enabled, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
 		{
 			if (enabled)
 				return image_button(texture, size, uv0, uv1, frame_padding, bg_col, tint_col);
@@ -1979,14 +1829,13 @@ namespace octoon
 			}
 		}
 
-		bool image_button_with_aspect_and_label(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags)
+		bool image_button_with_aspect_and_label(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, bool selected, bool* edit_label, const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags) noexcept
 		{
 			return ImGui::ImageButtonWithAspectAndLabel(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)uv0, (ImVec2&)uv1, selected, edit_label, label, buf, buf_size, flags);
 		}
 
-		bool image_button_and_label(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col)
+		bool image_button_and_label(const char* label, GuiTextureID texture, const float2& size, bool showLabel, bool selected, const float2& uv0, const float2& uv1, int frame_padding, const float4& bg_col, const float4& tint_col) noexcept
 		{
-			ImGuiWindow* window = ImGui::GetCurrentWindow();
 			ImGui::BeginGroup();
 
 			bool chlick = image_button_ex(texture, size, true, uv0, uv1, frame_padding, bg_col, tint_col);
@@ -2018,12 +1867,12 @@ namespace octoon
 			return chlick;
 		}
 
-		void image_with_aspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col)
+		void image_with_aspect(GuiTextureID texture, const float2& texture_size, const float2& size, const float2& uv0, const float2& uv1, const float4& tint_col, const float4& border_col) noexcept
 		{
 			ImGui::ImageWithAspect(texture, (ImVec2&)texture_size, (ImVec2&)size, (ImVec2&)size, (ImVec2&)uv0, (ImVec4&)tint_col, (ImVec4&)border_col);
 		}
 
-		void label_text_ex(const char* label, const char* fmt, ...)
+		void label_text_ex(const char* label, const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -2031,9 +1880,47 @@ namespace octoon
 			va_end(args);
 		}
 
-		void label_text_ex_v(const char* label, const char* fmt, va_list args)
+		void label_text_ex_v(const char* label, const char* fmt, va_list args) noexcept
 		{
 			ImGui::LabelTextExV(label, fmt, args);
+		}
+
+		namespace guizmo
+		{
+			void SetDrawlist()
+			{
+				ImGuizmo::SetDrawlist();
+			}
+
+			void BeginFrame()
+			{
+				ImGuizmo::BeginFrame();
+			}
+
+			bool IsOver()
+			{
+				return ImGuizmo::IsOver();
+			}
+
+			bool IsUsing()
+			{
+				return ImGuizmo::IsUsing();
+			}
+
+			void Enable(bool enable)
+			{
+				ImGuizmo::Enable(enable);
+			}
+
+			void SetRect(float x, float y, float width, float height)
+			{
+				ImGuizmo::SetRect(x, y, width, height);
+			}
+
+			void Manipulate(const float *view, const float *projection, Operation operation, Mode mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
+			{
+				ImGuizmo::Manipulate(view, projection, (ImGuizmo::OPERATION)operation, (ImGuizmo::MODE)mode, matrix, deltaMatrix, snap, localBounds, boundsSnap);
+			}
 		}
 	}
 }

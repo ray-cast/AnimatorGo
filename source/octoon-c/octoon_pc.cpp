@@ -1,28 +1,36 @@
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include <octoon/octoon.h>
 
-#include <octoon/game_application.h>
+#include <octoon/game_app.h>
 #include <octoon/input/input_event.h>
+#include <octoon/runtime/except.h>
+#include <octoon/io/fcntl.h>
 
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
 #include <chrono>
 #include <iostream>
+#include <cstring>
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
-#define glfwGetWinHandle(window) glfwGetWin32Window(window_);
+#define glfwGetWinHandle(window) glfwGetWin32Window(window)
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
-#define glfwGetWinHandle(window) glfwGetX11Window(window_);
+#define glfwGetWinHandle(window) glfwGetX11Window(window)
 #elif defined(GLFW_EXPOSE_NATIVE_EGL)
-#define glfwGetWinHandle(window) glfwGetEGLSurface(window_);
+#define glfwGetWinHandle(window) glfwGetEGLSurface(window)
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
-#define glfwGetWinHandle(window) glfwGetCocoaWindow(window_);
+#define glfwGetWinHandle(window) glfwGetCocoaWindow(window)
+#endif
+
+#undef None
+
+#ifndef MAX_PATH
+#	define MAX_PATH 260
 #endif
 
 GLFWwindow* window_ = nullptr;
-octoon::GameApplicationPtr gameApp_;
-octoon::input::InputMousePtr inputMessage_;
+octoon::GameApp* gameApp_;
 
 std::string gameRootPath_;
 std::string gameScenePath_;
@@ -159,96 +167,52 @@ octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
 
 void onWindowResize(GLFWwindow* window, int w, int h)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::SizeChange;
-		event.change.w = w;
-		event.change.h = h;
-		event.change.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.change.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowResize(hwnd, w, h);
 }
 
 void onWindowFramebufferResize(GLFWwindow* window, int w, int h)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::SizeChangeDPI;
-		event.change.w = w;
-		event.change.h = h;
-		event.change.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.change.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowFramebufferResize(hwnd, w, h);
 }
 
 void onWindowClose(GLFWwindow* window)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::AppQuit;
-		event.window.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.window.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowClose(hwnd);
 }
 
 void onWindowFocus(GLFWwindow* window, int focus)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
-		event.window.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.window.timestamp = ::glfwGetTimerFrequency();
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowFocus(hwnd, focus);
 }
 
 void onWindowKey(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
 	{
-		octoon::input::InputEvent event;
-		event.event = (action == GLFW_PRESS || action == GLFW_REPEAT) ? octoon::input::InputEvent::KeyDown : octoon::input::InputEvent::KeyUp;
-		event.key.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.key.timestamp = ::glfwGetTimerFrequency();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = (action == GLFW_REPEAT) ? true : false;
-		event.key.state = ::glfwGetKey(window, key) == GLFW_PRESS ? true : false;
-		event.key.keysym.raw = scancode;
-		event.key.keysym.sym = KeyCodetoInputKey(key);
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = 0;
-
-		gameApp_->send_input_event(event);
+		auto octoon_key = KeyCodetoInputKey(key);
+		if (action == GLFW_PRESS)
+			gameApp_->doWindowKeyDown(hwnd, octoon_key, scancode, mods);
+		else if (action == GLFW_REPEAT)
+			gameApp_->doWindowKeyPress(hwnd, octoon_key, scancode, mods);
+		else if (action == GLFW_RELEASE)
+			gameApp_->doWindowKeyUp(hwnd, octoon_key, scancode, mods);
 	}
 }
 
 void onWindowKeyChar(GLFWwindow* window, unsigned int unicode, int mods)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::Character;
-		event.key.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.key.timestamp = ::glfwGetTimerFrequency();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = 0;
-		event.key.state = true;
-		event.key.keysym.raw = 0;
-		event.key.keysym.sym = 0;
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = unicode;
-
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowKeyChar(hwnd, unicode, mods);
 }
 
 void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
@@ -258,18 +222,11 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 		double mouseX, mouseY;
 		::glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		octoon::input::InputEvent event;
-		event.event = action == GLFW_PRESS ? octoon::input::InputEvent::MouseButtonDown : octoon::input::InputEvent::MouseButtonUp;
-		event.button.button = octoon::input::InputButton::MOUSE0 + button;
-		event.button.clicks = action == GLFW_PRESS ? true : false;
-		event.button.x = mouseX;
-		event.button.y = mouseY;
-		event.button.timestamp = glfwGetTimerFrequency();
-		event.button.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-		event.button.padding1 = 0;
-		event.button.which = 0;
-
-		gameApp_->send_input_event(event);
+		octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
+		if (action == GLFW_PRESS)
+			gameApp_->doWindowMouseButtonDown(hwnd, octoon::input::InputButton::Mouse0 + button, mouseX, mouseY);
+		else if (action == GLFW_RELEASE)
+			gameApp_->doWindowMouseButtonUp(hwnd, octoon::input::InputButton::Mouse0 + button, mouseX, mouseY);
 
 		if (action == GLFW_RELEASE)
 		{
@@ -286,20 +243,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 				auto now = std::chrono::system_clock::now();
 				double diff_ms = std::chrono::duration <double, std::milli>(now - before).count();
 				if (diff_ms > 10 && diff_ms < 200)
-				{
-					octoon::input::InputEvent doubleClick;
-					doubleClick.event = octoon::input::InputEvent::MouseButtonDoubleClick;
-					doubleClick.button.button = octoon::input::InputButton::MOUSE0 + button;
-					doubleClick.button.clicks = true;
-					doubleClick.button.x = mouseX;
-					doubleClick.button.y = mouseY;
-					doubleClick.button.timestamp = glfwGetTimerFrequency();
-					doubleClick.button.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-					doubleClick.button.padding1 = 0;
-					doubleClick.button.which = 0;
-
-					gameApp_->send_input_event(doubleClick);
-				}
+					gameApp_->doWindowMouseButtonDoubleClick(hwnd, octoon::input::InputButton::Mouse0 + button, mouseX, mouseY);
 
 				clicks = false;
 			}
@@ -309,56 +253,23 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 void onWindowMouseMotion(GLFWwindow* window, double x, double y)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::MouseMotion;
-		event.motion.x = x;
-		event.motion.y = y;
-		event.motion.xrel = x;
-		event.motion.yrel = y;
-		event.motion.timestamp = glfwGetTimerFrequency();
-		event.motion.state = false;
-		event.motion.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-
-#if defined(GLFW_EXPOSE_NATIVE_WIN32)
-		POINT pt;
-		GetCursorPos(&pt);
-
-		event.motion.xrel = pt.x;
-		event.motion.yrel = pt.y;
-#endif
-
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowMouseMotion(hwnd, x, y);
 }
 
 void onWindowScrool(GLFWwindow* window, double x, double y)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
-		event.wheel.timestamp = glfwGetTimerFrequency();
-		event.wheel.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowScrool(hwnd, x, y);
 }
 
 void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 {
+	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-	{
-		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::Drop;
-		event.drop.timestamp = glfwGetTimerFrequency();
-		event.drop.count = count;
-		event.drop.files = file_utf8;
-		event.drop.windowID = (std::uint64_t)::glfwGetWinHandle(window);
-
-		gameApp_->send_input_event(event);
-	}
+		gameApp_->doWindowDrop(hwnd, count, file_utf8);
 }
 
 bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
@@ -369,15 +280,11 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 
 	if (gamedir)
 	{
-		char drive[3];
+		char drive[MAX_PATH];
 		char dir[MAX_PATH];
 		char filename[MAX_PATH];
 		char ext[MAX_PATH];
-#if GLFW_EXPOSE_NATIVE_WIN32
-		::_splitpath_s(gamedir, drive, 3, dir, MAX_PATH, filename, MAX_PATH, ext, MAX_PATH);
-#else
-		::_splitpath(gamedir, drive, dir, filename, ext);
-#endif
+		octoon::io::fcntl::splitpath(gamedir, drive, dir, filename, ext);
 
 		gameRootPath_ = drive;
 		gameRootPath_ += dir;
@@ -438,22 +345,17 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(window_);
 
-			gameApp_ = std::make_shared<octoon::GameApplication>();
-
-			if (!gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h))
-				throw std::exception("GameApplication::open() failed");
-
-			if (!gameApp_->start())
-				throw std::exception("GameApplication::start() failed");
-
-			onWindowFocus(window_, true);
-			onWindowResize(window_, w, h);
-			onWindowFramebufferResize(window_, framebuffer_w, framebuffer_h);
+			gameApp_ = octoon::GameApp::instance();
+			gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h);
+			gameApp_->setActive(true);
+			gameApp_->doWindowFocus(hwnd, true);
+			gameApp_->doWindowResize(hwnd, w, h);
+			gameApp_->doWindowFramebufferResize(hwnd, framebuffer_w, framebuffer_h);
 
 			if (!gameScenePath_.empty())
 			{
-				if (!gameApp_->open_scene(gameScenePath_))
-					throw std::exception("GameApplication::open_scene() failed");
+				if (!gameApp_->openScene(gameScenePath_))
+					throw octoon::runtime::runtime_error::create("GameApplication::open_scene() failed");
 			}
 
 			::glfwShowWindow(window_);
@@ -466,7 +368,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 	{
 		OctoonCloseWindow();
 
-		gameApp_.reset();
+		gameApp_->close();
 		gameApp_ = nullptr;
 
 		return false;
@@ -477,7 +379,7 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 {
 	if (gameApp_)
 	{
-		gameApp_.reset();
+		gameApp_->close();
 		gameApp_ = nullptr;
 	}
 
@@ -495,7 +397,7 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	if (!gameApp_)
 		return true;
 
-	if (glfwWindowShouldClose(window_) || gameApp_->is_quit_request())
+	if (glfwWindowShouldClose(window_) || gameApp_->isQuitRequest())
 		return true;
 
 	return false;

@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	class GameBaseFeatures : public GameFeature
+	class GameBaseFeatures final : public GameFeature
 	{
 		OctoonDeclareSubClass(GameBaseFeatures, GameFeature)
 	public:
@@ -13,9 +13,9 @@ namespace octoon
 		~GameBaseFeatures() noexcept;
 
 	private:
-		virtual void on_frame_begin() noexcept;
-		virtual void on_frame() noexcept;
-		virtual void on_frame_end() noexcept;
+		virtual void onFrameBegin() noexcept override;
+		virtual void onFrame() noexcept override;
+		virtual void onFrameEnd() noexcept override;
 	};
 }
 

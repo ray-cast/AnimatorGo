@@ -60,7 +60,7 @@ namespace octoon
 			}
 		}
 
-		InputMousePtr
+		IInputMousePtr
 		GLFWInputMouse::clone() const noexcept
 		{
 			return std::make_shared<GLFWInputMouse>();

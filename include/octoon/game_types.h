@@ -8,7 +8,7 @@ namespace octoon
 {
 	class GameServer;
 	class GameFeature;
-	class GameApplication;
+	class GameApp;
 	class GameScene;
 	class GameSceneManager;
 	class GameListener;
@@ -22,7 +22,7 @@ namespace octoon
 	typedef std::shared_ptr<GameComponent> GameComponentPtr;
 	typedef std::shared_ptr<GameFeature> GameFeaturePtr;
 	typedef std::shared_ptr<GameServer> GameServerPtr;
-	typedef std::shared_ptr<GameApplication> GameApplicationPtr;
+	typedef std::shared_ptr<GameApp> GameApplicationPtr;
 
 	typedef std::weak_ptr<GameScene> GameSceneWeakPtr;
 	typedef std::weak_ptr<GameListener> GameListenerWeakPtr;
@@ -30,27 +30,34 @@ namespace octoon
 	typedef std::weak_ptr<GameComponent> GameComponentWeakPtr;
 	typedef std::weak_ptr<GameFeature> GameFeatureWeakPtr;
 	typedef std::weak_ptr<GameServer> GameServerWeakPtr;
-	typedef std::weak_ptr<GameApplication> GameApplicationWeakPtr;
+	typedef std::weak_ptr<GameApp> GameApplicationWeakPtr;
 
 	typedef std::vector<GameScenePtr> GameScenes;
 	typedef std::vector<GameObjectPtr> GameObjects;
 	typedef std::vector<GameComponentPtr> GameComponents;
+	typedef std::vector<GameComponent*> GameComponentRaws;
 	typedef std::vector<GameFeaturePtr> GameFeatures;
+	typedef std::vector<GameComponent*> GameComponentRaws;
 
 	typedef void* WindHandle;
 
-	enum GameDispatchType : std::uint8_t
+	struct GameDispatchType
 	{
-		GameDispatchTypeFrameBegin,
-		GameDispatchTypeFrame,
-		GameDispatchTypeFrameEnd,
-		GameDispatchTypeGui,
-		GameDispatchTypeMoveBefore,
-		GameDispatchTypeMoveAfter,
-		GameDispatchTypeBeginRange = GameDispatchTypeFrameBegin,
-		GameDispatchTypeEndRange = GameDispatchTypeMoveAfter,
-		GameDispatchTypeRangeSize = (GameDispatchTypeEndRange - GameDispatchTypeBeginRange + 1),
+		enum Type
+		{
+			FrameBegin,
+			Frame,
+			FrameEnd,
+			Gui,
+			MoveBefore,
+			MoveAfter,
+			BeginRange_ = FrameBegin,
+			EndRange_ = MoveAfter,
+			RangeSize_ = (EndRange_ - BeginRange_ + 1),
+		};
 	};
+
+	typedef std::uint8_t GameDispatchTypes;
 }
 
 #endif

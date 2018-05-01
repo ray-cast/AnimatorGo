@@ -1,8 +1,8 @@
 #ifndef OCTOON_QUATERNION_H_
 #define OCTOON_QUATERNION_H_
 
-#include <octoon/math/mathfwd.h>
 #include <octoon/math/trait.h>
+#include <octoon/math/mathfwd.h>
 
 namespace octoon
 {
@@ -217,14 +217,14 @@ namespace octoon
 					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
 				}
 
-				template<typename ostream, typename T, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
+				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>
 				friend ostream& operator << (ostream& os, const Quaternion<T>& v)
 				{
 					os << v.x << ", " << v.y << ", " << v.z << ", " << v.w;
 					return os;
 				}
 
-				template<typename istream, typename T, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
+				template<typename istream, std::enable_if_t<trait::has_right_shift<istream>::value, int> = 0>
 				friend istream& operator >> (istream& is, Quaternion<T>& v)
 				{
 					is >> v.x;
@@ -414,13 +414,13 @@ namespace octoon
 		template<typename T>
 		inline detail::Quaternion<T> min(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
 		{
-			return Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+			return detail::Quaternion<T>(std::min(a.w, b.w), std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 		}
 
 		template<typename T>
 		inline  detail::Quaternion<T> max(const detail::Quaternion<T>& a, const detail::Quaternion<T>& b) noexcept
 		{
-			return Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+			return detail::Quaternion<T>(std::max(a.w, b.w), std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 		}
 	}
 }

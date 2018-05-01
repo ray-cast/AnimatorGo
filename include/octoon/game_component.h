@@ -12,55 +12,68 @@ namespace octoon
 		GameComponent() noexcept;
 		virtual ~GameComponent() noexcept;
 
-		void set_active(bool active) except;
-		bool get_active() const noexcept;
+		void setActive(bool active) except;
+		bool getActive() const noexcept;
 
-		void set_name(const std::string& name) noexcept;
-		void set_name(std::string&& name) noexcept;
-		const std::string& get_name() const noexcept;
+		void setName(const std::string& name) noexcept;
+		void setName(std::string&& name) noexcept;
+		const std::string& getName() const noexcept;
 
-		GameObjectPtr get_game_object() const noexcept;
+		GameObjectPtr getGameObject() const noexcept;
 
-		GameComponentPtr get_component(const runtime::Rtti* type) const noexcept;
-		GameComponentPtr get_component(const runtime::Rtti& type) const noexcept;
-		const GameComponents& get_components() const noexcept;
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }
+		GameComponentPtr getComponent(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr getComponent(const runtime::Rtti& type) const noexcept;
 
-		template<typename T>
-		std::shared_ptr<T> get_component() const noexcept
-		{
-			return std::dynamic_pointer_cast<T>(this->get_component(T::RTTI));
-		}
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void getComponents(GameComponents& components) const noexcept { this->getComponents(T::RTTI, components); }
+		void getComponents(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void getComponents(const runtime::Rtti& type, GameComponents& components) const noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		std::shared_ptr<T> getComponentInChildren() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponentInChildren(T::RTTI)); }
+		GameComponentPtr getComponentInChildren(const runtime::Rtti* type) const noexcept;
+		GameComponentPtr getComponentInChildren(const runtime::Rtti& type) const noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
+		void getComponentsInChildren(GameComponents& components) const noexcept { this->getComponentsInChildren(T::RTTI, components); }
+		void getComponentsInChildren(const runtime::Rtti* type, GameComponents& components) const noexcept;
+		void getComponentsInChildren(const runtime::Rtti& type, GameComponents& components) const noexcept;
+
+		const GameComponents& getComponents() const noexcept;
+
+		static GameComponentPtr instantiate(const GameComponent* component) except;
+		static GameComponentPtr instantiate(const GameComponent& component) except;
 
 		virtual GameComponentPtr clone() const noexcept = 0;
 
 	protected:
-		void add_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
-
-		void remove_component_dispatch(GameDispatchType type, GameComponent* component) noexcept;
-		void remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept;
+		void addComponentDispatch(GameDispatchTypes type) noexcept;
+		void removeComponentDispatch(GameDispatchTypes type) noexcept;
+		void removeComponentDispatchs() noexcept;
 
 	private:
-		virtual void on_attach() except;
-		virtual void on_detach() noexcept;
+		virtual void onAttach() except;
+		virtual void onDetach() noexcept;
 
-		virtual void on_attach_component(const GameComponentPtr& component) except;
-		virtual void on_detach_component(const GameComponentPtr& component) noexcept;
+		virtual void onAttachComponent(const GameComponentPtr& component) except;
+		virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
-		virtual void on_activate() except;
-		virtual void on_deactivate() noexcept;
+		virtual void onActivate() except;
+		virtual void onDeactivate() noexcept;
 
-		virtual void on_frame_begin() except;
-		virtual void on_frame() except;
-		virtual void on_frame_end() except;
+		virtual void onFrameBegin() except;
+		virtual void onFrame() except;
+		virtual void onFrameEnd() except;
 
-		virtual void on_move_before() except;
-		virtual void on_move_after() except;
+		virtual void onMoveBefore() except;
+		virtual void onMoveAfter() except;
 
-		virtual void on_layer_change_before() except;
-		virtual void on_layer_change_after() except;
+		virtual void onLayerChangeBefore() except;
+		virtual void onLayerChangeAfter() except;
 
-		virtual void on_gui() except;
+		virtual void onGui() except;
 
 	private:
 		friend GameObject;

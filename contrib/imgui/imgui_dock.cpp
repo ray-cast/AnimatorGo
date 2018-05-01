@@ -332,7 +332,7 @@ namespace ImGui
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
 				ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
 				ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar |
-				ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_ShowBorders |
+				ImGuiWindowFlags_NoScrollWithMouse |
 				ImGuiWindowFlags_NoBringToFrontOnFocus;
 			Dock* root = getRootDock();
 			if (root)
@@ -909,7 +909,7 @@ namespace ImGui
 			{
 				SetNextWindowPos(dock.pos);
 				SetNextWindowSize(dock.size);
-				bool ret = Begin(label, opened, dock.size, -1.0f, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_ShowBorders | extra_flags);
+				bool ret = Begin(label, opened, dock.size, -1.0f, ImGuiWindowFlags_NoCollapse | extra_flags);
 				m_end_action = EndAction_End;
 				dock.pos = GetWindowPos();
 				dock.size = GetWindowSize();

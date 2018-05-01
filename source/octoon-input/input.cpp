@@ -36,62 +36,62 @@ namespace octoon
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 			input_device_ = std::make_shared<MSWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<MSWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<MSWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
 #elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
 			input_device_ = std::make_shared<GLFWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<GLFWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<GLFWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
 #else
 			input_device_ = std::make_shared<DefaultInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<DefaultInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<DefaultInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
 			return true;
 		}
 
 		bool
-		DefaultInput::open(InputDevicePtr& device) noexcept
+		DefaultInput::open(const IInputDevicePtr& device) noexcept
 		{
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 			input_device_ = device ? device : std::make_shared<MSWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<MSWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<MSWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
 #elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
 			input_device_ = device ? device : std::make_shared<GLFWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<GLFWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<GLFWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
 #else
 			input_device_ = device ? device : std::make_shared<DefaultInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<DefaultInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<DefaultInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
 			return true;
 		}
 
 		bool
-		DefaultInput::open(InputDevicePtr&& device) noexcept
+		DefaultInput::open(IInputDevicePtr&& device) noexcept
 		{
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 			input_device_ = device ? std::move(device) : std::make_shared<MSWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<MSWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<MSWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<MSWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<MSWInputKeyboard>());
 #elif defined(OCTOON_FEATURE_INPUT_API_GLFW)
 			input_device_ = device ? std::move(device) : std::make_shared<GLFWInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<GLFWInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<GLFWInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<GLFWInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<GLFWInputKeyboard>());
 #else
 			input_device_ = device ? std::move(device) : std::make_shared<DefaultInputDevice>();
 
-			this->obtain_mouse_capture(std::make_shared<DefaultInputMouse>());
-			this->obtain_keyboard_capture(std::make_shared<DefaultInputKeyboard>());
+			this->obtainMouseCapture(std::make_shared<DefaultInputMouse>());
+			this->obtainKeyboardCapture(std::make_shared<DefaultInputKeyboard>());
 #endif
 			return true;
 		}
@@ -107,361 +107,361 @@ namespace octoon
 
 			if (mouse_capture_device_)
 			{
-				mouse_capture_device_->release_capture();
+				mouse_capture_device_->releaseCapture();
 				mouse_capture_device_.reset();
 				mouse_capture_device_ = nullptr;
 			}
 
 			if (keyboard_capture_device_)
 			{
-				keyboard_capture_device_->release_capture();
+				keyboard_capture_device_->releaseCapture();
 				keyboard_capture_device_.reset();
 				keyboard_capture_device_ = nullptr;
 			}
 		}
 
 		void
-		DefaultInput::set_capture_object(WindHandle window) noexcept
+		DefaultInput::setCaptureObject(WindHandle window) noexcept
 		{
 			if (input_device_)
-				input_device_->set_capture_object(window);
+				input_device_->setCaptureObject(window);
 		}
 
 		WindHandle
-		DefaultInput::get_capture_object() const noexcept
+		DefaultInput::getCaptureObject() const noexcept
 		{
 			if (input_device_)
-				return input_device_->get_capture_object();
+				return input_device_->getCaptureObject();
 			return nullptr;
 		}
 
 		float
-		DefaultInput::get_axis(InputAxis::Code axis) const noexcept
+		DefaultInput::getAxis(InputAxis::Code axis) const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->get_axis(axis);
+				return mouse_capture_device_->getAxis(axis);
 			return 0.0f;
 		}
 
 		void
-		DefaultInput::set_mouse_pos(InputButton::mouse_t x, InputButton::mouse_t y) noexcept
+		DefaultInput::setMousePos(InputButton::Type x, InputButton::Type y) noexcept
 		{
 			if (mouse_capture_device_)
-				mouse_capture_device_->set_position(x, y);
+				mouse_capture_device_->setPosition(x, y);
 		}
 
 		void
-		DefaultInput::get_mouse_pos(InputButton::mouse_t& x, InputButton::mouse_t& y) const noexcept
+		DefaultInput::getMousePos(InputButton::Type& x, InputButton::Type& y) const noexcept
 		{
 			if (mouse_capture_device_)
-				mouse_capture_device_->get_position(x, y);
+				mouse_capture_device_->getPosition(x, y);
 		}
 
 		bool
-		DefaultInput::is_key_down(InputKey::Code key) const noexcept
+		DefaultInput::isKeyDown(InputKey::Code key) const noexcept
 		{
 			if (keyboard_capture_device_)
-				return keyboard_capture_device_->is_key_down(key);
+				return keyboard_capture_device_->isKeyDown(key);
 
 			return false;
 		}
 
 		bool
-		DefaultInput::is_key_up(InputKey::Code key) const noexcept
+		DefaultInput::isKeyUp(InputKey::Code key) const noexcept
 		{
 			if (keyboard_capture_device_)
-				return keyboard_capture_device_->is_key_up(key);
+				return keyboard_capture_device_->isKeyUp(key);
 
 			return false;
 		}
 
 		bool
-		DefaultInput::is_key_pressed(InputKey::Code key) const noexcept
+		DefaultInput::isKeyPressed(InputKey::Code key) const noexcept
 		{
 			if (keyboard_capture_device_)
-				return keyboard_capture_device_->is_key_pressed(key);
+				return keyboard_capture_device_->isKeyPressed(key);
 
 			return false;
 		}
 
 		bool
-		DefaultInput::is_button_down(InputButton::Code key) const noexcept
+		DefaultInput::isButtonDown(InputButton::Code key) const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->is_button_down(key);
+				return mouse_capture_device_->isButtonDown(key);
 
 			return false;
 		}
 
 		bool
-		DefaultInput::is_button_up(InputButton::Code key) const noexcept
+		DefaultInput::isButtonUp(InputButton::Code key) const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->is_button_up(key);
+				return mouse_capture_device_->isButtonUp(key);
 
 			return false;
 		}
 
 		bool
-		DefaultInput::is_button_pressed(InputButton::Code key) const noexcept
+		DefaultInput::isButtonPressed(InputButton::Code key) const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->is_button_pressed(key);
+				return mouse_capture_device_->isButtonPressed(key);
 
 			return false;
 		}
 
 		void
-		DefaultInput::show_cursor(bool show) noexcept
+		DefaultInput::showCursor(bool show) noexcept
 		{
 			if (mouse_capture_device_)
 			{
 				if (show)
-					mouse_capture_device_->show_mouse();
+					mouse_capture_device_->showMouse();
 				else
-					mouse_capture_device_->hide_mouse();
+					mouse_capture_device_->hideMouse();
 			}
 		}
 
 		bool
-		DefaultInput::is_show_cursor() const noexcept
+		DefaultInput::isShowCursor() const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->is_show_mouse();
+				return mouse_capture_device_->isShowMouse();
 			return false;
 		}
 
 		void
-		DefaultInput::lock_cursor(bool lock) noexcept
+		DefaultInput::lockCursor(bool lock) noexcept
 		{
 			if (mouse_capture_device_)
 			{
 				if (lock)
-					mouse_capture_device_->lock_mouse();
+					mouse_capture_device_->lockMouse();
 				else
-					mouse_capture_device_->unlock_mouse();
+					mouse_capture_device_->unlockMouse();
 			}
 		}
 
 		bool
-		DefaultInput::is_locked_cursor() const noexcept
+		DefaultInput::isLockedCursor() const noexcept
 		{
 			if (mouse_capture_device_)
-				return mouse_capture_device_->is_locked_mouse();
+				return mouse_capture_device_->isLockedMouse();
 			return false;
 		}
 
 		void
-		DefaultInput::obtain_mouse_capture() noexcept
+		DefaultInput::obtainMouseCapture() noexcept
 		{
 			if (mouse_capture_device_ && !mouse_capture_device_->capture())
-				mouse_capture_device_->obtain_capture();
+				mouse_capture_device_->obtainCapture();
 		}
 
 		void
-		DefaultInput::obtain_keyboard_capture() noexcept
+		DefaultInput::obtainKeyboardCapture() noexcept
 		{
 			if (keyboard_capture_device_ && !keyboard_capture_device_->capture())
-				keyboard_capture_device_->obtain_capture();
+				keyboard_capture_device_->obtainCapture();
 		}
 
 		void
-		DefaultInput::obtain_mouse_capture(InputMousePtr& mouse) noexcept
+		DefaultInput::obtainMouseCapture(const IInputMousePtr& mouse) noexcept
 		{
 			if (mouse_capture_device_ != mouse)
 			{
 				if (mouse_capture_device_)
 				{
-					mouse_capture_device_->release_capture();
+					mouse_capture_device_->releaseCapture();
 
 					if (input_device_)
-						input_device_->remove_input_listener(mouse_capture_device_);
+						input_device_->removeInputListener(mouse_capture_device_);
 				}
 
 				mouse_capture_device_ = mouse;
 
 				if (mouse_capture_device_)
 				{
-					mouse_capture_device_->obtain_capture();
+					mouse_capture_device_->obtainCapture();
 
 					if (input_device_)
-						input_device_->add_input_listener(mouse_capture_device_);
+						input_device_->addInputListener(mouse_capture_device_);
 				}
 			}
 		}
 
 		void
-		DefaultInput::obtain_mouse_capture(InputMousePtr&& mouse) noexcept
+		DefaultInput::obtainMouseCapture(IInputMousePtr&& mouse) noexcept
 		{
 			if (mouse_capture_device_ != mouse)
 			{
 				if (mouse_capture_device_)
 				{
-					mouse_capture_device_->release_capture();
+					mouse_capture_device_->releaseCapture();
 
 					if (input_device_)
-						input_device_->remove_input_listener(mouse_capture_device_);
+						input_device_->removeInputListener(mouse_capture_device_);
 				}
 
 				mouse_capture_device_ = std::move(mouse);
 
 				if (mouse_capture_device_)
 				{
-					mouse_capture_device_->obtain_capture();
+					mouse_capture_device_->obtainCapture();
 
 					if (input_device_)
-						input_device_->add_input_listener(mouse_capture_device_);
+						input_device_->addInputListener(mouse_capture_device_);
 				}
 			}
 		}
 
 		void
-		DefaultInput::obtain_keyboard_capture(InputKeyboardPtr& keyboard) noexcept
+		DefaultInput::obtainKeyboardCapture(const IInputKeyboardPtr& keyboard) noexcept
 		{
 			if (keyboard_capture_device_ != keyboard)
 			{
 				if (keyboard_capture_device_)
 				{
-					keyboard_capture_device_->release_capture();
+					keyboard_capture_device_->releaseCapture();
 
 					if (input_device_)
-						input_device_->remove_input_listener(keyboard);
+						input_device_->removeInputListener(keyboard);
 				}
 
 				keyboard_capture_device_ = keyboard;
 
 				if (keyboard_capture_device_)
 				{
-					keyboard_capture_device_->obtain_capture();
+					keyboard_capture_device_->obtainCapture();
 
 					if (input_device_)
-						input_device_->add_input_listener(keyboard_capture_device_);
+						input_device_->addInputListener(keyboard_capture_device_);
 				}
 			}
 		}
 
 		void
-		DefaultInput::obtain_keyboard_capture(InputKeyboardPtr&& keyboard) noexcept
+		DefaultInput::obtainKeyboardCapture(IInputKeyboardPtr&& keyboard) noexcept
 		{
 			if (keyboard_capture_device_ != keyboard)
 			{
 				if (keyboard_capture_device_)
 				{
-					keyboard_capture_device_->release_capture();
+					keyboard_capture_device_->releaseCapture();
 
 					if (input_device_)
-						input_device_->remove_input_listener(keyboard);
+						input_device_->removeInputListener(keyboard);
 				}
 
 				keyboard_capture_device_ = std::move(keyboard);
 
 				if (keyboard_capture_device_)
 				{
-					keyboard_capture_device_->obtain_capture();
+					keyboard_capture_device_->obtainCapture();
 
 					if (input_device_)
-						input_device_->add_input_listener(keyboard_capture_device_);
+						input_device_->addInputListener(keyboard_capture_device_);
 				}
 			}
 		}
 
 		void
-		DefaultInput::obtain_capture() noexcept
+		DefaultInput::obtainCapture() noexcept
 		{
-			this->obtain_mouse_capture();
-			this->obtain_keyboard_capture();
+			this->obtainMouseCapture();
+			this->obtainKeyboardCapture();
 		}
 
 		void
-		DefaultInput::release_mouse_capture() noexcept
+		DefaultInput::releaseMouseCapture() noexcept
 		{
 			if (mouse_capture_device_ && mouse_capture_device_->capture())
-				mouse_capture_device_->release_capture();
+				mouse_capture_device_->releaseCapture();
 		}
 
 		void
-		DefaultInput::release_keyboard_capture() noexcept
+		DefaultInput::releaseKeyboardCapture() noexcept
 		{
 			if (keyboard_capture_device_ && keyboard_capture_device_->capture())
-				keyboard_capture_device_->release_capture();
+				keyboard_capture_device_->releaseCapture();
 		}
 
 		void
-		DefaultInput::release_capture() noexcept
+		DefaultInput::releaseCapture() noexcept
 		{
-			this->release_mouse_capture();
-			this->release_keyboard_capture();
+			this->releaseMouseCapture();
+			this->releaseKeyboardCapture();
 		}
 
 		void
 		DefaultInput::reset() noexcept
 		{
 			if (mouse_capture_device_)
-				mouse_capture_device_->on_reset();
+				mouse_capture_device_->onReset();
 
 			if (keyboard_capture_device_)
-				keyboard_capture_device_->on_reset();
+				keyboard_capture_device_->onReset();
 		}
 
 		void
-		DefaultInput::add_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInput::addInputListener(const IInputListenerPtr& listener) noexcept
 		{
 			if (input_device_)
-				input_device_->add_input_listener(listener);
+				input_device_->addInputListener(listener);
 		}
 
 		void
-		DefaultInput::add_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInput::addInputListener(IInputListenerPtr&& listener) noexcept
 		{
 			if (input_device_)
-				input_device_->add_input_listener(std::move(listener));
+				input_device_->addInputListener(std::move(listener));
 		}
 
 		void
-		DefaultInput::remove_input_listener(InputListenerPtr& listener) noexcept
+		DefaultInput::removeInputListener(const IInputListenerPtr& listener) noexcept
 		{
 			if (input_device_)
-				input_device_->remove_input_listener(listener);
+				input_device_->removeInputListener(listener);
 		}
 
 		void
-		DefaultInput::remove_input_listener(InputListenerPtr&& listener) noexcept
+		DefaultInput::removeInputListener(IInputListenerPtr&& listener) noexcept
 		{
 			if (input_device_)
-				input_device_->remove_input_listener(std::move(listener));
+				input_device_->removeInputListener(std::move(listener));
 		}
 
 		void
-		DefaultInput::clear_input_listener() noexcept
+		DefaultInput::clearInputListener() noexcept
 		{
 			if (input_device_)
-				input_device_->clear_input_listener();
+				input_device_->clearInputListener();
 		}
 
 		bool
-		DefaultInput::send_input_event(const InputEvent& event) noexcept
+		DefaultInput::sendInputEvent(const InputEvent& event) noexcept
 		{
 			if (input_device_)
-				return input_device_->send_event(event);
+				return input_device_->sendEvent(event);
 			return false;
 		}
 
 		bool
-		DefaultInput::post_input_event(const InputEvent& event) noexcept
+		DefaultInput::postInputEvent(const InputEvent& event) noexcept
 		{
 			if (input_device_)
-				return input_device_->post_event(event);
+				return input_device_->postEvent(event);
 			return true;
 		}
 
 		void
-		DefaultInput::update_begin() noexcept
+		DefaultInput::updateBegin() noexcept
 		{
 			if (mouse_capture_device_)
-				mouse_capture_device_->on_frame_begin();
+				mouse_capture_device_->onFrameBegin();
 
 			if (keyboard_capture_device_)
-				keyboard_capture_device_->on_frame_begin();
+				keyboard_capture_device_->onFrameBegin();
 		}
 
 		void
@@ -471,23 +471,23 @@ namespace octoon
 				return;
 
 			InputEvent event;
-			while (input_device_->poll_events(event))
+			while (input_device_->pollEvents(event))
 			{
-				this->send_input_event(event);
+				this->sendInputEvent(event);
 			}
 		}
 
 		void
-		DefaultInput::update_end() noexcept
+		DefaultInput::updateEnd() noexcept
 		{
 			if (mouse_capture_device_ && mouse_capture_device_->capture())
-				mouse_capture_device_->on_frame_end();
+				mouse_capture_device_->onFrameEnd();
 
 			if (keyboard_capture_device_ && keyboard_capture_device_->capture())
-				keyboard_capture_device_->on_frame_end();
+				keyboard_capture_device_->onFrameEnd();
 		}
 
-		InputPtr
+		IInputPtr
 		DefaultInput::clone() const noexcept
 		{
 			auto input = std::make_shared<DefaultInput>();
@@ -495,10 +495,10 @@ namespace octoon
 				input->open(input_device_->clone());
 
 			if (keyboard_capture_device_)
-				input->obtain_keyboard_capture(keyboard_capture_device_->clone());
+				input->obtainKeyboardCapture(keyboard_capture_device_->clone());
 
 			if (mouse_capture_device_)
-				input->obtain_mouse_capture(mouse_capture_device_->clone());
+				input->obtainMouseCapture(mouse_capture_device_->clone());
 
 			return input;
 		}

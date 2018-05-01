@@ -130,6 +130,7 @@ namespace ImGui
 	bool ImageButtonEx(ImTextureID texture, ImVec2 size, const char* tooltip, bool selected, bool enabled)
 	{
 		ImVec4 bg_color(0, 0, 0, 0);
+
 		// 		if (selected)
 		// 		{
 		// 			bg_color = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
@@ -203,7 +204,7 @@ namespace ImGui
 
 		ImRect bb(window->DC.CursorPos, ImVec2(window->DC.CursorPos.x + max_size, window->DC.CursorPos.y + max_size));
 		ItemSize(bb);
-		ItemAdd(bb, nullptr);
+		ItemAdd(bb, 0);
 
 		auto pos2 = GetCursorScreenPos();
 
@@ -242,6 +243,7 @@ namespace ImGui
 
 			auto pos = GetCursorScreenPos();
 			PushItemWidth(size.x);
+
 			//			LabelTextEx("", label);
 			if (!(selected && edit))
 			{

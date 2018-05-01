@@ -1,0 +1,49 @@
+PROJECT(unzip)
+
+SET(LIB_NAME unzip)
+
+INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/zlib)
+
+SET(HEADER_PATH ${OCTOON_PATH_DEPENDENCIES}/${LIB_NAME})
+SET(SOURCE_PATH ${OCTOON_PATH_DEPENDENCIES}/${LIB_NAME})
+
+IF(OCTOON_BUILD_PLATFORM_WINDOWS)
+    SET(UNZIP_LIST
+    ${HEADER_PATH}/crypt.h
+    ${HEADER_PATH}/ioapi_buf.h
+    ${SOURCE_PATH}/ioapi_buf.c
+    ${HEADER_PATH}/ioapi_mem.h
+    ${SOURCE_PATH}/ioapi_mem.c
+    ${HEADER_PATH}/ioapi.h
+    ${SOURCE_PATH}/ioapi.c
+    ${HEADER_PATH}/iowin32.h
+    ${SOURCE_PATH}/iowin32.c
+    ${HEADER_PATH}/unzip.h
+    ${SOURCE_PATH}/unzip.c
+    ${HEADER_PATH}/zip.h
+    ${SOURCE_PATH}/zip.c
+    )
+ELSE()
+    SET(UNZIP_LIST
+    ${HEADER_PATH}/crypt.h
+    ${HEADER_PATH}/ioapi_buf.h
+    ${SOURCE_PATH}/ioapi_buf.c
+    ${HEADER_PATH}/ioapi_mem.h
+    ${SOURCE_PATH}/ioapi_mem.c
+    ${HEADER_PATH}/ioapi.h
+    ${SOURCE_PATH}/ioapi.c
+    ${HEADER_PATH}/unzip.h
+    ${SOURCE_PATH}/unzip.c
+    ${HEADER_PATH}/zip.h
+    ${SOURCE_PATH}/zip.c
+    )
+ENDIF()
+
+
+SOURCE_GROUP(${LIB_NAME} FILES ${UNZIP_LIST})
+
+ADD_DEFINITIONS(-DZLIB_DLL)
+ADD_DEFINITIONS(-DZLIB_INTERNAL)
+ADD_LIBRARY(${LIB_NAME} SHARED ${UNZIP_LIST})
+
+TARGET_LINK_LIBRARIES (${LIB_NAME} zlib)

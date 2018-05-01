@@ -27,7 +27,7 @@ namespace octoon
 		{
 			assert(_texture == GL_NONE);
 
-			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim(), textureDesc.isMultiSample());
+			GLenum target = OGLTypes::asTextureTarget(textureDesc.getTexDim());
 			if (target == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture target");
@@ -57,17 +57,20 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = textureDesc.getMipNums();
 
-			if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
-				return false;
+			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
+			{
+				if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
+					return false;
 
-			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-				return false;
+				if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
+					return false;
 
-			if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
-				return false;
+				if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
+					return false;
 
-			if (!applyMipmapLimit(target, mipBase, mipLevel))
-				return false;
+				if (!applyMipmapLimit(target, mipBase, mipLevel))
+					return false;
+			}
 
 			const char* stream = (const char*)textureDesc.getStream();
 			if (OGLTypes::isCompressedTexture(textureDesc.getTexFormat()))
@@ -126,51 +129,66 @@ namespace octoon
 				else
 					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-				for (GLsizei mip = mipBase; mip < mipBase + mipLevel; mip++)
+				if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 				{
-					GLsizei w = std::max(width / (1 << mip), 1);
-					GLsizei h = std::max(height / (1 << mip), 1);
-					GLsizei mipSize = w * h * pixelSize;
-					GLsizei layerBase = textureDesc.getLayerBase();
-					GLsizei layerLevel = textureDesc.getLayerNums();
-
-					for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
+					if (target == GL_TEXTURE_2D_MULTISAMPLE)
+						glTexImage2DMultisample(target, textureDesc.getTexMultisample(), internalFormat, width, height, GL_FALSE);
+					else
 					{
-						if (target == GL_TEXTURE_2D ||
-							target == GL_TEXTURE_2D_MULTISAMPLE)
+						GLsizei layerBase = textureDesc.getLayerBase() + 1;
+						GLsizei layerLevel = textureDesc.getLayerNums();
+
+						for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
+							glTexImage3DMultisample(_texture, textureDesc.getTexMultisample(), internalFormat, width, height, layer, GL_FALSE);
+					}
+				}
+				else
+				{
+					for (GLsizei mip = mipBase; mip < mipBase + mipLevel; mip++)
+					{
+						GLsizei w = std::max(width / (1 << mip), 1);
+						GLsizei h = std::max(height / (1 << mip), 1);
+						GLsizei mipSize = w * h * pixelSize;
+						GLsizei layerBase = textureDesc.getLayerBase();
+						GLsizei layerLevel = textureDesc.getLayerNums();
+
+						for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
 						{
-							glTexImage2D(target, mip, internalFormat, w, h, 0, format, type, stream ? stream + offset : nullptr);
-						}
-						else
-						{
-							if (target == GL_TEXTURE_CUBE_MAP_ARRAY ||
-								target == GL_TEXTURE_CUBE_MAP)
+							if (target == GL_TEXTURE_2D)
 							{
-								GLenum cubeFace[] =
-								{
-									GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-									GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-									GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-								};
-
-								for (GLsizei face = 0; face < 6; face++)
-								{
-									if (target == GL_TEXTURE_CUBE_MAP)
-										glTexImage2D(cubeFace[face], mip, internalFormat, w, h, 0, format, type, stream ? (char*)stream + offset : nullptr);
-									else
-										glTexImage3D(cubeFace[face], mip, internalFormat, w, h, layer + 1, 0, format, type, stream ? (char*)stream + offset : nullptr);
-
-									offset += mipSize;
-								}
+								glTexImage2D(target, mip, internalFormat, w, h, 0, format, type, stream ? stream + offset : nullptr);
 							}
 							else
 							{
-								if (target == GL_TEXTURE_2D_ARRAY)
-									glTexImage3D(target, mip, internalFormat, w, h, layer + 1, 0, format, type, stream ? (char*)stream + offset : nullptr);
-								else
-									glTexImage3D(target, mip, internalFormat, w, h, depth, 0, format, type, stream ? (char*)stream + offset : nullptr);
+								if (target == GL_TEXTURE_CUBE_MAP_ARRAY ||
+									target == GL_TEXTURE_CUBE_MAP)
+								{
+									GLenum cubeFace[] =
+									{
+										GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+										GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+										GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+									};
 
-								offset += mipSize;
+									for (GLsizei face = 0; face < 6; face++)
+									{
+										if (target == GL_TEXTURE_CUBE_MAP)
+											glTexImage2D(cubeFace[face], mip, internalFormat, w, h, 0, format, type, stream ? (char*)stream + offset : nullptr);
+										else
+											glTexImage3D(cubeFace[face], mip, internalFormat, w, h, layer + 1, 0, format, type, stream ? (char*)stream + offset : nullptr);
+
+										offset += mipSize;
+									}
+								}
+								else
+								{
+									if (target == GL_TEXTURE_2D_ARRAY)
+										glTexImage3D(target, mip, internalFormat, w, h, layer + 1, 0, format, type, stream ? (char*)stream + offset : nullptr);
+									else
+										glTexImage3D(target, mip, internalFormat, w, h, depth, 0, format, type, stream ? (char*)stream + offset : nullptr);
+
+									offset += mipSize;
+								}
 							}
 						}
 					}
@@ -240,7 +258,7 @@ namespace octoon
 
 			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
 
-			GLsizei mapSize = w * h * num;
+			GLsizei mapSize = _textureDesc.getWidth() * _textureDesc.getHeight() * num;
 			if (_pboSize < mapSize)
 			{
 				glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_STREAM_READ);
@@ -251,7 +269,7 @@ namespace octoon
 			glGetTexImage(_target, mipLevel, format, type, 0);
 
 			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
-			data += (y * _textureDesc.getWidth() * num) * x;
+			*(std::uint8_t*)data += (y * _textureDesc.getWidth() * num) + x * num;
 
 			return *data ? true : false;
 		}
@@ -259,7 +277,8 @@ namespace octoon
 		void
 		OGLTexture::unmap() noexcept
 		{
-			glUnmapNamedBuffer(_pbo);
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
+			glUnmapBuffer(_target);
 		}
 
 		GLenum

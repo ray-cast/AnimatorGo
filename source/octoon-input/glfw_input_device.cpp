@@ -149,7 +149,7 @@ namespace octoon
 				event.change.w = w;
 				event.change.h = h;
 				event.change.windowID = (std::uint64_t)window;
-				event.change.timestamp = ::glfwGetTimerFrequency();
+				event.change.timestamp = ::glfwGetTimerValue();
 				input->send_event(event);
 			}
 		}
@@ -164,7 +164,7 @@ namespace octoon
 				event.change.w = w;
 				event.change.h = h;
 				event.change.windowID = (std::uint64_t)window;
-				event.change.timestamp = ::glfwGetTimerFrequency();
+				event.change.timestamp = ::glfwGetTimerValue();
 				input->send_event(event);
 			}
 		}
@@ -177,7 +177,7 @@ namespace octoon
 				octoon::input::InputEvent event;
 				event.event = octoon::input::InputEvent::AppQuit;
 				event.window.windowID = (std::uint64_t)window;
-				event.window.timestamp = ::glfwGetTimerFrequency();
+				event.window.timestamp = ::glfwGetTimerValue();
 				input->send_event(event);
 			}
 		}
@@ -190,7 +190,7 @@ namespace octoon
 				octoon::input::InputEvent event;
 				event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
 				event.window.windowID = (std::uint64_t)window;
-				event.window.timestamp = ::glfwGetTimerFrequency();
+				event.window.timestamp = ::glfwGetTimerValue();
 				input->send_event(event);
 			}
 		}
@@ -203,7 +203,7 @@ namespace octoon
 				octoon::input::InputEvent event;
 				event.event = (action == GLFW_PRESS || action == GLFW_REPEAT) ? octoon::input::InputEvent::KeyDown : octoon::input::InputEvent::KeyUp;
 				event.key.windowID = (std::uint64_t)window;
-				event.key.timestamp = ::glfwGetTimerFrequency();
+				event.key.timestamp = ::glfwGetTimerValue();
 				event.key.padding2 = 0;
 				event.key.padding3 = 0;
 				event.key.repeat = (action == GLFW_REPEAT) ? true : false;
@@ -225,7 +225,7 @@ namespace octoon
 				octoon::input::InputEvent event;
 				event.event = octoon::input::InputEvent::Character;
 				event.key.windowID = (std::uint64_t)window;
-				event.key.timestamp = ::glfwGetTimerFrequency();
+				event.key.timestamp = ::glfwGetTimerValue();
 				event.key.padding2 = 0;
 				event.key.padding3 = 0;
 				event.key.repeat = 0;
@@ -249,11 +249,11 @@ namespace octoon
 
 				octoon::input::InputEvent event;
 				event.event = action == GLFW_PRESS ? octoon::input::InputEvent::MouseButtonDown : octoon::input::InputEvent::MouseButtonUp;
-				event.button.button = octoon::input::InputButton::MOUSE0 + button;
+				event.button.button = octoon::input::InputButton::Mouse0 + button;
 				event.button.clicks = action == GLFW_PRESS ? true : false;
 				event.button.x = mouseX;
 				event.button.y = mouseY;
-				event.button.timestamp = glfwGetTimerFrequency();
+				event.button.timestamp = glfwGetTimerValue();
 				event.button.windowID = (std::uint64_t)window;
 				event.button.padding1 = 0;
 				event.button.which = 0;
@@ -278,11 +278,11 @@ namespace octoon
 						{
 							octoon::input::InputEvent doubleClick;
 							doubleClick.event = octoon::input::InputEvent::MouseButtonDoubleClick;
-							doubleClick.button.button = octoon::input::InputButton::MOUSE0 + button;
+							doubleClick.button.button = octoon::input::InputButton::Mouse0 + button;
 							doubleClick.button.clicks = true;
 							doubleClick.button.x = mouseX;
 							doubleClick.button.y = mouseY;
-							doubleClick.button.timestamp = glfwGetTimerFrequency();
+							doubleClick.button.timestamp = glfwGetTimerValue();
 							doubleClick.button.windowID = (std::uint64_t)window;
 							doubleClick.button.padding1 = 0;
 							doubleClick.button.which = 0;
@@ -307,7 +307,7 @@ namespace octoon
 				event.motion.y = y;
 				event.motion.xrel = x;
 				event.motion.yrel = y;
-				event.motion.timestamp = glfwGetTimerFrequency();
+				event.motion.timestamp = glfwGetTimerValue();
 				event.motion.state = false;
 				event.motion.windowID = (std::uint64_t)window;
 
@@ -330,7 +330,7 @@ namespace octoon
 			{
 				octoon::input::InputEvent event;
 				event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
-				event.wheel.timestamp = glfwGetTimerFrequency();
+				event.wheel.timestamp = glfwGetTimerValue();
 				event.wheel.windowID = (std::uint64_t)window;
 
 				input->send_event(event);
@@ -344,7 +344,7 @@ namespace octoon
 			{
 				octoon::input::InputEvent event;
 				event.event = octoon::input::InputEvent::Drop;
-				event.drop.timestamp = glfwGetTimerFrequency();
+				event.drop.timestamp = glfwGetTimerValue();
 				event.drop.count = count;
 				event.drop.files = file_utf8;
 				event.drop.windowID = (std::uint64_t)window;
@@ -430,7 +430,7 @@ namespace octoon
 			DefaultInputDevice::flush_event();
 		}
 
-		InputDevicePtr
+		IInputDevicePtr
 		GLFWInputDevice::clone() const noexcept
 		{
 			return std::make_shared<GLFWInputDevice>();

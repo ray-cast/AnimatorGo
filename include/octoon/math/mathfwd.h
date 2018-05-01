@@ -31,28 +31,50 @@ namespace octoon
 
 			template<typename T = float>
 			class Quaternion;
+
+			template<typename T = float>
+			class AABB;
+
+			template<typename T = float>
+			class Sphere;
+
+			template<typename T = float>
+			class Triangle;
+
+			template<typename T = float>
+			class BoundingBox;
 		}
 
 		// default
-		using Vector2 = detail::Vector2<>;
-		using Vector3 = detail::Vector3<>;
-		using Vector4 = detail::Vector4<>;
-		using Matrix2x2 = detail::Matrix2x2<>;
-		using Matrix3x3 = detail::Matrix3x3<>;
-		using Matrix4x4 = detail::Matrix4x4<>;
-		using Quaternion = detail::Quaternion<>;
+		using Vector2 = detail::Vector2<float>;
+		using Vector3 = detail::Vector3<float>;
+		using Vector4 = detail::Vector4<float>;
+		using Matrix2x2 = detail::Matrix2x2<float>;
+		using Matrix3x3 = detail::Matrix3x3<float>;
+		using Matrix4x4 = detail::Matrix4x4<float>;
+		using Quaternion = detail::Quaternion<float>;
+		using AABB = detail::AABB<float>;
+		using Sphere = detail::Sphere<float>;
+		using Triangle = detail::Triangle<float>;
+		using BoundingBox = detail::BoundingBox<float>;
 
 		// float
 		using float2x2 = detail::Matrix2x2<float>;
 		using float3x3 = detail::Matrix3x3<float>;
 		using float4x4 = detail::Matrix4x4<float>;
 		using Quaternionf = detail::Quaternion<float>;
+		using AABBf = detail::AABB<float>;
+		using Spheref = detail::Sphere<float>;
+		using BoundingBoxf = detail::BoundingBox<float>;
 
 		// double
 		using double2x2 = detail::Matrix2x2<double>;
 		using double3x3 = detail::Matrix3x3<double>;
 		using double4x4 = detail::Matrix4x4<double>;
 		using Quaterniond = detail::Quaternion<double>;
+		using AABBd = detail::AABB<double>;
+		using Sphered = detail::Sphere<float>;
+		using BoundingBoxd = detail::BoundingBox<float>;
 
 		// char
 		using char1 = std::int8_t;
@@ -103,7 +125,7 @@ namespace octoon
 		using double4 = detail::Vector4<double>;
 
 		// array
-		using IntArray = std::vector<int>;
+		using Int1Array = std::vector<int1>;
 		using Int2Array = std::vector<int2>;
 		using Int3Array = std::vector<int3>;
 		using Int4Array = std::vector<int4>;
@@ -114,20 +136,48 @@ namespace octoon
 		using Vector2Array = std::vector<Vector2>;
 		using Vector3Array = std::vector<Vector3>;
 		using Vector4Array = std::vector<Vector4>;
-		using FloatArray = std::vector<float> ;
+		using Float1Array = std::vector<float1>;
 		using Float2Array = std::vector<float2>;
 		using Float3Array = std::vector<float3>;
 		using Float4Array = std::vector<float4>;
-		using DoubleArray = std::vector<double>;
+		using Double1Array = std::vector<double1>;
 		using Double2Array = std::vector<double2>;
 		using Double3Array = std::vector<double3>;
 		using Double4Array = std::vector<double4>;
 		using Float2x2Array = std::vector<float2x2>;
 		using Float3x3Array = std::vector<float3x3>;
 		using Float4x4Array = std::vector<float4x4>;
-		using double2x2Array = std::vector<double2x2>;
-		using double3x3Array = std::vector<double3x3>;
-		using double4x4Array = std::vector<double4x4>;
+		using Double2x2Array = std::vector<double2x2>;
+		using Double3x3Array = std::vector<double3x3>;
+		using Double4x4Array = std::vector<double4x4>;
+
+		using int1s = std::vector<int1>;
+		using int2s = std::vector<int2>;
+		using int3s = std::vector<int3>;
+		using int4s = std::vector<int4>;
+		using uint1s = std::vector<uint1>;
+		using uint2s = std::vector<uint2>;
+		using uint3s = std::vector<uint3>;
+		using uint4s = std::vector<uint4>;
+		using float1s = std::vector<float1>;
+		using float2s = std::vector<float2>;
+		using float3s = std::vector<float3>;
+		using float4s = std::vector<float4>;
+		using double1s = std::vector<double1>;
+		using double2s = std::vector<double2>;
+		using double3s = std::vector<double3>;
+		using double4s = std::vector<double4>;
+		using float2x2s = std::vector<float2x2>;
+		using float3x3s = std::vector<float3x3>;
+		using float4x4s = std::vector<float4x4>;
+		using double2x2s = std::vector<double2x2>;
+		using double3x3s = std::vector<double3x3>;
+		using double4x4s = std::vector<double4x4>;
+
+		using uint8s = std::vector<std::uint8_t>;
+		using uint16s = std::vector<std::uint16_t>;
+		using uint32s = std::vector<std::uint32_t>;
+		using uint64s = std::vector<std::uint64_t>;
 	}
 }
 

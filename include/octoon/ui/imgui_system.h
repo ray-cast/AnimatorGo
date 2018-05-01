@@ -6,6 +6,8 @@
 #include <octoon/runtime/singleton.h>
 #include <octoon/graphics/graphics.h>
 
+struct ImGuiContext;
+
 namespace octoon
 {
 	namespace imgui
@@ -16,7 +18,7 @@ namespace octoon
 			System() noexcept;
 			~System() noexcept;
 
-			bool open(input::WindHandle window) except;
+			bool open(input::WindHandle window, const graphics::GraphicsDevicePtr& device) except;
 			void close() noexcept;
 
 			bool inject_mouse_move(float absx, float absy) noexcept;
@@ -37,7 +39,9 @@ namespace octoon
 
 			bool load_font(const char* path, float font_size = 15) noexcept;
 
-			void render() noexcept;
+			void newFrame() noexcept;
+
+			void render(graphics::GraphicsContext& context) noexcept;
 
 		private:
 			System(const System&) noexcept = delete;
@@ -49,7 +53,7 @@ namespace octoon
 			std::string imguiPath_;
 			std::string imguiDockPath_;
 
-			input::WindHandle window_;
+			ImGuiContext* ui_context_;
 
 			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsDataPtr ibo_;
@@ -60,8 +64,6 @@ namespace octoon
 			graphics::GraphicsUniformSetPtr decal_;
 
 			graphics::GraphicsDevicePtr device_;
-			graphics::GraphicsContextPtr context_;
-			graphics::GraphicsSwapchainPtr swapchain_;
 			graphics::GraphicsPipelinePtr pipeline_;
 		};
 	}

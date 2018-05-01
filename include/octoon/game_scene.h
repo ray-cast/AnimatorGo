@@ -13,31 +13,31 @@ namespace octoon
 		GameScene(const std::string& name) noexcept;
 		~GameScene() noexcept;
 
-		void set_active(bool active) except;
-		bool get_active() const noexcept;
+		void setActive(bool active) except;
+		bool getActive() const noexcept;
 
-		void set_game_listener(const GameListenerPtr& listener) noexcept;
-		GameListenerPtr get_game_listener() const noexcept;
+		void setGameListener(const GameListenerPtr& listener) noexcept;
+		GameListenerPtr getGameListener() const noexcept;
 
-		void set_name(std::string&& name) noexcept;
-		void set_name(const std::string& name) noexcept;
-		const std::string& get_name() const noexcept;
+		void setName(std::string&& name) noexcept;
+		void setName(const std::string& name) noexcept;
+		const std::string& getName() const noexcept;
 
-		std::size_t get_instance_id() const noexcept;
+		std::size_t id() const noexcept;
 
-		GameObjectPtr get_root_object() const noexcept;
+		const GameObjectPtr& root() const noexcept;
 
 		GameScenePtr clone() const noexcept;
 
 	private:
-		class RootObject : public GameObject
+		class RootObject final : public GameObject
 		{
 		public:
 			RootObject(GameScene* scene) noexcept;
 			virtual ~RootObject() noexcept;
 
-			virtual GameScene* get_game_scene() noexcept;
-			virtual const GameScene* get_game_scene() const noexcept;
+			virtual GameScene* getGameScene() noexcept override;
+			virtual const GameScene* getGameScene() const noexcept override;
 
 		private:
 			GameScene* scene_;

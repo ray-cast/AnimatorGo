@@ -31,14 +31,13 @@ namespace octoon
 			void setTexDim(GraphicsTextureDim mapping) noexcept;
 			void setTexTiling(GraphicsImageTiling tiling) noexcept;
 			void setTexUsage(GraphicsViewUsageFlags flags) noexcept;
+			void setTexMultisample(std::uint32_t samples) noexcept;
 
 			void setSamplerWrap(GraphicsSamplerWrap wrap) noexcept;
 			void setSamplerMinFilter(GraphicsSamplerFilter filter) noexcept;
 			void setSamplerMagFilter(GraphicsSamplerFilter filter) noexcept;
 			void setSamplerFilter(GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept;
 			void setSamplerAnis(GraphicsSamplerAnis anis) noexcept;
-
-			void setMultisample(bool enable) noexcept;
 
 			GraphicsFormat getTexFormat()  const noexcept;
 			GraphicsTextureDim getTexDim() const noexcept;
@@ -60,15 +59,13 @@ namespace octoon
 			std::uint32_t getLayerBase() const noexcept;
 			std::uint32_t getLayerNums() const noexcept;
 
-			bool isMultiSample() const noexcept;
+			std::uint32_t getTexMultisample() const noexcept;
 
 			const void* getStream() const noexcept;
 			std::size_t getStreamSize() const noexcept;
 
 		private:
 			std::string _name;
-
-			bool _multisample;
 
 			math::uint3 _size;
 
@@ -77,6 +74,8 @@ namespace octoon
 
 			std::uint32_t _mipLevel;
 			std::uint32_t _mipBase;
+
+			std::uint32_t _samples;
 
 			GraphicsFormat _format;
 			GraphicsTextureDim _dim;

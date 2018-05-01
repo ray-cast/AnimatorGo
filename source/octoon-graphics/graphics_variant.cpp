@@ -1,18 +1,19 @@
 #include <octoon/graphics/graphics_variant.h>
+#include <cstring>
 
 namespace octoon
 {
 	namespace graphics
 	{
 		GraphicsVariant::GraphicsVariant() noexcept
-			: _type(GraphicsUniformType::None)
+			: _type(GraphicsUniformType::Null)
 		{
 			std::memset(&_value, 0, sizeof(_value));
 		}
 
 		GraphicsVariant::~GraphicsVariant() noexcept
 		{
-			this->setType(GraphicsUniformType::None);
+			this->setType(GraphicsUniformType::Null);
 		}
 
 		void
@@ -198,7 +199,7 @@ namespace octoon
 		void
 		GraphicsVariant::uniform1b(bool b1) noexcept
 		{
-			assert(_type == GraphicsUniformType::Bool);
+			assert(_type == GraphicsUniformType::Boolean);
 			_value.b = b1;
 		}
 
@@ -669,7 +670,7 @@ namespace octoon
 		bool
 		GraphicsVariant::getBool() const noexcept
 		{
-			assert(_type == GraphicsUniformType::Bool);
+			assert(_type == GraphicsUniformType::Boolean);
 			return _value.b;
 		}
 

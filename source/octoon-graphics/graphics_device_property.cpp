@@ -147,7 +147,7 @@ namespace octoon
 		}
 
 		bool
-		GraphicsDeviceProperties::isShaderSupport(GraphicsShaderStageFlagBits stage) const noexcept
+		GraphicsDeviceProperties::isShaderSupport(GraphicsShaderStageFlags stage) const noexcept
 		{
 			return std::find(supportShaders.begin(), supportShaders.end(), stage) != supportShaders.end();
 		}

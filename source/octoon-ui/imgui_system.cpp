@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 #include <imgui_dock.h>
+#include <imgui_internal.h>
+
+#include <cstring> // std::memcpy
 
 using namespace octoon::graphics;
 
@@ -37,9 +40,9 @@ namespace octoon
 
 		System::System() noexcept
 			: initialize_(false)
-			, window_(nullptr)
 			, imguiPath_("../../ui/imgui.layout")
 			, imguiDockPath_("../../ui/imgui_dock.layout")
+			, ui_context_(nullptr)
 		{
 		}
 
@@ -49,19 +52,18 @@ namespace octoon
 		}
 
 		bool
-		System::open(input::WindHandle window) except
+		System::open(input::WindHandle window, const GraphicsDevicePtr& device) except
 		{
-			assert(window);
 			assert(!initialize_);
-#if _WINDOWS
-			assert(::IsWindow((HWND)window));
-#endif
+
+			ui_context_ = ImGui::CreateContext();
+			ImGui::SetCurrentContext(ui_context_);
 
 			GuiStyle style;
 			set_style(style);
 
 			ImGuiIO& io = ImGui::GetIO();
-			io.ImeWindowHandle = window_ = window;
+			io.ImeWindowHandle = window;
 			io.IniFilename = imguiPath_.c_str();
 			io.KeyMap[ImGuiKey_Tab] = input::InputKey::Tab;
 			io.KeyMap[ImGuiKey_LeftArrow] = input::InputKey::ArrowLeft;
@@ -83,52 +85,30 @@ namespace octoon
 			io.KeyMap[ImGuiKey_Y] = input::InputKey::Y;
 			io.KeyMap[ImGuiKey_Z] = input::InputKey::Z;
 
-			GraphicsDeviceDesc deviceDesc;
-			deviceDesc.setDeviceType(GraphicsDeviceType::OpenGL);
-			device_ = GraphicsSystem::instance()->createDevice(deviceDesc);
-			if (!device_)
-				return false;
-
-			GraphicsSwapchainDesc swapchainDesc;
-			swapchainDesc.setWindHandle(window);
-			swapchainDesc.setWidth(1);
-			swapchainDesc.setHeight(1);
-			swapchainDesc.setSwapInterval(GraphicsSwapInterval::Vsync);
-			swapchainDesc.setImageNums(2);
-			swapchainDesc.setColorFormat(GraphicsFormat::B8G8R8A8UNorm);
-			swapchainDesc.setDepthStencilFormat(GraphicsFormat::D24UNorm_S8UInt);
-			swapchain_ = device_->createSwapchain(swapchainDesc);
-			if (!swapchain_)
-				return false;
-
-			GraphicsContextDesc contextDesc;
-			contextDesc.setSwapchain(swapchain_);
-			context_ = device_->createDeviceContext(contextDesc);
-			if (!context_)
-				return false;
+			device_ = device;
 
 			GraphicsDataDesc dataDesc;
 			dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
 			dataDesc.setStreamSize(0xFFF * sizeof(ImDrawVert));
-			dataDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
+			dataDesc.setUsage(GraphicsUsageFlagBits::WriteBit);
 
-			vbo_ = device_->createGraphicsData(dataDesc);
+			vbo_ = device->createGraphicsData(dataDesc);
 			if (!vbo_)
 				return false;
 
 			GraphicsDataDesc elementDesc;
 			elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
 			elementDesc.setStreamSize(0xFFF * sizeof(ImDrawIdx));
-			elementDesc.setUsage(GraphicsUsageFlagBits::GraphicsUsageFlagWriteBit);
+			elementDesc.setUsage(GraphicsUsageFlagBits::WriteBit);
 
-			ibo_ = device_->createGraphicsData(elementDesc);
+			ibo_ = device->createGraphicsData(elementDesc);
 			if (!ibo_)
 				return false;
 
 			GraphicsProgramDesc programDesc;
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageVertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
-			programDesc.addShader(device_->createShader(GraphicsShaderDesc(GraphicsShaderStageFragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
-			auto program = device_->createProgram(programDesc);
+			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
+			auto program = device->createProgram(programDesc);
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
@@ -155,19 +135,19 @@ namespace octoon
 			stateDesc.setDepthEnable(false);
 
 			GraphicsPipelineDesc pipeline;
-			pipeline.setGraphicsInputLayout(device_->createInputLayout(layoutDesc));
-			pipeline.setGraphicsState(device_->createRenderState(stateDesc));
+			pipeline.setGraphicsInputLayout(device->createInputLayout(layoutDesc));
+			pipeline.setGraphicsState(device->createRenderState(stateDesc));
 			pipeline.setGraphicsProgram(std::move(program));
-			pipeline.setGraphicsDescriptorSetLayout(device_->createDescriptorSetLayout(descriptor_set_layout));
+			pipeline.setGraphicsDescriptorSetLayout(device->createDescriptorSetLayout(descriptor_set_layout));
 
-			pipeline_ = device_->createRenderPipeline(pipeline);
+			pipeline_ = device->createRenderPipeline(pipeline);
 			if (!pipeline_)
 				return false;
 
 			GraphicsDescriptorSetDesc descriptor_set;
 			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
 
-			descriptor_set_ = device_->createDescriptorSet(descriptor_set);
+			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)
 				return false;
 
@@ -188,16 +168,18 @@ namespace octoon
 			ibo_.reset();
 			texture_.reset();
 
-			context_.reset();
-			swapchain_.reset();
-			device_.reset();
-
 			if (initialize_)
 			{
 				ImGui::ShutdownDock();
-				ImGui::Shutdown();
+				ImGui::Shutdown(ui_context_);
 
 				initialize_ = false;
+			}
+
+			if (ui_context_)
+			{
+				ImGui::DestroyContext(ui_context_);
+				ui_context_ = nullptr;
 			}
 		}
 
@@ -321,8 +303,6 @@ namespace octoon
 			project.make_ortho_lh(0, w, h, 0, 0, 1);
 
 			proj_->uniform4fmat(project);
-
-			swapchain_->setWindowResolution(w, h);
 		}
 
 		void
@@ -371,9 +351,18 @@ namespace octoon
 		}
 
 		void
-		System::render() noexcept
+		System::newFrame() noexcept
+		{
+			ImGui::SetCurrentContext(ui_context_);
+			ImGui::NewFrame();
+		}
+
+		void
+		System::render(graphics::GraphicsContext& context) noexcept
 		{
 			assert(vbo_ && ibo_);
+
+			ImGui::Render();
 
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)
@@ -416,7 +405,10 @@ namespace octoon
 					return;
 
 				if (!ibo_->map(0, totalIndirectSize, (void**)&ibo))
+				{
+					vbo_->unmap();
 					return;
+				}
 
 				for (int n = 0; n < drawData->CmdListsCount; n++)
 				{
@@ -433,17 +425,13 @@ namespace octoon
 
 			auto& io = ImGui::GetIO();
 
-			context_->renderBegin();
-
-			context_->setViewport(0, Viewport(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context_->setScissor(0, Scissor(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-
-			context_->clearFramebuffer(0, GraphicsClearFlagBits::GraphicsClearFlagColorBit, float4(0.1,0.2,0.3,1.0), 1, 0);
+			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context.setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
-				context_->setVertexBufferData(0, vbo_, 0);
-				context_->setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
+				context.setVertexBufferData(0, vbo_, 0);
+				context.setIndexBufferData(ibo_, 0, GraphicsIndexType::UInt16);
 
 				std::uint32_t vdx_buffer_offset = 0;
 				std::uint32_t idx_buffer_offset = 0;
@@ -462,12 +450,12 @@ namespace octoon
 
 						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-						context_->setScissor(0, Scissor(scissor.x, scissor.y, scissor.z, scissor.w));
+						context.setScissor(0, uint4(scissor.x, scissor.y, scissor.z, scissor.w));
 
-						context_->setRenderPipeline(pipeline_);
-						context_->setDescriptorSet(descriptor_set_);
+						context.setRenderPipeline(pipeline_);
+						context.setDescriptorSet(descriptor_set_);
 
-						context_->drawIndexed(cmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
+						context.drawIndexed(cmd->ElemCount, 1, idx_buffer_offset, vdx_buffer_offset, 0);
 
 						idx_buffer_offset += cmd->ElemCount;
 					}
@@ -475,9 +463,6 @@ namespace octoon
 					vdx_buffer_offset += cmd_list->VtxBuffer.size();
 				}
 			}
-
-			context_->renderEnd();
-			context_->present();
 		}
 	}
 }

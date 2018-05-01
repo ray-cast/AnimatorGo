@@ -6,6 +6,7 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 
 SET(CORE_LIST
 	${HEADER_PATH}/def.h
+	${HEADER_PATH}/algorithm.h
 	${HEADER_PATH}/json.h
 	${HEADER_PATH}/assert.h
 	${HEADER_PATH}/platform.h
@@ -17,6 +18,14 @@ SET(CORE_LIST
 	${HEADER_PATH}/rtti_factory.h
 	${SOURCE_PATH}/rtti_factory.cpp
 	${HEADER_PATH}/rtti_macros.h
+	${HEADER_PATH}/rtti_singleton.h
+	${SOURCE_PATH}/rtti_singleton.cpp
+	${HEADER_PATH}/timer.h
+	${SOURCE_PATH}/timer.cpp
+	${HEADER_PATH}/except.h
+	${SOURCE_PATH}/except.cpp
+	${HEADER_PATH}/string.h
+	${SOURCE_PATH}/string.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

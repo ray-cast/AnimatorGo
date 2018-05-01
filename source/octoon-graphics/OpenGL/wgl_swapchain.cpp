@@ -86,29 +86,26 @@ namespace octoon
 		{
 			static thread_local WGLSwapchain* _swapchain = nullptr;
 
-			if (_isActive != active)
+			if (active)
 			{
-				if (active)
-				{
-					if (_swapchain)
-						_swapchain->setActive(false);
+				if (_swapchain && _swapchain != this)
+					_swapchain->setActive(false);
 
-					if (!::wglMakeCurrent(_hdc, _context))
-						this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
+				if (!::wglMakeCurrent(_hdc, _context))
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
 
-					_swapchain = this;
-				}
-				else
-				{
-					if (!::wglMakeCurrent(0, 0))
-						this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
-
-					if (_swapchain == this)
-						_swapchain = nullptr;
-				}
-
-				_isActive = active;
+				_swapchain = this;
 			}
+			else
+			{
+				if (!::wglMakeCurrent(0, 0))
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
+
+				if (_swapchain == this)
+					_swapchain = nullptr;
+			}
+
+			_isActive = active;
 		}
 
 		bool
@@ -137,19 +134,19 @@ namespace octoon
 			switch (interval)
 			{
 			case GraphicsSwapInterval::Free:
-				if (!__wglSwapIntervalEXT(0))
+				if (!wglSwapIntervalEXT(0))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Free) fail");
 				break;
 			case GraphicsSwapInterval::Vsync:
-				if (!__wglSwapIntervalEXT(1))
+				if (!wglSwapIntervalEXT(1))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Vsync) fail");
 				break;
 			case GraphicsSwapInterval::Fps30:
-				if (!__wglSwapIntervalEXT(2))
+				if (!wglSwapIntervalEXT(2))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps30) fail");
 				break;
 			case GraphicsSwapInterval::Fps15:
-				if (!__wglSwapIntervalEXT(3))
+				if (!wglSwapIntervalEXT(3))
 					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps15) fail");
 				break;
 			default:
@@ -180,7 +177,8 @@ namespace octoon
 		void
 		WGLSwapchain::present() noexcept
 		{
-			SwapBuffers(_hdc);
+			if (_swapchainDesc.getWindHandle())
+				::SwapBuffers(_hdc);
 		}
 
 		bool
@@ -207,13 +205,14 @@ namespace octoon
 				WNDCLASSEXA wc;
 				std::memset(&wc, 0, sizeof(wc));
 				wc.cbSize = sizeof(wc);
-				wc.hInstance = _hinstance = ::GetModuleHandle(NULL);
+				wc.hInstance = ::GetModuleHandle(NULL);
 				wc.lpfnWndProc = ::DefWindowProc;
 				wc.lpszClassName = "OGL";
 				if (!::RegisterClassEx(&wc))
 					return false;
 
-				_hwnd = CreateWindowEx(WS_EX_APPWINDOW, "OGL", "OGL", 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
+				DWORD style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+				_hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "OGL", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
 				if (!_hwnd)
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("CreateWindowEx() fail");
@@ -360,7 +359,7 @@ namespace octoon
 		bool
 		WGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
-			if (!__wglCreateContextAttribsARB)
+			if (!wglCreateContextAttribsARB)
 				_context = wglCreateContext(_hdc);
 			else
 			{
@@ -368,9 +367,9 @@ namespace octoon
 				int mask = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 				int flags = 0;
 
-		#if _DEBUG
+#if __DEBUG__
 				flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
-		#endif
+#endif
 
 				int major = 0;
 				int minor = 0;
@@ -400,10 +399,10 @@ namespace octoon
 				attribs[index++] = WGL_CONTEXT_PROFILE_MASK_ARB;
 				attribs[index++] = mask;
 
-				attribs[index] = 0;
+				attribs[index++] = 0;
 				attribs[index] = 0;
 
-				_context = __wglCreateContextAttribsARB(_hdc, nullptr, attribs);
+				_context = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
 			}
 
 			if (!_context)
@@ -412,7 +411,7 @@ namespace octoon
 				return false;
 			}
 
-			if (__wglCreateContextAttribsARB)
+			if (swapchainDesc.getWindHandle())
 			{
 				this->setActive(true);
 				this->setSwapInterval(swapchainDesc.getSwapInterval());

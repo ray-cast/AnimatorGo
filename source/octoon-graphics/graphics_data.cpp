@@ -9,7 +9,7 @@ namespace octoon
 		GraphicsDataDesc::GraphicsDataDesc() noexcept
 			: _data(nullptr)
 			, _dataSize(0)
-			, _usage(GraphicsUsageFlagBits::GraphicsUsageFlagReadBit)
+			, _usage(GraphicsUsageFlagBits::ReadBit)
 			, _type(GraphicsDataType::None)
 		{
 		}

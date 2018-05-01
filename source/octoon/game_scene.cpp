@@ -18,13 +18,13 @@ namespace octoon
 	}
 
 	GameScene*
-	GameScene::RootObject::get_game_scene() noexcept
+	GameScene::RootObject::getGameScene() noexcept
 	{
 		return scene_;
 	}
 
 	const GameScene*
-	GameScene::RootObject::get_game_scene() const noexcept
+	GameScene::RootObject::getGameScene() const noexcept
 	{
 		return scene_;
 	}
@@ -43,70 +43,69 @@ namespace octoon
 
 	GameScene::~GameScene() noexcept
 	{
-		assert(root_.unique());
+		assert(root_.use_count() == 1);
 
-		this->set_active(false);
-		root_.unique();
+		this->setActive(false);
 
 		GameSceneManager::instance()->_unsetScene(this);
 	}
 
 	void
-	GameScene::set_active(bool active) except
+	GameScene::setActive(bool active) except
 	{
-		if (this->get_active() != active)
+		if (this->getActive() != active)
 		{
 			GameSceneManager::instance()->_activeScene(this, active);
 
-			root_->set_active_downwards(active);
+			root_->setActiveDownwards(active);
 		}
 	}
 
 	bool
-	GameScene::get_active() const noexcept
+	GameScene::getActive() const noexcept
 	{
-		return root_->get_active();
+		return root_->getActive();
 	}
 
 	void
-	GameScene::set_game_listener(const GameListenerPtr& listener) noexcept
+	GameScene::setGameListener(const GameListenerPtr& listener) noexcept
 	{
 		if (game_listener_ != listener)
 			game_listener_ = listener;
 	}
 
 	GameListenerPtr
-	GameScene::get_game_listener() const noexcept
+	GameScene::getGameListener() const noexcept
 	{
 		return game_listener_;
 	}
 
 	void
-	GameScene::set_name(std::string&& name) noexcept
+	GameScene::setName(std::string&& name) noexcept
 	{
 		name_ = std::move(name);
 	}
 
 	void
-	GameScene::set_name(const std::string& name) noexcept
+	GameScene::setName(const std::string& name) noexcept
 	{
 		name_ = name;
 	}
 
 	const std::string&
-	GameScene::get_name() const noexcept
+	GameScene::getName() const noexcept
 	{
 		return name_;
 	}
 
 	std::size_t
-	GameScene::get_instance_id() const noexcept
+	GameScene::id() const noexcept
 	{
 		return instance_id_;
 	}
 
-	GameObjectPtr
-	GameScene::get_root_object() const noexcept
+	const GameObjectPtr&
+	GameScene::root() const noexcept
 	{
 		return root_;
 	}
@@ -115,7 +114,7 @@ namespace octoon
 	GameScene::clone() const noexcept
 	{
 		auto scene = std::make_shared<GameScene>();
-		scene->set_name(this->get_name());
+		scene->setName(this->getName());
 		scene->root_ = root_->clone();
 		return scene;
 	}

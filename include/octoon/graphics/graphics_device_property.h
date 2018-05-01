@@ -16,7 +16,7 @@ namespace octoon
 			bool isTextureSupport(GraphicsFormat format) const noexcept;
 			bool isTextureDimSupport(GraphicsTextureDim dimension) const noexcept;
 			bool isVertexSupport(GraphicsFormat format) const noexcept;
-			bool isShaderSupport(GraphicsShaderStageFlagBits stage) const noexcept;
+			bool isShaderSupport(GraphicsShaderStageFlags stage) const noexcept;
 
 			std::uint32_t         maxImageDimension1D;
 			std::uint32_t         maxImageDimension2D;
@@ -131,7 +131,7 @@ namespace octoon
 			std::vector<GraphicsFormat> supportTextures;
 			std::vector<GraphicsTextureDim> supportTextureDims;
 			std::vector<GraphicsFormat> supportAttribute;
-			std::vector<GraphicsShaderStageFlagBits> supportShaders;
+			std::vector<GraphicsShaderStageFlags> supportShaders;
 		};
 
 		class GraphicsDeviceProperty : public runtime::RttiInterface
@@ -141,7 +141,7 @@ namespace octoon
 			GraphicsDeviceProperty() noexcept;
 			virtual ~GraphicsDeviceProperty() noexcept;
 
-			virtual const GraphicsDeviceProperties& getGraphicsDeviceProperties() const noexcept = 0;
+			virtual const GraphicsDeviceProperties& getDeviceProperties() const noexcept = 0;
 
 		private:
 			GraphicsDeviceProperty(const GraphicsDeviceProperty&) = delete;

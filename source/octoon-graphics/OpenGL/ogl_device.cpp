@@ -19,6 +19,8 @@
 #include "ogl_core_graphics_data.h"
 #include "ogl_core_pipeline.h"
 
+#include <stdarg.h>
+
 namespace octoon
 {
 	namespace graphics
@@ -306,7 +308,7 @@ namespace octoon
 		}
 
 		const GraphicsDeviceProperty&
-		OGLDevice::getGraphicsDeviceProperty() const noexcept
+		OGLDevice::getDeviceProperty() const noexcept
 		{
 			return *_deviceProperty;
 		}

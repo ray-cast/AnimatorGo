@@ -8,129 +8,129 @@ namespace octoon
 	OctoonImplementSubClass(GameObject, runtime::RttiInterface, "Object")
 
 	GameObject::GameObject() noexcept
-		: active_(false)
+		: active_(true)
 		, layer_(0)
 	{
 		GameObjectManager::instance()->_instanceObject(this, instance_id_);
 
-		this->add_component<TransformComponent>();
+		this->addComponent<TransformComponent>();
 	}
 
 	GameObject::~GameObject() noexcept
 	{
-		this->cleanup_children();
-		this->cleanup_components();
+		this->cleanupChildren();
+		this->cleanupComponents();
 
 		GameObjectManager::instance()->_unsetObject(this);
 	}
 
 	void
-	GameObject::set_name(const std::string& name) noexcept
+	GameObject::setName(const std::string& name) noexcept
 	{
 		name_ = name;
 	}
 
 	void
-	GameObject::set_name(std::string&& name) noexcept
+	GameObject::setName(std::string&& name) noexcept
 	{
 		name_ = std::move(name);
 	}
 
 	const std::string&
-	GameObject::get_name() const noexcept
+	GameObject::getName() const noexcept
 	{
 		return name_;
 	}
 
 	void
-	GameObject::set_active(bool active) except
+	GameObject::setActive(bool active) except
 	{
 		if (active_ != active)
 		{
 			if (active)
-				this->on_activate();
+				this->onActivate();
 			else
-				this->on_deactivate();
+				this->onDeactivate();
 
 			active_ = active;
 		}
 	}
 
 	void
-	GameObject::set_active_upwards(bool active) except
+	GameObject::setActiveUpwards(bool active) except
 	{
 		if (active_ != active)
 		{
 			if (active)
-				this->on_activate();
+				this->onActivate();
 			else
-				this->on_deactivate();
+				this->onDeactivate();
 
-			auto parent = this->get_parent();
+			auto parent = this->getParent();
 			if (parent)
-				parent->set_active_upwards(active);
+				parent->setActiveUpwards(active);
 
 			active_ = active;
 		}
 	}
 
 	void
-	GameObject::set_active_downwards(bool active) except
+	GameObject::setActiveDownwards(bool active) except
 	{
 		if (active_ != active)
 		{
 			if (active)
-				this->on_activate();
+				this->onActivate();
 			else
-				this->on_deactivate();
+				this->onDeactivate();
 
 			for (auto& it : children_)
-				it->set_active_downwards(active);
+				it->setActiveDownwards(active);
 
 			active_ = active;
 		}
 	}
 
 	bool
-	GameObject::get_active() const noexcept
+	GameObject::getActive() const noexcept
 	{
 		return active_;
 	}
 
 	void
-	GameObject::set_layer(std::uint8_t layer) noexcept
+	GameObject::setLayer(std::uint8_t layer) noexcept
 	{
 		if (layer_ != layer)
 		{
-			this->on_layer_change_before();
+			this->onLayerChangeBefore();
 
 			layer_ = layer;
 
-			this->on_layer_change_after();
+			this->onLayerChangeAfter();
 		}
 	}
 
 	std::uint8_t
-	GameObject::get_layer() const noexcept
+	GameObject::getLayer() const noexcept
 	{
 		return layer_;
 	}
 
 	std::size_t
-	GameObject::get_instance_id() const noexcept
+	GameObject::id() const noexcept
 	{
 		return instance_id_;
 	}
 
 	void
-	GameObject::set_parent(const GameObjectPtr& parent) noexcept
+	GameObject::setParent(const GameObjectPtr& parent) noexcept
 	{
 		assert(this != parent.get());
 
 		auto _weak = parent_.lock();
 		if (_weak != parent)
 		{
-			this->on_move_before();
+			this->onMoveBefore();
 
 			if (_weak)
 			{
@@ -151,43 +151,51 @@ namespace octoon
 			if (parent)
 				parent->children_.push_back(this->downcast_pointer<GameObject>());
 
-			this->on_move_after();
+			this->getComponent<TransformComponent>()->updateLocalChildren();
+			this->onMoveAfter();
 		}
 	}
 
 	GameObject*
-	GameObject::get_parent() const noexcept
+	GameObject::getParent() const noexcept
 	{
 		return parent_.lock().get();
 	}
 
 	GameScene*
-	GameObject::get_game_scene() noexcept
+	GameObject::getGameScene() noexcept
 	{
-		auto parent = this->get_parent();
+		auto parent = this->getParent();
 		if (parent)
-			return parent->get_game_scene();
+			return parent->getGameScene();
 		return nullptr;
 	}
 
 	const GameScene*
-	GameObject::get_game_scene() const noexcept
+	GameObject::getGameScene() const noexcept
 	{
-		auto parent = this->get_parent();
+		auto parent = this->getParent();
 		if (parent)
-			return parent->get_game_scene();
+			return parent->getGameScene();
 		return nullptr;
 	}
 
 	void
-	GameObject::add_child(GameObjectPtr& entity) noexcept
+	GameObject::addChild(GameObjectPtr& entity) noexcept
 	{
 		assert(entity);
-		entity->set_parent(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
+		entity->setParent(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
 	}
 
 	void
-	GameObject::remove_child(GameObjectPtr& entity) noexcept
+	GameObject::addChild(GameObjectPtr&& entity) noexcept
+	{
+		assert(entity);
+		entity->setParent(std::dynamic_pointer_cast<GameObject>(this->shared_from_this()));
+	}
+
+	void
+	GameObject::removeChild(GameObjectPtr& entity) noexcept
 	{
 		assert(entity);
 
@@ -197,7 +205,7 @@ namespace octoon
 		{
 			if ((*it) == entity)
 			{
-				(*it)->set_parent(nullptr);
+				(*it)->setParent(nullptr);
 				break;
 			}
 		}
@@ -209,7 +217,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::cleanup_children() noexcept
+	GameObject::cleanupChildren() noexcept
 	{
 		for (auto& it : children_)
 			it.reset();
@@ -218,11 +226,11 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObject::find_child(const std::string& name, bool recuse) noexcept
+	GameObject::findChild(const std::string& name, bool recuse) noexcept
 	{
 		for (auto& it : children_)
 		{
-			if (it->get_name() == name)
+			if (it->getName() == name)
 			{
 				return it;
 			}
@@ -232,7 +240,7 @@ namespace octoon
 		{
 			for (auto& it : children_)
 			{
-				auto result = it->find_child(name, recuse);
+				auto result = it->findChild(name, recuse);
 				if (result)
 				{
 					return result;
@@ -244,25 +252,25 @@ namespace octoon
 	}
 
 	std::size_t
-	GameObject::get_child_count() const noexcept
+	GameObject::getChildCount() const noexcept
 	{
 		return children_.size();
 	}
 
 	GameObjects&
-	GameObject::get_children() noexcept
+	GameObject::getChildren() noexcept
 	{
 		return children_;
 	}
 
 	const GameObjects&
-	GameObject::get_children() const noexcept
+	GameObject::getChildren() const noexcept
 	{
 		return children_;
 	}
 
 	void
-	GameObject::add_component(const GameComponentPtr& gameComponent) except
+	GameObject::addComponent(const GameComponentPtr& gameComponent) except
 	{
 		assert(gameComponent);
 		assert(gameComponent->gameObject_ == nullptr);
@@ -271,29 +279,59 @@ namespace octoon
 		if (it == components_.end())
 		{
 			gameComponent->_setGameObject(this);
-			gameComponent->on_attach();
+			gameComponent->onAttach();
 
-			if (this->get_active() && gameComponent->get_active())
-				gameComponent->on_activate();
-
-			for (auto& component : components_)
-				gameComponent->on_attach_component(component);
+			if (this->getActive() && gameComponent->getActive())
+				gameComponent->onActivate();
 
 			for (auto& component : components_)
-				component->on_attach_component(gameComponent);
+				gameComponent->onAttachComponent(component);
+
+			for (auto& component : components_)
+				component->onAttachComponent(gameComponent);
 
 			components_.push_back(gameComponent);
 		}
 	}
 
 	void
-	GameObject::add_component(GameComponentPtr&& component) except
+	GameObject::addComponent(GameComponentPtr&& component) except
 	{
-		this->add_component(component);
+		this->addComponent(component);
 	}
 
 	void
-	GameObject::remove_component(const GameComponentPtr& gameComponent) noexcept
+	GameObject::removeComponent(const runtime::Rtti* type) noexcept
+	{
+		assert(type);
+
+		auto it = std::find_if(components_.begin(), components_.end(), [type](const GameComponentPtr& it) { return it->isA(type); });
+		if (it != components_.end())
+		{
+			components_.erase(it);
+
+			for (auto& compoent : components_)
+				compoent->onDetachComponent(*it);
+
+			for (auto& component : components_)
+				(*it)->onDetachComponent(component);
+
+			if (this->getActive() && (*it)->getActive())
+				(*it)->onDeactivate();
+
+			(*it)->onDetach();
+			(*it)->_setGameObject(nullptr);
+		}
+	}
+
+	void
+	GameObject::removeComponent(const runtime::Rtti& type) noexcept
+	{
+		this->removeComponent(&type);
+	}
+
+	void
+	GameObject::removeComponent(const GameComponentPtr& gameComponent) noexcept
 	{
 		assert(gameComponent);
 		assert(gameComponent->gameObject_ == this);
@@ -304,23 +342,23 @@ namespace octoon
 			components_.erase(it);
 
 			for (auto& compoent : components_)
-				compoent->on_detach_component(gameComponent);
+				compoent->onDetachComponent(gameComponent);
 
 			for (auto& component : components_)
-				gameComponent->on_detach_component(component);
+				gameComponent->onDetachComponent(component);
 
-			if (this->get_active() && gameComponent->get_active())
-				gameComponent->on_deactivate();
+			if (this->getActive() && gameComponent->getActive())
+				gameComponent->onDeactivate();
 
-			gameComponent->on_detach();
+			gameComponent->onDetach();
 			gameComponent->_setGameObject(nullptr);
 
-			this->remove_component_dispatchs(gameComponent);
+			this->removeComponentDispatchs(gameComponent.get());
 		}
 	}
 
 	void
-	GameObject::cleanup_components() noexcept
+	GameObject::cleanupComponents() noexcept
 	{
 		for (auto it = components_.begin(); it != components_.end();)
 		{
@@ -328,31 +366,31 @@ namespace octoon
 			auto nextComponent = components_.erase(it);
 
 			for (auto& compoent : components_)
-				compoent->on_detach_component(gameComponent);
+				compoent->onDetachComponent(gameComponent);
 
 			for (auto& component : components_)
-				gameComponent->on_detach_component(component);
+				gameComponent->onDetachComponent(component);
 
-			if (this->get_active() && (gameComponent)->get_active())
-				gameComponent->on_deactivate();
+			if (this->getActive() && (gameComponent)->getActive())
+				gameComponent->onDeactivate();
 
-			gameComponent->on_detach();
+			gameComponent->onDetach();
 			gameComponent->_setGameObject(nullptr);
 
-			this->remove_component_dispatchs(gameComponent);
+			this->removeComponentDispatchs(gameComponent.get());
 
 			it = nextComponent;
 		}
 	}
 
 	GameComponentPtr
-	GameObject::get_component(const runtime::Rtti* type) const noexcept
+	GameObject::getComponent(const runtime::Rtti* type) const noexcept
 	{
 		assert(type);
 
 		for (auto& it : components_)
 		{
-			if (it->is_a(type))
+			if (it->isA(type))
 				return it;
 		}
 
@@ -360,13 +398,31 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	GameObject::get_component(const runtime::Rtti& type) const noexcept
+	GameObject::getComponent(const runtime::Rtti& type) const noexcept
 	{
-		return this->get_component(&type);
+		return this->getComponent(&type);
+	}
+
+	void
+	GameObject::getComponents(const runtime::Rtti* type, GameComponents& components) const noexcept
+	{
+		assert(type);
+
+		for (auto& it : components_)
+		{
+			if (it->isA(type))
+				components.push_back(it);
+		}
+	}
+
+	void
+	GameObject::getComponents(const runtime::Rtti& type, GameComponents& components) const noexcept
+	{
+		this->getComponents(&type, components);
 	}
 
 	GameComponentPtr
-	GameObject::get_component_in_children(const runtime::Rtti* type) const noexcept
+	GameObject::getComponentInChildren(const runtime::Rtti* type) const noexcept
 	{
 		assert(type);
 
@@ -374,11 +430,11 @@ namespace octoon
 		{
 			for (auto& component : it->components_)
 			{
-				if (component->is_a(type))
+				if (component->isA(type))
 					return component;
 			}
 
-			auto component = it->get_component_in_children(type);
+			auto component = it->getComponentInChildren(type);
 			if (component)
 				return component;
 		}
@@ -387,13 +443,13 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	GameObject::get_component_in_children(const runtime::Rtti& type) const noexcept
+	GameObject::getComponentInChildren(const runtime::Rtti& type) const noexcept
 	{
-		return this->get_component_in_children(&type);
+		return this->getComponentInChildren(&type);
 	}
 
 	void
-	GameObject::get_components_in_children(const runtime::Rtti* type, GameComponents& components) const noexcept
+	GameObject::getComponentsInChildren(const runtime::Rtti* type, GameComponents& components) const noexcept
 	{
 		assert(type);
 
@@ -401,46 +457,48 @@ namespace octoon
 		{
 			for (auto& component : it->components_)
 			{
-				if (component->is_a(type))
+				if (component->isA(type))
 					components.push_back(component);
 			}
 
-			it->get_component_in_children(type);
+			it->getComponentInChildren(type);
 		}
 	}
 
 	void
-	GameObject::get_components_in_children(const runtime::Rtti& type, GameComponents& components) const noexcept
+	GameObject::getComponentsInChildren(const runtime::Rtti& type, GameComponents& components) const noexcept
 	{
-		return this->get_components_in_children(&type, components);
+		return this->getComponentsInChildren(&type, components);
 	}
 
 	const GameComponents&
-	GameObject::get_components() const noexcept
+	GameObject::getComponents() const noexcept
 	{
 		return components_;
 	}
 
 	void
-	GameObject::add_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameObject::addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept
 	{
 		assert(component);
 
 		if (dispatch_components_.empty())
-			dispatch_components_.resize(GameDispatchType::GameDispatchTypeRangeSize);
+			dispatch_components_.resize(GameDispatchType::RangeSize_);
 
 		if (std::find(dispatch_components_[type].begin(), dispatch_components_[type].end(), component) != dispatch_components_[type].end())
 			return;
 
-		if (this->get_active())
+		if (this->getActive())
 		{
-			if (type == GameDispatchType::GameDispatchTypeFrame ||
-				type == GameDispatchType::GameDispatchTypeFrameBegin ||
-				type == GameDispatchType::GameDispatchTypeFrameEnd)
+			if (type == GameDispatchType::Frame ||
+				type == GameDispatchType::FrameBegin ||
+				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::Gui)
 			{
-				if (dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatch_components_[GameDispatchType::Frame].empty() &&
+					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
+					dispatch_components_[GameDispatchType::FrameEnd].empty() &&
+					dispatch_components_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, true);
 				}
@@ -451,7 +509,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::remove_component_dispatch(GameDispatchType type, const GameComponentPtr& component) noexcept
+	GameObject::removeComponentDispatch(GameDispatchTypes type, const GameComponent* component) noexcept
 	{
 		assert(component);
 
@@ -462,15 +520,17 @@ namespace octoon
 		if (it == dispatch_components_[type].end())
 			return;
 
-		if (this->get_active())
+		if (this->getActive())
 		{
-			if (type == GameDispatchType::GameDispatchTypeFrame ||
-				type == GameDispatchType::GameDispatchTypeFrameBegin ||
-				type == GameDispatchType::GameDispatchTypeFrameEnd)
+			if (type == GameDispatchType::Frame ||
+				type == GameDispatchType::FrameBegin ||
+				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::Gui)
 			{
-				if (dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() &&
-					dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+				if (dispatch_components_[GameDispatchType::Frame].empty() &&
+					dispatch_components_[GameDispatchType::FrameBegin].empty() &&
+					dispatch_components_[GameDispatchType::FrameEnd].empty() &&
+					dispatch_components_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, false);
 				}
@@ -481,7 +541,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::remove_component_dispatchs(const GameComponentPtr& component) noexcept
+	GameObject::removeComponentDispatchs(const GameComponent* component) noexcept
 	{
 		assert(component);
 
@@ -496,72 +556,73 @@ namespace octoon
 	void
 	GameObject::destroy() noexcept
 	{
-		this->cleanup_children();
-		this->cleanup_components();
-		this->set_parent(nullptr);
+		this->cleanupChildren();
+		this->cleanupComponents();
+		this->setParent(nullptr);
 	}
 
 	GameObjectPtr
 	GameObject::clone() const except
 	{
 		auto instance = std::make_shared<GameObject>();
-		instance->set_parent(parent_.lock());
-		instance->set_name(this->get_name());
-		instance->set_layer(this->get_layer());
+		instance->setParent(parent_.lock());
+		instance->setName(this->getName());
+		instance->setLayer(this->getLayer());
 
 		for (auto& it : components_)
-			instance->add_component(it->clone());
+			instance->addComponent(it->clone());
 
-		for (auto& it : this->get_children())
-			instance->add_child(it->clone());
+		for (auto& it : this->getChildren())
+			instance->addChild(it->clone());
 
 		return instance;
 	}
 
 	void
-	GameObject::on_frame_begin() except
+	GameObject::onFrameBegin() except
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin];
+		auto& components = dispatch_components_[GameDispatchType::FrameBegin];
 		for (auto& it : components)
-			it->on_frame_begin();
+			it->onFrameBegin();
 	}
 
 	void
-	GameObject::on_frame() except
+	GameObject::onFrame() except
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrame];
+		auto& components = dispatch_components_[GameDispatchType::Frame];
 		for (auto& it : components)
-			it->on_frame();
+			it->onFrame();
 	}
 
 	void
-	GameObject::on_frame_end() except
+	GameObject::onFrameEnd() except
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd];
+		auto& components = dispatch_components_[GameDispatchType::FrameEnd];
 		for (auto& it : components)
-			it->on_frame_end();
+			it->onFrameEnd();
 	}
 
 	void
-	GameObject::on_activate() except
+	GameObject::onActivate() except
 	{
 		for (auto& it : components_)
 		{
-			if (it->get_active())
-				it->on_activate();
+			if (it->getActive())
+				it->onActivate();
 		}
 
 		if (!dispatch_components_.empty())
 		{
-			if (!dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
+				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
+				!dispatch_components_[GameDispatchType::FrameEnd].empty() ||
+				!dispatch_components_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, true);
 			}
@@ -569,13 +630,14 @@ namespace octoon
 	}
 
 	void
-	GameObject::on_deactivate() noexcept
+	GameObject::onDeactivate() noexcept
 	{
 		if (!dispatch_components_.empty())
 		{
-			if (!dispatch_components_[GameDispatchType::GameDispatchTypeFrame].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameBegin].empty() ||
-				!dispatch_components_[GameDispatchType::GameDispatchTypeFrameEnd].empty())
+			if (!dispatch_components_[GameDispatchType::Frame].empty() ||
+				!dispatch_components_[GameDispatchType::FrameBegin].empty() ||
+				!dispatch_components_[GameDispatchType::FrameEnd].empty()||
+				!dispatch_components_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, false);
 			}
@@ -583,90 +645,90 @@ namespace octoon
 
 		for (auto& it : components_)
 		{
-			if (it->get_active())
-				it->on_deactivate();
+			if (it->getActive())
+				it->onDeactivate();
 		}
 	}
 
 	void
-	GameObject::on_layer_change_before() except
+	GameObject::onLayerChangeBefore() except
 	{
-		if (this->get_active())
+		if (this->getActive())
 		{
 			for (auto& it : components_)
 			{
-				if (it->get_active())
-					it->on_layer_change_before();
+				if (it->getActive())
+					it->onLayerChangeBefore();
 			}
 		}
 	}
 
 	void
-	GameObject::on_layer_change_after() except
+	GameObject::onLayerChangeAfter() except
 	{
-		if (this->get_active())
+		if (this->getActive())
 		{
 			for (auto& it : components_)
 			{
-				if (it->get_active())
-					it->on_layer_change_after();
+				if (it->getActive())
+					it->onLayerChangeAfter();
 			}
 		}
 	}
 
 	void
-	GameObject::on_move_before() except
+	GameObject::onMoveBefore() except
 	{
-		if (!this->get_active())
+		if (!this->getActive())
 			return;
 
 		if (!dispatch_components_.empty())
 		{
-			auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeMoveBefore];
+			auto& components = dispatch_components_[GameDispatchType::MoveBefore];
 			for (auto& it : components)
 			{
-				if (it->get_active())
-					it->on_move_before();
+				if (it->getActive())
+					it->onMoveBefore();
 			}
 		}
 
 		for (auto& it : children_)
 		{
-			if (it->get_active())
-				it->on_move_before();
+			if (it->getActive())
+				it->onMoveBefore();
 		}
 	}
 
 	void
-	GameObject::on_move_after() except
+	GameObject::onMoveAfter() except
 	{
-		if (!this->get_active())
+		if (!this->getActive())
 			return;
 
 		if (!dispatch_components_.empty())
 		{
-			auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeMoveAfter];
+			auto& components = dispatch_components_[GameDispatchType::MoveAfter];
 			for (auto& it : components)
 			{
-				if (it->get_active())
-					it->on_move_after();
+				if (it->getActive())
+					it->onMoveAfter();
 			}
 		}
 
 		for (auto& it : children_)
 		{
-			if (it->get_active())
-				it->on_move_after();
+			if (it->getActive())
+				it->onMoveAfter();
 		}
 	}
 
 	void
-	GameObject::on_gui() except
+	GameObject::onGui() except
 	{
 		assert(!dispatch_components_.empty());
 
-		auto& components = dispatch_components_[GameDispatchType::GameDispatchTypeGui];
+		auto& components = dispatch_components_[GameDispatchType::Gui];
 		for (auto& it : components)
-			it->on_gui();
+			it->onGui();
 	}
 }

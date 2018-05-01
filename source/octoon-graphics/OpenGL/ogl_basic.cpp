@@ -18,8 +18,7 @@ namespace octoon
 #	endif
 #endif
 
-#if defined(_BUILD_OPENGL_ES)
-
+#if defined(OCTOON_BUILD_OPENGL_ES)
 		PFNGLACCUM __glAccum;
 		PFNGLALPHAFUNC __glAlphaFunc;
 		PFNGLARETEXTURESRESIDENT __glAreTexturesResident;
@@ -359,11 +358,7 @@ namespace octoon
 
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-		PFNWGLSWAPINTERVALEXTPROC __wglSwapIntervalEXT;
-		PFNWGLCREATECONTEXTATTRIBSARBPROC   __wglCreateContextAttribsARB;
-		PFNWGLGETPIXELFORMATATTRIBIVARBPROC __wglGetPixelFormatAttribivARB;
-#elif defined(_BUILD_OPENGL_ES)
+#if defined(OCTOON_BUILD_OPENGL_ES)
 #	define GetProcAddress dlsym
 #endif
 
@@ -386,21 +381,21 @@ namespace octoon
 #	endif
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(_BUILD_OPENGL_ES)
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_BUILD_OPENGL_ES)
 			HMODULE opengl32 = ::LoadLibrary("OpenGL32");
 			if (!opengl32)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("OpenGL dynamic library is not found.");
 				return false;
 			}
-#elif defined(OCTOON_BUILD_PLATFORM_LINUX) && defined(_BUILD_OPENGL_ES)
+#elif defined(OCTOON_BUILD_PLATFORM_LINUX) && defined(OCTOON_BUILD_OPENGL_ES)
 			void* opengl32 = ::dlopen("/usr/lib/x86_64-linux-gnu/libGL.so.1", RTLD_NOW);
 			if (!opengl32)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("OpenGL dynamic library is not found.");
 				return false;
 			}
-#elif defined(OCTOON_BUILD_PLATFORM_APPLE) && defined(_BUILD_OPENGL_ES)
+#elif defined(OCTOON_BUILD_PLATFORM_APPLE) && defined(OCTOON_BUILD_OPENGL_ES)
 			void* opengl32 = ::dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_NOW);
 			if (!opengl32)
 			{
@@ -409,7 +404,7 @@ namespace octoon
 		}
 #endif
 
-#if defined(_BUILD_OPENGL_ES)
+#if defined(OCTOON_BUILD_OPENGL_ES)
 			__glAccum = (PFNGLACCUM)::GetProcAddress(opengl32, "glAccum");
 			__glAlphaFunc = (PFNGLALPHAFUNC)::GetProcAddress(opengl32, "glAlphaFunc");
 			__glAreTexturesResident = (PFNGLARETEXTURESRESIDENT)::GetProcAddress(opengl32, "glAreTexturesResident");
@@ -748,15 +743,7 @@ namespace octoon
 			__glViewport = (PFNGLVIEWPORT)::GetProcAddress(opengl32, "glViewport");
 #endif
 
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-			__wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)::wglGetProcAddress("wglSwapIntervalEXT");
-			__wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)::wglGetProcAddress("wglGetPixelFormatAttribivARB");
-			__wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)::wglGetProcAddress("wglCreateContextAttribsARB");
-
-			initGLExtention = __wglCreateContextAttribsARB ? true : false;
-#else
 			initGLExtention = true;
-#endif
 
 			return initGLExtention;
 		}

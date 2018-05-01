@@ -41,7 +41,7 @@ namespace octoon
 		}
 
 		GraphicsDescriptorPoolComponent::GraphicsDescriptorPoolComponent() noexcept
-			: _type(GraphicsUniformType::None)
+			: _type(GraphicsUniformType::Null)
 			, _descriptorNums(0)
 		{
 		}

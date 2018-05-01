@@ -31,20 +31,20 @@ namespace octoon
 			virtual void renderBegin() noexcept = 0;
 			virtual void renderEnd() noexcept = 0;
 
-			virtual void setViewport(std::uint32_t i, const Viewport& viewport) noexcept = 0;
-			virtual const Viewport& getViewport(std::uint32_t i) const noexcept = 0;
+			virtual void setViewport(std::uint32_t i, const float4& viewport) noexcept = 0;
+			virtual const float4& getViewport(std::uint32_t i) const noexcept = 0;
 
-			virtual void setScissor(std::uint32_t i, const Scissor& scissor) noexcept = 0;
-			virtual const Scissor& getScissor(std::uint32_t i) const noexcept = 0;
+			virtual void setScissor(std::uint32_t i, const uint4& scissor) noexcept = 0;
+			virtual const uint4& getScissor(std::uint32_t i) const noexcept = 0;
 
 			virtual void setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept = 0;
-			virtual std::uint32_t getStencilCompareMask(GraphicsStencilFaceFlagBits face) noexcept = 0;
+			virtual std::uint32_t getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept = 0;
 
 			virtual void setStencilReference(GraphicsStencilFaceFlags face, std::uint32_t reference) noexcept = 0;
-			virtual std::uint32_t getStencilReference(GraphicsStencilFaceFlagBits face) noexcept = 0;
+			virtual std::uint32_t getStencilReference(GraphicsStencilFaceFlags face) noexcept = 0;
 
 			virtual void setStencilWriteMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept = 0;
-			virtual std::uint32_t getStencilWriteMask(GraphicsStencilFaceFlagBits face) noexcept = 0;
+			virtual std::uint32_t getStencilWriteMask(GraphicsStencilFaceFlags face) noexcept = 0;
 
 			virtual void setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept = 0;
 			virtual GraphicsPipelinePtr getRenderPipeline() const noexcept = 0;
@@ -61,9 +61,9 @@ namespace octoon
 			virtual void generateMipmap(const GraphicsTexturePtr& texture) noexcept = 0;
 
 			virtual void setFramebuffer(const GraphicsFramebufferPtr& target) noexcept = 0;
-			virtual void setFramebufferClear(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept = 0;
 			virtual void clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept = 0;
 			virtual void discardFramebuffer(std::uint32_t i) noexcept = 0;
+			virtual void blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept = 0;
 			virtual void readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept = 0;
 			virtual void readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept = 0;
 			virtual GraphicsFramebufferPtr getFramebuffer() const noexcept = 0;

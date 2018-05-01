@@ -10,6 +10,8 @@
 
 #include <octoon/ui/imgui.h>
 
+#include <octoon/image/image.h>
+
 class CubeController : public octoon::GameComponent
 {
 public:

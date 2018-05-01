@@ -189,17 +189,17 @@ namespace octoon
 
 			if (info.info.bpp == BMP_32BPP)
 			{
-				if (!image.create(columns, rows, image::Format::B8G8R8A8SRGB))
+				if (!image.create(Format::B8G8R8A8SRGB, columns, rows))
 					return false;
 			}
 			else if (info.info.bpp == BMP_24BPP)
 			{
-				if (!image.create(columns, rows, image::Format::B8G8R8SRGB))
+				if (!image.create(Format::B8G8R8SRGB, columns, rows))
 					return false;
 			}
 			else if (info.info.bpp == BMP_16BPP)
 			{
-				if (!image.create(columns, rows, image::Format::R8G8B8SRGB))
+				if (!image.create(Format::R8G8B8SRGB, columns, rows))
 					return false;
 			}
 			else

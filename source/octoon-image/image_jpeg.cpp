@@ -163,7 +163,7 @@ namespace octoon
 			// read jpeg handle parameters*/
 			::jpeg_read_header(&cinfo, TRUE);
 
-			if (!image.create(cinfo.image_width, cinfo.image_height, image::Format::R8G8B8SRGB))
+			if (!image.create(image::Format::R8G8B8SRGB, cinfo.image_width, cinfo.image_height))
 				return false;
 
 			JSAMPARRAY data = (JSAMPARRAY)image.data();

@@ -428,7 +428,7 @@ namespace octoon
 			if (hdr.width == 0 || hdr.height == 0)
 				return false;
 
-			if (!image.create(hdr.width, hdr.height, Format::R32G32B32SFloat))
+			if (!image.create(Format::R32G32B32SFloat, hdr.width, hdr.height))
 				return false;
 
 			if (RGBE_ReadPixels_RLE(stream, (float*)image.data(), hdr.width, hdr.height) != RGBE_RETURN_SUCCESS)

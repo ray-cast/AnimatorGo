@@ -15,9 +15,9 @@ SET(SOURCE_LIST
     ${HEADER_PATH}/image.h
     ${SOURCE_PATH}/image.cpp
     ${HEADER_PATH}/image_types.h
-    ${HEADER_PATH}/image_def.h
-    ${HEADER_PATH}/image_handler.h
+    ${HEADER_PATH}/image_loader.h
     ${HEADER_PATH}/image_format.h
+    ${SOURCE_PATH}/image_format.cpp
     ${HEADER_PATH}/image_util.h
     ${SOURCE_PATH}/image_util.cpp
 )

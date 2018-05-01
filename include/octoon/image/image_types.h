@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include <octoon/io/iostream.h>
-#include <octoon/image/image_format.h>
 
 namespace octoon
 {

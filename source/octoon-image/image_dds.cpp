@@ -1002,7 +1002,7 @@ namespace octoon
 				if (!stream.read((char*)data.get(), length))
 					return false;
 
-				if (!image.create(info.width, info.height, info.depth * faceCount, format, info.mip_level, info10.arraySize))
+				if (!image.create(format, info.width, info.height, info.depth * faceCount, info.mip_level, info10.arraySize))
 					return false;
 
 				if (!DDStoCubeMap((char*)image.data(), 0, info.mip_level, info.width, info.height, faceCount, info.format.bpp, data.get()))
@@ -1010,7 +1010,7 @@ namespace octoon
 			}
 			else
 			{
-				if (!image.create(info.width, info.height, info.depth * faceCount, format, info.mip_level, info10.arraySize))
+				if (!image.create(format, info.width, info.height, info.depth * faceCount, info.mip_level, info10.arraySize))
 					return false;
 
 				if (!stream.read((char*)image.data(), image.size()))

@@ -120,19 +120,19 @@ namespace octoon
 				return false;
 			case TGA_TYPE_RGB:
 			{
-				image::Format format = image::Format::Undefined;
+				Format format = Format::Undefined;
 				if (hdr.pixel_size == TGA_BPP_8)
-					format = image::Format::R8SRGB;
+					format = Format::R8SRGB;
 				else if (hdr.pixel_size == TGA_BPP_16)
-					format = image::Format::R8G8SRGB;
+					format = Format::R8G8SRGB;
 				else if (hdr.pixel_size == TGA_BPP_24)
-					format = image::Format::B8G8R8SRGB;
+					format = Format::B8G8R8SRGB;
 				else if (hdr.pixel_size == TGA_BPP_32)
-					format = image::Format::B8G8R8A8SRGB;
+					format = Format::B8G8R8A8SRGB;
 				else
 					return false;
 
-				if (!image.create(columns, rows, format))
+				if (!image.create(format, columns, rows))
 					return false;
 
 				if (!stream.read((char*)image.data(), streamLength))
@@ -141,7 +141,7 @@ namespace octoon
 			break;
 			case TGA_TYPE_GRAY:
 			{
-				if (!image.create(columns, rows, image::Format::R8SRGB))
+				if (!image.create(Format::R8SRGB, columns, rows))
 					return false;
 
 				if (!stream.read((char*)image.data(), streamLength))
@@ -160,7 +160,7 @@ namespace octoon
 				{
 				case TGA_BPP_16:
 				{
-					if (!image.create(columns, rows, image::Format::R8G8SRGB))
+					if (!image.create(Format::R8G8SRGB, columns, rows))
 						return false;
 
 					std::uint8_t* data = (std::uint8_t*)image.data();
@@ -197,7 +197,7 @@ namespace octoon
 				break;
 				case TGA_BPP_24:
 				{
-					if (!image.create(columns, rows, image::Format::B8G8R8SRGB))
+					if (!image.create(Format::B8G8R8SRGB, columns, rows))
 						return false;
 
 					std::uint8_t* data = (std::uint8_t*)image.data();
@@ -235,7 +235,7 @@ namespace octoon
 				break;
 				case TGA_BPP_32:
 				{
-					if (!image.create(columns, rows, image::Format::B8G8R8A8SRGB))
+					if (!image.create(Format::B8G8R8A8SRGB, columns, rows))
 						return false;
 
 					std::uint32_t* data = (std::uint32_t*)image.data();
@@ -275,7 +275,7 @@ namespace octoon
 				if (!stream.read((char*)buf, buffers.size()))
 					return false;
 
-				if (!image.create(columns, rows, image::Format::R8SRGB))
+				if (!image.create(Format::R8SRGB, columns, rows))
 					return false;
 
 				std::uint8_t* data = (std::uint8_t*)image.data();
@@ -343,10 +343,7 @@ namespace octoon
 		bool
 		TGAHandler::doSave(ostream& stream, const Image& image) noexcept
 		{
-			auto channel = image.channel();
-			auto type_size = image.type_size();
-
-			std::uint8_t pixelSize = type_size * channel * 8;
+			std::uint8_t pixelSize = image.format().type_size() * image.format().channel() * 8;
 			if (pixelSize != TGA_BPP_8 && pixelSize != TGA_BPP_16 && pixelSize != TGA_BPP_24 && pixelSize != TGA_BPP_32)
 				return false;
 

@@ -120,7 +120,7 @@ namespace octoon
 					pixelSize = 3;
 				}
 
-				if (!image.create(width, height, format))
+				if (!image.create(format, width, height))
 					return false;
 
 				std::size_t columnLength = width * pixelSize;

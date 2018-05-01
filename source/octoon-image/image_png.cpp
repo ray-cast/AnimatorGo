@@ -217,7 +217,7 @@ namespace octoon
 
 				return true;
 			}
-			catch (const std::exception& e)
+			catch (...)
 			{
 				if (info_ptr)
 					png_destroy_write_struct(&png_ptr, nullptr);

@@ -2,8 +2,6 @@
 #define OCTOON_IMAGE_TYPES_H_
 
 #include <memory>
-#include <iostream>
-
 #include <octoon/io/iostream.h>
 
 namespace octoon

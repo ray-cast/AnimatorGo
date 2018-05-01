@@ -84,7 +84,7 @@ namespace octoon
 		inline std::enable_if_t<std::is_unsigned<_Ty>::value, void>
 			RGBT_encode(_Tx r, _Tx g, _Tx b, _Ty encode[4], _Tx range = 1024) noexcept
 		{
-			static_assert(std::numeric_limits<_Ty>::max() <= std::numeric_limits<_Tx>::max());
+			static_assert(std::numeric_limits<_Ty>::max() <= std::numeric_limits<_Tx>::max(), "");
 
 			_Tx max = 0;
 			max = std::max(std::max(r, g), std::max(b, _Tx(1e-6f)));
@@ -98,10 +98,10 @@ namespace octoon
 			_Tx minLimits = std::numeric_limits<_Ty>::min();
 			_Tx maxLimits = std::numeric_limits<_Ty>::max();
 
-			encode[0] = (_Ty)std::clamp<_Tx>(r * rcp * maxLimits, minLimits, maxLimits);
-			encode[1] = (_Ty)std::clamp<_Tx>(g * rcp * maxLimits, minLimits, maxLimits);
-			encode[2] = (_Ty)std::clamp<_Tx>(b * rcp * maxLimits, minLimits, maxLimits);
-			encode[3] = (_Ty)std::clamp<_Tx>(a * maxLimits, minLimits, maxLimits);
+			encode[0] = (_Ty)math::clamp<_Tx>(r * rcp * maxLimits, minLimits, maxLimits);
+			encode[1] = (_Ty)math::clamp<_Tx>(g * rcp * maxLimits, minLimits, maxLimits);
+			encode[2] = (_Ty)math::clamp<_Tx>(b * rcp * maxLimits, minLimits, maxLimits);
+			encode[3] = (_Ty)math::clamp<_Tx>(a * maxLimits, minLimits, maxLimits);
 		}
 
 		template<typename _Tx, typename _Ty = std::uint8_t, typename = std::enable_if_t<std::is_floating_point<_Tx>::value>>

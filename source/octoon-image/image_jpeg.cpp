@@ -105,7 +105,7 @@ namespace octoon
 		}
 
 		bool
-		JPEGHandler::do_can_read(istream& stream) const noexcept
+		JPEGHandler::doCanRead(istream& stream) const noexcept
 		{
 			static std::uint8_t magic[] = { 0xFF, 0xD8 };
 
@@ -118,13 +118,13 @@ namespace octoon
 		}
 
 		bool
-		JPEGHandler::do_can_read(const char* type_name) const noexcept
+		JPEGHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return (std::strncmp(type_name, "jpg", 3) == 0) || (std::strncmp(type_name, "jpeg", 4) == 0);
 		}
 
 		bool
-		JPEGHandler::do_load(istream& stream, Image& image) noexcept
+		JPEGHandler::doLoad(istream& stream, Image& image) noexcept
 		{
 			jpeg_decompress_struct cinfo;
 
@@ -226,7 +226,7 @@ namespace octoon
 		}
 
 		bool
-		JPEGHandler::do_save(ostream&, const Image&) noexcept
+		JPEGHandler::doSave(ostream&, const Image&) noexcept
 		{
 			jpeg_compress_struct cinfo;
 

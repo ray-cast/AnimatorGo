@@ -864,7 +864,7 @@ namespace octoon
 		}
 
 		bool
-		DDSHandler::do_can_read(istream& stream) const noexcept
+		DDSHandler::doCanRead(istream& stream) const noexcept
 		{
 			static const std::uint8_t magic[] = { 'D', 'D', 'S', ' ' };
 
@@ -877,13 +877,13 @@ namespace octoon
 		}
 
 		bool
-		DDSHandler::do_can_read(const char* type_name) const noexcept
+		DDSHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return std::strncmp(type_name, "dds", 3) == 0;
 		}
 
 		bool
-		DDSHandler::do_load(istream& stream, Image& image) noexcept
+		DDSHandler::doLoad(istream& stream, Image& image) noexcept
 		{
 			stream.seekg(0, std::ios_base::end);
 			std::size_t size = stream.tellg();
@@ -1021,7 +1021,7 @@ namespace octoon
 		}
 
 		bool
-		DDSHandler::do_save(ostream& stream, const Image& image) noexcept
+		DDSHandler::doSave(ostream& stream, const Image& image) noexcept
 		{
 			DDS_HEADER hdr;
 			std::memset((char*)&hdr, 0, sizeof(hdr));

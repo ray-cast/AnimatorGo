@@ -279,10 +279,10 @@ namespace octoon
 		bool
 		Image::load(istream& stream, const char* type) noexcept
 		{
-			ImageHandlerPtr impl = image::find_handler(stream, type);
-			if (image::find_handler(stream, type))
+			ImageLoaderPtr impl = image::findHandler(stream, type);
+			if (image::findHandler(stream, type))
 			{
-				if (impl->do_load(stream, *this))
+				if (impl->doLoad(stream, *this))
 					return true;
 			}
 
@@ -294,10 +294,10 @@ namespace octoon
 		{
 			if (stream.good())
 			{
-				ImageHandlerPtr impl = image::find_handler(type);
+				ImageLoaderPtr impl = image::findHandler(type);
 				if (impl)
 				{
-					if (!impl->do_save(stream, *this))
+					if (!impl->doSave(stream, *this))
 						return false;
 
 					return true;

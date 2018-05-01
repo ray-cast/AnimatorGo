@@ -37,7 +37,7 @@ namespace octoon
 		}
 
 		bool
-		PNGHandler::do_can_read(istream& stream) const noexcept
+		PNGHandler::doCanRead(istream& stream) const noexcept
 		{
 			static constexpr std::uint8_t magic[] = { 0x89, 'P', 'N', 'G' };
 
@@ -50,13 +50,13 @@ namespace octoon
 		}
 
 		bool
-		PNGHandler::do_can_read(const char* type_name) const noexcept
+		PNGHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return std::strncmp(type_name, "png", 3) == 0;
 		}
 
 		bool
-		PNGHandler::do_load(istream& stream, Image& image) noexcept
+		PNGHandler::doLoad(istream& stream, Image& image) noexcept
 		{
 			PNGInfoStruct info;
 			info.stream.in = &stream;
@@ -140,7 +140,7 @@ namespace octoon
 		}
 
 		bool
-		PNGHandler::do_save(ostream&, const Image&) noexcept
+		PNGHandler::doSave(ostream&, const Image&) noexcept
 		{
 			return false;
 		}

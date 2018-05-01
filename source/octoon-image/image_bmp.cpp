@@ -28,46 +28,22 @@ typedef std::int32_t LONG;
 #define BI_RGB5_BIT_G 0x3
 #define BI_RGB5_BIT_B 0x3
 
-struct RGB
-{
-	std::uint8_t r, g, b;
-};
-
 namespace octoon
 {
 	namespace image
 	{
 		enum
 		{
-			BMP_32BPP = 32,
-
-			// default, do not need to set
+			BMP_32BPP = 32,        // default, do not need to set
 			BMP_24BPP = 24,
-
-			BMP_16BPP = 16,
-
-			// 8bpp, quantized colors
-			BMP_8BPP = 8,
-
-			// 8bpp, rgb averaged to greys
-			BMP_8BPP_GREY = 9,
-
-			// 8bpp, rgb averaged to grays
-			BMP_8BPP_GRAY = 9,
-
-			// 8bpp, red used as greyscale
-			BMP_8BPP_RED = 10,
-
-			// 8bpp, use the wxImage's palette
-			BMP_8BPP_PALETTE = 11,
-
-			// 4bpp, quantized colors
-			BMP_4BPP = 4,
-
-			// 1bpp, quantized "colors"
-			BMP_1BPP = 1,
-
-			// 1bpp, black & white from red
+			BMP_16BPP = 16,        // 8bpp, quantized colors
+			BMP_8BPP = 8,          // 8bpp, rgb averaged to greys
+			BMP_8BPP_GREY = 9,     // 8bpp, rgb averaged to grays
+			BMP_8BPP_GRAY = 9,     // 8bpp, red used as greyscale
+			BMP_8BPP_RED = 10,     // 8bpp, use the wxImage's palette
+			BMP_8BPP_PALETTE = 11, // 4bpp, quantized colors
+			BMP_4BPP = 4,          // 1bpp, quantized "colors"
+			BMP_1BPP = 1,          // 1bpp, black & white from red
 			BMP_1BPP_BW = 2
 		};
 
@@ -113,8 +89,15 @@ namespace octoon
 
 		#pragma pack(pop)
 
+		struct RGB
+		{
+			std::uint8_t r, g, b;
+
+			RGB() noexcept : r(0), g(0), b(0) {};
+		};
+
 		bool
-		BMPHandler::do_can_read(istream& stream) const noexcept
+		BMPHandler::doCanRead(istream& stream) const noexcept
 		{
 			std::uint8_t hdr[2];
 
@@ -124,13 +107,13 @@ namespace octoon
 		}
 
 		bool
-		BMPHandler::do_can_read(const char* type_name) const noexcept
+		BMPHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return std::strncmp(type_name, "bmp", 3) == 0;
 		}
 
 		bool
-		BMPHandler::do_load(istream& stream, Image& image) except
+		BMPHandler::doLoad(istream& stream, Image& image) except
 		{
 			stream.seekg(0, std::ios_base::end);
 			auto size = stream.tellg();
@@ -172,7 +155,7 @@ namespace octoon
 		}
 
 		bool
-		BMPHandler::do_save(ostream&, const Image&) except
+		BMPHandler::doSave(ostream&, const Image&) except
 		{
 			return false;
 		}

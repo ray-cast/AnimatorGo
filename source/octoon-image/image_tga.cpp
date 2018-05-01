@@ -1,31 +1,5 @@
 #include "image_tga.h"
 
-#include <vector>
-
-#define TGA_TYPE_PALETTE 1
-#define TGA_TYPE_RGB 2
-#define TGA_TYPE_GRAY 3
-#define TGA_TYPE_PALETTE_RLE  9
-#define TGA_TYPE_RGB_RLE 10
-#define TGA_TYPE_GRAY_RLE 11
-
-#define TGA_BPP_8 8
-#define TGA_BPP_16 16
-#define TGA_BPP_24 24
-#define TGA_BPP_32 32
-
-#define TGA_ATTRIB_ALPHA 8
-
-struct RGB
-{
-	std::uint8_t r, g, b;
-};
-
-struct RGBA
-{
-	std::uint8_t r, g, b, a;
-};
-
 namespace octoon
 {
 	namespace image
@@ -51,8 +25,41 @@ namespace octoon
 
 		#pragma pack(pop)
 
+		struct RGB
+		{
+			std::uint8_t r, g, b;
+		};
+
+		struct RGBA
+		{
+			std::uint8_t r, g, b, a;
+		};
+
+		enum : std::uint8_t
+		{
+			TGA_BPP_8 = 8,
+			TGA_BPP_16 = 16,
+			TGA_BPP_24 = 24,
+			TGA_BPP_32 = 32
+		};
+
+		enum : std::uint8_t
+		{
+			TGA_TYPE_PALETTE = 1,
+			TGA_TYPE_RGB = 2,
+			TGA_TYPE_GRAY = 3,
+			TGA_TYPE_PALETTE_RLE =  9,
+			TGA_TYPE_RGB_RLE = 10,
+			TGA_TYPE_GRAY_RLE = 11,
+		};
+
+		enum : std::uint8_t
+		{
+			TGA_ATTRIB_ALPHA = 8
+		};
+
 		bool
-		TGAHandler::do_can_read(istream& stream) const noexcept
+		TGAHandler::doCanRead(istream& stream) const noexcept
 		{
 			TGAHeader hdr;
 
@@ -84,13 +91,13 @@ namespace octoon
 		}
 
 		bool
-		TGAHandler::do_can_read(const char* type_name) const noexcept
+		TGAHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return std::strncmp(type_name, "tga", 3) == 0;
 		}
 
 		bool
-		TGAHandler::do_load(istream& stream, Image& image) noexcept
+		TGAHandler::doLoad(istream& stream, Image& image) noexcept
 		{
 			stream.seekg(0, std::ios_base::end);
 			std::size_t size = stream.tellg();
@@ -102,7 +109,7 @@ namespace octoon
 			std::uint32_t columns = hdr.width;
 			std::uint32_t rows = hdr.height;
 			std::uint32_t nums = columns * rows;
-			std::uint32_t length = nums * hdr.pixel_size / 8;
+			std::uint32_t streamLength = nums * hdr.pixel_size / 8;
 
 			if (hdr.id_length != 0)
 				stream.seekg(hdr.id_length, std::ios_base::cur);
@@ -128,7 +135,7 @@ namespace octoon
 				if (!image.create(columns, rows, format))
 					return false;
 
-				if (!stream.read((char*)image.data(), length))
+				if (!stream.read((char*)image.data(), streamLength))
 					return false;
 			}
 			break;
@@ -137,7 +144,7 @@ namespace octoon
 				if (!image.create(columns, rows, image::Format::R8SRGB))
 					return false;
 
-				if (!stream.read((char*)image.data(), length))
+				if (!stream.read((char*)image.data(), streamLength))
 					return false;
 			}
 			break;
@@ -280,11 +287,8 @@ namespace octoon
 					if (packe & 0x80)
 					{
 						std::uint8_t length = (std::uint8_t)(1 + (packe & 0x7f));
-
 						for (std::uint8_t i = 0; i < length; i++)
-							*data++ = *(std::uint32_t*)buf;
-
-						buf++;
+							*data++ = *buf++;
 					}
 					else
 					{
@@ -337,15 +341,16 @@ namespace octoon
 		}
 
 		bool
-		TGAHandler::do_save(ostream& stream, const Image& image) noexcept
+		TGAHandler::doSave(ostream& stream, const Image& image) noexcept
 		{
 			auto channel = image.channel();
 			auto type_size = image.type_size();
 
-			std::size_t destLength = 0;
 			std::uint8_t pixelSize = type_size * channel * 8;
-
 			if (pixelSize != TGA_BPP_8 && pixelSize != TGA_BPP_16 && pixelSize != TGA_BPP_24 && pixelSize != TGA_BPP_32)
+				return false;
+
+			if (image.width() > std::numeric_limits<std::uint16_t>::max() || image.height() > std::numeric_limits<std::uint16_t>::max())
 				return false;
 
 			bool isGreyscale = pixelSize == TGA_BPP_8;
@@ -360,8 +365,8 @@ namespace octoon
 			header.colormap_size = 0;
 			header.x_origin = 0;
 			header.y_origin = 0;
-			header.width = image.width();
-			header.height = image.height();
+			header.width = (std::uint16_t)image.width();
+			header.height = (std::uint16_t)image.height();
 			header.pixel_size = pixelSize;
 			header.attributes = hasAlpha ? TGA_ATTRIB_ALPHA : 0;
 

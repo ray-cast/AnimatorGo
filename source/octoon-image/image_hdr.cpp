@@ -61,7 +61,7 @@ namespace octoon
 
 		int RGBE_ReadHeader(istream& stream, rgbe_header_info* info)
 		{
-			static_assert(sizeof(char) == sizeof(std::uint8_t));
+			static_assert(sizeof(char) == sizeof(std::uint8_t), "");
 
 			std::uint8_t buf[256];
 			if (!stream.read((char*)buf, sizeof(buf)))
@@ -174,7 +174,7 @@ namespace octoon
 			if (!stream.read((char*)rgbe, sizeof(rgbe)))
 				return rgbe_error(rgbe_read_error, NULL);
 
-			if ((((int)rgbe[2]) << 8 | rgbe[3]) != wdith)
+			if ((((unsigned)rgbe[2]) << 8 | rgbe[3]) != wdith)
 				return rgbe_error(rgbe_format_error, "wrong scanline width");
 
 			if ((wdith < 8) || (wdith > 0x7fff) || (rgbe[0] != 2) || (rgbe[1] != 2) || (rgbe[2] & 0x80))
@@ -188,9 +188,9 @@ namespace octoon
 			{
 				std::unique_ptr<std::uint8_t[]> scanline_buffer = std::make_unique<std::uint8_t[]>(sizeof(std::uint8_t) * 4 * wdith);
 
-				for (std::uint32_t i = 0; i < height; i++)
+				for (std::uint32_t y = 0; y < height; y++)
 				{
-					if ((((int)rgbe[2]) << 8 | rgbe[3]) != wdith)
+					if ((((unsigned)rgbe[2]) << 8 | rgbe[3]) != wdith)
 						return rgbe_error(rgbe_format_error, "wrong scanline width");
 
 					auto ptr = scanline_buffer.get();
@@ -397,7 +397,7 @@ namespace octoon
 		}
 
 		bool
-		HDRHandler::do_can_read(istream& stream) const noexcept
+		HDRHandler::doCanRead(istream& stream) const noexcept
 		{
 			char hdr[11];
 			if (!stream.read(hdr, sizeof(hdr)))
@@ -413,13 +413,13 @@ namespace octoon
 		}
 
 		bool
-		HDRHandler::do_can_read(const char* type_name) const noexcept
+		HDRHandler::doCanRead(const char* type_name) const noexcept
 		{
 			return std::strncmp(type_name, "hdr", 3) == 0;
 		}
 
 		bool
-		HDRHandler::do_load(istream& stream, Image& image) noexcept
+		HDRHandler::doLoad(istream& stream, Image& image) noexcept
 		{
 			rgbe_header_info hdr;
 			if (RGBE_ReadHeader(stream, &hdr) != RGBE_RETURN_SUCCESS)
@@ -438,7 +438,7 @@ namespace octoon
 		}
 
 		bool
-		HDRHandler::do_save(ostream& stream, const Image& image) noexcept
+		HDRHandler::doSave(ostream& stream, const Image& image) noexcept
 		{
 			rgbe_header_info hdr;
 			hdr.valid = RGBE_VALID_PROGRAMTYPE | RGBE_VALID_GAMMA | RGBE_VALID_EXPOSURE;

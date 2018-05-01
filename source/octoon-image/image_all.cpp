@@ -6,9 +6,6 @@
 #if OCTOON_BUILD_PNG_HANDLER
 #	include "image_png.h"
 #endif
-#if OCTOON_BUILD_GIF_HANDLER
-#	include "image_gif.h"
-#endif
 #if OCTOON_BUILD_DDS_HANDLER
 #	include "image_dds.h"
 #endif
@@ -29,25 +26,25 @@ namespace octoon
 	namespace image
 	{
 		#if OCTOON_BUILD_BMP_HANDLER
-		std::shared_ptr<ImageHandler> bmp = std::make_shared<BMPHandler>();
+		std::shared_ptr<ImageLoader> bmp = std::make_shared<BMPHandler>();
 		#endif
 		#if OCTOON_BUILD_DDS_HANDLER
-		std::shared_ptr<ImageHandler> dds = std::make_shared<DDSHandler>();
+		std::shared_ptr<ImageLoader> dds = std::make_shared<DDSHandler>();
 		#endif
 		#if OCTOON_BUILD_PNG_HANDLER
-		std::shared_ptr<ImageHandler> png = std::make_shared<PNGHandler>();
+		std::shared_ptr<ImageLoader> png = std::make_shared<PNGHandler>();
 		#endif
 		#if OCTOON_BUILD_JPG_HANDLER
-		std::shared_ptr<ImageHandler> jpeg = std::make_shared<JPEGHandler>();
+		std::shared_ptr<ImageLoader> jpeg = std::make_shared<JPEGHandler>();
 		#endif
 		#if OCTOON_BUILD_TGA_HANDLER
-		std::shared_ptr<ImageHandler> tga = std::make_shared<TGAHandler>();
+		std::shared_ptr<ImageLoader> tga = std::make_shared<TGAHandler>();
 		#endif
 		#if OCTOON_BUILD_HDR_HANDLER
-		std::shared_ptr<ImageHandler> hdr = std::make_shared<HDRHandler>();
+		std::shared_ptr<ImageLoader> hdr = std::make_shared<HDRHandler>();
 		#endif
 
-		std::vector<ImageHandlerPtr> _handlers = {
+		std::vector<ImageLoaderPtr> _handlers = {
 		#if OCTOON_BUILD_PNG_HANDLER
 			png,
 		#endif
@@ -68,12 +65,25 @@ namespace octoon
 		#endif
 		};
 
-		bool empty_handler() noexcept
+		bool emptyLoader() noexcept
 		{
 			return _handlers.empty();
 		}
 
-		bool add_handler(ImageHandlerPtr handler) noexcept
+		bool addHandler(ImageLoaderPtr&& handler) noexcept
+		{
+			assert(handler);
+			auto it = std::find(_handlers.begin(), _handlers.end(), handler);
+			if (it == _handlers.end())
+			{
+				_handlers.push_back(std::move(handler));
+				return true;
+			}
+
+			return false;
+		}
+
+		bool addHandler(const ImageLoaderPtr& handler) noexcept
 		{
 			assert(handler);
 			auto it = std::find(_handlers.begin(), _handlers.end(), handler);
@@ -86,7 +96,7 @@ namespace octoon
 			return false;
 		}
 
-		bool remove_handler(ImageHandlerPtr handler) noexcept
+		bool removeHandler(const ImageLoaderPtr& handler) noexcept
 		{
 			assert(handler);
 			auto it = std::find(_handlers.begin(), _handlers.end(), handler);
@@ -99,19 +109,19 @@ namespace octoon
 			return false;
 		}
 
-		ImageHandlerPtr find_handler(const char* type) noexcept
+		ImageLoaderPtr findHandler(const char* type) noexcept
 		{
 			if (type)
 			{
 				for (auto& it : _handlers)
-					if (it->do_can_read(type))
+					if (it->doCanRead(type))
 						return it;
 			}
 
 			return nullptr;
 		}
 
-		ImageHandlerPtr find_handler(istream& stream) noexcept
+		ImageLoaderPtr findHandler(istream& stream) noexcept
 		{
 			if (!stream.good())
 				return nullptr;
@@ -120,7 +130,7 @@ namespace octoon
 			{
 				stream.seekg(0, std::ios_base::beg);
 
-				if (it->do_can_read(stream))
+				if (it->doCanRead(stream))
 				{
 					stream.seekg(0, std::ios_base::beg);
 					return it;
@@ -130,12 +140,12 @@ namespace octoon
 			return nullptr;
 		}
 
-		ImageHandlerPtr find_handler(istream& stream, const char* type) noexcept
+		ImageLoaderPtr findHandler(istream& stream, const char* type) noexcept
 		{
-			ImageHandlerPtr result = find_handler(type);
+			ImageLoaderPtr result = findHandler(type);
 			if (result)
 				return result;
-			return find_handler(stream);
+			return findHandler(stream);
 		}
 	}
 }

@@ -7,17 +7,17 @@ namespace octoon
 {
 	namespace image
 	{
-		class GIFHandler final : public ImageHandler
+		class GIFHandler final : public ImageLoader
 		{
 		public:
 			GIFHandler() noexcept = default;
 			virtual ~GIFHandler() = default;
 
-			bool do_can_read(istream& stream) const noexcept;
-			bool do_can_read(const char* type_name) const noexcept;
+			bool doCanRead(istream& stream) const noexcept;
+			bool doCanRead(const char* type_name) const noexcept;
 
-			bool do_load(istream& stream, Image& image) noexcept;
-			bool do_save(ostream& stream, const Image& image) noexcept;
+			bool doLoad(istream& stream, Image& image) noexcept;
+			bool doSave(ostream& stream, const Image& image) noexcept;
 
 		private:
 			GIFHandler(const GIFHandler&) = delete;

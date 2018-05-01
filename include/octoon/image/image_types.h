@@ -4,7 +4,7 @@
 #include <memory>
 #include <iostream>
 
-#include <octoon/image/image_def.h>
+#include <octoon/io/iostream.h>
 #include <octoon/image/image_format.h>
 
 namespace octoon
@@ -56,10 +56,10 @@ namespace octoon
 		};
 
 		typedef std::shared_ptr<class Image> ImagePtr;
-		typedef std::shared_ptr<class ImageHandler> ImageHandlerPtr;
+		typedef std::shared_ptr<class ImageLoader> ImageLoaderPtr;
 
-		using istream = std::istream;
-		using ostream = std::ostream;
+		using istream = io::istream;
+		using ostream = io::ostream;
 	}
 }
 

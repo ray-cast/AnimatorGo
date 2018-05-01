@@ -2,7 +2,7 @@
 #define OCTOON_IMAGE_H_
 
 #include <octoon/image/image_types.h>
-#include <octoon/image/image_handler.h>
+#include <octoon/image/image_loader.h>
 
 namespace octoon
 {

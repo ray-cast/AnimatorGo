@@ -181,7 +181,7 @@ namespace octoon
 
 			for (std::size_t i = 0; i < width * height * depth; i++)
 			{
-				dst[i] = math::clamp<std::uint8_t>(math::detail::Vector4<std::uint8_t>(src[i] * 255.0), minLimit, maxLimit);
+				dst[i] = math::clamp<std::uint8_t>(math::detail::Vector4<std::uint8_t>(src[i] * 255.0f), minLimit, maxLimit);
 			}
 		}
 

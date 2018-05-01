@@ -60,6 +60,10 @@ SET(INPUT_DEFAULT_LIST
 	${SOURCE_PATH}/input_keyboard.cpp
 	${HEADER_PATH}/input_mouse.h
 	${SOURCE_PATH}/input_mouse.cpp
+	${HEADER_PATH}/input_map.h
+	${SOURCE_PATH}/input_map.cpp
+	${HEADER_PATH}/input_content.h
+	${SOURCE_PATH}/input_content.cpp
 	${HEADER_PATH}/input.h
 	${SOURCE_PATH}/input.cpp
 )

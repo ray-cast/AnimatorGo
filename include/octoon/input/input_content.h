@@ -12,7 +12,7 @@ namespace octoon
 	{
 		struct InputContent
 		{
-			enum Type
+			enum Type : std::uint16_t
 			{
 				Keyboard,
 				Mouse,

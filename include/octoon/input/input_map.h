@@ -20,13 +20,15 @@ namespace octoon
 			static void bind(const std::string& id, InputButton::Code code);
 			static void bind(const std::string& id, const InputOp& ops);
 
-			static void bind(const std::string& id, const InputOp& ops, InputKey::Code code);
-			static void bind(const std::string& id, const InputOp& ops, InputButton::Code code);
+			static void bind(const std::string& id, InputOp ops, InputKey::Code code);
+			static void bind(const std::string& id, InputOp ops, InputButton::Code code);
 
-			static void bind(const std::string& id, InputKey::Code code, const InputOp& ops);
-			static void bind(const std::string& id, InputButton::Code code, const InputOp& ops);
+			static void bind(const std::string& id, InputKey::Code code, InputOp ops);
+			static void bind(const std::string& id, InputButton::Code code, InputOp ops);
 
-			static void bind(const std::string& id, const InputOp& ops1, const InputOp& ops2);
+			static void bind(const std::string& id, InputOp ops1, InputOp ops2);
+
+			static void unbind(const std::string& id);
 		private:
 			InputMap() = delete;
 			InputMap(const InputMap&) = delete;

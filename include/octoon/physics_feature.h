@@ -4,6 +4,8 @@
 #include <memory>
 
 #include <octoon/game_feature.h>
+#include <octoon/timer_feature.h>
+#include <octoon/game_app.h>
 
 #include <PxPhysicsAPI.h>
 
@@ -45,6 +47,11 @@ namespace octoon
 		physx::PxPvd* pvd;
 		physx::PxPhysics* physics;
 		physx::PxCooking* cooking;
+		physx::PxDefaultCpuDispatcher* dispatcher;
+		physx::PxScene* physicsScene;
+
+		float accumulator;
+		float stepSize;
     };
 }
 

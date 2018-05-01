@@ -14,6 +14,8 @@ namespace octoon
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
     
 	PhysicsFeature::PhysicsFeature() noexcept
+		:dispatcher(nullptr), physicsScene(nullptr),
+		accumulator(0.0f), stepSize(1.0f / 60.0f)
 	{
 		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
 		if (!foundation)
@@ -42,11 +44,19 @@ namespace octoon
 		if (!PxInitExtensions(*physics, pvd))
 			throw std::runtime_error("PxInitExtensions failed!");
 
+
+		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
+		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+		dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+		sceneDesc.cpuDispatcher = dispatcher;
+		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+		physicsScene = physics->createScene(sceneDesc);
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
 	{
-
+		physics->release();
+		foundation->release();
 	}
 
     void PhysicsFeature::onActivate() except
@@ -70,7 +80,11 @@ namespace octoon
 
     void PhysicsFeature::onFrameBegin() noexcept
     {
-
+		auto delta = runtime::Singleton<GameApp>::instance()->getFeature<TimerFeature>()->delta();
+		accumulator += delta;
+		if (accumulator < stepSize)	return;
+		accumulator -= stepSize;
+		physicsScene->simulate(stepSize);
     }
 
     void PhysicsFeature::onFrame() except

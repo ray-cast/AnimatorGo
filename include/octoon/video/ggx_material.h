@@ -1,5 +1,5 @@
-#ifndef OCTOON_PHONG_MATERIAL_H_
-#define OCTOON_PHONG_MATERIAL_H_
+#ifndef OCTOON_GGX_MATERIAL_H_
+#define OCTOON_GGX_MATERIAL_H_
 
 #include <octoon/video/material.h>
 #include <octoon/graphics/graphics.h>
@@ -8,11 +8,11 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT PhongMaterial final : public Material
+		class OCTOON_EXPORT GGXMaterial final : public Material
 		{
 		public:
-			PhongMaterial() except;
-			~PhongMaterial() noexcept;
+			GGXMaterial() except;
+			~GGXMaterial() noexcept;
 
 			void setup() except;
 
@@ -25,18 +25,24 @@ namespace octoon
 			void setLightDir(const math::float3& translate) noexcept;
 			void setBaseColor(const math::float3& colors) noexcept;
 			void setAmbientColor(const math::float3& colors) noexcept;
-			void setShininess(float shininess) noexcept;
+			void setSpecularColor(const math::float3& colors) noexcept;
+
+			void setSmoothness(float smoothness) noexcept;
+			void setMetalness(float metalness) noexcept;
 
 			const math::float3& getLightDir() const noexcept;
 			const math::float3& getBaseColor() const noexcept;
 			const math::float3& getAmbientColor() const noexcept;
-			float getShininess() const noexcept;
+			const math::float3& getSpecularColor() const noexcept;
+
+			float getSmoothness() const noexcept;
+			float getMetalness() const noexcept;
 
 			MaterialPtr clone() const noexcept override;
 
 		private:
-			PhongMaterial(const PhongMaterial&) = delete;
-			PhongMaterial& operator=(const PhongMaterial&) = delete;
+			GGXMaterial(const GGXMaterial&) = delete;
+			GGXMaterial& operator=(const GGXMaterial&) = delete;
 
 		private:
 			graphics::GraphicsPipelinePtr pipeline_;
@@ -48,8 +54,10 @@ namespace octoon
 
 			graphics::GraphicsUniformSetPtr baseColor_;
 			graphics::GraphicsUniformSetPtr ambientColor_;
+			graphics::GraphicsUniformSetPtr specularColor_;
 
-			graphics::GraphicsUniformSetPtr shininess_;
+			graphics::GraphicsUniformSetPtr smoothness_;
+			graphics::GraphicsUniformSetPtr metalness_;
 		};
 	}
 }

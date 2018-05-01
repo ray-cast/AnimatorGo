@@ -2,6 +2,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
+#include <stdlib.h>
+
 namespace ImSequencer
 {
 	static bool SequencerAddDelButton(ImDrawList* draw_list, ImVec2 pos, bool add = true)

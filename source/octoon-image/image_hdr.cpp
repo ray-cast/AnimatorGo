@@ -1,6 +1,7 @@
 #include "image_hdr.h"
 #include <octoon/image/image_util.h>
-#include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 #define RGBE_RETURN_SUCCESS 0
 #define RGBE_RETURN_FAILURE -1

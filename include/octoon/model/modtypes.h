@@ -67,6 +67,10 @@ namespace octoon
 		typedef std::shared_ptr<LightProperty> LightPropertyPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<MaterialProperty> MaterialPropertyPtr;
+		typedef std::unique_ptr<class Contour> ContourPtr;
+		typedef std::shared_ptr<class ContourGroup> ContourGroupPtr;
+		typedef std::shared_ptr<class TextFile> TextFilePtr;
+		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;
 
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;
@@ -80,6 +84,9 @@ namespace octoon
 		typedef std::vector<Bone> Bones;
 		typedef std::vector<IKAttr> InverseKinematics;
 		typedef std::vector<CombineMesh> CombineMeshes;
+		typedef std::vector<TextFilePtr> TextFiles;
+		typedef std::vector<ContourPtr> Contours;
+		typedef std::vector<ContourGroupPtr> ContourGroups;
 
 		enum TextureType
 		{

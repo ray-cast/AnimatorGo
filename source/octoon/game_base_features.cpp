@@ -1,6 +1,7 @@
 #include <octoon/game_base_features.h>
 #include <octoon/game_object_manager.h>
 #include <octoon/game_scene_manager.h>
+#include <octoon/model/text_system.h>
 
 namespace octoon
 {
@@ -8,10 +9,12 @@ namespace octoon
 
 	GameBaseFeatures::GameBaseFeatures() noexcept
 	{
+		model::TextSystem::instance()->setup();
 	}
 
 	GameBaseFeatures::~GameBaseFeatures() noexcept
 	{
+		model::TextSystem::instance()->close();
 	}
 
 	void

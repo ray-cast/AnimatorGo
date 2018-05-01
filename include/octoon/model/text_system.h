@@ -1,14 +1,15 @@
-#ifndef OCTOON_TEXT_SYSTEM_H_
-#define OCTOON_TEXT_SYSTEM_H_
+#ifndef OCTOON_MODEL_TEXT_SYSTEM_H_
+#define OCTOON_MODEL_TEXT_SYSTEM_H_
 
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
 {
-	namespace video
+	namespace model
 	{
-		class OCTOON_EXPORT TextSystem final : public runtime::Singleton<TextSystem>
+		class OCTOON_EXPORT TextSystem final
 		{
+			OctoonDeclareSingleton(TextSystem)
 		public:
 			TextSystem() noexcept;
 			~TextSystem() noexcept;

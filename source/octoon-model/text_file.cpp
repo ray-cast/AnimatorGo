@@ -1,5 +1,5 @@
-#include <octoon/video/text_file.h>
-#include <octoon/video/text_system.h>
+#include <octoon/model/text_file.h>
+#include <octoon/model/text_system.h>
 #include <octoon/runtime/except.h>
 
 #include <ft2build.h>
@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	namespace video
+	namespace model
 	{
 		TextFile::TextFile() noexcept
 			: font_(nullptr)

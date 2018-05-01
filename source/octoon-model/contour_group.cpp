@@ -1,4 +1,4 @@
-#include <octoon/video/text_contour_group.h>
+#include <octoon/model/contour_group.h>
 #include <octoon/model/mesh.h>
 
 #include <cstring>
@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	namespace video
+	namespace model
 	{
 		static std::vector<math::float3> g_tris;
 
@@ -31,68 +31,46 @@ namespace octoon
 
 		void APIENTRY vertexCallback(GLvoid* vertex)
 		{
-			static int count = 0;
-			static math::Triangle g_tri;
-
-			const GLdouble *d;
-			d = (GLdouble *)vertex;
-
-			if (count == 0)
-			{
-				g_tri.a.x = d[0];
-				g_tri.a.y = d[1];
-				g_tri.a.z = d[2];
-				count++;
-			}
-			else if (count == 1)
-			{
-				g_tri.c.x = d[0];
-				g_tri.c.y = d[1];
-				g_tri.c.z = d[2];
-				count++;
-			}
-			else if (count == 2)
-			{
-				g_tri.b = math::float3(d[0], d[1], d[2]);
-
-				g_tris.push_back(g_tri.a);
-				g_tris.push_back(g_tri.b);
-				g_tris.push_back(g_tri.c);
-				count = 0;
-			}
+			const GLdouble *d = (GLdouble *)vertex;
+			g_tris.emplace_back((float)d[0], (float)d[1], (float)d[2]);
 		}
 
 		void APIENTRY combineCallback(GLdouble coords[3], GLdouble* points[4], GLfloat weight[4], GLdouble* dataOut[3])
 		{
 		}
 
-		TextContourGroup::TextContourGroup() noexcept
+		ContourGroup::ContourGroup() noexcept
 		{
 		}
 
-		TextContourGroup::TextContourGroup(TextContours&& contour) noexcept
+		ContourGroup::ContourGroup(Contours&& contour) noexcept
 		{
 			this->setContours(std::move(contour));
 		}
 
-		TextContourGroup::~TextContourGroup() noexcept
+		ContourGroup::ContourGroup(const Contours& contour) noexcept
+		{
+			this->setContours(contour);
+		}
+
+		ContourGroup::~ContourGroup() noexcept
 		{
 		}
 
 		void
-		TextContourGroup::setContours(TextContours&& contour) noexcept
+		ContourGroup::setContours(Contours&& contour) noexcept
 		{
 			contours_ = std::move(contour);
 		}
 
 		void
-		TextContourGroup::setContours(const TextContours& textContour) noexcept
+		ContourGroup::setContours(const Contours& textContour) noexcept
 		{
-			TextContours contours;
+			Contours contours;
 
 			for (auto& it : textContour)
 			{
-				auto contour = std::make_unique<TextContour>();
+				auto contour = std::make_unique<Contour>();
 				contour->points() = it->points();
 				contour->isClockwise(it->isClockwise());
 
@@ -102,56 +80,40 @@ namespace octoon
 			contours_ = std::move(contours);
 		}
 
-		TextContours&
-		TextContourGroup::getContours() noexcept
+		Contours&
+		ContourGroup::getContours() noexcept
 		{
 			return contours_;
 		}
 
-		const TextContours&
-		TextContourGroup::getContours() const noexcept
+		const Contours&
+		ContourGroup::getContours() const noexcept
 		{
 			return contours_;
 		}
 
 		std::size_t
-		TextContourGroup::count() const noexcept
+		ContourGroup::count() const noexcept
 		{
 			return contours_.size();
 		}
 
-		TextContour&
-		TextContourGroup::at(std::size_t index)  noexcept
+		Contour&
+		ContourGroup::at(std::size_t index)  noexcept
 		{
 			assert(index < count());
 			return *contours_[index];
 		}
 
-		const TextContour&
-		TextContourGroup::at(std::size_t index) const noexcept
+		const Contour&
+		ContourGroup::at(std::size_t index) const noexcept
 		{
 			assert(index < count());
 			return *contours_[index];
-		}
-
-		void
-		TextContourGroup::clear() noexcept
-		{
-			contours_.clear();
-		}
-
-		void
-		TextContourGroup::scale(float scaler) noexcept
-		{
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-					it *= scaler;
-			}
 		}
 
 		std::size_t
-		TextContourGroup::countOfPoints() const noexcept
+		ContourGroup::countOfPoints() const noexcept
 		{
 			std::size_t sum = 0;
 
@@ -162,7 +124,7 @@ namespace octoon
 		}
 
 		void
-		TextContourGroup::normalize(math::float3& center) noexcept
+		ContourGroup::normalize(math::float3& center) noexcept
 		{
 			math::float3 min(std::numeric_limits<float>::max());
 			math::float3 max(-std::numeric_limits<float>::max());
@@ -185,24 +147,25 @@ namespace octoon
 			}
 		}
 
-		TextContourGroupPtr
-		TextContourGroup::clone() const noexcept
+		ContourGroupPtr
+		ContourGroup::clone() const noexcept
 		{
-			auto instance = std::make_shared<TextContourGroup>();
+			auto instance = std::make_shared<ContourGroup>();
 			instance->setContours(this->getContours());
 			return instance;
 		}
 
-		void
-		TextContourGroup::buildMeshes(model::Mesh& mesh) noexcept
+		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
 		{
-			math::float3s tris(this->countOfPoints() * 2 * sizeof(math::Triangle) / sizeof(math::float3));
+			Mesh mesh;
+
+			math::float3s tris(group.countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
-			for (std::size_t written = 0, i = 0; i < this->count(); ++i)
+			for (std::size_t written = 0, i = 0; i < group.count(); ++i)
 			{
-				TextContour& contour = this->at(i);
+				const Contour& contour = group.at(i);
 
 				for (std::size_t n = 0; n < contour.count() - 1; ++n)
 				{
@@ -210,14 +173,14 @@ namespace octoon
 					auto p2 = contour.at(n + 1);
 
 					math::Triangle t1;
-					t1.a = math::float3(p1.x, p1.y, -1.0f);
-					t1.b = math::float3(p2.x, p2.y, 1.0f);
-					t1.c = math::float3(p1.x, p1.y, 1.0f);
+					t1.a = math::float3(p1.x, p1.y, -thickness);
+					t1.b = math::float3(p2.x, p2.y, thickness);
+					t1.c = math::float3(p1.x, p1.y, thickness);
 
 					math::Triangle t2;
-					t2.a = math::float3(p1.x, p1.y, -1.0f);
-					t2.b = math::float3(p2.x, p2.y, -1.0f);
-					t2.c = math::float3(p2.x, p2.y, 1.0f);
+					t2.a = math::float3(p1.x, p1.y, -thickness);
+					t2.b = math::float3(p2.x, p2.y, -thickness);
+					t2.c = math::float3(p2.x, p2.y, thickness);
 
 					std::memcpy(trisData + written, t1.ptr(), sizeof(math::Triangle));
 					std::memcpy(trisData + written + sizeof(math::Triangle) / sizeof(math::float3), t2.ptr(), sizeof(math::Triangle));
@@ -244,15 +207,15 @@ namespace octoon
 					gluTessNormal(tobj, 0.0f, 0.0f, 0.0f);
 
 					std::size_t index = 0;
-					std::vector<math::double3> vertices(this->countOfPoints() * 2);
+					std::vector<math::double3> vertices(group.countOfPoints() * 2);
 
 					for (std::uint8_t face = 0; face < 2; face++)
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (std::size_t j = 0; j < this->count(); ++j)
+						for (std::size_t j = 0; j < group.count(); ++j)
 						{
-							TextContour& it = this->at(j);
+							const Contour& it = group.at(j);
 
 							gluTessBeginContour(tobj);
 
@@ -279,8 +242,84 @@ namespace octoon
 				}
 			}
 
-			mesh.computeVertexNormals();
-			mesh.computeBoundingBox();
+			return mesh;
+		}
+
+		Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
+		{
+			Mesh mesh;
+
+			for (auto& group : groups)
+				mesh.combineMeshes(makeMesh(*group), true);
+
+			return mesh;
+		}
+
+		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+		{
+			Mesh mesh;
+
+			math::float3s& tris = mesh.getVertexArray();
+
+			for (auto& contour : group.getContours())
+			{
+				for (std::size_t n = 0; n < contour->count() - 1; ++n)
+				{
+					auto p1 = contour->at(n);
+					auto p2 = contour->at(n + 1);
+
+					math::float3 a = math::float3(p1.x, p1.y, thickness);
+					math::float3 b = math::float3(p1.x, p1.y, -thickness);
+					math::float3 c = math::float3(p2.x, p2.y, -thickness);
+					math::float3 d = math::float3(p2.x, p2.y, thickness);
+
+					tris.push_back(a);
+					tris.push_back(b);
+					tris.push_back(b);
+					tris.push_back(c);
+					tris.push_back(c);
+					tris.push_back(d);
+					tris.push_back(d);
+					tris.push_back(a);
+				}
+			}
+
+			return mesh;
+		}
+
+		Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
+		{
+			Mesh mesh;
+
+			math::float3s& tris = mesh.getVertexArray();
+
+			for (auto& group : groups)
+			{
+				for (auto& contour : group->getContours())
+				{
+					for (std::size_t n = 0; n < contour->count() - 1; ++n)
+					{
+						auto p1 = contour->at(n);
+						auto p2 = contour->at(n + 1);
+
+						math::float3 a = math::float3(p1.x, p1.y, thickness);
+						math::float3 b = math::float3(p1.x, p1.y, -thickness);
+						math::float3 c = math::float3(p2.x, p2.y, -thickness);
+						math::float3 d = math::float3(p2.x, p2.y, thickness);
+
+						tris.push_back(a);
+						tris.push_back(b);
+						tris.push_back(b);
+						tris.push_back(c);
+						tris.push_back(c);
+						tris.push_back(d);
+						tris.push_back(d);
+						tris.push_back(a);
+					}
+				}
+			}
+
+			return mesh;
 		}
 	}
 }

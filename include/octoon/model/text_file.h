@@ -1,13 +1,13 @@
-#ifndef OCTOON_TEXT_FILE_H_
-#define OCTOON_TEXT_FILE_H_
+#ifndef OCTOON_MODEL_TEXT_FILE_H_
+#define OCTOON_MODEL_TEXT_FILE_H_
 
-#include <octoon/video/render_types.h>
+#include <octoon/model/modtypes.h>
 
 namespace octoon
 {
 	class TextMeshingComponent;
 
-	namespace video
+	namespace model
 	{
 		class OCTOON_EXPORT TextFile final
 		{
@@ -23,9 +23,6 @@ namespace octoon
 
 			const std::string& getFontPath() const noexcept;
 
-		private:
-			friend class TextMeshing;
-			friend  TextMeshingComponent;
 			void* getFont() const noexcept;
 
 		private:

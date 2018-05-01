@@ -41,6 +41,9 @@ namespace octoon
 			void saveAsPNG(graphics::GraphicsContext& context, const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
 
 		private:
+			void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
+
+		private:
 			RenderSystem(const RenderSystem&) = delete;
 			RenderSystem& operator=(const RenderSystem&) = delete;
 

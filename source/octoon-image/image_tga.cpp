@@ -1,5 +1,8 @@
 #include "image_tga.h"
 
+#include <cstring>
+#include <limits>
+
 namespace octoon
 {
 	namespace image

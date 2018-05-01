@@ -3,7 +3,6 @@
 #include <octoon/video/geometry.h>
 #include <octoon/video/material.h>
 #include <octoon/video/render_scene.h>
-#include <octoon/video/text_system.h>
 
 #include <octoon/runtime/except.h>
 
@@ -38,89 +37,25 @@ namespace octoon
 		void
 		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
-			TextSystem::instance()->setup();
-
-			width_ = w;
-			height_ = h;
 			device_ = device;
-
-			GraphicsTextureDesc colorTextureDesc;
-			colorTextureDesc.setWidth(w);
-			colorTextureDesc.setHeight(h);
-			colorTextureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-			colorTexture_ = device_->createTexture(colorTextureDesc);
-			if (!colorTexture_)
-				throw runtime::runtime_error::create("createTexture() failed");
-
-			GraphicsTextureDesc depthTextureDesc;
-			depthTextureDesc.setWidth(w);
-			depthTextureDesc.setHeight(h);
-			depthTextureDesc.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
-			depthTexture_ = device_->createTexture(depthTextureDesc);
-			if (!depthTexture_)
-				throw runtime::runtime_error::create("createTexture() failed");
-
-			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R8G8B8A8UNorm));
-			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, GraphicsFormat::X8_D24UNormPack32));
-
-			GraphicsFramebufferDesc framebufferDesc;
-			framebufferDesc.setWidth(w);
-			framebufferDesc.setHeight(h);
-			framebufferDesc.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
-			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_, 0, 0));
-			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_, 0, 0));
-
-			fbo_ = device_->createFramebuffer(framebufferDesc);
-			if (!fbo_)
-				throw runtime::runtime_error::create("createFramebuffer() failed");
-
-			if (device_->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
-			{
-				GraphicsTextureDesc colorTextureDescMSAA;
-				colorTextureDescMSAA.setWidth(w);
-				colorTextureDescMSAA.setHeight(h);
-				colorTextureDescMSAA.setTexMultisample(4);
-				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				colorTextureDescMSAA.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-				colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
-				if (!colorTextureMSAA_)
-					throw runtime::runtime_error::create("createTexture() failed");
-
-				GraphicsTextureDesc depthTextureDescMSAA;
-				depthTextureDescMSAA.setWidth(w);
-				depthTextureDescMSAA.setHeight(h);
-				depthTextureDescMSAA.setTexMultisample(4);
-				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				depthTextureDescMSAA.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
-				depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
-				if (!depthTextureMSAA_)
-					throw runtime::runtime_error::create("createTexture() failed");
-
-				GraphicsFramebufferDesc framebufferDescMSAA;
-				framebufferDescMSAA.setWidth(w);
-				framebufferDescMSAA.setHeight(h);
-				framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
-				framebufferDescMSAA.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
-				framebufferDescMSAA.addColorAttachment(GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
-
-				fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
-				if (!fboMSAA_)
-					throw runtime::runtime_error::create("createFramebuffer() failed");
-			}
+			this->setFramebufferSize(w, h);
 		}
 
 		void
 		RenderSystem::close() noexcept
 		{
-			TextSystem::instance()->close();
 		}
 
 		void
 		RenderSystem::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
 		{
-			width_ = w;
-			height_ = h;
+			if (width_ != w || height_ != h)
+			{
+				this->setupFramebuffers(w, h);
+
+				width_ = w;
+				height_ = h;
+			}
 		}
 
 		void
@@ -237,10 +172,6 @@ namespace octoon
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
-					auto mesh = geometry->getMesh();
-					if (!mesh)
-						continue;
-
 					auto material = geometry->getMaterial();
 					if (!material)
 						continue;
@@ -253,11 +184,11 @@ namespace octoon
 					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
 					context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
 
-					auto& indices = mesh->getIndicesArray();
-					if (indices.empty())
-						context.draw(mesh->getVertexArray().size(), 1, 0, 0);
+					auto indices = geometry->getNumIndices();
+					if (indices > 0)
+						context.drawIndexed(indices, 1, 0, 0, 0);
 					else
-						context.drawIndexed(indices.size(), 1, 0, 0, 0);
+						context.draw(geometry->getNumVertices(), 1, 0, 0);
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)
@@ -357,6 +288,75 @@ namespace octoon
 					png_destroy_write_struct(&png_ptr, &info_ptr);
 
 				throw e;
+			}
+		}
+
+		void
+		RenderSystem::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
+		{
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+			colorTexture_ = device_->createTexture(colorTextureDesc);
+			if (!colorTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+			depthTexture_ = device_->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R8G8B8A8UNorm));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, GraphicsFormat::X8_D24UNormPack32));
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			fbo_ = device_->createFramebuffer(framebufferDesc);
+			if (!fbo_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			if (device_->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
+			{
+				GraphicsTextureDesc colorTextureDescMSAA;
+				colorTextureDescMSAA.setWidth(w);
+				colorTextureDescMSAA.setHeight(h);
+				colorTextureDescMSAA.setTexMultisample(4);
+				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				colorTextureDescMSAA.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+				colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
+				if (!colorTextureMSAA_)
+					throw runtime::runtime_error::create("createTexture() failed");
+
+				GraphicsTextureDesc depthTextureDescMSAA;
+				depthTextureDescMSAA.setWidth(w);
+				depthTextureDescMSAA.setHeight(h);
+				depthTextureDescMSAA.setTexMultisample(4);
+				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				depthTextureDescMSAA.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+				depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
+				if (!depthTextureMSAA_)
+					throw runtime::runtime_error::create("createTexture() failed");
+
+				GraphicsFramebufferDesc framebufferDescMSAA;
+				framebufferDescMSAA.setWidth(w);
+				framebufferDescMSAA.setHeight(h);
+				framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDescMSAA.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
+				framebufferDescMSAA.addColorAttachment(GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
+
+				fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
+				if (!fboMSAA_)
+					throw runtime::runtime_error::create("createFramebuffer() failed");
 			}
 		}
 	}

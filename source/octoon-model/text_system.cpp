@@ -1,4 +1,4 @@
-#include <octoon/video/text_system.h>
+#include <octoon/model/text_system.h>
 #include <octoon/runtime/except.h>
 
 #include <ft2build.h>
@@ -6,8 +6,10 @@
 
 namespace octoon
 {
-	namespace video
+	namespace model
 	{
+		OctoonImplementSingleton(TextSystem)
+
 		TextSystem::TextSystem() noexcept
 			: library_(nullptr)
 		{

@@ -1,6 +1,6 @@
 #include <octoon/path_meshing_component.h>
 #include <octoon/model/mesh.h>
-#include <octoon/video/text_contour_group.h>
+#include <octoon/model/contour_group.h>
 #include <octoon/runtime/except.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
@@ -135,8 +135,10 @@ namespace octoon
 	PathMeshingComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<PathMeshingComponent>();
-		instance->setBezierSteps(this->getBezierSteps());
+		instance->setName(this->getName());
+		instance->setClockwise(this->getClockwise());
 		instance->setBezierPath(this->getBezierPath());
+		instance->setBezierSteps(this->getBezierSteps());
 
 		return instance;
 	}
@@ -152,7 +154,7 @@ namespace octoon
 
 		auto reader = json::parse(data);
 
-		video::TextContours contours;
+		model::Contours contours;
 
 		for (auto& path : reader["paths"])
 		{
@@ -160,7 +162,7 @@ namespace octoon
 			json::pointer cur = nullptr;
 			json::reference points = path["points"];
 
-			auto contour = std::make_unique<video::TextContour>();
+			auto contour = std::make_unique<model::Contour>();
 
 			for (int index = 0; index < points.size(); index++)
 			{
@@ -233,14 +235,15 @@ namespace octoon
 			contours.push_back(std::move(contour));
 		}
 
-		auto mesh = std::make_shared<model::Mesh>();
-
 		math::float3 center;
 
-		auto contourGroup_ = std::make_shared<video::TextContourGroup>();
+		auto contourGroup_ = std::make_shared<model::ContourGroup>();
 		contourGroup_->setContours(std::move(contours));
 		contourGroup_->normalize(center);
-		contourGroup_->buildMeshes(*mesh);
+
+		auto mesh = model::makeMesh(*contourGroup_);
+		mesh.computeVertexNormals();
+		mesh.computeBoundingBox();
 
 		this->setMesh(std::move(mesh));
 		this->getComponent<TransformComponent>()->setLocalTranslate(center);

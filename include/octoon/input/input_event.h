@@ -85,7 +85,7 @@ namespace octoon
 		struct JoyButtonEvent {};
 		struct JoyDeviceEvent {};
 
-		class InputEvent final
+		class OCTOON_EXPORT InputEvent final
 		{
 		public:
 			enum Type
@@ -139,6 +139,21 @@ namespace octoon
 				WindowEvent window;
 				DropEvent drop;
 			};
+
+			void makeWindowResize(WindHandle window_, std::uint32_t w, std::uint32_t h, std::uint64_t timestamp) noexcept;
+			void makeWindowFramebufferResize(WindHandle window_, std::uint32_t w, std::uint32_t h, std::uint64_t timestamp) noexcept;
+			void makeWindowClose(WindHandle window_, std::uint64_t timestamp) noexcept;
+			void makeWindowFocus(WindHandle window_, bool focus, std::uint64_t timestamp) noexcept;
+			void makeWindowKeyDown(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept;
+			void makeWindowKeyUp(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept;
+			void makeWindowKeyPress(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept;
+			void makeWindowKeyChar(WindHandle window_, std::uint16_t unicode, std::uint16_t mods, std::uint64_t timestamp) noexcept;
+			void makeWindowMouseButtonDown(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept;
+			void makeWindowMouseButtonUp(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept;
+			void makeWindowMouseButtonDoubleClick(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept;
+			void makeWindowMouseMotion(WindHandle window_, float x, float y, std::uint64_t timestamp) noexcept;
+			void makeWindowScrool(WindHandle window_, float x, float y, std::uint64_t timestamp) noexcept;
+			void makeWindowDrop(WindHandle window_, std::uint32_t count, const char** file_utf8, std::uint64_t timestamp) noexcept;
 		};
 	}
 }

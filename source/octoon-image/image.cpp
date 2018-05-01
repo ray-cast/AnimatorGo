@@ -5,7 +5,7 @@
 
 #include "image_all.h"
 
-#include <algorithm>
+#include <string.h>
 
 namespace octoon
 {
@@ -237,7 +237,7 @@ namespace octoon
 				if (!this->create(image.format(), image.width(), image.height(), image.depth(), image.mipLevel(), image.layerLevel(), image.mipBase(), image.layerBase()))
 					return false;
 
-				std::memcpy((char*)this->data(), image.data(), image.size());
+				memcpy((char*)this->data(), image.data(), image.size());
 				return true;
 			}
 		}

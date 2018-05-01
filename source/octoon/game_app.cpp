@@ -328,12 +328,7 @@ namespace octoon
 	GameApp::doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::SizeChange;
-		event.change.w = w;
-		event.change.h = h;
-		event.change.windowID = (std::uint64_t)window;
-		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-
+		event.makeWindowResize(window, w, h, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -341,12 +336,7 @@ namespace octoon
 	GameApp::doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::SizeChangeDPI;
-		event.change.w = w;
-		event.change.h = h;
-		event.change.windowID = (std::uint64_t)window;
-		event.change.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-
+		event.makeWindowFramebufferResize(window, w, h, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -354,9 +344,7 @@ namespace octoon
 	GameApp::doWindowClose(WindHandle window) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::AppQuit;
-		event.window.windowID = (std::uint64_t)window;
-		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
+		event.makeWindowClose(window, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -364,9 +352,7 @@ namespace octoon
 	GameApp::doWindowFocus(WindHandle window, bool focus) except
 	{
 		octoon::input::InputEvent event;
-		event.event = focus ? octoon::input::InputEvent::GetFocus : octoon::input::InputEvent::LostFocus;
-		event.window.windowID = (std::uint64_t)window;
-		event.window.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
+		event.makeWindowFocus(window, focus, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -374,18 +360,7 @@ namespace octoon
 	GameApp::doWindowKeyDown(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::KeyDown;
-		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = false;
-		event.key.state = true;
-		event.key.keysym.raw = scancode;
-		event.key.keysym.sym = key;
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = 0;
-
+		event.makeWindowKeyDown(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -393,18 +368,7 @@ namespace octoon
 	GameApp::doWindowKeyUp(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::KeyUp;
-		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = false;
-		event.key.state = false;
-		event.key.keysym.raw = scancode;
-		event.key.keysym.sym = key;
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = 0;
-
+		event.makeWindowKeyUp(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -412,18 +376,7 @@ namespace octoon
 	GameApp::doWindowKeyPress(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::KeyDown;
-		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = true;
-		event.key.state = false;
-		event.key.keysym.raw = scancode;
-		event.key.keysym.sym = key;
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = 0;
-
+		event.makeWindowKeyPress(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -431,18 +384,7 @@ namespace octoon
 	GameApp::doWindowKeyChar(WindHandle window, std::uint16_t unicode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::Character;
-		event.key.windowID = (std::uint64_t)window;
-		event.key.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.key.padding2 = 0;
-		event.key.padding3 = 0;
-		event.key.repeat = 0;
-		event.key.state = true;
-		event.key.keysym.raw = 0;
-		event.key.keysym.sym = 0;
-		event.key.keysym.mod = mods;
-		event.key.keysym.unicode = unicode;
-
+		event.makeWindowKeyChar(window, unicode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -450,16 +392,7 @@ namespace octoon
 	GameApp::doWindowMouseButtonDown(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::MouseButtonDown;
-		event.button.button = button;
-		event.button.clicks = true;
-		event.button.x = x;
-		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.button.windowID = (std::uint64_t)window;
-		event.button.padding1 = 0;
-		event.button.which = 0;
-
+		event.makeWindowMouseButtonDown(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -467,16 +400,7 @@ namespace octoon
 	GameApp::doWindowMouseButtonUp(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::MouseButtonUp;
-		event.button.button = button;
-		event.button.clicks = false;
-		event.button.x = x;
-		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.button.windowID = (std::uint64_t)window;
-		event.button.padding1 = 0;
-		event.button.which = 0;
-
+		event.makeWindowMouseButtonUp(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -484,16 +408,7 @@ namespace octoon
 	GameApp::doWindowMouseButtonDoubleClick(WindHandle window, std::uint8_t button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::MouseButtonDoubleClick;
-		event.button.button = button;
-		event.button.clicks = true;
-		event.button.x = x;
-		event.button.y = y;
-		event.button.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.button.windowID = (std::uint64_t)window;
-		event.button.padding1 = 0;
-		event.button.which = 0;
-
+		event.makeWindowMouseButtonDoubleClick(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -501,15 +416,7 @@ namespace octoon
 	GameApp::doWindowMouseMotion(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::MouseMotion;
-		event.motion.x = x;
-		event.motion.y = y;
-		event.motion.xrel = (std::uint32_t)x;
-		event.motion.yrel = (std::uint32_t)y;
-		event.motion.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.motion.state = false;
-		event.motion.windowID = (std::uint64_t)window;
-
+		event.makeWindowMouseMotion(window, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -517,10 +424,7 @@ namespace octoon
 	GameApp::doWindowScrool(WindHandle window, float x, float y) except
 	{
 		octoon::input::InputEvent event;
-		event.event = y > 0 ? octoon::input::InputEvent::MouseWheelUp : octoon::input::InputEvent::MouseWheelDown;
-		event.wheel.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.wheel.windowID = (std::uint64_t)window;
-
+		event.makeWindowScrool(window, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 
@@ -528,12 +432,7 @@ namespace octoon
 	GameApp::doWindowDrop(WindHandle window, std::uint32_t count, const char** file_utf8) except
 	{
 		octoon::input::InputEvent event;
-		event.event = octoon::input::InputEvent::Drop;
-		event.drop.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count();
-		event.drop.count = count;
-		event.drop.files = file_utf8;
-		event.drop.windowID = (std::uint64_t)window;
-
+		event.makeWindowDrop(window, count, file_utf8, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
 		this->sendInputEvent(event);
 	}
 }

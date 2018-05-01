@@ -1,4 +1,4 @@
-#include <octoon/video/blinn_material.h>
+#include <octoon/video/line_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
 
@@ -6,13 +6,13 @@ namespace octoon
 {
 	namespace video
 	{
-		BlinnMaterial::BlinnMaterial() except
+		LineMaterial::LineMaterial() except
 		{
 			this->setup();
 		}
 
 		void
-		BlinnMaterial::setup() except
+		LineMaterial::setup() except
 		{
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
@@ -21,41 +21,18 @@ namespace octoon
 			layout(location  = 0) in vec4 POSITION0;
 			layout(location  = 1) in vec4 NORMAL0;
 
-			out vec3 oTexcoord0;
-			out vec3 oTexcoord1;
-
 			void main()
 			{
-				oTexcoord0 = normalize(NORMAL0.xyz);
-				oTexcoord1 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";
 
 			const char* frag = R"(#version 330
-
-			uniform vec3 lightDir;
-			uniform vec3 baseColor;
-			uniform vec3 ambientColor;
-			uniform float shininess;
-
 			layout(location  = 0) out vec4 fragColor;
-
 			in vec3 oTexcoord0;
-			in vec3 oTexcoord1;
-
+			uniform vec3 color;
 			void main()
 			{
-				vec3 ambient = pow(ambientColor, vec3(2.2f));
-				vec3 base = pow(baseColor, vec3(2.2f));
-
-				vec3 N = normalize(oTexcoord0);
-				vec3 V = normalize(oTexcoord1);
-				vec3 H = normalize(V + lightDir);
-
-				float nl = max(0.0f, dot(N, lightDir));
-				float spec = pow(max(0, dot(N, H)), pow(4096, shininess));
-
-				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				fragColor = vec4(color, 1.0f);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -72,7 +49,7 @@ namespace octoon
 			descriptor_set_layout.setUniformComponents(program->getActiveParams());
 
 			graphics::GraphicsStateDesc stateDesc;
-			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::TriangleList);
+			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::LineList);
 			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
 
@@ -97,97 +74,56 @@ namespace octoon
 
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
-			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
-			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
-			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "shininess"; });
+			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "color"; });
 
-			lightDir_->uniform3f(math::float3::UnitY);
-			baseColor_->uniform3f(math::float3::One);
-			ambientColor_->uniform3f(math::float3::Zero);
+			color_->uniform3f(math::float3::Zero);
 		}
 
-		BlinnMaterial::~BlinnMaterial() noexcept
+		LineMaterial::~LineMaterial() noexcept
 		{
 		}
 
 		void
-		BlinnMaterial::setTransform(const math::float4x4& m) noexcept
+		LineMaterial::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		BlinnMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		LineMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		const graphics::GraphicsPipelinePtr&
-		BlinnMaterial::getPipeline() const noexcept
+		LineMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		const graphics::GraphicsDescriptorSetPtr&
-		BlinnMaterial::getDescriptorSet() const noexcept
+		LineMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
 		void
-		BlinnMaterial::setLightDir(const math::float3& dir) noexcept
+		LineMaterial::setColor(const math::float3& colors) noexcept
 		{
-			lightDir_->uniform3f(dir);
-		}
-
-		void
-		BlinnMaterial::setBaseColor(const math::float3& color) noexcept
-		{
-			baseColor_->uniform3f(color);
-		}
-
-		void
-		BlinnMaterial::setAmbientColor(const math::float3& color) noexcept
-		{
-			ambientColor_->uniform3f(color);
-		}
-
-		void
-		BlinnMaterial::setShininess(float shininess) noexcept
-		{
-			shininess_->uniform1f(shininess);
+			color_->uniform3f(colors);
 		}
 
 		const math::float3&
-		BlinnMaterial::getLightDir() const noexcept
+		LineMaterial::getColor() const noexcept
 		{
-			return lightDir_->getFloat3();
-		}
-
-		const math::float3&
-		BlinnMaterial::getBaseColor() const noexcept
-		{
-			return baseColor_->getFloat3();
-		}
-
-		const math::float3&
-		BlinnMaterial::getAmbientColor() const noexcept
-		{
-			return ambientColor_->getFloat3();
-		}
-
-		float
-		BlinnMaterial::getShininess() const noexcept
-		{
-			return shininess_->getFloat();
+			return color_->getFloat3();
 		}
 
 		MaterialPtr
-		BlinnMaterial::clone() const noexcept
+		LineMaterial::clone() const noexcept
 		{
-			auto instance = std::make_shared<BlinnMaterial>();
-			instance->setLightDir(this->getLightDir());
+			auto instance = std::make_shared<LineMaterial>();
+			instance->setColor(this->getColor());
 
 			return instance;
 		}

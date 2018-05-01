@@ -8,7 +8,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/first_person_camera.h>
-
 #include <octoon/ui/imgui.h>
 
 const std::string chars[] =

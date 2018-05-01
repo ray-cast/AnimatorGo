@@ -1,4 +1,4 @@
-#include <octoon/video/blinn_material.h>
+#include <octoon/video/ggx_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
 
@@ -6,13 +6,13 @@ namespace octoon
 {
 	namespace video
 	{
-		BlinnMaterial::BlinnMaterial() except
+		GGXMaterial::GGXMaterial() except
 		{
 			this->setup();
 		}
 
 		void
-		BlinnMaterial::setup() except
+		GGXMaterial::setup() except
 		{
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
@@ -35,8 +35,11 @@ namespace octoon
 
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
+			uniform vec3 specularColor;
 			uniform vec3 ambientColor;
-			uniform float shininess;
+
+			uniform float smoothness;
+			uniform float metalness;
 
 			layout(location  = 0) out vec4 fragColor;
 
@@ -47,15 +50,34 @@ namespace octoon
 			{
 				vec3 ambient = pow(ambientColor, vec3(2.2f));
 				vec3 base = pow(baseColor, vec3(2.2f));
+				vec3 specular = pow(specularColor, vec3(2.2f)) * 0.04f;
 
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
 				vec3 H = normalize(V + lightDir);
 
 				float nl = max(0.0f, dot(N, lightDir));
-				float spec = pow(max(0, dot(N, H)), pow(4096, shininess));
+				float nv = max(0.0f, dot(N, V));
+				float nh = max(0.0f, dot(N, H));
+				float vh = max(0.0f, dot(V, H));
 
-				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				float roughness = max(1e-4f, (1.0 - smoothness) * (1.0 - smoothness));
+				float m2 = roughness * roughness;
+
+				float spec = (nh * m2 - nh) * nh + 1;
+				spec = m2 / (spec * spec);
+
+				float Gv = nl * (nv * (1 - roughness) + roughness);
+				float Gl = nv * (nl * (1 - roughness) + roughness);
+				spec *= 0.5 / (Gv + Gl);
+
+				vec3 f0 = mix(specular, base, vec3(metalness));
+				vec3 f90 = vec3(clamp(dot(f0, vec3(0.33333f)) * 50.0f, 0.0f, 1.0f));
+				vec3 fresnel = mix(f0, f90, vec3(pow(1.0 - vh, 5.0f)));
+
+				vec3 diffuse = mix(base, vec3(0.0f), vec3(metalness));
+
+				fragColor = vec4(pow(ambient + (diffuse + spec * fresnel) * nl, vec3(1.0f / 2.2f)), 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -100,93 +122,119 @@ namespace octoon
 			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
 			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
 			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
-			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "shininess"; });
+			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "specularColor"; });
+			smoothness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "smoothness"; });
+			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "metalness"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::One);
 			ambientColor_->uniform3f(math::float3::Zero);
 		}
 
-		BlinnMaterial::~BlinnMaterial() noexcept
+		GGXMaterial::~GGXMaterial() noexcept
 		{
 		}
 
 		void
-		BlinnMaterial::setTransform(const math::float4x4& m) noexcept
+		GGXMaterial::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		BlinnMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		GGXMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		const graphics::GraphicsPipelinePtr&
-		BlinnMaterial::getPipeline() const noexcept
+		GGXMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		const graphics::GraphicsDescriptorSetPtr&
-		BlinnMaterial::getDescriptorSet() const noexcept
+		GGXMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
 		void
-		BlinnMaterial::setLightDir(const math::float3& dir) noexcept
+		GGXMaterial::setLightDir(const math::float3& dir) noexcept
 		{
 			lightDir_->uniform3f(dir);
 		}
 
 		void
-		BlinnMaterial::setBaseColor(const math::float3& color) noexcept
+		GGXMaterial::setBaseColor(const math::float3& color) noexcept
 		{
 			baseColor_->uniform3f(color);
 		}
 
 		void
-		BlinnMaterial::setAmbientColor(const math::float3& color) noexcept
+		GGXMaterial::setAmbientColor(const math::float3& color) noexcept
 		{
 			ambientColor_->uniform3f(color);
 		}
 
 		void
-		BlinnMaterial::setShininess(float shininess) noexcept
+		GGXMaterial::setSpecularColor(const math::float3& color) noexcept
 		{
-			shininess_->uniform1f(shininess);
+			specularColor_->uniform3f(color);
+		}
+
+		void
+		GGXMaterial::setSmoothness(float smoothness) noexcept
+		{
+			smoothness_->uniform1f(smoothness);
+		}
+
+		void
+		GGXMaterial::setMetalness(float metalness) noexcept
+		{
+			metalness_->uniform1f(metalness);
 		}
 
 		const math::float3&
-		BlinnMaterial::getLightDir() const noexcept
+		GGXMaterial::getLightDir() const noexcept
 		{
 			return lightDir_->getFloat3();
 		}
 
 		const math::float3&
-		BlinnMaterial::getBaseColor() const noexcept
+		GGXMaterial::getBaseColor() const noexcept
 		{
 			return baseColor_->getFloat3();
 		}
 
 		const math::float3&
-		BlinnMaterial::getAmbientColor() const noexcept
+		GGXMaterial::getAmbientColor() const noexcept
 		{
 			return ambientColor_->getFloat3();
 		}
 
-		float
-		BlinnMaterial::getShininess() const noexcept
+		const math::float3&
+		GGXMaterial::getSpecularColor() const noexcept
 		{
-			return shininess_->getFloat();
+			return specularColor_->getFloat3();
+		}
+
+		float
+		GGXMaterial::getMetalness() const noexcept
+		{
+			return metalness_->getFloat();
+		}
+
+		float
+		GGXMaterial::getSmoothness() const noexcept
+		{
+			return smoothness_->getFloat();
 		}
 
 		MaterialPtr
-		BlinnMaterial::clone() const noexcept
+		GGXMaterial::clone() const noexcept
 		{
-			auto instance = std::make_shared<BlinnMaterial>();
+			auto instance = std::make_shared<GGXMaterial>();
 			instance->setLightDir(this->getLightDir());
 
 			return instance;

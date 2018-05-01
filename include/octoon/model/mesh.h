@@ -4,11 +4,7 @@
 #include <octoon/model/modtypes.h>
 #include <octoon/model/bone.h>
 #include <octoon/model/combine_mesh.h>
-
-#include <octoon/math/mathfwd.h>
-#include <octoon/math/vector2.h>
-#include <octoon/math/vector3.h>
-#include <octoon/math/boundingbox.h>
+#include <octoon/math/math.h>
 
 #include <string>
 
@@ -78,10 +74,11 @@ namespace octoon
 			void makeCube(float width, float height, float depth, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1, std::uint32_t depthSegments = 1) noexcept;
 			void makeCubeWireframe(float width, float height, float depth, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1, std::uint32_t depthSegments = 1) noexcept;
 			void makeRing(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart = 0, float thetaLength = math::PI) noexcept;
-			void makeSphere(float radius, std::uint32_t widthSegments = 8, std::uint32_t heightSegments = 6, float phiStart = 0.0, float phiLength = math::PI_2, float thetaStart = 0, float thetaLength = math::PI) noexcept;
+			void makeSphere(float radius, std::uint32_t widthSegments = 32, std::uint32_t heightSegments = 24, float phiStart = 0.0, float phiLength = math::PI_2, float thetaStart = 0, float thetaLength = math::PI) noexcept;
 			void makeVolumes(float fovy, float znear, float zfar) noexcept;
 			void makeCone(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
 
+			bool combineMeshes(const Mesh& mesh, bool force = false) noexcept;
 			bool combineMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
 			bool combineMeshes(const CombineMeshes& instances, bool merge) noexcept;
 
@@ -181,7 +178,7 @@ namespace octoon
 			return mesh;
 		}
 
-		inline Mesh makeSphere(float radius, std::uint32_t widthSegments = 8, std::uint32_t heightSegments = 6, float phiStart = 0.0, float phiLength = math::PI_2, float thetaStart = 0, float thetaLength = math::PI) noexcept
+		inline Mesh makeSphere(float radius, std::uint32_t widthSegments = 32, std::uint32_t heightSegments = 24, float phiStart = 0.0, float phiLength = math::PI_2, float thetaStart = 0, float thetaLength = math::PI) noexcept
 		{
 			Mesh mesh;
 			mesh.makeSphere(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength);

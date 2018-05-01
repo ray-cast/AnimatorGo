@@ -111,13 +111,13 @@ namespace octoon
 			proj_->uniform4fmat(vp);
 		}
 
-		graphics::GraphicsPipelinePtr
+		const graphics::GraphicsPipelinePtr&
 		TextMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
-		graphics::GraphicsDescriptorSetPtr
+		const graphics::GraphicsDescriptorSetPtr&
 		TextMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;

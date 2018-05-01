@@ -10,6 +10,8 @@
 
 #include <octoon/ui/imgui.h>
 
+#include <octoon/image/image.h>
+
 class CubeController : public octoon::GameComponent
 {
 public:
@@ -99,6 +101,10 @@ private:
 
 int main(int argc, const char* argv[])
 {
+	octoon::image::Image image;
+	image.load("C:/Users/ray/Desktop/8F6CBE07600FE2E28BB5F6510152313E.jpg");
+	image.save("C:/Users/ray/Desktop/1.png", "jpg");
+
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
 

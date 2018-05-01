@@ -1,7 +1,6 @@
 #ifndef OCTOON_IMAGE_H_
 #define OCTOON_IMAGE_H_
 
-#include <octoon/image/image_types.h>
 #include <octoon/image/image_format.h>
 #include <octoon/image/image_loader.h>
 
@@ -19,6 +18,9 @@ namespace octoon
 			Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth) except;
 			Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth, std::uint32_t mipLevel, std::uint32_t layerLevel, std::uint32_t mipBase = 0, std::uint32_t layerBase = 0) except;
 			Image(Format format, const Image& src) except;
+			Image(istream& stream, const char* type = nullptr) noexcept;
+			Image(const char* filepath, const char* type = nullptr) noexcept;
+			Image(const std::string& filepath, const char* type = nullptr) noexcept;
 			~Image() noexcept;
 
 			bool create(Format format, std::uint32_t width, std::uint32_t height) except;
@@ -46,7 +48,12 @@ namespace octoon
 
 		public:
 			bool load(istream& stream, const char* type = nullptr) noexcept;
+			bool load(const char* filepath, const char* type = nullptr) noexcept;
+			bool load(const std::string& filepath, const char* type = nullptr) noexcept;
+
 			bool save(ostream& stream, const char* type = "tga") noexcept;
+			bool save(const char* filepath, const char* type = "tga") noexcept;
+			bool save(const std::string& filepath, const char* type = nullptr) noexcept;
 
 		private:
 			Format format_;

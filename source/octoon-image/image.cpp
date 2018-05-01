@@ -1,6 +1,7 @@
 #include <octoon/image/image.h>
 #include <octoon/image/image_util.h>
 #include <octoon/runtime/except.h>
+#include <octoon/io/fstream.h>
 
 #include "image_all.h"
 
@@ -49,23 +50,45 @@ namespace octoon
 		}
 
 		Image::Image(Format format, std::uint32_t width, std::uint32_t height) except
+			: Image()
 		{
 			this->create(format, width, height);
 		}
 
 		Image::Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth) except
+			: Image()
 		{
 			this->create(format, width, height, depth);
 		}
 
 		Image::Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth, std::uint32_t mipLevel, std::uint32_t layerLevel, std::uint32_t mipBase, std::uint32_t layerBase) except
+			: Image()
 		{
 			this->create(format, width, height, depth, mipLevel, layerLevel, mipBase, layerBase);
 		}
 
 		Image::Image(Format format, const Image& src) except
+			: Image()
 		{
 			this->create(format, src);
+		}
+
+		Image::Image(istream& stream, const char* type) noexcept
+			: Image()
+		{
+			this->load(stream, type);
+		}
+
+		Image::Image(const char* filepath, const char* type) noexcept
+			: Image()
+		{
+			this->load(filepath, type);
+		}
+
+		Image::Image(const std::string& filepath, const char* type) noexcept
+			: Image()
+		{
+			this->load(filepath, type);
 		}
 
 		Image::~Image() noexcept
@@ -296,9 +319,23 @@ namespace octoon
 					if (impl->doLoad(stream, *this))
 						return true;
 				}
-
-				return false;
 			}
+
+			return false;
+		}
+
+		bool
+		Image::load(const char* filepath, const char* type) noexcept
+		{
+			io::ifstream stream(filepath);
+			return this->load(stream, type);
+		}
+
+		bool
+		Image::load(const std::string& filepath, const char* type) noexcept
+		{
+			io::ifstream stream(filepath);
+			return this->load(stream, type);
 		}
 
 		bool
@@ -315,6 +352,20 @@ namespace octoon
 			}
 
 			return false;
+		}
+
+		bool
+		Image::save(const char* filepath, const char* type) noexcept
+		{
+			io::ofstream stream(filepath, io::ios_base::in | io::ios_base::out);
+			return this->save(stream, type);
+		}
+
+		bool
+		Image::save(const std::string& filepath, const char* type) noexcept
+		{
+			io::ofstream stream(filepath, io::ios_base::in | io::ios_base::out);
+			return this->save(stream, type);
 		}
 	}
 }

@@ -20,6 +20,7 @@
 #endif
 
 #include <vector>
+#include <algorithm>
 
 namespace octoon
 {

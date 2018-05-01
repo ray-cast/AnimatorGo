@@ -3,6 +3,7 @@
 
 #include <png.h>
 #include <vector>
+#include <cstring>
 
 namespace octoon
 {

@@ -1,6 +1,8 @@
 #include "image_dds.h"
 
 #include <algorithm>
+#include <cstring>
+#include <cstdlib>
 
 namespace octoon
 {

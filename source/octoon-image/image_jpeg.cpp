@@ -3,6 +3,7 @@
 
 #include <setjmp.h>
 #include <jpeglib.h>
+#include <cstring>
 
 namespace octoon
 {

@@ -1,6 +1,7 @@
 #include "image_bmp.h"
 
 #include <vector>
+#include <cstring>
 
 #ifndef __WINDOWS__
 /* constants for the biCompression field */

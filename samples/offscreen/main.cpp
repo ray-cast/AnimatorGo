@@ -26,7 +26,7 @@ R"({
 				"ambient":0.0,
 				"power":0.6,
 				"size":0.9,
-				"color":[1,1,1]
+				"darkcolor":[0,0,0]
 			}
 		]
 	},

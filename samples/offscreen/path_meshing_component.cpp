@@ -314,7 +314,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				math::float3 color = math::float3::Zero;
 
 				direction << light["direction"];
-				color << light["color"];
+				color << light["darkcolor"];
 
 				float intensity = light["intensity"].get<json::number_float_t>();
 				float ambient = light["ambient"].get<json::number_float_t>();
@@ -327,6 +327,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				material->setSpecularColor(math::float3::One * power);
 				material->setShininess(size);
 				material->setLightDir(math::normalize(direction));
+				material->setDarkColor(color);
 
 				if (object_)
 					object_->addComponent<octoon::MeshRendererComponent>(std::move(material));

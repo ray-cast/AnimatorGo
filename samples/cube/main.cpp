@@ -122,7 +122,7 @@ int main(int argc, const char* argv[])
 		auto material = std::make_shared<octoon::video::GGXMaterial>();
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0));
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<CubeController>(material);

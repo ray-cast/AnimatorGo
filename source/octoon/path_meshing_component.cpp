@@ -1,6 +1,6 @@
 #include <octoon/path_meshing_component.h>
 #include <octoon/model/mesh.h>
-#include <octoon/video/text_contour_group.h>
+#include <octoon/model/contour_group.h>
 #include <octoon/runtime/except.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
@@ -154,7 +154,7 @@ namespace octoon
 
 		auto reader = json::parse(data);
 
-		video::TextContours contours;
+		model::Contours contours;
 
 		for (auto& path : reader["paths"])
 		{
@@ -162,7 +162,7 @@ namespace octoon
 			json::pointer cur = nullptr;
 			json::reference points = path["points"];
 
-			auto contour = std::make_unique<video::TextContour>();
+			auto contour = std::make_unique<model::Contour>();
 
 			for (int index = 0; index < points.size(); index++)
 			{
@@ -237,11 +237,11 @@ namespace octoon
 
 		math::float3 center;
 
-		auto contourGroup_ = std::make_shared<video::TextContourGroup>();
+		auto contourGroup_ = std::make_shared<model::ContourGroup>();
 		contourGroup_->setContours(std::move(contours));
 		contourGroup_->normalize(center);
 
-		auto mesh = video::makeText(*contourGroup_);
+		auto mesh = model::makeMesh(*contourGroup_);
 		mesh.computeVertexNormals();
 		mesh.computeBoundingBox();
 

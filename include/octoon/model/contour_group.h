@@ -13,8 +13,8 @@ namespace octoon
 		{
 		public:
 			ContourGroup() noexcept;
-			ContourGroup(Contours&& contour) noexcept;
-			ContourGroup(const Contours& contour) noexcept;
+			explicit ContourGroup(Contours&& contour) noexcept;
+			explicit ContourGroup(const Contours& contour) noexcept;
 			virtual ~ContourGroup() noexcept;
 
 			void setContours(Contours&& contour) noexcept;

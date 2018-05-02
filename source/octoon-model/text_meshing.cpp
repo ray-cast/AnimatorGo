@@ -232,9 +232,14 @@ namespace octoon
 				if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
 					throw runtime::runtime_error::create("Invalid Glyph Format.");
 
-				groups.push_back(addContours(ftface->glyph, offset, params.getBezierSteps()));
+				if (ch == ' ')
+					offset += ftface->glyph->advance.x / 64.0f;
+				else
+				{
+					groups.push_back(addContours(ftface->glyph, offset, params.getBezierSteps()));
 
-				offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
+					offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
+				}
 			}
 
 			return groups;

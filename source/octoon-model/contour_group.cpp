@@ -250,7 +250,7 @@ namespace octoon
 			Mesh mesh;
 
 			for (auto& group : groups)
-				mesh.combineMeshes(makeMesh(*group), true);
+				mesh.combineMeshes(makeMesh(*group, thickness), true);
 
 			return mesh;
 		}

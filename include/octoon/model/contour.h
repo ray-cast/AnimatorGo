@@ -11,10 +11,10 @@ namespace octoon
 		{
 		public:
 			Contour() noexcept;
-			Contour(const math::float3s& pt) noexcept;
 			Contour(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept;
 			Contour(const math::float3& pt1, const math::float3& control, const math::float3& pt2, std::uint16_t bezierSteps) noexcept; // Quadratic Curve
 			Contour(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2, std::uint16_t bezierSteps) noexcept; // Cubic Curve
+			explicit Contour(const math::float3s& pt) noexcept;
 
 			void addPoints(const math::float3& pt) noexcept;
 			void addPoints(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept;

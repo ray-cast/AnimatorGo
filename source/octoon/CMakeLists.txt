@@ -109,6 +109,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/rigidbody_component.cpp
 	${HEADER_PATH}/collider_component.h
 	${SOURCE_PATH}/collider_component.cpp
+	${HEADER_PATH}/box_collider_component.h
+	${SOURCE_PATH}/box_collider_component.cpp
 )
 SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 

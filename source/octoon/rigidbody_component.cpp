@@ -1,5 +1,9 @@
 #include <octoon/rigidbody_component.h>
+#include <octoon/collider_component.h>
 #include <octoon/game_app.h>
+#include <octoon/runtime/except.h>
+
+#include <PxPhysicsAPI.h>
 
 
 namespace octoon
@@ -8,11 +12,23 @@ namespace octoon
 
     Rigidbody::Rigidbody() noexcept
     {
+		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
+		auto collider = this->getComponent<Collider>();
+		physx::PxReal d = 0.0f;
+		physx::PxU32 axis = 1;
+		physx::PxTransform pose;
+
+		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+			physx::PxQuat(rotation.w, physx::PxVec3(rotation.x, rotation.y, rotation.z)));
+
+		body = physics_feature->getSDK()->createRigidDynamic(pose);
+		if (!body)
+			runtime::runtime_error::create("create body failed!");
+		physics_feature->getScene()->addActor(*body);
     }
 
 	Rigidbody::~Rigidbody()
     {
-
     }
 
 	GameComponentPtr Rigidbody::clone() const noexcept
@@ -80,22 +96,22 @@ namespace octoon
         return bodyType;
     }
 
-    void Rigidbody::setPosition(math::Vector2 pos) noexcept
+    void Rigidbody::setPosition(math::Vector3 pos) noexcept
     {
         position = pos;
     }
 
-    math::Vector2 Rigidbody::getPosition() const noexcept
+    math::Vector3 Rigidbody::getPosition() const noexcept
     {
         return position;
     }
 
-    void Rigidbody::setRotation(float delta) noexcept
+    void Rigidbody::setRotation(math::Quaternion delta) noexcept
     {
         rotation = delta;
     }
 
-    float Rigidbody::getRotation() const noexcept
+	math::Quaternion Rigidbody::getRotation() const noexcept
     {
         return rotation;
     }

@@ -3,8 +3,13 @@
 
 #include <memory>
 #include <octoon/game_component.h>
+#include <octoon/physics_feature.h>
 #include <octoon/math/math.h>
 
+namespace physx
+{
+	class PxMaterial;
+}
 
 namespace octoon
 {
@@ -21,11 +26,14 @@ namespace octoon
             void setFriction(float f) noexcept;
             float getFriction() const noexcept;
         
+			physx::PxMaterial* getMaterial() noexcept { return material; }
         protected:
             float bounciness; // The degree of elasticity during collisions.
             float friction; // Coefficient of friction.
         private:
-            friend class Rigidbody2D;
+			physx::PxMaterial* material;
+
+            friend class Rigidbody;
     };
 }
 

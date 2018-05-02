@@ -60,7 +60,7 @@ namespace octoon
 	}
 
 	const GameFeatures&
-	GameFeature::getFeaturs() const noexcept
+	GameFeature::getFeatures() const noexcept
 	{
 		assert(game_server_);
 		return game_server_->getFeatures();

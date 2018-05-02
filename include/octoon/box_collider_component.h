@@ -23,8 +23,8 @@ namespace octoon
             void setEdgeRadius(float r) noexcept;
             float getEdgeRadius() const noexcept;
 
-            void setSize(const math::Vector2& s) noexcept;
-            math::Vector2 getSize() const noexcept;
+            void setSize(const math::Vector3& s) noexcept;
+            math::Vector3 getSize() const noexcept;
 
         protected:
             virtual void onCollisionChange() noexcept;
@@ -43,7 +43,7 @@ namespace octoon
             bool isRegistered;
             bool autoTiling; //Determines whether the BoxCollider2D's shape is automatically updated based on a SpriteRenderer's tiling properties.
             float edgeRadius; //Controls the radius of all edges created by the collider.
-            math::Vector2 size; //The width and height of the rectangle.
+            math::Vector3 size; //The width and height of the rectangle.
     };
 }
 

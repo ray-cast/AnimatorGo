@@ -49,11 +49,11 @@ namespace octoon
             void setBodyType(RigidbodyType type) noexcept;
             RigidbodyType getBodyType() const noexcept;
 
-            void setPosition(math::Vector2 pos) noexcept;
-            math::Vector2 getPosition() const noexcept;
+            void setPosition(math::Vector3 pos) noexcept;
+            math::Vector3 getPosition() const noexcept;
 
-            void setRotation(float delta) noexcept;
-            float getRotation() const noexcept;
+            void setRotation(math::Quaternion delta) noexcept;
+			math::Quaternion getRotation() const noexcept;
 
         private:
         	virtual void onAttach() except;
@@ -67,15 +67,16 @@ namespace octoon
             void rigidbodyChange() noexcept;
 
         private:
+			physx::PxRigidDynamic* body;
 
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.
             float mass; // Mass of the rigidbody.
             RigidbodySleepMode sleepMode;
-            math::Vector2 velocity;
+            math::Vector3 velocity;
             RigidbodyType bodyType;
-            math::Vector2 position;
-            float rotation;
+            math::Vector3 position;
+            math::Quaternion rotation;
         
             friend class Collider;
             friend class BoxCollider;

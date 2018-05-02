@@ -6,8 +6,17 @@
 #include <octoon/game_feature.h>
 #include <octoon/timer_feature.h>
 #include <octoon/game_app.h>
-
-#include <PxPhysicsAPI.h>
+namespace physx
+{
+	class PxDefaultErrorCallback;
+	class PxDefaultAllocator;
+	class PxFoundation;
+	class PxPvd;
+	class PxPhysics;
+	class PxCooking;
+	class PxDefaultCpuDispatcher;
+	class PxScene;
+}
 
 namespace octoon
 {
@@ -16,10 +25,10 @@ namespace octoon
 	{
         OctoonDeclareSubClass(PhysicsFeature, GameFeature)
 	public:
-		PhysicsFeature() noexcept;
+		PhysicsFeature() except;
 		virtual ~PhysicsFeature() noexcept;
 
-	private:
+	public:
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
@@ -33,6 +42,9 @@ namespace octoon
 
 		virtual void onOpenScene(const GameScenePtr& scene) except;
 		virtual void onCloseScene(const GameScenePtr& scene) noexcept;
+
+		physx::PxPhysics* getSDK() noexcept { return physics; }
+		physx::PxScene* getScene() noexcept { return physicsScene; }
 
 	private:
 		PhysicsFeature(const PhysicsFeature&) = delete;

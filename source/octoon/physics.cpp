@@ -2,14 +2,14 @@
 
 namespace octoon
 {
-	math::Vector2 Physics::gravity;
+	math::Vector3 Physics::gravity;
 
-    void Physics::setGravity(const math::Vector2& g)
+    void Physics::setGravity(const math::Vector3& g)
     {
         gravity=g;
     }
 
-    math::Vector2 Physics::getGravity()
+    math::Vector3 Physics::getGravity()
     {
         return gravity;
     }

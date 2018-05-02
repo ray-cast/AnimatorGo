@@ -21,7 +21,7 @@ namespace octoon
 		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
 		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
-		const GameFeatures& getFeaturs() const noexcept;
+		const GameFeatures& getFeatures() const noexcept;
 
 		GameServer* getGameServer() noexcept;
 

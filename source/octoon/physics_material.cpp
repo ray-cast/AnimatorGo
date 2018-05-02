@@ -6,6 +6,8 @@
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/rtti_factory.h>
 
+#include <PxPhysicsAPI.h>
+
 
 namespace octoon
 {
@@ -13,12 +15,16 @@ namespace octoon
 
 	PhysicsMaterial::PhysicsMaterial() noexcept
 	{
-
+		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
+		
+		material = physics_feature->getSDK()->createMaterial(friction, friction, bounciness);     //static friction, dynamic friction, restitution
+		if (!material)
+			runtime::runtime_error::create("createMaterial failed!");
 	}
 
 	PhysicsMaterial::~PhysicsMaterial()
 	{
-
+		material->release();
 	}
 
     void PhysicsMaterial::setBounciness(float b) noexcept

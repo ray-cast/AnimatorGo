@@ -8,18 +8,28 @@
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/rtti_factory.h>
 
+#include <PxPhysicsAPI.h>
+
 
 namespace octoon
 {
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
     
-	PhysicsFeature::PhysicsFeature() noexcept
+	PhysicsFeature::PhysicsFeature() except
 		:dispatcher(nullptr), physicsScene(nullptr),
 		accumulator(0.0f), stepSize(1.0f / 60.0f)
 	{
+	}
+
+	PhysicsFeature::~PhysicsFeature() noexcept
+	{
+	}
+
+    void PhysicsFeature::onActivate() except
+    {
 		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
 		if (!foundation)
-			throw std::runtime_error("PxCreateFoundation failed!");
+			runtime::runtime_error::create("PxCreateFoundation failed!");
 
 		bool recordMemoryAllocations = true;
 
@@ -30,7 +40,7 @@ namespace octoon
 		physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
 			physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
 		if (!physics)
-			throw std::runtime_error("PxCreatePhysics failed!");
+			runtime::runtime_error::create("PxCreatePhysics failed!");
 
 		physx::PxTolerancesScale scale;
 		scale.length = 1;
@@ -38,34 +48,26 @@ namespace octoon
 
 		cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
 		if (!cooking)
-			throw std::runtime_error("PxCreateCooking failed!");
+			runtime::runtime_error::create("PxCreateCooking failed!");
 
 
 		if (!PxInitExtensions(*physics, pvd))
-			throw std::runtime_error("PxInitExtensions failed!");
+			runtime::runtime_error::create("PxInitExtensions failed!");
 
 
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
-		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+		math::Vector3 g = Physics::getGravity();
+		sceneDesc.gravity = physx::PxVec3(g.x, g.y, g.z);
 		dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 		sceneDesc.cpuDispatcher = dispatcher;
 		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 		physicsScene = physics->createScene(sceneDesc);
-	}
-
-	PhysicsFeature::~PhysicsFeature() noexcept
-	{
-		physics->release();
-		foundation->release();
-	}
-
-    void PhysicsFeature::onActivate() except
-    {
     }
 
     void PhysicsFeature::onDeactivate() noexcept
     {
-
+		physics->release();
+		foundation->release();
     }
 
     void PhysicsFeature::onInputEvent(const input::InputEvent& event) noexcept

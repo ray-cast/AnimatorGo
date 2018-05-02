@@ -1,5 +1,5 @@
 #include <octoon/collider_component.h>
-
+#include <PxPhysicsAPI.h>
 
 namespace octoon
 {
@@ -44,4 +44,14 @@ namespace octoon
     {
         return friction;
     }
+
+	void Collider::setSharedMaterial(PhysicsMaterial material) except
+	{
+		shared_material = std::make_shared<PhysicsMaterial>(material);
+	}
+
+	std::shared_ptr<PhysicsMaterial> Collider::getSharedMaterial() except
+	{
+		return shared_material;
+	}
 }

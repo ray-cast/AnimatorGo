@@ -1,5 +1,7 @@
 #include <octoon/box_collider_component.h>
 #include <octoon/rigidbody_component.h>
+#include <octoon/runtime/except.h>
+#include <PxPhysicsAPI.h>
 
 
 namespace octoon
@@ -36,7 +38,6 @@ namespace octoon
     void BoxCollider::setEdgeRadius(float r) noexcept
     {
         edgeRadius = r;
-        onCollisionChange();
     }
 
     float BoxCollider::getEdgeRadius() const noexcept
@@ -44,65 +45,26 @@ namespace octoon
         return edgeRadius;
     }
 
-    void BoxCollider::setSize(const math::Vector2& s) noexcept
+    void BoxCollider::setSize(const math::Vector3& s) noexcept
     {
         size = s;
-        onCollisionChange();
     }
 
-    math::Vector2 BoxCollider::getSize() const noexcept
+    math::Vector3 BoxCollider::getSize() const noexcept
     {
         return size;
     }
 
     void BoxCollider::onCollisionChange() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-
-        if(!isRegistered)
-            return;
-        
-        b2PolygonShape shapeDef;
-        shapeDef.SetAsBox(size.x, size.y);
-        shapeDef.m_radius = edgeRadius;
-
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &shapeDef;
-        
-        rigidBody->body->DestroyFixture(collider);
-        collider = rigidBody->body->CreateFixture(&fixtureDef);
     }
 
     void BoxCollider::onCollisionEnter() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-        
-        b2PolygonShape shapeDef;
-        shapeDef.SetAsBox(size.x, size.y);
-        shapeDef.m_radius = edgeRadius;
-
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &shapeDef;
-        
-        collider = rigidBody->body->CreateFixture(&fixtureDef);
-
-        isRegistered = true;
     }
 
     void BoxCollider::onCollisionExit() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-
-        if(!isRegistered)
-            return;
-
-        rigidBody->body->DestroyFixture(collider);
     }
 
     void BoxCollider::onCollisionStay() noexcept
@@ -112,23 +74,20 @@ namespace octoon
 
     void BoxCollider::onAttach() except
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-
-        onCollisionEnter();
+		auto collider = this->getComponent<Rigidbody>();
+		physx::PxShape* shape = collider->body->createShape(physx::PxPlaneGeometry(), this->shared_material->getMaterial());
+		if (!shape)
+			runtime::runtime_error::create("create shape failed!");
     }
 
     void BoxCollider::onDetach() noexcept
     {
-        onCollisionExit();
     }
 
     void BoxCollider::onAttachComponent(const GameComponentPtr& component) except
     {
         if (component->isA<Rigidbody>())
         {
-            onCollisionEnter();
         }
     }
 

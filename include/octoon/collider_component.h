@@ -25,6 +25,9 @@ namespace octoon
             void setFriction(float f) noexcept;
             float getFriction() const noexcept;
 
+			void setSharedMaterial(PhysicsMaterial material) except;
+			std::shared_ptr<PhysicsMaterial> getSharedMaterial() except;
+
         protected:
             virtual void onCollisionChange() = 0;
             virtual void onCollisionEnter() = 0;
@@ -32,8 +35,6 @@ namespace octoon
             virtual void onCollisionStay() = 0;
         
         protected:
-
-        private:
             float bounciness; // Get the bounciness used by the collider.
             float density; // The density of the collider used to calculate its mass (when auto mass is enabled).
             float friction; // Get the friction used by the collider.

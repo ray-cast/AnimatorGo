@@ -8,11 +8,11 @@ namespace octoon
     class Physics
     {
         public:
-        static void setGravity(const math::Vector2& g);
-        static math::Vector2 getGravity();
+        static void setGravity(const math::Vector3& g);
+        static math::Vector3 getGravity();
 
         private:
-        static math::Vector2 gravity;
+        static math::Vector3 gravity;
     };
 }
 

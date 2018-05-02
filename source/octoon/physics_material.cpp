@@ -14,10 +14,11 @@ namespace octoon
     OctoonImplementSubClass(PhysicsMaterial, runtime::RttiInterface, "PhysicsMaterial")
 
 	PhysicsMaterial::PhysicsMaterial() noexcept
+		:static_friction(0.5f), dynamic_friction(0.3f), restitution(0.1f)
 	{
 		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
 		
-		material = physics_feature->getSDK()->createMaterial(friction, friction, bounciness);     //static friction, dynamic friction, restitution
+		material = physics_feature->getSDK()->createMaterial(static_friction, dynamic_friction, restitution);     //static friction, dynamic friction, restitution
 		if (!material)
 			runtime::runtime_error::create("createMaterial failed!");
 	}
@@ -27,23 +28,33 @@ namespace octoon
 		material->release();
 	}
 
-    void PhysicsMaterial::setBounciness(float b) noexcept
+    void PhysicsMaterial::setStaticFriction(float f) noexcept
     {
-        bounciness = b;
+		static_friction = f;
     }
 
-    float PhysicsMaterial::getBounciness() const noexcept
+    float PhysicsMaterial::getStaticFriction() const noexcept
     {
-        return bounciness;
+        return static_friction;
     }
 
-    void PhysicsMaterial::setFriction(float f) noexcept
+    void PhysicsMaterial::setDynamicFriction(float f) noexcept
     {
-        f = friction;
+        f = dynamic_friction;
     }
 
-    float PhysicsMaterial::getFriction() const noexcept
+    float PhysicsMaterial::getDynamicFriction() const noexcept
     {
-        return friction;
+        return dynamic_friction;
     }
+
+	void PhysicsMaterial::setRestitution(float r) noexcept
+	{
+		restitution = r;
+	}
+
+	float PhysicsMaterial::getRestitution() const noexcept
+	{
+		return restitution;
+	}
 }

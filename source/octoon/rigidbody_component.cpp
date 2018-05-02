@@ -1,5 +1,6 @@
 #include <octoon/rigidbody_component.h>
 #include <octoon/collider_component.h>
+#include <octoon/transform_component.h>
 #include <octoon/game_app.h>
 #include <octoon/runtime/except.h>
 
@@ -12,19 +13,6 @@ namespace octoon
 
     Rigidbody::Rigidbody() noexcept
     {
-		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
-		auto collider = this->getComponent<Collider>();
-		physx::PxReal d = 0.0f;
-		physx::PxU32 axis = 1;
-		physx::PxTransform pose;
-
-		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-			physx::PxQuat(rotation.w, physx::PxVec3(rotation.x, rotation.y, rotation.z)));
-
-		body = physics_feature->getSDK()->createRigidDynamic(pose);
-		if (!body)
-			runtime::runtime_error::create("create body failed!");
-		physics_feature->getScene()->addActor(*body);
     }
 
 	Rigidbody::~Rigidbody()
@@ -119,11 +107,35 @@ namespace octoon
     void Rigidbody::onAttach() except
     {
         addComponentDispatch(GameDispatchType::MoveAfter);
+		//addComponentDispatch(GameDispatchType::FrameEnd);
+
+		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
+		// get from transform
+		auto transform_component = this->getComponent<TransformComponent>();
+		position = transform_component->getTranslate();
+		rotation = transform_component->getQuaternion();
+
+		physx::PxTransform pose;
+
+		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
+			physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f)));
+
+		body = physics_feature->getSDK()->createRigidDynamic(pose);
+		if (!body)
+			runtime::runtime_error::create("create body failed!");
+
+		body->userData = &(*this->getGameObject());
+		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1);
+
+		physics_feature->getScene()->addActor(*body);
     }
 
     void Rigidbody::onDetach() noexcept
     {
         removeComponentDispatch(GameDispatchType::MoveAfter);
+		//removeComponentDispatch(GameDispatchType::FrameEnd);
+
+		body->release();
     }
 
     void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
@@ -137,6 +149,21 @@ namespace octoon
         //if (component->isA<Collider>())
 		//    component->downcast<Collider>()->removeShapeChangeListener(&OnCollisionChange);
     }
+
+	void Rigidbody::onFrameBegin() except
+	{
+
+	}
+
+	void Rigidbody::onFrame() except
+	{
+		//auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
+	}
+
+	void Rigidbody::onFrameEnd() except
+	{
+		
+	}
 
     void Rigidbody::rigidbodyEnter() noexcept
     {

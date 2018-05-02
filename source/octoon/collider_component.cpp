@@ -6,6 +6,7 @@ namespace octoon
 	OctoonImplementSubInterface(Collider, GameComponent, "Collider")
 
     Collider::Collider() noexcept
+		:shared_material(std::make_shared<PhysicsMaterial>())
     {
 
     }

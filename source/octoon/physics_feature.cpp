@@ -1,5 +1,7 @@
 #include <stdexcept>
 
+#include <octoon/game_object.h>
+#include <octoon/transform_component.h>
 #include <octoon/physics_feature.h>
 #include <octoon/physics.h>
 #include <octoon/math/math.h>
@@ -16,18 +18,12 @@ namespace octoon
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
     
 	PhysicsFeature::PhysicsFeature() except
-		:dispatcher(nullptr), physicsScene(nullptr),
+		:defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>()),
+		defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>()),
+		dispatcher(nullptr), physicsScene(nullptr),
 		accumulator(0.0f), stepSize(1.0f / 60.0f)
 	{
-	}
-
-	PhysicsFeature::~PhysicsFeature() noexcept
-	{
-	}
-
-    void PhysicsFeature::onActivate() except
-    {
-		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
+		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
 		if (!foundation)
 			runtime::runtime_error::create("PxCreateFoundation failed!");
 
@@ -56,12 +52,22 @@ namespace octoon
 
 
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
+		Physics::setGravity(math::Vector3(0.f, -9.f, 0.f));
 		math::Vector3 g = Physics::getGravity();
 		sceneDesc.gravity = physx::PxVec3(g.x, g.y, g.z);
 		dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 		sceneDesc.cpuDispatcher = dispatcher;
 		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 		physicsScene = physics->createScene(sceneDesc);
+		physicsScene->setFlag(physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
+	}
+
+	PhysicsFeature::~PhysicsFeature() noexcept
+	{
+	}
+
+    void PhysicsFeature::onActivate() except
+    {
     }
 
     void PhysicsFeature::onDeactivate() noexcept
@@ -82,15 +88,33 @@ namespace octoon
 
     void PhysicsFeature::onFrameBegin() noexcept
     {
-		auto delta = runtime::Singleton<GameApp>::instance()->getFeature<TimerFeature>()->delta();
-		accumulator += delta;
-		if (accumulator < stepSize)	return;
-		accumulator -= stepSize;
-		physicsScene->simulate(stepSize);
+		
     }
 
     void PhysicsFeature::onFrame() except
     {
+		auto delta = this->getFeature<TimerFeature>()->delta();
+		accumulator += delta / 360.f;
+		if (accumulator < stepSize)	return;
+		accumulator -= stepSize;
+		
+		physicsScene->simulate(stepSize);
+		physicsScene->fetchResults(true);
+
+		// retrieve array of actors that moved
+		physx::PxU32 nbActiveActors;
+		physx::PxActor** activeActors = physicsScene->getActiveActors(nbActiveActors);
+
+		// update each render object with the new transform
+		for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
+		{
+			GameObject* renderObject = static_cast<GameObject*>(activeActors[i]->userData);
+			physx::PxRigidActor* actor = static_cast<physx::PxRigidActor*>(activeActors[i]);
+
+			physx::PxTransform transform = actor->getGlobalPose();
+			auto transform_component = renderObject->getComponent<TransformComponent>();
+			transform_component->setTranslate(math::Vector3(transform.p.x, transform.p.y, transform.p.z));
+		}
 
     }
 

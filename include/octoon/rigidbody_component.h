@@ -9,6 +9,11 @@
 #include <octoon/math/math.h>
 #include <octoon/runtime/singleton.h>
 
+namespace physx
+{
+	class PxRigidDynamic;
+	class PxRigidBody;
+}
 
 namespace octoon
 {
@@ -55,6 +60,8 @@ namespace octoon
             void setRotation(math::Quaternion delta) noexcept;
 			math::Quaternion getRotation() const noexcept;
 
+			
+
         private:
         	virtual void onAttach() except;
             virtual void onDetach() noexcept;
@@ -62,12 +69,16 @@ namespace octoon
             virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
             virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
+			virtual void onFrameBegin() except override;
+			virtual void onFrame() except override;
+			virtual void onFrameEnd() except override;
+
             void rigidbodyEnter() noexcept;
             void rigidbodyExit() noexcept;
             void rigidbodyChange() noexcept;
 
         private:
-			physx::PxRigidDynamic* body;
+			physx::PxRigidBody* body;
 
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.

@@ -6,6 +6,11 @@
 #include <octoon/math/math.h>
 #include <octoon/physics_material.h>
 
+namespace physx
+{
+	class PxShape;
+}
+
 
 namespace octoon
 {
@@ -35,6 +40,8 @@ namespace octoon
             virtual void onCollisionStay() = 0;
         
         protected:
+			physx::PxShape* shape;
+
             float bounciness; // Get the bounciness used by the collider.
             float density; // The density of the collider used to calculate its mass (when auto mass is enabled).
             float friction; // Get the friction used by the collider.

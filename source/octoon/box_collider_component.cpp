@@ -9,7 +9,7 @@ namespace octoon
     OctoonImplementSubClass(BoxCollider, Collider, "BoxCollider")
 
     BoxCollider::BoxCollider() noexcept
-        :isRegistered(false)
+        :isRegistered(false), size(1, 1, 1)
     {
 
     }
@@ -75,13 +75,22 @@ namespace octoon
     void BoxCollider::onAttach() except
     {
 		auto collider = this->getComponent<Rigidbody>();
-		physx::PxShape* shape = collider->body->createShape(physx::PxPlaneGeometry(), this->shared_material->getMaterial());
+		physx::PxVec3 dimensions(size.x, size.y, size.z);
+		physx::PxBoxGeometry geometry(dimensions);
+
+		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry,
+			*this->shared_material->getMaterial());
 		if (!shape)
 			runtime::runtime_error::create("create shape failed!");
+		//getScene().addActor(*meshActor);
+		//collider->body->attachShape(*shape);
     }
 
     void BoxCollider::onDetach() noexcept
     {
+		//auto collider = this->getComponent<Rigidbody>();
+		//collider->body->detachShape(*shape);
+		//shape->release();
     }
 
     void BoxCollider::onAttachComponent(const GameComponentPtr& component) except

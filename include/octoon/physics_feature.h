@@ -53,8 +53,8 @@ namespace octoon
 	private:
 		bool recordMemoryAllocations = true;
 
-		physx::PxDefaultErrorCallback gDefaultErrorCallback;
-		physx::PxDefaultAllocator gDefaultAllocatorCallback;
+		std::unique_ptr<physx::PxDefaultErrorCallback> defaultErrorCallback;
+		std::unique_ptr<physx::PxDefaultAllocator> defaultAllocatorCallback;
 		physx::PxFoundation* foundation;
 		physx::PxPvd* pvd;
 		physx::PxPhysics* physics;

@@ -20,16 +20,20 @@ namespace octoon
             PhysicsMaterial() noexcept;
             ~PhysicsMaterial();
 
-            void setBounciness(float b) noexcept;
-            float getBounciness() const noexcept;
+            void setStaticFriction(float f) noexcept;
+            float getStaticFriction() const noexcept;
 
-            void setFriction(float f) noexcept;
-            float getFriction() const noexcept;
+            void setDynamicFriction(float f) noexcept;
+            float getDynamicFriction() const noexcept;
+
+			void setRestitution(float r) noexcept;
+			float getRestitution() const noexcept;
         
 			physx::PxMaterial* getMaterial() noexcept { return material; }
         protected:
-            float bounciness; // The degree of elasticity during collisions.
-            float friction; // Coefficient of friction.
+			float static_friction;
+			float dynamic_friction;
+			float restitution;
         private:
 			physx::PxMaterial* material;
 

@@ -21,7 +21,7 @@ namespace octoon
 
 				static const BoundingBox<T> Empty;
 
-				BoundingBox() noexcept = default;
+				BoundingBox() noexcept { this->reset(); };
 				BoundingBox(const Vector3<T>& min, const Vector3<T>& max) noexcept { this->set(min, max); }
 				BoundingBox(const Vector3<T> pt[], std::size_t n) noexcept { this->reset(); this->encapsulate(pt, n); }
 				BoundingBox(const Vector3<T> pt[], const std::uint8_t* indices, std::size_t indicesCount) noexcept { this->reset(); this->encapsulate(pt, indices, indicesCount); }

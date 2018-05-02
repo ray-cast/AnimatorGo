@@ -82,6 +82,7 @@ namespace octoon
 	MeshFilterComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<MeshFilterComponent>();
+		instance->setName(instance->getName());
 		instance->setMesh(mesh_ ? mesh_->clone() : nullptr);
 		return instance;
 	}

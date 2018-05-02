@@ -58,6 +58,8 @@ namespace octoon
 	GameComponentPtr
 	GuizmoComponent::clone() const noexcept
 	{
-		return std::make_shared<GuizmoComponent>();
+		auto instance = std::make_shared<GuizmoComponent>();
+		instance->setName(this->getName());
+		return instance;
 	}
 }

@@ -206,6 +206,7 @@ namespace octoon
 	CameraComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<CameraComponent>();
+		instance->setName(this->getName());
 		instance->setAperture(this->getAperture());
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());

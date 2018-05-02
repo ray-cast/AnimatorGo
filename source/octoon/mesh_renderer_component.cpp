@@ -29,6 +29,7 @@ namespace octoon
 	MeshRendererComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
+		instance->setName(this->getName());
 		instance->setMaterial(this->getMaterial()->clone());
 		return instance;
 	}

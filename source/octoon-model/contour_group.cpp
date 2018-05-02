@@ -163,14 +163,16 @@ namespace octoon
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
+			std::vector<math::double3> vertices(group.countOfPoints() * 2);
+
 			for (std::size_t written = 0, i = 0; i < group.count(); ++i)
 			{
 				const Contour& contour = group.at(i);
 
 				for (std::size_t n = 0; n < contour.count() - 1; ++n)
 				{
-					auto p1 = contour.at(n);
-					auto p2 = contour.at(n + 1);
+					auto& p1 = contour.at(n);
+					auto& p2 = contour.at(n + 1);
 
 					math::Triangle t1;
 					t1.a = math::float3(p1.x, p1.y, -thickness);
@@ -188,7 +190,8 @@ namespace octoon
 					written += sizeof(math::Triangle) / sizeof(math::float3) * 2;
 				}
 
-				trisMesh.insert(trisMesh.end(), tris.begin(), tris.end());
+				trisMesh.resize(trisMesh.size() + tris.size());
+				std::memcpy(trisMesh.data() + (trisMesh.size() - tris.size()), tris.data(), tris.size() * sizeof(math::float3));
 
 				if (contour.isClockwise())
 				{
@@ -207,7 +210,6 @@ namespace octoon
 					gluTessNormal(tobj, 0.0f, 0.0f, 0.0f);
 
 					std::size_t index = 0;
-					std::vector<math::double3> vertices(group.countOfPoints() * 2);
 
 					for (std::uint8_t face = 0; face < 2; face++)
 					{
@@ -235,7 +237,8 @@ namespace octoon
 
 						gluTessEndPolygon(tobj);
 
-						trisMesh.insert(trisMesh.end(), g_tris.begin(), g_tris.end());
+						trisMesh.resize(trisMesh.size() + g_tris.size());
+						std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
 					}
 
 					gluDeleteTess(tobj);

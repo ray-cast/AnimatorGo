@@ -280,7 +280,6 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		{
 			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)));
 			mesh.computeVertexNormals();
-			mesh.computeBoundingBox();
 
 			object_ = std::make_shared<octoon::GameObject>();
 			object_->setParent(this->getGameObject());

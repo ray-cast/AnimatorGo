@@ -1,9 +1,9 @@
 #include <octoon/octoon.h>
 
-#include <octoon/video/text_material.h>
 #include <octoon/game_object.h>
+#include <octoon/video/text_material.h>
 #include <octoon/camera_component.h>
-#include <octoon/path_meshing_component.h>
+#include <octoon/model/text_meshing.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
@@ -90,27 +90,6 @@ public:
 				octoon::imgui::tree_pop();
 			}
 
-			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
-			{
-				static int item_current = 3;
-				static bool clockwise = true;
-
-				const char* items[] = { "2", "4", "6", "8", "10", "12"};
-				if (octoon::imgui::combo("Bezier Steps", &item_current, items, 6))
-				{
-					this->getComponent<octoon::PathMeshingComponent>()->setBezierSteps((item_current + 1) * 2);
-					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
-				}
-
-				if (octoon::imgui::checkbox("Clockwise", &clockwise))
-				{
-					this->getComponent<octoon::PathMeshingComponent>()->setClockwise(clockwise);
-					this->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
-				}
-
-				octoon::imgui::tree_pop();
-			}
-
 			octoon::imgui::end();
 		}
 	}
@@ -146,12 +125,10 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<octoon::PathMeshingComponent>(chars[0]);
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf"), L"Octoon Studio"));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);
-		object->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3::Zero);
-		object->getComponent<octoon::TransformComponent>()->setLocalQuaternion(octoon::math::Quaternion().make_rotation_x(octoon::math::radians(180)));
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

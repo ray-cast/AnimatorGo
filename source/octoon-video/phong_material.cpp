@@ -36,6 +36,7 @@ namespace octoon
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
 			uniform vec3 ambientColor;
+			uniform vec3 specularColor;
 			uniform float shininess;
 
 			layout(location  = 0) out vec4 fragColor;
@@ -47,6 +48,7 @@ namespace octoon
 			{
 				vec3 ambient = pow(ambientColor, vec3(2.2f));
 				vec3 base = pow(baseColor, vec3(2.2f));
+				vec3 specular = pow(specularColor, vec3(2.2f));
 
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
@@ -56,7 +58,7 @@ namespace octoon
 				float nl = max(0.0f, dot(N, lightDir));
 				float spec = pow(max(0, dot(R, V)), pow(4096, shininess));
 
-				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				fragColor = vec4(pow(ambient + (base + specular * spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -101,11 +103,13 @@ namespace octoon
 			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
 			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
 			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
+			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "specularColor"; });
 			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "shininess"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::One);
 			ambientColor_->uniform3f(math::float3::Zero);
+			specularColor_->uniform3f(math::float3::One);
 		}
 
 		PhongMaterial::~PhongMaterial() noexcept
@@ -155,6 +159,12 @@ namespace octoon
 		}
 
 		void
+		PhongMaterial::setSpecularColor(const math::float3& color) noexcept
+		{
+			specularColor_->uniform3f(color);
+		}
+
+		void
 		PhongMaterial::setShininess(float shininess) noexcept
 		{
 			shininess_->uniform1f(shininess);
@@ -176,6 +186,12 @@ namespace octoon
 		PhongMaterial::getAmbientColor() const noexcept
 		{
 			return ambientColor_->getFloat3();
+		}
+
+		const math::float3&
+		PhongMaterial::getSpecularColor() const noexcept
+		{
+			return specularColor_->getFloat3();
 		}
 
 		float

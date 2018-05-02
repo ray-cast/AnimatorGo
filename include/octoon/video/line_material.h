@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_MATERIAL_H_
-#define OCTOON_TEXT_MATERIAL_H_
+#ifndef OCTOON_LINE_MATERIAL_H_
+#define OCTOON_LINE_MATERIAL_H_
 
 #include <octoon/video/material.h>
 #include <octoon/graphics/graphics.h>

@@ -233,7 +233,7 @@ namespace octoon
 					throw runtime::runtime_error::create("Invalid Glyph Format.");
 
 				if (ch == ' ')
-					offset += ftface->glyph->advance.x / 64.0f;
+					offset += ftface->glyph->advance.x / 64;
 				else
 				{
 					groups.push_back(addContours(ftface->glyph, offset, params.getBezierSteps()));

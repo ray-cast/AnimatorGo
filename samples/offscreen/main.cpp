@@ -11,13 +11,13 @@ R"({
 	"transform":
 	{
 		"translate":[318.99, 157.10],
-		"scale":[1.0, 1.0],
-		"rotation":[0.0,0.0,0.0]
+		"scale":[1.0, 1.0, 10.0],
+		"rotation":[10.0,-10.0,10.0]
 	},
 	"material":
 	{
 		"color":[1,0,0],
-		"hollow":true,
+		"hollow":false,
 		"wireframe":false,
 		"lights":[
 			{
@@ -26,7 +26,7 @@ R"({
 				"ambient":0.0,
 				"power":0.6,
 				"size":0.9,
-				"darkcolor":[0,0,0]
+				"darkcolor":[0,1,0]
 			}
 		]
 	},

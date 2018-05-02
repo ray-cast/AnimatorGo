@@ -256,7 +256,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					}
 				}
 
-				contour->isClockwise(hollow);
+				contour->isClockwise(!hollow);
 				contours.push_back(std::move(contour));
 			}
 		}

@@ -125,7 +125,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf"), L"Octoon Studio"));
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf", 24), L"Octoon Studio"));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);

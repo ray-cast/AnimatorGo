@@ -242,12 +242,19 @@ namespace octoon
 				}
 			}
 
+			for (auto& group : groups)
+			{
+				for (auto& contour : group->getContours())
+					for (auto& point : contour->points())
+						point.x -= offset * 0.5f;
+			}
+
 			return groups;
 		}
 
 		Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
-			Mesh mesh = makeMesh(makeTextContours(params, std::move(string)), params.getThickness());
+			Mesh mesh = makeMesh(makeTextContours(params, string), params.getThickness());
 			mesh.computeVertexNormals();
 			mesh.computeBoundingBox();
 
@@ -256,7 +263,7 @@ namespace octoon
 
 		Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
-			Mesh mesh = makeMeshWireframe(makeTextContours(params, std::move(string)), params.getThickness());
+			Mesh mesh = makeMeshWireframe(makeTextContours(params, string), params.getThickness());
 			mesh.computeBoundingBox();
 
 			return mesh;

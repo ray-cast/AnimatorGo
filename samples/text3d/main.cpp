@@ -42,18 +42,18 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::math::float3 matrixTranslation = transform->getLocalTranslate();
-				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getLocalQuaternion()));
-				octoon::math::float3 matrixScale = transform->getLocalScale();
+				octoon::math::float3 matrixTranslation = transform->getTranslate();
+				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getQuaternion()));
+				octoon::math::float3 matrixScale = transform->getScale();
 
 				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
 				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
 				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
 
-				transform->setLocalTranslate(matrixTranslation);
+				transform->setTranslate(matrixTranslation);
 
-				transform->setLocalQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
-				transform->setLocalScale(matrixScale);
+				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
+				transform->setScale(matrixScale);
 
 				octoon::imgui::tree_pop();
 			}

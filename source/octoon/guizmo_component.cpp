@@ -38,7 +38,7 @@ namespace octoon
 
 			auto& view = camera_->getComponent<CameraComponent>()->getView();
 			auto& project = camera_->getComponent<CameraComponent>()->getProjection();
-			auto model = transform->getLocalTransform();
+			auto model = transform->getTransform();
 
 			if (imgui::is_key_pressed(input::InputKey::Code::Key1))
 				op_ = imgui::guizmo::Translate;
@@ -51,7 +51,7 @@ namespace octoon
 			imgui::guizmo::SetRect(0, 0, imgui::get_display_size().x, imgui::get_display_size().y);
 			imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op_, imgui::guizmo::Mode::Local, model.ptr());
 
-			transform->setLocalTransform(model);
+			transform->setTransform(model);
 		}
 	}
 

@@ -13,6 +13,7 @@ namespace physx
 {
 	class PxRigidDynamic;
 	class PxRigidBody;
+	class PxRigidActor;
 }
 
 namespace octoon
@@ -36,6 +37,8 @@ namespace octoon
 		OctoonDeclareSubClass(Rigidbody, runtime::RttiInterface)
         public:
             Rigidbody() noexcept;
+			Rigidbody(RigidbodyType type) noexcept;
+			Rigidbody(RigidbodyType type, float mass) noexcept;
             ~Rigidbody();
             virtual GameComponentPtr clone() const noexcept;
 
@@ -81,7 +84,7 @@ namespace octoon
             void rigidbodyChange() noexcept;
 
         private:
-			physx::PxRigidBody* body;
+			physx::PxRigidActor* body;
 
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.

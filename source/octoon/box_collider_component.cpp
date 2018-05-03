@@ -14,6 +14,12 @@ namespace octoon
 
     }
 
+	BoxCollider::BoxCollider(const math::Vector3& s) noexcept
+		: isRegistered(false), size(s.x, s.y, s.z)
+	{
+
+	}
+
     BoxCollider::~BoxCollider()
     {
 

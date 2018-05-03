@@ -11,8 +11,19 @@ namespace octoon
     OctoonImplementSubClass(Rigidbody, GameComponent, "Rigidbody")
 
     Rigidbody::Rigidbody() noexcept
+		:bodyType(RigidbodyType::Kinematic), mass(1.0f)
     {
     }
+
+	Rigidbody::Rigidbody(RigidbodyType type) noexcept
+		: bodyType(type)
+	{
+	}
+
+	Rigidbody::Rigidbody(RigidbodyType type, float mass) noexcept
+		:bodyType(type), mass(mass)
+	{
+	}
 
 	Rigidbody::~Rigidbody()
     {
@@ -123,11 +134,28 @@ namespace octoon
 
 		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
-		body = physics_feature->getSDK()->createRigidDynamic(pose);
-		if (!body)
-			runtime::runtime_error::create("create body failed!");
-
-		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1);
+		if (bodyType == RigidbodyType::Dynamic)
+		{
+			body = physics_feature->getSDK()->createRigidDynamic(pose);
+			if (!body)
+				runtime::runtime_error::create("create body failed!");
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
+		}
+		else if (bodyType == RigidbodyType::Static)
+		{
+			body = physics_feature->getSDK()->createRigidStatic(pose);
+			if (!body)
+				runtime::runtime_error::create("create body failed!");
+		}
+		else if (bodyType == RigidbodyType::Kinematic)
+		{
+			body = physics_feature->getSDK()->createRigidDynamic(pose);
+			if (!body)
+				runtime::runtime_error::create("create body failed!");
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
+		}
 
 		physics_feature->getScene()->addActor(*body);
     }

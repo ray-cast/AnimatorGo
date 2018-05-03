@@ -14,6 +14,7 @@ namespace octoon
         OctoonDeclareSubClass(BoxCollider, Collider)
         public:
             BoxCollider() noexcept;
+			BoxCollider(const math::Vector3& s) noexcept;
             ~BoxCollider();
             virtual GameComponentPtr clone() const noexcept;
 

@@ -125,6 +125,15 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::Rigidbody>();
 		object->addComponent<octoon::BoxCollider>();
 
+		auto plane = std::make_shared<octoon::GameObject>();
+		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
+		plane->addComponent<octoon::MeshRendererComponent>(material);
+		plane->addComponent<octoon::GuizmoComponent>(camera);
+		auto transform_component = plane->getComponent<octoon::TransformComponent>();
+		transform_component->setTranslate(octoon::math::Vector3(0.f, -2.f, 0.f));
+		plane->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Static);
+		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0,1.0,1.0));
+
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();
 	}

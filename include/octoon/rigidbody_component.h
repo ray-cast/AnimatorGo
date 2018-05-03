@@ -91,6 +91,7 @@ namespace octoon
 
             friend class Collider;
             friend class BoxCollider;
+			friend class SphereCollider;
     };
 }
 

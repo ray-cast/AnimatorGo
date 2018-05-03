@@ -6,16 +6,16 @@
 #include <octoon/collider_component.h>
 #include <octoon/math/math.h>
 
-class b2Body;
 
 namespace octoon
 {
-    class OCTOON_EXPORT CircleCollider : public Collider
+    class OCTOON_EXPORT SphereCollider : public Collider
 	{
-        OctoonDeclareSubClass(CircleCollider, Collider)
+        OctoonDeclareSubClass(SphereCollider, Collider)
         public:
-            CircleCollider() noexcept;
-            ~CircleCollider();
+			SphereCollider() noexcept;
+			SphereCollider(float r) noexcept;
+            ~SphereCollider();
             virtual GameComponentPtr clone() const noexcept;
 
             void setRadius(float r) noexcept;

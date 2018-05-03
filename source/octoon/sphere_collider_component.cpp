@@ -1,116 +1,82 @@
 #include <octoon/sphere_collider_component.h>
 #include <octoon/rigidbody_component.h>
+#include <octoon/runtime/except.h>
+#include <PxPhysicsAPI.h>
 
 
 namespace octoon
 {
-    OctoonImplementSubClass(CircleCollider, Collider, "CircleCollider")
+    OctoonImplementSubClass(SphereCollider, Collider, "SphereCollider")
 
-    CircleCollider::CircleCollider() noexcept
-        :isRegistered(false)
+    SphereCollider::SphereCollider() noexcept
+        :isRegistered(false), radius(1.f)
     {
 
     }
 
-    CircleCollider::~CircleCollider()
+	SphereCollider::SphereCollider(float r) noexcept
+		: isRegistered(false), radius(r)
+	{
+
+	}
+
+    SphereCollider::~SphereCollider()
     {
 
     }
 
-    GameComponentPtr CircleCollider::clone() const noexcept
+    GameComponentPtr SphereCollider::clone() const noexcept
     {
-        return std::make_shared<CircleCollider>();
+        return std::make_shared<SphereCollider>();
     }
 
-    void CircleCollider::setRadius(float r) noexcept
+    void SphereCollider::setRadius(float r) noexcept
     {
         radius = r;
-        onCollisionChange();
     }
 
-    float CircleCollider::getRadius() const noexcept
+    float SphereCollider::getRadius() const noexcept
     {
         return radius;
     }
 
-    void CircleCollider::onCollisionChange() noexcept
+    void SphereCollider::onCollisionChange() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-
-        if(!isRegistered)
-            return;
-        
-        b2CircleShape shapeDef;
-        shapeDef.m_p = b2Vec2(rigidBody->getPosition().x, rigidBody->getPosition().y);
-        shapeDef.m_radius = this->getRadius();
-
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &shapeDef;
-        
-        rigidBody->body->DestroyFixture(collider);
-        collider = rigidBody->body->CreateFixture(&fixtureDef);
     }
 
-    void CircleCollider::onCollisionEnter() noexcept
+    void SphereCollider::onCollisionEnter() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-        
-        b2CircleShape shapeDef;
-        shapeDef.m_p = b2Vec2(rigidBody->getPosition().x, rigidBody->getPosition().y);
-        shapeDef.m_radius = this->getRadius();
-
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &shapeDef;
-        
-        collider = rigidBody->body->CreateFixture(&fixtureDef);
-
-        isRegistered = true;
     }
 
-    void CircleCollider::onCollisionExit() noexcept
+    void SphereCollider::onCollisionExit() noexcept
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
-
-        if(!isRegistered)
-            return;
-
-        rigidBody->body->DestroyFixture(collider);
     }
 
-    void CircleCollider::onCollisionStay() noexcept
+    void SphereCollider::onCollisionStay() noexcept
     {
 
     }
 
-    void CircleCollider::onAttach() except
+    void SphereCollider::onAttach() except
     {
-        auto rigidBody = getComponent<Rigidbody>();
-        if (!rigidBody)
-            return;
+		auto collider = this->getComponent<Rigidbody>();
+		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+		physx::PxSphereGeometry geometry(radius);
 
-        onCollisionEnter();
+		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry, *this->shared_material->getMaterial());
+		if (!shape)
+			runtime::runtime_error::create("create shape failed!");
     }
 
-    void CircleCollider::onDetach() noexcept
+    void SphereCollider::onDetach() noexcept
     {
-        onCollisionExit();
     }
 
-    void CircleCollider::onAttachComponent(const GameComponentPtr& component) except
+    void SphereCollider::onAttachComponent(const GameComponentPtr& component) except
     {
-        if (component->isA<Rigidbody>())
-        {
-            onCollisionEnter();
-        }
     }
 
-    void CircleCollider::onDetachComponent(const GameComponentPtr& component) noexcept
+    void SphereCollider::onDetachComponent(const GameComponentPtr& component) noexcept
     {
     }
 }

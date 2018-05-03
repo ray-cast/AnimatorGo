@@ -5,98 +5,72 @@ namespace octoon
 {
 	namespace input
 	{
-		void
-		InputMap::bind(const std::string& id, InputKey::Code code)
+		InputMap::InputMap() noexcept
 		{
-			InputOp op;
-			op.emplace_back(InputContent::Keyboard, (std::uint16_t)code);
-			table[id] = op;
+		}
+
+		InputMap::~InputMap() noexcept
+		{
 		}
 
 		void
-		InputMap::bind(const std::string& id, InputButton::Code code)
+		InputMap::add(const bind_t& bind)
 		{
-			InputOp op;
-			op.emplace_back(InputContent::Mouse, (std::uint16_t)code);
-			table[id] = op;
-		}
-
-		void
-		InputMap::bind(const std::string& id, const InputOp& ops)
-		{
-			if (ops.empty())
+			auto&& id = bind.first;
+			auto pos = table_.find(id);
+			if (pos != table_.end())
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				throw runtime::runtime_error::create("Bind duplicate id: " + id);
 			}
-			table[id] = ops;
+			table_.emplace_hint(pos, id, bind.second);
 		}
 
 		void
-		InputMap::bind(const std::string& id, InputOp ops, InputKey::Code code)
+		InputMap::remove(const std::string& id)
 		{
-			if (ops.empty())
+			table_.erase(id);
+		}
+
+		bool
+		InputMap::isInput(const std::string& id) const
+		{
+			auto pos = table_.find(id);
+			if (pos == table_.end())
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				throw runtime::runtime_error::create("No InputMap id: " + id);
 			}
-			InputOp op(std::move(ops));
-			op.emplace_back(InputContent::Keyboard, (std::uint16_t)code);
-			table[id] = op;
-		}
+			auto&& ops = pos->second;
 
-		void
-		InputMap::bind(const std::string& id, InputOp ops, InputButton::Code code)
-		{
-			if (ops.empty())
+			// TODO: does not support combined key
+			std::size_t i = 0;
+			for (; i < ops.size() - 1; ++i)
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				if (ops[i].input == InputContent::Keyboard)
+				{
+					if (!input_->isKeyPressed((InputKey::Code)ops[i].code)) return false;
+				}
+				else if(ops[i].input == InputContent::Mouse)
+				{
+					if (!input_->isButtonPressed((InputButton::Code)ops[i].code)) return false;
+				}
+				else
+				{
+					throw runtime::runtime_error::create("InputMap doesn't support combined key yet.");
+				}
 			}
-			InputOp op(std::move(ops));
-			op.emplace_back(InputContent::Mouse, (std::uint16_t)code);
-			table[id] = op;
-		}
-
-		void
-		InputMap::bind(const std::string& id, InputKey::Code code, InputOp ops)
-		{
-			if (ops.empty())
+			if (ops[i].input == InputContent::Keyboard)
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				if (!input_->isKeyDown((InputKey::Code)ops[i].code)) return false;
 			}
-			InputOp op(std::move(ops));
-			op.emplace(op.begin(), InputContent::Keyboard, (std::uint16_t)code);
-			table[id] = op;
-		}
-
-		void
-		InputMap::bind(const std::string& id, InputButton::Code code, InputOp ops)
-		{
-			if (ops.empty())
+			else if (ops[i].input == InputContent::Mouse)
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				if (!input_->isButtonDown((InputButton::Code)ops[i].code)) return false;
 			}
-			InputOp op(std::move(ops));
-			op.emplace(op.begin(), InputContent::Mouse, (std::uint16_t)code);
-			table[id] = op;
-		}
-
-		void
-		InputMap::bind(const std::string& id, InputOp ops1, InputOp ops2)
-		{
-			if (ops1.empty() || ops2.empty())
+			else
 			{
-				throw runtime::runtime_error::create("ops is empty when binding " + id);
+				throw runtime::runtime_error::create("InputMap doesn't support combined key yet.");
 			}
-			InputOp ops(ops1.size() + ops2.size() + 1);
-			std::move(ops1.begin(), ops1.end(), ops.begin());
-			ops[ops1.size()].input = InputContent::Sep;
-			std::move(ops2.begin(), ops2.end(), ops.begin() + ops1.size() + 1);
-			table[id] = ops;
-		}
-
-		void
-		InputMap::unbind(const std::string& id)
-		{
-			table.erase(id);
+			return true;
 		}
 	}
 }

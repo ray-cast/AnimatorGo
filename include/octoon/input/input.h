@@ -27,8 +27,6 @@ namespace octoon
 			virtual void setMousePos(InputButton::Type x, InputButton::Type y) noexcept override;
 			virtual void getMousePos(InputButton::Type& x, InputButton::Type& y) const noexcept override;
 
-			virtual bool isInput(const std::string& id) const override;
-
 			virtual bool isKeyDown(InputKey::Code key) const noexcept override;
 			virtual bool isKeyUp(InputKey::Code key) const noexcept override;
 			virtual bool isKeyPressed(InputKey::Code key) const noexcept override;

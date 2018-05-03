@@ -14,6 +14,9 @@ namespace octoon
 		typedef std::shared_ptr<class IInputDevice> IInputDevicePtr;
 		typedef std::shared_ptr<class IInput> IInputPtr;
 
+		typedef std::shared_ptr<class DefaultInput> DefaultInputPtr;
+		typedef std::shared_ptr<class InputMap> InputMapPtr;
+
 		typedef void* WindHandle;
 	}
 }

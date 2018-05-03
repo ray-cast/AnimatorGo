@@ -161,63 +161,6 @@ namespace octoon
 		}
 
 		bool
-		DefaultInput::isInput(const std::string& id) const
-		{
-			const auto& contents = InputMap::table[id];
-			auto sep = std::find_if(contents.begin(), contents.end(), [&](auto&& c) {
-				return c == InputContent::Sep;
-			});
-
-			std::size_t n = static_cast<std::size_t>(sep - contents.begin());
-			std::size_t i = 0;
-			for (; i < n - 1; ++i)
-			{
-				if (contents[i].input == InputContent::Keyboard)
-				{
-					if (!isKeyPressed((InputKey::Code)contents[i].code)) return false;
-				}
-				else if (contents[i].input == InputContent::Mouse)
-				{
-					if (!isButtonPressed((InputButton::Code)contents[i].code)) return false;
-				}
-			}
-			if (contents[i].input == InputContent::Keyboard)
-			{
-				if (!isKeyDown((InputKey::Code)contents[i].code)) return false;
-			}
-			else if (contents[i].input == InputContent::Mouse)
-			{
-				if (!isButtonDown((InputButton::Code)contents[i].code)) return false;
-			}
-
-			if (n != contents.size())
-			{
-				i = n + 1;
-				for (; i < contents.size() - 1; ++i)
-				{
-					if (contents[i].input == InputContent::Keyboard)
-					{
-						if (!isKeyPressed((InputKey::Code)contents[i].code)) return false;
-					}
-					else if (contents[i].input == InputContent::Mouse)
-					{
-						if (!isButtonPressed((InputButton::Code)contents[i].code)) return false;
-					}
-				}
-				if (contents[i].input == InputContent::Keyboard)
-				{
-					if (!isKeyDown((InputKey::Code)contents[i].code)) return false;
-				}
-				else if (contents[i].input == InputContent::Mouse)
-				{
-					if (!isButtonDown((InputButton::Code)contents[i].code)) return false;
-				}
-			}
-
-			return true;
-		}
-
-		bool
 		DefaultInput::isKeyDown(InputKey::Code key) const noexcept
 		{
 			if (keyboard_capture_device_)

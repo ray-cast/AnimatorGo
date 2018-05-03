@@ -11,7 +11,7 @@ namespace octoon
 {
     class OCTOON_EXPORT FixedJoint : public Joint
 	{
-        OctoonDeclareSubInterface(FixedJoint, Joint)
+        OctoonDeclareSubClass(FixedJoint, Joint)
         public:
             FixedJoint() noexcept;
             ~FixedJoint();

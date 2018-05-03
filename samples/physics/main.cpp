@@ -126,7 +126,7 @@ int main(int argc, const char* argv[])
 			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 3.0, 0.2));
 			object->addComponent<octoon::MeshRendererComponent>(material);
 			//object->addComponent<octoon::GuizmoComponent>(camera);
-			object->addComponent<CubeController>(material);
+			//object->addComponent<CubeController>(material);
 			object->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 			object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 3.0f, 0.2f));
 			{
@@ -140,6 +140,7 @@ int main(int argc, const char* argv[])
 		sphere->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0f));
 		sphere->addComponent<octoon::MeshRendererComponent>(material);
 		sphere->addComponent<octoon::GuizmoComponent>(camera);
+		sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
 		{

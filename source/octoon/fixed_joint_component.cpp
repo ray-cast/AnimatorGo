@@ -4,7 +4,7 @@
 
 namespace octoon
 {
-    OctoonImplementSubClass(FixedJoint, AnchoredJoint, "FixedJoint")
+    OctoonImplementSubClass(FixedJoint, Joint, "FixedJoint")
 
     FixedJoint::FixedJoint() noexcept
     {
@@ -14,6 +14,11 @@ namespace octoon
     {
 
     }
+
+	GameComponentPtr FixedJoint::clone() const noexcept
+	{
+		return std::make_shared<FixedJoint>();
+	}
 
     void FixedJoint::onJointChange()
     {

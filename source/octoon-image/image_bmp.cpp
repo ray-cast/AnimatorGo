@@ -245,7 +245,7 @@ namespace octoon
 					buf += sizeof(BITMAPMASK);
 
 					RGB shift;
-					for (int bit = info.info.bpp - 1; bit >= 0; bit--)
+					for (std::uint8_t bit = (std::uint8_t)(info.info.bpp - 1); bit >= 0; bit--)
 					{
 						if (mask.b & (1 << bit))
 							shift.b = bit;
@@ -256,7 +256,7 @@ namespace octoon
 					}
 
 					RGB bits;
-					for (int bit = 0; bit < info.info.bpp; bit++)
+					for (std::uint8_t bit = 0; bit < info.info.bpp; bit++)
 					{
 						if (mask.b & (1 << bit))
 							bits.b = bit - shift.b + 1;

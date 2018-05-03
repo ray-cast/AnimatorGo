@@ -386,11 +386,11 @@ namespace octoon
 				transform_ = math::transform_multiply(transform_, this->getLocalTransform());
 				transform_.get_transform(translate_, rotation_, scaling_);
 				transform_inverse_ = math::transform_inverse(transform_);
-			}
 
-			local_translate_ = math::float3::Zero;
-			local_scaling_ = math::float3::One;
-			local_rotation_ = math::Quaternion::Zero;
+				local_translate_ = math::float3::Zero;
+				local_scaling_ = math::float3::One;
+				local_rotation_ = math::Quaternion::Zero;
+			}
 
 			world_need_updates_ = false;
 		}

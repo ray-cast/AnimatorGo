@@ -3,7 +3,6 @@
 #include <octoon/runtime/except.h>
 #include <PxPhysicsAPI.h>
 
-
 namespace octoon
 {
     OctoonImplementSubClass(BoxCollider, Collider, "BoxCollider")
@@ -11,18 +10,15 @@ namespace octoon
     BoxCollider::BoxCollider() noexcept
         :isRegistered(false), size(1, 1, 1)
     {
-
     }
 
 	BoxCollider::BoxCollider(const math::Vector3& s) noexcept
 		: isRegistered(false), size(s.x, s.y, s.z)
 	{
-
 	}
 
     BoxCollider::~BoxCollider()
     {
-
     }
 
     GameComponentPtr BoxCollider::clone() const noexcept
@@ -75,7 +71,6 @@ namespace octoon
 
     void BoxCollider::onCollisionStay() noexcept
     {
-
     }
 
     void BoxCollider::onAttach() except
@@ -85,11 +80,20 @@ namespace octoon
 		physx::PxVec3 dimensions(size.x, size.y, size.z);
 		physx::PxBoxGeometry geometry(dimensions);
 
+<<<<<<< HEAD
 		shape = physics_feature->getSDK()->createShape(geometry, *this->shared_material->getMaterial(), true);
 		if (!shape)
 			runtime::runtime_error::create("create shape failed!");
 		collider->body->attachShape(*shape);
 		shape->release();
+=======
+		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry, *this->shared_material->getMaterial());
+		if (!shape)
+			runtime::runtime_error::create("create shape failed!");
+
+		//getScene().addActor(*meshActor);
+		//collider->body->attachShape(*shape);
+>>>>>>> 4fbd90c135bcfb33da8c81f86affdd8db0d8891b
     }
 
     void BoxCollider::onDetach() noexcept

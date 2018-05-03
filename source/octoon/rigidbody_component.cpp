@@ -11,7 +11,10 @@ namespace octoon
     OctoonImplementSubClass(Rigidbody, GameComponent, "Rigidbody")
 
     Rigidbody::Rigidbody() noexcept
-		: body(nullptr), bodyType(RigidbodyType::Kinematic), mass(1.0f), massOffset()
+		: body(nullptr)
+		,bodyType(RigidbodyType::Dynamic)
+		, mass(1.0f)
+		, massOffset()
     {
     }
 
@@ -110,59 +113,58 @@ namespace octoon
         return bodyType;
     }
 
-    void Rigidbody::onAttach() except
+    void Rigidbody::onActivate() except
     {
-        addComponentDispatch(GameDispatchType::MoveAfter);
-		addComponentDispatch(GameDispatchType::FrameEnd);
+        this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
-		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+		auto physicsFeature = GameApp::instance()->getFeature<PhysicsFeature>();
 
-		// get from transform
-		auto transform_component = this->getComponent<TransformComponent>();
-		math::Vector3 position = transform_component->getTranslate();
-		math::Quaternion rotation = transform_component->getQuaternion();
+		auto transform = this->getComponent<TransformComponent>();
+		auto& translate = transform->getTranslate();
+		auto& rotation = transform->getQuaternion();
 
 		physx::PxTransform pose;
+		pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
+		pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
 
-		pose = physx::PxTransform(physx::PxVec3(position.x + massOffset.x, position.y + massOffset.y, position.z + massOffset.z),
-			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
-
-		if (bodyType == RigidbodyType::Dynamic)
+		switch (bodyType)
 		{
-			body = physics_feature->getSDK()->createRigidDynamic(pose);
+		case RigidbodyType::Dynamic:
+		{
+			body = physicsFeature->getSDK()->createRigidDynamic(pose);
 			if (!body)
-				runtime::runtime_error::create("create body failed!");
+				throw  runtime::runtime_error::create("create body failed!");
+
 			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
 			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
 		}
-		else if (bodyType == RigidbodyType::Static)
+		break;
+		case RigidbodyType::Static:
+		case RigidbodyType::Kinematic:
 		{
-			body = physics_feature->getSDK()->createRigidStatic(pose);
+			body = physicsFeature->getSDK()->createRigidStatic(pose);
 			if (!body)
-				runtime::runtime_error::create("create body failed!");
+				throw  runtime::runtime_error::create("create body failed!");
 		}
-		else if (bodyType == RigidbodyType::Kinematic)
-		{
-			body = physics_feature->getSDK()->createRigidDynamic(pose);
-			if (!body)
-				runtime::runtime_error::create("create body failed!");
-			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
-			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
+		break;
+		default:
+			throw runtime::type_error::create("Invalid enum type of rigidbody");
 		}
 
-		physics_feature->getScene()->addActor(*body);
+		physicsFeature->getScene()->addActor(*body);
     }
 
-    void Rigidbody::onDetach() noexcept
+    void Rigidbody::onDeactivate() noexcept
     {
-        removeComponentDispatch(GameDispatchType::MoveAfter);
-		removeComponentDispatch(GameDispatchType::FrameEnd);
-
 		if (body)
 		{
 			body->release();
 			body = nullptr;
 		}
+
+		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeComponentDispatch(GameDispatchType::FrameEnd);
     }
 
     void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
@@ -191,29 +193,25 @@ namespace octoon
 		{
 			auto transform = body->getGlobalPose();
 
-			auto transform_component = this->getComponent<TransformComponent>();
-			transform_component->setTranslate(math::float3(transform.p.x - massOffset.x, transform.p.y - massOffset.y, transform.p.z - massOffset.z));
-			transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
+			auto transformComponent = this->getComponent<TransformComponent>();
+			transformComponent->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z) - massOffset);
+			transformComponent->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
 		}
 	}
 
-	void Rigidbody::onMoveBefore() except
-	{
-		
-	}
-
-	void Rigidbody::onMoveAfter() except
+	void Rigidbody::onMoveAfter() noexcept
 	{
 		if (body)
 		{
-			auto transform_component = this->getComponent<TransformComponent>();
-			auto translate = transform_component->getTranslate();
-			auto rotation = transform_component->getQuaternion();
-			body->setGlobalPose(physx::PxTransform(
-				translate.x - massOffset.x,
-				translate.y - massOffset.y,
-				translate.z - massOffset.z,
-				physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
+			auto transform = this->getComponent<TransformComponent>();
+			auto& translate = transform->getTranslate();
+			auto& rotation = transform->getQuaternion();
+
+			physx::PxTransform pose;
+			pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
+			pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+			body->setGlobalPose(pose);
 		}
 	}
 

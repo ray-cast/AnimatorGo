@@ -62,8 +62,8 @@ namespace octoon
             RigidbodyType getBodyType() const noexcept;
 
         private:
-        	virtual void onAttach() except;
-            virtual void onDetach() noexcept;
+        	virtual void onActivate() except override;
+            virtual void onDeactivate() noexcept override;
 
             virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
             virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
@@ -72,8 +72,7 @@ namespace octoon
 			virtual void onFrame() except override;
 			virtual void onFrameEnd() except override;
 
-			virtual void onMoveBefore() except;
-			virtual void onMoveAfter() except;
+			virtual void onMoveAfter() noexcept;
 
             void rigidbodyEnter() noexcept;
             void rigidbodyExit() noexcept;
@@ -89,11 +88,10 @@ namespace octoon
             RigidbodySleepMode sleepMode;
             math::Vector3 velocity;
             RigidbodyType bodyType;
-        
+
             friend class Collider;
             friend class BoxCollider;
     };
 }
-
 
 #endif // OCTOON_RIGIDBODY_COMPONENT_H_

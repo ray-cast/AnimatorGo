@@ -12,11 +12,10 @@
 
 #include <PxPhysicsAPI.h>
 
-
 namespace octoon
 {
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
-    
+
 	PhysicsFeature::PhysicsFeature() except
 		:defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>()),
 		defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>()),
@@ -46,10 +45,8 @@ namespace octoon
 		if (!cooking)
 			runtime::runtime_error::create("PxCreateCooking failed!");
 
-
 		if (!PxInitExtensions(*physics, pvd))
 			runtime::runtime_error::create("PxInitExtensions failed!");
-
 
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
 		Physics::setGravity(math::Vector3(0.f, -9.f, 0.f));
@@ -78,26 +75,23 @@ namespace octoon
 
     void PhysicsFeature::onInputEvent(const input::InputEvent& event) noexcept
     {
-
     }
 
     void PhysicsFeature::onReset() noexcept
     {
-
     }
 
     void PhysicsFeature::onFrameBegin() noexcept
     {
-		
     }
 
     void PhysicsFeature::onFrame() except
     {
 		auto delta = this->getFeature<TimerFeature>()->delta();
-		accumulator += delta / 360.f;
+		accumulator += delta;
 		if (accumulator < stepSize)	return;
 		accumulator -= stepSize;
-		
+
 		physicsScene->simulate(stepSize);
 		physicsScene->fetchResults(true);
 
@@ -115,22 +109,17 @@ namespace octoon
 			auto transform_component = renderObject->getComponent<TransformComponent>();
 			transform_component->setTranslate(math::Vector3(transform.p.x, transform.p.y, transform.p.z));
 		}
-
     }
 
     void PhysicsFeature::onFrameEnd() noexcept
     {
-
     }
 
     void PhysicsFeature::onOpenScene(const GameScenePtr& scene) except
     {
-
     }
 
 	void PhysicsFeature::onCloseScene(const GameScenePtr& scene) noexcept
     {
-
     }
-
 }

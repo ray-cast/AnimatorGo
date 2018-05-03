@@ -6,7 +6,6 @@
 
 #include <PxPhysicsAPI.h>
 
-
 namespace octoon
 {
     OctoonImplementSubClass(Rigidbody, GameComponent, "Rigidbody")
@@ -107,9 +106,10 @@ namespace octoon
     void Rigidbody::onAttach() except
     {
         addComponentDispatch(GameDispatchType::MoveAfter);
-		//addComponentDispatch(GameDispatchType::FrameEnd);
+		addComponentDispatch(GameDispatchType::FrameEnd);
 
-		auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
+		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+
 		// get from transform
 		auto transform_component = this->getComponent<TransformComponent>();
 		position = transform_component->getTranslate();
@@ -117,14 +117,14 @@ namespace octoon
 
 		physx::PxTransform pose;
 
-		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z),
-			physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f)));
+		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 		body = physics_feature->getSDK()->createRigidDynamic(pose);
 		if (!body)
 			runtime::runtime_error::create("create body failed!");
 
 		body->userData = &(*this->getGameObject());
+
 		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1);
 
 		physics_feature->getScene()->addActor(*body);
@@ -133,6 +133,7 @@ namespace octoon
     void Rigidbody::onDetach() noexcept
     {
         removeComponentDispatch(GameDispatchType::MoveAfter);
+
 		//removeComponentDispatch(GameDispatchType::FrameEnd);
 
 		body->release();
@@ -152,7 +153,6 @@ namespace octoon
 
 	void Rigidbody::onFrameBegin() except
 	{
-
 	}
 
 	void Rigidbody::onFrame() except
@@ -162,7 +162,11 @@ namespace octoon
 
 	void Rigidbody::onFrameEnd() except
 	{
-		
+		auto& transform = body->getGlobalPose();
+
+		auto transform_component = this->getComponent<TransformComponent>();
+		transform_component->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z));
+		transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
 	}
 
     void Rigidbody::rigidbodyEnter() noexcept

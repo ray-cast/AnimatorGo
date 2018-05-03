@@ -357,7 +357,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowKeyDown(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyDown(WindHandle window, input::InputKey::Code key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowKeyDown(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
@@ -365,7 +365,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowKeyUp(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyUp(WindHandle window, input::InputKey::Code key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowKeyUp(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
@@ -373,7 +373,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowKeyPress(WindHandle window, std::uint16_t key, std::uint16_t scancode, std::uint16_t mods) except
+	GameApp::doWindowKeyPress(WindHandle window, input::InputKey::Code key, std::uint16_t scancode, std::uint16_t mods) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowKeyPress(window, key, scancode, mods, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
@@ -389,7 +389,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowMouseButtonDown(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonDown(WindHandle window, input::InputButton::Code button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowMouseButtonDown(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
@@ -397,7 +397,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowMouseButtonUp(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonUp(WindHandle window, input::InputButton::Code button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowMouseButtonUp(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());
@@ -405,7 +405,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::doWindowMouseButtonDoubleClick(WindHandle window, std::uint8_t button, float x, float y) except
+	GameApp::doWindowMouseButtonDoubleClick(WindHandle window, input::InputButton::Code button, float x, float y) except
 	{
 		octoon::input::InputEvent event;
 		event.makeWindowMouseButtonDoubleClick(window, button, x, y, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time_).count());

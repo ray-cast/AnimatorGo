@@ -12,7 +12,7 @@ namespace octoon
 		public:
 			using Type = float;
 
-			enum Code
+			enum Code : std::uint8_t
 			{
 				Left = 0,
 				Right,

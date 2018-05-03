@@ -56,7 +56,6 @@ namespace octoon
 		sceneDesc.cpuDispatcher = dispatcher;
 		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 		physicsScene = physics->createScene(sceneDesc);
-		physicsScene->setFlag(physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
@@ -94,21 +93,6 @@ namespace octoon
 
 		physicsScene->simulate(stepSize);
 		physicsScene->fetchResults(true);
-
-		// retrieve array of actors that moved
-		physx::PxU32 nbActiveActors;
-		physx::PxActor** activeActors = physicsScene->getActiveActors(nbActiveActors);
-
-		// update each render object with the new transform
-		for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
-		{
-			GameObject* renderObject = static_cast<GameObject*>(activeActors[i]->userData);
-			physx::PxRigidActor* actor = static_cast<physx::PxRigidActor*>(activeActors[i]);
-
-			physx::PxTransform transform = actor->getGlobalPose();
-			auto transform_component = renderObject->getComponent<TransformComponent>();
-			transform_component->setTranslate(math::Vector3(transform.p.x, transform.p.y, transform.p.z));
-		}
     }
 
     void PhysicsFeature::onFrameEnd() noexcept

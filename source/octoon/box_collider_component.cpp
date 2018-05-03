@@ -77,7 +77,7 @@ namespace octoon
     {
 		auto collider = this->getComponent<Rigidbody>();
 		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-		physx::PxVec3 dimensions(size.x, size.y, size.z);
+		physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
 		physx::PxBoxGeometry geometry(dimensions);
 
 		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry, *this->shared_material->getMaterial());

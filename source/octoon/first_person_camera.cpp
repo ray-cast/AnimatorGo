@@ -118,7 +118,9 @@ namespace octoon
 		float angle = angleX + math::degress(euler.x);
 
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
+		{
 			rotateCamera(angleX, this->getGameObject()->getComponent<TransformComponent>()->getLocalRight());
+		}
 
 		rotateCamera(angleY, math::float3::UnitY);
 	}

@@ -19,6 +19,7 @@ namespace octoon
 			, is_mouse_lock_(false)
 			, is_mouse_locked_(false)
 			, is_mouse_hide(false)
+			, is_mouse_position_updated(false)
 		{
 			std::memset(button_state_, 0, sizeof(button_state_));
 		}
@@ -181,6 +182,16 @@ namespace octoon
 				button.down = false;
 				button.doubleClick = false;
 			}
+
+			// some windows do not send input event when the position of mouse is the same between two frames
+			if (is_mouse_position_updated)
+			{
+				is_mouse_position_updated = false;
+				mouse_axis_x_ = 0;
+				mouse_axis_y_ = 0;
+				last_x_ = mouse_x_;
+				last_y_ = mouse_y_;
+			}
 		}
 
 		void
@@ -233,6 +244,7 @@ namespace octoon
 		void
 		DefaultInputMouse::onInputEvent(const InputEvent& event) noexcept
 		{
+			is_mouse_position_updated = true;
 			switch (event.event)
 			{
 			case InputEvent::MouseMotion:

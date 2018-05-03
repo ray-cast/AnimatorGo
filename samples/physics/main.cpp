@@ -122,17 +122,17 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<CubeController>(material);
-		object->addComponent<octoon::Rigidbody>();
-		object->addComponent<octoon::BoxCollider>();
+		object->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+		object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(0.5f, 0.5f, 0.5f));
 
 		auto plane = std::make_shared<octoon::GameObject>();
-		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
+		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(2.0, 2.0, 2.0));
 		plane->addComponent<octoon::MeshRendererComponent>(material);
 		plane->addComponent<octoon::GuizmoComponent>(camera);
+		plane->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Static, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 1.0f, 1.0f));
 		auto transform_component = plane->getComponent<octoon::TransformComponent>();
-		transform_component->setTranslate(octoon::math::Vector3(0.f, -2.f, 0.f));
-		plane->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Static);
-		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0,1.0,1.0));
+		transform_component->setTranslate(octoon::math::Vector3(0.f, -3.f, 0.f));
 
 		while (!::OctoonIsQuitRequest())
 			::OctoonUpdate();

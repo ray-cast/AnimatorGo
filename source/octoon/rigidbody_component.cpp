@@ -11,17 +11,22 @@ namespace octoon
     OctoonImplementSubClass(Rigidbody, GameComponent, "Rigidbody")
 
     Rigidbody::Rigidbody() noexcept
-		:bodyType(RigidbodyType::Kinematic), mass(1.0f)
+		:bodyType(RigidbodyType::Kinematic), mass(1.0f), massOffset()
     {
     }
 
 	Rigidbody::Rigidbody(RigidbodyType type) noexcept
-		: bodyType(type)
+		: bodyType(type), mass(1.0f), massOffset()
 	{
 	}
 
 	Rigidbody::Rigidbody(RigidbodyType type, float mass) noexcept
-		:bodyType(type), mass(mass)
+		:bodyType(type), mass(mass), massOffset()
+	{
+	}
+
+	Rigidbody::Rigidbody(RigidbodyType type, float mass, const math::Vector3& offset) noexcept
+		: bodyType(type), mass(mass), massOffset(offset)
 	{
 	}
 
@@ -64,6 +69,16 @@ namespace octoon
     {
         return mass;
     }
+
+	void Rigidbody::setMassOffset(math::Vector3 offset) noexcept
+	{
+		massOffset = offset;
+	}
+
+	math::Vector3 Rigidbody::getMassOffset() const noexcept
+	{
+		return massOffset;
+	}
 
     void Rigidbody::setSleepMode(RigidbodySleepMode mode) noexcept
     {
@@ -132,7 +147,8 @@ namespace octoon
 
 		physx::PxTransform pose;
 
-		pose = physx::PxTransform(physx::PxVec3(position.x, position.y, position.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+		pose = physx::PxTransform(physx::PxVec3(position.x + massOffset.x, position.y + massOffset.y, position.z + massOffset.z),
+			physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 		if (bodyType == RigidbodyType::Dynamic)
 		{
@@ -193,7 +209,7 @@ namespace octoon
 		auto transform = body->getGlobalPose();
 
 		auto transform_component = this->getComponent<TransformComponent>();
-		transform_component->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z));
+		transform_component->setTranslate(math::float3(transform.p.x - massOffset.x, transform.p.y - massOffset.y, transform.p.z - massOffset.z));
 		transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
 	}
 
@@ -207,7 +223,7 @@ namespace octoon
 		auto transform_component = this->getComponent<TransformComponent>();
 		auto translate = transform_component->getTranslate();
 		//auto rotation = transform_component->getQuaternion();
-		body->setGlobalPose(physx::PxTransform(translate.x, translate.y, translate.z));
+		body->setGlobalPose(physx::PxTransform(translate.x - massOffset.x, translate.y - massOffset.y, translate.z - massOffset.z));
 	}
 
     void Rigidbody::rigidbodyEnter() noexcept

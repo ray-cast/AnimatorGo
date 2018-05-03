@@ -39,6 +39,7 @@ namespace octoon
             Rigidbody() noexcept;
 			Rigidbody(RigidbodyType type) noexcept;
 			Rigidbody(RigidbodyType type, float mass) noexcept;
+			Rigidbody(RigidbodyType type, float mass, const math::Vector3& offset) noexcept;
             ~Rigidbody();
             virtual GameComponentPtr clone() const noexcept;
 
@@ -50,6 +51,9 @@ namespace octoon
 
             void setMass(float m) noexcept;
             float getMass() const noexcept;
+
+			void setMassOffset(math::Vector3 offset) noexcept;
+			math::Vector3 getMassOffset() const noexcept;
 
             void setSleepMode(RigidbodySleepMode mode) noexcept;
             RigidbodySleepMode getSleepMode() const noexcept;
@@ -89,6 +93,7 @@ namespace octoon
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.
             float mass; // Mass of the rigidbody.
+			math::Vector3 massOffset;
             RigidbodySleepMode sleepMode;
             math::Vector3 velocity;
             RigidbodyType bodyType;

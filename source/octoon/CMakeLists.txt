@@ -46,16 +46,8 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/first_person_camera.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
-	${HEADER_PATH}/point_renderer_component.h
-	${SOURCE_PATH}/point_renderer_component.cpp
-	${HEADER_PATH}/line_renderer_component.h
-	${SOURCE_PATH}/line_renderer_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
-	${HEADER_PATH}/path_meshing_component.h
-	${SOURCE_PATH}/path_meshing_component.cpp
-	${HEADER_PATH}/text_meshing_component.h
-	${SOURCE_PATH}/text_meshing_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )
@@ -127,12 +119,12 @@ ADD_LIBRARY(${LIB_NAME} SHARED
 	${PHYSICS_FEATURES_LIST}
 )
 
-TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-math)
-TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE octoon-runtime)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-math)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-runtime)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-image)
 
-IF(OCTOON_FEATURE_VIDEO_ENABLE)
-	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-video)
-	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-graphics)
+IF(OCTOON_FEATURE_MODEL_ENABLE)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-model)
 ENDIF()
 
 IF(OCTOON_FEATURE_IO_ENABLE)
@@ -143,9 +135,16 @@ IF(OCTOON_FEATURE_INPUT_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-input)
 ENDIF()
 
+IF(OCTOON_FEATURE_GRAPHICS_ENABLE)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-graphics)
+ENDIF()
+
+IF(OCTOON_FEATURE_VIDEO_ENABLE)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-video)
+ENDIF()
+
 IF(OCTOON_FEATURE_UI_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-ui)
-	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-graphics)
 ENDIF()
 
 IF(OCTOON_FEATURE_PHYSICS_ENABLE)

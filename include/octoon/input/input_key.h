@@ -10,7 +10,7 @@ namespace octoon
 		class InputKey
 		{
 		public:
-			enum Code
+			enum Code : std::uint16_t
 			{
 				None = 0,
 				Space = 32,

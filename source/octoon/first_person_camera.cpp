@@ -5,7 +5,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
-#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -16,8 +15,8 @@ namespace octoon
 		, _gravity(15)
 		, _maxVelocityChange(1.0)
 		, _jumpHeight(10)
-		, _sensitivityX(2.0)
-		, _sensitivityY(2.0)
+		, _sensitivityX(1.0)
+		, _sensitivityY(1.0)
 	{
 	}
 
@@ -44,8 +43,7 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onFrame() noexcept
 	{
-		float delta = GameApp::instance()->getFeature<TimerFeature>()->delta();
-		float step = _speed * delta;
+		float step = _speed;
 
 		auto inputFeature = GameApp::instance()->getFeature<InputFeature>();
 		if (inputFeature)
@@ -75,7 +73,7 @@ namespace octoon
 					upCamera(step);
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))
-					rotateCamera(input->getAxis(input::InputAxis::Horizontal), input->getAxis(input::InputAxis::Vertical));
+					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);
 			}
 		}
 	}

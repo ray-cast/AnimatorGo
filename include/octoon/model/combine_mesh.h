@@ -1,5 +1,5 @@
-#ifndef OCTOON_COMBINE_MESH_H_
-#define OCTOON_COMBINE_MESH_H_
+#ifndef OCTOON_MODEL_COMBINE_MESH_H_
+#define OCTOON_MODEL_COMBINE_MESH_H_
 
 #include <octoon/model/modtypes.h>
 #include <octoon/math/mat4.h>
@@ -12,10 +12,10 @@ namespace octoon
 		{
 		public:
 			CombineMesh() noexcept;
-			CombineMesh(const MeshPtr mesh, const math::float4x4& transform = math::float4x4::One) noexcept;
+			CombineMesh(const MeshPtr& mesh, const math::float4x4& transform = math::float4x4::One) noexcept;
 
-			void setMesh(MeshPtr other) noexcept;
-			MeshPtr getMesh() const noexcept;
+			void setMesh(const MeshPtr& other) noexcept;
+			const MeshPtr& getMesh() const noexcept;
 
 			void setTransform(const math::float4x4& m) noexcept;
 			const math::float4x4& getTransform() const noexcept;
@@ -29,4 +29,4 @@ namespace octoon
 	}
 }
 
-#endif // !OCTOON_COMBINE_MESH_H_
+#endif

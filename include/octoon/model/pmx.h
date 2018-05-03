@@ -8,10 +8,6 @@
 
 #include <cstdint>
 
-namespace octoon
-{
-	namespace model
-	{
 #ifndef MAX_PATH
 #	define MAX_PATH 256
 #endif
@@ -27,6 +23,10 @@ namespace octoon
 #define PMX_BONE_AXIS     1 << 10
 #define PMX_BONE_ROTATE   1 << 11
 
+namespace octoon
+{
+	namespace model
+	{
 		typedef math::Vector2  PmxVector2;
 		typedef math::Vector3  PmxVector3;
 		typedef math::Vector4  PmxVector4;

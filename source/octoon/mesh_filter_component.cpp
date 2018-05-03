@@ -33,6 +33,12 @@ namespace octoon
 	}
 
 	void
+	MeshFilterComponent::setMesh(model::Mesh&& mesh) noexcept
+	{
+		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)));
+	}
+
+	void
 	MeshFilterComponent::setMesh(model::MeshPtr&& mesh) noexcept
 	{
 		if (mesh_ != mesh)
@@ -76,6 +82,7 @@ namespace octoon
 	MeshFilterComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<MeshFilterComponent>();
+		instance->setName(instance->getName());
 		instance->setMesh(mesh_ ? mesh_->clone() : nullptr);
 		return instance;
 	}

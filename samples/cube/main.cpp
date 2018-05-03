@@ -1,6 +1,6 @@
 #include <octoon/octoon.h>
 
-#include <octoon/video/phong_material.h>
+#include <octoon/video/ggx_material.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/mesh_renderer_component.h>
@@ -17,7 +17,7 @@ public:
 	{
 	}
 
-	CubeController(std::shared_ptr<octoon::video::PhongMaterial>& material)
+	CubeController(std::shared_ptr<octoon::video::GGXMaterial>& material)
 		: material_(material)
 	{
 	}
@@ -35,11 +35,6 @@ public:
 
 	void onGui() except override
 	{
-		static octoon::math::float1 shininess = 0.0f;
-		static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
-		static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
-		static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
-
 		auto transform = this->getComponent<octoon::TransformComponent>();
 
 		if (octoon::imgui::begin("Material"))
@@ -48,37 +43,48 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::math::float3 matrixTranslation = transform->getLocalTranslate();
-				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getLocalQuaternion()));
-				octoon::math::float3 matrixScale = transform->getLocalScale();
+				octoon::math::float3 matrixTranslation = transform->getTranslate();
+				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getQuaternion()));
+				octoon::math::float3 matrixScale = transform->getScale();
 
 				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
 				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
 				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
 
-				transform->setLocalTranslate(matrixTranslation);
+				transform->setTranslate(matrixTranslation);
 
-				transform->setLocalQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
-				transform->setLocalScale(matrixScale);
+				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
+				transform->setScale(matrixScale);
 
 				octoon::imgui::tree_pop();
 			}
 
 			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
+				static octoon::math::float1 smoothness = 0.0f;
+				static octoon::math::float1 metalness = 0.0f;
+				static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
+				static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
+				static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
+				static octoon::math::float3 specularColor(1.0f);
+
 				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
 
-				octoon::imgui::color_picker3("Base color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-				octoon::imgui::color_picker3("Ambient color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("Ambient Color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("Base Color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::color_picker3("Specular Color", specularColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
-				octoon::imgui::drag_float("Shininess", &shininess, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::drag_float("smoothness", &smoothness, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::drag_float("metalness", &metalness, 0.01f, 0.0f, 1.0f);
 
 				lightDir = octoon::math::normalize(lightDir);
 
 				material_->setLightDir(lightDir);
 				material_->setBaseColor(baseColor);
+				material_->setSpecularColor(specularColor);
 				material_->setAmbientColor(ambientColor);
-				material_->setShininess(shininess);
+				material_->setSmoothness(smoothness);
+				material_->setMetalness(metalness);
 
 				octoon::imgui::tree_pop();
 			}
@@ -94,7 +100,7 @@ public:
 
 private:
 	octoon::GameObjectPtr camera_;
-	std::shared_ptr<octoon::video::PhongMaterial> material_;
+	std::shared_ptr<octoon::video::GGXMaterial> material_;
 };
 
 int main(int argc, const char* argv[])
@@ -113,7 +119,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
-		auto material = std::make_shared<octoon::video::PhongMaterial>();
+		auto material = std::make_shared<octoon::video::GGXMaterial>();
 
 		auto object = std::make_shared<octoon::GameObject>();
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));

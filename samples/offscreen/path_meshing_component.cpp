@@ -178,7 +178,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		max << bound["max"];
 	}
 
-	auto& text = reader["text"];
+	auto& text = reader["text"]["paras"][0];
 	if (!text.is_null())
 	{
 		model::Contours contours;

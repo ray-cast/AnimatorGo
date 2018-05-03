@@ -169,6 +169,16 @@ namespace octoon
 		transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
 	}
 
+	void Rigidbody::onMoveBefore() except
+	{
+
+	}
+
+	void Rigidbody::onMoveAfter() except
+	{
+
+	}
+
     void Rigidbody::rigidbodyEnter() noexcept
     {
     }

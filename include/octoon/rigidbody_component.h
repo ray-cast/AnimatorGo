@@ -73,6 +73,9 @@ namespace octoon
 			virtual void onFrame() except override;
 			virtual void onFrameEnd() except override;
 
+			virtual void onMoveBefore() except;
+			virtual void onMoveAfter() except;
+
             void rigidbodyEnter() noexcept;
             void rigidbodyExit() noexcept;
             void rigidbodyChange() noexcept;

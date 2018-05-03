@@ -388,6 +388,10 @@ namespace octoon
 				transform_inverse_ = math::transform_inverse(transform_);
 			}
 
+			local_translate_ = math::float3::Zero;
+			local_scaling_ = math::float3::One;
+			local_rotation_ = math::Quaternion::Zero;
+
 			world_need_updates_ = false;
 		}
 	}

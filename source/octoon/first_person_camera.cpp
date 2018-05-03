@@ -5,6 +5,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -43,7 +44,7 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onFrame() noexcept
 	{
-		float step = _speed;
+		float step = _speed * GameApp::instance()->getFeature<TimerFeature>()->delta();
 
 		auto inputFeature = GameApp::instance()->getFeature<InputFeature>();
 		if (inputFeature)
@@ -82,28 +83,28 @@ namespace octoon
 	FirstPersonCameraComponent::upCamera(float speed) noexcept
 	{
 		const math::float3& up = this->getGameObject()->getComponent<TransformComponent>()->getLocalUp();
-		this->getGameObject()->getComponent<TransformComponent>()->setTranslateAccum(up * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(up * speed);
 	}
 
 	void
 	FirstPersonCameraComponent::yawCamera(float speed) noexcept
 	{
 		const math::float3& right = this->getGameObject()->getComponent<TransformComponent>()->getLocalRight();
-		this->getGameObject()->getComponent<TransformComponent>()->setTranslateAccum(right * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(right * speed);
 	}
 
 	void
 	FirstPersonCameraComponent::moveCamera(float speed) noexcept
 	{
 		const math::float3& forward = this->getGameObject()->getComponent<TransformComponent>()->getLocalForward();
-		this->getGameObject()->getComponent<TransformComponent>()->setTranslateAccum(forward * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(forward * speed);
 	}
 
 	void
 	FirstPersonCameraComponent::rotateCamera(float angle, const math::float3& axis) noexcept
 	{
 		math::Quaternion quat(axis, math::radians(angle));
-		this->getGameObject()->getComponent<TransformComponent>()->setQuaternionAccum(quat);
+		this->getGameObject()->getComponent<TransformComponent>()->setLocalQuaternionAccum(quat);
 	}
 
 	void

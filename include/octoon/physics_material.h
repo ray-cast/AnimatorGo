@@ -18,6 +18,8 @@ namespace octoon
         OctoonDeclareSubClass(PhysicsMaterial, runtime::RttiInterface)
         public:
             PhysicsMaterial() noexcept;
+			PhysicsMaterial(const PhysicsMaterial& other) noexcept;
+			PhysicsMaterial(PhysicsMaterial&& other) noexcept;
             ~PhysicsMaterial();
 
             void setStaticFriction(float f) noexcept;

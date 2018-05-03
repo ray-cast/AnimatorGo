@@ -81,22 +81,19 @@ namespace octoon
     void BoxCollider::onAttach() except
     {
 		auto collider = this->getComponent<Rigidbody>();
+		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
 		physx::PxVec3 dimensions(size.x, size.y, size.z);
 		physx::PxBoxGeometry geometry(dimensions);
 
-		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry,
-			*this->shared_material->getMaterial());
+		shape = physics_feature->getSDK()->createShape(geometry, *this->shared_material->getMaterial(), true);
 		if (!shape)
 			runtime::runtime_error::create("create shape failed!");
-		//getScene().addActor(*meshActor);
-		//collider->body->attachShape(*shape);
+		collider->body->attachShape(*shape);
+		shape->release();
     }
 
     void BoxCollider::onDetach() noexcept
     {
-		//auto collider = this->getComponent<Rigidbody>();
-		//collider->body->detachShape(*shape);
-		//shape->release();
     }
 
     void BoxCollider::onAttachComponent(const GameComponentPtr& component) except

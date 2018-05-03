@@ -61,14 +61,6 @@ namespace octoon
             void setBodyType(RigidbodyType type) noexcept;
             RigidbodyType getBodyType() const noexcept;
 
-            void setPosition(math::Vector3 pos) noexcept;
-            math::Vector3 getPosition() const noexcept;
-
-            void setRotation(math::Quaternion delta) noexcept;
-			math::Quaternion getRotation() const noexcept;
-
-			
-
         private:
         	virtual void onAttach() except;
             virtual void onDetach() noexcept;

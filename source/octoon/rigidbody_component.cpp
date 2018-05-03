@@ -11,27 +11,28 @@ namespace octoon
     OctoonImplementSubClass(Rigidbody, GameComponent, "Rigidbody")
 
     Rigidbody::Rigidbody() noexcept
-		:bodyType(RigidbodyType::Kinematic), mass(1.0f), massOffset()
+		: body(nullptr), bodyType(RigidbodyType::Kinematic), mass(1.0f), massOffset()
     {
     }
 
 	Rigidbody::Rigidbody(RigidbodyType type) noexcept
-		: bodyType(type), mass(1.0f), massOffset()
+		: body(nullptr), bodyType(type), mass(1.0f), massOffset()
 	{
 	}
 
 	Rigidbody::Rigidbody(RigidbodyType type, float mass) noexcept
-		:bodyType(type), mass(mass), massOffset()
+		: body(nullptr), bodyType(type), mass(mass), massOffset()
 	{
 	}
 
 	Rigidbody::Rigidbody(RigidbodyType type, float mass, const math::Vector3& offset) noexcept
-		: bodyType(type), mass(mass), massOffset(offset)
+		: body(nullptr), bodyType(type), mass(mass), massOffset(offset)
 	{
 	}
 
 	Rigidbody::~Rigidbody()
     {
+		body = nullptr;
     }
 
 	GameComponentPtr Rigidbody::clone() const noexcept
@@ -109,30 +110,6 @@ namespace octoon
         return bodyType;
     }
 
-    void Rigidbody::setPosition(math::Vector3 pos) noexcept
-    {
-		auto transform_component = this->getComponent<TransformComponent>();
-		transform_component->setTranslate(pos);
-    }
-
-    math::Vector3 Rigidbody::getPosition() const noexcept
-    {
-		auto transform_component = this->getComponent<TransformComponent>();
-		return transform_component->getTranslate();
-    }
-
-    void Rigidbody::setRotation(math::Quaternion delta) noexcept
-    {
-		auto transform_component = this->getComponent<TransformComponent>();
-		transform_component->setQuaternion(delta);
-    }
-
-	math::Quaternion Rigidbody::getRotation() const noexcept
-    {
-		auto transform_component = this->getComponent<TransformComponent>();
-		return transform_component->getQuaternion();
-    }
-
     void Rigidbody::onAttach() except
     {
         addComponentDispatch(GameDispatchType::MoveAfter);
@@ -181,7 +158,11 @@ namespace octoon
         removeComponentDispatch(GameDispatchType::MoveAfter);
 		removeComponentDispatch(GameDispatchType::FrameEnd);
 
-		body->release();
+		if (body)
+		{
+			body->release();
+			body = nullptr;
+		}
     }
 
     void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
@@ -206,11 +187,14 @@ namespace octoon
 
 	void Rigidbody::onFrameEnd() except
 	{
-		auto transform = body->getGlobalPose();
+		if (body)
+		{
+			auto transform = body->getGlobalPose();
 
-		auto transform_component = this->getComponent<TransformComponent>();
-		transform_component->setTranslate(math::float3(transform.p.x - massOffset.x, transform.p.y - massOffset.y, transform.p.z - massOffset.z));
-		transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
+			auto transform_component = this->getComponent<TransformComponent>();
+			transform_component->setTranslate(math::float3(transform.p.x - massOffset.x, transform.p.y - massOffset.y, transform.p.z - massOffset.z));
+			transform_component->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
+		}
 	}
 
 	void Rigidbody::onMoveBefore() except
@@ -220,10 +204,17 @@ namespace octoon
 
 	void Rigidbody::onMoveAfter() except
 	{
-		auto transform_component = this->getComponent<TransformComponent>();
-		auto translate = transform_component->getTranslate();
-		//auto rotation = transform_component->getQuaternion();
-		body->setGlobalPose(physx::PxTransform(translate.x - massOffset.x, translate.y - massOffset.y, translate.z - massOffset.z));
+		if (body)
+		{
+			auto transform_component = this->getComponent<TransformComponent>();
+			auto translate = transform_component->getTranslate();
+			auto rotation = transform_component->getQuaternion();
+			body->setGlobalPose(physx::PxTransform(
+				translate.x - massOffset.x,
+				translate.y - massOffset.y,
+				translate.z - massOffset.z,
+				physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w)));
+		}
 	}
 
     void Rigidbody::rigidbodyEnter() noexcept

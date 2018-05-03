@@ -19,6 +19,8 @@ namespace octoon
 	PhysicsFeature::PhysicsFeature() except
 		:defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>()),
 		defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>()),
+		foundation(nullptr), pvd(nullptr),
+		physics(nullptr), cooking(nullptr),
 		dispatcher(nullptr), physicsScene(nullptr),
 		accumulator(0.0f), stepSize(1.0f / 60.0f)
 	{
@@ -60,6 +62,16 @@ namespace octoon
 
 	PhysicsFeature::~PhysicsFeature() noexcept
 	{
+		physicsScene->release();
+		cooking->release();
+		physics->release();
+		pvd->release();
+		foundation->release();
+		physicsScene = nullptr;
+		cooking = nullptr;
+		physics = nullptr;
+		pvd = nullptr;
+		foundation = nullptr;
 	}
 
     void PhysicsFeature::onActivate() except
@@ -68,8 +80,6 @@ namespace octoon
 
     void PhysicsFeature::onDeactivate() noexcept
     {
-		physics->release();
-		foundation->release();
     }
 
     void PhysicsFeature::onInputEvent(const input::InputEvent& event) noexcept
@@ -86,13 +96,16 @@ namespace octoon
 
     void PhysicsFeature::onFrame() except
     {
-		auto delta = this->getFeature<TimerFeature>()->delta();
-		accumulator += delta;
-		if (accumulator < stepSize)	return;
-		accumulator -= stepSize;
+		if (physicsScene)
+		{
+			auto delta = this->getFeature<TimerFeature>()->delta();
+			accumulator += delta;
+			if (accumulator < stepSize)	return;
+			accumulator -= stepSize;
 
-		physicsScene->simulate(stepSize);
-		physicsScene->fetchResults(true);
+			physicsScene->simulate(stepSize);
+			physicsScene->fetchResults(true);
+		}
     }
 
     void PhysicsFeature::onFrameEnd() noexcept

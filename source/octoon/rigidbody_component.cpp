@@ -171,15 +171,15 @@ namespace octoon
 
 	void Rigidbody::onMoveBefore() except
 	{
-		auto transform_component = this->getComponent<TransformComponent>();
-		auto translate = transform_component->getTranslate();
-		//auto rotation = transform_component->getQuaternion();
-		body->setGlobalPose(physx::PxTransform(translate.x, translate.y, translate.z));
+		
 	}
 
 	void Rigidbody::onMoveAfter() except
 	{
-
+		auto transform_component = this->getComponent<TransformComponent>();
+		auto translate = transform_component->getTranslate();
+		//auto rotation = transform_component->getQuaternion();
+		body->setGlobalPose(physx::PxTransform(translate.x, translate.y, translate.z));
 	}
 
     void Rigidbody::rigidbodyEnter() noexcept

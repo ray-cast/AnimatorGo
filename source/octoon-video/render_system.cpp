@@ -161,10 +161,16 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-				if (fboMSAA_)
-					context.setFramebuffer(fboMSAA_);
+				auto framebuffer = camera->getFramebuffer();
+				if (framebuffer)
+					context.setFramebuffer(framebuffer);
 				else
-					context.setFramebuffer(fbo_);
+				{
+					if (fboMSAA_)
+						context.setFramebuffer(fboMSAA_);
+					else
+						context.setFramebuffer(fbo_);
+				}
 
 				context.setViewport(0, camera->getPixelViewport());
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
@@ -195,7 +201,9 @@ namespace octoon
 				{
 					auto& v = camera->getPixelViewport();
 
-					if (fboMSAA_)
+					if (framebuffer)
+						context.blitFramebuffer(framebuffer, v, nullptr, v);
+					else if (fboMSAA_)
 						context.blitFramebuffer(fboMSAA_, v, nullptr, v);
 					else
 						context.blitFramebuffer(fbo_, v, nullptr, v);

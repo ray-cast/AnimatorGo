@@ -11,7 +11,7 @@ R"({
 	"transform":
 	{
 		"translate":[318.99, 157.10],
-		"scale":[1.0, 1.0, 10.0],
+		"scale":[1.0, 1.0, 1.0],
 		"rotation":[10.0,-10.0,10.0]
 	},
 	"material":
@@ -19,6 +19,7 @@ R"({
 		"color":[1,0,0],
 		"hollow":false,
 		"wireframe":false,
+		"thickness":10.0,
 		"lights":[
 			{
 				"direcction":[0,1,0],

@@ -165,6 +165,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 
 	bool hollow = reader["material"]["hollow"].get<json::boolean_t>();
 	bool wireframe = reader["material"]["wireframe"].get<json::boolean_t>();
+	float thickness = reader["material"]["thickness"].get<json::number_float_t>();
 
 	auto& text = reader["text"];
 	if (!text.is_null())
@@ -274,11 +275,11 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			object_ = std::make_shared<octoon::GameObject>();
 			object_->setParent(this->getGameObject());
 			object_->getComponent<TransformComponent>()->setLocalTranslate(offset);
-			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(octoon::model::ContourGroup(std::move(contours))));
+			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(octoon::model::ContourGroup(std::move(contours)), thickness));
 		}
 		else
 		{
-			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)));
+			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)), thickness);
 			mesh.computeVertexNormals();
 
 			object_ = std::make_shared<octoon::GameObject>();

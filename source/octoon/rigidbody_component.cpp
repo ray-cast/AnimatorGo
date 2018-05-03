@@ -85,22 +85,26 @@ namespace octoon
 
     void Rigidbody::setPosition(math::Vector3 pos) noexcept
     {
-        position = pos;
+		auto transform_component = this->getComponent<TransformComponent>();
+		transform_component->setTranslate(pos);
     }
 
     math::Vector3 Rigidbody::getPosition() const noexcept
     {
-        return position;
+		auto transform_component = this->getComponent<TransformComponent>();
+		return transform_component->getTranslate();
     }
 
     void Rigidbody::setRotation(math::Quaternion delta) noexcept
     {
-        rotation = delta;
+		auto transform_component = this->getComponent<TransformComponent>();
+		transform_component->setQuaternion(delta);
     }
 
 	math::Quaternion Rigidbody::getRotation() const noexcept
     {
-        return rotation;
+		auto transform_component = this->getComponent<TransformComponent>();
+		return transform_component->getQuaternion();
     }
 
     void Rigidbody::onAttach() except
@@ -112,8 +116,8 @@ namespace octoon
 
 		// get from transform
 		auto transform_component = this->getComponent<TransformComponent>();
-		position = transform_component->getTranslate();
-		rotation = transform_component->getQuaternion();
+		math::Vector3 position = transform_component->getTranslate();
+		math::Quaternion rotation = transform_component->getQuaternion();
 
 		physx::PxTransform pose;
 
@@ -123,8 +127,6 @@ namespace octoon
 		if (!body)
 			runtime::runtime_error::create("create body failed!");
 
-		body->userData = &(*this->getGameObject());
-
 		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1);
 
 		physics_feature->getScene()->addActor(*body);
@@ -133,8 +135,7 @@ namespace octoon
     void Rigidbody::onDetach() noexcept
     {
         removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		//removeComponentDispatch(GameDispatchType::FrameEnd);
+		removeComponentDispatch(GameDispatchType::FrameEnd);
 
 		body->release();
     }
@@ -157,12 +158,11 @@ namespace octoon
 
 	void Rigidbody::onFrame() except
 	{
-		//auto physics_feature = runtime::Singleton<GameApp>::instance()->getFeature<PhysicsFeature>();
 	}
 
 	void Rigidbody::onFrameEnd() except
 	{
-		auto& transform = body->getGlobalPose();
+		auto transform = body->getGlobalPose();
 
 		auto transform_component = this->getComponent<TransformComponent>();
 		transform_component->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z));

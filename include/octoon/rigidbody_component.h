@@ -86,8 +86,6 @@ namespace octoon
             RigidbodySleepMode sleepMode;
             math::Vector3 velocity;
             RigidbodyType bodyType;
-            math::Vector3 position;
-            math::Quaternion rotation;
         
             friend class Collider;
             friend class BoxCollider;

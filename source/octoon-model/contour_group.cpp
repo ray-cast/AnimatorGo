@@ -211,15 +211,13 @@ namespace octoon
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (std::size_t j = 0; j < group.count(); ++j)
+						for (auto& it : group.getContours())
 						{
-							const Contour& it = group.at(j);
-
 							gluTessBeginContour(tobj);
 
-							for (std::size_t p = 0; p < it.count() - 1; ++p)
+							for (std::size_t p = 0; p < it->count() - 1; ++p)
 							{
-								auto& p1 = it.at(p);
+								auto& p1 = it->at(p);
 								auto& d = vertices[index++];
 								d[0] = p1.x;
 								d[1] = p1.y;

@@ -8,6 +8,7 @@
 
 const char* chars =
 R"({
+	"color":[1,0,0],
 	"transform":
 	{
 		"translate":[318.99, 157.10],
@@ -16,7 +17,6 @@ R"({
 	},
 	"material":
 	{
-		"color":[1,0,0],
 		"hollow":false,
 		"wireframe":false,
 		"thickness":10.0,
@@ -31,11 +31,14 @@ R"({
 			}
 		]
 	},
-	"text":
+	"boundingBox":
 	{
 		"min":[0.0,0.0,0.0],
 		"max":[420.00,72.00,0.0],
-		"center":[0.50, 0.50],
+		"center":[0.50, 0.50]
+	},
+	"text":
+	{
 		"chars":[
 			{
 				"paths":

@@ -325,38 +325,44 @@ namespace octoon
 			if (!fbo_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
-			if (device_->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
+			try
 			{
-				GraphicsTextureDesc colorTextureDescMSAA;
-				colorTextureDescMSAA.setWidth(w);
-				colorTextureDescMSAA.setHeight(h);
-				colorTextureDescMSAA.setTexMultisample(4);
-				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				colorTextureDescMSAA.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-				colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
-				if (!colorTextureMSAA_)
-					throw runtime::runtime_error::create("createTexture() failed");
+				if (device_->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
+				{
+					GraphicsTextureDesc colorTextureDescMSAA;
+					colorTextureDescMSAA.setWidth(w);
+					colorTextureDescMSAA.setHeight(h);
+					colorTextureDescMSAA.setTexMultisample(4);
+					colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+					colorTextureDescMSAA.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+					colorTextureMSAA_ = device_->createTexture(colorTextureDescMSAA);
+					if (!colorTextureMSAA_)
+						throw runtime::runtime_error::create("createTexture() failed");
 
-				GraphicsTextureDesc depthTextureDescMSAA;
-				depthTextureDescMSAA.setWidth(w);
-				depthTextureDescMSAA.setHeight(h);
-				depthTextureDescMSAA.setTexMultisample(4);
-				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				depthTextureDescMSAA.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
-				depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
-				if (!depthTextureMSAA_)
-					throw runtime::runtime_error::create("createTexture() failed");
+					GraphicsTextureDesc depthTextureDescMSAA;
+					depthTextureDescMSAA.setWidth(w);
+					depthTextureDescMSAA.setHeight(h);
+					depthTextureDescMSAA.setTexMultisample(4);
+					depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+					depthTextureDescMSAA.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+					depthTextureMSAA_ = device_->createTexture(depthTextureDescMSAA);
+					if (!depthTextureMSAA_)
+						throw runtime::runtime_error::create("createTexture() failed");
 
-				GraphicsFramebufferDesc framebufferDescMSAA;
-				framebufferDescMSAA.setWidth(w);
-				framebufferDescMSAA.setHeight(h);
-				framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
-				framebufferDescMSAA.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
-				framebufferDescMSAA.addColorAttachment(GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
+					GraphicsFramebufferDesc framebufferDescMSAA;
+					framebufferDescMSAA.setWidth(w);
+					framebufferDescMSAA.setHeight(h);
+					framebufferDescMSAA.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+					framebufferDescMSAA.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
+					framebufferDescMSAA.addColorAttachment(GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
 
-				fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
-				if (!fboMSAA_)
-					throw runtime::runtime_error::create("createFramebuffer() failed");
+					fboMSAA_ = device_->createFramebuffer(framebufferDescMSAA);
+					if (!fboMSAA_)
+						throw runtime::runtime_error::create("createFramebuffer() failed");
+				}
+			}
+			catch (...)
+			{
 			}
 		}
 	}

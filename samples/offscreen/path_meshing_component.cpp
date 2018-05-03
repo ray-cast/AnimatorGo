@@ -144,15 +144,18 @@ PathMeshingComponent::clone() const noexcept
 void
 PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 {
+	math::float3 min = math::float3::Zero;
+	math::float3 max = math::float3::Zero;
+	math::float3 center = math::float3::Zero;
+	math::float3 translate = math::float3::Zero;
+	math::float3 scale = math::float3::One;
+	math::float3 rotation = math::float3::Zero;
+
 	auto reader = json::parse(data);
 
 	auto transform = reader["transform"];
 	if (!transform.is_null())
 	{
-		math::float3 translate = math::float3::Zero;
-		math::float3 scale = math::float3::One;
-		math::float3 rotation = math::float3::Zero;
-
 		translate << transform["translate"];
 		scale << transform["scale"];
 		rotation << transform["rotation"];
@@ -167,17 +170,17 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	bool wireframe = reader["material"]["wireframe"].get<json::boolean_t>();
 	float thickness = reader["material"]["thickness"].get<json::number_float_t>();
 
+	auto& bound = reader["boundingBox"];
+	if (!bound.is_null())
+	{
+		center << bound["center"];
+		min << bound["min"];
+		max << bound["max"];
+	}
+
 	auto& text = reader["text"];
 	if (!text.is_null())
 	{
-		math::float3 min = math::float3::Zero;
-		math::float3 max = math::float3::Zero;
-		math::float3 center = math::float3::Zero;
-
-		center << text["center"];
-		min << text["min"];
-		max << text["max"];
-
 		model::Contours contours;
 
 		for (auto& group : text["chars"])
@@ -293,7 +296,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	if (!json_material.is_null())
 	{
 		math::float3 baseColor = math::float3::Zero;
-		baseColor << json_material["color"];
+		baseColor << reader["color"];
 
 		if (wireframe)
 		{

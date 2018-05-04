@@ -34,6 +34,8 @@ namespace octoon
             virtual void onAttachComponent(const GameComponentPtr& component) except;
             virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
+			void buildCollider() except;
+			void buildCollider(const GameComponentPtr& component) except;
         private:
             bool isRegistered;
             float radius;

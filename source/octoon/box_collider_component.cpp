@@ -75,14 +75,6 @@ namespace octoon
 
     void BoxCollider::onAttach() except
     {
-		auto collider = this->getComponent<Rigidbody>();
-		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-		physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
-		physx::PxBoxGeometry geometry(dimensions);
-
-		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry, *this->shared_material->getMaterial());
-		if (!shape)
-			runtime::runtime_error::create("create shape failed!");
     }
 
     void BoxCollider::onDetach() noexcept
@@ -93,10 +85,41 @@ namespace octoon
     {
         if (component->isA<Rigidbody>())
         {
+			buildCollider(component);
         }
     }
 
     void BoxCollider::onDetachComponent(const GameComponentPtr& component) noexcept
     {
     }
+
+	void BoxCollider::buildCollider() except
+	{
+		auto rigid_body = this->getComponent<Rigidbody>();
+		if (rigid_body)
+		{
+			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+			physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
+			physx::PxBoxGeometry geometry(dimensions);
+
+			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
+			if (!shape)
+				runtime::runtime_error::create("create shape failed!");
+		}
+	}
+
+	void BoxCollider::buildCollider(const GameComponentPtr& component) except
+	{
+		auto rigid_body = component->downcast_pointer<Rigidbody>();
+		if (rigid_body)
+		{
+			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+			physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
+			physx::PxBoxGeometry geometry(dimensions);
+
+			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
+			if (!shape)
+				runtime::runtime_error::create("create shape failed!");
+		}
+	}
 }

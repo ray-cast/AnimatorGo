@@ -40,6 +40,8 @@ namespace octoon
             virtual void onAttachComponent(const GameComponentPtr& component) except;
             virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
+			void buildCollider() except;
+			void buildCollider(const GameComponentPtr& component) except;
         private:
             bool isRegistered;
             bool autoTiling; //Determines whether the BoxCollider2D's shape is automatically updated based on a SpriteRenderer's tiling properties.

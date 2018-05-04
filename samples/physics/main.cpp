@@ -141,8 +141,8 @@ int main(int argc, const char* argv[])
 		sphere->addComponent<octoon::MeshRendererComponent>(material);
 		sphere->addComponent<octoon::GuizmoComponent>(camera);
 		sphere->addComponent<CubeController>(material);
-		sphere->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
+		sphere->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		{
 			auto transform_component = sphere->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(-2.f, 5.f, 0.f));

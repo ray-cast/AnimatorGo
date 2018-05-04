@@ -1,6 +1,7 @@
 #ifndef OCTOON_COLLIDER_COMPONENT_H_
 #define OCTOON_COLLIDER_COMPONENT_H_
 
+#include <functional>
 #include <memory>
 #include <octoon/game_component.h>
 #include <octoon/math/math.h>
@@ -46,6 +47,7 @@ namespace octoon
             float density; // The density of the collider used to calculate its mass (when auto mass is enabled).
             float friction; // Get the friction used by the collider.
             std::shared_ptr<PhysicsMaterial> shared_material; // The PhysicsMaterial2D that is applied to this collider.
+
             friend class Rigidbody;
     };
 }

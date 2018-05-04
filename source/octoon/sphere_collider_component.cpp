@@ -59,13 +59,7 @@ namespace octoon
 
     void SphereCollider::onAttach() except
     {
-		auto collider = this->getComponent<Rigidbody>();
-		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-		physx::PxSphereGeometry geometry(radius);
-
-		shape = physx::PxRigidActorExt::createExclusiveShape(*collider->body, geometry, *this->shared_material->getMaterial());
-		if (!shape)
-			runtime::runtime_error::create("create shape failed!");
+		
     }
 
     void SphereCollider::onDetach() noexcept
@@ -74,9 +68,41 @@ namespace octoon
 
     void SphereCollider::onAttachComponent(const GameComponentPtr& component) except
     {
+		if (component->isA<Rigidbody>())
+		{
+			buildCollider(component);
+		}
     }
 
     void SphereCollider::onDetachComponent(const GameComponentPtr& component) noexcept
     {
     }
+
+	void SphereCollider::buildCollider() except
+	{
+		auto rigid_body = this->getComponent<Rigidbody>();
+		if (rigid_body)
+		{
+			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+			physx::PxSphereGeometry geometry(radius);
+
+			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
+			if (!shape)
+				runtime::runtime_error::create("create shape failed!");
+		}
+	}
+
+	void SphereCollider::buildCollider(const GameComponentPtr& component) except
+	{
+		auto rigid_body = component->downcast_pointer<Rigidbody>();
+		if (rigid_body)
+		{
+			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+			physx::PxSphereGeometry geometry(radius);
+
+			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
+			if (!shape)
+				runtime::runtime_error::create("create shape failed!");
+		}
+	}
 }

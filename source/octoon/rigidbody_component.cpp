@@ -118,50 +118,12 @@ namespace octoon
         this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
-		auto physicsFeature = GameApp::instance()->getFeature<PhysicsFeature>();
-
-		auto transform = this->getComponent<TransformComponent>();
-		auto& translate = transform->getTranslate();
-		auto& rotation = transform->getQuaternion();
-
-		physx::PxTransform pose;
-		pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
-		pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
-
-		switch (bodyType)
-		{
-		case RigidbodyType::Dynamic:
-		{
-			body = physicsFeature->getSDK()->createRigidDynamic(pose);
-			if (!body)
-				throw  runtime::runtime_error::create("create body failed!");
-
-			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
-			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
-		}
-		break;
-		case RigidbodyType::Static:
-		case RigidbodyType::Kinematic:
-		{
-			body = physicsFeature->getSDK()->createRigidStatic(pose);
-			if (!body)
-				throw  runtime::runtime_error::create("create body failed!");
-		}
-		break;
-		default:
-			throw runtime::type_error::create("Invalid enum type of rigidbody");
-		}
-
-		physicsFeature->getScene()->addActor(*body);
+		buildRigidBody();
     }
 
     void Rigidbody::onDeactivate() noexcept
     {
-		if (body)
-		{
-			body->release();
-			body = nullptr;
-		}
+		releaseRigidBody();
 
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
@@ -169,14 +131,14 @@ namespace octoon
 
     void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
     {
-        //if (component->isA<Collider>())
-		//    component->downcast<Collider>()->addShapeChangeListener(&OnCollisionChange);
+      //  if (component->isA<Collider>())
+		    //component->downcast<Collider>()->addShapeChangeListener(&OnCollisionChange);
     }
 
     void Rigidbody::onDetachComponent(const GameComponentPtr& component) noexcept
     {
-        //if (component->isA<Collider>())
-		//    component->downcast<Collider>()->removeShapeChangeListener(&OnCollisionChange);
+      //  if (component->isA<Collider>())
+		    //component->downcast<Collider>()->removeShapeChangeListener(&OnCollisionChange);
     }
 
 	void Rigidbody::onFrameBegin() except
@@ -215,15 +177,54 @@ namespace octoon
 		}
 	}
 
-    void Rigidbody::rigidbodyEnter() noexcept
-    {
-    }
+	void Rigidbody::buildRigidBody() except
+	{
+		if (body)return;
+		auto physicsFeature = GameApp::instance()->getFeature<PhysicsFeature>();
 
-    void Rigidbody::rigidbodyChange() noexcept
-    {
-    }
+		auto transform = this->getComponent<TransformComponent>();
 
-    void Rigidbody::rigidbodyExit() noexcept
-    {
-    }
+		if (!transform) return;
+		auto& translate = transform->getTranslate();
+		auto& rotation = transform->getQuaternion();
+
+		physx::PxTransform pose;
+		pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
+		pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+		switch (bodyType)
+		{
+		case RigidbodyType::Dynamic:
+		{
+			body = physicsFeature->getSDK()->createRigidDynamic(pose);
+			if (!body)
+				throw  runtime::runtime_error::create("create body failed!");
+
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
+		}
+		break;
+		case RigidbodyType::Static:
+		case RigidbodyType::Kinematic:
+		{
+			body = physicsFeature->getSDK()->createRigidStatic(pose);
+			if (!body)
+				throw  runtime::runtime_error::create("create body failed!");
+		}
+		break;
+		default:
+			throw runtime::type_error::create("Invalid enum type of rigidbody");
+		}
+
+		physicsFeature->getScene()->addActor(*body);
+	}
+
+	void Rigidbody::releaseRigidBody() noexcept
+	{
+		if (body)
+		{
+			body->release();
+			body = nullptr;
+		}
+	}
 }

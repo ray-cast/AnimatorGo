@@ -74,10 +74,8 @@ namespace octoon
 
 			virtual void onMoveAfter() noexcept;
 
-            void rigidbodyEnter() noexcept;
-            void rigidbodyExit() noexcept;
-            void rigidbodyChange() noexcept;
-
+			void buildRigidBody() except;
+			void releaseRigidBody() noexcept;
         private:
 			physx::PxRigidActor* body;
 

@@ -31,10 +31,12 @@ namespace octoon
 			void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
 			void setCameraOrder(CameraOrder order) noexcept;
 			void setCameraType(CameraType type) noexcept;
+			void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 			CameraOrder getCameraOrder() const noexcept;
 			CameraType getCameraType() const noexcept;
 			graphics::GraphicsClearFlags getClearFlags() const noexcept;
+			const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 			math::float3 worldToScreen(const math::float3& pos) const noexcept;
 			math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -60,7 +62,7 @@ namespace octoon
 
 		private:
 			void _updateOrtho() const noexcept;
-			void _updatePerspective() const noexcept;
+			void _updatePerspective(float ratio) const noexcept;
 			void _updateViewProject() const noexcept;
 
 		private:
@@ -68,8 +70,6 @@ namespace octoon
 			float zfar_;
 			float ratio_;
 			float aperture_;
-
-			mutable bool needUpdateViewProject_;
 
 			math::float4 ortho_;
 			math::float4 clearColor_;
@@ -80,11 +80,15 @@ namespace octoon
 			CameraType cameraType_;
 
 			graphics::GraphicsClearFlags clearflags_;
+			graphics::GraphicsFramebufferPtr framebuffer_;
 
 			mutable math::float4x4 viewProject_;
 			mutable math::float4x4 viewProjectInverse_;
 			mutable math::float4x4 project_;
 			mutable math::float4x4 projectInverse_;
+
+			mutable float ratioReal_;
+			mutable bool needUpdateViewProject_;
 		};
 	}
 }

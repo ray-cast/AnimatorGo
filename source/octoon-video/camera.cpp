@@ -11,6 +11,7 @@ namespace octoon
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
+			, ratioReal_(1.0f)
 			, znear_(0.01f)
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
@@ -261,6 +262,12 @@ namespace octoon
 			}
 		}
 
+		void
+		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+		{
+			framebuffer_ = framebuffer;
+		}
+
 		CameraOrder
 		Camera::getCameraOrder() const noexcept
 		{
@@ -279,6 +286,12 @@ namespace octoon
 			return clearflags_;
 		}
 
+		const graphics::GraphicsFramebufferPtr&
+		Camera::getFramebuffer() const noexcept
+		{
+			return framebuffer_;
+		}
+
 		void
 		Camera::_updateOrtho() const noexcept
 		{
@@ -295,13 +308,8 @@ namespace octoon
 		}
 
 		void
-		Camera::_updatePerspective() const noexcept
+		Camera::_updatePerspective(float ratio) const noexcept
 		{
-			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
-
-			float ratio = (float)width / height;
-
 			project_.make_perspective_off_center_rh(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
@@ -309,13 +317,22 @@ namespace octoon
 		void
 		Camera::_updateViewProject() const noexcept
 		{
-			if (needUpdateViewProject_)
+			std::uint32_t width = 1920, height = 1080;
+			RenderSystem::instance()->getFramebufferSize(width, height);
+			float ratio = (float)width / height;
+
+			if (ratioReal_ != ratio)
 			{
 				if (cameraType_ == CameraType::Perspective)
-					this->_updatePerspective();
+					this->_updatePerspective(ratio);
 				else
 					this->_updateOrtho();
 
+				ratioReal_ = ratio;
+			}
+
+			if (needUpdateViewProject_)
+			{
 				viewProject_ = project_ * this->getView();
 				viewProjectInverse_ = math::inverse(viewProject_);
 

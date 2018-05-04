@@ -53,6 +53,8 @@ namespace octoon
 		const math::float4x4& getProjection() const noexcept;
 		const math::float4x4& getProjectionInverse() const noexcept;
 
+		void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:

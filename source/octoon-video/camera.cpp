@@ -297,12 +297,12 @@ namespace octoon
 		}
 
 		void
-		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, graphics::GraphicsFormat foramt, graphics::GraphicsFormat depthStencil) except
+		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
 		{
 			GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
-			colorTextureDesc.setTexFormat(foramt);
+			colorTextureDesc.setTexFormat(format);
 			colorTexture_ = RenderSystem::instance()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
@@ -316,7 +316,7 @@ namespace octoon
 				throw runtime::runtime_error::create("createTexture() failed");
 
 			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, foramt));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
 			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
 
 			GraphicsFramebufferDesc framebufferDesc;
@@ -330,14 +330,14 @@ namespace octoon
 			if (!fbo_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
-			//if (RenderSystem::instance()->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
+			if (multisample > 0)
 			{
 				GraphicsTextureDesc colorTextureDescMSAA;
 				colorTextureDescMSAA.setWidth(w);
 				colorTextureDescMSAA.setHeight(h);
-				colorTextureDescMSAA.setTexMultisample(4);
+				colorTextureDescMSAA.setTexMultisample(multisample);
 				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				colorTextureDescMSAA.setTexFormat(foramt);
+				colorTextureDescMSAA.setTexFormat(format);
 				colorTextureMSAA_ = RenderSystem::instance()->createTexture(colorTextureDescMSAA);
 				if (!colorTextureMSAA_)
 					throw runtime::runtime_error::create("createTexture() failed");
@@ -345,7 +345,7 @@ namespace octoon
 				GraphicsTextureDesc depthTextureDescMSAA;
 				depthTextureDescMSAA.setWidth(w);
 				depthTextureDescMSAA.setHeight(h);
-				depthTextureDescMSAA.setTexMultisample(4);
+				depthTextureDescMSAA.setTexMultisample(multisample);
 				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
 				depthTextureDescMSAA.setTexFormat(depthStencil);
 				depthTextureMSAA_ = RenderSystem::instance()->createTexture(depthTextureDescMSAA);

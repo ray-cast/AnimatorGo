@@ -214,6 +214,12 @@ namespace octoon
 		return camera_->getProjectionInverse();
 	}
 
+	void
+	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	{
+		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
+	}
+
 	GameComponentPtr
 	CameraComponent::clone() const noexcept
 	{

@@ -9,8 +9,8 @@ class PathMeshingComponent final : public octoon::GameComponent
 	OctoonDeclareSubClass(PathMeshingComponent, octoon::GameComponent)
 public:
 	PathMeshingComponent() noexcept;
-	PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps = 8, bool clockwise = true) noexcept;
-	PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps = 8, bool clockwise = true) noexcept;
+	PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps = 6, bool clockwise = true) noexcept;
+	PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps = 6, bool clockwise = true) noexcept;
 	virtual ~PathMeshingComponent() noexcept;
 
 	void setBezierPath(std::string&& json) noexcept;

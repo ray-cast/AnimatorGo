@@ -203,7 +203,7 @@ namespace octoon
 					gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
 					gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
 
-					gluTessNormal(tobj, 0.0f, 0.0f, 0.0f);
+					gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
 
 					std::size_t index = 0;
 
@@ -221,7 +221,7 @@ namespace octoon
 								auto& d = vertices[index++];
 								d[0] = p1.x;
 								d[1] = p1.y;
-								d[2] = p1.z + face ? -1.0 : 1.0;
+								d[2] = p1.z + face ? -thickness : thickness;
 
 								gluTessVertex(tobj, d.ptr(), d.ptr());
 							}

@@ -19,6 +19,10 @@
 #define POD_TT_PRIM_MOVE 8   	// move to, Ò»¸öµã£Ûx,y]
 #define POD_TT_PRIM_CLOSE 9  	// close path, equal to fisrt point of path
 
+#define MATERIAL_TYPE_LINE 0
+#define MATERIAL_TYPE_BASIC 1
+#define MATERIAL_TYPE_PHONGSHADING 2
+
 OctoonImplementSubClass(PathMeshingComponent, octoon::GameComponent, "PathMeshingComponent")
 
 using namespace octoon;
@@ -40,19 +44,19 @@ math::float4& operator << (math::float4& v, json::reference& json)
 }
 
 PathMeshingComponent::PathMeshingComponent() noexcept
-	: bezierSteps_(6)
+	: bezierSteps_(5)
 {
 }
 
 PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps, bool clockwise) noexcept
-	: bezierSteps_(6)
+	: bezierSteps_(5)
 {
 	this->setBezierPath(json);
 	this->setBezierSteps(bezierSteps);
 }
 
 PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps, bool clockwise) noexcept
-	: bezierSteps_(6)
+	: bezierSteps_(5)
 {
 	this->setBezierPath(json);
 	this->setBezierSteps(bezierSteps);
@@ -167,7 +171,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	}
 
 	bool hollow = reader["material"]["hollow"].get<json::boolean_t>();
-	bool wireframe = reader["material"]["wireframe"].get<json::boolean_t>();
+	bool wireframe = reader["material"]["type"].get<json::number_integer_t>() == 0;
 	float thickness = reader["material"]["thickness"].get<json::number_float_t>();
 
 	auto& bound = reader["boundingBox"];
@@ -178,7 +182,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		max << bound["max"];
 	}
 
-	auto& text = reader["text"]["paras"][0];
+	auto& text = reader["text"];
 	if (!text.is_null())
 	{
 		model::Contours contours;
@@ -298,7 +302,9 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		math::float3 baseColor = math::float3::Zero;
 		baseColor << reader["color"];
 
-		if (wireframe)
+		switch (json_material["type"].get<json::number_integer_t>())
+		{
+		case MATERIAL_TYPE_LINE:
 		{
 			auto material = std::make_shared<octoon::video::LineMaterial>();
 			material->setColor(baseColor);
@@ -306,7 +312,18 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			if (object_)
 				object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 		}
-		else
+		break;
+		case MATERIAL_TYPE_BASIC:
+		{
+			auto material = std::make_shared<octoon::video::TextMaterial>();
+			material->setTextColor(octoon::video::TextColor::FrontColor, baseColor);
+			material->setTextColor(octoon::video::TextColor::SideColor, baseColor);
+
+			if (object_)
+				object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+		}
+		break;
+		case MATERIAL_TYPE_PHONGSHADING:
 		{
 			auto& lights = json_material["lights"];
 			if (lights.size() > 0)
@@ -330,20 +347,16 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				material->setSpecularColor(math::float3::One * power);
 				material->setShininess(size);
 				material->setLightDir(math::normalize(direction));
+
 				material->setDarkColor(color);
 
 				if (object_)
 					object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 			}
-			else
-			{
-				auto material = std::make_shared<octoon::video::TextMaterial>();
-				material->setTextColor(octoon::video::TextColor::FrontColor, baseColor);
-				material->setTextColor(octoon::video::TextColor::SideColor, baseColor);
-
-				if (object_)
-					object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
-			}
+		}
+		break;
+		default:
+			break;
 		}
 	}
 }

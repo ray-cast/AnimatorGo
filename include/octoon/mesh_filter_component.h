@@ -27,6 +27,8 @@ namespace octoon
 		void setMesh(const model::MeshPtr& mesh) noexcept;
 		const model::MeshPtr& getMesh() const noexcept;
 
+		void uploadMeshData() noexcept;
+
 		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
 		void removeMeshListener(const OnMeshReplaceEvent* func) noexcept;
 

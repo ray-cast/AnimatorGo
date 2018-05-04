@@ -65,6 +65,13 @@ namespace octoon
 	}
 
 	void
+	MeshFilterComponent::uploadMeshData() noexcept
+	{
+		for (auto& it : delegates_)
+			(*it)(mesh_);
+	}
+
+	void
 	MeshFilterComponent::addMeshListener(OnMeshReplaceEvent* func) noexcept
 	{
 		delegates_.push_back(func);

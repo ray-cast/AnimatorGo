@@ -10,6 +10,7 @@
 #include <octoon/rigidbody_component.h>
 #include <octoon/box_collider_component.h>
 #include <octoon/sphere_collider_component.h>
+#include <octoon/capsule_collider_component.h>
 #include <octoon/fixed_joint_component.h>
 #include <octoon/spring_joint_component.h>
 
@@ -145,7 +146,7 @@ int main(int argc, const char* argv[])
 		//sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
 		sphere->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
-		sphere->addComponent<octoon::SpringJoint>(domino[0]->getComponent<octoon::Rigidbody>());
+		//sphere->addComponent<octoon::SpringJoint>(domino[0]->getComponent<octoon::Rigidbody>());
 		{
 			auto transform_component = sphere->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(-2.f, 5.f, 0.f));

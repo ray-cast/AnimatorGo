@@ -131,14 +131,22 @@ namespace octoon
 
     void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
     {
-      //  if (component->isA<Collider>())
-		    //component->downcast<Collider>()->addShapeChangeListener(&OnCollisionChange);
+		if (component->isA<Collider>())
+		{
+			auto collider = component->downcast_pointer<Collider>();
+			if (collider)
+				body->attachShape(*collider->getShape()); // increments reference count
+		}
     }
 
     void Rigidbody::onDetachComponent(const GameComponentPtr& component) noexcept
     {
-      //  if (component->isA<Collider>())
-		    //component->downcast<Collider>()->removeShapeChangeListener(&OnCollisionChange);
+		if (component->isA<Collider>())
+		{
+			auto collider = component->downcast_pointer<Collider>();
+			if (collider)
+				body->detachShape(*collider->getShape()); // decrements reference count
+		}
     }
 
 	void Rigidbody::onFrameBegin() except

@@ -75,18 +75,16 @@ namespace octoon
 
     void BoxCollider::onAttach() except
     {
+		buildCollider();
     }
 
     void BoxCollider::onDetach() noexcept
     {
+		releaseCollider();
     }
 
     void BoxCollider::onAttachComponent(const GameComponentPtr& component) except
     {
-        if (component->isA<Rigidbody>())
-        {
-			buildCollider(component);
-        }
     }
 
     void BoxCollider::onDetachComponent(const GameComponentPtr& component) noexcept
@@ -95,31 +93,17 @@ namespace octoon
 
 	void BoxCollider::buildCollider() except
 	{
-		auto rigid_body = this->getComponent<Rigidbody>();
-		if (rigid_body)
-		{
-			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-			physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
-			physx::PxBoxGeometry geometry(dimensions);
-
-			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
-			if (!shape)
-				runtime::runtime_error::create("create shape failed!");
-		}
+		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+		physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
+		physx::PxBoxGeometry geometry(dimensions);
+		shape = physics_feature->getSDK()->createShape(geometry, *this->shared_material->getMaterial()); // reference count is 1
+		if (!shape)
+			runtime::runtime_error::create("create shape failed!");
 	}
 
-	void BoxCollider::buildCollider(const GameComponentPtr& component) except
+	void BoxCollider::releaseCollider() except
 	{
-		auto rigid_body = component->downcast_pointer<Rigidbody>();
-		if (rigid_body)
-		{
-			auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-			physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
-			physx::PxBoxGeometry geometry(dimensions);
-
-			shape = physx::PxRigidActorExt::createExclusiveShape(*rigid_body->body, geometry, *this->shared_material->getMaterial());
-			if (!shape)
-				runtime::runtime_error::create("create shape failed!");
-		}
+		shape->release();
+		shape = nullptr;
 	}
 }

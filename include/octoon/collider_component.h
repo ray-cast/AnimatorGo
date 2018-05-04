@@ -34,6 +34,8 @@ namespace octoon
 			void setSharedMaterial(PhysicsMaterial material) except;
 			std::shared_ptr<PhysicsMaterial> getSharedMaterial() except;
 
+			physx::PxShape* getShape() noexcept { return shape; }
+
         protected:
             virtual void onCollisionChange() = 0;
             virtual void onCollisionEnter() = 0;

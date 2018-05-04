@@ -9,8 +9,8 @@ namespace octoon
 	OctoonImplementSubClass(SpringJoint, Joint, "SpringJoint")
 
 	SpringJoint::SpringJoint() noexcept
-		:damper(0.f), minDistance(0.f), maxDistance(0.1f)
-		, spring(0.5f), tolerance(0.01f)
+		:damper(0.f), minDistance(0.5f), maxDistance(1.0f)
+		, spring(20.f), tolerance(0.01f)
     {
     }
 

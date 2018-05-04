@@ -44,6 +44,7 @@ namespace octoon
 		virtual void onCloseScene(const GameScenePtr& scene) noexcept;
 
 		physx::PxPhysics* getSDK() noexcept { return physics; }
+		physx::PxCooking* getCooking() noexcept { return cooking; }
 		physx::PxScene* getScene() noexcept { return physicsScene; }
 
 	private:

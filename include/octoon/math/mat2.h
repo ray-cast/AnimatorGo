@@ -56,8 +56,8 @@ namespace octoon
 				Matrix2x2<T>& make_scale(T x, T y) noexcept { return this->make_matrix(x, 0, 0, y); }
 				Matrix2x2<T>& make_scale(const Vector2<T>& sz) noexcept { return this->make_matrix(sz.x, 0, 0, sz.y); }
 
-				Matrix2x2<T>& make_rotation(T x, T y, T z, T angle) noexcept { return make_rotation(x, y, z, angle); }
-				Matrix2x2<T>& make_rotation(const Quaternion<T>& q) noexcept { return make_rotation(q.x, q.y, q.z, q.w); }
+				Matrix2x2<T>& makeRotation(T x, T y, T z, T angle) noexcept { return makeRotation(x, y, z, angle); }
+				Matrix2x2<T>& makeRotation(const Quaternion<T>& q) noexcept { return makeRotation(q.x, q.y, q.z, q.w); }
 
 				Matrix2x2<T>& make_rotation_x(T theta) noexcept
 				{
@@ -89,7 +89,7 @@ namespace octoon
 					return make_matrix(c, -s, s, c);
 				}
 
-				Matrix2x2<T>& make_rotation(const Vector3<T>& axis, T theta) noexcept
+				Matrix2x2<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);

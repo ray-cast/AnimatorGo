@@ -89,7 +89,7 @@ namespace octoon
 		void
 		RenderObject::setTransform(const math::float4x4& transform) noexcept
 		{
-			this->setTransform(transform, math::transform_inverse(transform));
+			this->setTransform(transform, math::transformInverse(transform));
 		}
 
 		void

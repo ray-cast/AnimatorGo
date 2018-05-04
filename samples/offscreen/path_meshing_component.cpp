@@ -13,6 +13,7 @@
 #include <octoon/video/render_system.h>
 #include <octoon/camera_component.h>
 #include <octoon/image/image.h>
+#include <octoon/image/image_util.h>
 
 #include <cstring>
 
@@ -295,9 +296,14 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				it -= offset;
 		}
 
+		params.aabb.aabb.min.z = -params.material.thickness;
+		params.aabb.aabb.max.z = params.material.thickness;
+		params.aabb.aabb -= offset;
+		params.aabb.aabb = math::transform(params.aabb.aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params.transform.rotation))));
+
 		object_ = std::make_shared<octoon::GameObject>();
 		object_->setParent(this->getGameObject());
-		object_->getComponent<TransformComponent>()->setLocalTranslate(params.transform.translate + offset);
+		object_->getComponent<TransformComponent>()->setLocalTranslate(-params.aabb.aabb.min);
 		object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params.transform.rotation)));
 		object_->getComponent<TransformComponent>()->setLocalScale(params.transform.scale);
 
@@ -346,10 +352,6 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		}
 	}
 
-	params.aabb.aabb.min.z = -params.material.thickness;
-	params.aabb.aabb.max.z = params.material.thickness;
-	params.aabb.aabb = math::transform(params.aabb.aabb, this->getComponent<TransformComponent>()->getTransform());
-
 	camera_ = std::make_shared<octoon::GameObject>();
 
 	auto cameraComponent = camera_->addComponent<octoon::CameraComponent>();
@@ -357,8 +359,8 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
 	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
-	cameraComponent->setupFramebuffers(1920, 1080, 4);
-	cameraComponent->setupSwapFramebuffers(1920, 1080);
+	cameraComponent->setupFramebuffers(params.aabb.aabb.size().x, params.aabb.aabb.size().y, 4);
+	cameraComponent->setupSwapFramebuffers(params.aabb.aabb.size().x, params.aabb.aabb.size().y);
 }
 
 void

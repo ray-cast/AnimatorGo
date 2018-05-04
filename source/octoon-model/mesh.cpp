@@ -1323,7 +1323,7 @@ namespace octoon
 				auto binormal = math::cross(normal, tangent);
 
 				Quaternion quat;
-				quat.make_rotation(normal, binormal, tangent);
+				quat.makeRotation(normal, binormal, tangent);
 
 				if (quat.w < 0.0f)
 					quat = -quat;

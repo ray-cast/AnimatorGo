@@ -49,12 +49,8 @@ namespace octoon
 			std::uint32_t width_, height_;
 
 			graphics::GraphicsFramebufferPtr fbo_;
-			graphics::GraphicsFramebufferPtr fboMSAA_;
-
 			graphics::GraphicsTexturePtr colorTexture_;
 			graphics::GraphicsTexturePtr depthTexture_;
-			graphics::GraphicsTexturePtr colorTextureMSAA_;
-			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			graphics::GraphicsDevicePtr device_;
 		};

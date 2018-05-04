@@ -4,6 +4,85 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/video/render_types.h>
 
+struct PathMeshing
+{
+	struct Transform
+	{
+		octoon::math::float3 translate = octoon::math::float3::Zero;
+		octoon::math::float3 scale = octoon::math::float3::One;
+		octoon::math::float3 rotation = octoon::math::float3::Zero;
+	};
+
+	struct BoundingBox
+	{
+		octoon::math::AABB aabb = octoon::math::AABB::Empty;
+		octoon::math::float3 center = octoon::math::float3::Zero;
+	};
+
+	struct Material
+	{
+		enum Type
+		{
+			Line = 0,
+			Basic = 1,
+			PhongShading = 2
+		};
+
+		Type type;
+
+		bool hollow;
+		octoon::math::float3 color;
+		octoon::math::float1 thickness;
+
+		struct LineMaterial
+		{
+		};
+
+		struct BasicMaterial
+		{
+		};
+
+		struct PhongMaterial
+		{
+			float intensity;
+			float ambient;
+			float highLight;
+			float highLightSize;
+
+			octoon::math::float1 thickness;
+			octoon::math::float3 darkcolor;
+			octoon::math::float3 direction;
+		};
+
+		union
+		{
+			LineMaterial line;
+			BasicMaterial basic;
+			PhongMaterial phong;
+		};
+	};
+
+	Transform transform;
+	BoundingBox aabb;
+	Material material;
+
+	PathMeshing()
+	{
+		material.type = Material::PhongShading;
+		material.hollow = false;
+		material.color = octoon::math::float3::Zero;
+		material.thickness = 1.0f;
+
+		material.phong.intensity = 1.0;
+		material.phong.ambient = 0.6;
+		material.phong.highLight = 0.0f;
+		material.phong.highLightSize = 0.0f;
+		material.phong.thickness = 1.0;
+		material.phong.darkcolor = octoon::math::float3::Zero;
+		material.phong.direction = octoon::math::float3::UnitY;
+	}
+};
+
 class PathMeshingComponent final : public octoon::GameComponent
 {
 	OctoonDeclareSubClass(PathMeshingComponent, octoon::GameComponent)
@@ -25,6 +104,8 @@ public:
 private:
 	virtual void onActivate() noexcept(false);
 	virtual void onDeactivate() noexcept;
+
+	virtual void onFrameEnd() except;
 
 private:
 	void updateContour(const std::string& json) noexcept(false);

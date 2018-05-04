@@ -130,6 +130,12 @@ namespace octoon
 		return camera_->getFramebuffer();
 	}
 
+	const graphics::GraphicsFramebufferPtr&
+	CameraComponent::getSwapFramebuffer() const noexcept
+	{
+		return camera_->getSwapFramebuffer();
+	}
+
 	math::float3
 	CameraComponent::worldToScreen(const math::float3& pos) const noexcept
 	{
@@ -218,6 +224,12 @@ namespace octoon
 	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
 	{
 		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
+	}
+
+		void
+	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	{
+		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
 	}
 
 	GameComponentPtr

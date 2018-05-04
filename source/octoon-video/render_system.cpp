@@ -6,9 +6,6 @@
 
 #include <octoon/runtime/except.h>
 
-#include <png.h>
-#include <cstring>
-
 using namespace octoon::graphics;
 
 namespace octoon
@@ -208,94 +205,16 @@ namespace octoon
 					else
 						context.blitFramebuffer(fbo_, v, nullptr, v);
 				}
-			}
-		}
 
-		void
-		RenderSystem::saveAsPNG(graphics::GraphicsContext& context, const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
-		{
-			context.renderBegin();
-
-			if (fboMSAA_)
-			{
-				math::float4 v(0, 0, fboMSAA_->getGraphicsFramebufferDesc().getWidth(), fboMSAA_->getGraphicsFramebufferDesc().getHeight());
-				context.blitFramebuffer(fboMSAA_, v, fbo_, v);
-			}
-
-			std::uint32_t iw = (width - x);
-			std::uint32_t ih = (height - y);
-
-			std::vector<std::uint32_t> pixels(iw * ih);
-
-			void* data = nullptr;
-			auto texture = fbo_->getGraphicsFramebufferDesc().getColorAttachments().at(0).getBindingTexture();
-			if (texture->map(x, y, width, height, 0, &data))
-			{
-				std::memcpy(pixels.data(), data, pixels.size() * sizeof(std::uint32_t));
-				texture->unmap();
-			}
-
-			context.renderEnd();
-
-			for (std::uint32_t iy = 0; iy < ih / 2; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < iw; ix++)
-					std::swap(pixels[iy * iw + ix], pixels[(ih - iy - 1) * iw + ix]);
-			}
-
-			png_infop info_ptr = nullptr;
-			png_structp png_ptr = nullptr;
-
-			FILE* png_file = ::fopen(filepath, "wb");
-			if (!png_file)
-				throw runtime::runtime_error::create(std::string("failed to create file with ") + filepath);
-
-			try
-			{
-				png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
-				if (!png_ptr)
-					throw runtime::runtime_error::create(std::string("png_create_write_struct() failed"));
-
-				info_ptr = png_create_info_struct(png_ptr);
-				if (!info_ptr)
-					throw runtime::runtime_error::create(std::string("png_create_info_struct() failed"));
-
-				if (setjmp(png_jmpbuf(png_ptr)))
-					throw runtime::runtime_error::create(std::string("setjmp() failed"));
-
-				png_init_io(png_ptr, png_file);
-				png_set_IHDR(png_ptr, info_ptr, iw, ih, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-				auto palette = std::make_unique<png_color[]>(PNG_MAX_PALETTE_LENGTH);
-				if (!palette)
-					throw runtime::runtime_error::create(std::string("png_malloc() failed"));
-
-				png_set_strip_16(png_ptr);
-				png_set_packing(png_ptr);
-				png_set_PLTE(png_ptr, info_ptr, palette.get(), PNG_MAX_PALETTE_LENGTH);
-
-				png_write_info(png_ptr, info_ptr);
-
-				auto rows = std::make_unique<png_bytep[]>(ih);
-				for (std::uint32_t i = 0; i < ih; ++i)
-					rows[i] = (png_bytep)(pixels.data() + (ih - i - 1) * iw);
-
-				png_write_image(png_ptr, rows.get());
-				png_write_end(png_ptr, info_ptr);
-
-				png_destroy_write_struct(&png_ptr, &info_ptr);
-				fclose(png_file);
-			}
-			catch (const std::exception& e)
-			{
-				::fclose(png_file);
-
-				if (info_ptr)
-					png_destroy_write_struct(&png_ptr, nullptr);
-				else
-					png_destroy_write_struct(&png_ptr, &info_ptr);
-
-				throw e;
+				if (framebuffer)
+				{
+					auto& swapFramebuffer = camera->getSwapFramebuffer();
+					if (swapFramebuffer)
+					{
+						math::float4 v(0, 0, swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
+						context.blitFramebuffer(framebuffer, v, swapFramebuffer, v);
+					}
+				}
 			}
 		}
 

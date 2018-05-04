@@ -10,7 +10,11 @@
 #include <octoon/video/text_material.h>
 #include <octoon/video/line_material.h>
 #include <octoon/video/phong_material.h>
+#include <octoon/video/render_system.h>
 #include <octoon/camera_component.h>
+#include <octoon/image/image.h>
+
+#include <cstring>
 
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, Ò»¸öµã£Ûx,y]
@@ -27,6 +31,8 @@
 OctoonImplementSubClass(PathMeshingComponent, octoon::GameComponent, "PathMeshingComponent")
 
 using namespace octoon;
+using namespace octoon::graphics;
+using namespace octoon::video;
 
 math::float3& operator << (math::float3& v, json::reference& json)
 {
@@ -126,6 +132,8 @@ PathMeshingComponent::getBezierSteps() const noexcept
 void
 PathMeshingComponent::onActivate() noexcept(false)
 {
+	this->addComponentDispatch(octoon::GameDispatchType::FrameEnd);
+
 	if (!json_.empty())
 		this->updateContour(json_);
 }
@@ -133,6 +141,7 @@ PathMeshingComponent::onActivate() noexcept(false)
 void
 PathMeshingComponent::onDeactivate() noexcept
 {
+	this->removeComponentDispatch(octoon::GameDispatchType::FrameEnd);
 }
 
 GameComponentPtr
@@ -149,37 +158,46 @@ PathMeshingComponent::clone() const noexcept
 void
 PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 {
-	math::AABB aabb = math::AABB::Empty;
-	math::float3 center = math::float3::Zero;
-	math::float3 translate = math::float3::Zero;
-	math::float3 scale = math::float3::One;
-	math::float3 rotation = math::float3::Zero;
+	PathMeshing params;
 
 	auto reader = json::parse(data);
 
 	auto transform = reader["transform"];
 	if (!transform.is_null())
 	{
-		translate << transform["translate"];
-		scale << transform["scale"];
-		rotation << transform["rotation"];
-
-		auto transformComponent = this->getComponent<TransformComponent>();
-		transformComponent->setTranslate(translate);
-		transformComponent->setScale(scale);
-		transformComponent->setQuaternion(math::Quaternion(math::radians(rotation)));
+		params.transform.translate << transform["translate"];
+		params.transform.scale << transform["scale"];
+		params.transform.rotation << transform["rotation"];
 	}
-
-	bool hollow = reader["material"]["hollow"].get<json::boolean_t>();
-	bool wireframe = reader["material"]["type"].get<json::number_integer_t>() == 0;
-	float thickness = reader["material"]["thickness"].get<json::number_float_t>();
 
 	auto& bound = reader["boundingBox"];
 	if (!bound.is_null())
 	{
-		center << bound["center"];
-		aabb.min << bound["min"];
-		aabb.max << bound["max"];
+		params.aabb.center << bound["center"];
+		params.aabb.aabb.min << bound["min"];
+		params.aabb.aabb.max << bound["max"];
+	}
+
+	auto& json_material = reader["material"];
+	if (!json_material.is_null())
+	{
+		params.material.type = (PathMeshing::Material::Type)json_material["type"].get<json::number_integer_t>();
+		params.material.color << reader["color"];
+		params.material.hollow = json_material["hollow"].get<json::boolean_t>();
+		params.material.thickness = json_material["thickness"].get<json::number_float_t>();
+
+		auto& lights = json_material["lights"];
+		if (lights.size() > 0)
+		{
+			auto& light = lights[0];
+
+			params.material.phong.direction << light["direction"];
+			params.material.phong.darkcolor << light["darkcolor"];
+			params.material.phong.intensity = light["intensity"].get<json::number_float_t>();
+			params.material.phong.ambient = light["ambient"].get<json::number_float_t>();
+			params.material.phong.highLight = light["highLight"].get<json::number_float_t>();
+			params.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
+		}
 	}
 
 	auto& text = reader["text"];
@@ -264,12 +282,12 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					}
 				}
 
-				contour->isClockwise(!hollow);
+				contour->isClockwise(!params.material.hollow);
 				contours.push_back(std::move(contour));
 			}
 		}
 
-		math::float3 offset = (aabb.max - aabb.min) * center;
+		math::float3 offset = (params.aabb.aabb.max - params.aabb.aabb.min) * params.aabb.center;
 
 		for (auto& contour : contours)
 		{
@@ -277,96 +295,91 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				it -= offset;
 		}
 
-		if (wireframe)
-		{
-			object_ = std::make_shared<octoon::GameObject>();
-			object_->setParent(this->getGameObject());
-			object_->getComponent<TransformComponent>()->setLocalTranslate(offset);
-			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(octoon::model::ContourGroup(std::move(contours)), thickness));
-		}
+		object_ = std::make_shared<octoon::GameObject>();
+		object_->setParent(this->getGameObject());
+		object_->getComponent<TransformComponent>()->setLocalTranslate(params.transform.translate + offset);
+		object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params.transform.rotation)));
+		object_->getComponent<TransformComponent>()->setLocalScale(params.transform.scale);
+
+		if (params.material.type == PathMeshing::Material::Line)
+			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(octoon::model::ContourGroup(std::move(contours)), params.material.thickness));
 		else
 		{
-			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)), thickness);
+			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)), params.material.thickness);
 			mesh.computeVertexNormals();
 
-			object_ = std::make_shared<octoon::GameObject>();
-			object_->setParent(this->getGameObject());
-			object_->getComponent<TransformComponent>()->setLocalTranslate(offset);
 			object_->addComponent<octoon::MeshFilterComponent>(std::move(mesh));
 		}
-	}
 
-	auto& json_material = reader["material"];
-	if (!json_material.is_null())
-	{
-		math::float3 baseColor = math::float3::Zero;
-		baseColor << reader["color"];
-
-		switch (json_material["type"].get<json::number_integer_t>())
+		switch (params.material.type)
 		{
-		case MATERIAL_TYPE_LINE:
+		case PathMeshing::Material::Line:
 		{
 			auto material = std::make_shared<octoon::video::LineMaterial>();
-			material->setColor(baseColor);
+			material->setColor(params.material.color);
 
-			if (object_)
-				object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 		}
 		break;
-		case MATERIAL_TYPE_BASIC:
+		case PathMeshing::Material::Basic:
 		{
 			auto material = std::make_shared<octoon::video::TextMaterial>();
-			material->setTextColor(octoon::video::TextColor::FrontColor, baseColor);
-			material->setTextColor(octoon::video::TextColor::SideColor, baseColor);
+			material->setTextColor(octoon::video::TextColor::FrontColor, params.material.color);
+			material->setTextColor(octoon::video::TextColor::SideColor, params.material.color);
 
-			if (object_)
-				object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 		}
 		break;
-		case MATERIAL_TYPE_PHONGSHADING:
+		case PathMeshing::Material::PhongShading:
 		{
-			auto& lights = json_material["lights"];
-			if (lights.size() > 0)
-			{
-				auto& light = lights[0];
+			auto material = std::make_shared<octoon::video::PhongMaterial>();
+			material->setBaseColor(params.material.color * params.material.phong.intensity);
+			material->setAmbientColor(params.material.color * params.material.phong.ambient);
+			material->setSpecularColor(math::float3::One * params.material.phong.highLight);
+			material->setShininess(params.material.phong.highLightSize);
+			material->setLightDir(math::normalize(params.material.phong.direction));
+			material->setDarkColor(params.material.phong.darkcolor);
 
-				math::float3 direction = math::float3::UnitY;
-				math::float3 color = math::float3::Zero;
-
-				direction << light["direction"];
-				color << light["darkcolor"];
-
-				float intensity = light["intensity"].get<json::number_float_t>();
-				float ambient = light["ambient"].get<json::number_float_t>();
-				float power = light["power"].get<json::number_float_t>();
-				float size = light["size"].get<json::number_float_t>();
-
-				auto material = std::make_shared<octoon::video::PhongMaterial>();
-				material->setBaseColor(baseColor * intensity);
-				material->setAmbientColor(baseColor * ambient);
-				material->setSpecularColor(math::float3::One * power);
-				material->setShininess(size);
-				material->setLightDir(math::normalize(direction));
-				material->setDarkColor(color);
-
-				if (object_)
-					object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
-			}
+			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 		}
 		break;
-		default:
-			break;
 		}
 	}
 
-	aabb.min.z = -thickness;
-	aabb.max.z = thickness;
-	aabb = math::transform(aabb, this->getComponent<TransformComponent>()->getTransform());
+	params.aabb.aabb.min.z = -params.material.thickness;
+	params.aabb.aabb.max.z = params.material.thickness;
+	params.aabb.aabb = math::transform(params.aabb.aabb, this->getComponent<TransformComponent>()->getTransform());
 
 	camera_ = std::make_shared<octoon::GameObject>();
-	camera_->addComponent<octoon::CameraComponent>();
-	camera_->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-	camera_->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
-	camera_->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-	camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
+
+	auto cameraComponent = camera_->addComponent<octoon::CameraComponent>();
+	cameraComponent->setCameraOrder(octoon::video::CameraOrder::Custom);
+	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
+	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
+	cameraComponent->setupFramebuffers(1920, 1080, 4);
+	cameraComponent->setupSwapFramebuffers(1920, 1080);
+}
+
+void
+PathMeshingComponent::onFrameEnd() except
+{
+	auto framebuffer = camera_->getComponent<octoon::CameraComponent>()->getSwapFramebuffer();
+	if (framebuffer)
+	{
+		std::uint32_t w = framebuffer->getGraphicsFramebufferDesc().getWidth();
+		std::uint32_t h = framebuffer->getGraphicsFramebufferDesc().getHeight();
+
+		image::Image image(image::Format::R8G8B8A8UNorm, w, h);
+
+		void* data = nullptr;
+		auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachments().at(0).getBindingTexture();
+		if (texture->map(0, 0, w, h, 0, &data))
+		{
+			std::memcpy((void*)image.data(), data, image.size());
+			texture->unmap();
+		}
+
+		image.save("C:/Users/Administrator/Desktop/output.png", "png");
+	}
 }

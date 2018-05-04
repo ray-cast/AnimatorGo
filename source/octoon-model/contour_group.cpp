@@ -271,7 +271,7 @@ namespace octoon
 					math::float3 c = math::float3(p2.x, p2.y, -thickness);
 					math::float3 d = math::float3(p2.x, p2.y, thickness);
 
-					auto index = tris.size();
+					std::uint32_t index = tris.size();
 					indices.push_back(index);
 					indices.push_back(index + 1);
 					indices.push_back(index + 1);

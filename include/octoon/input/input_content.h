@@ -22,6 +22,9 @@ namespace octoon
 				Sep
 			};
 
+			InputContent() = default;
+			InputContent(Type input_type, std::uint16_t c);
+
 			Type input;
 			std::uint16_t code;
 		};

@@ -4,6 +4,11 @@ namespace octoon
 {
 	namespace input
 	{
+		InputContent::InputContent(Type input_type, std::uint16_t c)
+			: input(input_type), code(c)
+		{
+		}
+
 		InputOp
 		operator+(InputKey::Code code1, InputKey::Code code2)
 		{

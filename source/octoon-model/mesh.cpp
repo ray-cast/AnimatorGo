@@ -119,7 +119,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(const uint1s& array) noexcept
+		Mesh::setIndicesArray(const Uint1Array& array) noexcept
 		{
 			_indices = array;
 		}
@@ -168,7 +168,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(uint1s&& array) noexcept
+		Mesh::setIndicesArray(Uint1Array&& array) noexcept
 		{
 			_indices = std::move(array);
 		}
@@ -222,7 +222,7 @@ namespace octoon
 			return _weights;
 		}
 
-		uint1s&
+		Uint1Array&
 		Mesh::getIndicesArray() noexcept
 		{
 			return _indices;
@@ -283,7 +283,7 @@ namespace octoon
 			return _bones;
 		}
 
-		const uint1s&
+		const Uint1Array&
 		Mesh::getIndicesArray() const noexcept
 		{
 			return _indices;
@@ -302,7 +302,7 @@ namespace octoon
 			_normals = float3s();
 			_colors = float4s();
 			_tangents = float4s();
-			_indices = uint1s();
+			_indices = Uint1Array();
 
 			for (std::size_t i = 0; i < 8; i++)
 				_texcoords[i] = float2s();
@@ -1339,7 +1339,11 @@ namespace octoon
 		Mesh::computeBoundingBox() noexcept
 		{
 			_boundingBox.reset();
-			_boundingBox.encapsulate(_vertices.data(), _vertices.size());
+
+			if (_indices.empty())
+				_boundingBox.encapsulate(_vertices.data(), _vertices.size());
+			else
+				_boundingBox.encapsulate(_vertices.data(), _indices.data(), _indices.size());
 		}
 	}
 }

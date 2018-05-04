@@ -58,7 +58,6 @@ namespace octoon
 			bool is_mouse_lock_;
 			bool is_mouse_locked_;
 			bool is_mouse_hide;
-			bool is_mouse_position_updated_;
 
 			float mouse_axis_x_;
 			float mouse_axis_y_;

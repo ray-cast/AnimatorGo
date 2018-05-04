@@ -29,12 +29,10 @@ namespace octoon
 		void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
 		void setCameraOrder(video::CameraOrder order) noexcept;
 		void setCameraType(video::CameraType type) noexcept;
-		void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 		video::CameraOrder getCameraOrder() const noexcept;
 		video::CameraType getCameraType() const noexcept;
 		graphics::GraphicsClearFlags getClearFlags() const noexcept;
-		const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 		math::float3 worldToScreen(const math::float3& pos) const noexcept;
 		math::float3 worldToProject(const math::float3& pos) const noexcept;

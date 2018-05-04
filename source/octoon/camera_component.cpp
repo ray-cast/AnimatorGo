@@ -100,12 +100,6 @@ namespace octoon
 		camera_->setCameraType(type);
 	}
 
-	void
-	CameraComponent::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
-	{
-		camera_->setFramebuffer(framebuffer);
-	}
-
 	video::CameraOrder
 	CameraComponent::getCameraOrder() const noexcept
 	{
@@ -122,12 +116,6 @@ namespace octoon
 	CameraComponent::getClearFlags() const noexcept
 	{
 		return camera_->getClearFlags();
-	}
-
-	const graphics::GraphicsFramebufferPtr&
-	CameraComponent::getFramebuffer() const noexcept
-	{
-		return camera_->getFramebuffer();
 	}
 
 	math::float3

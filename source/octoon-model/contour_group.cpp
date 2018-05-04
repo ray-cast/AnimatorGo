@@ -159,37 +159,41 @@ namespace octoon
 		{
 			Mesh mesh;
 
-			std::size_t maxElement = 0;
-			for (auto& contour : group.getContours())
-					maxElement = std::max(maxElement, contour->points().size());
-
-			math::float3s tris(maxElement * 6);
+			math::float3s tris(group.countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
 			std::vector<math::double3> vertices(group.countOfPoints() * 2);
 
-			for (auto& contour : group.getContours())
+			for (std::size_t written = 0, i = 0; i < group.count(); ++i)
 			{
-				std::size_t written = 0;
+				const Contour& contour = group.at(i);
 
-				for (std::size_t n = 0; n < contour->count() - 1; ++n)
+				for (std::size_t n = 0; n < contour.count() - 1; ++n)
 				{
-					auto& p1 = contour->at(n);
-					auto& p2 = contour->at(n + 1);
+					auto& p1 = contour.at(n);
+					auto& p2 = contour.at(n + 1);
 
-					trisData[written++] = math::float3(p1.x, p1.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, thickness);
-					trisData[written++] = math::float3(p1.x, p1.y, thickness);
-					trisData[written++] = math::float3(p1.x, p1.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, thickness);
+					math::Triangle t1;
+					t1.a = math::float3(p1.x, p1.y, -thickness);
+					t1.b = math::float3(p2.x, p2.y, thickness);
+					t1.c = math::float3(p1.x, p1.y, thickness);
+
+					math::Triangle t2;
+					t2.a = math::float3(p1.x, p1.y, -thickness);
+					t2.b = math::float3(p2.x, p2.y, -thickness);
+					t2.c = math::float3(p2.x, p2.y, thickness);
+
+					std::memcpy(trisData + written, t1.ptr(), sizeof(math::Triangle));
+					std::memcpy(trisData + written + sizeof(math::Triangle) / sizeof(math::float3), t2.ptr(), sizeof(math::Triangle));
+
+					written += sizeof(math::Triangle) / sizeof(math::float3) * 2;
 				}
 
-				trisMesh.resize(trisMesh.size() + written);
-				std::memcpy(trisMesh.data() + (trisMesh.size() - written), trisData, written * sizeof(math::float3));
+				trisMesh.resize(trisMesh.size() + tris.size());
+				std::memcpy(trisMesh.data() + (trisMesh.size() - tris.size()), tris.data(), tris.size() * sizeof(math::float3));
 
-				if (contour->isClockwise())
+				if (contour.isClockwise())
 				{
 					GLUtesselator* tobj = gluNewTess();
 
@@ -211,13 +215,15 @@ namespace octoon
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (auto& it : group.getContours())
+						for (std::size_t j = 0; j < group.count(); ++j)
 						{
+							const Contour& it = group.at(j);
+
 							gluTessBeginContour(tobj);
 
-							for (std::size_t p = 0; p < it->count() - 1; ++p)
+							for (std::size_t p = 0; p < it.count() - 1; ++p)
 							{
-								auto& p1 = it->at(p);
+								auto& p1 = it.at(p);
 								auto& d = vertices[index++];
 								d[0] = p1.x;
 								d[1] = p1.y;
@@ -257,7 +263,6 @@ namespace octoon
 			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
-			math::uint1s& indices = mesh.getIndicesArray();
 
 			for (auto& contour : group.getContours())
 			{
@@ -271,20 +276,14 @@ namespace octoon
 					math::float3 c = math::float3(p2.x, p2.y, -thickness);
 					math::float3 d = math::float3(p2.x, p2.y, thickness);
 
-					std::uint32_t index = tris.size();
-					indices.push_back(index);
-					indices.push_back(index + 1);
-					indices.push_back(index + 1);
-					indices.push_back(index + 2);
-					indices.push_back(index + 2);
-					indices.push_back(index + 3);
-					indices.push_back(index + 3);
-					indices.push_back(index);
-
 					tris.push_back(a);
 					tris.push_back(b);
+					tris.push_back(b);
+					tris.push_back(c);
 					tris.push_back(c);
 					tris.push_back(d);
+					tris.push_back(d);
+					tris.push_back(a);
 				}
 			}
 
@@ -296,7 +295,6 @@ namespace octoon
 			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
-			math::uint1s& indices = mesh.getIndicesArray();
 
 			for (auto& group : groups)
 			{
@@ -312,20 +310,14 @@ namespace octoon
 						math::float3 c = math::float3(p2.x, p2.y, -thickness);
 						math::float3 d = math::float3(p2.x, p2.y, thickness);
 
-						auto index = tris.size();
-						indices.push_back(index);
-						indices.push_back(index + 1);
-						indices.push_back(index + 1);
-						indices.push_back(index + 2);
-						indices.push_back(index + 2);
-						indices.push_back(index + 3);
-						indices.push_back(index + 3);
-						indices.push_back(index);
-
 						tris.push_back(a);
 						tris.push_back(b);
+						tris.push_back(b);
+						tris.push_back(c);
 						tris.push_back(c);
 						tris.push_back(d);
+						tris.push_back(d);
+						tris.push_back(a);
 					}
 				}
 			}

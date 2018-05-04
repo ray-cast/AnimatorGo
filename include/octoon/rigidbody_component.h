@@ -61,6 +61,8 @@ namespace octoon
             void setBodyType(RigidbodyType type) noexcept;
             RigidbodyType getBodyType() const noexcept;
 
+			physx::PxRigidActor* getRigidbody() noexcept { return body; }
+
         private:
         	virtual void onActivate() except override;
             virtual void onDeactivate() noexcept override;

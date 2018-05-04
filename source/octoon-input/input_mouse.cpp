@@ -181,6 +181,11 @@ namespace octoon
 				button.down = false;
 				button.doubleClick = false;
 			}
+
+			mouse_axis_x_ = mouse_x_ - last_x_;
+			mouse_axis_y_ = mouse_y_ - last_y_;
+			last_x_ = mouse_x_;
+			last_y_ = mouse_y_;
 		}
 
 		void

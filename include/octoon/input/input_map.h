@@ -14,56 +14,50 @@ namespace octoon
 	{
 		namespace impl
 		{
-			template <typename Last>
-			void bind_ops_dispatch(std::true_type, InputOp& ops, Last&& last)
+			inline void bind_ops(InputOp& ops)
 			{
-				for (auto&& op : last) ops.emplace_back(op);
+				ops.pop_back();
 			}
 
-			template <typename Last>
-			void bind_ops_dispatch(std::false_type, InputOp& ops, Last&& last)
-			{
-				if (std::is_same<std::remove_cv_t<Last>, InputKey>::value)
-				{
-					ops.emplace_back(InputContent::Keyboard, (std::uint16_t)last);
-				}
-				else
-				{
-					ops.emplace_back(InputContent::Mouse, (std::uint16_t)last);
-				}
-			}
+			template <bool, typename First, typename ...Args>
+			struct bind_ops_d;
 
 			template <typename First, typename ...Args>
-			void bind_ops_dispatch(std::true_type, InputOp& ops, First&& first, Args&& ...args)
+			struct bind_ops_d<false, First, Args...>
 			{
-				for (auto&& op : first)
+				bind_ops_d(InputOp& ops, First&& first, Args&& ...args)
 				{
-					ops.emplace_back(op);
+					if (std::is_same<std::remove_reference_t<First>, InputKey::Code>::value)
+					{
+						ops.emplace_back(InputContent::Keyboard, (std::uint16_t)first);
+					}
+					else
+					{
+						ops.emplace_back(InputContent::Mouse, (std::uint16_t)first);
+					}
+					ops.emplace_back(InputContent::Sep, 0ui16);
+					bind_ops(ops, args...);
 				}
-				ops.emplace_back(InputContent::Sep, 0ui16);
-				bind_ops(ops, args...);
-			}
+			};
 
 			template <typename First, typename ...Args>
-			void bind_ops_dispatch(std::false_type, InputOp& ops, First&& first, Args&& ...args)
+			struct bind_ops_d<true, First, Args...>
 			{
-				if (std::is_same<std::remove_cv_t<First>, InputKey>::value)
+				bind_ops_d(InputOp& ops, First&& first, Args&& ...args)
 				{
-					ops.emplace_back(InputContent::Keyboard, (std::uint16_t)first);
+					for (auto&& op : first)
+					{
+						ops.emplace_back(op);
+					}
+					ops.emplace_back(InputContent::Sep, 0ui16);
+					bind_ops(ops, args...);
 				}
-				else
-				{
-					ops.emplace_back(InputContent::Mouse, (std::uint16_t)first);
-				}
-				ops.emplace_back(InputContent::Sep, 0ui16);
-				bind_ops(ops, args...);
-			}
+			};
 
 			template <typename First, typename ...Args>
-			void bind_ops(InputOp& ops, First&& first, Args&& ...args) 
+			void bind_ops(InputOp& ops, First&& first, Args&& ...args)
 			{
-				bind_ops_dispatch(std::is_same<std::remove_cv_t<First>, InputOp>(),
-					std::forward<First>(first), std::forward<Args>(args)...);
+				bind_ops_d<std::is_same<std::remove_reference_t<First>, InputOp>::value, First, Args...>(ops, first, args...);
 			}
 		}
 
@@ -76,18 +70,6 @@ namespace octoon
 			impl::bind_ops(ops, first, args...);
 			return bind_t(id, ops);
 		}
-
-		//bind_t bind(const std::string& id, InputKey::Code code);
-		//bind_t bind(const std::string& id, InputButton::Code code);
-		//bind_t bind(const std::string& id, const InputOp& ops);
-
-		//bind_t bind(const std::string& id, InputOp ops, InputKey::Code code);
-		//bind_t bind(const std::string& id, InputOp ops, InputButton::Code code);
-
-		//bind_t bind(const std::string& id, InputKey::Code code, InputOp ops);
-		//bind_t bind(const std::string& id, InputButton::Code code, InputOp ops);
-
-		//bind_t bind(const std::string& id, InputOp ops1, InputOp ops2);
 
 		class InputMap final
 		{

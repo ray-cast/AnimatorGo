@@ -17,5 +17,11 @@ namespace octoon
 		{
 			inputmap_ = inputmap;
 		}
+
+		bool
+		InputManager::isInput(const std::string & id) const
+		{
+			return inputmap_->isInput(id);
+		}
 	}
 }

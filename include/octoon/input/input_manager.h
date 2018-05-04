@@ -2,6 +2,7 @@
 #define OCTOON_INPUT_MANAGER_H_
 
 #include <octoon/input/input_map.h>
+#include <octoon/input/input_event.h>
 
 namespace octoon
 {
@@ -13,12 +14,11 @@ namespace octoon
 			InputManager() noexcept;
 			~InputManager() noexcept;
 
-			void setInput();
 			void setInputMap(InputMapPtr inputmap);
 
 			bool isInput(const std::string& id) const;
 
-			void sendInputEvent();
+			void sendInputEvent(const InputEvent& event);
 
 		private:
 			InputMapPtr inputmap_;

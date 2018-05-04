@@ -12,24 +12,24 @@ namespace octoon
 
     Rigidbody::Rigidbody() noexcept
 		: body(nullptr)
-		,bodyType(RigidbodyType::Dynamic)
+		, isKinematic(true)
 		, mass(1.0f)
 		, massOffset()
     {
     }
 
-	Rigidbody::Rigidbody(RigidbodyType type) noexcept
-		: body(nullptr), bodyType(type), mass(1.0f), massOffset()
+	Rigidbody::Rigidbody(bool type) noexcept
+		: body(nullptr), isKinematic(type), mass(1.0f), massOffset()
 	{
 	}
 
-	Rigidbody::Rigidbody(RigidbodyType type, float mass) noexcept
-		: body(nullptr), bodyType(type), mass(mass), massOffset()
+	Rigidbody::Rigidbody(bool type, float mass) noexcept
+		: body(nullptr), isKinematic(type), mass(mass), massOffset()
 	{
 	}
 
-	Rigidbody::Rigidbody(RigidbodyType type, float mass, const math::Vector3& offset) noexcept
-		: body(nullptr), bodyType(type), mass(mass), massOffset(offset)
+	Rigidbody::Rigidbody(bool type, float mass, const math::Vector3& offset) noexcept
+		: body(nullptr), isKinematic(type), mass(mass), massOffset(offset)
 	{
 	}
 
@@ -103,15 +103,15 @@ namespace octoon
         return sleepMode;
     }
 
-    void Rigidbody::setBodyType(RigidbodyType type) noexcept
-    {
-        bodyType = type;
-    }
+	void Rigidbody::setIsKinematic(bool type) noexcept
+	{
+		isKinematic = type;
+	}
 
-    RigidbodyType Rigidbody::getBodyType() const noexcept
-    {
-        return bodyType;
-    }
+	bool Rigidbody::getIsKinematic() const noexcept
+	{
+		return isKinematic;
+	}
 
     void Rigidbody::onActivate() except
     {
@@ -200,9 +200,13 @@ namespace octoon
 		pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
 		pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
 
-		switch (bodyType)
+		if (isKinematic)
 		{
-		case RigidbodyType::Dynamic:
+			body = physicsFeature->getSDK()->createRigidStatic(pose);
+			if (!body)
+				throw  runtime::runtime_error::create("create body failed!");
+		}
+		else
 		{
 			body = physicsFeature->getSDK()->createRigidDynamic(pose);
 			if (!body)
@@ -210,18 +214,6 @@ namespace octoon
 
 			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
 			physx::PxRigidBodyExt::updateMassAndInertia(*rigid_body, mass);
-		}
-		break;
-		case RigidbodyType::Static:
-		case RigidbodyType::Kinematic:
-		{
-			body = physicsFeature->getSDK()->createRigidStatic(pose);
-			if (!body)
-				throw  runtime::runtime_error::create("create body failed!");
-		}
-		break;
-		default:
-			throw runtime::type_error::create("Invalid enum type of rigidbody");
 		}
 
 		physicsFeature->getScene()->addActor(*body);

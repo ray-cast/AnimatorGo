@@ -18,13 +18,6 @@ namespace physx
 
 namespace octoon
 {
-    enum class RigidbodyType: int
-    {
-        Static = 0,
-        Dynamic = 1,
-        Kinematic = 2
-    };
-
     enum class RigidbodySleepMode:int
     {
         NeverSleep, //Rigidbody never automatically sleeps.
@@ -37,9 +30,9 @@ namespace octoon
 		OctoonDeclareSubClass(Rigidbody, runtime::RttiInterface)
         public:
             Rigidbody() noexcept;
-			Rigidbody(RigidbodyType type) noexcept;
-			Rigidbody(RigidbodyType type, float mass) noexcept;
-			Rigidbody(RigidbodyType type, float mass, const math::Vector3& offset) noexcept;
+			Rigidbody(bool type) noexcept;
+			Rigidbody(bool type, float mass) noexcept;
+			Rigidbody(bool type, float mass, const math::Vector3& offset) noexcept;
             ~Rigidbody();
             virtual GameComponentPtr clone() const noexcept;
 
@@ -58,8 +51,8 @@ namespace octoon
             void setSleepMode(RigidbodySleepMode mode) noexcept;
             RigidbodySleepMode getSleepMode() const noexcept;
 
-            void setBodyType(RigidbodyType type) noexcept;
-            RigidbodyType getBodyType() const noexcept;
+			void setIsKinematic(bool type) noexcept;
+			bool getIsKinematic() const noexcept;
 
 			physx::PxRigidActor* getRigidbody() noexcept { return body; }
 
@@ -83,11 +76,11 @@ namespace octoon
 
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.
+			bool isKinematic;
             float mass; // Mass of the rigidbody.
 			math::Vector3 massOffset;
             RigidbodySleepMode sleepMode;
             math::Vector3 velocity;
-            RigidbodyType bodyType;
 
             friend class Collider;
             friend class BoxCollider;

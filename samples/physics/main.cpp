@@ -128,7 +128,7 @@ int main(int argc, const char* argv[])
 			object->addComponent<octoon::MeshRendererComponent>(material);
 			//object->addComponent<octoon::GuizmoComponent>(camera);
 			object->addComponent<CubeController>(material);
-			object->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+			object->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 			object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 3.0f, 0.2f));
 			{
 				auto transform_component = object->getComponent<octoon::TransformComponent>();
@@ -143,7 +143,7 @@ int main(int argc, const char* argv[])
 		sphere->addComponent<octoon::GuizmoComponent>(camera);
 		//sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
-		sphere->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Dynamic, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+		sphere->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		sphere->addComponent<octoon::FixedJoint>(domino[0]->getComponent<octoon::Rigidbody>());
 		{
 			auto transform_component = sphere->getComponent<octoon::TransformComponent>();
@@ -154,7 +154,7 @@ int main(int argc, const char* argv[])
 		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(12.0, 0.5, 12.0));
 		plane->addComponent<octoon::MeshRendererComponent>(material);
 		//plane->addComponent<octoon::GuizmoComponent>(camera);
-		plane->addComponent<octoon::Rigidbody>(octoon::RigidbodyType::Static, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+		plane->addComponent<octoon::Rigidbody>(true, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(12.0f, 0.5f, 12.0f));
 		{
 			auto transform_component = plane->getComponent<octoon::TransformComponent>();

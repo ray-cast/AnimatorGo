@@ -38,6 +38,7 @@ private:
 	std::uint16_t bezierSteps_;
 
 	octoon::GameObjectPtr object_;
+	octoon::GameObjectPtr camera_;
 };
 
 #endif

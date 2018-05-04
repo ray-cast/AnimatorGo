@@ -338,7 +338,7 @@ namespace octoon
 		template<typename T>
 		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
 		{
-			assert(!empty());
+			assert(!aabb.empty());
 
 			detail::AABB<T> aabb_;
 			aabb_.min.x = aabb_.max.x = m.d1;

@@ -1,5 +1,9 @@
 #include <octoon/video/camera.h>
 #include <octoon/video/render_system.h>
+#include <octoon/runtime/except.h>
+#include <octoon/graphics/graphics.h>
+
+using namespace octoon::graphics;
 
 namespace octoon
 {
@@ -265,7 +269,7 @@ namespace octoon
 		void
 		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
 		{
-			framebuffer_ = framebuffer;
+			fbo_ = framebuffer;
 		}
 
 		CameraOrder
@@ -289,7 +293,76 @@ namespace octoon
 		const graphics::GraphicsFramebufferPtr&
 		Camera::getFramebuffer() const noexcept
 		{
-			return framebuffer_;
+			return fbo_;
+		}
+
+		void
+		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, graphics::GraphicsFormat foramt, graphics::GraphicsFormat depthStencil) except
+		{
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexFormat(foramt);
+			colorTexture_ = RenderSystem::instance()->createTexture(colorTextureDesc);
+			if (!colorTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexFormat(depthStencil);
+			depthTexture_ = RenderSystem::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, foramt));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			fbo_ = RenderSystem::instance()->createFramebuffer(framebufferDesc);
+			if (!fbo_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			//if (RenderSystem::instance()->getDeviceProperty().getDeviceProperties().isTextureDimSupport(GraphicsTextureDim::Texture2DMultisample))
+			{
+				GraphicsTextureDesc colorTextureDescMSAA;
+				colorTextureDescMSAA.setWidth(w);
+				colorTextureDescMSAA.setHeight(h);
+				colorTextureDescMSAA.setTexMultisample(4);
+				colorTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				colorTextureDescMSAA.setTexFormat(foramt);
+				colorTextureMSAA_ = RenderSystem::instance()->createTexture(colorTextureDescMSAA);
+				if (!colorTextureMSAA_)
+					throw runtime::runtime_error::create("createTexture() failed");
+
+				GraphicsTextureDesc depthTextureDescMSAA;
+				depthTextureDescMSAA.setWidth(w);
+				depthTextureDescMSAA.setHeight(h);
+				depthTextureDescMSAA.setTexMultisample(4);
+				depthTextureDescMSAA.setTexDim(GraphicsTextureDim::Texture2DMultisample);
+				depthTextureDescMSAA.setTexFormat(depthStencil);
+				depthTextureMSAA_ = RenderSystem::instance()->createTexture(depthTextureDescMSAA);
+				if (!depthTextureMSAA_)
+					throw runtime::runtime_error::create("createTexture() failed");
+
+				GraphicsFramebufferDesc framebufferDescMSAA;
+				framebufferDescMSAA.setWidth(w);
+				framebufferDescMSAA.setHeight(h);
+				framebufferDescMSAA.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDescMSAA.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTextureMSAA_, 0, 0));
+				framebufferDescMSAA.addColorAttachment(GraphicsAttachmentBinding(colorTextureMSAA_, 0, 0));
+
+				fboMSAA_ = RenderSystem::instance()->createFramebuffer(framebufferDescMSAA);
+				if (!fboMSAA_)
+					throw runtime::runtime_error::create("createFramebuffer() failed");
+			}
 		}
 
 		void

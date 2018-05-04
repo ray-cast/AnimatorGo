@@ -55,6 +55,8 @@ namespace octoon
 			const math::float4x4& getProjection() const noexcept;
 			const math::float4x4& getProjectionInverse() const noexcept;
 
+			void setupFramebuffers(std::uint32_t w, std::uint32_t h, graphics::GraphicsFormat foramt = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+
 		private:
 			void onMoveAfter() noexcept;
 			void onRenderBefore(const Camera& camera) noexcept;
@@ -80,7 +82,14 @@ namespace octoon
 			CameraType cameraType_;
 
 			graphics::GraphicsClearFlags clearflags_;
-			graphics::GraphicsFramebufferPtr framebuffer_;
+
+			graphics::GraphicsFramebufferPtr fbo_;
+			graphics::GraphicsFramebufferPtr fboMSAA_;
+
+			graphics::GraphicsTexturePtr colorTexture_;
+			graphics::GraphicsTexturePtr depthTexture_;
+			graphics::GraphicsTexturePtr colorTextureMSAA_;
+			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			mutable math::float4x4 viewProject_;
 			mutable math::float4x4 viewProjectInverse_;

@@ -10,6 +10,7 @@
 #include <octoon/video/text_material.h>
 #include <octoon/video/line_material.h>
 #include <octoon/video/phong_material.h>
+#include <octoon/camera_component.h>
 
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, Ò»¸öµã£Ûx,y]
@@ -148,8 +149,7 @@ PathMeshingComponent::clone() const noexcept
 void
 PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 {
-	math::float3 min = math::float3::Zero;
-	math::float3 max = math::float3::Zero;
+	math::AABB aabb = math::AABB::Empty;
 	math::float3 center = math::float3::Zero;
 	math::float3 translate = math::float3::Zero;
 	math::float3 scale = math::float3::One;
@@ -178,8 +178,8 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	if (!bound.is_null())
 	{
 		center << bound["center"];
-		min << bound["min"];
-		max << bound["max"];
+		aabb.min << bound["min"];
+		aabb.max << bound["max"];
 	}
 
 	auto& text = reader["text"];
@@ -269,7 +269,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			}
 		}
 
-		math::float3 offset = (max - min) * center;
+		math::float3 offset = (aabb.max - aabb.min) * center;
 
 		for (auto& contour : contours)
 		{
@@ -347,7 +347,6 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 				material->setSpecularColor(math::float3::One * power);
 				material->setShininess(size);
 				material->setLightDir(math::normalize(direction));
-
 				material->setDarkColor(color);
 
 				if (object_)
@@ -359,4 +358,15 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			break;
 		}
 	}
+
+	aabb.min.z = -thickness;
+	aabb.max.z = thickness;
+	aabb = math::transform(aabb, this->getComponent<TransformComponent>()->getTransform());
+
+	camera_ = std::make_shared<octoon::GameObject>();
+	camera_->addComponent<octoon::CameraComponent>();
+	camera_->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
+	camera_->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
+	camera_->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+	camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
 }

@@ -27,7 +27,8 @@ namespace octoon
 			{
 				bind_ops_d(InputOp& ops, First&& first, Args&& ...args)
 				{
-					if (std::is_same<std::remove_reference_t<First>, InputKey::Code>::value)
+					if (std::is_same<std::remove_cv_t<std::remove_reference_t<First>>,
+						InputKey::Code>::value)
 					{
 						ops.emplace_back(InputContent::Keyboard, (std::uint16_t)first);
 					}
@@ -57,7 +58,9 @@ namespace octoon
 			template <typename First, typename ...Args>
 			void bind_ops(InputOp& ops, First&& first, Args&& ...args)
 			{
-				bind_ops_d<std::is_same<std::remove_reference_t<First>, InputOp>::value, First, Args...>(ops, first, args...);
+				bind_ops_d<std::is_same<
+					std::remove_cv_t<std::remove_reference_t<First>>, InputOp>::value,
+					First, Args...>(ops, first, args...);
 			}
 		}
 

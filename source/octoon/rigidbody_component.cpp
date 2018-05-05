@@ -44,34 +44,49 @@ namespace octoon
 		return instance;
     }
 
-    void Rigidbody::setAngularVelocity(float v) noexcept
+    void Rigidbody::setAngularVelocity(const math::float3& v) noexcept
     {
-        angularVelocity = v;
+		if ( !isKinematic && body)
+		{
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			rigid_body->setAngularVelocity(physx::PxVec3(v.x, v.y, v.z));
+		}
     }
 
-    float Rigidbody::getAngularVelocity() const noexcept
+	math::float3 Rigidbody::getAngularVelocity() const noexcept
     {
-        return angularVelocity;
-    }
+		math::float3 retval;
+		if (!isKinematic && body)
+		{
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			physx::PxVec3 v = rigid_body->getAngularVelocity();
+			retval.x = v.x;
+			retval.y = v.y;
+			retval.z = v.z;
+		}
 
-    void Rigidbody::setGravityScale(float scale) noexcept
-    {
-        gravityScale = scale;
-    }
-
-    float Rigidbody::getGravityScale() const noexcept
-    {
-        return gravityScale;
+		return retval;
     }
 
     void Rigidbody::setMass(float m) noexcept
     {
-        mass = m;
+		if (!isKinematic && body)
+		{
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			rigid_body->setMass(m);
+		}
     }
 
     float Rigidbody::getMass() const noexcept
     {
-        return mass;
+		float retval;
+		if (!isKinematic && body)
+		{
+			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
+			retval = rigid_body->getMass();
+		}
+
+		return retval;
     }
 
 	void Rigidbody::setMassOffset(math::Vector3 offset) noexcept
@@ -105,7 +120,12 @@ namespace octoon
 
 	void Rigidbody::setIsKinematic(bool type) noexcept
 	{
-		isKinematic = type;
+		if (isKinematic != type)
+		{
+			isKinematic = type;
+			releaseRigidBody();
+			buildRigidBody();
+		}
 	}
 
 	bool Rigidbody::getIsKinematic() const noexcept

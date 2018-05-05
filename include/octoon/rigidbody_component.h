@@ -36,11 +36,8 @@ namespace octoon
             ~Rigidbody();
             virtual GameComponentPtr clone() const noexcept;
 
-            void setAngularVelocity(float v) noexcept;
-            float getAngularVelocity() const noexcept;
-
-            void setGravityScale(float scale) noexcept;
-            float getGravityScale() const noexcept;
+            void setAngularVelocity(const math::float3& v) noexcept;
+			math::float3 getAngularVelocity() const noexcept;
 
             void setMass(float m) noexcept;
             float getMass() const noexcept;

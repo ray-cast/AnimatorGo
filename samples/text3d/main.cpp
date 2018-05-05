@@ -7,7 +7,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera.h>
+#include <octoon/first_person_camera_component.h>
 #include <octoon/ui/imgui.h>
 
 class TextController : public octoon::GameComponent
@@ -104,7 +104,7 @@ int main(int argc, const char* argv[])
 		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
 
-		auto camera = std::make_shared<octoon::GameObject>();
+		auto camera = octoon::GameObject::create();
 		camera->addComponent<octoon::CameraComponent>();
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
@@ -113,7 +113,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
-		auto object = std::make_shared<octoon::GameObject>();
+		auto object = octoon::GameObject::create();
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf", 24), L"Octoon Studio"));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);

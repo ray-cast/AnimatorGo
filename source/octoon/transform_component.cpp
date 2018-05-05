@@ -109,8 +109,8 @@ namespace octoon
 	{
 		this->onMoveBefore();
 
-		transform_ = transform.get_transform(translate_, rotation_, scaling_);
-		transform_inverse_ = math::transform_inverse(transform_);
+		transform_ = transform.getTransform(translate_, rotation_, scaling_);
+		transform_inverse_ = math::transformInverse(transform_);
 		world_need_updates_ = false;
 
 		this->updateWorldChildren();
@@ -122,9 +122,9 @@ namespace octoon
 	{
 		this->onMoveBefore();
 
-		transform_ = transform.get_transform_without_scaler(translate_, rotation_);
+		transform_ = transform.getTransformWithoutScaler(translate_, rotation_);
 		transform_.scale(scaling_);
-		transform_inverse_ = math::transform_inverse(transform_);
+		transform_inverse_ = math::transformInverse(transform_);
 
 		world_need_updates_ = false;
 
@@ -262,7 +262,7 @@ namespace octoon
 	{
 		this->onMoveBefore();
 
-		local_transform_ = transform.get_transform(local_translate_, local_rotation_, local_scaling_);
+		local_transform_ = transform.getTransform(local_translate_, local_rotation_, local_scaling_);
 		local_need_updates_ = false;
 
 		this->updateLocalChildren();
@@ -274,7 +274,7 @@ namespace octoon
 	{
 		this->onMoveBefore();
 
-		local_transform_ = transform.get_transform_without_scaler(local_translate_, local_rotation_);
+		local_transform_ = transform.getTransformWithoutScaler(local_translate_, local_rotation_);
 		local_transform_.scale(local_scaling_);
 		local_need_updates_ = false;
 
@@ -360,8 +360,8 @@ namespace octoon
 	{
 		if (local_need_updates_)
 		{
-			local_transform_.make_transform(local_translate_, local_rotation_, local_scaling_);
-			local_transform_inverse_ = math::transform_inverse(local_transform_);
+			local_transform_.makeTransform(local_translate_, local_rotation_, local_scaling_);
+			local_transform_inverse_ = math::transformInverse(local_transform_);
 
 			local_need_updates_ = false;
 		}
@@ -376,18 +376,16 @@ namespace octoon
 			if (parent)
 			{
 				auto& baseTransform = parent->getComponent<TransformComponent>()->getTransform();
-				transform_ = math::transform_multiply(baseTransform, this->getLocalTransform());
-				transform_.get_transform(translate_, rotation_, scaling_);
-				transform_inverse_ = math::transform_inverse(transform_);
+				transform_ = math::transformMultiply(baseTransform, this->getLocalTransform());
+				transform_.getTransform(translate_, rotation_, scaling_);
+				transform_inverse_ = math::transformInverse(transform_);
 			}
 			else
 			{
-				translate_ = local_translate_;
-				scaling_ = local_scaling_;
-				rotation_ = local_rotation_;
-
-				transform_.make_transform(translate_, rotation_, scaling_);
-				transform_inverse_ = math::transform_inverse(transform_);
+				transform_.makeTransform(translate_, rotation_, scaling_);
+				transform_ = math::transformMultiply(transform_, this->getLocalTransform());
+				transform_.getTransform(translate_, rotation_, scaling_);
+				transform_inverse_ = math::transformInverse(transform_);
 			}
 
 			world_need_updates_ = false;
@@ -399,7 +397,7 @@ namespace octoon
 	{
 		if (world_need_updates_)
 		{
-			transform_.make_transform(translate_, rotation_, scaling_);
+			transform_.makeTransform(translate_, rotation_, scaling_);
 			world_need_updates_ = false;
 		}
 
@@ -407,8 +405,8 @@ namespace octoon
 		if (parent)
 		{
 			auto& baseTransformInverse = parent->getComponent<TransformComponent>()->getTransformInverse();
-			local_transform_ = math::transform_multiply(baseTransformInverse, transform_);
-			local_transform_.get_transform(local_translate_, local_rotation_, local_scaling_);
+			local_transform_ = math::transformMultiply(baseTransformInverse, transform_);
+			local_transform_.getTransform(local_translate_, local_rotation_, local_scaling_);
 		}
 		else
 		{

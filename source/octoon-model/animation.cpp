@@ -300,7 +300,7 @@ namespace octoon
 				if ((std::size_t)parent > size)
 					_bones[i].setTransform(_bones[i].getLocalTransform());
 				else
-					_bones[i].setTransform(transform_multiply(_bones[parent].getTransform(), _bones[i].getLocalTransform()));
+					_bones[i].setTransform(transformMultiply(_bones[parent].getTransform(), _bones[i].getLocalTransform()));
 			}
 		}
 
@@ -310,7 +310,7 @@ namespace octoon
 			{
 				auto& parent = _bones.at(bone.getParent());
 				updateBoneMatrix(parent);
-				bone.setTransform(transform_multiply(parent.getTransform(), bone.getLocalTransform()));
+				bone.setTransform(transformMultiply(parent.getTransform(), bone.getLocalTransform()));
 			}
 			else
 			{
@@ -368,7 +368,7 @@ namespace octoon
 						euler.y = std::max(ik.child[j].maximumDegrees.y, euler.y);
 						euler.z = std::max(ik.child[j].maximumDegrees.z, euler.z);
 
-						q0.make_rotation(euler);
+						q0.makeRotation(euler);
 					}
 
 					Quaternion qq = math::cross(bone.getRotation(), q0);
@@ -382,7 +382,7 @@ namespace octoon
 		void AnimationProperty::updateTransform(Bone& bone, const float3& translate, const Quaternion& rotate) noexcept
 		{
 			float4x4 transform;
-			transform.make_rotation(rotate);
+			transform.makeRotation(rotate);
 			transform.set_translate(translate);
 
 			bone.setRotation(rotate);

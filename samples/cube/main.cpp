@@ -6,7 +6,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera.h>
+#include <octoon/first_person_camera_component.h>
 
 #include <octoon/ui/imgui.h>
 
@@ -110,7 +110,7 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = std::make_shared<octoon::GameObject>();
+		auto camera = octoon::GameObject::create("camera");
 		camera->addComponent<octoon::CameraComponent>();
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
@@ -121,7 +121,7 @@ int main(int argc, const char* argv[])
 
 		auto material = std::make_shared<octoon::video::GGXMaterial>();
 
-		auto object = std::make_shared<octoon::GameObject>();
+		auto object = octoon::GameObject::create("actor");
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);

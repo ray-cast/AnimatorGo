@@ -1,5 +1,9 @@
 #include <octoon/video/camera.h>
 #include <octoon/video/render_system.h>
+#include <octoon/runtime/except.h>
+#include <octoon/graphics/graphics.h>
+
+using namespace octoon::graphics;
 
 namespace octoon
 {
@@ -261,6 +265,12 @@ namespace octoon
 			}
 		}
 
+		void
+		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+		{
+			fbo_[0] = framebuffer;
+		}
+
 		CameraOrder
 		Camera::getCameraOrder() const noexcept
 		{
@@ -277,6 +287,96 @@ namespace octoon
 		Camera::getClearFlags() const noexcept
 		{
 			return clearflags_;
+		}
+
+		const graphics::GraphicsFramebufferPtr&
+		Camera::getFramebuffer() const noexcept
+		{
+			return fbo_[0];
+		}
+
+		const graphics::GraphicsFramebufferPtr&
+		Camera::getSwapFramebuffer() const noexcept
+		{
+			return fbo_[1];
+		}
+
+		void
+		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		{
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
+
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexMultisample(multisample);
+			colorTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(format);
+			colorTexture_[0] = RenderSystem::instance()->createTexture(colorTextureDesc);
+			if (!colorTexture_[0])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexMultisample(multisample);
+			depthTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(depthStencil);
+			depthTexture_[0] = RenderSystem::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture_[0])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_[0], 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_[0], 0, 0));
+
+			fbo_[0] = RenderSystem::instance()->createFramebuffer(framebufferDesc);
+			if (!fbo_[0])
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+		}
+
+		void
+		Camera::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		{
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
+
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexMultisample(multisample);
+			colorTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(format);
+			colorTexture_[1] = RenderSystem::instance()->createTexture(colorTextureDesc);
+			if (!colorTexture_[1])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexMultisample(multisample);
+			depthTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(depthStencil);
+			depthTexture_[1] = RenderSystem::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture_[1])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_[1], 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_[1], 0, 0));
+
+			fbo_[1] = RenderSystem::instance()->createFramebuffer(framebufferDesc);
+			if (!fbo_[1])
+				throw runtime::runtime_error::create("createFramebuffer() failed");
 		}
 
 		void

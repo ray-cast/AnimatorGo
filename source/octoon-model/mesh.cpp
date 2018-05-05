@@ -335,7 +335,7 @@ namespace octoon
 			{
 				float3 v;
 
-				float segment = thetaStart + i / segments * thetaLength;
+				float segment = thetaStart + (float)i / segments * thetaLength;
 
 				v.x = radius * math::cos(segment);
 				v.y = radius * math::sin(segment);
@@ -1433,7 +1433,7 @@ namespace octoon
 				auto binormal = math::cross(normal, tangent);
 
 				Quaternion quat;
-				quat.make_rotation(normal, binormal, tangent);
+				quat.makeRotation(normal, binormal, tangent);
 
 				if (quat.w < 0.0f)
 					quat = -quat;

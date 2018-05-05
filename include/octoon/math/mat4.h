@@ -45,8 +45,8 @@ namespace octoon
 
 				Matrix4x4() = default;
 				Matrix4x4(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept { this->make_matrix(m1, m2); }
-				Matrix4x4(const Vector3<T>& axis, T angle, const Vector3<T>& translate) noexcept { this->make_rotation(axis, angle, translate); }
-				Matrix4x4(const Quaternion<T>& q, const Vector3<T>& translate) noexcept { this->make_rotation(q, translate); }
+				Matrix4x4(const Vector3<T>& axis, T angle, const Vector3<T>& translate) noexcept { this->makeRotation(axis, angle, translate); }
+				Matrix4x4(const Quaternion<T>& q, const Vector3<T>& translate) noexcept { this->makeRotation(q, translate); }
 				Matrix4x4(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
 					: a1(mt00), a2(mt01), a3(mt02), a4(mt03)
 					, b1(mt10), b2(mt11), b3(mt12), b4(mt13)
@@ -309,7 +309,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Vector3<T>& axis, T theta, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& makeRotation(const Vector3<T>& axis, T theta, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -346,7 +346,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Quaternion<T>& q, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& makeRotation(const Quaternion<T>& q, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T xs = q.x * T(2.0f), ys = q.y * T(2.0f), zs = q.z * T(2.0f);
 					T wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
@@ -376,7 +376,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Vector3<T>& forward_, const Vector3<T>& up_, const Vector3<T>& right_, const Vector3<T>& translate_ = Vector3<T>::Zero) noexcept
+				Matrix4x4<T>& makeRotation(const Vector3<T>& forward_, const Vector3<T>& up_, const Vector3<T>& right_, const Vector3<T>& translate_ = Vector3<T>::Zero) noexcept
 				{
 					this->right = Vector4<T>(right_, 0.0);
 					this->up = Vector4<T>(up_, 0.0);
@@ -386,7 +386,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& make_rotation(const Vector4<T>& forward_, const Vector4<T>& up_, const Vector4<T>& right_, const Vector4<T>& translate_ = Vector4<T>::UnitW) noexcept
+				Matrix4x4<T>& makeRotation(const Vector4<T>& forward_, const Vector4<T>& up_, const Vector4<T>& right_, const Vector4<T>& translate_ = Vector4<T>::UnitW) noexcept
 				{
 					this->right = right_;
 					this->up = up_;
@@ -457,19 +457,19 @@ namespace octoon
 					return Vector4<T>(a4, b4, c4, d4);
 				}
 
-				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
+				Matrix4x4<T>& makeTransform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
 				{
-					return this->make_rotation(rotate, translate);
+					return this->makeRotation(rotate, translate);
 				}
 
-				Matrix4x4<T>& make_transform(const Vector3<T>& translate, const Quaternion<T>& rotate, const Vector3<T>& scale) noexcept
+				Matrix4x4<T>& makeTransform(const Vector3<T>& translate, const Quaternion<T>& rotate, const Vector3<T>& scale) noexcept
 				{
-					this->make_transform(translate, rotate);
+					this->makeTransform(translate, rotate);
 					this->scale(scale);
 					return *this;
 				}
 
-				const Matrix4x4<T>& get_transform(Vector3<T>& translate, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
+				const Matrix4x4<T>& getTransform(Vector3<T>& translate, Quaternion<T>& rotation, Vector3<T>& scaling) const noexcept
 				{
 					auto right_ = this->get_right();
 					auto up_ = this->get_up();
@@ -498,17 +498,17 @@ namespace octoon
 					if (scaling.y != T(0.0)) up_ /= scaling.y;
 					if (scaling.z != T(0.0)) forward_ /= scaling.z;
 
-					rotation.make_rotation(forward_, up_, right_);
+					rotation.makeRotation(forward_, up_, right_);
 					return *this;
 				}
 
-				const Matrix4x4<T>& get_transform_without_scaler(Vector3<T>& translate, Quaternion<T>& rotation) const noexcept
+				const Matrix4x4<T>& getTransformWithoutScaler(Vector3<T>& translate, Quaternion<T>& rotation) const noexcept
 				{
 					translate.x = this->d1;
 					translate.y = this->d2;
 					translate.z = this->d3;
 
-					rotation.make_rotation(this->get_forward(), this->get_up(), this->get_right());
+					rotation.makeRotation(this->get_forward(), this->get_up(), this->get_right());
 					return *this;
 				}
 
@@ -1063,7 +1063,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix4x4<T> transform_multiply(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2)
+		inline detail::Matrix4x4<T> transformMultiply(const detail::Matrix4x4<T>& m1, const detail::Matrix4x4<T>& m2)
 		{
 			detail::Matrix4x4<T> out;
 			out.a1 = m1.a1 * m2.a1 + m1.b1 * m2.a2 + m1.c1 * m2.a3;
@@ -1090,7 +1090,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix4x4<T> transform_inverse(const detail::Matrix4x4<T>& m) noexcept
+		inline detail::Matrix4x4<T> transformInverse(const detail::Matrix4x4<T>& m) noexcept
 		{
 			detail::Matrix4x4<T> out;
 

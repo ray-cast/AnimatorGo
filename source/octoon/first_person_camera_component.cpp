@@ -1,5 +1,4 @@
 #include <octoon/first_person_camera_component.h>
-#include <octoon/game_server.h>
 #include <octoon/game_app.h>
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
@@ -9,15 +8,15 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCamera")
+	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCameraComponent")
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
-		: _speed(10.0)
-		, _gravity(15)
-		, _maxVelocityChange(1.0)
-		, _jumpHeight(10)
-		, _sensitivityX(1.0)
-		, _sensitivityY(1.0)
+		: speed_(10.0)
+		, gravity_(15)
+		, maxVelocityChange_(1.0)
+		, jumpHeight_(10)
+		, sensitivityX_(1.0)
+		, sensitivityY_(1.0)
 	{
 	}
 
@@ -26,12 +25,80 @@ namespace octoon
 	}
 
 	void
+	FirstPersonCameraComponent::setSpeed(float speed) noexcept
+	{
+		speed_ = speed;
+	}
+
+	void
+	FirstPersonCameraComponent::setGravity(float gravity) noexcept
+	{
+		gravity_ = gravity;
+	}
+
+	void
+	FirstPersonCameraComponent::setMaxVelocityChange(float maxVelocityChange) noexcept
+	{
+		maxVelocityChange_ = maxVelocityChange;
+	}
+
+	void
+	FirstPersonCameraComponent::setJumpHeight(float jumpHeight) noexcept
+	{
+		jumpHeight_ = jumpHeight;
+	}
+
+	void
+	FirstPersonCameraComponent::setSensitivityX(float sensitivityX) noexcept
+	{
+		sensitivityX_ = sensitivityX;
+	}
+
+	void
+	FirstPersonCameraComponent::setSensitivityY(float sensitivityY) noexcept
+	{
+		sensitivityY_ = sensitivityY;
+	}
+
+	float
+	FirstPersonCameraComponent::getSpeed() const noexcept
+	{
+		return speed_;
+	}
+
+	float
+	FirstPersonCameraComponent::getGravity() const noexcept
+	{
+		return gravity_;
+	}
+
+	float
+	FirstPersonCameraComponent::getMaxVelocityChange() const noexcept
+	{
+		return maxVelocityChange_;
+	}
+
+	float
+	FirstPersonCameraComponent::getJumpHeight() const noexcept
+	{
+		return jumpHeight_;
+	}
+
+	float
+	FirstPersonCameraComponent::getSensitivityX() const noexcept
+	{
+		return sensitivityX_;
+	}
+
+	float
+	FirstPersonCameraComponent::getSensitivityY() const noexcept
+	{
+		return sensitivityY_;
+	}
+
+	void
 	FirstPersonCameraComponent::onActivate() noexcept
 	{
-		auto cameraComponent = this->getComponent<CameraComponent>();
-		if (cameraComponent)
-			_sensitivityX = _sensitivityY * cameraComponent->getRatio();
-
 		this->addComponentDispatch(GameDispatchType::Frame);
 	}
 
@@ -44,7 +111,10 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onFrame() noexcept
 	{
-		float step = _speed * GameApp::instance()->getFeature<TimerFeature>()->delta();
+		float step = speed_;
+#if OCTOON_FEATURE_TIMER_ENABLE
+		step *= GameApp::instance()->getFeature<TimerFeature>()->delta();
+#endif
 
 		auto inputFeature = GameApp::instance()->getFeature<InputFeature>();
 		if (inputFeature)
@@ -110,17 +180,15 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::rotateCamera(float axisX, float axisY) noexcept
 	{
-		float angleY = -axisX * _sensitivityX;
-		float angleX = -axisY * _sensitivityY;
+		float angleY = -axisX * sensitivityX_;
+		float angleX = -axisY * sensitivityY_;
 
 		math::float3 euler(math::euler_angles(this->getGameObject()->getComponent<TransformComponent>()->getLocalQuaternion()));
 
 		float angle = angleX + math::degress(euler.x);
 
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
-		{
 			rotateCamera(angleX, this->getGameObject()->getComponent<TransformComponent>()->getLocalRight());
-		}
 
 		rotateCamera(angleY, math::float3::UnitY);
 	}
@@ -128,6 +196,14 @@ namespace octoon
 	GameComponentPtr
 	FirstPersonCameraComponent::clone() const noexcept
 	{
-		return std::make_shared<FirstPersonCameraComponent>();
+		auto instance = std::make_shared<FirstPersonCameraComponent>();
+		instance->speed_ = this->speed_;
+		instance->gravity_ = this->gravity_;
+		instance->maxVelocityChange_ = this->maxVelocityChange_;
+		instance->jumpHeight_ = this->jumpHeight_;
+		instance->sensitivityX_ = this->sensitivityX_;
+		instance->sensitivityY_ = this->sensitivityY_;
+
+		return instance;
 	}
 }

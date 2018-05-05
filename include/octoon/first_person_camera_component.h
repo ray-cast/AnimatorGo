@@ -5,12 +5,26 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT FirstPersonCameraComponent : public GameComponent
+	class OCTOON_EXPORT FirstPersonCameraComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(FirstPersonCameraComponent, GameComponent)
 	public:
 		FirstPersonCameraComponent() noexcept;
 		~FirstPersonCameraComponent() noexcept;
+
+		void setSpeed(float speed) noexcept;
+		void setGravity(float gravity) noexcept;
+		void setMaxVelocityChange(float maxVelocityChange) noexcept;
+		void setJumpHeight(float jumpHeight) noexcept;
+		void setSensitivityX(float sensitivityX) noexcept;
+		void setSensitivityY(float sensitivityY) noexcept;
+
+		float getSpeed() const noexcept;
+		float getGravity() const noexcept;
+		float getMaxVelocityChange() const noexcept;
+		float getJumpHeight() const noexcept;
+		float getSensitivityX() const noexcept;
+		float getSensitivityY() const noexcept;
 
 		void upCamera(float speed) noexcept;
 		void yawCamera(float speed) noexcept;
@@ -27,13 +41,12 @@ namespace octoon
 		GameComponentPtr clone() const noexcept override;
 
 	private:
-		float _speed;
-		float _gravity;
-		float _maxVelocityChange;
-		float _jumpHeight;
-
-		float _sensitivityX;
-		float _sensitivityY;
+		float speed_;
+		float gravity_;
+		float maxVelocityChange_;
+		float jumpHeight_;
+		float sensitivityX_;
+		float sensitivityY_;
 	};
 }
 

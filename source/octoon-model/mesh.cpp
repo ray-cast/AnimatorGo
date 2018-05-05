@@ -796,7 +796,7 @@ namespace octoon
 		{
 			this->clear();
 
-			float tanFovy_2 = math::tan(fovy * PI / 360.0f);
+			float tanFovy_2 = math::tan(math::radians(fovy) * 0.5f);
 
 			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
 			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
@@ -827,6 +827,11 @@ namespace octoon
 			_vertices.emplace_back(-tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
 			_vertices.emplace_back(-tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
 			_vertices.emplace_back(tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
+
+			math::uint1 indices[] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 8, 9, 10, 10, 11, 8, 12, 13, 14, 14, 15, 12, 16, 17, 18, 18, 19, 16, 20, 21, 22, 22, 23, 20 };
+
+			for (auto& index : indices)
+				_indices.push_back(index);
 
 			this->computeBoundingBox();
 		}

@@ -335,7 +335,7 @@ namespace octoon
 			{
 				float3 v;
 
-				float segment = thetaStart + i / segments * thetaLength;
+				float segment = thetaStart + (float)i / segments * thetaLength;
 
 				v.x = radius * math::cos(segment);
 				v.y = radius * math::sin(segment);

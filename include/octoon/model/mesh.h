@@ -65,7 +65,7 @@ namespace octoon
 			std::size_t getNumIndices() const noexcept;
 			std::size_t getTexcoordNums() const noexcept;
 
-			void makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI) noexcept;
+			void makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
 			void makePlane(float width, float height, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1) noexcept;
 			void makePlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear = true) noexcept;
 			void makePlaneWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear = true) noexcept;
@@ -115,7 +115,7 @@ namespace octoon
 			math::BoundingBox _boundingBox;
 		};
 
-		inline Mesh makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI) noexcept
+		inline Mesh makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI_2) noexcept
 		{
 			Mesh mesh;
 			mesh.makeCircle(radius, segments, thetaStart, thetaLength);

@@ -73,11 +73,11 @@ namespace octoon
 	{
 		if (game_server_)
 		{
-			this->onMessage("Game Application has been opened.");
+			this->onMessage("Game App has been opened.");
 			return;
 		}
 
-		this->onMessage("Initializing : Game Application.");
+		this->onMessage("Initializing : Game App.");
 		this->onMessage(std::string("Initializing : Local : ") + ::setlocale(LC_ALL, ""));
 		this->onMessage("Initializing : RTTI.");
 

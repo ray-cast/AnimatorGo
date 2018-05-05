@@ -29,17 +29,17 @@ SET(OCTOON_LIST
 SOURCE_GROUP("system\\app" FILES ${OCTOON_LIST})
 
 SET(BASE_FEATURES_LIST
-	${HEADER_PATH}/transform_component.h
-	${SOURCE_PATH}/transform_component.cpp
 	${HEADER_PATH}/game_base_features.h
 	${SOURCE_PATH}/game_base_features.cpp
+	${HEADER_PATH}/transform_component.h
+	${SOURCE_PATH}/transform_component.cpp
+	${HEADER_PATH}/mesh_filter_component.h
+	${SOURCE_PATH}/mesh_filter_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
 IF(OCTOON_FEATURE_VIDEO_ENABLE)
 SET(VIDEO_FEATURES_LIST
-	${HEADER_PATH}/mesh_filter_component.h
-	${SOURCE_PATH}/mesh_filter_component.cpp
 	${HEADER_PATH}/camera_component.h
 	${SOURCE_PATH}/camera_component.cpp
 	${HEADER_PATH}/first_person_camera.h

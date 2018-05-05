@@ -250,6 +250,7 @@ IF(CMAKE_GENERATOR MATCHES "Visual Studio")
 		# W3
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4251") # needs to have dll-interface to be used by clients of class
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4275") # 非 dll 接口 class“std::exception”用作 dll 接口 class“Exception”的基
+		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4611") # setjmp
 
 		# W4
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4100") # 未引用的形参

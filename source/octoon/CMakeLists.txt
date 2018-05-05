@@ -42,8 +42,6 @@ IF(OCTOON_FEATURE_VIDEO_ENABLE)
 SET(VIDEO_FEATURES_LIST
 	${HEADER_PATH}/camera_component.h
 	${SOURCE_PATH}/camera_component.cpp
-	${HEADER_PATH}/first_person_camera.h
-	${SOURCE_PATH}/first_person_camera.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
@@ -57,6 +55,8 @@ ENDIF()
 SET(INPUT_FEATURES_LIST
 	${HEADER_PATH}/input_feature.h
 	${SOURCE_PATH}/input_feature.cpp
+	${HEADER_PATH}/first_person_camera_component.h
+	${SOURCE_PATH}/first_person_camera_component.cpp
 )
 SOURCE_GROUP("system\\input" FILES ${INPUT_FEATURES_LIST})
 

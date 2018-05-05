@@ -18,12 +18,6 @@ namespace octoon
             ~BoxCollider();
             virtual GameComponentPtr clone() const noexcept;
 
-            void setAutoTiling(bool isAutoTilling) noexcept;
-            bool getAutoTiling() const noexcept;
-
-            void setEdgeRadius(float r) noexcept;
-            float getEdgeRadius() const noexcept;
-
             void setSize(const math::Vector3& s) noexcept;
             math::Vector3 getSize() const noexcept;
 

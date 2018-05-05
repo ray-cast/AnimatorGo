@@ -97,6 +97,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/physics_feature.cpp
 	${HEADER_PATH}/physics_material.h
 	${SOURCE_PATH}/physics_material.cpp
+	${HEADER_PATH}/joint_limits.h
+	${HEADER_PATH}/joint_spring.h
 	${HEADER_PATH}/rigidbody_component.h
 	${SOURCE_PATH}/rigidbody_component.cpp
 	${HEADER_PATH}/collider_component.h
@@ -115,6 +117,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/fixed_joint_component.cpp
 	${HEADER_PATH}/spring_joint_component.h
 	${SOURCE_PATH}/spring_joint_component.cpp
+	${HEADER_PATH}/hinge_joint_component.h
+	${SOURCE_PATH}/hinge_joint_component.cpp
 )
 SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 

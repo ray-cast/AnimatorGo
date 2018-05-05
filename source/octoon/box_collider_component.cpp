@@ -26,27 +26,6 @@ namespace octoon
         return std::make_shared<BoxCollider>();
     }
 
-    void BoxCollider::setAutoTiling(bool isAutoTilling) noexcept
-    {
-        autoTiling = isAutoTilling;
-        onCollisionChange();
-    }
-
-    bool BoxCollider::getAutoTiling() const noexcept
-    {
-        return autoTiling;
-    }
-
-    void BoxCollider::setEdgeRadius(float r) noexcept
-    {
-        edgeRadius = r;
-    }
-
-    float BoxCollider::getEdgeRadius() const noexcept
-    {
-        return edgeRadius;
-    }
-
     void BoxCollider::setSize(const math::Vector3& s) noexcept
     {
         size = s;

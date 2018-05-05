@@ -5,53 +5,80 @@ namespace octoon
 {
 	OctoonImplementSubInterface(Collider, GameComponent, "Collider")
 
-    Collider::Collider() noexcept
-		:shared_material(std::make_shared<PhysicsMaterial>())
-    {
+	Collider::Collider() noexcept
+		: shared_material(std::make_shared<PhysicsMaterial>())
+		, shape(nullptr)
+	{
+	}
 
-    }
+	Collider::~Collider()
+	{
+	}
 
-    Collider::~Collider()
-    {
+	void
+	Collider::setBounciness(float b) noexcept
+	{
+		bounciness = b;
+	}
 
-    }
+	float
+	Collider::getBounciness() const noexcept
+	{
+		return bounciness;
+	}
 
-    void Collider::setBounciness(float b) noexcept
-    {
-        bounciness = b;
-    }
+	void
+	Collider::setDensity(float d) noexcept
+	{
+		density = d;
+	}
 
-    float Collider::getBounciness() const noexcept
-    {
-        return bounciness;
-    }
+	float
+	Collider::getDensity() const noexcept
+	{
+		return density;
+	}
 
-    void Collider::setDensity(float d) noexcept
-    {
-        density = d;
-    }
+	void
+	Collider::setFriction(float f) noexcept
+	{
+		friction = f;
+	}
 
-    float Collider::getDensity() const noexcept
-    {
-        return density;
-    }
+	float
+	Collider::getFriction() const noexcept
+	{
+		return friction;
+	}
 
-    void Collider::setFriction(float f) noexcept
-    {
-        friction = f;
-    }
+	void
+	Collider::onCollisionChange()
+	{
+	}
 
-    float Collider::getFriction() const noexcept
-    {
-        return friction;
-    }
+	void
+	Collider::onCollisionEnter()
+	{
+	}
 
-	void Collider::setSharedMaterial(PhysicsMaterial material) except
+	void
+	Collider::onCollisionExit()
+	{
+	}
+
+	void
+	Collider::onCollisionStay()
+	{
+	}
+
+	void
+	Collider::setSharedMaterial(PhysicsMaterial material) except
 	{
 		shared_material = std::make_shared<PhysicsMaterial>(material);
 	}
 
-	std::shared_ptr<PhysicsMaterial> Collider::getSharedMaterial() except
+	std::shared_ptr<PhysicsMaterial>
+	Collider::getSharedMaterial() except
 	{
 		return shared_material;
 	}

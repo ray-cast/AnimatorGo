@@ -1,76 +1,61 @@
 #include <octoon/box_collider_component.h>
-#include <octoon/rigidbody_component.h>
 #include <octoon/runtime/except.h>
 #include <PxPhysicsAPI.h>
 
 namespace octoon
 {
-    OctoonImplementSubClass(BoxCollider, Collider, "BoxCollider")
+	OctoonImplementSubClass(BoxCollider, Collider, "BoxCollider")
 
-    BoxCollider::BoxCollider() noexcept
-        :isRegistered(false), size(1, 1, 1)
-    {
-    }
-
-	BoxCollider::BoxCollider(const math::Vector3& s) noexcept
-		: isRegistered(false), size(s.x, s.y, s.z)
+	BoxCollider::BoxCollider() noexcept
+		: size(1, 1, 1)
 	{
 	}
 
-    BoxCollider::~BoxCollider()
-    {
-    }
+	BoxCollider::BoxCollider(const math::Vector3& s) noexcept
+		: size(s.x, s.y, s.z)
+	{
+	}
 
-    GameComponentPtr BoxCollider::clone() const noexcept
-    {
-        return std::make_shared<BoxCollider>();
-    }
+	BoxCollider::~BoxCollider()
+	{
+	}
 
-    void BoxCollider::setSize(const math::Vector3& s) noexcept
-    {
-        size = s;
-    }
+	void
+	BoxCollider::setSize(const math::Vector3& s) noexcept
+	{
+		size = s;
+	}
 
-    math::Vector3 BoxCollider::getSize() const noexcept
-    {
-        return size;
-    }
+	const math::Vector3&
+	BoxCollider::getSize() const noexcept
+	{
+		return size;
+	}
 
-    void BoxCollider::onCollisionChange() noexcept
-    {
-    }
+	GameComponentPtr
+	BoxCollider::clone() const noexcept
+	{
+		auto instance = std::make_shared<BoxCollider>();
+		instance->setName(this->getName());
+		instance->setSize(this->getSize());
 
-    void BoxCollider::onCollisionEnter() noexcept
-    {
-    }
+		return instance;
+	}
 
-    void BoxCollider::onCollisionExit() noexcept
-    {
-    }
-
-    void BoxCollider::onCollisionStay() noexcept
-    {
-    }
-
-    void BoxCollider::onAttach() except
-    {
+	void
+	BoxCollider::onAttach() except
+	{
 		buildCollider();
-    }
+	}
 
-    void BoxCollider::onDetach() noexcept
-    {
+	void
+	BoxCollider::onDetach() noexcept
+	{
 		releaseCollider();
-    }
+	}
 
-    void BoxCollider::onAttachComponent(const GameComponentPtr& component) except
-    {
-    }
-
-    void BoxCollider::onDetachComponent(const GameComponentPtr& component) noexcept
-    {
-    }
-
-	void BoxCollider::buildCollider() except
+	void
+	BoxCollider::buildCollider() except
 	{
 		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
 		physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
@@ -80,7 +65,8 @@ namespace octoon
 			runtime::runtime_error::create("create shape failed!");
 	}
 
-	void BoxCollider::releaseCollider() except
+	void
+	BoxCollider::releaseCollider() except
 	{
 		shape->release();
 		shape = nullptr;

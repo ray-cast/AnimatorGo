@@ -10,6 +10,8 @@ namespace octoon
 		OctoonDeclareSubInterface(GameComponent, runtime::RttiInterface)
 	public:
 		GameComponent() noexcept;
+		GameComponent(const std::string& name) noexcept;
+		GameComponent(std::string&& name) noexcept;
 		virtual ~GameComponent() noexcept;
 
 		void setActive(bool active) except;

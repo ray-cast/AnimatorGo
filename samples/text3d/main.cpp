@@ -7,7 +7,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera.h>
+#include <octoon/first_person_camera_component.h>
 #include <octoon/ui/imgui.h>
 
 class TextController : public octoon::GameComponent

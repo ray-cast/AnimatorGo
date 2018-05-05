@@ -166,7 +166,7 @@ int main(int argc, const char* argv[])
 		}
 
 		auto floor = std::make_shared<octoon::GameObject>();
-		floor->addComponent<octoon::MeshFilterComponent>(octoon::model::makeFloor(0.5f, 1.0f));
+		floor->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCapsule(0.5f, 2.0f, 16, 2));
 		floor->addComponent<octoon::MeshRendererComponent>(material);
 		floor->addComponent<octoon::GuizmoComponent>(camera);
 		{

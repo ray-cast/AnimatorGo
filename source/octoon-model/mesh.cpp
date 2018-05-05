@@ -888,6 +888,116 @@ namespace octoon
 			this->computeBoundingBox();
 		}
 
+		void
+		Mesh::makeCapsule(float radius, float height, std::uint32_t segments, std::uint32_t heightSegments) noexcept
+		{
+			this->clear();
+
+			float mid_height = height - 2 * radius;
+			float half_height = mid_height / 2;
+
+			// make it even
+			float widthSegments = segments;
+			segments = 2 * (segments / 2);
+
+			std::vector<std::uint32_t> vertices;
+
+			for (std::uint32_t y = 0; y <= segments + heightSegments; y++)
+			{
+				for (std::uint32_t x = 0; x <= widthSegments; x++)
+				{
+					if (y > segments / 2 - 1 && y < segments / 2 - 1 + heightSegments)
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y - segments / 2 + 1) / heightSegments;
+						Vector3 vertex;
+						vertex.x = -radius * math::cos(u * math::PI_2);
+						vertex.y = (1 - v) * mid_height - half_height;
+						vertex.z = radius * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						vertex.y = 0;
+						_normals.push_back(math::normalize(vertex));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+					else if(y >= segments / 2 - 1 + heightSegments)
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y - heightSegments + 1) / segments;
+
+						Vector3 vertex;
+						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
+						vertex.y = radius * math::cos(v * math::PI);
+						if (vertex.y > 0.f) vertex.y += half_height;
+						else vertex.y -= half_height;
+						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						_normals.push_back(math::normalize(vertex));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+					else
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y) / segments;
+
+						Vector3 vertex;
+						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
+						vertex.y = radius * math::cos(v * math::PI);
+						vertex.y += half_height;
+						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						_normals.push_back(math::normalize(vertex));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+				}
+			}
+
+			for (std::uint32_t y = 0; y < segments + heightSegments; y++)
+			{
+				for (std::uint32_t x = 0; x < widthSegments; x++)
+				{
+					std::uint32_t v1 = vertices[y * (widthSegments + 1) + x];
+					std::uint32_t v2 = vertices[y * (widthSegments + 1) + x + 1];
+					std::uint32_t v3 = vertices[(y + 1) * (widthSegments + 1) + x];
+					std::uint32_t v4 = vertices[(y + 1) * (widthSegments + 1) + x + 1];
+
+					if (math::abs((_vertices)[v2].y) == radius + half_height)
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v3);
+						_indices.push_back(v4);
+					}
+					else if (math::abs((_vertices)[v3].y) == radius + half_height)
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v1);
+						_indices.push_back(v3);
+					}
+					else
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v3);
+						_indices.push_back(v4);
+
+						_indices.push_back(v2);
+						_indices.push_back(v1);
+						_indices.push_back(v3);
+					}
+				}
+			}
+
+			this->computeTangents();
+			this->computeBoundingBox();
+		}
+
 		bool
 		Mesh::combineMeshes(const Mesh& mesh, bool force) noexcept
 		{

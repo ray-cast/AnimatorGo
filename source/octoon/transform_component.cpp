@@ -382,9 +382,11 @@ namespace octoon
 			}
 			else
 			{
+				translate_ = local_translate_;
+				scaling_ = local_scaling_;
+				rotation_ = local_rotation_;
+
 				transform_.makeTransform(translate_, rotation_, scaling_);
-				transform_ = math::transformMultiply(transform_, this->getLocalTransform());
-				transform_.getTransform(translate_, rotation_, scaling_);
 				transform_inverse_ = math::transformInverse(transform_);
 			}
 

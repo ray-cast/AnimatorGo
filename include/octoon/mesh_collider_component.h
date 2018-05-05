@@ -38,6 +38,7 @@ namespace octoon
 			void buildCollider() except;
 			void releaseCollider() except;
         private:
+			bool isConvex;
             model::MeshPtr sharedMesh; // The mesh object used for collision detection.
     };
 }

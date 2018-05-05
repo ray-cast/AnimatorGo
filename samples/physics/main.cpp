@@ -11,6 +11,7 @@
 #include <octoon/box_collider_component.h>
 #include <octoon/sphere_collider_component.h>
 #include <octoon/capsule_collider_component.h>
+#include <octoon/mesh_collider_component.h>
 #include <octoon/fixed_joint_component.h>
 #include <octoon/spring_joint_component.h>
 
@@ -123,7 +124,7 @@ int main(int argc, const char* argv[])
 
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 1; ++i)
 		{
 			auto object = std::make_shared<octoon::GameObject>();
 			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 3.0, 0.2));
@@ -142,7 +143,7 @@ int main(int argc, const char* argv[])
 		auto sphere = std::make_shared<octoon::GameObject>();
 		sphere->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0f));
 		sphere->addComponent<octoon::MeshRendererComponent>(material);
-		sphere->addComponent<octoon::GuizmoComponent>(camera);
+		//sphere->addComponent<octoon::GuizmoComponent>(camera);
 		//sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
 		sphere->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
@@ -161,6 +162,18 @@ int main(int argc, const char* argv[])
 		{
 			auto transform_component = plane->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(0.f, -5.f, 0.f));
+		}
+
+		auto volumes = std::make_shared<octoon::GameObject>();
+		volumes->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCone(0.5, 1.0));
+		volumes->addComponent<octoon::MeshRendererComponent>(material);
+		volumes->addComponent<octoon::GuizmoComponent>(camera);
+		auto mesh_component = volumes->getComponent<octoon::MeshFilterComponent>();
+		volumes->addComponent<octoon::MeshCollider>(mesh_component->getMesh());
+		volumes->addComponent<octoon::Rigidbody>(false, 1.0f);
+		{
+			auto transform_component = volumes->getComponent<octoon::TransformComponent>();
+			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 0.f));
 		}
 
 		while (!::OctoonIsQuitRequest())

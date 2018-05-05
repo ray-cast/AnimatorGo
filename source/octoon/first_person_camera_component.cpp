@@ -1,4 +1,4 @@
-#include <octoon/first_person_camera.h>
+#include <octoon/first_person_camera_component.h>
 #include <octoon/game_server.h>
 #include <octoon/game_app.h>
 #include <octoon/camera_component.h>

@@ -11,6 +11,7 @@ R"({"color":[255,0,255],"boundingBox":{"min":[83.41,328.29,0.00],"max":[587.41,4
 #else
 const char* chars =
 R"({
+	"color":[1,0,0],
 	"transform":
 	{
 		"translate":[318.99, 157.10],
@@ -22,6 +23,7 @@ R"({
 		"type":1,
 		"hollow":false,
 		"wireframe":false,
+		"thickness":10.0,
 		"lights":[
 			{
 				"direcction":[0,1,0],
@@ -33,7 +35,7 @@ R"({
 			}
 		]
 	},
-	"text":
+	"boundingBox":
 	{
 		"min":[0.0,0.0,0.0],
 		"max":[420.00,72.00,0.0],
@@ -111,6 +113,7 @@ R"({
 		]
 	}
 })";
+#endif
 
 int main(int argc, const char* argv[])
 {

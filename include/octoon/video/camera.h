@@ -31,6 +31,7 @@ namespace octoon
 			void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
 			void setCameraOrder(CameraOrder order) noexcept;
 			void setCameraType(CameraType type) noexcept;
+			void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 			CameraOrder getCameraOrder() const noexcept;
 			CameraType getCameraType() const noexcept;

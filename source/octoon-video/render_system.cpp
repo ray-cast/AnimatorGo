@@ -14,7 +14,7 @@ namespace octoon
 	{
 		OctoonImplementSingleton(RenderSystem)
 
-		RenderSystem::RenderSystem() noexcept
+			RenderSystem::RenderSystem() noexcept
 			: width_(0)
 			, height_(0)
 			, fbo_(0)
@@ -29,19 +29,19 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
+			RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
 			device_ = device;
 			this->setFramebufferSize(w, h);
 		}
 
 		void
-		RenderSystem::close() noexcept
+			RenderSystem::close() noexcept
 		{
 		}
 
 		void
-		RenderSystem::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
+			RenderSystem::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			if (width_ != w || height_ != h)
 			{
@@ -53,110 +53,111 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept
+			RenderSystem::getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept
 		{
 			w = width_;
 			h = height_;
 		}
 
 		GraphicsInputLayoutPtr
-		RenderSystem::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
+			RenderSystem::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createInputLayout(desc);
 		}
 
 		GraphicsDataPtr
-		RenderSystem::createGraphicsData(const GraphicsDataDesc& desc) noexcept
+			RenderSystem::createGraphicsData(const GraphicsDataDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createGraphicsData(desc);
 		}
 
 		GraphicsTexturePtr
-		RenderSystem::createTexture(const GraphicsTextureDesc& desc) noexcept
+			RenderSystem::createTexture(const GraphicsTextureDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createTexture(desc);
 		}
 
 		GraphicsSamplerPtr
-		RenderSystem::createSampler(const GraphicsSamplerDesc& desc) noexcept
+			RenderSystem::createSampler(const GraphicsSamplerDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createSampler(desc);
 		}
 
 		GraphicsFramebufferPtr
-		RenderSystem::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
+			RenderSystem::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createFramebuffer(desc);
 		}
 
 		GraphicsFramebufferLayoutPtr
-		RenderSystem::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
+			RenderSystem::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createFramebufferLayout(desc);
 		}
 
 		GraphicsShaderPtr
-		RenderSystem::createShader(const GraphicsShaderDesc& desc) noexcept
+			RenderSystem::createShader(const GraphicsShaderDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createShader(desc);
 		}
 
 		GraphicsProgramPtr
-		RenderSystem::createProgram(const GraphicsProgramDesc& desc) noexcept
+			RenderSystem::createProgram(const GraphicsProgramDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createProgram(desc);
 		}
 
 		GraphicsStatePtr
-		RenderSystem::createRenderState(const GraphicsStateDesc& desc) noexcept
+			RenderSystem::createRenderState(const GraphicsStateDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createRenderState(desc);
 		}
 
 		GraphicsPipelinePtr
-		RenderSystem::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
+			RenderSystem::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createRenderPipeline(desc);
 		}
 
 		GraphicsDescriptorSetPtr
-		RenderSystem::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
+			RenderSystem::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createDescriptorSet(desc);
 		}
 
 		GraphicsDescriptorSetLayoutPtr
-		RenderSystem::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
+			RenderSystem::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createDescriptorSetLayout(desc);
 		}
 
 		GraphicsDescriptorPoolPtr
-		RenderSystem::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
+			RenderSystem::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
 		{
 			assert(device_);
 			return device_->createDescriptorPool(desc);
 		}
 
 		void
-		RenderSystem::render(graphics::GraphicsContext& context) noexcept
+			RenderSystem::render(graphics::GraphicsContext& context) noexcept
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-				if (fboMSAA_)
-					context.setFramebuffer(fboMSAA_);
+				auto framebuffer = camera->getFramebuffer();
+				if (framebuffer)
+					context.setFramebuffer(framebuffer);
 				else
 					context.setFramebuffer(fbo_);
 
@@ -208,7 +209,7 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
+			RenderSystem::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
 		{
 			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R8G8B8A8UNorm));

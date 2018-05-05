@@ -26,7 +26,7 @@ namespace octoon
 
 			void main()
 			{
-				oTexcoord0 = normalize(NORMAL0.xyz);
+				oTexcoord0 = normalize(mat3(model) * NORMAL0.xyz);
 				oTexcoord1 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";

@@ -1,6 +1,6 @@
 #include <octoon/octoon.h>
 
-#include <octoon/video/phong_material.h>
+#include <octoon/video/blinn_material.h>
 #include <octoon/game_object.h>
 #include <octoon/camera_component.h>
 #include <octoon/mesh_renderer_component.h>
@@ -14,7 +14,7 @@
 #include <octoon/mesh_collider_component.h>
 #include <octoon/fixed_joint_component.h>
 #include <octoon/spring_joint_component.h>
-
+#include <octoon/video/blinn_material.h>
 #include <octoon/ui/imgui.h>
 
 class CubeController : public octoon::GameComponent
@@ -24,7 +24,7 @@ public:
 	{
 	}
 
-	CubeController(std::shared_ptr<octoon::video::PhongMaterial>& material)
+	CubeController(std::shared_ptr<octoon::video::BlinnMaterial>& material)
 		: material_(material)
 	{
 	}
@@ -42,19 +42,13 @@ public:
 
 	void onGui() except override
 	{
-		static octoon::math::float1 shininess = 0.0f;
-		static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
-		static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
-		static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
-
-		auto transform = this->getComponent<octoon::TransformComponent>();
-
 		if (octoon::imgui::begin("Material"))
 		{
 			octoon::imgui::set_window_size(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
 
 			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
+				auto transform = this->getComponent<octoon::TransformComponent>();
 				octoon::math::float3 matrixTranslation = transform->getTranslate();
 				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getQuaternion()));
 				octoon::math::float3 matrixScale = transform->getScale();
@@ -64,7 +58,6 @@ public:
 				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
 
 				transform->setTranslate(matrixTranslation);
-
 				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
 				transform->setScale(matrixScale);
 
@@ -73,11 +66,14 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
+				static octoon::math::float1 shininess = 1.0f;
+				static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
+				static octoon::math::float3 ambientColor(0.1f, 0.1f, 0.1f);
+				static octoon::math::float3 baseColor = octoon::math::float3(0.5f, 0.5f, 0.5f);
 
+				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
 				octoon::imgui::color_picker3("Base color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 				octoon::imgui::color_picker3("Ambient color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-
 				octoon::imgui::drag_float("Shininess", &shininess, 0.01f, 0.0f, 1.0f);
 
 				lightDir = octoon::math::normalize(lightDir);
@@ -101,7 +97,7 @@ public:
 
 private:
 	octoon::GameObjectPtr camera_;
-	std::shared_ptr<octoon::video::PhongMaterial> material_;
+	std::shared_ptr<octoon::video::BlinnMaterial> material_;
 };
 
 int main(int argc, const char* argv[])
@@ -120,8 +116,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
-		auto material = std::make_shared<octoon::video::PhongMaterial>();
-
+		auto material = std::make_shared<octoon::video::BlinnMaterial>();
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
 		for (int i = 0; i < 1; ++i)
@@ -129,6 +124,7 @@ int main(int argc, const char* argv[])
 			auto object = std::make_shared<octoon::GameObject>();
 			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 3.0, 0.2));
 			object->addComponent<octoon::MeshRendererComponent>(material);
+
 			//object->addComponent<octoon::GuizmoComponent>(camera);
 			object->addComponent<CubeController>(material);
 			object->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
@@ -143,10 +139,12 @@ int main(int argc, const char* argv[])
 		auto sphere = std::make_shared<octoon::GameObject>();
 		sphere->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0f));
 		sphere->addComponent<octoon::MeshRendererComponent>(material);
+
 		//sphere->addComponent<octoon::GuizmoComponent>(camera);
 		//sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
 		sphere->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
+
 		//sphere->addComponent<octoon::SpringJoint>(domino[0]->getComponent<octoon::Rigidbody>());
 		{
 			auto transform_component = sphere->getComponent<octoon::TransformComponent>();
@@ -156,6 +154,7 @@ int main(int argc, const char* argv[])
 		auto volumes = std::make_shared<octoon::GameObject>();
 		volumes->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCone(0.5, 1.0));
 		volumes->addComponent<octoon::MeshRendererComponent>(material);
+
 		// volumes->addComponent<octoon::GuizmoComponent>(camera);
 		{
 			auto mesh_component = volumes->getComponent<octoon::MeshFilterComponent>();
@@ -180,6 +179,7 @@ int main(int argc, const char* argv[])
 		auto plane = std::make_shared<octoon::GameObject>();
 		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(12.0, 0.5, 12.0));
 		plane->addComponent<octoon::MeshRendererComponent>(material);
+
 		//plane->addComponent<octoon::GuizmoComponent>(camera);
 		plane->addComponent<octoon::Rigidbody>(true, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(12.0f, 0.5f, 12.0f));

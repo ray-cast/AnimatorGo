@@ -26,7 +26,7 @@ namespace octoon
 
 			void main()
 			{
-				oTexcoord0 = normalize(NORMAL0.xyz);
+				oTexcoord0 = normalize(mat3(model) * NORMAL0.xyz);
 				oTexcoord1 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";
@@ -53,7 +53,7 @@ namespace octoon
 				vec3 H = normalize(V + lightDir);
 
 				float nl = max(0.0f, dot(N, lightDir));
-				float spec = pow(max(0, dot(N, H)), pow(4096, shininess));
+				float spec = pow(max(0, dot(N, H)), pow(8192, shininess));
 
 				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
 			})";

@@ -302,9 +302,11 @@ namespace octoon
 			_normals = float3s();
 			_colors = float4s();
 			_tangents = float4s();
+			_weights = VertexWeights();
+			_bindposes = float4x4s();
 			_indices = Uint1Array();
 
-			for (std::size_t i = 0; i < 8; i++)
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
 				_texcoords[i] = float2s();
 		}
 
@@ -316,12 +318,14 @@ namespace octoon
 			mesh->setVertexArray(this->getVertexArray());
 			mesh->setNormalArray(this->getNormalArray());
 			mesh->setColorArray(this->getColorArray());
-			mesh->setTexcoordArray(this->getTexcoordArray());
 			mesh->setWeightArray(this->getWeightArray());
 			mesh->setTangentArray(this->getTangentArray());
 			mesh->setBindposes(this->getBindposes());
 			mesh->setIndicesArray(this->getIndicesArray());
 			mesh->_boundingBox = this->_boundingBox;
+
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				mesh->setTexcoordArray(this->getTexcoordArray(i), i);
 
 			return mesh;
 		}
@@ -333,12 +337,11 @@ namespace octoon
 
 			for (std::uint32_t i = 0; i <= segments; i++)
 			{
+				float theta = thetaStart + (float)i / segments * thetaLength;
+
 				float3 v;
-
-				float segment = thetaStart + (float)i / segments * thetaLength;
-
-				v.x = radius * math::cos(segment);
-				v.y = radius * math::sin(segment);
+				v.x = radius * math::cos(theta);
+				v.y = radius * math::sin(theta);
 				v.z = 0;
 
 				_vertices.push_back(v);
@@ -916,8 +919,7 @@ namespace octoon
 						vertex.z = radius * math::sin(u * math::PI_2);
 
 						_vertices.push_back(vertex);
-						vertex.y = 0;
-						_normals.push_back(math::normalize(vertex));
+						_normals.push_back(math::normalize(Vector3(vertex.x, 0, vertex.z)));
 						_texcoords[0].emplace_back(u, v);
 
 						vertices.push_back((std::uint32_t)_vertices.size() - 1);
@@ -930,8 +932,7 @@ namespace octoon
 						Vector3 vertex;
 						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
 						vertex.y = radius * math::cos(v * math::PI);
-						if (vertex.y > 0.f) vertex.y += half_height;
-						else vertex.y -= half_height;
+						vertex.y += (vertex.y > 0.f) ? half_height : -half_height;
 						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
 
 						_vertices.push_back(vertex);
@@ -947,8 +948,7 @@ namespace octoon
 
 						Vector3 vertex;
 						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
-						vertex.y = radius * math::cos(v * math::PI);
-						vertex.y += half_height;
+						vertex.y = radius * math::cos(v * math::PI) + half_height;
 						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
 
 						_vertices.push_back(vertex);

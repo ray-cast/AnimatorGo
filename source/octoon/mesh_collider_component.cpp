@@ -3,7 +3,6 @@
 #include <octoon/runtime/except.h>
 #include <PxPhysicsAPI.h>
 
-
 namespace octoon
 {
     OctoonImplementSubClass(MeshCollider, Collider, "MeshCollider")
@@ -11,7 +10,6 @@ namespace octoon
     MeshCollider::MeshCollider() noexcept
 		: isConvex(true)
     {
-
     }
 
 	MeshCollider::MeshCollider(model::MeshPtr m) noexcept
@@ -21,7 +19,6 @@ namespace octoon
 
     MeshCollider::~MeshCollider()
     {
-
     }
 
     GameComponentPtr MeshCollider::clone() const noexcept
@@ -53,7 +50,6 @@ namespace octoon
 
     void MeshCollider::onCollisionStay() noexcept
     {
-
     }
 
     void MeshCollider::onAttach() except
@@ -89,16 +85,14 @@ namespace octoon
 			physx::PxDefaultMemoryOutputStream buf;
 			physx::PxConvexMeshCookingResult::Enum result;
 			if (!physics_feature->getCooking()->cookConvexMesh(convexDesc, buf, &result))
-			{
-				runtime::runtime_error::create("cook convex mesh failed!");
-				return;
-			}
+				throw runtime::runtime_error::create("cook convex mesh failed!");
+
 			physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 			physx::PxConvexMesh* convexMesh = physics_feature->getSDK()->createConvexMesh(input);
 
 			shape = physics_feature->getSDK()->createShape(physx::PxConvexMeshGeometry(convexMesh), *this->shared_material->getMaterial()); // reference count is 1
 			if (!shape)
-				runtime::runtime_error::create("create shape failed!");
+				throw runtime::runtime_error::create("create shape failed!");
 		}
 		else
 		{
@@ -115,10 +109,7 @@ namespace octoon
 			physx::PxTriangleMeshCookingResult::Enum result;
 			bool status = physics_feature->getCooking()->cookTriangleMesh(meshDesc, writeBuffer, &result);
 			if (!status)
-			{
-				runtime::runtime_error::create("cook triangle mesh failed!");
-				return;
-			}
+				throw runtime::runtime_error::create("cook triangle mesh failed!");
 
 			physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
 
@@ -127,7 +118,7 @@ namespace octoon
 
 			shape = physics_feature->getSDK()->createShape(triGeom, *this->shared_material->getMaterial()); // reference count is 1
 			if (!shape)
-				runtime::runtime_error::create("create shape failed!");
+				throw runtime::runtime_error::create("create shape failed!");
 		}
 	}
 

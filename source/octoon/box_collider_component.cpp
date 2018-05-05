@@ -62,7 +62,7 @@ namespace octoon
 		physx::PxBoxGeometry geometry(dimensions);
 		shape = physics_feature->getSDK()->createShape(geometry, *this->shared_material->getMaterial()); // reference count is 1
 		if (!shape)
-			runtime::runtime_error::create("create shape failed!");
+			throw runtime::runtime_error::create("create shape failed!");
 	}
 
 	void

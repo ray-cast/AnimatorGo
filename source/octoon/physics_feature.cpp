@@ -26,7 +26,7 @@ namespace octoon
 	{
 		foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
 		if (!foundation)
-			runtime::runtime_error::create("PxCreateFoundation failed!");
+			throw runtime::runtime_error::create("PxCreateFoundation failed!");
 
 		bool recordMemoryAllocations = true;
 
@@ -37,7 +37,7 @@ namespace octoon
 		physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
 			physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
 		if (!physics)
-			runtime::runtime_error::create("PxCreatePhysics failed!");
+			throw runtime::runtime_error::create("PxCreatePhysics failed!");
 
 		physx::PxTolerancesScale scale;
 		scale.length = 1;
@@ -45,10 +45,10 @@ namespace octoon
 
 		cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
 		if (!cooking)
-			runtime::runtime_error::create("PxCreateCooking failed!");
+			throw runtime::runtime_error::create("PxCreateCooking failed!");
 
 		if (!PxInitExtensions(*physics, pvd))
-			runtime::runtime_error::create("PxInitExtensions failed!");
+			throw runtime::runtime_error::create("PxInitExtensions failed!");
 
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
 		Physics::setGravity(math::Vector3(0.f, -9.f, 0.f));

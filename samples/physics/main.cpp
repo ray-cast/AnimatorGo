@@ -123,7 +123,7 @@ int main(int argc, const char* argv[])
 
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
-		for (int i = 0; i < 2; ++i)
+		for (int i = 0; i < 8; ++i)
 		{
 			auto object = std::make_shared<octoon::GameObject>();
 			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 3.0, 0.2));

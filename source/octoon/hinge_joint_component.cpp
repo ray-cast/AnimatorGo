@@ -70,7 +70,7 @@ namespace octoon
 			actor0, physx::PxTransform(anchor.x, anchor.y, anchor.z),
 			actor1, physx::PxTransform(connectedAnchor.x, connectedAnchor.y, connectedAnchor.z));
 
-		physx::PxJointAngularLimitPair limitPair(minDistance, maxDistance, physx::PxSpring(spring, damper));
+		physx::PxJointAngularLimitPair limitPair(limits.min, limits.max, physx::PxSpring(spring.spring, spring.damper));
 		revolute_joint->setLimit(limitPair);
 		revolute_joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
 		joint = revolute_joint;

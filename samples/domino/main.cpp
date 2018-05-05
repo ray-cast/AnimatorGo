@@ -123,19 +123,25 @@ int main(int argc, const char* argv[])
 		auto material = std::make_shared<octoon::video::PhongMaterial>();
 
 
+		float r = 3.0f;
+		int num = 16;
+		float alpha = 2;
+		float beta = 1;
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
-		for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < num; ++i)
 		{
+			float theta = 3.1415 * 2 * i / num;
 			auto object = std::make_shared<octoon::GameObject>();
-			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 3.0, 0.2));
+			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 5.0, 0.2));
 			object->addComponent<octoon::MeshRendererComponent>(material);
 			//object->addComponent<octoon::GuizmoComponent>(camera);
-			object->addComponent<CubeController>(material);
+			//object->addComponent<CubeController>(material);
 			object->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
-			object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 3.0f, 0.2f));
+			object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 5.0f, 0.2f));
 			{
 				auto transform_component = object->getComponent<octoon::TransformComponent>();
-				transform_component->setTranslate(octoon::math::Vector3(0.f, 5.f, 6.0 * i / 8 - 3.f));
+				transform_component->setTranslate(octoon::math::Vector3((alpha + beta * theta)*cos(theta), 2.f, (alpha + beta * theta)*sin(theta)));
+				transform_component->setQuaternion(octoon::math::Quaternion(octoon::math::float3(0.f, cos(theta), 0.f)));
 			}
 			domino.push_back(object);
 		}
@@ -143,46 +149,22 @@ int main(int argc, const char* argv[])
 		auto sphere = std::make_shared<octoon::GameObject>();
 		sphere->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0f));
 		sphere->addComponent<octoon::MeshRendererComponent>(material);
-		//sphere->addComponent<octoon::GuizmoComponent>(camera);
-		//sphere->addComponent<CubeController>(material);
+		sphere->addComponent<octoon::GuizmoComponent>(camera);
+		sphere->addComponent<CubeController>(material);
 		sphere->addComponent<octoon::SphereCollider>(1.0f);
 		sphere->addComponent<octoon::Rigidbody>(false, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
 		//sphere->addComponent<octoon::SpringJoint>(domino[0]->getComponent<octoon::Rigidbody>());
 		{
 			auto transform_component = sphere->getComponent<octoon::TransformComponent>();
-			transform_component->setTranslate(octoon::math::Vector3(-2.f, 5.f, 0.f));
-		}
-
-		auto volumes = std::make_shared<octoon::GameObject>();
-		volumes->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCone(0.5, 1.0));
-		volumes->addComponent<octoon::MeshRendererComponent>(material);
-		// volumes->addComponent<octoon::GuizmoComponent>(camera);
-		{
-			auto mesh_component = volumes->getComponent<octoon::MeshFilterComponent>();
-			volumes->addComponent<octoon::MeshCollider>(mesh_component->getMesh());
-			volumes->addComponent<octoon::Rigidbody>(false, 1.0f);
-			auto transform_component = volumes->getComponent<octoon::TransformComponent>();
-			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 0.f));
-		}
-
-		auto floor = std::make_shared<octoon::GameObject>();
-		floor->addComponent<octoon::MeshFilterComponent>(octoon::model::makeFloor(0.5f, 1.0f));
-		floor->addComponent<octoon::MeshRendererComponent>(material);
-		floor->addComponent<octoon::GuizmoComponent>(camera);
-		{
-			auto mesh_component = floor->getComponent<octoon::MeshFilterComponent>();
-			floor->addComponent<octoon::MeshCollider>(mesh_component->getMesh());
-			floor->addComponent<octoon::Rigidbody>(false, 1.0f);
-			auto transform_component = floor->getComponent<octoon::TransformComponent>();
-			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 1.f));
+			transform_component->setTranslate(octoon::math::Vector3(0.f, 5.f, 0.f));
 		}
 
 		auto plane = std::make_shared<octoon::GameObject>();
-		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(12.0, 0.5, 12.0));
+		plane->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(50.0f, 1.0f, 50.0f));
 		plane->addComponent<octoon::MeshRendererComponent>(material);
 		//plane->addComponent<octoon::GuizmoComponent>(camera);
 		plane->addComponent<octoon::Rigidbody>(true, 1.0f, octoon::math::Vector3(0.f, 0.0f, 0.f));
-		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(12.0f, 0.5f, 12.0f));
+		plane->addComponent<octoon::BoxCollider>(octoon::math::Vector3(50.0f, 1.0f, 50.0f));
 		{
 			auto transform_component = plane->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(0.f, -5.f, 0.f));

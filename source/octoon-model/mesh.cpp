@@ -905,7 +905,7 @@ namespace octoon
 			float half_height = mid_height / 2;
 
 			// make it even
-			float widthSegments = segments;
+			std::uint32_t widthSegments = segments;
 			segments = 2 * (segments / 2);
 
 			std::vector<std::uint32_t> vertices;
@@ -936,8 +936,7 @@ namespace octoon
 
 						Vector3 vertex;
 						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
-						vertex.y = radius * math::cos(v * math::PI);
-						vertex.y += (vertex.y > 0.f) ? half_height : -half_height;
+						vertex.y = radius * math::cos(v * math::PI) - half_height;
 						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
 
 						_vertices.push_back(vertex);

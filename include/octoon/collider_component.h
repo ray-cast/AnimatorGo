@@ -21,15 +21,6 @@ namespace octoon
 		Collider() noexcept;
 		~Collider();
 
-		void setBounciness(float b) noexcept;
-		float getBounciness() const noexcept;
-
-		void setDensity(float d) noexcept;
-		float getDensity() const noexcept;
-
-		void setFriction(float f) noexcept;
-		float getFriction() const noexcept;
-
 		void setSharedMaterial(PhysicsMaterial material) except;
 		std::shared_ptr<PhysicsMaterial> getSharedMaterial() except;
 
@@ -44,10 +35,7 @@ namespace octoon
 	protected:
 		physx::PxShape* shape;
 
-		float bounciness; // Get the bounciness used by the collider.
-		float density; // The density of the collider used to calculate its mass (when auto mass is enabled).
-		float friction; // Get the friction used by the collider.
-		std::shared_ptr<PhysicsMaterial> shared_material; // The PhysicsMaterial2D that is applied to this collider.
+		std::shared_ptr<PhysicsMaterial> shared_material; // The PhysicsMaterial that is applied to this collider.
 
 		friend class Rigidbody;
 	};

@@ -75,6 +75,11 @@ namespace octoon
 	Collider::setSharedMaterial(PhysicsMaterial material) except
 	{
 		shared_material = std::make_shared<PhysicsMaterial>(material);
+		if (shape)
+		{
+			physx::PxMaterial * material_list = shared_material->getMaterial();
+			shape->setMaterials(&material_list, 1);
+		}
 	}
 
 	std::shared_ptr<PhysicsMaterial>

@@ -58,6 +58,10 @@ namespace octoon
     void PhysicsMaterial::setStaticFriction(float f) noexcept
     {
 		static_friction = f;
+		if (material)
+		{
+			material->setStaticFriction(f);
+		}
     }
 
     float PhysicsMaterial::getStaticFriction() const noexcept
@@ -68,6 +72,10 @@ namespace octoon
     void PhysicsMaterial::setDynamicFriction(float f) noexcept
     {
         f = dynamic_friction;
+		if (material)
+		{
+			material->setDynamicFriction(f);
+		}
     }
 
     float PhysicsMaterial::getDynamicFriction() const noexcept
@@ -78,6 +86,10 @@ namespace octoon
 	void PhysicsMaterial::setRestitution(float r) noexcept
 	{
 		restitution = r;
+		if (material)
+		{
+			material->setRestitution(r);
+		}
 	}
 
 	float PhysicsMaterial::getRestitution() const noexcept

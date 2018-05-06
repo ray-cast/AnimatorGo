@@ -51,7 +51,7 @@ namespace octoon
 			throw runtime::runtime_error::create("PxInitExtensions failed!");
 
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale());
-		Physics::setGravity(math::Vector3(0.f, -9.f, 0.f));
+		Physics::setGravity(math::Vector3(0.f, -9.8f, 0.f));
 		math::Vector3 g = Physics::getGravity();
 		sceneDesc.gravity = physx::PxVec3(g.x, g.y, g.z);
 		dispatcher = physx::PxDefaultCpuDispatcherCreate(2);

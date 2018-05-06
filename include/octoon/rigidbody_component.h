@@ -71,12 +71,16 @@ namespace octoon
         private:
 			physx::PxRigidActor* body;
 
+			float mass; // Mass of the rigidbody.
             float angularVelocity;
             float gravityScale; // The degree to which this object is affected by gravity.
+
 			bool isKinematic;
-            float mass; // Mass of the rigidbody.
+			bool isNeedUpdate;
+
+			RigidbodySleepMode sleepMode;
+
 			math::Vector3 massOffset;
-            RigidbodySleepMode sleepMode;
             math::Vector3 velocity;
 
             friend class Collider;

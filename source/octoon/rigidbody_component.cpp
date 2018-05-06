@@ -13,6 +13,7 @@ namespace octoon
     Rigidbody::Rigidbody() noexcept
 		: body(nullptr)
 		, isKinematic(true)
+		, isNeedUpdate(true)
 		, mass(1.0f)
 		, massOffset()
     {
@@ -38,13 +39,15 @@ namespace octoon
 		body = nullptr;
     }
 
-	GameComponentPtr Rigidbody::clone() const noexcept
+	GameComponentPtr
+	Rigidbody::clone() const noexcept
     {
 		auto instance = std::make_shared<Rigidbody>();
 		return instance;
     }
 
-    void Rigidbody::setAngularVelocity(const math::float3& v) noexcept
+    void
+    Rigidbody::setAngularVelocity(const math::float3& v) noexcept
     {
 		if ( !isKinematic && body)
 		{
@@ -53,7 +56,8 @@ namespace octoon
 		}
     }
 
-	math::float3 Rigidbody::getAngularVelocity() const noexcept
+	math::float3
+	Rigidbody::getAngularVelocity() const noexcept
     {
 		math::float3 retval;
 		if (!isKinematic && body)
@@ -68,7 +72,8 @@ namespace octoon
 		return retval;
     }
 
-    void Rigidbody::setMass(float m) noexcept
+    void
+    Rigidbody::setMass(float m) noexcept
     {
 		if (!isKinematic && body)
 		{
@@ -77,7 +82,8 @@ namespace octoon
 		}
     }
 
-    float Rigidbody::getMass() const noexcept
+    float
+    Rigidbody::getMass() const noexcept
     {
 		float retval;
 		if (!isKinematic && body)
@@ -89,17 +95,20 @@ namespace octoon
 		return retval;
     }
 
-	void Rigidbody::setMassOffset(math::Vector3 offset) noexcept
+	void
+	Rigidbody::setMassOffset(math::Vector3 offset) noexcept
 	{
 		massOffset = offset;
 	}
 
-	math::Vector3 Rigidbody::getMassOffset() const noexcept
+	math::Vector3
+	Rigidbody::getMassOffset() const noexcept
 	{
 		return massOffset;
 	}
 
-    void Rigidbody::setSleepMode(RigidbodySleepMode mode) noexcept
+    void
+    Rigidbody::setSleepMode(RigidbodySleepMode mode) noexcept
     {
         sleepMode = mode;
         if(sleepMode == RigidbodySleepMode::NeverSleep)
@@ -113,12 +122,14 @@ namespace octoon
         }
     }
 
-    RigidbodySleepMode Rigidbody::getSleepMode() const noexcept
+    RigidbodySleepMode
+    Rigidbody::getSleepMode() const noexcept
     {
         return sleepMode;
     }
 
-	void Rigidbody::setIsKinematic(bool type) noexcept
+	void
+	Rigidbody::setIsKinematic(bool type) noexcept
 	{
 		if (isKinematic != type)
 		{
@@ -128,12 +139,14 @@ namespace octoon
 		}
 	}
 
-	bool Rigidbody::getIsKinematic() const noexcept
+	bool
+	Rigidbody::getIsKinematic() const noexcept
 	{
 		return isKinematic;
 	}
 
-    void Rigidbody::onActivate() except
+    void
+    Rigidbody::onActivate() except
     {
         this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
@@ -141,7 +154,8 @@ namespace octoon
 		buildRigidBody();
     }
 
-    void Rigidbody::onDeactivate() noexcept
+    void
+    Rigidbody::onDeactivate() noexcept
     {
 		releaseRigidBody();
 
@@ -149,7 +163,8 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
     }
 
-    void Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
+    void
+    Rigidbody::onAttachComponent(const GameComponentPtr& component) noexcept
     {
 		if (component->isA<Collider>())
 		{
@@ -159,7 +174,8 @@ namespace octoon
 		}
     }
 
-    void Rigidbody::onDetachComponent(const GameComponentPtr& component) noexcept
+    void
+    Rigidbody::onDetachComponent(const GameComponentPtr& component) noexcept
     {
 		if (component->isA<Collider>())
 		{
@@ -169,29 +185,37 @@ namespace octoon
 		}
     }
 
-	void Rigidbody::onFrameBegin() except
+	void
+	Rigidbody::onFrameBegin() except
 	{
 	}
 
-	void Rigidbody::onFrame() except
+	void
+	Rigidbody::onFrame() except
 	{
 	}
 
-	void Rigidbody::onFrameEnd() except
+	void
+	Rigidbody::onFrameEnd() except
 	{
 		if (body)
 		{
+			isNeedUpdate = false;
+
 			auto transform = body->getGlobalPose();
 
 			auto transformComponent = this->getComponent<TransformComponent>();
 			transformComponent->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z) - massOffset);
 			transformComponent->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
+
+			isNeedUpdate = true;
 		}
 	}
 
-	void Rigidbody::onMoveAfter() noexcept
+	void
+	Rigidbody::onMoveAfter() noexcept
 	{
-		if (body)
+		if (body && isNeedUpdate)
 		{
 			auto transform = this->getComponent<TransformComponent>();
 			auto& translate = transform->getTranslate();
@@ -205,7 +229,8 @@ namespace octoon
 		}
 	}
 
-	void Rigidbody::buildRigidBody() except
+	void
+	Rigidbody::buildRigidBody() except
 	{
 		if (body)return;
 		auto physicsFeature = GameApp::instance()->getFeature<PhysicsFeature>();
@@ -239,7 +264,8 @@ namespace octoon
 		physicsFeature->getScene()->addActor(*body);
 	}
 
-	void Rigidbody::releaseRigidBody() noexcept
+	void
+	Rigidbody::releaseRigidBody() noexcept
 	{
 		if (body)
 		{

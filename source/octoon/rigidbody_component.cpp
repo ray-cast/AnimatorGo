@@ -59,7 +59,7 @@ namespace octoon
 	math::float3
 	Rigidbody::getAngularVelocity() const noexcept
     {
-		math::float3 retval;
+		math::float3 retval(0.f);
 		if (!isKinematic && body)
 		{
 			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
@@ -85,7 +85,7 @@ namespace octoon
     float
     Rigidbody::getMass() const noexcept
     {
-		float retval;
+		float retval(0.f);
 		if (!isKinematic && body)
 		{
 			physx::PxRigidBody* rigid_body = static_cast<physx::PxRigidBody*>(body);
@@ -205,7 +205,7 @@ namespace octoon
 			auto transform = body->getGlobalPose();
 
 			auto transformComponent = this->getComponent<TransformComponent>();
-			transformComponent->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z) - massOffset);
+			transformComponent->setTranslate(math::float3(transform.p.x, transform.p.y, transform.p.z));
 			transformComponent->setQuaternion(math::Quaternion(transform.q.x, transform.q.y, transform.q.z, transform.q.w));
 
 			isNeedUpdate = true;
@@ -222,7 +222,7 @@ namespace octoon
 			auto& rotation = transform->getQuaternion();
 
 			physx::PxTransform pose;
-			pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
+			pose.p = physx::PxVec3(translate.x, translate.y, translate.z);
 			pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
 
 			body->setGlobalPose(pose);
@@ -242,7 +242,7 @@ namespace octoon
 		auto& rotation = transform->getQuaternion();
 
 		physx::PxTransform pose;
-		pose.p = physx::PxVec3(translate.x + massOffset.x, translate.y + massOffset.y, translate.z + massOffset.z);
+		pose.p = physx::PxVec3(translate.x, translate.y, translate.z);
 		pose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
 
 		if (isKinematic)

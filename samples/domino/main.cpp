@@ -125,7 +125,7 @@ int main(int argc, const char* argv[])
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
 		for (int i = 0; i < num; ++i)
 		{
-			float theta = 3.1415 * 2 * i / num;
+			float theta = 3.1415f * 2 * i / num;
 			auto object = std::make_shared<octoon::GameObject>();
 			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 5.0, 0.2));
 			object->addComponent<octoon::MeshRendererComponent>(material);

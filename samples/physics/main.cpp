@@ -15,6 +15,7 @@
 #include <octoon/fixed_joint_component.h>
 #include <octoon/spring_joint_component.h>
 #include <octoon/video/blinn_material.h>
+#include <octoon/video/line_material.h>
 #include <octoon/ui/imgui.h>
 
 class CubeController : public octoon::GameComponent
@@ -117,6 +118,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
 		auto material = std::make_shared<octoon::video::BlinnMaterial>();
+		auto line_material = std::make_shared<octoon::video::LineMaterial>();
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
 		for (int i = 0; i < 1; ++i)
@@ -131,7 +133,7 @@ int main(int argc, const char* argv[])
 			object->addComponent<octoon::BoxCollider>(octoon::math::Vector3(1.0f, 3.0f, 0.2f));
 			{
 				auto transform_component = object->getComponent<octoon::TransformComponent>();
-				transform_component->setTranslate(octoon::math::Vector3(0.f, 5.f, 6.0 * i / 8 - 3.f));
+				transform_component->setTranslate(octoon::math::Vector3(0.f, 5.f, 6.0f * i / 8 - 3.f));
 			}
 			domino.push_back(object);
 		}
@@ -164,15 +166,15 @@ int main(int argc, const char* argv[])
 			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 0.f));
 		}
 
-		auto floor = std::make_shared<octoon::GameObject>();
-		floor->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCapsule(0.5f, 2.0f, 16, 2));
-		floor->addComponent<octoon::MeshRendererComponent>(material);
-		floor->addComponent<octoon::GuizmoComponent>(camera);
+		auto capsule = std::make_shared<octoon::GameObject>();
+		capsule->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCapsule(0.5f, 2.0f, 16, 2));
+		capsule->addComponent<octoon::MeshRendererComponent>(material);
+		capsule->addComponent<octoon::GuizmoComponent>(camera);
 		{
-			auto mesh_component = floor->getComponent<octoon::MeshFilterComponent>();
-			floor->addComponent<octoon::MeshCollider>();
-			floor->addComponent<octoon::Rigidbody>(false, 1.0f);
-			auto transform_component = floor->getComponent<octoon::TransformComponent>();
+			auto mesh_component = capsule->getComponent<octoon::MeshFilterComponent>();
+			capsule->addComponent<octoon::MeshCollider>();
+			capsule->addComponent<octoon::Rigidbody>(false, 1.0f);
+			auto transform_component = capsule->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 1.f));
 		}
 

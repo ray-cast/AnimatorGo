@@ -82,10 +82,6 @@ namespace octoon
 
 			math::Vector3 massOffset;
             math::Vector3 velocity;
-
-            friend class Collider;
-            friend class BoxCollider;
-			friend class SphereCollider;
     };
 }
 

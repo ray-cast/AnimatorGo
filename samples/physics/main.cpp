@@ -15,6 +15,7 @@
 #include <octoon/fixed_joint_component.h>
 #include <octoon/spring_joint_component.h>
 #include <octoon/video/blinn_material.h>
+#include <octoon/video/phong_material.h>
 #include <octoon/video/line_material.h>
 #include <octoon/ui/imgui.h>
 
@@ -118,6 +119,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
 		auto material = std::make_shared<octoon::video::BlinnMaterial>();
+		auto phong_material = std::make_shared<octoon::video::PhongMaterial>();
 		auto line_material = std::make_shared<octoon::video::LineMaterial>();
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
@@ -140,7 +142,7 @@ int main(int argc, const char* argv[])
 
 		auto sphere = std::make_shared<octoon::GameObject>();
 		sphere->addComponent<octoon::MeshFilterComponent>(octoon::model::makeSphere(1.0f));
-		sphere->addComponent<octoon::MeshRendererComponent>(material);
+		sphere->addComponent<octoon::MeshRendererComponent>(phong_material);
 
 		//sphere->addComponent<octoon::GuizmoComponent>(camera);
 		//sphere->addComponent<CubeController>(material);

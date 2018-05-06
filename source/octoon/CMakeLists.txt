@@ -99,6 +99,7 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/physics_material.cpp
 	${HEADER_PATH}/joint_limits.h
 	${HEADER_PATH}/joint_spring.h
+	${HEADER_PATH}/joint_motor.h
 	${HEADER_PATH}/rigidbody_component.h
 	${SOURCE_PATH}/rigidbody_component.cpp
 	${HEADER_PATH}/collider_component.h

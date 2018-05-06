@@ -6,6 +6,7 @@
 #include <octoon/joint_component.h>
 #include <octoon/joint_limits.h>
 #include <octoon/joint_spring.h>
+#include <octoon/joint_motor.h>
 #include <octoon/math/math.h>
 
 namespace physx
@@ -37,7 +38,7 @@ namespace octoon
 			void releaseJoint(const GameComponentPtr& component) except;
         private:
 			JointLimits limits; // Limit of angular rotation(in degrees) on the hinge joint.
-			//float motor; // The motor will apply a force up to a maximum force to achieve the target velocity in degrees per second.
+			JointMotor motor; // The motor will apply a force up to a maximum force to achieve the target velocity in degrees per second.
 			JointSpring spring; // The spring attempts to reach a target angle by adding spring and damping forces.
 			bool useLimits; // Enables the joint's limits. Disabled by default.
 			bool useMotor; // Enables the joint's motor. Disabled by default.

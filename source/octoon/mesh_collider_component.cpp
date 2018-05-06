@@ -1,4 +1,5 @@
 #include <octoon/mesh_collider_component.h>
+#include <octoon/mesh_filter_component.h>
 #include <octoon/rigidbody_component.h>
 #include <octoon/runtime/except.h>
 #include <PxPhysicsAPI.h>
@@ -12,11 +13,6 @@ namespace octoon
     {
     }
 
-	MeshCollider::MeshCollider(model::MeshPtr m) noexcept
-		: isConvex(true), sharedMesh(m)
-	{
-	}
-
     MeshCollider::~MeshCollider()
     {
     }
@@ -25,16 +21,6 @@ namespace octoon
     {
         return std::make_shared<MeshCollider>();
     }
-
-	void MeshCollider::setMesh(model::MeshPtr m) noexcept
-	{
-		sharedMesh = m;
-	}
-
-	model::MeshPtr MeshCollider::getMesh() const noexcept
-	{
-		return sharedMesh;
-	}
 
     void MeshCollider::onCollisionChange() noexcept
     {
@@ -54,30 +40,38 @@ namespace octoon
 
     void MeshCollider::onAttach() except
     {
-		buildCollider();
     }
 
     void MeshCollider::onDetach() noexcept
     {
-		releaseCollider();
     }
 
     void MeshCollider::onAttachComponent(const GameComponentPtr& component) except
     {
+		if (component->isA<MeshFilterComponent>())
+		{
+			buildCollider(component);
+		}
     }
 
     void MeshCollider::onDetachComponent(const GameComponentPtr& component) noexcept
     {
+		if (component->isA<MeshFilterComponent>())
+		{
+			releaseCollider();
+		}
     }
 
-	void MeshCollider::buildCollider() except
+	void MeshCollider::buildCollider(const GameComponentPtr& component) except
 	{
 		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
+		auto meshComponent = component->downcast_pointer<MeshFilterComponent>();
+		auto sharedMesh = meshComponent->getMesh();
 
 		if (isConvex)
 		{
 			physx::PxConvexMeshDesc convexDesc;
-			convexDesc.points.count = sharedMesh->getNumVertices();
+			convexDesc.points.count = (physx::PxU32)sharedMesh->getNumVertices();
 			convexDesc.points.stride = sizeof(physx::PxVec3);
 			convexDesc.points.data = sharedMesh->getVertexArray().data();
 			convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
@@ -97,11 +91,11 @@ namespace octoon
 		else
 		{
 			physx::PxTriangleMeshDesc meshDesc;
-			meshDesc.points.count = sharedMesh->getNumVertices();
+			meshDesc.points.count = (physx::PxU32)sharedMesh->getNumVertices();
 			meshDesc.points.stride = sizeof(physx::PxVec3);
 			meshDesc.points.data = sharedMesh->getVertexArray().data();
 
-			meshDesc.triangles.count = sharedMesh->getNumIndices() / 3;
+			meshDesc.triangles.count = (physx::PxU32)(sharedMesh->getNumIndices() / 3);
 			meshDesc.triangles.stride = 3 * sizeof(physx::PxU32);
 			meshDesc.triangles.data = sharedMesh->getIndicesArray().data();
 

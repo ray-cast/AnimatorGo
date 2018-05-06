@@ -24,6 +24,12 @@ namespace octoon
 	BoxCollider::setSize(const math::Vector3& s) noexcept
 	{
 		size = s;
+		if (shape)
+		{
+			physx::PxVec3 dimensions(size.x / 2, size.y / 2, size.z / 2);
+			physx::PxBoxGeometry geometry(dimensions);
+			shape->setGeometry(geometry);
+		}
 	}
 
 	const math::Vector3&

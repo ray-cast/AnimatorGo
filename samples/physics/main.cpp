@@ -158,7 +158,7 @@ int main(int argc, const char* argv[])
 		// volumes->addComponent<octoon::GuizmoComponent>(camera);
 		{
 			auto mesh_component = volumes->getComponent<octoon::MeshFilterComponent>();
-			volumes->addComponent<octoon::MeshCollider>(mesh_component->getMesh());
+			volumes->addComponent<octoon::MeshCollider>();
 			volumes->addComponent<octoon::Rigidbody>(false, 1.0f);
 			auto transform_component = volumes->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 0.f));
@@ -170,7 +170,7 @@ int main(int argc, const char* argv[])
 		floor->addComponent<octoon::GuizmoComponent>(camera);
 		{
 			auto mesh_component = floor->getComponent<octoon::MeshFilterComponent>();
-			floor->addComponent<octoon::MeshCollider>(mesh_component->getMesh());
+			floor->addComponent<octoon::MeshCollider>();
 			floor->addComponent<octoon::Rigidbody>(false, 1.0f);
 			auto transform_component = floor->getComponent<octoon::TransformComponent>();
 			transform_component->setTranslate(octoon::math::Vector3(2.f, 5.f, 1.f));

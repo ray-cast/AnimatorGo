@@ -8,7 +8,7 @@ namespace octoon
     OctoonImplementSubClass(CapsuleCollider, Collider, "CapsuleCollider")
 
     CapsuleCollider::CapsuleCollider() noexcept
-		: radius(), halfHeight()
+		: radius(0.5f), halfHeight(1.0f)
     {
     }
 
@@ -29,6 +29,11 @@ namespace octoon
 	void CapsuleCollider::setRadius(float r) except
 	{
 		radius = r;
+		if (shape)
+		{
+			physx::PxCapsuleGeometry geometry(radius, halfHeight);
+			shape->setGeometry(geometry);
+		}
 	}
 
 	float CapsuleCollider::getRadius() const except
@@ -39,6 +44,11 @@ namespace octoon
 	void CapsuleCollider::setHalfHeight(float h) except
 	{
 		halfHeight = h;
+		if (shape)
+		{
+			physx::PxCapsuleGeometry geometry(radius, halfHeight);
+			shape->setGeometry(geometry);
+		}
 	}
 
 	float CapsuleCollider::getHalfHeight() const except

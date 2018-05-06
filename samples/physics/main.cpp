@@ -17,6 +17,7 @@
 #include <octoon/video/blinn_material.h>
 #include <octoon/video/phong_material.h>
 #include <octoon/video/line_material.h>
+#include <octoon/video/ggx_material.h>
 #include <octoon/ui/imgui.h>
 
 class CubeController : public octoon::GameComponent
@@ -121,6 +122,7 @@ int main(int argc, const char* argv[])
 		auto material = std::make_shared<octoon::video::BlinnMaterial>();
 		auto phong_material = std::make_shared<octoon::video::PhongMaterial>();
 		auto line_material = std::make_shared<octoon::video::LineMaterial>();
+		auto ggx_material = std::make_shared<octoon::video::GGXMaterial>();
 
 		std::vector<std::shared_ptr<octoon::GameObject>> domino;
 		for (int i = 0; i < 1; ++i)

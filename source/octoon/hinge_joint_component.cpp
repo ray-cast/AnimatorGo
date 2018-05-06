@@ -9,12 +9,14 @@ namespace octoon
 	OctoonImplementSubClass(HingeJoint, Joint, "HingeJoint")
 
 	HingeJoint::HingeJoint() noexcept
-		: Joint()
+		: Joint(), limits(), spring(), motor()
+		, useLimits(false), useMotor(false), useSpring(false)
     {
     }
 
 	HingeJoint::HingeJoint(const std::shared_ptr<Rigidbody>& connected_body) noexcept
-		: Joint(connected_body)
+		: Joint(connected_body), limits(), spring(), motor()
+		, useLimits(false), useMotor(false), useSpring(false)
 	{
 
 	}
@@ -70,9 +72,21 @@ namespace octoon
 			actor0, physx::PxTransform(anchor.x, anchor.y, anchor.z),
 			actor1, physx::PxTransform(connectedAnchor.x, connectedAnchor.y, connectedAnchor.z));
 
+		// spring and limit
 		physx::PxJointAngularLimitPair limitPair(limits.min, limits.max, physx::PxSpring(spring.spring, spring.damper));
 		revolute_joint->setLimit(limitPair);
 		revolute_joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eLIMIT_ENABLED, true);
+
+		// motor
+		revolute_joint->setDriveVelocity(motor.targetVelocity);
+		revolute_joint->setDriveForceLimit(motor.force);
+		revolute_joint->setConstraintFlag(physx::PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES, true);
+		revolute_joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eDRIVE_ENABLED, true);
+		if (motor.freeSpin)
+			revolute_joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eDRIVE_FREESPIN, true);
+		else
+			revolute_joint->setRevoluteJointFlag(physx::PxRevoluteJointFlag::eDRIVE_FREESPIN, false);
+
 		joint = revolute_joint;
 	}
 

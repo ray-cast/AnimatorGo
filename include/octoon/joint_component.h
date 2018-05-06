@@ -21,7 +21,7 @@ namespace octoon
     public:
         Joint() noexcept;
 		Joint(const std::shared_ptr<Rigidbody>& connected_body) noexcept;
-        ~Joint();
+        virtual ~Joint();
         virtual GameComponentPtr clone() const noexcept = 0;
         
     protected:

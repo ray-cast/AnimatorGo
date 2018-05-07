@@ -22,6 +22,7 @@
 #include <cstring>
 #include <chrono>
 #include <sstream>
+#include <fstream>
 
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, Ò»¸öµã£Ûx,y]
@@ -165,7 +166,7 @@ PathMeshingComponent::clone() const noexcept
 void
 PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 {
-	PathMeshing params;
+	PathMeshing& params = params_;
 
 	auto reader = json::parse(data);
 
@@ -415,15 +416,27 @@ PathMeshingComponent::onFrameEnd() except
 		stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
 #endif
 
-		io::fcntl::mkdir(stream.str().c_str());
+		auto dir = stream.str();
+		io::fcntl::mkdir(dir.c_str());
 
 		char uuid[64] = {};
 		runtime::GUID guid;
 		runtime::guid_generate(guid);
 		runtime::guid_to_string(guid, uuid);
 
-		stream << uuid << ".png";
+		dir +=uuid;
 
-		image.save(stream.str(), "png");
+		image.save(dir + ".png", "png");
+
+		std::ofstream file(dir + ".json", std::ios_base::out | std::ios_base::binary);
+		if (file)
+		{
+			std::ostringstream json;
+			json << R"({"x":)" << params_.transform.translate.x + params_.aabb.aabb.center().x << ",";
+			json << R"("y":)" << params_.transform.translate.y + params_.aabb.aabb.center().y << ",";
+			json << R"("path":")" << dir << R"("})";
+
+			file.write(json.str().c_str(), json.str().size());
+		}
 	}
 }

@@ -118,7 +118,7 @@ private:
 private:
 	std::string json_;
 	std::uint16_t bezierSteps_;
-
+	PathMeshing params_;
 	octoon::GameObjectPtr object_;
 	octoon::GameObjectPtr camera_;
 };

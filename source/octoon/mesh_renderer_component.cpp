@@ -30,8 +30,10 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
 		instance->setName(this->getName());
-		instance->setMaterial(this->getMaterial() ? this->getMaterial()->clone() : nullptr);
-		instance->setSharedMaterial(this->getSharedMaterial() ? this->getSharedMaterial() : this->getMaterial());
+		if (this->isSharedMaterial())
+			instance->setMaterial(this->getMaterial(), this->isSharedMaterial());
+		else
+			instance->setMaterial(this->getMaterial() ? this->getMaterial()->clone() : nullptr, this->isSharedMaterial());
 
 		return instance;
 	}
@@ -45,13 +47,11 @@ namespace octoon
 		auto meshFilter = this->getComponent<MeshFilterComponent>();
 
 		geometry_ = std::make_shared<video::Geometry>();
-		geometry_->setDrawType(video::DrawType::Triangles);
 		geometry_->setActive(true);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
-		if (meshFilter)
-			this->onMeshReplace(meshFilter->getMesh());
+		this->onMeshReplace(meshFilter->getMesh());
 	}
 
 	void
@@ -60,7 +60,10 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		if (geometry_)
+		{
 			geometry_->setActive(false);
+			geometry_ = nullptr;
+		}
 	}
 
 	void

@@ -5,17 +5,18 @@ namespace octoon
 	OctoonImplementSubInterface(RenderComponent, GameComponent, "RenderComponent")
 
 	RenderComponent::RenderComponent() noexcept
+		: isSharedMaterial_(false)
 	{
 	}
 
-	RenderComponent::RenderComponent(video::MaterialPtr&& material) noexcept
+	RenderComponent::RenderComponent(video::MaterialPtr&& material, bool sharedMesh) noexcept
 	{
-		this->setMaterial(std::move(material));
+		this->setMaterial(std::move(material), sharedMesh);
 	}
 
-	RenderComponent::RenderComponent(const video::MaterialPtr& material) noexcept
+	RenderComponent::RenderComponent(const video::MaterialPtr& material, bool sharedMesh) noexcept
 	{
-		this->setMaterial(material);
+		this->setMaterial(material, sharedMesh);
 	}
 
 	RenderComponent::~RenderComponent() noexcept
@@ -23,22 +24,24 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterial(video::MaterialPtr&& material) noexcept
+	RenderComponent::setMaterial(video::MaterialPtr&& material, bool sharedMesh) noexcept
 	{
 		if (material_ != material)
 		{
-			this->onMaterialReplace(material);
 			material_ = std::move(material);
+			isSharedMaterial_ = sharedMesh;
+			this->onMaterialReplace(material);
 		}
 	}
 
 	void
-	RenderComponent::setMaterial(const video::MaterialPtr& material) noexcept
+	RenderComponent::setMaterial(const video::MaterialPtr& material, bool sharedMesh) noexcept
 	{
 		if (material_ != material)
 		{
-			this->onMaterialReplace(material);
 			material_ = material;
+			isSharedMaterial_ = sharedMesh;
+			this->onMaterialReplace(material);
 		}
 	}
 
@@ -48,39 +51,14 @@ namespace octoon
 		return material_;
 	}
 
-	void
-	RenderComponent::setSharedMaterial(video::MaterialPtr&& material) noexcept
+	bool
+	RenderComponent::isSharedMaterial() const noexcept
 	{
-		if (sharedMaterial_ != material)
-		{
-			this->onMaterialReplace(material);
-			sharedMaterial_ = std::move(material);
-		}
-	}
-
-	void
-	RenderComponent::setSharedMaterial(const video::MaterialPtr& material) noexcept
-	{
-		if (sharedMaterial_ != material)
-		{
-			this->onMaterialReplace(material);
-			sharedMaterial_ = material;
-		}
-	}
-
-	const video::MaterialPtr&
-	RenderComponent::getSharedMaterial() const noexcept
-	{
-		return sharedMaterial_;
+		return isSharedMaterial_;
 	}
 
 	void
 	RenderComponent::onMaterialReplace(const video::MaterialPtr&) noexcept
-	{
-	}
-
-	void
-	RenderComponent::onSharedMaterialReplace(const video::MaterialPtr&) noexcept
 	{
 	}
 }

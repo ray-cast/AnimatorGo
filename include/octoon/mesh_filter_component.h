@@ -16,21 +16,18 @@ namespace octoon
 
 	public:
 		MeshFilterComponent() noexcept;
-		MeshFilterComponent(model::Mesh&& mesh) noexcept;
-		MeshFilterComponent(model::MeshPtr&& mesh) noexcept;
-		MeshFilterComponent(const model::Mesh& mesh) noexcept;
-		MeshFilterComponent(const model::MeshPtr& mesh) noexcept;
+		MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const model::Mesh& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 
-		void setMesh(model::Mesh&& mesh) noexcept;
-		void setMesh(model::MeshPtr&& mesh) noexcept;
-		void setMesh(const model::MeshPtr& mesh) noexcept;
+		void setMesh(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
 		const model::MeshPtr& getMesh() const noexcept;
 
-		void setSharedMesh(model::Mesh&& mesh) noexcept;
-		void setSharedMesh(model::MeshPtr&& mesh) noexcept;
-		void setSharedMesh(const model::MeshPtr& mesh) noexcept;
-		const model::MeshPtr& getSharedMesh() const noexcept;
+		bool isSharedMesh() const noexcept;
 
 		void uploadMeshData() noexcept;
 
@@ -41,17 +38,15 @@ namespace octoon
 
 	private:
 		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
-		virtual void onSharedMeshReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:
 		MeshFilterComponent(const MeshFilterComponent&) = delete;
 		MeshFilterComponent& operator=(const MeshFilterComponent&) = delete;
 
 	private:
+		bool isSharedMesh_;
 		model::MeshPtr mesh_;
-		model::MeshPtr sharedMesh_;
 		OnMeshReplaceEvents delegates_;
-		OnMeshReplaceEvents sharedDelegates_;
 	};
 }
 

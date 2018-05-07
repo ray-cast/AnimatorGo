@@ -5,27 +5,28 @@ namespace octoon
 	OctoonImplementSubClass(MeshFilterComponent, GameComponent, "MeshFilter")
 
 	MeshFilterComponent::MeshFilterComponent() noexcept
+		: isSharedMesh_(false)
 	{
 	}
 
-	MeshFilterComponent::MeshFilterComponent(model::Mesh&& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)));
+		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(const model::Mesh& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const model::Mesh& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::make_shared<model::Mesh>(mesh));
+		this->setMesh(std::make_shared<model::Mesh>(mesh), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(model::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::move(mesh));
+		this->setMesh(std::move(mesh), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(const model::MeshPtr& mesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const model::MeshPtr& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(mesh);
+		this->setMesh(mesh, sharedMesh);
 	}
 
 	MeshFilterComponent::~MeshFilterComponent() noexcept
@@ -33,28 +34,30 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::setMesh(model::Mesh&& mesh) noexcept
+	MeshFilterComponent::setMesh(model::Mesh&& mesh, bool sharedMesh) noexcept
 	{
 		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)));
 	}
 
 	void
-	MeshFilterComponent::setMesh(model::MeshPtr&& mesh) noexcept
+	MeshFilterComponent::setMesh(model::MeshPtr&& mesh, bool sharedMesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
-			this->onMeshReplace(mesh);
 			mesh_ = std::move(mesh);
+			isSharedMesh_ = sharedMesh;
+			this->onMeshReplace(mesh);
 		}
 	}
 
 	void
-	MeshFilterComponent::setMesh(const model::MeshPtr& mesh) noexcept
+	MeshFilterComponent::setMesh(const model::MeshPtr& mesh, bool sharedMesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
-			this->onMeshReplace(mesh);
 			mesh_ = mesh;
+			isSharedMesh_ = sharedMesh;
+			this->onMeshReplace(mesh);
 		}
 	}
 
@@ -64,36 +67,10 @@ namespace octoon
 		return mesh_;
 	}
 
-	void
-	MeshFilterComponent::setSharedMesh(model::Mesh&& mesh) noexcept
+	bool
+	MeshFilterComponent::isSharedMesh() const noexcept
 	{
-		this->setSharedMesh(std::make_shared<model::Mesh>(std::move(mesh)));
-	}
-
-	void
-	MeshFilterComponent::setSharedMesh(model::MeshPtr&& mesh) noexcept
-	{
-		if (sharedMesh_ != mesh)
-		{
-			this->onSharedMeshReplace(mesh);
-			sharedMesh_ = std::move(mesh);
-		}
-	}
-
-	void
-	MeshFilterComponent::setSharedMesh(const model::MeshPtr& mesh) noexcept
-	{
-		if (sharedMesh_ != mesh)
-		{
-			this->onSharedMeshReplace(mesh);
-			sharedMesh_ = mesh;
-		}
-	}
-
-	const model::MeshPtr&
-	MeshFilterComponent::getSharedMesh() const noexcept
-	{
-		return sharedMesh_;
+		return isSharedMesh_;
 	}
 
 	void
@@ -122,8 +99,11 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshFilterComponent>();
 		instance->setName(instance->getName());
-		instance->setMesh(mesh_ ? mesh_->clone() : nullptr);
-		instance->setSharedMesh(sharedMesh_ ? sharedMesh_ : mesh_);
+
+		if (isSharedMesh_)
+			instance->setMesh(mesh_, isSharedMesh_);
+		else
+			instance->setMesh(mesh_ ? mesh_->clone() : nullptr, isSharedMesh_);
 
 		return instance;
 	}
@@ -132,13 +112,6 @@ namespace octoon
 	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
 		for (auto& it : delegates_)
-			(*it)(mesh);
-	}
-
-	void
-	MeshFilterComponent::onSharedMeshReplace(const model::MeshPtr& mesh) noexcept
-	{
-		for (auto& it : sharedDelegates_)
 			(*it)(mesh);
 	}
 }

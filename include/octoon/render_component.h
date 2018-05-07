@@ -11,29 +11,26 @@ namespace octoon
 		OctoonDeclareSubInterface(RenderComponent, GameComponent)
 	public:
 		RenderComponent() noexcept;
-		RenderComponent(video::MaterialPtr&& material) noexcept;
-		RenderComponent(const video::MaterialPtr& material) noexcept;
+		RenderComponent(video::MaterialPtr&& material, bool sharedMesh = false) noexcept;
+		RenderComponent(const video::MaterialPtr& material, bool sharedMesh = false) noexcept;
 		virtual ~RenderComponent() noexcept;
 
-		void setMaterial(video::MaterialPtr&& material) noexcept;
-		void setMaterial(const video::MaterialPtr& material) noexcept;
+		void setMaterial(video::MaterialPtr&& material, bool sharedMesh = false) noexcept;
+		void setMaterial(const video::MaterialPtr& material, bool sharedMesh = false) noexcept;
 		const video::MaterialPtr& getMaterial() const noexcept;
 
-		void setSharedMaterial(video::MaterialPtr&& material) noexcept;
-		void setSharedMaterial(const video::MaterialPtr& material) noexcept;
-		const video::MaterialPtr& getSharedMaterial() const noexcept;
+		bool isSharedMaterial() const noexcept;
 
 	protected:
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept;
-		virtual void onSharedMaterialReplace(const video::MaterialPtr& material) noexcept;
 
 	private:
 		RenderComponent(const RenderComponent&) = delete;
 		RenderComponent& operator=(const RenderComponent&) = delete;
 
 	private:
+		bool isSharedMaterial_;
 		video::MaterialPtr material_;
-		video::MaterialPtr sharedMaterial_;
 	};
 }
 

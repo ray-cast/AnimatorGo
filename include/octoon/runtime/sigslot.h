@@ -25,6 +25,8 @@ namespace octoon
 			~signal() noexcept
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
+				for (auto each : signals)
+					each->connected_signals_remove(*this);
 				for(auto each:connected_signals)
 					each->signals_remove(*this);
 			}
@@ -74,10 +76,10 @@ namespace octoon
 			{
 				std::lock_guard<std::mutex> guard_slots(slots_mutex);
 				if(!f)return;
-				for(std::list<SlotType>::iterater it = slots.begin();
-					it < slots.end(); ++it)
+				for(std::list<SlotType>::iterator it = slots.begin();
+					it != slots.end(); ++it)
 				{
-					if(f.target == it->target)
+					if(f.target<T>() == it->target<T>())
 						return;
 				}
 				slots.push_back(f);
@@ -93,8 +95,8 @@ namespace octoon
 			{
 				std::lock_guard<std::mutex> guard_slots(slots_mutex);
 				if(!f)return;
-				for(std::list<SlotType>::iterater it = slots.begin();
-					it < slots.end(); ++it)
+				for(std::list<SlotType>::iterator it = slots.begin();
+					it != slots.end(); ++it)
 				{
 					if(&sig == &**it)
 					{
@@ -107,8 +109,8 @@ namespace octoon
 			void disconnect(SignalType& sig)
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
-				for(std::list<SignalType *>::iterater it = signals.begin();
-					it < signals.end(); ++it)
+				for(std::list<SignalType *>::iterator it = signals.begin();
+					it != signals.end(); ++it)
 				{
 					if(&sig == &**it)
 					{
@@ -146,8 +148,8 @@ namespace octoon
 			bool connected_signals_append(SignalType& sig)
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
-				for(std::list<SignalType *>::iterater it = connected_signals.begin();
-					it < connected_signals.end(); ++it)
+				for(std::list<SignalType *>::iterator it = connected_signals.begin();
+					it != connected_signals.end(); ++it)
 				{
 					if(&sig == &**it)
 						return false;
@@ -159,8 +161,8 @@ namespace octoon
 			bool connected_signals_remove(SignalType& sig)
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
-				for(std::list<SignalType *>::iterater it = connected_signals.begin();
-					it < connected_signals.end(); ++it)
+				for(std::list<SignalType *>::iterator it = connected_signals.begin();
+					it != connected_signals.end(); ++it)
 				{
 					if(&sig == &**it)
 					{
@@ -174,8 +176,8 @@ namespace octoon
 			bool signals_append(SignalType& sig)
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
-				for(std::list<SignalType *>::iterater it = signals.begin();
-					it < signals.end(); ++it)
+				for(std::list<SignalType *>::iterator it = signals.begin();
+					it != signals.end(); ++it)
 				{
 					if(&sig == &**it)
 						return false;
@@ -187,8 +189,8 @@ namespace octoon
 			bool signals_remove(SignalType& sig)
 			{
 				std::lock_guard<std::mutex> guard_signals(signals_mutex);
-				for(std::list<SignalType *>::iterater it = signals.begin();
-					it < signals.end(); ++it)
+				for(std::list<SignalType *>::iterator it = signals.begin();
+					it != signals.end(); ++it)
 				{
 					if(&sig == &**it)
 					{

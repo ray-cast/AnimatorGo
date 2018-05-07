@@ -281,16 +281,16 @@ IF(OCTOON_BUILD_DOCUMENT)
   
     IF(NOT DOXYGEN_FOUND)
         MESSAGE(FATAL_ERROR "Doxygen is needed to build the documentation.")  
-    ENDIF()  
+    ENDIF()
   
-    SET(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/docs.doxyfile)
-    SET(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/docs.doxyfile)
+    SET(doxyfile ${OCTOON_PATH_DOCUMENT}/Doxyfile)
   
     CONFIGURE_FILE(${doxyfile_in} ${doxyfile} @ONLY)
   
     ADD_CUSTOM_TARGET(doc
         COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}
         COMMENT "Generating API documentation with Doxygen"  
         VERBATIM)
   

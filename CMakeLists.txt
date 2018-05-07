@@ -17,7 +17,7 @@ SET(OCTOON_PATH_DOCUMENT ${OCTOON_PATH}/document CACHE STRING "Adds a path to oc
 
 # 编译选项
 OPTION(OCTOON_BUILD_TESTS "ON to disable test binary generation" OFF)
-OPTION(OCTOON_BUILD_DOCUMENT "ON to enable document generation" OFF)
+OPTION(OCTOON_BUILD_DOCUMENT "ON to enable document generation" ON)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)
 OPTION(OCTOON_BUILD_DEBUG_MODE "ON for debug or OFF for release" ON)
 OPTION(OCTOON_BUILD_MUTILTHREAD_DLL "ON for /MD OFF for /MT" ON)
@@ -283,16 +283,16 @@ IF(OCTOON_BUILD_DOCUMENT)
         MESSAGE(FATAL_ERROR "Doxygen is needed to build the documentation.")  
     ENDIF()
   
-    SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/docs.doxyfile)
-    SET(doxyfile ${OCTOON_PATH_DOCUMENT}/Doxyfile)
+    SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/OctoonAPI/docs.doxyfile)
+    SET(doxyfile ${OCTOON_PATH_DOCUMENT}/OctoonAPI/Doxyfile)
   
     CONFIGURE_FILE(${doxyfile_in} ${doxyfile} @ONLY)
   
-    ADD_CUSTOM_TARGET(doc
+    ADD_CUSTOM_TARGET(document
         COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-        WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}
+        WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}/OctoonAPI
         COMMENT "Generating API documentation with Doxygen"  
         VERBATIM)
   
-    INSTALL(DIRECTORY ${OCTOON_PATH_DOCUMENT}/html DESTINATION share/doc)
+    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION share/doc)
 ENDIF()

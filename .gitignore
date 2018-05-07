@@ -12,3 +12,9 @@ build
 
 .vs
 .vscode
+
+document/OctoonAPI/Doxyfile
+document/OctoonAPI/html
+document/OctoonAPI/latex
+document/OctoonAPI/OctoonAPI.chm
+document/OctoonAPI/*.tmp

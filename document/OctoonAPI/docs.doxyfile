@@ -1,16 +1,13 @@
 PROJECT_NAME           = "@CMAKE_PROJECT_NAME@"
 PROJECT_NUMBER         = @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@
-STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@ \
-                         @PROJECT_BINARY_DIR@
-INPUT                  = @doxy_main_page@ \
-                         @PROJECT_SOURCE_DIR@ \
-                         @PROJECT_BINARY_DIR@
+INPUT                  =  @PROJECT_SOURCE_DIR@/include @PROJECT_SOURCE_DIR@/source
 FILE_PATTERNS          = *.h \
                          *.cpp
 RECURSIVE              = YES
-EXTRACT_ALL            = YES
-EXTRACT_PRIVATE        = YES
-EXTRACT_STATIC         = YES
+EXTRACT_ALL			   = YES
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+GENERATE_HTMLHELP      = YES
 EXCLUDE_PATTERNS       = */thirdparty/*
 USE_MDFILE_AS_MAINPAGE = @doxy_main_page@
 HTML_OUTPUT            = html/

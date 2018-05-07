@@ -167,6 +167,9 @@ namespace octoon
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
+					if (!geometry)
+						continue;
+
 					auto material = geometry->getMaterial();
 					if (!material)
 						continue;
@@ -174,16 +177,19 @@ namespace octoon
 					material->setTransform(geometry->getTransform());
 					material->setViewProjection(camera->getViewProjection());
 
-					context.setRenderPipeline(material->getPipeline());
-					context.setDescriptorSet(material->getDescriptorSet());
-					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
-					context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
+					if (geometry->getVertexBuffer())
+					{
+						context.setRenderPipeline(material->getPipeline());
+						context.setDescriptorSet(material->getDescriptorSet());
+						context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+						context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
 
-					auto indices = geometry->getNumIndices();
-					if (indices > 0)
-						context.drawIndexed(indices, 1, 0, 0, 0);
-					else
-						context.draw(geometry->getNumVertices(), 1, 0, 0);
+						auto indices = geometry->getNumIndices();
+						if (indices > 0)
+							context.drawIndexed(indices, 1, 0, 0, 0);
+						else
+							context.draw(geometry->getNumVertices(), 1, 0, 0);
+					}
 				}
 
 				if (camera->getCameraOrder() == CameraOrder::Main)

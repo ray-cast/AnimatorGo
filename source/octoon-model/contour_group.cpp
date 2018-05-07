@@ -274,10 +274,10 @@ namespace octoon
 					auto& p1 = contour->at(n);
 					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-					math::float3 a = math::float3(p1.x, p1.y, thickness);
-					math::float3 b = math::float3(p1.x, p1.y, -thickness);
-					math::float3 c = math::float3(p2.x, p2.y, -thickness);
-					math::float3 d = math::float3(p2.x, p2.y, thickness);
+					math::float3 a = math::float3(p1.x, p1.y, p1.z + thickness);
+					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thickness);
+					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thickness);
+					math::float3 d = math::float3(p2.x, p2.y, p2.z + thickness);
 
 					std::uint32_t index = tris.size();
 					indices.push_back(index);

@@ -30,7 +30,7 @@ namespace octoon
 		{
 			material_ = std::move(material);
 			isSharedMaterial_ = sharedMesh;
-			this->onMaterialReplace(material);
+			this->onMaterialReplace(material_);
 		}
 	}
 
@@ -41,7 +41,7 @@ namespace octoon
 		{
 			material_ = material;
 			isSharedMaterial_ = sharedMesh;
-			this->onMaterialReplace(material);
+			this->onMaterialReplace(material_);
 		}
 	}
 

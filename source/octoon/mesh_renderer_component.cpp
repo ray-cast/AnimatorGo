@@ -101,7 +101,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
-		if (geometry_)
+		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();
 			auto& normals = mesh->getNormalArray();

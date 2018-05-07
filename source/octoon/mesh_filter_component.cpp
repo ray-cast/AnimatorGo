@@ -46,7 +46,7 @@ namespace octoon
 		{
 			mesh_ = std::move(mesh);
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh);
+			this->onMeshReplace(mesh_);
 		}
 	}
 
@@ -57,7 +57,7 @@ namespace octoon
 		{
 			mesh_ = mesh;
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh);
+			this->onMeshReplace(mesh_);
 		}
 	}
 

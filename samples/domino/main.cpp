@@ -110,12 +110,18 @@ void slot()
 	std::cout << "123";
 }
 
+void slot2()
+{
+	std::cout << "4";
+}
+
 int main(int argc, const char* argv[])
 {
 	octoon::runtime::signal<void()> print;
 	print.connect(slot);
 	octoon::runtime::signal<void()> print2;
 	print2.connect(print);
+	print2.connect(slot2);
 	print2();
 	//if (!::OctoonInit(argv[0], ""))
 	//	return 1;

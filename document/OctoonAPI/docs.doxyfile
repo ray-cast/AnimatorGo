@@ -7,7 +7,6 @@ RECURSIVE              = YES
 EXTRACT_ALL			   = YES
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
-GENERATE_HTMLHELP      = YES
 EXCLUDE_PATTERNS       = */thirdparty/*
 USE_MDFILE_AS_MAINPAGE = @doxy_main_page@
 HTML_OUTPUT            = html/

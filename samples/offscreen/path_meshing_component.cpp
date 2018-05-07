@@ -187,17 +187,33 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		params.material.hollow = json_material["hollow"].get<json::boolean_t>();
 		params.material.thickness = json_material["thickness"].get<json::number_float_t>();
 
-		auto& lights = json_material["lights"];
-		if (lights.size() > 0)
+		switch (params.material.type)
 		{
-			auto& light = lights[0];
+		case PathMeshing::Material::Line:
+		{
+			auto& lineSize = json_material["lineWidth"];
+			if (!lineSize.is_null())
+				params.material.line.lineWidth = lineSize.get<json::number_float_t>();
+		}
+		break;
+		case PathMeshing::Material::Basic:
+		case PathMeshing::Material::PhongShading:
+		{
+			auto& lights = json_material["lights"];
+			if (lights.size() > 0)
+			{
+				auto& light = lights[0];
 
-			params.material.phong.direction << light["direction"];
-			params.material.phong.darkcolor << light["darkcolor"];
-			params.material.phong.intensity = light["intensity"].get<json::number_float_t>();
-			params.material.phong.ambient = light["ambient"].get<json::number_float_t>();
-			params.material.phong.highLight = light["highLight"].get<json::number_float_t>();
-			params.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
+				params.material.phong.direction << light["direction"];
+				params.material.phong.darkcolor << light["darkcolor"];
+				params.material.phong.intensity = light["intensity"].get<json::number_float_t>();
+				params.material.phong.ambient = light["ambient"].get<json::number_float_t>();
+				params.material.phong.highLight = light["highLight"].get<json::number_float_t>();
+				params.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
+			}
+		}
+		default:
+			break;
 		}
 	}
 
@@ -321,7 +337,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		{
 		case PathMeshing::Material::Line:
 		{
-			auto material = std::make_shared<octoon::video::LineMaterial>();
+			auto material = std::make_shared<octoon::video::LineMaterial>(params.material.line.lineWidth);
 			material->setColor(params.material.color);
 
 			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));

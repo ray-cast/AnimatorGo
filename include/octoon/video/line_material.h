@@ -12,6 +12,7 @@ namespace octoon
 		{
 		public:
 			LineMaterial() except;
+			LineMaterial(float lineWidth) except;
 			~LineMaterial() noexcept;
 
 			void setup() except;
@@ -32,6 +33,8 @@ namespace octoon
 			LineMaterial& operator=(const LineMaterial&) = delete;
 
 		private:
+			float lineWidth_;
+
 			graphics::GraphicsPipelinePtr pipeline_;
 			graphics::GraphicsDescriptorSetPtr descriptorSet_;
 

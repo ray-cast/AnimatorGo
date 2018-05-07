@@ -7,6 +7,13 @@ namespace octoon
 	namespace video
 	{
 		LineMaterial::LineMaterial() except
+			: lineWidth_(1.0f)
+		{
+			this->setup();
+		}
+
+		LineMaterial::LineMaterial(float lineWidth) except
+			: lineWidth_(lineWidth)
 		{
 			this->setup();
 		}
@@ -52,6 +59,7 @@ namespace octoon
 			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::LineList);
 			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
+			stateDesc.setLineWidth(lineWidth_);
 
 			graphics::GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));

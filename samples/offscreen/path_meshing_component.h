@@ -36,6 +36,7 @@ struct PathMeshing
 
 		struct LineMaterial
 		{
+			float lineWidth;
 		};
 
 		struct BasicMaterial

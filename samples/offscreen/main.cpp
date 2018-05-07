@@ -20,10 +20,11 @@ R"({
 	},
 	"material":
 	{
-		"type":1,
+		"type":0,
 		"hollow":false,
 		"wireframe":false,
 		"thickness":10.0,
+		"lineWidth":3.0,
 		"lights":[
 			{
 				"direcction":[0,1,0],

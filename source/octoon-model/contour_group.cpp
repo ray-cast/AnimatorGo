@@ -177,10 +177,10 @@ namespace octoon
 			{
 				std::size_t written = 0;
 
-				for (std::size_t n = 0; n < contour->count() - 1; ++n)
+				for (std::size_t n = 0; n < contour->count(); ++n)
 				{
 					auto& p1 = contour->at(n);
-					auto& p2 = contour->at(n + 1);
+					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
 					trisData[written++] = math::float3(p1.x, p1.y, -thickness);
 					trisData[written++] = math::float3(p2.x, p2.y, thickness);
@@ -215,17 +215,16 @@ namespace octoon
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (auto& it : contours)
+						for (auto& contour : contours)
 						{
 							gluTessBeginContour(tobj);
 
-							for (std::size_t p = 0; p < it->count() - 1; ++p)
+							for (auto& it : contour->points())
 							{
-								auto& p1 = it->at(p);
 								auto& d = vertices[index++];
-								d[0] = p1.x;
-								d[1] = p1.y;
-								d[2] = p1.z + face ? -thickness : thickness;
+								d[0] = it.x;
+								d[1] = it.y;
+								d[2] = it.z + face ? -thickness : thickness;
 
 								gluTessVertex(tobj, d.ptr(), d.ptr());
 							}
@@ -270,10 +269,10 @@ namespace octoon
 
 			for (auto& contour : contours)
 			{
-				for (std::size_t n = 0; n < contour->count() - 1; ++n)
+				for (std::size_t n = 0; n < contour->count(); ++n)
 				{
-					auto p1 = contour->at(n);
-					auto p2 = contour->at(n + 1);
+					auto& p1 = contour->at(n);
+					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
 					math::float3 a = math::float3(p1.x, p1.y, thickness);
 					math::float3 b = math::float3(p1.x, p1.y, -thickness);
@@ -316,10 +315,10 @@ namespace octoon
 			{
 				for (auto& contour : group->getContours())
 				{
-					for (std::size_t n = 0; n < contour->count() - 1; ++n)
+					for (std::size_t n = 0; n < contour->count(); ++n)
 					{
-						auto p1 = contour->at(n);
-						auto p2 = contour->at(n + 1);
+						auto& p1 = contour->at(n);
+						auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
 						math::float3 a = math::float3(p1.x, p1.y, thickness);
 						math::float3 b = math::float3(p1.x, p1.y, -thickness);

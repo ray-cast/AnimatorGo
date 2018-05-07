@@ -49,7 +49,38 @@ namespace octoon
 	}
 
 	void
+	RenderComponent::setSharedMaterial(video::MaterialPtr&& material) noexcept
+	{
+		if (sharedMaterial_ != material)
+		{
+			this->onMaterialReplace(material);
+			sharedMaterial_ = std::move(material);
+		}
+	}
+
+	void
+	RenderComponent::setSharedMaterial(const video::MaterialPtr& material) noexcept
+	{
+		if (sharedMaterial_ != material)
+		{
+			this->onMaterialReplace(material);
+			sharedMaterial_ = material;
+		}
+	}
+
+	const video::MaterialPtr&
+	RenderComponent::getSharedMaterial() const noexcept
+	{
+		return sharedMaterial_;
+	}
+
+	void
 	RenderComponent::onMaterialReplace(const video::MaterialPtr&) noexcept
+	{
+	}
+
+	void
+	RenderComponent::onSharedMaterialReplace(const video::MaterialPtr&) noexcept
 	{
 	}
 }

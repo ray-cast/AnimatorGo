@@ -65,6 +65,38 @@ namespace octoon
 	}
 
 	void
+	MeshFilterComponent::setSharedMesh(model::Mesh&& mesh) noexcept
+	{
+		this->setSharedMesh(std::make_shared<model::Mesh>(std::move(mesh)));
+	}
+
+	void
+	MeshFilterComponent::setSharedMesh(model::MeshPtr&& mesh) noexcept
+	{
+		if (sharedMesh_ != mesh)
+		{
+			this->onSharedMeshReplace(mesh);
+			sharedMesh_ = std::move(mesh);
+		}
+	}
+
+	void
+	MeshFilterComponent::setSharedMesh(const model::MeshPtr& mesh) noexcept
+	{
+		if (sharedMesh_ != mesh)
+		{
+			this->onSharedMeshReplace(mesh);
+			sharedMesh_ = mesh;
+		}
+	}
+
+	const model::MeshPtr&
+	MeshFilterComponent::getSharedMesh() const noexcept
+	{
+		return sharedMesh_;
+	}
+
+	void
 	MeshFilterComponent::uploadMeshData() noexcept
 	{
 		for (auto& it : delegates_)
@@ -91,6 +123,8 @@ namespace octoon
 		auto instance = std::make_shared<MeshFilterComponent>();
 		instance->setName(instance->getName());
 		instance->setMesh(mesh_ ? mesh_->clone() : nullptr);
+		instance->setSharedMesh(sharedMesh_ ? sharedMesh_ : mesh_);
+
 		return instance;
 	}
 
@@ -98,6 +132,13 @@ namespace octoon
 	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
 		for (auto& it : delegates_)
+			(*it)(mesh);
+	}
+
+	void
+	MeshFilterComponent::onSharedMeshReplace(const model::MeshPtr& mesh) noexcept
+	{
+		for (auto& it : sharedDelegates_)
 			(*it)(mesh);
 	}
 }

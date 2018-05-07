@@ -324,10 +324,10 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		object_->getComponent<TransformComponent>()->setLocalScale(params.transform.scale);
 
 		if (params.material.type == PathMeshing::Material::Line)
-			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(octoon::model::ContourGroup(std::move(contours)), params.material.thickness));
+			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(contours, params.material.thickness));
 		else
 		{
-			auto mesh = model::makeMesh(octoon::model::ContourGroup(std::move(contours)), params.material.thickness);
+			auto mesh = model::makeMesh(contours, params.material.thickness);
 			mesh.computeVertexNormals();
 
 			object_->addComponent<octoon::MeshFilterComponent>(std::move(mesh));

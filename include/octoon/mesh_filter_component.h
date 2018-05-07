@@ -27,6 +27,11 @@ namespace octoon
 		void setMesh(const model::MeshPtr& mesh) noexcept;
 		const model::MeshPtr& getMesh() const noexcept;
 
+		void setSharedMesh(model::Mesh&& mesh) noexcept;
+		void setSharedMesh(model::MeshPtr&& mesh) noexcept;
+		void setSharedMesh(const model::MeshPtr& mesh) noexcept;
+		const model::MeshPtr& getSharedMesh() const noexcept;
+
 		void uploadMeshData() noexcept;
 
 		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
@@ -36,6 +41,7 @@ namespace octoon
 
 	private:
 		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
+		virtual void onSharedMeshReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:
 		MeshFilterComponent(const MeshFilterComponent&) = delete;
@@ -43,7 +49,9 @@ namespace octoon
 
 	private:
 		model::MeshPtr mesh_;
+		model::MeshPtr sharedMesh_;
 		OnMeshReplaceEvents delegates_;
+		OnMeshReplaceEvents sharedDelegates_;
 	};
 }
 

@@ -155,21 +155,25 @@ namespace octoon
 			return instance;
 		}
 
-		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
+		Mesh makeMesh(const Contours& contours, float thickness) noexcept
 		{
 			Mesh mesh;
 
 			std::size_t maxElement = 0;
-			for (auto& contour : group.getContours())
+			for (auto& contour : contours)
 					maxElement = std::max(maxElement, contour->points().size());
 
 			math::float3s tris(maxElement * 6);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
-			std::vector<math::double3> vertices(group.countOfPoints() * 2);
+			std::size_t sum = 0;
+			for (auto& it : contours)
+				sum += it->count() * 2;
 
-			for (auto& contour : group.getContours())
+			std::vector<math::double3> vertices(sum);
+
+			for (auto& contour : contours)
 			{
 				std::size_t written = 0;
 
@@ -211,7 +215,7 @@ namespace octoon
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (auto& it : group.getContours())
+						for (auto& it : contours)
 						{
 							gluTessBeginContour(tobj);
 
@@ -242,6 +246,11 @@ namespace octoon
 			return mesh;
 		}
 
+		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
+		{
+			return makeMesh(group.getContours(), thickness);
+		}
+
 		Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
 		{
 			Mesh mesh;
@@ -252,14 +261,14 @@ namespace octoon
 			return mesh;
 		}
 
-		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+		Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
 		{
 			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
 			math::uint1s& indices = mesh.getIndicesArray();
 
-			for (auto& contour : group.getContours())
+			for (auto& contour : contours)
 			{
 				for (std::size_t n = 0; n < contour->count() - 1; ++n)
 				{
@@ -289,6 +298,11 @@ namespace octoon
 			}
 
 			return mesh;
+		}
+
+		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+		{
+			return makeMeshWireframe(group.getContours(), thickness);
 		}
 
 		Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept

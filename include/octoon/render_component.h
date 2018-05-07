@@ -19,8 +19,13 @@ namespace octoon
 		void setMaterial(const video::MaterialPtr& material) noexcept;
 		const video::MaterialPtr& getMaterial() const noexcept;
 
+		void setSharedMaterial(video::MaterialPtr&& material) noexcept;
+		void setSharedMaterial(const video::MaterialPtr& material) noexcept;
+		const video::MaterialPtr& getSharedMaterial() const noexcept;
+
 	protected:
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept;
+		virtual void onSharedMaterialReplace(const video::MaterialPtr& material) noexcept;
 
 	private:
 		RenderComponent(const RenderComponent&) = delete;
@@ -28,6 +33,7 @@ namespace octoon
 
 	private:
 		video::MaterialPtr material_;
+		video::MaterialPtr sharedMaterial_;
 	};
 }
 

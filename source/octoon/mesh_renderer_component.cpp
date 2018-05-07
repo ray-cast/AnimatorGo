@@ -30,7 +30,9 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
 		instance->setName(this->getName());
-		instance->setMaterial(this->getMaterial()->clone());
+		instance->setMaterial(this->getMaterial() ? this->getMaterial()->clone() : nullptr);
+		instance->setSharedMaterial(this->getSharedMaterial() ? this->getSharedMaterial() : this->getMaterial());
+
 		return instance;
 	}
 

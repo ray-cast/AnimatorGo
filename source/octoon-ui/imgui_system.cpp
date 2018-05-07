@@ -184,7 +184,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_move(float absx, float absy) noexcept
+		System::injectMouseMove(float absx, float absy) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MousePos.x = absx;
@@ -193,7 +193,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_press(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMousePress(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = true;
@@ -203,7 +203,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_release(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMouseRelease(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = false;
@@ -213,7 +213,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_wheel(float wheel) noexcept
+		System::injectMouseWheel(float wheel) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseWheel = wheel;
@@ -221,7 +221,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_press(input::InputKey::Code key, wchar_t char_) noexcept
+		System::injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key != input::InputKey::Code::None)
@@ -246,7 +246,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_release(input::InputKey::Code key) noexcept
+		System::injectKeyRelease(input::InputKey::Code key) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key == input::InputKey::Code::LeftControl)
@@ -263,7 +263,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_window_focus(bool focus) noexcept
+		System::injectWindowFocus(bool focus) noexcept
 		{
 			if (focus)
 			{
@@ -277,7 +277,7 @@ namespace octoon
 		}
 
 		void
-		System::set_viewport(std::uint32_t w, std::uint32_t h) noexcept
+		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize.x = w;
@@ -285,7 +285,7 @@ namespace octoon
 		}
 
 		void
-		System::get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			w = io.DisplaySize.x;
@@ -293,7 +293,7 @@ namespace octoon
 		}
 
 		void
-		System::set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept
+		System::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplayFramebufferScale.x = w;
@@ -306,7 +306,7 @@ namespace octoon
 		}
 
 		void
-		System::get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			w = io.DisplayFramebufferScale.x;
@@ -314,7 +314,7 @@ namespace octoon
 		}
 
 		bool
-		System::load_font(const char* path, float font_size) noexcept
+		System::loadFont(const char* path, float font_size) noexcept
 		{
 			static const ImWchar ranges[] =
 			{

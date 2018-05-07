@@ -271,7 +271,7 @@ namespace octoon
 					if (access(name, NULL) != 0)
 					{
 #if __LINUX__
-						if (mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
+						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
 							return false;
 #elif __WINDOWS__
 						if (!CreateDirectory(name, 0))

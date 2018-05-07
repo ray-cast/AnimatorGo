@@ -5,8 +5,12 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
+
 #include <octoon/runtime/json.h>
 #include <octoon/runtime/except.h>
+#include <octoon/runtime/uuid.h>
+#include <octoon/io/fcntl.h>
+
 #include <octoon/video/text_material.h>
 #include <octoon/video/line_material.h>
 #include <octoon/video/phong_material.h>
@@ -16,6 +20,8 @@
 #include <octoon/image/image_util.h>
 
 #include <cstring>
+#include <chrono>
+#include <sstream>
 
 #define POD_TT_PRIM_NONE 0
 #define POD_TT_PRIM_LINE 1   	// line to, Ò»¸öµã£Ûx,y]
@@ -397,6 +403,27 @@ PathMeshingComponent::onFrameEnd() except
 			texture->unmap();
 		}
 
-		image.save("C:/Users/Administrator/Desktop/output.png", "png");
+		auto now = std::chrono::system_clock::now();
+		auto time = std::chrono::system_clock::to_time_t(now);
+
+		std::ostringstream stream;
+#if __WINDOWS__
+		stream << "D:\\media\\images\\";
+		stream << std::put_time(std::localtime(&time), "%Y\\%m\\%d\\");
+#elif __LINUX__
+		stream << "/media/images/";
+		stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
+#endif
+
+		io::fcntl::mkdir(stream.str().c_str());
+
+		char uuid[64] = {};
+		runtime::GUID guid;
+		runtime::guid_generate(guid);
+		runtime::guid_to_string(guid, uuid);
+
+		stream << uuid << ".png";
+
+		image.save(stream.str(), "png");
 	}
 }

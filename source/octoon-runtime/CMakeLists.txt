@@ -26,6 +26,8 @@ SET(CORE_LIST
 	${SOURCE_PATH}/except.cpp
 	${HEADER_PATH}/string.h
 	${SOURCE_PATH}/string.cpp
+	${HEADER_PATH}/uuid.h
+	${SOURCE_PATH}/uuid.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

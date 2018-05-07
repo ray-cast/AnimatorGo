@@ -16,7 +16,7 @@ R"({
 	{
 		"translate":[318.99, 157.10],
 		"scale":[1.0, 1.0, 1.0],
-		"rotation":[0.0,0.0,10.0]
+		"rotation":[0.0,0.0,0.0]
 	},
 	"material":
 	{
@@ -142,6 +142,4 @@ int main(int argc, const char* argv[])
 	object->addComponent<PathMeshingComponent>(chars);
 
 	app->update();
-
-	//app->getFeature<octoon::VideoFeature>()->saveAsPNG("C:/Users/Administrator/Desktop/output.png", 0, 0, w, h);
 }

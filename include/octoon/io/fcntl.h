@@ -23,6 +23,14 @@
 
 namespace octoon
 {
+#if defined(__WINDOWS__)
+#	define SEPARATOR '\\'
+#	define SEPARATOR_STRING "\\"
+#else
+#	define SEPARATOR '/'
+#	define SEPARATOR_STRING "/"
+#endif
+
 #if defined(__WINDOWS__) || defined(__MINGW64__)
 #   define  POSIX(func) _ ## func
 #else
@@ -241,6 +249,42 @@ namespace octoon
 				return ::__close(fd);
 			}
 
+			inline bool mkdir(const char* path)
+			{
+				char name[PATHLIMIT];
+				strcpy(name, path);
+				std::size_t len = strlen(path);
+
+				if (name[len - 1] != SEPARATOR)
+				{
+					strcat(name, SEPARATOR_STRING);
+					len += 1;
+				}
+
+				for (std::size_t i = 1; i < len; i++)
+				{
+					if (name[i] != SEPARATOR)
+						continue;
+
+					name[i] = 0;
+
+					if (access(name, NULL) != 0)
+					{
+#if __LINUX__
+						if (mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
+							return false;
+#elif __WINDOWS__
+						if (!CreateDirectory(name, 0))
+							return false;
+#endif
+					}
+
+					name[i] = SEPARATOR;
+				}
+
+				return true;
+			}
+
 #if __WINDOWS__
 			inline void splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
 			{
@@ -320,6 +364,8 @@ namespace octoon
 #undef __wopen
 #undef __wstat
 #undef __waccess
+#undef SEPARATOR
+#undef SEPARATOR_STRING
 }
 
 #endif

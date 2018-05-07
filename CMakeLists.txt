@@ -291,8 +291,8 @@ IF(OCTOON_BUILD_DOCUMENT)
     ADD_CUSTOM_TARGET(document
         COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
         WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}/OctoonAPI
-        COMMENT "Generating API documentation with Doxygen"  
+        COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
   
-    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION share/doc)
+    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION document/OctoonAPI/html)
 ENDIF()

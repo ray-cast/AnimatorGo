@@ -360,7 +360,7 @@ namespace octoon
 
 					if (ik.child[j].rotateLimited)
 					{
-						float3 euler(math::euler_angles(q0));
+						float3 euler(math::eulerAngles(q0));
 						euler.x = std::min(ik.child[j].minimumDegrees.x, euler.x);
 						euler.y = std::min(ik.child[j].minimumDegrees.y, euler.y);
 						euler.z = std::min(ik.child[j].minimumDegrees.z, euler.z);

@@ -266,9 +266,9 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Vector3<T> euler_angles(const detail::Quaternion<T>& q) noexcept
+		inline detail::Vector3<T> eulerAngles(const detail::Quaternion<T>& q) noexcept
 		{
-			T x = std::asin(math::saturate<T>(2.0f * (q.w * q.x - q.y * q.z)));
+			T x = std::asin(math::clamp<T>(2.0f * (q.w * q.x - q.y * q.z), -1.0f, 1.0f));
 			T y = std::atan2(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
 			T z = std::atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z));
 			return detail::Vector3<T>(x, y, z);

@@ -32,7 +32,7 @@ namespace octoon
 		const GameScenes& getScenes() const noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		void addFeature(Args&&... args) except { this->addFeature(std::make_shared<T>(std::forward<Args>(args)...)); }
+		std::shared_ptr<T> addFeature(Args&&... args) except { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addFeature(t); return t; }
 		void addFeature(const GameFeaturePtr& component) except;
 		void addFeature(GameFeaturePtr&& component) except;
 

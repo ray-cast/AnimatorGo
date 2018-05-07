@@ -13,6 +13,11 @@ namespace octoon
     {
     }
 
+	MeshCollider::MeshCollider(model::MeshPtr m) noexcept
+		: isConvex(true), sharedMesh(m)
+	{
+	}
+
     MeshCollider::~MeshCollider()
     {
     }
@@ -21,6 +26,16 @@ namespace octoon
     {
         return std::make_shared<MeshCollider>();
     }
+
+	void MeshCollider::setMesh(model::MeshPtr m) noexcept
+	{
+		sharedMesh = m;
+	}
+
+	model::MeshPtr MeshCollider::getMesh() const noexcept
+	{
+		return sharedMesh;
+	}
 
     void MeshCollider::onCollisionChange() noexcept
     {
@@ -50,7 +65,7 @@ namespace octoon
     {
 		if (component->isA<MeshFilterComponent>())
 		{
-			buildCollider(component);
+			buildCollider();
 		}
     }
 
@@ -62,13 +77,11 @@ namespace octoon
 		}
     }
 
-	void MeshCollider::buildCollider(const GameComponentPtr& component) except
+	void MeshCollider::buildCollider() except
 	{
 		auto physics_feature = GameApp::instance()->getFeature<PhysicsFeature>();
-		auto meshComponent = component->downcast_pointer<MeshFilterComponent>();
-		auto sharedMesh = meshComponent->getMesh();
 
-		if (isConvex)
+		if (sharedMesh && isConvex)
 		{
 			physx::PxConvexMeshDesc convexDesc;
 			convexDesc.points.count = (physx::PxU32)sharedMesh->getNumVertices();

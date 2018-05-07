@@ -15,8 +15,12 @@ namespace octoon
         OctoonDeclareSubClass(MeshCollider, Collider)
         public:
 			MeshCollider() noexcept;
+			MeshCollider(model::MeshPtr m) noexcept;
             ~MeshCollider();
             virtual GameComponentPtr clone() const noexcept;
+
+			void setMesh(model::MeshPtr m) noexcept;
+			model::MeshPtr getMesh() const noexcept;
 
         protected:
             virtual void onCollisionChange() noexcept;
@@ -31,9 +35,10 @@ namespace octoon
             virtual void onAttachComponent(const GameComponentPtr& component) except;
             virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
-			void buildCollider(const GameComponentPtr& component) except;
+			void buildCollider() except;
 			void releaseCollider() except;
         private:
+			model::MeshPtr sharedMesh; // The mesh object used for collision detection.
 			bool isConvex;
     };
 }

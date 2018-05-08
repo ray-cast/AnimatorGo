@@ -155,7 +155,7 @@
 	```
 3. 运行 `tar zxvf gcc-6.2.0.tar.gz` 解压
 4. 运行 `cd gcc-6.2.0` 切换到 gcc-6.2.0 目录
-5. 运行 `./contrib/download_prerequisits` 下载依赖库
+5. 运行 `./contrib/download_prerequisites` 下载依赖库
 6. 运行 `mkdir build` 建立build目录
 7. 运行 `cd build` 切换到 build 目录
 8. 运行 `../configure –-disable-multilib` 生成 Makefile

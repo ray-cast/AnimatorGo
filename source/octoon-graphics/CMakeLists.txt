@@ -13,55 +13,55 @@ ADD_DEFINITIONS(-DOCTOON_FEATURE_GRAPHICS_USE_OPENGL)
 ADD_DEFINITIONS(-DOCTOON_FEATURE_GRAPHICS_USE_OPENGL_CORE)
 
 IF(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
-    ADD_DEFINITIONS(-DOCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+	ADD_DEFINITIONS(-DOCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
 ENDIF()
 
-INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/glew/include)
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/OpenGL")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/OpenGL Core")
+INCLUDE_DIRECTORIES("${OCTOON_PATH_DEPENDENCIES}/glew/include")
 INCLUDE_DIRECTORIES("${OCTOON_PATH_DEPENDENCIES}/HLSLCrossCompiler/include")
 
 SET(RENDERER_CORE
-    ${HEADER_PATH}/graphics.h
-    ${HEADER_PATH}/graphics_child.h
-    ${SOURCE_PATH}/graphics_child.cpp
-    ${HEADER_PATH}/graphics_context.h
-    ${SOURCE_PATH}/graphics_context.cpp
-    ${HEADER_PATH}/graphics_data.h
-    ${SOURCE_PATH}/graphics_data.cpp
-    ${HEADER_PATH}/graphics_debug.h
-    ${SOURCE_PATH}/graphics_debug.cpp
-    ${HEADER_PATH}/graphics_descriptor.h
-    ${SOURCE_PATH}/graphics_descriptor.cpp
-    ${HEADER_PATH}/graphics_device.h
-    ${SOURCE_PATH}/graphics_device.cpp
-    ${HEADER_PATH}/graphics_device_property.h
-    ${SOURCE_PATH}/graphics_device_property.cpp
-    ${HEADER_PATH}/graphics_input_layout.h
-    ${SOURCE_PATH}/graphics_input_layout.cpp
-    ${HEADER_PATH}/graphics_pipeline.h
-    ${SOURCE_PATH}/graphics_pipeline.cpp
-    ${HEADER_PATH}/graphics_resource.h
-    ${SOURCE_PATH}/graphics_resource.cpp
-    ${HEADER_PATH}/graphics_sampler.h
-    ${SOURCE_PATH}/graphics_sampler.cpp
-    ${HEADER_PATH}/graphics_semaphore.h
-    ${SOURCE_PATH}/graphics_semaphore.cpp
-    ${HEADER_PATH}/graphics_shader.h
-    ${SOURCE_PATH}/graphics_shader.cpp
-    ${HEADER_PATH}/graphics_state.h
-    ${SOURCE_PATH}/graphics_state.cpp
-    ${HEADER_PATH}/graphics_swapchain.h
-    ${SOURCE_PATH}/graphics_swapchain.cpp
-    ${HEADER_PATH}/graphics_system.h
-    ${SOURCE_PATH}/graphics_system.cpp
-    ${HEADER_PATH}/graphics_texture.h
-    ${SOURCE_PATH}/graphics_texture.cpp
-    ${HEADER_PATH}/graphics_types.h
-    ${HEADER_PATH}/graphics_framebuffer.h
-    ${SOURCE_PATH}/graphics_framebuffer.cpp
-    ${HEADER_PATH}/graphics_variant.h
-    ${SOURCE_PATH}/graphics_variant.cpp
+	${HEADER_PATH}/graphics.h
+	${HEADER_PATH}/graphics_child.h
+	${SOURCE_PATH}/graphics_child.cpp
+	${HEADER_PATH}/graphics_context.h
+	${SOURCE_PATH}/graphics_context.cpp
+	${HEADER_PATH}/graphics_data.h
+	${SOURCE_PATH}/graphics_data.cpp
+	${HEADER_PATH}/graphics_debug.h
+	${SOURCE_PATH}/graphics_debug.cpp
+	${HEADER_PATH}/graphics_descriptor.h
+	${SOURCE_PATH}/graphics_descriptor.cpp
+	${HEADER_PATH}/graphics_device.h
+	${SOURCE_PATH}/graphics_device.cpp
+	${HEADER_PATH}/graphics_device_property.h
+	${SOURCE_PATH}/graphics_device_property.cpp
+	${HEADER_PATH}/graphics_input_layout.h
+	${SOURCE_PATH}/graphics_input_layout.cpp
+	${HEADER_PATH}/graphics_pipeline.h
+	${SOURCE_PATH}/graphics_pipeline.cpp
+	${HEADER_PATH}/graphics_resource.h
+	${SOURCE_PATH}/graphics_resource.cpp
+	${HEADER_PATH}/graphics_sampler.h
+	${SOURCE_PATH}/graphics_sampler.cpp
+	${HEADER_PATH}/graphics_semaphore.h
+	${SOURCE_PATH}/graphics_semaphore.cpp
+	${HEADER_PATH}/graphics_shader.h
+	${SOURCE_PATH}/graphics_shader.cpp
+	${HEADER_PATH}/graphics_state.h
+	${SOURCE_PATH}/graphics_state.cpp
+	${HEADER_PATH}/graphics_swapchain.h
+	${SOURCE_PATH}/graphics_swapchain.cpp
+	${HEADER_PATH}/graphics_system.h
+	${SOURCE_PATH}/graphics_system.cpp
+	${HEADER_PATH}/graphics_texture.h
+	${SOURCE_PATH}/graphics_texture.cpp
+	${HEADER_PATH}/graphics_types.h
+	${HEADER_PATH}/graphics_framebuffer.h
+	${SOURCE_PATH}/graphics_framebuffer.cpp
+	${HEADER_PATH}/graphics_variant.h
+	${SOURCE_PATH}/graphics_variant.cpp
 )
 SOURCE_GROUP("Common" FILES ${RENDERER_CORE})
 
@@ -71,18 +71,18 @@ FILE(GLOB RENDERER_OGL_CORE_HEADER "OpenGL Core/*.h")
 FILE(GLOB RENDERER_OGL_CORE_SOURCE "OpenGL Core/*.cpp")
 
 IF(NOT OCTOON_BUILD_PLATFORM_APPLE)
-    LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/nsgl_swapchain.h")
-    LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/nsgl_swapchain.mm")
+	LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/nsgl_swapchain.h")
+	LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/nsgl_swapchain.mm")
 ENDIF()
 
 IF(NOT OCTOON_BUILD_PLATFORM_LINUX)
-    LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/x11_swapchain.h")
-    LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/x11_swapchain.cpp")
+	LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/x11_swapchain.h")
+	LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/x11_swapchain.cpp")
 ENDIF()
 
 IF(NOT OCTOON_BUILD_PLATFORM_WINDOWS)
-    LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/wgl_swapchain.h")
-    LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/wgl_swapchain.cpp")
+	LIST(REMOVE_ITEM RENDERER_OGL_HEADER "${SOURCE_PATH}/OpenGL/wgl_swapchain.h")
+	LIST(REMOVE_ITEM RENDERER_OGL_SOURCE "${SOURCE_PATH}/OpenGL/wgl_swapchain.cpp")
 ENDIF()
 
 SET(RENDERER_OGL ${RENDERER_OGL_HEADER} ${RENDERER_OGL_SOURCE})
@@ -94,38 +94,38 @@ SOURCE_GROUP("OpenGL Core" FILES ${RENDERER_OGL_CORE})
 SET(RENDERER_LIST ${RENDERER_CORE} ${RENDERER_OGL} ${RENDERER_OGL_CORE})
 
 IF(OCTOON_BUILD_PLATFORM_APPLE)
-    SET_SOURCE_FILES_PROPERTIES(${RENDERER_LIST} PROPERTIES LANGUAGE CXX)
+	SET_SOURCE_FILES_PROPERTIES(${RENDERER_LIST} PROPERTIES LANGUAGE CXX)
 ENDIF()
 
 IF(OCTOON_BUILD_SHARED_DLL)
-    ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
-    ADD_LIBRARY(${LIB_OUTNAME} SHARED ${RENDERER_LIST})
+	ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
+	ADD_LIBRARY(${LIB_OUTNAME} SHARED ${RENDERER_LIST})
 ELSE()
-    ADD_DEFINITIONS(-DOCTOON_STATIC)
-    ADD_LIBRARY(${LIB_OUTNAME} ${RENDERER_LIST})
+	ADD_DEFINITIONS(-DOCTOON_STATIC)
+	ADD_LIBRARY(${LIB_OUTNAME} ${RENDERER_LIST})
 ENDIF()
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-runtime)
 
 IF(OCTOON_BUILD_PLATFORM_APPLE)
-    FIND_LIBRARY(COCOA_FRAMEWORK Cocoa)
-    FIND_LIBRARY(OPENGL_FRAMEWORK OpenGL)
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${COCOA_FRAMEWORK})
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${OPENGL_FRAMEWORK})
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
+	FIND_LIBRARY(COCOA_FRAMEWORK Cocoa)
+	FIND_LIBRARY(OPENGL_FRAMEWORK OpenGL)
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${COCOA_FRAMEWORK})
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${OPENGL_FRAMEWORK})
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
 ELSEIF(OCTOON_BUILD_PLATFORM_WINDOWS)
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
-    IF(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
-        TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE d3dcompiler)
-        TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE libHLSLcc)
-    ENDIF()
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
+	IF(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+		TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE d3dcompiler)
+		TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE libHLSLcc)
+	ENDIF()
 ELSEIF(OCTOON_BUILD_PLATFORM_LINUX)
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE X11)
-    TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
-    IF(NOT OCTOON_BUILD_SHARED_DLL)
-        FIND_PACKAGE(OpenGL REQUIRED)
-        TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${OPENGL_LIBRARIES})
-    ENDIF()
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE X11)
+	TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE glew)
+	IF(NOT OCTOON_BUILD_SHARED_DLL)
+		FIND_PACKAGE(OpenGL REQUIRED)
+		TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE ${OPENGL_LIBRARIES})
+	ENDIF()
 ENDIF()
 
 SET_TARGET_ATTRIBUTE(${LIB_OUTNAME} "core")

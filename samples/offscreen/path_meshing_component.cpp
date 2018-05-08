@@ -408,7 +408,7 @@ PathMeshingComponent::onFrameEnd() except
 }
 
 void
-PathMeshingComponent::onSaveImage(octoon::image::Image& image, std::uint32_t x, std::uint32_t y) except
+PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y) except
 {
 	std::ostringstream stream;
 #if __WINDOWS__

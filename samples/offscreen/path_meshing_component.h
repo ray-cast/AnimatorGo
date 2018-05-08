@@ -104,7 +104,7 @@ public:
 	virtual octoon::GameComponentPtr clone() const noexcept override;
 
 protected:
-	virtual void onSaveImage(octoon::image::Image& image, std::uint32_t x, std::uint32_t y) except;
+	virtual void onSaveImage(octoon::image::Image& image, float x, float y) except;
 
 private:
 	virtual void onActivate() noexcept(false);

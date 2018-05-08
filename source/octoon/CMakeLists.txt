@@ -87,6 +87,8 @@ SOURCE_GROUP("system\\timer" FILES ${TIMER_FEATURES_LIST})
 SET(IO_FEATURES_LIST
 	${HEADER_PATH}/io_feature.h
 	${SOURCE_PATH}/io_feature.cpp
+	${HEADER_PATH}/res_manager.h
+	${SOURCE_PATH}/res_manager.cpp
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 

@@ -252,6 +252,7 @@ namespace octoon
 
 			std::uint8_t channel() const except;
 			std::uint8_t type_size() const except;
+			std::uint8_t type() const noexcept;
 
 		public:
 			static value_t value_type(Format::Type format) except;

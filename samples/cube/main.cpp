@@ -9,6 +9,7 @@
 #include <octoon/first_person_camera_component.h>
 
 #include <octoon/ui/imgui.h>
+#include <octoon/res_manager.h>
 
 class CubeController : public octoon::GameComponent
 {

@@ -31,12 +31,14 @@
 #	if defined(OCTOON_BUILD_DLL_EXPORT)
 #		define OCTOON_EXPORT __declspec(dllexport)
 #		define OCTOON_EXPORT_WINONLY __declspec(dllexport)
-#	elif !defined(OCTOON_STATIC)
-#		define OCTOON_EXPORT __declspec(dllimport)
-#		define OCTOON_EXPORT_WINONLY __declspec(dllimport)
 #	else
-#		define OCTOON_EXPORT
-#		define OCTOON_EXPORT_WINONLY
+#		if defined(OCTOON_STATIC)
+#			define OCTOON_EXPORT
+#			define OCTOON_EXPORT_WINONLY
+#		else
+#			define OCTOON_EXPORT __declspec(dllimport)
+#			define OCTOON_EXPORT_WINONLY __declspec(dllimport)
+#		endif
 #	endif
 
 #	define OCTOON_CALL __stdcall

@@ -4,6 +4,8 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/video/render_types.h>
 #include <octoon/image/image.h>
+#include <octoon/model/mesh.h>
+#include <octoon/model/contour_group.h>
 
 struct PathMeshing
 {
@@ -34,6 +36,7 @@ struct PathMeshing
 		bool hollow;
 		octoon::math::float3 color;
 		octoon::math::float1 thickness;
+		std::uint16_t bezierSteps;
 
 		struct LineMaterial
 		{
@@ -65,8 +68,9 @@ struct PathMeshing
 	};
 
 	Transform transform;
-	BoundingBox aabb;
+	BoundingBox bound;
 	Material material;
+	octoon::model::Contours contours;
 
 	PathMeshing()
 	{
@@ -74,6 +78,7 @@ struct PathMeshing
 		material.hollow = false;
 		material.color = octoon::math::float3::Zero;
 		material.thickness = 1.0f;
+		material.bezierSteps = 6;
 
 		material.phong.intensity = 1.0;
 		material.phong.ambient = 0.6;
@@ -90,20 +95,19 @@ class PathMeshingComponent : public octoon::GameComponent
 	OctoonDeclareSubClass(PathMeshingComponent, octoon::GameComponent)
 public:
 	PathMeshingComponent() noexcept;
-	PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps = 6) noexcept;
-	PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps = 6) noexcept;
+	PathMeshingComponent(std::string&& json) noexcept;
+	PathMeshingComponent(const std::string& json) noexcept;
 	virtual ~PathMeshingComponent() noexcept;
 
 	void setBezierPath(std::string&& json) noexcept;
 	void setBezierPath(const std::string& json) noexcept;
 	const std::string& getBezierPath() const noexcept;
 
-	void setBezierSteps(std::uint16_t bezierSteps) noexcept;
-	std::uint16_t getBezierSteps() const noexcept;
-
 	virtual octoon::GameComponentPtr clone() const noexcept override;
 
 protected:
+	virtual void updateContour(const std::string& json) noexcept(false);
+	virtual void updateMesh() noexcept;
 	virtual void onSaveImage(octoon::image::Image& image, float x, float y) except;
 
 private:
@@ -113,16 +117,14 @@ private:
 	virtual void onFrameEnd() except;
 
 private:
-	void updateContour(const std::string& json) noexcept(false);
-
-private:
 	PathMeshingComponent(const PathMeshingComponent&) = delete;
 	PathMeshingComponent& operator=(const PathMeshingComponent&) = delete;
 
 private:
 	std::string json_;
-	std::uint16_t bezierSteps_;
+
 	PathMeshing params_;
+
 	octoon::GameObjectPtr object_;
 	octoon::GameObjectPtr camera_;
 };

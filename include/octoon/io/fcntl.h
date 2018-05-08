@@ -255,31 +255,35 @@ namespace octoon
 				strcpy(name, path);
 				std::size_t len = strlen(path);
 
-				if (name[len - 1] != SEPARATOR)
+				if (name[len - 1] != '/' && name[len - 1] != '\\')
 				{
-					strcat(name, SEPARATOR_STRING);
+					strcat(name, "/");
 					len += 1;
 				}
 
 				for (std::size_t i = 1; i < len; i++)
 				{
-					if (name[i] != SEPARATOR)
+					if (name[i] != '/' && name[i] != '\\')
 						continue;
 
 					name[i] = 0;
 
 					if (access(name, 0) != 0)
 					{
-#if __LINUX__
-						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
-							return false;
-#elif __WINDOWS__
+#if __WINDOWS__
 						if (!CreateDirectory(name, 0))
+							return false;
+#elif __LINUX__
+						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
 							return false;
 #endif
 					}
 
-					name[i] = SEPARATOR;
+#if __WINDOWS__
+					name[i] = '\\';
+#else
+					name[i] = '/';
+#endif
 				}
 
 				return true;

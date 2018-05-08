@@ -58,22 +58,17 @@ math::float4& operator << (math::float4& v, json::reference& json)
 }
 
 PathMeshingComponent::PathMeshingComponent() noexcept
-	: bezierSteps_(5)
 {
 }
 
-PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps) noexcept
-	: bezierSteps_(5)
+PathMeshingComponent::PathMeshingComponent(std::string&& json) noexcept
 {
-	this->setBezierPath(json);
-	this->setBezierSteps(bezierSteps);
+	this->setBezierPath(std::move(json));
 }
 
-PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps) noexcept
-	: bezierSteps_(5)
+PathMeshingComponent::PathMeshingComponent(const std::string& json) noexcept
 {
 	this->setBezierPath(json);
-	this->setBezierSteps(bezierSteps);
 }
 
 PathMeshingComponent::~PathMeshingComponent() noexcept
@@ -89,7 +84,10 @@ PathMeshingComponent::setBezierPath(std::string&& json) noexcept
 	{
 		auto object = this->getGameObject();
 		if (object && object->getActive())
+		{
 			this->updateContour(json_);
+			this->updateMesh();
+		}
 	}
 }
 
@@ -102,7 +100,10 @@ PathMeshingComponent::setBezierPath(const std::string& json) noexcept
 	{
 		auto object = this->getGameObject();
 		if (object && object->getActive())
+		{
 			this->updateContour(json_);
+			this->updateMesh();
+		}
 	}
 }
 
@@ -113,36 +114,15 @@ PathMeshingComponent::getBezierPath() const noexcept
 }
 
 void
-PathMeshingComponent::setBezierSteps(std::uint16_t bezierSteps) noexcept
-{
-	assert(bezierSteps > 0);
-
-	if (bezierSteps_ != bezierSteps)
-	{
-		bezierSteps_ = bezierSteps;
-
-		if (this->getActive())
-		{
-			auto object = this->getGameObject();
-			if (object && object->getActive())
-				this->updateContour(json_);
-		}
-	}
-}
-
-std::uint16_t
-PathMeshingComponent::getBezierSteps() const noexcept
-{
-	return bezierSteps_;
-}
-
-void
 PathMeshingComponent::onActivate() noexcept(false)
 {
 	this->addComponentDispatch(octoon::GameDispatchType::FrameEnd);
 
 	if (!json_.empty())
+	{
 		this->updateContour(json_);
+		this->updateMesh();
+	}
 }
 
 void
@@ -157,7 +137,6 @@ PathMeshingComponent::clone() const noexcept
 	auto instance = std::make_shared<PathMeshingComponent>();
 	instance->setName(this->getName());
 	instance->setBezierPath(this->getBezierPath());
-	instance->setBezierSteps(this->getBezierSteps());
 
 	return instance;
 }
@@ -165,41 +144,46 @@ PathMeshingComponent::clone() const noexcept
 void
 PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 {
-	PathMeshing& params = params_;
-
 	auto reader = json::parse(data);
 
 	auto transform = reader["transform"];
 	if (!transform.is_null())
 	{
-		params.transform.translate << transform["translate"];
-		params.transform.scale << transform["scale"];
-		params.transform.rotation << transform["rotation"];
+		params_.transform.translate << transform["translate"];
+		params_.transform.scale << transform["scale"];
+		params_.transform.rotation << transform["rotation"];
 	}
 
 	auto& bound = reader["boundingBox"];
 	if (!bound.is_null())
 	{
-		params.aabb.center << bound["center"];
-		params.aabb.aabb.min << bound["min"];
-		params.aabb.aabb.max << bound["max"];
+		params_.bound.center << bound["center"];
+		params_.bound.aabb.min << bound["min"];
+		params_.bound.aabb.max << bound["max"];
 	}
 
 	auto& json_material = reader["material"];
 	if (!json_material.is_null())
 	{
-		params.material.type = (PathMeshing::Material::Type)json_material["type"].get<json::number_integer_t>();
-		params.material.color << reader["color"];
-		params.material.hollow = json_material["hollow"].get<json::boolean_t>();
-		params.material.thickness = json_material["thickness"].get<json::number_float_t>();
+		params_.material.color << reader["color"];
 
-		switch (params.material.type)
+		auto& type = json_material["type"];
+		auto& hollow = json_material["hollow"];
+		auto& thickness = json_material["thickness"];
+		auto& bezierSteps = json_material["bezierSteps"];
+
+		if (!type.is_null()) params_.material.type = (PathMeshing::Material::Type)type.get<json::number_integer_t>();
+		if (!hollow.is_null()) params_.material.hollow = hollow.get<json::boolean_t>();
+		if (!thickness.is_null()) params_.material.thickness = thickness.get<json::number_float_t>();
+		if (!bezierSteps.is_null()) params_.material.bezierSteps = bezierSteps.get<json::number_unsigned_t>();
+
+		switch (params_.material.type)
 		{
 		case PathMeshing::Material::Line:
 		{
 			auto& lineSize = json_material["lineWidth"];
 			if (!lineSize.is_null())
-				params.material.line.lineWidth = lineSize.get<json::number_float_t>();
+				params_.material.line.lineWidth = lineSize.get<json::number_float_t>();
 		}
 		break;
 		case PathMeshing::Material::Basic:
@@ -210,12 +194,12 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			{
 				auto& light = lights[0];
 
-				params.material.phong.direction << light["direction"];
-				params.material.phong.darkcolor << light["darkcolor"];
-				params.material.phong.intensity = light["intensity"].get<json::number_float_t>();
-				params.material.phong.ambient = light["ambient"].get<json::number_float_t>();
-				params.material.phong.highLight = light["highLight"].get<json::number_float_t>();
-				params.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
+				params_.material.phong.direction << light["direction"];
+				params_.material.phong.darkcolor << light["darkcolor"];
+				params_.material.phong.intensity = light["intensity"].get<json::number_float_t>();
+				params_.material.phong.ambient = light["ambient"].get<json::number_float_t>();
+				params_.material.phong.highLight = light["highLight"].get<json::number_float_t>();
+				params_.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
 			}
 		}
 		default:
@@ -226,8 +210,6 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	auto& text = reader["text"];
 	if (!text.is_null())
 	{
-		model::Contours contours;
-
 		for (auto& group : text["chars"])
 		{
 			for (auto& path : group["paths"])
@@ -260,7 +242,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 						math::float3 B(p2[0].get<json::number_float_t>(), p2[1].get<json::number_float_t>(), 0.0);
 						math::float3 C(p3[0].get<json::number_float_t>(), p3[1].get<json::number_float_t>(), 0.0);
 
-						contour->addPoints(A, B, C, bezierSteps_);
+						contour->addPoints(A, B, C, params_.material.bezierSteps);
 
 						prev = &p3;
 
@@ -279,7 +261,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 						math::float3 C(p3[0].get<json::number_float_t>(), p3[1].get<json::number_float_t>(), 0.0);
 						math::float3 D(p4[0].get<json::number_float_t>(), p4[1].get<json::number_float_t>(), 0.0);
 
-						contour->addPoints(A, B, C, D, bezierSteps_);
+						contour->addPoints(A, B, C, D, params_.material.bezierSteps);
 
 						prev = &p4;
 
@@ -304,73 +286,78 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					}
 				}
 
-				contour->isClockwise(!params.material.hollow);
-				contours.push_back(std::move(contour));
+				contour->isClockwise(!params_.material.hollow);
+				params_.contours.push_back(std::move(contour));
 			}
 		}
+	}
+}
 
-		math::float3 offset = (params.aabb.aabb.max - params.aabb.aabb.min) * params.aabb.center;
+void
+PathMeshingComponent::updateMesh() noexcept
+{
+	math::float3 offset = (params_.bound.aabb.max - params_.bound.aabb.min) * params_.bound.center;
+	for (auto& contour : params_.contours)
+	{
+		for (auto& it : contour->points())
+			it -= offset;
+	}
 
-		for (auto& contour : contours)
-		{
-			for (auto& it : contour->points())
-				it -= offset;
-		}
+	math::AABB aabb = params_.bound.aabb;
+	aabb.min.z = -params_.material.thickness;
+	aabb.max.z = params_.material.thickness;
+	aabb -= offset;
+	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation))));
+	params_.bound.aabb = aabb;
 
-		params.aabb.aabb.min.z = -params.material.thickness;
-		params.aabb.aabb.max.z = params.material.thickness;
-		params.aabb.aabb -= offset;
-		params.aabb.aabb = math::transform(params.aabb.aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params.transform.rotation))));
+	object_ = std::make_shared<octoon::GameObject>();
+	object_->setParent(this->getGameObject());
+	object_->getComponent<TransformComponent>()->setLocalTranslate(-aabb.min);
+	object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
+	object_->getComponent<TransformComponent>()->setLocalScale(params_.transform.scale);
 
-		object_ = std::make_shared<octoon::GameObject>();
-		object_->setParent(this->getGameObject());
-		object_->getComponent<TransformComponent>()->setLocalTranslate(-params.aabb.aabb.min);
-		object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params.transform.rotation)));
-		object_->getComponent<TransformComponent>()->setLocalScale(params.transform.scale);
+	if (params_.material.type == PathMeshing::Material::Line)
+		object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(params_.contours, params_.material.thickness));
+	else
+	{
+		auto mesh = model::makeMesh(params_.contours, params_.material.thickness);
+		mesh.computeVertexNormals();
 
-		if (params.material.type == PathMeshing::Material::Line)
-			object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(contours, params.material.thickness));
-		else
-		{
-			auto mesh = model::makeMesh(contours, params.material.thickness);
-			mesh.computeVertexNormals();
+		object_->addComponent<octoon::MeshFilterComponent>(std::move(mesh));
+	}
 
-			object_->addComponent<octoon::MeshFilterComponent>(std::move(mesh));
-		}
+	switch (params_.material.type)
+	{
+	case PathMeshing::Material::Line:
+	{
+		auto material = std::make_shared<octoon::video::LineMaterial>(params_.material.line.lineWidth);
+		material->setColor(params_.material.color);
 
-		switch (params.material.type)
-		{
-		case PathMeshing::Material::Line:
-		{
-			auto material = std::make_shared<octoon::video::LineMaterial>(params.material.line.lineWidth);
-			material->setColor(params.material.color);
+		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+	}
+	break;
+	case PathMeshing::Material::Basic:
+	{
+		auto material = std::make_shared<octoon::video::TextMaterial>();
+		material->setTextColor(octoon::video::TextColor::FrontColor, params_.material.color);
+		material->setTextColor(octoon::video::TextColor::SideColor, params_.material.color);
 
-			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
-		}
-		break;
-		case PathMeshing::Material::Basic:
-		{
-			auto material = std::make_shared<octoon::video::TextMaterial>();
-			material->setTextColor(octoon::video::TextColor::FrontColor, params.material.color);
-			material->setTextColor(octoon::video::TextColor::SideColor, params.material.color);
+		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+	}
+	break;
+	case PathMeshing::Material::PhongShading:
+	{
+		auto material = std::make_shared<octoon::video::PhongMaterial>();
+		material->setBaseColor(params_.material.color * params_.material.phong.intensity);
+		material->setAmbientColor(params_.material.color * params_.material.phong.ambient);
+		material->setSpecularColor(math::float3::One * params_.material.phong.highLight);
+		material->setShininess(params_.material.phong.highLightSize);
+		material->setLightDir(math::normalize(params_.material.phong.direction));
+		material->setDarkColor(params_.material.phong.darkcolor);
 
-			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
-		}
-		break;
-		case PathMeshing::Material::PhongShading:
-		{
-			auto material = std::make_shared<octoon::video::PhongMaterial>();
-			material->setBaseColor(params.material.color * params.material.phong.intensity);
-			material->setAmbientColor(params.material.color * params.material.phong.ambient);
-			material->setSpecularColor(math::float3::One * params.material.phong.highLight);
-			material->setShininess(params.material.phong.highLightSize);
-			material->setLightDir(math::normalize(params.material.phong.direction));
-			material->setDarkColor(params.material.phong.darkcolor);
-
-			object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
-		}
-		break;
-		}
+		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
+	}
+	break;
 	}
 
 	camera_ = std::make_shared<octoon::GameObject>();
@@ -380,8 +367,8 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
 	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
-	cameraComponent->setupFramebuffers(params.aabb.aabb.size().x, params.aabb.aabb.size().y, 4);
-	cameraComponent->setupSwapFramebuffers(params.aabb.aabb.size().x, params.aabb.aabb.size().y);
+	cameraComponent->setupFramebuffers(aabb.size().x, aabb.size().y, 4);
+	cameraComponent->setupSwapFramebuffers(aabb.size().x, aabb.size().y);
 }
 
 void
@@ -404,7 +391,8 @@ PathMeshingComponent::onFrameEnd() except
 		texture->unmap();
 	}
 
-	this->onSaveImage(image, params_.transform.translate.x + params_.aabb.aabb.center().x, params_.transform.translate.y + params_.aabb.aabb.center().y);
+	auto center = params_.bound.aabb.center() + params_.transform.translate;
+	this->onSaveImage(image, center.x, center.y);
 }
 
 void
@@ -412,20 +400,17 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 {
 	std::ostringstream stream;
 #if __WINDOWS__
-	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	stream << "D:\\media\\images\\";
-	stream << std::put_time(std::localtime(&time), "%Y\\%m\\%d\\");
-#elif __LINUX__
-	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	stream << "D:/media/images/";
+#else
 	stream << "/media/images/";
-	stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
 #endif
+
+	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
 
 	io::fcntl::mkdir(stream.str().c_str());
 
 	stream << make_guid();
-
-	image.save(stream.str() + ".png", "png");
 
 	json j;
 	j["x"] = x;
@@ -438,4 +423,6 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 	std::ofstream file(stream.str() + ".json", std::ios_base::out | std::ios_base::binary);
 	if (file)
 		file.write(sstream.str().c_str(), sstream.str().size());
+
+	image.save(stream.str() + ".png", "png");
 }

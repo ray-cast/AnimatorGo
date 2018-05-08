@@ -62,14 +62,14 @@ PathMeshingComponent::PathMeshingComponent() noexcept
 {
 }
 
-PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps, bool clockwise) noexcept
+PathMeshingComponent::PathMeshingComponent(std::string&& json, std::uint16_t bezierSteps) noexcept
 	: bezierSteps_(5)
 {
 	this->setBezierPath(json);
 	this->setBezierSteps(bezierSteps);
 }
 
-PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps, bool clockwise) noexcept
+PathMeshingComponent::PathMeshingComponent(const std::string& json, std::uint16_t bezierSteps) noexcept
 	: bezierSteps_(5)
 {
 	this->setBezierPath(json);

@@ -19,6 +19,7 @@ OPTION(OCTOON_BUILD_TESTS "ON to disable test binary generation" OFF)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)
 OPTION(OCTOON_BUILD_DEBUG_MODE "ON for debug or OFF for release" ON)
 OPTION(OCTOON_BUILD_MUTILTHREAD_DLL "ON for /MD OFF for /MT" ON)
+OPTION(OCTOON_BUILD_SHARED_DLL "ON for dynamic OFF for static libraries" ON)
 
 # 设置默认编译平台
 IF(ANDROID_ABI OR CMAKE_SYSTEM_NAME MATCHES "VCMDDAndroid")

@@ -72,14 +72,14 @@ namespace octoon
 		GameServer& operator=(const GameServer&) noexcept = delete;
 
 	private:
-		bool is_actived_;
-		bool is_quit_request_;
+		bool isActived_;
+		bool isQuitRequest_;
 
 		GameScenes scenes_;
 		GameFeatures features_;
 
-		GameApp* game_app_;
-		GameListenerPtr game_listener_;
+		GameApp* gameApp_;
+		GameListenerPtr listener_;
 	};
 }
 

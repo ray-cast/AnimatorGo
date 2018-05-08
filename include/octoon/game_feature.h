@@ -49,10 +49,10 @@ namespace octoon
 		GameFeature& operator=(const GameFeature&) noexcept = delete;
 
 	private:
-		bool is_actived_;
+		bool isActived_;
 
-		GameServer* game_server_;
-		GameListenerPtr game_listener_;
+		GameServer* server_;
+		GameListenerPtr listener_;
 	};
 }
 

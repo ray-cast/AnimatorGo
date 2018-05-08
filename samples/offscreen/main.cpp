@@ -142,4 +142,5 @@ int main(int argc, const char* argv[])
 	object->addComponent<PathMeshingComponent>(chars);
 
 	app->update();
+	app->close();
 }

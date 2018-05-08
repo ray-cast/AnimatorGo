@@ -79,10 +79,10 @@ namespace octoon
 		GameApp& operator=(const GameApp&) noexcept = delete;
 
 	private:
-		GameServerPtr game_server_;
-		GameListenerPtr game_listener_;
+		GameServerPtr server_;
+		GameListenerPtr listener_;
 
-		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
+		std::chrono::time_point<std::chrono::high_resolution_clock> startTime_;
 	};
 }
 

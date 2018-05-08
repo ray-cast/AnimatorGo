@@ -1144,6 +1144,9 @@ namespace octoon
 					_normals[f2] += n;
 					_normals[f3] += n;
 				}
+
+				for (auto& it : _normals)
+					it = math::normalize(it);
 			}
 		}
 

@@ -40,7 +40,7 @@ namespace octoon
 			throw runtime::runtime_error::create("Unknown stream:" + path);
 
 		GraphicsFormat format = GraphicsFormat::Undefined;
-		switch (image.format().type())
+		switch (image.format())
 		{
 		case Format::BC1RGBUNormBlock: format = GraphicsFormat::BC1RGBUNormBlock; break;
 		case Format::BC1RGBAUNormBlock: format = GraphicsFormat::BC1RGBAUNormBlock; break;

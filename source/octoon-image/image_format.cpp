@@ -29,7 +29,7 @@ namespace octoon
 			return swizzle_type(format_);
 		}
 
-		std::uint8_t
+		Format::Type
 		Format::type() const noexcept
 		{
 			return format_;

@@ -2,6 +2,7 @@
 #define OCTOON_UUID_H_
 
 #include <string>
+#include <sstream>
 #include <octoon/runtime/platform.h>
 
 namespace octoon

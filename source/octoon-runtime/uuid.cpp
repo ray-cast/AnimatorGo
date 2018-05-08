@@ -55,11 +55,11 @@ namespace octoon
 			this->data4[0] = (time >> 0) & 0xFF;
 			this->data4[1] = (time >> 8) & 0xFF;
 			this->data4[2] = (time >> 16) & 0xFF;
-			this->data4[3] = (time >> 32) & 0xFF;
-			this->data4[4] = (time >> 40) & 0xFF;
-			this->data4[5] = (time >> 48) & 0xFF;
-			this->data4[6] = (time >> 56) & 0xFF;
-			this->data4[7] = (time >> 64) & 0xFF;
+			this->data4[3] = (time >> 24) & 0xFF;
+			this->data4[4] = (time >> 32) & 0xFF;
+			this->data4[5] = (time >> 40) & 0xFF;
+			this->data4[6] = (time >> 48) & 0xFF;
+			this->data4[7] = (time >> 56) & 0xFF;
 #endif
 			return *this;
 		}

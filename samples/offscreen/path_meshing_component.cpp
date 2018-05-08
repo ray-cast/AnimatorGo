@@ -16,8 +16,6 @@
 #include <octoon/video/phong_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/camera_component.h>
-#include <octoon/image/image.h>
-#include <octoon/image/image_util.h>
 
 #include <cstring>
 #include <chrono>
@@ -39,6 +37,7 @@
 OctoonImplementSubClass(PathMeshingComponent, octoon::GameComponent, "PathMeshingComponent")
 
 using namespace octoon;
+using namespace octoon::runtime;
 using namespace octoon::graphics;
 using namespace octoon::video;
 
@@ -389,54 +388,54 @@ void
 PathMeshingComponent::onFrameEnd() except
 {
 	auto framebuffer = camera_->getComponent<octoon::CameraComponent>()->getSwapFramebuffer();
-	if (framebuffer)
+	if (!framebuffer)
+		return;
+
+	std::uint32_t w = framebuffer->getGraphicsFramebufferDesc().getWidth();
+	std::uint32_t h = framebuffer->getGraphicsFramebufferDesc().getHeight();
+
+	image::Image image(image::Format::R8G8B8A8UNorm, w, h);
+
+	void* data = nullptr;
+	auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachments().at(0).getBindingTexture();
+	if (texture->map(0, 0, w, h, 0, &data))
 	{
-		std::uint32_t w = framebuffer->getGraphicsFramebufferDesc().getWidth();
-		std::uint32_t h = framebuffer->getGraphicsFramebufferDesc().getHeight();
+		std::memcpy((void*)image.data(), data, image.size());
+		texture->unmap();
+	}
 
-		image::Image image(image::Format::R8G8B8A8UNorm, w, h);
+	this->onSaveImage(image, params_.transform.translate.x + params_.aabb.aabb.center().x, params_.transform.translate.y + params_.aabb.aabb.center().y);
+}
 
-		void* data = nullptr;
-		auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachments().at(0).getBindingTexture();
-		if (texture->map(0, 0, w, h, 0, &data))
-		{
-			std::memcpy((void*)image.data(), data, image.size());
-			texture->unmap();
-		}
-
-		auto now = std::chrono::system_clock::now();
-		auto time = std::chrono::system_clock::to_time_t(now);
-
-		std::ostringstream stream;
+void
+PathMeshingComponent::onSaveImage(octoon::image::Image& image, std::uint32_t x, std::uint32_t y) except
+{
+	std::ostringstream stream;
 #if __WINDOWS__
-		stream << "D:\\media\\images\\";
-		stream << std::put_time(std::localtime(&time), "%Y\\%m\\%d\\");
+	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	stream << "D:\\media\\images\\";
+	stream << std::put_time(std::localtime(&time), "%Y\\%m\\%d\\");
 #elif __LINUX__
-		stream << "/media/images/";
-		stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
+	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	stream << "/media/images/";
+	stream << std::put_time(std::localtime(&time), "%Y/%m/%d/");
 #endif
 
-		auto dir = stream.str();
-		io::fcntl::mkdir(dir.c_str());
+	io::fcntl::mkdir(stream.str().c_str());
 
-		char uuid[64] = {};
-		runtime::GUID guid;
-		runtime::guid_generate(guid);
-		runtime::guid_to_string(guid, uuid);
+	stream << make_guid();
 
-		dir +=uuid;
+	image.save(stream.str() + ".png", "png");
 
-		image.save(dir + ".png", "png");
+	json j;
+	j["x"] = x;
+	j["y"] = y;
+	j["path"] = stream.str() + ".png";
 
-		std::ofstream file(dir + ".json", std::ios_base::out | std::ios_base::binary);
-		if (file)
-		{
-			std::ostringstream json;
-			json << R"({"x":)" << params_.transform.translate.x + params_.aabb.aabb.center().x << ",";
-			json << R"("y":)" << params_.transform.translate.y + params_.aabb.aabb.center().y << ",";
-			json << R"("path":")" << dir + ".png" << R"("})";
+	std::ostringstream sstream;
+	sstream << j;
 
-			file.write(json.str().c_str(), json.str().size());
-		}
-	}
+	std::ofstream file(stream.str() + ".json", std::ios_base::out | std::ios_base::binary);
+	if (file)
+		file.write(sstream.str().c_str(), sstream.str().size());
 }

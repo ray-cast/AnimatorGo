@@ -3,6 +3,7 @@
 
 #include <octoon/mesh_filter_component.h>
 #include <octoon/video/render_types.h>
+#include <octoon/image/image.h>
 
 struct PathMeshing
 {
@@ -84,7 +85,7 @@ struct PathMeshing
 	}
 };
 
-class PathMeshingComponent final : public octoon::GameComponent
+class PathMeshingComponent : public octoon::GameComponent
 {
 	OctoonDeclareSubClass(PathMeshingComponent, octoon::GameComponent)
 public:
@@ -101,6 +102,9 @@ public:
 	std::uint16_t getBezierSteps() const noexcept;
 
 	virtual octoon::GameComponentPtr clone() const noexcept override;
+
+protected:
+	virtual void onSaveImage(octoon::image::Image& image, std::uint32_t x, std::uint32_t y) except;
 
 private:
 	virtual void onActivate() noexcept(false);

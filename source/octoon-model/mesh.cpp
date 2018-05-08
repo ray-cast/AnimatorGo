@@ -1072,7 +1072,7 @@ namespace octoon
 		{
 			assert(!_vertices.empty() && !_indices.empty());
 
-			faceNormals.resize(_vertices.size());
+			faceNormals.resize(_indices.size());
 
 			std::size_t size = _indices.size();
 			for (std::size_t i = 0; i < size; i += 3)
@@ -1090,9 +1090,9 @@ namespace octoon
 
 				Vector3 normal = math::normalize(math::cross(edge1, edge2));
 
-				faceNormals[f1] = normal;
-				faceNormals[f2] = normal;
-				faceNormals[f3] = normal;
+				faceNormals[i] = normal;
+				faceNormals[i + 1] = normal;
+				faceNormals[i + 2] = normal;
 			}
 		}
 
@@ -1153,7 +1153,7 @@ namespace octoon
 		void
 		Mesh::computeVertexNormals(const float3s& faceNormals) noexcept
 		{
-			assert(faceNormals.size() == _vertices.size());
+			assert(faceNormals.size() == _indices.size());
 			assert(!_vertices.empty() && !_indices.empty());
 
 			float3s normal;
@@ -1167,9 +1167,9 @@ namespace octoon
 				std::uint32_t b = (_indices)[i + 1];
 				std::uint32_t c = (_indices)[i + 2];
 
-				normal[a] += faceNormals[a];
-				normal[b] += faceNormals[b];
-				normal[c] += faceNormals[c];
+				normal[a] += faceNormals[i];
+				normal[b] += faceNormals[i + 1];
+				normal[c] += faceNormals[i + 2];
 			}
 
 			for (auto& it : normal)

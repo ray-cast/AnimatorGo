@@ -268,7 +268,7 @@ namespace octoon
 
 					name[i] = 0;
 
-					if (access(name, NULL) != 0)
+					if (access(name, 0) != 0)
 					{
 #if __LINUX__
 						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)

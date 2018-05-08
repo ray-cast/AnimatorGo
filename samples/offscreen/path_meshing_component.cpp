@@ -434,7 +434,7 @@ PathMeshingComponent::onFrameEnd() except
 			std::ostringstream json;
 			json << R"({"x":)" << params_.transform.translate.x + params_.aabb.aabb.center().x << ",";
 			json << R"("y":)" << params_.transform.translate.y + params_.aabb.aabb.center().y << ",";
-			json << R"("path":")" << dir << R"("})";
+			json << R"("path":")" << dir + ".png" << R"("})";
 
 			file.write(json.str().c_str(), json.str().size());
 		}

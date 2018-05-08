@@ -39,7 +39,7 @@ namespace octoon
 		template<class T>
 		struct return_type<T, typename std::enable_if<std::is_reference<typename result_of<T>::type>::value>::type>
 		{
-			using type = typename std::reference_wrapper<typename remove_cvref<T>::type>::type;
+			using type = std::reference_wrapper<typename remove_cvref<typename result_of<T>::type>::type>;
 		};
 
 		template<class T> class signal_impl;

@@ -106,24 +106,34 @@ private:
 };
 
 
-void slot()
+int& swap(int& x, int& y)
 {
-	std::cout << "123";
+	int tmp = x;
+	x = y;
+	y = tmp;
+	return x;
 }
 
-void slot2()
+int& swap2(int& x, int& y)
 {
-	std::cout << "4";
+	x = 1;
+	y = 2;
+	return y;
 }
 
 int main(int argc, const char* argv[])
 {
-	octoon::runtime::signal<void()> print;
-	print.connect(slot);
-	octoon::runtime::signal<void()> print2;
+	int x = 1, y = 2;
+	octoon::runtime::signal<int&(int&, int&)> print;
+	print.connect(swap);
+	octoon::runtime::signal<int&(int&, int&)> print2;
 	print2.connect(print);
-	print2.connect(slot2);
-	print2();
+	print2.connect(swap2);
+	auto ret = print2(x, y);
+	for (int& each : ret)
+		each = 5;
+	std::cout << x << y;
+
 	//if (!::OctoonInit(argv[0], ""))
 	//	return 1;
 

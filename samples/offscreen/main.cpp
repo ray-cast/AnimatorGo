@@ -24,6 +24,7 @@ R"({
 		"hollow":false,
 		"wireframe":false,
 		"thickness":10.0,
+		"bezierSteps":6,
 		"lineWidth":3.0,
 		"lights":[
 			{
@@ -132,15 +133,22 @@ int main(int argc, const char* argv[])
 	::SetCurrentDirectory(root.c_str());
 #endif
 
-	int w = 1920, h = 1080;
+	try
+	{
+		int w = 1920, h = 1080;
 
-	auto app = octoon::GameApp::instance();
-	app->open(nullptr, w, h, w, h);
-	app->start();
+		auto app = octoon::GameApp::instance();
+		app->open(nullptr, w, h, w, h);
+		app->start();
 
-	auto object = std::make_shared<octoon::GameObject>();
-	object->addComponent<PathMeshingComponent>(chars);
+		auto object = std::make_shared<octoon::GameObject>();
+		object->addComponent<PathMeshingComponent>(chars);
 
-	app->update();
-	app->close();
+		app->update();
+		app->close();
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+	}
 }

@@ -76,7 +76,7 @@ PathMeshingComponent::~PathMeshingComponent() noexcept
 }
 
 void
-PathMeshingComponent::setBezierPath(std::string&& json) noexcept
+PathMeshingComponent::setBezierPath(std::string&& json) except
 {
 	json_ = std::move(json);
 
@@ -92,7 +92,7 @@ PathMeshingComponent::setBezierPath(std::string&& json) noexcept
 }
 
 void
-PathMeshingComponent::setBezierPath(const std::string& json) noexcept
+PathMeshingComponent::setBezierPath(const std::string& json) except
 {
 	json_ = json;
 
@@ -172,10 +172,25 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		auto& thickness = json_material["thickness"];
 		auto& bezierSteps = json_material["bezierSteps"];
 
-		if (!type.is_null()) params_.material.type = (PathMeshing::Material::Type)type.get<json::number_integer_t>();
-		if (!hollow.is_null()) params_.material.hollow = hollow.get<json::boolean_t>();
-		if (!thickness.is_null()) params_.material.thickness = thickness.get<json::number_float_t>();
-		if (!bezierSteps.is_null()) params_.material.bezierSteps = bezierSteps.get<json::number_unsigned_t>();
+		if (!type.is_null())
+			params_.material.type = (PathMeshing::Material::Type)type.get<json::number_integer_t>();
+		else
+			throw runtime::runtime_error::create(R"(The "type" must be interger, but is null)");
+
+		if (!hollow.is_null())
+			params_.material.hollow = hollow.get<json::boolean_t>();
+		else
+			throw runtime::runtime_error::create(R"(The "hollow" must be boolean, but is null)");
+
+		if (!thickness.is_null())
+			params_.material.thickness = thickness.get<json::number_float_t>();
+		else
+			throw runtime::runtime_error::create(R"(The "thickness" must be float, but is null)");
+
+		if (!bezierSteps.is_null())
+			params_.material.bezierSteps = bezierSteps.get<json::number_unsigned_t>();
+		else
+			throw runtime::runtime_error::create(R"(The "bezierSteps" must be unsigned int, but is null)");
 
 		switch (params_.material.type)
 		{
@@ -210,6 +225,8 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 	auto& text = reader["text"];
 	if (!text.is_null())
 	{
+		params_.contours.clear();
+
 		for (auto& group : text["chars"])
 		{
 			for (auto& path : group["paths"])

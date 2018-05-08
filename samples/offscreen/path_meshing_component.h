@@ -99,8 +99,8 @@ public:
 	PathMeshingComponent(const std::string& json) noexcept;
 	virtual ~PathMeshingComponent() noexcept;
 
-	void setBezierPath(std::string&& json) noexcept;
-	void setBezierPath(const std::string& json) noexcept;
+	void setBezierPath(std::string&& json) except;
+	void setBezierPath(const std::string& json) except;
 	const std::string& getBezierPath() const noexcept;
 
 	virtual octoon::GameComponentPtr clone() const noexcept override;

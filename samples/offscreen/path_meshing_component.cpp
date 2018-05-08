@@ -328,7 +328,6 @@ PathMeshingComponent::updateMesh() noexcept
 	params_.bound.aabb = aabb;
 
 	object_ = std::make_shared<octoon::GameObject>();
-	object_->setParent(this->getGameObject());
 	object_->getComponent<TransformComponent>()->setLocalTranslate(-aabb.min);
 	object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
 	object_->getComponent<TransformComponent>()->setLocalScale(params_.transform.scale);

@@ -40,9 +40,9 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
-				void set_center(const Vector3<T>& center) noexcept
+				void setCenter(const Vector3<T>& center) noexcept
 				{
-					aabb_.set_center(center);
+					aabb_.setCenter(center);
 					sphere_.set(aabb_);
 				}
 

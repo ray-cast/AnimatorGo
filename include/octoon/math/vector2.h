@@ -222,7 +222,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T sqr_distance(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
+		inline T sqrDistance(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
 		{
 			return length2(v1 - v2);
 		}

@@ -61,7 +61,7 @@ namespace octoon
 				Quaternion<T>& set(const Vector3<T>& v) noexcept { return this->set(v.x, v.y, v.z, T(1)); }
 				Quaternion<T>& set(const Vector4<T>& v) noexcept { return this->set(v.x, v.y, v.z, v.w); }
 
-				Quaternion<T>& make_rotation_x(T theta) noexcept
+				Quaternion<T>& makeRotationX(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -73,7 +73,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotation_y(T theta) noexcept
+				Quaternion<T>& makeRotationY(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 
@@ -85,7 +85,7 @@ namespace octoon
 					return *this;
 				}
 
-				Quaternion<T>& make_rotation_z(T theta) noexcept
+				Quaternion<T>& makeRotationZ(T theta) noexcept
 				{
 					T thetaOver2 = theta * 0.5f;
 

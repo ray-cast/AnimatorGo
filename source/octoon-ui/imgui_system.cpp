@@ -300,7 +300,7 @@ namespace octoon
 			io.DisplayFramebufferScale.y = h;
 
 			math::float4x4 project;
-			project.make_ortho_lh(0, w, h, 0, 0, 1);
+			project.makeOrthoLH(0, w, h, 0, 0, 1);
 
 			proj_->uniform4fmat(project);
 		}

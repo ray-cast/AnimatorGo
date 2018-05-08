@@ -90,7 +90,7 @@ namespace octoon
 		inline bool intersects(const detail::Sphere<T>& sphere_, const detail::AABB<T>& aabb_) noexcept
 		{
 			detail::Vector3<T> point = closest(aabb_, sphere_.center);
-			return sqr_distance(sphere_.center, point) < (sphere_.radius * sphere_.radius);
+			return sqrDistance(sphere_.center, point) < (sphere_.radius * sphere_.radius);
 		}
 
 		template<typename T>
@@ -132,9 +132,9 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T sqr_distance(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& pt) noexcept
+		inline T sqrDistance(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& pt) noexcept
 		{
-			return sqr_distance(pt, sphere_.center()) - sphere_.radius() * sphere_.radius();
+			return sqrDistance(pt, sphere_.center()) - sphere_.radius() * sphere_.radius();
 		}
 
 		template<typename T>

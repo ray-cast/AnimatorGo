@@ -39,7 +39,7 @@ namespace octoon
 
 				Matrix3x3() = default;
 				Matrix3x3(T mt00, T mt01, T mt02, T mt10, T mt11, T mt12, T mt20, T mt21, T mt22) noexcept : a1(mt00), a2(mt01), a3(mt02), b1(mt10), b2(mt11), b3(mt12), c1(mt20), c2(mt21), c3(mt22){}
-				Matrix3x3(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept { this->make_matrix(m1, m2); }
+				Matrix3x3(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept { this->makeMatrix(m1, m2); }
 				Matrix3x3(const Vector3<T>& axis, T angle) noexcept { this->makeRotation(axis, angle); }
 				Matrix3x3(const Quaternion<T>& q) noexcept { this->makeRotation(q); }
 				~Matrix3x3() = default;
@@ -66,7 +66,7 @@ namespace octoon
 				Matrix3x3<T>& operator*=(const Matrix3x3<T>& m) noexcept
 				{
 					Matrix3x3<T> m1(*this);
-					this->make_matrix(m1, m);
+					this->makeMatrix(m1, m);
 					return *this;
 				}
 
@@ -113,7 +113,7 @@ namespace octoon
 					return this->ptr();
 				}
 
-				Matrix3x3<T>& make_matrix(T mt00, T mt01, T mt02, T mt10, T mt11, T mt12, T mt20, T mt21, T mt22) noexcept
+				Matrix3x3<T>& makeMatrix(T mt00, T mt01, T mt02, T mt10, T mt11, T mt12, T mt20, T mt21, T mt22) noexcept
 				{
 					a1 = mt00; a2 = mt01; a3 = mt02;
 					b1 = mt10; b2 = mt11; b3 = mt12;
@@ -121,7 +121,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_matrix(const Matrix4x4<T>& m) noexcept
+				Matrix3x3<T>& makeMatrix(const Matrix4x4<T>& m) noexcept
 				{
 					a1 = m.a1; a2 = m.a2; a3 = m.a3;
 					b1 = m.b1; b2 = m.b2; b3 = m.b3;
@@ -129,7 +129,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_matrix(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
+				Matrix3x3<T>& makeMatrix(const Matrix3x3<T>& m1, const Matrix3x3<T>& m2) noexcept
 				{
 					assert(&m1 != this && &m2 != this);
 
@@ -145,7 +145,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_identity() noexcept
+				Matrix3x3<T>& makeIdentity() noexcept
 				{
 					a1 = 1.0f; a2 = 0.0f; a3 = 0.0f;
 					b1 = 0.0f; b2 = 1.0f; b3 = 0.0f;
@@ -153,7 +153,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_scale(T x, T y, T z) noexcept
+				Matrix3x3<T>& makeScale(T x, T y, T z) noexcept
 				{
 					set(x, 0, 0,
 						0, y, 0,
@@ -161,7 +161,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_scale(const Vector3<T>& sz) noexcept
+				Matrix3x3<T>& makeScale(const Vector3<T>& sz) noexcept
 				{
 					set(sz.x, 0, 0,
 						0, sz.y, 0,
@@ -169,7 +169,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_rotation_x(T theta) noexcept
+				Matrix3x3<T>& makeRotationX(T theta) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -180,7 +180,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_rotation_y(T theta) noexcept
+				Matrix3x3<T>& makeRotationY(T theta) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -191,7 +191,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& make_rotation_z(T theta) noexcept
+				Matrix3x3<T>& makeRotationZ(T theta) noexcept
 				{
 					T c, s;
 					math::sinCos(&s, &c, theta);
@@ -261,7 +261,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& multiply_scalar(T scale) noexcept
+				Matrix3x3<T>& multiplyScalar(T scale) noexcept
 				{
 					this->right *= scale;
 					this->up *= scale;
@@ -269,7 +269,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& multiply_scalar(T x, T y, T z) noexcept
+				Matrix3x3<T>& multiplyScalar(T x, T y, T z) noexcept
 				{
 					this->right *= x;
 					this->up *= y;
@@ -277,7 +277,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& multiply_scalar(const Vector3<T>& sz) noexcept
+				Matrix3x3<T>& multiplyScalar(const Vector3<T>& sz) noexcept
 				{
 					this->right *= sz.x;
 					this->up *= sz.y;
@@ -285,18 +285,18 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& multiply_rotate(const Vector3<T>& axis, T angle) noexcept
+				Matrix3x3<T>& multiplyRotate(const Vector3<T>& axis, T angle) noexcept
 				{
 					Matrix3x3<T> m1(*this);
 					Matrix3x3<T> m2(axis, angle);
-					return make_matrix(m1, m2);
+					return makeMatrix(m1, m2);
 				}
 
-				Matrix3x3<T>& multiply_rotate(const Quaternion<T>& q) noexcept
+				Matrix3x3<T>& multiplyRotate(const Quaternion<T>& q) noexcept
 				{
 					Matrix3x3<T> m1(*this);
 					Matrix3x3<T> m2(q);
-					return make_matrix(m1, m2);
+					return makeMatrix(m1, m2);
 				}
 
 				pointer ptr() noexcept { return (pointer)&a1; }
@@ -398,7 +398,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool is_identity(const detail::Matrix3x3<T>& m) noexcept
+		inline bool isIdentity(const detail::Matrix3x3<T>& m) noexcept
 		{
 			constexpr T epsilon = EPSILON_E4;
 			return (
@@ -414,7 +414,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool is_only_rotate(const detail::Matrix3x3<T>& m) noexcept
+		inline bool isOnlyRotate(const detail::Matrix3x3<T>& m) noexcept
 		{
 			constexpr T epsilon = 10e-3f;
 			return (

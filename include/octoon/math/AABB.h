@@ -49,7 +49,7 @@ namespace octoon
 					max = max_;
 				}
 
-				void set_center(const Vector3<T>& center) noexcept
+				void setCenter(const Vector3<T>& center) noexcept
 				{
 					auto size = this->size();
 					min = center - size;
@@ -279,7 +279,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T surface_area(const detail::AABB<T>& aabb_) noexcept
+		inline T surfaceArea(const detail::AABB<T>& aabb_) noexcept
 		{
 			detail::Vector3<T> ext = aabb_.max - aabb_.min;
 			return 2 * (ext.x * ext.y + ext.x * ext.z + ext.y * ext.z);

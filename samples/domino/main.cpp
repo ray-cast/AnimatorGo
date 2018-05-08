@@ -20,6 +20,7 @@
 #include <octoon/ui/imgui.h>
 
 #include <iostream>
+#include <type_traits>
 
 class CubeController : public octoon::GameComponent
 {

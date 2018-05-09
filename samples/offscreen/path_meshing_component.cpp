@@ -153,6 +153,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		params_.transform.scale << transform["scale"];
 		params_.transform.rotation << transform["rotation"];
 		params_.transform.rotation *= math::float3(1.0, -1.0, 1.0);
+		params_.transform.rotation = math::radians(params_.transform.rotation);
 	}
 
 	auto& bound = reader["boundingBox"];
@@ -338,7 +339,7 @@ PathMeshingComponent::updateMesh() noexcept
 	math::AABB aabb = params_.bound.aabb - offset;
 	aabb.min.z -= params_.material.thickness;
 	aabb.max.z += params_.material.thickness;
-	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation))));
+	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(params_.transform.rotation)));
 
 	params_.bound.aabb = aabb;
 	params_.transform.translate += offset;
@@ -355,7 +356,7 @@ PathMeshingComponent::updateMesh() noexcept
 
 	object_ = std::make_shared<octoon::GameObject>();
 	object_->getComponent<TransformComponent>()->setTranslate(-aabb.min);
-	object_->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
+	object_->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(params_.transform.rotation));
 	object_->getComponent<TransformComponent>()->setScale(params_.transform.scale);
 
 	switch (params_.material.type)

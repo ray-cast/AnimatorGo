@@ -125,35 +125,18 @@ namespace octoon
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const Vector3<T> pt[], const std::uint8_t* indices, std::size_t indicesCount) noexcept
+				AABB<T>& encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					for (std::size_t i = 0; i < indicesCount; i++)
-						this->encapsulate(pt[indices[i]]);
+					for (auto& pt : points)
+						this->encapsulate(pt);
 
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const Vector3<T> pt[], const std::uint16_t* indices, std::size_t indicesCount) noexcept
+				AABB<T>& encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					for (std::size_t i = 0; i < indicesCount; i++)
-						this->encapsulate(pt[indices[i]]);
-
-					return *this;
-				}
-
-				AABB<T>& encapsulate(const Vector3<T> pt[], const std::uint32_t* indices, std::size_t indicesCount) noexcept
-				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					for (std::size_t i = 0; i < indicesCount; i++)
-						this->encapsulate(pt[indices[i]]);
+					for (auto& pt : points)
+						this->encapsulate(pt);
 
 					return *this;
 				}

@@ -112,26 +112,6 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		void
-		ContourGroup::normalize(math::float3& center) noexcept
-		{
-			math::float3 min(std::numeric_limits<float>::max());
-			math::float3 max(-std::numeric_limits<float>::max());
-
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-				{
-					min = math::min(it, min);
-					max = math::max(it, max);
-				}
-			}
-
-			center = min + (max - min) * 0.5f;
-
-			*this -= center;
-		}
-
 		ContourGroupPtr
 		ContourGroup::clone() const noexcept
 		{
@@ -193,11 +173,11 @@ namespace octoon
 					{
 						gluTessBeginPolygon(tobj, nullptr);
 
-						for (auto& contour : contours)
+						for (auto& contour_ : contours)
 						{
 							gluTessBeginContour(tobj);
 
-							for (auto& it : contour->points())
+							for (auto& it : contour_->points())
 							{
 								auto& d = vertices[index++];
 								d[0] = it.x;

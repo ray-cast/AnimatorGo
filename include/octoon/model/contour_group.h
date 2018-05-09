@@ -60,6 +60,16 @@ namespace octoon
 		OCTOON_EXPORT Mesh makeMeshWireframe(const Contours& contours, float thickness = 1.0f) noexcept;
 		OCTOON_EXPORT Mesh makeMeshWireframe(const ContourGroup& group, float thickness = 1.0f) noexcept;
 		OCTOON_EXPORT Mesh makeMeshWireframe(const ContourGroups& groups, float thickness = 1.0f) noexcept;
+
+		inline math::AABB aabb(const ContourGroup& group) noexcept
+		{
+			math::AABB aabb;
+
+			for (auto& contour : group.getContours())
+				aabb.encapsulate(contour->points());
+
+			return aabb;
+		}
 	}
 }
 

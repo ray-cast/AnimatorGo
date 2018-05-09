@@ -185,7 +185,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			throw runtime::runtime_error::create(R"(The "hollow" must be boolean, but is null)");
 
 		if (!thickness.is_null())
-			params_.material.thickness = thickness.get<json::number_float_t>() / 2.0f;
+			params_.material.thickness = thickness.get<json::number_float_t>();
 		else
 			throw runtime::runtime_error::create(R"(The "thickness" must be float, but is null)");
 
@@ -330,19 +330,15 @@ PathMeshingComponent::updateMesh() noexcept
 		return;
 
 	math::float3 offset = math::lerp(params_.bound.aabb, params_.bound.center);
-	for (auto& contour : params_.contours)
-	{
-		for (auto& it : contour->points())
-			it -= offset;
-	}
 
-	math::AABB aabb = params_.bound.aabb - offset;
-	aabb.min.z -= params_.material.thickness;
-	aabb.max.z += params_.material.thickness;
-	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(params_.transform.rotation)));
-
-	params_.bound.aabb = aabb;
+	params_.bound.aabb -= offset;
+	params_.bound.aabb.min.z -= params_.material.thickness;
+	params_.bound.aabb.max.z += params_.material.thickness;
+	params_.bound.aabb = math::transform(params_.bound.aabb, math::float4x4().makeRotation(math::Quaternion(params_.transform.rotation)));
 	params_.transform.translate += offset;
+
+	for (auto& contour : params_.contours)
+		(*contour) -= offset;
 
 	camera_ = std::make_shared<octoon::GameObject>();
 
@@ -351,11 +347,11 @@ PathMeshingComponent::updateMesh() noexcept
 	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
 	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
-	cameraComponent->setupFramebuffers(aabb.size().x, aabb.size().y, 4);
-	cameraComponent->setupSwapFramebuffers(aabb.size().x, aabb.size().y);
+	cameraComponent->setupFramebuffers(params_.bound.aabb.size().x, params_.bound.aabb.size().y, 4);
+	cameraComponent->setupSwapFramebuffers(params_.bound.aabb.size().x, params_.bound.aabb.size().y);
 
 	object_ = std::make_shared<octoon::GameObject>();
-	object_->getComponent<TransformComponent>()->setTranslate(-aabb.min);
+	object_->getComponent<TransformComponent>()->setTranslate(-params_.bound.aabb.min);
 	object_->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(params_.transform.rotation));
 	object_->getComponent<TransformComponent>()->setScale(params_.transform.scale);
 

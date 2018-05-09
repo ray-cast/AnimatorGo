@@ -180,11 +180,11 @@ namespace octoon
 				contours.isClockwise(angle < 0.0f);
 			};
 
-			auto addContours = [&](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
+			auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
 			{
 				Contours contours(glyph->outline.n_contours);
 
-				for (short i = 0; i < glyph->outline.n_contours; i++)
+				for (std::size_t i = 0; i < glyph->outline.n_contours; i++)
 					contours[i] = std::make_unique<Contour>();
 
 				for (std::size_t startIndex = 0, i = 0; i < glyph->outline.n_contours; i++)
@@ -204,10 +204,7 @@ namespace octoon
 						pt.x += offset;
 				}
 
-				auto group = std::make_shared<ContourGroup>();
-				group->setContours(std::move(contours));
-
-				return group;
+				return std::make_shared<ContourGroup>(std::move(contours));
 			};
 
 			if (::FT_Set_Pixel_Sizes((FT_Face)(params.getFont()->getFont()), params.getPixelsSize(), params.getPixelsSize()))
@@ -243,11 +240,7 @@ namespace octoon
 			}
 
 			for (auto& group : groups)
-			{
-				for (auto& contour : group->getContours())
-					for (auto& point : contour->points())
-						point.x -= offset * 0.5f;
-			}
+				*group -= math::float3(offset * 0.5f, 0, 0);
 
 			return groups;
 		}

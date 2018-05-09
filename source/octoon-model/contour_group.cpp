@@ -112,17 +112,6 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		std::size_t
-		ContourGroup::countOfPoints() const noexcept
-		{
-			std::size_t sum = 0;
-
-			for (auto& it : contours_)
-				sum += it->count();
-
-			return sum;
-		}
-
 		void
 		ContourGroup::normalize(math::float3& center) noexcept
 		{
@@ -140,11 +129,7 @@ namespace octoon
 
 			center = min + (max - min) * 0.5f;
 
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-					it -= center;
-			}
+			*this -= center;
 		}
 
 		ContourGroupPtr
@@ -158,20 +143,13 @@ namespace octoon
 		Mesh makeMesh(const Contours& contours, float thickness) noexcept
 		{
 			Mesh mesh;
-
-			std::size_t maxElement = 0;
-			for (auto& contour : contours)
-					maxElement = std::max(maxElement, contour->points().size());
-
-			math::float3s tris(maxElement * 6);
+			math::float3s tris(max_count(contours) * 6);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
-			std::size_t sum = 0;
-			for (auto& it : contours)
-				sum += it->count() * 2;
+			std::vector<math::double3> vertices(sum(contours) * 2);
 
-			std::vector<math::double3> vertices(sum);
+			float thicknessHalf = thickness * 0.5f;
 
 			for (auto& contour : contours)
 			{
@@ -182,12 +160,12 @@ namespace octoon
 					auto& p1 = contour->at(n);
 					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-					trisData[written++] = math::float3(p1.x, p1.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, thickness);
-					trisData[written++] = math::float3(p1.x, p1.y, thickness);
-					trisData[written++] = math::float3(p1.x, p1.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, -thickness);
-					trisData[written++] = math::float3(p2.x, p2.y, thickness);
+					trisData[written++] = math::float3(p1.x, p1.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, thicknessHalf);
+					trisData[written++] = math::float3(p1.x, p1.y, thicknessHalf);
+					trisData[written++] = math::float3(p1.x, p1.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, thicknessHalf);
 				}
 
 				trisMesh.resize(trisMesh.size() + written);
@@ -224,7 +202,7 @@ namespace octoon
 								auto& d = vertices[index++];
 								d[0] = it.x;
 								d[1] = it.y;
-								d[2] = it.z + face ? -thickness : thickness;
+								d[2] = it.z + face ? -thicknessHalf : thicknessHalf;
 
 								gluTessVertex(tobj, d.ptr(), d.ptr());
 							}
@@ -269,6 +247,8 @@ namespace octoon
 			math::float3s& tris = mesh.getVertexArray();
 			math::uint1s& indices = mesh.getIndicesArray();
 
+			float thicknessHalf = thickness * 0.5f;
+
 			for (auto& contour : contours)
 			{
 				for (std::size_t n = 0; n < contour->count(); ++n)
@@ -276,10 +256,10 @@ namespace octoon
 					auto& p1 = contour->at(n);
 					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-					math::float3 a = math::float3(p1.x, p1.y, p1.z + thickness);
-					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thickness);
-					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thickness);
-					math::float3 d = math::float3(p2.x, p2.y, p2.z + thickness);
+					math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
+					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thicknessHalf);
+					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thicknessHalf);
+					math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
 					std::uint32_t index = tris.size();
 					indices.push_back(index);
@@ -313,6 +293,8 @@ namespace octoon
 			math::float3s& tris = mesh.getVertexArray();
 			math::uint1s& indices = mesh.getIndicesArray();
 
+			float thicknessHalf = thickness * 0.5f;
+
 			for (auto& group : groups)
 			{
 				for (auto& contour : group->getContours())
@@ -322,10 +304,10 @@ namespace octoon
 						auto& p1 = contour->at(n);
 						auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-						math::float3 a = math::float3(p1.x, p1.y, thickness);
-						math::float3 b = math::float3(p1.x, p1.y, -thickness);
-						math::float3 c = math::float3(p2.x, p2.y, -thickness);
-						math::float3 d = math::float3(p2.x, p2.y, thickness);
+						math::float3 a = math::float3(p1.x, p1.y, thicknessHalf);
+						math::float3 b = math::float3(p1.x, p1.y, -thicknessHalf);
+						math::float3 c = math::float3(p2.x, p2.y, -thicknessHalf);
+						math::float3 d = math::float3(p2.x, p2.y, thicknessHalf);
 
 						auto index = tris.size();
 						indices.push_back(index);

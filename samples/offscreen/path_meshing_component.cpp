@@ -326,7 +326,7 @@ PathMeshingComponent::updateMesh() noexcept
 	if (params_.contours.empty())
 		return;
 
-	math::float3 offset = math::lerp(params_.bound.aabb.min, params_.bound.aabb.max, params_.bound.center);
+	math::float3 offset = math::lerp(params_.bound.aabb, params_.bound.center);
 	for (auto& contour : params_.contours)
 	{
 		for (auto& it : contour->points())

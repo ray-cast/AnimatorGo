@@ -422,41 +422,6 @@ namespace octoon
 					return Quaternion<T>(forward, up, right);
 				}
 
-				const Vector3<T>& getRight() const noexcept
-				{
-					return *(Vector3<T>*)&a1;
-				}
-
-				const Vector3<T>& getUp() const noexcept
-				{
-					return *(Vector3<T>*)&b1;
-				}
-
-				const Vector3<T>& getForward() const noexcept
-				{
-					return *(Vector3<T>*)&c1;
-				}
-
-				Vector4<T> getAxisX() const noexcept
-				{
-					return Vector4<T>(a1, b1, c1, d1);
-				}
-
-				Vector4<T> getAxisY() const noexcept
-				{
-					return Vector4<T>(a2, b2, c2, d2);
-				}
-
-				Vector4<T> getAxisZ() const noexcept
-				{
-					return Vector4<T>(a3, b3, c3, d3);
-				}
-
-				Vector4<T> getAxisW() const noexcept
-				{
-					return Vector4<T>(a4, b4, c4, d4);
-				}
-
 				Matrix4x4<T>& makeTransform(const Vector3<T>& translate, const Quaternion<T>& rotate) noexcept
 				{
 					return this->makeRotation(rotate, translate);
@@ -512,244 +477,39 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeOrthoLH(T width, T height, T zNear, T zFar) noexcept
+				const Vector3<T>& getRight() const noexcept
 				{
-					T cx = 2.0f / width;
-					T cy = 2.0f / height;
-					T cz = 1.0f / (zFar - zNear);
-					T tz = zNear / (zNear - zFar);
-
-					makeMatrix(cx, 0.0, 0.0, 0.0,
-								0.0, cy, 0.0, 0.0,
-								0.0, 0.0, cz, 0.0,
-								0.0, 0.0, tz, 1.0);
-
-					return *this;
+					return *(Vector3<T>*)&a1;
 				}
 
-				Matrix4x4<T>& makeOrthoLH(T left, T _right, T bottom, T top, T zNear, T zFar) noexcept
+				const Vector3<T>& getUp() const noexcept
 				{
-					T tx = -(_right + left) / (_right - left);
-					T ty = -(top + bottom) / (top - bottom);
-					T tz = -zNear / (zFar - zNear);
-					T cx = 2.0f / (_right - left);
-					T cy = 2.0f / (top - bottom);
-					T cz = 1.0f / (zFar - zNear);
-
-					makeMatrix(cx, 0.0, 0.0, 0.0,
-								0.0, cy, 0.0, 0.0,
-								0.0, 0.0, cz, 0.0,
-								tx, ty, tz, 1.0);
-
-					return *this;
+					return *(Vector3<T>*)&b1;
 				}
 
-				Matrix4x4<T>& makeOrthoRH(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				const Vector3<T>& getForward() const noexcept
 				{
-					T tx = -(right + left) / (right - left);
-					T ty = -(top + bottom) / (top - bottom);
-					T tz = -(zFar + zNear) / (zFar - zNear);
-					T cx = 2.0f / (right - left);
-					T cy = 2.0f / (top - bottom);
-					T cz = -2.0f / (zFar - zNear);
-
-					makeMatrix(cx, 0.0, 0.0, 0.0,
-								0.0, cy, 0.0, 0.0,
-								0.0, 0.0, cz, 0.0,
-								tx, ty, tz, 1.0);
-
-					return *this;
+					return *(Vector3<T>*)&c1;
 				}
 
-				bool getOrthoRH(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
+				Vector4<T> getAxisX() const noexcept
 				{
-					if (a4 != 0.0 || b4 != 0.0 || c4 != 0.0 || c4 != 1.0) return false;
-
-					zNear = (d3 + 1.0f) / c3;
-					zFar = (d3 - 1.0f) / c3;
-
-					left = -(1.0f + d1) / a1;
-					right = (1.0f - d1) / a1;
-
-					bottom = -(1.0f + d2) / b2;
-					top = (1.0f - d2) / b2;
-
-					return true;
+					return Vector4<T>(a1, b1, c1, d1);
 				}
 
-				Matrix4x4<T>& makeFrustumtLH(T left, T right, T bottom, T top, T zNear, T zFar) noexcept
+				Vector4<T> getAxisY() const noexcept
 				{
-					T A = (left + right) / (left - right);
-					T B = (bottom + top) / (bottom - top);
-					T C = (zFar > DBL_MAX) ? 1.0f : (zFar + zNear) / (zFar - zNear);
-					T D = (zFar > DBL_MAX) ? zNear : 2.0 * zNear * zFar / (zNear - zFar);
-					T cx = 2.0f * zNear / (right - left);
-					T cy = 2.0f * zNear / (top - bottom);
-
-					makeMatrix(cx, 0.0, 0.0, 0.0,
-								0.0, cy, 0.0, 0.0,
-								0.0, 0.0, C, 1.0,
-								A, B, D, 0.0);
-
-					return *this;
+					return Vector4<T>(a2, b2, c2, d2);
 				}
 
-				Matrix4x4<T>& makeFrustumtRH(T left, T right_, T bottom, T top, T zNear, T zFar) noexcept
+				Vector4<T> getAxisZ() const noexcept
 				{
-					T A = (right_ + left) / (right_ - left);
-					T B = (top + bottom) / (top - bottom);
-					T C = (zFar > DBL_MAX) ? -1.0f : -(zFar + zNear) / (zFar - zNear);
-					T D = (zFar > DBL_MAX) ? -zNear : -2.0f * zFar * zNear / (zFar - zNear);
-					T cx = 2.0f * zNear / (right_ - left);
-					T cy = 2.0f * zNear / (top - bottom);
-
-					makeMatrix(cx, 0.0, 0.0, 0.0,
-								0.0, cy, 0.0, 0.0,
-								0.0, 0.0, C, -1.0,
-								A, B, D, 0.0);
-
-					return *this;
+					return Vector4<T>(a3, b3, c3, d3);
 				}
 
-				bool getFrustumtRH(T& left, T& right, T& bottom, T& top, T& zNear, T& zFar) const noexcept
+				Vector4<T> getAxisW() const noexcept
 				{
-					if (a4 != 0.0 || b4 != 0.0 || c4 != -1.0 || c4 != 0.0)
-						return false;
-
-					T temp_near = d3 / (c3 - 1.0f);
-					T temp_far = d3 / (1.0f + c3);
-
-					left = temp_near * (c1 - 1.0f) / a1;
-					right = temp_near * (1.0f + c1) / a1;
-
-					top = temp_near * (1.0f + c2) / b2;
-					bottom = temp_near * (c2 - 1.0f) / b2;
-
-					zNear = temp_near;
-					zFar = temp_far;
-
-					return true;
-				}
-
-				Matrix4x4<T>& makePerspectiveFovLH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
-				{
-					const T h = 1.0f / tan(radians(fov * 0.5f));
-					const T w = h / aspect;
-					const T q = farPlane / (farPlane - nearPlane);
-
-					makeMatrix(w, 0, 0, 0,
-								0, h, 0, 0,
-								0, 0, q, 1,
-								0, 0, -nearPlane * q, 0);
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makePerspectiveFovRH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
-				{
-					const T h = 1.0f / tan(radians(fov * 0.5f));
-					const T w = h / aspect;
-					const T q = farPlane / (farPlane - nearPlane);
-
-					makeMatrix(w, 0, 0, 0,
-								0, h, 0, 0,
-								0, 0, q, -1,
-								0, 0, nearPlane * q, 0);
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makePerspectiveOffCenterLH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
-				{
-					T tan_fovy = tan(radians(fovy * 0.5f));
-					T right = tan_fovy * aspectRatio * znear;
-					T left = -right;
-					T top = tan_fovy * znear;
-					T bottom = -top;
-
-					makeFrustumtLH(left, right, bottom, top, znear, zfar);
-					return *this;
-				}
-
-				Matrix4x4<T>& makePerspectiveOffCenterRH(const T& fovy, const T& aspectRatio, const T& zNear, const T& zFar) noexcept
-				{
-					T tan_fovy = tan(radians(fovy * 0.5f));
-					T _right = tan_fovy * aspectRatio * zNear;
-					T left = -_right;
-					T top = tan_fovy * zNear;
-					T bottom = -top;
-
-					makeFrustumtRH(left, _right, bottom, top, zNear, zFar);
-					return *this;
-				}
-
-				bool getPerspectiveRH(T& fovy, T& aspectRatio, T& zNear, T& zFar) const noexcept
-				{
-					T right = 0;
-					T left = 0;
-					T top = 0;
-					T bottom = 0;
-
-					T temp_near = 0;
-					T temp_far = 0;
-
-					bool r = getFrustumt(left, right, bottom, top, temp_near, temp_far);
-
-					if (r)
-					{
-						fovy = degrees(atan(top / temp_near) - atan(bottom / temp_near));
-						aspectRatio = (right - left) / (top - bottom);
-					}
-
-					zNear = temp_near;
-					zFar = temp_far;
-					return r;
-				}
-
-				Matrix4x4<T>& makeLookatLH(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
-				{
-					Vector3<T> x, y, z;
-
-					z = center - eye;
-					z = math::normalize(z);
-
-					x = math::cross(up, z);
-					x = math::normalize(x);
-
-					y = math::cross(z, x);
-					y = math::normalize(y);
-
-					set(x.x, y.x, z.x, 0.0,
-						x.y, y.y, z.y, 0.0,
-						x.z, y.z, z.z, 0.0,
-						0.0, 0.0, 0.0, 1.0);
-
-					Vector3<T> tmp = -eye;
-					if (tmp.x != 0)
-					{
-						d1 += tmp.x * a1;
-						d2 += tmp.x * a2;
-						d3 += tmp.x * a3;
-						d4 += tmp.x * a4;
-					}
-
-					if (tmp.y != 0)
-					{
-						d1 += tmp.y * b1;
-						d2 += tmp.y * b2;
-						d3 += tmp.y * b3;
-						d4 += tmp.y * b4;
-					}
-
-					if (tmp.z != 0)
-					{
-						d1 += tmp.z * c1;
-						d2 += tmp.z * c2;
-						d3 += tmp.z * c3;
-						d4 += tmp.z * c4;
-					}
-
-					return *this;
+					return Vector4<T>(a4, b4, c4, d4);
 				}
 
 				pointer ptr() noexcept { return (pointer)&a1; }
@@ -849,6 +609,17 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline T determinant(const detail::Matrix4x4<T>& m) noexcept
+		{
+			return m.a1 * m.b2*m.c3*m.d4 - m.a1 * m.b2*m.c4*m.d3 + m.a1 * m.b3*m.c4*m.d2 - m.a1 * m.b3*m.c2*m.d4
+				 + m.a1 * m.b4*m.c2*m.d3 - m.a1 * m.b4*m.c3*m.d2 - m.a2 * m.b3*m.c4*m.d1 + m.a2 * m.b3*m.c1*m.d4
+				 - m.a2 * m.b4*m.c1*m.d3 + m.a2 * m.b4*m.c3*m.d1 - m.a2 * m.b1*m.c3*m.d4 + m.a2 * m.b1*m.c4*m.d3
+				 + m.a3 * m.b4*m.c1*m.d2 - m.a3 * m.b4*m.c2*m.d1 + m.a3 * m.b1*m.c2*m.d4 - m.a3 * m.b1*m.c4*m.d2
+				 + m.a3 * m.b2*m.c4*m.d1 - m.a3 * m.b2*m.c1*m.d4 - m.a4 * m.b1*m.c2*m.d3 + m.a4 * m.b1*m.c3*m.d2
+				 - m.a4 * m.b2*m.c3*m.d1 + m.a4 * m.b2*m.c1*m.d3 - m.a4 * m.b3*m.c1*m.d2 + m.a4 * m.b3*m.c2*m.d1;
+		}
+
+		template<typename T>
 		inline const detail::Vector3<T>& right(const detail::Matrix4x4<T>& m) noexcept
 		{
 			return *(detail::Vector3<T>*)&m.a1;
@@ -886,7 +657,39 @@ namespace octoon
 		}
 
 		template<typename T>
-		detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
+		inline bool isOnlyTranslate(const detail::Matrix4x4<T>& m) noexcept
+		{
+			constexpr T epsilon = static_cast<T>(EPSILON_E4);
+			return (
+				m.a2 <= epsilon && m.a2 >= -epsilon &&
+				m.a3 <= epsilon && m.a3 >= -epsilon &&
+				m.b1 <= epsilon && m.b1 >= -epsilon &&
+				m.b3 <= epsilon && m.b3 >= -epsilon &&
+				m.c1 <= epsilon && m.c1 >= -epsilon &&
+				m.c2 <= epsilon && m.c2 >= -epsilon &&
+				m.a1 <= 1.f + epsilon && m.a1 >= 1.f - epsilon &&
+				m.b2 <= 1.f + epsilon && m.b2 >= 1.f - epsilon &&
+				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
+		}
+
+		template<typename T>
+		inline bool isOnlyRotate(const detail::Matrix4x4<T>& m) noexcept
+		{
+			constexpr T epsilon = 10e-3f;
+			return (
+				m.a1 <= 1.f + epsilon && m.a1 >= 1.f - epsilon &&
+				m.a2 <= 1.f + epsilon && m.a2 >= 1.f - epsilon &&
+				m.a3 <= 1.f + epsilon && m.a3 >= 1.f - epsilon &&
+				m.b1 <= 1.f + epsilon && m.b1 >= 1.f - epsilon &&
+				m.b2 <= 1.f + epsilon && m.b2 >= 1.f - epsilon &&
+				m.b3 <= 1.f + epsilon && m.b3 >= 1.f - epsilon &&
+				m.c1 <= 1.f + epsilon && m.c1 >= 1.f - epsilon &&
+				m.c2 <= 1.f + epsilon && m.c2 >= 1.f - epsilon &&
+				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
 			detail::Vector3<T> x = m.getRight();
 			detail::Vector3<T> y = m.getUp();
@@ -906,7 +709,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		detail::Matrix4x4<T> transpose(const detail::Matrix4x4<T>& _m) noexcept
+		inline detail::Matrix4x4<T> transpose(const detail::Matrix4x4<T>& _m) noexcept
 		{
 			detail::Matrix4x4<T> m = _m;
 			std::swap(m.b1, m.a2);
@@ -920,7 +723,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		detail::Matrix4x4<T> inverse(const detail::Matrix4x4<T>& _m) noexcept
+		inline detail::Matrix4x4<T> inverse(const detail::Matrix4x4<T>& _m) noexcept
 		{
 			detail::Matrix4x4<T> m;
 
@@ -961,19 +764,106 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool isOnlyTranslate(const detail::Matrix4x4<T>& m) noexcept
+		inline void decomposeTransform(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation, detail::Vector3<T>& scaling) noexcept
 		{
-			constexpr T epsilon = static_cast<T>(EPSILON_E4);
-			return (
-				m.a2 <= epsilon && m.a2 >= -epsilon &&
-				m.a3 <= epsilon && m.a3 >= -epsilon &&
-				m.b1 <= epsilon && m.b1 >= -epsilon &&
-				m.b3 <= epsilon && m.b3 >= -epsilon &&
-				m.c1 <= epsilon && m.c1 >= -epsilon &&
-				m.c2 <= epsilon && m.c2 >= -epsilon &&
-				m.a1 <= 1.f + epsilon && m.a1 >= 1.f - epsilon &&
-				m.b2 <= 1.f + epsilon && m.b2 >= 1.f - epsilon &&
-				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
+			auto right_ = m.getRight();
+			auto up_ = m.getUp();
+			auto forward_ = m.getForward();
+
+			translate.x = m.d1;
+			translate.y = m.d2;
+			translate.z = m.d3;
+
+			scaling.x = length(right_);
+			scaling.y = length(up_);
+			scaling.z = length(forward_);
+
+			T det = (m.a1 * m.b2 - m.a2 * m.b1) * (m.c3) - (m.a1 * m.b3 - m.a3 * m.b1) * (m.c2) + (m.a2 * m.b3 - m.a3 * m.b2) * (m.c1);
+			if (det < 0)
+			{
+				scaling.x = -scaling.x;
+				scaling.y = -scaling.y;
+				scaling.z = -scaling.z;
+			}
+
+			if (scaling.x != T(0.0)) right_ /= scaling.x;
+			if (scaling.y != T(0.0)) up_ /= scaling.y;
+			if (scaling.z != T(0.0)) forward_ /= scaling.z;
+
+			rotation.makeRotation(forward_, up_, right_);
+		}
+
+		template<typename T>
+		const void decomposeTransformWithoutScaler(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation) noexcept
+		{
+			assert(isOnlyRotate(m));
+
+			translate.x = m.d1;
+			translate.y = m.d2;
+			translate.z = m.d3;
+
+			rotation.makeRotation(m.getForward(), m.getUp(), m.getRight());
+		}
+
+		template<typename T>
+		inline bool decomposeFrustumtRH(const detail::Matrix4x4<T>& m, T& left, T& right, T& bottom, T& top, T& znear, T& zfar) noexcept
+		{
+			if (m.a4 != 0.0 || m.b4 != 0.0 || m.c4 != -1.0 || m.c4 != 0.0)
+				return false;
+
+			T temp_near = m.d3 / (m.c3 - 1.0f);
+			T temp_far = m.d3 / (1.0f + m.c3);
+
+			left = temp_near * (m.c1 - 1.0f) / m.a1;
+			right = temp_near * (1.0f + m.c1) / m.a1;
+
+			top = temp_near * (1.0f + m.c2) / m.b2;
+			bottom = temp_near * (m.c2 - 1.0f) / m.b2;
+
+			znear = temp_near;
+			zfar = temp_far;
+
+			return true;
+		}
+
+		template<typename T>
+		inline bool decomposeOrthoRH(const detail::Matrix4x4<T>& m, T& left, T& right, T& bottom, T& top, T& znear, T& zfar) noexcept
+		{
+			if (m.a4 != 0.0 || m.b4 != 0.0 || m.c4 != 0.0 || m.c4 != 1.0) return false;
+
+			znear = (m.d3 + 1.0f) / m.c3;
+			zfar = (m.d3 - 1.0f) / m.c3;
+
+			left = -(1.0f + m.d1) / m.a1;
+			right = (1.0f - m.d1) / m.a1;
+
+			bottom = -(1.0f + m.d2) / m.b2;
+			top = (1.0f - m.d2) / m.b2;
+
+			return true;
+		}
+
+		template<typename T>
+		inline bool decomposePerspectiveRH(const detail::Matrix4x4<T>& m, T& fovy, T& aspectRatio, T& znear, T& zfar) noexcept
+		{
+			T right = 0;
+			T left = 0;
+			T top = 0;
+			T bottom = 0;
+
+			T temp_near = 0;
+			T temp_far = 0;
+
+			bool r = decomposeFrustumtRH(m, left, right, bottom, top, temp_near, temp_far);
+			if (r)
+			{
+				fovy = degrees(atan(top / temp_near) - atan(bottom / temp_near));
+				aspectRatio = (right - left) / (top - bottom);
+			}
+
+			znear = temp_near;
+			zfar = temp_far;
+			return r;
 		}
 
 		template<typename T>
@@ -1075,7 +965,330 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::Matrix4x4<T>& makeLookatRH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
+		inline detail::Matrix4x4<T> makeRotationX(T theta) noexcept
+		{
+			T c, s;
+			math::sinCos(&s, &c, theta);
+
+			detail::Matrix4x4<T> m;
+			m.a1 = 1; m.a2 = 0;  m.a3 = 0; m.a4 = 0;
+			m.b1 = 0; m.b2 = c;  m.b3 = s; m.b4 = 0;
+			m.c1 = 0; m.c2 = -s; m.c3 = c; m.c4 = 0;
+			m.d1 = 0; m.d2 = 0;  m.d3 = 0; m.c4 = 1;
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotationY(T theta) noexcept
+		{
+			T c, s;
+			math::sinCos(&s, &c, theta);
+
+			detail::Matrix4x4<T> m;
+			m.a1 = c; m.a2 = 0; m.a3 = -s; m.a4 = 0;
+			m.b1 = 0; m.b2 = 1; m.b3 = 0;  m.b4 = 0;
+			m.c1 = s; m.c2 = 0; m.c3 = c;  m.c4 = 0;
+			m.d1 = 0; m.d2 = 0; m.d3 = 0;  m.c4 = 1;
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotationZ(T theta) noexcept
+		{
+			T c, s;
+			math::sinCos(&s, &c, theta);
+
+			detail::Matrix4x4<T> m;
+			m.a1 = c;  m.a2 = s; m.a3 = 0; m.a4 = 0;
+			m.b1 = -s; m.b2 = c; m.b3 = 0; m.b4 = 0;
+			m.c1 = 0;  m.c2 = 0; m.c3 = 1; m.c4 = 0;
+			m.d1 = 0;  m.d2 = 0; m.d3 = 0; m.c4 = 1;
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& axis, T theta, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		{
+			T c, s;
+			math::sinCos(&s, &c, theta);
+
+			T x = axis.x;
+			T y = axis.y;
+			T z = axis.z;
+
+			T t = 1 - c;
+			T tx = t * x;
+			T ty = t * y;
+			T tz = t * z;
+
+			detail::Matrix4x4<T> m;
+			m.a1 = (tx * x + c);
+			m.a2 = (tx * y + s * z);
+			m.a3 = (tx * z - s * y);
+			m.a4 = 0;
+
+			m.b1 = (tx * y - s * z);
+			m.b2 = (ty * y + c);
+			m.b3 = (ty * z + s * x);
+			m.b4 = 0;
+
+			m.c1 = (tx * z + s * y);
+			m.c2 = (ty * z - s * x);
+			m.c3 = (tz * z + c);
+			m.c4 = 0;
+
+			m.d1 = translate.x;
+			m.d2 = translate.y;
+			m.d3 = translate.z;
+			m.d4 = T(1.0f);
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotation(const detail::Quaternion<T>& q, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		{
+			T xs = q.x * T(2.0f), ys = q.y * T(2.0f), zs = q.z * T(2.0f);
+			T wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+			T xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+			T yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+
+			detail::Matrix4x4<T> m;
+			m.a1 = T(1.0f) - (yy + zz);
+			m.a2 = xy + wz;
+			m.a3 = xz - wy;
+			m.a4 = T(0.0f);
+
+			m.b1 = xy - wz;
+			m.b2 = T(1.0f) - (xx + zz);
+			m.b3 = yz + wx;
+			m.b4 = T(0.0f);
+
+			m.c1 = xz + wy;
+			m.c2 = yz - wx;
+			m.c3 = T(1.0f) - (xx + yy);
+			m.c4 = T(0.0f);
+
+			m.d1 = translate.x;
+			m.d2 = translate.y;
+			m.d3 = translate.z;
+			m.d4 = T(1.0f);
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& forward, const detail::Vector3<T>& up, const detail::Vector3<T>& right, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		{
+			detail::Matrix4x4<T> m;
+			m.right = Vector4<T>(right, 0.0);
+			m.up = Vector4<T>(up, 0.0);
+			m.forward = Vector4<T>(forward, 0.0);
+			m.position = Vector4<T>(translate, 1.0);
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeRotation(const detail::Vector4<T>& forward, const detail::Vector4<T>& up, const detail::Vector4<T>& right, const detail::Vector4<T>& translate = detail::Vector4<T>::UnitW) noexcept
+		{
+			detail::Matrix4x4<T> m;
+			m.right = right;
+			m.up = up;
+			m.forward = forward;
+			m.position = translate;
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeOrthoLH(T width, T height, T znear, T zfar) noexcept
+		{
+			T cx = 2.0f / width;
+			T cy = 2.0f / height;
+			T cz = 1.0f / (zfar - znear);
+			T tz = znear / (znear - zfar);
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, cz, 0.0,
+				0.0, 0.0, tz, 1.0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeOrthoLH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
+		{
+			T tx = -(right + left) / (right - left);
+			T ty = -(top + bottom) / (top - bottom);
+			T tz = -znear / (zfar - znear);
+			T cx = 2.0f / (right - left);
+			T cy = 2.0f / (top - bottom);
+			T cz = 1.0f / (zfar - znear);
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, cz, 0.0,
+				tx, ty, tz, 1.0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeOrthoRH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
+		{
+			T tx = -(right + left) / (right - left);
+			T ty = -(top + bottom) / (top - bottom);
+			T tz = -(zfar + znear) / (zfar - znear);
+			T cx = 2.0f / (right - left);
+			T cy = 2.0f / (top - bottom);
+			T cz = -2.0f / (zfar - znear);
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, cz, 0.0,
+				tx, ty, tz, 1.0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeFrustumtLH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
+		{
+			T A = (left + right) / (left - right);
+			T B = (bottom + top) / (bottom - top);
+			T C = (zfar > DBL_MAX) ? 1.0f : (zfar + znear) / (zfar - znear);
+			T D = (zfar > DBL_MAX) ? znear : 2.0 * znear * zfar / (znear - zfar);
+			T cx = 2.0f * znear / (right - left);
+			T cy = 2.0f * znear / (top - bottom);
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, C, 1.0,
+				A, B, D, 0.0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeFrustumtRH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
+		{
+			T A = (right + left) / (right - left);
+			T B = (top + bottom) / (top - bottom);
+			T C = (zfar > DBL_MAX) ? -1.0f : -(zfar + znear) / (zfar - znear);
+			T D = (zfar > DBL_MAX) ? -znear : -2.0f * zfar * znear / (zfar - znear);
+			T cx = 2.0f * znear / (right - left);
+			T cy = 2.0f * znear / (top - bottom);
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, C, -1.0,
+				A, B, D, 0.0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makePerspectiveFovLH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
+		{
+			const T h = 1.0f / tan(radians(fov * 0.5f));
+			const T w = h / aspect;
+			const T q = farPlane / (farPlane - nearPlane);
+
+			return detail::Matrix4x4<T>(
+				w, 0, 0, 0,
+				0, h, 0, 0,
+				0, 0, q, 1,
+				0, 0, -nearPlane * q, 0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makePerspectiveFovRH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
+		{
+			const T h = 1.0f / tan(radians(fov * 0.5f));
+			const T w = h / aspect;
+			const T q = farPlane / (farPlane - nearPlane);
+
+			return detail::Matrix4x4<T>(
+				w, 0, 0, 0,
+				0, h, 0, 0,
+				0, 0, q, -1,
+				0, 0, nearPlane * q, 0);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makePerspectiveOffCenterLH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
+		{
+			T tan_fovy = tan(radians(fovy * 0.5f));
+			T right = tan_fovy * aspectRatio * znear;
+			T left = -right;
+			T top = tan_fovy * znear;
+			T bottom = -top;
+
+			return makeFrustumtLH(left, right, bottom, top, znear, zfar);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makePerspectiveOffCenterRH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
+		{
+			T tan_fovy = tan(radians(fovy * 0.5f));
+			T _right = tan_fovy * aspectRatio * znear;
+			T left = -_right;
+			T top = tan_fovy * znear;
+			T bottom = -top;
+
+			return makeFrustumtRH(left, _right, bottom, top, znear, zfar);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeLookatLH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
+		{
+			detail::Vector3<T> x, y, z;
+
+			z = center - eye;
+			z = normalize(z);
+
+			x = cross(up, z);
+			x = normalize(x);
+
+			y = cross(z, x);
+			y = normalize(y);
+
+			detail::Matrix4x4<T> m(
+				x.x, y.x, z.x, 0.0,
+				x.y, y.y, z.y, 0.0,
+				x.z, y.z, z.z, 0.0,
+				0.0, 0.0, 0.0, 1.0);
+
+			detail::Vector3<T> tmp = -eye;
+			if (tmp.x != 0)
+			{
+				m.d1 += tmp.x * m.a1;
+				m.d2 += tmp.x * m.a2;
+				m.d3 += tmp.x * m.a3;
+				m.d4 += tmp.x * m.a4;
+			}
+
+			if (tmp.y != 0)
+			{
+				m.d1 += tmp.y * m.b1;
+				m.d2 += tmp.y * m.b2;
+				m.d3 += tmp.y * m.b3;
+				m.d4 += tmp.y * m.b4;
+			}
+
+			if (tmp.z != 0)
+			{
+				m.d1 += tmp.z * m.c1;
+				m.d2 += tmp.z * m.c2;
+				m.d3 += tmp.z * m.c3;
+				m.d4 += tmp.z * m.c4;
+			}
+
+			return m;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeLookatRH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
 		{
 			detail::Vector3<T> x, y, z;
 
@@ -1119,7 +1332,7 @@ namespace octoon
 				m.d4 += tmp.z * m.c4;
 			}
 
-			return *this;
+			return m;
 		}
 
 		template<typename T>

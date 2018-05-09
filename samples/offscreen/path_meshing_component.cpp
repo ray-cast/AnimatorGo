@@ -334,7 +334,7 @@ PathMeshingComponent::updateMesh() noexcept
 	params_.bound.aabb -= offset;
 	params_.bound.aabb.min.z -= params_.material.thickness;
 	params_.bound.aabb.max.z += params_.material.thickness;
-	params_.bound.aabb = math::transform(params_.bound.aabb, math::float4x4().makeRotation(math::Quaternion(params_.transform.rotation)));
+	params_.bound.aabb = math::transform(params_.bound.aabb, math::makeRotation(math::Quaternion(params_.transform.rotation)));
 	params_.transform.translate += offset;
 
 	for (auto& contour : params_.contours)

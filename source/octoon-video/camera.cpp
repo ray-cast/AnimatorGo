@@ -405,14 +405,14 @@ namespace octoon
 			auto bottom = height * ortho_.z;
 			auto top = height * ortho_.w;
 
-			project_.makeOrthoLH(left, right, bottom, top, znear_, zfar_);
+			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
 		Camera::_updatePerspective(float ratio) const noexcept
 		{
-			project_.makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
+			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 

@@ -152,6 +152,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		params_.transform.translate << transform["translate"];
 		params_.transform.scale << transform["scale"];
 		params_.transform.rotation << transform["rotation"];
+		params_.transform.rotation *= math::float3(1.0, -1.0, 1.0);
 	}
 
 	auto& bound = reader["boundingBox"];
@@ -238,8 +239,9 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					throw runtime::runtime_error::create(R"(The "highlightSize" must be float, but is null)");
 			}
 		}
+		break;
 		default:
-			break;
+			throw runtime::runtime_error::create("invalid type of material.");
 		}
 	}
 
@@ -309,7 +311,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					}
 					break;
 					default:
-						throw runtime::runtime_error::create("invalid bezier type");
+						throw runtime::runtime_error::create("invalid type of bezier path.");
 					}
 				}
 
@@ -333,29 +335,28 @@ PathMeshingComponent::updateMesh() noexcept
 			it -= offset;
 	}
 
-	math::AABB aabb = params_.bound.aabb;
-	aabb.min.z = -params_.material.thickness;
-	aabb.max.z = params_.material.thickness;
-	aabb -= offset;
-	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation * math::float3(1.0,-1.0,1.0)))));
+	math::AABB aabb = params_.bound.aabb - offset;
+	aabb.min.z -= params_.material.thickness;
+	aabb.max.z += params_.material.thickness;
+	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation))));
 
 	params_.bound.aabb = aabb;
 	params_.transform.translate += offset;
 
+	camera_ = std::make_shared<octoon::GameObject>();
+
+	auto cameraComponent = camera_->addComponent<octoon::CameraComponent>();
+	cameraComponent->setCameraOrder(octoon::video::CameraOrder::Custom);
+	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
+	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
+	cameraComponent->setupFramebuffers(aabb.size().x, aabb.size().y, 4);
+	cameraComponent->setupSwapFramebuffers(aabb.size().x, aabb.size().y);
+
 	object_ = std::make_shared<octoon::GameObject>();
-	object_->getComponent<TransformComponent>()->setLocalTranslate(-aabb.min);
-	object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
-	object_->getComponent<TransformComponent>()->setLocalScale(params_.transform.scale);
-
-	if (params_.material.type == PathMeshing::Material::Line)
-		object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(params_.contours, params_.material.thickness));
-	else
-	{
-		auto mesh = model::makeMesh(params_.contours, params_.material.thickness);
-		mesh.computeVertexNormals();
-
-		object_->addComponent<octoon::MeshFilterComponent>(std::move(mesh));
-	}
+	object_->getComponent<TransformComponent>()->setTranslate(-aabb.min);
+	object_->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
+	object_->getComponent<TransformComponent>()->setScale(params_.transform.scale);
 
 	switch (params_.material.type)
 	{
@@ -364,6 +365,7 @@ PathMeshingComponent::updateMesh() noexcept
 		auto material = std::make_shared<octoon::video::LineMaterial>(params_.material.line.lineWidth);
 		material->setColor(params_.material.color);
 
+		object_->addComponent<octoon::MeshFilterComponent>(model::makeMeshWireframe(params_.contours, params_.material.thickness));
 		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 	}
 	break;
@@ -373,6 +375,7 @@ PathMeshingComponent::updateMesh() noexcept
 		material->setTextColor(octoon::video::TextColor::FrontColor, params_.material.color);
 		material->setTextColor(octoon::video::TextColor::SideColor, params_.material.color);
 
+		object_->addComponent<octoon::MeshFilterComponent>(model::makeMesh(params_.contours, params_.material.thickness));
 		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 	}
 	break;
@@ -386,20 +389,11 @@ PathMeshingComponent::updateMesh() noexcept
 		material->setLightDir(math::normalize(params_.material.phong.direction));
 		material->setDarkColor(params_.material.phong.darkcolor);
 
+		object_->addComponent<octoon::MeshFilterComponent>(model::makeMesh(params_.contours, params_.material.thickness));
 		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));
 	}
 	break;
 	}
-
-	camera_ = std::make_shared<octoon::GameObject>();
-
-	auto cameraComponent = camera_->addComponent<octoon::CameraComponent>();
-	cameraComponent->setCameraOrder(octoon::video::CameraOrder::Custom);
-	cameraComponent->setCameraType(octoon::video::CameraType::Ortho);
-	cameraComponent->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-	cameraComponent->setClearColor(octoon::math::float4(1.0, 1.0, 1.0, 0.0));
-	cameraComponent->setupFramebuffers(aabb.size().x, aabb.size().y, 4);
-	cameraComponent->setupSwapFramebuffers(aabb.size().x, aabb.size().y);
 }
 
 void

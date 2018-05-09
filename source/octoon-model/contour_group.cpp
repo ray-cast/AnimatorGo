@@ -242,6 +242,8 @@ namespace octoon
 				}
 			}
 
+			mesh.computeVertexNormals();
+
 			return mesh;
 		}
 

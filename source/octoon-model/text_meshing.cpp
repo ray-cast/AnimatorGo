@@ -255,7 +255,6 @@ namespace octoon
 		Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
 			Mesh mesh = makeMesh(makeTextContours(params, string), params.getThickness());
-			mesh.computeVertexNormals();
 			mesh.computeBoundingBox();
 
 			return mesh;

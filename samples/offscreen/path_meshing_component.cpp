@@ -152,7 +152,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 		params_.transform.translate << transform["translate"];
 		params_.transform.scale << transform["scale"];
 		params_.transform.rotation << transform["rotation"];
-		params_.transform.rotation *= math::float3(1.0, -1.0, 1.0);
+		params_.transform.rotation *= math::float3(-1.0, 1.0, -1.0);
 		params_.transform.rotation = math::radians(params_.transform.rotation);
 	}
 
@@ -185,7 +185,7 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			throw runtime::runtime_error::create(R"(The "hollow" must be boolean, but is null)");
 
 		if (!thickness.is_null())
-			params_.material.thickness = thickness.get<json::number_float_t>();
+			params_.material.thickness = thickness.get<json::number_float_t>() / 2.0f;
 		else
 			throw runtime::runtime_error::create(R"(The "thickness" must be float, but is null)");
 

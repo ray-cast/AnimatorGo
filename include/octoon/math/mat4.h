@@ -273,7 +273,7 @@ namespace octoon
 				Matrix4x4<T>& makeRotationX(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = 1; a2 = 0; a3 = 0; a4 = 0;
 					b1 = 0; b2 = c; b3 = s; b4 = 0;
@@ -286,7 +286,7 @@ namespace octoon
 				Matrix4x4<T>& makeRotationY(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = c; a2 = 0; a3 =-s; a4 = 0;
 					b1 = 0; b2 = 1; b3 = 0; b4 = 0;
@@ -299,7 +299,7 @@ namespace octoon
 				Matrix4x4<T>& makeRotationZ(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = c; a2 = s; a3 = 0; a4 = 0;
 					b1 =-s; b2 = c; b3 = 0; b4 = 0;
@@ -312,7 +312,7 @@ namespace octoon
 				Matrix4x4<T>& makeRotation(const Vector3<T>& axis, T theta, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					T x = axis.x;
 					T y = axis.y;
@@ -403,9 +403,9 @@ namespace octoon
 					const Vector3<T>& forward = this->getForward();
 
 					Vector3<T> scaling;
-					scaling.x = math::length(right);
-					scaling.y = math::length(up);
-					scaling.z = math::length(forward);
+					scaling.x = length(right);
+					scaling.y = length(up);
+					scaling.z = length(forward);
 
 					T det = (a1 * b2 - a2 * b1) * (c3)-(a1 * b3 - a3 * b1) * (c2)+(a2 * b3 - a3 * b2) * (c1);
 					if (det < 0)
@@ -444,9 +444,9 @@ namespace octoon
 					translate.y = this->d2;
 					translate.z = this->d3;
 
-					scaling.x = math::length(right_);
-					scaling.y = math::length(up_);
-					scaling.z = math::length(forward_);
+					scaling.x = length(right_);
+					scaling.y = length(up_);
+					scaling.z = length(forward_);
 
 					T det = (this->a1 * this->b2 - this->a2 * this->b1) * (this->c3) -
 						(this->a1 * this->b3 - this->a3 * this->b1) * (this->c2) +
@@ -955,7 +955,7 @@ namespace octoon
 			auto& right = m.getRight();
 			auto& up = m.getUp();
 			auto& forward = m.getForward();
-			auto translate = -math::invRotateVector3(m, m.get_translate());
+			auto translate = -invRotateVector3(m, m.get_translate());
 
 			return detail::Matrix4x4<T>(
 				right.x, up.x, forward.x, 0.0f,
@@ -968,7 +968,7 @@ namespace octoon
 		inline detail::Matrix4x4<T> makeRotationX(T theta) noexcept
 		{
 			T c, s;
-			math::sinCos(&s, &c, theta);
+			sinCos(&s, &c, theta);
 
 			detail::Matrix4x4<T> m;
 			m.a1 = 1; m.a2 = 0;  m.a3 = 0; m.a4 = 0;
@@ -983,7 +983,7 @@ namespace octoon
 		inline detail::Matrix4x4<T> makeRotationY(T theta) noexcept
 		{
 			T c, s;
-			math::sinCos(&s, &c, theta);
+			sinCos(&s, &c, theta);
 
 			detail::Matrix4x4<T> m;
 			m.a1 = c; m.a2 = 0; m.a3 = -s; m.a4 = 0;
@@ -998,7 +998,7 @@ namespace octoon
 		inline detail::Matrix4x4<T> makeRotationZ(T theta) noexcept
 		{
 			T c, s;
-			math::sinCos(&s, &c, theta);
+			sinCos(&s, &c, theta);
 
 			detail::Matrix4x4<T> m;
 			m.a1 = c;  m.a2 = s; m.a3 = 0; m.a4 = 0;
@@ -1013,7 +1013,7 @@ namespace octoon
 		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& axis, T theta, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			T c, s;
-			math::sinCos(&s, &c, theta);
+			sinCos(&s, &c, theta);
 
 			T x = axis.x;
 			T y = axis.y;

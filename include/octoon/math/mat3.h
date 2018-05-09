@@ -172,7 +172,7 @@ namespace octoon
 				Matrix3x3<T>& makeRotationX(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = 1; a2 = 0; a3 = 0;
 					b1 = 0; b2 = c; b3 = s;
@@ -183,7 +183,7 @@ namespace octoon
 				Matrix3x3<T>& makeRotationY(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = c; a2 = 0; a3 =-s;
 					b1 = 0; b2 = 1; b3 = 0;
@@ -194,7 +194,7 @@ namespace octoon
 				Matrix3x3<T>& makeRotationZ(T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					a1 = c; a2 = s; a3 = 0;
 					b1 =-s; b2 = c; b3 = 0;
@@ -205,7 +205,7 @@ namespace octoon
 				Matrix3x3<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					T x = axis.x;
 					T y = axis.y;
@@ -437,11 +437,11 @@ namespace octoon
 			detail::Vector3<T> y = m.up;
 			detail::Vector3<T> z;
 
-			x = math::normalize(x);
-			z = math::cross(x, y);
-			z = math::normalize(z);
-			y = math::cross(z, x);
-			y = math::normalize(y);
+			x = normalize(x);
+			z = cross(x, y);
+			z = normalize(z);
+			y = cross(z, x);
+			y = normalize(y);
 
 			m.a1 = x.x; m.a2 = x.y; m.a3 = x.z;
 			m.b1 = y.x; m.b2 = y.y; m.b3 = y.z;

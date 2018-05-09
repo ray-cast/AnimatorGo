@@ -35,11 +35,6 @@ namespace octoon
 				explicit Quaternion(const Matrix4x4<T>& m) noexcept { this->makeRotation(forward(m), up(m), right(m)); }
 				~Quaternion() = default;
 
-				Quaternion<T>& operator+=(const Quaternion<T>& v) noexcept { w += v.w; x += v.x; y += v.y; z += v.z; return *this; }
-				Quaternion<T>& operator-=(const Quaternion<T>& v) noexcept { w -= v.w; x -= v.x; y -= v.y; z -= v.z; return *this; }
-				Quaternion<T>& operator*=(const Quaternion<T>& v) noexcept { w *= v.w; x *= v.x; y *= v.y; z *= v.z; return *this; }
-				Quaternion<T>& operator/=(const Quaternion<T>& v) noexcept { w /= v.w; x /= v.x; y /= v.y; z /= v.z; return *this; }
-
 				constexpr T operator[](std::uint8_t i) const noexcept
 				{
 					assert(i < 4);
@@ -118,9 +113,9 @@ namespace octoon
 					T sp, sb, sh;
 					T cp, cb, ch;
 
-					math::sinCos(&sp, &cp, (T)(euler.x * 0.5f));
-					math::sinCos(&sh, &ch, (T)(euler.y * 0.5f));
-					math::sinCos(&sb, &cb, (T)(euler.z * 0.5f));
+					sinCos(&sp, &cp, (T)(euler.x * 0.5f));
+					sinCos(&sh, &ch, (T)(euler.y * 0.5f));
+					sinCos(&sb, &cb, (T)(euler.z * 0.5f));
 
 					x = cb * sp * ch + sb * cp * sh;
 					y = cb * cp * sh - sb * sp * ch;
@@ -135,9 +130,9 @@ namespace octoon
 					T sp, sb, sh;
 					T cp, cb, ch;
 
-					math::sinCos(&sp, &cp, (T)(euler.x * 0.5f));
-					math::sinCos(&sh, &ch, (T)(euler.y * 0.5f));
-					math::sinCos(&sb, &cb, (T)(euler.z * 0.5f));
+					sinCos(&sp, &cp, (T)(euler.x * 0.5f));
+					sinCos(&sh, &ch, (T)(euler.y * 0.5f));
+					sinCos(&sb, &cb, (T)(euler.z * 0.5f));
 
 					x = sp * ch * cb - cp * sh * sb;
 					y = cp * sh * cb + sp * ch * sb;
@@ -196,6 +191,26 @@ namespace octoon
 				friend bool operator!=(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
 					return !(q1 == q2);
+				}
+
+				friend Quaternion<T>& operator+=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				{
+					a.w += b.w; a.x += b.x; a.y += b.y; a.z += b.z; return a; 
+				}
+
+				friend Quaternion<T>& operator-=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				{
+					a.w -= b.w; a.x -= b.x; a.y -= b.y; a.z -= b.z; return a; 
+				}
+
+				friend Quaternion<T>& operator*=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				{
+					a.w *= b.w; a.x *= b.x; a.y *= b.y; a.z *= b.z; return a; 
+				}
+
+				friend Quaternion<T>& operator/=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				{
+					a.w /= b.w; a.x /= b.x; a.y /= b.y; a.z /= b.z; return a; 
 				}
 
 				friend Quaternion<T> operator-(const Quaternion<T>& q) noexcept
@@ -263,13 +278,13 @@ namespace octoon
 		template<typename T>
 		inline T angle(const detail::Quaternion<T>& q) noexcept
 		{
-			return math::safe_acos(q.w) * T(2);
+			return safe_acos(q.w) * T(2);
 		}
 
 		template<typename T>
 		inline detail::Vector3<T> eulerAngles(const detail::Quaternion<T>& q) noexcept
 		{
-			T x = std::asin(math::clamp<T>(2.0f * (q.w * q.x - q.y * q.z), -1.0f, 1.0f));
+			T x = std::asin(clamp<T>(2.0f * (q.w * q.x - q.y * q.z), -1.0f, 1.0f));
 			T y = std::atan2(2.0f * (q.w * q.y + q.x * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
 			T z = std::atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.x * q.x + q.z * q.z));
 			return detail::Vector3<T>(x, y, z);
@@ -289,10 +304,10 @@ namespace octoon
 		inline bool equal(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
 		{
 			return
-				math::equal<T>(q1.x, q2.x) &&
-				math::equal<T>(q1.y, q2.y) &&
-				math::equal<T>(q1.z, q2.z) &&
-				math::equal<T>(q1.w, q2.w);
+				equal<T>(q1.x, q2.x) &&
+				equal<T>(q1.y, q2.y) &&
+				equal<T>(q1.z, q2.z) &&
+				equal<T>(q1.w, q2.w);
 		}
 
 		template<typename T>

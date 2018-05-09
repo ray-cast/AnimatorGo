@@ -64,7 +64,7 @@ namespace octoon
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
 					return makeMatrix(1, 0, 0, c);
 				}
@@ -74,7 +74,7 @@ namespace octoon
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
 					return makeMatrix(c, 0, 0, 1);
 				}
@@ -84,7 +84,7 @@ namespace octoon
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
 					return makeMatrix(c, -s, s, c);
 				}
@@ -92,7 +92,7 @@ namespace octoon
 				Matrix2x2<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					T x = axis.x;
 					T y = axis.y;

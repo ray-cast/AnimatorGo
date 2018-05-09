@@ -337,13 +337,12 @@ PathMeshingComponent::updateMesh() noexcept
 	aabb.min.z = -params_.material.thickness;
 	aabb.max.z = params_.material.thickness;
 	aabb -= offset;
-	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation))));
+	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation * math::float3(1.0,-1.0,1.0)))));
 
 	params_.bound.aabb = aabb;
 	params_.transform.translate += offset;
 
 	object_ = std::make_shared<octoon::GameObject>();
-
 	object_->getComponent<TransformComponent>()->setLocalTranslate(-aabb.min);
 	object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
 	object_->getComponent<TransformComponent>()->setLocalScale(params_.transform.scale);

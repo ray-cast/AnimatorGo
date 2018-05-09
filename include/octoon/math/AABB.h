@@ -346,7 +346,7 @@ namespace octoon
 		{
 			assert(!aabb.empty());
 
-			detail::AABB<T> aabb_;
+			detail::AABB<T> aabb_ = detail::AABB<T>::Empty;
 			aabb_.min.x = aabb_.max.x = m.d1;
 			aabb_.min.y = aabb_.max.y = m.d2;
 			aabb_.min.z = aabb_.max.z = m.d3;

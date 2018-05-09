@@ -752,67 +752,6 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix4x4<T>& makeLookatRH(const Vector3<T>& eye, const Vector3<T>& center, const Vector3<T>& up) noexcept
-				{
-					Vector3<T> x, y, z;
-
-					z = eye - center;
-					z = math::normalize(z);
-
-					x = math::cross(up, z);
-					x = math::normalize(x);
-
-					y = math::cross(z, x);
-					y = math::normalize(y);
-
-					set(x.x, y.x, z.x, 0.0,
-						x.y, y.y, z.y, 0.0,
-						x.z, y.z, z.z, 0.0,
-						0.0, 0.0, 0.0, 1.0);
-
-					Vector3<T> tmp = -eye;
-					if (tmp.x != 0)
-					{
-						d1 += tmp.x * a1;
-						d2 += tmp.x * a2;
-						d3 += tmp.x * a3;
-						d4 += tmp.x * a4;
-					}
-
-					if (tmp.y != 0)
-					{
-						d1 += tmp.y * b1;
-						d2 += tmp.y * b2;
-						d3 += tmp.y * b3;
-						d4 += tmp.y * b4;
-					}
-
-					if (tmp.z != 0)
-					{
-						d1 += tmp.z * c1;
-						d2 += tmp.z * c2;
-						d3 += tmp.z * c3;
-						d4 += tmp.z * c4;
-					}
-
-					return *this;
-				}
-
-				Matrix4x4<T>& makeViewport(std::size_t left, std::size_t top, std::size_t width, std::size_t height) noexcept
-				{
-					T cx = (T)(width >> 1);
-					T cy = (T)(height >> 1);
-					T A = cx + left;
-					T B = cy + top;
-
-					set(cx, 0.0, 0.0, 0.0,
-						0.0, cy, 0.0, 0.0,
-						0.0, 0.0, 0.5, 0.0,
-						A, B, 0.5, 1.0);
-
-					return *this;
-				}
-
 				pointer ptr() noexcept { return (pointer)&a1; }
 				const_pointer ptr() const noexcept { return (const_pointer)&a1; }
 
@@ -1133,6 +1072,69 @@ namespace octoon
 				right.y, up.y, forward.y, 0.0f,
 				right.z, up.z, forward.z, 0.0f,
 				translate.x, translate.y, translate.z, 1.0f);
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T>& makeLookatRH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
+		{
+			detail::Vector3<T> x, y, z;
+
+			z = eye - center;
+			z = normalize(z);
+
+			x = cross(up, z);
+			x = normalize(x);
+
+			y = cross(z, x);
+			y = normalize(y);
+
+			detail::Matrix4x4<T> m(
+				x.x, y.x, z.x, 0.0,
+				x.y, y.y, z.y, 0.0,
+				x.z, y.z, z.z, 0.0,
+				0.0, 0.0, 0.0, 1.0);
+
+			detail::Vector3<T> tmp = -eye;
+			if (tmp.x != 0)
+			{
+				m.d1 += tmp.x * m.a1;
+				m.d2 += tmp.x * m.a2;
+				m.d3 += tmp.x * m.a3;
+				m.d4 += tmp.x * m.a4;
+			}
+
+			if (tmp.y != 0)
+			{
+				m.d1 += tmp.y * m.b1;
+				m.d2 += tmp.y * m.b2;
+				m.d3 += tmp.y * m.b3;
+				m.d4 += tmp.y * m.b4;
+			}
+
+			if (tmp.z != 0)
+			{
+				m.d1 += tmp.z * m.c1;
+				m.d2 += tmp.z * m.c2;
+				m.d3 += tmp.z * m.c3;
+				m.d4 += tmp.z * m.c4;
+			}
+
+			return *this;
+		}
+
+		template<typename T>
+		inline detail::Matrix4x4<T> makeViewport(std::uint32_t left, std::uint32_t top, std::uint32_t width, std::uint32_t height) noexcept
+		{
+			T cx = (T)(width >> 1);
+			T cy = (T)(height >> 1);
+			T A = cx + left;
+			T B = cy + top;
+
+			return detail::Matrix4x4<T>(
+				cx, 0.0, 0.0, 0.0,
+				0.0, cy, 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				A, B, 0.5, 1.0);
 		}
 	}
 }

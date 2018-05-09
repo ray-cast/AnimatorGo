@@ -209,12 +209,33 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 			{
 				auto& light = lights[0];
 
+				auto& intensity = light["intensity"];
+				auto& ambient = light["ambient"];
+				auto& highlight = light["highlight"];
+				auto& highlightSize = light["highlightSize"];
+
 				params_.material.phong.direction << light["direction"];
 				params_.material.phong.darkcolor << light["darkcolor"];
-				params_.material.phong.intensity = light["intensity"].get<json::number_float_t>();
-				params_.material.phong.ambient = light["ambient"].get<json::number_float_t>();
-				params_.material.phong.highLight = light["highLight"].get<json::number_float_t>();
-				params_.material.phong.highLightSize = light["highLightSize"].get<json::number_float_t>();
+
+				if (!intensity.is_null())
+					params_.material.phong.intensity = intensity.get<json::number_float_t>();
+				else
+					throw runtime::runtime_error::create(R"(The "intensity" must be float, but is null)");
+
+				if (!ambient.is_null())
+					params_.material.phong.ambient = ambient.get<json::number_float_t>();
+				else
+					throw runtime::runtime_error::create(R"(The "ambient" must be float, but is null)");
+
+				if (!highlight.is_null())
+					params_.material.phong.highlight = highlight.get<json::number_float_t>();
+				else
+					throw runtime::runtime_error::create(R"(The "highlight" must be float, but is null)");
+
+				if (!highlightSize.is_null())
+					params_.material.phong.highlightSize = highlightSize.get<json::number_float_t>();
+				else
+					throw runtime::runtime_error::create(R"(The "highlightSize" must be float, but is null)");
 			}
 		}
 		default:
@@ -313,7 +334,10 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 void
 PathMeshingComponent::updateMesh() noexcept
 {
-	math::float3 offset = (params_.bound.aabb.max - params_.bound.aabb.min) * params_.bound.center;
+	if (params_.contours.empty())
+		return;
+
+	math::float3 offset = math::lerp(params_.bound.aabb.min, params_.bound.aabb.max, params_.bound.center);
 	for (auto& contour : params_.contours)
 	{
 		for (auto& it : contour->points())
@@ -325,9 +349,12 @@ PathMeshingComponent::updateMesh() noexcept
 	aabb.max.z = params_.material.thickness;
 	aabb -= offset;
 	aabb = math::transform(aabb, math::float4x4().makeRotation(math::Quaternion(math::radians(params_.transform.rotation))));
+
 	params_.bound.aabb = aabb;
+	params_.transform.translate += offset;
 
 	object_ = std::make_shared<octoon::GameObject>();
+
 	object_->getComponent<TransformComponent>()->setLocalTranslate(-aabb.min);
 	object_->getComponent<TransformComponent>()->setLocalQuaternion(math::Quaternion(math::radians(params_.transform.rotation)));
 	object_->getComponent<TransformComponent>()->setLocalScale(params_.transform.scale);
@@ -366,8 +393,8 @@ PathMeshingComponent::updateMesh() noexcept
 		auto material = std::make_shared<octoon::video::PhongMaterial>();
 		material->setBaseColor(params_.material.color * params_.material.phong.intensity);
 		material->setAmbientColor(params_.material.color * params_.material.phong.ambient);
-		material->setSpecularColor(math::float3::One * params_.material.phong.highLight);
-		material->setShininess(params_.material.phong.highLightSize);
+		material->setSpecularColor(math::float3::One * params_.material.phong.highlight);
+		material->setShininess(params_.material.phong.highlightSize);
 		material->setLightDir(math::normalize(params_.material.phong.direction));
 		material->setDarkColor(params_.material.phong.darkcolor);
 
@@ -407,7 +434,7 @@ PathMeshingComponent::onFrameEnd() except
 		texture->unmap();
 	}
 
-	auto center = params_.bound.aabb.center() + params_.transform.translate;
+	auto center = params_.transform.translate + params_.bound.aabb.min;
 	this->onSaveImage(image, center.x, center.y);
 }
 
@@ -431,6 +458,8 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 	json j;
 	j["x"] = x;
 	j["y"] = y;
+	j["w"] = image.width();
+	j["h"] = image.height();
 	j["path"] = stream.str() + ".png";
 
 	std::ostringstream sstream;
@@ -441,4 +470,6 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 		file.write(sstream.str().c_str(), sstream.str().size());
 
 	image.save(stream.str() + ".png", "png");
+
+	std::cerr << sstream.str();
 }

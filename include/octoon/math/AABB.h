@@ -79,7 +79,7 @@ namespace octoon
 
 				Vector3<T> center() const noexcept
 				{
-					return (min + max) * 0.5f;
+					return lerp(min, max, 0.5f);
 				}
 
 				AABB<T>& expand(const Vector3<T>& amount) noexcept

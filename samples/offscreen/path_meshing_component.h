@@ -51,8 +51,8 @@ struct PathMeshing
 		{
 			float intensity;
 			float ambient;
-			float highLight;
-			float highLightSize;
+			float highlight;
+			float highlightSize;
 
 			octoon::math::float1 thickness;
 			octoon::math::float3 darkcolor;
@@ -82,8 +82,8 @@ struct PathMeshing
 
 		material.phong.intensity = 1.0;
 		material.phong.ambient = 0.6;
-		material.phong.highLight = 0.0f;
-		material.phong.highLightSize = 0.0f;
+		material.phong.highlight = 0.0f;
+		material.phong.highlightSize = 0.0f;
 		material.phong.thickness = 1.0;
 		material.phong.darkcolor = octoon::math::float3::Zero;
 		material.phong.direction = octoon::math::float3::UnitY;

@@ -1,5 +1,5 @@
-#ifndef OCTOON_COMPONENT_H_
-#define OCTOON_COMPONENT_H_
+#ifndef OCTOON_GAME_COMPONENT_H_
+#define OCTOON_GAME_COMPONENT_H_
 
 #include <octoon/game_object.h>
 

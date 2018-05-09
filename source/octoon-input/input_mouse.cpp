@@ -8,20 +8,20 @@ namespace octoon
 		OctoonImplementSubInterface(DefaultInputMouse, IInputMouse, "DefaultInputMouse")
 
 		DefaultInputMouse::DefaultInputMouse() noexcept
-			: mouse_x_(0)
-			, mouse_y_(0)
-			, mouse_axis_x_(0)
-			, mouse_axis_y_(0)
-			, last_x_(0)
-			, last_y_(0)
-			, center_x_(0)
-			, center_y_(0)
-			, is_mouse_lock_(false)
-			, is_mouse_locked_(false)
-			, is_mouse_hide(false)
-			, is_mouse_position_updated_(false)
+			: mouseX_(0)
+			, mouseY_(0)
+			, mouseAxisX_(0)
+			, mouseAxisY_(0)
+			, lastX_(0)
+			, lastY_(0)
+			, centerX_(0)
+			, centerY_(0)
+			, isMouseLock_(false)
+			, isMouseLocked_(false)
+			, isMouseHide(false)
+			, isMousePositionUpdated_(false)
 		{
-			std::memset(button_state_, 0, sizeof(button_state_));
+			std::memset(buttonState_, 0, sizeof(buttonState_));
 		}
 
 		DefaultInputMouse::~DefaultInputMouse() noexcept
@@ -34,8 +34,8 @@ namespace octoon
 			if (!isLockedMouse())
 			{
 				this->hideMouse();
-				is_mouse_lock_ = true;
-				is_mouse_locked_ = true;
+				isMouseLock_ = true;
+				isMouseLocked_ = true;
 			}
 		}
 
@@ -45,41 +45,41 @@ namespace octoon
 			if (isLockedMouse())
 			{
 				this->showMouse();
-				is_mouse_lock_ = false;
-				is_mouse_locked_ = false;
+				isMouseLock_ = false;
+				isMouseLocked_ = false;
 			}
 		}
 
 		bool
 		DefaultInputMouse::isLockedMouse() const noexcept
 		{
-			return is_mouse_locked_;
+			return isMouseLocked_;
 		}
 
 		void
 		DefaultInputMouse::showMouse() noexcept
 		{
-			if (is_mouse_hide)
+			if (isMouseHide)
 			{
 				this->onShowMouse();
-				is_mouse_hide = false;
+				isMouseHide = false;
 			}
 		}
 
 		void
 		DefaultInputMouse::hideMouse() noexcept
 		{
-			if (!is_mouse_hide)
+			if (!isMouseHide)
 			{
 				this->onHideMouse();
-				is_mouse_hide = true;
+				isMouseHide = true;
 			}
 		}
 
 		bool
 		DefaultInputMouse::isShowMouse() noexcept
 		{
-			return !is_mouse_hide;
+			return !isMouseHide;
 		}
 
 		float
@@ -88,15 +88,15 @@ namespace octoon
 			switch (axis)
 			{
 			case InputAxis::MouseX:
-				return mouse_axis_x_;
+				return mouseAxisX_;
 			case InputAxis::MouseY:
-				return mouse_axis_y_;
+				return mouseAxisY_;
 			case InputAxis::Horizontal:
 			{
 				float mouseX = 0.0f, mouseY = 0.0f;
 				this->getPosition(mouseX, mouseY);
 
-				return (float)(mouseX - center_x_) / center_x_;
+				return (float)(mouseX - centerX_) / centerX_;
 			}
 			break;
 			case InputAxis::Vertical:
@@ -104,7 +104,7 @@ namespace octoon
 				float mouseX = 0.0f, mouseY = 0.0f;
 				this->getPosition(mouseX, mouseY);
 
-				return (float)(mouseY - center_y_) / center_y_;
+				return (float)(mouseY - centerY_) / centerY_;
 			}
 			break;
 			default:
@@ -116,34 +116,34 @@ namespace octoon
 		void
 		DefaultInputMouse::setPosition(InputButton::Type x, InputButton::Type y) noexcept
 		{
-			mouse_x_ = x;
-			mouse_y_ = y;
+			mouseX_ = x;
+			mouseY_ = y;
 			this->onChangePosition(x, y);
 		}
 
 		void
 		DefaultInputMouse::getPosition(InputButton::Type& x, InputButton::Type& y) const noexcept
 		{
-			x = mouse_x_;
-			y = mouse_y_;
+			x = mouseX_;
+			y = mouseY_;
 		}
 
 		bool
 		DefaultInputMouse::isButtonDown(InputButton::Code key) const noexcept
 		{
-			return button_state_[key].down;
+			return buttonState_[key].down;
 		}
 
 		bool
 		DefaultInputMouse::isButtonUp(InputButton::Code key) const noexcept
 		{
-			return button_state_[key].up;
+			return buttonState_[key].up;
 		}
 
 		bool
 		DefaultInputMouse::isButtonPressed(InputButton::Code key) const noexcept
 		{
-			return button_state_[key].pressed;
+			return buttonState_[key].pressed;
 		}
 
 		IInputMousePtr
@@ -171,9 +171,9 @@ namespace octoon
 		DefaultInputMouse::onFrameEnd() noexcept
 		{
 			if (this->isLockedMouse())
-				this->setPosition(center_x_, center_y_);
+				this->setPosition(centerX_, centerY_);
 
-			for (auto& button : button_state_)
+			for (auto& button : buttonState_)
 			{
 				if (button.up)
 					button.pressed = false;
@@ -183,27 +183,27 @@ namespace octoon
 				button.doubleClick = false;
 			}
 
-			if (is_mouse_position_updated_)
+			if (isMousePositionUpdated_)
 			{
-				mouse_axis_x_ = 0;
-				mouse_axis_y_ = 0;
-				last_x_ = mouse_x_;
-				last_y_ = mouse_y_;
+				mouseAxisX_ = 0;
+				mouseAxisY_ = 0;
+				lastX_ = mouseX_;
+				lastY_ = mouseY_;
 
-				is_mouse_position_updated_ = false;
+				isMousePositionUpdated_ = false;
 			}
 		}
 
 		void
 		DefaultInputMouse::onObtainCapture() noexcept
 		{
-			if (is_mouse_lock_ && !is_mouse_locked_)
+			if (isMouseLock_ && !isMouseLocked_)
 			{
 				this->hideMouse();
-				is_mouse_locked_ = true;
+				isMouseLocked_ = true;
 			}
 
-			for (auto& button : button_state_)
+			for (auto& button : buttonState_)
 			{
 				if (button.up)
 					button.pressed = false;
@@ -216,17 +216,17 @@ namespace octoon
 		void
 		DefaultInputMouse::onReleaseCapture() noexcept
 		{
-			if (is_mouse_lock_ && is_mouse_locked_)
+			if (isMouseLock_ && isMouseLocked_)
 			{
 				this->showMouse();
-				is_mouse_locked_ = false;
+				isMouseLocked_ = false;
 			}
 		}
 
 		void
 		DefaultInputMouse::onReset() noexcept
 		{
-			for (auto& button : button_state_)
+			for (auto& button : buttonState_)
 			{
 				if (button.up)
 					button.pressed = false;
@@ -248,24 +248,24 @@ namespace octoon
 			{
 			case InputEvent::MouseMotion:
 			{
-				mouse_x_ = event.motion.x;
-				mouse_y_ = event.motion.y;
-				mouse_axis_x_ = mouse_x_ - last_x_;
-				mouse_axis_y_ = mouse_y_ - last_y_;
-				last_x_ = mouse_x_;
-				last_y_ = mouse_y_;
+				mouseX_ = event.motion.x;
+				mouseY_ = event.motion.y;
+				mouseAxisX_ = mouseX_ - lastX_;
+				mouseAxisY_ = mouseY_ - lastY_;
+				lastX_ = mouseX_;
+				lastY_ = mouseY_;
 
-				is_mouse_position_updated_ = true;
+				isMousePositionUpdated_ = true;
 			}
 			break;
 			case InputEvent::MouseButtonDown:
 			{
-				mouse_axis_x_ = 0;
-				mouse_axis_y_ = 0;
-				last_x_ = mouse_x_ = event.button.x;
-				last_y_ = mouse_y_ = event.button.y;
+				mouseAxisX_ = 0;
+				mouseAxisY_ = 0;
+				lastX_ = mouseX_ = event.button.x;
+				lastY_ = mouseY_ = event.button.y;
 
-				auto& key = this->button_state_[event.button.button];
+				auto& key = this->buttonState_[event.button.button];
 				if (!key.pressed)
 				{
 					key.up = false;
@@ -276,12 +276,12 @@ namespace octoon
 			break;
 			case InputEvent::MouseButtonUp:
 			{
-				mouse_axis_x_ = 0;
-				mouse_axis_y_ = 0;
-				last_x_ = mouse_x_ = event.button.x;
-				last_y_ = mouse_y_ = event.button.y;
+				mouseAxisX_ = 0;
+				mouseAxisY_ = 0;
+				lastX_ = mouseX_ = event.button.x;
+				lastY_ = mouseY_ = event.button.y;
 
-				auto& key = this->button_state_[event.button.button];
+				auto& key = this->buttonState_[event.button.button];
 				key.up = true;
 				key.pressed = false;
 				key.down = false;
@@ -289,12 +289,12 @@ namespace octoon
 			break;
 			case InputEvent::MouseWheelDown:
 			{
-				mouse_axis_x_ = 0;
-				mouse_axis_y_ = 0;
-				last_x_ = mouse_x_;
-				last_y_ = mouse_y_;
+				mouseAxisX_ = 0;
+				mouseAxisY_ = 0;
+				lastX_ = mouseX_;
+				lastY_ = mouseY_;
 
-				auto& key = this->button_state_[InputButton::MouseWheel];
+				auto& key = this->buttonState_[InputButton::MouseWheel];
 				key.up = false;
 				key.down = true;
 				key.pressed = false;
@@ -302,12 +302,12 @@ namespace octoon
 			break;
 			case InputEvent::MouseWheelUp:
 			{
-				mouse_axis_x_ = 0;
-				mouse_axis_y_ = 0;
-				last_x_ = mouse_x_;
-				last_y_ = mouse_y_;
+				mouseAxisX_ = 0;
+				mouseAxisY_ = 0;
+				lastX_ = mouseX_;
+				lastY_ = mouseY_;
 
-				auto& key = this->button_state_[InputButton::MouseWheel];
+				auto& key = this->buttonState_[InputButton::MouseWheel];
 				key.up = true;
 				key.pressed = false;
 				key.down = false;
@@ -315,7 +315,7 @@ namespace octoon
 			break;
 			case InputEvent::MouseButtonDoubleClick:
 			{
-				auto& key = this->button_state_[event.button.button];
+				auto& key = this->buttonState_[event.button.button];
 				key.doubleClick = true;
 			}
 			break;
@@ -330,8 +330,8 @@ namespace octoon
 				break;
 			case InputEvent::SizeChange:
 			{
-				center_x_ = static_cast<InputButton::Type>(event.change.w >> 1);
-				center_y_ = static_cast<InputButton::Type>(event.change.h >> 1);
+				centerX_ = static_cast<InputButton::Type>(event.change.w >> 1);
+				centerY_ = static_cast<InputButton::Type>(event.change.h >> 1);
 			}
 			break;
 			default:

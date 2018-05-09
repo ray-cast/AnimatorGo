@@ -55,22 +55,22 @@ namespace octoon
 			DefaultInputMouse& operator=(const DefaultInputMouse&) noexcept = delete;
 
 		protected:
-			bool is_mouse_lock_;
-			bool is_mouse_locked_;
-			bool is_mouse_hide;
-			bool is_mouse_position_updated_;
+			bool isMouseLock_;
+			bool isMouseLocked_;
+			bool isMouseHide;
+			bool isMousePositionUpdated_;
 
-			float mouse_axis_x_;
-			float mouse_axis_y_;
+			float mouseAxisX_;
+			float mouseAxisY_;
 
-			InputButton::Type last_x_;
-			InputButton::Type last_y_;
+			InputButton::Type lastX_;
+			InputButton::Type lastY_;
 
-			InputButton::Type mouse_x_;
-			InputButton::Type mouse_y_;
+			InputButton::Type mouseX_;
+			InputButton::Type mouseY_;
 
-			InputButton::Type center_x_;
-			InputButton::Type center_y_;
+			InputButton::Type centerX_;
+			InputButton::Type centerY_;
 
 			struct ButtonState
 			{
@@ -80,7 +80,7 @@ namespace octoon
 				bool doubleClick;
 			};
 
-			ButtonState button_state_[InputButton::NumButtonCodes];
+			ButtonState buttonState_[InputButton::NumButtonCodes];
 		};
 	}
 }

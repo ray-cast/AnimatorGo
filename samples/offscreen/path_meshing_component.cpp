@@ -265,6 +265,8 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 					switch (cur->at(2).get<json::number_unsigned_t>())
 					{
 					case POD_TT_PRIM_LINE:
+					case POD_TT_PRIM_MOVE:
+					case POD_TT_PRIM_CLOSE:
 					{
 						contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
 						prev = cur;
@@ -304,19 +306,6 @@ PathMeshingComponent::updateContour(const std::string& data) noexcept(false)
 						prev = &p4;
 
 						index += 2;
-					}
-					break;
-					case POD_TT_PRIM_MOVE:
-					{
-						contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
-						prev = cur;
-					}
-					break;
-					case POD_TT_PRIM_CLOSE:
-					{
-						contour->addPoints(math::float3(cur->at(0).get<json::number_float_t>(), cur->at(1).get<json::number_float_t>(), 0));
-
-						prev = cur;
 					}
 					break;
 					default:
@@ -471,5 +460,5 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 
 	image.save(stream.str() + ".png", "png");
 
-	std::cerr << sstream.str();
+	std::cout << sstream.str();
 }

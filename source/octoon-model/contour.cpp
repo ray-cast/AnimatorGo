@@ -98,7 +98,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 1; i < bezierSteps; i++)
+			for (std::size_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;
@@ -113,7 +113,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, const math::float3& D, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 0; i < bezierSteps; i++)
+			for (std::size_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;

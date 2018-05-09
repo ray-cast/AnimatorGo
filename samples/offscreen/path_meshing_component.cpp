@@ -383,12 +383,12 @@ PathMeshingComponent::updateMesh() noexcept
 	case PathMeshing::Material::PhongShading:
 	{
 		auto material = std::make_shared<octoon::video::PhongMaterial>();
-		material->setBaseColor(params_.material.color * params_.material.phong.intensity);
-		material->setAmbientColor(params_.material.color * params_.material.phong.ambient);
+		material->setBaseColor(params_.material.color * params_.material.phong.intensity / 255.0f);
+		material->setAmbientColor(params_.material.color * params_.material.phong.ambient / 255.0f);
 		material->setSpecularColor(math::float3::One * params_.material.phong.highlight);
 		material->setShininess(params_.material.phong.highlightSize);
 		material->setLightDir(math::normalize(params_.material.phong.direction));
-		material->setDarkColor(params_.material.phong.darkcolor);
+		material->setDarkColor(params_.material.phong.darkcolor / 255.0f);
 
 		object_->addComponent<octoon::MeshFilterComponent>(model::makeMesh(params_.contours, params_.material.thickness));
 		object_->addComponent<octoon::MeshRendererComponent>(std::move(material));

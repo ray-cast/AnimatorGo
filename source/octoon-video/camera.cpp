@@ -232,7 +232,14 @@ namespace octoon
 		Camera::getPixelViewport() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			math::float4 result;
 			result.x = viewport_.x * width;
@@ -384,7 +391,14 @@ namespace octoon
 		Camera::_updateOrtho() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			auto left = width * ortho_.x;
 			auto right = width * ortho_.y;
@@ -406,7 +420,15 @@ namespace octoon
 		Camera::_updateViewProject() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
+
 			float ratio = (float)width / height;
 
 			if (ratioReal_ != ratio)

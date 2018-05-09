@@ -280,37 +280,34 @@ namespace octoon
 		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize.x = w;
-			io.DisplaySize.y = h;
+			io.DisplaySize.x = (float)w;
+			io.DisplaySize.y = (float)h;
 		}
 
 		void
 		System::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplaySize.x;
-			h = io.DisplaySize.y;
+			w = (std::uint32_t)io.DisplaySize.x;
+			h = (std::uint32_t)io.DisplaySize.y;
 		}
 
 		void
 		System::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplayFramebufferScale.x = w;
-			io.DisplayFramebufferScale.y = h;
+			io.DisplayFramebufferScale.x = (float)w;
+			io.DisplayFramebufferScale.y = (float)h;
 
-			math::float4x4 project;
-			project.makeOrthoLH(0, w, h, 0, 0, 1);
-
-			proj_->uniform4fmat(project);
+			proj_->uniform4fmat(math::makeOrthoLH<float>(0.0f, (float)w, (float)h, 0.0f, 0.0f, 1.0f));
 		}
 
 		void
 		System::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplayFramebufferScale.x;
-			h = io.DisplayFramebufferScale.y;
+			w = (std::uint32_t)io.DisplayFramebufferScale.x;
+			h = (std::uint32_t)io.DisplayFramebufferScale.y;
 		}
 
 		bool
@@ -426,7 +423,7 @@ namespace octoon
 			auto& io = ImGui::GetIO();
 
 			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context.setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context.setScissor(0, uint4(0, 0, (std::uint32_t)io.DisplayFramebufferScale.x, (std::uint32_t)io.DisplayFramebufferScale.y));
 
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
@@ -448,9 +445,9 @@ namespace octoon
 						else
 							decal_->uniformTexture(nullptr);
 
-						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
+						uint4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-						context.setScissor(0, uint4(scissor.x, scissor.y, scissor.z, scissor.w));
+						context.setScissor(0, scissor);
 
 						context.setRenderPipeline(pipeline_);
 						context.setDescriptorSet(descriptor_set_);

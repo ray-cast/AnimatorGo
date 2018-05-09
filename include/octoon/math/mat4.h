@@ -688,18 +688,18 @@ namespace octoon
 				m.c3 <= 1.f + epsilon && m.c3 >= 1.f - epsilon);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> orthonormalize(const detail::Matrix4x4<T>& m) noexcept
 		{
 			detail::Vector3<T> x = m.getRight();
 			detail::Vector3<T> y = m.getUp();
 			detail::Vector3<T> z;
 
-			x = math::normalize(x);
-			z = math::cross(x, y);
-			z = math::normalize(z);
-			y = math::cross(z, x);
-			y = math::normalize(y);
+			x = normalize(x);
+			z = cross(x, y);
+			z = normalize(z);
+			y = cross(z, x);
+			y = normalize(y);
 
 			return detail::Matrix4x4<T>(
 				x.x, x.y, x.z, 0.0f,
@@ -722,7 +722,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> inverse(const detail::Matrix4x4<T>& _m) noexcept
 		{
 			detail::Matrix4x4<T> m;
@@ -763,7 +763,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline void decomposeTransform(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation, detail::Vector3<T>& scaling) noexcept
 		{
 			auto right_ = m.getRight();
@@ -793,7 +793,7 @@ namespace octoon
 			rotation.makeRotation(forward_, up_, right_);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		const void decomposeTransformWithoutScaler(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation) noexcept
 		{
 			assert(isOnlyRotate(m));
@@ -805,7 +805,7 @@ namespace octoon
 			rotation.makeRotation(m.getForward(), m.getUp(), m.getRight());
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline bool decomposeFrustumtRH(const detail::Matrix4x4<T>& m, T& left, T& right, T& bottom, T& top, T& znear, T& zfar) noexcept
 		{
 			if (m.a4 != 0.0 || m.b4 != 0.0 || m.c4 != -1.0 || m.c4 != 0.0)
@@ -826,7 +826,7 @@ namespace octoon
 			return true;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline bool decomposeOrthoRH(const detail::Matrix4x4<T>& m, T& left, T& right, T& bottom, T& top, T& znear, T& zfar) noexcept
 		{
 			if (m.a4 != 0.0 || m.b4 != 0.0 || m.c4 != 0.0 || m.c4 != 1.0) return false;
@@ -843,7 +843,7 @@ namespace octoon
 			return true;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline bool decomposePerspectiveRH(const detail::Matrix4x4<T>& m, T& fovy, T& aspectRatio, T& znear, T& zfar) noexcept
 		{
 			T right = 0;
@@ -918,7 +918,7 @@ namespace octoon
 			return out;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> transformInverse(const detail::Matrix4x4<T>& m) noexcept
 		{
 			detail::Matrix4x4<T> out;
@@ -949,7 +949,7 @@ namespace octoon
 			return out;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> transformInverseWithoutScaler(const detail::Matrix4x4<T>& m) noexcept
 		{
 			auto& right = m.getRight();
@@ -964,7 +964,7 @@ namespace octoon
 				translate.x, translate.y, translate.z, 1.0f);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotationX(T theta) noexcept
 		{
 			T c, s;
@@ -979,7 +979,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotationY(T theta) noexcept
 		{
 			T c, s;
@@ -994,7 +994,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotationZ(T theta) noexcept
 		{
 			T c, s;
@@ -1009,7 +1009,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& axis, T theta, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			T c, s;
@@ -1048,7 +1048,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotation(const detail::Quaternion<T>& q, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			T xs = q.x * T(2.0f), ys = q.y * T(2.0f), zs = q.z * T(2.0f);
@@ -1080,7 +1080,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& forward, const detail::Vector3<T>& up, const detail::Vector3<T>& right, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			detail::Matrix4x4<T> m;
@@ -1092,7 +1092,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeRotation(const detail::Vector4<T>& forward, const detail::Vector4<T>& up, const detail::Vector4<T>& right, const detail::Vector4<T>& translate = detail::Vector4<T>::UnitW) noexcept
 		{
 			detail::Matrix4x4<T> m;
@@ -1104,7 +1104,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeOrthoLH(T width, T height, T znear, T zfar) noexcept
 		{
 			T cx = 2.0f / width;
@@ -1119,7 +1119,7 @@ namespace octoon
 				0.0, 0.0, tz, 1.0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeOrthoLH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
 		{
 			T tx = -(right + left) / (right - left);
@@ -1136,7 +1136,7 @@ namespace octoon
 				tx, ty, tz, 1.0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeOrthoRH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
 		{
 			T tx = -(right + left) / (right - left);
@@ -1153,13 +1153,13 @@ namespace octoon
 				tx, ty, tz, 1.0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeFrustumtLH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
 		{
 			T A = (left + right) / (left - right);
 			T B = (bottom + top) / (bottom - top);
 			T C = (zfar > DBL_MAX) ? 1.0f : (zfar + znear) / (zfar - znear);
-			T D = (zfar > DBL_MAX) ? znear : 2.0 * znear * zfar / (znear - zfar);
+			T D = (zfar > DBL_MAX) ? znear : 2.0f * znear * zfar / (znear - zfar);
 			T cx = 2.0f * znear / (right - left);
 			T cy = 2.0f * znear / (top - bottom);
 
@@ -1170,7 +1170,7 @@ namespace octoon
 				A, B, D, 0.0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeFrustumtRH(T left, T right, T bottom, T top, T znear, T zfar) noexcept
 		{
 			T A = (right + left) / (right - left);
@@ -1187,7 +1187,7 @@ namespace octoon
 				A, B, D, 0.0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makePerspectiveFovLH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
 			const T h = 1.0f / tan(radians(fov * 0.5f));
@@ -1201,7 +1201,7 @@ namespace octoon
 				0, 0, -nearPlane * q, 0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makePerspectiveFovRH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
 			const T h = 1.0f / tan(radians(fov * 0.5f));
@@ -1215,7 +1215,7 @@ namespace octoon
 				0, 0, nearPlane * q, 0);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makePerspectiveOffCenterLH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
 		{
 			T tan_fovy = tan(radians(fovy * 0.5f));
@@ -1227,7 +1227,7 @@ namespace octoon
 			return makeFrustumtLH(left, right, bottom, top, znear, zfar);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makePerspectiveOffCenterRH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
 		{
 			T tan_fovy = tan(radians(fovy * 0.5f));
@@ -1239,7 +1239,7 @@ namespace octoon
 			return makeFrustumtRH(left, _right, bottom, top, znear, zfar);
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeLookatLH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
 		{
 			detail::Vector3<T> x, y, z;
@@ -1287,7 +1287,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeLookatRH(const detail::Vector3<T>& eye, const detail::Vector3<T>& center, const detail::Vector3<T>& up) noexcept
 		{
 			detail::Vector3<T> x, y, z;
@@ -1335,7 +1335,7 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 		inline detail::Matrix4x4<T> makeViewport(std::uint32_t left, std::uint32_t top, std::uint32_t width, std::uint32_t height) noexcept
 		{
 			T cx = (T)(width >> 1);

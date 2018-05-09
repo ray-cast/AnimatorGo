@@ -1053,7 +1053,7 @@ namespace octoon
 					changeVertex.push_back(v);
 					changeNormal.push_back(n);
 
-					auto size = changeVertex.size();
+					math::uint1 size = (math::uint1)changeVertex.size();
 					it = size - 1;
 					vectorMap[std::make_pair(vkey, nkey)] = size;
 				}

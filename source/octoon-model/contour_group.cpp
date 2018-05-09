@@ -241,7 +241,7 @@ namespace octoon
 					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thicknessHalf);
 					math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
-					std::uint32_t index = tris.size();
+					math::uint1 index = (math::uint1)tris.size();
 					indices.push_back(index);
 					indices.push_back(index + 1);
 					indices.push_back(index + 1);
@@ -289,7 +289,7 @@ namespace octoon
 						math::float3 c = math::float3(p2.x, p2.y, -thicknessHalf);
 						math::float3 d = math::float3(p2.x, p2.y, thicknessHalf);
 
-						auto index = tris.size();
+						math::uint1 index = (math::uint1)tris.size();
 						indices.push_back(index);
 						indices.push_back(index + 1);
 						indices.push_back(index + 1);

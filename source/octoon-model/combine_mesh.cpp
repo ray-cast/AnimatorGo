@@ -38,7 +38,7 @@ namespace octoon
 
 		void CombineMesh::makeTransform(const float3& translate, const Quaternion& quat, const float3& scale) noexcept
 		{
-			_transform.make_transform(translate, quat, scale);
+			_transform.makeTransform(translate, quat, scale);
 		}
 	}
 }

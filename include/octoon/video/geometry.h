@@ -46,8 +46,8 @@ namespace octoon
 			bool isCastShadow_;
 			bool isReceiveShadow_;
 
-			std::intptr_t numVertices_;
-			std::intptr_t numIndices_;
+			std::uint32_t numVertices_;
+			std::uint32_t numIndices_;
 
 			std::intptr_t vertexOffset_;
 			std::intptr_t indexOffset_;

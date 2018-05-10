@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(GuizmoComponent, GameComponent)
 	public:
 		GuizmoComponent() noexcept;
-		GuizmoComponent(GameObjectPtr& camera) noexcept;
+		GuizmoComponent(const GameObjectPtr& camera) noexcept;
 
 		octoon::GameComponentPtr clone() const noexcept;
 

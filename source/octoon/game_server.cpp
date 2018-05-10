@@ -9,9 +9,9 @@ namespace octoon
 	OctoonImplementSubClass(GameServer, runtime::RttiInterface, "GameServer")
 
 	GameServer::GameServer() noexcept
-		: is_actived_(false)
-		, is_quit_request_(false)
-		, game_app_(nullptr)
+		: isActived_(false)
+		, isQuitRequest_(false)
+		, gameApp_(nullptr)
 	{
 	}
 
@@ -23,57 +23,57 @@ namespace octoon
 	void
 	GameServer::setActive(bool active) except
 	{
-		if (is_actived_ != active)
+		if (isActived_ != active)
 		{
 			if (active)
 				this->onActivate();
 			else
 				this->onDeactivate();
 
-			is_actived_ = active;
+			isActived_ = active;
 		}
 	}
 
 	bool
 	GameServer::getActive() const noexcept
 	{
-		return is_actived_;
+		return isActived_;
 	}
 
 	void
 	GameServer::setGameListener(GameListenerPtr&& listener) noexcept
 	{
-		if (game_listener_ != listener)
+		if (listener_ != listener)
 		{
 			for (auto& it : scenes_)
 				it->setGameListener(listener);
 
-			game_listener_ = std::move(listener);
+			listener_ = std::move(listener);
 		}
 	}
 
 	void
 	GameServer::setGameListener(const GameListenerPtr& listener) noexcept
 	{
-		if (game_listener_ != listener)
+		if (listener_ != listener)
 		{
 			for (auto& it : scenes_)
 				it->setGameListener(listener);
 
-			game_listener_ = listener;
+			listener_ = listener;
 		}
 	}
 
 	const GameListenerPtr&
 	GameServer::getGameListener() const noexcept
 	{
-		return game_listener_;
+		return listener_;
 	}
 
 	bool
 	GameServer::isQuitRequest() const noexcept
 	{
-		return is_quit_request_;
+		return isQuitRequest_;
 	}
 
 	bool
@@ -84,14 +84,14 @@ namespace octoon
 		try
 		{
 			auto scene = std::make_shared<GameScene>();
-			scene->setGameListener(game_listener_);
+			scene->setGameListener(listener_);
 
 			return this->addScene(scene);
 		}
 		catch (const std::exception& e)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(e.what());
+			if (listener_)
+				listener_->onMessage(e.what());
 
 			return false;
 		}
@@ -135,15 +135,15 @@ namespace octoon
 
 		try
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Scene adding : ") + scene->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Scene adding : ") + scene->getName());
 
 			if (this->getActive())
 			{
 				for (auto& feature : features_)
 				{
-					if (game_listener_)
-						game_listener_->onMessage(std::string("GameServer : Scene adding : ") + scene->getName() + " with feature : " + feature->type_name());
+					if (listener_)
+						listener_->onMessage(std::string("GameServer : Scene adding : ") + scene->getName() + " with feature : " + feature->type_name());
 
 					feature->onOpenScene(scene);
 				}
@@ -153,15 +153,15 @@ namespace octoon
 
 			scenes_.push_back(scene);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Scene added : ") + scene->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Scene added : ") + scene->getName());
 
 			return true;
 		}
 		catch (const std::exception& e)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(e.what());
+			if (listener_)
+				listener_->onMessage(e.what());
 
 			return false;
 		}
@@ -175,8 +175,8 @@ namespace octoon
 		auto it = std::find(scenes_.begin(), scenes_.end(), scene);
 		if (it != scenes_.end())
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Removeing scene with : ") + scene->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Removeing scene with : ") + scene->getName());
 
 			if (this->getActive())
 			{
@@ -188,8 +188,8 @@ namespace octoon
 
 			scenes_.erase(it);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Removed scene with : ") + scene->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Removed scene with : ") + scene->getName());
 		}
 	}
 
@@ -198,21 +198,21 @@ namespace octoon
 	{
 		for (auto& it : scenes_)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name() + " : " + it->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name() + " : " + it->getName());
 
 			it->setActive(false);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stopped : ") + it->type_name() + " : " + it->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stopped : ") + it->type_name() + " : " + it->getName());
 		}
 
 		for (auto& it : features_)
 		{
 			for (auto& scene : scenes_)
 			{
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Stopping feature : ") + it->type_name() + " with scene : " + scene->getName());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Stopping feature : ") + it->type_name() + " with scene : " + scene->getName());
 
 				it->onCloseScene(scene);
 			}
@@ -222,21 +222,21 @@ namespace octoon
 	}
 
 	void
-	GameServer::addFeature(const GameFeaturePtr& feature) except
+	GameServer::addFeature(GameFeaturePtr&& feature) except
 	{
 		assert(feature);
 
-		auto it = octoon::runtime::find_if(features_, [feature](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
+		auto it = octoon::runtime::find_if(features_, [&](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
 		if (it != features_.end())
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Feature with ") + feature->type_name() + " has been added to server.");
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Feature with ") + feature->type_name() + " has been added to server.");
 
 			return;
 		}
 
-		if (game_listener_)
-			game_listener_->onMessage(std::string("GameServer : Feature adding: ") + feature->type_name());
+		if (listener_)
+			listener_->onMessage(std::string("GameServer : Feature adding: ") + feature->type_name());
 
 		feature->_setGameServer(this);
 
@@ -246,26 +246,20 @@ namespace octoon
 
 			for (auto& scene : scenes_)
 			{
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Feature adding: ") + feature->type_name() + " with scene : " + scene->getName());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Feature adding: ") + feature->type_name() + " with scene : " + scene->getName());
 
 				feature->onOpenScene(scene);
 			}
 		}
 
-		features_.push_back(feature);
+		features_.push_back(std::move(feature));
 
-		if (game_listener_)
-			game_listener_->onMessage(std::string("GameServer : Feature added : ") + feature->type_name());
+		if (listener_)
+			listener_->onMessage(std::string("GameServer : Feature added : ") + features_.back()->type_name());
 	}
 
-	void
-	GameServer::addFeature(GameFeaturePtr&& component) except
-	{
-		return this->addFeature(component);
-	}
-
-	GameFeaturePtr
+	GameFeature*
 	GameServer::getFeature(const runtime::Rtti* rtti) const noexcept
 	{
 		assert(rtti);
@@ -273,13 +267,13 @@ namespace octoon
 		for (auto& it : features_)
 		{
 			if (it->isInstanceOf(rtti))
-				return it;
+				return it.get();
 		}
 
 		return nullptr;
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameServer::getFeature(const runtime::Rtti& rtti) const noexcept
 	{
 		return getFeature(&rtti);
@@ -297,16 +291,16 @@ namespace octoon
 		auto it = octoon::runtime::find_if(features_, [rtti](const GameFeaturePtr& it) { return it->isInstanceOf(rtti); });
 		if (it != features_.end())
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Feature removeing: ") + rtti->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Feature removeing: ") + rtti->type_name());
 
 			(*it)->onDeactivate();
 			(*it)->_setGameServer(nullptr);
 
 			features_.erase(it);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Feature removed: ") + rtti->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Feature removed: ") + rtti->type_name());
 		}
 	}
 
@@ -323,16 +317,16 @@ namespace octoon
 		auto it = octoon::runtime::find(features_, feature);
 		if (it != features_.end())
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Feature removeing: ") + feature->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Feature removeing: ") + feature->type_name());
 
 			(*it)->onDeactivate();
 			(*it)->_setGameServer(nullptr);
 
 			features_.erase(it);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Feature removed: ") + feature->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Feature removed: ") + feature->type_name());
 		}
 	}
 
@@ -348,13 +342,13 @@ namespace octoon
 	{
 		for (auto& it : features_)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name());
 
 			it->setActive(false);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stopped : ") + it->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stopped : ") + it->type_name());
 		}
 
 		features_.clear();
@@ -373,13 +367,13 @@ namespace octoon
 	void
 	GameServer::setGameApp(GameApp* app) noexcept
 	{
-		game_app_ = app;
+		gameApp_ = app;
 	}
 
 	GameApp*
 	GameServer::getGameApp() noexcept
 	{
-		return game_app_;
+		return gameApp_;
 	}
 
 	void
@@ -390,7 +384,7 @@ namespace octoon
 
 		try
 		{
-			if (!is_quit_request_)
+			if (!isQuitRequest_)
 			{
 				for (auto& it : features_)
 					it->onFrameBegin();
@@ -404,10 +398,10 @@ namespace octoon
 		}
 		catch (const std::exception& e)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(e.what());
+			if (listener_)
+				listener_->onMessage(e.what());
 
-			is_quit_request_ = true;
+			isQuitRequest_ = true;
 		}
 	}
 
@@ -417,28 +411,28 @@ namespace octoon
 		if (this->isQuitRequest())
 			return;
 
-		if (game_listener_)
-			game_listener_->onMessage("GameServer : Starting.");
+		if (listener_)
+			listener_->onMessage("GameServer : Starting.");
 
 		try
 		{
 			for (auto& it : features_)
 			{
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Starting : ") + it->type_name());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Starting : ") + it->type_name());
 
 				it->setActive(true);
 
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Started : ") + it->type_name());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Started : ") + it->type_name());
 			}
 
 			for (auto& it : features_)
 			{
 				for (auto& scene : scenes_)
 				{
-					if (game_listener_)
-						game_listener_->onMessage(std::string("GameServer : Starting feature : ") + it->type_name() + " with scene : " + scene->getName());
+					if (listener_)
+						listener_->onMessage(std::string("GameServer : Starting feature : ") + it->type_name() + " with scene : " + scene->getName());
 
 					it->onOpenScene(scene);
 				}
@@ -446,21 +440,21 @@ namespace octoon
 
 			for (auto& it : scenes_)
 			{
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Starting scene : ") + it->getName());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Starting scene : ") + it->getName());
 
 				it->setActive(true);
 			}
 
-			if (game_listener_)
-				game_listener_->onMessage("GameServer : Started.");
+			if (listener_)
+				listener_->onMessage("GameServer : Started.");
 		}
 		catch (const std::exception& e)
 		{
-			is_quit_request_ = true;
+			isQuitRequest_ = true;
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : except with ") + e.what());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : except with ") + e.what());
 
 			throw e;
 		}
@@ -473,8 +467,8 @@ namespace octoon
 		{
 			for (auto& scene : scenes_)
 			{
-				if (game_listener_)
-					game_listener_->onMessage(std::string("GameServer : Stopping feature : ") + it->type_name() + " with scene : " + scene->getName());
+				if (listener_)
+					listener_->onMessage(std::string("GameServer : Stopping feature : ") + it->type_name() + " with scene : " + scene->getName());
 
 				it->onCloseScene(scene);
 			}
@@ -482,24 +476,24 @@ namespace octoon
 
 		for (auto& it : features_)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stopping : ") + it->type_name());
 
 			it->setActive(false);
 
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Stoped : ") + it->type_name());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Stoped : ") + it->type_name());
 		}
 
 		for (auto& it : scenes_)
 		{
-			if (game_listener_)
-				game_listener_->onMessage(std::string("GameServer : Starting scene : ") + it->getName());
+			if (listener_)
+				listener_->onMessage(std::string("GameServer : Starting scene : ") + it->getName());
 
 			it->setActive(false);
 		}
 
-		if (game_listener_)
-			game_listener_->onMessage("GameServer : stopped.");
+		if (listener_)
+			listener_->onMessage("GameServer : stopped.");
 	}
 }

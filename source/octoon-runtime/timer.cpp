@@ -12,7 +12,7 @@ namespace octoon
 			: fps_(0)
 			, average_fps_(0)
 			, app_time_(0)
-			, start_time_(0)
+			, startTime_(0)
 			, last_time_(0)
 			, frame_time_(0)
 			, accumulate_time_(0)
@@ -30,13 +30,13 @@ namespace octoon
 		float
 		Timer::elapsed() const noexcept
 		{
-			return float(std::clock()) / CLOCKS_PER_SEC - start_time_;
+			return float(std::clock()) / CLOCKS_PER_SEC - startTime_;
 		}
 
 		float
 		Timer::elapsed_max() const noexcept
 		{
-			return float(std::numeric_limits<std::clock_t>::max()) / float(CLOCKS_PER_SEC) - start_time_;
+			return float(std::numeric_limits<std::clock_t>::max()) / float(CLOCKS_PER_SEC) - startTime_;
 		}
 
 		float
@@ -72,7 +72,7 @@ namespace octoon
 		float
 		Timer::start_time() const noexcept
 		{
-			return start_time_;
+			return startTime_;
 		}
 
 		float
@@ -84,7 +84,7 @@ namespace octoon
 		void
 		Timer::reset() noexcept
 		{
-			start_time_ = (float)std::clock() / (float)CLOCKS_PER_SEC;
+			startTime_ = (float)std::clock() / (float)CLOCKS_PER_SEC;
 		}
 
 		void
@@ -135,7 +135,7 @@ namespace octoon
 				}
 			}
 
-			last_time_ = (float)std::clock() / (float)CLOCKS_PER_SEC - start_time_;
+			last_time_ = (float)std::clock() / (float)CLOCKS_PER_SEC - startTime_;
 		}
 	}
 }

@@ -11,9 +11,7 @@ namespace octoon
 			assert(w > 0 && h > 0 && channel > 0 && channel <= 4);
 
 			for (std::size_t i = 0; i < w * h * channel; i++)
-			{
-				dst[i] = (std::uint8_t)math::clamp<std::uint16_t>((std::uint16_t)(src[i] * 255), 0, 255);
-			}
+				dst[i] = math::clamp<std::uint8_t>((std::uint8_t)(src[i] * 255), 0, 255);
 		}
 
 		void r32f_to_r8sint(const float* src, std::int8_t* dst, std::uint32_t w, std::uint32_t h, std::uint8_t channel) noexcept
@@ -22,9 +20,7 @@ namespace octoon
 			assert(w > 0 && h > 0 && channel > 0 && channel <= 4);
 
 			for (std::size_t i = 0; i < w * h * channel; i++)
-			{
-				dst[i] = (std::uint8_t)math::clamp<std::uint16_t>((std::uint16_t)(src[i] * 127), -127, 127);
-			}
+				dst[i] = math::clamp<std::int8_t>((std::int8_t)(src[i] * 127), -127, 127);
 		}
 
 		void r64f_to_r8uint(const double* src, std::uint8_t* dst, std::uint32_t w, std::uint32_t h, std::uint8_t channel) noexcept
@@ -33,9 +29,7 @@ namespace octoon
 			assert(w > 0 && h > 0 && channel > 0 && channel <= 4);
 
 			for (std::size_t i = 0; i < w * h * channel; i++)
-			{
-				dst[i] = (std::uint8_t)math::clamp<std::uint16_t>((std::uint16_t)(src[i] * 255), 0, 255);
-			}
+				dst[i] = math::clamp<std::uint8_t>((std::uint8_t)(src[i] * 255), 0, 255);
 		}
 
 		void r64f_to_r8sint(const double* src, std::int8_t* dst, std::uint32_t w, std::uint32_t h, std::uint8_t channel) noexcept
@@ -44,9 +38,7 @@ namespace octoon
 			assert(w > 0 && h > 0 && channel > 0 && channel <= 4);
 
 			for (std::size_t i = 0; i < w * h * channel; i++)
-			{
-				dst[i] = (std::uint8_t)math::clamp<std::uint16_t>((std::uint16_t)(src[i] * 127), -127, 127);
-			}
+				dst[i] = math::clamp<std::int8_t>((std::int8_t)(src[i] * 127), -127, 127);
 		}
 
 		void rgb32f_to_rgbt8(const float* src, std::uint8_t* dst, std::uint32_t w, std::uint32_t h, std::uint8_t channel) noexcept
@@ -176,13 +168,8 @@ namespace octoon
 			auto height = dstImage.height();
 			auto depth = dstImage.depth();
 
-			constexpr std::int8_t minLimit = std::numeric_limits<std::int8_t>::min();
-			constexpr std::int8_t maxLimit = std::numeric_limits<std::int8_t>::max();
-
 			for (std::size_t i = 0; i < width * height * depth; i++)
-			{
-				dst[i] = math::clamp<std::uint8_t>(math::detail::Vector4<std::uint8_t>(src[i] * 255.0f), minLimit, maxLimit);
-			}
+				dst[i] = math::clamp<std::uint8_t>(math::detail::Vector4<std::uint8_t>(src[i] * 255.0f), 0, 255);
 		}
 
 		void rgb32f_to_rgb8sint(const Image& srcImage, Image& dstImage) noexcept

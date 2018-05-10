@@ -11,7 +11,7 @@ namespace octoon
 	{
 	}
 
-	GuizmoComponent::GuizmoComponent(GameObjectPtr& camera) noexcept
+	GuizmoComponent::GuizmoComponent(const GameObjectPtr& camera) noexcept
 		: camera_(camera)
 		, op_(imgui::guizmo::Translate)
 	{
@@ -38,7 +38,7 @@ namespace octoon
 
 			auto& view = camera_->getComponent<CameraComponent>()->getView();
 			auto& project = camera_->getComponent<CameraComponent>()->getProjection();
-			auto model = transform->getLocalTransform();
+			auto model = transform->getTransform();
 
 			if (imgui::is_key_pressed(input::InputKey::Code::Key1))
 				op_ = imgui::guizmo::Translate;
@@ -51,13 +51,15 @@ namespace octoon
 			imgui::guizmo::SetRect(0, 0, imgui::get_display_size().x, imgui::get_display_size().y);
 			imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op_, imgui::guizmo::Mode::Local, model.ptr());
 
-			transform->setLocalTransform(model);
+			transform->setTransform(model);
 		}
 	}
 
 	GameComponentPtr
 	GuizmoComponent::clone() const noexcept
 	{
-		return std::make_shared<GuizmoComponent>();
+		auto instance = std::make_shared<GuizmoComponent>();
+		instance->setName(this->getName());
+		return instance;
 	}
 }

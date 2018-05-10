@@ -94,13 +94,5 @@ namespace octoon
 	VideoFeature::onFrameEnd() noexcept
 	{
 	}
-
-	void
-	VideoFeature::saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false)
-	{
-		auto graphics = this->getFeature<GraphicsFeature>();
-		if (graphics)
-			video::RenderSystem::instance()->saveAsPNG(*graphics->getContext(), filepath, x, y, width, height);
-	}
 }
 #endif

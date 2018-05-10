@@ -371,14 +371,12 @@ namespace octoon
 			if (::glewInit() != GLEW_OK)
 				return false;
 
-#if defined(GLEW_MX)
-#	if	defined(OCTOON_BUILD_PLATFORM_WINDOWS)
+#if	defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 			if (wglewInit() != GLEW_OK)
 				return false;
-#	elif defined(OCTOON_BUILD_PLATFORM_LINUX)
+#elif defined(OCTOON_BUILD_PLATFORM_LINUX)
 			if (glxewInit() != GLEW_OK)
 				return false;
-#	endif
 #endif
 
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_BUILD_OPENGL_ES)

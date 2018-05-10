@@ -1,5 +1,5 @@
-#ifndef OCTOON_VECTOR3_H_
-#define OCTOON_VECTOR3_H_
+#ifndef OCTOON_MATH_VECTOR3_H_
+#define OCTOON_MATH_VECTOR3_H_
 
 #include <octoon/math/trait.h>
 #include <octoon/math/mathfwd.h>
@@ -380,7 +380,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T sqr_distance(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
+		inline T sqrDistance(const detail::Vector3<T>& v1, const detail::Vector3<T>& v2) noexcept
 		{
 			return length2(v1 - v2);
 		}

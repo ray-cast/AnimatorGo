@@ -76,9 +76,9 @@ namespace octoon
 			DefaultInput& operator=(const DefaultInput&) noexcept = delete;
 
 		private:
-			IInputDevicePtr input_device_;
-			IInputMousePtr mouse_capture_device_;
-			IInputKeyboardPtr keyboard_capture_device_;
+			IInputDevicePtr inputDevice_;
+			IInputMousePtr mouseCaptureDevice_;
+			IInputKeyboardPtr keyboardCaptureDevice_;
 		};
 	}
 }

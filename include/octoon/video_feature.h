@@ -16,8 +16,6 @@ namespace octoon
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-		void saveAsPNG(const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
-
 	private:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;

@@ -23,19 +23,17 @@ namespace octoon
 {
 	namespace graphics
 	{
-#if _BUILD_OPENGL
-#	ifdef GLEW_MX
-		extern GLEWContext _glewctx;
+#ifdef GLEW_MX
+	extern GLEWContext _glewctx;
 #	define glewGetContext() (&_glewctx)
-#	endif
+#endif
 
-#  if defined(__MINGW32__) || defined(__CYGWIN__)
+#if defined(__MINGW32__) || defined(__CYGWIN__)
 #    define GLEXT_APIENTRY __stdcall
-#  elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+#elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
 #    define GLEXT_APIENTRY __stdcall
-#  else
+#else
 #    define GLEXT_APIENTRY
-#  endif
 #endif
 
 #if GL_DEBUG

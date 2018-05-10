@@ -10,6 +10,8 @@ namespace octoon
 		OctoonDeclareSubClass(GameObject, runtime::RttiInterface)
 	public:
 		GameObject() noexcept;
+		GameObject(std::string&& name) noexcept;
+		GameObject(const std::string& name) noexcept;
 		virtual ~GameObject() noexcept;
 
 		void setName(const std::string& name) noexcept;

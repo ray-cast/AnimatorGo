@@ -1,5 +1,5 @@
-#ifndef OCTOON_MONTECARLO_H_
-#define OCTOON_MONTECARLO_H_
+#ifndef OCTOON_MATH_MONTECARLO_H_
+#define OCTOON_MATH_MONTECARLO_H_
 
 #include <octoon/math/vector3.h>
 #include <octoon/math/hammersley.h>
@@ -9,7 +9,7 @@ namespace octoon
 	namespace math
 	{
 		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
-		detail::Vector3<T> HammersleySampleCos(const detail::Vector2<T>& Xi)
+		inline detail::Vector3<T> HammersleySampleCos(const detail::Vector2<T>& Xi)
 		{
 			T phi = 2 * PI * Xi.x;
 
@@ -25,7 +25,7 @@ namespace octoon
 		}
 
 		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
-		detail::Vector3<T> HammersleySampleGGX(const detail::Vector2<T>& Xi, T roughness)
+		inline detail::Vector3<T> HammersleySampleGGX(const detail::Vector2<T>& Xi, T roughness)
 		{
 			T m = roughness * roughness;
 			T m2 = m * m;
@@ -35,7 +35,7 @@ namespace octoon
 		}
 
 		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
-		detail::Vector3<T> TangentToWorld(const detail::Vector3<T>& N, const detail::Vector3<T>& H)
+		inline detail::Vector3<T> TangentToWorld(const detail::Vector3<T>& N, const detail::Vector3<T>& H)
 		{
 			detail::Vector3<T> Y = std::abs(N.z) < 0.999 ? detail::Vector3<T>::UnitZ : detail::Vector3<T>::UnitX;
 			detail::Vector3<T> X = normalize(cross(Y, N));

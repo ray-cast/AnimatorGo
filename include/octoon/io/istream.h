@@ -27,6 +27,10 @@ namespace octoon
 
 			streamsize gcount() const noexcept;
 
+			istream& operator >> (std::string& str) noexcept;
+			istream& operator >> (ios_base& (*function)(ios_base&)) noexcept;
+			istream& operator >> (istream& (*function)(istream&)) noexcept;
+
 		protected:
 			class isentry final
 			{

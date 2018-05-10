@@ -139,5 +139,37 @@ namespace octoon
 		{
 			return _count;
 		}
+
+		istream& 
+		istream::operator >> (std::string& str) noexcept
+		{
+			const isentry _Ok(this);
+			if (_Ok)
+			{
+				auto written = this->rdbuf()->size() - this->rdbuf()->tellg();
+				auto size = str.size();
+				str.resize(size + written);
+				return this->read((char*)&str[size], written);
+			}
+
+			this->setstate(ios_base::failbit);
+			return *this;
+		}
+		
+		istream& 
+		istream::operator >> (ios_base& (*function)(ios_base&)) noexcept
+		{
+			assert(function);
+			(*function)(*(ios_base *)this);
+			return (*this);
+		}
+		
+		istream& 
+		istream::operator >> (istream& (*function)(istream&)) noexcept
+		{
+			assert(function);
+			(*function)(*this);
+			return (*this);
+		}
 	}
 }

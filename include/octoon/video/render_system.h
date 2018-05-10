@@ -38,8 +38,6 @@ namespace octoon
 
 			void render(graphics::GraphicsContext& context) noexcept;
 
-			void saveAsPNG(graphics::GraphicsContext& context, const char* filepath, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept(false);
-
 		private:
 			void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
@@ -51,12 +49,8 @@ namespace octoon
 			std::uint32_t width_, height_;
 
 			graphics::GraphicsFramebufferPtr fbo_;
-			graphics::GraphicsFramebufferPtr fboMSAA_;
-
 			graphics::GraphicsTexturePtr colorTexture_;
 			graphics::GraphicsTexturePtr depthTexture_;
-			graphics::GraphicsTexturePtr colorTextureMSAA_;
-			graphics::GraphicsTexturePtr depthTextureMSAA_;
 
 			graphics::GraphicsDevicePtr device_;
 		};

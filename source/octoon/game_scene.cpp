@@ -70,14 +70,14 @@ namespace octoon
 	void
 	GameScene::setGameListener(const GameListenerPtr& listener) noexcept
 	{
-		if (game_listener_ != listener)
-			game_listener_ = listener;
+		if (listener_ != listener)
+			listener_ = listener;
 	}
 
 	GameListenerPtr
 	GameScene::getGameListener() const noexcept
 	{
-		return game_listener_;
+		return listener_;
 	}
 
 	void

@@ -1,4 +1,3 @@
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 #include "wgl_swapchain.h"
 #include "ogl_device.h"
 
@@ -428,5 +427,3 @@ namespace octoon
 		}
 	}
 }
-
-#endif

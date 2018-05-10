@@ -6,9 +6,10 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera.h>
+#include <octoon/first_person_camera_component.h>
 
 #include <octoon/ui/imgui.h>
+#include <octoon/res_manager.h>
 
 class CubeController : public octoon::GameComponent
 {
@@ -43,18 +44,18 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				octoon::math::float3 matrixTranslation = transform->getLocalTranslate();
-				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getLocalQuaternion()));
-				octoon::math::float3 matrixScale = transform->getLocalScale();
+				octoon::math::float3 matrixTranslation = transform->getTranslate();
+				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::eulerAngles(transform->getQuaternion()));
+				octoon::math::float3 matrixScale = transform->getScale();
 
 				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
 				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
 				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
 
-				transform->setLocalTranslate(matrixTranslation);
+				transform->setTranslate(matrixTranslation);
 
-				transform->setLocalQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
-				transform->setLocalScale(matrixScale);
+				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
+				transform->setScale(matrixScale);
 
 				octoon::imgui::tree_pop();
 			}
@@ -110,7 +111,7 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = std::make_shared<octoon::GameObject>();
+		auto camera = octoon::GameObject::create("camera");
 		camera->addComponent<octoon::CameraComponent>();
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
 		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
@@ -121,7 +122,7 @@ int main(int argc, const char* argv[])
 
 		auto material = std::make_shared<octoon::video::GGXMaterial>();
 
-		auto object = std::make_shared<octoon::GameObject>();
+		auto object = octoon::GameObject::create("actor");
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);

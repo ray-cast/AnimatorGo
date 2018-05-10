@@ -184,7 +184,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_move(float absx, float absy) noexcept
+		System::injectMouseMove(float absx, float absy) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MousePos.x = absx;
@@ -193,7 +193,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_press(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMousePress(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = true;
@@ -203,7 +203,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_release(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMouseRelease(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = false;
@@ -213,7 +213,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_wheel(float wheel) noexcept
+		System::injectMouseWheel(float wheel) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseWheel = wheel;
@@ -221,7 +221,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_press(input::InputKey::Code key, wchar_t char_) noexcept
+		System::injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key != input::InputKey::Code::None)
@@ -246,7 +246,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_release(input::InputKey::Code key) noexcept
+		System::injectKeyRelease(input::InputKey::Code key) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key == input::InputKey::Code::LeftControl)
@@ -263,7 +263,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_window_focus(bool focus) noexcept
+		System::injectWindowFocus(bool focus) noexcept
 		{
 			if (focus)
 			{
@@ -277,44 +277,41 @@ namespace octoon
 		}
 
 		void
-		System::set_viewport(std::uint32_t w, std::uint32_t h) noexcept
+		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize.x = w;
-			io.DisplaySize.y = h;
+			io.DisplaySize.x = (float)w;
+			io.DisplaySize.y = (float)h;
 		}
 
 		void
-		System::get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplaySize.x;
-			h = io.DisplaySize.y;
+			w = (std::uint32_t)io.DisplaySize.x;
+			h = (std::uint32_t)io.DisplaySize.y;
 		}
 
 		void
-		System::set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept
+		System::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplayFramebufferScale.x = w;
-			io.DisplayFramebufferScale.y = h;
+			io.DisplayFramebufferScale.x = (float)w;
+			io.DisplayFramebufferScale.y = (float)h;
 
-			math::float4x4 project;
-			project.make_ortho_lh(0, w, h, 0, 0, 1);
-
-			proj_->uniform4fmat(project);
+			proj_->uniform4fmat(math::makeOrthoLH<float>(0.0f, (float)w, (float)h, 0.0f, 0.0f, 1.0f));
 		}
 
 		void
-		System::get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplayFramebufferScale.x;
-			h = io.DisplayFramebufferScale.y;
+			w = (std::uint32_t)io.DisplayFramebufferScale.x;
+			h = (std::uint32_t)io.DisplayFramebufferScale.y;
 		}
 
 		bool
-		System::load_font(const char* path, float font_size) noexcept
+		System::loadFont(const char* path, float font_size) noexcept
 		{
 			static const ImWchar ranges[] =
 			{
@@ -426,7 +423,7 @@ namespace octoon
 			auto& io = ImGui::GetIO();
 
 			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context.setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context.setScissor(0, uint4(0, 0, (std::uint32_t)io.DisplayFramebufferScale.x, (std::uint32_t)io.DisplayFramebufferScale.y));
 
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
@@ -448,9 +445,9 @@ namespace octoon
 						else
 							decal_->uniformTexture(nullptr);
 
-						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
+						uint4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-						context.setScissor(0, uint4(scissor.x, scissor.y, scissor.z, scissor.w));
+						context.setScissor(0, scissor);
 
 						context.setRenderPipeline(pipeline_);
 						context.setDescriptorSet(descriptor_set_);

@@ -39,8 +39,8 @@ namespace octoon
 
 			int button_;
 
-			int mouse_x_;
-			int mouse_y_;
+			int mouseX_;
+			int mouseY_;
 		};
 	}
 }

@@ -32,6 +32,14 @@
 
 namespace octoon
 {
+#if defined(__WINDOWS__)
+#	define SEPARATOR '\\'
+#	define SEPARATOR_STRING "\\"
+#else
+#	define SEPARATOR '/'
+#	define SEPARATOR_STRING "/"
+#endif
+
 #if defined(__WINDOWS__) || defined(__MINGW64__)
 #   define  POSIX(func) _ ## func
 #else
@@ -250,6 +258,46 @@ namespace octoon
 				return ::OCTOON_POSIX_CLOSE(fd);
 			}
 
+			inline bool mkdir(const char* path)
+			{
+				char name[PATHLIMIT];
+				strcpy(name, path);
+				std::size_t len = strlen(path);
+
+				if (name[len - 1] != '/' && name[len - 1] != '\\')
+				{
+					strcat(name, "/");
+					len += 1;
+				}
+
+				for (std::size_t i = 1; i < len; i++)
+				{
+					if (name[i] != '/' && name[i] != '\\')
+						continue;
+
+					name[i] = 0;
+
+					if (access(name, 0) != 0)
+					{
+#if __WINDOWS__
+						if (!CreateDirectory(name, 0))
+							return false;
+#elif __LINUX__
+						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
+							return false;
+#endif
+					}
+
+#if __WINDOWS__
+					name[i] = '\\';
+#else
+					name[i] = '/';
+#endif
+				}
+
+				return true;
+			}
+
 #if __WINDOWS__
 			inline void splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
 			{
@@ -329,6 +377,8 @@ namespace octoon
 #undef OCTOON_POSIX_WOPEN
 #undef OCTOON_POSIX_WSTAT
 #undef OCTOON_POSIX_WACCESS
+#undef SEPARATOR
+#undef SEPARATOR_STRING
 }
 
 #endif

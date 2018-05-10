@@ -9,16 +9,15 @@ SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to
 SET(OCTOON_PATH_SAMPLE ${OCTOON_PATH}/sample CACHE STRING "Adds a path to octoon sample" FORCE)
 SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
 SET(OCTOON_PATH_SAMPLES ${OCTOON_PATH}/samples CACHE STRING "Adds a path to octoon samples" FORCE)
-SET(OCTOON_PATH_TESTS ${OCTOON_PATH}/tests CACHE STRING "Adds a path to octoon tests" FORCE)
 SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 
 # 编译选项
-OPTION(OCTOON_BUILD_TESTS "ON to disable test binary generation" OFF)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)
 OPTION(OCTOON_BUILD_DEBUG_MODE "ON for debug or OFF for release" ON)
 OPTION(OCTOON_BUILD_MUTILTHREAD_DLL "ON for /MD OFF for /MT" ON)
+OPTION(OCTOON_BUILD_SHARED_DLL "ON for dynamic OFF for static libraries" ON)
 
 # 设置默认编译平台
 IF(ANDROID_ABI OR CMAKE_SYSTEM_NAME MATCHES "VCMDDAndroid")
@@ -283,6 +282,7 @@ IF(CMAKE_GENERATOR MATCHES "Visual Studio")
 		# W3
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4251") # needs to have dll-interface to be used by clients of class
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4275") # 非 dll 接口 class“std::exception”用作 dll 接口 class“Exception”的基
+		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4611") # setjmp
 
 		# W4
 		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4100") # 未引用的形参
@@ -297,10 +297,5 @@ ADD_SUBDIRECTORY(source)
 # 工具
 ADD_SUBDIRECTORY(tools)
 
-# 工具
+# 示例
 ADD_SUBDIRECTORY(samples)
-
-# 单元测试
-IF(OCTOON_BUILD_TESTS)
-	ADD_SUBDIRECTORY(tests)
-ENDIF()

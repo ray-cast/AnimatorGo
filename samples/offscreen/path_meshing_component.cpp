@@ -329,7 +329,7 @@ PathMeshingComponent::updateMesh() noexcept
 	if (params_.contours.empty())
 		return;
 
-	math::float3 offset = math::lerp(params_.bound.aabb, params_.bound.center);
+	math::float3 offset = math::lerp(params_.bound.aabb.min, params_.bound.aabb.max, params_.bound.center);
 
 	params_.bound.aabb -= offset;
 	params_.bound.aabb.min.z -= params_.material.thickness;
@@ -396,6 +396,9 @@ PathMeshingComponent::updateMesh() noexcept
 void
 PathMeshingComponent::onFrameEnd() except
 {
+	if (!camera_)
+		return;
+
 	auto framebuffer = camera_->getComponent<octoon::CameraComponent>()->getSwapFramebuffer();
 	if (!framebuffer)
 		return;
@@ -434,21 +437,20 @@ PathMeshingComponent::onSaveImage(octoon::image::Image& image, float x, float y)
 
 	stream << make_guid();
 
-	json j;
-	j["x"] = x;
-	j["y"] = y;
-	j["w"] = image.width();
-	j["h"] = image.height();
-	j["path"] = stream.str() + ".png";
-
-	std::ostringstream sstream;
-	sstream << j;
+	image.save(stream.str() + ".png", "png");
 
 	std::ofstream file(stream.str() + ".json", std::ios_base::out | std::ios_base::binary);
 	if (file)
-		file.write(sstream.str().c_str(), sstream.str().size());
+	{
+		json j;
+		j["x"] = x;
+		j["y"] = y;
+		j["w"] = image.width();
+		j["h"] = image.height();
+		j["path"] = stream.str() + ".png";
 
-	image.save(stream.str() + ".png", "png");
+		file << j;
 
-	std::cout << sstream.str();
+		std::cout << j;
+	}
 }

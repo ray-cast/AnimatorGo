@@ -176,12 +176,6 @@ namespace octoon
 			template<typename T> const AABB<T> AABB<T>::One(Vector3<T>::One, Vector3<T>::One);
 		}
 
-		template<typename Tx, typename Ty>
-		inline auto lerp(const detail::AABB<Tx>& aabb, const Ty& t)
-		{
-			return lerp(aabb.min, aabb.max, t);
-		}
-
 		template<typename T>
 		inline bool intersects(const detail::AABB<T>& aabb_, const detail::AABB<T>& other) noexcept
 		{

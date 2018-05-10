@@ -127,13 +127,11 @@ namespace octoon
 		istream::tellg() noexcept
 		{
 			const isentry ok(this);
-			if (ok)
-			{
-				if (!this->fail())
-					return (this->rdbuf()->tellg());
-				else
-					return (ios_base::pos_type(ios_base::_BADOFF));
-			}
+
+			if (!this->fail())
+				return (this->rdbuf()->tellg());
+			else
+				return (ios_base::pos_type(ios_base::_BADOFF));
 		}
 
 		streamsize

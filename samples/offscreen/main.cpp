@@ -146,7 +146,7 @@ int main(int argc, const char* argv[])
 		app->start();
 
 		auto object = std::make_shared<octoon::GameObject>();
-		object->addComponent<PathMeshingComponent>(chars);
+		object->addComponent<PathMeshingComponent>(argv[2]);
 
 		app->update();
 		app->close();

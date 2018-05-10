@@ -32,8 +32,6 @@ namespace octoon
 	typedef std::weak_ptr<GameServer> GameServerWeakPtr;
 	typedef std::weak_ptr<GameApp> GameAppWeakPtr;
 
-	typedef GameFeature* GameFeatureRawPtr;
-
 	typedef std::vector<GameScenePtr> GameScenes;
 	typedef std::vector<GameObjectPtr> GameObjects;
 	typedef std::vector<GameComponentPtr> GameComponents;

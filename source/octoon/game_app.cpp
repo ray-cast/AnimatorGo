@@ -237,7 +237,7 @@ namespace octoon
 			throw runtime::runtime_error::create("please call open() before addFeature()");
 	}
 
-	GameFeatureRawPtr
+	GameFeature*
 	GameApp::getFeature(const runtime::Rtti* type) const except
 	{
 		if (server_)
@@ -246,7 +246,7 @@ namespace octoon
 			throw runtime::runtime_error::create("please call open() before getFeature()");
 	}
 
-	GameFeatureRawPtr
+	GameFeature*
 	GameApp::getFeature(const runtime::Rtti& type) const except
 	{
 		return this->getFeature(&type);

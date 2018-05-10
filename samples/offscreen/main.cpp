@@ -135,8 +135,8 @@ int main(int argc, const char* argv[])
 
 	try
 	{
-		/*if (argc <= 2)
-			throw std::runtime_error("too few arguments to function 'main'.\n");*/
+		if (argc <= 2)
+			throw std::runtime_error("too few arguments to function 'main'.\n");
 
 		int w = 1920, h = 1080;
 

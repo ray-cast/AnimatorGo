@@ -1,5 +1,5 @@
-#ifndef OCTOON_BOUNDING_BOX_H_
-#define OCTOON_BOUNDING_BOX_H_
+#ifndef OCTOON_MATH_BOUNDING_BOX_H_
+#define OCTOON_MATH_BOUNDING_BOX_H_
 
 #include <octoon/math/sphere.h>
 

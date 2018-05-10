@@ -1,5 +1,5 @@
-#ifndef OCTOON_HAMMERSLEY_H_
-#define OCTOON_HAMMERSLEY_H_
+#ifndef OCTOON_MATH_HAMMERSLEY_H_
+#define OCTOON_MATH_HAMMERSLEY_H_
 
 #include <octoon/math/vector2.h>
 

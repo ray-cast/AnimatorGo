@@ -1,5 +1,5 @@
-﻿#ifndef OCTOON_MATHUTIL_H_
-#define OCTOON_MATHUTIL_H_
+﻿#ifndef OCTOON_MATH_MATHUTIL_H_
+#define OCTOON_MATH_MATHUTIL_H_
 
 #include <cmath>
 #include <cfloat>

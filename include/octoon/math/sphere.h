@@ -1,5 +1,5 @@
-#ifndef OCTOON_SPHERE_H_
-#define OCTOON_SPHERE_H_
+#ifndef OCTOON_MATH_SPHERE_H_
+#define OCTOON_MATH_SPHERE_H_
 
 #include <octoon/math/AABB.h>
 

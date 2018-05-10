@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATRIX3X3_H_
-#define OCTOON_MATRIX3X3_H_
+#ifndef OCTOON_MATH_MATRIX3X3_H_
+#define OCTOON_MATH_MATRIX3X3_H_
 
 #include <octoon/math/vector3.h>
 #include <octoon/math/quat.h>

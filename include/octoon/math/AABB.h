@@ -1,5 +1,5 @@
-#ifndef OCTOON_AABB_H_
-#define OCTOON_AABB_H_
+#ifndef OCTOON_MATH_AABB_H_
+#define OCTOON_MATH_AABB_H_
 
 #include <limits>
 #include <octoon/math/mat4.h>
@@ -177,13 +177,13 @@ namespace octoon
 		}
 
 		template<typename Tx, typename Ty>
-		constexpr auto lerp(const detail::AABB<Tx>& aabb, const Ty& t)
+		inline auto lerp(const detail::AABB<Tx>& aabb, const Ty& t)
 		{
 			return lerp(aabb.min, aabb.max, t);
 		}
 
 		template<typename T>
-		constexpr bool intersects(const detail::AABB<T>& aabb_, const detail::AABB<T>& other) noexcept
+		inline bool intersects(const detail::AABB<T>& aabb_, const detail::AABB<T>& other) noexcept
 		{
 			if (aabb_.max.x < other.min.x || aabb_.min.x > other.max.x) { return false; }
 			if (aabb_.max.y < other.min.y || aabb_.min.y > other.max.y) { return false; }
@@ -193,13 +193,13 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
+		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
 		{
 			return (pt > aabb_.min && pt < aabb_.max) ? true : false;
 		}
 
 		template<typename T>
-		constexpr bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
+		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
 		{
 			std::uint8_t symbol[3];
 			symbol[0] = origin.x > 0 ? 1 : 0;
@@ -227,7 +227,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& n, const T& distance) noexcept
+		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& n, const T& distance) noexcept
 		{
 			T minD, maxD;
 
@@ -268,14 +268,14 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr T surfaceArea(const detail::AABB<T>& aabb_) noexcept
+		inline T surfaceArea(const detail::AABB<T>& aabb_) noexcept
 		{
 			detail::Vector3<T> ext = aabb_.max - aabb_.min;
 			return 2 * (ext.x * ext.y + ext.x * ext.z + ext.y * ext.z);
 		}
 
 		template<typename T>
-		constexpr detail::Vector3<T> closest(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
+		inline detail::Vector3<T> closest(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
 		{
 			T x = pt.x;
 			T y = pt.y;
@@ -292,7 +292,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			assert(!empty());
 
@@ -325,7 +325,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
+		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
 		{
 			assert(!aabb.empty());
 

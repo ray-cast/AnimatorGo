@@ -1,5 +1,5 @@
-#ifndef OCTOON_QUATERNION_H_
-#define OCTOON_QUATERNION_H_
+#ifndef OCTOON_MATH_QUATERNION_H_
+#define OCTOON_MATH_QUATERNION_H_
 
 #include <octoon/math/trait.h>
 #include <octoon/math/mathfwd.h>
@@ -195,22 +195,22 @@ namespace octoon
 
 				friend Quaternion<T>& operator+=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
 				{
-					a.w += b.w; a.x += b.x; a.y += b.y; a.z += b.z; return a; 
+					a.w += b.w; a.x += b.x; a.y += b.y; a.z += b.z; return a;
 				}
 
 				friend Quaternion<T>& operator-=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
 				{
-					a.w -= b.w; a.x -= b.x; a.y -= b.y; a.z -= b.z; return a; 
+					a.w -= b.w; a.x -= b.x; a.y -= b.y; a.z -= b.z; return a;
 				}
 
 				friend Quaternion<T>& operator*=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
 				{
-					a.w *= b.w; a.x *= b.x; a.y *= b.y; a.z *= b.z; return a; 
+					a.w *= b.w; a.x *= b.x; a.y *= b.y; a.z *= b.z; return a;
 				}
 
 				friend Quaternion<T>& operator/=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
 				{
-					a.w /= b.w; a.x /= b.x; a.y /= b.y; a.z /= b.z; return a; 
+					a.w /= b.w; a.x /= b.x; a.y /= b.y; a.z /= b.z; return a;
 				}
 
 				friend Quaternion<T> operator-(const Quaternion<T>& q) noexcept

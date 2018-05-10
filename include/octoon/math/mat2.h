@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATRIX2X2_H_
-#define OCTOON_MATRIX2X2_H_
+#ifndef OCTOON_MATH_MATRIX2X2_H_
+#define OCTOON_MATH_MATRIX2X2_H_
 
 #include <octoon/math/vector2.h>
 #include <octoon/math/quat.h>

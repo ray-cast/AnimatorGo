@@ -1,5 +1,5 @@
-#ifndef OCTOON_VECTOR2_H_
-#define OCTOON_VECTOR2_H_
+#ifndef OCTOON_MATH_VECTOR2_H_
+#define OCTOON_MATH_VECTOR2_H_
 
 #include <octoon/math/trait.h>
 #include <octoon/math/mathfwd.h>

@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATRIX4X4_H_
-#define OCTOON_MATRIX4X4_H_
+#ifndef OCTOON_MATH_MATRIX4X4_H_
+#define OCTOON_MATH_MATRIX4X4_H_
 
 #include <octoon/math/mat3.h>
 #include <octoon/math/quat.h>
@@ -794,7 +794,7 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
-		const void decomposeTransformWithoutScaler(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation) noexcept
+		inline void decomposeTransformWithoutScaler(const detail::Matrix4x4<T>& m, detail::Vector3<T>& translate, detail::Quaternion<T>& rotation) noexcept
 		{
 			assert(isOnlyRotate(m));
 
@@ -1084,10 +1084,10 @@ namespace octoon
 		inline detail::Matrix4x4<T> makeRotation(const detail::Vector3<T>& forward, const detail::Vector3<T>& up, const detail::Vector3<T>& right, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			detail::Matrix4x4<T> m;
-			m.right = Vector4<T>(right, 0.0);
-			m.up = Vector4<T>(up, 0.0);
-			m.forward = Vector4<T>(forward, 0.0);
-			m.position = Vector4<T>(translate, 1.0);
+			m.right = detail::Vector4<T>(right, 0.0);
+			m.up = detail::Vector4<T>(up, 0.0);
+			m.forward = detail::Vector4<T>(forward, 0.0);
+			m.position = detail::Vector4<T>(translate, 1.0);
 
 			return m;
 		}

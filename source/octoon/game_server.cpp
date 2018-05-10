@@ -222,11 +222,11 @@ namespace octoon
 	}
 
 	void
-	GameServer::addFeature(const GameFeaturePtr& feature) except
+	GameServer::addFeature(GameFeaturePtr&& feature) except
 	{
 		assert(feature);
 
-		auto it = octoon::runtime::find_if(features_, [feature](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
+		auto it = octoon::runtime::find_if(features_, [&](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
 		if (it != features_.end())
 		{
 			if (listener_)
@@ -253,19 +253,13 @@ namespace octoon
 			}
 		}
 
-		features_.push_back(feature);
+		features_.push_back(std::move(feature));
 
 		if (listener_)
-			listener_->onMessage(std::string("GameServer : Feature added : ") + feature->type_name());
+			listener_->onMessage(std::string("GameServer : Feature added : ") + features_.back()->type_name());
 	}
 
-	void
-	GameServer::addFeature(GameFeaturePtr&& component) except
-	{
-		return this->addFeature(component);
-	}
-
-	GameFeaturePtr
+	GameFeature*
 	GameServer::getFeature(const runtime::Rtti* rtti) const noexcept
 	{
 		assert(rtti);
@@ -273,13 +267,13 @@ namespace octoon
 		for (auto& it : features_)
 		{
 			if (it->isInstanceOf(rtti))
-				return it;
+				return it.get();
 		}
 
 		return nullptr;
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameServer::getFeature(const runtime::Rtti& rtti) const noexcept
 	{
 		return getFeature(&rtti);

@@ -43,7 +43,7 @@ namespace octoon
 		return server_->getGameListener();
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameFeature::getFeature(const runtime::Rtti* type) const noexcept
 	{
 		assert(server_);
@@ -51,7 +51,7 @@ namespace octoon
 		return server_->getFeature(type);
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameFeature::getFeature(const runtime::Rtti& type) const noexcept
 	{
 		assert(server_);

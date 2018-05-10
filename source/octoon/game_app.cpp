@@ -95,31 +95,31 @@ namespace octoon
 		server_->setGameListener(listener_);
 
 #if OCTOON_FEATURE_IO_ENABLE
-		this->addFeature(std::make_shared<IOFeature>());
+		this->addFeature(std::make_unique<IOFeature>());
 #endif
 
 #if OCTOON_FEATURE_TIMER_ENABLE
-		this->addFeature(std::make_shared<TimerFeature>());
+		this->addFeature(std::make_unique<TimerFeature>());
 #endif
 
 #if OCTOON_FEATURE_INPUT_ENABLE
-		this->addFeature(std::make_shared<InputFeature>(hwnd));
+		this->addFeature(std::make_unique<InputFeature>(hwnd));
 #endif
 
 #if OCTOON_FEATURE_BASE_ENABLE
-		this->addFeature(std::make_shared<GameBaseFeatures>());
+		this->addFeature(std::make_unique<GameBaseFeatures>());
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(std::make_shared<GraphicsFeature>(hwnd, w, h));
+		this->addFeature(std::make_unique<GraphicsFeature>(hwnd, w, h));
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(std::make_shared<VideoFeature>(w, h));
+		this->addFeature(std::make_unique<VideoFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE
-		this->addFeature(std::make_shared<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
+		this->addFeature(std::make_unique<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
 #endif
 	}
 
@@ -229,24 +229,15 @@ namespace octoon
 	}
 
 	void
-	GameApp::addFeature(const GameFeaturePtr& feature) except
-	{
-		if (server_)
-			server_->addFeature(feature);
-		else
-			throw runtime::runtime_error::create("please call open() before addFeature()");
-	}
-
-	void
 	GameApp::addFeature(GameFeaturePtr&& feature) except
 	{
 		if (server_)
-			server_->addFeature(feature);
+			server_->addFeature(std::move(feature));
 		else
 			throw runtime::runtime_error::create("please call open() before addFeature()");
 	}
 
-	GameFeaturePtr
+	GameFeatureRawPtr
 	GameApp::getFeature(const runtime::Rtti* type) const except
 	{
 		if (server_)
@@ -255,7 +246,7 @@ namespace octoon
 			throw runtime::runtime_error::create("please call open() before getFeature()");
 	}
 
-	GameFeaturePtr
+	GameFeatureRawPtr
 	GameApp::getFeature(const runtime::Rtti& type) const except
 	{
 		return this->getFeature(&type);

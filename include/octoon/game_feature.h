@@ -18,9 +18,9 @@ namespace octoon
 		const GameListenerPtr& getGameListener() const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
-		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
-		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
+		T* getFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 		const GameFeatures& getFeaturs() const noexcept;
 
 		GameServer* getGameServer() noexcept;

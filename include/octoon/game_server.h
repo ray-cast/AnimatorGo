@@ -32,14 +32,13 @@ namespace octoon
 		const GameScenes& getScenes() const noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		std::shared_ptr<T> addFeature(Args&&... args) except { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addFeature(t); return t; }
-		void addFeature(const GameFeaturePtr& component) except;
+		void addFeature(Args&&... args) except { this->addFeature(std::make_unique<T>(std::forward<Args>(args)...)); }
 		void addFeature(GameFeaturePtr&& component) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
-		GameFeaturePtr getFeature(const runtime::Rtti* rtti) const noexcept;
-		GameFeaturePtr getFeature(const runtime::Rtti& rtti) const noexcept;
+		T* getFeature() const noexcept { return dynamic_cast<T>(this->getFeature(T::RTTI)); }
+		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 
 		const GameFeatures& getFeatures() const noexcept;
 

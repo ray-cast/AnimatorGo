@@ -1,3 +1,4 @@
+#define OCTOON_BUILD_PLATFORM_WINDOWS
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include <octoon/octoon.h>
 
@@ -7,7 +8,9 @@
 #include <octoon/io/fcntl.h>
 
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
+#ifndef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
+#	include <GLFW/glfw3native.h>
+#endif
 
 #include <chrono>
 #include <iostream>
@@ -21,8 +24,6 @@
 #define glfwGetWinHandle(window) glfwGetEGLSurface(window)
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
 #define glfwGetWinHandle(window) glfwGetCocoaWindow(window)
-#else
-#define glfwGetWinHandle(window) glfwGetX11Window(window)
 #endif
 
 #undef None

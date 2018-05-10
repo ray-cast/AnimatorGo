@@ -393,7 +393,7 @@ namespace octoon
 			return std::ldexp(m, e);
 		}
 
-		constexpr float fast_rsqrt(float x) noexcept
+		inline float fast_rsqrt(float x) noexcept
 		{
 			float xhalf = 0.5f*x;
 			int i = *(int*)&x;
@@ -404,7 +404,7 @@ namespace octoon
 			return x;
 		}
 
-		constexpr double fast_rsqrt(double y) noexcept
+		inline double fast_rsqrt(double y) noexcept
 		{
 			const double threehalfs = 1.5F;
 			double x2 = y * 0.5F;
@@ -440,22 +440,22 @@ namespace octoon
 			return (std::uint16_t)(f * 65535);
 		}
 
-		constexpr float fpFromIEEE(std::uint32_t raw) noexcept
+		inline float fpFromIEEE(std::uint32_t raw) noexcept
 		{
 			return *reinterpret_cast<float*>(&raw);
 		}
 
-		constexpr std::uint32_t fpToIEEE(float fp) noexcept
+		inline std::uint32_t fpToIEEE(float fp) noexcept
 		{
 			return *reinterpret_cast<std::uint32_t*>(&fp);
 		}
 
-		constexpr double fpFromIEEE(std::uint64_t raw) noexcept
+		inline double fpFromIEEE(std::uint64_t raw) noexcept
 		{
 			return *reinterpret_cast<double*>(&raw);
 		}
 
-		constexpr std::uint64_t fpToIEEE(double fp) noexcept
+		inline std::uint64_t fpToIEEE(double fp) noexcept
 		{
 			return *reinterpret_cast<std::uint64_t*>(&fp);
 		}

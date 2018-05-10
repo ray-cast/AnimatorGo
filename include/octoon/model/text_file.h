@@ -1,6 +1,8 @@
 #ifndef OCTOON_MODEL_TEXT_FILE_H_
 #define OCTOON_MODEL_TEXT_FILE_H_
 
+#include <string>
+
 #include <octoon/model/modtypes.h>
 
 namespace octoon

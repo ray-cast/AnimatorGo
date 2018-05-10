@@ -35,7 +35,7 @@ namespace octoon
 			OCTOON_EXPORT RttiInterface* instance(const Rtti& rtti) noexcept;
 		}
 
-		template<typename _Tx, typename _Ty> _Tx* RttiSingleton<_Tx, _Ty>::instance_ = singleton::instance(_Tx::RTTI)->downcast<_Tx>();
+		template<typename _Tx, typename _Ty> _Tx* RttiSingleton<_Tx, _Ty>::instance_ = singleton::instance(_Tx::RTTI)->template downcast<_Tx>();
 	}
 }
 

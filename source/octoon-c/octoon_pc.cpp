@@ -8,9 +8,7 @@
 #include <octoon/io/fcntl.h>
 
 #include <GLFW/glfw3.h>
-#ifndef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
-#	include <GLFW/glfw3native.h>
-#endif
+#include <GLFW/glfw3native.h>
 
 #include <chrono>
 #include <iostream>

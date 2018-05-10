@@ -66,30 +66,17 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
-				void encapsulate(const Vector3<T> pt[], const std::uint8_t* indices, std::size_t indicesCount) noexcept
+				void encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
 					assert(pt);
-					assert(indices && indicesCount > 0);
 
-					aabb_.encapsulate(pt, indices, indicesCount);
+					aabb_.encapsulate(points);
 					sphere_.set(aabb_);
 				}
 
-				void encapsulate(const Vector3<T> pt[], const std::uint16_t* indices, std::size_t indicesCount) noexcept
+				void encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					aabb_.encapsulate(pt, indices, indicesCount);
-					sphere_.set(aabb_);
-				}
-
-				void encapsulate(const Vector3<T> pt[], const std::uint32_t* indices, std::size_t indicesCount) noexcept
-				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					aabb_.encapsulate(pt, indices, indicesCount);
+					aabb_.encapsulate(points);
 					sphere_.set(aabb_);
 				}
 

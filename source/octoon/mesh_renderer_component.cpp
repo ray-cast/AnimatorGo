@@ -135,7 +135,7 @@ namespace octoon
 			}
 
 			geometry_->setVertexBuffer(vertices_);
-			geometry_->setNumVertices(vertices.size());
+			geometry_->setNumVertices((std::uint32_t)vertices.size());
 
 			auto& indices = mesh->getIndicesArray();
 			if (!indices.empty())
@@ -147,7 +147,7 @@ namespace octoon
 				indiceDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
 
 				geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
-				geometry_->setNumIndices(indices.size());
+				geometry_->setNumIndices((std::uint32_t)indices.size());
 			}
 		}
 	}

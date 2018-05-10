@@ -21,6 +21,8 @@
 #define glfwGetWinHandle(window) glfwGetEGLSurface(window)
 #elif defined(GLFW_EXPOSE_NATIVE_NSGL)
 #define glfwGetWinHandle(window) glfwGetCocoaWindow(window)
+#else
+#define glfwGetWinHandle(window) glfwGetX11Window(window)
 #endif
 
 #undef None

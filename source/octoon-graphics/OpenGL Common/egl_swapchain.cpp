@@ -1,14 +1,14 @@
-#include "egl2_swapchain.h"
+#include "egl_swapchain.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
-		OctoonImplementSubClass(EGL2Swapchain, GraphicsSwapchain, "EGL2Swapchain")
+		OctoonImplementSubClass(EGLSwapchain, GraphicsSwapchain, "EGLSwapchain")
 
-		EGL2Swapchain* EGL2Swapchain::_swapchain = nullptr;
+		EGLSwapchain* EGLSwapchain::_swapchain = nullptr;
 
-		EGL2Swapchain::EGL2Swapchain() noexcept
+		EGLSwapchain::EGLSwapchain() noexcept
 			: _display(EGL_NO_DISPLAY)
 			, _surface(EGL_NO_SURFACE)
 			, _context(EGL_NO_CONTEXT)
@@ -17,13 +17,13 @@ namespace octoon
 		{
 		}
 
-		EGL2Swapchain::~EGL2Swapchain() noexcept
+		EGLSwapchain::~EGLSwapchain() noexcept
 		{
 			this->close();
 		}
 
 		bool
-		EGL2Swapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
+		EGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
 			if (!initPixelFormat(swapchainDesc))
 				return false;
@@ -39,7 +39,7 @@ namespace octoon
 		}
 
 		void
-		EGL2Swapchain::close() noexcept
+		EGLSwapchain::close() noexcept
 		{
 			if (_surface != EGL_NO_SURFACE)
 			{
@@ -61,17 +61,14 @@ namespace octoon
 		}
 
 		void
-		EGL2Swapchain::setActive(bool active) noexcept
+		EGLSwapchain::setActive(bool active) noexcept
 		{
 			if (_isActive != active)
 			{
 				if (active)
 				{
 					if (eglMakeCurrent(_display, _surface, _surface, _context) == EGL_FALSE)
-					{
-						GL_PLATFORM_LOG("eglMakeCurrent() fail.");
 						return;
-					}
 
 					if (_swapchain)
 						_swapchain->setActive(false);
@@ -81,10 +78,7 @@ namespace octoon
 				else
 				{
 					if (eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) == EGL_FALSE)
-					{
-						GL_PLATFORM_LOG("eglMakeCurrent() fail.");
 						return;
-					}
 
 					if (_swapchain == this)
 						_swapchain = nullptr;
@@ -95,50 +89,45 @@ namespace octoon
 		}
 
 		bool
-		EGL2Swapchain::getActive() const noexcept
+		EGLSwapchain::getActive() const noexcept
 		{
 			return _isActive;
 		}
 
 		void
-		EGL2Swapchain::setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept
+		EGLSwapchain::setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			_swapchainDesc.setWidth(w);
 			_swapchainDesc.setHeight(h);
 		}
 
 		void
-		EGL2Swapchain::getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept
+		EGLSwapchain::getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept
 		{
 			w = _swapchainDesc.getWidth();
 			h = _swapchainDesc.getHeight();
 		}
 
 		void
-		EGL2Swapchain::setSwapInterval(GraphicsSwapInterval interval) noexcept
+		EGLSwapchain::setSwapInterval(GraphicsSwapInterval interval) noexcept
 		{
 			assert(_display != EGL_NO_DISPLAY);
 
 			switch (interval)
 			{
 			case GraphicsSwapInterval::Free:
-				if (eglSwapInterval(_display, 0) == EGL_FALSE)
-					GL_PLATFORM_LOG("eglSwapInterval(SwapInterval::Free) fail.");
+				eglSwapInterval(_display, 0);
 				break;
 			case GraphicsSwapInterval::Vsync:
-				if (eglSwapInterval(_display, 1) == EGL_FALSE)
-					GL_PLATFORM_LOG("eglSwapInterval(SwapInterval::Vsync) fail.");
+				eglSwapInterval(_display, 1);
 				break;
 			case GraphicsSwapInterval::Fps30:
-				if (eglSwapInterval(_display, 2) == EGL_FALSE)
-					GL_PLATFORM_LOG("eglSwapInterval(SwapInterval::Fps30) fail.");
+				eglSwapInterval(_display, 2);
 				break;
 			case GraphicsSwapInterval::Fps15:
-				if (eglSwapInterval(_display, 3) == EGL_FALSE)
-					GL_PLATFORM_LOG("eglSwapInterval(SwapInterval::Fps15) fail.");
+				eglSwapInterval(_display, 3);
 				break;
 			default:
-				GL_PLATFORM_LOG("Invlid SwapInterval");
 				return;
 			}
 
@@ -146,38 +135,34 @@ namespace octoon
 		}
 
 		GraphicsSwapInterval
-		EGL2Swapchain::getSwapInterval() const noexcept
+		EGLSwapchain::getSwapInterval() const noexcept
 		{
 			return _swapchainDesc.getSwapInterval();
 		}
 
 		void
-		EGL2Swapchain::present() noexcept
+		EGLSwapchain::present() noexcept
 		{
 			assert(_isActive);
 			assert(_display != EGL_NO_DISPLAY);
 			assert(_surface != EGL_NO_SURFACE);
 
-			if (::eglSwapBuffers(_display, _surface) == EGL_FALSE)
-				GL_PLATFORM_LOG("eglSwapBuffers() fail.");
+			::eglSwapBuffers(_display, _surface);
 		}
 
 		bool
-		EGL2Swapchain::initSurface(const GraphicsSwapchainDesc& swapchainDesc)
+		EGLSwapchain::initSurface(const GraphicsSwapchainDesc& swapchainDesc)
 		{
 			EGLNativeWindowType hwnd = (EGLNativeWindowType)swapchainDesc.getWindHandle();
 			_surface = ::eglCreateWindowSurface(_display, _config, hwnd, NULL);
 			if (eglGetError() != EGL_SUCCESS)
-			{
-				GL_PLATFORM_LOG("eglCreateContext() fail.");
 				return false;
-			}
 
 			return true;
 		}
 
 		bool
-		EGL2Swapchain::initPixelFormat(const GraphicsSwapchainDesc& swapchainDesc) noexcept
+		EGLSwapchain::initPixelFormat(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
 			EGLint pixelFormat[80];
 			EGLint index = 0;
@@ -190,7 +175,7 @@ namespace octoon
 
 			if (swapchainDesc.getImageNums() != 2)
 			{
-				GL_PLATFORM_LOG("Invalid image number");
+				// GL_PLATFORM_LOG("Invalid image number");
 				return false;
 			}
 
@@ -214,7 +199,7 @@ namespace octoon
 			}
 			else
 			{
-				GL_PLATFORM_LOG("Can't support color format");
+				// GL_PLATFORM_LOG("Can't support color format");
 				return false;
 			}
 
@@ -269,7 +254,7 @@ namespace octoon
 			}
 			else
 			{
-				GL_PLATFORM_LOG("Can't support depth stencil format");
+				// GL_PLATFORM_LOG("Can't support depth stencil format");
 				return false;
 			}
 
@@ -278,26 +263,26 @@ namespace octoon
 			_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 			if (_display == EGL_NO_DISPLAY)
 			{
-				GL_PLATFORM_LOG("eglGetDisplay() fail.");
+				// GL_PLATFORM_LOG("eglGetDisplay() fail.");
 				return false;
 			}
 
 			if (::eglInitialize(_display, nullptr, nullptr) == EGL_FALSE)
 			{
-				GL_PLATFORM_LOG("eglInitialize() fail.");
+				// GL_PLATFORM_LOG("eglInitialize() fail.");
 				return false;
 			}
 
 			if (::eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE)
 			{
-				GL_PLATFORM_LOG("eglBindAPI() fail.");
+				// GL_PLATFORM_LOG("eglBindAPI() fail.");
 				return false;
 			}
 
 			EGLint num = 0;
 			if (::eglChooseConfig(_display, pixelFormat, &_config, 1, &num) == EGL_FALSE)
 			{
-				GL_PLATFORM_LOG("eglChooseConfig() fail.");
+				// GL_PLATFORM_LOG("eglChooseConfig() fail.");
 				return false;
 			}
 
@@ -305,7 +290,7 @@ namespace octoon
 		}
 
 		bool
-		EGL2Swapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
+		EGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
 			EGLint attribs[80];
 			EGLint index = 0;
@@ -327,7 +312,7 @@ namespace octoon
 			_context = ::eglCreateContext(_display, _config, EGL_NO_CONTEXT, attribs);
 			if (eglGetError() != EGL_SUCCESS)
 			{
-				GL_PLATFORM_LOG("eglCreateContext() fail.");
+				// GL_PLATFORM_LOG("eglCreateContext() fail.");
 				return false;
 			}
 
@@ -336,19 +321,19 @@ namespace octoon
 		}
 
 		const GraphicsSwapchainDesc&
-		EGL2Swapchain::getGraphicsSwapchainDesc() const noexcept
+		EGLSwapchain::getGraphicsSwapchainDesc() const noexcept
 		{
 			return _swapchainDesc;
 		}
 
 		void
-		EGL2Swapchain::setDevice(GraphicsDevicePtr device) noexcept
+		EGLSwapchain::setDevice(GraphicsDevicePtr device) noexcept
 		{
 			_device = device;
 		}
 
 		GraphicsDevicePtr
-		EGL2Swapchain::getDevice() noexcept
+		EGLSwapchain::getDevice() noexcept
 		{
 			return _device.lock();
 		}

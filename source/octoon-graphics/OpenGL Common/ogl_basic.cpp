@@ -16,12 +16,14 @@ namespace octoon
 
 		bool initGLExtenstion() noexcept
 		{
-			static thread_local bool initGLExtention = false;
+			static bool initGLExtention = false;
 			if (initGLExtention)
 				return true;
 
+#if	defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 			if (::glewInit() != GLEW_OK)
 				return false;
+#endif
 
 #if	defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 			if (wglewInit() != GLEW_OK)

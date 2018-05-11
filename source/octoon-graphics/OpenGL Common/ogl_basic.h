@@ -28,7 +28,7 @@
 #	include <GL/glew.h>
 #	include <OpenGL/OpenGL.h>
 #	include <OpenGL/CGLTypes.h>
-#else
+#elif defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID) || defined(OCTOON_BUILD_PLATFORM_JAVA)
 #	include <EGL\egl.h>
 #	include <GLES3\gl32.h>
 #endif

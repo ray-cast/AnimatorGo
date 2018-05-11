@@ -1,18 +1,18 @@
 #ifndef OCTOON_EGL_SWAPCHAIN_H_
 #define OCTOON_EGL_SWAPCHAIN_H_
 
-#include "egl2_types.h"
+#include "ogl_basic.h"
 
 namespace octoon
 {
 	namespace graphics
 	{
-		class EGL2Swapchain final : public GraphicsSwapchain
+		class EGLSwapchain final : public GraphicsSwapchain
 		{
-			OctoonDeclareSubClass(EGL2Swapchain, GraphicsSwapchain)
+			OctoonDeclareSubClass(EGLSwapchain, GraphicsSwapchain)
 		public:
-			EGL2Swapchain() noexcept;
-			~EGL2Swapchain() noexcept;
+			EGLSwapchain() noexcept;
+			~EGLSwapchain() noexcept;
 
 			bool setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept;
 			void close() noexcept;
@@ -41,8 +41,8 @@ namespace octoon
 			bool initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept;
 
 		private:
-			EGL2Swapchain(const EGL2Swapchain&) noexcept = delete;
-			EGL2Swapchain& operator=(const EGL2Swapchain&) noexcept = delete;
+			EGLSwapchain(const EGLSwapchain&) noexcept = delete;
+			EGLSwapchain& operator=(const EGLSwapchain&) noexcept = delete;
 
 		private:
 			bool _isActive;
@@ -55,7 +55,7 @@ namespace octoon
 			GraphicsSwapchainDesc _swapchainDesc;
 			GraphicsDeviceWeakPtr _device;
 
-			static EGL2Swapchain* _swapchain;
+			static EGLSwapchain* _swapchain;
 		};
 	}
 }

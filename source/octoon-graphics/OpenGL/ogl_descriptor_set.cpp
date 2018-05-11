@@ -22,7 +22,7 @@ namespace octoon
 		}
 
 		const std::string&
-		OGLGraphicsUniformSet::get_name() const noexcept
+		OGLGraphicsUniformSet::getName() const noexcept
 		{
 			assert(_param);
 			return _param->getName();

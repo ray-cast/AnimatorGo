@@ -593,7 +593,7 @@ namespace octoon
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
+			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
 			if (layoutDesc.getComponents().size() > i)
 			{
 				auto& attachment = layoutDesc.getComponents().at(i);

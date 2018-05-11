@@ -17,7 +17,7 @@ namespace octoon
 			bool setup(const GraphicsFramebufferLayoutDesc& framebufferDesc) noexcept;
 			void close() noexcept;
 
-			const GraphicsFramebufferLayoutDesc& getGraphicsFramebufferLayoutDesc() const noexcept;
+			const GraphicsFramebufferLayoutDesc& getFramebufferLayoutDesc() const noexcept;
 
 		private:
 			friend class OGLDevice;

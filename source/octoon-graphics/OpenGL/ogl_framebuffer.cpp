@@ -31,7 +31,7 @@ namespace octoon
 		}
 
 		const GraphicsFramebufferLayoutDesc&
-		OGLFramebufferLayout::getGraphicsFramebufferLayoutDesc() const noexcept
+		OGLFramebufferLayout::getFramebufferLayoutDesc() const noexcept
 		{
 			return _framebufferLayoutDesc;
 		}
@@ -78,7 +78,7 @@ namespace octoon
 			GLenum drawCount = 0;
 			GLenum drawBuffers[GL_COLOR_ATTACHMENT15 - GL_COLOR_ATTACHMENT0];
 
-			const auto& textureComponents = framebufferDesc.getFramebufferLayout()->getGraphicsFramebufferLayoutDesc().getComponents();
+			const auto& textureComponents = framebufferDesc.getFramebufferLayout()->getFramebufferLayoutDesc().getComponents();
 			const auto& colorAttachments = framebufferDesc.getColorAttachments();
 			if (colorAttachments.size() > (sizeof(drawBuffers) / sizeof(drawBuffers[0])))
 			{

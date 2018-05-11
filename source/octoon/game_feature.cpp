@@ -1,6 +1,5 @@
 #include <octoon/game_feature.h>
 #include <octoon/game_server.h>
-#include <octoon/game_scene.h>
 
 namespace octoon
 {

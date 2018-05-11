@@ -68,7 +68,7 @@ namespace octoon
 	GraphicsFeature::onActivate() except
 	{
 		graphics::GraphicsDeviceDesc deviceDesc;
-		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL);
+		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL33);
 		device_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
 		if (!device_)
 			throw runtime::runtime_error::create("createDevice() failed");

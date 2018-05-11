@@ -199,16 +199,15 @@ namespace octoon
 
 		enum class GraphicsDeviceType : std::uint8_t
 		{
-			D3D9 = 1,
-			D3D11 = 1,
-			D3D12 = 2,
-			OpenGL = 3,
-			OpenGLCore = 4,
-			OpenGLES2 = 5,
-			OpenGLES3 = 6,
-			OpenGLES31 = 7,
-			OpenGLES32 = 8,
-			Vulkan = 9,
+			OpenGL20 = 0,
+			OpenGL30 = 1,
+			OpenGL32 = 2,
+			OpenGL33 = 3,
+			OpenGL45 = 4,
+			Vulkan = 5,
+			D3D9 = 6,
+			D3D11 = 7,
+			D3D12 = 8,
 		};
 
 		enum class GraphicsSwapInterval : std::uint8_t

@@ -281,19 +281,19 @@ IF(OCTOON_BUILD_DOCUMENT)
 	OPTION(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})  
   
     IF(NOT DOXYGEN_FOUND)
-        MESSAGE(FATAL_ERROR "Doxygen is needed to build the documentation.")  
+		MESSAGE(WARNING "Doxygen is needed to build the documentation.")  
+	ELSE()
+		SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/OctoonAPI/docs.doxyfile)
+		SET(doxyfile ${OCTOON_PATH_DOCUMENT}/OctoonAPI/Doxyfile)
+	
+		CONFIGURE_FILE(${doxyfile_in} ${doxyfile} @ONLY)
+	
+		ADD_CUSTOM_TARGET(document
+			COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+			WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}/OctoonAPI
+			COMMENT "Generating API documentation with Doxygen"
+			VERBATIM)
+	
+		INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION document/OctoonAPI/html)
     ENDIF()
-  
-    SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/OctoonAPI/docs.doxyfile)
-    SET(doxyfile ${OCTOON_PATH_DOCUMENT}/OctoonAPI/Doxyfile)
-  
-    CONFIGURE_FILE(${doxyfile_in} ${doxyfile} @ONLY)
-  
-    ADD_CUSTOM_TARGET(document
-        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-        WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}/OctoonAPI
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM)
-  
-    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION document/OctoonAPI/html)
 ENDIF()

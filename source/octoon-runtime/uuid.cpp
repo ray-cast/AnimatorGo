@@ -1,7 +1,7 @@
 #include <octoon/runtime/uuid.h>
 #include <chrono>
 
-#ifndef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 #	if defined(__GNUC__) || defined(__clang__)
 #		include <cpuid.h>
 #	elif defined _MSC_VER
@@ -10,7 +10,6 @@
 #		error unknown complier
 #	endif
 #endif
-
 
 static std::uint16_t sequence = 0;
 static auto start_time = std::chrono::high_resolution_clock::now();
@@ -21,7 +20,7 @@ namespace octoon
 	{
 		void cpuid(std::uint32_t func, std::uint32_t sub, std::uint32_t data[4])
 		{
-#ifndef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 #	if defined(__GNUC__) || defined(__clang__)
 			__cpuid_count(func, sub, data[0], data[1], data[2], data[3]);
 #	elif defined _MSC_VER

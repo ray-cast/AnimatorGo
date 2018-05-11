@@ -1,4 +1,3 @@
-#ifndef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include <octoon/octoon.h>
 
@@ -416,5 +415,4 @@ void OCTOON_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
 }
-#endif
 #endif

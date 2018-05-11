@@ -1,4 +1,3 @@
-#ifdef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
 #include <octoon/octoon.h>
 
 #include  <X11/Xlib.h>
@@ -140,5 +139,3 @@ void OCTOON_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
 }
-
-#endif

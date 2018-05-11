@@ -207,8 +207,8 @@ namespace octoon
 					auto& swapFramebuffer = camera->getSwapFramebuffer();
 					if (swapFramebuffer)
 					{
-						math::float4 v1(0, 0, framebuffer->getGraphicsFramebufferDesc().getWidth(), framebuffer->getGraphicsFramebufferDesc().getHeight());
-						math::float4 v2(0, 0, swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
+						math::float4 v1(0, 0, (float)framebuffer->getGraphicsFramebufferDesc().getWidth(), (float)framebuffer->getGraphicsFramebufferDesc().getHeight());
+						math::float4 v2(0, 0, (float)swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), (float)swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
 						context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 					}
 				}

@@ -314,7 +314,7 @@ namespace octoon
 		}
 
 		const GraphicsDeviceDesc&
-		OGLDevice::getGraphicsDeviceDesc() const noexcept
+		OGLDevice::getDeviceDesc() const noexcept
 		{
 			return _deviceDesc;
 		}

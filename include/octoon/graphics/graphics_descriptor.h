@@ -83,7 +83,7 @@ namespace octoon
 			GraphicsUniformSet() noexcept = default;
 			virtual ~GraphicsUniformSet() = default;
 
-			virtual const std::string& get_name() const noexcept = 0;
+			virtual const std::string& getName() const noexcept = 0;
 
 			virtual void uniform1b(bool value) noexcept = 0;
 			virtual void uniform1i(std::int32_t i1) noexcept = 0;

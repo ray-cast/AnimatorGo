@@ -373,7 +373,7 @@ namespace octoon
 				int major = 0;
 				int minor = 0;
 
-				auto deviceType = this->getDevice()->getGraphicsDeviceDesc().getDeviceType();
+				auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
 				if (deviceType == GraphicsDeviceType::OpenGLCore)
 				{
 					major = 4;

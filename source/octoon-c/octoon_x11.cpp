@@ -1,7 +1,11 @@
 #ifdef OCTOON_TARGET_PLATFORM_EMSCRIPTEN
 #include <octoon/octoon.h>
 
-#include <X11/Xlib.h>
+#include  <X11/Xlib.h>
+#include  <X11/Xatom.h>
+#include  <X11/Xutil.h>
+
+#undef None
 
 #include <octoon/game_app.h>
 #include <octoon/input/input_event.h>
@@ -12,7 +16,11 @@
 #include <iostream>
 #include <cstring>
 
+
 std::string gameScenePath_;
+// X11 related local variables
+static Display *x_display = NULL;
+octoon::GameApp* gameApp_;
 
 bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
@@ -44,10 +52,10 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
                CopyFromParent, CWEventMask,
                &swa );
 
-    xattr.override_redirect = FALSE;
+    xattr.override_redirect = false;
     XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
 
-    hints.input = TRUE;
+    hints.input = true;
     hints.flags = InputHint;
     XSetWMHints(x_display, win, &hints);
 
@@ -56,7 +64,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
     XStoreName (x_display, win, title);
 
     // get identifiers for the provided atom name strings
-    wm_state = XInternAtom (x_display, "_NET_WM_STATE", FALSE);
+    wm_state = XInternAtom (x_display, "_NET_WM_STATE", false);
 
     memset ( &xev, 0, sizeof(xev) );
     xev.type                 = ClientMessage;
@@ -64,11 +72,11 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
     xev.xclient.message_type = wm_state;
     xev.xclient.format       = 32;
     xev.xclient.data.l[0]    = 1;
-    xev.xclient.data.l[1]    = FALSE;
+    xev.xclient.data.l[1]    = false;
     XSendEvent (
        x_display,
        DefaultRootWindow ( x_display ),
-       FALSE,
+       false,
        SubstructureNotifyMask,
        &xev );
 
@@ -104,12 +112,6 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 	{
 		gameApp_->close();
 		gameApp_ = nullptr;
-	}
-
-	if (window_)
-	{
-		//::glfwDestroyWindow(window_);
-		window_ = nullptr;
 	}
 
 	//::glfwTerminate();

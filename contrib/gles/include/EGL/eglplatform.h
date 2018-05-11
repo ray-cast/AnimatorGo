@@ -2,7 +2,7 @@
 #define __eglplatform_h_
 
 /*
-** Copyright (c) 2007-2013 The Khronos Group Inc.
+** Copyright (c) 2007-2009 The Khronos Group Inc.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -24,8 +24,11 @@
 ** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 */
 
+// Define MESA_EGL_NO_X11_HEADERS for Emscripten
+#define MESA_EGL_NO_X11_HEADERS
+
 /* Platform-specific types and definitions for egl.h
- * $Revision: 23432 $ on $Date: 2013-10-09 00:57:24 -0700 (Wed, 09 Oct 2013) $
+ * $Revision: 9724 $ on $Date: 2009-12-02 02:05:33 -0800 (Wed, 02 Dec 2009) $
  *
  * Adopters may modify khrplatform.h and this file to suit their platform.
  * You are encouraged to submit all modifications to the Khronos group so that
@@ -60,11 +63,6 @@
  * Windows Device Context. They must be defined in platform-specific
  * code below. The EGL-prefixed versions of Native*Type are the same
  * types, renamed in EGL 1.3 so all types in the API start with "EGL".
- *
- * Khronos STRONGLY RECOMMENDS that you use the default definitions
- * provided below, since these changes affect both binary and source
- * portability of applications using EGL running on different EGL
- * implementations.
  */
 
 #if defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
@@ -77,23 +75,39 @@ typedef HDC     EGLNativeDisplayType;
 typedef HBITMAP EGLNativePixmapType;
 typedef HWND    EGLNativeWindowType;
 
+#elif defined(__EMSCRIPTEN__)
+
+typedef int EGLNativeDisplayType;
+typedef int EGLNativeWindowType;
+typedef int EGLNativePixmapType;
+
 #elif defined(__WINSCW__) || defined(__SYMBIAN32__)  /* Symbian */
 
 typedef int   EGLNativeDisplayType;
 typedef void *EGLNativeWindowType;
 typedef void *EGLNativePixmapType;
 
-#elif defined(__ANDROID__) || defined(ANDROID)
+#elif defined(WL_EGL_PLATFORM)
 
-#include <android/native_window.h>
+typedef struct wl_display     *EGLNativeDisplayType;
+typedef struct wl_egl_pixmap  *EGLNativePixmapType;
+typedef struct wl_egl_window  *EGLNativeWindowType;
 
-struct egl_native_pixmap_t;
+#elif defined(__GBM__)
 
-typedef struct ANativeWindow*           EGLNativeWindowType;
-typedef struct egl_native_pixmap_t*     EGLNativePixmapType;
-typedef void*                           EGLNativeDisplayType;
+typedef struct gbm_device  *EGLNativeDisplayType;
+typedef struct gbm_bo      *EGLNativePixmapType;
+typedef void               *EGLNativeWindowType;
 
-#elif defined(__unix__) || defined(__APPLE__)
+#elif defined(__unix__) || defined(__unix)
+
+#ifdef MESA_EGL_NO_X11_HEADERS
+
+typedef void            *EGLNativeDisplayType;
+typedef khronos_uint32_t EGLNativePixmapType;
+typedef khronos_uint32_t EGLNativeWindowType;
+
+#else
 
 /* X11 (tentative)  */
 #include <X11/Xlib.h>
@@ -102,6 +116,8 @@ typedef void*                           EGLNativeDisplayType;
 typedef Display *EGLNativeDisplayType;
 typedef Pixmap   EGLNativePixmapType;
 typedef Window   EGLNativeWindowType;
+
+#endif /* MESA_EGL_NO_X11_HEADERS */
 
 #else
 #error "Platform not recognized"

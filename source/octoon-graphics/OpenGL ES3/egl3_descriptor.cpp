@@ -772,46 +772,46 @@ namespace octoon
 					GL_CHECK(glProgramUniformMatrix4fv(program, location, 1, GL_FALSE, it->getFloat4x4().ptr()));
 					break;
 				case GraphicsUniformType::IntArray:
-					GL_CHECK(glProgramUniform1iv(program, location, it->getIntArray().size(), it->getIntArray().data()));
+					GL_CHECK(glProgramUniform1iv(program, location, (GLsizei)it->getIntArray().size(), it->getIntArray().data()));
 					break;
 				case GraphicsUniformType::Int2Array:
-					GL_CHECK(glProgramUniform2iv(program, location, it->getInt2Array().size(), (GLint*)it->getInt2Array().data()));
+					GL_CHECK(glProgramUniform2iv(program, location, (GLsizei)it->getInt2Array().size(), (GLint*)it->getInt2Array().data()));
 					break;
 				case GraphicsUniformType::Int3Array:
-					GL_CHECK(glProgramUniform3iv(program, location, it->getInt3Array().size(), (GLint*)it->getInt3Array().data()));
+					GL_CHECK(glProgramUniform3iv(program, location, (GLsizei)it->getInt3Array().size(), (GLint*)it->getInt3Array().data()));
 					break;
 				case GraphicsUniformType::Int4Array:
-					GL_CHECK(glProgramUniform4iv(program, location, it->getInt4Array().size(), (GLint*)it->getInt4Array().data()));
+					GL_CHECK(glProgramUniform4iv(program, location, (GLsizei)it->getInt4Array().size(), (GLint*)it->getInt4Array().data()));
 					break;
 				case GraphicsUniformType::UIntArray:
-					GL_CHECK(glProgramUniform1uiv(program, location, it->getUIntArray().size(), it->getUIntArray().data()));
+					GL_CHECK(glProgramUniform1uiv(program, location, (GLsizei)it->getUIntArray().size(), it->getUIntArray().data()));
 					break;
 				case GraphicsUniformType::UInt2Array:
-					GL_CHECK(glProgramUniform2uiv(program, location, it->getUInt2Array().size(), (GLuint*)it->getUInt2Array().data()));
+					GL_CHECK(glProgramUniform2uiv(program, location, (GLsizei)it->getUInt2Array().size(), (GLuint*)it->getUInt2Array().data()));
 					break;
 				case GraphicsUniformType::UInt3Array:
-					GL_CHECK(glProgramUniform3uiv(program, location, it->getUInt3Array().size(), (GLuint*)it->getUInt3Array().data()));
+					GL_CHECK(glProgramUniform3uiv(program, location, (GLsizei)it->getUInt3Array().size(), (GLuint*)it->getUInt3Array().data()));
 					break;
 				case GraphicsUniformType::UInt4Array:
-					GL_CHECK(glProgramUniform4uiv(program, location, it->getUInt4Array().size(), (GLuint*)it->getUInt4Array().data()));
+					GL_CHECK(glProgramUniform4uiv(program, location, (GLsizei)it->getUInt4Array().size(), (GLuint*)it->getUInt4Array().data()));
 					break;
 				case GraphicsUniformType::FloatArray:
-					GL_CHECK(glProgramUniform1fv(program, location, it->getFloatArray().size(), (GLfloat*)it->getFloatArray().data()));
+					GL_CHECK(glProgramUniform1fv(program, location, (GLsizei)it->getFloatArray().size(), (GLfloat*)it->getFloatArray().data()));
 					break;
 				case GraphicsUniformType::Float2Array:
-					GL_CHECK(glProgramUniform2fv(program, location, it->getFloat2Array().size(), (GLfloat*)it->getFloat2Array().data()));
+					GL_CHECK(glProgramUniform2fv(program, location, (GLsizei)it->getFloat2Array().size(), (GLfloat*)it->getFloat2Array().data()));
 					break;
 				case GraphicsUniformType::Float3Array:
-					GL_CHECK(glProgramUniform3fv(program, location, it->getFloat3Array().size(), (GLfloat*)it->getFloat3Array().data()));
+					GL_CHECK(glProgramUniform3fv(program, location, (GLsizei)it->getFloat3Array().size(), (GLfloat*)it->getFloat3Array().data()));
 					break;
 				case GraphicsUniformType::Float4Array:
-					GL_CHECK(glProgramUniform4fv(program, location, it->getFloat4Array().size(), (GLfloat*)it->getFloat4Array().data()));
+					GL_CHECK(glProgramUniform4fv(program, location, (GLsizei)it->getFloat4Array().size(), (GLfloat*)it->getFloat4Array().data()));
 					break;
 				case GraphicsUniformType::Float3x3Array:
-					GL_CHECK(glProgramUniformMatrix3fv(program, location, it->getFloat3x3Array().size(), GL_FALSE, (GLfloat*)it->getFloat3x3Array().data()));
+					GL_CHECK(glProgramUniformMatrix3fv(program, location, (GLsizei)it->getFloat3x3Array().size(), GL_FALSE, (GLfloat*)it->getFloat3x3Array().data()));
 					break;
 				case GraphicsUniformType::Float4x4Array:
-					GL_CHECK(glProgramUniformMatrix4fv(program, location, it->getFloat4x4Array().size(), GL_FALSE, (GLfloat*)it->getFloat4x4Array().data()));
+					GL_CHECK(glProgramUniformMatrix4fv(program, location, (GLsizei)it->getFloat4x4Array().size(), GL_FALSE, (GLfloat*)it->getFloat4x4Array().data()));
 					break;
 				case GraphicsUniformType::Sampler:
 				{

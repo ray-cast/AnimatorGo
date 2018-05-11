@@ -3,7 +3,7 @@
 
 #include "egl2_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -28,7 +28,6 @@ namespace octoon
 		private:
 			static bool applySamplerWrap(GLenum target, GraphicsSamplerWrap wrap) noexcept;
 			static bool applySamplerFilter(GLenum target, GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept;
-			static bool applySamplerAnis(GLenum target, GraphicsSamplerAnis anis) noexcept;
 
 		private:
 			friend class EGL2Device;

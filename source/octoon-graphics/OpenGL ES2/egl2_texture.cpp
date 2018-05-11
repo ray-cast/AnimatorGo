@@ -1,6 +1,6 @@
 #include "egl2_texture.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -49,9 +49,6 @@ namespace octoon
 				return false;
 
 			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-				return false;
-
-			if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
 				return false;
 
 			const char* stream = (const char*)textureDesc.getStream();
@@ -115,28 +112,19 @@ namespace octoon
 
 					for (GLsizei layer = layerBase; layer < layerBase + layerLevel; layer++)
 					{
-						if (target == GL_TEXTURE_2D || target == GL_TEXTURE_2D_MULTISAMPLE)
+						if (target == GL_TEXTURE_2D)
 						{
 							GL_CHECK(glTexImage2D(target, mip, internalFormat, w, h, 0, format, type, (char*)stream + offset));
 							offset += mipSize;
 						}
 						else
 						{
-							if (target == GL_TEXTURE_CUBE_MAP || target == GL_TEXTURE_CUBE_MAP_ARRAY_EXT)
+							if (target == GL_TEXTURE_CUBE_MAP)
 							{
 								for (std::size_t i = 0; i < 6; i++)
 								{
 									if (target == GL_TEXTURE_CUBE_MAP)
 										GL_CHECK(glTexImage2D(cubeFace[i], mip, internalFormat, w, h, 0, format, type, (char*)stream + offset));
-									else
-									{
-		#ifndef __AMD__
-										//GL_CHECK(glTexImage3DOES(cubeFace[i], mip, internalFormat, w, h, layer, 0, format, type, (char*)stream + offset));
-		#else
-										GL_PLATFORM_LOG("Can't support cubemap array");
-										return false;
-		#endif
-									}
 
 									offset += mipSize;
 								}
@@ -221,30 +209,6 @@ namespace octoon
 			}
 
 			return false;
-		}
-
-		bool
-		EGL2Texture::applySamplerAnis(GLenum target, GraphicsSamplerAnis anis) noexcept
-		{
-			if (EGL2Types::isSupportFeature(EGL2Features::EGL2_EXT_texture_filter_anisotropic))
-			{
-				if (anis == GraphicsSamplerAnis::Anis1)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1));
-				else if (anis == GraphicsSamplerAnis::Anis2)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2));
-				else if (anis == GraphicsSamplerAnis::Anis4)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4));
-				else if (anis == GraphicsSamplerAnis::Anis8)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8));
-				else if (anis == GraphicsSamplerAnis::Anis16)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16));
-				else
-				{
-					GL_PLATFORM_LOG("Can't support anisotropy format");
-					return false;
-				}
-			}
-			return true;
 		}
 
 		const GraphicsTextureDesc&

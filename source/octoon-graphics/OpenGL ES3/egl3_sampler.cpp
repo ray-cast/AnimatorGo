@@ -1,6 +1,6 @@
 #include "egl3_sampler.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -88,26 +88,6 @@ namespace octoon
 			{
 				GL_PLATFORM_LOG("Invalid SamplerFilter");
 				return false;
-			}
-
-			if (EGL3Types::isSupportFeature(EGL3Features::EGL3_EXT_texture_filter_anisotropic))
-			{
-				GraphicsSamplerAnis anis = samplerDesc.getSamplerAnis();
-				if (anis == GraphicsSamplerAnis::Anis1)
-					glSamplerParameteri(_sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				else if (anis == GraphicsSamplerAnis::Anis2)
-					glSamplerParameteri(_sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2);
-				else if (anis == GraphicsSamplerAnis::Anis4)
-					glSamplerParameteri(_sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
-				else if (anis == GraphicsSamplerAnis::Anis8)
-					glSamplerParameteri(_sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8);
-				else if (anis == GraphicsSamplerAnis::Anis16)
-					glSamplerParameteri(_sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-				else
-				{
-					GL_PLATFORM_LOG("Invalid SamplerAnis");
-					return false;
-				}
 			}
 
 			_sampleDesc = samplerDesc;

@@ -1,6 +1,6 @@
 #include "egl3_texture.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -52,9 +52,6 @@ namespace octoon
 				return false;
 
 			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter()))
-				return false;
-
-			if (!applySamplerAnis(target, textureDesc.getSamplerAnis()))
 				return false;
 
 			if (!applyMipmapLimit(target, mipBase, mipLevel))
@@ -141,7 +138,7 @@ namespace octoon
 							}
 							else
 							{
-								if (target == GL_TEXTURE_CUBE_MAP || target == GL_TEXTURE_CUBE_MAP_ARRAY_EXT)
+								if (target == GL_TEXTURE_CUBE_MAP || target == GL_TEXTURE_CUBE_MAP_ARRAY)
 								{
 									for (std::size_t i = 0; i < 6; i++)
 									{
@@ -226,7 +223,7 @@ namespace octoon
 
 			GL_CHECK(glBindTexture(_target, _texture));
 			GL_CHECK(glReadPixels(x, y, w, h, format, type, 0));
-	
+
 			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
 			return *data != nullptr;
 		}
@@ -276,31 +273,6 @@ namespace octoon
 			}
 
 			return false;
-		}
-
-		bool
-		EGL3Texture::applySamplerAnis(GLenum target, GraphicsSamplerAnis anis) noexcept
-		{
-			if (EGL3Types::isSupportFeature(EGL3Features::EGL3_EXT_texture_filter_anisotropic))
-			{
-				if (anis == GraphicsSamplerAnis::Anis1)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1));
-				else if (anis == GraphicsSamplerAnis::Anis2)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2));
-				else if (anis == GraphicsSamplerAnis::Anis4)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4));
-				else if (anis == GraphicsSamplerAnis::Anis8)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8));
-				else if (anis == GraphicsSamplerAnis::Anis16)
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16));
-				else
-				{
-					GL_PLATFORM_LOG("Can't support anisotropy format");
-					return false;
-				}
-			}
-
-			return true;
 		}
 
 		const GraphicsTextureDesc&

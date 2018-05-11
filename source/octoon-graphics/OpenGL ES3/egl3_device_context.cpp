@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -491,7 +491,7 @@ namespace octoon
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
 				{
-					//glColorMaskiEXT(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+					glColorMaski(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 				}
 
 				glClearBufferfv(GL_COLOR, buffer, color.ptr());
@@ -502,7 +502,8 @@ namespace octoon
 					GLboolean g = colorWriteFlags & GraphicsColorMaskFlagBits::GreendBit ? GL_TRUE : GL_FALSE;
 					GLboolean b = colorWriteFlags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
 					GLboolean a = colorWriteFlags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
-					//glColorMaskiEXT(buffer, r, g, b, a);
+
+					glColorMaski(buffer, r, g, b, a);
 				}
 			}
 
@@ -562,7 +563,7 @@ namespace octoon
 		{
 		}
 
-		void 
+		void
 		EGL3DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
 		}
@@ -629,12 +630,12 @@ namespace octoon
 			}
 		}
 
-		void 
+		void
 		EGL3DeviceContext::drawIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
 
-		void 
+		void
 		EGL3DeviceContext::drawIndexedIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
@@ -670,9 +671,10 @@ namespace octoon
 
 			GL_CHECK(glEnable(GL_DEBUG_OUTPUT));
 
-			//GL_CHECK(glDebugMessageCallback(debugCallBack, this));
+			GL_CHECK(glDebugMessageCallback(debugCallBack, this));
+
 			// enable all
-			//GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
+			GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
 		#endif
 		}
 

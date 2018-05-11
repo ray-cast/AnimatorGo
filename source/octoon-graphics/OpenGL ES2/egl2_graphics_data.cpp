@@ -1,6 +1,6 @@
 #include "egl2_graphics_data.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -78,32 +78,18 @@ namespace octoon
 		int
 		EGL2GraphicsData::flush(GLintptr offset, GLsizeiptr cnt) noexcept
 		{
-		#ifndef __AMD__
-			GL_CHECK(glBindBuffer(_target, _buffer));
-			//GL_CHECK(glFlushMappedBufferRangeEXT(_target, offset, cnt));
-			return cnt;
-		#else
 			return 0;
-		#endif
 		}
 
 		bool
 		EGL2GraphicsData::map(std::intptr_t offset, std::intptr_t count, void** data) noexcept
 		{
-			assert(data);
-			GL_CHECK(glBindBuffer(_target, _buffer));
-			//*data = (char*)glMapBufferOES(_target, GL_WRITE_ONLY_OES) + offset;
-			if (!*data)
-				return false;
-			*(char**)data += offset;
-			return true;
+			return false;
 		}
 
 		void
 		EGL2GraphicsData::unmap() noexcept
 		{
-			GL_CHECK(glBindBuffer(_target, _buffer));
-			//GL_CHECK(glUnmapBufferOES(_target));
 		}
 
 		GLuint
@@ -115,7 +101,7 @@ namespace octoon
 		void
 		EGL2GraphicsData::bind() noexcept
 		{
-			GL_CHECK(glBindBuffer(_target, _buffer));
+			glBindBuffer(_target, _buffer);
 		}
 
 		const GraphicsDataDesc&

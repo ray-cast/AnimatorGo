@@ -1,6 +1,6 @@
 #include "egl3_device_property.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -164,7 +164,7 @@ namespace octoon
 			glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, (GLint*)&_deviceProperties.maxImageDimensionCube);
 
 			glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&_deviceProperties.maxImageArrayLayers);
-			glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE_EXT, (GLint*)&_deviceProperties.maxTexelBufferElements);
+			glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, (GLint*)&_deviceProperties.maxTexelBufferElements);
 			glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, (GLint*)&_deviceProperties.maxUniformBufferRange);
 			glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, (GLint*)&_deviceProperties.maxStorageBufferRange);
 
@@ -191,23 +191,23 @@ namespace octoon
 
 			if (EGL3Types::isSupportFeature(EGL3Features::EGL3_EXT_tessellation_shader))
 			{
-				glGetIntegerv(GL_MAX_TESS_GEN_LEVEL_EXT, (GLint*)&_deviceProperties.maxTessellationGenerationLevel);
-				glGetIntegerv(GL_MAX_PATCH_VERTICES_EXT, (GLint*)&_deviceProperties.maxTessellationPatchSize);
-				glGetIntegerv(GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationControlPerVertexInputComponents);
-				glGetIntegerv(GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationControlPerVertexOutputComponents);
-				glGetIntegerv(GL_MAX_TESS_PATCH_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationControlPerPatchOutputComponents);
-				glGetIntegerv(GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationControlTotalOutputComponents);
-				glGetIntegerv(GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationEvaluationInputComponents);
-				glGetIntegerv(GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxTessellationEvaluationOutputComponents);
+				glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, (GLint*)&_deviceProperties.maxTessellationGenerationLevel);
+				glGetIntegerv(GL_MAX_PATCH_VERTICES, (GLint*)&_deviceProperties.maxTessellationPatchSize);
+				glGetIntegerv(GL_MAX_TESS_CONTROL_INPUT_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationControlPerVertexInputComponents);
+				glGetIntegerv(GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationControlPerVertexOutputComponents);
+				glGetIntegerv(GL_MAX_TESS_PATCH_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationControlPerPatchOutputComponents);
+				glGetIntegerv(GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationControlTotalOutputComponents);
+				glGetIntegerv(GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationEvaluationInputComponents);
+				glGetIntegerv(GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, (GLint*)&_deviceProperties.maxTessellationEvaluationOutputComponents);
 			}
 
 			if (EGL3Types::isSupportFeature(EGL3Features::EGL3_EXT_geometry_shader))
 			{
-				glGetIntegerv(GL_MAX_GEOMETRY_SHADER_INVOCATIONS_EXT, (GLint*)&_deviceProperties.maxGeometryShaderInvocations);
-				glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxGeometryInputComponents);
-				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxGeometryOutputComponents);
-				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, (GLint*)&_deviceProperties.maxGeometryOutputVertices);
-				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS_EXT, (GLint*)&_deviceProperties.maxGeometryTotalOutputComponents);
+				glGetIntegerv(GL_MAX_GEOMETRY_SHADER_INVOCATIONS, (GLint*)&_deviceProperties.maxGeometryShaderInvocations);
+				glGetIntegerv(GL_MAX_GEOMETRY_INPUT_COMPONENTS, (GLint*)&_deviceProperties.maxGeometryInputComponents);
+				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, (GLint*)&_deviceProperties.maxGeometryOutputComponents);
+				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, (GLint*)&_deviceProperties.maxGeometryOutputVertices);
+				glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, (GLint*)&_deviceProperties.maxGeometryTotalOutputComponents);
 			}
 
 			glGetIntegerv(GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, (GLint*)&_deviceProperties.maxComputeSharedMemorySize);
@@ -229,7 +229,6 @@ namespace octoon
 			glGetIntegerv(GL_MAX_ELEMENTS_INDICES, (GLint*)&_deviceProperties.maxDrawIndirectCount);
 
 			glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS, &_deviceProperties.maxSamplerLodBias);
-			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &_deviceProperties.maxSamplerAnisotropy);
 			glGetIntegerv(GL_MAX_VIEWPORT_DIMS, (GLint*)&_deviceProperties.maxViewportDimensionsW);
 			glGetInteger64v(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint64*)&_deviceProperties.minUniformBufferOffsetAlignment);
 			glGetInteger64v(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, (GLint64*)&_deviceProperties.minStorageBufferOffsetAlignment);
@@ -239,7 +238,7 @@ namespace octoon
 			glGetIntegerv(GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, (GLint*)&_deviceProperties.minTexelGatherOffset);
 			glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, (GLint*)&_deviceProperties.maxFramebufferWidth);
 			glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, (GLint*)&_deviceProperties.maxFramebufferHeight);
-			glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS_EXT, (GLint*)&_deviceProperties.maxFramebufferLayers);
+			glGetIntegerv(GL_MAX_FRAMEBUFFER_LAYERS, (GLint*)&_deviceProperties.maxFramebufferLayers);
 			glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, (GLint*)&_deviceProperties.maxFramebufferColorAttachments);
 			glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, (GLint*)&_deviceProperties.framebufferColorSampleCounts);
 			glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, (GLint*)&_deviceProperties.framebufferDepthSampleCounts);

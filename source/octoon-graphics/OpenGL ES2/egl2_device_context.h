@@ -3,7 +3,7 @@
 
 #include "egl2_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -70,8 +70,6 @@ namespace octoon
 
 		private:
 			bool initStateSystem() noexcept;
-
-			static void GLAPIENTRY debugCallBack(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) noexcept;
 
 		private:
 			friend class EGL2Device;

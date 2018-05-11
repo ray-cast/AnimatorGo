@@ -483,46 +483,6 @@ namespace octoon
 		void
 		EGL2DeviceContext::discardFramebuffer(std::uint32_t i) noexcept
 		{
-			assert(_framebuffer);
-			assert(_glcontext->getActive());
-
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
-			if (layoutDesc.getComponents().size() > i)
-			{
-				auto& attachment = layoutDesc.getComponents().at(i);
-				switch (attachment.getAttachType())
-				{
-				case GraphicsImageLayout::ColorAttachmentOptimal:
-				{
-					GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
-					//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
-				}
-				break;
-				case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
-				case GraphicsImageLayout::DepthStencilAttachmentOptimal:
-				{
-					auto format = attachment.getAttachFormat();
-					if (format == GraphicsFormat::S8UInt)
-					{
-						GLenum attachments = GL_STENCIL_ATTACHMENT;
-						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
-					}
-					else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
-					{
-						GLenum attachments = GL_DEPTH_ATTACHMENT;
-						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
-					}
-					else
-					{
-						GLenum attachments[] = { GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT };
-						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, attachments);
-					}
-				}
-				break;
-				default:
-					break;
-				}
-			}
 		}
 
 		void
@@ -535,7 +495,7 @@ namespace octoon
 		{
 		}
 
-		void 
+		void
 		EGL2DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
 		}
@@ -603,12 +563,12 @@ namespace octoon
 			}
 		}
 
-		void 
+		void
 		EGL2DeviceContext::drawIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
 
-		void 
+		void
 		EGL2DeviceContext::drawIndexedIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
@@ -638,46 +598,11 @@ namespace octoon
 		void
 		EGL2DeviceContext::startDebugControl() noexcept
 		{
-		#if !defined(__ANDROID__) && !defined(__AMD__)
-			if (!EGL2Types::isSupportFeature(EGL2Features::EGL2_KHR_debug))
-			{
-				GL_PLATFORM_LOG("Can't support GL_KHR_debug.");
-				return;
-			}
-
-			// 131184 memory info
-			// 131185 memory allocation info
-			GLuint ids[] =
-			{
-				131076,
-				131169,
-				131184,
-				131185,
-				131218,
-				131204
-			};
-
-			GL_CHECK(glEnable(GL_DEBUG_OUTPUT));
-
-			// GL_CHECK(glDebugMessageCallback(debugCallBack, this));
-			// enable all
-			// GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
-		#endif
 		}
 
 		void
 		EGL2DeviceContext::stopDebugControl() noexcept
 		{
-		#if !defined(__ANDROID__) && !defined(__AMD__)
-			if (!EGL2Types::isSupportFeature(EGL2Features::EGL2_KHR_debug))
-			{
-				GL_CHECK(glDisable(GL_DEBUG_OUTPUT));
-			}
-			else
-			{
-				GL_PLATFORM_LOG("Can't support GL_KHR_debug.");
-			}
-		#endif
 		}
 
 		bool
@@ -716,100 +641,6 @@ namespace octoon
 			_stateCaptured.setColorBlends(blends);
 
 			return true;
-		}
-
-		void
-		EGL2DeviceContext::debugCallBack(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) noexcept
-		{
-			/*if (severity == GL_DEBUG_SEVERITY_LOW)
-				return;
-
-			if (severity == GL_DEBUG_SEVERITY_MEDIUM)
-				return;*/
-
-			if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-				return;
-
-			std::cerr << "source : ";
-			switch (source)
-			{
-			case GL_DEBUG_SOURCE_API:
-				std::cerr << "GL_DEBUG_SOURCE_API";
-				break;
-			case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-				std::cerr << "GL_DEBUG_SOURCE_WINDOW_SYSTEM";
-				break;
-			case GL_DEBUG_SOURCE_SHADER_COMPILER:
-				std::cerr << "GL_DEBUG_SOURCE_SHADER_COMPILER";
-				break;
-			case GL_DEBUG_SOURCE_THIRD_PARTY:
-				std::cerr << "GL_DEBUG_SOURCE_THIRD_PARTY";
-				break;
-			case GL_DEBUG_SOURCE_APPLICATION:
-				std::cerr << "GL_DEBUG_SOURCE_APPLICATION";
-				break;
-			case GL_DEBUG_SOURCE_OTHER:
-				std::cerr << "GL_DEBUG_SOURCE_OTHER";
-				break;
-			}
-
-			std::cerr << std::endl;
-
-			std::cerr << "type : ";
-			switch (type)
-			{
-			case GL_DEBUG_TYPE_ERROR:
-				std::cerr << "GL_DEBUG_TYPE_ERROR";
-				break;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-				std::cerr << "GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR";
-				break;
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-				std::cerr << "GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR";
-				break;
-			case GL_DEBUG_TYPE_PORTABILITY:
-				std::cerr << "GL_DEBUG_TYPE_PORTABILITY";
-				break;
-			case GL_DEBUG_TYPE_PERFORMANCE:
-				std::cerr << "GL_DEBUG_TYPE_PERFORMANCE";
-				break;
-			case GL_DEBUG_TYPE_OTHER:
-				std::cerr << "GL_DEBUG_TYPE_OTHER";
-				break;
-			case GL_DEBUG_TYPE_MARKER:
-				std::cerr << "GL_DEBUG_TYPE_MARKER";
-				break;
-			case GL_DEBUG_TYPE_PUSH_GROUP:
-				std::cerr << "GL_DEBUG_TYPE_PUSH_GROUP";
-				break;
-			case GL_DEBUG_TYPE_POP_GROUP:
-				std::cerr << "GL_DEBUG_TYPE_POP_GROUP";
-				break;
-			}
-
-			std::cerr << std::endl;
-
-			std::cerr << "id : " << id << std::endl;
-
-			switch (severity)
-			{
-			case GL_DEBUG_SEVERITY_NOTIFICATION:
-				std::cerr << "notice";
-				break;
-			case GL_DEBUG_SEVERITY_LOW:
-				std::cerr << "low";
-				break;
-			case GL_DEBUG_SEVERITY_MEDIUM:
-				std::cerr << "medium";
-				break;
-			case GL_DEBUG_SEVERITY_HIGH:
-				std::cerr << "high";
-				break;
-			}
-
-			std::cerr << std::endl;
-
-			std::cerr << "message : " << message << std::endl;
 		}
 
 		void

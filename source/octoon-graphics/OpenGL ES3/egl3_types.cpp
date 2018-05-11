@@ -1,6 +1,6 @@
 #include "egl3_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -389,7 +389,8 @@ namespace octoon
 			case GraphicsFormat::A2B10G10R10SScaledPack32:
 			case GraphicsFormat::A2B10G10R10UIntPack32:
 			case GraphicsFormat::A2B10G10R10SIntPack32:
-				return GL_BGRA_EXT;
+				GL_PLATFORM_LOG("Can't support ABGR format");
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::A8B8G8R8UNormPack32:
 			case GraphicsFormat::A8B8G8R8SNormPack32:
 			case GraphicsFormat::A8B8G8R8UScaledPack32:
@@ -406,7 +407,8 @@ namespace octoon
 			case GraphicsFormat::R8G8B8A8SRGB:
 			case GraphicsFormat::B8G8R8A8SRGB:
 			case GraphicsFormat::A8B8G8R8SRGBPack32:
-				return GL_SRGB_ALPHA_EXT;
+				GL_PLATFORM_LOG("Can't support ABGR format");
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::D16UNorm:
 			case GraphicsFormat::X8_D24UNormPack32:
 			case GraphicsFormat::D32_SFLOAT:
@@ -435,7 +437,7 @@ namespace octoon
 			case GraphicsFormat::B5G6R5UNormPack16:        return GL_UNSIGNED_SHORT_5_6_5;
 			case GraphicsFormat::R5G5B5A1UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
 			case GraphicsFormat::B5G5R5A1UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
-			case GraphicsFormat::A1R5G5B5UNormPack16:      return GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT;
+			case GraphicsFormat::A1R5G5B5UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
 			case GraphicsFormat::R8UNorm:                  return GL_UNSIGNED_BYTE;
 			case GraphicsFormat::R8SNorm:                  return GL_BYTE;
 			case GraphicsFormat::R8UScaled:                return GL_UNSIGNED_BYTE;
@@ -573,7 +575,7 @@ namespace octoon
 			GLenum internalFormat = GL_INVALID_ENUM;
 			switch (format)
 			{
-			case GraphicsFormat::R4G4UNormPack8:	         internalFormat = GL_LUMINANCE8_ALPHA8_EXT; break;
+			case GraphicsFormat::R4G4UNormPack8:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R4G4B4A4UNormPack16:	     internalFormat = GL_RGBA4; break;
 			case GraphicsFormat::B4G4R4A4UNormPack16:	     internalFormat = GL_RGBA4; break;
 			case GraphicsFormat::R5G6B5UNormPack16:	     internalFormat = GL_RGB565; break;
@@ -642,29 +644,29 @@ namespace octoon
 			case GraphicsFormat::A2B10G10R10SScaledPack32: internalFormat = GL_RGB10_A2; break;
 			case GraphicsFormat::A2B10G10R10UIntPack32:	 internalFormat = GL_RGB10_A2UI; break;
 			case GraphicsFormat::A2B10G10R10SIntPack32:	 internalFormat = GL_RGB10_A2; break;
-			case GraphicsFormat::R16UNorm:	             internalFormat = GL_R16_EXT; break;
-			case GraphicsFormat::R16SNorm:	             internalFormat = GL_R16_SNORM_EXT; break;
+			case GraphicsFormat::R16UNorm:	             internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16SNorm:	             internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16UScaled:	             internalFormat = GL_R16UI; break;
 			case GraphicsFormat::R16SScaled:	             internalFormat = GL_R16I; break;
 			case GraphicsFormat::R16UInt:	                 internalFormat = GL_R16UI; break;
 			case GraphicsFormat::R16SInt:	                 internalFormat = GL_R16I; break;
 			case GraphicsFormat::R16SFloat:	             internalFormat = GL_R16F; break;
-			case GraphicsFormat::R16G16UNorm:	             internalFormat = GL_RG16_EXT; break;
-			case GraphicsFormat::R16G16SNorm:	             internalFormat = GL_RG16_SNORM_EXT; break;
+			case GraphicsFormat::R16G16UNorm:	             internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16SNorm:	             internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16UScaled:	         internalFormat = GL_RG16UI; break;
 			case GraphicsFormat::R16G16SScaled:	         internalFormat = GL_RG16I; break;
 			case GraphicsFormat::R16G16UInt:	             internalFormat = GL_RG16UI; break;
 			case GraphicsFormat::R16G16SInt:	             internalFormat = GL_RG16I; break;
 			case GraphicsFormat::R16G16SFloat:	         internalFormat = GL_RG16F; break;
-			case GraphicsFormat::R16G16B16UNorm:	         internalFormat = GL_RGB16_EXT; break;
-			case GraphicsFormat::R16G16B16SNorm:	         internalFormat = GL_RGB16_SNORM_EXT; break;
+			case GraphicsFormat::R16G16B16UNorm:	         internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16SNorm:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16UScaled:	     internalFormat = GL_RGB16UI; break;
 			case GraphicsFormat::R16G16B16SScaled:	     internalFormat = GL_RGB16I; break;
 			case GraphicsFormat::R16G16B16UInt:	         internalFormat = GL_RGB16UI; break;
 			case GraphicsFormat::R16G16B16SInt:	         internalFormat = GL_RGB16I; break;
 			case GraphicsFormat::R16G16B16SFloat:	         internalFormat = GL_RGB16F; break;
-			case GraphicsFormat::R16G16B16A16UNorm:	     internalFormat = GL_RGBA16_EXT; break;
-			case GraphicsFormat::R16G16B16A16SNorm:	     internalFormat = GL_RGBA16_SNORM_EXT; break;
+			case GraphicsFormat::R16G16B16A16UNorm:	     internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16A16SNorm:	     internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16A16UScaled:	     internalFormat = GL_RGBA16UI; break;
 			case GraphicsFormat::R16G16B16A16SScaled:	     internalFormat = GL_RGBA16I; break;
 			case GraphicsFormat::R16G16B16A16UInt:	     internalFormat = GL_RGBA16UI; break;
@@ -703,17 +705,17 @@ namespace octoon
 			case GraphicsFormat::D16UNorm_S8UInt:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::D24UNorm_S8UInt:	         internalFormat = GL_DEPTH24_STENCIL8; break;
 			case GraphicsFormat::D32_SFLOAT_S8UInt:	     internalFormat = GL_DEPTH32F_STENCIL8; break;
-			case GraphicsFormat::BC1RGBUNormBlock:	     internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT; break;
+			case GraphicsFormat::BC1RGBUNormBlock:			internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC1RGBSRGBBlock:	         internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC1RGBAUNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
+			case GraphicsFormat::BC1RGBAUNormBlock:			internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC1RGBASRGBBlock:	     internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC2UNormBlock:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC2SRGBBlock:	         internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC3UNormBlock:	         internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
+			case GraphicsFormat::BC3UNormBlock:				internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC3SRGBBlock:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC4UNormBlock:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC4SNormBlock:	         internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC5UNormBlock:	         internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
+			case GraphicsFormat::BC5UNormBlock:				internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC5SNormBlock:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC6HUFloatBlock:	         internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC6HSFloatBlock:	         internalFormat = GL_INVALID_ENUM; break;
@@ -729,34 +731,34 @@ namespace octoon
 			case GraphicsFormat::EACR11SNormBlock:	     internalFormat = GL_COMPRESSED_SIGNED_R11_EAC; break;
 			case GraphicsFormat::EACR11G11UNormBlock:	     internalFormat = GL_COMPRESSED_RG11_EAC; break;
 			case GraphicsFormat::EACR11G11SNormBlock:	     internalFormat = GL_COMPRESSED_SIGNED_RG11_EAC; break;
-			case GraphicsFormat::ASTC4x4UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC4x4SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC5x4UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC5x4SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR; break;
-			case GraphicsFormat::ASTC5x5UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_5x5_KHR; break;
-			case GraphicsFormat::ASTC5x5SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR; break;
-			case GraphicsFormat::ASTC6x5UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_6x5_KHR; break;
-			case GraphicsFormat::ASTC6x5SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR; break;
-			case GraphicsFormat::ASTC6x6UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_6x6_KHR; break;
-			case GraphicsFormat::ASTC6x6SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR; break;
-			case GraphicsFormat::ASTC8x5UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_8x5_KHR; break;
-			case GraphicsFormat::ASTC8x5SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR; break;
-			case GraphicsFormat::ASTC8x6UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_8x6_KHR; break;
-			case GraphicsFormat::ASTC8x6SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR; break;
-			case GraphicsFormat::ASTC8x8UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_8x8_KHR; break;
-			case GraphicsFormat::ASTC8x8SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR; break;
-			case GraphicsFormat::ASTC10x5UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_10x5_KHR; break;
-			case GraphicsFormat::ASTC10x5SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR; break;
-			case GraphicsFormat::ASTC10x6UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x6SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x8UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_10x8_KHR; break;
-			case GraphicsFormat::ASTC10x8SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x10UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_10x10_KHR; break;
-			case GraphicsFormat::ASTC10x10SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR; break;
-			case GraphicsFormat::ASTC12x10UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_12x10_KHR; break;
-			case GraphicsFormat::ASTC12x10SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR; break;
-			case GraphicsFormat::ASTC12x12UNormBlock:	     internalFormat = GL_COMPRESSED_RGBA_ASTC_12x12_KHR; break;
-			case GraphicsFormat::ASTC12x12SRGBBlock:	     internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR; break;
+			case GraphicsFormat::ASTC4x4UNormBlock:
+			case GraphicsFormat::ASTC4x4SRGBBlock:
+			case GraphicsFormat::ASTC5x4UNormBlock:
+			case GraphicsFormat::ASTC5x4SRGBBlock:
+			case GraphicsFormat::ASTC5x5UNormBlock:
+			case GraphicsFormat::ASTC5x5SRGBBlock:
+			case GraphicsFormat::ASTC6x5UNormBlock:
+			case GraphicsFormat::ASTC6x5SRGBBlock:
+			case GraphicsFormat::ASTC6x6UNormBlock:
+			case GraphicsFormat::ASTC6x6SRGBBlock:
+			case GraphicsFormat::ASTC8x5UNormBlock:
+			case GraphicsFormat::ASTC8x5SRGBBlock:
+			case GraphicsFormat::ASTC8x6UNormBlock:
+			case GraphicsFormat::ASTC8x6SRGBBlock:
+			case GraphicsFormat::ASTC8x8UNormBlock:
+			case GraphicsFormat::ASTC8x8SRGBBlock:
+			case GraphicsFormat::ASTC10x5UNormBlock:
+			case GraphicsFormat::ASTC10x5SRGBBlock:
+			case GraphicsFormat::ASTC10x6UNormBlock:
+			case GraphicsFormat::ASTC10x6SRGBBlock:
+			case GraphicsFormat::ASTC10x8UNormBlock:
+			case GraphicsFormat::ASTC10x8SRGBBlock:
+			case GraphicsFormat::ASTC10x10UNormBlock:
+			case GraphicsFormat::ASTC10x10SRGBBlock:
+			case GraphicsFormat::ASTC12x10UNormBlock:
+			case GraphicsFormat::ASTC12x10SRGBBlock:
+			case GraphicsFormat::ASTC12x12UNormBlock:
+			case GraphicsFormat::ASTC12x12SRGBBlock:
 			default:
 				assert(false);
 				return GL_INVALID_ENUM;
@@ -960,7 +962,7 @@ namespace octoon
 				return 2 * typeSize;
 			else if (format == GL_RGB || format == GL_SRGB)
 				return 3 * typeSize;
-			else if (format == GL_RGBA || format == GL_BGRA_EXT || format == GL_SRGB_ALPHA_EXT)
+			else if (format == GL_RGBA)
 				return 4 * typeSize;
 			else
 			{
@@ -972,24 +974,7 @@ namespace octoon
 		GLsizei
 		EGL3Types::getCompressedTextureSize(GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat) noexcept
 		{
-			switch (internalFormat)
-			{
-			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-				width = (width + 3) & ~3;
-				height = (height + 3) & ~3;
-				return std::max(8, width * height / 2);
-			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-				width = (width + 3) & ~3;
-				height = (height + 3) & ~3;
-				return std::max(16, width * height);
-			default:
-			{
-				GL_PLATFORM_ASSERT(false, "bad texformat in compressed_texture_size");
-				return 0;
-			}
-			}
+			return  0;
 		}
 
 		GLboolean

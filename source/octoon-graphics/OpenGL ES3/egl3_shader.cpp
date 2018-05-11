@@ -9,7 +9,7 @@
 #	include <d3dcompiler.h>
 #endif
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -341,7 +341,7 @@ namespace octoon
 					}
 
 					out = glslopt_get_output(glslopt_shader);
-					glslopt_cleanup(ctx);			
+					glslopt_cleanup(ctx);
 				}
 			}
 			else
@@ -350,7 +350,7 @@ namespace octoon
 			}
 
 			out = shader.sourceCode;
-	
+
 			FreeGLSLShader(&shader);
 			return true;
 #else
@@ -549,9 +549,9 @@ namespace octoon
 				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
 
 				if (type == GL_SAMPLER_2D ||
-					type == GL_SAMPLER_3D_OES ||
+					type == GL_SAMPLER_3D ||
 					type == GL_SAMPLER_CUBE ||
-					type == GL_SAMPLER_CUBE_MAP_ARRAY_EXT)
+					type == GL_SAMPLER_CUBE_MAP_ARRAY)
 				{
 					auto pos = nameUniform.find_first_of("_X_");
 					if (pos != std::string::npos)
@@ -724,6 +724,5 @@ namespace octoon
 		{
 			return _device.lock();
 		}
-
 	}
 }

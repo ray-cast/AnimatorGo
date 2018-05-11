@@ -143,15 +143,6 @@ namespace octoon
 				lastStateDesc.setScissorTestEnable(_stateDesc.getScissorTestEnable());
 			}
 
-			if (lastStateDesc.getLinear2sRGBEnable() != _stateDesc.getLinear2sRGBEnable())
-			{
-				if (_stateDesc.getLinear2sRGBEnable())
-					glEnable(GL_FRAMEBUFFER_SRGB);
-				else
-					glDisable(GL_FRAMEBUFFER_SRGB);
-				lastStateDesc.setLinear2sRGBEnable(_stateDesc.getLinear2sRGBEnable());
-			}
-
 			if (_stateDesc.getDepthEnable())
 			{
 				if (!lastStateDesc.getDepthEnable())

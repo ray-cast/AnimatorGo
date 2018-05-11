@@ -3,7 +3,7 @@
 
 #include "egl3_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -29,7 +29,6 @@ namespace octoon
 			static bool applyMipmapLimit(GLenum target, std::uint32_t min, std::uint32_t count) noexcept;
 			static bool applySamplerWrap(GLenum target, GraphicsSamplerWrap wrap) noexcept;
 			static bool applySamplerFilter(GLenum target, GraphicsSamplerFilter filter) noexcept;
-			static bool applySamplerAnis(GLenum target, GraphicsSamplerAnis anis) noexcept;
 
 		private:
 			friend class EGL3Device;

@@ -1,6 +1,6 @@
 #include "egl2_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -253,18 +253,12 @@ namespace octoon
 			switch (target)
 			{
 			case GraphicsTextureDim::Texture2D:					return GL_TEXTURE_2D;
-			case GraphicsTextureDim::Texture2DMultisample:		return GL_TEXTURE_2D_MULTISAMPLE;
-			case GraphicsTextureDim::Texture2DArrayMultisample:	return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-			case GraphicsTextureDim::Texture2DArray:
-				GL_PLATFORM_LOG("Can't support texture2D array");
-				return GL_INVALID_ENUM;
-			case GraphicsTextureDim::Texture3D:
-				GL_PLATFORM_LOG("Can't support texture3D");
-				return GL_INVALID_ENUM;
 			case GraphicsTextureDim::Cube:						return GL_TEXTURE_CUBE_MAP;
+			case GraphicsTextureDim::Texture2DMultisample:
+			case GraphicsTextureDim::Texture2DArrayMultisample:
+			case GraphicsTextureDim::Texture2DArray:
+			case GraphicsTextureDim::Texture3D:
 			case GraphicsTextureDim::CubeArray:
-				GL_PLATFORM_LOG("Can't support cube array");
-				return GL_INVALID_ENUM;
 			default:
 				return GL_INVALID_ENUM;
 			}
@@ -294,7 +288,7 @@ namespace octoon
 			case GraphicsFormat::R64UInt:
 			case GraphicsFormat::R64SInt:
 			case GraphicsFormat::R64SFloat:
-				return GL_RED_EXT;
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::R4G4UNormPack8:
 			case GraphicsFormat::R8G8UNorm:
 			case GraphicsFormat::R8G8SNorm:
@@ -315,7 +309,7 @@ namespace octoon
 			case GraphicsFormat::R64G64UInt:
 			case GraphicsFormat::R64G64SInt:
 			case GraphicsFormat::R64G64SFloat:
-				return GL_RG_EXT;
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::R5G6B5UNormPack16:
 			case GraphicsFormat::R8G8B8UNorm:
 			case GraphicsFormat::R8G8B8SNorm:
@@ -345,7 +339,6 @@ namespace octoon
 			case GraphicsFormat::B8G8R8UInt:
 			case GraphicsFormat::B8G8R8SInt:
 			case GraphicsFormat::B10G11R11UFloatPack32:
-				GL_PLATFORM_LOG("Can't support BGR format");
 				return GL_INVALID_ENUM;
 			case GraphicsFormat::R4G4B4A4UNormPack16:
 			case GraphicsFormat::R5G5B5A1UNormPack16:
@@ -390,24 +383,23 @@ namespace octoon
 			case GraphicsFormat::A2B10G10R10SScaledPack32:
 			case GraphicsFormat::A2B10G10R10UIntPack32:
 			case GraphicsFormat::A2B10G10R10SIntPack32:
-				return GL_BGRA_EXT;
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::A8B8G8R8UNormPack32:
 			case GraphicsFormat::A8B8G8R8SNormPack32:
 			case GraphicsFormat::A8B8G8R8UScaledPack32:
 			case GraphicsFormat::A8B8G8R8SScaledPack32:
 			case GraphicsFormat::A8B8G8R8UIntPack32:
 			case GraphicsFormat::A8B8G8R8SIntPack32:
-				GL_PLATFORM_LOG("Can't support ABGR format");
 				return GL_INVALID_ENUM;
 			case GraphicsFormat::R8SRGB:
 			case GraphicsFormat::R8G8SRGB:
 			case GraphicsFormat::R8G8B8SRGB:
 			case GraphicsFormat::B8G8R8SRGB:
-				return GL_SRGB_EXT;
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::R8G8B8A8SRGB:
 			case GraphicsFormat::B8G8R8A8SRGB:
 			case GraphicsFormat::A8B8G8R8SRGBPack32:
-				return GL_SRGB_ALPHA_EXT;
+				return GL_INVALID_ENUM;
 			case GraphicsFormat::D16UNorm:
 			case GraphicsFormat::X8_D24UNormPack32:
 			case GraphicsFormat::D32_SFLOAT:
@@ -417,7 +409,7 @@ namespace octoon
 			case GraphicsFormat::D24UNorm_S8UInt:
 			case GraphicsFormat::D16UNorm_S8UInt:
 			case GraphicsFormat::D32_SFLOAT_S8UInt:
-				return GL_DEPTH_STENCIL_OES;
+				return GL_INVALID_ENUM;
 			default:
 				GL_PLATFORM_ASSERT(false, "Invalid texture format");
 				return GL_INVALID_ENUM;
@@ -436,7 +428,7 @@ namespace octoon
 			case GraphicsFormat::B5G6R5UNormPack16:        return GL_UNSIGNED_SHORT_5_6_5;
 			case GraphicsFormat::R5G5B5A1UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
 			case GraphicsFormat::B5G5R5A1UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
-			case GraphicsFormat::A1R5G5B5UNormPack16:      return GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT;
+			case GraphicsFormat::A1R5G5B5UNormPack16:      return GL_UNSIGNED_SHORT_5_5_5_1;
 			case GraphicsFormat::R8UNorm:                  return GL_UNSIGNED_BYTE;
 			case GraphicsFormat::R8SNorm:                  return GL_BYTE;
 			case GraphicsFormat::R8UScaled:                return GL_UNSIGNED_BYTE;
@@ -486,40 +478,40 @@ namespace octoon
 			case GraphicsFormat::A8B8G8R8UIntPack32:       return GL_UNSIGNED_BYTE;
 			case GraphicsFormat::A8B8G8R8SIntPack32:       return GL_BYTE;
 			case GraphicsFormat::A8B8G8R8SRGBPack32:       return GL_UNSIGNED_BYTE;
-			case GraphicsFormat::A2R10G10B10UNormPack32:   return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-			case GraphicsFormat::A2R10G10B10UScaledPack32: return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-			case GraphicsFormat::A2R10G10B10UIntPack32:    return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-			case GraphicsFormat::A2B10G10R10UNormPack32:   return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-			case GraphicsFormat::A2B10G10R10UScaledPack32: return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-			case GraphicsFormat::A2B10G10R10UIntPack32:    return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
+			case GraphicsFormat::A2R10G10B10UNormPack32:   return GL_INVALID_ENUM;
+			case GraphicsFormat::A2R10G10B10UScaledPack32: return GL_INVALID_ENUM;
+			case GraphicsFormat::A2R10G10B10UIntPack32:    return GL_INVALID_ENUM;
+			case GraphicsFormat::A2B10G10R10UNormPack32:   return GL_INVALID_ENUM;
+			case GraphicsFormat::A2B10G10R10UScaledPack32: return GL_INVALID_ENUM;
+			case GraphicsFormat::A2B10G10R10UIntPack32:    return GL_INVALID_ENUM;
 			case GraphicsFormat::R16UNorm:                 return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16SNorm:                 return GL_SHORT;
 			case GraphicsFormat::R16UScaled:               return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16SScaled:               return GL_SHORT;
 			case GraphicsFormat::R16UInt:                  return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16SInt:                  return GL_SHORT;
-			case GraphicsFormat::R16SFloat:                return GL_HALF_FLOAT_OES;
+			case GraphicsFormat::R16SFloat:                return GL_INVALID_ENUM;
 			case GraphicsFormat::R16G16UNorm:              return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16SNorm:              return GL_SHORT;
 			case GraphicsFormat::R16G16UScaled:            return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16SScaled:            return GL_SHORT;
 			case GraphicsFormat::R16G16UInt:               return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16SInt:               return GL_SHORT;
-			case GraphicsFormat::R16G16SFloat:             return GL_HALF_FLOAT_OES;
+			case GraphicsFormat::R16G16SFloat:             return GL_INVALID_ENUM;
 			case GraphicsFormat::R16G16B16UNorm:           return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16SNorm:           return GL_SHORT;
 			case GraphicsFormat::R16G16B16UScaled:         return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16SScaled:         return GL_SHORT;
 			case GraphicsFormat::R16G16B16UInt:            return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16SInt:            return GL_SHORT;
-			case GraphicsFormat::R16G16B16SFloat:          return GL_HALF_FLOAT_OES;
+			case GraphicsFormat::R16G16B16SFloat:          return GL_INVALID_ENUM;
 			case GraphicsFormat::R16G16B16A16UNorm:        return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16A16SNorm:        return GL_SHORT;
 			case GraphicsFormat::R16G16B16A16UScaled:      return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16A16SScaled:      return GL_SHORT;
 			case GraphicsFormat::R16G16B16A16UInt:         return GL_UNSIGNED_SHORT;
 			case GraphicsFormat::R16G16B16A16SInt:         return GL_SHORT;
-			case GraphicsFormat::R16G16B16A16SFloat:       return GL_HALF_FLOAT_OES;
+			case GraphicsFormat::R16G16B16A16SFloat:       return GL_INVALID_ENUM;
 			case GraphicsFormat::R32UInt:                  return GL_UNSIGNED_INT;
 			case GraphicsFormat::R32SInt:                  return GL_INT;
 			case GraphicsFormat::R32SFloat:                return GL_FLOAT;
@@ -537,7 +529,7 @@ namespace octoon
 			case GraphicsFormat::S8UInt:                   return GL_UNSIGNED_BYTE;
 			case GraphicsFormat::X8_D24UNormPack32:        return GL_UNSIGNED_INT;
 			case GraphicsFormat::D16UNorm_S8UInt:          return GL_INVALID_ENUM;
-			case GraphicsFormat::D24UNorm_S8UInt:          return GL_UNSIGNED_INT_24_8_OES;
+			case GraphicsFormat::D24UNorm_S8UInt:          return GL_INVALID_ENUM;
 			case GraphicsFormat::D32_SFLOAT_S8UInt:        return GL_INVALID_ENUM;
 			case GraphicsFormat::A2R10G10B10SNormPack32:   return GL_INVALID_ENUM;
 			case GraphicsFormat::A2R10G10B10SScaledPack32: return GL_INVALID_ENUM;
@@ -574,7 +566,7 @@ namespace octoon
 			GLenum internalFormat = GL_INVALID_ENUM;
 			switch (format)
 			{
-			case GraphicsFormat::R4G4UNormPack8:	        internalFormat = GL_LUMINANCE8_ALPHA8_EXT; break;
+			case GraphicsFormat::R4G4UNormPack8:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R4G4B4A4UNormPack16:	    internalFormat = GL_RGBA4; break;
 			case GraphicsFormat::B4G4R4A4UNormPack16:	    internalFormat = GL_RGBA4; break;
 			case GraphicsFormat::R5G6B5UNormPack16:	        internalFormat = GL_RGB565; break;
@@ -582,107 +574,107 @@ namespace octoon
 			case GraphicsFormat::R5G5B5A1UNormPack16:	    internalFormat = GL_RGB5_A1; break;
 			case GraphicsFormat::B5G5R5A1UNormPack16:	    internalFormat = GL_RGB5_A1; break;
 			case GraphicsFormat::A1R5G5B5UNormPack16:	    internalFormat = GL_RGB5_A1; break;
-			case GraphicsFormat::R8UNorm:                   internalFormat = GL_R8_EXT; break;
-			case GraphicsFormat::R8SNorm:                   internalFormat = GL_R8_SNORM; break;
+			case GraphicsFormat::R8UNorm:                   internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R8SNorm:                   internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8UScaled:                 internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8SScaled:                 internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8UInt:                    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8SInt:                    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8SRGB:                    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R8G8UNorm:                 internalFormat = GL_RG8_EXT; break;
-			case GraphicsFormat::R8G8SNorm:                 internalFormat = GL_RG8_SNORM; break;
+			case GraphicsFormat::R8G8UNorm:                 internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R8G8SNorm:                 internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8UScaled:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8SScaled:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8UInt:                  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8SInt:                  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8SRGB:                  internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R8G8B8UNorm:               internalFormat = GL_RGB8_OES; break;
+			case GraphicsFormat::R8G8B8UNorm:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8SNorm:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8UScaled:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8SScaled:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8UInt:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8SInt:                internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R8G8B8SRGB:                internalFormat = GL_SRGB_EXT; break;
-			case GraphicsFormat::B8G8R8UNorm:               internalFormat = GL_RGB8_OES; break;
+			case GraphicsFormat::R8G8B8SRGB:                internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::B8G8R8UNorm:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8SNorm:               internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::B8G8R8UScaled:	            internalFormat = GL_RGB8_OES; break;
-			case GraphicsFormat::B8G8R8SScaled:	            internalFormat = GL_RGB8_OES; break;
+			case GraphicsFormat::B8G8R8UScaled:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::B8G8R8SScaled:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8UInt:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8SInt:                internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::B8G8R8SRGB:                internalFormat = GL_SRGB_EXT; break;
-			case GraphicsFormat::R8G8B8A8UNorm:	            internalFormat = GL_RGBA8_OES; break;
-			case GraphicsFormat::R8G8B8A8SNorm:	            internalFormat = GL_RGBA8_SNORM; break;
+			case GraphicsFormat::B8G8R8SRGB:                internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R8G8B8A8UNorm:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R8G8B8A8SNorm:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8A8UScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8A8SScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8A8UInt:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R8G8B8A8SInt:	            internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R8G8B8A8SRGB:	            internalFormat = GL_SRGB8_ALPHA8_EXT; break;
-			case GraphicsFormat::B8G8R8A8UNorm:	            internalFormat = GL_RGB8_OES; break;
-			case GraphicsFormat::B8G8R8A8SNorm:	            internalFormat = GL_RGBA8_SNORM; break;
+			case GraphicsFormat::R8G8B8A8SRGB:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::B8G8R8A8UNorm:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::B8G8R8A8SNorm:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8A8UScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8A8SScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8A8UInt:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::B8G8R8A8SInt:	            internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::B8G8R8A8SRGB:	            internalFormat = GL_SRGB8_ALPHA8_EXT; break;
-			case GraphicsFormat::A8B8G8R8UNormPack32:	    internalFormat = GL_RGBA8_OES; break;
-			case GraphicsFormat::A8B8G8R8SNormPack32:	    internalFormat = GL_RGBA8_SNORM; break;
+			case GraphicsFormat::B8G8R8A8SRGB:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::A8B8G8R8UNormPack32:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::A8B8G8R8SNormPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A8B8G8R8UScaledPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A8B8G8R8SScaledPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A8B8G8R8UIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A8B8G8R8SIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::A8B8G8R8SRGBPack32:	    internalFormat = GL_SRGB8_ALPHA8_EXT; break;
-			case GraphicsFormat::A2R10G10B10UNormPack32:	internalFormat = GL_RGB10_A2_EXT; break;
-			case GraphicsFormat::A2R10G10B10SNormPack32:	internalFormat = GL_RGB10_A2_EXT; break;
+			case GraphicsFormat::A8B8G8R8SRGBPack32:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::A2R10G10B10UNormPack32:	internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::A2R10G10B10SNormPack32:	internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2R10G10B10UScaledPack32:  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2R10G10B10SScaledPack32:  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2R10G10B10UIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::A2R10G10B10SIntPack32:	    internalFormat = GL_RGB10_A2_EXT; break;
+			case GraphicsFormat::A2R10G10B10SIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2B10G10R10UNormPack32:	internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::A2B10G10R10SNormPack32:	internalFormat = GL_RGB10_A2_EXT; break;
+			case GraphicsFormat::A2B10G10R10SNormPack32:	internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2B10G10R10UScaledPack32:  internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::A2B10G10R10SScaledPack32:  internalFormat = GL_RGB10_A2_EXT; break;
+			case GraphicsFormat::A2B10G10R10SScaledPack32:  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::A2B10G10R10UIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::A2B10G10R10SIntPack32:	    internalFormat = GL_RGB10_A2_EXT; break;
-			case GraphicsFormat::R16UNorm:                  internalFormat = GL_R16_EXT; break;
-			case GraphicsFormat::R16SNorm:                  internalFormat = GL_R16_SNORM_EXT; break;
+			case GraphicsFormat::A2B10G10R10SIntPack32:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16UNorm:                  internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16SNorm:                  internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16UScaled:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16SScaled:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16UInt:                   internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16SInt:                   internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R16SFloat:                 internalFormat = GL_R16F_EXT; break;
-			case GraphicsFormat::R16G16UNorm:               internalFormat = GL_RG16_EXT; break;
-			case GraphicsFormat::R16G16SNorm:               internalFormat = GL_RG16_SNORM_EXT; break;
+			case GraphicsFormat::R16SFloat:                 internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16UNorm:               internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16SNorm:               internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16UScaled:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16SScaled:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16UInt:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16SInt:                internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R16G16SFloat:	            internalFormat = GL_RG16F_EXT; break;
-			case GraphicsFormat::R16G16B16UNorm:	        internalFormat = GL_RGB16_EXT; break;
-			case GraphicsFormat::R16G16B16SNorm:	        internalFormat = GL_RGB16_SNORM_EXT; break;
+			case GraphicsFormat::R16G16SFloat:	            internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16UNorm:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16SNorm:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16UScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16SScaled:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16UInt:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16SInt:	            internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R16G16B16SFloat:	        internalFormat = GL_RGB16F_EXT; break;
-			case GraphicsFormat::R16G16B16A16UNorm:	        internalFormat = GL_RGBA16_EXT; break;
-			case GraphicsFormat::R16G16B16A16SNorm:	        internalFormat = GL_RGBA16_SNORM_EXT; break;
+			case GraphicsFormat::R16G16B16SFloat:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16A16UNorm:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::R16G16B16A16SNorm:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16A16UScaled:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16A16SScaled:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16A16UInt:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R16G16B16A16SInt:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R16G16B16A16SFloat:	    internalFormat = GL_RGBA16F_EXT; break;
+			case GraphicsFormat::R16G16B16A16SFloat:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32UInt:                   internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32SInt:                   internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R32SFloat:                 internalFormat = GL_R32F_EXT; break;
+			case GraphicsFormat::R32SFloat:                 internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32UInt:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32SInt:                internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R32G32SFloat:	            internalFormat = GL_RG32F_EXT; break;
+			case GraphicsFormat::R32G32SFloat:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32B32UInt:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32B32SInt:	            internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R32G32B32SFloat:	        internalFormat = GL_RGB32F_EXT; break;
+			case GraphicsFormat::R32G32B32SFloat:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32B32A32UInt:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R32G32B32A32SInt:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::R32G32B32A32SFloat:	    internalFormat = GL_RGBA32F_EXT; break;
+			case GraphicsFormat::R32G32B32A32SFloat:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R64UInt:                   internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R64SInt:                   internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R64SFloat:                 internalFormat = GL_INVALID_ENUM; break;
@@ -695,22 +687,22 @@ namespace octoon
 			case GraphicsFormat::R64G64B64A64UInt:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R64G64B64A64SInt:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::R64G64B64A64SFloat:	    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::B10G11R11UFloatPack32:	    internalFormat = GL_R11F_G11F_B10F_APPLE; break;
-			case GraphicsFormat::E5B9G9R9UFloatPack32:	    internalFormat = GL_RGB9_E5_APPLE; break;
+			case GraphicsFormat::B10G11R11UFloatPack32:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::E5B9G9R9UFloatPack32:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::D16UNorm:                  internalFormat = GL_DEPTH_COMPONENT16; break;
-			case GraphicsFormat::X8_D24UNormPack32:	        internalFormat = GL_DEPTH_COMPONENT24_OES; break;
-			case GraphicsFormat::D32_SFLOAT:                internalFormat = GL_DEPTH_COMPONENT32_OES; break;
+			case GraphicsFormat::X8_D24UNormPack32:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::D32_SFLOAT:                internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::S8UInt:                    internalFormat = GL_STENCIL_INDEX8; break;
 			case GraphicsFormat::D16UNorm_S8UInt:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::D24UNorm_S8UInt:	        internalFormat = GL_DEPTH24_STENCIL8_OES; break;
+			case GraphicsFormat::D24UNorm_S8UInt:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::D32_SFLOAT_S8UInt:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC1RGBUNormBlock:	        internalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT; break;
+			case GraphicsFormat::BC1RGBUNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC1RGBSRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC1RGBAUNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; break;
+			case GraphicsFormat::BC1RGBAUNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC1RGBASRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC2UNormBlock:	            internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; break;
+			case GraphicsFormat::BC2UNormBlock:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC2SRGBBlock:	            internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::BC3UNormBlock:	            internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; break;
+			case GraphicsFormat::BC3UNormBlock:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC3SRGBBlock:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC4UNormBlock:	            internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::BC4SNormBlock:	            internalFormat = GL_INVALID_ENUM; break;
@@ -730,34 +722,34 @@ namespace octoon
 			case GraphicsFormat::EACR11SNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::EACR11G11UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::EACR11G11SNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
-			case GraphicsFormat::ASTC4x4UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC4x4SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC5x4UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_4x4_KHR; break;
-			case GraphicsFormat::ASTC5x4SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR; break;
-			case GraphicsFormat::ASTC5x5UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_5x5_KHR; break;
-			case GraphicsFormat::ASTC5x5SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR; break;
-			case GraphicsFormat::ASTC6x5UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_6x5_KHR; break;
-			case GraphicsFormat::ASTC6x5SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR; break;
-			case GraphicsFormat::ASTC6x6UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_6x6_KHR; break;
-			case GraphicsFormat::ASTC6x6SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR; break;
-			case GraphicsFormat::ASTC8x5UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_8x5_KHR; break;
-			case GraphicsFormat::ASTC8x5SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR; break;
-			case GraphicsFormat::ASTC8x6UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_8x6_KHR; break;
-			case GraphicsFormat::ASTC8x6SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR; break;
-			case GraphicsFormat::ASTC8x8UNormBlock:	        internalFormat = GL_COMPRESSED_RGBA_ASTC_8x8_KHR; break;
-			case GraphicsFormat::ASTC8x8SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR; break;
-			case GraphicsFormat::ASTC10x5UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_10x5_KHR; break;
-			case GraphicsFormat::ASTC10x5SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR; break;
-			case GraphicsFormat::ASTC10x6UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x6SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x8UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_10x8_KHR; break;
-			case GraphicsFormat::ASTC10x8SRGBBlock:	        internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR; break;
-			case GraphicsFormat::ASTC10x10UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_10x10_KHR; break;
-			case GraphicsFormat::ASTC10x10SRGBBlock:	    internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR; break;
-			case GraphicsFormat::ASTC12x10UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_12x10_KHR; break;
-			case GraphicsFormat::ASTC12x10SRGBBlock:	    internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR; break;
-			case GraphicsFormat::ASTC12x12UNormBlock:	    internalFormat = GL_COMPRESSED_RGBA_ASTC_12x12_KHR; break;
-			case GraphicsFormat::ASTC12x12SRGBBlock:	    internalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR; break;
+			case GraphicsFormat::ASTC4x4UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC4x4SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC5x4UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC5x4SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC5x5UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC5x5SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC6x5UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC6x5SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC6x6UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC6x6SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x5UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x5SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x6UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x6SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x8UNormBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC8x8SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x5UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x5SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x6UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x6SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x8UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x8SRGBBlock:	        internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x10UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC10x10SRGBBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC12x10UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC12x10SRGBBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC12x12UNormBlock:	    internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::ASTC12x12SRGBBlock:	    internalFormat = GL_INVALID_ENUM; break;
 			default:
 				assert(false);
 				return GL_INVALID_ENUM;
@@ -955,13 +947,9 @@ namespace octoon
 				return 1;
 			}
 
-			if (format == GL_RED_EXT)
-				return 1 * typeSize;
-			else if (format == GL_RG_EXT)
-				return 2 * typeSize;
-			else if (format == GL_RGB || format == GL_SRGB_EXT)
+			if (format == GL_RGB)
 				return 3 * typeSize;
-			else if (format == GL_RGBA || format == GL_BGRA_EXT || format == GL_SRGB_ALPHA_EXT)
+			else if (format == GL_RGBA)
 				return 4 * typeSize;
 			else
 			{
@@ -973,24 +961,8 @@ namespace octoon
 		GLsizei
 		EGL2Types::getCompressedTextureSize(GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat) noexcept
 		{
-			switch (internalFormat)
-			{
-			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-				width = (width + 3) & ~3;
-				height = (height + 3) & ~3;
-				return std::max(8, width * height / 2);
-			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-				width = (width + 3) & ~3;
-				height = (height + 3) & ~3;
-				return std::max(16, width * height);
-			default:
-			{
-				GL_PLATFORM_ASSERT(false, "bad texformat in compressed_texture_size");
-				return 0;
-			}
-			}
+			GL_PLATFORM_ASSERT(false, "bad texformat in compressed_texture_size");
+			return 0;
 		}
 
 		GLboolean
@@ -1155,12 +1127,6 @@ namespace octoon
 					break;
 				case GL_INVALID_OPERATION:
 					GL_PLATFORM_LOG("glGetError() fail : GL_INVALID_OPERATION");
-					break;
-				case GL_STACK_OVERFLOW:
-					GL_PLATFORM_LOG("glGetError() fail : GL_STACK_OVERFLOW");
-					break;
-				case GL_STACK_UNDERFLOW:
-					GL_PLATFORM_LOG("glGetError() fail : GL_STACK_UNDERFLOW");
 					break;
 				case GL_OUT_OF_MEMORY:
 					GL_PLATFORM_LOG("glGetError() fail : GL_OUT_OF_MEMORY");

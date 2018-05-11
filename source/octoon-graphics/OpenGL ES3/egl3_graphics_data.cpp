@@ -1,6 +1,6 @@
 #include "egl3_graphics_data.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -32,7 +32,7 @@ namespace octoon
 			else if (type == GraphicsDataType::UniformBuffer)
 				_target = GL_UNIFORM_BUFFER;
 			else if (type == GraphicsDataType::StorageTexelBuffer)
-				_target = GL_TEXTURE_BUFFER_EXT;
+				_target = GL_TEXTURE_BUFFER;
 			else if (type == GraphicsDataType::StorageBuffer)
 				_target = GL_SHADER_STORAGE_BUFFER;
 			else if (type == GraphicsDataType::StorageBuffer)
@@ -51,7 +51,7 @@ namespace octoon
 			GL_CHECK(glGenBuffers(1, &_buffer));
 			GL_CHECK(glBindBuffer(_target, _buffer));
 			GL_CHECK(glBufferData(_target, desc.getStreamSize(), desc.getStream(), flags));
-	
+
 			return true;
 		}
 

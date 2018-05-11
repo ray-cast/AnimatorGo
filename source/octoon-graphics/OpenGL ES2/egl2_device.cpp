@@ -52,7 +52,7 @@ namespace octoon
 			swapchain->setDevice(this->downcast_pointer<EGL2Device>());
 			if (swapchain->setup(desc))
 				return swapchain;
-			return false;
+			return nullptr;
 		}
 
 		GraphicsContextPtr
@@ -65,7 +65,7 @@ namespace octoon
 				_deviceContexts.push_back(context);
 				return context;
 			}
-			return false;
+			return nullptr;
 		}
 
 		GraphicsInputLayoutPtr

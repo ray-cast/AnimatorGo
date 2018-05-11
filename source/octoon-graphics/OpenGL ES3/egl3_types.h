@@ -23,6 +23,8 @@
 #include <GLES3\gl3.h>
 #include <GLES3\gl31.h>
 
+#include <cstdarg>
+
 #if defined(GL_KHR_debug)
 #	define GL_DEBUG_OUTPUT_SYNCHRONOUS   GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR
 #   define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_KHR

@@ -174,7 +174,7 @@ namespace octoon
 			attribs[index++] = GLX_CONTEXT_PROFILE_MASK_ARB;
 			attribs[index++] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
 
-			auto deviceType = this->getDevice()->getGraphicsDeviceDesc().getDeviceType();
+			auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
 			if (deviceType == GraphicsDeviceType::OpenGLCore)
 			{
 				attribs[index++] = GLX_CONTEXT_MAJOR_VERSION_ARB;

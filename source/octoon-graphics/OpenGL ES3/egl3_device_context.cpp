@@ -491,7 +491,7 @@ namespace octoon
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
 				{
-					glColorMaskiEXT(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+					//glColorMaskiEXT(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 				}
 
 				glClearBufferfv(GL_COLOR, buffer, color.ptr());
@@ -502,7 +502,7 @@ namespace octoon
 					GLboolean g = colorWriteFlags & GraphicsColorMaskFlagBits::GreendBit ? GL_TRUE : GL_FALSE;
 					GLboolean b = colorWriteFlags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
 					GLboolean a = colorWriteFlags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
-					glColorMaskiEXT(buffer, r, g, b, a);
+					//glColorMaskiEXT(buffer, r, g, b, a);
 				}
 			}
 
@@ -670,9 +670,9 @@ namespace octoon
 
 			GL_CHECK(glEnable(GL_DEBUG_OUTPUT));
 
-			GL_CHECK(glDebugMessageCallback(debugCallBack, this));
+			//GL_CHECK(glDebugMessageCallback(debugCallBack, this));
 			// enable all
-			GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
+			//GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
 		#endif
 		}
 

@@ -495,7 +495,7 @@ namespace octoon
 				case GraphicsImageLayout::ColorAttachmentOptimal:
 				{
 					GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
-					glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
+					//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
 				}
 				break;
 				case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
@@ -505,17 +505,17 @@ namespace octoon
 					if (format == GraphicsFormat::S8UInt)
 					{
 						GLenum attachments = GL_STENCIL_ATTACHMENT;
-						glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
+						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
 					}
 					else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
 					{
 						GLenum attachments = GL_DEPTH_ATTACHMENT;
-						glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
+						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, &attachments);
 					}
 					else
 					{
 						GLenum attachments[] = { GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT };
-						glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, attachments);
+						//glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, attachments);
 					}
 				}
 				break;
@@ -659,9 +659,9 @@ namespace octoon
 
 			GL_CHECK(glEnable(GL_DEBUG_OUTPUT));
 
-			GL_CHECK(glDebugMessageCallback(debugCallBack, this));
+			// GL_CHECK(glDebugMessageCallback(debugCallBack, this));
 			// enable all
-			GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
+			// GL_CHECK(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE));
 		#endif
 		}
 

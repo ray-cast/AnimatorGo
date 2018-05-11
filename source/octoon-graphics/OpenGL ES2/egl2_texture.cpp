@@ -131,7 +131,7 @@ namespace octoon
 									else
 									{
 		#ifndef __AMD__
-										GL_CHECK(glTexImage3DOES(cubeFace[i], mip, internalFormat, w, h, layer, 0, format, type, (char*)stream + offset));
+										//GL_CHECK(glTexImage3DOES(cubeFace[i], mip, internalFormat, w, h, layer, 0, format, type, (char*)stream + offset));
 		#else
 										GL_PLATFORM_LOG("Can't support cubemap array");
 										return false;

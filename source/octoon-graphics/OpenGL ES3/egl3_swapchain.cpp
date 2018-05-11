@@ -186,7 +186,7 @@ namespace octoon
 			pixelFormat[index++] = EGL_WINDOW_BIT;
 
 			pixelFormat[index++] = EGL_RENDERABLE_TYPE;
-			pixelFormat[index++] = EGL_OPENGL_ES3_BIT;
+			pixelFormat[index++] = 0x00000040;
 
 			if (swapchainDesc.getImageNums() != 2)
 			{
@@ -311,10 +311,10 @@ namespace octoon
 			EGLint index = 0;
 
 		#if !defined(_BUILD_PLATFORM_ANDROID)
-			attribs[index++] = EGL_CONTEXT_MAJOR_VERSION;
+			attribs[index++] = 0x3098;
 			attribs[index++] = 3;
 
-			attribs[index++] = EGL_CONTEXT_MINOR_VERSION;
+			attribs[index++] = 0x30FB;
 			attribs[index++] = 1;
 		#else
 			attribs[index++] = EGL_CONTEXT_CLIENT_VERSION;

@@ -311,10 +311,10 @@ namespace octoon
 			EGLint index = 0;
 
 		#if !defined(_BUILD_PLATFORM_ANDROID)
-			attribs[index++] = EGL_CONTEXT_MAJOR_VERSION;
+			attribs[index++] = 0x3098;
 			attribs[index++] = 2;
 
-			attribs[index++] = EGL_CONTEXT_MINOR_VERSION;
+			attribs[index++] = 0x30FB;
 			attribs[index++] = 0;
 		#else
 			attribs[index++] = EGL_CONTEXT_CLIENT_VERSION;

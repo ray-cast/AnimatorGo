@@ -102,11 +102,11 @@ namespace octoon
 
 			EGLint attribs[80];
 
-		#if !defined(_BUILD_PLATFORM_ANDROID)
-			attribs[attribIndex++] = EGL_CONTEXT_MAJOR_VERSION;
+		#if !defined(OCTOON_BUILD_PLATFORM_ANDROID)
+			attribs[attribIndex++] = 0x3098;
 			attribs[attribIndex++] = 2;
 
-			attribs[attribIndex++] = EGL_CONTEXT_MINOR_VERSION;
+			attribs[attribIndex++] = 0x30FB;
 			attribs[attribIndex++] = 0;
 		#else
 			attribs[attribIndex++] = EGL_CONTEXT_CLIENT_VERSION;
@@ -118,7 +118,7 @@ namespace octoon
 
 			EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-			EGLNativeWindowType hwnd = nullptr;// (EGLNativeWindowType)deviceDesc.getWindHandle();
+			EGLNativeWindowType hwnd = 0;// (EGLNativeWindowType)deviceDesc.getWindHandle();
 			EGLSurface surface = ::eglCreateWindowSurface(display, config, hwnd, NULL);
 			if (::eglGetError() != EGL_SUCCESS)
 			{

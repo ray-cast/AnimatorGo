@@ -39,7 +39,7 @@ namespace octoon
 				auto& destBlend = destBlends[i];
 				if (destBlend.getBlendEnable())
 				{
-					glDisableiEXT(GL_BLEND, i);
+					//glDisableiEXT(GL_BLEND, i);
 					destBlend.setBlendEnable(false);
 				}
 			}
@@ -53,7 +53,7 @@ namespace octoon
 				{
 					if (!destBlend.getBlendEnable())
 					{
-						glEnableiEXT(GL_BLEND, i);
+						//glEnableiEXT(GL_BLEND, i);
 						destBlend.setBlendEnable(true);
 					}
 
@@ -67,7 +67,7 @@ namespace octoon
 						GLenum sfactorAlpha = EGL3Types::asBlendFactor(srcBlend.getBlendAlphaSrc());
 						GLenum dfactorAlpha = EGL3Types::asBlendFactor(srcBlend.getBlendAlphaDest());
 
-						glBlendFuncSeparateiEXT(i, sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+						//glBlendFuncSeparateiEXT(i, sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
 
 						destBlend.setBlendSrc(srcBlend.getBlendSrc());
 						destBlend.setBlendDest(srcBlend.getBlendDest());
@@ -81,7 +81,7 @@ namespace octoon
 						GLenum modeRGB = EGL3Types::asBlendOperation(srcBlend.getBlendOp());
 						GLenum modeAlpha = EGL3Types::asBlendOperation(srcBlend.getBlendAlphaOp());
 
-						glBlendEquationSeparateiEXT(i, modeRGB, modeAlpha);
+						//glBlendEquationSeparateiEXT(i, modeRGB, modeAlpha);
 
 						destBlend.setBlendOp(srcBlend.getBlendOp());
 						destBlend.setBlendAlphaOp(srcBlend.getBlendAlphaOp());
@@ -91,7 +91,7 @@ namespace octoon
 				{
 					if (destBlend.getBlendEnable())
 					{
-						glDisableiEXT(GL_BLEND, i);
+						//glDisableiEXT(GL_BLEND, i);
 						destBlend.setBlendEnable(false);
 					}
 				}
@@ -105,7 +105,7 @@ namespace octoon
 					GLboolean b = flags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
 					GLboolean a = flags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
 
-					glColorMaskiEXT(i, r, g, b, a);
+					//glColorMaskiEXT(i, r, g, b, a);
 
 					destBlend.setColorWriteMask(srcBlend.getColorWriteMask());
 				}

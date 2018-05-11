@@ -80,7 +80,7 @@ namespace octoon
 		{
 		#ifndef __AMD__
 			GL_CHECK(glBindBuffer(_target, _buffer));
-			GL_CHECK(glFlushMappedBufferRangeEXT(_target, offset, cnt));
+			//GL_CHECK(glFlushMappedBufferRangeEXT(_target, offset, cnt));
 			return cnt;
 		#else
 			return 0;
@@ -92,7 +92,7 @@ namespace octoon
 		{
 			assert(data);
 			GL_CHECK(glBindBuffer(_target, _buffer));
-			*data = (char*)glMapBufferOES(_target, GL_WRITE_ONLY_OES) + offset;
+			//*data = (char*)glMapBufferOES(_target, GL_WRITE_ONLY_OES) + offset;
 			if (!*data)
 				return false;
 			*(char**)data += offset;
@@ -103,7 +103,7 @@ namespace octoon
 		EGL2GraphicsData::unmap() noexcept
 		{
 			GL_CHECK(glBindBuffer(_target, _buffer));
-			GL_CHECK(glUnmapBufferOES(_target));
+			//GL_CHECK(glUnmapBufferOES(_target));
 		}
 
 		GLuint

@@ -154,8 +154,8 @@ namespace octoon
 			auto begin = descriptor_set_->getGraphicsUniformSets().begin();
 			auto end = descriptor_set_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "proj"; });
-			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "decal"; });
+			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
+			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
 
 			initialize_ = true;
 			return true;

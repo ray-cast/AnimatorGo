@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace graphics
 	{
-		class EGLSwapchain final : public GraphicsSwapchain
+		class EGLSwapchain : public GraphicsSwapchain
 		{
 			OctoonDeclareSubClass(EGLSwapchain, GraphicsSwapchain)
 		public:
@@ -23,17 +23,15 @@ namespace octoon
 			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept;
 			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept;
 
+			void setDevice(GraphicsDevicePtr device) noexcept;
+			GraphicsDevicePtr getDevice() noexcept;
+
 			void setSwapInterval(GraphicsSwapInterval interval) noexcept;
 			GraphicsSwapInterval getSwapInterval() const noexcept;
 
 			void present() noexcept;
 
 			const GraphicsSwapchainDesc& getGraphicsSwapchainDesc() const noexcept;
-
-		private:
-			friend class EGL2Device;
-			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
 
 		private:
 			bool initSurface(const GraphicsSwapchainDesc& swapchainDesc);

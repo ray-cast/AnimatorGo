@@ -1,5 +1,5 @@
-#ifndef OCTOON_GL33_SWAPCHAIN_H_
-#define OCTOON_GL33_SWAPCHAIN_H_
+#ifndef OCTOON_OGL_SWAPCHAIN_H_
+#define OCTOON_OGL_SWAPCHAIN_H_
 
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 #		include "wgl_swapchain.h"
@@ -10,6 +10,9 @@
 #elif defined(OCTOON_BUILD_PLATFORM_APPLE)
 #		include "nsgl_swapchain.h"
 #		define ToplevelSwapchain NSGLSwapchain
+#else
+#		include "egl_swapchain.h"
+#		define ToplevelSwapchain EGLSwapchain
 #endif
 
 namespace octoon

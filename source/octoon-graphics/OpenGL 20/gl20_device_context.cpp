@@ -107,7 +107,7 @@ namespace octoon
 				_viewport.width != view.width ||
 				_viewport.height != view.height)
 			{
-				GL_CHECK(glViewport(view.left, view.top, view.width, view.height));
+				GL_CHECK(glViewport((GLint)view.left, (GLint)view.top, (GLsizei)view.width, (GLsizei)view.height));
 				_viewport = view;
 			}
 		}
@@ -340,7 +340,7 @@ namespace octoon
 			}
 
 			_indexType = GL20Types::asIndexType(indexType);
-			_indexOffset = offset;
+			_indexOffset = (GLintptr)offset;
 		}
 
 		GraphicsDataPtr
@@ -378,7 +378,7 @@ namespace octoon
 					glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer->getInstanceID());
 
 					auto& framebufferDesc = _framebuffer->getGraphicsFramebufferDesc();
-					this->setViewport(0, float4(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight()));
+					this->setViewport(0, float4(0, 0, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
 
 					glScissor(_scissor.left, framebufferDesc.getHeight() - _scissor.height - _scissor.top, _scissor.width, _scissor.height);
 				}

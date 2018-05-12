@@ -1,4 +1,4 @@
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>

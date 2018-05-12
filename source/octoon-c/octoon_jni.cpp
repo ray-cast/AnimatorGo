@@ -1,5 +1,5 @@
 #if defined(OCTOON_BUILD_PLATFORM_JAVA)
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 void Java_org_octoon_lib_Octoon3DRenderer_nativeConfig(JNIEnv*  env, jobject thiz, jstring gamedir, jstring scenename, jboolean bShader) noexcept
 {

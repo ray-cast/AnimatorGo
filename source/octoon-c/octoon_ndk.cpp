@@ -1,11 +1,14 @@
 #if defined(OCTOON_BUILD_PLATFORM_ANDROID)
-#include <ray/ray.h>
-#include <ray/ray_main.h>
+#include <octoon/octoon-c.h>
 
-#include <ray/game_application.h>
+#include <octoon/game_app.h>
+#include <octoon/input/input_event.h>
+#include <octoon/runtime/except.h>
+#include <octoon/io/fcntl.h>
 
-#include <ray/fcntl.h>
-#include <ray/input.h>
+#include <chrono>
+#include <iostream>
+#include <cstring>
 
 #include <android_native_app_glue.h>
 

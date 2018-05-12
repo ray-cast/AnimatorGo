@@ -1,5 +1,5 @@
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 #include <octoon/game_app.h>
 #include <octoon/input/input_event.h>

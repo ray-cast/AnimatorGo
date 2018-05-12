@@ -1,5 +1,4 @@
 #include "x11_swapchain.h"
-#include "ogl_device.h"
 
 namespace octoon
 {
@@ -31,14 +30,14 @@ namespace octoon
 
 			if (swapchainDesc.getImageNums() != 2)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Invalid image number");
+				// this->getDevice()->downcast<OGLDevice>()->message("Invalid image number");
 				return false;
 			}
 
 			_display = ::XOpenDisplay(NULL);
 			if (_display == nullptr)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot connect to X server");
+				// this->getDevice()->downcast<OGLDevice>()->message("Cannot connect to X server");
 				return false;
 			}
 
@@ -48,13 +47,13 @@ namespace octoon
 			int glx_major, glx_minor;
 			if (!glXQueryVersion(_display, &glx_major, &glx_minor))
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot query GLX version");
+				// this->getDevice()->downcast<OGLDevice>()->message("Cannot query GLX version");
 				return false;
 			}
 
 			if ((glx_major == 1) && (glx_minor < 3) || (glx_major < 1))
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("GLX version 1.3 is required");
+				// this->getDevice()->downcast<OGLDevice>()->message("GLX version 1.3 is required");
 				return false;
 			}
 
@@ -99,7 +98,7 @@ namespace octoon
 			}
 			else
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
+				// this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
 				return false;
 			}
 
@@ -148,7 +147,7 @@ namespace octoon
 			}
 			else
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
+				// this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
 				return false;
 			}
 
@@ -159,7 +158,7 @@ namespace octoon
 			_cfg = glXChooseFBConfig(_display, 0, att, &fbcount);
 			if (!_cfg)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Failed to retrieve a framebuffer config.");
+				// this->getDevice()->downcast<OGLDevice>()->message("Failed to retrieve a framebuffer config.");
 				return false;
 			}
 
@@ -175,7 +174,7 @@ namespace octoon
 			attribs[index++] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
 
 			auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
-			if (deviceType == GraphicsDeviceType::OpenGLCore)
+			if (deviceType == GraphicsDeviceType::OpenGL45)
 			{
 				attribs[index++] = GLX_CONTEXT_MAJOR_VERSION_ARB;
 				attribs[index++] = 4;
@@ -183,7 +182,7 @@ namespace octoon
 				attribs[index++] = GLX_CONTEXT_MINOR_VERSION_ARB;
 				attribs[index++] = 5;
 			}
-			else
+			else if (deviceType == GraphicsDeviceType::OpenGL33)
 			{
 				attribs[index++] = GLX_CONTEXT_MAJOR_VERSION_ARB;
 				attribs[index++] = 3;
@@ -198,7 +197,7 @@ namespace octoon
 			_glc = glXCreateContextAttribsARB(_display, *_cfg, 0, true, attribs);
 			if (!_glc)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Failed to create context");
+				// this->getDevice()->downcast<OGLDevice>()->message("Failed to create context");
 				return false;
 			}
 
@@ -248,7 +247,7 @@ namespace octoon
 				}
 				else
 				{
-					this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
+					// this->getDevice()->downcast<OGLDevice>()->message("Cannot supported color format");
 					return false;
 				}
 
@@ -297,7 +296,7 @@ namespace octoon
 				}
 				else
 				{
-					this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
+					// this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
 					return false;
 				}
 
@@ -307,14 +306,14 @@ namespace octoon
 				_vi = glXChooseVisual(_display, DefaultScreen(_display), attrib);
 				if (!_vi)
 				{
-					this->getDevice()->downcast<OGLDevice>()->message("glXChooseVisual() fail.");
+					// this->getDevice()->downcast<OGLDevice>()->message("glXChooseVisual() fail.");
 					return false;
 				}
 
 				_cmap = XCreateColormap(_display, RootWindow(_display, _vi->screen), _vi->visual, AllocNone);
 				if (!_cmap)
 				{
-					this->getDevice()->downcast<OGLDevice>()->message("XCreateColormap() fail.");
+					// this->getDevice()->downcast<OGLDevice>()->message("XCreateColormap() fail.");
 					return false;
 				}
 
@@ -380,7 +379,7 @@ namespace octoon
 					_swapchain->setActive(false);
 
 				if (!glXMakeContextCurrent(_display, _window, _window, _glc))
-					this->getDevice()->downcast<OGLDevice>()->message("Failed to make context");
+					// this->getDevice()->downcast<OGLDevice>()->message("Failed to make context");
 
 				_swapchain = this;
 			}

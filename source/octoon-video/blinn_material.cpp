@@ -87,7 +87,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;

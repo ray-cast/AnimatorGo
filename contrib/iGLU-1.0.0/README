@@ -1,0 +1,68 @@
+******************************************
+iGLU: OpenGL Utility Library for iPhone OS
+******************************************
+
+
+Summary
+-------
+
+iGLU_ is an implementation of the `OpenGL Utility Library`__ (GLU) for
+`iPhone OS`_.
+
+__ http://www.opengl.org/documentation/specs/
+.. _iGLU: http://code.google.com/p/iphone-glu/
+.. _iPhone OS: http://developer.apple.com/iphone/
+
+
+License
+-------
+
+iGLU is based on the GLU source included with Mesa_ 7.2, which in turn
+derives from the `SGI OpenGL Sample Implementation`__.  All code
+derived from SGI's source is licensed under the `SGI Free Software
+License B`__ version 2.0. All other code is licensed under the `MIT
+license`__.
+
+.. _Mesa: http://mesa3d.sourceforge.net/
+__ http://oss.sgi.com/projects/ogl-sample/
+__ http://oss.sgi.com/projects/FreeB/
+__ http://www.opensource.org/licenses/mit-license.php
+
+
+Compiling
+---------
+
+To compile for the simulator::
+
+  make ARCH=i386 PLATFORM=iPhoneSimulator
+
+To compile for a device::
+
+  make ARCH=armv6 PLATFORM=iPhoneOS
+
+This produces ``libGLU.a``, which you can add to your iPhone project
+(along with ``include/glu.h``).
+
+
+Comparison with Standard GLU
+----------------------------
+
+iGLU does not include GLU features that depend on OpenGL functionality
+missing in `OpenGL ES 1.1`__.
+
+Available features:
+
+* Matrix manipulation
+* Polygon tessellation
+
+Missing features:
+
+* Mipmapping
+* Quadrics
+* NURBS
+
+For more information on these features, see the `GLU 1.3
+specification`__.
+
+__ http://www.khronos.org/opengles/1_X/
+__ http://opengl.org/documentation/specs/glu/glu1_3.pdf

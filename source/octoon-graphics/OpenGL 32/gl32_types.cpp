@@ -1,4 +1,6 @@
 #include "gl32_types.h"
+#include <cstring>
+#include <cstdarg>
 
 namespace octoon
 {

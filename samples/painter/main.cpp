@@ -1,4 +1,4 @@
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 #include <octoon/game_app.h>
 #include <octoon/game_object.h>

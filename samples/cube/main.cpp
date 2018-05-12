@@ -1,4 +1,4 @@
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 #include <octoon/video/ggx_material.h>
 #include <octoon/game_object.h>

@@ -140,7 +140,7 @@ namespace octoon
 			return _count;
 		}
 
-		istream& 
+		istream&
 		istream::operator >> (std::string& str) noexcept
 		{
 			const isentry _Ok(this);
@@ -155,16 +155,16 @@ namespace octoon
 			this->setstate(ios_base::failbit);
 			return *this;
 		}
-		
-		istream& 
+
+		istream&
 		istream::operator >> (ios_base& (*function)(ios_base&)) noexcept
 		{
 			assert(function);
 			(*function)(*(ios_base *)this);
 			return (*this);
 		}
-		
-		istream& 
+
+		istream&
 		istream::operator >> (istream& (*function)(istream&)) noexcept
 		{
 			assert(function);

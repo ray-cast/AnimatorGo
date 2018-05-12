@@ -41,40 +41,40 @@ namespace octoon
 
 #pragma warning(push)
 #pragma warning(disable : 4244) // float multiply with double
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator+=(const S sz) noexcept { x += sz; y += sz; z += sz; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator-=(const S sz) noexcept { x -= sz; y -= sz; z -= sz; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator*=(const S sz) noexcept { x *= sz; y *= sz; z *= sz; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator/=(const S sz) noexcept { x /= sz; y /= sz; z /= sz; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator+=(const Vector2<S>& rt) noexcept { x += rt.x; y += rt.y; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator-=(const Vector2<S>& rt) noexcept { x -= rt.x; y -= rt.y; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator/=(const Vector2<S>& rt) noexcept { x *= rt.x; y *= rt.y; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator*=(const Vector2<S>& rt) noexcept { x /= rt.x; y /= rt.y; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator+=(const Vector3<S>& pt) noexcept { x += pt.x; y += pt.y; z += pt.z; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator-=(const Vector3<S>& pt) noexcept { x -= pt.x; y -= pt.y; z -= pt.z; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator*=(const Vector3<S>& pt) noexcept { x *= pt.x; y *= pt.y; z *= pt.z; return *this; }
 
-				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || !trait::is_same_v<S, T> && trait::is_floating_point_v<S>>>
+				template<typename S, typename = std::enable_if_t<trait::is_same_v<S, T> || (!trait::is_same_v<S, T> && trait::is_floating_point_v<S>)>>
 				Vector3<T>& operator/=(const Vector3<S>& pt) noexcept { x /= pt.x; y /= pt.y; z /= pt.z; return *this; }
 #pragma warning(pop)
 

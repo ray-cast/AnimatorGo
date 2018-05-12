@@ -1,8 +1,8 @@
 #include <octoon/octoon-c.h>
 
-#include  <X11/Xlib.h>
-#include  <X11/Xatom.h>
-#include  <X11/Xutil.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
 
 #undef None
 
@@ -208,8 +208,9 @@ void OCTOON_C_CALL OctoonCloseWindow() noexcept
 		gameApp_->close();
 		gameApp_ = nullptr;
 	}
-
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 	XCloseDisplay(x_display);
+#endif
 }
 
 bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept
@@ -226,7 +227,7 @@ bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept
 void OCTOON_C_CALL OctoonUpdate() noexcept
 {
     //_glfwPollJoystickEvents();
-
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
     int count = XPending(x_display);
     while (count--)
     {
@@ -239,6 +240,7 @@ void OCTOON_C_CALL OctoonUpdate() noexcept
     //    centerCursor(_glfw.x11.disabledCursorWindow);
 
     XFlush(x_display);
+#endif
 
     if (gameApp_)
 		gameApp_->update();

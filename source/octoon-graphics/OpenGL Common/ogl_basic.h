@@ -37,7 +37,7 @@
 #	include <GLES3/gl32.h>
 #endif
 
-#if OCTOON_BUILD_PLATFORM_LINUX
+#if defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 #	undef None
 #	undef Always
 #endif

@@ -1,9 +1,9 @@
-#include "gl32_descriptor.h"
+#include "gl32_descriptor_set.h"
 #include "gl32_texture.h"
 #include "gl32_shader.h"
 #include "gl32_sampler.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -20,7 +20,7 @@ namespace octoon
 		{
 		}
 
-		const std::string& 
+		const std::string&
 		GL32GraphicsUniformSet::getName() const noexcept
 		{
 			assert(_param);

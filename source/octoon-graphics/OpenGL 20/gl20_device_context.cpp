@@ -1,4 +1,5 @@
 #include "gl20_device_context.h"
+#include "gl20_device.h"
 #include "gl20_state.h"
 #include "gl20_shader.h"
 #include "gl20_texture.h"
@@ -7,11 +8,7 @@
 #include "gl20_framebuffer.h"
 #include "gl20_graphics_data.h"
 #include "gl20_pipeline.h"
-#include "gl20_descriptor.h"
-
-#include "ogl_swapchain.h"
-
-#include <iostream>
+#include "gl20_descriptor_set.h"
 
 namespace octoon
 {
@@ -489,16 +486,54 @@ namespace octoon
 		void
 		GL20DeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept
 		{
+			assert(src);
+			assert(src->isInstanceOf<GL20Framebuffer>());
+			assert(!dest || (dest && dest->isInstanceOf<GL20Framebuffer>()));
+			assert(_glcontext->getActive());
+
+			auto readFramebuffer = src->downcast<GL20Framebuffer>()->getInstanceID();
+			auto drawFramebuffer = dest ? dest->downcast<GL20Framebuffer>()->getInstanceID() : GL_NONE;
+
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
+
+			glBlitFramebuffer(v1.left, v1.top, v1.width, v1.height, v2.left, v2.top, v2.width, v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+			_framebuffer = nullptr;
 		}
 
 		void
 		GL20DeviceContext::readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
+			GLenum internalFormat = GL20Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			if (internalFormat == GL_INVALID_ENUM)
+			{
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
+				return;
+			}
+
+			glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(texture->downcast<GL20Texture>()->getTarget(), texture->downcast<GL20Texture>()->getInstanceID());
+			glCopyTexImage2D(texture->downcast<GL20Texture>()->getTarget(), miplevel, internalFormat, x, y, width, height, 0);
 		}
 
 		void
 		GL20DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
+			GLenum internalFormat = GL20Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			if (internalFormat == GL_INVALID_ENUM)
+			{
+				this->getDevice()->downcast<GL20Device>()->message("Invalid texture format");
+				return;
+			}
+
+			glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(texture->downcast<GL20Texture>()->getTarget(), texture->downcast<GL20Texture>()->getInstanceID());
+			glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, miplevel, internalFormat, x, y, width, height, 0);
 		}
 
 		void

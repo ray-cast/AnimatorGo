@@ -2,17 +2,17 @@
 #define OCTOON_OGL_SWAPCHAIN_H_
 
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
-#		include "wgl_swapchain.h"
-#		define ToplevelSwapchain WGLSwapchain
+#	include "wgl_swapchain.h"
+#	define ToplevelSwapchain WGLSwapchain
 #elif defined(OCTOON_BUILD_PLATFORM_LINUX)
-#		include "x11_swapchain.h"
-#		define ToplevelSwapchain XGLSwapchain
+#	include "x11_swapchain.h"
+#	define ToplevelSwapchain XGLSwapchain
 #elif defined(OCTOON_BUILD_PLATFORM_APPLE)
-#		include "nsgl_swapchain.h"
-#		define ToplevelSwapchain NSGLSwapchain
+#	include "nsgl_swapchain.h"
+#	define ToplevelSwapchain NSGLSwapchain
 #else
-#		include "egl_swapchain.h"
-#		define ToplevelSwapchain EGLSwapchain
+#	include "egl_swapchain.h"
+#	define ToplevelSwapchain EGLSwapchain
 #endif
 
 namespace octoon

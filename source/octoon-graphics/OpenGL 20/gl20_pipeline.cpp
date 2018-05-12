@@ -2,10 +2,10 @@
 #include "gl20_state.h"
 #include "gl20_shader.h"
 #include "gl20_input_layout.h"
-#include "gl20_descriptor.h"
+#include "gl20_descriptor_set.h"
 #include "gl20_graphics_data.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -92,7 +92,7 @@ namespace octoon
 					VertexBinding binding;
 					binding.index = attrib.index;
 					binding.slot = it.getVertexSlot();
-					
+
 					auto divisor = it.getVertexDivisor();
 					if (divisor == GraphicsVertexDivisor::Vertex)
 						binding.divisor = 0;

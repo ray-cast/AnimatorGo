@@ -74,8 +74,8 @@ namespace octoon
 		int
 		GL32GraphicsData::flush(GLintptr offset, GLsizeiptr cnt) noexcept
 		{
-			GL_CHECK(glBindBuffer(_target, _buffer));
-			GL_CHECK(glFlushMappedBufferRange(_buffer, offset, cnt));
+			glBindBuffer(_target, _buffer);
+			glFlushMappedBufferRange(_buffer, offset, cnt);
 			return cnt;
 		}
 
@@ -83,7 +83,7 @@ namespace octoon
 		GL32GraphicsData::map(std::ptrdiff_t offset, std::ptrdiff_t count, void** data) noexcept
 		{
 			assert(data);
-			GL_CHECK(glBindBuffer(_target, _buffer));
+			glBindBuffer(_target, _buffer);
 			*data = glMapBufferRange(_target, offset, count, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
 			return *data ? true : false;
 		}
@@ -91,8 +91,8 @@ namespace octoon
 		void
 		GL32GraphicsData::unmap() noexcept
 		{
-			GL_CHECK(glBindBuffer(_target, _buffer));
-			GL_CHECK(glUnmapBuffer(_target));
+			glBindBuffer(_target, _buffer);
+			glUnmapBuffer(_target);
 		}
 
 		GLuint

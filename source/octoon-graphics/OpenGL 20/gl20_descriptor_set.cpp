@@ -1,9 +1,9 @@
-#include "gl20_descriptor.h"
+#include "gl20_descriptor_set.h"
 #include "gl20_texture.h"
 #include "gl20_shader.h"
 #include "gl20_sampler.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -20,7 +20,7 @@ namespace octoon
 		{
 		}
 
-		const std::string& 
+		const std::string&
 		GL20GraphicsUniformSet::getName() const noexcept
 		{
 			assert(_param);

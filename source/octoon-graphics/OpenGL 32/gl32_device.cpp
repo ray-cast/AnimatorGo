@@ -8,7 +8,7 @@
 #include "gl32_input_layout.h"
 #include "gl32_sampler.h"
 #include "gl32_pipeline.h"
-#include "gl32_descriptor.h"
+#include "gl32_descriptor_set.h"
 #include "gl32_graphics_data.h"
 
 namespace octoon
@@ -30,6 +30,7 @@ namespace octoon
 		GL32Device::setup(const GraphicsDeviceDesc& desc) noexcept
 		{
 			auto deviceProperty = std::make_shared<GL32DeviceProperty>();
+			deviceProperty->setDevice(this->downcast_pointer<OGLDevice>());
 			if (!deviceProperty->setup(desc))
 				return false;
 

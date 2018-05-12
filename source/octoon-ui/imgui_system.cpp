@@ -145,7 +145,7 @@ namespace octoon
 				return false;
 
 			GraphicsDescriptorSetDesc descriptor_set;
-			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 
 			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)

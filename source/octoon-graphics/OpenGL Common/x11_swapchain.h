@@ -1,7 +1,7 @@
-#ifndef _H_X11_CORE_SWAPCHAIN_H_
-#define _H_X11_CORE_SWAPCHAIN_H_
+#ifndef OCTOON_X11_SWAPCHAIN_H_
+#define OCTOON_X11_SWAPCHAIN_H_
 
-#include "ogl_types.h"
+#include "ogl_basic.h"
 
 namespace octoon
 {

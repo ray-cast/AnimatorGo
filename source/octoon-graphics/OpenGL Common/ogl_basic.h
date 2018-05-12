@@ -35,6 +35,8 @@
 #	include <X11/Xlib.h>
 #	include <EGL/egl.h>
 #	include <GLES3/gl32.h>
+#   undef None
+#   undef Always
 #endif
 
 #if OCTOON_BUILD_PLATFORM_LINUX

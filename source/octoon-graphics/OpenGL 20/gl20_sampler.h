@@ -17,11 +17,11 @@ namespace octoon
 			bool setup(const GraphicsSamplerDesc& desc) except;
 			void close() noexcept;
 
-			const GraphicsSamplerDesc& getGraphicsSamplerDesc() const noexcept;
+			const GraphicsSamplerDesc& getGraphicsSamplerDesc() const noexcept override;
 		private:
 			friend class GL20Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GraphicsSamplerDesc _desc;

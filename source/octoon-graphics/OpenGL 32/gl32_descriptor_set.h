@@ -134,12 +134,12 @@ namespace octoon
 			bool setup(const GraphicsDescriptorPoolDesc& desc) noexcept;
 			void close() noexcept;
 
-			const GraphicsDescriptorPoolDesc& getGraphicsDescriptorPoolDesc() const noexcept;
+			const GraphicsDescriptorPoolDesc& getGraphicsDescriptorPoolDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32DescriptorPool(const GL32DescriptorPool&) noexcept = delete;
@@ -160,12 +160,12 @@ namespace octoon
 			bool setup(const GraphicsDescriptorSetLayoutDesc& desc) noexcept;
 			void close() noexcept;
 
-			const GraphicsDescriptorSetLayoutDesc& getGraphicsDescriptorSetLayoutDesc() const noexcept;
+			const GraphicsDescriptorSetLayoutDesc& getGraphicsDescriptorSetLayoutDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32DescriptorSetLayout(const GL32DescriptorSetLayout&) noexcept = delete;
@@ -191,12 +191,12 @@ namespace octoon
 			void copy(std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept;
 
 			const GraphicsUniformSets& getGraphicsUniformSets() const noexcept;
-			const GraphicsDescriptorSetDesc& getGraphicsDescriptorSetDesc() const noexcept;
+			const GraphicsDescriptorSetDesc& getGraphicsDescriptorSetDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32DescriptorSet(const GL32DescriptorSet&) noexcept = delete;

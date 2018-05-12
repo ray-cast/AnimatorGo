@@ -19,12 +19,12 @@ namespace octoon
 
 			void apply(GraphicsStateDesc& last) noexcept;
 
-			const GraphicsStateDesc& getGraphicsStateDesc() const noexcept;
+			const GraphicsStateDesc& getGraphicsStateDesc() const noexcept override;
 
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL33GraphicsState(const GL33GraphicsState&) = delete;

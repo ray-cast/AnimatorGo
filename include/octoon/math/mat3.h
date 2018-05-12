@@ -432,7 +432,7 @@ namespace octoon
 		template<typename T>
 		inline detail::Matrix3x3<T> orthonormalize(const detail::Matrix3x3<T>& m_) noexcept
 		{
-			detail::Matrix3x3<T> m;
+			detail::Matrix3x3<T> m = m_;
 			detail::Vector3<T> x = m.right;
 			detail::Vector3<T> y = m.up;
 			detail::Vector3<T> z;

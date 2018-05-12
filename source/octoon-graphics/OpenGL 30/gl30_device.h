@@ -34,10 +34,10 @@ namespace octoon
 
 			void enableDebugControl(bool enable) noexcept;
 
-			void copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept;
+			void copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept override;
 
-			const GraphicsDeviceProperty& getDeviceProperty() const noexcept;
-			const GraphicsDeviceDesc& getDeviceDesc() const noexcept;
+			const GraphicsDeviceProperty& getDeviceProperty() const noexcept override;
+			const GraphicsDeviceDesc& getDeviceDesc() const noexcept override;
 
 		private:
 			GL30Device(const GL30Device&) noexcept = delete;

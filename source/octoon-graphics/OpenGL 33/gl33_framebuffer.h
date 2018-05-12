@@ -17,12 +17,12 @@ namespace octoon
 			bool setup(const GraphicsFramebufferLayoutDesc& framebufferDesc) noexcept;
 			void close() noexcept;
 
-			const GraphicsFramebufferLayoutDesc& getFramebufferLayoutDesc() const noexcept;
+			const GraphicsFramebufferLayoutDesc& getFramebufferLayoutDesc() const noexcept override;
 
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL33FramebufferLayout(const GL33FramebufferLayout&) noexcept = delete;
@@ -45,7 +45,7 @@ namespace octoon
 
 			GLuint getInstanceID() noexcept;
 
-			const GraphicsFramebufferDesc& getGraphicsFramebufferDesc() const noexcept;
+			const GraphicsFramebufferDesc& getGraphicsFramebufferDesc() const noexcept override;
 
 		private:
 			bool bindRenderTexture(GraphicsTexturePtr target, GLenum attachment, GLint level, GLint layer) noexcept;
@@ -53,7 +53,7 @@ namespace octoon
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL33Framebuffer(const GL33Framebuffer&) noexcept = delete;

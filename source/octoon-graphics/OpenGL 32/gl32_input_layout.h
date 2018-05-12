@@ -17,12 +17,12 @@ namespace octoon
 			bool setup(const GraphicsInputLayoutDesc& desc) noexcept;
 			void close() noexcept;
 
-			const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept;
+			const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32InputLayout(const GL32InputLayout&) noexcept = delete;

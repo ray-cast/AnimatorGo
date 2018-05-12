@@ -3,7 +3,7 @@
 
 #include "gl20_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -19,12 +19,12 @@ namespace octoon
 
 			void apply(GraphicsStateDesc& last) noexcept;
 
-			const GraphicsStateDesc& getGraphicsStateDesc() const noexcept;
+			const GraphicsStateDesc& getGraphicsStateDesc() const noexcept override;
 
 		private:
 			friend class GL20Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL20GraphicsState(const GL20GraphicsState&) = delete;

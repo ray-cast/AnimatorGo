@@ -20,12 +20,12 @@ namespace octoon
 			void bindVertexBuffers(GL33VertexBuffers& vbos, bool forceUpdate) noexcept;
 			void apply() noexcept;
 
-			const GraphicsPipelineDesc& getPipelineDesc() const noexcept;
+			const GraphicsPipelineDesc& getPipelineDesc() const noexcept override;
 
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL33Pipeline(const GL33Pipeline&) noexcept = delete;

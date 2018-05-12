@@ -17,15 +17,15 @@ namespace octoon
 			bool setup(const GraphicsTextureDesc& textureDesc) noexcept;
 			void close() noexcept;
 
-			bool map(std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h, std::uint32_t mipLevel, void** data) noexcept;
-			void unmap() noexcept;
+			bool map(std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h, std::uint32_t mipLevel, void** data) noexcept override;
+			void unmap() noexcept override;
 
 			void setSampler(const GraphicsSamplerPtr& sampler) noexcept;
 
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept;
+			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept override;
 
 		private:
 			static bool applySamplerWrap(GLenum target, GraphicsSamplerWrap wrap) noexcept;
@@ -34,7 +34,7 @@ namespace octoon
 		private:
 			friend class GL20Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GLenum _target;

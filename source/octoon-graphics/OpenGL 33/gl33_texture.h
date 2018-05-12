@@ -23,7 +23,7 @@ namespace octoon
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept;
+			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept override;
 
 		private:
 			bool applyMipmapLimit(GLenum target, std::uint32_t min, std::uint32_t count) noexcept;
@@ -34,7 +34,7 @@ namespace octoon
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GLenum _target;

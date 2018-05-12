@@ -74,7 +74,7 @@ namespace octoon
 		private:
 			friend class GL20Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL20DeviceContext(const GL20DeviceContext&) noexcept = delete;

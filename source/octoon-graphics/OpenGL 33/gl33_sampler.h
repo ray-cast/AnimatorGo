@@ -19,12 +19,12 @@ namespace octoon
 
 			GLuint getInstanceID() noexcept;
 
-			const GraphicsSamplerDesc& getGraphicsSamplerDesc() const noexcept;
+			const GraphicsSamplerDesc& getGraphicsSamplerDesc() const noexcept override;
 
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GLuint _sampler;

@@ -20,19 +20,19 @@ namespace octoon
 			int flush() noexcept;
 			int flush(GLintptr offset, GLsizeiptr cnt) noexcept;
 
-			bool map(std::intptr_t offset, std::intptr_t count, void** data) noexcept;
-			void unmap() noexcept;
+			bool map(std::intptr_t offset, std::intptr_t count, void** data) noexcept override;
+			void unmap() noexcept override;
 
 			GLuint getInstanceID() const noexcept;
 
 			void bind() noexcept;
 
-			const GraphicsDataDesc& getGraphicsDataDesc() const noexcept;
+			const GraphicsDataDesc& getGraphicsDataDesc() const noexcept override;
 
 		private:
 			friend class GL20Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL20GraphicsData(const GL20GraphicsData&) noexcept = delete;

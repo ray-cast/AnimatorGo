@@ -22,12 +22,12 @@ namespace octoon
 			void copy(std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept;
 
 			const GraphicsUniformSets& getGraphicsUniformSets() const noexcept;
-			const GraphicsDescriptorSetDesc& getGraphicsDescriptorSetDesc() const noexcept;
+			const GraphicsDescriptorSetDesc& getGraphicsDescriptorSetDesc() const noexcept override;
 
 		private:
 			friend class GL33Device;
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL45DescriptorSet(const GL45DescriptorSet&) noexcept = delete;

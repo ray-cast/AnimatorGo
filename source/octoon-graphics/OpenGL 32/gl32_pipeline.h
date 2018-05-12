@@ -21,12 +21,12 @@ namespace octoon
 
 			void apply() noexcept;
 
-			const GraphicsPipelineDesc& getPipelineDesc() const noexcept;
+			const GraphicsPipelineDesc& getPipelineDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32Pipeline(const GL32Pipeline&) noexcept = delete;

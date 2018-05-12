@@ -126,7 +126,7 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept;
+			const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept override;
 
 		private:
 			static bool HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, std::string& out);
@@ -135,7 +135,7 @@ namespace octoon
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32Shader(const GL32Shader&) noexcept = delete;
@@ -164,7 +164,7 @@ namespace octoon
 			const GraphicsParams& getActiveParams() const noexcept;
 			const GraphicsAttributes& getActiveAttributes() const noexcept;
 
-			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept;
+			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept override;
 
 		private:
 			void _initActiveAttribute() noexcept;
@@ -178,7 +178,7 @@ namespace octoon
 		private:
 			friend class GL32Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL32Program(const GL32Program&) noexcept = delete;

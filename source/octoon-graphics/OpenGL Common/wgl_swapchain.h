@@ -21,18 +21,18 @@ namespace octoon
 			void setActive(bool active) noexcept;
 			bool getActive() const noexcept;
 
-			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept;
-			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept;
+			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept override;
+			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept override;
 
 			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
-			void setSwapInterval(GraphicsSwapInterval interval) noexcept;
-			GraphicsSwapInterval getSwapInterval() const noexcept;
+			void setSwapInterval(GraphicsSwapInterval interval) noexcept override;
+			GraphicsSwapInterval getSwapInterval() const noexcept override;
 
 			void present() noexcept;
 
-			const GraphicsSwapchainDesc& getGraphicsSwapchainDesc() const noexcept;
+			const GraphicsSwapchainDesc& getGraphicsSwapchainDesc() const noexcept override;
 
 		private:
 			bool initSurface(const GraphicsSwapchainDesc& swapchainDesc);

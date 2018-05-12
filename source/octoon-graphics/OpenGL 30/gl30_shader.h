@@ -15,13 +15,13 @@ namespace octoon
 			~GL30GraphicsAttribute() noexcept;
 
 			void setSemantic(const std::string& semantic) noexcept;
-			const std::string& getSemantic() const noexcept;
+			const std::string& getSemantic() const noexcept override;
 
 			void setSemanticIndex(std::uint8_t index) noexcept;
-			std::uint32_t getSemanticIndex() const noexcept;
+			std::uint32_t getSemanticIndex() const noexcept override;
 
 			void setType(GraphicsFormat type) noexcept;
-			GraphicsFormat getType() const noexcept;
+			GraphicsFormat getType() const noexcept override;
 
 			void setBindingPoint(std::uint32_t bindingPoint) noexcept;
 			std::uint32_t getBindingPoint() const noexcept;
@@ -45,22 +45,22 @@ namespace octoon
 			~GL30GraphicsUniform() noexcept;
 
 			void setName(const std::string& name) noexcept;
-			const std::string& getName() const noexcept;
+			const std::string& getName() const noexcept override;
 
 			void setSamplerName(const std::string& name) noexcept;
-			const std::string& getSamplerName() const noexcept;
+			const std::string& getSamplerName() const noexcept override;
 
 			void setType(GraphicsUniformType type) noexcept;
-			GraphicsUniformType getType() const noexcept;
+			GraphicsUniformType getType() const noexcept override;
 
 			void setOffset(std::uint32_t offset) noexcept;
-			std::uint32_t getOffset() const noexcept;
+			std::uint32_t getOffset() const noexcept override;
 
 			void setBindingPoint(GLuint bindingPoint) noexcept;
-			GLuint getBindingPoint() const noexcept;
+			GLuint getBindingPoint() const noexcept override;
 
 			void setShaderStageFlags(GraphicsShaderStageFlags flags) noexcept;
-			GraphicsShaderStageFlags getShaderStageFlags() const noexcept;
+			GraphicsShaderStageFlags getShaderStageFlags() const noexcept override;
 
 		private:
 			GL30GraphicsUniform(const GL30GraphicsUniform&) noexcept = delete;
@@ -83,23 +83,23 @@ namespace octoon
 			~GL30GraphicsUniformBlock() noexcept;
 
 			void setName(const std::string& name) noexcept;
-			const std::string& getName() const noexcept;
+			const std::string& getName() const noexcept override;
 
 			void setType(GraphicsUniformType type) noexcept;
-			GraphicsUniformType getType() const noexcept;
+			GraphicsUniformType getType() const noexcept override;
 
 			void setBlockSize(std::uint32_t size) noexcept;
-			std::uint32_t getBlockSize() const noexcept;
+			std::uint32_t getBlockSize() const noexcept override;
 
 			void setBindingPoint(GLuint bindingPoint) noexcept;
-			GLuint getBindingPoint() const noexcept;
+			GLuint getBindingPoint() const noexcept override;
 
 			void setShaderStageFlags(GraphicsShaderStageFlags flags) noexcept;
-			GraphicsShaderStageFlags getShaderStageFlags() const noexcept;
+			GraphicsShaderStageFlags getShaderStageFlags() const noexcept override;
 
 			void addGraphicsUniform(GraphicsUniformPtr uniform) noexcept;
 			void removeGraphicsUniform(GraphicsUniformPtr uniform) noexcept;
-			const GraphicsUniforms& getGraphicsUniforms() const noexcept;
+			const GraphicsUniforms& getGraphicsUniforms() const noexcept override;
 
 		private:
 			GL30GraphicsUniformBlock(const GL30GraphicsUniformBlock&) noexcept = delete;
@@ -126,7 +126,7 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept;
+			const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept override;
 
 		private:
 			static bool HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, std::string& out);
@@ -135,7 +135,7 @@ namespace octoon
 		private:
 			friend class GL30Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL30Shader(const GL30Shader&) noexcept = delete;
@@ -161,10 +161,10 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsParams& getActiveParams() const noexcept;
-			const GraphicsAttributes& getActiveAttributes() const noexcept;
+			const GraphicsParams& getActiveParams() const noexcept override;
+			const GraphicsAttributes& getActiveAttributes() const noexcept override;
 
-			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept;
+			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept override;
 
 		private:
 			void _initActiveAttribute() noexcept;
@@ -178,7 +178,7 @@ namespace octoon
 		private:
 			friend class GL30Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
+			GraphicsDevicePtr getDevice() noexcept override;
 
 		private:
 			GL30Program(const GL30Program&) noexcept = delete;

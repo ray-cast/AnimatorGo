@@ -180,7 +180,7 @@ namespace octoon
 			case Format::Type::D32_SFLOAT_S8UInt:
 				return swizzle_t::DepthStencil;
 			default:
-				throw runtime::type_error::create("invalid enum : " + format);
+				throw runtime::type_error::create(std::string("invalid enum : ") + format);
 			}
 		}
 
@@ -434,7 +434,7 @@ namespace octoon
 			case Format::Type::ASTC12x12SRGBBlock:
 				return value_t::Compressed;
 			default:
-				throw runtime::type_error::create("invalid enum : " + format);
+				throw runtime::type_error::create(std::string("invalid enum : ") + format);
 			}
 		}
 
@@ -674,7 +674,7 @@ namespace octoon
 			case Format::Type::ASTC12x12UNormBlock:
 			case Format::Type::ASTC12x12SRGBBlock:
 			default:
-				throw runtime::type_error::create("invalid enum : " + format);
+				throw runtime::type_error::create(std::string("invalid enum : ") + format);
 			}
 		}
 
@@ -914,7 +914,7 @@ namespace octoon
 			case Format::Type::ASTC12x12UNormBlock:
 			case Format::Type::ASTC12x12SRGBBlock:
 			default:
-				throw runtime::type_error::create("invalid enum : " + format);
+				throw runtime::type_error::create(std::string("invalid enum : ") + format);
 			}
 		}
 	}

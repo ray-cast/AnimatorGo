@@ -339,8 +339,7 @@ namespace octoon
 				return false;
 			}
 
-			if (pfd2.cDepthBits != pfd.cDepthBits ||
-				pfd2.cStencilBits != pfd.cStencilBits)
+			if (pfd2.cDepthBits < pfd.cDepthBits || pfd2.cStencilBits < pfd.cStencilBits)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Can't support depth stencil format");
 				return false;

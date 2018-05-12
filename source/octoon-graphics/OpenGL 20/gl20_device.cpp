@@ -30,6 +30,7 @@ namespace octoon
 		GL20Device::setup(const GraphicsDeviceDesc& desc) noexcept
 		{
 			auto deviceProperty = std::make_shared<GL20DeviceProperty>();
+			deviceProperty->setDevice(this->downcast_pointer<OGLDevice>());
 			if (!deviceProperty->setup(desc))
 				return false;
 

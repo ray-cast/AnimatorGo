@@ -48,18 +48,6 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = std::max((GLsizei)textureDesc.getMipNums(), 1);
 
-			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
-			{
-				if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
-					return false;
-
-				if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter()))
-					return false;
-
-				if (!applyMipmapLimit(target, mipBase, mipLevel))
-					return false;
-			}
-
 			if (target == GL_TEXTURE_2D)
 				glTexStorage2D(target, mipLevel, internalFormat, width, height);
 			else if (target == GL_TEXTURE_2D_MULTISAMPLE)

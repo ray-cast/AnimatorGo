@@ -20,6 +20,8 @@ namespace octoon
 			bool map(std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h, std::uint32_t mipLevel, void** data) noexcept;
 			void unmap() noexcept;
 
+			void setSampler(const GraphicsSamplerPtr& sampler) noexcept;
+
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
@@ -37,6 +39,7 @@ namespace octoon
 		private:
 			GLenum _target;
 			GLuint _texture;
+			GraphicsSamplerPtr _sampler;
 			GraphicsTextureDesc _textureDesc;
 			GraphicsDeviceWeakPtr _device;
 		};

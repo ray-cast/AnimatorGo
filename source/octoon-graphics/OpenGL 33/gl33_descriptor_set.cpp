@@ -846,13 +846,15 @@ namespace octoon
 					if (texture)
 					{
 						auto gltexture = texture->downcast<GL33Texture>();
-						glActiveTexture(GL_TEXTURE0 + location);
-						glBindTexture(gltexture->getTarget(), gltexture->getInstanceID());
-					}
-					else
-					{
-						glActiveTexture(GL_TEXTURE0 + location);
-						glBindTexture(GL_TEXTURE_2D, GL_NONE);
+						GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
+						GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
+
+						auto sampler = it->getTextureSampler();
+						if (sampler)
+						{
+							auto instance = sampler->downcast<GL33Sampler>()->getInstanceID();
+							glBindSampler(location, instance);
+						}
 					}
 				}
 				break;

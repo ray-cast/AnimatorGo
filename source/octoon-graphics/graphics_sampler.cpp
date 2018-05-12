@@ -8,14 +8,16 @@ namespace octoon
 
 		GraphicsSamplerDesc::GraphicsSamplerDesc() noexcept
 			: _wrap(GraphicsSamplerWrap::Repeat)
-			, _filter(GraphicsSamplerFilter::Nearest)
+			, _filterMin(GraphicsSamplerFilter::Linear)
+			, _filterMag(GraphicsSamplerFilter::Linear)
 			, _anis(GraphicsSamplerAnis::Anis0)
 		{
 		}
 
 		GraphicsSamplerDesc::GraphicsSamplerDesc(GraphicsSamplerWrap wrap, GraphicsSamplerFilter filter, GraphicsSamplerAnis anis) noexcept
 			: _wrap(wrap)
-			, _filter(filter)
+			, _filterMin(filter)
+			, _filterMag(filter)
 			, _anis(anis)
 		{
 		}
@@ -31,15 +33,28 @@ namespace octoon
 		}
 
 		void
-		GraphicsSamplerDesc::setSamplerAnis(GraphicsSamplerAnis anis) noexcept
+		GraphicsSamplerDesc::setSamplerMinFilter(GraphicsSamplerFilter filter) noexcept
 		{
-			_anis = anis;
+			_filterMin = filter;
 		}
 
 		void
-		GraphicsSamplerDesc::setSamplerFilter(GraphicsSamplerFilter filter) noexcept
+		GraphicsSamplerDesc::setSamplerMagFilter(GraphicsSamplerFilter filter) noexcept
 		{
-			_filter = filter;
+			_filterMag = filter;
+		}
+
+		void
+		GraphicsSamplerDesc::setSamplerFilter(GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept
+		{
+			_filterMin = minFilter;
+			_filterMag = magFilter;
+		}
+
+		void
+		GraphicsSamplerDesc::setSamplerAnis(GraphicsSamplerAnis anis) noexcept
+		{
+			_anis = anis;
 		}
 
 		GraphicsSamplerWrap
@@ -48,16 +63,22 @@ namespace octoon
 			return _wrap;
 		}
 
+		GraphicsSamplerFilter
+		GraphicsSamplerDesc::getSamplerMinFilter() const noexcept
+		{
+			return _filterMin;
+		}
+
+		GraphicsSamplerFilter
+		GraphicsSamplerDesc::getSamplerMagFilter() const noexcept
+		{
+			return _filterMag;
+		}
+
 		GraphicsSamplerAnis
 		GraphicsSamplerDesc::getSamplerAnis() const noexcept
 		{
 			return _anis;
-		}
-
-		GraphicsSamplerFilter
-		GraphicsSamplerDesc::getSamplerFilter() const noexcept
-		{
-			return _filter;
 		}
 	}
 }

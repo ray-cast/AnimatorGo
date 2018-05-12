@@ -55,15 +55,6 @@ namespace octoon
 
 			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 			{
-				if (!applySamplerWrap(textureDesc.getSamplerWrap()))
-					return false;
-
-				if (!applySamplerFilter(textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-					return false;
-
-				if (!applySamplerAnis(textureDesc.getSamplerAnis()))
-					return false;
-
 				if (!applyMipmapLimit(mipBase, mipLevel))
 					return false;
 			}

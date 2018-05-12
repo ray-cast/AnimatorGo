@@ -335,8 +335,6 @@ namespace octoon
 			fontDesc.setStream(pixels);
 			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
 			fontDesc.setTexTiling(GraphicsImageTiling::Linear);
-			fontDesc.setSamplerFilter(GraphicsSamplerFilter::LinearMipmapLinear, GraphicsSamplerFilter::Linear);
-			fontDesc.setSamplerWrap(GraphicsSamplerWrap::ClampToEdge);
 
 			texture_ = device_->createTexture(fontDesc);
 			if (!texture_)

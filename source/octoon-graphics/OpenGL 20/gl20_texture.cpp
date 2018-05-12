@@ -1,4 +1,5 @@
 #include "gl20_texture.h"
+#include "gl20_sampler.h"
 
 namespace octoon
 {
@@ -44,12 +45,6 @@ namespace octoon
 
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = textureDesc.getMipNums();
-
-			if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
-				return false;
-
-			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter(), textureDesc.getSamplerMagFilter()))
-				return false;
 
 			const char* stream = (const char*)textureDesc.getStream();
 			if (GL20Types::isCompressedTexture(textureDesc.getTexFormat()))
@@ -179,6 +174,25 @@ namespace octoon
 		void
 		GL20Texture::unmap() noexcept
 		{
+		}
+
+		void
+		GL20Texture::setSampler(const GraphicsSamplerPtr& sampler) noexcept
+		{
+			if (sampler != _sampler)
+			{
+				if (sampler)
+				{
+					auto& desc = sampler->getGraphicsSamplerDesc();
+					if (!applySamplerWrap(_target, desc.getSamplerWrap()))
+						return;
+
+					if (!applySamplerFilter(_target, desc.getSamplerMinFilter(), desc.getSamplerMagFilter()))
+						return;
+				}
+
+				_sampler = sampler;
+			}
 		}
 
 		bool

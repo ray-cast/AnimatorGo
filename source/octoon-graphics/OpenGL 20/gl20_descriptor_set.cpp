@@ -798,6 +798,7 @@ namespace octoon
 							auto gltexture = texture->downcast<GL20Texture>();
 							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
 							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
+							gltexture->setSampler(it->getTextureSampler());
 						}
 					}
 					break;
@@ -809,6 +810,7 @@ namespace octoon
 							auto gltexture = texture->downcast<GL20Texture>();
 							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
 							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
+							gltexture->setSampler(it->getTextureSampler());
 						}
 					}
 					break;
@@ -820,6 +822,7 @@ namespace octoon
 							auto gltexture = texture->downcast<GL20Texture>();
 							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
 							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
+							gltexture->setSampler(it->getTextureSampler());
 						}
 					}
 					break;

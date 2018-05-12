@@ -149,11 +149,23 @@ namespace octoon
 				case GraphicsUniformType::CombinedImageSampler:
 				case GraphicsUniformType::StorageImage:
 				{
-					auto texture = it->getTexture();
+					auto& texture = it->getTexture();
 					if (texture)
-						glBindTextureUnit(location, texture->downcast<GL45Texture>()->getInstanceID());
+					{
+						auto gltexture = texture->downcast<GL45Texture>();
+						glBindTextureUnit(location, gltexture->getInstanceID());
+
+						auto sampler = it->getTextureSampler();
+						if (sampler)
+						{
+							auto instance = sampler->downcast<GL33Sampler>()->getInstanceID();
+							glBindSampler(location, instance);
+						}
+					}
 					else
+					{
 						glBindTextureUnit(location, GL_NONE);
+					}
 				}
 				break;
 				case GraphicsUniformType::StorageTexelBuffer:

@@ -497,7 +497,7 @@ namespace octoon
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
 
-			glBlitFramebuffer(v1.left, v1.top, v1.width, v1.height, v2.left, v2.top, v2.width, v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBlitFramebuffer((float)v1.left, (float)v1.top, (float)v1.width, (float)v1.height, (float)v2.left, (float)v2.top, (float)v2.width, (float)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 			_framebuffer = nullptr;
 		}

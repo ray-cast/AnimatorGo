@@ -813,38 +813,10 @@ namespace octoon
 				case GraphicsUniformType::Float4x4Array:
 					GL_CHECK(glProgramUniformMatrix4fv(program, location, (GLsizei)it->getFloat4x4Array().size(), GL_FALSE, (GLfloat*)it->getFloat4x4Array().data()));
 					break;
+				break;
 				case GraphicsUniformType::Sampler:
-				{
-					auto sampler = it->getTextureSampler();
-					if (sampler)
-					{
-						auto instance = sampler->downcast<GL32Sampler>()->getInstanceID();
-						glBindSampler(location, instance);
-					}
-				}
-				break;
 				case GraphicsUniformType::SamplerImage:
-				{
-					auto& texture = it->getTexture();
-					if (texture)
-					{
-						auto gltexture = texture->downcast<GL32Texture>();
-						GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
-						GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
-					}
-				}
-				break;
 				case GraphicsUniformType::CombinedImageSampler:
-				{
-					auto& texture = it->getTexture();
-					if (texture)
-					{
-						auto gltexture = texture->downcast<GL32Texture>();
-						GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
-						GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
-					}
-				}
-				break;
 				case GraphicsUniformType::StorageImage:
 				{
 					auto& texture = it->getTexture();
@@ -853,6 +825,13 @@ namespace octoon
 						auto gltexture = texture->downcast<GL32Texture>();
 						GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
 						GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
+
+						auto sampler = it->getTextureSampler();
+						if (sampler)
+						{
+							auto instance = sampler->downcast<GL32Sampler>()->getInstanceID();
+							glBindSampler(location, instance);
+						}
 					}
 				}
 				break;

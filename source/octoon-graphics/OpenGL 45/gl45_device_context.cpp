@@ -528,7 +528,7 @@ namespace octoon
 			auto readFramebuffer = src->downcast_pointer<GL45Framebuffer>()->getInstanceID();
 			auto drawFramebuffer = dest ? dest->downcast_pointer<GL45Framebuffer>()->getInstanceID() : GL_NONE;
 
-			glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, v1.left, v1.top, v1.width, v1.height, v2.left, v2.top, v2.width, v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, (float)v1.left, (float)v1.top, (float)v1.width, (float)v1.height, (float)v2.left, (float)v2.top, (float)v2.width, (float)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		}
 
 		void

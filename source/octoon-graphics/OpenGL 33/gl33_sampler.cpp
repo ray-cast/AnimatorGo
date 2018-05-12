@@ -54,36 +54,13 @@ namespace octoon
 				return false;
 			}
 
-			GraphicsSamplerFilter filter = samplerDesc.getSamplerFilter();
-			if (filter == GraphicsSamplerFilter::Nearest)
+			GLenum min = GL33Types::asSamplerMinFilter(samplerDesc.getSamplerMinFilter());
+			GLenum mag = GL33Types::asSamplerMagFilter(samplerDesc.getSamplerMagFilter());
+
+			if (min != GL_INVALID_ENUM && mag != GL_INVALID_ENUM)
 			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			}
-			else if (filter == GraphicsSamplerFilter::Linear)
-			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			}
-			else if (filter == GraphicsSamplerFilter::NearestMipmapLinear)
-			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-			}
-			else if (filter == GraphicsSamplerFilter::NearestMipmapNearest)
-			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-			}
-			else if (filter == GraphicsSamplerFilter::LinearMipmapNearest)
-			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-			}
-			else if (filter == GraphicsSamplerFilter::LinearMipmapLinear)
-			{
-				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glSamplerParameteri(_sampler, GL_TEXTURE_MAG_FILTER, mag);
+				glSamplerParameteri(_sampler, GL_TEXTURE_MIN_FILTER, min);
 			}
 			else
 			{

@@ -217,11 +217,13 @@ namespace octoon
 			{
 				std::size_t index = 0;
 
-				CGLPixelFormatAttribute contextAttrs[20];
-				contextAttrs[index++] = kCGLPFAAccelerated;
-				contextAttrs[index++] = kCGLPFAOpenGLProfile;
-				contextAttrs[index++] = (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core;
-				contextAttrs[index++] = (CGLPixelFormatAttribute)0;
+				CGLPixelFormatAttribute contextAttrs[20] =
+				{
+					kCGLPFAAccelerated,
+					kCGLPFAOpenGLProfile,
+					(CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core,
+					(CGLPixelFormatAttribute)0;
+				};
 
 				GLint npix;
 				CGLPixelFormatObj pf;
@@ -259,6 +261,27 @@ namespace octoon
 		void
 		OGLDeviceProperty::setupGLEnvironment(CreateParam& param) noexcept(false)
 		{
+			EGLint pixelFormat[] =
+			{
+				EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+				EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+				EGL_BUFFER_SIZE, 32,
+				EGL_RED_SIZE, 8,
+				EGL_GREEN_SIZE, 8,
+				EGL_BLUE_SIZE, 8,
+				EGL_ALPHA_SIZE, 8,
+				EGL_DEPTH_SIZE, 16,
+				EGL_STENCIL_SIZE, 0,
+				EGL_NONE,
+			};
+
+			EGLint attribs[] =
+			{
+				EGL_CONTEXT_CLIENT_VERSION, 2,
+				EGL_NONE,
+				EGL_NONE
+			};
+
 			param.display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 			if (param.display == EGL_NO_DISPLAY)
 				throw runtime::runtime_error::create("eglGetDisplay() fail.");
@@ -271,50 +294,20 @@ namespace octoon
 
 			EGLint num = 0;
 			EGLConfig config = 0;
-
-			EGLint index = 0;
-			EGLint pixelFormat[80];
-
-			pixelFormat[index++] = EGL_SURFACE_TYPE;
-			pixelFormat[index++] = EGL_WINDOW_BIT;
-			pixelFormat[index++] = EGL_RENDERABLE_TYPE;
-			pixelFormat[index++] = EGL_OPENGL_ES2_BIT;
-			pixelFormat[index++] = EGL_BUFFER_SIZE;
-			pixelFormat[index++] = 32;
-			pixelFormat[index++] = EGL_RED_SIZE;
-			pixelFormat[index++] = 8;
-			pixelFormat[index++] = EGL_GREEN_SIZE;
-			pixelFormat[index++] = 8;
-			pixelFormat[index++] = EGL_BLUE_SIZE;
-			pixelFormat[index++] = 8;
-			pixelFormat[index++] = EGL_ALPHA_SIZE;
-			pixelFormat[index++] = 8;
-			pixelFormat[index++] = EGL_DEPTH_SIZE;
-			pixelFormat[index++] = 16;
-			pixelFormat[index++] = EGL_STENCIL_SIZE;
-			pixelFormat[index++] = 0;
-			pixelFormat[index++] = EGL_NONE;
 			if (::eglChooseConfig(param.display, pixelFormat, &config, 1, &num) == EGL_FALSE)
 				throw runtime::runtime_error::create("eglChooseConfig() fail.");
 
-			EGLint attribIndex = 0;
-			EGLint attribs[80];
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+			auto dpy = XOpenDisplay(NULL);
+			if (!dpy)
+				throw runtime::runtime_error::create("XOpenDisplay() fail");
 
-#if !defined(OCTOON_BUILD_PLATFORM_ANDROID)
-			attribs[attribIndex++] = 0x3098;
-			attribs[attribIndex++] = 3;
+			XSetWindowAttributes swa;
+			swa.event_mask = ExposureMask | PointerMotionMask | KeyPressMask;
+			auto win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0, 0, 1, 1, 0, CopyFromParent, InputOutput, CopyFromParent, CWEventMask, &swa);
 
-			attribs[attribIndex++] = 0x30FB;
-			attribs[attribIndex++] = 0;
-#else
-			attribs[attribIndex++] = EGL_CONTEXT_CLIENT_VERSION;
-			attribs[attribIndex++] = 2;
+			EGLNativeWindowType hwnd = (EGLNativeWindowType)win;
 #endif
-
-			attribs[attribIndex++] = EGL_NONE;
-			attribs[attribIndex++] = EGL_NONE;
-
-			EGLNativeWindowType hwnd = 0;// (EGLNativeWindowType)deviceDesc.getWindHandle();
 			param.surface = ::eglCreateWindowSurface(param.display, config, hwnd, NULL);
 			if (::eglGetError() != EGL_SUCCESS)
 				throw runtime::runtime_error::create("eglCreateWindowSurface() fail.");

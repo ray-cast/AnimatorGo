@@ -64,29 +64,28 @@ namespace octoon
 		void
 		EGLSwapchain::setActive(bool active) noexcept
 		{
-			if (_isActive != active)
+			static thread_local EGLSwapchain* _swapchain = nullptr;
+
+			if (active)
 			{
-				if (active)
-				{
-					if (eglMakeCurrent(_display, _surface, _surface, _context) == EGL_FALSE)
-						return;
+				if (_swapchain && _swapchain != this)
+					_swapchain->setActive(false);
 
-					if (_swapchain)
-						_swapchain->setActive(false);
+				if (::eglMakeCurrent(_display, _surface, _surface, _context) == EGL_FALSE)
+					this->getDevice()->downcast<OGLDevice>()->message("eglMakeCurrent() fail");
 
-					_swapchain = this;
-				}
-				else
-				{
-					if (eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) == EGL_FALSE)
-						return;
-
-					if (_swapchain == this)
-						_swapchain = nullptr;
-				}
-
-				_isActive = active;
+				_swapchain = this;
 			}
+			else
+			{
+				if (::eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) == EGL_FALSE)
+					this->getDevice()->downcast<OGLDevice>()->message("eglMakeCurrent() fail");
+
+				if (_swapchain == this)
+					_swapchain = nullptr;
+			}
+
+			_isActive = active;
 		}
 
 		bool

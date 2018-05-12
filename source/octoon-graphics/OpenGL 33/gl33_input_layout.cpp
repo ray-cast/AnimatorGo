@@ -31,7 +31,7 @@ namespace octoon
 		}
 
 		const GraphicsInputLayoutDesc&
-		GL33InputLayout::getGraphicsInputLayoutDesc() const noexcept
+		GL33InputLayout::getInputLayoutDesc() const noexcept
 		{
 			return _inputLayoutDesc;
 		}

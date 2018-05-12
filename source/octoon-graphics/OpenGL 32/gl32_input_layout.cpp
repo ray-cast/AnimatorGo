@@ -1,6 +1,6 @@
 #include "gl32_input_layout.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -28,7 +28,7 @@ namespace octoon
 		}
 
 		const GraphicsInputLayoutDesc&
-		GL32InputLayout::getGraphicsInputLayoutDesc() const noexcept
+		GL32InputLayout::getInputLayoutDesc() const noexcept
 		{
 			return _inputLayoutDesc;
 		}

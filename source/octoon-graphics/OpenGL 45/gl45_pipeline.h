@@ -21,7 +21,7 @@ namespace octoon
 
 			void apply() noexcept;
 
-			const GraphicsPipelineDesc& getGraphicsPipelineDesc() const noexcept;
+			const GraphicsPipelineDesc& getPipelineDesc() const noexcept;
 
 		private:
 			friend class GL33Device;

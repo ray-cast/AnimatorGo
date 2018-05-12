@@ -695,9 +695,9 @@ namespace octoon
 		bool
 		GL33DescriptorSet::setup(const GraphicsDescriptorSetDesc& descriptorSetDesc) noexcept
 		{
-			assert(descriptorSetDesc.getGraphicsDescriptorSetLayout());
+			assert(descriptorSetDesc.getDescriptorSetLayout());
 
-			auto& descriptorSetLayoutDesc = descriptorSetDesc.getGraphicsDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
+			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
 
 			auto& params = descriptorSetLayoutDesc.getUniformComponents();
 			for (auto& uniform : params)

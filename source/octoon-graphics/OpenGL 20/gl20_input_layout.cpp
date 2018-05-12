@@ -28,7 +28,7 @@ namespace octoon
 		}
 
 		const GraphicsInputLayoutDesc&
-		GL20InputLayout::getGraphicsInputLayoutDesc() const noexcept
+		GL20InputLayout::getInputLayoutDesc() const noexcept
 		{
 			return _inputLayoutDesc;
 		}

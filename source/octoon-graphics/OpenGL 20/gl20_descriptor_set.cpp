@@ -694,9 +694,9 @@ namespace octoon
 		bool
 		GL20DescriptorSet::setup(const GraphicsDescriptorSetDesc& descriptorSetDesc) noexcept
 		{
-			assert(descriptorSetDesc.getGraphicsDescriptorSetLayout());
+			assert(descriptorSetDesc.getDescriptorSetLayout());
 
-			auto& descriptorSetLayoutDesc = descriptorSetDesc.getGraphicsDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
+			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
 			auto& uniforms = descriptorSetLayoutDesc.getUniformComponents();
 			for (auto& uniform : uniforms)
 			{

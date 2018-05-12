@@ -1,4 +1,4 @@
-#include "gl32_types.h"
+#include "gl30_types.h"
 #include <cstring>
 #include <cstdarg>
 
@@ -6,11 +6,11 @@ namespace octoon
 {
 	namespace graphics
 	{
-		GLboolean GL32Types::_egl3init = GL_FALSE;
-		GLboolean GL32Types::_egl3Features[GL32_RangeSize];
+		GLboolean GL30Types::_egl3init = GL_FALSE;
+		GLboolean GL30Types::_egl3Features[GL30_RangeSize];
 
 		bool
-		GL32Types::setup() noexcept
+		GL30Types::setup() noexcept
 		{
 			if (_egl3init)
 				return true;
@@ -44,36 +44,36 @@ namespace octoon
 
 				const char* src = pos - length;
 
-				if (strncmp(src, "GL_OES_required_internalformat", length) == 0)		   _egl3Features[GL32Features::GL32_OES_required_internalformat] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_read_format_bgra", length) == 0)             _egl3Features[GL32Features::GL32_EXT_read_format_bgra] = GL_TRUE;
-				else if (strncmp(src, "GL_ARM_rgba8", length) == 0)                        _egl3Features[GL32Features::GL32_ARM_rgba8] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_rgb8_rgba8", length) == 0)                   _egl3Features[GL32Features::GL32_OES_rgb8_rgba8] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_format_BGRA8888", length) == 0)      _egl3Features[GL32Features::GL32_EXT_texture_format_BGRA8888] = GL_TRUE;
-				else if (strncmp(src, "GL_APPLE_texture_format_BGRA8888", length) == 0)    _egl3Features[GL32Features::GL32_APPLE_texture_format_BGRA8888] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_sRGB", length) == 0)                         _egl3Features[GL32Features::GL32_EXT_sRGB] = GL_TRUE;
-				else if (strncmp(src, "GL_NV_sRGB_formats", length) == 0)                  _egl3Features[GL32Features::GL32_NV_sRGB_formats] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_rg", length) == 0)                   _egl3Features[GL32Features::GL32_EXT_texture_rg] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_norm16", length) == 0)               _egl3Features[GL32Features::GL32_EXT_texture_norm16] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_texture_half_float", length) == 0)           _egl3Features[GL32Features::GL32_OES_texture_half_float] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_color_buffer_half_float", length) == 0)      _egl3Features[GL32Features::GL32_EXT_color_buffer_half_float] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_texture_float", length) == 0)                _egl3Features[GL32Features::GL32_OES_texture_float] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_color_buffer_float", length) == 0)           _egl3Features[GL32Features::GL32_EXT_color_buffer_float] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_type_2_10_10_10_REV", length) == 0)  _egl3Features[GL32Features::GL32_EXT_texture_type_2_10_10_10_REV] = GL_TRUE;
-				else if (strncmp(src, "GL_APPLE_texture_packed_float", length) == 0)       _egl3Features[GL32Features::GL32_APPLE_texture_packed_float] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_depth_texture", length) == 0)                _egl3Features[GL32Features::GL32_OES_depth_texture] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_depth24", length) == 0)                      _egl3Features[GL32Features::GL32_OES_depth24] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_depth32", length) == 0)                      _egl3Features[GL32Features::GL32_OES_depth32] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_texture_stencil8", length) == 0)             _egl3Features[GL32Features::GL32_OES_texture_stencil8] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_packed_depth_stencil", length) == 0)         _egl3Features[GL32Features::GL32_OES_packed_depth_stencil] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_compression_dxt1", length) == 0)     _egl3Features[GL32Features::GL32_EXT_texture_compression_dxt1] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_compression_s3tc", length) == 0)     _egl3Features[GL32Features::GL32_EXT_texture_compression_s3tc] = GL_TRUE;
-				else if (strncmp(src, "GL_KHR_texture_compression_astc_ldr", length) == 0) _egl3Features[GL32Features::GL32_KHR_texture_compression_astc_ldr] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_vertex_type_10_10_10_2", length) == 0)       _egl3Features[GL32Features::GL32_OES_vertex_type_10_10_10_2] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_vertex_half_float", length) == 0)            _egl3Features[GL32Features::GL32_OES_vertex_half_float] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_filter_anisotropic", length) == 0)   _egl3Features[GL32Features::GL32_EXT_texture_filter_anisotropic] = GL_TRUE;
-				else if (strncmp(src, "GL_OES_compressed_ETC1_RGB8_texture", length) == 0) _egl3Features[GL32Features::GL32_OES_compressed_ETC1_RGB8_texture] = GL_TRUE;
-				else if (strncmp(src, "GL_EXT_texture_cube_map_array", length) == 0)	   _egl3Features[GL32Features::GL32_EXT_texture_cube_map_array] = GL_TRUE;
-				else if (strncmp(src, "GL_KHR_debug", length) == 0)                        _egl3Features[GL32Features::GL32_KHR_debug] = GL_TRUE;
+				if (strncmp(src, "GL_OES_required_internalformat", length) == 0)		   _egl3Features[GL30Features::GL30_OES_required_internalformat] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_read_format_bgra", length) == 0)             _egl3Features[GL30Features::GL30_EXT_read_format_bgra] = GL_TRUE;
+				else if (strncmp(src, "GL_ARM_rgba8", length) == 0)                        _egl3Features[GL30Features::GL30_ARM_rgba8] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_rgb8_rgba8", length) == 0)                   _egl3Features[GL30Features::GL30_OES_rgb8_rgba8] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_format_BGRA8888", length) == 0)      _egl3Features[GL30Features::GL30_EXT_texture_format_BGRA8888] = GL_TRUE;
+				else if (strncmp(src, "GL_APPLE_texture_format_BGRA8888", length) == 0)    _egl3Features[GL30Features::GL30_APPLE_texture_format_BGRA8888] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_sRGB", length) == 0)                         _egl3Features[GL30Features::GL30_EXT_sRGB] = GL_TRUE;
+				else if (strncmp(src, "GL_NV_sRGB_formats", length) == 0)                  _egl3Features[GL30Features::GL30_NV_sRGB_formats] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_rg", length) == 0)                   _egl3Features[GL30Features::GL30_EXT_texture_rg] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_norm16", length) == 0)               _egl3Features[GL30Features::GL30_EXT_texture_norm16] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_texture_half_float", length) == 0)           _egl3Features[GL30Features::GL30_OES_texture_half_float] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_color_buffer_half_float", length) == 0)      _egl3Features[GL30Features::GL30_EXT_color_buffer_half_float] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_texture_float", length) == 0)                _egl3Features[GL30Features::GL30_OES_texture_float] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_color_buffer_float", length) == 0)           _egl3Features[GL30Features::GL30_EXT_color_buffer_float] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_type_2_10_10_10_REV", length) == 0)  _egl3Features[GL30Features::GL30_EXT_texture_type_2_10_10_10_REV] = GL_TRUE;
+				else if (strncmp(src, "GL_APPLE_texture_packed_float", length) == 0)       _egl3Features[GL30Features::GL30_APPLE_texture_packed_float] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_depth_texture", length) == 0)                _egl3Features[GL30Features::GL30_OES_depth_texture] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_depth24", length) == 0)                      _egl3Features[GL30Features::GL30_OES_depth24] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_depth32", length) == 0)                      _egl3Features[GL30Features::GL30_OES_depth32] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_texture_stencil8", length) == 0)             _egl3Features[GL30Features::GL30_OES_texture_stencil8] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_packed_depth_stencil", length) == 0)         _egl3Features[GL30Features::GL30_OES_packed_depth_stencil] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_compression_dxt1", length) == 0)     _egl3Features[GL30Features::GL30_EXT_texture_compression_dxt1] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_compression_s3tc", length) == 0)     _egl3Features[GL30Features::GL30_EXT_texture_compression_s3tc] = GL_TRUE;
+				else if (strncmp(src, "GL_KHR_texture_compression_astc_ldr", length) == 0) _egl3Features[GL30Features::GL30_KHR_texture_compression_astc_ldr] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_vertex_type_10_10_10_2", length) == 0)       _egl3Features[GL30Features::GL30_OES_vertex_type_10_10_10_2] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_vertex_half_float", length) == 0)            _egl3Features[GL30Features::GL30_OES_vertex_half_float] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_filter_anisotropic", length) == 0)   _egl3Features[GL30Features::GL30_EXT_texture_filter_anisotropic] = GL_TRUE;
+				else if (strncmp(src, "GL_OES_compressed_ETC1_RGB8_texture", length) == 0) _egl3Features[GL30Features::GL30_OES_compressed_ETC1_RGB8_texture] = GL_TRUE;
+				else if (strncmp(src, "GL_EXT_texture_cube_map_array", length) == 0)	   _egl3Features[GL30Features::GL30_EXT_texture_cube_map_array] = GL_TRUE;
+				else if (strncmp(src, "GL_KHR_debug", length) == 0)                        _egl3Features[GL30Features::GL30_KHR_debug] = GL_TRUE;
 
 				offset = pos + 1;
 			}
@@ -83,7 +83,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asVertexType(GraphicsVertexType type) noexcept
+		GL30Types::asVertexType(GraphicsVertexType type) noexcept
 		{
 			switch (type)
 			{
@@ -100,7 +100,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asVertexFormat(GraphicsFormat format) noexcept
+		GL30Types::asVertexFormat(GraphicsFormat format) noexcept
 		{
 			switch (format)
 			{
@@ -221,7 +221,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asIndexType(GraphicsIndexType type) noexcept
+		GL30Types::asIndexType(GraphicsIndexType type) noexcept
 		{
 			switch (type)
 			{
@@ -234,13 +234,13 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asShaderStage(GraphicsShaderStageFlags stage) noexcept
+		GL30Types::asShaderStage(GraphicsShaderStageFlags stage) noexcept
 		{
 			switch (stage)
 			{
 			case GraphicsShaderStageFlagBits::VertexBit:         return GL_VERTEX_SHADER;
 			case GraphicsShaderStageFlagBits::FragmentBit:       return GL_FRAGMENT_SHADER;
-			case GraphicsShaderStageFlagBits::ComputeBit:        return GL_COMPUTE_SHADER;
+			case GraphicsShaderStageFlagBits::ComputeBit:
 			case GraphicsShaderStageFlagBits::GeometryBit:
 			case GraphicsShaderStageFlagBits::TessControlBit:
 			case GraphicsShaderStageFlagBits::TessEvaluationBit:
@@ -252,13 +252,17 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asTextureTarget(GraphicsTextureDim target) noexcept
+		GL30Types::asTextureTarget(GraphicsTextureDim target) noexcept
 		{
 			switch (target)
 			{
 			case GraphicsTextureDim::Texture2D:					return GL_TEXTURE_2D;
-			case GraphicsTextureDim::Texture2DMultisample:		return GL_TEXTURE_2D_MULTISAMPLE;
-			case GraphicsTextureDim::Texture2DArrayMultisample:	return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+			case GraphicsTextureDim::Texture2DMultisample:
+				GL_PLATFORM_LOG("Can't support Texture2D multisample");
+				return GL_INVALID_ENUM;
+			case GraphicsTextureDim::Texture2DArrayMultisample:
+				GL_PLATFORM_LOG("Can't support Texture2D array multisample");
+				return GL_INVALID_ENUM;
 			case GraphicsTextureDim::Texture2DArray:			return GL_TEXTURE_2D_ARRAY;
 			case GraphicsTextureDim::Texture3D:					return GL_TEXTURE_3D;
 			case GraphicsTextureDim::Cube:						return GL_TEXTURE_CUBE_MAP;
@@ -272,7 +276,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asTextureFormat(GraphicsFormat format) noexcept
+		GL30Types::asTextureFormat(GraphicsFormat format) noexcept
 		{
 			switch (format)
 			{
@@ -416,7 +420,7 @@ namespace octoon
 			case GraphicsFormat::D32_SFLOAT:
 				return GL_DEPTH_COMPONENT;
 			case GraphicsFormat::S8UInt:
-				return GL_STENCIL_INDEX;
+				return GL_STENCIL_INDEX8;
 			case GraphicsFormat::D16UNorm_S8UInt:
 			case GraphicsFormat::D24UNorm_S8UInt:
 			case GraphicsFormat::D32_SFLOAT_S8UInt:
@@ -428,7 +432,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asTextureType(GraphicsFormat format) noexcept
+		GL30Types::asTextureType(GraphicsFormat format) noexcept
 		{
 			switch (format)
 			{
@@ -572,7 +576,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asTextureInternalFormat(GraphicsFormat format) noexcept
+		GL30Types::asTextureInternalFormat(GraphicsFormat format) noexcept
 		{
 			GLenum internalFormat = GL_INVALID_ENUM;
 			switch (format)
@@ -702,7 +706,7 @@ namespace octoon
 			case GraphicsFormat::E5B9G9R9UFloatPack32:	   	internalFormat = GL_RGB9_E5; break;
 			case GraphicsFormat::D16UNorm:	               	internalFormat = GL_DEPTH_COMPONENT16; break;
 			case GraphicsFormat::X8_D24UNormPack32:	       	internalFormat = GL_DEPTH_COMPONENT24; break;
-			case GraphicsFormat::D32_SFLOAT:	           	internalFormat = GL_INVALID_ENUM; break;
+			case GraphicsFormat::D32_SFLOAT:	           	internalFormat = GL_DEPTH_COMPONENT32F; break;
 			case GraphicsFormat::S8UInt:	               	internalFormat = GL_STENCIL_INDEX8; break;
 			case GraphicsFormat::D16UNorm_S8UInt:	       	internalFormat = GL_INVALID_ENUM; break;
 			case GraphicsFormat::D24UNorm_S8UInt:	       	internalFormat = GL_DEPTH24_STENCIL8; break;
@@ -771,7 +775,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asCompareFunction(GraphicsCompareFunc func) noexcept
+		GL30Types::asCompareFunction(GraphicsCompareFunc func) noexcept
 		{
 			switch (func)
 			{
@@ -791,7 +795,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asBlendFactor(GraphicsBlendFactor func) noexcept
+		GL30Types::asBlendFactor(GraphicsBlendFactor func) noexcept
 		{
 			switch (func)
 			{
@@ -817,7 +821,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asBlendOperation(GraphicsBlendOp blendop) noexcept
+		GL30Types::asBlendOperation(GraphicsBlendOp blendop) noexcept
 		{
 			switch (blendop)
 			{
@@ -831,7 +835,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asCullMode(GraphicsCullMode mode) noexcept
+		GL30Types::asCullMode(GraphicsCullMode mode) noexcept
 		{
 			switch (mode)
 			{
@@ -846,7 +850,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asFrontFace(GraphicsFrontFace face) noexcept
+		GL30Types::asFrontFace(GraphicsFrontFace face) noexcept
 		{
 			switch (face)
 			{
@@ -861,7 +865,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asFillMode(GraphicsPolygonMode mode) noexcept
+		GL30Types::asFillMode(GraphicsPolygonMode mode) noexcept
 		{
 			switch (mode)
 			{
@@ -877,7 +881,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asStencilOperation(GraphicsStencilOp stencilop) noexcept
+		GL30Types::asStencilOperation(GraphicsStencilOp stencilop) noexcept
 		{
 			switch (stencilop)
 			{
@@ -895,7 +899,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asSamplerWrap(GraphicsSamplerWrap wrap) noexcept
+		GL30Types::asSamplerWrap(GraphicsSamplerWrap wrap) noexcept
 		{
 			switch (wrap)
 			{
@@ -909,7 +913,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asSamplerMinFilter(GraphicsSamplerFilter filter) noexcept
+		GL30Types::asSamplerMinFilter(GraphicsSamplerFilter filter) noexcept
 		{
 			switch (filter)
 			{
@@ -926,7 +930,7 @@ namespace octoon
 		}
 
 		GLenum
-		GL32Types::asSamplerMagFilter(GraphicsSamplerFilter filter) noexcept
+		GL30Types::asSamplerMagFilter(GraphicsSamplerFilter filter) noexcept
 		{
 			switch (filter)
 			{
@@ -943,7 +947,7 @@ namespace octoon
 		}
 
 		GLsizei
-		GL32Types::getFormatNum(GLenum format, GLenum type) noexcept
+		GL30Types::getFormatNum(GLenum format, GLenum type) noexcept
 		{
 			GLsizei typeSize = 0;
 			if (type == GL_UNSIGNED_BYTE || type == GL_BYTE)
@@ -974,13 +978,13 @@ namespace octoon
 		}
 
 		GLsizei
-		GL32Types::getCompressedTextureSize(GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat) noexcept
+		GL30Types::getCompressedTextureSize(GLsizei width, GLsizei height, GLsizei depth, GLenum internalFormat) noexcept
 		{
 			return  0;
 		}
 
 		GLboolean
-		GL32Types::isNormFormat(GraphicsFormat format) noexcept
+		GL30Types::isNormFormat(GraphicsFormat format) noexcept
 		{
 			switch (format)
 			{
@@ -1017,14 +1021,14 @@ namespace octoon
 		}
 
 		GLboolean
-		GL32Types::isSupportFeature(GL32Features features) noexcept
+		GL30Types::isSupportFeature(GL30Features features) noexcept
 		{
-			assert(features >= GL32Features::GL32_BeginRange && features <= GL32Features::GL32_EndRange);
+			assert(features >= GL30Features::GL30_BeginRange && features <= GL30Features::GL30_EndRange);
 			return _egl3Features[features];
 		}
 
 		GLboolean
-		GL32Types::isStencilFormat(GraphicsFormat format) noexcept
+		GL30Types::isStencilFormat(GraphicsFormat format) noexcept
 		{
 			if (format == GraphicsFormat::S8UInt)
 				return GL_TRUE;
@@ -1032,7 +1036,7 @@ namespace octoon
 		}
 
 		GLboolean
-		GL32Types::isDepthFormat(GraphicsFormat format) noexcept
+		GL30Types::isDepthFormat(GraphicsFormat format) noexcept
 		{
 			if (format == GraphicsFormat::D16UNorm ||
 				format == GraphicsFormat::X8_D24UNormPack32 ||
@@ -1045,7 +1049,7 @@ namespace octoon
 		}
 
 		GLboolean
-		GL32Types::isDepthStencilFormat(GraphicsFormat format) noexcept
+		GL30Types::isDepthStencilFormat(GraphicsFormat format) noexcept
 		{
 			if (format == GraphicsFormat::D16UNorm_S8UInt ||
 				format == GraphicsFormat::D24UNorm_S8UInt ||
@@ -1058,7 +1062,7 @@ namespace octoon
 		}
 
 		GLboolean
-		GL32Types::isCompressedTexture(GraphicsFormat format) noexcept
+		GL30Types::isCompressedTexture(GraphicsFormat format) noexcept
 		{
 			switch (format)
 			{
@@ -1123,7 +1127,7 @@ namespace octoon
 		}
 
 		bool
-		GL32Check::checkError() noexcept
+		GL30Check::checkError() noexcept
 		{
 			bool success = true;
 			GLenum result = ::glGetError();
@@ -1141,12 +1145,6 @@ namespace octoon
 					break;
 				case GL_INVALID_OPERATION:
 					GL_PLATFORM_LOG("glGetError() fail : GL_INVALID_OPERATION");
-					break;
-				case GL_STACK_OVERFLOW:
-					GL_PLATFORM_LOG("glGetError() fail : GL_STACK_OVERFLOW");
-					break;
-				case GL_STACK_UNDERFLOW:
-					GL_PLATFORM_LOG("glGetError() fail : GL_STACK_UNDERFLOW");
 					break;
 				case GL_OUT_OF_MEMORY:
 					GL_PLATFORM_LOG("glGetError() fail : GL_OUT_OF_MEMORY");
@@ -1184,7 +1182,7 @@ namespace octoon
 		}
 
 		void
-		GL32Check::debugOutput(const char* message, ...) noexcept
+		GL30Check::debugOutput(const char* message, ...) noexcept
 		{
 			va_list va;
 			va_start(va, message);

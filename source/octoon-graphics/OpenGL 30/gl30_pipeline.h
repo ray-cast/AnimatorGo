@@ -1,36 +1,34 @@
-#ifndef OCTOON_GL20_PIPELINE_H_
-#define OCTOON_GL20_PIPELINE_H_
+#ifndef OCTOON_GL30_RENDER_PIPELINE_H_
+#define OCTOON_GL30_RENDER_PIPELINE_H_
 
-#include "gl20_types.h"
+#include "gl30_types.h"
 
 namespace octoon
 {
 	namespace graphics
 	{
-		class GL20Pipeline final : public GraphicsPipeline
+		class GL30Pipeline final : public GraphicsPipeline
 		{
-			OctoonDeclareSubClass(GL20Pipeline, GraphicsPipeline)
+			OctoonDeclareSubClass(GL30Pipeline, GraphicsPipeline)
 		public:
-			GL20Pipeline() noexcept;
-			virtual ~GL20Pipeline() noexcept;
+			GL30Pipeline() noexcept;
+			virtual ~GL30Pipeline() noexcept;
 
 			bool setup(const GraphicsPipelineDesc& pipelineDesc) noexcept;
 			void close() noexcept;
 
-			void bindVertexBuffers(GL20VertexBuffers& vbos, bool forceUpdate, std::uint32_t startVertices = 0) noexcept;
+			void setDevice(const GraphicsDevicePtr& device) noexcept;
+			GraphicsDevicePtr getDevice() noexcept;
+
+			void bindVertexBuffers(GL30VertexBuffers& vbos, bool forceUpdate, std::uint32_t startVertices = 0) noexcept;
 
 			void apply() noexcept;
 
 			const GraphicsPipelineDesc& getPipelineDesc() const noexcept;
 
 		private:
-			friend class GL20Device;
-			void setDevice(GraphicsDevicePtr device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
-
-		private:
-			GL20Pipeline(const GL20Pipeline&) noexcept = delete;
-			GL20Pipeline& operator=(const GL20Pipeline&) noexcept = delete;
+			GL30Pipeline(const GL30Pipeline&) noexcept = delete;
+			GL30Pipeline& operator=(const GL30Pipeline&) noexcept = delete;
 
 		private:
 			struct VertexAttrib
@@ -39,8 +37,8 @@ namespace octoon
 				GLuint index;
 				GLuint count;
 				GLuint stride;
-				GLuint size;
 				GLboolean normalize;
+				GLuint size;
 				GLintptr offset;
 			};
 
@@ -54,7 +52,6 @@ namespace octoon
 			std::vector<VertexBinding> _bindings;
 			std::vector<std::vector<VertexAttrib>> _attributes;
 
-			GraphicsProgramPtr _program;
 			GraphicsPipelineDesc _pipelineDesc;
 			GraphicsDeviceWeakPtr _device;
 		};

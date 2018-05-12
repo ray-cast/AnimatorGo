@@ -1,18 +1,18 @@
-#ifndef OCTOON_GL32_INPUT_LAYOUT_H_
-#define OCTOON_GL32_INPUT_LAYOUT_H_
+#ifndef OCTOON_GL30_INPUT_LAYOUT_H_
+#define OCTOON_GL30_INPUT_LAYOUT_H_
 
-#include "gl32_types.h"
+#include "gl30_types.h"
 
 namespace octoon
 {
 	namespace graphics
 	{
-		class GL32InputLayout final : public GraphicsInputLayout
+		class GL30InputLayout final : public GraphicsInputLayout
 		{
-			OctoonDeclareSubClass(GL32InputLayout, GraphicsInputLayout)
+			OctoonDeclareSubClass(GL30InputLayout, GraphicsInputLayout)
 		public:
-			GL32InputLayout() noexcept;
-			~GL32InputLayout() noexcept;
+			GL30InputLayout() noexcept;
+			~GL30InputLayout() noexcept;
 
 			bool setup(const GraphicsInputLayoutDesc& desc) noexcept;
 			void close() noexcept;
@@ -20,13 +20,13 @@ namespace octoon
 			const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept;
 
 		private:
-			friend class GL32Device;
+			friend class GL30Device;
 			void setDevice(GraphicsDevicePtr device) noexcept;
 			GraphicsDevicePtr getDevice() noexcept;
 
 		private:
-			GL32InputLayout(const GL32InputLayout&) noexcept = delete;
-			GL32InputLayout& operator=(const GL32InputLayout&) noexcept = delete;
+			GL30InputLayout(const GL30InputLayout&) noexcept = delete;
+			GL30InputLayout& operator=(const GL30InputLayout&) noexcept = delete;
 
 		private:
 			GraphicsInputLayoutDesc _inputLayoutDesc;

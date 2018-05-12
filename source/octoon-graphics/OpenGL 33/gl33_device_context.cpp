@@ -302,7 +302,7 @@ namespace octoon
 
 				if (_pipeline != glpipeline)
 				{
-					auto& pipelineDesc = pipeline->getGraphicsPipelineDesc();
+					auto& pipelineDesc = pipeline->getPipelineDesc();
 
 					auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL33GraphicsState>();
 					if (_state != glstate)

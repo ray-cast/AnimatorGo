@@ -4,7 +4,10 @@
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL20)
 #	include "OpenGL 20/gl20_device.h"
 #endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL32)
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
+#	include "OpenGL 30/gl30_device.h"
+#endif
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
 #	include "OpenGL 32/gl32_device.h"
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL33)
@@ -68,10 +71,17 @@ namespace octoon
 						return;
 					}
 #endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL32
-					if (device->isInstanceOf<GL32Device>())
+#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL30
+					if (device->isInstanceOf<GL30Device>())
 					{
-						device->downcast<GL32Device>()->enableDebugControl(enable);
+						device->downcast<GL30Device>()->enableDebugControl(enable);
+						return;
+					}
+#endif
+#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL30
+					if (device->isInstanceOf<GL30Device>())
+					{
+						device->downcast<GL30Device>()->enableDebugControl(enable);
 						return;
 			}
 #endif
@@ -122,10 +132,23 @@ namespace octoon
 				return nullptr;
 			}
 #endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL32)
-			if (deviceType == GraphicsDeviceType::OpenGL32)
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
+			if (deviceType == GraphicsDeviceType::OpenGL30)
 			{
-				auto device = std::make_shared<GL32Device>();
+				auto device = std::make_shared<GL30Device>();
+				if (device->setup(deviceDesc))
+				{
+					_devices.push_back(device);
+					return device;
+				}
+
+				return nullptr;
+			}
+#endif
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
+			if (deviceType == GraphicsDeviceType::OpenGL30)
+			{
+				auto device = std::make_shared<GL30Device>();
 				if (device->setup(deviceDesc))
 				{
 					_devices.push_back(device);

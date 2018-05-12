@@ -1,22 +1,22 @@
-#include "gl32_device_context.h"
-#include "gl32_state.h"
-#include "gl32_shader.h"
-#include "gl32_texture.h"
-#include "gl32_framebuffer.h"
-#include "gl32_input_layout.h"
-#include "gl32_sampler.h"
-#include "gl32_descriptor_set.h"
-#include "gl32_pipeline.h"
-#include "gl32_graphics_data.h"
-#include "gl32_device.h"
+#include "gl30_device_context.h"
+#include "gl30_state.h"
+#include "gl30_shader.h"
+#include "gl30_texture.h"
+#include "gl30_framebuffer.h"
+#include "gl30_input_layout.h"
+#include "gl30_sampler.h"
+#include "gl30_descriptor_set.h"
+#include "gl30_pipeline.h"
+#include "gl30_graphics_data.h"
+#include "gl30_device.h"
 
 namespace octoon
 {
 	namespace graphics
 	{
-		OctoonImplementSubClass(GL32DeviceContext, GraphicsContext, "GL32DeviceContext")
+		OctoonImplementSubClass(GL30DeviceContext, GraphicsContext, "GL30DeviceContext")
 
-		GL32DeviceContext::GL32DeviceContext() noexcept
+		GL30DeviceContext::GL30DeviceContext() noexcept
 			: _clearColor(0.0f, 0.0f, 0.0f, 0.0f)
 			, _clearDepth(1.0f)
 			, _clearStencil(0)
@@ -35,17 +35,17 @@ namespace octoon
 			, _needEnableDebugControl(false)
 			, _needDisableDebugControl(false)
 		{
-			_stateDefault = std::make_shared<GL32GraphicsState>();
+			_stateDefault = std::make_shared<GL30GraphicsState>();
 			_stateDefault->setup(GraphicsStateDesc());
 		}
 
-		GL32DeviceContext::~GL32DeviceContext() noexcept
+		GL30DeviceContext::~GL30DeviceContext() noexcept
 		{
 			this->close();
 		}
 
 		bool
-		GL32DeviceContext::setup(const GraphicsContextDesc& desc) noexcept
+		GL30DeviceContext::setup(const GraphicsContextDesc& desc) noexcept
 		{
 			assert(desc.getSwapchain());
 			assert(desc.getSwapchain()->isInstanceOf<OGLSwapchain>());
@@ -66,7 +66,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::close() noexcept
+		GL30DeviceContext::close() noexcept
 		{
 			_framebuffer = nullptr;
 			_program = nullptr;
@@ -85,7 +85,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::renderBegin() noexcept
+		GL30DeviceContext::renderBegin() noexcept
 		{
 			assert(_glcontext);
 			_glcontext->setActive(true);
@@ -104,12 +104,12 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::renderEnd() noexcept
+		GL30DeviceContext::renderEnd() noexcept
 		{
 		}
 
 		void
-		GL32DeviceContext::setViewport(std::uint32_t i, const float4& view) noexcept
+		GL30DeviceContext::setViewport(std::uint32_t i, const float4& view) noexcept
 		{
 			assert(_glcontext->getActive());
 
@@ -125,13 +125,13 @@ namespace octoon
 		}
 
 		const float4&
-		GL32DeviceContext::getViewport(std::uint32_t i) const noexcept
+		GL30DeviceContext::getViewport(std::uint32_t i) const noexcept
 		{
 			return _viewports[i];
 		}
 
 		void
-		GL32DeviceContext::setScissor(std::uint32_t i, const uint4& scissor) noexcept
+		GL30DeviceContext::setScissor(std::uint32_t i, const uint4& scissor) noexcept
 		{
 			assert(_glcontext->getActive());
 
@@ -153,18 +153,18 @@ namespace octoon
 		}
 
 		const uint4&
-		GL32DeviceContext::getScissor(std::uint32_t i) const noexcept
+		GL30DeviceContext::getScissor(std::uint32_t i) const noexcept
 		{
 			return _scissors[i];
 		}
 		void
-		GL32DeviceContext::setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
+		GL30DeviceContext::setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
 		{
 			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
 				if (_stateCaptured.getStencilFrontReadMask() != mask)
 				{
-					GLenum frontfunc = GL32Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
+					GLenum frontfunc = GL30Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
 					if (frontfunc == GL_INVALID_ENUM)
 					{
 						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
@@ -179,7 +179,7 @@ namespace octoon
 			{
 				if (_stateCaptured.getStencilBackReadMask() != mask)
 				{
-					GLenum backfunc = GL32Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
+					GLenum backfunc = GL30Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
 					if (backfunc == GL_INVALID_ENUM)
 					{
 						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
@@ -193,7 +193,7 @@ namespace octoon
 		}
 
 		std::uint32_t
-		GL32DeviceContext::getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept
+		GL30DeviceContext::getStencilCompareMask(GraphicsStencilFaceFlags face) noexcept
 		{
 			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
@@ -204,13 +204,13 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::setStencilReference(GraphicsStencilFaceFlags face, std::uint32_t reference) noexcept
+		GL30DeviceContext::setStencilReference(GraphicsStencilFaceFlags face, std::uint32_t reference) noexcept
 		{
 			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
 				if (_stateCaptured.getStencilFrontRef() != reference)
 				{
-					GLenum frontfunc = GL32Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
+					GLenum frontfunc = GL30Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
 					if (frontfunc == GL_INVALID_ENUM)
 					{
 						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
@@ -225,7 +225,7 @@ namespace octoon
 			{
 				if (_stateCaptured.getStencilBackRef() != reference)
 				{
-					GLenum backfunc = GL32Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
+					GLenum backfunc = GL30Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
 					if (backfunc == GL_INVALID_ENUM)
 					{
 						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
@@ -239,7 +239,7 @@ namespace octoon
 		}
 
 		std::uint32_t
-		GL32DeviceContext::getStencilReference(GraphicsStencilFaceFlags face) noexcept
+		GL30DeviceContext::getStencilReference(GraphicsStencilFaceFlags face) noexcept
 		{
 			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
@@ -250,7 +250,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::setStencilWriteMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
+		GL30DeviceContext::setStencilWriteMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
 		{
 			if (face & GraphicsStencilFaceFlagBits::FrontBit)
 			{
@@ -271,7 +271,7 @@ namespace octoon
 		}
 
 		std::uint32_t
-		GL32DeviceContext::getStencilWriteMask(GraphicsStencilFaceFlags face) noexcept
+		GL30DeviceContext::getStencilWriteMask(GraphicsStencilFaceFlags face) noexcept
 		{
 			assert(face == GraphicsStencilFaceFlagBits::FrontBit || face == GraphicsStencilFaceFlagBits::BackBit);
 
@@ -282,27 +282,27 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept
+		GL30DeviceContext::setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept
 		{
-			assert(!pipeline || pipeline && pipeline->isInstanceOf<GL32Pipeline>());
+			assert(!pipeline || pipeline && pipeline->isInstanceOf<GL30Pipeline>());
 			assert(_glcontext->getActive());
 
 			if (pipeline)
 			{
-				auto glpipeline = pipeline->downcast_pointer<GL32Pipeline>();
+				auto glpipeline = pipeline->downcast_pointer<GL30Pipeline>();
 
 				if (_pipeline != glpipeline)
 				{
 					auto& pipelineDesc = pipeline->getPipelineDesc();
 
-					auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL32GraphicsState>();
+					auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL30GraphicsState>();
 					if (_state != glstate)
 					{
 						glstate->apply(_stateCaptured);
 						_state = glstate;
 					}
 
-					auto glprogram = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL32Program>();
+					auto glprogram = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL30Program>();
 					if (_program != glprogram)
 					{
 						_program = glprogram;
@@ -339,38 +339,38 @@ namespace octoon
 		}
 
 		GraphicsPipelinePtr
-		GL32DeviceContext::getRenderPipeline() const noexcept
+		GL30DeviceContext::getRenderPipeline() const noexcept
 		{
 			return _pipeline;
 		}
 
 		void
-		GL32DeviceContext::setDescriptorSet(const GraphicsDescriptorSetPtr& descriptorSet) noexcept
+		GL30DeviceContext::setDescriptorSet(const GraphicsDescriptorSetPtr& descriptorSet) noexcept
 		{
 			assert(descriptorSet);
-			assert(descriptorSet->isInstanceOf<GL32DescriptorSet>());
+			assert(descriptorSet->isInstanceOf<GL30DescriptorSet>());
 			assert(_glcontext->getActive());
 
-			_descriptorSet = descriptorSet->downcast_pointer<GL32DescriptorSet>();
+			_descriptorSet = descriptorSet->downcast_pointer<GL30DescriptorSet>();
 			_needUpdateDescriptor = true;
 		}
 
 		GraphicsDescriptorSetPtr
-		GL32DeviceContext::getDescriptorSet() const noexcept
+		GL30DeviceContext::getDescriptorSet() const noexcept
 		{
 			return _descriptorSet;
 		}
 
 		void
-		GL32DeviceContext::setVertexBufferData(std::uint32_t i, const GraphicsDataPtr& data, std::intptr_t offset) noexcept
+		GL30DeviceContext::setVertexBufferData(std::uint32_t i, const GraphicsDataPtr& data, std::intptr_t offset) noexcept
 		{
 			assert(data);
-			assert(data->isInstanceOf<GL32GraphicsData>());
+			assert(data->isInstanceOf<GL30GraphicsData>());
 			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
 			assert(_vertexBuffers.size() > i);
 			assert(_glcontext->getActive());
 
-			auto vbo = data->downcast_pointer<GL32GraphicsData>();
+			auto vbo = data->downcast_pointer<GL30GraphicsData>();
 			if (_vertexBuffers[i].vbo != vbo || _vertexBuffers[i].offset != offset)
 			{
 				_vertexBuffers[i].vbo = vbo;
@@ -381,30 +381,30 @@ namespace octoon
 		}
 
 		GraphicsDataPtr
-		GL32DeviceContext::getVertexBufferData(std::uint32_t i) const noexcept
+		GL30DeviceContext::getVertexBufferData(std::uint32_t i) const noexcept
 		{
 			assert(_vertexBuffers.size() > i);
 			return _vertexBuffers[i].vbo;
 		}
 
 		void
-		GL32DeviceContext::setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset, GraphicsIndexType indexType) noexcept
+		GL30DeviceContext::setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset, GraphicsIndexType indexType) noexcept
 		{
 			if (data)
 			{
-				assert(data->isInstanceOf<GL32GraphicsData>());
+				assert(data->isInstanceOf<GL30GraphicsData>());
 				assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
 				assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
 				assert(_glcontext->getActive());
 
-				auto ibo = data->downcast_pointer<GL32GraphicsData>();
+				auto ibo = data->downcast_pointer<GL30GraphicsData>();
 				if (_indexBuffer != ibo)
 				{
 					::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo->getInstanceID());
 					_indexBuffer = ibo;
 				}
 
-				_indexType = GL32Types::asIndexType(indexType);
+				_indexType = GL30Types::asIndexType(indexType);
 				_indexOffset = (GLintptr)offset;
 
 				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
@@ -417,18 +417,18 @@ namespace octoon
 		}
 
 		GraphicsDataPtr
-		GL32DeviceContext::getIndexBufferData() const noexcept
+		GL30DeviceContext::getIndexBufferData() const noexcept
 		{
 			return _indexBuffer;
 		}
 
 		void
-		GL32DeviceContext::generateMipmap(const GraphicsTexturePtr& texture) noexcept
+		GL30DeviceContext::generateMipmap(const GraphicsTexturePtr& texture) noexcept
 		{
 			assert(texture);
-			assert(texture->isInstanceOf<GL32Texture>());
+			assert(texture->isInstanceOf<GL30Texture>());
 
-			auto gltexture = texture->downcast<GL32Texture>();
+			auto gltexture = texture->downcast<GL30Texture>();
 			auto textureID = gltexture->getInstanceID();
 			auto textureTarget = gltexture->getTarget();
 
@@ -438,7 +438,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::setFramebuffer(const GraphicsFramebufferPtr& target) noexcept
+		GL30DeviceContext::setFramebuffer(const GraphicsFramebufferPtr& target) noexcept
 		{
 			assert(_glcontext->getActive());
 
@@ -446,7 +446,7 @@ namespace octoon
 			{
 				if (target)
 				{
-					auto framebuffer = target->downcast_pointer<GL32Framebuffer>();
+					auto framebuffer = target->downcast_pointer<GL30Framebuffer>();
 					glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->getInstanceID());
 
 					auto& framebufferDesc = framebuffer->getGraphicsFramebufferDesc();
@@ -472,8 +472,9 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
+		GL30DeviceContext::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
 		{
+			assert(i == 0);
 			assert(_glcontext->getActive());
 
 			GLint buffer = i;
@@ -522,7 +523,7 @@ namespace octoon
 				auto colorWriteFlags = _stateCaptured.getColorBlends()[buffer].getColorWriteMask();
 				if (colorWriteFlags != GraphicsColorMaskFlagBits::RGBABit)
 				{
-					glColorMaski(buffer, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+					glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 				}
 
 				glClearBufferfv(GL_COLOR, buffer, color.ptr());
@@ -533,7 +534,7 @@ namespace octoon
 					GLboolean g = colorWriteFlags & GraphicsColorMaskFlagBits::GreendBit ? GL_TRUE : GL_FALSE;
 					GLboolean b = colorWriteFlags & GraphicsColorMaskFlagBits::BlurBit ? GL_TRUE : GL_FALSE;
 					GLboolean a = colorWriteFlags & GraphicsColorMaskFlagBits::AlphaBit ? GL_TRUE : GL_FALSE;
-					glColorMaski(buffer, r, g, b, a);
+					glColorMask(r, g, b, a);
 				}
 			}
 
@@ -553,15 +554,15 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept
+		GL30DeviceContext::blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept
 		{
 			assert(src);
-			assert(src->isInstanceOf<GL32Framebuffer>());
-			assert(!dest || (dest && dest->isInstanceOf<GL32Framebuffer>()));
+			assert(src->isInstanceOf<GL30Framebuffer>());
+			assert(!dest || (dest && dest->isInstanceOf<GL30Framebuffer>()));
 			assert(_glcontext->getActive());
 
-			auto readFramebuffer = src->downcast<GL32Framebuffer>()->getInstanceID();
-			auto drawFramebuffer = dest ? dest->downcast<GL32Framebuffer>()->getInstanceID() : GL_NONE;
+			auto readFramebuffer = src->downcast<GL30Framebuffer>()->getInstanceID();
+			auto drawFramebuffer = dest ? dest->downcast<GL30Framebuffer>()->getInstanceID() : GL_NONE;
 
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
@@ -572,7 +573,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::discardFramebuffer(std::uint32_t i) noexcept
+		GL30DeviceContext::discardFramebuffer(std::uint32_t i) noexcept
 		{
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
@@ -617,9 +618,9 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
+		GL30DeviceContext::readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
-			GLenum internalFormat = GL32Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			GLenum internalFormat = GL30Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
@@ -629,14 +630,14 @@ namespace octoon
 			glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
 
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(texture->downcast<GL32Texture>()->getTarget(), texture->downcast<GL32Texture>()->getInstanceID());
-			glCopyTexImage2D(texture->downcast<GL32Texture>()->getTarget(), miplevel, internalFormat, x, y, width, height, 0);
+			glBindTexture(texture->downcast<GL30Texture>()->getTarget(), texture->downcast<GL30Texture>()->getInstanceID());
+			glCopyTexImage2D(texture->downcast<GL30Texture>()->getTarget(), miplevel, internalFormat, x, y, width, height, 0);
 		}
 
 		void
-		GL32DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
+		GL30DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
-			GLenum internalFormat = GL32Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			GLenum internalFormat = GL30Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
@@ -646,18 +647,18 @@ namespace octoon
 			glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
 
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(texture->downcast<GL32Texture>()->getTarget(), texture->downcast<GL32Texture>()->getInstanceID());
+			glBindTexture(texture->downcast<GL30Texture>()->getTarget(), texture->downcast<GL30Texture>()->getInstanceID());
 			glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, miplevel, internalFormat, x, y, width, height, 0);
 		}
 
 		GraphicsFramebufferPtr
-		GL32DeviceContext::getFramebuffer() const noexcept
+		GL30DeviceContext::getFramebuffer() const noexcept
 		{
 			return _framebuffer;
 		}
 
 		void
-		GL32DeviceContext::draw(std::uint32_t numVertices, std::uint32_t numInstances, std::uint32_t startVertice, std::uint32_t startInstances) noexcept
+		GL30DeviceContext::draw(std::uint32_t numVertices, std::uint32_t numInstances, std::uint32_t startVertice, std::uint32_t startInstances) noexcept
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
@@ -678,7 +679,7 @@ namespace octoon
 
 			if (numVertices > 0)
 			{
-				GLenum drawType = GL32Types::asVertexType(_stateCaptured.getPrimitiveType());
+				GLenum drawType = GL30Types::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
 				{
 					if (numInstances == 1)
@@ -692,7 +693,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::drawIndexed(std::uint32_t numIndices, std::uint32_t numInstances, std::uint32_t startIndice, std::uint32_t startVertice, std::uint32_t startInstances) noexcept
+		GL30DeviceContext::drawIndexed(std::uint32_t numIndices, std::uint32_t numInstances, std::uint32_t startIndice, std::uint32_t startVertice, std::uint32_t startInstances) noexcept
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
@@ -700,12 +701,7 @@ namespace octoon
 			assert(_indexType == GL_UNSIGNED_INT || _indexType == GL_UNSIGNED_SHORT);
 			assert(startInstances == 0);
 
-			if (_needUpdatePipeline || _needUpdateVertexBuffers)
-			{
-				_pipeline->bindVertexBuffers(_vertexBuffers, _needUpdatePipeline);
-				_needUpdatePipeline = false;
-				_needUpdateVertexBuffers = false;
-			}
+			_pipeline->bindVertexBuffers(_vertexBuffers, _needUpdatePipeline, startVertice);
 
 			if (_needUpdateDescriptor)
 			{
@@ -721,20 +717,13 @@ namespace octoon
 				else if (_indexType == GL_UNSIGNED_SHORT)
 					offsetIndices += _indexOffset + sizeof(std::uint16_t) * startIndice;
 
-				GLenum drawType = GL32Types::asVertexType(_stateCaptured.getPrimitiveType());
+				GLenum drawType = GL30Types::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
 				{
-					if (startVertice == 0)
-					{
-						if (numInstances == 1)
-							glDrawElements(drawType, numIndices, _indexType, offsetIndices);
-						else
-							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
-					}
+					if (numInstances == 1)
+						glDrawElements(drawType, numIndices, _indexType, offsetIndices);
 					else
-					{
-						glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
-					}
+						glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
 				}
 				else
 				{
@@ -744,24 +733,24 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::drawIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
+		GL30DeviceContext::drawIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
 
 		void
-		GL32DeviceContext::drawIndexedIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
+		GL30DeviceContext::drawIndexedIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept
 		{
 		}
 
 		void
-		GL32DeviceContext::present() noexcept
+		GL30DeviceContext::present() noexcept
 		{
 			assert(_glcontext->getActive());
 			_glcontext->present();
 		}
 
 		void
-		GL32DeviceContext::enableDebugControl(bool enable) noexcept
+		GL30DeviceContext::enableDebugControl(bool enable) noexcept
 		{
 			if (enable)
 			{
@@ -776,44 +765,17 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::startDebugControl() noexcept
+		GL30DeviceContext::startDebugControl() noexcept
 		{
-			// 131184 memory info
-			// 131185 memory allocation info
-			// 131154 pixel transfer is synchronized with 3D rendering
-			GLuint ids[] =
-			{
-				131076,
-				131169,
-				131184,
-				131185,
-				131218,
-				131204,
-				131154
-			};
-
-			glEnable(GL_DEBUG_OUTPUT);
-
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
-			glDebugMessageCallback(debugCallBack, this);
-
-			// enable all
-			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
-
-			// disable ids
-			glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 7, ids, GL_FALSE);
 		}
 
 		void
-		GL32DeviceContext::stopDebugControl() noexcept
+		GL30DeviceContext::stopDebugControl() noexcept
 		{
-			glDisable(GL_DEBUG_OUTPUT);
-			glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 
 		bool
-		GL32DeviceContext::initStateSystem() noexcept
+		GL30DeviceContext::initStateSystem() noexcept
 		{
 			glClearDepthf(1.0f);
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -855,94 +817,13 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::debugCallBack(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) noexcept
-		{
-			auto context = (GL32DeviceContext*)userParam;
-
-			context->getDevice()->downcast<OGLDevice>()->message("source : ");
-			switch (source)
-			{
-			case GL_DEBUG_SOURCE_API:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_API\n");
-				break;
-			case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_WINDOW_SYSTEM\n");
-				break;
-			case GL_DEBUG_SOURCE_SHADER_COMPILER:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_SHADER_COMPILER\n");
-				break;
-			case GL_DEBUG_SOURCE_THIRD_PARTY:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_THIRD_PARTY\n");
-				break;
-			case GL_DEBUG_SOURCE_APPLICATION:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_APPLICATION\n");
-				break;
-			case GL_DEBUG_SOURCE_OTHER:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_OTHER\n");
-				break;
-			}
-
-			context->getDevice()->downcast<OGLDevice>()->message("type : ");
-			switch (type)
-			{
-			case GL_DEBUG_TYPE_ERROR:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_ERROR\n");
-				break;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR\n");
-				break;
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR\n");
-				break;
-			case GL_DEBUG_TYPE_PORTABILITY:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PORTABILITY\n");
-				break;
-			case GL_DEBUG_TYPE_PERFORMANCE:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PERFORMANCE\n");
-				break;
-			case GL_DEBUG_TYPE_OTHER:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_OTHER\n");
-				break;
-			case GL_DEBUG_TYPE_MARKER:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_MARKER\n");
-				break;
-			case GL_DEBUG_TYPE_PUSH_GROUP:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PUSH_GROUP\n");
-				break;
-			case GL_DEBUG_TYPE_POP_GROUP:
-				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_POP_GROUP\n");
-				break;
-			}
-
-			context->getDevice()->downcast<OGLDevice>()->message("id : %d\n", id);
-
-			switch (severity)
-			{
-			case GL_DEBUG_SEVERITY_NOTIFICATION:
-				context->getDevice()->downcast<OGLDevice>()->message("notice\n");
-				break;
-			case GL_DEBUG_SEVERITY_LOW:
-				context->getDevice()->downcast<OGLDevice>()->message("low\n");
-				break;
-			case GL_DEBUG_SEVERITY_MEDIUM:
-				context->getDevice()->downcast<OGLDevice>()->message("medium\n");
-				break;
-			case GL_DEBUG_SEVERITY_HIGH:
-				context->getDevice()->downcast<OGLDevice>()->message("high\n");
-				break;
-			}
-
-			context->getDevice()->downcast<OGLDevice>()->message("message : %s\n", message);
-		}
-
-		void
-		GL32DeviceContext::setDevice(const GraphicsDevicePtr& device) noexcept
+		GL30DeviceContext::setDevice(const GraphicsDevicePtr& device) noexcept
 		{
 			_device = device;
 		}
 
 		GraphicsDevicePtr
-		GL32DeviceContext::getDevice() noexcept
+		GL30DeviceContext::getDevice() noexcept
 		{
 			return _device.lock();
 		}

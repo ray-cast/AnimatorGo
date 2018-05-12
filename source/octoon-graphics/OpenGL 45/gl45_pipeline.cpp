@@ -27,16 +27,16 @@ namespace octoon
 		{
 			assert(pipelineDesc.getGraphicsState());
 			assert(pipelineDesc.getGraphicsProgram());
-			assert(pipelineDesc.getGraphicsInputLayout());
-			assert(pipelineDesc.getGraphicsDescriptorSetLayout());
+			assert(pipelineDesc.getInputLayout());
+			assert(pipelineDesc.getDescriptorSetLayout());
 			assert(pipelineDesc.getGraphicsState()->isInstanceOf<GL33GraphicsState>());
 			assert(pipelineDesc.getGraphicsProgram()->isInstanceOf<GL33Program>());
-			assert(pipelineDesc.getGraphicsInputLayout()->isInstanceOf<GL33InputLayout>());
-			assert(pipelineDesc.getGraphicsDescriptorSetLayout()->isInstanceOf<GL33DescriptorSetLayout>());
+			assert(pipelineDesc.getInputLayout()->isInstanceOf<GL33InputLayout>());
+			assert(pipelineDesc.getDescriptorSetLayout()->isInstanceOf<GL33DescriptorSetLayout>());
 
 			std::uint16_t offset = 0;
 
-			auto& layouts = pipelineDesc.getGraphicsInputLayout()->getGraphicsInputLayoutDesc().getVertexLayouts();
+			auto& layouts = pipelineDesc.getInputLayout()->getInputLayoutDesc().getVertexLayouts();
 			for (auto& it : layouts)
 			{
 				GLuint attribIndex = GL_INVALID_INDEX;
@@ -75,7 +75,7 @@ namespace octoon
 				offset += it.getVertexOffset() + it.getVertexSize();
 			}
 
-			auto& bindings = pipelineDesc.getGraphicsInputLayout()->getGraphicsInputLayoutDesc().getVertexBindings();
+			auto& bindings = pipelineDesc.getInputLayout()->getInputLayoutDesc().getVertexBindings();
 			for (auto& it : bindings)
 			{
 				VertexBinding binding;
@@ -106,7 +106,7 @@ namespace octoon
 		}
 
 		const GraphicsPipelineDesc&
-		GL45Pipeline::getGraphicsPipelineDesc() const noexcept
+		GL45Pipeline::getPipelineDesc() const noexcept
 		{
 			return _pipelineDesc;
 		}

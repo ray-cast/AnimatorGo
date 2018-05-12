@@ -25,16 +25,16 @@ namespace octoon
 		{
 			assert(pipelineDesc.getGraphicsState());
 			assert(pipelineDesc.getGraphicsProgram());
-			assert(pipelineDesc.getGraphicsInputLayout());
-			assert(pipelineDesc.getGraphicsDescriptorSetLayout());
+			assert(pipelineDesc.getInputLayout());
+			assert(pipelineDesc.getDescriptorSetLayout());
 			assert(pipelineDesc.getGraphicsState()->isInstanceOf<GL20GraphicsState>());
 			assert(pipelineDesc.getGraphicsProgram()->isInstanceOf<GL20Program>());
-			assert(pipelineDesc.getGraphicsInputLayout()->isInstanceOf<GL20InputLayout>());
-			assert(pipelineDesc.getGraphicsDescriptorSetLayout()->isInstanceOf<GL20DescriptorSetLayout>());
+			assert(pipelineDesc.getInputLayout()->isInstanceOf<GL20InputLayout>());
+			assert(pipelineDesc.getDescriptorSetLayout()->isInstanceOf<GL20DescriptorSetLayout>());
 
 			std::uint16_t offset = 0;
 
-			auto& layouts = pipelineDesc.getGraphicsInputLayout()->getGraphicsInputLayoutDesc().getVertexLayouts();
+			auto& layouts = pipelineDesc.getInputLayout()->getInputLayoutDesc().getVertexLayouts();
 			for (auto& it : layouts)
 			{
 				GLuint attribIndex = GL_INVALID_INDEX;
@@ -66,6 +66,7 @@ namespace octoon
 					attrib.stride = 0;
 					attrib.offset = offset + it.getVertexOffset();
 					attrib.normalize = GL20Types::isNormFormat(it.getVertexFormat());
+					attrib.size = pipelineDesc.getInputLayout()->getInputLayoutDesc().getVertexSize((std::uint8_t)it.getVertexSlot());
 
 					if (it.getVertexSlot() <= _attributes.size())
 						_attributes.resize(it.getVertexSlot() + 1);
@@ -76,7 +77,7 @@ namespace octoon
 				offset += it.getVertexOffset() + it.getVertexSize();
 			}
 
-			auto& bindings = pipelineDesc.getGraphicsInputLayout()->getGraphicsInputLayoutDesc().getVertexBindings();
+			auto& bindings = pipelineDesc.getInputLayout()->getInputLayoutDesc().getVertexBindings();
 			for (auto& it : bindings)
 			{
 				if (it.getVertexDivisor() != GraphicsVertexDivisor::Vertex)
@@ -124,7 +125,7 @@ namespace octoon
 		}
 
 		void
-		GL20Pipeline::bindVertexBuffers(GL20VertexBuffers& vbos, bool forceUpdate) noexcept
+		GL20Pipeline::bindVertexBuffers(GL20VertexBuffers& vbos, bool forceUpdate, std::uint32_t startVertices) noexcept
 		{
 			for (std::size_t slot = 0; slot < _attributes.size(); slot++)
 			{
@@ -137,8 +138,10 @@ namespace octoon
 
 					for (auto& it : _attributes[slot])
 					{
+						auto offset = (GLbyte*)nullptr + it.offset + vbos[slot].offset + it.size * startVertices;
+
 						glEnableVertexAttribArray(it.index);
-						glVertexAttribPointer(it.index, it.count, it.type, it.normalize, it.stride, (GLbyte*)nullptr + vbos[slot].offset + it.offset);
+						glVertexAttribPointer(it.index, it.count, it.type, it.normalize, it.stride, offset);
 					}
 
 					vbos[slot].needUpdate = false;
@@ -147,7 +150,7 @@ namespace octoon
 		}
 
 		const GraphicsPipelineDesc&
-		GL20Pipeline::getGraphicsPipelineDesc() const noexcept
+		GL20Pipeline::getPipelineDesc() const noexcept
 		{
 			return _pipelineDesc;
 		}

@@ -247,7 +247,7 @@ namespace octoon
 			auto glpipeline = pipeline->downcast_pointer<GL20Pipeline>();
 			if (_pipeline != glpipeline)
 			{
-				auto& pipelineDesc = pipeline->getGraphicsPipelineDesc();
+				auto& pipelineDesc = pipeline->getPipelineDesc();
 
 				auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL20GraphicsState>();
 				if (_state != glstate)
@@ -497,7 +497,7 @@ namespace octoon
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
 
-			glBlitFramebuffer((float)v1.left, (float)v1.top, (float)v1.width, (float)v1.height, (float)v2.left, (float)v2.top, (float)v2.width, (float)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBlitFramebuffer((GLint)v1.left, (GLint)v1.top, (GLint)v1.width, (GLint)v1.height, (GLint)v2.left, (GLint)v2.top, (GLint)v2.width, (GLint)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 			_framebuffer = nullptr;
 		}
@@ -560,7 +560,7 @@ namespace octoon
 			if (numVertices > 0)
 			{
 				GLenum drawType = GL20Types::asVertexType(primitiveType);
-				GL_CHECK(glDrawArrays(drawType, 0, numVertices));
+				GL_CHECK(glDrawArrays(drawType, startVertice, numVertices));
 			}
 		}
 
@@ -573,12 +573,7 @@ namespace octoon
 			assert(_indexType == GL_UNSIGNED_INT || _indexType == GL_UNSIGNED_SHORT);
 			assert(numInstances <= 1 && startInstances == 0);
 
-			if (_needUpdatePipeline || _needUpdateVertexBuffers)
-			{
-				_pipeline->bindVertexBuffers(_vertexBuffers, _needUpdatePipeline);
-				_needUpdatePipeline = false;
-				_needUpdateVertexBuffers = false;
-			}
+			_pipeline->bindVertexBuffers(_vertexBuffers, _needUpdatePipeline, startVertice);
 
 			if (_needUpdateDescriptor)
 			{

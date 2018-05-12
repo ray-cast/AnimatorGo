@@ -1,5 +1,5 @@
-#ifndef OCTOON_H_
-#define OCTOON_H_
+#ifndef OCTOON_C_H_
+#define OCTOON_C_H_
 
 #ifndef OCTOON_C_LINKAGE
 #	ifdef __cplusplus

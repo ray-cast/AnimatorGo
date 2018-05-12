@@ -42,7 +42,7 @@ namespace octoon
 		}
 
 		void
-		GL32GraphicsAttribute::setSemanticIndex(std::uint32_t index) noexcept
+		GL32GraphicsAttribute::setSemanticIndex(std::uint8_t index) noexcept
 		{
 			_semanticIndex = index;
 		}

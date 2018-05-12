@@ -1,15 +1,5 @@
+#include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
-
-#include <octoon/video/ggx_material.h>
-#include <octoon/game_object.h>
-#include <octoon/camera_component.h>
-#include <octoon/mesh_renderer_component.h>
-#include <octoon/transform_component.h>
-#include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera_component.h>
-
-#include <octoon/ui/imgui.h>
-#include <octoon/res_manager.h>
 
 class CubeController : public octoon::GameComponent
 {

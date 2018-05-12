@@ -3,7 +3,7 @@
 
 #include "gl32_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -17,7 +17,7 @@ namespace octoon
 			void setSemantic(const std::string& semantic) noexcept;
 			const std::string& getSemantic() const noexcept;
 
-			void setSemanticIndex(std::uint32_t index) noexcept;
+			void setSemanticIndex(std::uint8_t index) noexcept;
 			std::uint32_t getSemanticIndex() const noexcept;
 
 			void setType(GraphicsFormat type) noexcept;

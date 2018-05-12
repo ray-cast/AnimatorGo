@@ -269,7 +269,7 @@ namespace octoon
 			glGetTexImage(_target, mipLevel, format, type, 0);
 
 			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
-			*(std::uint8_t*)data += (y * _textureDesc.getWidth() * num) + x * num;
+			(std::uint8_t*&)*data += (y * _textureDesc.getWidth() * num) + x * num;
 
 			return *data ? true : false;
 		}

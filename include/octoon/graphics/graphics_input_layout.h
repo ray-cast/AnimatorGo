@@ -84,7 +84,7 @@ namespace octoon
 			void setVertexBindings(const GraphicsVertexBindings& binding) noexcept;
 			const GraphicsVertexBindings& getVertexBindings() const noexcept;
 
-			std::uint32_t getVertexSize(std::uint8_t slot = 0) const noexcept;
+			std::uint16_t getVertexSize(std::uint8_t slot = 0) const noexcept;
 
 		private:
 			GraphicsVertexLayouts _layouts;

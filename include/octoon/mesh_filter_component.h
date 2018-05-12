@@ -16,16 +16,20 @@ namespace octoon
 
 	public:
 		MeshFilterComponent() noexcept;
-		MeshFilterComponent(model::Mesh&& mesh) noexcept;
-		MeshFilterComponent(model::MeshPtr&& mesh) noexcept;
-		MeshFilterComponent(const model::Mesh& mesh) noexcept;
-		MeshFilterComponent(const model::MeshPtr& mesh) noexcept;
+		MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const model::Mesh& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 
-		void setMesh(model::Mesh&& mesh) noexcept;
-		void setMesh(model::MeshPtr&& mesh) noexcept;
-		void setMesh(const model::MeshPtr& mesh) noexcept;
+		void setMesh(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
 		const model::MeshPtr& getMesh() const noexcept;
+
+		bool isSharedMesh() const noexcept;
+
+		void uploadMeshData() noexcept;
 
 		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
 		void removeMeshListener(const OnMeshReplaceEvent* func) noexcept;
@@ -40,6 +44,7 @@ namespace octoon
 		MeshFilterComponent& operator=(const MeshFilterComponent&) = delete;
 
 	private:
+		bool isSharedMesh_;
 		model::MeshPtr mesh_;
 		OnMeshReplaceEvents delegates_;
 	};

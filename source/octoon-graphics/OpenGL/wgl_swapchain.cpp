@@ -1,4 +1,3 @@
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
 #include "wgl_swapchain.h"
 #include "ogl_device.h"
 
@@ -374,7 +373,7 @@ namespace octoon
 				int major = 0;
 				int minor = 0;
 
-				auto deviceType = this->getDevice()->getGraphicsDeviceDesc().getDeviceType();
+				auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
 				if (deviceType == GraphicsDeviceType::OpenGLCore)
 				{
 					major = 4;
@@ -428,5 +427,3 @@ namespace octoon
 		}
 	}
 }
-
-#endif

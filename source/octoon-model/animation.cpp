@@ -258,13 +258,13 @@ namespace octoon
 					auto& parent = _bones[bone.getParent()];
 					auto position = (bone.getPosition() - parent.getPosition());
 					float4x4 m;
-					m.make_translate(position);
+					m.makeTranslate(position);
 					bone.setLocalTransform(m);
 				}
 				else
 				{
 					float4x4 m;
-					m.make_translate(bone.getPosition());
+					m.makeTranslate(bone.getPosition());
 					bone.setLocalTransform(m);
 				}
 
@@ -300,7 +300,7 @@ namespace octoon
 				if ((std::size_t)parent > size)
 					_bones[i].setTransform(_bones[i].getLocalTransform());
 				else
-					_bones[i].setTransform(transform_multiply(_bones[parent].getTransform(), _bones[i].getLocalTransform()));
+					_bones[i].setTransform(transformMultiply(_bones[parent].getTransform(), _bones[i].getLocalTransform()));
 			}
 		}
 
@@ -310,7 +310,7 @@ namespace octoon
 			{
 				auto& parent = _bones.at(bone.getParent());
 				updateBoneMatrix(parent);
-				bone.setTransform(transform_multiply(parent.getTransform(), bone.getLocalTransform()));
+				bone.setTransform(transformMultiply(parent.getTransform(), bone.getLocalTransform()));
 			}
 			else
 			{
@@ -341,8 +341,8 @@ namespace octoon
 					if (math::distance(effectPos, targetPos) < EPSILON)
 						return;
 
-					Vector3 dstLocal = math::inv_translate_vector3(bone.getTransform(), targetPos);
-					Vector3 srcLocal = math::inv_translate_vector3(bone.getTransform(), effectPos);
+					Vector3 dstLocal = math::invTranslateVector3(bone.getTransform(), targetPos);
+					Vector3 srcLocal = math::invTranslateVector3(bone.getTransform(), effectPos);
 
 					srcLocal = math::normalize(srcLocal);
 					dstLocal = math::normalize(dstLocal);
@@ -360,7 +360,7 @@ namespace octoon
 
 					if (ik.child[j].rotateLimited)
 					{
-						float3 euler(math::euler_angles(q0));
+						float3 euler(math::eulerAngles(q0));
 						euler.x = std::min(ik.child[j].minimumDegrees.x, euler.x);
 						euler.y = std::min(ik.child[j].minimumDegrees.y, euler.y);
 						euler.z = std::min(ik.child[j].minimumDegrees.z, euler.z);
@@ -368,7 +368,7 @@ namespace octoon
 						euler.y = std::max(ik.child[j].maximumDegrees.y, euler.y);
 						euler.z = std::max(ik.child[j].maximumDegrees.z, euler.z);
 
-						q0.make_rotation(euler);
+						q0.makeRotation(euler);
 					}
 
 					Quaternion qq = math::cross(bone.getRotation(), q0);
@@ -382,8 +382,8 @@ namespace octoon
 		void AnimationProperty::updateTransform(Bone& bone, const float3& translate, const Quaternion& rotate) noexcept
 		{
 			float4x4 transform;
-			transform.make_rotation(rotate);
-			transform.set_translate(translate);
+			transform.makeRotation(rotate);
+			transform.setTranslate(translate);
 
 			bone.setRotation(rotate);
 			bone.setLocalTransform(transform);

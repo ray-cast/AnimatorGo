@@ -1,5 +1,9 @@
 #include <octoon/video/camera.h>
 #include <octoon/video/render_system.h>
+#include <octoon/runtime/except.h>
+#include <octoon/graphics/graphics.h>
+
+using namespace octoon::graphics;
 
 namespace octoon
 {
@@ -11,6 +15,7 @@ namespace octoon
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
+			, ratioReal_(1.0f)
 			, znear_(0.01f)
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
@@ -227,7 +232,14 @@ namespace octoon
 		Camera::getPixelViewport() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			math::float4 result;
 			result.x = viewport_.x * width;
@@ -261,6 +273,12 @@ namespace octoon
 			}
 		}
 
+		void
+		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+		{
+			fbo_[0] = framebuffer;
+		}
+
 		CameraOrder
 		Camera::getCameraOrder() const noexcept
 		{
@@ -279,43 +297,152 @@ namespace octoon
 			return clearflags_;
 		}
 
+		const graphics::GraphicsFramebufferPtr&
+		Camera::getFramebuffer() const noexcept
+		{
+			return fbo_[0];
+		}
+
+		const graphics::GraphicsFramebufferPtr&
+		Camera::getSwapFramebuffer() const noexcept
+		{
+			return fbo_[1];
+		}
+
+		void
+		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		{
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
+
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexMultisample(multisample);
+			colorTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(format);
+			colorTexture_[0] = RenderSystem::instance()->createTexture(colorTextureDesc);
+			if (!colorTexture_[0])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexMultisample(multisample);
+			depthTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(depthStencil);
+			depthTexture_[0] = RenderSystem::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture_[0])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_[0], 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_[0], 0, 0));
+
+			fbo_[0] = RenderSystem::instance()->createFramebuffer(framebufferDesc);
+			if (!fbo_[0])
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+		}
+
+		void
+		Camera::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		{
+			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, depthStencil));
+
+			GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexMultisample(multisample);
+			colorTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(format);
+			colorTexture_[1] = RenderSystem::instance()->createTexture(colorTextureDesc);
+			if (!colorTexture_[1])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexMultisample(multisample);
+			depthTextureDesc.setTexDim(multisample > 0 ? GraphicsTextureDim::Texture2DMultisample : GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(depthStencil);
+			depthTexture_[1] = RenderSystem::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture_[1])
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_[1], 0, 0));
+			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_[1], 0, 0));
+
+			fbo_[1] = RenderSystem::instance()->createFramebuffer(framebufferDesc);
+			if (!fbo_[1])
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+		}
+
 		void
 		Camera::_updateOrtho() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			auto left = width * ortho_.x;
 			auto right = width * ortho_.y;
 			auto bottom = height * ortho_.z;
 			auto top = height * ortho_.w;
 
-			project_.make_ortho_lh(left, right, bottom, top, znear_, zfar_);
+			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
-		Camera::_updatePerspective() const noexcept
+		Camera::_updatePerspective(float ratio) const noexcept
 		{
-			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
-
-			float ratio = (float)width / height;
-
-			project_.make_perspective_off_center_rh(aperture_, ratio_ * ratio, znear_, zfar_);
+			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
 		Camera::_updateViewProject() const noexcept
 		{
-			if (needUpdateViewProject_)
+			std::uint32_t width = 1920, height = 1080;
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
+
+			float ratio = (float)width / height;
+
+			if (ratioReal_ != ratio)
 			{
 				if (cameraType_ == CameraType::Perspective)
-					this->_updatePerspective();
+					this->_updatePerspective(ratio);
 				else
 					this->_updateOrtho();
 
+				ratioReal_ = ratio;
+			}
+
+			if (needUpdateViewProject_)
+			{
 				viewProject_ = project_ * this->getView();
 				viewProjectInverse_ = math::inverse(viewProject_);
 

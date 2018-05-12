@@ -7,6 +7,13 @@ namespace octoon
 	namespace video
 	{
 		LineMaterial::LineMaterial() except
+			: lineWidth_(1.0f)
+		{
+			this->setup();
+		}
+
+		LineMaterial::LineMaterial(float lineWidth) except
+			: lineWidth_(lineWidth)
 		{
 			this->setup();
 		}
@@ -52,6 +59,7 @@ namespace octoon
 			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::LineList);
 			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
+			stateDesc.setLineWidth(lineWidth_);
 
 			graphics::GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));
@@ -72,9 +80,9 @@ namespace octoon
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "color"; });
+			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
+			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
 
 			color_->uniform3f(math::float3::Zero);
 		}

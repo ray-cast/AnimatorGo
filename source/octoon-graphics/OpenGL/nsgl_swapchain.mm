@@ -1,4 +1,3 @@
-#if defined(OCTOON_BUILD_PLATFORM_APPLE)
 #include "nsgl_swapchain.h"
 
 #include <Cocoa/Cocoa.h>
@@ -306,5 +305,3 @@ namespace octoon
 		}
 	}
 }
-
-#endif

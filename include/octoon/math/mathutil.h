@@ -1,5 +1,5 @@
-﻿#ifndef OCTOON_MATHUTIL_H_
-#define OCTOON_MATHUTIL_H_
+﻿#ifndef OCTOON_MATH_MATHUTIL_H_
+#define OCTOON_MATH_MATHUTIL_H_
 
 #include <cmath>
 #include <cfloat>
@@ -27,7 +27,7 @@ namespace octoon
 		constexpr float EPSILON_E6 = 1E-6f;
 
 		template<typename T>
-		constexpr auto wrap_pi(const T theta) noexcept
+		constexpr auto wrap_pi(T theta) noexcept
 		{
 			theta += math::PI;
 			theta -= std::floor(theta * math::PI_2);

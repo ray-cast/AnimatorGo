@@ -6,10 +6,8 @@ namespace octoon
 {
 	namespace graphics
 	{
-		#ifdef _BUILD_OPENGL
-		#	ifdef GLEW_MX
-		GLEWContext _glewctx;
-		#	endif
+		#ifdef GLEW_MX
+			GLEWContext _glewctx;
 		#endif
 
 		GLenum

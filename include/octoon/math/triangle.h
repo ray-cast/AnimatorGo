@@ -1,5 +1,5 @@
-#ifndef OCTOON_TRIANGLE_H_
-#define OCTOON_TRIANGLE_H_
+#ifndef OCTOON_MATH_TRIANGLE_H_
+#define OCTOON_MATH_TRIANGLE_H_
 
 #include <octoon/math/vector3.h>
 

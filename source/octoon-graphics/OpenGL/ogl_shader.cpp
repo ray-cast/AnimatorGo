@@ -1,7 +1,7 @@
 #include "ogl_shader.h"
 #include "ogl_device.h"
 
-#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_USE_HLSL)
 #	define EXCLUDE_PSTDINT
 #	include <hlslcc.hpp>
 
@@ -291,7 +291,7 @@ namespace octoon
 
 			if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSL)
 			{
-#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_USE_HLSL)
 				if (!HlslCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), shaderDesc.getEntryPoint().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlsl to glsl.");
@@ -306,7 +306,7 @@ namespace octoon
 			}
 			else if (shaderDesc.getLanguage() == GraphicsShaderLang::HLSLbytecodes)
 			{
-#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#if defined(__WINDOWS__) && defined(OCTOON_FEATURE_GRAPHICS_USE_HLSL)
 				if (!HlslByteCodes2GLSL(shaderDesc.getStage(), shaderDesc.getByteCodes().data(), codes))
 				{
 					this->getDevice()->downcast<OGLDevice>()->message("Can't conv hlslbytecodes to glsl.");
@@ -360,7 +360,7 @@ namespace octoon
 		bool
 		OGLShader::HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, const std::string& main, std::string& out)
 		{
-		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+		#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_USE_HLSL)
 			const char* profile = nullptr;
 			if (stage == GraphicsShaderStageFlagBits::VertexBit)
 				profile = "vs_4_0";
@@ -430,7 +430,7 @@ namespace octoon
 		bool
 		OGLShader::HlslByteCodes2GLSL(GraphicsShaderStageFlags stage, const char* codes, std::string& out)
 		{
-#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_HLSL_SUPPORT)
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS) && defined(OCTOON_FEATURE_GRAPHICS_USE_HLSL)
 			std::uint32_t flags = HLSLCC_FLAG_COMBINE_TEXTURE_SAMPLERS | HLSLCC_FLAG_INOUT_APPEND_SEMANTIC_NAMES | HLSLCC_FLAG_DISABLE_GLOBALS_STRUCT;
 			if (stage == GraphicsShaderStageFlagBits::GeometryBit)
 				flags = HLSLCC_FLAG_GS_ENABLED;

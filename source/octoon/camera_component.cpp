@@ -100,6 +100,12 @@ namespace octoon
 		camera_->setCameraType(type);
 	}
 
+	void
+	CameraComponent::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+	{
+		camera_->setFramebuffer(framebuffer);
+	}
+
 	video::CameraOrder
 	CameraComponent::getCameraOrder() const noexcept
 	{
@@ -116,6 +122,18 @@ namespace octoon
 	CameraComponent::getClearFlags() const noexcept
 	{
 		return camera_->getClearFlags();
+	}
+
+	const graphics::GraphicsFramebufferPtr&
+	CameraComponent::getFramebuffer() const noexcept
+	{
+		return camera_->getFramebuffer();
+	}
+
+	const graphics::GraphicsFramebufferPtr&
+	CameraComponent::getSwapFramebuffer() const noexcept
+	{
+		return camera_->getSwapFramebuffer();
 	}
 
 	math::float3
@@ -202,10 +220,23 @@ namespace octoon
 		return camera_->getProjectionInverse();
 	}
 
+	void
+	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	{
+		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
+	}
+
+		void
+	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	{
+		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
+	}
+
 	GameComponentPtr
 	CameraComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<CameraComponent>();
+		instance->setName(this->getName());
 		instance->setAperture(this->getAperture());
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());

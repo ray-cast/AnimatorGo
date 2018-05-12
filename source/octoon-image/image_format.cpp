@@ -29,6 +29,12 @@ namespace octoon
 			return swizzle_type(format_);
 		}
 
+		Format::Type
+		Format::type() const noexcept
+		{
+			return format_;
+		}
+
 		swizzle_t
 		Format::swizzle_type(Format::Type format) except
 		{

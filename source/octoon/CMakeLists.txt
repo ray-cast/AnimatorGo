@@ -29,27 +29,23 @@ SET(OCTOON_LIST
 SOURCE_GROUP("system\\app" FILES ${OCTOON_LIST})
 
 SET(BASE_FEATURES_LIST
-	${HEADER_PATH}/transform_component.h
-	${SOURCE_PATH}/transform_component.cpp
 	${HEADER_PATH}/game_base_features.h
 	${SOURCE_PATH}/game_base_features.cpp
+	${HEADER_PATH}/transform_component.h
+	${SOURCE_PATH}/transform_component.cpp
+	${HEADER_PATH}/mesh_filter_component.h
+	${SOURCE_PATH}/mesh_filter_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
 IF(OCTOON_FEATURE_VIDEO_ENABLE)
 SET(VIDEO_FEATURES_LIST
-	${HEADER_PATH}/mesh_filter_component.h
-	${SOURCE_PATH}/mesh_filter_component.cpp
 	${HEADER_PATH}/camera_component.h
 	${SOURCE_PATH}/camera_component.cpp
-	${HEADER_PATH}/first_person_camera.h
-	${SOURCE_PATH}/first_person_camera.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
-	${HEADER_PATH}/path_meshing_component.h
-	${SOURCE_PATH}/path_meshing_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )
@@ -59,6 +55,8 @@ ENDIF()
 SET(INPUT_FEATURES_LIST
 	${HEADER_PATH}/input_feature.h
 	${SOURCE_PATH}/input_feature.cpp
+	${HEADER_PATH}/first_person_camera_component.h
+	${SOURCE_PATH}/first_person_camera_component.cpp
 )
 SOURCE_GROUP("system\\input" FILES ${INPUT_FEATURES_LIST})
 
@@ -89,24 +87,44 @@ SOURCE_GROUP("system\\timer" FILES ${TIMER_FEATURES_LIST})
 SET(IO_FEATURES_LIST
 	${HEADER_PATH}/io_feature.h
 	${SOURCE_PATH}/io_feature.cpp
+	${HEADER_PATH}/res_manager.h
+	${SOURCE_PATH}/res_manager.cpp
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 
-ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
-ADD_LIBRARY(${LIB_NAME} SHARED 
-	${OCTOON_LIST} 
-	${BASE_FEATURES_LIST} 
-	${INPUT_FEATURES_LIST} 
-	${GRAPHICS_FEATURES_LIST}
-	${GUI_FEATURES_LIST}
-	${TIMER_FEATURES_LIST}
-	${IO_FEATURES_LIST}
-	${VIDEO_FEATURES_LIST}
-)
+IF(OCTOON_BUILD_SHARED_DLL)
+	ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
+	ADD_LIBRARY(${LIB_NAME} SHARED 
+		${OCTOON_LIST} 
+		${BASE_FEATURES_LIST} 
+		${INPUT_FEATURES_LIST} 
+		${GRAPHICS_FEATURES_LIST}
+		${GUI_FEATURES_LIST}
+		${TIMER_FEATURES_LIST}
+		${IO_FEATURES_LIST}
+		${VIDEO_FEATURES_LIST}
+	)
+ELSE()
+	ADD_DEFINITIONS(-DOCTOON_STATIC)
+	ADD_LIBRARY(${LIB_NAME} 
+		${OCTOON_LIST} 
+		${BASE_FEATURES_LIST} 
+		${INPUT_FEATURES_LIST} 
+		${GRAPHICS_FEATURES_LIST}
+		${GUI_FEATURES_LIST}
+		${TIMER_FEATURES_LIST}
+		${IO_FEATURES_LIST}
+		${VIDEO_FEATURES_LIST}
+	)
+ENDIF()
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-math)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-runtime)
-TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-model)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-image)
+
+IF(OCTOON_FEATURE_MODEL_ENABLE)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-model)
+ENDIF()
 
 IF(OCTOON_FEATURE_IO_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-io)

@@ -1,5 +1,5 @@
-#ifndef OCTOON_TEXT_MATERIAL_H_
-#define OCTOON_TEXT_MATERIAL_H_
+#ifndef OCTOON_LINE_MATERIAL_H_
+#define OCTOON_LINE_MATERIAL_H_
 
 #include <octoon/video/material.h>
 #include <octoon/graphics/graphics.h>
@@ -12,6 +12,7 @@ namespace octoon
 		{
 		public:
 			LineMaterial() except;
+			LineMaterial(float lineWidth) except;
 			~LineMaterial() noexcept;
 
 			void setup() except;
@@ -32,6 +33,8 @@ namespace octoon
 			LineMaterial& operator=(const LineMaterial&) = delete;
 
 		private:
+			float lineWidth_;
+
 			graphics::GraphicsPipelinePtr pipeline_;
 			graphics::GraphicsDescriptorSetPtr descriptorSet_;
 

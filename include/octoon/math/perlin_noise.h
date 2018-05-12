@@ -1,5 +1,5 @@
-#ifndef OCTOON_PERLIN_NOISE_H_
-#define OCTOON_PERLIN_NOISE_H_
+#ifndef OCTOON_MATH_PERLIN_NOISE_H_
+#define OCTOON_MATH_PERLIN_NOISE_H_
 
 #include <octoon/math/vector2.h>
 

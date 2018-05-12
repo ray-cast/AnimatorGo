@@ -593,7 +593,7 @@ namespace octoon
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getGraphicsFramebufferLayoutDesc();
+			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
 			if (layoutDesc.getComponents().size() > i)
 			{
 				auto& attachment = layoutDesc.getComponents().at(i);
@@ -742,7 +742,9 @@ namespace octoon
 				{
 					if (startVertice == 0)
 					{
-						if (glDrawElementsInstanced)
+						if (numInstances == 1)
+							glDrawElements(drawType, numIndices, _indexType, offsetIndices);
+						else if (glDrawElementsInstanced)
 							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
 						else
 							this->getDevice()->downcast<OGLDevice>()->message("Cannot support glDrawElementsInstanced.");

@@ -1,5 +1,5 @@
-#ifndef _H_EGL3_TEXTURE_H_
-#define _H_EGL3_TEXTURE_H_
+#ifndef OCTOON_OGL_TEXTURE_H_
+#define OCTOON_OGL_TEXTURE_H_
 
 #include "ogl_types.h"
 

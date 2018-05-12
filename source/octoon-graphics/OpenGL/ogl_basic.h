@@ -25,8 +25,7 @@ namespace octoon
 {
 	namespace graphics
 	{
-#if defined(_BUILD_OPENGL_ES)
-
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES)
 		typedef void (GLAPIENTRY* PFNGLACCUM) (GLenum op, GLfloat value);
 		typedef void (GLAPIENTRY* PFNGLALPHAFUNC) (GLenum func, GLclampf ref);
 		typedef GLboolean(GLAPIENTRY* PFNGLARETEXTURESRESIDENT) (GLsizei n, const GLuint *textures, GLboolean *residences);

@@ -633,10 +633,10 @@ namespace octoon
 			return _bindings;
 		}
 
-		std::uint32_t
+		std::uint16_t
 		GraphicsInputLayoutDesc::getVertexSize(std::uint8_t slot) const noexcept
 		{
-			std::uint32_t size = 0;
+			std::uint16_t size = 0;
 			for (auto& it : _layouts)
 			{
 				if (it.getVertexSlot() == slot)

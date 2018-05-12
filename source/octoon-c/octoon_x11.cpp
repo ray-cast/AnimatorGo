@@ -199,6 +199,8 @@ bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexce
 {
     if (scenename)
 		gameScenePath_ = scenename;
+
+    return true;
 }
 
 void OCTOON_C_CALL OctoonCloseWindow() noexcept

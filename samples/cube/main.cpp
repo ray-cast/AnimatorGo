@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept
+	octoon::GameComponentPtr clone() const noexcept override
 	{
 		return std::make_shared<CubeController>();
 	}

@@ -11,13 +11,11 @@
 #include "gl32_descriptor.h"
 #include "gl32_graphics_data.h"
 
-#include "ogl_swapchain.h"
-
 namespace octoon
 {
 	namespace graphics
 	{
-		OctoonImplementSubClass(GL32Device, GraphicsDevice, "GL32Device")
+		OctoonImplementSubClass(GL32Device, OGLDevice, "GL32Device")
 
 		GL32Device::GL32Device() noexcept
 		{
@@ -44,16 +42,6 @@ namespace octoon
 		GL32Device::close() noexcept
 		{
 			_deviceProperty.reset();
-		}
-
-		GraphicsSwapchainPtr
-		GL32Device::createSwapchain(const GraphicsSwapchainDesc& desc) noexcept
-		{
-			auto swapchain = std::make_shared<OGLSwapchain>();
-			swapchain->setDevice(this->downcast_pointer<GL32Device>());
-			if (swapchain->setup(desc))
-				return swapchain;
-			return nullptr;
 		}
 
 		GraphicsContextPtr

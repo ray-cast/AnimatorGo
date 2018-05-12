@@ -18,7 +18,7 @@ namespace octoon
 			void close() noexcept;
 
 			void setActive(bool active) noexcept;
-			bool getActive() noexcept;
+			bool getActive() const noexcept;
 
 			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept;
 			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept;

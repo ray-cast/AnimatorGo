@@ -1,4 +1,5 @@
 #include "nsgl_swapchain.h"
+#include "ogl_device.h"
 
 #include <Cocoa/Cocoa.h>
 
@@ -12,15 +13,6 @@ namespace octoon
 			: _isActive(false)
 			, _major(3)
 			, _minor(3)
-			, _context(0)
-			, _pixelFormat(0)
-		{
-		}
-
-		NSGLSwapchain::NSGLSwapchain(GLuint major, GLuint minor) noexcept
-			: _isActive(false)
-			, _major(major)
-			, _minor(minor)
 			, _context(0)
 			, _pixelFormat(0)
 		{
@@ -152,7 +144,7 @@ namespace octoon
 
 			if (swapchainDesc.getImageNums() != 1 && swapchainDesc.getImageNums() != 2)
 			{
-				GL_PLATFORM_LOG("Invalid image number");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid image number");
 				return false;
 			}
 
@@ -187,7 +179,7 @@ namespace octoon
 			}
 			else
 			{
-				GL_PLATFORM_LOG("Cannot support color format");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support color format");
 				return false;
 			}
 
@@ -236,14 +228,14 @@ namespace octoon
 			}
 			else
 			{
-				GL_PLATFORM_LOG("Cannot support depth stencil format");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support depth stencil format");
 				return false;
 			}
 
 			this->_pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
 			if (this->_pixelFormat == nil)
 			{
-				GL_PLATFORM_LOG("NSGL: Failed to find a suitable pixel format");
+				this->getDevice()->downcast<OGLDevice>()->message("NSGL: Failed to find a suitable pixel format");
 				return false;
 			}
 
@@ -256,14 +248,14 @@ namespace octoon
 			NSWindow* window = (NSWindow*)swapchainDesc.getWindHandle();
 			if (window == nil)
 			{
-				GL_PLATFORM_LOG("NSGL: Empty window handle.");
+				this->getDevice()->downcast<OGLDevice>()->message("NSGL: Empty window handle.");
 				return false;
 			}
 
 			NSOpenGLPixelFormat* pfd = (NSOpenGLPixelFormat*)this->_pixelFormat;
 			if (pfd == nil)
 			{
-				GL_PLATFORM_LOG("NSGL: Failed to initialize GL PixelFormat.");
+				this->getDevice()->downcast<OGLDevice>()->message("NSGL: Failed to initialize GL PixelFormat.");
 				return false;
 			}
 
@@ -271,7 +263,7 @@ namespace octoon
 			NSOpenGLContext* context = [[NSOpenGLContext alloc] initWithFormat:pfd shareContext:share];
 			if (context == nil)
 			{
-				GL_PLATFORM_LOG("NSGL: Failed to initialize GL context.");
+				this->getDevice()->downcast<OGLDevice>()->message("NSGL: Failed to initialize GL context.");
 				return false;
 			}
 

@@ -1,5 +1,5 @@
 #include "wgl_swapchain.h"
-#include "gl33_device.h"
+#include "ogl_device.h"
 
 namespace octoon
 {
@@ -91,14 +91,14 @@ namespace octoon
 					_swapchain->setActive(false);
 
 				if (!::wglMakeCurrent(_hdc, _context))
-					this->getDevice()->downcast<GL33Device>()->message("wglMakeCurrent() fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
 
 				_swapchain = this;
 			}
 			else
 			{
 				if (!::wglMakeCurrent(0, 0))
-					this->getDevice()->downcast<GL33Device>()->message("wglMakeCurrent() fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglMakeCurrent() fail");
 
 				if (_swapchain == this)
 					_swapchain = nullptr;
@@ -134,22 +134,22 @@ namespace octoon
 			{
 			case GraphicsSwapInterval::Free:
 				if (!wglSwapIntervalEXT(0))
-					this->getDevice()->downcast<GL33Device>()->message("wglSwapInterval(SwapInterval::Free) fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Free) fail");
 				break;
 			case GraphicsSwapInterval::Vsync:
 				if (!wglSwapIntervalEXT(1))
-					this->getDevice()->downcast<GL33Device>()->message("wglSwapInterval(SwapInterval::Vsync) fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Vsync) fail");
 				break;
 			case GraphicsSwapInterval::Fps30:
 				if (!wglSwapIntervalEXT(2))
-					this->getDevice()->downcast<GL33Device>()->message("wglSwapInterval(SwapInterval::Fps30) fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps30) fail");
 				break;
 			case GraphicsSwapInterval::Fps15:
 				if (!wglSwapIntervalEXT(3))
-					this->getDevice()->downcast<GL33Device>()->message("wglSwapInterval(SwapInterval::Fps15) fail");
+					this->getDevice()->downcast<OGLDevice>()->message("wglSwapInterval(SwapInterval::Fps15) fail");
 				break;
 			default:
-				this->getDevice()->downcast<GL33Device>()->message("Invalid swap interval");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid swap interval");
 			}
 
 			_swapchainDesc.setSwapInterval(interval);
@@ -187,7 +187,7 @@ namespace octoon
 			{
 				if (!IsWindow((HWND)swapchainDesc.getWindHandle()))
 				{
-					this->getDevice()->downcast<GL33Device>()->message("Invlid HWND");
+					this->getDevice()->downcast<OGLDevice>()->message("Invlid HWND");
 					return false;
 				}
 
@@ -195,7 +195,7 @@ namespace octoon
 				_hdc = ::GetDC(hwnd);
 				if (!_hdc)
 				{
-					this->getDevice()->downcast<GL33Device>()->message("GetDC() fail");
+					this->getDevice()->downcast<OGLDevice>()->message("GetDC() fail");
 					return false;
 				}
 			}
@@ -214,14 +214,14 @@ namespace octoon
 				_hwnd = CreateWindowEx(WS_EX_APPWINDOW, wc.lpszClassName, "GL33", style, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, wc.hInstance, 0);
 				if (!_hwnd)
 				{
-					this->getDevice()->downcast<GL33Device>()->message("CreateWindowEx() fail");
+					this->getDevice()->downcast<OGLDevice>()->message("CreateWindowEx() fail");
 					return false;
 				}
 
 				_hdc = ::GetDC(_hwnd);
 				if (!_hdc)
 				{
-					this->getDevice()->downcast<GL33Device>()->message("GetDC() fail");
+					this->getDevice()->downcast<OGLDevice>()->message("GetDC() fail");
 					return false;
 				}
 			}
@@ -254,7 +254,7 @@ namespace octoon
 				pfd.dwFlags |= PFD_DOUBLEBUFFER;
 			else if (swapchainDesc.getImageNums() != 1)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Invalid image number");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid image number");
 				return false;
 			}
 
@@ -273,7 +273,7 @@ namespace octoon
 			}
 			else
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Can't support color format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support color format");
 				return false;
 			}
 
@@ -310,21 +310,21 @@ namespace octoon
 			}
 			else
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Can't support depth stencil format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support depth stencil format");
 				return false;
 			}
 
 			int pixelFormat = ::ChoosePixelFormat(_hdc, &pfd);
 			if (!pixelFormat)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("ChoosePixelFormat() fail");
+				this->getDevice()->downcast<OGLDevice>()->message("ChoosePixelFormat() fail");
 				return false;
 			}
 
 			PIXELFORMATDESCRIPTOR pfd2;
 			if (!::DescribePixelFormat(_hdc, pixelFormat, sizeof(pfd2), &pfd2))
 			{
-				this->getDevice()->downcast<GL33Device>()->message("DescribePixelFormat() fail");
+				this->getDevice()->downcast<OGLDevice>()->message("DescribePixelFormat() fail");
 				return false;
 			}
 
@@ -335,20 +335,20 @@ namespace octoon
 				pfd2.cBlueBits != pfd.cBlueBits ||
 				pfd2.cBlueShift != pfd.cBlueShift)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Can't support color format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support color format");
 				return false;
 			}
 
 			if (pfd2.cDepthBits != pfd.cDepthBits ||
 				pfd2.cStencilBits != pfd.cStencilBits)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Can't support depth stencil format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support depth stencil format");
 				return false;
 			}
 
 			if (!::SetPixelFormat(_hdc, pixelFormat, &pfd2))
 			{
-				this->getDevice()->downcast<GL33Device>()->message("SetPixelFormat() fail");
+				this->getDevice()->downcast<OGLDevice>()->message("SetPixelFormat() fail");
 				return false;
 			}
 
@@ -406,7 +406,7 @@ namespace octoon
 
 			if (!_context)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("wglCreateContextAttribs fail");
+				this->getDevice()->downcast<OGLDevice>()->message("wglCreateContextAttribs fail");
 				return false;
 			}
 

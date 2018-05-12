@@ -18,15 +18,11 @@
 #include "gl45_graphics_data.h"
 #include "gl45_pipeline.h"
 
-#include "ogl_swapchain.h"
-
-#include <stdarg.h>
-
 namespace octoon
 {
 	namespace graphics
 	{
-		OctoonImplementSubClass(GL33Device, GraphicsDevice, "GL33Device")
+		OctoonImplementSubClass(GL33Device, OGLDevice, "GL33Device")
 
 		GL33Device::GL33Device() noexcept
 		{
@@ -54,16 +50,6 @@ namespace octoon
 		GL33Device::close() noexcept
 		{
 			_deviceProperty.reset();
-		}
-
-		GraphicsSwapchainPtr
-		GL33Device::createSwapchain(const GraphicsSwapchainDesc& desc) noexcept
-		{
-			auto swapchain = std::make_shared<OGLSwapchain>();
-			swapchain->setDevice(this->downcast_pointer<GL33Device>());
-			if (swapchain->setup(desc))
-				return swapchain;
-			return nullptr;
 		}
 
 		GraphicsContextPtr
@@ -318,16 +304,6 @@ namespace octoon
 		GL33Device::getDeviceDesc() const noexcept
 		{
 			return _deviceDesc;
-		}
-
-		void
-		GL33Device::message(const char* message, ...) noexcept
-		{
-			va_list va;
-			va_start(va, message);
-			vprintf(message, va);
-			printf("\n");
-			va_end(va);
 		}
 	}
 }

@@ -1,15 +1,15 @@
 #ifndef OCTOON_GL32_DEVICE_H_
 #define OCTOON_GL32_DEVICE_H_
 
-#include "gl32_types.h"
+#include "ogl_device.h"
 
 namespace octoon
 {
 	namespace graphics
 	{
-		class GL32Device final : public GraphicsDevice
+		class GL32Device final : public OGLDevice
 		{
-			OctoonDeclareSubClass(GL32Device, GraphicsDevice)
+			OctoonDeclareSubClass(GL32Device, OGLDevice)
 		public:
 			GL32Device() noexcept;
 			virtual ~GL32Device() noexcept;
@@ -17,21 +17,20 @@ namespace octoon
 			bool setup(const GraphicsDeviceDesc& desc) noexcept;
 			void close() noexcept;
 
-			GraphicsSwapchainPtr createSwapchain(const GraphicsSwapchainDesc& desc) noexcept;
-			GraphicsContextPtr createDeviceContext(const GraphicsContextDesc& desc) noexcept;
-			GraphicsInputLayoutPtr createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept;
-			GraphicsDataPtr createGraphicsData(const GraphicsDataDesc& desc) noexcept;
-			GraphicsTexturePtr createTexture(const GraphicsTextureDesc& desc) noexcept;
-			GraphicsSamplerPtr createSampler(const GraphicsSamplerDesc& desc) noexcept;
-			GraphicsFramebufferPtr createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept;
-			GraphicsFramebufferLayoutPtr createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept;
-			GraphicsShaderPtr createShader(const GraphicsShaderDesc& desc) noexcept;
-			GraphicsProgramPtr createProgram(const GraphicsProgramDesc& desc) noexcept;
-			GraphicsStatePtr createRenderState(const GraphicsStateDesc& desc) noexcept;
-			GraphicsPipelinePtr createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept;
-			GraphicsDescriptorSetPtr createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept;
-			GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept;
-			GraphicsDescriptorPoolPtr createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept;
+			GraphicsContextPtr createDeviceContext(const GraphicsContextDesc& desc) noexcept override;
+			GraphicsInputLayoutPtr createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept override;
+			GraphicsDataPtr createGraphicsData(const GraphicsDataDesc& desc) noexcept override;
+			GraphicsTexturePtr createTexture(const GraphicsTextureDesc& desc) noexcept override;
+			GraphicsSamplerPtr createSampler(const GraphicsSamplerDesc& desc) noexcept override;
+			GraphicsFramebufferPtr createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept override;
+			GraphicsFramebufferLayoutPtr createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept override;
+			GraphicsShaderPtr createShader(const GraphicsShaderDesc& desc) noexcept override;
+			GraphicsProgramPtr createProgram(const GraphicsProgramDesc& desc) noexcept override;
+			GraphicsStatePtr createRenderState(const GraphicsStateDesc& desc) noexcept override;
+			GraphicsPipelinePtr createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept override;
+			GraphicsDescriptorSetPtr createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept override;
+			GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept override;
+			GraphicsDescriptorPoolPtr createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept override;
 
 			void enableDebugControl(bool enable) noexcept;
 

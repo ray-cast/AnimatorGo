@@ -1,15 +1,15 @@
 #ifndef OCTOON_GL20_DEVICE_H_
 #define OCTOON_GL20_DEVICE_H_
 
-#include <octoon/graphics/graphics_device.h>
+#include "ogl_device.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
-		class GL20Device final : public GraphicsDevice
+		class GL20Device final : public OGLDevice
 		{
-			OctoonDeclareSubClass(GL20Device, GraphicsDevice)
+			OctoonDeclareSubClass(GL20Device, OGLDevice)
 		public:
 			GL20Device() noexcept;
 			virtual ~GL20Device() noexcept;
@@ -17,7 +17,6 @@ namespace octoon
 			bool setup(const GraphicsDeviceDesc& desc) noexcept;
 			void close() noexcept;
 
-			GraphicsSwapchainPtr createSwapchain(const GraphicsSwapchainDesc& desc) noexcept override;
 			GraphicsContextPtr createDeviceContext(const GraphicsContextDesc& desc) noexcept override;
 			GraphicsInputLayoutPtr createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept override;
 			GraphicsDataPtr createGraphicsData(const GraphicsDataDesc& desc) noexcept override;

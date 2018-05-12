@@ -1,7 +1,7 @@
 #ifndef OCTOON_NSGL_SWAPCHAIN_H_
 #define OCTOON_NSGL_SWAPCHAIN_H_
 
-#include "ogl_types.h"
+#include "ogl_basic.h"
 
 namespace octoon
 {
@@ -12,7 +12,6 @@ namespace octoon
 			OctoonDeclareSubClass(NSGLSwapchain, GraphicsSwapchain)
 		public:
 			NSGLSwapchain() noexcept;
-			NSGLSwapchain(GLuint major, GLuint minor) noexcept;
 			virtual ~NSGLSwapchain() noexcept;
 
 			bool setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept;
@@ -23,6 +22,9 @@ namespace octoon
 
 			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept;
 			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept;
+
+			void setDevice(const GraphicsDevicePtr& device) noexcept;
+			GraphicsDevicePtr getDevice() noexcept;
 
 			void setSwapInterval(GraphicsSwapInterval interval) noexcept;
 			GraphicsSwapInterval getSwapInterval() const noexcept;
@@ -35,11 +37,6 @@ namespace octoon
 			bool initSurface(const GraphicsSwapchainDesc& swapchainDesc);
 			bool initPixelFormat(const GraphicsSwapchainDesc& swapchainDesc) noexcept;
 			bool initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept;
-
-		private:
-			friend class OGLDevice;
-			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
 
 		private:
 			NSGLSwapchain(const NSGLSwapchain&) noexcept = delete;

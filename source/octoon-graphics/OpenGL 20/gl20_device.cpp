@@ -11,13 +11,11 @@
 #include "gl20_descriptor.h"
 #include "gl20_graphics_data.h"
 
-#include "ogl_swapchain.h"
-
 namespace octoon
 {
 	namespace graphics
 	{
-		OctoonImplementSubClass(GL20Device, GraphicsDevice, "GL20Device")
+		OctoonImplementSubClass(GL20Device, OGLDevice, "GL20Device")
 
 		GL20Device::GL20Device() noexcept
 		{
@@ -44,16 +42,6 @@ namespace octoon
 		GL20Device::close() noexcept
 		{
 			_deviceProperty.reset();
-		}
-
-		GraphicsSwapchainPtr
-		GL20Device::createSwapchain(const GraphicsSwapchainDesc& desc) noexcept
-		{
-			auto swapchain = std::make_shared<OGLSwapchain>();
-			swapchain->setDevice(this->downcast_pointer<GL20Device>());
-			if (swapchain->setup(desc))
-				return swapchain;
-			return nullptr;
 		}
 
 		GraphicsContextPtr

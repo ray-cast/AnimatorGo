@@ -42,10 +42,23 @@
 #	define GL_APIENTRY GLAPIENTRY
 #endif
 
+#if defined(__MINGW32__) || defined(__CYGWIN__)
+#    define GLEXT_APIENTRY __stdcall
+#elif (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__)
+#    define GLEXT_APIENTRY __stdcall
+#else
+#    define GLEXT_APIENTRY
+#endif
+
 namespace octoon
 {
 	namespace graphics
 	{
+#ifdef GLEW_MX
+		extern GLEWContext _glewctx;
+#	define glewGetContext() (&_glewctx)
+#endif
+
 		bool initGLExtenstion() noexcept;
 	}
 }

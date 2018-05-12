@@ -1,4 +1,5 @@
 #include "egl_swapchain.h"
+#include "ogl_device.h"
 
 namespace octoon
 {
@@ -175,7 +176,7 @@ namespace octoon
 
 			if (swapchainDesc.getImageNums() != 2)
 			{
-				// GL_PLATFORM_LOG("Invalid image number");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid image number");
 				return false;
 			}
 
@@ -199,7 +200,7 @@ namespace octoon
 			}
 			else
 			{
-				// GL_PLATFORM_LOG("Can't support color format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support color format");
 				return false;
 			}
 
@@ -254,7 +255,7 @@ namespace octoon
 			}
 			else
 			{
-				// GL_PLATFORM_LOG("Can't support depth stencil format");
+				this->getDevice()->downcast<OGLDevice>()->message("Can't support depth stencil format");
 				return false;
 			}
 
@@ -263,26 +264,26 @@ namespace octoon
 			_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 			if (_display == EGL_NO_DISPLAY)
 			{
-				// GL_PLATFORM_LOG("eglGetDisplay() fail.");
+				this->getDevice()->downcast<OGLDevice>()->message("eglGetDisplay() fail.");
 				return false;
 			}
 
 			if (::eglInitialize(_display, nullptr, nullptr) == EGL_FALSE)
 			{
-				// GL_PLATFORM_LOG("eglInitialize() fail.");
+				this->getDevice()->downcast<OGLDevice>()->message("eglInitialize() fail.");
 				return false;
 			}
 
 			if (::eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE)
 			{
-				// GL_PLATFORM_LOG("eglBindAPI() fail.");
+				this->getDevice()->downcast<OGLDevice>()->message("eglBindAPI() fail.");
 				return false;
 			}
 
 			EGLint num = 0;
 			if (::eglChooseConfig(_display, pixelFormat, &_config, 1, &num) == EGL_FALSE)
 			{
-				// GL_PLATFORM_LOG("eglChooseConfig() fail.");
+				this->getDevice()->downcast<OGLDevice>()->message("eglChooseConfig() fail.");
 				return false;
 			}
 
@@ -312,7 +313,7 @@ namespace octoon
 			_context = ::eglCreateContext(_display, _config, EGL_NO_CONTEXT, attribs);
 			if (eglGetError() != EGL_SUCCESS)
 			{
-				// GL_PLATFORM_LOG("eglCreateContext() fail.");
+				this->getDevice()->downcast<OGLDevice>()->message("eglCreateContext() fail.");
 				return false;
 			}
 

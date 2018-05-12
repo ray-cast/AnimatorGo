@@ -20,6 +20,102 @@ std::string gameScenePath_;
 // X11 related local variables
 static Display *x_display = NULL;
 octoon::GameApp* gameApp_;
+bool should_close_ = false;
+
+static bool windowShouldClose()
+{
+    return should_close_;
+}
+
+static void processEvent(XEvent *event)
+{
+    switch (event->type)
+    {
+        case KeyPress:
+        {
+            return;
+        }
+
+        case KeyRelease:
+        {
+            return;
+        }
+
+        case ButtonPress:
+        {
+            return;
+        }
+
+        case ButtonRelease:
+        {
+
+            return;
+        }
+
+        case EnterNotify:
+        {
+            return;
+        }
+
+        case LeaveNotify:
+        {
+            return;
+        }
+
+        case MotionNotify:
+        {
+            return;
+        }
+
+        case ConfigureNotify:
+        {
+            return;
+        }
+
+        case ClientMessage:
+        {
+            return;
+        }
+
+        case SelectionNotify:
+        {
+            return;
+        }
+
+        case FocusIn:
+        {
+            return;
+        }
+
+        case FocusOut:
+        {
+            return;
+        }
+
+        case Expose:
+        {
+            return;
+        }
+
+        case PropertyNotify:
+        {
+            return;
+        }
+
+        case SelectionClear:
+        {
+            return;
+        }
+
+        case SelectionRequest:
+        {
+            return;
+        }
+
+        case DestroyNotify:
+            return;
+    }
+}
 
 bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
@@ -113,7 +209,7 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 		gameApp_ = nullptr;
 	}
 
-	//::glfwTerminate();
+	XCloseDisplay(x_display);
 }
 
 bool OCTOON_CALL OctoonIsQuitRequest() noexcept
@@ -121,17 +217,30 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	if (!gameApp_)
 		return true;
 
-	//if (glfwWindowShouldClose(window_) || gameApp_->isQuitRequest())
-	//	return true;
+	if (windowShouldClose() || gameApp_->isQuitRequest())
+		return true;
 
 	return false;
 }
 
 void OCTOON_CALL OctoonUpdate() noexcept
 {
-	//::glfwPollEvents();
+    //_glfwPollJoystickEvents();
 
-	if (gameApp_)
+    int count = XPending(x_display);
+    while (count--)
+    {
+        XEvent event;
+        XNextEvent(x_display, &event);
+        processEvent(&event);
+    }
+
+    //if (_glfw.x11.disabledCursorWindow)
+    //    centerCursor(_glfw.x11.disabledCursorWindow);
+
+    XFlush(x_display);
+
+    if (gameApp_)
 		gameApp_->update();
 }
 

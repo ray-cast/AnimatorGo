@@ -1,4 +1,5 @@
 #include "gl32_device_property.h"
+#include "gl32_types.h"
 
 namespace octoon
 {
@@ -10,142 +11,8 @@ namespace octoon
 
 		GL32DeviceProperty::~GL32DeviceProperty() noexcept
 		{
-			this->close();
 		}
 
-		bool
-		GL32DeviceProperty::setup(const GraphicsDeviceDesc& deviceDesc) noexcept
-		{
-			/*EGLConfig config;
-			if (!initPixelFormat(deviceDesc, config))
-				return false;
-
-			if (!initContext(deviceDesc, config))
-				return false;
-			*/
-			return true;
-		}
-
-		void
-		GL32DeviceProperty::close() noexcept
-		{
-		}
-		/*
-		bool
-		GL32DeviceProperty::initPixelFormat(const GraphicsDeviceDesc& deviceDesc, EGLConfig& config) noexcept
-		{
-			EGLint pixelFormat[80];
-			EGLint index = 0;
-
-			pixelFormat[index++] = EGL_SURFACE_TYPE;
-			pixelFormat[index++] = EGL_WINDOW_BIT;
-
-			pixelFormat[index++] = EGL_RENDERABLE_TYPE;
-			pixelFormat[index++] = EGL_OPENGL_ES2_BIT;
-
-			pixelFormat[index++] = EGL_BUFFER_SIZE;
-			pixelFormat[index++] = 32;
-
-			pixelFormat[index++] = EGL_RED_SIZE;
-			pixelFormat[index++] = 8;
-
-			pixelFormat[index++] = EGL_GREEN_SIZE;
-			pixelFormat[index++] = 8;
-
-			pixelFormat[index++] = EGL_BLUE_SIZE;
-			pixelFormat[index++] = 8;
-
-			pixelFormat[index++] = EGL_ALPHA_SIZE;
-			pixelFormat[index++] = 8;
-
-			pixelFormat[index++] = EGL_DEPTH_SIZE;
-			pixelFormat[index++] = 16;
-
-			pixelFormat[index++] = EGL_STENCIL_SIZE;
-			pixelFormat[index++] = 0;
-
-			pixelFormat[index++] = EGL_NONE;
-
-			auto display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-			if (display == EGL_NO_DISPLAY)
-			{
-				GL_PLATFORM_LOG("eglGetDisplay() fail : %d", eglGetError());
-				return false;
-			}
-
-			if (::eglInitialize(display, nullptr, nullptr) == EGL_FALSE)
-			{
-				GL_PLATFORM_LOG("eglInitialize() fail : %d", eglGetError());
-				return false;
-			}
-
-			if (::eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE)
-			{
-				GL_PLATFORM_LOG("eglBindAPI() fail : %d", eglGetError());
-				return false;
-			}
-
-			EGLint num = 0;
-			if (::eglChooseConfig(display, pixelFormat, &config, 1, &num) == EGL_FALSE)
-			{
-				GL_PLATFORM_LOG("eglChooseConfig() fail : %d", eglGetError());
-				return false;
-			}
-
-			return true;
-		}
-
-		bool
-		GL32DeviceProperty::initContext(const GraphicsDeviceDesc& deviceDesc, EGLConfig config) noexcept
-		{
-			EGLint attribIndex = 0;
-
-			EGLint attribs[80];
-
-		#if !defined(_BUILD_PLATFORM_ANDROID)
-			attribs[attribIndex++] = 0x3098;
-			attribs[attribIndex++] = 3;
-
-			attribs[attribIndex++] = 0x30FB;
-			attribs[attribIndex++] = 0;
-		#else
-			attribs[attribIndex++] = EGL_CONTEXT_CLIENT_VERSION;
-			attribs[attribIndex++] = 2;
-		#endif
-
-			attribs[attribIndex++] = EGL_NONE;
-			attribs[attribIndex++] = EGL_NONE;
-
-			EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-
-			EGLNativeWindowType hwnd = 0;// (EGLNativeWindowType)deviceDesc.getWindHandle();
-			EGLSurface surface = ::eglCreateWindowSurface(display, config, hwnd, NULL);
-			if (::eglGetError() != EGL_SUCCESS)
-			{
-				GL_PLATFORM_LOG("eglCreateContext() fail : %d", eglGetError());
-				return false;
-			}
-
-			EGLContext context = ::eglCreateContext(display, config, EGL_NO_CONTEXT, attribs);
-			if (eglGetError() != EGL_SUCCESS)
-			{
-				::eglDestroySurface(display, surface);
-				GL_PLATFORM_LOG("eglCreateContext() fail : %d", eglGetError());
-				return false;
-			}
-
-			::eglMakeCurrent(display, surface, surface, context);
-
-			this->initDeviceProperties();
-
-			::eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-
-			::eglDestroyContext(display, context);
-			::eglDestroySurface(display, surface);
-
-			return true;
-		}
-		*/
 		bool
 		GL32DeviceProperty::initDeviceProperties() noexcept
 		{
@@ -513,12 +380,6 @@ namespace octoon
 				_deviceProperties.supportShaders.push_back(GraphicsShaderStageFlagBits::GeometryBit);
 
 			return true;
-		}
-
-		const GraphicsDeviceProperties&
-		GL32DeviceProperty::getDeviceProperties() const noexcept
-		{
-			return _deviceProperties;
 		}
 	}
 }

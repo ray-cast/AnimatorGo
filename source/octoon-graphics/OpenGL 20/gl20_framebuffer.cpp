@@ -64,7 +64,7 @@ namespace octoon
 			assert(framebufferDesc.getFramebufferLayout());
 			assert(framebufferDesc.getWidth() > 0 && framebufferDesc.getHeight() > 0);
 
-			std::uint32_t numAttachment = framebufferDesc.getColorAttachments().size();
+			std::uint32_t numAttachment = (std::uint32_t)framebufferDesc.getColorAttachments().size();
 			if (numAttachment > 1)
 			{
 				GL_PLATFORM_LOG("Can't support multi framebuffer");

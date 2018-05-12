@@ -3,7 +3,7 @@
 
 #include "gl20_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -32,7 +32,7 @@ namespace octoon
 
 		private:
 			std::string _semantic;
-			std::uint8_t _semanticIndex;
+			std::uint32_t _semanticIndex;
 			std::uint32_t _bindingPoint;
 			GraphicsFormat _type;
 		};

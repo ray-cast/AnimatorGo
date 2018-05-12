@@ -42,7 +42,7 @@ namespace octoon
 		{
 			auto deviceProperty = std::make_shared<GL33DeviceProperty>();
 			deviceProperty->setDevice(this->downcast_pointer<GL33Device>());
-			if (!deviceProperty->setup())
+			if (!deviceProperty->setup(desc))
 				return false;
 
 			_deviceProperty = deviceProperty;

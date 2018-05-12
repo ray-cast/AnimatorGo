@@ -1,6 +1,6 @@
 #include "egl2_texture.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{

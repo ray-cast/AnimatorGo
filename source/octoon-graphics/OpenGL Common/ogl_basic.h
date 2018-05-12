@@ -30,7 +30,7 @@
 #	include <OpenGL/CGLTypes.h>
 #elif defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID) || defined(OCTOON_BUILD_PLATFORM_JAVA)
 #	include <EGL/egl.h>
-#	include <GLES3/gl3.h>
+#	include <GLES3/gl32.h>
 #endif
 
 #if OCTOON_BUILD_PLATFORM_LINUX

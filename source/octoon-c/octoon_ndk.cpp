@@ -15,7 +15,7 @@ std::string gameScenePath_;
 bool isQuitRequest_ = false;
 android_app* android_app_ = nullptr;
 
-bool OctoonInit(const char* gamedir, const char* scenename) noexcept
+bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
 	if (gamedir)
 	{
@@ -31,12 +31,12 @@ bool OctoonInit(const char* gamedir, const char* scenename) noexcept
 	return true;
 }
 
-void OctoonTerminate() noexcept
+void OCTOON_C_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
 }
 
-bool OctoonOpenWindow(const char* title, int w, int h) noexcept
+bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
 	gameApp_ = std::make_shared<octoon::GameApp>();
 	gameApp_->setFileService(true);
@@ -59,7 +59,7 @@ bool OctoonOpenWindow(const char* title, int w, int h) noexcept
 	return true;
 }
 
-void OctoonCloseWindow() noexcept
+void OCTOON_C_CALL OctoonCloseWindow() noexcept
 {
 	if (gameApp_)
 	{
@@ -70,12 +70,12 @@ void OctoonCloseWindow() noexcept
 	isQuitRequest_ = true;
 }
 
-bool OctoonIsQuitRequest() noexcept
+bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept
 {
 	return isQuitRequest_ || android_app_->destroyRequested ? true : false;
 }
 
-void OctoonUpdate() noexcept
+void OCTOON_C_CALL OctoonUpdate() noexcept
 {
 	if (gameApp_)
 		gameApp_->update();

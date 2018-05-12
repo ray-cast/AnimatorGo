@@ -117,7 +117,7 @@ static void processEvent(XEvent *event)
     }
 }
 
-bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
+bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
     Window root;
     XSetWindowAttributes swa;
@@ -195,13 +195,13 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 }
 
 
-bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
+bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
     if (scenename)
 		gameScenePath_ = scenename;
 }
 
-void OCTOON_CALL OctoonCloseWindow() noexcept
+void OCTOON_C_CALL OctoonCloseWindow() noexcept
 {
 	if (gameApp_)
 	{
@@ -212,7 +212,7 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 	XCloseDisplay(x_display);
 }
 
-bool OCTOON_CALL OctoonIsQuitRequest() noexcept
+bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept
 {
 	if (!gameApp_)
 		return true;
@@ -223,7 +223,7 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	return false;
 }
 
-void OCTOON_CALL OctoonUpdate() noexcept
+void OCTOON_C_CALL OctoonUpdate() noexcept
 {
     //_glfwPollJoystickEvents();
 
@@ -244,7 +244,7 @@ void OCTOON_CALL OctoonUpdate() noexcept
 		gameApp_->update();
 }
 
-void OCTOON_CALL OctoonTerminate() noexcept
+void OCTOON_C_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
 }

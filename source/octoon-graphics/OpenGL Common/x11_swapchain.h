@@ -23,6 +23,9 @@ namespace octoon
 			void setWindowResolution(std::uint32_t w, std::uint32_t h) noexcept;
 			void getWindowResolution(std::uint32_t& w, std::uint32_t& h) const noexcept;
 
+			void setDevice(const GraphicsDevicePtr& device) noexcept;
+			GraphicsDevicePtr getDevice() noexcept;
+
 			void setSwapInterval(GraphicsSwapInterval interval) noexcept;
 			GraphicsSwapInterval getSwapInterval() const noexcept;
 
@@ -32,11 +35,6 @@ namespace octoon
 
 		private:
 			bool initSurface(const GraphicsSwapchainDesc& swapchainDesc);
-
-		private:
-			friend class OGLDevice;
-			void setDevice(const GraphicsDevicePtr& device) noexcept;
-			GraphicsDevicePtr getDevice() noexcept;
 
 		private:
 			XGLSwapchain(const XGLSwapchain&) noexcept = delete;

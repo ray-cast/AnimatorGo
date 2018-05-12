@@ -23,7 +23,7 @@
 #	include <sys/stat.h>
 #	include <sys/types.h>
 #	include <sys/param.h>
-#	include <sys/fcntl.h>
+#	include <fcntl.h>
 #	include <unistd.h>
 #	include <dirent.h>
 #	include <string.h>

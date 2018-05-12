@@ -994,7 +994,7 @@ namespace octoon
 
 			for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
 			{
-				if (hasTexcoord)
+				if (hasTexcoord[i])
 					this->_texcoords[i].resize(maxVertices);
 			}
 

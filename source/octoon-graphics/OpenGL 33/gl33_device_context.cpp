@@ -10,10 +10,6 @@
 #include "gl33_graphics_data.h"
 #include "gl33_device.h"
 
-#include "ogl_swapchain.h"
-
-#include <iostream>
-
 namespace octoon
 {
 	namespace graphics
@@ -24,7 +20,7 @@ namespace octoon
 			: _clearColor(0.0f, 0.0f, 0.0f, 0.0f)
 			, _clearDepth(1.0f)
 			, _clearStencil(0)
-			, _globalVao(GL_NONE)
+			, _inputLayout(GL_NONE)
 			, _framebuffer(nullptr)
 			, _program(nullptr)
 			, _pipeline(nullptr)
@@ -84,10 +80,10 @@ namespace octoon
 			_indexBuffer.reset();
 			_vertexBuffers.clear();
 
-			if (_globalVao)
+			if (_inputLayout)
 			{
-				glDeleteVertexArrays(1, &_globalVao);
-				_globalVao = GL_NONE;
+				glDeleteVertexArrays(1, &_inputLayout);
+				_inputLayout = GL_NONE;
 			}
 		}
 
@@ -123,7 +119,7 @@ namespace octoon
 			if (_viewports[i] != view)
 			{
 				if (i == 0)
-					glViewport(view.left, view.top, view.width, view.height);
+					glViewport((GLint)view.left, (GLint)view.top, (GLsizei)view.width, (GLsizei)view.height);
 				else
 				{
 					if (glViewportIndexedf)
@@ -180,7 +176,7 @@ namespace octoon
 					GLenum frontfunc = GL33Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
 					if (frontfunc == GL_INVALID_ENUM)
 					{
-						this->getDevice()->downcast<GL33Device>()->message("Invalid compare function");
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
 						return;
 					}
 
@@ -195,7 +191,7 @@ namespace octoon
 					GLenum backfunc = GL33Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
 					if (backfunc == GL_INVALID_ENUM)
 					{
-						this->getDevice()->downcast<GL33Device>()->message("Invalid compare function");
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
 						return;
 					}
 
@@ -226,7 +222,7 @@ namespace octoon
 					GLenum frontfunc = GL33Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
 					if (frontfunc == GL_INVALID_ENUM)
 					{
-						this->getDevice()->downcast<GL33Device>()->message("Invalid compare function");
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
 						return;
 					}
 
@@ -241,7 +237,7 @@ namespace octoon
 					GLenum backfunc = GL33Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
 					if (backfunc == GL_INVALID_ENUM)
 					{
-						this->getDevice()->downcast<GL33Device>()->message("Invalid compare function");
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
 						return;
 					}
 
@@ -420,10 +416,11 @@ namespace octoon
 				_indexType = GL33Types::asIndexType(indexType);
 				_indexOffset = offset;
 
-				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<GL33Device>()->message("Invalid index type");
+				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
 			}
 			else
 			{
+				::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_NONE);
 				_indexBuffer = nullptr;
 			}
 		}
@@ -467,7 +464,7 @@ namespace octoon
 					std::uint32_t viewportCount = std::max<std::uint32_t>(1, static_cast<std::uint32_t>(colorAttachment.size()));
 					for (std::uint32_t i = 0; i < viewportCount; i++)
 					{
-						this->setViewport(i, float4(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight()));
+						this->setViewport(i, float4(0, 0, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
 
 						if (glScissorIndexed)
 							glScissorIndexed(i, _scissors[i].left, framebufferDesc.getHeight() - _scissors[i].height - _scissors[i].top, _scissors[i].width, _scissors[i].height);
@@ -557,8 +554,7 @@ namespace octoon
 			{
 				if (_framebuffer)
 				{
-					GLuint viewportCount = std::max<GLuint>(1, _framebuffer->getGraphicsFramebufferDesc().getColorAttachments().size());
-
+					GLuint viewportCount = std::max<GLuint>(1, (GLuint)_framebuffer->getGraphicsFramebufferDesc().getColorAttachments().size());
 					for (GLuint j = 0; j < viewportCount; j++)
 						glScissorIndexed(j, _scissors[j].left, _scissors[j].top, _scissors[j].width, _scissors[j].height);
 				}
@@ -583,7 +579,7 @@ namespace octoon
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
 
-			glBlitFramebuffer(v1.left, v1.top, v1.width, v1.height, v2.left, v2.top, v2.width, v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBlitFramebuffer((GLint)v1.left, (GLint)v1.top, (GLint)v1.width, (GLint)v1.height, (GLint)v2.left, (GLint)v2.top, (GLint)v2.width, (GLint)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 			_framebuffer = nullptr;
 		}
@@ -639,7 +635,7 @@ namespace octoon
 			GLenum internalFormat = GL33Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Invalid texture format");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
 				return;
 			}
 
@@ -656,7 +652,7 @@ namespace octoon
 			GLenum internalFormat = GL33Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Invalid texture format");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
 				return;
 			}
 
@@ -704,7 +700,7 @@ namespace octoon
 						glDrawArraysInstanced(drawType, startVertice, numVertices, numInstances);
 				}
 				else
-					this->getDevice()->downcast<GL33Device>()->message("Invalid vertex type");
+					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
 			}
 		}
 
@@ -748,19 +744,19 @@ namespace octoon
 						else if (glDrawElementsInstanced)
 							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
 						else
-							this->getDevice()->downcast<GL33Device>()->message("Cannot support glDrawElementsInstanced.");
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support glDrawElementsInstanced.");
 					}
 					else
 					{
 						if (glDrawElementsInstancedBaseVertex)
 							glDrawElementsInstancedBaseVertex(drawType, numIndices, _indexType, offsetIndices, numInstances, startVertice);
 						else
-							this->getDevice()->downcast<GL33Device>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
+							this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_draw_elements_base_vertex.");
 					}
 				}
 				else
 				{
-					this->getDevice()->downcast<GL33Device>()->message("Invalid vertex type");
+					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
 				}
 			}
 		}
@@ -780,7 +776,7 @@ namespace octoon
 				if (drawType != GL_INVALID_ENUM)
 					glMultiDrawArraysIndirect(drawType, (char*)nullptr + offset, drawCount, stride);
 				else
-					this->getDevice()->downcast<GL33Device>()->message("Invalid vertex type");
+					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
 			}
 		}
 
@@ -799,7 +795,7 @@ namespace octoon
 				if (drawType != GL_INVALID_ENUM)
 					glMultiDrawElementsIndirect(drawType, _indexType, (char*)nullptr + offset, drawCount, stride);
 				else
-					this->getDevice()->downcast<GL33Device>()->message("Invalid vertex type");
+					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
 			}
 		}
 
@@ -815,25 +811,25 @@ namespace octoon
 		{
 			if (!GLEW_ARB_uniform_buffer_object)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Cannot support GL_ARB_uniform_buffer_object.");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_uniform_buffer_object.");
 				return false;
 			}
 
 			if (!GLEW_ARB_sampler_objects)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Cannot support GL_ARB_sampler_objects.");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_sampler_objects.");
 				return false;
 			}
 
 			if (!GLEW_ARB_framebuffer_object)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Cannot support GL_ARB_framebuffer_object.");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_framebuffer_object.");
 				return false;
 			}
 
 			if (!GLEW_ARB_separate_shader_objects)
 			{
-				this->getDevice()->downcast<GL33Device>()->message("Cannot support GL_ARB_separate_shader_objects.");
+				this->getDevice()->downcast<OGLDevice>()->message("Cannot support GL_ARB_separate_shader_objects.");
 				return false;
 			}
 
@@ -901,7 +897,7 @@ namespace octoon
 		bool
 		GL33DeviceContext::initStateSystem() noexcept
 		{
-			glClearDepth(1.0f);
+			glClearDepthf(1.0f);
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 			glClearStencil(0);
 
@@ -928,13 +924,13 @@ namespace octoon
 
 			if (GLEW_ARB_vertex_array_object)
 			{
-				glGenVertexArrays(1, &_globalVao);
-				glBindVertexArray(_globalVao);
+				glGenVertexArrays(1, &_inputLayout);
+				glBindVertexArray(_inputLayout);
 			}
 			else if (GLEW_APPLE_vertex_array_object)
 			{
-				glGenVertexArraysAPPLE(1, &_globalVao);
-				glBindVertexArrayAPPLE(_globalVao);
+				glGenVertexArraysAPPLE(1, &_inputLayout);
+				glBindVertexArrayAPPLE(_inputLayout);
 			}
 
 			auto& deviceProperties = this->getDevice()->getDeviceProperty().getDeviceProperties();
@@ -951,86 +947,82 @@ namespace octoon
 		void
 		GL33DeviceContext::debugCallBack(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) noexcept
 		{
-			std::cerr << "source : ";
+			auto context = (GL33DeviceContext*)userParam;
+
+			context->getDevice()->downcast<OGLDevice>()->message("source : ");
 			switch (source)
 			{
 			case GL_DEBUG_SOURCE_API:
-				std::cerr << "GL_DEBUG_SOURCE_API";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_API\n");
 				break;
 			case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-				std::cerr << "GL_DEBUG_SOURCE_WINDOW_SYSTEM";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_WINDOW_SYSTEM\n");
 				break;
 			case GL_DEBUG_SOURCE_SHADER_COMPILER:
-				std::cerr << "GL_DEBUG_SOURCE_SHADER_COMPILER";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_SHADER_COMPILER\n");
 				break;
 			case GL_DEBUG_SOURCE_THIRD_PARTY:
-				std::cerr << "GL_DEBUG_SOURCE_THIRD_PARTY";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_THIRD_PARTY\n");
 				break;
 			case GL_DEBUG_SOURCE_APPLICATION:
-				std::cerr << "GL_DEBUG_SOURCE_APPLICATION";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_APPLICATION\n");
 				break;
 			case GL_DEBUG_SOURCE_OTHER:
-				std::cerr << "GL_DEBUG_SOURCE_OTHER";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_SOURCE_OTHER\n");
 				break;
 			}
 
-			std::cerr << std::endl;
-
-			std::cerr << "type : ";
+			context->getDevice()->downcast<OGLDevice>()->message("type : ");
 			switch (type)
 			{
 			case GL_DEBUG_TYPE_ERROR:
-				std::cerr << "GL_DEBUG_TYPE_ERROR";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_ERROR\n");
 				break;
 			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-				std::cerr << "GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR\n");
 				break;
 			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-				std::cerr << "GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR\n");
 				break;
 			case GL_DEBUG_TYPE_PORTABILITY:
-				std::cerr << "GL_DEBUG_TYPE_PORTABILITY";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PORTABILITY\n");
 				break;
 			case GL_DEBUG_TYPE_PERFORMANCE:
-				std::cerr << "GL_DEBUG_TYPE_PERFORMANCE";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PERFORMANCE\n");
 				break;
 			case GL_DEBUG_TYPE_OTHER:
-				std::cerr << "GL_DEBUG_TYPE_OTHER";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_OTHER\n");
 				break;
 			case GL_DEBUG_TYPE_MARKER:
-				std::cerr << "GL_DEBUG_TYPE_MARKER";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_MARKER\n");
 				break;
 			case GL_DEBUG_TYPE_PUSH_GROUP:
-				std::cerr << "GL_DEBUG_TYPE_PUSH_GROUP";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_PUSH_GROUP\n");
 				break;
 			case GL_DEBUG_TYPE_POP_GROUP:
-				std::cerr << "GL_DEBUG_TYPE_POP_GROUP";
+				context->getDevice()->downcast<OGLDevice>()->message("GL_DEBUG_TYPE_POP_GROUP\n");
 				break;
 			}
 
-			std::cerr << std::endl;
-
-			std::cerr << "id : " << id << std::endl;
+			context->getDevice()->downcast<OGLDevice>()->message("id : %d\n", id);
 
 			switch (severity)
 			{
 			case GL_DEBUG_SEVERITY_NOTIFICATION:
-				std::cerr << "notice";
+				context->getDevice()->downcast<OGLDevice>()->message("notice\n");
 				break;
 			case GL_DEBUG_SEVERITY_LOW:
-				std::cerr << "low";
+				context->getDevice()->downcast<OGLDevice>()->message("low\n");
 				break;
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				std::cerr << "medium";
+				context->getDevice()->downcast<OGLDevice>()->message("medium\n");
 				break;
 			case GL_DEBUG_SEVERITY_HIGH:
-				std::cerr << "high";
+				context->getDevice()->downcast<OGLDevice>()->message("high\n");
 				break;
 			}
 
-			std::cerr << std::endl;
-
-			std::cerr << "message : " << message << std::endl;
+			context->getDevice()->downcast<OGLDevice>()->message("message : %s\n", message);
 		}
 
 		void

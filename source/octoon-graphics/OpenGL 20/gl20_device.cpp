@@ -8,7 +8,7 @@
 #include "gl20_input_layout.h"
 #include "gl20_sampler.h"
 #include "gl20_pipeline.h"
-#include "gl20_descriptor.h"
+#include "gl20_descriptor_set.h"
 #include "gl20_graphics_data.h"
 
 namespace octoon

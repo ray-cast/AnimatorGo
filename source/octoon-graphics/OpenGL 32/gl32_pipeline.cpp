@@ -2,10 +2,10 @@
 #include "gl32_state.h"
 #include "gl32_shader.h"
 #include "gl32_input_layout.h"
-#include "gl32_descriptor.h"
+#include "gl32_descriptor_set.h"
 #include "gl32_graphics_data.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -152,6 +152,5 @@ namespace octoon
 		{
 			return _device.lock();
 		}
-
 	}
 }

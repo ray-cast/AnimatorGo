@@ -90,6 +90,8 @@ namespace octoon
 		context_ = device_->createDeviceContext(contextDesc);
 		if (!context_)
 			throw runtime::runtime_error::create("createDeviceContext() failed");
+
+		graphics::GraphicsSystem::instance()->enableDebugControl(true);
 	}
 
 	void

@@ -75,7 +75,7 @@ namespace octoon
 
 		private:
 			friend class GL32Device;
-			void setDevice(GraphicsDevicePtr device) noexcept;
+			void setDevice(const GraphicsDevicePtr& device) noexcept;
 			GraphicsDevicePtr getDevice() noexcept;
 
 		private:
@@ -86,10 +86,10 @@ namespace octoon
 
 			GLfloat _clearDepth;
 			GLint   _clearStencil;
-			std::vector<float4> _clearColor;
+			float4 _clearColor;
 
-			float4 _viewport;
-			uint4 _scissor;
+			std::vector<float4> _viewports;
+			std::vector<uint4> _scissors;
 
 			GLuint _inputLayout;
 
@@ -105,6 +105,7 @@ namespace octoon
 			GL32GraphicsDataPtr _indexBuffer;
 			GL32ProgramPtr _program;
 			GL32GraphicsStatePtr _state;
+			GL32GraphicsStatePtr _stateDefault;
 			GraphicsStateDesc _stateCaptured;
 
 			bool _needUpdatePipeline;

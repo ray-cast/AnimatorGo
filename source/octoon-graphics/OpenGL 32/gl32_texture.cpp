@@ -32,14 +32,14 @@ namespace octoon
 			if (internalFormat == GL_INVALID_ENUM)
 				return false;
 
-			GL_CHECK(glGenTextures(1, &_texture));
+			glGenTextures(1, &_texture);
 			if (_texture == GL_NONE)
 			{
 				GL_PLATFORM_LOG("glGenTextures() fail");
 				return false;
 			}
 
-			GL_CHECK(glBindTexture(target, _texture));
+			glBindTexture(target, _texture);
 
 			GLsizei width = (GLsizei)textureDesc.getWidth();
 			GLsizei height = (GLsizei)textureDesc.getHeight();
@@ -48,25 +48,30 @@ namespace octoon
 			GLsizei mipBase = textureDesc.getMipBase();
 			GLsizei mipLevel = std::max((GLsizei)textureDesc.getMipNums(), 1);
 
-			if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
-				return false;
+			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
+			{
+				if (!applySamplerWrap(target, textureDesc.getSamplerWrap()))
+					return false;
 
-			if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter()))
-				return false;
+				if (!applySamplerFilter(target, textureDesc.getSamplerMinFilter()))
+					return false;
 
-			if (!applyMipmapLimit(target, mipBase, mipLevel))
-				return false;
+				if (!applyMipmapLimit(target, mipBase, mipLevel))
+					return false;
+			}
 
 			if (target == GL_TEXTURE_2D)
-				GL_CHECK(glTexStorage2D(target, mipLevel, internalFormat, width, height));
+				glTexStorage2D(target, mipLevel, internalFormat, width, height);
 			else if (target == GL_TEXTURE_2D_MULTISAMPLE)
-				GL_CHECK(glTexStorage2DMultisample(target, mipLevel, internalFormat, width, height, GL_FALSE));
+				glTexStorage2DMultisample(target, textureDesc.getTexMultisample(), internalFormat, width, height, GL_FALSE);
 			else if (target == GL_TEXTURE_2D_ARRAY)
-				GL_CHECK(glTexStorage3D(target, mipLevel, internalFormat, width, height, depth));
+				glTexStorage3D(target, mipLevel, internalFormat, width, height, depth);
+			else if (target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
+				glTexStorage3DMultisample(target, mipLevel, internalFormat, width, height, textureDesc.getLayerNums(), GL_FALSE);
 			else if (target == GL_TEXTURE_3D)
-				GL_CHECK(glTexStorage3D(target, mipLevel, internalFormat, width, height, depth));
+				glTexStorage3D(target, mipLevel, internalFormat, width, height, depth);
 			else if (target == GL_TEXTURE_CUBE_MAP)
-				GL_CHECK(glTexStorage2D(target, mipLevel, internalFormat, width, height));
+				glTexStorage2D(target, mipLevel, internalFormat, width, height);
 
 			auto stream = textureDesc.getStream();
 			if (stream)
@@ -133,7 +138,7 @@ namespace octoon
 						{
 							if (target == GL_TEXTURE_2D || target == GL_TEXTURE_2D_MULTISAMPLE)
 							{
-								GL_CHECK(glTexSubImage2D(target, mip, 0, 0, w, h, format, type, (char*)stream + offset));
+								glTexSubImage2D(target, mip, 0, 0, w, h, format, type, (char*)stream + offset);
 								offset += mipSize;
 							}
 							else
@@ -143,15 +148,15 @@ namespace octoon
 									for (std::size_t i = 0; i < 6; i++)
 									{
 										if (target == GL_TEXTURE_CUBE_MAP)
-											GL_CHECK(glTexSubImage2D(cubeFace[i], mip, 0, 0, w, h, format, type, (char*)stream + offset));
+											glTexSubImage2D(cubeFace[i], mip, 0, 0, w, h, format, type, (char*)stream + offset);
 										else
-											GL_CHECK(glTexSubImage3D(cubeFace[i], mip, 0, 0, 0, w, h, layer, format, type, (char*)stream + offset));
+											glTexSubImage3D(cubeFace[i], mip, 0, 0, 0, w, h, layer, format, type, (char*)stream + offset);
 										offset += mipSize;
 									}
 								}
 								else
 								{
-									GL_CHECK(glTexSubImage3D(target, mip, 0, 0, 0, w, h, depth * layer, format, type, (char*)stream + offset));
+									glTexSubImage3D(target, mip, 0, 0, 0, w, h, depth * layer, format, type, (char*)stream + offset);
 									offset += mipSize * depth;
 								}
 							}
@@ -162,7 +167,7 @@ namespace octoon
 				}
 			}
 
-			GL_CHECK(glBindTexture(target, GL_NONE));
+			glBindTexture(target, GL_NONE);
 
 			_target = target;
 			_textureDesc = textureDesc;
@@ -210,19 +215,19 @@ namespace octoon
 				return false;
 
 			if (_pbo == GL_NONE)
-				GL_CHECK(glGenBuffers(1, &_pbo));
+				glGenBuffers(1, &_pbo);
 
-			GL_CHECK(glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo));
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
 
 			GLsizei mapSize = w * h * num;
 			if (_pboSize < mapSize)
 			{
-				GL_CHECK(glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_STREAM_READ));
+				glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_STREAM_READ);
 				_pboSize = mapSize;
 			}
 
-			GL_CHECK(glBindTexture(_target, _texture));
-			GL_CHECK(glReadPixels(x, y, w, h, format, type, 0));
+			glBindTexture(_target, _texture);
+			glReadPixels(x, y, w, h, format, type, 0);
 
 			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
 			return *data != nullptr;
@@ -231,15 +236,15 @@ namespace octoon
 		void
 		GL32Texture::unmap() noexcept
 		{
-			GL_CHECK(glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo));
-			GL_CHECK(glUnmapBuffer(GL_PIXEL_PACK_BUFFER));
+			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
+			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 		}
 
 		bool
 		GL32Texture::applyMipmapLimit(GLenum target, std::uint32_t min, std::uint32_t count) noexcept
 		{
-			GL_CHECK(glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, min));
-			GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, min + count - 1));
+			glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, min);
+			glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, min + count - 1);
 			return true;
 		}
 
@@ -249,9 +254,9 @@ namespace octoon
 			GLenum glwrap = GL32Types::asSamplerWrap(wrap);
 			if (glwrap != GL_INVALID_ENUM)
 			{
-				GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, glwrap));
-				GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, glwrap));
-				GL_CHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, glwrap));
+				glTexParameteri(target, GL_TEXTURE_WRAP_S, glwrap);
+				glTexParameteri(target, GL_TEXTURE_WRAP_T, glwrap);
+				glTexParameteri(target, GL_TEXTURE_WRAP_R, glwrap);
 
 				return true;
 			}
@@ -267,8 +272,8 @@ namespace octoon
 
 			if (min != GL_INVALID_ENUM && mag != GL_INVALID_ENUM)
 			{
-				GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, min));
-				GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, mag));
+				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, min);
+				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, mag);
 				return true;
 			}
 

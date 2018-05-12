@@ -87,7 +87,7 @@ namespace octoon
 			float4 _clearColor;
 			GLfloat _clearDepth;
 			GLint   _clearStencil;
-			GLuint _globalVao;
+			GLuint _inputLayout;
 
 			std::vector<float4> _viewports;
 			std::vector<uint4> _scissors;

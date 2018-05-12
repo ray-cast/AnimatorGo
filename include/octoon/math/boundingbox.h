@@ -68,8 +68,6 @@ namespace octoon
 
 				void encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-
 					aabb_.encapsulate(points);
 					sphere_.set(aabb_);
 				}

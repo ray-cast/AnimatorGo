@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <octoon/math/mathfwd.h>
+#include <octoon/runtime/platform.h>
 
 #define MATKEY_NAME               "?mat.name",0,0
 #define MATKEY_TWOSIDED           "$mat.twosided",0,0

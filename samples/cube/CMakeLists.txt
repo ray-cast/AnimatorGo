@@ -22,11 +22,11 @@ IF(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
     #SET_TARGET_PROPERTIES(${LIB_OUTNAME} PROPERTIES COMPILE_FLAGS "-o cube.html -s FULL_ES2=1 -s FULL_ES3=1")
     SET(emscripten_js_path "${LIB_OUTNAME}.js")
     SET(runner_in ${OCTOON_PATH_BIN}/system/web/runner.html.in)
-    SET(runner ${OCTOON_LIBRARY_OUTPUT_PATH}/runner.html)
+    SET(runner ${OCTOON_LIBRARY_OUTPUT_PATH}/${LIB_OUTNAME}_runner.html)
 	
     CONFIGURE_FILE(${runner_in} ${runner} @ONLY)
     
-    file(COPY ${OCTOON_LIBRARY_OUTPUT_PATH}/runner.html
+    file(COPY ${OCTOON_LIBRARY_OUTPUT_PATH}/${LIB_OUTNAME}_runner.html
         DESTINATION ${OCTOON_LIBRARY_OUTPUT_PATH_DEBUG})
 ENDIF()
 

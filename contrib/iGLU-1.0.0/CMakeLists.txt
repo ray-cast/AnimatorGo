@@ -1,4 +1,4 @@
-project(iGLU C)
+PROJECT(iGLU C)
 
 SET(LIB_NAME iGLU)
 

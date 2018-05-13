@@ -241,7 +241,6 @@ void OCTOON_C_CALL OctoonUpdate() noexcept
     //if (_glfw.x11.disabledCursorWindow)
     //    centerCursor(_glfw.x11.disabledCursorWindow);
 
-    XFlush(x_display);
 #endif
 
     if (gameApp_)

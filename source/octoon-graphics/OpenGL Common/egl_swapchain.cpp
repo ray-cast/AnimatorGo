@@ -1,6 +1,8 @@
 #include "egl_swapchain.h"
 #include "ogl_device.h"
 
+#include <iostream>
+
 namespace octoon
 {
 	namespace graphics
@@ -295,15 +297,18 @@ namespace octoon
 			EGLint attribs[80];
 			EGLint index = 0;
 
-		#if !defined(_BUILD_PLATFORM_ANDROID)
-			attribs[index++] = 0x3098;
-			attribs[index++] = 2;
-
-			attribs[index++] = 0x30FB;
-			attribs[index++] = 0;
-		#else
+		#if defined(OCTOON_BUILD_PLATFORM_ANDROID)
 			attribs[index++] = EGL_CONTEXT_CLIENT_VERSION;
 			attribs[index++] = 2;
+		#elif defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+			attribs[index++] = EGL_CONTEXT_CLIENT_VERSION;
+			attribs[index++] = 3;
+		#else
+			attribs[index++] = EGL_CONTEXT_MAJOR_VERSION;
+			attribs[index++] = 2;
+
+			attribs[index++] = EGL_CONTEXT_MINOR_VERSION;
+			attribs[index++] = 0;
 		#endif
 
 			attribs[index++] = EGL_NONE;

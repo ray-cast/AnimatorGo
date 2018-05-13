@@ -1,8 +1,6 @@
 #include "egl_swapchain.h"
 #include "ogl_device.h"
 
-#include <iostream>
-
 namespace octoon
 {
 	namespace graphics

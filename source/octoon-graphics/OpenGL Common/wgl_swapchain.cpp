@@ -43,7 +43,7 @@ namespace octoon
 			if (!initPixelFormat(swapchainDesc))
 				return false;
 
-			if (!initSwapchain(swapchainDesc))
+			if (!initSwapchain(swapchainDesc, deviceType))
 				return false;
 
 			_swapchainDesc = swapchainDesc;

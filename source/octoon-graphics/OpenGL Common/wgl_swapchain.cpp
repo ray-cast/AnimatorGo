@@ -35,7 +35,7 @@ namespace octoon
 		}
 
 		bool
-		WGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc) noexcept
+		WGLSwapchain::setup(const GraphicsSwapchainDesc& swapchainDesc, GraphicsDeviceType deviceType) noexcept
 		{
 			if (!initSurface(swapchainDesc))
 				return false;
@@ -355,14 +355,14 @@ namespace octoon
 		}
 
 		bool
-		WGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
+		WGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc, GraphicsDeviceType deviceType) noexcept
 		{
 			if (!wglCreateContextAttribsARB)
 				_context = wglCreateContext(_hdc);
 			else
 			{
 				int index = 0;
-				int mask = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+				int mask = (deviceType == GraphicsDeviceType::OpenGL20) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 				int flags = 0;
 
 #if __DEBUG__

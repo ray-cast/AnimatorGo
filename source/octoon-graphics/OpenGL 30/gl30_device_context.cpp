@@ -716,7 +716,9 @@ namespace octoon
 					offsetIndices += _indexOffset + sizeof(std::uint32_t) * startIndice;
 				else if (_indexType == GL_UNSIGNED_SHORT)
 					offsetIndices += _indexOffset + sizeof(std::uint16_t) * startIndice;
-
+				else
+					offsetIndices += _indexOffset + sizeof(std::uint8_t) * startIndice;
+				
 				GLenum drawType = GL30Types::asVertexType(_stateCaptured.getPrimitiveType());
 				if (drawType != GL_INVALID_ENUM)
 				{

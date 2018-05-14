@@ -88,8 +88,6 @@ namespace octoon
 			float4 _viewport;
 			uint4 _scissor;
 
-			GLuint _inputLayout;
-
 			GLenum  _indexType;
 			GLintptr _indexOffset;
 
@@ -101,6 +99,7 @@ namespace octoon
 			GL20GraphicsDataPtr _indexBuffer;
 			GL20ProgramPtr _program;
 			GL20GraphicsStatePtr _state;
+			GL20GraphicsStatePtr _stateDefault;
 			GraphicsStateDesc _stateCaptured;
 
 			bool _needUpdatePipeline;

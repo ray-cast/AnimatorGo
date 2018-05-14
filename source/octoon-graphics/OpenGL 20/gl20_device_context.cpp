@@ -22,7 +22,6 @@ namespace octoon
 			, _clearColor(0.0, 0.0, 0.0, 0.0)
 			, _viewport(0, 0, 0, 0)
 			, _scissor(0, 0, 0, 0)
-			, _inputLayout(GL_NONE)
 			, _indexType(GL_UNSIGNED_INT)
 			, _indexOffset(0)
 			, _needUpdatePipeline(false)
@@ -31,6 +30,8 @@ namespace octoon
 			, _needEnableDebugControl(false)
 			, _needDisableDebugControl(false)
 		{
+			_stateDefault = std::make_shared<GL20GraphicsState>();
+			_stateDefault->setup(GraphicsStateDesc());
 		}
 
 		GL20DeviceContext::~GL20DeviceContext() noexcept
@@ -99,12 +100,15 @@ namespace octoon
 		void
 		GL20DeviceContext::setViewport(std::uint32_t i, const float4& view) noexcept
 		{
-			if (_viewport.left != view.left ||
-				_viewport.top != view.top ||
-				_viewport.width != view.width ||
-				_viewport.height != view.height)
+			assert(_glcontext->getActive());
+
+			if (_viewport != view)
 			{
-				GL_CHECK(glViewport((GLint)view.left, (GLint)view.top, (GLsizei)view.width, (GLsizei)view.height));
+				if (i == 0)
+					glViewport((GLint)view.left, (GLint)view.top, (GLsizei)view.width, (GLsizei)view.height);
+				else
+					this->getDevice()->downcast<OGLDevice>()->message("Cannot support glViewportIndexedf.");
+
 				_viewport = view;
 			}
 		}
@@ -118,6 +122,8 @@ namespace octoon
 		void
 		GL20DeviceContext::setScissor(std::uint32_t i, const uint4& scissor) noexcept
 		{
+			assert(_glcontext->getActive());
+
 			if (_scissor != scissor)
 			{
 				std::uint32_t height;
@@ -126,7 +132,11 @@ namespace octoon
 				else
 					height = _glcontext->getGraphicsSwapchainDesc().getHeight();
 
-				glScissor(scissor.left, height - scissor.top, scissor.width, scissor.height);
+				if (i == 0)
+					glScissor(scissor.left, height - scissor.height - scissor.top, scissor.width, scissor.height);
+				else
+					this->getDevice()->downcast<OGLDevice>()->message("Cannot support glScissorIndexed.");
+
 				_scissor = scissor;
 			}
 		}
@@ -240,34 +250,56 @@ namespace octoon
 		void
 		GL20DeviceContext::setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept
 		{
-			assert(pipeline);
-			assert(pipeline->isInstanceOf<GL20Pipeline>());
+			assert(!pipeline || pipeline && pipeline->isInstanceOf<GL20Pipeline>());
 			assert(_glcontext->getActive());
 
-			auto glpipeline = pipeline->downcast_pointer<GL20Pipeline>();
-			if (_pipeline != glpipeline)
+			if (pipeline)
 			{
-				auto& pipelineDesc = pipeline->getPipelineDesc();
-
-				auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL20GraphicsState>();
-				if (_state != glstate)
-				{
-					glstate->apply(_stateCaptured);
-					_state = glstate;
-				}
-
-				auto glshader = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL20Program>();
-				if (_program != glshader)
-				{
-					_program = glshader;
-					_program->apply();
-				}
+				auto glpipeline = pipeline->downcast_pointer<GL20Pipeline>();
 
 				if (_pipeline != glpipeline)
 				{
-					_pipeline = glpipeline;
-					_pipeline->apply();
-					_needUpdatePipeline = true;
+					auto& pipelineDesc = pipeline->getPipelineDesc();
+
+					auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL20GraphicsState>();
+					if (_state != glstate)
+					{
+						glstate->apply(_stateCaptured);
+						_state = glstate;
+					}
+
+					auto glprogram = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL20Program>();
+					if (_program != glprogram)
+					{
+						_program = glprogram;
+						_program->apply();
+					}
+
+					if (_pipeline != glpipeline)
+					{
+						_pipeline = glpipeline;
+						_pipeline->apply();
+						_needUpdatePipeline = true;
+					}
+				}
+			}
+			else
+			{
+				if (_pipeline != pipeline)
+				{
+					if (_state != _stateDefault)
+					{
+						_stateDefault->apply(_stateCaptured);
+						_state = _stateDefault;
+					}
+
+					if (_program)
+					{
+						glUseProgram(GL_NONE);
+						_program = nullptr;
+					}
+
+					_pipeline = nullptr;
 				}
 			}
 		}
@@ -375,24 +407,27 @@ namespace octoon
 		{
 			assert(_glcontext->getActive());
 
-			if (target)
+			if (_framebuffer != target)
 			{
-				auto framebuffer = target->downcast_pointer<GL20Framebuffer>();
-				if (_framebuffer != framebuffer)
+				if (target)
 				{
-					_framebuffer = framebuffer;
-					glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer->getInstanceID());
+					auto framebuffer = target->downcast_pointer<GL20Framebuffer>();
+					glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->getInstanceID());
 
-					auto& framebufferDesc = _framebuffer->getGraphicsFramebufferDesc();
+					auto& framebufferDesc = framebuffer->getGraphicsFramebufferDesc();
+
 					this->setViewport(0, float4(0, 0, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
+					this->setScissor(0, _scissor);
 
-					glScissor(_scissor.left, framebufferDesc.getHeight() - _scissor.height - _scissor.top, _scissor.width, _scissor.height);
+					_framebuffer = framebuffer;
 				}
-			}
-			else
-			{
-				glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
-				_framebuffer = nullptr;
+				else
+				{
+					glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
+					this->setRenderPipeline(nullptr);
+
+					_framebuffer = nullptr;
+				}
 			}
 		}
 
@@ -550,7 +585,7 @@ namespace octoon
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
-			assert(numInstances <= 1 && startInstances == 0);
+			assert(startInstances == 0);
 
 			if (_needUpdatePipeline || _needUpdateVertexBuffers)
 			{
@@ -595,8 +630,10 @@ namespace octoon
 				GLbyte* offsetIndices = nullptr;
 				if (_indexType == GL_UNSIGNED_INT)
 					offsetIndices += _indexOffset + sizeof(std::uint32_t) * startIndice;
-				else
+				else if (_indexType == GL_UNSIGNED_SHORT)
 					offsetIndices += _indexOffset + sizeof(std::uint16_t) * startIndice;
+				else
+					offsetIndices += _indexOffset + sizeof(std::uint8_t) * startIndice;
 
 				GLenum drawType = GL20Types::asVertexType(_stateCaptured.getPrimitiveType());
 				glDrawElements(drawType, numIndices, _indexType, offsetIndices);

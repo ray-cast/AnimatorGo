@@ -28,8 +28,6 @@ namespace octoon
 
 			std::size_t count() const noexcept;
 
-			void normalize(math::float3& center) noexcept;
-
 			ContourGroupPtr clone() const noexcept;
 
 		public:

@@ -146,11 +146,13 @@ namespace octoon
 				}
 			}
 
-			GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE));
+			bool error = GL20Check::checkError();
+
+			glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 
 			_framebufferDesc = framebufferDesc;
 
-			return GL20Check::checkError();
+			return error;
 		}
 
 		void

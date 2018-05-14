@@ -1,5 +1,6 @@
 #include "gl30_framebuffer.h"
 #include "gl30_texture.h"
+#include "gl30_device.h"
 
 namespace octoon 
 {
@@ -65,10 +66,10 @@ namespace octoon
 			assert(framebufferDesc.getFramebufferLayout()->isInstanceOf<GL30FramebufferLayout>());
 			assert(framebufferDesc.getWidth() > 0 && framebufferDesc.getHeight() > 0);
 
-			GL_CHECK(glGenFramebuffers(1, &_fbo));
+			glGenFramebuffers(1, &_fbo);
 			if (_fbo == GL_NONE)
 			{
-				GL_PLATFORM_LOG("glCreateFramebuffers() fail.");
+				this->getDevice()->downcast<GL30Device>()->message("glCreateFramebuffers() fail.");
 				return false;
 			}
 
@@ -81,7 +82,7 @@ namespace octoon
 			const auto& colorAttachments = framebufferDesc.getColorAttachments();
 			if (colorAttachments.size() > (sizeof(drawBuffers) / sizeof(drawBuffers[0])))
 			{
-				GL_PLATFORM_LOG("The color attachment in framebuffer is out of range.");
+				this->getDevice()->downcast<GL30Device>()->message("The color attachment in framebuffer is out of range.");
 				return false;
 			}
 
@@ -110,7 +111,7 @@ namespace octoon
 					const auto& depthStencilAttachment = framebufferDesc.getDepthStencilAttachment();
 					if (!depthStencilAttachment.getBindingTexture())
 					{
-						GL_PLATFORM_LOG("Need depth or stencil texture.");
+						this->getDevice()->downcast<GL30Device>()->message("Need depth or stencil texture.");
 						return false;
 					}
 
@@ -136,7 +137,7 @@ namespace octoon
 					}
 					else
 					{
-						GL_PLATFORM_LOG("Invalid texture format");
+						this->getDevice()->downcast<GL30Device>()->message("Invalid texture format");
 						return false;
 					}
 				}
@@ -155,11 +156,13 @@ namespace octoon
 				}
 			}
 
-			GL_CHECK(glDrawBuffers(drawCount, drawBuffers));
-			GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE));
+			glDrawBuffers(drawCount, drawBuffers);
+			bool error = GL30Check::checkError();
+
+			glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
 
 			_framebufferDesc = framebufferDesc;
-			return GL30Check::checkError();
+			return error;
 		}
 
 		void

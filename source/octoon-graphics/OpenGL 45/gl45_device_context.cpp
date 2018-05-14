@@ -504,7 +504,7 @@ namespace octoon
 			{
 				if (_framebuffer)
 				{
-					GLuint viewportCount = std::max<GLuint>(1, _framebuffer->getGraphicsFramebufferDesc().getColorAttachments().size());
+					GLuint viewportCount = std::max<GLuint>(1, (GLuint)_framebuffer->getGraphicsFramebufferDesc().getColorAttachments().size());
 					for (GLuint j = 0; j < viewportCount; j++)
 					{
 						glScissorIndexed(j, _scissors[j].left, _scissors[j].top, _scissors[j].width, _scissors[j].height);
@@ -528,7 +528,7 @@ namespace octoon
 			auto readFramebuffer = src->downcast_pointer<GL45Framebuffer>()->getInstanceID();
 			auto drawFramebuffer = dest ? dest->downcast_pointer<GL45Framebuffer>()->getInstanceID() : GL_NONE;
 
-			glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, (float)v1.left, (float)v1.top, (float)v1.width, (float)v1.height, (float)v2.left, (float)v2.top, (float)v2.width, (float)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, (GLint)v1.left, (GLint)v1.top, (GLint)v1.width, (GLint)v1.height, (GLint)v2.left, (GLint)v2.top, (GLint)v2.width, (GLint)v2.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		}
 
 		void

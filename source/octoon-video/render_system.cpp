@@ -268,7 +268,7 @@ namespace octoon
 				GraphicsTextureDesc depthTextureDesc;
 				depthTextureDesc.setWidth(w);
 				depthTextureDesc.setHeight(h);
-				depthTextureDesc.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+				depthTextureDesc.setTexFormat(GraphicsFormat::D16UNorm);
 				depthTexture_ = device_->createTexture(depthTextureDesc);
 				if (!depthTexture_)
 					throw runtime::runtime_error::create("createTexture() failed");

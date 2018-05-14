@@ -80,7 +80,7 @@ namespace octoon
 		swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::Vsync);
 		swapchainDesc.setImageNums(2);
 		swapchainDesc.setColorFormat(graphics::GraphicsFormat::B8G8R8A8UNorm);
-		swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::D24UNorm_S8UInt);
+		swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::D16UNorm);
 		swapchain_ = device_->createSwapchain(swapchainDesc);
 		if (!swapchain_)
 			throw runtime::runtime_error::create("createSwapchain() failed");

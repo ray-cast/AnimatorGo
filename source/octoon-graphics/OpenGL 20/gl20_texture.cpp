@@ -73,19 +73,10 @@ namespace octoon
 				GLenum format = GL20Types::asTextureFormat(textureDesc.getTexFormat());
 				GLenum type = GL20Types::asTextureType(textureDesc.getTexFormat());
 
-				GLsizei offset = 0;
-				GLsizei pixelSize = GL20Types::getFormatNum(format, type);
-
-				GLenum cubeFace[] =
-				{
-					GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-					GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-					GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-				};
-
 				GLint oldPackStore = 1;
 				glGetIntegerv(GL_UNPACK_ALIGNMENT, &oldPackStore);
 
+				GLsizei pixelSize = stream ? GL20Types::getFormatNum(format, type) : 1;
 				if (pixelSize == 1)
 					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 				else if (pixelSize == 2)
@@ -96,6 +87,8 @@ namespace octoon
 					glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
 				else
 					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+				GLsizei offset = 0;
 
 				for (GLsizei mip = mipBase; mip < mipBase + mipLevel; mip++)
 				{
@@ -116,6 +109,13 @@ namespace octoon
 						{
 							if (target == GL_TEXTURE_CUBE_MAP)
 							{
+								GLenum cubeFace[] =
+								{
+									GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+									GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+									GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+								};
+
 								for (std::size_t i = 0; i < 6; i++)
 								{
 									if (target == GL_TEXTURE_CUBE_MAP)

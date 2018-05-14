@@ -5,6 +5,8 @@
 #include <emscripten.h>
 #endif
 
+/*
+
 class CubeController : public octoon::GameComponent
 {
 public:
@@ -97,6 +99,7 @@ private:
 	octoon::GameObjectPtr camera_;
 	std::shared_ptr<octoon::video::GGXMaterial> material_;
 };
+*/
 
 int main(int argc, const char* argv[])
 {
@@ -114,13 +117,13 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
-		auto material = std::make_shared<octoon::video::GGXMaterial>();
+		auto material = std::make_shared<octoon::video::LineMaterial>();
 
 		auto object = octoon::GameObject::create("actor");
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
-		object->addComponent<octoon::GuizmoComponent>(camera);
-		object->addComponent<CubeController>(material);
+		//object->addComponent<octoon::GuizmoComponent>(camera);
+		//object->addComponent<CubeController>(material);
 		
 #ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 		// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);

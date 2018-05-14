@@ -6,6 +6,8 @@
 
 #include <octoon/runtime/except.h>
 
+#include <iostream>
+
 using namespace octoon::graphics;
 
 namespace octoon
@@ -32,6 +34,7 @@ namespace octoon
 		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
 			device_ = device;
+			std::cout<<w<<","<<h<<std::endl;
 			this->setFramebufferSize(w, h);
 		}
 

@@ -34,7 +34,7 @@ namespace octoon
 		}
 
 		void
-		GL20InputLayout::setDevice(GraphicsDevicePtr device) noexcept
+		GL20InputLayout::setDevice(const GraphicsDevicePtr& device) noexcept
 		{
 			_device = device;
 		}

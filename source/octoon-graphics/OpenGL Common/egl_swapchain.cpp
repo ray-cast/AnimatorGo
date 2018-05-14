@@ -300,7 +300,7 @@ namespace octoon
 			attribs[index++] = 2;
 		#elif defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			attribs[index++] = EGL_CONTEXT_CLIENT_VERSION;
-			attribs[index++] = 3;
+			attribs[index++] = 2;
 		#else
 			attribs[index++] = EGL_CONTEXT_MAJOR_VERSION;
 			attribs[index++] = 2;

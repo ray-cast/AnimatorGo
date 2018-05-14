@@ -32,7 +32,7 @@ namespace octoon
 			{
 				vec4 P = POSITION0;
 				P.x -= P.y * lean;
-				if (P.z == 0)
+				if (P.z == 0.0)
 					P.xyz += translate;
 
 				if (abs(NORMAL0.z) > 0.5)

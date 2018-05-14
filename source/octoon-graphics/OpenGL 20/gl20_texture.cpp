@@ -74,7 +74,7 @@ namespace octoon
 				GLenum type = GL20Types::asTextureType(textureDesc.getTexFormat());
 
 				GLsizei offset = 0;
-				GLsizei pixelSize = GL20Types::getFormatNum(format, type);
+				GLsizei pixelSize = stream ? GL20Types::getFormatNum(format, type) : 1;
 
 				GLenum cubeFace[] =
 				{

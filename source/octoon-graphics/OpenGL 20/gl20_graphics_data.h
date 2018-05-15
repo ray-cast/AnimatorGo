@@ -3,7 +3,7 @@
 
 #include "gl20_types.h"
 
-namespace octoon 
+namespace octoon
 {
 	namespace graphics
 	{
@@ -41,8 +41,8 @@ namespace octoon
 		private:
 			GLuint _buffer;
 			GLenum _target;
-			GLsizeiptr _dataSize;
-			GLintptr _dataOffset;
+			GLintptr _mapOffset;
+			GLintptr _mapCount;
 			GLboolean _isMapping;
 			std::vector<char> _data;
 			std::uint32_t _usage;

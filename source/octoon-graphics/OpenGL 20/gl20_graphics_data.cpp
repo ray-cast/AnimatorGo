@@ -9,6 +9,8 @@ namespace octoon
 		GL20GraphicsData::GL20GraphicsData() noexcept
 			: _buffer(GL_NONE)
 			, _isMapping(GL_FALSE)
+			, _mapOffset(0)
+			, _mapCount(0)
 		{
 		}
 
@@ -23,8 +25,6 @@ namespace octoon
 			assert(!_buffer);
 			assert(desc.getStreamSize() > 0);
 
-			_dataOffset = 0;
-			_dataSize = desc.getStreamSize();
 			_usage = desc.getUsage();
 			_desc = desc;
 			_isMapping = GL_FALSE;
@@ -47,8 +47,15 @@ namespace octoon
 
 			GL_CHECK(glGenBuffers(1, &_buffer));
 			GL_CHECK(glBindBuffer(_target, _buffer));
-			GL_CHECK(glBufferData(_target, _dataSize, desc.getStream(), flags));
+			GL_CHECK(glBufferData(_target, desc.getStreamSize(), desc.getStream(), flags));
 
+			if (desc.getStream())
+			{
+				_data.resize(desc.getStreamSize());
+				memcpy(_data.data(), desc.getStream(), desc.getStreamSize());
+			}
+
+			_desc = desc;
 			return true;
 		}
 
@@ -58,9 +65,7 @@ namespace octoon
 			assert(!_isMapping);
 
 			if (_isMapping)
-			{
 				this->unmap();
-			}
 
 			if (_buffer)
 			{
@@ -72,7 +77,7 @@ namespace octoon
 		int
 		GL20GraphicsData::flush() noexcept
 		{
-			return this->flush(0, _dataSize);
+			return 0;
 		}
 
 		int
@@ -84,23 +89,23 @@ namespace octoon
 		bool
 		GL20GraphicsData::map(std::ptrdiff_t offset, std::ptrdiff_t count, void** data) noexcept
 		{
-#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-			assert(data);
-			glBindBuffer(_target, _buffer);
-			*data = glMapBufferRange(_target, offset, count, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
-			return *data ? true : false;
-#else
-			return false;
-#endif
+			_data.resize(_desc.getStreamSize());
+			_isMapping = true;
+			_mapOffset = offset;
+			_mapCount = count;
+
+			*data = _data.data() + offset;
+			return true;
 		}
 
 		void
 		GL20GraphicsData::unmap() noexcept
 		{
-#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-			glBindBuffer(_target, _buffer);
-			glUnmapBuffer(_target);
-#endif
+			if (_isMapping)
+			{
+				glBufferSubData(_target, _mapOffset, _mapCount, _data.data() + _mapOffset);
+				_isMapping = false;
+			}
 		}
 
 		GLuint

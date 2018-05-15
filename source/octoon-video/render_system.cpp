@@ -158,7 +158,7 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
@@ -197,7 +197,7 @@ namespace octoon
 					}
 				}
 
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
 					auto& v = camera->getPixelViewport();

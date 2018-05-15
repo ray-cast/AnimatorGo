@@ -204,7 +204,7 @@ namespace octoon
 		{
 			Mesh mesh;
 			makeMesh(mesh, contours, thickness);
-			if (hollow) makeMeshTess(mesh, contours, thickness);
+			if (!hollow) makeMeshTess(mesh, contours, thickness);
 
 			mesh.computeVertexNormals();
 			return mesh;
@@ -222,7 +222,7 @@ namespace octoon
 			for (auto& group : groups)
 			{
 				makeMesh(mesh, group->getContours(), thickness);
-				if (hollow) makeMeshTess(mesh, group->getContours(), thickness);
+				if (!hollow) makeMeshTess(mesh, group->getContours(), thickness);
 			}
 
 			mesh.computeVertexNormals();

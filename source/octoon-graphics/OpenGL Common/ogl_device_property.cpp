@@ -297,6 +297,10 @@ namespace octoon
 			if (::eglChooseConfig(param.display, pixelFormat, &config, 1, &num) == EGL_FALSE)
 				throw runtime::runtime_error::create("eglChooseConfig() fail.");
 
+			param.context = ::eglCreateContext(param.display, config, EGL_NO_CONTEXT, attribs);
+			if (param.context == EGL_NO_CONTEXT)
+				throw runtime::runtime_error::create("eglCreateContext() fail.");
+
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			auto dpy = XOpenDisplay(NULL);
 			if (!dpy)
@@ -305,16 +309,14 @@ namespace octoon
 			XSetWindowAttributes swa;
 			swa.event_mask = ExposureMask | PointerMotionMask | KeyPressMask;
 			auto win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0, 0, 1, 1, 0, CopyFromParent, InputOutput, CopyFromParent, CWEventMask, &swa);
+			if (!win)
+				throw runtime::runtime_error::create("XCreateWindow() fail.");
 
 			EGLNativeWindowType hwnd = (EGLNativeWindowType)win;
 #endif
 			param.surface = ::eglCreateWindowSurface(param.display, config, hwnd, NULL);
 			if (::eglGetError() != EGL_SUCCESS)
 				throw runtime::runtime_error::create("eglCreateWindowSurface() fail.");
-
-			param.context = ::eglCreateContext(param.display, config, EGL_NO_CONTEXT, attribs);
-			if (eglGetError() != EGL_SUCCESS)
-				throw runtime::runtime_error::create("eglCreateContext() fail.");
 
 			::eglMakeCurrent(param.display, param.surface, param.surface, param.context);
 		}

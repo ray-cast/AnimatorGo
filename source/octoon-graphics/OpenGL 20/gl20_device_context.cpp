@@ -721,7 +721,7 @@ namespace octoon
 		}
 
 		void
-		GL20DeviceContext::setDevice(GraphicsDevicePtr device) noexcept
+		GL20DeviceContext::setDevice(const GraphicsDevicePtr& device) noexcept
 		{
 			_device = device;
 		}

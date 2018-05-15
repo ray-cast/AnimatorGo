@@ -19,6 +19,9 @@
 #include <iostream>
 #include <cstring>
 
+#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+#   include <emscripten.h>
+#endif
 
 std::string gameScenePath_;
 // X11 related local variables
@@ -265,4 +268,14 @@ void OCTOON_C_CALL OctoonMainLoop() noexcept
 void OCTOON_C_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
+}
+
+void OCTOON_C_CALL OctoonMainLoop() noexcept
+{
+#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+    emscripten_set_main_loop(OctoonUpdate, 60, 1);
+#else
+    while (!::OctoonIsQuitRequest())
+        ::OctoonUpdate();
+#endif
 }

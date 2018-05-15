@@ -22,8 +22,13 @@ namespace octoon
 		{
 			auto swapchain = std::make_shared<OGLSwapchain>();
 			swapchain->setDevice(this->downcast_pointer<GraphicsDevice>());
+#if defined(OCTOON_BUILD_PLATFORM_WINDOWS)
+			if (swapchain->setup(desc, this->getDeviceDesc().getDeviceType()))
+				return swapchain;
+#else
 			if (swapchain->setup(desc))
 				return swapchain;
+#endif
 			return nullptr;
 		}
 

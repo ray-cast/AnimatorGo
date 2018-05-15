@@ -17,12 +17,10 @@ namespace octoon
 			bool setup(const GraphicsInputLayoutDesc& desc) noexcept;
 			void close() noexcept;
 
-			const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept override;
-
-		private:
-			friend class GL20Device;
-			void setDevice(GraphicsDevicePtr device) noexcept;
+			void setDevice(const GraphicsDevicePtr& device) noexcept;
 			GraphicsDevicePtr getDevice() noexcept override;
+
+			const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept override;
 
 		private:
 			GL20InputLayout(const GL20InputLayout&) noexcept = delete;

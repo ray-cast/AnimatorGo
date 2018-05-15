@@ -1,14 +1,14 @@
 #include "gl20_device_context.h"
+#include "gl20_device.h"
 #include "gl20_state.h"
 #include "gl20_shader.h"
 #include "gl20_texture.h"
-#include "gl20_framebuffer.h"
 #include "gl20_input_layout.h"
 #include "gl20_sampler.h"
-#include "gl20_descriptor_set.h"
-#include "gl20_pipeline.h"
+#include "gl20_framebuffer.h"
 #include "gl20_graphics_data.h"
-#include "gl20_device.h"
+#include "gl20_pipeline.h"
+#include "gl20_descriptor_set.h"
 
 namespace octoon
 {
@@ -17,24 +17,18 @@ namespace octoon
 		OctoonImplementSubClass(GL20DeviceContext, GraphicsContext, "GL20DeviceContext")
 
 		GL20DeviceContext::GL20DeviceContext() noexcept
-			: _clearColor(0.0f, 0.0f, 0.0f, 0.0f)
-			, _clearDepth(1.0f)
+			: _clearDepth(1.0)
 			, _clearStencil(0)
-			, _framebuffer(nullptr)
-			, _program(nullptr)
-			, _pipeline(nullptr)
-			, _descriptorSet(nullptr)
+			, _clearColor(0.0, 0.0, 0.0, 0.0)
+			, _viewport(0, 0, 0, 0)
+			, _scissor(0, 0, 0, 0)
 			, _indexType(GL_UNSIGNED_INT)
 			, _indexOffset(0)
-			, _state(nullptr)
-			, _glcontext(nullptr)
 			, _needUpdatePipeline(false)
 			, _needUpdateDescriptor(false)
 			, _needUpdateVertexBuffers(false)
 			, _needEnableDebugControl(false)
 			, _needDisableDebugControl(false)
-			, _viewport(float4(0, 0, 0, 0))
-			, _scissor(uint4(0, 0, 0, 0))
 		{
 			_stateDefault = std::make_shared<GL20GraphicsState>();
 			_stateDefault->setup(GraphicsStateDesc());
@@ -69,13 +63,13 @@ namespace octoon
 		void
 		GL20DeviceContext::close() noexcept
 		{
-			_framebuffer = nullptr;
-			_program = nullptr;
-			_pipeline = nullptr;
-			_descriptorSet = nullptr;
-			_state = nullptr;
-			_glcontext = nullptr;
+			_framebuffer.reset();
+			_program.reset();
+			_pipeline.reset();
+			_descriptorSet.reset();
+			_state.reset();
 			_indexBuffer.reset();
+			_glcontext.reset();
 			_vertexBuffers.clear();
 		}
 
@@ -115,7 +109,7 @@ namespace octoon
 				else
 					this->getDevice()->downcast<OGLDevice>()->message("Cannot support glViewportIndexedf.");
 
-				_viewport= view;
+				_viewport = view;
 			}
 		}
 
@@ -152,6 +146,7 @@ namespace octoon
 		{
 			return _scissor;
 		}
+
 		void
 		GL20DeviceContext::setStencilCompareMask(GraphicsStencilFaceFlags face, std::uint32_t mask) noexcept
 		{
@@ -160,13 +155,7 @@ namespace octoon
 				if (_stateCaptured.getStencilFrontReadMask() != mask)
 				{
 					GLenum frontfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
-					if (frontfunc == GL_INVALID_ENUM)
-					{
-						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
-						return;
-					}
-
-					glStencilFuncSeparate(GL_FRONT, frontfunc, _stateCaptured.getStencilFrontRef(), mask);
+					GL_CHECK(glStencilFuncSeparate(GL_FRONT, frontfunc, _stateCaptured.getStencilFrontRef(), mask));
 					_stateCaptured.setStencilFrontReadMask(mask);
 				}
 			}
@@ -175,13 +164,7 @@ namespace octoon
 				if (_stateCaptured.getStencilBackReadMask() != mask)
 				{
 					GLenum backfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
-					if (backfunc == GL_INVALID_ENUM)
-					{
-						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
-						return;
-					}
-
-					glStencilFuncSeparate(GL_BACK, backfunc, _stateCaptured.getStencilBackRef(), mask);
+					GL_CHECK(glStencilFuncSeparate(GL_BACK, backfunc, _stateCaptured.getStencilBackRef(), mask));
 					_stateCaptured.setStencilBackReadMask(mask);
 				}
 			}
@@ -206,13 +189,7 @@ namespace octoon
 				if (_stateCaptured.getStencilFrontRef() != reference)
 				{
 					GLenum frontfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
-					if (frontfunc == GL_INVALID_ENUM)
-					{
-						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
-						return;
-					}
-
-					glStencilFuncSeparate(GL_FRONT, frontfunc, reference, _stateCaptured.getStencilFrontReadMask());
+					GL_CHECK(glStencilFuncSeparate(GL_FRONT, frontfunc, reference, _stateCaptured.getStencilFrontReadMask()));
 					_stateCaptured.setStencilFrontRef(reference);
 				}
 			}
@@ -221,13 +198,7 @@ namespace octoon
 				if (_stateCaptured.getStencilBackRef() != reference)
 				{
 					GLenum backfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
-					if (backfunc == GL_INVALID_ENUM)
-					{
-						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
-						return;
-					}
-
-					glStencilFuncSeparate(GL_BACK, backfunc, reference, _stateCaptured.getStencilBackReadMask());
+					GL_CHECK(glStencilFuncSeparate(GL_BACK, backfunc, reference, _stateCaptured.getStencilBackReadMask()));
 					_stateCaptured.setStencilBackRef(reference);
 				}
 			}
@@ -251,7 +222,7 @@ namespace octoon
 			{
 				if (_stateCaptured.getStencilFrontWriteMask() != mask)
 				{
-					glStencilMaskSeparate(GL_FRONT, mask);
+					GL_CHECK(glStencilMaskSeparate(GL_FRONT, mask));
 					_stateCaptured.setStencilFrontWriteMask(mask);
 				}
 			}
@@ -259,7 +230,7 @@ namespace octoon
 			{
 				if (_stateCaptured.getStencilBackWriteMask() != mask)
 				{
-					glStencilMaskSeparate(GL_BACK, mask);
+					GL_CHECK(glStencilMaskSeparate(GL_BACK, mask));
 					_stateCaptured.setStencilBackWriteMask(mask);
 				}
 			}
@@ -378,7 +349,6 @@ namespace octoon
 		GraphicsDataPtr
 		GL20DeviceContext::getVertexBufferData(std::uint32_t i) const noexcept
 		{
-			assert(_vertexBuffers.size() > i);
 			return _vertexBuffers[i].vbo;
 		}
 
@@ -400,7 +370,7 @@ namespace octoon
 				}
 
 				_indexType = GL20Types::asIndexType(indexType);
-				_indexOffset = (GLintptr)offset;
+				_indexOffset = offset;
 
 				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
 			}
@@ -445,14 +415,9 @@ namespace octoon
 					glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->getInstanceID());
 
 					auto& framebufferDesc = framebuffer->getGraphicsFramebufferDesc();
-					auto& colorAttachment = framebufferDesc.getColorAttachments();
 
-					std::uint32_t viewportCount = std::max<std::uint32_t>(1, static_cast<std::uint32_t>(colorAttachment.size()));
-					for (std::uint32_t i = 0; i < viewportCount; i++)
-					{
-						this->setViewport(i, float4(0, 0, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
-						this->setScissor(i, _scissor);
-					}
+					this->setViewport(0, float4(0, 0, (float)framebufferDesc.getWidth(), (float)framebufferDesc.getHeight()));
+					this->setScissor(0, _scissor);
 
 					_framebuffer = framebuffer;
 				}
@@ -466,11 +431,16 @@ namespace octoon
 			}
 		}
 
+		GraphicsFramebufferPtr
+		GL20DeviceContext::getFramebuffer() const noexcept
+		{
+			return _framebuffer;
+		}
+
 		void
 		GL20DeviceContext::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
 		{
 			assert(i == 0);
-			assert(_glcontext->getActive());
 
 			GLbitfield mode = 0;
 
@@ -599,7 +569,7 @@ namespace octoon
 			GLenum internalFormat = GL20Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
-				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
+				this->getDevice()->downcast<GL20Device>()->message("Invalid texture format");
 				return;
 			}
 
@@ -608,12 +578,6 @@ namespace octoon
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(texture->downcast<GL20Texture>()->getTarget(), texture->downcast<GL20Texture>()->getInstanceID());
 			glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, miplevel, internalFormat, x, y, width, height, 0);
-		}
-
-		GraphicsFramebufferPtr
-		GL20DeviceContext::getFramebuffer() const noexcept
-		{
-			return _framebuffer;
 		}
 
 		void
@@ -636,18 +600,11 @@ namespace octoon
 				_needUpdateDescriptor = false;
 			}
 
+			auto primitiveType = _stateCaptured.getPrimitiveType();
 			if (numVertices > 0)
 			{
-				GLenum drawType = GL20Types::asVertexType(_stateCaptured.getPrimitiveType());
-				if (drawType != GL_INVALID_ENUM)
-				{
-					if (numInstances == 1)
-						glDrawArrays(drawType, startVertice, numVertices);
-					else
-						this->getDevice()->downcast<OGLDevice>()->message("Cannot support multi instance.");
-				}
-				else
-					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
+				GLenum drawType = GL20Types::asVertexType(primitiveType);
+				GL_CHECK(glDrawArrays(drawType, startVertice, numVertices));
 			}
 		}
 
@@ -658,7 +615,7 @@ namespace octoon
 			assert(_glcontext->getActive());
 			assert(_indexBuffer);
 			assert(_indexType == GL_UNSIGNED_INT || _indexType == GL_UNSIGNED_SHORT);
-			assert(startInstances == 0);
+			assert(numInstances <= 1 && startInstances == 0);
 
 			_pipeline->bindVertexBuffers(_vertexBuffers, _needUpdatePipeline, startVertice);
 
@@ -675,19 +632,11 @@ namespace octoon
 					offsetIndices += _indexOffset + sizeof(std::uint32_t) * startIndice;
 				else if (_indexType == GL_UNSIGNED_SHORT)
 					offsetIndices += _indexOffset + sizeof(std::uint16_t) * startIndice;
+				else
+					offsetIndices += _indexOffset + sizeof(std::uint8_t) * startIndice;
 
 				GLenum drawType = GL20Types::asVertexType(_stateCaptured.getPrimitiveType());
-				if (drawType != GL_INVALID_ENUM)
-				{
-					if (numInstances == 1)
-						glDrawElements(drawType, numIndices, _indexType, offsetIndices);
-					else
-						this->getDevice()->downcast<OGLDevice>()->message("Cannot support multi instance.");
-				}
-				else
-				{
-					this->getDevice()->downcast<OGLDevice>()->message("Invalid vertex type");
-				}
+				glDrawElements(drawType, numIndices, _indexType, offsetIndices);
 			}
 		}
 
@@ -704,7 +653,7 @@ namespace octoon
 		void
 		GL20DeviceContext::present() noexcept
 		{
-			assert(_glcontext->getActive());
+			assert(_glcontext);
 			_glcontext->present();
 		}
 
@@ -736,30 +685,31 @@ namespace octoon
 		bool
 		GL20DeviceContext::initStateSystem() noexcept
 		{
-			glClearDepthf(1.0f);
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-			glClearStencil(0);
+			GL_CHECK(glClearDepthf(1.0));
+			GL_CHECK(glClearColor(0.0, 0.0, 0.0, 0.0));
+			GL_CHECK(glClearStencil(0));
 
-			glViewport(0, 0, 0, 0);
+			GL_CHECK(glViewport(0, 0, 0, 0));
 
-			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			GL_CHECK(glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
 
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(GL_TRUE);
-			glDepthFunc(GL_LEQUAL);
+			GL_CHECK(glEnable(GL_DEPTH_TEST));
+			GL_CHECK(glDepthMask(GL_TRUE));
+			GL_CHECK(glDepthFunc(GL_LEQUAL));
 
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CW);
+			GL_CHECK(glEnable(GL_CULL_FACE));
+			GL_CHECK(glCullFace(GL_BACK));
+			GL_CHECK(glFrontFace(GL_CW));
+			GL_CHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
 
-			glDisable(GL_STENCIL_TEST);
-			glStencilMask(0xFFFFFFFF);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-			glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+			GL_CHECK(glDisable(GL_STENCIL_TEST));
+			GL_CHECK(glStencilMask(0xFFFFFFFF));
+			GL_CHECK(glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP));
+			GL_CHECK(glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF));
 
-			glDisable(GL_BLEND);
-			glBlendEquation(GL_FUNC_ADD);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			GL_CHECK(glDisable(GL_BLEND));
+			GL_CHECK(glBlendEquation(GL_FUNC_ADD));
+			GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 			auto& deviceProperties = this->getDevice()->getDeviceProperty().getDeviceProperties();
 			_vertexBuffers.resize(deviceProperties.maxVertexInputBindings);
@@ -771,7 +721,7 @@ namespace octoon
 		}
 
 		void
-		GL20DeviceContext::setDevice(const GraphicsDevicePtr& device) noexcept
+		GL20DeviceContext::setDevice(GraphicsDevicePtr device) noexcept
 		{
 			_device = device;
 		}

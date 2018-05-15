@@ -14,7 +14,8 @@ namespace octoon
 		void
 		TextMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 			uniform float lean;
@@ -22,16 +23,16 @@ namespace octoon
 			uniform vec3 sideColor;
 			uniform vec3 translate;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
-			out vec3 oTexcoord0;
+			varying vec3 oTexcoord0;
 
 			void main()
 			{
 				vec4 P = POSITION0;
 				P.x -= P.y * lean;
-				if (P.z == 0)
+				if (P.z == 0.0)
 					P.xyz += translate;
 
 				if (abs(NORMAL0.z) > 0.5)
@@ -42,12 +43,12 @@ namespace octoon
 				gl_Position = proj * model * P;
 			})";
 
-			const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-			in vec3 oTexcoord0;
+			const char* frag = R"(
+			precision mediump float;
+			varying vec3 oTexcoord0;
 			void main()
 			{
-				fragColor = vec4(oTexcoord0, 1.0f);
+				gl_FragColor = vec4(oTexcoord0, 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;

@@ -14,15 +14,16 @@ namespace octoon
 		void
 		PhongMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
-			out vec3 oTexcoord0;
-			out vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
@@ -31,7 +32,8 @@ namespace octoon
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(#version 330
+			const char* frag = R"(
+			precision mediump float;
 
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
@@ -40,27 +42,25 @@ namespace octoon
 			uniform vec3 darkColor;
 			uniform float shininess;
 
-			layout(location  = 0) out vec4 fragColor;
-
-			in vec3 oTexcoord0;
-			in vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
-				vec3 ambient = pow(ambientColor, vec3(2.2f));
-				vec3 base = pow(baseColor, vec3(2.2f));
-				vec3 specular = pow(specularColor, vec3(2.2f));
-				vec3 dark = pow(darkColor, vec3(2.2f));
+				vec3 ambient = pow(ambientColor, vec3(2.2));
+				vec3 base = pow(baseColor, vec3(2.2));
+				vec3 specular = pow(specularColor, vec3(2.2));
+				vec3 dark = pow(darkColor, vec3(2.2));
 
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
 				vec3 H = normalize(V + lightDir);
 				vec3 R = -reflect(N, lightDir);
 
-				float nl = max(0.0f, dot(N, lightDir));
+				float nl = max(0.0, dot(N, lightDir));
 				float spec = pow(max(0, dot(R, V)), pow(4096, shininess));
 
-				fragColor = vec4(pow(ambient + mix(dark, (base + specular * spec), nl), vec3(1.0f / 2.2f)), 1.0f);
+				gl_FragColor = vec4(pow(ambient + mix(dark, (base + specular * spec), nl), vec3(1.0 / 2.2)), 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;

@@ -82,14 +82,25 @@ namespace octoon
 		}
 
 		bool
-		GL20GraphicsData::map(std::intptr_t offset, std::intptr_t count, void** data) noexcept
+		GL20GraphicsData::map(std::ptrdiff_t offset, std::ptrdiff_t count, void** data) noexcept
 		{
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+			assert(data);
+			glBindBuffer(_target, _buffer);
+			*data = glMapBufferRange(_target, offset, count, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+			return *data ? true : false;
+#else
 			return false;
+#endif
 		}
 
 		void
 		GL20GraphicsData::unmap() noexcept
 		{
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+			glBindBuffer(_target, _buffer);
+			glUnmapBuffer(_target);
+#endif
 		}
 
 		GLuint

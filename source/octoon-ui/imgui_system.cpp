@@ -13,13 +13,13 @@ namespace octoon
 	namespace imgui
 	{
 		const char* vert =
-			"#version 330\n"
+			"precision mediump float;\n"
 			"uniform mat4 proj;\n"
-			"layout(location  = 0) in vec4 POSITION0;\n"
-			"layout(location  = 1) in vec4 COLOR0;\n"
-			"layout(location  = 2) in vec4 TEXCOORD0;\n"
-			"out vec4 oTexcoord0;\n"
-			"out vec4 oTexcoord1;\n"
+			"attribute vec4 POSITION0;\n"
+			"attribute vec4 COLOR0;\n"
+			"attribute vec4 TEXCOORD0;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec4 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
 			"oTexcoord0 = COLOR0;\n"
@@ -28,14 +28,13 @@ namespace octoon
 			"}\n";
 
 		const char* frag =
-			"#version 330\n"
+			"precision mediump float;\n"
 			"uniform sampler2D decal;\n"
-			"layout(location  = 0) out vec4 oColor;\n"
-			"in vec4 oTexcoord0;\n"
-			"in vec4 oTexcoord1;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec4 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
-			"	oColor = texture(decal, oTexcoord1.rg) * oTexcoord0;\n"
+			"	gl_FragColor = texture2D(decal, oTexcoord1.rg) * oTexcoord0;\n"
 			"}";
 
 		System::System() noexcept

@@ -138,7 +138,7 @@ namespace octoon
 
 					for (auto& it : _attributes[slot])
 					{
-						auto offset = (GLbyte*)nullptr + it.offset + vbos[slot].offset + it.size * startVertices;
+						auto offset = (GLbyte*)nullptr + vbos[slot].offset + it.offset + startVertices * it.size;
 
 						glEnableVertexAttribArray(it.index);
 						glVertexAttribPointer(it.index, it.count, it.type, it.normalize, it.stride, offset);

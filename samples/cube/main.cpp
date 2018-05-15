@@ -101,6 +101,50 @@ private:
 };
 */
 
+class CubeController : public octoon::GameComponent
+{
+public:
+	CubeController()
+	{
+	}
+
+	CubeController(std::shared_ptr<octoon::video::GGXMaterial>& material)
+		: material_(material)
+	{
+	}
+
+	void onActivate() override
+	{
+		this->addComponentDispatch(octoon::GameDispatchType::Frame);
+	}
+
+	void onDeactivate() noexcept override
+	{
+		this->removeComponentDispatchs();
+	}
+
+	void onFrame() noexcept override
+	{
+		static float angleX = 0.0;
+		static float angleY = 0.0;
+
+		angleX += 0.01f;
+		angleY += 0.01f;
+
+		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, angleX));
+		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, angleY));
+	}
+
+	octoon::GameComponentPtr clone() const noexcept override
+	{
+		return std::make_shared<CubeController>();
+	}
+
+private:
+	octoon::GameObjectPtr camera_;
+	std::shared_ptr<octoon::video::GGXMaterial> material_;
+};
+
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
@@ -117,15 +161,18 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
-		auto material = std::make_shared<octoon::video::LineMaterial>();
+		auto material = std::make_shared<octoon::video::GGXMaterial>();
+		material->setBaseColor(octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 
 		auto object = octoon::GameObject::create("actor");
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
+		object->addComponent<CubeController>(material);
+
 		//object->addComponent<octoon::GuizmoComponent>(camera);
-		//object->addComponent<CubeController>(material);
-		
+
 #ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+
 		// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
 		emscripten_set_main_loop(OctoonUpdate, 60, 1);
 #else

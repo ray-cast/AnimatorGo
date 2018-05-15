@@ -42,6 +42,8 @@ OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonCloseWindow() noexcept
 OCTOON_C_LINKAGE OCTOON_C_EXPORT bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept;
 OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonUpdate() noexcept;
 
+OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonMainLoop() noexcept;
+
 #if defined(OCTOON_BUILD_PLATFORM_JAVA)
 
 OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL Java_org_octoon_lib_Octoon3DRenderer_nativeConfig(JNIEnv*  env, jobject thiz, jstring gamedir, jstring scenename, jboolean bShader) noexcept;

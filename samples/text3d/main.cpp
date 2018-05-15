@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
-	
+
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
 		auto material = std::make_shared<octoon::video::TextMaterial>();
@@ -112,8 +112,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

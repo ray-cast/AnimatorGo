@@ -1,10 +1,6 @@
 #include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
 
-#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
-#include <emscripten.h>
-#endif
-
 /*
 
 class CubeController : public octoon::GameComponent
@@ -165,14 +161,7 @@ int main(int argc, const char* argv[])
 
 		//object->addComponent<octoon::GuizmoComponent>(camera);
 
-#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
-
-		// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
-		emscripten_set_main_loop(OctoonUpdate, 60, 1);
-#else
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
-#endif
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

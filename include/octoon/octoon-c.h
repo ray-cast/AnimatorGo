@@ -41,6 +41,7 @@ OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonCloseWindow() noexcept
 
 OCTOON_C_LINKAGE OCTOON_C_EXPORT bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept;
 OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonUpdate() noexcept;
+OCTOON_C_LINKAGE OCTOON_C_EXPORT void OCTOON_C_CALL OctoonMainLoop() noexcept;
 
 #if defined(OCTOON_BUILD_PLATFORM_JAVA)
 

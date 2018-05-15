@@ -84,6 +84,12 @@ void OCTOON_C_CALL OctoonUpdate() noexcept
 		gameApp_->update();
 }
 
+void OCTOON_C_CALL OctoonMainLoop() noexcept
+{
+    while (!OctoonIsQuitRequest())
+        OctoonUpdate();
+}
+
 static int32_t onInputEvent(struct android_app* app, AInputEvent* event)
 {
 	int32_t lEventType = AInputEvent_getType(event);

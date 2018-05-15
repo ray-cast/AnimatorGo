@@ -78,8 +78,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 		camera->addComponent<PainterController>();
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

@@ -6,6 +6,10 @@
 
 #undef None
 
+#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+#   include <emscripten.h>
+#endif
+
 #include <octoon/game_app.h>
 #include <octoon/input/input_event.h>
 #include <octoon/runtime/except.h>
@@ -245,6 +249,17 @@ void OCTOON_C_CALL OctoonUpdate() noexcept
 
     if (gameApp_)
 		gameApp_->update();
+}
+
+void OCTOON_C_CALL OctoonMainLoop() noexcept
+{
+#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+	// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
+	emscripten_set_main_loop(OctoonUpdate, 60, 1);
+#else
+    while (!OctoonIsQuitRequest())
+        OctoonUpdate();
+#endif
 }
 
 void OCTOON_C_CALL OctoonTerminate() noexcept

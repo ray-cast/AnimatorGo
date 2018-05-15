@@ -112,8 +112,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

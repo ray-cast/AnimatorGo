@@ -1,12 +1,6 @@
 #include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
 
-#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
-#include <emscripten.h>
-#endif
-
-/*
-
 class CubeController : public octoon::GameComponent
 {
 public:
@@ -90,46 +84,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept override
-	{
-		return std::make_shared<CubeController>();
-	}
-
-private:
-	octoon::GameObjectPtr camera_;
-	std::shared_ptr<octoon::video::GGXMaterial> material_;
-};
-*/
-
-class CubeController : public octoon::GameComponent
-{
-public:
-	CubeController()
-	{
-	}
-
-	CubeController(std::shared_ptr<octoon::video::GGXMaterial>& material)
-		: material_(material)
-	{
-	}
-
-	void onActivate() override
-	{
-		this->addComponentDispatch(octoon::GameDispatchType::Frame);
-	}
-
-	void onDeactivate() noexcept override
-	{
-		this->removeComponentDispatchs();
-	}
-
-	void onFrame() noexcept override
-	{
-		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, 0.01f));
-		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, 0.01f));
-	}
-
-	octoon::GameComponentPtr clone() const noexcept override
+	octoon::GameComponentPtr clone() const noexcept
 	{
 		return std::make_shared<CubeController>();
 	}
@@ -156,23 +111,14 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
 		auto material = std::make_shared<octoon::video::GGXMaterial>();
-		material->setBaseColor(octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 
 		auto object = octoon::GameObject::create("actor");
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
 		object->addComponent<octoon::MeshRendererComponent>(material);
+		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<CubeController>(material);
 
-		//object->addComponent<octoon::GuizmoComponent>(camera);
-
-#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
-
-		// void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
-		emscripten_set_main_loop(OctoonUpdate, 60, 1);
-#else
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
-#endif
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

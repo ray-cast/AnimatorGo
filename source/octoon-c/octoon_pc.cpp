@@ -411,6 +411,12 @@ void OCTOON_C_CALL OctoonUpdate() noexcept
 		gameApp_->update();
 }
 
+void OCTOON_C_CALL OctoonMainLoop() noexcept
+{
+    while (!OctoonIsQuitRequest())
+        OctoonUpdate();
+}
+
 void OCTOON_C_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();

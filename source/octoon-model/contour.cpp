@@ -6,19 +6,16 @@ namespace octoon
 	namespace model
 	{
 		Contour::Contour() noexcept
-			: clockwise_(false)
 		{
 		}
 
-		Contour::Contour(math::float3s&& points, bool clockwise) noexcept
+		Contour::Contour(math::float3s&& points) noexcept
 		{
-			clockwise_ = clockwise;
 			points_ = std::move(points);
 		}
 
-		Contour::Contour(const math::float3s& points, bool clockwise) noexcept
+		Contour::Contour(const math::float3s& points) noexcept
 		{
-			clockwise_ = clockwise;
 			points_ = points;
 		}
 
@@ -74,18 +71,6 @@ namespace octoon
 		Contour::count() const noexcept
 		{
 			return points_.size();
-		}
-
-		void
-		Contour::isClockwise(bool clockwise) noexcept
-		{
-			clockwise_ = clockwise;
-		}
-
-		bool
-		Contour::isClockwise() const noexcept
-		{
-			return clockwise_;
 		}
 
 		void

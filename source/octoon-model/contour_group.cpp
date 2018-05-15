@@ -72,8 +72,6 @@ namespace octoon
 			{
 				auto contour = std::make_unique<Contour>();
 				contour->points() = it->points();
-				contour->isClockwise(it->isClockwise());
-
 				contours.push_back(std::move(contour));
 			}
 
@@ -120,14 +118,11 @@ namespace octoon
 			return instance;
 		}
 
-		Mesh makeMesh(const Contours& contours, float thickness) noexcept
+		void makeMesh(Mesh& mesh, const Contours& contours, float thickness) noexcept
 		{
-			Mesh mesh;
 			math::float3s tris(max_count(contours) * 6);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
-
-			std::vector<math::double3> vertices(sum(contours) * 2);
 
 			float thicknessHalf = thickness * 0.5f;
 
@@ -150,73 +145,87 @@ namespace octoon
 
 				trisMesh.resize(trisMesh.size() + written);
 				std::memcpy(trisMesh.data() + (trisMesh.size() - written), trisData, written * sizeof(math::float3));
+			}
+		}
 
-				if (contour->isClockwise())
+		void makeMeshTess(Mesh& mesh, const Contours& contours, float thickness) noexcept
+		{
+			math::float3s& trisMesh = mesh.getVertexArray();
+
+			std::vector<math::double3> vertices(sum(contours) * 2);
+
+			GLUtesselator* tobj = gluNewTess();
+
+			gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
+			gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
+			gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
+			gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
+			gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
+			gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
+
+			gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
+			gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
+
+			gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
+
+			std::size_t index = 0;
+
+			for (std::uint8_t face = 0; face < 2; face++)
+			{
+				gluTessBeginPolygon(tobj, nullptr);
+
+				for (auto& contour_ : contours)
 				{
-					GLUtesselator* tobj = gluNewTess();
+					gluTessBeginContour(tobj);
 
-					gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
-					gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
-					gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
-					gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
-					gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
-					gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
-
-					gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
-					gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
-
-					gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
-
-					std::size_t index = 0;
-
-					for (std::uint8_t face = 0; face < 2; face++)
+					for (auto& it : contour_->points())
 					{
-						gluTessBeginPolygon(tobj, nullptr);
+						auto& d = vertices[index++];
+						d[0] = it.x;
+						d[1] = it.y;
+						d[2] = it.z + face ? -thickness * 0.5f : thickness * 0.5f;
 
-						for (auto& contour_ : contours)
-						{
-							gluTessBeginContour(tobj);
-
-							for (auto& it : contour_->points())
-							{
-								auto& d = vertices[index++];
-								d[0] = it.x;
-								d[1] = it.y;
-								d[2] = it.z + face ? -thicknessHalf : thicknessHalf;
-
-								gluTessVertex(tobj, d.ptr(), d.ptr());
-							}
-
-							gluTessEndContour(tobj);
-						}
-
-						gluTessEndPolygon(tobj);
-
-						trisMesh.resize(trisMesh.size() + g_tris.size());
-						std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
+						gluTessVertex(tobj, d.ptr(), d.ptr());
 					}
 
-					gluDeleteTess(tobj);
+					gluTessEndContour(tobj);
 				}
+
+				gluTessEndPolygon(tobj);
+
+				trisMesh.resize(trisMesh.size() + g_tris.size());
+				std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
 			}
 
-			mesh.computeVertexNormals();
+			gluDeleteTess(tobj);
+		}
 
+		Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
+		{
+			Mesh mesh;
+			makeMesh(mesh, contours, thickness);
+			if (hollow) makeMeshTess(mesh, contours, thickness);
+
+			mesh.computeVertexNormals();
 			return mesh;
 		}
 
-		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
+		Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
 		{
-			return makeMesh(group.getContours(), thickness);
+			return makeMesh(group.getContours(), thickness, hollow);
 		}
 
-		Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
+		Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
 		{
 			Mesh mesh;
 
 			for (auto& group : groups)
-				mesh.combineMeshes(makeMesh(*group, thickness), true);
+			{
+				makeMesh(mesh, group->getContours(), thickness);
+				if (hollow) makeMeshTess(mesh, group->getContours(), thickness);
+			}
 
+			mesh.computeVertexNormals();
 			return mesh;
 		}
 

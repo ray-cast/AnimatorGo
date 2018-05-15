@@ -3,7 +3,7 @@
 
 #include "ogl_swapchain.h"
 
-#if GL_DEBUG
+#if defined(__DEBUG__)
 #	if defined(_VISUAL_STUDIO_)
 #		pragma warning(disable : 4127)
 #	endif

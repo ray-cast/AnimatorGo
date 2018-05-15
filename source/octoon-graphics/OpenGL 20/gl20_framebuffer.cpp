@@ -78,7 +78,7 @@ namespace octoon
 				return false;
 			}
 
-			GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, _fbo));
+			glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 
 			const auto& textureComponents = framebufferDesc.getFramebufferLayout()->getFramebufferLayoutDesc().getComponents();
 			const auto& colorAttachments = framebufferDesc.getColorAttachments();

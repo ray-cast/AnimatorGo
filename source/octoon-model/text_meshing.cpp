@@ -132,23 +132,12 @@ namespace octoon
 				math::float3 cur(contour[(n - 1) % n].x / 64.0f, contour[(n - 1) % n].y / 64.0f, 0.0);
 				math::float3 next(contour[0].x / 64.0f, contour[0].y / 64.0f, 0.0);
 
-				float olddir, dir = std::atan2((next - cur).y, (next - cur).x);
-				float angle = 0.0f;
-
 				for (std::size_t i = 0; i < n; i++)
 				{
 					prev = cur;
 					cur = next;
 					next = math::float3(contour[(i + 1) % n].x / 64.0f, contour[(i + 1) % n].y / 64.0f, 0.0f);
-
-					olddir = dir;
-					dir = std::atan2((next - cur).y, (next - cur).x);
-
-					float t = dir - olddir;
-					if (t < -math::PI) t += 2 * math::PI;
-					if (t > math::PI) t -= 2 * math::PI;
-					angle += t;
-
+					
 					switch (FT_CURVE_TAG(tags[i]))
 					{
 					case FT_Curve_Tag_On:
@@ -177,7 +166,6 @@ namespace octoon
 				}
 
 				contours.addPoints(contours.at(0));
-				contours.isClockwise(angle < 0.0f);
 			};
 
 			auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)

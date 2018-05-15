@@ -360,8 +360,10 @@ namespace octoon
 			auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
 
 			int mask = (deviceType == GraphicsDeviceType::OpenGL20) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-			int flags = __DEBUG__ ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
-
+			int flags = 0;
+#if defined(__DEBUG__)
+			flags = WGL_CONTEXT_DEBUG_BIT_ARB;
+#endif
 			int major = 0;
 			int minor = 0;
 				

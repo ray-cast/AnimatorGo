@@ -790,31 +790,9 @@ namespace octoon
 				case GraphicsUniformType::Sampler:
 					assert(false);
 					break;
-				case GraphicsUniformType::SamplerImage:
-					{
-						auto& texture = it->getTexture();
-						if (texture)
-						{
-							auto gltexture = texture->downcast<GL20Texture>();
-							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
-							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
-							gltexture->setSampler(it->getTextureSampler());
-						}
-					}
-					break;
 				case GraphicsUniformType::CombinedImageSampler:
-					{
-						auto& texture = it->getTexture();
-						if (texture)
-						{
-							auto gltexture = texture->downcast<GL20Texture>();
-							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
-							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
-							gltexture->setSampler(it->getTextureSampler());
-						}
-					}
-					break;
 				case GraphicsUniformType::StorageImage:
+				case GraphicsUniformType::SamplerImage:
 					{
 						auto& texture = it->getTexture();
 						if (texture)

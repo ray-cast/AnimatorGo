@@ -158,16 +158,16 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
-				/*
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
 				else
 					context.setFramebuffer(fbo_);
+#endif
 
 				context.setViewport(0, camera->getPixelViewport());
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-				*/
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
@@ -197,7 +197,8 @@ namespace octoon
 					}
 				}
 
-				/*if (camera->getCameraOrder() == CameraOrder::Main)
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
 					auto& v = camera->getPixelViewport();
 
@@ -216,7 +217,8 @@ namespace octoon
 						math::float4 v2(0, 0, (float)swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), (float)swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
 						context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 					}
-				}*/
+				}
+#endif
 			}
 		}
 

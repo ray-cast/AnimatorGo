@@ -164,8 +164,6 @@ namespace octoon
 					break;
 					}
 				}
-
-				contours.addPoints(contours.at(0));
 			};
 
 			auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
@@ -235,7 +233,7 @@ namespace octoon
 
 		Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
 		{
-			Mesh mesh = makeMesh(makeTextContours(params, string), params.getThickness());
+			Mesh mesh = makeMesh(makeTextContours(params, string), params.getThickness(), false);
 			mesh.computeBoundingBox();
 
 			return mesh;

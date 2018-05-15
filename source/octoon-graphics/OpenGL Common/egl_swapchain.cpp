@@ -318,8 +318,9 @@ namespace octoon
 				this->getDevice()->downcast<OGLDevice>()->message("eglCreateContext() fail.");
 				return false;
 			}
-
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			this->setSwapInterval(swapchainDesc.getSwapInterval());
+#endif
 			return true;
 		}
 

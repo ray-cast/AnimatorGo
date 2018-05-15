@@ -65,8 +65,6 @@ SET(RENDERER_CORE
 	${SOURCE_PATH}/graphics_context.cpp
 	${HEADER_PATH}/graphics_data.h
 	${SOURCE_PATH}/graphics_data.cpp
-	${HEADER_PATH}/graphics_debug.h
-	${SOURCE_PATH}/graphics_debug.cpp
 	${HEADER_PATH}/graphics_descriptor.h
 	${SOURCE_PATH}/graphics_descriptor.cpp
 	${HEADER_PATH}/graphics_device.h
@@ -81,8 +79,6 @@ SET(RENDERER_CORE
 	${SOURCE_PATH}/graphics_resource.cpp
 	${HEADER_PATH}/graphics_sampler.h
 	${SOURCE_PATH}/graphics_sampler.cpp
-	${HEADER_PATH}/graphics_semaphore.h
-	${SOURCE_PATH}/graphics_semaphore.cpp
 	${HEADER_PATH}/graphics_shader.h
 	${SOURCE_PATH}/graphics_shader.cpp
 	${HEADER_PATH}/graphics_state.h

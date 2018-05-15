@@ -189,17 +189,6 @@ namespace octoon
 		}
 
 		void
-		GL20Device::enableDebugControl(bool enable) noexcept
-		{
-			for (auto& it : _deviceContexts)
-			{
-				auto deviceContext = it.lock();
-				if (deviceContext)
-					deviceContext->downcast<GL20DeviceContext>()->enableDebugControl(enable);
-			}
-		}
-
-		void
 		GL20Device::copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept
 		{
 			assert(source);

@@ -64,7 +64,6 @@ namespace octoon
 
 			void present() noexcept override;
 
-			void enableDebugControl(bool enable) noexcept;
 			void startDebugControl() noexcept;
 			void stopDebugControl() noexcept;
 
@@ -109,8 +108,6 @@ namespace octoon
 			bool _needUpdatePipeline;
 			bool _needUpdateDescriptor;
 			bool _needUpdateVertexBuffers;
-			bool _needEnableDebugControl;
-			bool _needDisableDebugControl;
 
 			GraphicsDeviceWeakPtr _device;
 		};

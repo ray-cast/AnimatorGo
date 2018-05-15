@@ -62,7 +62,6 @@ namespace octoon
 			void drawIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept;
 			void drawIndexedIndirect(const GraphicsDataPtr& data, std::size_t offset, std::uint32_t drawCount, std::uint32_t stride) noexcept;
 
-			void enableDebugControl(bool enable) noexcept;
 			void startDebugControl() noexcept;
 			void stopDebugControl() noexcept;
 
@@ -99,8 +98,6 @@ namespace octoon
 			bool _needUpdatePipeline;
 			bool _needUpdateDescriptor;
 			bool _needUpdateVertexBuffers;
-			bool _needEnableDebugControl;
-			bool _needDisableDebugControl;
 
 			GLfloat _clearDepth;
 			GLint   _clearStencil;

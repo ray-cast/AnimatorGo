@@ -32,8 +32,6 @@ namespace octoon
 			, _needUpdatePipeline(false)
 			, _needUpdateDescriptor(false)
 			, _needUpdateVertexBuffers(false)
-			, _needEnableDebugControl(false)
-			, _needDisableDebugControl(false)
 		{
 			_stateDefault = std::make_shared<GL33GraphicsState>();
 			_stateDefault->setup(GraphicsStateDesc());
@@ -59,7 +57,7 @@ namespace octoon
 			if (!this->checkSupport())
 				return false;
 
-			if (GraphicsSystem::instance()->enableDebugControl())
+			if (this->getDevice()->getDeviceDesc().isEnabledDebugControl())
 				this->startDebugControl();
 
 			if (!this->initStateSystem())
@@ -834,21 +832,6 @@ namespace octoon
 			}
 
 			return true;
-		}
-
-		void
-		GL33DeviceContext::enableDebugControl(bool enable) noexcept
-		{
-			if (enable)
-			{
-				_needEnableDebugControl = true;
-				_needDisableDebugControl = false;
-			}
-			else
-			{
-				_needEnableDebugControl = false;
-				_needDisableDebugControl = true;
-			}
 		}
 
 		void

@@ -27,8 +27,6 @@ namespace octoon
 			, _needUpdatePipeline(false)
 			, _needUpdateDescriptor(false)
 			, _needUpdateVertexBuffers(false)
-			, _needEnableDebugControl(false)
-			, _needDisableDebugControl(false)
 		{
 			_stateDefault = std::make_shared<GL20GraphicsState>();
 			_stateDefault->setup(GraphicsStateDesc());
@@ -51,7 +49,7 @@ namespace octoon
 			if (!_glcontext->getActive())
 				return false;
 
-			if (GraphicsSystem::instance()->enableDebugControl())
+			if (this->getDevice()->getDeviceDesc().isEnabledDebugControl())
 				this->startDebugControl();
 
 			if (!this->initStateSystem())
@@ -78,18 +76,6 @@ namespace octoon
 		{
 			assert(_glcontext);
 			_glcontext->setActive(true);
-
-			if (_needEnableDebugControl)
-			{
-				this->startDebugControl();
-				_needEnableDebugControl = false;
-			}
-
-			if (_needDisableDebugControl)
-			{
-				this->stopDebugControl();
-				_needDisableDebugControl = false;
-			}
 		}
 
 		void
@@ -655,21 +641,6 @@ namespace octoon
 		{
 			assert(_glcontext);
 			_glcontext->present();
-		}
-
-		void
-		GL20DeviceContext::enableDebugControl(bool enable) noexcept
-		{
-			if (enable)
-			{
-				_needEnableDebugControl = true;
-				_needDisableDebugControl = false;
-			}
-			else
-			{
-				_needEnableDebugControl = false;
-				_needDisableDebugControl = true;
-			}
 		}
 
 		void

@@ -69,6 +69,7 @@ namespace octoon
 	{
 		graphics::GraphicsDeviceDesc deviceDesc;
 		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL20);
+		deviceDesc.setDebugControl(__DEBUG__ ? true : false);
 		device_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
 		if (!device_)
 			throw runtime::runtime_error::create("createDevice() failed");
@@ -90,8 +91,6 @@ namespace octoon
 		context_ = device_->createDeviceContext(contextDesc);
 		if (!context_)
 			throw runtime::runtime_error::create("createDeviceContext() failed");
-
-		graphics::GraphicsSystem::instance()->enableDebugControl(true);
 	}
 
 	void

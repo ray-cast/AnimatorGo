@@ -25,93 +25,19 @@ namespace octoon
 		OctoonImplementSingleton(GraphicsSystem)
 
 		GraphicsSystem::GraphicsSystem() noexcept
-			: _debugMode(false)
 		{
 		}
 
 		GraphicsSystem::~GraphicsSystem() noexcept
 		{
-			this->enableDebugControl(false);
-		}
-
-		bool
-		GraphicsSystem::open(bool debugControl) noexcept
-		{
-			_debugMode = debugControl;
-			return true;
+			this->close();
 		}
 
 		void
 		GraphicsSystem::close() noexcept
 		{
-			if (_debugMode)
-			{
-				this->enableDebugControl(false);
-				_debugMode = false;
-			}
-
 			for (auto& it : _devices)
-			{
 				it.reset();
-			}
-		}
-
-		void
-		GraphicsSystem::enableDebugControl(bool enable) noexcept
-		{
-			for (auto& it : _devices)
-			{
-				auto device = it.lock();
-				if (device)
-				{
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL20
-					if (device->isInstanceOf<GL20Device>())
-					{
-						device->downcast<GL20Device>()->enableDebugControl(enable);
-						return;
-					}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL30
-					if (device->isInstanceOf<GL30Device>())
-					{
-						device->downcast<GL30Device>()->enableDebugControl(enable);
-						return;
-					}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL32
-					if (device->isInstanceOf<GL32Device>())
-					{
-						device->downcast<GL32Device>()->enableDebugControl(enable);
-						return;
-			}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL33
-					if (device->isInstanceOf<GL33Device>())
-					{
-						device->downcast<GL33Device>()->enableDebugControl(enable);
-						return;
-					}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_VULKAN
-					if (device->isInstanceOf<VulkanDevice>())
-					{
-						if (enable)
-							VulkanSystem::instance()->startDebugControl();
-						else
-							VulkanSystem::instance()->stopDebugControl();
-						return;
-					}
-#endif
-				}
-			}
-
-			_debugMode = true;
-		}
-
-		bool
-		GraphicsSystem::enableDebugControl() const noexcept
-		{
-			return _debugMode;
 		}
 
 		GraphicsDevicePtr

@@ -8,11 +8,13 @@ namespace octoon
 
 		GraphicsDeviceDesc::GraphicsDeviceDesc() noexcept
 			: _deviceType(GraphicsDeviceType::OpenGL33)
+			, _enableDebug(false)
 		{
 		}
 
-		GraphicsDeviceDesc::GraphicsDeviceDesc(GraphicsDeviceType type) noexcept
+		GraphicsDeviceDesc::GraphicsDeviceDesc(GraphicsDeviceType type, bool enable) noexcept
 			: _deviceType(type)
+			, _enableDebug(enable)
 		{
 		}
 
@@ -31,5 +33,18 @@ namespace octoon
 		{
 			return _deviceType;
 		}
+
+		void
+		GraphicsDeviceDesc::setDebugControl(bool enable) noexcept
+		{
+			_enableDebug = enable;
+		}
+
+		bool
+		GraphicsDeviceDesc::isEnabledDebugControl() const noexcept
+		{
+			return _enableDebug;
+		}
+
 	}
 }

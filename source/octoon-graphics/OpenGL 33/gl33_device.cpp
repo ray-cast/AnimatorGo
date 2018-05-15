@@ -261,29 +261,6 @@ namespace octoon
 		}
 
 		void
-		GL33Device::enableDebugControl(bool enable) noexcept
-		{
-			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL33)
-			{
-				for (auto& it : _deviceContexts)
-				{
-					auto deviceContext = it.lock();
-					if (deviceContext)
-						deviceContext->downcast<GL33DeviceContext>()->enableDebugControl(enable);
-				}
-			}
-			else if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL45)
-			{
-				for (auto& it : _deviceContexts)
-				{
-					auto deviceContext = it.lock();
-					if (deviceContext)
-						deviceContext->downcast<GL45DeviceContext>()->enableDebugControl(enable);
-				}
-			}
-		}
-
-		void
 		GL33Device::copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept
 		{
 			assert(source);

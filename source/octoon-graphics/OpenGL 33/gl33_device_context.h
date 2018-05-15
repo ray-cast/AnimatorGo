@@ -64,7 +64,6 @@ namespace octoon
 
 			void present() noexcept;
 
-			void enableDebugControl(bool enable) noexcept;
 			void startDebugControl() noexcept;
 			void stopDebugControl() noexcept;
 

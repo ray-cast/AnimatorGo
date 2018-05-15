@@ -32,8 +32,6 @@ namespace octoon
 			GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept override;
 			GraphicsDescriptorPoolPtr createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept override;
 
-			void enableDebugControl(bool enable) noexcept;
-
 			void copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept;
 
 			const GraphicsDeviceProperty& getDeviceProperty() const noexcept;

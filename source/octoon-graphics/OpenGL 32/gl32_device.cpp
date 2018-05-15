@@ -190,17 +190,6 @@ namespace octoon
 		}
 
 		void
-		GL32Device::enableDebugControl(bool enable) noexcept
-		{
-			for (auto& it : _deviceContexts)
-			{
-				auto deviceContext = it.lock();
-				if (deviceContext)
-					deviceContext->downcast<GL32DeviceContext>()->enableDebugControl(enable);
-			}
-		}
-
-		void
 		GL32Device::copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept
 		{
 			assert(source);

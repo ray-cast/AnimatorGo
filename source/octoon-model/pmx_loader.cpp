@@ -723,7 +723,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(io::ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(ostream& stream, const Pmx& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1106,7 +1106,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(io::ostream& stream, const Model& model) noexcept
+		bool PmxLoader::doSave(ostream& stream, const Model& model) noexcept
 		{
 			return false;
 		}

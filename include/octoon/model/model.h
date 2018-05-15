@@ -1,9 +1,7 @@
 #ifndef OCTOON_MODEL_H_
 #define OCTOON_MODEL_H_
 
-#include <octoon/io/fstream.h>
-#include <octoon/model/modtypes.h>
-#include <octoon/model/loader.h>
+#include <octoon/model/model_loader.h>
 
 #include <string>
 
@@ -92,15 +90,15 @@ namespace octoon
 
 			void clear() noexcept;
 
-			bool load(io::fstream& file, const char* type = nullptr) noexcept;
-			bool save(io::fstream& file, const char* type = "pmx") noexcept;
+			bool load(istream& file, const char* type = nullptr) noexcept;
+			bool save(ostream& file, const char* type = "pmx") noexcept;
 
 			bool emptyLoader() const noexcept;
 			bool addLoader(MyLoader loader) noexcept;
 			bool removeLoader(MyLoader loader) noexcept;
 			bool find(const char* type, MyLoader& loader) const noexcept;
-			bool find(io::istream& file, MyLoader& loader) const noexcept;
-			bool find(io::istream& file, const char* type, MyLoader& loader) const noexcept;
+			bool find(istream& file, MyLoader& loader) const noexcept;
+			bool find(istream& file, const char* type, MyLoader& loader) const noexcept;
 
 		private:
 			Model& operator=(const Model&) noexcept = delete;

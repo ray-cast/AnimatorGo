@@ -1,8 +1,7 @@
 #ifndef OCTOON_LOADER_H_
 #define OCTOON_LOADER_H_
 
-#include <octoon/io/iostream.h>
-#include <octoon/model/moddef.h>
+#include <octoon/model/modtypes.h>
 
 #include <string>
 
@@ -10,19 +9,17 @@ namespace octoon
 {
 	namespace model
 	{
-		class Model;
-
 		class ModelLoader
 		{
 		public:
 			ModelLoader() = default;
 			virtual ~ModelLoader() noexcept = default;
 
-			virtual bool doCanLoad(io::istream& stream) noexcept = 0;
+			virtual bool doCanLoad(istream& stream) noexcept = 0;
 			virtual bool doCanLoad(const std::string& type) noexcept = 0;
 			virtual bool doCanLoad(const char* type) noexcept = 0;
-			virtual bool doLoad(io::istream& stream, Model& model) noexcept = 0;
-			virtual bool doSave(io::ostream& stream, const Model& model) noexcept = 0;
+			virtual bool doLoad(istream& stream, class Model& model) noexcept = 0;
+			virtual bool doSave(ostream& stream, const class Model& model) noexcept = 0;
 
 		private:
 			ModelLoader(const ModelLoader&) = delete;
@@ -30,5 +27,5 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_LOADER_H_
 
+#endif

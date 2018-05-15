@@ -232,7 +232,7 @@ namespace octoon
 		}
 
 		void
-		GL20Texture::setDevice(GraphicsDevicePtr device) noexcept
+		GL20Texture::setDevice(const GraphicsDevicePtr& device) noexcept
 		{
 			_device = device;
 		}

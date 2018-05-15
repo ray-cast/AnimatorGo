@@ -108,6 +108,8 @@ namespace octoon
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
 			auto program = device->createProgram(programDesc);
+			if (!program)
+				return false;
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
@@ -138,14 +140,12 @@ namespace octoon
 			pipeline.setGraphicsState(device->createRenderState(stateDesc));
 			pipeline.setGraphicsProgram(std::move(program));
 			pipeline.setGraphicsDescriptorSetLayout(device->createDescriptorSetLayout(descriptor_set_layout));
-
 			pipeline_ = device->createRenderPipeline(pipeline);
 			if (!pipeline_)
 				return false;
 
 			GraphicsDescriptorSetDesc descriptor_set;
 			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
-
 			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)
 				return false;
@@ -327,15 +327,13 @@ namespace octoon
 			io.Fonts->AddFontFromFileTTF(path, font_size, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-			GraphicsTextureDesc fontDesc;
-			fontDesc.setSize(width, height);
-			fontDesc.setTexDim(GraphicsTextureDim::Texture2D);
-			fontDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-			fontDesc.setStream(pixels);
-			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
-			fontDesc.setTexTiling(GraphicsImageTiling::Linear);
-
-			texture_ = device_->createTexture(fontDesc);
+			GraphicsTextureDesc textureDesc;
+			textureDesc.setSize(width, height);
+			textureDesc.setTexDim(GraphicsTextureDim::Texture2D);
+			textureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+			textureDesc.setStream(pixels);
+			textureDesc.setStreamSize(width * height * sizeof(std::uint32_t));
+			texture_ = device_->createTexture(textureDesc);
 			if (!texture_)
 				return false;
 

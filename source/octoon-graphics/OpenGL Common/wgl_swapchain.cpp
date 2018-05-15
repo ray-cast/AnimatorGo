@@ -357,53 +357,48 @@ namespace octoon
 		bool
 		WGLSwapchain::initSwapchain(const GraphicsSwapchainDesc& swapchainDesc) noexcept
 		{
-			if (!wglCreateContextAttribsARB)
-				_context = wglCreateContext(_hdc);
-			else
-			{
-				auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
+			auto deviceType = this->getDevice()->getDeviceDesc().getDeviceType();
 
-				int index = 0;
-				int mask = (deviceType == GraphicsDeviceType::OpenGL20) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-				int flags = 0;
+			int mask = (deviceType == GraphicsDeviceType::OpenGL20) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+			int flags = __DEBUG__ ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 
-#if __DEBUG__
-				flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
-#endif
-
-				int major = 0;
-				int minor = 0;
+			int major = 0;
+			int minor = 0;
 				
-				if (deviceType == GraphicsDeviceType::OpenGL45)
-				{
-					major = 4;
-					minor = 5;
-				}
-				else
-				{
-					major = 3;
-					minor = 3;
-				}
-
-				int attribs[40];
-				attribs[index++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
-				attribs[index++] = major;
-
-				attribs[index++] = WGL_CONTEXT_MINOR_VERSION_ARB;
-				attribs[index++] = minor;
-
-				attribs[index++] = WGL_CONTEXT_FLAGS_ARB;
-				attribs[index++] = flags;
-
-				attribs[index++] = WGL_CONTEXT_PROFILE_MASK_ARB;
-				attribs[index++] = mask;
-
-				attribs[index++] = 0;
-				attribs[index] = 0;
-
-				_context = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
+			switch (deviceType)
+			{
+			case octoon::graphics::GraphicsDeviceType::OpenGL20:
+				major = 2;
+				minor = 0;
+				break;
+			case octoon::graphics::GraphicsDeviceType::OpenGL30:
+				major = 3;
+				minor = 0;
+				break;
+			case octoon::graphics::GraphicsDeviceType::OpenGL32:
+				major = 3;
+				minor = 2;
+				break;
+			case octoon::graphics::GraphicsDeviceType::OpenGL33:
+				major = 3;
+				minor = 3;
+				break;
+			case octoon::graphics::GraphicsDeviceType::OpenGL45:
+				major = 4;
+				minor = 5;
+				break;
 			}
 
+			int attribs[] =
+			{
+				WGL_CONTEXT_MAJOR_VERSION_ARB, major,
+				WGL_CONTEXT_MINOR_VERSION_ARB, minor,
+				WGL_CONTEXT_FLAGS_ARB, flags,
+				WGL_CONTEXT_PROFILE_MASK_ARB, mask,
+				GL_NONE, GL_NONE
+			};
+
+			_context = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
 			if (!_context)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("wglCreateContextAttribs fail");

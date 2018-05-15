@@ -126,7 +126,7 @@ public:
 	void onFrame() noexcept override
 	{
 		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, 0.01f));
-		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, 0.0f));
+		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, 0.01f));
 	}
 
 	octoon::GameComponentPtr clone() const noexcept override

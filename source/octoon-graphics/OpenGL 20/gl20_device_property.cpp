@@ -156,10 +156,10 @@ namespace octoon
 				_deviceProperties.supportTextures.push_back(GraphicsFormat::S8UInt);
 			}
 
-			/*if (GL20Types::isSupportFeature(GL20Features::GL20_OES_packed_depth_stencil))
+			if (GL20Types::isSupportFeature(GL20Features::GL20_OES_packed_depth_stencil))
 			{
-			_deviceProperties.supportTextures.push_back(GraphicsFormat::D24UNorm_S8UInt);
-			}*/
+				_deviceProperties.supportTextures.push_back(GraphicsFormat::D24UNorm_S8UInt);
+			}
 
 			if (GL20Types::isSupportFeature(GL20Features::GL20_EXT_texture_compression_dxt1))
 			{

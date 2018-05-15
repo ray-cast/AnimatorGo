@@ -125,14 +125,8 @@ public:
 
 	void onFrame() noexcept override
 	{
-		static float angleX = 0.0;
-		static float angleY = 0.0;
-
-		angleX += 0.01f;
-		angleY += 0.01f;
-
-		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, angleX));
-		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, angleY));
+		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, 0.01f));
+		this->getComponent<octoon::Transform>()->setLocalQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, 0.0f));
 	}
 
 	octoon::GameComponentPtr clone() const noexcept override

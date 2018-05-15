@@ -22,7 +22,7 @@ namespace octoon
 		OGLDeviceProperty::setup(const GraphicsDeviceDesc& deviceDesc) noexcept
 		{
 			assert(_device.lock());
-
+			/*
 			CreateParam params;
 
 			try
@@ -41,7 +41,7 @@ namespace octoon
 			{
 				this->closeGLEnvironment(params);
 			}
-
+			*/
 			return true;
 		}
 
@@ -304,7 +304,7 @@ namespace octoon
 
 			XSetWindowAttributes swa;
 			swa.event_mask = ExposureMask | PointerMotionMask | KeyPressMask;
-			auto win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0, 0, 1, 1, 0, CopyFromParent, InputOutput, CopyFromParent, CWEventMask, &swa);
+			auto win = XCreateWindow(dpy, DefaultRootWindow(dpy), 0, 0, 400, 400, 0, CopyFromParent, InputOutput, CopyFromParent, CWEventMask, &swa);
 
 			EGLNativeWindowType hwnd = (EGLNativeWindowType)win;
 #endif

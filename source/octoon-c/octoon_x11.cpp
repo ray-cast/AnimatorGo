@@ -8,6 +8,7 @@
 
 #ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 #   include <emscripten.h>
+#   include <emscripten/html5.h>
 #   include <emscripten/bind.h>
 #endif
 
@@ -38,93 +39,48 @@ static bool windowShouldClose()
     return should_close_;
 }
 
-static void processEvent(XEvent *event)
+EM_BOOL onMouseButtonDown(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
 {
-    switch (event->type)
+    if (gameApp_)
     {
-        case KeyPress:
-        {
-            return;
-        }
+        gameApp_->doWindowMouseButtonDown(hwnd,
+        (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + mouseEvent->button),
+        mouseEvent->clientX,
+        mouseEvent->clientY);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
-        case KeyRelease:
-        {
-            return;
-        }
+EM_BOOL onMouseButtonUp(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowMouseButtonUp(hwnd,
+        (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + mouseEvent->button),
+        mouseEvent->clientX,
+        mouseEvent->clientY);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
-        case ButtonPress:
-        {
-            return;
-        }
-
-        case ButtonRelease:
-        {
-
-            return;
-        }
-
-        case EnterNotify:
-        {
-            return;
-        }
-
-        case LeaveNotify:
-        {
-            return;
-        }
-
-        case MotionNotify:
-        {
-            return;
-        }
-
-        case ConfigureNotify:
-        {
-            return;
-        }
-
-        case ClientMessage:
-        {
-            return;
-        }
-
-        case SelectionNotify:
-        {
-            return;
-        }
-
-        case FocusIn:
-        {
-            return;
-        }
-
-        case FocusOut:
-        {
-            return;
-        }
-
-        case Expose:
-        {
-            return;
-        }
-
-        case PropertyNotify:
-        {
-            return;
-        }
-
-        case SelectionClear:
-        {
-            return;
-        }
-
-        case SelectionRequest:
-        {
-            return;
-        }
-
-        case DestroyNotify:
-            return;
+EM_BOOL onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowMouseMotion(hwnd, mouseEvent->clientX, mouseEvent->clientY);
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -185,6 +141,11 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
        false,
        SubstructureNotifyMask,
        &xev );
+
+    // bind io
+    emscripten_set_mousedown_callback("#canvas", 0, false, onMouseButtonDown);
+    emscripten_set_mouseup_callback("#canvas", 0, false, onMouseButtonUp);
+    emscripten_set_mousemove_callback("#canvas", 0, false, onMouseMove);
 
     // build gameapp
     hwnd = (octoon::WindHandle)win;

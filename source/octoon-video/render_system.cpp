@@ -6,8 +6,6 @@
 
 #include <octoon/runtime/except.h>
 
-#include <iostream>
-
 using namespace octoon::graphics;
 
 namespace octoon

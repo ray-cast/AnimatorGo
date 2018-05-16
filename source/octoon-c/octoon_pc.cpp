@@ -422,10 +422,4 @@ void OCTOON_C_CALL OctoonTerminate() noexcept
 	OctoonCloseWindow();
 }
 
-void OCTOON_C_CALL OctoonMainLoop() noexcept
-{
-	while (!::OctoonIsQuitRequest())
-		::OctoonUpdate();
-}
-
 #endif

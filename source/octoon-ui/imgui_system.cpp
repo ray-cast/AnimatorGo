@@ -12,6 +12,7 @@ namespace octoon
 {
 	namespace imgui
 	{
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert =
 			"precision mediump float;\n"
 			"uniform mat4 proj;\n"
@@ -19,11 +20,11 @@ namespace octoon
 			"attribute vec4 COLOR0;\n"
 			"attribute vec4 TEXCOORD0;\n"
 			"varying vec4 oTexcoord0;\n"
-			"varying vec4 oTexcoord1;\n"
+			"varying vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
 			"oTexcoord0 = COLOR0;\n"
-			"oTexcoord1 = TEXCOORD0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
 			"gl_Position = proj * POSITION0;\n"
 			"}\n";
 
@@ -31,11 +32,38 @@ namespace octoon
 			"precision mediump float;\n"
 			"uniform sampler2D decal;\n"
 			"varying vec4 oTexcoord0;\n"
-			"varying vec4 oTexcoord1;\n"
+			"varying vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
-			"	gl_FragColor = texture2D(decal, oTexcoord1.rg) * oTexcoord0;\n"
+			"	gl_FragColor = texture2D(decal, oTexcoord1) * oTexcoord0;\n"
 			"}";
+#else
+		const char* vert =
+			"#version 330\n"
+			"uniform mat4 proj;\n"
+			"layout(location  = 0) in vec4 POSITION0;\n"
+			"layout(location  = 1) in vec4 COLOR0;\n"
+			"layout(location  = 2) in vec4 TEXCOORD0;\n"
+			"out vec4 oTexcoord0;\n"
+			"out vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"oTexcoord0 = COLOR0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
+			"gl_Position = proj * POSITION0;\n"
+			"}\n";
+
+		const char* frag =
+			"#version 330\n"
+			"uniform sampler2D decal;\n"
+			"layout(location  = 0) out vec4 oColor;\n"
+			"in vec4 oTexcoord0;\n"
+			"in vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"	oColor = texture(decal, oTexcoord1) * oTexcoord0;\n"
+			"}";
+#endif
 
 		System::System() noexcept
 			: initialize_(false)

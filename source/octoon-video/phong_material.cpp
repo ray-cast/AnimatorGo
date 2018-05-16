@@ -41,6 +41,7 @@ namespace octoon
 			uniform vec3 specularColor;
 			uniform vec3 darkColor;
 			uniform float shininess;
+			uniform float lightIntensity;
 
 			varying vec3 oTexcoord0;
 			varying vec3 oTexcoord1;
@@ -103,6 +104,7 @@ namespace octoon
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
 			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
+			lightIntensity_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightIntensity"; });
 			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
 			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
 			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
@@ -151,6 +153,12 @@ namespace octoon
 		}
 
 		void
+		PhongMaterial::setLightIntensity(math::float1 intensity) noexcept
+		{
+			lightIntensity_->uniform1f(intensity);
+		}
+
+		void
 		PhongMaterial::setBaseColor(const math::float3& color) noexcept
 		{
 			baseColor_->uniform3f(color);
@@ -184,6 +192,12 @@ namespace octoon
 		PhongMaterial::getLightDir() const noexcept
 		{
 			return lightDir_->getFloat3();
+		}
+
+		math::float1
+		PhongMaterial::getLightIntensity() const noexcept
+		{
+			return lightIntensity_->getFloat();
 		}
 
 		const math::float3&

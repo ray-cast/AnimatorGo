@@ -8,6 +8,7 @@
 
 #ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 #   include <emscripten.h>
+#   include <emscripten/bind.h>
 #endif
 
 #include <octoon/game_app.h>
@@ -26,6 +27,9 @@
 std::string gameScenePath_;
 // X11 related local variables
 static Display *x_display = NULL;
+// win hwnd
+octoon::WindHandle hwnd = 0;
+
 octoon::GameApp* gameApp_;
 bool should_close_ = false;
 
@@ -183,7 +187,7 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
        &xev );
 
     // build gameapp
-    octoon::WindHandle hwnd = (octoon::WindHandle)win;
+    hwnd = (octoon::WindHandle)win;
 
     gameApp_ = octoon::GameApp::instance();
     gameApp_->open(hwnd, w, h, w, h);
@@ -200,7 +204,6 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
     return true;
 }
-
 
 bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {

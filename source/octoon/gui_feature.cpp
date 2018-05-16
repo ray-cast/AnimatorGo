@@ -90,7 +90,7 @@ namespace octoon
 
 		if (!system_->open(window_, graphics->getDevice()))
 			throw runtime::runtime_error::create("GuiSystem::open() fail", runtime::error_code::none);
-#ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 		if (!system_->loadFont("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
 			throw runtime::runtime_error::create("GuiSystem::loadFont() fail", runtime::error_code::none);
 #else

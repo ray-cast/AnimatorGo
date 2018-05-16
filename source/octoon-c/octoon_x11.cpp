@@ -20,6 +20,7 @@
 #include <chrono>
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
 
 #ifdef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 #   include <emscripten.h>
@@ -33,6 +34,75 @@ octoon::WindHandle hwnd = 0;
 
 octoon::GameApp* gameApp_;
 bool should_close_ = false;
+
+octoon::input::InputKey::Code KeyCodetoInputKey(const char* key) noexcept
+{
+    if(strcmp(key, "Unidentified") == 0) return octoon::input::InputKey::Code::None;
+    else if (strcmp(key, "Backspace") == 0) return octoon::input::InputKey::Code::Space;
+    else if (strcmp(key, "Alt") == 0) return octoon::input::InputKey::Code::Space;
+    else if (strcmp(key, "F1") == 0) return octoon::input::InputKey::Code::F1;
+	else if (strcmp(key, "F2") == 0) return octoon::input::InputKey::Code::F2;
+	else if (strcmp(key, "F3") == 0) return octoon::input::InputKey::Code::F3;
+	else if (strcmp(key, "F4") == 0) return octoon::input::InputKey::Code::F4;
+	else if (strcmp(key, "F5") == 0) return octoon::input::InputKey::Code::F5;
+	else if (strcmp(key, "F6") == 0) return octoon::input::InputKey::Code::F6;
+	else if (strcmp(key, "F7") == 0) return octoon::input::InputKey::Code::F7;
+	else if (strcmp(key, "F8") == 0) return octoon::input::InputKey::Code::F8;
+	else if (strcmp(key, "F9") == 0) return octoon::input::InputKey::Code::F9;
+	else if (strcmp(key, "F10") == 0) return octoon::input::InputKey::Code::F10;
+	else if (strcmp(key, "F11") == 0) return octoon::input::InputKey::Code::F11;
+	else if (strcmp(key, "F12") == 0) return octoon::input::InputKey::Code::F12;
+	else if (strcmp(key, "F13") == 0) return octoon::input::InputKey::Code::F13;
+	else if (strcmp(key, "F14") == 0) return octoon::input::InputKey::Code::F14;
+	else if (strcmp(key, "F15") == 0) return octoon::input::InputKey::Code::F15;
+	else if (strcmp(key, "F16") == 0) return octoon::input::InputKey::Code::F16;
+	else if (strcmp(key, "F17") == 0) return octoon::input::InputKey::Code::F17;
+	else if (strcmp(key, "F18") == 0) return octoon::input::InputKey::Code::F18;
+	else if (strcmp(key, "F19") == 0) return octoon::input::InputKey::Code::F19;
+	else if (strcmp(key, "F20") == 0) return octoon::input::InputKey::Code::F20;
+	else if (strcmp(key, "F21") == 0) return octoon::input::InputKey::Code::F21;
+	else if (strcmp(key, "F22") == 0) return octoon::input::InputKey::Code::F22;
+	else if (strcmp(key, "F23") == 0) return octoon::input::InputKey::Code::F23;
+	else if (strcmp(key, "F24") == 0) return octoon::input::InputKey::Code::F24;
+	else if (strcmp(key, "F25") == 0) return octoon::input::InputKey::Code::F25;
+    else if (strcmp(key, "A") == 0) return octoon::input::InputKey::Code::A;
+	else if (strcmp(key, "B") == 0) return octoon::input::InputKey::Code::B;
+	else if (strcmp(key, "C") == 0) return octoon::input::InputKey::Code::C;
+	else if (strcmp(key, "D") == 0) return octoon::input::InputKey::Code::D;
+	else if (strcmp(key, "E") == 0) return octoon::input::InputKey::Code::E;
+	else if (strcmp(key, "F") == 0) return octoon::input::InputKey::Code::F;
+	else if (strcmp(key, "G") == 0) return octoon::input::InputKey::Code::G;
+	else if (strcmp(key, "H") == 0) return octoon::input::InputKey::Code::H;
+	else if (strcmp(key, "I") == 0) return octoon::input::InputKey::Code::I;
+	else if (strcmp(key, "J") == 0) return octoon::input::InputKey::Code::J;
+	else if (strcmp(key, "K") == 0) return octoon::input::InputKey::Code::K;
+	else if (strcmp(key, "L") == 0) return octoon::input::InputKey::Code::L;
+	else if (strcmp(key, "M") == 0) return octoon::input::InputKey::Code::M;
+	else if (strcmp(key, "N") == 0) return octoon::input::InputKey::Code::N;
+	else if (strcmp(key, "O") == 0) return octoon::input::InputKey::Code::O;
+	else if (strcmp(key, "P") == 0) return octoon::input::InputKey::Code::P;
+	else if (strcmp(key, "Q") == 0) return octoon::input::InputKey::Code::Q;
+	else if (strcmp(key, "R") == 0) return octoon::input::InputKey::Code::R;
+	else if (strcmp(key, "S") == 0) return octoon::input::InputKey::Code::S;
+	else if (strcmp(key, "T") == 0) return octoon::input::InputKey::Code::T;
+	else if (strcmp(key, "U") == 0) return octoon::input::InputKey::Code::U;
+	else if (strcmp(key, "V") == 0) return octoon::input::InputKey::Code::V;
+	else if (strcmp(key, "W") == 0) return octoon::input::InputKey::Code::W;
+	else if (strcmp(key, "X") == 0) return octoon::input::InputKey::Code::X;
+	else if (strcmp(key, "Y") == 0) return octoon::input::InputKey::Code::Y;
+	else if (strcmp(key, "Z") == 0) return octoon::input::InputKey::Code::Z;
+    else if (strcmp(key, "0") == 0) return octoon::input::InputKey::Code::Key0;
+	else if (strcmp(key, "1") == 0) return octoon::input::InputKey::Code::Key1;
+	else if (strcmp(key, "2") == 0) return octoon::input::InputKey::Code::Key2;
+	else if (strcmp(key, "3") == 0) return octoon::input::InputKey::Code::Key3;
+	else if (strcmp(key, "4") == 0) return octoon::input::InputKey::Code::Key4;
+	else if (strcmp(key, "5") == 0) return octoon::input::InputKey::Code::Key5;
+	else if (strcmp(key, "6") == 0) return octoon::input::InputKey::Code::Key6;
+	else if (strcmp(key, "7") == 0) return octoon::input::InputKey::Code::Key7;
+	else if (strcmp(key, "8") == 0) return octoon::input::InputKey::Code::Key8;
+	else if (strcmp(key, "9") == 0) return octoon::input::InputKey::Code::Key9;
+	else return octoon::input::InputKey::Code::None;
+}
 
 static bool windowShouldClose()
 {
@@ -76,6 +146,71 @@ EM_BOOL onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void 
     if (gameApp_)
     {
         gameApp_->doWindowMouseMotion(hwnd, mouseEvent->clientX, mouseEvent->clientY);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+EM_BOOL onWindowScrool(int eventType, const EmscriptenWheelEvent *wheelEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowScrool(hwnd, wheelEvent->deltaX, wheelEvent->deltaY);
+        return true;
+    }
+	else
+    {
+        return false;
+    }
+}
+
+EM_BOOL onWindowKeyDown(int eventType, const EmscriptenKeyboardEvent *keyEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowKeyDown(hwnd, KeyCodetoInputKey(keyEvent->key), std::atoi(keyEvent->code), 0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+EM_BOOL onWindowKeyUp(int eventType, const EmscriptenKeyboardEvent *keyEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowKeyUp(hwnd, KeyCodetoInputKey(keyEvent->key), std::atoi(keyEvent->code), 0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+EM_BOOL onWindowKeyPress(int eventType, const EmscriptenKeyboardEvent *keyEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowKeyPress(hwnd, KeyCodetoInputKey(keyEvent->key), std::atoi(keyEvent->code), 0);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+EM_BOOL onWindowResize(int eventType, const EmscriptenUiEvent *uiEvent, void *userData)
+{
+    if (gameApp_)
+    {
+        gameApp_->doWindowResize(hwnd, uiEvent->documentBodyClientWidth, uiEvent->documentBodyClientHeight);
         return true;
     }
     else
@@ -146,6 +281,14 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
     emscripten_set_mousedown_callback("#canvas", 0, false, onMouseButtonDown);
     emscripten_set_mouseup_callback("#canvas", 0, false, onMouseButtonUp);
     emscripten_set_mousemove_callback("#canvas", 0, false, onMouseMove);
+
+    emscripten_set_wheel_callback("#canvas", 0, false, onWindowScrool);
+
+    emscripten_set_keypress_callback("#canvas", 0, false, onWindowKeyPress);
+    emscripten_set_keydown_callback("#canvas", 0, false, onWindowKeyDown);
+    emscripten_set_keyup_callback("#canvas", 0, false, onWindowKeyUp);
+
+    emscripten_set_resize_callback("#canvas", 0, false, onWindowResize);
 
     // build gameapp
     hwnd = (octoon::WindHandle)win;

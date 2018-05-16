@@ -115,8 +115,8 @@ EM_BOOL onMouseButtonDown(int eventType, const EmscriptenMouseEvent *mouseEvent,
     {
         gameApp_->doWindowMouseButtonDown(hwnd,
         (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + mouseEvent->button),
-        mouseEvent->clientX,
-        mouseEvent->clientY);
+        mouseEvent->canvasX,
+        mouseEvent->canvasY);
         return true;
     }
     else
@@ -131,8 +131,8 @@ EM_BOOL onMouseButtonUp(int eventType, const EmscriptenMouseEvent *mouseEvent, v
     {
         gameApp_->doWindowMouseButtonUp(hwnd,
         (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + mouseEvent->button),
-        mouseEvent->clientX,
-        mouseEvent->clientY);
+        mouseEvent->canvasX,
+        mouseEvent->canvasY);
         return true;
     }
     else
@@ -145,7 +145,7 @@ EM_BOOL onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void 
 {
     if (gameApp_)
     {
-        gameApp_->doWindowMouseMotion(hwnd, mouseEvent->clientX, mouseEvent->clientY);
+        gameApp_->doWindowMouseMotion(hwnd, mouseEvent->canvasX, mouseEvent->canvasY);
         return true;
     }
     else

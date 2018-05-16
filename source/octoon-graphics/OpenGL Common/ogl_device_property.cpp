@@ -22,7 +22,7 @@ namespace octoon
 		OGLDeviceProperty::setup(const GraphicsDeviceDesc& deviceDesc) noexcept
 		{
 			assert(_device.lock());
-			/*
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 			CreateParam params;
 
 			try
@@ -41,7 +41,7 @@ namespace octoon
 			{
 				this->closeGLEnvironment(params);
 			}
-			*/
+#endif
 			return true;
 		}
 

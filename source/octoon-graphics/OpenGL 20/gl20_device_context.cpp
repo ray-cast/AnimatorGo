@@ -1,14 +1,14 @@
 #include "gl20_device_context.h"
-#include "gl20_device.h"
 #include "gl20_state.h"
 #include "gl20_shader.h"
 #include "gl20_texture.h"
+#include "gl20_framebuffer.h"
 #include "gl20_input_layout.h"
 #include "gl20_sampler.h"
-#include "gl20_framebuffer.h"
-#include "gl20_graphics_data.h"
-#include "gl20_pipeline.h"
 #include "gl20_descriptor_set.h"
+#include "gl20_pipeline.h"
+#include "gl20_graphics_data.h"
+#include "gl20_device.h"
 
 namespace octoon
 {
@@ -17,16 +17,22 @@ namespace octoon
 		OctoonImplementSubClass(GL20DeviceContext, GraphicsContext, "GL20DeviceContext")
 
 		GL20DeviceContext::GL20DeviceContext() noexcept
-			: _clearDepth(1.0)
+			: _clearColor(0.0f, 0.0f, 0.0f, 0.0f)
+			, _clearDepth(1.0f)
 			, _clearStencil(0)
-			, _clearColor(0.0, 0.0, 0.0, 0.0)
-			, _viewport(0, 0, 0, 0)
-			, _scissor(0, 0, 0, 0)
+			, _framebuffer(nullptr)
+			, _program(nullptr)
+			, _pipeline(nullptr)
+			, _descriptorSet(nullptr)
 			, _indexType(GL_UNSIGNED_INT)
 			, _indexOffset(0)
+			, _state(nullptr)
+			, _glcontext(nullptr)
 			, _needUpdatePipeline(false)
 			, _needUpdateDescriptor(false)
 			, _needUpdateVertexBuffers(false)
+			, _viewport(0, 0, 0, 0)
+			, _scissor(0, 0, 0, 0)
 		{
 			_stateDefault = std::make_shared<GL20GraphicsState>();
 			_stateDefault->setup(GraphicsStateDesc());
@@ -61,13 +67,13 @@ namespace octoon
 		void
 		GL20DeviceContext::close() noexcept
 		{
-			_framebuffer.reset();
-			_program.reset();
-			_pipeline.reset();
-			_descriptorSet.reset();
-			_state.reset();
+			_framebuffer = nullptr;
+			_program = nullptr;
+			_pipeline = nullptr;
+			_descriptorSet = nullptr;
+			_state = nullptr;
+			_glcontext = nullptr;
 			_indexBuffer.reset();
-			_glcontext.reset();
 			_vertexBuffers.clear();
 		}
 
@@ -141,7 +147,13 @@ namespace octoon
 				if (_stateCaptured.getStencilFrontReadMask() != mask)
 				{
 					GLenum frontfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
-					GL_CHECK(glStencilFuncSeparate(GL_FRONT, frontfunc, _stateCaptured.getStencilFrontRef(), mask));
+					if (frontfunc == GL_INVALID_ENUM)
+					{
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
+						return;
+					}
+
+					glStencilFuncSeparate(GL_FRONT, frontfunc, _stateCaptured.getStencilFrontRef(), mask);
 					_stateCaptured.setStencilFrontReadMask(mask);
 				}
 			}
@@ -150,7 +162,13 @@ namespace octoon
 				if (_stateCaptured.getStencilBackReadMask() != mask)
 				{
 					GLenum backfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
-					GL_CHECK(glStencilFuncSeparate(GL_BACK, backfunc, _stateCaptured.getStencilBackRef(), mask));
+					if (backfunc == GL_INVALID_ENUM)
+					{
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
+						return;
+					}
+
+					glStencilFuncSeparate(GL_BACK, backfunc, _stateCaptured.getStencilBackRef(), mask);
 					_stateCaptured.setStencilBackReadMask(mask);
 				}
 			}
@@ -175,7 +193,13 @@ namespace octoon
 				if (_stateCaptured.getStencilFrontRef() != reference)
 				{
 					GLenum frontfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilFrontFunc());
-					GL_CHECK(glStencilFuncSeparate(GL_FRONT, frontfunc, reference, _stateCaptured.getStencilFrontReadMask()));
+					if (frontfunc == GL_INVALID_ENUM)
+					{
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
+						return;
+					}
+
+					glStencilFuncSeparate(GL_FRONT, frontfunc, reference, _stateCaptured.getStencilFrontReadMask());
 					_stateCaptured.setStencilFrontRef(reference);
 				}
 			}
@@ -184,7 +208,13 @@ namespace octoon
 				if (_stateCaptured.getStencilBackRef() != reference)
 				{
 					GLenum backfunc = GL20Types::asCompareFunction(_stateCaptured.getStencilBackFunc());
-					GL_CHECK(glStencilFuncSeparate(GL_BACK, backfunc, reference, _stateCaptured.getStencilBackReadMask()));
+					if (backfunc == GL_INVALID_ENUM)
+					{
+						this->getDevice()->downcast<OGLDevice>()->message("Invalid compare function");
+						return;
+					}
+
+					glStencilFuncSeparate(GL_BACK, backfunc, reference, _stateCaptured.getStencilBackReadMask());
 					_stateCaptured.setStencilBackRef(reference);
 				}
 			}
@@ -335,6 +365,7 @@ namespace octoon
 		GraphicsDataPtr
 		GL20DeviceContext::getVertexBufferData(std::uint32_t i) const noexcept
 		{
+			assert(_vertexBuffers.size() > i);
 			return _vertexBuffers[i].vbo;
 		}
 
@@ -356,7 +387,7 @@ namespace octoon
 				}
 
 				_indexType = GL20Types::asIndexType(indexType);
-				_indexOffset = offset;
+				_indexOffset = (GLintptr)offset;
 
 				if (_indexType == GL_INVALID_ENUM) this->getDevice()->downcast<OGLDevice>()->message("Invalid index type");
 			}
@@ -555,7 +586,7 @@ namespace octoon
 			GLenum internalFormat = GL20Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
-				this->getDevice()->downcast<GL20Device>()->message("Invalid texture format");
+				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
 				return;
 			}
 
@@ -639,7 +670,7 @@ namespace octoon
 		void
 		GL20DeviceContext::present() noexcept
 		{
-			assert(_glcontext);
+			assert(_glcontext->getActive());
 			_glcontext->present();
 		}
 

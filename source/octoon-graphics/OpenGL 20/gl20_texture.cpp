@@ -40,6 +40,9 @@ namespace octoon
 
 			GL_CHECK(glBindTexture(target, _texture));
 
+			GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+			GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+
 			GLsizei width = (GLsizei)textureDesc.getWidth();
 			GLsizei height = (GLsizei)textureDesc.getHeight();
 

@@ -103,6 +103,7 @@ namespace octoon
 		{
 			if (_isMapping)
 			{
+				glBindBuffer(_target, _buffer);
 				glBufferSubData(_target, _mapOffset, _mapCount, _data.data() + _mapOffset);
 				_isMapping = false;
 			}

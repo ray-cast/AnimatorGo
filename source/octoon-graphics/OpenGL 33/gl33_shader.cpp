@@ -605,7 +605,7 @@ namespace octoon
 					if (it != name.rend())
 					{
 						semantic = name.substr(0, name.rend() - it);
-						semanticIndex = std::atoi(name.substr(name.rend() - it).c_str());
+						semanticIndex = std::stoi(name.substr(name.rend() - it));
 					}
 
 					std::size_t off = semantic.find_last_of('_');

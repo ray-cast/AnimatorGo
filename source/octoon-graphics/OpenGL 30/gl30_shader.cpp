@@ -487,6 +487,8 @@ namespace octoon
 
 					glGetActiveAttrib(_program, (GLuint)i, maxAttribute, GL_NONE, &size, &type, nameAttribute.get());
 					GLint location = glGetAttribLocation(_program, nameAttribute.get());
+					if (location == GL_INVALID_INDEX)
+						continue;
 
 					std::string name = nameAttribute.get();
 					std::string semantic;
@@ -496,7 +498,7 @@ namespace octoon
 					if (it != name.rend())
 					{
 						semantic = name.substr(0, name.rend() - it);
-						semanticIndex = std::atoi(name.substr(name.rend() - it).c_str());
+						semanticIndex = std::stoi(name.substr(name.rend() - it));
 					}
 
 					std::size_t off = semantic.find_last_of('_');

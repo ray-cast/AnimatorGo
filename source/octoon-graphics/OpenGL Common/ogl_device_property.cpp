@@ -289,8 +289,13 @@ namespace octoon
 			if (::eglInitialize(param.display, nullptr, nullptr) == EGL_FALSE)
 				throw runtime::runtime_error::create("eglInitialize() fail.");
 
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 			if (::eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE)
-				throw runtime::runtime_error::create("eglBindAPI() fail.");
+				throw runtime::runtime_error::create("eglBindAPI(EGL_OPENGL_ES_API) fail.");
+#else
+			if (::eglBindAPI(EGL_OPENGL_API) == EGL_FALSE)
+				throw runtime::runtime_error::create("eglBindAPI(EGL_OPENGL_API) fail.");
+#endif
 
 			EGLint num = 0;
 			EGLConfig config = 0;

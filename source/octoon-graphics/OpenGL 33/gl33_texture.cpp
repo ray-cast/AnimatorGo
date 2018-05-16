@@ -59,6 +59,9 @@ namespace octoon
 
 			if (target != GL_TEXTURE_2D_MULTISAMPLE && target != GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 			{
+				GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+				GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+
 				if (!applyMipmapLimit(target, mipBase, mipLevel))
 					return false;
 			}

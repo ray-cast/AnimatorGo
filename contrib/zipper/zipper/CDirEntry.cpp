@@ -197,7 +197,7 @@ bool CDirEntry::createDir(const std::string & dir,
   if (!actualParent.empty() && (!exist(actualParent)))
     createDir(actualParent);
 
-#ifdef WIN32
+#ifdef _WIN32
   return (mkdir(Dir.c_str()) == 0);
 #else
   return (mkdir(Dir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0);

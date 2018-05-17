@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace math
 	{
-		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Vector3<T> HammersleySampleCos(const detail::Vector2<T>& Xi)
 		{
 			T phi = 2 * PI * Xi.x;
@@ -24,7 +24,7 @@ namespace octoon
 			return H;
 		}
 
-		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Vector3<T> HammersleySampleGGX(const detail::Vector2<T>& Xi, T roughness)
 		{
 			T m = roughness * roughness;
@@ -34,7 +34,7 @@ namespace octoon
 			return HammersleySampleCos<T>(const detail::Vector2<T>(Xi.x, u));
 		}
 
-		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Vector3<T> TangentToWorld(const detail::Vector3<T>& N, const detail::Vector3<T>& H)
 		{
 			detail::Vector3<T> Y = std::abs(N.z) < 0.999 ? detail::Vector3<T>::UnitZ : detail::Vector3<T>::UnitX;

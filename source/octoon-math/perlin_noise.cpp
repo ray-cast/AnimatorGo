@@ -220,7 +220,7 @@ namespace octoon
 		void simplex_seed(unsigned int x)
 		{
 			srand(x);
-			for (unsigned char i = 0; i < 256; i++)
+			for (unsigned char i = 0; i <= 255; i++)
 			{
 				PERM[i] = i;
 			}

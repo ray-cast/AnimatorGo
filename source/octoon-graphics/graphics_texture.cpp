@@ -14,10 +14,6 @@ namespace octoon
 			, _mipLevel(1)
 			, _format(GraphicsFormat::Undefined)
 			, _dim(GraphicsTextureDim::Texture2D)
-			, _filterMin(GraphicsSamplerFilter::Linear)
-			, _filterMag(GraphicsSamplerFilter::Linear)
-			, _wrap(GraphicsSamplerWrap::Repeat)
-			, _anis(GraphicsSamplerAnis::Anis0)
 			, _textureUsage(GraphicsViewUsageFlagBits::SampledBit)
 			, _tiling(GraphicsImageTiling::Optimal)
 			, _data(nullptr)
@@ -132,61 +128,6 @@ namespace octoon
 		GraphicsTextureDesc::getTexMultisample() const noexcept
 		{
 			return _samples;
-		}
-
-		void
-		GraphicsTextureDesc::setSamplerWrap(GraphicsSamplerWrap wrap) noexcept
-		{
-			_wrap = wrap;
-		}
-
-		void
-		GraphicsTextureDesc::setSamplerMinFilter(GraphicsSamplerFilter filter) noexcept
-		{
-			_filterMin = filter;
-		}
-
-		void
-		GraphicsTextureDesc::setSamplerMagFilter(GraphicsSamplerFilter filter) noexcept
-		{
-			_filterMag = filter;
-		}
-
-		void
-		GraphicsTextureDesc::setSamplerFilter(GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept
-		{
-			_filterMin = minFilter;
-			_filterMag = magFilter;
-		}
-
-		void
-		GraphicsTextureDesc::setSamplerAnis(GraphicsSamplerAnis anis) noexcept
-		{
-			_anis = anis;
-		}
-
-		GraphicsSamplerWrap
-		GraphicsTextureDesc::getSamplerWrap() const noexcept
-		{
-			return _wrap;
-		}
-
-		GraphicsSamplerFilter
-		GraphicsTextureDesc::getSamplerMinFilter() const noexcept
-		{
-			return _filterMin;
-		}
-
-		GraphicsSamplerFilter
-		GraphicsTextureDesc::getSamplerMagFilter() const noexcept
-		{
-			return _filterMag;
-		}
-
-		GraphicsSamplerAnis
-		GraphicsTextureDesc::getSamplerAnis() const noexcept
-		{
-			return _anis;
 		}
 
 		void

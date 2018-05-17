@@ -12,6 +12,32 @@ namespace octoon
 {
 	namespace imgui
 	{
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
+		const char* vert =
+			"precision mediump float;\n"
+			"uniform mat4 proj;\n"
+			"attribute vec4 POSITION0;\n"
+			"attribute vec4 COLOR0;\n"
+			"attribute vec4 TEXCOORD0;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"oTexcoord0 = COLOR0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
+			"gl_Position = proj * POSITION0;\n"
+			"}\n";
+
+		const char* frag =
+			"precision mediump float;\n"
+			"uniform sampler2D decal;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_FragColor = texture2D(decal, oTexcoord1) * oTexcoord0;\n"
+			"}";
+#else
 		const char* vert =
 			"#version 330\n"
 			"uniform mat4 proj;\n"
@@ -19,11 +45,11 @@ namespace octoon
 			"layout(location  = 1) in vec4 COLOR0;\n"
 			"layout(location  = 2) in vec4 TEXCOORD0;\n"
 			"out vec4 oTexcoord0;\n"
-			"out vec4 oTexcoord1;\n"
+			"out vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
 			"oTexcoord0 = COLOR0;\n"
-			"oTexcoord1 = TEXCOORD0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
 			"gl_Position = proj * POSITION0;\n"
 			"}\n";
 
@@ -32,11 +58,12 @@ namespace octoon
 			"uniform sampler2D decal;\n"
 			"layout(location  = 0) out vec4 oColor;\n"
 			"in vec4 oTexcoord0;\n"
-			"in vec4 oTexcoord1;\n"
+			"in vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
-			"	oColor = texture(decal, oTexcoord1.rg) * oTexcoord0;\n"
+			"	oColor = texture(decal, oTexcoord1) * oTexcoord0;\n"
 			"}";
+#endif
 
 		System::System() noexcept
 			: initialize_(false)
@@ -109,6 +136,8 @@ namespace octoon
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
 			auto program = device->createProgram(programDesc);
+			if (!program)
+				return false;
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
@@ -139,14 +168,12 @@ namespace octoon
 			pipeline.setGraphicsState(device->createRenderState(stateDesc));
 			pipeline.setGraphicsProgram(std::move(program));
 			pipeline.setGraphicsDescriptorSetLayout(device->createDescriptorSetLayout(descriptor_set_layout));
-
 			pipeline_ = device->createRenderPipeline(pipeline);
 			if (!pipeline_)
 				return false;
 
 			GraphicsDescriptorSetDesc descriptor_set;
-			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
-
+			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)
 				return false;
@@ -328,17 +355,13 @@ namespace octoon
 			io.Fonts->AddFontFromFileTTF(path, font_size, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-			GraphicsTextureDesc fontDesc;
-			fontDesc.setSize(width, height);
-			fontDesc.setTexDim(GraphicsTextureDim::Texture2D);
-			fontDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-			fontDesc.setStream(pixels);
-			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
-			fontDesc.setTexTiling(GraphicsImageTiling::Linear);
-			fontDesc.setSamplerFilter(GraphicsSamplerFilter::LinearMipmapLinear, GraphicsSamplerFilter::Linear);
-			fontDesc.setSamplerWrap(GraphicsSamplerWrap::ClampToEdge);
-
-			texture_ = device_->createTexture(fontDesc);
+			GraphicsTextureDesc textureDesc;
+			textureDesc.setSize(width, height);
+			textureDesc.setTexDim(GraphicsTextureDim::Texture2D);
+			textureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+			textureDesc.setStream(pixels);
+			textureDesc.setStreamSize(width * height * sizeof(std::uint32_t));
+			texture_ = device_->createTexture(textureDesc);
 			if (!texture_)
 				return false;
 

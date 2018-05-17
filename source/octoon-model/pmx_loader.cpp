@@ -22,9 +22,9 @@ namespace octoon
 			PmxHeader header;
 			if (stream.read((char*)&header, sizeof(header)))
 			{
-				if (header.magic[0] == 'p' || header.magic[0] == 'P' &&
-					header.magic[1] == 'm' || header.magic[1] == 'M' &&
-					header.magic[2] == 'x' || header.magic[2] == 'X')
+				if ((header.magic[0] == 'p' || header.magic[0] == 'P') &&
+					(header.magic[1] == 'm' || header.magic[1] == 'M') &&
+					(header.magic[2] == 'x' || header.magic[2] == 'X'))
 				{
 					if (header.version == 2.0)
 					{
@@ -723,7 +723,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(io::ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(ostream& stream, const Pmx& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1106,7 +1106,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(io::ostream& stream, const Model& model) noexcept
+		bool PmxLoader::doSave(ostream& stream, const Model& model) noexcept
 		{
 			return false;
 		}

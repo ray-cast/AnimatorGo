@@ -1,4 +1,4 @@
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 int main(int argc, const char* argv[])
 {
@@ -7,8 +7,7 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

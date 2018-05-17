@@ -1,14 +1,5 @@
 #include <octoon/octoon.h>
-
-#include <octoon/game_object.h>
-#include <octoon/video/text_material.h>
-#include <octoon/camera_component.h>
-#include <octoon/model/text_meshing.h>
-#include <octoon/mesh_renderer_component.h>
-#include <octoon/transform_component.h>
-#include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera_component.h>
-#include <octoon/ui/imgui.h>
+#include <octoon/octoon-c.h>
 
 class TextController : public octoon::GameComponent
 {
@@ -83,7 +74,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept
+	octoon::GameComponentPtr clone() const noexcept override
 	{
 		return std::make_shared<TextController>();
 	}
@@ -91,6 +82,8 @@ public:
 private:
 	octoon::video::TextMaterialPtr material_;
 };
+
+#include <iostream>
 
 int main(int argc, const char* argv[])
 {
@@ -119,8 +112,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

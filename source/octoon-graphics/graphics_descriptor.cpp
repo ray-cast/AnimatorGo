@@ -144,7 +144,7 @@ namespace octoon
 		}
 
 		GraphicsDescriptorSetLayoutPtr
-		GraphicsDescriptorSetDesc::getGraphicsDescriptorSetLayout() const noexcept
+		GraphicsDescriptorSetDesc::getDescriptorSetLayout() const noexcept
 		{
 			return _layout;
 		}

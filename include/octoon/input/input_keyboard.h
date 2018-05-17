@@ -18,7 +18,7 @@ namespace octoon
 			virtual bool isKeyUp(InputKey::Code key) const noexcept override;
 			virtual bool isKeyPressed(InputKey::Code key) const noexcept override;
 
-			virtual IInputKeyboardPtr clone() const noexcept;
+			virtual IInputKeyboardPtr clone() const noexcept override;
 
 		protected:
 			virtual void onFrameEnd() noexcept override;

@@ -993,7 +993,10 @@ namespace octoon
 			if (hasIndices)  this->_indices.resize(maxIndices);
 
 			for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
-				if (hasTexcoord) this->_texcoords[i].resize(maxVertices);
+			{
+				if (hasTexcoord[i])
+					this->_texcoords[i].resize(maxVertices);
+			}
 
 			std::size_t offsetVertices = 0;
 			std::size_t offsetIndices = 0;

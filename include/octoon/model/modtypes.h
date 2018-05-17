@@ -5,6 +5,8 @@
 #include <vector>
 
 #include <octoon/math/mathfwd.h>
+#include <octoon/runtime/platform.h>
+#include <octoon/io/iostream.h>
 
 #define MATKEY_NAME               "?mat.name",0,0
 #define MATKEY_TWOSIDED           "$mat.twosided",0,0
@@ -111,6 +113,9 @@ namespace octoon
 			PropertyTypeInfoInt = 0x04,
 			PropertyTypeInfoBuffer = 0x08,
 		};
+
+		using istream = io::istream;
+		using ostream = io::ostream;
 	}
 }
 

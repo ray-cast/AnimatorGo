@@ -1,16 +1,5 @@
 #include <octoon/octoon.h>
-
-#include <octoon/game_app.h>
-#include <octoon/game_object.h>
-#include <octoon/video/line_material.h>
-#include <octoon/camera_component.h>
-#include <octoon/model/text_meshing.h>
-#include <octoon/mesh_renderer_component.h>
-#include <octoon/transform_component.h>
-#include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera_component.h>
-#include <octoon/ui/imgui.h>
-#include <octoon/input_feature.h>
+#include <octoon/octoon-c.h>
 
 class PainterController : public octoon::GameComponent
 {
@@ -62,7 +51,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept
+	octoon::GameComponentPtr clone() const noexcept override
 	{
 		return std::make_shared<PainterController>();
 	}
@@ -89,8 +78,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 		camera->addComponent<PainterController>();
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

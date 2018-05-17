@@ -66,7 +66,7 @@ namespace octoon
 			~GraphicsDescriptorSetDesc() noexcept;
 
 			void setGraphicsDescriptorSetLayout(GraphicsDescriptorSetLayoutPtr layout) noexcept;
-			GraphicsDescriptorSetLayoutPtr getGraphicsDescriptorSetLayout() const noexcept;
+			GraphicsDescriptorSetLayoutPtr getDescriptorSetLayout() const noexcept;
 
 			void setGraphicsDescriptorPool(GraphicsDescriptorPoolPtr pool) noexcept;
 			GraphicsDescriptorPoolPtr getGraphicsDescriptorPool() const noexcept;

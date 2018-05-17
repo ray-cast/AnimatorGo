@@ -33,21 +33,10 @@ namespace octoon
 			void setTexUsage(GraphicsViewUsageFlags flags) noexcept;
 			void setTexMultisample(std::uint32_t samples) noexcept;
 
-			void setSamplerWrap(GraphicsSamplerWrap wrap) noexcept;
-			void setSamplerMinFilter(GraphicsSamplerFilter filter) noexcept;
-			void setSamplerMagFilter(GraphicsSamplerFilter filter) noexcept;
-			void setSamplerFilter(GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept;
-			void setSamplerAnis(GraphicsSamplerAnis anis) noexcept;
-
 			GraphicsFormat getTexFormat()  const noexcept;
 			GraphicsTextureDim getTexDim() const noexcept;
 			GraphicsImageTiling getTexTiling() const noexcept;
 			GraphicsViewUsageFlags getTexUsage() const noexcept;
-
-			GraphicsSamplerWrap getSamplerWrap() const noexcept;
-			GraphicsSamplerFilter getSamplerMinFilter() const noexcept;
-			GraphicsSamplerFilter getSamplerMagFilter() const noexcept;
-			GraphicsSamplerAnis getSamplerAnis() const noexcept;
 
 			std::uint32_t getWidth() const noexcept;
 			std::uint32_t getHeight() const noexcept;
@@ -79,10 +68,6 @@ namespace octoon
 
 			GraphicsFormat _format;
 			GraphicsTextureDim _dim;
-			GraphicsSamplerFilter _filterMin;
-			GraphicsSamplerFilter _filterMag;
-			GraphicsSamplerWrap _wrap;
-			GraphicsSamplerAnis _anis;
 			GraphicsImageTiling _tiling;
 			GraphicsViewUsageFlags _textureUsage;
 

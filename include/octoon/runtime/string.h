@@ -131,13 +131,6 @@ namespace octoon
 			OCTOON_EXPORT bool skipSpacesAndLineEnd(const char** inout);
 			OCTOON_EXPORT bool skipSpacesAndLineEnd(const wchar_t** inout);
 
-			OCTOON_EXPORT void skipToken(const char*& in);
-			OCTOON_EXPORT bool getNextLine(const char*& buffer, char out[4096]);
-			OCTOON_EXPORT bool tokenMatch(char*& in, const char* token, std::size_t len);
-			OCTOON_EXPORT bool tokenMatchI(const char*& in, const char* token, std::size_t len);
-			OCTOON_EXPORT std::string getNextToken(const char*& in);
-			OCTOON_EXPORT std::wstring getNextToken(const wchar_t*& in);
-
 			OCTOON_EXPORT std::string directory(const std::string& path);
 			OCTOON_EXPORT std::wstring directory(const std::wstring& path);
 

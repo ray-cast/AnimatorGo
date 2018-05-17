@@ -26,7 +26,7 @@
 
 /* Khronos platform-specific types and definitions.
  *
- * $Revision: 23298 $ on $Date: 2013-09-30 17:07:13 -0700 (Mon, 30 Sep 2013) $
+ * $Revision: 9356 $ on $Date: 2009-10-21 02:52:25 -0700 (Wed, 21 Oct 2009) $
  *
  * Adopters may modify this file to suit their platform. Adopters are
  * encouraged to submit platform specific modifications to the Khronos
@@ -98,15 +98,19 @@
  * This precedes the return type of the function in the function prototype.
  */
 #if defined(_WIN32) && !defined(__SCITECH_SNAP__)
-#   if defined (_DLL_EXPORTS)
-#       define KHRONOS_APICALL __declspec(dllexport)
+#   if defined(KHRONOS_DLL_EXPORTS)
+#      define KHRONOS_APICALL __declspec(dllexport)
 #   else
-#       define KHRONOS_APICALL __declspec(dllimport)
+#      define KHRONOS_APICALL __declspec(dllimport)
 #   endif
 #elif defined (__SYMBIAN32__)
 #   define KHRONOS_APICALL IMPORT_C
+#elif (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__) >= 303) \
+	|| (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590))
+/* KHRONOS_APIATTRIBUTES is not used by the client API headers yet */
+#  define KHRONOS_APICALL __attribute__((visibility("default")))
 #else
-#   define KHRONOS_APICALL __attribute__ ((visibility ("default")))
+#   define KHRONOS_APICALL
 #endif
 
 /*-------------------------------------------------------------------------
@@ -225,26 +229,10 @@ typedef signed   char          khronos_int8_t;
 typedef unsigned char          khronos_uint8_t;
 typedef signed   short int     khronos_int16_t;
 typedef unsigned short int     khronos_uint16_t;
-
-/*
- * Types that differ between LLP64 and LP64 architectures - in LLP64, 
- * pointers are 64 bits, but 'long' is still 32 bits. Win64 appears
- * to be the only LLP64 architecture in current use.
- */
-#ifdef _WIN64
-typedef unsigned long long int khronos_uintptr_t;
-typedef unsigned long long int khronos_usize_t;
-#else
+typedef signed   long  int     khronos_intptr_t;
 typedef unsigned long  int     khronos_uintptr_t;
+typedef signed   long  int     khronos_ssize_t;
 typedef unsigned long  int     khronos_usize_t;
-#endif
-
-/*
- * Modified to be in line with GL/glcorearb.h
- */
-#include <stddef.h>
-typedef ptrdiff_t              khronos_intptr_t;
-typedef ptrdiff_t              khronos_ssize_t;
 
 #if KHRONOS_SUPPORT_FLOAT
 /*

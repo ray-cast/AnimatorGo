@@ -13,7 +13,7 @@ namespace octoon
 		GuizmoComponent() noexcept;
 		GuizmoComponent(const GameObjectPtr& camera) noexcept;
 
-		octoon::GameComponentPtr clone() const noexcept;
+		octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onActivate() noexcept override;

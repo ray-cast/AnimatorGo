@@ -1,4 +1,6 @@
+#include <octoon/model/model.h>
 #include <octoon/model/modall.h>
+#include <octoon/model/pmx_loader.h>
 
 namespace octoon
 {

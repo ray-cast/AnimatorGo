@@ -128,6 +128,12 @@ namespace octoon
 			struct has_right_shift<T, void> : _Has_right_shift<T, void>::type_t
 			{
 			};
+
+			template<class _Ty> constexpr bool is_empty_v = std::is_empty<_Ty>::value;
+			template<class _Ty> constexpr bool is_integral_v = std::is_integral<_Ty>::value;
+			template<class _Ty> constexpr bool is_floating_point_v = std::is_floating_point<_Ty>::value;
+
+			template<class _Tx, class _Ty> constexpr bool is_same_v = std::is_same<_Tx, _Ty>::value;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #include <octoon/io/http_buf.h>
 #include <curl/curl.h>
 #include <iostream>
+#include <cstring>
 
 namespace octoon
 {
@@ -14,7 +15,7 @@ namespace octoon
 
 			auto index = mem->size();
 			mem->memory_.resize(mem->size() + realsize);
-			memcpy(&mem->memory_[index], contents, realsize);
+			std::memcpy(&mem->memory_[index], contents, realsize);
 			
 			return realsize;
 		}

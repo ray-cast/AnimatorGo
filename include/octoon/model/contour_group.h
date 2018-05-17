@@ -28,8 +28,6 @@ namespace octoon
 
 			std::size_t count() const noexcept;
 
-			void normalize(math::float3& center) noexcept;
-
 			ContourGroupPtr clone() const noexcept;
 
 		public:
@@ -53,9 +51,9 @@ namespace octoon
 			Contours contours_;
 		};
 
-		OCTOON_EXPORT Mesh makeMesh(const Contours& contours, float thickness = 1.0f) noexcept;
-		OCTOON_EXPORT Mesh makeMesh(const ContourGroup& group, float thickness = 1.0f) noexcept;
-		OCTOON_EXPORT Mesh makeMesh(const ContourGroups& groups, float thickness = 1.0f) noexcept;
+		OCTOON_EXPORT Mesh makeMesh(const Contours& contours, float thickness = 1.0f, bool hollow = false) noexcept;
+		OCTOON_EXPORT Mesh makeMesh(const ContourGroup& group, float thickness = 1.0f, bool hollow = false) noexcept;
+		OCTOON_EXPORT Mesh makeMesh(const ContourGroups& groups, float thickness = 1.0f, bool hollow = false) noexcept;
 
 		OCTOON_EXPORT Mesh makeMeshWireframe(const Contours& contours, float thickness = 1.0f) noexcept;
 		OCTOON_EXPORT Mesh makeMeshWireframe(const ContourGroup& group, float thickness = 1.0f) noexcept;

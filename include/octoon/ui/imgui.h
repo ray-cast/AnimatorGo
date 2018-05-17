@@ -2,6 +2,7 @@
 #define OCTOON_IMGUI_H_
 
 #include <octoon/math/math.h>
+#include <octoon/runtime/platform.h>
 
 namespace octoon
 {

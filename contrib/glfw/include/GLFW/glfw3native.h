@@ -95,7 +95,7 @@ extern "C" {
  #endif
 #elif defined(GLFW_EXPOSE_NATIVE_X11)
  #include <X11/Xlib.h>
- #include <X11/extensions/Xrandr.h>
+ //#include <X11/extensions/Xrandr.h>
 #elif defined(GLFW_EXPOSE_NATIVE_WAYLAND)
  #include <wayland-client.h>
 #elif defined(GLFW_EXPOSE_NATIVE_MIR)
@@ -255,7 +255,7 @@ GLFWAPI Display* glfwGetX11Display(void);
  *
  *  @ingroup native
  */
-GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
+//GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
 
 /*! @brief Returns the `RROutput` of the specified monitor.
  *
@@ -269,7 +269,7 @@ GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
  *
  *  @ingroup native
  */
-GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);
+//GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);
 
 /*! @brief Returns the `Window` of the specified window.
  *

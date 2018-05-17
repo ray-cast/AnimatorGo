@@ -21,25 +21,26 @@ namespace octoon
 		void
 		LineMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
 			void main()
 			{
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-			in vec3 oTexcoord0;
+			const char* frag = R"(
+			precision mediump float;
+			varying vec3 oTexcoord0;
 			uniform vec3 color;
 			void main()
 			{
-				fragColor = vec4(color, 1.0f);
+				gl_FragColor = vec4(color, 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -72,7 +73,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;

@@ -4,8 +4,9 @@
 #include <cmath>
 #include <cfloat>
 #include <cstdint>
+#include <cassert>
 #include <algorithm>
-#include <octoon/runtime/platform.h>
+#include <octoon/math/trait.h>
 
 namespace octoon
 {
@@ -141,7 +142,7 @@ namespace octoon
 			return smoothlerp(z, z1, z2, r0, r1);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr bool equal(T a, T b, T epsilon = EPSILON) noexcept
 		{
 			return (a + epsilon) > b && (a - epsilon) < b;
@@ -159,14 +160,14 @@ namespace octoon
 			return (x * 180.0f / math::PI);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr void sinCos(T* returnSin, T* returnCos, T theta) noexcept
 		{
 			*returnSin = std::sin(theta);
 			*returnCos = std::cos(theta);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T modf(T x, T* y) noexcept
 		{
 			T d;
@@ -175,28 +176,28 @@ namespace octoon
 			return f;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T frac(T v) noexcept
 		{
 			T intPart;
 			return std::modf(v, &intPart);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T fract(T v) noexcept
 		{
 			T intPart;
 			return std::modf(v, &intPart);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T fraction(T v) noexcept
 		{
 			T intPart;
 			return std::modf(v, &intPart);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T safe_acos(T x) noexcept
 		{
 			if (x <= -1.0f) { return math::PI; }
@@ -204,13 +205,13 @@ namespace octoon
 			return std::acos(x);
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T snorm2unorm(T x) noexcept
 		{
 			return x * 0.5f + 0.5f;
 		}
 
-		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T unorm2snorm(T x) noexcept
 		{
 			return x * 2.0f - 1.0f;
@@ -393,7 +394,7 @@ namespace octoon
 			return std::ldexp(m, e);
 		}
 
-		constexpr float fast_rsqrt(float x) noexcept
+		inline float fast_rsqrt(float x) noexcept
 		{
 			float xhalf = 0.5f*x;
 			int i = *(int*)&x;
@@ -404,7 +405,7 @@ namespace octoon
 			return x;
 		}
 
-		constexpr double fast_rsqrt(double y) noexcept
+		inline double fast_rsqrt(double y) noexcept
 		{
 			const double threehalfs = 1.5F;
 			double x2 = y * 0.5F;
@@ -440,34 +441,34 @@ namespace octoon
 			return (std::uint16_t)(f * 65535);
 		}
 
-		constexpr float fpFromIEEE(std::uint32_t raw) noexcept
+		inline float fpFromIEEE(std::uint32_t raw) noexcept
 		{
 			return *reinterpret_cast<float*>(&raw);
 		}
 
-		constexpr std::uint32_t fpToIEEE(float fp) noexcept
+		inline std::uint32_t fpToIEEE(float fp) noexcept
 		{
 			return *reinterpret_cast<std::uint32_t*>(&fp);
 		}
 
-		constexpr double fpFromIEEE(std::uint64_t raw) noexcept
+		inline double fpFromIEEE(std::uint64_t raw) noexcept
 		{
 			return *reinterpret_cast<double*>(&raw);
 		}
 
-		constexpr std::uint64_t fpToIEEE(double fp) noexcept
+		inline std::uint64_t fpToIEEE(double fp) noexcept
 		{
 			return *reinterpret_cast<std::uint64_t*>(&fp);
 		}
 
-		OCTOON_EXPORT void randomize() noexcept;
-		OCTOON_EXPORT void randomize(unsigned int) noexcept;
-		OCTOON_EXPORT int random(int min, int max) noexcept;
-		OCTOON_EXPORT float random(float min, float max) noexcept;
-		OCTOON_EXPORT double random(double min, double max) noexcept;
+		void randomize() noexcept;
+		void randomize(unsigned int) noexcept;
+		int random(int min, int max) noexcept;
+		float random(float min, float max) noexcept;
+		double random(double min, double max) noexcept;
 
-		OCTOON_EXPORT std::uint32_t morton2(std::uint32_t x, std::uint32_t y) noexcept;
-		OCTOON_EXPORT std::uint32_t morton3(std::uint32_t x, std::uint32_t y, std::uint32_t z) noexcept;
+		std::uint32_t morton2(std::uint32_t x, std::uint32_t y) noexcept;
+		std::uint32_t morton3(std::uint32_t x, std::uint32_t y, std::uint32_t z) noexcept;
 	}
 }
 

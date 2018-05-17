@@ -32,6 +32,7 @@ namespace octoon
 		RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
 			device_ = device;
+
 			this->setFramebufferSize(w, h);
 		}
 
@@ -155,11 +156,13 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
 				else
 					context.setFramebuffer(fbo_);
+#endif
 
 				context.setViewport(0, camera->getPixelViewport());
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
@@ -192,6 +195,7 @@ namespace octoon
 					}
 				}
 
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
 					auto& v = camera->getPixelViewport();
@@ -212,6 +216,7 @@ namespace octoon
 						context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 					}
 				}
+#endif
 			}
 		}
 
@@ -268,7 +273,7 @@ namespace octoon
 				GraphicsTextureDesc depthTextureDesc;
 				depthTextureDesc.setWidth(w);
 				depthTextureDesc.setHeight(h);
-				depthTextureDesc.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+				depthTextureDesc.setTexFormat(GraphicsFormat::D16UNorm);
 				depthTexture_ = device_->createTexture(depthTextureDesc);
 				if (!depthTexture_)
 					throw runtime::runtime_error::create("createTexture() failed");

@@ -2,7 +2,6 @@
 #define OCTOON_GEOMETRY_H_
 
 #include <octoon/video/render_object.h>
-#include <octoon/model/mesh.h>
 #include <octoon/graphics/graphics_data.h>
 
 namespace octoon

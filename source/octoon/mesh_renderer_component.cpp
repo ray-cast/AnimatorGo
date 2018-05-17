@@ -30,7 +30,11 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
 		instance->setName(this->getName());
-		instance->setMaterial(this->getMaterial()->clone());
+		if (this->isSharedMaterial())
+			instance->setMaterial(this->getMaterial(), this->isSharedMaterial());
+		else
+			instance->setMaterial(this->getMaterial() ? this->getMaterial()->clone() : nullptr, this->isSharedMaterial());
+
 		return instance;
 	}
 
@@ -43,13 +47,11 @@ namespace octoon
 		auto meshFilter = this->getComponent<MeshFilterComponent>();
 
 		geometry_ = std::make_shared<video::Geometry>();
-		geometry_->setDrawType(video::DrawType::Triangles);
 		geometry_->setActive(true);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
-		if (meshFilter)
-			this->onMeshReplace(meshFilter->getMesh());
+		this->onMeshReplace(meshFilter->getMesh());
 	}
 
 	void
@@ -58,7 +60,10 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		if (geometry_)
+		{
 			geometry_->setActive(false);
+			geometry_ = nullptr;
+		}
 	}
 
 	void
@@ -96,7 +101,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
-		if (geometry_)
+		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();
 			auto& normals = mesh->getNormalArray();
@@ -130,7 +135,7 @@ namespace octoon
 			}
 
 			geometry_->setVertexBuffer(vertices_);
-			geometry_->setNumVertices(vertices.size());
+			geometry_->setNumVertices((std::uint32_t)vertices.size());
 
 			auto& indices = mesh->getIndicesArray();
 			if (!indices.empty())
@@ -142,7 +147,7 @@ namespace octoon
 				indiceDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
 
 				geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
-				geometry_->setNumIndices(indices.size());
+				geometry_->setNumIndices((std::uint32_t)indices.size());
 			}
 		}
 	}

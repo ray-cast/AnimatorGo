@@ -60,9 +60,9 @@ namespace octoon
 			void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
 
 		private:
-			void onMoveAfter() noexcept;
-			void onRenderBefore(const Camera& camera) noexcept;
-			void onRenderAfter(const Camera& camera) noexcept;
+			void onMoveAfter() noexcept override;
+			void onRenderBefore(const Camera& camera) noexcept override;
+			void onRenderAfter(const Camera& camera) noexcept override;
 
 		private:
 			void _updateOrtho() const noexcept;

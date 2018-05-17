@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATRIX2X2_H_
-#define OCTOON_MATRIX2X2_H_
+#ifndef OCTOON_MATH_MATRIX2X2_H_
+#define OCTOON_MATH_MATRIX2X2_H_
 
 #include <octoon/math/vector2.h>
 #include <octoon/math/quat.h>
@@ -39,60 +39,60 @@ namespace octoon
 				Matrix2x2(T mt00, T mt01, T mt10, T mt11) noexcept :a1(mt00), a2(mt01), b1(mt10), b2(mt11) {}
 				~Matrix2x2() = default;
 
-				Matrix2x2<T>& make_matrix(T mt00, T mt01, T mt10, T mt11) noexcept
+				Matrix2x2<T>& makeMatrix(T mt00, T mt01, T mt10, T mt11) noexcept
 				{
 					this->a1 = mt00; this->a2 = mt01;
 					this->b1 = mt10; this->b2 = mt11;
 					return *this;
 				}
 
-				Matrix2x2<T>& make_identity() noexcept
+				Matrix2x2<T>& makeIdentity() noexcept
 				{
 					a1 = 1.0f; a2 = 0.0f;
 					b1 = 0.0f; b2 = 1.0f;
 					return *this;
 				}
 
-				Matrix2x2<T>& make_scale(T x, T y) noexcept { return this->make_matrix(x, 0, 0, y); }
-				Matrix2x2<T>& make_scale(const Vector2<T>& sz) noexcept { return this->make_matrix(sz.x, 0, 0, sz.y); }
+				Matrix2x2<T>& makeScale(T x, T y) noexcept { return this->makeMatrix(x, 0, 0, y); }
+				Matrix2x2<T>& makeScale(const Vector2<T>& sz) noexcept { return this->makeMatrix(sz.x, 0, 0, sz.y); }
 
 				Matrix2x2<T>& makeRotation(T x, T y, T z, T angle) noexcept { return makeRotation(x, y, z, angle); }
 				Matrix2x2<T>& makeRotation(const Quaternion<T>& q) noexcept { return makeRotation(q.x, q.y, q.z, q.w); }
 
-				Matrix2x2<T>& make_rotation_x(T theta) noexcept
+				Matrix2x2<T>& makeRotationX(T theta) noexcept
 				{
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
-					return make_matrix(1, 0, 0, c);
+					return makeMatrix(1, 0, 0, c);
 				}
 
-				Matrix2x2<T>& make_rotation_y(T theta) noexcept
+				Matrix2x2<T>& makeRotationY(T theta) noexcept
 				{
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
-					return make_matrix(c, 0, 0, 1);
+					return makeMatrix(c, 0, 0, 1);
 				}
 
-				Matrix2x2<T>& make_rotation_z(T theta) noexcept
+				Matrix2x2<T>& makeRotationZ(T theta) noexcept
 				{
 					T ang = theta;
 					T c, s;
 
-					math::sinCos(&s, &c, ang);
+					sinCos(&s, &c, ang);
 
-					return make_matrix(c, -s, s, c);
+					return makeMatrix(c, -s, s, c);
 				}
 
 				Matrix2x2<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
 					T c, s;
-					math::sinCos(&s, &c, theta);
+					sinCos(&s, &c, theta);
 
 					T x = axis.x;
 					T y = axis.y;
@@ -110,7 +110,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix2x2<T>& multiply_scalar(T x, T y) noexcept
+				Matrix2x2<T>& multiplyScalar(T x, T y) noexcept
 				{
 					this->a1 *= x; this->a2 *= x;
 					this->b1 *= y; this->b2 *= y;

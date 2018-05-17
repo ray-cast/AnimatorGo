@@ -1,14 +1,17 @@
 #include <octoon/graphics/graphics_system.h>
 #include <octoon/graphics/graphics_device.h>
 
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL)
-#	include "OpenGL/ogl_device.h"
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL20)
+#	include "OpenGL 20/gl20_device.h"
 #endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES2)
-#	include "OpenGL ES2/egl2_device.h"
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
+#	include "OpenGL 30/gl30_device.h"
 #endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES3)
-#	include "OpenGL ES3/egl3_device.h"
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL32)
+#	include "OpenGL 32/gl32_device.h"
+#endif
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL33)
+#	include "OpenGL 33/gl33_device.h"
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_VULKAN)
 #   include "Vulkan/vk_system.h"
@@ -22,87 +25,19 @@ namespace octoon
 		OctoonImplementSingleton(GraphicsSystem)
 
 		GraphicsSystem::GraphicsSystem() noexcept
-			: _debugMode(false)
 		{
 		}
 
 		GraphicsSystem::~GraphicsSystem() noexcept
 		{
-			this->enableDebugControl(false);
-		}
-
-		bool
-		GraphicsSystem::open(bool debugControl) noexcept
-		{
-			_debugMode = debugControl;
-			return true;
+			this->close();
 		}
 
 		void
 		GraphicsSystem::close() noexcept
 		{
-			if (_debugMode)
-			{
-				this->enableDebugControl(false);
-				_debugMode = false;
-			}
-
 			for (auto& it : _devices)
-			{
 				it.reset();
-			}
-		}
-
-		void
-		GraphicsSystem::enableDebugControl(bool enable) noexcept
-		{
-			for (auto& it : _devices)
-			{
-				auto device = it.lock();
-				if (device)
-				{
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL
-					if (device->isInstanceOf<OGLDevice>())
-					{
-						device->downcast<OGLDevice>()->enableDebugControl(enable);
-						return;
-					}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES2
-					if (device->isInstanceOf<EGL2Device>())
-					{
-						device->downcast<EGL2Device>()->enableDebugControl(enable);
-						return;
-					}
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES3
-					if (device->isInstanceOf<EGL3Device>())
-					{
-						device->downcast<EGL3Device>()->enableDebugControl(enable);
-						return;
-			}
-
-#endif
-#if OCTOON_FEATURE_GRAPHICS_USE_VULKAN
-					if (device->isInstanceOf<VulkanDevice>())
-					{
-						if (enable)
-							VulkanSystem::instance()->startDebugControl();
-						else
-							VulkanSystem::instance()->stopDebugControl();
-						return;
-					}
-#endif
-				}
-			}
-
-			_debugMode = true;
-		}
-
-		bool
-		GraphicsSystem::enableDebugControl() const noexcept
-		{
-			return _debugMode;
 		}
 
 		GraphicsDevicePtr
@@ -110,25 +45,10 @@ namespace octoon
 		{
 			GraphicsDeviceType deviceType = deviceDesc.getDeviceType();
 
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL)
-			if (deviceType == GraphicsDeviceType::OpenGLCore ||
-				deviceType == GraphicsDeviceType::OpenGL)
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL20)
+			if (deviceType == GraphicsDeviceType::OpenGL20)
 			{
-				auto device = std::make_shared<OGLDevice>();
-				if (device->setup(deviceDesc))
-				{
-					_devices.push_back(device);
-					return device;
-				}
-
-				return nullptr;
-		}
-
-#endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES2)
-			if (deviceType == GraphicsDeviceType::OpenGLES2)
-			{
-				auto device = std::make_shared<EGL2Device>();
+				auto device = std::make_shared<GL20Device>();
 				if (device->setup(deviceDesc))
 				{
 					_devices.push_back(device);
@@ -138,11 +58,10 @@ namespace octoon
 				return nullptr;
 			}
 #endif
-#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL_ES3)
-			if (deviceType == GraphicsDeviceType::OpenGLES3 ||
-				deviceType == GraphicsDeviceType::OpenGLES31)
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL30)
+			if (deviceType == GraphicsDeviceType::OpenGL30)
 			{
-				auto device = std::make_shared<EGL3Device>();
+				auto device = std::make_shared<GL30Device>();
 				if (device->setup(deviceDesc))
 				{
 					_devices.push_back(device);
@@ -151,6 +70,34 @@ namespace octoon
 
 				return nullptr;
 			}
+#endif
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL32)
+			if (deviceType == GraphicsDeviceType::OpenGL32)
+			{
+				auto device = std::make_shared<GL32Device>();
+				if (device->setup(deviceDesc))
+				{
+					_devices.push_back(device);
+					return device;
+				}
+
+				return nullptr;
+			}
+#endif
+#if defined(OCTOON_FEATURE_GRAPHICS_USE_OPENGL33)
+			if (deviceType == GraphicsDeviceType::OpenGL45 ||
+				deviceType == GraphicsDeviceType::OpenGL33)
+			{
+				auto device = std::make_shared<GL33Device>();
+				if (device->setup(deviceDesc))
+				{
+					_devices.push_back(device);
+					return device;
+				}
+
+				return nullptr;
+			}
+
 #endif
 #if defined(OCTOON_FEATURE_GRAPHICS_USE_VULKAN)
 			if (deviceType == GraphicsDeviceType::Vulkan)

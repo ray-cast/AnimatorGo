@@ -15,17 +15,21 @@ namespace octoon
 			~GraphicsSamplerDesc() noexcept;
 
 			void setSamplerWrap(GraphicsSamplerWrap wrap) noexcept;
+			void setSamplerMinFilter(GraphicsSamplerFilter filter) noexcept;
+			void setSamplerMagFilter(GraphicsSamplerFilter filter) noexcept;
+			void setSamplerFilter(GraphicsSamplerFilter minFilter, GraphicsSamplerFilter magFilter) noexcept;
 			void setSamplerAnis(GraphicsSamplerAnis anis) noexcept;
-			void setSamplerFilter(GraphicsSamplerFilter filter) noexcept;
 
 			GraphicsSamplerWrap getSamplerWrap() const noexcept;
+			GraphicsSamplerFilter getSamplerMinFilter() const noexcept;
+			GraphicsSamplerFilter getSamplerMagFilter() const noexcept;
 			GraphicsSamplerAnis getSamplerAnis() const noexcept;
-			GraphicsSamplerFilter getSamplerFilter() const noexcept;
 
 		private:
-			GraphicsSamplerWrap _wrap;
 			GraphicsSamplerAnis _anis;
-			GraphicsSamplerFilter _filter;
+			GraphicsSamplerWrap _wrap;
+			GraphicsSamplerFilter _filterMin;
+			GraphicsSamplerFilter _filterMag;
 		};
 
 		class OCTOON_EXPORT GraphicsSampler : public GraphicsChild

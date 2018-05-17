@@ -183,12 +183,13 @@ namespace octoon
 		float angleY = -axisX * sensitivityX_;
 		float angleX = -axisY * sensitivityY_;
 
-		math::float3 euler(math::euler_angles(this->getGameObject()->getComponent<TransformComponent>()->getLocalQuaternion()));
+		auto transform = this->getGameObject()->getComponent<TransformComponent>();
+		math::float3 euler(math::eulerAngles(transform->getLocalQuaternion()));
 
 		float angle = angleX + math::degress(euler.x);
 
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
-			rotateCamera(angleX, this->getGameObject()->getComponent<TransformComponent>()->getLocalRight());
+			rotateCamera(angleX, transform->getLocalRight());
 
 		rotateCamera(angleY, math::float3::UnitY);
 	}

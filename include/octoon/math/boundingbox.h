@@ -1,5 +1,5 @@
-#ifndef OCTOON_BOUNDING_BOX_H_
-#define OCTOON_BOUNDING_BOX_H_
+#ifndef OCTOON_MATH_BOUNDING_BOX_H_
+#define OCTOON_MATH_BOUNDING_BOX_H_
 
 #include <octoon/math/sphere.h>
 
@@ -40,9 +40,9 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
-				void set_center(const Vector3<T>& center) noexcept
+				void setCenter(const Vector3<T>& center) noexcept
 				{
-					aabb_.set_center(center);
+					aabb_.setCenter(center);
 					sphere_.set(aabb_);
 				}
 
@@ -66,30 +66,15 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
-				void encapsulate(const Vector3<T> pt[], const std::uint8_t* indices, std::size_t indicesCount) noexcept
+				void encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					aabb_.encapsulate(pt, indices, indicesCount);
+					aabb_.encapsulate(points);
 					sphere_.set(aabb_);
 				}
 
-				void encapsulate(const Vector3<T> pt[], const std::uint16_t* indices, std::size_t indicesCount) noexcept
+				void encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
 				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					aabb_.encapsulate(pt, indices, indicesCount);
-					sphere_.set(aabb_);
-				}
-
-				void encapsulate(const Vector3<T> pt[], const std::uint32_t* indices, std::size_t indicesCount) noexcept
-				{
-					assert(pt);
-					assert(indices && indicesCount > 0);
-
-					aabb_.encapsulate(pt, indices, indicesCount);
+					aabb_.encapsulate(points);
 					sphere_.set(aabb_);
 				}
 

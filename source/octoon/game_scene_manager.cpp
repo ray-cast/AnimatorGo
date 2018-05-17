@@ -3,6 +3,8 @@
 
 namespace octoon
 {
+	OctoonImplementSingleton(GameSceneManager)
+
 	GameSceneManager::GameSceneManager() noexcept
 	{
 	}

@@ -5,7 +5,10 @@
 
 namespace octoon
 {
-	using json = nlohmann::json;
+	namespace runtime
+	{
+		using json = nlohmann::json;
+	}
 }
 
 #endif

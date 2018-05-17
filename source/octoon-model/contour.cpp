@@ -6,15 +6,17 @@ namespace octoon
 	namespace model
 	{
 		Contour::Contour() noexcept
-			: clockwise_(false)
 		{
 		}
 
-		Contour::Contour(const math::float3s& points) noexcept
-			: Contour()
+		Contour::Contour(math::float3s&& points) noexcept
 		{
-			for (auto& it : points_)
-				this->addPoints(it);
+			points_ = std::move(points);
+		}
+
+		Contour::Contour(const math::float3s& points) noexcept
+		{
+			points_ = points;
 		}
 
 		Contour::Contour(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept
@@ -33,6 +35,12 @@ namespace octoon
 			: Contour()
 		{
 			this->addPoints(a, b, c, bezierSteps);
+		}
+
+		Contour::Contour(const std::initializer_list<math::float3>& list) noexcept
+		{
+			for (auto& it : list)
+				this->addPoints(it);
 		}
 
 		math::float3&
@@ -66,18 +74,6 @@ namespace octoon
 		}
 
 		void
-		Contour::isClockwise(bool clockwise) noexcept
-		{
-			clockwise_ = clockwise;
-		}
-
-		bool
-		Contour::isClockwise() const noexcept
-		{
-			return clockwise_;
-		}
-
-		void
 		Contour::addPoints(const math::float3& point) noexcept
 		{
 			points_.push_back(point);
@@ -88,7 +84,7 @@ namespace octoon
 		{
 			this->addPoints(pt1);
 
-			for (std::size_t i = 0; i < steps; i++)
+			for (std::size_t i = 0; i <= steps; i++)
 			{
 				float t = (float)i / steps;
 				this->addPoints(math::lerp(pt1, pt2, t));
@@ -98,7 +94,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 1; i < bezierSteps; i++)
+			for (std::size_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;
@@ -113,7 +109,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, const math::float3& D, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 0; i < bezierSteps; i++)
+			for (std::size_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;

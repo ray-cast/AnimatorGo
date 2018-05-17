@@ -231,7 +231,14 @@ namespace octoon
 		Camera::getPixelViewport() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			math::float4 result;
 			result.x = viewport_.x * width;
@@ -383,33 +390,47 @@ namespace octoon
 		Camera::_updateOrtho() const noexcept
 		{
 			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
 
 			auto left = width * ortho_.x;
 			auto right = width * ortho_.y;
 			auto bottom = height * ortho_.z;
 			auto top = height * ortho_.w;
 
-			project_.make_ortho_lh(left, right, bottom, top, znear_, zfar_);
+			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
 		Camera::_updatePerspective() const noexcept
 		{
-			std::uint32_t width = 1920, height = 1080;
-			RenderSystem::instance()->getFramebufferSize(width, height);
-
-			float ratio = (float)width / height;
-
-			project_.make_perspective_off_center_rh(aperture_, ratio_ * ratio, znear_, zfar_);
+			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
 		void
 		Camera::_updateViewProject() const noexcept
 		{
-			if (needUpdateViewProject_)
+			std::uint32_t width = 1920, height = 1080;
+
+			if (!fbo_[0])
+				RenderSystem::instance()->getFramebufferSize(width, height);
+			else
+			{
+				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
+				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			}
+
+			float ratio = (float)width / height;
+
+			if (ratioReal_ != ratio)
 			{
 				if (cameraType_ == CameraType::Perspective)
 					this->_updatePerspective();

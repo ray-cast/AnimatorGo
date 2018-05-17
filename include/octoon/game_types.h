@@ -20,7 +20,7 @@ namespace octoon
 	typedef std::shared_ptr<GameListener> GameListenerPtr;
 	typedef std::shared_ptr<GameObject> GameObjectPtr;
 	typedef std::shared_ptr<GameComponent> GameComponentPtr;
-	typedef std::shared_ptr<GameFeature> GameFeaturePtr;
+	typedef std::unique_ptr<GameFeature> GameFeaturePtr;
 	typedef std::shared_ptr<GameServer> GameServerPtr;
 	typedef std::shared_ptr<GameApp> GameAppPtr;
 

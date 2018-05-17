@@ -258,13 +258,13 @@ namespace octoon
 					auto& parent = _bones[bone.getParent()];
 					auto position = (bone.getPosition() - parent.getPosition());
 					float4x4 m;
-					m.make_translate(position);
+					m.makeTranslate(position);
 					bone.setLocalTransform(m);
 				}
 				else
 				{
 					float4x4 m;
-					m.make_translate(bone.getPosition());
+					m.makeTranslate(bone.getPosition());
 					bone.setLocalTransform(m);
 				}
 
@@ -341,8 +341,8 @@ namespace octoon
 					if (math::distance(effectPos, targetPos) < EPSILON)
 						return;
 
-					Vector3 dstLocal = math::inv_translate_vector3(bone.getTransform(), targetPos);
-					Vector3 srcLocal = math::inv_translate_vector3(bone.getTransform(), effectPos);
+					Vector3 dstLocal = math::invTranslateVector3(bone.getTransform(), targetPos);
+					Vector3 srcLocal = math::invTranslateVector3(bone.getTransform(), effectPos);
 
 					srcLocal = math::normalize(srcLocal);
 					dstLocal = math::normalize(dstLocal);
@@ -360,7 +360,7 @@ namespace octoon
 
 					if (ik.child[j].rotateLimited)
 					{
-						float3 euler(math::euler_angles(q0));
+						float3 euler(math::eulerAngles(q0));
 						euler.x = std::min(ik.child[j].minimumDegrees.x, euler.x);
 						euler.y = std::min(ik.child[j].minimumDegrees.y, euler.y);
 						euler.z = std::min(ik.child[j].minimumDegrees.z, euler.z);
@@ -383,7 +383,7 @@ namespace octoon
 		{
 			float4x4 transform;
 			transform.makeRotation(rotate);
-			transform.set_translate(translate);
+			transform.setTranslate(translate);
 
 			bone.setRotation(rotate);
 			bone.setLocalTransform(transform);

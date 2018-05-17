@@ -106,19 +106,19 @@ namespace octoon
 		const math::float3&
 		RenderObject::getRight() const noexcept
 		{
-			return transform_.get_right();
+			return transform_.getRight();
 		}
 
 		const math::float3&
 		RenderObject::getUp() const noexcept
 		{
-			return transform_.get_up();
+			return transform_.getUp();
 		}
 
 		const math::float3&
 		RenderObject::getForward() const noexcept
 		{
-			return transform_.get_forward();
+			return transform_.getForward();
 		}
 
 		const math::float3&

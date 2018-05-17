@@ -43,7 +43,7 @@ namespace octoon
 			float average_fps_;
 
 			float app_time_;
-			float start_time_;
+			float startTime_;
 			float last_time_;
 			float frame_time_;
 			float accumulate_time_;

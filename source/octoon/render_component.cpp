@@ -5,17 +5,18 @@ namespace octoon
 	OctoonImplementSubInterface(RenderComponent, GameComponent, "RenderComponent")
 
 	RenderComponent::RenderComponent() noexcept
+		: isSharedMaterial_(false)
 	{
 	}
 
-	RenderComponent::RenderComponent(video::MaterialPtr&& material) noexcept
+	RenderComponent::RenderComponent(video::MaterialPtr&& material, bool sharedMesh) noexcept
 	{
-		this->setMaterial(std::move(material));
+		this->setMaterial(std::move(material), sharedMesh);
 	}
 
-	RenderComponent::RenderComponent(const video::MaterialPtr& material) noexcept
+	RenderComponent::RenderComponent(const video::MaterialPtr& material, bool sharedMesh) noexcept
 	{
-		this->setMaterial(material);
+		this->setMaterial(material, sharedMesh);
 	}
 
 	RenderComponent::~RenderComponent() noexcept
@@ -23,22 +24,24 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterial(video::MaterialPtr&& material) noexcept
+	RenderComponent::setMaterial(video::MaterialPtr&& material, bool sharedMesh) noexcept
 	{
 		if (material_ != material)
 		{
-			this->onMaterialReplace(material);
 			material_ = std::move(material);
+			isSharedMaterial_ = sharedMesh;
+			this->onMaterialReplace(material_);
 		}
 	}
 
 	void
-	RenderComponent::setMaterial(const video::MaterialPtr& material) noexcept
+	RenderComponent::setMaterial(const video::MaterialPtr& material, bool sharedMesh) noexcept
 	{
 		if (material_ != material)
 		{
-			this->onMaterialReplace(material);
 			material_ = material;
+			isSharedMaterial_ = sharedMesh;
+			this->onMaterialReplace(material_);
 		}
 	}
 
@@ -46,6 +49,12 @@ namespace octoon
 	RenderComponent::getMaterial() const noexcept
 	{
 		return material_;
+	}
+
+	bool
+	RenderComponent::isSharedMaterial() const noexcept
+	{
+		return isSharedMaterial_;
 	}
 
 	void

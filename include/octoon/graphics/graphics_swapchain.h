@@ -1,5 +1,5 @@
 #ifndef OCTOON_GRAPHICS_SWAPCHAIN_H_
-#define OCTOON_GRAPHICS_SWAPCHINA_H_
+#define OCTOON_GRAPHICS_SWAPCHAIN_H_
 
 #include <octoon/graphics/graphics_child.h>
 

@@ -35,13 +35,12 @@ namespace octoon
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		void addFeature(Args&&... args) except { this->addFeature(std::make_shared<T>(std::forward<Args>(args)...)); }
-		void addFeature(const GameFeaturePtr& feature) except;
 		void addFeature(GameFeaturePtr&& feature) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		std::shared_ptr<T> getFeature() const noexcept { return std::dynamic_pointer_cast<T>(this->getFeature(T::RTTI)); }
-		GameFeaturePtr getFeature(const runtime::Rtti* type) const except;
-		GameFeaturePtr getFeature(const runtime::Rtti& type) const except;
+		T* getFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		GameFeature* getFeature(const runtime::Rtti* type) const except;
+		GameFeature* getFeature(const runtime::Rtti& type) const except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		void removeFeature() noexcept { this->removeFeature(T::RTTI); }
@@ -79,10 +78,10 @@ namespace octoon
 		GameApp& operator=(const GameApp&) noexcept = delete;
 
 	private:
-		GameServerPtr game_server_;
-		GameListenerPtr game_listener_;
+		GameServerPtr server_;
+		GameListenerPtr listener_;
 
-		std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
+		std::chrono::time_point<std::chrono::high_resolution_clock> startTime_;
 	};
 }
 

@@ -32,6 +32,7 @@ namespace octoon
 			RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 		{
 			device_ = device;
+
 			this->setFramebufferSize(w, h);
 		}
 
@@ -155,11 +156,13 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
 				else
 					context.setFramebuffer(fbo_);
+#endif
 
 				context.setViewport(0, camera->getPixelViewport());
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
@@ -167,6 +170,9 @@ namespace octoon
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
+					if (!geometry)
+						continue;
+
 					auto material = geometry->getMaterial();
 					if (!material)
 						continue;
@@ -174,18 +180,22 @@ namespace octoon
 					material->setTransform(geometry->getTransform());
 					material->setViewProjection(camera->getViewProjection());
 
-					context.setRenderPipeline(material->getPipeline());
-					context.setDescriptorSet(material->getDescriptorSet());
-					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
-					context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
+					if (geometry->getVertexBuffer())
+					{
+						context.setRenderPipeline(material->getPipeline());
+						context.setDescriptorSet(material->getDescriptorSet());
+						context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+						context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
 
-					auto indices = geometry->getNumIndices();
-					if (indices > 0)
-						context.drawIndexed(indices, 1, 0, 0, 0);
-					else
-						context.draw(geometry->getNumVertices(), 1, 0, 0);
+						auto indices = geometry->getNumIndices();
+						if (indices > 0)
+							context.drawIndexed(indices, 1, 0, 0, 0);
+						else
+							context.draw(geometry->getNumVertices(), 1, 0, 0);
+					}
 				}
 
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				if (camera->getCameraOrder() == CameraOrder::Main)
 				{
 					auto& v = camera->getPixelViewport();
@@ -201,10 +211,12 @@ namespace octoon
 					auto& swapFramebuffer = camera->getSwapFramebuffer();
 					if (swapFramebuffer)
 					{
-						math::float4 v(0, 0, swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
-						context.blitFramebuffer(framebuffer, v, swapFramebuffer, v);
+						math::float4 v1(0, 0, (float)framebuffer->getGraphicsFramebufferDesc().getWidth(), (float)framebuffer->getGraphicsFramebufferDesc().getHeight());
+						math::float4 v2(0, 0, (float)swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), (float)swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
+						context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 					}
 				}
+#endif
 			}
 		}
 
@@ -261,7 +273,7 @@ namespace octoon
 				GraphicsTextureDesc depthTextureDesc;
 				depthTextureDesc.setWidth(w);
 				depthTextureDesc.setHeight(h);
-				depthTextureDesc.setTexFormat(GraphicsFormat::X8_D24UNormPack32);
+				depthTextureDesc.setTexFormat(GraphicsFormat::D16UNorm);
 				depthTexture_ = device_->createTexture(depthTextureDesc);
 				if (!depthTexture_)
 					throw runtime::runtime_error::create("createTexture() failed");

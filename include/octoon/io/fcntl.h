@@ -19,46 +19,63 @@
 #	include <dirent.h>
 #	include <string.h>
 #	include <strings.h>
+#else
+#	include <sys/stat.h>
+#	include <sys/types.h>
+#	include <sys/param.h>
+#	include <fcntl.h>
+#	include <unistd.h>
+#	include <dirent.h>
+#	include <string.h>
+#	include <strings.h>
 #endif
 
 namespace octoon
 {
+#if defined(__WINDOWS__)
+#	define SEPARATOR '\\'
+#	define SEPARATOR_STRING "\\"
+#else
+#	define SEPARATOR '/'
+#	define SEPARATOR_STRING "/"
+#endif
+
 #if defined(__WINDOWS__) || defined(__MINGW64__)
 #   define  POSIX(func) _ ## func
 #else
 #   define  POSIX(func) func
 #endif
 
-#define __access   POSIX(access)
-#define __read     POSIX(read)
-#define __write    POSIX(write)
-#define __close    POSIX(close)
+#define OCTOON_POSIX_ACCESS   POSIX(access)
+#define OCTOON_POSIX_READ     POSIX(read)
+#define OCTOON_POSIX_WRITE    POSIX(write)
+#define OCTOON_POSIX_CLOSE    POSIX(close)
 #if defined(__WINDOWS__)
-#    define __waccess  POSIX(waccess)
+#    define OCTOON_POSIX_WACCESS  POSIX(waccess)
 #endif
 
 #if __WINDOWS__
-#   define __flush    POSIX(commit)
+#   define OCTOON_POSIX_FLUSH    POSIX(commit)
 #endif
 
 #if _HUGE_FILES_
-#   define __stat   POSIX(stat64)
-#   define __open   POSIX(open64)
-#   define __wopen  POSIX(wopen64)
-#   define __seek   POSIX(lseeki64)
+#   define OCTOON_POSIX_STAT   POSIX(stat64)
+#   define OCTOON_POSIX_OPEN   POSIX(open64)
+#   define OCTOON_POSIX_WOPEN  POSIX(wopen64)
+#   define OCTOON_POSIX_SEEK   POSIX(lseeki64)
 #    if defined(__WINDOWS__)
-#        define __wopen    POSIX(wopen)
-#        define __wstat    POSIX(wstat64)
-#        define __tell     POSIX(telli64)
+#        define OCTOON_POSIX_WOPEN    POSIX(wopen)
+#        define OCTOON_POSIX_WSTAT    POSIX(wstat64)
+#        define OCTOON_POSIX_TELL     POSIX(telli64)
 #    endif
 #else
-#   define __stat   POSIX(stat64)
-#   define __open   POSIX(open)
-#   define __lseek  POSIX(lseek)
+#   define OCTOON_POSIX_STAT   POSIX(stat64)
+#   define OCTOON_POSIX_OPEN   POSIX(open)
+#   define OCTOON_POSIX_LSEEK  POSIX(lseek)
 #    if defined(__WINDOWS__)
-#        define __wopen    POSIX(wopen)
-#        define __wstat    POSIX(wstat64)
-#        define __tell     POSIX(tell)
+#        define OCTOON_POSIX_WOPEN    POSIX(wopen)
+#        define OCTOON_POSIX_WSTAT    POSIX(wstat64)
+#        define OCTOON_POSIX_TELL     POSIX(tell)
 #    endif
 #endif
 
@@ -87,24 +104,24 @@ namespace octoon
 
 			inline int access(const char* path, int mode)
 			{
-				return ::__access(path, mode);
+				return ::OCTOON_POSIX_ACCESS(path, mode);
 			}
 
 			inline int access(const std::string& path, int mode)
 			{
-				return ::__access(path.data(), mode);
+				return ::OCTOON_POSIX_ACCESS(path.data(), mode);
 			}
 
 			inline int access(const wchar_t* path, int mode)
 			{
 #if defined(__WINDOWS__)
-				return ::__waccess(path, mode);
+				return ::OCTOON_POSIX_WACCESS(path, mode);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, path, PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
 
-				return ::__access(fn, mode);
+				return ::OCTOON_POSIX_ACCESS(fn, mode);
 #else
 				return 0;
 #endif
@@ -113,51 +130,51 @@ namespace octoon
 			inline int access(const std::wstring& path, int mode)
 			{
 #if defined(__WINDOWS__)
-				return ::__waccess(path.c_str(), mode);
+				return ::OCTOON_POSIX_WACCESS(path.c_str(), mode);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, path.c_str(), PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
 
-				return ::__access(fn, mode);
+				return ::OCTOON_POSIX_ACCESS(fn, mode);
 #else
 				return 0;
 #endif
 			}
 
-			inline int stat64(const char* filename, struct __stat* stat)
+			inline int stat64(const char* filename, struct OCTOON_POSIX_STAT* stat)
 			{
-				return ::__stat(filename, stat);
+				return ::OCTOON_POSIX_STAT(filename, stat);
 			}
 
-			inline int stat64(const std::string& filename, struct __stat* stat)
+			inline int stat64(const std::string& filename, struct OCTOON_POSIX_STAT* stat)
 			{
-				return ::__stat(filename.data(), stat);
+				return ::OCTOON_POSIX_STAT(filename.data(), stat);
 			}
 
-			inline int stat64(const wchar_t* filename, struct __stat* stat)
+			inline int stat64(const wchar_t* filename, struct OCTOON_POSIX_STAT* stat)
 			{
 #if defined(__WINDOWS__)
-				return ::__wstat(filename, stat);
+				return ::OCTOON_POSIX_WSTAT(filename, stat);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, filename, PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
-				return ::__stat(fn, stat);
+				return ::OCTOON_POSIX_STAT(fn, stat);
 #else
 				return EOF;
 #endif
 			}
 
-			inline int stat64(const std::wstring& filename, struct __stat* stat)
+			inline int stat64(const std::wstring& filename, struct OCTOON_POSIX_STAT* stat)
 			{
 #if defined(__WINDOWS__)
-				return ::__wstat(filename.data(), stat);
+				return ::OCTOON_POSIX_WSTAT(filename.data(), stat);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, filename.c_str(), PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
-				return ::__stat(fn, stat);
+				return ::OCTOON_POSIX_STAT(fn, stat);
 #else
 				return EOF;
 #endif
@@ -165,24 +182,24 @@ namespace octoon
 
 			inline int open(const char* filename, int flag, int mode)
 			{
-				return ::__open(filename, flag, mode);
+				return ::OCTOON_POSIX_OPEN(filename, flag, mode);
 			}
 
 			inline int open(const std::string& filename, int flag, int mode)
 			{
-				return ::__open(filename.data(), flag, mode);
+				return ::OCTOON_POSIX_OPEN(filename.data(), flag, mode);
 			}
 
 			inline int open(const wchar_t* filename, int flag, int mode)
 			{
 #if defined(__WINDOWS__)
-				return ::__wopen(filename, flag, mode);
+				return ::OCTOON_POSIX_WOPEN(filename, flag, mode);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, filename, PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
 
-				return ::__open(fn, flag, mode);
+				return ::OCTOON_POSIX_OPEN(fn, flag, mode);
 #else
 				return EOF;
 #endif
@@ -191,54 +208,94 @@ namespace octoon
 			inline int open(const std::wstring& filename, int flag, int mode)
 			{
 #if defined(__WINDOWS__)
-				return ::__wopen(filename.c_str(), flag, mode);
+				return ::OCTOON_POSIX_WOPEN(filename.c_str(), flag, mode);
 #elif defined(__LINUX__) || defined(__APPLE__)
 				char fn[PATHLIMIT];
 				if (::wcstombs(fn, filename.c_str(), PATHLIMIT) == (std::size_t) - 1)
 					return EOF;
 
-				return ::__open(fn, flag, mode);
+				return ::OCTOON_POSIX_OPEN(fn, flag, mode);
 #else
-				return EOF:
+				return EOF;
 #endif
 			}
 
 			inline long long seek(int fd, long offset, int origin)
 			{
-				return ::__lseek(fd, offset, origin);
+				return ::OCTOON_POSIX_LSEEK(fd, offset, origin);
 			}
 
 #if __WINDOWS__
 
 			inline long long tell(int fd)
 			{
-				return ::__tell(fd);
+				return ::OCTOON_POSIX_TELL(fd);
 			}
 
 #endif
 
 			inline int read(int fd, void* buf, unsigned int cnt)
 			{
-				return ::__read(fd, buf, cnt);
+				return ::OCTOON_POSIX_READ(fd, buf, cnt);
 			}
 
 			inline int write(int fd, const void* buf, unsigned int cnt)
 			{
-				return ::__write(fd, buf, cnt);
+				return ::OCTOON_POSIX_WRITE(fd, buf, cnt);
 			}
 
 #if __WINDOWS__
 
 			inline int flush(int fd)
 			{
-				return ::__flush(fd);
+				return ::OCTOON_POSIX_FLUSH(fd);
 			}
 
 #endif
 
 			inline int close(int fd)
 			{
-				return ::__close(fd);
+				return ::OCTOON_POSIX_CLOSE(fd);
+			}
+
+			inline bool mkdir(const char* path)
+			{
+				char name[PATHLIMIT];
+				strcpy(name, path);
+				std::size_t len = strlen(path);
+
+				if (name[len - 1] != '/' && name[len - 1] != '\\')
+				{
+					strcat(name, "/");
+					len += 1;
+				}
+
+				for (std::size_t i = 1; i < len; i++)
+				{
+					if (name[i] != '/' && name[i] != '\\')
+						continue;
+
+					name[i] = 0;
+
+					if (access(name, 0) != 0)
+					{
+#if __WINDOWS__
+						if (!CreateDirectory(name, 0))
+							return false;
+#elif __LINUX__
+						if (::mkdir(name, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO) == -1)
+							return false;
+#endif
+					}
+
+#if __WINDOWS__
+					name[i] = '\\';
+#else
+					name[i] = '/';
+#endif
+				}
+
+				return true;
 			}
 
 #if __WINDOWS__
@@ -307,19 +364,21 @@ namespace octoon
 #endif
 		}
 	}
-#undef __access
-#undef __close
-#undef __flush
-#undef __write
-#undef __open
-#undef __stat
-#undef __read
-#undef __tell
-#undef __seek
-#undef __lseek
-#undef __wopen
-#undef __wstat
-#undef __waccess
+#undef OCTOON_POSIX_ACCESS
+#undef OCTOON_POSIX_CLOSE
+#undef OCTOON_POSIX_FLUSH
+#undef OCTOON_POSIX_WRITE
+#undef OCTOON_POSIX_OPEN
+#undef OCTOON_POSIX_STAT
+#undef OCTOON_POSIX_READ
+#undef OCTOON_POSIX_TELL
+#undef OCTOON_POSIX_SEEK
+#undef OCTOON_POSIX_LSEEK
+#undef OCTOON_POSIX_WOPEN
+#undef OCTOON_POSIX_WSTAT
+#undef OCTOON_POSIX_WACCESS
+#undef SEPARATOR
+#undef SEPARATOR_STRING
 }
 
 #endif

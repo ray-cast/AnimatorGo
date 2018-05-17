@@ -12,7 +12,7 @@ namespace octoon
 {
 	namespace model
 	{
-		class OCTOON_EXPORT Mesh final : public std::enable_shared_from_this<Mesh>
+		class OCTOON_EXPORT Mesh final
 		{
 		public:
 			Mesh() noexcept;
@@ -20,6 +20,7 @@ namespace octoon
 			Mesh(const Mesh& mesh) noexcept;
 			~Mesh() noexcept;
 
+			void setName(std::string&& name) noexcept;
 			void setName(const std::string& name) noexcept;
 			const std::string& getName() const noexcept;
 

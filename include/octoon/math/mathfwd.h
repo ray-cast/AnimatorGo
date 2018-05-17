@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATHFWD_H_
-#define OCTOON_MATHFWD_H_
+#ifndef OCTOON_MATH_MATHFWD_H_
+#define OCTOON_MATH_MATHFWD_H_
 
 #include <vector>
 

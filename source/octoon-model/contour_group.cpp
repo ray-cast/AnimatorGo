@@ -72,8 +72,6 @@ namespace octoon
 			{
 				auto contour = std::make_unique<Contour>();
 				contour->points() = it->points();
-				contour->isClockwise(it->isClockwise());
-
 				contours.push_back(std::move(contour));
 			}
 
@@ -112,41 +110,6 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		std::size_t
-		ContourGroup::countOfPoints() const noexcept
-		{
-			std::size_t sum = 0;
-
-			for (auto& it : contours_)
-				sum += it->count();
-
-			return sum;
-		}
-
-		void
-		ContourGroup::normalize(math::float3& center) noexcept
-		{
-			math::float3 min(std::numeric_limits<float>::max());
-			math::float3 max(-std::numeric_limits<float>::max());
-
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-				{
-					min = math::min(it, min);
-					max = math::max(it, max);
-				}
-			}
-
-			center = min + (max - min) * 0.5f;
-
-			for (auto& contour : contours_)
-			{
-				for (auto& it : contour->points())
-					it -= center;
-			}
-		}
-
 		ContourGroupPtr
 		ContourGroup::clone() const noexcept
 		{
@@ -155,139 +118,164 @@ namespace octoon
 			return instance;
 		}
 
-		Mesh makeMesh(const ContourGroup& group, float thickness) noexcept
+		void makeMesh(Mesh& mesh, const Contours& contours, float thickness) noexcept
 		{
-			Mesh mesh;
-
-			math::float3s tris(group.countOfPoints() * sizeof(math::Triangle) / sizeof(math::float3) * 2);
+			math::float3s tris(max_count(contours) * 6);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
 
-			std::vector<math::double3> vertices(group.countOfPoints() * 2);
+			float thicknessHalf = thickness * 0.5f;
 
-			for (std::size_t written = 0, i = 0; i < group.count(); ++i)
+			for (auto& contour : contours)
 			{
 				const Contour& contour = group.at(i);
 
-				for (std::size_t n = 0; n < contour.count() - 1; ++n)
+				for (std::size_t n = 0; n < contour->count(); ++n)
 				{
-					auto& p1 = contour.at(n);
-					auto& p2 = contour.at(n + 1);
+					auto& p1 = contour->at(n);
+					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-					math::Triangle t1;
-					t1.a = math::float3(p1.x, p1.y, -thickness);
-					t1.b = math::float3(p2.x, p2.y, thickness);
-					t1.c = math::float3(p1.x, p1.y, thickness);
-
-					math::Triangle t2;
-					t2.a = math::float3(p1.x, p1.y, -thickness);
-					t2.b = math::float3(p2.x, p2.y, -thickness);
-					t2.c = math::float3(p2.x, p2.y, thickness);
-
-					std::memcpy(trisData + written, t1.ptr(), sizeof(math::Triangle));
-					std::memcpy(trisData + written + sizeof(math::Triangle) / sizeof(math::float3), t2.ptr(), sizeof(math::Triangle));
-
-					written += sizeof(math::Triangle) / sizeof(math::float3) * 2;
+					trisData[written++] = math::float3(p1.x, p1.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, thicknessHalf);
+					trisData[written++] = math::float3(p1.x, p1.y, thicknessHalf);
+					trisData[written++] = math::float3(p1.x, p1.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, -thicknessHalf);
+					trisData[written++] = math::float3(p2.x, p2.y, thicknessHalf);
 				}
 
-				trisMesh.resize(trisMesh.size() + tris.size());
-				std::memcpy(trisMesh.data() + (trisMesh.size() - tris.size()), tris.data(), tris.size() * sizeof(math::float3));
+				trisMesh.resize(trisMesh.size() + written);
+				std::memcpy(trisMesh.data() + (trisMesh.size() - written), trisData, written * sizeof(math::float3));
+			}
+		}
 
-				if (contour.isClockwise())
+		void makeMeshTess(Mesh& mesh, const Contours& contours, float thickness) noexcept
+		{
+			math::float3s& trisMesh = mesh.getVertexArray();
+
+			std::vector<math::double3> vertices(sum(contours) * 2);
+
+			GLUtesselator* tobj = gluNewTess();
+
+			gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
+			gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
+			gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
+			gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
+			gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
+			gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
+
+			gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
+			gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
+
+			gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
+
+			std::size_t index = 0;
+
+			for (std::uint8_t face = 0; face < 2; face++)
+			{
+				gluTessBeginPolygon(tobj, nullptr);
+
+				for (auto& contour_ : contours)
 				{
-					GLUtesselator* tobj = gluNewTess();
+					gluTessBeginContour(tobj);
 
-					gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
-					gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
-					gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
-					gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
-					gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
-					gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
-
-					gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
-					gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
-
-					gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
-
-					std::size_t index = 0;
-
-					for (std::uint8_t face = 0; face < 2; face++)
+					for (auto& it : contour_->points())
 					{
-						gluTessBeginPolygon(tobj, nullptr);
+						auto& d = vertices[index++];
+						d[0] = it.x;
+						d[1] = it.y;
+						d[2] = it.z + face ? -thickness * 0.5f : thickness * 0.5f;
 
-						for (std::size_t j = 0; j < group.count(); ++j)
-						{
-							const Contour& it = group.at(j);
-
-							gluTessBeginContour(tobj);
-
-							for (std::size_t p = 0; p < it.count() - 1; ++p)
-							{
-								auto& p1 = it.at(p);
-								auto& d = vertices[index++];
-								d[0] = p1.x;
-								d[1] = p1.y;
-								d[2] = p1.z + face ? -thickness : thickness;
-
-								gluTessVertex(tobj, d.ptr(), d.ptr());
-							}
-
-							gluTessEndContour(tobj);
-						}
-
-						gluTessEndPolygon(tobj);
-
-						trisMesh.resize(trisMesh.size() + g_tris.size());
-						std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
+						gluTessVertex(tobj, d.ptr(), d.ptr());
 					}
 
-					gluDeleteTess(tobj);
+					gluTessEndContour(tobj);
 				}
+
+				gluTessEndPolygon(tobj);
+
+				trisMesh.resize(trisMesh.size() + g_tris.size());
+				std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
 			}
 
+			gluDeleteTess(tobj);
+		}
+
+		Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
+		{
+			Mesh mesh;
+			makeMesh(mesh, contours, thickness);
+			if (!hollow) makeMeshTess(mesh, contours, thickness);
+
+			mesh.computeVertexNormals();
 			return mesh;
 		}
 
-		Mesh makeMesh(const ContourGroups& groups, float thickness) noexcept
+		Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
+		{
+			return makeMesh(group.getContours(), thickness, hollow);
+		}
+
+		Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
 		{
 			Mesh mesh;
 
 			for (auto& group : groups)
-				mesh.combineMeshes(makeMesh(*group, thickness), true);
+			{
+				makeMesh(mesh, group->getContours(), thickness);
+				if (!hollow) makeMeshTess(mesh, group->getContours(), thickness);
+			}
+
+			mesh.computeVertexNormals();
+			return mesh;
+		}
+
+		Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
+		{
+			Mesh mesh;
+
+			math::float3s& tris = mesh.getVertexArray();
+
+			float thicknessHalf = thickness * 0.5f;
+
+			for (auto& contour : contours)
+			{
+				for (std::size_t n = 0; n < contour->count(); ++n)
+				{
+					auto& p1 = contour->at(n);
+					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
+
+					math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
+					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thicknessHalf);
+					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thicknessHalf);
+					math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
+
+					math::uint1 index = (math::uint1)tris.size();
+					indices.push_back(index);
+					indices.push_back(index + 1);
+					indices.push_back(index + 1);
+					indices.push_back(index + 2);
+					indices.push_back(index + 2);
+					indices.push_back(index + 3);
+					indices.push_back(index + 3);
+					indices.push_back(index);
+
+					tris.push_back(a);
+					tris.push_back(b);
+					tris.push_back(b);
+					tris.push_back(c);
+					tris.push_back(c);
+					tris.push_back(d);
+					tris.push_back(d);
+					tris.push_back(a);
+				}
+			}
 
 			return mesh;
 		}
 
 		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
 		{
-			Mesh mesh;
-
-			math::float3s& tris = mesh.getVertexArray();
-
-			for (auto& contour : group.getContours())
-			{
-				for (std::size_t n = 0; n < contour->count() - 1; ++n)
-				{
-					auto p1 = contour->at(n);
-					auto p2 = contour->at(n + 1);
-
-					math::float3 a = math::float3(p1.x, p1.y, thickness);
-					math::float3 b = math::float3(p1.x, p1.y, -thickness);
-					math::float3 c = math::float3(p2.x, p2.y, -thickness);
-					math::float3 d = math::float3(p2.x, p2.y, thickness);
-
-					tris.push_back(a);
-					tris.push_back(b);
-					tris.push_back(b);
-					tris.push_back(c);
-					tris.push_back(c);
-					tris.push_back(d);
-					tris.push_back(d);
-					tris.push_back(a);
-				}
-			}
-
-			return mesh;
+			return makeMeshWireframe(group.getContours(), thickness);
 		}
 
 		Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
@@ -296,19 +284,31 @@ namespace octoon
 
 			math::float3s& tris = mesh.getVertexArray();
 
+			float thicknessHalf = thickness * 0.5f;
+
 			for (auto& group : groups)
 			{
 				for (auto& contour : group->getContours())
 				{
-					for (std::size_t n = 0; n < contour->count() - 1; ++n)
+					for (std::size_t n = 0; n < contour->count(); ++n)
 					{
-						auto p1 = contour->at(n);
-						auto p2 = contour->at(n + 1);
+						auto& p1 = contour->at(n);
+						auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
 
-						math::float3 a = math::float3(p1.x, p1.y, thickness);
-						math::float3 b = math::float3(p1.x, p1.y, -thickness);
-						math::float3 c = math::float3(p2.x, p2.y, -thickness);
-						math::float3 d = math::float3(p2.x, p2.y, thickness);
+						math::float3 a = math::float3(p1.x, p1.y, thicknessHalf);
+						math::float3 b = math::float3(p1.x, p1.y, -thicknessHalf);
+						math::float3 c = math::float3(p2.x, p2.y, -thicknessHalf);
+						math::float3 d = math::float3(p2.x, p2.y, thicknessHalf);
+
+						math::uint1 index = (math::uint1)tris.size();
+						indices.push_back(index);
+						indices.push_back(index + 1);
+						indices.push_back(index + 1);
+						indices.push_back(index + 2);
+						indices.push_back(index + 2);
+						indices.push_back(index + 3);
+						indices.push_back(index + 3);
+						indices.push_back(index);
 
 						tris.push_back(a);
 						tris.push_back(b);

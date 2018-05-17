@@ -68,7 +68,12 @@ namespace octoon
 	GraphicsFeature::onActivate() except
 	{
 		graphics::GraphicsDeviceDesc deviceDesc;
-		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL);
+		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL20);
+#if defined(__DEBUG__)
+		deviceDesc.setDebugControl(true);
+#else
+		deviceDesc.setDebugControl(false);
+#endif
 		device_ = graphics::GraphicsSystem::instance()->createDevice(deviceDesc);
 		if (!device_)
 			throw runtime::runtime_error::create("createDevice() failed");
@@ -80,7 +85,7 @@ namespace octoon
 		swapchainDesc.setSwapInterval(graphics::GraphicsSwapInterval::Vsync);
 		swapchainDesc.setImageNums(2);
 		swapchainDesc.setColorFormat(graphics::GraphicsFormat::B8G8R8A8UNorm);
-		swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::D24UNorm_S8UInt);
+		swapchainDesc.setDepthStencilFormat(graphics::GraphicsFormat::D16UNorm);
 		swapchain_ = device_->createSwapchain(swapchainDesc);
 		if (!swapchain_)
 			throw runtime::runtime_error::create("createSwapchain() failed");

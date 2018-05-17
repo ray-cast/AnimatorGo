@@ -98,7 +98,7 @@ namespace octoon
 			GraphicsInputLayout() noexcept = default;
 			virtual ~GraphicsInputLayout() = default;
 
-			virtual const GraphicsInputLayoutDesc& getGraphicsInputLayoutDesc() const noexcept = 0;
+			virtual const GraphicsInputLayoutDesc& getInputLayoutDesc() const noexcept = 0;
 
 		private:
 			GraphicsInputLayout(const GraphicsInputLayout&) = delete;

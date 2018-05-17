@@ -21,23 +21,23 @@ namespace octoon
 			bool open(input::WindHandle window, const graphics::GraphicsDevicePtr& device) except;
 			void close() noexcept;
 
-			bool inject_mouse_move(float absx, float absy) noexcept;
-			bool inject_mouse_press(float absx, float absy, input::InputButton::Code id) noexcept;
-			bool inject_mouse_release(float absx, float absy, input::InputButton::Code id) noexcept;
-			bool inject_mouse_wheel(float wheel) noexcept;
+			bool injectMouseMove(float absx, float absy) noexcept;
+			bool injectMousePress(float absx, float absy, input::InputButton::Code id) noexcept;
+			bool injectMouseRelease(float absx, float absy, input::InputButton::Code id) noexcept;
+			bool injectMouseWheel(float wheel) noexcept;
 
-			bool inject_key_press(input::InputKey::Code key, wchar_t char_) noexcept;
-			bool inject_key_release(input::InputKey::Code key) noexcept;
+			bool injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept;
+			bool injectKeyRelease(input::InputKey::Code key) noexcept;
 
-			bool inject_window_focus(bool focus) noexcept;
+			bool injectWindowFocus(bool focus) noexcept;
 
-			void set_viewport(std::uint32_t w, std::uint32_t h) noexcept;
-			void get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept;
+			void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
+			void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-			void set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept;
-			void get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept;
+			void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
+			void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-			bool load_font(const char* path, float font_size = 15) noexcept;
+			bool loadFont(const char* path, float font_size = 15) noexcept;
 
 			void newFrame() noexcept;
 

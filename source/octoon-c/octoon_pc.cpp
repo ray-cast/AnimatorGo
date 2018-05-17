@@ -1,5 +1,5 @@
 #if defined(OCTOON_BUILD_PLATFORM_WINDOWS) || defined(OCTOON_BUILD_PLATFORM_LINUX) || defined(OCTOON_BUILD_PLATFORM_APPLE)
-#include <octoon/octoon.h>
+#include <octoon/octoon-c.h>
 
 #include <octoon/game_app.h>
 #include <octoon/input/input_event.h>
@@ -272,7 +272,7 @@ void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)
 		gameApp_->doWindowDrop(hwnd, count, file_utf8);
 }
 
-bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
+bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 {
 #if GLFW_EXPOSE_NATIVE_WIN32
 	::SetConsoleOutputCP(CP_UTF8);
@@ -300,7 +300,7 @@ bool OCTOON_CALL OctoonInit(const char* gamedir, const char* scenename) noexcept
 	return true;
 }
 
-bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
+bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 {
 	assert(!gameApp_ && !window_);
 
@@ -375,7 +375,7 @@ bool OCTOON_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 	}
 }
 
-void OCTOON_CALL OctoonCloseWindow() noexcept
+void OCTOON_C_CALL OctoonCloseWindow() noexcept
 {
 	if (gameApp_)
 	{
@@ -392,7 +392,7 @@ void OCTOON_CALL OctoonCloseWindow() noexcept
 	::glfwTerminate();
 }
 
-bool OCTOON_CALL OctoonIsQuitRequest() noexcept
+bool OCTOON_C_CALL OctoonIsQuitRequest() noexcept
 {
 	if (!gameApp_)
 		return true;
@@ -403,7 +403,7 @@ bool OCTOON_CALL OctoonIsQuitRequest() noexcept
 	return false;
 }
 
-void OCTOON_CALL OctoonUpdate() noexcept
+void OCTOON_C_CALL OctoonUpdate() noexcept
 {
 	::glfwPollEvents();
 
@@ -411,8 +411,15 @@ void OCTOON_CALL OctoonUpdate() noexcept
 		gameApp_->update();
 }
 
-void OCTOON_CALL OctoonTerminate() noexcept
+void OCTOON_C_CALL OctoonMainLoop() noexcept
+{
+    while (!OctoonIsQuitRequest())
+        OctoonUpdate();
+}
+
+void OCTOON_C_CALL OctoonTerminate() noexcept
 {
 	OctoonCloseWindow();
 }
+
 #endif

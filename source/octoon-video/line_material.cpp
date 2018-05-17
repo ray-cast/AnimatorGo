@@ -7,6 +7,13 @@ namespace octoon
 	namespace video
 	{
 		LineMaterial::LineMaterial() except
+			: lineWidth_(1.0f)
+		{
+			this->setup();
+		}
+
+		LineMaterial::LineMaterial(float lineWidth) except
+			: lineWidth_(lineWidth)
 		{
 			this->setup();
 		}
@@ -14,25 +21,26 @@ namespace octoon
 		void
 		LineMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
 			void main()
 			{
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-			in vec3 oTexcoord0;
+			const char* frag = R"(
+			precision mediump float;
+			varying vec3 oTexcoord0;
 			uniform vec3 color;
 			void main()
 			{
-				fragColor = vec4(color, 1.0f);
+				gl_FragColor = vec4(color, 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -52,6 +60,7 @@ namespace octoon
 			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::LineList);
 			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
+			stateDesc.setLineWidth(lineWidth_);
 
 			graphics::GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));
@@ -64,7 +73,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;
@@ -72,9 +81,9 @@ namespace octoon
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "color"; });
+			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
+			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
 
 			color_->uniform3f(math::float3::Zero);
 		}

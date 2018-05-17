@@ -47,7 +47,7 @@ namespace octoon
 		std::size_t instance_id_;
 
 		GameObjectPtr  root_;
-		GameListenerPtr game_listener_;
+		GameListenerPtr listener_;
 	};
 }
 

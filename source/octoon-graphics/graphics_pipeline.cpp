@@ -62,7 +62,7 @@ namespace octoon
 		}
 
 		GraphicsInputLayoutPtr
-		GraphicsPipelineDesc::getGraphicsInputLayout() const noexcept
+		GraphicsPipelineDesc::getInputLayout() const noexcept
 		{
 			return _inputLayout;
 		}
@@ -74,7 +74,7 @@ namespace octoon
 		}
 
 		GraphicsDescriptorSetLayoutPtr
-		GraphicsPipelineDesc::getGraphicsDescriptorSetLayout() const noexcept
+		GraphicsPipelineDesc::getDescriptorSetLayout() const noexcept
 		{
 			return _descriptorSetLayout;
 		}

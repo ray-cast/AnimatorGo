@@ -1,82 +1,81 @@
 #include <octoon/game_feature.h>
 #include <octoon/game_server.h>
-#include <octoon/game_scene.h>
 
 namespace octoon
 {
 	OctoonImplementSubInterface(GameFeature, runtime::RttiInterface, "GameFeature")
 
 	GameFeature::GameFeature() noexcept
-		: is_actived_(false)
-		, game_server_(nullptr)
+		: isActived_(false)
+		, server_(nullptr)
 	{
 	}
 
 	GameFeature::~GameFeature() noexcept
 	{
-		assert(!is_actived_);
+		assert(!isActived_);
 	}
 
 	void
 	GameFeature::setActive(bool active) except
 	{
-		if (is_actived_ != active)
+		if (isActived_ != active)
 		{
 			if (active)
 				this->onActivate();
 			else
 				this->onDeactivate();
 
-			is_actived_ = active;
+			isActived_ = active;
 		}
 	}
 	bool
 	GameFeature::getActive() noexcept
 	{
-		return is_actived_;
+		return isActived_;
 	}
 
 	const GameListenerPtr&
 	GameFeature::getGameListener() const noexcept
 	{
-		assert(game_server_);
-		return game_server_->getGameListener();
+		assert(server_);
+		return server_->getGameListener();
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameFeature::getFeature(const runtime::Rtti* type) const noexcept
 	{
-		assert(game_server_);
+		assert(server_);
 		assert(this->rtti() != type);
-		return game_server_->getFeature(type);
+		return server_->getFeature(type);
 	}
 
-	GameFeaturePtr
+	GameFeature*
 	GameFeature::getFeature(const runtime::Rtti& type) const noexcept
 	{
-		assert(game_server_);
+		assert(server_);
 		assert(this->rtti() != &type);
-		return game_server_->getFeature(type);
+		return server_->getFeature(type);
 	}
 
 	const GameFeatures&
 	GameFeature::getFeatures() const noexcept
 	{
-		assert(game_server_);
-		return game_server_->getFeatures();
+		assert(server_);
+		return server_->getFeatures();
 	}
 
 	void
 	GameFeature::_setGameServer(GameServer* server) noexcept
 	{
-		assert(!game_server_);
-		game_server_ = server;
+		assert(!server_);
+		server_ = server;
 	}
 
 	GameServer*
 	GameFeature::getGameServer() noexcept
 	{
-		return game_server_;
+		return server_;
 	}
 
 	void

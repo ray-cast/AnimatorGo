@@ -109,7 +109,7 @@ namespace octoon
 			GraphicsFramebufferLayout() noexcept = default;
 			virtual ~GraphicsFramebufferLayout() = default;
 
-			virtual const GraphicsFramebufferLayoutDesc& getGraphicsFramebufferLayoutDesc() const noexcept = 0;
+			virtual const GraphicsFramebufferLayoutDesc& getFramebufferLayoutDesc() const noexcept = 0;
 
 		private:
 			GraphicsFramebufferLayout(GraphicsFramebufferLayout&) noexcept = delete;

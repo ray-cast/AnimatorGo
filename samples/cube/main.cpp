@@ -1,14 +1,5 @@
 #include <octoon/octoon.h>
-
-#include <octoon/video/ggx_material.h>
-#include <octoon/game_object.h>
-#include <octoon/camera_component.h>
-#include <octoon/mesh_renderer_component.h>
-#include <octoon/transform_component.h>
-#include <octoon/guizmo_component.h>
-#include <octoon/first_person_camera_component.h>
-
-#include <octoon/ui/imgui.h>
+#include <octoon/octoon-c.h>
 
 class CubeController : public octoon::GameComponent
 {
@@ -44,7 +35,7 @@ public:
 			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				octoon::math::float3 matrixTranslation = transform->getTranslate();
-				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::euler_angles(transform->getQuaternion()));
+				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::eulerAngles(transform->getQuaternion()));
 				octoon::math::float3 matrixScale = transform->getScale();
 
 				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
@@ -127,8 +118,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<CubeController>(material);
 
-		while (!::OctoonIsQuitRequest())
-			::OctoonUpdate();
+		::OctoonMainLoop();
 	}
 
 	::OctoonTerminate();

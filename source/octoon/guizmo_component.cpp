@@ -11,7 +11,7 @@ namespace octoon
 	{
 	}
 
-	GuizmoComponent::GuizmoComponent(GameObjectPtr& camera) noexcept
+	GuizmoComponent::GuizmoComponent(const GameObjectPtr& camera) noexcept
 		: camera_(camera)
 		, op_(imgui::guizmo::Translate)
 	{

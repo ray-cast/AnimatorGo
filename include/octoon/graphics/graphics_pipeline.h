@@ -33,10 +33,10 @@ namespace octoon
 			GraphicsProgramPtr getGraphicsProgram() const noexcept;
 
 			void setGraphicsInputLayout(GraphicsInputLayoutPtr inputLayout) noexcept;
-			GraphicsInputLayoutPtr getGraphicsInputLayout() const noexcept;
+			GraphicsInputLayoutPtr getInputLayout() const noexcept;
 
 			void setGraphicsDescriptorSetLayout(GraphicsDescriptorSetLayoutPtr descriptorSet) noexcept;
-			GraphicsDescriptorSetLayoutPtr getGraphicsDescriptorSetLayout() const noexcept;
+			GraphicsDescriptorSetLayoutPtr getDescriptorSetLayout() const noexcept;
 
 			void setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr framebufferLayout) noexcept;
 			GraphicsFramebufferLayoutPtr getFramebufferLayout() const noexcept;
@@ -73,7 +73,7 @@ namespace octoon
 			GraphicsPipeline() noexcept = default;
 			virtual ~GraphicsPipeline() = default;
 
-			virtual const GraphicsPipelineDesc& getGraphicsPipelineDesc() const noexcept = 0;
+			virtual const GraphicsPipelineDesc& getPipelineDesc() const noexcept = 0;
 
 		private:
 			GraphicsPipeline(const GraphicsPipeline&) noexcept = delete;

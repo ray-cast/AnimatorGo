@@ -20,7 +20,7 @@ namespace octoon
 			this->open(fontpath);
 		}
 
-		TextFile::TextFile(const std::uint8_t* stream, std::size_t size) noexcept(false)
+		TextFile::TextFile(const std::uint8_t* stream, std::uint32_t size) noexcept(false)
 			: font_(nullptr)
 		{
 			this->open(stream, size);
@@ -52,7 +52,7 @@ namespace octoon
 		}
 
 		void
-		TextFile::open(const std::uint8_t* stream, std::size_t size) noexcept(false)
+		TextFile::open(const std::uint8_t* stream, std::uint32_t size) noexcept(false)
 		{
 			assert(stream);
 

@@ -15,11 +15,7 @@ namespace octoon
 			GraphicsSystem() noexcept;
 			~GraphicsSystem() noexcept;
 
-			bool open(bool debugControl = false) noexcept;
 			void close() noexcept;
-
-			void enableDebugControl(bool enable) noexcept;
-			bool enableDebugControl() const noexcept;
 
 			GraphicsDevicePtr createDevice(const GraphicsDeviceDesc& desc) noexcept;
 
@@ -28,7 +24,6 @@ namespace octoon
 			GraphicsSystem& operator=(const GraphicsSystem&) = delete;
 
 		private:
-			bool _debugMode;
 			GraphicsDeviceWeaks _devices;
 		};
 	}

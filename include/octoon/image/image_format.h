@@ -252,12 +252,16 @@ namespace octoon
 
 			std::uint8_t channel() const except;
 			std::uint8_t type_size() const except;
+			Type type() const noexcept;
 
 		public:
 			static value_t value_type(Format::Type format) except;
 			static swizzle_t swizzle_type(Format::Type format) except;
 			static std::uint8_t channel(Format::Type format) except;
 			static std::uint8_t type_size(Format::Type format) except;
+
+		public:
+			operator Type() const noexcept { return this->type(); }
 
 		public:
 			friend constexpr bool operator==(const Format& a, const Format& b) noexcept { return a.format_ == b.format_; }

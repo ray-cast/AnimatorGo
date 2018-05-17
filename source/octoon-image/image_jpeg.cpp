@@ -161,10 +161,10 @@ namespace octoon
 
 			try
 			{
-				::jpeg_create_decompress(&cinfo);
-
 				if (::setjmp(jerrmgr.setjmp_buffer))
 					throw runtime::runtime_error::create("::setjmp() failed.");
+
+				::jpeg_create_decompress(&cinfo);
 
 				if (cinfo.src == nullptr)
 					cinfo.src = (jpeg_source_mgr *)(cinfo.mem->alloc_small)((j_common_ptr)&cinfo, JPOOL_PERMANENT, sizeof(jpeg_source_manager));

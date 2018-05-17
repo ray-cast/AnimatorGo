@@ -39,7 +39,7 @@ namespace octoon
 			rgbe_memory_error,
 		};
 
-		static int rgbe_error(int rgbe_error_code, char* msg)
+		static int rgbe_error(int rgbe_error_code, const char* msg)
 		{
 			switch (rgbe_error_code)
 			{
@@ -69,7 +69,7 @@ namespace octoon
 				return rgbe_error(rgbe_read_error, nullptr);
 
 			if ((buf[0] != '#') || (buf[1] != '?'))
-				return rgbe_error(rgbe_format_error, (char*)"bad initial token");
+				return rgbe_error(rgbe_format_error, "bad initial token");
 
 			std::uint8_t pos = 0;
 			if (info)

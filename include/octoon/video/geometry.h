@@ -2,7 +2,6 @@
 #define OCTOON_GEOMETRY_H_
 
 #include <octoon/video/render_object.h>
-#include <octoon/model/mesh.h>
 #include <octoon/graphics/graphics_data.h>
 
 namespace octoon
@@ -46,8 +45,8 @@ namespace octoon
 			bool isCastShadow_;
 			bool isReceiveShadow_;
 
-			std::intptr_t numVertices_;
-			std::intptr_t numIndices_;
+			std::uint32_t numVertices_;
+			std::uint32_t numIndices_;
 
 			std::intptr_t vertexOffset_;
 			std::intptr_t indexOffset_;

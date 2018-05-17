@@ -14,24 +14,26 @@ namespace octoon
 		void
 		GGXMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
-			out vec3 oTexcoord0;
-			out vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
-				oTexcoord0 = normalize(NORMAL0.xyz);
+				oTexcoord0 = normalize(mat3(model) * NORMAL0.xyz);
 				oTexcoord1 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(#version 330
+			const char* frag = R"(
+			precision mediump float;
 
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
@@ -41,43 +43,41 @@ namespace octoon
 			uniform float smoothness;
 			uniform float metalness;
 
-			layout(location  = 0) out vec4 fragColor;
-
-			in vec3 oTexcoord0;
-			in vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
-				vec3 ambient = pow(ambientColor, vec3(2.2f));
-				vec3 base = pow(baseColor, vec3(2.2f));
-				vec3 specular = pow(specularColor, vec3(2.2f)) * 0.04f;
+				vec3 ambient = pow(ambientColor, vec3(2.2));
+				vec3 base = pow(baseColor, vec3(2.2));
+				vec3 specular = pow(specularColor, vec3(2.2)) * 0.04;
 
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
 				vec3 H = normalize(V + lightDir);
 
-				float nl = max(0.0f, dot(N, lightDir));
-				float nv = max(0.0f, dot(N, V));
-				float nh = max(0.0f, dot(N, H));
-				float vh = max(0.0f, dot(V, H));
+				float nl = max(0.0, dot(N, lightDir));
+				float nv = max(0.0, dot(N, V));
+				float nh = max(0.0, dot(N, H));
+				float vh = max(0.0, dot(V, H));
 
-				float roughness = max(1e-4f, (1.0 - smoothness) * (1.0 - smoothness));
+				float roughness = max(1e-4, (1.0 - smoothness) * (1.0 - smoothness));
 				float m2 = roughness * roughness;
 
-				float spec = (nh * m2 - nh) * nh + 1;
+				float spec = (nh * m2 - nh) * nh + 1.0;
 				spec = m2 / (spec * spec);
 
-				float Gv = nl * (nv * (1 - roughness) + roughness);
-				float Gl = nv * (nl * (1 - roughness) + roughness);
+				float Gv = nl * (nv * (1.0 - roughness) + roughness);
+				float Gl = nv * (nl * (1.0 - roughness) + roughness);
 				spec *= 0.5 / (Gv + Gl);
 
 				vec3 f0 = mix(specular, base, vec3(metalness));
-				vec3 f90 = vec3(clamp(dot(f0, vec3(0.33333f)) * 50.0f, 0.0f, 1.0f));
-				vec3 fresnel = mix(f0, f90, vec3(pow(1.0 - vh, 5.0f)));
+				vec3 f90 = vec3(clamp(dot(f0, vec3(0.33333)) * 50.0, 0.0, 1.0));
+				vec3 fresnel = mix(f0, f90, vec3(pow(1.0 - vh, 5.0)));
 
-				vec3 diffuse = mix(base, vec3(0.0f), vec3(metalness));
+				vec3 diffuse = mix(base, vec3(0.0), vec3(metalness));
 
-				fragColor = vec4(pow(ambient + (diffuse + spec * fresnel) * nl, vec3(1.0f / 2.2f)), 1.0);
+				gl_FragColor = vec4(pow(ambient + (diffuse + spec * fresnel) * nl, vec3(1.0 / 2.2)), 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -109,7 +109,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;
@@ -117,14 +117,14 @@ namespace octoon
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
-			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
-			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
-			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "specularColor"; });
-			smoothness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "smoothness"; });
-			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "metalness"; });
+			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
+			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
+			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
+			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
+			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
+			smoothness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "smoothness"; });
+			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "metalness"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::One);

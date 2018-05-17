@@ -14,15 +14,16 @@ namespace octoon
 		void
 		BlinnMaterial::setup() except
 		{
-			const char* vert = R"(#version 330
+			const char* vert = R"(
+			precision mediump float;
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec4 NORMAL0;
+			attribute vec4 POSITION0;
+			attribute vec4 NORMAL0;
 
-			out vec3 oTexcoord0;
-			out vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
@@ -31,22 +32,20 @@ namespace octoon
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(#version 330
-
+			const char* frag = R"(
+			precision mediump float;
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
 			uniform vec3 ambientColor;
 			uniform float shininess;
 
-			layout(location  = 0) out vec4 fragColor;
-
-			in vec3 oTexcoord0;
-			in vec3 oTexcoord1;
+			varying vec3 oTexcoord0;
+			varying vec3 oTexcoord1;
 
 			void main()
 			{
-				vec3 ambient = pow(ambientColor, vec3(2.2f));
-				vec3 base = pow(baseColor, vec3(2.2f));
+				vec3 ambient = pow(ambientColor, vec3(2.2));
+				vec3 base = pow(baseColor, vec3(2.2));
 
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
@@ -55,7 +54,7 @@ namespace octoon
 				float nl = max(0.0f, dot(N, lightDir));
 				float spec = pow(max(0, dot(N, H)), pow(4096, shininess));
 
-				fragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				gl_FragColor = vec4(pow(ambient + (base + spec) * nl, vec3(1.0 / 2.2)), 1.0);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -87,7 +86,7 @@ namespace octoon
 				return;
 
 			graphics::GraphicsDescriptorSetDesc descriptorSet;
-			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
+			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
 				return;
@@ -95,12 +94,12 @@ namespace octoon
 			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
 			auto end = descriptorSet_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "model"; });
-			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "lightDir"; });
-			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "baseColor"; });
-			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "ambientColor"; });
-			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->get_name() == "shininess"; });
+			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
+			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
+			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
+			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
+			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "shininess"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::One);

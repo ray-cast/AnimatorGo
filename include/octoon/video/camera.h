@@ -31,10 +31,13 @@ namespace octoon
 			void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
 			void setCameraOrder(CameraOrder order) noexcept;
 			void setCameraType(CameraType type) noexcept;
+			void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 			CameraOrder getCameraOrder() const noexcept;
 			CameraType getCameraType() const noexcept;
 			graphics::GraphicsClearFlags getClearFlags() const noexcept;
+			const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
+			const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
 
 			math::float3 worldToScreen(const math::float3& pos) const noexcept;
 			math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -53,14 +56,17 @@ namespace octoon
 			const math::float4x4& getProjection() const noexcept;
 			const math::float4x4& getProjectionInverse() const noexcept;
 
+			void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+			void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+
 		private:
-			void onMoveAfter() noexcept;
-			void onRenderBefore(const Camera& camera) noexcept;
-			void onRenderAfter(const Camera& camera) noexcept;
+			void onMoveAfter() noexcept override;
+			void onRenderBefore(const Camera& camera) noexcept override;
+			void onRenderAfter(const Camera& camera) noexcept override;
 
 		private:
 			void _updateOrtho() const noexcept;
-			void _updatePerspective() const noexcept;
+			void _updatePerspective(float ratio) const noexcept;
 			void _updateViewProject() const noexcept;
 
 		private:
@@ -68,8 +74,6 @@ namespace octoon
 			float zfar_;
 			float ratio_;
 			float aperture_;
-
-			mutable bool needUpdateViewProject_;
 
 			math::float4 ortho_;
 			math::float4 clearColor_;
@@ -81,10 +85,17 @@ namespace octoon
 
 			graphics::GraphicsClearFlags clearflags_;
 
+			graphics::GraphicsFramebufferPtr fbo_[2];
+			graphics::GraphicsTexturePtr colorTexture_[2];
+			graphics::GraphicsTexturePtr depthTexture_[2];
+
 			mutable math::float4x4 viewProject_;
 			mutable math::float4x4 viewProjectInverse_;
 			mutable math::float4x4 project_;
 			mutable math::float4x4 projectInverse_;
+
+			mutable float ratioReal_;
+			mutable bool needUpdateViewProject_;
 		};
 	}
 }

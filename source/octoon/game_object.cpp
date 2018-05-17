@@ -16,6 +16,18 @@ namespace octoon
 		this->addComponent<TransformComponent>();
 	}
 
+	GameObject::GameObject(std::string&& name) noexcept
+		:GameObject()
+	{
+		this->setName(std::move(name));
+	}
+
+	GameObject::GameObject(const std::string& name) noexcept
+		: GameObject()
+	{
+		this->setName(name);
+	}
+
 	GameObject::~GameObject() noexcept
 	{
 		this->cleanupChildren();

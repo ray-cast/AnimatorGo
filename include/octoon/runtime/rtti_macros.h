@@ -25,8 +25,8 @@ private:
 public:\
 	static OCTOON_PROJECT runtime::Rtti RTTI;\
 	static OCTOON_PROJECT runtime::Rtti* getRtti() noexcept;\
-    virtual OCTOON_PROJECT runtime::Rtti* rtti() const noexcept;\
-	virtual const char* type_name() noexcept;\
+    virtual OCTOON_PROJECT runtime::Rtti* rtti() const noexcept override;\
+	virtual const char* type_name() noexcept override;\
 private:
 
 #define OctoonImplementSubInterface(Derived, Base, Name) \
@@ -39,9 +39,12 @@ private:
 public:\
 	static OCTOON_PROJECT runtime::Rtti RTTI;\
 	static OCTOON_PROJECT runtime::Rtti* getRtti() noexcept;\
-	static OCTOON_PROJECT runtime::RttiInterface* FactoryCreate(); \
     virtual OCTOON_PROJECT runtime::Rtti* rtti() const noexcept;\
 	virtual const char* type_name() noexcept;\
+	template<typename ...Args>\
+	static std::shared_ptr<Base> create(Args&&... args) { return std::make_shared<Base>(std::forward<Args>(args)...); }\
+protected:\
+	static OCTOON_PROJECT runtime::RttiInterface* FactoryCreate(); \
 private:
 
 #define OctoonImplementClass(Base, Name) \
@@ -55,9 +58,12 @@ private:
 public:\
     static OCTOON_PROJECT runtime::Rtti RTTI;\
 	static OCTOON_PROJECT runtime::Rtti* getRtti() noexcept;\
+    virtual OCTOON_PROJECT runtime::Rtti* rtti() const noexcept override;\
+	virtual const char* type_name() noexcept override;\
+	template<typename ...Args>\
+	static std::shared_ptr<Derived> create(Args&&... args) { return std::make_shared<Derived>(std::forward<Args>(args)...); }\
+protected:\
 	static OCTOON_PROJECT runtime::RttiInterface* FactoryCreate(); \
-    virtual OCTOON_PROJECT runtime::Rtti* rtti() const noexcept;\
-	virtual const char* type_name() noexcept;\
 private:
 
 #define OctoonImplementSubClass(Derived, Base, Name) \

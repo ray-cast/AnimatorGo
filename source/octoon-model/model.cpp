@@ -1,5 +1,6 @@
 #include <octoon/model/model.h>
 #include <octoon/model/modall.h>
+#include <octoon/io/fstream.h>
 
 using namespace octoon::io;
 
@@ -16,7 +17,7 @@ namespace octoon
 			this->clear();
 		}
 
-		bool Model::load(fstream& file, const char* type) noexcept
+		bool Model::load(istream& file, const char* type) noexcept
 		{
 			if (emptyLoader())
 				addModelLoaderFor(*this);
@@ -28,7 +29,7 @@ namespace octoon
 			return false;
 		}
 
-		bool Model::save(fstream& file, const char* type) noexcept
+		bool Model::save(ostream& file, const char* type) noexcept
 		{
 			if (emptyLoader())
 				addModelLoaderFor(*this);

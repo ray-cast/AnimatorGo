@@ -51,6 +51,12 @@ namespace octoon
 		}
 
 		void
+		Mesh::setName(std::string&& name) noexcept
+		{
+			_name = std::move(name);
+		}
+
+		void
 		Mesh::setName(const std::string& name) noexcept
 		{
 			_name = name;
@@ -119,7 +125,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(const Uint1Array& array) noexcept
+		Mesh::setIndicesArray(const uint1s& array) noexcept
 		{
 			_indices = array;
 		}
@@ -168,7 +174,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(Uint1Array&& array) noexcept
+		Mesh::setIndicesArray(uint1s&& array) noexcept
 		{
 			_indices = std::move(array);
 		}
@@ -222,7 +228,7 @@ namespace octoon
 			return _weights;
 		}
 
-		Uint1Array&
+		uint1s&
 		Mesh::getIndicesArray() noexcept
 		{
 			return _indices;
@@ -283,7 +289,7 @@ namespace octoon
 			return _bones;
 		}
 
-		const Uint1Array&
+		const uint1s&
 		Mesh::getIndicesArray() const noexcept
 		{
 			return _indices;
@@ -302,7 +308,7 @@ namespace octoon
 			_normals = float3s();
 			_colors = float4s();
 			_tangents = float4s();
-			_indices = Uint1Array();
+			_indices = uint1s();
 
 			for (std::size_t i = 0; i < 8; i++)
 				_texcoords[i] = float2s();
@@ -335,7 +341,7 @@ namespace octoon
 			{
 				float3 v;
 
-				float segment = thetaStart + i / segments * thetaLength;
+				float segment = thetaStart + (float)i / segments * thetaLength;
 
 				v.x = radius * math::cos(segment);
 				v.y = radius * math::sin(segment);
@@ -987,7 +993,10 @@ namespace octoon
 			if (hasIndices)  this->_indices.resize(maxIndices);
 
 			for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
-				if (hasTexcoord) this->_texcoords[i].resize(maxVertices);
+			{
+				if (hasTexcoord[i])
+					this->_texcoords[i].resize(maxVertices);
+			}
 
 			std::size_t offsetVertices = 0;
 			std::size_t offsetIndices = 0;
@@ -1053,7 +1062,7 @@ namespace octoon
 					changeVertex.push_back(v);
 					changeNormal.push_back(n);
 
-					auto size = changeVertex.size();
+					math::uint1 size = (math::uint1)changeVertex.size();
 					it = size - 1;
 					vectorMap[std::make_pair(vkey, nkey)] = size;
 				}
@@ -1072,7 +1081,7 @@ namespace octoon
 		{
 			assert(!_vertices.empty() && !_indices.empty());
 
-			faceNormals.resize(_vertices.size());
+			faceNormals.resize(_indices.size());
 
 			std::size_t size = _indices.size();
 			for (std::size_t i = 0; i < size; i += 3)
@@ -1090,9 +1099,9 @@ namespace octoon
 
 				Vector3 normal = math::normalize(math::cross(edge1, edge2));
 
-				faceNormals[f1] = normal;
-				faceNormals[f2] = normal;
-				faceNormals[f3] = normal;
+				faceNormals[i] = normal;
+				faceNormals[i + 1] = normal;
+				faceNormals[i + 2] = normal;
 			}
 		}
 
@@ -1144,13 +1153,16 @@ namespace octoon
 					_normals[f2] += n;
 					_normals[f3] += n;
 				}
+
+				for (auto& it : _normals)
+					it = math::normalize(it);
 			}
 		}
 
 		void
 		Mesh::computeVertexNormals(const float3s& faceNormals) noexcept
 		{
-			assert(faceNormals.size() == _vertices.size());
+			assert(faceNormals.size() == _indices.size());
 			assert(!_vertices.empty() && !_indices.empty());
 
 			float3s normal;
@@ -1164,9 +1176,9 @@ namespace octoon
 				std::uint32_t b = (_indices)[i + 1];
 				std::uint32_t c = (_indices)[i + 2];
 
-				normal[a] += faceNormals[a];
-				normal[b] += faceNormals[b];
-				normal[c] += faceNormals[c];
+				normal[a] += faceNormals[i];
+				normal[b] += faceNormals[i + 1];
+				normal[c] += faceNormals[i + 2];
 			}
 
 			for (auto& it : normal)
@@ -1323,7 +1335,7 @@ namespace octoon
 				auto binormal = math::cross(normal, tangent);
 
 				Quaternion quat;
-				quat.make_rotation(normal, binormal, tangent);
+				quat.makeRotation(normal, binormal, tangent);
 
 				if (quat.w < 0.0f)
 					quat = -quat;
@@ -1339,11 +1351,7 @@ namespace octoon
 		Mesh::computeBoundingBox() noexcept
 		{
 			_boundingBox.reset();
-
-			if (_indices.empty())
-				_boundingBox.encapsulate(_vertices.data(), _vertices.size());
-			else
-				_boundingBox.encapsulate(_vertices.data(), _indices.data(), _indices.size());
+			_boundingBox.encapsulate(_vertices.data(), _vertices.size());
 		}
 	}
 }

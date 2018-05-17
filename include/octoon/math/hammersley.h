@@ -1,5 +1,5 @@
-#ifndef OCTOON_HAMMERSLEY_H_
-#define OCTOON_HAMMERSLEY_H_
+#ifndef OCTOON_MATH_HAMMERSLEY_H_
+#define OCTOON_MATH_HAMMERSLEY_H_
 
 #include <octoon/math/vector2.h>
 
@@ -17,7 +17,7 @@ namespace octoon
 			return bits;
 		}
 
-		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		detail::Vector2<T> Hammersley(uint1 i, uint1 samplesCount)
 		{
 			T E1 = (T)i / samplesCount;
@@ -25,7 +25,7 @@ namespace octoon
 			return detail::Vector2<T>(E1, E2);
 		}
 
-		template<typename T = float, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		detail::Vector2<T> Hammersley(uint1 i, uint1 samplesCount, int2 random)
 		{
 			T E1 = fract((T)i / samplesCount + T(random.x & 0xffff) / (1 << 16));

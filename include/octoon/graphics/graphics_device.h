@@ -11,13 +11,17 @@ namespace octoon
 		{
 		public:
 			GraphicsDeviceDesc() noexcept;
-			GraphicsDeviceDesc(GraphicsDeviceType type) noexcept;
+			GraphicsDeviceDesc(GraphicsDeviceType type, bool enable = false) noexcept;
 			~GraphicsDeviceDesc() noexcept;
 
 			void setDeviceType(GraphicsDeviceType type) noexcept;
 			GraphicsDeviceType getDeviceType() const noexcept;
 
+			void setDebugControl(bool enable) noexcept;
+			bool isEnabledDebugControl() const noexcept;
+
 		private:
+			bool _enableDebug;
 			GraphicsDeviceType _deviceType;
 		};
 
@@ -47,7 +51,7 @@ namespace octoon
 			virtual void copyDescriptorSets(GraphicsDescriptorSetPtr& source, std::uint32_t descriptorCopyCount, const GraphicsDescriptorSetPtr descriptorCopies[]) noexcept = 0;
 
 			virtual const GraphicsDeviceProperty& getDeviceProperty() const noexcept = 0;
-			virtual const GraphicsDeviceDesc& getGraphicsDeviceDesc() const noexcept = 0;
+			virtual const GraphicsDeviceDesc& getDeviceDesc() const noexcept = 0;
 
 		private:
 			GraphicsDevice(const GraphicsDevice&) noexcept = delete;

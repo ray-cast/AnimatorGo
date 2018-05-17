@@ -10,7 +10,7 @@ namespace octoon
 {
 	namespace io
 	{
-		class virtual_buf final : public stream_buf
+		class OCTOON_EXPORT virtual_buf final : public stream_buf
 		{
 		public:
 			virtual_buf() noexcept;

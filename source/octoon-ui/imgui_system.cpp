@@ -12,6 +12,32 @@ namespace octoon
 {
 	namespace imgui
 	{
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
+		const char* vert =
+			"precision mediump float;\n"
+			"uniform mat4 proj;\n"
+			"attribute vec4 POSITION0;\n"
+			"attribute vec4 COLOR0;\n"
+			"attribute vec4 TEXCOORD0;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"oTexcoord0 = COLOR0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
+			"gl_Position = proj * POSITION0;\n"
+			"}\n";
+
+		const char* frag =
+			"precision mediump float;\n"
+			"uniform sampler2D decal;\n"
+			"varying vec4 oTexcoord0;\n"
+			"varying vec2 oTexcoord1;\n"
+			"void main()\n"
+			"{\n"
+			"	gl_FragColor = texture2D(decal, oTexcoord1) * oTexcoord0;\n"
+			"}";
+#else
 		const char* vert =
 			"#version 330\n"
 			"uniform mat4 proj;\n"
@@ -19,11 +45,11 @@ namespace octoon
 			"layout(location  = 1) in vec4 COLOR0;\n"
 			"layout(location  = 2) in vec4 TEXCOORD0;\n"
 			"out vec4 oTexcoord0;\n"
-			"out vec4 oTexcoord1;\n"
+			"out vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
 			"oTexcoord0 = COLOR0;\n"
-			"oTexcoord1 = TEXCOORD0;\n"
+			"oTexcoord1 = TEXCOORD0.rg;\n"
 			"gl_Position = proj * POSITION0;\n"
 			"}\n";
 
@@ -32,11 +58,12 @@ namespace octoon
 			"uniform sampler2D decal;\n"
 			"layout(location  = 0) out vec4 oColor;\n"
 			"in vec4 oTexcoord0;\n"
-			"in vec4 oTexcoord1;\n"
+			"in vec2 oTexcoord1;\n"
 			"void main()\n"
 			"{\n"
-			"	oColor = texture(decal, oTexcoord1.rg) * oTexcoord0;\n"
+			"	oColor = texture(decal, oTexcoord1) * oTexcoord0;\n"
 			"}";
+#endif
 
 		System::System() noexcept
 			: initialize_(false)
@@ -109,6 +136,8 @@ namespace octoon
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
 			auto program = device->createProgram(programDesc);
+			if (!program)
+				return false;
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
@@ -139,14 +168,12 @@ namespace octoon
 			pipeline.setGraphicsState(device->createRenderState(stateDesc));
 			pipeline.setGraphicsProgram(std::move(program));
 			pipeline.setGraphicsDescriptorSetLayout(device->createDescriptorSetLayout(descriptor_set_layout));
-
 			pipeline_ = device->createRenderPipeline(pipeline);
 			if (!pipeline_)
 				return false;
 
 			GraphicsDescriptorSetDesc descriptor_set;
-			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getGraphicsDescriptorSetLayout());
-
+			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)
 				return false;
@@ -154,8 +181,8 @@ namespace octoon
 			auto begin = descriptor_set_->getGraphicsUniformSets().begin();
 			auto end = descriptor_set_->getGraphicsUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "proj"; });
-			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->get_name() == "decal"; });
+			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
+			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
 
 			initialize_ = true;
 			return true;
@@ -184,7 +211,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_move(float absx, float absy) noexcept
+		System::injectMouseMove(float absx, float absy) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MousePos.x = absx;
@@ -193,7 +220,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_press(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMousePress(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = true;
@@ -203,7 +230,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_release(float absx, float absy, input::InputButton::Code code) noexcept
+		System::injectMouseRelease(float absx, float absy, input::InputButton::Code code) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = false;
@@ -213,7 +240,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_mouse_wheel(float wheel) noexcept
+		System::injectMouseWheel(float wheel) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			io.MouseWheel = wheel;
@@ -221,7 +248,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_press(input::InputKey::Code key, wchar_t char_) noexcept
+		System::injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key != input::InputKey::Code::None)
@@ -246,7 +273,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_key_release(input::InputKey::Code key) noexcept
+		System::injectKeyRelease(input::InputKey::Code key) noexcept
 		{
 			auto& io = ImGui::GetIO();
 			if (key == input::InputKey::Code::LeftControl)
@@ -263,7 +290,7 @@ namespace octoon
 		}
 
 		bool
-		System::inject_window_focus(bool focus) noexcept
+		System::injectWindowFocus(bool focus) noexcept
 		{
 			if (focus)
 			{
@@ -277,44 +304,41 @@ namespace octoon
 		}
 
 		void
-		System::set_viewport(std::uint32_t w, std::uint32_t h) noexcept
+		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize.x = w;
-			io.DisplaySize.y = h;
+			io.DisplaySize.x = (float)w;
+			io.DisplaySize.y = (float)h;
 		}
 
 		void
-		System::get_viewport(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplaySize.x;
-			h = io.DisplaySize.y;
+			w = (std::uint32_t)io.DisplaySize.x;
+			h = (std::uint32_t)io.DisplaySize.y;
 		}
 
 		void
-		System::set_framebuffer_scale(std::uint32_t w, std::uint32_t h) noexcept
+		System::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			io.DisplayFramebufferScale.x = w;
-			io.DisplayFramebufferScale.y = h;
+			io.DisplayFramebufferScale.x = (float)w;
+			io.DisplayFramebufferScale.y = (float)h;
 
-			math::float4x4 project;
-			project.make_ortho_lh(0, w, h, 0, 0, 1);
-
-			proj_->uniform4fmat(project);
+			proj_->uniform4fmat(math::makeOrthoLH<float>(0.0f, (float)w, (float)h, 0.0f, 0.0f, 1.0f));
 		}
 
 		void
-		System::get_framebuffer_scale(std::uint32_t& w, std::uint32_t& h) noexcept
+		System::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			w = io.DisplayFramebufferScale.x;
-			h = io.DisplayFramebufferScale.y;
+			w = (std::uint32_t)io.DisplayFramebufferScale.x;
+			h = (std::uint32_t)io.DisplayFramebufferScale.y;
 		}
 
 		bool
-		System::load_font(const char* path, float font_size) noexcept
+		System::loadFont(const char* path, float font_size) noexcept
 		{
 			static const ImWchar ranges[] =
 			{
@@ -331,17 +355,13 @@ namespace octoon
 			io.Fonts->AddFontFromFileTTF(path, font_size, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-			GraphicsTextureDesc fontDesc;
-			fontDesc.setSize(width, height);
-			fontDesc.setTexDim(GraphicsTextureDim::Texture2D);
-			fontDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
-			fontDesc.setStream(pixels);
-			fontDesc.setStreamSize(width * height * sizeof(std::uint32_t));
-			fontDesc.setTexTiling(GraphicsImageTiling::Linear);
-			fontDesc.setSamplerFilter(GraphicsSamplerFilter::LinearMipmapLinear, GraphicsSamplerFilter::Linear);
-			fontDesc.setSamplerWrap(GraphicsSamplerWrap::ClampToEdge);
-
-			texture_ = device_->createTexture(fontDesc);
+			GraphicsTextureDesc textureDesc;
+			textureDesc.setSize(width, height);
+			textureDesc.setTexDim(GraphicsTextureDim::Texture2D);
+			textureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+			textureDesc.setStream(pixels);
+			textureDesc.setStreamSize(width * height * sizeof(std::uint32_t));
+			texture_ = device_->createTexture(textureDesc);
 			if (!texture_)
 				return false;
 
@@ -426,7 +446,7 @@ namespace octoon
 			auto& io = ImGui::GetIO();
 
 			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
-			context.setScissor(0, uint4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
+			context.setScissor(0, uint4(0, 0, (std::uint32_t)io.DisplayFramebufferScale.x, (std::uint32_t)io.DisplayFramebufferScale.y));
 
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
@@ -448,9 +468,9 @@ namespace octoon
 						else
 							decal_->uniformTexture(nullptr);
 
-						ImVec4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
+						uint4 scissor((int)cmd->ClipRect.x, (int)cmd->ClipRect.y, (int)(cmd->ClipRect.z - cmd->ClipRect.x), (int)(cmd->ClipRect.w - cmd->ClipRect.y));
 
-						context.setScissor(0, uint4(scissor.x, scissor.y, scissor.z, scissor.w));
+						context.setScissor(0, scissor);
 
 						context.setRenderPipeline(pipeline_);
 						context.setDescriptorSet(descriptor_set_);

@@ -41,7 +41,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowKeyDown(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowKeyDown(WindHandle window_, InputKey::Code input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::KeyDown;
 			this->key.windowID = (std::uint64_t)window_;
@@ -57,7 +57,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowKeyUp(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowKeyUp(WindHandle window_, InputKey::Code input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::KeyUp;
 			this->key.windowID = (std::uint64_t)window_;
@@ -73,7 +73,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowKeyPress(WindHandle window_, std::uint16_t input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowKeyPress(WindHandle window_, InputKey::Code input_key, std::uint16_t scancode, std::uint16_t mods, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::KeyDown;
 			this->key.windowID = (std::uint64_t)window_;
@@ -105,7 +105,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowMouseButtonDown(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowMouseButtonDown(WindHandle window_, InputButton::Code input_button, float x, float y, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::MouseButtonDown;
 			this->button.button = input_button;
@@ -119,7 +119,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowMouseButtonUp(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowMouseButtonUp(WindHandle window_, InputButton::Code input_button, float x, float y, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::MouseButtonUp;
 			this->button.button = input_button;
@@ -133,7 +133,7 @@ namespace octoon
 		}
 
 		void
-		InputEvent::makeWindowMouseButtonDoubleClick(WindHandle window_, std::uint8_t input_button, float x, float y, std::uint64_t timestamp) noexcept
+		InputEvent::makeWindowMouseButtonDoubleClick(WindHandle window_, InputButton::Code input_button, float x, float y, std::uint64_t timestamp) noexcept
 		{
 			this->event = octoon::input::InputEvent::MouseButtonDoubleClick;
 			this->button.button = input_button;

@@ -7,7 +7,7 @@
 #include <octoon/io/mstream.h>
 #include <octoon/io/fstream.h>
 
-#ifndef __linux
+#ifdef _MSC_VER
 #include <filesystem>
 namespace std
 {
@@ -40,7 +40,7 @@ namespace octoon
 		std::unique_ptr<stream_buf>
 		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
-#ifndef __linux
+#ifdef _MSC_VER
 			auto file = std::make_unique<filebuf>();
 			auto file_path = make_path(orl);
 			auto parent = orl.parent();
@@ -72,7 +72,7 @@ namespace octoon
 		bool
 		farchive::remove(const Orl& orl, ItemType type)
 		{
-#ifndef __linux
+#ifdef _MSC_VER
 			auto path = make_path(orl);
 			auto status = std::filesystem::status(path).type();
 			if (status == std::filesystem::file_type::not_found) {
@@ -95,7 +95,7 @@ namespace octoon
 		ItemType
 		farchive::exists(const Orl& orl)
 		{
-#ifndef __linux
+#ifdef _MSC_VER
 			auto status = std::filesystem::status(make_path(orl));
 			switch (status.type())
 			{

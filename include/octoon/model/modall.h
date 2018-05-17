@@ -1,9 +1,9 @@
 #ifndef OCTOON_MODALL_H_
 #define OCTOON_MODALL_H_
 
-#include <octoon/model/moddef.h>
-#include <octoon/model/pmx_loader.h>
-#include <octoon/model/model.h>
+#include <octoon/model/model_loader.h>
+
+#define OCTOON_BUILD_PMX_MODEL 1
 
 namespace octoon
 {
@@ -12,4 +12,5 @@ namespace octoon
 		void addModelLoaderFor(Model& model);
 	}
 }
-#endif // !OCTOON_MODALL_H_
+
+#endif

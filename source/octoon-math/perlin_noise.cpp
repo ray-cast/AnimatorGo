@@ -1,10 +1,6 @@
 #include <octoon/math/perlin_noise.h>
 #include <cstring>
 
-namespace octoon
-{
-	namespace math
-	{
 #define F2 0.3660254037844386f
 #define G2 0.21132486540518713f
 #define F3 (1.0f / 3.0f)
@@ -12,6 +8,10 @@ namespace octoon
 #define ASSIGN(a, v0, v1, v2) (a)[0] = v0; (a)[1] = v1; (a)[2] = v2;
 #define DOT3(v1, v2) ((v1)[0] * (v2)[0] + (v1)[1] * (v2)[1] + (v1)[2] * (v2)[2])
 
+namespace octoon
+{
+	namespace math
+	{
 		const static float GRAD3[16][3] = {
 			{ 1, 1, 0 },{ -1, 1, 0 },{ 1, -1, 0 },{ -1, -1, 0 },
 			{ 1, 0, 1 },{ -1, 0, 1 },{ 1, 0, -1 },{ -1, 0, -1 },
@@ -220,7 +220,7 @@ namespace octoon
 		void simplex_seed(unsigned int x)
 		{
 			srand(x);
-			for (unsigned char i = 0; i < 256; i++)
+			for (unsigned char i = 0; i <= 255; i++)
 			{
 				PERM[i] = i;
 			}

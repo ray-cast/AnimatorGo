@@ -51,14 +51,14 @@ namespace octoon
 			width_ = w;
 			height_ = h;
 
-			system_->set_viewport(w, h);
+			system_->setViewport(w, h);
 		}
 	}
 
 	void
 	GuiFeature::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		system_->get_viewport(w, h);
+		system_->getViewport(w, h);
 	}
 
 	void
@@ -69,14 +69,14 @@ namespace octoon
 			framebuffer_w_ = w;
 			framebuffer_h_ = h;
 
-			system_->set_framebuffer_scale(w, h);
+			system_->setFramebufferScale(w, h);
 		}
 	}
 
 	void
 	GuiFeature::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		system_->set_framebuffer_scale(w, h);
+		system_->setFramebufferScale(w, h);
 	}
 
 	void
@@ -90,19 +90,23 @@ namespace octoon
 
 		if (!system_->open(window_, graphics->getDevice()))
 			throw runtime::runtime_error::create("GuiSystem::open() fail", runtime::error_code::none);
-
-		if (!system_->load_font("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
+#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+		if (!system_->loadFont("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
 			throw runtime::runtime_error::create("GuiSystem::loadFont() fail", runtime::error_code::none);
+#else
+		if (!system_->loadFont("./system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
+			throw runtime::runtime_error::create("GuiSystem::loadFont() fail", runtime::error_code::none);
+#endif
 
-		system_->set_viewport(width_, height_);
-		system_->set_framebuffer_scale(framebuffer_w_, framebuffer_h_);
+		system_->setViewport(width_, height_);
+		system_->setFramebufferScale(framebuffer_w_, framebuffer_h_);
 	}
 
 	void
 	GuiFeature::onDeactivate() noexcept
 	{
-		system_->get_viewport(width_, height_);
-		system_->set_framebuffer_scale(framebuffer_w_, framebuffer_h_);
+		system_->getViewport(width_, height_);
+		system_->setFramebufferScale(framebuffer_w_, framebuffer_h_);
 		system_.reset();
 	}
 
@@ -112,40 +116,40 @@ namespace octoon
 		switch (event.event)
 		{
 		case input::InputEvent::MouseMotion:
-			system_->inject_mouse_move(event.motion.x, event.motion.y);
+			system_->injectMouseMove(event.motion.x, event.motion.y);
 			break;
 		case input::InputEvent::MouseButtonDown:
-			system_->inject_mouse_press(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
+			system_->injectMousePress(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
 			break;
 		case input::InputEvent::MouseButtonUp:
-			system_->inject_mouse_release(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
+			system_->injectMouseRelease(event.button.x, event.button.y, (input::InputButton::Code)event.button.button);
 			break;
 		case input::InputEvent::KeyDown:
-			system_->inject_key_press((input::InputKey::Code)event.key.keysym.sym, event.key.keysym.unicode);
+			system_->injectKeyPress((input::InputKey::Code)event.key.keysym.sym, event.key.keysym.unicode);
 			break;
 		case input::InputEvent::KeyUp:
-			system_->inject_key_release((input::InputKey::Code)event.key.keysym.sym);
+			system_->injectKeyRelease((input::InputKey::Code)event.key.keysym.sym);
 			break;
 		case input::InputEvent::Character:
-			system_->inject_key_press(input::InputKey::Code::None, event.key.keysym.unicode);
+			system_->injectKeyPress(input::InputKey::Code::None, event.key.keysym.unicode);
 			break;
 		case input::InputEvent::LostFocus:
-			system_->inject_window_focus(false);
+			system_->injectWindowFocus(false);
 			break;
 		case input::InputEvent::GetFocus:
-			system_->inject_window_focus(true);
+			system_->injectWindowFocus(true);
 			break;
 		case input::InputEvent::MouseWheelUp:
-			system_->inject_mouse_wheel(1.0f);
+			system_->injectMouseWheel(1.0f);
 			break;
 		case input::InputEvent::MouseWheelDown:
-			system_->inject_mouse_wheel(-1.0f);
+			system_->injectMouseWheel(-1.0f);
 			break;
 		case input::InputEvent::SizeChange:
-			system_->set_viewport(event.change.w, event.change.h);
+			system_->setViewport(event.change.w, event.change.h);
 			break;
 		case input::InputEvent::SizeChangeDPI:
-			system_->set_framebuffer_scale(event.change.w, event.change.h);
+			system_->setFramebufferScale(event.change.w, event.change.h);
 			break;
 		default:
 			return;

@@ -537,7 +537,7 @@ namespace octoon
 					}
 				}
 
-				model.addMaterial(std::move(material));
+				model.add(std::move(material));
 			}
 
 			if (pmx.numVertices > 0 && pmx.numIndices > 0 && pmx.numMaterials > 0)
@@ -616,7 +616,7 @@ namespace octoon
 
 					startIndices += it.FaceCount;
 
-					model.addMesh(std::move(mesh));
+					model.add(std::move(mesh));
 				}
 			}
 
@@ -638,7 +638,7 @@ namespace octoon
 					bone.setPosition(it.position);
 					bone.setParent(it.Parent);
 
-					model.addBone(std::make_shared<Bone>(bone));
+					model.add(std::make_shared<Bone>(bone));
 
 					if (it.Flag & PMX_BONE_IK)
 					{
@@ -660,7 +660,7 @@ namespace octoon
 							attr.child.push_back(child);
 						}
 
-						model.addIK(std::make_shared<IKAttr>(attr));
+						model.add(std::make_shared<IKAttr>(attr));
 					}
 
 					index++;
@@ -692,7 +692,7 @@ namespace octoon
 				body->friction = it.friction;
 				body->physicsOperation = it.physicsOperation;
 
-				model.addRigidbody(std::move(body));
+				model.add(std::move(body));
 			}
 
 			for (auto& it : pmx.joints)
@@ -717,7 +717,7 @@ namespace octoon
 				joint->springMovementConstant = it.springMovementConstant;
 				joint->springRotationConstant = it.springRotationConstant;
 
-				model.addJoint(std::move(joint));
+				model.add(std::move(joint));
 			}
 
 			return true;

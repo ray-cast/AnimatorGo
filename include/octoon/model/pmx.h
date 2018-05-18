@@ -53,6 +53,9 @@ namespace octoon
 			PMX_QDEF = 4
 		};
 
+#pragma pack(push)
+#pragma pack(push,1)
+
 		struct PmxHeader
 		{
 			PmxUInt8 magic[3];       // 始终为PMX
@@ -68,6 +71,8 @@ namespace octoon
 			PmxUInt8 sizeOfMorph;    // ( 1 or 2 or 4 )
 			PmxUInt8 sizeOfBody;     // ( 1 or 2 or 4 )
 		};
+
+#pragma pack(pop)
 
 		struct PmxDescription
 		{

@@ -372,6 +372,26 @@ namespace octoon
 			return std::round(v);
 		}
 
+		inline float sqrt(float x) noexcept
+		{
+			return std::sqrt(x);
+		}
+
+		inline double sqrt(double x) noexcept
+		{
+			return std::sqrt(x);
+		}
+
+		inline float rsqrt(float x) noexcept
+		{
+			return 1.0f / std::sqrt(x);
+		}
+
+		inline double rsqrt(double x) noexcept
+		{
+			return 1.0 / std::sqrt(x);
+		}
+
 		inline float fast_exp2(float x) noexcept
 		{
 			constexpr float c[3] = { 5.79526f, 12.82461f, -2.88611f };

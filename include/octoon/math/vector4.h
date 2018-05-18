@@ -750,6 +750,12 @@ namespace octoon
 			return detail::Vector4<T>(std::pow(v1.x, v2.x), std::pow(v1.y, v2.y), std::pow(v1.z, v2.z), std::pow(v1.w, v2.w));
 		}
 
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		inline detail::Vector4<T> reflect(const detail::Vector4<T>& I, const detail::Vector4<T>& N) noexcept
+		{
+			return I - 2 * (dot(I, N) * N);
+		}
+
 		template<typename T>
 		inline detail::Vector4<T> random(const detail::Vector4<T>& min, const detail::Vector4<T>& max) noexcept
 		{

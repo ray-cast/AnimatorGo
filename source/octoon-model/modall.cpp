@@ -16,7 +16,6 @@ namespace octoon
 #endif
 		};
 
-
 		bool emptyLoader() noexcept
 		{
 			return _handlers.empty();

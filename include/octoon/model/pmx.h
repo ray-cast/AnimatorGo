@@ -330,4 +330,5 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_PMX_H_
+
+#endif

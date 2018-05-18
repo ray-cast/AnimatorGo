@@ -26,5 +26,5 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_PMX_LOADER_H_
 
+#endif

@@ -7,8 +7,6 @@
 
 namespace octoon
 {
-	class TextMeshingComponent;
-
 	namespace model
 	{
 		class OCTOON_EXPORT TextFile final

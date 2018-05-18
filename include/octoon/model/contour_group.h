@@ -80,6 +80,51 @@ namespace octoon
 			return aabb;
 		}
 
+		inline math::float2 Cove(const math::float2& OM, float x, float y)
+		{
+			float weight = math::cos(OM.x * math::PI * 0.5f) * 2.0f;
+			float xx = math::lerp(OM.x, OM.x + OM.x * (1.0f - math::abs(OM.x)) * 0.3f, abs(x));
+			float yy = math::lerp(OM.y, OM.y + weight, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Bulege(const math::float2& OM, float x, float y)
+		{
+			float weight = math::cos(OM.x * math::PI * 0.5f) * math::length(OM) * 2.0f;
+			float xx = math::lerp(OM.x, OM.x + OM.x * weight, y);
+			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Wave(const math::float2& OM, float x, float y)
+		{
+			float xx = math::lerp(OM.x, OM.x, y);
+			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI), x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Wave2(const math::float2& OM, float x, float y)
+		{
+			float xx = math::lerp(OM.x, OM.x, y);
+			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI) * (1.0f - abs(OM.y)), x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Slope(const math::float2& OM, float x, float y)
+		{
+			float xx = math::lerp(OM.x, OM.x, y);
+			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Expand(const math::float2& OM, float x, float y)
+		{
+			float weight = 1.2f - math::length(OM);
+			float xx = math::lerp(OM.x, OM.x + OM.x * weight, x);
+			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			return math::float2(xx, yy);
+		}
+
 		inline math::float2 Twist(const math::float2& OM, float x, float y)
 		{
 			float xx = math::lerp(OM.x, OM.x + OM.x * OM.y, y);

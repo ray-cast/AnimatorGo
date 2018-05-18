@@ -141,7 +141,11 @@ namespace octoon
 					switch (FT_CURVE_TAG(tags[i]))
 					{
 					case FT_Curve_Tag_On:
-						contours.addPoints(cur);
+						if (tags[i + 1] == FT_Curve_Tag_On)
+							contours.addPoints(cur, next, bezierSteps);
+						else
+							contours.addPoints(cur);
+
 						break;
 					case FT_Curve_Tag_Cubic:
 						contours.addPoints(prev, cur, next, math::float3(contour[(i + 2) % n].x / 64.0f, contour[(i + 2) % n].y / 64.0f, 0.0f), bezierSteps);

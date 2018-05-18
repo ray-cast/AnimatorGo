@@ -72,15 +72,15 @@ public:
 
 			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
-				static octoon::math::float1 s1 = 0.0f;
-				static octoon::math::float1 s2 = 0.0f;
-				static octoon::math::float1 d1 = 0.0f;
-				static octoon::math::float1 d2 = 0.0f;
+				static octoon::math::float1 x1 = 0.0f;
+				static octoon::math::float1 x2 = 0.0f;
+				static octoon::math::float1 y1 = 0.0f;
+				static octoon::math::float1 y2 = 0.0f;
 
-				octoon::imgui::drag_float("s", &s1, 0.01f, -2, 2);
-				octoon::imgui::drag_float("d", &d1, 0.01f, -2, 2);
+				octoon::imgui::drag_float("x", &x1, 0.01f, -2, 2);
+				octoon::imgui::drag_float("y", &y1, 0.01f, -2, 2);
 
-				if (s1 != s2 || d1 != d2)
+				if (y1 != y2 || x1 != x2)
 				{
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
@@ -91,7 +91,7 @@ public:
 						for (auto& it : text)
 						{
 							*it -= aabb.center();
-							*it /= aabb.size();
+							*it /= aabb.extents();
 						}
 
 						for (auto& group : text)
@@ -100,7 +100,15 @@ public:
 							{
 								for (auto& it : contours->points())
 								{
-									auto v = octoon::model::Panini(it.xy(), d1, s1);
+									 auto v = octoon::model::Cove(it.xy(), x1, y1);
+									// auto v = octoon::model::Bulege(it.xy(), x1, y1);
+									// auto v = octoon::model::Slope(it.xy(), x1, y1);
+									// auto v = octoon::model::Wave(it.xy(), x1, y1);
+									// auto v = octoon::model::Wave2(it.xy(), x1, y1);
+									// auto v = octoon::model::Expand(it.xy(), x1, y1);
+									// auto v = octoon::model::Panini(it.xy(), x1, y1);
+									// auto v = octoon::model::Twist(it.xy(), x1, y1);
+									
 									it.x = v.x;
 									it.y = v.y;
 								}
@@ -108,13 +116,13 @@ public:
 						}
 
 						for (auto& it : text)
-							*it *= aabb.size();
+							*it *= aabb.extents();
 
 						component->setMesh(octoon::model::makeMesh(text));
 					}
 
-					d2 = d1;
-					s2 = s1;
+					x2 = x1;
+					y2 = y1;
 				}
 
 				octoon::imgui::tree_pop();
@@ -134,11 +142,14 @@ private:
 };
 
 #include <iostream>
+#include <octoon/model/model.h>
 
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
+
+	octoon::model::Model model("C:\\Users\\Administrator\\Desktop\\ぽんぷ長式大和_水着\\ぽんぷ長式大和_水着.pmx");
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
@@ -156,8 +167,14 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
+		auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto aabb = octoon::model::aabb(text);
+
+		for (auto& it : text)
+			*it -= aabb.center();
+
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>();
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);

@@ -17,7 +17,7 @@ namespace octoon
 {
 	namespace model
 	{
-		bool PmxLoader::doCanLoad(istream& stream) noexcept
+		bool PmxLoader::doCanRead(istream& stream) const noexcept
 		{
 			PmxHeader header;
 			if (stream.read((char*)&header, sizeof(header)))
@@ -35,12 +35,12 @@ namespace octoon
 			return false;
 		}
 
-		bool PmxLoader::doCanLoad(const std::string& type) noexcept
+		bool PmxLoader::doCanRead(const std::string& type) const noexcept
 		{
 			return type.compare("pmx") == 0;
 		}
 
-		bool PmxLoader::doCanLoad(const char* type) noexcept
+		bool PmxLoader::doCanRead(const char* type) const noexcept
 		{
 			return std::strncmp(type, "pmx", 3) == 0;
 		}

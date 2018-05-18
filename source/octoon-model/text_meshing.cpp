@@ -120,7 +120,7 @@ namespace octoon
 			return instance;
 		}
 
-		ContourGroups makeTextContours(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
@@ -231,17 +231,17 @@ namespace octoon
 			return groups;
 		}
 
-		Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		Mesh makeText(const std::wstring& string, const TextMeshing& params) noexcept(false)
 		{
-			Mesh mesh = makeMesh(makeTextContours(params, string), params.getThickness(), false);
+			Mesh mesh = makeMesh(makeTextContours(string, params), params.getThickness(), false);
 			mesh.computeBoundingBox();
 
 			return mesh;
 		}
 
-		Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false)
+		Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params) noexcept(false)
 		{
-			Mesh mesh = makeMeshWireframe(makeTextContours(params, string), params.getThickness());
+			Mesh mesh = makeMeshWireframe(makeTextContours(string, params), params.getThickness());
 			mesh.computeBoundingBox();
 
 			return mesh;

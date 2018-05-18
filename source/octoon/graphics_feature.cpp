@@ -68,7 +68,7 @@ namespace octoon
 	GraphicsFeature::onActivate() except
 	{
 		graphics::GraphicsDeviceDesc deviceDesc;
-		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL20);
+		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL33);
 #if defined(__DEBUG__)
 		deviceDesc.setDebugControl(true);
 #else

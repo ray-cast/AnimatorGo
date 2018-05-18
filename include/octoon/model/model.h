@@ -12,8 +12,6 @@ namespace octoon
 		class OCTOON_EXPORT Model final
 		{
 		public:
-			typedef std::shared_ptr<ModelLoader>      MyLoader;
-
 			typedef std::vector<MeshPtr>      MeshList;
 			typedef std::vector<BonePtr>              BoneList;
 			typedef std::vector<IKAttrPtr>            IKList;
@@ -90,15 +88,14 @@ namespace octoon
 
 			void clear() noexcept;
 
-			bool load(istream& file, const char* type = nullptr) noexcept;
-			bool save(ostream& file, const char* type = "pmx") noexcept;
+		public:
+			bool load(istream& stream, const char* type = nullptr) noexcept;
+			bool load(const char* filepath, const char* type = nullptr) noexcept;
+			bool load(const std::string& filepath, const char* type = nullptr) noexcept;
 
-			bool emptyLoader() const noexcept;
-			bool addLoader(MyLoader loader) noexcept;
-			bool removeLoader(MyLoader loader) noexcept;
-			bool find(const char* type, MyLoader& loader) const noexcept;
-			bool find(istream& file, MyLoader& loader) const noexcept;
-			bool find(istream& file, const char* type, MyLoader& loader) const noexcept;
+			bool save(ostream& stream, const char* type = "obj") noexcept;
+			bool save(const char* filepath, const char* type = "obj") noexcept;
+			bool save(const std::string& filepath, const char* type = "obj") noexcept;
 
 		private:
 			Model& operator=(const Model&) noexcept = delete;
@@ -117,7 +114,6 @@ namespace octoon
 			AnimList _animations;
 			LightList _lights;
 			CameraList _cameras;
-			std::vector<MyLoader> _loaders;
 		};
 	}
 }

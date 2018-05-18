@@ -1,8 +1,7 @@
 #include <octoon/model/model.h>
 #include <octoon/model/modall.h>
-#include <octoon/io/fstream.h>
 
-using namespace octoon::io;
+#include <octoon/io/fstream.h>
 
 namespace octoon
 {
@@ -15,30 +14,6 @@ namespace octoon
 		Model::~Model() noexcept
 		{
 			this->clear();
-		}
-
-		bool Model::load(istream& file, const char* type) noexcept
-		{
-			if (emptyLoader())
-				addModelLoaderFor(*this);
-
-			MyLoader impl;
-			if (this->find(file, type, impl))
-				return impl->doLoad(file, *this);
-
-			return false;
-		}
-
-		bool Model::save(ostream& file, const char* type) noexcept
-		{
-			if (emptyLoader())
-				addModelLoaderFor(*this);
-
-			MyLoader impl;
-			if (this->find(type, impl))
-				return impl->doSave(file, *this);
-
-			return false;
 		}
 
 		void Model::clear() noexcept
@@ -311,88 +286,64 @@ namespace octoon
 		{
 		}
 
-		bool Model::emptyLoader() const noexcept
+		bool
+		Model::load(istream& stream, const char* type) noexcept
 		{
-			return _loaders.empty();
-		}
-
-		bool Model::addLoader(MyLoader loader) noexcept
-		{
-			assert(loader);
-
-			std::string baked;
-
-			for (auto it : _loaders)
+			if (stream.good())
 			{
-				if (it == loader)
+				ModelLoaderPtr impl = findHandler(stream, type);
+				if (impl)
 				{
-					return false;
-				}
-			}
-
-			_loaders.push_back(loader);
-
-			return true;
-		}
-
-		bool Model::removeLoader(MyLoader loader) noexcept
-		{
-			assert(loader);
-
-			auto it = std::find(_loaders.begin(), _loaders.end(), loader);
-			if (it != _loaders.end())
-			{
-				if (*it == loader)
-				{
-					_loaders.erase(it);
-					return true;
+					if (impl->doLoad(stream, *this))
+						return true;
 				}
 			}
 
 			return false;
 		}
 
-		bool Model::find(const char* type, MyLoader& out) const noexcept
+		bool
+		Model::load(const char* filepath, const char* type) noexcept
 		{
-			for (auto& it : _loaders)
+			io::ifstream stream(filepath);
+			return this->load(stream, type);
+		}
+
+		bool
+		Model::load(const std::string& filepath, const char* type) noexcept
+		{
+			io::ifstream stream(filepath);
+			return this->load(stream, type);
+		}
+
+		bool
+		Model::save(ostream& stream, const char* type) noexcept
+		{
+			if (stream.good())
 			{
-				if (it->doCanLoad(type))
+				ModelLoaderPtr impl = findHandler(type);
+				if (impl)
 				{
-					out = it;
-					return true;
+					if (impl->doSave(stream, *this))
+						return true;
 				}
 			}
 
 			return false;
 		}
 
-		bool Model::find(istream& file, MyLoader& out) const noexcept
+		bool
+		Model::save(const char* filepath, const char* type) noexcept
 		{
-			for (auto& it : _loaders)
-			{
-				file.seekg(0, ios_base::beg);
-
-				if (it->doCanLoad(file))
-				{
-					file.seekg(0, ios_base::beg);
-
-					out = it;
-					return true;
-				}
-			}
-
-			return false;
+			io::ofstream stream(filepath, io::ios_base::in | io::ios_base::out);
+			return this->save(stream, type);
 		}
 
-		bool Model::find(istream& file, const char* type, MyLoader& out) const noexcept
+		bool
+		Model::save(const std::string& filepath, const char* type) noexcept
 		{
-			if (type)
-			{
-				if (this->find(type, out))
-					return true;
-			}
-
-			return this->find(file, out);
+			io::ofstream stream(filepath, io::ios_base::in | io::ios_base::out);
+			return this->save(stream, type);
 		}
 	}
 }

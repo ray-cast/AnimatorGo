@@ -73,6 +73,7 @@ namespace octoon
 		typedef std::shared_ptr<class ContourGroup> ContourGroupPtr;
 		typedef std::shared_ptr<class TextFile> TextFilePtr;
 		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;
+		typedef std::shared_ptr<class ModelLoader> ModelLoaderPtr;
 
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;

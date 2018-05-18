@@ -70,6 +70,56 @@ public:
 				octoon::imgui::tree_pop();
 			}
 
+			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				static octoon::math::float1 s1 = 0.0f;
+				static octoon::math::float1 s2 = 0.0f;
+				static octoon::math::float1 d1 = 0.0f;
+				static octoon::math::float1 d2 = 0.0f;
+
+				octoon::imgui::drag_float("s", &s1, 0.01f, -2, 2);
+				octoon::imgui::drag_float("d", &d1, 0.01f, -2, 2);
+
+				if (s1 != s2 || d1 != d2)
+				{
+					auto component = this->getComponent<octoon::MeshFilterComponent>();
+					if (component)
+					{
+						auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+						auto aabb = octoon::model::aabb(text);
+
+						for (auto& it : text)
+						{
+							*it -= aabb.center();
+							*it /= aabb.size();
+						}
+
+						for (auto& group : text)
+						{
+							for (auto& contours : group->getContours())
+							{
+								for (auto& it : contours->points())
+								{
+									auto v = octoon::model::Panini(it.xy(), d1, s1);
+									it.x = v.x;
+									it.y = v.y;
+								}
+							}
+						}
+
+						for (auto& it : text)
+							*it *= aabb.size();
+
+						component->setMesh(octoon::model::makeMesh(text));
+					}
+
+					d2 = d1;
+					s2 = s1;
+				}
+
+				octoon::imgui::tree_pop();
+			}
+
 			octoon::imgui::end();
 		}
 	}
@@ -107,7 +157,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
 
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf", 24), L"Octoon Studio"));
+		object->addComponent<octoon::MeshFilterComponent>();
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material);

@@ -85,7 +85,7 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+						auto text = octoon::model::makeTextContours(L"Octoon Studio", { u8"../../system/fonts/DroidSansFallback.ttf", 24 });
 						auto aabb = octoon::model::aabb(text);
 
 						for (auto& it : text)

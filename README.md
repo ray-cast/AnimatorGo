@@ -33,7 +33,7 @@ This project is still under development. You can submit code by using Pull Reque
 
 [License (MIT)](https://github.com/octoon/octoon/blob/master/LICENSE)
 -------------------------------------------------------------------------------
-	Copyright (C) 2016-2018 Octoon Developers. All rights reserved.
+	Copyright (C) 2018-2019 Octoon Developers. All rights reserved.
 
 	https://github.com/octoon/octoon
 

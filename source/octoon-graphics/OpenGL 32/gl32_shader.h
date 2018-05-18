@@ -161,8 +161,8 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsParams& getActiveParams() const noexcept;
-			const GraphicsAttributes& getActiveAttributes() const noexcept;
+			const GraphicsParams& getActiveParams() const noexcept override;
+			const GraphicsAttributes& getActiveAttributes() const noexcept override;
 
 			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept override;
 

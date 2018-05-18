@@ -87,64 +87,64 @@ namespace octoon
 			void set(camera_array_t&& value) noexcept { _cameras = std::move(value); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& get() const { return _meshes; }
+			const mesh_array_t& get() const { return _meshes; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
-			constexpr bone_array_t& get() const { return _bones; }
+			const bone_array_t& get() const { return _bones; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::ik>>
-			constexpr ik_array_t& get() const { return _iks; }
+			const ik_array_t& get() const { return _iks; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			constexpr rigidbody_array_t& get() const { return _rigidbodys; }
+			const rigidbody_array_t& get() const { return _rigidbodys; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
-			constexpr joint_array_t& get() const { return _joints; }
+			const joint_array_t& get() const { return _joints; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::material>>
-			constexpr material_array_t& get() const { return _materials; }
+			const material_array_t& get() const { return _materials; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::texture>>
-			constexpr texture_array_t& get() const { return _textures; }
+			const texture_array_t& get() const { return _textures; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
-			constexpr animation_array_t& get() const { return _animations; }
+			const animation_array_t& get() const { return _animations; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::light>>
-			constexpr light_array_t& get() const { return _lights; }
+			const light_array_t& get() const { return _lights; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::camera>>
-			constexpr camera_array_t& get() const { return _cameras; }
+			const camera_array_t& get() const { return _cameras; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& get(std::size_t n) const { return _meshes[n]; }
+			const mesh_array_t& get(std::size_t n) const { return _meshes[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
-			constexpr bone_array_t& get(std::size_t n) const { return _bones[n]; }
+			const bone_array_t& get(std::size_t n) const { return _bones[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::ik>>
-			constexpr ik_array_t& get(std::size_t n) const { return _iks[n]; }
+			const ik_array_t& get(std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			constexpr rigidbody_array_t& get(std::size_t n) const { return _rigidbodys[n]; }
+			const rigidbody_array_t& get(std::size_t n) const { return _rigidbodys[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
-			constexpr joint_array_t& get(std::size_t n) const { return _joints[n]; }
+			const joint_array_t& get(std::size_t n) const { return _joints[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::material>>
-			constexpr material_array_t& get(std::size_t n) const { return _materials[n]; }
+			const material_array_t& get(std::size_t n) const { return _materials[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::texture>>
-			constexpr texture_array_t& get(std::size_t n) const { return _textures[n]; }
+			const texture_array_t& get(std::size_t n) const { return _textures[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
-			constexpr animation_array_t& get(std::size_t n) const { return _animations[n]; }
+			const animation_array_t& get(std::size_t n) const { return _animations[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::light>>
-			constexpr light_array_t& get(std::size_t n) const { return _lights[n]; }
+			const light_array_t& get(std::size_t n) const { return _lights[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::camera>>
-			constexpr camera_array_t& get(std::size_t n) const { return _cameras[n]; }
+			const camera_array_t& get(std::size_t n) const { return _cameras[n]; }
 
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::mesh, bool> empty() const { return _meshes.empty(); }

@@ -51,7 +51,8 @@ namespace octoon
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
-		this->onMeshReplace(meshFilter->getMesh());
+		if (meshFilter)
+			this->onMeshReplace(meshFilter->getMesh());
 	}
 
 	void

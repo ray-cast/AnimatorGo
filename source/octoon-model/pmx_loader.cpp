@@ -8,6 +8,7 @@
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
 
+#include <map>
 #include <cstring>
 
 using namespace octoon::io;
@@ -485,18 +486,10 @@ namespace octoon
 			{
 				auto material = std::make_shared<MaterialProperty>();
 
-				if ((it.name.length >> 1) < MAX_PATH)
-				{
-					char name[MAX_PATH];
-					auto length = wcstombs(nullptr, it.name.name, 0);
-					if (length < MAX_PATH)
-					{
-						wcstombs(name, it.name.name, MAX_PATH);
+				char name[MAX_PATH] = { 0 };
+				wcstombs(name, it.name.name, MAX_PATH);
 
-						material->set(MATKEY_NAME, name);
-					}
-				}
-
+				material->set(MATKEY_NAME, name);
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
@@ -516,7 +509,7 @@ namespace octoon
 					PmxName& texture = pmx.textures[it.TextureIndex];
 					if ((texture.length >> 1) < MAX_PATH)
 					{
-						char name[MAX_PATH];
+						char name[MAX_PATH] = { 0 };
 						::wcstombs(name, texture.name, MAX_PATH);
 
 						material->set(MATKEY_TEXTURE_DIFFUSE(0), name);
@@ -530,7 +523,6 @@ namespace octoon
 					if ((texture.length >> 1) < MAX_PATH)
 					{
 						char name[MAX_PATH];
-
 						wcstombs(name, texture.name, MAX_PATH);
 
 						material->set(MATKEY_COLOR_SPHEREMAP, name);
@@ -540,23 +532,43 @@ namespace octoon
 				model.add(std::move(material));
 			}
 
-			if (pmx.numVertices > 0 && pmx.numIndices > 0 && pmx.numMaterials > 0)
+			PmxUInt32 startIndices = 0;
+
+			for (auto& it : pmx.materials)
 			{
-				float3s vertices;
-				float3s normals;
-				float2s texcoords;
-				VertexWeights weights;
+				MeshPtr mesh = std::make_shared<Mesh>();
 
-				for (std::uint32_t i = 0; i < pmx.numVertices; i++)
+				if (pmx.numVertices)
 				{
-					PmxVertex& v = pmx.vertices[i];
+					float3s vertices_;
+					float3s normals_;
+					float2s texcoords_;
 
-					vertices.push_back(v.position);
-					normals.push_back(v.normal);
-					texcoords.push_back(v.coord);
+					vertices_.resize(it.FaceCount);
+					normals_.resize(it.FaceCount);
+					texcoords_.resize(it.FaceCount);
 
-					if (pmx.numBones > 1)
+					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 					{
+						auto src = pmx.indices[startIndices + i];
+						vertices_[i] = pmx.vertices[src].position;
+						normals_[i] = pmx.vertices[src].normal;
+						texcoords_[i] = pmx.vertices[src].coord;
+					}
+
+					mesh->setVertexArray(std::move(vertices_));
+					mesh->setNormalArray(std::move(normals_));
+					mesh->setTexcoordArray(std::move(texcoords_));
+				}
+
+				if (pmx.numBones)
+				{
+					VertexWeights weights(it.FaceCount);
+
+					for (auto i = 0; i < it.FaceCount; i++)
+					{
+						auto& v = pmx.vertices[i];
+
 						VertexWeight weight;
 						weight.weight1 = v.weight.weight1;
 						weight.weight2 = v.weight.weight2;
@@ -569,55 +581,13 @@ namespace octoon
 
 						weights.push_back(weight);
 					}
+
+					mesh->setWeightArray(std::move(weights));
 				}
 
-				Uint1Array indices(pmx.numIndices);
-				PmxIndex* indicesData = pmx.indices.data();
+				model.add(std::move(mesh));
 
-				for (std::uint32_t i = 0; i < pmx.numIndices; i++, indicesData += pmx.header.sizeOfIndices)
-				{
-					if (pmx.header.sizeOfIndices == 1)
-						indices[i] = *(std::uint8_t*)indicesData;
-					else if (pmx.header.sizeOfIndices == 2)
-						indices[i] = *(std::uint16_t*)indicesData;
-					else if (pmx.header.sizeOfIndices == 4)
-						indices[i] = *(std::uint16_t*)indicesData;
-					else
-						return false;
-				}
-
-				PmxUInt32 startIndices = 0;
-
-				for (auto& it : pmx.materials)
-				{
-					MeshPtr mesh = std::make_shared<Mesh>();
-
-					float3s vertices_(it.FaceCount);
-					float3s normals_(it.FaceCount);
-					float2s texcoords_(it.FaceCount);
-					VertexWeights weights_(it.FaceCount);
-					uint1s indices_(it.FaceCount);
-
-					for (auto i = startIndices; i < it.FaceCount; i++)
-					{
-						auto index = indices[i];
-						vertices_[i] = vertices[index];
-						normals_[i] = normals[index];
-						texcoords_[i] = texcoords[index];
-						weights_[i] = weights[index];
-						indices_[i] = i;
-					}
-
-					mesh->setVertexArray(std::move(vertices_));
-					mesh->setNormalArray(std::move(normals_));
-					mesh->setTexcoordArray(std::move(texcoords_));
-					mesh->setWeightArray(std::move(weights_));
-					mesh->setIndicesArray(std::move(indices_));
-
-					startIndices += it.FaceCount;
-
-					model.add(std::move(mesh));
-				}
+				startIndices += it.FaceCount;
 			}
 
 			if (pmx.numBones > 1)
@@ -626,9 +596,6 @@ namespace octoon
 				for (auto& it : pmx.bones)
 				{
 					char name[MAX_PATH] = { 0 };
-					if ((it.name.length) > MAX_PATH)
-						return false;
-
 					if (!wcstombs(name, it.name.name, MAX_PATH))
 						return false;
 

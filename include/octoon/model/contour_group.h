@@ -125,6 +125,14 @@ namespace octoon
 			return math::float2(xx, yy);
 		}
 
+		inline math::float2 Expand2(const math::float2& OM, float x, float y)
+		{
+			float weight = 1.3f - math::length(OM);
+			float xx = math::lerp(OM.x, OM.x - OM.x * weight, x);
+			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			return math::float2(xx, yy);
+		}
+
 		inline math::float2 Twist(const math::float2& OM, float x, float y)
 		{
 			float xx = math::lerp(OM.x, OM.x + OM.x * OM.y, y);
@@ -138,6 +146,17 @@ namespace octoon
 			float yy = math::lerp(OM.y, OM.y + OM.x * OM.y, x);
 			float zz = math::lerp(OM.z, OM.z + OM.x * OM.y, z);
 			return math::float3(xx, yy, zz);
+		}
+
+		inline math::float2 Rotation(const math::float2& OM, float x, float y)
+		{
+			float c, s;
+			math::sinCos(&s, &c, x);
+
+			float xx = math::lerp(OM.x, OM.x * c - s * OM.y, x);
+			float yy = math::lerp(OM.y, OM.x * s + c * OM.y, x);
+
+			return math::float2(xx, yy);
 		}
 
 		// Thanks to : http://tksharpless.net/vedutismo/Pannini/panini.pdf

@@ -87,7 +87,7 @@ namespace octoon
 			void set(camera_array_t&& value) noexcept { _cameras = std::move(value); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& get() const { return _meshs; }
+			constexpr mesh_array_t& get() const { return _meshes; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
 			constexpr bone_array_t& get() const { return _bones; }
@@ -117,7 +117,7 @@ namespace octoon
 			constexpr camera_array_t& get() const { return _cameras; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& get(std::size_t n) const { return _meshs[n]; }
+			constexpr mesh_array_t& get(std::size_t n) const { return _meshes[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
 			constexpr bone_array_t& get(std::size_t n) const { return _bones[n]; }
@@ -147,7 +147,7 @@ namespace octoon
 			constexpr camera_array_t& get(std::size_t n) const { return _cameras[n]; }
 
 			template<type_t type>
-			constexpr std::enable_if_t<type == type_t::mesh, bool> empty() const { return _meshs.empty(); }
+			constexpr std::enable_if_t<type == type_t::mesh, bool> empty() const { return _meshes.empty(); }
 
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::bone, bool> empty() const { return _bones.empty(); }
@@ -177,7 +177,7 @@ namespace octoon
 			constexpr std::enable_if_t<type == type_t::camera, bool> empty() const { return _cameras.empty(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& operator[](std::size_t n) const { return _meshs[n]; }
+			constexpr mesh_array_t& operator[](std::size_t n) const { return _meshes[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
 			constexpr bone_array_t& operator[](std::size_t n) const { return _bones[n]; }

@@ -4,25 +4,28 @@ Octoon is a cross-platform graphic engine. It is free and open-source under MIT 
 
 Octoon provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.
 
-
-Getting started
+Supported compilers:
 ------
-For compiling Octoon, CMake shall be installed first.
-These compilers are tested:
-* Microsoft Visual Studio 2017 15.5.7
-* GNU c version 7.3.0
-* GNU c version 5.4.0
-* GNU c version 6.2.0
-* GNU c version 8.0.0
-* clang version 5.0.0
+* Visual Studio 2017 (Only tested on 15.5.7 version)
+* GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.0.0 version)
+* Clang & LLVM (Only tested on 5.0.0 version)
 
-Platforms
+Support platforms:
 ------
-* Windows desktop
-* macOS (future)
-* Linux
-* Android (future)
+* Windows (Only tested on XP, Vista, 7, 8, 10)
+* Linux (Only tested on Ubuntu, Centos)
 * HTML5
+* Android (future)
+* ios (future)
+* mac (future)
+
+Support rendering backends:
+------
+* OpenGL 330
+* OpenGL 450
+* OpenGL ES 2.0
+* OpenGL ES 3.0
+* OpenGL ES 3.2
 
 Contribution
 ------

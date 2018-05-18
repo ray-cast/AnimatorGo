@@ -11,14 +11,17 @@ For compiling Octoon, CMake shall be installed first.
 These compilers are tested:
 * Microsoft Visual Studio 2017 15.5.7
 * GNU c version 7.3.0
+* GNU c version 5.4.0
+* GNU c version 6.2.0
+* GNU c version 8.0.0
 * clang version 5.0.0
 
 Platforms
 ------
 * Windows desktop
-* macOS
+* macOS (future)
 * Linux
-* Android
+* Android (future)
 * HTML5
 
 Contribution

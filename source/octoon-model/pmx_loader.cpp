@@ -548,12 +548,36 @@ namespace octoon
 					normals_.resize(it.FaceCount);
 					texcoords_.resize(it.FaceCount);
 
-					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
+					auto indicesData = pmx.indices.data();
+					if (pmx.header.sizeOfIndices == 1)
 					{
-						auto src = pmx.indices[startIndices + i];
-						vertices_[i] = pmx.vertices[src].position;
-						normals_[i] = pmx.vertices[src].normal;
-						texcoords_[i] = pmx.vertices[src].coord;
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint8_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
+					}
+					else if (pmx.header.sizeOfIndices == 2)
+					{
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint16_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
+					}
+					else if (pmx.header.sizeOfIndices == 4)
+					{
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint32_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
 					}
 
 					mesh->setVertexArray(std::move(vertices_));

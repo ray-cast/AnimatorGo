@@ -1,5 +1,7 @@
 Octoon
 ======
+######[English](https://github.com/octoon/octoon/blob/master/README.md) &nbsp; [中文](https://github.com/octoon/octoon/blob/master/README_zh_cn.md)
+####
 Octoon是一个免费和开源的跨平台图形引擎，采用MIT协议。 用户可以使用一组统一的API轻松创建图形应用程序。 应用程序可以导出到许多平台，包括Linux，Mac OSX，Windows，Android和HTML5。
 
 Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 ECS系统的形式支持许多功能，如图形，物理，音频和视频。 通过附加各种组件，对象可以灵活地执行不同的任务。

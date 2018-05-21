@@ -128,7 +128,7 @@ namespace octoon
 
 			for (auto& contour : contours)
 			{
-				std::size_t written = 0;
+				const Contour& contour = group.at(i);
 
 				for (std::size_t n = 0; n < contour->count(); ++n)
 				{
@@ -234,7 +234,6 @@ namespace octoon
 			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
-			math::uint1s& indices = mesh.getIndicesArray();
 
 			float thicknessHalf = thickness * 0.5f;
 
@@ -262,8 +261,12 @@ namespace octoon
 
 					tris.push_back(a);
 					tris.push_back(b);
+					tris.push_back(b);
+					tris.push_back(c);
 					tris.push_back(c);
 					tris.push_back(d);
+					tris.push_back(d);
+					tris.push_back(a);
 				}
 			}
 
@@ -280,7 +283,6 @@ namespace octoon
 			Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
-			math::uint1s& indices = mesh.getIndicesArray();
 
 			float thicknessHalf = thickness * 0.5f;
 
@@ -310,8 +312,12 @@ namespace octoon
 
 						tris.push_back(a);
 						tris.push_back(b);
+						tris.push_back(b);
+						tris.push_back(c);
 						tris.push_back(c);
 						tris.push_back(d);
+						tris.push_back(d);
+						tris.push_back(a);
 					}
 				}
 			}

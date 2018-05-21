@@ -80,20 +80,26 @@ namespace octoon
 			return aabb;
 		}
 
+		inline math::float2 Twist(const math::float2& pt, float x, float y)
+		{
+			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
+			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float3 Twist(const math::float3& pt, float x, float y, float z)
+		{
+			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
+			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
+			float zz = math::lerp(pt.z, pt.z + pt.x * pt.y, z);
+			return math::float3(xx, yy, zz);
+		}
+
 		inline math::float2 fan(const math::float2& pt, float x, float y)
 		{
 			float unorm = math::saturate(math::snorm2unorm(pt.y));
 			float weight = math::cos(pt.x * math::PI * 0.5f) * 7.0f;
 			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.3f - abs(pt.x)), abs(x));
-			float yy = math::lerp(pt.y, pt.y + weight, x);
-			return math::float2(xx, yy);
-		}
-
-		inline math::float2 HighCove(const math::float2& pt, float x, float y)
-		{
-			float unorm = math::saturate(math::snorm2unorm(pt.y));
-			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * 7.0f;
-			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.0f - abs(pt.x)) * 0.3f, abs(x));
 			float yy = math::lerp(pt.y, pt.y + weight, x);
 			return math::float2(xx, yy);
 		}
@@ -104,6 +110,15 @@ namespace octoon
 			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * 6.8f;
 			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.0f - abs(pt.x)) * 0.3f, abs(x));
 			float yy = math::lerp(pt.y, pt.y - weight, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 HighCove(const math::float2& pt, float x, float y)
+		{
+			float unorm = math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * 7.0f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.0f - abs(pt.x)) * 0.3f, abs(x));
+			float yy = math::lerp(pt.y, pt.y + weight, x);
 			return math::float2(xx, yy);
 		}
 
@@ -123,39 +138,57 @@ namespace octoon
 			return math::float2(xx, yy);
 		}
 
+		inline math::float2 BulegeHigh(const math::float2& pt, float x, float y)
+		{
+			float unorm = math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * unorm * 6.8f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * 0.3f, abs(x));
+			float yy = math::lerp(pt.y, pt.y + weight, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 BulegeLow(const math::float2& pt, float x, float y)
+		{
+			float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * unorm * 6.8f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * 0.3f, abs(x));
+			float yy = math::lerp(pt.y, pt.y - weight, x);
+			return math::float2(xx, yy);
+		}
+
 		inline math::float2 Fish(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * math::PI), x);
-			float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), y);
+			float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * math::PI), y);
+			float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 FishEye(const math::float2& pt, float x, float y)
-		{
-			float weight = 1.0f - math::length(pt);
-			float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
-			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
-			return math::float2(xx, yy);
-		}
-
-		inline math::float2 Wave(const math::float2& pt, float x, float y)
+		inline math::float2 Flag(const math::float2& pt, float x, float y)
 		{
 			float xx = math::lerp(pt.x, pt.x, y);
 			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI), x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Wave2(const math::float2& pt, float x, float y)
+		inline math::float2 Wave(const math::float2& pt, float x, float y)
 		{
 			float xx = math::lerp(pt.x, pt.x, y);
-			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI) * (1.2f - abs(pt.y)), x);
+			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI) * (1.0f - abs(pt.y)), x);
 			return math::float2(xx, yy);
 		}
 
 		inline math::float2 Slope(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(pt.x, pt.x, y);
-			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x);
+			float xx = math::lerp(pt.x, pt.x + math::sin(pt.y * math::PI * 0.5f) - math::sin(math::PI * 0.5f), y * 2.0f);
+			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x * 2.0f);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 FishEye(const math::float2& pt, float ratio, float x, float y)
+		{
+			float weight = 1.1f - math::length(pt);
+			float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
+			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x / ratio);
 			return math::float2(xx, yy);
 		}
 
@@ -173,21 +206,6 @@ namespace octoon
 			float xx = math::lerp(pt.x, pt.x - pt.x * weight, x * 0.5f);
 			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x * 0.5f);
 			return math::float2(xx, yy);
-		}
-
-		inline math::float2 Twist(const math::float2& pt, float x, float y)
-		{
-			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
-			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
-			return math::float2(xx, yy);
-		}
-
-		inline math::float3 Twist(const math::float3& pt, float x, float y, float z)
-		{
-			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
-			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
-			float zz = math::lerp(pt.z, pt.z + pt.x * pt.y, z);
-			return math::float3(xx, yy, zz);
 		}
 
 		inline math::float2 Spin(const math::float2& pt, float ratio, float x, float y)

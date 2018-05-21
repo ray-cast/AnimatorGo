@@ -100,19 +100,27 @@ public:
 							{
 								for (auto& it : contours->points())
 								{
-									auto v = octoon::model::fan(it.xy(), x1, y1);
+									//auto v = octoon::model::Twist(it.xy(), 1.0f, 0.0f);
+
+									// auto v = octoon::model::fan(it.xy(), x1, y1);
 									// auto v = octoon::model::HighCove(it.xy(), x1, y1);
 									// auto v = octoon::model::LowCove(it.xy(), x1, y1);
-									// auto v = octoon::model::ExpandIn(it.xy(), x1, y1);
-									// auto v = octoon::model::Fish(v, x1, y1);
-									// auto v = octoon::model::FishEye(it.xy(), x1, y1);
-									// auto v = octoon::model::Slope(it.xy(), x1, y1);
+
+									// auto v = octoon::model::Cove(it.xy(), x1, y1);
+									// auto v = octoon::model::Bulege(it.xy(), x1, y1);
+									// auto v = octoon::model::BulegeHigh(it.xy(), x1, y1);
+									auto v = octoon::model::BulegeLow(it.xy(), x1, y1);
+
+									// auto v = octoon::model::Flag(it.xy(), x1, y1);
 									// auto v = octoon::model::Wave(it.xy(), x1, y1);
-									// auto v = octoon::model::Wave2(it.xy(), x1, y1);
-									// auto v = octoon::model::Expand(it.xy(), x1, y1);
-									// auto v = octoon::model::Panini(it.xy(), x1, y1);
-									// auto v = octoon::model::Twist(it.xy(), x1, y1);
-									// auto v = octoon::model::Rotation(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
+									// auto v = octoon::model::Fish(it.xy(), x1, y1);
+									// auto v = octoon::model::Slope(it.xy(), x1, y1);
+
+									// auto v = octoon::model::FishEye(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
+									// auto v = octoon::model::ExpandOut(it.xy(), x1, y1);
+									// auto v = octoon::model::ExpandIn(it.xy(), x1, y1);
+									// auto v = octoon::model::Spin(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
+
 									it.x = v.x;
 									it.y = v.y;
 								}

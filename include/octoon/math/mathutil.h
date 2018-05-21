@@ -49,6 +49,12 @@ namespace octoon
 		}
 
 		template<typename T>
+		constexpr T sign(const T t) noexcept
+		{
+			return (t == 0.0f) ? 0.0 : (t > 0) ? 1.0f : -1.0f;
+		}
+
+		template<typename T>
 		constexpr T middle(const T t1, const T t2, const T t3) noexcept
 		{
 			if (t1 < t2)

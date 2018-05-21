@@ -77,15 +77,15 @@ public:
 				static octoon::math::float1 y1 = 0.0f;
 				static octoon::math::float1 y2 = 0.0f;
 
-				octoon::imgui::drag_float("x", &x1, 0.01f, -2, 2);
-				octoon::imgui::drag_float("y", &y1, 0.01f, -2, 2);
+				octoon::imgui::drag_float("x", &x1, 0.01f, -1, 1);
+				octoon::imgui::drag_float("y", &y1, 0.01f, -1, 1);
 
 				if (y1 != y2 || x1 != x2)
 				{
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+						auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(text);
 
 						for (auto& it : text)
@@ -100,15 +100,19 @@ public:
 							{
 								for (auto& it : contours->points())
 								{
-									 auto v = octoon::model::Cove(it.xy(), x1, y1);
-									// auto v = octoon::model::Bulege(it.xy(), x1, y1);
+									auto v = octoon::model::fan(it.xy(), x1, y1);
+									// auto v = octoon::model::HighCove(it.xy(), x1, y1);
+									// auto v = octoon::model::LowCove(it.xy(), x1, y1);
+									// auto v = octoon::model::ExpandIn(it.xy(), x1, y1);
+									// auto v = octoon::model::Fish(v, x1, y1);
+									// auto v = octoon::model::FishEye(it.xy(), x1, y1);
 									// auto v = octoon::model::Slope(it.xy(), x1, y1);
 									// auto v = octoon::model::Wave(it.xy(), x1, y1);
 									// auto v = octoon::model::Wave2(it.xy(), x1, y1);
 									// auto v = octoon::model::Expand(it.xy(), x1, y1);
 									// auto v = octoon::model::Panini(it.xy(), x1, y1);
 									// auto v = octoon::model::Twist(it.xy(), x1, y1);
-									
+									// auto v = octoon::model::Rotation(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
 									it.x = v.x;
 									it.y = v.y;
 								}
@@ -118,7 +122,7 @@ public:
 						for (auto& it : text)
 							*it *= aabb.extents();
 
-						component->setMesh(octoon::model::makeMesh(text));
+						component->setMesh(octoon::model::makeMesh(text, 0.1f));
 					}
 
 					x2 = x1;
@@ -141,9 +145,6 @@ private:
 	octoon::video::TextMaterialPtr material_;
 };
 
-#include <iostream>
-#include <octoon/model/model.h>
-
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
@@ -163,9 +164,9 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
+		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 
 		for (auto& it : text)

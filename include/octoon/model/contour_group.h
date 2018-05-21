@@ -80,91 +80,133 @@ namespace octoon
 			return aabb;
 		}
 
-		inline math::float2 Cove(const math::float2& OM, float x, float y)
+		inline math::float2 fan(const math::float2& pt, float x, float y)
 		{
-			float weight = math::cos(OM.x * math::PI * 0.5f) * 2.0f;
-			float xx = math::lerp(OM.x, OM.x + OM.x * (1.0f - math::abs(OM.x)) * 0.3f, abs(x));
-			float yy = math::lerp(OM.y, OM.y + weight, x);
+			float unorm = math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * 7.0f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.3f - abs(pt.x)), abs(x));
+			float yy = math::lerp(pt.y, pt.y + weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Bulege(const math::float2& OM, float x, float y)
+		inline math::float2 HighCove(const math::float2& pt, float x, float y)
 		{
-			float weight = math::cos(OM.x * math::PI * 0.5f) * math::length(OM) * 2.0f;
-			float xx = math::lerp(OM.x, OM.x + OM.x * weight, y);
-			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			float unorm = math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * 7.0f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.0f - abs(pt.x)) * 0.3f, abs(x));
+			float yy = math::lerp(pt.y, pt.y + weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Wave(const math::float2& OM, float x, float y)
+		inline math::float2 LowCove(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(OM.x, OM.x, y);
-			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI), x);
+			float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.y));
+			float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * 6.8f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * unorm * (1.0f - abs(pt.x)) * 0.3f, abs(x));
+			float yy = math::lerp(pt.y, pt.y - weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Wave2(const math::float2& OM, float x, float y)
+		inline math::float2 Cove(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(OM.x, OM.x, y);
-			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI) * (1.0f - abs(OM.y)), x);
+			float weight = math::cos(pt.x * math::PI * 0.5f) * 8.0f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * (1.0f - math::abs(pt.x)) * 0.5f, abs(x));
+			float yy = math::lerp(pt.y, pt.y + weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Slope(const math::float2& OM, float x, float y)
+		inline math::float2 Bulege(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(OM.x, OM.x, y);
-			float yy = math::lerp(OM.y, OM.y + math::sin(OM.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x);
+			float weight = math::cos(pt.x * math::PI * 0.5f) * math::length(pt) * 8.0f;
+			float xx = math::lerp(pt.x, pt.x + pt.x * weight, y);
+			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Expand(const math::float2& OM, float x, float y)
+		inline math::float2 Fish(const math::float2& pt, float x, float y)
 		{
-			float weight = 1.2f - math::length(OM);
-			float xx = math::lerp(OM.x, OM.x + OM.x * weight, x);
-			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * math::PI), x);
+			float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), y);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Expand2(const math::float2& OM, float x, float y)
+		inline math::float2 FishEye(const math::float2& pt, float x, float y)
 		{
-			float weight = 1.3f - math::length(OM);
-			float xx = math::lerp(OM.x, OM.x - OM.x * weight, x);
-			float yy = math::lerp(OM.y, OM.y + OM.y * weight, x);
+			float weight = 1.0f - math::length(pt);
+			float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
+			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float2 Twist(const math::float2& OM, float x, float y)
+		inline math::float2 Wave(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(OM.x, OM.x + OM.x * OM.y, y);
-			float yy = math::lerp(OM.y, OM.y + OM.x * OM.y, x);
+			float xx = math::lerp(pt.x, pt.x, y);
+			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI), x);
 			return math::float2(xx, yy);
 		}
 
-		inline math::float3 Twist(const math::float3& OM, float x, float y, float z)
+		inline math::float2 Wave2(const math::float2& pt, float x, float y)
 		{
-			float xx = math::lerp(OM.x, OM.x + OM.x * OM.y, y);
-			float yy = math::lerp(OM.y, OM.y + OM.x * OM.y, x);
-			float zz = math::lerp(OM.z, OM.z + OM.x * OM.y, z);
+			float xx = math::lerp(pt.x, pt.x, y);
+			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI) * (1.2f - abs(pt.y)), x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Slope(const math::float2& pt, float x, float y)
+		{
+			float xx = math::lerp(pt.x, pt.x, y);
+			float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 ExpandOut(const math::float2& pt, float x, float y)
+		{
+			float weight = 1.5f - math::length(pt);
+			float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
+			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 ExpandIn(const math::float2& pt, float x, float y)
+		{
+			float weight = 1.5f - math::length(pt);
+			float xx = math::lerp(pt.x, pt.x - pt.x * weight, x * 0.5f);
+			float yy = math::lerp(pt.y, pt.y + pt.y * weight, x * 0.5f);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float2 Twist(const math::float2& pt, float x, float y)
+		{
+			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
+			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
+			return math::float2(xx, yy);
+		}
+
+		inline math::float3 Twist(const math::float3& pt, float x, float y, float z)
+		{
+			float xx = math::lerp(pt.x, pt.x + pt.x * pt.y, y);
+			float yy = math::lerp(pt.y, pt.y + pt.x * pt.y, x);
+			float zz = math::lerp(pt.z, pt.z + pt.x * pt.y, z);
 			return math::float3(xx, yy, zz);
 		}
 
-		inline math::float2 Rotation(const math::float2& OM, float x, float y)
+		inline math::float2 Spin(const math::float2& pt, float ratio, float x, float y)
 		{
-			float c, s;
-			math::sinCos(&s, &c, x);
+			math::float2 spin;
+			math::sinCos(&spin.x, &spin.y, x * (1.0f - math::length(pt)) * 0.5f);
 
-			float xx = math::lerp(OM.x, OM.x * c - s * OM.y, x);
-			float yy = math::lerp(OM.y, OM.x * s + c * OM.y, x);
+			float xx = math::lerp(pt.x, pt.x + pt.y * spin.x, x);
+			float yy = math::lerp(pt.y, pt.x + pt.y * spin.y, x / ratio);
 
 			return math::float2(xx, yy);
 		}
 
-		// Thanks to : http://tksharpless.net/vedutismo/Pannini/panini.pdf
-		inline math::float2 Panini(const math::float2& OM, float x, float y)
+		inline math::float2 Panini(const math::float2& pt, float x, float y)
 		{
-			float invLen = math::rsqrt(1.0f + OM.x * OM.x);
-			float SinPhi = OM.x * invLen;
-			float TanTheta = OM.y * invLen;
+			// Thanks to : http://tksharpless.net/vedutismo/Pannini/panini.pdf
+			float invLen = math::rsqrt(1.0f + pt.x * pt.x);
+			float SinPhi = pt.x * invLen;
+			float TanTheta = pt.y * invLen;
 			float CosPhi = math::sqrt(1.0f - SinPhi * SinPhi);
 			float S = (x + 1.0f) / (x + CosPhi);
 

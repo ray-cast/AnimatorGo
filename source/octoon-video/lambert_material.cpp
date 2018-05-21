@@ -1,4 +1,4 @@
-#include <octoon/video/phong_material.h>
+#include <octoon/video/lambert_material.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
 
@@ -6,13 +6,13 @@ namespace octoon
 {
 	namespace video
 	{
-		PhongMaterial::PhongMaterial() except
+		LambertMaterial::LambertMaterial() except
 		{
 			this->setup();
 		}
 
 		void
-		PhongMaterial::setup() except
+		LambertMaterial::setup() except
 		{
 			const char* vert = R"(#version 330
 			uniform mat4 proj;
@@ -32,40 +32,31 @@ namespace octoon
 			})";
 
 			const char* frag = R"(#version 330
+
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
 			uniform vec3 ambientColor;
-			uniform vec3 specularColor;
 			uniform vec3 darkColor;
-			uniform float shininess;
-			uniform float lightIntensity;
 			uniform float ambient;
+			uniform float lightIntensity;
 
-			layout(location = 0) out vec4 fragColor;
+			layout(location  = 0) out vec4 fragColor;
 
 			in vec3 oTexcoord0;
 			in vec3 oTexcoord1;
 
-			float lum(vec3 rgb)
-			{
-				return dot(rgb, vec3(0.30, 0.59, 0.11));
-			}
-
 			void main()
 			{
 				vec3 base = baseColor;
-				vec3 specular = specularColor;
 
 				vec3 L = lightDir;
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
-				vec3 R = reflect(N, L);
 
 				float nl = max(0.0f, dot(N, L));
-				float spec = pow(max(0, dot(R, V)), pow(4096, shininess));
 
 				vec3 lighting = mix(darkColor, ambientColor, ambient);
-				lighting = mix(lighting, base + specular * spec, nl * lightIntensity);
+				lighting = mix(lighting, base, nl * lightIntensity);
 
 				fragColor = vec4(lighting, 1.0f);
 			})";
@@ -114,145 +105,118 @@ namespace octoon
 			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
 			ambient_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambient"; });
 			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
-			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
 			darkColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "darkColor"; });
-			shininess_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "shininess"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::One);
 			ambientColor_->uniform3f(math::float3::Zero);
-			specularColor_->uniform3f(math::float3::One);
 			darkColor_->uniform3f(math::float3::Zero);
 		}
 
-		PhongMaterial::~PhongMaterial() noexcept
+		LambertMaterial::~LambertMaterial() noexcept
 		{
 		}
 
 		void
-		PhongMaterial::setTransform(const math::float4x4& m) noexcept
+		LambertMaterial::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		PhongMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		LambertMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		const graphics::GraphicsPipelinePtr&
-		PhongMaterial::getPipeline() const noexcept
+		LambertMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		const graphics::GraphicsDescriptorSetPtr&
-		PhongMaterial::getDescriptorSet() const noexcept
+		LambertMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
 		void
-		PhongMaterial::setLightDir(const math::float3& dir) noexcept
+		LambertMaterial::setLightDir(const math::float3& dir) noexcept
 		{
 			lightDir_->uniform3f(dir);
 		}
 
 		void
-		PhongMaterial::setLightIntensity(const math::float1& intensity) noexcept
+		LambertMaterial::setLightIntensity(const math::float1& intensity) noexcept
 		{
 			lightIntensity_->uniform1f(intensity);
 		}
 
 		void
-		PhongMaterial::setBaseColor(const math::float3& color) noexcept
-		{
-			baseColor_->uniform3f(color);
-		}
-
-		void
-		PhongMaterial::setAmbient(const math::float1& weight) noexcept
+		LambertMaterial::setAmbient(math::float1 weight) noexcept
 		{
 			ambient_->uniform1f(weight);
 		}
 
 		void
-		PhongMaterial::setAmbientColor(const math::float3& color) noexcept
+		LambertMaterial::setBaseColor(const math::float3& color) noexcept
+		{
+			baseColor_->uniform3f(color);
+		}
+
+		void
+		LambertMaterial::setAmbientColor(const math::float3& color) noexcept
 		{
 			ambientColor_->uniform3f(color);
 		}
 
 		void
-		PhongMaterial::setSpecularColor(const math::float3& color) noexcept
-		{
-			specularColor_->uniform3f(color);
-		}
-
-		void
-		PhongMaterial::setDarkColor(const math::float3& color) noexcept
+		LambertMaterial::setDarkColor(const math::float3& color) noexcept
 		{
 			darkColor_->uniform3f(color);
 		}
 
-		void
-		PhongMaterial::setShininess(float shininess) noexcept
-		{
-			shininess_->uniform1f(shininess);
-		}
-
 		const math::float3&
-		PhongMaterial::getLightDir() const noexcept
+		LambertMaterial::getLightDir() const noexcept
 		{
 			return lightDir_->getFloat3();
 		}
 
 		math::float1
-		PhongMaterial::getLightIntensity() const noexcept
+		LambertMaterial::getLightIntensity() const noexcept
 		{
 			return lightIntensity_->getFloat();
 		}
 
-		const math::float3&
-		PhongMaterial::getBaseColor() const noexcept
-		{
-			return baseColor_->getFloat3();
-		}
-
 		math::float1
-		PhongMaterial::getAmbient() const noexcept
+		LambertMaterial::getAmbient() const noexcept
 		{
 			return ambient_->getFloat();
 		}
 
 		const math::float3&
-		PhongMaterial::getAmbientColor() const noexcept
+		LambertMaterial::getBaseColor() const noexcept
+		{
+			return baseColor_->getFloat3();
+		}
+
+		const math::float3&
+		LambertMaterial::getAmbientColor() const noexcept
 		{
 			return ambientColor_->getFloat3();
 		}
 
 		const math::float3&
-		PhongMaterial::getSpecularColor() const noexcept
-		{
-			return specularColor_->getFloat3();
-		}
-
-		const math::float3&
-		PhongMaterial::getDarkColor() const noexcept
+		LambertMaterial::getDarkColor() const noexcept
 		{
 			return darkColor_->getFloat3();
 		}
 
-		float
-		PhongMaterial::getShininess() const noexcept
-		{
-			return shininess_->getFloat();
-		}
-
 		MaterialPtr
-		PhongMaterial::clone() const noexcept
+		LambertMaterial::clone() const noexcept
 		{
-			auto instance = std::make_shared<PhongMaterial>();
+			auto instance = std::make_shared<LambertMaterial>();
 			instance->setLightDir(this->getLightDir());
 
 			return instance;

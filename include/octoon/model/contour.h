@@ -32,17 +32,29 @@ namespace octoon
 			std::size_t count() const noexcept;
 
 		public:
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend Contour& operator+=(Contour& contour, T scale) noexcept { for (auto& it : contour.points_) it += scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend Contour& operator-=(Contour& contour, T scale) noexcept { for (auto& it : contour.points_) it -= scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend Contour& operator*=(Contour& contour, T scale) noexcept { for (auto& it : contour.points_) it *= scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend Contour& operator/=(Contour& contour, T scale) noexcept { for (auto& it : contour.points_) it /= scale; return contour; }
+
+			template<typename T>
+			friend Contour& operator+=(Contour& contour, math::detail::Vector3<T>& scale) noexcept { for (auto& it : contour.points_) it += scale; return contour; }
+			
+			template<typename T>
+			friend Contour& operator-=(Contour& contour, math::detail::Vector3<T>& scale) noexcept { for (auto& it : contour.points_) it -= scale; return contour; }
+			
+			template<typename T>
+			friend Contour& operator*=(Contour& contour, math::detail::Vector3<T>& scale) noexcept { for (auto& it : contour.points_) it *= scale; return contour; }
+			
+			template<typename T>
+			friend Contour& operator/=(Contour& contour, math::detail::Vector3<T>& scale) noexcept { for (auto& it : contour.points_) it /= scale; return contour; }
 
 		private:
 			math::float3s points_;

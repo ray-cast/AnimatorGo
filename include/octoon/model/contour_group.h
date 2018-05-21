@@ -31,17 +31,29 @@ namespace octoon
 			ContourGroupPtr clone() const noexcept;
 
 		public:
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend ContourGroup& operator+=(ContourGroup& contour, T scale) noexcept { for (auto& it : contour.contours_) (*it) += scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend ContourGroup& operator-=(ContourGroup& contour, T scale) noexcept { for (auto& it : contour.contours_) (*it) -= scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend ContourGroup& operator*=(ContourGroup& contour, T scale) noexcept { for (auto& it : contour.contours_) (*it) *= scale; return contour; }
 
-			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value | std::is_base_of<T, math::float3>::value>>
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
 			friend ContourGroup& operator/=(ContourGroup& contour, T scale) noexcept { for (auto& it : contour.contours_) (*it) /= scale; return contour; }
+
+			template<typename T>
+			friend ContourGroup& operator+=(ContourGroup& contour, math::detail::Vector3<T> scale) noexcept { for (auto& it : contour.contours_) (*it) += scale; return contour; }
+
+			template<typename T>
+			friend ContourGroup& operator-=(ContourGroup& contour, math::detail::Vector3<T> scale) noexcept { for (auto& it : contour.contours_) (*it) -= scale; return contour; }
+
+			template<typename T>
+			friend ContourGroup& operator*=(ContourGroup& contour, math::detail::Vector3<T> scale) noexcept { for (auto& it : contour.contours_) (*it) *= scale; return contour; }
+
+			template<typename T>
+			friend ContourGroup& operator/=(ContourGroup& contour, math::detail::Vector3<T> scale) noexcept { for (auto& it : contour.contours_) (*it) /= scale; return contour; }
 
 		private:
 			ContourGroup(const ContourGroup&) = delete;

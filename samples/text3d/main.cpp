@@ -149,8 +149,6 @@ int main(int argc, const char* argv[])
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
 
-	octoon::model::Model model("C:\\Users\\Administrator\\Desktop\\ぽんぷ長式大和_水着\\ぽんぷ長式大和_水着.pmx");
-
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
 		auto material = std::make_shared<octoon::video::TextMaterial>();

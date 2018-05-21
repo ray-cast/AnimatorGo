@@ -509,11 +509,11 @@ namespace octoon
 					PmxName& texture = pmx.textures[it.TextureIndex];
 					if ((texture.length >> 1) < MAX_PATH)
 					{
-						char name[MAX_PATH] = { 0 };
-						::wcstombs(name, texture.name, MAX_PATH);
+						char textureName[MAX_PATH] = { 0 };
+						::wcstombs(textureName, texture.name, MAX_PATH);
 
-						material->set(MATKEY_TEXTURE_DIFFUSE(0), name);
-						material->set(MATKEY_TEXTURE_AMBIENT(0), name);
+						material->set(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+						material->set(MATKEY_TEXTURE_AMBIENT(0), textureName);
 					}
 				}
 
@@ -522,10 +522,10 @@ namespace octoon
 					PmxName& texture = pmx.textures[it.SphereTextureIndex];
 					if ((texture.length >> 1) < MAX_PATH)
 					{
-						char name[MAX_PATH];
-						wcstombs(name, texture.name, MAX_PATH);
+						char textureName[MAX_PATH];
+						wcstombs(textureName, texture.name, MAX_PATH);
 
-						material->set(MATKEY_COLOR_SPHEREMAP, name);
+						material->set(MATKEY_COLOR_SPHEREMAP, textureName);
 					}
 				}
 
@@ -589,7 +589,7 @@ namespace octoon
 				{
 					VertexWeights weights(it.FaceCount);
 
-					for (auto i = 0; i < it.FaceCount; i++)
+					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 					{
 						auto& v = pmx.vertices[i];
 

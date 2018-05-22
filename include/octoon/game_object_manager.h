@@ -20,6 +20,9 @@ namespace octoon
 
 		bool activeObject(const std::string& name) noexcept;
 
+		const GameObjectRaws& getInstanceList() const noexcept;
+		const GameObjectRaws& getActivedActors() const noexcept;
+
 		void onFrameBegin() noexcept;
 		void onFrame() noexcept;
 		void onFrameEnd() noexcept;
@@ -36,9 +39,10 @@ namespace octoon
 	private:
 		bool hasEmptyActors_;
 
+		GameObjectRaws instanceLists_;
+		GameObjectRaws activeActors_;
+
 		std::stack<std::size_t> emptyLists_;
-		std::vector<GameObject*> instanceLists_;
-		std::vector<GameObject*> activeActors_;
 	};
 }
 

@@ -166,13 +166,12 @@ namespace octoon
 			gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
 			gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
 
-			gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
-
 			std::size_t index = 0;
 
 			for (std::uint8_t face = 0; face < 2; face++)
 			{
 				gluTessBeginPolygon(tobj, nullptr);
+				gluTessNormal(tobj, 0.0f, 0.0f, face ? -1.0f : 1.0f);
 
 				for (auto& contour_ : contours)
 				{

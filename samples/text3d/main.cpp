@@ -85,50 +85,43 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
-						auto aabb = octoon::model::aabb(text);
+						auto paths = octoon::model::makeTextPaths(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
+						auto aabb = octoon::model::aabb(paths);
 
-						for (auto& it : text)
+						for (auto& it : paths)
 						{
 							*it -= aabb.center();
 							*it /= aabb.extents();
 						}
 
-						for (auto& group : text)
+						for (auto& path : paths)
 						{
-							for (auto& contours : group->getContours())
-							{
-								for (auto& it : contours->points())
-								{
-									//auto v = octoon::model::Twist(it.xy(), 1.0f, 0.0f);
+							*path << octoon::model::transform::twist(x1, y1);
 
-									// auto v = octoon::model::fan(it.xy(), x1, y1);
-									// auto v = octoon::model::HighCove(it.xy(), x1, y1);
-									// auto v = octoon::model::LowCove(it.xy(), x1, y1);
+							/**path << octoon::model::transform::fan(x1, y1);
+							*path << octoon::model::transform::highCove(x1, y1);
+							*path << octoon::model::transform::lowCove(x1, y1);
 
-									// auto v = octoon::model::Cove(it.xy(), x1, y1);
-									// auto v = octoon::model::Bulege(it.xy(), x1, y1);
-									// auto v = octoon::model::BulegeHigh(it.xy(), x1, y1);
-									auto v = octoon::model::BulegeLow(it.xy(), x1, y1);
+							*path << octoon::model::transform::cove(x1, y1);
+							*path << octoon::model::transform::bulege(x1, y1);
+							*path << octoon::model::transform::bulegeHigh(x1, y1);
+							*path << octoon::model::transform::bulegeLow(x1, y1);
 
-									// auto v = octoon::model::Flag(it.xy(), x1, y1);
-									// auto v = octoon::model::Wave(it.xy(), x1, y1);
-									// auto v = octoon::model::Fish(it.xy(), x1, y1);
-									// auto v = octoon::model::Slope(it.xy(), x1, y1);
+							*path << octoon::model::transform::flag(x1, y1);
+							*path << octoon::model::transform::wave(x1, y1);
+							*path << octoon::model::transform::fish(x1, y1);
+							*path << octoon::model::transform::slope(x1, y1);
 
-									// auto v = octoon::model::FishEye(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
-									// auto v = octoon::model::ExpandOut(it.xy(), x1, y1);
-									// auto v = octoon::model::ExpandIn(it.xy(), x1, y1);
-									// auto v = octoon::model::Spin(it.xy(), aabb.size().x / aabb.size().y, x1, y1);
-
-									it.x = v.x;
-									it.y = v.y;
-								}
-							}
+							*path << octoon::model::transform::fishEye(aabb.size().x / aabb.size().y, x1, y1);
+							*path << octoon::model::transform::expandOut(x1, y1);
+							*path << octoon::model::transform::expandIn(x1, y1);
+							*path << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);*/
 						}
 
-						for (auto& it : text)
+						for (auto& it : paths)
 							*it *= aabb.extents();
+
+						auto text = octoon::model::makeTextContours(paths, 8);
 
 						component->setMesh(octoon::model::makeMesh(text, 0.1f));
 					}

@@ -1,5 +1,5 @@
 #include <octoon/model/contour.h>
-#include <octoon/math/math.h>
+#include <octoon/model/path.h>
 
 namespace octoon
 {
@@ -9,9 +9,24 @@ namespace octoon
 		{
 		}
 
+		Contour::Contour(const Path& path, std::uint16_t bezierSteps) noexcept
+		{
+			this->addPoints(path, bezierSteps);
+		}
+
 		Contour::Contour(math::float3s&& points) noexcept
 		{
 			points_ = std::move(points);
+		}
+
+		Contour::Contour(std::initializer_list<math::float3>&& list) noexcept
+		{
+			points_ = std::move(list);
+		}
+
+		Contour::Contour(const math::float3& points) noexcept
+		{
+			points_.push_back(points);
 		}
 
 		Contour::Contour(const math::float3s& points) noexcept
@@ -20,19 +35,16 @@ namespace octoon
 		}
 
 		Contour::Contour(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept
-			: Contour()
 		{
 			this->addPoints(pt1, pt2, steps);
 		}
 
 		Contour::Contour(const math::float3& a, const math::float3& b, const math::float3& c, std::uint16_t bezierSteps) noexcept
-			: Contour()
 		{
 			this->addPoints(a, b, c, bezierSteps);
 		}
 
 		Contour::Contour(const math::float3& a, const math::float3& b, const math::float3& c, const math::float3& d, std::uint16_t bezierSteps) noexcept
-			: Contour()
 		{
 			this->addPoints(a, b, c, bezierSteps);
 		}
@@ -67,10 +79,29 @@ namespace octoon
 			return points_;
 		}
 
-		std::size_t
-		Contour::count() const noexcept
+		void 
+		Contour::addPoints(const Path& path, std::uint16_t bezierSteps) noexcept
 		{
-			return points_.size();
+			for (auto& edge : path.edges())
+			{
+				switch (edge.type)
+				{
+				case PathEdge::Type::Point:
+					this->addPoints(edge.pt.pt);
+					break;
+				case PathEdge::Type::Line:
+					this->addPoints(edge.line.pt1, edge.line.pt2, bezierSteps);
+					break;
+				case PathEdge::Type::Quadratic:
+					this->addPoints(edge.quad.pt1, edge.quad.control, edge.quad.pt2, bezierSteps);
+					break;
+				case PathEdge::Type::Cubic:
+					this->addPoints(edge.cubic.pt1, edge.cubic.control1, edge.cubic.control2, edge.quad.pt2, bezierSteps);
+					break;
+				default:
+					assert(false);
+				}
+			}
 		}
 
 		void
@@ -80,11 +111,16 @@ namespace octoon
 		}
 
 		void
+		Contour::addPoints(const math::float3s& points) noexcept
+		{
+			for (auto& point : points)
+				points_.push_back(point);
+		}
+
+		void
 		Contour::addPoints(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept
 		{
-			this->addPoints(pt1);
-
-			for (std::size_t i = 0; i <= steps; i++)
+			for (std::uint16_t i = 0; i <= steps; i++)
 			{
 				float t = (float)i / steps;
 				this->addPoints(math::lerp(pt1, pt2, t));
@@ -94,7 +130,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 0; i <= bezierSteps; i++)
+			for (std::uint16_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;
@@ -109,7 +145,7 @@ namespace octoon
 		void
 		Contour::addPoints(const math::float3& A, const math::float3& B, const math::float3& C, const math::float3& D, std::uint16_t bezierSteps) noexcept
 		{
-			for (std::size_t i = 0; i <= bezierSteps; i++)
+			for (std::uint16_t i = 0; i <= bezierSteps; i++)
 			{
 				float t = (float)i / bezierSteps;
 				float t2 = 1.0f - t;

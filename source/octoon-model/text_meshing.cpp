@@ -169,11 +169,7 @@ namespace octoon
 					addEdge(*paths[i], points, tags, index);
 				}
 
-				for (auto& contour : paths)
-				{
-					for (auto& pt : contour->edges())
-						pt += math::float3(offset, 0, 0);
-				}
+				paths += math::float3(offset, 0, 0);
 
 				return std::move(paths);
 			};

@@ -50,6 +50,34 @@ namespace octoon
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend PathGroup& operator/=(PathGroup& path, T scale) noexcept { for (auto& it : path.paths_) (*it) /= scale; return path; }
 
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
+			friend PathGroups& operator+=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it += scale; return groups; }
+
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
+			friend PathGroups& operator-=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it -= scale; return groups; }
+
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
+			friend PathGroups& operator*=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it *= scale; return groups; }
+
+			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
+			friend PathGroups& operator/=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it /= scale; return groups; }
+
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathEdge&)>& func)
+			{
+				for (auto& it : groups)
+					*it << func;
+
+				return groups;
+			}
+
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathGroup&)>& func)
+			{
+				for (auto& it : groups)
+					*it << func;
+
+				return groups;
+			}
+
 		private:
 			PathGroup(const PathGroup&) = delete;
 			PathGroup& operator=(const PathGroup&) = delete;

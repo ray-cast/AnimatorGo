@@ -88,38 +88,30 @@ public:
 						auto paths = octoon::model::makeTextPaths(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(paths);
 
-						for (auto& it : paths)
-						{
-							*it -= aabb.center();
-							*it /= aabb.extents();
-						}
+						paths -= aabb.center();
+						paths /= aabb.extents();
+						paths << octoon::model::transform::twist(x1, y1);
 
-						for (auto& path : paths)
-						{
-							*path << octoon::model::transform::twist(x1, y1);
+						/*paths << octoon::model::transform::fan(x1, y1);
+						paths << octoon::model::transform::highCove(x1, y1);
+						paths << octoon::model::transform::lowCove(x1, y1);
 
-							/*path << octoon::model::transform::fan(x1, y1);
-							*path << octoon::model::transform::highCove(x1, y1);
-							*path << octoon::model::transform::lowCove(x1, y1);
+						paths << octoon::model::transform::cove(x1, y1);
+						paths << octoon::model::transform::bulege(x1, y1);
+						paths << octoon::model::transform::bulegeHigh(x1, y1);
+						paths << octoon::model::transform::bulegeLow(x1, y1);
 
-							*path << octoon::model::transform::cove(x1, y1);
-							*path << octoon::model::transform::bulege(x1, y1);
-							*path << octoon::model::transform::bulegeHigh(x1, y1);
-							*path << octoon::model::transform::bulegeLow(x1, y1);
+						paths << octoon::model::transform::flag(x1, y1);
+						paths << octoon::model::transform::wave(x1, y1);
+						paths << octoon::model::transform::fish(x1, y1);
+						paths << octoon::model::transform::slope(x1, y1);
 
-							*path << octoon::model::transform::flag(x1, y1);
-							*path << octoon::model::transform::wave(x1, y1);
-							*path << octoon::model::transform::fish(x1, y1);
-							*path << octoon::model::transform::slope(x1, y1);
+						paths << octoon::model::transform::fishEye(aabb.size().x / aabb.size().y, x1, y1);
+						paths << octoon::model::transform::expandOut(x1, y1);
+						paths << octoon::model::transform::expandIn(x1, y1);
+						paths << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);*/
 
-							*path << octoon::model::transform::fishEye(aabb.size().x / aabb.size().y, x1, y1);
-							*path << octoon::model::transform::expandOut(x1, y1);
-							*path << octoon::model::transform::expandIn(x1, y1);
-							*path << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);*/
-						}
-
-						for (auto& it : paths)
-							*it *= aabb.extents();
+						paths *= aabb.extents();
 
 						auto text = octoon::model::makeTextContours(paths, 8);
 

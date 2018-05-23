@@ -190,25 +190,26 @@ namespace octoon
 
 							for (; it != end; ++it)
 							{
-								if ((*it).type == PathEdge::Point)
+								if ((*it).type != PathEdge::Point)
 								{
-									auto pt1 = *(it);
-									
-									if (it + 1 != end)
-									{
-										auto begin = pt1.point.pt;
-										auto end = (*(it + 1)).point.pt;
-										auto step = (end - begin) / (steps + 1);
+									edges.push_back(*it);
+									continue;
+								}
+								
+								if (it + 1 != end)
+								{
+									auto begin = (*(it)).point.pt;
+									auto next = (*(it + 1)).point.pt;
+									auto step = (next - begin) / (steps + 1);
 
-										for (std::size_t n = 0; n < steps; n++, begin += step + step)
-										{
-											edges.emplace_back(begin, begin + step, begin + step + step);
-										}										
-									}
-									else
+									for (std::size_t n = 0; n < steps; n++, begin += step + step)
 									{
-										edges.push_back(pt1);
-									}
+										edges.emplace_back(begin, begin + step, begin + step + step);
+									}										
+								}
+								else
+								{
+									edges.push_back(*it);
 								}
 							}
 

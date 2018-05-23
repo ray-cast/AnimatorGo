@@ -98,7 +98,7 @@ public:
 						{
 							*path << octoon::model::transform::twist(x1, y1);
 
-							/**path << octoon::model::transform::fan(x1, y1);
+							/*path << octoon::model::transform::fan(x1, y1);
 							*path << octoon::model::transform::highCove(x1, y1);
 							*path << octoon::model::transform::lowCove(x1, y1);
 

@@ -146,7 +146,6 @@ namespace octoon
 				return std::bind(twist, std::placeholders::_1, x, y);
 			}
 
-
 			std::function<void(PathEdge&)> fan(float x, float y) noexcept
 			{
 				auto fan = [](PathEdge& it, float x, float y) noexcept

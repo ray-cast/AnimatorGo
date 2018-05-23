@@ -347,10 +347,10 @@ namespace octoon
 			OCTOON_EXPORT std::function<void(PathEdge&)> flag(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> wave(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> slope(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float ratio, float x, float y) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float x, float y, float ratio) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> expandOut(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> expandIn(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> spin(float ratio, float x, float y) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> spin(float x, float y, float ratio) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> panini(float x, float y) noexcept;
 		}
 	}

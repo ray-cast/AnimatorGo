@@ -345,11 +345,11 @@ namespace octoon
 				return std::bind(slope, std::placeholders::_1, x, y);
 			}
 
-			std::function<void(PathEdge&)> fishEye(float ratio, float x, float y) noexcept
+			std::function<void(PathEdge&)> fishEye(float x, float y, float ratio) noexcept
 			{
-				auto fishEye = [](PathEdge& it, float ratio, float x, float y) noexcept
+				auto fishEye = [](PathEdge& it, float x, float y, float ratio) noexcept
 				{
-					auto method = [](const math::float2& pt, float ratio, float x, float y) -> math::float2
+					auto method = [](const math::float2& pt, float x, float y, float ratio) -> math::float2
 					{
 						float weight = 1.1f - math::length(pt);
 						float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
@@ -357,10 +357,10 @@ namespace octoon
 						return math::float2(xx, yy);
 					};
 
-					postprocess(it, std::bind(method, std::placeholders::_1, ratio, x, y));
+					postprocess(it, std::bind(method, std::placeholders::_1, x, y, ratio));
 				};
 
-				return std::bind(fishEye, std::placeholders::_1, ratio, x, y);
+				return std::bind(fishEye, std::placeholders::_1, x, y, ratio);
 			}
 
 			std::function<void(PathEdge&)> expandOut(float x, float y) noexcept
@@ -399,11 +399,11 @@ namespace octoon
 				return std::bind(expandIn, std::placeholders::_1, x, y);
 			}
 
-			std::function<void(PathEdge&)> spin(float ratio, float x, float y) noexcept
+			std::function<void(PathEdge&)> spin(float x, float y, float ratio) noexcept
 			{
-				auto spin = [](PathEdge& it, float ratio, float x, float y) noexcept
+				auto spin = [](PathEdge& it, float x, float y, float ratio) noexcept
 				{
-					auto method = [](const math::float2& pt, float ratio, float x, float y) -> math::float2
+					auto method = [](const math::float2& pt, float x, float y, float ratio) -> math::float2
 					{
 						math::float2 spin;
 						math::sinCos(&spin.x, &spin.y, x * (1.0f - math::length(pt)) * 0.5f);
@@ -414,10 +414,10 @@ namespace octoon
 						return math::float2(xx, yy);
 					};
 
-					postprocess(it, std::bind(method, std::placeholders::_1, ratio, x, y));
+					postprocess(it, std::bind(method, std::placeholders::_1, x, y, ratio));
 				};
 
-				return std::bind(spin, std::placeholders::_1, ratio, x, y);
+				return std::bind(spin, std::placeholders::_1, x, y, ratio);
 			}
 
 			std::function<void(PathEdge&)> panini(float x, float y) noexcept

@@ -113,7 +113,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 		camera->addComponent<CubeController>();
 
-		std::string rootPath = "C:\\Users\\Administrator\\Desktop\\Tda-luo-ver2.3\\";
+		std::string rootPath = "";
 
 		octoon::GameObjects objects;
 		octoon::model::Model model(rootPath + "luo.pmx");

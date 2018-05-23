@@ -92,7 +92,8 @@ public:
 						paths /= aabb.extents();
 						paths << octoon::model::transform::twist(x1, y1);
 
-						/*paths << octoon::model::transform::fan(x1, y1);
+						/*
+						paths << octoon::model::transform::fan(x1, y1);
 						paths << octoon::model::transform::highCove(x1, y1);
 						paths << octoon::model::transform::lowCove(x1, y1);
 
@@ -109,7 +110,8 @@ public:
 						paths << octoon::model::transform::fishEye(aabb.size().x / aabb.size().y, x1, y1);
 						paths << octoon::model::transform::expandOut(x1, y1);
 						paths << octoon::model::transform::expandIn(x1, y1);
-						paths << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);*/
+						paths << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);
+						*/
 
 						paths *= aabb.extents();
 

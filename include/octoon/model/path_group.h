@@ -2,7 +2,6 @@
 #define OCTOON_MODEL_PATH_GROUP_H_
 
 #include <octoon/model/path.h>
-#include <functional>
 
 namespace octoon
 {

@@ -1,5 +1,4 @@
 #include <octoon/model/path_edge.h>
-#include <functional>
 
 namespace octoon
 {

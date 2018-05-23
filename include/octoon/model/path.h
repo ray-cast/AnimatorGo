@@ -2,7 +2,6 @@
 #define OCTOON_MODEL_PATH_H_
 
 #include <octoon/model/path_edge.h>
-#include <functional>
 
 namespace octoon
 {

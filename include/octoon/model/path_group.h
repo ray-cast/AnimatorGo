@@ -34,9 +34,6 @@ namespace octoon
 			PathGroup& invoke(const std::function<void(PathEdge&)>& func) noexcept;
 			PathGroup& invoke(const std::function<void(PathGroup&)>& func) noexcept;
 
-			PathGroup& operator << (const std::function<void(PathEdge&)>& func) noexcept { return this->invoke(func); }
-			PathGroup& operator << (const std::function<void(PathGroup&)>& func) noexcept { return this->invoke(func); }
-
 		public:
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend PathGroup& operator+=(PathGroup& path, T scale) noexcept { for (auto& it : path.paths_) (*it) += scale; return path; }
@@ -62,19 +59,35 @@ namespace octoon
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend PathGroups& operator/=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it /= scale; return groups; }
 
-			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathEdge&)>& func)
+			friend PathGroup& operator <<(PathGroup& group, const std::function<void(PathEdge&)>& func) noexcept
+			{
+				return group.invoke(func); 
+			}
+
+			friend PathGroup& operator <<(PathGroup& group, const std::function<void(PathGroup&)>& func) noexcept
+			{
+				return group.invoke(func); 
+			}
+
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathEdge&)>& func) noexcept
 			{
 				for (auto& it : groups)
-					*it << func;
+					it->invoke(func);
 
 				return groups;
 			}
 
-			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathGroup&)>& func)
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathGroup&)>& func) noexcept
 			{
 				for (auto& it : groups)
-					*it << func;
+					it->invoke(func);
 
+				return groups;
+			}
+
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathGroups&)>& func) noexcept
+			{
+				func(groups);
 				return groups;
 			}
 

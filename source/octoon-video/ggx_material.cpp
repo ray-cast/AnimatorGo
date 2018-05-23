@@ -87,15 +87,18 @@ namespace octoon
 			uniform mat4 model;
 
 			layout(location = 0) in vec4 POSITION0;
-			layout(location = 1) in vec4 NORMAL0;
+			layout(location = 1) in vec2 TEXCOORD0;
+			layout(location = 2) in vec4 NORMAL0;
 
 			out vec3 oTexcoord0;
-			out vec3 oTexcoord1;
+			out vec2 oTexcoord1;
+			out vec3 oTexcoord2;
 
 			void main()
 			{
 				oTexcoord0 = normalize(inverse(mat3(model)) * NORMAL0.xyz);
-				oTexcoord1 = normalize(POSITION0.xyz);
+				oTexcoord1 = TEXCOORD0;
+				oTexcoord2 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";
 
@@ -108,11 +111,13 @@ namespace octoon
 
 			uniform float smoothness;
 			uniform float metalness;
+			uniform sampler2D decal;
 
 			layout(location = 0) out vec4 fragColor;
 
 			in vec3 oTexcoord0;
-			in vec3 oTexcoord1;
+			in vec2 oTexcoord1;
+			in vec3 oTexcoord2;
 
 			void main()
 			{
@@ -122,7 +127,7 @@ namespace octoon
 
 				vec3 L = -lightDir;
 				vec3 N = normalize(oTexcoord0);
-				vec3 V = normalize(oTexcoord1);
+				vec3 V = normalize(oTexcoord2);
 				vec3 H = normalize(V + L);
 
 				float nl = max(dot(N, L), 0.0f);
@@ -146,7 +151,7 @@ namespace octoon
 
 				vec3 diffuse = mix(base, vec3(0.0f), vec3(metalness));
 
-				fragColor = vec4(pow(ambient + (diffuse + spec * fresnel * 0.001f) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				fragColor = vec4(pow(texture2D(decal, oTexcoord1).rgb * ambient + (diffuse + spec * fresnel * 0.001f) * nl, vec3(1.0f / 2.2f)), 1.0f);
 			})";
 #endif
 
@@ -157,6 +162,7 @@ namespace octoon
 
 			graphics::GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "POSITION", 0, graphics::GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "TEXCOORD", 0, graphics::GraphicsFormat::R32G32SFloat));
 			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "NORMAL", 0, graphics::GraphicsFormat::R32G32B32SFloat));
 			layoutDesc.addVertexBinding(graphics::GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 
@@ -195,9 +201,10 @@ namespace octoon
 			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
 			smoothness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "smoothness"; });
 			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "metalness"; });
+			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 
 			lightDir_->uniform3f(math::float3::UnitY);
-			baseColor_->uniform3f(math::float3::One);
+			baseColor_->uniform3f(math::float3::Zero);
 			ambientColor_->uniform3f(math::float3::Zero);
 			specularColor_->uniform3f(math::float3::One);
 			smoothness_->uniform1f(0.0f);
@@ -256,6 +263,12 @@ namespace octoon
 			specularColor_->uniform3f(color);
 		}
 
+		void 
+		GGXMaterial::setTexture(const graphics::GraphicsTexturePtr& texture) noexcept
+		{
+			decal_->uniformTexture(texture);
+		}
+
 		void
 		GGXMaterial::setSmoothness(float smoothness) noexcept
 		{
@@ -302,6 +315,12 @@ namespace octoon
 		GGXMaterial::getSmoothness() const noexcept
 		{
 			return smoothness_->getFloat();
+		}
+
+		const graphics::GraphicsTexturePtr&
+		GGXMaterial::getTexture() noexcept
+		{
+			return decal_->getTexture();
 		}
 
 		MaterialPtr

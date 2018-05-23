@@ -105,37 +105,60 @@ namespace octoon
 		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();
+			auto& texcoord = mesh->getTexcoordArray();
 			auto& normals = mesh->getNormalArray();
+
+			auto inputLayout = this->getMaterial()->getPipeline()->getPipelineDesc().getInputLayout()->getInputLayoutDesc();
+			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
+
+			std::uint32_t offset = 0;
+			std::vector<float> data(vertices.size() * vertexSize);
+
+			for (auto& layout : inputLayout.getVertexLayouts())
+			{
+				if (layout.getSemantic() == "POSITION")
+				{
+					auto v = data.data() + offset;
+					for (auto& it : vertices)
+					{
+						v[0] = it.x;
+						v[1] = it.y;
+						v[2] = it.z;
+						v += vertexSize;
+					}
+				}
+				else if (layout.getSemantic() == "TEXCOORD")
+				{
+					auto t = data.data() + offset;
+					for (auto& it : texcoord)
+					{
+						t[0] = it.x;
+						t[1] = it.y;
+						t += vertexSize;
+					}
+				}
+				else if (layout.getSemantic() == "NORMAL")
+				{
+					auto n = data.data() + offset;
+					for (auto& it : normals)
+					{
+						n[0] = it.x;
+						n[1] = it.y;
+						n[2] = it.z;
+						n += vertexSize;
+					}
+				}
+
+				offset += layout.getVertexCount();
+			}
 
 			graphics::GraphicsDataDesc dataDesc;
 			dataDesc.setType(graphics::GraphicsDataType::StorageVertexBuffer);
-			dataDesc.setStream(0);
-			dataDesc.setStreamSize(vertices.size() * sizeof(math::float3) * 2);
-			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::WriteBit);
+			dataDesc.setStream((std::uint8_t*)data.data());
+			dataDesc.setStreamSize(data.size() * sizeof(float));
+			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
 
-			auto vertices_ = video::RenderSystem::instance()->createGraphicsData(dataDesc);
-
-			math::float3* data = nullptr;
-			if (vertices_->map(0, vertices.size() * sizeof(math::float3) * 2, (void**)&data))
-			{
-				auto v = data;
-				for (auto& it : vertices)
-				{
-					*v = it;
-					v += 2;
-				}
-
-				auto n = ++data;
-				for (auto& it : normals)
-				{
-					*n = it;
-					n += 2;
-				}
-
-				vertices_->unmap();
-			}
-
-			geometry_->setVertexBuffer(vertices_);
+			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
 
 			auto& indices = mesh->getIndicesArray();

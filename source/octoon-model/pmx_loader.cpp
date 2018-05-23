@@ -506,27 +506,19 @@ namespace octoon
 
 				if (it.TextureIndex < limits)
 				{
-					PmxName& texture = pmx.textures[it.TextureIndex];
-					if ((texture.length >> 1) < MAX_PATH)
-					{
-						char textureName[MAX_PATH] = { 0 };
-						::wcstombs(textureName, texture.name, MAX_PATH);
+					char textureName[MAX_PATH] = { 0 };
+					::wcstombs(textureName, pmx.textures[it.TextureIndex].name, MAX_PATH);
 
-						material->set(MATKEY_TEXTURE_DIFFUSE(0), textureName);
-						material->set(MATKEY_TEXTURE_AMBIENT(0), textureName);
-					}
+					material->set(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+					material->set(MATKEY_TEXTURE_AMBIENT(0), textureName);
 				}
 
 				if (it.SphereTextureIndex < limits)
 				{
-					PmxName& texture = pmx.textures[it.SphereTextureIndex];
-					if ((texture.length >> 1) < MAX_PATH)
-					{
-						char textureName[MAX_PATH];
-						wcstombs(textureName, texture.name, MAX_PATH);
+					char textureName[MAX_PATH];
+					wcstombs(textureName, pmx.textures[it.SphereTextureIndex].name, MAX_PATH);
 
-						material->set(MATKEY_COLOR_SPHEREMAP, textureName);
-					}
+					material->set(MATKEY_COLOR_SPHEREMAP, textureName);
 				}
 
 				model.add(std::move(material));
@@ -548,7 +540,7 @@ namespace octoon
 					normals_.resize(it.FaceCount);
 					texcoords_.resize(it.FaceCount);
 
-					auto indicesData = pmx.indices.data();
+					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
 					if (pmx.header.sizeOfIndices == 1)
 					{
 						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)

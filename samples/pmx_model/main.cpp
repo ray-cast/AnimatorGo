@@ -103,7 +103,6 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-
 		auto camera = octoon::GameObject::create("camera");
 		camera->addComponent<octoon::CameraComponent>();
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
@@ -114,7 +113,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 		camera->addComponent<CubeController>();
 
-		std::string rootPath = "";
+		std::string rootPath = "C:\\Users\\Administrator\\Desktop\\Tda-luo-ver2.3\\";
 
 		octoon::GameObjects objects;
 		octoon::model::Model model(rootPath + "luo.pmx");

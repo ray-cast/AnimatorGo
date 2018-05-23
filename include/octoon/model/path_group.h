@@ -59,12 +59,12 @@ namespace octoon
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend PathGroups& operator/=(PathGroups& groups, T scale) noexcept { for (auto& it : groups) *it /= scale; return groups; }
 
-			friend PathGroup& operator <<(PathGroup& group, const std::function<void(PathEdge&)>& func) noexcept
+			friend PathGroup& operator<<(PathGroup& group, const std::function<void(PathEdge&)>& func) noexcept
 			{
 				return group.invoke(func); 
 			}
 
-			friend PathGroup& operator <<(PathGroup& group, const std::function<void(PathGroup&)>& func) noexcept
+			friend PathGroup& operator<<(PathGroup& group, const std::function<void(PathGroup&)>& func) noexcept
 			{
 				return group.invoke(func); 
 			}

@@ -49,7 +49,7 @@ namespace octoon
 
 			union
 			{
-				PathPoint pt;
+				PathPoint point;
 				PathLine line;
 				PathQuadratic quad;
 				PathCubic cubic;
@@ -61,7 +61,7 @@ namespace octoon
 			PathEdge(const math::float3& pt1, const math::float3& control, const math::float3& pt2) noexcept; // Quadratic Curve
 			PathEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
 
-			void makeEdge(const math::float3& pt) noexcept;
+			void makeEdge(const math::float3& point) noexcept;
 			void makeEdge(const math::float3& pt1, const math::float3& pt2) noexcept;
 			void makeEdge(const math::float3& pt1, const math::float3& control, const math::float3& pt2) noexcept; // Quadratic Curve
 			void makeEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
@@ -75,7 +75,7 @@ namespace octoon
 				switch (a.type)
 				{
 				case Type::Point:
-					if (a.pt.pt != b.pt.pt) return false;
+					if (a.point.pt != b.point.pt) return false;
 					break;
 				case Type::Line:
 					if (a.line.pt1 != b.line.pt1) return false;
@@ -111,7 +111,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					result.pt.pt = edge.pt.pt + scale;
+					result.point.pt = edge.point.pt + scale;
 					break;
 				case Type::Line:
 					result.line.pt1 = edge.line.pt1 + scale;
@@ -140,7 +140,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					result.pt.pt = edge.pt.pt - scale;
+					result.point.pt = edge.point.pt - scale;
 					break;
 				case Type::Line:
 					result.line.pt1 = edge.line.pt1 - scale;
@@ -169,7 +169,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					result.pt.pt = edge.pt.pt * scale;
+					result.point.pt = edge.point.pt * scale;
 					break;
 				case Type::Line:
 					result.line.pt1 = edge.line.pt1 * scale;
@@ -198,7 +198,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					result.pt.pt = edge.pt.pt / scale;
+					result.point.pt = edge.point.pt / scale;
 					break;
 				case Type::Line:
 					result.line.pt1 = edge.line.pt1 / scale;
@@ -226,7 +226,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					edge.pt.pt += scale;
+					edge.point.pt += scale;
 					break;
 				case Type::Line:
 					edge.line.pt1 += scale;
@@ -254,7 +254,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					edge.pt.pt -= scale;
+					edge.point.pt -= scale;
 					break;
 				case Type::Line:
 					edge.line.pt1 -= scale;
@@ -282,7 +282,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					edge.pt.pt *= scale;
+					edge.point.pt *= scale;
 					break;
 				case Type::Line:
 					edge.line.pt1 *= scale;
@@ -310,7 +310,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case Type::Point:
-					edge.pt.pt /= scale;
+					edge.point.pt /= scale;
 					break;
 				case Type::Line:
 					edge.line.pt1 /= scale;

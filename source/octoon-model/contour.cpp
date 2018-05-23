@@ -87,7 +87,7 @@ namespace octoon
 				switch (edge.type)
 				{
 				case PathEdge::Type::Point:
-					this->addPoints(edge.pt.pt);
+					this->addPoints(edge.point.pt);
 					break;
 				case PathEdge::Type::Line:
 					this->addPoints(edge.line.pt1, edge.line.pt2, bezierSteps);

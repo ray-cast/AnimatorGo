@@ -15,14 +15,14 @@ namespace octoon
 			Contour(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps) noexcept; // line curve
 			Contour(const math::float3& pt1, const math::float3& control1, const math::float3& pt2, std::uint16_t bezierSteps) noexcept; // Quadratic Curve
 			Contour(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2, std::uint16_t bezierSteps) noexcept; // Cubic Curve
-			explicit Contour(math::float3s&& pt) noexcept; // points
+			explicit Contour(math::float3s&& point) noexcept; // points
 			explicit Contour(std::initializer_list<math::float3>&& list) noexcept; // points
-			explicit Contour(const math::float3& pt) noexcept; // point
-			explicit Contour(const math::float3s& pt) noexcept; // points
+			explicit Contour(const math::float3& point) noexcept; // point
+			explicit Contour(const math::float3s& point) noexcept; // points
 			explicit Contour(const std::initializer_list<math::float3>& list) noexcept; // points
 
-			void addPoints(const math::float3& pt) noexcept; // point
-			void addPoints(const math::float3s& pt) noexcept; // points
+			void addPoints(const math::float3& point) noexcept; // point
+			void addPoints(const math::float3s& point) noexcept; // points
 			void addPoints(const Path& path, std::uint16_t bezierSteps) noexcept; // path curve
 			void addPoints(const math::float3& pt1, const math::float3& pt2, std::uint16_t steps = 1) noexcept; // line curve
 			void addPoints(const math::float3& pt1, const math::float3& control, const math::float3& pt2, std::uint16_t bezierSteps) noexcept; // Quadratic Curve

@@ -289,8 +289,8 @@ namespace octoon
 
 				for (auto& contour : contours)
 				{
-					for (auto& pt : contour->points())
-						pt.x += offset;
+					for (auto& point : contour->points())
+						point.x += offset;
 				}
 
 				return std::make_shared<ContourGroup>(std::move(contours));

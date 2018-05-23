@@ -121,7 +121,7 @@ namespace octoon
 					switch (edge.type)
 					{
 					case PathEdge::Point:
-						aabb.encapsulate(edge.pt.pt);
+						aabb.encapsulate(edge.point.pt);
 						break;
 					case PathEdge::Quadratic:
 						aabb.encapsulate(edge.quad.pt1);
@@ -153,7 +153,7 @@ namespace octoon
 						switch (edge.type)
 						{
 						case PathEdge::Point:
-							aabb.encapsulate(edge.pt.pt);
+							aabb.encapsulate(edge.point.pt);
 							break;
 						case PathEdge::Quadratic:
 							aabb.encapsulate(edge.quad.pt1);
@@ -171,6 +171,54 @@ namespace octoon
 			}
 
 			return aabb;
+		}
+
+		namespace transform
+		{
+			std::function<void(PathGroups&)> begin(std::uint32_t steps) noexcept
+			{
+				auto begin = [](PathGroups& groups, std::uint32_t steps) noexcept
+				{
+					for (auto& group : groups)
+					{
+						for (auto& path : group->getPaths())
+						{
+							PathEdges edges;
+
+							auto it = path->edges().begin();
+							auto end = path->edges().end();
+
+							for (; it != end; ++it)
+							{
+								if ((*it).type == PathEdge::Point)
+								{
+									auto pt1 = *(it);
+									
+									if (it + 1 != end)
+									{
+										auto begin = pt1.point.pt;
+										auto end = (*(it + 1)).point.pt;
+										auto step = (end - begin) / (steps + 1);
+
+										for (std::size_t n = 0; n < steps; n++, begin += step + step)
+										{
+											edges.emplace_back(begin, begin + step, begin + step + step);
+										}										
+									}
+									else
+									{
+										edges.push_back(pt1);
+									}
+								}
+							}
+
+							path->setEdge(std::move(edges));
+						}
+					}
+				};
+
+				return std::bind(begin, std::placeholders::_1, steps);
+			}
 		}
 	}
 }

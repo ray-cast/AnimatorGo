@@ -100,6 +100,11 @@ namespace octoon
 
 		OCTOON_EXPORT math::AABB aabb(const PathGroup& group) noexcept;
 		OCTOON_EXPORT math::AABB aabb(const PathGroups& groups) noexcept;
+
+		namespace transform
+		{
+			OCTOON_EXPORT std::function<void(PathGroups&)> begin(std::uint32_t steps) noexcept;
+		}
 	}
 }
 

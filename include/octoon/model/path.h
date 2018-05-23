@@ -21,20 +21,29 @@ namespace octoon
 			explicit Path(const PathEdges& edges) noexcept;
 			~Path() noexcept;
 
-			PathEdge& at(std::size_t index) noexcept;
-			const PathEdge& at(std::size_t index) const noexcept;
-
-			PathEdges& edges() noexcept;
-			const PathEdges& edges() const noexcept;
+			void setEdge(PathEdges&& edges) noexcept;
+			void setEdge(const PathEdge& edge) noexcept;
+			void setEdge(const PathEdges& edge) noexcept;
+			void setEdge(const math::float3& pt1) noexcept; // point
+			void setEdge(const math::float3s& points) noexcept; // points
+			void setEdge(const math::float3& pt1, const math::float3& pt2) noexcept; // Line Curve
+			void setEdge(const math::float3& pt1, const math::float3& control1, const math::float3& pt2) noexcept; // Quadratic Curve
+			void setEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
 
 			void addEdge(PathEdges&& edges) noexcept;
 			void addEdge(const PathEdge& edge) noexcept;
 			void addEdge(const PathEdges& edge) noexcept;
 			void addEdge(const math::float3& pt1) noexcept; // point
-			void addEdge(const math::float3s& pt1) noexcept; // points
+			void addEdge(const math::float3s& points) noexcept; // points
 			void addEdge(const math::float3& pt1, const math::float3& pt2) noexcept; // Line Curve
 			void addEdge(const math::float3& pt1, const math::float3& control1, const math::float3& pt2) noexcept; // Quadratic Curve
 			void addEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
+
+			PathEdge& at(std::size_t index) noexcept;
+			const PathEdge& at(std::size_t index) const noexcept;
+
+			PathEdges& edges() noexcept;
+			const PathEdges& edges() const noexcept;
 
 			Path& invoke(const std::function<void(Path&)>& func) noexcept;
 			Path& invoke(const std::function<void(PathEdge&)>& func) noexcept;

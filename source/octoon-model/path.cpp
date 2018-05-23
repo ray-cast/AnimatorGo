@@ -24,9 +24,9 @@ namespace octoon
 		{
 		}
 
-		Path::Path(const math::float3& pt) noexcept
+		Path::Path(const math::float3& point) noexcept
 		{
-			this->addEdge(pt);
+			this->addEdge(point);
 		}
 
 		Path::Path(const math::float3s& points) noexcept
@@ -78,9 +78,64 @@ namespace octoon
 		}
 
 		void
-		Path::addEdge(PathEdges&& edge) noexcept
+		Path::setEdge(PathEdges&& edges) noexcept
 		{
-			edges_ = std::move(edge);
+			edges_ = std::move(edges);
+		}
+
+		void
+		Path::setEdge(const PathEdge& edges) noexcept
+		{
+			edges_.clear();
+			edges_.push_back(std::move(edges));
+		}
+
+		void
+		Path::setEdge(const PathEdges& edges) noexcept
+		{
+			edges_ = std::move(edges);
+		}
+
+		void
+		Path::setEdge(const math::float3& pt1) noexcept
+		{
+			edges_.clear();
+			this->addEdge(pt1);
+		}
+
+		void
+		Path::setEdge(const math::float3s& points) noexcept
+		{
+			edges_.clear();
+			this->addEdge(points);
+		}
+
+		void
+		Path::setEdge(const math::float3& pt1, const math::float3& pt2) noexcept
+		{
+			edges_.clear();
+			this->addEdge(pt1, pt2);
+		}
+
+		void
+		Path::setEdge(const math::float3& pt1, const math::float3& control1, const math::float3& pt2) noexcept
+		{
+			edges_.clear();
+			this->addEdge(pt1, control1, pt2);
+		}
+
+		void
+		Path::setEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept
+		{
+			edges_.clear();
+			this->addEdge(pt1, control1, control2, pt2);
+		}
+
+		void
+		Path::addEdge(PathEdges&& edges) noexcept
+		{
+			for (auto& edge : edges)
+				edges_.push_back(std::move(edge));
 		}
 
 		void

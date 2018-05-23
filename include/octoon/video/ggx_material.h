@@ -12,6 +12,7 @@ namespace octoon
 		{
 		public:
 			GGXMaterial() except;
+			GGXMaterial(const graphics::GraphicsTexturePtr& texture) except;
 			~GGXMaterial() noexcept;
 
 			void setup() except;

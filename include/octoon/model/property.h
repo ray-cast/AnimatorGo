@@ -16,22 +16,22 @@ namespace octoon
 {
 	namespace model
 	{
-		enum ShapeType
+		enum OCTOON_EXPORT ShapeType
 		{
 			ShapeTypeCircle,
 			ShapeTypeSquare,
 			ShapeTypeCapsule
 		};
 
-		class CameraProperty final
+		class OCTOON_EXPORT CameraProperty final
 		{
 		};
 
-		class LightProperty final
+		class OCTOON_EXPORT LightProperty final
 		{
 		};
 
-		class RigidbodyProperty
+		class OCTOON_EXPORT RigidbodyProperty
 		{
 		public:
 			std::string name;
@@ -55,7 +55,7 @@ namespace octoon
 			std::uint8_t physicsOperation; //0:Follow Bone (static), 1:Physics Calc. (dynamic), 2: Physics Calc. + Bone position matching
 		};
 
-		class JointProperty
+		class OCTOON_EXPORT JointProperty
 		{
 		public:
 			std::string name;
@@ -75,7 +75,7 @@ namespace octoon
 			math::float3 springRotationConstant;
 		};
 
-		class TextureProperty final
+		class OCTOON_EXPORT TextureProperty final
 		{
 		public:
 			TextureProperty() noexcept;
@@ -88,7 +88,7 @@ namespace octoon
 			std::uint32_t height;
 		};
 
-		class MaterialProperty final
+		class OCTOON_EXPORT MaterialProperty final
 		{
 		public:
 			struct MaterialParam

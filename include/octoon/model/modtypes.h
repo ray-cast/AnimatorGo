@@ -30,17 +30,17 @@
 
 #define MATKEY_TEXTURE(type, N)   "$tex.file", type, N
 
-#define MATKEY_TEXTURE_DIFFUSE(N)      MATKEY_TEXTURE(TextureTypeDiffuse, N)
-#define MATKEY_TEXTURE_SPECULAR(N)     MATKEY_TEXTURE(TextureTypeSpecular, N)
-#define MATKEY_TEXTURE_AMBIENT(N)      MATKEY_TEXTURE(TextureTypeAmbient, N)
-#define MATKEY_TEXTURE_EMISSIVE(N)     MATKEY_TEXTURE(TextureTypeEmissive, N)
-#define MATKEY_TEXTURE_NORMALS(N)      MATKEY_TEXTURE(TextureTypeNormals, N)
-#define MATKEY_TEXTURE_HEIGHT(N)       MATKEY_TEXTURE(TextureTypeHeight, N)
-#define MATKEY_TEXTURE_SHININESS(N)    MATKEY_TEXTURE(TextureTypeShininess, N)
-#define MATKEY_TEXTURE_OPACITY(N)      MATKEY_TEXTURE(TextureTypeOpacity, N)
-#define MATKEY_TEXTURE_DISPLACEMENT(N) MATKEY_TEXTURE(TextureTypeDisplacement, N)
-#define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(TextureTypeLightmap, N)
-#define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(TextureTypeReflection, N)
+#define MATKEY_TEXTURE_DIFFUSE(N)      MATKEY_TEXTURE(octoon::model::TextureTypeDiffuse, N)
+#define MATKEY_TEXTURE_SPECULAR(N)     MATKEY_TEXTURE(octoon::model::TextureTypeSpecular, N)
+#define MATKEY_TEXTURE_AMBIENT(N)      MATKEY_TEXTURE(octoon::model::TextureTypeAmbient, N)
+#define MATKEY_TEXTURE_EMISSIVE(N)     MATKEY_TEXTURE(octoon::model::TextureTypeEmissive, N)
+#define MATKEY_TEXTURE_NORMALS(N)      MATKEY_TEXTURE(octoon::model::TextureTypeNormals, N)
+#define MATKEY_TEXTURE_HEIGHT(N)       MATKEY_TEXTURE(octoon::model::TextureTypeHeight, N)
+#define MATKEY_TEXTURE_SHININESS(N)    MATKEY_TEXTURE(octoon::model::TextureTypeShininess, N)
+#define MATKEY_TEXTURE_OPACITY(N)      MATKEY_TEXTURE(octoon::model::TextureTypeOpacity, N)
+#define MATKEY_TEXTURE_DISPLACEMENT(N) MATKEY_TEXTURE(octoon::model::TextureTypeDisplacement, N)
+#define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(octoon::model::TextureTypeLightmap, N)
+#define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(octoon::model::TextureTypeReflection, N)
 
 #define TEXTURE_ARRAY_COUNT 4
 

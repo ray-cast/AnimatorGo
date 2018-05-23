@@ -50,13 +50,13 @@ public:
 				octoon::imgui::tree_pop();
 			}
 
-			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (material_ && octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				static octoon::math::float1 smoothness = 0.0f;
 				static octoon::math::float1 metalness = 0.0f;
-				static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
+				static octoon::math::float3 lightDir = -octoon::math::float3::UnitY;
 				static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
-				static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
+				static octoon::math::float3 baseColor = octoon::math::float3(62.0f, 62.0f, 62.0f) / 255.0f;
 				static octoon::math::float3 specularColor(1.0f);
 
 				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
@@ -94,6 +94,8 @@ private:
 	std::shared_ptr<octoon::video::GGXMaterial> material_;
 };
 
+
+
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
@@ -101,6 +103,7 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
+
 		auto camera = octoon::GameObject::create("camera");
 		camera->addComponent<octoon::CameraComponent>();
 		camera->addComponent<octoon::FirstPersonCameraComponent>();
@@ -109,20 +112,38 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
+		camera->addComponent<CubeController>();
 
-		auto material = std::make_shared<octoon::video::GGXMaterial>();
+		std::string rootPath = "";
 
 		octoon::GameObjects objects;
-		octoon::model::Model model("Tda-luo-ver2.3/luo.pmx");
-		for (auto & each : model.get<octoon::model::Model::mesh>())
+		octoon::model::Model model(rootPath + "luo.pmx");
+
+		for (std::size_t i = 0; i < model.get<octoon::model::Model::material>().size(); i++)
 		{
+			auto mesh = model.get<octoon::model::Model::mesh>(i);
+			auto materialProp = model.get<octoon::model::Model::material>(i);
+
+			std::string textureName;
+			materialProp->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+
+			octoon::math::float3 base;
+			materialProp->get(MATKEY_COLOR_DIFFUSE, base);
+
+			octoon::math::float3 ambient;
+			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
+
+			auto material = std::make_shared<octoon::video::GGXMaterial>();
+			material->setAmbientColor(base);
+			material->setBaseColor(octoon::math::float3::Zero);
+			material->setTexture(octoon::ResManager::instance()->createTexture(rootPath + textureName));
+
 			auto object = octoon::GameObject::create("actor");
-			object->addComponent<octoon::MeshFilterComponent>(each);
-			object->addComponent<octoon::MeshRendererComponent>(material);
-			// object->addComponent<octoon::GuizmoComponent>(camera);
-			object->addComponent<CubeController>(material);
+			object->addComponent<octoon::MeshFilterComponent>(mesh);
+			object->addComponent<octoon::MeshRendererComponent>(std::move(material));
 			objects.push_back(object);
 		}
+
 		::OctoonMainLoop();
 	}
 

@@ -11,6 +11,16 @@ namespace octoon
 			this->setup();
 		}
 
+		GGXMaterial::GGXMaterial(const graphics::GraphicsTexturePtr& texture) except
+			:GGXMaterial()
+		{
+			this->setTexture(texture);
+		}
+
+		GGXMaterial::~GGXMaterial() noexcept
+		{
+		}
+
 		void
 		GGXMaterial::setup() except
 		{
@@ -151,7 +161,7 @@ namespace octoon
 
 				vec3 diffuse = mix(base, vec3(0.0f), vec3(metalness));
 
-				fragColor = vec4(pow(texture2D(decal, oTexcoord1).rgb * ambient + (diffuse + spec * fresnel * 0.001f) * nl, vec3(1.0f / 2.2f)), 1.0f);
+				fragColor = vec4(pow(texture2D(decal, oTexcoord1).rgb * (ambient + (diffuse + spec * fresnel * 0.001f) * nl), vec3(1.0f / 2.2f)), 1.0f);
 			})";
 #endif
 
@@ -203,16 +213,12 @@ namespace octoon
 			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "metalness"; });
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 
-			lightDir_->uniform3f(math::float3::UnitY);
+			lightDir_->uniform3f(-math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::Zero);
 			ambientColor_->uniform3f(math::float3::Zero);
 			specularColor_->uniform3f(math::float3::One);
 			smoothness_->uniform1f(0.0f);
 			metalness_->uniform1f(0.0f);
-		}
-
-		GGXMaterial::~GGXMaterial() noexcept
-		{
 		}
 
 		void

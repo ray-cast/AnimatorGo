@@ -26,31 +26,31 @@ namespace octoon
 		void
 		UIViewComponent::onActivate() noexcept
 		{
-			this->addComponentDispatch(octoon::GameDispatchType::Gui);
+			this->addComponentDispatch(GameDispatchType::Gui);
 
-			camera_ = octoon::GameObject::create();
-			camera_->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
+			camera_ = GameObject::create();
+			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, 205));
 
-			auto camera = camera_->addComponent<octoon::CameraComponent>();
-			camera->setCameraOrder(octoon::video::CameraOrder::Custom);
-			camera->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
-			camera->setCameraType(octoon::video::CameraType::Perspective);
-			camera->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+			auto camera = camera_->addComponent<CameraComponent>();
+			camera->setCameraOrder(video::CameraOrder::Custom);
+			camera->setClearColor(math::float4(0.1f, 0.2f, 0.3f, 1.0));
+			camera->setCameraType(video::CameraType::Perspective);
+			camera->setOrtho(math::float4(0.0, 1.0, 0.0, 1.0));
 
-			auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
-			auto aabb = octoon::model::aabb(text);
+			auto text = model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+			auto aabb = model::aabb(text);
 
 			for (auto& it : text)
 				*it -= aabb.center();
 
-			auto material = std::make_shared<octoon::video::TextMaterial>();
+			auto material = std::make_shared<video::TextMaterial>();
 			material->setLean(0.0f);
-			material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
-			material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
+			material->setTextColor(video::TextColor::FrontColor, math::float3(31.0, 179.0, 249.0) / 255.0f);
+			material->setTextColor(video::TextColor::SideColor, math::float3(0.0, 1.0, 0.0));
 
-			static auto object = octoon::GameObject::create();
-			object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
-			object->addComponent<octoon::MeshRendererComponent>(material);
+			static auto object = GameObject::create();
+			object->addComponent<MeshFilterComponent>(model::makeMesh(text));
+			object->addComponent<MeshRendererComponent>(material);
 		}
 
 		void
@@ -75,11 +75,11 @@ namespace octoon
 		{
 			auto cameraComponent = camera_->getComponent<CameraComponent>();
 
-			if (imgui::begin_dock("Camera", &isShowedCameraWindow_, octoon::imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | octoon::imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
+			if (imgui::begin_dock("Camera", &isShowedCameraWindow_, imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
 			{
 				imgui::set_scroll_y(imgui::get_style_default().WindowPadding.y);
 
-				auto size = octoon::imgui::get_window_size();
+				auto size = imgui::get_window_size();
 
 				if (framebufferSizeW_ != size.x || framebufferSizeH_ != size.y)
 				{
@@ -94,7 +94,7 @@ namespace octoon
 				{
 					auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachment().getBindingTexture();
 					if (texture)
-						octoon::imgui::image(texture.get(), size, octoon::math::float2::UnitY, octoon::math::float2::UnitX);
+						imgui::image(texture.get(), size, math::float2::UnitY, math::float2::UnitX);
 				}
 
 				imgui::end_dock();

@@ -67,8 +67,8 @@ namespace octoon
 
 		System::System() noexcept
 			: initialize_(false)
-			, imguiPath_("../../ui/imgui.layout")
-			, imguiDockPath_("../../ui/imgui_dock.layout")
+			, imguiPath_("../../system/ui/imgui.layout")
+			, imguiDockPath_("../../system/ui/imgui_dock.layout")
 			, ui_context_(nullptr)
 		{
 		}

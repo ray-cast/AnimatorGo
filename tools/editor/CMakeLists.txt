@@ -6,6 +6,8 @@ SET(SOURCE_PATH ${OCTOON_PATH_TOOLS}/${LIB_NAME})
 
 SET(PLATFORM_LIST
 	${SOURCE_PATH}/main.cpp
+	${SOURCE_PATH}/ui_view_component.h
+	${SOURCE_PATH}/ui_view_component.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${PLATFORM_LIST})
 

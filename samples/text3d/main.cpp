@@ -90,6 +90,7 @@ public:
 
 						paths -= aabb.center();
 						paths /= aabb.extents();
+						paths << octoon::model::transform::begin(1);
 						paths << octoon::model::transform::twist(x1, y1);
 
 						/*

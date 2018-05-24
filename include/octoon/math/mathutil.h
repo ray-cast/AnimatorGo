@@ -105,18 +105,20 @@ namespace octoon
 		template<typename T>
 		constexpr T clamp(const T t, const T min, const T max) noexcept
 		{
-			return std::max(min, std::min(max, t));
+			return std::max<T>(min, std::min<T>(max, t));
 		}
 
 		template<typename T>
 		constexpr T saturate(const T v) noexcept
 		{
-			return clamp(v, 0.0f, 1.0f);
+			return clamp<T>(v, T(0), T(1));
 		}
 
 		template<typename _Tx, typename _Ty>
 		constexpr _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
 		{
+			if (t3 == 0) return t1; // float-precision
+			if (t3 == 1) return t2; // float-precision
 			return t1 + (t2 - t1) * t3;
 		}
 

@@ -196,13 +196,18 @@ namespace octoon
 									continue;
 								}
 								
-								if (it + 1 != end && (*(it)).point.pt != (*(it + 1)).point.pt)
+								if (it + 1 != end && (*it).point.pt != (*(it + 1)).point.pt)
 								{
-									auto begin = (*(it)).point.pt;
+									auto begin = (*it).point.pt;
 									auto next = (*(it + 1)).point.pt;
-									auto step = (next - begin) / (steps + 1);
 
-									edges.emplace_back(begin, math::lerp(begin, next, 0.5f), next);
+									std::vector<math::float3> points(steps * 3);
+									
+									for (std::uint32_t n = 0; n < points.size(); n++)
+										points[n] = math::lerp(begin, next, float(n) / (points.size() - 1));
+
+									for (std::uint32_t n = 0; n < points.size(); n+=3)
+										edges.emplace_back(points[n], points[n + 1], points[n + 2]);
 								}
 								else
 								{

@@ -270,8 +270,8 @@ namespace octoon
 					auto& p2 = (n == contour->points().size() - 1) ? contour->at(0) : contour->at(n + 1);
 
 					math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
-					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thicknessHalf);
-					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thicknessHalf);
+					math::float3 b = math::float3(p1.x, p1.y, p1.z - thicknessHalf);
+					math::float3 c = math::float3(p2.x, p2.y, p2.z - thicknessHalf);
 					math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
 					math::uint1 index = (math::uint1)tris.size();
@@ -317,10 +317,10 @@ namespace octoon
 						auto& p1 = contour->at(n);
 						auto& p2 = (n == contour->points().size() - 1) ? contour->at(0) : contour->at(n + 1);
 
-						math::float3 a = math::float3(p1.x, p1.y, thicknessHalf);
-						math::float3 b = math::float3(p1.x, p1.y, -thicknessHalf);
-						math::float3 c = math::float3(p2.x, p2.y, -thicknessHalf);
-						math::float3 d = math::float3(p2.x, p2.y, thicknessHalf);
+						math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
+						math::float3 b = math::float3(p1.x, p1.y, p1.z - thicknessHalf);
+						math::float3 c = math::float3(p2.x, p2.y, p2.z - thicknessHalf);
+						math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
 						math::uint1 index = (math::uint1)tris.size();
 						indices.push_back(index);

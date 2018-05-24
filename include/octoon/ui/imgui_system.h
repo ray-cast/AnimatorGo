@@ -48,12 +48,10 @@ namespace octoon
 			System& operator=(const System&) noexcept = delete;
 
 		private:
-			bool initialize_;
-
 			std::string imguiPath_;
 			std::string imguiDockPath_;
 
-			ImGuiContext* ui_context_;
+			ImGuiContext* imguiContext_;
 
 			graphics::GraphicsDataPtr vbo_;
 			graphics::GraphicsDataPtr ibo_;

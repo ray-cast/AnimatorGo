@@ -66,10 +66,9 @@ namespace octoon
 #endif
 
 		System::System() noexcept
-			: initialize_(false)
-			, imguiPath_("../../system/ui/imgui.layout")
+			: imguiPath_("../../system/ui/imgui.layout")
 			, imguiDockPath_("../../system/ui/imgui_dock.layout")
-			, ui_context_(nullptr)
+			, imguiContext_(nullptr)
 		{
 		}
 
@@ -81,10 +80,10 @@ namespace octoon
 		bool
 		System::open(input::WindHandle window, const GraphicsDevicePtr& device) except
 		{
-			assert(!initialize_);
+			assert(!imguiContext_);
 
-			ui_context_ = ImGui::CreateContext();
-			ImGui::SetCurrentContext(ui_context_);
+			imguiContext_ = ImGui::CreateContext();
+			ImGui::SetCurrentContext(imguiContext_);
 			ImGui::LoadDock(imguiDockPath_.c_str());
 
 			GuiStyle style;
@@ -185,7 +184,6 @@ namespace octoon
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
 			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
 
-			initialize_ = true;
 			return true;
 		}
 
@@ -196,19 +194,14 @@ namespace octoon
 			ibo_.reset();
 			texture_.reset();
 
-			if (initialize_)
+			if (imguiContext_)
 			{
 				ImGui::SaveDock(imguiDockPath_.c_str());
 				ImGui::ShutdownDock();
-				ImGui::Shutdown(ui_context_);
+				ImGui::Shutdown(imguiContext_);
+				ImGui::DestroyContext(imguiContext_);
 
-				initialize_ = false;
-			}
-
-			if (ui_context_)
-			{
-				ImGui::DestroyContext(ui_context_);
-				ui_context_ = nullptr;
+				imguiContext_ = nullptr;
 			}
 		}
 
@@ -375,7 +368,7 @@ namespace octoon
 		void
 		System::newFrame() noexcept
 		{
-			ImGui::SetCurrentContext(ui_context_);
+			ImGui::SetCurrentContext(imguiContext_);
 			ImGui::NewFrame();
 		}
 

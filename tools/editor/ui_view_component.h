@@ -24,6 +24,7 @@ namespace octoon
 			void onGui() noexcept override;
 
 		private:
+			void showMainMenu() noexcept;
 			void showCameraWindow() noexcept;
 			void showAssetsWindow() noexcept;
 			void showHierarchyWindow() noexcept;
@@ -33,6 +34,7 @@ namespace octoon
 			std::uint32_t framebufferSizeW_;
 			std::uint32_t framebufferSizeH_;
 
+			bool isShowedMainMenu_;
 			bool isShowedCameraWindow_;
 			bool isShowedAssetsWindow_;
 			bool isShowedInspectorWindow_;

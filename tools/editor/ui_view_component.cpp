@@ -14,6 +14,7 @@ namespace octoon
 			, isShowedAssetsWindow_(true)
 			, isShowedInspectorWindow_(true)
 			, isShowedCameraWindow_(true)
+			, isShowedMainMenu_(true)
 			, framebufferSizeW_(0)
 			, framebufferSizeH_(0)
 		{
@@ -80,10 +81,90 @@ namespace octoon
 		void 
 		UIViewComponent::onGui() noexcept
 		{
+			this->showMainMenu();
 			this->showCameraWindow();
 			this->showAssetsWindow();
 			this->showHierarchyWindow();
 			this->showInspectorWindow();
+		}
+
+		void
+		UIViewComponent::showMainMenu() noexcept
+		{
+			if (!isShowedMainMenu_)
+				return;
+
+			imgui::push_style_var(imgui::GuiStyleVar::WindowPadding, math::float2(_style.WindowPadding.x * 2, _style.WindowPadding.y));
+
+			if (imgui::begin_main_menu_bar())
+			{
+				math::float2 size = imgui::get_display_size();
+				size.y -= imgui::get_window_height();
+
+				imgui::root_dock(math::float2(0, imgui::get_window_height()), size);
+				imgui::push_style_color(imgui::GuiCol::Border, math::float4::Zero);
+
+				if (imgui::begin_menu("File"))
+				{
+					if (imgui::menu_item("Open", "CTRL+O", false, false)) { /*on click */}
+					if (imgui::menu_item("Save", "CTRL+S", false, false)) { /*on click */}
+					if (imgui::menu_item("SaveAs", "CTRL+SHIFT+S", false, false)) { /*on click */}
+
+					imgui::separator();
+
+					if (imgui::menu_item("ImportModel")) { /*on click */}
+					if (imgui::menu_item("ExportModel")) { /*on click */}
+
+					imgui::separator();
+
+					if (imgui::menu_item("Exit")) { std::exit(0); }
+
+					imgui::end_menu();
+				}
+
+				if (imgui::begin_menu("Edit"))
+				{
+					if (imgui::begin_menu("Language"))
+					{
+						if (imgui::menu_item("English")) { /*on click() */}
+						if (imgui::menu_item("Chinese")) { /*on click() */}
+
+						imgui::end_menu();
+					}
+
+					imgui::separator();
+					imgui::menu_item("StyleEditor", 0);
+
+					imgui::end_menu();
+				}
+
+				if (imgui::begin_menu("GameObject"))
+				{
+					if (imgui::menu_item("CreateProbe")) { /*on click */}
+					imgui::end_menu();
+				}
+
+				if (imgui::begin_menu("Window"))
+				{
+					imgui::menu_item("Assert", 0);
+					imgui::menu_item("Camera", 0);
+					imgui::menu_item("Inspector", 0);
+					imgui::menu_item("LightMass", 0);
+					imgui::end_menu();
+				}
+
+				if (imgui::begin_menu("Help"))
+				{
+					imgui::menu_item("About", 0);
+					imgui::end_menu();
+				}
+
+				imgui::pop_style_color();
+
+				imgui::end_main_menu_bar();
+			}
+
+			imgui::pop_style_var();
 		}
 
 		void

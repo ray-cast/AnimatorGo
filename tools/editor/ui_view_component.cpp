@@ -108,12 +108,12 @@ namespace octoon
 				{
 					if (imgui::menu_item("Open", "CTRL+O", false, false)) { /*on click */}
 					if (imgui::menu_item("Save", "CTRL+S", false, false)) { /*on click */}
-					if (imgui::menu_item("SaveAs", "CTRL+SHIFT+S", false, false)) { /*on click */}
+					if (imgui::menu_item("Save As...", "CTRL+SHIFT+S", false, false)) { /*on click */}
 
 					imgui::separator();
 
-					if (imgui::menu_item("ImportModel")) { /*on click */}
-					if (imgui::menu_item("ExportModel")) { /*on click */}
+					if (imgui::menu_item("Import Model")) { /*on click */}
+					if (imgui::menu_item("Export Model")) { /*on click */}
 
 					imgui::separator();
 
@@ -133,14 +133,14 @@ namespace octoon
 					}
 
 					imgui::separator();
-					imgui::menu_item("StyleEditor", 0);
+					imgui::menu_item("Style Editor", 0);
 
 					imgui::end_menu();
 				}
 
 				if (imgui::begin_menu("GameObject"))
 				{
-					if (imgui::menu_item("CreateProbe")) { /*on click */}
+					if (imgui::menu_item("Create Game Object")) { /*on click */}
 					imgui::end_menu();
 				}
 
@@ -149,7 +149,7 @@ namespace octoon
 					imgui::menu_item("Assert", 0);
 					imgui::menu_item("Camera", 0);
 					imgui::menu_item("Inspector", 0);
-					imgui::menu_item("LightMass", 0);
+					imgui::menu_item("Light Mass", 0);
 					imgui::end_menu();
 				}
 

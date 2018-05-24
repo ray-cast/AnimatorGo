@@ -175,7 +175,7 @@ namespace octoon
 
 		namespace transform
 		{
-			std::function<void(PathGroups&)> begin(std::uint32_t steps) noexcept
+			std::function<void(PathGroups&)> smoother(std::uint32_t steps) noexcept
 			{
 				auto begin = [](PathGroups& groups, std::uint32_t steps) noexcept
 				{
@@ -196,16 +196,13 @@ namespace octoon
 									continue;
 								}
 								
-								if (it + 1 != end)
+								if (it + 1 != end && (*(it)).point.pt != (*(it + 1)).point.pt)
 								{
 									auto begin = (*(it)).point.pt;
 									auto next = (*(it + 1)).point.pt;
 									auto step = (next - begin) / (steps + 1);
 
-									for (std::size_t n = 0; n < steps; n++, begin += step + step)
-									{
-										edges.emplace_back(begin, begin + step, begin + step + step);
-									}										
+									edges.emplace_back(begin, math::lerp(begin, next, 0.5f), next);
 								}
 								else
 								{

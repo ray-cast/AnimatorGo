@@ -103,7 +103,7 @@ namespace octoon
 
 		namespace transform
 		{
-			OCTOON_EXPORT std::function<void(PathGroups&)> begin(std::uint32_t steps) noexcept;
+			OCTOON_EXPORT std::function<void(PathGroups&)> smoother(std::uint32_t steps) noexcept;
 		}
 	}
 }

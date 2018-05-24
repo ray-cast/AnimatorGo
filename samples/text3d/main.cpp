@@ -78,20 +78,20 @@ public:
 				static octoon::math::float1 y2 = 0.0f;
 
 				octoon::imgui::drag_float("x", &x1, 0.01f, -1, 1);
-				octoon::imgui::drag_float("y", &y1, 0.01f, -1, 1);
+				octoon::imgui::drag_float("y", &y1, 0.01f, -1, 1); 
 
 				if (y1 != y2 || x1 != x2)
 				{
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto paths = octoon::model::makeTextPaths(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
+						auto paths = octoon::model::makeTextPaths(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(paths);
 
 						paths -= aabb.center();
-						paths /= aabb.extents();
-						paths << octoon::model::transform::begin(1);
-						paths << octoon::model::transform::twist(x1, y1);
+						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
+						paths << octoon::model::transform::smoother(1);
+						paths << octoon::model::transform::bulegeLow(x1, y1);
 
 						/*
 						paths << octoon::model::transform::fan(x1, y1);
@@ -114,7 +114,7 @@ public:
 						paths << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);
 						*/
 
-						paths *= aabb.extents();
+						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
 						auto text = octoon::model::makeTextContours(paths, 8);
 
@@ -162,7 +162,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto text = octoon::model::makeTextContours(L"滚滚长江东逝水", { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 
 		for (auto& it : text)

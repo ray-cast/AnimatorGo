@@ -180,13 +180,21 @@ namespace octoon
 
 				if (framebufferSizeW_ != size.x || framebufferSizeH_ != size.y)
 				{
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+					camera_->getComponent<CameraComponent>()->setupFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y);
+#else
 					camera_->getComponent<CameraComponent>()->setupFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y, 4);
 					camera_->getComponent<CameraComponent>()->setupSwapFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y);
+#endif
 					framebufferSizeW_ = (std::uint32_t)size.x;
 					framebufferSizeH_ = (std::uint32_t)size.y;
 				}
 
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
+				auto framebuffer = cameraComponent->getFramebuffer();
+#else
 				auto framebuffer = cameraComponent->getSwapFramebuffer();
+#endif
 				if (framebuffer)
 				{
 					auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachment().getBindingTexture();

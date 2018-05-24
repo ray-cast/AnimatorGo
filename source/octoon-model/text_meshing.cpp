@@ -135,14 +135,11 @@ namespace octoon
 					{
 						math::float3 prev2 = prev, next2 = next;
 
-						if (FT_CURVE_TAG(tags[(i - 1 + n) % n]) == FT_Curve_Tag_Conic)
-						{
-							prev2 = (cur + prev) * 0.5f;
-							contours.addEdge(prev2);
-						}
-
 						if (FT_CURVE_TAG(tags[(i + 1) % n]) == FT_Curve_Tag_Conic)
 							next2 = (cur + next) * 0.5f;
+
+						if (FT_CURVE_TAG(tags[(i - 1 + n) % n]) == FT_Curve_Tag_Conic)
+							prev2 = (cur + prev) * 0.5f;
 
 						contours.addEdge(prev2, cur, next2);
 					}
@@ -249,14 +246,11 @@ namespace octoon
 					{
 						math::float3 prev2 = prev, next2 = next;
 
-						if (FT_CURVE_TAG(tags[(i - 1 + n) % n]) == FT_Curve_Tag_Conic)
-						{
-							prev2 = (cur + prev) * 0.5f;
-							contours.addPoints(prev2);
-						}
-
 						if (FT_CURVE_TAG(tags[(i + 1) % n]) == FT_Curve_Tag_Conic)
 							next2 = (cur + next) * 0.5f;
+
+						if (FT_CURVE_TAG(tags[(i - 1 + n) % n]) == FT_Curve_Tag_Conic)
+							prev2 = (cur + prev) * 0.5f;
 
 						contours.addPoints(prev2, cur, next2, bezierSteps);
 					}

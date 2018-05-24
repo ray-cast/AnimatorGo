@@ -17,6 +17,22 @@ namespace octoon
 			, framebufferSizeW_(0)
 			, framebufferSizeH_(0)
 		{
+			_styleDefault.AntiAliasedLines = false;
+			_styleDefault.ItemSpacing.y = 3;
+			_styleDefault.WindowPadding.x = 5;
+			_styleDefault.WindowPadding.y = 10;
+			_styleDefault.FramePadding.x = 6;
+			_styleDefault.ScrollbarSize = 15;
+			_styleDefault.IndentSpacing = 25;
+			_styleDefault.Colors[imgui::GuiCol::FrameBgActive] = octoon::math::float4(0.3f, 0.3f, 0.3f, 0.58f);
+			_styleDefault.Colors[imgui::GuiCol::FrameBgHovered] = octoon::math::float4(0.4f, 0.4f, 0.4f, 0.75f);
+			_styleDefault.Colors[imgui::GuiCol::WindowBg] = octoon::math::float4(0.075f, 0.075f, 0.075f, 1.0f);
+			_styleDefault.Colors[imgui::GuiCol::ChildBg] = octoon::math::float4(0.33333f, 0.33333f, 0.33333f, 0.45f);
+			_styleDefault.Colors[imgui::GuiCol::ScrollbarGrab] = octoon::math::float4(0.314f, 0.314f, 0.33333f, 1.0f);
+			_styleDefault.Colors[imgui::GuiCol::Border] = octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f);
+			_style = _styleDefault;
+
+			imgui::set_style(_styleDefault);
 		}
 
 		UIViewComponent::~UIViewComponent() noexcept
@@ -85,8 +101,8 @@ namespace octoon
 				{
 					camera_->getComponent<CameraComponent>()->setupFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y, 4);
 					camera_->getComponent<CameraComponent>()->setupSwapFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y);
-					framebufferSizeW_ = size.x;
-					framebufferSizeH_ = size.y;
+					framebufferSizeW_ = (std::uint32_t)size.x;
+					framebufferSizeH_ = (std::uint32_t)size.y;
 				}
 
 				auto framebuffer = cameraComponent->getSwapFramebuffer();

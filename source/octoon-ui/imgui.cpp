@@ -407,7 +407,7 @@ namespace octoon
 			ImGui::SetKeyboardFocusHere(offset);
 		}
 
-		void push_style_color(GuiCol idx, const float4& col) noexcept
+		void push_style_color(GuiCol::Type idx, const float4& col) noexcept
 		{
 			ImGui::PushStyleColor((ImGuiCol)idx, (ImVec4&)col);
 		}
@@ -442,7 +442,7 @@ namespace octoon
 			return ImVec2ToFloat2(ImGui::GetFontTexUvWhitePixel());
 		}
 
-		std::uint32_t get_color_u32(GuiCol idx, float alpha_mul) noexcept
+		std::uint32_t get_color_u32(GuiCol::Type idx, float alpha_mul) noexcept
 		{
 			return ImGui::GetColorU32((ImGuiCol)idx, alpha_mul);
 		}
@@ -1398,7 +1398,7 @@ namespace octoon
 			return ImGui::GetFrameCount();
 		}
 
-		const char* get_style_col_name(GuiCol idx) noexcept
+		const char* get_style_col_name(GuiCol::Type idx) noexcept
 		{
 			return ImGui::GetStyleColorName((ImGuiCol)idx);
 		}

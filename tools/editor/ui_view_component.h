@@ -2,6 +2,7 @@
 #define OCTOON_UI_VIEW_COMPONENT_H_
 
 #include <octoon/game_component.h>
+#include <octoon/ui/imgui.h>
 
 namespace octoon
 {
@@ -38,6 +39,9 @@ namespace octoon
 			bool isShowedHierarchyWindow_;
 
 			GameObjectPtr camera_;
+
+			imgui::GuiStyle _style;
+			imgui::GuiStyle _styleDefault;
 		};
 	}
 }

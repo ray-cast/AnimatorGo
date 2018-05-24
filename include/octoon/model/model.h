@@ -177,34 +177,34 @@ namespace octoon
 			constexpr std::enable_if_t<type == type_t::camera, bool> empty() const { return _cameras.empty(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
-			constexpr mesh_array_t& operator[](std::size_t n) const { return _meshes[n]; }
+			const MeshPtr& operator[](std::size_t n) const { return _meshes[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::bone>>
-			constexpr bone_array_t& operator[](std::size_t n) const { return _bones[n]; }
+			const BonePtr& operator[](std::size_t n) const { return _bones[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::ik>>
-			constexpr ik_array_t& operator[](std::size_t n) const { return _iks[n]; }
+			const IKAttrPtr& operator[](std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			constexpr rigidbody_array_t& operator[](std::size_t n) const { return _rigidbodys[n]; }
+			const RigidbodyPropertyPtr& operator[](std::size_t n) const { return _rigidbodys[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
-			constexpr joint_array_t& operator[](std::size_t n) const { return _joints[n]; }
+			const JointPropertyPtr& operator[](std::size_t n) const { return _joints[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::material>>
-			constexpr material_array_t& operator[](std::size_t n) const { return _materials[n]; }
+			const MaterialPropertyPtr& operator[](std::size_t n) const { return _materials[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::texture>>
-			constexpr texture_array_t& operator[](std::size_t n) const { return _textures[n]; }
+			const TexturePropertyPtr& operator[](std::size_t n) const { return _textures[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
-			constexpr animation_array_t& operator[](std::size_t n) const { return _animations[n]; }
+			const AnimationPropertyPtr& operator[](std::size_t n) const { return _animations[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::light>>
-			constexpr light_array_t& operator[](std::size_t n) const { return _lights[n]; }
+			const LightPropertyPtr& operator[](std::size_t n) const { return _lights[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::camera>>
-			constexpr camera_array_t& operator[](std::size_t n) const { return _cameras[n]; }
+			const CameraPropertyPtr& operator[](std::size_t n) const { return _cameras[n]; }
 
 			void clear() noexcept;
 

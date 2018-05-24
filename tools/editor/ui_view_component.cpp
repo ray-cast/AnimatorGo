@@ -10,10 +10,10 @@ namespace octoon
 		OctoonImplementSubClass(UIViewComponent, GameComponent, "UIViewComponent")
 
 		UIViewComponent::UIViewComponent() noexcept
-			: _isShowedHierarchyWindow(true)
-			, _isShowedAssetsWindow(true)
-			, _isShowedInspectorWindow(true)
-			, _isShowedCameraWindow(true)
+			: isShowedHierarchyWindow_(true)
+			, isShowedAssetsWindow_(true)
+			, isShowedInspectorWindow_(true)
+			, isShowedCameraWindow_(true)
 			, framebufferSizeW_(0)
 			, framebufferSizeH_(0)
 		{
@@ -28,10 +28,10 @@ namespace octoon
 		{
 			this->addComponentDispatch(octoon::GameDispatchType::Gui);
 
-			_camera = octoon::GameObject::create();
-			_camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
+			camera_ = octoon::GameObject::create();
+			camera_->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-			auto camera = _camera->addComponent<octoon::CameraComponent>();
+			auto camera = camera_->addComponent<octoon::CameraComponent>();
 			camera->setCameraOrder(octoon::video::CameraOrder::Custom);
 			camera->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 			camera->setCameraType(octoon::video::CameraType::Perspective);
@@ -58,7 +58,7 @@ namespace octoon
 		{
 			this->removeComponentDispatchs();
 
-			_camera.reset();
+			camera_.reset();
 		}
 
 		void 
@@ -73,9 +73,9 @@ namespace octoon
 		void
 		UIViewComponent::showCameraWindow() noexcept
 		{
-			auto cameraComponent = _camera->getComponent<CameraComponent>();
+			auto cameraComponent = camera_->getComponent<CameraComponent>();
 
-			if (imgui::begin_dock("Camera", &_isShowedCameraWindow, octoon::imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | octoon::imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
+			if (imgui::begin_dock("Camera", &isShowedCameraWindow_, octoon::imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | octoon::imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
 			{
 				imgui::set_scroll_y(imgui::get_style_default().WindowPadding.y);
 
@@ -83,8 +83,8 @@ namespace octoon
 
 				if (framebufferSizeW_ != size.x || framebufferSizeH_ != size.y)
 				{
-					_camera->getComponent<CameraComponent>()->setupFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y, 4);
-					_camera->getComponent<CameraComponent>()->setupSwapFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y);
+					camera_->getComponent<CameraComponent>()->setupFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y, 4);
+					camera_->getComponent<CameraComponent>()->setupSwapFramebuffers((std::uint32_t)size.x, (std::uint32_t)size.y);
 					framebufferSizeW_ = size.x;
 					framebufferSizeH_ = size.y;
 				}
@@ -104,7 +104,7 @@ namespace octoon
 		void
 		UIViewComponent::showAssetsWindow() noexcept
 		{
-			if (imgui::begin_dock("Assets", &_isShowedAssetsWindow))
+			if (imgui::begin_dock("Assets", &isShowedAssetsWindow_))
 			{
 				imgui::end_dock();
 			}
@@ -113,7 +113,7 @@ namespace octoon
 		void
 		UIViewComponent::showHierarchyWindow() noexcept
 		{
-			if (imgui::begin_dock("Hierarchy", &_isShowedHierarchyWindow))
+			if (imgui::begin_dock("Hierarchy", &isShowedHierarchyWindow_))
 			{
 				imgui::end_dock();
 			}
@@ -122,10 +122,10 @@ namespace octoon
 		void 
 		UIViewComponent::showInspectorWindow() noexcept
 		{
-			if (!_isShowedInspectorWindow)
+			if (!isShowedInspectorWindow_)
 				return;
 
-			if (imgui::begin_dock("Inspector", &_isShowedInspectorWindow))
+			if (imgui::begin_dock("Inspector", &isShowedInspectorWindow_))
 			{
 				imgui::end_dock();
 			}

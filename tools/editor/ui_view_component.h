@@ -32,12 +32,12 @@ namespace octoon
 			std::uint32_t framebufferSizeW_;
 			std::uint32_t framebufferSizeH_;
 
-			bool _isShowedCameraWindow;
-			bool _isShowedAssetsWindow;
-			bool _isShowedInspectorWindow;
-			bool _isShowedHierarchyWindow;
+			bool isShowedCameraWindow_;
+			bool isShowedAssetsWindow_;
+			bool isShowedInspectorWindow_;
+			bool isShowedHierarchyWindow_;
 
-			GameObjectPtr _camera;
+			GameObjectPtr camera_;
 		};
 	}
 }

@@ -198,6 +198,9 @@ namespace octoon
 								
 								if (it + 1 != end && (*it).point.pt != (*(it + 1)).point.pt)
 								{
+									if (it == path->edges().begin())
+										edges.emplace_back(*it);
+
 									auto begin = (*it).point.pt;
 									auto next = (*(it + 1)).point.pt;
 

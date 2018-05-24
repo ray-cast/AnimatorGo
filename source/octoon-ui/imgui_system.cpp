@@ -85,6 +85,7 @@ namespace octoon
 
 			ui_context_ = ImGui::CreateContext();
 			ImGui::SetCurrentContext(ui_context_);
+			ImGui::LoadDock(imguiDockPath_.c_str());
 
 			GuiStyle style;
 			set_style(style);
@@ -197,6 +198,7 @@ namespace octoon
 
 			if (initialize_)
 			{
+				ImGui::SaveDock(imguiDockPath_.c_str());
 				ImGui::ShutdownDock();
 				ImGui::Shutdown(ui_context_);
 
@@ -445,6 +447,7 @@ namespace octoon
 
 			auto& io = ImGui::GetIO();
 
+			context.setFramebuffer(nullptr);
 			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 			context.setScissor(0, uint4(0, 0, (std::uint32_t)io.DisplayFramebufferScale.x, (std::uint32_t)io.DisplayFramebufferScale.y));
 

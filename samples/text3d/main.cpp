@@ -85,35 +85,13 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto paths = octoon::model::makeTextPaths(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
+						auto paths = octoon::model::makeTextPaths(L"OOOOOO", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(paths);
 
 						paths -= aabb.center();
 						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
-						paths << octoon::model::transform::smoother(1);
-						paths << octoon::model::transform::bulegeLow(x1, y1);
-
-						/*
-						paths << octoon::model::transform::fan(x1, y1);
-						paths << octoon::model::transform::highCove(x1, y1);
-						paths << octoon::model::transform::lowCove(x1, y1);
-
-						paths << octoon::model::transform::cove(x1, y1);
-						paths << octoon::model::transform::bulege(x1, y1);
-						paths << octoon::model::transform::bulegeHigh(x1, y1);
-						paths << octoon::model::transform::bulegeLow(x1, y1);
-
-						paths << octoon::model::transform::flag(x1, y1);
-						paths << octoon::model::transform::wave(x1, y1);
-						paths << octoon::model::transform::fish(x1, y1);
+						paths << octoon::model::transform::smoother(2);
 						paths << octoon::model::transform::slope(x1, y1);
-
-						paths << octoon::model::transform::fishEye(aabb.size().x / aabb.size().y, x1, y1);
-						paths << octoon::model::transform::expandOut(x1, y1);
-						paths << octoon::model::transform::expandIn(x1, y1);
-						paths << octoon::model::transform::spin(aabb.size().x / aabb.size().y, x1, y1);
-						*/
-
 						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
 						auto text = octoon::model::makeTextContours(paths, 8);
@@ -162,7 +140,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto text = octoon::model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto text = octoon::model::makeTextContours(L"O", { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 
 		for (auto& it : text)

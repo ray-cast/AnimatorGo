@@ -134,7 +134,7 @@ namespace octoon
 				{
 					auto method = [](const math::float2& point, float x, float y) -> math::float2
 					{
-						float xx = math::lerp(point.x, point.x + point.x * point.y, y);
+						float xx = math::lerp(point.x, point.x - point.x * point.y, y);
 						float yy = math::lerp(point.y, point.y + point.x * point.y, x);
 						return math::float2(xx, yy);
 					};
@@ -299,8 +299,8 @@ namespace octoon
 				{
 					auto method = [](const math::float2& point, float x, float y) -> math::float2
 					{
-						float xx = math::lerp(point.x, point.x, y);
-						float yy = math::lerp(point.y, point.y + math::sin(point.x * math::PI) * 20, x);
+						float xx = math::lerp(point.x, point.x + math::sin(point.y * math::PI) * 2.0f, y);
+						float yy = math::lerp(point.y, point.y + math::sin(point.x * math::PI) * 2.0f, x);
 						return math::float2(xx, yy);
 					};
 

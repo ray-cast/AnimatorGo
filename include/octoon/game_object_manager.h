@@ -7,8 +7,9 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT GameObjectManager final : public runtime::Singleton<GameObjectManager>
+	class OCTOON_EXPORT GameObjectManager final
 	{
+		OctoonDeclareSingleton(GameObjectManager)
 	public:
 		GameObjectManager() noexcept;
 		~GameObjectManager() noexcept;

@@ -190,25 +190,20 @@ namespace octoon
 
 							for (; it != end; ++it)
 							{
-								if (it + 1 == end)
-								{
-									edges.push_back(*it);
-									continue;
-								}
+								auto last = it + 1;
+								if (last == end)
+									last = path->edges().begin();
 
-								if ((*it).type != PathEdge::Point)
-								{
-									edges.push_back(*it);
-									continue;
-								}
-								
-								if ((*it).point.pt != (*(it + 1)).point.pt)
+								auto pt1 = (*it).type == PathEdge::Point ? (*it).point.pt : (*it).quad.pt2;
+								auto pt2 = (*last).type == PathEdge::Point ? (*last).point.pt : (*last).quad.pt1;
+
+								if (pt1 != pt2)
 								{
 									if (it == path->edges().begin())
 										edges.emplace_back(*it);
 
 									auto begin = (*it).point.pt;
-									auto next = (*(it + 1)).point.pt;
+									auto next = (*last).point.pt;
 
 									std::vector<math::float3> points(steps * 3);
 									

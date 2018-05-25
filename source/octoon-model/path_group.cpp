@@ -197,25 +197,17 @@ namespace octoon
 								auto pt1 = (*it).type == PathEdge::Point ? (*it).point.pt : (*it).quad.pt2;
 								auto pt2 = (*last).type == PathEdge::Point ? (*last).point.pt : (*last).quad.pt1;
 
+								edges.emplace_back(*it);
+
 								if (pt1 != pt2)
 								{
-									if (it == path->edges().begin())
-										edges.emplace_back(*it);
-
-									auto begin = (*it).point.pt;
-									auto next = (*last).point.pt;
-
 									std::vector<math::float3> points(steps * 3);
 									
 									for (std::uint32_t n = 0; n < points.size(); n++)
-										points[n] = math::lerp(begin, next, float(n) / (points.size() - 1));
+										points[n] = math::lerp(pt1, pt2, float(n) / (points.size() - 1));
 
 									for (std::uint32_t n = 0; n < points.size(); n+=3)
 										edges.emplace_back(points[n], points[n + 1], points[n + 2]);
-								}
-								else
-								{
-									edges.push_back(*it);
 								}
 							}
 

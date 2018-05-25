@@ -190,13 +190,19 @@ namespace octoon
 
 							for (; it != end; ++it)
 							{
+								if (it + 1 == end)
+								{
+									edges.push_back(*it);
+									continue;
+								}
+
 								if ((*it).type != PathEdge::Point)
 								{
 									edges.push_back(*it);
 									continue;
 								}
 								
-								if (it + 1 != end && (*it).point.pt != (*(it + 1)).point.pt)
+								if ((*it).point.pt != (*(it + 1)).point.pt)
 								{
 									if (it == path->edges().begin())
 										edges.emplace_back(*it);

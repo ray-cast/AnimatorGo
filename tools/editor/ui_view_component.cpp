@@ -45,7 +45,7 @@ namespace octoon
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
 
-			camera_ = GameObject::create();
+			camera_ = GameObject::create("MainCamera");
 			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, 205));
 
 			auto camera = camera_->addComponent<CameraComponent>();
@@ -220,6 +220,26 @@ namespace octoon
 		{
 			if (imgui::begin_dock("Hierarchy", &isShowedHierarchyWindow_))
 			{
+				if (imgui::tree_node_ex("Camera", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+				{
+					std::string name = camera_->getName();
+					if (imgui::selectable(name.c_str()))
+					{
+					}
+
+					imgui::tree_pop();
+				}
+
+				if (imgui::tree_node_ex("Object", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+				{
+					std::string name = camera_->getName();
+					if (imgui::selectable(name.c_str()))
+					{
+					}
+
+					imgui::tree_pop();
+				}
+
 				imgui::end_dock();
 			}
 		}

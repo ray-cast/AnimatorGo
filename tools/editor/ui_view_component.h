@@ -41,6 +41,7 @@ namespace octoon
 			bool isShowedHierarchyWindow_;
 
 			GameObjectPtr camera_;
+			GameObjectPtr selectedObject_;
 
 			imgui::GuiStyle _style;
 			imgui::GuiStyle _styleDefault;

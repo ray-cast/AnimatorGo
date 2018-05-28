@@ -299,8 +299,8 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
-						float xx = math::lerp(point.x, point.x + math::sin(point.y * math::PI) * 2.0f, y);
-						float yy = math::lerp(point.y, point.y + math::sin(point.x * math::PI) * 2.0f, x);
+						float xx = math::lerp(point.x, point.x + math::sin(point.y * math::PI), y);
+						float yy = math::lerp(point.y, point.y + math::sin(point.x * math::PI), x);
 						return math::float2(xx, yy);
 					};
 
@@ -387,8 +387,8 @@ namespace octoon
 					auto method = [=](const math::float2& point) -> math::float2
 					{
 						float weight = 1.5f - math::length(point);
-						float xx = math::lerp(point.x, point.x - point.x * weight, x * 0.5f);
-						float yy = math::lerp(point.y, point.y + point.y * weight, x * 0.5f);
+						float xx = math::lerp(point.x, point.x + point.x * weight, x * 0.5f);
+						float yy = math::lerp(point.y, point.y - point.y * weight, x * 0.5f);
 						return math::float2(xx, yy);
 					};
 
@@ -400,9 +400,9 @@ namespace octoon
 
 			std::function<void(PathEdge&)> spin(float x, float y, float ratio) noexcept
 			{
-				auto spin = [](PathEdge& it, float x, float y, float ratio) noexcept
+				auto spin = [=](PathEdge& it) noexcept
 				{
-					auto method = [](const math::float2& point, float x, float y, float ratio) -> math::float2
+					auto method = [=](const math::float2& point) -> math::float2
 					{
 						math::float2 spin;
 						math::sinCos(&spin.x, &spin.y, x * (1.0f - math::length(point)) * 0.5f);
@@ -413,10 +413,10 @@ namespace octoon
 						return math::float2(xx, yy);
 					};
 
-					postprocess(it, std::bind(method, std::placeholders::_1, x, y, ratio));
+					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(spin, std::placeholders::_1, x, y, ratio);
+				return std::bind(spin, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> panini(float x, float y) noexcept

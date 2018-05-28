@@ -91,13 +91,11 @@ public:
 
 						paths -= aabb.center();
 						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
-						paths << octoon::model::transform::smoother(2);
-						paths << octoon::model::transform::fishEye(x1, y1, aabb.size().x / aabb.size().y);
+						paths << octoon::model::transform::smoother(3);
+						paths << octoon::model::transform::expandIn(x1, y1);
 						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
-						auto text = octoon::model::makeTextContours(paths, 8);
-
-						component->setMesh(octoon::model::makeMesh(text, 0.1f));
+						component->setMesh(octoon::model::makeMesh(octoon::model::makeTextContours(paths, 8), 0.1f));
 					}
 
 					x2 = x1;

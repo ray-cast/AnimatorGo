@@ -86,13 +86,13 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto paths = octoon::model::makeTextPaths(text_.c_str(), { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
+						auto paths = octoon::model::makeTextPaths(text_, { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(paths);
 
 						paths -= aabb.center();
 						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
 						paths << octoon::model::transform::smoother(3);
-						paths << octoon::model::transform::expandIn(x1, y1);
+						paths << octoon::model::transform::fan(x1, aabb.size().x / aabb.size().y);
 						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
 						component->setMesh(octoon::model::makeMesh(octoon::model::makeTextContours(paths, 8), 0.1f));

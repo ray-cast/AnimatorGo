@@ -128,7 +128,7 @@ namespace octoon
 				}
 			}
 
-			std::function<void(PathEdge&)> twist(float x, float y) noexcept
+			std::function<void(PathEdge&)> twist(float x, float y, bool rotate) noexcept
 			{
 				auto twist = [=](PathEdge& it) noexcept
 				{
@@ -145,15 +145,15 @@ namespace octoon
 				return std::bind(twist, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> fan(float x, float y, float ratio) noexcept
+			std::function<void(PathEdge&)> fan(float x, float ratio, bool rotate) noexcept
 			{
 				auto fan = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
-						float unorm = math::saturate(math::snorm2unorm(point.y));
+						float unorm = math::snorm2unorm(point.y) * point.x;
 						float weight = math::cos(point.x * math::PI * 0.5f) * ratio;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * (1.3f - abs(point.x)), abs(x));
+						float xx = math::lerp(point.x, point.x + unorm, math::abs(x));
 						float yy = math::lerp(point.y, point.y + weight, x);
 						return math::float2(xx, yy);
 					};
@@ -164,7 +164,7 @@ namespace octoon
 				return std::bind(fan, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> lowCove(float x, float y, float ratio) noexcept
+			std::function<void(PathEdge&)> lowCove(float x, float ratio) noexcept
 			{
 				auto lowCove = [=](PathEdge& it) noexcept
 				{
@@ -172,7 +172,7 @@ namespace octoon
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(point.y));
 						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * (1.0f - abs(point.x)) * 0.3f, abs(x));
+						float xx = math::lerp(point.x, point.x + point.x * unorm * (1.0f - abs(point.x)), math::abs(x));
 						float yy = math::lerp(point.y, point.y - weight, x);
 						return math::float2(xx, yy);
 					};
@@ -183,7 +183,7 @@ namespace octoon
 				return std::bind(lowCove, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> highCove(float x, float y, float ratio) noexcept
+			std::function<void(PathEdge&)> highCove(float x, float ratio) noexcept
 			{
 				auto highCove = [=](PathEdge& it) noexcept
 				{
@@ -191,7 +191,7 @@ namespace octoon
 					{
 						float unorm = math::saturate(math::snorm2unorm(point.y));
 						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * (1.0f - abs(point.x)) * 0.3f, abs(x));
+						float xx = math::lerp(point.x, point.x + point.x * unorm * (1.0f - abs(point.x)), math::abs(x));
 						float yy = math::lerp(point.y, point.y + weight, x);
 						return math::float2(xx, yy);
 					};
@@ -202,14 +202,14 @@ namespace octoon
 				return std::bind(highCove, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> cove(float x, float y) noexcept
+			std::function<void(PathEdge&)> cove(float x, float ratio, bool rotate) noexcept
 			{
-				auto cove = [=](PathEdge& it) noexcept
+				auto cove_x = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
-						float weight = math::cos(point.x * math::PI * 0.5f) * 8.0f;
-						float xx = math::lerp(point.x, point.x + point.x * (1.0f - math::abs(point.x)) * 0.5f, abs(x));
+						float weight = math::cos(point.x * math::PI * 0.5f) * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * (1.0f - math::abs(point.x)), abs(x));
 						float yy = math::lerp(point.y, point.y + weight, x);
 						return math::float2(xx, yy);
 					};
@@ -217,36 +217,68 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(cove, std::placeholders::_1);
-			}
-
-			std::function<void(PathEdge&)> bulege(float x, float y) noexcept
-			{
-				auto bulege = [=](PathEdge& it) noexcept
+				auto cove_y = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
-						float weight = math::cos(point.x * math::PI * 0.5f) * math::length(point) * 8.0f;
-						float xx = math::lerp(point.x, point.x + point.x * weight, y);
-						float yy = math::lerp(point.y, point.y + point.y * weight, x);
+						float weight = math::cos(point.y * math::PI * 0.5f) / ratio;
+						float xx = math::lerp(point.x, point.x - weight, math::abs(x));
+						float yy = math::lerp(point.y, point.y + point.y * (1.0f - math::abs(point.y)), x);
 						return math::float2(xx, yy);
 					};
 
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(bulege, std::placeholders::_1);
+				if (rotate)
+					return std::bind(cove_x, std::placeholders::_1);
+				else
+					return std::bind(cove_y, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> bulegeHigh(float x, float y) noexcept
+			std::function<void(PathEdge&)> bulege(float x, float ratio, bool rotate) noexcept
+			{
+				auto bulege_x = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& point) -> math::float2
+					{
+						float weight = math::cos(point.x * math::PI * 0.5f) * math::length(point) * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * (1.0f - math::abs(point.x)), x);
+						float yy = math::lerp(point.y, point.y + point.y * weight, x);
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));					
+				};
+
+				auto bulege_y = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& point) -> math::float2
+					{
+						float weight = math::cos(point.y * math::PI * 0.5f) * math::length(point) * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * weight, x);
+						float yy = math::lerp(point.y, point.y, x);
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				if (rotate)
+					return std::bind(bulege_x, std::placeholders::_1);
+				else
+					return std::bind(bulege_y, std::placeholders::_1);
+			}
+
+			std::function<void(PathEdge&)> bulegeHigh(float x, float ratio, bool rotate) noexcept
 			{
 				auto bulegeHigh = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
 						float unorm = math::saturate(math::snorm2unorm(point.y));
-						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * unorm * 6.8f;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.3f, abs(x));
+						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * unorm, math::abs(x));
 						float yy = math::lerp(point.y, point.y + weight, x);
 						return math::float2(xx, yy);
 					};
@@ -257,15 +289,15 @@ namespace octoon
 				return std::bind(bulegeHigh, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> bulegeLow(float x, float y) noexcept
+			std::function<void(PathEdge&)> bulegeLow(float x, float ratio, bool rotate) noexcept
 			{
 				auto bulegeLow = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point)
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(point.y));
-						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * unorm * 6.8f;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.3f, abs(x));
+						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.3f, math::abs(x));
 						float yy = math::lerp(point.y, point.y - weight, x);
 						return math::float2(xx, yy);
 					};
@@ -274,23 +306,6 @@ namespace octoon
 				};
 
 				return std::bind(bulegeLow, std::placeholders::_1);
-			}
-
-			std::function<void(PathEdge&)> fish(float x, float y) noexcept
-			{
-				auto fish = [=](PathEdge& it) noexcept
-				{
-					auto method = [=](const math::float2& point) -> math::float2
-					{
-						float xx = math::lerp(point.x, point.x + point.x * math::sin(point.y * math::PI), y);
-						float yy = math::lerp(point.y, point.y + point.y * math::sin(point.x * -math::PI), x);
-						return math::float2(xx, yy);
-					};
-
-					postprocess(it, std::bind(method, std::placeholders::_1));
-				};
-
-				return std::bind(fish, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> flag(float x, float y) noexcept
@@ -325,6 +340,23 @@ namespace octoon
 				};
 
 				return std::bind(wave, std::placeholders::_1);
+			}
+
+			std::function<void(PathEdge&)> fish(float x, float y) noexcept
+			{
+				auto fish = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& point) -> math::float2
+					{
+						float xx = math::lerp(point.x, point.x + point.x * math::sin(point.y * math::PI), y);
+						float yy = math::lerp(point.y, point.y + point.y * math::sin(point.x * -math::PI), x);
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				return std::bind(fish, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> slope(float x, float y) noexcept
@@ -386,7 +418,7 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
-						float weight = 1.5f - math::length(point);
+						float weight = 1.4f - math::sqrt(math::length(point));
 						float xx = math::lerp(point.x, point.x + point.x * weight, x * 0.5f);
 						float yy = math::lerp(point.y, point.y - point.y * weight, x * 0.5f);
 						return math::float2(xx, yy);
@@ -398,7 +430,7 @@ namespace octoon
 				return std::bind(expandIn, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> spin(float x, float y, float ratio) noexcept
+			std::function<void(PathEdge&)> spin(float x, float ratio, bool rotate) noexcept
 			{
 				auto spin = [=](PathEdge& it) noexcept
 				{

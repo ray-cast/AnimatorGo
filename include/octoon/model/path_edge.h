@@ -336,17 +336,17 @@ namespace octoon
 		namespace transform
 		{
 			OCTOON_EXPORT std::function<void(PathEdge&)> twist(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> fan(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> lowCove(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> highCove(float x, float y) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> fan(float x, float y, float ratio) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> lowCove(float x, float y, float ratio) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> highCove(float x, float y, float ratio) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> cove(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> bulege(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> bulegeHigh(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> bulegeLow(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> fish(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> flag(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> wave(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> slope(float x, float y) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> flag(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<void(PathEdge&)> wave(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<void(PathEdge&)> fish(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<void(PathEdge&)> slope(float x, float y) noexcept; // ok
 			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float x, float y, float ratio) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> expandOut(float x, float y) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> expandIn(float x, float y) noexcept;

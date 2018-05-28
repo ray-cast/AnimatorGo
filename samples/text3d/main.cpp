@@ -8,8 +8,9 @@ public:
 	{
 	}
 
-	TextController(const octoon::video::TextMaterialPtr& material)
+	TextController(const octoon::video::TextMaterialPtr& material, const std::wstring& text)
 		: material_(material)
+		, text_(text)
 	{
 	}
 
@@ -85,13 +86,13 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto paths = octoon::model::makeTextPaths(L"OOOOOO", { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
+						auto paths = octoon::model::makeTextPaths(text_.c_str(), { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
 						auto aabb = octoon::model::aabb(paths);
 
 						paths -= aabb.center();
 						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
 						paths << octoon::model::transform::smoother(2);
-						paths << octoon::model::transform::slope(x1, y1);
+						paths << octoon::model::transform::fishEye(x1, y1, aabb.size().x / aabb.size().y);
 						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
 						auto text = octoon::model::makeTextContours(paths, 8);
@@ -116,6 +117,7 @@ public:
 	}
 
 private:
+	std::wstring text_;
 	octoon::video::TextMaterialPtr material_;
 };
 
@@ -140,7 +142,8 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto text = octoon::model::makeTextContours(L"O", { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto str = L"OOOOOO";
+		auto text = octoon::model::makeTextContours(str, { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 
 		for (auto& it : text)
@@ -150,7 +153,7 @@ int main(int argc, const char* argv[])
 		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
-		object->addComponent<TextController>(material);
+		object->addComponent<TextController>(material, str);
 
 		::OctoonMainLoop();
 	}

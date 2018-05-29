@@ -335,7 +335,7 @@ namespace octoon
 
 		namespace deform
 		{
-			OCTOON_EXPORT std::function<void(PathEdge&)> twist(float x, float y, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> twist(float x, float y, bool rotate) noexcept; // ok
 			OCTOON_EXPORT std::function<void(PathEdge&)> fan(float x, float ratio, bool rotate) noexcept;
 			OCTOON_EXPORT std::function<void(PathEdge&)> coveLow(float x, float ratio, bool rotate) noexcept; // ok;
 			OCTOON_EXPORT std::function<void(PathEdge&)> coveHigh(float x, float ratio, bool rotate) noexcept; // ok
@@ -347,11 +347,10 @@ namespace octoon
 			OCTOON_EXPORT std::function<void(PathEdge&)> wave(float x, float y) noexcept; // ok
 			OCTOON_EXPORT std::function<void(PathEdge&)> fish(float x, float y) noexcept; // ok
 			OCTOON_EXPORT std::function<void(PathEdge&)> slope(float x, float y) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float x, float y, float ratio) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> expandOut(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> expandIn(float x, float y) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> spin(float x, float ratio, bool rotate) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> panini(float x, float y) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float x, float ratio) noexcept; // ok
+			OCTOON_EXPORT std::function<void(PathEdge&)> expandOut(float x, float ratio, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> expandIn(float x, float ratio, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<void(PathEdge&)> spin(float x, float ratio, bool rotate) noexcept; // ok
 		}
 	}
 }

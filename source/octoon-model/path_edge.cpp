@@ -166,7 +166,7 @@ namespace octoon
 
 			std::function<void(PathEdge&)> coveLow(float x, float ratio, bool rotate) noexcept
 			{
-				auto coveLow = [=](PathEdge& it) noexcept
+				auto coveLow_x = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
@@ -180,12 +180,29 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(coveLow, std::placeholders::_1);
+				auto coveLow_y = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& pt) -> math::float2
+					{
+						float unorm = math::saturate(math::snorm2unorm(pt.x));
+						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm / ratio;
+						float xx = math::lerp(pt.x, pt.x + weight, x);
+						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * (1.0f - abs(pt.y)) , math::abs(x));
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				if (rotate)
+					return std::bind(coveLow_x, std::placeholders::_1);
+				else
+					return std::bind(coveLow_y, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> coveHigh(float x, float ratio, bool rotate) noexcept
 			{
-				auto coveHigh = [=](PathEdge& it) noexcept
+				auto coveHigh_x = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
@@ -199,7 +216,24 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(coveHigh, std::placeholders::_1);
+				auto coveHigh_y = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& pt) -> math::float2
+					{
+						float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.x));
+						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm / ratio;
+						float xx = math::lerp(pt.x, pt.x - weight, x);
+						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * (1.0f - abs(pt.y)), math::abs(x));
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				if (rotate)
+					return std::bind(coveHigh_x, std::placeholders::_1);
+				else
+					return std::bind(coveHigh_y, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> cove(float x, float ratio, bool rotate) noexcept
@@ -410,7 +444,7 @@ namespace octoon
 				return std::bind(slope, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> fishEye(float x, float ratio) noexcept
+			std::function<void(PathEdge&)> fishEye(float x) noexcept
 			{
 				auto fishEye = [=](PathEdge& it) noexcept
 				{
@@ -437,8 +471,8 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float weight = math::length(math::float2::One) - math::length(pt);
-						float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
+						float weight = math::length(math::float2::One) - math::pow(math::length(pt), math::abs(pt.x));
+						float xx = math::lerp(pt.x, pt.x + pt.x * weight * ratio, x);
 						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
 						return math::float2(xx, yy);
 					};

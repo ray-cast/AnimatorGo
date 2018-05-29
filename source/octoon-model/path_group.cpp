@@ -173,7 +173,7 @@ namespace octoon
 			return aabb;
 		}
 
-		namespace transform
+		namespace deform
 		{
 			std::function<void(PathGroups&)> smoother(std::uint32_t steps) noexcept
 			{

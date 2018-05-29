@@ -101,7 +101,7 @@ namespace octoon
 		OCTOON_EXPORT math::AABB aabb(const PathGroup& group) noexcept;
 		OCTOON_EXPORT math::AABB aabb(const PathGroups& groups) noexcept;
 
-		namespace transform
+		namespace deform
 		{
 			OCTOON_EXPORT std::function<void(PathGroups&)> smoother(std::uint32_t steps) noexcept;
 		}

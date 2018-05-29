@@ -91,8 +91,8 @@ public:
 
 						paths -= aabb.center();
 						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
-						paths << octoon::model::transform::smoother(3);
-						paths << octoon::model::transform::fan(x1, aabb.size().x / aabb.size().y);
+						paths << octoon::model::deform::smoother(3);
+						paths << octoon::model::deform::fan(x1, aabb.size().x / aabb.size().y, true);
 						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
 
 						component->setMesh(octoon::model::makeMesh(octoon::model::makeTextContours(paths, 8), 0.1f));

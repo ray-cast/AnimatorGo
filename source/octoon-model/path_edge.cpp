@@ -62,7 +62,7 @@ namespace octoon
 			this->cubic.control2 = control2;
 		}
 
-		namespace transform
+		namespace deform
 		{
 			void postprocess(PathEdge& it, const std::function<math::float2(const math::float2&)>& func) noexcept
 			{
@@ -164,9 +164,9 @@ namespace octoon
 				return std::bind(fan, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> lowCove(float x, float ratio) noexcept
+			std::function<void(PathEdge&)> coveLow(float x, float ratio, bool rotate) noexcept
 			{
-				auto lowCove = [=](PathEdge& it) noexcept
+				auto coveLow = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
@@ -180,12 +180,12 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(lowCove, std::placeholders::_1);
+				return std::bind(coveLow, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> highCove(float x, float ratio) noexcept
+			std::function<void(PathEdge&)> coveHigh(float x, float ratio, bool rotate) noexcept
 			{
-				auto highCove = [=](PathEdge& it) noexcept
+				auto coveHigh = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& point) -> math::float2
 					{
@@ -199,7 +199,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(highCove, std::placeholders::_1);
+				return std::bind(coveHigh, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> cove(float x, float ratio, bool rotate) noexcept
@@ -270,25 +270,6 @@ namespace octoon
 					return std::bind(bulege_y, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> bulegeHigh(float x, float ratio, bool rotate) noexcept
-			{
-				auto bulegeHigh = [=](PathEdge& it) noexcept
-				{
-					auto method = [=](const math::float2& point) -> math::float2
-					{
-						float unorm = math::saturate(math::snorm2unorm(point.y));
-						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
-						float xx = math::lerp(point.x, point.x + point.x * unorm, math::abs(x));
-						float yy = math::lerp(point.y, point.y + weight, x);
-						return math::float2(xx, yy);
-					};
-
-					postprocess(it, std::bind(method, std::placeholders::_1));
-				};
-
-				return std::bind(bulegeHigh, std::placeholders::_1);
-			}
-
 			std::function<void(PathEdge&)> bulegeLow(float x, float ratio, bool rotate) noexcept
 			{
 				auto bulegeLow = [=](PathEdge& it) noexcept
@@ -297,7 +278,7 @@ namespace octoon
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(point.y));
 						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
-						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.3f, math::abs(x));
+						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.4f, x);
 						float yy = math::lerp(point.y, point.y - weight, x);
 						return math::float2(xx, yy);
 					};
@@ -306,6 +287,25 @@ namespace octoon
 				};
 
 				return std::bind(bulegeLow, std::placeholders::_1);
+			}
+
+			std::function<void(PathEdge&)> bulegeHigh(float x, float ratio, bool rotate) noexcept
+			{
+				auto bulegeHigh = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& point) -> math::float2
+					{
+						float unorm = math::saturate(math::snorm2unorm(point.y));
+						float weight = math::cos(point.x * math::PI * 0.5f) * unorm * ratio;
+						float xx = math::lerp(point.x, point.x + point.x * unorm * 0.4f, x);
+						float yy = math::lerp(point.y, point.y + weight, x);
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				return std::bind(bulegeHigh, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> flag(float x, float y) noexcept

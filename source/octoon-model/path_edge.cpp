@@ -326,7 +326,7 @@ namespace octoon
 					{
 						float unorm = math::saturate(math::snorm2unorm(pt.x));
 						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x + weight * 0.5f, x);
+						float xx = math::lerp(pt.x, pt.x + weight * unorm * 0.5f, x);
 						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * ratio, x);
 						return math::float2(xx, yy);
 					};
@@ -362,7 +362,7 @@ namespace octoon
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.x));
 						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x - weight * 0.5f, x);
+						float xx = math::lerp(pt.x, pt.x - weight * unorm * 0.5f, x);
 						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * ratio, x);
 						return math::float2(xx, yy);
 					};
@@ -490,8 +490,8 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float weight = math::length(math::float2::One) - math::pow(math::length(pt), math::abs(pt.x));
-						float xx = math::lerp(pt.x, pt.x - pt.x * weight, x * (rotate ? 1.0 : -1.0f));
-						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x * (rotate ? 1.0 : -1.0f));
+						float xx = math::lerp(pt.x, pt.x - pt.x * weight, x * (rotate ? 1.0f : -1.0f));
+						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x * (rotate ? 1.0f : -1.0f));
 						return math::float2(xx, yy);
 					};
 

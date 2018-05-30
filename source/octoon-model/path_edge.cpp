@@ -351,7 +351,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(bulegeLow_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeLow_y, std::placeholders::_1);
@@ -387,7 +387,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(bulegeHigh_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeHigh_y, std::placeholders::_1);

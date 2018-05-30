@@ -451,7 +451,7 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float weight = math::rsqrt(1.0f + math::dot(pt, pt));
-						float solidAngle = weight * weight * weight * weight;
+						float solidAngle = weight * weight * weight;
 
 						float xx = math::lerp(pt.x, pt.x + pt.x * solidAngle * (1.0f - math::pow(pt.x, 4)), x);
 						float yy = math::lerp(pt.y, pt.y + pt.y * solidAngle * (1.0f - math::pow(pt.y, 4)), x);
@@ -472,7 +472,7 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float weight = math::length(math::float2::One) - math::pow(math::length(pt), math::abs(pt.x));
-						float xx = math::lerp(pt.x, pt.x + pt.x * weight * ratio, x);
+						float xx = math::lerp(pt.x, pt.x + pt.x * weight, x);
 						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
 						return math::float2(xx, yy);
 					};
@@ -490,8 +490,8 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float weight = math::length(math::float2::One) - math::pow(math::length(pt), math::abs(pt.x));
-						float xx = math::lerp(pt.x, pt.x - pt.x * weight, x);
-						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
+						float xx = math::lerp(pt.x, pt.x - pt.x * weight, x * (rotate ? 1.0 : -1.0f));
+						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x * (rotate ? 1.0 : -1.0f));
 						return math::float2(xx, yy);
 					};
 

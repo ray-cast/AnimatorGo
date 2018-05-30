@@ -147,7 +147,7 @@ namespace octoon
 
 			std::function<void(PathEdge&)> fan(float x, float ratio, bool rotate) noexcept
 			{
-				auto fan = [=](PathEdge& it) noexcept
+				auto fan_x = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
@@ -161,7 +161,24 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				return std::bind(fan, std::placeholders::_1);
+				auto fan_y = [=](PathEdge& it) noexcept
+				{
+					auto method = [=](const math::float2& pt) -> math::float2
+					{
+						float unorm = math::snorm2unorm(pt.x) * pt.y;
+						float weight = math::cos(pt.y * math::PI * 0.5f) * ratio;
+						float xx = math::lerp(pt.x, pt.x - weight, x);
+						float yy = math::lerp(pt.y, pt.y + unorm * ratio, math::abs(x));
+						return math::float2(xx, yy);
+					};
+
+					postprocess(it, std::bind(method, std::placeholders::_1));
+				};
+
+				if (rotate)
+					return std::bind(fan_x, std::placeholders::_1);
+				else
+					return std::bind(fan_y, std::placeholders::_1);
 			}
 
 			std::function<void(PathEdge&)> coveLow(float x, float ratio, bool rotate) noexcept
@@ -348,8 +365,8 @@ namespace octoon
 					{
 						float unorm = math::saturate(math::snorm2unorm(pt.y));
 						float weight = math::cos(pt.x * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x + pt.x * unorm * 0.5f, x);
-						float yy = math::lerp(pt.y, pt.y + weight * unorm * ratio, x);
+						float xx = math::lerp(pt.x, pt.x + unorm * pt.x  * 0.5f, x);
+						float yy = math::lerp(pt.y, pt.y + unorm * weight * ratio, x);
 						return math::float2(xx, yy);
 					};
 
@@ -362,8 +379,8 @@ namespace octoon
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.x));
 						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x - weight * unorm * 0.5f, x);
-						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * ratio, x);
+						float xx = math::lerp(pt.x, pt.x - unorm * weight * 0.5f, x);
+						float yy = math::lerp(pt.y, pt.y + unorm * pt.y * ratio, x);
 						return math::float2(xx, yy);
 					};
 

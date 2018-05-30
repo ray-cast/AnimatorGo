@@ -175,7 +175,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(fan_x, std::placeholders::_1);
 				else
 					return std::bind(fan_y, std::placeholders::_1);
@@ -211,7 +211,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(coveLow_x, std::placeholders::_1);
 				else
 					return std::bind(coveLow_y, std::placeholders::_1);
@@ -247,7 +247,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(coveHigh_x, std::placeholders::_1);
 				else
 					return std::bind(coveHigh_y, std::placeholders::_1);
@@ -281,7 +281,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(cove_x, std::placeholders::_1);
 				else
 					return std::bind(cove_y, std::placeholders::_1);
@@ -315,7 +315,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(bulege_x, std::placeholders::_1);
 				else
 					return std::bind(bulege_y, std::placeholders::_1);
@@ -351,7 +351,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(bulegeLow_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeLow_y, std::placeholders::_1);
@@ -387,7 +387,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (rotate)
+				if (!rotate)
 					return std::bind(bulegeHigh_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeHigh_y, std::placeholders::_1);

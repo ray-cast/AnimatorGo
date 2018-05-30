@@ -299,7 +299,7 @@ namespace octoon
 						return math::float2(xx, yy);
 					};
 
-					postprocess(it, std::bind(method, std::placeholders::_1));					
+					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
 				auto bulege_y = [=](PathEdge& it) noexcept
@@ -351,7 +351,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (!rotate)
+				if (rotate)
 					return std::bind(bulegeLow_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeLow_y, std::placeholders::_1);
@@ -387,7 +387,7 @@ namespace octoon
 					postprocess(it, std::bind(method, std::placeholders::_1));
 				};
 
-				if (!rotate)
+				if (rotate)
 					return std::bind(bulegeHigh_x, std::placeholders::_1);
 				else
 					return std::bind(bulegeHigh_y, std::placeholders::_1);
@@ -433,7 +433,7 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * math::PI), y);
+						float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * -math::PI), y);
 						float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), x);
 						return math::float2(xx, yy);
 					};
@@ -450,8 +450,8 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float xx = math::lerp(pt.x, pt.x + math::sin(pt.y * math::PI * 0.5f) - math::sin(math::PI * 0.5f), y * 2.0f);
-						float yy = math::lerp(pt.y, pt.y + math::sin(pt.x * math::PI * 0.5f) - math::sin(math::PI * 0.5f), x * 2.0f);
+						float xx = math::lerp(pt.x, pt.x - math::sin(pt.y * math::PI * 0.5f) + math::sin(math::PI * 0.5f), y * 2.0f);
+						float yy = math::lerp(pt.y, pt.y - math::sin(pt.x * math::PI * 0.5f) + math::sin(math::PI * 0.5f), x * 2.0f);
 						return math::float2(xx, yy);
 					};
 

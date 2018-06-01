@@ -47,9 +47,11 @@ namespace octoon
 
 			Path& invoke(const std::function<void(Path&)>& func) noexcept;
 			Path& invoke(const std::function<void(PathEdge&)>& func) noexcept;
+			Path& invoke(const std::function<math::float2(const math::float2&)>& func) noexcept;
 
 			Path& operator << (const std::function<void(Path&)>& func) noexcept { return this->invoke(func); }
 			Path& operator << (const std::function<void(PathEdge&)>& func) noexcept { return this->invoke(func); }
+			Path& operator << (const std::function<math::float2(const math::float2&)>& func) noexcept { return this->invoke(func); }
 
 		public:
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>

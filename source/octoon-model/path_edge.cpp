@@ -62,6 +62,73 @@ namespace octoon
 			this->cubic.control2 = control2;
 		}
 
+		PathEdge&
+		PathEdge::invoke(const std::function<math::float2(const math::float2&)>& func) noexcept
+		{
+			switch (type)
+			{
+			case octoon::model::PathEdge::Point:
+			{
+				auto v = func(point.pt.xy());
+				point.pt.x = v.x;
+				point.pt.y = v.y;
+			}
+			break;
+			case octoon::model::PathEdge::Line:
+			{
+				auto v1 = func(line.pt1.xy());
+				auto v2 = func(line.pt2.xy());
+
+				line.pt1.x = v1.x;
+				line.pt1.y = v1.y;
+
+				line.pt2.x = v2.x;
+				line.pt2.y = v2.y;
+			}
+			break;
+			case octoon::model::PathEdge::Quadratic:
+			{
+				auto v1 = func(quad.pt1.xy());
+				auto v2 = func(quad.pt2.xy());
+				auto c1 = func(quad.control.xy());
+
+				quad.pt1.x = v1.x;
+				quad.pt1.y = v1.y;
+
+				quad.pt2.x = v2.x;
+				quad.pt2.y = v2.y;
+
+				quad.control.x = c1.x;
+				quad.control.y = c1.y;
+			}
+			break;
+			case octoon::model::PathEdge::Cubic:
+			{
+				auto v1 = func(cubic.pt1.xy());
+				auto v2 = func(cubic.pt2.xy());
+				auto c1 = func(cubic.control1.xy());
+				auto c2 = func(cubic.control2.xy());
+
+				cubic.pt1.x = v1.x;
+				cubic.pt1.y = v1.y;
+
+				cubic.pt2.x = v2.x;
+				cubic.pt2.y = v2.y;
+
+				cubic.control1.x = c1.x;
+				cubic.control1.y = c1.y;
+
+				cubic.control2.x = c2.x;
+				cubic.control2.y = c2.y;
+			}
+			break;
+			default:
+				break;
+			}
+
+			return *this;
+		}
+
 		namespace deform
 		{
 			void postprocess(PathEdge& it, const std::function<math::float2(const math::float2&)>& func) noexcept
@@ -165,7 +232,7 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float unorm = (1.0 - math::snorm2unorm(pt.x)) * pt.y;
+						float unorm = (1.0f - math::snorm2unorm(pt.x)) * pt.y;
 						float weight = math::cos(pt.y * math::PI * 0.5f);
 						float xx = math::lerp(pt.x, pt.x - weight, x);
 						float yy = math::lerp(pt.y, pt.y + unorm * ratio, math::abs(x));

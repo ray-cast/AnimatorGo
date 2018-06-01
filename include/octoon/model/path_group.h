@@ -32,6 +32,7 @@ namespace octoon
 
 			PathGroup& invoke(const std::function<void(PathEdge&)>& func) noexcept;
 			PathGroup& invoke(const std::function<void(PathGroup&)>& func) noexcept;
+			PathGroup& invoke(const std::function<math::float2(const math::float2&)>& func) noexcept;
 
 		public:
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
@@ -77,6 +78,14 @@ namespace octoon
 			}
 
 			friend PathGroups& operator<<(PathGroups& groups, const std::function<void(PathGroup&)>& func) noexcept
+			{
+				for (auto& it : groups)
+					it->invoke(func);
+
+				return groups;
+			}
+
+			friend PathGroups& operator<<(PathGroups& groups, const std::function<math::float2(const math::float2&)>& func) noexcept
 			{
 				for (auto& it : groups)
 					it->invoke(func);

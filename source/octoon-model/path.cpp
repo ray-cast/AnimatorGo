@@ -196,5 +196,13 @@ namespace octoon
 				func(it);
 			return *this;
 		}
+
+		Path&
+		Path::invoke(const std::function<math::float2(const math::float2&)>& func) noexcept
+		{
+			for (auto& it : edges_)
+				it.invoke(func);
+			return *this;
+		}
 	}
 }

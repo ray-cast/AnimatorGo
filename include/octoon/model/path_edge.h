@@ -66,6 +66,7 @@ namespace octoon
 			void makeEdge(const math::float3& pt1, const math::float3& control, const math::float3& pt2) noexcept; // Quadratic Curve
 			void makeEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
 
+			PathEdge& invoke(const std::function<math::float2(const math::float2&)>& func) noexcept;
 		public:
 			friend bool operator==(const PathEdge& a, const PathEdge& b) noexcept
 			{
@@ -368,6 +369,11 @@ namespace octoon
 				for (auto& it : edges)
 					os << it;
 				return os;
+			}
+
+			friend PathEdge& operator << (PathEdge& edge, const std::function<math::float2(const math::float2&)>& func) noexcept
+			{
+				return edge.invoke(func);
 			}
 		};
 

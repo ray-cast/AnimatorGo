@@ -153,7 +153,7 @@ namespace octoon
 					{
 						float unorm = math::snorm2unorm(pt.y) * pt.x;
 						float weight = math::cos(pt.x * math::PI * 0.5f) * ratio;
-						float xx = math::lerp(pt.x, pt.x + unorm, math::abs(x));
+						float xx = math::lerp(pt.x, pt.x - unorm, math::abs(x));
 						float yy = math::lerp(pt.y, pt.y - weight, x);
 						return math::float2(xx, yy);
 					};
@@ -259,7 +259,7 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float weight = math::cos(pt.x * math::PI * 0.5f) * ratio * 1.3f;
+						float weight = math::cos(pt.x * math::PI * 0.5f) * ratio;
 						float xx = math::lerp(pt.x, pt.x + pt.x * (1.0f - math::abs(pt.x)), abs(x));
 						float yy = math::lerp(pt.y, pt.y - weight, x);
 						return math::float2(xx, yy);
@@ -293,7 +293,7 @@ namespace octoon
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float weight = math::cos(pt.x * math::PI * 0.5f) * ratio * 1.4f;
+						float weight = math::cos(pt.x * math::PI * 0.5f) * ratio;
 						float xx = math::lerp(pt.x, pt.x + pt.x * (1.0f - math::abs(pt.x)), math::abs(x));
 						float yy = math::lerp(pt.y, pt.y + pt.y * weight, x);
 						return math::float2(xx, yy);
@@ -328,7 +328,7 @@ namespace octoon
 					auto method = [=](const math::float2& pt)
 					{
 						float unorm = math::saturate(math::snorm2unorm(pt.y));
-						float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * ratio * 1.4f;
+						float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * unorm * ratio;
 						float xx = math::lerp(pt.x, pt.x + unorm * pt.x  * 0.5f, x);
 						float yy = math::lerp(pt.y, pt.y + unorm * weight, x);
 						return math::float2(xx, yy);
@@ -342,9 +342,9 @@ namespace octoon
 					auto method = [=](const math::float2& pt)
 					{
 						float unorm = math::saturate(math::snorm2unorm(pt.x));
-						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x + weight * unorm * 0.5f, x);
-						float yy = math::lerp(pt.y, pt.y + pt.y * unorm * ratio * 1.4f, x);
+						float weight = (1.0f - math::cos(pt.y * math::PI * 0.5f)) * unorm * unorm;
+						float xx = math::lerp(pt.x, pt.x - unorm * weight, x);
+						float yy = math::lerp(pt.y, pt.y + unorm * unorm * pt.y * ratio * ratio * 0.5f, x);
 						return math::float2(xx, yy);
 					};
 
@@ -364,7 +364,7 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.y));
-						float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * ratio * 1.4f;
+						float weight = math::cos(pt.x * math::PI * 0.5f) * unorm * unorm * ratio;
 						float xx = math::lerp(pt.x, pt.x + unorm * pt.x * 0.5f, x);
 						float yy = math::lerp(pt.y, pt.y - unorm * weight, x);
 						return math::float2(xx, yy);
@@ -378,9 +378,9 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.x));
-						float weight = math::cos(pt.y * math::PI * 0.5f) * unorm;
-						float xx = math::lerp(pt.x, pt.x - unorm * weight * 0.5f, x);
-						float yy = math::lerp(pt.y, pt.y + unorm * pt.y * ratio * 1.4f, x);
+						float weight = (1.0f - math::cos(pt.y * math::PI * 0.5f)) * unorm * unorm;
+						float xx = math::lerp(pt.x, pt.x + unorm * weight , x);
+						float yy = math::lerp(pt.y, pt.y + unorm * unorm * pt.y * ratio * ratio * 0.5f, x);
 						return math::float2(xx, yy);
 					};
 
@@ -417,7 +417,7 @@ namespace octoon
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
 						float xx = math::lerp(pt.x, pt.x - math::sin(pt.y * math::PI) * (1.0f - math::abs(pt.x)), y);
-						float yy = math::lerp(pt.y, pt.y - math::sin(pt.x * math::PI) * (1.0f - math::abs(pt.y)), x);
+						float yy = math::lerp(pt.y, pt.y - math::sin(pt.x * math::PI) * (1.0f - math::abs(pt.y)), x * 0.5f);
 						return math::float2(xx, yy);
 					};
 
@@ -427,14 +427,14 @@ namespace octoon
 				return std::bind(wave, std::placeholders::_1);
 			}
 
-			std::function<void(PathEdge&)> fish(float x, float y) noexcept
+			std::function<void(PathEdge&)> fish(float x, float y, float weight) noexcept
 			{
 				auto fish = [=](PathEdge& it) noexcept
 				{
 					auto method = [=](const math::float2& pt) -> math::float2
 					{
-						float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * -math::PI), y * 1.2f);
-						float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), x * 1.2f);
+						float xx = math::lerp(pt.x, pt.x + pt.x * math::sin(pt.y * -math::PI), y * weight);
+						float yy = math::lerp(pt.y, pt.y + pt.y * math::sin(pt.x * -math::PI), x * weight);
 						return math::float2(xx, yy);
 					};
 

@@ -76,6 +76,13 @@ namespace octoon
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend const Paths& operator/=(const Paths& paths, T scale) noexcept { for (auto& it : paths) *it /= scale; return paths; }
 
+			friend std::ostream& operator << (std::ostream& os, const Paths& paths) noexcept
+			{
+				for (auto& it : paths)
+					os << it->edges();
+				return os;
+			}
+
 		private:
 			PathEdges edges_;
 		};

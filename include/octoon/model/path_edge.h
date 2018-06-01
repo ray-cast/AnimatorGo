@@ -331,6 +331,44 @@ namespace octoon
 
 				return edge;
 			}
+
+			friend std::ostream& operator << (std::ostream& os, const PathEdge& e)
+			{
+				switch (e.type)
+				{
+				case Type::Point:
+					os << "Point:";
+					os << " pt " << e.point.pt << std::endl;
+					break;
+				case Type::Line:
+					os << "Line:";
+					os << " pt1 " << e.line.pt1;
+					os << " pt2 " << e.line.pt2 << std::endl;
+					break;
+				case Type::Quadratic:
+					os << "Quad:";
+					os << " pt1 " << e.quad.pt1;
+					os << " pt2 " << e.quad.pt2;
+					os << " control " << e.quad.control << std::endl;
+					break;
+				case Type::Cubic:
+					os << "Cubic:";
+					os << " pt1 " << e.cubic.pt1;
+					os << " pt2 " << e.cubic.pt2;
+					os << " control1 " << e.cubic.control1;
+					os << " control2 " << e.cubic.control2 << std::endl;
+					break;
+				}
+
+				return os;
+			}
+
+			friend std::ostream& operator << (std::ostream& os, const PathEdges& edges) noexcept
+			{
+				for (auto& it : edges)
+					os << it;
+				return os;
+			}
 		};
 
 		namespace deform

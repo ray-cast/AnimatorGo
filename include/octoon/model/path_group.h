@@ -90,6 +90,19 @@ namespace octoon
 				return groups;
 			}
 
+			friend std::ostream& operator << (std::ostream& os, const PathGroup& group) noexcept
+			{
+				os << group.getPaths();
+				return os;
+			}
+
+			friend std::ostream& operator << (std::ostream& os, const PathGroups& groups) noexcept
+			{
+				for (auto& it : groups)
+					os << it;
+				return os;
+			}
+
 		private:
 			PathGroup(const PathGroup&) = delete;
 			PathGroup& operator=(const PathGroup&) = delete;

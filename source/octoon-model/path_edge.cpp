@@ -407,7 +407,7 @@ namespace octoon
 			{
 				auto method = [=](const math::float3& pt) -> math::float3
 				{
-					float xx = math::lerp(pt.x, pt.x + math::sin(-pt.y * math::PI * 0.5f) - math::sin(math::PI * 0.5f), y * 2.0f);
+					float xx = math::lerp(pt.x, pt.x + math::sin(pt.y * math::PI *-0.5f) - math::sin(math::PI * 0.5f), y * 2.0f);
 					float yy = math::lerp(pt.y, pt.y - math::sin(pt.x * math::PI * 0.5f) + math::sin(math::PI * 0.5f), x * 2.0f);
 					return math::float3(xx, yy, pt.z);
 				};

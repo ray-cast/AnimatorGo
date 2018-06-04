@@ -86,16 +86,20 @@ public:
 					auto component = this->getComponent<octoon::MeshFilterComponent>();
 					if (component)
 					{
-						auto paths = octoon::model::makeTextPaths(text_, { "../../system/fonts/DroidSansFallback.ttf", 24, 16 });
-						auto aabb = octoon::model::aabb(paths);
+						auto path = octoon::model::makeTextPaths(text_, { "../../system/fonts/DroidSansFallback.ttf", 24 });
+						path << octoon::model::deform::smoother(4);
 
-						paths -= aabb.center();
-						paths /= octoon::math::float3(aabb.extents().xy(), 1.0);
-						paths << octoon::model::deform::smoother(3);
-						paths << octoon::model::deform::fan(x1, aabb.size().x / aabb.size().y, true);
-						paths *= octoon::math::float3(aabb.extents().xy(), 1.0);
+						auto text = octoon::model::makeTextContours(path, 8);
+						auto aabb = octoon::model::aabb(text);
 
-						component->setMesh(octoon::model::makeMesh(octoon::model::makeTextContours(paths, 8), 0.1f));
+						text -= aabb.center();
+						text /= octoon::math::float3(aabb.extents().xy(), 1.0);
+						text << octoon::model::deform::bulegeLow(x1, aabb.size().x / aabb.size().y, true);
+						text *= octoon::math::float3(aabb.extents().xy(), 1.0);
+
+						// std::cout << paths[0]->getPaths() << std::endl;
+
+						component->setMesh(octoon::model::makeMesh(text, 0.1f));
 					}
 
 					x2 = x1;
@@ -140,7 +144,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto str = L"OOOOOO";
+		auto str = L"滚滚长江东逝水";
 		auto text = octoon::model::makeTextContours(str, { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 

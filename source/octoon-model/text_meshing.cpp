@@ -15,35 +15,30 @@ namespace octoon
 	{
 		TextMeshing::TextMeshing() noexcept
 			: font_(nullptr)
-			, bezierSteps_(6)
 			, pixelSize_(12)
 		{
 		}
 
-		TextMeshing::TextMeshing(const char* path, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+		TextMeshing::TextMeshing(const char* path, std::uint16_t pixelsSize) noexcept
 			: font_(std::make_shared<TextFile>(path))
-			, bezierSteps_(bezierSteps)
 			, pixelSize_(pixelsSize)
 		{
 		}
 
-		TextMeshing::TextMeshing(const std::string& path, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+		TextMeshing::TextMeshing(const std::string& path, std::uint16_t pixelsSize) noexcept
 			: font_(std::make_shared<TextFile>(path.c_str()))
-			, bezierSteps_(bezierSteps)
 			, pixelSize_(pixelsSize)
 		{
 		}
 
-		TextMeshing::TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+		TextMeshing::TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize) noexcept
 			: font_(std::move(font))
-			, bezierSteps_(bezierSteps)
 			, pixelSize_(pixelsSize)
 		{
 		}
 
-		TextMeshing::TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize, std::uint16_t bezierSteps) noexcept
+		TextMeshing::TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize) noexcept
 			: font_(std::move(font))
-			, bezierSteps_(bezierSteps)
 			, pixelSize_(pixelsSize)
 		{
 		}
@@ -71,18 +66,6 @@ namespace octoon
 		}
 
 		void
-		TextMeshing::setBezierSteps(std::uint16_t bezierSteps) noexcept
-		{
-			bezierSteps_ = bezierSteps;
-		}
-
-		std::uint16_t
-		TextMeshing::getBezierSteps() const noexcept
-		{
-			return bezierSteps_;
-		}
-
-		void
 		TextMeshing::setPixelsSize(std::uint16_t pixelsSize) noexcept
 		{
 			pixelSize_ = pixelsSize;
@@ -100,7 +83,6 @@ namespace octoon
 			auto instance = std::make_shared<TextMeshing>();
 			instance->setFont(this->getFont());
 			instance->setPixelsSize(this->getPixelsSize());
-			instance->setBezierSteps(this->getBezierSteps());
 
 			return instance;
 		}
@@ -109,7 +91,6 @@ namespace octoon
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
-			assert(params.getBezierSteps() > 1);
 
 			auto addEdge = [](Path& contours, const FT_Vector* contour, const char* tags, std::size_t n) -> void
 			{
@@ -216,11 +197,10 @@ namespace octoon
 			return groups;
 		}
 
-		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params) noexcept(false)
+		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
-			assert(params.getBezierSteps() > 1);
 
 			auto addPoints = [](Contour& contours, const FT_Vector* contour, const char* tags, std::size_t n, std::uint16_t bezierSteps) -> void
 			{
@@ -312,7 +292,7 @@ namespace octoon
 					offset += ftface->glyph->advance.x / 64;
 				else
 				{
-					groups.push_back(addContours(ftface->glyph, offset, params.getBezierSteps()));
+					groups.push_back(addContours(ftface->glyph, offset, bezierSteps));
 
 					offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
 				}
@@ -324,17 +304,17 @@ namespace octoon
 			return groups;
 		}
 
-		Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness) noexcept(false)
+		Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 		{
-			Mesh mesh = makeMesh(makeTextContours(string, params), thickness, false);
+			Mesh mesh = makeMesh(makeTextContours(string, params, bezierSteps), thickness, false);
 			mesh.computeBoundingBox();
 
 			return mesh;
 		}
 
-		Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness) noexcept(false)
+		Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 		{
-			Mesh mesh = makeMeshWireframe(makeTextContours(string, params), thickness);
+			Mesh mesh = makeMeshWireframe(makeTextContours(string, params, bezierSteps), thickness);
 			mesh.computeBoundingBox();
 
 			return mesh;

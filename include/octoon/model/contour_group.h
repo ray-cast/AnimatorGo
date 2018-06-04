@@ -61,6 +61,34 @@ namespace octoon
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend ContourGroups& operator/=(ContourGroups& groups, T scale) noexcept { for (auto& it : groups) *it /= scale; return groups; }
 
+			friend ContourGroup& operator<<(ContourGroup& groups, const std::function<math::float2(const math::float2&)>& func) noexcept
+			{
+				for (auto& it : groups.getContours())
+					*it << func;
+				return groups;
+			}
+
+			friend ContourGroup& operator<<(ContourGroup& groups, const std::function<math::float3(const math::float3&)>& func) noexcept
+			{
+				for (auto& it : groups.getContours())
+					*it << func;
+				return groups;
+			}
+
+			friend ContourGroups& operator<<(ContourGroups& groups, const std::function<math::float2(const math::float2&)>& func) noexcept
+			{
+				for (auto& it : groups)
+					*it << func;
+				return groups;
+			}
+
+			friend ContourGroups& operator<<(ContourGroups& groups, const std::function<math::float3(const math::float3&)>& func) noexcept
+			{
+				for (auto& it : groups)
+					*it << func;
+				return groups;
+			}
+
 		private:
 			ContourGroup(const ContourGroup&) = delete;
 			ContourGroup& operator=(const ContourGroup&) = delete;

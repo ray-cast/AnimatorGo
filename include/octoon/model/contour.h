@@ -34,6 +34,9 @@ namespace octoon
 			math::float3s& points() noexcept;
 			const math::float3s& points() const noexcept;
 
+			Contour& invoke(const std::function<math::float2(const math::float2&)>& func) noexcept;
+			Contour& invoke(const std::function<math::float3(const math::float3&)>& func) noexcept;
+
 			math::float3& operator[](std::size_t index) noexcept { return this->at(index); }
 			const math::float3& operator[](std::size_t index) const noexcept { return this->at(index); }
 
@@ -61,6 +64,16 @@ namespace octoon
 
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend const Contours& operator/=(const Contours& contours, const T& scale) noexcept { for (auto& it : contours) *it /= scale; return contours; }
+
+			friend Contour& operator<<(Contour& contour, const std::function<math::float2(const math::float2&)>& func) noexcept
+			{
+				return contour.invoke(func);
+			}
+
+			friend Contour& operator<<(Contour& contour, const std::function<math::float3(const math::float3&)>& func) noexcept
+			{
+				return contour.invoke(func);
+			}
 
 		private:
 			math::float3s points_;

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <functional>
 
 #include <octoon/math/math.h>
 #include <octoon/runtime/platform.h>

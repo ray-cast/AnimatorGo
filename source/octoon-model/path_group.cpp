@@ -119,6 +119,15 @@ namespace octoon
 			return *this;
 		}
 
+		PathGroup&
+		PathGroup::invoke(const std::function<math::float3(const math::float3&)>& func) noexcept
+		{
+			for (auto& path : paths_)
+				path->invoke(func);
+
+			return *this;
+		}
+
 		math::AABB aabb(const PathGroup& group) noexcept
 		{
 			math::AABB aabb;

@@ -79,6 +79,28 @@ namespace octoon
 			return points_;
 		}
 
+		Contour&
+		Contour::invoke(const std::function<math::float2(const math::float2&)>& func) noexcept
+		{
+			for (auto& it : points_)
+			{
+				auto v = func(it.xy());
+				it.x = v.x;
+				it.y = v.y;
+			}
+
+			return *this;
+		}
+
+		Contour&
+		Contour::invoke(const std::function<math::float3(const math::float3&)>& func) noexcept
+		{
+			for (auto& it : points_)
+				it = func(it);
+
+			return *this;
+		}
+
 		void 
 		Contour::addPoints(const Path& path, std::uint16_t bezierSteps) noexcept
 		{

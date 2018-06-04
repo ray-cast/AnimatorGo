@@ -67,6 +67,8 @@ namespace octoon
 			void makeEdge(const math::float3& pt1, const math::float3& control1, const math::float3& control2, const math::float3& pt2) noexcept; // Cubic Curve
 
 			PathEdge& invoke(const std::function<math::float2(const math::float2&)>& func) noexcept;
+			PathEdge& invoke(const std::function<math::float3(const math::float3&)>& func) noexcept;
+
 		public:
 			friend bool operator==(const PathEdge& a, const PathEdge& b) noexcept
 			{
@@ -333,6 +335,23 @@ namespace octoon
 				return edge;
 			}
 
+			friend PathEdge& operator<<(PathEdge& edge, const std::function<math::float2(const math::float2&)>& func) noexcept
+			{
+				return edge.invoke(func);
+			}
+
+			friend PathEdge& operator<<(PathEdge& edge, const std::function<math::float3(const math::float3&)>& func) noexcept
+			{
+				return edge.invoke(func);
+			}
+
+			friend std::ostream& operator << (std::ostream& os, const PathEdges& edges) noexcept
+			{
+				for (auto& it : edges)
+					os << it;
+				return os;
+			}
+
 			friend std::ostream& operator << (std::ostream& os, const PathEdge& e)
 			{
 				switch (e.type)
@@ -363,39 +382,27 @@ namespace octoon
 
 				return os;
 			}
-
-			friend std::ostream& operator << (std::ostream& os, const PathEdges& edges) noexcept
-			{
-				for (auto& it : edges)
-					os << it;
-				return os;
-			}
-
-			friend PathEdge& operator << (PathEdge& edge, const std::function<math::float2(const math::float2&)>& func) noexcept
-			{
-				return edge.invoke(func);
-			}
 		};
 
 		namespace deform
 		{
-			OCTOON_EXPORT std::function<void(PathEdge&)> twist(float x, float y, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> fan(float x, float ratio, bool rotate) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> coveLow(float x, float ratio, bool rotate) noexcept; // ok;
-			OCTOON_EXPORT std::function<void(PathEdge&)> coveHigh(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> cove(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> bulege(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> bulegeLow(float x, float ratio, bool rotate) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> bulegeHigh(float x, float ratio, bool rotate) noexcept;
-			OCTOON_EXPORT std::function<void(PathEdge&)> flag(float x, float y) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> wave(float x, float y) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> fish(float x, float y, float weight = 1.2f) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> slope(float x, float y) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> fishEye(float x) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> expandOut(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> expandIn(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> spin(float x, float ratio, bool rotate) noexcept; // ok
-			OCTOON_EXPORT std::function<void(PathEdge&)> panini(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> twist(float x, float y, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> fan(float x, float ratio, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> coveLow(float x, float ratio, bool rotate) noexcept; // ok;
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> coveHigh(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> cove(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> bulege(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> bulegeLow(float x, float ratio, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> bulegeHigh(float x, float ratio, bool rotate) noexcept;
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> flag(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> wave(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> fish(float x, float y, float weight = 1.2f) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> slope(float x, float y) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> fishEye(float x) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> expandOut(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> expandIn(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> spin(float x, float ratio, bool rotate) noexcept; // ok
+			OCTOON_EXPORT std::function<math::float3(const math::float3&)> panini(float x, float y) noexcept; // ok
 		}
 	}
 }

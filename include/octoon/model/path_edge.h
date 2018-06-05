@@ -647,6 +647,17 @@ namespace octoon
 			* @return 一个lambda的函数，用于 Contour::invoke, ContourGrpup::invoke, PathEdge::invoke，PathGroup::invoke，对轮廓中的每一个点执行顶点变形
 			*/
 			OCTOON_EXPORT std::function<math::float3(const math::float3&)> spin(float x, float ratio, bool rotate) noexcept;
+
+			/*
+			* @brief 扭转
+			* @param[in] x 水平方向的变化量，范围在 -1.0 至 1.0
+			* @param[in] y 垂直方向的变化量，范围在 -1.0 至 1.0
+			* @details lambda中输入的pt为归一化后的参数，并在锚点处建立坐标系
+			*
+			*  变形： http://tksharpless.net/vedutismo/Pannini/panini.pdf
+			*
+			* @return 一个lambda的函数，用于 Contour::invoke, ContourGrpup::invoke, PathEdge::invoke，PathGroup::invoke，对轮廓中的每一个点执行顶点变形
+			*/
 			OCTOON_EXPORT std::function<math::float3(const math::float3&)> panini(float x, float y) noexcept;
 		}
 	}

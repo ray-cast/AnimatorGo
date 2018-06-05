@@ -421,7 +421,7 @@ namespace octoon
 			{
 				auto method = [=](const math::float3& pt) -> math::float3
 				{
-					float weight = math::rsqrt(1.0f + math::dot(pt, pt));
+					float weight = math::rsqrt(1.0f + math::dot(pt.xy(), pt.xy()));
 					float solidAngle = weight * weight * weight;
 
 					float xx = math::lerp(pt.x, pt.x + pt.x * solidAngle * (1.0f - math::pow(pt.x, 4)), x);

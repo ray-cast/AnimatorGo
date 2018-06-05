@@ -358,7 +358,7 @@ namespace octoon
 				{
 					float unorm = 1.0f - math::saturate(math::snorm2unorm(pt.x));
 					float weight = (1.0f - math::cos(pt.y * math::PI * 0.5f)) * unorm * unorm;
-					float xx = math::lerp(pt.x, pt.x + unorm * weight , x);
+					float xx = math::lerp(pt.x, pt.x + unorm * weight, x);
 					float yy = math::lerp(pt.y, pt.y + unorm * unorm * pt.y * ratio * ratio * 0.5f, x);
 					return math::float3(xx, yy, pt.z);
 				};

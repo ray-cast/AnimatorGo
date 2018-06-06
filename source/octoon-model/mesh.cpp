@@ -125,7 +125,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(const uint1s& array) noexcept
+		Mesh::setIndicesArray(const Uint1Array& array) noexcept
 		{
 			_indices = array;
 		}
@@ -174,7 +174,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(uint1s&& array) noexcept
+		Mesh::setIndicesArray(Uint1Array&& array) noexcept
 		{
 			_indices = std::move(array);
 		}
@@ -228,7 +228,7 @@ namespace octoon
 			return _weights;
 		}
 
-		uint1s&
+		Uint1Array&
 		Mesh::getIndicesArray() noexcept
 		{
 			return _indices;
@@ -289,7 +289,7 @@ namespace octoon
 			return _bones;
 		}
 
-		const uint1s&
+		const Uint1Array&
 		Mesh::getIndicesArray() const noexcept
 		{
 			return _indices;
@@ -308,9 +308,11 @@ namespace octoon
 			_normals = float3s();
 			_colors = float4s();
 			_tangents = float4s();
-			_indices = uint1s();
+			_weights = VertexWeights();
+			_bindposes = float4x4s();
+			_indices = Uint1Array();
 
-			for (std::size_t i = 0; i < 8; i++)
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
 				_texcoords[i] = float2s();
 		}
 
@@ -322,12 +324,14 @@ namespace octoon
 			mesh->setVertexArray(this->getVertexArray());
 			mesh->setNormalArray(this->getNormalArray());
 			mesh->setColorArray(this->getColorArray());
-			mesh->setTexcoordArray(this->getTexcoordArray());
 			mesh->setWeightArray(this->getWeightArray());
 			mesh->setTangentArray(this->getTangentArray());
 			mesh->setBindposes(this->getBindposes());
 			mesh->setIndicesArray(this->getIndicesArray());
 			mesh->_boundingBox = this->_boundingBox;
+
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				mesh->setTexcoordArray(this->getTexcoordArray(i), i);
 
 			return mesh;
 		}
@@ -339,12 +343,11 @@ namespace octoon
 
 			for (std::uint32_t i = 0; i <= segments; i++)
 			{
+				float theta = thetaStart + (float)i / segments * thetaLength;
+
 				float3 v;
-
-				float segment = thetaStart + (float)i / segments * thetaLength;
-
-				v.x = radius * math::cos(segment);
-				v.y = radius * math::sin(segment);
+				v.x = radius * math::cos(theta);
+				v.y = radius * math::sin(theta);
 				v.z = 0;
 
 				_vertices.push_back(v);
@@ -799,7 +802,7 @@ namespace octoon
 		{
 			this->clear();
 
-			float tanFovy_2 = math::tan(fovy * PI / 360.0f);
+			float tanFovy_2 = math::tan(math::radians(fovy) * 0.5f);
 
 			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
 			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
@@ -830,6 +833,11 @@ namespace octoon
 			_vertices.emplace_back(-tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
 			_vertices.emplace_back(-tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
 			_vertices.emplace_back(tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
+
+			math::uint1 indices[] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4, 8, 9, 10, 10, 11, 8, 12, 13, 14, 14, 15, 12, 16, 17, 18, 18, 19, 16, 20, 21, 22, 22, 23, 20 };
+
+			for (auto& index : indices)
+				_indices.push_back(index);
 
 			this->computeBoundingBox();
 		}
@@ -888,6 +896,112 @@ namespace octoon
 				_indices.push_back(v3);
 				_indices.push_back(v2);
 				_indices.push_back(v1);
+			}
+
+			this->computeTangents();
+			this->computeBoundingBox();
+		}
+
+		void
+		Mesh::makeCapsule(float radius, float height, std::uint32_t segments, std::uint32_t heightSegments) noexcept
+		{
+			this->clear();
+
+			float mid_height = height - 2 * radius;
+			float half_height = mid_height / 2;
+
+			// make it even
+			std::uint32_t widthSegments = segments;
+			segments = 2 * (segments / 2);
+
+			std::vector<std::uint32_t> vertices;
+
+			for (std::uint32_t y = 0; y <= segments + heightSegments; y++)
+			{
+				for (std::uint32_t x = 0; x <= widthSegments; x++)
+				{
+					if (y > segments / 2 - 1 && y < segments / 2 - 1 + heightSegments)
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y - segments / 2 + 1) / heightSegments;
+						Vector3 vertex;
+						vertex.x = -radius * math::cos(u * math::PI_2);
+						vertex.y = (1 - v) * mid_height - half_height;
+						vertex.z = radius * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						_normals.push_back(math::normalize(Vector3(vertex.x, 0, vertex.z)));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+					else if(y >= segments / 2 - 1 + heightSegments)
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y - heightSegments + 1) / segments;
+
+						Vector3 vertex;
+						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
+						vertex.y = radius * math::cos(v * math::PI) - half_height;
+						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						_normals.push_back(math::normalize(vertex));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+					else
+					{
+						float u = (float)(x) / widthSegments;
+						float v = (float)(y) / segments;
+
+						Vector3 vertex;
+						vertex.x = -radius * math::sin(v * math::PI) * math::cos(u * math::PI_2);
+						vertex.y = radius * math::cos(v * math::PI) + half_height;
+						vertex.z = radius * math::sin(v * math::PI) * math::sin(u * math::PI_2);
+
+						_vertices.push_back(vertex);
+						_normals.push_back(math::normalize(vertex));
+						_texcoords[0].emplace_back(u, v);
+
+						vertices.push_back((std::uint32_t)_vertices.size() - 1);
+					}
+				}
+			}
+
+			for (std::uint32_t y = 0; y < segments + heightSegments; y++)
+			{
+				for (std::uint32_t x = 0; x < widthSegments; x++)
+				{
+					std::uint32_t v1 = vertices[y * (widthSegments + 1) + x];
+					std::uint32_t v2 = vertices[y * (widthSegments + 1) + x + 1];
+					std::uint32_t v3 = vertices[(y + 1) * (widthSegments + 1) + x];
+					std::uint32_t v4 = vertices[(y + 1) * (widthSegments + 1) + x + 1];
+
+					if (math::abs((_vertices)[v2].y) == radius + half_height)
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v3);
+						_indices.push_back(v4);
+					}
+					else if (math::abs((_vertices)[v3].y) == radius + half_height)
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v1);
+						_indices.push_back(v3);
+					}
+					else
+					{
+						_indices.push_back(v2);
+						_indices.push_back(v3);
+						_indices.push_back(v4);
+
+						_indices.push_back(v2);
+						_indices.push_back(v1);
+						_indices.push_back(v3);
+					}
+				}
 			}
 
 			this->computeTangents();
@@ -1351,7 +1465,11 @@ namespace octoon
 		Mesh::computeBoundingBox() noexcept
 		{
 			_boundingBox.reset();
-			_boundingBox.encapsulate(_vertices.data(), _vertices.size());
+
+			if (_indices.empty())
+				_boundingBox.encapsulate(_vertices.data(), _vertices.size());
+			else
+				_boundingBox.encapsulate(_vertices.data(), _indices.data(), _indices.size());
 		}
 	}
 }

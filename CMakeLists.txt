@@ -14,7 +14,6 @@ SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path t
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 SET(OCTOON_PATH_DOCUMENT ${OCTOON_PATH}/document CACHE STRING "Adds a path to octoon document" FORCE)
 
-# 编译选项
 OPTION(OCTOON_BUILD_DOCUMENT "ON to enable document generation" ON)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)
 OPTION(OCTOON_BUILD_DEBUG_MODE "ON for debug or OFF for release" ON)
@@ -268,6 +267,29 @@ ADD_SUBDIRECTORY(tools)
 
 # 示例
 ADD_SUBDIRECTORY(samples)
+
+# doxygen API document
+IF(OCTOON_BUILD_DOCUMENT)
+	FIND_PACKAGE(Doxygen)
+	OPTION(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})  
+  
+    IF(NOT DOXYGEN_FOUND)
+		MESSAGE(WARNING "Doxygen is needed to build the documentation.")  
+	ELSE()
+		SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/OctoonAPI/docs.doxyfile)
+		SET(doxyfile ${OCTOON_PATH_DOCUMENT}/OctoonAPI/Doxyfile)
+	
+		CONFIGURE_FILE(${doxyfile_in} ${doxyfile} @ONLY)
+	
+		ADD_CUSTOM_TARGET(document
+			COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+			WORKING_DIRECTORY ${OCTOON_PATH_DOCUMENT}/OctoonAPI
+			COMMENT "Generating API documentation with Doxygen"
+			VERBATIM)
+	
+		INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/document/OctoonAPI/html DESTINATION document/OctoonAPI/html)
+    ENDIF()
+ENDIF()
 
 # doxygen API document
 IF(OCTOON_BUILD_DOCUMENT)

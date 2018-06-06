@@ -11,6 +11,7 @@ SET(CORE_LIST
 	${HEADER_PATH}/assert.h
 	${HEADER_PATH}/platform.h
 	${HEADER_PATH}/singleton.h
+	${HEADER_PATH}/sigslot.h
 	${HEADER_PATH}/rtti.h
 	${SOURCE_PATH}/rtti.cpp
 	${HEADER_PATH}/rtti_interface.h

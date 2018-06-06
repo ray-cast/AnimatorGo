@@ -740,9 +740,7 @@ namespace octoon
 				{
 					if (startVertice == 0)
 					{
-						if (numInstances == 1)
-							glDrawElements(drawType, numIndices, _indexType, offsetIndices);
-						else if (glDrawElementsInstanced)
+						if (glDrawElementsInstanced)
 							glDrawElementsInstanced(drawType, numIndices, _indexType, offsetIndices, numInstances);
 						else
 							this->getDevice()->downcast<OGLDevice>()->message("Cannot support glDrawElementsInstanced.");

@@ -66,7 +66,7 @@ namespace octoon
 
 		private:
 			void _updateOrtho() const noexcept;
-			void _updatePerspective(float ratio) const noexcept;
+			void _updatePerspective() const noexcept;
 			void _updateViewProject() const noexcept;
 
 		private:
@@ -74,6 +74,8 @@ namespace octoon
 			float zfar_;
 			float ratio_;
 			float aperture_;
+
+			mutable bool needUpdateViewProject_;
 
 			math::float4 ortho_;
 			math::float4 clearColor_;
@@ -93,9 +95,6 @@ namespace octoon
 			mutable math::float4x4 viewProjectInverse_;
 			mutable math::float4x4 project_;
 			mutable math::float4x4 projectInverse_;
-
-			mutable float ratioReal_;
-			mutable bool needUpdateViewProject_;
 		};
 	}
 }

@@ -92,6 +92,39 @@ SET(IO_FEATURES_LIST
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 
+SET(PHYSICS_FEATURES_LIST
+	${HEADER_PATH}/physics.h
+	${SOURCE_PATH}/physics.cpp
+	${HEADER_PATH}/physics_feature.h
+	${SOURCE_PATH}/physics_feature.cpp
+	${HEADER_PATH}/physics_material.h
+	${SOURCE_PATH}/physics_material.cpp
+	${HEADER_PATH}/joint_limits.h
+	${HEADER_PATH}/joint_spring.h
+	${HEADER_PATH}/joint_motor.h
+	${HEADER_PATH}/rigidbody_component.h
+	${SOURCE_PATH}/rigidbody_component.cpp
+	${HEADER_PATH}/collider_component.h
+	${SOURCE_PATH}/collider_component.cpp
+	${HEADER_PATH}/box_collider_component.h
+	${SOURCE_PATH}/box_collider_component.cpp
+	${HEADER_PATH}/sphere_collider_component.h
+	${SOURCE_PATH}/sphere_collider_component.cpp
+	${HEADER_PATH}/capsule_collider_component.h
+	${SOURCE_PATH}/capsule_collider_component.cpp
+	${HEADER_PATH}/mesh_collider_component.h
+	${SOURCE_PATH}/mesh_collider_component.cpp
+	${HEADER_PATH}/joint_component.h
+	${SOURCE_PATH}/joint_component.cpp
+	${HEADER_PATH}/fixed_joint_component.h
+	${SOURCE_PATH}/fixed_joint_component.cpp
+	${HEADER_PATH}/spring_joint_component.h
+	${SOURCE_PATH}/spring_joint_component.cpp
+	${HEADER_PATH}/hinge_joint_component.h
+	${SOURCE_PATH}/hinge_joint_component.cpp
+)
+SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
+
 IF(OCTOON_BUILD_SHARED_DLL)
 	ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
 	ADD_LIBRARY(${LIB_NAME} SHARED 
@@ -144,6 +177,16 @@ ENDIF()
 
 IF(OCTOON_FEATURE_UI_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-ui)
+ENDIF()
+
+IF(OCTOON_FEATURE_PHYSICS_ENABLE)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3Common)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3CharacterKinematic)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3Cooking)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3Vehicle)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PhysX3Extensions)
+	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC PxFoundation)
 ENDIF()
 
 SET_TARGET_ATTRIBUTE(${LIB_NAME} "octoon")

@@ -484,7 +484,7 @@ namespace octoon
 
 			for (auto& it : pmx.materials)
 			{
-				auto material = std::make_shared<MaterialProperty>();
+				auto material = std::make_shared<Material>();
 
 				char name[MAX_PATH] = { 0 };
 				wcstombs(name, it.name.name, MAX_PATH);
@@ -659,7 +659,7 @@ namespace octoon
 				if (!wcstombs(name, it.name.name, MAX_PATH))
 					return false;
 
-				auto body = std::make_shared<RigidbodyProperty>();
+				auto body = std::make_shared<Rigidbody>();
 				body->name = name;
 				body->bone = it.bone;
 				body->group = it.group;
@@ -687,7 +687,7 @@ namespace octoon
 				if (!wcstombs(name, it.name.name, MAX_PATH))
 					return false;
 
-				auto joint = std::make_shared<JointProperty>();
+				auto joint = std::make_shared<Joint>();
 				joint->name = name;
 				joint->bodyIndexA = it.relatedRigidBodyIndexA;
 				joint->bodyIndexB = it.relatedRigidBodyIndexB;

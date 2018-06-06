@@ -23,15 +23,15 @@ namespace octoon
 			ShapeTypeCapsule
 		};
 
-		class OCTOON_EXPORT CameraProperty final
+		class OCTOON_EXPORT Camera final
 		{
 		};
 
-		class OCTOON_EXPORT LightProperty final
+		class OCTOON_EXPORT Light final
 		{
 		};
 
-		class OCTOON_EXPORT RigidbodyProperty
+		class OCTOON_EXPORT Rigidbody
 		{
 		public:
 			std::string name;
@@ -55,7 +55,7 @@ namespace octoon
 			std::uint8_t physicsOperation; //0:Follow Bone (static), 1:Physics Calc. (dynamic), 2: Physics Calc. + Bone position matching
 		};
 
-		class OCTOON_EXPORT JointProperty
+		class OCTOON_EXPORT Joint
 		{
 		public:
 			std::string name;
@@ -75,20 +75,20 @@ namespace octoon
 			math::float3 springRotationConstant;
 		};
 
-		class OCTOON_EXPORT TextureProperty final
+		class OCTOON_EXPORT Texture final
 		{
 		public:
-			TextureProperty() noexcept;
-			TextureProperty(const std::string& filename) noexcept;
-
-			TextureProperty(const char* filename, std::size_t length) noexcept;
+			Texture() noexcept;
+			Texture(std::string&& filename) noexcept;
+			Texture(const std::string& filename) noexcept;
+			Texture(const char* filename, std::size_t length) noexcept;
 
 			std::string   name;
 			std::uint32_t width;
 			std::uint32_t height;
 		};
 
-		class OCTOON_EXPORT MaterialProperty final
+		class OCTOON_EXPORT Material final
 		{
 		public:
 			struct MaterialParam
@@ -104,8 +104,8 @@ namespace octoon
 			};
 
 		public:
-			MaterialProperty() noexcept;
-			~MaterialProperty() noexcept;
+			Material() noexcept;
+			~Material() noexcept;
 
 			bool set(const char* key, std::size_t type, std::size_t index, int value) noexcept;
 			bool set(const char* key, std::size_t type, std::size_t index, float value) noexcept;
@@ -127,4 +127,4 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_PROPERTY_H_
+#endif

@@ -16,7 +16,7 @@ namespace octoon
 			using rigidbody_array_t = std::vector<RigidbodyPropertyPtr>;
 			using joint_array_t = std::vector<JointPropertyPtr>;
 			using material_array_t = std::vector<MaterialPropertyPtr>;
-			using texture_array_t = std::vector<TexturePropertyPtr>;
+			using texture_array_t = std::vector<TexturePtr>;
 			using animation_array_t = std::vector<AnimationPropertyPtr>;
 			using light_array_t = std::vector<LightPropertyPtr>;
 			using camera_array_t = std::vector<CameraPropertyPtr>;
@@ -47,7 +47,7 @@ namespace octoon
 			void add(const IKAttrPtr& value) noexcept { _iks.push_back(value); }
 			void add(const RigidbodyPropertyPtr& value) noexcept { _rigidbodys.push_back(value); }
 			void add(const JointPropertyPtr& value) noexcept { _joints.push_back(value); }
-			void add(const TexturePropertyPtr& value) noexcept { _textures.push_back(value); }
+			void add(const TexturePtr& value) noexcept { _textures.push_back(value); }
 			void add(const MaterialPropertyPtr& value) noexcept { _materials.push_back(value); }
 			void add(const AnimationPropertyPtr& value) noexcept { _animations.push_back(value); }
 			void add(const LightPropertyPtr& value) noexcept { _lights.push_back(value); }
@@ -58,7 +58,7 @@ namespace octoon
 			void add(IKAttrPtr&& value) noexcept { _iks.push_back(value); }
 			void add(RigidbodyPropertyPtr&& value) noexcept { _rigidbodys.push_back(value); }
 			void add(JointPropertyPtr&& value) noexcept { _joints.push_back(value); }
-			void add(TexturePropertyPtr&& value) noexcept { _textures.push_back(value); }
+			void add(TexturePtr&& value) noexcept { _textures.push_back(value); }
 			void add(MaterialPropertyPtr&& value) noexcept { _materials.push_back(value); }
 			void add(AnimationPropertyPtr&& value) noexcept { _animations.push_back(value); }
 			void add(LightPropertyPtr&& value) noexcept { _lights.push_back(value); }
@@ -135,7 +135,7 @@ namespace octoon
 			const MaterialPropertyPtr& get(std::size_t n) const { return _materials[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::texture>>
-			const TexturePropertyPtr& get(std::size_t n) const { return _textures[n]; }
+			const TexturePtr& get(std::size_t n) const { return _textures[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
 			const AnimationPropertyPtr& get(std::size_t n) const { return _animations[n]; }
@@ -195,7 +195,7 @@ namespace octoon
 			const MaterialPropertyPtr& operator[](std::size_t n) const { return _materials[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::texture>>
-			const TexturePropertyPtr& operator[](std::size_t n) const { return _textures[n]; }
+			const TexturePtr& operator[](std::size_t n) const { return _textures[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
 			const AnimationPropertyPtr& operator[](std::size_t n) const { return _animations[n]; }

@@ -50,26 +50,26 @@ namespace octoon
 	namespace model
 	{
 		class AnimationProperty;
-		class TextureProperty;
-		class CameraProperty;
-		class LightProperty;
+		class Texture;
+		class Camera;
+		class Light;
 		class Mesh;
-		class MaterialProperty;
+		class Material;
 
 		class Model;
 		class Bone;
 		class IKAttr;
-		class RigidbodyProperty;
-		class JointProperty;
+		class Rigidbody;
+		class Joint;
 		class VertexWeight;
 		class CombineMesh;
 
 		typedef std::shared_ptr<AnimationProperty> AnimationPropertyPtr;
-		typedef std::shared_ptr<TextureProperty> TexturePropertyPtr;
-		typedef std::shared_ptr<CameraProperty> CameraPropertyPtr;
-		typedef std::shared_ptr<LightProperty> LightPropertyPtr;
+		typedef std::shared_ptr<Texture> TexturePtr;
+		typedef std::shared_ptr<Camera> CameraPropertyPtr;
+		typedef std::shared_ptr<Light> LightPropertyPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
-		typedef std::shared_ptr<MaterialProperty> MaterialPropertyPtr;
+		typedef std::shared_ptr<Material> MaterialPropertyPtr;
 		typedef std::unique_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
@@ -82,8 +82,8 @@ namespace octoon
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
-		typedef std::shared_ptr<RigidbodyProperty> RigidbodyPropertyPtr;
-		typedef std::shared_ptr<JointProperty> JointPropertyPtr;
+		typedef std::shared_ptr<Rigidbody> RigidbodyPropertyPtr;
+		typedef std::shared_ptr<Joint> JointPropertyPtr;
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;

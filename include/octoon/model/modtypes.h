@@ -49,7 +49,7 @@ namespace octoon
 {
 	namespace model
 	{
-		class AnimationProperty;
+		class Animation;
 		class Texture;
 		class Camera;
 		class Light;
@@ -64,12 +64,12 @@ namespace octoon
 		class VertexWeight;
 		class CombineMesh;
 
-		typedef std::shared_ptr<AnimationProperty> AnimationPropertyPtr;
+		typedef std::shared_ptr<Animation> AnimationPtr;
 		typedef std::shared_ptr<Texture> TexturePtr;
 		typedef std::shared_ptr<Camera> CameraPropertyPtr;
 		typedef std::shared_ptr<Light> LightPropertyPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
-		typedef std::shared_ptr<Material> MaterialPropertyPtr;
+		typedef std::shared_ptr<Material> MaterialPtr;
 		typedef std::unique_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
@@ -127,4 +127,4 @@ namespace octoon
 	}
 }
 
-#endif // !OCTOON_MODTYPES_H_
+#endif

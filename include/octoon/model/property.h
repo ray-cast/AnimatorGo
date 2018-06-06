@@ -1,5 +1,5 @@
-#ifndef OCTOON_PROPERTY_H_
-#define OCTOON_PROPERTY_H_
+#ifndef OCTOON_MODEL_PROPERTY_H_
+#define OCTOON_MODEL_PROPERTY_H_
 
 #include <octoon/model/modtypes.h>
 #include <octoon/model/bone.h>

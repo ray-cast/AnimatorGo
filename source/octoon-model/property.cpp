@@ -38,7 +38,8 @@ namespace octoon
 			}
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, int value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, int value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -72,7 +73,8 @@ namespace octoon
 			return true;
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, float value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, float value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -107,7 +109,8 @@ namespace octoon
 			return true;
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector3& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector3& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -142,7 +145,8 @@ namespace octoon
 			return true;
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector4& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector4& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -177,7 +181,8 @@ namespace octoon
 			return true;
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, const char* value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const char* value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -185,7 +190,8 @@ namespace octoon
 			return this->set(key, type, index, str);
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, const unsigned char* value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const unsigned char* value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -193,7 +199,8 @@ namespace octoon
 			return this->set(key, type, index, str);
 		}
 
-		bool Material::set(const char* key, std::size_t type, std::size_t index, const std::string& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const std::string& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -228,7 +235,8 @@ namespace octoon
 			return true;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, int& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, int& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -248,7 +256,8 @@ namespace octoon
 			return false;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, float& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, float& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -268,7 +277,8 @@ namespace octoon
 			return false;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, math::Vector3& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, math::Vector3& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -289,7 +299,8 @@ namespace octoon
 			return false;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, math::Vector4& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, math::Vector4& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -310,7 +321,8 @@ namespace octoon
 			return false;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, std::string& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, std::string& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -327,7 +339,8 @@ namespace octoon
 			return false;
 		}
 
-		bool Material::get(const char* key, std::size_t type, std::size_t index, MaterialParam** out) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, MaterialParam** out) const noexcept
 		{
 			assert(nullptr != key);
 			assert(nullptr != out);

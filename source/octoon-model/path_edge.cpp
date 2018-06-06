@@ -185,19 +185,25 @@ namespace octoon
 			{
 				auto method_x = [=](const math::float3& pt) -> math::float3
 				{
-					float unorm = math::snorm2unorm(pt.y) * pt.x;
-					float weight = math::cos(pt.x * math::PI * 0.5f) * ratio;
-					float xx = math::lerp(pt.x, pt.x - unorm, math::abs(x));
-					float yy = math::lerp(pt.y, pt.y - weight, x);
+					math::float2 n = math::float2::Zero;
+					math::sinCos(&n.x, &n.y, math::PI * pt.x * 0.5f);
+
+					float len = x < 0.0f ? math::snorm2unorm(pt.y) : 1.0f - math::snorm2unorm(pt.y);
+					float xx = math::lerp(pt.x, n.x * (len + 1.0f), math::abs(x));
+					float yy = math::lerp(pt.y, n.y * (len + ratio) * (x < 0.0f ? 1.0f : -1.0f), math::abs(x));
+
 					return math::float3(xx, yy, pt.z);
 				};
 
 				auto method_y = [=](const math::float3& pt) -> math::float3
 				{
-					float unorm = (1.0f - math::snorm2unorm(pt.x)) * pt.y;
-					float weight = math::cos(pt.y * math::PI * 0.5f);
-					float xx = math::lerp(pt.x, pt.x - weight, x);
-					float yy = math::lerp(pt.y, pt.y + unorm * ratio, math::abs(x));
+					math::float2 n = math::float2::Zero;
+					math::sinCos(&n.x, &n.y, math::PI * pt.y * 0.5f);
+
+					float len = x < 0.0f ? math::snorm2unorm(pt.x) : 1.0f - math::snorm2unorm(pt.x);
+					float xx = math::lerp(pt.x, n.y * (len + 1.0f) * math::snorm2unorm(pt.x), math::abs(x));
+					float yy = math::lerp(pt.y, n.x * (len + ratio) * (x < 0.0f ? 1.0f : -1.0f), math::abs(x));
+
 					return math::float3(xx, yy, pt.z);
 				};
 

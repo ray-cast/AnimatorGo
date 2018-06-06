@@ -43,7 +43,7 @@ namespace octoon
 				Vector2<T>& operator-=(const Vector2<T>& v) noexcept { x -= v.x; y -= v.y; return *this; }
 				Vector2<T>& operator*=(const Vector2<T>& v) noexcept { x *= v.x; y *= v.y; return *this; }
 				Vector2<T>& operator/=(const Vector2<T>& v) noexcept { x /= v.x; y /= v.y; return *this; }
-
+				
 				template<typename S, typename = std::enable_if_t<trait::is_integral_v<S> || trait::is_floating_point_v<S>>>
 				explicit operator Vector2<S>() const noexcept
 				{
@@ -404,6 +404,12 @@ namespace octoon
 		inline detail::Vector2<T> pow(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
 		{
 			return detail::Vector2<T>(std::pow(v1.x, v2.x), std::pow(v1.y, v2.y));
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		inline detail::Vector2<T> reflect(const detail::Vector2<T>& I, const detail::Vector2<T>& N) noexcept
+		{
+			return I - 2 * (dot(I, N) * N);
 		}
 
 		template<typename T>

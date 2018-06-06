@@ -12,51 +12,54 @@ namespace octoon
 		using float3 = math::float3;
 		using float4 = math::float4;
 
-		enum class GuiCol
+		struct GuiCol
 		{
-			Text,
-			TextDisabled,
-			WindowBg,              // Background of normal windows
-			ChildBg,               // Background of child windows
-			PopupBg,               // Background of popups, menus, tooltips windows
-			Border,
-			BorderShadow,
-			FrameBg,               // Background of checkbox, radio button, plot, slider, text input
-			FrameBgHovered,
-			FrameBgActive,
-			TitleBg,
-			TitleBgActive,
-			TitleBgCollapsed,
-			MenuBarBg,
-			ScrollbarBg,
-			ScrollbarGrab,
-			ScrollbarGrabHovered,
-			ScrollbarGrabActive,
-			CheckMark,
-			SliderGrab,
-			SliderGrabActive,
-			Button,
-			ButtonHovered,
-			ButtonActive,
-			Header,
-			HeaderHovered,
-			HeaderActive,
-			Separator,
-			SeparatorHovered,
-			SeparatorActive,
-			ResizeGrip,
-			ResizeGripHovered,
-			ResizeGripActive,
-			PlotLines,
-			PlotLinesHovered,
-			PlotHistogram,
-			PlotHistogramHovered,
-			TextSelectedBg,
-			ModalWindowDarkening,  // darken/colorize entire screen behind a modal window, when one is active
-			DragDropTarget,
-			NavHighlight,          // gamepad/keyboard: current highlighted item
-			NavWindowingHighlight, // gamepad/keyboard: when holding NavMenu to focus/move/resize windows
-			Count_
+			enum Type
+			{
+				Text,
+				TextDisabled,
+				WindowBg,              // Background of normal windows
+				ChildBg,               // Background of child windows
+				PopupBg,               // Background of popups, menus, tooltips windows
+				Border,
+				BorderShadow,
+				FrameBg,               // Background of checkbox, radio button, plot, slider, text input
+				FrameBgHovered,
+				FrameBgActive,
+				TitleBg,
+				TitleBgActive,
+				TitleBgCollapsed,
+				MenuBarBg,
+				ScrollbarBg,
+				ScrollbarGrab,
+				ScrollbarGrabHovered,
+				ScrollbarGrabActive,
+				CheckMark,
+				SliderGrab,
+				SliderGrabActive,
+				Button,
+				ButtonHovered,
+				ButtonActive,
+				Header,
+				HeaderHovered,
+				HeaderActive,
+				Separator,
+				SeparatorHovered,
+				SeparatorActive,
+				ResizeGrip,
+				ResizeGripHovered,
+				ResizeGripActive,
+				PlotLines,
+				PlotLinesHovered,
+				PlotHistogram,
+				PlotHistogramHovered,
+				TextSelectedBg,
+				ModalWindowDarkening,  // darken/colorize entire screen behind a modal window, when one is active
+				DragDropTarget,
+				NavHighlight,          // gamepad/keyboard: current highlighted item
+				NavWindowingHighlight, // gamepad/keyboard: when holding NavMenu to focus/move/resize windows
+				Count_
+			};
 		};
 
 		struct GuiInputTextFlagBits
@@ -438,14 +441,14 @@ namespace octoon
 		OCTOON_EXPORT void  set_scroll_here(float center_y_ratio = 0.5f) noexcept;
 		OCTOON_EXPORT void  set_scroll_from_pos_y(float pos_y, float center_y_ratio = 0.5f) noexcept;
 
-		OCTOON_EXPORT void          push_style_color(GuiCol idx, const float4& col) noexcept;
+		OCTOON_EXPORT void          push_style_color(GuiCol::Type idx, const float4& col) noexcept;
 		OCTOON_EXPORT void          pop_style_color(int count = 1) noexcept;
 		OCTOON_EXPORT void          push_style_var(GuiStyleVar idx, float val) noexcept;
 		OCTOON_EXPORT void          push_style_var(GuiStyleVar idx, const float2& val) noexcept;
 		OCTOON_EXPORT void          pop_style_var(int count = 1) noexcept;
 		OCTOON_EXPORT float         get_font_size() noexcept;
 		OCTOON_EXPORT float2        get_font_tex_uv_white_pixel() noexcept;
-		OCTOON_EXPORT std::uint32_t get_color_u32(GuiCol idx, float alpha_mul = 1.0f) noexcept;
+		OCTOON_EXPORT std::uint32_t get_color_u32(GuiCol::Type idx, float alpha_mul = 1.0f) noexcept;
 		OCTOON_EXPORT std::uint32_t get_color_u32(const float4& col) noexcept;
 
 		OCTOON_EXPORT void  push_item_width(float item_width) noexcept;
@@ -633,7 +636,7 @@ namespace octoon
 
 		OCTOON_EXPORT float get_time() noexcept;
 		OCTOON_EXPORT int get_frame_count() noexcept;
-		OCTOON_EXPORT const char* get_style_col_name(GuiCol idx) noexcept;
+		OCTOON_EXPORT const char* get_style_col_name(GuiCol::Type idx) noexcept;
 		OCTOON_EXPORT float2 calc_item_rect_closest_point(const float2& pos, bool on_edge = false, float outward = +0.0f) noexcept;
 		OCTOON_EXPORT float2 calc_text_size(const char* text, const char* text_end = nullptr, bool hide_text_after_double_hash = false, float wrap_width = -1.0f) noexcept;
 		OCTOON_EXPORT void calc_list_clipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end) noexcept;

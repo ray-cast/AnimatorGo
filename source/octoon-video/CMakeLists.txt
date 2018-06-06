@@ -34,6 +34,8 @@ SET(VIDEO_MATERIAL_LIST
 	${SOURCE_PATH}/line_material.cpp
 	${HEADER_PATH}/text_material.h
 	${SOURCE_PATH}/text_material.cpp
+	${HEADER_PATH}/lambert_material.h
+	${SOURCE_PATH}/lambert_material.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\material  FILES ${VIDEO_MATERIAL_LIST})
 

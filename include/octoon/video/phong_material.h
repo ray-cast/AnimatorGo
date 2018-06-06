@@ -23,15 +23,18 @@ namespace octoon
 			const graphics::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
 
 			void setLightDir(const math::float3& translate) noexcept;
-			void setLightIntensity(math::float1 intensity) noexcept;
+			void setLightIntensity(const math::float1& intensity) noexcept;
 			void setBaseColor(const math::float3& color) noexcept;
+			void setAmbient(const math::float1& weight) noexcept;
 			void setAmbientColor(const math::float3& color) noexcept;
 			void setSpecularColor(const math::float3& color) noexcept;
 			void setDarkColor(const math::float3& color) noexcept;
 			void setShininess(float shininess) noexcept;
 
-			const math::float3& getLightDir() const noexcept;
+			math::float1 getAmbient() const noexcept;
 			math::float1 getLightIntensity() const noexcept;
+
+			const math::float3& getLightDir() const noexcept;
 			const math::float3& getBaseColor() const noexcept;
 			const math::float3& getAmbientColor() const noexcept;
 			const math::float3& getSpecularColor() const noexcept;
@@ -54,6 +57,7 @@ namespace octoon
 			graphics::GraphicsUniformSetPtr lightIntensity_;
 
 			graphics::GraphicsUniformSetPtr baseColor_;
+			graphics::GraphicsUniformSetPtr ambient_;
 			graphics::GraphicsUniformSetPtr ambientColor_;
 			graphics::GraphicsUniformSetPtr specularColor_;
 			graphics::GraphicsUniformSetPtr darkColor_;

@@ -3,6 +3,8 @@
 
 namespace octoon
 {
+	OctoonImplementSingleton(GameObjectManager)
+
 	GameObjectManager::GameObjectManager() noexcept
 	{
 	}
@@ -120,6 +122,18 @@ namespace octoon
 		return false;
 	}
 
+	const GameObjectRaws& 
+	GameObjectManager::getInstanceList() const noexcept
+	{
+		return instanceLists_;
+	}
+
+	const GameObjectRaws&
+	GameObjectManager::getActivedActors() const noexcept
+	{
+		return activeActors_;
+	}
+
 	void
 	GameObjectManager::onFrameBegin() noexcept
 	{
@@ -166,10 +180,7 @@ namespace octoon
 	void
 	GameObjectManager::onGui() noexcept
 	{
-		for (std::size_t i = 0; i < activeActors_.size(); i++)
-		{
-			if (activeActors_[i])
-				activeActors_[i]->onGui();
-		}
+		for (auto& it : activeActors_)
+			if (it) it->onGui();
 	}
 }

@@ -3,8 +3,9 @@
 
 #include <memory>
 #include <vector>
+#include <functional>
 
-#include <octoon/math/mathfwd.h>
+#include <octoon/math/math.h>
 #include <octoon/runtime/platform.h>
 #include <octoon/io/iostream.h>
 
@@ -30,17 +31,17 @@
 
 #define MATKEY_TEXTURE(type, N)   "$tex.file", type, N
 
-#define MATKEY_TEXTURE_DIFFUSE(N)      MATKEY_TEXTURE(TextureTypeDiffuse, N)
-#define MATKEY_TEXTURE_SPECULAR(N)     MATKEY_TEXTURE(TextureTypeSpecular, N)
-#define MATKEY_TEXTURE_AMBIENT(N)      MATKEY_TEXTURE(TextureTypeAmbient, N)
-#define MATKEY_TEXTURE_EMISSIVE(N)     MATKEY_TEXTURE(TextureTypeEmissive, N)
-#define MATKEY_TEXTURE_NORMALS(N)      MATKEY_TEXTURE(TextureTypeNormals, N)
-#define MATKEY_TEXTURE_HEIGHT(N)       MATKEY_TEXTURE(TextureTypeHeight, N)
-#define MATKEY_TEXTURE_SHININESS(N)    MATKEY_TEXTURE(TextureTypeShininess, N)
-#define MATKEY_TEXTURE_OPACITY(N)      MATKEY_TEXTURE(TextureTypeOpacity, N)
-#define MATKEY_TEXTURE_DISPLACEMENT(N) MATKEY_TEXTURE(TextureTypeDisplacement, N)
-#define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(TextureTypeLightmap, N)
-#define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(TextureTypeReflection, N)
+#define MATKEY_TEXTURE_DIFFUSE(N)      MATKEY_TEXTURE(octoon::model::TextureTypeDiffuse, N)
+#define MATKEY_TEXTURE_SPECULAR(N)     MATKEY_TEXTURE(octoon::model::TextureTypeSpecular, N)
+#define MATKEY_TEXTURE_AMBIENT(N)      MATKEY_TEXTURE(octoon::model::TextureTypeAmbient, N)
+#define MATKEY_TEXTURE_EMISSIVE(N)     MATKEY_TEXTURE(octoon::model::TextureTypeEmissive, N)
+#define MATKEY_TEXTURE_NORMALS(N)      MATKEY_TEXTURE(octoon::model::TextureTypeNormals, N)
+#define MATKEY_TEXTURE_HEIGHT(N)       MATKEY_TEXTURE(octoon::model::TextureTypeHeight, N)
+#define MATKEY_TEXTURE_SHININESS(N)    MATKEY_TEXTURE(octoon::model::TextureTypeShininess, N)
+#define MATKEY_TEXTURE_OPACITY(N)      MATKEY_TEXTURE(octoon::model::TextureTypeOpacity, N)
+#define MATKEY_TEXTURE_DISPLACEMENT(N) MATKEY_TEXTURE(octoon::model::TextureTypeDisplacement, N)
+#define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(octoon::model::TextureTypeLightmap, N)
+#define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(octoon::model::TextureTypeReflection, N)
 
 #define TEXTURE_ARRAY_COUNT 4
 
@@ -48,37 +49,41 @@ namespace octoon
 {
 	namespace model
 	{
-		class AnimationProperty;
-		class TextureProperty;
-		class CameraProperty;
-		class LightProperty;
+		class Animation;
+		class Texture;
+		class Camera;
+		class Light;
 		class Mesh;
-		class MaterialProperty;
+		class Material;
 
 		class Model;
 		class Bone;
 		class IKAttr;
-		class RigidbodyProperty;
-		class JointProperty;
+		class Rigidbody;
+		class Joint;
 		class VertexWeight;
 		class CombineMesh;
 
-		typedef std::shared_ptr<AnimationProperty> AnimationPropertyPtr;
-		typedef std::shared_ptr<TextureProperty> TexturePropertyPtr;
-		typedef std::shared_ptr<CameraProperty> CameraPropertyPtr;
-		typedef std::shared_ptr<LightProperty> LightPropertyPtr;
+		typedef std::shared_ptr<Animation> AnimationPtr;
+		typedef std::shared_ptr<Texture> TexturePtr;
+		typedef std::shared_ptr<Camera> CameraPropertyPtr;
+		typedef std::shared_ptr<Light> LightPropertyPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
-		typedef std::shared_ptr<MaterialProperty> MaterialPropertyPtr;
+		typedef std::shared_ptr<Material> MaterialPtr;
+		typedef std::unique_ptr<class Path> PathPtr;
+		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
+		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
 		typedef std::unique_ptr<class Contour> ContourPtr;
 		typedef std::shared_ptr<class ContourGroup> ContourGroupPtr;
 		typedef std::shared_ptr<class TextFile> TextFilePtr;
 		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;
+		typedef std::shared_ptr<class ModelLoader> ModelLoaderPtr;
 
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
-		typedef std::shared_ptr<RigidbodyProperty> RigidbodyPropertyPtr;
-		typedef std::shared_ptr<JointProperty> JointPropertyPtr;
+		typedef std::shared_ptr<Rigidbody> RigidbodyPropertyPtr;
+		typedef std::shared_ptr<Joint> JointPropertyPtr;
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;
@@ -89,6 +94,9 @@ namespace octoon
 		typedef std::vector<TextFilePtr> TextFiles;
 		typedef std::vector<ContourPtr> Contours;
 		typedef std::vector<ContourGroupPtr> ContourGroups;
+		typedef std::vector<PathPtr> Paths;
+		typedef std::vector<PathEdge> PathEdges;
+		typedef std::vector<PathGroupPtr> PathGroups;
 
 		enum TextureType
 		{
@@ -119,4 +127,4 @@ namespace octoon
 	}
 }
 
-#endif // !OCTOON_MODTYPES_H_
+#endif

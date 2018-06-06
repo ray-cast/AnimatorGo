@@ -1,4 +1,5 @@
 #include "gl20_graphics_data.h"
+#include <cstring>
 
 namespace octoon
 {
@@ -52,7 +53,7 @@ namespace octoon
 			if (desc.getStream())
 			{
 				_data.resize(desc.getStreamSize());
-				memcpy(_data.data(), desc.getStream(), desc.getStreamSize());
+				std::memcpy(_data.data(), desc.getStream(), desc.getStreamSize());
 			}
 
 			_desc = desc;

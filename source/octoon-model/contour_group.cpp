@@ -1,5 +1,5 @@
 #include <octoon/model/contour_group.h>
-#include <octoon/model/mesh.h>
+#include <octoon/model/path_group.h>
 
 #include <cstring>
 #include <iostream>
@@ -43,6 +43,16 @@ namespace octoon
 		{
 		}
 
+		ContourGroup::ContourGroup(const PathGroup& pathGroup, std::uint16_t bezierSteps) noexcept
+		{
+			Contours contrours;
+
+			for (auto& it : pathGroup.getPaths())
+				contrours.push_back(std::make_unique<Contour>(*it, bezierSteps));
+
+			this->setContours(contrours);
+		}
+
 		ContourGroup::ContourGroup(Contours&& contour) noexcept
 		{
 			this->setContours(std::move(contour));
@@ -51,6 +61,11 @@ namespace octoon
 		ContourGroup::ContourGroup(const Contours& contour) noexcept
 		{
 			this->setContours(contour);
+		}
+
+		ContourGroup::ContourGroup(const std::initializer_list<ContourPtr>& list) noexcept
+		{
+			this->setContours(list);
 		}
 
 		ContourGroup::~ContourGroup() noexcept
@@ -64,18 +79,42 @@ namespace octoon
 		}
 
 		void
-		ContourGroup::setContours(const Contours& textContour) noexcept
+		ContourGroup::setContours(const Contours& contours) noexcept
 		{
-			Contours contours;
+			contours_.clear();
 
-			for (auto& it : textContour)
-			{
-				auto contour = std::make_unique<Contour>();
-				contour->points() = it->points();
-				contours.push_back(std::move(contour));
-			}
+			for (auto& it : contours)
+				contours_.push_back(std::make_unique<Contour>(it->points()));
+		}
 
-			contours_ = std::move(contours);
+		void 
+		ContourGroup::setContours(const std::initializer_list<ContourPtr>& list) noexcept
+		{
+			contours_.clear();
+
+			for (auto& it : list)
+				contours_.push_back(std::make_unique<Contour>(it->points()));
+		}
+
+		void
+		ContourGroup::addContours(Contours&& contours) noexcept
+		{
+			for (auto& contour : contours)
+				contours_.push_back(std::move(contour));
+		}
+
+		void
+		ContourGroup::addContours(const Contours& contours) noexcept
+		{
+			for (auto& it : contours)
+				contours_.push_back(std::make_unique<Contour>(it->points()));
+		}
+
+		void 
+		ContourGroup::addContours(const std::initializer_list<ContourPtr>& list) noexcept
+		{
+			for (auto& it : list)
+				contours_.push_back(std::make_unique<Contour>(it->points()));
 		}
 
 		Contours&
@@ -90,32 +129,18 @@ namespace octoon
 			return contours_;
 		}
 
-		std::size_t
-		ContourGroup::count() const noexcept
-		{
-			return contours_.size();
-		}
-
 		Contour&
 		ContourGroup::at(std::size_t index)  noexcept
 		{
-			assert(index < count());
+			assert(index < contours_.size());
 			return *contours_[index];
 		}
 
 		const Contour&
 		ContourGroup::at(std::size_t index) const noexcept
 		{
-			assert(index < count());
+			assert(index < contours_.size());
 			return *contours_[index];
-		}
-
-		ContourGroupPtr
-		ContourGroup::clone() const noexcept
-		{
-			auto instance = std::make_shared<ContourGroup>();
-			instance->setContours(this->getContours());
-			return instance;
 		}
 
 		void makeMesh(Mesh& mesh, const Contours& contours, float thickness) noexcept
@@ -130,10 +155,10 @@ namespace octoon
 			{
 				const Contour& contour = group.at(i);
 
-				for (std::size_t n = 0; n < contour->count(); ++n)
+				for (std::size_t n = 0; n < contour->points().size(); ++n)
 				{
 					auto& p1 = contour->at(n);
-					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
+					auto& p2 = (n == contour->points().size() - 1) ? contour->at(0) : contour->at(n + 1);
 
 					trisData[written++] = math::float3(p1.x, p1.y, -thicknessHalf);
 					trisData[written++] = math::float3(p2.x, p2.y, thicknessHalf);
@@ -166,13 +191,12 @@ namespace octoon
 			gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
 			gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
 
-			gluTessNormal(tobj, 0.0f, 0.0f, 1.0f);
-
 			std::size_t index = 0;
 
 			for (std::uint8_t face = 0; face < 2; face++)
 			{
 				gluTessBeginPolygon(tobj, nullptr);
+				gluTessNormal(tobj, 0.0f, 0.0f, face ? 1.0f : -1.0f);
 
 				for (auto& contour_ : contours)
 				{
@@ -239,14 +263,14 @@ namespace octoon
 
 			for (auto& contour : contours)
 			{
-				for (std::size_t n = 0; n < contour->count(); ++n)
+				for (std::size_t n = 0; n < contour->points().size(); ++n)
 				{
 					auto& p1 = contour->at(n);
-					auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
+					auto& p2 = (n == contour->points().size() - 1) ? contour->at(0) : contour->at(n + 1);
 
 					math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
-					math::float3 b = math::float3(p1.x, p1.y, p1.z + -thicknessHalf);
-					math::float3 c = math::float3(p2.x, p2.y, p2.z + -thicknessHalf);
+					math::float3 b = math::float3(p1.x, p1.y, p1.z - thicknessHalf);
+					math::float3 c = math::float3(p2.x, p2.y, p2.z - thicknessHalf);
 					math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
 					math::uint1 index = (math::uint1)tris.size();
@@ -290,15 +314,15 @@ namespace octoon
 			{
 				for (auto& contour : group->getContours())
 				{
-					for (std::size_t n = 0; n < contour->count(); ++n)
+					for (std::size_t n = 0; n < contour->points().size(); ++n)
 					{
 						auto& p1 = contour->at(n);
-						auto& p2 = (n == contour->count() - 1) ? contour->at(0) : contour->at(n + 1);
+						auto& p2 = (n == contour->points().size() - 1) ? contour->at(0) : contour->at(n + 1);
 
-						math::float3 a = math::float3(p1.x, p1.y, thicknessHalf);
-						math::float3 b = math::float3(p1.x, p1.y, -thicknessHalf);
-						math::float3 c = math::float3(p2.x, p2.y, -thicknessHalf);
-						math::float3 d = math::float3(p2.x, p2.y, thicknessHalf);
+						math::float3 a = math::float3(p1.x, p1.y, p1.z + thicknessHalf);
+						math::float3 b = math::float3(p1.x, p1.y, p1.z - thicknessHalf);
+						math::float3 c = math::float3(p2.x, p2.y, p2.z - thicknessHalf);
+						math::float3 d = math::float3(p2.x, p2.y, p2.z + thicknessHalf);
 
 						math::uint1 index = (math::uint1)tris.size();
 						indices.push_back(index);

@@ -49,6 +49,12 @@ namespace octoon
 		}
 
 		template<typename T>
+		constexpr T sign(const T t) noexcept
+		{
+			return (t == 0.0f) ? 0.0 : (t > 0) ? 1.0f : -1.0f;
+		}
+
+		template<typename T>
 		constexpr T middle(const T t1, const T t2, const T t3) noexcept
 		{
 			if (t1 < t2)
@@ -99,18 +105,20 @@ namespace octoon
 		template<typename T>
 		constexpr T clamp(const T t, const T min, const T max) noexcept
 		{
-			return std::max(min, std::min(max, t));
+			return std::max<T>(min, std::min<T>(max, t));
 		}
 
 		template<typename T>
 		constexpr T saturate(const T v) noexcept
 		{
-			return clamp(v, 0.0f, 1.0f);
+			return clamp<T>(v, T(0), T(1));
 		}
 
 		template<typename _Tx, typename _Ty>
 		constexpr _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
 		{
+			if (t3 == 0) return t1; // float-precision
+			if (t3 == 1) return t2; // float-precision
 			return t1 + (t2 - t1) * t3;
 		}
 
@@ -370,6 +378,26 @@ namespace octoon
 		inline double round(double v) noexcept
 		{
 			return std::round(v);
+		}
+
+		inline float sqrt(float x) noexcept
+		{
+			return std::sqrt(x);
+		}
+
+		inline double sqrt(double x) noexcept
+		{
+			return std::sqrt(x);
+		}
+
+		inline float rsqrt(float x) noexcept
+		{
+			return 1.0f / std::sqrt(x);
+		}
+
+		inline double rsqrt(double x) noexcept
+		{
+			return 1.0 / std::sqrt(x);
 		}
 
 		inline float fast_exp2(float x) noexcept

@@ -377,16 +377,16 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 void OCTOON_C_CALL OctoonCloseWindow() noexcept
 {
-	if (gameApp_)
-	{
-		gameApp_->close();
-		gameApp_ = nullptr;
-	}
-
 	if (window_)
 	{
 		::glfwDestroyWindow(window_);
 		window_ = nullptr;
+	}
+
+	if (gameApp_)
+	{
+		gameApp_->close();
+		gameApp_ = nullptr;
 	}
 
 	::glfwTerminate();

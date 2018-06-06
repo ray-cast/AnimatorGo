@@ -7,8 +7,9 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT GameObjectManager final : public runtime::Singleton<GameObjectManager>
+	class OCTOON_EXPORT GameObjectManager final
 	{
+		OctoonDeclareSingleton(GameObjectManager)
 	public:
 		GameObjectManager() noexcept;
 		~GameObjectManager() noexcept;
@@ -19,6 +20,9 @@ namespace octoon
 		GameObjectPtr instantiate(const std::string& name) noexcept;
 
 		bool activeObject(const std::string& name) noexcept;
+
+		const GameObjectRaws& getInstanceList() const noexcept;
+		const GameObjectRaws& getActivedActors() const noexcept;
 
 		void onFrameBegin() noexcept;
 		void onFrame() noexcept;
@@ -36,9 +40,10 @@ namespace octoon
 	private:
 		bool hasEmptyActors_;
 
+		GameObjectRaws instanceLists_;
+		GameObjectRaws activeActors_;
+
 		std::stack<std::size_t> emptyLists_;
-		std::vector<GameObject*> instanceLists_;
-		std::vector<GameObject*> activeActors_;
 	};
 }
 

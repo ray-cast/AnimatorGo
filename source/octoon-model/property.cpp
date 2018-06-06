@@ -2,31 +2,34 @@
 
 #include <cstring>
 
-using namespace octoon::math;
-
 namespace octoon
 {
 	namespace model
 	{
-		TextureProperty::TextureProperty() noexcept
+		Texture::Texture() noexcept
 		{
 		}
 
-		TextureProperty::TextureProperty(const std::string& filename) noexcept
+		Texture::Texture(std::string&& filename) noexcept
+			: name(std::move(filename))
+		{
+		}
+
+		Texture::Texture(const std::string& filename) noexcept
 			: name(filename)
 		{
 		}
 
-		TextureProperty::TextureProperty(const char* filename, std::size_t length) noexcept
+		Texture::Texture(const char* filename, std::size_t length) noexcept
 			: name(filename, length)
 		{
 		}
 
-		MaterialProperty::MaterialProperty() noexcept
+		Material::Material() noexcept
 		{
 		}
 
-		MaterialProperty::~MaterialProperty() noexcept
+		Material::~Material() noexcept
 		{
 			for (auto& it : _properties)
 			{
@@ -35,7 +38,8 @@ namespace octoon
 			}
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, int value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, int value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -69,7 +73,8 @@ namespace octoon
 			return true;
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, float value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, float value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -104,7 +109,8 @@ namespace octoon
 			return true;
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, const Vector3& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector3& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -128,7 +134,7 @@ namespace octoon
 			prop->key = key;
 			prop->type = type;
 			prop->index = index;
-			prop->length = sizeof(Vector3);
+			prop->length = sizeof(math::Vector3);
 			prop->dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
 			prop->data = new char[prop->length];
 
@@ -139,7 +145,8 @@ namespace octoon
 			return true;
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, const Vector4& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const math::Vector4& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -163,7 +170,7 @@ namespace octoon
 			prop->key = key;
 			prop->type = type;
 			prop->index = index;
-			prop->length = sizeof(Vector4);
+			prop->length = sizeof(math::Vector4);
 			prop->dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
 			prop->data = new char[prop->length];
 
@@ -174,7 +181,8 @@ namespace octoon
 			return true;
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, const char* value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const char* value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -182,7 +190,8 @@ namespace octoon
 			return this->set(key, type, index, str);
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, const unsigned char* value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const unsigned char* value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -190,7 +199,8 @@ namespace octoon
 			return this->set(key, type, index, str);
 		}
 
-		bool MaterialProperty::set(const char* key, std::size_t type, std::size_t index, const std::string& value) noexcept
+		bool
+		Material::set(const char* key, std::size_t type, std::size_t index, const std::string& value) noexcept
 		{
 			assert(nullptr != key);
 
@@ -225,7 +235,8 @@ namespace octoon
 			return true;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, int& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, int& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -245,7 +256,8 @@ namespace octoon
 			return false;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, float& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, float& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -265,7 +277,8 @@ namespace octoon
 			return false;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, Vector3& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, math::Vector3& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -275,7 +288,7 @@ namespace octoon
 				if (prop->dataType & PropertyTypeInfoFloat &&
 					prop->dataType & PropertyTypeInfoBuffer)
 				{
-					if (prop->length == sizeof(Vector3))
+					if (prop->length == sizeof(math::Vector3))
 					{
 						std::memcpy(&value, prop->data, prop->length);
 						return true;
@@ -286,7 +299,8 @@ namespace octoon
 			return false;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, Vector4& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, math::Vector4& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -296,7 +310,7 @@ namespace octoon
 				if (prop->dataType & PropertyTypeInfoFloat &&
 					prop->dataType & PropertyTypeInfoBuffer)
 				{
-					if (prop->length == sizeof(Vector4))
+					if (prop->length == sizeof(math::Vector4))
 					{
 						std::memcpy(&value, prop->data, prop->length);
 						return true;
@@ -307,7 +321,8 @@ namespace octoon
 			return false;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, std::string& value) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, std::string& value) const noexcept
 		{
 			assert(nullptr != key);
 
@@ -324,7 +339,8 @@ namespace octoon
 			return false;
 		}
 
-		bool MaterialProperty::get(const char* key, std::size_t type, std::size_t index, MaterialParam** out) const noexcept
+		bool
+		Material::get(const char* key, std::size_t type, std::size_t index, MaterialParam** out) const noexcept
 		{
 			assert(nullptr != key);
 			assert(nullptr != out);

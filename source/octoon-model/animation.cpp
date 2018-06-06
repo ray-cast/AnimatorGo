@@ -19,172 +19,203 @@ namespace octoon
 		{
 		}
 
-		void BoneAnimation::setName(const std::string& name) noexcept
+		void
+		BoneAnimation::setName(const std::string& name) noexcept
 		{
 			_name = name;
 		}
 
-		const std::string& BoneAnimation::getName() const noexcept
+		const std::string&
+		BoneAnimation::getName() const noexcept
 		{
 			return _name;
 		}
 
-		void BoneAnimation::setPosition(const Vector3& position) noexcept
+		void
+		BoneAnimation::setPosition(const float3& position) noexcept
 		{
 			_position = position;
 		}
 
-		const Vector3& BoneAnimation::getPosition() const noexcept
+		const float3&
+		BoneAnimation::getPosition() const noexcept
 		{
 			return _position;
 		}
 
-		void BoneAnimation::setRotation(const Quaternion& quat) noexcept
+		void
+		BoneAnimation::setRotation(const Quaternion& quat) noexcept
 		{
 			_rotation = quat;
 		}
 
-		const Quaternion& BoneAnimation::getRotation() const noexcept
+		const Quaternion&
+		BoneAnimation::getRotation() const noexcept
 		{
 			return _rotation;
 		}
 
-		void BoneAnimation::setBoneIndex(const std::int32_t bone) noexcept
+		void
+		BoneAnimation::setBoneIndex(const std::int32_t bone) noexcept
 		{
 			_bone = bone;
 		}
 
-		std::int32_t BoneAnimation::getBoneIndex() const noexcept
+		std::int32_t
+		BoneAnimation::getBoneIndex() const noexcept
 		{
 			return _bone;
 		}
 
-		void BoneAnimation::setFrameNo(std::int32_t frame) noexcept
+		void
+		BoneAnimation::setFrameNo(std::int32_t frame) noexcept
 		{
 			_frame = frame;
 		}
 
-		std::int32_t BoneAnimation::getFrameNo() const noexcept
+		std::int32_t
+		BoneAnimation::getFrameNo() const noexcept
 		{
 			return _frame;
 		}
 
-		void BoneAnimation::setInterpolation(const Interpolation& interp) noexcept
+		void
+		BoneAnimation::setInterpolation(const Interpolation& interp) noexcept
 		{
 			_interpolation = interp;
 		}
 
-		const Interpolation& BoneAnimation::getInterpolation() const noexcept
+		const Interpolation&
+		BoneAnimation::getInterpolation() const noexcept
 		{
 			return _interpolation;
 		}
 
-		AnimationProperty::AnimationProperty() noexcept
+		Animation::Animation() noexcept
 			: _frame(0)
 			, _fps(30)
 			, _delta(0)
 		{
 		}
 
-		AnimationProperty::~AnimationProperty() noexcept
+		Animation::~Animation() noexcept
 		{
 		}
 
-		void AnimationProperty::setName(const std::string& name) noexcept
+		void
+		Animation::setName(const std::string& name) noexcept
 		{
 			_name = name;
 		}
 
-		const std::string& AnimationProperty::getName() const noexcept
+		const std::string&
+		Animation::getName() const noexcept
 		{
 			return _name;
 		}
 
-		void AnimationProperty::setCurrentFrame(std::size_t frame) noexcept
+		void
+		Animation::setCurrentFrame(std::size_t frame) noexcept
 		{
 			_frame = frame;
 		}
 
-		std::size_t AnimationProperty::getCurrentFrame() const noexcept
+		std::size_t
+		Animation::getCurrentFrame() const noexcept
 		{
 			return _frame;
 		}
 
-		void AnimationProperty::addBoneAnimation(const BoneAnimation& anim) noexcept
+		void
+		Animation::addBoneAnimation(const BoneAnimation& anim) noexcept
 		{
 			_boneAnimation.push_back(anim);
 		}
 
-		BoneAnimation& AnimationProperty::getBoneAnimation(std::size_t index) noexcept
+		BoneAnimation&
+		Animation::getBoneAnimation(std::size_t index) noexcept
 		{
 			return _boneAnimation[index];
 		}
 
-		const BoneAnimation& AnimationProperty::getBoneAnimation(std::size_t index) const noexcept
+		const BoneAnimation&
+		Animation::getBoneAnimation(std::size_t index) const noexcept
 		{
 			return _boneAnimation[index];
 		}
 
-		std::size_t AnimationProperty::getNumBoneAnimation() const noexcept
+		std::size_t
+		Animation::getNumBoneAnimation() const noexcept
 		{
 			return _boneAnimation.size();
 		}
 
-		void AnimationProperty::addMorphAnimation(const MorphAnimation& anim) noexcept
+		void
+		Animation::addMorphAnimation(const MorphAnimation& anim) noexcept
 		{
 			_morphAnimation.push_back(anim);
 		}
 
-		MorphAnimation& AnimationProperty::getMorphAnimation(std::size_t index) noexcept
+		MorphAnimation&
+		Animation::getMorphAnimation(std::size_t index) noexcept
 		{
 			return _morphAnimation[index];
 		}
 
-		const MorphAnimation& AnimationProperty::getMorphAnimation(std::size_t index) const noexcept
+		const MorphAnimation&
+		Animation::getMorphAnimation(std::size_t index) const noexcept
 		{
 			return _morphAnimation[index];
 		}
 
-		std::size_t AnimationProperty::getNumMorphAnimation() const noexcept
+		std::size_t
+		Animation::getNumMorphAnimation() const noexcept
 		{
 			return _morphAnimation.size();
 		}
 
-		void AnimationProperty::setBoneArray(const Bones& bones) noexcept
+		void
+		Animation::setBoneArray(const Bones& bones) noexcept
 		{
 			_bones = bones;
 			this->updateBones(bones);
 		}
 
-		void AnimationProperty::setBoneArray(Bones&& bones) noexcept
+		void
+		Animation::setBoneArray(Bones&& bones) noexcept
 		{
 			_bones = std::move(bones);
 			this->updateBones(_bones);
 		}
 
-		const Bones& AnimationProperty::getBoneArray() const noexcept
+		const Bones&
+		Animation::getBoneArray() const noexcept
 		{
 			return _bones;
 		}
 
-		void AnimationProperty::setIKArray(const InverseKinematics& ik) noexcept
+		void
+		Animation::setIKArray(const InverseKinematics& ik) noexcept
 		{
 			_iks = ik;
 		}
 
-		void AnimationProperty::setIKArray(InverseKinematics&& ik) noexcept
+		void
+		Animation::setIKArray(InverseKinematics&& ik) noexcept
 		{
 			_iks = std::move(ik);
 		}
 
-		const InverseKinematics& AnimationProperty::getIKArray() const noexcept
+		const InverseKinematics&
+		Animation::getIKArray() const noexcept
 		{
 			return _iks;
 		}
 
-		AnimationPropertyPtr AnimationProperty::clone() noexcept
+		AnimationPtr
+		Animation::clone() noexcept
 		{
-			auto anim = std::make_shared<AnimationProperty>();
+			auto anim = std::make_shared<Animation>();
 			anim->_name = this->_name;
 			anim->_boneAnimation = this->_boneAnimation;
 			anim->_morphAnimation = this->_morphAnimation;
@@ -192,7 +223,8 @@ namespace octoon
 			return anim;
 		}
 
-		void AnimationProperty::updateFrame(float delta) noexcept
+		void
+		Animation::updateFrame(float delta) noexcept
 		{
 			_delta += delta;
 
@@ -203,14 +235,16 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::updateMotion() noexcept
+		void
+		Animation::updateMotion() noexcept
 		{
 			this->updateBoneMotion();
 			this->updateBoneMatrix();
 			this->updateIK();
 		}
 
-		void AnimationProperty::updateBones(const Bones& bones) noexcept
+		void
+		Animation::updateBones(const Bones& bones) noexcept
 		{
 			if (bones.empty())
 			{
@@ -245,7 +279,8 @@ namespace octoon
 			}
 		}
 
-		bool AnimationProperty::updateBoneMotion(std::size_t index) noexcept
+		bool
+		Animation::updateBoneMotion(std::size_t index) noexcept
 		{
 			auto& bone = _bones[index];
 			const auto& motion = _bindAnimation[index];
@@ -285,13 +320,15 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::updateBoneMotion() noexcept
+		void
+		Animation::updateBoneMotion() noexcept
 		{
 			for (std::size_t i = 0; i < _bones.size(); i++)
 				this->updateBoneMotion(i);
 		}
 
-		void AnimationProperty::updateBoneMatrix() noexcept
+		void
+		Animation::updateBoneMatrix() noexcept
 		{
 			std::size_t size = _bones.size();
 			for (std::size_t i = 0; i < size; i++)
@@ -304,7 +341,8 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::updateBoneMatrix(Bone& bone) noexcept
+		void
+		Animation::updateBoneMatrix(Bone& bone) noexcept
 		{
 			if (bone.getParent() != (-1))
 			{
@@ -318,18 +356,20 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::updateIK() noexcept
+		void
+		Animation::updateIK() noexcept
 		{
 			for (auto& ik : _iks)
 				this->updateIK(_bones, ik);
 		}
 
-		void AnimationProperty::updateIK(Bones& bones, const IKAttr& ik) noexcept
+		void
+		Animation::updateIK(Bones& bones, const IKAttr& ik) noexcept
 		{
 			auto& effector = bones.at(ik.boneIndex);
 			auto& target = bones.at(ik.targetBoneIndex);
 
-			const Vector3& effectPos = effector.getTransform().get_translate();
+			const float3& effectPos = effector.getTransform().get_translate();
 
 			for (std::uint32_t i = 0; i < ik.iterations; i++)
 			{
@@ -337,12 +377,12 @@ namespace octoon
 				{
 					auto& bone = bones[ik.child[j].boneIndex];
 
-					Vector3 targetPos = target.getTransform().get_translate();
+					float3 targetPos = target.getTransform().get_translate();
 					if (math::distance(effectPos, targetPos) < EPSILON)
 						return;
 
-					Vector3 dstLocal = math::invTranslateVector3(bone.getTransform(), targetPos);
-					Vector3 srcLocal = math::invTranslateVector3(bone.getTransform(), effectPos);
+					float3 dstLocal = math::invTranslateVector3(bone.getTransform(), targetPos);
+					float3 srcLocal = math::invTranslateVector3(bone.getTransform(), effectPos);
 
 					srcLocal = math::normalize(srcLocal);
 					dstLocal = math::normalize(dstLocal);
@@ -353,7 +393,7 @@ namespace octoon
 					if (rotationAngle < EPSILON_E5)
 						continue;
 
-					Vector3 rotationAxis = math::cross(dstLocal, srcLocal);
+					float3 rotationAxis = math::cross(dstLocal, srcLocal);
 					rotationAxis = math::normalize(rotationAxis);
 
 					Quaternion q0(rotationAxis, degress(rotationAngle));
@@ -379,7 +419,8 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::updateTransform(Bone& bone, const float3& translate, const Quaternion& rotate) noexcept
+		void
+		Animation::updateTransform(Bone& bone, const float3& translate, const Quaternion& rotate) noexcept
 		{
 			float4x4 transform;
 			transform.makeRotation(rotate);
@@ -389,7 +430,8 @@ namespace octoon
 			bone.setLocalTransform(transform);
 		}
 
-		MotionSegment AnimationProperty::findMotionSegment(int frame, const std::vector<std::size_t>& motions) noexcept
+		MotionSegment
+		Animation::findMotionSegment(int frame, const std::vector<std::size_t>& motions) noexcept
 		{
 			MotionSegment ms;
 			ms.m0 = 0;
@@ -474,7 +516,8 @@ namespace octoon
 			}
 		}
 
-		void AnimationProperty::interpolateMotion(Quaternion& rotation, Vector3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept
+		void
+		Animation::interpolateMotion(Quaternion& rotation, float3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept
 		{
 			auto ms = findMotionSegment(frame, motions);
 
@@ -497,8 +540,8 @@ namespace octoon
 				float tz = BezierEval(anim0.getInterpolation().interpZ, ratio);
 				float tr = BezierEval(anim0.getInterpolation().interpW, ratio);
 
-				position = Vector3(1 - tx, 1 - ty, 1 - tz) * anim0.getPosition();
-				position += Vector3(tx, ty, tz) * anim1.getPosition();
+				position = float3(1 - tx, 1 - ty, 1 - tz) * anim0.getPosition();
+				position += float3(tx, ty, tz) * anim1.getPosition();
 
 				Quaternion r0 = anim0.getRotation();
 				Quaternion r1 = anim1.getRotation();

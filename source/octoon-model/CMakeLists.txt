@@ -39,6 +39,12 @@ SET(CONTOUER_LIST
 	${SOURCE_PATH}/contour.cpp
 	${HEADER_PATH}/contour_group.h
 	${SOURCE_PATH}/contour_group.cpp
+	${HEADER_PATH}/path.h
+	${SOURCE_PATH}/path.cpp
+	${HEADER_PATH}/path_edge.h
+	${SOURCE_PATH}/path_edge.cpp
+	${HEADER_PATH}/path_group.h
+	${SOURCE_PATH}/path_group.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\contour  FILES ${CONTOUER_LIST})
 

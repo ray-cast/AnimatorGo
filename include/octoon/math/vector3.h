@@ -558,6 +558,12 @@ namespace octoon
 			return detail::Vector3<T>(std::pow(v1.x, v2.x), std::pow(v1.y, v2.y), std::pow(v1.z, v2.z));
 		}
 
+		template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value>>
+		inline detail::Vector3<T> reflect(const detail::Vector3<T>& I, const detail::Vector3<T>& N) noexcept
+		{
+			return I - 2 * (dot(I, N) * N);
+		}
+
 		template<typename T>
 		inline detail::Vector3<T> random(const detail::Vector3<T>& min, const detail::Vector3<T>& max) noexcept
 		{

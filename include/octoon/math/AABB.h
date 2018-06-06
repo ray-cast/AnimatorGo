@@ -33,7 +33,7 @@ namespace octoon
 				static const AABB<T> Empty;
 				static const AABB<T> One;
 
-				AABB() noexcept = default;
+				AABB() noexcept { this->reset(); };
 				AABB(const Vector3<T> pt[], std::size_t n) noexcept { this->reset(); this->encapsulate(pt, n); }
 				AABB(const Vector3<T>& min_, const Vector3<T>& max_) noexcept : min(min_), max(max_) { assert(!empty()); }
 				~AABB() = default;

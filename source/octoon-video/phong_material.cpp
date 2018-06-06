@@ -14,27 +14,24 @@ namespace octoon
 		void
 		PhongMaterial::setup() except
 		{
-			const char* vert = R"(
-			precision mediump float;
+			const char* vert = R"(#version 330
 			uniform mat4 proj;
 			uniform mat4 model;
 
-			attribute vec4 POSITION0;
-			attribute vec4 NORMAL0;
+			layout(location = 0) in vec4 POSITION0;
+			layout(location = 1) in vec4 NORMAL0;
 
-			varying vec3 oTexcoord0;
-			varying vec3 oTexcoord1;
+			out vec3 oTexcoord0;
+			out vec3 oTexcoord1;
 
 			void main()
 			{
-				oTexcoord0 = normalize(mat3(model) * NORMAL0.xyz);
+				oTexcoord0 = inverse(mat3(model)) * normalize(NORMAL0.xyz);
 				oTexcoord1 = normalize(POSITION0.xyz);
 				gl_Position = proj * model * POSITION0;
 			})";
 
-			const char* frag = R"(
-			precision mediump float;
-
+			const char* frag = R"(#version 330
 			uniform vec3 lightDir;
 			uniform vec3 baseColor;
 			uniform vec3 ambientColor;
@@ -42,26 +39,35 @@ namespace octoon
 			uniform vec3 darkColor;
 			uniform float shininess;
 			uniform float lightIntensity;
+			uniform float ambient;
 
-			varying vec3 oTexcoord0;
-			varying vec3 oTexcoord1;
+			layout(location = 0) out vec4 fragColor;
+
+			in vec3 oTexcoord0;
+			in vec3 oTexcoord1;
+
+			float lum(vec3 rgb)
+			{
+				return dot(rgb, vec3(0.30, 0.59, 0.11));
+			}
 
 			void main()
 			{
-				vec3 ambient = pow(ambientColor, vec3(2.2));
-				vec3 base = pow(baseColor, vec3(2.2));
-				vec3 specular = pow(specularColor, vec3(2.2));
-				vec3 dark = pow(darkColor, vec3(2.2));
+				vec3 base = baseColor;
+				vec3 specular = specularColor;
 
+				vec3 L = lightDir;
 				vec3 N = normalize(oTexcoord0);
 				vec3 V = normalize(oTexcoord1);
-				vec3 H = normalize(V + lightDir);
-				vec3 R = -reflect(N, lightDir);
+				vec3 R = reflect(N, L);
 
-				float nl = max(0.0, dot(N, lightDir));
+				float nl = max(0.0f, dot(N, L));
 				float spec = pow(max(0, dot(R, V)), pow(4096, shininess));
 
-				gl_FragColor = vec4(pow(ambient + mix(dark, (base + specular * spec), nl), vec3(1.0 / 2.2)), 1.0);
+				vec3 lighting = mix(darkColor, ambientColor, ambient);
+				lighting = mix(lighting, base + specular * spec, nl * lightIntensity);
+
+				fragColor = vec4(lighting, 1.0f);
 			})";
 
 			graphics::GraphicsProgramDesc programDesc;
@@ -106,6 +112,7 @@ namespace octoon
 			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
 			lightIntensity_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightIntensity"; });
 			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
+			ambient_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambient"; });
 			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
 			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
 			darkColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "darkColor"; });
@@ -153,7 +160,7 @@ namespace octoon
 		}
 
 		void
-		PhongMaterial::setLightIntensity(math::float1 intensity) noexcept
+		PhongMaterial::setLightIntensity(const math::float1& intensity) noexcept
 		{
 			lightIntensity_->uniform1f(intensity);
 		}
@@ -162,6 +169,12 @@ namespace octoon
 		PhongMaterial::setBaseColor(const math::float3& color) noexcept
 		{
 			baseColor_->uniform3f(color);
+		}
+
+		void
+		PhongMaterial::setAmbient(const math::float1& weight) noexcept
+		{
+			ambient_->uniform1f(weight);
 		}
 
 		void
@@ -204,6 +217,12 @@ namespace octoon
 		PhongMaterial::getBaseColor() const noexcept
 		{
 			return baseColor_->getFloat3();
+		}
+
+		math::float1
+		PhongMaterial::getAmbient() const noexcept
+		{
+			return ambient_->getFloat();
 		}
 
 		const math::float3&

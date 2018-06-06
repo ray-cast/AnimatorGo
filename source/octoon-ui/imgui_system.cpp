@@ -66,10 +66,9 @@ namespace octoon
 #endif
 
 		System::System() noexcept
-			: initialize_(false)
-			, imguiPath_("../../ui/imgui.layout")
-			, imguiDockPath_("../../ui/imgui_dock.layout")
-			, ui_context_(nullptr)
+			: imguiPath_("../../system/ui/imgui.layout")
+			, imguiDockPath_("../../system/ui/imgui_dock.layout")
+			, imguiContext_(nullptr)
 		{
 		}
 
@@ -81,10 +80,11 @@ namespace octoon
 		bool
 		System::open(input::WindHandle window, const GraphicsDevicePtr& device) except
 		{
-			assert(!initialize_);
+			assert(!imguiContext_);
 
-			ui_context_ = ImGui::CreateContext();
-			ImGui::SetCurrentContext(ui_context_);
+			imguiContext_ = ImGui::CreateContext();
+			ImGui::SetCurrentContext(imguiContext_);
+			ImGui::LoadDock(imguiDockPath_.c_str());
 
 			GuiStyle style;
 			set_style(style);
@@ -184,7 +184,6 @@ namespace octoon
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
 			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
 
-			initialize_ = true;
 			return true;
 		}
 
@@ -195,18 +194,14 @@ namespace octoon
 			ibo_.reset();
 			texture_.reset();
 
-			if (initialize_)
+			if (imguiContext_)
 			{
+				ImGui::SaveDock(imguiDockPath_.c_str());
 				ImGui::ShutdownDock();
-				ImGui::Shutdown(ui_context_);
+				ImGui::Shutdown(imguiContext_);
+				ImGui::DestroyContext(imguiContext_);
 
-				initialize_ = false;
-			}
-
-			if (ui_context_)
-			{
-				ImGui::DestroyContext(ui_context_);
-				ui_context_ = nullptr;
+				imguiContext_ = nullptr;
 			}
 		}
 
@@ -373,7 +368,7 @@ namespace octoon
 		void
 		System::newFrame() noexcept
 		{
-			ImGui::SetCurrentContext(ui_context_);
+			ImGui::SetCurrentContext(imguiContext_);
 			ImGui::NewFrame();
 		}
 
@@ -445,6 +440,7 @@ namespace octoon
 
 			auto& io = ImGui::GetIO();
 
+			context.setFramebuffer(nullptr);
 			context.setViewport(0, float4(0, 0, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y));
 			context.setScissor(0, uint4(0, 0, (std::uint32_t)io.DisplayFramebufferScale.x, (std::uint32_t)io.DisplayFramebufferScale.y));
 

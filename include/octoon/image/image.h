@@ -53,7 +53,7 @@ namespace octoon
 
 			bool save(ostream& stream, const char* type = "tga") noexcept;
 			bool save(const char* filepath, const char* type = "tga") noexcept;
-			bool save(const std::string& filepath, const char* type = nullptr) noexcept;
+			bool save(const std::string& filepath, const char* type = "tga") noexcept;
 
 		private:
 			Format format_;

@@ -8,6 +8,7 @@
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
 
+#include <map>
 #include <cstring>
 
 using namespace octoon::io;
@@ -17,7 +18,7 @@ namespace octoon
 {
 	namespace model
 	{
-		bool PmxLoader::doCanLoad(istream& stream) noexcept
+		bool PmxLoader::doCanRead(istream& stream) const noexcept
 		{
 			PmxHeader header;
 			if (stream.read((char*)&header, sizeof(header)))
@@ -35,12 +36,12 @@ namespace octoon
 			return false;
 		}
 
-		bool PmxLoader::doCanLoad(const std::string& type) noexcept
+		bool PmxLoader::doCanRead(const std::string& type) const noexcept
 		{
 			return type.compare("pmx") == 0;
 		}
 
-		bool PmxLoader::doCanLoad(const char* type) noexcept
+		bool PmxLoader::doCanRead(const char* type) const noexcept
 		{
 			return std::strncmp(type, "pmx", 3) == 0;
 		}
@@ -483,20 +484,12 @@ namespace octoon
 
 			for (auto& it : pmx.materials)
 			{
-				auto material = std::make_shared<MaterialProperty>();
+				auto material = std::make_shared<Material>();
 
-				if ((it.name.length >> 1) < MAX_PATH)
-				{
-					char name[MAX_PATH];
-					auto length = wcstombs(nullptr, it.name.name, 0);
-					if (length < MAX_PATH)
-					{
-						wcstombs(name, it.name.name, MAX_PATH);
+				char name[MAX_PATH] = { 0 };
+				wcstombs(name, it.name.name, MAX_PATH);
 
-						material->set(MATKEY_NAME, name);
-					}
-				}
-
+				material->set(MATKEY_NAME, name);
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
@@ -513,50 +506,85 @@ namespace octoon
 
 				if (it.TextureIndex < limits)
 				{
-					PmxName& texture = pmx.textures[it.TextureIndex];
-					if ((texture.length >> 1) < MAX_PATH)
-					{
-						char name[MAX_PATH];
-						::wcstombs(name, texture.name, MAX_PATH);
+					char textureName[MAX_PATH] = { 0 };
+					::wcstombs(textureName, pmx.textures[it.TextureIndex].name, MAX_PATH);
 
-						material->set(MATKEY_TEXTURE_DIFFUSE(0), name);
-						material->set(MATKEY_TEXTURE_AMBIENT(0), name);
-					}
+					material->set(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+					material->set(MATKEY_TEXTURE_AMBIENT(0), textureName);
 				}
 
 				if (it.SphereTextureIndex < limits)
 				{
-					PmxName& texture = pmx.textures[it.SphereTextureIndex];
-					if ((texture.length >> 1) < MAX_PATH)
-					{
-						char name[MAX_PATH];
+					char textureName[MAX_PATH];
+					wcstombs(textureName, pmx.textures[it.SphereTextureIndex].name, MAX_PATH);
 
-						wcstombs(name, texture.name, MAX_PATH);
-
-						material->set(MATKEY_COLOR_SPHEREMAP, name);
-					}
+					material->set(MATKEY_COLOR_SPHEREMAP, textureName);
 				}
 
-				model.addMaterial(std::move(material));
+				model.add(std::move(material));
 			}
 
-			if (pmx.numVertices > 0 && pmx.numIndices > 0 && pmx.numMaterials > 0)
+			PmxUInt32 startIndices = 0;
+
+			for (auto& it : pmx.materials)
 			{
-				float3s vertices;
-				float3s normals;
-				float2s texcoords;
-				VertexWeights weights;
+				MeshPtr mesh = std::make_shared<Mesh>();
 
-				for (std::uint32_t i = 0; i < pmx.numVertices; i++)
+				if (pmx.numVertices)
 				{
-					PmxVertex& v = pmx.vertices[i];
+					float3s vertices_;
+					float3s normals_;
+					float2s texcoords_;
 
-					vertices.push_back(v.position);
-					normals.push_back(v.normal);
-					texcoords.push_back(v.coord);
+					vertices_.resize(it.FaceCount);
+					normals_.resize(it.FaceCount);
+					texcoords_.resize(it.FaceCount);
 
-					if (pmx.numBones > 1)
+					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
+					if (pmx.header.sizeOfIndices == 1)
 					{
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint8_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
+					}
+					else if (pmx.header.sizeOfIndices == 2)
+					{
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint16_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
+					}
+					else if (pmx.header.sizeOfIndices == 4)
+					{
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						{
+							auto index = *(std::uint32_t*)indicesData;
+							vertices_[i] = pmx.vertices[index].position;
+							normals_[i] = pmx.vertices[index].normal;
+							texcoords_[i] = pmx.vertices[index].coord;
+						}
+					}
+
+					mesh->setVertexArray(std::move(vertices_));
+					mesh->setNormalArray(std::move(normals_));
+					mesh->setTexcoordArray(std::move(texcoords_));
+				}
+
+				if (pmx.numBones)
+				{
+					VertexWeights weights(it.FaceCount);
+
+					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
+					{
+						auto& v = pmx.vertices[i];
+
 						VertexWeight weight;
 						weight.weight1 = v.weight.weight1;
 						weight.weight2 = v.weight.weight2;
@@ -569,55 +597,13 @@ namespace octoon
 
 						weights.push_back(weight);
 					}
+
+					mesh->setWeightArray(std::move(weights));
 				}
 
-				Uint1Array indices(pmx.numIndices);
-				PmxIndex* indicesData = pmx.indices.data();
+				model.add(std::move(mesh));
 
-				for (std::uint32_t i = 0; i < pmx.numIndices; i++, indicesData += pmx.header.sizeOfIndices)
-				{
-					if (pmx.header.sizeOfIndices == 1)
-						indices[i] = *(std::uint8_t*)indicesData;
-					else if (pmx.header.sizeOfIndices == 2)
-						indices[i] = *(std::uint16_t*)indicesData;
-					else if (pmx.header.sizeOfIndices == 4)
-						indices[i] = *(std::uint16_t*)indicesData;
-					else
-						return false;
-				}
-
-				PmxUInt32 startIndices = 0;
-
-				for (auto& it : pmx.materials)
-				{
-					MeshPtr mesh = std::make_shared<Mesh>();
-
-					float3s vertices_(it.FaceCount);
-					float3s normals_(it.FaceCount);
-					float2s texcoords_(it.FaceCount);
-					VertexWeights weights_(it.FaceCount);
-					uint1s indices_(it.FaceCount);
-
-					for (auto i = startIndices; i < it.FaceCount; i++)
-					{
-						auto index = indices[i];
-						vertices_[i] = vertices[index];
-						normals_[i] = normals[index];
-						texcoords_[i] = texcoords[index];
-						weights_[i] = weights[index];
-						indices_[i] = i;
-					}
-
-					mesh->setVertexArray(std::move(vertices_));
-					mesh->setNormalArray(std::move(normals_));
-					mesh->setTexcoordArray(std::move(texcoords_));
-					mesh->setWeightArray(std::move(weights_));
-					mesh->setIndicesArray(std::move(indices_));
-
-					startIndices += it.FaceCount;
-
-					model.addMesh(std::move(mesh));
-				}
+				startIndices += it.FaceCount;
 			}
 
 			if (pmx.numBones > 1)
@@ -626,9 +612,6 @@ namespace octoon
 				for (auto& it : pmx.bones)
 				{
 					char name[MAX_PATH] = { 0 };
-					if ((it.name.length) > MAX_PATH)
-						return false;
-
 					if (!wcstombs(name, it.name.name, MAX_PATH))
 						return false;
 
@@ -638,7 +621,7 @@ namespace octoon
 					bone.setPosition(it.position);
 					bone.setParent(it.Parent);
 
-					model.addBone(std::make_shared<Bone>(bone));
+					model.add(std::make_shared<Bone>(bone));
 
 					if (it.Flag & PMX_BONE_IK)
 					{
@@ -660,7 +643,7 @@ namespace octoon
 							attr.child.push_back(child);
 						}
 
-						model.addIK(std::make_shared<IKAttr>(attr));
+						model.add(std::make_shared<IKAttr>(attr));
 					}
 
 					index++;
@@ -676,7 +659,7 @@ namespace octoon
 				if (!wcstombs(name, it.name.name, MAX_PATH))
 					return false;
 
-				auto body = std::make_shared<RigidbodyProperty>();
+				auto body = std::make_shared<Rigidbody>();
 				body->name = name;
 				body->bone = it.bone;
 				body->group = it.group;
@@ -692,7 +675,7 @@ namespace octoon
 				body->friction = it.friction;
 				body->physicsOperation = it.physicsOperation;
 
-				model.addRigidbody(std::move(body));
+				model.add(std::move(body));
 			}
 
 			for (auto& it : pmx.joints)
@@ -704,7 +687,7 @@ namespace octoon
 				if (!wcstombs(name, it.name.name, MAX_PATH))
 					return false;
 
-				auto joint = std::make_shared<JointProperty>();
+				auto joint = std::make_shared<Joint>();
 				joint->name = name;
 				joint->bodyIndexA = it.relatedRigidBodyIndexA;
 				joint->bodyIndexB = it.relatedRigidBodyIndexB;
@@ -717,7 +700,7 @@ namespace octoon
 				joint->springMovementConstant = it.springMovementConstant;
 				joint->springRotationConstant = it.springRotationConstant;
 
-				model.addJoint(std::move(joint));
+				model.add(std::move(joint));
 			}
 
 			return true;

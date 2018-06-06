@@ -21,6 +21,7 @@ namespace octoon
 		void
 		LineMaterial::setup() except
 		{
+#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 			const char* vert = R"(
 			precision mediump float;
 			uniform mat4 proj;
@@ -42,7 +43,28 @@ namespace octoon
 			{
 				gl_FragColor = vec4(color, 1.0);
 			})";
+#else
+			const char* vert = R"(#version 330
+			uniform mat4 proj;
+			uniform mat4 model;
 
+			layout(location  = 0) in vec4 POSITION0;
+			layout(location  = 1) in vec4 NORMAL0;
+
+			void main()
+			{
+				gl_Position = proj * model * POSITION0;
+			})";
+
+			const char* frag = R"(#version 330
+			layout(location  = 0) out vec4 fragColor;
+			in vec3 oTexcoord0;
+			uniform vec3 color;
+			void main()
+			{
+				fragColor = vec4(color, 1.0f);
+			})";
+#endif
 			graphics::GraphicsProgramDesc programDesc;
 			programDesc.addShader(RenderSystem::instance()->createShader(graphics::GraphicsShaderDesc(graphics::GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
 			programDesc.addShader(RenderSystem::instance()->createShader(graphics::GraphicsShaderDesc(graphics::GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));

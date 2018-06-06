@@ -14,9 +14,9 @@ namespace octoon
 			PmxLoader() = default;
 			~PmxLoader() = default;
 
-			bool doCanLoad(istream& stream) noexcept;
-			bool doCanLoad(const std::string& type) noexcept;
-			bool doCanLoad(const char* type) noexcept;
+			bool doCanRead(istream& stream) const noexcept;
+			bool doCanRead(const std::string& type) const noexcept;
+			bool doCanRead(const char* type) const noexcept;
 
 			bool doLoad(istream& stream, Pmx& pmx) noexcept;
 			bool doLoad(istream& stream, Model& model) noexcept;
@@ -26,5 +26,5 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_PMX_LOADER_H_
 
+#endif

@@ -1,4 +1,5 @@
 #include <octoon/octoon-c.h>
+#include "ui_view_component.h"
 
 int main(int argc, const char* argv[])
 {
@@ -7,6 +8,9 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
+		auto object = octoon::GameObject::create();
+		object->addComponent<octoon::editor::UIViewComponent>();
+
 		::OctoonMainLoop();
 	}
 

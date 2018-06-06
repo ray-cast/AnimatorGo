@@ -8,8 +8,9 @@ public:
 	{
 	}
 
-	TextController(const octoon::video::TextMaterialPtr& material)
+	TextController(const octoon::video::TextMaterialPtr& material, const std::wstring& text)
 		: material_(material)
+		, text_(text)
 	{
 	}
 
@@ -70,6 +71,44 @@ public:
 				octoon::imgui::tree_pop();
 			}
 
+			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			{
+				static octoon::math::float1 x1 = 0.0f;
+				static octoon::math::float1 x2 = 0.0f;
+				static octoon::math::float1 y1 = 0.0f;
+				static octoon::math::float1 y2 = 0.0f;
+
+				octoon::imgui::drag_float("x", &x1, 0.01f, -1, 1);
+				octoon::imgui::drag_float("y", &y1, 0.01f, -1, 1); 
+
+				if (y1 != y2 || x1 != x2)
+				{
+					auto component = this->getComponent<octoon::MeshFilterComponent>();
+					if (component)
+					{
+						auto path = octoon::model::makeTextPaths(text_, { "../../system/fonts/DroidSansFallback.ttf", 24 });
+						path << octoon::model::deform::smoother(4);
+
+						auto text = octoon::model::makeTextContours(path, 8);
+						auto aabb = octoon::model::aabb(text);
+
+						text -= aabb.center();
+						text /= octoon::math::float3(aabb.extents().xy(), 1.0);
+						text << octoon::model::deform::bulegeLow(x1, aabb.size().x / aabb.size().y, true);
+						text *= octoon::math::float3(aabb.extents().xy(), 1.0);
+
+						// std::cout << paths[0]->getPaths() << std::endl;
+
+						component->setMesh(octoon::model::makeMesh(text, 0.1f));
+					}
+
+					x2 = x1;
+					y2 = y1;
+				}
+
+				octoon::imgui::tree_pop();
+			}
+
 			octoon::imgui::end();
 		}
 	}
@@ -80,10 +119,9 @@ public:
 	}
 
 private:
+	std::wstring text_;
 	octoon::video::TextMaterialPtr material_;
 };
-
-#include <iostream>
 
 int main(int argc, const char* argv[])
 {
@@ -104,13 +142,20 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
+		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
+
+		auto str = L"滚滚长江东逝水";
+		auto text = octoon::model::makeTextContours(str, { "../../system/fonts/DroidSansFallback.ttf", 24 });
+		auto aabb = octoon::model::aabb(text);
+
+		for (auto& it : text)
+			*it -= aabb.center();
 
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeText(octoon::model::TextMeshing("../../system/fonts/DroidSansFallback.ttf", 24), L"Octoon Studio"));
+		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
-		object->addComponent<TextController>(material);
+		object->addComponent<TextController>(material, str);
 
 		::OctoonMainLoop();
 	}

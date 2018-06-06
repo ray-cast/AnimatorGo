@@ -1,6 +1,7 @@
 #ifndef OCTOON_MODEL_TEXT_MESHING_H_
 #define OCTOON_MODEL_TEXT_MESHING_H_
 
+#include <octoon/model/path_group.h>
 #include <octoon/model/contour_group.h>
 
 namespace octoon
@@ -11,10 +12,10 @@ namespace octoon
 		{
 		public:
 			TextMeshing() noexcept;
-			TextMeshing(const char* path, std::uint16_t pixelsSize = 12, std::uint16_t bezierSteps = 8, float thickness = 1.0f) noexcept;
-			TextMeshing(const std::string& path, std::uint16_t pixelsSize = 12, std::uint16_t bezierSteps = 8, float  thickness = 1.0f) noexcept;
-			TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize = 12, std::uint16_t bezierSteps = 8, float  thickness = 1.0f) noexcept;
-			TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize = 12, std::uint16_t bezierSteps = 8, float thickness = 1.0f) noexcept;
+			TextMeshing(const char* path, std::uint16_t pixelsSize = 12) noexcept;
+			TextMeshing(const std::string& path, std::uint16_t pixelsSize = 12) noexcept;
+			TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize = 12) noexcept;
+			TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize = 12) noexcept;
 			virtual ~TextMeshing() noexcept;
 
 			void setFont(TextFilePtr&& font) noexcept;
@@ -23,12 +24,6 @@ namespace octoon
 
 			void setPixelsSize(std::uint16_t pixelsSize) noexcept;
 			std::uint16_t getPixelsSize() const noexcept;
-
-			void setBezierSteps(std::uint16_t bezierSteps) noexcept;
-			std::uint16_t getBezierSteps() const noexcept;
-
-			void setThickness(float thickness) noexcept;
-			float getThickness() const noexcept;
 
 			virtual TextMeshingPtr clone() const noexcept;
 
@@ -39,14 +34,17 @@ namespace octoon
 		private:
 			TextFilePtr font_;
 
-			float thickness_;
 			std::wstring string_;
-			std::uint16_t bezierSteps_;
 			std::uint16_t pixelSize_;
 		};
 
-		OCTOON_EXPORT Mesh makeText(const TextMeshing& params, const std::wstring& string) noexcept(false);
-		OCTOON_EXPORT Mesh makeTextWireframe(const TextMeshing& params, const std::wstring& string) noexcept(false);
+		OCTOON_EXPORT PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false);
+
+		OCTOON_EXPORT ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps = 8) noexcept(false);
+		OCTOON_EXPORT ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps = 8) noexcept(false);
+
+		OCTOON_EXPORT Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
+		OCTOON_EXPORT Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
 	}
 }
 

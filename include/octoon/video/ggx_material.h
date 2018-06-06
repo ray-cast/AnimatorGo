@@ -12,6 +12,7 @@ namespace octoon
 		{
 		public:
 			GGXMaterial() except;
+			GGXMaterial(const graphics::GraphicsTexturePtr& texture) except;
 			~GGXMaterial() noexcept;
 
 			void setup() except;
@@ -26,6 +27,7 @@ namespace octoon
 			void setBaseColor(const math::float3& colors) noexcept;
 			void setAmbientColor(const math::float3& colors) noexcept;
 			void setSpecularColor(const math::float3& colors) noexcept;
+			void setTexture(const graphics::GraphicsTexturePtr& texture) noexcept;
 
 			void setSmoothness(float smoothness) noexcept;
 			void setMetalness(float metalness) noexcept;
@@ -34,6 +36,7 @@ namespace octoon
 			const math::float3& getBaseColor() const noexcept;
 			const math::float3& getAmbientColor() const noexcept;
 			const math::float3& getSpecularColor() const noexcept;
+			const graphics::GraphicsTexturePtr& getTexture() noexcept;
 
 			float getSmoothness() const noexcept;
 			float getMetalness() const noexcept;
@@ -58,6 +61,7 @@ namespace octoon
 
 			graphics::GraphicsUniformSetPtr smoothness_;
 			graphics::GraphicsUniformSetPtr metalness_;
+			graphics::GraphicsUniformSetPtr decal_;
 		};
 	}
 }

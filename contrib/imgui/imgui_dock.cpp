@@ -1000,28 +1000,31 @@ namespace ImGui
 		void save(const char* path)
 		{
 			FILE *fp = fopen(path, "w");
-			fprintf(fp, "docks %d\n\n", m_docks.size());
-			for (int i = 0; i < m_docks.size(); ++i) {
-				Dock& dock = *m_docks[i];
+			if (fp)
+			{
+				fprintf(fp, "docks %d\n\n", m_docks.size());
+				for (int i = 0; i < m_docks.size(); ++i) {
+					Dock& dock = *m_docks[i];
 
-				fprintf(fp, "index    %d\n", i);
-				fprintf(fp, "label    %s\n", dock.parent ? (dock.label[0] == '\0' ? "DOCK" : dock.label) : "ROOT");
-				fprintf(fp, "x        %d\n", (int)dock.pos.x);
-				fprintf(fp, "y        %d\n", (int)dock.pos.y);
-				fprintf(fp, "size_x   %d\n", (int)dock.size.x);
-				fprintf(fp, "size_y   %d\n", (int)dock.size.y);
-				fprintf(fp, "status   %d\n", (int)dock.status);
-				fprintf(fp, "active   %d\n", dock.active ? 1 : 0);
-				fprintf(fp, "opened   %d\n", dock.opened ? 1 : 0);
-				fillLocation(dock);
-				fprintf(fp, "location %s\n", strlen(dock.location) ? dock.location : "-1");
-				fprintf(fp, "child0   %d\n", getDockIndex(dock.children[0]));
-				fprintf(fp, "child1   %d\n", getDockIndex(dock.children[1]));
-				fprintf(fp, "prev_tab %d\n", getDockIndex(dock.prev_tab));
-				fprintf(fp, "next_tab %d\n", getDockIndex(dock.next_tab));
-				fprintf(fp, "parent   %d\n\n", getDockIndex(dock.parent));
+					fprintf(fp, "index    %d\n", i);
+					fprintf(fp, "label    %s\n", dock.parent ? (dock.label[0] == '\0' ? "DOCK" : dock.label) : "ROOT");
+					fprintf(fp, "x        %d\n", (int)dock.pos.x);
+					fprintf(fp, "y        %d\n", (int)dock.pos.y);
+					fprintf(fp, "size_x   %d\n", (int)dock.size.x);
+					fprintf(fp, "size_y   %d\n", (int)dock.size.y);
+					fprintf(fp, "status   %d\n", (int)dock.status);
+					fprintf(fp, "active   %d\n", dock.active ? 1 : 0);
+					fprintf(fp, "opened   %d\n", dock.opened ? 1 : 0);
+					fillLocation(dock);
+					fprintf(fp, "location %s\n", strlen(dock.location) ? dock.location : "-1");
+					fprintf(fp, "child0   %d\n", getDockIndex(dock.children[0]));
+					fprintf(fp, "child1   %d\n", getDockIndex(dock.children[1]));
+					fprintf(fp, "prev_tab %d\n", getDockIndex(dock.prev_tab));
+					fprintf(fp, "next_tab %d\n", getDockIndex(dock.next_tab));
+					fprintf(fp, "parent   %d\n\n", getDockIndex(dock.parent));
+				}
+				fclose(fp);
 			}
-			fclose(fp);
 		}
 
 		Dock* getDockByIndex(int idx) { return idx < 0 ? nullptr : m_docks[(int)idx]; }

@@ -1,5 +1,5 @@
-#ifndef OCTOON_ANIMATION_H_
-#define OCTOON_ANIMATION_H_
+#ifndef OCTOON_MODEL_ANIMATION_H_
+#define OCTOON_MODEL_ANIMATION_H_
 
 #include <octoon/model/bone.h>
 
@@ -37,8 +37,8 @@ namespace octoon
 			void setName(const std::string& name) noexcept;
 			const std::string& getName() const noexcept;
 
-			void setPosition(const math::Vector3& position) noexcept;
-			const math::Vector3& getPosition() const noexcept;
+			void setPosition(const math::float3& position) noexcept;
+			const math::float3& getPosition() const noexcept;
 
 			void setRotation(const math::Quaternion& position) noexcept;
 			const math::Quaternion& getRotation() const noexcept;
@@ -58,7 +58,7 @@ namespace octoon
 			std::int32_t _bone;
 			std::int32_t _frame;
 
-			math::Vector3 _position;
+			math::float3 _position;
 			math::Quaternion _rotation;
 			Interpolation _interpolation;
 		};
@@ -67,11 +67,11 @@ namespace octoon
 		{
 		};
 
-		class AnimationProperty final
+		class Animation final
 		{
 		public:
-			AnimationProperty() noexcept;
-			~AnimationProperty() noexcept;
+			Animation() noexcept;
+			~Animation() noexcept;
 
 			void setName(const std::string& name) noexcept;
 			const std::string& getName() const noexcept;
@@ -97,7 +97,7 @@ namespace octoon
 			const MorphAnimation& getMorphAnimation(std::size_t index) const noexcept;
 			std::size_t getNumMorphAnimation() const noexcept;
 
-			AnimationPropertyPtr clone() noexcept;
+			AnimationPtr clone() noexcept;
 
 			void updateFrame(float delta) noexcept;
 			void updateMotion() noexcept;
@@ -108,11 +108,11 @@ namespace octoon
 			void updateIK() noexcept;
 
 			MotionSegment findMotionSegment(int frame, const std::vector<std::size_t>& motions) noexcept;
-			void interpolateMotion(math::Quaternion& rotation, math::Vector3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept;
+			void interpolateMotion(math::Quaternion& rotation, math::float3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept;
 
 		private:
-			AnimationProperty(const AnimationProperty&) = delete;
-			AnimationProperty& operator=(const AnimationProperty&) = delete;
+			Animation(const Animation&) = delete;
+			Animation& operator=(const Animation&) = delete;
 
 		private:
 			void updateIK(Bones& _bones, const IKAttr& ik) noexcept;
@@ -138,4 +138,4 @@ namespace octoon
 		};
 	}
 }
-#endif // !OCTOON_ANIMATION_H_
+#endif

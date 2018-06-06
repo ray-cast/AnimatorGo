@@ -7,8 +7,6 @@ namespace octoon
 	{
 		OctoonImplementSubClass(EGLSwapchain, GraphicsSwapchain, "EGLSwapchain")
 
-		EGLSwapchain* EGLSwapchain::_swapchain = nullptr;
-
 		EGLSwapchain::EGLSwapchain() noexcept
 			: _display(EGL_NO_DISPLAY)
 			, _surface(EGL_NO_SURFACE)

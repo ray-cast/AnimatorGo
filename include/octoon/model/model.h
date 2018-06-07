@@ -13,8 +13,8 @@ namespace octoon
 			using mesh_array_t = std::vector<MeshPtr>;
 			using bone_array_t = std::vector<BonePtr>;
 			using ik_array_t = std::vector<IKAttrPtr>;
-			using rigidbody_array_t = std::vector<RigidbodyPropertyPtr>;
-			using joint_array_t = std::vector<JointPropertyPtr>;
+			using rigidbody_array_t = std::vector<RigidbodyPtr>;
+			using joint_array_t = std::vector<JointPtr>;
 			using material_array_t = std::vector<MaterialPtr>;
 			using texture_array_t = std::vector<TexturePtr>;
 			using animation_array_t = std::vector<AnimationPtr>;
@@ -45,8 +45,8 @@ namespace octoon
 			void add(const MeshPtr& value) noexcept { _meshes.push_back(value); }
 			void add(const BonePtr& value) noexcept { _bones.push_back(value); }
 			void add(const IKAttrPtr& value) noexcept { _iks.push_back(value); }
-			void add(const RigidbodyPropertyPtr& value) noexcept { _rigidbodys.push_back(value); }
-			void add(const JointPropertyPtr& value) noexcept { _joints.push_back(value); }
+			void add(const RigidbodyPtr& value) noexcept { _rigidbodys.push_back(value); }
+			void add(const JointPtr& value) noexcept { _joints.push_back(value); }
 			void add(const TexturePtr& value) noexcept { _textures.push_back(value); }
 			void add(const MaterialPtr& value) noexcept { _materials.push_back(value); }
 			void add(const AnimationPtr& value) noexcept { _animations.push_back(value); }
@@ -56,8 +56,8 @@ namespace octoon
 			void add(MeshPtr&& value) noexcept { _meshes.push_back(value); }
 			void add(BonePtr&& value) noexcept { _bones.push_back(value); }
 			void add(IKAttrPtr&& value) noexcept { _iks.push_back(value); }
-			void add(RigidbodyPropertyPtr&& value) noexcept { _rigidbodys.push_back(value); }
-			void add(JointPropertyPtr&& value) noexcept { _joints.push_back(value); }
+			void add(RigidbodyPtr&& value) noexcept { _rigidbodys.push_back(value); }
+			void add(JointPtr&& value) noexcept { _joints.push_back(value); }
 			void add(TexturePtr&& value) noexcept { _textures.push_back(value); }
 			void add(MaterialPtr&& value) noexcept { _materials.push_back(value); }
 			void add(AnimationPtr&& value) noexcept { _animations.push_back(value); }
@@ -126,10 +126,10 @@ namespace octoon
 			const IKAttrPtr& get(std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			const RigidbodyPropertyPtr& get(std::size_t n) const { return _rigidbodys[n]; }
+			const RigidbodyPtr& get(std::size_t n) const { return _rigidbodys[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
-			const JointPropertyPtr& get(std::size_t n) const { return _joints[n]; }
+			const JointPtr& get(std::size_t n) const { return _joints[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::material>>
 			const MaterialPtr& get(std::size_t n) const { return _materials[n]; }
@@ -186,10 +186,10 @@ namespace octoon
 			const IKAttrPtr& operator[](std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			const RigidbodyPropertyPtr& operator[](std::size_t n) const { return _rigidbodys[n]; }
+			const RigidbodyPtr& operator[](std::size_t n) const { return _rigidbodys[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
-			const JointPropertyPtr& operator[](std::size_t n) const { return _joints[n]; }
+			const JointPtr& operator[](std::size_t n) const { return _joints[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::material>>
 			const MaterialPtr& operator[](std::size_t n) const { return _materials[n]; }

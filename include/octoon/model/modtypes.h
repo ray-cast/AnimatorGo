@@ -82,8 +82,8 @@ namespace octoon
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
-		typedef std::shared_ptr<Rigidbody> RigidbodyPropertyPtr;
-		typedef std::shared_ptr<Joint> JointPropertyPtr;
+		typedef std::shared_ptr<Rigidbody> RigidbodyPtr;
+		typedef std::shared_ptr<Joint> JointPtr;
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;

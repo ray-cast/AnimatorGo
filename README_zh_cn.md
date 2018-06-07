@@ -1,17 +1,17 @@
 Octoon
 ======
 ###### [English](https://github.com/octoon/octoon/blob/master/README.md) &nbsp; [中文](https://github.com/octoon/octoon/blob/master/README_zh_cn.md)
-Octoon is a cross-platform graphic engine. It is free and open-source under MIT lisence.  Users can easily create graphic applications by using a set of unified API. Applications can be exported to lots of platforms, including Linux, Mac OSX, Windows, Android and HTML5.
+Octoon是一个免费和开源的跨平台图形引擎，采用MIT协议。 用户可以使用一组统一的API轻松创建图形应用程序。 应用程序可以导出到许多平台，包括Linux，Mac OSX，Windows，Android和HTML5。
 
-Octoon provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.
+Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 ECS系统的形式支持许多功能，如图形，物理，音频和视频。 通过附加各种组件，对象可以灵活地执行不同的任务。
 
-Supported compilers:
+支持的编译器:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
 * GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.0.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
 
-Support platforms:
+支持的平台:
 ------
 * Windows (Only tested on XP, Vista, 7, 8, 10)
 * Linux (Only tested on Ubuntu, Centos)
@@ -20,7 +20,7 @@ Support platforms:
 * ios (future)
 * mac (future)
 
-Support rendering backends:
+支持的渲染后端:
 ------
 * OpenGL 330
 * OpenGL 450
@@ -28,9 +28,9 @@ Support rendering backends:
 * OpenGL ES 3.0
 * OpenGL ES 3.2
 
-Contribution
+贡献
 ------
-This project is still under development. You can submit code by using Pull Requests or Feel free to contact us via e-mail or issues. Any questions or good suggestions are welcomed to be addressed to us in Issues. We would be grateful for your contribution.
+这个项目还在开发中，您可以请求合并提交代码，或者通过电子邮件随时与我们联系。 欢迎向我们提出任何问题或好的建议。 我们非常感谢您的贡献。
 
 [License (MIT)](https://github.com/octoon/octoon/blob/master/LICENSE)
 -------------------------------------------------------------------------------

@@ -189,8 +189,8 @@ namespace octoon
 					math::sinCos(&n.x, &n.y, math::PI * pt.x * 0.5f);
 
 					float len = x < 0.0f ? math::snorm2unorm(pt.y) : 1.0f - math::snorm2unorm(pt.y);
-					float xx = math::lerp(pt.x, n.x * (len + 1.0f), math::abs(x));
-					float yy = math::lerp(pt.y, n.y * (len + ratio - 1.0f) * (x < 0.0f ? 1.0f : -1.0f), math::abs(x));
+					float xx = math::lerp(pt.x, n.x * (len * math::lerp(1.0f, 0.5f, math::abs(pt.x)) + 1.0f), math::abs(x));
+					float yy = math::lerp(pt.y, n.y * (len + ratio + 1.0f - math::abs(pt.x)) * (x < 0.0f ? 1.0f : -1.0f), math::abs(x));
 
 					return math::float3(xx, yy, pt.z);
 				};

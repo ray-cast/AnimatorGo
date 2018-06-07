@@ -28,6 +28,7 @@ SET(CORE_LIST
 	${SOURCE_PATH}/string.cpp
 	${HEADER_PATH}/uuid.h
 	${SOURCE_PATH}/uuid.cpp
+	${HEADER_PATH}/sigslot.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

@@ -1,7 +1,6 @@
 #ifndef OCTOON_IMAGE_LUT_H_
 #define OCTOON_IMAGE_LUT_H_
 
-#include <octoon/image/image_types.h>
 #include <limits>
 #include <sstream>
 

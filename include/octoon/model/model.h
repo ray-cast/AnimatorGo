@@ -18,8 +18,8 @@ namespace octoon
 			using material_array_t = std::vector<MaterialPtr>;
 			using texture_array_t = std::vector<TexturePtr>;
 			using animation_array_t = std::vector<AnimationPtr>;
-			using light_array_t = std::vector<LightPropertyPtr>;
-			using camera_array_t = std::vector<CameraPropertyPtr>;
+			using light_array_t = std::vector<LightPtr>;
+			using camera_array_t = std::vector<CameraPtr>;
 
 			enum type_t
 			{
@@ -50,8 +50,8 @@ namespace octoon
 			void add(const TexturePtr& value) noexcept { _textures.push_back(value); }
 			void add(const MaterialPtr& value) noexcept { _materials.push_back(value); }
 			void add(const AnimationPtr& value) noexcept { _animations.push_back(value); }
-			void add(const LightPropertyPtr& value) noexcept { _lights.push_back(value); }
-			void add(const CameraPropertyPtr& value) noexcept { _cameras.push_back(value); }
+			void add(const LightPtr& value) noexcept { _lights.push_back(value); }
+			void add(const CameraPtr& value) noexcept { _cameras.push_back(value); }
 
 			void add(MeshPtr&& value) noexcept { _meshes.push_back(value); }
 			void add(BonePtr&& value) noexcept { _bones.push_back(value); }
@@ -61,8 +61,8 @@ namespace octoon
 			void add(TexturePtr&& value) noexcept { _textures.push_back(value); }
 			void add(MaterialPtr&& value) noexcept { _materials.push_back(value); }
 			void add(AnimationPtr&& value) noexcept { _animations.push_back(value); }
-			void add(LightPropertyPtr&& value) noexcept { _lights.push_back(value); }
-			void add(CameraPropertyPtr&& value) noexcept { _cameras.push_back(value); }
+			void add(LightPtr&& value) noexcept { _lights.push_back(value); }
+			void add(CameraPtr&& value) noexcept { _cameras.push_back(value); }
 
 			void set(mesh_array_t& value) noexcept { _meshes = value; }
 			void set(bone_array_t& value) noexcept { _bones = value; }
@@ -141,10 +141,10 @@ namespace octoon
 			const AnimationPtr& get(std::size_t n) const { return _animations[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::light>>
-			const LightPropertyPtr& get(std::size_t n) const { return _lights[n]; }
+			const LightPtr& get(std::size_t n) const { return _lights[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::camera>>
-			const CameraPropertyPtr& get(std::size_t n) const { return _cameras[n]; }
+			const CameraPtr& get(std::size_t n) const { return _cameras[n]; }
 
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::mesh, bool> empty() const { return _meshes.empty(); }
@@ -201,10 +201,10 @@ namespace octoon
 			const AnimationPtr& operator[](std::size_t n) const { return _animations[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::light>>
-			const LightPropertyPtr& operator[](std::size_t n) const { return _lights[n]; }
+			const LightPtr& operator[](std::size_t n) const { return _lights[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::camera>>
-			const CameraPropertyPtr& operator[](std::size_t n) const { return _cameras[n]; }
+			const CameraPtr& operator[](std::size_t n) const { return _cameras[n]; }
 
 			void clear() noexcept;
 

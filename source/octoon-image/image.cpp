@@ -302,7 +302,7 @@ namespace octoon
 			return layerLevel_;
 		}
 
-		const char*
+		const std::uint8_t*
 		Image::data() const noexcept
 		{
 			return data_.data();

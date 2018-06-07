@@ -290,7 +290,7 @@ namespace octoon
 				dest->pub.term_destination = &term_destination;
 
 				::jpeg_set_defaults(&cinfo);
-				::jpeg_set_quality(&cinfo, 10, TRUE);
+				::jpeg_set_quality(&cinfo, 100, TRUE);
 
 				::jpeg_start_compress(&cinfo, TRUE);
 
@@ -313,6 +313,7 @@ namespace octoon
 			{
 				::jpeg_finish_compress(&cinfo);
 				::jpeg_destroy_compress(&cinfo);
+
 				return false;
 			}
 		}

@@ -36,10 +36,6 @@
 #	include <octoon/video_feature.h>
 #endif
 
-#if OCTOON_FEATURE_PHYSICS_ENABLE
-#	include <octoon/physics_feature.h>
-#endif
-
 namespace octoon
 {
 	OctoonImplementSingleton(GameApp)
@@ -124,10 +120,6 @@ namespace octoon
 
 #if OCTOON_FEATURE_UI_ENABLE
 		this->addFeature(std::make_unique<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
-#endif
-
-#if OCTOON_FEATURE_PHYSICS_ENABLE
-		this->addFeature(std::make_shared<PhysicsFeature>());
 #endif
 	}
 

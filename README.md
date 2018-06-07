@@ -1,6 +1,5 @@
 Octoon
 ======
-###### [English](https://github.com/octoon/octoon/blob/master/README.md) &nbsp; [中文](https://github.com/octoon/octoon/blob/master/README_zh_cn.md)
 Octoon is a cross-platform graphic engine. It is free and open-source under MIT lisence.  Users can easily create graphic applications by using a set of unified API. Applications can be exported to lots of platforms, including Linux, Mac OSX, Windows, Android and HTML5.
 
 Octoon provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.

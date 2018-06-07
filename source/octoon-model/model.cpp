@@ -45,8 +45,6 @@ namespace octoon
 			_textures.clear();
 			_materials.clear();
 			_animations.clear();
-			_lights.clear();
-			_cameras.clear();
 		}
 
 		bool

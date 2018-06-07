@@ -23,14 +23,6 @@ namespace octoon
 			ShapeTypeCapsule
 		};
 
-		class OCTOON_EXPORT Camera final
-		{
-		};
-
-		class OCTOON_EXPORT Light final
-		{
-		};
-
 		class OCTOON_EXPORT Rigidbody
 		{
 		public:

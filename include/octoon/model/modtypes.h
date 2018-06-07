@@ -66,8 +66,6 @@ namespace octoon
 
 		typedef std::shared_ptr<Animation> AnimationPtr;
 		typedef std::shared_ptr<Texture> TexturePtr;
-		typedef std::shared_ptr<Camera> CameraPtr;
-		typedef std::shared_ptr<Light> LightPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<Material> MaterialPtr;
 		typedef std::unique_ptr<class Path> PathPtr;

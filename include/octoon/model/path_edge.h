@@ -108,7 +108,7 @@ namespace octoon
 			}
 
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
-			friend PathEdge& operator+(const PathEdge& edge, const T& scale) noexcept
+			friend PathEdge operator+(const PathEdge& edge, const T& scale) noexcept
 			{
 				PathEdge result;
 				switch (edge.type)
@@ -137,7 +137,7 @@ namespace octoon
 			}
 
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
-			friend PathEdge& operator-(const PathEdge& edge, const T& scale) noexcept
+			friend PathEdge operator-(const PathEdge& edge, const T& scale) noexcept
 			{
 				PathEdge result;
 				switch (edge.type)
@@ -166,7 +166,7 @@ namespace octoon
 			}
 
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
-			friend PathEdge& operator*(const PathEdge& edge, const T& scale) noexcept
+			friend PathEdge operator*(const PathEdge& edge, const T& scale) noexcept
 			{
 				PathEdge result;
 				switch (edge.type)
@@ -195,7 +195,7 @@ namespace octoon
 			}
 
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
-			friend PathEdge& operator/(const PathEdge& edge, const T& scale) noexcept
+			friend PathEdge operator/(const PathEdge& edge, const T& scale) noexcept
 			{
 				PathEdge result;
 				switch (edge.type)

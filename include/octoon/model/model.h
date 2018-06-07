@@ -148,12 +148,6 @@ namespace octoon
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::animation, bool> empty() const { return _animations.empty(); }
 
-			template<type_t type>
-			constexpr std::enable_if_t<type == type_t::light, bool> empty() const { return _lights.empty(); }
-
-			template<type_t type>
-			constexpr std::enable_if_t<type == type_t::camera, bool> empty() const { return _cameras.empty(); }
-
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
 			const MeshPtr& operator[](std::size_t n) const { return _meshes[n]; }
 

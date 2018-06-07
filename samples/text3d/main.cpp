@@ -144,7 +144,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 
-		auto str = L"滚滚长江东逝水";
+		auto str = L"Octoon Stdudio";
 		auto text = octoon::model::makeTextContours(str, { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 

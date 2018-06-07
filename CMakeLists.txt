@@ -275,7 +275,7 @@ IF(OCTOON_BUILD_DOCUMENT)
   
     IF(NOT DOXYGEN_FOUND)
 		MESSAGE(WARNING "Doxygen is needed to build the documentation.")  
-	ELSE()
+	else()
 		SET(doxyfile_in ${OCTOON_PATH_DOCUMENT}/OctoonAPI/docs.doxyfile)
 		SET(doxyfile ${OCTOON_PATH_DOCUMENT}/OctoonAPI/Doxyfile)
 	

@@ -15,6 +15,7 @@ namespace octoon
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
+			, ratioReal_(1.0f)
 			, znear_(0.01f)
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
@@ -409,7 +410,7 @@ namespace octoon
 		}
 
 		void
-		Camera::_updatePerspective() const noexcept
+		Camera::_updatePerspective(float ratio) const noexcept
 		{
 			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
@@ -433,10 +434,15 @@ namespace octoon
 			if (ratioReal_ != ratio)
 			{
 				if (cameraType_ == CameraType::Perspective)
-					this->_updatePerspective();
+					this->_updatePerspective(ratio);
 				else
 					this->_updateOrtho();
 
+				ratioReal_ = ratio;
+			}
+
+			if (needUpdateViewProject_)
+			{
 				viewProject_ = project_ * this->getView();
 				viewProjectInverse_ = math::inverse(viewProject_);
 

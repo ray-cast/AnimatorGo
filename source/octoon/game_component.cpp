@@ -11,18 +11,6 @@ namespace octoon
 	{
 	}
 
-	GameComponent::GameComponent(const std::string& name) noexcept
-		: GameComponent()
-	{
-		this->setName(name);
-	}
-
-	GameComponent::GameComponent(std::string&& name) noexcept
-		: GameComponent()
-	{
-		this->setName(std::move(name));
-	}
-
 	GameComponent::~GameComponent() noexcept
 	{
 	}

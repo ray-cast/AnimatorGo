@@ -345,7 +345,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief 最近领采样
+				* @brief 最近邻采样
 				* @param[in] u x轴的方向的坐标，范围 0.0 ~ 1.0
 				* @param[in] v y轴的方向的坐标，范围 0.0 ~ 1.0
 				* @return 返回在归一化纹理坐标(u, v) 处通过最近邻采样获取的像素数据
@@ -366,7 +366,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief 最近领采样
+				* @brief 最近邻采样
 				* @param[in] u x轴的方向的绝对像素坐标，范围 0 ~ width
 				* @param[in] v y轴的方向的绝对像素坐标，范围 0 ~ height
 				* @return 返回在绝对像素纹理坐标(u, v) 处通过最近邻采样像素数据

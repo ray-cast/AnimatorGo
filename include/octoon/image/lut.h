@@ -181,11 +181,45 @@ namespace octoon
 				std::unique_ptr<T[]> data;
 
 				basic_lut() noexcept {};
+
+				/*
+				* @brief 创建3D lut 查找表
+				* @param[in] data 3D lut 查找表的像素信息
+				* @param[in] w 图片宽度
+				* @param[in] h 图片高度
+				* @param[in] c 通道数量, RGB = 3, RGBA = 4
+				*/
 				basic_lut(std::unique_ptr<T>&& _data, std::uint32_t w, std::uint32_t h, std::uint8_t c) noexcept : data(std::move(_data)), width(w), height(h), channel(c) {}
+
+				/*
+				* @brief 创建3D lut 查找表
+				* @param[in] s .cube文件的起始内容
+				* @param[in] n .cube文件的长度
+				* @details 加载cube文件并且生成一张3D lut 查找表
+				*/
 				basic_lut(const char* s, std::size_t n) noexcept(false) { this->create(s, n); }
+
+				/*
+				* @brief 创建默认的 3D lut 查找表, 用于自定义滤镜效果
+				* @param[in] size 查找表的大小，宽度为 size * size， 高度为 size
+				* @param[in] channel 通道数量， RGB 为 3， RGBA 为 4
+				* @details 创建默认的 3D lut 查找表, 用于自定义滤镜效果
+				*/
 				explicit basic_lut(std::uint32_t size, std::uint8_t channel_ = 3) noexcept { this->create(size, channel_); }
+
+				/*
+				* @brief 创建3D lut 查找表
+				* @param[in] strean .cube文件的流
+				* @details 加载cube流并且生成一张3D lut 查找表
+				*/
 				explicit basic_lut(std::istream& stream) noexcept(false) { this->create(stream); }
 
+				/*
+				* @brief 创建默认的 3D lut 查找表, 用于自定义滤镜效果
+				* @param[in] size 查找表的大小，宽度为 size * size， 高度为 size
+				* @param[in] channel 通道数量， RGB 为 3， RGBA 为 4
+				* @details 创建默认的 3D lut 查找表, 用于自定义滤镜效果
+				*/
 				void create(std::uint32_t size, std::uint8_t channel_) noexcept
 				{
 					width = size * size;
@@ -200,28 +234,39 @@ namespace octoon
 							float u = float(x) / (width - 1) * ((width - 1.0f) / width);
 							float v = float(y) / (height - 1) * ((height - 1.0f) / height);
 
-							float rgb[3];
-							rgb[0] = frac(u * size);
-							rgb[1] = v;
-							rgb[2] = u - rgb[0] / size;
+							float uvw[3];
+							uvw[0] = frac(u * size);
+							uvw[1] = v;
+							uvw[2] = u - uvw[0] / size;
 
-							rgb[0] *= size / float(size - 1);
-							rgb[1] *= size / float(size - 1);
-							rgb[2] *= size / float(size - 1);
+							uvw[0] *= size / float(size - 1);
+							uvw[1] *= size / float(size - 1);
+							uvw[2] *= size / float(size - 1);
 
 							std::size_t n = (width * y + x) * channel;
-							data[n + 0] = cast<T>(rgb[0]);
-							data[n + 1] = cast<T>(rgb[1]);
-							data[n + 2] = cast<T>(rgb[2]);
+							data[n + 0] = cast<T>(uvw[0]);
+							data[n + 1] = cast<T>(uvw[1]);
+							data[n + 2] = cast<T>(uvw[2]);
 						}
 					}
 				}
 				
+				/*
+				* @brief 创建3D lut 查找表
+				* @param[in] s .cube文件的起始内容
+				* @param[in] n .cube文件的长度
+				* @details 加载cube文件并且生成一张3D lut 查找表
+				*/
 				void create(const char* s, std::size_t n) noexcept(false)
 				{
 					this->create(std::istringstream(std::string(s, n)));
 				}
 
+				/*
+				* @brief 创建3D lut 查找表
+				* @param[in] strean .cube文件的流
+				* @details 加载cube流并且生成一张3D lut 查找表
+				*/
 				void create(std::istream& stream) noexcept(false)
 				{
 					assert(stream.good());
@@ -299,6 +344,13 @@ namespace octoon
 					}					
 				}
 
+				/*
+				* @brief 最近领采样
+				* @param[in] u x轴的方向的坐标，范围 0.0 ~ 1.0
+				* @param[in] v y轴的方向的坐标，范围 0.0 ~ 1.0
+				* @return 返回在归一化纹理坐标(u, v) 处通过最近邻采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> fetch(_Elem u, _Elem v) noexcept
 				{
@@ -313,6 +365,13 @@ namespace octoon
 					return Vector3<T>(this->data[n], this->data[n + 1], this->data[n + 2]);
 				}
 
+				/*
+				* @brief 最近领采样
+				* @param[in] u x轴的方向的绝对像素坐标，范围 0 ~ width
+				* @param[in] v y轴的方向的绝对像素坐标，范围 0 ~ height
+				* @return 返回在绝对像素纹理坐标(u, v) 处通过最近邻采样像素数据
+				* @detail https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_unsigned<_Elem>::value | std::is_integral<_Elem>::value, Vector3<_Elem>> fetch(_Elem u, _Elem v) noexcept
 				{
@@ -327,6 +386,13 @@ namespace octoon
 					return Vector3<T>(this->data[n], this->data[n + 1], this->data[n + 2]);
 				}
 
+				/*
+				* @brief 双线性过滤采样
+				* @param[in] u x轴的方向的归一化坐标，范围 0.0 ~ 1.0
+				* @param[in] v y轴的方向的归一化坐标，范围 0.0 ~ 1.0
+				* @return 返回在归一化纹理坐标(u, v) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(_Elem u, _Elem v) noexcept
 				{
@@ -368,6 +434,13 @@ namespace octoon
 					return v1 + v2 + v3 + v4;
 				}
 
+				/*
+				* @brief 双线性过滤采样
+				* @param[in] u x轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] v y轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化纹理坐标(u, v) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v)
 				{
@@ -377,6 +450,13 @@ namespace octoon
 					return Vector3<_Elem>(cast<_Elem, T>(pixel[0]), cast<_Elem, T>(pixel[1]), cast<_Elem, T>(pixel[2]));
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] u x轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @param[in] v y轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @param[in] w z轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @return 返回在归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
 				{
@@ -408,6 +488,13 @@ namespace octoon
 					return lerp(col0, col1, s);
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] u x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] v y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] w z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
 				{
@@ -418,18 +505,37 @@ namespace octoon
 					return Vector3<_Elem>(cast<_Elem, T>((T)pixel[0]), cast<_Elem, T>((T)pixel[1]), cast<_Elem, T>((T)pixel[2]));
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw[0] x轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @param[in] uvw[1] y轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @param[in] uvw[2] z轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
+				* @return 返回在归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
 				{
 					return lookup(uvw[0], uvw[1], uvw[2]);
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw[0] x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] uvw[1] y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] uvw[2] z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
 				{
 					return lookup(uvw[0], uvw[1], uvw[2]);
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw  归一化立方体纹理坐标 (u, v, w)，范围 0.0 ~ 1.0
+				* @param[out] out 归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
 				{
@@ -439,6 +545,11 @@ namespace octoon
 					out[2] = v[2];
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw  整数范围内未归一化立方体纹理坐标 (u, v, w)，范围 0.0 ~ 整数数据类型最大值
+				* @param[out] out 整数范围内未归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
 				{
@@ -448,6 +559,29 @@ namespace octoon
 					out[2] = v[2];
 				}
 
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw  归一化立方体纹理坐标 (u, v, w)，范围 0 ~ 1.0f
+				* @param[out] out 归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				* @param[in] len 立方体纹理坐标的长度
+				* @param[in] channel 立方体纹理坐标的通道数量, RGB = 3, RGBA = 4
+				*/
+				template<typename _Elem>
+				std::enable_if_t<std::is_floating_point<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
+				{
+					assert(channel == 3 || channel == 4);
+
+					for (std::size_t i = 0; i < len; i += channel)
+						lookup(uvw + i, out + i);
+				}
+
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw  整数范围内未归一化立方体纹理坐标 (u, v, w)，范围 0 ~ 整数数据类型最大值
+				* @param[out] out 整数范围内未归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				* @param[in] len 立方体纹理坐标的长度
+				* @param[in] channel 立方体纹理坐标的通道数量, RGB = 3, RGBA = 4
+				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
 				{
@@ -457,6 +591,9 @@ namespace octoon
 						lookup<_Elem, _Float>(uvw + i, out + i);
 				}
 
+				/*
+				* @brief 将lut中的数据序列化成.cube的字符串流
+				*/
 				std::string dump() const noexcept
 				{
 					assert(this->data);
@@ -494,6 +631,9 @@ namespace octoon
 					return stream.str();
 				}
 
+				/*
+				* @brief 解析一个来至cube文件的流
+				*/
 				static basic_lut parse(std::istream& stream) noexcept(false)
 				{
 					if (stream)
@@ -502,6 +642,9 @@ namespace octoon
 						throw std::runtime_error("bad stream");
 				}
 
+				/*
+				* @brief 解析一个来至cube的文件
+				*/
 				static basic_lut parse(const std::string& filepath) noexcept(false)
 				{
 					auto stream = std::ifstream(filepath);
@@ -511,6 +654,9 @@ namespace octoon
 						throw std::runtime_error("failed to open the file: " + filepath);
 				}
 
+				/*
+				* @brief 解析一个来至cube的文件
+				*/
 				static basic_lut parse(const char* filepath) noexcept(false)
 				{
 					auto stream = std::ifstream(filepath);
@@ -520,6 +666,9 @@ namespace octoon
 						throw std::runtime_error(std::string("failed to open the file: ") + filepath);
 				}
 
+				/*
+				* @brief 将lut中的数据序列化成.cube的字符串流
+				*/
 				friend std::ostream& operator << (std::ostream& os, const basic_lut& lut) noexcept
 				{
 					os << lut.dump();
@@ -533,24 +682,39 @@ namespace octoon
 					return x;
 				}
 
+				/*
+				* @brief 将整数归一化成浮点数
+				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_integral<_Ty>::value | std::is_unsigned<_Ty>::value, _Tx>>
 				static std::enable_if_t<std::is_floating_point<_Tx>::value, _Tx> cast(_Ty x) noexcept
 				{
 					return static_cast<_Tx>(_Tx(x) / std::numeric_limits<_Ty>::max());
 				}
 
+				/*
+				* @brief 将浮点数乘算整数最大值
+				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_floating_point<_Ty>::value>>
 				static std::enable_if_t<std::is_integral<_Tx>::value | std::is_unsigned<_Tx>::value, _Tx> cast(_Ty x) noexcept
 				{
 					return static_cast<_Tx>(std::min(std::max(x, 0.0f), 1.0f) * std::numeric_limits<_Tx>::max());
 				}
 
+				/*
+				* @brief 取小数部分
+				*/
 				template<typename _Tx>
 				static _Tx frac(const _Tx x) noexcept
 				{
 					return x - std::floor(x);
 				}
 
+				/*
+				* @brief 在t1 和 t2 之间进行线性插值
+				* @param[in] t1 初始值
+				* @param[in] t2 终止值
+				* @param[in] t3 插值的百分比，范围 0.0f ~ 1.0f
+				*/
 				template<typename _Tx, typename _Ty>
 				static _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
 				{

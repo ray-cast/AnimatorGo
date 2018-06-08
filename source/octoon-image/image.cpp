@@ -308,6 +308,12 @@ namespace octoon
 			return data_.data();
 		}
 
+		const std::uint8_t*
+		Image::data(std::size_t i = 0) const noexcept
+		{
+			return data_.data() + i;
+		}
+
 		bool
 		Image::load(istream& stream, const char* type) noexcept
 		{

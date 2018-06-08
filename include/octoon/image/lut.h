@@ -1,4 +1,4 @@
-#ifndef OCTOON_IMAGE_LUT_H_
+ï»¿#ifndef OCTOON_IMAGE_LUT_H_
 #define OCTOON_IMAGE_LUT_H_
 
 #include <limits>
@@ -183,42 +183,42 @@ namespace octoon
 				basic_lut() noexcept {};
 
 				/*
-				* @brief ´´½¨3D lut ²éÕÒ±í
-				* @param[in] data 3D lut ²éÕÒ±íµÄÏñËØĞÅÏ¢
-				* @param[in] w Í¼Æ¬¿í¶È
-				* @param[in] h Í¼Æ¬¸ß¶È
-				* @param[in] c Í¨µÀÊıÁ¿, RGB = 3, RGBA = 4
+				* @brief åˆ›å»º3D lut æŸ¥æ‰¾è¡¨
+				* @param[in] data 3D lut æŸ¥æ‰¾è¡¨çš„åƒç´ ä¿¡æ¯
+				* @param[in] w å›¾ç‰‡å®½åº¦
+				* @param[in] h å›¾ç‰‡é«˜åº¦
+				* @param[in] c é€šé“æ•°é‡, RGB = 3, RGBA = 4
 				*/
 				basic_lut(std::unique_ptr<T>&& _data, std::uint32_t w, std::uint32_t h, std::uint8_t c) noexcept : data(std::move(_data)), width(w), height(h), channel(c) {}
 
 				/*
-				* @brief ´´½¨3D lut ²éÕÒ±í
-				* @param[in] s .cubeÎÄ¼şµÄÆğÊ¼ÄÚÈİ
-				* @param[in] n .cubeÎÄ¼şµÄ³¤¶È
-				* @details ¼ÓÔØcubeÎÄ¼ş²¢ÇÒÉú³ÉÒ»ÕÅ3D lut ²éÕÒ±í
+				* @brief åˆ›å»º3D lut æŸ¥æ‰¾è¡¨
+				* @param[in] s .cubeæ–‡ä»¶çš„èµ·å§‹å†…å®¹
+				* @param[in] n .cubeæ–‡ä»¶çš„é•¿åº¦
+				* @details åŠ è½½cubeæ–‡ä»¶å¹¶ä¸”ç”Ÿæˆä¸€å¼ 3D lut æŸ¥æ‰¾è¡¨
 				*/
 				basic_lut(const char* s, std::size_t n) noexcept(false) { this->create(s, n); }
 
 				/*
-				* @brief ´´½¨Ä¬ÈÏµÄ 3D lut ²éÕÒ±í, ÓÃÓÚ×Ô¶¨ÒåÂË¾µĞ§¹û
-				* @param[in] size ²éÕÒ±íµÄ´óĞ¡£¬¿í¶ÈÎª size * size£¬ ¸ß¶ÈÎª size
-				* @param[in] channel Í¨µÀÊıÁ¿£¬ RGB Îª 3£¬ RGBA Îª 4
-				* @details ´´½¨Ä¬ÈÏµÄ 3D lut ²éÕÒ±í, ÓÃÓÚ×Ô¶¨ÒåÂË¾µĞ§¹û
+				* @brief åˆ›å»ºé»˜è®¤çš„ 3D lut æŸ¥æ‰¾è¡¨, ç”¨äºè‡ªå®šä¹‰æ»¤é•œæ•ˆæœ
+				* @param[in] size æŸ¥æ‰¾è¡¨çš„å¤§å°ï¼Œå®½åº¦ä¸º size * sizeï¼Œ é«˜åº¦ä¸º size
+				* @param[in] channel é€šé“æ•°é‡ï¼Œ RGB ä¸º 3ï¼Œ RGBA ä¸º 4
+				* @details åˆ›å»ºé»˜è®¤çš„ 3D lut æŸ¥æ‰¾è¡¨, ç”¨äºè‡ªå®šä¹‰æ»¤é•œæ•ˆæœ
 				*/
 				explicit basic_lut(std::uint32_t size, std::uint8_t channel_ = 3) noexcept { this->create(size, channel_); }
 
 				/*
-				* @brief ´´½¨3D lut ²éÕÒ±í
-				* @param[in] strean .cubeÎÄ¼şµÄÁ÷
-				* @details ¼ÓÔØcubeÁ÷²¢ÇÒÉú³ÉÒ»ÕÅ3D lut ²éÕÒ±í
+				* @brief åˆ›å»º3D lut æŸ¥æ‰¾è¡¨
+				* @param[in] strean .cubeæ–‡ä»¶çš„æµ
+				* @details åŠ è½½cubeæµå¹¶ä¸”ç”Ÿæˆä¸€å¼ 3D lut æŸ¥æ‰¾è¡¨
 				*/
 				explicit basic_lut(std::istream& stream) noexcept(false) { this->create(stream); }
 
 				/*
-				* @brief ´´½¨Ä¬ÈÏµÄ 3D lut ²éÕÒ±í, ÓÃÓÚ×Ô¶¨ÒåÂË¾µĞ§¹û
-				* @param[in] size ²éÕÒ±íµÄ´óĞ¡£¬¿í¶ÈÎª size * size£¬ ¸ß¶ÈÎª size
-				* @param[in] channel Í¨µÀÊıÁ¿£¬ RGB Îª 3£¬ RGBA Îª 4
-				* @details ´´½¨Ä¬ÈÏµÄ 3D lut ²éÕÒ±í, ÓÃÓÚ×Ô¶¨ÒåÂË¾µĞ§¹û
+				* @brief åˆ›å»ºé»˜è®¤çš„ 3D lut æŸ¥æ‰¾è¡¨, ç”¨äºè‡ªå®šä¹‰æ»¤é•œæ•ˆæœ
+				* @param[in] size æŸ¥æ‰¾è¡¨çš„å¤§å°ï¼Œå®½åº¦ä¸º size * sizeï¼Œ é«˜åº¦ä¸º size
+				* @param[in] channel é€šé“æ•°é‡ï¼Œ RGB ä¸º 3ï¼Œ RGBA ä¸º 4
+				* @details åˆ›å»ºé»˜è®¤çš„ 3D lut æŸ¥æ‰¾è¡¨, ç”¨äºè‡ªå®šä¹‰æ»¤é•œæ•ˆæœ
 				*/
 				void create(std::uint32_t size, std::uint8_t channel_) noexcept
 				{
@@ -252,10 +252,10 @@ namespace octoon
 				}
 				
 				/*
-				* @brief ´´½¨3D lut ²éÕÒ±í
-				* @param[in] s .cubeÎÄ¼şµÄÆğÊ¼ÄÚÈİ
-				* @param[in] n .cubeÎÄ¼şµÄ³¤¶È
-				* @details ¼ÓÔØcubeÎÄ¼ş²¢ÇÒÉú³ÉÒ»ÕÅ3D lut ²éÕÒ±í
+				* @brief åˆ›å»º3D lut æŸ¥æ‰¾è¡¨
+				* @param[in] s .cubeæ–‡ä»¶çš„èµ·å§‹å†…å®¹
+				* @param[in] n .cubeæ–‡ä»¶çš„é•¿åº¦
+				* @details åŠ è½½cubeæ–‡ä»¶å¹¶ä¸”ç”Ÿæˆä¸€å¼ 3D lut æŸ¥æ‰¾è¡¨
 				*/
 				void create(const char* s, std::size_t n) noexcept(false)
 				{
@@ -263,9 +263,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief ´´½¨3D lut ²éÕÒ±í
-				* @param[in] strean .cubeÎÄ¼şµÄÁ÷
-				* @details ¼ÓÔØcubeÁ÷²¢ÇÒÉú³ÉÒ»ÕÅ3D lut ²éÕÒ±í
+				* @brief åˆ›å»º3D lut æŸ¥æ‰¾è¡¨
+				* @param[in] strean .cubeæ–‡ä»¶çš„æµ
+				* @details åŠ è½½cubeæµå¹¶ä¸”ç”Ÿæˆä¸€å¼ 3D lut æŸ¥æ‰¾è¡¨
 				*/
 				void create(std::istream& stream) noexcept(false)
 				{
@@ -345,10 +345,10 @@ namespace octoon
 				}
 
 				/*
-				* @brief ×î½üÁì²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄ×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] v yÖáµÄ·½ÏòµÄ×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @return ·µ»ØÔÚ¹éÒ»»¯ÎÆÀí×ø±ê(u, v) ´¦Í¨¹ı×î½üÁÚ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief æœ€è¿‘é¢†é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] v yè½´çš„æ–¹å‘çš„åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @return è¿”å›åœ¨å½’ä¸€åŒ–çº¹ç†åæ ‡(u, v) å¤„é€šè¿‡æœ€è¿‘é‚»é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				* @detail https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation
 				*/
 				template<typename _Elem>
@@ -366,10 +366,10 @@ namespace octoon
 				}
 
 				/*
-				* @brief ×î½üÁì²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄ¾ø¶ÔÏñËØ×ø±ê£¬·¶Î§ 0 ~ width
-				* @param[in] v yÖáµÄ·½ÏòµÄ¾ø¶ÔÏñËØ×ø±ê£¬·¶Î§ 0 ~ height
-				* @return ·µ»ØÔÚ¾ø¶ÔÏñËØÎÆÀí×ø±ê(u, v) ´¦Í¨¹ı×î½üÁÚ²ÉÑùÏñËØÊı¾İ
+				* @brief æœ€è¿‘é¢†é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„ç»å¯¹åƒç´ åæ ‡ï¼ŒèŒƒå›´ 0 ~ width
+				* @param[in] v yè½´çš„æ–¹å‘çš„ç»å¯¹åƒç´ åæ ‡ï¼ŒèŒƒå›´ 0 ~ height
+				* @return è¿”å›åœ¨ç»å¯¹åƒç´ çº¹ç†åæ ‡(u, v) å¤„é€šè¿‡æœ€è¿‘é‚»é‡‡æ ·åƒç´ æ•°æ®
 				* @detail https://en.wikipedia.org/wiki/Nearest-neighbor_interpolation
 				*/
 				template<typename _Elem>
@@ -387,10 +387,10 @@ namespace octoon
 				}
 
 				/*
-				* @brief Ë«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄ¹éÒ»»¯×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] v yÖáµÄ·½ÏòµÄ¹éÒ»»¯×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @return ·µ»ØÔÚ¹éÒ»»¯ÎÆÀí×ø±ê(u, v) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] v yè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @return è¿”å›åœ¨å½’ä¸€åŒ–çº¹ç†åæ ‡(u, v) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
 				template<typename _Elem>
@@ -435,10 +435,10 @@ namespace octoon
 				}
 
 				/*
-				* @brief Ë«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[in] v yÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @return ·µ»ØÔÚÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯ÎÆÀí×ø±ê(u, v) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[in] v yè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @return è¿”å›åœ¨æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–çº¹ç†åæ ‡(u, v) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
 				template<typename _Elem, typename _Float = float>
@@ -451,11 +451,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] v yÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] w zÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @return ·µ»ØÔÚ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê(u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] v yè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] w zè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @return è¿”å›åœ¨å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡(u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
@@ -489,11 +489,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] u xÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[in] v yÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[in] w zÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @return ·µ»ØÔÚÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê(u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] u xè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[in] v yè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[in] w zè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @return è¿”å›åœ¨æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡(u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
@@ -506,11 +506,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw[0] xÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] uvw[1] yÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @param[in] uvw[2] zÖáµÄ·½ÏòµÄ¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0.0 ~ 1.0
-				* @return ·µ»ØÔÚ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê(u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw[0] xè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] uvw[1] yè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[in] uvw[2] zè½´çš„æ–¹å‘çš„å½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @return è¿”å›åœ¨å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡(u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
@@ -519,11 +519,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw[0] xÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[in] uvw[1] yÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[in] uvw[2] zÖáµÄ·½ÏòµÄÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½Ìå×ø±ê£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @return ·µ»ØÔÚÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê(u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw[0] xè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[in] uvw[1] yè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[in] uvw[2] zè½´çš„æ–¹å‘çš„æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“åæ ‡ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @return è¿”å›åœ¨æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡(u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
@@ -532,9 +532,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw  ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w)£¬·¶Î§ 0.0 ~ 1.0
-				* @param[out] out ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw  å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w)ï¼ŒèŒƒå›´ 0.0 ~ 1.0
+				* @param[out] out å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
@@ -546,9 +546,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw  ÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w)£¬·¶Î§ 0.0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[out] out ÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw  æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w)ï¼ŒèŒƒå›´ 0.0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[out] out æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
 				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
@@ -560,11 +560,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw  ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w)£¬·¶Î§ 0 ~ 1.0f
-				* @param[out] out ¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
-				* @param[in] len Á¢·½ÌåÎÆÀí×ø±êµÄ³¤¶È
-				* @param[in] channel Á¢·½ÌåÎÆÀí×ø±êµÄÍ¨µÀÊıÁ¿, RGB = 3, RGBA = 4
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw  å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w)ï¼ŒèŒƒå›´ 0 ~ 1.0f
+				* @param[out] out å½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
+				* @param[in] len ç«‹æ–¹ä½“çº¹ç†åæ ‡çš„é•¿åº¦
+				* @param[in] channel ç«‹æ–¹ä½“çº¹ç†åæ ‡çš„é€šé“æ•°é‡, RGB = 3, RGBA = 4
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
@@ -576,11 +576,11 @@ namespace octoon
 				}
 
 				/*
-				* @brief Á¢·½ÌåÎÆÀíµÄË«ÏßĞÔ¹ıÂË²ÉÑù
-				* @param[in] uvw  ÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w)£¬·¶Î§ 0 ~ ÕûÊıÊı¾İÀàĞÍ×î´óÖµ
-				* @param[out] out ÕûÊı·¶Î§ÄÚÎ´¹éÒ»»¯Á¢·½ÌåÎÆÀí×ø±ê (u, v, w) ´¦Í¨¹ıË«ÏßĞÔ²ÉÑù»ñÈ¡µÄÏñËØÊı¾İ
-				* @param[in] len Á¢·½ÌåÎÆÀí×ø±êµÄ³¤¶È
-				* @param[in] channel Á¢·½ÌåÎÆÀí×ø±êµÄÍ¨µÀÊıÁ¿, RGB = 3, RGBA = 4
+				* @brief ç«‹æ–¹ä½“çº¹ç†çš„åŒçº¿æ€§è¿‡æ»¤é‡‡æ ·
+				* @param[in] uvw  æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w)ï¼ŒèŒƒå›´ 0 ~ æ•´æ•°æ•°æ®ç±»å‹æœ€å¤§å€¼
+				* @param[out] out æ•´æ•°èŒƒå›´å†…æœªå½’ä¸€åŒ–ç«‹æ–¹ä½“çº¹ç†åæ ‡ (u, v, w) å¤„é€šè¿‡åŒçº¿æ€§é‡‡æ ·è·å–çš„åƒç´ æ•°æ®
+				* @param[in] len ç«‹æ–¹ä½“çº¹ç†åæ ‡çš„é•¿åº¦
+				* @param[in] channel ç«‹æ–¹ä½“çº¹ç†åæ ‡çš„é€šé“æ•°é‡, RGB = 3, RGBA = 4
 				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
@@ -592,7 +592,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½«lutÖĞµÄÊı¾İĞòÁĞ»¯³É.cubeµÄ×Ö·û´®Á÷
+				* @brief å°†lutä¸­çš„æ•°æ®åºåˆ—åŒ–æˆ.cubeçš„å­—ç¬¦ä¸²æµ
 				*/
 				std::string dump() const noexcept
 				{
@@ -632,7 +632,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½âÎöÒ»¸öÀ´ÖÁcubeÎÄ¼şµÄÁ÷
+				* @brief è§£æä¸€ä¸ªæ¥è‡³cubeæ–‡ä»¶çš„æµ
 				*/
 				static basic_lut parse(std::istream& stream) noexcept(false)
 				{
@@ -643,7 +643,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½âÎöÒ»¸öÀ´ÖÁcubeµÄÎÄ¼ş
+				* @brief è§£æä¸€ä¸ªæ¥è‡³cubeçš„æ–‡ä»¶
 				*/
 				static basic_lut parse(const std::string& filepath) noexcept(false)
 				{
@@ -655,7 +655,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½âÎöÒ»¸öÀ´ÖÁcubeµÄÎÄ¼ş
+				* @brief è§£æä¸€ä¸ªæ¥è‡³cubeçš„æ–‡ä»¶
 				*/
 				static basic_lut parse(const char* filepath) noexcept(false)
 				{
@@ -667,7 +667,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½«lutÖĞµÄÊı¾İĞòÁĞ»¯³É.cubeµÄ×Ö·û´®Á÷
+				* @brief å°†lutä¸­çš„æ•°æ®åºåˆ—åŒ–æˆ.cubeçš„å­—ç¬¦ä¸²æµ
 				*/
 				friend std::ostream& operator << (std::ostream& os, const basic_lut& lut) noexcept
 				{
@@ -683,7 +683,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½«ÕûÊı¹éÒ»»¯³É¸¡µãÊı
+				* @brief å°†æ•´æ•°å½’ä¸€åŒ–æˆæµ®ç‚¹æ•°
 				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_integral<_Ty>::value | std::is_unsigned<_Ty>::value, _Tx>>
 				static std::enable_if_t<std::is_floating_point<_Tx>::value, _Tx> cast(_Ty x) noexcept
@@ -692,7 +692,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief ½«¸¡µãÊı³ËËãÕûÊı×î´óÖµ
+				* @brief å°†æµ®ç‚¹æ•°ä¹˜ç®—æ•´æ•°æœ€å¤§å€¼
 				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_floating_point<_Ty>::value>>
 				static std::enable_if_t<std::is_integral<_Tx>::value | std::is_unsigned<_Tx>::value, _Tx> cast(_Ty x) noexcept
@@ -701,7 +701,7 @@ namespace octoon
 				}
 
 				/*
-				* @brief È¡Ğ¡Êı²¿·Ö
+				* @brief å–å°æ•°éƒ¨åˆ†
 				*/
 				template<typename _Tx>
 				static _Tx frac(const _Tx x) noexcept
@@ -710,10 +710,10 @@ namespace octoon
 				}
 
 				/*
-				* @brief ÔÚt1 ºÍ t2 Ö®¼ä½øĞĞÏßĞÔ²åÖµ
-				* @param[in] t1 ³õÊ¼Öµ
-				* @param[in] t2 ÖÕÖ¹Öµ
-				* @param[in] t3 ²åÖµµÄ°Ù·Ö±È£¬·¶Î§ 0.0f ~ 1.0f
+				* @brief åœ¨t1 å’Œ t2 ä¹‹é—´è¿›è¡Œçº¿æ€§æ’å€¼
+				* @param[in] t1 åˆå§‹å€¼
+				* @param[in] t2 ç»ˆæ­¢å€¼
+				* @param[in] t3 æ’å€¼çš„ç™¾åˆ†æ¯”ï¼ŒèŒƒå›´ 0.0f ~ 1.0f
 				*/
 				template<typename _Tx, typename _Ty>
 				static _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
@@ -726,6 +726,30 @@ namespace octoon
 		}
 
 		using lut = detail::basic_lut<std::uint8_t>;
+
+		// Usage 1
+		// auto lut = octoon::image::lut::parse("xxx.cube"); // load the lut from .cube file
+		// for (std::size_t i = 0; i < image.size(); i++)
+		// {
+		//		auto& rgb = image[i];
+		// 		auto data = lut.lookup(rgb.r, rgb.g, rgb.b); The (r,g,b) can be extended to support these types of std::uint8_t, std::uint16_t, std::uint32_t, float, double
+		// 		rgb.r = data[0];
+		// 		rgb.g = data[1];
+		// 		rgb.b = data[2];
+		// }
+
+		// Usage 2
+		// auto lut = octoon::image::lut::parse("xxx.cube"); // load the lut from .cube file
+		// lut.lookup(image.data(), image.data(), image.size(), 3); The (r,g,b) can be extended to support these types of std::uint8_t, std::uint16_t, std::uint32_t, float, double
+
+		// Serializable to .cube stream
+		// method 1 : std::cout << lut.dump();
+		// method 2 : std::cout << lut;
+
+		// Serializable to image
+		// auto image = octoon::image::Image(octoon::image::Format::R8G8B8UNorm, lut.width, lut.height);
+		// std::memcpy((std::uint8_t*)image.data(), lut.data.get(), lut.width * lut.height * lut.channel);
+		// image.save("C:\\Users\\Administrator\\Desktop\\1.png", "png");
 	}
 }
 

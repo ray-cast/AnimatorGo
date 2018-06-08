@@ -209,7 +209,7 @@ namespace octoon
 							rgb[1] *= size / float(size - 1);
 							rgb[2] *= size / float(size - 1);
 
-							std::size_t n = (width * y + x) * 3;
+							std::size_t n = (width * y + x) * channel;
 							data[n + 0] = cast<T>(rgb[0]);
 							data[n + 1] = cast<T>(rgb[1]);
 							data[n + 2] = cast<T>(rgb[2]);
@@ -545,8 +545,8 @@ namespace octoon
 					return static_cast<_Tx>(std::min(std::max(x, 0.0f), 1.0f) * std::numeric_limits<_Tx>::max());
 				}
 
-				template<typename S>
-				static S frac(const S x) noexcept
+				template<typename _Tx>
+				static _Tx frac(const _Tx x) noexcept
 				{
 					return x - std::floor(x);
 				}

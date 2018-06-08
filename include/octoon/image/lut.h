@@ -410,7 +410,7 @@ namespace octoon
 					_Elem xw = frac(x);
 					_Elem yw = frac(y);
 
-					// linear interpolation
+					// bilinear interpolation
 					_Elem xw1 = 1.0f - xw;
 					_Elem xw2 = xw;
 					_Elem yw1 = 1.0f - yw;

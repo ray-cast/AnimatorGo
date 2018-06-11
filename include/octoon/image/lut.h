@@ -542,14 +542,6 @@ namespace octoon
 				* @param[in] channel 立方体纹理坐标的通道数量, RGB = 3, RGBA = 4
 				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
-				/*
-				* @brief Bilinear filtering
-				* @param[in] t1 begin point
-				* @param[in] t2 end point
-				* @param[in] t unit interval, the unit interval is a value of weight that closed interval [0, 1]
-				* @return return an bilinear interpolation between two parameters (t1, t2) for a weight 't'
-				* @detail https://en.wikipedia.org/wiki/Linear_interpolation
-				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
 				{

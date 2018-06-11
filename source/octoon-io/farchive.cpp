@@ -107,7 +107,7 @@ namespace octoon
 				return ios_base::none;
 			}
 #else
-			return ItemType::NA;
+			return ios_base::none;
 #endif
 		}
 

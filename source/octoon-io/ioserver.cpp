@@ -10,6 +10,14 @@ namespace octoon
 	{
 		OctoonImplementSingleton(IoServer);
 
+		IoServer::IoServer() noexcept
+		{
+		}
+
+		IoServer::~IoServer() noexcept
+		{
+		}
+
 		void
 		IoServer::mount_archive(const std::string& vpath, const archive_pointer& vdir)
 		{

@@ -24,6 +24,9 @@ namespace octoon
 		{
 			OctoonDeclareSingleton(IoServer)
 		public:
+			IoServer() noexcept;
+			~IoServer() noexcept;
+
 			/*
 			* Register an entry to the IoServer, so that the file contained in that
 			* entry an be found.
@@ -35,6 +38,10 @@ namespace octoon
 			archive_pointer unmount_archive(const std::string& path);
 
 			archive_pointer get_archive(const Orl& orl) const;
+
+		private:
+			IoServer(const IoServer&) = delete;
+			IoServer& operator=(const IoServer&) = delete;
 
 		private:
 			std::map<std::string, std::shared_ptr<archive>> registry_;

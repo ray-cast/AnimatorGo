@@ -24,8 +24,8 @@ namespace octoon
 			~zarchive() noexcept;
 
 			std::unique_ptr<stream_buf> open(const Orl& orl, const ios_base::open_mode options) override;
-			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
-			ItemType exists(const Orl& orl) override;
+			bool remove(const Orl& orl, ios_base::file_type type = ios_base::file) override;
+			ios_base::file_type exists(const Orl& orl) override;
 
 		private:
 

@@ -13,19 +13,6 @@ namespace octoon
 	namespace io
 	{
 		/*
-		* File system item types supported by `octoon-io`. This type is used to ensure
-		* all FS operations are adopted as expected. `NA` stands for 'not available',
-		* meaning that the file was not found or of a type out of capability of
-		* `octoon-io`.
-		*/
-		enum class ItemType
-		{
-			File,
-			Directory,
-			NA
-		};
-
-		/*
 		* A virtual directory in `IoServer`. Different variants of virtual
 		* directories are distinguished by URI scheme.
 		*/
@@ -53,7 +40,7 @@ namespace octoon
 			*   `true` if the file located at `orl` is successfully removed or the file
 			*   doesn't exist.
 			*/
-			virtual bool remove(const Orl& orl, ItemType type = ItemType::File) = 0;
+			virtual bool remove(const Orl& orl, ios_base::file_type type = ios_base::file) = 0;
 
 			/*
 			* Test if a file exists in current virtual directory.
@@ -61,7 +48,7 @@ namespace octoon
 			* Returns:
 			*   Type of file found via `orl`. `Unknown` if the item doesn't exist.
 			*/
-			virtual ItemType exists(const Orl& orl) = 0;
+			virtual ios_base::file_type exists(const Orl& orl) = 0;
 		};
 
 		using archive_pointer = std::shared_ptr<archive>;

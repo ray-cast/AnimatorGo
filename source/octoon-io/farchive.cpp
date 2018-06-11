@@ -46,7 +46,7 @@ namespace octoon
 			auto parent = orl.parent();
 
 			// Check if the file exists.
-			if (exists(orl) == ItemType::NA)
+			if (exists(orl) == ios_base::none)
 			{
 				// Make sure it can create files and directories.
 				if (!(opts | ios_base::out) || !(opts | ios_base::trunc)) {
@@ -54,7 +54,7 @@ namespace octoon
 				}
 
 				// Create missing segments.
-				if (exists(parent) == ItemType::NA && !std::filesystem::create_directories(make_path(parent))) {
+				if (exists(parent) == ios_base::none && !std::filesystem::create_directories(make_path(parent))) {
 					return nullptr;
 				}
 			}
@@ -70,7 +70,7 @@ namespace octoon
 		}
 
 		bool
-		farchive::remove(const Orl& orl, ItemType type)
+		farchive::remove(const Orl& orl, ios_base::file_type type)
 		{
 #ifdef _MSC_VER
 			auto path = make_path(orl);
@@ -78,11 +78,11 @@ namespace octoon
 			if (status == std::filesystem::file_type::not_found) {
 				return false;
 			}
-			if (type == ItemType::File &&
+			if (type == ios_base::file &&
 				status == std::filesystem::file_type::regular) {
 				return std::filesystem::remove(path);
 			}
-			if (type == ItemType::Directory &&
+			if (type == ios_base::directory &&
 				status == std::filesystem::file_type::directory) {
 				return std::filesystem::remove_all(path);
 			}
@@ -92,7 +92,7 @@ namespace octoon
 #endif
 		}
 
-		ItemType
+		ios_base::file_type
 		farchive::exists(const Orl& orl)
 		{
 #ifdef _MSC_VER
@@ -100,11 +100,11 @@ namespace octoon
 			switch (status.type())
 			{
 			case std::filesystem::file_type::regular:
-				return ItemType::File;
+				return ios_base::file;
 			case std::filesystem::file_type::directory:
-				return ItemType::Directory;
+				return ios_base::directory;
 			default:
-				return ItemType::NA;
+				return ios_base::none;
 			}
 #else
 			return ItemType::NA;

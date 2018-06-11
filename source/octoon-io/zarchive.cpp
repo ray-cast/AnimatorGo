@@ -59,16 +59,16 @@ namespace octoon
 		}
 
 		bool
-		zarchive::remove(const Orl& orl, ItemType type)
+		zarchive::remove(const Orl& orl, ios_base::file_type type)
 		{
 			return false;
 		}
 
-		ItemType
+		ios_base::file_type
 		zarchive::exists(const Orl& orl)
 		{
 			if (entries_ == nullptr)
-				return ItemType::NA;
+				return ios_base::none;
 
 			auto size = orl.path().size();
 			for (auto entry : *(std::vector<zipper::ZipEntry>*)entries_)
@@ -76,16 +76,16 @@ namespace octoon
 				if (entry.name.size() == size)
 				{
 					if (entry.name == orl.path())
-						return ItemType::File;
+						return ios_base::file;
 				}
 				else if (entry.name.size() == size + 1)
 				{
 					if (orl.path().compare(entry.name) == 0 && entry.name.back() == '/')
-						return ItemType::Directory;
+						return ios_base::directory;
 				}
 			}
 
-			return ItemType::NA;
+			return ios_base::none;
 		}
 	}
 }

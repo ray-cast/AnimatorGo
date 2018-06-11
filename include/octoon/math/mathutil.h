@@ -115,11 +115,11 @@ namespace octoon
 		}
 
 		template<typename _Tx, typename _Ty>
-		constexpr _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
+		constexpr _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t) noexcept
 		{
-			if (t3 == 0) return t1; // float-precision
-			if (t3 == 1) return t2; // float-precision
-			return t1 + (t2 - t1) * t3;
+			if (t == 0) return t1; // due to float-precision arithmetic error
+			if (t == 1) return t2; // due to float-precision arithmetic error
+			return t1 * (1.0f - t) + t2 * t;
 		}
 
 		template<typename T>

@@ -54,51 +54,6 @@ namespace octoon
 			};
 
 			template<typename T>
-			struct Vector2
-			{
-				T x, y;
-
-				Vector2() = default;
-				Vector2(T xx, T yy) noexcept :x(xx), y(yy) {}
-
-				Vector2& operator+=(T scale) noexcept { x += scale; y += scale; return *this; }
-				Vector2& operator-=(T scale) noexcept { x -= scale; y -= scale; return *this; }
-				Vector2& operator*=(T scale) noexcept { x *= scale; y *= scale; return *this; }
-				Vector2& operator/=(T scale) noexcept { x /= scale; y /= scale; return *this; }
-
-				Vector2& operator+=(const Vector2& r) noexcept { x += r.x; y += r.y; return *this; }
-				Vector2& operator-=(const Vector2& r) noexcept { x -= r.x; y -= r.y; return *this; }
-				Vector2& operator*=(const Vector2& r) noexcept { x *= r.x; y *= r.y; return *this; }
-				Vector2& operator/=(const Vector2& r) noexcept { x /= r.x; y /= r.y; return *this; }
-
-				friend Vector2 operator+(const Vector2& l, const Vector2& r) noexcept { return Vector2(l.x + r.x, l.y + r.y); }
-				friend Vector2 operator-(const Vector2& l, const Vector2& r) noexcept { return Vector2(l.x - r.x, l.y - r.y); }
-				friend Vector2 operator*(const Vector2& l, const Vector2& r) noexcept { return Vector2(l.x * r.x, l.y * r.y); }
-				friend Vector2 operator/(const Vector2& l, const Vector2& r) noexcept { return Vector2(l.x / r.x, l.y / r.y); }
-
-				template<typename S>
-				friend Vector2 operator+(const Vector2& l, S scale) noexcept { return Vector2(l.x + scale, l.y + scale); }
-				template<typename S>
-				friend Vector2 operator-(const Vector2& l, S scale) noexcept { return Vector2(l.x - scale, l.y - scale); }
-				template<typename S>
-				friend Vector2 operator*(const Vector2& l, S scale) noexcept { return Vector2(l.x * scale, l.y * scale); }
-				template<typename S>
-				friend Vector2 operator/(const Vector2& l, S scale) noexcept { return Vector2(l.x / scale, l.y / scale); }
-
-				const T operator[](std::uint8_t i) const noexcept
-				{
-					assert(i < 2);
-					return *(&x + i);
-				}
-
-				const T& operator[](std::uint8_t i) noexcept
-				{
-					assert(i < 2);
-					return *(&x + i);
-				}
-			};
-
-			template<typename T>
 			struct Vector3
 			{
 				T x, y, z;
@@ -252,10 +207,9 @@ namespace octoon
 				}
 				
 				/*
-				* @brief 创建3D lut 查找表
+				* @brief 加载 .cube文件并且生成一张3D lut 查找表
 				* @param[in] s .cube文件的起始内容
 				* @param[in] n .cube文件的长度
-				* @details 加载cube文件并且生成一张3D lut 查找表
 				*/
 				void create(const char* s, std::size_t n) noexcept(false)
 				{
@@ -263,9 +217,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief 创建3D lut 查找表
+				* @brief 加载 .cube流并且生成一张3D lut 查找表
 				* @param[in] strean .cube文件的流
-				* @details 加载cube流并且生成一张3D lut 查找表
 				*/
 				void create(std::istream& stream) noexcept(false)
 				{
@@ -435,27 +388,12 @@ namespace octoon
 				}
 
 				/*
-				* @brief 双线性过滤采样
-				* @param[in] u x轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
-				* @param[in] v y轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
-				* @return 返回在整数范围内未归一化纹理坐标(u, v) 处通过双线性采样获取的像素数据
-				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
-				*/
-				template<typename _Elem, typename _Float = float>
-				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v)
-				{
-					auto uu = (_Float)u / std::numeric_limits<_Elem>::max();
-					auto vv = (_Float)v / std::numeric_limits<_Elem>::max();
-					auto pixel = lookup(uu, vv);
-					return Vector3<_Elem>(cast<_Elem, T>(pixel[0]), cast<_Elem, T>(pixel[1]), cast<_Elem, T>(pixel[2]));
-				}
-
-				/*
-				* @brief 立方体纹理的双线性过滤采样
+				* @brief 立方体纹理坐标的双线性过滤采样
 				* @param[in] u x轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @param[in] v y轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @param[in] w z轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @return 返回在归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
@@ -490,27 +428,11 @@ namespace octoon
 
 				/*
 				* @brief 立方体纹理的双线性过滤采样
-				* @param[in] u x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @param[in] v y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @param[in] w z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
-				*/
-				template<typename _Elem, typename _Float = float>
-				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
-				{
-					auto uu = (_Float)u / std::numeric_limits<_Elem>::max();
-					auto vv = (_Float)v / std::numeric_limits<_Elem>::max();
-					auto ww = (_Float)w / std::numeric_limits<_Elem>::max();
-					auto pixel = lookup(uu, vv, ww);
-					return Vector3<_Elem>(cast<_Elem, T>((T)pixel[0]), cast<_Elem, T>((T)pixel[1]), cast<_Elem, T>((T)pixel[2]));
-				}
-
-				/*
-				* @brief 立方体纹理的双线性过滤采样
 				* @param[in] uvw[0] x轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @param[in] uvw[1] y轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @param[in] uvw[2] z轴的方向的归一化立方体坐标，范围 0.0 ~ 1.0
 				* @return 返回在归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
@@ -520,21 +442,9 @@ namespace octoon
 
 				/*
 				* @brief 立方体纹理的双线性过滤采样
-				* @param[in] uvw[0] x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @param[in] uvw[1] y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @param[in] uvw[2] z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
-				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
-				*/
-				template<typename _Elem>
-				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
-				{
-					return lookup(uvw[0], uvw[1], uvw[2]);
-				}
-
-				/*
-				* @brief 立方体纹理的双线性过滤采样
 				* @param[in] uvw  归一化立方体纹理坐标 (u, v, w)，范围 0.0 ~ 1.0
 				* @param[out] out 归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
 				*/
 				template<typename _Elem>
 				std::enable_if_t<std::is_floating_point<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
@@ -547,21 +457,7 @@ namespace octoon
 
 				/*
 				* @brief 立方体纹理的双线性过滤采样
-				* @param[in] uvw  整数范围内未归一化立方体纹理坐标 (u, v, w)，范围 0.0 ~ 整数数据类型最大值
-				* @param[out] out 整数范围内未归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
-				*/
-				template<typename _Elem, typename _Float = float>
-				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
-				{
-					auto v = lookup<_Elem, _Float>(uvw[0], uvw[1], uvw[2]);
-					out[0] = v[0];
-					out[1] = v[1];
-					out[2] = v[2];
-				}
-
-				/*
-				* @brief 立方体纹理的双线性过滤采样
-				* @param[in] uvw  归一化立方体纹理坐标 (u, v, w)，范围 0 ~ 1.0f
+				* @param[in] uvw  归一化立方体纹理坐标 (u, v, w)，范围 0.0f ~ 1.0f
 				* @param[out] out 归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
 				* @param[in] len 立方体纹理坐标的长度
 				* @param[in] channel 立方体纹理坐标的通道数量, RGB = 3, RGBA = 4
@@ -576,11 +472,83 @@ namespace octoon
 				}
 
 				/*
+				* @brief 双线性过滤采样
+				* @param[in] u x轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] v y轴的方向的整数范围内未归一化坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化纹理坐标(u, v) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
+				template<typename _Elem, typename _Float = float>
+				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v)
+				{
+					auto uu = (_Float)u / std::numeric_limits<_Elem>::max();
+					auto vv = (_Float)v / std::numeric_limits<_Elem>::max();
+					auto pixel = lookup(uu, vv);
+					return Vector3<_Elem>(cast<_Elem, T>(pixel[0]), cast<_Elem, T>(pixel[1]), cast<_Elem, T>(pixel[2]));
+				}
+
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] u x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] v y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] w z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
+				template<typename _Elem, typename _Float = float>
+				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem u, const _Elem v, const _Elem w)
+				{
+					auto uu = (_Float)u / std::numeric_limits<_Elem>::max();
+					auto vv = (_Float)v / std::numeric_limits<_Elem>::max();
+					auto ww = (_Float)w / std::numeric_limits<_Elem>::max();
+					auto pixel = lookup(uu, vv, ww);
+					return Vector3<_Elem>(cast<_Elem, T>((T)pixel[0]), cast<_Elem, T>((T)pixel[1]), cast<_Elem, T>((T)pixel[2]));
+				}
+
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw[0] x轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] uvw[1] y轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @param[in] uvw[2] z轴的方向的整数范围内未归一化立方体坐标，范围 0 ~ 整数数据类型最大值
+				* @return 返回在整数范围内未归一化立方体纹理坐标(u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
+				template<typename _Elem>
+				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value, Vector3<_Elem>> lookup(const _Elem uvw[3])
+				{
+					return lookup(uvw[0], uvw[1], uvw[2]);
+				}
+
+				/*
+				* @brief 立方体纹理的双线性过滤采样
+				* @param[in] uvw  整数范围内未归一化立方体纹理坐标 (u, v, w)，范围 0.0 ~ 整数数据类型最大值
+				* @param[out] out 整数范围内未归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
+				template<typename _Elem, typename _Float = float>
+				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem uvw[3], _Elem out[3])
+				{
+					auto v = lookup<_Elem, _Float>(uvw[0], uvw[1], uvw[2]);
+					out[0] = v[0];
+					out[1] = v[1];
+					out[2] = v[2];
+				}
+
+				/*
 				* @brief 立方体纹理的双线性过滤采样
 				* @param[in] uvw  整数范围内未归一化立方体纹理坐标 (u, v, w)，范围 0 ~ 整数数据类型最大值
 				* @param[out] out 整数范围内未归一化立方体纹理坐标 (u, v, w) 处通过双线性采样获取的像素数据
 				* @param[in] len 立方体纹理坐标的长度
 				* @param[in] channel 立方体纹理坐标的通道数量, RGB = 3, RGBA = 4
+				* @detail https://en.wikipedia.org/wiki/Bilinear_interpolation#Alternative_algorithm
+				*/
+				/*
+				* @brief Bilinear filtering
+				* @param[in] t1 begin point
+				* @param[in] t2 end point
+				* @param[in] t unit interval, the unit interval is a value of weight that closed interval [0, 1]
+				* @return return an bilinear interpolation between two parameters (t1, t2) for a weight 't'
+				* @detail https://en.wikipedia.org/wiki/Linear_interpolation
 				*/
 				template<typename _Elem, typename _Float = float>
 				std::enable_if_t<std::is_integral<_Elem>::value | std::is_unsigned<_Elem>::value> lookup(const _Elem* uvw, _Elem* out, std::size_t len, std::uint8_t channel = 3)
@@ -592,7 +560,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief 将lut中的数据序列化成.cube的字符串流
+				* @brief serialization function for LUT values
+				* @return string containing the serialization of the LUT value as the .cube string
 				*/
 				std::string dump() const noexcept
 				{
@@ -632,7 +601,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief 解析一个来至cube文件的流
+				* @brief deserialization from a .cube stream
+				* @param[in] stream stream to read a serialized .cube value from
+				* @return result of the deserialization
 				*/
 				static basic_lut parse(std::istream& stream) noexcept(false)
 				{
@@ -643,7 +614,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief 解析一个来至cube的文件
+				* @brief deserialization from a .cube file
+				* @param[in] filepath path to read a .cube file from disk
+				* @return result of the deserialization
 				*/
 				static basic_lut parse(const std::string& filepath) noexcept(false)
 				{
@@ -655,7 +628,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief 解析一个来至cube的文件
+				* @brief deserialization from a .cube file
+				* @param[in] filepath path to read a .cube file from disk
+				* @return result of the deserialization
 				*/
 				static basic_lut parse(const char* filepath) noexcept(false)
 				{
@@ -667,7 +642,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief 将lut中的数据序列化成.cube的字符串流
+				* @brief serialization function for LUT values
+				* @return stream containing the serialization of the LUT value as the .cube stream
 				*/
 				friend std::ostream& operator << (std::ostream& os, const basic_lut& lut) noexcept
 				{
@@ -676,6 +652,9 @@ namespace octoon
 				}
 
 			private:
+				/*
+				* @brief there is nothing to do, when the two typename (_Tx, _Ty) are the same types
+				*/
 				template<typename _Tx, typename _Ty>
 				static std::enable_if_t<std::is_same<_Tx, _Ty>::value, _Tx> cast(_Ty x) noexcept
 				{
@@ -683,7 +662,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief 将整数归一化成浮点数
+				* @brief 'x' multiple with a maximum value of int, where input parameter (x) is a non-normalized value
+				* @return return a normalized value
 				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_integral<_Ty>::value | std::is_unsigned<_Ty>::value, _Tx>>
 				static std::enable_if_t<std::is_floating_point<_Tx>::value, _Tx> cast(_Ty x) noexcept
@@ -692,7 +672,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief 将浮点数乘算整数最大值
+				* @brief 'x' multiple with a maximum value of int, where input parameter (x) is a normalized value
+				* @return return a non-normalized value
 				*/
 				template<typename _Tx, typename _Ty, typename = std::enable_if_t<std::is_floating_point<_Ty>::value>>
 				static std::enable_if_t<std::is_integral<_Tx>::value | std::is_unsigned<_Tx>::value, _Tx> cast(_Ty x) noexcept
@@ -701,26 +682,40 @@ namespace octoon
 				}
 
 				/*
-				* @brief 取小数部分
+				* @brief helper-function "frac", fraction calling
+				* @params[in] x
+				* @return The result is a fractional part of x
 				*/
 				template<typename _Tx>
-				static _Tx frac(const _Tx x) noexcept
+				static std::enable_if_t<std::is_floating_point<_Tx>::value, _Tx> frac(const _Tx x) noexcept
 				{
 					return x - std::floor(x);
 				}
 
 				/*
-				* @brief 在t1 和 t2 之间进行线性插值
-				* @param[in] t1 初始值
-				* @param[in] t2 终止值
-				* @param[in] t3 插值的百分比，范围 0.0f ~ 1.0f
+				* @brief helper-function "frac", fraction calling
+				* @params[in] x
+				* @return The result is a fractional part of x
+				*/
+				template<typename _Tx>
+				static std::enable_if_t<std::is_integral<_Tx>::value | std::is_unsigned<_Tx>::value, _Tx> frac(const _Tx x) noexcept
+				{
+					return 0;
+				}
+
+				/*
+				* @brief helper-function "lerp", return an linear interpolation between two parameters (t1, t2) for a weight 't'
+				* @param[in] t1 begin point
+				* @param[in] t2 end point
+				* @param[in] t unit interval, the unit interval is a value of weight that closed interval [0, 1]
+				* @detail https://en.wikipedia.org/wiki/Linear_interpolation
 				*/
 				template<typename _Tx, typename _Ty>
-				static _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t3) noexcept
+				static _Tx lerp(const _Tx t1, const _Tx t2, const _Ty t) noexcept
 				{
-					if (t3 == 0) return t1; // float-precision
-					if (t3 == 1) return t2; // float-precision
-					return t1 + (t2 - t1) * t3;
+					if (t == 0) return t1; // due to float-precision arithmetic error
+					if (t == 1) return t2; // due to float-precision arithmetic error
+					return t1 * (1.0f - t) + t2 * t;
 				}
 			};
 		}
@@ -743,10 +738,13 @@ namespace octoon
 		// lut.lookup(image.data(), image.data(), image.size(), 3); The (r,g,b) can be extended to support these types of std::uint8_t, std::uint16_t, std::uint32_t, float, double
 
 		// Serializable to .cube stream
-		// method 1 : std::cout << lut.dump();
-		// method 2 : std::cout << lut;
-
-		// Serializable to image
+		// Usage 1
+		// std::cout << lut.dump();
+		//
+		// Usage 2 
+		// std::cout << lut;
+		//
+		// Usage 3
 		// auto image = octoon::image::Image(octoon::image::Format::R8G8B8UNorm, lut.width, lut.height);
 		// std::memcpy((std::uint8_t*)image.data(), lut.data.get(), lut.width * lut.height * lut.channel);
 		// image.save("C:\\Users\\Administrator\\Desktop\\1.png", "png");

@@ -3,12 +3,19 @@
 #include <octoon/image/image.h>
 #include <octoon/io/vstream.h>
 #include <octoon/video/render_system.h>
+#include <octoon/video/ggx_material.h>
+#include <octoon/model/model.h>
+#include <octoon/model/property.h>
+#include <octoon/mesh_filter_component.h>
+#include <octoon/mesh_renderer_component.h>
 #include <octoon/runtime/except.h>
+#include <octoon/runtime/string.h>
 
 using namespace octoon::io;
 using namespace octoon::image;
 using namespace octoon::graphics;
 using namespace octoon::video;
+using namespace octoon::model;
 
 namespace octoon
 {
@@ -20,6 +27,51 @@ namespace octoon
 
 	ResManager::~ResManager() noexcept
 	{
+	}
+
+	GameObjectPtr 
+	ResManager::createModel(const std::string& path, bool cache) except
+	{
+		auto it = _prefabs.find(path);
+		if (it != _prefabs.end())
+			return (*it).second->clone();
+
+		Model model(path);
+
+		auto actor = GameObject::create(path);
+		auto rootPath = runtime::string::directory(path);
+
+		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
+		{
+			auto mesh = model.get<Model::mesh>(i);
+			auto materialProp = model.get<Model::material>(i);
+
+			std::string name;
+			materialProp->get(MATKEY_NAME, name);
+
+			std::string textureName;
+			materialProp->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+
+			math::float3 base;
+			materialProp->get(MATKEY_COLOR_DIFFUSE, base);
+
+			math::float3 ambient;
+			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
+
+			auto material = std::make_shared<video::GGXMaterial>();
+			material->setAmbientColor(base);
+			material->setBaseColor(math::float3::Zero);
+			material->setTexture(ResManager::instance()->createTexture(rootPath + textureName));
+
+			auto object = GameObject::create(std::move(name));
+			object->addComponent<MeshFilterComponent>(mesh);
+			object->addComponent<MeshRendererComponent>(std::move(material));
+			object->setParent(actor);
+		}
+
+		_prefabs[path] = actor->clone();
+
+		return actor;
 	}
 
 	graphics::GraphicsTexturePtr

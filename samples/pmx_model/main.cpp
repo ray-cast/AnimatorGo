@@ -94,8 +94,6 @@ private:
 	std::shared_ptr<octoon::video::GGXMaterial> material_;
 };
 
-
-
 int main(int argc, const char* argv[])
 {
 	if (!::OctoonInit(argv[0], ""))
@@ -113,36 +111,8 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 		camera->addComponent<CubeController>();
 
-		std::string rootPath = "";
-
-		octoon::GameObjects objects;
-		octoon::model::Model model(rootPath + "luo.pmx");
-
-		for (std::size_t i = 0; i < model.get<octoon::model::Model::material>().size(); i++)
-		{
-			auto mesh = model.get<octoon::model::Model::mesh>(i);
-			auto materialProp = model.get<octoon::model::Model::material>(i);
-
-			std::string textureName;
-			materialProp->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
-
-			octoon::math::float3 base;
-			materialProp->get(MATKEY_COLOR_DIFFUSE, base);
-
-			octoon::math::float3 ambient;
-			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
-
-			auto material = std::make_shared<octoon::video::GGXMaterial>();
-			material->setAmbientColor(base);
-			material->setBaseColor(octoon::math::float3::Zero);
-			material->setTexture(octoon::ResManager::instance()->createTexture(rootPath + textureName));
-
-			auto object = octoon::GameObject::create("actor");
-			object->addComponent<octoon::MeshFilterComponent>(mesh);
-			object->addComponent<octoon::MeshRendererComponent>(std::move(material));
-			objects.push_back(object);
-		}
-
+		auto model = octoon::ResManager::instance()->createModel("luo.pmx");
+		
 		::OctoonMainLoop();
 	}
 

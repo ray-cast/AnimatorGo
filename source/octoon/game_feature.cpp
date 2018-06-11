@@ -29,6 +29,7 @@ namespace octoon
 			isActived_ = active;
 		}
 	}
+
 	bool
 	GameFeature::getActive() noexcept
 	{

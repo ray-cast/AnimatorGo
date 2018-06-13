@@ -14,11 +14,11 @@ Supported compilers:
 Support platforms:
 ------
 * Windows (Only tested on XP, Vista, 7, 8, 10)
-* Linux (Only tested on Ubuntu, Centos)
-* HTML5
-* Android (future)
-* ios (future)
-* mac (future)
+* Linux (Only tested on Ubuntu 16.10, Ubuntu 18.04, Centos 7.3)
+* HTML5 (Only tested on Google chrome with WebGL 2.0)
+* Android (Future)
+* ios (Future)
+* mac (Future)
 
 Support rendering backends:
 ------

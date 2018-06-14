@@ -592,6 +592,58 @@ namespace octoon
 					return stream.str();
 				}
 
+				void dumpTGA(std::ostream& stream) const noexcept
+				{
+					assert(stream);
+					assert(this->width > std::numeric_limits<std::uint16_t>::max() || this->height > std::numeric_limits<std::uint16_t>::max());
+
+					std::uint8_t  id_length = 0;
+					std::uint8_t  colormap_type = 0;
+					std::uint8_t  image_type = 2;
+					std::uint16_t colormap_index = 0;
+					std::uint16_t colormap_length = 0;
+					std::uint8_t  colormap_size = 0;
+					std::uint16_t x_origin = 0;
+					std::uint16_t y_origin = 0;
+					std::uint16_t w = (std::uint16_t)this->width;
+					std::uint16_t h = (std::uint16_t)this->height;
+					std::uint8_t  pixel_size = this->channel * 8;
+					std::uint8_t  attributes = this->channel == 4 ? 8 : 0;			
+
+					stream.write((char*)&id_length, sizeof(id_length));
+					stream.write((char*)&colormap_type, sizeof(colormap_type));
+					stream.write((char*)&image_type, sizeof(image_type));
+					stream.write((char*)&colormap_index, sizeof(colormap_index));
+					stream.write((char*)&colormap_length, sizeof(colormap_length));
+					stream.write((char*)&colormap_size, sizeof(colormap_size));
+					stream.write((char*)&x_origin, sizeof(x_origin));
+					stream.write((char*)&y_origin, sizeof(y_origin));
+					stream.write((char*)&w, sizeof(w));
+					stream.write((char*)&h, sizeof(h));
+					stream.write((char*)&pixel_size, sizeof(pixel_size));
+					stream.write((char*)&attributes, sizeof(attributes));
+
+					stream.write((char*)this->data.get(), this->width * this->height * this->channel);
+				}
+
+				void dumpTGA(const char* filepath) const noexcept(false)
+				{
+					auto stream = std::ofstream(filepath, std::ios_base::out);
+					if (stream)
+						this->dumpTGA(stream);
+					else
+						throw std::runtime_error("failed to open the file: " + std::string(filepath));
+				}
+
+				void dumpTGA(const std::string& filepath) const noexcept(false)
+				{
+					auto stream = std::ofstream(filepath, std::ios_base::out);
+					if (stream)
+						this->dumpTGA(stream);
+					else
+						throw std::runtime_error("failed to open the file: " + filepath);
+				}
+
 				/*
 				* @brief deserialization from a .cube stream
 				* @param[in] stream stream to read a serialized .cube value from
@@ -645,7 +697,7 @@ namespace octoon
 
 			private:
 				/*
-				* @brief there is nothing to do, when the two typename (_Tx, _Ty) are the same types
+				* @brief there is nothing to do, when two typename (_Tx, _Ty) are the same types
 				*/
 				template<typename _Tx, typename _Ty>
 				static std::enable_if_t<std::is_same<_Tx, _Ty>::value, _Tx> cast(_Ty x) noexcept
@@ -674,8 +726,8 @@ namespace octoon
 				}
 
 				/*
-				* @brief helper-function "frac", fraction calling
-				* @params[in] x
+				* @brief helper-function "frac", fraction calling, compute the fractional part of x, where input parameter (x) is a floating-point
+				* @params[in] x the input parameter (x) must be a floating-point
 				* @return The result is a fractional part of x
 				*/
 				template<typename _Tx>
@@ -685,9 +737,9 @@ namespace octoon
 				}
 
 				/*
-				* @brief helper-function "frac", fraction calling
-				* @params[in] x
-				* @return The result is a fractional part of x
+				* @brief helper-function "frac", fraction calling, compute the fractional part of x, where input parameter (x) is a interger
+				* @params[in] x the input parameter (x) must be a interger
+				* @return The result is always zero
 				*/
 				template<typename _Tx>
 				static std::enable_if_t<std::is_integral<_Tx>::value | std::is_unsigned<_Tx>::value, _Tx> frac(const _Tx x) noexcept
@@ -736,10 +788,12 @@ namespace octoon
 		// Usage 2 
 		// std::cout << lut;
 		//
-		// Usage 3
-		// auto image = octoon::image::Image(octoon::image::Format::R8G8B8UNorm, lut.width, lut.height);
-		// std::memcpy((std::uint8_t*)image.data(), lut.data.get(), lut.width * lut.height * lut.channel);
-		// image.save("C:\\Users\\Administrator\\Desktop\\1.png", "png");
+		// Serializable to image
+		// Usage 1
+		// lut.dumpTGA("C:\\Users\\User Name\\Desktop\\1.tga");
+		//
+		// Usage 2
+		// lut.dumpTGA(stream);
 	}
 }
 

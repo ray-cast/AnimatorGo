@@ -595,7 +595,7 @@ namespace octoon
 				void dumpTGA(std::ostream& stream) const noexcept
 				{
 					assert(stream);
-					assert(this->width > std::numeric_limits<std::uint16_t>::max() || this->height > std::numeric_limits<std::uint16_t>::max());
+					assert(this->width < std::numeric_limits<std::uint16_t>::max() || this->height < std::numeric_limits<std::uint16_t>::max());
 
 					std::uint8_t  id_length = 0;
 					std::uint8_t  colormap_type = 0;
@@ -623,7 +623,11 @@ namespace octoon
 					stream.write((char*)&pixel_size, sizeof(pixel_size));
 					stream.write((char*)&attributes, sizeof(attributes));
 
-					stream.write((char*)this->data.get(), this->width * this->height * this->channel);
+					std::vector<std::uint8_t> buffer(this->width * this->height * this->channel);
+					for (std::size_t i = 0; i < buffer.size(); i++)
+						buffer[i] = cast<std::uint8_t>(this->data[i]);
+
+					stream.write((char*)buffer.data(), this->width * this->height * this->channel);
 				}
 
 				void dumpTGA(const char* filepath) const noexcept(false)

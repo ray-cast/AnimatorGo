@@ -410,7 +410,7 @@ namespace octoon
 					c[1] = v * ((this->height - 1.0f) / this->height);
 					c[2] = w * ((this->height - 1.0f) / this->height);
 
-					_Elem slice = c[2] * this->height - 0.5f;
+					_Elem slice = c[2] * this->height;
 					_Elem s = frac(slice);
 					slice -= s;
 

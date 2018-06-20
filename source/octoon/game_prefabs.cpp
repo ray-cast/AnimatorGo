@@ -12,6 +12,7 @@
 #include <octoon/model/text_meshing.h>
 
 #include <octoon/camera_component.h>
+#include <octoon/transform_component.h>
 #include <octoon/first_person_camera_component.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
@@ -40,11 +41,12 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCamera() except
 	{
-		auto camera = octoon::GameObject::create("MainCamera");
-		camera->addComponent<octoon::CameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
+		auto camera = GameObject::create("MainCamera");
+		camera->addComponent<CameraComponent>();
+		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
+		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Perspective);
+		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -10));
+		camera->addComponent<FirstPersonCameraComponent>();
 
 		return camera;
 	}
@@ -52,11 +54,12 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCamera2D() except
 	{
-		auto camera = octoon::GameObject::create("MainCamera");
-		camera->addComponent<octoon::CameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
+		auto camera = GameObject::create("MainCamera");
+		camera->addComponent<CameraComponent>();
+		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
+		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Ortho);
+		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -10));
+		camera->addComponent<FirstPersonCameraComponent>();
 
 		return camera;
 	}
@@ -172,9 +175,9 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createText(const wchar_t* text, const char* fontPath) noexcept
 	{
-		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, 24 })));
-		object->addComponent<octoon::MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		auto object = GameObject::create();
+		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, 24 })));
+		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 
 		return object;
 	}

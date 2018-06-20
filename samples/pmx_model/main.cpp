@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept
+	octoon::GameComponentPtr clone() const noexcept override
 	{
 		return std::make_shared<CubeController>();
 	}
@@ -103,7 +103,6 @@ int main(int argc, const char* argv[])
 	{
 		auto camera = octoon::GamePrefabs::instance()->createCamera();
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 		camera->addComponent<CubeController>();
 
 		auto model = octoon::GamePrefabs::instance()->createModel("luo.pmx");

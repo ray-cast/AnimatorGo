@@ -70,7 +70,7 @@ int main(int argc, const char* argv[])
 		auto camera = octoon::GamePrefabs::instance()->createCamera2D();
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0f, 1.0f, 1.0f, 1.0));
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
+		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, -200));
 		camera->addComponent<PainterController>();
 
 		::OctoonMainLoop();

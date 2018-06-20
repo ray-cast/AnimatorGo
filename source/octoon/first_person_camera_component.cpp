@@ -126,10 +126,10 @@ namespace octoon
 					step *= 3;
 
 				if (input->isKeyPressed(input::InputKey::Code::W))
-					moveCamera(-step);
+					moveCamera(step);
 
 				if (input->isKeyPressed(input::InputKey::Code::S))
-					moveCamera(step);
+					moveCamera(-step);
 
 				if (input->isKeyPressed(input::InputKey::Code::A))
 					yawCamera(-step);
@@ -180,8 +180,8 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::rotateCamera(float axisX, float axisY) noexcept
 	{
-		float angleY = -axisX * sensitivityX_;
-		float angleX = -axisY * sensitivityY_;
+		float angleY = axisX * sensitivityX_;
+		float angleX = axisY * sensitivityY_;
 
 		auto transform = this->getGameObject()->getComponent<TransformComponent>();
 		math::float3 euler(math::eulerAngles(transform->getLocalQuaternion()));

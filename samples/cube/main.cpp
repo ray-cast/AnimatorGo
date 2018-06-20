@@ -65,13 +65,13 @@ public:
 
 				lightDir = octoon::math::normalize(lightDir);
 
-				/*material_ = std::dynamic_pointer_cast<octoon::video::GGXMaterial>(this->getComponent<octoon::RenderComponent>()->getMaterial());
+				material_ = std::dynamic_pointer_cast<octoon::video::GGXMaterial>(this->getComponent<octoon::RenderComponent>()->getMaterial());
 				material_->setLightDir(lightDir);
 				material_->setBaseColor(baseColor);
 				material_->setSpecularColor(specularColor);
 				material_->setAmbientColor(ambientColor);
 				material_->setSmoothness(smoothness);
-				material_->setMetalness(metalness);*/
+				material_->setMetalness(metalness);
 
 				octoon::imgui::tree_pop();
 			}
@@ -80,7 +80,7 @@ public:
 		}
 	}
 
-	octoon::GameComponentPtr clone() const noexcept
+	octoon::GameComponentPtr clone() const noexcept override
 	{
 		return std::make_shared<CubeController>();
 	}
@@ -98,12 +98,11 @@ int main(int argc, const char* argv[])
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
 		auto camera = octoon::GamePrefabs::instance()->createCamera();
-		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.95f, 0.95f, 0.95f, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
+		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.9f, 0.9f, 0.9f, 1.0));
 
-		auto object = octoon::GamePrefabs::instance()->createSprite("C:\\Users\\Administrator\\Desktop\\1.jpg");
-		//object->addComponent<octoon::GuizmoComponent>(camera);
-		//object->addComponent<CubeController>();
+		auto object = octoon::GamePrefabs::instance()->createCube(1.0f, 1.0f, 1.0f);
+		object->addComponent<octoon::GuizmoComponent>(camera);
+		object->addComponent<CubeController>();
 
 		::OctoonMainLoop();
 	}

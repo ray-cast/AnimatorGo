@@ -412,7 +412,7 @@ namespace octoon
 		void
 		Camera::_updatePerspective(float ratio) const noexcept
 		{
-			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
+			project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ratio, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 

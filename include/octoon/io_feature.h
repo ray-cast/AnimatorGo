@@ -21,7 +21,7 @@ namespace octoon
 		void onFrameEnd() noexcept override;
 
 	private:
-		std::string system_path_;
+		std::string systemPath_;
 	};
 }
 

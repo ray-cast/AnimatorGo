@@ -8,7 +8,7 @@ namespace octoon
 	OctoonImplementSubClass(IOFeature, GameFeature, "IOFeature")
 
 	IOFeature::IOFeature() noexcept
-		: system_path_("../../system")
+		: systemPath_("../../system")
 	{
 	}
 
@@ -19,7 +19,7 @@ namespace octoon
 	void
 	IOFeature::onActivate() except
 	{
-		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(system_path_));
+		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(systemPath_));
 	}
 
 	void

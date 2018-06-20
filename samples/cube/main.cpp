@@ -49,7 +49,7 @@ public:
 			{
 				static octoon::math::float1 smoothness = 0.0f;
 				static octoon::math::float1 metalness = 0.0f;
-				static octoon::math::float3 lightDir = octoon::math::float3::UnitY;
+				static octoon::math::float3 lightDir = -octoon::math::float3::UnitY;
 				static octoon::math::float3 ambientColor(0.0f, 0.0f, 0.0f);
 				static octoon::math::float3 baseColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
 				static octoon::math::float3 specularColor(1.0f);

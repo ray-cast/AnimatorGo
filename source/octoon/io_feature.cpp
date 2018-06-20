@@ -2,7 +2,6 @@
 #include <octoon/io_feature.h>
 #include <octoon/io/ioserver.h>
 #include <octoon/io/farchive.h>
-#include <octoon/io/vstream.h>
 
 namespace octoon
 {
@@ -10,6 +9,7 @@ namespace octoon
 
 	IOFeature::IOFeature() noexcept
 		: systemPath_("../../system")
+		, diskPath_("")
 	{
 	}
 
@@ -21,6 +21,7 @@ namespace octoon
 	IOFeature::onActivate() except
 	{
 		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(systemPath_));
+		io::IoServer::instance()->mount_archive("file", std::make_shared<octoon::io::farchive>(diskPath_));
 	}
 
 	void

@@ -123,24 +123,8 @@ private:
 	octoon::video::TextMaterialPtr material_;
 };
 
-#include <octoon/math/octree.h>
-#include <octoon/image/lut.h>
-#include <octoon/image/image.h>
-
 int main(int argc, const char* argv[])
 {
-	octoon::math::Octree<int> o(16);
-	
-	o.at(1, 2, 3) = 1;
-	o.erase(1, 2, 3);
-	std::cout << o.at(1, 2, 3);
-
-	octoon::image::lut lut(std::ifstream("C:\\Users\\Administrator\\Desktop\\LUTs\\VLogL\\The Grid.cube"));
-	//lut.dumpTGA("C:\\Users\\Administrator\\Desktop\\1.tga");
-	octoon::image::Image image("C:\\Users\\Administrator\\Desktop\\timg.jpg");
-	lut.lookup(image.data(), (std::uint8_t*)image.data(), image.size());
-	image.save("C:\\Users\\Administrator\\Desktop\\1.png", "png");
-
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
 

@@ -196,7 +196,7 @@ namespace octoon
 		inline Mesh makeCone(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept
 		{
 			Mesh mesh;
-			mesh.makeCone(radius, height, segments = 32, thetaStart, thetaLength);
+			mesh.makeCone(radius, height, segments, thetaStart, thetaLength);
 			return mesh;
 		}
 	}

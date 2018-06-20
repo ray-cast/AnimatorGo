@@ -123,8 +123,24 @@ private:
 	octoon::video::TextMaterialPtr material_;
 };
 
+#include <octoon/math/octree.h>
+#include <octoon/image/lut.h>
+#include <octoon/image/image.h>
+
 int main(int argc, const char* argv[])
 {
+	octoon::math::Octree<int> o(16);
+	
+	o.at(1, 2, 3) = 1;
+	o.erase(1, 2, 3);
+	std::cout << o.at(1, 2, 3);
+
+	octoon::image::lut lut(std::ifstream("C:\\Users\\Administrator\\Desktop\\LUTs\\VLogL\\The Grid.cube"));
+	//lut.dumpTGA("C:\\Users\\Administrator\\Desktop\\1.tga");
+	octoon::image::Image image("C:\\Users\\Administrator\\Desktop\\timg.jpg");
+	lut.lookup(image.data(), (std::uint8_t*)image.data(), image.size());
+	image.save("C:\\Users\\Administrator\\Desktop\\1.png", "png");
+
 	if (!::OctoonInit(argv[0], ""))
 		return 1;
 
@@ -135,12 +151,8 @@ int main(int argc, const char* argv[])
 		material->setTextColor(octoon::video::TextColor::FrontColor, octoon::math::float3(31.0, 179.0, 249.0) / 255.0f);
 		material->setTextColor(octoon::video::TextColor::SideColor, octoon::math::float3(0.0, 1.0, 0.0));
 
-		auto camera = octoon::GameObject::create();
-		camera->addComponent<octoon::CameraComponent>();
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
+		auto camera = octoon::GamePrefabs::instance()->createCamera();
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
 		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 205));
 

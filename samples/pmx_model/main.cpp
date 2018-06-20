@@ -101,17 +101,12 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = octoon::GameObject::create("camera");
-		camera->addComponent<octoon::CameraComponent>();
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
+		auto camera = octoon::GamePrefabs::instance()->createCamera();
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
-		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 		camera->addComponent<CubeController>();
 
-		auto model = octoon::ResManager::instance()->createModel("luo.pmx");
+		auto model = octoon::GamePrefabs::instance()->createModel("luo.pmx");
 		
 		::OctoonMainLoop();
 	}

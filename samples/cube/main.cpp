@@ -8,11 +8,6 @@ public:
 	{
 	}
 
-	CubeController(std::shared_ptr<octoon::video::GGXMaterial>& material)
-		: material_(material)
-	{
-	}
-
 	void onActivate() override
 	{
 		this->addComponentDispatch(octoon::GameDispatchType::Frame);
@@ -70,12 +65,13 @@ public:
 
 				lightDir = octoon::math::normalize(lightDir);
 
+				/*material_ = std::dynamic_pointer_cast<octoon::video::GGXMaterial>(this->getComponent<octoon::RenderComponent>()->getMaterial());
 				material_->setLightDir(lightDir);
 				material_->setBaseColor(baseColor);
 				material_->setSpecularColor(specularColor);
 				material_->setAmbientColor(ambientColor);
 				material_->setSmoothness(smoothness);
-				material_->setMetalness(metalness);
+				material_->setMetalness(metalness);*/
 
 				octoon::imgui::tree_pop();
 			}
@@ -101,22 +97,13 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = octoon::GameObject::create("camera");
-		camera->addComponent<octoon::CameraComponent>();
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Perspective);
-		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+		auto camera = octoon::GamePrefabs::instance()->createCamera();
+		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.95f, 0.95f, 0.95f, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 10));
 
-		auto material = std::make_shared<octoon::video::GGXMaterial>();
-
-		auto object = octoon::GameObject::create("actor");
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeCube(1.0, 1.0, 1.0));
-		object->addComponent<octoon::MeshRendererComponent>(material);
-		object->addComponent<octoon::GuizmoComponent>(camera);
-		object->addComponent<CubeController>(material);
+		auto object = octoon::GamePrefabs::instance()->createSprite("C:\\Users\\Administrator\\Desktop\\1.jpg");
+		//object->addComponent<octoon::GuizmoComponent>(camera);
+		//object->addComponent<CubeController>();
 
 		::OctoonMainLoop();
 	}

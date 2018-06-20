@@ -102,6 +102,9 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
+		if (!this->getMaterial())
+			return;
+
 		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();

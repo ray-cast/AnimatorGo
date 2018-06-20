@@ -40,33 +40,13 @@ namespace octoon
 		std::unique_ptr<stream_buf>
 		farchive::open(const Orl& orl, const ios_base::open_mode opts)
 		{
-#ifdef _MSC_VER
 			auto file = std::make_unique<filebuf>();
-			auto file_path = make_path(orl);
-			auto parent = orl.parent();
-
-			// Check if the file exists.
-			if (exists(orl) == ios_base::none)
-			{
-				// Make sure it can create files and directories.
-				if (!(opts | ios_base::out) || !(opts | ios_base::trunc)) {
-					return nullptr;
-				}
-
-				// Create missing segments.
-				if (exists(parent) == ios_base::none && !std::filesystem::create_directories(make_path(parent))) {
-					return nullptr;
-				}
-			}
 
 			// Open the file.
 			if (file->open(make_path(orl), opts))
 				return file;
 			else
 				return nullptr;
-#else
-			return nullptr;
-#endif
 		}
 
 		bool

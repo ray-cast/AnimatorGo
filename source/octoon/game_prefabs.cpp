@@ -240,7 +240,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createSpriteSquare() except
 	{
-		return this->createSprite("../../system/sprite/square.png");
+		return this->createSprite("sys:sprite/square.png");
 	}
 
 	graphics::GraphicsTexturePtr
@@ -252,7 +252,7 @@ namespace octoon
 		if (it != textureCaches_.end())
 			return (*it).second;
 
-		ifstream stream;
+		vstream stream;
 		if (!stream.open(path))
 			throw runtime::runtime_error::create("Failed to open file :" + path);
 

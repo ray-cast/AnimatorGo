@@ -2,6 +2,7 @@
 #include <octoon/io_feature.h>
 #include <octoon/io/ioserver.h>
 #include <octoon/io/farchive.h>
+#include <octoon/io/vstream.h>
 
 namespace octoon
 {

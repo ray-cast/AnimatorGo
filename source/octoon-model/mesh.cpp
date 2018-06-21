@@ -406,10 +406,10 @@ namespace octoon
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)
 				{
-					_texcoords[0].emplace_back((float)ix / gridX, (float)(iy + 1) / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)(iy + 1) / gridY);
-					_texcoords[0].emplace_back((float)ix / gridX, (float)iy / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)iy / gridY);
+					_texcoords[0].emplace_back((float)ix / gridX, 1.0f - (float)(iy + 1) / gridY);
+					_texcoords[0].emplace_back((float)(ix + 1) / gridX, 1.0f - (float)(iy + 1) / gridY);
+					_texcoords[0].emplace_back((float)ix / gridX, 1.0f - (float)iy / gridY);
+					_texcoords[0].emplace_back((float)(ix + 1) / gridX, 1.0f - (float)iy / gridY);
 
 					std::int32_t a = static_cast<std::int32_t>(ix + gridX1 * iy);
 					std::int32_t b = static_cast<std::int32_t>(ix + gridX1 * (iy + 1));

@@ -58,7 +58,8 @@ namespace octoon
 		camera->addComponent<CameraComponent>();
 		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
 		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Ortho);
-		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -10));
+		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, 1.0f, 0.0f));
+		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
 		camera->addComponent<FirstPersonCameraComponent>();
 
 		return camera;

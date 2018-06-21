@@ -95,20 +95,9 @@ namespace octoon
 		farchive::make_path(const Orl& orl) const
 		{
 			std::string rv;
-			auto path = orl.path();
-			if (path.size() > 0 && path.back() != '/')
-			{
-				rv.reserve(base_dir_.size() + 1 + path.size());
-				rv.append(base_dir_);
-				rv.push_back('/');
-				rv.append(path);
-			}
-			else
-			{
-				rv.reserve(base_dir_.size() + path.size());
-				rv.append(base_dir_);
-				rv.append(path);
-			}
+			rv.reserve(base_dir_.size() + orl.path().size());
+			rv.append(base_dir_);
+			rv.append(orl.path());
 
 			return rv;
 		}

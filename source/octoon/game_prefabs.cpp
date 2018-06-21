@@ -58,8 +58,9 @@ namespace octoon
 		camera->addComponent<CameraComponent>();
 		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
 		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Ortho);
-		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, 1.0f, 0.0f));
+		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, -1.0f, 0.0f));
 		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
+		camera->getComponent<TransformComponent>()->setScale(math::float3(1.0f, -1.0f, 1.0f));
 		camera->addComponent<FirstPersonCameraComponent>();
 
 		return camera;
@@ -174,11 +175,26 @@ namespace octoon
 	}
 
 	GameObjectPtr 
-	GamePrefabs::createText(const wchar_t* text, const char* fontPath) noexcept
+	GamePrefabs::createText(const wchar_t* text, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
 		auto object = GameObject::create();
-		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, 24 })));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, fontsize })));
+		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
+
+		return object;
+	}
+
+	GameObjectPtr 
+	GamePrefabs::createText(const char* text, std::uint16_t fontsize, const char* fontPath) noexcept
+	{
+		constexpr int PATHLIMIT = 4096;
+
+		wchar_t buffer[PATHLIMIT];
+		mbstowcs(buffer, text, PATHLIMIT);
+
+		auto object = GameObject::create();
+		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(buffer, { fontPath, fontsize })));
+		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
 
 		return object;
 	}

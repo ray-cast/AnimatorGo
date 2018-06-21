@@ -298,9 +298,6 @@ namespace octoon
 				}
 			}
 
-			for (auto& group : groups)
-				*group -= math::float3(offset * 0.5f, 0, 0);
-
 			return groups;
 		}
 

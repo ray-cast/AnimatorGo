@@ -64,12 +64,13 @@ namespace octoon
 			layout(location  = 0) out vec4 fragColor;
 
 			uniform sampler2D decal;
+			uniform vec4 color;
 
 			in vec2 oTexcoord0;
 
 			void main()
 			{
-				fragColor = texture(decal, oTexcoord0);
+				fragColor = texture(decal, oTexcoord0) * color;
 			})";
 #endif
 			graphics::GraphicsProgramDesc programDesc;
@@ -112,6 +113,8 @@ namespace octoon
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
+			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
+			color_->uniform4f(math::float4::One);
 		}
 
 		BasicMaterial::~BasicMaterial() noexcept
@@ -128,6 +131,12 @@ namespace octoon
 		BasicMaterial::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
+		}
+
+		void 
+		BasicMaterial::setBaseColor(const math::float4& color) noexcept
+		{
+			color_->uniform4f(color);
 		}
 
 		void

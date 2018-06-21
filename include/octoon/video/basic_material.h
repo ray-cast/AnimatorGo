@@ -19,6 +19,7 @@ namespace octoon
 
 			void setTransform(const math::float4x4& m) noexcept override;
 			void setViewProjection(const math::float4x4& vp) noexcept override;
+			void setBaseColor(const math::float4& texture) noexcept;
 			void setTexture(const graphics::GraphicsTexturePtr& texture) noexcept;
 
 			const graphics::GraphicsPipelinePtr& getPipeline() const noexcept override;
@@ -36,6 +37,7 @@ namespace octoon
 
 			graphics::GraphicsUniformSetPtr proj_;
 			graphics::GraphicsUniformSetPtr model_;
+			graphics::GraphicsUniformSetPtr color_;
 			graphics::GraphicsUniformSetPtr decal_;
 		};
 	}

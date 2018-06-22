@@ -85,10 +85,14 @@ namespace octoon
 #if OCTOON_FEATURE_TIMER_ENABLE
 			step = GameApp::instance()->getFeature<TimerFeature>()->delta();
 #endif
+			if (!pos_.frames.empty())
+				transform->setTranslate(pos_.evaluate(step));
 
-			transform->setTranslate(pos_.evaluate(step));
-			transform->setScale(scale_.evaluate(step));
-			transform->setQuaternion(math::Quaternion(rotation_.evaluate(step)));
+			if (!scale_.frames.empty())
+				transform->setScale(scale_.evaluate(step));
+
+			if (!rotation_.frames.empty())
+				transform->setQuaternion(math::Quaternion(rotation_.evaluate(step)));
 		}
 
 	}

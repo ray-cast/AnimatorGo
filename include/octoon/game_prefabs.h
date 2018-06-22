@@ -36,6 +36,7 @@ namespace octoon
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
 
 		GameObjectPtr createSprite(const std::string& image) except;
+		GameObjectPtr createSprite(const graphics::GraphicsTexturePtr& texture) except;
 		GameObjectPtr createSpriteSquare() except;
 
 		graphics::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;

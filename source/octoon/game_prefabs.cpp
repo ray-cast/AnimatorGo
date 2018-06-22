@@ -254,6 +254,16 @@ namespace octoon
 		return object;
 	}
 	
+	GameObjectPtr 
+	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture) except
+	{
+		auto object = GameObject::create();
+		object->addComponent<MeshFilterComponent>(model::makePlane(1.0, 1.0));
+		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
+
+		return object;
+	}
+
 	GameObjectPtr
 	GamePrefabs::createSpriteSquare() except
 	{

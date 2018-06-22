@@ -33,6 +33,8 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/game_base_features.cpp
 	${HEADER_PATH}/transform_component.h
 	${SOURCE_PATH}/transform_component.cpp
+	${HEADER_PATH}/transform_anim_component.h
+	${SOURCE_PATH}/transform_anim_component.cpp
 	${HEADER_PATH}/mesh_filter_component.h
 	${SOURCE_PATH}/mesh_filter_component.cpp
 )

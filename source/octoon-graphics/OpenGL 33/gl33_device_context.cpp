@@ -633,7 +633,7 @@ namespace octoon
 		void
 		GL33DeviceContext::readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
-			GLenum internalFormat = GL33Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			GLenum internalFormat = GL33Types::asTextureFormat(texture->getTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");
@@ -650,7 +650,7 @@ namespace octoon
 		void
 		GL33DeviceContext::readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept
 		{
-			GLenum internalFormat = GL33Types::asTextureFormat(texture->getGraphicsTextureDesc().getTexFormat());
+			GLenum internalFormat = GL33Types::asTextureFormat(texture->getTextureDesc().getTexFormat());
 			if (internalFormat == GL_INVALID_ENUM)
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("Invalid texture format");

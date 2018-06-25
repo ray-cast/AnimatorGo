@@ -341,7 +341,7 @@ namespace octoon
 		}
 
 		const GraphicsTextureDesc&
-		GL45Texture::getGraphicsTextureDesc() const noexcept
+		GL45Texture::getTextureDesc() const noexcept
 		{
 			return _textureDesc;
 		}

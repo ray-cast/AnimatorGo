@@ -28,7 +28,7 @@ namespace octoon
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept override;
+			const GraphicsTextureDesc& getTextureDesc() const noexcept override;
 
 		private:
 			static bool applySamplerWrap(GLenum target, GraphicsSamplerWrap wrap) noexcept;

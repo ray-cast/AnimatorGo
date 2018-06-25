@@ -81,18 +81,18 @@ namespace octoon
 		auto transform = this->getGameObject()->getComponent<TransformComponent>();
 		if (transform)
 		{
-			float step = 0;
+			float step = 1.0f / 60.0f;
 #if OCTOON_FEATURE_TIMER_ENABLE
 			step = GameApp::instance()->getFeature<TimerFeature>()->delta();
 #endif
 			if (!pos_.frames.empty())
-				transform->setTranslate(pos_.evaluate(step));
+				transform->setLocalTranslate(pos_.evaluate(step));
 
 			if (!scale_.frames.empty())
-				transform->setScale(scale_.evaluate(step));
+				transform->setLocalScale(scale_.evaluate(step));
 
 			if (!rotation_.frames.empty())
-				transform->setQuaternion(math::Quaternion(rotation_.evaluate(step)));
+				transform->setLocalQuaternion(math::Quaternion(rotation_.evaluate(step)));
 		}
 
 	}

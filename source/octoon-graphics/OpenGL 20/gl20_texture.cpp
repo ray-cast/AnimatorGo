@@ -229,7 +229,7 @@ namespace octoon
 		}
 
 		const GraphicsTextureDesc&
-		GL20Texture::getGraphicsTextureDesc() const noexcept
+		GL20Texture::getTextureDesc() const noexcept
 		{
 			return _textureDesc;
 		}

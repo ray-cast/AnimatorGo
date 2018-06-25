@@ -23,7 +23,7 @@ namespace octoon
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsTextureDesc& getGraphicsTextureDesc() const noexcept override;
+			const GraphicsTextureDesc& getTextureDesc() const noexcept override;
 
 		private:
 			bool applyMipmapLimit(GLenum target, std::uint32_t min, std::uint32_t count) noexcept;

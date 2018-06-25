@@ -32,7 +32,7 @@ namespace octoon
 		GameObjectPtr createVolumes(float fovy, float znear, float zfar) noexcept;
 		GameObjectPtr createCone(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
 		GameObjectPtr createText(const wchar_t* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
-		GameObjectPtr createText(const char* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
+		GameObjectPtr createText(const char* u8str, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
 
 		GameObjectPtr createSprite(const std::string& image, std::uint32_t w, std::uint32_t h) except;

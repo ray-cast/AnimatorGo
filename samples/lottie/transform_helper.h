@@ -32,15 +32,12 @@ public:
 	{
 		auto& pa = j["p"]["a"];
 		auto& sa = j["s"]["a"];
-		auto& ra = j["r"]["a"];
 		auto& oa = j["o"]["a"];
-		auto& pk = j["p"]["k"];
-		auto& sk = j["s"]["k"];
-		auto& rk = j["r"]["k"];
-		auto& ok = j["o"]["k"];
-
+		
 		if (pa.get<json::number_unsigned_t>())
 		{
+			auto& pk = j["p"]["k"];
+
 			for (auto it = pk.begin(); it != pk.end(); ++it)
 			{
 				if ((it + 2) == pk.end())
@@ -61,11 +58,13 @@ public:
 		}
 		else
 		{
+			auto& pk = j["p"]["k"];
 			pos.emplace_back(0.0f, float3(pk[0].get<json::number_float_t>(), pk[1].get<json::number_float_t>(), pk[2].get<json::number_float_t>()));
 		}
 		
 		if (sa.get<json::number_unsigned_t>())
 		{
+			auto& sk = j["s"]["k"];
 			for (auto it = sk.begin(); it != sk.end(); ++it)
 			{
 				if ((it + 2) == sk.end())
@@ -86,36 +85,45 @@ public:
 		}
 		else
 		{
+			auto& sk = j["s"]["k"];
 			scale.emplace_back(0.0f, float3(sk[0].get<json::number_float_t>() / 100.0f, sk[1].get<json::number_float_t>() / 100.0f, sk[2].get<json::number_float_t>() / 100.0f));
 		}
 
-		if (ra.get<json::number_unsigned_t>())
+		if (j.find("r") != j.end())
 		{
-			for (auto it = rk.begin(); it != rk.end(); ++it)
+			auto& r = j["r"];
+			auto& ra = r["a"];
+			if (ra.get<json::number_unsigned_t>())
 			{
-				if ((it + 2) == rk.end())
+				auto& rk = r["k"];
+				for (auto it = rk.begin(); it != rk.end(); ++it)
 				{
-					auto& s = (*it)["s"];
-					auto& e = (*it)["e"];
+					if ((it + 2) == rk.end())
+					{
+						auto& s = (*it)["s"];
+						auto& e = (*it)["e"];
 
-					rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
-					rotation.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, e[0].get<json::number_float_t>())));
-					break;
-				}
-				else
-				{
-					auto& s = (*it)["s"];
-					rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
+						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
+						rotation.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, e[0].get<json::number_float_t>())));
+						break;
+					}
+					else
+					{
+						auto& s = (*it)["s"];
+						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
+					}
 				}
 			}
-		}
-		else
-		{
-			rotation.emplace_back(0.0f, octoon::math::radians(float3(0.0f, 0.0f, rk.get<json::number_float_t>())));
+			else
+			{
+				auto& rk = r["k"];
+				rotation.emplace_back(0.0f, octoon::math::radians(float3(0.0f, 0.0f, rk.get<json::number_float_t>())));
+			}
 		}
 
 		if (oa.get<json::number_unsigned_t>())
 		{
+			auto& ok = j["o"]["k"];
 			for (auto it = ok.begin(); it != ok.end(); ++it)
 			{
 				if ((it + 2) == ok.end())
@@ -136,6 +144,7 @@ public:
 		}
 		else
 		{
+			auto& ok = j["o"]["k"];
 			opacity.emplace_back(0.0f, ok.get<json::number_unsigned_t>() / 100.0f);
 		}
 	}

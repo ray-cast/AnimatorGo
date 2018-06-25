@@ -9,14 +9,14 @@ namespace octoon
 	{
 	}
 
-	RenderComponent::RenderComponent(video::MaterialPtr&& material, bool sharedMesh) noexcept
+	RenderComponent::RenderComponent(video::MaterialPtr&& material, bool sharedMaterial) noexcept
 	{
-		this->setMaterial(std::move(material), sharedMesh);
+		this->setMaterial(std::move(material), sharedMaterial);
 	}
 
-	RenderComponent::RenderComponent(const video::MaterialPtr& material, bool sharedMesh) noexcept
+	RenderComponent::RenderComponent(const video::MaterialPtr& material, bool sharedMaterial) noexcept
 	{
-		this->setMaterial(material, sharedMesh);
+		this->setMaterial(material, sharedMaterial);
 	}
 
 	RenderComponent::~RenderComponent() noexcept
@@ -24,23 +24,23 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterial(video::MaterialPtr&& material, bool sharedMesh) noexcept
+	RenderComponent::setMaterial(video::MaterialPtr&& material, bool sharedMaterial) noexcept
 	{
 		if (material_ != material)
 		{
 			material_ = std::move(material);
-			isSharedMaterial_ = sharedMesh;
+			isSharedMaterial_ = sharedMaterial;
 			this->onMaterialReplace(material_);
 		}
 	}
 
 	void
-	RenderComponent::setMaterial(const video::MaterialPtr& material, bool sharedMesh) noexcept
+	RenderComponent::setMaterial(const video::MaterialPtr& material, bool sharedMaterial) noexcept
 	{
 		if (material_ != material)
 		{
 			material_ = material;
-			isSharedMaterial_ = sharedMesh;
+			isSharedMaterial_ = sharedMaterial;
 			this->onMaterialReplace(material_);
 		}
 	}
@@ -55,6 +55,12 @@ namespace octoon
 	RenderComponent::isSharedMaterial() const noexcept
 	{
 		return isSharedMaterial_;
+	}
+
+	void
+	RenderComponent::isSharedMaterial(bool sharedMaterial) noexcept
+	{
+		isSharedMaterial_ = sharedMaterial;
 	}
 
 	void

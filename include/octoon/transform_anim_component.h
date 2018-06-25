@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT TransformAnimComponent : public GameComponent
+	class OCTOON_EXPORT TransformAnimComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(TransformAnimComponent, GameComponent)
 	public:
@@ -20,6 +20,14 @@ namespace octoon
 		void setScale(const model::Keyframes<math::float3>& frames) noexcept;
 		void setRotation(const model::Keyframes<math::float3>& frames) noexcept;
 		void setTranslate(const model::Keyframes<math::float3>& frames) noexcept;
+
+		void setLocalScale(model::Keyframes<math::float3>&& frames) noexcept;
+		void setLocalRotation(model::Keyframes<math::float3>&& frames) noexcept;
+		void setLocalTranslate(model::Keyframes<math::float3>&& frames) noexcept;
+
+		void setLocalScale(const model::Keyframes<math::float3>& frames) noexcept;
+		void setLocalRotation(const model::Keyframes<math::float3>& frames) noexcept;
+		void setLocalTranslate(const model::Keyframes<math::float3>& frames) noexcept;
 
 		virtual GameComponentPtr clone() const noexcept override;
 
@@ -37,6 +45,9 @@ namespace octoon
 		model::AnimationCurve<math::float3> pos_;
 		model::AnimationCurve<math::float3> scale_;
 		model::AnimationCurve<math::float3> rotation_;
+		model::AnimationCurve<math::float3> localPos_;
+		model::AnimationCurve<math::float3> localScale_;
+		model::AnimationCurve<math::float3> localRotation_;
 	};
 }
 

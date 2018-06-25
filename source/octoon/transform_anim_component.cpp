@@ -51,14 +51,53 @@ namespace octoon
 		pos_ = frames;
 	}
 
+	void
+	TransformAnimComponent::setLocalScale(model::Keyframes<math::float3>&& frames) noexcept
+	{
+		localScale_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalRotation(model::Keyframes<math::float3>&& frames) noexcept
+	{
+		localRotation_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalTranslate(model::Keyframes<math::float3>&& frames) noexcept
+	{
+		localPos_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalScale(const model::Keyframes<math::float3>& frames) noexcept
+	{
+		localScale_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setLocalRotation(const model::Keyframes<math::float3>& frames) noexcept
+	{
+		localRotation_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setLocalTranslate(const model::Keyframes<math::float3>& frames) noexcept
+	{
+		localPos_ = frames;
+	}
+
 	GameComponentPtr
 	TransformAnimComponent::clone() const noexcept
 	{
 		auto instance = std::make_shared<TransformAnimComponent>();
 		instance->setName(instance->getName());
-		instance->pos_ = this->pos_;
-		instance->scale_ = this->scale_;
-		instance->rotation_ = this->rotation_;
+		instance->setScale(this->pos_.frames);
+		instance->setRotation(this->scale_.frames);
+		instance->setTranslate(this->rotation_.frames);
+		instance->setLocalScale(this->localPos_.frames);
+		instance->setLocalRotation(this->localScale_.frames);
+		instance->setLocalTranslate(this->localRotation_.frames);
 
 		return instance;
 	}
@@ -86,13 +125,22 @@ namespace octoon
 			step = GameApp::instance()->getFeature<TimerFeature>()->delta();
 #endif
 			if (!pos_.frames.empty())
-				transform->setLocalTranslate(pos_.evaluate(step));
+				transform->setTranslate(pos_.evaluate(step));
 
 			if (!scale_.frames.empty())
-				transform->setLocalScale(scale_.evaluate(step));
+				transform->setScale(scale_.evaluate(step));
 
 			if (!rotation_.frames.empty())
-				transform->setLocalQuaternion(math::Quaternion(rotation_.evaluate(step)));
+				transform->setQuaternion(math::Quaternion(rotation_.evaluate(step)));
+
+			if (!localPos_.frames.empty())
+				transform->setLocalTranslate(localPos_.evaluate(step));
+
+			if (!localScale_.frames.empty())
+				transform->setLocalScale(localScale_.evaluate(step));
+
+			if (!localRotation_.frames.empty())
+				transform->setLocalQuaternion(math::Quaternion(localRotation_.evaluate(step)));
 		}
 
 	}

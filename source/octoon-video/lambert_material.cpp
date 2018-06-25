@@ -95,8 +95,8 @@ namespace octoon
 			if (!descriptorSet_)
 				return;
 
-			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
-			auto end = descriptorSet_->getGraphicsUniformSets().end();
+			auto begin = descriptorSet_->getUniformSets().begin();
+			auto end = descriptorSet_->getUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });

@@ -225,7 +225,7 @@ namespace octoon
 				Matrix4x4<T>& makeScale(T cx, T cy) noexcept { return makeScale(cx, cy, 1.0f); }
 				Matrix4x4<T>& makeScale(T x, T y, T z) noexcept
 				{
-					set(
+					makeMatrix(
 						x, 0, 0, 0,
 						0, y, 0, 0,
 						0, 0, z, 0,
@@ -236,7 +236,7 @@ namespace octoon
 				Matrix4x4<T>& scale(const Vector2<T>& sz) noexcept { return scale(sz.x, sz.y, 1.0f); }
 				Matrix4x4<T>& scale(const Vector3<T>& sz) noexcept { return scale(sz.x, sz.y, sz.z); }
 				Matrix4x4<T>& scale(T v) noexcept { return scale(v, v, v); }
-				Matrix4x4<T>& scale(T cx, T cy) noexcept { return scale(cx, cy, 1.0f); }
+				Matrix4x4<T>& scale(T x, T y) noexcept { return scale(x, y, 1.0f); }
 				Matrix4x4<T>& scale(T x, T y, T z) noexcept
 				{
 					a1 *= x; a2 *= x; a3 *= x;

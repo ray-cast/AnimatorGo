@@ -59,7 +59,7 @@ namespace octoon
 			GraphicsPipelineLayout() noexcept = default;
 			virtual ~GraphicsPipelineLayout() = default;
 
-			virtual const GraphicsPipelineLayoutDesc& getGraphicsPipelineLayoutDesc() const noexcept = 0;
+			virtual const GraphicsPipelineLayoutDesc& getPipelineLayoutDesc() const noexcept = 0;
 
 		private:
 			GraphicsPipelineLayout(const GraphicsPipelineLayout&) noexcept = delete;

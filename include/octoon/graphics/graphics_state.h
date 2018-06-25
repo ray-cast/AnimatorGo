@@ -185,7 +185,7 @@ namespace octoon
 			GraphicsState() noexcept = default;
 			virtual ~GraphicsState() = default;
 
-			virtual const GraphicsStateDesc& getGraphicsStateDesc() const noexcept = 0;
+			virtual const GraphicsStateDesc& getStateDesc() const noexcept = 0;
 
 		private:
 			GraphicsState(const GraphicsState&) noexcept = delete;

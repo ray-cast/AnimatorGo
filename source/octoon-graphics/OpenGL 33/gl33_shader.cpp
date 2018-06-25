@@ -465,7 +465,7 @@ namespace octoon
 		}
 
 		const GraphicsShaderDesc&
-		GL33Shader::getGraphicsShaderDesc() const noexcept
+		GL33Shader::getShaderDesc() const noexcept
 		{
 			return _shaderDesc;
 		}
@@ -925,7 +925,7 @@ namespace octoon
 		}
 
 		const GraphicsProgramDesc&
-		GL33Program::getGraphicsProgramDesc() const noexcept
+		GL33Program::getProgramDesc() const noexcept
 		{
 			return _programDesc;
 		}

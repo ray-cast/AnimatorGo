@@ -116,7 +116,7 @@ namespace octoon
 
 			auto comp = [&](const GraphicsShaderPtr& it)
 			{
-				return it->getGraphicsShaderDesc().getStage() == shader->getGraphicsShaderDesc().getStage();
+				return it->getShaderDesc().getStage() == shader->getShaderDesc().getStage();
 			};
 
 			auto it = std::find_if(_shaders.begin(), _shaders.end(), comp);

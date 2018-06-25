@@ -126,7 +126,7 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept override;
+			const GraphicsShaderDesc& getShaderDesc() const noexcept override;
 
 		private:
 			bool HlslCodes2GLSL(GraphicsShaderStageFlags stage, const std::string& codes, const std::string& main, std::string& out);
@@ -165,7 +165,7 @@ namespace octoon
 			const GraphicsParams& getActiveParams() const noexcept;
 			const GraphicsAttributes& getActiveAttributes() const noexcept;
 
-			const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept override;
+			const GraphicsProgramDesc& getProgramDesc() const noexcept override;
 
 		private:
 			void _initActiveAttribute() noexcept;

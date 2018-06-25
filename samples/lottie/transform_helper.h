@@ -86,7 +86,7 @@ public:
 		}
 		else
 		{
-			scale.emplace_back(0.0f, float3(sk[0].get<json::number_float_t>() / 100.0f, -sk[1].get<json::number_float_t>() / 100.0f, sk[2].get<json::number_float_t>() / 100.0f));
+			scale.emplace_back(0.0f, float3(sk[0].get<json::number_float_t>() / 100.0f, sk[1].get<json::number_float_t>() / 100.0f, sk[2].get<json::number_float_t>() / 100.0f));
 		}
 
 		if (ra.get<json::number_unsigned_t>())

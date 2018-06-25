@@ -39,7 +39,7 @@ namespace octoon
 			GraphicsSampler() noexcept = default;
 			virtual ~GraphicsSampler() = default;
 
-			virtual const GraphicsSamplerDesc& getGraphicsSamplerDesc() const noexcept = 0;
+			virtual const GraphicsSamplerDesc& getSamplerDesc() const noexcept = 0;
 
 		private:
 			GraphicsSampler(const GraphicsSampler&) noexcept = delete;

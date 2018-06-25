@@ -348,7 +348,7 @@ namespace octoon
 		{
 			assert(data);
 			assert(data->isInstanceOf<GL20GraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
+			assert(data->getDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
 			assert(_vertexBuffers.size() > i);
 			assert(_glcontext->getActive());
 
@@ -375,7 +375,7 @@ namespace octoon
 			if (data)
 			{
 				assert(data->isInstanceOf<GL20GraphicsData>());
-				assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
+				assert(data->getDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
 				assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
 				assert(_glcontext->getActive());
 

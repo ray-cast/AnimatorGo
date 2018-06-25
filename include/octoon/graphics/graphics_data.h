@@ -43,7 +43,7 @@ namespace octoon
 			virtual bool map(std::ptrdiff_t offset, std::ptrdiff_t count, void** data) noexcept = 0;
 			virtual void unmap() noexcept = 0;
 
-			virtual const GraphicsDataDesc& getGraphicsDataDesc() const noexcept = 0;
+			virtual const GraphicsDataDesc& getDataDesc() const noexcept = 0;
 
 		private:
 			GraphicsData(const GraphicsData&) = delete;

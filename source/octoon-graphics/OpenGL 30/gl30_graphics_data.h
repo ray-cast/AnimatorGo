@@ -25,7 +25,7 @@ namespace octoon
 
 			GLuint getInstanceID() const noexcept;
 
-			const GraphicsDataDesc& getGraphicsDataDesc() const noexcept override;
+			const GraphicsDataDesc& getDataDesc() const noexcept override;
 
 		private:
 			friend class GL30Device;

@@ -405,7 +405,10 @@ namespace octoon
 			auto bottom = height * ortho_.z;
 			auto top = height * ortho_.w;
 
-			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
+			math::float4x4  adjustment;
+			adjustment.makeScale(1.0, -1.0, 1.0);
+
+			project_ = adjustment * math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 

@@ -35,9 +35,9 @@ namespace octoon
 		GameObjectPtr createText(const char* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
 
-		GameObjectPtr createSprite(const std::string& image) except;
-		GameObjectPtr createSprite(const graphics::GraphicsTexturePtr& texture) except;
-		GameObjectPtr createSpriteSquare() except;
+		GameObjectPtr createSprite(const std::string& image, std::uint32_t w, std::uint32_t h) except;
+		GameObjectPtr createSprite(const graphics::GraphicsTexturePtr& texture, std::uint32_t w, std::uint32_t h) except;
+		GameObjectPtr createSpriteSquare(std::uint32_t w, std::uint32_t h) except;
 
 		graphics::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;
 

@@ -39,10 +39,16 @@ namespace octoon
 
 			const char* frag = R"(
 			precision mediump float;
-			varying vec3 oTexcoord0;
+
+			uniform sampler2D decal;
+			uniform vec4 color;
+			uniform bool hasTexture;
+
+			varying vec2 oTexcoord0;
 			void main()
 			{
-				gl_FragColor = vec4(oTexcoord0, 1.0);
+				fragColor = color;
+				if (hasTexture) fragColor *= texture(decal, oTexcoord0);
 			})";
 #else
 			const char* vert = R"(#version 330
@@ -57,7 +63,7 @@ namespace octoon
 			void main()
 			{
 				oTexcoord0 = TEXCOORD0;
-				gl_Position = proj * model * POSITION0;
+				gl_Position = proj * model * (POSITION0 * vec4(1,-1,1,1));
 			})";
 
 			const char* frag = R"(#version 330
@@ -65,12 +71,14 @@ namespace octoon
 
 			uniform sampler2D decal;
 			uniform vec4 color;
+			uniform bool hasTexture;
 
 			in vec2 oTexcoord0;
 
 			void main()
 			{
-				fragColor = texture(decal, oTexcoord0) * color;
+				fragColor = color;
+				if (hasTexture) fragColor *= texture(decal, oTexcoord0);
 			})";
 #endif
 			graphics::GraphicsProgramDesc programDesc;
@@ -107,14 +115,16 @@ namespace octoon
 			if (!descriptorSet_)
 				return;
 
-			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
-			auto end = descriptorSet_->getGraphicsUniformSets().end();
+			auto begin = descriptorSet_->getUniformSets().begin();
+			auto end = descriptorSet_->getUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
+			hasTexture_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "hasTexture"; });
 			color_->uniform4f(math::float4::One);
+			hasTexture_->uniform1b(false);
 		}
 
 		BasicMaterial::~BasicMaterial() noexcept
@@ -142,7 +152,16 @@ namespace octoon
 		void
 		BasicMaterial::setTexture(const graphics::GraphicsTexturePtr& texture) noexcept
 		{
-			decal_->uniformTexture(texture);
+			if (texture)
+			{
+				hasTexture_->uniform1b(true);
+				decal_->uniformTexture(texture);
+			}
+			else
+			{
+				hasTexture_->uniform1b(false);
+				decal_->uniformTexture(texture);
+			}
 		}
 
 		const graphics::GraphicsPipelinePtr&

@@ -178,8 +178,8 @@ namespace octoon
 			if (!descriptor_set_)
 				return false;
 
-			auto begin = descriptor_set_->getGraphicsUniformSets().begin();
-			auto end = descriptor_set_->getGraphicsUniformSets().end();
+			auto begin = descriptor_set_->getUniformSets().begin();
+			auto end = descriptor_set_->getUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
 			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
@@ -387,26 +387,26 @@ namespace octoon
 			std::size_t totalIndirectSize = drawData->TotalIdxCount * sizeof(ImDrawIdx);
 			if (totalVertexSize != 0 || totalIndirectSize != 0)
 			{
-				if (vbo_->getGraphicsDataDesc().getStreamSize() < totalVertexSize)
+				if (vbo_->getDataDesc().getStreamSize() < totalVertexSize)
 				{
 					GraphicsDataDesc dataDesc;
 					dataDesc.setType(GraphicsDataType::StorageVertexBuffer);
 					dataDesc.setStream(0);
 					dataDesc.setStreamSize(totalVertexSize);
-					dataDesc.setUsage(vbo_->getGraphicsDataDesc().getUsage());
+					dataDesc.setUsage(vbo_->getDataDesc().getUsage());
 
 					vbo_ = device_->createGraphicsData(dataDesc);
 					if (!vbo_)
 						return;
 				}
 
-				if (ibo_->getGraphicsDataDesc().getStreamSize() < totalIndirectSize)
+				if (ibo_->getDataDesc().getStreamSize() < totalIndirectSize)
 				{
 					GraphicsDataDesc elementDesc;
 					elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
 					elementDesc.setStream(0);
 					elementDesc.setStreamSize(totalIndirectSize);
-					elementDesc.setUsage(ibo_->getGraphicsDataDesc().getUsage());
+					elementDesc.setUsage(ibo_->getDataDesc().getUsage());
 
 					ibo_ = device_->createGraphicsData(elementDesc);
 					if (!ibo_)

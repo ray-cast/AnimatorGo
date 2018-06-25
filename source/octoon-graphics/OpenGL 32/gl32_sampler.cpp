@@ -88,7 +88,7 @@ namespace octoon
 		}
 
 		const GraphicsSamplerDesc&
-		GL32Sampler::getGraphicsSamplerDesc() const noexcept
+		GL32Sampler::getSamplerDesc() const noexcept
 		{
 			return _sampleDesc;
 		}

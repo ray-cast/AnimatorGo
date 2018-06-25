@@ -39,6 +39,7 @@ namespace octoon
 			graphics::GraphicsUniformSetPtr model_;
 			graphics::GraphicsUniformSetPtr color_;
 			graphics::GraphicsUniformSetPtr decal_;
+			graphics::GraphicsUniformSetPtr hasTexture_;
 		};
 	}
 }

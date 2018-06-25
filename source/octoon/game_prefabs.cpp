@@ -58,9 +58,8 @@ namespace octoon
 		camera->addComponent<CameraComponent>();
 		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
 		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Ortho);
-		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, -1.0f, 0.0f));
+		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, 0.0f, 1.0f));
 		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
-		camera->getComponent<TransformComponent>()->setScale(math::float3(1.0f, -1.0f, 1.0f));
 		camera->addComponent<FirstPersonCameraComponent>();
 
 		return camera;
@@ -245,29 +244,29 @@ namespace octoon
 	}
 
 	GameObjectPtr 
-	GamePrefabs::createSprite(const std::string& image) except
+	GamePrefabs::createSprite(const std::string& image, std::uint32_t w, std::uint32_t h) except
 	{
 		auto object = GameObject::create();
-		object->addComponent<MeshFilterComponent>(model::makePlane(1.0, 1.0));
+		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(this->createTexture(image)));
 
 		return object;
 	}
 	
 	GameObjectPtr 
-	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture) except
+	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture, std::uint32_t w, std::uint32_t h) except
 	{
 		auto object = GameObject::create();
-		object->addComponent<MeshFilterComponent>(model::makePlane(1.0, 1.0));
+		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
 
 		return object;
 	}
 
 	GameObjectPtr
-	GamePrefabs::createSpriteSquare() except
+	GamePrefabs::createSpriteSquare(std::uint32_t w, std::uint32_t h) except
 	{
-		return this->createSprite("sys:sprite/square.png");
+		return this->createSprite("sys:sprite/square.png", w, h);
 	}
 
 	graphics::GraphicsTexturePtr

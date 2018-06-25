@@ -197,7 +197,7 @@ namespace octoon
 			return groups;
 		}
 
-		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps) noexcept(false)
+		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, bool horizintal) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
@@ -239,7 +239,7 @@ namespace octoon
 				}
 			};
 
-			auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps)
+			auto addContours = [addPoints](const FT_GlyphSlot glyph, FT_Pos offset, std::uint16_t bezierSteps, bool horizintal)
 			{
 				Contours contours(glyph->outline.n_contours);
 
@@ -261,6 +261,15 @@ namespace octoon
 				{
 					for (auto& point : contour->points())
 						point.x += offset;
+				}
+
+				if (horizintal)
+				{
+					for (auto& contour : contours)
+					{
+						for (auto& point : contour->points())
+							point.y *= -1;
+					}
 				}
 
 				return std::make_shared<ContourGroup>(std::move(contours));
@@ -292,7 +301,7 @@ namespace octoon
 					offset += ftface->glyph->advance.x / 64;
 				else
 				{
-					groups.push_back(addContours(ftface->glyph, offset, bezierSteps));
+					groups.push_back(addContours(ftface->glyph, offset, bezierSteps, horizintal));
 
 					offset += ftface->glyph->bitmap_left + ftface->glyph->bitmap.width;
 				}

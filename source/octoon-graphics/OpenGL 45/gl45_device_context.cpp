@@ -321,7 +321,7 @@ namespace octoon
 		{
 			assert(data);
 			assert(data->isInstanceOf<GL45GraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
+			assert(data->getDataDesc().getType() == GraphicsDataType::StorageVertexBuffer);
 			assert(_vertexBuffers.size() > i);
 			assert(_glcontext->getActive());
 
@@ -347,7 +347,7 @@ namespace octoon
 		{
 			assert(data);
 			assert(data->isInstanceOf<GL45GraphicsData>());
-			assert(data->getGraphicsDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
+			assert(data->getDataDesc().getType() == GraphicsDataType::StorageIndexBuffer);
 			assert(indexType == GraphicsIndexType::UInt16 || indexType == GraphicsIndexType::UInt32);
 			assert(_glcontext->getActive());
 
@@ -669,7 +669,7 @@ namespace octoon
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
-			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::IndirectBiffer);
+			assert(data && data->getDataDesc().getType() == GraphicsDataType::IndirectBiffer);
 
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, data->downcast<GL45GraphicsData>()->getInstanceID());
 
@@ -688,7 +688,7 @@ namespace octoon
 		{
 			assert(_pipeline);
 			assert(_glcontext->getActive());
-			assert(data && data->getGraphicsDataDesc().getType() == GraphicsDataType::IndirectBiffer);
+			assert(data && data->getDataDesc().getType() == GraphicsDataType::IndirectBiffer);
 
 			glBindBuffer(GL_DRAW_INDIRECT_BUFFER, data->downcast<GL45GraphicsData>()->getInstanceID());
 

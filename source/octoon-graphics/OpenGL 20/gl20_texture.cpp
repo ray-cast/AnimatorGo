@@ -186,7 +186,7 @@ namespace octoon
 			{
 				if (sampler)
 				{
-					auto& desc = sampler->getGraphicsSamplerDesc();
+					auto& desc = sampler->getSamplerDesc();
 					if (!applySamplerWrap(_target, desc.getSamplerWrap()))
 						return;
 

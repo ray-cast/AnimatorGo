@@ -125,7 +125,7 @@ namespace octoon
 			GraphicsShader() noexcept = default;
 			virtual ~GraphicsShader() = default;
 
-			virtual const GraphicsShaderDesc& getGraphicsShaderDesc() const noexcept = 0;
+			virtual const GraphicsShaderDesc& getShaderDesc() const noexcept = 0;
 
 		private:
 			GraphicsShader(const GraphicsShader&) noexcept = delete;
@@ -142,7 +142,7 @@ namespace octoon
 			virtual const GraphicsParams& getActiveParams() const noexcept = 0;
 			virtual const GraphicsAttributes& getActiveAttributes() const noexcept = 0;
 
-			virtual const GraphicsProgramDesc& getGraphicsProgramDesc() const noexcept = 0;
+			virtual const GraphicsProgramDesc& getProgramDesc() const noexcept = 0;
 
 		private:
 			GraphicsProgram(const GraphicsProgram&) noexcept = delete;

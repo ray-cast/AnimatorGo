@@ -20,6 +20,8 @@ namespace octoon
 			virtual const graphics::GraphicsPipelinePtr& getPipeline() const noexcept = 0;
 			virtual const graphics::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept = 0;
 
+			virtual graphics::GraphicsUniformSetPtr getParameter(const std::string& name) const;
+
 			virtual MaterialPtr clone() const noexcept = 0;
 
 		private:

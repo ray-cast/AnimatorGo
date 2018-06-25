@@ -101,7 +101,7 @@ public:
 				auto color = octoon::math::float4(fc[0].get<json::number_float_t>(), fc[1].get<json::number_float_t>(), fc[2].get<json::number_float_t>(), 1.0f);
 				
 				object = octoon::GamePrefabs::instance()->createText(text.c_str(), size);
-				std::dynamic_pointer_cast<octoon::video::BasicMaterial>(object->getComponent<octoon::RenderComponent>()->getMaterial())->setBaseColor(color);
+				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(color);
 			}
 			break;
 			case LayerTypes::audio:

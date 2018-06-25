@@ -9,8 +9,36 @@ namespace octoon
 		{
 		}
 
+		Material::Material(std::string&& name) noexcept
+		{
+			this->setName(std::move(name));
+		}
+
+		Material::Material(const std::string& name) noexcept
+		{
+			this->setName(name);
+		}
+
 		Material::~Material() noexcept
 		{
+		}
+
+		void
+		Material::setName(std::string&& name) noexcept
+		{
+			_name = std::move(name);
+		}
+
+		void
+		Material::setName(const std::string& name) noexcept
+		{
+			_name = name;
+		}
+
+		const std::string&
+		Material::getName() const noexcept
+		{
+			return _name;
 		}
 
 		graphics::GraphicsUniformSetPtr 

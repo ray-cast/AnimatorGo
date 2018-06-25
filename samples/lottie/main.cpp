@@ -1,8 +1,6 @@
 #include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
 #include <octoon/runtime/json.h>
-#include <octoon/video/basic_material.h>
-
 #include <octoon/transform_anim_component.h>
 
 #include "transform_helper.h"
@@ -52,8 +50,6 @@ public:
 		for (auto& asset : j["assets"])
 		{
 			auto id = asset["id"].get<json::string_t>();
-			auto w = asset["w"].get<json::number_integer_t>();
-			auto h = asset["h"].get<json::number_integer_t>();
 			auto root = "file:C:\\Users\\Administrator\\Desktop\\" + asset["u"].get<json::string_t>();
 			auto p = asset["p"].get<json::string_t>();
 

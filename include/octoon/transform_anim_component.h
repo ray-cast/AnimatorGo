@@ -21,6 +21,14 @@ namespace octoon
 		void setRotation(const model::Keyframes<math::float3>& frames) noexcept;
 		void setTranslate(const model::Keyframes<math::float3>& frames) noexcept;
 
+		void setScale(model::AnimationCurve<math::float3>&& frames) noexcept;
+		void setRotation(model::AnimationCurve<math::float3>&& frames) noexcept;
+		void setTranslate(model::AnimationCurve<math::float3>&& frames) noexcept;
+
+		void setScale(const model::AnimationCurve<math::float3>& frames) noexcept;
+		void setRotation(const model::AnimationCurve<math::float3>& frames) noexcept;
+		void setTranslate(const model::AnimationCurve<math::float3>& frames) noexcept;
+
 		void setLocalScale(model::Keyframes<math::float3>&& frames) noexcept;
 		void setLocalRotation(model::Keyframes<math::float3>&& frames) noexcept;
 		void setLocalTranslate(model::Keyframes<math::float3>&& frames) noexcept;
@@ -28,6 +36,14 @@ namespace octoon
 		void setLocalScale(const model::Keyframes<math::float3>& frames) noexcept;
 		void setLocalRotation(const model::Keyframes<math::float3>& frames) noexcept;
 		void setLocalTranslate(const model::Keyframes<math::float3>& frames) noexcept;
+
+		void setLocalScale(model::AnimationCurve<math::float3>&& frames) noexcept;
+		void setLocalRotation(model::AnimationCurve<math::float3>&& frames) noexcept;
+		void setLocalTranslate(model::AnimationCurve<math::float3>&& frames) noexcept;
+
+		void setLocalScale(const model::AnimationCurve<math::float3>& frames) noexcept;
+		void setLocalRotation(const model::AnimationCurve<math::float3>& frames) noexcept;
+		void setLocalTranslate(const model::AnimationCurve<math::float3>& frames) noexcept;
 
 		virtual GameComponentPtr clone() const noexcept override;
 

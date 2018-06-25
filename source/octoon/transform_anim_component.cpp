@@ -18,71 +18,143 @@ namespace octoon
 	void
 	TransformAnimComponent::setScale(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		scale_ = std::move(frames);
+		scale_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setRotation(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		rotation_ = std::move(frames);
+		rotation_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setTranslate(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		pos_ = std::move(frames);
+		pos_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setScale(const model::Keyframes<math::float3>& frames) noexcept
 	{
-		scale_ = frames;
+		scale_.frames = frames;
 	}
 
 	void
 	TransformAnimComponent::setRotation(const model::Keyframes<math::float3>& frames) noexcept
 	{
-		rotation_ = frames;
+		rotation_.frames = frames;
 	}
 
 	void
 	TransformAnimComponent::setTranslate(const model::Keyframes<math::float3>& frames) noexcept
 	{
-		pos_ = frames;
+		pos_.frames = frames;
 	}
 
 	void
 	TransformAnimComponent::setLocalScale(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		localScale_ = std::move(frames);
+		localScale_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setLocalRotation(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		localRotation_ = std::move(frames);
+		localRotation_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setLocalTranslate(model::Keyframes<math::float3>&& frames) noexcept
 	{
-		localPos_ = std::move(frames);
+		localPos_.frames = std::move(frames);
 	}
 
 	void
 	TransformAnimComponent::setLocalScale(const model::Keyframes<math::float3>& frames) noexcept
 	{
-		localScale_ = frames;
+		localScale_.frames = frames;
 	}
 
 	void
 	TransformAnimComponent::setLocalRotation(const model::Keyframes<math::float3>& frames) noexcept
 	{
-		localRotation_ = frames;
+		localRotation_.frames = frames;
 	}
 
 	void
 	TransformAnimComponent::setLocalTranslate(const model::Keyframes<math::float3>& frames) noexcept
+	{
+		localPos_.frames = frames;
+	}
+
+	void
+	TransformAnimComponent::setScale(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		scale_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setRotation(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		rotation_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setTranslate(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		pos_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setScale(const model::AnimationCurve<math::float3>& frames) noexcept
+	{
+		scale_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setRotation(const model::AnimationCurve<math::float3>& frames) noexcept
+	{
+		rotation_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setTranslate(const model::AnimationCurve<math::float3>& frames) noexcept
+	{
+		pos_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setLocalScale(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		localScale_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalRotation(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		localRotation_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalTranslate(model::AnimationCurve<math::float3>&& frames) noexcept
+	{
+		localPos_ = std::move(frames);
+	}
+
+	void
+	TransformAnimComponent::setLocalScale(const model::AnimationCurve<math::float3>& frames) noexcept
+	{
+		localScale_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setLocalRotation(const model::AnimationCurve<math::float3>& frames) noexcept
+	{
+		localRotation_ = frames;
+	}
+
+	void
+	TransformAnimComponent::setLocalTranslate(const model::AnimationCurve<math::float3>& frames) noexcept
 	{
 		localPos_ = frames;
 	}
@@ -92,12 +164,12 @@ namespace octoon
 	{
 		auto instance = std::make_shared<TransformAnimComponent>();
 		instance->setName(instance->getName());
-		instance->setScale(this->pos_.frames);
-		instance->setRotation(this->scale_.frames);
-		instance->setTranslate(this->rotation_.frames);
-		instance->setLocalScale(this->localPos_.frames);
-		instance->setLocalRotation(this->localScale_.frames);
-		instance->setLocalTranslate(this->localRotation_.frames);
+		instance->setScale(this->pos_);
+		instance->setRotation(this->scale_);
+		instance->setTranslate(this->rotation_);
+		instance->setLocalScale(this->localPos_);
+		instance->setLocalRotation(this->localScale_);
+		instance->setLocalTranslate(this->localRotation_);
 
 		return instance;
 	}
@@ -124,24 +196,23 @@ namespace octoon
 #if OCTOON_FEATURE_TIMER_ENABLE
 			step = GameApp::instance()->getFeature<TimerFeature>()->delta();
 #endif
-			if (!pos_.frames.empty())
+			if (!pos_.empty())
 				transform->setTranslate(pos_.evaluate(step));
 
-			if (!scale_.frames.empty())
+			if (!scale_.empty())
 				transform->setScale(scale_.evaluate(step));
 
-			if (!rotation_.frames.empty())
+			if (!rotation_.empty())
 				transform->setQuaternion(math::Quaternion(rotation_.evaluate(step)));
 
-			if (!localPos_.frames.empty())
+			if (!localPos_.empty())
 				transform->setLocalTranslate(localPos_.evaluate(step));
 
-			if (!localScale_.frames.empty())
+			if (!localScale_.empty())
 				transform->setLocalScale(localScale_.evaluate(step));
 
-			if (!localRotation_.frames.empty())
+			if (!localRotation_.empty())
 				transform->setLocalQuaternion(math::Quaternion(localRotation_.evaluate(step)));
 		}
-
 	}
 }

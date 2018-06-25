@@ -20,12 +20,12 @@ namespace octoon
 			{
 			}
 
-			AnimationCurve(Keyframes&& frames_) noexcept
+			explicit AnimationCurve(Keyframes&& frames_) noexcept
 			{
 				this->assign(std::move(frames_));
 			}
 
-			AnimationCurve(const Keyframes& frames_) noexcept
+			explicit AnimationCurve(const Keyframes& frames_) noexcept
 			{
 				this->assign(frames_);
 			}
@@ -40,6 +40,11 @@ namespace octoon
 			{
 				frames = frames_;
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+			}
+
+			bool empty() const noexcept
+			{
+				return frames.empty();
 			}
 
 			const _Elem& evaluate(const _Time& delta) noexcept

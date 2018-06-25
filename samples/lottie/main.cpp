@@ -84,7 +84,7 @@ public:
 				auto refid = layer["refId"].get<json::string_t>();
 				auto tex = _textures[refid];
 				object = octoon::GamePrefabs::instance()->createSprite(tex, tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight());
-				object->getComponent<octoon::Transform>()->setLocalScale(octoon::math::float3(tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight(), 100));
+				object->getComponent<octoon::Transform>()->setLocalScale(octoon::math::float3(tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight(), 1.0f));
 			}
 			break;
 			case LayerTypes::nullLayer:

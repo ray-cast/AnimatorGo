@@ -40,6 +40,8 @@ namespace octoon
 			math::float3& operator[](std::size_t index) noexcept { return this->at(index); }
 			const math::float3& operator[](std::size_t index) const noexcept { return this->at(index); }
 
+			ContourPtr clone() const noexcept;
+
 		public:
 			template<typename T, typename = std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, math::detail::Vector3<typename T::value_type>>::value>>
 			friend Contour& operator+=(Contour& contour, const T& scale) noexcept { for (auto& it : contour.points_) it += scale; return contour; }

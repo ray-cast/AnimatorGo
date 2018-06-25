@@ -68,10 +68,10 @@ namespace octoon
 		typedef std::shared_ptr<Texture> TexturePtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<Material> MaterialPtr;
-		typedef std::unique_ptr<class Path> PathPtr;
+		typedef std::shared_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
-		typedef std::unique_ptr<class Contour> ContourPtr;
+		typedef std::shared_ptr<class Contour> ContourPtr;
 		typedef std::shared_ptr<class ContourGroup> ContourGroupPtr;
 		typedef std::shared_ptr<class TextFile> TextFilePtr;
 		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;

@@ -177,6 +177,9 @@ namespace octoon
 					if (!material)
 						continue;
 
+					if (camera->getLayer() != object->getLayer())
+						continue;
+
 					material->setTransform(geometry->getTransform());
 					material->setViewProjection(camera->getViewProjection());
 

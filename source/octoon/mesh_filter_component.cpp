@@ -99,11 +99,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshFilterComponent>();
 		instance->setName(instance->getName());
-
-		if (isSharedMesh_)
-			instance->setMesh(mesh_, isSharedMesh_);
-		else
-			instance->setMesh(mesh_ ? mesh_->clone() : nullptr, isSharedMesh_);
+		instance->setMesh(mesh_ ? (isSharedMesh_ ? mesh_ : mesh_->clone()) : nullptr, isSharedMesh_);
 
 		return instance;
 	}

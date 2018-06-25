@@ -13,11 +13,9 @@ public:
 	{
 		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 
-		auto material_ = std::make_shared<octoon::video::LineMaterial>(2);
-
 		object_ = octoon::GameObject::create();
 		object_->addComponent<octoon::MeshFilterComponent>();
-		object_->addComponent<octoon::MeshRendererComponent>(material_);
+		object_->addComponent<octoon::MeshRendererComponent>(std::make_shared<octoon::video::LineMaterial>(2.0f));
 	}
 
 	void onDeactivate() noexcept override

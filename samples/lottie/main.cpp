@@ -38,11 +38,11 @@ public:
 
 	bool prepareCanvas(const json& j)
 	{
-		w = j["w"];
-		h = j["h"];
+		width_ = j["w"];
+		height_ = j["h"];
 		fps_ = j["fr"];
 
-		return ::OctoonOpenWindow("Octoon Studio", w, h);
+		return ::OctoonOpenWindow("Octoon Studio", width_, height_);
 	}
 
 	bool prepareAssets(const json& j)
@@ -141,14 +141,12 @@ public:
 
 private:
 	float fps_;
-	std::uint32_t w, h;
+	std::uint32_t width_, height_;
 
 	octoon::GameObjects layers_;
 	octoon::GameObjectPtr camera_;
 	std::map<std::string, octoon::graphics::GraphicsTexturePtr> _textures;
 };
-
-#include <octoon/model/animation_curve.h>
 
 int main(int argc, const char* argv[])
 {

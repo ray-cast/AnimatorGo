@@ -37,6 +37,12 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/transform_anim_component.cpp
 	${HEADER_PATH}/mesh_filter_component.h
 	${SOURCE_PATH}/mesh_filter_component.cpp
+	${HEADER_PATH}/text_component.h
+	${SOURCE_PATH}/text_component.cpp
+	${HEADER_PATH}/path_component.h
+	${SOURCE_PATH}/path_component.cpp
+	${HEADER_PATH}/contour_component.h
+	${SOURCE_PATH}/contour_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
@@ -48,8 +54,6 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
-	${HEADER_PATH}/text_component.h
-	${SOURCE_PATH}/text_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )

@@ -50,6 +50,7 @@ namespace octoon
 		geometry_->setActive(true);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
+		geometry_->setLayer(this->getGameObject()->getLayer());
 
 		if (meshFilter)
 			this->onMeshReplace(meshFilter->getMesh());

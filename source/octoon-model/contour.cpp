@@ -182,5 +182,13 @@ namespace octoon
 				this->addPoints(t2 * m + t * n);
 			}
 		}
+
+		ContourPtr
+		Contour::clone() const noexcept
+		{
+			auto contour = std::make_shared<Contour>();
+			contour->points_ = this->points_;
+			return contour;
+		}
 	}
 }

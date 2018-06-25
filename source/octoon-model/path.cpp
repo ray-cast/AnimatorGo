@@ -212,5 +212,13 @@ namespace octoon
 				it.invoke(func);
 			return *this;
 		}
+
+		PathPtr
+		Path::clone() const noexcept
+		{
+			auto path = std::make_shared<Path>();
+			path->edges_ = this->edges_;
+			return path;
+		}
 	}
 }

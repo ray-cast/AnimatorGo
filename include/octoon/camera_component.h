@@ -69,6 +69,8 @@ namespace octoon
 		virtual void onRenderObjectPre(const video::Camera& camera) noexcept override;
 		virtual void onRenderObjectPost(const video::Camera& camera) noexcept override;
 
+		virtual void onLayerChangeAfter() noexcept override;
+
 	private:
 		CameraComponent(const CameraComponent&) = delete;
 		CameraComponent& operator=(const CameraComponent&) = delete;

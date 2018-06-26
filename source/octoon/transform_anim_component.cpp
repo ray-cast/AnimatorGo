@@ -194,7 +194,7 @@ namespace octoon
 		{
 			float step = 1.0f / 60.0f;
 #if OCTOON_FEATURE_TIMER_ENABLE
-			step = GameApp::instance()->getFeature<TimerFeature>()->delta();
+			// step = GameApp::instance()->getFeature<TimerFeature>()->delta();
 #endif
 			if (!pos_.empty())
 				transform->setTranslate(pos_.evaluate(step));

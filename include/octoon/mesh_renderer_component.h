@@ -31,6 +31,8 @@ namespace octoon
 		void onMeshReplace(const model::MeshPtr& mesh) noexcept;
 		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
+		void onLayerChangeAfter() noexcept override;
+
 	private:
 		MeshRendererComponent(const MeshRendererComponent&) = delete;
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;

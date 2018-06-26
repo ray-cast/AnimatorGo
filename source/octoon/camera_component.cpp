@@ -290,4 +290,10 @@ namespace octoon
 	CameraComponent::onRenderObjectPost(const video::Camera& camera) noexcept
 	{
 	}
+
+	void
+	CameraComponent::onLayerChangeAfter() noexcept
+	{
+		camera_->setLayer(this->getGameObject()->getLayer());
+	}
 }

@@ -41,7 +41,7 @@ public:
 		height_ = j["h"];
 		fps_ = j["fr"];
 
-		return ::OctoonOpenWindow("Octoon Studio", width_, height_);
+		return ::OctoonOpenWindow("Octoon Studio", width_ / 2 , height_/2);
 	}
 
 	bool prepareAssets(const json& j)
@@ -68,8 +68,8 @@ public:
 
 	bool prepareLayers(const json& j)
 	{
-		camera_ = octoon::GamePrefabs::instance()->createCamera2D();
-		camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0));
+		/*camera_ = octoon::GamePrefabs::instance()->createCamera2D();
+		camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0));*/
 
 		for (auto& layer : j["layers"])
 		{
@@ -78,10 +78,6 @@ public:
 			auto type = (LayerTypes)layer["ty"].get<json::number_unsigned_t>();
 			switch (type)
 			{
-			case LayerTypes::precomp:
-			break;
-			case LayerTypes::solid:
-			break;
 			case LayerTypes::still:
 			{
 				auto refid = layer["refId"].get<json::string_t>();
@@ -89,10 +85,6 @@ public:
 				object = octoon::GamePrefabs::instance()->createSprite(tex, tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight());
 				object->getComponent<octoon::Transform>()->setLocalScale(octoon::math::float3(tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight(), 1.0f));
 			}
-			break;
-			case LayerTypes::nullLayer:
-			break;
-			case LayerTypes::shape:
 			break;
 			case LayerTypes::text:
 			{
@@ -104,40 +96,49 @@ public:
 				
 				object = octoon::GamePrefabs::instance()->createText(text.c_str(), size);
 				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(color);
+
+				auto& ks = layer["ks"];
+				if (!ks.is_null())
+				{
+					TransformHelper t(ks, fps_);
+
+					auto transform = object->addComponent<octoon::TransformAnimComponent>();
+					transform->setLocalTranslate(t.pos);
+					transform->setLocalScale(t.scale);
+					//transform->setLocalRotation(t.rotation);
+				}
 			}
 			break;
-			case LayerTypes::audio:
-			break;
-			case LayerTypes::pholderVideo:
-			break;
-			case LayerTypes::imageSeq:
-			break;
-			case LayerTypes::video:
-			break;
-			case LayerTypes::pholderStill:
-			break;
-			case LayerTypes::guide:
-			break;
-			case LayerTypes::adjustment:
-			break;
 			case LayerTypes::camera:
-			break;
-			case LayerTypes::light:
+			{
+				object = octoon::GamePrefabs::instance()->createCamera();
+				object->setLayer(1);
+
+				auto& ks = layer["ks"];
+				if (!ks.is_null())
+				{
+					TransformHelper t(ks, fps_);
+
+					for (auto& p : t.pos)
+						p.value.z += 1000.0f;
+
+					auto transform = object->addComponent<octoon::TransformAnimComponent>();
+					transform->setLocalTranslate(t.pos);
+					transform->setLocalScale(t.scale);
+					//transform->setLocalRotation(t.rotation);
+				}
+			}
 			break;
 			default:
+				continue;
 				break;
 			}
 
-			auto& ks = layer["ks"];
-			if (!ks.is_null())
-			{
-				TransformHelper t(ks, fps_);
+			auto& ddd = layer["ddd"];
+			if (ddd.get<json::number_unsigned_t>())
+				object->setLayer(1);
 
-				auto transform = object->addComponent<octoon::TransformAnimComponent>();
-				transform->setTranslate(t.pos);
-				transform->setScale(t.scale);
-				transform->setRotation(t.rotation);
-			}
+
 
 			layers_.push_back(std::move(object));
 		}

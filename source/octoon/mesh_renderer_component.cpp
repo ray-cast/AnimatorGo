@@ -183,4 +183,11 @@ namespace octoon
 		if (geometry_)
 			geometry_->setMaterial(material);
 	}
+
+	void
+	MeshRendererComponent::onLayerChangeAfter() noexcept
+	{
+		if (geometry_)
+			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
 }

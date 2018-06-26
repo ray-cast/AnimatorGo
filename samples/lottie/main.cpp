@@ -41,7 +41,7 @@ public:
 		height_ = j["h"];
 		fps_ = j["fr"];
 
-		return ::OctoonOpenWindow("Octoon Studio", width_ / 2 , height_/2);
+		return ::OctoonOpenWindow("Octoon Studio", width_ / 2 , height_ / 2);
 	}
 
 	bool prepareAssets(const json& j)
@@ -83,7 +83,6 @@ public:
 				auto refid = layer["refId"].get<json::string_t>();
 				auto tex = _textures[refid];
 				object = octoon::GamePrefabs::instance()->createSprite(tex, tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight());
-				object->getComponent<octoon::Transform>()->setLocalScale(octoon::math::float3(tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight(), 1.0f));
 			}
 			break;
 			case LayerTypes::text:
@@ -96,37 +95,16 @@ public:
 				
 				object = octoon::GamePrefabs::instance()->createText(text.c_str(), size);
 				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(color);
-
-				auto& ks = layer["ks"];
-				if (!ks.is_null())
-				{
-					TransformHelper t(ks, fps_);
-
-					auto transform = object->addComponent<octoon::TransformAnimComponent>();
-					transform->setLocalTranslate(t.pos);
-					transform->setLocalScale(t.scale);
-					//transform->setLocalRotation(t.rotation);
-				}
 			}
 			break;
 			case LayerTypes::camera:
 			{
-				object = octoon::GamePrefabs::instance()->createCamera();
-				object->setLayer(1);
+				auto zoom = 905.30f;
+				auto comp = width_;
+				auto fov = octoon::math::degress(std::atan(comp / zoom * 0.5f)) * 2.0f;
 
-				auto& ks = layer["ks"];
-				if (!ks.is_null())
-				{
-					TransformHelper t(ks, fps_);
-
-					for (auto& p : t.pos)
-						p.value.z += 1000.0f;
-
-					auto transform = object->addComponent<octoon::TransformAnimComponent>();
-					transform->setLocalTranslate(t.pos);
-					transform->setLocalScale(t.scale);
-					//transform->setLocalRotation(t.rotation);
-				}
+				object = octoon::GamePrefabs::instance()->createCamera(fov);
+				//object->setLayer(1);
 			}
 			break;
 			default:
@@ -134,11 +112,20 @@ public:
 				break;
 			}
 
-			auto& ddd = layer["ddd"];
+			/*auto& ddd = layer["ddd"];
 			if (ddd.get<json::number_unsigned_t>())
-				object->setLayer(1);
+				object->setLayer(1);*/
 
+			auto& ks = layer["ks"];
+			if (!ks.is_null())
+			{
+				TransformHelper t(ks, fps_);
 
+				auto transform = object->addComponent<octoon::TransformAnimComponent>();
+				transform->setLocalTranslate(t.pos);
+				transform->setLocalScale(t.scale);
+				transform->setLocalRotation(t.rotation);
+			}
 
 			layers_.push_back(std::move(object));
 		}

@@ -31,7 +31,8 @@ namespace octoon
 		enum class CameraType
 		{
 			Ortho,
-			Perspective
+			Perspective,
+			Frustum
 		};
 
 		enum class GraphicsIndexType

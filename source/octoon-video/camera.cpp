@@ -11,11 +11,12 @@ namespace octoon
 	{
 		OctoonImplementSubClass(Camera, runtime::RttiInterface, "Camera")
 
-			Camera::Camera() noexcept
+		Camera::Camera() noexcept
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 			, aperture_(45.0f)
 			, ratio_(1.0f)
-			, ratioReal_(1.0f)
+			, width_(0)
+			, height_(0)
 			, znear_(0.01f)
 			, zfar_(65535.0f)
 			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
@@ -388,24 +389,14 @@ namespace octoon
 		}
 
 		void
-		Camera::_updateOrtho() const noexcept
+		Camera::_updateOrtho(std::uint32_t width, std::uint32_t height) const noexcept
 		{
-			std::uint32_t width = 1920, height = 1080;
-
-			if (!fbo_[0])
-				RenderSystem::instance()->getFramebufferSize(width, height);
-			else
-			{
-				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
-				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
-			}
-
 			auto left = width * ortho_.x;
 			auto right = width * ortho_.y;
 			auto bottom = height * ortho_.z;
 			auto top = height * ortho_.w;
 
-			math::float4x4  adjustment;
+			math::float4x4 adjustment;
 			adjustment.makeScale(1.0, -1.0, 1.0);
 
 			project_ = adjustment * math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
@@ -413,12 +404,27 @@ namespace octoon
 		}
 
 		void
-		Camera::_updatePerspective(float ratio) const noexcept
+		Camera::_updatePerspective(std::uint32_t width, std::uint32_t height) const noexcept
 		{
-			math::float4x4  adjustment;
+			math::float4x4 adjustment;
 			adjustment.makeScale(1.0, -1.0, 1.0);
 
-			project_ = adjustment * math::makePerspectiveFovLH(aperture_, ratio_ * ratio, znear_, zfar_);
+			project_ = adjustment * math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
+			projectInverse_ = math::inverse(project_);
+		}
+
+		void 
+		Camera::_updateFrustum(std::uint32_t width, std::uint32_t height) const noexcept
+		{
+			auto left = width * ortho_.x;
+			auto right = width * ortho_.y;
+			auto bottom = height * ortho_.z;
+			auto top = height * ortho_.w;
+
+			math::float4x4 adjustment;
+			adjustment.makeScale(1.0, -1.0, 1.0);
+
+			project_ = adjustment * math::makeFrustumtLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 		}
 
@@ -435,16 +441,17 @@ namespace octoon
 				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
 			}
 
-			float ratio = (float)width / height;
-
-			if (ratioReal_ != ratio)
+			if (width_ != width || height_ != height)
 			{
 				if (cameraType_ == CameraType::Perspective)
-					this->_updatePerspective(ratio);
+					this->_updatePerspective(width, height);
+				else if (cameraType_ == CameraType::Frustum)
+					this->_updateFrustum(width, height);
 				else
-					this->_updateOrtho();
+					this->_updateOrtho(width, height);
 
-				ratioReal_ = ratio;
+				width_ = width;
+				height_ = height;
 			}
 
 			if (needUpdateViewProject_)

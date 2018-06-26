@@ -1190,7 +1190,7 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Matrix4x4<T> makePerspectiveFovLH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
-			const T h = 1.0f / tan(radians(fov * 0.5f));
+			const T h = 1.0f / tan(radians(fov * 0.5f)) * aspect;
 			const T w = h / aspect;
 			const T q = farPlane / (farPlane - nearPlane);
 
@@ -1204,7 +1204,7 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Matrix4x4<T> makePerspectiveFovRH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
-			const T h = 1.0f / tan(radians(fov * 0.5f));
+			const T h = 1.0f / tan(radians(fov * 0.5f)) * aspect;
 			const T w = h / aspect;
 			const T q = farPlane / (farPlane - nearPlane);
 

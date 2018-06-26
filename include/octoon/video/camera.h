@@ -65,8 +65,9 @@ namespace octoon
 			void onRenderAfter(const Camera& camera) noexcept override;
 
 		private:
-			void _updateOrtho() const noexcept;
-			void _updatePerspective(float ratio) const noexcept;
+			void _updateOrtho(std::uint32_t width, std::uint32_t height) const noexcept;
+			void _updatePerspective(std::uint32_t width, std::uint32_t height) const noexcept;
+			void _updateFrustum(std::uint32_t width, std::uint32_t height) const noexcept;
 			void _updateViewProject() const noexcept;
 
 		private:
@@ -94,7 +95,9 @@ namespace octoon
 			mutable math::float4x4 project_;
 			mutable math::float4x4 projectInverse_;
 
-			mutable float ratioReal_;
+			mutable std::uint32_t width_;
+			mutable std::uint32_t height_;
+
 			mutable bool needUpdateViewProject_;
 		};
 	}

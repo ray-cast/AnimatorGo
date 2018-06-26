@@ -101,7 +101,7 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = octoon::GamePrefabs::instance()->createCamera();
+		auto camera = octoon::GamePrefabs::instance()->createCamera(45.0f);
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->addComponent<CubeController>();
 

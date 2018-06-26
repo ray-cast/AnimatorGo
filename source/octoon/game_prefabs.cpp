@@ -39,16 +39,18 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GamePrefabs::createCamera() except
+	GamePrefabs::createCamera(float fov) except
 	{
-		auto camera = GameObject::create("MainCamera");
-		camera->addComponent<CameraComponent>();
-		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
-		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Perspective);
-		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -10));
-		camera->addComponent<FirstPersonCameraComponent>();
+		auto object = GameObject::create("MainCamera");
+		object->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -10));
+		object->addComponent<FirstPersonCameraComponent>();
 
-		return camera;
+		auto camera = object->addComponent<CameraComponent>();
+		camera->setCameraOrder(video::CameraOrder::Main);
+		camera->setCameraType(video::CameraType::Perspective);
+		camera->setAperture(fov);
+
+		return object;
 	}
 
 	GameObjectPtr
@@ -58,6 +60,21 @@ namespace octoon
 		camera->addComponent<CameraComponent>();
 		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
 		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Ortho);
+		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, 0.0f, 1.0f));
+		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
+		camera->addComponent<FirstPersonCameraComponent>();
+
+		return camera;
+	}
+
+	GameObjectPtr
+	GamePrefabs::createFrustum() except
+	{
+		auto camera = GameObject::create("MainCamera");
+		camera->addComponent<CameraComponent>();
+		camera->getComponent<CameraComponent>()->setCameraOrder(video::CameraOrder::Main);
+		camera->getComponent<CameraComponent>()->setCameraType(video::CameraType::Frustum);
+		camera->getComponent<CameraComponent>()->setNear(1.0f);
 		camera->getComponent<CameraComponent>()->setOrtho(math::float4(0.0f, 1.0f, 0.0f, 1.0f));
 		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
 		camera->addComponent<FirstPersonCameraComponent>();
@@ -250,7 +267,7 @@ namespace octoon
 		}
 
 		auto object = GameObject::create();
-		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(u16str, { fontPath, fontsize }, 8, true)));
+		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(u16str, { fontPath, fontsize }, 8),0.0f));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
 
 		return object;

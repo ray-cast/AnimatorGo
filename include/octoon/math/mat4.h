@@ -1190,7 +1190,7 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Matrix4x4<T> makePerspectiveFovLH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
-			const T h = 1.0f / tan(radians(fov * 0.5f)) * aspect;
+			const T h = aspect / tan(radians(fov * 0.5f));
 			const T w = h / aspect;
 			const T q = farPlane / (farPlane - nearPlane);
 
@@ -1204,7 +1204,7 @@ namespace octoon
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		inline detail::Matrix4x4<T> makePerspectiveFovRH(const T& fov, const T& aspect, const T& nearPlane, const T& farPlane) noexcept
 		{
-			const T h = 1.0f / tan(radians(fov * 0.5f)) * aspect;
+			const T h = aspect / tan(radians(fov * 0.5f));
 			const T w = h / aspect;
 			const T q = farPlane / (farPlane - nearPlane);
 
@@ -1216,24 +1216,24 @@ namespace octoon
 		}
 
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
-		inline detail::Matrix4x4<T> makePerspectiveOffCenterLH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
+		inline detail::Matrix4x4<T> makePerspectiveOffCenterLH(const T& fovy, const T& aspect, const T& znear, const T& zfar) noexcept
 		{
 			T tan_fovy = tan(radians(fovy * 0.5f));
-			T right = tan_fovy * aspectRatio * znear;
+			T right = tan_fovy * znear;
 			T left = -right;
-			T top = tan_fovy * znear;
+			T top = tan_fovy * znear / aspect;
 			T bottom = -top;
 
 			return makeFrustumtLH(left, right, bottom, top, znear, zfar);
 		}
 
 		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
-		inline detail::Matrix4x4<T> makePerspectiveOffCenterRH(const T& fovy, const T& aspectRatio, const T& znear, const T& zfar) noexcept
+		inline detail::Matrix4x4<T> makePerspectiveOffCenterRH(const T& fovy, const T& aspect, const T& znear, const T& zfar) noexcept
 		{
 			T tan_fovy = tan(radians(fovy * 0.5f));
-			T _right = tan_fovy * aspectRatio * znear;
+			T _right = tan_fovy * znear;
 			T left = -_right;
-			T top = tan_fovy * znear;
+			T top = tan_fovy * znear / aspect;
 			T bottom = -top;
 
 			return makeFrustumtRH(left, _right, bottom, top, znear, zfar);

@@ -1335,11 +1335,11 @@ namespace octoon
 			return m;
 		}
 
-		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
-		inline detail::Matrix4x4<T> makeViewport(std::uint32_t left, std::uint32_t top, std::uint32_t width, std::uint32_t height) noexcept
+		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
+		inline detail::Matrix4x4<T> makeViewport(T left, T top, T width, T height) noexcept
 		{
-			T cx = (T)(width >> 1);
-			T cy = (T)(height >> 1);
+			T cx = width / 2;
+			T cy = height / 2;
 			T A = cx + left;
 			T B = cy + top;
 

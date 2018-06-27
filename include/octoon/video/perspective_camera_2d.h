@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_ORTHO_CAMERA_H_
-#define OCTOON_VIDEO_ORTHO_CAMERA_H_
+#ifndef OCTOON_VIDEO_PERSPECTIVE_CAMERA_2D_H_
+#define OCTOON_VIDEO_PERSPECTIVE_CAMERA_2D_H_
 
 #include <octoon/video/camera.h>
 
@@ -7,21 +7,22 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT OrthoCamera final : public Camera
+		class OCTOON_EXPORT PerspectiveCamera2D final : public Camera
 		{
-			OctoonDeclareSubClass(OrthoCamera, Camera)
+			OctoonDeclareSubClass(PerspectiveCamera2D, Camera)
 		public:
-			OrthoCamera() noexcept;
-			virtual ~OrthoCamera() noexcept;
-		
+			PerspectiveCamera2D() noexcept;
+			virtual ~PerspectiveCamera2D() noexcept;
+
+			void setAperture(float fov) noexcept;
 			void setNear(float znear) noexcept;
 			void setFar(float zfar) noexcept;
+			void setRatio(float ratio) noexcept;
 
+			float getAperture() const noexcept;
 			float getNear() const noexcept;
 			float getFar() const noexcept;
-
-			void setOrtho(const math::float4& ortho) noexcept;
-			const math::float4& getOrtho() const noexcept;
+			float getRatio() const noexcept;
 
 			const math::float4x4& getViewProjection() const noexcept override;
 			const math::float4x4& getViewProjectionInverse() const noexcept override;
@@ -35,10 +36,10 @@ namespace octoon
 			void _updateViewProject() const noexcept;
 
 		private:
-			float zfar_;
 			float znear_;
-
-			math::float4 ortho_;
+			float zfar_;
+			float ratio_;
+			float aperture_;
 
 			mutable std::uint32_t width_;
 			mutable std::uint32_t height_;

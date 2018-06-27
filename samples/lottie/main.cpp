@@ -103,7 +103,7 @@ public:
 				auto comp = width_;
 				auto fov = octoon::math::degress(std::atan(comp / zoom * 0.5f)) * 2.0f;
 
-				object = octoon::GamePrefabs::instance()->createPerspectiveCamera(fov);
+				object = octoon::GamePrefabs::instance()->createPerspectiveCamera2D(fov);
 				//object->setLayer(1);
 			}
 			break;

@@ -22,8 +22,8 @@ SET(VIDEO_CAMERA_LIST
 	${SOURCE_PATH}/ortho_camera.cpp
 	${HEADER_PATH}/perspective_camera.h
 	${SOURCE_PATH}/perspective_camera.cpp
-	${HEADER_PATH}/perspective_camera_2d.h
-	${SOURCE_PATH}/perspective_camera_2d.cpp
+	${HEADER_PATH}/film_camera.h
+	${SOURCE_PATH}/film_camera.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\camera  FILES ${VIDEO_CAMERA_LIST})
 

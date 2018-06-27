@@ -54,8 +54,8 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/ortho_camera_component.cpp
 	${HEADER_PATH}/perspective_camera_component.h
 	${SOURCE_PATH}/perspective_camera_component.cpp
-	${HEADER_PATH}/perspective_camera_2d_component.h
-	${SOURCE_PATH}/perspective_camera_2d_component.cpp
+	${HEADER_PATH}/film_camera_component.h
+	${SOURCE_PATH}/film_camera_component.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h

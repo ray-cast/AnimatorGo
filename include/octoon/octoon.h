@@ -19,6 +19,7 @@
 #include <octoon/first_person_camera_component.h>
 #include <octoon/ortho_camera_component.h>
 #include <octoon/perspective_camera_component.h>
+#include <octoon/perspective_camera_2d_component.h>
 #include <octoon/mesh_renderer_component.h>
 
 #include <octoon/model/model.h>

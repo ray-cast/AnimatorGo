@@ -100,10 +100,8 @@ public:
 			case LayerTypes::camera:
 			{
 				auto zoom = layer["co"][0]["v"]["k"].get<json::number_float_t>();
-				auto comp = width_;
-				auto fov = octoon::math::degress(std::atan(comp / zoom * 0.5f)) * 2.0f;
 
-				object = octoon::GamePrefabs::instance()->createPerspectiveCamera2D(fov);
+				object = octoon::GamePrefabs::instance()->createFilmCamera(zoom);
 				//object->setLayer(1);
 			}
 			break;

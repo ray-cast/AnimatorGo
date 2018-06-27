@@ -12,7 +12,7 @@ namespace octoon
 		typedef std::shared_ptr<class Camera> CameraPtr;
 		typedef std::shared_ptr<class OrthoCamera> OrthoCameraPtr;
 		typedef std::shared_ptr<class PerspectiveCamera> PerspectiveCameraPtr;
-		typedef std::shared_ptr<class PerspectiveCamera2D> PerspectiveCamera2DPtr;
+		typedef std::shared_ptr<class FilmCamera> FilmCameraPtr;
 		typedef std::shared_ptr<class Geometry> GeometryPtr;
 		typedef std::shared_ptr<class Material> MaterialPtr;
 		typedef std::shared_ptr<class RenderObject> RenderObjectPtr;

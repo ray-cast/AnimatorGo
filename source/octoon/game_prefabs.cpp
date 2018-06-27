@@ -14,7 +14,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>
 #include <octoon/perspective_camera_component.h>
-#include <octoon/perspective_camera_2d_component.h>
+#include <octoon/film_camera_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/first_person_camera_component.h>
 #include <octoon/mesh_filter_component.h>
@@ -67,13 +67,13 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GamePrefabs::createPerspectiveCamera2D(float fov) except
+	GamePrefabs::createFilmCamera(float zoom) except
 	{
 		auto object = GameObject::create("MainCamera");
 		object->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -10));
 		object->addComponent<FirstPersonCameraComponent>();
 
-		auto camera = object->addComponent<PerspectiveCamera2DComponent>(fov);
+		auto camera = object->addComponent<FilmCameraComponent>(zoom);
 		camera->setCameraOrder(video::CameraOrder::Main);
 
 		return object;

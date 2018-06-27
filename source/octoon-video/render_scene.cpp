@@ -53,7 +53,7 @@ namespace octoon
 		{
 			assert(object);
 
-			if (object->isInstanceOf<Camera>())
+			if (object->isA<Camera>())
 				this->addCamera(object->downcast<Camera>());
 			else
 				renderables_.push_back(object);
@@ -64,7 +64,7 @@ namespace octoon
 		{
 			assert(object);
 
-			if (object->isInstanceOf<Camera>())
+			if (object->isA<Camera>())
 			{
 				auto it = std::find(cameras_.begin(), cameras_.end(), object->downcast<Camera>());
 				if (it != cameras_.end())

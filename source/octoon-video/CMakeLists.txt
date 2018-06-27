@@ -18,6 +18,10 @@ SOURCE_GROUP(${LIB_NAME}  FILES ${VIDEO_GRAPHICS_LIST})
 SET(VIDEO_CAMERA_LIST
 	${HEADER_PATH}/camera.h
 	${SOURCE_PATH}/camera.cpp
+	${HEADER_PATH}/ortho_camera.h
+	${SOURCE_PATH}/ortho_camera.cpp
+	${HEADER_PATH}/perspective_camera.h
+	${SOURCE_PATH}/perspective_camera.cpp
 )
 SOURCE_GROUP(${LIB_NAME}\\camera  FILES ${VIDEO_CAMERA_LIST})
 

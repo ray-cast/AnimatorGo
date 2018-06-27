@@ -65,9 +65,9 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = octoon::GamePrefabs::instance()->createCamera2D();
-		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0f, 1.0f, 1.0f, 1.0));
-		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+		auto camera = octoon::GamePrefabs::instance()->createOrthoCamera();
+		camera->getComponent<octoon::OrthoCameraComponent>()->setClearColor(octoon::math::float4(1.0f, 1.0f, 1.0f, 1.0));
+		camera->getComponent<octoon::OrthoCameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, -200));
 		camera->addComponent<PainterController>();
 

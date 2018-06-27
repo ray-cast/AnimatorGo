@@ -41,7 +41,7 @@ public:
 		height_ = j["h"];
 		fps_ = j["fr"];
 
-		return ::OctoonOpenWindow("Octoon Studio", width_ / 2 , height_ / 2);
+		return ::OctoonOpenWindow("Octoon Studio", width_ , height_);
 	}
 
 	bool prepareAssets(const json& j)
@@ -68,7 +68,7 @@ public:
 
 	bool prepareLayers(const json& j)
 	{
-		/*camera_ = octoon::GamePrefabs::instance()->createCamera2D();
+		/*camera_ = octoon::GamePrefabs::instance()->createOrthoCamera();
 		camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0));*/
 
 		for (auto& layer : j["layers"])
@@ -99,11 +99,11 @@ public:
 			break;
 			case LayerTypes::camera:
 			{
-				auto zoom = 905.30f;
+				auto zoom = layer["co"][0]["v"]["k"].get<json::number_float_t>();
 				auto comp = width_;
 				auto fov = octoon::math::degress(std::atan(comp / zoom * 0.5f)) * 2.0f;
 
-				object = octoon::GamePrefabs::instance()->createCamera(fov);
+				object = octoon::GamePrefabs::instance()->createPerspectiveCamera(fov);
 				//object->setLayer(1);
 			}
 			break;

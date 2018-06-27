@@ -3,47 +3,22 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(CameraComponent, GameComponent, "CameraComponent")
+	OctoonImplementSubInterface(CameraComponent, GameComponent, "CameraComponent")
 
 	CameraComponent::CameraComponent() noexcept
 		: camera_(std::make_shared<video::Camera>())
 	{
 		camera_->setOwnerListener(this);
-		camera_->setCameraType(video::CameraType::Ortho);
+	}
+
+	CameraComponent::CameraComponent(video::CameraPtr&& camera) noexcept
+		: camera_(camera)
+	{
+		camera_->setOwnerListener(this);
 	}
 
 	CameraComponent::~CameraComponent() noexcept
 	{
-	}
-
-	void
-	CameraComponent::setAperture(float fov) noexcept
-	{
-		camera_->setAperture(fov);
-	}
-
-	void
-	CameraComponent::setNear(float znear) noexcept
-	{
-		camera_->setNear(znear);
-	}
-
-	void
-	CameraComponent::setFar(float zfar) noexcept
-	{
-		camera_->setFar(zfar);
-	}
-
-	void
-	CameraComponent::setRatio(float ratio) noexcept
-	{
-		camera_->setRatio(ratio);
-	}
-
-	void
-	CameraComponent::setOrtho(const math::float4& ortho) noexcept
-	{
-		camera_->setOrtho(ortho);
 	}
 
 	void
@@ -56,30 +31,6 @@ namespace octoon
 	CameraComponent::setViewport(const math::float4& viewport) noexcept
 	{
 		camera_->setViewport(viewport);
-	}
-
-	float
-	CameraComponent::getAperture() const noexcept
-	{
-		return camera_->getAperture();
-	}
-
-	float
-	CameraComponent::getNear() const noexcept
-	{
-		return camera_->getNear();
-	}
-
-	float
-	CameraComponent::getFar() const noexcept
-	{
-		return camera_->getFar();
-	}
-
-	float
-	CameraComponent::getRatio() const noexcept
-	{
-		return camera_->getRatio();
 	}
 
 	void
@@ -95,12 +46,6 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setCameraType(video::CameraType type) noexcept
-	{
-		camera_->setCameraType(type);
-	}
-
-	void
 	CameraComponent::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
 	{
 		camera_->setFramebuffer(framebuffer);
@@ -110,12 +55,6 @@ namespace octoon
 	CameraComponent::getCameraOrder() const noexcept
 	{
 		return camera_->getCameraOrder();
-	}
-
-	video::CameraType
-	CameraComponent::getCameraType() const noexcept
-	{
-		return camera_->getCameraType();
 	}
 
 	graphics::GraphicsClearFlags
@@ -158,12 +97,6 @@ namespace octoon
 	CameraComponent::screenToView(const math::float2& pos) const noexcept
 	{
 		return camera_->screenToView(pos);
-	}
-
-	const math::float4&
-	CameraComponent::getOrtho() const noexcept
-	{
-		return camera_->getOrtho();
 	}
 
 	const math::float4&
@@ -226,29 +159,10 @@ namespace octoon
 		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
 	}
 
-		void
+	void
 	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
 	{
 		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
-	}
-
-	GameComponentPtr
-	CameraComponent::clone() const noexcept
-	{
-		auto instance = std::make_shared<CameraComponent>();
-		instance->setName(this->getName());
-		instance->setAperture(this->getAperture());
-		instance->setNear(this->getNear());
-		instance->setFar(this->getFar());
-		instance->setRatio(this->getRatio());
-		instance->setOrtho(this->getOrtho());
-		instance->setClearColor(this->getClearColor());
-		instance->setViewport(this->getViewport());
-		instance->setCameraType(this->getCameraType());
-		instance->setCameraOrder(this->getCameraOrder());
-		instance->setClearFlags(this->getClearFlags());
-
-		return instance;
 	}
 
 	void

@@ -17,7 +17,8 @@
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/first_person_camera_component.h>
-#include <octoon/camera_component.h>
+#include <octoon/ortho_camera_component.h>
+#include <octoon/perspective_camera_component.h>
 #include <octoon/mesh_renderer_component.h>
 
 #include <octoon/model/model.h>

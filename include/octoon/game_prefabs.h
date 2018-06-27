@@ -16,9 +16,8 @@ namespace octoon
 		GamePrefabs() noexcept;
 		~GamePrefabs() noexcept;
 
-		GameObjectPtr createCamera(float fov) except;
-		GameObjectPtr createCamera2D() except;
-		GameObjectPtr createFrustum() except;
+		GameObjectPtr createPerspectiveCamera(float fov) except;
+		GameObjectPtr createOrthoCamera() except;
 
 		GameObjectPtr createCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
 		GameObjectPtr createPlane(float width, float height, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1) noexcept;

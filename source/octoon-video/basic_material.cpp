@@ -34,7 +34,7 @@ namespace octoon
 			void main()
 			{
 				oTexcoord0 = NORMAL0;
-				gl_Position = proj * model * POSITION0;
+				gl_Position = proj * model * (POSITION0 * vec4(1,-1,1,1));
 			})";
 
 			const char* frag = R"(

@@ -17,16 +17,14 @@ namespace octoon
 			void setNear(float znear) noexcept;
 			void setFar(float zfar) noexcept;
 			void setRatio(float ratio) noexcept;
-
-			float getNear() const noexcept;
-			float getFar() const noexcept;
-			float getRatio() const noexcept;
-
 			void setZoom(float zoom) noexcept;
 			void setAperture(float fov) noexcept;
 			void setFilmSize(float width) noexcept;
 			void setFocalLength(float length) noexcept;
 
+			float getNear() const noexcept;
+			float getFar() const noexcept;
+			float getRatio() const noexcept;
 			float getZoom() const noexcept;
 			float getAperture() const noexcept;
 			float getFilmSize() const noexcept;

@@ -10,8 +10,8 @@ namespace octoon
 		FilmCamera::FilmCamera() noexcept
 			: aperture_(45.0f)
 			, ratio_(1.0f)
-			, znear_(0.01f)
-			, zfar_(65535.0f)
+			, znear_(std::numeric_limits<float>::min())
+			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
 			, height_(0)
 			, filmSize_(36.0f) // 35mm

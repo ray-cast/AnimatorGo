@@ -14,7 +14,7 @@ namespace octoon
 		Camera::Camera() noexcept
 			: viewport_(0.0f, 0.0f, 1.0f, 1.0f)
 			, clearColor_(math::float4(0.0f, 0.0f, 0.0f, 1.0f))
-			, cameraOrder_(CameraOrder::Custom)
+			, cameraType_(CameraType::Custom)
 			, project_(math::float4x4::One)
 			, projectInverse_(math::float4x4::One)
 			, viewProject_(math::float4x4::One)
@@ -46,9 +46,9 @@ namespace octoon
 		}
 
 		void
-		Camera::setCameraOrder(CameraOrder order) noexcept
+		Camera::setCameraType(CameraType order) noexcept
 		{
-			cameraOrder_ = order;
+			cameraType_ = order;
 		}
 
 		void
@@ -204,10 +204,10 @@ namespace octoon
 			return screen_;
 		}
 
-		CameraOrder
-		Camera::getCameraOrder() const noexcept
+		CameraType
+		Camera::getCameraType() const noexcept
 		{
-			return cameraOrder_;
+			return cameraType_;
 		}
 
 		graphics::GraphicsClearFlags

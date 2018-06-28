@@ -27,7 +27,7 @@ namespace octoon
 
 				std::sort(cameras_.begin(), cameras_.end(), [](const Camera* a, const Camera* b)
 				{
-					return a->getCameraOrder() < b->getCameraOrder();
+					return a->getCameraType() < b->getCameraType();
 				});
 			}
 		}

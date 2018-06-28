@@ -199,7 +199,7 @@ namespace octoon
 				}
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-				if (camera->getCameraOrder() == CameraOrder::Main)
+				if (camera->getCameraType() == CameraType::Main)
 				{
 					auto& v = camera->getPixelViewport();
 

@@ -46,7 +46,7 @@ namespace octoon
 	{
 		auto camera = GameObject::create("MainCamera");
 		camera->addComponent<OrthoCameraComponent>(0.0f, 1.0f, 0.0f, 1.0f);
-		camera->getComponent<OrthoCameraComponent>()->setCameraOrder(video::CameraOrder::Main);
+		camera->getComponent<OrthoCameraComponent>()->setCameraType(video::CameraType::Main);
 		camera->getComponent<TransformComponent>()->setTranslate(math::float3(0.0f, 0.0f, -10.0f));
 		camera->addComponent<FirstPersonCameraComponent>();
 
@@ -61,7 +61,7 @@ namespace octoon
 		object->addComponent<FirstPersonCameraComponent>();
 
 		auto camera = object->addComponent<PerspectiveCameraComponent>(fov);
-		camera->setCameraOrder(video::CameraOrder::Main);
+		camera->setCameraType(video::CameraType::Main);
 
 		return object;
 	}
@@ -74,7 +74,7 @@ namespace octoon
 		object->addComponent<FirstPersonCameraComponent>();
 
 		auto camera = object->addComponent<FilmCameraComponent>(zoom);
-		camera->setCameraOrder(video::CameraOrder::Main);
+		camera->setCameraType(video::CameraType::Main);
 
 		return object;
 	}

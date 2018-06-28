@@ -40,8 +40,18 @@ public:
 		width_ = j["w"];
 		height_ = j["h"];
 		fps_ = j["fr"];
+		focalLength_ = 50.0f * 2.8346f;
+		filmSize_ = 36.0f * 2.8346f;
+		zoom_ = focalLength_ / filmSize_ * width_;
 
-		return ::OctoonOpenWindow("Octoon Studio", width_ , height_);
+		auto success = ::OctoonOpenWindow("Octoon Studio", width_ , height_);
+		if (success)
+		{
+			camera_ = octoon::GamePrefabs::instance()->createFilmCamera(zoom_);
+			camera_->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(width_ / 2.0f, height_ / 2.0f, -zoom_));
+		}
+
+		return success;
 	}
 
 	bool prepareAssets(const json& j)
@@ -68,9 +78,6 @@ public:
 
 	bool prepareLayers(const json& j)
 	{
-		/*camera_ = octoon::GamePrefabs::instance()->createOrthoCamera();
-		camera_->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0));*/
-
 		for (auto& layer : j["layers"])
 		{
 			octoon::GameObjectPtr object;
@@ -101,6 +108,7 @@ public:
 			{
 				auto zoom = layer["co"][0]["v"]["k"].get<json::number_float_t>();
 
+				camera_ = nullptr;
 				object = octoon::GamePrefabs::instance()->createFilmCamera(zoom);
 				//object->setLayer(1);
 			}
@@ -133,6 +141,9 @@ public:
 
 private:
 	float fps_;
+	float zoom_;
+	float focalLength_;
+	float filmSize_;
 	std::uint32_t width_, height_;
 
 	octoon::GameObjects layers_;

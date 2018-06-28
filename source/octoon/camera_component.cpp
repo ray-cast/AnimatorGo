@@ -40,9 +40,9 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setCameraOrder(video::CameraOrder order) noexcept
+	CameraComponent::setCameraType(video::CameraType type) noexcept
 	{
-		camera_->setCameraOrder(order);
+		camera_->setCameraType(type);
 	}
 
 	void
@@ -51,10 +51,10 @@ namespace octoon
 		camera_->setFramebuffer(framebuffer);
 	}
 
-	video::CameraOrder
-	CameraComponent::getCameraOrder() const noexcept
+	video::CameraType
+	CameraComponent::getCameraType() const noexcept
 	{
-		return camera_->getCameraOrder();
+		return camera_->getCameraType();
 	}
 
 	graphics::GraphicsClearFlags

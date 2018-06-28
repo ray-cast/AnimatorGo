@@ -17,10 +17,10 @@ namespace octoon
 		void setClearColor(const math::float4& color) noexcept;
 		void setViewport(const math::float4& viewport) noexcept;
 		void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
-		void setCameraOrder(video::CameraOrder order) noexcept;
+		void setCameraType(video::CameraType type) noexcept;
 		void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
-		video::CameraOrder getCameraOrder() const noexcept;
+		video::CameraType getCameraType() const noexcept;
 		graphics::GraphicsClearFlags getClearFlags() const noexcept;
 		const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 		const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;

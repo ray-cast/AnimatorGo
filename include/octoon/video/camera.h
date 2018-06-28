@@ -19,13 +19,13 @@ namespace octoon
 			virtual void setViewport(const math::float4& viewport) noexcept;
 
 			virtual void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
-			virtual void setCameraOrder(CameraOrder order) noexcept;
+			virtual void setCameraType(CameraType order) noexcept;
 			virtual void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 			virtual void setProjection(math::float4x4& projection) const noexcept;
 			virtual void setProjectionInverse(math::float4x4& projection) const noexcept;
 
-			virtual CameraOrder getCameraOrder() const noexcept;
+			virtual CameraType getCameraType() const noexcept;
 			virtual graphics::GraphicsClearFlags getClearFlags() const noexcept;
 			virtual const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 			virtual const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
@@ -56,7 +56,7 @@ namespace octoon
 			math::float4 viewport_;
 			mutable math::float4 screen_;
 
-			CameraOrder cameraOrder_;
+			CameraType cameraType_;
 
 			graphics::GraphicsClearFlags clearflags_;
 

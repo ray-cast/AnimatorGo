@@ -21,6 +21,7 @@ namespace octoon
 		void setAperture(float fov) noexcept;
 		void setFilmSize(float width) noexcept;
 		void setFocalLength(float length) noexcept;
+		void setCanvasWidth(float width) noexcept;
 
 		float getNear() const noexcept;
 		float getFar() const noexcept;
@@ -29,6 +30,7 @@ namespace octoon
 		float getAperture() const noexcept;
 		float getFilmSize() const noexcept;
 		float getFocalLength() const noexcept;
+		float getCanvasWidth() const noexcept;
 
 		virtual GameComponentPtr clone() const noexcept override;
 

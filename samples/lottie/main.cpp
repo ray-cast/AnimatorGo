@@ -44,10 +44,10 @@ public:
 		filmSize_ = 36.0f;
 		zoom_ = focalLength_ / filmSize_ * width_;
 
-		auto success = ::OctoonOpenWindow("Octoon Studio", width_ , height_);
+		auto success = ::OctoonOpenWindow("Octoon Studio", width_, height_);
 		if (success)
 		{
-			camera_ = octoon::GamePrefabs::instance()->createFilmCamera(zoom_);
+			camera_ = octoon::GamePrefabs::instance()->createFilmCamera(width_, zoom_);
 			camera_->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(width_ / 2.0f, height_ / 2.0f, -zoom_));
 		}
 
@@ -109,7 +109,7 @@ public:
 				auto zoom = layer["co"][0]["v"]["k"].get<json::number_float_t>();
 
 				camera_ = nullptr;
-				object = octoon::GamePrefabs::instance()->createFilmCamera(zoom);
+				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, zoom);
 				//object->setLayer(1);
 			}
 			break;

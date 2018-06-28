@@ -1,7 +1,7 @@
-#ifndef OCTOON_VIDEO_PERSPECTIVE_CAMERA_2D_H_
-#define OCTOON_VIDEO_PERSPECTIVE_CAMERA_2D_H_
+#ifndef OCTOON_VIDEO_FILM_CAMERA_H_
+#define OCTOON_VIDEO_FILM_CAMERA_H_
 
-#include <octoon/video/camera.h>
+#include <octoon/video/perspective_camera.h>
 
 namespace octoon
 {
@@ -17,10 +17,11 @@ namespace octoon
 			void setNear(float znear) noexcept;
 			void setFar(float zfar) noexcept;
 			void setRatio(float ratio) noexcept;
+			void setFilmSize(float width) noexcept;
+			void setCanvasWidth(float width) noexcept;
+			void setFocalLength(float length) noexcept;
 			void setZoom(float zoom) noexcept;
 			void setAperture(float fov) noexcept;
-			void setFilmSize(float width) noexcept;
-			void setFocalLength(float length) noexcept;
 
 			float getNear() const noexcept;
 			float getFar() const noexcept;
@@ -28,6 +29,7 @@ namespace octoon
 			float getZoom() const noexcept;
 			float getAperture() const noexcept;
 			float getFilmSize() const noexcept;
+			float getCanvasWidth() const noexcept;
 			float getFocalLength() const noexcept;
 
 			const math::float4x4& getViewProjection() const noexcept override;
@@ -45,10 +47,11 @@ namespace octoon
 			float znear_;
 			float zfar_;
 			float ratio_;
-			float aperture_;
-			float zoom_;
 			float filmSize_;
 			float focalLength_;
+			float aperture_;
+			float zoom_;
+			float canvasWidth_;
 
 			mutable std::uint32_t width_;
 			mutable std::uint32_t height_;

@@ -14,8 +14,10 @@ namespace octoon
 			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
 			, height_(0)
+			, zoom_(0)
 			, filmSize_(36.0f) // 35mm
 			, focalLength_(50.0f) // 50mm
+			, canvasWidth_(720.0f)
 			, needUpdateViewProject_(true)
 		{
 		}
@@ -55,14 +57,46 @@ namespace octoon
 		}
 
 		void
+		FilmCamera::setFilmSize(float filmSize) noexcept
+		{
+			if (filmSize_ != filmSize)
+			{
+				this->setZoom(focalLength_ / filmSize * canvasWidth_);
+				filmSize_ = filmSize;
+			}
+		}
+
+		void
 		FilmCamera::setZoom(float zoom) noexcept
 		{
 			if (zoom_ != zoom)
 			{
-				float comp = this->getPixelViewport().width;
-				aperture_ = math::degress(std::atan(comp / zoom * 0.5f)) * 2.0f;
 				needUpdateViewProject_ = true;
+				aperture_ = math::degress(std::atan(canvasWidth_ / zoom * 0.5f)) * 2.0f;
 				zoom_ = zoom;
+			}
+		}
+
+		void
+		FilmCamera::setCanvasWidth(float width) noexcept
+		{
+			if (canvasWidth_ != width)
+			{
+				needUpdateViewProject_ = true;
+				aperture_ = math::degress(std::atan(width / zoom_ * 0.5f)) * 2.0f;
+				canvasWidth_ = width;
+			}
+		}
+
+		void
+		FilmCamera::setFocalLength(float length) noexcept
+		{
+			if (focalLength_ != length)
+			{
+				float comp = canvasWidth_;
+				float zoom = length / filmSize_ * comp;
+				this->setZoom(zoom);
+				focalLength_ = length;
 			}
 		}
 
@@ -75,30 +109,6 @@ namespace octoon
 				auto length = filmSize_ / ratio;
 				this->setFocalLength(length);
 				aperture_ = aperture;
-			}
-		}
-
-		void
-		FilmCamera::setFilmSize(float filmSize) noexcept
-		{
-			if (filmSize_ != filmSize)
-			{
-				float comp = this->getPixelViewport().w;
-				float zoom = focalLength_ / filmSize * comp;
-				this->setZoom(zoom);
-				filmSize_ = filmSize;
-			}
-		}
-
-		void
-		FilmCamera::setFocalLength(float length) noexcept
-		{
-			if (focalLength_ != length)
-			{
-				float comp = this->getPixelViewport().w;
-				float zoom = length / filmSize_ * comp;
-				this->setZoom(zoom);
-				focalLength_ = length;
 			}
 		}
 
@@ -117,13 +127,19 @@ namespace octoon
 		float
 		FilmCamera::getFilmSize() const noexcept
 		{
-			return aperture_;
+			return filmSize_;
 		}
 
 		float
 		FilmCamera::getFocalLength() const noexcept
 		{
-			return aperture_;
+			return focalLength_;
+		}
+
+		float
+		FilmCamera::getCanvasWidth() const noexcept
+		{
+			return canvasWidth_;
 		}
 
 		float
@@ -190,8 +206,7 @@ namespace octoon
 				math::float4x4 adjustment;
 				adjustment.makeScale(1.0, -1.0, 1.0);
 
-				float fov = math::degress(std::atan(width / zoom_ * 0.5f)) * 2.0f;
-				project_ = adjustment * math::makePerspectiveFovLH(fov, ratio_ * ((float)width / height), znear_, zfar_);
+				project_ = adjustment * math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
 				projectInverse_ = math::inverse(project_);
 
 				width_ = width;

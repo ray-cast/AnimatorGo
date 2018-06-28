@@ -67,7 +67,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GamePrefabs::createFilmCamera(float zoom) except
+	GamePrefabs::createFilmCamera(float canvasWidth, float zoom) except
 	{
 		auto object = GameObject::create("MainCamera");
 		object->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -10));
@@ -75,6 +75,7 @@ namespace octoon
 
 		auto camera = object->addComponent<FilmCameraComponent>(zoom);
 		camera->setCameraType(video::CameraType::Main);
+		camera->setCanvasWidth(canvasWidth);
 
 		return object;
 	}

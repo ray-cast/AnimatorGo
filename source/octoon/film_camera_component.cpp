@@ -65,6 +65,12 @@ namespace octoon
 		camera_->setFocalLength(length);
 	}
 
+	void
+	FilmCameraComponent::setCanvasWidth(float width) noexcept
+	{
+		camera_->setCanvasWidth(width);
+	}
+
 	float
 	FilmCameraComponent::getNear() const noexcept
 	{
@@ -105,6 +111,12 @@ namespace octoon
 	FilmCameraComponent::getFocalLength() const noexcept
 	{
 		return camera_->getFocalLength();
+	}
+
+	float
+	FilmCameraComponent::getCanvasWidth() const noexcept
+	{
+		return camera_->getCanvasWidth();
 	}
 
 	GameComponentPtr

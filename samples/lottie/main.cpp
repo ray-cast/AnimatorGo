@@ -40,8 +40,8 @@ public:
 		width_ = j["w"];
 		height_ = j["h"];
 		fps_ = j["fr"];
-		focalLength_ = 50.0f * 2.8346f;
-		filmSize_ = 36.0f * 2.8346f;
+		focalLength_ = 50.0f;
+		filmSize_ = 36.0f;
 		zoom_ = focalLength_ / filmSize_ * width_;
 
 		auto success = ::OctoonOpenWindow("Octoon Studio", width_ , height_);

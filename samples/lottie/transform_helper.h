@@ -1,8 +1,7 @@
 #ifndef TRANSFORM_HELPER_H_
 #define TRANSFORM_HELPER_H_
 
-#include <octoon/runtime/json.h>
-#include <octoon/model/keyframe.h>
+#include "keyframe_helper.h"
 
 class TransformHelper
 {
@@ -16,7 +15,10 @@ public:
 
 	octoon::model::Keyframes<float3> pos;
 	octoon::model::Keyframes<float3> scale;
-	octoon::model::Keyframes<float3> rotation;
+	octoon::model::Keyframes<float3> orientation;
+	octoon::model::Keyframes<float1> rx;
+	octoon::model::Keyframes<float1> ry;
+	octoon::model::Keyframes<float1> rz;
 	octoon::model::Keyframes<float1> opacity;
 
 	TransformHelper()
@@ -30,163 +32,14 @@ public:
 
 	void prepare(const json& j, float fps)
 	{
-		if (j.find("p") != j.end())
-		{
-			auto& pa = j["p"]["a"];
-			if (pa.get<json::number_unsigned_t>())
-			{
-				auto& pk = j["p"]["k"];
-
-				for (auto it = pk.begin(); it != pk.end(); ++it)
-				{
-					if ((it + 2) == pk.end())
-					{
-						auto& s = (*it)["s"];
-						auto& e = (*it)["e"];
-
-						pos.emplace_back((*it)["t"].get<json::number_float_t>() / fps, float3(s[0].get<json::number_float_t>(), s[1].get<json::number_float_t>(), s[2].get<json::number_float_t>()));
-						pos.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, float3(e[0].get<json::number_float_t>(), e[1].get<json::number_float_t>(), e[2].get<json::number_float_t>()));
-						break;
-					}
-					else
-					{
-						auto& s = (*it)["s"];
-						pos.emplace_back((*it)["t"].get<json::number_float_t>() / fps, float3(s[0].get<json::number_float_t>(), s[1].get<json::number_float_t>(), s[2].get<json::number_float_t>()));
-					}
-				}
-			}
-			else
-			{
-				auto& pk = j["p"]["k"];
-				pos.emplace_back(0.0f, float3(pk[0].get<json::number_float_t>(), pk[1].get<json::number_float_t>(), pk[2].get<json::number_float_t>()));
-			}
-		}
-
-		if (j.find("s") != j.end())
-		{
-			auto& sa = j["s"]["a"];
-			if (sa.get<json::number_unsigned_t>())
-			{
-				auto& sk = j["s"]["k"];
-				for (auto it = sk.begin(); it != sk.end(); ++it)
-				{
-					if ((it + 2) == sk.end())
-					{
-						auto& s = (*it)["s"];
-						auto& e = (*it)["e"];
-
-						scale.emplace_back((*it)["t"].get<json::number_float_t>() / fps, float3(s[0].get<json::number_float_t>() / 100.0f, s[1].get<json::number_float_t>() / 100.0f, s[2].get<json::number_float_t>() / 100.0f));
-						scale.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, float3(e[0].get<json::number_float_t>() / 100.0f, e[1].get<json::number_float_t>() / 100.0f, e[2].get<json::number_float_t>() / 100.0f));
-						break;
-					}
-					else
-					{
-						auto& s = (*it)["s"];
-						scale.emplace_back((*it)["t"].get<json::number_float_t>() / fps, float3(s[0].get<json::number_float_t>(), s[1].get<json::number_float_t>(), s[2].get<json::number_float_t>()));
-					}
-				}
-			}
-			else
-			{
-				auto& sk = j["s"]["k"];
-				scale.emplace_back(0.0f, float3(sk[0].get<json::number_float_t>() / 100.0f, sk[1].get<json::number_float_t>() / 100.0f, sk[2].get<json::number_float_t>() / 100.0f));
-			}
-		}
-
-		if (j.find("r") != j.end())
-		{
-			auto& r = j["r"];
-			auto& ra = r["a"];
-			if (ra.get<json::number_unsigned_t>())
-			{
-				auto& rk = r["k"];
-				for (auto it = rk.begin(); it != rk.end(); ++it)
-				{
-					if ((it + 2) == rk.end())
-					{
-						auto& s = (*it)["s"];
-						auto& e = (*it)["e"];
-
-						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
-						rotation.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, e[0].get<json::number_float_t>())));
-						break;
-					}
-					else
-					{
-						auto& s = (*it)["s"];
-						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(0.0f, 0.0f, s[0].get<json::number_float_t>())));
-					}
-				}
-			}
-			else
-			{
-				auto& rk = r["k"];
-				rotation.emplace_back(0.0f, octoon::math::radians(float3(0.0f, 0.0f, rk.get<json::number_float_t>())));
-			}
-		}
-
-		if (j.find("or") != j.end())
-		{
-			auto& r = j["or"];
-			auto& ra = r["a"];
-			if (ra.get<json::number_unsigned_t>())
-			{
-				auto& rk = r["k"];
-				for (auto it = rk.begin(); it != rk.end(); ++it)
-				{
-					if ((it + 2) == rk.end())
-					{
-						auto& s = (*it)["s"];
-						auto& e = (*it)["e"];
-
-						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(s[0].get<json::number_float_t>(), s[1].get<json::number_float_t>(), s[2].get<json::number_float_t>())));
-						rotation.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(e[0].get<json::number_float_t>(), e[1].get<json::number_float_t>(), e[2].get<json::number_float_t>())));
-						break;
-					}
-					else
-					{
-						auto& s = (*it)["s"];
-						rotation.emplace_back((*it)["t"].get<json::number_float_t>() / fps, octoon::math::radians(float3(s[0].get<json::number_float_t>(), s[1].get<json::number_float_t>(), s[2].get<json::number_float_t>())));
-					}
-				}
-			}
-			else
-			{
-				auto& rk = r["k"];
-				rotation.emplace_back(0.0f, octoon::math::radians(float3(rk[0].get<json::number_float_t>(), rk[1].get<json::number_float_t>(), rk[2].get<json::number_float_t>())));
-			}
-		}
-
-		if (j.find("o") != j.end())
-		{
-			auto& oa = j["o"]["a"];
-			if (oa.get<json::number_unsigned_t>())
-			{
-				auto& ok = j["o"]["k"];
-				for (auto it = ok.begin(); it != ok.end(); ++it)
-				{
-					if ((it + 2) == ok.end())
-					{
-						auto& s = (*it)["s"];
-						auto& e = (*it)["e"];
-
-						opacity.emplace_back((*it)["t"].get<json::number_float_t>() / fps, s.get<json::number_unsigned_t>() / 100.0f);
-						opacity.emplace_back((*(it + 1))["t"].get<json::number_float_t>() / fps, e.get<json::number_unsigned_t>() / 100.0f);
-						break;
-					}
-					else
-					{
-						auto& s = (*it)["s"];
-						opacity.emplace_back((*it)["t"].get<json::number_float_t>() / fps, s.get<json::number_unsigned_t>() / 100.0f);
-					}
-				}
-			}
-			else
-			{
-				auto& ok = j["o"]["k"];
-				opacity.emplace_back(0.0f, ok.get<json::number_unsigned_t>() / 100.0f);
-			}
-		}
+		if (j.find("p") != j.end()) pos = KeyframeHelper::preparefloat3(j["p"]);
+		if (j.find("s") != j.end()) scale = KeyframeHelper::preparefloat3(j["s"], 1.0f / 100.0f);
+		if (j.find("or") != j.end()) orientation = KeyframeHelper::preparefloat3(j["or"]);
+		if (j.find("r") != j.end()) rz = KeyframeHelper::preparefloat1(j["r"], octoon::math::radians(1.0f));
+		if (j.find("rx") != j.end()) rx = KeyframeHelper::preparefloat1(j["rx"], octoon::math::radians(1.0f));
+		if (j.find("ry") != j.end()) ry = KeyframeHelper::preparefloat1(j["ry"], octoon::math::radians(1.0f));
+		if (j.find("rz") != j.end()) rz = KeyframeHelper::preparefloat1(j["rz"], octoon::math::radians(1.0f));
+		if (j.find("o") != j.end()) opacity = KeyframeHelper::preparefloat1(j["o"], 1.0f / 100.0f);
 	}
 };
 

@@ -2,6 +2,9 @@
 #define OCTOON_GAME_OBJECT_H_
 
 #include <octoon/game_types.h>
+#include <octoon/runtime/any.h>
+#include <map>
+#include <functional>
 
 namespace octoon
 {
@@ -79,6 +82,8 @@ namespace octoon
 
 		void destroy() noexcept;
 
+		void sendMessage(const std::string& event, const runtime::any& data) noexcept;
+
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
 
@@ -125,7 +130,8 @@ namespace octoon
 		GameObjectWeakPtr parent_;
 
 		GameComponents components_;
-		std::vector<GameComponentRaws> dispatch_components_;
+		std::vector<GameComponentRaws> dispatchComponents_;
+		std::map<std::string, std::vector<std::function<void(const runtime::any&)>>> dispatchEvents_;
 	};
 }
 

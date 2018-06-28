@@ -150,6 +150,13 @@ namespace octoon
 		return name_;
 	}
 
+	void
+	GameComponent::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessage(event, data);
+	}
+
 	GameComponentPtr
 	GameComponent::instantiate(const GameComponent* component) except
 	{

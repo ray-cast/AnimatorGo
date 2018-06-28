@@ -1,11 +1,11 @@
 #include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
 #include <octoon/runtime/json.h>
-#include <octoon/transform_anim_component.h>
 
 #include <fstream>
 
 #include "transform_helper.h"
+#include "transform_anim_component.h"
 
 class LottieApp
 {
@@ -127,10 +127,13 @@ public:
 			{
 				TransformHelper t(ks, fps_);
 
-				auto transform = object->addComponent<octoon::TransformAnimComponent>();
-				transform->setLocalTranslate(t.pos);
-				transform->setLocalScale(t.scale);
-				transform->setLocalRotation(t.rotation);
+				auto transform = object->addComponent<TransformAnimComponent>();
+				transform->setTranslate(t.pos);
+				transform->setScale(t.scale);
+				transform->setOrientation(t.orientation);
+				transform->setRotationX(t.rx);
+				transform->setRotationY(t.ry);
+				transform->setRotationZ(t.rz);
 			}
 
 			layers_.push_back(std::move(object));

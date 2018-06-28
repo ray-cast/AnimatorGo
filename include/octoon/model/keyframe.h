@@ -31,6 +31,55 @@ namespace octoon
 				, value(std::move(value_))
 			{
 			}
+
+		public:
+			friend Keyframe& operator+=(Keyframe& a, const Keyframe& b) noexcept
+			{
+				a.time += b.time;
+				a.value += b.value;
+				return a;
+			}
+
+			friend Keyframe& operator-=(Keyframe& a, const Keyframe& b) noexcept
+			{
+				a.time -= b.time;
+				a.value -= b.value;
+				return a;
+			}
+
+			friend Keyframe& operator*=(Keyframe& a, const Keyframe& b) noexcept
+			{
+				a.time *= b.time;
+				a.value *= b.value;
+				return a;
+			}
+
+			friend Keyframe& operator/=(Keyframe& a, const Keyframe& b) noexcept
+			{
+				a.time /= b.time;
+				a.value /= b.value;
+				return a;
+			}
+
+			friend Keyframe operator+(const Keyframe& a, const Keyframe& b) noexcept
+			{
+				return Keyframe(a.time + b.time, a.value + b.value);
+			}
+
+			friend Keyframe operator-(const Keyframe& a, const Keyframe& b) noexcept
+			{
+				return Keyframe(a.time - b.time, a.value - b.value);
+			}
+
+			friend Keyframe operator*(const Keyframe& a, const Keyframe& b) noexcept
+			{
+				return Keyframe(a.time * b.time, a.value * b.value);
+			}
+
+			friend Keyframe operator/(const Keyframe& a, const Keyframe& b) noexcept
+			{
+				return Keyframe(a.time / b.time, a.value / b.value);
+			}
 		};
 
 		template<typename _Elem, typename _Time = float>

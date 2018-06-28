@@ -43,6 +43,8 @@ namespace octoon
 
 		const GameComponents& getComponents() const noexcept;
 
+		void sendMessage(const std::string& event, const runtime::any& data) noexcept;
+
 		static GameComponentPtr instantiate(const GameComponent* component) except;
 		static GameComponentPtr instantiate(const GameComponent& component) except;
 

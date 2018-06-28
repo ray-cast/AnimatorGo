@@ -7,6 +7,9 @@ SET(SOURCE_PATH ${OCTOON_PATH_SAMPLES}/${LIB_NAME})
 SET(PLATFORM_LIST
 	${SOURCE_PATH}/main.cpp
 	${SOURCE_PATH}/transform_helper.h
+	${SOURCE_PATH}/transform_anim_component.h
+	${SOURCE_PATH}/transform_anim_component.cpp
+	${SOURCE_PATH}/keyframe_helper.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${PLATFORM_LIST})
 

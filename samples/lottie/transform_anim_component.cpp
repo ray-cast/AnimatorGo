@@ -226,7 +226,7 @@ TransformAnimComponent::onFrame() except
 		if (!scale_.empty())
 			transform->setScale(scale_.evaluate(step));
 
-		transform->setQuaternion(octoon::math::Quaternion::Zero);
+		auto quat = octoon::math::Quaternion::Zero;
 
 		if (!anchor_.empty())
 		{
@@ -234,23 +234,25 @@ TransformAnimComponent::onFrame() except
 			if (hasCamera)
 			{
 				auto target = anchor_.evaluate(step);
-				auto camera = pos_.evaluate(0);
+				auto camera = pos_.evaluate(0.0f);
 				auto angle = octoon::math::normalize(target - camera);
 
-				transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
+				quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
 			}
 		}
 
 		if (!orientation_.empty())
-			transform->setQuaternionAccum(octoon::math::Quaternion(orientation_.evaluate(step)));
+			quat = octoon::math::cross(quat, octoon::math::Quaternion(orientation_.evaluate(step)));
 
 		if (!rx_.empty())
-			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
+			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
 
 		if (!ry_.empty())
-			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
+			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
 
 		if (!rz_.empty())
-			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
+			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
+
+		transform->setQuaternion(quat);
 	}
 }

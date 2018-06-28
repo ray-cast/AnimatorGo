@@ -25,16 +25,16 @@ public:
 	{
 	}
 
-	TransformHelper(const json& j, float fps)
+	TransformHelper(const json& j)
 	{
-		this->prepare(j, fps);
+		this->prepare(j);
 	}
 
-	void prepare(const json& j, float fps)
+	void prepare(const json& j)
 	{
 		if (j.find("p") != j.end()) pos = KeyframeHelper::preparefloat3(j["p"]);
 		if (j.find("s") != j.end()) scale = KeyframeHelper::preparefloat3(j["s"], 1.0f / 100.0f);
-		if (j.find("or") != j.end()) orientation = KeyframeHelper::preparefloat3(j["or"]);
+		if (j.find("or") != j.end()) orientation = KeyframeHelper::preparefloat3(j["or"], octoon::math::radians(1.0f));
 		if (j.find("r") != j.end()) rz = KeyframeHelper::preparefloat1(j["r"], octoon::math::radians(1.0f));
 		if (j.find("rx") != j.end()) rx = KeyframeHelper::preparefloat1(j["rx"], octoon::math::radians(1.0f));
 		if (j.find("ry") != j.end()) ry = KeyframeHelper::preparefloat1(j["ry"], octoon::math::radians(1.0f));

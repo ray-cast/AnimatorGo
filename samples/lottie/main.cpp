@@ -125,7 +125,7 @@ public:
 			auto& ks = layer["ks"];
 			if (!ks.is_null())
 			{
-				TransformHelper t(ks, fps_);
+				TransformHelper t(ks);
 
 				auto transform = object->addComponent<TransformAnimComponent>();
 				transform->setTranslate(t.pos);

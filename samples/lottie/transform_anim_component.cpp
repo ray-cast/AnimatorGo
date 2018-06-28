@@ -220,13 +220,16 @@ TransformAnimComponent::onFrame() except
 		float step = 1.0f / 60.0f;
 		step = octoon::GameApp::instance()->getFeature<octoon::TimerFeature>()->delta();
 
+		auto quat = octoon::math::Quaternion::Zero;
+
 		if (!pos_.empty())
 			transform->setTranslate(pos_.evaluate(step));
 
 		if (!scale_.empty())
 			transform->setScale(scale_.evaluate(step));
 
-		auto quat = octoon::math::Quaternion::Zero;
+		if (!orientation_.empty()) 
+			quat = octoon::math::cross(quat, octoon::math::Quaternion(orientation_.evaluate(step)));
 
 		if (!anchor_.empty())
 		{
@@ -241,17 +244,9 @@ TransformAnimComponent::onFrame() except
 			}
 		}
 
-		if (!orientation_.empty())
-			quat = octoon::math::cross(quat, octoon::math::Quaternion(orientation_.evaluate(step)));
-
-		if (!rx_.empty())
-			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
-
-		if (!ry_.empty())
-			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
-
-		if (!rz_.empty())
-			quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
+		if (!rx_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
+		if (!ry_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
+		if (!rz_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
 
 		transform->setQuaternion(quat);
 	}

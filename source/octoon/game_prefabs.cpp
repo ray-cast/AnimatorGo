@@ -265,7 +265,7 @@ namespace octoon
 		}
 
 		auto object = GameObject::create();
-		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(u16str, { fontPath, fontsize }, 8, true),0.0f));
+		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(u16str, { fontPath, fontsize }, 8),0.0f));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
 
 		return object;

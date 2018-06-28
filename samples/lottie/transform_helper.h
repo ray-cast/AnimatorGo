@@ -14,7 +14,7 @@ public:
 	using float4 = octoon::math::float4;
 
 	octoon::model::Keyframes<float3> pos;
-	octoon::model::Keyframes<float3> interest;
+	octoon::model::Keyframes<float3> anchor;
 	octoon::model::Keyframes<float3> scale;
 	octoon::model::Keyframes<float3> orientation;
 	octoon::model::Keyframes<float1> rx;
@@ -33,7 +33,7 @@ public:
 
 	void prepare(const json& j)
 	{
-		if (j.find("a") != j.end()) interest = KeyframeHelper::preparefloat3(j["a"]);
+		if (j.find("a") != j.end()) anchor = KeyframeHelper::preparefloat3(j["a"]);
 		if (j.find("p") != j.end()) pos = KeyframeHelper::preparefloat3(j["p"]);
 		if (j.find("s") != j.end()) scale = KeyframeHelper::preparefloat3(j["s"], 1.0f / 100.0f);
 		if (j.find("or") != j.end()) orientation = KeyframeHelper::preparefloat3(j["or"], octoon::math::radians(1.0f));

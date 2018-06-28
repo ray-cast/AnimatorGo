@@ -2,6 +2,7 @@
 
 #include <octoon/game_app.h>
 #include <octoon/transform_component.h>
+#include <octoon/camera_component.h>
 #include <octoon/timer_feature.h>
 
 OctoonImplementSubClass(TransformAnimComponent, GameComponent, "MeshFilter")
@@ -21,9 +22,9 @@ TransformAnimComponent::setScale(octoon::model::Keyframes<octoon::math::float3>&
 }
 
 void
-TransformAnimComponent::setInterest(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+TransformAnimComponent::setAnchorPoint(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
 {
-	interest_.frames = std::move(frames);
+	anchor_.frames = std::move(frames);
 }
 
 void
@@ -63,9 +64,9 @@ TransformAnimComponent::setScale(const octoon::model::Keyframes<octoon::math::fl
 }
 
 void
-TransformAnimComponent::setInterest(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+TransformAnimComponent::setAnchorPoint(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
 {
-	interest_.frames = frames;
+	anchor_.frames = frames;
 }
 
 void
@@ -105,9 +106,9 @@ TransformAnimComponent::setScale(octoon::model::AnimationCurve<octoon::math::flo
 }
 
 void
-TransformAnimComponent::setInterest(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+TransformAnimComponent::setAnchorPoint(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
-	interest_ = std::move(frames);
+	anchor_ = std::move(frames);
 }
 
 void
@@ -147,9 +148,9 @@ TransformAnimComponent::setScale(const octoon::model::AnimationCurve<octoon::mat
 }
 
 void
-TransformAnimComponent::setInterest(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+TransformAnimComponent::setAnchorPoint(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
-	interest_ = frames;
+	anchor_ = frames;
 }
 
 void
@@ -190,7 +191,7 @@ TransformAnimComponent::clone() const noexcept
 	instance->setScale(this->pos_);
 	instance->setOrientation(this->scale_);
 	instance->setTranslate(this->orientation_);
-	instance->setInterest(this->interest_);
+	instance->setAnchorPoint(this->anchor_);
 	instance->setRotationX(this->rx_);
 	instance->setRotationY(this->ry_);
 	instance->setRotationZ(this->rz_);
@@ -227,13 +228,17 @@ TransformAnimComponent::onFrame() except
 
 		transform->setQuaternion(octoon::math::Quaternion::Zero);
 
-		if (!interest_.empty())
+		if (!anchor_.empty())
 		{
-			auto target = interest_.evaluate(step);
-			auto camera = pos_.evaluate(0);
-			auto angle = octoon::math::normalize(target - camera);
+			auto hasCamera = this->getGameObject()->getComponent<octoon::CameraComponent>();
+			if (hasCamera)
+			{
+				auto target = anchor_.evaluate(step);
+				auto camera = pos_.evaluate(0);
+				auto angle = octoon::math::normalize(target - camera);
 
-			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
+				transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
+			}
 		}
 
 		if (!orientation_.empty())

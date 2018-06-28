@@ -128,15 +128,13 @@ public:
 				TransformHelper t(ks);
 
 				auto transform = object->addComponent<TransformAnimComponent>();
+				transform->setAnchorPoint(t.anchor);
 				transform->setTranslate(t.pos);
 				transform->setScale(t.scale);
 				transform->setOrientation(t.orientation);
 				transform->setRotationX(t.rx);
 				transform->setRotationY(t.ry);
 				transform->setRotationZ(t.rz);
-
-				if (type == LayerTypes::camera)
-					transform->setInterest(t.interest);
 			}
 
 			layers_.push_back(std::move(object));

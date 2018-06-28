@@ -21,6 +21,12 @@ TransformAnimComponent::setScale(octoon::model::Keyframes<octoon::math::float3>&
 }
 
 void
+TransformAnimComponent::setInterest(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+{
+	interest_.frames = std::move(frames);
+}
+
+void
 TransformAnimComponent::setTranslate(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
 {
 	pos_.frames = std::move(frames);
@@ -54,6 +60,12 @@ void
 TransformAnimComponent::setScale(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
 {
 	scale_.frames = frames;
+}
+
+void
+TransformAnimComponent::setInterest(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+{
+	interest_.frames = frames;
 }
 
 void
@@ -93,6 +105,12 @@ TransformAnimComponent::setScale(octoon::model::AnimationCurve<octoon::math::flo
 }
 
 void
+TransformAnimComponent::setInterest(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+{
+	interest_ = std::move(frames);
+}
+
+void
 TransformAnimComponent::setTranslate(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
 	pos_ = std::move(frames);
@@ -126,6 +144,12 @@ void
 TransformAnimComponent::setScale(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
 	scale_ = frames;
+}
+
+void
+TransformAnimComponent::setInterest(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+{
+	interest_ = frames;
 }
 
 void
@@ -166,6 +190,7 @@ TransformAnimComponent::clone() const noexcept
 	instance->setScale(this->pos_);
 	instance->setOrientation(this->scale_);
 	instance->setTranslate(this->orientation_);
+	instance->setInterest(this->interest_);
 	instance->setRotationX(this->rx_);
 	instance->setRotationY(this->ry_);
 	instance->setRotationZ(this->rz_);
@@ -200,13 +225,19 @@ TransformAnimComponent::onFrame() except
 		if (!scale_.empty())
 			transform->setScale(scale_.evaluate(step));
 
-		if (!orientation_.empty())
-			transform->setQuaternion(octoon::math::Quaternion(orientation_.evaluate(step)));
-		else
+		transform->setQuaternion(octoon::math::Quaternion::Zero);
+
+		if (!interest_.empty())
 		{
-			if (!rx_.empty() || !ry_.empty() || !rz_.empty())
-				transform->setQuaternion(octoon::math::Quaternion::Zero);
+			auto target = interest_.evaluate(step);
+			auto camera = pos_.evaluate(0);
+			auto angle = octoon::math::normalize(target - camera);
+
+			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
 		}
+
+		if (!orientation_.empty())
+			transform->setQuaternionAccum(octoon::math::Quaternion(orientation_.evaluate(step)));
 
 		if (!rx_.empty())
 			transform->setQuaternionAccum(octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));

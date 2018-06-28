@@ -49,6 +49,9 @@ namespace octoon
 
 			const _Elem& evaluate(const _Time& delta) noexcept
 			{
+				if (delta == 0.0f)
+					return key.value;
+
 				key.time += delta;
 
 				auto it = std::upper_bound(frames.begin(), frames.end(), key.time, 

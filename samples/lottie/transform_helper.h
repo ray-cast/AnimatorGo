@@ -31,17 +31,19 @@ public:
 		this->prepare(j);
 	}
 
-	void prepare(const json& j)
+	void prepare(const json& layer)
 	{
-		if (j.find("a") != j.end()) anchor = KeyframeHelper::preparefloat3(j["a"]);
-		if (j.find("p") != j.end()) pos = KeyframeHelper::preparefloat3(j["p"]);
-		if (j.find("s") != j.end()) scale = KeyframeHelper::preparefloat3(j["s"], 1.0f / 100.0f);
-		if (j.find("or") != j.end()) orientation = KeyframeHelper::preparefloat3(j["or"], octoon::math::radians(1.0f));
-		if (j.find("r") != j.end()) rz = KeyframeHelper::preparefloat1(j["r"], octoon::math::radians(1.0f));
-		if (j.find("rx") != j.end()) rx = KeyframeHelper::preparefloat1(j["rx"], octoon::math::radians(1.0f));
-		if (j.find("ry") != j.end()) ry = KeyframeHelper::preparefloat1(j["ry"], octoon::math::radians(1.0f));
-		if (j.find("rz") != j.end()) rz = KeyframeHelper::preparefloat1(j["rz"], octoon::math::radians(1.0f));
-		if (j.find("o") != j.end()) opacity = KeyframeHelper::preparefloat1(j["o"], 1.0f / 100.0f);
+		auto& ks = layer["ks"];
+		if (ks.is_null()) return;
+		if (ks.find("a") != ks.end()) anchor = KeyframeHelper::preparefloat3(ks["a"]);
+		if (ks.find("p") != ks.end()) pos = KeyframeHelper::preparefloat3(ks["p"]);
+		if (ks.find("s") != ks.end()) scale = KeyframeHelper::preparefloat3(ks["s"], 1.0f / 100.0f);
+		if (ks.find("or") != ks.end()) orientation = KeyframeHelper::preparefloat3(ks["or"], octoon::math::radians(1.0f));
+		if (ks.find("r") != ks.end()) rz = KeyframeHelper::preparefloat1(ks["r"], octoon::math::radians(1.0f));
+		if (ks.find("rx") != ks.end()) rx = KeyframeHelper::preparefloat1(ks["rx"], octoon::math::radians(1.0f));
+		if (ks.find("ry") != ks.end()) ry = KeyframeHelper::preparefloat1(ks["ry"], octoon::math::radians(1.0f));
+		if (ks.find("rz") != ks.end()) rz = KeyframeHelper::preparefloat1(ks["rz"], octoon::math::radians(1.0f));
+		if (ks.find("o") != ks.end()) opacity = KeyframeHelper::preparefloat1(ks["o"], 1.0f / 100.0f);
 	}
 };
 

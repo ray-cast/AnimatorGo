@@ -5,6 +5,8 @@
 #include <fstream>
 
 #include "transform_helper.h"
+#include "shape_helper.h"
+
 #include "transform_anim_component.h"
 
 class LottieApp
@@ -85,6 +87,13 @@ public:
 			auto type = (LayerTypes)layer["ty"].get<json::number_unsigned_t>();
 			switch (type)
 			{
+			case LayerTypes::solid:
+			{
+				auto sw = layer["sw"].get <json::number_unsigned_t>();
+				auto sh = layer["sh"].get <json::number_unsigned_t>();
+				object = octoon::GamePrefabs::instance()->createSpriteSquare(sw, sh);
+			}
+			break;
 			case LayerTypes::still:
 			{
 				auto refid = layer["refId"].get<json::string_t>();
@@ -102,6 +111,11 @@ public:
 				
 				object = octoon::GamePrefabs::instance()->createText(text.c_str(), size);
 				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(color);
+			}
+			break;
+			case LayerTypes::shape:
+			{
+				ShapeHelper shape;
 			}
 			break;
 			case LayerTypes::camera:
@@ -122,20 +136,16 @@ public:
 			if (ddd.get<json::number_unsigned_t>())
 				object->setLayer(1);*/
 
-			auto& ks = layer["ks"];
-			if (!ks.is_null())
-			{
-				TransformHelper t(ks);
+			TransformHelper t(layer);
 
-				auto transform = object->addComponent<TransformAnimComponent>();
-				transform->setAnchorPoint(t.anchor);
-				transform->setTranslate(t.pos);
-				transform->setScale(t.scale);
-				transform->setOrientation(t.orientation);
-				transform->setRotationX(t.rx);
-				transform->setRotationY(t.ry);
-				transform->setRotationZ(t.rz);
-			}
+			auto transform = object->addComponent<TransformAnimComponent>();
+			transform->setAnchorPoint(t.anchor);
+			transform->setTranslate(t.pos);
+			transform->setScale(t.scale);
+			transform->setOrientation(t.orientation);
+			transform->setRotationX(t.rx);
+			transform->setRotationY(t.ry);
+			transform->setRotationZ(t.rz);
 
 			layers_.push_back(std::move(object));
 		}

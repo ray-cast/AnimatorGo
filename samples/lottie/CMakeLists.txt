@@ -10,6 +10,7 @@ SET(PLATFORM_LIST
 	${SOURCE_PATH}/transform_anim_component.h
 	${SOURCE_PATH}/transform_anim_component.cpp
 	${SOURCE_PATH}/keyframe_helper.h
+	${SOURCE_PATH}/shape_helper.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${PLATFORM_LIST})
 

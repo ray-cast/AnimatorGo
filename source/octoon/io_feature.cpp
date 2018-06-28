@@ -8,7 +8,7 @@ namespace octoon
 	OctoonImplementSubClass(IOFeature, GameFeature, "IOFeature")
 
 	IOFeature::IOFeature() noexcept
-		: systemPath_("../../system")
+		: systemPath_("../../system/")
 		, diskPath_("")
 	{
 	}

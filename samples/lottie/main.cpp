@@ -83,8 +83,11 @@ public:
 
 	bool prepareLayers(const json& j)
 	{
-		for (auto& layer : j["layers"])
+		auto& layers = j["layers"];
+		for (auto it = layers.rbegin(); it != layers.rend(); ++it)
 		{
+			auto layer = *it;
+
 			octoon::GameObjectPtr object;
 
 			auto type = (LayerTypes)layer["ty"].get<json::number_unsigned_t>();

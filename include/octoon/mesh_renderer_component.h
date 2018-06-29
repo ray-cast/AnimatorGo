@@ -22,13 +22,10 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onAttachComponent(const GameComponentPtr& component) noexcept override;
-		void onDetachComponent(const GameComponentPtr& component) noexcept override;
-
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onMeshReplace(const model::MeshPtr& mesh) noexcept;
+		void onMeshReplace(const runtime::any& mesh) noexcept;
 		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
@@ -38,7 +35,6 @@ namespace octoon
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;
 
 	private:
-		MeshFilterComponent::OnMeshReplaceEvent onMeshReplaceEvent_;
 		video::GeometryPtr geometry_;
 	};
 }

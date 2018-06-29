@@ -11,10 +11,6 @@ namespace octoon
 	{
 		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
 	public:
-		typedef std::function<void(const model::MeshPtr&)> OnMeshReplaceEvent;
-		typedef std::vector<OnMeshReplaceEvent*> OnMeshReplaceEvents;
-
-	public:
 		MeshFilterComponent() noexcept;
 		MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
 		MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
@@ -30,10 +26,7 @@ namespace octoon
 		bool isSharedMesh() const noexcept;
 
 		void uploadMeshData() noexcept;
-
-		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
-		void removeMeshListener(const OnMeshReplaceEvent* func) noexcept;
-
+		
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -46,7 +39,6 @@ namespace octoon
 	private:
 		bool isSharedMesh_;
 		model::MeshPtr mesh_;
-		OnMeshReplaceEvents delegates_;
 	};
 }
 

@@ -39,6 +39,7 @@ namespace octoon
 	MeshRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->addMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
 		auto transform = this->getComponent<TransformComponent>();
 		auto meshFilter = this->getComponent<MeshFilterComponent>();
@@ -57,29 +58,13 @@ namespace octoon
 	MeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
 		if (geometry_)
 		{
 			geometry_->setActive(false);
 			geometry_ = nullptr;
 		}
-	}
-
-	void
-	MeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
-	{
-		if (component->isA<MeshFilterComponent>())
-		{
-			onMeshReplaceEvent_ = std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1);
-			component->downcast<MeshFilterComponent>()->addMeshListener(&onMeshReplaceEvent_);
-		}
-	}
-
-	void
-	MeshRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
-	{
-		if (component->isA<MeshFilterComponent>())
-			component->downcast<MeshFilterComponent>()->removeMeshListener(&onMeshReplaceEvent_);
 	}
 
 	void
@@ -98,11 +83,12 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
+	MeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
 		if (!this->getMaterial())
 			return;
 
+		auto mesh = runtime::any_cast<model::MeshPtr>(data);
 		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();

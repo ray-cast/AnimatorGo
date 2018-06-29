@@ -73,27 +73,6 @@ namespace octoon
 		return isSharedMesh_;
 	}
 
-	void
-	MeshFilterComponent::uploadMeshData() noexcept
-	{
-		for (auto& it : delegates_)
-			(*it)(mesh_);
-	}
-
-	void
-	MeshFilterComponent::addMeshListener(OnMeshReplaceEvent* func) noexcept
-	{
-		delegates_.push_back(func);
-	}
-
-	void
-	MeshFilterComponent::removeMeshListener(const OnMeshReplaceEvent* func) noexcept
-	{
-		auto it = std::find(delegates_.begin(), delegates_.end(), func);
-		if (it != delegates_.end())
-			delegates_.erase(it);
-	}
-
 	GameComponentPtr
 	MeshFilterComponent::clone() const noexcept
 	{
@@ -107,7 +86,7 @@ namespace octoon
 	void
 	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(mesh);
+		if (this->getGameObject())
+			this->sendMessage("octoon::mesh::update", mesh);
 	}
 }

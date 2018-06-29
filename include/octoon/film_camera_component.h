@@ -11,7 +11,6 @@ namespace octoon
 		OctoonDeclareSubClass(FilmCameraComponent, CameraComponent)
 	public:
 		FilmCameraComponent() noexcept;
-		explicit FilmCameraComponent(float zoom, float ratio = 1.0f, float znear = 0.01f, float zfar = 65535.0f) noexcept;
 		virtual ~FilmCameraComponent() noexcept;
 
 		void setNear(float znear) noexcept;

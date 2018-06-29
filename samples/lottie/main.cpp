@@ -6,6 +6,9 @@
 
 #include "transform_helper.h"
 #include "shape_helper.h"
+#include "solid_helper.h"
+#include "still_helper.h"
+#include "camera_helper.h"
 
 #include "transform_anim_component.h"
 
@@ -89,16 +92,14 @@ public:
 			{
 			case LayerTypes::solid:
 			{
-				auto sw = layer["sw"].get <json::number_unsigned_t>();
-				auto sh = layer["sh"].get <json::number_unsigned_t>();
-				object = octoon::GamePrefabs::instance()->createSpriteSquare(sw, sh);
+				SoildHelper solid(layer);
+				object = octoon::GamePrefabs::instance()->createSpriteSquare(solid.sw, solid.sh);
 			}
 			break;
 			case LayerTypes::still:
 			{
-				auto refid = layer["refId"].get<json::string_t>();
-				auto tex = _textures[refid];
-				object = octoon::GamePrefabs::instance()->createSprite(tex, tex->getTextureDesc().getWidth(), tex->getTextureDesc().getHeight());
+				StillHelper still(layer);
+				object = octoon::GamePrefabs::instance()->createSprite(_textures[still.refid]);
 			}
 			break;
 			case LayerTypes::text:
@@ -120,10 +121,10 @@ public:
 			break;
 			case LayerTypes::camera:
 			{
-				auto zoom = layer["co"][0]["v"]["k"].get<json::number_float_t>();
+				CameraHelper camera(layer);
 
 				camera_ = nullptr;
-				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, zoom);
+				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, camera.zoom[0].value);
 				//object->setLayer(1);
 			}
 			break;
@@ -139,13 +140,13 @@ public:
 			TransformHelper t(layer);
 
 			auto transform = object->addComponent<TransformAnimComponent>();
-			transform->setAnchorPoint(t.anchor);
-			transform->setTranslate(t.pos);
-			transform->setScale(t.scale);
-			transform->setOrientation(t.orientation);
-			transform->setRotationX(t.rx);
-			transform->setRotationY(t.ry);
-			transform->setRotationZ(t.rz);
+			transform->setAnchorPoint(std::move(t.anchor));
+			transform->setTranslate(std::move(t.pos));
+			transform->setScale(std::move(t.scale));
+			transform->setOrientation(std::move(t.orientation));
+			transform->setRotationX(std::move(t.rx));
+			transform->setRotationY(std::move(t.ry));
+			transform->setRotationZ(std::move(t.rz));
 
 			layers_.push_back(std::move(object));
 		}

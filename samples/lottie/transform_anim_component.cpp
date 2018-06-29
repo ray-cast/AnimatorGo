@@ -5,7 +5,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/timer_feature.h>
 
-OctoonImplementSubClass(TransformAnimComponent, GameComponent, "MeshFilter")
+OctoonImplementSubClass(TransformAnimComponent, octoon::GameComponent, "MeshFilter")
 
 TransformAnimComponent::TransformAnimComponent() noexcept
 {

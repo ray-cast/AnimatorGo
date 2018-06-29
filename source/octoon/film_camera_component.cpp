@@ -10,15 +10,6 @@ namespace octoon
 		camera_ = dynamic_cast<video::FilmCamera*>(CameraComponent::camera_.get());
 	}
 
-	FilmCameraComponent::FilmCameraComponent(float zoom, float ratio, float znear, float zfar) noexcept
-		: FilmCameraComponent()
-	{
-		this->setZoom(zoom);
-		this->setRatio(ratio);
-		this->setNear(znear);
-		this->setFar(zfar);
-	}
-
 	FilmCameraComponent::~FilmCameraComponent() noexcept
 	{
 	}

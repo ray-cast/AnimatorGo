@@ -46,9 +46,9 @@ namespace octoon
 		}
 
 		void
-		Camera::setCameraType(CameraType order) noexcept
+		Camera::setCameraType(CameraType type) noexcept
 		{
-			cameraType_ = order;
+			cameraType_ = type;
 		}
 
 		void

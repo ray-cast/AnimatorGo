@@ -19,7 +19,7 @@ namespace octoon
 			virtual void setViewport(const math::float4& viewport) noexcept;
 
 			virtual void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
-			virtual void setCameraType(CameraType order) noexcept;
+			virtual void setCameraType(CameraType type) noexcept;
 			virtual void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 			virtual void setProjection(math::float4x4& projection) const noexcept;

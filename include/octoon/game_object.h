@@ -3,6 +3,7 @@
 
 #include <octoon/game_types.h>
 #include <octoon/runtime/any.h>
+#include <octoon/runtime/sigslot.h>
 #include <map>
 #include <functional>
 
@@ -83,6 +84,10 @@ namespace octoon
 		void destroy() noexcept;
 
 		void sendMessage(const std::string& event, const runtime::any& data) noexcept;
+		void sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept;
+		void sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
@@ -131,7 +136,7 @@ namespace octoon
 
 		GameComponents components_;
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::map<std::string, std::vector<std::function<void(const runtime::any&)>>> dispatchEvents_;
+		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
 	};
 }
 

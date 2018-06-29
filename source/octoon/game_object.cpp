@@ -590,14 +590,38 @@ namespace octoon
 	void
 	GameObject::sendMessage(const std::string& event, const runtime::any& data) noexcept
 	{
-		auto& events = dispatchEvents_[event];
-		if (!events.empty())
-		{
-			for (auto& it : events)
-			{
-				it(data);
-			}
-		}
+		dispatchEvents_[event].call_all_signals(data);
+	}
+
+	void
+	GameObject::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		dispatchEvents_[event].call_all_signals(data);
+
+		auto parent = this->getParent();
+		if (parent)
+			parent->sendMessageUpwards(event, data);
+	}
+
+	void
+	GameObject::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		dispatchEvents_[event].call_all_signals(data);
+
+		for (auto& it : children_)
+			it->sendMessageDownwards(event, data);
+	}
+
+	void 
+	GameObject::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].connect(listener);
+	}
+
+	void 
+	GameObject::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].disconnect(listener);
 	}
 
 	GameObjectPtr

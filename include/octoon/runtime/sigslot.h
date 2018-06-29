@@ -73,7 +73,7 @@ namespace octoon
 			}
 
 			void connect(SlotType f) { impl.connect(f); }
-			void disconnect(SlotType f) { impl.connect(f); }
+			void disconnect(SlotType f) { impl.disconnect(f); }
 
 			void connect(SignalType& sig)
 			{

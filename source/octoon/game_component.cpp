@@ -157,6 +157,34 @@ namespace octoon
 		gameObject_->sendMessage(event, data);
 	}
 
+	void
+	GameComponent::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessageUpwards(event, data);
+	}
+
+	void
+	GameComponent::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessageDownwards(event, data);
+	}
+
+	void
+	GameComponent::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->addMessageListener(event, listener);
+	}
+
+	void
+	GameComponent::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->removeMessageListener(event, listener);
+	}
+
 	GameComponentPtr
 	GameComponent::instantiate(const GameComponent* component) except
 	{

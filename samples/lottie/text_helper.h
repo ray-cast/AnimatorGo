@@ -14,6 +14,7 @@ public:
 	using float4 = octoon::math::float4;
 
 	std::string text;
+	std::string font;
 	std::uint32_t size;
 	octoon::math::float3 color;
 
@@ -31,6 +32,7 @@ public:
 		auto& t = layer["t"]["d"]["k"][0]["s"];
 		auto& fc = t["fc"];
 		text = t["t"].get<json::string_t>();
+		font = t["f"].get<json::string_t>();
 		size = t["s"].get<json::number_unsigned_t>();
 		color = octoon::math::float3(fc[0].get<json::number_float_t>(), fc[1].get<json::number_float_t>(), fc[2].get<json::number_float_t>());
 	}

@@ -231,6 +231,10 @@ TransformAnimComponent::onFrame() except
 		if (!orientation_.empty()) 
 			quat = octoon::math::cross(quat, octoon::math::Quaternion(orientation_.evaluate(step)));
 
+		if (!rx_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
+		if (!ry_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
+		if (!rz_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
+
 		if (!anchor_.empty())
 		{
 			auto hasCamera = this->getGameObject()->getComponent<octoon::CameraComponent>();
@@ -242,11 +246,11 @@ TransformAnimComponent::onFrame() except
 
 				quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));
 			}
+			else
+			{
+				transform->setTranslateAccum(octoon::math::rotate(quat, -anchor_.evaluate(step)));
+			}
 		}
-
-		if (!rx_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitX, rx_.evaluate(step)));
-		if (!ry_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitY, ry_.evaluate(step)));
-		if (!rz_.empty()) quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3::UnitZ, rz_.evaluate(step)));
 
 		transform->setQuaternion(quat);
 	}

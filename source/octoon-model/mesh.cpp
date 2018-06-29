@@ -393,8 +393,8 @@ namespace octoon
 			{
 				for (std::uint32_t ix = 0; ix < gridX1; ix++)
 				{
-					float x = ix * segmentWidth - widthHalf;
-					float z = iz * segmentHeight - heightHalf;
+					float x = ix * segmentWidth;
+					float z = iz * segmentHeight - segmentHeight;
 
 					_vertices.emplace_back(x, z, 0.0f);
 

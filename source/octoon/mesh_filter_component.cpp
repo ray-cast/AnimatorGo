@@ -73,6 +73,12 @@ namespace octoon
 		return isSharedMesh_;
 	}
 
+	void
+	MeshFilterComponent::uploadMeshData() noexcept
+	{
+		this->onMeshReplace(mesh_);
+	}
+
 	GameComponentPtr
 	MeshFilterComponent::clone() const noexcept
 	{

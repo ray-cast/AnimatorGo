@@ -9,31 +9,13 @@
 #include "solid_helper.h"
 #include "still_helper.h"
 #include "camera_helper.h"
+#include "layer_helper.h"
 
 #include "transform_anim_component.h"
 
 class LottieApp
 {
 	using json = octoon::runtime::json;
-
-	enum class LayerTypes 
-	{
-		precomp = 0,
-		solid = 1,
-		still = 2,
-		nullLayer = 3,
-		shape = 4,
-		text = 5,
-		audio = 6,
-		pholderVideo = 7,
-		imageSeq = 8,
-		video = 9,
-		pholderStill = 10,
-		guide = 11,
-		adjustment = 12,
-		camera = 13,
-		light = 14
-	};
 
 public:
 	LottieApp()
@@ -86,49 +68,37 @@ public:
 		auto& layers = j["layers"];
 		for (auto it = layers.rbegin(); it != layers.rend(); ++it)
 		{
-			auto layer = *it;
+			LayerHelper layer(*it);
 
 			octoon::GameObjectPtr object;
 
-			auto type = (LayerTypes)layer["ty"].get<json::number_unsigned_t>();
-			switch (type)
+			switch (layer.type)
 			{
-			case LayerTypes::solid:
+			case LayerHelper::LayerTypes::solid:
 			{
-				SoildHelper solid(layer);
-				object = octoon::GamePrefabs::instance()->createSpriteSquare(solid.sw, solid.sh);
+				object = octoon::GamePrefabs::instance()->createSpriteSquare(layer.solid.sw, layer.solid.sh);
 			}
 			break;
-			case LayerTypes::still:
+			case LayerHelper::LayerTypes::still:
 			{
-				StillHelper still(layer);
-				object = octoon::GamePrefabs::instance()->createSprite(_textures[still.refid]);
+				object = octoon::GamePrefabs::instance()->createSprite(_textures[layer.still.refid]);
 			}
 			break;
-			case LayerTypes::text:
-			{
-				auto& t = layer["t"]["d"]["k"][0]["s"];
-				auto& fc = t["fc"];
-				auto text = t["t"].get<json::string_t>();
-				auto size = t["s"].get<json::number_unsigned_t>();
-				auto color = octoon::math::float4(fc[0].get<json::number_float_t>(), fc[1].get<json::number_float_t>(), fc[2].get<json::number_float_t>(), 1.0f);
-				
-				object = octoon::GamePrefabs::instance()->createText(text.c_str(), size);
-				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(color);
+			case LayerHelper::LayerTypes::text:
+			{			
+				object = octoon::GamePrefabs::instance()->createText(layer.text.text.c_str(), layer.text.size);
+				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(layer.text.color);
 			}
 			break;
-			case LayerTypes::shape:
+			case LayerHelper::LayerTypes::shape:
 			{
 				ShapeHelper shape;
 			}
 			break;
-			case LayerTypes::camera:
+			case LayerHelper::LayerTypes::camera:
 			{
-				CameraHelper camera(layer);
-
 				camera_ = nullptr;
-				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, camera.zoom[0].value);
-				//object->setLayer(1);
+				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, layer.camera.zoom[0].value);
 			}
 			break;
 			default:
@@ -136,20 +106,16 @@ public:
 				break;
 			}
 
-			/*auto& ddd = layer["ddd"];
-			if (ddd.get<json::number_unsigned_t>())
-				object->setLayer(1);*/
-
-			TransformHelper t(layer);
+			// object->setLayer(layer.threeLayer);
 
 			auto transform = object->addComponent<TransformAnimComponent>();
-			transform->setAnchorPoint(std::move(t.anchor));
-			transform->setTranslate(std::move(t.pos));
-			transform->setScale(std::move(t.scale));
-			transform->setOrientation(std::move(t.orientation));
-			transform->setRotationX(std::move(t.rx));
-			transform->setRotationY(std::move(t.ry));
-			transform->setRotationZ(std::move(t.rz));
+			transform->setAnchorPoint(std::move(layer.transform.anchor));
+			transform->setTranslate(std::move(layer.transform.pos));
+			transform->setScale(std::move(layer.transform.scale));
+			transform->setOrientation(std::move(layer.transform.orientation));
+			transform->setRotationX(std::move(layer.transform.rx));
+			transform->setRotationY(std::move(layer.transform.ry));
+			transform->setRotationZ(std::move(layer.transform.rz));
 
 			layers_.push_back(std::move(object));
 		}

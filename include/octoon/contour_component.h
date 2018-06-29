@@ -3,7 +3,6 @@
 
 #include <octoon/model/contour.h>
 #include <octoon/game_component.h>
-#include <functional>
 
 namespace octoon
 {
@@ -31,9 +30,6 @@ namespace octoon
 
 		void uploadContourData() noexcept;
 
-		void addContourListener(OnContourReplaceEvent* func) noexcept;
-		void removeContourListener(const OnContourReplaceEvent* func) noexcept;
-
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -46,7 +42,6 @@ namespace octoon
 	private:
 		bool isSharedContour_;
 		model::ContourPtr contour_;
-		OnContourReplaceEvents delegates_;
 	};
 }
 

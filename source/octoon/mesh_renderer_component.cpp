@@ -83,12 +83,12 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
+	MeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
 		if (!this->getMaterial())
 			return;
 
-		auto mesh = runtime::any_cast<model::MeshPtr>(data);
+		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
 		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();

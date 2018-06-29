@@ -76,22 +76,6 @@ namespace octoon
 	void
 	ContourComponent::uploadContourData() noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(contour_);
-	}
-
-	void
-	ContourComponent::addContourListener(OnContourReplaceEvent* func) noexcept
-	{
-		delegates_.push_back(func);
-	}
-
-	void
-	ContourComponent::removeContourListener(const OnContourReplaceEvent* func) noexcept
-	{
-		auto it = std::find(delegates_.begin(), delegates_.end(), func);
-		if (it != delegates_.end())
-			delegates_.erase(it);
 	}
 
 	GameComponentPtr
@@ -107,7 +91,7 @@ namespace octoon
 	void
 	ContourComponent::onContourReplace(const model::ContourPtr& mesh) noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(mesh);
+		if (this->getGameObject())
+			this->sendMessage("octoon::mesh::update", mesh);
 	}
 }

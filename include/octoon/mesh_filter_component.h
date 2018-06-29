@@ -3,7 +3,6 @@
 
 #include <octoon/model/mesh.h>
 #include <octoon/game_component.h>
-#include <functional>
 
 namespace octoon
 {

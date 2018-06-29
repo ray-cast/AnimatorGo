@@ -61,9 +61,9 @@ public:
 
 	void prepare(const json& layer)
 	{
-		sw = layer["sw"].get <json::number_unsigned_t>();
-		sh = layer["sh"].get <json::number_unsigned_t>();
-		auto sc = layer["sc"].get <json::string_t>();
+		sw = layer["sw"].get<json::number_unsigned_t>();
+		sh = layer["sh"].get<json::number_unsigned_t>();
+		auto sc = layer["sc"].get<json::string_t>();
 
 		if (sc.front() == '#')
 		{

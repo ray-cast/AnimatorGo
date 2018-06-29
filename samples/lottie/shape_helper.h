@@ -253,7 +253,7 @@ public:
 		{
 			trim.start = KeyframeHelper::preparefloat1(it["s"], 1.0f / 100.0f);
 			trim.end = KeyframeHelper::preparefloat1(it["e"], 1.0f / 100.0f);
-			trim.offset = KeyframeHelper::preparefloat1(it["o"], 1.0f / 100.0f);
+			trim.offset = KeyframeHelper::preparefloat1(it["o"], octoon::math::radians(1.0f));
 			trim.trimMultipleShapes = it["m"].get<json::number_unsigned_t>();
 		}
 		else if (ty == "tw")

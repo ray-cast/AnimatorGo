@@ -48,6 +48,7 @@ public:
 	StillHelper still;
 	TextHelper text;
 	CameraHelper camera;
+	std::vector<ShapeHelper> shapes;
 
 	LayerHelper()
 	{
@@ -86,7 +87,8 @@ public:
 		break;
 		case LayerTypes::shape:
 		{
-			ShapeHelper shape;
+			for (auto& shape : layer["shapes"])
+				shapes.push_back(ShapeHelper(shape));
 		}
 		break;
 		case LayerTypes::camera:

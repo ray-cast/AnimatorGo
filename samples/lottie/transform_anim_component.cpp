@@ -218,7 +218,7 @@ TransformAnimComponent::onFrame() except
 	if (transform)
 	{
 		float step = 1.0f / 60.0f;
-		step = octoon::GameApp::instance()->getFeature<octoon::TimerFeature>()->delta();
+		step = octoon::GameApp::instance()->getFeature<octoon::TimerFeature>()->delta() * 23.9f;
 
 		auto quat = octoon::math::Quaternion::Zero;
 

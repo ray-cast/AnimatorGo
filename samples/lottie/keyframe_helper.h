@@ -27,6 +27,12 @@ public:
 	{
 		float1s key;
 
+		if (!j.is_object())
+		{
+			key.emplace_back(0.0f, float1(j.get<json::number_float_t>() * weight));
+			return key;
+		}
+
 		auto& k = j["k"];
 
 		if (j["a"].get<json::number_unsigned_t>())

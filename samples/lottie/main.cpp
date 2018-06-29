@@ -56,11 +56,94 @@ public:
 			}
 			else if (id.compare(0, 4, "comp") == 0)
 			{
+				auto root = octoon::GameObject::create();
 
+				auto& layers = asset["layers"];
+				for (auto it = layers.rbegin(); it != layers.rend(); ++it)
+				{
+					auto object = prepareLayer(*it);
+					if (object)
+						root->addChild(std::move(object));
+				}
+
+				if (root->getChildCount() > 0)
+				{
+					root->setActiveDownwards(false);
+					_comps[id] = std::move(root);
+				}
 			}
 		}
 
 		return true;
+	}
+
+	octoon::GameObjectPtr prepareLayer(const json& j)
+	{
+		LayerHelper layer(j);
+
+		octoon::GameObjectPtr object;
+
+		switch (layer.type)
+		{
+		case LayerHelper::LayerTypes::solid:
+		{
+			object = octoon::GamePrefabs::instance()->createSpriteSquare(layer.solid.sw, layer.solid.sh);
+			object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(octoon::math::float4(layer.solid.color, 1.0f));
+		}
+		break;
+		case LayerHelper::LayerTypes::still:
+		{
+			object = octoon::GamePrefabs::instance()->createSprite(_textures[layer.still.refid]);
+		}
+		break;
+		case LayerHelper::LayerTypes::text:
+		{
+			object = octoon::GamePrefabs::instance()->createText(layer.text.text.c_str(), layer.text.size);
+			object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(octoon::math::float4(layer.text.color, 1.0f));
+		}
+		break;
+		case LayerHelper::LayerTypes::shape:
+		{
+			return nullptr;
+		}
+		break;
+		case LayerHelper::LayerTypes::camera:
+		{
+			camera_ = nullptr;
+			object = octoon::GamePrefabs::instance()->createFilmCamera(width_, layer.camera.zoom[0].value);
+		}
+		break;
+		case LayerHelper::LayerTypes::precomp:
+		{
+			auto& comp = _comps[j["refId"].get<json::string_t>()];
+			if (comp)
+			{
+				object = comp->clone();
+				object->setActiveDownwards(true);
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+		break;
+		default:
+			return nullptr;
+			break;
+		}
+
+		// object->setLayer(layer.threeLayer);
+
+		auto transform = object->addComponent<TransformAnimComponent>();
+		transform->setAnchorPoint(std::move(layer.transform.anchor));
+		transform->setTranslate(std::move(layer.transform.pos));
+		transform->setScale(std::move(layer.transform.scale));
+		transform->setOrientation(std::move(layer.transform.orientation));
+		transform->setRotationX(std::move(layer.transform.rx));
+		transform->setRotationY(std::move(layer.transform.ry));
+		transform->setRotationZ(std::move(layer.transform.rz));
+
+		return std::move(object);
 	}
 
 	bool prepareLayers(const json& j)
@@ -68,57 +151,9 @@ public:
 		auto& layers = j["layers"];
 		for (auto it = layers.rbegin(); it != layers.rend(); ++it)
 		{
-			LayerHelper layer(*it);
-
-			octoon::GameObjectPtr object;
-
-			switch (layer.type)
-			{
-			case LayerHelper::LayerTypes::solid:
-			{
-				object = octoon::GamePrefabs::instance()->createSpriteSquare(layer.solid.sw, layer.solid.sh);
-				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(octoon::math::float4(layer.solid.color, 1.0f));
-			}
-			break;
-			case LayerHelper::LayerTypes::still:
-			{
-				object = octoon::GamePrefabs::instance()->createSprite(_textures[layer.still.refid]);
-			}
-			break;
-			case LayerHelper::LayerTypes::text:
-			{			
-				object = octoon::GamePrefabs::instance()->createText(layer.text.text.c_str(), layer.text.size);
-				object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(octoon::math::float4(layer.text.color, 1.0f));
-			}
-			break;
-			case LayerHelper::LayerTypes::shape:
-			{
-				ShapeHelper shape;
-			}
-			break;
-			case LayerHelper::LayerTypes::camera:
-			{
-				camera_ = nullptr;
-				object = octoon::GamePrefabs::instance()->createFilmCamera(width_, layer.camera.zoom[0].value);
-			}
-			break;
-			default:
-				continue;
-				break;
-			}
-
-			// object->setLayer(layer.threeLayer);
-
-			auto transform = object->addComponent<TransformAnimComponent>();
-			transform->setAnchorPoint(std::move(layer.transform.anchor));
-			transform->setTranslate(std::move(layer.transform.pos));
-			transform->setScale(std::move(layer.transform.scale));
-			transform->setOrientation(std::move(layer.transform.orientation));
-			transform->setRotationX(std::move(layer.transform.rx));
-			transform->setRotationY(std::move(layer.transform.ry));
-			transform->setRotationZ(std::move(layer.transform.rz));
-
-			layers_.push_back(std::move(object));
+			octoon::GameObjectPtr object = prepareLayer(*it);
+			if (object)
+				layers_.push_back(std::move(object));
 		}
 
 		return true;
@@ -133,6 +168,7 @@ private:
 
 	octoon::GameObjects layers_;
 	octoon::GameObjectPtr camera_;
+	std::map<std::string, octoon::GameObjectPtr> _comps;
 	std::map<std::string, octoon::graphics::GraphicsTexturePtr> _textures;
 };
 

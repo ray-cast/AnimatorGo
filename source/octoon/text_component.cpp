@@ -57,7 +57,7 @@ namespace octoon
 	{
 		if (meshing_ != meshing)
 		{
-			meshing_ = std::make_shared<model::TextMeshing>("../../system/fonts/DroidSansFallback.ttf", 24);
+			meshing_ = std::move(meshing);
 			this->uploadTextData();
 		}
 	}

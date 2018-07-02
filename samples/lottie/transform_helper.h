@@ -56,6 +56,12 @@ public:
 					it.value.y += octoon::math::PI_2;
 				if ((cur.value.z - it.value.z) > octoon::math::PI)
 					it.value.z += octoon::math::PI_2;
+				if ((cur.value.x - it.value.x) < -octoon::math::PI)
+					it.value.x -= octoon::math::PI_2;
+				if ((cur.value.y - it.value.y) < -octoon::math::PI)
+					it.value.y -= octoon::math::PI_2;
+				if ((cur.value.z - it.value.z) < -octoon::math::PI)
+					it.value.z -= octoon::math::PI_2;
 				cur = it;
 			}
 		}

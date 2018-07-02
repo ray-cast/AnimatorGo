@@ -90,6 +90,18 @@ namespace octoon
 	}
 
 	void
+	MeshFilterComponent::onActivate() except
+	{
+		this->addMessageListener("octoon::mesh::get", std::bind(&MeshFilterComponent::uploadMeshData, this));
+		this->uploadMeshData();
+	}
+
+	void
+	MeshFilterComponent::onDeactivate() noexcept
+	{
+	}
+
+	void
 	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
 	{
 		if (this->getGameObject())

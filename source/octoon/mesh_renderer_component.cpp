@@ -40,9 +40,8 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-
+		
 		auto transform = this->getComponent<TransformComponent>();
-		auto meshFilter = this->getComponent<MeshFilterComponent>();
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setActive(true);
@@ -50,8 +49,7 @@ namespace octoon
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 		geometry_->setLayer(this->getGameObject()->getLayer());
 
-		if (meshFilter)
-			this->onMeshReplace(meshFilter->getMesh());
+		this->sendMessage("octoon::mesh::get", nullptr);
 	}
 
 	void

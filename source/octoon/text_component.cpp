@@ -27,29 +27,29 @@ namespace octoon
 	void
 	TextComponent::setText(std::string&& mesh, bool sharedText) noexcept
 	{
-		if (text_ != mesh)
+		if (u8str_ != mesh)
 		{
-			text_ = std::move(mesh);
+			u8str_ = std::move(mesh);
 			isSharedText_ = sharedText;
-			this->onTextReplace(text_);
+			this->uploadTextData();
 		}
 	}
 
 	void
 	TextComponent::setText(const std::string& mesh, bool sharedText) noexcept
 	{
-		if (text_ != mesh)
+		if (u8str_ != mesh)
 		{
-			text_ = mesh;
+			u8str_ = mesh;
 			isSharedText_ = sharedText;
-			this->onTextReplace(text_);
+			this->uploadTextData();
 		}
 	}
 
 	const std::string&
 	TextComponent::getText() const noexcept
 	{
-		return text_;
+		return u8str_;
 	}
 
 	bool
@@ -59,9 +59,86 @@ namespace octoon
 	}
 
 	void
+	TextComponent::onActivate() except
+	{
+		this->addMessageListener("octoon::mesh::get", std::bind(&TextComponent::uploadTextData, this));
+		this->uploadTextData();
+	}
+
+	void
+	TextComponent::onDeactivate() noexcept
+	{
+	}
+
+	void
 	TextComponent::uploadTextData() noexcept
 	{
-		this->onTextReplace(text_);
+		std::string::size_type len = std::strlen(u8str_.c_str());
+
+		std::wstring u16str;
+		u16str.reserve(len);
+
+		const unsigned char* p = (unsigned char*)(u8str_.c_str());
+		if (len > 3 && p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF) {
+			p += 3;
+			len -= 3;
+		}
+
+		bool is_ok = true;
+		for (std::string::size_type i = 0; i < len; ++i)
+		{
+			uint32_t ch = p[i];
+			if ((ch & 0x80) == 0)
+			{
+				u16str.push_back((char16_t)ch);
+				continue;
+			}
+
+			switch (ch & 0xF0)
+			{
+			case 0xF0:
+			{
+				uint32_t c2 = p[++i];
+				uint32_t c3 = p[++i];
+				uint32_t c4 = p[++i];
+				uint32_t codePoint = ((ch & 0x07U) << 18) | ((c2 & 0x3FU) << 12) | ((c3 & 0x3FU) << 6) | (c4 & 0x3FU);
+				if (codePoint >= 0x10000)
+				{
+					codePoint -= 0x10000;
+					u16str.push_back((char16_t)((codePoint >> 10) | 0xD800U));
+					u16str.push_back((char16_t)((codePoint & 0x03FFU) | 0xDC00U));
+				}
+				else
+				{
+					u16str.push_back((char16_t)codePoint);
+				}
+			}
+			break;
+			case 0xE0:
+			{
+				uint32_t c2 = p[++i];
+				uint32_t c3 = p[++i];
+				uint32_t codePoint = ((ch & 0x0FU) << 12) | ((c2 & 0x3FU) << 6) | (c3 & 0x3FU);
+				u16str.push_back((char16_t)codePoint);
+			}
+			break;
+			case 0xD0:
+			case 0xC0:
+			{
+				uint32_t c2 = p[++i];
+				uint32_t codePoint = ((ch & 0x1FU) << 12) | ((c2 & 0x3FU) << 6);
+				u16str.push_back((char16_t)codePoint);
+			}
+			break;
+			default:
+				is_ok = false;
+				break;
+			}
+		}
+
+		mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8), 0.0f));
+
+		this->onTextReplace(mesh_);
 	}
 
 	GameComponentPtr
@@ -69,16 +146,14 @@ namespace octoon
 	{
 		auto instance = std::make_shared<TextComponent>();
 		instance->setName(instance->getName());
-		instance->setText(text_);
+		instance->setText(u8str_);
 
 		return instance;
 	}
 
 	void
-	TextComponent::onTextReplace(const std::string& mesh) noexcept
+	TextComponent::onTextReplace(const model::MeshPtr& mesh) noexcept
 	{
-		//mesh_ = model::makeMesh(model::makeTextContours(u16str_, { fontPath, fontsize }, 8), 0.0f);
-
 		if (this->getGameObject())
 			this->sendMessage("octoon::mesh::update", mesh);
 	}

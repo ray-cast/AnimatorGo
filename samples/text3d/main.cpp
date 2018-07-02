@@ -147,7 +147,7 @@ int main(int argc, const char* argv[])
 			*it -= aabb.center();
 
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
+		object->addComponent<octoon::TextComponent>("Octoon Stdudio");
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material, str);

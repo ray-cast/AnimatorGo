@@ -70,6 +70,18 @@ namespace octoon
 	}
 
 	void
+	PathComponent::onActivate() except
+	{
+		this->addMessageListener("octoon::mesh::get", std::bind(&PathComponent::uploadPathData, this));
+		this->onPathReplace(mesh_);
+	}
+
+	void
+	PathComponent::onDeactivate() noexcept
+	{
+	}
+
+	void
 	PathComponent::onPathReplace(const model::MeshPtr& mesh) noexcept
 	{
 		if (this->getGameObject())

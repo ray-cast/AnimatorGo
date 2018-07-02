@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT MeshFilterComponent : public GameComponent
+	class OCTOON_EXPORT MeshFilterComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
 	public:
@@ -29,6 +29,9 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
+		virtual void onActivate() except override;
+		virtual void onDeactivate() noexcept override;
+
 		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:

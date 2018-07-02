@@ -11,12 +11,12 @@ namespace octoon
 		OctoonDeclareSubClass(TextComponent, GameComponent)
 	public:
 		TextComponent() noexcept;
-		TextComponent(std::string&& text, bool sharedText = false) noexcept;
-		TextComponent(const std::string& text, bool sharedText = false) noexcept;
+		TextComponent(std::string&& u8str, bool sharedText = false) noexcept;
+		TextComponent(const std::string& u8str, bool sharedText = false) noexcept;
 		virtual ~TextComponent() noexcept;
 
-		void setText(std::string&& text, bool sharedText = false) noexcept;
-		void setText(const std::string& text, bool sharedText = false) noexcept;
+		void setText(std::string&& u8str, bool sharedText = false) noexcept;
+		void setText(const std::string& u8str, bool sharedText = false) noexcept;
 		const std::string& getText() const noexcept;
 
 		bool isSharedText() const noexcept;
@@ -26,7 +26,10 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onTextReplace(const std::string& text) noexcept;
+		virtual void onActivate() except override;
+		virtual void onDeactivate() noexcept override;
+
+		virtual void onTextReplace(const model::MeshPtr& text) noexcept;
 
 	private:
 		TextComponent(const TextComponent&) = delete;
@@ -35,8 +38,7 @@ namespace octoon
 	private:
 		bool isSharedText_;
 		model::MeshPtr mesh_;
-		std::string text_;
-		std::wstring u16str_;
+		std::string u8str_;
 	};
 }
 

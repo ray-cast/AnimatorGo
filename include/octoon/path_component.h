@@ -27,6 +27,9 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
+		virtual void onActivate() except override;
+		virtual void onDeactivate() noexcept override;
+
 		virtual void onPathReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:

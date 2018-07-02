@@ -44,6 +44,21 @@ public:
 		if (ks.find("ry") != ks.end()) ry = KeyframeHelper::preparefloat1(ks["ry"], octoon::math::radians(1.0f));
 		if (ks.find("rz") != ks.end()) rz = KeyframeHelper::preparefloat1(ks["rz"], octoon::math::radians(1.0f));
 		if (ks.find("o") != ks.end()) opacity = KeyframeHelper::preparefloat1(ks["o"], 1.0f / 100.0f);
+
+		if (!orientation.empty())
+		{
+			auto cur = orientation.front();
+			for (auto& it : orientation)
+			{
+				if ((cur.value.x - it.value.x) > octoon::math::PI)
+					it.value.x += octoon::math::PI_2;
+				if ((cur.value.y - it.value.y) > octoon::math::PI)
+					it.value.y += octoon::math::PI_2;
+				if ((cur.value.z - it.value.z) > octoon::math::PI)
+					it.value.z += octoon::math::PI_2;
+				cur = it;
+			}
+		}
 	}
 };
 

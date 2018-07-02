@@ -99,6 +99,7 @@ public:
 		case LayerHelper::LayerTypes::text:
 		{
 			object = octoon::GamePrefabs::instance()->createText(layer.text.text.c_str(), layer.text.size);
+			object->getComponent<octoon::TextComponent>()->setTextAlign((octoon::model::TextAlign)layer.text.align);
 			object->getComponent<octoon::RenderComponent>()->getMaterial()->getParameter("color")->uniform4f(octoon::math::float4(layer.text.color, 1.0f));
 		}
 		break;

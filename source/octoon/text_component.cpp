@@ -7,15 +7,18 @@ namespace octoon
 
 	TextComponent::TextComponent() noexcept
 		: isSharedText_(false)
+		, align_(model::TextAlign::Left)
 	{
 	}
 
 	TextComponent::TextComponent(std::string&& mesh, bool sharedText) noexcept
+		: TextComponent()
 	{
 		this->setText(std::move(mesh), sharedText);
 	}
 
 	TextComponent::TextComponent(const std::string& mesh, bool sharedText) noexcept
+		: TextComponent()
 	{
 		this->setText(mesh, sharedText);
 	}
@@ -76,6 +79,22 @@ namespace octoon
 	TextComponent::getTextMeshing() const noexcept
 	{
 		return meshing_;
+	}
+
+	void
+	TextComponent::setTextAlign(model::TextAlign align) noexcept
+	{
+		if (align_ != align)
+		{
+			align_ = align;
+			this->uploadTextData();
+		}
+	}
+
+	model::TextAlign
+	TextComponent::getTextAlign() const noexcept
+	{
+		return align_;
 	}
 
 	bool
@@ -165,9 +184,9 @@ namespace octoon
 		if (is_ok)
 		{
 			if (meshing_)
-				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8), 0.0f));
+				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8, align_), 0.0f));
 			else
-				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8), 0.0f));
+				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8, align_), 0.0f));
 		}
 		else
 		{

@@ -2,6 +2,7 @@
 #define OCTOON_TEXT_COMPONENT_H_
 
 #include <octoon/model/mesh.h>
+#include <octoon/model/text_meshing.h>
 #include <octoon/game_component.h>
 
 namespace octoon
@@ -23,6 +24,9 @@ namespace octoon
 		void setTextMeshing(const model::TextMeshingPtr& meshing) noexcept;
 		const model::TextMeshingPtr& getTextMeshing() const noexcept;
 
+		void setTextAlign(model::TextAlign align) noexcept;
+		model::TextAlign getTextAlign() const noexcept;
+
 		bool isSharedText() const noexcept;
 
 		void uploadTextData() noexcept;
@@ -43,6 +47,7 @@ namespace octoon
 		bool isSharedText_;
 		std::string u8str_;
 		model::MeshPtr mesh_;
+		model::TextAlign align_;
 		model::TextMeshingPtr meshing_;
 	};
 }

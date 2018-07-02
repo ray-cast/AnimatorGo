@@ -207,7 +207,7 @@ namespace octoon
 			return groups;
 		}
 
-		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, bool centerAlign) noexcept(false)
+		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, TextAlign align) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
@@ -281,7 +281,7 @@ namespace octoon
 
 			FT_Face ftface = (FT_Face)params.getFont()->getFont();
 
-			auto offset = ftface->glyph->advance.x;
+			auto offset = 0;
 
 			ContourGroups groups;
 
@@ -308,7 +308,21 @@ namespace octoon
 				}
 			}
 
-			if (centerAlign)
+			switch (align)
+			{
+			case octoon::model::TextAlign::Left:
+				break;
+			case octoon::model::TextAlign::Right:
+			{
+				for (auto& group : groups)
+				{
+					for (auto& contour : group->getContours())
+						for (auto& pt : contour->points())
+							pt.x -= offset;
+				}
+			}
+			break;
+			case octoon::model::TextAlign::Middle:
 			{
 				for (auto& group : groups)
 				{
@@ -316,6 +330,10 @@ namespace octoon
 						for (auto& pt : contour->points())
 							pt.x -= offset * 0.5f;
 				}
+			}
+			break;
+			default:
+				break;
 			}
 
 			return groups;

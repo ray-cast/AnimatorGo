@@ -13,9 +13,17 @@ public:
 	using float3 = octoon::math::float3;
 	using float4 = octoon::math::float4;
 
+	enum TextAlign
+	{
+		Left,
+		Right,
+		Middle,
+	};
+
 	std::string text;
 	std::string font;
 	std::uint32_t size;
+	TextAlign align;
 	octoon::math::float3 color;
 
 	TextHelper()
@@ -34,6 +42,7 @@ public:
 		text = t["t"].get<json::string_t>();
 		font = t["f"].get<json::string_t>();
 		size = t["s"].get<json::number_unsigned_t>();
+		align = (TextAlign)t["j"].get<json::number_unsigned_t>();
 		color = octoon::math::float3(fc[0].get<json::number_float_t>(), fc[1].get<json::number_float_t>(), fc[2].get<json::number_float_t>());
 	}
 };

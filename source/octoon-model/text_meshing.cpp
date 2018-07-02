@@ -187,6 +187,16 @@ namespace octoon
 			return groups;
 		}
 
+		Contours makeTextContours(const Paths& paths, std::uint16_t bezierSteps) noexcept(false)
+		{
+			Contours groups;
+
+			for (auto& path : paths)
+				groups.push_back(std::make_shared<Contour>(*path, bezierSteps));
+
+			return groups;
+		}
+
 		ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps) noexcept(false)
 		{
 			ContourGroups groups;

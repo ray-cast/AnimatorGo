@@ -1,6 +1,7 @@
 #ifndef OCTOON_TEXT_COMPONENT_H_
 #define OCTOON_TEXT_COMPONENT_H_
 
+#include <octoon/model/mesh.h>
 #include <octoon/game_component.h>
 
 namespace octoon
@@ -33,7 +34,9 @@ namespace octoon
 
 	private:
 		bool isSharedText_;
+		model::MeshPtr mesh_;
 		std::string text_;
+		std::wstring u16str_;
 	};
 }
 

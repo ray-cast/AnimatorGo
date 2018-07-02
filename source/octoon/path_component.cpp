@@ -1,4 +1,5 @@
 #include <octoon/path_component.h>
+#include <octoon/model/text_meshing.h>
 
 namespace octoon
 {
@@ -9,22 +10,12 @@ namespace octoon
 	{
 	}
 
-	PathComponent::PathComponent(model::Path&& mesh, bool sharedPath) noexcept
+	PathComponent::PathComponent(model::Paths&& mesh, bool sharedPath) noexcept
 	{
-		this->setPath(std::make_unique<model::Path>(std::move(mesh)), sharedPath);
+		this->setPath(mesh, sharedPath);
 	}
 
-	PathComponent::PathComponent(const model::Path& mesh, bool sharedPath) noexcept
-	{
-		this->setPath(std::make_shared<model::Path>(mesh), sharedPath);
-	}
-
-	PathComponent::PathComponent(model::PathPtr&& mesh, bool sharedPath) noexcept
-	{
-		this->setPath(std::move(mesh), sharedPath);
-	}
-
-	PathComponent::PathComponent(const model::PathPtr& mesh, bool sharedPath) noexcept
+	PathComponent::PathComponent(const model::Paths& mesh, bool sharedPath) noexcept
 	{
 		this->setPath(mesh, sharedPath);
 	}
@@ -34,37 +25,25 @@ namespace octoon
 	}
 
 	void
-	PathComponent::setPath(model::Path&& mesh, bool sharedPath) noexcept
+	PathComponent::setPath(model::Paths&& path, bool sharedPath) noexcept
 	{
-		this->setPath(std::make_shared<model::Path>(std::move(mesh)));
+		paths_ = std::move(path);
+		isSharedPath_ = sharedPath;
+		this->uploadPathData();
 	}
 
 	void
-	PathComponent::setPath(model::PathPtr&& mesh, bool sharedPath) noexcept
+	PathComponent::setPath(const model::Paths& path, bool sharedPath) noexcept
 	{
-		if (path_ != mesh)
-		{
-			path_ = std::move(mesh);
-			isSharedPath_ = sharedPath;
-			this->onPathReplace(path_);
-		}
+		paths_ = path;
+		isSharedPath_ = sharedPath;
+		this->uploadPathData();
 	}
 
-	void
-	PathComponent::setPath(const model::PathPtr& mesh, bool sharedPath) noexcept
-	{
-		if (path_ != mesh)
-		{
-			path_ = mesh;
-			isSharedPath_ = sharedPath;
-			this->onPathReplace(path_);
-		}
-	}
-
-	const model::PathPtr&
+	const model::Paths&
 	PathComponent::getPath() const noexcept
 	{
-		return path_;
+		return paths_;
 	}
 
 	bool
@@ -76,22 +55,8 @@ namespace octoon
 	void
 	PathComponent::uploadPathData() noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(path_);
-	}
-
-	void
-	PathComponent::addPathListener(OnPathReplaceEvent* func) noexcept
-	{
-		delegates_.push_back(func);
-	}
-
-	void
-	PathComponent::removePathListener(const OnPathReplaceEvent* func) noexcept
-	{
-		auto it = std::find(delegates_.begin(), delegates_.end(), func);
-		if (it != delegates_.end())
-			delegates_.erase(it);
+		mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(paths_)));
+		this->onPathReplace(mesh_);
 	}
 
 	GameComponentPtr
@@ -99,15 +64,15 @@ namespace octoon
 	{
 		auto instance = std::make_shared<PathComponent>();
 		instance->setName(instance->getName());
-		instance->setPath(path_ ? (isSharedPath_ ? path_ : path_->clone()) : nullptr, isSharedPath_);
+		instance->setPath(isSharedPath_ ? paths_ : model::Paths(paths_), isSharedPath_);
 
 		return instance;
 	}
 
 	void
-	PathComponent::onPathReplace(const model::PathPtr& mesh) noexcept
+	PathComponent::onPathReplace(const model::MeshPtr& mesh) noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(mesh);
+		if (this->getGameObject())
+			this->sendMessage("octoon::mesh::update", mesh);
 	}
 }

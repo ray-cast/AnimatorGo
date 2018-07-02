@@ -11,33 +11,23 @@ namespace octoon
 	{
 		OctoonDeclareSubClass(PathComponent, GameComponent)
 	public:
-		typedef std::function<void(const model::PathPtr&)> OnPathReplaceEvent;
-		typedef std::vector<OnPathReplaceEvent*> OnPathReplaceEvents;
-
-	public:
 		PathComponent() noexcept;
-		PathComponent(model::Path&& mesh, bool sharedPath = false) noexcept;
-		PathComponent(model::PathPtr&& mesh, bool sharedPath = false) noexcept;
-		PathComponent(const model::Path& mesh, bool sharedPath = false) noexcept;
-		PathComponent(const model::PathPtr& mesh, bool sharedPath = false) noexcept;
+		PathComponent(model::Paths&& mesh, bool sharedPath = false) noexcept;
+		PathComponent(const model::Paths& mesh, bool sharedPath = false) noexcept;
 		virtual ~PathComponent() noexcept;
 
-		void setPath(model::Path&& mesh, bool sharedPath = false) noexcept;
-		void setPath(model::PathPtr&& mesh, bool sharedPath = false) noexcept;
-		void setPath(const model::PathPtr& mesh, bool sharedPath = false) noexcept;
-		const model::PathPtr& getPath() const noexcept;
+		void setPath(model::Paths&& mesh, bool sharedPath = false) noexcept;
+		void setPath(const model::Paths& mesh, bool sharedPath = false) noexcept;
+		const model::Paths& getPath() const noexcept;
 
 		bool isSharedPath() const noexcept;
 
 		void uploadPathData() noexcept;
 
-		void addPathListener(OnPathReplaceEvent* func) noexcept;
-		void removePathListener(const OnPathReplaceEvent* func) noexcept;
-
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onPathReplace(const model::PathPtr& mesh) noexcept;
+		virtual void onPathReplace(const model::MeshPtr& mesh) noexcept;
 
 	private:
 		PathComponent(const PathComponent&) = delete;
@@ -45,8 +35,8 @@ namespace octoon
 
 	private:
 		bool isSharedPath_;
-		model::PathPtr path_;
-		OnPathReplaceEvents delegates_;
+		model::Paths paths_;
+		model::MeshPtr mesh_;
 	};
 }
 

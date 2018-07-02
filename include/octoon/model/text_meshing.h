@@ -40,6 +40,7 @@ namespace octoon
 
 		OCTOON_EXPORT PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false);
 
+		OCTOON_EXPORT Contours makeTextContours(const Paths& paths, std::uint16_t bezierSteps = 8) noexcept(false);
 		OCTOON_EXPORT ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps = 8) noexcept(false);
 		OCTOON_EXPORT ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps = 8, bool centerAlign = false) noexcept(false);
 

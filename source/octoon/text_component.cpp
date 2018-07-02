@@ -1,4 +1,5 @@
 #include <octoon/text_component.h>
+#include <octoon/model/text_meshing.h>
 
 namespace octoon
 {
@@ -76,6 +77,8 @@ namespace octoon
 	void
 	TextComponent::onTextReplace(const std::string& mesh) noexcept
 	{
+		//mesh_ = model::makeMesh(model::makeTextContours(u16str_, { fontPath, fontsize }, 8), 0.0f);
+
 		if (this->getGameObject())
 			this->sendMessage("octoon::mesh::update", mesh);
 	}

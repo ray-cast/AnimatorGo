@@ -6,7 +6,7 @@ class PainterController : public octoon::GameComponent
 public:
 	PainterController()
 	{
-		contours_.push_back(std::make_unique<octoon::model::Contour>());
+		paths_.push_back(std::make_unique<octoon::model::Path>());
 	}
 
 	void onActivate() override
@@ -14,7 +14,7 @@ public:
 		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 
 		object_ = octoon::GameObject::create();
-		object_->addComponent<octoon::MeshFilterComponent>();
+		object_->addComponent<octoon::PathComponent>();
 		object_->addComponent<octoon::MeshRendererComponent>(std::make_shared<octoon::video::LineMaterial>(2.0f));
 	}
 
@@ -40,9 +40,9 @@ public:
 
 					auto camera = this->getComponent<octoon::CameraComponent>();
 
-					contours_[0]->addPoints(camera->screenToWorld(octoon::math::float3(x, y, -1)));
+					paths_[0]->addEdge(camera->screenToWorld(octoon::math::float3(x, y, -1)));
 
-					object_->getComponent<octoon::MeshFilterComponent>()->setMesh(octoon::model::makeMeshWireframe(contours_));
+					object_->getComponent<octoon::PathComponent>()->setPath(paths_);
 				}
 			}
 		}
@@ -54,7 +54,7 @@ public:
 	}
 
 private:
-	octoon::model::Contours contours_;
+	octoon::model::Paths paths_;
 	octoon::GameObjectPtr object_;
 };
 

@@ -204,9 +204,8 @@ namespace octoon
 	GamePrefabs::createText(const char* u8str, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
 		auto object = GameObject::create();
-		auto text = object->addComponent<TextComponent>(u8str);
+		object->addComponent<TextComponent>(u8str)->setTextMeshing(std::make_shared<TextMeshing>(fontPath, fontsize));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
-		text->setTextMeshing(std::make_shared<TextMeshing>(fontPath, fontsize));
 
 		return object;
 	}

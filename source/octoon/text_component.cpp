@@ -52,6 +52,32 @@ namespace octoon
 		return u8str_;
 	}
 
+	void
+	TextComponent::setTextMeshing(model::TextMeshingPtr&& meshing) noexcept
+	{
+		if (meshing_ != meshing)
+		{
+			meshing_ = std::make_shared<model::TextMeshing>("../../system/fonts/DroidSansFallback.ttf", 24);
+			this->uploadTextData();
+		}
+	}
+
+	void
+	TextComponent::setTextMeshing(const model::TextMeshingPtr& meshing) noexcept
+	{
+		if (meshing_ != meshing)
+		{
+			meshing_ = meshing;
+			this->uploadTextData();
+		}
+	}
+
+	const model::TextMeshingPtr&
+	TextComponent::getTextMeshing() const noexcept
+	{
+		return meshing_;
+	}
+
 	bool
 	TextComponent::isSharedText() const noexcept
 	{
@@ -61,7 +87,7 @@ namespace octoon
 	void
 	TextComponent::onActivate() except
 	{
-		this->addMessageListener("octoon::mesh::get", std::bind(&TextComponent::uploadTextData, this));
+		this->addMessageListener("octoon::mesh::get", std::bind(&TextComponent::onTextReplace, this));
 		this->uploadTextData();
 	}
 
@@ -136,9 +162,19 @@ namespace octoon
 			}
 		}
 
-		mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8), 0.0f));
+		if (is_ok)
+		{
+			if (meshing_)
+				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8), 0.0f));
+			else
+				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8), 0.0f));
+		}
+		else
+		{
+			mesh_ = nullptr;
+		}
 
-		this->onTextReplace(mesh_);
+		this->onTextReplace();
 	}
 
 	GameComponentPtr
@@ -147,14 +183,13 @@ namespace octoon
 		auto instance = std::make_shared<TextComponent>();
 		instance->setName(instance->getName());
 		instance->setText(u8str_);
-
 		return instance;
 	}
 
 	void
-	TextComponent::onTextReplace(const model::MeshPtr& mesh) noexcept
+	TextComponent::onTextReplace() noexcept
 	{
 		if (this->getGameObject())
-			this->sendMessage("octoon::mesh::update", mesh);
+			this->sendMessage("octoon::mesh::update", mesh_);
 	}
 }

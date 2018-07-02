@@ -19,6 +19,10 @@ namespace octoon
 		void setText(const std::string& u8str, bool sharedText = false) noexcept;
 		const std::string& getText() const noexcept;
 
+		void setTextMeshing(model::TextMeshingPtr&& meshing) noexcept;
+		void setTextMeshing(const model::TextMeshingPtr& meshing) noexcept;
+		const model::TextMeshingPtr& getTextMeshing() const noexcept;
+
 		bool isSharedText() const noexcept;
 
 		void uploadTextData() noexcept;
@@ -29,7 +33,7 @@ namespace octoon
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
-		virtual void onTextReplace(const model::MeshPtr& text) noexcept;
+		virtual void onTextReplace() noexcept;
 
 	private:
 		TextComponent(const TextComponent&) = delete;
@@ -37,8 +41,9 @@ namespace octoon
 
 	private:
 		bool isSharedText_;
-		model::MeshPtr mesh_;
 		std::string u8str_;
+		model::MeshPtr mesh_;
+		model::TextMeshingPtr meshing_;
 	};
 }
 

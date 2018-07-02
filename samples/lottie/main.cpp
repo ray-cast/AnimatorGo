@@ -179,15 +179,17 @@ int main(int argc, const char* argv[])
 
 	auto json = octoon::runtime::json::parse(std::ifstream("C:\\Users\\Administrator\\Desktop\\data.json"));
 
-	LottieApp app;
+	auto app = std::make_shared<LottieApp>();
 
-	if (app.prepareCanvas(json))
+	if (app->prepareCanvas(json))
 	{
-		app.prepareAssets(json);
-		app.prepareLayers(json);
+		app->prepareAssets(json);
+		app->prepareLayers(json);
 
 		::OctoonMainLoop();
 	}
+
+	app.reset();
 
 	::OctoonTerminate();
 	return 0;

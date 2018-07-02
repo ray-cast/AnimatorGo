@@ -139,7 +139,7 @@ int main(int argc, const char* argv[])
 		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0));
 		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, -205));
 
-		auto str = L"Octoon Stdudio";
+		auto str = L"Octoon Studio";
 		auto text = octoon::model::makeTextContours(str, { "../../system/fonts/DroidSansFallback.ttf", 24 });
 		auto aabb = octoon::model::aabb(text);
 
@@ -147,7 +147,7 @@ int main(int argc, const char* argv[])
 			*it -= aabb.center();
 
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::MeshFilterComponent>(octoon::model::makeMesh(text));
+		object->addComponent<octoon::TextComponent>("Octoon Studio")->setTextMeshing(std::make_shared<octoon::model::TextMeshing>("../../system/fonts/DroidSansFallback.ttf", (std::uint16_t)24));
 		object->addComponent<octoon::MeshRendererComponent>(material);
 		object->addComponent<octoon::GuizmoComponent>(camera);
 		object->addComponent<TextController>(material, str);

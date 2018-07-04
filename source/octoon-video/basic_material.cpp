@@ -94,10 +94,19 @@ namespace octoon
 			graphics::GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
 			descriptor_set_layout.setUniformComponents(program->getActiveParams());
 
+			graphics::GraphicsColorBlend blend;
+			blend.setBlendEnable(true);
+			blend.setBlendSrc(graphics::GraphicsBlendFactor::SrcAlpha);
+			blend.setBlendDest(graphics::GraphicsBlendFactor::OneMinusSrcAlpha);
+
+			std::vector<graphics::GraphicsColorBlend> blends;
+			blends.push_back(blend);
+
 			graphics::GraphicsStateDesc stateDesc;
 			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::TriangleList);
 			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
+			stateDesc.setColorBlends(blends);
 
 			graphics::GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));

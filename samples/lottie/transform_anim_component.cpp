@@ -251,9 +251,9 @@ TransformAnimComponent::onFrame() except
 			else
 			{
 				if (pos_.empty())
-					transform->setTranslate(octoon::math::rotate(quat, -anchor_.evaluate(step)));
+					transform->setTranslate(octoon::math::rotate(quat, -anchor_.evaluate(step)) * transform->getScale());
 				else
-					transform->setTranslateAccum(octoon::math::rotate(quat, -anchor_.evaluate(step)));
+					transform->setTranslateAccum(octoon::math::rotate(quat, -anchor_.evaluate(step)) * transform->getScale());
 			}
 		}
 

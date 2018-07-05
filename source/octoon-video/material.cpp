@@ -42,7 +42,7 @@ namespace octoon
 		}
 
 		graphics::GraphicsUniformSetPtr 
-		Material::getParameter(const std::string& name) const
+		Material::at(const std::string& name) const
 		{
 			auto begin = this->getDescriptorSet()->getUniformSets().begin();
 			auto end = this->getDescriptorSet()->getUniformSets().end();

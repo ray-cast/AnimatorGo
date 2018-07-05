@@ -243,7 +243,7 @@ TransformAnimComponent::onFrame() except
 			if (hasCamera)
 			{
 				auto target = anchor_.evaluate(step);
-				auto camera = pos_.evaluate(0.0f);
+				auto camera = transform->getTranslate();
 				auto angle = octoon::math::normalize(target - camera);
 
 				quat = octoon::math::cross(quat, octoon::math::Quaternion(octoon::math::float3(angle.y, angle.x, 0.0f)));

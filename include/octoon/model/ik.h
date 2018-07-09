@@ -6,8 +6,6 @@
 #include <octoon/math/vector3.h>
 #include <octoon/model/vertex_weight.h>
 
-#include <cstdint>
-
 namespace octoon
 {
 	namespace model

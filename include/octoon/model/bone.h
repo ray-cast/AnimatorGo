@@ -20,16 +20,16 @@ namespace octoon
 			void setPosition(const math::float3& position) noexcept;
 			void setRotation(const math::Quaternion& rotate) noexcept;
 			void setScaling(const math::float3& scale) noexcept;
-			void setLocalTransform(const math::Matrix4x4& transform) noexcept;
-			void setTransform(const math::Matrix4x4& transform) noexcept;
+			void setLocalTransform(const math::float4x4& transform) noexcept;
+			void setTransform(const math::float4x4& transform) noexcept;
 
 			const std::string& getName() const noexcept;
 			std::int16_t getParent() const noexcept;
 			const math::float3& getPosition() const noexcept;
 			const math::Quaternion& getRotation() const noexcept;
 			const math::float3& getScaling() const noexcept;
-			const math::Matrix4x4& getLocalTransform() const noexcept;
-			const math::Matrix4x4& getTransform() const noexcept;
+			const math::float4x4& getLocalTransform() const noexcept;
+			const math::float4x4& getTransform() const noexcept;
 
 		private:
 			std::string _name;

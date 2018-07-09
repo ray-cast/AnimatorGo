@@ -85,24 +85,24 @@ namespace octoon
 		}
 
 		void
-		Bone::setLocalTransform(const Matrix4x4& transform) noexcept
+		Bone::setLocalTransform(const float4x4& transform) noexcept
 		{
 			_localTransform = transform;
 		}
 
-		const Matrix4x4&
+		const float4x4&
 		Bone::getLocalTransform() const noexcept
 		{
 			return _localTransform;
 		}
 
 		void
-		Bone::setTransform(const Matrix4x4& transform) noexcept
+		Bone::setTransform(const float4x4& transform) noexcept
 		{
 			_transform = transform;
 		}
 
-		const Matrix4x4&
+		const float4x4&
 		Bone::getTransform() const noexcept
 		{
 			return _transform;

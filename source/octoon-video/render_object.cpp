@@ -124,7 +124,7 @@ namespace octoon
 		const math::float3&
 		RenderObject::getTranslate() const noexcept
 		{
-			return transform_.get_translate();
+			return transform_.getTranslate();
 		}
 
 		const math::float4x4&

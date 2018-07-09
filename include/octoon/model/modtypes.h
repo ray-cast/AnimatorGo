@@ -61,8 +61,20 @@ namespace octoon
 		class IKAttr;
 		class Rigidbody;
 		class Joint;
-		class VertexWeight;
 		class CombineMesh;
+
+		namespace detail
+		{
+			template<typename _Tx = std::uint16_t, typename _Ty = float>
+			class VertexWeight;
+
+			template<typename T>
+			class Interpolation;
+		}
+
+		// default
+		using VertexWeight = detail::VertexWeight<std::uint16_t, float>;
+		using Interpolation = detail::Interpolation<std::uint8_t>;
 
 		typedef std::shared_ptr<Animation> AnimationPtr;
 		typedef std::shared_ptr<Texture> TexturePtr;

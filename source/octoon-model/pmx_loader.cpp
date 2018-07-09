@@ -4,6 +4,7 @@
 #include <octoon/model/mesh.h>
 #include <octoon/model/property.h>
 #include <octoon/model/model.h>
+#include <octoon/model/ik.h>
 
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
@@ -590,10 +591,10 @@ namespace octoon
 						weight.weight2 = v.weight.weight2;
 						weight.weight3 = v.weight.weight3;
 						weight.weight4 = v.weight.weight4;
-						weight.bone1 = static_cast<uint8_t>(v.weight.bone1);
-						weight.bone2 = static_cast<uint8_t>(v.weight.bone2);
-						weight.bone3 = static_cast<uint8_t>(v.weight.bone3);
-						weight.bone4 = static_cast<uint8_t>(v.weight.bone4);
+						weight.bone1 = v.weight.bone1;
+						weight.bone2 = v.weight.bone2;
+						weight.bone3 = v.weight.bone3;
+						weight.bone4 = v.weight.bone4;
 
 						weights.push_back(weight);
 					}

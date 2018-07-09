@@ -215,7 +215,7 @@ namespace octoon
 					return *this;
 				}
 
-				const Vector3<T>& get_translate() const noexcept
+				const Vector3<T>& getTranslate() const noexcept
 				{
 					return *(Vector3<T>*)&d1;
 				}

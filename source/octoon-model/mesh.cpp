@@ -375,9 +375,6 @@ namespace octoon
 		{
 			this->clear();
 
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-
 			std::uint32_t gridX = widthSegments;
 			std::uint32_t gridY = heightSegments;
 

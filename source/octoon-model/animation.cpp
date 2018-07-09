@@ -1,5 +1,4 @@
 #include <octoon/model/animation.h>
-#include <octoon/math/mathutil.h>
 
 #include <map>
 
@@ -9,6 +8,12 @@ namespace octoon
 {
 	namespace model
 	{
+		struct MotionSegment
+		{
+			int m0;
+			int m1;
+		};
+
 		BoneAnimation::BoneAnimation() noexcept
 			: _bone(0)
 			, _frame(-1)
@@ -68,13 +73,13 @@ namespace octoon
 		}
 
 		void
-		BoneAnimation::setFrameNo(std::int32_t frame) noexcept
+		BoneAnimation::setFrameIndex(std::int32_t frame) noexcept
 		{
 			_frame = frame;
 		}
 
 		std::int32_t
-		BoneAnimation::getFrameNo() const noexcept
+		BoneAnimation::getFrameIndex() const noexcept
 		{
 			return _frame;
 		}
@@ -94,7 +99,7 @@ namespace octoon
 		Animation::Animation() noexcept
 			: _frame(0)
 			, _fps(30)
-			, _delta(0)
+			, _totalTime(0)
 		{
 		}
 
@@ -226,12 +231,12 @@ namespace octoon
 		void
 		Animation::updateFrame(float delta) noexcept
 		{
-			_delta += delta;
+			_totalTime += delta;
 
-			while (_delta > (1.0f / _fps))
+			while (_totalTime > (1.0f / _fps))
 			{
 				_frame++;
-				_delta -= 1.0f / _fps;
+				_totalTime -= 1.0f / _fps;
 			}
 		}
 
@@ -263,7 +268,7 @@ namespace octoon
 
 			for (std::size_t i = 0; i < numAnimation; i++)
 			{
-				numFrame = std::max((std::int32_t)numFrame, _boneAnimation[i].getFrameNo());
+				numFrame = std::max((std::int32_t)numFrame, _boneAnimation[i].getFrameIndex());
 			}
 
 			_bindAnimation.resize(bones.size());
@@ -369,7 +374,7 @@ namespace octoon
 			auto& effector = bones.at(ik.boneIndex);
 			auto& target = bones.at(ik.targetBoneIndex);
 
-			const float3& effectPos = effector.getTransform().get_translate();
+			const float3& effectPos = effector.getTransform().getTranslate();
 
 			for (std::uint32_t i = 0; i < ik.iterations; i++)
 			{
@@ -377,7 +382,7 @@ namespace octoon
 				{
 					auto& bone = bones[ik.child[j].boneIndex];
 
-					float3 targetPos = target.getTransform().get_translate();
+					float3 targetPos = target.getTransform().getTranslate();
 					if (math::distance(effectPos, targetPos) < EPSILON)
 						return;
 
@@ -412,7 +417,7 @@ namespace octoon
 					}
 
 					Quaternion qq = math::cross(bone.getRotation(), q0);
-					updateTransform(bone, bone.getLocalTransform().get_translate(), qq);
+					updateTransform(bone, bone.getLocalTransform().getTranslate(), qq);
 
 					this->updateBoneMatrix(target);
 				}
@@ -430,16 +435,15 @@ namespace octoon
 			bone.setLocalTransform(transform);
 		}
 
-		MotionSegment
-		Animation::findMotionSegment(int frame, const std::vector<std::size_t>& motions) noexcept
+		MotionSegment findMotionSegment(int frame, std::vector<BoneAnimation>& bones, const std::vector<std::size_t>& motions) noexcept
 		{
 			MotionSegment ms;
 			ms.m0 = 0;
 			ms.m1 = motions.size() - 1;
 
-			auto& anim1 = this->getBoneAnimation(motions[ms.m1]);
+			auto& anim1 = bones[motions[ms.m1]];
 
-			if (frame >= anim1.getFrameNo())
+			if (frame >= anim1.getFrameIndex())
 			{
 				ms.m0 = ms.m1;
 				ms.m1 = -1;
@@ -449,77 +453,29 @@ namespace octoon
 			for (;;)
 			{
 				int middle = (ms.m0 + ms.m1) / 2;
-				auto& anim2 = this->getBoneAnimation(motions[middle]);
+				auto& anim2 = bones[motions[middle]];
 
 				if (middle == ms.m0)
 					return ms;
 
-				if (anim2.getFrameNo() == frame)
+				if (anim2.getFrameIndex() == frame)
 				{
 					ms.m0 = middle;
 					ms.m1 = -1;
 					return ms;
 				}
 
-				if (anim2.getFrameNo() > frame)
+				if (anim2.getFrameIndex() > frame)
 					ms.m1 = middle;
 				else
 					ms.m0 = middle;
 			}
 		}
 
-		static float BezierEval(const std::uint8_t* ip, float t) noexcept
-		{
-			float xa = ip[0] / 256.0f;
-			float xb = ip[2] / 256.0f;
-			float ya = ip[1] / 256.0f;
-			float yb = ip[3] / 256.0f;
-
-			float min = 0.0f;
-			float max = 1.0f;
-
-			float ct = t;
-			for (;;)
-			{
-				float x11 = xa * ct;
-				float x12 = xa + (xb - xa) * ct;
-				float x13 = xb + (1.0f - xb) * ct;
-
-				float x21 = x11 + (x12 - x11) * ct;
-				float x22 = x12 + (x13 - x12) * ct;
-
-				float x3 = x21 + (x22 - x21) * ct;
-
-				if (std::fabs(x3 - t) < 0.0001f)
-				{
-					float y11 = ya * ct;
-					float y12 = ya + (yb - ya) * ct;
-					float y13 = yb + (1.0f - yb) * ct;
-
-					float y21 = y11 + (y12 - y11) * ct;
-					float y22 = y12 + (y13 - y12) * ct;
-
-					float y3 = y21 + (y22 - y21) * ct;
-
-					return y3;
-				}
-				else if (x3 < t)
-				{
-					min = ct;
-				}
-				else
-				{
-					max = ct;
-				}
-
-				ct = min * 0.5f + max * 0.5f;
-			}
-		}
-
 		void
 		Animation::interpolateMotion(Quaternion& rotation, float3& position, const std::vector<std::size_t>& motions, std::size_t frame) noexcept
 		{
-			auto ms = findMotionSegment(frame, motions);
+			auto ms = findMotionSegment(frame, _boneAnimation, motions);
 
 			if (ms.m1 == -1)
 			{
@@ -531,22 +487,17 @@ namespace octoon
 				auto& anim0 = this->getBoneAnimation(motions[ms.m0]);
 				auto& anim1 = this->getBoneAnimation(motions[ms.m1]);
 
-				int diff = anim1.getFrameNo() - anim0.getFrameNo();
-				float a0 = static_cast<float>(frame - anim0.getFrameNo());
+				int diff = anim1.getFrameIndex() - anim0.getFrameIndex();
+				float a0 = static_cast<float>(frame - anim0.getFrameIndex());
 				float ratio = a0 / diff;
 
-				float tx = BezierEval(anim0.getInterpolation().interpX, ratio);
-				float ty = BezierEval(anim0.getInterpolation().interpY, ratio);
-				float tz = BezierEval(anim0.getInterpolation().interpZ, ratio);
-				float tr = BezierEval(anim0.getInterpolation().interpW, ratio);
+				float tx = bezierEval(anim0.getInterpolation().interpX, ratio);
+				float ty = bezierEval(anim0.getInterpolation().interpY, ratio);
+				float tz = bezierEval(anim0.getInterpolation().interpZ, ratio);
+				float tr = bezierEval(anim0.getInterpolation().interpRotation, ratio);
 
-				position = float3(1 - tx, 1 - ty, 1 - tz) * anim0.getPosition();
-				position += float3(tx, ty, tz) * anim1.getPosition();
-
-				Quaternion r0 = anim0.getRotation();
-				Quaternion r1 = anim1.getRotation();
-
-				rotation = math::slerp(r0, r1, tr);
+				position = math::lerp(anim0.getPosition(), anim1.getPosition(), float3(tx, ty, tz));
+				rotation = math::slerp(anim0.getRotation(), anim1.getRotation(), tr);
 			}
 		}
 	}

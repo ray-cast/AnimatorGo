@@ -61,6 +61,9 @@ SET(ANIM_LIST
 	${SOURCE_PATH}/animation.cpp
 	${HEADER_PATH}/bone.h
 	${SOURCE_PATH}/bone.cpp
+	${HEADER_PATH}/ik.h
+	${HEADER_PATH}/interpolation.h
+	${HEADER_PATH}/vertex_weight.h
 )
 SOURCE_GROUP(${LIB_NAME}\\animation  FILES ${ANIM_LIST})
 

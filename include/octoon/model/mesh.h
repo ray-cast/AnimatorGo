@@ -1,9 +1,9 @@
 #ifndef OCTOON_MODEL_MESH_H_
 #define OCTOON_MODEL_MESH_H_
 
-#include <octoon/model/modtypes.h>
 #include <octoon/model/bone.h>
 #include <octoon/model/combine_mesh.h>
+#include <octoon/model/vertex_weight.h>
 #include <octoon/math/math.h>
 
 #include <string>

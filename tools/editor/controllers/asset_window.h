@@ -2,7 +2,6 @@
 #define OCTOON_UI_ASSET_WINDOW_H_
 
 #include <octoon/game_component.h>
-#include <octoon/ui/imgui.h>
 
 namespace octoon
 {

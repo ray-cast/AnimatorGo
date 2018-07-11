@@ -1,8 +1,7 @@
-#ifndef OCTOON_UI_VIEW_COMPONENT_H_
-#define OCTOON_UI_VIEW_COMPONENT_H_
+#ifndef OCTOON_UI_MESSAGE_WINDOW_H_
+#define OCTOON_UI_MESSAGE_WINDOW_H_
 
 #include <octoon/game_component.h>
-#include <octoon/ui/imgui.h>
 
 namespace octoon
 {

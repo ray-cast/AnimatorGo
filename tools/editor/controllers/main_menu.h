@@ -2,7 +2,6 @@
 #define OCTOON_UI_MAIN_MENU_H_
 
 #include <octoon/game_component.h>
-#include <octoon/ui/imgui.h>
 
 namespace octoon
 {

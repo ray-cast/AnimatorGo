@@ -98,7 +98,7 @@ namespace octoon
 
 				if (imgui::begin_menu("Help"))
 				{
-					imgui::menu_item("About", this->sendMessage("editor:menu:help:about"););
+					if (imgui::menu_item("About")) { this->sendMessage("editor:menu:help:about"); }
 					imgui::end_menu();
 				}
 

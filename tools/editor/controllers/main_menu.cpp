@@ -49,18 +49,18 @@ namespace octoon
 
 				if (imgui::begin_menu("File"))
 				{
-					if (imgui::menu_item("Open", "CTRL+O", false, false)) { /*on click */ }
-					if (imgui::menu_item("Save", "CTRL+S", false, false)) { /*on click */ }
-					if (imgui::menu_item("Save As...", "CTRL+SHIFT+S", false, false)) { /*on click */ }
+					if (imgui::menu_item("Open", "CTRL+O", false, false)) { this->sendMessage("editor:menu:file:open"); }
+					if (imgui::menu_item("Save", "CTRL+S", false, false)) { this->sendMessage("editor:menu:file:save"); }
+					if (imgui::menu_item("Save As...", "CTRL+SHIFT+S", false, false)) { this->sendMessage("editor:menu:file:saveAs"); }
 
 					imgui::separator();
 
-					if (imgui::menu_item("Import Model")) { /*on click */ }
-					if (imgui::menu_item("Export Model")) { /*on click */ }
+					if (imgui::menu_item("Import Model")) { this->sendMessage("editor:menu:file:import"); }
+					if (imgui::menu_item("Export Model")) { this->sendMessage("editor:menu:file:export"); }
 
 					imgui::separator();
 
-					if (imgui::menu_item("Exit")) { std::exit(0); }
+					if (imgui::menu_item("Exit")) { this->sendMessage("editor:menu:file:exit"); std::exit(0); }
 
 					imgui::end_menu();
 				}
@@ -98,7 +98,7 @@ namespace octoon
 
 				if (imgui::begin_menu("Help"))
 				{
-					imgui::menu_item("About", 0);
+					imgui::menu_item("About", this->sendMessage("editor:menu:help:about"););
 					imgui::end_menu();
 				}
 

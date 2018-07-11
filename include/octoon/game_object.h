@@ -83,9 +83,9 @@ namespace octoon
 
 		void destroy() noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data) noexcept;
-		void sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept;
-		void sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept;
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
 		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 

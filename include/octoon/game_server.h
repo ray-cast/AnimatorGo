@@ -2,7 +2,6 @@
 #define OCTOON_GAME_SERVER_H_
 
 #include <octoon/game_types.h>
-#include <octoon/runtime/singleton.h>
 #include <octoon/runtime/any.h>
 #include <octoon/runtime/sigslot.h>
 #include <map>

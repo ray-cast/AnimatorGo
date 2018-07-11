@@ -20,6 +20,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/inspector_window.cpp
 	${SOURCE_PATH}/controllers/hierarchy_window.h
 	${SOURCE_PATH}/controllers/hierarchy_window.cpp
+	${SOURCE_PATH}/controllers/message_window.h
+	${SOURCE_PATH}/controllers/message_window.cpp
 	${SOURCE_PATH}/controllers/main_menu.h
 	${SOURCE_PATH}/controllers/main_menu.cpp
 	${SOURCE_PATH}/controllers/theme_manager.h

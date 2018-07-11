@@ -83,7 +83,7 @@ namespace octoon
 
 				if (imgui::begin_menu("GameObject"))
 				{
-					if (imgui::menu_item("Create Game Object")) { /*on click */ }
+					if (imgui::menu_item("Create Game Object")) { this->sendMessage("editor:menu:help:about"); }
 					imgui::end_menu();
 				}
 
@@ -98,7 +98,8 @@ namespace octoon
 
 				if (imgui::begin_menu("Help"))
 				{
-					if (imgui::menu_item("About")) { this->sendMessage("editor:menu:help:about"); }
+					auto str = "Octoon Studio Ver.0.1 beta\n\n Licensed under the MIT.\n\n Copyright (c) 2018-2019. All rights reserved.";
+					if (imgui::menu_item("About")) { this->sendMessage("editor:message", std::make_pair("About", str)); }
 					imgui::end_menu();
 				}
 

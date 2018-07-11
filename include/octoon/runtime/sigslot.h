@@ -284,7 +284,8 @@ namespace octoon
 				for (std::list<SlotType>::iterator it = slots.begin();
 					it != slots.end(); ++it)
 				{
-					if (f.target_type() == it->target_type())
+					if (f.target_type() == it->target_type() && 
+						f.target<T>() == it->target<T>())
 						return;
 				}
 				slots.push_back(f);

@@ -3,6 +3,9 @@
 
 #include <octoon/game_types.h>
 #include <octoon/runtime/singleton.h>
+#include <octoon/runtime/any.h>
+#include <octoon/runtime/sigslot.h>
+#include <map>
 
 namespace octoon
 {
@@ -52,7 +55,9 @@ namespace octoon
 		void cleanupScenes() noexcept;
 		void cleanupFeatures() noexcept;
 
-		void sendInputEvent(const input::InputEvent& event) noexcept;
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
 		GameApp* getGameApp() noexcept;
 
@@ -79,6 +84,7 @@ namespace octoon
 
 		GameApp* gameApp_;
 		GameListenerPtr listener_;
+		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
 	};
 }
 

@@ -1,7 +1,7 @@
 #if defined(OCTOON_FEATURE_GRAPHICS_ENABLE)
 #include <octoon/graphics_feature.h>
 #include <octoon/graphics/graphics.h>
-
+#include <octoon/input/input.h>
 #include <octoon/runtime/except.h>
 
 namespace octoon
@@ -67,6 +67,8 @@ namespace octoon
 	void
 	GraphicsFeature::onActivate() except
 	{
+		this->addMessageListener("input:event", std::bind(&GraphicsFeature::onInputEvent, this, std::placeholders::_1));
+
 		graphics::GraphicsDeviceDesc deviceDesc;
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 		deviceDesc.setDeviceType(graphics::GraphicsDeviceType::OpenGL20);
@@ -108,8 +110,9 @@ namespace octoon
 	}
 
 	void
-	GraphicsFeature::onInputEvent(const input::InputEvent& event) noexcept
+	GraphicsFeature::onInputEvent(const runtime::any& data) noexcept
 	{
+		auto event = runtime::any_cast<input::InputEvent>(data);
 		switch (event.event)
 		{
 		case input::InputEvent::SizeChangeDPI:

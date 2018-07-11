@@ -281,12 +281,12 @@ namespace octoon
 			{
 				std::lock_guard<std::mutex> guard_slots(slots_mutex);
 				if (!f)return;
-				for (std::list<SlotType>::iterator it = slots.begin();
+				/*for (std::list<SlotType>::iterator it = slots.begin();
 					it != slots.end(); ++it)
 				{
 					if (f.target<T>() == it->target<T>())
 						return;
-				}
+				}*/
 				slots.push_back(f);
 			}
 

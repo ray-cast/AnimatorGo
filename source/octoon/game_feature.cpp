@@ -67,6 +67,27 @@ namespace octoon
 	}
 
 	void
+	GameFeature::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(server_);
+		server_->sendMessage(event, data);
+	}
+
+	void
+	GameFeature::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(server_);
+		server_->addMessageListener(event, listener);
+	}
+
+	void
+	GameFeature::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(server_);
+		server_->removeMessageListener(event, listener);
+	}
+
+	void
 	GameFeature::_setGameServer(GameServer* server) noexcept
 	{
 		assert(!server_);
@@ -96,11 +117,6 @@ namespace octoon
 
 	void
 	GameFeature::onCloseScene(const GameScenePtr& scene) noexcept
-	{
-	}
-
-	void
-	GameFeature::onInputEvent(const input::InputEvent& event) noexcept
 	{
 	}
 

@@ -1,6 +1,7 @@
 #include <octoon/guizmo_component.h>
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/input/input.h>
 
 namespace octoon
 {

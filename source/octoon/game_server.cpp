@@ -352,16 +352,25 @@ namespace octoon
 		}
 
 		features_.clear();
+		dispatchEvents_.clear();
 	}
 
 	void
-	GameServer::sendInputEvent(const input::InputEvent& event) noexcept
+	GameServer::sendMessage(const std::string& event, const runtime::any& data) noexcept
 	{
-		if (this->getActive())
-		{
-			for (auto& feature : features_)
-				feature->onInputEvent(event);
-		}
+		dispatchEvents_[event].call_all_slots(data);
+	}
+
+	void 
+	GameServer::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].connect(listener);
+	}
+
+	void 
+	GameServer::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].disconnect(listener);
 	}
 
 	void

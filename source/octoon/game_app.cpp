@@ -283,9 +283,36 @@ namespace octoon
 	GameApp::sendInputEvent(const input::InputEvent& event) except
 	{
 		if (server_)
-			server_->sendInputEvent(event);
+			server_->sendMessage("input:event", event);
 		else
 			throw runtime::runtime_error::create("please call open() before sendInputEvent()");
+	}
+
+	void
+	GameApp::sendMessage(const std::string& event, const runtime::any& data) except
+	{
+		if (server_)
+			server_->sendMessage(event, data);
+		else
+			throw runtime::runtime_error::create("please call open() before sendMessage()");
+	}
+
+	void
+	GameApp::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except
+	{
+		if (server_)
+			server_->addMessageListener(event, listener);
+		else
+			throw runtime::runtime_error::create("please call open() before addMessageListener()");
+	}
+
+	void
+	GameApp::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except
+	{
+		if (server_)
+			server_->removeMessageListener(event, listener);
+		else
+			throw runtime::runtime_error::create("please call open() before removeMessageListener()");
 	}
 
 	void

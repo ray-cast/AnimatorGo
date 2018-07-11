@@ -20,7 +20,7 @@ namespace octoon
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
-		virtual void onInputEvent(const input::InputEvent& event) noexcept override;
+		virtual void onInputEvent(const runtime::any& data) noexcept;
 
 		virtual void onReset() noexcept override;
 

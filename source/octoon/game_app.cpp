@@ -283,7 +283,7 @@ namespace octoon
 	GameApp::sendInputEvent(const input::InputEvent& event) except
 	{
 		if (server_)
-			server_->sendMessage("input:event", event);
+			server_->sendMessage("feature:input:event", event);
 		else
 			throw runtime::runtime_error::create("please call open() before sendInputEvent()");
 	}

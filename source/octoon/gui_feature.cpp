@@ -82,7 +82,7 @@ namespace octoon
 	void
 	GuiFeature::onActivate() except
 	{
-		this->addMessageListener("input:event", std::bind(&GuiFeature::onInputEvent, this, std::placeholders::_1));
+		this->addMessageListener("feature:input:event", std::bind(&GuiFeature::onInputEvent, this, std::placeholders::_1));
 
 		system_ = std::make_unique<imgui::System>();
 
@@ -107,7 +107,7 @@ namespace octoon
 	void
 	GuiFeature::onDeactivate() noexcept
 	{
-		this->removeMessageListener("input:event", std::bind(&GuiFeature::onInputEvent, this, std::placeholders::_1));
+		this->removeMessageListener("feature:input:event", std::bind(&GuiFeature::onInputEvent, this, std::placeholders::_1));
 		system_->getViewport(width_, height_);
 		system_->setFramebufferScale(framebuffer_w_, framebuffer_h_);
 		system_.reset();

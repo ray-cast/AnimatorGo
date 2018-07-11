@@ -67,7 +67,7 @@ namespace octoon
 	void
 	GraphicsFeature::onActivate() except
 	{
-		this->addMessageListener("input:event", std::bind(&GraphicsFeature::onInputEvent, this, std::placeholders::_1));
+		this->addMessageListener("feature:input:event", std::bind(&GraphicsFeature::onInputEvent, this, std::placeholders::_1));
 
 		graphics::GraphicsDeviceDesc deviceDesc;
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)

@@ -50,7 +50,7 @@ namespace octoon
 	void
 	InputFeature::onActivate() except
 	{
-		this->addMessageListener("input:event", std::bind(&InputFeature::onInputEvent, this, std::placeholders::_1));
+		this->addMessageListener("feature:input:event", std::bind(&InputFeature::onInputEvent, this, std::placeholders::_1));
 
 		input_ = std::make_shared<input::DefaultInput>();
 		if (!input_->open())
@@ -65,7 +65,7 @@ namespace octoon
 	InputFeature::onDeactivate() noexcept
 	{
 		assert(input_);
-		this->removeMessageListener("input:event", std::bind(&InputFeature::onInputEvent, this, std::placeholders::_1));
+		this->removeMessageListener("feature:input:event", std::bind(&InputFeature::onInputEvent, this, std::placeholders::_1));
 		input_.reset();
 	}
 

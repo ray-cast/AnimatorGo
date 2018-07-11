@@ -52,7 +52,7 @@ namespace octoon
 	void
 	VideoFeature::onActivate() except
 	{
-		this->addMessageListener("input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
+		this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 
 		auto graphics = this->getFeature<GraphicsFeature>();
 		if (graphics)
@@ -62,7 +62,7 @@ namespace octoon
 	void
 	VideoFeature::onDeactivate() noexcept
 	{
-		this->removeMessageListener("input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
+		this->removeMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		video::RenderSystem::instance()->close();
 	}
 

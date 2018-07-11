@@ -33,6 +33,7 @@ namespace octoon
 			main_->addComponent<HierarchyWindow>();
 			main_->addComponent<InspectorWindow>();
 			main_->addComponent<ThemeManager>();
+			main_->addMessageListener("editor:menu:file:exit", [](const runtime::any&) { std::exit(0); });
 
 			auto text = model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
 			auto aabb = model::aabb(text);

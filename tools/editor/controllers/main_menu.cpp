@@ -60,7 +60,7 @@ namespace octoon
 
 					imgui::separator();
 
-					if (imgui::menu_item("Exit")) { this->sendMessage("editor:menu:file:exit"); std::exit(0); }
+					if (imgui::menu_item("Exit")) { this->sendMessage("editor:menu:file:exit"); }
 
 					imgui::end_menu();
 				}

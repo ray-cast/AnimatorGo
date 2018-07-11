@@ -38,37 +38,15 @@ namespace octoon
 			if (imgui::begin_dock("Hierarchy", &isShowedHierarchyWindow_))
 			{
 				auto& actors = GameObjectManager::instance()->getInstanceList();
-
-				if (imgui::tree_node_ex("Camera", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
-				{
-					for (auto& it : actors)
-					{
-						auto camera = it->getComponent<CameraComponent>();
-						if (!camera)
-							continue;
-
-						if (imgui::selectable(it->getName().c_str(), _selectedObject == it ? true : false))
-						{
-							_selectedObject = it;
-							this->sendMessage("editor:object:selected", it);
-						}
-					}
-
-					imgui::tree_pop();
-				}
 				
 				if (imgui::tree_node_ex("Object", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 				{
 					for (auto& it : actors)
 					{
-						auto meshRender = it->getComponent<MeshRendererComponent>();
-						if (!meshRender)
-							continue;
-
 						auto& name = it->getName();
 						char objectName[MAX_PATH];
 						if (name.empty())
-							std::sprintf(objectName, "|-mesh");
+							std::sprintf(objectName, "|-null");
 						else
 							std::sprintf(objectName, "|-%s", name.c_str());
 

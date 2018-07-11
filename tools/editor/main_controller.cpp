@@ -27,7 +27,7 @@ namespace octoon
 		void
 		MainController::onActivate() noexcept
 		{
-			main_ = GameObject::create("mainView");
+			main_ = GameObject::create("MainView");
 			main_->addComponent<MainMenu>();
 			main_->addComponent<CameraWindow>();
 			main_->addComponent<AssetWindow>();
@@ -48,7 +48,7 @@ namespace octoon
 			material->setTextColor(video::TextColor::FrontColor, math::float3(31.0, 179.0, 249.0) / 255.0f);
 			material->setTextColor(video::TextColor::SideColor, math::float3(0.0, 1.0, 0.0));
 
-			object_ = GameObject::create();
+			object_ = GameObject::create("Text");
 			object_->addComponent<MeshFilterComponent>(model::makeMesh(text));
 			object_->addComponent<MeshRendererComponent>(material);
 		}

@@ -85,7 +85,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCircle(float radius, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCircle(radius, segments, thetaStart, thetaLength));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -94,7 +94,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createPlane(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(width, height, widthSegments, heightSegments));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -103,7 +103,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createPlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(width, height, depth, widthSegments, heightSegments, depthSegments, u, v, udir, vdir));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -112,7 +112,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createPlaneWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlaneWireframe(width, height, depth, widthSegments, heightSegments, depthSegments, u, v, udir, vdir, clear));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -121,7 +121,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeFloor(width, height, widthSegments, heightSegments));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -130,7 +130,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createNoise(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeNoise(width, height, widthSegments, heightSegments));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -139,7 +139,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCube(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCube(width, height, depth, widthSegments, heightSegments, depthSegments));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -148,7 +148,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCubeWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCubeWireframe(width, height, depth, widthSegments, heightSegments, depthSegments));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -157,7 +157,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createRing(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart, float thetaLength) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeRing(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -166,7 +166,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createSphere(float radius, std::uint32_t widthSegments, std::uint32_t heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeSphere(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -175,7 +175,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createVolumes(float fovy, float znear, float zfar) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeVolumes(fovy, znear, zfar));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -184,7 +184,7 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createCone(float radius, float height, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCone(radius, height, segments, thetaStart, thetaLength));
 		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
 		return object;
@@ -193,7 +193,7 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createText(const wchar_t* text, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, fontsize })));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
 
@@ -203,7 +203,7 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createText(const char* u8str, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<TextComponent>(u8str)->setTextMeshing(std::make_shared<TextMeshing>(fontPath, fontsize));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
 
@@ -258,7 +258,7 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createSprite(const std::string& image, float w, float h) except
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(this->createTexture(image)));
 
@@ -268,7 +268,7 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture) except
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight()));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
 
@@ -278,7 +278,7 @@ namespace octoon
 	GameObjectPtr 
 	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture, float w, float h) except
 	{
-		auto object = GameObject::create();
+		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
 

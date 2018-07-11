@@ -48,7 +48,10 @@ namespace octoon
 							continue;
 
 						if (imgui::selectable(it->getName().c_str(), _selectedObject == it ? true : false))
+						{
 							_selectedObject = it;
+							this->sendMessage("editor:object:selected", it);
+						}
 					}
 
 					imgui::tree_pop();
@@ -70,7 +73,10 @@ namespace octoon
 							std::sprintf(objectName, "|-%s", name.c_str());
 
 						if (imgui::selectable(objectName, _selectedObject == it ? true : false))
+						{
 							_selectedObject = it;
+							this->sendMessage("editor:object:selected", it);
+						}
 					}
 
 					imgui::tree_pop();

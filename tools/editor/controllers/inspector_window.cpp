@@ -22,6 +22,7 @@ namespace octoon
 		InspectorWindow::onActivate() noexcept
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
+			this->addMessageListener("editor:object:selected", std::bind(&InspectorWindow::onObjectSelected, this, std::placeholders::_1));
 		}
 
 		void
@@ -46,6 +47,11 @@ namespace octoon
 		InspectorWindow::clone() const noexcept
 		{
 			return std::make_shared<InspectorWindow>();
+		}
+
+		void
+		InspectorWindow::onObjectSelected(const runtime::any& data) noexcept
+		{
 		}
 	}
 }

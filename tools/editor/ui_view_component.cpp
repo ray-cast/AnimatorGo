@@ -48,11 +48,9 @@ namespace octoon
 			camera_ = GameObject::create("MainCamera");
 			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, 205));
 
-			auto camera = camera_->addComponent<CameraComponent>();
-			camera->setCameraOrder(video::CameraOrder::Custom);
+			auto camera = camera_->addComponent<PerspectiveCameraComponent>();
+			camera->setCameraType(video::CameraType::Custom);
 			camera->setClearColor(math::float4(0.1f, 0.2f, 0.3f, 1.0));
-			camera->setCameraType(video::CameraType::Perspective);
-			camera->setOrtho(math::float4(0.0, 1.0, 0.0, 1.0));
 
 			auto text = model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
 			auto aabb = model::aabb(text);

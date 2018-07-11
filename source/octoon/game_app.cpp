@@ -110,7 +110,7 @@ namespace octoon
 		this->addFeature(std::make_unique<GameBaseFeatures>());
 #endif
 
-#if OCTOON_FEATURE_VIDEO_ENABLE
+#if OCTOON_FEATURE_GRAPHICS_ENABLE
 		this->addFeature(std::make_unique<GraphicsFeature>(hwnd, w, h));
 #endif
 

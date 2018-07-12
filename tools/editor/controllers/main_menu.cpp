@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace editor
 	{
-		OctoonImplementSubClass(MainMenu, GameComponent, "UIViewComponent")
+		OctoonImplementSubClass(MainMenu, GameComponent, "MainMenu")
 
 		MainMenu::MainMenu() noexcept
 			: isShowedMainMenu_(true)
@@ -30,7 +30,7 @@ namespace octoon
 			this->removeComponentDispatchs();
 		}
 
-		void 
+		void
 		MainMenu::onGui() noexcept
 		{
 			if (!isShowedMainMenu_)
@@ -111,7 +111,7 @@ namespace octoon
 			imgui::pop_style_var();
 		}
 
-		GameComponentPtr 
+		GameComponentPtr
 		MainMenu::clone() const noexcept
 		{
 			return std::make_shared<MainMenu>();

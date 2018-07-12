@@ -2,6 +2,7 @@
 // Author: PENGUINLIONG
 #ifndef OCTOON_IO_STREAM_H_
 #define OCTOON_IO_STREAM_H_
+
 #include <cstdint>
 #include <vector>
 #include <iostream>

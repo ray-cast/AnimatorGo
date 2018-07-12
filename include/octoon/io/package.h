@@ -16,11 +16,11 @@ namespace octoon
 		* A virtual directory in `IoServer`. Different variants of virtual
 		* directories are distinguished by URI scheme.
 		*/
-		class OCTOON_EXPORT archive
+		class OCTOON_EXPORT package
 		{
 		public:
-			archive() noexcept = default;
-			virtual ~archive() = default;
+			package() noexcept = default;
+			virtual ~package() = default;
 
 			/*
 			* Open a file in current virtual directory. For writing, all hierarchy of
@@ -51,7 +51,7 @@ namespace octoon
 			virtual ios_base::file_type exists(const Orl& orl) = 0;
 		};
 
-		using archive_pointer = std::shared_ptr<archive>;
+		using package_pointer = std::shared_ptr<package>;
 	}
 }
 

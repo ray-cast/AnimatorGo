@@ -30,6 +30,7 @@ SET(CORE_LIST
 	${SOURCE_PATH}/uuid.cpp
 	${HEADER_PATH}/sigslot.h
 	${HEADER_PATH}/any.h
+	${HEADER_PATH}/variant.h
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${CORE_LIST})
 

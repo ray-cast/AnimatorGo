@@ -3,14 +3,14 @@
 #include <cassert>
 #include <zipper/unzipper.h>
 
-#include <octoon/io/zarchive.h>
+#include <octoon/io/zpackage.h>
 #include <octoon/io/membuf.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		zarchive::zarchive(const char* zip_file) except
+		zpackage::zpackage(const char* zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -18,7 +18,7 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::zarchive(std::string&& zip_file) except
+		zpackage::zpackage(std::string&& zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -26,7 +26,7 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::zarchive(const std::string& zip_file) except
+		zpackage::zpackage(const std::string& zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -34,14 +34,14 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::~zarchive()
+		zpackage::~zpackage()
 		{
 			delete ((zipper::Unzipper*)unzipper_);
 			delete ((std::vector<zipper::ZipEntry>*)entries_);
 		}
 
 		std::unique_ptr<stream_buf>
-		zarchive::open(const Orl& orl, const ios_base::open_mode opts)
+		zpackage::open(const Orl& orl, const ios_base::open_mode opts)
 		{
 			std::vector<uint8_t> buf;
 
@@ -59,13 +59,13 @@ namespace octoon
 		}
 
 		bool
-		zarchive::remove(const Orl& orl, ios_base::file_type type)
+		zpackage::remove(const Orl& orl, ios_base::file_type type)
 		{
 			return false;
 		}
 
 		ios_base::file_type
-		zarchive::exists(const Orl& orl)
+		zpackage::exists(const Orl& orl)
 		{
 			if (entries_ == nullptr)
 				return ios_base::none;

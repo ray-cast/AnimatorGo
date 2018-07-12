@@ -29,6 +29,19 @@ namespace octoon
             void write(std::uint64_t v) except;
 
             ostream& baseStream() noexcept { return base_stream; }
+
+			BinaryWriter & operator <<(bool v) except;
+			BinaryWriter & operator <<(char v) except;
+			BinaryWriter & operator <<(float v) except;
+			BinaryWriter & operator <<(double v) except;
+
+			BinaryWriter & operator <<(std::int16_t v) except;
+			BinaryWriter & operator <<(std::int32_t v) except;
+			BinaryWriter & operator <<(std::int64_t v) except;
+
+			BinaryWriter & operator <<(std::uint16_t v) except;
+			BinaryWriter & operator <<(std::uint32_t v) except;
+			BinaryWriter & operator <<(std::uint64_t v) except;
         private:
 			BinaryWriter & operator=(const BinaryWriter&) = delete;
 			BinaryWriter(const BinaryWriter&) = delete;

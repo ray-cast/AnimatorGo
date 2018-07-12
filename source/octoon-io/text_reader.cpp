@@ -8,9 +8,23 @@ namespace octoon
             :new_line("\n")
         {
         }
-        
+
         TextReader::~TextReader() noexcept
         {
+        }
+
+        TextReader&
+        TextReader::operator>>(std::string& v)
+        {
+            v = readLine();
+            return *this;
+        }
+
+        TextReader&
+        TextReader::operator>>(int& v)
+        {
+            v = read();
+            return *this;
         }
     }
 }

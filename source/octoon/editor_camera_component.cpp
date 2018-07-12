@@ -122,22 +122,19 @@ namespace octoon
 	void
 	EditorCameraComponent::upCamera(float speed) noexcept
 	{
-		const math::float3& up = this->getGameObject()->getComponent<TransformComponent>()->getLocalUp();
-		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(up * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->up(speed);
 	}
 
 	void
 	EditorCameraComponent::yawCamera(float speed) noexcept
 	{
-		const math::float3& right = this->getGameObject()->getComponent<TransformComponent>()->getLocalRight();
-		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(right * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->yaw(speed);
 	}
 
 	void
 	EditorCameraComponent::moveCamera(float speed) noexcept
 	{
-		const math::float3& forward = this->getGameObject()->getComponent<TransformComponent>()->getLocalForward();
-		this->getGameObject()->getComponent<TransformComponent>()->setLocalTranslateAccum(forward * speed);
+		this->getGameObject()->getComponent<TransformComponent>()->move(speed);
 	}
 
 	void

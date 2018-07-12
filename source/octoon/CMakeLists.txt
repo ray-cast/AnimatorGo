@@ -65,6 +65,8 @@ ENDIF()
 SET(INPUT_FEATURES_LIST
 	${HEADER_PATH}/input_feature.h
 	${SOURCE_PATH}/input_feature.cpp
+	${HEADER_PATH}/editor_camera_component.h
+	${SOURCE_PATH}/editor_camera_component.cpp
 	${HEADER_PATH}/first_person_camera_component.h
 	${SOURCE_PATH}/first_person_camera_component.cpp
 )

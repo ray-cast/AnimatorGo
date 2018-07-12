@@ -2,6 +2,7 @@
 
 #include <octoon/octoon.h>
 #include <octoon/ui/imgui.h>
+#include <octoon/editor_camera_component.h>
 
 namespace octoon
 {
@@ -27,11 +28,11 @@ namespace octoon
 
 			camera_ = GameObject::create("MainCamera");
 			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -200));
-			camera_->addComponent<FirstPersonCameraComponent>();
+			camera_->addComponent<EditorCameraComponent>();
 
 			auto camera = camera_->addComponent<PerspectiveCameraComponent>(45.0f);
 			camera->setCameraType(video::CameraType::Custom);
-			camera->setClearColor(octoon::math::float4(0.1f, 0.2f, 0.3f, 1.0f));
+			camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 		}
 
 		void

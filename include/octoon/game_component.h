@@ -49,6 +49,9 @@ namespace octoon
 		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
+		virtual void load(io::iarchive& reader) except;
+		virtual void save(io::oarchive& write) except;
+
 		static GameComponentPtr instantiate(const GameComponent* component) except;
 		static GameComponentPtr instantiate(const GameComponent& component) except;
 

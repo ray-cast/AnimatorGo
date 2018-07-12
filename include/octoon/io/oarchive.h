@@ -64,7 +64,7 @@ namespace octoon
 				return *this;
 			}
 
-			template<typename T, std::enable_if_t<std::is_integral<T>::value || std::is_same<T, number_float_t>::value, int> = 0>
+			template<typename T, std::enable_if_t<std::is_integral<T>::value || std::is_unsigned<T>::value || std::is_floating_point<T>::value, int> = 0>
 			oarchive& operator << (T argv)
 			{
 				this->operator=(argv);

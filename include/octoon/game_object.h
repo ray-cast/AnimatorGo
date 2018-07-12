@@ -4,6 +4,7 @@
 #include <octoon/game_types.h>
 #include <octoon/runtime/any.h>
 #include <octoon/runtime/sigslot.h>
+#include <octoon/io/iarchive.h>
 #include <map>
 #include <functional>
 
@@ -16,6 +17,7 @@ namespace octoon
 		GameObject() noexcept;
 		GameObject(std::string&& name) noexcept;
 		GameObject(const std::string& name) noexcept;
+		GameObject(io::iarchive& reader) except;
 		virtual ~GameObject() noexcept;
 
 		void setName(const std::string& name) noexcept;
@@ -91,6 +93,9 @@ namespace octoon
 
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
+
+		virtual void load(io::iarchive& reader) except;
+		virtual void save(io::oarchive& write) except;
 
 		GameObjectPtr clone() const except;
 

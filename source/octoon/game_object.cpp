@@ -28,6 +28,12 @@ namespace octoon
 		this->setName(name);
 	}
 
+	GameObject::GameObject(io::iarchive& reader) except
+		: GameObject()
+	{
+		this->load(reader);
+	}
+
 	GameObject::~GameObject() noexcept
 	{
 		this->cleanupChildren();
@@ -612,16 +618,39 @@ namespace octoon
 			it->sendMessageDownwards(event, data);
 	}
 
-	void 
+	void
 	GameObject::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
 	{
 		dispatchEvents_[event].connect(listener);
 	}
 
-	void 
+	void
 	GameObject::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
 	{
 		dispatchEvents_[event].disconnect(listener);
+	}
+
+	void
+	GameObject::load(io::iarchive& reader) except
+	{
+		bool active = false;
+		std::size_t count = 0;
+
+		reader["name"] >> name_;
+		reader["active"] >> active;
+		reader["layer"] >> layer_;
+		reader["count"] >> count;
+
+		this->setActive(active);
+	}
+
+	void
+	GameObject::save(io::oarchive& write) except
+	{
+		write["name"] << name_;
+		write["active"] << active_;
+		write["layer"] << layer_;
+		write["count"] << (std::uint32_t)children_.size();
 	}
 
 	GameObjectPtr

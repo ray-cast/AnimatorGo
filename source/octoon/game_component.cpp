@@ -185,6 +185,23 @@ namespace octoon
 		gameObject_->removeMessageListener(event, listener);
 	}
 
+	void
+	GameComponent::load(io::iarchive& reader) except
+	{
+		bool active = false;
+		reader["name"] >> name_;
+		reader["active"] >> active;
+
+		this->setActive(active);
+	}
+
+	void
+	GameComponent::save(io::oarchive& write) except
+	{
+		write["name"] << name_;
+		write["active"] << active_;
+	}
+
 	GameComponentPtr
 	GameComponent::instantiate(const GameComponent* component) except
 	{

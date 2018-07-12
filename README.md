@@ -8,7 +8,7 @@ Octoon provides a modern and powerful ECS framework to make development simple. 
 Supported compilers:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
-* GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.0.0 version)
+* GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
 
 Support platforms:

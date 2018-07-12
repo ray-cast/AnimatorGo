@@ -13,16 +13,12 @@ namespace octoon
 		~EditorCameraComponent() noexcept;
 
 		void setSpeed(float speed) noexcept;
-		void setGravity(float gravity) noexcept;
-		void setMaxVelocityChange(float maxVelocityChange) noexcept;
-		void setJumpHeight(float jumpHeight) noexcept;
+		void setMoveSpeed(float speed) noexcept;
 		void setSensitivityX(float sensitivityX) noexcept;
 		void setSensitivityY(float sensitivityY) noexcept;
 
 		float getSpeed() const noexcept;
-		float getGravity() const noexcept;
-		float getMaxVelocityChange() const noexcept;
-		float getJumpHeight() const noexcept;
+		float getMoveSpeed() const noexcept;
 		float getSensitivityX() const noexcept;
 		float getSensitivityY() const noexcept;
 
@@ -42,9 +38,7 @@ namespace octoon
 
 	private:
 		float speed_;
-		float gravity_;
-		float maxVelocityChange_;
-		float jumpHeight_;
+		float moveSpeed_;
 		float sensitivityX_;
 		float sensitivityY_;
 	};

@@ -12,9 +12,7 @@ namespace octoon
 
 	EditorCameraComponent::EditorCameraComponent() noexcept
 		: speed_(10.0)
-		, gravity_(15)
-		, maxVelocityChange_(1.0)
-		, jumpHeight_(10)
+		, moveSpeed_(10.0f)
 		, sensitivityX_(1.0)
 		, sensitivityY_(1.0)
 	{
@@ -31,21 +29,9 @@ namespace octoon
 	}
 
 	void
-	EditorCameraComponent::setGravity(float gravity) noexcept
+	EditorCameraComponent::setMoveSpeed(float speed) noexcept
 	{
-		gravity_ = gravity;
-	}
-
-	void
-	EditorCameraComponent::setMaxVelocityChange(float maxVelocityChange) noexcept
-	{
-		maxVelocityChange_ = maxVelocityChange;
-	}
-
-	void
-	EditorCameraComponent::setJumpHeight(float jumpHeight) noexcept
-	{
-		jumpHeight_ = jumpHeight;
+		moveSpeed_ = speed;
 	}
 
 	void
@@ -67,21 +53,9 @@ namespace octoon
 	}
 
 	float
-	EditorCameraComponent::getGravity() const noexcept
+	EditorCameraComponent::getMoveSpeed() const noexcept
 	{
-		return gravity_;
-	}
-
-	float
-	EditorCameraComponent::getMaxVelocityChange() const noexcept
-	{
-		return maxVelocityChange_;
-	}
-
-	float
-	EditorCameraComponent::getJumpHeight() const noexcept
-	{
-		return jumpHeight_;
+		return speed_;
 	}
 
 	float
@@ -126,12 +100,15 @@ namespace octoon
 					step *= 3;
 
 				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
-					moveCamera(step * 10.0f);
+					moveCamera(step * moveSpeed_);
 
 				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
-					moveCamera(-step * 10.0f);
+					moveCamera(-step * moveSpeed_);
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))
+					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);
+
+				if (input->isButtonPressed(input::InputButton::Code::Middle))
 				{
 					auto x = input->getAxis(input::InputAxis::MouseX) * step;
 					auto y = input->getAxis(input::InputAxis::MouseY) * step;
@@ -192,9 +169,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<EditorCameraComponent>();
 		instance->speed_ = this->speed_;
-		instance->gravity_ = this->gravity_;
-		instance->maxVelocityChange_ = this->maxVelocityChange_;
-		instance->jumpHeight_ = this->jumpHeight_;
+		instance->moveSpeed_ = this->moveSpeed_;
 		instance->sensitivityX_ = this->sensitivityX_;
 		instance->sensitivityY_ = this->sensitivityY_;
 

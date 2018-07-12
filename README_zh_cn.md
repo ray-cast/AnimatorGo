@@ -8,8 +8,9 @@ Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 E
 支持的编译器:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
-* GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.0.0 version)
+* GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
+* Emscripten (Only tested on 1.37.40)
 
 支持的平台:
 ------

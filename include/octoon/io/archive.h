@@ -32,9 +32,6 @@ namespace octoon
 			archive() noexcept;
 			virtual ~archive() noexcept;
 
-			void setOpenMode(ios_base::openmode mode) noexcept;
-			ios_base::openmode getOpenMode() const noexcept;
-
 			archivebuf* rdbuf() const noexcept;
 			void set_rdbuf(archivebuf* buf) noexcept;
 

@@ -32,18 +32,6 @@ namespace octoon
 			ios_base::_init(mode);
 		}
 
-		void
-		archive::setOpenMode(ios_base::openmode mode) noexcept
-		{
-			_mode = mode;
-		}
-
-		ios_base::openmode
-		archive::getOpenMode() const noexcept
-		{
-			return _mode;
-		}
-
 		std::size_t
 		archive::size() const noexcept
 		{

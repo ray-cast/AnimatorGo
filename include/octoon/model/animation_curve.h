@@ -72,7 +72,7 @@ namespace octoon
 				{
 					auto& a = *it;
 					auto& b = *(it - 1);
-					auto t = 1.0f - (b.time - key.time) / (b.time - a.time);
+					auto t = (key.time - a.time) / (b.time - a.time);
 
 					if (a.interpolator)
 						key.value = math::lerp(a.value, b.value, a.interpolator->getInterpolation(t));

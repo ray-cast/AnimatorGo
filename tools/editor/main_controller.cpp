@@ -45,7 +45,7 @@ namespace octoon
 
 			auto material = std::make_shared<video::TextMaterial>();
 			material->setLean(0.0f);
-			material->setTextColor(video::TextColor::FrontColor, math::float3(240.0, 240.0, 240.0) / 255.0f);
+			material->setTextColor(video::TextColor::FrontColor, math::float3(180.0, 180.0, 180.0) / 255.0f);
 			material->setTextColor(video::TextColor::SideColor, math::float3(125.f, 125.f, 125.f) / 255.0f);
 
 			object_ = GameObject::create("Text");

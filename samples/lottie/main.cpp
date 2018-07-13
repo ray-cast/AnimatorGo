@@ -11,7 +11,7 @@
 #include "camera_helper.h"
 #include "layer_helper.h"
 
-#include "transform_anim_component.h"
+#include "animation_transform_component.h"
 
 class LottieApp
 {
@@ -135,7 +135,7 @@ public:
 
 		// object->setLayer(layer.threeLayer);
 
-		auto transform = object->addComponent<TransformAnimComponent>();
+		auto transform = object->addComponent<AnimTransformComponent>();
 		transform->setAnchorPoint(std::move(layer.transform.anchor));
 		transform->setTranslate(std::move(layer.transform.pos));
 		transform->setScale(std::move(layer.transform.scale));

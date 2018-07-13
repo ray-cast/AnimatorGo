@@ -1,15 +1,15 @@
-#ifndef OCTOON_TRANSFORM_ANIM_COMPONENT_H_
-#define OCTOON_TRANSFORM_ANIM_COMPONENT_H_
+#ifndef OCTOON_ANIM_TRANSFORM_COMPONENT_H_
+#define OCTOON_ANIM_TRANSFORM_COMPONENT_H_
 
 #include <octoon/model/animation_curve.h>
 #include <octoon/game_component.h>
 
-class TransformAnimComponent final : public octoon::GameComponent
+class AnimTransformComponent final : public octoon::GameComponent
 {
-	OctoonDeclareSubClass(TransformAnimComponent, octoon::GameComponent)
+	OctoonDeclareSubClass(AnimTransformComponent, octoon::GameComponent)
 public:
-	TransformAnimComponent() noexcept;
-	virtual ~TransformAnimComponent() noexcept;
+	AnimTransformComponent() noexcept;
+	virtual ~AnimTransformComponent() noexcept;
 
 	void setScale(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept;
 	void setAnchorPoint(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept;
@@ -52,8 +52,8 @@ private:
 	virtual void onFrame() except;
 
 private:
-	TransformAnimComponent(const TransformAnimComponent&) = delete;
-	TransformAnimComponent& operator=(const TransformAnimComponent&) = delete;
+	AnimTransformComponent(const AnimTransformComponent&) = delete;
+	AnimTransformComponent& operator=(const AnimTransformComponent&) = delete;
 
 private:
 	octoon::model::AnimationCurve<octoon::math::float3> pos_;

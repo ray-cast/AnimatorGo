@@ -6,6 +6,7 @@
 #include <octoon/math/math.h>
 #include <octoon/runtime/platform.h>
 #include <octoon/runtime/variant.h>
+#include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
 {
@@ -204,6 +205,19 @@ namespace octoon
 			{
 				if (this->is_integral())
 					argv = static_cast<T>(this->get<archivebuf::number_unsigned_t>());
+				return *this;
+			}
+
+			template<typename T, std::enable_if_t<std::is_class<T>::value, int> = 0>
+			const archivebuf& operator >> (std::vector<std::shared_ptr<T>>& argv) const
+			{
+				for (auto& it : *this)
+				{
+					auto obj = runtime::RttiFactory::instance()->make_shared<T>(it.first);
+					obj->load(io::iarchive(&it.second.get<io::iarchive::object_t>()));
+
+					argv.push_back(std::move(obj));
+				}
 				return *this;
 			}
 

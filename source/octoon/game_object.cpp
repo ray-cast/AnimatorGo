@@ -2,7 +2,6 @@
 #include <octoon/game_object_manager.h>
 #include <octoon/game_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
 {
@@ -333,6 +332,13 @@ namespace octoon
 		this->addComponent(component);
 	}
 
+	void 
+	GameObject::addComponent(GameComponents&& components) except
+	{
+		for (auto& it : components)
+			this->addComponent(it);
+	}
+
 	void
 	GameObject::removeComponent(const runtime::Rtti* type) noexcept
 	{
@@ -635,23 +641,18 @@ namespace octoon
 	GameObject::load(io::iarchive& reader) except
 	{
 		bool active = false;
+		GameObjects children;
+		GameComponents components;
 
 		reader["name"] >> name_;
 		reader["active"] >> active;
 		reader["layer"] >> layer_;
-
-		for (auto& it : reader["component"])
-		{
-			auto obj = runtime::RttiFactory::instance()->make_shared<GameComponent>(it.first);
-			obj->load(io::iarchive(&it.second.get<io::iarchive::object_t>()));
-
-			this->addComponent(std::move(obj));
-		}
-
-		for (auto& it : reader["children"])
-			this->addChild(GameObject::create(io::iarchive(&it.second.get<io::iarchive::object_t>())));
+		reader["components"] >> components;
+		reader["children"] >> children;
 
 		this->setActive(active);
+		this->addComponent(std::move(components));
+		this->addChild(std::move(children));
 	}
 
 	void
@@ -660,23 +661,8 @@ namespace octoon
 		write["name"] << name_;
 		write["active"] << active_;
 		write["layer"] << layer_;
-
-		for (auto& it : components_)
-		{
-			io::archivebuf buf;
-			buf["type"] = it->type_name();
-			it->save(io::oarchive(&buf));
-
-			write["components"].push_back(std::move(buf));
-		}
-
-		for (auto& it : children_)
-		{
-			io::archivebuf buf;
-			it->save(io::oarchive(&buf));
-
-			write["children"].push_back(std::move(buf));
-		}
+		write["components"] << components_;
+		write["children"] << children_;
 	}
 
 	GameObjectPtr

@@ -53,6 +53,7 @@ namespace octoon
 		std::shared_ptr<T> addComponent(Args&&... args) noexcept(false) { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addComponent(t); return t; }
 		void addComponent(const GameComponentPtr& component) except;
 		void addComponent(GameComponentPtr&& component) except;
+		void addComponent(GameComponents&& component) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
 		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }

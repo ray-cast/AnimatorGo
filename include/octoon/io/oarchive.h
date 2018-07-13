@@ -86,6 +86,20 @@ namespace octoon
 				return *this;
 			}
 
+			template<typename T, std::enable_if_t<std::is_class<T>::value, int> = 0>
+			oarchive& operator << (const std::vector<T>& argv)
+			{
+				for (auto& it : argv)
+				{
+					io::archivebuf buf;
+					it->save(io::oarchive(&buf));
+
+					this->push_back(std::move(buf));
+				}
+
+				return *this;
+			}
+
 			oarchive& operator << (const archivebuf::number_float2_t& argv)
 			{
 				if (!this->is_array())

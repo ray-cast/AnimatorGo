@@ -2,6 +2,7 @@
 #include <octoon/game_object_manager.h>
 #include <octoon/game_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
 {
@@ -634,12 +635,21 @@ namespace octoon
 	GameObject::load(io::iarchive& reader) except
 	{
 		bool active = false;
-		std::size_t count = 0;
 
 		reader["name"] >> name_;
 		reader["active"] >> active;
 		reader["layer"] >> layer_;
-		reader["count"] >> count;
+
+		for (auto& it : reader["component"])
+		{
+			auto obj = runtime::RttiFactory::instance()->make_shared<GameComponent>(it.first);
+			obj->load(io::iarchive(&it.second.get<io::iarchive::object_t>()));
+
+			this->addComponent(std::move(obj));
+		}
+
+		for (auto& it : reader["children"])
+			this->addChild(GameObject::create(io::iarchive(&it.second.get<io::iarchive::object_t>())));
 
 		this->setActive(active);
 	}
@@ -654,6 +664,7 @@ namespace octoon
 		for (auto& it : components_)
 		{
 			io::archivebuf buf;
+			buf["type"] = it->type_name();
 			it->save(io::oarchive(&buf));
 
 			write["components"].push_back(std::move(buf));

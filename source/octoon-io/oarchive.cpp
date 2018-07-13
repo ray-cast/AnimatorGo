@@ -79,6 +79,48 @@ namespace octoon
 			return this->rdbuf()->at(n);
 		}
 
+		void
+		oarchive::push_back(const string_t& key, boolean_t value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(const string_t& key, const number_integer_t& value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(const string_t& key, const number_unsigned_t& value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(const string_t& key, const number_float_t& value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(const string_t& key, const string_t& value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(const string_t& key, const string_t::value_type* value)
+		{
+			this->rdbuf()->push_back(key, value);
+		}
+
+		void
+		oarchive::push_back(archivebuf&& value)
+		{
+			this->rdbuf()->push_back(std::move(value));
+		}
+
 		oarchive&
 		oarchive::operator=(boolean_t value) except
 		{

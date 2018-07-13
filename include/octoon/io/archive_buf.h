@@ -125,7 +125,7 @@ namespace octoon
 			void push_back(const string_t& key, const number_float_t& value);
 			void push_back(const string_t& key, const string_t& value);
 			void push_back(const string_t& key, const string_t::value_type* value);
-			void push_back(const string_t& key, archivebuf&& value);
+			void push_back(archivebuf&& value);
 
 			iterator begin() noexcept;
 			iterator end() noexcept;

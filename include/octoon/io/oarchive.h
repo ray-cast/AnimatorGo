@@ -58,6 +58,14 @@ namespace octoon
 			const oarchive& operator[](const string_t& key) const except;
 			const oarchive& operator[](string_t::const_pointer key) const except;
 
+			void push_back(const string_t& key, boolean_t value);
+			void push_back(const string_t& key, const number_integer_t& value);
+			void push_back(const string_t& key, const number_unsigned_t& value);
+			void push_back(const string_t& key, const number_float_t& value);
+			void push_back(const string_t& key, const string_t& value);
+			void push_back(const string_t& key, const string_t::value_type* value);
+			void push_back(archivebuf&& value);
+
 			oarchive& operator << (archivebuf::boolean_t& argv)
 			{
 				this->operator=(argv);

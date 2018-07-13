@@ -70,7 +70,7 @@ namespace octoon
 					break;
 				case nlohmann::json::value_t::array:
 				{
-					node.push_back(it.key(), archivebuf(archivebuf::array));
+					node.push_back(archivebuf(archivebuf::array));
 					reader(node.back(), value.get<nlohmann::json::array_t>());
 				}
 				break;

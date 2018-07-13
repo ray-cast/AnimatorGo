@@ -237,13 +237,13 @@ namespace octoon
 		}
 
 		void
-		archivebuf::push_back(const string_t& key, archivebuf&& value)
+		archivebuf::push_back(archivebuf&& value)
 		{
 			if (this->is_null())
-				this->emplace(archivebuf::type_t::object);
+				this->emplace(archivebuf::type_t::array);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
-			data->push_back(std::make_pair(key, std::move(value)));
+			auto& data = runtime::get<archivebuf::type_t::array>(_data);
+			data->push_back(std::move(value));
 		}
 
 		archivebuf::iterator

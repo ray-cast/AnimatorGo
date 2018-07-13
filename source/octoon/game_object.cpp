@@ -650,7 +650,22 @@ namespace octoon
 		write["name"] << name_;
 		write["active"] << active_;
 		write["layer"] << layer_;
-		write["count"] << (std::uint32_t)children_.size();
+
+		for (auto& it : components_)
+		{
+			io::archivebuf buf;
+			it->save(io::oarchive(&buf));
+
+			write["components"].push_back(std::move(buf));
+		}
+
+		for (auto& it : children_)
+		{
+			io::archivebuf buf;
+			it->save(io::oarchive(&buf));
+
+			write["children"].push_back(std::move(buf));
+		}
 	}
 
 	GameObjectPtr

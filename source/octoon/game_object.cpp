@@ -336,7 +336,7 @@ namespace octoon
 	GameObject::addComponent(GameComponents&& components) except
 	{
 		for (auto& it : components)
-			this->addComponent(it);
+			this->addComponent(std::move(it));
 	}
 
 	void

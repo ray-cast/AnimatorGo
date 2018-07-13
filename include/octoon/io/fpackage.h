@@ -28,10 +28,10 @@ namespace octoon
 
 		private:
 			std::string make_path(const Orl& orl) const;
+
+		private:
 			std::string base_dir_;
 		};
-
-		using LocalDirPtr = std::shared_ptr<fpackage>;
 	}
 }
 

@@ -3,6 +3,7 @@
 #include <octoon/game_feature.h>
 #include <octoon/game_listener.h>
 #include <octoon/runtime/algorithm.h>
+#include <octoon/io/json_reader.h>
 
 namespace octoon
 {
@@ -83,10 +84,19 @@ namespace octoon
 
 		try
 		{
-			auto scene = std::make_shared<GameScene>();
-			scene->setGameListener(listener_);
+			io::JsonReader json(filename);
+			if (json)
+			{
+				auto scene = std::make_shared<GameScene>();
+				scene->setGameListener(listener_);
+				scene->load(json);
 
-			return this->addScene(scene);
+				return this->addScene(scene);
+			}
+			else
+			{
+				return false;
+			}
 		}
 		catch (const std::exception& e)
 		{

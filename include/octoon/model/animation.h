@@ -23,20 +23,20 @@ namespace octoon
 			void setRotation(const math::Quaternion& rotation) noexcept;
 			void setBoneIndex(const std::int32_t) noexcept;
 			void setFrameIndex(std::int32_t frame) noexcept;
-			void setInterpX(const PathInterpolator<float(float)>& interp) noexcept;
-			void setInterpY(const PathInterpolator<float(float)>& interp) noexcept;
-			void setInterpZ(const PathInterpolator<float(float)>& interp) noexcept;
-			void setInterpRotation(const PathInterpolator<float(float)>& interp) noexcept;
+			void setInterpX(const PathInterpolator<float>& interp) noexcept;
+			void setInterpY(const PathInterpolator<float>& interp) noexcept;
+			void setInterpZ(const PathInterpolator<float>& interp) noexcept;
+			void setInterpRotation(const PathInterpolator<float>& interp) noexcept;
 
 			const std::string& getName() const noexcept;
 			const math::float3& getPosition() const noexcept;
 			const math::Quaternion& getRotation() const noexcept;
 			std::int32_t getBoneIndex() const noexcept;
 			std::int32_t getFrameIndex() const noexcept;
-			const PathInterpolator<float(float)>& getInterpX() const noexcept;
-			const PathInterpolator<float(float)>& getInterpY() const noexcept;
-			const PathInterpolator<float(float)>& getInterpZ() const noexcept;
-			const PathInterpolator<float(float)>& getInterpRotation() const noexcept;
+			const PathInterpolator<float>& getInterpX() const noexcept;
+			const PathInterpolator<float>& getInterpY() const noexcept;
+			const PathInterpolator<float>& getInterpZ() const noexcept;
+			const PathInterpolator<float>& getInterpRotation() const noexcept;
 
 		private:
 			std::string _name;
@@ -47,10 +47,10 @@ namespace octoon
 			math::float3 _position;
 			math::Quaternion _rotation;
 
-			PathInterpolator<float(float)> interpX;
-			PathInterpolator<float(float)> interpY;
-			PathInterpolator<float(float)> interpZ;
-			PathInterpolator<float(float)> interpRotation;
+			PathInterpolator<float> interpX;
+			PathInterpolator<float> interpY;
+			PathInterpolator<float> interpZ;
+			PathInterpolator<float> interpRotation;
 		};
 
 		class MorphAnimation

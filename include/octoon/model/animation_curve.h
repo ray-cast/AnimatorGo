@@ -8,7 +8,7 @@ namespace octoon
 	namespace model
 	{
 		template<typename _Elem, typename _Time = float>
-		class AnimationCurve
+		class AnimationCurve final
 		{
 		public:
 			using Keyframes = std::vector<Keyframe<_Elem, _Time>>;
@@ -69,7 +69,8 @@ namespace octoon
 				{
 					auto& a = *it;
 					auto& b = *(it - 1);
-					key.value = math::lerp(a.value, b.value, 1.0f - (b.time - key.time) / (b.time - a.time));
+					auto t = 1.0f - (b.time - key.time) / (b.time - a.time);
+					key.value = math::lerp(a.value, b.value, a.interpolator->getInterpolation(t));
 				}
 
 				return key.value;

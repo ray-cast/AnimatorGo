@@ -85,48 +85,48 @@ namespace octoon
 		}
 
 		void
-		BoneAnimation::setInterpX(const PathInterpolator<float(float)>& interp) noexcept
+		BoneAnimation::setInterpX(const PathInterpolator<float>& interp) noexcept
 		{
 			interpX = interp;
 		}
 
 		void
-		BoneAnimation::setInterpY(const PathInterpolator<float(float)>& interp) noexcept
+		BoneAnimation::setInterpY(const PathInterpolator<float>& interp) noexcept
 		{
 			interpY = interp;
 		}
 
 		void
-		BoneAnimation::setInterpZ(const PathInterpolator<float(float)>& interp) noexcept
+		BoneAnimation::setInterpZ(const PathInterpolator<float>& interp) noexcept
 		{
 			interpZ = interp;
 		}
 
 		void
-		BoneAnimation::setInterpRotation(const PathInterpolator<float(float)>& interp) noexcept
+		BoneAnimation::setInterpRotation(const PathInterpolator<float>& interp) noexcept
 		{
 			interpRotation = interp;
 		}
 
-		const PathInterpolator<float(float)>&
+		const PathInterpolator<float>&
 		BoneAnimation::getInterpX() const noexcept
 		{
 			return interpX;
 		}
 
-		const PathInterpolator<float(float)>&
+		const PathInterpolator<float>&
 		BoneAnimation::getInterpY() const noexcept
 		{
 			return interpY;
 		}
 
-		const PathInterpolator<float(float)>&
+		const PathInterpolator<float>&
 		BoneAnimation::getInterpZ() const noexcept
 		{
 			return interpZ;
 		}
 
-		const PathInterpolator<float(float)>&
+		const PathInterpolator<float>&
 		BoneAnimation::getInterpRotation() const noexcept
 		{
 			return interpRotation;

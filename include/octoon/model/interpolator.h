@@ -14,17 +14,7 @@ namespace octoon
 			Interpolator() = default;
 			virtual ~Interpolator() = default;
 
-			virtual T getInterpolation() const noexcept = 0;
-		};
-
-		template<typename Result, typename ...Argc>
-		class Interpolator<Result(Argc...)>
-		{
-		public:
-			Interpolator() = default;
-			virtual ~Interpolator() = default;
-
-			virtual Result getInterpolation(Argc... t) const noexcept = 0;
+			virtual T getInterpolation(T t) const noexcept = 0;
 		};
 	}
 }

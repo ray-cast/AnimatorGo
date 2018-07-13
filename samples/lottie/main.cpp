@@ -1,6 +1,7 @@
 #include <octoon/octoon.h>
 #include <octoon/octoon-c.h>
 #include <octoon/runtime/json.h>
+#include <octoon/animation_transform_component.h>
 
 #include <fstream>
 
@@ -10,8 +11,6 @@
 #include "still_helper.h"
 #include "camera_helper.h"
 #include "layer_helper.h"
-
-#include "animation_transform_component.h"
 
 class LottieApp
 {
@@ -135,7 +134,7 @@ public:
 
 		// object->setLayer(layer.threeLayer);
 
-		auto transform = object->addComponent<AnimTransformComponent>();
+		auto transform = object->addComponent<octoon::AnimationTransformComponent>();
 		transform->setAnchorPoint(std::move(layer.transform.anchor));
 		transform->setTranslate(std::move(layer.transform.pos));
 		transform->setScale(std::move(layer.transform.scale));

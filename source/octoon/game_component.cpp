@@ -186,7 +186,7 @@ namespace octoon
 	}
 
 	void
-	GameComponent::load(io::iarchive& reader) except
+	GameComponent::load(const io::archivebuf& reader) except
 	{
 		bool active = false;
 		reader["name"] >> name_;
@@ -196,7 +196,7 @@ namespace octoon
 	}
 
 	void
-	GameComponent::save(io::oarchive& write) except
+	GameComponent::save(io::archivebuf& write) except
 	{
 		write["name"] << name_;
 		write["active"] << active_;

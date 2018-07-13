@@ -50,7 +50,7 @@ namespace octoon
 			return this->rdbuf()->type_name(type);
 		}
 
-		const archive::type_t
+		archive::type_t
 		archive::type() const noexcept
 		{
 			return this->rdbuf()->type();

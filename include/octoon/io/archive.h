@@ -40,7 +40,7 @@ namespace octoon
 			const char* type_name() const noexcept;
 			const char* type_name(type_t type) const noexcept;
 
-			const type_t type() const noexcept;
+			type_t type() const noexcept;
 
 			bool is_null() const noexcept;
 			bool is_boolean() const noexcept;

@@ -12,7 +12,7 @@ namespace octoon
 		GameScene() noexcept;
 		GameScene(std::string&& name) noexcept;
 		GameScene(const std::string& name) noexcept;
-		GameScene(io::iarchive& reader) noexcept;
+		GameScene(io::archivebuf& reader) noexcept;
 		~GameScene() noexcept;
 
 		void setActive(bool active) except;
@@ -25,8 +25,8 @@ namespace octoon
 		void setName(const std::string& name) noexcept;
 		const std::string& getName() const noexcept;
 
-		void load(io::iarchive& reader) except;
-		void save(io::oarchive& write) except;
+		void load(const io::archivebuf& reader) except;
+		void save(io::archivebuf& write) except;
 
 		std::size_t id() const noexcept;
 

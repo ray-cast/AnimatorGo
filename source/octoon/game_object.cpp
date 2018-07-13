@@ -28,7 +28,7 @@ namespace octoon
 		this->setName(name);
 	}
 
-	GameObject::GameObject(io::iarchive& reader) except
+	GameObject::GameObject(io::archivebuf& reader) except
 		: GameObject()
 	{
 		this->load(reader);
@@ -638,7 +638,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::load(io::iarchive& reader) except
+	GameObject::load(const io::archivebuf& reader) except
 	{
 		bool active = false;
 		GameObjects children;
@@ -656,7 +656,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::save(io::oarchive& write) except
+	GameObject::save(io::archivebuf& write) except
 	{
 		write["name"] << name_;
 		write["active"] << active_;

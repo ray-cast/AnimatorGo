@@ -89,7 +89,7 @@ namespace octoon
 			{
 				auto scene = std::make_shared<GameScene>();
 				scene->setGameListener(listener_);
-				scene->load(json);
+				scene->load(*json.rdbuf());
 
 				return this->addScene(scene);
 			}

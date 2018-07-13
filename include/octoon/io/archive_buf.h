@@ -91,10 +91,10 @@ namespace octoon
 			constexpr number_float_t get() const { return this->get<number_float_t, type>(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::string>>
-			constexpr string_t& get() const { return *this->_get<type>(); }
+			constexpr string_t& get() const { return this->_get<type>(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::array>>
-			constexpr array_t& get() const { return *this->_get<type>(); }
+			constexpr array_t& get() const { return this->_get<type>(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::object>>
 			constexpr object_t& get() const { return this->_get<type>(); }
@@ -214,7 +214,7 @@ namespace octoon
 				for (auto& it : *this)
 				{
 					auto obj = runtime::RttiFactory::instance()->make_shared<T>(it.first);
-					obj->load(io::iarchive(&it.second.get<io::iarchive::object_t>()));
+					obj->load(it.second.get<archivebuf::object_t>());
 
 					argv.push_back(std::move(obj));
 				}
@@ -333,6 +333,20 @@ namespace octoon
 				return *this;
 			}
 
+			template<typename T, std::enable_if_t<std::is_class<T>::value, int> = 0>
+			archivebuf& operator << (const std::vector<T>& argv)
+			{
+				for (auto& it : argv)
+				{
+					archivebuf buf;
+					it->save(buf);
+
+					this->push_back(std::move(buf));
+				}
+
+				return *this;
+			}
+
 			archivebuf& operator << (const archivebuf::number_float2_t& argv)
 			{
 				if (!this->is_array())
@@ -424,8 +438,8 @@ namespace octoon
 				}
 			}
 
-			template<type_t type, std::enable_if_t<type != object, int> = 0>
-			constexpr decltype(auto) _get() const
+			template<type_t type, typename = std::enable_if_t<type == type_t::boolean, int>>
+			constexpr boolean_t _get() const
 			{
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
@@ -433,7 +447,52 @@ namespace octoon
 				return runtime::get<type>(_data);
 			}
 
-			template<type_t type, std::enable_if_t<type == object, int> = 0>
+			template<type_t type, typename = std::enable_if_t<type == type_t::number_integer, int>>
+			constexpr number_integer_t _get() const
+			{
+				if (this->type() != type)
+					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
+
+				return runtime::get<type>(_data);
+			}
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::number_unsigned, int>>
+			constexpr number_unsigned_t _get() const
+			{
+				if (this->type() != type)
+					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
+
+				return runtime::get<type>(_data);
+			}
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::number_float, int>>
+			constexpr number_float_t _get() const
+			{
+				if (this->type() != type)
+					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
+
+				return runtime::get<type>(_data);
+			}
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::string, int>>
+			constexpr string_t& _get() const
+			{
+				if (this->type() != type)
+					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
+
+				return *runtime::get<type>(_data);
+			}
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::array, int>>
+			constexpr array_t& _get() const
+			{
+				if (this->type() != type)
+					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
+
+				return *runtime::get<type>(_data);
+			}
+
+			template<type_t type, typename = std::enable_if_t<type == object, int>>
 			constexpr object_t& _get() const
 			{
 				if (this->type() != type)

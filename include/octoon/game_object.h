@@ -17,7 +17,7 @@ namespace octoon
 		GameObject() noexcept;
 		GameObject(std::string&& name) noexcept;
 		GameObject(const std::string& name) noexcept;
-		GameObject(io::iarchive& reader) except;
+		GameObject(io::archivebuf& reader) except;
 		virtual ~GameObject() noexcept;
 
 		void setName(const std::string& name) noexcept;
@@ -95,8 +95,8 @@ namespace octoon
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
 
-		virtual void load(io::iarchive& reader) except;
-		virtual void save(io::oarchive& write) except;
+		virtual void load(const io::archivebuf& reader) except;
+		virtual void save(io::archivebuf& write) except;
 
 		GameObjectPtr clone() const except;
 

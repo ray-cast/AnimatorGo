@@ -44,7 +44,7 @@ namespace octoon
 
 		void reader(archivebuf& node, const nlohmann::json& json) except
 		{
-			for (auto& it = json.begin(); it != json.end(); ++it)
+			for (auto it = json.begin(); it != json.end(); ++it)
 			{
 				auto& value = it.value();
 

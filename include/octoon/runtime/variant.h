@@ -19,7 +19,7 @@ namespace octoon
 		template <std::size_t I, typename... Ts>
 		inline constexpr mpark::variant_alternative_t<I, variant<Ts...>> &&get(variant<Ts...> &&v)
 		{
-			return mpark::detail::generic_get<I>(lib::move(v));
+			return mpark::detail::generic_get<I>(mpark::lib::move(v));
 		}
 
 		template <std::size_t I, typename... Ts>

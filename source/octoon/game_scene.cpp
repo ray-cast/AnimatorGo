@@ -35,7 +35,7 @@ namespace octoon
 		GameSceneManager::instance()->_instanceScene(this, instance_id_);
 	}
 
-	GameScene::GameScene(io::iarchive& reader) noexcept
+	GameScene::GameScene(io::archivebuf& reader) noexcept
 		: GameScene()
 	{
 		this->load(reader);
@@ -117,16 +117,14 @@ namespace octoon
 	}
 
 	void 
-	GameScene::load(io::iarchive& reader) except
+	GameScene::load(const io::archivebuf& reader) except
 	{
-		assert(reader.good());
 		root_->load(reader);
 	}
 
 	void
-	GameScene::save(io::oarchive& write) except
+	GameScene::save(io::archivebuf& write) except
 	{
-		assert(write.good());
 		root_->save(write);
 	}
 

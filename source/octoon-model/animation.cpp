@@ -85,15 +85,51 @@ namespace octoon
 		}
 
 		void
-		BoneAnimation::setInterpolation(const Interpolation& interp) noexcept
+		BoneAnimation::setInterpX(const PathInterpolator<float(float)>& interp) noexcept
 		{
-			_interpolation = interp;
+			interpX = interp;
 		}
 
-		const Interpolation&
-		BoneAnimation::getInterpolation() const noexcept
+		void
+		BoneAnimation::setInterpY(const PathInterpolator<float(float)>& interp) noexcept
 		{
-			return _interpolation;
+			interpY = interp;
+		}
+
+		void
+		BoneAnimation::setInterpZ(const PathInterpolator<float(float)>& interp) noexcept
+		{
+			interpZ = interp;
+		}
+
+		void
+		BoneAnimation::setInterpRotation(const PathInterpolator<float(float)>& interp) noexcept
+		{
+			interpRotation = interp;
+		}
+
+		const PathInterpolator<float(float)>&
+		BoneAnimation::getInterpX() const noexcept
+		{
+			return interpX;
+		}
+
+		const PathInterpolator<float(float)>&
+		BoneAnimation::getInterpY() const noexcept
+		{
+			return interpY;
+		}
+
+		const PathInterpolator<float(float)>&
+		BoneAnimation::getInterpZ() const noexcept
+		{
+			return interpZ;
+		}
+
+		const PathInterpolator<float(float)>&
+		BoneAnimation::getInterpRotation() const noexcept
+		{
+			return interpRotation;
 		}
 
 		Animation::Animation() noexcept
@@ -491,10 +527,10 @@ namespace octoon
 				float a0 = static_cast<float>(frame - anim0.getFrameIndex());
 				float ratio = a0 / diff;
 
-				float tx = bezierEval(anim0.getInterpolation().interpX, ratio);
-				float ty = bezierEval(anim0.getInterpolation().interpY, ratio);
-				float tz = bezierEval(anim0.getInterpolation().interpZ, ratio);
-				float tr = bezierEval(anim0.getInterpolation().interpRotation, ratio);
+				float tx = anim0.getInterpX().getInterpolation(ratio);
+				float ty = anim0.getInterpY().getInterpolation(ratio);
+				float tz = anim0.getInterpZ().getInterpolation(ratio);
+				float tr = anim0.getInterpRotation().getInterpolation(ratio);
 
 				position = math::lerp(anim0.getPosition(), anim1.getPosition(), float3(tx, ty, tz));
 				rotation = math::slerp(anim0.getRotation(), anim1.getRotation(), tr);

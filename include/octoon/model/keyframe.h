@@ -1,7 +1,7 @@
 #ifndef OCTOON_MODEL_KEYFRAME_H_
 #define OCTOON_MODEL_KEYFRAME_H_
 
-#include <octoon/model/linear_interpolator.h>
+#include <octoon/model/interpolator.h>
 #include <memory>
 
 namespace octoon
@@ -19,21 +19,20 @@ namespace octoon
 			Keyframe() noexcept
 				: time()
 				, value()
-				, interpolator(std::make_shared<LinearInterpolator<_Time>>())
 			{
 			}
 
-			Keyframe(const _Time& time_, const _Elem& value_) noexcept
+			Keyframe(const _Time& time_, const _Elem& value_, const std::shared_ptr<Interpolator<_Time>>& interpolator_ = nullptr) noexcept
 				: time(time_)
 				, value(value_)
-				, interpolator(std::make_shared<LinearInterpolator<_Time>>())
+				, interpolator(interpolator_)
 			{
 			}
 
-			Keyframe(_Time&& time_, _Elem&& value_) noexcept
+			Keyframe(_Time&& time_, _Elem&& value_, std::shared_ptr<Interpolator<_Time>>&& interpolator_ = nullptr) noexcept
 				: time(std::move(time_))
 				, value(std::move(value_))
-				, interpolator(std::make_shared<LinearInterpolator<_Time>>())
+				, interpolator(std::move(interpolator_))
 			{
 			}
 

@@ -15,17 +15,20 @@ namespace octoon
 
 			Keyframes frames;
 			Keyframe<_Elem, _Time> key;
+			std::shared_ptr<Interpolator<_Time>> interpolator;
 
 			AnimationCurve() noexcept
 			{
 			}
 
-			explicit AnimationCurve(Keyframes&& frames_) noexcept
+			explicit AnimationCurve(Keyframes&& frames_, std::shared_ptr<Interpolator<_Time>>&& interpolator_ = nullptr) noexcept
+				: interpolator(std::move(interpolator_))
 			{
 				this->assign(std::move(frames_));
 			}
 
-			explicit AnimationCurve(const Keyframes& frames_) noexcept
+			explicit AnimationCurve(const Keyframes& frames_, const std::shared_ptr<Interpolator<_Time>>& interpolator_ = nullptr) noexcept
+				: interpolator(interpolator_)
 			{
 				this->assign(frames_);
 			}
@@ -70,7 +73,11 @@ namespace octoon
 					auto& a = *it;
 					auto& b = *(it - 1);
 					auto t = 1.0f - (b.time - key.time) / (b.time - a.time);
-					key.value = math::lerp(a.value, b.value, a.interpolator->getInterpolation(t));
+
+					if (a.interpolator)
+						key.value = math::lerp(a.value, b.value, a.interpolator->getInterpolation(t));
+					else
+						key.value = math::lerp(a.value, b.value, interpolator ? interpolator->getInterpolation(t) : t);
 				}
 
 				return key.value;

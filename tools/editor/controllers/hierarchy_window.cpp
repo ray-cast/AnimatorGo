@@ -44,7 +44,7 @@ namespace octoon
 					for (auto& it : actors)
 					{
 						auto& name = it->getName();
-						char objectName[MAX_PATH];
+						char objectName[256];
 						if (name.empty())
 							std::sprintf(objectName, "|-null");
 						else

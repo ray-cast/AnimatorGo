@@ -1,7 +1,7 @@
 #if defined(OCTOON_FEATURE_IO_ENABLE)
 #include <octoon/io_feature.h>
 #include <octoon/io/ioserver.h>
-#include <octoon/io/farchive.h>
+#include <octoon/io/fpackage.h>
 
 namespace octoon
 {
@@ -20,8 +20,8 @@ namespace octoon
 	void
 	IOFeature::onActivate() except
 	{
-		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(systemPath_));
-		io::IoServer::instance()->mount_archive("file", std::make_shared<octoon::io::farchive>(diskPath_));
+		io::IoServer::instance()->mount_package("sys", std::make_shared<octoon::io::fpackage>(systemPath_));
+		io::IoServer::instance()->mount_package("file", std::make_shared<octoon::io::fpackage>(diskPath_));
 	}
 
 	void

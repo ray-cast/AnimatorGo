@@ -317,6 +317,42 @@ namespace octoon
 		return math::forward(local_transform_);
 	}
 
+	void
+	TransformComponent::up(float speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalUp() * speed);
+	}
+
+	void
+	TransformComponent::up(const math::float3& speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalUp() * speed);
+	}
+
+	void
+	TransformComponent::yaw(float speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalRight() * speed);
+	}
+
+	void
+	TransformComponent::yaw(const math::float3& speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalRight() * speed);
+	}
+
+	void
+	TransformComponent::move(float speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalForward() * speed);
+	}
+
+	void
+	TransformComponent::move(const math::float3& speed) noexcept
+	{
+		this->setLocalTranslateAccum(this->getLocalForward() * speed);
+	}
+
 	GameComponentPtr
 	TransformComponent::clone() const noexcept
 	{

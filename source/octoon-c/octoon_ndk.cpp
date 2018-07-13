@@ -1,4 +1,3 @@
-#if defined(OCTOON_BUILD_PLATFORM_ANDROID)
 #include <octoon/octoon-c.h>
 
 #include <octoon/game_app.h>
@@ -188,5 +187,3 @@ void android_main(android_app* app)
 
 	octoon_main(0, 0);
 }
-
-#endif

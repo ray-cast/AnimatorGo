@@ -19,24 +19,24 @@ namespace octoon
 		}
 
 		void
-		IoServer::mount_archive(const std::string& vpath, const archive_pointer& vdir)
+		IoServer::mount_package(const std::string& vpath, const package_pointer& vdir)
 		{
 			registry_.insert(std::make_pair(vpath, vdir));
 		}
 
 		void
-		IoServer::mount_archive(const std::string& vpath, archive_pointer&& vdir)
+		IoServer::mount_package(const std::string& vpath, package_pointer&& vdir)
 		{
 			registry_.insert(std::make_pair(vpath, std::move(vdir)));
 		}
 
 		void
-		IoServer::mount_archive(std::string&& vpath, archive_pointer&& vdir)
+		IoServer::mount_package(std::string&& vpath, package_pointer&& vdir)
 		{
 			registry_.insert(std::make_pair(std::move(vpath), std::move(vdir)));
 		}
 
-		archive_pointer
+		package_pointer
 		IoServer::unmount_archive(const std::string& vdir)
 		{
 			auto it = registry_.find(vdir);
@@ -45,7 +45,7 @@ namespace octoon
 			return ptr;
 		}
 
-		archive_pointer
+		package_pointer
 		IoServer::get_archive(const Orl& orl) const
 		{
 			auto it = registry_.find(orl.virtual_dir());

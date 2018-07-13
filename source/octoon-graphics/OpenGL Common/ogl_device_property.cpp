@@ -22,7 +22,7 @@ namespace octoon
 		OGLDeviceProperty::setup(const GraphicsDeviceDesc& deviceDesc) noexcept
 		{
 			assert(_device.lock());
-#ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
+#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) && !defined(OCTOON_BUILD_PLATFORM_JAVA)
 			CreateParam params;
 
 			try

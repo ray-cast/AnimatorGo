@@ -86,7 +86,7 @@ namespace octoon
 			listener_ = listener;
 	}
 
-	GameListenerPtr
+	const GameListenerPtr&
 	GameScene::getGameListener() const noexcept
 	{
 		return listener_;
@@ -116,7 +116,7 @@ namespace octoon
 		return instance_id_;
 	}
 
-	void 
+	void
 	GameScene::load(const io::archivebuf& reader) except
 	{
 		root_->load(reader);

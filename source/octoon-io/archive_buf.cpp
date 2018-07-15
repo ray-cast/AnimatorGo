@@ -68,7 +68,7 @@ namespace octoon
 
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -91,7 +91,7 @@ namespace octoon
 
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -111,7 +111,7 @@ namespace octoon
 		{
 			if (this->is_array())
 			{
-				auto& data = runtime::get<archivebuf::type_t::array>(_data);
+				auto& data = std::get<archivebuf::type_t::array>(_data);
 				assert(data->size() > n);
 
 				return (*data)[n];
@@ -127,7 +127,7 @@ namespace octoon
 		{
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -146,7 +146,7 @@ namespace octoon
 		{
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -165,7 +165,7 @@ namespace octoon
 		{
 			if (this->is_array())
 			{
-				auto& data = runtime::get<archivebuf::type_t::array>(_data);
+				auto& data = std::get<archivebuf::type_t::array>(_data);
 				assert(data->size() > n);
 
 				return (*data)[n];
@@ -182,7 +182,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -192,7 +192,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -202,7 +202,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -212,7 +212,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -222,7 +222,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -232,7 +232,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::object);
 
-			auto& data = runtime::get<archivebuf::type_t::object>(_data);
+			auto& data = std::get<archivebuf::type_t::object>(_data);
 			data->push_back(std::make_pair(key, value));
 		}
 
@@ -242,7 +242,7 @@ namespace octoon
 			if (this->is_null())
 				this->emplace(archivebuf::type_t::array);
 
-			auto& data = runtime::get<archivebuf::type_t::array>(_data);
+			auto& data = std::get<archivebuf::type_t::array>(_data);
 			data->push_back(std::move(value));
 		}
 
@@ -252,8 +252,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->begin();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->begin();
 				break;
 			default:
 				break;
@@ -268,8 +268,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->end();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->end();
 				break;
 			default:
 				break;
@@ -284,8 +284,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->begin();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->begin();
 				break;
 			default:
 				break;
@@ -300,8 +300,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->end();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->end();
 				break;
 			default:
 				break;
@@ -316,8 +316,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->rbegin();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->rbegin();
 				break;
 			default:
 				break;
@@ -332,8 +332,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->rend();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->rend();
 				break;
 			default:
 				break;
@@ -348,8 +348,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->rbegin();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->rbegin();
 				break;
 			default:
 				break;
@@ -364,8 +364,8 @@ namespace octoon
 			switch (this->type())
 			{
 			case archivebuf::type_t::object:
-				if (runtime::get<archivebuf::type_t::object>(_data))
-					return runtime::get<archivebuf::type_t::object>(_data)->rend();
+				if (std::get<archivebuf::type_t::object>(_data))
+					return std::get<archivebuf::type_t::object>(_data)->rend();
 				break;
 			default:
 				break;
@@ -378,28 +378,28 @@ namespace octoon
 		archivebuf::front() noexcept
 		{
 			assert(this->type() == archivebuf::type_t::object);
-			return runtime::get<archivebuf::type_t::object>(_data)->front().second;
+			return std::get<archivebuf::type_t::object>(_data)->front().second;
 		}
 
 		const archivebuf&
 		archivebuf::front() const noexcept
 		{
 			assert(this->type() == archivebuf::type_t::object);
-			return runtime::get<archivebuf::type_t::object>(_data)->front().second;
+			return std::get<archivebuf::type_t::object>(_data)->front().second;
 		}
 
 		archivebuf&
 		archivebuf::back() noexcept
 		{
 			assert(this->type() == archivebuf::type_t::object);
-			return runtime::get<archivebuf::type_t::object>(_data)->back().second;
+			return std::get<archivebuf::type_t::object>(_data)->back().second;
 		}
 
 		const archivebuf&
 		archivebuf::back() const noexcept
 		{
 			assert(this->type() == archivebuf::type_t::object);
-			return runtime::get<archivebuf::type_t::object>(_data)->back().second;
+			return std::get<archivebuf::type_t::object>(_data)->back().second;
 		}
 
 		archivebuf::type_t
@@ -597,7 +597,7 @@ namespace octoon
 
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -620,7 +620,7 @@ namespace octoon
 
 			if (this->is_object())
 			{
-				auto& data = runtime::get<archivebuf::type_t::object>(_data);
+				auto& data = std::get<archivebuf::type_t::object>(_data);
 
 				for (auto& it : *data)
 					if (it.first == key)
@@ -643,10 +643,10 @@ namespace octoon
 
 			if (this->is_array())
 			{
-				if (n >= runtime::get<archivebuf::type_t::array>(_data)->size())
-					runtime::get<archivebuf::type_t::array>(_data)->resize(n + 1);
+				if (n >= std::get<archivebuf::type_t::array>(_data)->size())
+					std::get<archivebuf::type_t::array>(_data)->resize(n + 1);
 
-				return runtime::get<archivebuf::type_t::array>(_data)->operator[](n);
+				return std::get<archivebuf::type_t::array>(_data)->operator[](n);
 			}
 			else
 			{

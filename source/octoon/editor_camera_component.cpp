@@ -99,10 +99,10 @@ namespace octoon
 				if (input->isKeyPressed(input::InputKey::Code::LeftShift))
 					step *= 3;
 
-				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
+				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
 					moveCamera(step * moveSpeed_);
 
-				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
+				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
 					moveCamera(-step * moveSpeed_);
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))

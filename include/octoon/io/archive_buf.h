@@ -426,13 +426,13 @@ namespace octoon
 				switch (_data.index())
 				{
 				case type_t::boolean:
-					return static_cast<T>(runtime::get<type_t::boolean>(_data));
+					return static_cast<T>(std::get<type_t::boolean>(_data));
 				case type_t::number_integer:
-					return static_cast<T>(runtime::get<type_t::number_integer>(_data));
+					return static_cast<T>(std::get<type_t::number_integer>(_data));
 				case type_t::number_unsigned:
-					return static_cast<T>(runtime::get<type_t::number_unsigned>(_data));
+					return static_cast<T>(std::get<type_t::number_unsigned>(_data));
 				case type_t::number_float:
-					return static_cast<T>(runtime::get<type_t::number_float>(_data));
+					return static_cast<T>(std::get<type_t::number_float>(_data));
 				default:
 					throw std::runtime_error(string_t("type must be number, but is ") + this->type_name());
 				}
@@ -444,7 +444,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return runtime::get<type>(_data);
+				return std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::number_integer, int>>
@@ -453,7 +453,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return runtime::get<type>(_data);
+				return std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::number_unsigned, int>>
@@ -462,7 +462,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return runtime::get<type>(_data);
+				return std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::number_float, int>>
@@ -471,7 +471,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return runtime::get<type>(_data);
+				return std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::string, int>>
@@ -480,7 +480,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return *runtime::get<type>(_data);
+				return *std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::array, int>>
@@ -489,7 +489,7 @@ namespace octoon
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
 
-				return *runtime::get<type>(_data);
+				return *std::get<type>(_data);
 			}
 
 			template<type_t type, typename = std::enable_if_t<type == object, int>>
@@ -497,7 +497,7 @@ namespace octoon
 			{
 				if (this->type() != type)
 					throw std::runtime_error(string_t("type must be ") + type_name(type) + " but is " + this->type_name());
-				return runtime::get<type>(_data)->front().second;
+				return std::get<type>(_data)->front().second;
 			}
 
 		private:

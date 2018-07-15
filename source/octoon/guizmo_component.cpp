@@ -19,6 +19,18 @@ namespace octoon
 	}
 
 	void
+	GuizmoComponent::setCamera(const GameObjectPtr& camera) noexcept
+	{
+		camera_ = camera;
+	}
+
+	const GameObjectPtr&
+	GuizmoComponent::getCamera() const noexcept
+	{
+		return camera_;
+	}
+
+	void
 	GuizmoComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::Gui);

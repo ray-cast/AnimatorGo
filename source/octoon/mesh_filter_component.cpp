@@ -46,7 +46,7 @@ namespace octoon
 		{
 			mesh_ = std::move(mesh);
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh_);
+			this->uploadMeshData();
 		}
 	}
 
@@ -57,7 +57,7 @@ namespace octoon
 		{
 			mesh_ = mesh;
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh_);
+			this->uploadMeshData();
 		}
 	}
 
@@ -76,7 +76,7 @@ namespace octoon
 	void
 	MeshFilterComponent::uploadMeshData() noexcept
 	{
-		this->onMeshReplace(mesh_);
+		this->onMeshReplace();
 	}
 
 	GameComponentPtr
@@ -102,9 +102,9 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
+	MeshFilterComponent::onMeshReplace() noexcept
 	{
 		if (this->getGameObject())
-			this->sendMessage("octoon::mesh::update", mesh);
+			this->sendMessage("octoon::mesh::update", mesh_);
 	}
 }

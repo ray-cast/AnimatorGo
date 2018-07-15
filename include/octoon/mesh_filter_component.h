@@ -25,14 +25,14 @@ namespace octoon
 		bool isSharedMesh() const noexcept;
 
 		void uploadMeshData() noexcept;
-		
+
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
-		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
+		virtual void onMeshReplace() noexcept;
 
 	private:
 		MeshFilterComponent(const MeshFilterComponent&) = delete;

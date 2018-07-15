@@ -30,7 +30,7 @@ namespace octoon
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
-		virtual void onPathReplace(const model::MeshPtr& mesh) noexcept;
+		virtual void onPathReplace() noexcept;
 
 	private:
 		PathComponent(const PathComponent&) = delete;

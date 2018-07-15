@@ -19,7 +19,7 @@ namespace octoon
 		bool getActive() const noexcept;
 
 		void setGameListener(const GameListenerPtr& listener) noexcept;
-		GameListenerPtr getGameListener() const noexcept;
+		const GameListenerPtr& getGameListener() const noexcept;
 
 		void setName(std::string&& name) noexcept;
 		void setName(const std::string& name) noexcept;

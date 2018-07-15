@@ -55,8 +55,12 @@ namespace octoon
 	void
 	PathComponent::uploadPathData() noexcept
 	{
-		mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(paths_)));
-		this->onPathReplace(mesh_);
+		if (!paths_.empty())
+			mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(paths_)));
+		else
+			mesh_ = nullptr;
+
+		this->onPathReplace();
 	}
 
 	GameComponentPtr
@@ -73,7 +77,7 @@ namespace octoon
 	PathComponent::onActivate() except
 	{
 		this->addMessageListener("octoon::mesh::get", std::bind(&PathComponent::uploadPathData, this));
-		this->onPathReplace(mesh_);
+		this->uploadPathData();
 	}
 
 	void
@@ -82,9 +86,9 @@ namespace octoon
 	}
 
 	void
-	PathComponent::onPathReplace(const model::MeshPtr& mesh) noexcept
+	PathComponent::onPathReplace() noexcept
 	{
 		if (this->getGameObject())
-			this->sendMessage("octoon::mesh::update", mesh);
+			this->sendMessage("octoon::mesh::update", mesh_);
 	}
 }

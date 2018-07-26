@@ -131,6 +131,7 @@ namespace octoon
 			{
 				width_ = width;
 				height_ = height;
+
 				needUpdateViewProject_ = true;
 			}
 

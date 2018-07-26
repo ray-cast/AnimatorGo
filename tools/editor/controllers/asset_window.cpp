@@ -35,6 +35,18 @@ namespace octoon
 		{
 			if (imgui::begin_dock("Assets", &isShowedAssetsWindow_))
 			{
+				imgui::text("", "");
+				imgui::same_line();
+				if (imgui::button("Import")) {}
+				imgui::same_line();
+				if (imgui::button("Export")) {}
+
+				imgui::push_style_color(imgui::GuiCol::Button, math::float4::Zero);
+				imgui::text("", "");
+				imgui::same_line();
+
+				imgui::pop_style_color();
+
 				imgui::end_dock();
 			}
 		}

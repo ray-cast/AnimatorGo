@@ -7,6 +7,7 @@
 #include "controllers/inspector_window.h"
 #include "controllers/message_window.h"
 #include "controllers/theme_manager.h"
+#include "controllers/about_window.h"
 
 #include <octoon/octoon.h>
 
@@ -35,6 +36,7 @@ namespace octoon
 			main_->addComponent<InspectorWindow>();
 			main_->addComponent<ThemeManager>();
 			main_->addComponent<MessageWindow>();
+			main_->addComponent<AboutWindow>();
 			main_->addMessageListener("editor:menu:file:exit", [](const runtime::any&) { std::exit(0); });
 
 			auto text = model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });

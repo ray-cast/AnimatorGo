@@ -12,6 +12,8 @@ SET(MAIN_LIST
 SOURCE_GROUP(${LIB_NAME} FILES ${MAIN_LIST})
 
 SET(CONTROLLERS_LIST
+	${SOURCE_PATH}/controllers/about_window.h
+	${SOURCE_PATH}/controllers/about_window.cpp
 	${SOURCE_PATH}/controllers/asset_window.h
 	${SOURCE_PATH}/controllers/asset_window.cpp
 	${SOURCE_PATH}/controllers/camera_window.h

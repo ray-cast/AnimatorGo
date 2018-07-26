@@ -98,8 +98,7 @@ namespace octoon
 
 				if (imgui::begin_menu("Help"))
 				{
-					auto str = "Octoon Studio Ver.0.1 beta\n\n Licensed under the MIT.\n\n Copyright (c) 2018-2019. All rights reserved.";
-					if (imgui::menu_item("About")) { this->sendMessage("editor:message", std::make_pair("About", str)); }
+					if (imgui::menu_item("About")) { this->sendMessage("editor:menu:help:about"); }
 					imgui::end_menu();
 				}
 

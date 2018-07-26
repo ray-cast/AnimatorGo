@@ -30,6 +30,7 @@ namespace octoon
 		MessageWindow::onDeactivate() noexcept
 		{
 			this->removeComponentDispatchs();
+			this->removeMessageListener("editor:message", std::bind(&MessageWindow::showPopupMessage, this, std::placeholders::_1));
 		}
 
 		void

@@ -269,6 +269,19 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline T volume(const detail::AABB<T>& aabb_) noexcept
+		{
+			detail::Vector3<T> ext = aabb_.max - aabb_.min;
+			return ext.x * ext.y * ext.z;
+		}
+
+		template<typename T>
+		inline T diagonal(const detail::AABB<T>& aabb_) noexcept
+		{
+			return aabb_.max - aabb_.min;
+		}
+
+		template<typename T>
 		inline detail::Vector3<T> closest(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
 		{
 			T x = pt.x;

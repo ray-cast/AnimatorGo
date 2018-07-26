@@ -404,6 +404,18 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline bool any(const detail::Vector3<T>& v) noexcept
+		{
+			return v.x != 0.0f || v.y != 0.0f || v.z != 0.0f;
+		}
+
+		template<typename T>
+		inline bool all(const detail::Vector3<T>& v) noexcept
+		{
+			return !(v.x == 0.0f && v.y == 0.0f && v.z == 0.0f);
+		}
+
+		template<typename T>
 		inline bool isfinite(const detail::Vector3<T>& v) noexcept
 		{
 			return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);

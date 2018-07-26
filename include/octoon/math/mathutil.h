@@ -51,7 +51,7 @@ namespace octoon
 		template<typename T>
 		constexpr T sign(const T t) noexcept
 		{
-			return (t == 0.0f) ? 0.0 : (t > 0) ? 1.0f : -1.0f;
+			return (t == 0.0f) ? 0.0f : (t > 0) ? 1.0f : -1.0f;
 		}
 
 		template<typename T>

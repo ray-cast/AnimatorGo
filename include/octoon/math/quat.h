@@ -28,6 +28,7 @@ namespace octoon
 				Quaternion(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
 				Quaternion(const Vector3<T>& axis, T angle) noexcept { this->makeRotation(axis, angle); }
 				Quaternion(const Vector3<T>& forward, const Vector3<T>& up, const Vector3<T>& right) noexcept { this->makeRotation(forward, up, right); }
+				Quaternion(const Vector3<T>& A, const Vector3<T>& B) noexcept { this->makeRotation(A, B); }
 				explicit Quaternion(const T xyzw[4]) noexcept : x(xyzw[0]), y(xyzw[1]), z(xyzw[2]), w(xyzw[3]) {}
 				explicit Quaternion(const Vector3<T>& eulerXYZ) noexcept { this->makeRotation(eulerXYZ); }
 				explicit Quaternion(const Vector4<T>& xyzw) noexcept : x(xyzw.x), y(xyzw.y), z(xyzw.z), w(xyzw.w) {}
@@ -123,6 +124,23 @@ namespace octoon
 					w = cb * cp * ch + sb * sp * sh;
 
 					return *this;
+				}
+
+				Quaternion<T>& makeRotation(const Vector3<T>& a, const Vector3<T>& b) noexcept
+				{
+					auto axis = cross(a, b);
+					auto angle = acos(dot(a, b));
+
+					if (!all(axis))
+					{
+						auto right = cross(Vector3<T>::UnitY, a);
+						if (any(right))
+							axis = cross(a, right);
+						else
+							axis = Vector3<T>(0.0f, 0.0f, -sign(a.y));
+					}
+
+					return makeRotation(axis, angle);
 				}
 
 				Quaternion<T>& makeRotationZYX(const Vector3<T>& euler) noexcept

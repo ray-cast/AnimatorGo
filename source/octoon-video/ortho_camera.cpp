@@ -109,6 +109,14 @@ namespace octoon
 
 			if (width_ != width || height_ != height)
 			{
+				width_ = width;
+				height_ = height;
+
+				needUpdateViewProject_ = true;
+			}
+
+			if (needUpdateViewProject_)
+			{
 				auto left = width * ortho_.x;
 				auto right = width * ortho_.y;
 				auto bottom = height * ortho_.z;
@@ -120,12 +128,6 @@ namespace octoon
 				project_ = adjustment * math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 				projectInverse_ = math::inverse(project_);
 
-				width_ = width;
-				height_ = height;
-			}
-
-			if (needUpdateViewProject_)
-			{
 				viewProject_ = project_ * this->getView();
 				viewProjectInverse_ = math::inverse(viewProject_);
 

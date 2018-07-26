@@ -26,6 +26,7 @@ namespace octoon
 
 		private:
 			bool isShowedInspectorWindow_;
+			GameObjectWeakPtr selected_;
 		};
 	}
 }

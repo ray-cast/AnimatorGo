@@ -129,15 +129,16 @@ namespace octoon
 
 			if (width_ != width || height_ != height)
 			{
-				project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
-				projectInverse_ = math::inverse(project_);
-
 				width_ = width;
 				height_ = height;
+				needUpdateViewProject_ = true;
 			}
 
 			if (needUpdateViewProject_)
 			{
+				project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
+				projectInverse_ = math::inverse(project_);
+
 				viewProject_ = project_ * this->getView();
 				viewProjectInverse_ = math::inverse(viewProject_);
 

@@ -145,6 +145,7 @@ namespace octoon
 
 			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
+			geometry_->setBoundingBox(mesh->getBoundingBox());
 
 			auto& indices = mesh->getIndicesArray();
 			if (!indices.empty())

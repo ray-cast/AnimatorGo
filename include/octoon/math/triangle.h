@@ -32,6 +32,12 @@ namespace octoon
 				const T* ptr() const noexcept { return (T*)this; }
 			};
 		}
+
+		template<typename T>
+		inline T surfaceArea(const detail::Triangle<T>& t) noexcept
+		{
+			return 0.5f * length(cross(t.b - t.a, t.c - t.a));
+		}
 	}
 }
 

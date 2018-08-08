@@ -632,7 +632,7 @@ namespace octoon
 
 				void dumpTGA(const char* filepath) const noexcept(false)
 				{
-					auto stream = std::ofstream(filepath, std::ios_base::out);
+					auto stream = std::ofstream(filepath, std::ios_base::out | std::ios_base::binary);
 					if (stream)
 						this->dumpTGA(stream);
 					else
@@ -641,7 +641,7 @@ namespace octoon
 
 				void dumpTGA(const std::string& filepath) const noexcept(false)
 				{
-					auto stream = std::ofstream(filepath, std::ios_base::out);
+					auto stream = std::ofstream(filepath, std::ios_base::out | std::ios_base::binary);
 					if (stream)
 						this->dumpTGA(stream);
 					else

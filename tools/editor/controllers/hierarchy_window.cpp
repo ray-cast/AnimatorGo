@@ -12,7 +12,7 @@ namespace octoon
 
 		HierarchyWindow::HierarchyWindow() noexcept
 			: isShowedHierarchyWindow_(true)
-			, _selectedObject(nullptr)
+			, selectedObject_(nullptr)
 		{
 		}
 
@@ -51,7 +51,7 @@ namespace octoon
 						else
 							std::sprintf(objectName, "|-%s", name.c_str());
 
-						if (imgui::selectable(objectName, _selectedObject == it ? true : false))
+						if (imgui::selectable(objectName, selectedObject_ == it ? true : false))
 							this->sendMessage("editor:object:selected", it);
 					}
 
@@ -73,7 +73,7 @@ namespace octoon
 		{
 			auto object = runtime::any_cast<GameObject*>(data);
 			if (object)
-				_selectedObject = object;
+				selectedObject_ = object;
 		}
 	}
 }

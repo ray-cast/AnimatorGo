@@ -27,7 +27,7 @@ namespace octoon
 		private:
 			bool isShowedHierarchyWindow_;
 
-			GameObject* _selectedObject;
+			GameObject* selectedObject_;
 		};
 	}
 }

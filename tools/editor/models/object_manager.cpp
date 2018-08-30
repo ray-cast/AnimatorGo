@@ -31,6 +31,9 @@ namespace octoon
 		{
 			this->removeComponentDispatchs();
 			this->removeMessageListener("editor:menu:create:object", std::bind(&ObjectManager::createGameObject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:create:cube", std::bind(&ObjectManager::createCubeObject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:create:sphere", std::bind(&ObjectManager::createSphereObject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:create:plane", std::bind(&ObjectManager::createPlaneObject, this, std::placeholders::_1));
 		}
 
 		void

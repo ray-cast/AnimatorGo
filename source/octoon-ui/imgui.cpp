@@ -722,7 +722,7 @@ namespace octoon
 			ImGui::Bullet();
 		}
 
-		void bulletTextV(const char* fmt, ...) noexcept
+		void bulletText(const char* fmt, ...) noexcept
 		{
 			va_list args;
 			va_start(args, fmt);
@@ -849,7 +849,7 @@ namespace octoon
 			ImGui::PlotHistogram(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max);
 		}
 
-		void progress_bar(float fraction, const float2& size_arg, const char* overlay) noexcept
+		void progressBar(float fraction, const float2& size_arg, const char* overlay) noexcept
 		{
 			ImGui::ProgressBar(fraction, (ImVec2&)size_arg, overlay);
 		}
@@ -874,7 +874,7 @@ namespace octoon
 			return ImGui::DragFloat4(label, v, v_speed, v_min, v_max, display_format, power);
 		}
 
-		bool dragFloat_range2(const char* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, const char* display_format, const char* display_format_max, float power) noexcept
+		bool dragFloatRange2(const char* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, const char* display_format, const char* display_format_max, float power) noexcept
 		{
 			return ImGui::DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max);
 		}
@@ -899,7 +899,7 @@ namespace octoon
 			return ImGui::DragInt4(label, v, v_speed, v_min, v_max, display_format);
 		}
 
-		bool dragInt_range2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* display_format, const char* display_format_max) noexcept
+		bool dragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* display_format, const char* display_format_max) noexcept
 		{
 			return ImGui::DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format);
 		}
@@ -1034,12 +1034,12 @@ namespace octoon
 			return result;
 		}
 
-		bool treeNode_v(const char* str_id, const char* fmt, va_list args) noexcept
+		bool treeNodeV(const char* str_id, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeExV(str_id, 0, fmt, args);
 		}
 
-		bool treeNode_v(const void* ptr_id, const char* fmt, va_list args) noexcept
+		bool treeNodeV(const void* ptr_id, const char* fmt, va_list args) noexcept
 		{
 			return ImGui::TreeNodeExV(ptr_id, 0, fmt, args);
 		}
@@ -1094,27 +1094,27 @@ namespace octoon
 			return ImGui::TreePop();
 		}
 
-		void treeAdvance_to_labelpos() noexcept
+		void treeAdvanceToLabelPos() noexcept
 		{
 			return ImGui::TreeAdvanceToLabelPos();
 		}
 
-		float get_tree_node_to_labelspacing() noexcept
+		float getTreeNodeToLabelSpacing() noexcept
 		{
 			return ImGui::GetTreeNodeToLabelSpacing();
 		}
 
-		void set_next_tree_node_open(bool is_open, GuiSetCondFlags cond) noexcept
+		void setNextTreeNodeOpen(bool is_open, GuiSetCondFlags cond) noexcept
 		{
 			return ImGui::SetNextTreeNodeOpen(is_open, cond);
 		}
 
-		bool collapsing_header(const char* label, GuiTreeNodeFlags flags) noexcept
+		bool collapsingHeader(const char* label, GuiTreeNodeFlags flags) noexcept
 		{
 			return ImGui::CollapsingHeader(label, flags);
 		}
 
-		bool collapsing_header(const char* label, bool* isOpened, GuiTreeNodeFlags flags) noexcept
+		bool collapsingHeader(const char* label, bool* isOpened, GuiTreeNodeFlags flags) noexcept
 		{
 			return ImGui::CollapsingHeader(label, isOpened, flags);
 		}
@@ -1129,27 +1129,27 @@ namespace octoon
 			return ImGui::Selectable(label, p_selected, flags, (const ImVec2&)size);
 		}
 
-		bool list_box(const char* label, int* current_item, const char** items, int items_count, int height_in_items) noexcept
+		bool listBox(const char* label, int* current_item, const char** items, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBox(label, current_item, items, items_count, height_in_items);
 		}
 
-		bool list_box(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items) noexcept
+		bool listBox(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBox(label, current_item, items_getter, data, items_count, height_in_items);
 		}
 
-		bool list_box_header(const char* label, const float2& size) noexcept
+		bool listBoxHeader(const char* label, const float2& size) noexcept
 		{
 			return ImGui::ListBoxHeader(label, (const ImVec2&)size);
 		}
 
-		bool list_box_header(const char* label, int items_count, int height_in_items) noexcept
+		bool listBoxHeader(const char* label, int items_count, int height_in_items) noexcept
 		{
 			return ImGui::ListBoxHeader(label, items_count, height_in_items);
 		}
 
-		void list_box_footer() noexcept
+		void listBoxFooter() noexcept
 		{
 			ImGui::ListBoxFooter();
 		}
@@ -1808,7 +1808,7 @@ namespace octoon
 			ImGui::EndToolbar();
 		}
 
-		bool toolbar_button(GuiTextureID texture, const char* tooltip, bool selected, bool enabled) noexcept
+		bool toolbarButton(GuiTextureID texture, const char* tooltip, bool selected, bool enabled) noexcept
 		{
 			return ImGui::ToolbarButton(texture, tooltip, selected, enabled);
 		}

@@ -358,7 +358,7 @@ namespace octoon
 		OCTOON_EXPORT void setWindowFontScale(float scale) noexcept;
 
 		OCTOON_EXPORT void setNextWindowPos(const float2& pos, GuiSetCondFlags cond = 0) noexcept;
-		OCTOON_EXPORT void setNextWindowPos_center(GuiSetCondFlags cond = 0) noexcept;
+		OCTOON_EXPORT void setNextWindowPosCenter(GuiSetCondFlags cond = 0) noexcept;
 		OCTOON_EXPORT void setNextWindowSize(const float2& size, GuiSetCondFlags cond = 0) noexcept;
 		OCTOON_EXPORT void setNextWindowSizeConstraints(const float2& size_min, const float2& size_max) noexcept;
 		OCTOON_EXPORT void setNextWindowContentSize(const float2& size) noexcept;
@@ -370,7 +370,6 @@ namespace octoon
 		OCTOON_EXPORT void setCursorPosY(float y) noexcept;
 		OCTOON_EXPORT void setCursorPos(const float2& local_pos) noexcept;
 		OCTOON_EXPORT void setCursorScreenPos(const float2& pos) noexcept;
-		OCTOON_EXPORT void setCursorIcon(GuiMouseCursor type) noexcept;
 
 		OCTOON_EXPORT void setKeyboardFocusHere(int offset = 0) noexcept;
 
@@ -392,11 +391,11 @@ namespace octoon
 
 		OCTOON_EXPORT bool isMouseDown(int button) noexcept;
 		OCTOON_EXPORT bool isMouseClicked(int button, bool repeat = false) noexcept;
-		OCTOON_EXPORT bool isMouseDouble_clicked(int button) noexcept;
+		OCTOON_EXPORT bool isMouseDoubleClicked(int button) noexcept;
 		OCTOON_EXPORT bool isMouseReleased(int button) noexcept;
-		OCTOON_EXPORT bool isMouseHovering_window() noexcept;
-		OCTOON_EXPORT bool isMouseHovering_any_window() noexcept;
-		OCTOON_EXPORT bool isMouseHovering_rect(const float2& min, const float2& max, bool clip = true) noexcept;
+		OCTOON_EXPORT bool isMouseHoveringWindow() noexcept;
+		OCTOON_EXPORT bool isMouseHoveringAnyWindow() noexcept;
+		OCTOON_EXPORT bool isMouseHoveringRect(const float2& min, const float2& max, bool clip = true) noexcept;
 		OCTOON_EXPORT bool isMouseDragging(int button = 0, float lock_threshold = -1.0f) noexcept;
 
 		OCTOON_EXPORT float getContentRegionAvailWidth() noexcept;
@@ -472,10 +471,10 @@ namespace octoon
 		OCTOON_EXPORT void indent(float indent_w = 0.0f) noexcept;
 		OCTOON_EXPORT void unindent(float indent_w = 0.0f) noexcept;
 
-		OCTOON_EXPORT void align_first_text_height_to_widgets() noexcept;
-		OCTOON_EXPORT float get_text_line_height() noexcept;
-		OCTOON_EXPORT float get_text_line_height_with_spacing() noexcept;
-		OCTOON_EXPORT float get_items_line_height_with_spacing() noexcept;
+		OCTOON_EXPORT void alignFirstTextHeightToWidgets() noexcept;
+		OCTOON_EXPORT float getTextLineHeight() noexcept;
+		OCTOON_EXPORT float getTextLineHeightWithSpacing() noexcept;
+		OCTOON_EXPORT float getItemsLineHeightWithSpacing() noexcept;
 
 		OCTOON_EXPORT void columns(int count = 1, const char* id = nullptr, bool border = true) noexcept;
 
@@ -540,21 +539,21 @@ namespace octoon
 		OCTOON_EXPORT void plotHistogram(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = nullptr, float scale_min = FLT_MAX, float scale_max = FLT_MAX, const float2& graph_size = float2::Zero, int stride = sizeof(float)) noexcept;
 		OCTOON_EXPORT void plotHistogram(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = nullptr, float scale_min = FLT_MAX, float scale_max = FLT_MAX, const float2& graph_size = float2::Zero) noexcept;
 
-		OCTOON_EXPORT void progress_bar(float fraction, const float2& size_arg = float2(-1, 0), const char* overlay = nullptr) noexcept;
+		OCTOON_EXPORT void progressBar(float fraction, const float2& size_arg = float2(-1, 0), const char* overlay = nullptr) noexcept;
 
 		OCTOON_EXPORT bool dragFloat(const char* label, float* v, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
 		OCTOON_EXPORT bool dragFloat2(const char* label, float v[2], float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
 		OCTOON_EXPORT bool dragFloat3(const char* label, float v[3], float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
 		OCTOON_EXPORT bool dragFloat4(const char* label, float v[4], float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
-		OCTOON_EXPORT bool dragFloat_range2(const char* label, float* v_current_min, float* v_current_max, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", const char* display_format_max = nullptr, float power = 1.0f) noexcept;
+		OCTOON_EXPORT bool dragFloatRange2(const char* label, float* v_current_min, float* v_current_max, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", const char* display_format_max = nullptr, float power = 1.0f) noexcept;
 		OCTOON_EXPORT bool dragInt(const char* label, int* v, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
 		OCTOON_EXPORT bool dragInt2(const char* label, int v[2], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
 		OCTOON_EXPORT bool dragInt3(const char* label, int v[3], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
 		OCTOON_EXPORT bool dragInt4(const char* label, int v[4], float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
-		OCTOON_EXPORT bool dragInt_range2(const char* label, int* v_current_min, int* v_current_max, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f", const char* display_format_max = nullptr) noexcept;
-		OCTOON_EXPORT bool dragFloatn_ex(const char* labels[], float* v, int components, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
-		OCTOON_EXPORT bool dragIntn_ex(const char* labels[], int* v, int components, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
-		OCTOON_EXPORT bool dragUIntn_ex(const char* labels[], unsigned int* v, int components, float v_speed = 1.0f, unsigned int v_min = 0, unsigned int v_max = 0, const char* display_format = "%.0f") noexcept;
+		OCTOON_EXPORT bool dragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f", const char* display_format_max = nullptr) noexcept;
+		OCTOON_EXPORT bool dragFloatnEx(const char* labels[], float* v, int components, float v_speed = 1.0f, float v_min = 0.0f, float v_max = 0.0f, const char* display_format = "%.3f", float power = 1.0f) noexcept;
+		OCTOON_EXPORT bool dragIntnEx(const char* labels[], int* v, int components, float v_speed = 1.0f, int v_min = 0, int v_max = 0, const char* display_format = "%.0f") noexcept;
+		OCTOON_EXPORT bool dragUIntnEx(const char* labels[], unsigned int* v, int components, float v_speed = 1.0f, unsigned int v_min = 0, unsigned int v_max = 0, const char* display_format = "%.0f") noexcept;
 
 		OCTOON_EXPORT bool inputText(const char* label, char* buf, size_t buf_size, GuiInputTextFlags flags = 0) noexcept;
 		OCTOON_EXPORT bool inputTextMultiline(const char* label, char* buf, size_t buf_size, const float2& size = float2::Zero, GuiInputTextFlags flags = 0) noexcept;
@@ -602,10 +601,10 @@ namespace octoon
 		OCTOON_EXPORT void  treePush(const void* ptr_id = nullptr) noexcept;
 		OCTOON_EXPORT void  treePop() noexcept;
 		OCTOON_EXPORT void  treeAdvanceToLabelPos() noexcept;
-		OCTOON_EXPORT float get_tree_node_to_label_spacing() noexcept;
-		OCTOON_EXPORT void  set_next_tree_node_open(bool is__open, GuiSetCondFlags cond = 0) noexcept;
-		OCTOON_EXPORT bool  collapsing_header(const char* label, GuiTreeNodeFlags flags = 0) noexcept;
-		OCTOON_EXPORT bool  collapsing_header(const char* label, bool* isOpened, GuiTreeNodeFlags flags = 0) noexcept;
+		OCTOON_EXPORT float getTreeNodeToLabelSpacing() noexcept;
+		OCTOON_EXPORT void  setNextTreeNodeOpen(bool is__open, GuiSetCondFlags cond = 0) noexcept;
+		OCTOON_EXPORT bool  collapsingHeader(const char* label, GuiTreeNodeFlags flags = 0) noexcept;
+		OCTOON_EXPORT bool  collapsingHeader(const char* label, bool* isOpened, GuiTreeNodeFlags flags = 0) noexcept;
 
 		OCTOON_EXPORT bool selectable(const char* label, bool selected = false, GuiSelectableFlags flags = 0, const float2& size = float2::Zero) noexcept;
 		OCTOON_EXPORT bool selectable(const char* label, bool* p_selected, GuiSelectableFlags flags = 0, const float2& size = float2::Zero) noexcept;

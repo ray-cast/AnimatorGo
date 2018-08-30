@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace editor
 	{
-		OctoonImplementSubClass(AboutWindow, GameComponent, "UIViewComponent")
+		OctoonImplementSubClass(AboutWindow, GameComponent, "AboutWindow")
 
 		AboutWindow::AboutWindow() noexcept
 		{

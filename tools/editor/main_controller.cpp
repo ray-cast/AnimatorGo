@@ -9,6 +9,8 @@
 #include "controllers/theme_manager.h"
 #include "controllers/about_window.h"
 
+#include "models/object_manager.h"
+
 #include <octoon/octoon.h>
 
 namespace octoon
@@ -39,20 +41,7 @@ namespace octoon
 			main_->addComponent<AboutWindow>();
 			main_->addMessageListener("editor:menu:file:exit", [](const runtime::any&) { std::exit(0); });
 
-			auto text = model::makeTextContours(L"Octoon Studio", { "../../system/fonts/DroidSansFallback.ttf", 24 });
-			auto aabb = model::aabb(text);
-
-			for (auto& it : text)
-				*it -= aabb.center();
-
-			auto material = std::make_shared<video::TextMaterial>();
-			material->setLean(0.0f);
-			material->setTextColor(video::TextColor::FrontColor, math::float3(180.0, 180.0, 180.0) / 255.0f);
-			material->setTextColor(video::TextColor::SideColor, math::float3(125.f, 125.f, 125.f) / 255.0f);
-
-			object_ = GameObject::create("Text");
-			object_->addComponent<MeshFilterComponent>(model::makeMesh(text));
-			object_->addComponent<MeshRendererComponent>(material);
+			main_->addComponent<ObjectManager>();
 		}
 
 		void

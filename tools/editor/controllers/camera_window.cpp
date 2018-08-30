@@ -27,7 +27,7 @@ namespace octoon
 			this->addComponentDispatch(GameDispatchType::Gui);
 
 			camera_ = GameObject::create("MainCamera");
-			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -200));
+			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -20));
 			camera_->addComponent<EditorCameraComponent>();
 
 			auto camera = camera_->addComponent<PerspectiveCameraComponent>(45.0f);

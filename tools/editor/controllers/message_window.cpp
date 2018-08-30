@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace editor
 	{
-		OctoonImplementSubClass(MessageWindow, GameComponent, "UIViewComponent")
+		OctoonImplementSubClass(MessageWindow, GameComponent, "MessageWindow")
 
 		MessageWindow::MessageWindow() noexcept
 		{

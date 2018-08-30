@@ -24,6 +24,7 @@ namespace octoon
 		HierarchyWindow::onActivate() noexcept
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
+			this->addMessageListener("editor:object:selected", std::bind(&HierarchyWindow::onObjectSelected, this, std::placeholders::_1));
 		}
 
 		void
@@ -68,6 +69,14 @@ namespace octoon
 		HierarchyWindow::clone() const noexcept
 		{
 			return std::make_shared<HierarchyWindow>();
+		}
+
+		void
+		HierarchyWindow::onObjectSelected(const runtime::any& data) noexcept
+		{
+			auto object = runtime::any_cast<GameObject*>(data);
+			if (object)
+				_selectedObject = object;
 		}
 	}
 }

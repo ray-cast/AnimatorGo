@@ -22,6 +22,8 @@ namespace octoon
 
 			void onGui() noexcept override;
 
+			void onObjectSelected(const runtime::any& data) noexcept;
+
 		private:
 			bool isShowedHierarchyWindow_;
 

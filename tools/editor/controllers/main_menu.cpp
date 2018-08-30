@@ -67,6 +67,11 @@ namespace octoon
 
 				if (imgui::beginMenu("Edit"))
 				{
+					imgui::menuItem("Undo", "CTRL+Z", false, false);
+					imgui::menuItem("Rndo", "CTRL+Y", false, false);
+
+					imgui::separator();
+
 					if (imgui::beginMenu("Language"))
 					{
 						if (imgui::menuItem("English")) { /*on click() */ }

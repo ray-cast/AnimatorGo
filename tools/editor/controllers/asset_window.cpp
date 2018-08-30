@@ -33,21 +33,21 @@ namespace octoon
 		void 
 		AssetWindow::onGui() noexcept
 		{
-			if (imgui::begin_dock("Assets", &isShowedAssetsWindow_))
+			if (imgui::beginDock("Assets", &isShowedAssetsWindow_))
 			{
 				imgui::text("", "");
-				imgui::same_line();
+				imgui::sameLine();
 				if (imgui::button("Import")) {}
-				imgui::same_line();
+				imgui::sameLine();
 				if (imgui::button("Export")) {}
 
-				imgui::push_style_color(imgui::GuiCol::Button, math::float4::Zero);
+				imgui::pushStyleColor(imgui::GuiCol::Button, math::float4::Zero);
 				imgui::text("", "");
-				imgui::same_line();
+				imgui::sameLine();
 
-				imgui::pop_style_color();
+				imgui::popStyleColor();
 
-				imgui::end_dock();
+				imgui::endDock();
 			}
 		}
 

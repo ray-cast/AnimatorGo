@@ -57,7 +57,7 @@ namespace octoon
 				if (_ignoreMessage[_messageTitle])
 					return;
 
-				imgui::open_popup(_messageTitle.c_str());
+				imgui::openPopup(_messageTitle.c_str());
 
 				_isShowMessage = true;
 			}
@@ -65,27 +65,27 @@ namespace octoon
 			if (!_isShowMessage)
 				return;
 
-			if (imgui::begin_popup_modal(_messageTitle.c_str(), &_isShowMessage, imgui::GuiWindowFlagBits::AlwaysAutoResizeBit | imgui::GuiWindowFlagBits::NoSavedSettingsBit))
+			if (imgui::beginPopupModal(_messageTitle.c_str(), &_isShowMessage, imgui::GuiWindowFlagBits::AlwaysAutoResizeBit | imgui::GuiWindowFlagBits::NoSavedSettingsBit))
 			{
-				imgui::text_unformatted(_messageText.c_str());
+				imgui::textUnformatted(_messageText.c_str());
 				imgui::separator();
 
-				imgui::push_style_var(imgui::GuiStyleVar::FramePadding, math::float2::Zero);
+				imgui::pushStyleVar(imgui::GuiStyleVar::FramePadding, math::float2::Zero);
 				imgui::checkbox("Don't ask me next time?", &_ignoreMessage[_messageText]);
-				imgui::pop_style_var();
+				imgui::popStyleVar();
 
-				if (imgui::button("Ok", math::float2(120, 0))) { imgui::close_current_popup(); _isShowMessage = false; }
-				imgui::same_line();
+				if (imgui::button("Ok", math::float2(120, 0))) { imgui::closeCurrentPopup(); _isShowMessage = false; }
+				imgui::sameLine();
 
-				if (imgui::button("Cancel", math::float2(120, 0))) { imgui::close_current_popup(); _isShowMessage = false; }
+				if (imgui::button("Cancel", math::float2(120, 0))) { imgui::closeCurrentPopup(); _isShowMessage = false; }
 
-				if (imgui::is_key_down(input::InputKey::Enter) || imgui::is_key_down(input::InputKey::KP_Enter))
+				if (imgui::isKeyDown(input::InputKey::Enter) || imgui::isKeyDown(input::InputKey::KP_Enter))
 				{
 					_isShowMessage = false;
-					imgui::close_current_popup();
+					imgui::closeCurrentPopup();
 				}
 
-				imgui::end_popup();
+				imgui::endPopup();
 			}
 		}
 

@@ -30,27 +30,27 @@ public:
 
 		if (octoon::imgui::begin("Material"))
 		{
-			octoon::imgui::set_window_size(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
+			octoon::imgui::setWindowSize(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
 
-			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (octoon::imgui::treeNodeEx("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				octoon::math::float3 matrixTranslation = transform->getTranslate();
 				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::eulerAngles(transform->getQuaternion()));
 				octoon::math::float3 matrixScale = transform->getScale();
 
-				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
-				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
-				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
+				octoon::imgui::dragFloat3("Tr", matrixTranslation.ptr(), 3);
+				octoon::imgui::dragFloat3("Rt", matrixRotation.ptr(), 1);
+				octoon::imgui::dragFloat3("Sc", matrixScale.ptr(), 1);
 
 				transform->setTranslate(matrixTranslation);
 
 				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
 				transform->setScale(matrixScale);
 
-				octoon::imgui::tree_pop();
+				octoon::imgui::treePop();
 			}
 
-			if (material_ && octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (material_ && octoon::imgui::treeNodeEx("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				static octoon::math::float1 smoothness = 0.0f;
 				static octoon::math::float1 metalness = 0.0f;
@@ -59,14 +59,14 @@ public:
 				static octoon::math::float3 baseColor = octoon::math::float3(62.0f, 62.0f, 62.0f) / 255.0f;
 				static octoon::math::float3 specularColor(1.0f);
 
-				octoon::imgui::drag_float3("Light Direction", lightDir.ptr(), 0.1f);
+				octoon::imgui::dragFloat3("Light Direction", lightDir.ptr(), 0.1f);
 
-				octoon::imgui::color_picker3("Ambient Color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-				octoon::imgui::color_picker3("Base Color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-				octoon::imgui::color_picker3("Specular Color", specularColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::colorPicker3("Ambient Color", ambientColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::colorPicker3("Base Color", baseColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::colorPicker3("Specular Color", specularColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
-				octoon::imgui::drag_float("smoothness", &smoothness, 0.01f, 0.0f, 1.0f);
-				octoon::imgui::drag_float("metalness", &metalness, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::dragFloat("smoothness", &smoothness, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::dragFloat("metalness", &metalness, 0.01f, 0.0f, 1.0f);
 
 				lightDir = octoon::math::normalize(lightDir);
 
@@ -77,7 +77,7 @@ public:
 				material_->setSmoothness(smoothness);
 				material_->setMetalness(metalness);
 
-				octoon::imgui::tree_pop();
+				octoon::imgui::treePop();
 			}
 
 			octoon::imgui::end();

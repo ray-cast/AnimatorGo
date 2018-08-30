@@ -48,11 +48,11 @@ namespace octoon
 		{
 			auto cameraComponent = camera_->getComponent<CameraComponent>();
 
-			if (imgui::begin_dock("Camera", &isShowedCameraWindow_, imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
+			if (imgui::beginDock("Camera", &isShowedCameraWindow_, imgui::GuiWindowFlagBits::AlwaysUseWindowPaddingBit | imgui::GuiWindowFlagBits::NoScrollWithMouseBit))
 			{
-				imgui::set_scroll_y(imgui::get_style_default().WindowPadding.y);
+				imgui::setScrollY(imgui::getStyleDefault().WindowPadding.y);
 
-				auto size = imgui::get_window_size();
+				auto size = imgui::getWindowSize();
 
 				if (framebufferSizeW_ != size.x || framebufferSizeH_ != size.y)
 				{
@@ -78,7 +78,7 @@ namespace octoon
 						imgui::image(texture.get(), size, math::float2::UnitY, math::float2::UnitX);
 				}
 
-				imgui::end_dock();
+				imgui::endDock();
 			}
 		}
 

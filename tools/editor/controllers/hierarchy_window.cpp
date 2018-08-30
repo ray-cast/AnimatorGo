@@ -35,11 +35,11 @@ namespace octoon
 		void 
 		HierarchyWindow::onGui() noexcept
 		{
-			if (imgui::begin_dock("Hierarchy", &isShowedHierarchyWindow_))
+			if (imgui::beginDock("Hierarchy", &isShowedHierarchyWindow_))
 			{
 				auto& actors = GameObjectManager::instance()->getInstanceList();
 				
-				if (imgui::tree_node_ex("Object", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+				if (imgui::treeNodeEx("Object", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 				{
 					for (auto& it : actors)
 					{
@@ -57,10 +57,10 @@ namespace octoon
 						}
 					}
 
-					imgui::tree_pop();
+					imgui::treePop();
 				}
 
-				imgui::end_dock();
+				imgui::endDock();
 			}
 		}
 

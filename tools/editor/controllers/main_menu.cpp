@@ -36,78 +36,78 @@ namespace octoon
 			if (!isShowedMainMenu_)
 				return;
 
-			auto& style = imgui::get_style_default();
-			imgui::push_style_var(imgui::GuiStyleVar::WindowPadding, math::float2(style.WindowPadding.x * 2, style.WindowPadding.y));
+			auto& style = imgui::getStyleDefault();
+			imgui::pushStyleVar(imgui::GuiStyleVar::WindowPadding, math::float2(style.WindowPadding.x * 2, style.WindowPadding.y));
 
-			if (imgui::begin_main_menu_bar())
+			if (imgui::beginMainMenuBar())
 			{
-				math::float2 size = imgui::get_display_size();
-				size.y -= imgui::get_window_height();
+				math::float2 size = imgui::getDisplaySize();
+				size.y -= imgui::getWindowHeight();
 
-				imgui::root_dock(math::float2(0, imgui::get_window_height()), size);
-				imgui::push_style_color(imgui::GuiCol::Border, math::float4::Zero);
+				imgui::rootDock(math::float2(0, imgui::getWindowHeight()), size);
+				imgui::pushStyleColor(imgui::GuiCol::Border, math::float4::Zero);
 
-				if (imgui::begin_menu("File"))
+				if (imgui::beginMenu("File"))
 				{
-					if (imgui::menu_item("Open", "CTRL+O", false, false)) { this->sendMessage("editor:menu:file:open"); }
-					if (imgui::menu_item("Save", "CTRL+S", false, false)) { this->sendMessage("editor:menu:file:save"); }
-					if (imgui::menu_item("Save As...", "CTRL+SHIFT+S", false, false)) { this->sendMessage("editor:menu:file:saveAs"); }
+					if (imgui::menuItem("Open", "CTRL+O", false, false)) { this->sendMessage("editor:menu:file:open"); }
+					if (imgui::menuItem("Save", "CTRL+S", false, false)) { this->sendMessage("editor:menu:file:save"); }
+					if (imgui::menuItem("Save As...", "CTRL+SHIFT+S", false, false)) { this->sendMessage("editor:menu:file:saveAs"); }
 
 					imgui::separator();
 
-					if (imgui::menu_item("Import Model")) { this->sendMessage("editor:menu:file:import"); }
-					if (imgui::menu_item("Export Model")) { this->sendMessage("editor:menu:file:export"); }
+					if (imgui::menuItem("Import Model")) { this->sendMessage("editor:menu:file:import"); }
+					if (imgui::menuItem("Export Model")) { this->sendMessage("editor:menu:file:export"); }
 
 					imgui::separator();
 
-					if (imgui::menu_item("Exit")) { this->sendMessage("editor:menu:file:exit"); }
+					if (imgui::menuItem("Exit")) { this->sendMessage("editor:menu:file:exit"); }
 
-					imgui::end_menu();
+					imgui::endMenu();
 				}
 
-				if (imgui::begin_menu("Edit"))
+				if (imgui::beginMenu("Edit"))
 				{
-					if (imgui::begin_menu("Language"))
+					if (imgui::beginMenu("Language"))
 					{
-						if (imgui::menu_item("English")) { /*on click() */ }
-						if (imgui::menu_item("Chinese")) { /*on click() */ }
+						if (imgui::menuItem("English")) { /*on click() */ }
+						if (imgui::menuItem("Chinese")) { /*on click() */ }
 
-						imgui::end_menu();
+						imgui::endMenu();
 					}
 
 					imgui::separator();
-					imgui::menu_item("Style Editor", 0);
+					imgui::menuItem("Style Editor", 0);
 
-					imgui::end_menu();
+					imgui::endMenu();
 				}
 
-				if (imgui::begin_menu("GameObject"))
+				if (imgui::beginMenu("GameObject"))
 				{
-					if (imgui::menu_item("Create Game Object")) { this->sendMessage("editor:menu:help:about"); }
-					imgui::end_menu();
+					if (imgui::menuItem("Create Game Object")) { this->sendMessage("editor:menu:help:about"); }
+					imgui::endMenu();
 				}
 
-				if (imgui::begin_menu("Window"))
+				if (imgui::beginMenu("Window"))
 				{
-					imgui::menu_item("Assert", 0);
-					imgui::menu_item("Camera", 0);
-					imgui::menu_item("Inspector", 0);
-					imgui::menu_item("Light Mass", 0);
-					imgui::end_menu();
+					imgui::menuItem("Assert", 0);
+					imgui::menuItem("Camera", 0);
+					imgui::menuItem("Inspector", 0);
+					imgui::menuItem("Light Mass", 0);
+					imgui::endMenu();
 				}
 
-				if (imgui::begin_menu("Help"))
+				if (imgui::beginMenu("Help"))
 				{
-					if (imgui::menu_item("About")) { this->sendMessage("editor:menu:help:about"); }
-					imgui::end_menu();
+					if (imgui::menuItem("About")) { this->sendMessage("editor:menu:help:about"); }
+					imgui::endMenu();
 				}
 
-				imgui::pop_style_color();
+				imgui::popStyleColor();
 
-				imgui::end_main_menu_bar();
+				imgui::endMainMenuBar();
 			}
 
-			imgui::pop_style_var();
+			imgui::popStyleVar();
 		}
 
 		GameComponentPtr

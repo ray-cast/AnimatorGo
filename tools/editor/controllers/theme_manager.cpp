@@ -23,7 +23,7 @@ namespace octoon
 			_styleDefault.Colors[imgui::GuiCol::Border] = octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f);
 			_style = _styleDefault;
 
-			imgui::set_style(_styleDefault);
+			imgui::setStyle(_styleDefault);
 		}
 
 		ThemeManager::~ThemeManager() noexcept

@@ -87,7 +87,7 @@ namespace octoon
 			ImGui::LoadDock(imguiDockPath_.c_str());
 
 			GuiStyle style;
-			set_style(style);
+			setStyle(style);
 
 			ImGuiIO& io = ImGui::GetIO();
 			io.ImeWindowHandle = window;

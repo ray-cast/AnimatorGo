@@ -30,56 +30,56 @@ public:
 
 		if (octoon::imgui::begin("Material"))
 		{
-			octoon::imgui::set_window_size(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
+			octoon::imgui::setWindowSize(octoon::imgui::float2(300, 700), octoon::imgui::GuiSetCondFlagBits::FirstUseEverBit);
 
-			if (octoon::imgui::tree_node_ex("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (octoon::imgui::treeNodeEx("Transform", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				octoon::math::float3 matrixTranslation = transform->getTranslate();
 				octoon::math::float3 matrixRotation = octoon::math::degress(octoon::math::eulerAngles(transform->getQuaternion()));
 				octoon::math::float3 matrixScale = transform->getScale();
 
-				octoon::imgui::drag_float3("Tr", matrixTranslation.ptr(), 3);
-				octoon::imgui::drag_float3("Rt", matrixRotation.ptr(), 1);
-				octoon::imgui::drag_float3("Sc", matrixScale.ptr(), 1);
+				octoon::imgui::dragFloat3("Tr", matrixTranslation.ptr(), 3);
+				octoon::imgui::dragFloat3("Rt", matrixRotation.ptr(), 1);
+				octoon::imgui::dragFloat3("Sc", matrixScale.ptr(), 1);
 
 				transform->setTranslate(matrixTranslation);
 
 				transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(matrixRotation)));
 				transform->setScale(matrixScale);
 
-				octoon::imgui::tree_pop();
+				octoon::imgui::treePop();
 			}
 
-			if (octoon::imgui::tree_node_ex("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (octoon::imgui::treeNodeEx("Material", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				static octoon::math::float1 lern = 0.0f;
 				static octoon::math::float3 frontColor = octoon::math::float3(31.0, 179.0, 249.0) / 255.0f;
 				static octoon::math::float3 sideColor(0.0f, 1.0f, 0.0f);
 				static octoon::math::float3 translate(0.0f, 0.0f, 0.0f);
 
-				octoon::imgui::drag_float("lern", &lern, 0.01f, 0.0f, 1.0f);
-				octoon::imgui::drag_float3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
+				octoon::imgui::dragFloat("lern", &lern, 0.01f, 0.0f, 1.0f);
+				octoon::imgui::dragFloat3("translate", translate.ptr(), 1.0f, 0.0f, 50.0f);
 
-				octoon::imgui::color_picker3("front color", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
-				octoon::imgui::color_picker3("side color", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::colorPicker3("front color", frontColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
+				octoon::imgui::colorPicker3("side color", sideColor.ptr(), octoon::imgui::GuiColorEditFlagBits::HSV | octoon::imgui::GuiColorEditFlagBits::NoSidePreview);
 
 				material_->setLean(lern);
 				material_->setTextColor(octoon::video::TextColor::FrontColor, frontColor);
 				material_->setTextColor(octoon::video::TextColor::SideColor, sideColor);
 				material_->setTranslate(translate);
 
-				octoon::imgui::tree_pop();
+				octoon::imgui::treePop();
 			}
 
-			if (octoon::imgui::tree_node_ex("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
+			if (octoon::imgui::treeNodeEx("Text", octoon::imgui::GuiTreeNodeFlagBits::BulletBit | octoon::imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 			{
 				static octoon::math::float1 x1 = 0.0f;
 				static octoon::math::float1 x2 = 0.0f;
 				static octoon::math::float1 y1 = 0.0f;
 				static octoon::math::float1 y2 = 0.0f;
 
-				octoon::imgui::drag_float("x", &x1, 0.01f, -1, 1);
-				octoon::imgui::drag_float("y", &y1, 0.01f, -1, 1); 
+				octoon::imgui::dragFloat("x", &x1, 0.01f, -1, 1);
+				octoon::imgui::dragFloat("y", &y1, 0.01f, -1, 1); 
 
 				if (y1 != y2 || x1 != x2)
 				{
@@ -106,7 +106,7 @@ public:
 					y2 = y1;
 				}
 
-				octoon::imgui::tree_pop();
+				octoon::imgui::treePop();
 			}
 
 			octoon::imgui::end();

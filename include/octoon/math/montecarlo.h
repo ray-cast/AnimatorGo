@@ -31,7 +31,7 @@ namespace octoon
 			T m2 = m * m;
 			T u = (1 - Xi.y) / (1 + (m2 - 1) * Xi.y);
 
-			return HammersleySampleCos<T>(const detail::Vector2<T>(Xi.x, u));
+			return HammersleySampleCos<T>(detail::Vector2<T>(Xi.x, u));
 		}
 
 		template<typename T = float, typename = std::enable_if_t<trait::is_floating_point_v<T>>>

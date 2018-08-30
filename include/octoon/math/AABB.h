@@ -177,11 +177,11 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::AABB<T>& aabb_, const detail::AABB<T>& other) noexcept
+		inline bool intersects(const detail::AABB<T>& a, const detail::AABB<T>& b) noexcept
 		{
-			if (aabb_.max.x < other.min.x || aabb_.min.x > other.max.x) { return false; }
-			if (aabb_.max.y < other.min.y || aabb_.min.y > other.max.y) { return false; }
-			if (aabb_.max.z < other.min.z || aabb_.min.z > other.max.z) { return false; }
+			if (a.max.x < b.min.x || a.min.x > b.max.x) { return false; }
+			if (a.max.y < b.min.y || a.min.y > b.max.y) { return false; }
+			if (a.max.z < b.min.z || a.min.z > b.max.z) { return false; }
 
 			return true;
 		}
@@ -266,6 +266,19 @@ namespace octoon
 		{
 			detail::Vector3<T> ext = aabb_.max - aabb_.min;
 			return 2 * (ext.x * ext.y + ext.x * ext.z + ext.y * ext.z);
+		}
+
+		template<typename T>
+		inline T volume(const detail::AABB<T>& aabb_) noexcept
+		{
+			detail::Vector3<T> ext = aabb_.max - aabb_.min;
+			return ext.x * ext.y * ext.z;
+		}
+
+		template<typename T>
+		inline T diagonal(const detail::AABB<T>& aabb_) noexcept
+		{
+			return aabb_.max - aabb_.min;
 		}
 
 		template<typename T>

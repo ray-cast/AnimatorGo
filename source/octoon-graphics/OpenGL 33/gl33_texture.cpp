@@ -353,7 +353,7 @@ namespace octoon
 		}
 
 		const GraphicsTextureDesc&
-		GL33Texture::getGraphicsTextureDesc() const noexcept
+		GL33Texture::getTextureDesc() const noexcept
 		{
 			return _textureDesc;
 		}

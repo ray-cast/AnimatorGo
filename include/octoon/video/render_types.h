@@ -10,6 +10,9 @@ namespace octoon
 	namespace video
 	{
 		typedef std::shared_ptr<class Camera> CameraPtr;
+		typedef std::shared_ptr<class OrthoCamera> OrthoCameraPtr;
+		typedef std::shared_ptr<class PerspectiveCamera> PerspectiveCameraPtr;
+		typedef std::shared_ptr<class FilmCamera> FilmCameraPtr;
 		typedef std::shared_ptr<class Geometry> GeometryPtr;
 		typedef std::shared_ptr<class Material> MaterialPtr;
 		typedef std::shared_ptr<class RenderObject> RenderObjectPtr;
@@ -21,17 +24,11 @@ namespace octoon
 		typedef std::vector<Camera*> CameraRaws;
 		typedef std::vector<RenderObject*> RenderObjectRaws;
 
-		enum class CameraOrder
+		enum class CameraType
 		{
 			Custom,
 			Main,
 			UI
-		};
-
-		enum class CameraType
-		{
-			Ortho,
-			Perspective
 		};
 
 		enum class GraphicsIndexType

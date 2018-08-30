@@ -150,6 +150,58 @@ namespace octoon
 		return name_;
 	}
 
+	void
+	GameComponent::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessage(event, data);
+	}
+
+	void
+	GameComponent::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessageUpwards(event, data);
+	}
+
+	void
+	GameComponent::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->sendMessageDownwards(event, data);
+	}
+
+	void
+	GameComponent::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->addMessageListener(event, listener);
+	}
+
+	void
+	GameComponent::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		assert(gameObject_);
+		gameObject_->removeMessageListener(event, listener);
+	}
+
+	void
+	GameComponent::load(const io::archivebuf& reader) except
+	{
+		bool active = false;
+		reader["name"] >> name_;
+		reader["active"] >> active;
+
+		this->setActive(active);
+	}
+
+	void
+	GameComponent::save(io::archivebuf& write) except
+	{
+		write["name"] << name_;
+		write["active"] << active_;
+	}
+
 	GameComponentPtr
 	GameComponent::instantiate(const GameComponent* component) except
 	{

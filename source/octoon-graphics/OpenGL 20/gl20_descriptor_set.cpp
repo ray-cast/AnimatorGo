@@ -626,7 +626,7 @@ namespace octoon
 		}
 
 		const GraphicsDescriptorPoolDesc&
-		GL20DescriptorPool::getGraphicsDescriptorPoolDesc() const noexcept
+		GL20DescriptorPool::getDescriptorPoolDesc() const noexcept
 		{
 			return _descriptorPoolDesc;
 		}
@@ -665,7 +665,7 @@ namespace octoon
 		}
 
 		const GraphicsDescriptorSetLayoutDesc&
-		GL20DescriptorSetLayout::getGraphicsDescriptorSetLayoutDesc() const noexcept
+		GL20DescriptorSetLayout::getDescriptorSetLayoutDesc() const noexcept
 		{
 			return _descriptorSetDesc;
 		}
@@ -696,7 +696,7 @@ namespace octoon
 		{
 			assert(descriptorSetDesc.getDescriptorSetLayout());
 
-			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
+			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getDescriptorSetLayoutDesc();
 			auto& uniforms = descriptorSetLayoutDesc.getUniformComponents();
 			for (auto& uniform : uniforms)
 			{
@@ -978,13 +978,13 @@ namespace octoon
 		}
 
 		const GraphicsUniformSets&
-		GL20DescriptorSet::getGraphicsUniformSets() const noexcept
+		GL20DescriptorSet::getUniformSets() const noexcept
 		{
 			return _activeUniformSets;
 		}
 
 		const GraphicsDescriptorSetDesc&
-		GL20DescriptorSet::getGraphicsDescriptorSetDesc() const noexcept
+		GL20DescriptorSet::getDescriptorSetDesc() const noexcept
 		{
 			return _descriptorSetDesc;
 		}

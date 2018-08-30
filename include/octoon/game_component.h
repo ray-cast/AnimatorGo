@@ -43,6 +43,15 @@ namespace octoon
 
 		const GameComponents& getComponents() const noexcept;
 
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+
+		virtual void load(const io::archivebuf& reader) except;
+		virtual void save(io::archivebuf& write) except;
+
 		static GameComponentPtr instantiate(const GameComponent* component) except;
 		static GameComponentPtr instantiate(const GameComponent& component) except;
 

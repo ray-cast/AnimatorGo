@@ -116,7 +116,7 @@ namespace octoon
 					}
 
 					auto texture = depthStencilAttachment.getBindingTexture();
-					auto format = texture->getGraphicsTextureDesc().getTexFormat();
+					auto format = texture->getTextureDesc().getTexFormat();
 					auto level = depthStencilAttachment.getBindingLevel();
 					auto layer = depthStencilAttachment.getBindingLayer();
 
@@ -189,7 +189,7 @@ namespace octoon
 			auto texture = renderTexture->downcast<GL30Texture>();
 			auto textureID = texture->getInstanceID();
 			auto textureTarget = texture->getTarget();
-			auto& textureDesc = renderTexture->getGraphicsTextureDesc();
+			auto& textureDesc = renderTexture->getTextureDesc();
 
 			if (layer > 0)
 			{

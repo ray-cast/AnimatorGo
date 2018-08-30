@@ -8,7 +8,7 @@ namespace octoon
 		{
 		}
 
-		CombineMesh::CombineMesh(const MeshPtr& mesh, const math::float4x4 & transform) noexcept
+		CombineMesh::CombineMesh(const MeshPtr& mesh, const math::float4x4& transform) noexcept
 			: _mesh(mesh)
 			, _transform(transform)
 		{

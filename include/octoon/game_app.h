@@ -2,7 +2,10 @@
 #define OCTOON_GAME_APP_H_
 
 #include <chrono>
+#include <functional>
+#include <octoon/input/input.h>
 #include <octoon/game_types.h>
+#include <octoon/runtime/any.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
@@ -49,6 +52,10 @@ namespace octoon
 		void removeFeature(const GameFeaturePtr& feature) except;
 
 		void sendInputEvent(const input::InputEvent& event) except;
+
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) except;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except;
 
 		void doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
 		void doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;

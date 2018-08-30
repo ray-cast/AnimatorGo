@@ -28,7 +28,7 @@ namespace octoon
 		}
 
 		const GraphicsSamplerDesc&
-		GL20Sampler::getGraphicsSamplerDesc() const noexcept
+		GL20Sampler::getSamplerDesc() const noexcept
 		{
 			return _desc;
 		}

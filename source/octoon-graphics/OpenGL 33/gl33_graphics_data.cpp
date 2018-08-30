@@ -128,7 +128,7 @@ namespace octoon
 		}
 
 		const GraphicsDataDesc&
-		GL33GraphicsData::getGraphicsDataDesc() const noexcept
+		GL33GraphicsData::getDataDesc() const noexcept
 		{
 			return _desc;
 		}

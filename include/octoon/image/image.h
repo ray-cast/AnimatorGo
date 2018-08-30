@@ -45,6 +45,7 @@ namespace octoon
 			std::uint32_t layerLevel() const noexcept;
 
 			const std::uint8_t* data() const noexcept;
+			const std::uint8_t* data(std::size_t i) const noexcept;
 
 		public:
 			bool load(istream& stream, const char* type = nullptr) noexcept;

@@ -6,19 +6,16 @@ class PainterController : public octoon::GameComponent
 public:
 	PainterController()
 	{
-		contours_.push_back(std::make_unique<octoon::model::Contour>());
+		paths_.push_back(std::make_unique<octoon::model::Path>());
 	}
 
 	void onActivate() override
 	{
 		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 
-		auto material_ = std::make_shared<octoon::video::LineMaterial>(2);
-
 		object_ = octoon::GameObject::create();
-		object_->addComponent<octoon::MeshFilterComponent>();
-		object_->addComponent<octoon::MeshRendererComponent>(material_);
-		object_->addComponent<octoon::GuizmoComponent>(this->getGameObject());
+		object_->addComponent<octoon::PathComponent>();
+		object_->addComponent<octoon::MeshRendererComponent>(std::make_shared<octoon::video::LineMaterial>(2.0f));
 	}
 
 	void onDeactivate() noexcept override
@@ -43,9 +40,9 @@ public:
 
 					auto camera = this->getComponent<octoon::CameraComponent>();
 
-					contours_[0]->addPoints(camera->screenToWorld(octoon::math::float3(x, y, -1)));
+					paths_[0]->addEdge(camera->screenToWorld(octoon::math::float3(x, y, -1)));
 
-					object_->getComponent<octoon::MeshFilterComponent>()->setMesh(octoon::model::makeMeshWireframe(contours_));
+					object_->getComponent<octoon::PathComponent>()->setPath(paths_);
 				}
 			}
 		}
@@ -57,7 +54,7 @@ public:
 	}
 
 private:
-	octoon::model::Contours contours_;
+	octoon::model::Paths paths_;
 	octoon::GameObjectPtr object_;
 };
 
@@ -68,14 +65,10 @@ int main(int argc, const char* argv[])
 
 	if (::OctoonOpenWindow("Octoon Studio", 1376, 768))
 	{
-		auto camera = octoon::GameObject::create();
-		camera->addComponent<octoon::CameraComponent>();
-		camera->addComponent<octoon::FirstPersonCameraComponent>();
-		camera->getComponent<octoon::CameraComponent>()->setCameraOrder(octoon::video::CameraOrder::Main);
-		camera->getComponent<octoon::CameraComponent>()->setClearColor(octoon::math::float4(1.0f, 1.0f, 1.0f, 1.0));
-		camera->getComponent<octoon::CameraComponent>()->setCameraType(octoon::video::CameraType::Ortho);
-		camera->getComponent<octoon::CameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 200));
+		auto camera = octoon::GamePrefabs::instance()->createOrthoCamera();
+		camera->getComponent<octoon::OrthoCameraComponent>()->setClearColor(octoon::math::float4(1.0f, 1.0f, 1.0f, 1.0));
+		camera->getComponent<octoon::OrthoCameraComponent>()->setOrtho(octoon::math::float4(0.0, 1.0, 0.0, 1.0));
+		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, -200));
 		camera->addComponent<PainterController>();
 
 		::OctoonMainLoop();

@@ -13,25 +13,25 @@ namespace octoon
 		/*
 		* Local directory mapped directly to a virtual directory.
 		*/
-		class OCTOON_EXPORT farchive final : public archive
+		class OCTOON_EXPORT fpackage final : public package
 		{
 		public:
-			farchive(const char* base_dir) noexcept;
-			farchive(std::string&& base_dir) noexcept;
-			farchive(const std::string& base_dir) noexcept;
-			~farchive() noexcept = default;
+			fpackage(const char* base_dir) noexcept;
+			fpackage(std::string&& base_dir) noexcept;
+			fpackage(const std::string& base_dir) noexcept;
+			~fpackage() noexcept = default;
 
 			std::unique_ptr<stream_buf> open(const Orl& orl, const ios_base::open_mode mode) override;
 
-			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
-			ItemType exists(const Orl& orl) override;
+			bool remove(const Orl& orl, ios_base::file_type type = ios_base::file) override;
+			ios_base::file_type exists(const Orl& orl) override;
 
 		private:
 			std::string make_path(const Orl& orl) const;
+
+		private:
 			std::string base_dir_;
 		};
-
-		using LocalDirPtr = std::shared_ptr<farchive>;
 	}
 }
 

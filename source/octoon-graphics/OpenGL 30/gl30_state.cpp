@@ -292,7 +292,7 @@ namespace octoon
 		}
 
 		const GraphicsStateDesc&
-		GL30GraphicsState::getGraphicsStateDesc() const noexcept
+		GL30GraphicsState::getStateDesc() const noexcept
 		{
 			return _stateDesc;
 		}

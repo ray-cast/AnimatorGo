@@ -10,18 +10,23 @@ namespace octoon
 		OctoonDeclareSubClass(GameScene, runtime::RttiInterface)
 	public:
 		GameScene() noexcept;
+		GameScene(std::string&& name) noexcept;
 		GameScene(const std::string& name) noexcept;
+		GameScene(io::archivebuf& reader) noexcept;
 		~GameScene() noexcept;
 
 		void setActive(bool active) except;
 		bool getActive() const noexcept;
 
 		void setGameListener(const GameListenerPtr& listener) noexcept;
-		GameListenerPtr getGameListener() const noexcept;
+		const GameListenerPtr& getGameListener() const noexcept;
 
 		void setName(std::string&& name) noexcept;
 		void setName(const std::string& name) noexcept;
 		const std::string& getName() const noexcept;
+
+		void load(const io::archivebuf& reader) except;
+		void save(io::archivebuf& write) except;
 
 		std::size_t id() const noexcept;
 

@@ -123,7 +123,7 @@ namespace octoon
 		}
 
 		const GraphicsDataDesc&
-		GL20GraphicsData::getGraphicsDataDesc() const noexcept
+		GL20GraphicsData::getDataDesc() const noexcept
 		{
 			return _desc;
 		}

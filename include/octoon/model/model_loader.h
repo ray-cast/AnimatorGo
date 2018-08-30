@@ -1,5 +1,5 @@
-#ifndef OCTOON_LOADER_H_
-#define OCTOON_LOADER_H_
+#ifndef OCTOON_MODEL_LOADER_H_
+#define OCTOON_MODEL_LOADER_H_
 
 #include <octoon/model/modtypes.h>
 

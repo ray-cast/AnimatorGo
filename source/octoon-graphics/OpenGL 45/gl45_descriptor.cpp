@@ -25,7 +25,7 @@ namespace octoon
 		{
 			assert(descriptorSetDesc.getDescriptorSetLayout());
 
-			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getGraphicsDescriptorSetLayoutDesc();
+			auto& descriptorSetLayoutDesc = descriptorSetDesc.getDescriptorSetLayout()->getDescriptorSetLayoutDesc();
 
 			auto& params = descriptorSetLayoutDesc.getUniformComponents();
 			for (auto& uniform : params)
@@ -342,13 +342,13 @@ namespace octoon
 		}
 
 		const GraphicsUniformSets&
-		GL45DescriptorSet::getGraphicsUniformSets() const noexcept
+		GL45DescriptorSet::getUniformSets() const noexcept
 		{
 			return _activeUniformSets;
 		}
 
 		const GraphicsDescriptorSetDesc&
-		GL45DescriptorSet::getGraphicsDescriptorSetDesc() const noexcept
+		GL45DescriptorSet::getDescriptorSetDesc() const noexcept
 		{
 			return _descriptorSetDesc;
 		}

@@ -2,6 +2,11 @@
 #define OCTOON_GAME_OBJECT_H_
 
 #include <octoon/game_types.h>
+#include <octoon/runtime/any.h>
+#include <octoon/runtime/sigslot.h>
+#include <octoon/io/iarchive.h>
+#include <map>
+#include <functional>
 
 namespace octoon
 {
@@ -12,6 +17,7 @@ namespace octoon
 		GameObject() noexcept;
 		GameObject(std::string&& name) noexcept;
 		GameObject(const std::string& name) noexcept;
+		GameObject(io::archivebuf& reader) except;
 		virtual ~GameObject() noexcept;
 
 		void setName(const std::string& name) noexcept;
@@ -31,9 +37,11 @@ namespace octoon
 		void setParent(const GameObjectPtr& parent) noexcept;
 		GameObject* getParent() const noexcept;
 
-		void addChild(GameObjectPtr& child) noexcept;
+		void addChild(GameObjects&& child) noexcept;
 		void addChild(GameObjectPtr&& child) noexcept;
-		void removeChild(GameObjectPtr& child) noexcept;
+		void addChild(const GameObjects& child) noexcept;
+		void addChild(const GameObjectPtr& child) noexcept;
+		void removeChild(const GameObjectPtr& child) noexcept;
 		void cleanupChildren() noexcept;
 		GameObjectPtr findChild(const std::string& name, bool recurse = true) noexcept;
 
@@ -45,6 +53,7 @@ namespace octoon
 		std::shared_ptr<T> addComponent(Args&&... args) noexcept(false) { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addComponent(t); return t; }
 		void addComponent(const GameComponentPtr& component) except;
 		void addComponent(GameComponentPtr&& component) except;
+		void addComponent(GameComponents&& component) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
 		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }
@@ -77,8 +86,17 @@ namespace octoon
 
 		void destroy() noexcept;
 
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
+
+		virtual void load(const io::archivebuf& reader) except;
+		virtual void save(io::archivebuf& write) except;
 
 		GameObjectPtr clone() const except;
 
@@ -123,7 +141,8 @@ namespace octoon
 		GameObjectWeakPtr parent_;
 
 		GameComponents components_;
-		std::vector<GameComponentRaws> dispatch_components_;
+		std::vector<GameComponentRaws> dispatchComponents_;
+		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
 	};
 }
 

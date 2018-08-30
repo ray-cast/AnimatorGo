@@ -35,13 +35,29 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/transform_component.cpp
 	${HEADER_PATH}/mesh_filter_component.h
 	${SOURCE_PATH}/mesh_filter_component.cpp
+	${HEADER_PATH}/text_component.h
+	${SOURCE_PATH}/text_component.cpp
+	${HEADER_PATH}/path_component.h
+	${SOURCE_PATH}/path_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
+
+SET(ANIMATION_FEATURES_LIST
+	${HEADER_PATH}/animation_transform_component.h
+	${SOURCE_PATH}/animation_transform_component.cpp
+)
+SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 
 IF(OCTOON_FEATURE_VIDEO_ENABLE)
 SET(VIDEO_FEATURES_LIST
 	${HEADER_PATH}/camera_component.h
 	${SOURCE_PATH}/camera_component.cpp
+	${HEADER_PATH}/ortho_camera_component.h
+	${SOURCE_PATH}/ortho_camera_component.cpp
+	${HEADER_PATH}/perspective_camera_component.h
+	${SOURCE_PATH}/perspective_camera_component.cpp
+	${HEADER_PATH}/film_camera_component.h
+	${SOURCE_PATH}/film_camera_component.cpp
 	${HEADER_PATH}/render_component.h
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
@@ -55,6 +71,8 @@ ENDIF()
 SET(INPUT_FEATURES_LIST
 	${HEADER_PATH}/input_feature.h
 	${SOURCE_PATH}/input_feature.cpp
+	${HEADER_PATH}/editor_camera_component.h
+	${SOURCE_PATH}/editor_camera_component.cpp
 	${HEADER_PATH}/first_person_camera_component.h
 	${SOURCE_PATH}/first_person_camera_component.cpp
 )
@@ -87,8 +105,8 @@ SOURCE_GROUP("system\\timer" FILES ${TIMER_FEATURES_LIST})
 SET(IO_FEATURES_LIST
 	${HEADER_PATH}/io_feature.h
 	${SOURCE_PATH}/io_feature.cpp
-	${HEADER_PATH}/res_manager.h
-	${SOURCE_PATH}/res_manager.cpp
+	${HEADER_PATH}/game_prefabs.h
+	${SOURCE_PATH}/game_prefabs.cpp
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 
@@ -96,7 +114,8 @@ IF(OCTOON_BUILD_SHARED_DLL)
 	ADD_DEFINITIONS(-DOCTOON_BUILD_DLL_EXPORT)
 	ADD_LIBRARY(${LIB_NAME} SHARED 
 		${OCTOON_LIST} 
-		${BASE_FEATURES_LIST} 
+		${BASE_FEATURES_LIST}
+		${ANIMATION_FEATURES_LIST}
 		${INPUT_FEATURES_LIST} 
 		${GRAPHICS_FEATURES_LIST}
 		${GUI_FEATURES_LIST}
@@ -108,7 +127,8 @@ ELSE()
 	ADD_DEFINITIONS(-DOCTOON_STATIC)
 	ADD_LIBRARY(${LIB_NAME} 
 		${OCTOON_LIST} 
-		${BASE_FEATURES_LIST} 
+		${BASE_FEATURES_LIST}
+		${ANIMATION_FEATURES_LIST}
 		${INPUT_FEATURES_LIST} 
 		${GRAPHICS_FEATURES_LIST}
 		${GUI_FEATURES_LIST}

@@ -25,11 +25,11 @@ namespace octoon
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
 
-		void onInputEvent(const input::InputEvent& event) noexcept override;
-
 		void onFrameBegin() noexcept override;
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
+
+		void onInputEvent(const runtime::any& data) noexcept;
 
 	private:
 		WindHandle window_;

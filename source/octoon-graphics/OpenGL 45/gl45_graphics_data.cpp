@@ -164,7 +164,7 @@ namespace octoon
 		}
 
 		const GraphicsDataDesc&
-		GL45GraphicsData::getGraphicsDataDesc() const noexcept
+		GL45GraphicsData::getDataDesc() const noexcept
 		{
 			return _desc;
 		}

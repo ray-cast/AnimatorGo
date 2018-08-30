@@ -35,10 +35,22 @@ namespace octoon
 		GameSceneManager::instance()->_instanceScene(this, instance_id_);
 	}
 
-	GameScene::GameScene(const std::string& name) noexcept
-		: name_(name)
+	GameScene::GameScene(io::archivebuf& reader) noexcept
+		: GameScene()
 	{
-		GameSceneManager::instance()->_instanceScene(this, instance_id_);
+		this->load(reader);
+	}
+
+	GameScene::GameScene(std::string&& name) noexcept
+		: GameScene()
+	{
+		this->setName(std::move(name));
+	}
+
+	GameScene::GameScene(const std::string& name) noexcept
+		: GameScene()
+	{
+		this->setName(name);
 	}
 
 	GameScene::~GameScene() noexcept
@@ -74,7 +86,7 @@ namespace octoon
 			listener_ = listener;
 	}
 
-	GameListenerPtr
+	const GameListenerPtr&
 	GameScene::getGameListener() const noexcept
 	{
 		return listener_;
@@ -102,6 +114,18 @@ namespace octoon
 	GameScene::id() const noexcept
 	{
 		return instance_id_;
+	}
+
+	void
+	GameScene::load(const io::archivebuf& reader) except
+	{
+		root_->load(reader);
+	}
+
+	void
+	GameScene::save(io::archivebuf& write) except
+	{
+		root_->save(write);
 	}
 
 	const GameObjectPtr&

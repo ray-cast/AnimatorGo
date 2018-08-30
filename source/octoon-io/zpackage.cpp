@@ -3,14 +3,14 @@
 #include <cassert>
 #include <zipper/unzipper.h>
 
-#include <octoon/io/zarchive.h>
+#include <octoon/io/zpackage.h>
 #include <octoon/io/membuf.h>
 
 namespace octoon
 {
 	namespace io
 	{
-		zarchive::zarchive(const char* zip_file) except
+		zpackage::zpackage(const char* zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -18,7 +18,7 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::zarchive(std::string&& zip_file) except
+		zpackage::zpackage(std::string&& zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -26,7 +26,7 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::zarchive(const std::string& zip_file) except
+		zpackage::zpackage(const std::string& zip_file) except
 			: unzipper_(nullptr)
 			, entries_(nullptr)
 		{
@@ -34,14 +34,14 @@ namespace octoon
 			entries_ = new std::vector<zipper::ZipEntry>(std::move(((zipper::Unzipper*)unzipper_)->entries()));
 		}
 
-		zarchive::~zarchive()
+		zpackage::~zpackage()
 		{
 			delete ((zipper::Unzipper*)unzipper_);
 			delete ((std::vector<zipper::ZipEntry>*)entries_);
 		}
 
 		std::unique_ptr<stream_buf>
-		zarchive::open(const Orl& orl, const ios_base::open_mode opts)
+		zpackage::open(const Orl& orl, const ios_base::open_mode opts)
 		{
 			std::vector<uint8_t> buf;
 
@@ -59,16 +59,16 @@ namespace octoon
 		}
 
 		bool
-		zarchive::remove(const Orl& orl, ItemType type)
+		zpackage::remove(const Orl& orl, ios_base::file_type type)
 		{
 			return false;
 		}
 
-		ItemType
-		zarchive::exists(const Orl& orl)
+		ios_base::file_type
+		zpackage::exists(const Orl& orl)
 		{
 			if (entries_ == nullptr)
-				return ItemType::NA;
+				return ios_base::none;
 
 			auto size = orl.path().size();
 			for (auto entry : *(std::vector<zipper::ZipEntry>*)entries_)
@@ -76,16 +76,16 @@ namespace octoon
 				if (entry.name.size() == size)
 				{
 					if (entry.name == orl.path())
-						return ItemType::File;
+						return ios_base::file;
 				}
 				else if (entry.name.size() == size + 1)
 				{
 					if (orl.path().compare(entry.name) == 0 && entry.name.back() == '/')
-						return ItemType::Directory;
+						return ios_base::directory;
 				}
 			}
 
-			return ItemType::NA;
+			return ios_base::none;
 		}
 	}
 }

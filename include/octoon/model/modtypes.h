@@ -61,19 +61,25 @@ namespace octoon
 		class IKAttr;
 		class Rigidbody;
 		class Joint;
-		class VertexWeight;
 		class CombineMesh;
+
+		namespace detail
+		{
+			template<typename _Tx = std::uint16_t, typename _Ty = float>
+			class VertexWeight;
+		}
+
+		// default
+		using VertexWeight = detail::VertexWeight<std::uint16_t, float>;
 
 		typedef std::shared_ptr<Animation> AnimationPtr;
 		typedef std::shared_ptr<Texture> TexturePtr;
-		typedef std::shared_ptr<Camera> CameraPropertyPtr;
-		typedef std::shared_ptr<Light> LightPropertyPtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<Material> MaterialPtr;
-		typedef std::unique_ptr<class Path> PathPtr;
+		typedef std::shared_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
-		typedef std::unique_ptr<class Contour> ContourPtr;
+		typedef std::shared_ptr<class Contour> ContourPtr;
 		typedef std::shared_ptr<class ContourGroup> ContourGroupPtr;
 		typedef std::shared_ptr<class TextFile> TextFilePtr;
 		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;
@@ -82,8 +88,8 @@ namespace octoon
 		typedef std::shared_ptr<Model> ModelPtr;
 		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
-		typedef std::shared_ptr<Rigidbody> RigidbodyPropertyPtr;
-		typedef std::shared_ptr<Joint> JointPropertyPtr;
+		typedef std::shared_ptr<Rigidbody> RigidbodyPtr;
+		typedef std::shared_ptr<Joint> JointPtr;
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;

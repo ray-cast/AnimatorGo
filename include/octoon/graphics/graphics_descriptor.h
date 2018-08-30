@@ -195,7 +195,7 @@ namespace octoon
 			GraphicsDescriptorPool() noexcept = default;
 			virtual ~GraphicsDescriptorPool() = default;
 
-			virtual const GraphicsDescriptorPoolDesc& getGraphicsDescriptorPoolDesc() const noexcept = 0;
+			virtual const GraphicsDescriptorPoolDesc& getDescriptorPoolDesc() const noexcept = 0;
 
 		private:
 			GraphicsDescriptorPool(const GraphicsDescriptorPool&) = delete;
@@ -209,7 +209,7 @@ namespace octoon
 			GraphicsDescriptorSetLayout() noexcept = default;
 			virtual ~GraphicsDescriptorSetLayout() = default;
 
-			virtual const GraphicsDescriptorSetLayoutDesc& getGraphicsDescriptorSetLayoutDesc() const noexcept = 0;
+			virtual const GraphicsDescriptorSetLayoutDesc& getDescriptorSetLayoutDesc() const noexcept = 0;
 
 		private:
 			GraphicsDescriptorSetLayout(const GraphicsDescriptorSetLayout&) = delete;
@@ -223,8 +223,8 @@ namespace octoon
 			GraphicsDescriptorSet() noexcept = default;
 			virtual ~GraphicsDescriptorSet() = default;
 
-			virtual const GraphicsUniformSets& getGraphicsUniformSets() const noexcept = 0;
-			virtual const GraphicsDescriptorSetDesc& getGraphicsDescriptorSetDesc() const noexcept = 0;
+			virtual const GraphicsUniformSets& getUniformSets() const noexcept = 0;
+			virtual const GraphicsDescriptorSetDesc& getDescriptorSetDesc() const noexcept = 0;
 
 		private:
 			GraphicsDescriptorSet(const GraphicsDescriptorSet&) = delete;

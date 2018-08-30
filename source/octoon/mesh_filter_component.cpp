@@ -45,8 +45,11 @@ namespace octoon
 		if (mesh_ != mesh)
 		{
 			mesh_ = std::move(mesh);
+			if (mesh_->getBoundingBox().empty())
+				mesh_->computeBoundingBox();
+
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh_);
+			this->uploadMeshData();
 		}
 	}
 
@@ -56,8 +59,11 @@ namespace octoon
 		if (mesh_ != mesh)
 		{
 			mesh_ = mesh;
+			if (mesh_->getBoundingBox().empty())
+				mesh_->computeBoundingBox();
+
 			isSharedMesh_ = sharedMesh;
-			this->onMeshReplace(mesh_);
+			this->uploadMeshData();
 		}
 	}
 
@@ -76,22 +82,7 @@ namespace octoon
 	void
 	MeshFilterComponent::uploadMeshData() noexcept
 	{
-		for (auto& it : delegates_)
-			(*it)(mesh_);
-	}
-
-	void
-	MeshFilterComponent::addMeshListener(OnMeshReplaceEvent* func) noexcept
-	{
-		delegates_.push_back(func);
-	}
-
-	void
-	MeshFilterComponent::removeMeshListener(const OnMeshReplaceEvent* func) noexcept
-	{
-		auto it = std::find(delegates_.begin(), delegates_.end(), func);
-		if (it != delegates_.end())
-			delegates_.erase(it);
+		this->onMeshReplace();
 	}
 
 	GameComponentPtr
@@ -99,19 +90,27 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshFilterComponent>();
 		instance->setName(instance->getName());
-
-		if (isSharedMesh_)
-			instance->setMesh(mesh_, isSharedMesh_);
-		else
-			instance->setMesh(mesh_ ? mesh_->clone() : nullptr, isSharedMesh_);
+		instance->setMesh(mesh_ ? (isSharedMesh_ ? mesh_ : mesh_->clone()) : nullptr, isSharedMesh_);
 
 		return instance;
 	}
 
 	void
-	MeshFilterComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
+	MeshFilterComponent::onActivate() except
 	{
-		for (auto& it : delegates_)
-			(*it)(mesh);
+		this->addMessageListener("octoon::mesh::get", std::bind(&MeshFilterComponent::uploadMeshData, this));
+		this->uploadMeshData();
+	}
+
+	void
+	MeshFilterComponent::onDeactivate() noexcept
+	{
+	}
+
+	void
+	MeshFilterComponent::onMeshReplace() noexcept
+	{
+		if (this->getGameObject())
+			this->sendMessage("octoon::mesh::update", mesh_);
 	}
 }

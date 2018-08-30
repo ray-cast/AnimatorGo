@@ -23,7 +23,7 @@ namespace octoon
 			typedef int seekdir;
 			typedef int fmtflags;
 
-			typedef unsigned int io_state, open_mode, seek_dir;
+			typedef unsigned int io_state, open_mode, seek_dir, file_type;
 
 			typedef int int_type;
 			typedef int pos_type;
@@ -64,6 +64,17 @@ namespace octoon
 			static const _Seekdir beg = (_Seekdir)std::ios_base::beg;
 			static const _Seekdir cur = (_Seekdir)std::ios_base::cur;
 			static const _Seekdir end = (_Seekdir)std::ios_base::end;
+
+			/*
+			* File system file types supported by `octoon-io`. This type is used to ensure
+			* all FS operations are adopted as expected. `NA` stands for 'not available',
+			* meaning that the file was not found or of a type out of capability of
+			* `octoon-io`.
+			*/
+			enum _FileType { _Filemask = 0x2 };
+			static const _FileType none = (_FileType)0x0;
+			static const _FileType file = (_FileType)0x1;
+			static const _FileType directory = (_FileType)0x2;
 
 			enum { _Openprot = 0x40 };
 

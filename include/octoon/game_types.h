@@ -2,7 +2,8 @@
 #define OCTOON_GAME_TYPES_H_
 
 #include <octoon/math/math.h>
-#include <octoon/input/input.h>
+#include <octoon/runtime/rtti.h>
+#include <octoon/runtime/rtti_interface.h>
 
 namespace octoon
 {

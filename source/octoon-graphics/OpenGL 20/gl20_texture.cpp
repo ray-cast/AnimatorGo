@@ -186,7 +186,7 @@ namespace octoon
 			{
 				if (sampler)
 				{
-					auto& desc = sampler->getGraphicsSamplerDesc();
+					auto& desc = sampler->getSamplerDesc();
 					if (!applySamplerWrap(_target, desc.getSamplerWrap()))
 						return;
 
@@ -229,7 +229,7 @@ namespace octoon
 		}
 
 		const GraphicsTextureDesc&
-		GL20Texture::getGraphicsTextureDesc() const noexcept
+		GL20Texture::getTextureDesc() const noexcept
 		{
 			return _textureDesc;
 		}

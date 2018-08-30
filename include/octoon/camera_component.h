@@ -6,32 +6,20 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT CameraComponent final : public GameComponent, public video::RenderListener
+	class OCTOON_EXPORT CameraComponent : public GameComponent, public video::RenderListener
 	{
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
 	public:
 		CameraComponent() noexcept;
+		CameraComponent(video::CameraPtr&& camera) noexcept;
 		virtual ~CameraComponent() noexcept;
 
-		void setAperture(float fov) noexcept;
-		void setNear(float znear) noexcept;
-		void setFar(float zfar) noexcept;
-		void setRatio(float ratio) noexcept;
-		void setOrtho(const math::float4& ortho) noexcept;
 		void setClearColor(const math::float4& color) noexcept;
 		void setViewport(const math::float4& viewport) noexcept;
-
-		float getAperture() const noexcept;
-		float getNear() const noexcept;
-		float getFar() const noexcept;
-		float getRatio() const noexcept;
-
 		void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
-		void setCameraOrder(video::CameraOrder order) noexcept;
 		void setCameraType(video::CameraType type) noexcept;
 		void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
-		video::CameraOrder getCameraOrder() const noexcept;
 		video::CameraType getCameraType() const noexcept;
 		graphics::GraphicsClearFlags getClearFlags() const noexcept;
 		const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
@@ -42,7 +30,6 @@ namespace octoon
 		math::float3 screenToWorld(const math::float3& pos) const noexcept;
 		math::float3 screenToView(const math::float2& pos) const noexcept;
 
-		const math::float4& getOrtho() const noexcept;
 		const math::float4& getClearColor() const noexcept;
 		const math::float4& getViewport() const noexcept;
 		const math::float4& getPixelViewport() const noexcept;
@@ -57,8 +44,6 @@ namespace octoon
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
 		void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
 
-		virtual GameComponentPtr clone() const noexcept override;
-
 	private:
 		virtual void onActivate() noexcept override;
 		virtual void onDeactivate() noexcept override;
@@ -69,11 +54,13 @@ namespace octoon
 		virtual void onRenderObjectPre(const video::Camera& camera) noexcept override;
 		virtual void onRenderObjectPost(const video::Camera& camera) noexcept override;
 
+		virtual void onLayerChangeAfter() noexcept override;
+
 	private:
 		CameraComponent(const CameraComponent&) = delete;
 		CameraComponent& operator=(const CameraComponent&) = delete;
 
-	private:
+	protected:
 		video::CameraPtr camera_;
 	};
 }

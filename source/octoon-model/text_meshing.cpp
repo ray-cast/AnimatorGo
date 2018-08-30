@@ -187,6 +187,16 @@ namespace octoon
 			return groups;
 		}
 
+		Contours makeTextContours(const Paths& paths, std::uint16_t bezierSteps) noexcept(false)
+		{
+			Contours groups;
+
+			for (auto& path : paths)
+				groups.push_back(std::make_shared<Contour>(*path, bezierSteps));
+
+			return groups;
+		}
+
 		ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps) noexcept(false)
 		{
 			ContourGroups groups;
@@ -197,7 +207,7 @@ namespace octoon
 			return groups;
 		}
 
-		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps) noexcept(false)
+		ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps, TextAlign align) noexcept(false)
 		{
 			assert(params.getFont());
 			assert(params.getPixelsSize() > 0);
@@ -271,7 +281,7 @@ namespace octoon
 
 			FT_Face ftface = (FT_Face)params.getFont()->getFont();
 
-			auto offset = ftface->glyph->advance.x;
+			auto offset = 0;
 
 			ContourGroups groups;
 
@@ -298,8 +308,33 @@ namespace octoon
 				}
 			}
 
-			for (auto& group : groups)
-				*group -= math::float3(offset * 0.5f, 0, 0);
+			switch (align)
+			{
+			case octoon::model::TextAlign::Left:
+				break;
+			case octoon::model::TextAlign::Right:
+			{
+				for (auto& group : groups)
+				{
+					for (auto& contour : group->getContours())
+						for (auto& pt : contour->points())
+							pt.x -= offset;
+				}
+			}
+			break;
+			case octoon::model::TextAlign::Middle:
+			{
+				for (auto& group : groups)
+				{
+					for (auto& contour : group->getContours())
+						for (auto& pt : contour->points())
+							pt.x -= offset * 0.5f;
+				}
+			}
+			break;
+			default:
+				break;
+			}
 
 			return groups;
 		}

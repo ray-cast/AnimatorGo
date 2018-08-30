@@ -3,6 +3,7 @@
 #include <octoon/game_feature.h>
 #include <octoon/game_listener.h>
 #include <octoon/runtime/algorithm.h>
+#include <octoon/io/json_reader.h>
 
 namespace octoon
 {
@@ -83,10 +84,19 @@ namespace octoon
 
 		try
 		{
-			auto scene = std::make_shared<GameScene>();
-			scene->setGameListener(listener_);
+			io::JsonReader json(filename);
+			if (json)
+			{
+				auto scene = std::make_shared<GameScene>();
+				scene->setGameListener(listener_);
+				scene->load(*json.rdbuf());
 
-			return this->addScene(scene);
+				return this->addScene(scene);
+			}
+			else
+			{
+				return false;
+			}
 		}
 		catch (const std::exception& e)
 		{
@@ -352,16 +362,25 @@ namespace octoon
 		}
 
 		features_.clear();
+		dispatchEvents_.clear();
 	}
 
 	void
-	GameServer::sendInputEvent(const input::InputEvent& event) noexcept
+	GameServer::sendMessage(const std::string& event, const runtime::any& data) noexcept
 	{
-		if (this->getActive())
-		{
-			for (auto& feature : features_)
-				feature->onInputEvent(event);
-		}
+		dispatchEvents_[event].call_all_slots(data);
+	}
+
+	void 
+	GameServer::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].connect(listener);
+	}
+
+	void 
+	GameServer::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].disconnect(listener);
 	}
 
 	void

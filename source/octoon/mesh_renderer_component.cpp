@@ -30,10 +30,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
 		instance->setName(this->getName());
-		if (this->isSharedMaterial())
-			instance->setMaterial(this->getMaterial(), this->isSharedMaterial());
-		else
-			instance->setMaterial(this->getMaterial() ? this->getMaterial()->clone() : nullptr, this->isSharedMaterial());
+		instance->setMaterial(this->getMaterial() ? (this->isSharedMaterial() ? this->getMaterial() : this->getMaterial()->clone()) : nullptr, this->isSharedMaterial());
 
 		return instance;
 	}
@@ -42,46 +39,30 @@ namespace octoon
 	MeshRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-
+		this->addMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		
 		auto transform = this->getComponent<TransformComponent>();
-		auto meshFilter = this->getComponent<MeshFilterComponent>();
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setActive(true);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
+		geometry_->setLayer(this->getGameObject()->getLayer());
 
-		if (meshFilter)
-			this->onMeshReplace(meshFilter->getMesh());
+		this->sendMessage("octoon::mesh::get", nullptr);
 	}
 
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
 		if (geometry_)
 		{
 			geometry_->setActive(false);
 			geometry_ = nullptr;
 		}
-	}
-
-	void
-	MeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
-	{
-		if (component->isA<MeshFilterComponent>())
-		{
-			onMeshReplaceEvent_ = std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1);
-			component->downcast<MeshFilterComponent>()->addMeshListener(&onMeshReplaceEvent_);
-		}
-	}
-
-	void
-	MeshRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
-	{
-		if (component->isA<MeshFilterComponent>())
-			component->downcast<MeshFilterComponent>()->removeMeshListener(&onMeshReplaceEvent_);
 	}
 
 	void
@@ -100,8 +81,12 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMeshReplace(const model::MeshPtr& mesh) noexcept
+	MeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
+		if (!this->getMaterial())
+			return;
+
+		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
 		if (geometry_ && mesh)
 		{
 			auto& vertices = mesh->getVertexArray();
@@ -160,6 +145,7 @@ namespace octoon
 
 			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
+			geometry_->setBoundingBox(mesh->getBoundingBox());
 
 			auto& indices = mesh->getIndicesArray();
 			if (!indices.empty())
@@ -181,5 +167,12 @@ namespace octoon
 	{
 		if (geometry_)
 			geometry_->setMaterial(material);
+	}
+
+	void
+	MeshRendererComponent::onLayerChangeAfter() noexcept
+	{
+		if (geometry_)
+			geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 }

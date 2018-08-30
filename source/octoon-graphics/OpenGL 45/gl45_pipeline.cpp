@@ -151,7 +151,7 @@ namespace octoon
 					if (vbos[it.slot].needUpdate)
 					{
 						GLuint64 addr = vbos[it.slot].vbo->getInstanceAddr() + vbos[it.slot].offset;
-						GLsizeiptr size = vbos[it.slot].vbo->getGraphicsDataDesc().getStreamSize() - vbos[it.slot].offset;
+						GLsizeiptr size = vbos[it.slot].vbo->getDataDesc().getStreamSize() - vbos[it.slot].offset;
 						glBufferAddressRangeNV(GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, it.slot, addr, size);
 						vbos[it.slot].needUpdate = false;
 					}

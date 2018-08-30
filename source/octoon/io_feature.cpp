@@ -1,14 +1,15 @@
 #if defined(OCTOON_FEATURE_IO_ENABLE)
 #include <octoon/io_feature.h>
 #include <octoon/io/ioserver.h>
-#include <octoon/io/farchive.h>
+#include <octoon/io/fpackage.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(IOFeature, GameFeature, "IOFeature")
 
 	IOFeature::IOFeature() noexcept
-		: system_path_("../../system")
+		: systemPath_("../../system/")
+		, diskPath_("")
 	{
 	}
 
@@ -19,7 +20,8 @@ namespace octoon
 	void
 	IOFeature::onActivate() except
 	{
-		io::IoServer::instance()->mount_archive("sys", std::make_shared<octoon::io::farchive>(system_path_));
+		io::IoServer::instance()->mount_package("sys", std::make_shared<octoon::io::fpackage>(systemPath_));
+		io::IoServer::instance()->mount_package("file", std::make_shared<octoon::io::fpackage>(diskPath_));
 	}
 
 	void

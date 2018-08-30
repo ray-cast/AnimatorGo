@@ -10,22 +10,22 @@ namespace octoon
 	namespace io
 	{
 		/*
-		* Zip archive as a virtual directory.
+		* Zip package as a virtual directory.
 		*
 		* **NOTE** Zip archives are always read-only. Any non-read options set true
 		* will lead to rejection.
 		*/
-		class OCTOON_EXPORT zarchive : public archive
+		class OCTOON_EXPORT zpackage : public package
 		{
 		public:
-			zarchive(const char* zip_file) except;
-			zarchive(std::string&& zip_file) except;
-			zarchive(const std::string& zip_file) except;
-			~zarchive() noexcept;
+			zpackage(const char* zip_file) except;
+			zpackage(std::string&& zip_file) except;
+			zpackage(const std::string& zip_file) except;
+			~zpackage() noexcept;
 
 			std::unique_ptr<stream_buf> open(const Orl& orl, const ios_base::open_mode options) override;
-			bool remove(const Orl& orl, ItemType type = ItemType::File) override;
-			ItemType exists(const Orl& orl) override;
+			bool remove(const Orl& orl, ios_base::file_type type = ios_base::file) override;
+			ios_base::file_type exists(const Orl& orl) override;
 
 		private:
 
@@ -34,7 +34,7 @@ namespace octoon
 			void* entries_;
 		};
 
-		using ZipArchivePtr = std::shared_ptr<zarchive>;
+		using ZipArchivePtr = std::shared_ptr<zpackage>;
 	}
 }
 

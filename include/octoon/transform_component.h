@@ -55,6 +55,15 @@ namespace octoon
 		const math::float3& getLocalUp() const noexcept;
 		const math::float3& getLocalForward() const noexcept;
 
+		void up(float speed) noexcept;
+		void up(const math::float3& speed) noexcept;
+
+		void yaw(float speed) noexcept;
+		void yaw(const math::float3& speed) noexcept;
+
+		void move(float speed) noexcept;
+		void move(const math::float3& speed) noexcept;
+
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:

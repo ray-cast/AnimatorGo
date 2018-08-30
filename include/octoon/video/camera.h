@@ -8,79 +8,54 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT Camera final : public RenderObject
+		class OCTOON_EXPORT Camera : public RenderObject
 		{
 			OctoonDeclareSubClass(Camera, RenderObject)
 		public:
 			Camera() noexcept;
 			virtual ~Camera() noexcept;
 
-			void setAperture(float fov) noexcept;
-			void setNear(float znear) noexcept;
-			void setFar(float zfar) noexcept;
-			void setRatio(float ratio) noexcept;
-			void setOrtho(const math::float4& ortho) noexcept;
-			void setClearColor(const math::float4& color) noexcept;
-			void setViewport(const math::float4& viewport) noexcept;
+			virtual void setClearColor(const math::float4& color) noexcept;
+			virtual void setViewport(const math::float4& viewport) noexcept;
 
-			float getAperture() const noexcept;
-			float getNear() const noexcept;
-			float getFar() const noexcept;
-			float getRatio() const noexcept;
+			virtual void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
+			virtual void setCameraType(CameraType type) noexcept;
+			virtual void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
 
-			void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
-			void setCameraOrder(CameraOrder order) noexcept;
-			void setCameraType(CameraType type) noexcept;
-			void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
+			virtual void setProjection(math::float4x4& projection) const noexcept;
+			virtual void setProjectionInverse(math::float4x4& projection) const noexcept;
 
-			CameraOrder getCameraOrder() const noexcept;
-			CameraType getCameraType() const noexcept;
-			graphics::GraphicsClearFlags getClearFlags() const noexcept;
-			const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
-			const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
+			virtual CameraType getCameraType() const noexcept;
+			virtual graphics::GraphicsClearFlags getClearFlags() const noexcept;
+			virtual const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
+			virtual const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
 
-			math::float3 worldToScreen(const math::float3& pos) const noexcept;
-			math::float3 worldToProject(const math::float3& pos) const noexcept;
-			math::float3 screenToWorld(const math::float3& pos) const noexcept;
-			math::float3 screenToView(const math::float2& pos) const noexcept;
+			virtual math::float3 worldToScreen(const math::float3& pos) const noexcept;
+			virtual math::float3 worldToProject(const math::float3& pos) const noexcept;
+			virtual math::float3 screenToWorld(const math::float3& pos) const noexcept;
+			virtual math::float3 screenToView(const math::float2& pos) const noexcept;
 
-			const math::float4& getOrtho() const noexcept;
-			const math::float4& getClearColor() const noexcept;
-			const math::float4& getViewport() const noexcept;
-			const math::float4& getPixelViewport() const noexcept;
+			virtual const math::float4& getClearColor() const noexcept;
+			virtual const math::float4& getViewport() const noexcept;
+			virtual const math::float4& getPixelViewport() const noexcept;
 
-			const math::float4x4& getView() const noexcept;
-			const math::float4x4& getViewInverse() const noexcept;
-			const math::float4x4& getViewProjection() const noexcept;
-			const math::float4x4& getViewProjectionInverse() const noexcept;
-			const math::float4x4& getProjection() const noexcept;
-			const math::float4x4& getProjectionInverse() const noexcept;
+			virtual const math::float4x4& getView() const noexcept;
+			virtual const math::float4x4& getViewInverse() const noexcept;
 
-			void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
-			void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+			virtual const math::float4x4& getProjection() const noexcept;
+			virtual const math::float4x4& getProjectionInverse() const noexcept;
 
-		private:
-			void onMoveAfter() noexcept override;
-			void onRenderBefore(const Camera& camera) noexcept override;
-			void onRenderAfter(const Camera& camera) noexcept override;
+			virtual const math::float4x4& getViewProjection() const noexcept;
+			virtual const math::float4x4& getViewProjectionInverse() const noexcept;
 
-		private:
-			void _updateOrtho() const noexcept;
-			void _updatePerspective(float ratio) const noexcept;
-			void _updateViewProject() const noexcept;
+			virtual void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+			virtual void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
 
-		private:
-			float znear_;
-			float zfar_;
-			float ratio_;
-			float aperture_;
-
-			math::float4 ortho_;
+		protected:
 			math::float4 clearColor_;
 			math::float4 viewport_;
 			mutable math::float4 screen_;
 
-			CameraOrder cameraOrder_;
 			CameraType cameraType_;
 
 			graphics::GraphicsClearFlags clearflags_;
@@ -93,9 +68,6 @@ namespace octoon
 			mutable math::float4x4 viewProjectInverse_;
 			mutable math::float4x4 project_;
 			mutable math::float4x4 projectInverse_;
-
-			mutable float ratioReal_;
-			mutable bool needUpdateViewProject_;
 		};
 	}
 }

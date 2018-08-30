@@ -4,18 +4,44 @@ SET(LIB_OUTNAME octoon-${LIB_NAME})
 SET(HEADER_PATH ${OCTOON_PATH_HEADER})
 SET(SOURCE_PATH ${OCTOON_PATH_TOOLS}/${LIB_NAME})
 
-SET(PLATFORM_LIST
+SET(MAIN_LIST
 	${SOURCE_PATH}/main.cpp
-	${SOURCE_PATH}/ui_view_component.h
-	${SOURCE_PATH}/ui_view_component.cpp
+	${SOURCE_PATH}/main_controller.h
+	${SOURCE_PATH}/main_controller.cpp
 )
-SOURCE_GROUP(${LIB_NAME} FILES ${PLATFORM_LIST})
+SOURCE_GROUP(${LIB_NAME} FILES ${MAIN_LIST})
+
+SET(CONTROLLERS_LIST
+	${SOURCE_PATH}/controllers/about_window.h
+	${SOURCE_PATH}/controllers/about_window.cpp
+	${SOURCE_PATH}/controllers/asset_window.h
+	${SOURCE_PATH}/controllers/asset_window.cpp
+	${SOURCE_PATH}/controllers/camera_window.h
+	${SOURCE_PATH}/controllers/camera_window.cpp
+	${SOURCE_PATH}/controllers/inspector_window.h
+	${SOURCE_PATH}/controllers/inspector_window.cpp
+	${SOURCE_PATH}/controllers/hierarchy_window.h
+	${SOURCE_PATH}/controllers/hierarchy_window.cpp
+	${SOURCE_PATH}/controllers/message_window.h
+	${SOURCE_PATH}/controllers/message_window.cpp
+	${SOURCE_PATH}/controllers/main_menu.h
+	${SOURCE_PATH}/controllers/main_menu.cpp
+	${SOURCE_PATH}/controllers/theme_manager.h
+	${SOURCE_PATH}/controllers/theme_manager.cpp
+)
+SOURCE_GROUP("contollers" FILES ${CONTROLLERS_LIST})
+
+SET(MODEL_LIST
+	${SOURCE_PATH}/models/object_manager.h
+	${SOURCE_PATH}/models/object_manager.cpp
+)
+SOURCE_GROUP("models" FILES ${MODEL_LIST})
 
 IF(NOT OCTOON_BUILD_SHARED_DLL AND OCTOON_BUILD_PLATFORM_WINDOWS)
 	ADD_DEFINITIONS(-DOCTOON_STATIC)
 ENDIF()
 
-ADD_EXECUTABLE(${LIB_OUTNAME} ${PLATFORM_LIST})
+ADD_EXECUTABLE(${LIB_OUTNAME} ${MAIN_LIST} ${CONTROLLERS_LIST} ${MODEL_LIST})
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-c)

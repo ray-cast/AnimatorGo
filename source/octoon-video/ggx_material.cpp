@@ -200,8 +200,8 @@ namespace octoon
 			if (!descriptorSet_)
 				return;
 
-			auto begin = descriptorSet_->getGraphicsUniformSets().begin();
-			auto end = descriptorSet_->getGraphicsUniformSets().end();
+			auto begin = descriptorSet_->getUniformSets().begin();
+			auto end = descriptorSet_->getUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
@@ -214,8 +214,8 @@ namespace octoon
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 
 			lightDir_->uniform3f(-math::float3::UnitY);
-			baseColor_->uniform3f(math::float3::Zero);
-			ambientColor_->uniform3f(math::float3::Zero);
+			baseColor_->uniform3f(math::float3::One);
+			ambientColor_->uniform3f(math::float3::One);
 			specularColor_->uniform3f(math::float3::One);
 			smoothness_->uniform1f(0.0f);
 			metalness_->uniform1f(0.0f);

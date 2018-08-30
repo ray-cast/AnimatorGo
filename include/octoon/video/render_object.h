@@ -36,6 +36,9 @@ namespace octoon
 			void setOwnerListener(RenderListener* listener) noexcept;
 			RenderListener* getOwnerListener() noexcept;
 
+			void setBoundingBox(const math::BoundingBox& bound) noexcept;
+			const math::BoundingBox& getBoundingBox() const noexcept;
+
 			void setTransform(const math::float4x4& transform) noexcept;
 			void setTransform(const math::float4x4& transform, const math::float4x4& transformInverse) noexcept;
 			const math::float4x4& getTransform() const noexcept;
@@ -64,6 +67,7 @@ namespace octoon
 
 			math::float4x4 transform_;
 			math::float4x4 transformInverse_;
+			math::BoundingBox boundingBox_;
 
 			RenderListener* renderListener_;
 			RenderScenePtr  renderScene_;

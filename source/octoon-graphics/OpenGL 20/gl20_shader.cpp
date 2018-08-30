@@ -359,7 +359,7 @@ namespace octoon
 		}
 
 		const GraphicsShaderDesc&
-		GL20Shader::getGraphicsShaderDesc() const noexcept
+		GL20Shader::getShaderDesc() const noexcept
 		{
 			return _shaderDesc;
 		}
@@ -708,7 +708,7 @@ namespace octoon
 		}
 
 		const GraphicsProgramDesc&
-		GL20Program::getGraphicsProgramDesc() const noexcept
+		GL20Program::getProgramDesc() const noexcept
 		{
 			return _programDesc;
 		}

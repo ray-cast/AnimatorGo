@@ -11,18 +11,10 @@ namespace octoon
 	{
 		OctoonImplementSubClass(Camera, runtime::RttiInterface, "Camera")
 
-			Camera::Camera() noexcept
-			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
-			, aperture_(45.0f)
-			, ratio_(1.0f)
-			, ratioReal_(1.0f)
-			, znear_(0.01f)
-			, zfar_(65535.0f)
-			, viewport_(0.0f, 0.0f, 1.0f, 1.0f)
+		Camera::Camera() noexcept
+			: viewport_(0.0f, 0.0f, 1.0f, 1.0f)
 			, clearColor_(math::float4(0.0f, 0.0f, 0.0f, 1.0f))
-			, cameraOrder_(CameraOrder::Custom)
-			, cameraType_(CameraType::Perspective)
-			, needUpdateViewProject_(true)
+			, cameraType_(CameraType::Custom)
 			, project_(math::float4x4::One)
 			, projectInverse_(math::float4x4::One)
 			, viewProject_(math::float4x4::One)
@@ -36,68 +28,45 @@ namespace octoon
 		}
 
 		void
-		Camera::setAperture(float aspect) noexcept
+		Camera::setClearColor(const math::float4& color) noexcept
 		{
-			aperture_ = aspect;
-			needUpdateViewProject_= true;
-		}
-
-		float
-		Camera::getAperture() const noexcept
-		{
-			return aperture_;
+			clearColor_ = color;
 		}
 
 		void
-		Camera::setNear(float znear) noexcept
+		Camera::setViewport(const math::float4& viewport) noexcept
 		{
-			znear_ = znear;
-			needUpdateViewProject_= true;
-		}
-
-		float
-		Camera::getNear() const noexcept
-		{
-			return znear_;
+			viewport_ = viewport;
 		}
 
 		void
-		Camera::setFar(float zfar) noexcept
+		Camera::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
 		{
-			zfar_ = zfar;
-			needUpdateViewProject_= true;
-		}
-
-		float
-		Camera::getFar() const noexcept
-		{
-			return zfar_;
+			clearflags_ = clearflags;
 		}
 
 		void
-		Camera::setRatio(float ratio) noexcept
+		Camera::setCameraType(CameraType type) noexcept
 		{
-			ratio_ = ratio;
-			needUpdateViewProject_= true;
-		}
-
-		float
-		Camera::getRatio() const noexcept
-		{
-			return ratio_;
+			cameraType_ = type;
 		}
 
 		void
-		Camera::setOrtho(const math::float4& ortho) noexcept
+		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
 		{
-			ortho_ = ortho;
-			needUpdateViewProject_= true;
+			fbo_[0] = framebuffer;
 		}
 
-		const math::float4&
-		Camera::getOrtho() const noexcept
+		void
+		Camera::setProjection(math::float4x4& projection) const noexcept
 		{
-			return ortho_;
+			project_ = projection;
+		}
+
+		void
+		Camera::setProjectionInverse(math::float4x4& projection) const noexcept
+		{
+			projectInverse_ = projection;
 		}
 
 		const math::float4x4&
@@ -115,28 +84,24 @@ namespace octoon
 		const math::float4x4&
 		Camera::getProjection() const noexcept
 		{
-			_updateViewProject();
 			return project_;
 		}
 
 		const math::float4x4&
 		Camera::getProjectionInverse() const noexcept
 		{
-			_updateViewProject();
 			return projectInverse_;
 		}
 
 		const math::float4x4&
 		Camera::getViewProjection() const noexcept
 		{
-			_updateViewProject();
 			return viewProject_;
 		}
 
 		const math::float4x4&
 		Camera::getViewProjectionInverse() const noexcept
 		{
-			_updateViewProject();
 			return viewProjectInverse_;
 		}
 
@@ -204,22 +169,10 @@ namespace octoon
 			return (this->getProjectionInverse() * v).xyz();
 		}
 
-		void
-		Camera::setClearColor(const math::float4& color) noexcept
-		{
-			clearColor_ = color;
-		}
-
 		const math::float4&
 		Camera::getClearColor() const noexcept
 		{
 			return clearColor_;
-		}
-
-		void
-		Camera::setViewport(const math::float4& viewport) noexcept
-		{
-			viewport_ = viewport;
 		}
 
 		const math::float4&
@@ -249,40 +202,6 @@ namespace octoon
 			screen_ = result;
 
 			return screen_;
-		}
-
-		void
-		Camera::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
-		{
-			clearflags_ = clearflags;
-		}
-
-		void
-		Camera::setCameraOrder(CameraOrder order) noexcept
-		{
-			cameraOrder_ = order;
-		}
-
-		void
-		Camera::setCameraType(CameraType type) noexcept
-		{
-			if (cameraType_ != type)
-			{
-				needUpdateViewProject_= true;
-				cameraType_ = type;
-			}
-		}
-
-		void
-		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
-		{
-			fbo_[0] = framebuffer;
-		}
-
-		CameraOrder
-		Camera::getCameraOrder() const noexcept
-		{
-			return cameraOrder_;
 		}
 
 		CameraType
@@ -385,89 +304,6 @@ namespace octoon
 			fbo_[1] = RenderSystem::instance()->createFramebuffer(framebufferDesc);
 			if (!fbo_[1])
 				throw runtime::runtime_error::create("createFramebuffer() failed");
-		}
-
-		void
-		Camera::_updateOrtho() const noexcept
-		{
-			std::uint32_t width = 1920, height = 1080;
-
-			if (!fbo_[0])
-				RenderSystem::instance()->getFramebufferSize(width, height);
-			else
-			{
-				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
-				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
-			}
-
-			auto left = width * ortho_.x;
-			auto right = width * ortho_.y;
-			auto bottom = height * ortho_.z;
-			auto top = height * ortho_.w;
-
-			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
-			projectInverse_ = math::inverse(project_);
-		}
-
-		void
-		Camera::_updatePerspective(float ratio) const noexcept
-		{
-			project_ = math::makePerspectiveOffCenterRH(aperture_, ratio_ * ratio, znear_, zfar_);
-			projectInverse_ = math::inverse(project_);
-		}
-
-		void
-		Camera::_updateViewProject() const noexcept
-		{
-			std::uint32_t width = 1920, height = 1080;
-
-			if (!fbo_[0])
-				RenderSystem::instance()->getFramebufferSize(width, height);
-			else
-			{
-				width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
-				height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
-			}
-
-			float ratio = (float)width / height;
-
-			if (ratioReal_ != ratio)
-			{
-				if (cameraType_ == CameraType::Perspective)
-					this->_updatePerspective(ratio);
-				else
-					this->_updateOrtho();
-
-				ratioReal_ = ratio;
-			}
-
-			if (needUpdateViewProject_)
-			{
-				viewProject_ = project_ * this->getView();
-				viewProjectInverse_ = math::inverse(viewProject_);
-
-				needUpdateViewProject_ = false;
-			}
-		}
-
-		void
-		Camera::onMoveAfter() noexcept
-		{
-			RenderObject::onMoveAfter();
-
-			needUpdateViewProject_= true;
-		}
-
-		void
-		Camera::onRenderBefore(const Camera& camera) noexcept
-		{
-			RenderObject::onRenderBefore(camera);
-		}
-
-		void
-		Camera::onRenderAfter(const Camera& camera) noexcept
-		{
-			RenderObject::onRenderAfter(camera);
 		}
 	}
 }

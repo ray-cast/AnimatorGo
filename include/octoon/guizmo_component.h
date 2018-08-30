@@ -6,12 +6,15 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT GuizmoComponent : public GameComponent
+	class OCTOON_EXPORT GuizmoComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(GuizmoComponent, GameComponent)
 	public:
 		GuizmoComponent() noexcept;
 		GuizmoComponent(const GameObjectPtr& camera) noexcept;
+
+		void setCamera(const GameObjectPtr& camera) noexcept;
+		const GameObjectPtr& getCamera() const noexcept;
 
 		octoon::GameComponentPtr clone() const noexcept override;
 
@@ -20,6 +23,10 @@ namespace octoon
 		void onDeactivate() noexcept override;
 
 		void onGui() noexcept override;
+
+	private:
+		GuizmoComponent(const GuizmoComponent&) = delete;
+		GuizmoComponent& operator=(const GuizmoComponent&) = delete;
 
 	private:
 		GameObjectPtr camera_;

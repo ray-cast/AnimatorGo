@@ -87,6 +87,18 @@ namespace octoon
 		}
 
 		void
+		RenderObject::setBoundingBox(const math::BoundingBox& bound) noexcept
+		{
+			boundingBox_ = bound;
+		}
+
+		const math::BoundingBox& 
+		RenderObject::getBoundingBox() const noexcept
+		{
+			return boundingBox_;
+		}
+
+		void
 		RenderObject::setTransform(const math::float4x4& transform) noexcept
 		{
 			this->setTransform(transform, math::transformInverse(transform));
@@ -124,7 +136,7 @@ namespace octoon
 		const math::float3&
 		RenderObject::getTranslate() const noexcept
 		{
-			return transform_.get_translate();
+			return transform_.getTranslate();
 		}
 
 		const math::float4x4&

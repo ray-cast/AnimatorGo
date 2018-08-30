@@ -320,6 +320,7 @@ namespace octoon
 		{
 			enum Flags
 			{
+				NoneBit = 0,
 				ColorBit = 1,
 				DepthBit = 2,
 				StencilBit = 4,

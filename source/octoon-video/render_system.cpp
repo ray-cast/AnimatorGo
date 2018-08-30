@@ -177,6 +177,9 @@ namespace octoon
 					if (!material)
 						continue;
 
+					if (camera->getLayer() != object->getLayer())
+						continue;
+
 					material->setTransform(geometry->getTransform());
 					material->setViewProjection(camera->getViewProjection());
 
@@ -196,7 +199,7 @@ namespace octoon
 				}
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-				if (camera->getCameraOrder() == CameraOrder::Main)
+				if (camera->getCameraType() == CameraType::Main)
 				{
 					auto& v = camera->getPixelViewport();
 

@@ -3,6 +3,7 @@
 
 #include <octoon/game_app.h>
 #include <octoon/game_object.h>
+#include <octoon/game_prefabs.h>
 
 #include <octoon/video/line_material.h>
 #include <octoon/video/text_material.h>
@@ -16,13 +17,17 @@
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/first_person_camera_component.h>
-#include <octoon/camera_component.h>
+#include <octoon/ortho_camera_component.h>
+#include <octoon/perspective_camera_component.h>
+#include <octoon/film_camera_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/path_component.h>
+#include <octoon/text_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/property.h>
-#include <octoon/res_manager.h>
+
 #include <octoon/ui/imgui.h>
 
 namespace octoon

@@ -375,9 +375,6 @@ namespace octoon
 		{
 			this->clear();
 
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-
 			std::uint32_t gridX = widthSegments;
 			std::uint32_t gridY = heightSegments;
 
@@ -393,8 +390,8 @@ namespace octoon
 			{
 				for (std::uint32_t ix = 0; ix < gridX1; ix++)
 				{
-					float x = ix * segmentWidth - widthHalf;
-					float z = iz * segmentHeight - heightHalf;
+					float x = ix * segmentWidth;
+					float z = iz * segmentHeight - segmentHeight;
 
 					_vertices.emplace_back(x, z, 0.0f);
 
@@ -406,10 +403,10 @@ namespace octoon
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)
 				{
-					_texcoords[0].emplace_back((float)ix / gridX, (float)(1 - (iy + 1)) / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)(1 - (iy + 1)) / gridY);
-					_texcoords[0].emplace_back((float)ix / gridX, (float)(1 - iy) / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)(1 - iy) / gridY);
+					_texcoords[0].emplace_back((float)ix / gridX, (float)(iy + 1) / gridY);
+					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)(iy + 1) / gridY);
+					_texcoords[0].emplace_back((float)ix / gridX, (float)iy / gridY);
+					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)iy / gridY);
 
 					std::int32_t a = static_cast<std::int32_t>(ix + gridX1 * iy);
 					std::int32_t b = static_cast<std::int32_t>(ix + gridX1 * (iy + 1));

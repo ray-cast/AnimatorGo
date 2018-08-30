@@ -3,17 +3,12 @@
 
 #include <octoon/model/mesh.h>
 #include <octoon/game_component.h>
-#include <functional>
 
 namespace octoon
 {
-	class OCTOON_EXPORT MeshFilterComponent : public GameComponent
+	class OCTOON_EXPORT MeshFilterComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
-	public:
-		typedef std::function<void(const model::MeshPtr&)> OnMeshReplaceEvent;
-		typedef std::vector<OnMeshReplaceEvent*> OnMeshReplaceEvents;
-
 	public:
 		MeshFilterComponent() noexcept;
 		MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
@@ -31,13 +26,13 @@ namespace octoon
 
 		void uploadMeshData() noexcept;
 
-		void addMeshListener(OnMeshReplaceEvent* func) noexcept;
-		void removeMeshListener(const OnMeshReplaceEvent* func) noexcept;
-
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onMeshReplace(const model::MeshPtr& mesh) noexcept;
+		virtual void onActivate() except override;
+		virtual void onDeactivate() noexcept override;
+
+		virtual void onMeshReplace() noexcept;
 
 	private:
 		MeshFilterComponent(const MeshFilterComponent&) = delete;
@@ -46,7 +41,6 @@ namespace octoon
 	private:
 		bool isSharedMesh_;
 		model::MeshPtr mesh_;
-		OnMeshReplaceEvents delegates_;
 	};
 }
 

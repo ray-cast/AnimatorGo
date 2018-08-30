@@ -19,7 +19,7 @@ namespace octoon
 
 			void apply(GraphicsStateDesc& last) noexcept;
 
-			const GraphicsStateDesc& getGraphicsStateDesc() const noexcept override;
+			const GraphicsStateDesc& getStateDesc() const noexcept override;
 
 		private:
 			friend class GL32Device;

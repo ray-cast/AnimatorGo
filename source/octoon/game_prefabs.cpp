@@ -219,8 +219,8 @@ namespace octoon
 
 		Model model(path);
 
-		auto actor = GameObject::create(path);
-		auto rootPath = runtime::string::directory(path);
+		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
+		auto rootPath = "file:" + runtime::string::directory(path);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{

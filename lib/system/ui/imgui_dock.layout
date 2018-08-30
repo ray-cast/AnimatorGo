@@ -66,9 +66,9 @@ parent   -1
 
 index    4
 label    Camera
-x        268
+x        290
 y        21
-size_x   841
+size_x   819
 size_y   511
 status   0
 active   1
@@ -100,7 +100,7 @@ index    6
 label    Hierarchy
 x        0
 y        21
-size_x   268
+size_x   290
 size_y   511
 status   0
 active   1

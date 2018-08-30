@@ -581,10 +581,19 @@ namespace octoon
 				if (pmx.numBones)
 				{
 					VertexWeights weights(it.FaceCount);
+					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
 
-					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
+					for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
 					{
-						auto& v = pmx.vertices[i];
+						std::uint32_t index = 0;
+						if (pmx.header.sizeOfIndices == 1)
+							index = *(std::uint8_t*)indicesData;
+						else if (pmx.header.sizeOfIndices == 2)
+							index = *(std::uint16_t*)indicesData;
+						else if (pmx.header.sizeOfIndices == 4)
+							index = *(std::uint32_t*)indicesData;
+
+						auto& v = pmx.vertices[index];
 
 						VertexWeight weight;
 						weight.weight1 = v.weight.weight1;
@@ -596,7 +605,7 @@ namespace octoon
 						weight.bone3 = v.weight.bone3;
 						weight.bone4 = v.weight.bone4;
 
-						weights.push_back(weight);
+						weights[i] = weight;
 					}
 
 					mesh->setWeightArray(std::move(weights));

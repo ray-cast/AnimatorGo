@@ -1,5 +1,6 @@
 #include <octoon/input/input.h>
 #include <octoon/input/input_device.h>
+#include <octoon/input/input_map.h>
 
 #if defined(OCTOON_FEATURE_INPUT_API_WINDOWS)
 #	include "msw_input_device.h"
@@ -14,6 +15,8 @@
 #	include <octoon/input/input_keyboard.h>
 #	include <octoon/input/input_mouse.h>
 #endif
+
+#include <algorithm>
 
 namespace octoon
 {

@@ -5,6 +5,8 @@
 #include <octoon/input/iinput_keyboard.h>
 #include <octoon/input/iinput_mouse.h>
 
+#include <string>
+
 namespace octoon
 {
 	namespace input

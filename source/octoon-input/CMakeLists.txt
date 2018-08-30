@@ -36,6 +36,12 @@ SET(INPUT_CORE_LIST
 	${HEADER_PATH}/input_types.h
 	${HEADER_PATH}/input_ps3.h
 	${HEADER_PATH}/input_xbox.h
+	${HEADER_PATH}/input_map.h
+	${SOURCE_PATH}/input_map.cpp
+	${HEADER_PATH}/input_content.h
+	${SOURCE_PATH}/input_content.cpp
+	${HEADER_PATH}/input_manager.h
+	${SOURCE_PATH}/input_manager.cpp
 )
 SOURCE_GROUP("input\\core" FILES ${INPUT_CORE_LIST})
 

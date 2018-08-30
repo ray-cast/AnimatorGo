@@ -299,7 +299,7 @@ namespace octoon
 
 			if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
 
-			if (pmx.numMorphs > 0)
+			/*if (pmx.numMorphs > 0)
 			{
 				pmx.morphs.resize(pmx.numMorphs);
 
@@ -472,7 +472,7 @@ namespace octoon
 					if (!stream.read((char*)&joint.springMovementConstant, sizeof(joint.springMovementConstant))) return false;
 					if (!stream.read((char*)&joint.springRotationConstant, sizeof(joint.springRotationConstant))) return false;
 				}
-			}
+			}*/
 
 			return true;
 		}

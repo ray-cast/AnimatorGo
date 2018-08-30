@@ -44,6 +44,9 @@ namespace octoon
 				{
 					for (auto& it : actors)
 					{
+						if (it->getParent())
+							continue;
+
 						auto& name = it->getName();
 						char objectName[256];
 						if (name.empty())

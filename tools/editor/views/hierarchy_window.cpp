@@ -36,6 +36,8 @@ namespace octoon
 		void 
 		HierarchyWindow::onGui() noexcept
 		{
+			constexpr int PATHLIMITE = 4096;
+
 			if (imgui::beginDock("Hierarchy", &isShowedHierarchyWindow_))
 			{
 				auto& actors = GameObjectManager::instance()->getInstanceList();
@@ -44,8 +46,12 @@ namespace octoon
 				{
 					for (auto& it : actors)
 					{
+						if (it->getParent())
+							continue;
+
+						char objectName[PATHLIMITE];
+
 						auto& name = it->getName();
-						char objectName[256];
 						if (name.empty())
 							std::sprintf(objectName, "|-null");
 						else

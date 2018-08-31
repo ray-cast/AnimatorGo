@@ -1,15 +1,16 @@
 #include "main_controller.h"
 
-#include "controllers/main_menu.h"
-#include "controllers/asset_window.h"
-#include "controllers/camera_window.h"
-#include "controllers/hierarchy_window.h"
-#include "controllers/inspector_window.h"
-#include "controllers/message_window.h"
-#include "controllers/theme_manager.h"
-#include "controllers/about_window.h"
+#include "views/main_menu.h"
+#include "views/asset_window.h"
+#include "views/camera_window.h"
+#include "views/hierarchy_window.h"
+#include "views/inspector_window.h"
+#include "views/message_window.h"
+#include "views/theme_manager.h"
+#include "views/about_window.h"
 
-#include "models/object_manager.h"
+#include "controllers/file_controller.h"
+#include "controllers/edit_controller.h"
 
 #include <octoon/octoon.h>
 
@@ -39,9 +40,9 @@ namespace octoon
 			main_->addComponent<ThemeManager>();
 			main_->addComponent<MessageWindow>();
 			main_->addComponent<AboutWindow>();
-			main_->addMessageListener("editor:menu:file:exit", [](const runtime::any&) { std::exit(0); });
 
-			main_->addComponent<ObjectManager>();
+			main_->addComponent<FileController>();
+			main_->addComponent<EditController>();
 		}
 
 		void

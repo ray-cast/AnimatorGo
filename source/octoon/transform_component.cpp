@@ -358,8 +358,9 @@ namespace octoon
 	{
 		auto component = std::make_shared<TransformComponent>();
 		component->setName(this->getName());
-		component->setTransform(this->getTransform());
-		component->setLocalTransform(this->getLocalTransform());
+		component->setLocalScale(this->getLocalScale());
+		component->setLocalTranslate(this->getLocalTranslate());
+		component->setLocalQuaternion(this->getLocalQuaternion());
 		return component;
 	}
 

@@ -132,7 +132,7 @@ namespace octoon
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 			color_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
 			hasTexture_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "hasTexture"; });
-			color_->uniform4f(math::float4::One);
+			color_->uniform4f(math::float4::Zero);
 			hasTexture_->uniform1b(false);
 		}
 

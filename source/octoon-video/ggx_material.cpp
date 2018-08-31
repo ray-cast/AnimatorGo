@@ -214,8 +214,8 @@ namespace octoon
 			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 
 			lightDir_->uniform3f(-math::float3::UnitY);
-			baseColor_->uniform3f(math::float3::One);
-			ambientColor_->uniform3f(math::float3::One);
+			baseColor_->uniform3f(math::float3::Zero);
+			ambientColor_->uniform3f(math::float3::Zero);
 			specularColor_->uniform3f(math::float3::One);
 			smoothness_->uniform1f(0.0f);
 			metalness_->uniform1f(0.0f);

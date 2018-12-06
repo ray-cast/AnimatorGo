@@ -200,11 +200,11 @@ void onWindowKey(GLFWwindow* window, int key, int scancode, int action, int mods
 	{
 		auto octoon_key = KeyCodetoInputKey(key);
 		if (action == GLFW_PRESS)
-			gameApp_->doWindowKeyDown(hwnd, octoon_key, scancode, mods);
+			gameApp_->doWindowKeyDown(hwnd, octoon_key, (std::uint16_t)scancode, (std::uint16_t)mods);
 		else if (action == GLFW_REPEAT)
-			gameApp_->doWindowKeyPress(hwnd, octoon_key, scancode, mods);
+			gameApp_->doWindowKeyPress(hwnd, octoon_key, (std::uint16_t)scancode, (std::uint16_t)mods);
 		else if (action == GLFW_RELEASE)
-			gameApp_->doWindowKeyUp(hwnd, octoon_key, scancode, mods);
+			gameApp_->doWindowKeyUp(hwnd, octoon_key, (std::uint16_t)scancode, (std::uint16_t)mods);
 	}
 }
 
@@ -212,7 +212,7 @@ void onWindowKeyChar(GLFWwindow* window, unsigned int unicode, int mods)
 {
 	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-		gameApp_->doWindowKeyChar(hwnd, unicode, mods);
+		gameApp_->doWindowKeyChar(hwnd, (std::uint16_t)unicode, (std::uint16_t)mods);
 }
 
 void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
@@ -224,9 +224,9 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 
 		octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 		if (action == GLFW_PRESS)
-			gameApp_->doWindowMouseButtonDown(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), mouseX, mouseY);
+			gameApp_->doWindowMouseButtonDown(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), (float)mouseX, (float)mouseY);
 		else if (action == GLFW_RELEASE)
-			gameApp_->doWindowMouseButtonUp(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), mouseX, mouseY);
+			gameApp_->doWindowMouseButtonUp(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), (float)mouseX, (float)mouseY);
 
 		if (action == GLFW_RELEASE)
 		{
@@ -243,7 +243,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods)
 				auto now = std::chrono::system_clock::now();
 				double diff_ms = std::chrono::duration <double, std::milli>(now - before).count();
 				if (diff_ms > 10 && diff_ms < 200)
-					gameApp_->doWindowMouseButtonDoubleClick(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), mouseX, mouseY);
+					gameApp_->doWindowMouseButtonDoubleClick(hwnd, (octoon::input::InputButton::Code)(octoon::input::InputButton::Mouse0 + button), (float)mouseX, (float)mouseY);
 
 				clicks = false;
 			}
@@ -255,14 +255,14 @@ void onWindowMouseMotion(GLFWwindow* window, double x, double y)
 {
 	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-		gameApp_->doWindowMouseMotion(hwnd, x, y);
+		gameApp_->doWindowMouseMotion(hwnd, (float)x, (float)y);
 }
 
 void onWindowScrool(GLFWwindow* window, double x, double y)
 {
 	octoon::WindHandle hwnd = (octoon::WindHandle)glfwGetWinHandle(window);
 	if (gameApp_)
-		gameApp_->doWindowScrool(hwnd, x, y);
+		gameApp_->doWindowScrool(hwnd, (float)x, (float)y);
 }
 
 void onWindowDrop(GLFWwindow* window, int count, const char** file_utf8)

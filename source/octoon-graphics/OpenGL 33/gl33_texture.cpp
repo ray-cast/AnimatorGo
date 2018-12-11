@@ -272,7 +272,7 @@ namespace octoon
 		GL33Texture::unmap() noexcept
 		{
 			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
-			glUnmapBuffer(_target);
+			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 		}
 
 		GLenum

@@ -39,6 +39,10 @@ namespace octoon
 		void
 		RenderSystem::close() noexcept
 		{
+			fbo_.reset();
+			colorTexture_.reset();
+			depthTexture_.reset();
+			device_.reset();
 		}
 
 		void

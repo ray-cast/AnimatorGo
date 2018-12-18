@@ -2,7 +2,7 @@
 #define OCTOON_LINE_MATERIAL_H_
 
 #include <octoon/video/material.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 
 namespace octoon
 {

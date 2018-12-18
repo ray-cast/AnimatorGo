@@ -3,7 +3,7 @@
 
 #include <octoon/game_types.h>
 #include <octoon/runtime/singleton.h>
-#include <octoon/graphics/graphics_types.h>
+#include <octoon/hal/graphics_types.h>
 
 #include <map>
 

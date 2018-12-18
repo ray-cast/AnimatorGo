@@ -1,5 +1,5 @@
 #include <octoon/video/material.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 
 namespace octoon
 {

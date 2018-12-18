@@ -4,7 +4,7 @@
 #include <octoon/ui/imgui.h>
 #include <octoon/input/input.h>
 #include <octoon/runtime/singleton.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 
 struct ImGuiContext;
 

@@ -8,7 +8,7 @@
 #include <octoon/game_server.h>
 #include <octoon/game_object_manager.h>
 
-#include <octoon/graphics_feature.h>
+#include <octoon/hal_feature.h>
 #include <octoon/video/render_system.h>
 
 namespace octoon

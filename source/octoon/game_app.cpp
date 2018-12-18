@@ -24,8 +24,8 @@
 #	include <octoon/game_base_features.h>
 #endif
 
-#if OCTOON_FEATURE_GRAPHICS_ENABLE
-#	include <octoon/graphics_feature.h>
+#if OCTOON_FEATURE_HAL_ENABLE
+#	include <octoon/hal_feature.h>
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE
@@ -110,7 +110,7 @@ namespace octoon
 		this->addFeature(std::make_unique<GameBaseFeatures>());
 #endif
 
-#if OCTOON_FEATURE_GRAPHICS_ENABLE
+#if OCTOON_FEATURE_HAL_ENABLE
 		this->addFeature(std::make_unique<GraphicsFeature>(hwnd, w, h));
 #endif
 

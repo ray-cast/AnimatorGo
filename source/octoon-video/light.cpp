@@ -2,7 +2,7 @@
 #include <octoon/video/camera.h>
 #include <octoon/video/perspective_camera.h>
 #include <octoon/video/ortho_camera.h>
-#include <octoon/graphics/graphics_texture.h>
+#include <octoon/hal/graphics_texture.h>
 
 namespace octoon
 {

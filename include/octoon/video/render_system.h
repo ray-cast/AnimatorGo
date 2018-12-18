@@ -3,7 +3,7 @@
 
 #include <octoon/runtime/singleton.h>
 #include <octoon/video/render_types.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 
 namespace octoon
 {

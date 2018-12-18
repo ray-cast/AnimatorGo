@@ -15,7 +15,7 @@
 #include <octoon/runtime/rtti_factory.h>
 
 #include <octoon/timer_feature.h>
-#include <octoon/graphics_feature.h>
+#include <octoon/hal_feature.h>
 
 namespace octoon
 {

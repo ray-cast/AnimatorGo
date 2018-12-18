@@ -2,7 +2,7 @@
 #define OCTOON_MATERIAL_H_
 
 #include <octoon/video/render_types.h>
-#include <octoon/graphics/graphics_types.h>
+#include <octoon/hal/graphics_types.h>
 
 namespace octoon
 {

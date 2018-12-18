@@ -1,7 +1,7 @@
 #include <octoon/video/camera.h>
 #include <octoon/video/render_system.h>
 #include <octoon/runtime/except.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 
 using namespace octoon::graphics;
 

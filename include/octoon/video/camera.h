@@ -2,7 +2,7 @@
 #define OCTOON_VIDEO_CAMERA_H_
 
 #include <octoon/video/render_object.h>
-#include <octoon/graphics/graphics_types.h>
+#include <octoon/hal/graphics_types.h>
 
 namespace octoon
 {

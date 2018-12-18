@@ -1,5 +1,5 @@
 #include <octoon/game_prefabs.h>
-#include <octoon/graphics/graphics.h>
+#include <octoon/hal/graphics.h>
 #include <octoon/image/image.h>
 #include <octoon/io/vstream.h>
 

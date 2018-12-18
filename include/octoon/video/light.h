@@ -2,7 +2,7 @@
 #define OCTOON_LIGHT_H_
 
 #include <octoon/video/render_object.h>
-#include <octoon/graphics/graphics_texture.h>
+#include <octoon/hal/graphics_texture.h>
 
 namespace octoon
 {

@@ -20,7 +20,7 @@ namespace octoon
 		}
 
 		void
-		GraphicsContextDesc::setSwapchain(GraphicsSwapchainPtr swapchain) noexcept
+		GraphicsContextDesc::setSwapchain(const GraphicsSwapchainPtr& swapchain) noexcept
 		{
 			_swapchain = swapchain;
 		}

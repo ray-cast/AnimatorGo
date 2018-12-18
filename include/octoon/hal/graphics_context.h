@@ -14,7 +14,7 @@ namespace octoon
 			GraphicsContextDesc(GraphicsSwapchainPtr swapchain) noexcept;
 			~GraphicsContextDesc() noexcept;
 
-			void setSwapchain(GraphicsSwapchainPtr swapchain) noexcept;
+			void setSwapchain(const GraphicsSwapchainPtr& swapchain) noexcept;
 			GraphicsSwapchainPtr getSwapchain() const noexcept;
 
 		private:

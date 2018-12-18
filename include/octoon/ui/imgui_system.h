@@ -16,9 +16,10 @@ namespace octoon
 		{
 		public:
 			System() noexcept;
+			System(const graphics::GraphicsDevicePtr& device) noexcept;
 			~System() noexcept;
 
-			bool open(input::WindHandle window, const graphics::GraphicsDevicePtr& device) except;
+			void open(const graphics::GraphicsDevicePtr& device) except;
 			void close() noexcept;
 
 			bool injectMouseMove(float absx, float absy) noexcept;
@@ -30,6 +31,9 @@ namespace octoon
 			bool injectKeyRelease(input::InputKey::Code key) noexcept;
 
 			bool injectWindowFocus(bool focus) noexcept;
+
+			void setImeWindowHandle(input::WindHandle window) noexcept;
+			input::WindHandle getImeWindowHandle() const noexcept;
 
 			void setViewport(std::uint32_t w, std::uint32_t h) noexcept;
 			void getViewport(std::uint32_t& w, std::uint32_t& h) noexcept;

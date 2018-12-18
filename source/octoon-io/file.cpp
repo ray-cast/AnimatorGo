@@ -385,6 +385,54 @@ namespace octoon
 		{
 		}
 
+		File::File(const char* filename, ios_base::openmode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+
+		File::File(const char* filename, ios_base::open_mode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+
+		File::File(const wchar_t* filename, ios_base::openmode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+		
+		File::File(const wchar_t* filename, ios_base::open_mode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+		
+		File::File(const std::string& filename, ios_base::openmode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+		
+		File::File(const std::string& filename, ios_base::open_mode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+		
+		File::File(const std::wstring& filename, ios_base::openmode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+
+		File::File(const std::wstring& filename, ios_base::open_mode mode) noexcept
+			: File()
+		{
+			this->open(filename, mode);
+		}
+
 		File::~File() noexcept
 		{
 			this->close();

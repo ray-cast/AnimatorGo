@@ -72,13 +72,19 @@ namespace octoon
 		{
 		}
 
+		System::System(const graphics::GraphicsDevicePtr& device) noexcept
+			: System()
+		{
+			this->open(device);
+		}
+
 		System::~System() noexcept
 		{
 			this->close();
 		}
 
-		bool
-		System::open(input::WindHandle window, const GraphicsDevicePtr& device) except
+		void
+		System::open(const GraphicsDevicePtr& device) except
 		{
 			assert(!imguiContext_);
 
@@ -90,7 +96,7 @@ namespace octoon
 			setStyle(style);
 
 			ImGuiIO& io = ImGui::GetIO();
-			io.ImeWindowHandle = window;
+			io.ImeWindowHandle = nullptr;
 			io.IniFilename = imguiPath_.c_str();
 			io.KeyMap[ImGuiKey_Tab] = input::InputKey::Tab;
 			io.KeyMap[ImGuiKey_LeftArrow] = input::InputKey::ArrowLeft;
@@ -121,7 +127,7 @@ namespace octoon
 
 			vbo_ = device->createGraphicsData(dataDesc);
 			if (!vbo_)
-				return false;
+				throw std::runtime_error("Failed to create vertex bufer");
 
 			GraphicsDataDesc elementDesc;
 			elementDesc.setType(GraphicsDataType::StorageIndexBuffer);
@@ -130,14 +136,14 @@ namespace octoon
 
 			ibo_ = device->createGraphicsData(elementDesc);
 			if (!ibo_)
-				return false;
+				throw std::runtime_error("Failed to create indices bufer");
 
 			GraphicsProgramDesc programDesc;
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
 			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
 			auto program = device->createProgram(programDesc);
 			if (!program)
-				return false;
+				throw std::runtime_error("Failed to create shader progoram");
 
 			GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(GraphicsVertexLayout(0, "POSITION", 0, GraphicsFormat::R32G32SFloat));
@@ -170,21 +176,19 @@ namespace octoon
 			pipeline.setGraphicsDescriptorSetLayout(device->createDescriptorSetLayout(descriptor_set_layout));
 			pipeline_ = device->createRenderPipeline(pipeline);
 			if (!pipeline_)
-				return false;
+				throw std::runtime_error("Failed to create render pipeline");
 
 			GraphicsDescriptorSetDesc descriptor_set;
 			descriptor_set.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptor_set_ = device->createDescriptorSet(descriptor_set);
 			if (!descriptor_set_)
-				return false;
+				throw std::runtime_error("Failed to create descriptor set");
 
 			auto begin = descriptor_set_->getUniformSets().begin();
 			auto end = descriptor_set_->getUniformSets().end();
 
 			proj_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "proj"; });
 			decal_ = *std::find_if(begin, end, [](const GraphicsUniformSetPtr& set) {return set->getName() == "decal"; });
-
-			return true;
 		}
 
 		void
@@ -208,6 +212,8 @@ namespace octoon
 		bool
 		System::injectMouseMove(float absx, float absy) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			io.MousePos.x = absx;
 			io.MousePos.y = absy;
@@ -217,6 +223,8 @@ namespace octoon
 		bool
 		System::injectMousePress(float absx, float absy, input::InputButton::Code code) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = true;
 			io.MousePos.x = absx;
@@ -227,6 +235,8 @@ namespace octoon
 		bool
 		System::injectMouseRelease(float absx, float absy, input::InputButton::Code code) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			io.MouseDown[code] = false;
 			io.MousePos.x = absx;
@@ -237,6 +247,8 @@ namespace octoon
 		bool
 		System::injectMouseWheel(float wheel) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			io.MouseWheel = wheel;
 			return true;
@@ -245,6 +257,8 @@ namespace octoon
 		bool
 		System::injectKeyPress(input::InputKey::Code key, wchar_t char_) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			if (key != input::InputKey::Code::None)
 			{
@@ -270,6 +284,8 @@ namespace octoon
 		bool
 		System::injectKeyRelease(input::InputKey::Code key) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			auto& io = ImGui::GetIO();
 			if (key == input::InputKey::Code::LeftControl)
 				io.KeyCtrl = false;
@@ -287,6 +303,8 @@ namespace octoon
 		bool
 		System::injectWindowFocus(bool focus) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			if (focus)
 			{
 				auto& io = ImGui::GetIO();
@@ -299,16 +317,31 @@ namespace octoon
 		}
 
 		void
+		System::setImeWindowHandle(input::WindHandle window) noexcept
+		{
+			ImGui::SetCurrentContext(imguiContext_);
+			ImGui::GetIO().ImeWindowHandle = window;
+		}
+
+		input::WindHandle 
+		System::getImeWindowHandle() const noexcept
+		{
+			ImGui::SetCurrentContext(imguiContext_);
+			return ImGui::GetIO().ImeWindowHandle;
+		}
+
+		void
 		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize.x = (float)w;
-			io.DisplaySize.y = (float)h;
+			ImGui::SetCurrentContext(imguiContext_);
+			ImGui::GetIO().DisplaySize = ImVec2(w, h);
 		}
 
 		void
 		System::getViewport(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			ImGuiIO& io = ImGui::GetIO();
 			w = (std::uint32_t)io.DisplaySize.x;
 			h = (std::uint32_t)io.DisplaySize.y;
@@ -317,6 +350,8 @@ namespace octoon
 		void
 		System::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplayFramebufferScale.x = (float)w;
 			io.DisplayFramebufferScale.y = (float)h;
@@ -327,6 +362,8 @@ namespace octoon
 		void
 		System::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 		{
+			ImGui::SetCurrentContext(imguiContext_);
+
 			ImGuiIO& io = ImGui::GetIO();
 			w = (std::uint32_t)io.DisplayFramebufferScale.x;
 			h = (std::uint32_t)io.DisplayFramebufferScale.y;
@@ -344,6 +381,8 @@ namespace octoon
 
 			std::uint8_t* pixels;
 			int width, height;
+
+			ImGui::SetCurrentContext(imguiContext_);
 
 			auto io = ImGui::GetIO();
 			io.Fonts->ClearFonts();
@@ -377,8 +416,9 @@ namespace octoon
 		{
 			assert(vbo_ && ibo_);
 
+			ImGui::SetCurrentContext(imguiContext_);
 			ImGui::Render();
-
+			
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)
 				return;

@@ -84,14 +84,15 @@ namespace octoon
 	{
 		this->addMessageListener("feature:input:event", std::bind(&GuiFeature::onInputEvent, this, std::placeholders::_1));
 
-		system_ = std::make_unique<imgui::System>();
-
 		auto graphics = this->getFeature<GraphicsFeature>();
 		if (!graphics)
 			throw runtime::runtime_error::create("failure to get feature with graphics", runtime::error_code::none);
 
-		if (!system_->open(window_, graphics->getDevice()))
-			throw runtime::runtime_error::create("GuiSystem::open() fail", runtime::error_code::none);
+		system_ = std::make_unique<imgui::System>(graphics->getDevice());
+		system_->setImeWindowHandle(window_);
+		system_->setViewport(width_, height_);
+		system_->setFramebufferScale(framebuffer_w_, framebuffer_h_);
+
 #ifndef OCTOON_BUILD_PLATFORM_EMSCRIPTEN
 		if (!system_->loadFont("../../system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
 			throw runtime::runtime_error::create("GuiSystem::loadFont() fail", runtime::error_code::none);
@@ -99,9 +100,6 @@ namespace octoon
 		if (!system_->loadFont("./system/fonts/DroidSansFallback.ttf", 15.0f * float(width_) / framebuffer_w_))
 			throw runtime::runtime_error::create("GuiSystem::loadFont() fail", runtime::error_code::none);
 #endif
-
-		system_->setViewport(width_, height_);
-		system_->setFramebufferScale(framebuffer_w_, framebuffer_h_);
 	}
 
 	void

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstring>
+#include <algorithm>
 
 #ifndef __WINDOWS__
 /* constants for the biCompression field */
@@ -181,6 +182,7 @@ namespace octoon
 			std::uint32_t nums = columns * rows;
 
 			std::size_t length = (std::size_t)(nums * info.info.bpp / 8);
+			std::int32_t padding = std::max<std::int32_t>(0, info.info.size_image - length) / rows;
 
 			std::vector<std::uint8_t> buffers(length);
 			std::uint8_t* buf = (std::uint8_t*)buffers.data();
@@ -190,12 +192,12 @@ namespace octoon
 
 			if (info.info.bpp == BMP_32BPP)
 			{
-				if (!image.create(Format::B8G8R8A8SRGB, columns, rows))
+				if (!image.create(Format::R8G8B8A8SRGB, columns, rows))
 					return false;
 			}
 			else if (info.info.bpp == BMP_24BPP)
 			{
-				if (!image.create(Format::B8G8R8SRGB, columns, rows))
+				if (!image.create(Format::R8G8B8SRGB, columns, rows))
 					return false;
 			}
 			else if (info.info.bpp == BMP_16BPP)
@@ -208,14 +210,50 @@ namespace octoon
 				return false;
 			}
 
-			if (info.info.bpp == BMP_32BPP || info.info.bpp == BMP_24BPP)
+			if (info.info.bpp == BMP_24BPP)
 			{
 				std::uint8_t* rgb = (std::uint8_t*)image.data();
-				std::size_t columnsLength = columns * info.info.bpp / 8;
+				std::uint8_t channel = info.info.bpp / 8;
 
 				for (std::size_t i = 0; i < rows; i++)
 				{
-					std::memcpy(rgb + ((rows - i - 1) * columnsLength), buf + (i * columnsLength), columnsLength);
+					for (std::size_t j = 0; j < columns; j++)
+					{
+						auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
+						auto dst = (i * columns + j) * channel;
+
+						auto b = buf[src];
+						auto g = buf[src + 1];
+						auto r = buf[src + 2];
+
+						rgb[dst] = r;
+						rgb[dst + 1] = g;
+						rgb[dst + 2] = b;
+					}
+				}
+			}
+			else if (info.info.bpp == BMP_32BPP)
+			{
+				std::uint8_t* rgb = (std::uint8_t*)image.data();
+				std::uint8_t channel = info.info.bpp / 8;
+
+				for (std::size_t i = 0; i < rows; i++)
+				{
+					for (std::size_t j = 0; j < columns; j++)
+					{
+						auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
+						auto dst = (i * columns + j) * channel;
+
+						auto b = buf[src];
+						auto g = buf[src + 1];
+						auto r = buf[src + 2];
+						auto a = buf[src + 3];
+
+						rgb[dst] = r;
+						rgb[dst + 1] = g;
+						rgb[dst + 2] = b;
+						rgb[dst + 3] = a;
+					}
 				}
 			}
 			else if (info.info.bpp == BMP_16BPP)
@@ -235,6 +273,8 @@ namespace octoon
 						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_R) >> BI_RGB5_SHIFT_R) << BI_RGB5_BIT_R);
 						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_G) >> BI_RGB5_SHIFT_G) << BI_RGB5_BIT_G);
 						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_B) >> BI_RGB5_SHIFT_B) << BI_RGB5_BIT_B);
+
+						pos += padding;
 					}
 				}
 				break;

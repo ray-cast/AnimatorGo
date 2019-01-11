@@ -1,5 +1,6 @@
 # contrib folders
 INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/zlib)
+INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/openal-soft)
 
 # octoon folder
 INCLUDE_DIRECTORIES(${OCTOON_PATH_INCLUDE})
@@ -13,6 +14,7 @@ OPTION(OCTOON_FEATURE_INPUT_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_TIMER_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_MODEL_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_HAL_ENABLE "On for enable off for disable" ON)
+OPTION(OCTOON_FEATURE_SOUND_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_VIDEO_ENABLE "On for enable off for disable" ON)
 
@@ -20,6 +22,7 @@ OPTION(OCTOON_FEATURE_VIDEO_ENABLE "On for enable off for disable" ON)
 ADD_SUBDIRECTORY(octoon-math)
 ADD_SUBDIRECTORY(octoon-runtime)
 ADD_SUBDIRECTORY(octoon-image)
+ADD_SUBDIRECTORY(octoon-audio)
 
 IF(OCTOON_FEATURE_IO_ENABLE)
 	ADD_DEFINITIONS(-DOCTOON_FEATURE_IO_ENABLE)

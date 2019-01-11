@@ -158,7 +158,7 @@
 5. 运行 `./contrib/download_prerequisites` 下载依赖库
 6. 运行 `mkdir build` 建立build目录
 7. 运行 `cd build` 切换到 build 目录
-8. 运行 `../configure –-disable-multilib` 生成 Makefile
+8. 运行 `../configure --enable-checking=release --enable-languages=c,c++ --disable-multilib` 生成 Makefile
 9. 运行 `make`
 10. 运行 `make install`
 11. 运行 `vim /etc/profile` 添加以下内容到文件

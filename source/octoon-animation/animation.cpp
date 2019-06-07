@@ -1,4 +1,4 @@
-#include <octoon/model/animation.h>
+#include <octoon/animation/animation.h>
 
 #include <map>
 

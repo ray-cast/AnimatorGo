@@ -1,7 +1,7 @@
 #ifndef OCTOON_MODEL_FIXED_INTERPOLATOR_H_
 #define OCTOON_MODEL_FIXED_INTERPOLATOR_H_
 
-#include <octoon/model/interpolator.h>
+#include <octoon/animation/interpolator.h>
 
 namespace octoon
 {

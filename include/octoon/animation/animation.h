@@ -4,7 +4,7 @@
 #include <octoon/math/math.h>
 #include <octoon/model/ik.h>
 #include <octoon/model/bone.h>
-#include <octoon/model/path_interpolator.h>
+#include <octoon/animation/path_interpolator.h>
 
 #include <cstdint>
 

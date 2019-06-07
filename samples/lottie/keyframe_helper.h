@@ -2,7 +2,7 @@
 #define KEYFRAME_HELPER_H_
 
 #include <octoon/runtime/json.h>
-#include <octoon/model/keyframe.h>
+#include <octoon/animation/keyframe.h>
 
 class KeyframeHelper
 {

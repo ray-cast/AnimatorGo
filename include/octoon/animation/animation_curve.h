@@ -1,7 +1,7 @@
 #ifndef OCTOON_MODEL_ANIMATION_CURVE_H_
 #define OCTOON_MODEL_ANIMATION_CURVE_H_
 
-#include <octoon/model/keyframe.h>
+#include <octoon/animation/keyframe.h>
 
 namespace octoon
 {
@@ -57,7 +57,7 @@ namespace octoon
 
 				key.time += delta;
 
-				auto it = std::upper_bound(frames.begin(), frames.end(), key.time, 
+				auto it = std::upper_bound(frames.begin(), frames.end(), key.time,
 					[](const _Time& time, const Keyframe<_Elem, _Time>& a)
 					{
 						return time < a.time;

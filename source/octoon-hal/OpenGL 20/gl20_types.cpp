@@ -4,7 +4,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GLboolean GL20Types::_gl20init = GL_FALSE;
 		GLboolean GL20Types::_gl20Features[GL20_RangeSize];

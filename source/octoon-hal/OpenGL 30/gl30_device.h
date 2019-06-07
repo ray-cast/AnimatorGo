@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL30Device final : public OGLDevice
 		{

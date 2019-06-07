@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL30GraphicsUniformSet, GraphicsUniformSet, "GL30GraphicsUniformSet")
 		OctoonImplementSubClass(GL30DescriptorSet, GraphicsDescriptorSet, "GL30DescriptorSet")

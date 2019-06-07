@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 #if GL_DEBUG
 #	if defined(_VISUAL_STUDIO_)

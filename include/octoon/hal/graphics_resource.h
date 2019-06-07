@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class OCTOON_EXPORT GraphicsResource : public GraphicsChild
 		{

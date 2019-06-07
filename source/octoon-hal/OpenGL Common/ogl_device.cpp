@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubInterface(OGLDevice, GraphicsDevice, "OGLDevice")
 

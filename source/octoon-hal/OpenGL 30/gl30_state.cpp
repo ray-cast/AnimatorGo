@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL30GraphicsState, GraphicsState, "GL30GraphicsState")
 

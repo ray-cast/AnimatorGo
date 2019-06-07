@@ -16,14 +16,14 @@ namespace octoon
 
 		void setClearColor(const math::float4& color) noexcept;
 		void setViewport(const math::float4& viewport) noexcept;
-		void setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept;
+		void setClearFlags(hal::GraphicsClearFlags clearflags) noexcept;
 		void setCameraType(video::CameraType type) noexcept;
-		void setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept;
+		void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 		video::CameraType getCameraType() const noexcept;
-		graphics::GraphicsClearFlags getClearFlags() const noexcept;
-		const graphics::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
-		const graphics::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
+		hal::GraphicsClearFlags getClearFlags() const noexcept;
+		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
+		const hal::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
 
 		math::float3 worldToScreen(const math::float3& pos) const noexcept;
 		math::float3 worldToProject(const math::float3& pos) const noexcept;
@@ -41,8 +41,8 @@ namespace octoon
 		const math::float4x4& getProjection() const noexcept;
 		const math::float4x4& getProjectionInverse() const noexcept;
 
-		void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
-		void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, graphics::GraphicsFormat format = graphics::GraphicsFormat::R8G8B8A8UNorm, graphics::GraphicsFormat depthStencil = graphics::GraphicsFormat::X8_D24UNormPack32) except;
+		void setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, hal::GraphicsFormat format = hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat depthStencil = hal::GraphicsFormat::X8_D24UNormPack32) except;
+		void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, hal::GraphicsFormat format = hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat depthStencil = hal::GraphicsFormat::X8_D24UNormPack32) except;
 
 	private:
 		virtual void onActivate() noexcept override;

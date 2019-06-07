@@ -17,9 +17,9 @@ namespace octoon
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-		const graphics::GraphicsDevicePtr& getDevice() const noexcept;
-		const graphics::GraphicsSwapchainPtr& getSwapchain() const noexcept;
-		const graphics::GraphicsContextPtr& getContext() const noexcept;
+		const hal::GraphicsDevicePtr& getDevice() const noexcept;
+		const hal::GraphicsSwapchainPtr& getSwapchain() const noexcept;
+		const hal::GraphicsContextPtr& getContext() const noexcept;
 
 	private:
 		void onActivate() except override;
@@ -37,9 +37,9 @@ namespace octoon
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
 
-		graphics::GraphicsDevicePtr device_;
-		graphics::GraphicsSwapchainPtr swapchain_;
-		graphics::GraphicsContextPtr context_;
+		hal::GraphicsDevicePtr device_;
+		hal::GraphicsSwapchainPtr swapchain_;
+		hal::GraphicsContextPtr context_;
 	};
 }
 

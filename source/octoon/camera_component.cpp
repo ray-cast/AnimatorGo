@@ -34,7 +34,7 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
+	CameraComponent::setClearFlags(hal::GraphicsClearFlags clearflags) noexcept
 	{
 		camera_->setClearFlags(clearflags);
 	}
@@ -46,7 +46,7 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+	CameraComponent::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept
 	{
 		camera_->setFramebuffer(framebuffer);
 	}
@@ -57,19 +57,19 @@ namespace octoon
 		return camera_->getCameraType();
 	}
 
-	graphics::GraphicsClearFlags
+	hal::GraphicsClearFlags
 	CameraComponent::getClearFlags() const noexcept
 	{
 		return camera_->getClearFlags();
 	}
 
-	const graphics::GraphicsFramebufferPtr&
+	const hal::GraphicsFramebufferPtr&
 	CameraComponent::getFramebuffer() const noexcept
 	{
 		return camera_->getFramebuffer();
 	}
 
-	const graphics::GraphicsFramebufferPtr&
+	const hal::GraphicsFramebufferPtr&
 	CameraComponent::getSwapFramebuffer() const noexcept
 	{
 		return camera_->getSwapFramebuffer();
@@ -154,13 +154,13 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
 	{
 		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
 	}
 
 	void
-	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
 	{
 		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
 	}

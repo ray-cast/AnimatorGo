@@ -66,24 +66,24 @@ namespace octoon
 		}
 
 		void
-		Geometry::setVertexBuffer(const graphics::GraphicsDataPtr& data) noexcept
+		Geometry::setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept
 		{
 			vertices_ = data;
 		}
 
-		const graphics::GraphicsDataPtr&
+		const hal::GraphicsDataPtr&
 		Geometry::getVertexBuffer() const noexcept
 		{
 			return vertices_;
 		}
 
 		void
-		Geometry::setIndexBuffer(const graphics::GraphicsDataPtr& data) noexcept
+		Geometry::setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept
 		{
 			indices_ = data;
 		}
 
-		const graphics::GraphicsDataPtr&
+		const hal::GraphicsDataPtr&
 		Geometry::getIndexBuffer() const noexcept
 		{
 			return indices_;

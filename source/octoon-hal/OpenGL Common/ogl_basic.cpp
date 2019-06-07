@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 #ifdef GLEW_MX
 #	ifdef _WIN32

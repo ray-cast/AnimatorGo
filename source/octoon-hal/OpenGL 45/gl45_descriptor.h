@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL45DescriptorSet final : public GraphicsDescriptorSet
 		{

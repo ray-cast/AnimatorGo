@@ -4,7 +4,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL33Framebuffer, GraphicsFramebuffer, "GL33Framebuffer")
 		OctoonImplementSubClass(GL33FramebufferLayout, GraphicsFramebufferLayout, "GL33FramebufferLayout")

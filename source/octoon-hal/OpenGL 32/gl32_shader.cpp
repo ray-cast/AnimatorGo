@@ -11,7 +11,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL32Shader, GraphicsShader, "GL32Shader")
 		OctoonImplementSubClass(GL32Program, GraphicsProgram, "GL32Program")

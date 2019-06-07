@@ -7,7 +7,7 @@ OCTOON_C_LINKAGE OCTOON_EXPORT DWORD NvOptimusEnablement = 0x00000001;
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OGLDeviceProperty::OGLDeviceProperty() noexcept
 		{

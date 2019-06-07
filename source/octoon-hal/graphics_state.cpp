@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubInterface(GraphicsState, GraphicsChild, "GraphicsState")
 

@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(WGLSwapchain, GraphicsSwapchain, "WGLSwapchain")
 
@@ -366,26 +366,26 @@ namespace octoon
 #endif
 			int major = 0;
 			int minor = 0;
-				
+
 			switch (deviceType)
 			{
-			case octoon::graphics::GraphicsDeviceType::OpenGL20:
+			case GraphicsDeviceType::OpenGL20:
 				major = 2;
 				minor = 0;
 				break;
-			case octoon::graphics::GraphicsDeviceType::OpenGL30:
+			case GraphicsDeviceType::OpenGL30:
 				major = 3;
 				minor = 0;
 				break;
-			case octoon::graphics::GraphicsDeviceType::OpenGL32:
+			case GraphicsDeviceType::OpenGL32:
 				major = 3;
 				minor = 2;
 				break;
-			case octoon::graphics::GraphicsDeviceType::OpenGL33:
+			case GraphicsDeviceType::OpenGL33:
 				major = 3;
 				minor = 3;
 				break;
-			case octoon::graphics::GraphicsDeviceType::OpenGL45:
+			case GraphicsDeviceType::OpenGL45:
 				major = 4;
 				minor = 5;
 				break;

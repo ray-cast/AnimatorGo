@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class OCTOON_EXPORT GraphicsSystem final
 		{

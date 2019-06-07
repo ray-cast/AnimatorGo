@@ -12,7 +12,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL33DeviceContext, GraphicsContext, "GL33DeviceContext")
 

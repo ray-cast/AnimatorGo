@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL32DeviceProperty final : public OGLDeviceProperty
 		{

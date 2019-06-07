@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		using int1 = math::int1;
 		using int2 = math::int2;

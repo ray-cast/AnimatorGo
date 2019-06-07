@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL20Pipeline, GraphicsPipeline, "GL20Pipeline")
 

@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubInterface(GL20GraphicsData, GraphicsData, "GL20GraphicsData")
 

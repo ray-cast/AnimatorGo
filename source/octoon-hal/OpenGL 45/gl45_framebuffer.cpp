@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL45Framebuffer, GraphicsFramebuffer, "GL45Framebuffer")
 

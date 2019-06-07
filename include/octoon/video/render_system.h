@@ -16,27 +16,27 @@ namespace octoon
 			RenderSystem() noexcept;
 			~RenderSystem() noexcept;
 
-			void setup(const graphics::GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except;
+			void setup(const hal::GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except;
 			void close() noexcept;
 
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
 			void getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept;
 
-			graphics::GraphicsInputLayoutPtr createInputLayout(const graphics::GraphicsInputLayoutDesc& desc) noexcept;
-			graphics::GraphicsDataPtr createGraphicsData(const graphics::GraphicsDataDesc& desc) noexcept;
-			graphics::GraphicsTexturePtr createTexture(const graphics::GraphicsTextureDesc& desc) noexcept;
-			graphics::GraphicsSamplerPtr createSampler(const graphics::GraphicsSamplerDesc& desc) noexcept;
-			graphics::GraphicsFramebufferPtr createFramebuffer(const graphics::GraphicsFramebufferDesc& desc) noexcept;
-			graphics::GraphicsFramebufferLayoutPtr createFramebufferLayout(const graphics::GraphicsFramebufferLayoutDesc& desc) noexcept;
-			graphics::GraphicsShaderPtr createShader(const graphics::GraphicsShaderDesc& desc) noexcept;
-			graphics::GraphicsProgramPtr createProgram(const graphics::GraphicsProgramDesc& desc) noexcept;
-			graphics::GraphicsStatePtr createRenderState(const graphics::GraphicsStateDesc& desc) noexcept;
-			graphics::GraphicsPipelinePtr createRenderPipeline(const graphics::GraphicsPipelineDesc& desc) noexcept;
-			graphics::GraphicsDescriptorSetPtr createDescriptorSet(const graphics::GraphicsDescriptorSetDesc& desc) noexcept;
-			graphics::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const graphics::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
-			graphics::GraphicsDescriptorPoolPtr createDescriptorPool(const graphics::GraphicsDescriptorPoolDesc& desc) noexcept;
+			hal::GraphicsInputLayoutPtr createInputLayout(const hal::GraphicsInputLayoutDesc& desc) noexcept;
+			hal::GraphicsDataPtr createGraphicsData(const hal::GraphicsDataDesc& desc) noexcept;
+			hal::GraphicsTexturePtr createTexture(const hal::GraphicsTextureDesc& desc) noexcept;
+			hal::GraphicsSamplerPtr createSampler(const hal::GraphicsSamplerDesc& desc) noexcept;
+			hal::GraphicsFramebufferPtr createFramebuffer(const hal::GraphicsFramebufferDesc& desc) noexcept;
+			hal::GraphicsFramebufferLayoutPtr createFramebufferLayout(const hal::GraphicsFramebufferLayoutDesc& desc) noexcept;
+			hal::GraphicsShaderPtr createShader(const hal::GraphicsShaderDesc& desc) noexcept;
+			hal::GraphicsProgramPtr createProgram(const hal::GraphicsProgramDesc& desc) noexcept;
+			hal::GraphicsStatePtr createRenderState(const hal::GraphicsStateDesc& desc) noexcept;
+			hal::GraphicsPipelinePtr createRenderPipeline(const hal::GraphicsPipelineDesc& desc) noexcept;
+			hal::GraphicsDescriptorSetPtr createDescriptorSet(const hal::GraphicsDescriptorSetDesc& desc) noexcept;
+			hal::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
+			hal::GraphicsDescriptorPoolPtr createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept;
 
-			void render(graphics::GraphicsContext& context) noexcept;
+			void render(hal::GraphicsContext& context) noexcept;
 
 		private:
 			void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
@@ -48,11 +48,11 @@ namespace octoon
 		private:
 			std::uint32_t width_, height_;
 
-			graphics::GraphicsFramebufferPtr fbo_;
-			graphics::GraphicsTexturePtr colorTexture_;
-			graphics::GraphicsTexturePtr depthTexture_;
+			hal::GraphicsFramebufferPtr fbo_;
+			hal::GraphicsTexturePtr colorTexture_;
+			hal::GraphicsTexturePtr depthTexture_;
 
-			graphics::GraphicsDevicePtr device_;
+			hal::GraphicsDevicePtr device_;
 		};
 	}
 }

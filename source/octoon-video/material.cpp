@@ -41,13 +41,13 @@ namespace octoon
 			return _name;
 		}
 
-		graphics::GraphicsUniformSetPtr 
+		hal::GraphicsUniformSetPtr 
 		Material::at(const std::string& name) const
 		{
 			auto begin = this->getDescriptorSet()->getUniformSets().begin();
 			auto end = this->getDescriptorSet()->getUniformSets().end();
 
-			auto it = std::find_if(begin, end, [&](const graphics::GraphicsUniformSetPtr& set){ return set->getName() == name; });
+			auto it = std::find_if(begin, end, [&](const hal::GraphicsUniformSetPtr& set){ return set->getName() == name; });
 			if (it != end)
 				return *it;
 

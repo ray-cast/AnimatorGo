@@ -37,15 +37,15 @@ namespace octoon
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
 
 		GameObjectPtr createSprite(const std::string& image, float w, float h) except;
-		GameObjectPtr createSprite(const graphics::GraphicsTexturePtr& texture) except;
-		GameObjectPtr createSprite(const graphics::GraphicsTexturePtr& texture, float w, float h) except;
+		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture) except;
+		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except;
 		GameObjectPtr createSpriteSquare(float w, float h) except;
 
-		graphics::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;
+		hal::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;
 
 	private:
 		using Prefabs = std::map<std::string, GameObjectPtr>;
-		using Textures = std::map<std::string, graphics::GraphicsTexturePtr>;
+		using Textures = std::map<std::string, hal::GraphicsTexturePtr>;
 
 		Prefabs prefabs_;
 		Textures textureCaches_;

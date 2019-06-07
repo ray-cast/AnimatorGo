@@ -137,11 +137,11 @@ namespace octoon
 				offset += layout.getVertexCount();
 			}
 
-			graphics::GraphicsDataDesc dataDesc;
-			dataDesc.setType(graphics::GraphicsDataType::StorageVertexBuffer);
+			hal::GraphicsDataDesc dataDesc;
+			dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
 			dataDesc.setStream((std::uint8_t*)data.data());
 			dataDesc.setStreamSize(data.size() * sizeof(float));
-			dataDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
+			dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
 			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
@@ -150,11 +150,11 @@ namespace octoon
 			auto& indices = mesh->getIndicesArray();
 			if (!indices.empty())
 			{
-				graphics::GraphicsDataDesc indiceDesc;
-				indiceDesc.setType(graphics::GraphicsDataType::StorageIndexBuffer);
+				hal::GraphicsDataDesc indiceDesc;
+				indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
 				indiceDesc.setStream((std::uint8_t*)indices.data());
 				indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
-				indiceDesc.setUsage(graphics::GraphicsUsageFlagBits::ReadBit);
+				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
 				geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
 				geometry_->setNumIndices((std::uint32_t)indices.size());

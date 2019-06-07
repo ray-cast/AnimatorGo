@@ -8,12 +8,11 @@
 #include <octoon/runtime/platform.h>
 #include <octoon/audio/common/audio_types.h>
 
-
 namespace octoon
 {
     namespace audio
     {
-        class OCTOON_EXPORT AudioBuffer : public StreamBuf
+        class OCTOON_EXPORT AudioBuffer
         {
         public:
             AudioBuffer() noexcept;
@@ -31,7 +30,5 @@ namespace octoon
         };
     }
 }
-
-
 
 #endif // OCTOON_AUDIO_BUFFER_H_

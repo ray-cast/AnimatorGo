@@ -16,10 +16,10 @@ namespace octoon
 		{
 		public:
 			System() noexcept;
-			System(const graphics::GraphicsDevicePtr& device) noexcept;
+			System(const hal::GraphicsDevicePtr& device) noexcept;
 			~System() noexcept;
 
-			void open(const graphics::GraphicsDevicePtr& device) except;
+			void open(const hal::GraphicsDevicePtr& device) except;
 			void close() noexcept;
 
 			bool injectMouseMove(float absx, float absy) noexcept;
@@ -45,7 +45,7 @@ namespace octoon
 
 			void newFrame() noexcept;
 
-			void render(graphics::GraphicsContext& context) noexcept;
+			void render(hal::GraphicsContext& context) noexcept;
 
 		private:
 			System(const System&) noexcept = delete;
@@ -57,16 +57,16 @@ namespace octoon
 
 			ImGuiContext* imguiContext_;
 
-			graphics::GraphicsDataPtr vbo_;
-			graphics::GraphicsDataPtr ibo_;
-			graphics::GraphicsTexturePtr texture_;
-			graphics::GraphicsDescriptorSetPtr descriptor_set_;
+			hal::GraphicsDataPtr vbo_;
+			hal::GraphicsDataPtr ibo_;
+			hal::GraphicsTexturePtr texture_;
+			hal::GraphicsDescriptorSetPtr descriptor_set_;
 
-			graphics::GraphicsUniformSetPtr proj_;
-			graphics::GraphicsUniformSetPtr decal_;
+			hal::GraphicsUniformSetPtr proj_;
+			hal::GraphicsUniformSetPtr decal_;
 
-			graphics::GraphicsDevicePtr device_;
-			graphics::GraphicsPipelinePtr pipeline_;
+			hal::GraphicsDevicePtr device_;
+			hal::GraphicsPipelinePtr pipeline_;
 		};
 	}
 }

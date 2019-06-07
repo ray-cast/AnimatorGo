@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL33Texture, GraphicsTexture, "GL33Texture")
 

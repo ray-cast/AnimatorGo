@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(NSGLSwapchain, GraphicsSwapchain, "NSGLSwapchain")
 

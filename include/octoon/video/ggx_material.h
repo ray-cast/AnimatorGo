@@ -12,7 +12,7 @@ namespace octoon
 		{
 		public:
 			GGXMaterial() except;
-			GGXMaterial(const graphics::GraphicsTexturePtr& texture) except;
+			GGXMaterial(const hal::GraphicsTexturePtr& texture) except;
 			~GGXMaterial() noexcept;
 
 			void setup() except;
@@ -20,14 +20,14 @@ namespace octoon
 			void setTransform(const math::float4x4& m) noexcept override;
 			void setViewProjection(const math::float4x4& vp) noexcept override;
 
-			const graphics::GraphicsPipelinePtr& getPipeline() const noexcept override;
-			const graphics::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
+			const hal::GraphicsPipelinePtr& getPipeline() const noexcept override;
+			const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
 
 			void setLightDir(const math::float3& translate) noexcept;
 			void setBaseColor(const math::float3& colors) noexcept;
 			void setAmbientColor(const math::float3& colors) noexcept;
 			void setSpecularColor(const math::float3& colors) noexcept;
-			void setTexture(const graphics::GraphicsTexturePtr& texture) noexcept;
+			void setTexture(const hal::GraphicsTexturePtr& texture) noexcept;
 
 			void setSmoothness(float smoothness) noexcept;
 			void setMetalness(float metalness) noexcept;
@@ -36,7 +36,7 @@ namespace octoon
 			const math::float3& getBaseColor() const noexcept;
 			const math::float3& getAmbientColor() const noexcept;
 			const math::float3& getSpecularColor() const noexcept;
-			const graphics::GraphicsTexturePtr& getTexture() noexcept;
+			const hal::GraphicsTexturePtr& getTexture() noexcept;
 
 			float getSmoothness() const noexcept;
 			float getMetalness() const noexcept;
@@ -48,20 +48,20 @@ namespace octoon
 			GGXMaterial& operator=(const GGXMaterial&) = delete;
 
 		private:
-			graphics::GraphicsPipelinePtr pipeline_;
-			graphics::GraphicsDescriptorSetPtr descriptorSet_;
+			hal::GraphicsPipelinePtr pipeline_;
+			hal::GraphicsDescriptorSetPtr descriptorSet_;
 
-			graphics::GraphicsUniformSetPtr proj_;
-			graphics::GraphicsUniformSetPtr model_;
-			graphics::GraphicsUniformSetPtr lightDir_;
+			hal::GraphicsUniformSetPtr proj_;
+			hal::GraphicsUniformSetPtr model_;
+			hal::GraphicsUniformSetPtr lightDir_;
 
-			graphics::GraphicsUniformSetPtr baseColor_;
-			graphics::GraphicsUniformSetPtr ambientColor_;
-			graphics::GraphicsUniformSetPtr specularColor_;
+			hal::GraphicsUniformSetPtr baseColor_;
+			hal::GraphicsUniformSetPtr ambientColor_;
+			hal::GraphicsUniformSetPtr specularColor_;
 
-			graphics::GraphicsUniformSetPtr smoothness_;
-			graphics::GraphicsUniformSetPtr metalness_;
-			graphics::GraphicsUniformSetPtr decal_;
+			hal::GraphicsUniformSetPtr smoothness_;
+			hal::GraphicsUniformSetPtr metalness_;
+			hal::GraphicsUniformSetPtr decal_;
 		};
 	}
 }

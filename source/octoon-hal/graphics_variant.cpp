@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GraphicsVariant::GraphicsVariant() noexcept
 			: _type(GraphicsUniformType::Null)

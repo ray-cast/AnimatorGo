@@ -9,7 +9,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL33Pipeline, GraphicsPipeline, "GL33Pipeline")
 

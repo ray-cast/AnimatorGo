@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GL33DeviceProperty::GL33DeviceProperty() noexcept
 		{

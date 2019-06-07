@@ -13,7 +13,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL20Device, OGLDevice, "GL20Device")
 

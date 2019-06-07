@@ -5,7 +5,7 @@
 
 namespace octoon 
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL32Sampler final : public GraphicsSampler
 		{

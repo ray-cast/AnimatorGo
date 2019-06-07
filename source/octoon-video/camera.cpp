@@ -3,7 +3,7 @@
 #include <octoon/runtime/except.h>
 #include <octoon/hal/graphics.h>
 
-using namespace octoon::graphics;
+using namespace octoon::hal;
 
 namespace octoon
 {
@@ -19,7 +19,7 @@ namespace octoon
 			, projectInverse_(math::float4x4::One)
 			, viewProject_(math::float4x4::One)
 			, viewProjectInverse_(math::float4x4::One)
-			, clearflags_(graphics::GraphicsClearFlagBits::AllBit)
+			, clearflags_(hal::GraphicsClearFlagBits::AllBit)
 		{
 		}
 
@@ -40,7 +40,7 @@ namespace octoon
 		}
 
 		void
-		Camera::setClearFlags(graphics::GraphicsClearFlags clearflags) noexcept
+		Camera::setClearFlags(hal::GraphicsClearFlags clearflags) noexcept
 		{
 			clearflags_ = clearflags;
 		}
@@ -52,7 +52,7 @@ namespace octoon
 		}
 
 		void
-		Camera::setFramebuffer(const graphics::GraphicsFramebufferPtr& framebuffer) noexcept
+		Camera::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept
 		{
 			fbo_[0] = framebuffer;
 		}
@@ -210,26 +210,26 @@ namespace octoon
 			return cameraType_;
 		}
 
-		graphics::GraphicsClearFlags
+		hal::GraphicsClearFlags
 		Camera::getClearFlags() const noexcept
 		{
 			return clearflags_;
 		}
 
-		const graphics::GraphicsFramebufferPtr&
+		const hal::GraphicsFramebufferPtr&
 		Camera::getFramebuffer() const noexcept
 		{
 			return fbo_[0];
 		}
 
-		const graphics::GraphicsFramebufferPtr&
+		const hal::GraphicsFramebufferPtr&
 		Camera::getSwapFramebuffer() const noexcept
 		{
 			return fbo_[1];
 		}
 
 		void
-		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		Camera::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
 		{
 			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));
@@ -268,7 +268,7 @@ namespace octoon
 		}
 
 		void
-		Camera::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, graphics::GraphicsFormat format, graphics::GraphicsFormat depthStencil) except
+		Camera::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
 		{
 			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, format));

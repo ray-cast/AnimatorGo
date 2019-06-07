@@ -17,7 +17,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class OGLSwapchain final : public ToplevelSwapchain
 		{

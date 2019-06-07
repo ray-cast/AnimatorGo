@@ -2,7 +2,7 @@
 
 namespace octoon 
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL20Sampler, GraphicsSampler, "GL20Sampler")
 

@@ -3,6 +3,7 @@
 
 #include <octoon/animation/interpolator.h>
 #include <memory>
+#include <vector>
 
 namespace octoon
 {

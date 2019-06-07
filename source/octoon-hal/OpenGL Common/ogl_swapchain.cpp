@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(OGLSwapchain, ToplevelSwapchain, "OGLSwapchain")
 

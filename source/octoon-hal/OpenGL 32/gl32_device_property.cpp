@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GL32DeviceProperty::GL32DeviceProperty() noexcept
 		{

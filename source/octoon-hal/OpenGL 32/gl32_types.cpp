@@ -4,7 +4,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GLboolean GL32Types::_egl3init = GL_FALSE;
 		GLboolean GL32Types::_egl3Features[GL32_RangeSize];

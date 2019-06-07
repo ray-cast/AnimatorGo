@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL20InputLayout, GraphicsInputLayout, "GL20InputLayout")
 

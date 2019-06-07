@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubInterface(GL45GraphicsData, GraphicsData, "GL45GraphicsData")
 

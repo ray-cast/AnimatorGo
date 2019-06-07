@@ -4,7 +4,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		#ifdef GLEW_MX
 			GLEWContext _glewctx;

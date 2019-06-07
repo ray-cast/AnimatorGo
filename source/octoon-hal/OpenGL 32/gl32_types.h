@@ -32,7 +32,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		enum GL32Features
 		{

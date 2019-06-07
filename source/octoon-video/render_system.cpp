@@ -6,7 +6,7 @@
 
 #include <octoon/runtime/except.h>
 
-using namespace octoon::graphics;
+using namespace octoon::hal;
 
 namespace octoon
 {
@@ -156,7 +156,7 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::render(graphics::GraphicsContext& context) noexcept
+		RenderSystem::render(hal::GraphicsContext& context) noexcept
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
@@ -192,7 +192,7 @@ namespace octoon
 						context.setRenderPipeline(material->getPipeline());
 						context.setDescriptorSet(material->getDescriptorSet());
 						context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
-						context.setIndexBufferData(geometry->getIndexBuffer(), 0, graphics::GraphicsIndexType::UInt32);
+						context.setIndexBufferData(geometry->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
 
 						auto indices = geometry->getNumIndices();
 						if (indices > 0)

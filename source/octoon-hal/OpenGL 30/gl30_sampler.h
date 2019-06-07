@@ -5,7 +5,7 @@
 
 namespace octoon 
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL30Sampler final : public GraphicsSampler
 		{

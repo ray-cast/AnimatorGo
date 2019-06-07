@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		class GL20InputLayout final : public GraphicsInputLayout
 		{

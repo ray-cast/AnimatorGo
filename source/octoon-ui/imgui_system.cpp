@@ -6,7 +6,7 @@
 
 #include <cstring> // std::memcpy
 
-using namespace octoon::graphics;
+using namespace octoon::hal;
 
 namespace octoon
 {
@@ -72,7 +72,7 @@ namespace octoon
 		{
 		}
 
-		System::System(const graphics::GraphicsDevicePtr& device) noexcept
+		System::System(const hal::GraphicsDevicePtr& device) noexcept
 			: System()
 		{
 			this->open(device);
@@ -139,8 +139,8 @@ namespace octoon
 				throw std::runtime_error("Failed to create indices bufer");
 
 			GraphicsProgramDesc programDesc;
-			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
-			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::VertexBit, vert, "main", hal::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(device->createShader(GraphicsShaderDesc(GraphicsShaderStageFlagBits::FragmentBit, frag, "main", hal::GraphicsShaderLang::GLSL)));
 			auto program = device->createProgram(programDesc);
 			if (!program)
 				throw std::runtime_error("Failed to create shader progoram");
@@ -323,7 +323,7 @@ namespace octoon
 			ImGui::GetIO().ImeWindowHandle = window;
 		}
 
-		input::WindHandle 
+		input::WindHandle
 		System::getImeWindowHandle() const noexcept
 		{
 			ImGui::SetCurrentContext(imguiContext_);
@@ -412,13 +412,13 @@ namespace octoon
 		}
 
 		void
-		System::render(graphics::GraphicsContext& context) noexcept
+		System::render(hal::GraphicsContext& context) noexcept
 		{
 			assert(vbo_ && ibo_);
 
 			ImGui::SetCurrentContext(imguiContext_);
 			ImGui::Render();
-			
+
 			auto drawData = ImGui::GetDrawData();
 			if (!drawData)
 				return;

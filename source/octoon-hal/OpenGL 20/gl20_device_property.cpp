@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		GL20DeviceProperty::GL20DeviceProperty() noexcept
 		{

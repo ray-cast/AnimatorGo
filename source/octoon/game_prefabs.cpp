@@ -26,7 +26,7 @@
 
 using namespace octoon::io;
 using namespace octoon::image;
-using namespace octoon::graphics;
+using namespace octoon::hal;
 using namespace octoon::video;
 using namespace octoon::model;
 
@@ -190,7 +190,7 @@ namespace octoon
 		return object;
 	}
 
-	GameObjectPtr 
+	GameObjectPtr
 	GamePrefabs::createText(const wchar_t* text, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
 		auto object = GameObject::create("GameObject");
@@ -200,7 +200,7 @@ namespace octoon
 		return object;
 	}
 
-	GameObjectPtr 
+	GameObjectPtr
 	GamePrefabs::createText(const char* u8str, std::uint16_t fontsize, const char* fontPath) noexcept
 	{
 		auto object = GameObject::create("GameObject");
@@ -210,7 +210,7 @@ namespace octoon
 		return object;
 	}
 
-	GameObjectPtr 
+	GameObjectPtr
 	GamePrefabs::createModel(const std::string& path, bool cache) except
 	{
 		auto it = prefabs_.find(path);
@@ -254,7 +254,7 @@ namespace octoon
 		return actor;
 	}
 
-	GameObjectPtr 
+	GameObjectPtr
 	GamePrefabs::createSprite(const std::string& image, float w, float h) except
 	{
 		auto object = GameObject::create("GameObject");
@@ -264,8 +264,8 @@ namespace octoon
 		return object;
 	}
 
-	GameObjectPtr 
-	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture) except
+	GameObjectPtr
+	GamePrefabs::createSprite(const hal::GraphicsTexturePtr& texture) except
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight()));
@@ -274,8 +274,8 @@ namespace octoon
 		return object;
 	}
 
-	GameObjectPtr 
-	GamePrefabs::createSprite(const graphics::GraphicsTexturePtr& texture, float w, float h) except
+	GameObjectPtr
+	GamePrefabs::createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
@@ -290,7 +290,7 @@ namespace octoon
 		return this->createSprite("sys:sprite/square.png", w, h);
 	}
 
-	graphics::GraphicsTexturePtr
+	hal::GraphicsTexturePtr
 	GamePrefabs::createTexture(const std::string& path, bool cache) except
 	{
 		assert(!path.empty());

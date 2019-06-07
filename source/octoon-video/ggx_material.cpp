@@ -11,7 +11,7 @@ namespace octoon
 			this->setup();
 		}
 
-		GGXMaterial::GGXMaterial(const graphics::GraphicsTexturePtr& texture) except
+		GGXMaterial::GGXMaterial(const hal::GraphicsTexturePtr& texture) except
 			:GGXMaterial()
 		{
 			this->setTexture(texture);
@@ -165,26 +165,26 @@ namespace octoon
 			})";
 #endif
 
-			graphics::GraphicsProgramDesc programDesc;
-			programDesc.addShader(RenderSystem::instance()->createShader(graphics::GraphicsShaderDesc(graphics::GraphicsShaderStageFlagBits::VertexBit, vert, "main", graphics::GraphicsShaderLang::GLSL)));
-			programDesc.addShader(RenderSystem::instance()->createShader(graphics::GraphicsShaderDesc(graphics::GraphicsShaderStageFlagBits::FragmentBit, frag, "main", graphics::GraphicsShaderLang::GLSL)));
+			hal::GraphicsProgramDesc programDesc;
+			programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vert, "main", hal::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, frag, "main", hal::GraphicsShaderLang::GLSL)));
 			auto program = RenderSystem::instance()->createProgram(programDesc);
 
-			graphics::GraphicsInputLayoutDesc layoutDesc;
-			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "POSITION", 0, graphics::GraphicsFormat::R32G32B32SFloat));
-			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "TEXCOORD", 0, graphics::GraphicsFormat::R32G32SFloat));
-			layoutDesc.addVertexLayout(graphics::GraphicsVertexLayout(0, "NORMAL", 0, graphics::GraphicsFormat::R32G32B32SFloat));
-			layoutDesc.addVertexBinding(graphics::GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
+			hal::GraphicsInputLayoutDesc layoutDesc;
+			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
+			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "NORMAL", 0, hal::GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexBinding(hal::GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 
-			graphics::GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
+			hal::GraphicsDescriptorSetLayoutDesc descriptor_set_layout;
 			descriptor_set_layout.setUniformComponents(program->getActiveParams());
 
-			graphics::GraphicsStateDesc stateDesc;
-			stateDesc.setPrimitiveType(graphics::GraphicsVertexType::TriangleList);
-			stateDesc.setCullMode(graphics::GraphicsCullMode::None);
+			hal::GraphicsStateDesc stateDesc;
+			stateDesc.setPrimitiveType(hal::GraphicsVertexType::TriangleList);
+			stateDesc.setCullMode(hal::GraphicsCullMode::None);
 			stateDesc.setDepthEnable(true);
 
-			graphics::GraphicsPipelineDesc pipeline;
+			hal::GraphicsPipelineDesc pipeline;
 			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));
 			pipeline.setGraphicsState(RenderSystem::instance()->createRenderState(stateDesc));
 			pipeline.setGraphicsProgram(std::move(program));
@@ -194,7 +194,7 @@ namespace octoon
 			if (!pipeline_)
 				return;
 
-			graphics::GraphicsDescriptorSetDesc descriptorSet;
+			hal::GraphicsDescriptorSetDesc descriptorSet;
 			descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
 			descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
 			if (!descriptorSet_)
@@ -203,15 +203,15 @@ namespace octoon
 			auto begin = descriptorSet_->getUniformSets().begin();
 			auto end = descriptorSet_->getUniformSets().end();
 
-			proj_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
-			model_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
-			lightDir_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
-			baseColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
-			ambientColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
-			specularColor_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
-			smoothness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "smoothness"; });
-			metalness_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "metalness"; });
-			decal_ = *std::find_if(begin, end, [](const graphics::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
+			proj_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
+			model_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
+			lightDir_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "lightDir"; });
+			baseColor_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "baseColor"; });
+			ambientColor_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "ambientColor"; });
+			specularColor_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "specularColor"; });
+			smoothness_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "smoothness"; });
+			metalness_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "metalness"; });
+			decal_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
 
 			lightDir_->uniform3f(-math::float3::UnitY);
 			baseColor_->uniform3f(math::float3::Zero);
@@ -233,13 +233,13 @@ namespace octoon
 			proj_->uniform4fmat(vp);
 		}
 
-		const graphics::GraphicsPipelinePtr&
+		const hal::GraphicsPipelinePtr&
 		GGXMaterial::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
-		const graphics::GraphicsDescriptorSetPtr&
+		const hal::GraphicsDescriptorSetPtr&
 		GGXMaterial::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
@@ -270,7 +270,7 @@ namespace octoon
 		}
 
 		void 
-		GGXMaterial::setTexture(const graphics::GraphicsTexturePtr& texture) noexcept
+		GGXMaterial::setTexture(const hal::GraphicsTexturePtr& texture) noexcept
 		{
 			decal_->uniformTexture(texture);
 		}
@@ -323,7 +323,7 @@ namespace octoon
 			return smoothness_->getFloat();
 		}
 
-		const graphics::GraphicsTexturePtr&
+		const hal::GraphicsTexturePtr&
 		GGXMaterial::getTexture() noexcept
 		{
 			return decal_->getTexture();

@@ -34,11 +34,11 @@ namespace octoon
 			void setNumIndices(std::uint32_t numIndices) noexcept;
 			std::uint32_t getNumIndices() const noexcept;
 
-			void setVertexBuffer(const graphics::GraphicsDataPtr& data) noexcept;
-			const graphics::GraphicsDataPtr& getVertexBuffer() const noexcept;
+			void setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept;
+			const hal::GraphicsDataPtr& getVertexBuffer() const noexcept;
 
-			void setIndexBuffer(const graphics::GraphicsDataPtr& data) noexcept;
-			const graphics::GraphicsDataPtr& getIndexBuffer() const noexcept;
+			void setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept;
+			const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
 
 		private:
 
@@ -54,8 +54,8 @@ namespace octoon
 			MaterialPtr material_;
 			DrawType drawType_;
 			GraphicsIndexType indexType_;
-			graphics::GraphicsDataPtr vertices_;
-			graphics::GraphicsDataPtr indices_;
+			hal::GraphicsDataPtr vertices_;
+			hal::GraphicsDataPtr indices_;
 		};
 	}
 }

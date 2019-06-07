@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL20Framebuffer, GraphicsFramebuffer, "GL20Framebuffer")
 		OctoonImplementSubClass(GL20FramebufferLayout, GraphicsFramebufferLayout, "GL20FramebufferLayout")

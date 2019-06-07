@@ -192,39 +192,39 @@ namespace octoon
 		}
 
 		void
-		Light::setSkyBox(const graphics::GraphicsTexturePtr& texture) noexcept
+		Light::setSkyBox(const hal::GraphicsTexturePtr& texture) noexcept
 		{
-			assert(!texture || texture->getTextureDesc().getTexDim() == graphics::GraphicsTextureDim::Texture2D);
+			assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
 			_skybox = texture;
 		}
 
-		const graphics::GraphicsTexturePtr&
+		const hal::GraphicsTexturePtr&
 		Light::getSkyBox() const noexcept
 		{
 			return _skybox;
 		}
 
 		void
-		Light::setSkyLightingDiffuse(const graphics::GraphicsTexturePtr& texture) noexcept
+		Light::setSkyLightingDiffuse(const hal::GraphicsTexturePtr& texture) noexcept
 		{
-			assert(!texture || texture->getTextureDesc().getTexDim() == graphics::GraphicsTextureDim::Cube);
+			assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube);
 			_skyDiffuseIBL = texture;
 		}
 
-		const graphics::GraphicsTexturePtr&
+		const hal::GraphicsTexturePtr&
 		Light::getSkyLightingDiffuse() const noexcept
 		{
 			return _skyDiffuseIBL;
 		}
 
 		void
-		Light::setSkyLightingSpecular(const graphics::GraphicsTexturePtr& texture) noexcept
+		Light::setSkyLightingSpecular(const hal::GraphicsTexturePtr& texture) noexcept
 		{
-			assert(!texture || texture->getTextureDesc().getTexDim() == graphics::GraphicsTextureDim::Cube);
+			assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube);
 			_skySpecularIBL = texture;
 		}
 
-		const graphics::GraphicsTexturePtr&
+		const hal::GraphicsTexturePtr&
 		Light::getSkyLightingSpecular() const noexcept
 		{
 			return _skySpecularIBL;

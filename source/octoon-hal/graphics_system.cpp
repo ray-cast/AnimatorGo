@@ -20,7 +20,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSingleton(GraphicsSystem)
 

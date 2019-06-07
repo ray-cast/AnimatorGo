@@ -83,14 +83,14 @@ namespace octoon
 			const math::float3& getLightColor() const noexcept;
 			const math::float3& getLightAttenuation() const noexcept;
 
-			void setSkyBox(const graphics::GraphicsTexturePtr& texture) noexcept;
-			const graphics::GraphicsTexturePtr& getSkyBox() const noexcept;
+			void setSkyBox(const hal::GraphicsTexturePtr& texture) noexcept;
+			const hal::GraphicsTexturePtr& getSkyBox() const noexcept;
 
-			void setSkyLightingDiffuse(const graphics::GraphicsTexturePtr& texture) noexcept;
-			const graphics::GraphicsTexturePtr& getSkyLightingDiffuse() const noexcept;
+			void setSkyLightingDiffuse(const hal::GraphicsTexturePtr& texture) noexcept;
+			const hal::GraphicsTexturePtr& getSkyLightingDiffuse() const noexcept;
 
-			void setSkyLightingSpecular(const graphics::GraphicsTexturePtr& texture) noexcept;
-			const graphics::GraphicsTexturePtr& getSkyLightingSpecular() const noexcept;
+			void setSkyLightingSpecular(const hal::GraphicsTexturePtr& texture) noexcept;
+			const hal::GraphicsTexturePtr& getSkyLightingSpecular() const noexcept;
 
 			const CameraPtr& getCamera() const noexcept;
 
@@ -138,9 +138,9 @@ namespace octoon
 			CameraPtr _shadowCamera;
 			ShadowMode _shadowMode;
 
-			graphics::GraphicsTexturePtr _skybox;
-			graphics::GraphicsTexturePtr _skyDiffuseIBL;
-			graphics::GraphicsTexturePtr _skySpecularIBL;
+			hal::GraphicsTexturePtr _skybox;
+			hal::GraphicsTexturePtr _skyDiffuseIBL;
+			hal::GraphicsTexturePtr _skySpecularIBL;
 		};
 	}
 }

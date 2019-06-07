@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubClass(GL45DescriptorSet, GraphicsDescriptorSet, "GL45DescriptorSet")
 

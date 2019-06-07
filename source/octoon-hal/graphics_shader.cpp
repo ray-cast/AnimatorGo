@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	namespace graphics
+	namespace hal
 	{
 		OctoonImplementSubInterface(GraphicsParam, runtime::RttiInterface, "GraphicsParam")
 		OctoonImplementSubInterface(GraphicsAttribute, runtime::RttiInterface, "GraphicsAttribute")

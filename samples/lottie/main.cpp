@@ -169,7 +169,7 @@ private:
 	octoon::GameObjects layers_;
 	octoon::GameObjectPtr camera_;
 	std::map<std::string, octoon::GameObjectPtr> _comps;
-	std::map<std::string, octoon::graphics::GraphicsTexturePtr> _textures;
+	std::map<std::string, octoon::hal::GraphicsTexturePtr> _textures;
 };
 
 int main(int argc, const char* argv[])

@@ -1,5 +1,5 @@
-#ifndef OCTOON_MODEL_PATH_ITERPOLATOR_H_
-#define OCTOON_MODEL_PATH_ITERPOLATOR_H_
+#ifndef OCTOON_ANIMATION_PATH_ITERPOLATOR_H_
+#define OCTOON_ANIMATION_PATH_ITERPOLATOR_H_
 
 #include <octoon/animation/interpolator.h>
 

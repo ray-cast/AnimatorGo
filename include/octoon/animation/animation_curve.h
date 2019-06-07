@@ -1,5 +1,5 @@
-#ifndef OCTOON_MODEL_ANIMATION_CURVE_H_
-#define OCTOON_MODEL_ANIMATION_CURVE_H_
+#ifndef OCTOON_ANIMATION_ANIMATION_CURVE_H_
+#define OCTOON_ANIMATION_ANIMATION_CURVE_H_
 
 #include <octoon/animation/keyframe.h>
 

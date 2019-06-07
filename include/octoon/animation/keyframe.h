@@ -1,5 +1,5 @@
-#ifndef OCTOON_MODEL_KEYFRAME_H_
-#define OCTOON_MODEL_KEYFRAME_H_
+#ifndef OCTOON_ANIMATION_KEYFRAME_H_
+#define OCTOON_ANIMATION_KEYFRAME_H_
 
 #include <octoon/animation/interpolator.h>
 #include <memory>

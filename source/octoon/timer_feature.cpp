@@ -77,7 +77,7 @@ namespace octoon
 	void
 	TimerFeature::onActivate() except
 	{
-		timer_ = std::make_shared<runtime::Timer>();
+		timer_ = std::make_unique<runtime::Timer>();
 		timer_->reset();
 	}
 

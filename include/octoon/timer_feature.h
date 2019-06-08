@@ -39,7 +39,7 @@ namespace octoon
 		TimerFeature& operator=(const TimerFeature&) = delete;
 
 	private:
-		std::shared_ptr<runtime::Timer> timer_;
+		std::unique_ptr<runtime::Timer> timer_;
 	};
 }
 

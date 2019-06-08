@@ -241,7 +241,9 @@ namespace octoon
 
 			auto material = std::make_shared<video::BasicMaterial>();
 			material->setBaseColor(math::float4::One);
-			material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
+
+			if (!textureName.empty())
+				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
 
 			auto object = GameObject::create(std::move(name));
 			object->addComponent<MeshFilterComponent>(mesh);
@@ -249,7 +251,7 @@ namespace octoon
 			object->setParent(actor);
 		}
 
-		prefabs_[path] = actor->clone();
+		prefabs_[path] = actor;
 
 		return actor;
 	}

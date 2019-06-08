@@ -27,7 +27,8 @@ namespace octoon
 			this->addComponentDispatch(GameDispatchType::Gui);
 
 			camera_ = GameObject::create("MainCamera");
-			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 0, -20));
+			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 1, -40));
+			camera_->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
 			camera_->addComponent<EditorCameraComponent>();
 
 			auto camera = camera_->addComponent<PerspectiveCameraComponent>(45.0f);

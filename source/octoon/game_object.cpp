@@ -332,7 +332,7 @@ namespace octoon
 		this->addComponent(component);
 	}
 
-	void 
+	void
 	GameObject::addComponent(GameComponents&& components) except
 	{
 		for (auto& it : components)
@@ -676,7 +676,7 @@ namespace octoon
 		for (auto& it : components_)
 			instance->addComponent(it->clone());
 
-		for (auto& it : this->getChildren())
+		for (auto& it : children_)
 			instance->addChild(it->clone());
 
 		return instance;

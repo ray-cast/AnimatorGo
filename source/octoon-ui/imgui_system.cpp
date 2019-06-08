@@ -412,6 +412,13 @@ namespace octoon
 		}
 
 		void
+		System::endFrame() noexcept
+		{
+			ImGui::SetCurrentContext(imguiContext_);
+			ImGui::EndFrame();
+		}
+
+		void
 		System::render(hal::GraphicsContext& context) noexcept
 		{
 			assert(vbo_ && ibo_);

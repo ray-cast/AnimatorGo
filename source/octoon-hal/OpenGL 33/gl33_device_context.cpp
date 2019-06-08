@@ -574,6 +574,8 @@ namespace octoon
 			auto readFramebuffer = src->downcast<GL33Framebuffer>()->getInstanceID();
 			auto drawFramebuffer = dest ? dest->downcast<GL33Framebuffer>()->getInstanceID() : GL_NONE;
 
+			this->setRenderPipeline(nullptr);
+
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
 

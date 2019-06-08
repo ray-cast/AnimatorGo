@@ -177,6 +177,7 @@ namespace octoon
 	void
 	GuiFeature::onFrameEnd() noexcept
 	{
+		system_->endFrame();
 	}
 }
 #endif

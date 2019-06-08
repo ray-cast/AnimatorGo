@@ -91,8 +91,8 @@ namespace octoon
 			GL45DescriptorSetPtr _descriptorSet;
 			GL45VertexBuffers _vertexBuffers;
 			GL33GraphicsStatePtr _state;
+			GL33GraphicsStatePtr _stateDefault;
 
-			GraphicsStateDesc _stateDefault;
 			GraphicsStateDesc _stateCaptured;
 
 			bool _needUpdatePipeline;

@@ -30,6 +30,8 @@ namespace octoon
 			, _needUpdateDescriptor(false)
 			, _needUpdateVertexBuffers(false)
 		{
+			_stateDefault = std::make_shared<GL33GraphicsState>();
+			_stateDefault->setup(GraphicsStateDesc());
 		}
 
 		GL45DeviceContext::~GL45DeviceContext() noexcept
@@ -261,34 +263,56 @@ namespace octoon
 		void
 		GL45DeviceContext::setRenderPipeline(const GraphicsPipelinePtr& pipeline) noexcept
 		{
-			assert(pipeline);
-			assert(pipeline->isInstanceOf<GL45Pipeline>());
+			assert(!pipeline || pipeline && pipeline->isInstanceOf<GL45Pipeline>());
 			assert(_glcontext->getActive());
 
-			auto glpipeline = pipeline->downcast_pointer<GL45Pipeline>();
-			if (_pipeline != glpipeline)
+			if (pipeline)
 			{
-				auto& pipelineDesc = pipeline->getPipelineDesc();
-
-				auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL33GraphicsState>();
-				if (_state != glstate)
-				{
-					glstate->apply(_stateCaptured);
-					_state = glstate;
-				}
-
-				auto glprogram = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL33Program>();
-				if (_program != glprogram)
-				{
-					_program = glprogram;
-					_program->apply();
-				}
+				auto glpipeline = pipeline->downcast_pointer<GL45Pipeline>();
 
 				if (_pipeline != glpipeline)
 				{
-					_pipeline = glpipeline;
-					_pipeline->apply();
-					_needUpdatePipeline = true;
+					auto& pipelineDesc = pipeline->getPipelineDesc();
+
+					auto glstate = pipelineDesc.getGraphicsState()->downcast_pointer<GL33GraphicsState>();
+					if (_state != glstate)
+					{
+						glstate->apply(_stateCaptured);
+						_state = glstate;
+					}
+
+					auto glprogram = pipelineDesc.getGraphicsProgram()->downcast_pointer<GL33Program>();
+					if (_program != glprogram)
+					{
+						_program = glprogram;
+						_program->apply();
+					}
+
+					if (_pipeline != glpipeline)
+					{
+						_pipeline = glpipeline;
+						_pipeline->apply();
+						_needUpdatePipeline = true;
+					}
+				}
+			}
+			else
+			{
+				if (_pipeline != pipeline)
+				{
+					if (_state != _stateDefault)
+					{
+						_stateDefault->apply(_stateCaptured);
+						_state = _stateDefault;
+					}
+
+					if (_program)
+					{
+						glUseProgram(GL_NONE);
+						_program = nullptr;
+					}
+
+					_pipeline = nullptr;
 				}
 			}
 		}
@@ -409,12 +433,7 @@ namespace octoon
 			else
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, GL_NONE);
-
-				if (_state)
-				{
-					_state->apply(_stateDefault);
-					_state = nullptr;
-				}
+				this->setRenderPipeline(nullptr);
 
 				_framebuffer = nullptr;
 			}

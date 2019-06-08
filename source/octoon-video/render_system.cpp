@@ -206,7 +206,6 @@ namespace octoon
 				if (camera->getCameraType() == CameraType::Main)
 				{
 					auto& v = camera->getPixelViewport();
-
 					if (framebuffer)
 						context.blitFramebuffer(framebuffer, v, nullptr, v);
 					else

@@ -44,6 +44,7 @@ namespace octoon
 			bool loadFont(const char* path, float font_size = 15) noexcept;
 
 			void newFrame() noexcept;
+			void endFrame() noexcept;
 
 			void render(hal::GraphicsContext& context) noexcept;
 

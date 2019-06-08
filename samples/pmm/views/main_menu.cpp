@@ -49,9 +49,9 @@ namespace octoon
 
 				if (imgui::beginMenu("File"))
 				{
-					if (imgui::menuItem("Open", "CTRL+O", false, false)) { this->sendMessage("editor:menu:file:open"); }
-					if (imgui::menuItem("Save", "CTRL+S", false, false)) { this->sendMessage("editor:menu:file:save"); }
-					if (imgui::menuItem("Save As...", "CTRL+SHIFT+S", false, false)) { this->sendMessage("editor:menu:file:saveAs"); }
+					if (imgui::menuItem("Open", "CTRL+O")) { this->sendMessage("editor:menu:file:open"); }
+					if (imgui::menuItem("Save", "CTRL+S")) { this->sendMessage("editor:menu:file:save"); }
+					if (imgui::menuItem("Save As...", "CTRL+SHIFT+S")) { this->sendMessage("editor:menu:file:saveAs"); }
 
 					imgui::separator();
 

@@ -1,6 +1,9 @@
 #include "file_controller.h"
 
 #include <octoon/octoon.h>
+#include <octoon/io/fstream.h>
+
+#include "..//models/pmm.h"
 #include "../libs/nativefiledialog/nfd.h"
 
 std::vector<const char*> g_SupportedProject = { "pmm" };
@@ -113,6 +116,8 @@ namespace octoon
 
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
 				return;
+
+			auto pmm = PMMFile::load(io::fstream(filepath));
 		}
 
 		void

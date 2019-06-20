@@ -17,7 +17,11 @@ namespace octoon
             LittleEndian
         };
 
+#ifdef __GNUC__
         constexpr inline bool isLE()
+#else
+		inline bool isLE()
+#endif
         {
 #ifdef __GNUC__
             return __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__;
@@ -26,7 +30,11 @@ namespace octoon
             return *(reinterpret_cast<const char *>(&i)) != 0;
 #endif
         }
-        constexpr inline bool isBE()
+#ifdef __GNUC__
+		constexpr inline bool isBE()
+#else
+		inline bool isBE()
+#endif
         {
 #ifdef __GNUC__
             return __BYTE_ORDER__==__ORDER_BIG_ENDIAN__;

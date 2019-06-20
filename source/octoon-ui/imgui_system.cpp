@@ -5,6 +5,7 @@
 #include <imgui_internal.h>
 
 #include <cstring> // std::memcpy
+#include <stdexcept> // std::runtime_error
 
 using namespace octoon::hal;
 

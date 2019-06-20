@@ -1,5 +1,8 @@
 INCLUDE_DIRECTORIES(${OCTOON_LIBRARY_OUTPUT_PATH})
 
+INCLUDE(ExternalProject)
+
+
 IF(NOT OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
     ADD_SUBDIRECTORY(glew)
     ADD_SUBDIRECTORY(glfw)
@@ -16,7 +19,25 @@ ADD_SUBDIRECTORY(libjpeg)
 ADD_SUBDIRECTORY(libpng)
 ADD_SUBDIRECTORY(gles)
 ADD_SUBDIRECTORY(openal-soft)
-ADD_SUBDIRECTORY(RadeonProRender-Baikal)
+ExternalProject_Add(
+    prorender
+    GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRender-Baikal.git
+    GIT_TAG 2d5a5d0eb2092d75adf637bf6f381d7e9307e986
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    PREFIX ${OCTOON_PATH_DEPENDENCIES}/RadeonProRender-Baikal
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_BIN}/install -DBUILD_SHARED_LIBS=OFF
+)
+
+ExternalProject_Add(
+    physx
+    GIT_REPOSITORY https://github.com/NVIDIAGameWorks/PhysX.git
+    GIT_TAG 4050bbfdc2699dfab7edbf0393df8ff96bbe06c5
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    PREFIX ${OCTOON_PATH_DEPENDENCIES}/PhysX
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_BIN}/install -DBUILD_SHARED_LIBS=OFF
+)
 
 IF(NOT OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
     SET_TARGET_ATTRIBUTE(glew "contrib")
@@ -33,20 +54,8 @@ SET_TARGET_ATTRIBUTE(dist "contrib")
 SET_TARGET_ATTRIBUTE(libjpeg "contrib")
 SET_TARGET_ATTRIBUTE(libpng "contrib")
 SET_TARGET_ATTRIBUTE(OpenAL "contrib")
-
-SET_TARGET_ATTRIBUTE(Baikal "contrib/prorender")
-SET_TARGET_ATTRIBUTE(BaikalDataGenerator "contrib/prorender")
-SET_TARGET_ATTRIBUTE(BaikalDataGeneratorApp "contrib/prorender")
-SET_TARGET_ATTRIBUTE(BaikalIO "contrib/prorender")
-SET_TARGET_ATTRIBUTE(Calc "contrib/prorender")
-SET_TARGET_ATTRIBUTE(CLW "contrib/prorender")
-SET_TARGET_ATTRIBUTE(clw_kernel_cache_h "contrib/prorender")
-SET_TARGET_ATTRIBUTE(Copy3rdParty "contrib/prorender")
-SET_TARGET_ATTRIBUTE(RadeonProRender64 "contrib/prorender")
-SET_TARGET_ATTRIBUTE(RadeonRays "contrib/prorender")
-SET_TARGET_ATTRIBUTE(RadeonRaysKernelCache "contrib/prorender")
-SET_TARGET_ATTRIBUTE(ResourcesDir "contrib/prorender")
-SET_TARGET_ATTRIBUTE(RprSupport64 "contrib/prorender")
+SET_TARGET_ATTRIBUTE(prorender "contrib")
+SET_TARGET_ATTRIBUTE(physx "contrib")
 
 IF(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 	ADD_SUBDIRECTORY(iGLU-1.0.0)

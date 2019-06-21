@@ -240,7 +240,7 @@ namespace octoon
 			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
 
 			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4::One);
+			material->setBaseColor(math::float4(base, 1.0));
 
 			if (!textureName.empty())
 				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));

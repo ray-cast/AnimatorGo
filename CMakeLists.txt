@@ -13,6 +13,7 @@ SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octo
 SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_SOURCE ${OCTOON_PATH}/source CACHE STRING "Adds a path to octoon source" FORCE)
 SET(OCTOON_PATH_DOCUMENT ${OCTOON_PATH}/document CACHE STRING "Adds a path to octoon document" FORCE)
+SET(OCTOON_PATH_INSTALL ${OCTOON_PATH}/install CACHE STRING "Adds a path for octoon dependencies install" FORCE)
 
 OPTION(OCTOON_BUILD_DOCUMENT "ON to enable document generation" OFF)
 OPTION(OCTOON_BUILD_SSE "ON for use OFF for ignore" OFF)

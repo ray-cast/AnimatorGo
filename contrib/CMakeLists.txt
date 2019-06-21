@@ -19,6 +19,15 @@ ADD_SUBDIRECTORY(libjpeg)
 ADD_SUBDIRECTORY(libpng)
 ADD_SUBDIRECTORY(gles)
 ADD_SUBDIRECTORY(openal-soft)
+ExternalProject_Add(Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG 2f631bb8087a0355d2b23a75a28d936ce237659d
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+    PREFIX ${TENSORA_PATH_DEPENDENCIES}/Catch2
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:path=${OCTOON_PATH_INSTALL}/ -DBUILD_SHARED_LIBS=OFF
+)
+
 ExternalProject_Add(
     prorender
     GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/RadeonProRender-Baikal.git
@@ -26,9 +35,10 @@ ExternalProject_Add(
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
     PREFIX ${OCTOON_PATH_DEPENDENCIES}/RadeonProRender-Baikal
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_BIN}/install -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_INSTALL}/install -DBUILD_SHARED_LIBS=OFF
 )
 
+IF(OCTOON_BUILD_PLATFORM_WINDOWS)
 ExternalProject_Add(
     physx
     GIT_REPOSITORY https://github.com/NVIDIAGameWorks/PhysX.git
@@ -36,8 +46,12 @@ ExternalProject_Add(
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
     PREFIX ${OCTOON_PATH_DEPENDENCIES}/PhysX
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_BIN}/install -DBUILD_SHARED_LIBS=OFF
+    CONFIGURE_COMMAND ${PYTHON_EXECUTABLE} ${OCTOON_PATH_DEPENDENCIES}/PhysX/src/physx/physx/buildtools/cmake_generate_projects.py 10
+    BUILD_COMMAND  cmake --build ${OCTOON_PATH_DEPENDENCIES}/PhysX/src/physx/physx/compiler/vc15win64
 )
+ELSE()
+	MESSAGE(FATAL_ERROR "Unsupported build platform for PhysX: " ${OCTOON_BUILD_PLATFORM})
+ENDIF()
 
 IF(NOT OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
     SET_TARGET_ATTRIBUTE(glew "contrib")

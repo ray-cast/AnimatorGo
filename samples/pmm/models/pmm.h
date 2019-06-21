@@ -12,6 +12,9 @@
 
 namespace octoon
 {
+	typedef math::Vector3  PmmVector3;
+	typedef math::Vector4  PmmVector4;
+
 	typedef math::Vector3  PmmColor3;
 	typedef math::Vector4  PmmColor4;
 	typedef math::float3x3 PmmFloat3x3;
@@ -39,12 +42,8 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto array = std::vector<PmmInt2>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmInt2 v;
-				v.load(reader);
-				array.push_back(v);
-			}
+			for (auto& it : array)
+				it.load(reader);
 
 			return array;
 		}
@@ -52,77 +51,10 @@ namespace octoon
 		static std::optional<std::vector<PmmInt2>> load_fixed_arrays(istream& reader, std::size_t len)
 		{
 			auto array = std::vector<PmmInt2>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmInt2 v;
-				v.load(reader);
-				array.push_back(v);
-			}
+			for (auto& it : array)
+				it.load(reader);
 
 			return array;
-		}
-	};
-
-	class PmmVector2
-	{
-	public:
-		float x, y;
-
-		std::optional<PmmVector2> load(istream& reader)
-		{
-			PmmVector2 v;
-			if (!reader.read((char*)& v.x, sizeof(v.x))) return std::nullopt;
-			if (!reader.read((char*)& v.y, sizeof(v.y))) return std::nullopt;
-			return v;
-		}
-	};
-
-	class PmmVector3
-	{
-	public:
-		float x, y, z;
-
-		PmmVector3()
-		{
-		}
-
-		PmmVector3(float xx, float yy, float zz)
-			: x(xx), y(yy), z(zz)
-		{
-		}
-
-		std::optional<PmmVector3> load(istream& reader)
-		{
-			PmmVector3 v;
-			if (!reader.read((char*)& v.x, sizeof(v.x))) return std::nullopt;
-			if (!reader.read((char*)& v.y, sizeof(v.y))) return std::nullopt;
-			if (!reader.read((char*)& v.z, sizeof(v.z))) return std::nullopt;
-			return v;
-		}
-	};
-
-	class PmmVector4
-	{
-	public:
-		float x, y, z, w;
-
-		PmmVector4()
-		{
-		}
-
-		PmmVector4(float xx, float yy, float zz, float ww)
-			: x(xx), y(yy), z(zz), w(ww)
-		{
-		}
-
-		std::optional<PmmVector4> load(istream& reader)
-		{
-			PmmVector4 v;
-			if (!reader.read((char*)& v.x, sizeof(v.x))) return std::nullopt;
-			if (!reader.read((char*)& v.y, sizeof(v.y))) return std::nullopt;
-			if (!reader.read((char*)& v.z, sizeof(v.z))) return std::nullopt;
-			if (!reader.read((char*)& v.w, sizeof(v.w))) return std::nullopt;
-			return v;
 		}
 	};
 
@@ -143,19 +75,18 @@ namespace octoon
 
 		static std::optional<std::string> load_fixed_utf8(istream& reader, std::size_t len)
 		{
-			auto bytes = std::string(len, 0);
+			auto bytes = std::string();
 			for (std::size_t i = 0; i < len; i++)
 			{
-				auto ch = 0;
-				reader.read((char*)& ch, 1);
-				if (ch == 0) { break; }
-				bytes.push_back(ch);
+				char ch = 0;
+				reader.read(& ch, 1);
+				if (ch == 0)
+					break;
+				bytes += ch;
 			}
 
 			if (bytes.size() < len - 1)
-			{
-				reader.seekg(std::ios_base::cur, len - bytes.size() - 1);
-			}
+				reader.seekg(len - bytes.size() - 1, std::ios_base::cur);
 
 			return bytes;
 			// return WINDOWS_31J.decode(&bytes, DecoderTrap::Ignore).unwrap();
@@ -167,10 +98,8 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto array = std::vector<std::string>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				array.push_back(PmmName::load(reader).value());
-			}
+			for (std::size_t i = 0; i < len; i++)
+				array[i] = PmmName::load(reader).value();
 
 			return array;
 		}
@@ -187,11 +116,11 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto array = std::vector<std::uint8_t>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
+			for (std::size_t i = 0; i < len; i++)
 			{
 				std::uint8_t ch = 0;
 				reader.read((char*)& ch, sizeof(ch));
-				array.push_back(ch);
+				array[i] = ch;
 			}
 
 			return array;
@@ -200,7 +129,7 @@ namespace octoon
 		static std::optional<std::vector<std::uint8_t>> load_fixed_arrays(istream& reader, std::size_t len)
 		{
 			auto array = std::vector<std::uint8_t>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
+			for (std::size_t i = 0; i < len; i++)
 			{
 				std::uint8_t ch = 0;
 				reader.read((char*)& ch, sizeof(ch));
@@ -220,7 +149,7 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto array = std::vector<std::int32_t>(len);
-			reader.read((char*)array.data(), array.size() * sizeof(std::int32_t));
+			reader.read((char*)array.data(), len * sizeof(std::int32_t));
 
 			return array;
 		}
@@ -234,7 +163,7 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto array = std::vector<float>(len);
-			reader.read((char*)array.data(), array.size() * sizeof(float));
+			reader.read((char*)array.data(), len * sizeof(float));
 
 			return array;
 		}
@@ -250,14 +179,14 @@ namespace octoon
 		std::uint32_t view_height;
 		std::uint32_t frame_width;
 		float edit_view_angle;
-		std::int8_t is_edit_camera_light_accessory;
-		std::int8_t is_open_camera_panel;
-		std::int8_t is_open_light_panel;
-		std::int8_t is_open_accessory_panel;
-		std::int8_t is_open_bone_panel;
-		std::int8_t is_open_morph_panel;
-		std::int8_t is_open_selfshadow_panel;
-		std::int8_t selected_model_index;
+		std::uint8_t is_edit_camera_light_accessory;
+		std::uint8_t is_open_camera_panel;
+		std::uint8_t is_open_light_panel;
+		std::uint8_t is_open_accessory_panel;
+		std::uint8_t is_open_bone_panel;
+		std::uint8_t is_open_morph_panel;
+		std::uint8_t is_open_selfshadow_panel;
+		std::uint8_t selected_model_index;
 
 		PmmHeader()
 			: reserve1(0)
@@ -311,7 +240,49 @@ namespace octoon
 		}
 	};
 
-	struct PmmBoneFrame
+	struct PmmKeyframe
+	{
+		std::int32_t data_index;
+		std::int32_t frame_number;
+		std::int32_t pre_index;
+		std::int32_t next_index;
+		std::uint8_t is_selected;
+
+		PmmKeyframe()
+			: data_index(-1)
+			, frame_number(-1)
+			, pre_index(-1)
+			, next_index(-1)
+			, is_selected(0)
+		{
+		}
+
+		static std::optional<PmmKeyframe> load(istream& reader)
+		{
+			auto data = PmmKeyframe();
+			reader.read((char*)& data.data_index, sizeof(data.data_index));
+			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+			reader.read((char*)& data.next_index, sizeof(data.next_index));
+			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+			return data;
+		}
+
+		static std::optional<std::vector<PmmKeyframe>> load_arrays(istream& reader)
+		{
+			std::uint8_t len = 0;
+			reader.read((char*)& len, sizeof(len));
+
+			auto data = std::vector<PmmKeyframe>(len);
+			for (std::size_t i = 0; i < data.size(); i++)
+				data[i] = PmmKeyframe::load(reader).value();
+
+			return data;
+		}
+	};
+
+	struct PmmKeyframeBone
 	{
 		std::int32_t data_index;
 		std::int32_t frame_number;
@@ -326,7 +297,7 @@ namespace octoon
 		std::uint8_t is_selected;
 		std::uint8_t is_physics_disabled;
 
-		PmmBoneFrame()
+		PmmKeyframeBone()
 			: data_index(-1)
 			, frame_number(0)
 			, pre_index(-1)
@@ -340,7 +311,7 @@ namespace octoon
 
 		bool load(istream& reader, bool is_init)
 		{
-			if (is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
+			if (!is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
 			reader.read((char*)& this->frame_number, sizeof(this->frame_number));
 			reader.read((char*)& this->pre_index, sizeof(this->pre_index));
 			reader.read((char*)& this->next_index, sizeof(this->next_index));
@@ -355,28 +326,24 @@ namespace octoon
 			return true;
 		}
 
-		static std::optional<std::vector<PmmBoneFrame>> load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
+		static std::optional<std::vector<PmmKeyframeBone>> load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
 		{
-			auto array = std::vector<PmmBoneFrame>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmBoneFrame frame;
-				frame.load(reader, is_init);
-				array.push_back(frame);
-			}
+			auto array = std::vector<PmmKeyframeBone>(len);
+			for (std::size_t i = 0; i < len; i++)
+				array[i].load(reader, is_init);
 
 			return array;
 		}
 
-		static std::optional<std::vector<PmmBoneFrame>> load_arrays(istream& reader, bool is_init)
+		static std::optional<std::vector<PmmKeyframeBone>> load_arrays(istream& reader, bool is_init)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
-			return PmmBoneFrame::load_fixed_arrays(reader, len, is_init);
+			return PmmKeyframeBone::load_fixed_arrays(reader, len, is_init);
 		}
 	};
 
-	struct PmmMorphFrame
+	struct PmmKeyframeMorph
 	{
 		std::int32_t data_index;
 		std::int32_t frame_number;
@@ -385,7 +352,7 @@ namespace octoon
 		float value;
 		std::uint8_t is_selected;
 
-		PmmMorphFrame()
+		PmmKeyframeMorph()
 			: data_index(1)
 			, frame_number(0)
 			, pre_index(-1)
@@ -397,7 +364,7 @@ namespace octoon
 
 		bool load(istream& reader, bool is_init)
 		{
-			if (is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
+			if (!is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
 			reader.read((char*)& this->frame_number, sizeof(this->frame_number));
 			reader.read((char*)& this->pre_index, sizeof(this->pre_index));
 			reader.read((char*)& this->next_index, sizeof(this->next_index));
@@ -407,28 +374,24 @@ namespace octoon
 			return true;
 		}
 
-		static std::optional<std::vector<PmmMorphFrame>> load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
+		static std::optional<std::vector<PmmKeyframeMorph>> load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
 		{
-			auto array = std::vector<PmmMorphFrame>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmMorphFrame frame;
-				frame.load(reader, is_init);
-				array.push_back(frame);
-			}
+			auto array = std::vector<PmmKeyframeMorph>(len);
+			for (std::size_t i = 0; i < len; i++)
+				array[i].load(reader, is_init);
 
 			return array;
 		}
 
-		static std::optional<std::vector<PmmMorphFrame>> load_arrays(istream& reader, bool is_init)
+		static std::optional<std::vector<PmmKeyframeMorph>> load_arrays(istream& reader, bool is_init)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
-			return PmmMorphFrame::load_fixed_arrays(reader, len, is_init);
+			return PmmKeyframeMorph::load_fixed_arrays(reader, len, is_init);
 		}
 	};
 
-	struct PmmOpFrame
+	struct PmmKeyframeOp
 	{
 		std::int32_t data_index;
 		std::int32_t frame_number;
@@ -439,7 +402,7 @@ namespace octoon
 		std::vector<PmmInt2> op_data;
 		std::uint8_t is_selected;
 
-		PmmOpFrame() noexcept
+		PmmKeyframeOp() noexcept
 			: data_index(-1)
 			, frame_number(-1)
 			, pre_index(-1)
@@ -451,7 +414,7 @@ namespace octoon
 
 		bool load(istream& reader, std::size_t ik_count, std::size_t op_count, bool is_init)
 		{
-			if (is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
+			if (!is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
 			reader.read((char*)& this->frame_number, sizeof(this->frame_number));
 			reader.read((char*)& this->pre_index, sizeof(this->pre_index));
 			reader.read((char*)& this->next_index, sizeof(this->next_index));
@@ -463,16 +426,251 @@ namespace octoon
 			return true;
 		}
 
-		static std::optional<std::vector<PmmOpFrame>> load_arrays(istream& reader, std::size_t ik_count, std::size_t op_count, bool is_init)
+		static std::optional<std::vector<PmmKeyframeOp>> load_arrays(istream& reader, std::size_t ik_count, std::size_t op_count, bool is_init)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto array = std::vector<PmmOpFrame>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
+			auto array = std::vector<PmmKeyframeOp>(len);
+			for (std::size_t i = 0; i < len; i++)
+				array[i].load(reader, ik_count, op_count, is_init);
+
+			return array;
+		}
+	};
+
+	struct PmmKeyframeCamera
+	{
+		std::int32_t data_index;
+		std::int32_t frame_number;
+		std::int32_t pre_index;
+		std::int32_t next_index;
+		float distance;
+		PmmVector3 eye_position;
+		PmmVector3 rotation;
+		std::int32_t looking_model_index;
+		std::int32_t looking_bone_index;
+		std::uint8_t interpolation_x[4];
+		std::uint8_t interpolation_y[4];
+		std::uint8_t interpolation_z[4];
+		std::uint8_t interpolation_rotation[4];
+		std::uint8_t interpolation_distance[4];
+		std::uint8_t interpolation_angleview[4];
+		std::uint8_t is_parse;
+		std::uint32_t angle_view;
+		std::uint8_t is_selected;
+
+		PmmKeyframeCamera()
+			: data_index(-1)
+			, frame_number(0)
+			, pre_index(0)
+			, next_index(0)
+			, distance(0.0)
+			, eye_position(PmmVector3(0.0, 0.0, 0.0))
+			, rotation(PmmVector3(0.0, 0.0, 0.0))
+			, looking_model_index(0)
+			, looking_bone_index(0)
+			, interpolation_x()
+			, interpolation_y()
+			, interpolation_z()
+			, interpolation_rotation()
+			, interpolation_distance()
+			, interpolation_angleview()
+			, is_parse(0)
+			, angle_view(0)
+			, is_selected(0)
+		{
+		}
+
+		static std::optional<PmmKeyframeCamera> load(istream& reader, bool is_init)
+		{
+			PmmKeyframeCamera data;
+			if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+			reader.read((char*)& data.next_index, sizeof(data.next_index));
+			reader.read((char*)& data.distance, sizeof(data.distance));
+			reader.read((char*)& data.eye_position, sizeof(data.eye_position));
+			reader.read((char*)& data.rotation, sizeof(data.rotation));
+			reader.read((char*)& data.looking_model_index, sizeof(data.looking_model_index));
+			reader.read((char*)& data.looking_bone_index, sizeof(data.looking_bone_index));
+			reader.read((char*)& data.interpolation_x, sizeof(data.interpolation_x));
+			reader.read((char*)& data.interpolation_y, sizeof(data.interpolation_y));
+			reader.read((char*)& data.interpolation_z, sizeof(data.interpolation_z));
+			reader.read((char*)& data.interpolation_rotation, sizeof(data.interpolation_rotation));
+			reader.read((char*)& data.interpolation_distance, sizeof(data.interpolation_distance));
+			reader.read((char*)& data.interpolation_angleview, sizeof(data.interpolation_angleview));
+			reader.read((char*)& data.is_parse, sizeof(data.is_parse));
+			reader.read((char*)& data.angle_view, sizeof(data.angle_view));
+			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+			return data;
+		}
+
+		static std::optional<std::vector<PmmKeyframeCamera>> load_arrays(istream& reader, bool is_init)
+		{
+			std::uint32_t len = 0;
+			reader.read((char*)& len, sizeof(len));
+
+			auto model = std::vector<PmmKeyframeCamera>(len);
+			for (std::size_t i = 0; i < model.size(); i++)
 			{
-				PmmOpFrame frame;
-				frame.load(reader, ik_count, op_count, is_init);
+				PmmKeyframeCamera frame;
+				frame.load(reader, is_init);
+				model.push_back(frame);
+			}
+
+			return model;
+		}
+	};
+
+	struct PmmKeyframeLight
+	{
+		std::int32_t data_index;
+		std::int32_t frame_number;
+		std::int32_t pre_index;
+		std::int32_t next_index;
+		PmmVector3 rgb;
+		PmmVector3 xyz;
+		std::uint8_t is_selected;
+
+		PmmKeyframeLight()
+			: data_index(-1)
+			, frame_number(-1)
+			, pre_index(-1)
+			, next_index(-1)
+			, rgb(PmmVector3(0.0, 0.0, 0.0))
+			, xyz(PmmVector3(0.0, 0.0, 0.0))
+			, is_selected(0)
+		{
+		}
+
+		static std::optional<PmmKeyframeLight> load(istream& reader, bool is_init)
+		{
+			PmmKeyframeLight data;
+			if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+			reader.read((char*)& data.next_index, sizeof(data.next_index));
+			reader.read((char*)& data.rgb, sizeof(data.rgb));
+			reader.read((char*)& data.xyz, sizeof(data.xyz));
+			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+			return data;
+		}
+
+		static std::optional<std::vector<PmmKeyframeLight>> load_arrays(istream& reader, bool is_init)
+		{
+			std::uint32_t len = 0;
+			reader.read((char*)& len, sizeof(len));
+
+			auto model = std::vector<PmmKeyframeLight>(len);
+			for (std::size_t i = 0; i < model.size(); i++)
+				model[i].load(reader, is_init);
+
+			return model;
+		}
+	};
+
+	struct PmmKeyFrameGravity
+	{
+		std::int32_t data_index;
+		std::int32_t frame_number;
+		std::int32_t pre_index;
+		std::int32_t next_index;
+		std::uint8_t is_add_noize;
+		std::uint32_t noize_amount;
+		float acceleration;
+		PmmVector3 direction;
+		std::uint8_t is_selected;
+
+		PmmKeyFrameGravity()
+			: data_index(-1)
+			, frame_number(-1)
+			, pre_index(-1)
+			, next_index(-1)
+			, is_add_noize(0)
+			, noize_amount(0)
+			, acceleration(0.0)
+			, direction(PmmVector3(0, 1, 0))
+			, is_selected(0)
+		{
+		}
+
+		static std::optional<PmmKeyFrameGravity> load(istream& reader, bool is_init)
+		{
+			PmmKeyFrameGravity data;
+			if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+			reader.read((char*)& data.next_index, sizeof(data.next_index));
+			reader.read((char*)& data.is_add_noize, sizeof(data.is_add_noize));
+			reader.read((char*)& data.noize_amount, sizeof(data.noize_amount));
+			reader.read((char*)& data.acceleration, sizeof(data.acceleration));
+			reader.read((char*)& data.direction, sizeof(data.direction));
+			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+			return data;
+		}
+
+		static std::optional<std::vector<PmmKeyFrameGravity>> load_arrays(istream& reader, bool is_init)
+		{
+			std::uint32_t len = 0;
+			reader.read((char*)& len, sizeof(len));
+
+			auto array = std::vector<PmmKeyFrameGravity>(len);
+			for (std::size_t i = 0; i < len; i++)
+				array[i] = PmmKeyFrameGravity::load(reader, is_init).value();
+
+			return array;
+		}
+	};
+
+	struct PmmKeyFrameSelfShadow
+	{
+		std::int32_t data_index;
+		std::int32_t frame_number;
+		std::int32_t pre_index;
+		std::int32_t next_index;
+		std::uint8_t mode;
+		float distance;
+		std::uint8_t is_selected;
+
+		PmmKeyFrameSelfShadow()
+			: data_index(-1)
+			, frame_number(-1)
+			, pre_index(-1)
+			, next_index(-1)
+			, mode(0)
+			, distance(0.0)
+			, is_selected(0)
+		{
+		}
+
+		static std::optional<PmmKeyFrameSelfShadow> load(istream& reader, bool is_init)
+		{
+			PmmKeyFrameSelfShadow data;
+			if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+			reader.read((char*)& data.next_index, sizeof(data.next_index));
+			reader.read((char*)& data.mode, sizeof(data.mode));
+			reader.read((char*)& data.distance, sizeof(data.distance));
+			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+			return data;
+		}
+
+		static std::optional<std::vector<PmmKeyFrameSelfShadow>> load_arrays(istream& reader, bool is_init)
+		{
+			std::uint32_t len = 0;
+			reader.read((char*)& len, sizeof(len));
+
+			auto array = std::vector<PmmKeyFrameSelfShadow>(len);
+			for (std::size_t i = 0; i < len; i++)
+			{
+				PmmKeyFrameSelfShadow frame;
+				frame.load(reader, is_init);
 				array.push_back(frame);
 			}
 
@@ -480,7 +678,7 @@ namespace octoon
 		}
 	};
 
-	struct PmmBoneCurrentData
+	struct PmmBone
 	{
 		PmmVector3 translation;
 		PmmVector4 quaternion;
@@ -488,7 +686,7 @@ namespace octoon
 		std::uint8_t is_physics_disabled;
 		std::uint8_t is_row_selected;
 
-		PmmBoneCurrentData()
+		PmmBone()
 			: translation(PmmVector3(0.0, 0.0, 0.0))
 			, quaternion(PmmVector4(0.0, 0.0, 0.0, 0.0))
 			, is_edit_un_commited(0)
@@ -497,9 +695,9 @@ namespace octoon
 		{
 		}
 
-		static std::optional<PmmBoneCurrentData> load(istream& reader)
+		static std::optional<PmmBone> load(istream& reader)
 		{
-			PmmBoneCurrentData data;
+			PmmBone data;
 			reader.read((char*)& data.translation, sizeof(data.translation));
 			reader.read((char*)& data.quaternion, sizeof(data.quaternion));
 			reader.read((char*)& data.is_edit_un_commited, sizeof(data.is_edit_un_commited));
@@ -509,29 +707,29 @@ namespace octoon
 			return data;
 		}
 
-		static std::optional<std::vector<PmmBoneCurrentData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmBone>> load_arrays(istream& reader)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto model = std::vector<PmmBoneCurrentData>(len);
+			auto model = std::vector<PmmBone>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
 			{
-				model.push_back(PmmBoneCurrentData::load(reader).value());
+				model.push_back(PmmBone::load(reader).value());
 			}
 
 			return model;
 		}
 	};
 
-	struct PmmOpCurrentData
+	struct PmmOp
 	{
 		std::int32_t keyframe_begin;
 		std::int32_t keyframe_end;
 		std::int32_t model_index;
 		std::int32_t parent_bone_index;
 
-		PmmOpCurrentData()
+		PmmOp()
 			: keyframe_begin(1)
 			, keyframe_end(-1)
 			, model_index(-1)
@@ -540,9 +738,9 @@ namespace octoon
 
 		}
 
-		static std::optional<PmmOpCurrentData> load(istream& reader)
+		static std::optional<PmmOp> load(istream& reader)
 		{
-			PmmOpCurrentData data;
+			PmmOp data;
 			reader.read((char*)& data.keyframe_begin, sizeof(data.keyframe_begin));
 			reader.read((char*)& data.keyframe_end, sizeof(data.keyframe_end));
 			reader.read((char*)& data.model_index, sizeof(data.model_index));
@@ -550,15 +748,15 @@ namespace octoon
 			return data;
 		}
 
-		static std::optional<std::vector<PmmOpCurrentData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmOp>> load_arrays(istream& reader)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto model = std::vector<PmmOpCurrentData>(len);
+			auto model = std::vector<PmmOp>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
 			{
-				model.push_back(PmmOpCurrentData::load(reader).value());
+				model.push_back(PmmOp::load(reader).value());
 			}
 
 			return model;
@@ -583,16 +781,16 @@ namespace octoon
 		std::vector<std::uint8_t> is_frame_open;
 		std::int32_t vscroll;
 		std::int32_t last_frame;
-		std::vector<PmmBoneFrame> bone_init_frame;
-		std::vector<PmmBoneFrame> bone_key_frame;
-		std::vector<PmmMorphFrame> morph_init_frame;
-		std::vector<PmmMorphFrame> morph_key_frame;
-		PmmOpFrame op_init_frame;
-		std::vector<PmmOpFrame> op_key_frames;
-		std::vector<PmmBoneCurrentData> bone_current_datas;
+		std::vector<PmmKeyframeBone> bone_init_frame;
+		std::vector<PmmKeyframeBone> bone_key_frame;
+		std::vector<PmmKeyframeMorph> morph_init_frame;
+		std::vector<PmmKeyframeMorph> morph_key_frame;
+		PmmKeyframeOp op_init_frame;
+		std::vector<PmmKeyframeOp> op_key_frames;
+		std::vector<PmmBone> bone_current_datas;
 		std::vector<float> morph_current_datas;
 		std::vector<std::uint8_t> is_current_ik_enabled_datas;
-		std::vector<PmmOpCurrentData> op_current_data;
+		std::vector<PmmOp> op_current_data;
 		std::uint8_t is_add_blend;
 		float edge_width;
 		std::uint8_t is_selfshadow_enabled;
@@ -610,65 +808,66 @@ namespace octoon
 			, is_add_blend(0)
 			, edge_width(1.0)
 			, is_selfshadow_enabled(1)
-			, calc_order()
+			, calc_order(0)
 		{
 		}
 
-		bool load(istream& reader)
+		static std::optional<PmmModel> load(istream& reader)
 		{
-			reader.read((char*)& this->number, sizeof(this->number));
-			this->name = PmmName::load(reader).value();
-			this->name_en = PmmName::load(reader).value();
-			this->path = PmmName::load_fixed_utf8(reader, 256).value();
-			reader.read((char*)& this->keyframe_editor_toplevel_rows, sizeof(this->keyframe_editor_toplevel_rows));
-			this->bone_name = PmmName::load_arrays(reader).value();
-			this->morph_name = PmmName::load_arrays(reader).value();
-			this->ik_index = PmmInt32::load_arrays(reader).value();
-			this->op_index = PmmInt32::load_arrays(reader).value();
-			reader.read((char*)& this->draw_order, sizeof(this->draw_order));
-			reader.read((char*)& this->edit_is_display, sizeof(this->edit_is_display));
-			reader.read((char*)& this->edit_selected_bone, sizeof(this->edit_selected_bone));
-			reader.read((char*)& this->skin_panel, sizeof(this->skin_panel));
-			this->is_frame_open = PmmUint8::load_array_from_u8(reader).value();
-			reader.read((char*)& this->vscroll, sizeof(this->vscroll));
-			reader.read((char*)& this->last_frame, sizeof(this->last_frame));
-			this->bone_init_frame = PmmBoneFrame::load_fixed_arrays(reader, this->bone_name.size(), true).value();
-			this->bone_key_frame = PmmBoneFrame::load_arrays(reader, false).value();
-			this->morph_init_frame = PmmMorphFrame::load_fixed_arrays(reader, this->morph_name.size(), true).value();
-			this->morph_key_frame = PmmMorphFrame::load_arrays(reader, false).value();
-			this->op_init_frame.load(reader, this->ik_index.size(), this->op_index.size(), true);
-			this->op_key_frames = PmmOpFrame::load_arrays(reader, this->ik_index.size(), this->op_index.size(), false).value();
+			PmmModel data;
+			reader.read((char*)& data.number, sizeof(data.number));
+			data.name = PmmName::load(reader).value();
+			data.name_en = PmmName::load(reader).value();
+			data.path = PmmName::load_fixed_utf8(reader, 256).value();
+			reader.read((char*)& data.keyframe_editor_toplevel_rows, sizeof(data.keyframe_editor_toplevel_rows));
+			data.bone_name = PmmName::load_arrays(reader).value();
+			data.morph_name = PmmName::load_arrays(reader).value();
+			data.ik_index = PmmInt32::load_arrays(reader).value();
+			data.op_index = PmmInt32::load_arrays(reader).value();
+			reader.read((char*)& data.draw_order, sizeof(data.draw_order));
+			reader.read((char*)& data.edit_is_display, sizeof(data.edit_is_display));
+			reader.read((char*)& data.edit_selected_bone, sizeof(data.edit_selected_bone));
+			reader.read((char*)& data.skin_panel, sizeof(data.skin_panel));
+			data.is_frame_open = PmmUint8::load_array_from_u8(reader).value();
+			reader.read((char*)& data.vscroll, sizeof(data.vscroll));
+			reader.read((char*)& data.last_frame, sizeof(data.last_frame));
+			data.bone_init_frame = PmmKeyframeBone::load_fixed_arrays(reader, data.bone_name.size(), true).value();
+			data.bone_key_frame = PmmKeyframeBone::load_arrays(reader, false).value();
+			data.morph_init_frame = PmmKeyframeMorph::load_fixed_arrays(reader, data.morph_name.size(), true).value();
+			data.morph_key_frame = PmmKeyframeMorph::load_arrays(reader, false).value();
+			data.op_init_frame.load(reader, data.ik_index.size(), data.op_index.size(), true);
+			data.op_key_frames = PmmKeyframeOp::load_arrays(reader, data.ik_index.size(), data.op_index.size(), false).value();
 
-			for (std::size_t i = 0; i < this->bone_name.size(); i++)
+			for (std::size_t i = 0; i < data.bone_name.size(); i++)
 			{
-				this->bone_current_datas.push_back(PmmBoneCurrentData::load(reader).value());
+				data.bone_current_datas.push_back(PmmBone::load(reader).value());
 			}
 
-			for (std::size_t i = 0; i < this->morph_name.size(); i++)
+			for (std::size_t i = 0; i < data.morph_name.size(); i++)
 			{
 				float ch = 0.0;
 				reader.read((char*)& ch, sizeof(ch));
-				this->morph_current_datas.push_back(ch);
+				data.morph_current_datas.push_back(ch);
 			}
 
-			for (std::size_t i = 0; i < this->ik_index.size(); i++)
+			for (std::size_t i = 0; i < data.ik_index.size(); i++)
 			{
-				std::uint8_t ch = 0.0;
-				reader.read((char*)& ch, sizeof(ch));
-				this->is_current_ik_enabled_datas.push_back(ch);
+				char ch = 0.0;
+				reader.read(&ch, sizeof(ch));
+				data.is_current_ik_enabled_datas.push_back(ch);
 			}
 
-			for (std::size_t i = 0; i < this->op_index.size(); i++)
+			for (std::size_t i = 0; i < data.op_index.size(); i++)
 			{
-				this->op_current_data.push_back(PmmOpCurrentData::load(reader).value());
+				data.op_current_data.push_back(PmmOp::load(reader).value());
 			}
 
-			reader.read((char*)& this->is_add_blend, sizeof(this->is_add_blend));
-			reader.read((char*)& this->edge_width, sizeof(this->edge_width));
-			reader.read((char*)& this->is_selfshadow_enabled, sizeof(this->is_selfshadow_enabled));
-			reader.read((char*)& this->calc_order, sizeof(this->calc_order));
+			reader.read((char*)& data.is_add_blend, sizeof(data.is_add_blend));
+			reader.read((char*)& data.edge_width, sizeof(data.edge_width));
+			reader.read((char*)& data.is_selfshadow_enabled, sizeof(data.is_selfshadow_enabled));
+			reader.read((char*)& data.calc_order, sizeof(data.calc_order));
 
-			return true;
+			return data;
 		}
 
 		static std::optional<std::vector<PmmModel>> load_arrays(istream& reader)
@@ -677,211 +876,68 @@ namespace octoon
 			reader.read((char*)& len, sizeof(len));
 
 			auto models = std::vector<PmmModel>(len);
-			for (std::size_t i = 0; i < models.size(); i++)
-			{
-				PmmModel model;
-				model.load(reader);
-				models.push_back(model);
-			}
+			for (auto& it : models)
+				it = PmmModel::load(reader).value();
 
 			return models;
 		}
 	};
 
-	struct PmmCameraFrame
+	struct PmmCamera
 	{
-		std::int32_t data_index;
-		std::int32_t frame_number;
-		std::int32_t pre_index;
-		std::int32_t next_index;
-		float distance;
-		PmmVector3 eye_position;
+		PmmVector3 eye;
+		PmmVector3 target;
 		PmmVector3 rotation;
-		std::int32_t looking_model_index;
-		std::int32_t looking_bone_index;
-		std::uint8_t interpolation_x[4];
-		std::uint8_t interpolation_y[4];
-		std::uint8_t interpolation_z[4];
-		std::uint8_t interpolation_rotation[4];
-		std::uint8_t interpolation_distance[4];
-		std::uint8_t interpolation_angleview[4];
-		std::uint8_t is_parse;
-		std::uint32_t angle_view;
-		std::uint8_t is_selected;
+		std::uint8_t isorthro;
 
-		PmmCameraFrame()
-			: data_index(-1)
-			, frame_number(0)
-			, pre_index(0)
-			, next_index(0)
-			, distance(0.0)
-			, eye_position(PmmVector3(0.0, 0.0, 0.0))
-			, rotation(PmmVector3(0.0, 0.0, 0.0))
-			, looking_model_index(0)
-			, looking_bone_index(0)
-			, interpolation_x()
-			, interpolation_y()
-			, interpolation_z()
-			, interpolation_rotation()
-			, interpolation_distance()
-			, interpolation_angleview()
-			, is_parse(0)
-			, angle_view(0)
-			, is_selected(0)
-		{
-		}
-
-		static std::optional<PmmCameraFrame> load(istream& reader, bool is_init)
-		{
-			PmmCameraFrame data;
-			if (is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
-			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
-			reader.read((char*)& data.next_index, sizeof(data.next_index));
-			reader.read((char*)& data.distance, sizeof(data.distance));
-			reader.read((char*)& data.eye_position, sizeof(data.eye_position));
-			reader.read((char*)& data.rotation, sizeof(data.rotation));
-			reader.read((char*)& data.looking_model_index, sizeof(data.looking_model_index));
-			reader.read((char*)& data.looking_bone_index, sizeof(data.looking_bone_index));
-			reader.read((char*)& data.interpolation_x, sizeof(data.interpolation_x));
-			reader.read((char*)& data.interpolation_y, sizeof(data.interpolation_y));
-			reader.read((char*)& data.interpolation_z, sizeof(data.interpolation_z));
-			reader.read((char*)& data.interpolation_rotation, sizeof(data.interpolation_rotation));
-			reader.read((char*)& data.interpolation_distance, sizeof(data.interpolation_distance));
-			reader.read((char*)& data.interpolation_angleview, sizeof(data.interpolation_angleview));
-			reader.read((char*)& data.is_parse, sizeof(data.is_parse));
-			reader.read((char*)& data.angle_view, sizeof(data.angle_view));
-			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
-
-			return data;
-		}
-
-		static std::optional<std::vector<PmmCameraFrame>> load_arrays(istream& reader, bool is_init)
-		{
-			std::uint32_t len = 0;
-			reader.read((char*)& len, sizeof(len));
-
-			auto model = std::vector<PmmCameraFrame>(len);
-			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				PmmCameraFrame frame;
-				frame.load(reader, is_init);
-				model.push_back(frame);
-			}
-
-			return model;
-		}
-	};
-
-	struct PmmCameraCurrentData
-	{
-		PmmVector3 eye_position;
-		PmmVector3 target_position;
-		PmmVector3 rotation;
-		std::uint8_t  isorthro;
-
-		PmmCameraCurrentData()
-			: eye_position(PmmVector3(0.0, 0.0, 0.0))
-			, target_position(PmmVector3(0.0, 0.0, 0.0))
+		PmmCamera()
+			: eye(PmmVector3(0.0, 0.0, 0.0))
+			, target(PmmVector3(0.0, 0.0, 0.0))
 			, rotation(PmmVector3(0.0, 0.0, 0.0))
 			, isorthro(0)
 		{
 		}
 
-		static std::optional<PmmCameraCurrentData> load(istream& reader)
+		static std::optional<PmmCamera> load(istream& reader)
 		{
-			PmmCameraCurrentData data;
-			reader.read((char*)& data.eye_position, sizeof(data.eye_position));
-			reader.read((char*)& data.target_position, sizeof(data.target_position));
+			PmmCamera data;
+			reader.read((char*)& data.eye, sizeof(data.eye));
+			reader.read((char*)& data.target, sizeof(data.target));
 			reader.read((char*)& data.rotation, sizeof(data.rotation));
 			reader.read((char*)& data.isorthro, sizeof(data.isorthro));
 
 			return data;
 		}
 
-		static std::optional<std::vector<PmmCameraCurrentData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmCamera>> load_arrays(istream& reader)
 		{
 			std::uint8_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto model = std::vector<PmmCameraCurrentData>(len);
+			auto model = std::vector<PmmCamera>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				model.push_back(PmmCameraCurrentData::load(reader).value());
-			}
+				model[i] = PmmCamera::load(reader).value();
 
 			return model;
 		}
 	};
 
-	struct PmmLightFrame
-	{
-		std::int32_t data_index;
-		std::int32_t frame_number;
-		std::int32_t pre_index;
-		std::int32_t next_index;
-		PmmVector3 rgb;
-		PmmVector3 xyz;
-		std::uint8_t is_selected;
-
-		PmmLightFrame()
-			: data_index(-1)
-			, frame_number(-1)
-			, pre_index(-1)
-			, next_index(-1)
-			, rgb(PmmVector3(0.0, 0.0, 0.0))
-			, xyz(PmmVector3(0.0, 0.0, 0.0))
-			, is_selected(0)
-		{
-		}
-
-		static std::optional<PmmLightFrame> load(istream& reader, bool is_init)
-		{
-			PmmLightFrame data;
-			if (is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
-			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
-			reader.read((char*)& data.next_index, sizeof(data.next_index));
-			reader.read((char*)& data.rgb, sizeof(data.rgb));
-			reader.read((char*)& data.xyz, sizeof(data.xyz));
-			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
-
-			return data;
-		}
-
-		static std::optional<std::vector<PmmLightFrame>> load_arrays(istream& reader, bool is_init)
-		{
-			std::uint32_t len = 0;
-			reader.read((char*)& len, sizeof(len));
-
-			auto model = std::vector<PmmLightFrame>(len);
-			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				PmmLightFrame frame;
-				frame.load(reader, is_init);
-				model.push_back(frame);
-			}
-
-			return model;
-		}
-	};
-
-	struct PmmLightCurrentData
+	struct PmmLight
 	{
 		PmmVector3 rgb;
 		PmmVector3 xyz;
 		std::uint8_t is_selected;
 
-		PmmLightCurrentData()
+		PmmLight()
 			: rgb(PmmVector3(0.0, 0.0, 0.0))
 			, xyz(PmmVector3(0.0, 0.0, 0.0))
 			, is_selected(0)
 		{
 		}
 
-		static std::optional<PmmLightCurrentData> load(istream& reader)
+		static std::optional<PmmLight> load(istream& reader)
 		{
-			auto data = PmmLightCurrentData();
+			auto data = PmmLight();
 			reader.read((char*)& data.rgb, sizeof(data.rgb));
 			reader.read((char*)& data.xyz, sizeof(data.xyz));
 			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
@@ -889,62 +945,16 @@ namespace octoon
 			return data;
 		}
 
-		static std::optional<std::vector<PmmLightCurrentData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmLight>> load_arrays(istream& reader)
 		{
 			std::uint8_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto model = std::vector<PmmLightCurrentData>(len);
+			auto model = std::vector<PmmLight>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				PmmLightCurrentData data;
-				data.load(reader);
-				model.push_back(data);
-			}
+				model[i] = PmmLight::load(reader).value();
 
 			return model;
-		}
-	};
-
-	struct PmmKeyFrame
-	{
-		std::int32_t data_index;
-		std::int32_t frame_number;
-		std::int32_t pre_index;
-		std::int32_t next_index;
-		std::uint8_t is_selected;
-
-		PmmKeyFrame()
-			: data_index(-1)
-			, frame_number(-1)
-			, pre_index(-1)
-			, next_index(-1)
-			, is_selected(0)
-		{
-		}
-
-		static std::optional<PmmKeyFrame> load(istream& reader)
-		{
-			auto data = PmmKeyFrame();
-			reader.read((char*)& data.data_index, sizeof(data.data_index));
-			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
-			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
-			reader.read((char*)& data.next_index, sizeof(data.next_index));
-			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
-
-			return data;
-		}
-
-		static std::optional<std::vector<PmmKeyFrame>> load_arrays(istream& reader)
-		{
-			std::uint8_t len = 0;
-			reader.read((char*)& len, sizeof(len));
-
-			auto data = std::vector<PmmKeyFrame>(len);
-			for (std::size_t i = 0; i < data.size(); i++)
-				data.push_back(PmmKeyFrame::load(reader).value());
-
-			return data;
 		}
 	};
 
@@ -992,7 +1002,7 @@ namespace octoon
 
 			auto model = std::vector<PmmDataBody>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
-				model.push_back(PmmDataBody::load(reader).value());
+				model[i] = PmmDataBody::load(reader).value();
 
 			return model;
 		}
@@ -1004,8 +1014,8 @@ namespace octoon
 		std::string name;
 		std::string path;
 		std::uint8_t draw_order;
-		PmmKeyFrame init_frame;
-		std::vector<PmmKeyFrame> key_frames;
+		PmmKeyframe init_frame;
+		std::vector<PmmKeyframe> key_frames;
 		PmmDataBody current_data;
 		std::uint8_t is_add_blend;
 
@@ -1024,7 +1034,7 @@ namespace octoon
 			data.path = PmmName::load_fixed_utf8(reader, 256).value();
 			reader.read((char*)& data.draw_order, sizeof(data.draw_order));
 			data.init_frame.load(reader);
-			data.key_frames = PmmKeyFrame::load_arrays(reader).value();
+			data.key_frames = PmmKeyframe::load_arrays(reader).value();
 			data.current_data.load(reader);
 			reader.read((char*)& data.is_add_blend, sizeof(data.is_add_blend));
 
@@ -1038,24 +1048,20 @@ namespace octoon
 
 			auto model = std::vector<PmmAccessoryData>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				PmmAccessoryData data;
-				data.load(reader);
-				model.push_back(data);
-			}
+				model[i] = PmmAccessoryData::load(reader).value();
 
 			return model;
 		}
 	};
 
-	struct PmmGravityCurrentData
+	struct PmmGravity
 	{
 		float acceleration;
 		std::uint32_t noize_amount;
 		PmmVector3 direction;
 		std::uint8_t is_add_noize;
 
-		PmmGravityCurrentData()
+		PmmGravity()
 			:acceleration(0.0)
 			, noize_amount(0)
 			, direction(PmmVector3(0.0, 0.0, 0.0))
@@ -1063,9 +1069,9 @@ namespace octoon
 		{
 		}
 
-		static std::optional<PmmGravityCurrentData> load(istream& reader)
+		static std::optional<PmmGravity> load(istream& reader)
 		{
-			PmmGravityCurrentData data;
+			PmmGravity data;
 			reader.read((char*)& data.acceleration, sizeof(data.acceleration));
 			reader.read((char*)& data.noize_amount, sizeof(data.noize_amount));
 			reader.read((char*)& data.direction, sizeof(data.direction));
@@ -1074,165 +1080,47 @@ namespace octoon
 			return data;
 		}
 
-		static std::optional<std::vector<PmmGravityCurrentData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmGravity>> load_arrays(istream& reader)
 		{
 			std::uint32_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto array = std::vector<PmmGravityCurrentData>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmGravityCurrentData data;
-				data.load(reader);
-				array.push_back(data);
-			}
+			auto array = std::vector<PmmGravity>(len);
+			for (std::size_t i = 0; i < len; i++)
+				array[i] = PmmGravity::load(reader).value();
 
 			return array;
 		}
 	};
 
-	struct PmmGravityKeyFrame
-	{
-		std::int32_t data_index;
-		std::int32_t frame_number;
-		std::int32_t pre_index;
-		std::int32_t next_index;
-		std::uint8_t is_add_noize;
-		std::uint32_t noize_amount;
-		float acceleration;
-		PmmVector3 direction;
-		std::uint8_t is_selected;
-
-		PmmGravityKeyFrame()
-			: data_index(-1)
-			, frame_number(-1)
-			, pre_index(-1)
-			, next_index(-1)
-			, is_add_noize(0)
-			, noize_amount(0)
-			, acceleration(0.0)
-			, direction(PmmVector3(0, 1, 0))
-			, is_selected(0)
-		{
-		}
-
-		static std::optional<PmmGravityKeyFrame> load(istream& reader, bool is_init)
-		{
-			PmmGravityKeyFrame data;
-			reader.read((char*)& data.data_index, sizeof(data.data_index));
-			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
-			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
-			reader.read((char*)& data.next_index, sizeof(data.next_index));
-			reader.read((char*)& data.is_add_noize, sizeof(data.is_add_noize));
-			reader.read((char*)& data.noize_amount, sizeof(data.noize_amount));
-			reader.read((char*)& data.acceleration, sizeof(data.acceleration));
-			reader.read((char*)& data.direction, sizeof(data.direction));
-			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
-
-			return data;
-		}
-
-		static std::optional<std::vector<PmmGravityKeyFrame>> load_arrays(istream& reader, bool is_init)
-		{
-			std::uint32_t len = 0;
-			reader.read((char*)& len, sizeof(len));
-
-			auto array = std::vector<PmmGravityKeyFrame>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmGravityKeyFrame frame;
-				frame.load(reader, is_init);
-				array.push_back(frame);
-			}
-
-			return array;
-		}
-	};
-
-	struct PmmSelfShadowKeyFrame
-	{
-		std::int32_t data_index;
-		std::int32_t frame_number;
-		std::int32_t pre_index;
-		std::int32_t next_index;
-		std::uint8_t mode;
-		float distance;
-		std::uint8_t is_selected;
-
-		PmmSelfShadowKeyFrame()
-			: data_index(-1)
-			, frame_number(-1)
-			, pre_index(-1)
-			, next_index(-1)
-			, mode(0)
-			, distance(0.0)
-			, is_selected(0)
-		{
-		}
-
-		static std::optional<PmmSelfShadowKeyFrame> load(istream& reader, bool is_init)
-		{
-			PmmSelfShadowKeyFrame data;
-			reader.read((char*)& data.data_index, sizeof(data.data_index));
-			reader.read((char*)& data.frame_number, sizeof(data.frame_number));
-			reader.read((char*)& data.pre_index, sizeof(data.pre_index));
-			reader.read((char*)& data.next_index, sizeof(data.next_index));
-			reader.read((char*)& data.mode, sizeof(data.mode));
-			reader.read((char*)& data.distance, sizeof(data.distance));
-			reader.read((char*)& data.is_selected, sizeof(data.is_selected));
-
-			return data;
-		}
-
-		static std::optional<std::vector<PmmSelfShadowKeyFrame>> load_arrays(istream& reader, bool is_init)
-		{
-			std::uint32_t len = 0;
-			reader.read((char*)& len, sizeof(len));
-
-			auto array = std::vector<PmmSelfShadowKeyFrame>(len);
-			for (std::size_t i = 0; i < array.size(); i++)
-			{
-				PmmSelfShadowKeyFrame frame;
-				frame.load(reader, is_init);
-				array.push_back(frame);
-			}
-
-			return array;
-		}
-	};
-
-	struct PmmCSelectorChoiceData
+	struct PmmCSelectorChoice
 	{
 		std::uint8_t mode_index;
 		std::uint32_t selector_choice;
 
-		PmmCSelectorChoiceData()
+		PmmCSelectorChoice()
 			: mode_index(0)
 			, selector_choice(0)
 		{
 		}
 
-		static std::optional<PmmCSelectorChoiceData> load(istream& reader)
+		static std::optional<PmmCSelectorChoice> load(istream& reader)
 		{
-			PmmCSelectorChoiceData data;
+			PmmCSelectorChoice data;
 			reader.read((char*)& data.mode_index, sizeof(data.mode_index));
 			reader.read((char*)& data.selector_choice, sizeof(data.selector_choice));
 
 			return data;
 		}
 
-		static std::optional<std::vector<PmmCSelectorChoiceData>> load_arrays(istream& reader)
+		static std::optional<std::vector<PmmCSelectorChoice>> load_arrays(istream& reader)
 		{
 			std::uint8_t len = 0;
 			reader.read((char*)& len, sizeof(len));
 
-			auto model = std::vector<PmmCSelectorChoiceData>(len);
+			auto model = std::vector<PmmCSelectorChoice>(len);
 			for (std::size_t i = 0; i < model.size(); i++)
-			{
-				PmmCSelectorChoiceData data;
-				data.load(reader);
-				model.push_back(data);
-			}
+				model[i] = PmmCSelectorChoice::load(reader).value();
 
 			return model;
 		}
@@ -1242,12 +1130,12 @@ namespace octoon
 	{
 		PmmHeader header;
 		std::vector<PmmModel> model;
-		PmmCameraFrame camera_init_frame;
-		std::vector<PmmCameraFrame> camera_key_frames;
-		PmmCameraCurrentData camera_current_data;
-		PmmLightFrame light_init_frame;
-		std::vector<PmmLightFrame> light_key_frames;
-		PmmLightCurrentData light_current_data;
+		PmmKeyframeCamera camera_init_frame;
+		std::vector<PmmKeyframeCamera> camera_key_frames;
+		PmmCamera camera_current_data;
+		PmmKeyframeLight light_init_frame;
+		std::vector<PmmKeyframeLight> light_key_frames;
+		PmmLight light_current_data;
 		std::uint8_t selected_accessory_index;
 		std::uint32_t accessory_vscroll;
 		std::uint8_t accessory_count;
@@ -1284,13 +1172,13 @@ namespace octoon
 		float ground_shadow_brightness;
 		std::uint8_t is_transparent_ground_shadow;
 		std::uint8_t physics_mode;
-		PmmGravityCurrentData gravity_current_data;
-		PmmGravityKeyFrame gravity_init_frame;
-		std::vector<PmmGravityKeyFrame> gravity_key_frames;
+		PmmGravity gravity_current_data;
+		PmmKeyFrameGravity gravity_init_frame;
+		std::vector<PmmKeyFrameGravity> gravity_key_frames;
 		std::uint8_t is_show_selfshadow;
 		float selfshadow_current_data;
-		PmmSelfShadowKeyFrame selfshadow_init_frame;
-		std::vector<PmmSelfShadowKeyFrame> selfshadow_keyframes;
+		PmmKeyFrameSelfShadow selfshadow_init_frame;
+		std::vector<PmmKeyFrameSelfShadow> selfshadow_keyframes;
 		std::uint32_t edge_color_r;
 		std::uint32_t edge_color_g;
 		std::uint32_t edge_color_b;
@@ -1303,7 +1191,7 @@ namespace octoon
 		std::uint8_t is_physics_ground_enabled;
 		std::uint32_t frame_text_box;
 		std::uint8_t selector_choice_selection_following;
-		std::vector<PmmCSelectorChoiceData> selector_choice_datas;
+		std::vector<PmmCSelectorChoice> selector_choice_datas;
 
 		PMMFile() noexcept
 			:selected_accessory_index(0)
@@ -1360,26 +1248,20 @@ namespace octoon
 			pmm.header.load(reader);
 			pmm.model = PmmModel::load_arrays(reader).value();
 			pmm.camera_init_frame.load(reader, true);
-			pmm.camera_key_frames = PmmCameraFrame::load_arrays(reader, false).value();
+			pmm.camera_key_frames = PmmKeyframeCamera::load_arrays(reader, false).value();
 			pmm.camera_current_data.load(reader);
 			pmm.light_init_frame.load(reader, true);
-			pmm.light_key_frames = PmmLightFrame::load_arrays(reader, false).value();
+			pmm.light_key_frames = PmmKeyframeLight::load_arrays(reader, false).value();
 			pmm.light_current_data.load(reader);
 			reader.read((char*)& pmm.selected_accessory_index, sizeof(pmm.selected_accessory_index));
 			reader.read((char*)& pmm.accessory_vscroll, sizeof(pmm.accessory_vscroll));
 			reader.read((char*)& pmm.accessory_count, sizeof(pmm.accessory_count));
 
 			for (std::size_t i = 0; i < pmm.accessory_count; i++)
-			{
 				pmm.accessory_name.push_back(PmmName::load_fixed_utf8(reader, 100).value());
-			}
 
 			for (std::size_t i = 0; i < pmm.accessory_count; i++)
-			{
-				PmmAccessoryData data;
-				data.load(reader);
-				pmm.accessory_datas.push_back(data);
-			}
+				pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
 
 			reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
 			reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));
@@ -1414,11 +1296,11 @@ namespace octoon
 			reader.read((char*)& pmm.physics_mode, sizeof(pmm.physics_mode));
 			pmm.gravity_current_data.load(reader);
 			pmm.gravity_init_frame.load(reader, true);
-			pmm.gravity_key_frames = PmmGravityKeyFrame::load_arrays(reader, false).value();
+			pmm.gravity_key_frames = PmmKeyFrameGravity::load_arrays(reader, false).value();
 			reader.read((char*)& pmm.is_show_selfshadow, sizeof(pmm.is_show_selfshadow));
 			reader.read((char*)& pmm.selfshadow_current_data, sizeof(pmm.selfshadow_current_data));
 			pmm.selfshadow_init_frame.load(reader, true);
-			pmm.selfshadow_keyframes = PmmSelfShadowKeyFrame::load_arrays(reader, false).value();
+			pmm.selfshadow_keyframes = PmmKeyFrameSelfShadow::load_arrays(reader, false).value();
 			reader.read((char*)& pmm.edge_color_r, sizeof(pmm.edge_color_r));
 			reader.read((char*)& pmm.edge_color_g, sizeof(pmm.edge_color_g));
 			reader.read((char*)& pmm.edge_color_b, sizeof(pmm.edge_color_b));
@@ -1427,15 +1309,14 @@ namespace octoon
 			reader.read((char*)& pmm.camera_current_looking_at_bone, sizeof(pmm.camera_current_looking_at_bone));
 
 			for (std::size_t i = 0; i < 16; i++)
-			{
 				reader.read((char*)& pmm.unknown_array[i], sizeof(pmm.unknown_array[i]));
-			}
+
 			reader.read((char*)& pmm.is_view_look_at_enabled, sizeof(pmm.is_view_look_at_enabled));
 			reader.read((char*)& pmm.unknown, sizeof(pmm.unknown));
 			reader.read((char*)& pmm.is_physics_ground_enabled, sizeof(pmm.is_physics_ground_enabled));
 			reader.read((char*)& pmm.frame_text_box, sizeof(pmm.frame_text_box));
 			reader.read((char*)& pmm.selector_choice_selection_following, sizeof(pmm.selector_choice_selection_following));
-			pmm.selector_choice_datas = PmmCSelectorChoiceData::load_arrays(reader).value();
+			pmm.selector_choice_datas = PmmCSelectorChoice::load_arrays(reader).value();
 
 			return pmm;
 		}

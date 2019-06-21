@@ -6,6 +6,8 @@
 #include "..//models/pmm.h"
 #include "../libs/nativefiledialog/nfd.h"
 
+constexpr std::size_t PATHLIMIT = 4096;
+
 std::vector<const char*> g_SupportedProject = { "pmm" };
 std::vector<const char*> g_SupportedModel = { "pmx" };
 
@@ -109,21 +111,29 @@ namespace octoon
 
 		void
 		FileController::openProject(const runtime::any& data) noexcept
-		{
-			constexpr std::size_t PATHLIMIT = 4096;
+		{			
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
 
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
 				return;
 
-			auto pmm = PMMFile::load(io::fstream(filepath));
+			auto pmm = PMMFile::load(io::fstream(filepath)).value();
+			for (auto& it : pmm.model)
+			{
+				auto model = GamePrefabs::instance()->createModel(it.path);
+				if (model)
+				{
+					model->setName(it.name);
+
+					objects_.push_back(model);
+				}
+			}
 		}
 
 		void
 		FileController::saveProject(const runtime::any& data) noexcept
 		{
-			constexpr std::size_t PATHLIMIT = 4096;
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
 
@@ -134,7 +144,6 @@ namespace octoon
 		void
 		FileController::saveAsProject(const runtime::any& data) noexcept
 		{
-			constexpr std::size_t PATHLIMIT = 4096;
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
 
@@ -145,7 +154,6 @@ namespace octoon
 		void
 		FileController::openModel(const runtime::any& data) noexcept
 		{
-			constexpr std::size_t PATHLIMIT = 4096;
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
 
@@ -158,7 +166,6 @@ namespace octoon
 		void
 		FileController::saveModel(const runtime::any& data) noexcept
 		{
-			constexpr std::size_t PATHLIMIT = 4096;
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
 

@@ -1,5 +1,4 @@
 #include <octoon/animation/vmd.h>
-#include <octoon/animation/animator.h>
 #include <iconv.h>
 #include <map>
 
@@ -95,7 +94,7 @@ namespace octoon
 		}
 
 		bool
-		VMDHandler::doLoad(io::istream& stream, Animator<float>& animation) noexcept
+		VMDHandler::doLoad(io::istream& stream, Animation<float>& animation) noexcept
 		{
 			VMD vmd;
 			if (!stream.read((char*)&vmd.Header, sizeof(vmd.Header))) return false;
@@ -174,7 +173,7 @@ namespace octoon
 		}
 
 		bool
-		VMDHandler::doSave(io::ostream& stream, const Animator<float>& animation) noexcept
+		VMDHandler::doSave(io::ostream& stream, const Animation<float>& animation) noexcept
 		{
 			VMD vmd;
 			std::memset(&vmd.Header, 0, sizeof(vmd.Header));

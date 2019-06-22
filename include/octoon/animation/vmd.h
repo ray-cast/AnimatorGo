@@ -6,7 +6,7 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/vector4.h>
 #include <octoon/math/quat.h>
-#include <octoon/animation/animator.h>
+#include <octoon/animation/animation.h>
 #include <optional>
 
 namespace octoon
@@ -116,8 +116,8 @@ namespace octoon
 			bool doCanRead(io::istream& stream) const noexcept;
 			bool doCanRead(const char* type) const noexcept;
 
-			bool doLoad(io::istream& stream, Animator<float>& animation) noexcept;
-			bool doSave(io::ostream& stream, const Animator<float>& animation) noexcept;
+			bool doLoad(io::istream& stream, Animation<float>& animation) noexcept;
+			bool doSave(io::ostream& stream, const Animation<float>& animation) noexcept;
 
 		private:
 			VMDHandler(const VMDHandler&) = delete;

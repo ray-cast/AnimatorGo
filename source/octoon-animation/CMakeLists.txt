@@ -7,7 +7,7 @@ SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_NAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/${LIB_OUTNAME})
 
 SET(ANIMATION_LIST
-	${HEADER_PATH}/animator.h
+	${HEADER_PATH}/animation.h
 	${HEADER_PATH}/animation_clip.h
 	${HEADER_PATH}/animation_curve.h
 )

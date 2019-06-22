@@ -1,11 +1,11 @@
-#ifndef OCTOON_ANIMATION_LINEAR_INTERPOLATOR_H_
-#define OCTOON_ANIMATION_LINEAR_INTERPOLATOR_H_
+#ifndef OCTOON_LINEAR_INTERPOLATOR_H_
+#define OCTOON_LINEAR_INTERPOLATOR_H_
 
 #include <octoon/animation/interpolator.h>
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
 		template<typename T>
 		class LinearInterpolator final : public Interpolator<T(T)>
@@ -14,7 +14,7 @@ namespace octoon
 			LinearInterpolator() noexcept = default;
 			virtual ~LinearInterpolator() noexcept = default;
 
-			virtual T getInterpolation(T t) const noexcept override
+			virtual T interpolator(T t) const noexcept override
 			{
 				return t;
 			}

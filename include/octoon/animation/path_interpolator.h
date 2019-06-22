@@ -1,11 +1,11 @@
-#ifndef OCTOON_ANIMATION_PATH_ITERPOLATOR_H_
-#define OCTOON_ANIMATION_PATH_ITERPOLATOR_H_
+#ifndef OCTOON_PATH_ITERPOLATOR_H_
+#define OCTOON_PATH_ITERPOLATOR_H_
 
 #include <octoon/animation/interpolator.h>
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
 		template<typename T>
 		class PathInterpolator final : public Interpolator<T>
@@ -16,7 +16,7 @@ namespace octoon
 			PathInterpolator(T xa_, T xb_, T ya_, T yb_) noexcept : xa(xa_), xb(xb_), ya(ya_), yb(yb_) {};
 			virtual ~PathInterpolator() noexcept = default;
 
-			virtual T getInterpolation(T t) const noexcept override
+			virtual T interpolator(T t) const noexcept override
 			{
 				T min = 0.0f;
 				T max = 1.0f;

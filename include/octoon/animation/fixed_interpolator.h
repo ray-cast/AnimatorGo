@@ -1,11 +1,11 @@
-#ifndef OCTOON_ANIMATION_FIXED_INTERPOLATOR_H_
-#define OCTOON_ANIMATION_FIXED_INTERPOLATOR_H_
+#ifndef OCTOON_FIXED_INTERPOLATOR_H_
+#define OCTOON_FIXED_INTERPOLATOR_H_
 
 #include <octoon/animation/interpolator.h>
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
 		template<typename T>
 		class FixedInterpolator final : public Interpolator<T>
@@ -16,7 +16,7 @@ namespace octoon
 			FixedInterpolator(const T& value) noexcept : value_(value) {};
 			virtual ~FixedInterpolator() noexcept = default;
 
-			virtual T getInterpolation(T t) const noexcept
+			virtual T interpolator(T t) const noexcept
 			{
 				return value_;
 			}

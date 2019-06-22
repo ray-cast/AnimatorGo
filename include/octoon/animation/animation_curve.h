@@ -1,11 +1,11 @@
-#ifndef OCTOON_ANIMATION_ANIMATION_CURVE_H_
-#define OCTOON_ANIMATION_ANIMATION_CURVE_H_
+#ifndef OCTOON_ANIMATION_CURVE_H_
+#define OCTOON_ANIMATION_CURVE_H_
 
 #include <octoon/animation/keyframe.h>
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
 		template<typename _Elem, typename _Time = float>
 		class AnimationCurve final
@@ -45,6 +45,12 @@ namespace octoon
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
 			}
 
+			void insert(Keyframe<_Elem, _Time>&& frame_) noexcept
+			{
+				frames.emplace_back(std::move(frame_));
+				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+			}
+
 			bool empty() const noexcept
 			{
 				return frames.empty();
@@ -70,8 +76,8 @@ namespace octoon
 					key.value = frames.back().value;
 				else
 				{
-					auto& a = *it;
-					auto& b = *(it - 1);
+					auto& a = *(it - 1);
+					auto& b = *(it);
 					auto t = (key.time - a.time) / (b.time - a.time);
 
 					if (a.interpolator)

@@ -1,9 +1,9 @@
-#ifndef OCTOON_ANIMATION_INTERPOLATOR_H_
-#define OCTOON_ANIMATION_INTERPOLATOR_H_
+#ifndef OCTOON_INTERPOLATOR_H_
+#define OCTOON_INTERPOLATOR_H_
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
 		template<typename T>
 		class Interpolator
@@ -12,7 +12,7 @@ namespace octoon
 			Interpolator() = default;
 			virtual ~Interpolator() = default;
 
-			virtual T getInterpolation(T t) const noexcept = 0;
+			virtual T interpolator(T t) const noexcept = 0;
 		};
 	}
 }

@@ -280,14 +280,10 @@ bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexce
 
 	if (gamedir)
 	{
-		char drive[MAX_PATH];
-		char dir[MAX_PATH];
-		char filename[MAX_PATH];
-		char ext[MAX_PATH];
-		octoon::io::fcntl::splitpath(gamedir, drive, dir, filename, ext);
-
-		gameRootPath_ = drive;
-		gameRootPath_ += dir;
+		gameRootPath_ = gamedir;
+		const size_t last_slash_idx = gameRootPath_.rfind('\\');
+		if (std::string::npos != last_slash_idx)
+			gameRootPath_ = gameRootPath_.substr(0, last_slash_idx);
 
 #if GLFW_EXPOSE_NATIVE_WIN32
 		::SetCurrentDirectory(gameRootPath_.c_str());

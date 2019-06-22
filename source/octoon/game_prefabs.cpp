@@ -217,6 +217,10 @@ namespace octoon
 		if (it != prefabs_.end())
 			return (*it).second->clone();
 
+		auto stream = io::ifstream(path);
+		if (!stream)
+			return nullptr;
+
 		Model model(path);
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));

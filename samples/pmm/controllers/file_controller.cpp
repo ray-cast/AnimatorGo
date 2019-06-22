@@ -17,31 +17,6 @@ namespace octoon
 	{
 		OctoonImplementSubClass(FileController, GameComponent, "FileController")
 
-		std::string utf82acp(const std::string& sjis)
-		{
-			std::string utf8_string;
-
-			LPCCH pSJIS = (LPCCH)sjis.c_str();
-			int utf16size = ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, pSJIS, -1, 0, 0);
-			if (utf16size != 0)
-			{
-				auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
-				if (::MultiByteToWideChar(CP_UTF8, 0, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
-				{
-					int utf8size = ::WideCharToMultiByte(CP_ACP, 0, pUTF16.get(), -1, 0, 0, 0, 0);
-					if (utf8size != 0)
-					{
-						auto pUTF8 = std::make_unique<TCHAR[]>(utf8size + 16);
-						std::memset(pUTF8.get(), 0, utf8size + 16);
-						if (::WideCharToMultiByte(CP_ACP, 0, pUTF16.get(), -1, pUTF8.get(), utf8size, 0, 0) != 0)
-							utf8_string = std::string(pUTF8.get());
-					}
-				}
-			}
-
-			return utf8_string;
-		}
-
 		FileController::FileController() noexcept
 		{
 		}
@@ -143,7 +118,7 @@ namespace octoon
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
 				return;
 
-			auto pmm = PMMFile::load(io::ifstream(utf82acp(filepath))).value();
+			auto pmm = PMMFile::load(io::ifstream(filepath)).value();
 			for (auto& it : pmm.model)
 			{
 				auto model = GamePrefabs::instance()->createModel(it.path);

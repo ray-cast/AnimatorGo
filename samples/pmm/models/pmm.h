@@ -1,7 +1,6 @@
 #ifndef OCTOON_PMM_H_
 #define OCTOON_PMM_H_
 
-#include <cstdio>
 #include <string>
 #include <vector>
 #include <optional>

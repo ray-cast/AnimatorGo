@@ -1,4 +1,5 @@
 #include "pmm.h"
+#include <iconv.h>
 
 namespace octoon
 {
@@ -37,27 +38,30 @@ namespace octoon
 	std::string
 	PmmName::sjis2utf8(const std::string& sjis)
 	{
-		std::string utf8_string;
+		std::size_t in_size = sjis.size();
+		std::size_t out_size = sjis.size() * 2;
 
-		LPCCH pSJIS = (LPCCH)sjis.c_str();
-		int utf16size = ::MultiByteToWideChar(932, MB_ERR_INVALID_CHARS, pSJIS, -1, 0, 0);
-		if (utf16size != 0)
+		auto inbuf = std::make_unique<char[]>(in_size);
+		auto outbuf = std::make_unique<char[]>(out_size);
+		char* in = inbuf.get();
+		char* out = outbuf.get();
+
+		std::memcpy(in, sjis.c_str(), in_size);
+
+		iconv_t ic = nullptr;
+
+		try
 		{
-			auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
-			if (::MultiByteToWideChar(932, 0, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
-			{
-				int utf8size = ::WideCharToMultiByte(CP_ACP, 0, pUTF16.get(), -1, 0, 0, 0, 0);
-				if (utf8size != 0)
-				{
-					auto pUTF8 = std::make_unique<TCHAR[]>(utf8size + 16);
-					std::memset(pUTF8.get(), 0, utf8size + 16);
-					if (::WideCharToMultiByte(CP_ACP, 0, pUTF16.get(), -1, pUTF8.get(), utf8size, 0, 0) != 0)
-						utf8_string = std::string(pUTF8.get());
-				}
-			}
+			iconv_t ic = iconv_open("utf-8", "SJIS");
+			iconv(ic, &in, &in_size, &out, &out_size);
+			iconv_close(ic);
+		}
+		catch (const std::exception&)
+		{
+			iconv_close(ic);
 		}
 
-		return utf8_string;
+		return std::string(outbuf.get());
 	}
 
 	std::optional<std::string>

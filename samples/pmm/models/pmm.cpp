@@ -84,14 +84,8 @@ namespace octoon
 			auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
 			if (::MultiByteToWideChar(932, 0, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
 			{
-				int utf8size = ::WideCharToMultiByte(CP_UTF8, 0, pUTF16.get(), -1, 0, 0, 0, 0);
-				if (utf8size != 0)
-				{
-					auto pUTF8 = std::make_unique<TCHAR[]>(utf8size + 16);
-					std::memset(pUTF8.get(), 0, utf8size + 16);
-					if (::WideCharToMultiByte(CP_UTF8, 0, pUTF16.get(), -1, pUTF8.get(), utf8size, 0, 0) != 0)
-						utf8_string = std::string(pUTF8.get());
-				}
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
+				return cv.to_bytes(pUTF16.get());
 			}
 		}
 
@@ -213,6 +207,7 @@ namespace octoon
 		, is_open_morph_panel(0)
 		, is_open_selfshadow_panel(0)
 		, selected_model_index(0)
+		, num_models(0)
 	{
 	}
 
@@ -235,8 +230,18 @@ namespace octoon
 		reader.read((char*)& data.is_open_bone_panel, sizeof(data.is_open_bone_panel));
 		reader.read((char*)& data.is_open_morph_panel, sizeof(data.is_open_morph_panel));
 		reader.read((char*)& data.is_open_selfshadow_panel, sizeof(data.is_open_selfshadow_panel));
-		reader.read((char*)& data.selected_model_index, sizeof(data.selected_model_index));
-		if (data.magic != "Polygon Movie maker 0002") { return std::nullopt; }
+		if (data.magic == "Polygon Movie maker 0002")
+		{
+			reader.read((char*)& data.selected_model_index, sizeof(data.selected_model_index));
+			reader.read((char*)& data.num_models, sizeof(data.num_models));
+		}
+		else
+		{
+			reader.read((char*)& data.num_models, sizeof(data.num_models));
+			reader.read((char*)& data.summary, sizeof(data.summary));
+		}
+		
+		if (data.magic != "Polygon Movie maker 0002" && data.magic != "Polygon Movie maker 0001") { return std::nullopt; }
 		if (data.view_width == 0) { return std::nullopt; }
 		if (data.view_height == 0) { return std::nullopt; }
 		if (data.frame_width == 0) { return std::nullopt; }
@@ -738,11 +743,8 @@ namespace octoon
 	}
 
 	std::optional<std::vector<PmmModel>>
-	PmmModel::load_arrays(istream& reader)
+	PmmModel::load_arrays(istream& reader, std::size_t len)
 	{
-		std::uint8_t len = 0;
-		reader.read((char*)& len, sizeof(len));
-
 		auto models = std::vector<PmmModel>(len);
 		for (auto& it : models)
 			it = PmmModel::load(reader).value();
@@ -1004,81 +1006,88 @@ namespace octoon
 	std::optional<PMMFile>
 	PMMFile::load(istream& reader)
 	{
-		auto pmm = PMMFile();
-		pmm.header = PmmHeader::load(reader).value();
-		pmm.model = PmmModel::load_arrays(reader).value();
-		pmm.camera_init_frame = PmmKeyframeCamera::load(reader, true).value();
-		pmm.camera_key_frames = PmmKeyframeCamera::load_arrays(reader, false).value();
-		pmm.camera_current_data = PmmCamera::load(reader).value();
-		pmm.light_init_frame = PmmKeyframeLight::load(reader, true).value();
-		pmm.light_key_frames = PmmKeyframeLight::load_arrays(reader, false).value();
-		pmm.light_current_data = PmmLight::load(reader).value();
-		reader.read((char*)& pmm.selected_accessory_index, sizeof(pmm.selected_accessory_index));
-		reader.read((char*)& pmm.accessory_vscroll, sizeof(pmm.accessory_vscroll));
-		reader.read((char*)& pmm.accessory_count, sizeof(pmm.accessory_count));
+		try
+		{
+			auto pmm = PMMFile();
+			pmm.header = PmmHeader::load(reader).value();
+			pmm.model = PmmModel::load_arrays(reader, pmm.header.num_models).value();
+			pmm.camera_init_frame = PmmKeyframeCamera::load(reader, true).value();
+			pmm.camera_key_frames = PmmKeyframeCamera::load_arrays(reader, false).value();
+			pmm.camera_current_data = PmmCamera::load(reader).value();
+			pmm.light_init_frame = PmmKeyframeLight::load(reader, true).value();
+			pmm.light_key_frames = PmmKeyframeLight::load_arrays(reader, false).value();
+			pmm.light_current_data = PmmLight::load(reader).value();
+			reader.read((char*)& pmm.selected_accessory_index, sizeof(pmm.selected_accessory_index));
+			reader.read((char*)& pmm.accessory_vscroll, sizeof(pmm.accessory_vscroll));
+			reader.read((char*)& pmm.accessory_count, sizeof(pmm.accessory_count));
 
-		for (std::size_t i = 0; i < pmm.accessory_count; i++)
-			pmm.accessory_name.push_back(PmmName::load_fixed_utf8(reader, 100).value());
+			for (std::size_t i = 0; i < pmm.accessory_count; i++)
+				pmm.accessory_name.push_back(PmmName::load_fixed_utf8(reader, 100).value());
 
-		for (std::size_t i = 0; i < pmm.accessory_count; i++)
-			pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
+			for (std::size_t i = 0; i < pmm.accessory_count; i++)
+				pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
 
-		reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
-		reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));
-		reader.read((char*)& pmm.h_scroll_scale, sizeof(pmm.h_scroll_scale));
-		reader.read((char*)& pmm.bone_operation_kind, sizeof(pmm.bone_operation_kind));
-		reader.read((char*)& pmm.looking_at, sizeof(pmm.looking_at));
-		reader.read((char*)& pmm.is_repeat, sizeof(pmm.is_repeat));
-		reader.read((char*)& pmm.is_play_from_frame, sizeof(pmm.is_play_from_frame));
-		reader.read((char*)& pmm.is_play_to_frame, sizeof(pmm.is_play_to_frame));
-		reader.read((char*)& pmm.play_start_frame, sizeof(pmm.play_start_frame));
-		reader.read((char*)& pmm.play_end_frame, sizeof(pmm.play_end_frame));
-		reader.read((char*)& pmm.is_wave_enabled, sizeof(pmm.is_wave_enabled));
-		pmm.wave_path = PmmName::load_fixed_utf8(reader, 256).value();
-		reader.read((char*)& pmm.avi_offset_x, sizeof(pmm.avi_offset_x));
-		reader.read((char*)& pmm.avi_offset_y, sizeof(pmm.avi_offset_y));
-		reader.read((char*)& pmm.avi_scale, sizeof(pmm.avi_scale));
-		pmm.avi_path = PmmName::load_fixed_utf8(reader, 256).value();
-		reader.read((char*)& pmm.is_show_avi, sizeof(pmm.is_show_avi));
-		reader.read((char*)& pmm.background_image_offset_x, sizeof(pmm.background_image_offset_x));
-		reader.read((char*)& pmm.background_image_offset_y, sizeof(pmm.background_image_offset_y));
-		reader.read((char*)& pmm.background_image_scale, sizeof(pmm.background_image_scale));
-		pmm.background_image_path = PmmName::load_fixed_utf8(reader, 255).value();
-		reader.read((char*)& pmm.is_show_background_image, sizeof(pmm.is_show_background_image));
-		reader.read((char*)& pmm.is_show_infomation, sizeof(pmm.is_show_infomation));
-		reader.read((char*)& pmm.is_show_axis, sizeof(pmm.is_show_axis));
-		reader.read((char*)& pmm.is_show_groundshadow, sizeof(pmm.is_show_groundshadow));
-		reader.read((char*)& pmm.fps_limit, sizeof(pmm.fps_limit));
-		reader.read((char*)& pmm.screen_capture_mode, sizeof(pmm.screen_capture_mode));
-		reader.read((char*)& pmm.accessory_number_render_after_model, sizeof(pmm.accessory_number_render_after_model));
-		reader.read((char*)& pmm.ground_shadow_brightness, sizeof(pmm.ground_shadow_brightness));
-		reader.read((char*)& pmm.is_transparent_ground_shadow, sizeof(pmm.is_transparent_ground_shadow));
-		reader.read((char*)& pmm.physics_mode, sizeof(pmm.physics_mode));
-		pmm.gravity_current_data = PmmGravity::load(reader).value();
-		pmm.gravity_init_frame = PmmKeyFrameGravity::load(reader, true).value();
-		pmm.gravity_key_frames = PmmKeyFrameGravity::load_arrays(reader, false).value();
-		reader.read((char*)& pmm.is_show_selfshadow, sizeof(pmm.is_show_selfshadow));
-		reader.read((char*)& pmm.selfshadow_current_data, sizeof(pmm.selfshadow_current_data));
-		pmm.selfshadow_init_frame = PmmKeyFrameSelfShadow::load(reader, true).value();
-		pmm.selfshadow_keyframes = PmmKeyFrameSelfShadow::load_arrays(reader, false).value();
-		reader.read((char*)& pmm.edge_color_r, sizeof(pmm.edge_color_r));
-		reader.read((char*)& pmm.edge_color_g, sizeof(pmm.edge_color_g));
-		reader.read((char*)& pmm.edge_color_b, sizeof(pmm.edge_color_b));
-		reader.read((char*)& pmm.is_black_background, sizeof(pmm.is_black_background));
-		reader.read((char*)& pmm.camera_current_looking_at_model, sizeof(pmm.camera_current_looking_at_model));
-		reader.read((char*)& pmm.camera_current_looking_at_bone, sizeof(pmm.camera_current_looking_at_bone));
+			reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
+			reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));
+			reader.read((char*)& pmm.h_scroll_scale, sizeof(pmm.h_scroll_scale));
+			reader.read((char*)& pmm.bone_operation_kind, sizeof(pmm.bone_operation_kind));
+			reader.read((char*)& pmm.looking_at, sizeof(pmm.looking_at));
+			reader.read((char*)& pmm.is_repeat, sizeof(pmm.is_repeat));
+			reader.read((char*)& pmm.is_play_from_frame, sizeof(pmm.is_play_from_frame));
+			reader.read((char*)& pmm.is_play_to_frame, sizeof(pmm.is_play_to_frame));
+			reader.read((char*)& pmm.play_start_frame, sizeof(pmm.play_start_frame));
+			reader.read((char*)& pmm.play_end_frame, sizeof(pmm.play_end_frame));
+			reader.read((char*)& pmm.is_wave_enabled, sizeof(pmm.is_wave_enabled));
+			pmm.wave_path = PmmName::load_fixed_utf8(reader, 256).value();
+			reader.read((char*)& pmm.avi_offset_x, sizeof(pmm.avi_offset_x));
+			reader.read((char*)& pmm.avi_offset_y, sizeof(pmm.avi_offset_y));
+			reader.read((char*)& pmm.avi_scale, sizeof(pmm.avi_scale));
+			pmm.avi_path = PmmName::load_fixed_utf8(reader, 256).value();
+			reader.read((char*)& pmm.is_show_avi, sizeof(pmm.is_show_avi));
+			reader.read((char*)& pmm.background_image_offset_x, sizeof(pmm.background_image_offset_x));
+			reader.read((char*)& pmm.background_image_offset_y, sizeof(pmm.background_image_offset_y));
+			reader.read((char*)& pmm.background_image_scale, sizeof(pmm.background_image_scale));
+			pmm.background_image_path = PmmName::load_fixed_utf8(reader, 255).value();
+			reader.read((char*)& pmm.is_show_background_image, sizeof(pmm.is_show_background_image));
+			reader.read((char*)& pmm.is_show_infomation, sizeof(pmm.is_show_infomation));
+			reader.read((char*)& pmm.is_show_axis, sizeof(pmm.is_show_axis));
+			reader.read((char*)& pmm.is_show_groundshadow, sizeof(pmm.is_show_groundshadow));
+			reader.read((char*)& pmm.fps_limit, sizeof(pmm.fps_limit));
+			reader.read((char*)& pmm.screen_capture_mode, sizeof(pmm.screen_capture_mode));
+			reader.read((char*)& pmm.accessory_number_render_after_model, sizeof(pmm.accessory_number_render_after_model));
+			reader.read((char*)& pmm.ground_shadow_brightness, sizeof(pmm.ground_shadow_brightness));
+			reader.read((char*)& pmm.is_transparent_ground_shadow, sizeof(pmm.is_transparent_ground_shadow));
+			reader.read((char*)& pmm.physics_mode, sizeof(pmm.physics_mode));
+			pmm.gravity_current_data = PmmGravity::load(reader).value();
+			pmm.gravity_init_frame = PmmKeyFrameGravity::load(reader, true).value();
+			pmm.gravity_key_frames = PmmKeyFrameGravity::load_arrays(reader, false).value();
+			reader.read((char*)& pmm.is_show_selfshadow, sizeof(pmm.is_show_selfshadow));
+			reader.read((char*)& pmm.selfshadow_current_data, sizeof(pmm.selfshadow_current_data));
+			pmm.selfshadow_init_frame = PmmKeyFrameSelfShadow::load(reader, true).value();
+			pmm.selfshadow_keyframes = PmmKeyFrameSelfShadow::load_arrays(reader, false).value();
+			reader.read((char*)& pmm.edge_color_r, sizeof(pmm.edge_color_r));
+			reader.read((char*)& pmm.edge_color_g, sizeof(pmm.edge_color_g));
+			reader.read((char*)& pmm.edge_color_b, sizeof(pmm.edge_color_b));
+			reader.read((char*)& pmm.is_black_background, sizeof(pmm.is_black_background));
+			reader.read((char*)& pmm.camera_current_looking_at_model, sizeof(pmm.camera_current_looking_at_model));
+			reader.read((char*)& pmm.camera_current_looking_at_bone, sizeof(pmm.camera_current_looking_at_bone));
 
-		for (std::size_t i = 0; i < 16; i++)
-			reader.read((char*)& pmm.unknown_array[i], sizeof(pmm.unknown_array[i]));
+			for (std::size_t i = 0; i < 16; i++)
+				reader.read((char*)& pmm.unknown_array[i], sizeof(pmm.unknown_array[i]));
 
-		reader.read((char*)& pmm.is_view_look_at_enabled, sizeof(pmm.is_view_look_at_enabled));
-		reader.read((char*)& pmm.unknown, sizeof(pmm.unknown));
-		reader.read((char*)& pmm.is_physics_ground_enabled, sizeof(pmm.is_physics_ground_enabled));
-		reader.read((char*)& pmm.frame_text_box, sizeof(pmm.frame_text_box));
-		reader.read((char*)& pmm.selector_choice_selection_following, sizeof(pmm.selector_choice_selection_following));
-		pmm.selector_choice_datas = PmmCSelectorChoice::load_arrays(reader).value();
+			reader.read((char*)& pmm.is_view_look_at_enabled, sizeof(pmm.is_view_look_at_enabled));
+			reader.read((char*)& pmm.unknown, sizeof(pmm.unknown));
+			reader.read((char*)& pmm.is_physics_ground_enabled, sizeof(pmm.is_physics_ground_enabled));
+			reader.read((char*)& pmm.frame_text_box, sizeof(pmm.frame_text_box));
+			reader.read((char*)& pmm.selector_choice_selection_following, sizeof(pmm.selector_choice_selection_following));
+			pmm.selector_choice_datas = PmmCSelectorChoice::load_arrays(reader).value();
 
-		return pmm;
+			return pmm;
+		}
+		catch (std::bad_optional_access& e)
+		{
+			return std::nullopt;
+		}
 	}
 
 	PMMLoader::PMMLoader()

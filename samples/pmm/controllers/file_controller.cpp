@@ -118,17 +118,24 @@ namespace octoon
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
 				return;
 
-			auto pmm = PMMFile::load(io::ifstream(filepath)).value();
-			for (auto& it : pmm.model)
+			try
 			{
-				auto model = GamePrefabs::instance()->createModel(it.path);
-				if (model)
+				auto pmm = PMMFile::load(io::ifstream(filepath)).value();
+				for (auto& it : pmm.model)
 				{
-					model->setName(it.name);
+					auto model = GamePrefabs::instance()->createModel(it.path);
+					if (model)
+					{
+						model->setName(it.name);
 
-					objects_.push_back(model);
+						objects_.push_back(model);
+					}
 				}
 			}
+			catch (const std::bad_optional_access&)
+			{
+			}
+
 		}
 
 		void

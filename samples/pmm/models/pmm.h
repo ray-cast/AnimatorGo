@@ -80,6 +80,8 @@ namespace octoon
 		std::uint8_t is_open_morph_panel;
 		std::uint8_t is_open_selfshadow_panel;
 		std::uint8_t selected_model_index;
+		std::uint8_t num_models;
+		std::uint8_t summary[21];
 
 		PmmHeader();
 
@@ -296,7 +298,7 @@ namespace octoon
 		PmmModel();
 
 		static std::optional<PmmModel> load(istream& reader);
-		static std::optional<std::vector<PmmModel>> load_arrays(istream& reader);
+		static std::optional<std::vector<PmmModel>> load_arrays(istream& reader, std::size_t len);
 	};
 
 	struct PmmCamera

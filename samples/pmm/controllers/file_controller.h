@@ -2,6 +2,7 @@
 #define OCTOON_EDITOR_FILE_CONTROLLER_H_
 
 #include <octoon/game_component.h>
+#include "..//models/pmm.h"
 
 namespace octoon
 {
@@ -24,6 +25,9 @@ namespace octoon
 			virtual void exit(const runtime::any& data) noexcept;
 
 			virtual GameComponentPtr clone() const noexcept override;
+
+		private:
+			void createCamera(const PMMFile& camera) noexcept;
 
 		private:
 			bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

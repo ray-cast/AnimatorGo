@@ -23,6 +23,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/path_component.h>
 #include <octoon/text_component.h>
+#include <octoon/animation_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>

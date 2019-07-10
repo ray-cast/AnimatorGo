@@ -415,7 +415,7 @@ namespace octoon
 
 	PmmKeyframeCamera::PmmKeyframeCamera()
 		: data_index(-1)
-		, frame_number(0)
+		, frame(0)
 		, pre_index(0)
 		, next_index(0)
 		, distance(0.0)
@@ -440,7 +440,7 @@ namespace octoon
 	{
 		PmmKeyframeCamera data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.distance, sizeof(data.distance));

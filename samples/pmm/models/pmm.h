@@ -161,7 +161,7 @@ namespace octoon
 	struct PmmKeyframeCamera
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		float distance;

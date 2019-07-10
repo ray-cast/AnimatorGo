@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace animation
 	{
-		template<typename T>
+		template<typename T = float>
 		class PathInterpolator final : public Interpolator<T>
 		{
 		public:

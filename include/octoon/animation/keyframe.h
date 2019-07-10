@@ -9,7 +9,7 @@ namespace octoon
 {
 	namespace animation
 	{
-		template<typename _Elem, typename _Time = float>
+		template<typename _Elem = float, typename _Time = float>
 		class Keyframe final
 		{
 		public:
@@ -91,7 +91,7 @@ namespace octoon
 			}
 		};
 
-		template<typename _Elem, typename _Time = float>
+		template<typename _Elem = float, typename _Time = float>
 		using Keyframes = std::vector<Keyframe<_Elem, _Time>>;
 	}
 }

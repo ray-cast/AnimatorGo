@@ -26,14 +26,7 @@ namespace octoon
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
 
-			camera_ = GameObject::create("MainCamera");
-			camera_->getComponent<TransformComponent>()->setTranslate(math::float3(0, 10, 0));
-			camera_->addComponent<EditorCameraComponent>();
-
-			auto camera = camera_->addComponent<PerspectiveCameraComponent>(45.0f);
-			camera->setCameraType(video::CameraType::Main);
-			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));
-
+			this->addMessageListener("editor:camera:set", std::bind(&CameraWindow::setCamera, this, std::placeholders::_1));
 			this->addMessageListener("editor:camera:fov", std::bind(&CameraWindow::setFov, this, std::placeholders::_1));
 			this->addMessageListener("editor:camera:position", std::bind(&CameraWindow::setPosition, this, std::placeholders::_1));
 			this->addMessageListener("editor:camera:rotation", std::bind(&CameraWindow::setRotation, this, std::placeholders::_1));
@@ -44,17 +37,26 @@ namespace octoon
 		CameraWindow::onDeactivate() noexcept
 		{
 			this->removeComponentDispatchs();
+			this->removeMessageListener("editor:camera:set", std::bind(&CameraWindow::setCamera, this, std::placeholders::_1));
 			this->removeMessageListener("editor:camera:fov", std::bind(&CameraWindow::setFov, this, std::placeholders::_1));
 			this->removeMessageListener("editor:camera:position", std::bind(&CameraWindow::setPosition, this, std::placeholders::_1));
 			this->removeMessageListener("editor:camera:rotation", std::bind(&CameraWindow::setRotation, this, std::placeholders::_1));
 			this->removeMessageListener("editor:camera:distance", std::bind(&CameraWindow::setDistance, this, std::placeholders::_1));
 
-			camera_.reset();
+			if (camera_)
+				camera_.reset();
 		}
 
 		void
 		CameraWindow::onGui() noexcept
 		{
+		}
+
+		void 
+		CameraWindow::setCamera(const runtime::any& data) noexcept
+		{
+			if (data.type() == typeid(GameObjectPtr))
+				camera_ = runtime::any_cast<GameObjectPtr>(data);
 		}
 
 		void 

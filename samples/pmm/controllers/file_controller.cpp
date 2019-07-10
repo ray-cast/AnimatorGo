@@ -131,11 +131,15 @@ namespace octoon
 						objects_.push_back(model);
 					}
 				}
+
+				this->sendMessage("editor:camera:fov", (float)pmm.camera_init_frame.fov * 2.0f);
+				this->sendMessage("editor:camera:position", pmm.camera_init_frame.eye);
+				this->sendMessage("editor:camera:rotation", math::Quaternion(pmm.camera_init_frame.rotation));
+				this->sendMessage("editor:camera:distance", (float)pmm.camera_init_frame.distance);
 			}
 			catch (const std::bad_optional_access&)
 			{
 			}
-
 		}
 
 		void

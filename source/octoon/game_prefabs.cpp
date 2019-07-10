@@ -255,6 +255,8 @@ namespace octoon
 			object->setParent(actor);
 		}
 
+		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
+
 		prefabs_[path] = actor;
 
 		return actor;

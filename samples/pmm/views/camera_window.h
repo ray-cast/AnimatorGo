@@ -17,6 +17,12 @@ namespace octoon
 			GameComponentPtr clone() const noexcept override;
 
 		private:
+			void setFov(const runtime::any& data) noexcept;
+			void setPosition(const runtime::any& data) noexcept;
+			void setRotation(const runtime::any& data) noexcept;
+			void setDistance(const runtime::any& data) noexcept;
+
+		private:
 			void onActivate() noexcept override;
 			void onDeactivate() noexcept override;
 

@@ -165,7 +165,7 @@ namespace octoon
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		float distance;
-		PmmVector3 eye_position;
+		PmmVector3 eye;
 		PmmVector3 rotation;
 		std::int32_t looking_model_index;
 		std::int32_t looking_bone_index;
@@ -176,7 +176,7 @@ namespace octoon
 		std::uint8_t interpolation_distance[4];
 		std::uint8_t interpolation_angleview[4];
 		std::uint8_t is_parse;
-		std::uint32_t angle_view;
+		std::uint32_t fov;
 		std::uint8_t is_selected;
 
 		PmmKeyframeCamera();
@@ -390,10 +390,10 @@ namespace octoon
 		std::vector<PmmModel> model;
 		PmmKeyframeCamera camera_init_frame;
 		std::vector<PmmKeyframeCamera> camera_key_frames;
-		PmmCamera camera_current_data;
-		PmmKeyframeLight light_init_frame;
-		std::vector<PmmKeyframeLight> light_key_frames;
-		PmmLight light_current_data;
+		PmmCamera camera;
+		PmmKeyframeLight main_light_frame;
+		std::vector<PmmKeyframeLight> main_light_frames;
+		PmmLight main_light;
 		std::uint8_t selected_accessory_index;
 		std::uint32_t accessory_vscroll;
 		std::uint8_t accessory_count;

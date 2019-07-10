@@ -419,7 +419,7 @@ namespace octoon
 		, pre_index(0)
 		, next_index(0)
 		, distance(0.0)
-		, eye_position(PmmVector3(0.0, 0.0, 0.0))
+		, eye(PmmVector3(0.0, 0.0, 0.0))
 		, rotation(PmmVector3(0.0, 0.0, 0.0))
 		, looking_model_index(0)
 		, looking_bone_index(0)
@@ -430,7 +430,7 @@ namespace octoon
 		, interpolation_distance()
 		, interpolation_angleview()
 		, is_parse(0)
-		, angle_view(0)
+		, fov(0)
 		, is_selected(0)
 	{
 	}
@@ -444,7 +444,7 @@ namespace octoon
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.distance, sizeof(data.distance));
-		reader.read((char*)& data.eye_position, sizeof(data.eye_position));
+		reader.read((char*)& data.eye, sizeof(data.eye));
 		reader.read((char*)& data.rotation, sizeof(data.rotation));
 		reader.read((char*)& data.looking_model_index, sizeof(data.looking_model_index));
 		reader.read((char*)& data.looking_bone_index, sizeof(data.looking_bone_index));
@@ -455,7 +455,7 @@ namespace octoon
 		reader.read((char*)& data.interpolation_distance, sizeof(data.interpolation_distance));
 		reader.read((char*)& data.interpolation_angleview, sizeof(data.interpolation_angleview));
 		reader.read((char*)& data.is_parse, sizeof(data.is_parse));
-		reader.read((char*)& data.angle_view, sizeof(data.angle_view));
+		reader.read((char*)& data.fov, sizeof(data.fov));
 		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
 		return data;
@@ -1013,10 +1013,10 @@ namespace octoon
 			pmm.model = PmmModel::load_arrays(reader, pmm.header.num_models).value();
 			pmm.camera_init_frame = PmmKeyframeCamera::load(reader, true).value();
 			pmm.camera_key_frames = PmmKeyframeCamera::load_arrays(reader, false).value();
-			pmm.camera_current_data = PmmCamera::load(reader).value();
-			pmm.light_init_frame = PmmKeyframeLight::load(reader, true).value();
-			pmm.light_key_frames = PmmKeyframeLight::load_arrays(reader, false).value();
-			pmm.light_current_data = PmmLight::load(reader).value();
+			pmm.camera = PmmCamera::load(reader).value();
+			pmm.main_light_frame = PmmKeyframeLight::load(reader, true).value();
+			pmm.main_light_frames = PmmKeyframeLight::load_arrays(reader, false).value();
+			pmm.main_light = PmmLight::load(reader).value();
 			reader.read((char*)& pmm.selected_accessory_index, sizeof(pmm.selected_accessory_index));
 			reader.read((char*)& pmm.accessory_vscroll, sizeof(pmm.accessory_vscroll));
 			reader.read((char*)& pmm.accessory_count, sizeof(pmm.accessory_count));

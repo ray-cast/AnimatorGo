@@ -159,3 +159,5 @@ IF(OCTOON_FEATURE_UI_ENABLE)
 ENDIF()
 
 SET_TARGET_ATTRIBUTE(${LIB_NAME} "octoon")
+
+add_dependencies(${LIB_NAME} prorender)

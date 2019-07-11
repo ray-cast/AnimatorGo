@@ -241,7 +241,7 @@ namespace octoon
 			reader.read((char*)& data.summary, sizeof(data.summary));
 		}
 		
-		if (data.magic != "Polygon Movie maker 0002" && data.magic != "Polygon Movie maker 0001") { return std::nullopt; }
+		if (data.magic != "Polygon Movie maker 0002") { return std::nullopt; }
 		if (data.view_width == 0) { return std::nullopt; }
 		if (data.view_height == 0) { return std::nullopt; }
 		if (data.frame_width == 0) { return std::nullopt; }

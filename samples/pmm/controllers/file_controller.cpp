@@ -140,6 +140,7 @@ namespace octoon
 			}
 			catch (const std::bad_optional_access&)
 			{
+				this->sendMessage("editor:message:error", "Failed to open the file");
 			}
 		}
 

@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace animation
 	{
-		template<typename _Elem, typename _Time = float>
+		template<typename _Elem = float, typename _Time = float>
 		class AnimationClip final
 		{
 		public:

@@ -27,6 +27,10 @@ namespace octoon
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
 
+		virtual void onFrameBegin() except override;
+		virtual void onFrame() except override;
+		virtual void onFrameEnd() except override;
+
 	private:
 		AnimationComponent(const AnimationComponent&) = delete;
 		AnimationComponent& operator=(const AnimationComponent&) = delete;

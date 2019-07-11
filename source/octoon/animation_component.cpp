@@ -35,16 +35,19 @@ namespace octoon
 	void
 	AnimationComponent::play() noexcept
 	{
+		this->addComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
 	AnimationComponent::pause() noexcept
 	{
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
 	AnimationComponent::stop() noexcept
 	{
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	GameComponentPtr
@@ -60,6 +63,22 @@ namespace octoon
 
 	void
 	AnimationComponent::onDeactivate() noexcept
+	{
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+	}
+
+	void
+	AnimationComponent::onFrameBegin() except
+	{
+	}
+
+	void
+	AnimationComponent::onFrame() except
+	{
+	}
+
+	void
+	AnimationComponent::onFrameEnd() except
 	{
 	}
 }

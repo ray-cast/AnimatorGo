@@ -198,6 +198,8 @@ namespace octoon
 		void
 		ProjectController::play(const runtime::any& data) noexcept
 		{
+			assert(data.type() == typeid(bool));
+
 			auto play = runtime::any_cast<bool>(data);
 			if (play)
 			{
@@ -268,6 +270,7 @@ namespace octoon
 
 			auto obj = GameObject::create("MainCamera");
 			obj->addComponent<AnimationComponent>(clip);
+			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_init_frame.eye);
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera_init_frame.rotation));
 			obj->getComponent<TransformComponent>()->move((float)pmm.camera_init_frame.distance);

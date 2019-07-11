@@ -8,7 +8,7 @@ ExternalProject_Add(Catch2
     GIT_SHALLOW true
     GIT_PROGRESS true
     PREFIX ${OCTOON_PATH_INSTALL}/source/Catch2
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:path=${OCTOON_PATH_INSTALL} -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF
 )
 
 add_dependencies(third_install Catch2)
@@ -20,7 +20,7 @@ ExternalProject_Add(
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
     PREFIX ${OCTOON_PATH_INSTALL}/source/RadeonProRender
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_INSTALL} -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF
         -DBAIKAL_ENABLE_TESTS=OFF -DBAIKAL_ENABLE_STANDALONE=OFF -DBAIKAL_ENABLE_RPR=ON
 )
 
@@ -33,7 +33,7 @@ ExternalProject_Add(
     GIT_SHALLOW TRUE
     GIT_PROGRESS TRUE
     PREFIX ${OCTOON_PATH_INSTALL}/source/bullet
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${OCTOON_PATH_INSTALL} -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF
 )
 
 add_dependencies(third_install bullet)
@@ -52,7 +52,7 @@ ELSE()
 	MESSAGE(FATAL_ERROR "Unsupported build platform for PhysX: " ${OCTOON_BUILD_PLATFORM})
 ENDIF()
 
-SET(PhysX_DIR ${OCTOON_PATH_INSTALL}/source/PhysX/src/physx/physx)
+SET(PHYSX_DIR ${OCTOON_PATH_INSTALL}/source/PhysX/src/physx/physx)
 FIND_PACKAGE(PhysX)
 add_dependencies(third_install physx)
 

@@ -17,6 +17,10 @@ namespace octoon
 		explicit AnimationComponent(const animation::AnimationClips<float>& clips) noexcept;
 		virtual ~AnimationComponent() noexcept;
 
+		void play() noexcept;
+		void pause() noexcept;
+		void stop() noexcept;
+
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:

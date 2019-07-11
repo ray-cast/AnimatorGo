@@ -1,5 +1,5 @@
-#ifndef OCTOON_EDITOR_FILE_CONTROLLER_H_
-#define OCTOON_EDITOR_FILE_CONTROLLER_H_
+#ifndef OCTOON_EDITOR_PROJECT_CONTROLLER_H_
+#define OCTOON_EDITOR_PROJECT_CONTROLLER_H_
 
 #include <octoon/game_component.h>
 #include "..//models/pmm.h"
@@ -15,18 +15,20 @@ namespace octoon
 			ProjectController() noexcept;
 			~ProjectController() noexcept;
 
-			virtual void openProject(const runtime::any& data) noexcept;
-			virtual void saveProject(const runtime::any& data) noexcept;
-			virtual void saveAsProject(const runtime::any& data) noexcept;
-
-			virtual void openModel(const runtime::any& data) noexcept;
-			virtual void saveModel(const runtime::any& data) noexcept;
-
-			virtual void exit(const runtime::any& data) noexcept;
-
 			virtual GameComponentPtr clone() const noexcept override;
 
 		private:
+			void openProject(const runtime::any& data) noexcept;
+			void saveProject(const runtime::any& data) noexcept;
+			void saveAsProject(const runtime::any& data) noexcept;
+
+			void openModel(const runtime::any& data) noexcept;
+			void saveModel(const runtime::any& data) noexcept;
+
+			void exit(const runtime::any& data) noexcept;
+
+			void play(const runtime::any& data) noexcept;
+
 			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
 
 		private:

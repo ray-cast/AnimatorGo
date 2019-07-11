@@ -19,7 +19,7 @@ namespace octoon
 {
 	namespace editor
 	{
-		OctoonImplementSubClass(ProjectController, GameComponent, "FileController")
+		OctoonImplementSubClass(ProjectController, GameComponent, "ProjectController")
 
 		ProjectController::ProjectController() noexcept
 		{
@@ -100,6 +100,7 @@ namespace octoon
 			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));			
 		}
 
 		void
@@ -192,6 +193,30 @@ namespace octoon
 		ProjectController::exit(const runtime::any& data) noexcept
 		{
 			std::exit(0);
+		}
+
+		void
+		ProjectController::play(const runtime::any& data) noexcept
+		{
+			auto play = runtime::any_cast<bool>(data);
+			if (play)
+			{
+				for (auto& it : objects_)
+				{
+					auto animation = it->getComponent<AnimationComponent>();
+					if (animation)
+						animation->play();
+				}
+			}
+			else
+			{
+				for (auto& it : objects_)
+				{
+					auto animation = it->getComponent<AnimationComponent>();
+					if (animation)
+						animation->stop();
+				}
+			}
 		}
 
 		GameComponentPtr 

@@ -32,6 +32,21 @@ namespace octoon
 	{
 	}
 
+	void
+	AnimationComponent::play() noexcept
+	{
+	}
+
+	void
+	AnimationComponent::pause() noexcept
+	{
+	}
+
+	void
+	AnimationComponent::stop() noexcept
+	{
+	}
+
 	GameComponentPtr
 	AnimationComponent::clone() const noexcept
 	{

@@ -34,8 +34,8 @@ SET(VIEWS_LIST
 SOURCE_GROUP("pmm\\views" FILES ${VIEWS_LIST})
 
 SET(CONTROLLERS_LIST
-	${SOURCE_PATH}/controllers/file_controller.h
-	${SOURCE_PATH}/controllers/file_controller.cpp
+	${SOURCE_PATH}/controllers/project_controller.h
+	${SOURCE_PATH}/controllers/project_controller.cpp
 	${SOURCE_PATH}/controllers/edit_controller.h
 	${SOURCE_PATH}/controllers/edit_controller.cpp
 )

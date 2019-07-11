@@ -12,9 +12,7 @@
 #include <octoon/ui/imgui_system.h>
 
 #include <octoon/runtime/except.h>
-#include <octoon/runtime/rtti_factory.h>
 
-#include <octoon/timer_feature.h>
 #include <octoon/hal_feature.h>
 
 namespace octoon
@@ -114,6 +112,8 @@ namespace octoon
 	void
 	GuiFeature::onInputEvent(const runtime::any& data) noexcept
 	{
+		assert(data.type() == typeid(input::InputEvent));
+
 		auto event = runtime::any_cast<input::InputEvent>(data);
 		switch (event.event)
 		{

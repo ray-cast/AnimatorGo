@@ -26,6 +26,7 @@ namespace octoon
 		}
 
 		instanceID = instanceLists_.size();
+		activeScenes_.push_back(entity);
 	}
 
 	void
@@ -42,21 +43,29 @@ namespace octoon
 	{
 		if (active)
 		{
-			activeActors_.push_back(entity);
+			activeScenes_.push_back(entity);
 		}
 		else
 		{
-			std::size_t size = activeActors_.size();
+			std::size_t size = activeScenes_.size();
 			for (std::size_t i = 0; i < size; i++)
 			{
-				if (activeActors_[i] == entity)
+				if (activeScenes_[i] == entity)
 				{
-					activeActors_[i] = nullptr;
+					activeScenes_[i] = nullptr;
 					hasEmptyActors_ = true;
 					break;
 				}
 			}
 		}
+	}
+
+	GameScene*
+	GameSceneManager::defaultScene() noexcept
+	{
+		if (activeScenes_.empty())
+			return nullptr;
+		return activeScenes_.front();
 	}
 
 	GameScenePtr
@@ -77,7 +86,7 @@ namespace octoon
 	GameScenePtr
 	GameSceneManager::findActivedScene(const std::string& name) noexcept
 	{
-		for (auto& it : activeActors_)
+		for (auto& it : activeScenes_)
 		{
 			if (!it)
 				continue;

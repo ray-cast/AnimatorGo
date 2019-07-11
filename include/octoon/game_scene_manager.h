@@ -20,6 +20,8 @@ namespace octoon
 
 		bool activeScene(const std::string& name) noexcept;
 
+		GameScene* defaultScene() noexcept;
+
 		void onFrameBegin() noexcept;
 		void onFrame() noexcept;
 		void onFrameEnd() noexcept;
@@ -33,9 +35,11 @@ namespace octoon
 	private:
 		bool hasEmptyActors_;
 
+		GameScenePtr scene_;
+
 		std::vector<std::size_t> emptyLists_;
 		std::vector<GameScene*> instanceLists_;
-		std::vector<GameScene*> activeActors_;
+		std::vector<GameScene*> activeScenes_;
 	};
 }
 

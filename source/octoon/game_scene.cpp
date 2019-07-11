@@ -2,6 +2,7 @@
 #include <octoon/game_scene_manager.h>
 #include <octoon/game_listener.h>
 #include <octoon/game_component.h>
+#include <octoon/game_server.h>
 
 namespace octoon
 {
@@ -31,6 +32,7 @@ namespace octoon
 
 	GameScene::GameScene() noexcept
 		: root_(std::make_unique<RootObject>(this))
+		, gameServer_(nullptr)
 	{
 		GameSceneManager::instance()->_instanceScene(this, instance_id_);
 	}
@@ -110,6 +112,27 @@ namespace octoon
 		return name_;
 	}
 
+	GameFeature*
+	GameScene::getFeature(const runtime::Rtti* rtti) const noexcept
+	{
+		assert(gameServer_);
+		return gameServer_->getFeature(rtti);
+	}
+
+	GameFeature*
+	GameScene::getFeature(const runtime::Rtti& rtti) const noexcept
+	{
+		assert(gameServer_);
+		return gameServer_->getFeature(rtti);
+	}
+
+	void
+	GameScene::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		assert(gameServer_);
+		return gameServer_->sendMessage(event, data);
+	}
+
 	std::size_t
 	GameScene::id() const noexcept
 	{
@@ -141,5 +164,11 @@ namespace octoon
 		scene->setName(this->getName());
 		scene->root_ = root_->clone();
 		return scene;
+	}
+
+	void
+	GameScene::_setGameServer(GameServer* gameServ) noexcept
+	{
+		this->gameServer_ = gameServ;
 	}
 }

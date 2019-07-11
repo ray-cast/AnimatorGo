@@ -1,30 +1,36 @@
 #include <octoon/animation_component.h>
+#include <octoon/game_scene.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(AnimationComponent, GameComponent, "Animation")
 
 	AnimationComponent::AnimationComponent() noexcept
+		: timer_(nullptr)
 	{
 	}
 
 	AnimationComponent::AnimationComponent(animation::AnimationClip<float>&& clip) noexcept
+		: timer_(nullptr)
 	{
 		clips_.emplace_back(clip);
 	}
 
 	AnimationComponent::AnimationComponent(animation::AnimationClips<float>&& clips) noexcept
-		: clips_(std::move(clips))
+		: timer_(nullptr)
+		, clips_(std::move(clips))
 	{
 	}
 
 	AnimationComponent::AnimationComponent(const animation::AnimationClip<float>& clip) noexcept
+		: timer_(nullptr)
 	{
 		clips_.emplace_back(clip);
 	}
 
 	AnimationComponent::AnimationComponent(const animation::AnimationClips<float>& clips) noexcept
-		: clips_(clips)
+		: timer_(nullptr)
+		, clips_(clips)
 	{
 	}
 
@@ -59,17 +65,28 @@ namespace octoon
 	void 
 	AnimationComponent::onActivate() except
 	{
+		timer_ = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
 	}
 
 	void
 	AnimationComponent::onDeactivate() noexcept
 	{
+		timer_ = nullptr;
 		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
 	AnimationComponent::onFrameBegin() except
 	{
+		auto delta = timer_->delta();
+
+		for (auto& clip : clips_)
+		{
+			for (auto& curve : clip.curves)
+			{
+				curve.second.evaluate(delta);
+			}
+		}
 	}
 
 	void

@@ -3,6 +3,7 @@
 
 #include <octoon/animation/animation.h>
 #include <octoon/game_component.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -36,6 +37,7 @@ namespace octoon
 		AnimationComponent& operator=(const AnimationComponent&) = delete;
 
 	private:
+		TimerFeature* timer_;
 		animation::AnimationClips<float> clips_;
 	};
 }

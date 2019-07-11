@@ -18,12 +18,19 @@ namespace octoon
 		void setActive(bool active) except;
 		bool getActive() const noexcept;
 
-		void setGameListener(const GameListenerPtr& listener) noexcept;
-		const GameListenerPtr& getGameListener() const noexcept;
-
 		void setName(std::string&& name) noexcept;
 		void setName(const std::string& name) noexcept;
 		const std::string& getName() const noexcept;
+
+		void setGameListener(const GameListenerPtr& listener) noexcept;
+		const GameListenerPtr& getGameListener() const noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		T* getFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
+
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
 
 		void load(const io::archivebuf& reader) except;
 		void save(io::archivebuf& write) except;
@@ -33,6 +40,10 @@ namespace octoon
 		const GameObjectPtr& root() const noexcept;
 
 		GameScenePtr clone() const noexcept;
+
+	private:
+		friend GameServer;
+		void _setGameServer(GameServer* gameServ) noexcept;
 
 	private:
 		class RootObject final : public GameObject
@@ -53,6 +64,7 @@ namespace octoon
 
 		GameObjectPtr  root_;
 		GameListenerPtr listener_;
+		GameServer* gameServer_;
 	};
 }
 

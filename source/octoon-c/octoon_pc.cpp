@@ -30,7 +30,7 @@
 #endif
 
 GLFWwindow* window_ = nullptr;
-octoon::GameApp* gameApp_;
+octoon::GameAppPtr gameApp_;
 
 std::string gameRootPath_;
 std::string gameScenePath_;
@@ -341,7 +341,7 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(window_);
 
-			gameApp_ = octoon::GameApp::instance();
+			gameApp_ = std::make_shared<octoon::GameApp>();
 			gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 			gameApp_->setActive(true);
 			gameApp_->doWindowFocus(hwnd, true);

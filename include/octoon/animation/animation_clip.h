@@ -1,6 +1,7 @@
 #ifndef OCTOON_ANIMATION_CLIP_H_
 #define OCTOON_ANIMATION_CLIP_H_
 
+#include <map>
 #include <unordered_map>
 #include <octoon/animation/animation_curve.h>
 
@@ -13,7 +14,7 @@ namespace octoon
 		{
 		public:
 			std::string name;
-			std::unordered_map<std::string, AnimationCurve<_Elem, _Time>> curves;
+			std::map<std::string, AnimationCurve<_Elem, _Time>> curves;
 
 			AnimationClip() noexcept
 			{

@@ -388,8 +388,7 @@ namespace octoon
 	{
 		PmmHeader header;
 		std::vector<PmmModel> model;
-		PmmKeyframeCamera camera_init_frame;
-		std::vector<PmmKeyframeCamera> camera_key_frames;
+		std::vector<PmmKeyframeCamera> camera_keyframes;
 		PmmCamera camera;
 		PmmKeyframeLight main_light_frame;
 		std::vector<PmmKeyframeLight> main_light_frames;

@@ -239,7 +239,7 @@ namespace octoon
 			Keyframes<float> rotationZ;
 			Keyframes<float> fov;
 
-			for (auto& it : pmm.camera_key_frames)
+			for (auto& it : pmm.camera_keyframes)
 			{
 				auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0], it.interpolation_distance[1], it.interpolation_distance[2], it.interpolation_distance[3]);
 				auto interpolationX = std::make_shared<PathInterpolator<float>>(it.interpolation_x[0], it.interpolation_x[1], it.interpolation_x[2], it.interpolation_x[3]);
@@ -248,14 +248,14 @@ namespace octoon
 				auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0], it.interpolation_rotation[1], it.interpolation_rotation[2], it.interpolation_rotation[3]);
 				auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0], it.interpolation_angleview[1], it.interpolation_angleview[2], it.interpolation_angleview[3]);
 
-				distance.emplace_back((float)it.frame, it.distance, interpolationDistance);
-				eyeX.emplace_back((float)it.frame, it.eye.x, interpolationX);
-				eyeY.emplace_back((float)it.frame, it.eye.y, interpolationY);
-				eyeZ.emplace_back((float)it.frame, it.eye.z, interpolationZ);
-				rotationX.emplace_back((float)it.frame, it.rotation.x, interpolationRotation);
-				rotationY.emplace_back((float)it.frame, it.rotation.y, interpolationRotation);
-				rotationZ.emplace_back((float)it.frame, it.rotation.z, interpolationRotation);
-				fov.emplace_back((float)it.frame, (float)it.fov, interpolationAngleView);
+				distance.emplace_back((float)it.frame / 30.0f, it.distance, interpolationDistance);
+				eyeX.emplace_back((float)it.frame / 30.0f, it.eye.x, interpolationX);
+				eyeY.emplace_back((float)it.frame / 30.0f, it.eye.y, interpolationY);
+				eyeZ.emplace_back((float)it.frame / 30.0f, it.eye.z, interpolationZ);
+				rotationX.emplace_back((float)it.frame / 30.0f, it.rotation.x, interpolationRotation);
+				rotationY.emplace_back((float)it.frame / 30.0f, it.rotation.y, interpolationRotation);
+				rotationZ.emplace_back((float)it.frame / 30.0f, it.rotation.z, interpolationRotation);
+				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov, interpolationAngleView);
 			}
 
 			AnimationClip<float> clip;
@@ -271,11 +271,10 @@ namespace octoon
 			auto obj = GameObject::create("MainCamera");
 			obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
-			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_init_frame.eye);
-			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera_init_frame.rotation));
-			obj->getComponent<TransformComponent>()->move((float)pmm.camera_init_frame.distance);
+			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye - math::float3::Forward * 45.0f);
+			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera.rotation));
 
-			auto camera = obj->addComponent<PerspectiveCameraComponent>((float)pmm.camera_init_frame.fov * 2.0f);
+			auto camera = obj->addComponent<PerspectiveCameraComponent>(60.0f);
 			camera->setCameraType(video::CameraType::Main);
 			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));			
 

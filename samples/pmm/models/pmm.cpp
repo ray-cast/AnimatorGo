@@ -464,12 +464,14 @@ namespace octoon
 	std::optional<std::vector<PmmKeyframeCamera>>
 	PmmKeyframeCamera::load_arrays(istream& reader, bool is_init)
 	{
+		auto model = std::vector<PmmKeyframeCamera>();
+		model.push_back(PmmKeyframeCamera::load(reader, true).value());
+
 		std::uint32_t len = 0;
 		reader.read((char*)& len, sizeof(len));
-
-		auto model = std::vector<PmmKeyframeCamera>(len);
-		for (std::size_t i = 0; i < model.size(); i++)
-			model[i] = PmmKeyframeCamera::load(reader, is_init).value();
+		
+		for (std::size_t i = 0; i < len; i++)
+			model.push_back(PmmKeyframeCamera::load(reader, is_init).value());
 
 		return model;
 	}
@@ -1011,8 +1013,7 @@ namespace octoon
 			auto pmm = PMMFile();
 			pmm.header = PmmHeader::load(reader).value();
 			pmm.model = PmmModel::load_arrays(reader, pmm.header.num_models).value();
-			pmm.camera_init_frame = PmmKeyframeCamera::load(reader, true).value();
-			pmm.camera_key_frames = PmmKeyframeCamera::load_arrays(reader, false).value();
+			pmm.camera_keyframes = PmmKeyframeCamera::load_arrays(reader, false).value();
 			pmm.camera = PmmCamera::load(reader).value();
 			pmm.main_light_frame = PmmKeyframeLight::load(reader, true).value();
 			pmm.main_light_frames = PmmKeyframeLight::load_arrays(reader, false).value();

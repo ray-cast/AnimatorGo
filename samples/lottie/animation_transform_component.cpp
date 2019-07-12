@@ -1,6 +1,6 @@
 #include "animation_transform_component.h"
 
-#include <octoon/game_app.h>
+#include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 #include <octoon/camera_component.h>
 #include <octoon/timer_feature.h>
@@ -218,7 +218,7 @@ AnimationTransformComponent::onFrame() except
 	if (transform)
 	{
 		float step = 1.0f / 60.0f;
-		step = octoon::GameApp::instance()->getFeature<octoon::TimerFeature>()->delta() * 23.9f;
+		step = this->getGameObject()->getGameScene()->getFeature<octoon::TimerFeature>()->delta() * 23.9f;
 
 		if (!pos_.empty())
 			transform->setTranslate(pos_.evaluate(step));

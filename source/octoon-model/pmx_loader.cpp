@@ -612,43 +612,40 @@ namespace octoon
 				startIndices += it.FaceCount;
 			}
 
-			if (pmx.numBones > 1)
+			std::size_t index = 0;
+			for (auto& it : pmx.bones)
 			{
-				std::size_t index = 0;
-				for (auto& it : pmx.bones)
+				Bone bone;
+				bone.setName(cv.to_bytes(it.name.name));
+				bone.setPosition(it.position);
+				bone.setParent(it.Parent);
+
+				model.add(std::make_shared<Bone>(bone));
+
+				if (it.Flag & PMX_BONE_IK)
 				{
-					Bone bone;
-					bone.setName(cv.to_bytes(it.name.name));
-					bone.setPosition(it.position);
-					bone.setParent(it.Parent);
+					IKAttr attr;
+					attr.boneIndex = static_cast<uint16_t>(index);
+					attr.targetBoneIndex = it.IKTargetBoneIndex;
+					attr.chainLength = it.IKLinkCount;
+					attr.iterations = it.IKLoopCount;
 
-					model.add(std::make_shared<Bone>(bone));
-
-					if (it.Flag & PMX_BONE_IK)
+					for (auto& ik : it.IKList)
 					{
-						IKAttr attr;
-						attr.boneIndex = static_cast<uint16_t>(index);
-						attr.targetBoneIndex = it.IKTargetBoneIndex;
-						attr.chainLength = it.IKLinkCount;
-						attr.iterations = it.IKLoopCount;
+						IKChild child;
+						child.boneIndex = ik.BoneIndex;
+						child.angleWeight = degress(it.IKLimitedRadian) / 229.1831f;
+						child.minimumDegrees = degress(ik.minimumRadian);
+						child.maximumDegrees = degress(ik.maximumRadian);
+						child.rotateLimited = ik.rotateLimited;
 
-						for (auto& ik : it.IKList)
-						{
-							IKChild child;
-							child.boneIndex = ik.BoneIndex;
-							child.angleWeight = degress(it.IKLimitedRadian) / 229.1831f;
-							child.minimumDegrees = degress(ik.minimumRadian);
-							child.maximumDegrees = degress(ik.maximumRadian);
-							child.rotateLimited = ik.rotateLimited;
-
-							attr.child.push_back(child);
-						}
-
-						model.add(std::make_shared<IKAttr>(attr));
+						attr.child.push_back(child);
 					}
 
-					index++;
+					model.add(std::make_shared<IKAttr>(attr));
 				}
+
+				index++;
 			}
 
 			for (auto& it : pmx.rigidbodys)

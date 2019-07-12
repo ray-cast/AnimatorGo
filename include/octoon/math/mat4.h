@@ -117,7 +117,7 @@ namespace octoon
 					return *this;
 				}
 
-				Matrix3x3<T>& makeIdentity() noexcept
+				Matrix4x4<T>& makeIdentity() noexcept
 				{
 					a1 = 1.0f; a2 = 0.0f; a3 = 0.0f; a4 = 0.0f;
 					b1 = 0.0f; b2 = 1.0f; b3 = 0.0f; b4 = 0.0f;

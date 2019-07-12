@@ -14,10 +14,10 @@ public:
 	using float3 = octoon::math::float3;
 	using float4 = octoon::math::float4;
 
-	using float1s = octoon::model::Keyframes<float1>;
-	using float2s = octoon::model::Keyframes<float2>;
-	using float3s = octoon::model::Keyframes<float3>;
-	using float4s = octoon::model::Keyframes<float4>;
+	using float1s = octoon::animation::Keyframes<float1>;
+	using float2s = octoon::animation::Keyframes<float2>;
+	using float3s = octoon::animation::Keyframes<float3>;
+	using float4s = octoon::animation::Keyframes<float4>;
 
 	KeyframeHelper() noexcept
 	{

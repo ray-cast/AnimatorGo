@@ -13,14 +13,14 @@ public:
 	using float3 = octoon::math::float3;
 	using float4 = octoon::math::float4;
 
-	octoon::model::Keyframes<float3> pos;
-	octoon::model::Keyframes<float3> anchor;
-	octoon::model::Keyframes<float3> scale;
-	octoon::model::Keyframes<float3> orientation;
-	octoon::model::Keyframes<float1> rx;
-	octoon::model::Keyframes<float1> ry;
-	octoon::model::Keyframes<float1> rz;
-	octoon::model::Keyframes<float1> opacity;
+	octoon::animation::Keyframes<float3> pos;
+	octoon::animation::Keyframes<float3> anchor;
+	octoon::animation::Keyframes<float3> scale;
+	octoon::animation::Keyframes<float3> orientation;
+	octoon::animation::Keyframes<float1> rx;
+	octoon::animation::Keyframes<float1> ry;
+	octoon::animation::Keyframes<float1> rz;
+	octoon::animation::Keyframes<float1> opacity;
 
 	TransformHelper()
 	{

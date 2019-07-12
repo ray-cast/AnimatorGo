@@ -30,19 +30,19 @@ public:
 		IrisHightlightSaturation = 12
 	};
 
-	octoon::model::Keyframes<float1> zoom;
-	octoon::model::Keyframes<float1> depthOfField;
-	octoon::model::Keyframes<float1> focusDistance;
-	octoon::model::Keyframes<float1> aperture;
-	octoon::model::Keyframes<float1> blurLevel;
-	octoon::model::Keyframes<float1> irisShape;
-	octoon::model::Keyframes<float1> irisRotation;
-	octoon::model::Keyframes<float1> irisRoundness;
-	octoon::model::Keyframes<float1> irisAspectRatio;
-	octoon::model::Keyframes<float1> irisDiffractionFringe;
-	octoon::model::Keyframes<float1> irisHighlightGain;
-	octoon::model::Keyframes<float1> irisHighlightThreshold;
-	octoon::model::Keyframes<float1> irisHightlightSaturation;
+	octoon::animation::Keyframes<float1> zoom;
+	octoon::animation::Keyframes<float1> depthOfField;
+	octoon::animation::Keyframes<float1> focusDistance;
+	octoon::animation::Keyframes<float1> aperture;
+	octoon::animation::Keyframes<float1> blurLevel;
+	octoon::animation::Keyframes<float1> irisShape;
+	octoon::animation::Keyframes<float1> irisRotation;
+	octoon::animation::Keyframes<float1> irisRoundness;
+	octoon::animation::Keyframes<float1> irisAspectRatio;
+	octoon::animation::Keyframes<float1> irisDiffractionFringe;
+	octoon::animation::Keyframes<float1> irisHighlightGain;
+	octoon::animation::Keyframes<float1> irisHighlightThreshold;
+	octoon::animation::Keyframes<float1> irisHightlightSaturation;
 
 	CameraHelper()
 	{

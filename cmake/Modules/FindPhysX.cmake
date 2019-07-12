@@ -1,12 +1,21 @@
-message("now using FindPhysX.cmake find physx lib")
+# message("now using FindPhysX.cmake find physx lib")
 
 if(PHYSX_DIR)
     message("search PHYSX_DIR in ${PHYSX_DIR}")
 endif()
 
-FIND_PATH(PHYSX_INCLUDE_DIR PxPhysics.h ${PHYSX_DIR}/include)
+if(PHYSX_STATIC_WINCRT)
+    message("physx wincrt static: ${PHYSX_STATIC_WINCRT}")
+endif()
 
-SET(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
+UNSET(PHYSX_INCLUDE_DIR)
+
+FIND_PATH(PHYSX_MAIN_INCLUDE_DIR PxPhysics.h ${PHYSX_DIR}/physx/include)
+FIND_PATH(PHYSX_SHARED_INCLUDE_DIR foundation/PxMath.h ${PHYSX_DIR}/pxshared/include)
+
+SET(PHYSX_INCLUDE_DIR ${PHYSX_MAIN_INCLUDE_DIR} ${PHYSX_SHARED_INCLUDE_DIR} CACHE STRING "physx include dir")
+
+# SET(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 
 if(CMAKE_CL_64)
     SET(PHYSX_LIB_LIST 
@@ -34,47 +43,39 @@ else()
     )
 endif()
 
-SET(PHYSX_LIBRARY "")
+SET(PHYSX_LIBRARY)
+
 foreach(each_lib ${PHYSX_LIB_LIST})
     UNSET(PHYSX_LIB CACHE)
-    FIND_LIBRARY(PHYSX_LIB ${each_lib}
-        HINTS ${PHYSX_DIR}/bin/win.x86_64.vc141.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_64.vc141.mt/release
-        ${PHYSX_DIR}/bin/win.x86_64.vc141.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_64.vc141.mt/profile
-        
-        ${PHYSX_DIR}/bin/win.x86_64.vc140.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_64.vc140.mt/release
-        ${PHYSX_DIR}/bin/win.x86_64.vc140.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_64.vc140.mt/profile
-        
-        ${PHYSX_DIR}/bin/win.x86_64.vc120.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_64.vc120.mt/release
-        ${PHYSX_DIR}/bin/win.x86_64.vc120.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_64.vc120.mt/profile
-        
-        ${PHYSX_DIR}/bin/win.x86_32.vc141.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_32.vc141.mt/release
-        ${PHYSX_DIR}/bin/win.x86_32.vc141.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_32.vc141.mt/profile
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        set(BUILD_TYPE_DIR "debug")
+    elseif(CMAKE_BUILD_TYPE MATCHES "Release")
+        set(BUILD_TYPE_DIR "release")
+    else()
+        set(BUILD_TYPE_DIR "checked")
+    endif()
 
-        ${PHYSX_DIR}/bin/win.x86_32.vc140.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_32.vc140.mt/release
-        ${PHYSX_DIR}/bin/win.x86_32.vc140.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_32.vc140.mt/profile
+    if(PHYSX_STATIC_WINCRT)
+        set(WINCRT_DIR "mt")
+    else()
+        set(WINCRT_DIR "md")
+    endif()
 
-        ${PHYSX_DIR}/bin/win.x86_32.vc120.mt/debug
-        ${PHYSX_DIR}/bin/win.x86_32.vc120.mt/release
-        ${PHYSX_DIR}/bin/win.x86_32.vc120.mt/checked
-        ${PHYSX_DIR}/bin/win.x86_32.vc120.mt/profile
+    if(CMAKE_CL_64)
+        set(MACHINE_TYPE_DIR "x86_64")
+    else()
+        set(MACHINE_TYPE_DIR "x86_32")
+    endif()
 
-        ${PHYSX_DIR}/bin/linux.clang/debug
-        ${PHYSX_DIR}/bin/linux.clang/release
-        ${PHYSX_DIR}/bin/linux.clang/checked
-        ${PHYSX_DIR}/bin/linux.clang/profile)
+    set(VS_VERSION_DIR "vc141")
+
+    list(APPEND PHYSX_LIBRARY ${PHYSX_DIR}/physx/bin/win.${MACHINE_TYPE_DIR}.${VS_VERSION_DIR}.${WINCRT_DIR}/${BUILD_TYPE_DIR}/${each_lib}.lib)
     # message(${PHYSX_LIB})
-    SET(PHYSX_LIBRARY ${PHYSX_LIBRARY} ${PHYSX_LIB})
 endforeach()
+
+SET(PHYSX_LIBRARY ${PHYSX_LIBRARY} CACHE STRING "physx libs")
+
+# message(${PHYSX_LIBRARY})
 
 # message(${PHYSX_INCLUDE_DIR})
 # message(${PHYSX_LIBRARY})

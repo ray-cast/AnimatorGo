@@ -6,4 +6,4 @@ SET PM_CMAKEMODULES_PATH=%PHYSX_ROOT_DIR%/../externals/CMakeModules
 SET PM_PXSHARED_PATH=%PHYSX_ROOT_DIR%/../pxshared
 SET PM_TARGA_PATH=%PHYSX_ROOT_DIR%/../externals/targa
 SET PM_PATHS=%PM_CMAKEMODULES_PATH%;%PM_TARGA_PATH%
-python ./buildtools/cmake_generate_projects.py vc15win64
+python ./buildtools/cmake_generate_projects.py %2

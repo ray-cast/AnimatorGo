@@ -16,169 +16,169 @@ AnimationTransformComponent::~AnimationTransformComponent() noexcept
 }
 
 void
-AnimationTransformComponent::setScale(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setScale(octoon::animation::Keyframes<octoon::math::float3>&& frames) noexcept
 {
 	scale_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setAnchorPoint(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setAnchorPoint(octoon::animation::Keyframes<octoon::math::float3>&& frames) noexcept
 {
 	anchor_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setTranslate(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setTranslate(octoon::animation::Keyframes<octoon::math::float3>&& frames) noexcept
 {
 	pos_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setOrientation(octoon::model::Keyframes<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setOrientation(octoon::animation::Keyframes<octoon::math::float3>&& frames) noexcept
 {
 	orientation_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationX(octoon::model::Keyframes<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationX(octoon::animation::Keyframes<octoon::math::float1>&& frames) noexcept
 {
 	rx_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationY(octoon::model::Keyframes<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationY(octoon::animation::Keyframes<octoon::math::float1>&& frames) noexcept
 {
 	ry_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationZ(octoon::model::Keyframes<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationZ(octoon::animation::Keyframes<octoon::math::float1>&& frames) noexcept
 {
 	rz_.frames = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setScale(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setScale(const octoon::animation::Keyframes<octoon::math::float3>& frames) noexcept
 {
 	scale_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setAnchorPoint(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setAnchorPoint(const octoon::animation::Keyframes<octoon::math::float3>& frames) noexcept
 {
 	anchor_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setTranslate(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setTranslate(const octoon::animation::Keyframes<octoon::math::float3>& frames) noexcept
 {
 	pos_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setOrientation(const octoon::model::Keyframes<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setOrientation(const octoon::animation::Keyframes<octoon::math::float3>& frames) noexcept
 {
 	orientation_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setRotationX(const octoon::model::Keyframes<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationX(const octoon::animation::Keyframes<octoon::math::float1>& frames) noexcept
 {
 	rx_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setRotationY(const octoon::model::Keyframes<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationY(const octoon::animation::Keyframes<octoon::math::float1>& frames) noexcept
 {
 	ry_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setRotationZ(const octoon::model::Keyframes<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationZ(const octoon::animation::Keyframes<octoon::math::float1>& frames) noexcept
 {
 	rz_.frames = frames;
 }
 
 void
-AnimationTransformComponent::setScale(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setScale(octoon::animation::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
 	scale_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setAnchorPoint(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setAnchorPoint(octoon::animation::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
 	anchor_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setTranslate(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setTranslate(octoon::animation::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
 	pos_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setOrientation(octoon::model::AnimationCurve<octoon::math::float3>&& frames) noexcept
+AnimationTransformComponent::setOrientation(octoon::animation::AnimationCurve<octoon::math::float3>&& frames) noexcept
 {
 	orientation_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationX(octoon::model::AnimationCurve<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationX(octoon::animation::AnimationCurve<octoon::math::float1>&& frames) noexcept
 {
 	rx_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationY(octoon::model::AnimationCurve<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationY(octoon::animation::AnimationCurve<octoon::math::float1>&& frames) noexcept
 {
 	ry_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setRotationZ(octoon::model::AnimationCurve<octoon::math::float1>&& frames) noexcept
+AnimationTransformComponent::setRotationZ(octoon::animation::AnimationCurve<octoon::math::float1>&& frames) noexcept
 {
 	rz_ = std::move(frames);
 }
 
 void
-AnimationTransformComponent::setScale(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setScale(const octoon::animation::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
 	scale_ = frames;
 }
 
 void
-AnimationTransformComponent::setAnchorPoint(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setAnchorPoint(const octoon::animation::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
 	anchor_ = frames;
 }
 
 void
-AnimationTransformComponent::setTranslate(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setTranslate(const octoon::animation::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
 	pos_ = frames;
 }
 
 void
-AnimationTransformComponent::setOrientation(const octoon::model::AnimationCurve<octoon::math::float3>& frames) noexcept
+AnimationTransformComponent::setOrientation(const octoon::animation::AnimationCurve<octoon::math::float3>& frames) noexcept
 {
 	orientation_ = frames;
 }
 
 void
-AnimationTransformComponent::setRotationX(const octoon::model::AnimationCurve<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationX(const octoon::animation::AnimationCurve<octoon::math::float1>& frames) noexcept
 {
 	rx_ = frames;
 }
 
 void
-AnimationTransformComponent::setRotationY(const octoon::model::AnimationCurve<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationY(const octoon::animation::AnimationCurve<octoon::math::float1>& frames) noexcept
 {
 	ry_ = frames;
 }
 
 void
-AnimationTransformComponent::setRotationZ(const octoon::model::AnimationCurve<octoon::math::float1>& frames) noexcept
+AnimationTransformComponent::setRotationZ(const octoon::animation::AnimationCurve<octoon::math::float1>& frames) noexcept
 {
 	rz_ = frames;
 }

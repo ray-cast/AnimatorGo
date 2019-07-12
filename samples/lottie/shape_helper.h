@@ -32,29 +32,29 @@ public:
 	struct RectangleHelper
 	{
 		std::uint32_t direction;
-		octoon::model::Keyframes<float2> size;
-		octoon::model::Keyframes<float2> position;
-		octoon::model::Keyframes<float1> roundness;
+		octoon::animation::Keyframes<float2> size;
+		octoon::animation::Keyframes<float2> position;
+		octoon::animation::Keyframes<float1> roundness;
 	};
 
 	struct PolystarHelper
 	{
 		std::uint32_t type;
 		std::uint32_t direction;
-		octoon::model::Keyframes<float1> points;
-		octoon::model::Keyframes<float2> position;
-		octoon::model::Keyframes<float1> rotation;
-		octoon::model::Keyframes<float1> innerRadius;
-		octoon::model::Keyframes<float1> outerRadius;
-		octoon::model::Keyframes<float1> innerRoundness;
-		octoon::model::Keyframes<float1> outerRoundness;
+		octoon::animation::Keyframes<float1> points;
+		octoon::animation::Keyframes<float2> position;
+		octoon::animation::Keyframes<float1> rotation;
+		octoon::animation::Keyframes<float1> innerRadius;
+		octoon::animation::Keyframes<float1> outerRadius;
+		octoon::animation::Keyframes<float1> innerRoundness;
+		octoon::animation::Keyframes<float1> outerRoundness;
 	};
 
 	struct EllipseHelper
 	{
 		std::uint32_t direction;
-		octoon::model::Keyframes<float2> size;
-		octoon::model::Keyframes<float2> position;
+		octoon::animation::Keyframes<float2> size;
+		octoon::animation::Keyframes<float2> position;
 	};
 
 	struct MergeHelper
@@ -65,27 +65,27 @@ public:
 
 	struct StrokeHelper
 	{
-		octoon::model::Keyframes<float3> color;
-		octoon::model::Keyframes<float1> opacity;
-		octoon::model::Keyframes<float1> width;
+		octoon::animation::Keyframes<float3> color;
+		octoon::animation::Keyframes<float1> opacity;
+		octoon::animation::Keyframes<float1> width;
 		std::uint32_t lineCap;
 		std::uint32_t lineJoin;
 	};
 
 	struct FillHelper
 	{
-		octoon::model::Keyframes<float3> color;
-		octoon::model::Keyframes<float1> opacity;
+		octoon::animation::Keyframes<float3> color;
+		octoon::animation::Keyframes<float1> opacity;
 	};
 
 	struct GradientStrokeHelper
 	{
 		std::uint32_t type;
-		octoon::model::Keyframes<float1> opacity;
-		octoon::model::Keyframes<float1> width;
-		octoon::model::Keyframes<float2> start;
-		octoon::model::Keyframes<float2> end;
-		octoon::model::Keyframes<float1> miterLimit;
+		octoon::animation::Keyframes<float1> opacity;
+		octoon::animation::Keyframes<float1> width;
+		octoon::animation::Keyframes<float2> start;
+		octoon::animation::Keyframes<float2> end;
+		octoon::animation::Keyframes<float1> miterLimit;
 		std::uint32_t lineCap;
 		std::uint32_t lineJoin;
 	};
@@ -94,46 +94,46 @@ public:
 	{
 		std::uint32_t type;
 		std::uint32_t fillRule;
-		octoon::model::Keyframes<float1> opacity;
-		octoon::model::Keyframes<float2> start;
-		octoon::model::Keyframes<float2> end;
+		octoon::animation::Keyframes<float1> opacity;
+		octoon::animation::Keyframes<float2> start;
+		octoon::animation::Keyframes<float2> end;
 	};
 
 	struct TwistHelper
 	{
-		octoon::model::Keyframes<float1> angle;
-		octoon::model::Keyframes<float2> center;
+		octoon::animation::Keyframes<float1> angle;
+		octoon::animation::Keyframes<float2> center;
 	};
 
 	struct TrimHelper
 	{
 		std::uint32_t trimMultipleShapes;
-		octoon::model::Keyframes<float1> start;
-		octoon::model::Keyframes<float1> end;
-		octoon::model::Keyframes<float1> offset;
+		octoon::animation::Keyframes<float1> start;
+		octoon::animation::Keyframes<float1> end;
+		octoon::animation::Keyframes<float1> offset;
 	};
 
 	struct RepeaterHelper
 	{
 		std::uint32_t composite;
-		octoon::model::Keyframes<float1> copies;
-		octoon::model::Keyframes<float1> offset;
+		octoon::animation::Keyframes<float1> copies;
+		octoon::animation::Keyframes<float1> offset;
 	};
 
 	struct RoundedCornersHelper
 	{
-		octoon::model::Keyframes<float1> radius;
+		octoon::animation::Keyframes<float1> radius;
 	};
 
 	struct TransformHelper
 	{
-		octoon::model::Keyframes<float2> pos;
-		octoon::model::Keyframes<float2> anchor;
-		octoon::model::Keyframes<float2> scale;
-		octoon::model::Keyframes<float1> skew;
-		octoon::model::Keyframes<float1> skewAxis;
-		octoon::model::Keyframes<float1> rz;
-		octoon::model::Keyframes<float1> opacity;
+		octoon::animation::Keyframes<float2> pos;
+		octoon::animation::Keyframes<float2> anchor;
+		octoon::animation::Keyframes<float2> scale;
+		octoon::animation::Keyframes<float1> skew;
+		octoon::animation::Keyframes<float1> skewAxis;
+		octoon::animation::Keyframes<float1> rz;
+		octoon::animation::Keyframes<float1> opacity;
 	};
 
 	EllipseHelper ellipse;

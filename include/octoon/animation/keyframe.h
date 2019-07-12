@@ -1,5 +1,5 @@
-#ifndef OCTOON_ANIMATION_KEYFRAME_H_
-#define OCTOON_ANIMATION_KEYFRAME_H_
+#ifndef OCTOON_KEYFRAME_H_
+#define OCTOON_KEYFRAME_H_
 
 #include <octoon/animation/interpolator.h>
 #include <memory>
@@ -7,9 +7,9 @@
 
 namespace octoon
 {
-	namespace model
+	namespace animation
 	{
-		template<typename _Elem, typename _Time = float>
+		template<typename _Elem = float, typename _Time = float>
 		class Keyframe final
 		{
 		public:
@@ -23,10 +23,10 @@ namespace octoon
 			{
 			}
 
-			Keyframe(const _Time& time_, const _Elem& value_, const std::shared_ptr<Interpolator<_Time>>& interpolator_ = nullptr) noexcept
+			Keyframe(const _Time& time_, const _Elem& value_, std::shared_ptr<Interpolator<_Time>>&& interpolator_ = nullptr) noexcept
 				: time(time_)
 				, value(value_)
-				, interpolator(interpolator_)
+				, interpolator(std::move(interpolator_))
 			{
 			}
 
@@ -34,6 +34,10 @@ namespace octoon
 				: time(std::move(time_))
 				, value(std::move(value_))
 				, interpolator(std::move(interpolator_))
+			{
+			}
+
+			~Keyframe() noexcept
 			{
 			}
 
@@ -87,7 +91,7 @@ namespace octoon
 			}
 		};
 
-		template<typename _Elem, typename _Time = float>
+		template<typename _Elem = float, typename _Time = float>
 		using Keyframes = std::vector<Keyframe<_Elem, _Time>>;
 	}
 }

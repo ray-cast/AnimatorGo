@@ -1,6 +1,7 @@
 #include <octoon/game_app.h>
 #include <octoon/game_server.h>
 #include <octoon/game_listener.h>
+#include <octoon/game_scene.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/rtti_factory.h>
@@ -38,8 +39,6 @@
 
 namespace octoon
 {
-	OctoonImplementSingleton(GameApp)
-
 	class GameAppListener final : public GameListener
 	{
 	public:

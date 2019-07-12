@@ -24,6 +24,7 @@ namespace octoon
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
 			this->addMessageListener("editor:message", std::bind(&MessageWindow::showPopupMessage, this, std::placeholders::_1));
+			this->addMessageListener("editor:message:error", std::bind(&MessageWindow::showErrorPopupMessage, this, std::placeholders::_1));
 		}
 
 		void
@@ -31,6 +32,7 @@ namespace octoon
 		{
 			this->removeComponentDispatchs();
 			this->removeMessageListener("editor:message", std::bind(&MessageWindow::showPopupMessage, this, std::placeholders::_1));
+			this->removeMessageListener("editor:message:error", std::bind(&MessageWindow::showErrorPopupMessage, this, std::placeholders::_1));
 		}
 
 		void
@@ -42,6 +44,18 @@ namespace octoon
 
 				_messageText = pair.second;
 				_messageTitle = pair.first;
+
+				_isShowMessageFirst = true;
+			}
+		}
+
+		void
+		MessageWindow::showErrorPopupMessage(const runtime::any& data) noexcept
+		{
+			if (!_isShowMessageFirst)
+			{
+				_messageText = runtime::any_cast<const char*>(data);
+				_messageTitle = "Error";
 
 				_isShowMessageFirst = true;
 			}

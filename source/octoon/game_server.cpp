@@ -14,6 +14,7 @@ namespace octoon
 		, isQuitRequest_(false)
 		, gameApp_(nullptr)
 	{
+		this->addScene(std::make_shared<GameScene>());
 	}
 
 	GameServer::~GameServer() noexcept
@@ -88,6 +89,7 @@ namespace octoon
 			if (json)
 			{
 				auto scene = std::make_shared<GameScene>();
+				scene->_setGameServer(this);
 				scene->setGameListener(listener_);
 				scene->load(*json.rdbuf());
 
@@ -161,6 +163,7 @@ namespace octoon
 				scene->setActive(true);
 			}
 
+			scene->_setGameServer(this);
 			scenes_.push_back(scene);
 
 			if (listener_)

@@ -217,6 +217,10 @@ namespace octoon
 		if (it != prefabs_.end())
 			return (*it).second->clone();
 
+		auto stream = io::ifstream(path);
+		if (!stream)
+			return nullptr;
+
 		Model model(path);
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
@@ -240,7 +244,7 @@ namespace octoon
 			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
 
 			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4::One);
+			material->setBaseColor(math::float4(base, 1.0));
 
 			if (!textureName.empty())
 				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
@@ -250,6 +254,8 @@ namespace octoon
 			object->addComponent<MeshRendererComponent>(material);
 			object->setParent(actor);
 		}
+
+		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
 
 		prefabs_[path] = actor;
 

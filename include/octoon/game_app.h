@@ -12,7 +12,6 @@ namespace octoon
 {
 	class OCTOON_EXPORT GameApp final
 	{
-		OctoonDeclareSingleton(GameApp)
 	public:
 		GameApp() noexcept;
 		GameApp(WindHandle hwnd, std::uint32_t w, std::uint32_t h, std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) except;

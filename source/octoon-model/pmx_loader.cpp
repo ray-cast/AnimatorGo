@@ -11,6 +11,7 @@
 
 #include <map>
 #include <cstring>
+#include <codecvt>
 
 using namespace octoon::io;
 using namespace octoon::math;
@@ -483,14 +484,12 @@ namespace octoon
 			if (!this->doLoad(stream, pmx))
 				return false;
 
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
+
 			for (auto& it : pmx.materials)
 			{
 				auto material = std::make_shared<Material>();
-
-				char name[MAX_PATH] = { 0 };
-				wcstombs(name, it.name.name, MAX_PATH);
-
-				material->set(MATKEY_NAME, name);
+				material->set(MATKEY_NAME, cv.to_bytes(it.name.name));
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
@@ -507,19 +506,16 @@ namespace octoon
 
 				if (it.TextureIndex < limits)
 				{
-					char textureName[MAX_PATH] = { 0 };
-					::wcstombs(textureName, pmx.textures[it.TextureIndex].name, MAX_PATH);
+					std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
 
-					material->set(MATKEY_TEXTURE_DIFFUSE(0), textureName);
-					material->set(MATKEY_TEXTURE_AMBIENT(0), textureName);
+					material->set(MATKEY_TEXTURE_DIFFUSE(0), u8_conv);
+					material->set(MATKEY_TEXTURE_AMBIENT(0), u8_conv);
 				}
 
 				if (it.SphereTextureIndex < limits)
 				{
-					char textureName[MAX_PATH];
-					wcstombs(textureName, pmx.textures[it.SphereTextureIndex].name, MAX_PATH);
-
-					material->set(MATKEY_COLOR_SPHEREMAP, textureName);
+					std::string u8_conv = cv.to_bytes(pmx.textures[it.SphereTextureIndex].name);
+					material->set(MATKEY_COLOR_SPHEREMAP, u8_conv);
 				}
 
 				model.add(std::move(material));
@@ -621,13 +617,8 @@ namespace octoon
 				std::size_t index = 0;
 				for (auto& it : pmx.bones)
 				{
-					char name[MAX_PATH] = { 0 };
-					if (!wcstombs(name, it.name.name, MAX_PATH))
-						return false;
-
 					Bone bone;
-
-					bone.setName(name);
+					bone.setName(cv.to_bytes(it.name.name));
 					bone.setPosition(it.position);
 					bone.setParent(it.Parent);
 
@@ -662,15 +653,8 @@ namespace octoon
 
 			for (auto& it : pmx.rigidbodys)
 			{
-				char name[MAX_PATH] = { 0 };
-				if ((it.name.length) > MAX_PATH)
-					return false;
-
-				if (!wcstombs(name, it.name.name, MAX_PATH))
-					return false;
-
 				auto body = std::make_shared<Rigidbody>();
-				body->name = name;
+				body->name = cv.to_bytes(it.name.name);
 				body->bone = it.bone;
 				body->group = it.group;
 				body->groupMask = it.groupMask;
@@ -690,15 +674,8 @@ namespace octoon
 
 			for (auto& it : pmx.joints)
 			{
-				char name[MAX_PATH] = { 0 };
-				if ((it.name.length) > MAX_PATH)
-					return false;
-
-				if (!wcstombs(name, it.name.name, MAX_PATH))
-					return false;
-
 				auto joint = std::make_shared<Joint>();
-				joint->name = name;
+				joint->name = cv.to_bytes(it.name.name);
 				joint->bodyIndexA = it.relatedRigidBodyIndexA;
 				joint->bodyIndexB = it.relatedRigidBodyIndexB;
 				joint->position = it.position;

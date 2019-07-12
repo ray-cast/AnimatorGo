@@ -1,6 +1,7 @@
 #include <octoon/game_object.h>
 #include <octoon/game_object_manager.h>
 #include <octoon/game_component.h>
+#include <octoon/game_scene_manager.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -186,7 +187,7 @@ namespace octoon
 		auto parent = this->getParent();
 		if (parent)
 			return parent->getGameScene();
-		return nullptr;
+		return GameSceneManager::instance()->defaultScene();
 	}
 
 	const GameScene*
@@ -195,7 +196,7 @@ namespace octoon
 		auto parent = this->getParent();
 		if (parent)
 			return parent->getGameScene();
-		return nullptr;
+		return GameSceneManager::instance()->defaultScene();
 	}
 
 	void

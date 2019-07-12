@@ -1,1529 +1,1134 @@
-/*#include <cstdio>
-#include <string>
-#include <vector>
-#include <octoon/math/vector2.h>
-#include <octoon/math/vector3.h>
-#include <octoon/math/vector4.h>
+#include "pmm.h"
+#include <iconv.h>
+#include <codecvt>
 
 namespace octoon
 {
-	typedef math::Vector2  PmmVector2;
-	typedef math::Vector3  PmmVector3;
-	typedef math::Vector4  PmmVector4;
-
-	typedef math::Vector3  PmmColor3;
-	typedef math::Vector4  PmmColor4;
-	typedef math::float3x3 PmmFloat3x3;
-	typedef math::float4x4 PmmFloat4x4;
-
-	typedef wchar_t                PmmChar;
-	typedef std::int8_t            PmmInt8;
-	typedef std::int16_t           PmmInt16;
-	typedef std::int32_t           PmmInt32;
-	typedef std::uint8_t           PmmUInt8;
-	typedef std::uint16_t          PmmUInt16;
-	typedef std::uint32_t          PmmUInt32;
-
-	typedef float                  PmmFloat;
-
-	struct PmmHeader
+	std::optional<PmmInt2>
+	PmmInt2::load(istream& reader)
 	{
-		std::string magic;
-		PmmUInt16 reserve1;
-		PmmUInt16 reserve2;
-		PmmUInt16 reserve3;
-		PmmUInt32 view_width;
-		PmmUInt32 view_height;
-		PmmUInt32 frame_width;
-		PmmFloat edit_view_angle;
-		PmmInt8 is_edit_camera_light_accessory;
-		PmmInt8 is_open_camera_panel;
-		PmmInt8 is_open_light_panel;
-		PmmInt8 is_open_accessory_panel;
-		PmmInt8 is_open_bone_panel;
-		PmmInt8 is_open_morph_panel;
-		PmmInt8 is_open_selfshadow_panel;
-		PmmInt8 selected_model_index;
-	};
-
-	struct PmmBoneFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmUInt8 interpolation_x[4];
-		PmmUInt8 interpolation_y[4];
-		PmmUInt8 interpolation_z[4];
-		PmmUInt8 interpolation_rotation[4];
-		PmmVector3 translation;
-		PmmVector4 quaternion;
-		PmmUInt8 is_selected;
-		PmmUInt8 is_physics_disabled;
-	};
-
-	struct PmmMorphFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmFloat value;
-		PmmUInt8 is_selected;
-	};
-
-	struct PmmOpFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmUInt8 is_display;
-		std::vector<PmmUInt8> is_ik_enabled;
-		std::vector<math::char2> op_data;
-		PmmUInt8 is_selected8;
-	};
-
-	struct PmmBoneCurrentData
-	{
-		PmmVector3 translation;
-		PmmVector4 quaternion;
-		PmmUInt8 is_edit_un_commited;
-		PmmUInt8 is_physics_disabled;
-		PmmUInt8 is_row_selected;
-	};
-
-	struct PmmOpCurrentData
-	{
-		PmmInt32 keyframe_begin;
-		PmmInt32 keyframe_end;
-		PmmInt32 model_index;
-		PmmInt32 parent_bone_index;
-	};
-
-	struct PmmModel
-	{
-		PmmUInt8 number;
-		std::string name;
-		std::string name_en;
-		std::string path;
-		PmmUInt8 keyframe_editor_toplevel_rows;
-		std::vector<std::string> bone_name;
-		std::vector<std::string> morph_name;
-		std::vector<PmmInt32> ik_index;
-		std::vector<PmmInt32> op_index;
-		PmmUInt8 draw_order;
-		PmmUInt8 edit_is_display;
-		PmmInt32 edit_selected_bone;
-		PmmInt32 skin_panel[4];
-		std::vector<PmmUInt8> is_frame_open;
-		PmmInt32 vscroll;
-		PmmInt32 last_frame;
-		std::vector<PmmBoneFrame> bone_init_frame;
-		std::vector<PmmBoneFrame> bone_key_frame;
-		std::vector<PmmMorphFrame> morph_init_frame;
-		std::vector<PmmMorphFrame> morph_key_frame;
-		PmmOpFrame op_init_frame;
-		std::vector<PmmOpFrame> op_key_frames;
-		std::vector<PmmBoneCurrentData> bone_current_datas;
-		std::vector<PmmFloat> morph_current_datas;
-		std::vector<PmmUInt8> is_current_ik_enabled_datas;
-		std::vector<PmmOpCurrentData> op_current_data;
-		PmmUInt8 is_add_blend;
-		PmmFloat edge_width;
-		PmmUInt8 is_selfshadow_enabled;
-		PmmUInt8 calc_order8;
-	};
-
-	struct PmmCameraFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmFloat distance;
-		PmmVector3 eye_position;
-		PmmVector3 rotation;
-		PmmInt32 looking_model_index;
-		PmmInt32 looking_bone_index;
-		PmmUInt8 interpolation_x[4];
-		PmmUInt8 interpolation_y[4];
-		PmmUInt8 interpolation_z[4];
-		PmmUInt8 interpolation_rotation[4];
-		PmmUInt8 interpolation_distance[4];
-		PmmUInt8 interpolation_angleview[4];
-		PmmUInt8 is_parse;
-		PmmUInt32 angle_view;
-		PmmUInt8 is_selected;
-	};
-
-	struct PmmCameraCurrentData
-	{
-		PmmVector3 eye_position;
-		PmmVector3 target_position;
-		PmmVector3 rotation;
-		 PmmUInt8  isorthro;
-	};
-
-	struct PmmLightFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmVector3 rgb;
-		PmmVector3 xyz;
-		PmmUInt8 is_selected;
-	};
-
-	struct PmmLightCurrentData
-	{
-		PmmVector3 rgb;
-		PmmVector3 xyz;
-		PmmUInt8 is_selected;
-	};
-
-	struct PmmKeyFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmUInt8 is_selected8;
-	};
-
-	struct PmmDataBody
-	{
-		PmmUInt8 transparency;
-		PmmUInt8 is_visible;
-		PmmInt32 parent_model_index;
-		PmmInt32 parent_bone_index;
-		PmmVector3 translation;
-		PmmVector3 rotation;
-		PmmFloat scale;
-		PmmUInt8 is_shadow_enabled;
-	};
-
-	struct PmmAccessoryData
-	{
-		PmmUInt8 index;
-		std::string name;
-		std::string path;
-		PmmUInt8 draw_order;
-		PmmKeyFrame init_frame;
-		std::vector<PmmKeyFrame> key_frames;
-		PmmDataBody current_data;
-		PmmUInt8 is_add_blend8;
-	};
-
-	struct PmmGravityCurrentData
-	{
-		PmmFloat acceleration;
-		PmmUInt32 noize_amount;
-		PmmVector3 direction;
-		PmmUInt8 is_add_noize8;
-	};
-
-	struct PmmGravityKeyFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmUInt8 is_add_noize;
-		PmmUInt32 noize_amount;
-		PmmFloat acceleration;
-		PmmVector3 direction;
-		PmmUInt8 is_selected8;
-	};
-
-	struct PmmSelfShadowKeyFrame
-	{
-		PmmInt32 data_index;
-		PmmInt32 frame_number;
-		PmmInt32 pre_index;
-		PmmInt32 next_index;
-		PmmUInt8 mode;
-		PmmFloat distance;
-		PmmUInt8 is_selected8;
-	};
-
-	struct PmmCSelectorChoiceData
-	{
-		PmmUInt8 mode_index;
-		PmmUInt32 selector_choice2;
-	};
-
-	struct PMMFile
-	{
-		PmmHeader header;
-		std::vector<PmmModel> model;
-		PmmCameraFrame camera_init_frame;
-		std::vector<PmmCameraFrame> camera_key_frames;
-		PmmCameraCurrentData camera_current_data;
-		PmmLightFrame light_init_frame;
-		std::vector<PmmLightFrame> light_key_frames;
-		PmmLightCurrentData light_current_data;
-		PmmUInt8 selected_accessory_index;
-		PmmUInt32 accessory_vscroll;
-		PmmUInt8 accessory_count;
-		std::vector<std::string> accessory_name;
-		std::vector<PmmAccessoryData> accessory_datas;
-		PmmUInt32 current_frame_position;
-		PmmUInt32 h_scroll_position;
-		PmmUInt32 h_scroll_scale;
-		PmmUInt32 bone_operation_kind;
-		PmmUInt8 looking_at;
-		PmmUInt8 is_repeat;
-		PmmUInt8 is_play_from_frame;
-		PmmUInt8 is_play_to_frame;
-		PmmUInt32 play_start_frame;
-		PmmUInt32 play_end_frame;
-		PmmUInt8 is_wave_enabled;
-		std::string wave_path;
-		PmmUInt32 avi_offset_x;
-		PmmUInt32 avi_offset_y;
-		PmmFloat avi_scale;
-		std::string avi_path;
-		PmmUInt32 is_show_avi;
-		PmmUInt32 background_image_offset_x;
-		PmmUInt32 background_image_offset_y;
-		PmmUInt32 background_image_scale;
-		std::string background_image_path;
-		PmmUInt8 is_show_background_image;
-		PmmUInt8 is_show_infomation;
-		PmmUInt8 is_show_axis;
-		PmmUInt8 is_show_groundshadow;
-		PmmFloat fps_limit;
-		PmmUInt32 screen_capture_mode;
-		PmmUInt32 accessory_number_render_after_model;
-		PmmFloat ground_shadow_brightness;
-		PmmUInt8 is_transparent_ground_shadow;
-		PmmUInt8 physics_mode;
-		PmmGravityCurrentData gravity_current_data;
-		PmmGravityKeyFrame gravity_init_frame;
-		std::vector<PmmGravityKeyFrame> gravity_key_frames;
-		PmmUInt8 is_show_selfshadow;
-		PmmFloat selfshadow_current_data;
-		PmmSelfShadowKeyFrame selfshadow_init_frame;
-		std::vector<PmmSelfShadowKeyFrame> selfshadow_keyframes;
-		PmmUInt32 edge_color_r;
-		PmmUInt32 edge_color_g;
-		PmmUInt32 edge_color_b;
-		PmmUInt8 is_black_background;
-		PmmInt32 camera_current_looking_at_model;
-		PmmInt32 camera_current_looking_at_bone;
-		PmmFloat unknown_array[16];
-		PmmUInt8 is_view_look_at_enabled;
-		PmmUInt8 unknown;
-		PmmUInt8 is_physics_ground_enabled;
-		PmmUInt32 frame_text_box;
-		PmmUInt8 selector_choice_selection_following;
-		std::vector<PmmCSelectorChoiceData> selector_choice_datas;
-	};
-
-	impl PmmInt2
-	{
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<(i32,i32)>
-		{
-			auto x = reader.read_i32::<LittleEndian>()?;
-			auto y = reader.read_i32::<LittleEndian>()?;
-			Ok((x, y))
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<(i32,i32)>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmInt2::load(reader)?);
-			}
-
-			Ok(array)
-		}
-
-		fn load_fixed_arrays(reader:&mut Cursor<&[u8]>, len:usize) -> Result<std::vector<(i32,i32)>>
-		{
-			auto array = Vec::with_capacity(len as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmInt2::load(reader)?);
-			}
-
-			Ok(array)
-		}
+		PmmInt2 v;
+		if (!reader.read((char*)& v.x, sizeof(v.x))) return std::nullopt;
+		if (!reader.read((char*)& v.y, sizeof(v.y))) return std::nullopt;
+		return v;
 	}
 
-	impl PmmVector2
+	std::optional<std::vector<PmmInt2>>
+	PmmInt2::load_arrays(istream& reader)
 	{
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<(f32,f32)>
-		{
-			auto x = reader.read_f32::<LittleEndian>()?;
-			auto y = reader.read_f32::<LittleEndian>()?;
-			Ok((x, y))
-		}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto array = std::vector<PmmInt2>(len);
+		for (auto& it : array)
+			it.load(reader);
+
+		return array;
 	}
 
-	impl PmmVector3
+	std::optional<std::vector<PmmInt2>>
+	PmmInt2::load_fixed_arrays(istream& reader, std::size_t len)
 	{
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<PmmVector3>
-		{
-			auto x = reader.read_f32::<LittleEndian>()?;
-			auto y = reader.read_f32::<LittleEndian>()?;
-			auto z = reader.read_f32::<LittleEndian>()?;
-			Ok((x, y, z))
-		}
+		auto array = std::vector<PmmInt2>(len);
+		for (auto& it : array)
+			it.load(reader);
+
+		return array;
 	}
 
-	impl PmmVector4
+	/*std::string
+	PmmName::sjis2utf8(const std::string& sjis)
 	{
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<PmmVector4>
+		std::size_t in_size = sjis.size();
+		std::size_t out_size = sjis.size() * 2;
+
+		auto inbuf = std::make_unique<char[]>(in_size + 1);
+		auto outbuf = std::make_unique<char[]>(out_size);
+		char* in = inbuf.get();
+		char* out = outbuf.get();
+
+		std::memset(in, 0, in_size + 1);
+		std::memcpy(in, sjis.c_str(), in_size);
+
+		iconv_t ic = nullptr;
+
+		try
 		{
-			auto x = reader.read_f32::<LittleEndian>()?;
-			auto y = reader.read_f32::<LittleEndian>()?;
-			auto z = reader.read_f32::<LittleEndian>()?;
-			auto w = reader.read_f32::<LittleEndian>()?;
-			Ok((x, y, z, w))
+			ic = iconv_open("GBK", "SJIS");
+			iconv(ic, &in, &in_size, &out, &out_size);
+			iconv_close(ic);
+
+			char* in = inbuf.get();
+			char* out = outbuf.get();
+
+			ic = iconv_open("UTF-8", "GBK");
+			iconv(ic, &out, &out_size, &in, &in_size);
+			iconv_close(ic);
 		}
+		catch (const std::exception&)
+		{
+			iconv_close(ic);
+		}
+
+		return std::string(inbuf.get());
+	}*/
+	std::string
+	PmmName::sjis2utf8(const std::string& sjis)
+	{
+		std::string utf8_string;
+
+		LPCCH pSJIS = (LPCCH)sjis.c_str();
+		int utf16size = ::MultiByteToWideChar(932, MB_ERR_INVALID_CHARS, pSJIS, -1, 0, 0);
+		if (utf16size != 0)
+		{
+			auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
+			if (::MultiByteToWideChar(932, 0, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
+			{
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
+				return cv.to_bytes(pUTF16.get());
+			}
+		}
+
+		return utf8_string;
 	}
 
-	impl PmmName
+	std::optional<std::string>
+	PmmName::load(istream& reader)
 	{
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<std::string>
-		{
-			auto bytes = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,bytes.capacity()
-			{
-				bytes.push(reader.read_u8()?);
-			}
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-			Ok(WINDOWS_31J.decode(&bytes, DecoderTrap::Ignore).unwrap())
-		}
+		auto bytes = std::string(len, 0);
+		reader.read(bytes.data(), bytes.size());
 
-		fn load_fixed_utf8(reader:&mut Cursor<&[u8]>, len:usize) -> Result<std::string>
-		{
-			auto bytes = Vec();
-			for _ in 0,len
-			{
-				auto ch = reader.read_u8()?;
-				if ch == 0 { break; }
-				bytes.push(ch);
-			}
-
-			if bytes.len() < len-1
-			{
-				reader.seek(SeekFrom::Current((len - bytes.len() - 1) as i64))?;
-			}
-
-			Ok(WINDOWS_31J.decode(&bytes, DecoderTrap::Ignore).unwrap())
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<std::string>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmName::load(reader)?);
-			}
-
-			Ok(array)
-		}
+		return sjis2utf8(bytes);
 	}
 
-	impl PmmUint8
+	std::optional<std::string>
+	PmmName::load_fixed_utf8(istream& reader, std::size_t len)
 	{
-		fn load_array_from_u8(reader:&mut Cursor<&[u8]>) -> Result<std::vector<u8>>
+		auto bytes = std::string();
+		for (std::size_t i = 0; i < len; i++)
 		{
-			auto array = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(reader.read_u8()?);
-			}
-
-			Ok(array)
+			char ch = 0;
+			reader.read(& ch, 1);
+			if (ch == 0)
+				break;
+			bytes += ch;
 		}
 
-		fn load_fixed_arrays(reader:&mut Cursor<&[u8]>, len:usize) -> Result<std::vector<u8>>
-		{
-			auto array = Vec::with_capacity(len);
-			for _ in 0,array.capacity()
-			{
-				array.push(reader.read_u8()?);
-			}
+		if (bytes.size() < len - 1)
+			reader.seekg(len - bytes.size() - 1, std::ios_base::cur);
 
-			Ok(array)
-		}
+		return sjis2utf8(bytes);
 	}
 
-	impl PmmInt32
+	std::optional<std::vector<std::string>>
+	PmmName::load_arrays(istream& reader)
 	{
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<i32>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(reader.read_i32::<LittleEndian>()?);
-			}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-			Ok(array)
-		}
+		auto array = std::vector<std::string>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i] = PmmName::load(reader).value();
+
+		return array;
 	}
 
-	impl PmmFloat
+	std::optional<std::vector<std::uint8_t>>
+	PmmUint8::load_array_from_u8(istream& reader)
 	{
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<f32>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(reader.read_f32::<LittleEndian>()?);
-			}
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-			Ok(array)
+		auto array = std::vector<std::uint8_t>(len);
+		for (std::size_t i = 0; i < len; i++)
+		{
+			std::uint8_t ch = 0;
+			reader.read((char*)& ch, sizeof(ch));
+			array[i] = ch;
 		}
+
+		return array;
 	}
 
-	impl PmmHeader
+	std::optional<std::vector<std::uint8_t>>
+	PmmUint8::load_fixed_arrays(istream& reader, std::size_t len)
 	{
-		fn new() -> Self
+		auto array = std::vector<std::uint8_t>(len);
+		for (std::size_t i = 0; i < len; i++)
 		{
-			Self
-			{
-				magic:std::string(),
-				reserve1:0,
-				reserve2:0,
-				reserve3:0,
-				view_width:0,
-				view_height:0,
-				frame_width:0,
-				edit_view_angle:0.0,
-				is_edit_camera_light_accessory :0,
-				is_open_camera_panel:0,
-				is_open_light_panel:0,
-				is_open_accessory_panel:0,
-				is_open_bone_panel:0,
-				is_open_morph_panel:0,
-				is_open_selfshadow_panel:0,
-				selected_model_index:0,
-			}
+			std::uint8_t ch = 0;
+			reader.read((char*)& ch, sizeof(ch));
+			array.push_back(ch);
 		}
 
-		fn valid(self) -> Result<Self>
-		{
-			if self.magic != "Polygon Movie maker 0002" { return Err(Error::LoaderError("Invalid magic in PMM Header".to_std::string())); }
-			if self.view_width == 0 { return Err(Error::LoaderError("Invalid width in PMM Header".to_std::string())); }
-			if self.view_height == 0 { return Err(Error::LoaderError("Invalid height in PMM Header".to_std::string())); }
-			if self.frame_width == 0 { return Err(Error::LoaderError("Invalid frame width in PMM Header".to_std::string())); }
-			if self.edit_view_angle <= 0.0 { return Err(Error::LoaderError("Invalid FOV in PMM Header".to_std::string())); }
-
-			Ok(self)
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmHeader();
-			this.magic = PmmName::load_fixed_utf8(reader, 24)?;
-			this.reserve1 = reader.read_u16::<LittleEndian>()?;
-			this.reserve2 = reader.read_u16::<LittleEndian>()?;
-			this.reserve3 = reader.read_u16::<LittleEndian>()?;
-			this.view_width = reader.read_u32::<LittleEndian>()?;
-			this.view_height = reader.read_u32::<LittleEndian>()?;
-			this.frame_width = reader.read_u32::<LittleEndian>()?;
-			this.edit_view_angle = reader.read_f32::<LittleEndian>()?;
-			this.is_edit_camera_light_accessory = reader.read_u8()?;
-			this.is_open_camera_panel = reader.read_u8()?;
-			this.is_open_light_panel = reader.read_u8()?;
-			this.is_open_accessory_panel = reader.read_u8()?;
-			this.is_open_bone_panel = reader.read_u8()?;
-			this.is_open_morph_panel = reader.read_u8()?;
-			this.is_open_selfshadow_panel = reader.read_u8()?;
-			this.selected_model_index = reader.read_u8()?;
-
-			this.valid()
-		}
+		return array;
 	}
 
-	impl PmmBoneFrame
+	std::optional<std::vector<std::int32_t>>
+	PmmInt32::load_arrays(istream& reader)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:0,
-				pre_index:-1,
-				next_index:-1,
-				interpolation_x:[0;4],
-				interpolation_y:[0;4],
-				interpolation_z:[0;4],
-				interpolation_rotation:[0;4],
-				translation:(0.0,0.0,0.0),
-				quaternion:(0.0,0.0,0.0,1.0),
-				is_selected:0,
-				is_physics_disabled:0,
-			}
-		}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmBoneFrame();
-			this.data_index = if is_init { -1 } else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			for i in 0,this.interpolation_x.len() { this.interpolation_x[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_y.len() { this.interpolation_y[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_z.len() { this.interpolation_z[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_rotation.len() { this.interpolation_rotation[i] = reader.read_u8()?; }
-			this.translation = PmmVector3::load(reader)?;
-			this.quaternion = PmmVector4::load(reader)?;
-			this.is_selected = reader.read_u8()?;
-			this.is_physics_disabled = reader.read_u8()?;
+		auto array = std::vector<std::int32_t>(len);
+		reader.read((char*)array.data(), len * sizeof(std::int32_t));
 
-			Ok(this)
-		}
-
-		fn load_fixed_arrays(reader:&mut Cursor<&[u8]>, len:usize, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(len as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmBoneFrame::load(reader, is_init)?);
-			}
-
-			Ok(array)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto len = reader.read_u32::<LittleEndian>()? as usize;
-			PmmBoneFrame::load_fixed_arrays(reader, len, is_init)
-		}
+		return array;
 	}
 
-	impl PmmMorphFrame
+	std::optional<std::vector<float>>
+	PmmFloat::load_arrays(istream& reader)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:0,
-				pre_index:-1,
-				next_index:-1,
-				value:0.0,
-				is_selected:0,
-			}
-		}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmMorphFrame();
-			this.data_index = if is_init { -1 } else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.value = reader.read_f32::<LittleEndian>()?;
-			this.is_selected = reader.read_u8()?;
+		auto array = std::vector<float>(len);
+		reader.read((char*)array.data(), len * sizeof(float));
 
-			Ok(this)
-		}
-
-		fn load_fixed_arrays(reader:&mut Cursor<&[u8]>, len:usize, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(len as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmMorphFrame::load(reader, is_init)?);
-			}
-
-			Ok(array)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto len = reader.read_u32::<LittleEndian>()? as usize;
-			PmmMorphFrame::load_fixed_arrays(reader, len, is_init)
-		}
+		return array;
 	}
 
-	impl PmmOpFrame
+	PmmHeader::PmmHeader()
+		: reserve1(0)
+		, reserve2(0)
+		, reserve3(0)
+		, view_width(0)
+		, view_height(0)
+		, frame_width(0)
+		, edit_view_angle(0.0)
+		, is_edit_camera_light_accessory(0)
+		, is_open_camera_panel(0)
+		, is_open_light_panel(0)
+		, is_open_accessory_panel(0)
+		, is_open_bone_panel(0)
+		, is_open_morph_panel(0)
+		, is_open_selfshadow_panel(0)
+		, selected_model_index(0)
+		, num_models(0)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:-1,
-				pre_index:-1,
-				next_index:-1,
-				is_display:0,
-				is_ik_enabled:Vec(),
-				op_data:Vec(),
-				is_selected:0
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>, ik_count:usize, op_count:usize, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmOpFrame();
-			this.data_index = if is_init { -1 } else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.is_display = reader.read_u8()?;
-			this.is_ik_enabled = PmmUint8::load_fixed_arrays(reader, ik_count)?;
-			this.op_data = PmmInt2::load_fixed_arrays(reader, op_count)?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, ik_count:usize, op_count:usize, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmOpFrame::load(reader, ik_count, op_count, is_init)?);
-			}
-
-			Ok(array)
-		}
 	}
 
-	impl PmmGravityCurrentData
+	std::optional<PmmHeader>
+	PmmHeader::load(istream& reader)
 	{
-		fn new() -> Self
+		PmmHeader data;
+		data.magic = PmmName::load_fixed_utf8(reader, 24).value();
+		reader.read((char*)& data.reserve1, sizeof(data.reserve1));
+		reader.read((char*)& data.reserve2, sizeof(data.reserve2));
+		reader.read((char*)& data.reserve3, sizeof(data.reserve3));
+		reader.read((char*)& data.view_width, sizeof(data.view_width));
+		reader.read((char*)& data.view_height, sizeof(data.view_height));
+		reader.read((char*)& data.frame_width, sizeof(data.frame_width));
+		reader.read((char*)& data.edit_view_angle, sizeof(data.edit_view_angle));
+		reader.read((char*)& data.is_edit_camera_light_accessory, sizeof(data.is_edit_camera_light_accessory));
+		reader.read((char*)& data.is_open_camera_panel, sizeof(data.is_open_camera_panel));
+		reader.read((char*)& data.is_open_light_panel, sizeof(data.is_open_light_panel));
+		reader.read((char*)& data.is_open_accessory_panel, sizeof(data.is_open_accessory_panel));
+		reader.read((char*)& data.is_open_bone_panel, sizeof(data.is_open_bone_panel));
+		reader.read((char*)& data.is_open_morph_panel, sizeof(data.is_open_morph_panel));
+		reader.read((char*)& data.is_open_selfshadow_panel, sizeof(data.is_open_selfshadow_panel));
+		if (data.magic == "Polygon Movie maker 0002")
 		{
-			Self
-			{
-				acceleration:0.0,
-				noize_amount:0,
-				direction:(0.0,0.0,0.0),
-				is_add_noize:0
-			}
+			reader.read((char*)& data.selected_model_index, sizeof(data.selected_model_index));
+			reader.read((char*)& data.num_models, sizeof(data.num_models));
 		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
+		else
 		{
-			auto this = PmmGravityCurrentData();
-			this.acceleration = reader.read_f32::<LittleEndian>()?;
-			this.noize_amount = reader.read_u32::<LittleEndian>()?;
-			this.direction = PmmVector3::load(reader)?;
-			this.is_add_noize = reader.read_u8()?;
-
-			Ok(this)
+			reader.read((char*)& data.num_models, sizeof(data.num_models));
+			reader.read((char*)& data.summary, sizeof(data.summary));
 		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmGravityCurrentData::load(reader)?);
-			}
-
-			Ok(array)
-		}
+		
+		if (data.magic != "Polygon Movie maker 0002") { return std::nullopt; }
+		if (data.view_width == 0) { return std::nullopt; }
+		if (data.view_height == 0) { return std::nullopt; }
+		if (data.frame_width == 0) { return std::nullopt; }
+		if (data.edit_view_angle <= 0.0) { return std::nullopt; }
+		return data;
 	}
 
-	impl PmmGravityKeyFrame
+	PmmKeyframe::PmmKeyframe()
+		: data_index(-1)
+		, frame_number(-1)
+		, pre_index(-1)
+		, next_index(-1)
+		, is_selected(0)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:-1,
-				pre_index:-1,
-				next_index:-1,
-				is_add_noize:0,
-				noize_amount:0,
-				acceleration:0.0,
-				direction:(0.0,0.0,0.0),
-				is_selected:0
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmGravityKeyFrame();
-			this.data_index = if is_init { -1} else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.is_add_noize = reader.read_u8()?;
-			this.noize_amount = reader.read_u32::<LittleEndian>()?;
-			this.acceleration = reader.read_f32::<LittleEndian>()?;
-			this.direction = PmmVector3::load(reader)?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmGravityKeyFrame::load(reader, is_init)?);
-			}
-
-			Ok(array)
-		}
 	}
 
-	impl PmmSelfShadowKeyFrame
+	std::optional<PmmKeyframe>
+	PmmKeyframe::load(istream& reader)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:-1,
-				pre_index:-1,
-				next_index:-1,
-				mode:0,
-				distance:0.0,
-				is_selected:0
-			}
-		}
+		auto data = PmmKeyframe();
+		reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmSelfShadowKeyFrame();
-			this.data_index = if is_init { -1} else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.mode = reader.read_u8()?;
-			this.distance = reader.read_f32::<LittleEndian>()?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto array = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,array.capacity()
-			{
-				array.push(PmmSelfShadowKeyFrame::load(reader, is_init)?);
-			}
-
-			Ok(array)
-		}
+		return data;
 	}
 
-	impl PmmBoneCurrentData
+	std::optional<std::vector<PmmKeyframe>>
+	PmmKeyframe::load_arrays(istream& reader)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				translation:(0.0,0.0,0.0),
-				quaternion:(0.0,0.0,0.0,0.0),
-				is_edit_un_commited:0,
-				is_physics_disabled:0,
-				is_row_selected:0,
-			}
-		}
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
 
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmBoneCurrentData();
-			this.translation = PmmVector3::load(reader)?;
-			this.quaternion = PmmVector4::load(reader)?;
-			this.is_edit_un_commited = reader.read_u8()?;
-			this.is_physics_disabled = reader.read_u8()?;
-			this.is_row_selected = reader.read_u8()?;
+		auto data = std::vector<PmmKeyframe>(len);
+		for (std::size_t i = 0; i < data.size(); i++)
+			data[i] = PmmKeyframe::load(reader).value();
 
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmBoneCurrentData::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		return data;
 	}
 
-	impl PmmOpCurrentData
+	PmmKeyframeBone::PmmKeyframeBone()
+		: data_index(-1)
+		, frame_number(0)
+		, pre_index(-1)
+		, next_index(-1)
+		, translation(PmmVector3(0.0, 0.0, 0.0))
+		, quaternion(PmmVector4(0.0, 0.0, 0.0, 1.0))
+		, is_selected(0)
+		, is_physics_disabled(0)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				keyframe_begin:-1,
-				keyframe_end:-1,
-				model_index:-1,
-				parent_bone_index:-1,
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmOpCurrentData();
-			this.keyframe_begin = reader.read_i32::<LittleEndian>()?;
-			this.keyframe_end = reader.read_i32::<LittleEndian>()?;
-			this.model_index = reader.read_i32::<LittleEndian>()?;
-			this.parent_bone_index = reader.read_i32::<LittleEndian>()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmOpCurrentData::load(reader)?);
-			}
-
-			Ok(model)
-		}
 	}
 
-	impl PmmModel
+	std::optional<PmmKeyframeBone>
+	PmmKeyframeBone::load(istream& reader, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				number:0,
-				name:std::string(),
-				name_en:std::string(),
-				path:std::string(),
-				keyframe_editor_toplevel_rows:0,
-				bone_name:Vec(),
-				morph_name:Vec(),
-				ik_index:Vec(),
-				op_index:Vec(),
-				draw_order:0,
-				edit_is_display:0,
-				edit_selected_bone:0,
-				skin_panel:[0;4],
-				is_frame_open:Vec(),
-				vscroll:0,
-				last_frame:0,
-				bone_init_frame:Vec(),
-				bone_key_frame:Vec(),
-				morph_init_frame:Vec(),
-				morph_key_frame:Vec(),
-				op_init_frame:PmmOpFrame(),
-				op_key_frames:Vec(),
-				bone_current_datas:Vec(),
-				morph_current_datas:Vec(),
-				is_current_ik_enabled_datas:Vec(),
-				op_current_data:Vec(),
-				is_add_blend:0,
-				edge_width:1.0,
-				is_selfshadow_enabled:1,
-				calc_order:1
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmModel();
-			this.number = reader.read_u8()?;
-			this.name = PmmName::load(reader)?;
-			this.name_en = PmmName::load(reader)?;
-			this.path = PmmName::load_fixed_utf8(reader, 256)?;
-			this.keyframe_editor_toplevel_rows = reader.read_u8()?;
-			this.bone_name = PmmName::load_arrays(reader)?;
-			this.morph_name = PmmName::load_arrays(reader)?;
-			this.ik_index = PmmInt32::load_arrays(reader)?;
-			this.op_index = PmmInt32::load_arrays(reader)?;
-			this.draw_order = reader.read_u8()?;
-			this.edit_is_display = reader.read_u8()?;
-			this.edit_selected_bone = reader.read_i32::<LittleEndian>()?;
-			this.skin_panel[0] = reader.read_i32::<LittleEndian>()?;
-			this.skin_panel[1] = reader.read_i32::<LittleEndian>()?;
-			this.skin_panel[2] = reader.read_i32::<LittleEndian>()?;
-			this.skin_panel[3] = reader.read_i32::<LittleEndian>()?;
-			this.is_frame_open = PmmUint8::load_array_from_u8(reader)?;
-			this.vscroll = reader.read_i32::<LittleEndian>()?;
-			this.last_frame = reader.read_i32::<LittleEndian>()?;
-			this.bone_init_frame = PmmBoneFrame::load_fixed_arrays(reader, this.bone_name.len(), true)?;
-			this.bone_key_frame = PmmBoneFrame::load_arrays(reader, false)?;
-			this.morph_init_frame = PmmMorphFrame::load_fixed_arrays(reader, this.morph_name.len(), true)?;
-			this.morph_key_frame = PmmMorphFrame::load_arrays(reader, false)?;
-			this.op_init_frame = PmmOpFrame::load(reader, this.ik_index.len(), this.op_index.len(), true)?;
-			this.op_key_frames = PmmOpFrame::load_arrays(reader, this.ik_index.len(), this.op_index.len(), false)?;
-
-			for _ in 0,this.bone_name.len()
-			{
-				this.bone_current_datas.push(PmmBoneCurrentData::load(reader)?);
-			}
-
-			for _ in 0,this.morph_name.len()
-			{
-				this.morph_current_datas.push(reader.read_f32::<LittleEndian>()?);
-			}
-
-			for _ in 0,this.ik_index.len()
-			{
-				this.is_current_ik_enabled_datas.push(reader.read_u8()?);
-			}
-
-			for _ in 0,this.op_index.len()
-			{
-				this.op_current_data.push(PmmOpCurrentData::load(reader)?);
-			}
-
-			this.is_add_blend = reader.read_u8()?;
-			this.edge_width = reader.read_f32::<LittleEndian>()?;
-			this.is_selfshadow_enabled = reader.read_u8()?;
-			this.calc_order = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmModel::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		PmmKeyframeBone data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.interpolation_x, sizeof(data.interpolation_x));
+		reader.read((char*)& data.interpolation_y, sizeof(data.interpolation_y));
+		reader.read((char*)& data.interpolation_z, sizeof(data.interpolation_z));
+		reader.read((char*)& data.interpolation_rotation, sizeof(data.interpolation_rotation));
+		reader.read((char*)& data.translation, sizeof(data.translation));
+		reader.read((char*)& data.quaternion, sizeof(data.quaternion));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+		reader.read((char*)& data.is_physics_disabled, sizeof(data.is_physics_disabled));
+		return data;
 	}
 
-	impl PmmCameraFrame
+	std::optional<std::vector<PmmKeyframeBone>>
+	PmmKeyframeBone::load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:0,
-				frame_number:0,
-				pre_index:0,
-				next_index:0,
-				distance:0.0,
-				eye_position:(0.0,0.0,0.0),
-				rotation:(0.0,0.0,0.0),
-				looking_model_index:0,
-				looking_bone_index:0,
-				interpolation_x:[0; 4],
-				interpolation_y:[0; 4],
-				interpolation_z:[0; 4],
-				interpolation_rotation:[0; 4],
-				interpolation_distance:[0; 4],
-				interpolation_angleview:[0; 4],
-				is_parse:0,
-				angle_view:0,
-				is_selected:0
-			}
-		}
+		auto array = std::vector<PmmKeyframeBone>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i].load(reader, is_init);
 
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmCameraFrame();
-			this.data_index = if is_init { -1 } else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.distance = reader.read_f32::<LittleEndian>()?;
-			this.eye_position = PmmVector3::load(reader)?;
-			this.rotation = PmmVector3::load(reader)?;
-			this.looking_model_index = reader.read_i32::<LittleEndian>()?;
-			this.looking_bone_index = reader.read_i32::<LittleEndian>()?;
-			for i in 0,this.interpolation_x.len() { this.interpolation_x[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_y.len() { this.interpolation_y[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_z.len() { this.interpolation_z[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_rotation.len() { this.interpolation_rotation[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_distance.len() { this.interpolation_distance[i] = reader.read_u8()?; }
-			for i in 0,this.interpolation_angleview.len() { this.interpolation_angleview[i] = reader.read_u8()?; }
-			this.is_parse = reader.read_u8()?;
-			this.angle_view = reader.read_u32::<LittleEndian>()?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmCameraFrame::load(reader, is_init)?);
-			}
-
-			Ok(model)
-		}
+		return array;
 	}
 
-	impl PmmCameraCurrentData
+	std::optional<std::vector<PmmKeyframeBone>>
+	PmmKeyframeBone::load_arrays(istream& reader, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				eye_position:(0.0,0.0,0.0),
-				target_position:(0.0,0.0,0.0),
-				rotation:(0.0,0.0,0.0),
-				isorthro:0,
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmCameraCurrentData();
-			this.eye_position = PmmVector3::load(reader)?;
-			this.target_position = PmmVector3::load(reader)?;
-			this.rotation = PmmVector3::load(reader)?;
-			this.isorthro = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmCameraCurrentData::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+		return PmmKeyframeBone::load_fixed_arrays(reader, len, is_init);
 	}
 
-	impl PmmLightFrame
+	PmmKeyframeMorph::PmmKeyframeMorph()
+		: data_index(1)
+		, frame_number(0)
+		, pre_index(-1)
+		, next_index(-1)
+		, value(0.0)
+		, is_selected(0)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:-1,
-				pre_index:-1,
-				next_index:-1,
-				rgb:(0.0,0.0,0.0),
-				xyz:(0.0,0.0,0.0),
-				is_selected:0,
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<Self>
-		{
-			auto this = PmmLightFrame();
-			this.data_index = if is_init { -1 } else { reader.read_i32::<LittleEndian>()? };
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.rgb = PmmVector3::load(reader)?;
-			this.xyz = PmmVector3::load(reader)?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>, is_init:bool) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u32::<LittleEndian>()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmLightFrame::load(reader, is_init)?);
-			}
-
-			Ok(model)
-		}
 	}
 
-	impl PmmLightCurrentData
+	bool 
+	PmmKeyframeMorph::load(istream& reader, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				rgb:(0.0,0.0,0.0),
-				xyz:(0.0,0.0,0.0),
-				is_selected:0,
-			}
-		}
+		if (!is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
+		reader.read((char*)& this->frame_number, sizeof(this->frame_number));
+		reader.read((char*)& this->pre_index, sizeof(this->pre_index));
+		reader.read((char*)& this->next_index, sizeof(this->next_index));
+		reader.read((char*)& this->value, sizeof(this->value));
+		reader.read((char*)& this->is_selected, sizeof(this->is_selected));
 
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmLightCurrentData();
-			this.rgb = PmmVector3::load(reader)?;
-			this.xyz = PmmVector3::load(reader)?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmLightCurrentData::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		return true;
 	}
 
-	impl PmmKeyFrame
+	std::optional<std::vector<PmmKeyframeMorph>>
+	PmmKeyframeMorph::load_fixed_arrays(istream& reader, std::size_t len, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				data_index:-1,
-				frame_number:-1,
-				pre_index:-1,
-				next_index:-1,
-				is_selected:0
-			}
-		}
+		auto array = std::vector<PmmKeyframeMorph>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i].load(reader, is_init);
 
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmKeyFrame();
-			this.data_index = reader.read_i32::<LittleEndian>()?;
-			this.frame_number = reader.read_i32::<LittleEndian>()?;
-			this.pre_index = reader.read_i32::<LittleEndian>()?;
-			this.next_index = reader.read_i32::<LittleEndian>()?;
-			this.is_selected = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmKeyFrame::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		return array;
 	}
 
-	impl PmmDataBody
+	std::optional<std::vector<PmmKeyframeMorph>>
+	PmmKeyframeMorph::load_arrays(istream& reader, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				transparency:0,
-				is_visible:0,
-				parent_model_index:0,
-				parent_bone_index:0,
-				translation:(0.0,0.0,0.0),
-				rotation:(0.0,0.0,0.0),
-				scale:0.0,
-				is_shadow_enabled:0,
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmDataBody();
-			this.transparency = reader.read_u8()?;
-			this.is_visible = 0;
-			this.parent_model_index = reader.read_i32::<LittleEndian>()?;
-			this.parent_bone_index = reader.read_i32::<LittleEndian>()?;
-			this.translation = PmmVector3::load(reader)?;
-			this.rotation = PmmVector3::load(reader)?;
-			this.scale = reader.read_f32::<LittleEndian>()?;
-			this.is_shadow_enabled = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmDataBody::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+		return PmmKeyframeMorph::load_fixed_arrays(reader, len, is_init);
 	}
 
-	impl PmmAccessoryData
+	PmmKeyframeOp::PmmKeyframeOp() noexcept
+		: data_index(-1)
+		, frame_number(-1)
+		, pre_index(-1)
+		, next_index(-1)
+		, is_display(0)
+		, is_selected(0)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				index:0,
-				name:std::string(),
-				path:std::string(),
-				draw_order:0,
-				init_frame:PmmKeyFrame(),
-				key_frames:Vec(),
-				current_data:PmmDataBody(),
-				is_add_blend:0
-			}
-		}
-
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmAccessoryData();
-			this.index = reader.read_u8()?;
-			this.name = PmmName::load_fixed_utf8(reader, 100)?;
-			this.path = PmmName::load_fixed_utf8(reader, 256)?;
-			this.draw_order = reader.read_u8()?;
-			this.init_frame = PmmKeyFrame::load(reader)?;
-			this.key_frames = PmmKeyFrame::load_arrays(reader)?;
-			this.current_data = PmmDataBody::load(reader)?;
-			this.is_add_blend = reader.read_u8()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmAccessoryData::load(reader)?);
-			}
-
-			Ok(model)
-		}
 	}
 
-	impl PmmCSelectorChoiceData
+	std::optional<PmmKeyframeOp>
+	PmmKeyframeOp::load(istream& reader, std::size_t ik_count, std::size_t op_count, bool is_init)
 	{
-		fn new() -> Self
-		{
-			Self
-			{
-				mode_index:0,
-				selector_choice:0,
-			}
-		}
+		PmmKeyframeOp data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.is_display, sizeof(data.is_display));
+		data.is_ik_enabled = PmmUint8::load_fixed_arrays(reader, ik_count).value();
+		data.op_data = PmmInt2::load_fixed_arrays(reader, op_count).value();
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
-		fn load(reader:&mut Cursor<&[u8]>) -> Result<Self>
-		{
-			auto this = PmmCSelectorChoiceData();
-			this.mode_index = reader.read_u8()?;
-			this.selector_choice = reader.read_u32::<LittleEndian>()?;
-
-			Ok(this)
-		}
-
-		fn load_arrays(reader:&mut Cursor<&[u8]>) -> Result<std::vector<Self>>
-		{
-			auto model = Vec::with_capacity(reader.read_u8()? as usize);
-			for _ in 0,model.capacity()
-			{
-				model.push(PmmCSelectorChoiceData::load(reader)?);
-			}
-
-			Ok(model)
-		}
+		return data;
 	}
 
-	impl PMMFile
+	std::optional<std::vector<PmmKeyframeOp>>
+	PmmKeyframeOp::load_arrays(istream& reader, std::size_t ik_count, std::size_t op_count, bool is_init)
 	{
-		fn new() -> Self
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto array = std::vector<PmmKeyframeOp>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i] = PmmKeyframeOp::load(reader, ik_count, op_count, is_init).value();
+
+		return array;
+	}
+
+	PmmKeyframeCamera::PmmKeyframeCamera()
+		: data_index(-1)
+		, frame(0)
+		, pre_index(0)
+		, next_index(0)
+		, distance(0.0)
+		, eye(PmmVector3(0.0, 0.0, 0.0))
+		, rotation(PmmVector3(0.0, 0.0, 0.0))
+		, looking_model_index(0)
+		, looking_bone_index(0)
+		, interpolation_x()
+		, interpolation_y()
+		, interpolation_z()
+		, interpolation_rotation()
+		, interpolation_distance()
+		, interpolation_angleview()
+		, is_parse(0)
+		, fov(0)
+		, is_selected(0)
+	{
+	}
+
+	std::optional<PmmKeyframeCamera>
+	PmmKeyframeCamera::load(istream& reader, bool is_init)
+	{
+		PmmKeyframeCamera data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame, sizeof(data.frame));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.distance, sizeof(data.distance));
+		reader.read((char*)& data.eye, sizeof(data.eye));
+		reader.read((char*)& data.rotation, sizeof(data.rotation));
+		reader.read((char*)& data.looking_model_index, sizeof(data.looking_model_index));
+		reader.read((char*)& data.looking_bone_index, sizeof(data.looking_bone_index));
+		reader.read((char*)& data.interpolation_x, sizeof(data.interpolation_x));
+		reader.read((char*)& data.interpolation_y, sizeof(data.interpolation_y));
+		reader.read((char*)& data.interpolation_z, sizeof(data.interpolation_z));
+		reader.read((char*)& data.interpolation_rotation, sizeof(data.interpolation_rotation));
+		reader.read((char*)& data.interpolation_distance, sizeof(data.interpolation_distance));
+		reader.read((char*)& data.interpolation_angleview, sizeof(data.interpolation_angleview));
+		reader.read((char*)& data.is_parse, sizeof(data.is_parse));
+		reader.read((char*)& data.fov, sizeof(data.fov));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmKeyframeCamera>>
+	PmmKeyframeCamera::load_arrays(istream& reader, bool is_init)
+	{
+		auto model = std::vector<PmmKeyframeCamera>();
+		model.push_back(PmmKeyframeCamera::load(reader, true).value());
+
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+		
+		for (std::size_t i = 0; i < len; i++)
+			model.push_back(PmmKeyframeCamera::load(reader, is_init).value());
+
+		return model;
+	}
+
+	PmmKeyframeLight::PmmKeyframeLight()
+		: data_index(-1)
+		, frame_number(-1)
+		, pre_index(-1)
+		, next_index(-1)
+		, rgb(PmmVector3(0.0, 0.0, 0.0))
+		, xyz(PmmVector3(0.0, 0.0, 0.0))
+		, is_selected(0)
+	{
+	}
+
+	std::optional<PmmKeyframeLight>
+	PmmKeyframeLight::load(istream& reader, bool is_init)
+	{
+		PmmKeyframeLight data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.rgb, sizeof(data.rgb));
+		reader.read((char*)& data.xyz, sizeof(data.xyz));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmKeyframeLight>>
+	PmmKeyframeLight::load_arrays(istream& reader, bool is_init)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmKeyframeLight>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmKeyframeLight::load(reader, is_init).value();
+
+		return model;
+	}
+
+	PmmKeyFrameGravity::PmmKeyFrameGravity()
+		: data_index(-1)
+		, frame_number(-1)
+		, pre_index(-1)
+		, next_index(-1)
+		, is_add_noize(0)
+		, noize_amount(0)
+		, acceleration(0.0)
+		, direction(PmmVector3(0, 1, 0))
+		, is_selected(0)
+	{
+	}
+
+	std::optional<PmmKeyFrameGravity>
+	PmmKeyFrameGravity::load(istream& reader, bool is_init)
+	{
+		PmmKeyFrameGravity data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.is_add_noize, sizeof(data.is_add_noize));
+		reader.read((char*)& data.noize_amount, sizeof(data.noize_amount));
+		reader.read((char*)& data.acceleration, sizeof(data.acceleration));
+		reader.read((char*)& data.direction, sizeof(data.direction));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmKeyFrameGravity>>
+	PmmKeyFrameGravity::load_arrays(istream& reader, bool is_init)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto array = std::vector<PmmKeyFrameGravity>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i] = PmmKeyFrameGravity::load(reader, is_init).value();
+
+		return array;
+	}
+
+	PmmKeyFrameSelfShadow::PmmKeyFrameSelfShadow()
+		: data_index(-1)
+		, frame_number(-1)
+		, pre_index(-1)
+		, next_index(-1)
+		, mode(0)
+		, distance(0.0)
+		, is_selected(0)
+	{
+	}
+
+	std::optional<PmmKeyFrameSelfShadow>
+	PmmKeyFrameSelfShadow::load(istream& reader, bool is_init)
+	{
+		PmmKeyFrameSelfShadow data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.mode, sizeof(data.mode));
+		reader.read((char*)& data.distance, sizeof(data.distance));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmKeyFrameSelfShadow>>
+	PmmKeyFrameSelfShadow::load_arrays(istream& reader, bool is_init)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto array = std::vector<PmmKeyFrameSelfShadow>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array.push_back(PmmKeyFrameSelfShadow::load(reader, is_init).value());
+
+		return array;
+	}
+
+	PmmBone::PmmBone()
+		: translation(PmmVector3(0.0, 0.0, 0.0))
+		, quaternion(PmmVector4(0.0, 0.0, 0.0, 0.0))
+		, is_edit_un_commited(0)
+		, is_physics_disabled(0)
+		, is_row_selected(0)
+	{
+	}
+
+	std::optional<PmmBone>
+	PmmBone::load(istream& reader)
+	{
+		PmmBone data;
+		reader.read((char*)& data.translation, sizeof(data.translation));
+		reader.read((char*)& data.quaternion, sizeof(data.quaternion));
+		reader.read((char*)& data.is_edit_un_commited, sizeof(data.is_edit_un_commited));
+		reader.read((char*)& data.is_physics_disabled, sizeof(data.is_physics_disabled));
+		reader.read((char*)& data.is_row_selected, sizeof(data.is_row_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmBone>>
+	PmmBone::load_arrays(istream& reader)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmBone>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
 		{
-			Self
-			{
-				header:PmmHeader(),
-				model:Vec(),
-				camera_init_frame:PmmCameraFrame(),
-				camera_key_frames:Vec(),
-				camera_current_data:PmmCameraCurrentData(),
-				light_init_frame:PmmLightFrame(),
-				light_key_frames:Vec(),
-				light_current_data:PmmLightCurrentData(),
-				selected_accessory_index:0,
-				accessory_vscroll:0,
-				accessory_count:0,
-				accessory_name:Vec(),
-				accessory_datas:Vec(),
-				current_frame_position:0,
-				h_scroll_position:0,
-				h_scroll_scale:0,
-				bone_operation_kind:0,
-				looking_at:0,
-				is_repeat:0,
-				is_play_from_frame:0,
-				is_play_to_frame:0,
-				play_start_frame:0,
-				play_end_frame:0,
-				is_wave_enabled:0,
-				wave_path:std::string(),
-				avi_offset_x: 0,
-				avi_offset_y: 0,
-				avi_scale: 0.0,
-				avi_path: std::string(),
-				is_show_avi: 0,
-				background_image_offset_x: 0,
-				background_image_offset_y: 0,
-				background_image_scale: 0,
-				background_image_path: std::string(),
-				is_show_background_image: 0,
-				is_show_infomation: 0,
-				is_show_axis: 0,
-				is_show_groundshadow: 0,
-				fps_limit: 0.0,
-				screen_capture_mode: 0,
-				accessory_number_render_after_model: 0,
-				ground_shadow_brightness: 0.0,
-				is_transparent_ground_shadow: 0,
-				physics_mode: 0,
-				gravity_current_data:PmmGravityCurrentData(),
-				gravity_init_frame:PmmGravityKeyFrame(),
-				gravity_key_frames:Vec(),
-				is_show_selfshadow:0,
-				selfshadow_current_data:0.0,
-				selfshadow_init_frame:PmmSelfShadowKeyFrame(),
-				selfshadow_keyframes:Vec(),
-				edge_color_r:0,
-				edge_color_g:0,
-				edge_color_b:0,
-				is_black_background:0,
-				camera_current_looking_at_model:0,
-				camera_current_looking_at_bone:0,
-				unknown_array:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-				is_view_look_at_enabled:0,
-				unknown:0,
-				is_physics_ground_enabled:0,
-				frame_text_box:0,
-				selector_choice_selection_following:0,
-				selector_choice_datas:Vec(),
-			}
+			model.push_back(PmmBone::load(reader).value());
 		}
 
-		fn load(buf:&[u8]) -> Result<Self>
+		return model;
+	}
+
+	PmmOp::PmmOp()
+		: keyframe_begin(1)
+		, keyframe_end(-1)
+		, model_index(-1)
+		, parent_bone_index(-1)
+	{
+
+	}
+
+	std::optional<PmmOp>
+	PmmOp::load(istream& reader)
+	{
+		PmmOp data;
+		reader.read((char*)& data.keyframe_begin, sizeof(data.keyframe_begin));
+		reader.read((char*)& data.keyframe_end, sizeof(data.keyframe_end));
+		reader.read((char*)& data.model_index, sizeof(data.model_index));
+		reader.read((char*)& data.parent_bone_index, sizeof(data.parent_bone_index));
+		return data;
+	}
+
+	std::optional<std::vector<PmmOp>>
+	PmmOp::load_arrays(istream& reader)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmOp>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
 		{
-			auto reader = Cursor(buf);
+			model.push_back(PmmOp::load(reader).value());
+		}
+
+		return model;
+	}
+
+	PmmModel::PmmModel()
+		: number(0)
+		, keyframe_editor_toplevel_rows(0)
+		, draw_order(0)
+		, edit_is_display(0)
+		, edit_selected_bone(0)
+		, skin_panel()
+		, vscroll(0)
+		, last_frame(0)
+		, is_add_blend(0)
+		, edge_width(1.0)
+		, is_selfshadow_enabled(1)
+		, calc_order(0)
+	{
+	}
+
+	std::optional<PmmModel>
+	PmmModel::load(istream& reader)
+	{
+		PmmModel data;
+		reader.read((char*)& data.number, sizeof(data.number));
+		data.name = PmmName::load(reader).value();
+		data.name_en = PmmName::load(reader).value();
+		data.path = PmmName::load_fixed_utf8(reader, 256).value();
+		reader.read((char*)& data.keyframe_editor_toplevel_rows, sizeof(data.keyframe_editor_toplevel_rows));
+		data.bone_name = PmmName::load_arrays(reader).value();
+		data.morph_name = PmmName::load_arrays(reader).value();
+		data.ik_index = PmmInt32::load_arrays(reader).value();
+		data.op_index = PmmInt32::load_arrays(reader).value();
+		reader.read((char*)& data.draw_order, sizeof(data.draw_order));
+		reader.read((char*)& data.edit_is_display, sizeof(data.edit_is_display));
+		reader.read((char*)& data.edit_selected_bone, sizeof(data.edit_selected_bone));
+		reader.read((char*)& data.skin_panel, sizeof(data.skin_panel));
+		data.is_frame_open = PmmUint8::load_array_from_u8(reader).value();
+		reader.read((char*)& data.vscroll, sizeof(data.vscroll));
+		reader.read((char*)& data.last_frame, sizeof(data.last_frame));
+		data.bone_init_frame = PmmKeyframeBone::load_fixed_arrays(reader, data.bone_name.size(), true).value();
+		data.bone_key_frame = PmmKeyframeBone::load_arrays(reader, false).value();
+		data.morph_init_frame = PmmKeyframeMorph::load_fixed_arrays(reader, data.morph_name.size(), true).value();
+		data.morph_key_frame = PmmKeyframeMorph::load_arrays(reader, false).value();
+		data.op_init_frame = PmmKeyframeOp::load(reader, data.ik_index.size(), data.op_index.size(), true).value();
+		data.op_key_frames = PmmKeyframeOp::load_arrays(reader, data.ik_index.size(), data.op_index.size(), false).value();
+
+		for (std::size_t i = 0; i < data.bone_name.size(); i++)
+		{
+			data.bone_current_datas.push_back(PmmBone::load(reader).value());
+		}
+
+		for (std::size_t i = 0; i < data.morph_name.size(); i++)
+		{
+			float ch = 0.0;
+			reader.read((char*)& ch, sizeof(ch));
+			data.morph_current_datas.push_back(ch);
+		}
+
+		for (std::size_t i = 0; i < data.ik_index.size(); i++)
+		{
+			char ch = 0;
+			reader.read(&ch, sizeof(ch));
+			data.is_current_ik_enabled_datas.push_back(ch);
+		}
+
+		for (std::size_t i = 0; i < data.op_index.size(); i++)
+		{
+			data.op_current_data.push_back(PmmOp::load(reader).value());
+		}
+
+		reader.read((char*)& data.is_add_blend, sizeof(data.is_add_blend));
+		reader.read((char*)& data.edge_width, sizeof(data.edge_width));
+		reader.read((char*)& data.is_selfshadow_enabled, sizeof(data.is_selfshadow_enabled));
+		reader.read((char*)& data.calc_order, sizeof(data.calc_order));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmModel>>
+	PmmModel::load_arrays(istream& reader, std::size_t len)
+	{
+		auto models = std::vector<PmmModel>(len);
+		for (auto& it : models)
+			it = PmmModel::load(reader).value();
+
+		return models;
+	}
+
+	PmmCamera::PmmCamera()
+		: eye(PmmVector3(0.0, 0.0, 0.0))
+		, target(PmmVector3(0.0, 0.0, 0.0))
+		, rotation(PmmVector3(0.0, 0.0, 0.0))
+		, isorthro(0)
+	{
+	}
+
+	std::optional<PmmCamera>
+	PmmCamera::load(istream& reader)
+	{
+		PmmCamera data;
+		reader.read((char*)& data.eye, sizeof(data.eye));
+		reader.read((char*)& data.target, sizeof(data.target));
+		reader.read((char*)& data.rotation, sizeof(data.rotation));
+		reader.read((char*)& data.isorthro, sizeof(data.isorthro));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmCamera>>
+	PmmCamera::load_arrays(istream& reader)
+	{
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmCamera>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmCamera::load(reader).value();
+
+		return model;
+	}
+
+	PmmLight::PmmLight()
+		: rgb(PmmVector3(0.0, 0.0, 0.0))
+		, xyz(PmmVector3(0.0, 0.0, 0.0))
+		, is_selected(0)
+	{
+	}
+
+	std::optional<PmmLight>
+	PmmLight::load(istream& reader)
+	{
+		auto data = PmmLight();
+		reader.read((char*)& data.rgb, sizeof(data.rgb));
+		reader.read((char*)& data.xyz, sizeof(data.xyz));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmLight>>
+	PmmLight::load_arrays(istream& reader)
+	{
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmLight>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmLight::load(reader).value();
+
+		return model;
+	}
+
+	PmmDataBody::PmmDataBody()
+		: transparency(0)
+		, is_visible(0)
+		, parent_model_index(0)
+		, parent_bone_index(0)
+		, translation(PmmVector3(0.0, 0.0, 0.0))
+		, rotation(PmmVector3(0.0, 0.0, 0.0))
+		, scale(0.0)
+		, is_shadow_enabled(0)
+	{
+	}
+
+	std::optional<PmmDataBody> 
+	PmmDataBody::load(istream& reader)
+	{
+		auto data = PmmDataBody();
+		reader.read((char*)& data.transparency, sizeof(data.transparency));
+		reader.read((char*)& data.parent_model_index, sizeof(data.parent_model_index));
+		reader.read((char*)& data.parent_bone_index, sizeof(data.parent_bone_index));
+		reader.read((char*)& data.translation, sizeof(data.translation));
+		reader.read((char*)& data.rotation, sizeof(data.rotation));
+		reader.read((char*)& data.scale, sizeof(data.scale));
+		reader.read((char*)& data.is_shadow_enabled, sizeof(data.is_shadow_enabled));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmDataBody>>
+	PmmDataBody::load_arrays(istream& reader)
+	{
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmDataBody>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmDataBody::load(reader).value();
+
+		return model;
+	}
+
+	PmmAccessoryData::PmmAccessoryData()
+		: index(0)
+		, draw_order(0)
+		, is_add_blend(0)
+	{
+	}
+
+	std::optional<PmmAccessoryData>
+	PmmAccessoryData::load(istream& reader)
+	{
+		PmmAccessoryData data;
+		reader.read((char*)& data.index, sizeof(data.index));
+		data.name = PmmName::load_fixed_utf8(reader, 100).value();
+		data.path = PmmName::load_fixed_utf8(reader, 256).value();
+		reader.read((char*)& data.draw_order, sizeof(data.draw_order));
+		data.init_frame = PmmKeyframe::load(reader).value();
+		data.key_frames = PmmKeyframe::load_arrays(reader).value();
+		data.current_data = PmmDataBody::load(reader).value();
+		reader.read((char*)& data.is_add_blend, sizeof(data.is_add_blend));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmAccessoryData>>
+	PmmAccessoryData::load_arrays(istream& reader)
+	{
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmAccessoryData>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmAccessoryData::load(reader).value();
+
+		return model;
+	}
+
+	PmmGravity::PmmGravity()
+		: acceleration(0.0)
+		, noize_amount(0)
+		, direction(PmmVector3(0.0, 0.0, 0.0))
+		, is_add_noize(0)
+	{
+	}
+
+	std::optional<PmmGravity> 
+	PmmGravity::load(istream& reader)
+	{
+		PmmGravity data;
+		reader.read((char*)& data.acceleration, sizeof(data.acceleration));
+		reader.read((char*)& data.noize_amount, sizeof(data.noize_amount));
+		reader.read((char*)& data.direction, sizeof(data.direction));
+		reader.read((char*)& data.is_add_noize, sizeof(data.is_add_noize));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmGravity>> 
+	PmmGravity::load_arrays(istream& reader)
+	{
+		std::uint32_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto array = std::vector<PmmGravity>(len);
+		for (std::size_t i = 0; i < len; i++)
+			array[i] = PmmGravity::load(reader).value();
+
+		return array;
+	}
+
+	PmmCSelectorChoice::PmmCSelectorChoice()
+		: mode_index(0)
+		, selector_choice(0)
+	{
+	}
+
+	std::optional<PmmCSelectorChoice>
+	PmmCSelectorChoice::load(istream& reader)
+	{
+		PmmCSelectorChoice data;
+		reader.read((char*)& data.mode_index, sizeof(data.mode_index));
+		reader.read((char*)& data.selector_choice, sizeof(data.selector_choice));
+
+		return data;
+	}
+
+	std::optional<std::vector<PmmCSelectorChoice>>
+	PmmCSelectorChoice::load_arrays(istream& reader)
+	{
+		std::uint8_t len = 0;
+		reader.read((char*)& len, sizeof(len));
+
+		auto model = std::vector<PmmCSelectorChoice>(len);
+		for (std::size_t i = 0; i < model.size(); i++)
+			model[i] = PmmCSelectorChoice::load(reader).value();
+
+		return model;
+	}
+
+	PMMFile::PMMFile() noexcept
+		: selected_accessory_index(0)
+		, accessory_vscroll(0)
+		, accessory_count(0)
+		, current_frame_position(0)
+		, h_scroll_position(0)
+		, h_scroll_scale(0)
+		, bone_operation_kind(0)
+		, looking_at(0)
+		, is_repeat(0)
+		, is_play_from_frame(0)
+		, is_play_to_frame(0)
+		, play_start_frame(0)
+		, play_end_frame(0)
+		, is_wave_enabled(0)
+		, avi_offset_x(0)
+		, avi_offset_y(0)
+		, avi_scale(0.0)
+		, is_show_avi(0)
+		, background_image_offset_x(0)
+		, background_image_offset_y(0)
+		, background_image_scale(0)
+		, is_show_background_image(0)
+		, is_show_infomation(0)
+		, is_show_axis(0)
+		, is_show_groundshadow(0)
+		, fps_limit(0.0)
+		, screen_capture_mode(0)
+		, accessory_number_render_after_model(0)
+		, ground_shadow_brightness(0.0)
+		, is_transparent_ground_shadow(0)
+		, physics_mode(0)
+		, is_show_selfshadow(0)
+		, selfshadow_current_data(0.0)
+		, edge_color_r(0)
+		, edge_color_g(0)
+		, edge_color_b(0)
+		, is_black_background(0)
+		, camera_current_looking_at_model(0)
+		, camera_current_looking_at_bone(0)
+		, is_view_look_at_enabled(0)
+		, unknown(0)
+		, is_physics_ground_enabled(0)
+		, frame_text_box(0)
+		, selector_choice_selection_following(0)
+	{
+		std::memset(&unknown_array, 0, sizeof(unknown_array));
+	}
+
+	std::optional<PMMFile>
+	PMMFile::load(istream& reader)
+	{
+		try
+		{
 			auto pmm = PMMFile();
-			pmm.header = PmmHeader::load(&mut reader)?;
-			pmm.model = PmmModel::load_arrays(&mut reader)?;
-			pmm.camera_init_frame = PmmCameraFrame::load(&mut reader, true)?;
-			pmm.camera_key_frames = PmmCameraFrame::load_arrays(&mut reader, false)?;
-			pmm.camera_current_data = PmmCameraCurrentData::load(&mut reader)?;
-			pmm.light_init_frame = PmmLightFrame::load(&mut reader, true)?;
-			pmm.light_key_frames = PmmLightFrame::load_arrays(&mut reader, false)?;
-			pmm.light_current_data = PmmLightCurrentData::load(&mut reader)?;
-			pmm.selected_accessory_index = reader.read_u8()?;
-			pmm.accessory_vscroll = reader.read_u32::<LittleEndian>()?;
-			pmm.accessory_count = reader.read_u8()?;
+			pmm.header = PmmHeader::load(reader).value();
+			pmm.model = PmmModel::load_arrays(reader, pmm.header.num_models).value();
+			pmm.camera_keyframes = PmmKeyframeCamera::load_arrays(reader, false).value();
+			pmm.camera = PmmCamera::load(reader).value();
+			pmm.main_light_frame = PmmKeyframeLight::load(reader, true).value();
+			pmm.main_light_frames = PmmKeyframeLight::load_arrays(reader, false).value();
+			pmm.main_light = PmmLight::load(reader).value();
+			reader.read((char*)& pmm.selected_accessory_index, sizeof(pmm.selected_accessory_index));
+			reader.read((char*)& pmm.accessory_vscroll, sizeof(pmm.accessory_vscroll));
+			reader.read((char*)& pmm.accessory_count, sizeof(pmm.accessory_count));
 
-			for _ in 0,pmm.accessory_count
-			{
-				pmm.accessory_name.push(PmmName::load_fixed_utf8(&mut reader, 100)?);
-			}
+			for (std::size_t i = 0; i < pmm.accessory_count; i++)
+				pmm.accessory_name.push_back(PmmName::load_fixed_utf8(reader, 100).value());
 
-			for _ in 0,pmm.accessory_count
-			{
-				pmm.accessory_datas.push(PmmAccessoryData::load(&mut reader)?);
-			}
+			for (std::size_t i = 0; i < pmm.accessory_count; i++)
+				pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
 
-			pmm.current_frame_position = reader.read_u32::<LittleEndian>()?;
-			pmm.h_scroll_position = reader.read_u32::<LittleEndian>()?;
-			pmm.h_scroll_scale = reader.read_u32::<LittleEndian>()?;
-			pmm.bone_operation_kind = reader.read_u32::<LittleEndian>()?;
-			pmm.looking_at = reader.read_u8()?;
-			pmm.is_repeat = reader.read_u8()?;
-			pmm.is_play_from_frame = reader.read_u8()?;
-			pmm.is_play_to_frame = reader.read_u8()?;
-			pmm.play_start_frame = reader.read_u32::<LittleEndian>()?;
-			pmm.play_end_frame = reader.read_u32::<LittleEndian>()?;
-			pmm.is_wave_enabled = reader.read_u8()?;
-			pmm.wave_path = PmmName::load_fixed_utf8(&mut reader, 256)?;
-			pmm.avi_offset_x = reader.read_u32::<LittleEndian>()?;
-			pmm.avi_offset_y = reader.read_u32::<LittleEndian>()?;
-			pmm.avi_scale = reader.read_f32::<LittleEndian>()?;
-			pmm.avi_path = PmmName::load_fixed_utf8(&mut reader, 256)?;
-			pmm.is_show_avi = reader.read_u32::<LittleEndian>()?;
-			pmm.background_image_offset_x = reader.read_u32::<LittleEndian>()?;
-			pmm.background_image_offset_y = reader.read_u32::<LittleEndian>()?;
-			pmm.background_image_scale = reader.read_u32::<LittleEndian>()?;
-			pmm.background_image_path = PmmName::load_fixed_utf8(&mut reader, 255)?;
-			pmm.is_show_background_image = reader.read_u8()?;
-			pmm.is_show_infomation = reader.read_u8()?;
-			pmm.is_show_axis = reader.read_u8()?;
-			pmm.is_show_groundshadow = reader.read_u8()?;
-			pmm.fps_limit = reader.read_f32::<LittleEndian>()?;
-			pmm.screen_capture_mode = reader.read_u32::<LittleEndian>()?;
-			pmm.accessory_number_render_after_model = reader.read_u32::<LittleEndian>()?;
-			pmm.ground_shadow_brightness = reader.read_f32::<LittleEndian>()?;
-			pmm.is_transparent_ground_shadow = reader.read_u8()?;
-			pmm.physics_mode =  reader.read_u8()?;
-			pmm.gravity_current_data = PmmGravityCurrentData::load(&mut reader)?;
-			pmm.gravity_init_frame = PmmGravityKeyFrame::load(&mut reader, true)?;
-			pmm.gravity_key_frames = PmmGravityKeyFrame::load_arrays(&mut reader, false)?;
-			pmm.is_show_selfshadow = reader.read_u8()?;
-			pmm.selfshadow_current_data = reader.read_f32::<LittleEndian>()?;
-			pmm.selfshadow_init_frame = PmmSelfShadowKeyFrame::load(&mut reader, true)?;
-			pmm.selfshadow_keyframes = PmmSelfShadowKeyFrame::load_arrays(&mut reader, false)?;
-			pmm.edge_color_r = reader.read_u32::<LittleEndian>()?;
-			pmm.edge_color_g = reader.read_u32::<LittleEndian>()?;
-			pmm.edge_color_b = reader.read_u32::<LittleEndian>()?;
-			pmm.is_black_background = reader.read_u8()?;
-			pmm.camera_current_looking_at_model = reader.read_i32::<LittleEndian>()?;
-			pmm.camera_current_looking_at_bone = reader.read_i32::<LittleEndian>()?;
-			for i in 0,pmm.unknown_array.len() { pmm.unknown_array[i] = reader.read_f32::<LittleEndian>()?; }
-			pmm.is_view_look_at_enabled = reader.read_u8()?;
-			pmm.unknown = reader.read_u8()?;
-			pmm.is_physics_ground_enabled = reader.read_u8()?;
-			pmm.frame_text_box = reader.read_u32::<LittleEndian>()?;
-			pmm.selector_choice_selection_following = reader.read_u8()?;
-			pmm.selector_choice_datas = PmmCSelectorChoiceData::load_arrays(&mut reader)?;
+			reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
+			reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));
+			reader.read((char*)& pmm.h_scroll_scale, sizeof(pmm.h_scroll_scale));
+			reader.read((char*)& pmm.bone_operation_kind, sizeof(pmm.bone_operation_kind));
+			reader.read((char*)& pmm.looking_at, sizeof(pmm.looking_at));
+			reader.read((char*)& pmm.is_repeat, sizeof(pmm.is_repeat));
+			reader.read((char*)& pmm.is_play_from_frame, sizeof(pmm.is_play_from_frame));
+			reader.read((char*)& pmm.is_play_to_frame, sizeof(pmm.is_play_to_frame));
+			reader.read((char*)& pmm.play_start_frame, sizeof(pmm.play_start_frame));
+			reader.read((char*)& pmm.play_end_frame, sizeof(pmm.play_end_frame));
+			reader.read((char*)& pmm.is_wave_enabled, sizeof(pmm.is_wave_enabled));
+			pmm.wave_path = PmmName::load_fixed_utf8(reader, 256).value();
+			reader.read((char*)& pmm.avi_offset_x, sizeof(pmm.avi_offset_x));
+			reader.read((char*)& pmm.avi_offset_y, sizeof(pmm.avi_offset_y));
+			reader.read((char*)& pmm.avi_scale, sizeof(pmm.avi_scale));
+			pmm.avi_path = PmmName::load_fixed_utf8(reader, 256).value();
+			reader.read((char*)& pmm.is_show_avi, sizeof(pmm.is_show_avi));
+			reader.read((char*)& pmm.background_image_offset_x, sizeof(pmm.background_image_offset_x));
+			reader.read((char*)& pmm.background_image_offset_y, sizeof(pmm.background_image_offset_y));
+			reader.read((char*)& pmm.background_image_scale, sizeof(pmm.background_image_scale));
+			pmm.background_image_path = PmmName::load_fixed_utf8(reader, 255).value();
+			reader.read((char*)& pmm.is_show_background_image, sizeof(pmm.is_show_background_image));
+			reader.read((char*)& pmm.is_show_infomation, sizeof(pmm.is_show_infomation));
+			reader.read((char*)& pmm.is_show_axis, sizeof(pmm.is_show_axis));
+			reader.read((char*)& pmm.is_show_groundshadow, sizeof(pmm.is_show_groundshadow));
+			reader.read((char*)& pmm.fps_limit, sizeof(pmm.fps_limit));
+			reader.read((char*)& pmm.screen_capture_mode, sizeof(pmm.screen_capture_mode));
+			reader.read((char*)& pmm.accessory_number_render_after_model, sizeof(pmm.accessory_number_render_after_model));
+			reader.read((char*)& pmm.ground_shadow_brightness, sizeof(pmm.ground_shadow_brightness));
+			reader.read((char*)& pmm.is_transparent_ground_shadow, sizeof(pmm.is_transparent_ground_shadow));
+			reader.read((char*)& pmm.physics_mode, sizeof(pmm.physics_mode));
+			pmm.gravity_current_data = PmmGravity::load(reader).value();
+			pmm.gravity_init_frame = PmmKeyFrameGravity::load(reader, true).value();
+			pmm.gravity_key_frames = PmmKeyFrameGravity::load_arrays(reader, false).value();
+			reader.read((char*)& pmm.is_show_selfshadow, sizeof(pmm.is_show_selfshadow));
+			reader.read((char*)& pmm.selfshadow_current_data, sizeof(pmm.selfshadow_current_data));
+			pmm.selfshadow_init_frame = PmmKeyFrameSelfShadow::load(reader, true).value();
+			pmm.selfshadow_keyframes = PmmKeyFrameSelfShadow::load_arrays(reader, false).value();
+			reader.read((char*)& pmm.edge_color_r, sizeof(pmm.edge_color_r));
+			reader.read((char*)& pmm.edge_color_g, sizeof(pmm.edge_color_g));
+			reader.read((char*)& pmm.edge_color_b, sizeof(pmm.edge_color_b));
+			reader.read((char*)& pmm.is_black_background, sizeof(pmm.is_black_background));
+			reader.read((char*)& pmm.camera_current_looking_at_model, sizeof(pmm.camera_current_looking_at_model));
+			reader.read((char*)& pmm.camera_current_looking_at_bone, sizeof(pmm.camera_current_looking_at_bone));
 
-			Ok(pmm)
+			for (std::size_t i = 0; i < 16; i++)
+				reader.read((char*)& pmm.unknown_array[i], sizeof(pmm.unknown_array[i]));
+
+			reader.read((char*)& pmm.is_view_look_at_enabled, sizeof(pmm.is_view_look_at_enabled));
+			reader.read((char*)& pmm.unknown, sizeof(pmm.unknown));
+			reader.read((char*)& pmm.is_physics_ground_enabled, sizeof(pmm.is_physics_ground_enabled));
+			reader.read((char*)& pmm.frame_text_box, sizeof(pmm.frame_text_box));
+			reader.read((char*)& pmm.selector_choice_selection_following, sizeof(pmm.selector_choice_selection_following));
+			pmm.selector_choice_datas = PmmCSelectorChoice::load_arrays(reader).value();
+
+			return pmm;
+		}
+		catch (std::bad_optional_access& e)
+		{
+			return std::nullopt;
 		}
 	}
 
-	class PMMLoader 
+	PMMLoader::PMMLoader()
 	{
-		PMMLoader()
-		{
-		}
-
-		bool can_read(&self, buf:&[u8])
-		{
-			PmmHeader::load(&mut Cursor(buf)).is_ok()
-		}
-
-		Result<Scene> do_load(&self, buf:&[u8])
-		{
-			auto pmm = PMMFile::load(buf)?;
-			auto scene = Scene();
-
-			auto camera = PerspectiveCamera::builder()
-				.main(true)
-				.set_fov(30.0)
-				.set_translate(float!(0.0,0.1,10.0))
-				.build();
-
-			scene.add(camera);
-
-			for model in pmm.model
-			{
-				auto model = ModelLoader::open(model.path)?;
-				model.set_scale(float!(0.1,0.1,0.1));
-				model.set_translate(float!(0.0,-0.8,20.0));
-				scene.add(model);
-			}
-
-			Ok(scene)
-		}
-
-		Result<std::vector<u8>> do_save(&self, _:&Scene)
-		{
-  			Err(Error::LoaderError("Not Implmention yet".to_std::string()))
-		}
 	}
-}*/
+
+	bool 
+	PMMLoader::can_read(istream& reader)
+	{
+		return PmmHeader::load(reader).has_value();
+	}
+
+	bool
+	PMMLoader::do_load(istream& reader, PMMFile& pmm)
+	{
+		pmm.load(reader);
+		return true;
+		/*auto scene = Scene();
+
+		auto camera = PerspectiveCamera::builder()
+			.main(true)
+			.set_fov(30.0)
+			.set_translate(float!(0.0, 0.1, 10.0))
+			.build();
+
+		scene.add(camera);
+
+		for model in pmm.model
+		{
+			auto model = ModelLoader::open(model.path);
+			model.set_scale(float!(0.1,0.1,0.1));
+			model.set_translate(float!(0.0,-0.8,20.0));
+			scene.add(model);
+		}
+
+		return scene;*/
+	}
+
+	/*std::optional<std::vector<u8>> do_save(&self, _:&Scene)
+	{
+		Err(Error::LoaderError("Not Implmention yet".to_std::string()))
+	}*/
+}

@@ -2,17 +2,18 @@
 #define OCTOON_EDITOR_FILE_CONTROLLER_H_
 
 #include <octoon/game_component.h>
+#include "..//models/pmm.h"
 
 namespace octoon
 {
 	namespace editor
 	{
-		class FileController : public GameComponent
+		class ProjectController : public GameComponent
 		{
-			OctoonDeclareSubClass(FileController, GameComponent)
+			OctoonDeclareSubClass(ProjectController, GameComponent)
 		public:
-			FileController() noexcept;
-			~FileController() noexcept;
+			ProjectController() noexcept;
+			~ProjectController() noexcept;
 
 			virtual void openProject(const runtime::any& data) noexcept;
 			virtual void saveProject(const runtime::any& data) noexcept;
@@ -24,6 +25,9 @@ namespace octoon
 			virtual void exit(const runtime::any& data) noexcept;
 
 			virtual GameComponentPtr clone() const noexcept override;
+
+		private:
+			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
 
 		private:
 			bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

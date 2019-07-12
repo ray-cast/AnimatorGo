@@ -17,12 +17,14 @@
 #include <octoon/transform_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/first_person_camera_component.h>
+#include <octoon/editor_camera_component.h>
 #include <octoon/ortho_camera_component.h>
 #include <octoon/perspective_camera_component.h>
 #include <octoon/film_camera_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/path_component.h>
 #include <octoon/text_component.h>
+#include <octoon/animation_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>

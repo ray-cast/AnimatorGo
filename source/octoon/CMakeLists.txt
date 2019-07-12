@@ -39,6 +39,8 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/text_component.cpp
 	${HEADER_PATH}/path_component.h
 	${SOURCE_PATH}/path_component.cpp
+	${HEADER_PATH}/animation_component.h
+	${SOURCE_PATH}/animation_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 

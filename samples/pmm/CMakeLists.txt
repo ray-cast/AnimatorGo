@@ -1,6 +1,8 @@
 SET(LIB_NAME pmm)
 SET(LIB_OUTNAME octoon-${LIB_NAME})
 
+INCLUDE_DIRECTORIES(${OCTOON_PATH_DEPENDENCIES}/libiconv/include)
+
 SET(HEADER_PATH ${OCTOON_PATH_HEADER})
 SET(SOURCE_PATH ${OCTOON_PATH_SAMPLES}/${LIB_NAME})
 
@@ -32,8 +34,8 @@ SET(VIEWS_LIST
 SOURCE_GROUP("pmm\\views" FILES ${VIEWS_LIST})
 
 SET(CONTROLLERS_LIST
-	${SOURCE_PATH}/controllers/file_controller.h
-	${SOURCE_PATH}/controllers/file_controller.cpp
+	${SOURCE_PATH}/controllers/project_controller.h
+	${SOURCE_PATH}/controllers/project_controller.cpp
 	${SOURCE_PATH}/controllers/edit_controller.h
 	${SOURCE_PATH}/controllers/edit_controller.cpp
 )
@@ -52,6 +54,7 @@ ENDIF()
 
 ADD_EXECUTABLE(${LIB_OUTNAME} ${MAIN_LIST} ${VIEWS_LIST} ${MODELS_LIST} ${CONTROLLERS_LIST} ${NATIVE_FILED_DIALOG_LIST})
 
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE libiconv)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} PRIVATE octoon-c)
 

@@ -6,7 +6,7 @@
 #include "views/theme_manager.h"
 #include "views/about_window.h"
 
-#include "controllers/file_controller.h"
+#include "controllers/project_controller.h"
 #include "controllers/edit_controller.h"
 
 #include <octoon/octoon.h>
@@ -35,7 +35,7 @@ namespace octoon
 			main_->addComponent<MessageWindow>();
 			main_->addComponent<AboutWindow>();
 
-			main_->addComponent<FileController>();
+			main_->addComponent<ProjectController>();
 			main_->addComponent<EditController>();
 		}
 
@@ -43,7 +43,6 @@ namespace octoon
 		MainController::onDeactivate() noexcept
 		{
 			main_.reset();
-			object_.reset();
 		}
 
 		GameComponentPtr

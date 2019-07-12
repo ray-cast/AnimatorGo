@@ -30,7 +30,7 @@
 #endif
 
 GLFWwindow* window_ = nullptr;
-octoon::GameApp* gameApp_;
+octoon::GameAppPtr gameApp_;
 
 std::string gameRootPath_;
 std::string gameScenePath_;
@@ -280,14 +280,10 @@ bool OCTOON_C_CALL OctoonInit(const char* gamedir, const char* scenename) noexce
 
 	if (gamedir)
 	{
-		char drive[MAX_PATH];
-		char dir[MAX_PATH];
-		char filename[MAX_PATH];
-		char ext[MAX_PATH];
-		octoon::io::fcntl::splitpath(gamedir, drive, dir, filename, ext);
-
-		gameRootPath_ = drive;
-		gameRootPath_ += dir;
+		gameRootPath_ = gamedir;
+		const size_t last_slash_idx = gameRootPath_.rfind('\\');
+		if (std::string::npos != last_slash_idx)
+			gameRootPath_ = gameRootPath_.substr(0, last_slash_idx);
 
 #if GLFW_EXPOSE_NATIVE_WIN32
 		::SetCurrentDirectory(gameRootPath_.c_str());
@@ -345,7 +341,7 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 
 			octoon::WindHandle hwnd = (octoon::WindHandle)::glfwGetWinHandle(window_);
 
-			gameApp_ = octoon::GameApp::instance();
+			gameApp_ = std::make_shared<octoon::GameApp>();
 			gameApp_->open(hwnd, w, h, framebuffer_w, framebuffer_h);
 			gameApp_->setActive(true);
 			gameApp_->doWindowFocus(hwnd, true);

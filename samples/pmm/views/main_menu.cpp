@@ -96,6 +96,12 @@ namespace octoon
 					imgui::endMenu();
 				}
 
+				if (imgui::beginMenu("Setting"))
+				{
+					if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }
+					imgui::endMenu();
+				}
+
 				if (imgui::beginMenu("Help"))
 				{
 					if (imgui::menuItem("About")) { this->sendMessage("editor:menu:help:about"); }

@@ -3,6 +3,7 @@
 
 #include <list>
 #include <memory>
+#include <stdexcept>
 #include <octoon/math/math.h>
 #include <octoon/runtime/platform.h>
 #include <octoon/runtime/variant.h>

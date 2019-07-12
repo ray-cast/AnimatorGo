@@ -22,7 +22,6 @@ namespace octoon
 
 		private:
 			GameObjectPtr main_;
-			GameObjectPtr object_;
 		};
 	}
 }

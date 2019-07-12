@@ -38,7 +38,7 @@ namespace octoon
 		void addFeature(GameFeaturePtr&& component) except;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		T* getFeature() const noexcept { return dynamic_cast<T>(this->getFeature(T::RTTI)); }
+		T* getFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
 		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 

@@ -27,7 +27,7 @@ public:
 	{
 		auto transform = this->getComponent<octoon::TransformComponent>();
 
-		auto inputFeature = octoon::GameApp::instance()->getFeature<octoon::InputFeature>();
+		auto inputFeature = this->getGameObject()->getGameScene()->getFeature<octoon::InputFeature>();
 		if (inputFeature)
 		{
 			auto input = inputFeature->getInput();

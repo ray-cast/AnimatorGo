@@ -2,6 +2,7 @@
 #define OCTOON_H_
 
 #include <octoon/game_app.h>
+#include <octoon/game_scene.h>
 #include <octoon/game_object.h>
 #include <octoon/game_prefabs.h>
 

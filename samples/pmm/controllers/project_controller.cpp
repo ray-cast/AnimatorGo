@@ -125,7 +125,8 @@ namespace octoon
 
 			try
 			{
-				auto pmm = PMMFile::load(io::ifstream(filepath)).value();
+				auto stream = io::ifstream(filepath);
+				auto pmm = PMMFile::load(stream).value();
 				for (auto& it : pmm.model)
 				{
 					auto model = GamePrefabs::instance()->createModel(it.path);

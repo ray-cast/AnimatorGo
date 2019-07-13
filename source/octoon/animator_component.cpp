@@ -69,6 +69,24 @@ namespace octoon
 	}
 
 	void
+	AnimatorComponent::setClips(animation::AnimationClips<float>&& clips) noexcept
+	{
+		clips_ = std::move(clips);
+	}
+
+	void
+	AnimatorComponent::setClips(const animation::AnimationClips<float>& clips) noexcept
+	{
+		clips_ = clips;
+	}
+
+	const animation::AnimationClips<float>&
+	AnimatorComponent::getClips() const noexcept
+	{
+		return clips_;
+	}
+
+	void
 	AnimatorComponent::setTransforms(GameObjects&& transforms) noexcept
 	{
 		transforms_ = std::move(transforms);

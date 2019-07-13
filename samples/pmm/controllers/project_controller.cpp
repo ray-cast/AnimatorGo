@@ -169,7 +169,7 @@ namespace octoon
 					if (model)
 					{
 						model->setName(it.name);
-						model->addComponent<AnimatorComponent>(clips);
+						model->getComponent<AnimatorComponent>()->setClips(clips);
 
 						objects_.emplace_back(std::move(model));
 					}

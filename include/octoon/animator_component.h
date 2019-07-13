@@ -22,6 +22,10 @@ namespace octoon
 		void pause() noexcept;
 		void stop() noexcept;
 
+		void setClips(animation::AnimationClips<float>&& transforms) noexcept;
+		void setClips(const animation::AnimationClips<float>& transforms) noexcept;
+		const animation::AnimationClips<float>& getClips() const noexcept;
+
 		void setTransforms(GameObjects&& transforms) noexcept;
 		void setTransforms(const GameObjects& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;

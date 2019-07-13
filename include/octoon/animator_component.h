@@ -16,6 +16,8 @@ namespace octoon
 		explicit AnimatorComponent(animation::AnimationClips<float>&& clips) noexcept;
 		explicit AnimatorComponent(const animation::AnimationClip<float>& clips) noexcept;
 		explicit AnimatorComponent(const animation::AnimationClips<float>& clips) noexcept;
+		explicit AnimatorComponent(GameObjects&& transforms) noexcept;
+		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
 		~AnimatorComponent() noexcept;
 
 		bool play(const std::string& filename) noexcept;

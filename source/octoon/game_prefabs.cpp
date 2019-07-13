@@ -245,8 +245,7 @@ namespace octoon
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
 		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
-		actor->addComponent<AnimatorComponent>();
-		actor->getComponent<AnimatorComponent>()->setTransforms(bones);
+		actor->addComponent<AnimatorComponent>(bones);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{

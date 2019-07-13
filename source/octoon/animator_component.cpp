@@ -38,6 +38,18 @@ namespace octoon
 		this->clips_ = clips;
 	}
 
+	AnimatorComponent::AnimatorComponent(GameObjects&& transforms) noexcept
+		: AnimatorComponent()
+	{
+		this->setTransforms(std::move(transforms));
+	}
+
+	AnimatorComponent::AnimatorComponent(const GameObjects& transforms) noexcept
+		: AnimatorComponent()
+	{
+		this->setTransforms(transforms);
+	}
+
 	AnimatorComponent::~AnimatorComponent() noexcept
 	{
 	}

@@ -103,6 +103,8 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/solver_component.cpp
 	${HEADER_PATH}/animation_component.h
 	${SOURCE_PATH}/animation_component.cpp
+	${HEADER_PATH}/animator_component.h
+	${SOURCE_PATH}/animator_component.cpp
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 

@@ -10,6 +10,7 @@
 #include <octoon/model/model.h>
 #include <octoon/model/property.h>
 #include <octoon/model/text_meshing.h>
+#include <octoon/model/ik.h>
 
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>
@@ -20,6 +21,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/text_component.h>
+#include <octoon/solver_component.h>
 #include <octoon/skinned_mesh_renderer_component.h>
 
 #include <octoon/runtime/except.h>
@@ -228,53 +230,36 @@ namespace octoon
 		if (!this->createBones(model, bones))
 			return false;
 
+		video::Materials materials;
+		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
+			return false;
+
 		std::vector<float4x4> bindposes;
-		for (auto& it : model.get<Model::bone>())
+		for (auto& bone : model.get<Model::bone>())
 		{
 			float4x4 bindpose;
-			bindpose.makeTranslate(-it->getPosition());
+			bindpose.makeTranslate(-bone->getPosition());
 			bindposes.push_back(bindpose);
 		}
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
-		auto rootPath = "file:" + runtime::string::directory(path);
-
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
 			mesh->setBindposes(bindposes);
-			auto materialProp = model.get<Model::material>(i);
 
-			std::string name;
-			materialProp->get(MATKEY_NAME, name);
-
-			std::string textureName;
-			materialProp->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
-
-			math::float3 base;
-			materialProp->get(MATKEY_COLOR_DIFFUSE, base);
-
-			math::float3 ambient;
-			materialProp->get(MATKEY_COLOR_AMBIENT, ambient);
-
-			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4(base, 1.0));
-
-			if (!textureName.empty())
-				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
-
-			auto object = GameObject::create(std::move(name));
+			auto object = GameObject::create(std::move(mesh->getName()));
 			object->setParent(actor);
 			object->addComponent<MeshFilterComponent>(mesh);
 
 			if (bones.empty())
 			{
-				object->addComponent<MeshRendererComponent>(material);
+				object->addComponent<MeshRendererComponent>(materials[i]);
 			}
 			else
 			{
 				auto smr = std::make_shared<SkinnedMeshRendererComponent>();
-				smr->setMaterial(std::move(material));
+				smr->setMaterial(std::move(materials[i]));
 				smr->setTransforms(bones);
 
 				object->addComponent(smr);
@@ -302,16 +287,16 @@ namespace octoon
 			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
 		}
 
-		/*for (auto& it : model.get<Model::ik>().size())
+		for (auto& it : model.get<Model::ik>())
 		{
-			auto iksolver = std::make_shared<IKSolverComponent>();
+			auto iksolver = std::make_shared<SolverComponent>();
 			iksolver->setTargetBone(bones[it->targetBoneIndex]);
 			iksolver->setIterations(it->iterations);
 			iksolver->setChainLength(it->chainLength);
 
 			for (auto& child : it->child)
 			{
-				auto bone = std::make_shared<IKSolverBone>();
+				auto bone = std::make_shared<SolverTarget>();
 				bone->bone = bones[child.boneIndex];
 				bone->angleWeight = child.angleWeight;
 				bone->rotateLimited = child.rotateLimited;
@@ -322,7 +307,35 @@ namespace octoon
 			}
 
 			bones[it->boneIndex]->addComponent(std::move(iksolver));
-		}*/
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath) noexcept
+	{
+		for (auto& it : model.get<Model::material>())
+		{
+			std::string name;
+			std::string textureName;
+
+			math::float3 base;
+			math::float3 ambient;
+
+			it->get(MATKEY_NAME, name);
+			it->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+			it->get(MATKEY_COLOR_DIFFUSE, base);			
+			it->get(MATKEY_COLOR_AMBIENT, ambient);
+
+			auto material = std::make_shared<video::BasicMaterial>();
+			material->setBaseColor(math::float4(base, 1.0));
+
+			if (!textureName.empty())
+				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
+
+			materials.push_back(material);
+		}
 
 		return true;
 	}

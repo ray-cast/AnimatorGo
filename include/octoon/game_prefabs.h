@@ -5,6 +5,7 @@
 #include <octoon/runtime/singleton.h>
 #include <octoon/hal/graphics_types.h>
 #include <octoon/model/model.h>
+#include <octoon/video/material.h>
 
 #include <map>
 
@@ -36,13 +37,16 @@ namespace octoon
 		GameObjectPtr createText(const wchar_t* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createText(const char* u8str, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
-		bool createBones(const model::Model& model, GameObjects& bones) noexcept;
 		GameObjectPtr createSprite(const std::string& image, float w, float h) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except;
 		GameObjectPtr createSpriteSquare(float w, float h) except;
 
 		hal::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;
+
+	private:
+		bool createBones(const model::Model& model, GameObjects& bones) noexcept;
+		bool createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath = "") noexcept;
 
 	private:
 		using Prefabs = std::map<std::string, GameObjectPtr>;

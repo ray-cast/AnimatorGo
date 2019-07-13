@@ -1,31 +1,77 @@
 #include "physx_context.h"
 
+#include <octoon/runtime/except.h>
+#include <octoon/math/math.h>
+
 #include <PxPhysicsAPI.h>
 
 namespace octoon
 {
 	namespace physics
 	{
-        PhysxContext::PhysxContext() noexcept
+        PhysxContext::PhysxContext()
             :foundation(nullptr),
+			pvd(nullptr),
+			physics(nullptr),
+			cooking(nullptr),
             defaultAllocatorCallback(new physx::PxDefaultAllocator),
             defaultErrorCallback(new physx::PxDefaultErrorCallback)
 		{
+			// create foundation
             foundation = PxCreateFoundation(PX_PHYSICS_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
-            // if(!foundation) fatalError("PxCreateFoundation failed!");
-            bool recordMemoryAllocations = true;
+            if (!foundation)
+                throw runtime::runtime_error::create("PxCreateFoundation failed!");
 
-            pvd = PxCreatePvd(*foundation);
+			// create pvd
+            pvd = physx::PxCreatePvd(*foundation);
             physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
             pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
+			// create physics
+			bool recordMemoryAllocations = true;
             physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
                 physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
-            // if(!mPhysics) fatalError("PxCreatePhysics failed!");
+            if (!physics)
+                throw runtime::runtime_error::create("PxCreatePhysics failed!");
+
+			// create cooking
+            physx::PxTolerancesScale scale;
+            scale.length = 1;
+            scale.speed = 1;
+
+            cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
+            if (!cooking)
+                throw runtime::runtime_error::create("PxCreateCooking failed!");
+
+            if (!PxInitExtensions(*physics, pvd))
+                throw runtime::runtime_error::create("PxInitExtensions failed!");
+
+			// create dispatcher
+			dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 		}
 
-		PhysxContext::~PhysxContext() noexcept
+		PhysxContext::~PhysxContext()
 		{
+		}
+
+        std::shared_ptr<PhysicsScene> PhysxContext::createScene(PhysicsSceneDesc desc)
+        {
+			auto scene_obj = std::make_shared<PhysxScene>(this, desc);
+			return scene_obj;
+        }
+
+		std::shared_ptr<PhysicsRigidbody> PhysxContext::createRigidbody()
+		{
+			return std::make_shared<PhysicsRigidbody>();
+		}
+
+		physx::PxPhysics * PhysxContext::getPxPhysics()
+		{
+			return physics;
+		}
+		physx::PxDefaultCpuDispatcher * PhysxContext::getPxDefaultCpuDispatcher()
+		{
+			return dispatcher;
 		}
 	}
 }

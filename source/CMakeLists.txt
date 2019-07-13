@@ -14,6 +14,7 @@ OPTION(OCTOON_FEATURE_HAL_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_SOUND_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_UI_ENABLE "On for enable off for disable" ON)
 OPTION(OCTOON_FEATURE_VIDEO_ENABLE "On for enable off for disable" ON)
+OPTION(OCTOON_FEATURE_PHYSICS_ENABLE "On for enable off for disable" ON)
 
 # runtime libraries
 ADD_SUBDIRECTORY(octoon-math)

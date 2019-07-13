@@ -3,6 +3,9 @@
 
 #include <octoon/runtime/platform.h>
 
+#include <octoon/physics/physics_scene.h>
+#include <octoon/physics/physics_rigidbody.h>
+
 namespace octoon
 {
 	namespace physics
@@ -12,9 +15,6 @@ namespace octoon
 		public:
 			PhysicsContextDesc() noexcept;
 			~PhysicsContextDesc() noexcept;
-
-		private:
-			// GraphicsSwapchainPtr _swapchain;
 		};
 
 		class OCTOON_EXPORT PhysicsContext
@@ -22,6 +22,9 @@ namespace octoon
 		public:
 			PhysicsContext() noexcept = default;
 			virtual ~PhysicsContext() = default;
+
+			virtual std::shared_ptr<PhysicsScene> createScene(PhysicsSceneDesc desc) = 0;
+			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody() = 0;
 
 		private:
 			PhysicsContext(const PhysicsContext&) noexcept = delete;

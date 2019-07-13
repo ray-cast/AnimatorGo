@@ -1,5 +1,7 @@
 #include <octoon/physics/physics_system.h>
 
+#include "physx/physx_context.h"
+
 namespace octoon
 {
 	namespace physics
@@ -12,12 +14,11 @@ namespace octoon
 
 		PhysicsSystem::~PhysicsSystem() noexcept
 		{
-			this->close();
 		}
 
-		void
-		PhysicsSystem::close() noexcept
+		std::shared_ptr<PhysicsContext> PhysicsSystem::createContext()
 		{
+			return std::make_shared<PhysxContext>();
 		}
 	}
 }

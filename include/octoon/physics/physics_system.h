@@ -1,7 +1,11 @@
 #ifndef OCTOON_PHYSICS_SYSTEM_H_
 #define OCTOON_PHYSICS_SYSTEM_H_
 
+#include <memory>
+
 #include <octoon/runtime/singleton.h>
+
+#include <octoon/physics/physics_context.h>
 
 namespace octoon
 {
@@ -14,16 +18,11 @@ namespace octoon
 			PhysicsSystem() noexcept;
 			~PhysicsSystem() noexcept;
 
-			void close() noexcept;
-
-			// GraphicsDevicePtr createDevice(const GraphicsDeviceDesc& desc) noexcept;
+			std::shared_ptr<PhysicsContext> createContext();
 
 		private:
 			PhysicsSystem(const PhysicsSystem&) = delete;
 			PhysicsSystem& operator=(const PhysicsSystem&) = delete;
-
-		private:
-			// GraphicsDeviceWeaks _devices;
 		};
 	}
 }

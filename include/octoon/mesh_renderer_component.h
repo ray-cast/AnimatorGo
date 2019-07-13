@@ -30,6 +30,9 @@ namespace octoon
 
 		void onLayerChangeAfter() noexcept override;
 
+	protected:
+		void uploadMeshData(const model::Mesh& mesh) noexcept;
+
 	private:
 		MeshRendererComponent(const MeshRendererComponent&) = delete;
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;

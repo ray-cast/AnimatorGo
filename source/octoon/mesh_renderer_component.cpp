@@ -87,11 +87,32 @@ namespace octoon
 			return;
 
 		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
-		if (geometry_ && mesh)
+		if (mesh)
+			this->uploadMeshData(*mesh);
+	}
+
+	void
+	MeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
+	{
+		if (geometry_)
+			geometry_->setMaterial(material);
+	}
+
+	void
+	MeshRendererComponent::onLayerChangeAfter() noexcept
+	{
+		if (geometry_)
+			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
+
+	void
+	MeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	{
+		if (geometry_)
 		{
-			auto& vertices = mesh->getVertexArray();
-			auto& texcoord = mesh->getTexcoordArray();
-			auto& normals = mesh->getNormalArray();
+			auto& vertices = mesh.getVertexArray();
+			auto& texcoord = mesh.getTexcoordArray();
+			auto& normals = mesh.getNormalArray();
 
 			auto inputLayout = this->getMaterial()->getPipeline()->getPipelineDesc().getInputLayout()->getInputLayoutDesc();
 			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
@@ -145,9 +166,9 @@ namespace octoon
 
 			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
-			geometry_->setBoundingBox(mesh->getBoundingBox());
+			geometry_->setBoundingBox(mesh.getBoundingBox());
 
-			auto& indices = mesh->getIndicesArray();
+			auto& indices = mesh.getIndicesArray();
 			if (!indices.empty())
 			{
 				hal::GraphicsDataDesc indiceDesc;
@@ -160,19 +181,5 @@ namespace octoon
 				geometry_->setNumIndices((std::uint32_t)indices.size());
 			}
 		}
-	}
-
-	void
-	MeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
-	{
-		if (geometry_)
-			geometry_->setMaterial(material);
-	}
-
-	void
-	MeshRendererComponent::onLayerChangeAfter() noexcept
-	{
-		if (geometry_)
-			geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 }

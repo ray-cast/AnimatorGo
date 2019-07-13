@@ -1,9 +1,0 @@
-cd %1
-SET PHYSX_ROOT_DIR=%CD%
-SET PHYSX_ROOT_DIR=%PHYSX_ROOT_DIR:\=/%
-SET PM_VSWHERE_PATH=%PHYSX_ROOT_DIR%/../externals/VsWhere
-SET PM_CMAKEMODULES_PATH=%PHYSX_ROOT_DIR%/../externals/CMakeModules
-SET PM_PXSHARED_PATH=%PHYSX_ROOT_DIR%/../pxshared
-SET PM_TARGA_PATH=%PHYSX_ROOT_DIR%/../externals/targa
-SET PM_PATHS=%PM_CMAKEMODULES_PATH%;%PM_TARGA_PATH%
-python ./buildtools/cmake_generate_projects.py %2

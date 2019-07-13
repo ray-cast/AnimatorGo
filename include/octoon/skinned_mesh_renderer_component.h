@@ -38,6 +38,9 @@ namespace octoon
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
+	
+	private:
+		void uploadMeshData(const model::Mesh& mesh) noexcept;
 
 	private:
 		SkinnedMeshRendererComponent(const SkinnedMeshRendererComponent&) = delete;
@@ -49,6 +52,7 @@ namespace octoon
 		GameObjects transforms_;
 		math::BoundingBox boundingBox_;
 		model::MeshPtr mesh_;
+		model::MeshPtr skinnedMesh_;
 		video::GeometryPtr geometry_;
 	};
 }

@@ -23,8 +23,6 @@ ELSE()
     ADD_DEFINITIONS(-D__LITTLE_ENDIAN__)
 ENDIF()
 
-INCLUDE_DIRECTORIES( ../include ../src/cbstring/ ../src/ )
-
 file(GLOB CBSTRING_CFILES ../src/cbstring/*.c)
 file(GLOB CBSTRING_HFILES ../src/cbstring/*.h)
 source_group("CBString Files" FILES ${CBSTRING_CFILES} ${CBSTRING_HFILES})
@@ -57,8 +55,9 @@ ${CBSTRING_CFILES}
 )
 ADD_LIBRARY( libHLSLcc ${libHLSLcc_SOURCES} )
 
-
-INCLUDE_DIRECTORIES( ../offline/cjson/ )
+TARGET_INCLUDE_DIRECTORIES(libHLSLcc PUBLIC ../include)
+TARGET_INCLUDE_DIRECTORIES(libHLSLcc PRIVATE ../src/cbstring/ ../src/)
+TARGET_INCLUDE_DIRECTORIES(libHLSLcc PRIVATE ../offline/cjson/ )
 
 file(GLOB CJSON_CFILES ../offline/cjson/*.c)
 file(GLOB CJSON_HFILES ../offline/cjson/*.h)

@@ -251,7 +251,7 @@ namespace octoon
 
 	PmmKeyframe::PmmKeyframe()
 		: data_index(-1)
-		, frame_number(-1)
+		, frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, is_selected(0)
@@ -263,7 +263,7 @@ namespace octoon
 	{
 		auto data = PmmKeyframe();
 		reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
@@ -286,7 +286,7 @@ namespace octoon
 
 	PmmKeyframeBone::PmmKeyframeBone()
 		: data_index(-1)
-		, frame_number(0)
+		, frame(0)
 		, pre_index(-1)
 		, next_index(-1)
 		, translation(PmmVector3(0.0, 0.0, 0.0))
@@ -301,7 +301,7 @@ namespace octoon
 	{
 		PmmKeyframeBone data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.interpolation_x, sizeof(data.interpolation_x));
@@ -320,7 +320,7 @@ namespace octoon
 	{
 		auto array = std::vector<PmmKeyframeBone>(len);
 		for (std::size_t i = 0; i < len; i++)
-			array[i].load(reader, is_init);
+			array[i] = PmmKeyframeBone::load(reader, is_init).value();
 
 		return array;
 	}
@@ -335,7 +335,7 @@ namespace octoon
 
 	PmmKeyframeMorph::PmmKeyframeMorph()
 		: data_index(1)
-		, frame_number(0)
+		, frame(0)
 		, pre_index(-1)
 		, next_index(-1)
 		, value(0.0)
@@ -343,17 +343,18 @@ namespace octoon
 	{
 	}
 
-	bool 
+	std::optional<PmmKeyframeMorph>
 	PmmKeyframeMorph::load(istream& reader, bool is_init)
 	{
-		if (!is_init) reader.read((char*)& this->data_index, sizeof(this->data_index));
-		reader.read((char*)& this->frame_number, sizeof(this->frame_number));
-		reader.read((char*)& this->pre_index, sizeof(this->pre_index));
-		reader.read((char*)& this->next_index, sizeof(this->next_index));
-		reader.read((char*)& this->value, sizeof(this->value));
-		reader.read((char*)& this->is_selected, sizeof(this->is_selected));
+		PmmKeyframeMorph data;
+		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
+		reader.read((char*)& data.frame, sizeof(data.frame));
+		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
+		reader.read((char*)& data.next_index, sizeof(data.next_index));
+		reader.read((char*)& data.value, sizeof(data.value));
+		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
-		return true;
+		return data;
 	}
 
 	std::optional<std::vector<PmmKeyframeMorph>>
@@ -361,7 +362,7 @@ namespace octoon
 	{
 		auto array = std::vector<PmmKeyframeMorph>(len);
 		for (std::size_t i = 0; i < len; i++)
-			array[i].load(reader, is_init);
+			array[i] = PmmKeyframeMorph::load(reader, is_init).value();
 
 		return array;
 	}
@@ -376,7 +377,7 @@ namespace octoon
 
 	PmmKeyframeOp::PmmKeyframeOp() noexcept
 		: data_index(-1)
-		, frame_number(-1)
+		, frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, is_display(0)
@@ -389,7 +390,7 @@ namespace octoon
 	{
 		PmmKeyframeOp data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.is_display, sizeof(data.is_display));
@@ -478,7 +479,7 @@ namespace octoon
 
 	PmmKeyframeLight::PmmKeyframeLight()
 		: data_index(-1)
-		, frame_number(-1)
+		, frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, rgb(PmmVector3(0.0, 0.0, 0.0))
@@ -492,7 +493,7 @@ namespace octoon
 	{
 		PmmKeyframeLight data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.rgb, sizeof(data.rgb));
@@ -517,7 +518,7 @@ namespace octoon
 
 	PmmKeyFrameGravity::PmmKeyFrameGravity()
 		: data_index(-1)
-		, frame_number(-1)
+		, frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, is_add_noize(0)
@@ -533,7 +534,7 @@ namespace octoon
 	{
 		PmmKeyFrameGravity data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.is_add_noize, sizeof(data.is_add_noize));
@@ -560,7 +561,7 @@ namespace octoon
 
 	PmmKeyFrameSelfShadow::PmmKeyFrameSelfShadow()
 		: data_index(-1)
-		, frame_number(-1)
+		, frame(-1)
 		, pre_index(-1)
 		, next_index(-1)
 		, mode(0)
@@ -574,7 +575,7 @@ namespace octoon
 	{
 		PmmKeyFrameSelfShadow data;
 		if (!is_init) reader.read((char*)& data.data_index, sizeof(data.data_index));
-		reader.read((char*)& data.frame_number, sizeof(data.frame_number));
+		reader.read((char*)& data.frame, sizeof(data.frame));
 		reader.read((char*)& data.pre_index, sizeof(data.pre_index));
 		reader.read((char*)& data.next_index, sizeof(data.next_index));
 		reader.read((char*)& data.mode, sizeof(data.mode));

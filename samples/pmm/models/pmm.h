@@ -91,7 +91,7 @@ namespace octoon
 	struct PmmKeyframe
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		std::uint8_t is_selected;
@@ -105,7 +105,7 @@ namespace octoon
 	struct PmmKeyframeBone
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		std::uint8_t interpolation_x[4];
@@ -127,7 +127,7 @@ namespace octoon
 	struct PmmKeyframeMorph
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		float value;
@@ -135,8 +135,7 @@ namespace octoon
 
 		PmmKeyframeMorph();
 
-		bool load(istream& reader, bool is_init);
-
+		static std::optional<PmmKeyframeMorph> load(istream& reader, bool is_init);
 		static std::optional<std::vector<PmmKeyframeMorph>> load_fixed_arrays(istream& reader, std::size_t len, bool is_init);
 		static std::optional<std::vector<PmmKeyframeMorph>> load_arrays(istream& reader, bool is_init);
 	};
@@ -144,7 +143,7 @@ namespace octoon
 	struct PmmKeyframeOp
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		std::uint8_t is_display;
@@ -188,7 +187,7 @@ namespace octoon
 	struct PmmKeyframeLight
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		PmmVector3 rgb;
@@ -204,7 +203,7 @@ namespace octoon
 	struct PmmKeyFrameGravity
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		std::uint8_t is_add_noize;
@@ -222,7 +221,7 @@ namespace octoon
 	struct PmmKeyFrameSelfShadow
 	{
 		std::int32_t data_index;
-		std::int32_t frame_number;
+		std::int32_t frame;
 		std::int32_t pre_index;
 		std::int32_t next_index;
 		std::uint8_t mode;

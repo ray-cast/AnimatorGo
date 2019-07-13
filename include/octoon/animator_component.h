@@ -3,6 +3,7 @@
 
 #include <octoon/game_component.h>
 #include <octoon/timer_feature.h>
+#include <octoon/animation/animation.h>
 
 namespace octoon
 {
@@ -11,8 +12,10 @@ namespace octoon
 		OctoonDeclareSubClass(AnimatorComponent, GameComponent)
 	public:
 		AnimatorComponent() noexcept;
-		AnimatorComponent(GameObjects&& bones) noexcept;
-		AnimatorComponent(const GameObjects& bones) noexcept;
+		explicit AnimatorComponent(animation::AnimationClip<float>&& clips) noexcept;
+		explicit AnimatorComponent(animation::AnimationClips<float>&& clips) noexcept;
+		explicit AnimatorComponent(const animation::AnimationClip<float>& clips) noexcept;
+		explicit AnimatorComponent(const animation::AnimationClips<float>& clips) noexcept;
 		~AnimatorComponent() noexcept;
 
 		bool play(const std::string& filename) noexcept;
@@ -43,6 +46,7 @@ namespace octoon
 		bool enableAnimOnVisableOnly_;
 
 		TimerFeature* timer_;
+		animation::AnimationClips<float> clips_;
 
 		GameObjects transforms_;
 	};

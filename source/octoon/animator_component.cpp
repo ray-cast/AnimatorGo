@@ -10,19 +10,32 @@ namespace octoon
 		: enableAnimation_(true)
 		, enableAnimOnVisableOnly_(false)
 		, needUpdate_(false)
+		, timer_(nullptr)
 	{
 	}
 
-	AnimatorComponent::AnimatorComponent(GameObjects&& bones) noexcept
+	AnimatorComponent::AnimatorComponent(animation::AnimationClip<float>&& clip) noexcept
 		: AnimatorComponent()
 	{
-		this->setTransforms(std::move(bones));
+		this->clips_.emplace_back(clip);
 	}
 
-	AnimatorComponent::AnimatorComponent(const GameObjects& bones) noexcept
+	AnimatorComponent::AnimatorComponent(animation::AnimationClips<float>&& clips) noexcept
 		: AnimatorComponent()
 	{
-		this->setTransforms(bones);
+		this->clips_ = std::move(clips);
+	}
+
+	AnimatorComponent::AnimatorComponent(const animation::AnimationClip<float>& clip) noexcept
+		: AnimatorComponent()
+	{
+		this->clips_.emplace_back(clip);
+	}
+
+	AnimatorComponent::AnimatorComponent(const animation::AnimationClips<float>& clips) noexcept
+		: AnimatorComponent()
+	{
+		this->clips_ = clips;
 	}
 
 	AnimatorComponent::~AnimatorComponent() noexcept

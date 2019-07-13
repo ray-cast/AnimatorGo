@@ -22,6 +22,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/text_component.h>
 #include <octoon/solver_component.h>
+#include <octoon/animator_component.h>
 #include <octoon/skinned_mesh_renderer_component.h>
 
 #include <octoon/runtime/except.h>
@@ -234,7 +235,7 @@ namespace octoon
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
 
-		std::vector<float4x4> bindposes;
+		math::float4x4s bindposes;
 		for (auto& bone : model.get<Model::bone>())
 		{
 			float4x4 bindpose;
@@ -243,12 +244,15 @@ namespace octoon
 		}
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
+		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
+		actor->addComponent<AnimatorComponent>(bones);
+
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
 			mesh->setBindposes(bindposes);
 
-			auto object = GameObject::create(std::move(mesh->getName()));
+			auto object = GameObject::create(mesh->getName());
 			object->setParent(actor);
 			object->addComponent<MeshFilterComponent>(mesh);
 
@@ -265,8 +269,6 @@ namespace octoon
 				object->addComponent(smr);
 			}
 		}
-
-		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
 
 		prefabs_[path] = actor;
 
@@ -354,7 +356,7 @@ namespace octoon
 	GamePrefabs::createSprite(const hal::GraphicsTexturePtr& texture) except
 	{
 		auto object = GameObject::create("GameObject");
-		object->addComponent<MeshFilterComponent>(model::makePlane(texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight()));
+		object->addComponent<MeshFilterComponent>(model::makePlane((float)texture->getTextureDesc().getWidth(), (float)texture->getTextureDesc().getHeight()));
 		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
 
 		return object;

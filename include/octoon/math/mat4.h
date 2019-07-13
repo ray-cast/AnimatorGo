@@ -91,6 +91,11 @@ namespace octoon
 					return this->ptr();
 				}
 
+				explicit operator Matrix3x3<T>()
+				{
+					return Matrix3x3<T>(a1, a2, a3, b1, b2, b3, c1, c2, c3);
+				}
+
 				Matrix4x4<T>& makeMatrix(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
 				{
 					a1 = mt00; a2 = mt01; a3 = mt02; a4 = mt03;

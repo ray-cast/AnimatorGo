@@ -8,18 +8,18 @@ namespace octoon
 	OctoonImplementSubClass(SkinnedMeshRendererComponent, RenderComponent, "MeshRenderer")
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
-		: needUpdate_(false)
+		: needUpdate_(true)
 	{
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept
-		: needUpdate_(false)
+		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept
-		: needUpdate_(false)
+		: needUpdate_(true)
 	{
 		this->setMaterial(material);
 	}
@@ -136,6 +136,26 @@ namespace octoon
 					joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
 			}
 
+			auto& vertices = mesh_->getVertexArray();
+			auto& weights = mesh_->getWeightArray();
+
+#pragma omp parallel for
+			for (std::size_t i = 0; i < vertices.size(); i++)
+			{
+				math::float3 v(0.0, 0.0, 0.0);
+				math::float3 n(0.0, 0.0, 0.0);
+
+				for (std::uint8_t j = 0; j < 4; j++)
+				{
+					v += (joints[weights[i].bones[j]] * vertices[i]) * weights[i].weights[j];
+					n += ((math::float3x3)joints[weights[i].bones[j]] * vertices[i]) * weights[i].weights[j];
+				}
+
+				skinnedMesh_->getVertexArray()[i] = v;
+				skinnedMesh_->getNormalArray()[i] = n;
+			}
+
+			this->uploadMeshData(*skinnedMesh_);
 			needUpdate_ = false;
 		}
 	}
@@ -148,13 +168,36 @@ namespace octoon
 
 		auto mesh = runtime::any_cast<model::MeshPtr>(data_);
 		if (mesh)
-			mesh_ = mesh;
-
-		if (geometry_ && mesh)
 		{
-			auto& vertices = mesh->getVertexArray();
-			auto& texcoord = mesh->getTexcoordArray();
-			auto& normals = mesh->getNormalArray();
+			mesh_ = mesh;
+			skinnedMesh_ = mesh->clone();
+		}
+
+		needUpdate_ = true;
+	}
+
+	void
+	SkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
+	{
+		if (geometry_)
+			geometry_->setMaterial(material);
+	}
+
+	void
+	SkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
+	{
+		if (geometry_)
+			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
+
+	void
+	SkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	{
+		if (geometry_)
+		{
+			auto& vertices = mesh.getVertexArray();
+			auto& texcoord = mesh.getTexcoordArray();
+			auto& normals = mesh.getNormalArray();
 
 			auto inputLayout = this->getMaterial()->getPipeline()->getPipelineDesc().getInputLayout()->getInputLayoutDesc();
 			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
@@ -208,9 +251,9 @@ namespace octoon
 
 			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
-			geometry_->setBoundingBox(mesh->getBoundingBox());
+			geometry_->setBoundingBox(mesh.getBoundingBox());
 
-			auto& indices = mesh->getIndicesArray();
+			auto& indices = mesh.getIndicesArray();
 			if (!indices.empty())
 			{
 				hal::GraphicsDataDesc indiceDesc;
@@ -223,19 +266,5 @@ namespace octoon
 				geometry_->setNumIndices((std::uint32_t)indices.size());
 			}
 		}
-	}
-
-	void
-	SkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
-	{
-		if (geometry_)
-			geometry_->setMaterial(material);
-	}
-
-	void
-	SkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
-	{
-		if (geometry_)
-			geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 }

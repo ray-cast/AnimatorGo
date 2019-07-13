@@ -1,9 +1,10 @@
 #ifndef OCTOON_GAME_PREFABS_H_
 #define OCTOON_GAME_PREFABS_H_
 
-#include <octoon/game_types.h>
+#include <octoon/game_object.h>
 #include <octoon/runtime/singleton.h>
 #include <octoon/hal/graphics_types.h>
+#include <octoon/model/model.h>
 
 #include <map>
 
@@ -35,7 +36,7 @@ namespace octoon
 		GameObjectPtr createText(const wchar_t* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createText(const char* u8str, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
-
+		bool createBones(const model::Model& model, GameObjects& bones) noexcept;
 		GameObjectPtr createSprite(const std::string& image, float w, float h) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except;

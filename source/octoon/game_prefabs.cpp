@@ -20,6 +20,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/text_component.h>
+#include <octoon/skinned_mesh_renderer_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -223,12 +224,25 @@ namespace octoon
 
 		Model model(path);
 
+		GameObjects bones;
+		if (!this->createBones(model, bones))
+			return false;
+
+		std::vector<float4x4> bindposes;
+		for (auto& it : model.get<Model::bone>())
+		{
+			float4x4 bindpose;
+			bindpose.makeTranslate(-it->getPosition());
+			bindposes.push_back(bindpose);
+		}
+
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
 		auto rootPath = "file:" + runtime::string::directory(path);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
+			mesh->setBindposes(bindposes);
 			auto materialProp = model.get<Model::material>(i);
 
 			std::string name;
@@ -250,9 +264,21 @@ namespace octoon
 				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
 
 			auto object = GameObject::create(std::move(name));
-			object->addComponent<MeshFilterComponent>(mesh);
-			object->addComponent<MeshRendererComponent>(material);
 			object->setParent(actor);
+			object->addComponent<MeshFilterComponent>(mesh);
+
+			if (bones.empty())
+			{
+				object->addComponent<MeshRendererComponent>(material);
+			}
+			else
+			{
+				auto smr = std::make_shared<SkinnedMeshRendererComponent>();
+				smr->setMaterial(std::move(material));
+				smr->setTransforms(bones);
+
+				object->addComponent(smr);
+			}
 		}
 
 		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
@@ -260,6 +286,45 @@ namespace octoon
 		prefabs_[path] = actor;
 
 		return actor;
+	}
+
+	bool
+	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
+	{
+		for (auto& it : model.get<Model::bone>())
+			bones.push_back(std::make_shared<GameObject>(it->getName()));
+
+		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
+		{
+			auto it = model.get<Model::bone>(i);
+			auto parent = it->getParent();
+			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
+			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
+		}
+
+		/*for (auto& it : model.get<Model::ik>().size())
+		{
+			auto iksolver = std::make_shared<IKSolverComponent>();
+			iksolver->setTargetBone(bones[it->targetBoneIndex]);
+			iksolver->setIterations(it->iterations);
+			iksolver->setChainLength(it->chainLength);
+
+			for (auto& child : it->child)
+			{
+				auto bone = std::make_shared<IKSolverBone>();
+				bone->bone = bones[child.boneIndex];
+				bone->angleWeight = child.angleWeight;
+				bone->rotateLimited = child.rotateLimited;
+				bone->minimumDegrees = child.minimumDegrees;
+				bone->maximumDegrees = child.maximumDegrees;
+
+				iksolver->addBone(bone);
+			}
+
+			bones[it->boneIndex]->addComponent(std::move(iksolver));
+		}*/
+
+		return true;
 	}
 
 	GameObjectPtr

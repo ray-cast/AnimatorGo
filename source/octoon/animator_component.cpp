@@ -180,69 +180,29 @@ namespace octoon
 			assert(bones_[i]->getName() == clips_[i].name);
 
 			auto transform = bones_[i]->getComponent<TransformComponent>();
+			auto translate = transform->getLocalTranslate();
+			auto quat = transform->getLocalQuaternion();
+
 			for (auto& curve : clips_[i].curves)
 			{
 				if (curve.first == "LocalPosition.x")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.x = curve.second.key.value + bindpose_[i].x;
-					transform->setLocalTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.y")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.y = curve.second.key.value + bindpose_[i].y;
-					transform->setLocalTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.z")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.z = curve.second.key.value + bindpose_[i].z;
-					transform->setLocalTranslate(translate);
-				}
-				else if (curve.first == "LocalRotation.x")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
-					eular.x = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
-				else if (curve.first == "LocalRotation.y")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
-					eular.y = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
-				else if (curve.first == "LocalRotation.z")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
-					eular.z = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
 				else if (curve.first == "LocalQuaternion.x")
-				{
-					auto quat = transform->getLocalQuaternion();
 					quat.x = curve.second.key.value;
-					transform->setLocalQuaternion(quat);
-				}
 				else if (curve.first == "LocalQuaternion.y")
-				{
-					auto quat = transform->getLocalQuaternion();
 					quat.y = curve.second.key.value;
-					transform->setLocalQuaternion(quat);
-				}
 				else if (curve.first == "LocalQuaternion.z")
-				{
-					auto quat = transform->getLocalQuaternion();
 					quat.z = curve.second.key.value;
-					transform->setLocalQuaternion(quat);
-				}
 				else if (curve.first == "LocalQuaternion.w")
-				{
-					auto quat = transform->getLocalQuaternion();
 					quat.w = curve.second.key.value;
-					transform->setLocalQuaternion(quat);
-				}
 			}
+
+			transform->setLocalTranslate(translate);
+			transform->setLocalQuaternion(math::normalize(quat));
 		}
 	}
 }

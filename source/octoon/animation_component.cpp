@@ -88,52 +88,30 @@ namespace octoon
 				curve.second.evaluate(delta);
 
 			auto transform = this->getComponent<TransformComponent>();
+			auto translate = transform->getLocalTranslate();
+			auto quat = transform->getLocalQuaternion();
+			auto eular = math::float3::Zero;
 
 			for (auto& curve : clip.curves)
 			{
 				if (curve.first == "LocalPosition.x")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.x = curve.second.key.value;
-					transform->setLocalTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.y")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.y = curve.second.key.value;
-					transform->setLocalTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.z")
-				{
-					auto translate = transform->getLocalTranslate();
 					translate.z = curve.second.key.value;
-					transform->setLocalTranslate(translate);
-				}
 				else if (curve.first == "LocalRotation.x")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
 					eular.x = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
 				else if (curve.first == "LocalRotation.y")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
 					eular.y = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
 				else if (curve.first == "LocalRotation.z")
-				{
-					auto eular = math::eulerAngles(transform->getLocalQuaternion());
 					eular.z = curve.second.key.value;
-					transform->setLocalQuaternion(math::Quaternion(eular));
-				}
 				else if (curve.first == "Transform:move")
-				{
-					auto translate = transform->getLocalTranslate();
-					translate += math::rotate(transform->getLocalQuaternion(), math::float3::Forward) * curve.second.key.value;
-					transform->setLocalTranslate(translate);
-				}
+					translate += math::rotate(quat, math::float3::Forward) * curve.second.key.value;
 			}
+
+			transform->setLocalTranslate(translate);
+			transform->setLocalQuaternion(math::Quaternion(eular));
 		}
 	}
 }

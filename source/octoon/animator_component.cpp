@@ -144,7 +144,7 @@ namespace octoon
 		if (time_ > (1.0 / fps_))
 		{
 			needUpdate_ = true;
-			time_ = 0.0f;
+			time_ -= (1.0 / fps_);
 		}
 
 		if (needUpdate_)

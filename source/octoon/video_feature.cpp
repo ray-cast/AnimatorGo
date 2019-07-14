@@ -74,7 +74,8 @@ namespace octoon
 		{
 		case input::InputEvent::SizeChange:
 		case input::InputEvent::SizeChangeDPI:
-			video::RenderSystem::instance()->setFramebufferSize(event.change.w, event.change.h);
+			if (event.change.w > 0 && event.change.h > 0)
+				video::RenderSystem::instance()->setFramebufferSize(event.change.w, event.change.h);
 			break;
 		default:
 			return;

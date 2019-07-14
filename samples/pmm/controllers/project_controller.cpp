@@ -166,6 +166,11 @@ namespace octoon
 						clips[i].setCurve("LocalQuaternion.w", AnimationCurve(std::move(rotationW)));
 					}
 
+					/*for (std::size_t i = 0; i < clips.size(); i++)
+					{
+						it.bone_key_frame[i].
+					}*/
+
 					auto model = GamePrefabs::instance()->createModel(it.path);
 					if (model)
 					{

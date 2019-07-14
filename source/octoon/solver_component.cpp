@@ -1,11 +1,12 @@
 #include <octoon/solver_component.h>
+#include <octoon/transform_component.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(SolverComponent, GameComponent, "Solver")
 
 	SolverComponent::SolverComponent() noexcept
-		: _chainLength(1)
+		: _iterations(10)
 	{
 	}
 
@@ -14,13 +15,13 @@ namespace octoon
 	}
 
 	void
-	SolverComponent::setTargetBone(GameObjectPtr bone) noexcept
+	SolverComponent::setTarget(GameObjectPtr joint) noexcept
 	{
-		_target = bone;
+		_target = joint;
 	}
 
 	GameObjectPtr
-	SolverComponent::getTargetBone() const noexcept
+	SolverComponent::getTargetJoint() const noexcept
 	{
 		return _target;
 	}
@@ -38,39 +39,27 @@ namespace octoon
 	}
 
 	void
-	SolverComponent::setChainLength(std::uint32_t length) noexcept
+	SolverComponent::addJoint(const SolverJointPtr joint) noexcept
 	{
-		_chainLength = length;
-	}
-
-	std::uint32_t
-	SolverComponent::getChainLength() const noexcept
-	{
-		return _chainLength;
+		_joints.push_back(joint);
 	}
 
 	void
-	SolverComponent::addBone(const SolverTargetPtr bone) noexcept
+	SolverComponent::setJoints(const SolverJoints& joints) noexcept
 	{
-		_bones.push_back(bone);
+		_joints = joints;
 	}
 
 	void
-	SolverComponent::setBones(const SolverTargets& bones) noexcept
+	SolverComponent::setJoints(const SolverJoints&& joints) noexcept
 	{
-		_bones = bones;
+		_joints = std::move(joints);
 	}
 
-	void
-	SolverComponent::setBones(const SolverTargets&& bones) noexcept
+	const SolverComponent::SolverJoints&
+	SolverComponent::getJoints() const noexcept
 	{
-		_bones = std::move(bones);
-	}
-
-	const SolverComponent::SolverTargets&
-	SolverComponent::getBones() const noexcept
-	{
-		return _bones;
+		return _joints;
 	}
 
 	GameComponentPtr
@@ -78,5 +67,66 @@ namespace octoon
 	{
 		auto iksolver = std::make_shared<SolverComponent>();
 		return iksolver;
+	}
+
+	void
+	SolverComponent::onActivate() noexcept
+	{
+	}
+
+	void
+	SolverComponent::onDeactivate() noexcept
+	{
+	}
+
+	void
+	SolverComponent::onMoveBefore() noexcept
+	{
+	}
+
+	void
+	SolverComponent::onMoveAfter() noexcept
+	{
+	}
+
+	void
+	SolverComponent::solver() noexcept
+	{
+		auto target = this->getTargetJoint()->getComponent<TransformComponent>();
+		auto effect = this->getComponent<TransformComponent>();
+
+		for (std::uint32_t i = 0; i < this->getIterations(); i++)
+		{
+			auto& joints = this->getJoints();
+			for (auto& joint : joints)
+			{
+				auto& targetPos = target->getTranslate();
+				auto& effectPos = effect->getTranslate();
+				if (math::distance(effectPos, targetPos) < math::EPSILON)
+					return;
+
+				auto transform = joint->bone->getComponent<TransformComponent>();
+				math::Vector3 dstLocal = math::invTranslateVector3(transform->getTransform(), targetPos);
+				math::Vector3 srcLocal = math::invTranslateVector3(transform->getTransform(), effectPos);
+
+				srcLocal = math::normalize(srcLocal);
+				dstLocal = math::normalize(dstLocal);
+
+				float cosDeltaAngle = math::dot(dstLocal, srcLocal);
+				if (cosDeltaAngle > 1.0 - math::EPSILON_E5)
+					continue;
+
+				float deltaAngle = math::safe_acos(cosDeltaAngle);
+				deltaAngle = math::clamp(deltaAngle, joint->mininumAngle, joint->maximumAngle);
+
+				math::Vector3 axis = math::normalize(math::cross(dstLocal, srcLocal));
+				math::Quaternion q0(axis, deltaAngle);
+
+				if (joint->enableAxisLimit)
+					q0.makeRotation(math::clamp(math::eulerAngles(q0), joint->minimumRadians, joint->maximumRadians));
+
+				transform->setLocalQuaternion(math::normalize(math::cross(transform->getLocalQuaternion(), q0)));
+			}
+		}
 	}
 }

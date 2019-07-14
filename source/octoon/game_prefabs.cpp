@@ -292,20 +292,20 @@ namespace octoon
 		for (auto& it : model.get<Model::ik>())
 		{
 			auto iksolver = std::make_shared<SolverComponent>();
-			iksolver->setTargetBone(bones[it->targetBoneIndex]);
+			iksolver->setTarget(bones[it->targetBoneIndex]);
 			iksolver->setIterations(it->iterations);
-			iksolver->setChainLength(it->chainLength);
 
 			for (auto& child : it->child)
 			{
-				auto bone = std::make_shared<SolverTarget>();
+				auto bone = std::make_shared<SolverJoint>();
 				bone->bone = bones[child.boneIndex];
-				bone->angleWeight = child.angleWeight;
-				bone->rotateLimited = child.rotateLimited;
-				bone->minimumDegrees = child.minimumDegrees;
-				bone->maximumDegrees = child.maximumDegrees;
+				bone->enableAxisLimit = child.rotateLimited;
+				bone->mininumAngle = -math::radians(child.angleDegrees);
+				bone->maximumAngle = math::radians(child.angleDegrees);
+				bone->minimumRadians = math::radians(child.minimumDegrees);
+				bone->maximumRadians = math::radians(child.maximumDegrees);
 
-				iksolver->addBone(bone);
+				iksolver->addJoint(bone);
 			}
 
 			bones[it->boneIndex]->addComponent(std::move(iksolver));

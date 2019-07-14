@@ -1,5 +1,6 @@
 #include <octoon/animator_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/solver_component.h>
 #include <octoon/game_scene.h>
 
 namespace octoon
@@ -141,18 +142,19 @@ namespace octoon
 	{
 		time_ += timer_->delta();
 
-		if (time_ > (1.0 / fps_))
+		if (time_ > (1.0f / fps_))
 		{
 			needUpdate_ = true;
-			time_ -= (1.0 / fps_);
+			time_ -= (1.0f / fps_);
 		}
 
 		if (needUpdate_)
 		{
 			for (auto& it : clips_)
-				it.evaluate(1.0 / fps_);
+				it.evaluate(1.0f / fps_);
 
 			this->updateBones();
+			this->updateSolvers();
 			this->sendMessageDownwards("octoon:animation:update");
 
 			needUpdate_ = false;
@@ -203,6 +205,17 @@ namespace octoon
 
 			transform->setLocalTranslate(translate);
 			transform->setLocalQuaternion(math::normalize(quat));
+		}
+	}
+
+	void
+	AnimatorComponent::updateSolvers() noexcept
+	{
+		for (auto& it : bones_)
+		{
+			auto solver = it->getComponent<SolverComponent>();
+			if (solver)
+				solver->solver();
 		}
 	}
 }

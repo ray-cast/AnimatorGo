@@ -13,7 +13,7 @@ namespace octoon
 		class IKChild
 		{
 		public:
-			float angleWeight;
+			float angleDegrees;
 
 			std::uint8_t rotateLimited;
 			std::uint16_t boneIndex;

@@ -43,6 +43,7 @@ namespace octoon
 	private:
 		void updateBindpose(const GameObjects& transforms) noexcept;
 		void updateBones() noexcept;
+		void updateSolvers() noexcept;
 
 	private:
 		bool needUpdate_;

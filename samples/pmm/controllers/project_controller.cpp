@@ -156,6 +156,7 @@ namespace octoon
 						rotationZ.emplace_back((float)key.frame / 30.0f, key.quaternion.z, interpolationRotation);
 						rotationW.emplace_back((float)key.frame / 30.0f, key.quaternion.w, interpolationRotation);
 
+						clips[i].setName(it.bone_name[i]);
 						clips[i].setCurve("LocalPosition.x", AnimationCurve(std::move(translateX)));
 						clips[i].setCurve("LocalPosition.y", AnimationCurve(std::move(translateY)));
 						clips[i].setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ)));
@@ -246,6 +247,10 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 						animation->play();
+
+					auto animator = it->getComponent<AnimatorComponent>();
+					if (animator)
+						animator->play();
 				}
 			}
 			else
@@ -255,6 +260,10 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 						animation->stop();
+
+					auto animator = it->getComponent<AnimatorComponent>();
+					if (animator)
+						animator->stop();
 				}
 			}
 		}
@@ -307,7 +316,7 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			obj->addComponent<AnimationComponent>(clip);
+			//obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye - math::float3::Forward * 45.0f);
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera.rotation));

@@ -20,7 +20,7 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
 		~AnimatorComponent() noexcept;
 
-		bool play(const std::string& filename) noexcept;
+		bool play(const std::string& filename = "default") noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
 
@@ -35,15 +35,14 @@ namespace octoon
 		GameComponentPtr clone() const noexcept;
 
 	private:
-		bool _playAnimation(const std::string& filename) noexcept;
-		void _updateAnimation() noexcept;
-		void _destroyAnimation() noexcept;
-
-	private:
 		virtual void onActivate() except;
 		virtual void onDeactivate() noexcept;
 
 		virtual void onFrameEnd() noexcept;
+
+	private:
+		void updateBindpose(const GameObjects& transforms) noexcept;
+		void updateBones() noexcept;
 
 	private:
 		bool needUpdate_;
@@ -51,10 +50,14 @@ namespace octoon
 		bool enableAnimation_;
 		bool enableAnimOnVisableOnly_;
 
+		float fps_;
+		float time_;
+
 		TimerFeature* timer_;
 		animation::AnimationClips<float> clips_;
+		math::float3s bindpose_;
 
-		GameObjects transforms_;
+		GameObjects bones_;
 	};
 }
 

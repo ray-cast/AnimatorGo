@@ -35,6 +35,7 @@ namespace octoon
 		virtual void onFrameEnd() noexcept override;
 
 		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
+		virtual void onAnimationUpdate(const runtime::any& data) noexcept;
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;

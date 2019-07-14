@@ -84,6 +84,12 @@ namespace octoon
 			{
 				return this->curves.size();
 			}
+
+			void evaluate(const _Time& delta) noexcept
+			{
+				for (auto& it : this->curves)
+					it.second.evaluate(delta);
+			}
 		};
 
 		template<typename _Elem, typename _Time = float>

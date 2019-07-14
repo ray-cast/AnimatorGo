@@ -166,10 +166,35 @@ namespace octoon
 						clips[i].setCurve("LocalQuaternion.w", AnimationCurve(std::move(rotationW)));
 					}
 
-					/*for (std::size_t i = 0; i < clips.size(); i++)
+					for (auto& key : it.bone_key_frame)
 					{
-						it.bone_key_frame[i].
-					}*/
+						auto index = key.pre_index;
+						while (index > it.bone_name.size())
+							index = it.bone_key_frame[index - it.bone_name.size()].pre_index;
+
+						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0], key.interpolation_x[1], key.interpolation_x[2], key.interpolation_x[3]);
+						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0], key.interpolation_y[1], key.interpolation_y[2], key.interpolation_y[3]);
+						auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0], key.interpolation_z[1], key.interpolation_z[2], key.interpolation_z[3]);
+						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0], key.interpolation_rotation[1], key.interpolation_rotation[2], key.interpolation_rotation[3]);
+
+						auto translateX = Keyframe<float>((float)key.frame / 30.0f, key.translation.x, interpolationX);
+						auto translateY = Keyframe<float>((float)key.frame / 30.0f, key.translation.y, interpolationY);
+						auto translateZ = Keyframe<float>((float)key.frame / 30.0f, key.translation.z, interpolationZ);
+						auto rotationX = Keyframe<float>((float)key.frame / 30.0f, key.quaternion.x, interpolationRotation);
+						auto rotationY = Keyframe<float>((float)key.frame / 30.0f, key.quaternion.y, interpolationRotation);
+						auto rotationZ = Keyframe<float>((float)key.frame / 30.0f, key.quaternion.z, interpolationRotation);
+						auto rotationW = Keyframe<float>((float)key.frame / 30.0f, key.quaternion.w, interpolationRotation);
+
+						index--;
+
+						clips[index].getCurve("LocalPosition.x").insert(std::move(translateX));
+						clips[index].getCurve("LocalPosition.y").insert(std::move(translateY));
+						clips[index].getCurve("LocalPosition.z").insert(std::move(translateZ));
+						clips[index].getCurve("LocalQuaternion.x").insert(std::move(rotationX));
+						clips[index].getCurve("LocalQuaternion.y").insert(std::move(rotationY));
+						clips[index].getCurve("LocalQuaternion.z").insert(std::move(rotationZ));
+						clips[index].getCurve("LocalQuaternion.w").insert(std::move(rotationW));
+					}
 
 					auto model = GamePrefabs::instance()->createModel(it.path);
 					if (model)

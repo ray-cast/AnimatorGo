@@ -51,6 +51,12 @@ namespace octoon
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
 			}
 
+			void insert(const Keyframe<_Elem, _Time>& frame_) noexcept
+			{
+				frames.emplace_back(frame_);
+				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+			}
+
 			bool empty() const noexcept
 			{
 				return frames.empty();
@@ -81,9 +87,11 @@ namespace octoon
 					auto t = (key.time - a.time) / (b.time - a.time);
 
 					if (a.interpolator)
-						key.value = math::lerp(a.value, b.value, a.interpolator->interpolator(t));
-					else
-						key.value = math::lerp(a.value, b.value, interpolator ? interpolator->interpolator(t) : t);
+						t = a.interpolator->interpolator(t);
+					else if (interpolator)
+						t = interpolator->interpolator(t);
+
+					key.value = a.value * (1.0f - t) + b.value * t;
 				}
 
 				return key.value;

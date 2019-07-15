@@ -41,6 +41,10 @@ namespace octoon
 
 		GameScenePtr clone() const noexcept;
 
+	public:
+		static GameScenePtr find(const char* name) noexcept;
+		static GameScenePtr find(const std::string& name) noexcept;
+
 	private:
 		friend GameServer;
 		void _setGameServer(GameServer* gameServ) noexcept;

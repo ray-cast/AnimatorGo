@@ -16,48 +16,50 @@ namespace octoon
 			PathInterpolator(T xa_, T xb_, T ya_, T yb_) noexcept : xa(xa_), xb(xb_), ya(ya_), yb(yb_) {};
 			virtual ~PathInterpolator() noexcept = default;
 
-			virtual T interpolator(T t) const noexcept override
+			T evalX(T t) const noexcept
+			{
+				T x11 = xa * t;
+				T x12 = xa + (xb - xa) * t;
+				T x13 = xb + (1.0f - xb) * t;
+
+				T x21 = x11 + (x12 - x11) * t;
+				T x22 = x12 + (x13 - x12) * t;
+
+				return x21 + (x22 - x21) * t;
+			}
+
+			T evalY(T t) const noexcept
+			{
+				T y11 = ya * t;
+				T y12 = ya + (yb - ya) * t;
+				T y13 = yb + (1.0f - yb) * t;
+
+				T y21 = y11 + (y12 - y11) * t;
+				T y22 = y12 + (y13 - y12) * t;
+
+				return y21 + (y22 - y21) * t;
+			}
+
+			T interpolator(T time) const noexcept override
 			{
 				T min = 0.0f;
 				T max = 1.0f;
 
-				T ct = t;
+				T t = 0.5f;
+				T x = this->evalX(t);
 
-				for (;;)
+				while (std::fabs(x - time) > math::EPSILON_E4)
 				{
-					T x11 = xa * ct;
-					T x12 = xa + (xb - xa) * ct;
-					T x13 = xb + (1.0f - xb) * ct;
-
-					T x21 = x11 + (x12 - x11) * ct;
-					T x22 = x12 + (x13 - x12) * ct;
-
-					T x3 = x21 + (x22 - x21) * ct;
-
-					if (std::fabs(x3 - t) < 0.0001f)
-					{
-						T y11 = ya * ct;
-						T y12 = ya + (yb - ya) * ct;
-						T y13 = yb + (1.0f - yb) * ct;
-
-						T y21 = y11 + (y12 - y11) * ct;
-						T y22 = y12 + (y13 - y12) * ct;
-
-						T y3 = y21 + (y22 - y21) * ct;
-
-						return y3;
-					}
-					else if (x3 < t)
-					{
-						min = ct;
-					}
+					if (x < time)
+						min = t;
 					else
-					{
-						max = ct;
-					}
+						max = t;
 
-					ct = min * 0.5f + max * 0.5f;
+					t = (min + max) * 0.5f;
+					x = evalX(t);
 				}
+
+				return this->evalY(t);
 			}
 
 		private:

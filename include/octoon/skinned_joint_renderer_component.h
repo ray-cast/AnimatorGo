@@ -1,5 +1,5 @@
-#ifndef OCTOON_SKINNED_MESH_RENDERER_COMPONENT_H_
-#define OCTOON_SKINNED_MESH_RENDERER_COMPONENT_H_
+#ifndef OCTOON_SKINNED_JOINT_RENDERER_COMPONENT_H_
+#define OCTOON_SKINNED_JOINT_RENDERER_COMPONENT_H_
 
 #include <octoon/render_component.h>
 #include <octoon/video/geometry.h>
@@ -8,14 +8,14 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT SkinnedMeshRendererComponent final : public RenderComponent
+	class OCTOON_EXPORT SkinnedJointRendererComponent final : public RenderComponent
 	{
-		OctoonDeclareSubClass(SkinnedMeshRendererComponent, RenderComponent)
+		OctoonDeclareSubClass(SkinnedJointRendererComponent, RenderComponent)
 	public:
-		SkinnedMeshRendererComponent() noexcept;
-		SkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept;
-		SkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept;
-		virtual ~SkinnedMeshRendererComponent() noexcept;
+		SkinnedJointRendererComponent() noexcept;
+		SkinnedJointRendererComponent(video::MaterialPtr&& material) noexcept;
+		SkinnedJointRendererComponent(const video::MaterialPtr& material) noexcept;
+		virtual ~SkinnedJointRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;
 		void setTransforms(GameObjects&& transforms) noexcept;
@@ -34,18 +34,18 @@ namespace octoon
 		virtual void onFrame() noexcept override;
 		virtual void onFrameEnd() noexcept override;
 
-		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
+		virtual void onJointReplace(const runtime::any& mesh) noexcept;
 		virtual void onAnimationUpdate(const runtime::any& data) noexcept;
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
 	
 	private:
-		void uploadMeshData(const model::Mesh& mesh) noexcept;
+		void uploadJointData(const model::Mesh& mesh) noexcept;
 
 	private:
-		SkinnedMeshRendererComponent(const SkinnedMeshRendererComponent&) = delete;
-		SkinnedMeshRendererComponent& operator=(const SkinnedMeshRendererComponent&) = delete;
+		SkinnedJointRendererComponent(const SkinnedJointRendererComponent&) = delete;
+		SkinnedJointRendererComponent& operator=(const SkinnedJointRendererComponent&) = delete;
 
 	private:
 		bool needUpdate_;

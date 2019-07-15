@@ -683,6 +683,24 @@ namespace octoon
 		return instance;
 	}
 
+	GameObjectPtr
+	GameObject::find(const char* name) noexcept
+	{
+		return GameObjectManager::instance()->find(name);
+	}
+
+	GameObjectPtr
+	GameObject::find(const std::string& name) noexcept
+	{
+		return GameObjectManager::instance()->find(name);
+	}
+
+	const GameObjectRaws&
+	GameObject::instances() noexcept
+	{
+		return GameObjectManager::instance()->instances();
+	}
+
 	void
 	GameObject::onFrameBegin() except
 	{

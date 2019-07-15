@@ -1,5 +1,6 @@
 #include <octoon/animator_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/solver_component.h>
 #include <octoon/game_scene.h>
 
 namespace octoon
@@ -9,8 +10,10 @@ namespace octoon
 	AnimatorComponent::AnimatorComponent() noexcept
 		: enableAnimation_(true)
 		, enableAnimOnVisableOnly_(false)
-		, needUpdate_(false)
+		, needUpdate_(true)
 		, timer_(nullptr)
+		, fps_(30.0f)
+		, time_(0.0f)
 	{
 	}
 
@@ -55,16 +58,12 @@ namespace octoon
 	}
 
 	bool
-	AnimatorComponent::play(const std::string& filename) noexcept
+	AnimatorComponent::play(const std::string& status) noexcept
 	{
-		if (this->getName() != filename)
-		{
-			_playAnimation(filename);
-			this->setName(filename);
-		}
+		this->setName(status);
+		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
 		enableAnimation_ = true;
-
 		return enableAnimation_;
 	}
 
@@ -77,7 +76,6 @@ namespace octoon
 	void
 	AnimatorComponent::stop() noexcept
 	{
-		_destroyAnimation();
 	}
 
 	void
@@ -101,26 +99,28 @@ namespace octoon
 	void
 	AnimatorComponent::setTransforms(GameObjects&& transforms) noexcept
 	{
-		transforms_ = std::move(transforms);
+		bones_ = std::move(transforms);
+		this->updateBindpose(bones_);
 	}
 
 	void
 	AnimatorComponent::setTransforms(const GameObjects& transforms) noexcept
 	{
-		transforms_ = transforms;
+		bones_ = transforms;
+		this->updateBindpose(bones_);
 	}
 
 	const GameObjects&
 	AnimatorComponent::getTransforms() const noexcept
 	{
-		return transforms_;
+		return bones_;
 	}
 
 	GameComponentPtr
 	AnimatorComponent::clone() const noexcept
 	{
 		auto animtion = std::make_shared<AnimatorComponent>();
-		animtion->transforms_ = transforms_;
+		animtion->bones_ = bones_;
 		return animtion;
 	}
 
@@ -140,109 +140,98 @@ namespace octoon
 	void
 	AnimatorComponent::onFrameEnd() noexcept
 	{
-		if (enableAnimation_ && !enableAnimOnVisableOnly_)
-			_updateAnimation();
-		else
+		time_ += timer_->delta();
+
+		if (time_ > (1.0f / fps_))
+		{
 			needUpdate_ = true;
+			time_ -= (1.0f / fps_);
+		}
+
+		if (needUpdate_)
+		{
+			for (auto& it : clips_)
+				it.evaluate(1.0f / fps_);
+
+			this->updateBones();
+			this->updateSolvers();
+			this->sendMessageDownwards("octoon:animation:update");
+
+			needUpdate_ = false;
+		}
 	}
 
-	bool
-	AnimatorComponent::_playAnimation(const std::string& filename) noexcept
+	void
+	AnimatorComponent::updateBindpose(const GameObjects& bones) noexcept
 	{
-		/*this->_destroyAnimation();
+		bindpose_.resize(bones.size());
 
-		if (filename.empty())
-			return false;
-
-		ResLoader<Model> loader;
-		loader.load(filename,
-			[&](ray::ModelPtr model, const std::string& name)
+		for (std::size_t i = 0; i < bones.size(); i++)
 		{
-			StreamReaderPtr stream;
-			if (IoServer::instance()->openFileURL(stream, name))
-				return model->load(*stream);
-			return false;
+			bindpose_[i] = bones[i]->getComponent<TransformComponent>()->getTranslate();
+			if (bones[i]->getParent())
+				bindpose_[i] -= bones[i]->getParent()->getComponent<TransformComponent>()->getTranslate();
 		}
-		);
+	}
 
-		auto model = loader.data();
-		if (!model || !model->hasAnimations())
-			return false;
-
-		std::intptr_t i = 0;
-		std::map<util::string, std::intptr_t> boneMap;
-		for (auto& it : transforms_)
+	void
+	AnimatorComponent::updateBones() noexcept
+	{
+		for (std::size_t i = 0; i < clips_.size(); i++)
 		{
-			boneMap[it->getName()] = i++;
-		}
+			assert(bones_[i]->getName() == clips_[i].name);
 
-		std::size_t index = 0;
+			auto transform = bones_[i]->getComponent<TransformComponent>();
 
-		std::vector<Bone> bones;
-		std::vector<IKAttr> iks;
+			auto scale = transform->getLocalScale();
+			auto quat = transform->getLocalQuaternion();
+			auto translate = transform->getLocalTranslate();
+			auto euler = math::eulerAngles(quat);
 
-		for (auto& it : transforms_)
-		{
-			Bone bone;
-			bone.setName(it->getName());
-			bone.setPosition(it->getWorldTranslate());
-			if (it->getParent())
-				bone.setParent(boneMap[it->getParent()->getName()]);
-			else
-				bone.setParent(-1);
-
-			auto iksolver = it->getComponent<IKSolverComponent>();
-			if (iksolver)
+			for (auto& curve : clips_[i].curves)
 			{
-				IKAttr attr;
-				attr.boneIndex = index;
-				attr.targetBoneIndex = boneMap[iksolver->getTargetBone()->getName()];
-				attr.chainLength = iksolver->getChainLength();
-				attr.iterations = iksolver->getIterations();
-
-				for (auto& child : iksolver->getBones())
-				{
-					IKChild ikbone;
-					ikbone.boneIndex = boneMap[child->bone->getName()];
-					ikbone.angleWeight = child->angleWeight;
-					ikbone.rotateLimited = child->rotateLimited;
-					ikbone.minimumDegrees = child->minimumDegrees;
-					ikbone.maximumDegrees = child->maximumDegrees;
-
-					attr.child.push_back(ikbone);
-				}
-
-				iks.push_back(attr);
+				if (curve.first == "LocalPosition.x")
+					translate.x = curve.second.key.value + bindpose_[i].x;
+				else if (curve.first == "LocalPosition.y")
+					translate.y = curve.second.key.value + bindpose_[i].y;
+				else if (curve.first == "LocalPosition.z")
+					translate.z = curve.second.key.value + bindpose_[i].z;
+				else if (curve.first == "LocalScale.x")
+					scale.x = curve.second.key.value;
+				else if (curve.first == "LocalScale.y")
+					scale.y = curve.second.key.value;
+				else if (curve.first == "LocalScale.z")
+					scale.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.x")
+					quat.x = curve.second.key.value;
+				else if (curve.first == "LocalRotation.y")
+					quat.y = curve.second.key.value;
+				else if (curve.first == "LocalRotation.z")
+					quat.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.w")
+					quat.w = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.x")
+					euler.x = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.y")
+					euler.y = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.z")
+					euler.z = curve.second.key.value;
 			}
 
-			bones.push_back(bone);
-
-			++index;
+			transform->setLocalScale(scale);
+			transform->setLocalTranslate(translate);
+			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
-
-		_animtion = model->getAnimationList().back()->clone();
-		_animtion->setBoneArray(bones);
-		_animtion->setIKArray(iks);
-		_animtion->updateMotion();
-
-		_enableAnimation = true;*/
-		return true;
 	}
 
 	void
-	AnimatorComponent::_updateAnimation() noexcept
+	AnimatorComponent::updateSolvers() noexcept
 	{
-		/*_animtion->updateFrame(this->getGameObject()->getGameScene()->getFeature<TimerFeature>()->delta());
-		_animtion->updateMotion();
-
-		std::size_t i = 0;
-		for (auto& it : _animtion->getBoneArray())
-			transforms_[i++]->getComponent<TransformComponent>()->setTransformOnlyRotate(it.getTransform());*/
-	}
-
-	void
-	AnimatorComponent::_destroyAnimation() noexcept
-	{
-		enableAnimation_ = false;
+		for (auto& it : bones_)
+		{
+			auto solver = it->getComponent<SolverComponent>();
+			if (solver)
+				solver->solver();
+		}
 	}
 }

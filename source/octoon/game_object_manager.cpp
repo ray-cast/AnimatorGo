@@ -1,5 +1,4 @@
 #include <octoon/game_object_manager.h>
-#include <octoon/game_object.h>
 
 namespace octoon
 {
@@ -67,48 +66,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObjectManager::findObject(const std::string& name) noexcept
-	{
-		std::lock_guard<std::mutex> guard_lock(lock_);
-
-		for (auto& it : instanceLists_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name)
-				return it->downcast_pointer<GameObject>();
-		}
-
-		return nullptr;
-	}
-
-	GameObjectPtr
-	GameObjectManager::findActiveObject(const std::string& name) noexcept
-	{
-		for (auto& it : activeActors_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name && it->getActive())
-				return it->downcast_pointer<GameObject>();
-		}
-
-		return nullptr;
-	}
-
-	GameObjectPtr
-	GameObjectManager::instantiate(const std::string& name) noexcept
-	{
-		auto object = this->findObject(name);
-		if (object)
-			return object->clone();
-		return nullptr;
-	}
-
-	bool
-	GameObjectManager::activeObject(const std::string& name) noexcept
+	GameObjectManager::find(const char* name) noexcept
 	{
 		std::lock_guard<std::mutex> guard_lock(lock_);
 
@@ -117,26 +75,23 @@ namespace octoon
 			if (it)
 			{
 				if (it->getName() == name)
-				{
-					it->setActive(true);
-					return true;
-				}
+					return it->downcast_pointer<GameObject>();
 			}
 		}
 
-		return false;
+		return nullptr;
+	}
+
+	GameObjectPtr
+	GameObjectManager::find(const std::string& name) noexcept
+	{
+		return this->find(name.c_str());
 	}
 
 	const GameObjectRaws&
-	GameObjectManager::getInstanceList() const noexcept
+	GameObjectManager::instances() const noexcept
 	{
 		return instanceLists_;
-	}
-
-	const GameObjectRaws&
-	GameObjectManager::getActivedActors() const noexcept
-	{
-		return activeActors_;
 	}
 
 	void

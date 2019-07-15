@@ -1,5 +1,4 @@
 #include <octoon/model/pmx_loader.h>
-#include <octoon/model/pmx.h>
 #include <octoon/model/modtypes.h>
 #include <octoon/model/mesh.h>
 #include <octoon/model/property.h>
@@ -48,7 +47,7 @@ namespace octoon
 			return std::strncmp(type, "pmx", 3) == 0;
 		}
 
-		bool PmxLoader::doLoad(istream& stream, Pmx& pmx) noexcept
+		bool PmxLoader::doLoad(istream& stream, PMX& pmx) noexcept
 		{
 			if (!stream.read((char*)&pmx.header, sizeof(pmx.header))) return false;
 			if (!stream.read((char*)&pmx.description.japanModelLength, sizeof(pmx.description.japanModelLength))) return false;
@@ -149,11 +148,14 @@ namespace octoon
 						break;
 						case PMX_QDEF:
 						{
-							if (!stream.read((char*)&vertex.weight.bone1, pmx.header.sizeOfBone)) return false;
-							if (!stream.read((char*)&vertex.weight.bone2, pmx.header.sizeOfBone)) return false;
-							if (!stream.read((char*)&vertex.weight.weight1, sizeof(vertex.weight.weight1))) return false;
-
-							vertex.weight.weight2 = 1.0f - vertex.weight.weight1;
+							if (!stream.read((char*)& vertex.weight.bone1, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone2, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone3, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone4, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.weight1, sizeof(vertex.weight.weight1))) return false;
+							if (!stream.read((char*)& vertex.weight.weight2, sizeof(vertex.weight.weight2))) return false;
+							if (!stream.read((char*)& vertex.weight.weight3, sizeof(vertex.weight.weight3))) return false;
+							if (!stream.read((char*)& vertex.weight.weight4, sizeof(vertex.weight.weight4))) return false;
 						}
 						default:
 							return false;
@@ -261,12 +263,12 @@ namespace octoon
 						if (!stream.read((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_AXIS)
+					if (bone.Flag & PMX_BONE_FIXED_AXIS)
 					{
 						if (!stream.read((char*)&bone.AxisDirection, sizeof(bone.AxisDirection))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_ROTATE)
+					if (bone.Flag & PMX_BONE_LOCAL_AXIS)
 					{
 						if (!stream.read((char*)&bone.DimentionXDirection, sizeof(bone.DimentionXDirection))) return false;
 						if (!stream.read((char*)&bone.DimentionZDirection, sizeof(bone.DimentionZDirection))) return false;
@@ -289,8 +291,8 @@ namespace octoon
 								if (!stream.read((char*)&bone.IKList[j].rotateLimited, (std::streamsize)sizeof(bone.IKList[j].rotateLimited))) return false;
 								if (bone.IKList[j].rotateLimited)
 								{
-									if (!stream.read((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
 									if (!stream.read((char*)&bone.IKList[j].minimumRadian, (std::streamsize)sizeof(bone.IKList[j].minimumRadian))) return false;
+									if (!stream.read((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
 								}
 							}
 						}
@@ -298,9 +300,9 @@ namespace octoon
 				}
 			}
 
-			if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
+			/*if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
 
-			/*if (pmx.numMorphs > 0)
+			if (pmx.numMorphs > 0)
 			{
 				pmx.morphs.resize(pmx.numMorphs);
 
@@ -316,8 +318,13 @@ namespace octoon
 
 					if (morph.morphType == PmxMorphType::MorphTypeGroup)
 					{
-						if (!stream.read((char*)&morph.morphIndex, pmx.header.sizeOfMorph)) return false;
-						if (!stream.read((char*)&morph.morphRate, sizeof(morph.morphRate))) return false;
+						morph.groupList.resize(morph.morphCount);
+
+						for (auto& group : morph.groupList)
+						{
+							if (!stream.read((char*)& group.morphIndex, pmx.header.sizeOfMorph)) return false;
+							if (!stream.read((char*)& group.morphRate, sizeof(group.morphRate))) return false;
+						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
 					{
@@ -480,7 +487,7 @@ namespace octoon
 
 		bool PmxLoader::doLoad(istream& stream, Model& model) noexcept
 		{
-			Pmx pmx;
+			PMX pmx;
 			if (!this->doLoad(stream, pmx))
 				return false;
 
@@ -634,9 +641,9 @@ namespace octoon
 					{
 						IKChild child;
 						child.boneIndex = ik.BoneIndex;
-						child.angleWeight = degress(it.IKLimitedRadian) / 229.1831f;
-						child.minimumDegrees = degress(ik.minimumRadian);
-						child.maximumDegrees = degress(ik.maximumRadian);
+						child.angleRadian = it.IKLimitedRadian;
+						child.minimumRadian = ik.minimumRadian;
+						child.maximumRadian = ik.maximumRadian;
 						child.rotateLimited = ik.rotateLimited;
 
 						attr.child.push_back(child);
@@ -690,7 +697,7 @@ namespace octoon
 			return true;
 		}
 
-		bool PmxLoader::doSave(ostream& stream, const Pmx& pmx) noexcept
+		bool PmxLoader::doSave(ostream& stream, const PMX& pmx) noexcept
 		{
 			if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -871,12 +878,12 @@ namespace octoon
 						if (!stream.write((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_AXIS)
+					if (bone.Flag & PMX_BONE_FIXED_AXIS)
 					{
 						if (!stream.write((char*)&bone.AxisDirection, sizeof(bone.AxisDirection))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_ROTATE)
+					if (bone.Flag & PMX_BONE_LOCAL_AXIS)
 					{
 						if (!stream.write((char*)&bone.DimentionXDirection, sizeof(bone.DimentionXDirection))) return false;
 						if (!stream.write((char*)&bone.DimentionZDirection, sizeof(bone.DimentionZDirection))) return false;
@@ -897,8 +904,8 @@ namespace octoon
 								if (!stream.write((char*)&bone.IKList[j].rotateLimited, (std::streamsize)sizeof(bone.IKList[j].rotateLimited))) return false;
 								if (bone.IKList[j].rotateLimited)
 								{
-									if (!stream.write((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
 									if (!stream.write((char*)&bone.IKList[j].minimumRadian, (std::streamsize)sizeof(bone.IKList[j].minimumRadian))) return false;
+									if (!stream.write((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;									
 								}
 							}
 						}
@@ -923,8 +930,11 @@ namespace octoon
 
 					if (morph.morphType == PmxMorphType::MorphTypeGroup)
 					{
-						if (!stream.write((char*)&morph.morphIndex, pmx.header.sizeOfMorph)) return false;
-						if (!stream.write((char*)&morph.morphRate, sizeof(morph.morphRate))) return false;
+						for (auto& group : morph.groupList)
+						{
+							if (!stream.write((char*)& group.morphIndex, pmx.header.sizeOfMorph)) return false;
+							if (!stream.write((char*)& group.morphRate, sizeof(group.morphRate))) return false;
+						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
 					{

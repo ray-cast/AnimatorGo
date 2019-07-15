@@ -89,51 +89,39 @@ namespace octoon
 
 			auto transform = this->getComponent<TransformComponent>();
 
+			auto scale = transform->getLocalScale();
+			auto quat = transform->getLocalQuaternion();
+			auto translate = transform->getLocalTranslate();
+
 			for (auto& curve : clip.curves)
 			{
-				if (curve.first == "LocalPosition.x")
-				{
-					auto translate = transform->getTranslate();
+				if (curve.first == "LocalScale.x")
+					scale.x = curve.second.key.value;
+				else if (curve.first == "LocalScale.y")
+					scale.y = curve.second.key.value;
+				else if (curve.first == "LocalScale.z")
+					scale.z = curve.second.key.value;
+				else if (curve.first == "LocalPosition.x")
 					translate.x = curve.second.key.value;
-					transform->setTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.y")
-				{
-					auto translate = transform->getTranslate();
 					translate.y = curve.second.key.value;
-					transform->setTranslate(translate);
-				}
 				else if (curve.first == "LocalPosition.z")
-				{
-					auto translate = transform->getTranslate();
 					translate.z = curve.second.key.value;
-					transform->setTranslate(translate);
-				}
 				else if (curve.first == "LocalRotation.x")
-				{
-					auto eular = math::eulerAngles(transform->getQuaternion());
-					eular.x = curve.second.key.value;
-					transform->setQuaternion(math::Quaternion(eular));
-				}
+					quat.x = curve.second.key.value;
 				else if (curve.first == "LocalRotation.y")
-				{
-					auto eular = math::eulerAngles(transform->getQuaternion());
-					eular.y = curve.second.key.value;
-					transform->setQuaternion(math::Quaternion(eular));
-				}
+					quat.y = curve.second.key.value;
 				else if (curve.first == "LocalRotation.z")
-				{
-					auto eular = math::eulerAngles(transform->getQuaternion());
-					eular.z = curve.second.key.value;
-					transform->setQuaternion(math::Quaternion(eular));
-				}
+					quat.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.w")
+					quat.w = curve.second.key.value;
 				else if (curve.first == "Transform:move")
-				{
-					auto translate = transform->getTranslate();
-					translate += math::rotate(transform->getQuaternion(), math::float3::Forward) * curve.second.key.value;
-					transform->setTranslate(translate);
-				}
+					translate += math::rotate(quat, math::float3::Forward) * curve.second.key.value;
 			}
+
+			transform->setLocalScale(scale);
+			transform->setLocalTranslate(translate);
+			transform->setLocalQuaternion(quat);
 		}
 	}
 }

@@ -8,11 +8,13 @@
 #include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 #include <octoon/math/vector4.h>
+#include <octoon/math/quat.h>
 
 namespace octoon
 {
 	typedef math::Vector3  PmmVector3;
 	typedef math::Vector4  PmmVector4;
+	typedef math::Quaternion  PmmQuaternion;
 
 	typedef math::Vector3  PmmColor3;
 	typedef math::Vector4  PmmColor4;
@@ -113,7 +115,7 @@ namespace octoon
 		std::uint8_t interpolation_z[4];
 		std::uint8_t interpolation_rotation[4];
 		PmmVector3 translation;
-		PmmVector4 quaternion;
+		PmmQuaternion quaternion;
 		std::uint8_t is_selected;
 		std::uint8_t is_physics_disabled;
 

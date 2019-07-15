@@ -100,6 +100,12 @@ namespace octoon
 
 		GameObjectPtr clone() const except;
 
+	public:
+		static GameObjectPtr find(const char* name) noexcept;
+		static GameObjectPtr find(const std::string& name) noexcept;
+
+		static const GameObjectRaws& instances() noexcept;
+
 	private:
 		friend class GameComponent;
 		void addComponentDispatch(GameDispatchTypes type, GameComponent* component) noexcept;

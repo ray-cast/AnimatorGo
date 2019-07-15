@@ -143,26 +143,57 @@ namespace octoon
 						Keyframes<float> rotationZ;
 						Keyframes<float> rotationW;
 
-						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0], key.interpolation_x[1], key.interpolation_x[2], key.interpolation_x[3]);
-						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0], key.interpolation_y[1], key.interpolation_y[2], key.interpolation_y[3]);
-						auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0], key.interpolation_z[1], key.interpolation_z[2], key.interpolation_z[3]);
-						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0], key.interpolation_rotation[1], key.interpolation_rotation[2], key.interpolation_rotation[3]);
+						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
+						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
+						auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
+						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 255.0f, key.interpolation_rotation[1] / 255.0f, key.interpolation_rotation[2] / 255.0f, key.interpolation_rotation[3] / 255.0f);
+
+						auto euler = math::eulerAngles(key.quaternion);
 
 						translateX.emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
 						translateY.emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
 						translateZ.emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						rotationX.emplace_back((float)key.frame / 30.0f, key.quaternion.x, interpolationRotation);
-						rotationY.emplace_back((float)key.frame / 30.0f, key.quaternion.y, interpolationRotation);
-						rotationZ.emplace_back((float)key.frame / 30.0f, key.quaternion.z, interpolationRotation);
-						rotationW.emplace_back((float)key.frame / 30.0f, key.quaternion.w, interpolationRotation);
+						rotationX.emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
+						rotationY.emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
+						rotationZ.emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 
-						clips[i].setCurve("LocalPosition.x", AnimationCurve(std::move(translateX)));
-						clips[i].setCurve("LocalPosition.y", AnimationCurve(std::move(translateY)));
-						clips[i].setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ)));
-						clips[i].setCurve("LocalQuaternion.x", AnimationCurve(std::move(rotationX)));
-						clips[i].setCurve("LocalQuaternion.y", AnimationCurve(std::move(rotationY)));
-						clips[i].setCurve("LocalQuaternion.z", AnimationCurve(std::move(rotationZ)));
-						clips[i].setCurve("LocalQuaternion.w", AnimationCurve(std::move(rotationW)));
+						auto& clip = clips[i];
+						clip.setName(it.bone_name[i]);
+						clip.setCurve("LocalPosition.x", AnimationCurve(std::move(translateX)));
+						clip.setCurve("LocalPosition.y", AnimationCurve(std::move(translateY)));
+						clip.setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ)));
+						clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX)));
+						clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY)));
+						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ)));
+					}
+
+					for (auto& key : it.bone_key_frame)
+					{
+						auto index = key.pre_index;
+						while (index >= it.bone_name.size())
+							index = it.bone_key_frame[index - it.bone_name.size()].pre_index;
+
+						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
+						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
+						auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
+						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 255.0f, key.interpolation_rotation[1] / 255.0f, key.interpolation_rotation[2] / 255.0f, key.interpolation_rotation[3] / 255.0f);
+
+						auto euler = math::eulerAngles(key.quaternion);
+
+						auto translateX = Keyframe<float>((float)key.frame / 30.0f, key.translation.x, interpolationX);
+						auto translateY = Keyframe<float>((float)key.frame / 30.0f, key.translation.y, interpolationY);
+						auto translateZ = Keyframe<float>((float)key.frame / 30.0f, key.translation.z, interpolationZ);
+						auto rotationX = Keyframe<float>((float)key.frame / 30.0f, euler.x, interpolationRotation);
+						auto rotationY = Keyframe<float>((float)key.frame / 30.0f, euler.y, interpolationRotation);
+						auto rotationZ = Keyframe<float>((float)key.frame / 30.0f, euler.z, interpolationRotation);
+
+						auto& clip = clips[index];
+						clip.getCurve("LocalPosition.x").insert(std::move(translateX));
+						clip.getCurve("LocalPosition.y").insert(std::move(translateY));
+						clip.getCurve("LocalPosition.z").insert(std::move(translateZ));
+						clip.getCurve("LocalEulerAnglesRaw.x").insert(std::move(rotationX));
+						clip.getCurve("LocalEulerAnglesRaw.y").insert(std::move(rotationY));
+						clip.getCurve("LocalEulerAnglesRaw.z").insert(std::move(rotationZ));
 					}
 
 					auto model = GamePrefabs::instance()->createModel(it.path);
@@ -246,6 +277,10 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 						animation->play();
+
+					auto animator = it->getComponent<AnimatorComponent>();
+					if (animator)
+						animator->play();
 				}
 			}
 			else
@@ -255,6 +290,10 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 						animation->stop();
+
+					auto animator = it->getComponent<AnimatorComponent>();
+					if (animator)
+						animator->stop();
 				}
 			}
 		}
@@ -307,7 +346,7 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			obj->addComponent<AnimationComponent>(clip);
+			//obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye - math::float3::Forward * 45.0f);
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera.rotation));

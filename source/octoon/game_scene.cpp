@@ -166,6 +166,18 @@ namespace octoon
 		return scene;
 	}
 
+	GameScenePtr
+	GameScene::find(const char* name) noexcept
+	{
+		return GameSceneManager::instance()->find(name);
+	}
+
+	GameScenePtr 
+	GameScene::find(const std::string& name) noexcept
+	{
+		return GameSceneManager::instance()->find(name);
+	}
+
 	void
 	GameScene::_setGameServer(GameServer* gameServ) noexcept
 	{

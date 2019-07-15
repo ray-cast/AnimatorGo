@@ -367,13 +367,15 @@ namespace octoon
 	void
 	TransformComponent::onMoveBefore() except
 	{
-		this->getGameObject()->onMoveBefore();
+		if (this->getGameObject())
+			this->getGameObject()->onMoveBefore();
 	}
 
 	void
 	TransformComponent::onMoveAfter() except
 	{
-		this->getGameObject()->onMoveAfter();
+		if (this->getGameObject())
+			this->getGameObject()->onMoveAfter();
 	}
 
 	void

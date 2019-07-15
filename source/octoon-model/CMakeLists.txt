@@ -21,7 +21,6 @@ SOURCE_GROUP(${LIB_NAME} FILES ${MODEL_LIST})
 SET(LOADER_LIST
 	${HEADER_PATH}/modall.h
 	${SOURCE_PATH}/modall.cpp
-	${HEADER_PATH}/pmx.h
 	${HEADER_PATH}/pmx_loader.h
 	${SOURCE_PATH}/pmx_loader.cpp
 )

@@ -1,7 +1,7 @@
 #ifndef OCTOON_GAME_SCENE_MANAGER_H_
 #define OCTOON_GAME_SCENE_MANAGER_H_
 
-#include <octoon/game_feature.h>
+#include <octoon/game_scene.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
@@ -13,18 +13,10 @@ namespace octoon
 		GameSceneManager() noexcept;
 		~GameSceneManager() noexcept;
 
-		GameScenePtr findScene(const std::string& name) noexcept;
-		GameScenePtr findActivedScene(const std::string& name) noexcept;
-
-		GameScenePtr instantiate(const std::string& name) except;
-
-		bool activeScene(const std::string& name) noexcept;
+		GameScenePtr find(const char* name) noexcept;
+		GameScenePtr find(const std::string& name) noexcept;
 
 		GameScene* defaultScene() noexcept;
-
-		void onFrameBegin() noexcept;
-		void onFrame() noexcept;
-		void onFrameEnd() noexcept;
 
 	private:
 		friend GameScene;

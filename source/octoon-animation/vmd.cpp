@@ -6,31 +6,6 @@ namespace octoon
 {
 	namespace animation
 	{
-		static bool VMDMotionSorter(const VMDMotion &m1, const VMDMotion &m2)
-		{
-			return m1.frame < m2.frame;
-		}
-
-		static bool VMDMorphSorter(const VMDMorph &m1, const VMDMorph &m2)
-		{
-			return m1.frame < m2.frame;
-		}
-
-		static bool VMDCameraFrameSorter(const VMDCamera &m1, const VMDCamera &m2)
-		{
-			return m1.frame < m2.frame;
-		}
-
-		static bool VMDLightFrameSorter(const VMDLight &m1, const VMDLight &m2)
-		{
-			return m1.frame < m2.frame;
-		}
-
-		static bool VMDSelfShadowFrameSorter(const VMDSelfShadow& m1, const VMDSelfShadow& m2)
-		{
-			return m1.frame < m2.frame;
-		}
-
 		std::string sjis2utf8(const std::string& sjis)
 		{
 			std::size_t in_size = sjis.size();
@@ -105,8 +80,6 @@ namespace octoon
 				vmd.MotionLists.resize(vmd.NumMotion);
 
 				if (!stream.read((char*)vmd.MotionLists.data(), sizeof(VMDMotion) * vmd.NumMotion)) return false;
-
-				std::sort(vmd.MotionLists.begin(), vmd.MotionLists.end(), VMDMotionSorter);
 			}
 
 			if (!stream.read((char*)&vmd.NumMorph, sizeof(vmd.NumMorph))) return false;
@@ -115,8 +88,6 @@ namespace octoon
 				vmd.MorphLists.resize(vmd.NumMorph);
 
 				if (!stream.read((char*)vmd.MorphLists.data(), sizeof(VMDMorph) * vmd.NumMorph)) return false;
-
-				std::sort(vmd.MorphLists.begin(), vmd.MorphLists.end(), VMDMorphSorter);
 			}
 
 			if (!stream.read((char*)&vmd.NumCamera, sizeof(vmd.NumCamera))) return false;
@@ -125,8 +96,6 @@ namespace octoon
 				vmd.CameraLists.resize(vmd.NumCamera);
 
 				if (!stream.read((char*)vmd.CameraLists.data(), sizeof(VMDCamera) * vmd.NumCamera)) return false;
-
-				std::sort(vmd.CameraLists.begin(), vmd.CameraLists.end(), VMDCameraFrameSorter);
 			}
 
 			if (!stream.read((char*)&vmd.NumLight, sizeof(vmd.NumLight))) return false;
@@ -135,8 +104,6 @@ namespace octoon
 				vmd.LightLists.resize(vmd.NumLight);
 
 				if (!stream.read((char*)vmd.LightLists.data(), sizeof(VMDLight) * vmd.NumLight)) return false;
-
-				std::sort(vmd.LightLists.begin(), vmd.LightLists.end(), VMDLightFrameSorter);
 			}
 
 			if (!stream.read((char*)&vmd.NumSelfShadow, sizeof(vmd.NumSelfShadow))) return false;
@@ -145,8 +112,6 @@ namespace octoon
 				vmd.SelfShadowLists.resize(vmd.NumSelfShadow);
 
 				if (!stream.read((char*)vmd.SelfShadowLists.data(), sizeof(VMDSelfShadow) * vmd.NumSelfShadow)) return false;
-
-				std::sort(vmd.SelfShadowLists.begin(), vmd.SelfShadowLists.end(), VMDSelfShadowFrameSorter);
 			}
 
 			std::map<std::string, AnimationClip<float>> motions;

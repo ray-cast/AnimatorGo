@@ -1,55 +1,56 @@
-#include <octoon/skinned_mesh_renderer_component.h>
+#include <octoon/skinned_joint_renderer_component.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
+#include <iostream>
 
 namespace octoon
 {
-	OctoonImplementSubClass(SkinnedMeshRendererComponent, RenderComponent, "MeshRenderer")
+	OctoonImplementSubClass(SkinnedJointRendererComponent, RenderComponent, "JointRenderer")
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent() noexcept
 		: needUpdate_(true)
 	{
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(video::MaterialPtr&& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(const video::MaterialPtr& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(material);
 	}
 
-	SkinnedMeshRendererComponent::~SkinnedMeshRendererComponent() noexcept
+	SkinnedJointRendererComponent::~SkinnedJointRendererComponent() noexcept
 	{
 	}
 
 	void
-	SkinnedMeshRendererComponent::setTransforms(const GameObjects& transforms) noexcept
+	SkinnedJointRendererComponent::setTransforms(const GameObjects& transforms) noexcept
 	{
 		transforms_ = transforms;
 	}
 
 	void
-	SkinnedMeshRendererComponent::setTransforms(GameObjects&& transforms) noexcept
+	SkinnedJointRendererComponent::setTransforms(GameObjects&& transforms) noexcept
 	{
 		transforms_ = std::move(transforms);
 	}
 
 	const GameObjects&
-	SkinnedMeshRendererComponent::getTransforms() const noexcept
+	SkinnedJointRendererComponent::getTransforms() const noexcept
 	{
 		return transforms_;
 	}
 
 	GameComponentPtr
-	SkinnedMeshRendererComponent::clone() const noexcept
+	SkinnedJointRendererComponent::clone() const noexcept
 	{
-		auto instance = std::make_shared<SkinnedMeshRendererComponent>();
+		auto instance = std::make_shared<SkinnedJointRendererComponent>();
 		instance->setName(this->getName());
 		instance->setMaterial(this->getMaterial() ? (this->isSharedMaterial() ? this->getMaterial() : this->getMaterial()->clone()) : nullptr, this->isSharedMaterial());
 
@@ -57,13 +58,13 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onActivate() noexcept
+	SkinnedJointRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
-		this->addMessageListener("octoon::mesh::update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->addMessageListener("octoon:animation:update", std::bind(&SkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
+		this->addMessageListener("octoon::mesh::update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
+		this->addMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		
 		auto transform = this->getComponent<TransformComponent>();
 
@@ -77,11 +78,11 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onDeactivate() noexcept
+	SkinnedJointRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-		this->removeMessageListener("octoon::mesh::update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->removeMessageListener("octoon:animation:update", std::bind(&SkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
+		this->removeMessageListener("octoon::mesh::update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
+		this->removeMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		
 		mesh_.reset();
 
@@ -93,12 +94,12 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMoveBefore() noexcept
+	SkinnedJointRendererComponent::onMoveBefore() noexcept
 	{
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMoveAfter() noexcept
+	SkinnedJointRendererComponent::onMoveAfter() noexcept
 	{
 		if (geometry_)
 		{
@@ -108,67 +109,44 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrameBegin() noexcept
+	SkinnedJointRendererComponent::onFrameBegin() noexcept
 	{
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrame() noexcept
+	SkinnedJointRendererComponent::onFrame() noexcept
 	{
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrameEnd() noexcept
+	SkinnedJointRendererComponent::onFrameEnd() noexcept
 	{
 		if (!mesh_)
 			return;
 
 		if (needUpdate_)
 		{
-			std::vector<math::float4x4> joints(transforms_.size());
+			model::Mesh meshes;
+			auto& vertices = meshes.getVertexArray();
 
-			auto& bindposes = mesh_->getBindposes();
-			if (bindposes.size() != transforms_.size())
+			for (auto& transfrom : transforms_)
 			{
-				for (std::size_t i = 0; i < transforms_.size(); ++i)
-					joints[i].makeIdentity();
-			}
-			else
-			{
-				for (std::size_t i = 0; i < transforms_.size(); ++i)
-					joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
-			}
-
-			auto& vertices = mesh_->getVertexArray();
-			auto& weights = mesh_->getWeightArray();
-
-#pragma omp parallel for
-			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
-			{
-				math::float3 v(0.0, 0.0, 0.0);
-				math::float3 n(0.0, 0.0, 0.0);
-
-				for (std::uint8_t j = 0; j < 4; j++)
+				if (transfrom->getParent())
 				{
-					auto w = weights[i].weights[j];
-					if (w > 0.0)
-					{
-						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-						n += ((math::float3x3)joints[weights[i].bones[j]] * vertices[i]) * w;
-					}
+					vertices.push_back(transfrom->getParent()->getComponent<TransformComponent>()->getTranslate());
+					vertices.push_back(transfrom->getComponent<TransformComponent>()->getTranslate());
 				}
-
-				skinnedMesh_->getVertexArray()[i] = v;
-				skinnedMesh_->getNormalArray()[i] = n;
 			}
 
-			this->uploadMeshData(*skinnedMesh_);
+			if (!vertices.empty())
+				this->uploadJointData(meshes);
+
 			needUpdate_ = false;
 		}
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data_) noexcept
+	SkinnedJointRendererComponent::onJointReplace(const runtime::any& data_) noexcept
 	{
 		if (!this->getMaterial())
 			return;
@@ -184,27 +162,27 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
+	SkinnedJointRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
 	{
 		this->needUpdate_ = true;
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
+	SkinnedJointRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
 	{
 		if (geometry_)
 			geometry_->setMaterial(material);
 	}
 
 	void
-	SkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
+	SkinnedJointRendererComponent::onLayerChangeAfter() noexcept
 	{
 		if (geometry_)
 			geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 
 	void
-	SkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	SkinnedJointRendererComponent::uploadJointData(const model::Mesh& mesh) noexcept
 	{
 		if (geometry_)
 		{

@@ -81,7 +81,7 @@ namespace octoon
 			hal::GraphicsStateDesc stateDesc;
 			stateDesc.setPrimitiveType(hal::GraphicsVertexType::LineList);
 			stateDesc.setCullMode(hal::GraphicsCullMode::None);
-			stateDesc.setDepthEnable(true);
+			stateDesc.setDepthEnable(false);
 			stateDesc.setLineWidth(lineWidth_);
 
 			hal::GraphicsPipelineDesc pipeline;

@@ -125,7 +125,7 @@ namespace octoon
 				if (joint->enableAxisLimit)
 					q0.makeRotation(math::clamp(math::eulerAngles(q0), joint->minimumRadians, joint->maximumRadians));
 
-				transform->setLocalQuaternion(math::normalize(math::cross(transform->getLocalQuaternion(), q0)));
+				transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * q0));
 			}
 		}
 	}

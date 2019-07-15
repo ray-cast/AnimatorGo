@@ -1,15 +1,14 @@
 #if defined(OCTOON_FEATURE_VIDEO_ENABLE)
 #include <octoon/video_feature.h>
+#include <octoon/video/render_system.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
 
 #include <octoon/game_app.h>
 #include <octoon/game_server.h>
-#include <octoon/game_object_manager.h>
 
 #include <octoon/hal_feature.h>
-#include <octoon/video/render_system.h>
 
 namespace octoon
 {

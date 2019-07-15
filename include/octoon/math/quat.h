@@ -201,6 +201,11 @@ namespace octoon
 				}
 
 			public:
+				friend Quaternion<T> operator-(const Quaternion<T>& q) noexcept
+				{
+					return Quaternion<T>(-q.x, -q.y, -q.z, -q.w);
+				}
+
 				friend bool operator==(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
 					return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
@@ -211,44 +216,19 @@ namespace octoon
 					return !(q1 == q2);
 				}
 
-				friend Quaternion<T>& operator+=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				friend Quaternion<T> operator*(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
-					a.w += b.w; a.x += b.x; a.y += b.y; a.z += b.z; return a;
+					return Quaternion<T>(
+						q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+						q1.w * q2.y + q1.y * q2.w + q1.z * q2.x - q1.x * q2.z,
+						q1.w * q2.z + q1.z * q2.w + q1.x * q2.y - q1.y * q2.x,
+						q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
 				}
 
-				friend Quaternion<T>& operator-=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
+				friend Quaternion<T>& operator*=(Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
-					a.w -= b.w; a.x -= b.x; a.y -= b.y; a.z -= b.z; return a;
-				}
-
-				friend Quaternion<T>& operator*=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
-				{
-					a.w *= b.w; a.x *= b.x; a.y *= b.y; a.z *= b.z; return a;
-				}
-
-				friend Quaternion<T>& operator/=(Quaternion<T>& a, const Quaternion<T>& b) noexcept
-				{
-					a.w /= b.w; a.x /= b.x; a.y /= b.y; a.z /= b.z; return a;
-				}
-
-				friend Quaternion<T> operator-(const Quaternion<T>& q) noexcept
-				{
-					return Quaternion<T>(-q.x, -q.y, -q.z, -q.w);
-				}
-
-				friend Quaternion<T> operator+(const Quaternion<T>& a, const Quaternion<T>& b) noexcept
-				{
-					return Quaternion<T>(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-				}
-
-				friend Quaternion<T> operator/(const Quaternion<T>& q, T f) noexcept
-				{
-					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
-				}
-
-				friend Quaternion<T> operator/(T f, const Quaternion<T>& q) noexcept
-				{
-					return Quaternion<T>(q.x / f, q.y / f, q.z / f, q.w / f);
+					q1 = q1 * q2;
+					return a;
 				}
 
 				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>

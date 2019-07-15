@@ -1,19 +1,18 @@
 #if defined(OCTOON_FEATURE_UI_ENABLE)
 #include <octoon/gui_feature.h>
+#include <octoon/game_app.h>
+#include <octoon/game_server.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
-
-#include <octoon/game_app.h>
-#include <octoon/game_server.h>
-#include <octoon/game_object_manager.h>
 
 #include <octoon/ui/imgui.h>
 #include <octoon/ui/imgui_system.h>
 
 #include <octoon/runtime/except.h>
-
 #include <octoon/hal_feature.h>
+
+#include "game_object_manager.h"
 
 namespace octoon
 {

@@ -40,7 +40,7 @@ namespace octoon
 				return y21 + (y22 - y21) * t;
 			}
 
-			virtual T interpolator(T time) const noexcept override
+			T interpolator(T time) const noexcept override
 			{
 				T min = 0.0f;
 				T max = 1.0f;

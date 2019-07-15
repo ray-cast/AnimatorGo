@@ -9,7 +9,7 @@ namespace octoon
 	namespace physics
 	{
 		PhysxFixedJoint::PhysxFixedJoint(PhysxContext * context, std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) noexcept
-			:joint(nullptr)
+			:context(nullptr), joint(nullptr)
 		{
 			std::shared_ptr<PhysxRigidbody> px_lhs = std::dynamic_pointer_cast<PhysxRigidbody>(lhs);
 			std::shared_ptr<PhysxRigidbody> px_rhs = std::dynamic_pointer_cast<PhysxRigidbody>(rhs);

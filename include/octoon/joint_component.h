@@ -16,6 +16,8 @@ namespace octoon
 		JointComponent() noexcept;
 		virtual ~JointComponent() noexcept;
 
+		virtual std::shared_ptr<RigidbodyComponent> getConnectedBody() = 0;
+		virtual void setConnectedBody(std::shared_ptr<RigidbodyComponent>) = 0;
 
 	protected:
 

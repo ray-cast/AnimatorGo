@@ -45,6 +45,8 @@ namespace octoon
 		void setIsKinematic(bool type) noexcept;
 		bool getIsKinematic() const noexcept;
 
+		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();
+
     private:
         virtual void onActivate() except override;
         virtual void onDeactivate() noexcept override;

@@ -7,6 +7,9 @@
 #include <octoon/joint_component.h>
 #include <octoon/math/math.h>
 
+#include <octoon/rigidbody_component.h>
+#include <octoon/physics/physics_fixed_joint.h>
+
 
 namespace octoon
 {
@@ -17,10 +20,21 @@ namespace octoon
 		FixedJointComponent() noexcept;
 		virtual ~FixedJointComponent() noexcept;
 
+		void FixedJointComponent::onActivate() except;
+		void FixedJointComponent::onDeactivate() noexcept;
+
+		void FixedJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept;
+		void FixedJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept;
+
+		virtual std::shared_ptr<RigidbodyComponent> getConnectedBody() override;
+		virtual void setConnectedBody(std::shared_ptr<RigidbodyComponent> component) override;
 
 	protected:
-
-	protected:
+		void buildJoint();
+	private:
+		std::shared_ptr<physics::PhysicsFixedJoint> joint;
+		std::weak_ptr<RigidbodyComponent> thisBody;
+		std::weak_ptr<RigidbodyComponent> connectedBody;
 	};
 }
 

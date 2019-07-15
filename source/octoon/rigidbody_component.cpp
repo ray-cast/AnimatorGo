@@ -95,6 +95,11 @@ namespace octoon
 		return true;
 	}
 
+	std::shared_ptr<physics::PhysicsRigidbody> RigidbodyComponent::getRigidbody()
+	{
+		return rigidbody;
+	}
+
     void RigidbodyComponent::onActivate() except
     {
         this->addComponentDispatch(GameDispatchType::MoveAfter);

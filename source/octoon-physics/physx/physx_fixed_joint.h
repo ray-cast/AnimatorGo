@@ -23,6 +23,7 @@ namespace octoon
 			PhysxFixedJoint(const PhysxFixedJoint&) = delete;
 			PhysxFixedJoint& operator=(const PhysxFixedJoint&) = delete;
 		private:
+			PhysxContext* context;
 			physx::PxFixedJoint* joint;
 		};
 	}

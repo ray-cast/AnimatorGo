@@ -58,9 +58,9 @@ namespace octoon
 	}
 
 	bool
-	AnimatorComponent::play(const std::string& filename) noexcept
+	AnimatorComponent::play(const std::string& status) noexcept
 	{
-		this->setName(filename);
+		this->setName(status);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
 		enableAnimation_ = true;

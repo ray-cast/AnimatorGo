@@ -1,8 +1,9 @@
 #include <octoon/game_object.h>
-#include <octoon/game_object_manager.h>
 #include <octoon/game_component.h>
-#include <octoon/game_scene_manager.h>
 #include <octoon/transform_component.h>
+
+#include "game_object_manager.h"
+#include "game_scene_manager.h"
 
 namespace octoon
 {
@@ -681,6 +682,24 @@ namespace octoon
 			instance->addChild(it->clone());
 
 		return instance;
+	}
+
+	GameObjectPtr
+	GameObject::find(const char* name) noexcept
+	{
+		return GameObjectManager::instance()->find(name);
+	}
+
+	GameObjectPtr
+	GameObject::find(const std::string& name) noexcept
+	{
+		return GameObjectManager::instance()->find(name);
+	}
+
+	const GameObjectRaws&
+	GameObject::instances() noexcept
+	{
+		return GameObjectManager::instance()->instances();
 	}
 
 	void

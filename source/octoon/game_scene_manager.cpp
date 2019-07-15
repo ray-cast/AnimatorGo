@@ -1,5 +1,4 @@
-#include <octoon/game_scene_manager.h>
-#include <octoon/game_scene.h>
+#include "game_scene_manager.h"
 
 namespace octoon
 {
@@ -11,6 +10,53 @@ namespace octoon
 
 	GameSceneManager::~GameSceneManager() noexcept
 	{
+	}
+
+	GameScenePtr
+	GameSceneManager::find(const char* name) noexcept
+	{
+		for (auto& it : instanceLists_)
+		{
+			if (!it)
+				continue;
+
+			if (it->getName() == name)
+				return it->downcast_pointer<GameScene>();
+		}
+
+		return nullptr;
+	}
+
+	GameScenePtr
+	GameSceneManager::find(const std::string& name) noexcept
+	{
+		return this->find(name.c_str());
+	}
+
+	bool
+	GameSceneManager::active(const std::string& name) noexcept
+	{
+		for (auto& it : instanceLists_)
+		{
+			if (!it)
+				continue;
+
+			if (it->getName() == name)
+			{
+				it->setActive(true);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	GameScene*
+	GameSceneManager::defaultScene() noexcept
+	{
+		if (activeScenes_.empty())
+			return nullptr;
+		return activeScenes_.front();
 	}
 
 	void
@@ -58,85 +104,5 @@ namespace octoon
 				}
 			}
 		}
-	}
-
-	GameScene*
-	GameSceneManager::defaultScene() noexcept
-	{
-		if (activeScenes_.empty())
-			return nullptr;
-		return activeScenes_.front();
-	}
-
-	GameScenePtr
-	GameSceneManager::findScene(const std::string& name) noexcept
-	{
-		for (auto& it : instanceLists_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name)
-				return it->downcast_pointer<GameScene>();
-		}
-
-		return nullptr;
-	}
-
-	GameScenePtr
-	GameSceneManager::findActivedScene(const std::string& name) noexcept
-	{
-		for (auto& it : activeScenes_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name && it->getActive())
-				return it->downcast_pointer<GameScene>();
-		}
-
-		return nullptr;
-	}
-
-	GameScenePtr
-	GameSceneManager::instantiate(const std::string& name) except
-	{
-		auto scene = this->findScene(name);
-		if (scene)
-			return scene->clone();
-		return nullptr;
-	}
-
-	bool
-	GameSceneManager::activeScene(const std::string& name) noexcept
-	{
-		for (auto& it : instanceLists_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name)
-			{
-				it->setActive(true);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	void
-	GameSceneManager::onFrameBegin() noexcept
-	{
-	}
-
-	void
-	GameSceneManager::onFrame() noexcept
-	{
-	}
-
-	void
-	GameSceneManager::onFrameEnd() noexcept
-	{
 	}
 }

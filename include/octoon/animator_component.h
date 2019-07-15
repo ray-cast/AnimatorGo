@@ -20,7 +20,7 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
 		~AnimatorComponent() noexcept;
 
-		bool play(const std::string& filename = "default") noexcept;
+		bool play(const std::string& status = "default") noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
 

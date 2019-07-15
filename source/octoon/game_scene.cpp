@@ -1,8 +1,9 @@
 #include <octoon/game_scene.h>
-#include <octoon/game_scene_manager.h>
 #include <octoon/game_listener.h>
 #include <octoon/game_component.h>
 #include <octoon/game_server.h>
+
+#include "game_scene_manager.h"
 
 namespace octoon
 {
@@ -164,6 +165,18 @@ namespace octoon
 		scene->setName(this->getName());
 		scene->root_ = root_->clone();
 		return scene;
+	}
+
+	GameScenePtr
+	GameScene::find(const char* name) noexcept
+	{
+		return GameSceneManager::instance()->find(name);
+	}
+
+	GameScenePtr 
+	GameScene::find(const std::string& name) noexcept
+	{
+		return GameSceneManager::instance()->find(name);
 	}
 
 	void

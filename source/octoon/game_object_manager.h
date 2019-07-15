@@ -3,7 +3,7 @@
 
 #include <stack>
 #include <mutex>
-#include <octoon/game_feature.h>
+#include <octoon/game_object.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
@@ -15,14 +15,12 @@ namespace octoon
 		GameObjectManager() noexcept;
 		~GameObjectManager() noexcept;
 
-		GameObjectPtr findObject(const std::string& name) noexcept;
-		GameObjectPtr findActiveObject(const std::string& name) noexcept;
+		GameObjectPtr find(const char* name) noexcept;
+		GameObjectPtr find(const std::string& name) noexcept;
 
-		GameObjectPtr instantiate(const std::string& name) noexcept;
+		bool active(const std::string& name) noexcept;
 
-		bool activeObject(const std::string& name) noexcept;
-
-		const GameObjectRaws& getInstanceList() const noexcept;
+		const GameObjectRaws& instances() const noexcept;
 		const GameObjectRaws& getActivedActors() const noexcept;
 
 		void onFrameBegin() noexcept;

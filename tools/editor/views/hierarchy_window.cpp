@@ -1,8 +1,8 @@
 #include "hierarchy_window.h"
 
 #include <octoon/octoon.h>
-#include <octoon/game_object_manager.h>
 #include <octoon/ui/imgui.h>
+#include <octoon/game_object.h>
 
 namespace octoon
 {
@@ -39,12 +39,10 @@ namespace octoon
 			constexpr int PATHLIMITE = 4096;
 
 			if (imgui::beginDock("Hierarchy", &isShowedHierarchyWindow_))
-			{
-				auto& actors = GameObjectManager::instance()->getInstanceList();
-				
+			{			
 				if (imgui::treeNodeEx("Object", imgui::GuiTreeNodeFlagBits::DefaultOpenBit))
 				{
-					for (auto& it : actors)
+					for (auto& it : GameObject::instances())
 					{
 						if (it->getParent())
 							continue;

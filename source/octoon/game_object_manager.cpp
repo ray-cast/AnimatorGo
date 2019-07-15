@@ -88,36 +88,10 @@ namespace octoon
 		return this->find(name.c_str());
 	}
 
-	bool
-	GameObjectManager::active(const std::string& name) noexcept
-	{
-		std::lock_guard<std::mutex> guard_lock(lock_);
-
-		for (auto& it : instanceLists_)
-		{
-			if (it)
-			{
-				if (it->getName() == name)
-				{
-					it->setActive(true);
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	const GameObjectRaws&
 	GameObjectManager::instances() const noexcept
 	{
 		return instanceLists_;
-	}
-
-	const GameObjectRaws&
-	GameObjectManager::getActivedActors() const noexcept
-	{
-		return activeActors_;
 	}
 
 	void

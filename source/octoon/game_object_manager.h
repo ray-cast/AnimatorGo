@@ -18,10 +18,7 @@ namespace octoon
 		GameObjectPtr find(const char* name) noexcept;
 		GameObjectPtr find(const std::string& name) noexcept;
 
-		bool active(const std::string& name) noexcept;
-
 		const GameObjectRaws& instances() const noexcept;
-		const GameObjectRaws& getActivedActors() const noexcept;
 
 		void onFrameBegin() noexcept;
 		void onFrame() noexcept;

@@ -33,24 +33,6 @@ namespace octoon
 		return this->find(name.c_str());
 	}
 
-	bool
-	GameSceneManager::active(const std::string& name) noexcept
-	{
-		for (auto& it : instanceLists_)
-		{
-			if (!it)
-				continue;
-
-			if (it->getName() == name)
-			{
-				it->setActive(true);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	GameScene*
 	GameSceneManager::defaultScene() noexcept
 	{

@@ -16,8 +16,6 @@ namespace octoon
 		GameScenePtr find(const char* name) noexcept;
 		GameScenePtr find(const std::string& name) noexcept;
 
-		bool active(const std::string& name) noexcept;
-
 		GameScene* defaultScene() noexcept;
 
 	private:

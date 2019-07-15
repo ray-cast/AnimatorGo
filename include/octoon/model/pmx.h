@@ -224,6 +224,12 @@ namespace octoon
 			PmxColor4 toon;
 		};
 
+		struct PmxMorphGroup
+		{
+			PmxUInt16 morphIndex;
+			PmxFloat  morphRate;
+		};
+
 		struct PmxMorph
 		{
 			PmxName name;
@@ -233,9 +239,7 @@ namespace octoon
 			PmxUInt8  morphType;
 			PmxUInt32 morphCount;
 
-			PmxUInt16 morphIndex;
-			PmxFloat  morphRate;
-
+			std::vector<PmxMorphGroup>   groupList;
 			std::vector<PmxMorphVertex>   vertexList;
 			std::vector<PmxMorphBone>     boneList;
 			std::vector<PmxMorphTexcoord> texcoordList;

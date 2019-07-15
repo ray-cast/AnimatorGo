@@ -149,11 +149,14 @@ namespace octoon
 						break;
 						case PMX_QDEF:
 						{
-							if (!stream.read((char*)&vertex.weight.bone1, pmx.header.sizeOfBone)) return false;
-							if (!stream.read((char*)&vertex.weight.bone2, pmx.header.sizeOfBone)) return false;
-							if (!stream.read((char*)&vertex.weight.weight1, sizeof(vertex.weight.weight1))) return false;
-
-							vertex.weight.weight2 = 1.0f - vertex.weight.weight1;
+							if (!stream.read((char*)& vertex.weight.bone1, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone2, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone3, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.bone4, pmx.header.sizeOfBone)) return false;
+							if (!stream.read((char*)& vertex.weight.weight1, sizeof(vertex.weight.weight1))) return false;
+							if (!stream.read((char*)& vertex.weight.weight2, sizeof(vertex.weight.weight2))) return false;
+							if (!stream.read((char*)& vertex.weight.weight3, sizeof(vertex.weight.weight3))) return false;
+							if (!stream.read((char*)& vertex.weight.weight4, sizeof(vertex.weight.weight4))) return false;
 						}
 						default:
 							return false;
@@ -289,8 +292,8 @@ namespace octoon
 								if (!stream.read((char*)&bone.IKList[j].rotateLimited, (std::streamsize)sizeof(bone.IKList[j].rotateLimited))) return false;
 								if (bone.IKList[j].rotateLimited)
 								{
-									if (!stream.read((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
 									if (!stream.read((char*)&bone.IKList[j].minimumRadian, (std::streamsize)sizeof(bone.IKList[j].minimumRadian))) return false;
+									if (!stream.read((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
 								}
 							}
 						}
@@ -300,7 +303,7 @@ namespace octoon
 
 			if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
 
-			/*if (pmx.numMorphs > 0)
+			if (pmx.numMorphs > 0)
 			{
 				pmx.morphs.resize(pmx.numMorphs);
 
@@ -316,8 +319,13 @@ namespace octoon
 
 					if (morph.morphType == PmxMorphType::MorphTypeGroup)
 					{
-						if (!stream.read((char*)&morph.morphIndex, pmx.header.sizeOfMorph)) return false;
-						if (!stream.read((char*)&morph.morphRate, sizeof(morph.morphRate))) return false;
+						morph.groupList.resize(morph.morphCount);
+
+						for (auto& group : morph.groupList)
+						{
+							if (!stream.read((char*)& group.morphIndex, pmx.header.sizeOfMorph)) return false;
+							if (!stream.read((char*)& group.morphRate, sizeof(group.morphRate))) return false;
+						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
 					{
@@ -473,7 +481,7 @@ namespace octoon
 					if (!stream.read((char*)&joint.springMovementConstant, sizeof(joint.springMovementConstant))) return false;
 					if (!stream.read((char*)&joint.springRotationConstant, sizeof(joint.springRotationConstant))) return false;
 				}
-			}*/
+			}
 
 			return true;
 		}
@@ -635,8 +643,8 @@ namespace octoon
 						IKChild child;
 						child.boneIndex = ik.BoneIndex;
 						child.angleDegrees = degress(it.IKLimitedRadian);
-						child.minimumDegrees = degress(math::min(ik.minimumRadian, ik.maximumRadian));
-						child.maximumDegrees = degress(math::max(ik.minimumRadian, ik.maximumRadian));
+						child.minimumDegrees = degress(ik.minimumRadian);
+						child.maximumDegrees = degress(ik.minimumRadian);
 						child.rotateLimited = ik.rotateLimited;
 
 						attr.child.push_back(child);
@@ -923,8 +931,11 @@ namespace octoon
 
 					if (morph.morphType == PmxMorphType::MorphTypeGroup)
 					{
-						if (!stream.write((char*)&morph.morphIndex, pmx.header.sizeOfMorph)) return false;
-						if (!stream.write((char*)&morph.morphRate, sizeof(morph.morphRate))) return false;
+						for (auto& group : morph.groupList)
+						{
+							if (!stream.write((char*)& group.morphIndex, pmx.header.sizeOfMorph)) return false;
+							if (!stream.write((char*)& group.morphRate, sizeof(group.morphRate))) return false;
+						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
 					{

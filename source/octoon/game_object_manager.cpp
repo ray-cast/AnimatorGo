@@ -1,4 +1,4 @@
-#include "game_object_manager.h"
+#include <octoon/game_object_manager.h>
 
 namespace octoon
 {

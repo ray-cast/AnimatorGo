@@ -1,4 +1,4 @@
-#include "game_scene_manager.h"
+#include <octoon/game_scene_manager.h>
 
 namespace octoon
 {

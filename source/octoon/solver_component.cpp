@@ -21,7 +21,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	SolverComponent::getTargetJoint() const noexcept
+	SolverComponent::getTarget() const noexcept
 	{
 		return _target;
 	}
@@ -92,7 +92,7 @@ namespace octoon
 	void
 	SolverComponent::solver() noexcept
 	{
-		auto target = this->getTargetJoint()->getComponent<TransformComponent>();
+		auto target = this->getTarget()->getComponent<TransformComponent>();
 		auto effect = this->getComponent<TransformComponent>();
 
 		for (std::uint32_t i = 0; i < this->getIterations(); i++)

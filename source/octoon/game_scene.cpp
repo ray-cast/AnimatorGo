@@ -1,9 +1,8 @@
 #include <octoon/game_scene.h>
+#include <octoon/game_scene_manager.h>
 #include <octoon/game_listener.h>
 #include <octoon/game_component.h>
 #include <octoon/game_server.h>
-
-#include "game_scene_manager.h"
 
 namespace octoon
 {

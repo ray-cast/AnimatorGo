@@ -11,7 +11,7 @@ SET(GAMEBASE_LIST
 	${SOURCE_PATH}/game_object.cpp
 	${HEADER_PATH}/game_object.h
 	${SOURCE_PATH}/game_object_manager.cpp
-	${SOURCE_PATH}/game_object_manager.h
+	${HEADER_PATH}/game_object_manager.h
 	${SOURCE_PATH}/game_component.cpp
 	${HEADER_PATH}/game_component.h
 	${SOURCE_PATH}/game_feature.cpp
@@ -21,7 +21,7 @@ SET(GAMEBASE_LIST
 	${SOURCE_PATH}/game_scene.cpp
 	${HEADER_PATH}/game_scene.h
 	${SOURCE_PATH}/game_scene_manager.cpp
-	${SOURCE_PATH}/game_scene_manager.h
+	${HEADER_PATH}/game_scene_manager.h
 	${HEADER_PATH}/game_types.h
 )
 SOURCE_GROUP("system\\app" FILES ${GAMEBASE_LIST})

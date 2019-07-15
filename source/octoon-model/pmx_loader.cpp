@@ -635,8 +635,8 @@ namespace octoon
 						IKChild child;
 						child.boneIndex = ik.BoneIndex;
 						child.angleDegrees = degress(it.IKLimitedRadian);
-						child.minimumDegrees = degress(ik.minimumRadian);
-						child.maximumDegrees = degress(ik.maximumRadian);
+						child.minimumDegrees = degress(math::min(ik.minimumRadian, ik.maximumRadian));
+						child.maximumDegrees = degress(math::max(ik.minimumRadian, ik.maximumRadian));
 						child.rotateLimited = ik.rotateLimited;
 
 						attr.child.push_back(child);

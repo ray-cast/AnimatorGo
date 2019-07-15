@@ -289,8 +289,8 @@ namespace octoon
 		, frame(0)
 		, pre_index(-1)
 		, next_index(-1)
-		, translation(PmmVector3(0.0, 0.0, 0.0))
-		, quaternion(PmmVector4(0.0, 0.0, 0.0, 1.0))
+		, translation(PmmVector3::Zero)
+		, quaternion(PmmQuaternion::Zero)
 		, is_selected(0)
 		, is_physics_disabled(0)
 	{

@@ -87,9 +87,11 @@ namespace octoon
 					auto t = (key.time - a.time) / (b.time - a.time);
 
 					if (a.interpolator)
-						key.value = math::lerp(a.value, b.value, a.interpolator->interpolator(t));
-					else
-						key.value = math::lerp(a.value, b.value, interpolator ? interpolator->interpolator(t) : t);
+						t = a.interpolator->interpolator(t);
+					else if (interpolator)
+						t = interpolator->interpolator(t);
+
+					key.value = a.value * (1.0f - t) + b.value * t;
 				}
 
 				return key.value;

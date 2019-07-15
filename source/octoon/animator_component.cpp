@@ -182,8 +182,11 @@ namespace octoon
 			assert(bones_[i]->getName() == clips_[i].name);
 
 			auto transform = bones_[i]->getComponent<TransformComponent>();
-			auto translate = transform->getLocalTranslate();
+
+			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
+			auto translate = transform->getLocalTranslate();
+			auto euler = math::eulerAngles(quat);
 
 			for (auto& curve : clips_[i].curves)
 			{
@@ -193,18 +196,31 @@ namespace octoon
 					translate.y = curve.second.key.value + bindpose_[i].y;
 				else if (curve.first == "LocalPosition.z")
 					translate.z = curve.second.key.value + bindpose_[i].z;
-				else if (curve.first == "LocalQuaternion.x")
+				else if (curve.first == "LocalScale.x")
+					scale.x = curve.second.key.value;
+				else if (curve.first == "LocalScale.y")
+					scale.y = curve.second.key.value;
+				else if (curve.first == "LocalScale.z")
+					scale.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.x")
 					quat.x = curve.second.key.value;
-				else if (curve.first == "LocalQuaternion.y")
+				else if (curve.first == "LocalRotation.y")
 					quat.y = curve.second.key.value;
-				else if (curve.first == "LocalQuaternion.z")
+				else if (curve.first == "LocalRotation.z")
 					quat.z = curve.second.key.value;
-				else if (curve.first == "LocalQuaternion.w")
+				else if (curve.first == "LocalRotation.w")
 					quat.w = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.x")
+					euler.x = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.y")
+					euler.y = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.z")
+					euler.z = curve.second.key.value;
 			}
 
+			transform->setLocalScale(scale);
 			transform->setLocalTranslate(translate);
-			transform->setLocalQuaternion(math::normalize(quat));
+			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
 	}
 

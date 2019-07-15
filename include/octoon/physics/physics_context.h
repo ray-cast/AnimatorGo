@@ -6,6 +6,8 @@
 #include <octoon/physics/physics_scene.h>
 #include <octoon/physics/physics_rigidbody.h>
 
+#include <octoon/physics/physics_type.h>
+
 namespace octoon
 {
 	namespace physics
@@ -24,7 +26,9 @@ namespace octoon
 			virtual ~PhysicsContext() = default;
 
 			virtual std::shared_ptr<PhysicsScene> createScene(PhysicsSceneDesc desc) = 0;
-			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody() = 0;
+			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody(PhysicsRigidbodyDesc desc) = 0;
+			virtual std::shared_ptr<PhysicsSphereShape> createShape(PhysicsSphereShapeDesc desc) = 0;
+			virtual std::shared_ptr<PhysicsFixedJoint> createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 
 		private:
 			PhysicsContext(const PhysicsContext&) noexcept = delete;

@@ -19,6 +19,14 @@ namespace octoon
 			PhysxRigidbody(PhysxContext* context, PhysicsRigidbodyDesc desc);
 			virtual ~PhysxRigidbody();
 
+			virtual math::float3 getPosition() override;
+			virtual void setPosition(math::float3 postion) override;
+			virtual math::Quaternion getRotation() override;
+			virtual void setRotation(math::Quaternion rotation) override;
+			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) override;
+
+			virtual void addShape(std::shared_ptr<PhysicsShape> shapeAdded) override;
+
 			physx::PxRigidActor* getPxRigidbody();
 
 		private:
@@ -27,6 +35,8 @@ namespace octoon
 		private:
 			PhysxContext* context;
 			physx::PxRigidActor* px_rigidbody;
+
+			std::shared_ptr<PhysxShape> shape;
 		};
 	}
 }

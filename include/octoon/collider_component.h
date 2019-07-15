@@ -9,12 +9,12 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT Collider : public GameComponent
+	class OCTOON_EXPORT ColliderComponent : public GameComponent
 	{
-		OctoonDeclareSubInterface(Collider, GameComponent)
+		OctoonDeclareSubInterface(ColliderComponent, GameComponent)
 	public:
-		Collider() noexcept;
-		~Collider();
+		ColliderComponent() noexcept;
+		~ColliderComponent();
 
 		//void setSharedMaterial(PhysicsMaterial material) except;
 		//std::shared_ptr<PhysicsMaterial> getSharedMaterial() except;

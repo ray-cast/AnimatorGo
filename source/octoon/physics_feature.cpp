@@ -16,7 +16,7 @@ namespace octoon
 	PhysicsFeature::PhysicsFeature() except
 		:physics_system(), physics_context(nullptr)
 	{
-		physics_context = physics_system.createContext();
+		
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
@@ -25,6 +25,7 @@ namespace octoon
 
     void PhysicsFeature::onActivate() except
     {
+		physics_context = physics_system.createContext();
     }
 
     void PhysicsFeature::onDeactivate() noexcept
@@ -54,6 +55,7 @@ namespace octoon
 	void PhysicsFeature::onCloseScene(const GameScenePtr& scene) noexcept
     {
     }
+
 	std::shared_ptr<physics::PhysicsContext> PhysicsFeature::getContext()
 	{
 		return physics_context;

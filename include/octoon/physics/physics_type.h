@@ -9,6 +9,12 @@ namespace octoon
         class PhysicsScene;
         class PhysicsContext;
         class PhysicsRigidbody;
+		class PhysicsShape;
+		class PhysicsSphereShape;
+		struct PhysicsSphereShapeDesc;
+
+		class PhysicsJoint;
+		class PhysicsFixedJoint;
     }
 }
 

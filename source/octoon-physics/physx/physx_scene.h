@@ -2,10 +2,13 @@
 #define OCTOON_PHYSX_SCENE_H_
 
 #include <memory>
+#include <vector>
 
 #include <octoon/runtime/platform.h>
 
 #include <octoon/physics/physics_scene.h>
+
+#include "physx_rigidbody.h"
 
 #include "physx_type.h"
 
@@ -27,6 +30,8 @@ namespace octoon
         private:
 			PhysxContext* context;
 			physx::PxScene* px_scene;
+
+			std::vector<std::shared_ptr<PhysxRigidbody>> rigidbody_list;
 		};
 	}
 }

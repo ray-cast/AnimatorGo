@@ -9,55 +9,55 @@
 #include <octoon/math/math.h>
 #include <octoon/runtime/singleton.h>
 
+#include <octoon/physics/physics_rigidbody.h>
+
 namespace octoon
 {
     enum class RigidbodySleepMode:int
     {
-        NeverSleep, //Rigidbody never automatically sleeps.
-        StartAwake, //Rigidbody is initially awake.
-        StartAsleep, //Rigidbody is initially asleep.
+        NeverSleep, //RigidbodyComponent never automatically sleeps.
+        StartAwake, //RigidbodyComponent is initially awake.
+        StartAsleep, //RigidbodyComponent is initially asleep.
     };
 
-    class OCTOON_EXPORT Rigidbody final : public GameComponent
+    class OCTOON_EXPORT RigidbodyComponent final : public GameComponent
 	{
-		OctoonDeclareSubClass(Rigidbody, runtime::RttiInterface)
-        public:
-            Rigidbody() noexcept;
-			Rigidbody(bool type) noexcept;
-			Rigidbody(bool type, float mass) noexcept;
-            ~Rigidbody();
-            virtual GameComponentPtr clone() const noexcept;
+	OctoonDeclareSubClass(RigidbodyComponent, GameComponent)
+    public:
+        RigidbodyComponent() noexcept;
+		RigidbodyComponent(bool type) noexcept;
+		RigidbodyComponent(bool type, float mass) noexcept;
+        ~RigidbodyComponent();
+        virtual GameComponentPtr clone() const noexcept;
 
-            void setAngularVelocity(float v) noexcept;
-            float getAngularVelocity() const noexcept;
+        void setAngularVelocity(float v) noexcept;
+        float getAngularVelocity() const noexcept;
 
-            void setGravityScale(float scale) noexcept;
-            float getGravityScale() const noexcept;
+        void setGravityScale(float scale) noexcept;
+        float getGravityScale() const noexcept;
 
-            void setMass(float m) noexcept;
-            float getMass() const noexcept;
+        void setMass(float m) noexcept;
+        float getMass() const noexcept;
 
-            void setSleepMode(RigidbodySleepMode mode) noexcept;
-            RigidbodySleepMode getSleepMode() const noexcept;
+        void setSleepMode(RigidbodySleepMode mode) noexcept;
+		RigidbodySleepMode getSleepMode() const noexcept;
 
-			void setIsKinematic(bool type) noexcept;
-			bool getIsKinematic() const noexcept;
+		void setIsKinematic(bool type) noexcept;
+		bool getIsKinematic() const noexcept;
 
-        private:
-        	virtual void onActivate() except override;
-            virtual void onDeactivate() noexcept override;
+    private:
+        virtual void onActivate() except override;
+        virtual void onDeactivate() noexcept override;
 
-            virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
-            virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
+        virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
+        virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
-			virtual void onFrameBegin() except override;
-			virtual void onFrame() except override;
-			virtual void onFrameEnd() except override;
+		virtual void onFrameEnd() except override;
 
-			virtual void onMoveAfter() noexcept;
+		virtual void onMoveAfter() noexcept;
 
-			void buildRigidBody() except;
-			void releaseRigidBody() noexcept;
+	private:
+		std::shared_ptr<physics::PhysicsRigidbody> rigidbody;
     };
 }
 

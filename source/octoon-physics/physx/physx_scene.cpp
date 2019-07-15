@@ -21,12 +21,15 @@ namespace octoon
 
 		PhysxScene::~PhysxScene()
 		{
+			px_scene->release();
+			px_scene = nullptr;
 		}
 
 		void PhysxScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 		{
 			std::shared_ptr<PhysxRigidbody> physx_rigidbody = std::dynamic_pointer_cast<PhysxRigidbody>(rigidbody);
 			px_scene->addActor(*physx_rigidbody->getPxRigidbody());
+			rigidbody_list.push_back(physx_rigidbody);
 		}
 	}
 }

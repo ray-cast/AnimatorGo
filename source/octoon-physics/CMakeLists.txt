@@ -16,6 +16,18 @@ SET(SOURCE_LIST
     ${SOURCE_PATH}/physics_scene.cpp
     ${HEADER_PATH}/physics_rigidbody.h
     ${SOURCE_PATH}/physics_rigidbody.cpp
+
+    ${HEADER_PATH}/physics_shape.h
+    ${SOURCE_PATH}/physics_shape.cpp
+    ${HEADER_PATH}/physics_sphere_shape.h
+    ${SOURCE_PATH}/physics_sphere_shape.cpp
+    ${HEADER_PATH}/physics_box_shape.h
+    ${SOURCE_PATH}/physics_box_shape.cpp
+
+    ${HEADER_PATH}/physics_joint.h
+    ${SOURCE_PATH}/physics_joint.cpp
+    ${HEADER_PATH}/physics_fixed_joint.h
+    ${SOURCE_PATH}/physics_fixed_joint.cpp
 )
 SOURCE_GROUP("physics" FILES ${SOURCE_LIST})
 
@@ -27,6 +39,18 @@ SET(PHYSX_SOURCE_LIST
     ${SOURCE_PATH}/physx/physx_scene.cpp
     ${SOURCE_PATH}/physx/physx_rigidbody.h
     ${SOURCE_PATH}/physx/physx_rigidbody.cpp
+
+    ${SOURCE_PATH}/physx/physx_shape.h
+    ${SOURCE_PATH}/physx/physx_shape.cpp
+    ${SOURCE_PATH}/physx/physx_sphere_shape.h
+    ${SOURCE_PATH}/physx/physx_sphere_shape.cpp
+    ${SOURCE_PATH}/physx/physics_box_shape.h
+    ${SOURCE_PATH}/physx/physics_box_shape.cpp
+    
+    ${SOURCE_PATH}/physx/physx_joint.h
+    ${SOURCE_PATH}/physx/physx_joint.cpp
+    ${SOURCE_PATH}/physx/physx_fixed_joint.h
+    ${SOURCE_PATH}/physx/physx_fixed_joint.cpp
 )
 SOURCE_GROUP("PhysX" FILES ${PHYSX_SOURCE_LIST})
 

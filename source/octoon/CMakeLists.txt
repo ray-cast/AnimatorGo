@@ -101,10 +101,18 @@ SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
 SET(PHYSICS_FEATURES_LIST
 	${HEADER_PATH}/physics_feature.h
 	${SOURCE_PATH}/physics_feature.cpp
-	${HEADER_PATH}/collider_component.h
-	${SOURCE_PATH}/collider_component.cpp
 	${HEADER_PATH}/rigidbody_component.h
 	${SOURCE_PATH}/rigidbody_component.cpp
+
+	${HEADER_PATH}/collider_component.h
+	${SOURCE_PATH}/collider_component.cpp
+	${HEADER_PATH}/sphere_collider_component.h
+	${SOURCE_PATH}/sphere_collider_component.cpp
+
+	${HEADER_PATH}/joint_component.h
+	${SOURCE_PATH}/joint_component.cpp
+	${HEADER_PATH}/fixed_joint_component.h
+	${SOURCE_PATH}/fixed_joint_component.cpp
 )
 SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 

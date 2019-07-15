@@ -31,6 +31,8 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/game_base_features.cpp
 	${HEADER_PATH}/transform_component.h
 	${SOURCE_PATH}/transform_component.cpp
+	${HEADER_PATH}/bone_controller_component.h
+	${SOURCE_PATH}/bone_controller_component.cpp
 	${HEADER_PATH}/mesh_filter_component.h
 	${SOURCE_PATH}/mesh_filter_component.cpp
 	${HEADER_PATH}/text_component.h
@@ -55,6 +57,8 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/mesh_renderer_component.cpp
 	${HEADER_PATH}/skinned_mesh_renderer_component.h
 	${SOURCE_PATH}/skinned_mesh_renderer_component.cpp
+	${HEADER_PATH}/skinned_joint_renderer_component.h
+	${SOURCE_PATH}/skinned_joint_renderer_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )

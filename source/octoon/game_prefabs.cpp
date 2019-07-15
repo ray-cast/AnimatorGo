@@ -6,6 +6,7 @@
 #include <octoon/video/render_system.h>
 #include <octoon/video/ggx_material.h>
 #include <octoon/video/basic_material.h>
+#include <octoon/video/line_material.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/property.h>
@@ -24,6 +25,8 @@
 #include <octoon/solver_component.h>
 #include <octoon/animator_component.h>
 #include <octoon/skinned_mesh_renderer_component.h>
+#include <octoon/skinned_joint_renderer_component.h>
+#include <octoon/guizmo_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -244,7 +247,6 @@ namespace octoon
 		}
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
-		actor->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::UnitZ, math::radians(180)));
 		actor->addComponent<AnimatorComponent>(bones);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
@@ -266,7 +268,15 @@ namespace octoon
 				smr->setMaterial(std::move(materials[i]));
 				smr->setTransforms(bones);
 
+				auto mat = std::make_shared<LineMaterial>(1.0f);
+				mat->setColor(math::float3(0.4, 0.9, 0.4));
+
+				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
+				sjr->setMaterial(mat);
+				sjr->setTransforms(bones);
+
 				object->addComponent(smr);
+				object->addComponent(sjr);
 			}
 		}
 
@@ -278,6 +288,9 @@ namespace octoon
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
+		auto material = std::make_shared<video::BasicMaterial>();
+		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
 		for (auto& it : model.get<Model::bone>())
 			bones.push_back(std::make_shared<GameObject>(it->getName()));
 
@@ -287,6 +300,8 @@ namespace octoon
 			auto parent = it->getParent();
 			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
 			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
+			bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			bones[i]->addComponent<MeshRendererComponent>(material);
 		}
 
 		for (auto& it : model.get<Model::ik>())
@@ -300,10 +315,10 @@ namespace octoon
 				auto bone = std::make_shared<SolverJoint>();
 				bone->bone = bones[child.boneIndex];
 				bone->enableAxisLimit = child.rotateLimited;
-				bone->mininumAngle = -math::radians(child.angleDegrees);
-				bone->maximumAngle = math::radians(child.angleDegrees);
-				bone->minimumRadians = math::radians(child.minimumDegrees);
-				bone->maximumRadians = math::radians(child.maximumDegrees);
+				bone->mininumAngle = -child.angleRadian;
+				bone->maximumAngle = child.angleRadian;
+				bone->minimumRadians = child.minimumRadian;
+				bone->maximumRadians = child.maximumRadian;
 
 				iksolver->addJoint(bone);
 			}

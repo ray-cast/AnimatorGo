@@ -13,13 +13,13 @@ namespace octoon
 		class IKChild
 		{
 		public:
-			float angleDegrees;
+			float angleRadian;
 
 			std::uint8_t rotateLimited;
 			std::uint16_t boneIndex;
 
-			math::float3 minimumDegrees;
-			math::float3 maximumDegrees;
+			math::float3 minimumRadian;
+			math::float3 maximumRadian;
 		};
 
 		class IKAttr

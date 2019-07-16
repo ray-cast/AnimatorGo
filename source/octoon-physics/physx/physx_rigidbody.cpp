@@ -77,6 +77,66 @@ namespace octoon
 			px_rigidbody->setGlobalPose(pxGlobalPose);
 		}
 
+		void PhysxRigidbody::setDynamicFriction(float f)
+		{
+			if (shape)
+			{
+				shape->getPxMaterial()->setDynamicFriction(f);
+			}
+		}
+
+		float PhysxRigidbody::getDynamicFriction() const
+		{
+			if (shape)
+			{
+				return shape->getPxMaterial()->getDynamicFriction();
+			}
+			else
+			{
+				return 0.f;
+			}
+		}
+
+		void PhysxRigidbody::setStaticFriction(float f)
+		{
+			if (shape)
+			{
+				shape->getPxMaterial()->setStaticFriction(f);
+			}
+		}
+
+		float PhysxRigidbody::getStaticFriction() const
+		{
+			if (shape)
+			{
+				return shape->getPxMaterial()->getStaticFriction();
+			}
+			else
+			{
+				return 0.f;
+			}
+		}
+
+		void PhysxRigidbody::setRestitution(float f)
+		{
+			if (shape)
+			{
+				shape->getPxMaterial()->setRestitution(f);
+			}
+		}
+
+		float PhysxRigidbody::getRestitution() const
+		{
+			if (shape)
+			{
+				return shape->getPxMaterial()->getRestitution();
+			}
+			else
+			{
+				return 0.f;
+			}
+		}
+
 		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shapeAdded)
 		{
 			shape = std::dynamic_pointer_cast<PhysxShape>(shapeAdded);

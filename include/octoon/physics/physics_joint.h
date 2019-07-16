@@ -12,6 +12,13 @@ namespace octoon
 {
 	namespace physics
 	{
+		struct OCTOON_EXPORT SoftJointLimit
+		{
+			float bounciness;
+			float contactDistance;
+			float limit;
+		};
+
 		class OCTOON_EXPORT PhysicsJoint
 		{
 		public:

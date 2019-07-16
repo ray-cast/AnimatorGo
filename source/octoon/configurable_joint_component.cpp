@@ -55,13 +55,133 @@ namespace octoon
 		buildJoint();
 	}
 
+	void ConfigurableJointComponent::setAngularXMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setAngularXMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getAngularXMotion()
+	{
+		if (joint)
+		{
+			return joint->getAngularXMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
+	void ConfigurableJointComponent::setAngularYMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setAngularYMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getAngularYMotion()
+	{
+		if (joint)
+		{
+			return joint->getAngularYMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
+	void ConfigurableJointComponent::setAngularZMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setAngularZMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getAngularZMotion()
+	{
+		if (joint)
+		{
+			return joint->getAngularZMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
+	void ConfigurableJointComponent::setXMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setXMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getXMotion()
+	{
+		if (joint)
+		{
+			return joint->getXMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
+	void ConfigurableJointComponent::setYMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setYMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getYMotion()
+	{
+		return ConfigurableJointMotion(); if (joint)
+		{
+			return joint->getYMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
+	void ConfigurableJointComponent::setZMotion(ConfigurableJointMotion motion)
+	{
+		if (joint)
+		{
+			joint->setZMotion(motion);
+		}
+	}
+
+	ConfigurableJointMotion ConfigurableJointComponent::getZMotion()
+	{
+		if (joint)
+		{
+			return joint->getZMotion();
+		}
+		else
+		{
+			return ConfigurableJointMotion::Locked;
+		}
+	}
+
 	void ConfigurableJointComponent::buildJoint()
 	{
 		if (!thisBody.expired() && !connectedBody.expired())
 		{
 			auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
 			auto physicsContext = physicsFeature->getContext();
-			joint = physicsContext->createFixedJoint(thisBody.lock()->getRigidbody(), connectedBody.lock()->getRigidbody());
+			joint = physicsContext->createConfigurableJoint(thisBody.lock()->getRigidbody(), connectedBody.lock()->getRigidbody());
 		}
 	}
 }

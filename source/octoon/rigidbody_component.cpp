@@ -95,6 +95,36 @@ namespace octoon
 		return true;
 	}
 
+	void RigidbodyComponent::setDynamicFriction(float f)
+	{
+		rigidbody->setDynamicFriction(f);
+	}
+
+	float RigidbodyComponent::getDynamicFriction() const
+	{
+		return rigidbody->getDynamicFriction();
+	}
+
+	void RigidbodyComponent::setStaticFriction(float f)
+	{
+		rigidbody->setStaticFriction(f);
+	}
+
+	float RigidbodyComponent::getStaticFriction() const
+	{
+		return rigidbody->getStaticFriction();
+	}
+
+	void RigidbodyComponent::setRestitution(float f)
+	{
+		rigidbody->setRestitution(f);
+	}
+
+	float RigidbodyComponent::getRestitution() const
+	{
+		return rigidbody->getRestitution();
+	}
+
 	std::shared_ptr<physics::PhysicsRigidbody> RigidbodyComponent::getRigidbody()
 	{
 		return rigidbody;

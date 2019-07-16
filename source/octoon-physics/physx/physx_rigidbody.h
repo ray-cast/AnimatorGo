@@ -25,6 +25,13 @@ namespace octoon
 			virtual void setRotation(math::Quaternion rotation) override;
 			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) override;
 
+			virtual void setDynamicFriction(float f) override;
+			virtual float getDynamicFriction() const override;
+			virtual void setStaticFriction(float f) override;
+			virtual float getStaticFriction() const override;
+			virtual void setRestitution(float f) override;
+			virtual float getRestitution() const override;
+
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shapeAdded) override;
 			virtual void detachShape() override;
 

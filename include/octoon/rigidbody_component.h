@@ -45,6 +45,13 @@ namespace octoon
 		void setIsKinematic(bool type) noexcept;
 		bool getIsKinematic() const noexcept;
 
+		void setDynamicFriction(float f);
+		float getDynamicFriction() const;
+		void setStaticFriction(float f);
+		float getStaticFriction() const;
+		void setRestitution(float f);
+		float getRestitution() const;
+
 		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();
 
     private:

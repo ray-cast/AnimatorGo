@@ -24,6 +24,24 @@ namespace octoon
 
 			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
+			virtual void setAngularXMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getAngularXMotion() override;
+
+			virtual void setAngularYMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getAngularYMotion() override;
+
+			virtual void setAngularZMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getAngularZMotion() override;
+
+			virtual void setXMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getXMotion() override;
+
+			virtual void setYMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getYMotion() override;
+
+			virtual void setZMotion(ConfigurableJointMotion motion) override;
+			virtual ConfigurableJointMotion getZMotion() override;
+
 		private:
 			PhysxConfigurableJoint(const PhysxConfigurableJoint&) = delete;
 			PhysxConfigurableJoint& operator=(const PhysxConfigurableJoint&) = delete;

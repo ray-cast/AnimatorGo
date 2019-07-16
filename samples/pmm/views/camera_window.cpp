@@ -26,6 +26,13 @@ namespace octoon
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
 
+			camera_ = GameObject::create("MainCamera");
+			camera_->addComponent<EditorCameraComponent>();
+
+			auto camera = camera_->addComponent<PerspectiveCameraComponent>(60.0f);
+			camera->setCameraType(video::CameraType::Main);
+			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));
+
 			this->addMessageListener("editor:camera:set", std::bind(&CameraWindow::setCamera, this, std::placeholders::_1));
 			this->addMessageListener("editor:camera:fov", std::bind(&CameraWindow::setFov, this, std::placeholders::_1));
 			this->addMessageListener("editor:camera:position", std::bind(&CameraWindow::setPosition, this, std::placeholders::_1));

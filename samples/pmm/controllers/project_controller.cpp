@@ -353,7 +353,7 @@ namespace octoon
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(60.0f);
 			camera->setCameraType(video::CameraType::Main);
-			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));			
+			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));
 
 			this->sendMessage("editor:camera:set", obj);
 

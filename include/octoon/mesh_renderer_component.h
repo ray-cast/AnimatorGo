@@ -16,7 +16,7 @@ namespace octoon
 		MeshRendererComponent(const video::MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onActivate() noexcept override;

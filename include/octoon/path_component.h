@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT PathComponent : public GameComponent
+	class OCTOON_EXPORT PathComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(PathComponent, GameComponent)
 	public:
@@ -27,10 +27,10 @@ namespace octoon
 		virtual GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onActivate() except override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		virtual void onPathReplace() noexcept;
+		void onPathReplace() noexcept;
 
 	private:
 		PathComponent(const PathComponent&) = delete;

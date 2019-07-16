@@ -21,24 +21,24 @@ namespace octoon
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onActivate() noexcept override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-		virtual void onMoveBefore() noexcept override;
-		virtual void onMoveAfter() noexcept override;
+		void onMoveBefore() noexcept override;
+		void onMoveAfter() noexcept override;
 
-		virtual void onFrameBegin() noexcept override;
-		virtual void onFrame() noexcept override;
-		virtual void onFrameEnd() noexcept override;
+		void onFrameBegin() noexcept override;
+		void onFrame() noexcept override;
+		void onFrameEnd() noexcept override;
 
-		virtual void onJointReplace(const runtime::any& mesh) noexcept;
-		virtual void onAnimationUpdate(const runtime::any& data) noexcept;
-		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
+		void onJointReplace(const runtime::any& mesh) noexcept;
+		void onAnimationUpdate(const runtime::any& data) noexcept;
+		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
-		virtual void onLayerChangeAfter() noexcept override;
+		void onLayerChangeAfter() noexcept override;
 	
 	private:
 		void uploadJointData(const model::Mesh& mesh) noexcept;

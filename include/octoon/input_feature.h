@@ -17,15 +17,15 @@ namespace octoon
 		const input::IInputPtr& getInput() const noexcept;
 
 	private:
-		virtual void onActivate() except override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		virtual void onInputEvent(const runtime::any& data) noexcept;
+		void onInputEvent(const runtime::any& data) noexcept;
 
-		virtual void onReset() noexcept override;
+		void onReset() noexcept override;
 
-		virtual void onFrameBegin() noexcept override;
-		virtual void onFrameEnd() noexcept override;
+		void onFrameBegin() noexcept override;
+		void onFrameEnd() noexcept override;
 
 	private:
 		InputFeature(const InputFeature&) = delete;

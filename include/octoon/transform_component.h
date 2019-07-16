@@ -64,7 +64,7 @@ namespace octoon
 		void move(float speed) noexcept;
 		void move(const math::float3& speed) noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onMoveBefore() except override;

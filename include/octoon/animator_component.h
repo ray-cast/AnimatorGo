@@ -38,10 +38,10 @@ namespace octoon
 		GameComponentPtr clone() const noexcept;
 
 	private:
-		virtual void onActivate() except;
-		virtual void onDeactivate() noexcept;
+		void onActivate() except;
+		void onDeactivate() noexcept;
 
-		virtual void onFrameEnd() noexcept;
+		void onFrameEnd() noexcept;
 
 	private:
 		void updateBindpose(const GameObjects& transforms) noexcept;

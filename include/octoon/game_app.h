@@ -77,7 +77,7 @@ namespace octoon
 		void update() except;
 
 	protected:
-		virtual void onMessage(const std::string& message) noexcept;
+		void onMessage(const std::string& message) noexcept;
 
 	private:
 		GameApp(const GameApp&) noexcept = delete;

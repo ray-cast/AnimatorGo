@@ -45,16 +45,16 @@ namespace octoon
 		void setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample = 0, hal::GraphicsFormat format = hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat depthStencil = hal::GraphicsFormat::X8_D24UNormPack32) except;
 
 	private:
-		virtual void onActivate() noexcept override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-		virtual void onMoveBefore() noexcept override;
-		virtual void onMoveAfter() noexcept override;
+		void onMoveBefore() noexcept override;
+		void onMoveAfter() noexcept override;
 
-		virtual void onRenderObjectPre(const video::Camera& camera) noexcept override;
-		virtual void onRenderObjectPost(const video::Camera& camera) noexcept override;
+		void onRenderObjectPre(const video::Camera& camera) noexcept override;
+		void onRenderObjectPost(const video::Camera& camera) noexcept override;
 
-		virtual void onLayerChangeAfter() noexcept override;
+		void onLayerChangeAfter() noexcept override;
 
 	private:
 		CameraComponent(const CameraComponent&) = delete;

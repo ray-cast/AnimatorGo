@@ -68,7 +68,7 @@ namespace octoon
 
 		TimerFeature* timer_;
 		
-		std::uint32_t iterations_;
+		std::uint32_t maxIterations_;
 
 		GameObjectPtr target_;
 		CCDJoints _joints;

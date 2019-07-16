@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT PerspectiveCameraComponent : public CameraComponent
+	class OCTOON_EXPORT PerspectiveCameraComponent final : public CameraComponent
 	{
 		OctoonDeclareSubClass(PerspectiveCameraComponent, CameraComponent)
 	public:
@@ -24,7 +24,7 @@ namespace octoon
 		float getFar() const noexcept;
 		float getRatio() const noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
 		PerspectiveCameraComponent(const PerspectiveCameraComponent&) = delete;

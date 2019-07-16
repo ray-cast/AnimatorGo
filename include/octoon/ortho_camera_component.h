@@ -24,7 +24,7 @@ namespace octoon
 		void setOrtho(const math::float4& ortho) noexcept;
 		const math::float4& getOrtho() const noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
 		OrthoCameraComponent(const OrthoCameraComponent&) = delete;

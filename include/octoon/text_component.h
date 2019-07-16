@@ -31,13 +31,13 @@ namespace octoon
 
 		void uploadTextData() noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onActivate() except override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		virtual void onTextReplace() noexcept;
+		void onTextReplace() noexcept;
 
 	private:
 		TextComponent(const TextComponent&) = delete;

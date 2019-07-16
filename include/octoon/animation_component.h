@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT AnimationComponent : public GameComponent
+	class OCTOON_EXPORT AnimationComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(AnimationComponent, GameComponent)
 	public:
@@ -22,13 +22,13 @@ namespace octoon
 		void pause() noexcept;
 		void stop() noexcept;
 
-		virtual GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
-		virtual void onActivate() except override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		virtual void onFrameEnd() except override;
+		void onFrameEnd() except override;
 
 	private:
 		AnimationComponent(const AnimationComponent&) = delete;

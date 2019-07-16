@@ -33,10 +33,10 @@ namespace octoon
 		void rotateCamera(float axisX, float axisY) noexcept;
 
 	private:
-		virtual void onActivate() noexcept override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-		virtual void onFrame() noexcept override;
+		void onFrame() noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 

@@ -53,14 +53,11 @@ namespace octoon
 		}
 		else
 		{
-			for (auto& actor : activeActors_)
+			auto it = std::find(activeActors_.begin(), activeActors_.end(), entity);
+			if (it != activeActors_.end())
 			{
-				if (actor == entity)
-				{
-					actor = nullptr;
-					hasEmptyActors_ = true;
-					break;
-				}
+				*it = nullptr;
+				hasEmptyActors_ = true;
 			}
 		}
 	}

@@ -307,24 +307,21 @@ namespace octoon
 	{
 		assert(gameComponent);
 		assert(gameComponent->gameObject_ == nullptr);
+		assert(std::find(components_.begin(), components_.end(), gameComponent) == components_.end());
 
-		auto it = std::find(components_.begin(), components_.end(), gameComponent);
-		if (it == components_.end())
-		{
-			gameComponent->_setGameObject(this);
-			gameComponent->onAttach();
+		gameComponent->_setGameObject(this);
+		gameComponent->onAttach();
 
-			if (this->getActive() && gameComponent->getActive())
-				gameComponent->onActivate();
+		if (this->getActive() && gameComponent->getActive())
+			gameComponent->onActivate();
 
-			for (auto& component : components_)
-				gameComponent->onAttachComponent(component);
+		for (auto& component : components_)
+			gameComponent->onAttachComponent(component);
 
-			for (auto& component : components_)
-				component->onAttachComponent(gameComponent);
+		for (auto& component : components_)
+			component->onAttachComponent(gameComponent);
 
-			components_.push_back(gameComponent);
-		}
+		components_.push_back(gameComponent);
 	}
 
 	void

@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(GuizmoComponent, GameComponent, "GuizmoComponent")
+	OctoonImplementSubClass(GuizmoComponent, GameComponent, "Guizmo")
 
 	GuizmoComponent::GuizmoComponent() noexcept
 		: op_(imgui::guizmo::Translate)

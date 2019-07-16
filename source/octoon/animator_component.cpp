@@ -130,9 +130,13 @@ namespace octoon
 	GameComponentPtr
 	AnimatorComponent::clone() const noexcept
 	{
-		auto animtion = std::make_shared<AnimatorComponent>();
-		animtion->bones_ = bones_;
-		return animtion;
+		auto instance = std::make_shared<AnimatorComponent>();
+		instance->setName(this->getName());
+		instance->setTransforms(this->getTransforms());
+		instance->setClips(this->getClips());
+		instance->setTimeStep(this->getTimeStep());
+
+		return instance;
 	}
 
 	void 

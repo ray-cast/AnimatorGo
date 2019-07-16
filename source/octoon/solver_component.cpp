@@ -2,6 +2,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
+#include <octoon/rotation_limit_component.h>
 
 namespace octoon
 {
@@ -12,6 +13,7 @@ namespace octoon
 		, tolerance_(math::EPSILON)
 		, time_(0)
 		, timeStep_(0)
+		, enableAxisLimit_(true)
 	{
 	}
 
@@ -68,34 +70,60 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::addJoint(const CCDJointPtr joint) noexcept
+	CCDSolverComponent::setAxisLimitEnable(bool enable) noexcept
 	{
-		_joints.push_back(joint);
+		enableAxisLimit_ = enable;
+	}
+
+	bool
+	CCDSolverComponent::getAxisLimitEnable() const noexcept
+	{
+		return enableAxisLimit_;
 	}
 
 	void
-	CCDSolverComponent::setJoints(const CCDJoints& joints) noexcept
+	CCDSolverComponent::addBone(GameObjectPtr&& joint) noexcept
 	{
-		_joints = joints;
+		bones_.emplace_back(std::move(joint));
 	}
 
 	void
-	CCDSolverComponent::setJoints(const CCDJoints&& joints) noexcept
+	CCDSolverComponent::addBone(const GameObjectPtr& joint) noexcept
 	{
-		_joints = std::move(joints);
+		bones_.push_back(joint);
 	}
 
-	const CCDSolverComponent::CCDJoints&
-	CCDSolverComponent::getJoints() const noexcept
+	void
+	CCDSolverComponent::setBones(GameObjects&& bones) noexcept
 	{
-		return _joints;
+		bones_ = std::move(bones);
+	}
+
+	void
+	CCDSolverComponent::setBones(const GameObjects& bones) noexcept
+	{
+		bones_ = bones;
+	}
+
+	const GameObjects&
+	CCDSolverComponent::getBones() const noexcept
+	{
+		return bones_;
 	}
 
 	GameComponentPtr
 	CCDSolverComponent::clone() const noexcept
 	{
-		auto iksolver = std::make_shared<CCDSolverComponent>();
-		return iksolver;
+		auto instance = std::make_shared<CCDSolverComponent>();
+		instance->setName(this->getName());
+		instance->setTarget(this->getTarget());
+		instance->setBones(this->getBones());
+		instance->setIterations(this->getIterations());
+		instance->setTimeStep(this->getTimeStep());
+		instance->setTolerance(this->getTolerance());
+		instance->setAxisLimitEnable(this->getAxisLimitEnable());
+
+		return instance;
 	}
 
 	void
@@ -141,15 +169,14 @@ namespace octoon
 
 		for (std::uint32_t i = 0; i < this->getIterations(); i++)
 		{
-			auto& joints = this->getJoints();
-			for (auto& joint : joints)
+			for (auto& bone : bones_)
 			{
 				auto& jointEnd = end->getTranslate();
 				auto& jointTarget = target->getTranslate();
 				if (math::sqrDistance(jointEnd, jointTarget) < tolerance_)
 					return;
 
-				auto transform = joint->bone->getComponent<TransformComponent>();
+				auto transform = bone->getComponent<TransformComponent>();
 				math::Vector3 localJointEnd = math::invTranslateVector3(transform->getTransform(), jointEnd);
 				math::Vector3 localJointTarget = math::invTranslateVector3(transform->getTransform(), jointTarget);
 
@@ -161,15 +188,27 @@ namespace octoon
 					continue;
 
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
-				deltaAngle = math::clamp(deltaAngle, joint->mininumAngle, joint->maximumAngle);
-
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
-				math::Quaternion q0(axis, deltaAngle);
 
-				if (joint->enableAxisLimit)
-					q0.makeRotation(math::clamp(math::eulerAngles(q0), joint->minimumRadians, joint->maximumRadians));
+				if (this->enableAxisLimit_)
+				{
+					auto limit = bone->getComponent<RotationLimitComponent>();
+					if (limit)
+					{
+						math::Quaternion q0(axis, math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle()));
+						q0.makeRotation(math::clamp(math::eulerAngles(q0), limit->getMinimumAxis(), limit->getMaximumAxis()));
 
-				transform->setLocalQuaternion(transform->getLocalQuaternion() * q0);
+						transform->setLocalQuaternion(transform->getLocalQuaternion() * q0);
+					}
+					else
+					{
+						transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
+					}
+				}
+				else
+				{
+					transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
+				}				
 			}
 		}
 	}

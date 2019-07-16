@@ -5,26 +5,9 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT CCDJoint
-	{
-	public:
-		GameObjectPtr bone;
-		std::uint8_t enableAxisLimit;
-
-		float mininumAngle;
-		float maximumAngle;
-
-		math::float3 minimumRadians;
-		math::float3 maximumRadians;
-	};
-
 	class OCTOON_EXPORT CCDSolverComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(CCDSolverComponent, GameComponent)
-	public:
-		typedef std::shared_ptr<CCDJoint> CCDJointPtr;
-		typedef std::vector<CCDJointPtr> CCDJoints;
-
 	public:
 		CCDSolverComponent() noexcept;
 		~CCDSolverComponent() noexcept;
@@ -41,10 +24,15 @@ namespace octoon
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;
 
-		void addJoint(CCDJointPtr joint) noexcept;
-		void setJoints(const CCDJoints& joint) noexcept;
-		void setJoints(const CCDJoints&& joint) noexcept;
-		const CCDJoints& getJoints() const noexcept;
+		void setAxisLimitEnable(bool enable) noexcept;
+		bool getAxisLimitEnable() const noexcept;
+
+		void addBone(GameObjectPtr&& bone) noexcept;
+		void addBone(const GameObjectPtr& bone) noexcept;
+
+		void setBones(GameObjects&& joint) noexcept;
+		void setBones(const GameObjects& joint) noexcept;
+		const GameObjects& getBones() const noexcept;
 
 		GameComponentPtr clone() const noexcept;
 	private:
@@ -64,11 +52,13 @@ namespace octoon
 		float time_;
 		float timeStep_;
 		float tolerance_;
+
+		bool enableAxisLimit_;
 		
 		std::uint32_t maxIterations_;
 
+		GameObjects bones_;
 		GameObjectPtr target_;
-		CCDJoints _joints;
 	};
 }
 

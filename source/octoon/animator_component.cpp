@@ -10,10 +10,9 @@ namespace octoon
 	AnimatorComponent::AnimatorComponent() noexcept
 		: enableAnimation_(true)
 		, enableAnimOnVisableOnly_(false)
-		, needUpdate_(true)
-		, timer_(nullptr)
-		, fps_(30.0f)
 		, time_(0.0f)
+		, timer_(nullptr)
+		, timeStep_(1000.0f / 24.0f)
 	{
 	}
 
@@ -55,6 +54,18 @@ namespace octoon
 
 	AnimatorComponent::~AnimatorComponent() noexcept
 	{
+	}
+
+	void
+	AnimatorComponent::setTimeStep(float timeStep) noexcept
+	{
+		timeStep_ = timeStep;
+	}
+
+	float
+	AnimatorComponent::getTimeStep() const noexcept
+	{
+		return timeStep_;
 	}
 
 	bool
@@ -140,24 +151,17 @@ namespace octoon
 	void
 	AnimatorComponent::onFrameEnd() noexcept
 	{
-		time_ += timer_->delta();
+		time_ += timer_->delta() * CLOCKS_PER_SEC;
 
-		if (time_ > (1.0f / fps_))
-		{
-			needUpdate_ = true;
-			time_ -= (1.0f / fps_);
-		}
-
-		if (needUpdate_)
+		if (time_ > timeStep_)
 		{
 			for (auto& it : clips_)
-				it.evaluate(1.0f / fps_);
+				it.evaluate(timeStep_ / CLOCKS_PER_SEC);
 
 			this->updateBones();
-			this->updateSolvers();
 			this->sendMessageDownwards("octoon:animation:update");
 
-			needUpdate_ = false;
+			time_ -= timeStep_;
 		}
 	}
 
@@ -221,17 +225,6 @@ namespace octoon
 			transform->setLocalScale(scale);
 			transform->setLocalTranslate(translate);
 			transform->setLocalQuaternion(math::Quaternion(euler));
-		}
-	}
-
-	void
-	AnimatorComponent::updateSolvers() noexcept
-	{
-		for (auto& it : bones_)
-		{
-			auto solver = it->getComponent<CCDSolverComponent>();
-			if (solver)
-				solver->solver();
 		}
 	}
 }

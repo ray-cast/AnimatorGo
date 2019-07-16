@@ -20,6 +20,9 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
 		~AnimatorComponent() noexcept;
 
+		void setTimeStep(float timeStep) noexcept;
+		float getTimeStep() const noexcept;
+
 		bool play(const std::string& status = "default") noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -43,16 +46,13 @@ namespace octoon
 	private:
 		void updateBindpose(const GameObjects& transforms) noexcept;
 		void updateBones() noexcept;
-		void updateSolvers() noexcept;
 
 	private:
-		bool needUpdate_;
-
 		bool enableAnimation_;
 		bool enableAnimOnVisableOnly_;
 
-		float fps_;
 		float time_;
+		float timeStep_;
 
 		TimerFeature* timer_;
 		animation::AnimationClips<float> clips_;

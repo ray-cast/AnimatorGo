@@ -2,6 +2,7 @@
 #define OCTOON_CCD_SOLVER_COMPONENT_H_
 
 #include <octoon/game_component.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -38,28 +39,37 @@ namespace octoon
 		void setTolerance(float tolerance) noexcept;
 		float getTolerance() const noexcept;
 
+		void setTimeStep(float timeStep) noexcept;
+		float getTimeStep() const noexcept;
+
 		void addJoint(CCDJointPtr joint) noexcept;
 		void setJoints(const CCDJoints& joint) noexcept;
 		void setJoints(const CCDJoints&& joint) noexcept;
 		const CCDJoints& getJoints() const noexcept;
 
-		void solver() noexcept;
-
 		GameComponentPtr clone() const noexcept;
 	private:
-		virtual void onActivate() noexcept override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-		virtual void onMoveBefore() noexcept override;
-		virtual void onMoveAfter() noexcept override;
+		void onFrameEnd() noexcept override;
+
+	private:
+		void evaluate() noexcept;
 
 	private:
 		CCDSolverComponent(const CCDSolverComponent&) = delete;
 		CCDSolverComponent& operator=(const CCDSolverComponent&) = delete;
 
 	private:
+		float time_;
+		float timeStep_;
 		float tolerance_;
+
+		TimerFeature* timer_;
+		
 		std::uint32_t iterations_;
+
 		GameObjectPtr target_;
 		CCDJoints _joints;
 	};

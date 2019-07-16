@@ -1,13 +1,16 @@
 #include <octoon/solver_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/game_scene.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
 
 	CCDSolverComponent::CCDSolverComponent() noexcept
-		: iterations_(10)
+		: maxIterations_(10)
 		, tolerance_(math::EPSILON)
+		, time_(0)
+		, timeStep_(0)
 	{
 	}
 
@@ -30,13 +33,13 @@ namespace octoon
 	void
 	CCDSolverComponent::setIterations(std::uint32_t iterations) noexcept
 	{
-		iterations_ = iterations;
+		maxIterations_ = iterations;
 	}
 
 	std::uint32_t
 	CCDSolverComponent::getIterations() const noexcept
 	{
-		return iterations_;
+		return maxIterations_;
 	}
 
 	void
@@ -49,6 +52,18 @@ namespace octoon
 	CCDSolverComponent::getTolerance() const noexcept
 	{
 		return tolerance_;
+	}
+
+	void
+	CCDSolverComponent::setTimeStep(float timeStep) noexcept
+	{
+		timeStep_ = timeStep;
+	}
+
+	float
+	CCDSolverComponent::getTimeStep() const noexcept
+	{
+		return timeStep_;
 	}
 
 	void
@@ -85,25 +100,32 @@ namespace octoon
 	void
 	CCDSolverComponent::onActivate() noexcept
 	{
+		this->addComponentDispatch(GameDispatchType::FrameEnd);
+
+		timer_ = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
 	}
 
 	void
 	CCDSolverComponent::onDeactivate() noexcept
 	{
+		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		timer_ = nullptr;
 	}
 
 	void
-	CCDSolverComponent::onMoveBefore() noexcept
+	CCDSolverComponent::onFrameEnd() noexcept
 	{
+		time_ += timer_->delta() * CLOCKS_PER_SEC;
+
+		if (time_ > timeStep_)
+		{
+			this->evaluate();
+			time_ = 0;
+		}
 	}
 
 	void
-	CCDSolverComponent::onMoveAfter() noexcept
-	{
-	}
-
-	void
-	CCDSolverComponent::solver() noexcept
+	CCDSolverComponent::evaluate() noexcept
 	{
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();

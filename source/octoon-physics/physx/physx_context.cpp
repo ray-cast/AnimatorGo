@@ -84,14 +84,14 @@ namespace octoon
 
 		std::shared_ptr<PhysicsFixedJoint> PhysxContext::createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
 		{
-			auto ret = std::make_shared<PhysxFixedJoint>();
+			auto ret = std::make_shared<PhysxFixedJoint>(this);
 			ret->connect(lhs, rhs);
 			return ret;
 		}
 
 		std::shared_ptr<PhysicsConfigurableJoint> PhysxContext::createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
 		{
-			auto ret = std::make_shared<PhysxConfigurableJoint>();
+			auto ret = std::make_shared<PhysxConfigurableJoint>(this);
 			ret->connect(lhs, rhs);
 			return ret;
 		}

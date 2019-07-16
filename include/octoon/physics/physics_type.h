@@ -15,6 +15,7 @@ namespace octoon
 
 		class PhysicsJoint;
 		class PhysicsFixedJoint;
+		class PhysicsConfigurableJoint;
     }
 }
 

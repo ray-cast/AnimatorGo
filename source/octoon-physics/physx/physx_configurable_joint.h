@@ -19,7 +19,7 @@ namespace octoon
 		class OCTOON_EXPORT PhysxConfigurableJoint : public PhysicsConfigurableJoint, public PhysxJoint
 		{
 		public:
-			PhysxConfigurableJoint(PhysxContext* context, std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) noexcept;
+			PhysxConfigurableJoint(PhysxContext* context) noexcept;
 			virtual ~PhysxConfigurableJoint() noexcept;
 
 			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;

@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace physics
 	{
-		PhysxConfigurableJoint::PhysxConfigurableJoint(PhysxContext * context, std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) noexcept
+		PhysxConfigurableJoint::PhysxConfigurableJoint(PhysxContext * context) noexcept
 			:context(nullptr), joint(nullptr)
 		{
 		}

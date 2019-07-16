@@ -3,94 +3,94 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(SolverComponent, GameComponent, "Solver")
+	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
 
-	SolverComponent::SolverComponent() noexcept
+	CCDSolverComponent::CCDSolverComponent() noexcept
 		: _iterations(10)
 	{
 	}
 
-	SolverComponent::~SolverComponent() noexcept
+	CCDSolverComponent::~CCDSolverComponent() noexcept
 	{
 	}
 
 	void
-	SolverComponent::setTarget(GameObjectPtr joint) noexcept
+	CCDSolverComponent::setTarget(GameObjectPtr joint) noexcept
 	{
 		_target = joint;
 	}
 
 	GameObjectPtr
-	SolverComponent::getTarget() const noexcept
+	CCDSolverComponent::getTarget() const noexcept
 	{
 		return _target;
 	}
 
 	void
-	SolverComponent::setIterations(std::uint32_t iterations) noexcept
+	CCDSolverComponent::setIterations(std::uint32_t iterations) noexcept
 	{
 		_iterations = iterations;
 	}
 
 	std::uint32_t
-	SolverComponent::getIterations() const noexcept
+	CCDSolverComponent::getIterations() const noexcept
 	{
 		return _iterations;
 	}
 
 	void
-	SolverComponent::addJoint(const SolverJointPtr joint) noexcept
+	CCDSolverComponent::addJoint(const CCDJointPtr joint) noexcept
 	{
 		_joints.push_back(joint);
 	}
 
 	void
-	SolverComponent::setJoints(const SolverJoints& joints) noexcept
+	CCDSolverComponent::setJoints(const CCDJoints& joints) noexcept
 	{
 		_joints = joints;
 	}
 
 	void
-	SolverComponent::setJoints(const SolverJoints&& joints) noexcept
+	CCDSolverComponent::setJoints(const CCDJoints&& joints) noexcept
 	{
 		_joints = std::move(joints);
 	}
 
-	const SolverComponent::SolverJoints&
-	SolverComponent::getJoints() const noexcept
+	const CCDSolverComponent::CCDJoints&
+	CCDSolverComponent::getJoints() const noexcept
 	{
 		return _joints;
 	}
 
 	GameComponentPtr
-	SolverComponent::clone() const noexcept
+	CCDSolverComponent::clone() const noexcept
 	{
-		auto iksolver = std::make_shared<SolverComponent>();
+		auto iksolver = std::make_shared<CCDSolverComponent>();
 		return iksolver;
 	}
 
 	void
-	SolverComponent::onActivate() noexcept
+	CCDSolverComponent::onActivate() noexcept
 	{
 	}
 
 	void
-	SolverComponent::onDeactivate() noexcept
+	CCDSolverComponent::onDeactivate() noexcept
 	{
 	}
 
 	void
-	SolverComponent::onMoveBefore() noexcept
+	CCDSolverComponent::onMoveBefore() noexcept
 	{
 	}
 
 	void
-	SolverComponent::onMoveAfter() noexcept
+	CCDSolverComponent::onMoveAfter() noexcept
 	{
 	}
 
 	void
-	SolverComponent::solver() noexcept
+	CCDSolverComponent::solver() noexcept
 	{
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();

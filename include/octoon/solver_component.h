@@ -1,11 +1,11 @@
-#ifndef OCTOON_SOLVER_COMPONENT_H_
-#define OCTOON_SOLVER_COMPONENT_H_
+#ifndef OCTOON_CCD_SOLVER_COMPONENT_H_
+#define OCTOON_CCD_SOLVER_COMPONENT_H_
 
 #include <octoon/game_component.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT SolverJoint
+	class OCTOON_EXPORT CCDJoint
 	{
 	public:
 		GameObjectPtr bone;
@@ -18,16 +18,16 @@ namespace octoon
 		math::float3 maximumRadians;
 	};
 
-	class OCTOON_EXPORT SolverComponent final : public GameComponent
+	class OCTOON_EXPORT CCDSolverComponent final : public GameComponent
 	{
-		OctoonDeclareSubClass(SolverComponent, GameComponent)
+		OctoonDeclareSubClass(CCDSolverComponent, GameComponent)
 	public:
-		typedef std::shared_ptr<SolverJoint> SolverJointPtr;
-		typedef std::vector<SolverJointPtr> SolverJoints;
+		typedef std::shared_ptr<CCDJoint> CCDJointPtr;
+		typedef std::vector<CCDJointPtr> CCDJoints;
 
 	public:
-		SolverComponent() noexcept;
-		~SolverComponent() noexcept;
+		CCDSolverComponent() noexcept;
+		~CCDSolverComponent() noexcept;
 
 		void setTarget(GameObjectPtr joint) noexcept;
 		GameObjectPtr getTarget() const noexcept;
@@ -35,10 +35,10 @@ namespace octoon
 		void setIterations(std::uint32_t iterations) noexcept;
 		std::uint32_t getIterations() const noexcept;
 
-		void addJoint(SolverJointPtr joint) noexcept;
-		void setJoints(const SolverJoints& joint) noexcept;
-		void setJoints(const SolverJoints&& joint) noexcept;
-		const SolverJoints& getJoints() const noexcept;
+		void addJoint(CCDJointPtr joint) noexcept;
+		void setJoints(const CCDJoints& joint) noexcept;
+		void setJoints(const CCDJoints&& joint) noexcept;
+		const CCDJoints& getJoints() const noexcept;
 
 		void solver() noexcept;
 
@@ -51,13 +51,13 @@ namespace octoon
 		virtual void onMoveAfter() noexcept override;
 
 	private:
-		SolverComponent(const SolverComponent&) = delete;
-		SolverComponent& operator=(const SolverComponent&) = delete;
+		CCDSolverComponent(const CCDSolverComponent&) = delete;
+		CCDSolverComponent& operator=(const CCDSolverComponent&) = delete;
 
 	private:
 		std::uint32_t _iterations;
 		GameObjectPtr _target;
-		SolverJoints _joints;
+		CCDJoints _joints;
 	};
 }
 

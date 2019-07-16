@@ -5,7 +5,7 @@
 #include <memory>
 #include <octoon/game_component.h>
 #include <octoon/math/math.h>
-
+#include <octoon/rigidbody_component.h>
 
 namespace octoon
 {

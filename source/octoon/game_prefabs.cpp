@@ -224,35 +224,86 @@ namespace octoon
 		if (it != prefabs_.end())
 			return (*it).second->clone();
 
-		auto stream = io::ifstream(path);
-		if (!stream)
-			return nullptr;
-
 		Model model(path);
 
 		GameObjects bones;
 		if (!this->createBones(model, bones))
 			return false;
 
+		if (!this->createSolver(model, bones))
+			return false;
+
+		GameObjectPtr actor;
+		if (!this->createMeshes(model, actor, bones, path))
+			return false;
+
+		prefabs_[path] = actor;
+		return actor;
+	}
+
+	bool
+	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
+	{
+		auto material = std::make_shared<video::BasicMaterial>();
+		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
+		for (auto& it : model.get<Model::bone>())
+			bones.emplace_back(std::make_shared<GameObject>(it->getName()));
+
+		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
+		{
+			auto it = model.get<Model::bone>(i);
+			auto parent = it->getParent();
+			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
+			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
+			bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			bones[i]->addComponent<MeshRendererComponent>(material);
+		}
+
+		return true;
+	}
+
+	bool 
+	GamePrefabs::createSolver(const model::Model& model, GameObjects& bones) noexcept
+	{
+		for (auto& it : model.get<Model::ik>())
+		{
+			auto iksolver = std::make_shared<CCDSolverComponent>();
+			iksolver->setTarget(bones[it->targetBoneIndex]);
+			iksolver->setIterations(it->iterations);
+
+			for (auto& child : it->child)
+			{
+				auto bone = std::make_shared<CCDJoint>();
+				bone->bone = bones[child.boneIndex];
+				bone->enableAxisLimit = child.rotateLimited;
+				bone->mininumAngle = -child.angleRadian;
+				bone->maximumAngle = child.angleRadian;
+				bone->minimumRadians = child.minimumRadian;
+				bone->maximumRadians = child.maximumRadian;
+
+				iksolver->addJoint(bone);
+			}
+
+			bones[it->boneIndex]->addComponent(std::move(iksolver));
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createMeshes(const model::Model& model, GameObjectPtr& actor, const GameObjects& bones, const std::string& path) noexcept
+	{
 		video::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
 
-		math::float4x4s bindposes;
-		for (auto& bone : model.get<Model::bone>())
-		{
-			float4x4 bindpose;
-			bindpose.makeTranslate(-bone->getPosition());
-			bindposes.push_back(bindpose);
-		}
-
-		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
+		actor = GameObject::create(runtime::string::filename(path.c_str()));
 		actor->addComponent<AnimatorComponent>(bones);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
-			mesh->setBindposes(bindposes);
 
 			auto object = GameObject::create(mesh->getName());
 			object->setParent(actor);
@@ -278,52 +329,6 @@ namespace octoon
 				object->addComponent(smr);
 				object->addComponent(sjr);
 			}
-		}
-
-		prefabs_[path] = actor;
-
-		return actor;
-	}
-
-	bool
-	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
-	{
-		auto material = std::make_shared<video::BasicMaterial>();
-		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
-
-		for (auto& it : model.get<Model::bone>())
-			bones.push_back(std::make_shared<GameObject>(it->getName()));
-
-		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
-		{
-			auto it = model.get<Model::bone>(i);
-			auto parent = it->getParent();
-			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
-			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
-			bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			bones[i]->addComponent<MeshRendererComponent>(material);
-		}
-
-		for (auto& it : model.get<Model::ik>())
-		{
-			auto iksolver = std::make_shared<SolverComponent>();
-			iksolver->setTarget(bones[it->targetBoneIndex]);
-			iksolver->setIterations(it->iterations);
-
-			for (auto& child : it->child)
-			{
-				auto bone = std::make_shared<SolverJoint>();
-				bone->bone = bones[child.boneIndex];
-				bone->enableAxisLimit = child.rotateLimited;
-				bone->mininumAngle = -child.angleRadian;
-				bone->maximumAngle = child.angleRadian;
-				bone->minimumRadians = child.minimumRadian;
-				bone->maximumRadians = child.maximumRadian;
-
-				iksolver->addJoint(bone);
-			}
-
-			bones[it->boneIndex]->addComponent(std::move(iksolver));
 		}
 
 		return true;

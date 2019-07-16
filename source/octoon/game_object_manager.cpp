@@ -140,7 +140,10 @@ namespace octoon
 	void
 	GameObjectManager::onGui() noexcept
 	{
-		for (auto& it : activeActors_)
-			if (it) it->onGui();
+		for (std::size_t i = 0; i < activeActors_.size(); i++)
+		{
+			if (activeActors_[i])
+				activeActors_[i]->onGui();
+		}
 	}
 }

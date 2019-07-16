@@ -300,7 +300,7 @@ namespace octoon
 				}
 			}
 
-			/*if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
+			if (!stream.read((char*)&pmx.numMorphs, sizeof(pmx.numMorphs))) return false;
 
 			if (pmx.numMorphs > 0)
 			{
@@ -480,7 +480,7 @@ namespace octoon
 					if (!stream.read((char*)&joint.springMovementConstant, sizeof(joint.springMovementConstant))) return false;
 					if (!stream.read((char*)&joint.springRotationConstant, sizeof(joint.springRotationConstant))) return false;
 				}
-			}*/
+			}
 
 			return true;
 		}
@@ -530,6 +530,14 @@ namespace octoon
 
 			PmxUInt32 startIndices = 0;
 
+			math::float4x4s bindposes;
+			for (auto& it : pmx.bones)
+			{
+				float4x4 bindpose;
+				bindpose.makeTranslate(-it.position);
+				bindposes.push_back(bindpose);
+			}
+
 			for (auto& it : pmx.materials)
 			{
 				MeshPtr mesh = std::make_shared<Mesh>();
@@ -576,6 +584,7 @@ namespace octoon
 						}
 					}
 
+					mesh->setBindposes(bindposes);
 					mesh->setVertexArray(std::move(vertices_));
 					mesh->setNormalArray(std::move(normals_));
 					mesh->setTexcoordArray(std::move(texcoords_));

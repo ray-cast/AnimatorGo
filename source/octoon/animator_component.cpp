@@ -229,7 +229,7 @@ namespace octoon
 	{
 		for (auto& it : bones_)
 		{
-			auto solver = it->getComponent<SolverComponent>();
+			auto solver = it->getComponent<CCDSolverComponent>();
 			if (solver)
 				solver->solver();
 		}

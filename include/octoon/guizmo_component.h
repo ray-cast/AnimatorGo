@@ -16,7 +16,7 @@ namespace octoon
 		void setCamera(const GameObjectPtr& camera) noexcept;
 		const GameObjectPtr& getCamera() const noexcept;
 
-		octoon::GameComponentPtr clone() const noexcept override;
+		GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onActivate() noexcept override;

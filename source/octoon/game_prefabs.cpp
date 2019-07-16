@@ -27,6 +27,7 @@
 #include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/skinned_joint_renderer_component.h>
 #include <octoon/guizmo_component.h>
+#include <octoon/rotation_limit_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -274,15 +275,10 @@ namespace octoon
 
 			for (auto& child : it->child)
 			{
-				auto bone = std::make_shared<CCDJoint>();
-				bone->bone = bones[child.boneIndex];
-				bone->enableAxisLimit = child.rotateLimited;
-				bone->mininumAngle = -child.angleRadian;
-				bone->maximumAngle = child.angleRadian;
-				bone->minimumRadians = child.minimumRadian;
-				bone->maximumRadians = child.maximumRadian;
+				if (child.rotateLimited)
+					bones[child.boneIndex]->addComponent<RotationLimitComponent>(-child.angleRadian, child.angleRadian, child.minimumRadian, child.maximumRadian);
 
-				iksolver->addJoint(bone);
+				iksolver->addBone(bones[child.boneIndex]);
 			}
 
 			bones[it->boneIndex]->addComponent(std::move(iksolver));

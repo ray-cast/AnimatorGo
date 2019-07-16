@@ -6,7 +6,8 @@ namespace octoon
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
 
 	CCDSolverComponent::CCDSolverComponent() noexcept
-		: _iterations(10)
+		: iterations_(10)
+		, tolerance_(math::EPSILON)
 	{
 	}
 
@@ -17,25 +18,37 @@ namespace octoon
 	void
 	CCDSolverComponent::setTarget(GameObjectPtr joint) noexcept
 	{
-		_target = joint;
+		target_ = joint;
 	}
 
 	GameObjectPtr
 	CCDSolverComponent::getTarget() const noexcept
 	{
-		return _target;
+		return target_;
 	}
 
 	void
 	CCDSolverComponent::setIterations(std::uint32_t iterations) noexcept
 	{
-		_iterations = iterations;
+		iterations_ = iterations;
 	}
 
 	std::uint32_t
 	CCDSolverComponent::getIterations() const noexcept
 	{
-		return _iterations;
+		return iterations_;
+	}
+
+	void
+	CCDSolverComponent::setTolerance(float tolerance) noexcept
+	{
+		tolerance_ = tolerance;
+	}
+
+	float
+	CCDSolverComponent::getTolerance() const noexcept
+	{
+		return tolerance_;
 	}
 
 	void
@@ -102,7 +115,7 @@ namespace octoon
 			{
 				auto& jointEnd = end->getTranslate();
 				auto& jointTarget = target->getTranslate();
-				if (math::sqrDistance(jointEnd, jointTarget) < math::EPSILON)
+				if (math::sqrDistance(jointEnd, jointTarget) < tolerance_)
 					return;
 
 				auto transform = joint->bone->getComponent<TransformComponent>();

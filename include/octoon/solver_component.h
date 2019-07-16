@@ -35,6 +35,9 @@ namespace octoon
 		void setIterations(std::uint32_t iterations) noexcept;
 		std::uint32_t getIterations() const noexcept;
 
+		void setTolerance(float tolerance) noexcept;
+		float getTolerance() const noexcept;
+
 		void addJoint(CCDJointPtr joint) noexcept;
 		void setJoints(const CCDJoints& joint) noexcept;
 		void setJoints(const CCDJoints&& joint) noexcept;
@@ -55,8 +58,9 @@ namespace octoon
 		CCDSolverComponent& operator=(const CCDSolverComponent&) = delete;
 
 	private:
-		std::uint32_t _iterations;
-		GameObjectPtr _target;
+		float tolerance_;
+		std::uint32_t iterations_;
+		GameObjectPtr target_;
 		CCDJoints _joints;
 	};
 }

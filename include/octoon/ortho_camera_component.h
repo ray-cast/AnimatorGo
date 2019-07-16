@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT OrthoCameraComponent : public CameraComponent
+	class OCTOON_EXPORT OrthoCameraComponent final : public CameraComponent
 	{
 		OctoonDeclareSubClass(OrthoCameraComponent, CameraComponent)
 	public:

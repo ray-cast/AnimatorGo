@@ -12,7 +12,7 @@
 #include <octoon/runtime/except.h>
 #include <octoon/hal_feature.h>
 
-#include "game_object_manager.h"
+#include <octoon/game_object_manager.h>
 
 namespace octoon
 {

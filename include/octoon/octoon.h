@@ -23,25 +23,18 @@
 #include <octoon/perspective_camera_component.h>
 #include <octoon/film_camera_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/skinned_joint_renderer_component.h>
+#include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/path_component.h>
 #include <octoon/text_component.h>
 #include <octoon/animation_component.h>
 #include <octoon/animator_component.h>
+#include <octoon/solver_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/property.h>
 
 #include <octoon/ui/imgui.h>
-
-namespace octoon
-{
-	typedef MeshFilterComponent MeshFilter;
-	typedef TransformComponent Transform;
-	typedef GuizmoComponent Guizmo;
-	typedef FirstPersonCameraComponent FirstPersonCamera;
-	typedef CameraComponent Camera;
-	typedef MeshRendererComponent MeshRenderer;
-}
 
 #endif

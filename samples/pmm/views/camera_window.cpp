@@ -80,14 +80,14 @@ namespace octoon
 		CameraWindow::setPosition(const runtime::any& data) noexcept
 		{
 			if (camera_)
-				camera_->getComponent<Transform>()->setTranslate(runtime::any_cast<math::float3>(data));
+				camera_->getComponent<TransformComponent>()->setTranslate(runtime::any_cast<math::float3>(data));
 		}
 
 		void 
 		CameraWindow::setRotation(const runtime::any& data) noexcept
 		{
 			if (camera_)
-				camera_->getComponent<Transform>()->setQuaternion(runtime::any_cast<math::Quaternion>(data));
+				camera_->getComponent<TransformComponent>()->setQuaternion(runtime::any_cast<math::Quaternion>(data));
 		}
 
 		void

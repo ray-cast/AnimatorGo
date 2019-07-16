@@ -344,7 +344,7 @@ namespace octoon
 						{
 							if (!stream.read((char*)&bone.boneIndex, pmx.header.sizeOfBone)) return false;
 							if (!stream.read((char*)&bone.position, sizeof(bone.position))) return false;
-							if (!stream.read((char*)&bone.rotate, sizeof(bone.rotate))) return false;
+							if (!stream.read((char*)&bone.rotation, sizeof(bone.rotation))) return false;
 						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeUV || morph.morphType == PmxMorphType::MorphTypeExtraUV1 ||
@@ -959,7 +959,7 @@ namespace octoon
 						{
 							if (!stream.write((char*)&bone.boneIndex, pmx.header.sizeOfBone)) return false;
 							if (!stream.write((char*)&bone.position, sizeof(bone.position))) return false;
-							if (!stream.write((char*)&bone.rotate, sizeof(bone.rotate))) return false;
+							if (!stream.write((char*)&bone.rotation, sizeof(bone.rotation))) return false;
 						}
 					}
 					else if (morph.morphType == PmxMorphType::MorphTypeUV || morph.morphType == PmxMorphType::MorphTypeExtraUV1 ||

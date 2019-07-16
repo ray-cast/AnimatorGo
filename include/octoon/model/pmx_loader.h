@@ -30,6 +30,7 @@ namespace octoon
 		typedef math::Vector2  PmxVector2;
 		typedef math::Vector3  PmxVector3;
 		typedef math::Vector4  PmxVector4;
+		typedef math::Quaternion PmxQuaternion;
 
 		typedef math::Vector3  PmxColor3;
 		typedef math::Vector4  PmxColor4;
@@ -206,7 +207,7 @@ namespace octoon
 		{
 			PmxUInt32  boneIndex;
 			PmxVector3 position;
-			PmxVector3 rotate;
+			PmxQuaternion rotation;
 		};
 
 		struct PmxMorphMaterial

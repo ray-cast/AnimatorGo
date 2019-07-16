@@ -2,7 +2,6 @@
 #define OCTOON_CCD_SOLVER_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -65,8 +64,6 @@ namespace octoon
 		float time_;
 		float timeStep_;
 		float tolerance_;
-
-		TimerFeature* timer_;
 		
 		std::uint32_t maxIterations_;
 

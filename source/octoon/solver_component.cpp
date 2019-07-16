@@ -1,6 +1,7 @@
 #include <octoon/solver_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/game_scene.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -101,26 +102,34 @@ namespace octoon
 	CCDSolverComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
-
-		timer_ = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
 	}
 
 	void
 	CCDSolverComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
-		timer_ = nullptr;
 	}
 
 	void
 	CCDSolverComponent::onFrameEnd() noexcept
 	{
-		time_ += timer_->delta() * CLOCKS_PER_SEC;
+		if (timeStep_ > 0)
+		{
+			auto feature = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
+			if (feature)
+			{
+				time_ += feature->delta() * CLOCKS_PER_SEC;
 
-		if (time_ > timeStep_)
+				if (time_ > timeStep_)
+				{
+					this->evaluate();
+					time_ = 0;
+				}
+			}
+		}
+		else
 		{
 			this->evaluate();
-			time_ = 0;
 		}
 	}
 

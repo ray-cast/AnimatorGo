@@ -14,7 +14,7 @@ namespace octoon
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
 
 	PhysicsFeature::PhysicsFeature() except
-		:physics_system(), physics_context(nullptr)
+		:physics_system(), physics_context(nullptr), physics_scene(nullptr)
 	{
 		
 	}
@@ -26,6 +26,7 @@ namespace octoon
     void PhysicsFeature::onActivate() except
     {
 		physics_context = physics_system.createContext();
+		physics_scene = physics_context->createScene(physics::PhysicsSceneDesc());
     }
 
     void PhysicsFeature::onDeactivate() noexcept
@@ -46,6 +47,7 @@ namespace octoon
 
     void PhysicsFeature::onFrameEnd() noexcept
     {
+		physics_scene->simulate(1 / 30.f);
     }
 
     void PhysicsFeature::onOpenScene(const GameScenePtr& scene) except
@@ -59,5 +61,9 @@ namespace octoon
 	std::shared_ptr<physics::PhysicsContext> PhysicsFeature::getContext()
 	{
 		return physics_context;
+	}
+	std::shared_ptr<physics::PhysicsScene> octoon::PhysicsFeature::getScene()
+	{
+		return physics_scene;
 	}
 }

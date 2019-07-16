@@ -30,6 +30,8 @@
 #include <octoon/animation_component.h>
 #include <octoon/animator_component.h>
 #include <octoon/solver_component.h>
+#include <octoon/rigidbody_component.h>
+#include <octoon/sphere_collider_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>

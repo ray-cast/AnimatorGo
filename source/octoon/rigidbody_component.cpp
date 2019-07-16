@@ -138,6 +138,10 @@ namespace octoon
 		auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
 		auto physicsContext = physicsFeature->getContext();
 		rigidbody = physicsContext->createRigidbody(physics::PhysicsRigidbodyDesc());
+		if (rigidbody)
+		{
+			physicsFeature->getScene()->addRigidbody(rigidbody);
+		}
     }
 
     void RigidbodyComponent::onDeactivate() noexcept
@@ -146,7 +150,15 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
     }
 
-    void RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	void RigidbodyComponent::onAttach() except
+	{
+	}
+
+	void RigidbodyComponent::onDetach() noexcept
+	{
+	}
+
+	void RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
     {
 		//if (component->isA<Collider>())
 		//{

@@ -145,7 +145,7 @@ namespace octoon
 
 	ConfigurableJointMotion ConfigurableJointComponent::getYMotion()
 	{
-		return ConfigurableJointMotion(); if (joint)
+		if (joint)
 		{
 			return joint->getYMotion();
 		}

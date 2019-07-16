@@ -35,6 +35,7 @@ namespace octoon
 
 	public:
 		std::shared_ptr<physics::PhysicsContext> getContext();
+		std::shared_ptr<physics::PhysicsScene> getScene();
 
 	private:
 		PhysicsFeature(const PhysicsFeature&) = delete;
@@ -43,6 +44,7 @@ namespace octoon
     private:
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;
+		std::shared_ptr<physics::PhysicsScene> physics_scene;
     };
 }
 

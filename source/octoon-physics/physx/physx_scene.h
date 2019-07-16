@@ -23,6 +23,7 @@ namespace octoon
 			virtual ~PhysxScene();
 
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
+			virtual void simulate(float time) override;
 
 		private:
 			PhysxScene(const PhysxScene&) noexcept = delete;

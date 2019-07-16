@@ -15,7 +15,10 @@ namespace octoon
     {
 		struct OCTOON_EXPORT PhysicsSceneDesc
 		{
+		public:
 			math::float3 gravity;
+			PhysicsSceneDesc()
+				:gravity (0.f, 9.8f, 0.f) {}
 		};
 
         class OCTOON_EXPORT PhysicsScene
@@ -25,6 +28,7 @@ namespace octoon
 			~PhysicsScene() noexcept;
 
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
+			virtual void simulate(float time) = 0;
 
 		private:
 			PhysicsScene(const PhysicsScene&) = delete;

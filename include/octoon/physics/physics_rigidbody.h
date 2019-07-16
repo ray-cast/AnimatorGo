@@ -32,9 +32,9 @@ namespace octoon
 		public:
 			PhysicsRigidbodyDesc()
 				:translate(0.f, 0.f, 0.f),
-				rotation(0.f, 0.f, 0.f, 0.f),
+				rotation(1.f, 0.f, 0.f, 0.f),
 				type(PhysicsRigidbodyType::Dynamic),
-				mass(0.f)
+				mass(1.f)
 			{
 			}
 		};

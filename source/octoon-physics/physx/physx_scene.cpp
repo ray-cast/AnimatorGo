@@ -31,6 +31,12 @@ namespace octoon
 			px_scene->addActor(*physx_rigidbody->getPxRigidbody());
 			rigidbody_list.push_back(physx_rigidbody);
 		}
+
+		void PhysxScene::simulate(float time)
+		{
+			px_scene->simulate(time);
+			px_scene->fetchResults(true);
+		}
 	}
 }
 

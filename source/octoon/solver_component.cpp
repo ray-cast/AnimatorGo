@@ -114,8 +114,16 @@ namespace octoon
 	GameComponentPtr
 	CCDSolverComponent::clone() const noexcept
 	{
-		auto iksolver = std::make_shared<CCDSolverComponent>();
-		return iksolver;
+		auto instance = std::make_shared<CCDSolverComponent>();
+		instance->setName(this->getName());
+		instance->setTarget(this->getTarget());
+		instance->setBones(this->getBones());
+		instance->setIterations(this->getIterations());
+		instance->setTimeStep(this->getTimeStep());
+		instance->setTolerance(this->getTolerance());
+		instance->setAxisLimitEnable(this->getAxisLimitEnable());
+
+		return instance;
 	}
 
 	void

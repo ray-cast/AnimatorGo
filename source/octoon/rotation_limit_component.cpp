@@ -73,6 +73,11 @@ namespace octoon
 	{
 		auto instance = std::make_shared<RotationLimitComponent>();
 		instance->setName(this->getName());
+		instance->setMinimumAxis(this->getMinimumAxis());
+		instance->setMaximumAxis(this->getMaximumAxis());
+		instance->setMininumAngle(this->getMininumAngle());
+		instance->setMaximumAngle(this->getMaximumAngle());
+
 		return instance;
 	}
 }

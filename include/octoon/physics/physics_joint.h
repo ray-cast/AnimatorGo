@@ -18,6 +18,8 @@ namespace octoon
 			PhysicsJoint() noexcept;
 			virtual ~PhysicsJoint() noexcept;
 
+			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
+
 		private:
 			PhysicsJoint(const PhysicsJoint&) = delete;
 			PhysicsJoint& operator=(const PhysicsJoint&) = delete;

@@ -7,17 +7,22 @@
 #include <octoon/math/math.h>
 
 #include <octoon/physics/physics_context.h>
+#include <octoon/physics/physics_fixed_joint.h>
+
+#include "physx_joint.h"
 #include "physx_type.h"
 
 namespace octoon
 {
 	namespace physics
 	{
-		class OCTOON_EXPORT PhysxFixedJoint
+		class OCTOON_EXPORT PhysxFixedJoint: public PhysicsFixedJoint, public PhysxJoint
 		{
 		public:
-			PhysxFixedJoint(PhysxContext* context, std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) noexcept;
+			PhysxFixedJoint(PhysxContext* context) noexcept;
 			virtual ~PhysxFixedJoint() noexcept;
+
+			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
 		private:
 			PhysxFixedJoint(const PhysxFixedJoint&) = delete;

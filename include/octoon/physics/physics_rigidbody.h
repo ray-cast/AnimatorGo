@@ -51,7 +51,8 @@ namespace octoon
 			virtual void setRotation(math::Quaternion rotation) = 0;
 			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) = 0;
 
-			virtual void addShape(std::shared_ptr<PhysicsShape> shape) = 0;
+			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) = 0;
+			virtual void detachShape() = 0;
 
 		private:
 			PhysicsRigidbody(const PhysicsRigidbody&) noexcept = delete;

@@ -10,6 +10,7 @@
 #include <octoon/physics/physics_sphere_shape.h>
 #include <octoon/physics/physics_joint.h>
 #include <octoon/physics/physics_fixed_joint.h>
+#include <octoon/physics/physics_configurable_joint.h>
 
 #include "physx_scene.h"
 
@@ -29,6 +30,7 @@ namespace octoon
 			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody(PhysicsRigidbodyDesc desc) override;
 			virtual std::shared_ptr<PhysicsSphereShape> createShape(PhysicsSphereShapeDesc desc) override;
 			virtual std::shared_ptr<PhysicsFixedJoint> createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
+			virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
 			physx::PxPhysics* getPxPhysics();
 			physx::PxDefaultCpuDispatcher* getPxDefaultCpuDispatcher();

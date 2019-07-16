@@ -117,6 +117,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/joint_component.cpp
 	${HEADER_PATH}/fixed_joint_component.h
 	${SOURCE_PATH}/fixed_joint_component.cpp
+	${HEADER_PATH}/configurable_joint_component.h
+	${SOURCE_PATH}/configurable_joint_component.cpp
 )
 SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 

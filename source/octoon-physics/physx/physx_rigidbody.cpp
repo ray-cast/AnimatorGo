@@ -39,8 +39,11 @@ namespace octoon
 
 		PhysxRigidbody::~PhysxRigidbody()
 		{
-			px_rigidbody->release();
-			px_rigidbody = nullptr;
+			if (px_rigidbody)
+			{
+				px_rigidbody->release();
+				px_rigidbody = nullptr;
+			}
 		}
 
 		math::float3 PhysxRigidbody::getPosition()
@@ -74,9 +77,17 @@ namespace octoon
 			px_rigidbody->setGlobalPose(pxGlobalPose);
 		}
 
-		void PhysxRigidbody::addShape(std::shared_ptr<PhysicsShape> shapeAdded)
+		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shapeAdded)
 		{
-			this->shape = std::dynamic_pointer_cast<PhysxShape>(shapeAdded);
+			shape = std::dynamic_pointer_cast<PhysxShape>(shapeAdded);
+			px_rigidbody->attachShape(*shape->getPxShape());
+		}
+
+		void PhysxRigidbody::detachShape()
+		{
+			px_rigidbody->detachShape(*shape->getPxShape());
+			shape.reset();
+			shape = nullptr;
 		}
 
 		physx::PxRigidActor * PhysxRigidbody::getPxRigidbody()

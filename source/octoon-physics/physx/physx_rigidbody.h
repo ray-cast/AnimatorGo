@@ -25,7 +25,8 @@ namespace octoon
 			virtual void setRotation(math::Quaternion rotation) override;
 			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) override;
 
-			virtual void addShape(std::shared_ptr<PhysicsShape> shapeAdded) override;
+			virtual void attachShape(std::shared_ptr<PhysicsShape> shapeAdded) override;
+			virtual void detachShape() override;
 
 			physx::PxRigidActor* getPxRigidbody();
 

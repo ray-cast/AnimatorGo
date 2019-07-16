@@ -11,6 +11,7 @@ namespace octoon
 		class PhysxSphereShape;
 		class PhysxJoint;
 		class PhysxFixedJoint;
+		class PhysxConfigurableJoint;
     }
 }
 
@@ -38,4 +39,5 @@ namespace physx
 	
 
 	class PxFixedJoint;
+	class PxD6Joint;
 } // namespace physx

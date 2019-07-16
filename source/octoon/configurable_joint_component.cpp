@@ -1,4 +1,4 @@
-#include <octoon/fixed_joint_component.h>
+#include <octoon/configurable_joint_component.h>
 
 #include <octoon/physics_feature.h>
 #include <octoon/transform_component.h>
@@ -8,26 +8,26 @@
 
 namespace octoon
 {
-	OctoonImplementSubInterface(FixedJointComponent, JointComponent, "FixedJointComponent")
+	OctoonImplementSubInterface(ConfigurableJointComponent, JointComponent, "ConfigurableJointComponent")
 
-	FixedJointComponent::FixedJointComponent() noexcept
+	ConfigurableJointComponent::ConfigurableJointComponent() noexcept
 		:joint(), thisBody(), connectedBody()
 	{
 	}
 
-	FixedJointComponent::~FixedJointComponent()
+	ConfigurableJointComponent::~ConfigurableJointComponent()
 	{
 	}
 
-	void FixedJointComponent::onActivate() except
+	void ConfigurableJointComponent::onActivate() except
 	{
 	}
 
-	void FixedJointComponent::onDeactivate() noexcept
+	void ConfigurableJointComponent::onDeactivate() noexcept
 	{
 	}
 
-	void FixedJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	void ConfigurableJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isA<RigidbodyComponent>())
 		{
@@ -36,7 +36,7 @@ namespace octoon
 		}
 	}
 
-	void FixedJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+	void ConfigurableJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isA<RigidbodyComponent>())
 		{
@@ -44,18 +44,18 @@ namespace octoon
 		}
 	}
 
-	std::shared_ptr<RigidbodyComponent> FixedJointComponent::getConnectedBody()
+	std::shared_ptr<RigidbodyComponent> ConfigurableJointComponent::getConnectedBody()
 	{
 		return connectedBody.lock();
 	}
 
-	void FixedJointComponent::setConnectedBody(std::shared_ptr<RigidbodyComponent> component)
+	void ConfigurableJointComponent::setConnectedBody(std::shared_ptr<RigidbodyComponent> component)
 	{
 		connectedBody = component;
 		buildJoint();
 	}
 
-	void FixedJointComponent::buildJoint()
+	void ConfigurableJointComponent::buildJoint()
 	{
 		if (!thisBody.expired() && !connectedBody.expired())
 		{

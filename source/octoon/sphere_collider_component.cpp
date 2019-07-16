@@ -51,13 +51,26 @@ namespace octoon
     void SphereColliderComponent::onDetach() noexcept
     {
 		shape.reset();
+		shape = nullptr;
     }
 
     void SphereColliderComponent::onAttachComponent(const GameComponentPtr& component) except
     {
+		if (component->isA<RigidbodyComponent>())
+		{
+			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
+			if (rigidbody)
+				rigidbody->getRigidbody()->attachShape(shape);
+		}
     }
 
     void SphereColliderComponent::onDetachComponent(const GameComponentPtr& component) noexcept
     {
+		if (component->isA<RigidbodyComponent>())
+		{
+			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
+			if (rigidbody)
+				rigidbody->getRigidbody()->detachShape(); // decrements reference count
+		}
     }
 }

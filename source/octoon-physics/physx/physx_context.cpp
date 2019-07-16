@@ -4,6 +4,8 @@
 #include "physx_rigidbody.h"
 #include "physx_shape.h"
 #include "physx_sphere_shape.h"
+#include "physx_fixed_joint.h"
+#include "physx_configurable_joint.h"
 
 #include <octoon/runtime/except.h>
 #include <octoon/math/math.h>
@@ -57,7 +59,11 @@ namespace octoon
 
 		PhysxContext::~PhysxContext()
 		{
-			physics->release();
+			if (physics)
+			{
+				physics->release();
+				physics = nullptr;
+			}
 		}
 
         std::shared_ptr<PhysicsScene> PhysxContext::createScene(PhysicsSceneDesc desc)
@@ -78,7 +84,16 @@ namespace octoon
 
 		std::shared_ptr<PhysicsFixedJoint> PhysxContext::createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
 		{
-			return std::shared_ptr<PhysicsFixedJoint>();
+			auto ret = std::make_shared<PhysxFixedJoint>();
+			ret->connect(lhs, rhs);
+			return ret;
+		}
+
+		std::shared_ptr<PhysicsConfigurableJoint> PhysxContext::createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
+		{
+			auto ret = std::make_shared<PhysxConfigurableJoint>();
+			ret->connect(lhs, rhs);
+			return ret;
 		}
 
 		physx::PxPhysics * PhysxContext::getPxPhysics()

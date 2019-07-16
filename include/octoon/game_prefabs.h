@@ -42,7 +42,7 @@ namespace octoon
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except;
 		GameObjectPtr createSpriteSquare(float w, float h) except;
 
-		hal::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) except;
+		hal::GraphicsTexturePtr createTexture(const std::string& path, bool cache = true) noexcept;
 
 	private:
 		bool createBones(const model::Model& model, GameObjects& bones) noexcept;

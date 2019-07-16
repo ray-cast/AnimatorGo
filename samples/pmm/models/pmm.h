@@ -455,7 +455,7 @@ namespace octoon
 		static std::optional<PMMFile> load(istream& reader);
 	};
 
-	class PMMLoader
+	class PMMLoader final
 	{
 	public:
 		PMMLoader();

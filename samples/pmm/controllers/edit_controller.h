@@ -7,7 +7,7 @@ namespace octoon
 {
 	namespace editor
 	{
-		class EditController : public GameComponent
+		class EditController final : public GameComponent
 		{
 			OctoonDeclareSubClass(EditController, GameComponent)
 		public:

@@ -28,13 +28,13 @@ namespace octoon
 		void rotateCamera(float angle, const math::float3& axis) noexcept;
 		void rotateCamera(float axisX, float axisY) noexcept;
 
+		GameComponentPtr clone() const noexcept override;
+
 	private:
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
 		void onFrame() noexcept override;
-
-		GameComponentPtr clone() const noexcept override;
 
 	private:
 		float speed_;

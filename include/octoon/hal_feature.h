@@ -1,5 +1,5 @@
-#ifndef OCTOON_GRAPHICS_FEATURE_H_
-#define OCTOON_GRAPHICS_FEATURE_H_
+#ifndef OCTOON_HAL_FEATURE_H_
+#define OCTOON_HAL_FEATURE_H_
 
 #include <octoon/game_feature.h>
 #include <octoon/hal/graphics_types.h>

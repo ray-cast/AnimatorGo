@@ -2,7 +2,6 @@
 #define OCTOON_ANIMATOR_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/timer_feature.h>
 #include <octoon/animation/animation.h>
 
 namespace octoon
@@ -54,7 +53,6 @@ namespace octoon
 		float time_;
 		float timeStep_;
 
-		TimerFeature* timer_;
 		animation::AnimationClips<float> clips_;
 		math::float3s bindpose_;
 

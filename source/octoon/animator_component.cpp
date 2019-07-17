@@ -2,6 +2,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/game_scene.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -11,7 +12,6 @@ namespace octoon
 		: enableAnimation_(true)
 		, enableAnimOnVisableOnly_(false)
 		, time_(0.0f)
-		, timer_(nullptr)
 		, timeStep_(1000.0f / 24.0f)
 	{
 	}
@@ -142,30 +142,33 @@ namespace octoon
 	void 
 	AnimatorComponent::onActivate() except
 	{
-		timer_ = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
+		
 	}
 
 	void
 	AnimatorComponent::onDeactivate() noexcept
 	{
-		timer_ = nullptr;
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
 	}
 
 	void
 	AnimatorComponent::onFrameEnd() noexcept
 	{
-		time_ += timer_->delta() * CLOCKS_PER_SEC;
-
-		if (time_ > timeStep_)
+		auto feature = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
+		if (feature)
 		{
-			for (auto& it : clips_)
-				it.evaluate(timeStep_ / CLOCKS_PER_SEC);
+			time_ += feature->delta() * CLOCKS_PER_SEC;
 
-			this->updateBones();
-			this->sendMessageDownwards("octoon:animation:update");
+			if (time_ > timeStep_)
+			{
+				for (auto& it : clips_)
+					it.evaluate(timeStep_ / CLOCKS_PER_SEC);
 
-			time_ -= timeStep_;
+				this->updateBones();
+				this->sendMessageDownwards("octoon:animation:update");
+
+				time_ -= timeStep_;
+			}
 		}
 	}
 

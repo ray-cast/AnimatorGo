@@ -12,8 +12,8 @@ namespace octoon
 		CCDSolverComponent() noexcept;
 		~CCDSolverComponent() noexcept;
 
-		void setTarget(GameObjectPtr joint) noexcept;
-		GameObjectPtr getTarget() const noexcept;
+		void setTarget(const GameObjectPtr& joint) noexcept;
+		const GameObjectPtr& getTarget() const noexcept;
 
 		void setIterations(std::uint32_t iterations) noexcept;
 		std::uint32_t getIterations() const noexcept;

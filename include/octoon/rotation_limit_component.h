@@ -10,7 +10,7 @@ namespace octoon
 		OctoonDeclareSubClass(RotationLimitComponent, GameComponent)
 	public:
 		RotationLimitComponent() noexcept;
-		RotationLimitComponent(float mininumAngle, float maximumAngle, math::float3 minimumRadians, math::float3 maximumRadians) noexcept;
+		RotationLimitComponent(float mininumAngle, float maximumAngle, const math::float3& minimumRadians, const math::float3& maximumRadians) noexcept;
 
 		void setMininumAngle(float limit) noexcept;
 		void setMaximumAngle(float limit) noexcept;

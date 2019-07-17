@@ -22,12 +22,12 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::setTarget(GameObjectPtr joint) noexcept
+	CCDSolverComponent::setTarget(const GameObjectPtr& joint) noexcept
 	{
 		target_ = joint;
 	}
 
-	GameObjectPtr
+	const GameObjectPtr&
 	CCDSolverComponent::getTarget() const noexcept
 	{
 		return target_;

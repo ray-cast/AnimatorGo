@@ -1,5 +1,5 @@
-#ifndef OCTOON_RENDERER_H_
-#define OCTOON_RENDERER_H_
+#ifndef OCTOON_RENDER_COMPONENT_H_
+#define OCTOON_RENDER_COMPONENT_H_
 
 #include <octoon/video/material.h>
 #include <octoon/game_component.h>

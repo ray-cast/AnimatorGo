@@ -164,6 +164,9 @@ namespace octoon
 	void
 	CCDSolverComponent::evaluate() noexcept
 	{
+		if (!this->getTarget())
+			return;
+
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();
 

@@ -28,6 +28,9 @@
 #include <octoon/skinned_joint_renderer_component.h>
 #include <octoon/guizmo_component.h>
 #include <octoon/rotation_limit_component.h>
+#include <octoon/rigidbody_component.h>
+#include <octoon/sphere_collider_component.h>
+#include <octoon/configurable_joint_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -234,6 +237,10 @@ namespace octoon
 		if (!this->createSolver(model, bones))
 			return false;
 
+		GameObjects rigidbodys;
+		if (!this->createRigidbodys(model, rigidbodys))
+			return false;
+
 		GameObjectPtr actor;
 		if (!this->createMeshes(model, actor, bones, path))
 			return false;
@@ -260,6 +267,42 @@ namespace octoon
 			bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
 			bones[i]->addComponent<MeshRendererComponent>(material);
 		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createRigidbodys(const model::Model& model, GameObjects& rigidbodys) noexcept
+	{
+		/*for (auto& it : model.get<Model::rigidbody>())
+		{
+			auto gameObject = std::make_shared<GameObject>();
+			gameObject->setName(it->name);
+			gameObject->setLayer(it->group);
+			gameObject->getComponent<TransformComponent>()->setTranslate(it->position);
+			gameObject->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(it->rotation));
+
+			if (it->shape == ShapeType::ShapeTypeCircle)
+				gameObject->addComponent(std::make_shared<SphereColliderComponent>(it->scale.x));
+			else if (it->shape == ShapeType::ShapeTypeSquare)
+				gameObject->addComponent(std::make_shared<PhysicsBoxComponent>(it->scale));
+			else if (it->shape == ShapeType::ShapeTypeCapsule)
+				gameObject->addComponent(std::make_shared<PhysicsCapsuleComponent>(it->scale.x, it->scale.y));
+
+			auto component = std::make_shared<RigidbodyComponent>();
+			component->setName(it->name);
+			component->setMass(it->mass);
+			component->setRestitution(it->elasticity);
+			component->setStaticFriction(it->friction);
+			component->setDynamicFriction(it->friction);
+			//component->setLinearDamping(it->movementDecay);
+			//component->setAngularDamping(it->rotationDecay);		
+			component->setIsKinematic(it->physicsOperation == 0);
+
+			gameObject->addComponent(component);
+
+			rigidbodys.push_back(std::move(gameObject));
+		}*/
 
 		return true;
 	}

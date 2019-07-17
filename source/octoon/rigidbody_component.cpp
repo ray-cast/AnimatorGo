@@ -10,14 +10,23 @@ namespace octoon
     OctoonImplementSubClass(RigidbodyComponent, GameComponent, "RigidbodyComponent")
 
     RigidbodyComponent::RigidbodyComponent() noexcept
+		: isKinematic_(false)
+		, angularVelocity_(1.0)
+		, gravityScale_(1.0)
+		, mass_(1.0)
+		, dynamicFriction_(1.0)
+		, staticFriction_(1.0)
+		, restitution_(1.0)
     {
     }
 
 	RigidbodyComponent::RigidbodyComponent(bool type) noexcept
+		: RigidbodyComponent()
 	{
 	}
 
 	RigidbodyComponent::RigidbodyComponent(bool type, float mass) noexcept
+		: RigidbodyComponent()
 	{
 	}
 
@@ -31,134 +40,153 @@ namespace octoon
 		return instance;
     }
 
-    void RigidbodyComponent::setAngularVelocity(float v) noexcept
-    {
-        //angularVelocity = v;
-    }
-
-    float RigidbodyComponent::getAngularVelocity() const noexcept
-    {
-        //return angularVelocity;
-		return 0;
-    }
-
-    void RigidbodyComponent::setGravityScale(float scale) noexcept
-    {
-        //gravityScale = scale;
-    }
-
-    float RigidbodyComponent::getGravityScale() const noexcept
-    {
-        //return gravityScale;
-		return 0;
-    }
-
-    void RigidbodyComponent::setMass(float m) noexcept
-    {
-        //mass = m;
-    }
-
-    float RigidbodyComponent::getMass() const noexcept
-    {
-        //return mass;
-		return 0;
-    }
-
-    void RigidbodyComponent::setSleepMode(RigidbodySleepMode mode) noexcept
-    {
-        /*sleepMode = mode;
-        if(sleepMode == RigidbodySleepMode::NeverSleep)
-        {
-        }
-        else if(sleepMode == RigidbodySleepMode::StartAsleep)
-        {
-        }
-        else if(sleepMode == RigidbodySleepMode::StartAwake)
-        {
-        }*/
-    }
-
-    RigidbodySleepMode RigidbodyComponent::getSleepMode() const noexcept
-    {
-        //return sleepMode;
-		return RigidbodySleepMode::NeverSleep;
-    }
-
-	void RigidbodyComponent::setIsKinematic(bool type) noexcept
+	void
+	RigidbodyComponent::setAngularVelocity(float angularVelocity) noexcept
 	{
-		//isKinematic = type;
+		angularVelocity_ = angularVelocity;
 	}
 
-	bool RigidbodyComponent::getIsKinematic() const noexcept
+	void
+	RigidbodyComponent::setGravityScale(float gravityScale) noexcept
 	{
-		//return isKinematic;
-		return true;
+		gravityScale_ = gravityScale;
 	}
 
-	void RigidbodyComponent::setDynamicFriction(float f)
+	void
+	RigidbodyComponent::setMass(float mass) noexcept
 	{
-		rigidbody->setDynamicFriction(f);
+		mass_ = mass;
 	}
 
-	float RigidbodyComponent::getDynamicFriction() const
+	void
+	RigidbodyComponent::setSleepMode(RigidbodySleepMode sleepMode) noexcept
 	{
-		return rigidbody->getDynamicFriction();
+		sleepMode_ = sleepMode;
 	}
 
-	void RigidbodyComponent::setStaticFriction(float f)
+	void
+	RigidbodyComponent::setIsKinematic(bool isKinematic) noexcept
 	{
-		rigidbody->setStaticFriction(f);
+		isKinematic_ = isKinematic;
 	}
 
-	float RigidbodyComponent::getStaticFriction() const
+	void
+	RigidbodyComponent::setDynamicFriction(float dynamicFriction)
 	{
-		return rigidbody->getStaticFriction();
+		if (rigidbody_)
+			rigidbody_->setDynamicFriction(dynamicFriction);
+		dynamicFriction_ = dynamicFriction;
 	}
 
-	void RigidbodyComponent::setRestitution(float f)
+	void
+	RigidbodyComponent::setStaticFriction(float staticFriction)
 	{
-		rigidbody->setRestitution(f);
+		if (rigidbody_)
+			rigidbody_->setStaticFriction(staticFriction);
+		staticFriction_ = staticFriction;
 	}
 
-	float RigidbodyComponent::getRestitution() const
+	void
+	RigidbodyComponent::setRestitution(float restitution)
 	{
-		return rigidbody->getRestitution();
+		if (rigidbody_)
+			rigidbody_->setRestitution(restitution);
+		restitution_ = restitution;
 	}
 
-	std::shared_ptr<physics::PhysicsRigidbody> RigidbodyComponent::getRigidbody()
+	float
+	RigidbodyComponent::getDynamicFriction() const
 	{
-		return rigidbody;
+		return dynamicFriction_;
 	}
 
-    void RigidbodyComponent::onActivate() except
+	float
+	RigidbodyComponent::getStaticFriction() const
+	{
+		return staticFriction_;
+	}
+
+	float
+	RigidbodyComponent::getRestitution() const
+	{
+		return restitution_;
+	}
+
+	float
+	RigidbodyComponent::getAngularVelocity() const noexcept
+	{
+		return angularVelocity_;
+	}
+
+	float
+	RigidbodyComponent::getGravityScale() const noexcept
+	{
+		return gravityScale_;
+	}
+
+	float
+	RigidbodyComponent::getMass() const noexcept
+	{
+		return mass_;
+	}
+
+	RigidbodySleepMode
+	RigidbodyComponent::getSleepMode() const noexcept
+	{
+		return sleepMode_;
+	}
+
+	bool 
+	RigidbodyComponent::getIsKinematic() const noexcept
+	{
+		return isKinematic_;
+	}
+
+	std::shared_ptr<physics::PhysicsRigidbody>
+	RigidbodyComponent::getRigidbody()
+	{
+		return rigidbody_;
+	}
+
+    void
+	RigidbodyComponent::onActivate() except
     {
         this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
 		auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
 		auto physicsContext = physicsFeature->getContext();
-		rigidbody = physicsContext->createRigidbody(physics::PhysicsRigidbodyDesc());
-		if (rigidbody)
+		rigidbody_ = physicsContext->createRigidbody(physics::PhysicsRigidbodyDesc());
+
+		if (rigidbody_)
 		{
-			physicsFeature->getScene()->addRigidbody(rigidbody);
+			rigidbody_->setRestitution(restitution_);
+			rigidbody_->setDynamicFriction(dynamicFriction_);
+			rigidbody_->setStaticFriction(staticFriction_);
+
+			physicsFeature->getScene()->addRigidbody(rigidbody_);
 		}
     }
 
-    void RigidbodyComponent::onDeactivate() noexcept
+    void
+	RigidbodyComponent::onDeactivate() noexcept
     {
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeComponentDispatch(GameDispatchType::FrameEnd);
     }
 
-	void RigidbodyComponent::onAttach() except
+	void 
+	RigidbodyComponent::onAttach() except
 	{
 	}
 
-	void RigidbodyComponent::onDetach() noexcept
+	void 
+	RigidbodyComponent::onDetach() noexcept
 	{
 	}
 
-	void RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	void 
+	RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
     {
 		//if (component->isA<Collider>())
 		//{
@@ -168,7 +196,8 @@ namespace octoon
 		//}
     }
 
-    void RigidbodyComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+    void 
+	RigidbodyComponent::onDetachComponent(const GameComponentPtr& component) noexcept
     {
 		//if (component->isA<Collider>())
 		//{
@@ -178,12 +207,13 @@ namespace octoon
 		//}
     }
 
-	void RigidbodyComponent::onFrameEnd() except
+	void 
+	RigidbodyComponent::onFrameEnd() except
 	{
-		if (rigidbody)
+		if (rigidbody_)
 		{
-			auto position = rigidbody->getPosition();
-			auto rotation = rigidbody->getRotation();
+			auto position = rigidbody_->getPosition();
+			auto rotation = rigidbody_->getRotation();
 
 			auto transformComponent = this->getComponent<TransformComponent>();
 			transformComponent->setTranslate(position);
@@ -191,15 +221,16 @@ namespace octoon
 		}
 	}
 
-	void RigidbodyComponent::onMoveAfter() noexcept
+	void 
+	RigidbodyComponent::onMoveAfter() noexcept
 	{
-		if (rigidbody)
+		if (rigidbody_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
 			auto& translate = transform->getTranslate();
 			auto& rotation = transform->getQuaternion();
 
-			rigidbody->setPositionAndRotation(translate, rotation);
+			rigidbody_->setPositionAndRotation(translate, rotation);
 		}
 	}
 }

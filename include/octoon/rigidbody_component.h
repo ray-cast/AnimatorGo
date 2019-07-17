@@ -31,26 +31,24 @@ namespace octoon
         virtual GameComponentPtr clone() const noexcept;
 
         void setAngularVelocity(float v) noexcept;
-        float getAngularVelocity() const noexcept;
-
         void setGravityScale(float scale) noexcept;
-        float getGravityScale() const noexcept;
-
         void setMass(float m) noexcept;
+        void setSleepMode(RigidbodySleepMode mode) noexcept;
+        void setIsKinematic(bool type) noexcept;
+        void setDynamicFriction(float f);
+        void setStaticFriction(float f);
+        void setRestitution(float f);
+
+        float getDynamicFriction() const;
+        float getStaticFriction() const;
+        float getRestitution() const;
+        float getAngularVelocity() const noexcept;
+        float getGravityScale() const noexcept;
         float getMass() const noexcept;
 
-        void setSleepMode(RigidbodySleepMode mode) noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
 
-		void setIsKinematic(bool type) noexcept;
 		bool getIsKinematic() const noexcept;
-
-		void setDynamicFriction(float f);
-		float getDynamicFriction() const;
-		void setStaticFriction(float f);
-		float getStaticFriction() const;
-		void setRestitution(float f);
-		float getRestitution() const;
 
 		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();
 
@@ -68,8 +66,19 @@ namespace octoon
 
 		virtual void onMoveAfter() noexcept;
 
-	private:
-		std::shared_ptr<physics::PhysicsRigidbody> rigidbody;
+    private:
+        bool isKinematic_;
+
+        float angularVelocity_;
+        float gravityScale_;
+        float mass_;
+        float dynamicFriction_;
+        float staticFriction_;
+        float restitution_;
+
+        RigidbodySleepMode sleepMode_;
+
+		std::shared_ptr<physics::PhysicsRigidbody> rigidbody_;
     };
 }
 

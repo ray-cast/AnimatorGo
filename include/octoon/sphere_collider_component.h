@@ -1,37 +1,35 @@
 #ifndef OCTOON_SPHERE_COLLIDER_COMPONENT_H_
 #define OCTOON_SPHERE_COLLIDER_COMPONENT_H_
 
-#include <memory>
-#include <octoon/game_component.h>
 #include <octoon/collider_component.h>
-#include <octoon/math/math.h>
-
 #include <octoon/physics/physics_sphere_shape.h>
-
 
 namespace octoon
 {
-	class OCTOON_EXPORT SphereColliderComponent : public ColliderComponent
+	class OCTOON_EXPORT SphereColliderComponent final : public ColliderComponent
 	{
 		OctoonDeclareSubClass(SphereColliderComponent, ColliderComponent)
 	public:
 		SphereColliderComponent() noexcept;
-		~SphereColliderComponent();
-		virtual GameComponentPtr clone() const noexcept;
+		SphereColliderComponent(float radius) noexcept;
+		virtual ~SphereColliderComponent();
 
 		void setRadius(float r) noexcept;
 		float getRadius() const noexcept;
 
-	private:
-		virtual void onAttach() except;
-		virtual void onDetach() noexcept;
+		GameComponentPtr clone() const noexcept;
 
-		virtual void onAttachComponent(const GameComponentPtr& component) except;
-		virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 	private:
-		std::shared_ptr<physics::PhysicsSphereShape> shape;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
+
+		void onAttachComponent(const GameComponentPtr& component) except override;
+		void onDetachComponent(const GameComponentPtr& component) noexcept override;
+
+	private:
+		float radius_;
+		std::shared_ptr<physics::PhysicsSphereShape> shape_;
 	};
 }
 
-
-#endif // OCTOON_SPHERE_COLLIDER_COMPONENT_H_
+#endif

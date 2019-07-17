@@ -46,6 +46,7 @@ namespace octoon
 
 	private:
 		bool createBones(const model::Model& model, GameObjects& bones) noexcept;
+		bool createRigidbodys(const model::Model& model, GameObjects& rigidbodys) noexcept;
 		bool createSolver(const model::Model& model, GameObjects& bones) noexcept;
 		bool createMeshes(const model::Model& model, GameObjectPtr& mesh, const GameObjects& bones, const std::string& path = "") noexcept;
 		bool createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath = "") noexcept;

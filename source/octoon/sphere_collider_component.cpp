@@ -1,76 +1,90 @@
 #include <octoon/sphere_collider_component.h>
 
-
 #include <octoon/rigidbody_component.h>
 #include <octoon/physics_feature.h>
 #include <octoon/game_app.h>
 #include <octoon/game_scene.h>
 #include <octoon/runtime/except.h>
 
-
 namespace octoon
 {
-    OctoonImplementSubClass(SphereColliderComponent, ColliderComponent, "SphereColliderComponent")
+    OctoonImplementSubClass(SphereColliderComponent, ColliderComponent, "SphereCollider")
 
 	SphereColliderComponent::SphereColliderComponent() noexcept
+		: radius_(1.0)
     {
-
     }
+
+	SphereColliderComponent::SphereColliderComponent(float radius) noexcept
+		: radius_(radius)
+	{
+	}
 
     SphereColliderComponent::~SphereColliderComponent()
     {
 
     }
 
-    GameComponentPtr SphereColliderComponent::clone() const noexcept
+    GameComponentPtr
+	SphereColliderComponent::clone() const noexcept
     {
         return std::make_shared<SphereColliderComponent>();
     }
 
-    void SphereColliderComponent::setRadius(float r) noexcept
+    void
+	SphereColliderComponent::setRadius(float radius) noexcept
     {
-		if (shape) shape->setRadius(r);
+		if (shape_)
+			shape_->setRadius(radius);
+		this->radius_ = radius;
     }
 
-    float SphereColliderComponent::getRadius() const noexcept
+    float
+	SphereColliderComponent::getRadius() const noexcept
     {
-		if (shape)
-			return shape->getRadius();
-		else
-			return 0.f;
+		this->radius_;
     }
 
-    void SphereColliderComponent::onAttach() except
+    void
+	SphereColliderComponent::onActivate() except
     {
 		auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
 		auto physicsContext = physicsFeature->getContext();
 		physics::PhysicsSphereShapeDesc sphereDesc;
-		shape = physicsContext->createShape(sphereDesc);
+		sphereDesc.radius = radius_;
+		shape_ = physicsContext->createShape(sphereDesc);
     }
 
-    void SphereColliderComponent::onDetach() noexcept
+    void
+	SphereColliderComponent::onDeactivate() noexcept
     {
-		shape.reset();
-		shape = nullptr;
+		shape_.reset();
+		shape_ = nullptr;
     }
 
-    void SphereColliderComponent::onAttachComponent(const GameComponentPtr& component) except
+    void
+	SphereColliderComponent::onAttachComponent(const GameComponentPtr& component) except
     {
+		/*if (!shape_) return;
+
 		if (component->isA<RigidbodyComponent>())
 		{
 			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
 			if (rigidbody)
-				rigidbody->getRigidbody()->attachShape(shape);
-		}
+				rigidbody->getRigidbody()->attachShape(shape_);
+		}*/
     }
 
-    void SphereColliderComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+    void 
+	SphereColliderComponent::onDetachComponent(const GameComponentPtr& component) noexcept
     {
+		/*if (!shape_) return;
+
 		if (component->isA<RigidbodyComponent>())
 		{
 			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
 			if (rigidbody)
 				rigidbody->getRigidbody()->detachShape(); // decrements reference count
-		}
+		}*/
     }
 }

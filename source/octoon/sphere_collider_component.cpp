@@ -42,7 +42,7 @@ namespace octoon
     float
 	SphereColliderComponent::getRadius() const noexcept
     {
-		this->radius_;
+		return this->radius_;
     }
 
     void

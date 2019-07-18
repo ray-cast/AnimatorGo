@@ -89,6 +89,6 @@ namespace octoon
 	PathComponent::onPathReplace() noexcept
 	{
 		if (this->getGameObject())
-			this->sendMessage("octoon::mesh::update", mesh_);
+			this->sendMessage("octoon:mesh:update", mesh_);
 	}
 }

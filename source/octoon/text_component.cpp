@@ -209,6 +209,6 @@ namespace octoon
 	TextComponent::onTextReplace() noexcept
 	{
 		if (this->getGameObject())
-			this->sendMessage("octoon::mesh::update", mesh_);
+			this->sendMessage("octoon:mesh:update", mesh_);
 	}
 }

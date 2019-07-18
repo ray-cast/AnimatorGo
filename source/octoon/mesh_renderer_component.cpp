@@ -39,7 +39,7 @@ namespace octoon
 	MeshRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->addMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		
 		auto transform = this->getComponent<TransformComponent>();
 
@@ -56,7 +56,7 @@ namespace octoon
 	MeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-		this->removeMessageListener("octoon::mesh::update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
 		if (geometry_)
 		{

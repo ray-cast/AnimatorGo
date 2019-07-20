@@ -352,7 +352,7 @@ namespace octoon
 			else
 			{
 				auto smr = std::make_shared<SkinnedMeshRendererComponent>();
-				smr->setMaterial(std::move(materials[i]));
+				smr->setMaterial(materials[i]);
 				smr->setTransforms(bones);
 
 				auto mat = std::make_shared<LineMaterial>(1.0f);
@@ -496,6 +496,7 @@ namespace octoon
 			}
 
 			GraphicsTextureDesc textureDesc;
+			textureDesc.setName(path);
 			textureDesc.setSize(image.width(), image.height(), image.depth());
 			textureDesc.setTexDim(GraphicsTextureDim::Texture2D);
 			textureDesc.setTexFormat(format);

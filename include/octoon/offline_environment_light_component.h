@@ -12,6 +12,8 @@ namespace octoon
 		OfflineEnvironmentLightComponent() noexcept;
 		virtual ~OfflineEnvironmentLightComponent() noexcept;
 
+		void setIntensity(float value) noexcept override;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:

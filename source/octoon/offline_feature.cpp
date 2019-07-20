@@ -111,7 +111,7 @@ namespace octoon
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
 		rprContextCreateFrameBuffer(rprContext_, format, &desc, &this->rprFramebuffer_);
 
-		rprContextSetScene(rprContext_, rprScene_);		
+		rprContextSetScene(rprContext_, rprScene_);
 		rprContextSetAOV(rprContext_, RPR_AOV_COLOR, this->rprFramebuffer_);
 	}
 

@@ -3,7 +3,6 @@
 #include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 #include <RadeonProRender.h>
-#include <array>
 
 namespace octoon
 {
@@ -18,6 +17,21 @@ namespace octoon
 
 	OfflineEnvironmentLightComponent::~OfflineEnvironmentLightComponent() noexcept
 	{
+	}
+
+	void
+	OfflineEnvironmentLightComponent::setIntensity(float value) noexcept
+	{
+		if (this->rprLight_)
+		{
+			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
+
+			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			if (feature)
+				feature->setFramebufferDirty(true);
+		}
+
+		OfflineLightComponent::setIntensity(value);
 	}
 
 	GameComponentPtr

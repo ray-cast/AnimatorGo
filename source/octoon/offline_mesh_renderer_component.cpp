@@ -80,6 +80,10 @@ namespace octoon
 		{
 			auto transform = this->getComponent<TransformComponent>();
 			rprShapeSetTransform(this->rprShape_, false, transform->getTransform().ptr());
+
+			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			if (feature)
+				feature->setFramebufferDirty(true);
 		}
 	}
 
@@ -87,7 +91,7 @@ namespace octoon
 	OfflineMeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
 		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
-		if (mesh)
+		if (mesh && this->getMaterial())
 			this->uploadMeshData(*mesh);
 	}
 
@@ -112,7 +116,67 @@ namespace octoon
 			if (!this->rprMaterial_)
 			{
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial_);
-				rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.color", 0.5, 0.5, 0.5, 1.0);
+
+				auto material = this->getMaterial();
+				for (auto& it : material->getDescriptorSet()->getUniformSets())
+				{
+					if (it->getName() == "color")
+					{
+						auto color = it->getFloat4();
+						rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.color", color[0], color[1], color[2], color[3]);
+					}
+					else if (it->getName() == "decal")
+					{
+						auto texture = it->getTexture();
+						if (texture)
+						{
+							try
+							{
+								std::uint8_t* data;
+								auto desc = texture->getTextureDesc();
+								texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
+
+								rpr_image_format imageFormat = { 4, RPR_COMPONENT_TYPE_UINT8 };
+								rpr_image_desc imageDesc;
+								imageDesc.image_width = desc.getWidth();
+								imageDesc.image_height = desc.getHeight();
+								imageDesc.image_depth = 1;
+								imageDesc.image_row_pitch = desc.getWidth() * imageFormat.num_components;
+								imageDesc.image_slice_pitch = imageDesc.image_row_pitch * desc.getHeight();
+
+								std::vector<std::uint8_t> array(desc.getWidth() * desc.getHeight() * imageFormat.num_components);
+								for (std::size_t y = 0; y < desc.getHeight(); y++)
+								{
+									for (std::size_t x = 0; x < desc.getWidth(); x++)
+									{
+										auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * imageFormat.num_components;
+										auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
+
+										array[dst] = data[src];
+										array[dst + 1] = data[src + 1];
+										array[dst + 2] = data[src + 2];
+										array[dst + 3] = data[src + 3];
+									}
+								}
+
+								rpr_image image_;
+								rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, array.data(), &image_);
+
+								rpr_material_node textureNode;
+								rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+								rprMaterialNodeSetInputImageData(textureNode, "data", image_);
+
+								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
+
+								texture->unmap();
+							}
+							catch (...)
+							{
+								texture->unmap();
+							}
+						}
+					}
+				}
 			}
 
 			math::uint1s faceArray;

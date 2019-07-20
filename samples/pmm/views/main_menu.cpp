@@ -53,6 +53,8 @@ namespace octoon
 					if (imgui::menuItem("Save", "CTRL+S")) { this->sendMessage("editor:menu:file:save"); }
 					if (imgui::menuItem("Save As...", "CTRL+SHIFT+S")) { this->sendMessage("editor:menu:file:saveAs"); }
 
+					if (imgui::menuItem("render to picture file", "CTRL+B")) { this->sendMessage("editor:menu:file:picture"); }
+
 					imgui::separator();
 
 					if (imgui::menuItem("Import Model")) { this->sendMessage("editor:menu:file:import"); }

@@ -106,7 +106,7 @@ namespace octoon
 	void
 	TextComponent::onActivate() except
 	{
-		this->addMessageListener("octoon::mesh::get", std::bind(&TextComponent::onTextReplace, this));
+		this->addMessageListener("octoon:mesh:get", std::bind(&TextComponent::onTextReplace, this));
 		this->uploadTextData();
 	}
 

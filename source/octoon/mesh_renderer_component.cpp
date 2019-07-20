@@ -49,7 +49,7 @@ namespace octoon
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 		geometry_->setLayer(this->getGameObject()->getLayer());
 
-		this->sendMessage("octoon::mesh::get", nullptr);
+		this->sendMessage("octoon:mesh:get", nullptr);
 	}
 
 	void

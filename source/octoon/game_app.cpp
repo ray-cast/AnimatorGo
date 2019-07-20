@@ -41,6 +41,10 @@
 #	include <octoon/physics_feature.h>
 #endif
 
+#if OCTOON_FEATURE_VIDEO_ENABLE
+#	include <octoon/offline_feature.h>
+#endif
+
 namespace octoon
 {
 	class GameAppListener final : public GameListener
@@ -119,6 +123,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
 		this->addFeature(std::make_unique<VideoFeature>(w, h));
+#endif
+
+#if OCTOON_FEATURE_VIDEO_ENABLE
+		this->addFeature(std::make_unique<OfflineFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE

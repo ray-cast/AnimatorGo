@@ -5,6 +5,10 @@
 #include <octoon/animation/animation_curve.h>
 #include <octoon/animation/animation_clip.h>
 #include <octoon/animation/path_interpolator.h>
+#include <octoon/offline_feature.h>
+#include <octoon/offline_camera_component.h>
+#include <octoon/offline_mesh_renderer_component.h>
+#include <octoon/offline_environment_light_component.h>
 
 #include "../libs/nativefiledialog/nfd.h"
 
@@ -14,6 +18,7 @@ constexpr std::size_t PATHLIMIT = 4096;
 
 std::vector<const char*> g_SupportedProject = { "pmm" };
 std::vector<const char*> g_SupportedModel = { "pmx" };
+std::vector<const char*> g_SupportedImage = { "png", "jpg" };
 
 namespace octoon
 {
@@ -100,7 +105,9 @@ namespace octoon
 			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));			
+			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));	
+			this->addMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
+			
 		}
 
 		void
@@ -112,6 +119,7 @@ namespace octoon
 			this->removeMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
 		}
 
 		void
@@ -202,6 +210,9 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
+						for (auto& child : model->getChildren())
+							child->addComponent<OfflineMeshRendererComponent>();
+
 						objects_.emplace_back(std::move(model));
 					}
 				}
@@ -209,6 +220,11 @@ namespace octoon
 				auto camera = this->createCamera(pmm);
 				if (camera)
 					objects_.emplace_back(std::move(camera));
+
+				auto obj = GameObject::create("EnvironmentLight");
+				obj->addComponent<OfflineEnvironmentLightComponent>();
+
+				objects_.push_back(obj);
 			}
 			catch (const std::bad_optional_access&)
 			{
@@ -256,6 +272,20 @@ namespace octoon
 
 			if (!showFileSaveBrowse(filepath, PATHLIMIT, g_SupportedModel[0]))
 				return;
+		}
+
+		void
+		ProjectController::renderPicture(const runtime::any& data) noexcept
+		{
+			std::string::value_type filepath[PATHLIMIT];
+			std::memset(filepath, 0, sizeof(filepath));
+
+			if (!showFileSaveBrowse(filepath, PATHLIMIT, g_SupportedImage[0]))
+				return;
+
+			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			if (feature)
+				feature->saveToFile(filepath);
 		}
 
 		void 
@@ -350,6 +380,7 @@ namespace octoon
 			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye - math::float3::Forward * 45.0f);
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera.rotation));
+			obj->addComponent<OfflineCameraComponent>();
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(60.0f);
 			camera->setCameraType(video::CameraType::Main);

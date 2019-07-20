@@ -76,7 +76,7 @@ namespace octoon
 	void
 	PathComponent::onActivate() except
 	{
-		this->addMessageListener("octoon::mesh::get", std::bind(&PathComponent::uploadPathData, this));
+		this->addMessageListener("octoon:mesh:get", std::bind(&PathComponent::uploadPathData, this));
 		this->uploadPathData();
 	}
 

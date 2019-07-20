@@ -134,7 +134,24 @@ SET(ANIMATION_FEATURES_LIST
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 
+SET(OFFLINE_FEATURES_LIST
+	${HEADER_PATH}/offline_camera_component.h
+	${SOURCE_PATH}/offline_camera_component.cpp
+	${HEADER_PATH}/offline_render_component.h
+	${SOURCE_PATH}/offline_render_component.cpp
+	${HEADER_PATH}/offline_mesh_renderer_component.h
+	${SOURCE_PATH}/offline_mesh_renderer_component.cpp
+	${HEADER_PATH}/offline_light_component.h
+	${SOURCE_PATH}/offline_light_component.cpp
+	${HEADER_PATH}/offline_environment_light_component.h
+	${SOURCE_PATH}/offline_environment_light_component.cpp
+	${HEADER_PATH}/offline_feature.h
+	${SOURCE_PATH}/offline_feature.cpp
+)
+SOURCE_GROUP("system\\offline" FILES ${OFFLINE_FEATURES_LIST})
+
 LIST(APPEND OCTOON_LIST ${GAMEBASE_LIST})
+LIST(APPEND OCTOON_LIST ${OFFLINE_FEATURES_LIST})
 
 IF(OCTOON_FEATURE_IO_ENABLE)
 	LIST(APPEND OCTOON_LIST ${IO_FEATURES_LIST})
@@ -183,6 +200,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-math)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-runtime)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-image)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC RadeonProRender64)
 
 IF(OCTOON_FEATURE_ANIMATION_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-animation)

@@ -55,7 +55,6 @@ namespace octoon
 		using Prefabs = std::map<std::string, GameObjectPtr>;
 		using Textures = std::map<std::string, hal::GraphicsTexturePtr>;
 
-		Prefabs prefabs_;
 		Textures textureCaches_;
 	};
 }

@@ -224,10 +224,6 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createModel(const std::string& path, bool cache) except
 	{
-		auto it = prefabs_.find(path);
-		if (it != prefabs_.end())
-			return (*it).second->clone();
-
 		Model model(path);
 
 		GameObjects bones;
@@ -245,7 +241,6 @@ namespace octoon
 		if (!this->createMeshes(model, actor, bones, path))
 			return false;
 
-		prefabs_[path] = actor;
 		return actor;
 	}
 

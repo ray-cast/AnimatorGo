@@ -61,10 +61,18 @@ namespace octoon
 
 		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
-		{
 			rprSceneDetachShape(feature->getScene(), this->rprShape_);
+
+		if (this->rprShape_)
+		{
 			rprObjectDelete(this->rprShape_);
 			this->rprShape_ = nullptr;
+		}
+
+		if (this->rprMaterial_)
+		{
+			rprObjectDelete(this->rprMaterial_);
+			this->rprMaterial_ = nullptr;
 		}
 	}
 

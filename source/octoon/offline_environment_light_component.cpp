@@ -70,10 +70,11 @@ namespace octoon
 	{
 		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprLight_)
-		{
 			rprSceneDetachLight(feature->getScene(), this->rprLight_);
-			rprObjectDelete(this->rprLight_);
 
+		if (feature && this->rprLight_)
+		{
+			rprObjectDelete(this->rprLight_);
 			this->rprLight_ = nullptr;
 		}
 

@@ -483,10 +483,10 @@ namespace octoon
 		void
 		DefaultInput::updateEnd() noexcept
 		{
-			if (mouseCaptureDevice_ && mouseCaptureDevice_->capture())
+			if (mouseCaptureDevice_)
 				mouseCaptureDevice_->onFrameEnd();
 
-			if (keyboardCaptureDevice_ && keyboardCaptureDevice_->capture())
+			if (keyboardCaptureDevice_)
 				keyboardCaptureDevice_->onFrameEnd();
 		}
 

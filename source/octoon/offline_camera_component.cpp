@@ -244,16 +244,20 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
-		if (feature && this->rprCamera_)
+		if (feature && feature->getScene())
 		{
 			rprSceneSetCamera(feature->getScene(), nullptr);
+			rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+		}
+
+		if (this->rprCamera_)
+		{
 			rprObjectDelete(this->rprCamera_);
 			this->rprCamera_ = nullptr;
 		}
 
 		if (this->rprClearImage_)
-		{
-			rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+		{			
 			rprObjectDelete(this->rprClearImage_);
 			this->rprClearImage_ = nullptr;
 		}

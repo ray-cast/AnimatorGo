@@ -37,6 +37,7 @@ namespace octoon
 		GameObjectPtr createText(const wchar_t* text, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createText(const char* u8str, std::uint16_t fontsize = 24, const char* fontPath = "../../system/fonts/DroidSansFallback.ttf") noexcept;
 		GameObjectPtr createModel(const std::string& path, bool cache = true) except;
+		GameObjectPtr createOfflineModel(const std::string& path, bool cache = true) except;
 		GameObjectPtr createSprite(const std::string& image, float w, float h) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture) except;
 		GameObjectPtr createSprite(const hal::GraphicsTexturePtr& texture, float w, float h) except;
@@ -49,6 +50,7 @@ namespace octoon
 		bool createRigidbodys(const model::Model& model, GameObjects& rigidbodys) noexcept;
 		bool createSolver(const model::Model& model, GameObjects& bones) noexcept;
 		bool createMeshes(const model::Model& model, GameObjectPtr& mesh, const GameObjects& bones, const std::string& path = "") noexcept;
+		bool createOfflineMeshes(const model::Model& model, GameObjectPtr& mesh, const GameObjects& bones, const std::string& path = "") noexcept;
 		bool createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath = "") noexcept;
 
 	private:

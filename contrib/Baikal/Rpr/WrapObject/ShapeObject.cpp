@@ -37,17 +37,18 @@ namespace
         rpr_int const * in_num_face_vertices, size_t in_num_faces)
     {
         std::vector<T> result;
+
+		int count = 0;
+		for (std::size_t i = 0; i < in_num_faces; ++i)
+			count += in_num_face_vertices[i];
+
+		result.reserve(count * size);
+
         if (!in_data || !in_data_indices)
         {
-            std::cout << "Warning: missing mesh data, fill it with NULL.\n";
-            int count = 0;
-            for (std::size_t i = 0; i < in_num_faces; ++i)
-            {
-                count += in_num_face_vertices[i];
-            }
-            result.resize(count * size);
-            std::fill(result.begin(), result.end(), 0.f);
-
+			result.resize(count * size);
+			std::fill(result.begin(), result.end(), 0.f);
+			std::cout << "Warning: missing mesh data, fill it with NULL.\n" << std::endl;
             return result;
         }
 
@@ -119,8 +120,10 @@ ShapeObject* ShapeObject::CreateMesh(rpr_float const * in_vertices, size_t in_nu
         in_num_face_vertices, in_num_faces);
 
     //generate indices
+	std::uint32_t indent = 0;
     std::vector<std::uint32_t> inds;
-    std::uint32_t indent = 0;
+	inds.reserve(in_num_faces * 3);
+
     for (std::uint32_t i = 0; i < in_num_faces; ++i)
     {
         inds.push_back(indent);

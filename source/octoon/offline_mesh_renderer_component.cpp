@@ -183,9 +183,7 @@ namespace octoon
 				}
 			}
 
-			math::uint1s faceArray;
-			for (std::size_t i = 0; i < mesh.getVertexArray().size() / 3; i++)
-				faceArray.push_back(3);
+			math::uint1s faceArray(mesh.getVertexArray().size() / 3, 3);
 
 			rprContextCreateMesh(feature->getContext(), 
 				mesh.getVertexArray().data()->ptr(), mesh.getVertexArray().size() / 3, sizeof(math::float3),

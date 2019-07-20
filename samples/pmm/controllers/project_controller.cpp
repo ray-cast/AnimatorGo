@@ -204,7 +204,7 @@ namespace octoon
 						clip.getCurve("LocalEulerAnglesRaw.z").insert(std::move(rotationZ));
 					}
 
-					auto model = GamePrefabs::instance()->createModel(it.path);
+					auto model = GamePrefabs::instance()->createOfflineModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
@@ -382,6 +382,7 @@ namespace octoon
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(60.0f);
 			camera->setCameraType(video::CameraType::Main);
+			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::DepthStencilBit);
 			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));
 
 			this->sendMessage("editor:camera:set", obj);

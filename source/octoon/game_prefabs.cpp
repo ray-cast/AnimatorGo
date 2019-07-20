@@ -246,6 +246,29 @@ namespace octoon
 		return actor;
 	}
 
+	GameObjectPtr
+	GamePrefabs::createOfflineModel(const std::string& path, bool cache) except
+	{
+		Model model(path);
+
+		GameObjects bones;
+		if (!this->createBones(model, bones))
+			return false;
+
+		if (!this->createSolver(model, bones))
+			return false;
+
+		GameObjects rigidbodys;
+		if (!this->createRigidbodys(model, rigidbodys))
+			return false;
+
+		GameObjectPtr actor;
+		if (!this->createOfflineMeshes(model, actor, bones, path))
+			return false;
+
+		return actor;
+	}
+
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
@@ -261,8 +284,8 @@ namespace octoon
 			auto parent = it->getParent();
 			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
 			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
-			bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			bones[i]->addComponent<MeshRendererComponent>(material);
+			// bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			// bones[i]->addComponent<MeshRendererComponent>(material);
 		}
 
 		return true;
@@ -363,11 +386,42 @@ namespace octoon
 				sjr->setMaterial(mat);
 				sjr->setTransforms(bones);
 
+				object->addComponent(smr);
+				object->addComponent(sjr);
+			}
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createOfflineMeshes(const model::Model& model, GameObjectPtr& actor, const GameObjects& bones, const std::string& path) noexcept
+	{
+		video::Materials materials;
+		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
+			return false;
+
+		actor = GameObject::create(runtime::string::filename(path.c_str()));
+		actor->addComponent<AnimatorComponent>(bones);
+
+		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
+		{
+			auto mesh = model.get<Model::mesh>(i);
+
+			auto object = GameObject::create(mesh->getName());
+			object->setParent(actor);
+			object->addComponent<MeshFilterComponent>(mesh);
+
+			if (bones.empty())
+			{
+				object->addComponent<MeshRendererComponent>(materials[i]);
+				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
+			}
+			else
+			{
 				auto osjr = std::make_shared<OfflineSkinnedMeshRendererComponent>(materials[i]);
 				osjr->setTransforms(bones);
 
-				object->addComponent(smr);
-				object->addComponent(sjr);
 				object->addComponent(osjr);
 			}
 		}

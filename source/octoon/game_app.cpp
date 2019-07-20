@@ -122,11 +122,11 @@ namespace octoon
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(std::make_unique<VideoFeature>(w, h));
+		this->addFeature(std::make_unique<OfflineFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_VIDEO_ENABLE
-		this->addFeature(std::make_unique<OfflineFeature>(w, h));
+		this->addFeature(std::make_unique<VideoFeature>(w, h));
 #endif
 
 #if OCTOON_FEATURE_UI_ENABLE

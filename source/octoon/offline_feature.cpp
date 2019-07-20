@@ -27,6 +27,7 @@ namespace octoon
 		, rprContext_(nullptr)
 		, rprScene_(nullptr)
 		, rprMaterialSystem_(nullptr)
+		, rprFramebuffer_(nullptr)
 	{
 	}
 
@@ -36,6 +37,7 @@ namespace octoon
 		, rprContext_(nullptr)
 		, rprScene_(nullptr)
 		, rprMaterialSystem_(nullptr)
+		, rprFramebuffer_(nullptr)
 	{
 	}
 
@@ -102,56 +104,12 @@ namespace octoon
 	{
 		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
 
-		auto context = this->getFeature<GraphicsFeature>()->getContext();
-
-		hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32A32SFloat));
-		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
-
-		hal::GraphicsTextureDesc colorTextureDesc;
-		colorTextureDesc.setWidth(this->framebuffer_w_);
-		colorTextureDesc.setHeight(this->framebuffer_h_);
-		colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-		colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
-		auto colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
-		if (!colorTexture_)
-			throw runtime::runtime_error::create("createTexture() failed");
-
-		hal::GraphicsTextureDesc depthTextureDesc;
-		depthTextureDesc.setWidth(this->framebuffer_w_);
-		depthTextureDesc.setHeight(this->framebuffer_h_);
-		depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-		depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
-		auto depthTexture_ = context->getDevice()->createTexture(depthTextureDesc);
-		if (!depthTexture_)
-			throw runtime::runtime_error::create("createTexture() failed");
-
-		hal::GraphicsFramebufferDesc framebufferDesc;
-		framebufferDesc.setWidth(this->framebuffer_w_);
-		framebufferDesc.setHeight(this->framebuffer_h_);
-		framebufferDesc.setGraphicsFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
-		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
-		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
-
-		this->framebuffer_ = context->getDevice()->createFramebuffer(framebufferDesc);
-		if (!this->framebuffer_)
-			throw runtime::runtime_error::create("createFramebuffer() failed");
-
-		rpr_framebuffer_format format;
-		format.type = RPR_COMPONENT_TYPE_FLOAT32;
-		format.num_components = 4;
-
-		rpr_framebuffer_desc desc;
-		desc.fb_width = this->framebuffer_w_;
-		desc.fb_height = this->framebuffer_h_;
-
 		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		rprContextCreateScene(rprContext_, &rprScene_);
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
-		rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &this->rprFramebuffer_);
-
 		rprContextSetScene(rprContext_, rprScene_);
-		rprContextSetAOV(rprContext_, RPR_AOV_COLOR, this->rprFramebuffer_);
+
+		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}
 
 	void
@@ -194,6 +152,16 @@ namespace octoon
 		{
 		case input::InputEvent::SizeChange:
 		case input::InputEvent::SizeChangeDPI:
+			{
+				if (event.change.w > 0 && event.change.h > 0)
+				{
+					if (this->framebuffer_w_ != event.change.w || this->framebuffer_h_ != event.change.h)
+					{
+						this->framebuffer_w_ = event.change.w;
+						this->framebuffer_h_ = event.change.h;
+					}
+				}
+			}
 			break;
 		default:
 			return;
@@ -244,6 +212,56 @@ namespace octoon
 	void
 	OfflineFeature::onFrameEnd() noexcept
 	{
+	}
+
+	void
+	OfflineFeature::onFramebufferChange(std::uint32_t w, std::uint32_t h) except
+	{
+		auto context = this->getFeature<GraphicsFeature>()->getContext();
+		if (context)
+		{
+			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32A32SFloat));
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
+
+			hal::GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(w);
+			colorTextureDesc.setHeight(h);
+			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
+			auto colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
+			if (!colorTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
+			auto depthTexture_ = context->getDevice()->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			this->framebuffer_ = context->getDevice()->createFramebuffer(framebufferDesc);
+			if (!this->framebuffer_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			if (this->rprFramebuffer_)
+			{
+				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, nullptr);
+				rprObjectDelete(this->rprFramebuffer_);
+			}
+
+			rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &this->rprFramebuffer_);
+			rprContextSetAOV(rprContext_, RPR_AOV_COLOR, this->rprFramebuffer_);
+		}
 	}
 }
 #endif

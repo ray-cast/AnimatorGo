@@ -36,6 +36,8 @@ namespace octoon
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
 
+		void onFramebufferChange(std::uint32_t w, std::uint32_t h) except;
+
 	private:
 		bool dirty_;
 

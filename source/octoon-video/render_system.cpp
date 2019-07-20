@@ -164,8 +164,6 @@ namespace octoon
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
-				else
-					context.setFramebuffer(fbo_);
 #endif
 
 				context.setViewport(0, camera->getPixelViewport());
@@ -208,8 +206,6 @@ namespace octoon
 					auto& v = camera->getPixelViewport();
 					if (framebuffer)
 						context.blitFramebuffer(framebuffer, v, nullptr, v);
-					else
-						context.blitFramebuffer(fbo_, v, nullptr, v);
 				}
 
 				if (framebuffer)

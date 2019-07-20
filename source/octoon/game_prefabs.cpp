@@ -31,6 +31,7 @@
 #include <octoon/rigidbody_component.h>
 #include <octoon/sphere_collider_component.h>
 #include <octoon/configurable_joint_component.h>
+#include <octoon/offline_mesh_renderer_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -346,6 +347,7 @@ namespace octoon
 			if (bones.empty())
 			{
 				object->addComponent<MeshRendererComponent>(materials[i]);
+				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
 			}
 			else
 			{
@@ -362,6 +364,7 @@ namespace octoon
 
 				object->addComponent(smr);
 				object->addComponent(sjr);
+				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
 			}
 		}
 

@@ -12,9 +12,15 @@ namespace octoon
 		OfflineLightComponent() noexcept;
 		virtual ~OfflineLightComponent() noexcept;
 
+		void setIntensity(float value) noexcept;
+		float getIntensity() const noexcept;
+
 	private:
 		OfflineLightComponent(const OfflineLightComponent&) = delete;
 		OfflineLightComponent& operator=(const OfflineLightComponent&) = delete;
+
+	private:
+		float intensity_;
 	};
 }
 

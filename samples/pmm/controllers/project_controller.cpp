@@ -210,9 +210,6 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
-						for (auto& child : model->getChildren())
-							child->addComponent<OfflineMeshRendererComponent>();
-
 						objects_.emplace_back(std::move(model));
 					}
 				}

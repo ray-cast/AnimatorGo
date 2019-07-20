@@ -27,6 +27,7 @@ namespace octoon
 	private:
 		void* rprImage_;
 		void* rprLight_;
+
 		math::float3 color_;
 	};
 }

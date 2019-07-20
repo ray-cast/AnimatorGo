@@ -296,11 +296,16 @@ namespace octoon
 			rprCameraSetFocusDistance(this->rprCamera_, this->focusDistance_);
 			rprCameraSetFocalTilt(this->rprCamera_, this->focalTilt_);
 			rprCameraSetFStop(this->rprCamera_, this->fStop_);
+			rprCameraSetMode(this->rprCamera_, RPR_CAMERA_MODE_PERSPECTIVE);
+
+			std::uint32_t w, h;
+			feature->getFramebufferScale(w, h);
+			rprCameraSetSensorSize(this->rprCamera_, this->focalLength_ + 1, (this->focalLength_ + 1)  / w * (float)h);
 
 			auto transform = this->getComponent<TransformComponent>();
-			auto eye = transform->getTransform() * math::float4(0, 0, 0, 1);
-			auto at = transform->getTransform() * math::float4(0, 0, -1, 0);
-			auto up = transform->getTransform() * math::float4(0, -1, 0, 0);
+			auto eye = transform->getTranslate();
+			auto at = transform->getTranslate() + math::rotate(transform->getQuaternion(), math::float3::UnitZ);
+			auto up = math::rotate(transform->getQuaternion(), math::float3::UnitY);
 			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
 
 			rprSceneSetCamera(feature->getScene(), this->rprCamera_);
@@ -340,9 +345,9 @@ namespace octoon
 		if (this->rprCamera_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
-			auto eye = transform->getTransform() * math::float4(0, 0, 0, 1);
-			auto at = transform->getTransform() * math::float4(0, 0, -1, 0);
-			auto up = transform->getTransform() * math::float4(0, -1, 0, 0);
+			auto eye = transform->getTranslate();
+			auto at = transform->getTranslate() + math::rotate(transform->getQuaternion(), math::float3::UnitZ);
+			auto up = math::rotate(transform->getQuaternion(), math::float3::UnitY);
 			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
 
 			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();

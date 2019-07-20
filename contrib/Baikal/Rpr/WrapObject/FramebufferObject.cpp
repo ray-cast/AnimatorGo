@@ -133,7 +133,7 @@ void FramebufferObject::SaveToFile(const char* path)
         for (std::size_t x = 0; x < width; ++x)
         {
 
-            RadeonRays::float3 val = data[(height - 1 - y) * width + x];
+            RadeonRays::float3 val = data[y * width + x];
             tempbuf[y * width + x] = (1.f / val.w) * val;
 
             tempbuf[y * width + x].x = std::pow(tempbuf[y * width + x].x, 1.f / 2.2f);

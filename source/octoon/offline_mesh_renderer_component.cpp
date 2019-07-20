@@ -112,7 +112,7 @@ namespace octoon
 			if (!this->rprMaterial_)
 			{
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial_);
-				rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.color", 1.0, 1.0, 1.0, 1.0);
+				rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.color", 0.5, 0.5, 0.5, 1.0);
 			}
 
 			math::uint1s faceArray;
@@ -128,8 +128,6 @@ namespace octoon
 				(rpr_int*)mesh.getIndicesArray().data(), sizeof(rpr_int),
 				(rpr_int*)faceArray.data(), faceArray.size(),
 				&this->rprShape_);
-
-			rprObjectSetName(this->rprShape_, this->getGameObject()->getName().c_str());
 
 			rprShapeSetShadow(this->rprShape_, true);
 			rprShapeSetShadowCatcher(this->rprShape_, true);

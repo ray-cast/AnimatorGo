@@ -44,7 +44,7 @@ namespace octoon
 				return;
 			if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
 				return;
-			if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(this->rprLight_, 10.0))
+			if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(this->rprLight_, this->getIntensity()))
 				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;

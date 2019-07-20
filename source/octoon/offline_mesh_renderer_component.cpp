@@ -200,9 +200,7 @@ namespace octoon
 			rprShapeSetVisibility(this->rprShape_, true);
 			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
 			rprShapeSetMaterial(this->rprShape_, this->rprMaterial_);
-
-			auto transform = this->getComponent<TransformComponent>();
-			rprShapeSetTransform(this->rprShape_, false, transform->getTransform().ptr());
+			rprShapeSetTransform(this->rprShape_, false, this->getComponent<TransformComponent>()->getTransform().ptr());
 
 			rprSceneAttachShape(feature->getScene(), this->rprShape_);
 		}

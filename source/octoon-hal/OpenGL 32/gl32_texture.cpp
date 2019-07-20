@@ -268,6 +268,12 @@ namespace octoon
 			return false;
 		}
 
+		const std::uint64_t
+		GL32Texture::handle() const noexcept
+		{
+			return _texture;
+		}
+
 		const GraphicsTextureDesc&
 		GL32Texture::getTextureDesc() const noexcept
 		{

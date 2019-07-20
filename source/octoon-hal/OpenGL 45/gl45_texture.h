@@ -23,6 +23,7 @@ namespace octoon
 			GLenum getTarget() const noexcept;
 			GLuint getInstanceID() const noexcept;
 
+			const std::uint64_t handle() const noexcept override;
 			const GraphicsTextureDesc& getTextureDesc() const noexcept override;
 
 		private:

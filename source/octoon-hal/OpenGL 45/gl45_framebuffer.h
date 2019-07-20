@@ -19,6 +19,7 @@ namespace octoon
 
 			GLuint getInstanceID() noexcept;
 
+			const std::uint64_t handle() const noexcept override;
 			const GraphicsFramebufferDesc& getGraphicsFramebufferDesc() const noexcept override;
 
 		private:

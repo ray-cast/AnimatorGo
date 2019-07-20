@@ -191,6 +191,12 @@ namespace octoon
 			return true;
 		}
 
+		const std::uint64_t
+		GL20Framebuffer::handle() const noexcept
+		{
+			return this->_fbo;
+		}
+
 		const GraphicsFramebufferDesc&
 		GL20Framebuffer::getGraphicsFramebufferDesc() const noexcept
 		{

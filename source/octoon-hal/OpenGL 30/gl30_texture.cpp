@@ -224,6 +224,12 @@ namespace octoon
 			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 		}
 
+		const std::uint64_t
+		GL30Texture::handle() const noexcept
+		{
+			return _texture;
+		}
+
 		const GraphicsTextureDesc&
 		GL30Texture::getTextureDesc() const noexcept
 		{

@@ -340,6 +340,12 @@ namespace octoon
 			return true;
 		}
 
+		const std::uint64_t
+		GL45Texture::handle() const noexcept
+		{
+			return _texture;
+		}
+
 		const GraphicsTextureDesc&
 		GL45Texture::getTextureDesc() const noexcept
 		{

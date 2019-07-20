@@ -228,6 +228,12 @@ namespace octoon
 			return false;
 		}
 
+		const std::uint64_t
+		GL20Texture::handle() const noexcept
+		{
+			return _texture;
+		}
+
 		const GraphicsTextureDesc&
 		GL20Texture::getTextureDesc() const noexcept
 		{

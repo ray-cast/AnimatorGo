@@ -203,6 +203,12 @@ namespace octoon
 			return GL33Check::checkError();
 		}
 
+		const std::uint64_t
+		GL33Framebuffer::handle() const noexcept
+		{
+			return this->_fbo;
+		}
+
 		const GraphicsFramebufferDesc&
 		GL33Framebuffer::getGraphicsFramebufferDesc() const noexcept
 		{

@@ -2,6 +2,7 @@
 #define OCTOON_OFFLINE_FEATURE_H_
 
 #include <octoon/game_feature.h>
+#include <octoon/hal/graphics_framebuffer.h>
 
 namespace octoon
 {
@@ -42,6 +43,8 @@ namespace octoon
 		void* rprContext_;
 		void* rprMaterialSystem_;
 		void* rprFramebuffer_;
+
+		hal::GraphicsFramebufferPtr framebuffer_;
 
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;

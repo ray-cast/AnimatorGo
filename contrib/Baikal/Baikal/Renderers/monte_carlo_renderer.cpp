@@ -55,14 +55,14 @@ namespace Baikal
 #ifdef BAIKAL_EMBED_KERNELS
         : Baikal::ClwClass(context, program_manager, "monte_carlo_renderer", g_monte_carlo_renderer_opencl, g_monte_carlo_renderer_opencl_headers, "")
 #else
-        : Baikal::ClwClass(context, program_manager, "../Baikal/Kernels/CL/monte_carlo_renderer.cl", "")
+        : Baikal::ClwClass(context, program_manager, "../../system/Kernels/CL/monte_carlo_renderer.cl", "")
 #endif
         , m_estimator(std::move(estimator))
         , m_sample_counter(0u)
 #ifdef BAIKAL_EMBED_KERNELS
         , m_uberv2_kernels(context, program_manager, "fill_aovs_uberv2", g_fill_aovs_uberv2_opencl, g_fill_aovs_uberv2_opencl_headers, "")
 #else
-        , m_uberv2_kernels(context, program_manager, "../Baikal/Kernels/CL/fill_aovs_uberv2.cl", "")
+        , m_uberv2_kernels(context, program_manager, "../../system/Kernels/CL/fill_aovs_uberv2.cl", "")
 #endif
     {
         m_estimator->SetWorkBufferSize(kTileSizeX * kTileSizeY);

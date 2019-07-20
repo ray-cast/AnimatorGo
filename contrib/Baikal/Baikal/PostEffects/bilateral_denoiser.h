@@ -63,7 +63,7 @@ namespace Baikal
 #ifdef BAIKAL_EMBED_KERNELS
         : ClwPostEffect(context, program_manager, "denoise", g_denoise_opencl, g_denoise_opencl_headers)
 #else
-        : ClwPostEffect(context, program_manager, "../Baikal/Kernels/CL/denoise.cl")
+        : ClwPostEffect(context, program_manager, "../../system/Kernels/CL/denoise.cl")
 #endif
     {
         // Add necessary params

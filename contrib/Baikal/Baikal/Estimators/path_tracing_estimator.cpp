@@ -79,14 +79,14 @@ namespace Baikal
 #ifdef BAIKAL_EMBED_KERNELS
         , ClwClass(context, program_manager, "path_tracing_estimator", g_path_tracing_estimator_opencl, g_path_tracing_estimator_opencl_headers, "")
 #else
-        , ClwClass(context, program_manager, "../Baikal/Kernels/CL/path_tracing_estimator.cl", "")
+        , ClwClass(context, program_manager, "../../system/Kernels/CL/path_tracing_estimator.cl", "")
 #endif
         , m_render_data(new RenderData)
         , m_sample_counter(0)
 #ifdef BAIKAL_EMBED_KERNELS
         , m_uberv2_kernels(context, program_manager, "path_tracing_estimator_uberv2", g_path_tracing_estimator_uberv2_opencl, g_path_tracing_estimator_uberv2_opencl_headers, "")
 #else
-        , m_uberv2_kernels(context, program_manager, "../Baikal/Kernels/CL/path_tracing_estimator_uberv2.cl", "")
+        , m_uberv2_kernels(context, program_manager, "../../system/Kernels/CL/path_tracing_estimator_uberv2.cl", "")
 #endif
     {
         // Create parallel primitives

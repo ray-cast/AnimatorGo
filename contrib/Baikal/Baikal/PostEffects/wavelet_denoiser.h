@@ -107,7 +107,7 @@ namespace Baikal
 #ifdef BAIKAL_EMBED_KERNELS
         : ClwPostEffect(context, program_manager, "wavelet_denoise", g_wavelet_denoise_opencl, g_wavelet_denoise_opencl_headers)
 #else
-        : ClwPostEffect(context, program_manager, "../Baikal/Kernels/CL/wavelet_denoise.cl")
+        : ClwPostEffect(context, program_manager, "../../system/Kernels/CL/wavelet_denoise.cl")
 #endif
         , m_current_buffer_index(0) 
         , m_max_wavelet_passes(5)

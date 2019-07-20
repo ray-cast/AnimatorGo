@@ -176,7 +176,7 @@ if (BAIKAL_EMBED_KERNELS)
     set(STRINGIFY_SCRIPT "${CMAKE_SOURCE_DIR}/Tools/scripts/baikal_stringify.py")
     add_custom_command(
         OUTPUT ${KERNEL_HEADER}
-        COMMAND ${PYTHON_EXECUTABLE} ${STRINGIFY_SCRIPT} ../Baikal/Kernels/CL/ .cl opencl > ${KERNEL_HEADER}
+        COMMAND ${PYTHON_EXECUTABLE} ${STRINGIFY_SCRIPT} ../../system/Kernels/CL/ .cl opencl > ${KERNEL_HEADER}
         DEPENDS ${KERNELS_SOURCES}
         WORKING_DIRECTORY ${Baikal_SOURCE_DIR}/Baikal
         COMMENT "Generating Baikal kernel cache"

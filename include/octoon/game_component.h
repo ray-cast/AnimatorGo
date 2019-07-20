@@ -19,7 +19,8 @@ namespace octoon
 		void setName(std::string&& name) noexcept;
 		const std::string& getName() const noexcept;
 
-		GameObjectPtr getGameObject() const noexcept;
+		GameObject* getGameObject() noexcept;
+		const GameObject* getGameObject() const noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
 		std::shared_ptr<T> getComponent() const noexcept { return std::dynamic_pointer_cast<T>(this->getComponent(T::RTTI)); }

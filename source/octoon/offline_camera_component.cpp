@@ -12,7 +12,6 @@ namespace octoon
 
 	OfflineCameraComponent::OfflineCameraComponent() noexcept
 		: rprCamera_(nullptr)
-		, exposure_(1.0f)
 		, nearPlane_(0.1f)
 		, farPlane_(1000.0f)
 		, focalLength_(35.0f)
@@ -48,69 +47,63 @@ namespace octoon
 	}
 
 	void
-	OfflineCameraComponent::setAngularMotion(float angularMotion) noexcept
-	{
-		angularMotion_ = angularMotion;
-	}
-
-	void
-	OfflineCameraComponent::setApertureBlades(float apertureBlades) noexcept
-	{
-		apertureBlades_ = apertureBlades;
-	}
-
-	void
-	OfflineCameraComponent::setExposure(float exposure) noexcept
-	{
-		exposure_ = exposure;
-	}
-
-	void
 	OfflineCameraComponent::setFarPlane(float farPlane) noexcept
 	{
-		farPlane_ = farPlane;
+		if (farPlane_ != farPlane)
+		{
+			if (this->rprCamera_)
+			{
+				rprCameraSetFarPlane(this->rprCamera_, farPlane);
+				this->onFrameDirty();
+			}
+
+			farPlane_ = farPlane;
+		}
 	}
 
 	void
 	OfflineCameraComponent::setFocalLength(float focalLength) noexcept
 	{
-		focalLength_ = focalLength;
-	}
+		if (focalLength_ != focalLength)
+		{
+			if (this->rprCamera_)
+			{
+				rprCameraSetFocalLength(this->rprCamera_, focalLength);
+				this->onFrameDirty();
+			}
 
-	void
-	OfflineCameraComponent::setFocalTilt(float focalTilt) noexcept
-	{
-		focalTilt_ = focalTilt;
+			focalLength_ = focalLength;
+		}
 	}
 
 	void
 	OfflineCameraComponent::setFocusDistance(float focusDistance) noexcept
 	{
-		focusDistance_ = focusDistance;
+		if (focusDistance_ != focusDistance)
+		{
+			if (this->rprCamera_)
+			{
+				rprCameraSetFocalLength(this->rprCamera_, focusDistance);
+				this->onFrameDirty();
+			}
+
+			focusDistance_ = focusDistance;
+		}
 	}
 
 	void
 	OfflineCameraComponent::setFStop(float fStop) noexcept
 	{
-		fStop_ = fStop;
-	}
+		if (fStop_ != fStop)
+		{
+			if (this->rprCamera_)
+			{
+				rprCameraSetFStop(this->rprCamera_, fStop);
+				this->onFrameDirty();
+			}
 
-	void
-	OfflineCameraComponent::setIPD(float iPD) noexcept
-	{
-		iPD_ = iPD;
-	}
-
-	void
-	OfflineCameraComponent::setLensShift(float lensShift) noexcept
-	{
-		lensShift_ = lensShift;
-	}
-
-	void
-	OfflineCameraComponent::setLinearMotion(float linearMotion) noexcept
-	{
-		linearMotion_ = linearMotion;
+			fStop_ = fStop;
+		}
 	}
 
 	void
@@ -137,36 +130,6 @@ namespace octoon
 		orthoWidth_ = orthoWidth;
 	}
 
-	void
-	OfflineCameraComponent::setSensorSize(float sensorSize) noexcept
-	{
-		sensorSize_ = sensorSize;
-	}
-
-	void
-	OfflineCameraComponent::setTiltCorrection(float tiltCorrection) noexcept
-	{
-		tiltCorrection_ = tiltCorrection;
-	}
-
-	float
-	OfflineCameraComponent::getAngularMotion() const noexcept
-	{
-		return this->angularMotion_;
-	}
-
-	float
-	OfflineCameraComponent::getApertureBlades() const noexcept
-	{
-		return this->apertureBlades_;
-	}
-
-	float
-	OfflineCameraComponent::getExposure() const noexcept
-	{
-		return this->exposure_;
-	}
-
 	float
 	OfflineCameraComponent::getFarPlane() const noexcept
 	{
@@ -180,12 +143,6 @@ namespace octoon
 	}
 
 	float
-	OfflineCameraComponent::getFocalTilt() const noexcept
-	{
-		return this->focalTilt_;
-	}
-
-	float
 	OfflineCameraComponent::getFocusDistance() const noexcept
 	{
 		return this->focusDistance_;
@@ -195,24 +152,6 @@ namespace octoon
 	OfflineCameraComponent::getFStop() const noexcept
 	{
 		return this->fStop_;
-	}
-
-	float
-	OfflineCameraComponent::getIPD() const noexcept
-	{
-		return this->iPD_;
-	}
-
-	float
-	OfflineCameraComponent::getLensShift() const noexcept
-	{
-		return this->lensShift_;
-	}
-
-	float
-	OfflineCameraComponent::getLinearMotion() const noexcept
-	{
-		return this->linearMotion_;
 	}
 
 	float
@@ -237,18 +176,6 @@ namespace octoon
 	OfflineCameraComponent::getOrthoWidth() const noexcept
 	{
 		return this->orthoWidth_;
-	}
-
-	float
-	OfflineCameraComponent::getSensorSize() const noexcept
-	{
-		return this->sensorSize_;
-	}
-
-	float
-	OfflineCameraComponent::getTiltCorrection() const noexcept
-	{
-		return this->tiltCorrection_;
 	}
 
 	void
@@ -289,12 +216,10 @@ namespace octoon
 			rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, clearColor_.data(), &this->rprClearImage_);
 			rprContextCreateCamera(feature->getContext(), &this->rprCamera_);
 
-			rprCameraSetExposure(this->rprCamera_, this->exposure_);
 			rprCameraSetNearPlane(this->rprCamera_, this->nearPlane_);
 			rprCameraSetFarPlane(this->rprCamera_, this->farPlane_);
 			rprCameraSetFocalLength(this->rprCamera_, this->focalLength_);
 			rprCameraSetFocusDistance(this->rprCamera_, this->focusDistance_);
-			rprCameraSetFocalTilt(this->rprCamera_, this->focalTilt_);
 			rprCameraSetFStop(this->rprCamera_, this->fStop_);
 			rprCameraSetMode(this->rprCamera_, RPR_CAMERA_MODE_PERSPECTIVE);
 
@@ -349,15 +274,21 @@ namespace octoon
 			auto at = transform->getTranslate() + math::rotate(transform->getQuaternion(), math::float3::UnitZ);
 			auto up = math::rotate(transform->getQuaternion(), math::float3::UnitY);
 			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
-
-			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+			
+			this->onFrameDirty();
 		}
 	}
 
 	void
 	OfflineCameraComponent::onLayerChangeAfter() noexcept
 	{
+	}
+
+	void
+	OfflineCameraComponent::onFrameDirty() noexcept
+	{
+		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		if (feature)
+			feature->setFramebufferDirty(true);
 	}
 }

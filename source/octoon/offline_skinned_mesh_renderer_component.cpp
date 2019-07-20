@@ -1,4 +1,4 @@
-#include <octoon/offline_mesh_renderer_component.h>
+#include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/game_scene.h>
 #include <octoon/mesh_filter_component.h>
@@ -9,36 +9,53 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(OfflineMeshRendererComponent, OfflineRenderComponent, "OfflineMeshRenderer")
+	OctoonImplementSubClass(OfflineSkinnedMeshRendererComponent, OfflineRenderComponent, "OfflineMeshRenderer")
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent() noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent() noexcept
 		: rprShape_(nullptr)
 		, rprMaterial_(nullptr)
+		, needUpdate_(true)
 	{
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(video::MaterialPtr&& material) noexcept
-		: rprShape_(nullptr)
-		, rprMaterial_(nullptr)
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept
+		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(const video::MaterialPtr& material) noexcept
-		: rprShape_(nullptr)
-		, rprMaterial_(nullptr)
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept
+		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
 	}
 
-	OfflineMeshRendererComponent::~OfflineMeshRendererComponent() noexcept
+	OfflineSkinnedMeshRendererComponent::~OfflineSkinnedMeshRendererComponent() noexcept
 	{
 	}
 
-	GameComponentPtr
-	OfflineMeshRendererComponent::clone() const noexcept
+	void
+	OfflineSkinnedMeshRendererComponent::setTransforms(const GameObjects& transforms) noexcept
 	{
-		auto instance = std::make_shared<OfflineMeshRendererComponent>();
+		transforms_ = transforms;
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::setTransforms(GameObjects&& transforms) noexcept
+	{
+		transforms_ = std::move(transforms);
+	}
+
+	const GameObjects&
+	OfflineSkinnedMeshRendererComponent::getTransforms() const noexcept
+	{
+		return transforms_;
+	}
+
+	GameComponentPtr
+	OfflineSkinnedMeshRendererComponent::clone() const noexcept
+	{
+		auto instance = std::make_shared<OfflineSkinnedMeshRendererComponent>();
 		instance->setName(this->getName());
 		instance->setMaterial(this->getMaterial() ? (this->isSharedMaterial() ? this->getMaterial() : this->getMaterial()->clone()) : nullptr, this->isSharedMaterial());
 
@@ -46,18 +63,22 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::onActivate() noexcept
+	OfflineSkinnedMeshRendererComponent::onActivate() noexcept
 	{
+		this->addComponentDispatch(GameDispatchType::FrameEnd);
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->addMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
+
 		this->sendMessage("octoon:mesh:get", nullptr);		
 	}
 
 	void
-	OfflineMeshRendererComponent::onDeactivate() noexcept
+	OfflineSkinnedMeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->removeMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
@@ -69,12 +90,68 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::onMoveBefore() noexcept
+	OfflineSkinnedMeshRendererComponent::onFrameEnd() noexcept
+	{
+		if (!mesh_)
+			return;
+
+		if (needUpdate_)
+		{
+			std::vector<math::float4x4> joints(transforms_.size());
+
+			auto& bindposes = mesh_->getBindposes();
+			if (bindposes.size() != transforms_.size())
+			{
+				for (std::size_t i = 0; i < transforms_.size(); ++i)
+					joints[i].makeIdentity();
+			}
+			else
+			{
+				for (std::size_t i = 0; i < transforms_.size(); ++i)
+					joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
+			}
+
+			auto& vertices = mesh_->getVertexArray();
+			auto& normals = mesh_->getNormalArray();
+			auto& weights = mesh_->getWeightArray();
+
+#pragma omp parallel for
+			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
+			{
+				math::float3 v = math::float3::Zero;
+				math::float3 n = math::float3::Zero;
+
+				for (std::uint8_t j = 0; j < 4; j++)
+				{
+					auto w = weights[i].weights[j];
+					if (w > 0.0)
+					{
+						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
+						n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
+					}
+				}
+
+				skinnedMesh_->getVertexArray()[i] = v;
+				skinnedMesh_->getNormalArray()[i] = n;
+			}
+
+			this->uploadMeshData(*skinnedMesh_);
+
+			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			if (feature)
+				feature->setFramebufferDirty(true);
+
+			needUpdate_ = false;
+		}
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onMoveBefore() noexcept
 	{
 	}
 
 	void
-	OfflineMeshRendererComponent::onMoveAfter() noexcept
+	OfflineSkinnedMeshRendererComponent::onMoveAfter() noexcept
 	{
 		if (this->rprShape_)
 		{
@@ -88,27 +165,41 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
+	OfflineSkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
-		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
-		if (mesh && this->getMaterial())
-			this->uploadMeshData(*mesh);
+		if (!this->getMaterial())
+			return;
+
+		auto mesh = runtime::any_cast<model::MeshPtr>(data);
+		if (mesh)
+		{
+			mesh_ = mesh;
+			skinnedMesh_ = mesh->clone();
+		}
+
+		needUpdate_ = true;
 	}
 
 	void
-	OfflineMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
+	OfflineSkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
 	{
 	}
 
 	void
-	OfflineMeshRendererComponent::onLayerChangeAfter() noexcept
+	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
+	{
+		this->needUpdate_ = true;
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
 	{
 		if (this->rprShape_)
 			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
 	}
 
 	void
-	OfflineMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	OfflineSkinnedMeshRendererComponent::uploadMatData(const video::Material& mat) noexcept
 	{
 		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
@@ -117,8 +208,7 @@ namespace octoon
 			{
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial_);
 
-				auto material = this->getMaterial();
-				for (auto& it : material->getDescriptorSet()->getUniformSets())
+				for (auto& it : mat.getDescriptorSet()->getUniformSets())
 				{
 					if (it->getName() == "color")
 					{
@@ -182,10 +272,25 @@ namespace octoon
 					}
 				}
 			}
+		}
+	}
 
-			math::uint1s faceArray;
-			for (std::size_t i = 0; i < mesh.getVertexArray().size() / 3; i++)
-				faceArray.push_back(3);
+	void
+	OfflineSkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	{
+		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		if (feature)
+		{
+			this->uploadMatData(*this->getMaterial());
+
+			if (this->rprShape_)
+			{
+				rprSceneDetachShape(feature->getScene(), this->rprShape_);
+				rprObjectDelete(this->rprShape_);
+				this->rprShape_ = nullptr;
+			}			
+
+			math::uint1s faceArray(mesh.getVertexArray().size() / 3, 3);
 
 			rprContextCreateMesh(feature->getContext(), 
 				mesh.getVertexArray().data()->ptr(), mesh.getVertexArray().size() / 3, sizeof(math::float3),
@@ -200,11 +305,9 @@ namespace octoon
 			rprShapeSetShadow(this->rprShape_, true);
 			rprShapeSetShadowCatcher(this->rprShape_, true);
 			rprShapeSetVisibility(this->rprShape_, true);
-			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
+			rprShapeSetObjectGroupID(this->rprShape_, this->getGameObject()->getLayer());
 			rprShapeSetMaterial(this->rprShape_, this->rprMaterial_);
-
-			auto transform = this->getComponent<TransformComponent>();
-			rprShapeSetTransform(this->rprShape_, false, transform->getTransform().ptr());
+			rprShapeSetTransform(this->rprShape_, false, this->getComponent<TransformComponent>()->getTransform().ptr());
 
 			rprSceneAttachShape(feature->getScene(), this->rprShape_);
 		}

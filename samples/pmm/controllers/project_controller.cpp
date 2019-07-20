@@ -220,7 +220,7 @@ namespace octoon
 
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
-				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(2.0f);
+				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(1.0f);
 
 				objects_.push_back(obj);
 			}

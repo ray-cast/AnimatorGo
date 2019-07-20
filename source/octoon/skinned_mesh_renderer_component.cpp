@@ -140,13 +140,14 @@ namespace octoon
 			}
 
 			auto& vertices = mesh_->getVertexArray();
+			auto& normals = mesh_->getNormalArray();
 			auto& weights = mesh_->getWeightArray();
 
 #pragma omp parallel for
 			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 			{
-				math::float3 v(0.0, 0.0, 0.0);
-				math::float3 n(0.0, 0.0, 0.0);
+				math::float3 v = math::float3::Zero;
+				math::float3 n = math::float3::Zero;
 
 				for (std::uint8_t j = 0; j < 4; j++)
 				{
@@ -154,7 +155,7 @@ namespace octoon
 					if (w > 0.0)
 					{
 						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-						n += ((math::float3x3)joints[weights[i].bones[j]] * vertices[i]) * w;
+						n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
 					}
 				}
 

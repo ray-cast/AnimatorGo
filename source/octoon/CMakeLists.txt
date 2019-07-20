@@ -141,6 +141,8 @@ SET(OFFLINE_FEATURES_LIST
 	${SOURCE_PATH}/offline_render_component.cpp
 	${HEADER_PATH}/offline_mesh_renderer_component.h
 	${SOURCE_PATH}/offline_mesh_renderer_component.cpp
+	${HEADER_PATH}/offline_skinned_mesh_renderer_component.h
+	${SOURCE_PATH}/offline_skinned_mesh_renderer_component.cpp
 	${HEADER_PATH}/offline_light_component.h
 	${SOURCE_PATH}/offline_light_component.cpp
 	${HEADER_PATH}/offline_environment_light_component.h

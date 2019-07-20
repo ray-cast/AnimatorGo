@@ -32,6 +32,7 @@
 #include <octoon/sphere_collider_component.h>
 #include <octoon/configurable_joint_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
+#include <octoon/offline_skinned_mesh_renderer_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -362,9 +363,12 @@ namespace octoon
 				sjr->setMaterial(mat);
 				sjr->setTransforms(bones);
 
+				auto osjr = std::make_shared<OfflineSkinnedMeshRendererComponent>(materials[i]);
+				osjr->setTransforms(bones);
+
 				object->addComponent(smr);
 				object->addComponent(sjr);
-				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
+				object->addComponent(osjr);
 			}
 		}
 

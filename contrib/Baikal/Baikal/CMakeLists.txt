@@ -156,7 +156,7 @@ elseif (UNIX)
     add_definitions(-fvisibility=default)
 endif (WIN32)
 
-add_library(Baikal SHARED ${SOURCES})
+add_library(Baikal STATIC ${SOURCES})
 
 # We need to use this definition because CMAKE_EXPORT_ALL_SYMBOLS
 # actually doesn't export data symbols

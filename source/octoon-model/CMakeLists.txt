@@ -13,8 +13,14 @@ SET(MODEL_LIST
 	${HEADER_PATH}/modtypes.h
 	${HEADER_PATH}/mesh.h
 	${SOURCE_PATH}/mesh.cpp
-	${HEADER_PATH}/property.h
-	${SOURCE_PATH}/property.cpp
+	${HEADER_PATH}/texture.h
+	${SOURCE_PATH}/texture.cpp
+	${HEADER_PATH}/material.h
+	${SOURCE_PATH}/material.cpp
+	${HEADER_PATH}/joint.h
+	${SOURCE_PATH}/joint.cpp
+	${HEADER_PATH}/rigidbody.h
+	${SOURCE_PATH}/rigidbody.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${MODEL_LIST})
 

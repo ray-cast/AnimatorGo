@@ -9,6 +9,7 @@
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_environment_light_component.h>
+#include <array>
 
 #include "../libs/nativefiledialog/nfd.h"
 
@@ -137,19 +138,17 @@ namespace octoon
 				auto pmm = PMMFile::load(stream).value();
 				for (auto& it : pmm.model)
 				{
-					AnimationClips<float> clips(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> translateY(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> translateZ(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size());
+					std::vector<Keyframes<float>> rotationW(it.bone_init_frame.size());
 
-					for (std::size_t i = 0; i < clips.size(); i++)
+					for (std::size_t i = 0; i < it.bone_init_frame.size(); i++)
 					{
 						auto& key = it.bone_init_frame[i];
-
-						Keyframes<float> translateX;
-						Keyframes<float> translateY;
-						Keyframes<float> translateZ;
-						Keyframes<float> rotationX;
-						Keyframes<float> rotationY;
-						Keyframes<float> rotationZ;
-						Keyframes<float> rotationW;
 
 						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
 						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
@@ -158,21 +157,12 @@ namespace octoon
 
 						auto euler = math::eulerAngles(key.quaternion);
 
-						translateX.emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
-						translateY.emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
-						translateZ.emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						rotationX.emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
-						rotationY.emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
-						rotationZ.emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
-
-						auto& clip = clips[i];
-						clip.setName(it.bone_name[i]);
-						clip.setCurve("LocalPosition.x", AnimationCurve(std::move(translateX)));
-						clip.setCurve("LocalPosition.y", AnimationCurve(std::move(translateY)));
-						clip.setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ)));
-						clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX)));
-						clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY)));
-						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ)));
+						translateX[i].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
+						translateY[i].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
+						translateZ[i].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
+						rotationX[i].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
+						rotationY[i].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
+						rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 					}
 
 					for (auto& key : it.bone_key_frame)
@@ -188,20 +178,26 @@ namespace octoon
 
 						auto euler = math::eulerAngles(key.quaternion);
 
-						auto translateX = Keyframe<float>((float)key.frame / 30.0f, key.translation.x, interpolationX);
-						auto translateY = Keyframe<float>((float)key.frame / 30.0f, key.translation.y, interpolationY);
-						auto translateZ = Keyframe<float>((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						auto rotationX = Keyframe<float>((float)key.frame / 30.0f, euler.x, interpolationRotation);
-						auto rotationY = Keyframe<float>((float)key.frame / 30.0f, euler.y, interpolationRotation);
-						auto rotationZ = Keyframe<float>((float)key.frame / 30.0f, euler.z, interpolationRotation);
+						translateX[index].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
+						translateY[index].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
+						translateZ[index].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
+						rotationX[index].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
+						rotationY[index].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
+						rotationZ[index].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
+					}
 
-						auto& clip = clips[index];
-						clip.getCurve("LocalPosition.x").insert(std::move(translateX));
-						clip.getCurve("LocalPosition.y").insert(std::move(translateY));
-						clip.getCurve("LocalPosition.z").insert(std::move(translateZ));
-						clip.getCurve("LocalEulerAnglesRaw.x").insert(std::move(rotationX));
-						clip.getCurve("LocalEulerAnglesRaw.y").insert(std::move(rotationY));
-						clip.getCurve("LocalEulerAnglesRaw.z").insert(std::move(rotationZ));
+					AnimationClips<float> clips(it.bone_init_frame.size());
+
+					for (std::size_t i = 0; i < clips.size(); i++)
+					{
+						auto& clip = clips[i];
+						clip.setName(it.bone_name[i]);
+						clip.setCurve("LocalPosition.x", AnimationCurve(std::move(translateX[i])));
+						clip.setCurve("LocalPosition.y", AnimationCurve(std::move(translateY[i])));
+						clip.setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ[i])));
+						clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX[i])));
+						clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY[i])));
+						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 					}
 
 					auto model = GamePrefabs::instance()->createOfflineModel(it.path);

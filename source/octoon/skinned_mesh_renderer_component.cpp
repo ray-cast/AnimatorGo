@@ -143,7 +143,7 @@ namespace octoon
 			auto& normals = mesh_->getNormalArray();
 			auto& weights = mesh_->getWeightArray();
 
-#pragma omp parallel for
+			#pragma omp parallel for num_threads(4)
 			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 			{
 				math::float3 v = math::float3::Zero;

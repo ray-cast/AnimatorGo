@@ -152,7 +152,7 @@ endif ()
 
 SET_TARGET_ATTRIBUTE(Baikal "contrib/Baikal SDK")
 #SET_TARGET_ATTRIBUTE(BaikalIO "contrib/Baikal SDK")
-#SET_TARGET_ATTRIBUTE(BaikalKernelsDir "contrib/Baikal SDK")
+SET_TARGET_ATTRIBUTE(BaikalKernelsDir "contrib/Baikal SDK")
 SET_TARGET_ATTRIBUTE(Calc "contrib/Baikal SDK")
 SET_TARGET_ATTRIBUTE(CLW "contrib/Baikal SDK")
 SET_TARGET_ATTRIBUTE(clw_kernel_cache_h "contrib/Baikal SDK")

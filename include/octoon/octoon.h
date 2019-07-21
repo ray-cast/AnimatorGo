@@ -35,7 +35,7 @@
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
-#include <octoon/model/property.h>
+#include <octoon/model/material.h>
 
 #include <octoon/ui/imgui.h>
 

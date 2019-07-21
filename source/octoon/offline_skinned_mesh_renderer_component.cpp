@@ -123,7 +123,7 @@ namespace octoon
 			auto& normals = mesh_->getNormalArray();
 			auto& weights = mesh_->getWeightArray();
 
-#pragma omp parallel for
+			#pragma omp parallel for num_threads(4)
 			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 			{
 				math::float3 v = math::float3::Zero;
@@ -264,12 +264,13 @@ namespace octoon
 								rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 								rprMaterialNodeSetInputImageData(textureNode, "data", image_);
 
+								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION);
 								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 1.0f, 0.0f, 1.0f, 1.0f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.color", 1.0f, 0.0f, 1.0f, 1.0f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.0f, 0.0f, 0.0f, 0.0f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.roughness", 0.0f, 0.0f, 0.0f, 0.0f);
-
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.weight", 1.0f, 1.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 0.04f, 0.0f, 0.04f, 0.04f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+								
 								texture->unmap();
 							}
 							catch (...)

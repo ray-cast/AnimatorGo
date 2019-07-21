@@ -9,7 +9,7 @@
 #include <octoon/video/line_material.h>
 
 #include <octoon/model/model.h>
-#include <octoon/model/property.h>
+#include <octoon/model/material.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/ik.h>
 
@@ -441,7 +441,7 @@ namespace octoon
 			math::float3 ambient;
 
 			it->get(MATKEY_NAME, name);
-			it->get(MATKEY_TEXTURE_DIFFUSE(0), textureName);
+			it->get(MATKEY_TEXTURE_DIFFUSE, textureName);
 			it->get(MATKEY_COLOR_DIFFUSE, base);			
 			it->get(MATKEY_COLOR_AMBIENT, ambient);
 

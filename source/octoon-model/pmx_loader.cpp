@@ -1,9 +1,11 @@
 #include <octoon/model/pmx_loader.h>
 #include <octoon/model/modtypes.h>
 #include <octoon/model/mesh.h>
-#include <octoon/model/property.h>
+#include <octoon/model/material.h>
 #include <octoon/model/model.h>
 #include <octoon/model/ik.h>
+#include <octoon/model/rigidbody.h>
+#include <octoon/model/joint.h>
 
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
@@ -498,7 +500,7 @@ namespace octoon
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
 				material->set(MATKEY_OPACITY, it.Opacity);
-				material->set(MATKEY_SHININESS, it.Shininess / 255.0f);
+				material->set(MATKEY_SHININESS, it.Shininess);
 
 				std::uint32_t limits = 0;
 				if (pmx.header.sizeOfTexture == 1)
@@ -511,16 +513,20 @@ namespace octoon
 				if (it.TextureIndex < limits)
 				{
 					std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
-
-					material->set(MATKEY_TEXTURE_DIFFUSE(0), u8_conv);
-					material->set(MATKEY_TEXTURE_AMBIENT(0), u8_conv);
+					material->set(MATKEY_TEXTURE_DIFFUSE, u8_conv);
 				}
 
 				if (it.SphereTextureIndex < limits)
 				{
 					std::string u8_conv = cv.to_bytes(pmx.textures[it.SphereTextureIndex].name);
-					material->set(MATKEY_COLOR_SPHEREMAP, u8_conv);
+					material->set(MATKEY_TEXTURE_SPECULAR, u8_conv);
 				}
+
+				if (it.ToonTexture < limits)
+				{
+					std::string u8_conv = cv.to_bytes(pmx.textures[it.ToonTexture].name);
+					material->set(MATKEY_TEXTURE_TOON, u8_conv);
+				}		
 
 				model.add(std::move(material));
 			}

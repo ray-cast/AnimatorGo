@@ -9,41 +9,40 @@
 #include <octoon/runtime/platform.h>
 #include <octoon/io/iostream.h>
 
-#define MATKEY_NAME               "?mat.name",0,0
-#define MATKEY_TWOSIDED           "$mat.twosided",0,0
-#define MATKEY_SHADING_MODEL      "$mat.shadingm",0,0
-#define MATKEY_ENABLE_WIREFRAME   "$mat.wireframe",0,0
-#define MATKEY_BLEND_FUNC         "$mat.blend",0,0
-#define MATKEY_OPACITY            "$mat.opacity",0,0
-#define MATKEY_BUMPSCALING        "$mat.bumpscaling",0,0
-#define MATKEY_SHININESS          "$mat.shininess",0,0
-#define MATKEY_REFLECTIVITY       "$mat.reflectivity",0,0
-#define MATKEY_SHININESS_STRENGTH "$mat.shinpercent",0,0
-#define MATKEY_REFRACTI           "$mat.refracti",0,0
-#define MATKEY_EFFECT             "$mat.effect",0,0
-#define MATKEY_COLOR_DIFFUSE      "$clr.diffuse",0,0
-#define MATKEY_COLOR_AMBIENT      "$clr.ambient",0,0
-#define MATKEY_COLOR_SPECULAR     "$clr.specular",0,0
-#define MATKEY_COLOR_EMISSIVE     "$clr.emissive",0,0
-#define MATKEY_COLOR_SPHEREMAP    "$clr.spheremap",0,0
-#define MATKEY_COLOR_TRANSPARENT  "$clr.transparent",0,0
-#define MATKEY_COLOR_REFLECTIVE   "$clr.reflective",0,0
-
-#define MATKEY_TEXTURE(type, N)   "$tex.file", type, N
-
-#define MATKEY_TEXTURE_DIFFUSE(N)      MATKEY_TEXTURE(octoon::model::TextureTypeDiffuse, N)
-#define MATKEY_TEXTURE_SPECULAR(N)     MATKEY_TEXTURE(octoon::model::TextureTypeSpecular, N)
-#define MATKEY_TEXTURE_AMBIENT(N)      MATKEY_TEXTURE(octoon::model::TextureTypeAmbient, N)
-#define MATKEY_TEXTURE_EMISSIVE(N)     MATKEY_TEXTURE(octoon::model::TextureTypeEmissive, N)
-#define MATKEY_TEXTURE_NORMALS(N)      MATKEY_TEXTURE(octoon::model::TextureTypeNormals, N)
-#define MATKEY_TEXTURE_HEIGHT(N)       MATKEY_TEXTURE(octoon::model::TextureTypeHeight, N)
-#define MATKEY_TEXTURE_SHININESS(N)    MATKEY_TEXTURE(octoon::model::TextureTypeShininess, N)
-#define MATKEY_TEXTURE_OPACITY(N)      MATKEY_TEXTURE(octoon::model::TextureTypeOpacity, N)
-#define MATKEY_TEXTURE_DISPLACEMENT(N) MATKEY_TEXTURE(octoon::model::TextureTypeDisplacement, N)
-#define MATKEY_TEXTURE_LIGHTMAP(N)     MATKEY_TEXTURE(octoon::model::TextureTypeLightmap, N)
-#define MATKEY_TEXTURE_REFLECTION(N)   MATKEY_TEXTURE(octoon::model::TextureTypeReflection, N)
-
 #define TEXTURE_ARRAY_COUNT 4
+
+#define MATKEY_NAME               "?mat.name"
+#define MATKEY_TWOSIDED           "$mat.twosided"
+#define MATKEY_SHADING_MODEL      "$mat.shadingm"
+#define MATKEY_ENABLE_WIREFRAME   "$mat.wireframe"
+#define MATKEY_BLEND_FUNC         "$mat.blend"
+#define MATKEY_OPACITY            "$mat.opacity"
+#define MATKEY_BUMPSCALING        "$mat.bumpscaling"
+#define MATKEY_SHININESS          "$mat.shininess"
+#define MATKEY_REFLECTIVITY       "$mat.reflectivity"
+#define MATKEY_SHININESS_STRENGTH "$mat.shinpercent"
+#define MATKEY_REFRACTI           "$mat.refracti"
+#define MATKEY_EFFECT             "$mat.effect"
+#define MATKEY_COLOR_DIFFUSE      "$clr.diffuse"
+#define MATKEY_COLOR_AMBIENT      "$clr.ambient"
+#define MATKEY_COLOR_SPECULAR     "$clr.specular"
+#define MATKEY_COLOR_EMISSIVE     "$clr.emissive"
+#define MATKEY_COLOR_SPHEREMAP    "$clr.spheremap"
+#define MATKEY_COLOR_TRANSPARENT  "$clr.transparent"
+#define MATKEY_COLOR_REFLECTIVE   "$clr.reflective"
+
+#define MATKEY_TEXTURE_DIFFUSE	    "$tex.diffuse"
+#define MATKEY_TEXTURE_SPECULAR	    "$tex.specular"
+#define MATKEY_TEXTURE_AMBIENT	    "$tex.ambient"
+#define MATKEY_TEXTURE_EMISSIVE	    "$tex.emissive"
+#define MATKEY_TEXTURE_NORMALS	    "$tex.normals"
+#define MATKEY_TEXTURE_HEIGHT	    "$tex.height"
+#define MATKEY_TEXTURE_SHININESS	"$tex.shininess"
+#define MATKEY_TEXTURE_OPACITY	    "$tex.opacity"
+#define MATKEY_TEXTURE_DISPLACEMENT	"$tex.displacement"
+#define MATKEY_TEXTURE_LIGHTMAP	    "$tex.lightmap"
+#define MATKEY_TEXTURE_REFLECTION	"$tex.reflection"
+#define MATKEY_TEXTURE_TOON			"$tex.toon"
 
 namespace octoon
 {

@@ -285,14 +285,14 @@ namespace octoon
 						{
 							bone.IKList.resize(bone.IKLinkCount);
 
-							for (std::size_t j = 0; j < bone.IKLinkCount; j++)
+							for (auto& chain : bone.IKList)
 							{
-								if (!stream.read((char*)&bone.IKList[j].BoneIndex, pmx.header.sizeOfBone)) return false;
-								if (!stream.read((char*)&bone.IKList[j].rotateLimited, (std::streamsize)sizeof(bone.IKList[j].rotateLimited))) return false;
-								if (bone.IKList[j].rotateLimited)
+								if (!stream.read((char*)&chain.BoneIndex, pmx.header.sizeOfBone)) return false;
+								if (!stream.read((char*)&chain.rotateLimited, (std::streamsize)sizeof(chain.rotateLimited))) return false;
+								if (chain.rotateLimited)
 								{
-									if (!stream.read((char*)&bone.IKList[j].minimumRadian, (std::streamsize)sizeof(bone.IKList[j].minimumRadian))) return false;
-									if (!stream.read((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;
+									if (!stream.read((char*)&chain.minimumRadian, (std::streamsize)sizeof(chain.minimumRadian))) return false;
+									if (!stream.read((char*)&chain.maximumRadian, (std::streamsize)sizeof(chain.maximumRadian))) return false;
 								}
 							}
 						}
@@ -462,9 +462,6 @@ namespace octoon
 
 					if (!stream.read((char*)&joint.type, sizeof(joint.type))) return false;
 
-					if (joint.type != 0)
-						return false;
-
 					if (!stream.read((char*)&joint.relatedRigidBodyIndexA, pmx.header.sizeOfBody)) return false;
 					if (!stream.read((char*)&joint.relatedRigidBodyIndexB, pmx.header.sizeOfBody)) return false;
 
@@ -555,9 +552,10 @@ namespace octoon
 					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
 					if (pmx.header.sizeOfIndices == 1)
 					{
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						#pragma omp parallel for
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 						{
-							auto index = *(std::uint8_t*)indicesData;
+							auto index = *(std::uint8_t*)(indicesData + pmx.header.sizeOfIndices * i);
 							vertices_[i] = pmx.vertices[index].position;
 							normals_[i] = pmx.vertices[index].normal;
 							texcoords_[i] = pmx.vertices[index].coord;
@@ -565,9 +563,10 @@ namespace octoon
 					}
 					else if (pmx.header.sizeOfIndices == 2)
 					{
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						#pragma omp parallel for
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 						{
-							auto index = *(std::uint16_t*)indicesData;
+							auto index = *(std::uint16_t*)(indicesData + pmx.header.sizeOfIndices * i);
 							vertices_[i] = pmx.vertices[index].position;
 							normals_[i] = pmx.vertices[index].normal;
 							texcoords_[i] = pmx.vertices[index].coord;
@@ -575,9 +574,10 @@ namespace octoon
 					}
 					else if (pmx.header.sizeOfIndices == 4)
 					{
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+						#pragma omp parallel for
+						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 						{
-							auto index = *(std::uint32_t*)indicesData;
+							auto index = *(std::uint32_t*)(indicesData + pmx.header.sizeOfIndices * i);
 							vertices_[i] = pmx.vertices[index].position;
 							normals_[i] = pmx.vertices[index].normal;
 							texcoords_[i] = pmx.vertices[index].coord;
@@ -595,15 +595,16 @@ namespace octoon
 					VertexWeights weights(it.FaceCount);
 					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
 
-					for (PmxUInt32 i = 0; i < it.FaceCount; i++, indicesData += pmx.header.sizeOfIndices)
+					#pragma omp parallel for
+					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
 					{
 						std::uint32_t index = 0;
 						if (pmx.header.sizeOfIndices == 1)
-							index = *(std::uint8_t*)indicesData;
+							index = *(std::uint8_t*)(indicesData + pmx.header.sizeOfIndices * i);
 						else if (pmx.header.sizeOfIndices == 2)
-							index = *(std::uint16_t*)indicesData;
+							index = *(std::uint16_t*)(indicesData + pmx.header.sizeOfIndices * i);
 						else if (pmx.header.sizeOfIndices == 4)
-							index = *(std::uint32_t*)indicesData;
+							index = *(std::uint32_t*)(indicesData + pmx.header.sizeOfIndices * i);
 
 						auto& v = pmx.vertices[index];
 
@@ -907,14 +908,14 @@ namespace octoon
 
 						if (bone.IKLinkCount > 0)
 						{
-							for (std::size_t j = 0; j < bone.IKLinkCount; j++)
+							for (auto& chain : bone.IKList)
 							{
-								if (!stream.write((char*)&bone.IKList[j].BoneIndex, pmx.header.sizeOfBone)) return false;
-								if (!stream.write((char*)&bone.IKList[j].rotateLimited, (std::streamsize)sizeof(bone.IKList[j].rotateLimited))) return false;
-								if (bone.IKList[j].rotateLimited)
+								if (!stream.write((char*)&chain.BoneIndex, pmx.header.sizeOfBone)) return false;
+								if (!stream.write((char*)&chain.rotateLimited, (std::streamsize)sizeof(chain.rotateLimited))) return false;
+								if (chain.rotateLimited)
 								{
-									if (!stream.write((char*)&bone.IKList[j].minimumRadian, (std::streamsize)sizeof(bone.IKList[j].minimumRadian))) return false;
-									if (!stream.write((char*)&bone.IKList[j].maximumRadian, (std::streamsize)sizeof(bone.IKList[j].maximumRadian))) return false;									
+									if (!stream.write((char*)&chain.minimumRadian, (std::streamsize)sizeof(chain.minimumRadian))) return false;
+									if (!stream.write((char*)&chain.maximumRadian, (std::streamsize)sizeof(chain.maximumRadian))) return false;
 								}
 							}
 						}
@@ -927,7 +928,7 @@ namespace octoon
 			{
 				for (auto& morph : pmx.morphs)
 				{
-					if (morph.name.length)
+					if (morph.name.length) 
 						if (!stream.write((char*)&morph.name.length, sizeof(morph.name.length))) return false;
 					if (!stream.write((char*)&morph.name.name, morph.name.length)) return false;
 					if (!stream.write((char*)&morph.nameEng.length, sizeof(morph.nameEng.length))) return false;

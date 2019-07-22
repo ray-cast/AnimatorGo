@@ -30,6 +30,20 @@ namespace octoon
 		this->setMaterial(material);
 	}
 
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(video::MaterialPtr&& material, GameObjects&& transforms) noexcept
+		: OfflineSkinnedMeshRendererComponent()
+	{
+		this->setMaterial(std::move(material));
+		this->setTransforms(std::move(transforms));
+	}
+
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const video::MaterialPtr& material, const GameObjects& transforms) noexcept
+		: OfflineSkinnedMeshRendererComponent()
+	{
+		this->setMaterial(material);
+		this->setTransforms(transforms);
+	}
+
 	OfflineSkinnedMeshRendererComponent::~OfflineSkinnedMeshRendererComponent() noexcept
 	{
 	}
@@ -264,8 +278,9 @@ namespace octoon
 								rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 								rprMaterialNodeSetInputImageData(textureNode, "data", image_);
 
-								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION);
+								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_SSS);
 								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
+								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.sss.subsurface_color", textureNode);								
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.weight", 1.0f, 1.0f, 1.0f, 1.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 0.04f, 0.0f, 0.04f, 0.04f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);

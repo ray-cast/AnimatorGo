@@ -157,6 +157,7 @@ namespace octoon
 				{
 					if (this->framebuffer_w_ != event.change.w || this->framebuffer_h_ != event.change.h)
 					{
+						this->onFramebufferChange(event.change.w, event.change.h);
 						this->framebuffer_w_ = event.change.w;
 						this->framebuffer_h_ = event.change.h;
 					}
@@ -253,14 +254,16 @@ namespace octoon
 			if (!this->framebuffer_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
-			if (this->rprFramebuffer_)
+			rpr_framebuffer framebuffer;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &framebuffer))
 			{
-				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, nullptr);
-				rprObjectDelete(this->rprFramebuffer_);
-			}
+				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, framebuffer);
 
-			rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &this->rprFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_COLOR, this->rprFramebuffer_);
+				if (this->rprFramebuffer_)
+					rprObjectDelete(this->rprFramebuffer_);
+
+				this->rprFramebuffer_ = framebuffer;
+			}
 		}
 	}
 }

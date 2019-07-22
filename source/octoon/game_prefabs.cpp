@@ -413,17 +413,9 @@ namespace octoon
 			object->addComponent<MeshFilterComponent>(mesh);
 
 			if (bones.empty())
-			{
-				object->addComponent<MeshRendererComponent>(materials[i]);
 				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
-			}
 			else
-			{
-				auto osjr = std::make_shared<OfflineSkinnedMeshRendererComponent>(materials[i]);
-				osjr->setTransforms(bones);
-
-				object->addComponent(osjr);
-			}
+				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
 		}
 
 		return true;

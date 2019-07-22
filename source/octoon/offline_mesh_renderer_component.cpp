@@ -177,7 +177,7 @@ namespace octoon
 								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 1.0f, 0.0f, 1.0f, 1.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.color", 1.0f, 0.0f, 1.0f, 1.0f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.0f, 0.0f, 0.0f, 0.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.0f, 0.0f, 0.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.roughness", 0.0f, 0.0f, 0.0f, 0.0f);
 
 								texture->unmap();

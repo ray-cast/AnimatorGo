@@ -33,6 +33,7 @@
 #include <octoon/configurable_joint_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_skinned_mesh_renderer_component.h>
+#include <octoon/bone_controller_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -276,7 +277,13 @@ namespace octoon
 		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
 
 		for (auto& it : model.get<Model::bone>())
-			bones.emplace_back(std::make_shared<GameObject>(it->getName()));
+		{
+			auto object = GameObject::create(it->getName());
+			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			object->addComponent<MeshRendererComponent>(material);*/
+
+			bones.emplace_back(object);
+		}
 
 		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
 		{
@@ -284,8 +291,30 @@ namespace octoon
 			auto parent = it->getParent();
 			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
 			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
-			// bones[i]->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			// bones[i]->addComponent<MeshRendererComponent>(material);
+
+			auto additiveParent = it->getAdditiveParent();
+			if (additiveParent >= 0 && additiveParent < bones.size())
+			{
+				auto boneController = BoneControllerComponent::create();
+				boneController->setAdditiveMoveRatio(it->getAdditiveMoveRatio());
+				boneController->setAdditiveRotationRatio(it->getAdditiveRotationRatio());
+				boneController->setAdditiveUseLocal(it->getAdditiveUseLocal());
+
+				bones[i]->addComponent(boneController);
+
+				auto parentController = bones[additiveParent]->getComponent<BoneControllerComponent>();
+				if (parentController)
+				{
+					parentController->addBone(bones[i]);
+				}
+				else
+				{
+					auto boneController = BoneControllerComponent::create();
+					boneController->addBone(bones[i]);
+
+					bones[additiveParent]->addComponent(boneController);
+				}
+			}
 		}
 
 		return true;

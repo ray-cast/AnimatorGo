@@ -259,10 +259,15 @@ namespace octoon
 						if (!stream.read((char*)&bone.Offset, sizeof(bone.Offset))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_PARENT)
+					if (bone.Flag & PMX_BONE_ADD_PARENT)
 					{
 						if (!stream.read((char*)&bone.ProvidedParentBoneIndex, pmx.header.sizeOfBone)) return false;
 						if (!stream.read((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;
+					}
+					else
+					{
+						bone.ProvidedParentBoneIndex = std::numeric_limits<PmxUInt16>::max();
+						bone.ProvidedRatio = 0;
 					}
 
 					if (bone.Flag & PMX_BONE_FIXED_AXIS)
@@ -642,6 +647,13 @@ namespace octoon
 				bone.setName(cv.to_bytes(it.name.name));
 				bone.setPosition(it.position);
 				bone.setParent(it.Parent);
+				bone.setAdditiveParent(it.ProvidedParentBoneIndex);
+				bone.setAdditiveUseLocal(!(it.Flag & PMX_BONE_ADD_LOCAL));
+
+				if (it.Flag & PMX_BONE_ADD_MOVE)
+					bone.setAdditiveMoveRatio(it.ProvidedRatio);
+				if (it.Flag & PMX_BONE_ADD_ROTATION)
+					bone.setAdditiveRotationRatio(it.ProvidedRatio);
 
 				model.add(std::make_shared<Bone>(bone));
 
@@ -888,7 +900,7 @@ namespace octoon
 						if (!stream.write((char*)&bone.Offset, sizeof(bone.Offset))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_PARENT)
+					if (bone.Flag & PMX_BONE_ADD_PARENT)
 					{
 						if (!stream.write((char*)&bone.ProvidedParentBoneIndex, pmx.header.sizeOfBone)) return false;
 						if (!stream.write((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;

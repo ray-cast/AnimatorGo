@@ -129,9 +129,9 @@ namespace octoon
 				else if (hdr.pixel_size == TGA_BPP_16)
 					format = Format::R8G8SRGB;
 				else if (hdr.pixel_size == TGA_BPP_24)
-					format = Format::B8G8R8SRGB;
+					format = Format::R8G8B8SRGB;
 				else if (hdr.pixel_size == TGA_BPP_32)
-					format = Format::B8G8R8A8SRGB;
+					format = Format::R8G8B8A8SRGB;
 				else
 					return false;
 
@@ -140,6 +140,19 @@ namespace octoon
 
 				if (!stream.read((char*)image.data(), streamLength))
 					return false;
+
+				if (hdr.pixel_size == TGA_BPP_24)
+				{
+					auto data = (char*)image.data();
+					for (std::size_t i = 0; i < streamLength; i += 3)
+						std::swap(data[i], data[i+2]);
+				}
+				else if (hdr.pixel_size == TGA_BPP_32)
+				{
+					auto data = (char*)image.data();
+					for (std::size_t i = 0; i < streamLength; i += 4)
+						std::swap(data[i], data[i + 2]);
+				}
 			}
 			break;
 			case TGA_TYPE_GRAY:
@@ -200,7 +213,7 @@ namespace octoon
 				break;
 				case TGA_BPP_24:
 				{
-					if (!image.create(Format::B8G8R8SRGB, columns, rows))
+					if (!image.create(Format::R8G8B8SRGB, columns, rows))
 						return false;
 
 					std::uint8_t* data = (std::uint8_t*)image.data();
@@ -215,9 +228,9 @@ namespace octoon
 
 							for (std::uint8_t i = 0; i < length; i++, data += 3)
 							{
-								data[0] = buf[0];
+								data[0] = buf[2];
 								data[1] = buf[1];
-								data[2] = buf[2];
+								data[2] = buf[0];
 							}
 
 							buf += 3;
@@ -228,9 +241,9 @@ namespace octoon
 
 							for (std::uint8_t i = 0; i < length; i++, data += 3, buf += 3)
 							{
-								data[0] = buf[0];
+								data[0] = buf[2];
 								data[1] = buf[1];
-								data[2] = buf[2];
+								data[2] = buf[0];
 							}
 						}
 					}

@@ -17,7 +17,7 @@
 #define PMX_BONE_ADD_LOCAL    1 << 7
 #define PMX_BONE_ADD_ROTATION 1 << 8
 #define PMX_BONE_ADD_MOVE     1 << 9
-#define PMX_BONE_PARENT       1 << 8
+#define PMX_BONE_ADD_PARENT   1 << 8
 #define PMX_BONE_FIXED_AXIS   1 << 10
 #define PMX_BONE_LOCAL_AXIS   1 << 11
 #define PMX_BONE_PHYSICS_TRANSFORM 1 << 12

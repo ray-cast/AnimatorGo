@@ -248,7 +248,24 @@ namespace octoon
 								auto desc = texture->getTextureDesc();
 								texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
 
-								rpr_image_format imageFormat = { 4, RPR_COMPONENT_TYPE_UINT8 };
+								std::uint8_t channel = 3;
+								switch (desc.getTexFormat())
+								{
+									case hal::GraphicsFormat::B8G8R8A8UNorm:
+										channel = 4;
+										break;
+									case hal::GraphicsFormat::R8G8B8A8UNorm:
+										channel = 4;
+										break;
+									case hal::GraphicsFormat::B8G8R8A8SRGB:
+										channel = 4;
+										break;
+									case hal::GraphicsFormat::R8G8B8A8SRGB:
+										channel = 4;
+										break;
+								}
+
+								rpr_image_format imageFormat = { channel, RPR_COMPONENT_TYPE_UINT8 };
 								rpr_image_desc imageDesc;
 								imageDesc.image_width = desc.getWidth();
 								imageDesc.image_height = desc.getHeight();
@@ -264,10 +281,8 @@ namespace octoon
 										auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * imageFormat.num_components;
 										auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
 
-										array[dst] = data[src];
-										array[dst + 1] = data[src + 1];
-										array[dst + 2] = data[src + 2];
-										array[dst + 3] = data[src + 3];
+										for (std::uint8_t i = 0; i < imageFormat.num_components; i++)
+											array[dst + i] = data[src + i];
 									}
 								}
 

@@ -3,6 +3,7 @@
 #include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
 #include <octoon/rotation_limit_component.h>
+#include <octoon/bone_controller_component.h>
 
 namespace octoon
 {
@@ -213,6 +214,13 @@ namespace octoon
 					transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
 				}				
 			}
+		}
+
+		for (auto& bone : bones_)
+		{
+			auto boneController = bone->getComponent<BoneControllerComponent>();
+			if (boneController)
+				boneController->solve();
 		}
 	}
 }

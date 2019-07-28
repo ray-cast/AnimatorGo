@@ -5,11 +5,11 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT BoneControllerComponent final : public GameComponent
+	class OCTOON_EXPORT RotationLinkComponent final : public GameComponent
 	{
-		OctoonDeclareSubClass(BoneControllerComponent, GameComponent)
+		OctoonDeclareSubClass(RotationLinkComponent, GameComponent)
 	public:
-		BoneControllerComponent() noexcept;
+		RotationLinkComponent() noexcept;
 
 		void setAdditiveUseLocal(bool enable) noexcept;
 		void setAdditiveMoveRatio(float ratio) noexcept;
@@ -38,8 +38,8 @@ namespace octoon
 		math::Quaternion deltaRotation(bool useLocal) noexcept;
 
 	private:
-		BoneControllerComponent(const BoneControllerComponent&) = delete;
-		BoneControllerComponent& operator=(const BoneControllerComponent&) = delete;
+		RotationLinkComponent(const RotationLinkComponent&) = delete;
+		RotationLinkComponent& operator=(const RotationLinkComponent&) = delete;
 
 	private:
 		bool additiveUseLocal_;

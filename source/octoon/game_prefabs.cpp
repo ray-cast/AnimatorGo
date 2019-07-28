@@ -33,7 +33,7 @@
 #include <octoon/configurable_joint_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_skinned_mesh_renderer_component.h>
-#include <octoon/bone_controller_component.h>
+#include <octoon/rotation_link_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -295,24 +295,24 @@ namespace octoon
 			auto additiveParent = it->getAdditiveParent();
 			if (additiveParent >= 0 && additiveParent < bones.size())
 			{
-				auto boneController = BoneControllerComponent::create();
+				auto boneController = RotationLinkComponent::create();
 				boneController->setAdditiveMoveRatio(it->getAdditiveMoveRatio());
 				boneController->setAdditiveRotationRatio(it->getAdditiveRotationRatio());
 				boneController->setAdditiveUseLocal(it->getAdditiveUseLocal());
 
 				bones[i]->addComponent(boneController);
 
-				auto parentController = bones[additiveParent]->getComponent<BoneControllerComponent>();
+				auto parentController = bones[additiveParent]->getComponent<RotationLinkComponent>();
 				if (parentController)
 				{
 					parentController->addBone(bones[i]);
 				}
 				else
 				{
-					auto boneController = BoneControllerComponent::create();
-					boneController->addBone(bones[i]);
+					auto controller = RotationLinkComponent::create();
+					controller->addBone(bones[i]);
 
-					bones[additiveParent]->addComponent(boneController);
+					bones[additiveParent]->addComponent(controller);
 				}
 			}
 		}

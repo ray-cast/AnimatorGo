@@ -1,11 +1,11 @@
-#include <octoon/bone_controller_component.h>
+#include <octoon/rotation_link_component.h>
 #include <octoon/transform_component.h>
 #include <iostream>
 namespace octoon
 {
-	OctoonImplementSubClass(BoneControllerComponent, GameComponent, "RotationLimit")
+	OctoonImplementSubClass(RotationLinkComponent, GameComponent, "RotationLimit")
 
-	BoneControllerComponent::BoneControllerComponent() noexcept
+	RotationLinkComponent::RotationLinkComponent() noexcept
 		: additiveMoveRatio_(0.0f)
 		, additiveRotationRatio_(0.0f)
 		, additiveUseLocal_(false)
@@ -15,81 +15,81 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	BoneControllerComponent::clone() const noexcept
+	RotationLinkComponent::clone() const noexcept
 	{
-		auto instance = std::make_shared<BoneControllerComponent>();
+		auto instance = std::make_shared<RotationLinkComponent>();
 		instance->setName(this->getName());
 		return instance;
 	}
 
 	void 
-	BoneControllerComponent::setAdditiveMoveRatio(float ratio) noexcept
+	RotationLinkComponent::setAdditiveMoveRatio(float ratio) noexcept
 	{
 		additiveMoveRatio_ = ratio;
 	}
 
 	void
-	BoneControllerComponent::setAdditiveUseLocal(bool enable) noexcept
+	RotationLinkComponent::setAdditiveUseLocal(bool enable) noexcept
 	{
 		additiveUseLocal_ = enable;
 	}
 
 	void 
-	BoneControllerComponent::setAdditiveRotationRatio(float ratio) noexcept
+	RotationLinkComponent::setAdditiveRotationRatio(float ratio) noexcept
 	{
 		additiveRotationRatio_ = ratio;
 	}
 
 	bool
-	BoneControllerComponent::getAdditiveUseLocal() const noexcept
+	RotationLinkComponent::getAdditiveUseLocal() const noexcept
 	{
 		return additiveUseLocal_;
 	}
 
 	float
-	BoneControllerComponent::getAdditiveMoveRatio() const noexcept
+	RotationLinkComponent::getAdditiveMoveRatio() const noexcept
 	{
 		return additiveMoveRatio_;
 	}
 
 	float
-	BoneControllerComponent::getAdditiveRotationRatio() const noexcept
+	RotationLinkComponent::getAdditiveRotationRatio() const noexcept
 	{
 		return additiveRotationRatio_;
 	}
 
 	void
-	BoneControllerComponent::addBone(GameObjectPtr&& joint) noexcept
+	RotationLinkComponent::addBone(GameObjectPtr&& joint) noexcept
 	{
 		bones_.emplace_back(std::move(joint));
 	}
 
 	void
-	BoneControllerComponent::addBone(const GameObjectPtr& joint) noexcept
+	RotationLinkComponent::addBone(const GameObjectPtr& joint) noexcept
 	{
 		bones_.push_back(joint);
 	}
 
 	void
-	BoneControllerComponent::setBones(GameObjects&& bones) noexcept
+	RotationLinkComponent::setBones(GameObjects&& bones) noexcept
 	{
 		bones_ = std::move(bones);
 	}
 
 	void
-	BoneControllerComponent::setBones(const GameObjects& bones) noexcept
+	RotationLinkComponent::setBones(const GameObjects& bones) noexcept
 	{
 		bones_ = bones;
 	}
 
 	const GameObjects&
-	BoneControllerComponent::getBones() const noexcept
+	RotationLinkComponent::getBones() const noexcept
 	{
 		return bones_;
 	}
 
 	void
-	BoneControllerComponent::onActivate() noexcept
+	RotationLinkComponent::onActivate() noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
 		translate_ = transform->getTranslate();
@@ -99,7 +99,7 @@ namespace octoon
 	}
 
 	void
-	BoneControllerComponent::solve() noexcept
+	RotationLinkComponent::solve() noexcept
 	{
 		if (bones_.empty())
 			return;
@@ -107,7 +107,7 @@ namespace octoon
 		for (auto& bone : bones_)
 		{
 			auto transform = bone->getComponent<TransformComponent>();
-			auto boneController = transform->getComponent<BoneControllerComponent>();
+			auto boneController = transform->getComponent<RotationLinkComponent>();
 
 			auto additiveTranslate = this->deltaTranslate(boneController->getAdditiveUseLocal());
 			if (boneController->getAdditiveMoveRatio() != 0.0f)
@@ -133,7 +133,7 @@ namespace octoon
 	}
 
 	math::float3
-	BoneControllerComponent::deltaTranslate(bool useLocal) noexcept
+	RotationLinkComponent::deltaTranslate(bool useLocal) noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
 		return useLocal ?
@@ -142,7 +142,7 @@ namespace octoon
 	}
 
 	math::Quaternion
-	BoneControllerComponent::deltaRotation(bool useLocal) noexcept
+	RotationLinkComponent::deltaRotation(bool useLocal) noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
 		return useLocal ?

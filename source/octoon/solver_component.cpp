@@ -3,7 +3,7 @@
 #include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
 #include <octoon/rotation_limit_component.h>
-#include <octoon/bone_controller_component.h>
+#include <octoon/rotation_link_component.h>
 
 namespace octoon
 {
@@ -218,7 +218,7 @@ namespace octoon
 
 		for (auto& bone : bones_)
 		{
-			auto boneController = bone->getComponent<BoneControllerComponent>();
+			auto boneController = bone->getComponent<RotationLinkComponent>();
 			if (boneController)
 				boneController->solve();
 		}

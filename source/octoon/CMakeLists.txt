@@ -131,6 +131,8 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/rotation_limit_component.cpp
 	${HEADER_PATH}/rotation_link_component.h
 	${SOURCE_PATH}/rotation_link_component.cpp
+	${HEADER_PATH}/rotation_link_limit_component.h
+	${SOURCE_PATH}/rotation_link_limit_component.cpp
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 

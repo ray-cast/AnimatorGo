@@ -1,17 +1,29 @@
 #include <octoon/rotation_link_component.h>
+#include <octoon/rotation_link_limit_component.h>
 #include <octoon/transform_component.h>
-#include <iostream>
+
 namespace octoon
 {
 	OctoonImplementSubClass(RotationLinkComponent, GameComponent, "RotationLimit")
 
 	RotationLinkComponent::RotationLinkComponent() noexcept
-		: additiveMoveRatio_(0.0f)
-		, additiveRotationRatio_(0.0f)
-		, additiveUseLocal_(false)
-		, rotation_(math::Quaternion::Zero)
+		: rotation_(math::Quaternion::Zero)
 		, localRotation_(math::Quaternion::Zero)
 	{
+	}
+
+	RotationLinkComponent::RotationLinkComponent(const GameObjects& bones) noexcept
+		: rotation_(math::Quaternion::Zero)
+		, localRotation_(math::Quaternion::Zero)
+		, bones_(bones)
+	{
+	}
+
+	RotationLinkComponent::RotationLinkComponent(const GameObjectPtr& bone) noexcept
+		: rotation_(math::Quaternion::Zero)
+		, localRotation_(math::Quaternion::Zero)
+	{
+		bones_.push_back(bone);
 	}
 
 	GameComponentPtr
@@ -19,43 +31,8 @@ namespace octoon
 	{
 		auto instance = std::make_shared<RotationLinkComponent>();
 		instance->setName(this->getName());
+		instance->setBones(this->getBones());
 		return instance;
-	}
-
-	void 
-	RotationLinkComponent::setAdditiveMoveRatio(float ratio) noexcept
-	{
-		additiveMoveRatio_ = ratio;
-	}
-
-	void
-	RotationLinkComponent::setAdditiveUseLocal(bool enable) noexcept
-	{
-		additiveUseLocal_ = enable;
-	}
-
-	void 
-	RotationLinkComponent::setAdditiveRotationRatio(float ratio) noexcept
-	{
-		additiveRotationRatio_ = ratio;
-	}
-
-	bool
-	RotationLinkComponent::getAdditiveUseLocal() const noexcept
-	{
-		return additiveUseLocal_;
-	}
-
-	float
-	RotationLinkComponent::getAdditiveMoveRatio() const noexcept
-	{
-		return additiveMoveRatio_;
-	}
-
-	float
-	RotationLinkComponent::getAdditiveRotationRatio() const noexcept
-	{
-		return additiveRotationRatio_;
 	}
 
 	void
@@ -107,26 +84,29 @@ namespace octoon
 		for (auto& bone : bones_)
 		{
 			auto transform = bone->getComponent<TransformComponent>();
-			auto boneController = transform->getComponent<RotationLinkComponent>();
+			auto rotationLimit = transform->getComponent<RotationLinkLimitComponent>();
 
-			auto additiveTranslate = this->deltaTranslate(boneController->getAdditiveUseLocal());
-			if (boneController->getAdditiveMoveRatio() != 0.0f)
+			auto additiveTranslate = this->deltaTranslate(rotationLimit->getAdditiveUseLocal());
+			if (rotationLimit->getAdditiveMoveRatio() != 0.0f)
 			{
-				transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * boneController->getAdditiveMoveRatio());
+				transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
 			}
 
-			auto additiveRotation = this->deltaRotation(boneController->getAdditiveUseLocal());
-			if (!math::equal(additiveRotation, math::Quaternion::Zero))
+			if (rotationLimit->getAdditiveRotationRatio() != 0.0)
 			{
-				if (boneController->getAdditiveRotationRatio() > 0.0)
+				auto additiveRotation = this->deltaRotation(rotationLimit->getAdditiveUseLocal());
+				if (!math::equal(additiveRotation, math::Quaternion::Zero))
 				{
-					auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, boneController->getAdditiveRotationRatio());
-					transform->setLocalQuaternionAccum(rotation);
-				}
-				else if (boneController->getAdditiveRotationRatio() < 0.0)
-				{
-					auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -boneController->getAdditiveRotationRatio());
-					transform->setLocalQuaternionAccum(rotation);
+					if (rotationLimit->getAdditiveRotationRatio() > 0.0)
+					{
+						auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
+						transform->setLocalQuaternionAccum(rotation);
+					}
+					else if (rotationLimit->getAdditiveRotationRatio() < 0.0)
+					{
+						auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
+						transform->setLocalQuaternionAccum(rotation);
+					}
 				}
 			}
 		}

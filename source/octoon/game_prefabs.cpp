@@ -34,6 +34,7 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/rotation_link_component.h>
+#include <octoon/rotation_link_limit_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -295,25 +296,13 @@ namespace octoon
 			auto additiveParent = it->getAdditiveParent();
 			if (additiveParent >= 0 && additiveParent < bones.size())
 			{
-				auto boneController = RotationLinkComponent::create();
-				boneController->setAdditiveMoveRatio(it->getAdditiveMoveRatio());
-				boneController->setAdditiveRotationRatio(it->getAdditiveRotationRatio());
-				boneController->setAdditiveUseLocal(it->getAdditiveUseLocal());
-
-				bones[i]->addComponent(boneController);
+				bones[i]->addComponent<RotationLinkLimitComponent>(it->getAdditiveMoveRatio(), it->getAdditiveRotationRatio(), it->getAdditiveUseLocal());
 
 				auto parentController = bones[additiveParent]->getComponent<RotationLinkComponent>();
 				if (parentController)
-				{
 					parentController->addBone(bones[i]);
-				}
 				else
-				{
-					auto controller = RotationLinkComponent::create();
-					controller->addBone(bones[i]);
-
-					bones[additiveParent]->addComponent(controller);
-				}
+					bones[additiveParent]->addComponent<RotationLinkComponent>(bones[i]);
 			}
 		}
 

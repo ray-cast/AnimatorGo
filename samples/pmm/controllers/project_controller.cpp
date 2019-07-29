@@ -342,12 +342,12 @@ namespace octoon
 
 			for (auto& it : pmm.camera_keyframes)
 			{
-				auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0], it.interpolation_distance[1], it.interpolation_distance[2], it.interpolation_distance[3]);
-				auto interpolationX = std::make_shared<PathInterpolator<float>>(it.interpolation_x[0], it.interpolation_x[1], it.interpolation_x[2], it.interpolation_x[3]);
-				auto interpolationY = std::make_shared<PathInterpolator<float>>(it.interpolation_y[0], it.interpolation_y[1], it.interpolation_y[2], it.interpolation_y[3]);
-				auto interpolationZ = std::make_shared<PathInterpolator<float>>(it.interpolation_z[0], it.interpolation_z[1], it.interpolation_z[2], it.interpolation_z[3]);
-				auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0], it.interpolation_rotation[1], it.interpolation_rotation[2], it.interpolation_rotation[3]);
-				auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0], it.interpolation_angleview[1], it.interpolation_angleview[2], it.interpolation_angleview[3]);
+				auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0] / 255.0f, it.interpolation_distance[1] / 255.0f, it.interpolation_distance[2] / 255.0f, it.interpolation_distance[3] / 255.0f);
+				auto interpolationX = std::make_shared<PathInterpolator<float>>(it.interpolation_x[0] / 255.0f, it.interpolation_x[1] / 255.0f, it.interpolation_x[2] / 255.0f, it.interpolation_x[3] / 255.0f);
+				auto interpolationY = std::make_shared<PathInterpolator<float>>(it.interpolation_y[0] / 255.0f, it.interpolation_y[1] / 255.0f, it.interpolation_y[2] / 255.0f, it.interpolation_y[3] / 255.0f);
+				auto interpolationZ = std::make_shared<PathInterpolator<float>>(it.interpolation_z[0] / 255.0f, it.interpolation_z[1] / 255.0f, it.interpolation_z[2] / 255.0f, it.interpolation_z[3] / 255.0f);
+				auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0] / 255.0f, it.interpolation_rotation[1] / 255.0f, it.interpolation_rotation[2] / 255.0f, it.interpolation_rotation[3] / 255.0f);
+				auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0] / 255.0f, it.interpolation_angleview[1] / 255.0f, it.interpolation_angleview[2] / 255.0f, it.interpolation_angleview[3] / 255.0f);
 
 				distance.emplace_back((float)it.frame / 30.0f, it.distance, interpolationDistance);
 				eyeX.emplace_back((float)it.frame / 30.0f, it.eye.x, interpolationX);

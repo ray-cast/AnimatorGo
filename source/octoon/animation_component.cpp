@@ -92,6 +92,7 @@ namespace octoon
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
+			auto euler = math::eulerAngles(quat);
 
 			for (auto& curve : clip.curves)
 			{
@@ -115,13 +116,19 @@ namespace octoon
 					quat.z = curve.second.key.value;
 				else if (curve.first == "LocalRotation.w")
 					quat.w = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.x")
+					euler.x = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.y")
+					euler.y = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.z")
+					euler.z = curve.second.key.value;
 				else if (curve.first == "Transform:move")
-					translate += math::rotate(quat, math::float3::Forward) * curve.second.key.value;
+					translate += math::rotate(math::Quaternion(euler), math::float3::Forward) * curve.second.key.value;
 			}
 
 			transform->setLocalScale(scale);
 			transform->setLocalTranslate(translate);
-			transform->setLocalQuaternion(quat);
+			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
 	}
 }

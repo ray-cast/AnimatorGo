@@ -459,6 +459,8 @@ namespace octoon
 		reader.read((char*)& data.fov, sizeof(data.fov));
 		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
+		data.rotation = -data.rotation;
+
 		return data;
 	}
 

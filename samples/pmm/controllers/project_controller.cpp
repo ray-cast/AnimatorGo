@@ -200,7 +200,7 @@ namespace octoon
 						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 					}
 
-					auto model = GamePrefabs::instance()->createOfflineModel(it.path);
+					auto model = GamePrefabs::instance()->createModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
@@ -363,20 +363,21 @@ namespace octoon
 			clip.setCurve("LocalPosition.x", AnimationCurve(std::move(eyeX)));
 			clip.setCurve("LocalPosition.y", AnimationCurve(std::move(eyeY)));
 			clip.setCurve("LocalPosition.z", AnimationCurve(std::move(eyeZ)));
-			clip.setCurve("LocalRotation.x", AnimationCurve(std::move(rotationX)));
-			clip.setCurve("LocalRotation.y", AnimationCurve(std::move(rotationY)));
-			clip.setCurve("LocalRotation.z", AnimationCurve(std::move(rotationZ)));
+			clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX)));
+			clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY)));
+			clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ)));
 			clip.setCurve("Transform:move", AnimationCurve(std::move(distance)));
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			//obj->addComponent<AnimationComponent>(clip);
+			obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
-			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye - math::float3::Forward * 45.0f);
-			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera.rotation));
-			obj->addComponent<OfflineCameraComponent>();
+			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera_keyframes[0].rotation));
+			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_keyframes[0].eye);
+			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera_keyframes[0].rotation), math::float3::Forward) * pmm.camera_keyframes[0].distance);
+			// obj->addComponent<OfflineCameraComponent>();
 
-			auto camera = obj->addComponent<PerspectiveCameraComponent>(60.0f);
+			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);
 			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::DepthStencilBit);
 			camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));

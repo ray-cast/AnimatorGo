@@ -9,7 +9,7 @@
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_environment_light_component.h>
-#include <array>
+#include <octoon/offline_directional_light_component.h>
 
 #include "../libs/nativefiledialog/nfd.h"
 
@@ -200,7 +200,7 @@ namespace octoon
 						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 					}
 
-					auto model = GamePrefabs::instance()->createModel(it.path);
+					auto model = GamePrefabs::instance()->createOfflineModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
@@ -210,13 +210,20 @@ namespace octoon
 					}
 				}
 
+				auto mainLight = GameObject::create("DirectionalLight");
+				mainLight->addComponent<OfflineDirectionalLightComponent>();
+				mainLight->getComponent<OfflineDirectionalLightComponent>()->setIntensity(10.0f);
+				mainLight->getComponent<OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
+				mainLight->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz)));
+				objects_.push_back(mainLight);
+
 				auto camera = this->createCamera(pmm);
 				if (camera)
 					objects_.emplace_back(std::move(camera));
 
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
-				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(1.0f);
+				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
 
 				objects_.push_back(obj);
 			}
@@ -375,7 +382,7 @@ namespace octoon
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera_keyframes[0].rotation));
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_keyframes[0].eye);
 			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera_keyframes[0].rotation), math::float3::Forward) * pmm.camera_keyframes[0].distance);
-			// obj->addComponent<OfflineCameraComponent>();
+			obj->addComponent<OfflineCameraComponent>();
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);

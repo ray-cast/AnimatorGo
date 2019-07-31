@@ -620,6 +620,27 @@ KERNEL void AccumulateData(
     }
 }
 
+float3 ACES(float3 x)
+{
+    float A = 2.51;
+    float B = 0.03;
+    float C = 2.43;
+    float D = 0.59;
+    float E = 0.14;
+    return (x * (A * x + B)) / (x * (C * x + D) + E);
+}
+
+float4 Hable(float4 x) 
+{
+    float A = 0.22;
+    float B = 0.30;
+    float C = 0.10;
+    float D = 0.20;
+    float E = 0.01;
+    float F = 0.30;
+    return ((x*(A*x+C*B)+D*E) / (x*(A*x+B)+D*F)) - E / F;
+}
+
 //#define ADAPTIVITY_DEBUG
 // Copy data to interop texture if supported
 KERNEL void ApplyGammaAndCopyData(
@@ -644,7 +665,12 @@ KERNEL void ApplyGammaAndCopyData(
         v *= mul_color;
 #endif
 
-        float4 val = clamp(native_powr(v / v.w, 1.f / gamma), 0.f, 1.f);
+        v /= v.w;
+        v *= 2.0f;
+        v = Hable(make_float4(v.x, v.y, v.z, 8.0f));
+        v /= v.w;
+
+        float4 val = clamp(native_powr(v, 1.f / gamma), 0.f, 1.f);        
         write_imagef(img, make_int2(global_idx, global_idy), val);
     }
 } 

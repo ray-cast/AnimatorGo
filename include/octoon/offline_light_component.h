@@ -15,12 +15,16 @@ namespace octoon
 		virtual void setIntensity(float value) noexcept;
 		virtual float getIntensity() const noexcept;
 
+		virtual void setColor(const math::float3& value) noexcept;
+		virtual const math::float3& getColor() const noexcept;
+
 	private:
 		OfflineLightComponent(const OfflineLightComponent&) = delete;
 		OfflineLightComponent& operator=(const OfflineLightComponent&) = delete;
 
 	private:
 		float intensity_;
+		math::float3 color_;
 	};
 }
 

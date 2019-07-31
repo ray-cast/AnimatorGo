@@ -282,23 +282,28 @@ namespace octoon
 										auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
 
 										for (std::uint8_t i = 0; i < imageFormat.num_components; i++)
-											array[dst + i] = data[src + i];
+											array[dst + i] = std::pow(data[src + i] / 255.0f, 2.2f) * 255.0f;
 									}
 								}
 
 								rpr_image image_;
 								rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, array.data(), &image_);
+								rprImageSetGamma(image_, 2.2);
 
 								rpr_material_node textureNode;
 								rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 								rprMaterialNodeSetInputImageData(textureNode, "data", image_);
 
-								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_SSS);
+								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION | RPR_UBER_MATERIAL_LAYER_SSS);
 								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
-								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.sss.subsurface_color", textureNode);								
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.sss.multiscatter", 1.0f, 0.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.sss.absorption_color", 1.0f, 0.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.sss.scatter_color", 1.0f, 0.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.sss.subsurface_color", 1.0f, 0.0f, 1.0f, 1.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.diffuse.weight", 1.0f, 1.0f, 1.0f, 1.0f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 0.04f, 0.0f, 0.04f, 0.04f);
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 1.0f, 0.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.metalness", 0.0f, 1.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.0f, 0.0f, 0.0f, 0.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 								
 								texture->unmap();

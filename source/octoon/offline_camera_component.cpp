@@ -17,7 +17,7 @@ namespace octoon
 		, focalLength_(35.0f)
 		, focusDistance_(1.0f)
 		, fStop_(0.0f)
-		, clearColor_(0.2f, 0.2f, 0.2f, 1.0)
+		, clearColor_(0.9f, 0.95f, 1.0f, 1.0)
 	{
 	}
 
@@ -225,7 +225,7 @@ namespace octoon
 
 			std::uint32_t w, h;
 			feature->getFramebufferScale(w, h);
-			rprCameraSetSensorSize(this->rprCamera_, this->focalLength_ + 1, (this->focalLength_ + 1)  / float(w * h));
+			rprCameraSetSensorSize(this->rprCamera_, this->focalLength_ + 1, (this->focalLength_ + 1)  / w * (float)h);
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto eye = transform->getTranslate();

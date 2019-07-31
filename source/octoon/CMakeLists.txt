@@ -149,6 +149,8 @@ SET(OFFLINE_FEATURES_LIST
 	${SOURCE_PATH}/offline_light_component.cpp
 	${HEADER_PATH}/offline_environment_light_component.h
 	${SOURCE_PATH}/offline_environment_light_component.cpp
+	${HEADER_PATH}/offline_directional_light_component.h
+	${SOURCE_PATH}/offline_directional_light_component.cpp
 	${HEADER_PATH}/offline_feature.h
 	${SOURCE_PATH}/offline_feature.cpp
 )

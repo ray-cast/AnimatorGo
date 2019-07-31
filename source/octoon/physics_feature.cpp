@@ -1,20 +1,16 @@
-#include <stdexcept>
-
-#include <octoon/game_object.h>
-#include <octoon/transform_component.h>
 #include <octoon/physics_feature.h>
-#include <octoon/math/math.h>
-#include <octoon/runtime/singleton.h>
-
-#include <octoon/runtime/except.h>
-#include <octoon/runtime/rtti_factory.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
 
 	PhysicsFeature::PhysicsFeature() except
-		:physics_system(), physics_context(nullptr), physics_scene(nullptr)
+		: physics_system()
+		, physics_context(nullptr)
+		, physics_scene(nullptr)
+		, time_(0.0f)
+		, timeStep_(1000.0f / 60.0f)
 	{
 		
 	}
@@ -23,46 +19,70 @@ namespace octoon
 	{
 	}
 
-    void PhysicsFeature::onActivate() except
+	void
+	PhysicsFeature::setTimeStep(float timeStep) noexcept
+	{
+		timeStep_ = timeStep;
+	}
+
+	float
+	PhysicsFeature::getTimeStep() const noexcept
+	{
+		return timeStep_;
+	}
+
+    void
+	PhysicsFeature::onActivate() except
     {
 		physics_context = physics_system.createContext();
 		physics_scene = physics_context->createScene(physics::PhysicsSceneDesc());
     }
 
-    void PhysicsFeature::onDeactivate() noexcept
+    void
+	PhysicsFeature::onDeactivate() noexcept
+    {
+		physics_scene.reset();
+		physics_context.reset();
+    }
+
+    void
+	PhysicsFeature::onReset() noexcept
     {
     }
 
-    void PhysicsFeature::onReset() noexcept
+    void
+	PhysicsFeature::onFrameBegin() noexcept
     {
     }
 
-    void PhysicsFeature::onFrameBegin() noexcept
+    void
+	PhysicsFeature::onFrame() except
     {
     }
 
-    void PhysicsFeature::onFrame() except
+    void
+	PhysicsFeature::onFrameEnd() noexcept
     {
+		auto feature = this->getFeature<TimerFeature>();
+		if (feature)
+		{
+			time_ += feature->delta() * CLOCKS_PER_SEC;
+
+			if (time_ > timeStep_)
+			{
+				physics_scene->simulate(timeStep_ / CLOCKS_PER_SEC);
+				time_ = 0;
+			}
+		}		
     }
 
-    void PhysicsFeature::onFrameEnd() noexcept
-    {
-		physics_scene->simulate(1 / 30.f);
-    }
-
-    void PhysicsFeature::onOpenScene(const GameScenePtr& scene) except
-    {
-    }
-
-	void PhysicsFeature::onCloseScene(const GameScenePtr& scene) noexcept
-    {
-    }
-
-	std::shared_ptr<physics::PhysicsContext> PhysicsFeature::getContext()
+	std::shared_ptr<physics::PhysicsContext>
+	PhysicsFeature::getContext()
 	{
 		return physics_context;
 	}
-	std::shared_ptr<physics::PhysicsScene> octoon::PhysicsFeature::getScene()
+	std::shared_ptr<physics::PhysicsScene> 
+	PhysicsFeature::getScene()
 	{
 		return physics_scene;
 	}

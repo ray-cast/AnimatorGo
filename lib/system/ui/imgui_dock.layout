@@ -66,7 +66,7 @@ parent   14
 
 index    4
 label    Camera
-x        459
+x        458
 y        21
 size_x   460
 size_y   342
@@ -100,7 +100,7 @@ index    6
 label    Hierarchy
 x        0
 y        21
-size_x   459
+size_x   458
 size_y   342
 status   0
 active   1
@@ -114,9 +114,9 @@ parent   10
 
 index    7
 label    Inspector
-x        919
+x        918
 y        21
-size_x   462
+size_x   463
 size_y   342
 status   0
 active   1
@@ -164,7 +164,7 @@ index    10
 label    DOCK
 x        0
 y        21
-size_x   919
+size_x   918
 size_y   342
 status   0
 active   1

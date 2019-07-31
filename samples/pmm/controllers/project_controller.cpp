@@ -356,7 +356,7 @@ namespace octoon
 				rotationX.emplace_back((float)it.frame / 30.0f, it.rotation.x, interpolationRotation);
 				rotationY.emplace_back((float)it.frame / 30.0f, it.rotation.y, interpolationRotation);
 				rotationZ.emplace_back((float)it.frame / 30.0f, it.rotation.z, interpolationRotation);
-				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov, interpolationAngleView);
+				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov * 2.0f, interpolationAngleView);
 			}
 
 			AnimationClip<float> clip;

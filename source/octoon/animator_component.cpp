@@ -72,7 +72,7 @@ namespace octoon
 	AnimatorComponent::play(const std::string& status) noexcept
 	{
 		this->setName(status);
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
+		this->addComponentDispatch(GameDispatchType::FrameBegin);
 
 		enableAnimation_ = true;
 		return enableAnimation_;
@@ -148,11 +148,11 @@ namespace octoon
 	void
 	AnimatorComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
-	AnimatorComponent::onFrameEnd() noexcept
+	AnimatorComponent::onFrameBegin() noexcept
 	{
 		auto feature = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
 		if (feature)
@@ -162,12 +162,12 @@ namespace octoon
 			if (time_ > timeStep_)
 			{
 				for (auto& it : clips_)
-					it.evaluate(timeStep_ / CLOCKS_PER_SEC);
+					it.evaluate(time_ / CLOCKS_PER_SEC);
 
 				this->updateBones();
 				this->sendMessageDownwards("octoon:animation:update");
 
-				time_ -= timeStep_;
+				time_ = 0;
 			}
 		}
 	}

@@ -3,7 +3,6 @@
 
 #include <octoon/animation/animation.h>
 #include <octoon/game_component.h>
-#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -18,6 +17,9 @@ namespace octoon
 		explicit AnimationComponent(const animation::AnimationClips<float>& clips) noexcept;
 		virtual ~AnimationComponent() noexcept;
 
+		void setTimeStep(float timeStep) noexcept;
+		float getTimeStep() const noexcept;
+
 		void play() noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -28,14 +30,19 @@ namespace octoon
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
 
-		void onFrameEnd() except override;
+		void onFrameBegin() except override;
+
+	private:
+		void update() noexcept;
 
 	private:
 		AnimationComponent(const AnimationComponent&) = delete;
 		AnimationComponent& operator=(const AnimationComponent&) = delete;
 
 	private:
-		TimerFeature* timer_;
+		float time_;
+		float timeStep_;
+
 		animation::AnimationClips<float> clips_;
 	};
 }

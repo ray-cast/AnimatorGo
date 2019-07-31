@@ -40,7 +40,7 @@ namespace octoon
 		void onActivate() except;
 		void onDeactivate() noexcept;
 
-		void onFrameEnd() noexcept;
+		void onFrameBegin() noexcept;
 
 	private:
 		void updateBindpose(const GameObjects& transforms) noexcept;

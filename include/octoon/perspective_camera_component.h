@@ -27,6 +27,12 @@ namespace octoon
 		GameComponentPtr clone() const noexcept override;
 
 	private:
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
+
+		void onFovChange(const runtime::any& fov) noexcept;
+
+	private:
 		PerspectiveCameraComponent(const PerspectiveCameraComponent&) = delete;
 		PerspectiveCameraComponent& operator=(const PerspectiveCameraComponent&) = delete;
 

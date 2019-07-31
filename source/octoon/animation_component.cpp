@@ -1,39 +1,40 @@
 #include <octoon/animation_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/game_scene.h>
-#include <octoon/math/quat.h>
+#include <octoon/timer_feature.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(AnimationComponent, GameComponent, "Animation")
 
 	AnimationComponent::AnimationComponent() noexcept
-		: timer_(nullptr)
+		: time_(0.0f)
+		, timeStep_(1000.0f / 24.0f)
 	{
 	}
 
 	AnimationComponent::AnimationComponent(animation::AnimationClip<float>&& clip) noexcept
-		: timer_(nullptr)
+		: AnimationComponent()
 	{
 		clips_.emplace_back(clip);
 	}
 
 	AnimationComponent::AnimationComponent(animation::AnimationClips<float>&& clips) noexcept
-		: timer_(nullptr)
-		, clips_(std::move(clips))
+		: AnimationComponent()
 	{
+		clips_ = std::move(clips);
 	}
 
 	AnimationComponent::AnimationComponent(const animation::AnimationClip<float>& clip) noexcept
-		: timer_(nullptr)
+		: AnimationComponent()
 	{
 		clips_.emplace_back(clip);
 	}
 
 	AnimationComponent::AnimationComponent(const animation::AnimationClips<float>& clips) noexcept
-		: timer_(nullptr)
-		, clips_(clips)
+		: AnimationComponent()
 	{
+		clips_ = clips;
 	}
 
 	AnimationComponent::~AnimationComponent() noexcept
@@ -41,21 +42,33 @@ namespace octoon
 	}
 
 	void
+	AnimationComponent::setTimeStep(float timeStep) noexcept
+	{
+		timeStep_ = timeStep;
+	}
+
+	float
+	AnimationComponent::getTimeStep() const noexcept
+	{
+		return timeStep_;
+	}
+
+	void
 	AnimationComponent::play() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
+		this->addComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
 	AnimationComponent::pause() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
 	AnimationComponent::stop() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	GameComponentPtr
@@ -67,28 +80,41 @@ namespace octoon
 	void 
 	AnimationComponent::onActivate() except
 	{
-		timer_ = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
 	}
 
 	void
 	AnimationComponent::onDeactivate() noexcept
 	{
-		timer_ = nullptr;
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 	}
 
 	void
-	AnimationComponent::onFrameEnd() except
+	AnimationComponent::onFrameBegin() except
 	{
-		auto delta = timer_->delta();
+		auto feature = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
+		if (feature)
+		{
+			time_ += feature->delta() * CLOCKS_PER_SEC;
 
+			if (time_ > timeStep_)
+			{
+				for (auto& it : clips_)
+					it.evaluate(time_ / CLOCKS_PER_SEC);
+
+				this->update();
+				this->sendMessageDownwards("octoon:animation:update");
+
+				time_ = 0;
+			}
+		}
+	}
+
+	void
+	AnimationComponent::update() noexcept
+	{
 		for (auto& clip : clips_)
 		{
-			for (auto& curve : clip.curves)
-				curve.second.evaluate(delta);
-
 			auto transform = this->getComponent<TransformComponent>();
-
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
@@ -124,6 +150,8 @@ namespace octoon
 					euler.z = curve.second.key.value;
 				else if (curve.first == "Transform:move")
 					translate += math::rotate(math::Quaternion(euler), math::float3::Forward) * curve.second.key.value;
+				else
+					this->sendMessage(curve.first, curve.second.key.value);
 			}
 
 			transform->setLocalScale(scale);

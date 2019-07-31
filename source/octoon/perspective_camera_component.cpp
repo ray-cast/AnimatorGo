@@ -87,4 +87,27 @@ namespace octoon
 
 		return instance;
 	}
+
+	void 
+	PerspectiveCameraComponent::onActivate() noexcept
+	{
+		CameraComponent::onActivate();
+		
+		this->addMessageListener("Camera:fov", std::bind(&PerspectiveCameraComponent::onFovChange, this, std::placeholders::_1));
+	}
+
+	void
+	PerspectiveCameraComponent::onDeactivate() noexcept
+	{
+		CameraComponent::onDeactivate();
+
+		this->removeMessageListener("Camera:fov", std::bind(&PerspectiveCameraComponent::onFovChange, this, std::placeholders::_1));
+	}
+
+	void
+	PerspectiveCameraComponent::onFovChange(const runtime::any& data) noexcept
+	{
+		if (data.type() == typeid(float))
+			this->setAperture(runtime::any_cast<float>(data));
+	}
 }

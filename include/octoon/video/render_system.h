@@ -22,6 +22,8 @@ namespace octoon
 			void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
 			void getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept;
 
+			const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
+
 			hal::GraphicsInputLayoutPtr createInputLayout(const hal::GraphicsInputLayoutDesc& desc) noexcept;
 			hal::GraphicsDataPtr createGraphicsData(const hal::GraphicsDataDesc& desc) noexcept;
 			hal::GraphicsTexturePtr createTexture(const hal::GraphicsTextureDesc& desc) noexcept;

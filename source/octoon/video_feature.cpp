@@ -48,6 +48,12 @@ namespace octoon
 		video::RenderSystem::instance()->getFramebufferSize(w, h);
 	}
 
+	const hal::GraphicsFramebufferPtr&
+	VideoFeature::getFramebuffer() const noexcept
+	{
+		return video::RenderSystem::instance()->getFramebuffer();
+	}
+
 	void
 	VideoFeature::onActivate() except
 	{

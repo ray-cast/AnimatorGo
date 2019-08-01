@@ -44,7 +44,14 @@ namespace octoon
 		void* rprScene_;
 		void* rprContext_;
 		void* rprMaterialSystem_;
+		void* rprDenoise_;
+
 		void* rprFramebuffer_;
+		void* colorFramebuffer_;
+		void* normalFramebuffer_;
+		void* positionFramebuffer_;
+		void* albedoFramebuffer_;
+		void* objectIdFramebuffer_;
 
 		hal::GraphicsFramebufferPtr framebuffer_;
 

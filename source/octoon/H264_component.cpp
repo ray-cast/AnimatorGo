@@ -83,7 +83,7 @@ namespace octoon
 			create_param.num_layers = 1;
 			create_param.inter_layer_pred_flag = 1;
 			create_param.inter_layer_pred_flag = 0;
-			create_param.gop = 120;
+			create_param.gop = 1;
 			create_param.width = framebuffer->getGraphicsFramebufferDesc().getWidth();
 			create_param.height = framebuffer->getGraphicsFramebufferDesc().getHeight();
 			create_param.max_long_term_reference_frames = 0;
@@ -98,7 +98,7 @@ namespace octoon
 
 			this->enc_ = std::make_unique<char[]>(sizeof_persist);
 			this->scratch_ = std::make_unique<char[]>(sizeof_scratch);
-			this->buf_ = std::make_unique<unsigned char[]>(create_param.width * create_param.height * 3 / 2);
+			this->buf_ = std::make_unique<std::uint8_t[]>(create_param.width * create_param.height * 3);
 
 			error = H264E_init((H264E_persist_t*)this->enc_.get(), &create_param);
 
@@ -108,46 +108,6 @@ namespace octoon
 
 			this->addComponentDispatch(GameDispatchType::FrameBegin);
 		}
-	}
-
-	bool rgb2yuv(unsigned char* rgb, int w, int h, unsigned char* yuvBuf)
-	{
-		unsigned char* ptrY, * ptrU, * ptrV;
-		memset(yuvBuf, 0, w * h * 3 / 2);
-		ptrY = yuvBuf;
-		ptrU = yuvBuf + w * h;
-		ptrV = ptrU + (w * h * 1 / 4);
-		unsigned char y, u, v, r, g, b;
-
-		for (int j = 0; j < h;j++)
-		{
-			for (int i = 0;i < w;i++)
-			{
-				auto data = rgb + ((h - j - 1) * w + i) * 4;
-				r = data[0];
-				g = data[1];
-				b = data[2];
-
-				y = (unsigned char)((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
-				u = (unsigned char)((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
-				v = (unsigned char)((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
-
-				*(ptrY++) = std::clamp<unsigned char>(y, 0, 255);
-
-				if (j % 2 == 0 && i % 2 == 0)
-				{
-					*(ptrU++) = std::clamp<unsigned char>(u, 0, 255);
-				}
-				else
-				{
-					if (i % 2 == 0)
-					{
-						*(ptrV++) = std::clamp<unsigned char>(v, 0, 255);
-					}
-				}
-			}
-		}
-		return true;
 	}
 
 	void
@@ -172,15 +132,18 @@ namespace octoon
 	H264Component::capture() noexcept
 	{
 		H264E_io_yuv_t yuv;
-		yuv.yuv[0] = (unsigned char*)this->buf_.get(); yuv.stride[0] = this->width_;
-		yuv.yuv[1] = (unsigned char*)this->buf_.get() + this->width_ * this->height_; yuv.stride[1] = this->width_ / 2;
-		yuv.yuv[2] = (unsigned char*)this->buf_.get() + this->width_ * this->height_ * 5 / 4; yuv.stride[2] = this->width_ / 2;
+		yuv.yuv[0] = (std::uint8_t*)this->buf_.get();
+		yuv.yuv[1] = (std::uint8_t*)this->buf_.get() + this->width_ * this->height_;
+		yuv.yuv[2] = (std::uint8_t*)this->buf_.get() + this->width_ * this->height_ * 5 / 4;
+		yuv.stride[0] = this->width_;
+		yuv.stride[1] = this->width_ / 2;
+		yuv.stride[2] = this->width_ / 2;
 
 		H264E_run_param_t run_param;
 		std::memset(&run_param, 0, sizeof(run_param));
 		run_param.frame_type = 0;
-		run_param.encode_speed = 24.0;
-		run_param.qp_min = run_param.qp_max = 33;
+		run_param.encode_speed = 0;
+		run_param.qp_min = run_param.qp_max = 21;
 
 		auto camera = camera_.lock();
 		if (camera)
@@ -191,7 +154,7 @@ namespace octoon
 			void* data;
 			if (colorTexture->map(0, 0, this->width_, this->height_, 0, &data))
 			{
-				rgb2yuv((unsigned char*)data, this->width_, this->height_, this->buf_.get());
+				rgb2yuv((std::uint8_t*)data, this->width_, this->height_, this->buf_.get());
 				colorTexture->unmap();
 			}
 		}
@@ -200,5 +163,42 @@ namespace octoon
 		std::uint8_t* coded_data;
 		if (H264E_STATUS_SUCCESS == H264E_encode((H264E_persist_t*)this->enc_.get(), (H264E_scratch_t*)this->scratch_.get(), &run_param, &yuv, &coded_data, &sizeof_coded_data))
 			ostream_->write((char*)coded_data, sizeof_coded_data);
+	}
+
+	void
+	H264Component::rgb2yuv(std::uint8_t* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept
+	{
+		auto ptrY = yuvBuf;
+		auto ptrU = ptrY + w * h;
+		auto ptrV = ptrU + w * h / 4;
+
+		for (int j = 0; j < h; j++)
+		{
+			for (int i = 0;i < w; i++)
+			{
+				auto data = rgb + ((h - j - 1) * w + i) * 4;
+				auto r = data[0];
+				auto g = data[1];
+				auto b = data[2];
+
+				auto y = (std::uint8_t)((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
+				auto u = (std::uint8_t)((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
+				auto v = (std::uint8_t)((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
+
+				*(ptrY++) = std::clamp<std::uint8_t>(y, 0, 255);
+
+				if (j % 2 == 0 && i % 2 == 0)
+				{
+					*(ptrU++) = std::clamp<std::uint8_t>(u, 0, 255);
+				}
+				else
+				{
+					if (i % 2 == 0)
+					{
+						*(ptrV++) = std::clamp<std::uint8_t>(v, 0, 255);
+					}
+				}
+			}
+		}
 	}
 }

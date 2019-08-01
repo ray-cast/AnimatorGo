@@ -102,13 +102,13 @@ namespace octoon
 			return test & input;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T> | std::is_integral<T>::value>>
 		constexpr T clamp(const T t, const T min, const T max) noexcept
 		{
 			return std::max<T>(min, std::min<T>(max, t));
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
 		constexpr T saturate(const T v) noexcept
 		{
 			return clamp<T>(v, T(0), T(1));

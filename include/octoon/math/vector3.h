@@ -438,6 +438,16 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline detail::Vector3<T> clamp(const detail::Vector3<T>& t, const detail::Vector3<T>& min, const detail::Vector3<T>& max) noexcept
+		{
+			return detail::Vector3<T>(
+				std::max(min.x, std::min(max.x, t.x)),
+				std::max(min.y, std::min(max.y, t.y)),
+				std::max(min.z, std::min(max.z, t.z))
+				);
+		}
+
+		template<typename T>
 		inline detail::Vector3<T> saturate(const detail::Vector3<T>& v) noexcept
 		{
 			return clamp(v, T(0), T(1));

@@ -43,6 +43,7 @@ namespace octoon
 
 	private:
 		void evaluate() noexcept;
+		void evaluate2() noexcept;
 
 	private:
 		CCDSolverComponent(const CCDSolverComponent&) = delete;

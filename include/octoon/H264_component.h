@@ -32,6 +32,8 @@ namespace octoon
 	private:
 		void capture() noexcept;
 
+		static void rgb2yuv(std::uint8_t* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept;
+
 	private:
 		H264Component(const H264Component&) = delete;
 		H264Component& operator=(const H264Component&) = delete;

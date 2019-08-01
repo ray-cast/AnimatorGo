@@ -35,6 +35,8 @@ set(WRAP_OBJECT_SOURCES
     WrapObject/SceneObject.h
     WrapObject/ShapeObject.cpp
     WrapObject/ShapeObject.h
+    WrapObject/PostEffectObject.cpp
+    WrapObject/PostEffectObject.h
     WrapObject/WrapObject.h)
 
 set(UTILS_SOURCES

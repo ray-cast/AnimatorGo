@@ -152,6 +152,7 @@ namespace octoon
 				if (time_ > timeStep_)
 				{
 					this->evaluate();
+					this->evaluate2();
 					time_ = 0;
 				}
 			}
@@ -159,6 +160,7 @@ namespace octoon
 		else
 		{
 			this->evaluate();
+			this->evaluate2();
 		}
 	}
 
@@ -212,10 +214,14 @@ namespace octoon
 				else
 				{
 					transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
-				}				
+				}	
 			}
 		}
+	}
 
+	void
+	CCDSolverComponent::evaluate2() noexcept
+	{
 		for (auto& bone : bones_)
 		{
 			auto boneController = bone->getComponent<RotationLinkComponent>();

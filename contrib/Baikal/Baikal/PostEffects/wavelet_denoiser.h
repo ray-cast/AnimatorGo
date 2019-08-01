@@ -114,6 +114,10 @@ namespace Baikal
         , m_buffers_width(0)
         , m_buffers_height(0)
         , m_buffers_initialized(false)
+		, m_updated_variance(nullptr)
+		, m_motion_buffer(nullptr)
+		, m_edge_detection(nullptr)
+		, m_blending_weight_calculation(nullptr)
     {
         // Add necessary params
         RegisterParameter("color_sensitivity", RadeonRays::float4(0.07f, 0.f, 0.f, 0.f));
@@ -124,6 +128,10 @@ namespace Baikal
         {
             m_tmp_buffers[buffer_index] = nullptr;
             m_colors[buffer_index] = nullptr;
+			m_positions[buffer_index] = nullptr;
+			m_normals[buffer_index] = nullptr;
+			m_mesh_ids[buffer_index] = nullptr;
+			m_moments[buffer_index] = nullptr;
         }
 
         m_view_proj_buffer = context.CreateBuffer<float>(16, CL_MEM_READ_WRITE);

@@ -1,5 +1,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/video_feature.h>
+#include <octoon/game_scene.h>
 
 namespace octoon
 {
@@ -66,7 +68,12 @@ namespace octoon
 	const hal::GraphicsFramebufferPtr&
 	CameraComponent::getFramebuffer() const noexcept
 	{
-		return camera_->getFramebuffer();
+		if (camera_->getFramebuffer())
+			return camera_->getFramebuffer();
+		auto feature = this->getGameObject()->getGameScene()->getFeature<VideoFeature>();
+		if (feature)
+			return feature->getFramebuffer();
+		return nullptr;
 	}
 
 	const hal::GraphicsFramebufferPtr&

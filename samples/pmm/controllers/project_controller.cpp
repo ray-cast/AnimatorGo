@@ -298,7 +298,7 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 					{
-						animation->setTimeStep(CLOCKS_PER_SEC * 20);
+						animation->setTimeStep(CLOCKS_PER_SEC * 30);
 						animation->setTimeInterval(CLOCKS_PER_SEC);
 						animation->play();
 					}
@@ -306,15 +306,18 @@ namespace octoon
 					auto animator = it->getComponent<AnimatorComponent>();
 					if (animator)
 					{
-						animator->setTimeStep(CLOCKS_PER_SEC * 20);
+						animator->setTimeStep(CLOCKS_PER_SEC * 30);
 						animator->setTimeInterval(CLOCKS_PER_SEC);
 						animator->play();
 					}
 				}
 
 				auto h264 = camera_->getComponent<H264Component>();
-				h264->setTimeStep(CLOCKS_PER_SEC * 20);
-				h264->capture(std::make_shared<std::ofstream>(filepath, io::ios_base::binary));
+				if (h264)
+				{
+					h264->setTimeStep(CLOCKS_PER_SEC * 30);
+					h264->capture(std::make_shared<std::ofstream>(filepath, io::ios_base::binary));
+				}
 			}
 		}
 
@@ -347,7 +350,7 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 					{
-						animation->setTimeStep(CLOCKS_PER_SEC / 30.0f);
+						animation->setTimeStep(CLOCKS_PER_SEC / 60.0f);
 						animation->setTimeInterval(CLOCKS_PER_SEC);
 						animation->play();
 					}
@@ -355,7 +358,7 @@ namespace octoon
 					auto animator = it->getComponent<AnimatorComponent>();
 					if (animator)
 					{
-						animator->setTimeStep(CLOCKS_PER_SEC / 30.0f);
+						animator->setTimeStep(CLOCKS_PER_SEC / 60.0f);
 						animator->setTimeInterval(CLOCKS_PER_SEC);
 						animator->play();
 					}

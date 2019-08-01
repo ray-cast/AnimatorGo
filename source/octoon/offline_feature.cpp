@@ -28,6 +28,12 @@ namespace octoon
 		, rprScene_(nullptr)
 		, rprMaterialSystem_(nullptr)
 		, rprFramebuffer_(nullptr)
+		, rprDenoise_(nullptr)
+		, colorFramebuffer_(nullptr)
+		, normalFramebuffer_(nullptr)
+		, positionFramebuffer_(nullptr)
+		, objectIdFramebuffer_(nullptr)
+		, albedoFramebuffer_(nullptr)
 	{
 	}
 
@@ -38,6 +44,12 @@ namespace octoon
 		, rprScene_(nullptr)
 		, rprMaterialSystem_(nullptr)
 		, rprFramebuffer_(nullptr)
+		, rprDenoise_(nullptr)
+		, colorFramebuffer_(nullptr)
+		, normalFramebuffer_(nullptr)
+		, positionFramebuffer_(nullptr)
+		, objectIdFramebuffer_(nullptr)
+		, albedoFramebuffer_(nullptr)
 	{
 	}
 
@@ -106,7 +118,10 @@ namespace octoon
 		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		rprContextCreateScene(rprContext_, &rprScene_);
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
+		rprContextCreatePostEffect(rprContext_, RPR_POST_EFFECT_WAVELET_DENOISER, &rprDenoise_);
+
 		rprContextSetScene(rprContext_, rprScene_);
+		// rprContextAttachPostEffect(rprContext_, rprDenoise_);
 
 		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}
@@ -126,6 +141,12 @@ namespace octoon
 		{
 			rprObjectDelete(this->rprFramebuffer_);
 			this->rprFramebuffer_ = nullptr;
+		}
+
+		if (this->rprDenoise_)
+		{
+			rprObjectDelete(this->rprDenoise_);
+			this->rprDenoise_ = nullptr;
 		}
 
 		if (this->rprScene_)
@@ -193,7 +214,24 @@ namespace octoon
 
 			if (this->dirty_)
 			{
-				rprFrameBufferClear(this->rprFramebuffer_);
+				if (this->rprFramebuffer_)
+					rprFrameBufferClear(this->rprFramebuffer_);
+
+				if (this->colorFramebuffer_)
+					rprFrameBufferClear(this->colorFramebuffer_);
+
+				if (this->normalFramebuffer_)
+					rprFrameBufferClear(this->normalFramebuffer_);
+
+				if (this->positionFramebuffer_)
+					rprFrameBufferClear(this->positionFramebuffer_);
+
+				if (this->objectIdFramebuffer_)
+					rprFrameBufferClear(this->objectIdFramebuffer_);
+
+				if (this->albedoFramebuffer_)
+					rprFrameBufferClear(this->albedoFramebuffer_);
+
 				this->dirty_ = false;
 			}
 
@@ -263,6 +301,24 @@ namespace octoon
 
 				this->rprFramebuffer_ = framebuffer;
 			}
+
+			/*rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
+			rpr_framebuffer_desc desc;
+			desc.fb_width = w;
+			desc.fb_height = h;
+
+			rprContextCreateFrameBuffer(rprContext_, format, &desc, &colorFramebuffer_);
+			rprContextCreateFrameBuffer(rprContext_, format, &desc, &normalFramebuffer_);
+			rprContextCreateFrameBuffer(rprContext_, format, &desc, &positionFramebuffer_);
+			rprContextCreateFrameBuffer(rprContext_, format, &desc, &albedoFramebuffer_);
+			rprContextCreateFrameBuffer(rprContext_, format, &desc, &objectIdFramebuffer_);
+
+			rprContextSetAOV(rprContext_, RPR_AOV_COLOR, framebuffer);
+			rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer_);
+			rprContextSetAOV(rprContext_, RPR_AOV_WORLD_COORDINATE, positionFramebuffer_);
+			rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer_);
+			rprContextSetAOV(rprContext_, RPR_AOV_OBJECT_ID, objectIdFramebuffer_);
+			rprContextSetAOV(rprContext_, RPR_AOV_OUTPUT, framebuffer);*/
 		}
 	}
 }

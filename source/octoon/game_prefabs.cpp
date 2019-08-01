@@ -389,7 +389,6 @@ namespace octoon
 			if (bones.empty())
 			{
 				object->addComponent<MeshRendererComponent>(materials[i]);
-				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
 			}
 			else
 			{

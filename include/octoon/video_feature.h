@@ -2,6 +2,7 @@
 #define OCTOON_VIDEO_FEATURE_H_
 
 #include <octoon/game_feature.h>
+#include <octoon/hal/graphics_framebuffer.h>
 
 namespace octoon
 {
@@ -15,6 +16,8 @@ namespace octoon
 
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
+
+		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
 		void onActivate() except override;

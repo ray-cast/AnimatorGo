@@ -45,12 +45,16 @@ namespace Baikal
     class PostEffect
     {
     public:
+		using Ptr = std::shared_ptr<PostEffect>;
+
         // Data type to pass all necessary content into the post effect. 
         using InputSet = std::map<Renderer::OutputType, Output*>;
 
         // Default constructor & destructor
         PostEffect() = default;
         virtual ~PostEffect() = default;
+
+		virtual void Update(class PerspectiveCamera* camera) = 0;
 
         // Apply post effect and use output for the result
         virtual void Apply(InputSet const& input_set, Output& output) = 0;

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "WrapObject/MatSysObject.h"
 #include "WrapObject/SceneObject.h"
 #include "WrapObject/ShapeObject.h"
+#include "WrapObject/PostEffectObject.h"
 #include "WrapObject/Exception.h"
 #include "math/float2.h"
 #include "math/float3.h"
@@ -2465,19 +2466,68 @@ rpr_int rprObjectSetName(void * in_node, rpr_char const * in_name)
     return RPR_SUCCESS;
 }
 
-rpr_int rprContextCreatePostEffect(rpr_context context, rpr_post_effect_type type, rpr_post_effect * out_effect)
+rpr_int rprContextCreatePostEffect(rpr_context in_context, rpr_post_effect_type type, rpr_post_effect * out_effect)
 {
-    UNIMLEMENTED_FUNCTION
+	//cast
+	ContextObject* context = WrapObject::Cast<ContextObject>(in_context);
+	if (!context)
+	{
+		return RPR_ERROR_INVALID_CONTEXT;
+	}
+	if (!out_effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+
+	*out_effect = context->CreatePostEffect(type);
+
+	return RPR_SUCCESS;
 }
 
-rpr_int rprContextAttachPostEffect(rpr_context context, rpr_post_effect effect)
+rpr_int rprContextAttachPostEffect(rpr_context in_context, rpr_post_effect in_effect)
 {
-    UNIMLEMENTED_FUNCTION
+	//cast
+	ContextObject* context = WrapObject::Cast<ContextObject>(in_context);
+	if (!context)
+	{
+		return RPR_ERROR_INVALID_CONTEXT;
+	}
+	if (!in_effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+	PostEffectObject* effect = WrapObject::Cast<PostEffectObject>(in_effect);
+	if (!effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+
+	context->AttachPostEffect(effect);
+
+	return RPR_SUCCESS;
 }
 
-rpr_int rprContextDetachPostEffect(rpr_context context, rpr_post_effect effect)
+rpr_int rprContextDetachPostEffect(rpr_context in_context, rpr_post_effect in_effect)
 {
-    UNIMLEMENTED_FUNCTION
+	//cast
+	ContextObject* context = WrapObject::Cast<ContextObject>(in_context);
+	if (!context)
+	{
+		return RPR_ERROR_INVALID_CONTEXT;
+	}
+	if (!in_effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+	PostEffectObject* effect = WrapObject::Cast<PostEffectObject>(in_effect);
+	if (!effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+
+	context->DetachPostEffect(effect);
+
+	return RPR_SUCCESS;
 }
 
 rpr_int rprPostEffectSetParameter1u(rpr_post_effect effect, rpr_char const * name, rpr_uint x)

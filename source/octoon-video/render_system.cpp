@@ -64,6 +64,12 @@ namespace octoon
 			h = height_;
 		}
 
+		const GraphicsFramebufferPtr&
+		RenderSystem::getFramebuffer() const noexcept
+		{
+			return fbo_;
+		}
+
 		GraphicsInputLayoutPtr
 		RenderSystem::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
 		{

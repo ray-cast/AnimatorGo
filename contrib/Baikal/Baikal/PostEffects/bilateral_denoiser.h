@@ -50,6 +50,7 @@ namespace Baikal
         // Constructor
         BilateralDenoiser(CLWContext context, const CLProgramManager *program_manager);
         // Apply filter
+		void Update(PerspectiveCamera* camera) override {};
         void Apply(InputSet const& input_set, Output& output) override;
 
     private: 

@@ -38,6 +38,7 @@ class MatSysObject;
 class ShapeObject;
 class CameraObject;
 class MaterialObject;
+class PostEffectObject;
 
 //this class represent rpr_context
 class ContextObject
@@ -60,6 +61,9 @@ public:
     void SetAOV(rpr_int in_aov, FramebufferObject* buffer);
     FramebufferObject* GetAOV(rpr_int in_aov);
 
+	void AttachPostEffect(PostEffectObject* effect);
+	void DetachPostEffect(PostEffectObject* effect);
+
     //render
     void Render();
     void RenderTile(rpr_uint xmin, rpr_uint xmax, rpr_uint ymin, rpr_uint ymax);
@@ -81,6 +85,7 @@ public:
     CameraObject* CreateCamera();
     FramebufferObject* CreateFrameBuffer(rpr_framebuffer_format const in_format, rpr_framebuffer_desc const * in_fb_desc);
     FramebufferObject* CreateFrameBufferFromGLTexture(rpr_GLenum target, rpr_GLint miplevel, rpr_GLuint texture);
+	PostEffectObject* CreatePostEffect(rpr_post_effect_type type);
 private:
     void PrepareScene();
 
@@ -90,6 +95,9 @@ private:
     //render configs
     std::vector<ConfigManager::Config> m_cfgs;
     //know framefubbers used as AOV outputs
-    std::set<FramebufferObject*> m_output_framebuffers;
+    std::set<std::pair<rpr_aov, FramebufferObject*>> m_output_framebuffers;
+	//post effects
+	std::vector<PostEffectObject*> m_post_effects;
     SceneObject* m_current_scene;
+	FramebufferObject* m_swap_framebuffer;
 };

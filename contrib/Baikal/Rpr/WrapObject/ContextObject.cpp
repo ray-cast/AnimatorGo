@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "WrapObject/LightObject.h"
 #include "WrapObject/FramebufferObject.h"
 #include "WrapObject/Materials/MaterialObject.h"
+#include "WrapObject/PostEffectObject.h"
 #include "WrapObject/Exception.h"
 
 #include "SceneGraph/scene1.h"
@@ -105,6 +106,8 @@ namespace
                                                                         {RPR_AOV_OBJECT_GROUP_ID, Baikal::Renderer::OutputType::kGroupID},
                                                                         {RPR_AOV_BACKGROUND, Baikal::Renderer::OutputType::kBackground},
                                                                         {RPR_AOV_OPACITY, Baikal::Renderer::OutputType::kOpacity},
+																		{RPR_AOV_ALBEDO, Baikal::Renderer::OutputType::kAlbedo},
+																		{RPR_AOV_OUTPUT, Baikal::Renderer::OutputType::kColor},
                                                                         };
 
 }// anonymous
@@ -163,54 +166,76 @@ void ContextObject::SetAOV(rpr_int in_aov, FramebufferObject* buffer)
         throw Exception(RPR_ERROR_UNIMPLEMENTED, "Context: requested AOV not implemented.");
     }
     
-    for (auto& c : m_cfgs)
-    {
-        c.renderer->SetOutput(aov->second, buffer->GetOutput());
-    }
+	if (in_aov != RPR_AOV_OUTPUT)
+	{
+		for (auto& c : m_cfgs)
+		{
+			c.renderer->SetOutput(aov->second, buffer->GetOutput());
+		}
+	}
 
     //update registered output framebuffer
-    m_output_framebuffers.erase(old_buf);
-    m_output_framebuffers.insert(buffer);
+    m_output_framebuffers.erase(std::make_pair(in_aov, old_buf));
+    m_output_framebuffers.insert(std::make_pair(in_aov, buffer));
 }
 
 
 FramebufferObject* ContextObject::GetAOV(rpr_int in_aov)
-{
-    auto aov = kOutputTypeMap.find(in_aov);
-    if (aov == kOutputTypeMap.end())
-    {
-        throw Exception(RPR_ERROR_UNIMPLEMENTED, "Context: requested AOV not implemented.");
-    }
-
-    Baikal::Output* out = m_cfgs[0].renderer->GetOutput(aov->second);
-    if (!out)
-    {
-        return nullptr;
-    }
-    
+{   
     //find framebuffer
-    auto it = find_if(m_output_framebuffers.begin(), m_output_framebuffers.end(), [out](FramebufferObject* buff)
+    auto it = find_if(m_output_framebuffers.begin(), m_output_framebuffers.end(), [in_aov](const std::pair<rpr_aov, FramebufferObject*>& it)
     {
-        return buff->GetOutput() == out;
+        return it.first == in_aov;
     });
     if (it == m_output_framebuffers.end())
     {
-        throw Exception(RPR_ERROR_INTERNAL_ERROR, "Context: unknown framebuffer.");
+		return nullptr;
     }
 
-    return *it;
+    return (*it).second;
+}
+
+void ContextObject::AttachPostEffect(PostEffectObject* effect)
+{
+	auto it = find(m_post_effects.begin(), m_post_effects.end(), effect);
+	if (it == m_post_effects.end())
+		m_post_effects.push_back(effect);
+}
+
+void ContextObject::DetachPostEffect(PostEffectObject* effect)
+{
+	auto it = find(m_post_effects.begin(), m_post_effects.end(), effect);
+	if (it != m_post_effects.end())
+		m_post_effects.erase(it);
 }
 
 void ContextObject::Render()
 {
     PrepareScene();
 
-    //render
+	for (auto& e : m_post_effects)
+		e->GetPostEffect()->Update((Baikal::PerspectiveCamera*)this->GetCurrentScene()->GetCamera()->GetCamera().get());
+
+	//render
     for (auto& c : m_cfgs)
     {
         auto& scene = c.controller->GetCachedScene(m_current_scene->GetScene());
         c.renderer->Render(scene);
     }
+
+	if (!m_post_effects.empty())
+	{
+		Baikal::PostEffect::InputSet input_set;
+		input_set[Baikal::Renderer::OutputType::kColor] = this->GetAOV(RPR_AOV_COLOR)->GetOutput();
+		input_set[Baikal::Renderer::OutputType::kWorldShadingNormal] = this->GetAOV(RPR_AOV_SHADING_NORMAL)->GetOutput();
+		input_set[Baikal::Renderer::OutputType::kWorldPosition] = this->GetAOV(RPR_AOV_WORLD_COORDINATE)->GetOutput();
+		input_set[Baikal::Renderer::OutputType::kAlbedo] = this->GetAOV(RPR_AOV_ALBEDO)->GetOutput();
+		input_set[Baikal::Renderer::OutputType::kMeshID] = this->GetAOV(RPR_AOV_OBJECT_ID)->GetOutput();
+
+		for (auto& e : m_post_effects)
+			e->GetPostEffect()->Apply(input_set, *this->GetAOV(RPR_AOV_OUTPUT)->GetOutput());
+	}
+
     PostRender();
 }
 
@@ -226,7 +251,8 @@ void ContextObject::RenderTile(rpr_uint xmin, rpr_uint xmax, rpr_uint ymin, rpr_
         auto& scene = c.controller->GetCachedScene(m_current_scene->GetScene());
         c.renderer->RenderTile(scene, origin, size);
     }
-    PostRender();
+
+	PostRender();
 }
 
 
@@ -323,6 +349,39 @@ FramebufferObject* ContextObject::CreateFrameBufferFromGLTexture(rpr_GLenum targ
     return result;
 }
 
+PostEffectObject* ContextObject::CreatePostEffect(rpr_post_effect_type type)
+{
+	//TODO:: implement for several devices
+	if (m_cfgs.size() != 1)
+	{
+		throw Exception(RPR_ERROR_INTERNAL_ERROR, "ContextObject: invalid config count.");
+	}
+
+	Baikal::PostEffect* effect = nullptr;
+
+	auto& c = m_cfgs[0];
+	switch (type)
+	{
+	case RPR_POST_EFFECT_BILATERAL_DENOISER:
+		effect = c.factory->CreatePostEffect(Baikal::RenderFactory<Baikal::ClwScene>::PostEffectType::kBilateralDenoiser).release();
+		break;
+	case RPR_POST_EFFECT_WAVELET_DENOISER:
+		effect = c.factory->CreatePostEffect(Baikal::RenderFactory<Baikal::ClwScene>::PostEffectType::kWaveletDenoiser).release();
+		break;
+	default:
+		throw std::runtime_error("PostEffect is not supported");
+	}
+
+	if (effect)
+	{
+		PostEffectObject* result = new PostEffectObject();
+		result->SetPostEffect(std::shared_ptr<Baikal::PostEffect>(effect));
+		return result;
+	}
+
+	return nullptr;
+}
+
 void ContextObject::SetParameter(const std::string& input, rpr_uint value)
 {
     auto it = std::find_if(kContextParameterDescriptions.begin(), kContextParameterDescriptions.end(),
@@ -398,6 +457,6 @@ void ContextObject::PostRender()
     // need to copy data from CL to GL for interop framebuffers
     for (auto fb : m_output_framebuffers)
     {
-        fb->UpdateGlTex();
+        fb.second->UpdateGlTex();
     }
 }

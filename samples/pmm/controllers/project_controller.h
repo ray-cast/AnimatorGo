@@ -29,6 +29,7 @@ namespace octoon
 
 			void play(const runtime::any& data) noexcept;
 
+			void renderVideo(const runtime::any& data) noexcept;
 			void renderPicture(const runtime::any& data) noexcept;
 
 			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
@@ -43,6 +44,7 @@ namespace octoon
 
 		private:
 			GameObjects objects_;
+			GameObjectPtr camera_;
 		};
 	}
 }

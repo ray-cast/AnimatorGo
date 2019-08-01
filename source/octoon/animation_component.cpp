@@ -10,6 +10,7 @@ namespace octoon
 	AnimationComponent::AnimationComponent() noexcept
 		: time_(0.0f)
 		, timeStep_(1000.0f / 24.0f)
+		, timeInterval_(1000.0f / 24.0f)
 	{
 	}
 
@@ -54,9 +55,22 @@ namespace octoon
 	}
 
 	void
+	AnimationComponent::setTimeInterval(float timeInterval) noexcept
+	{
+		timeInterval_ = timeInterval;
+	}
+	
+	float
+	AnimationComponent::getTimeInterval() const noexcept
+	{
+		return timeInterval_;
+	}
+
+	void
 	AnimationComponent::play() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::FrameBegin);
+		this->update();
 	}
 
 	void
@@ -98,19 +112,14 @@ namespace octoon
 
 			if (time_ > timeStep_)
 			{
-				for (auto& it : clips_)
-					it.evaluate(time_ / CLOCKS_PER_SEC);
-
-				this->update();
-				this->sendMessageDownwards("octoon:animation:update");
-
-				time_ = 0;
+				this->update(timeInterval_ / CLOCKS_PER_SEC);
+				time_ -= timeStep_;
 			}
 		}
 	}
 
 	void
-	AnimationComponent::update() noexcept
+	AnimationComponent::update(float delta) noexcept
 	{
 		for (auto& clip : clips_)
 		{
@@ -119,6 +128,8 @@ namespace octoon
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
 			auto euler = math::eulerAngles(quat);
+
+			clip.evaluate(delta);
 
 			for (auto& curve : clip.curves)
 			{
@@ -158,5 +169,7 @@ namespace octoon
 			transform->setLocalTranslate(translate);
 			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
+
+		this->sendMessageDownwards("octoon:animation:update");
 	}
 }

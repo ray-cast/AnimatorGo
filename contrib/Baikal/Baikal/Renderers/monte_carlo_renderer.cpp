@@ -43,8 +43,8 @@ namespace Baikal
 {
     using namespace RadeonRays;
 
-    int constexpr kTileSizeX = 1920;
-    int constexpr kTileSizeY = 1080;
+    int constexpr kTileSizeX = 2560;
+    int constexpr kTileSizeY = 1440;
 
     // Constructor
     MonteCarloRenderer::MonteCarloRenderer(

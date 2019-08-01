@@ -17,7 +17,7 @@ namespace octoon
 		, focalLength_(35.0f)
 		, focusDistance_(1.0f)
 		, fStop_(0.0f)
-		, clearColor_(0.9f, 0.95f, 1.0f, 1.0)
+		, clearColor_(0.8f, 0.9f, 1.0f, 1.0)
 	{
 	}
 
@@ -178,14 +178,13 @@ namespace octoon
 		return this->orthoWidth_;
 	}
 
-	void
-	OfflineCameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
+	hal::GraphicsFramebufferPtr
+	OfflineCameraComponent::getFramebuffer() const noexcept
 	{
-	}
-
-	void
-	OfflineCameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
-	{
+		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		if (feature)
+			return feature->getFramebuffer();
+		return nullptr;
 	}
 
 	GameComponentPtr

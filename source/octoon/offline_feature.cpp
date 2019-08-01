@@ -92,11 +92,10 @@ namespace octoon
 		return this->rprMaterialSystem_;
 	}
 
-	void
-	OfflineFeature::saveToFile(const char* path) noexcept
+	hal::GraphicsFramebufferPtr
+	OfflineFeature::getFramebuffer() const noexcept
 	{
-		if (this->rprFramebuffer_)
-			rprFrameBufferSaveToFile(this->rprFramebuffer_, path);
+		return this->framebuffer_;
 	}
 
 	void
@@ -222,14 +221,14 @@ namespace octoon
 		if (context)
 		{
 			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32A32SFloat));
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R8G8B8A8UNorm));
 			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
 
 			hal::GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R8G8B8A8UNorm);
 			auto colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");

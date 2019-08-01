@@ -20,6 +20,9 @@ namespace octoon
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;
 
+		void setTimeInterval(float timeInterval) noexcept;
+		float getTimeInterval() const noexcept;
+
 		void play() noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -33,7 +36,7 @@ namespace octoon
 		void onFrameBegin() except override;
 
 	private:
-		void update() noexcept;
+		void update(float delta = 0.0f) noexcept;
 
 	private:
 		AnimationComponent(const AnimationComponent&) = delete;
@@ -42,6 +45,7 @@ namespace octoon
 	private:
 		float time_;
 		float timeStep_;
+		float timeInterval_;
 
 		animation::AnimationClips<float> clips_;
 	};

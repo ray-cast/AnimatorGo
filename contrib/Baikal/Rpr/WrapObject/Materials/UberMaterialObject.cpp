@@ -105,8 +105,8 @@ void UberMaterialObject::SetInputTexture(const std::string & input_name, Texture
         }
         else
         {
-            auto sampler = Baikal::InputMap_Sampler::Create(input->GetTexture());
-            m_mat->SetInputValue(input_name, sampler);
+			auto sampler = Baikal::InputMap_Pow::Create(Baikal::InputMap_Sampler::Create(input->GetTexture()), InputMap_ConstantFloat::Create(2.2));
+			m_mat->SetInputValue(input_name, sampler);
         }
     }
     catch (...)

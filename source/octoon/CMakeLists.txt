@@ -57,6 +57,8 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/skinned_mesh_renderer_component.cpp
 	${HEADER_PATH}/skinned_joint_renderer_component.h
 	${SOURCE_PATH}/skinned_joint_renderer_component.cpp
+	${HEADER_PATH}/h264_component.h
+	${SOURCE_PATH}/h264_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )
@@ -241,6 +243,6 @@ IF(OCTOON_FEATURE_PHYSICS_ENABLE)
 ENDIF()
 
 TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_INCLUDE})
-TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_DEPENDENCIES}/json)
+TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_DEPENDENCIES}/minih264e)
 
 SET_TARGET_ATTRIBUTE(${LIB_NAME} "octoon")

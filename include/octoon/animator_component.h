@@ -22,6 +22,9 @@ namespace octoon
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;
 
+		void setTimeInterval(float timeInterval) noexcept;
+		float getTimeInterval() const noexcept;
+
 		bool play(const std::string& status = "default") noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -43,8 +46,8 @@ namespace octoon
 		void onFrameBegin() noexcept;
 
 	private:
+		void update(float delta = 0.0f) noexcept;
 		void updateBindpose(const GameObjects& transforms) noexcept;
-		void updateBones() noexcept;
 
 	private:
 		bool enableAnimation_;
@@ -52,6 +55,7 @@ namespace octoon
 
 		float time_;
 		float timeStep_;
+		float timeInterval_;
 
 		animation::AnimationClips<float> clips_;
 		math::float3s bindpose_;

@@ -53,7 +53,10 @@ namespace octoon
 					if (imgui::menuItem("Save", "CTRL+S")) { this->sendMessage("editor:menu:file:save"); }
 					if (imgui::menuItem("Save As...", "CTRL+SHIFT+S")) { this->sendMessage("editor:menu:file:saveAs"); }
 
+					imgui::separator();
+
 					if (imgui::menuItem("render to picture file", "CTRL+B")) { this->sendMessage("editor:menu:file:picture"); }
+					if (imgui::menuItem("render to video file", "CTRL+B")) { this->sendMessage("editor:menu:file:video"); }
 
 					imgui::separator();
 

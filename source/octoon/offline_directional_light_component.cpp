@@ -3,6 +3,9 @@
 #include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 #include <RadeonProRender.h>
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
 
 namespace octoon
 {

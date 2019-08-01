@@ -24,7 +24,7 @@ namespace octoon
 		void* getContext() const noexcept;
 		void* getMaterialSystem() const noexcept;
 
-		void saveToFile(const char* path) noexcept;
+		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
 
 	private:
 		void onActivate() except override;

@@ -71,7 +71,7 @@ namespace octoon
 			if (time_ > timeStep_)
 			{
 				physics_scene->simulate(timeStep_ / CLOCKS_PER_SEC);
-				time_ = 0;
+				time_ -= timeStep_;
 			}
 		}		
     }

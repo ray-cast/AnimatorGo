@@ -10,7 +10,8 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_environment_light_component.h>
 #include <octoon/offline_directional_light_component.h>
-
+#include <octoon/H264_component.h>
+#include <fstream>
 #include "../libs/nativefiledialog/nfd.h"
 
 using namespace octoon::animation;
@@ -20,6 +21,7 @@ constexpr std::size_t PATHLIMIT = 4096;
 std::vector<const char*> g_SupportedProject = { "pmm" };
 std::vector<const char*> g_SupportedModel = { "pmx" };
 std::vector<const char*> g_SupportedImage = { "png", "jpg" };
+std::vector<const char*> g_SupportedVideo = { "264" };
 
 namespace octoon
 {
@@ -108,6 +110,7 @@ namespace octoon
 			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));	
 			this->addMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
 			
 		}
 
@@ -121,6 +124,7 @@ namespace octoon
 			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
 		}
 
 		void
@@ -157,12 +161,12 @@ namespace octoon
 
 						auto euler = math::eulerAngles(key.quaternion);
 
-						translateX[i].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
-						translateY[i].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
-						translateZ[i].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						rotationX[i].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
-						rotationY[i].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
-						rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
+						translateX[i].emplace_back((float)key.frame, key.translation.x, interpolationX);
+						translateY[i].emplace_back((float)key.frame, key.translation.y, interpolationY);
+						translateZ[i].emplace_back((float)key.frame, key.translation.z, interpolationZ);
+						rotationX[i].emplace_back((float)key.frame, euler.x, interpolationRotation);
+						rotationY[i].emplace_back((float)key.frame, euler.y, interpolationRotation);
+						rotationZ[i].emplace_back((float)key.frame, euler.z, interpolationRotation);
 					}
 
 					for (auto& key : it.bone_key_frame)
@@ -178,12 +182,12 @@ namespace octoon
 
 						auto euler = math::eulerAngles(key.quaternion);
 
-						translateX[index].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
-						translateY[index].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
-						translateZ[index].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						rotationX[index].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
-						rotationY[index].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
-						rotationZ[index].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
+						translateX[index].emplace_back((float)key.frame, key.translation.x, interpolationX);
+						translateY[index].emplace_back((float)key.frame, key.translation.y, interpolationY);
+						translateZ[index].emplace_back((float)key.frame, key.translation.z, interpolationZ);
+						rotationX[index].emplace_back((float)key.frame, euler.x, interpolationRotation);
+						rotationY[index].emplace_back((float)key.frame, euler.y, interpolationRotation);
+						rotationZ[index].emplace_back((float)key.frame, euler.z, interpolationRotation);
 					}
 
 					AnimationClips<float> clips(it.bone_init_frame.size());
@@ -219,7 +223,10 @@ namespace octoon
 
 				auto camera = this->createCamera(pmm);
 				if (camera)
-					objects_.emplace_back(std::move(camera));
+				{
+					objects_.emplace_back(camera);
+					camera_ = camera;
+				}
 
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
@@ -276,6 +283,42 @@ namespace octoon
 		}
 
 		void
+		ProjectController::renderVideo(const runtime::any& data) noexcept
+		{
+			std::string::value_type filepath[PATHLIMIT];
+			std::memset(filepath, 0, sizeof(filepath));
+
+			if (!showFileSaveBrowse(filepath, PATHLIMIT, g_SupportedVideo[0]))
+				return;
+
+			if (camera_)
+			{
+				for (auto& it : objects_)
+				{
+					auto animation = it->getComponent<AnimationComponent>();
+					if (animation)
+					{
+						animation->setTimeStep(CLOCKS_PER_SEC * 20);
+						animation->setTimeInterval(CLOCKS_PER_SEC);
+						animation->play();
+					}
+
+					auto animator = it->getComponent<AnimatorComponent>();
+					if (animator)
+					{
+						animator->setTimeStep(CLOCKS_PER_SEC * 20);
+						animator->setTimeInterval(CLOCKS_PER_SEC);
+						animator->play();
+					}
+				}
+
+				auto h264 = camera_->getComponent<H264Component>();
+				h264->setTimeStep(CLOCKS_PER_SEC * 20);
+				h264->capture(std::make_shared<std::ofstream>(filepath, io::ios_base::binary));
+			}
+		}
+
+		void
 		ProjectController::renderPicture(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
@@ -283,10 +326,6 @@ namespace octoon
 
 			if (!showFileSaveBrowse(filepath, PATHLIMIT, g_SupportedImage[0]))
 				return;
-
-			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
-			if (feature)
-				feature->saveToFile(filepath);
 		}
 
 		void 
@@ -307,11 +346,19 @@ namespace octoon
 				{
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
+					{
+						animation->setTimeStep(CLOCKS_PER_SEC / 30.0f);
+						animation->setTimeInterval(CLOCKS_PER_SEC);
 						animation->play();
+					}
 
 					auto animator = it->getComponent<AnimatorComponent>();
 					if (animator)
+					{
+						animator->setTimeStep(CLOCKS_PER_SEC / 30.0f);
+						animator->setTimeInterval(CLOCKS_PER_SEC);
 						animator->play();
+					}
 				}
 			}
 			else
@@ -356,14 +403,14 @@ namespace octoon
 				auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0] / 255.0f, it.interpolation_rotation[1] / 255.0f, it.interpolation_rotation[2] / 255.0f, it.interpolation_rotation[3] / 255.0f);
 				auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0] / 255.0f, it.interpolation_angleview[1] / 255.0f, it.interpolation_angleview[2] / 255.0f, it.interpolation_angleview[3] / 255.0f);
 
-				distance.emplace_back((float)it.frame / 30.0f, it.distance, interpolationDistance);
-				eyeX.emplace_back((float)it.frame / 30.0f, it.eye.x, interpolationX);
-				eyeY.emplace_back((float)it.frame / 30.0f, it.eye.y, interpolationY);
-				eyeZ.emplace_back((float)it.frame / 30.0f, it.eye.z, interpolationZ);
-				rotationX.emplace_back((float)it.frame / 30.0f, it.rotation.x, interpolationRotation);
-				rotationY.emplace_back((float)it.frame / 30.0f, it.rotation.y, interpolationRotation);
-				rotationZ.emplace_back((float)it.frame / 30.0f, it.rotation.z, interpolationRotation);
-				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov * 2.0f, interpolationAngleView);
+				distance.emplace_back((float)it.frame, it.distance, interpolationDistance);
+				eyeX.emplace_back((float)it.frame, it.eye.x, interpolationX);
+				eyeY.emplace_back((float)it.frame, it.eye.y, interpolationY);
+				eyeZ.emplace_back((float)it.frame, it.eye.z, interpolationZ);
+				rotationX.emplace_back((float)it.frame, it.rotation.x, interpolationRotation);
+				rotationY.emplace_back((float)it.frame, it.rotation.y, interpolationRotation);
+				rotationZ.emplace_back((float)it.frame, it.rotation.z, interpolationRotation);
+				fov.emplace_back((float)it.frame, (float)it.fov * 2.0f, interpolationAngleView);
 			}
 
 			AnimationClip<float> clip;
@@ -383,6 +430,7 @@ namespace octoon
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_keyframes[0].eye);
 			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera_keyframes[0].rotation), math::float3::Forward) * pmm.camera_keyframes[0].distance);
 			obj->addComponent<OfflineCameraComponent>();
+			obj->addComponent<H264Component>(obj);
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);

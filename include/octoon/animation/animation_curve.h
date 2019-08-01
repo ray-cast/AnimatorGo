@@ -37,24 +37,28 @@ namespace octoon
 			{
 				frames = std::move(frames_);
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+				key = frames.front();
 			}
 
 			void assign(const Keyframes& frames_) noexcept
 			{
 				frames = frames_;
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+				key = frames.front();
 			}
 
 			void insert(Keyframe<_Elem, _Time>&& frame_) noexcept
 			{
 				frames.emplace_back(std::move(frame_));
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+				key = frames.front();
 			}
 
 			void insert(const Keyframe<_Elem, _Time>& frame_) noexcept
 			{
 				frames.emplace_back(frame_);
 				std::sort(frames.begin(), frames.end(), [](const Keyframe<_Elem, _Time>& a, const Keyframe<_Elem, _Time>& b) { return a.time < b.time; });
+				key = frames.front();
 			}
 
 			bool empty() const noexcept

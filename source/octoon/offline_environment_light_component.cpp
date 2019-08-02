@@ -26,7 +26,7 @@ namespace octoon
 		{
 			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
 
-			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
@@ -46,7 +46,7 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::onActivate() noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
@@ -68,7 +68,7 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::onDeactivate() noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprLight_)
 			rprSceneDetachLight(feature->getScene(), this->rprLight_);
 

@@ -116,6 +116,18 @@ namespace octoon
 		return gameObject_;
 	}
 
+	GameScene*
+	GameComponent::getGameScene() noexcept
+	{
+		return gameObject_ ? gameObject_->getGameScene() : nullptr;
+	}
+
+	const GameScene*
+	GameComponent::getGameScene() const noexcept
+	{
+		return gameObject_ ? gameObject_->getGameScene() : nullptr;
+	}
+
 	void
 	GameComponent::setActive(bool active) except
 	{

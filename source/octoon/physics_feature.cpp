@@ -86,7 +86,7 @@ namespace octoon
 				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
 				time_ -= timeStep_;
 			}
-		}		
+		}
     }
 
 	std::shared_ptr<physics::PhysicsContext>

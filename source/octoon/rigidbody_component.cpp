@@ -154,7 +154,7 @@ namespace octoon
         this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FrameEnd);
 
-		auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
+		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		auto physicsContext = physicsFeature->getContext();
 		rigidbody_ = physicsContext->createRigidbody(physics::PhysicsRigidbodyDesc());
 

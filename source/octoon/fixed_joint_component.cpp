@@ -59,7 +59,7 @@ namespace octoon
 	{
 		if (!thisBody.expired() && !connectedBody.expired())
 		{
-			auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
+			auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 			auto physicsContext = physicsFeature->getContext();
 			joint = physicsContext->createFixedJoint(thisBody.lock()->getRigidbody(), connectedBody.lock()->getRigidbody());
 		}

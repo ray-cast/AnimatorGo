@@ -114,7 +114,7 @@ namespace octoon
 	{
 		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
 
-		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		rprContextCreateScene(rprContext_, &rprScene_);
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
 		rprContextCreatePostEffect(rprContext_, RPR_POST_EFFECT_WAVELET_DENOISER, &rprDenoise_);

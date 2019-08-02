@@ -59,7 +59,7 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
 			rprSceneDetachShape(feature->getScene(), this->rprShape_);
 
@@ -89,7 +89,7 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			rprShapeSetTransform(this->rprShape_, false, transform->getTransform().ptr());
 
-			auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
@@ -118,7 +118,7 @@ namespace octoon
 	void
 	OfflineMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			if (!this->rprMaterial_)

@@ -114,10 +114,10 @@ namespace octoon
 	{
 		float step = speed_;
 #if OCTOON_FEATURE_TIMER_ENABLE
-		step *= this->getGameObject()->getGameScene()->getFeature<TimerFeature>()->delta();
+		step *= this->getGameScene()->getFeature<TimerFeature>()->delta();
 #endif
 
-		auto inputFeature = this->getGameObject()->getGameScene()->getFeature<InputFeature>();
+		auto inputFeature = this->getGameScene()->getFeature<InputFeature>();
 		if (inputFeature)
 		{
 			auto input = inputFeature->getInput();

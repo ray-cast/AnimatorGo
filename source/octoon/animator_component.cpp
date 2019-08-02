@@ -167,7 +167,7 @@ namespace octoon
 	void
 	AnimatorComponent::onFrameBegin() noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<TimerFeature>();
+		auto feature = this->getGameScene()->getFeature<TimerFeature>();
 		if (feature)
 		{
 			time_ += feature->delta() * CLOCKS_PER_SEC;

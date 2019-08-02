@@ -70,7 +70,7 @@ namespace octoon
 	{
 		if (camera_->getFramebuffer())
 			return camera_->getFramebuffer();
-		auto feature = this->getGameObject()->getGameScene()->getFeature<VideoFeature>();
+		auto feature = this->getGameScene()->getFeature<VideoFeature>();
 		if (feature)
 			return feature->getFramebuffer();
 		return nullptr;

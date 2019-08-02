@@ -88,10 +88,10 @@ namespace octoon
 	{
 		float step = speed_;
 #if OCTOON_FEATURE_TIMER_ENABLE
-		step *= this->getGameObject()->getGameScene()->getFeature<TimerFeature>()->delta();
+		step *= this->getGameScene()->getFeature<TimerFeature>()->delta();
 #endif
 
-		auto inputFeature = this->getGameObject()->getGameScene()->getFeature<InputFeature>();
+		auto inputFeature = this->getGameScene()->getFeature<InputFeature>();
 		if (inputFeature)
 		{
 			auto input = inputFeature->getInput();
@@ -123,26 +123,26 @@ namespace octoon
 	void
 	EditorCameraComponent::upCamera(float speed) noexcept
 	{
-		this->getGameObject()->getComponent<TransformComponent>()->up(speed);
+		this->getComponent<TransformComponent>()->up(speed);
 	}
 
 	void
 	EditorCameraComponent::yawCamera(float speed) noexcept
 	{
-		this->getGameObject()->getComponent<TransformComponent>()->yaw(speed);
+		this->getComponent<TransformComponent>()->yaw(speed);
 	}
 
 	void
 	EditorCameraComponent::moveCamera(float speed) noexcept
 	{
-		this->getGameObject()->getComponent<TransformComponent>()->move(speed);
+		this->getComponent<TransformComponent>()->move(speed);
 	}
 
 	void
 	EditorCameraComponent::rotateCamera(float angle, const math::float3& axis) noexcept
 	{
 		math::Quaternion quat(axis, math::radians(angle));
-		this->getGameObject()->getComponent<TransformComponent>()->setLocalQuaternionAccum(quat);
+		this->getComponent<TransformComponent>()->setLocalQuaternionAccum(quat);
 	}
 
 	void
@@ -151,7 +151,7 @@ namespace octoon
 		float angleY = axisX * sensitivityX_;
 		float angleX = axisY * sensitivityY_;
 
-		auto transform = this->getGameObject()->getComponent<TransformComponent>();
+		auto transform = this->getComponent<TransformComponent>();
 		math::float3 euler(math::eulerAngles(transform->getLocalQuaternion()));
 
 		float angle = angleX + math::degress(euler.x);

@@ -48,7 +48,7 @@ namespace octoon
     void
 	SphereColliderComponent::onActivate() except
     {
-		auto physicsFeature = this->getGameObject()->getGameScene()->getFeature<PhysicsFeature>();
+		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		auto physicsContext = physicsFeature->getContext();
 		physics::PhysicsSphereShapeDesc sphereDesc;
 		sphereDesc.radius = radius_;

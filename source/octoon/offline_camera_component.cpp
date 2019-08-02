@@ -181,7 +181,7 @@ namespace octoon
 	hal::GraphicsFramebufferPtr
 	OfflineCameraComponent::getFramebuffer() const noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 			return feature->getFramebuffer();
 		return nullptr;
@@ -206,7 +206,7 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			rpr_image_format imageFormat = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
@@ -242,7 +242,7 @@ namespace octoon
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && feature->getScene())
 		{
 			rprSceneSetCamera(feature->getScene(), nullptr);
@@ -290,7 +290,7 @@ namespace octoon
 	void
 	OfflineCameraComponent::onFrameDirty() noexcept
 	{
-		auto feature = this->getGameObject()->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 			feature->setFramebufferDirty(true);
 	}

@@ -19,17 +19,26 @@ namespace octoon
 		void setBones(GameObjects&& bones) noexcept;
 		void setBones(const GameObjects& bones) noexcept;
 		const GameObjects& getBones() const noexcept;
+		
+		void setTranslate(const math::float3& translate) noexcept;
+		void setLocalTranslate(const math::float3& translate) noexcept;
+
+		void setQuaternion(const math::Quaternion& quat) noexcept;
+		void setLocalQuaternion(const math::Quaternion& quat) noexcept;
+
+		const math::float3& getTranslate() const noexcept;
+		const math::float3& getLocalTranslate() const noexcept;
+
+		const math::Quaternion& getQuaternion() const noexcept;
+		const math::Quaternion& getLocalQuaternion() const noexcept;
+
+		math::float3 getDeltaTranslate(bool useLocal) const noexcept;
+		math::Quaternion getDeltaRotation(bool useLocal) const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
-		void solve() noexcept;
-
 	private:
-		void onActivate() noexcept override;
-
-	private:
-		math::float3 deltaTranslate(bool useLocal) noexcept;
-		math::Quaternion deltaRotation(bool useLocal) noexcept;
+		void onAttach() noexcept override;
 
 	private:
 		RotationLinkComponent(const RotationLinkComponent&) = delete;

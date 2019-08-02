@@ -42,8 +42,8 @@ namespace octoon
 		void onFrameEnd() noexcept override;
 
 	private:
-		void evaluate() noexcept;
-		void evaluate2() noexcept;
+		void evaluateIK() noexcept;
+		void evaluateRotationLink() noexcept;
 
 	private:
 		CCDSolverComponent(const CCDSolverComponent&) = delete;

@@ -1,5 +1,4 @@
 #include <octoon/rotation_link_component.h>
-#include <octoon/rotation_link_limit_component.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -66,54 +65,55 @@ namespace octoon
 	}
 
 	void
-	RotationLinkComponent::onActivate() noexcept
+	RotationLinkComponent::setTranslate(const math::float3& translate) noexcept
 	{
-		auto transform = this->getComponent<TransformComponent>();
-		translate_ = transform->getTranslate();
-		rotation_ = transform->getQuaternion();
-		localTranslate_ = transform->getLocalTranslate();
-		localRotation_ = transform->getLocalQuaternion();
+		this->translate_ = translate;
 	}
 
 	void
-	RotationLinkComponent::solve() noexcept
+	RotationLinkComponent::setLocalTranslate(const math::float3& translate) noexcept
 	{
-		if (bones_.empty())
-			return;
+		this->localTranslate_ = translate;
+	}
 
-		for (auto& bone : bones_)
-		{
-			auto transform = bone->getComponent<TransformComponent>();
-			auto rotationLimit = transform->getComponent<RotationLinkLimitComponent>();
+	void
+	RotationLinkComponent::setQuaternion(const math::Quaternion& quat) noexcept
+	{
+		this->rotation_ = quat;
+	}
 
-			auto additiveTranslate = this->deltaTranslate(rotationLimit->getAdditiveUseLocal());
-			if (rotationLimit->getAdditiveMoveRatio() != 0.0f)
-			{
-				transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
-			}
+	void
+	RotationLinkComponent::setLocalQuaternion(const math::Quaternion& quat) noexcept
+	{
+		this->localRotation_ = quat;
+	}
 
-			if (rotationLimit->getAdditiveRotationRatio() != 0.0)
-			{
-				auto additiveRotation = this->deltaRotation(rotationLimit->getAdditiveUseLocal());
-				if (!math::equal(additiveRotation, math::Quaternion::Zero))
-				{
-					if (rotationLimit->getAdditiveRotationRatio() > 0.0)
-					{
-						auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
-						transform->setLocalQuaternionAccum(rotation);
-					}
-					else if (rotationLimit->getAdditiveRotationRatio() < 0.0)
-					{
-						auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
-						transform->setLocalQuaternionAccum(rotation);
-					}
-				}
-			}
-		}
+	const math::float3&
+	RotationLinkComponent::getTranslate() const noexcept
+	{
+		return this->translate_;
+	}
+
+	const math::float3&
+	RotationLinkComponent::getLocalTranslate() const noexcept
+	{
+		return this->localTranslate_;
+	}
+
+	const math::Quaternion&
+	RotationLinkComponent::getQuaternion() const noexcept
+	{
+		return this->rotation_;
+	}
+
+	const math::Quaternion&
+	RotationLinkComponent::getLocalQuaternion() const noexcept
+	{
+		return this->localRotation_;
 	}
 
 	math::float3
-	RotationLinkComponent::deltaTranslate(bool useLocal) noexcept
+	RotationLinkComponent::getDeltaTranslate(bool useLocal) const noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
 		return useLocal ?
@@ -122,11 +122,21 @@ namespace octoon
 	}
 
 	math::Quaternion
-	RotationLinkComponent::deltaRotation(bool useLocal) noexcept
+	RotationLinkComponent::getDeltaRotation(bool useLocal) const noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
 		return useLocal ?
 			math::inverse(localRotation_) * transform->getLocalQuaternion() :
 			math::inverse(rotation_) * transform->getQuaternion();
+	}
+
+	void
+	RotationLinkComponent::onAttach() noexcept
+	{
+		auto transform = this->getComponent<TransformComponent>();
+		translate_ = transform->getTranslate();
+		rotation_ = transform->getQuaternion();
+		localTranslate_ = transform->getLocalTranslate();
+		localRotation_ = transform->getLocalQuaternion();
 	}
 }

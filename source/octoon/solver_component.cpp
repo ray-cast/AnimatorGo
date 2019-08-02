@@ -4,6 +4,7 @@
 #include <octoon/timer_feature.h>
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
+#include <octoon/rotation_link_limit_component.h>
 
 namespace octoon
 {
@@ -151,21 +152,21 @@ namespace octoon
 
 				if (time_ > timeStep_)
 				{
-					this->evaluate();
-					this->evaluate2();
+					this->evaluateIK();
+					this->evaluateRotationLink();
 					time_ = 0;
 				}
 			}
 		}
 		else
 		{
-			this->evaluate();
-			this->evaluate2();
+			this->evaluateIK();
+			this->evaluateRotationLink();
 		}
 	}
 
 	void
-	CCDSolverComponent::evaluate() noexcept
+	CCDSolverComponent::evaluateIK() noexcept
 	{
 		if (!this->getTarget())
 			return;
@@ -220,13 +221,43 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::evaluate2() noexcept
+	CCDSolverComponent::evaluateRotationLink() noexcept
 	{
-		for (auto& bone : bones_)
+		for (auto& it : bones_)
 		{
-			auto boneController = bone->getComponent<RotationLinkComponent>();
-			if (boneController)
-				boneController->solve();
+			auto link = it->getComponent<RotationLinkComponent>();
+			if (link)
+			{
+				for (auto& bone : link->getBones())
+				{
+					auto transform = bone->getComponent<TransformComponent>();
+					auto rotationLimit = transform->getComponent<RotationLinkLimitComponent>();
+
+					auto additiveTranslate = link->getDeltaTranslate(rotationLimit->getAdditiveUseLocal());
+					if (rotationLimit->getAdditiveMoveRatio() != 0.0f)
+					{
+						transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
+					}
+
+					if (rotationLimit->getAdditiveRotationRatio() != 0.0)
+					{
+						auto additiveRotation = link->getDeltaRotation(rotationLimit->getAdditiveUseLocal());
+						if (!math::equal(additiveRotation, math::Quaternion::Zero))
+						{
+							if (rotationLimit->getAdditiveRotationRatio() > 0.0)
+							{
+								auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
+								transform->setLocalQuaternionAccum(rotation);
+							}
+							else if (rotationLimit->getAdditiveRotationRatio() < 0.0)
+							{
+								auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
+								transform->setLocalQuaternionAccum(rotation);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

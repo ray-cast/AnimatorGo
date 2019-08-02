@@ -79,17 +79,17 @@ namespace octoon
 
 		void PhysxRigidbody::setDynamicFriction(float f)
 		{
-			if (shape)
+			if (shape_)
 			{
-				shape->getPxMaterial()->setDynamicFriction(f);
+				shape_->getPxMaterial()->setDynamicFriction(f);
 			}
 		}
 
 		float PhysxRigidbody::getDynamicFriction() const
 		{
-			if (shape)
+			if (shape_)
 			{
-				return shape->getPxMaterial()->getDynamicFriction();
+				return shape_->getPxMaterial()->getDynamicFriction();
 			}
 			else
 			{
@@ -99,17 +99,17 @@ namespace octoon
 
 		void PhysxRigidbody::setStaticFriction(float f)
 		{
-			if (shape)
+			if (shape_)
 			{
-				shape->getPxMaterial()->setStaticFriction(f);
+				shape_->getPxMaterial()->setStaticFriction(f);
 			}
 		}
 
 		float PhysxRigidbody::getStaticFriction() const
 		{
-			if (shape)
+			if (shape_)
 			{
-				return shape->getPxMaterial()->getStaticFriction();
+				return shape_->getPxMaterial()->getStaticFriction();
 			}
 			else
 			{
@@ -119,17 +119,17 @@ namespace octoon
 
 		void PhysxRigidbody::setRestitution(float f)
 		{
-			if (shape)
+			if (shape_)
 			{
-				shape->getPxMaterial()->setRestitution(f);
+				shape_->getPxMaterial()->setRestitution(f);
 			}
 		}
 
 		float PhysxRigidbody::getRestitution() const
 		{
-			if (shape)
+			if (shape_)
 			{
-				return shape->getPxMaterial()->getRestitution();
+				return shape_->getPxMaterial()->getRestitution();
 			}
 			else
 			{
@@ -137,15 +137,16 @@ namespace octoon
 			}
 		}
 
-		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shapeAdded)
+		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 		{
-			shape = std::dynamic_pointer_cast<PhysxShape>(shapeAdded);
-			px_rigidbody->attachShape(*shape->getPxShape());
+			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
+			px_rigidbody->attachShape(*pxshape->getPxShape());
 		}
 
-		void PhysxRigidbody::detachShape()
+		void PhysxRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
 		{
-			px_rigidbody->detachShape(*shape->getPxShape());
+			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
+			px_rigidbody->detachShape(*pxshape->getPxShape());
 			shape.reset();
 			shape = nullptr;
 		}

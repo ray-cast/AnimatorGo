@@ -32,8 +32,8 @@ namespace octoon
 			virtual void setRestitution(float f) override;
 			virtual float getRestitution() const override;
 
-			virtual void attachShape(std::shared_ptr<PhysicsShape> shapeAdded) override;
-			virtual void detachShape() override;
+			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) override;
+			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) override;
 
 			physx::PxRigidActor* getPxRigidbody();
 
@@ -44,7 +44,7 @@ namespace octoon
 			PhysxContext* context;
 			physx::PxRigidActor* px_rigidbody;
 
-			std::shared_ptr<PhysxShape> shape;
+			std::shared_ptr<PhysxShape> shape_;
 		};
 	}
 }

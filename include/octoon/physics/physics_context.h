@@ -5,7 +5,7 @@
 
 #include <octoon/physics/physics_scene.h>
 #include <octoon/physics/physics_rigidbody.h>
-
+#include <octoon/physics/physics_box_shape.h>
 #include <octoon/physics/physics_type.h>
 
 namespace octoon
@@ -27,7 +27,8 @@ namespace octoon
 
 			virtual std::shared_ptr<PhysicsScene> createScene(PhysicsSceneDesc desc) = 0;
 			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody(PhysicsRigidbodyDesc desc) = 0;
-			virtual std::shared_ptr<PhysicsSphereShape> createShape(PhysicsSphereShapeDesc desc) = 0;
+			virtual std::shared_ptr<PhysicsSphereShape> createSphereShape(PhysicsSphereShapeDesc desc) = 0;
+			virtual std::shared_ptr<PhysicsBoxShape> createBoxShape(PhysicsBoxShapeDesc desc) = 0;
 			virtual std::shared_ptr<PhysicsFixedJoint> createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 			virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 

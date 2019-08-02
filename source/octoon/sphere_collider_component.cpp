@@ -22,13 +22,6 @@ namespace octoon
 
     SphereColliderComponent::~SphereColliderComponent()
     {
-
-    }
-
-    GameComponentPtr
-	SphereColliderComponent::clone() const noexcept
-    {
-        return std::make_shared<SphereColliderComponent>();
     }
 
     void
@@ -45,14 +38,31 @@ namespace octoon
 		return this->radius_;
     }
 
+	std::shared_ptr<physics::PhysicsShape>
+	SphereColliderComponent::getShape() noexcept
+	{
+		return this->shape_;
+	}
+
+	GameComponentPtr
+	SphereColliderComponent::clone() const noexcept
+	{
+		auto instance = std::make_shared<SphereColliderComponent>();
+		instance->setName(this->getName());
+		instance->setRadius(this->getRadius());
+		return instance;
+	}
+
     void
 	SphereColliderComponent::onActivate() except
     {
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
-		auto physicsContext = physicsFeature->getContext();
-		physics::PhysicsSphereShapeDesc sphereDesc;
-		sphereDesc.radius = radius_;
-		shape_ = physicsContext->createShape(sphereDesc);
+		if (physicsFeature)
+		{
+			physics::PhysicsSphereShapeDesc sphereDesc;
+			sphereDesc.radius = radius_;
+			shape_ = physicsFeature->getContext()->createSphereShape(sphereDesc);
+		}
     }
 
     void
@@ -60,31 +70,5 @@ namespace octoon
     {
 		shape_.reset();
 		shape_ = nullptr;
-    }
-
-    void
-	SphereColliderComponent::onAttachComponent(const GameComponentPtr& component) except
-    {
-		/*if (!shape_) return;
-
-		if (component->isA<RigidbodyComponent>())
-		{
-			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
-			if (rigidbody)
-				rigidbody->getRigidbody()->attachShape(shape_);
-		}*/
-    }
-
-    void 
-	SphereColliderComponent::onDetachComponent(const GameComponentPtr& component) noexcept
-    {
-		/*if (!shape_) return;
-
-		if (component->isA<RigidbodyComponent>())
-		{
-			auto rigidbody = component->downcast_pointer<RigidbodyComponent>();
-			if (rigidbody)
-				rigidbody->getRigidbody()->detachShape(); // decrements reference count
-		}*/
     }
 }

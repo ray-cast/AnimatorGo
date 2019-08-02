@@ -65,7 +65,7 @@ namespace octoon
 		return camera_->getClearFlags();
 	}
 
-	const hal::GraphicsFramebufferPtr&
+	hal::GraphicsFramebufferPtr
 	CameraComponent::getFramebuffer() const noexcept
 	{
 		if (camera_->getFramebuffer())
@@ -74,12 +74,6 @@ namespace octoon
 		if (feature)
 			return feature->getFramebuffer();
 		return nullptr;
-	}
-
-	const hal::GraphicsFramebufferPtr&
-	CameraComponent::getSwapFramebuffer() const noexcept
-	{
-		return camera_->getSwapFramebuffer();
 	}
 
 	math::float3

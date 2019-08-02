@@ -241,6 +241,15 @@ namespace Baikal
         return m_transform;
     }
 
+	inline void Shape::SetShadow(bool shadow)
+	{
+	}
+
+	inline bool Shape::GetShadow() const
+	{
+		return true;
+	}
+
     inline void Shape::SetVisibilityMask(std::uint32_t mask)
     {
         m_visibility_mask = mask;

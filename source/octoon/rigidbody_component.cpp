@@ -188,23 +188,23 @@ namespace octoon
 	void 
 	RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
     {
-		//if (component->isA<Collider>())
-		//{
-		//	auto collider = component->downcast_pointer<Collider>();
-		//	if (collider)
-		//		body->attachShape(*collider->getShape()); // increments reference count
-		//}
+		if (component->isA<ColliderComponent>())
+		{
+			auto collider = component->downcast_pointer<ColliderComponent>();
+			if (collider)
+				rigidbody_->attachShape(collider->getShape());
+		}
     }
 
     void 
 	RigidbodyComponent::onDetachComponent(const GameComponentPtr& component) noexcept
     {
-		//if (component->isA<Collider>())
-		//{
-		//	auto collider = component->downcast_pointer<Collider>();
-		//	if (collider)
-		//		body->detachShape(*collider->getShape()); // decrements reference count
-		//}
+		if (component->isA<ColliderComponent>())
+		{
+			auto collider = component->downcast_pointer<ColliderComponent>();
+			if (collider)
+				rigidbody_->detachShape(collider->getShape());
+		}
     }
 
 	void 

@@ -1,16 +1,16 @@
-#ifndef OCTOON_OFFLINE_DIRECTIONAL_LIGHT_COMPONENT_H_
-#define OCTOON_OFFLINE_DIRECTIONAL_LIGHT_COMPONENT_H_
+#ifndef OCTOON_OFFLINE_POINT_LIGHT_COMPONENT_H_
+#define OCTOON_OFFLINE_POINT_LIGHT_COMPONENT_H_
 
 #include <octoon/offline_light_component.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT OfflineDirectionalLightComponent final : public OfflineLightComponent
+	class OCTOON_EXPORT OfflinePointLightComponent final : public OfflineLightComponent
 	{
 		OctoonDeclareSubInterface(OfflineLightComponent, OfflineLightComponent)
 	public:
-		OfflineDirectionalLightComponent() noexcept;
-		virtual ~OfflineDirectionalLightComponent() noexcept;
+		OfflinePointLightComponent() noexcept;
+		virtual ~OfflinePointLightComponent() noexcept;
 
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
@@ -26,11 +26,12 @@ namespace octoon
 		void onLayerChangeAfter() noexcept override;
 
 	private:
-		OfflineDirectionalLightComponent(const OfflineDirectionalLightComponent&) = delete;
-		OfflineDirectionalLightComponent& operator=(const OfflineDirectionalLightComponent&) = delete;
+		OfflinePointLightComponent(const OfflinePointLightComponent&) = delete;
+		OfflinePointLightComponent& operator=(const OfflinePointLightComponent&) = delete;
 
 	private:
 		void* rprLight_;
+
 		math::float3 color_;
 	};
 }

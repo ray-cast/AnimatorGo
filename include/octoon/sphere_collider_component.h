@@ -17,14 +17,13 @@ namespace octoon
 		void setRadius(float r) noexcept;
 		float getRadius() const noexcept;
 
+		std::shared_ptr<physics::PhysicsShape> getShape() noexcept override;
+
 		GameComponentPtr clone() const noexcept;
 
 	private:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
-
-		void onAttachComponent(const GameComponentPtr& component) except override;
-		void onDetachComponent(const GameComponentPtr& component) noexcept override;
 
 	private:
 		float radius_;

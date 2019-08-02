@@ -1,4 +1,4 @@
-#include <octoon/offline_directional_light_component.h>
+#include <octoon/offline_spot_light_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
@@ -6,20 +6,22 @@
 
 namespace octoon
 {
-	OctoonImplementSubInterface(OfflineDirectionalLightComponent, OfflineLightComponent, "OfflineDirectionalLight")
+	OctoonImplementSubInterface(OfflineSpotLightComponent, OfflineLightComponent, "OfflineSpotLight")
 
-	OfflineDirectionalLightComponent::OfflineDirectionalLightComponent() noexcept
+	OfflineSpotLightComponent::OfflineSpotLightComponent() noexcept
 		: rprLight_(nullptr)
 		, color_(math::float3::One)
+		, innerAngle_(30.0f)
+		, outerAngle_(60.0f)
 	{
 	}
 
-	OfflineDirectionalLightComponent::~OfflineDirectionalLightComponent() noexcept
+	OfflineSpotLightComponent::~OfflineSpotLightComponent() noexcept
 	{
 	}
 
 	void
-	OfflineDirectionalLightComponent::setIntensity(float value) noexcept
+	OfflineSpotLightComponent::setIntensity(float value) noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -34,7 +36,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::setColor(const math::float3& value) noexcept
+	OfflineSpotLightComponent::setColor(const math::float3& value) noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -50,17 +52,67 @@ namespace octoon
 		OfflineLightComponent::setColor(value);
 	}
 
-	GameComponentPtr
-	OfflineDirectionalLightComponent::clone() const noexcept
+	void
+	OfflineSpotLightComponent::setInnerAngle(float value) noexcept
 	{
-		auto instance = std::make_shared<OfflineDirectionalLightComponent>();
+		if (innerAngle_ != value)
+		{
+			if (this->rprLight_)
+			{
+				rprSpotLightSetConeShape(this->rprLight_, value, outerAngle_);
+
+				auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+
+			}
+
+			innerAngle_ = value;
+		}
+	}
+
+	void 
+	OfflineSpotLightComponent::setOuterAngle(float value) noexcept
+	{
+		if (outerAngle_ != value)
+		{
+			if (this->rprLight_)
+			{
+				rprSpotLightSetConeShape(this->rprLight_, innerAngle_, value);
+
+				auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+
+			}
+
+			outerAngle_ = value;
+		}
+	}
+
+	float
+	OfflineSpotLightComponent::getInnerAngle() const noexcept
+	{
+		return innerAngle_;
+	}
+
+	float
+	OfflineSpotLightComponent::getOuterAngle() const noexcept
+	{
+		return outerAngle_;
+	}
+
+	GameComponentPtr
+	OfflineSpotLightComponent::clone() const noexcept
+	{
+		auto instance = std::make_shared<OfflineSpotLightComponent>();
 		instance->setName(this->getName());
 
 		return instance;
 	}
 
 	void
-	OfflineDirectionalLightComponent::onActivate() noexcept
+	OfflineSpotLightComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
@@ -69,9 +121,11 @@ namespace octoon
 		{
 			auto transform = this->getComponent<TransformComponent>();
 
-			if (RPR_SUCCESS != rprContextCreateDirectionalLight(feature->getContext(), &this->rprLight_))
+			if (RPR_SUCCESS != rprContextCreateSpotLight(feature->getContext(), &this->rprLight_))
 				return;
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
+			if (RPR_SUCCESS != rprSpotLightSetConeShape(this->rprLight_, innerAngle_, outerAngle_))
+				return;
+			if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
 				return;
 			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
 				return;
@@ -81,7 +135,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onDeactivate() noexcept
+	OfflineSpotLightComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
@@ -97,7 +151,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onMoveAfter() noexcept
+	OfflineSpotLightComponent::onMoveAfter() noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -111,7 +165,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onLayerChangeAfter() noexcept
+	OfflineSpotLightComponent::onLayerChangeAfter() noexcept
 	{
 	}
 }

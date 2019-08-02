@@ -54,6 +54,12 @@ public:
     void SetTransform(const RadeonRays::matrix& m) { m_shape->SetTransform(m); };
     RadeonRays::matrix GetTransform() { return m_shape->GetTransform(); }
 
+	void SetShadow(bool enable) { m_shape->SetShadow(enable); };
+	bool GetShadow() const { return m_shape->GetShadow(); }
+
+	void SetVisibilityMask(uint32_t mask) { m_shape->SetVisibilityMask(mask); };
+	bool GetVisibilityMask() const { return m_shape->GetVisibilityMask(); }
+
     void SetMaterial(MaterialObject* mat);
     MaterialObject* GetMaterial() { return m_current_mat; }
     

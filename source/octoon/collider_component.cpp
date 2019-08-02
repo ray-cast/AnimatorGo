@@ -8,36 +8,22 @@ namespace octoon
 	{
 	}
 
-	ColliderComponent::~ColliderComponent()
+	ColliderComponent::~ColliderComponent() noexcept
 	{
 	}
-/*
+
 	void
-	Collider::OnCollisionEnter(Collision collision)
+	ColliderComponent::OnCollisionEnter() noexcept
 	{
 	}
+	
 	void
-	Collider::OnCollisionExit(Collision collision)
+	ColliderComponent::OnCollisionExit() noexcept
 	{
 	}
+
 	void
-	Collider::OnCollisionStay(Collision collision)
+	ColliderComponent::OnCollisionStay() noexcept
 	{
 	}
-	void
-	Collider::setSharedMaterial(PhysicsMaterial material) except
-	{
-		shared_material = std::make_shared<PhysicsMaterial>(material);
-		if (shape)
-		{
-			physx::PxMaterial * material_list = shared_material->getMaterial();
-			shape->setMaterials(&material_list, 1);
-		}
-	}
-	std::shared_ptr<PhysicsMaterial>
-	Collider::getSharedMaterial() except
-	{
-		return shared_material;
-	}
-	*/
 }

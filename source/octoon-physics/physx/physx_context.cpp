@@ -1,8 +1,7 @@
 #include "physx_context.h"
-
-
 #include "physx_rigidbody.h"
 #include "physx_shape.h"
+#include "physx_box_shape.h"
 #include "physx_sphere_shape.h"
 #include "physx_fixed_joint.h"
 #include "physx_configurable_joint.h"
@@ -77,7 +76,12 @@ namespace octoon
 			return std::make_shared<PhysxRigidbody>(this, desc);
 		}
 
-		std::shared_ptr<PhysicsSphereShape> PhysxContext::createShape(PhysicsSphereShapeDesc desc)
+		std::shared_ptr<PhysicsBoxShape> PhysxContext::createBoxShape(PhysicsBoxShapeDesc desc)
+		{
+			return std::make_shared<PhysxBoxShape>(this, desc.width, desc.height, desc.depth);
+		}
+
+		std::shared_ptr<PhysicsSphereShape> PhysxContext::createSphereShape(PhysicsSphereShapeDesc desc)
 		{
 			return std::make_shared<PhysxSphereShape>(this, desc.radius);
 		}

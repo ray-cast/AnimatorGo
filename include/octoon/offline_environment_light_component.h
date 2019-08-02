@@ -5,7 +5,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT OfflineEnvironmentLightComponent : public OfflineLightComponent
+	class OCTOON_EXPORT OfflineEnvironmentLightComponent final : public OfflineLightComponent
 	{
 		OctoonDeclareSubInterface(OfflineLightComponent, OfflineLightComponent)
 	public:

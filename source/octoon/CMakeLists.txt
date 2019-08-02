@@ -110,6 +110,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/collider_component.cpp
 	${HEADER_PATH}/sphere_collider_component.h
 	${SOURCE_PATH}/sphere_collider_component.cpp
+	${HEADER_PATH}/box_collider_component.h
+	${SOURCE_PATH}/box_collider_component.cpp
 
 	${HEADER_PATH}/joint_component.h
 	${SOURCE_PATH}/joint_component.cpp
@@ -151,6 +153,10 @@ SET(OFFLINE_FEATURES_LIST
 	${SOURCE_PATH}/offline_environment_light_component.cpp
 	${HEADER_PATH}/offline_directional_light_component.h
 	${SOURCE_PATH}/offline_directional_light_component.cpp
+	${HEADER_PATH}/offline_spot_light_component.h
+	${SOURCE_PATH}/offline_spot_light_component.cpp
+	${HEADER_PATH}/offline_point_light_component.h
+	${SOURCE_PATH}/offline_point_light_component.cpp
 	${HEADER_PATH}/offline_feature.h
 	${SOURCE_PATH}/offline_feature.cpp
 	${HEADER_PATH}/h264_component.h

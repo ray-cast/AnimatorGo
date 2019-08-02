@@ -350,7 +350,8 @@ namespace octoon
 			rprShapeSetShadow(this->rprShape_, true);
 			rprShapeSetShadowCatcher(this->rprShape_, true);
 			rprShapeSetVisibility(this->rprShape_, true);
-			rprShapeSetObjectGroupID(this->rprShape_, this->getGameObject()->getLayer());
+			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
+			rprShapeSetObjectGroupID(this->rprShape_, this->getGameObject()->id());
 			rprShapeSetMaterial(this->rprShape_, this->rprMaterial_);
 			rprShapeSetTransform(this->rprShape_, false, this->getComponent<TransformComponent>()->getTransform().ptr());
 

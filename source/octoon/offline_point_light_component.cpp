@@ -1,4 +1,4 @@
-#include <octoon/offline_directional_light_component.h>
+#include <octoon/offline_point_light_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
@@ -6,20 +6,20 @@
 
 namespace octoon
 {
-	OctoonImplementSubInterface(OfflineDirectionalLightComponent, OfflineLightComponent, "OfflineDirectionalLight")
+	OctoonImplementSubInterface(OfflinePointLightComponent, OfflineLightComponent, "OfflineSpotLight")
 
-	OfflineDirectionalLightComponent::OfflineDirectionalLightComponent() noexcept
+	OfflinePointLightComponent::OfflinePointLightComponent() noexcept
 		: rprLight_(nullptr)
 		, color_(math::float3::One)
 	{
 	}
 
-	OfflineDirectionalLightComponent::~OfflineDirectionalLightComponent() noexcept
+	OfflinePointLightComponent::~OfflinePointLightComponent() noexcept
 	{
 	}
 
 	void
-	OfflineDirectionalLightComponent::setIntensity(float value) noexcept
+	OfflinePointLightComponent::setIntensity(float value) noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -34,7 +34,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::setColor(const math::float3& value) noexcept
+	OfflinePointLightComponent::setColor(const math::float3& value) noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -51,16 +51,16 @@ namespace octoon
 	}
 
 	GameComponentPtr
-	OfflineDirectionalLightComponent::clone() const noexcept
+	OfflinePointLightComponent::clone() const noexcept
 	{
-		auto instance = std::make_shared<OfflineDirectionalLightComponent>();
+		auto instance = std::make_shared<OfflinePointLightComponent>();
 		instance->setName(this->getName());
 
 		return instance;
 	}
 
 	void
-	OfflineDirectionalLightComponent::onActivate() noexcept
+	OfflinePointLightComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
@@ -69,9 +69,9 @@ namespace octoon
 		{
 			auto transform = this->getComponent<TransformComponent>();
 
-			if (RPR_SUCCESS != rprContextCreateDirectionalLight(feature->getContext(), &this->rprLight_))
+			if (RPR_SUCCESS != rprContextCreatePointLight(feature->getContext(), &this->rprLight_))
 				return;
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
+			if (RPR_SUCCESS != rprPointLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
 				return;
 			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
 				return;
@@ -81,7 +81,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onDeactivate() noexcept
+	OfflinePointLightComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
@@ -97,7 +97,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onMoveAfter() noexcept
+	OfflinePointLightComponent::onMoveAfter() noexcept
 	{
 		if (this->rprLight_)
 		{
@@ -111,7 +111,7 @@ namespace octoon
 	}
 
 	void
-	OfflineDirectionalLightComponent::onLayerChangeAfter() noexcept
+	OfflinePointLightComponent::onLayerChangeAfter() noexcept
 	{
 	}
 }

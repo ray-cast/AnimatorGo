@@ -1159,9 +1159,15 @@ rpr_int rprShapeSetShadowCatcher(rpr_shape shape, rpr_bool shadowCatcher)
     UNSUPPORTED_FUNCTION
 }
 
-rpr_int rprShapeSetShadow(rpr_shape shape, rpr_bool casts_shadow)
+rpr_int rprShapeSetShadow(rpr_shape in_shape, rpr_bool casts_shadow)
 {
-    UNSUPPORTED_FUNCTION
+	ShapeObject* shape = WrapObject::Cast<ShapeObject>(in_shape);
+	if (!shape)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+	shape->SetShadow(casts_shadow);
+	return RPR_SUCCESS;
 }
 
 rpr_int rprLightSetTransform(rpr_light in_light, rpr_bool in_transpose, rpr_float const * in_transform)

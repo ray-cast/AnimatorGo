@@ -18,11 +18,7 @@ namespace octoon
 
 		virtual std::shared_ptr<RigidbodyComponent> getConnectedBody() = 0;
 		virtual void setConnectedBody(std::shared_ptr<RigidbodyComponent>) = 0;
-
-	protected:
-
-	protected:
 	};
 }
 
-#endif // OCTOON_JOINT_COMPONENT_H_
+#endif

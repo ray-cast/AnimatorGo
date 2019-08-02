@@ -51,8 +51,8 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onRenderObjectPre(const video::Camera& camera) noexcept override;
-		void onRenderObjectPost(const video::Camera& camera) noexcept override;
+		void onPreRender(const video::Camera& camera) noexcept override;
+		void onPostRender(const video::Camera& camera) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
 

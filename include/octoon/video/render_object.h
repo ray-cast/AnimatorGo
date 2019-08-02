@@ -13,8 +13,8 @@ namespace octoon
 			RenderListener() noexcept;
 			virtual ~RenderListener() noexcept;
 
-			virtual void onRenderObjectPre(const Camera& camera) noexcept = 0;
-			virtual void onRenderObjectPost(const Camera& camera) noexcept = 0;
+			virtual void onPreRender(const Camera& camera) noexcept = 0;
+			virtual void onPostRender(const Camera& camera) noexcept = 0;
 		};
 
 		class OCTOON_EXPORT RenderObject : public runtime::RttiInterface

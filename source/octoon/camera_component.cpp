@@ -203,12 +203,12 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::onRenderObjectPre(const video::Camera& camera) noexcept
+	CameraComponent::onPreRender(const video::Camera& camera) noexcept
 	{
 	}
 
 	void
-	CameraComponent::onRenderObjectPost(const video::Camera& camera) noexcept
+	CameraComponent::onPostRender(const video::Camera& camera) noexcept
 	{
 	}
 

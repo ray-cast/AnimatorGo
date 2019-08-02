@@ -156,7 +156,7 @@ namespace octoon
 		{
 			auto listener = this->getOwnerListener();
 			if (listener)
-				listener->onRenderObjectPre(camera);
+				listener->onPreRender(camera);
 		}
 
 		void
@@ -164,7 +164,7 @@ namespace octoon
 		{
 			auto listener = this->getOwnerListener();
 			if (listener)
-				listener->onRenderObjectPost(camera);
+				listener->onPostRender(camera);
 		}
 
 		void

@@ -351,12 +351,12 @@ namespace octoon
 		}
 
 		void
-		Light::onRenderObjectPre(const Camera& camera) noexcept
+		Light::onPreRender(const Camera& camera) noexcept
 		{
 		}
 
 		void
-		Light::onRenderObjectPost(const Camera& camera) noexcept
+		Light::onPostRender(const Camera& camera) noexcept
 		{
 		}
 

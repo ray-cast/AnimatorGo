@@ -109,8 +109,8 @@ namespace octoon
 			void onSceneChangeBefore() noexcept;
 			void onSceneChangeAfter() noexcept;
 			
-			void onRenderObjectPre(const Camera& camera) noexcept;
-			void onRenderObjectPost(const Camera& camera) noexcept;
+			void onPreRender(const Camera& camera) noexcept;
+			void onPostRender(const Camera& camera) noexcept;
 
 			void onMoveAfter() noexcept;
 

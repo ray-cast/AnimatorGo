@@ -166,6 +166,8 @@ namespace octoon
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
 			{
+				camera->onRenderBefore(*camera);
+
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
@@ -205,6 +207,8 @@ namespace octoon
 							context.draw(geometry->getNumVertices(), 1, 0, 0);
 					}
 				}
+
+				camera->onRenderAfter(*camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 				if (camera->getCameraType() == CameraType::Main)

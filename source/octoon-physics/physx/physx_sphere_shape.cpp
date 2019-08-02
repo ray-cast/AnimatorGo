@@ -58,9 +58,10 @@ namespace octoon
 				px_shape->setGeometry(geometry);
 			}
 		}
+
 		physx::PxShape * PhysxSphereShape::getPxShape()
 		{
-			return nullptr;
+			return px_shape;
 		}
 
 		physx::PxMaterial * PhysxSphereShape::getPxMaterial()

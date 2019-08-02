@@ -22,7 +22,7 @@ namespace octoon
 
     class OCTOON_EXPORT RigidbodyComponent final : public GameComponent
 	{
-	OctoonDeclareSubClass(RigidbodyComponent, GameComponent)
+		OctoonDeclareSubClass(RigidbodyComponent, GameComponent)
     public:
         RigidbodyComponent() noexcept;
 		RigidbodyComponent(bool type) noexcept;
@@ -56,13 +56,10 @@ namespace octoon
         virtual void onActivate() except override;
         virtual void onDeactivate() noexcept override;
 
-		virtual void onAttach() except override;
-		virtual void onDetach() noexcept override;
-
         virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
         virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
 
-		virtual void onFrameEnd() except override;
+		virtual void onFrameBegin() except override;
 
 		virtual void onMoveAfter() noexcept;
 

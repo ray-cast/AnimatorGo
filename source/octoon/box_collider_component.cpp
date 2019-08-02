@@ -17,6 +17,13 @@ namespace octoon
     {
     }
 
+	BoxColliderComponent::BoxColliderComponent(const math::float3& size) noexcept
+		: width_(size.x)
+		, height_(size.y)
+		, depth_(size.z)
+	{
+	}
+
 	BoxColliderComponent::BoxColliderComponent(float x, float y, float z) noexcept
 		: width_(x)
 		, height_(y)

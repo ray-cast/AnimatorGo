@@ -1,8 +1,7 @@
 #include "physx_box_shape.h"
+#include "physx_context.h"
 
 #include <octoon/runtime/except.h>
-
-#include "physx_context.h"
 
 #include <PxPhysicsAPI.h>
 
@@ -99,7 +98,7 @@ namespace octoon
 
 		physx::PxShape * PhysxBoxShape::getPxShape()
 		{
-			return nullptr;
+			return px_shape;
 		}
 
 		physx::PxMaterial * PhysxBoxShape::getPxMaterial()

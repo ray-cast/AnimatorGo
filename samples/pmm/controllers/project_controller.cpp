@@ -204,7 +204,7 @@ namespace octoon
 						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 					}
 
-					auto model = GamePrefabs::instance()->createOfflineModel(it.path);
+					auto model = GamePrefabs::instance()->createModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
@@ -218,7 +218,7 @@ namespace octoon
 				mainLight->addComponent<OfflineDirectionalLightComponent>();
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setIntensity(10.0f);
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
-				mainLight->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz)));
+				mainLight->getComponent<TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 				objects_.push_back(mainLight);
 
 				auto camera = this->createCamera(pmm);
@@ -427,13 +427,13 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			obj->addComponent<AnimationComponent>(clip);
+			//obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
-			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(pmm.camera_keyframes[0].rotation));
-			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera_keyframes[0].eye);
-			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera_keyframes[0].rotation), math::float3::Forward) * pmm.camera_keyframes[0].distance);
-			obj->addComponent<OfflineCameraComponent>();
-			obj->addComponent<H264Component>(obj);
+			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
+			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
+			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
+			//obj->addComponent<OfflineCameraComponent>();
+			//obj->addComponent<H264Component>(obj);
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);

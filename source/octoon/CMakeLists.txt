@@ -112,6 +112,8 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/sphere_collider_component.cpp
 	${HEADER_PATH}/box_collider_component.h
 	${SOURCE_PATH}/box_collider_component.cpp
+	${HEADER_PATH}/capsule_collider_component.h
+	${SOURCE_PATH}/capsule_collider_component.cpp
 
 	${HEADER_PATH}/joint_component.h
 	${SOURCE_PATH}/joint_component.cpp

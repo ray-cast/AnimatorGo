@@ -151,20 +151,26 @@ namespace octoon
     void
 	RigidbodyComponent::onActivate() except
     {
-        this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
-
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
-		auto physicsContext = physicsFeature->getContext();
-		rigidbody_ = physicsContext->createRigidbody(physics::PhysicsRigidbodyDesc());
-
-		if (rigidbody_)
+		if (physicsFeature)
 		{
-			rigidbody_->setRestitution(restitution_);
-			rigidbody_->setDynamicFriction(dynamicFriction_);
-			rigidbody_->setStaticFriction(staticFriction_);
+			this->addComponentDispatch(GameDispatchType::MoveAfter);
+			this->addComponentDispatch(GameDispatchType::FrameBegin);
 
-			physicsFeature->getScene()->addRigidbody(rigidbody_);
+			rigidbody_ = physicsFeature->getContext()->createRigidbody(physics::PhysicsRigidbodyDesc());
+			if (rigidbody_)
+			{
+				auto transform = this->getComponent<TransformComponent>();
+				auto& translate = transform->getTranslate();
+				auto& rotation = transform->getQuaternion();
+
+				rigidbody_->setRestitution(restitution_);
+				rigidbody_->setDynamicFriction(dynamicFriction_);
+				rigidbody_->setStaticFriction(staticFriction_);
+				rigidbody_->setPositionAndRotation(translate, rotation);
+
+				physicsFeature->getScene()->addRigidbody(rigidbody_);
+			}
 		}
     }
 
@@ -172,18 +178,10 @@ namespace octoon
 	RigidbodyComponent::onDeactivate() noexcept
     {
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+
+		rigidbody_.reset();
     }
-
-	void 
-	RigidbodyComponent::onAttach() except
-	{
-	}
-
-	void 
-	RigidbodyComponent::onDetach() noexcept
-	{
-	}
 
 	void 
 	RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
@@ -208,7 +206,7 @@ namespace octoon
     }
 
 	void 
-	RigidbodyComponent::onFrameEnd() except
+	RigidbodyComponent::onFrameBegin() except
 	{
 		if (rigidbody_)
 		{

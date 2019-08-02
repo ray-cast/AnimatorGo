@@ -12,6 +12,7 @@
 #include <octoon/model/material.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/ik.h>
+#include <octoon/model/rigidbody.h>
 
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>
@@ -30,6 +31,8 @@
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rigidbody_component.h>
 #include <octoon/sphere_collider_component.h>
+#include <octoon/box_collider_component.h>
+#include <octoon/capsule_collider_component.h>
 #include <octoon/configurable_joint_component.h>
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_skinned_mesh_renderer_component.h>
@@ -238,7 +241,7 @@ namespace octoon
 			return false;
 
 		GameObjects rigidbodys;
-		if (!this->createRigidbodys(model, rigidbodys))
+		if (!this->createRigidbodys(model, bones, rigidbodys))
 			return false;
 
 		GameObjectPtr actor;
@@ -261,7 +264,7 @@ namespace octoon
 			return false;
 
 		GameObjects rigidbodys;
-		if (!this->createRigidbodys(model, rigidbodys))
+		if (!this->createRigidbodys(model, bones, rigidbodys))
 			return false;
 
 		GameObjectPtr actor;
@@ -310,22 +313,23 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createRigidbodys(const model::Model& model, GameObjects& rigidbodys) noexcept
+	GamePrefabs::createRigidbodys(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept
 	{
-		/*for (auto& it : model.get<Model::rigidbody>())
+		for (auto& it : model.get<Model::rigidbody>())
 		{
 			auto gameObject = std::make_shared<GameObject>();
 			gameObject->setName(it->name);
 			gameObject->setLayer(it->group);
+			gameObject->setParent(bones[it->bone]);
 			gameObject->getComponent<TransformComponent>()->setTranslate(it->position);
 			gameObject->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(it->rotation));
 
 			if (it->shape == ShapeType::ShapeTypeCircle)
 				gameObject->addComponent(std::make_shared<SphereColliderComponent>(it->scale.x));
 			else if (it->shape == ShapeType::ShapeTypeSquare)
-				gameObject->addComponent(std::make_shared<PhysicsBoxComponent>(it->scale));
+				gameObject->addComponent(std::make_shared<BoxColliderComponent>(it->scale));
 			else if (it->shape == ShapeType::ShapeTypeCapsule)
-				gameObject->addComponent(std::make_shared<PhysicsCapsuleComponent>(it->scale.x, it->scale.y));
+				gameObject->addComponent(std::make_shared<CapsuleColliderComponent>(it->scale.x, it->scale.y));
 
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
@@ -334,13 +338,13 @@ namespace octoon
 			component->setStaticFriction(it->friction);
 			component->setDynamicFriction(it->friction);
 			//component->setLinearDamping(it->movementDecay);
-			//component->setAngularDamping(it->rotationDecay);		
+			//component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
 
 			gameObject->addComponent(component);
 
 			rigidbodys.push_back(std::move(gameObject));
-		}*/
+		}
 
 		return true;
 	}

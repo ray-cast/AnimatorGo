@@ -11,6 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(BoxColliderComponent, ColliderComponent)
 	public:
 		BoxColliderComponent() noexcept;
+		BoxColliderComponent(const math::float3& size) noexcept;
 		BoxColliderComponent(float width, float height, float depth) noexcept;
 		virtual ~BoxColliderComponent();
 

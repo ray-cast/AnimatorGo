@@ -79,6 +79,8 @@ namespace octoon
 	void
 	TransformComponent::setQuaternion(const math::Quaternion& quat) noexcept
 	{
+		assert(math::abs(math::length(quat) - 1) < 1e-2f);
+
 		if (rotation_ != quat)
 		{
 			this->onMoveBefore();
@@ -94,6 +96,7 @@ namespace octoon
 	void
 	TransformComponent::setQuaternionAccum(const math::Quaternion& quat) noexcept
 	{
+		assert(math::abs(math::length(quat) - 1) < 1e-2f);
 		this->setLocalQuaternion(math::cross(quat, rotation_));
 	}
 
@@ -232,6 +235,8 @@ namespace octoon
 	void
 	TransformComponent::setLocalQuaternion(const math::Quaternion& quat) noexcept
 	{
+		assert(math::abs(math::length(quat) - 1) < 1e-2f);
+
 		if (local_rotation_ != quat)
 		{
 			this->onMoveBefore();
@@ -247,6 +252,8 @@ namespace octoon
 	void
 	TransformComponent::setLocalQuaternionAccum(const math::Quaternion& quat) noexcept
 	{
+		assert(math::abs(math::length(quat) - 1) < 1e-2f);
+
 		this->setLocalQuaternion(math::cross(quat, local_rotation_));
 	}
 

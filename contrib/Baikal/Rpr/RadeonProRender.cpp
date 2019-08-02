@@ -2545,9 +2545,15 @@ rpr_int rprPostEffectSetParameter3f(rpr_post_effect effect, rpr_char const * nam
     UNIMLEMENTED_FUNCTION
 }
 
-rpr_int rprPostEffectSetParameter4f(rpr_post_effect effect, rpr_char const * name, rpr_float x, rpr_float y, rpr_float z, rpr_float w)
+rpr_int rprPostEffectSetParameter4f(rpr_post_effect in_effect, rpr_char const * name, rpr_float x, rpr_float y, rpr_float z, rpr_float w)
 {
-    UNIMLEMENTED_FUNCTION
+	PostEffectObject* effect = WrapObject::Cast<PostEffectObject>(in_effect);
+	if (!effect)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+
+	effect->GetPostEffect()->SetParameter(name, RadeonRays::float4(x, y, z, w));
 }
 
 rpr_int rprContextGetAttachedPostEffectCount(rpr_context context, rpr_uint *  nb)

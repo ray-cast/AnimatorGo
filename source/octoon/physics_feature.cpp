@@ -11,6 +11,7 @@ namespace octoon
 		, physics_scene(nullptr)
 		, time_(0.0f)
 		, timeStep_(1000.0f / 60.0f)
+		, timeInterval_(1000.0f / 60.0f)
 	{
 		
 	}
@@ -29,6 +30,18 @@ namespace octoon
 	PhysicsFeature::getTimeStep() const noexcept
 	{
 		return timeStep_;
+	}
+
+	void
+	PhysicsFeature::setTimeInterval(float timeInterval) noexcept
+	{
+		timeInterval_ = timeInterval;
+	}
+	
+	float
+	PhysicsFeature::getTimeInterval() const noexcept
+	{
+		return timeInterval_;
 	}
 
     void
@@ -70,7 +83,7 @@ namespace octoon
 
 			if (time_ > timeStep_)
 			{
-				physics_scene->simulate(timeStep_ / CLOCKS_PER_SEC);
+				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
 				time_ -= timeStep_;
 			}
 		}		

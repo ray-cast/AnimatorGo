@@ -18,6 +18,9 @@ namespace octoon
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;
 
+		void setTimeInterval(float timeInterval) noexcept;
+		float getTimeInterval() const noexcept;
+
 	public:
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
@@ -39,6 +42,7 @@ namespace octoon
     private:
 		float time_;
 		float timeStep_;
+		float timeInterval_;
 
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;

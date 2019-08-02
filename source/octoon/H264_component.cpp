@@ -174,7 +174,7 @@ namespace octoon
 
 		for (int j = 0; j < h; j++)
 		{
-			for (int i = 0;i < w; i++)
+			for (int i = 0; i < w; i++)
 			{
 				auto data = rgb + ((h - j - 1) * w + i) * 4;
 				auto r = data[0];
@@ -191,12 +191,9 @@ namespace octoon
 				{
 					*(ptrU++) = std::clamp<std::uint8_t>(u, 0, 255);
 				}
-				else
+				else if (i % 2 == 0)
 				{
-					if (i % 2 == 0)
-					{
-						*(ptrV++) = std::clamp<std::uint8_t>(v, 0, 255);
-					}
+					*(ptrV++) = std::clamp<std::uint8_t>(v, 0, 255);
 				}
 			}
 		}

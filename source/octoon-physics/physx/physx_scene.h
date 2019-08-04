@@ -5,8 +5,8 @@
 #include <vector>
 
 #include <octoon/runtime/platform.h>
-
 #include <octoon/physics/physics_scene.h>
+#include <octoon/physics/physics_listener.h>
 
 #include "physx_rigidbody.h"
 
@@ -24,6 +24,7 @@ namespace octoon
 
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 			virtual void simulate(float time) override;
+			virtual void fetchResults() override;
 
 		private:
 			PhysxScene(const PhysxScene&) noexcept = delete;
@@ -31,8 +32,6 @@ namespace octoon
         private:
 			PhysxContext* context;
 			physx::PxScene* px_scene;
-
-			std::vector<std::shared_ptr<PhysxRigidbody>> rigidbody_list;
 		};
 	}
 }

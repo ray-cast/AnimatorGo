@@ -12,6 +12,8 @@ namespace octoon
 		public:
 			std::string name;
 
+			std::uint32_t type;
+
 			math::float3 position;
 			math::float3 rotation;
 

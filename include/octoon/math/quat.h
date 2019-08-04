@@ -197,16 +197,6 @@ namespace octoon
 						this->w = (right.y - up.x) / s;
 					}
 
-					const T magSqrt = x*x + y*y+ z*z + w*w;
-					if (magSqrt)
-					{
-						const T inv = (T)(1.0f) / std::sqrt(magSqrt);
-						this->x *= inv;
-						this->y *= inv;
-						this->z *= inv;
-						this->w *= inv;
-					}
-
 					return *this;
 				}
 

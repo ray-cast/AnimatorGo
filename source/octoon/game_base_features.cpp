@@ -18,19 +18,19 @@ namespace octoon
 
 	void
 	GameBaseFeatures::onFrameBegin() noexcept
-	{		
+	{
+		GameObjectManager::instance()->onFrameBegin();
 	}
 
 	void
 	GameBaseFeatures::onFrame() noexcept
 	{
-		GameObjectManager::instance()->onFrameBegin();
-		GameObjectManager::instance()->onFrame();
-		GameObjectManager::instance()->onFrameEnd();
+		GameObjectManager::instance()->onFrame();		
 	}
 
 	void
 	GameBaseFeatures::onFrameEnd() noexcept
 	{	
+		GameObjectManager::instance()->onFrameEnd();
 	}
 }

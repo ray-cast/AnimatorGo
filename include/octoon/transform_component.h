@@ -25,6 +25,7 @@ namespace octoon
 		const math::Quaternion& getQuaternion() const noexcept;
 
 		void setTransform(const math::float4x4& transform) noexcept;
+		void setTransform(const math::float3& translate, const math::Quaternion& quat, const math::float3& scale = math::float3::One) noexcept;
 		void setTransformOnlyRotate(const math::float4x4& transform) noexcept;
 		const math::float4x4& getTransform() const noexcept;
 		const math::float4x4& getTransformInverse() const noexcept;

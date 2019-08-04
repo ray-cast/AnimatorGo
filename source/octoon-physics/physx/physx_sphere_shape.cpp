@@ -16,7 +16,7 @@ namespace octoon
 		{
 			physx::PxSphereGeometry geometry(radius);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);
-			px_shape = context->getPxPhysics()->createShape(geometry, *px_material);
+			px_shape = context->getPxPhysics()->createShape(geometry, *px_material, true);
 			if (!px_shape)
 				runtime::runtime_error::create("create shape failed!");
 		}

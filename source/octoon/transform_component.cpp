@@ -121,6 +121,23 @@ namespace octoon
 	}
 
 	void
+	TransformComponent::setTransform(const math::float3& translate, const math::Quaternion& quat, const math::float3& scale) noexcept
+	{
+		if (translate != translate_ || rotation_ != quat || scale != scaling_)
+		{
+			this->onMoveBefore();
+
+			scaling_ = scale;
+			rotation_ = quat;
+			translate_ = translate;
+			world_need_updates_ = true;
+
+			this->updateWorldChildren();
+			this->onMoveAfter();
+		}
+	}
+
+	void
 	TransformComponent::setTransformOnlyRotate(const math::float4x4& transform) noexcept
 	{
 		this->onMoveBefore();

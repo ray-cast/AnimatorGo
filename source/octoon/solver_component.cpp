@@ -209,7 +209,7 @@ namespace octoon
 					}
 					else
 					{
-						transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
+						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
 					}
 				}
 				else

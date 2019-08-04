@@ -3,7 +3,7 @@
 #include "physx_context.h"
 #include "physx_shape.h"
 
-#include<octoon/runtime/except.h>
+#include <octoon/runtime/except.h>
 
 #include <PxPhysicsAPI.h>
 
@@ -12,29 +12,21 @@ namespace octoon
 	namespace physics
 	{
 		PhysxRigidbody::PhysxRigidbody(PhysxContext * context, PhysicsRigidbodyDesc desc)
-			:context(nullptr), px_rigidbody(nullptr)
+			: context(nullptr)
+			, px_rigidbody(nullptr)
 		{
 			physx::PxTransform pose;
 			pose.p = physx::PxVec3(desc.translate.x, desc.translate.y, desc.translate.z);
 			pose.q = physx::PxQuat(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w);
 
-			if (desc.type == PhysicsRigidbodyType::Static)
-			{
-				auto rigidbody = context->getPxPhysics()->createRigidStatic(pose);
-				if (!rigidbody)
-					throw  runtime::runtime_error::create("create body failed!");
-				px_rigidbody = rigidbody;
-			}
-			else if(desc.type == PhysicsRigidbodyType::Dynamic)
-			{
-				auto rigidbody = context->getPxPhysics()->createRigidDynamic(pose);
-				if (!rigidbody)
-					throw  runtime::runtime_error::create("create body failed!");
+			auto rigidbody = context->getPxPhysics()->createRigidDynamic(pose);
+			if (!rigidbody)
+				throw  runtime::runtime_error::create("create body failed!");
+			
+			rigidbody->setMass(desc.mass);
+			rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
 
-				rigidbody->setMass(desc.mass);
-
-				px_rigidbody = rigidbody;
-			}
+			px_rigidbody = rigidbody;
 		}
 
 		PhysxRigidbody::~PhysxRigidbody()
@@ -80,41 +72,73 @@ namespace octoon
 		void PhysxRigidbody::setDynamicFriction(float f)
 		{
 			if (shape_)
-			{
 				shape_->getPxMaterial()->setDynamicFriction(f);
-			}
 		}
 
 		float PhysxRigidbody::getDynamicFriction() const
 		{
 			if (shape_)
-			{
 				return shape_->getPxMaterial()->getDynamicFriction();
-			}
 			else
-			{
 				return 0.f;
-			}
 		}
 
 		void PhysxRigidbody::setStaticFriction(float f)
 		{
 			if (shape_)
-			{
 				shape_->getPxMaterial()->setStaticFriction(f);
-			}
+		}
+
+		void
+		PhysxRigidbody::setGroup(std::uint8_t group)
+		{
+			physx::PxSetGroup(*px_rigidbody, group);
+		}
+
+		void
+		PhysxRigidbody::setGroupMask(std::uint16_t groupMask)
+		{
+			physx::PxGroupsMask mask;
+			mask.bits0 = groupMask;
+			mask.bits1 = 0;
+			mask.bits2 = 0;
+			mask.bits3 = 0;
+			physx::PxSetGroupsMask(*px_rigidbody, mask);
+		}
+
+		void
+		PhysxRigidbody::setOwnerListener(PhysicsListener* listener)
+		{
+			px_rigidbody->userData = listener;
+		}
+
+		void 
+		PhysxRigidbody::isKinematic(bool kinematic) noexcept
+		{
+			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, kinematic);
+		}
+
+		void PhysxRigidbody::setMass(float f)
+		{
+			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setMass(f);
+		}
+
+		void PhysxRigidbody::setLinearDamping(float value)
+		{
+			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setLinearDamping(value);
+		}
+
+		void PhysxRigidbody::setAngularDamping(float value)
+		{
+			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setAngularDamping(value);
 		}
 
 		float PhysxRigidbody::getStaticFriction() const
 		{
 			if (shape_)
-			{
 				return shape_->getPxMaterial()->getStaticFriction();
-			}
 			else
-			{
 				return 0.f;
-			}
 		}
 
 		void PhysxRigidbody::setRestitution(float f)
@@ -128,13 +152,9 @@ namespace octoon
 		float PhysxRigidbody::getRestitution() const
 		{
 			if (shape_)
-			{
 				return shape_->getPxMaterial()->getRestitution();
-			}
 			else
-			{
 				return 0.f;
-			}
 		}
 
 		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)

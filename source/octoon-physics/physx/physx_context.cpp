@@ -24,28 +24,26 @@ namespace octoon
             defaultAllocatorCallback(new physx::PxDefaultAllocator),
             defaultErrorCallback(new physx::PxDefaultErrorCallback)
 		{
+			physx::PxTolerancesScale scale;
+			scale.length = 1;
+			scale.speed = 1;
+
 			// create foundation
             foundation = PxCreateFoundation(PX_PHYSICS_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
             if (!foundation)
                 throw runtime::runtime_error::create("PxCreateFoundation failed!");
 
 			// create pvd
-            pvd = physx::PxCreatePvd(*foundation);
-            physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+            physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5435, 10000);
+			pvd = physx::PxCreatePvd(*foundation);
             pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
 			// create physics
-			bool recordMemoryAllocations = true;
-            physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation,
-                physx::PxTolerancesScale(), recordMemoryAllocations, pvd);
+            physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, physx::PxTolerancesScale(), true, pvd);
             if (!physics)
                 throw runtime::runtime_error::create("PxCreatePhysics failed!");
 
 			// create cooking
-            physx::PxTolerancesScale scale;
-            scale.length = 1;
-            scale.speed = 1;
-
             cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
             if (!cooking)
                 throw runtime::runtime_error::create("PxCreateCooking failed!");
@@ -59,6 +57,8 @@ namespace octoon
 
 		PhysxContext::~PhysxContext()
 		{
+			PxCloseExtensions();
+
 			if (physics)
 			{
 				physics->release();

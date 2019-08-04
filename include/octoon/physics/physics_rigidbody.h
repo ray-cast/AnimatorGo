@@ -8,7 +8,7 @@
 
 #include <octoon/physics/physics_scene.h>
 #include <octoon/physics/physics_shape.h>
-
+#include <octoon/physics/physics_listener.h>
 
 #include "physics_type.h"
 
@@ -45,17 +45,30 @@ namespace octoon
 			PhysicsRigidbody() noexcept;
 			virtual ~PhysicsRigidbody();
 
-			virtual math::float3 getPosition() = 0;
+			virtual void setGroup(std::uint8_t group) = 0;
+			virtual void setGroupMask(std::uint16_t groupMask) = 0;
+
+			virtual void setOwnerListener(PhysicsListener* listener) = 0;
+
+			virtual void isKinematic(bool kinematic) noexcept = 0;
+
 			virtual void setPosition(math::float3 postion) = 0;
-			virtual math::Quaternion getRotation() = 0;
 			virtual void setRotation(math::Quaternion rotation) = 0;
 			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) = 0;
 
+			virtual void setMass(float f) = 0;
 			virtual void setDynamicFriction(float f) = 0;
-			virtual float getDynamicFriction() const = 0;
 			virtual void setStaticFriction(float f) = 0;
-			virtual float getStaticFriction() const = 0;
 			virtual void setRestitution(float f) = 0;
+
+			virtual void setLinearDamping(float value) = 0;
+			virtual void setAngularDamping(float value) = 0;
+
+			virtual math::float3 getPosition() = 0;
+			virtual math::Quaternion getRotation() = 0;
+
+			virtual float getDynamicFriction() const = 0;
+			virtual float getStaticFriction() const = 0;
 			virtual float getRestitution() const = 0;
 
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) = 0;

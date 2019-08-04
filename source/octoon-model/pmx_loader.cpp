@@ -708,6 +708,7 @@ namespace octoon
 			{
 				auto joint = std::make_shared<Joint>();
 				joint->name = cv.to_bytes(it.name.name);
+				joint->type = it.type;
 				joint->bodyIndexA = it.relatedRigidBodyIndexA;
 				joint->bodyIndexB = it.relatedRigidBodyIndexB;
 				joint->position = it.position;

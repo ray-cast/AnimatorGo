@@ -13,9 +13,9 @@ namespace octoon
 			: px_shape(nullptr)
 			, context_(context)
 		{
-			physx::PxCapsuleGeometry geometry(radius, height / 2);
+			physx::PxCapsuleGeometry geometry(radius, height*0.5f);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);
-			px_shape = context->getPxPhysics()->createShape(geometry, *px_material);
+			px_shape = context->getPxPhysics()->createShape(geometry, *px_material, true);
 			if (!px_shape)
 				runtime::runtime_error::create("create shape failed!");
 		}
@@ -54,7 +54,7 @@ namespace octoon
 			physx::PxCapsuleGeometry geometry;
 			if (px_shape->getCapsuleGeometry(geometry))
 			{
-				geometry.halfHeight = height * 0.5f;
+				geometry.halfHeight = height*0.5f;
 				px_shape->setGeometry(geometry);
 			}
 		}
@@ -72,7 +72,7 @@ namespace octoon
 		{
 			physx::PxCapsuleGeometry geometry;
 			if (px_shape->getCapsuleGeometry(geometry))
-				return geometry.halfHeight * 2.0f;
+				return geometry.halfHeight*2.0f;
 			else
 				return 0.f;
 		}

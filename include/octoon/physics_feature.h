@@ -44,6 +44,8 @@ namespace octoon
 		float timeStep_;
 		float timeInterval_;
 
+		bool fetchResult_;
+
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;
 		std::shared_ptr<physics::PhysicsScene> physics_scene;

@@ -12,6 +12,7 @@ namespace octoon
 		, time_(0.0f)
 		, timeStep_(1000.0f / 60.0f)
 		, timeInterval_(1000.0f / 60.0f)
+		, fetchResult_(false)
 	{
 		
 	}
@@ -66,6 +67,11 @@ namespace octoon
     void
 	PhysicsFeature::onFrameBegin() noexcept
     {
+		if (fetchResult_)
+		{
+			physics_scene->fetchResults();
+			fetchResult_ = false;
+		}
     }
 
     void
@@ -84,6 +90,7 @@ namespace octoon
 			if (time_ > timeStep_)
 			{
 				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
+				fetchResult_ = true;
 				time_ -= timeStep_;
 			}
 		}

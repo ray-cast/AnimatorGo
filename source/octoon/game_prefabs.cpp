@@ -13,6 +13,7 @@
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/ik.h>
 #include <octoon/model/rigidbody.h>
+#include <octoon/model/joint.h>
 
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>
@@ -240,8 +241,12 @@ namespace octoon
 		if (!this->createSolver(model, bones))
 			return false;
 
-		GameObjects rigidbodys;
-		if (!this->createRigidbodys(model, bones, rigidbodys))
+		GameObjects rigidbody;
+		if (!this->createRigidbodys(model, bones, rigidbody))
+			return false;
+
+		GameObjects joints;
+		if (!this->createJoints(model, rigidbody, joints))
 			return false;
 
 		GameObjectPtr actor;
@@ -263,8 +268,12 @@ namespace octoon
 		if (!this->createSolver(model, bones))
 			return false;
 
-		GameObjects rigidbodys;
-		if (!this->createRigidbodys(model, bones, rigidbodys))
+		GameObjects rigidbody;
+		if (!this->createRigidbodys(model, bones, rigidbody))
+			return false;
+
+		GameObjects joints;
+		if (!this->createJoints(model, rigidbody, joints))
 			return false;
 
 		GameObjectPtr actor;
@@ -283,8 +292,8 @@ namespace octoon
 		for (auto& it : model.get<Model::bone>())
 		{
 			auto object = GameObject::create(it->getName());
-			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			object->addComponent<MeshRendererComponent>(material);*/
+			// object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			// object->addComponent<MeshRendererComponent>(material);
 
 			bones.emplace_back(object);
 		}
@@ -317,33 +326,144 @@ namespace octoon
 	{
 		for (auto& it : model.get<Model::rigidbody>())
 		{
-			auto gameObject = std::make_shared<GameObject>();
+			auto gameObject = GameObject::create();
 			gameObject->setName(it->name);
+			gameObject->setParent(it->bone >= 0 && it->bone < bones.size() ? bones[it->bone] : nullptr);
 			gameObject->setLayer(it->group);
-			gameObject->setParent(bones[it->bone]);
-			gameObject->getComponent<TransformComponent>()->setTranslate(it->position);
-			gameObject->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(it->rotation));
+			gameObject->getComponent<TransformComponent>()->setTransform(it->position, math::Quaternion(it->rotation));
 
 			if (it->shape == ShapeType::ShapeTypeCircle)
-				gameObject->addComponent(std::make_shared<SphereColliderComponent>(it->scale.x));
+				gameObject->addComponent<SphereColliderComponent>(it->scale.x);
 			else if (it->shape == ShapeType::ShapeTypeSquare)
-				gameObject->addComponent(std::make_shared<BoxColliderComponent>(it->scale));
+				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale));
 			else if (it->shape == ShapeType::ShapeTypeCapsule)
-				gameObject->addComponent(std::make_shared<CapsuleColliderComponent>(it->scale.x, it->scale.y));
+				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x, it->scale.y);
+			else
+				assert(false);
 
 			auto component = std::make_shared<RigidbodyComponent>();
+			component->setPosition(it->position);
+			component->setRotation(math::Quaternion(it->rotation));
+			component->setGroupMask(it->groupMask);
 			component->setName(it->name);
 			component->setMass(it->mass);
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction);
 			component->setDynamicFriction(it->friction);
-			//component->setLinearDamping(it->movementDecay);
-			//component->setAngularDamping(it->rotationDecay);
+			component->setLinearDamping(it->movementDecay);
+			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
 
 			gameObject->addComponent(component);
 
-			rigidbodys.push_back(std::move(gameObject));
+			rigidbodys.push_back(gameObject);
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createJoints(const Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept
+	{
+		for (auto& it : model.get<Model::joint>())
+		{
+			if (rigidbodys.size() <= it->bodyIndexA || rigidbodys.size() <= it->bodyIndexB)
+				continue;
+
+			auto bodyA = rigidbodys[it->bodyIndexA]->getComponent<RigidbodyComponent>();
+			auto bodyB = rigidbodys[it->bodyIndexB]->getComponent<RigidbodyComponent>();
+
+			if (!bodyA) bodyA = rigidbodys[it->bodyIndexA]->getParent()->getComponent<RigidbodyComponent>();
+			if (!bodyB) bodyB = rigidbodys[it->bodyIndexB]->getParent()->getComponent<RigidbodyComponent>();
+
+			if (bodyA != bodyB)
+			{
+				auto joint = bodyA->getGameObject()->addComponent<ConfigurableJointComponent>();
+				joint->setTarget(bodyB);
+				joint->setTargetPosition(it->position);
+				joint->setTargetRotation(math::Quaternion(it->rotation));
+
+				if (it->movementLowerLimit.x == 0.0f && it->movementUpperLimit.x == 0.0f)
+					joint->setXMotion(ConfigurableJointMotion::Locked);
+				else
+				{
+					joint->setLowXLimit(it->movementLowerLimit.x);
+					joint->setHighXLimit(it->movementUpperLimit.x);
+					joint->setXMotion(ConfigurableJointMotion::Limited);
+				}
+
+				if (it->movementLowerLimit.y == 0.0f && it->movementUpperLimit.y == 0.0f)
+					joint->setYMotion(ConfigurableJointMotion::Locked);
+				else
+				{
+					joint->setLowYLimit(it->movementLowerLimit.y);
+					joint->setHighYLimit(it->movementUpperLimit.y);
+					joint->setYMotion(ConfigurableJointMotion::Limited);
+				}
+
+				if (it->movementLowerLimit.z == 0.0f && it->movementUpperLimit.z == 0.0f)
+					joint->setZMotion(ConfigurableJointMotion::Locked);
+				else
+				{
+					joint->setLowZLimit(it->movementLowerLimit.z);
+					joint->setHighZLimit(it->movementUpperLimit.z);
+					joint->setZMotion(ConfigurableJointMotion::Limited);
+				}
+
+				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)
+					joint->setAngularXMotion(ConfigurableJointMotion::Locked);
+				else
+				{
+					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
+						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
+
+					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -math::PI, math::PI) - 1e-5);
+					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -math::PI, math::PI) + 1e-5);
+					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
+				}
+
+				if (it->rotationLowerLimit.y == 0.0f && it->rotationUpperLimit.y == 0.0f)
+					joint->setAngularYMotion(ConfigurableJointMotion::Locked);
+				else
+				{
+					if (it->rotationLowerLimit.z == 0.0f && it->rotationUpperLimit.z == 0.0f)
+					{
+						joint->setSwingLimit(it->rotationLowerLimit.y, it->rotationUpperLimit.z);
+						joint->setAngularYMotion(ConfigurableJointMotion::Limited);
+						joint->setAngularZMotion(ConfigurableJointMotion::Locked);
+					}
+					else
+					{
+						if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
+							std::swap(it->rotationLowerLimit.y, it->rotationUpperLimit.y);
+						if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
+							std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
+
+						it->rotationLowerLimit.y = math::clamp(it->rotationLowerLimit.y, -3.1415f, 3.1415f);
+						it->rotationUpperLimit.y = math::clamp(it->rotationUpperLimit.y, -3.1415f, 3.1415f);
+						it->rotationLowerLimit.z = math::clamp(it->rotationLowerLimit.z, -3.1415f, 3.1415f);
+						it->rotationUpperLimit.z = math::clamp(it->rotationUpperLimit.z, -3.1415f, 3.1415f);
+
+						joint->setPyramidSwingLimit(it->rotationLowerLimit.y, it->rotationUpperLimit.y, it->rotationLowerLimit.z, it->rotationUpperLimit.z);
+						joint->setAngularYMotion(ConfigurableJointMotion::Limited);
+						joint->setAngularZMotion(ConfigurableJointMotion::Limited);
+					}
+				}
+
+				if (it->springMovementConstant.x != 0.0f)
+					joint->setDriveMotionX(it->springMovementConstant.x);
+				if (it->springMovementConstant.y != 0.0f)
+					joint->setDriveMotionY(it->springMovementConstant.y);
+				if (it->springMovementConstant.z != 0.0f)
+					joint->setDriveMotionZ(it->springMovementConstant.z);
+
+				if (it->springRotationConstant.x != 0.0f)
+					joint->setDriveMotionX(it->springRotationConstant.x);
+				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
+					joint->setDriveAngularZ(it->springRotationConstant.y);
+
+				joints.push_back(bodyB->getGameObject()->shared_from_this()->downcast_pointer<GameObject>());
+			}
 		}
 
 		return true;
@@ -400,15 +520,15 @@ namespace octoon
 				smr->setMaterial(materials[i]);
 				smr->setTransforms(bones);
 
-				auto mat = std::make_shared<LineMaterial>(1.0f);
+				/*auto mat = std::make_shared<LineMaterial>(1.0f);
 				mat->setColor(math::float3(0.4, 0.9, 0.4));
 
 				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
 				sjr->setMaterial(mat);
-				sjr->setTransforms(bones);
+				sjr->setTransforms(bones);*/
 
 				object->addComponent(smr);
-				object->addComponent(sjr);
+				//object->addComponent(sjr);
 			}
 		}
 

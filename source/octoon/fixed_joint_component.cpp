@@ -11,7 +11,7 @@ namespace octoon
 	OctoonImplementSubInterface(FixedJointComponent, JointComponent, "FixedJointComponent")
 
 	FixedJointComponent::FixedJointComponent() noexcept
-		:joint(), thisBody(), connectedBody()
+		:joint(), thisBody(), target_()
 	{
 	}
 
@@ -19,24 +19,28 @@ namespace octoon
 	{
 	}
 
-	void FixedJointComponent::onActivate() except
+	void
+	FixedJointComponent::onActivate() except
 	{
 	}
 
-	void FixedJointComponent::onDeactivate() noexcept
+	void
+	FixedJointComponent::onDeactivate() noexcept
 	{
 	}
 
-	void FixedJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	void
+	FixedJointComponent::onAttachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isA<RigidbodyComponent>())
 		{
 			thisBody = component->downcast_pointer<RigidbodyComponent>();
-			buildJoint();
+			setupFixedJoint();
 		}
 	}
 
-	void FixedJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+	void
+	FixedJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isA<RigidbodyComponent>())
 		{
@@ -44,24 +48,25 @@ namespace octoon
 		}
 	}
 
-	std::shared_ptr<RigidbodyComponent> FixedJointComponent::getConnectedBody()
+	std::shared_ptr<RigidbodyComponent>
+	FixedJointComponent::getTarget()
 	{
-		return connectedBody.lock();
+		return target_.lock();
 	}
 
-	void FixedJointComponent::setConnectedBody(std::shared_ptr<RigidbodyComponent> component)
+	void
+	FixedJointComponent::setTarget(std::shared_ptr<RigidbodyComponent> component)
 	{
-		connectedBody = component;
-		buildJoint();
+		target_ = component;
 	}
 
-	void FixedJointComponent::buildJoint()
+	void FixedJointComponent::setupFixedJoint()
 	{
-		if (!thisBody.expired() && !connectedBody.expired())
+		if (!thisBody.expired() && !target_.expired())
 		{
 			auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 			auto physicsContext = physicsFeature->getContext();
-			joint = physicsContext->createFixedJoint(thisBody.lock()->getRigidbody(), connectedBody.lock()->getRigidbody());
+			joint = physicsContext->createFixedJoint(thisBody.lock()->getRigidbody(), target_.lock()->getRigidbody());
 		}
 	}
 }

@@ -14,9 +14,14 @@ namespace octoon
 		, angularVelocity_(1.0)
 		, gravityScale_(1.0)
 		, mass_(1.0)
-		, dynamicFriction_(1.0)
-		, staticFriction_(1.0)
-		, restitution_(1.0)
+		, dynamicFriction_(0.5f)
+		, staticFriction_(0.5f)
+		, restitution_(0.0f)
+		, linearDamping_(0.5f)
+		, angularDamping_(0.5f)
+		, position_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, groupMask_(0)
     {
     }
 
@@ -34,11 +39,25 @@ namespace octoon
     {
     }
 
-	GameComponentPtr RigidbodyComponent::clone() const noexcept
-    {
-		auto instance = std::make_shared<RigidbodyComponent>();
-		return instance;
-    }
+	void
+	RigidbodyComponent::setPosition(const math::float3& position) noexcept
+	{
+		position_ = position;
+		transform_.makeTransform(position_, rotation_);
+	}
+
+	void
+	RigidbodyComponent::setRotation(const math::Quaternion& quat) noexcept
+	{
+		rotation_ = quat;
+		transform_.makeTransform(position_, rotation_);
+	}
+
+	void
+	RigidbodyComponent::setGroupMask(std::uint16_t groupMask) noexcept
+	{
+		groupMask_ = groupMask;
+	}
 
 	void
 	RigidbodyComponent::setAngularVelocity(float angularVelocity) noexcept
@@ -67,7 +86,10 @@ namespace octoon
 	void
 	RigidbodyComponent::setIsKinematic(bool isKinematic) noexcept
 	{
-		isKinematic_ = isKinematic;
+		if (isKinematic_ != isKinematic)
+		{
+			isKinematic_ = isKinematic;
+		}
 	}
 
 	void
@@ -92,6 +114,22 @@ namespace octoon
 		if (rigidbody_)
 			rigidbody_->setRestitution(restitution);
 		restitution_ = restitution;
+	}
+
+	void
+	RigidbodyComponent::setLinearDamping(float value) noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+			rigidbody_->setLinearDamping(value);
+		linearDamping_ = value;
+	}
+
+	void
+	RigidbodyComponent::setAngularDamping(float value) noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+			rigidbody_->setAngularDamping(value);
+		angularDamping_ = value;
 	}
 
 	float
@@ -148,6 +186,13 @@ namespace octoon
 		return rigidbody_;
 	}
 
+	GameComponentPtr
+	RigidbodyComponent::clone() const noexcept
+    {
+		auto instance = std::make_shared<RigidbodyComponent>();
+		return instance;
+    }
+
     void
 	RigidbodyComponent::onActivate() except
     {
@@ -155,19 +200,29 @@ namespace octoon
 		if (physicsFeature)
 		{
 			this->addComponentDispatch(GameDispatchType::MoveAfter);
-			this->addComponentDispatch(GameDispatchType::FrameBegin);
 
-			rigidbody_ = physicsFeature->getContext()->createRigidbody(physics::PhysicsRigidbodyDesc());
+			physics::PhysicsRigidbodyDesc desc;
+			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
+			desc.translate = position_;
+			desc.rotation = rotation_;
+			desc.mass = mass_;
+
+			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);
 			if (rigidbody_)
 			{
-				auto transform = this->getComponent<TransformComponent>();
-				auto& translate = transform->getTranslate();
-				auto& rotation = transform->getQuaternion();
-
+				rigidbody_->setOwnerListener(this);
+				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setRestitution(restitution_);
 				rigidbody_->setDynamicFriction(dynamicFriction_);
 				rigidbody_->setStaticFriction(staticFriction_);
-				rigidbody_->setPositionAndRotation(translate, rotation);
+				rigidbody_->setPositionAndRotation(position_, rotation_);
+				rigidbody_->setGroupMask(groupMask_);
+
+				if (!isKinematic_)
+				{
+					rigidbody_->setLinearDamping(linearDamping_);
+					rigidbody_->setAngularDamping(angularDamping_);
+				}
 
 				physicsFeature->getScene()->addRigidbody(rigidbody_);
 			}
@@ -178,7 +233,6 @@ namespace octoon
 	RigidbodyComponent::onDeactivate() noexcept
     {
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
 
 		rigidbody_.reset();
     }
@@ -190,7 +244,14 @@ namespace octoon
 		{
 			auto collider = component->downcast_pointer<ColliderComponent>();
 			if (collider)
+			{
 				rigidbody_->attachShape(collider->getShape());
+				rigidbody_->setRestitution(restitution_);
+				rigidbody_->setDynamicFriction(dynamicFriction_);
+				rigidbody_->setStaticFriction(staticFriction_);
+				rigidbody_->setGroup(this->getGameObject()->getLayer());
+				rigidbody_->setGroupMask(groupMask_);
+			}
 		}
     }
 
@@ -206,29 +267,45 @@ namespace octoon
     }
 
 	void 
-	RigidbodyComponent::onFrameBegin() except
+	RigidbodyComponent::onFetchResult() noexcept
 	{
 		if (rigidbody_)
 		{
-			auto position = rigidbody_->getPosition();
-			auto rotation = rigidbody_->getRotation();
+			this->position_ = rigidbody_->getPosition();
+			this->rotation_ = rigidbody_->getRotation();
+			transform_.makeTransform(position_, rotation_);
 
-			auto transformComponent = this->getComponent<TransformComponent>();
-			transformComponent->setTranslate(position);
-			transformComponent->setQuaternion(rotation);
+			auto transform = this->getComponent<TransformComponent>();
+			transform->getGameObject()->getParent()->getComponent<TransformComponent>()->setTransform(transform_ * transform->getLocalTransformInverse());
 		}
+	}
+
+	void
+	RigidbodyComponent::onLayerChangeAfter() noexcept
+	{
+		if (rigidbody_)
+			rigidbody_->setGroup(this->getGameObject()->getLayer());
 	}
 
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
-		if (rigidbody_)
+		if (rigidbody_ && isKinematic_)
 		{
+			/*auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
+			auto transform = math::transformMultiply(parent->getTransform(), localTransform_);
+			transform.getTransform(position_, rotation_, scaling_);
+			rigidbody_->setPositionAndRotation(position_, rotation_);*/
 			auto transform = this->getComponent<TransformComponent>();
-			auto& translate = transform->getTranslate();
-			auto& rotation = transform->getQuaternion();
-
-			rigidbody_->setPositionAndRotation(translate, rotation);
+			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
 		}
+	}
+
+	void
+	RigidbodyComponent::updateParentTransform() noexcept
+	{
+		auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
+		localTransform_ = math::transformMultiply(parent->getTransformInverse(), transform_);
+		localTransform_.getTransform(localPosition_, localRotation_, localScaling_);
 	}
 }

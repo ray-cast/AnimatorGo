@@ -13,9 +13,9 @@ namespace octoon
 			:px_shape(nullptr)
 			, context_(context)
 		{
-			physx::PxBoxGeometry geometry(hx, hy, hz);
+			physx::PxBoxGeometry geometry(hx*0.5f, hy*0.5f, hz*0.5f);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);
-			px_shape = context->getPxPhysics()->createShape(geometry, *px_material);
+			px_shape = context->getPxPhysics()->createShape(geometry, *px_material, true);
 			if (!px_shape)
 				runtime::runtime_error::create("create shape failed!");
 		}
@@ -44,7 +44,7 @@ namespace octoon
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
 			{
-				geometry.halfExtents.x = width * 0.5f;
+				geometry.halfExtents.x = width*0.5f;
 				px_shape->setGeometry(geometry);
 			}
 		}
@@ -54,7 +54,7 @@ namespace octoon
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
 			{
-				geometry.halfExtents.y = height * 0.5f;
+				geometry.halfExtents.y = height*0.5f;
 				px_shape->setGeometry(geometry);
 			}
 		}
@@ -64,7 +64,7 @@ namespace octoon
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
 			{
-				geometry.halfExtents.z = depth * 0.5f;
+				geometry.halfExtents.z = depth*0.5f;
 				px_shape->setGeometry(geometry);
 			}
 		}
@@ -73,7 +73,7 @@ namespace octoon
 		{
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
-				return geometry.halfExtents.x * 2.0f;
+				return geometry.halfExtents.x*2.0f;
 			else
 				return 0.f;
 		}
@@ -82,7 +82,7 @@ namespace octoon
 		{
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
-				return geometry.halfExtents.y * 2.0f;
+				return geometry.halfExtents.y*2.0f;
 			else
 				return 0.f;
 		}
@@ -91,7 +91,7 @@ namespace octoon
 		{
 			physx::PxBoxGeometry geometry;
 			if (px_shape->getBoxGeometry(geometry))
-				return geometry.halfExtents.z * 2.0f;
+				return geometry.halfExtents.z*2.0f;
 			else
 				return 0.f;
 		}

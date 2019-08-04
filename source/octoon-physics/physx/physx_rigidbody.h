@@ -19,18 +19,31 @@ namespace octoon
 			PhysxRigidbody(PhysxContext* context, PhysicsRigidbodyDesc desc);
 			virtual ~PhysxRigidbody();
 
-			virtual math::float3 getPosition() override;
+			virtual void setGroup(std::uint8_t group) override;
+			virtual void setGroupMask(std::uint16_t groupMask) override;
+
+			virtual void setOwnerListener(PhysicsListener* listener) override;
+
+			virtual void isKinematic(bool kinematic) noexcept override;
+
 			virtual void setPosition(math::float3 postion) override;
-			virtual math::Quaternion getRotation() override;
 			virtual void setRotation(math::Quaternion rotation) override;
 			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) override;
 
+			virtual void setMass(float f) override;
 			virtual void setDynamicFriction(float f) override;
-			virtual float getDynamicFriction() const override;
 			virtual void setStaticFriction(float f) override;
-			virtual float getStaticFriction() const override;
 			virtual void setRestitution(float f) override;
+
+			virtual void setLinearDamping(float value) override;
+			virtual void setAngularDamping(float value) override;
+
+			virtual float getDynamicFriction() const override;
+			virtual float getStaticFriction() const override;
 			virtual float getRestitution() const override;
+
+			virtual math::float3 getPosition() override;
+			virtual math::Quaternion getRotation() override;
 
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) override;
 			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) override;
@@ -42,7 +55,7 @@ namespace octoon
 			PhysxRigidbody& operator=(const PhysxRigidbody&) noexcept = delete;
 		private:
 			PhysxContext* context;
-			physx::PxRigidActor* px_rigidbody;
+			physx::PxRigidDynamic* px_rigidbody;
 
 			std::shared_ptr<PhysxShape> shape_;
 		};

@@ -16,6 +16,8 @@ SET(SOURCE_LIST
     ${SOURCE_PATH}/physics_scene.cpp
     ${HEADER_PATH}/physics_rigidbody.h
     ${SOURCE_PATH}/physics_rigidbody.cpp
+    ${HEADER_PATH}/physics_listener.h
+    ${SOURCE_PATH}/physics_listener.cpp
 
     ${HEADER_PATH}/physics_shape.h
     ${SOURCE_PATH}/physics_shape.cpp

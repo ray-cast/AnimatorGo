@@ -25,12 +25,12 @@ namespace octoon
 	void
 	GameBaseFeatures::onFrame() noexcept
 	{
-		GameObjectManager::instance()->onFrame();		
+		GameObjectManager::instance()->onFrame();
+		GameObjectManager::instance()->onFrameEnd();
 	}
 
 	void
 	GameBaseFeatures::onFrameEnd() noexcept
-	{	
-		GameObjectManager::instance()->onFrameEnd();
+	{		
 	}
 }

@@ -292,9 +292,6 @@ namespace octoon
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
-		if (this->getGameScene()->getFeature<PhysicsFeature>()->isFetchResult())
-			return;
-
 		if (rigidbody_ && isKinematic_)
 		{
 			auto transform = this->getComponent<TransformComponent>();

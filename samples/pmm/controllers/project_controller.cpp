@@ -350,7 +350,7 @@ namespace octoon
 					auto animation = it->getComponent<AnimationComponent>();
 					if (animation)
 					{
-						animation->setTimeStep(CLOCKS_PER_SEC / 60.0f);
+						animation->setTimeStep(CLOCKS_PER_SEC / 30.0f);
 						animation->setTimeInterval(CLOCKS_PER_SEC);
 						animation->play();
 					}
@@ -358,7 +358,7 @@ namespace octoon
 					auto animator = it->getComponent<AnimatorComponent>();
 					if (animator)
 					{
-						animator->setTimeStep(CLOCKS_PER_SEC / 60.0f);
+						animator->setTimeStep(CLOCKS_PER_SEC / 30.0f);
 						animator->setTimeInterval(CLOCKS_PER_SEC);
 						animator->play();
 					}

@@ -52,7 +52,7 @@ namespace octoon
                 throw runtime::runtime_error::create("PxInitExtensions failed!");
 
 			// create dispatcher
-			dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+			dispatcher = physx::PxDefaultCpuDispatcherCreate(4);
 		}
 
 		PhysxContext::~PhysxContext()

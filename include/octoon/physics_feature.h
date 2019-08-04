@@ -21,6 +21,8 @@ namespace octoon
 		void setTimeInterval(float timeInterval) noexcept;
 		float getTimeInterval() const noexcept;
 
+		bool isFetchResult() const noexcept { return fetchResulting_; }
+
 	public:
 		virtual void onActivate() except override;
 		virtual void onDeactivate() noexcept override;
@@ -45,6 +47,7 @@ namespace octoon
 		float timeInterval_;
 
 		bool fetchResult_;
+		bool fetchResulting_;
 
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;

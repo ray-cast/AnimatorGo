@@ -417,8 +417,8 @@ namespace octoon
 					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
 						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
 
-					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -math::PI, math::PI) - 1e-5);
-					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -math::PI, math::PI) + 1e-5);
+					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -3.1415f, 3.1415f) - 1e-5);
+					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -3.1415f, 3.1415f) + 1e-5);
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
 				}
 

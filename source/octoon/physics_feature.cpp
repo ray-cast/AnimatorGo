@@ -10,9 +10,10 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, time_(0.0f)
-		, timeStep_(1000.0f / 60.0f)
-		, timeInterval_(1000.0f / 60.0f)
+		, timeStep_(1000.0f / 120.0f)
+		, timeInterval_(1000.0f / 120.0f)
 		, fetchResult_(false)
+		, fetchResulting_(false)
 	{
 		
 	}
@@ -69,18 +70,15 @@ namespace octoon
     {
 		if (fetchResult_)
 		{
+			fetchResulting_ = true;
 			physics_scene->fetchResults();
 			fetchResult_ = false;
+			fetchResulting_ = false;
 		}
     }
 
     void
 	PhysicsFeature::onFrame() except
-    {
-    }
-
-    void
-	PhysicsFeature::onFrameEnd() noexcept
     {
 		auto feature = this->getFeature<TimerFeature>();
 		if (feature)
@@ -89,11 +87,16 @@ namespace octoon
 
 			if (time_ > timeStep_)
 			{
-				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
 				fetchResult_ = true;
+				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
 				time_ -= timeStep_;
 			}
 		}
+    }
+
+    void
+	PhysicsFeature::onFrameEnd() noexcept
+    {
     }
 
 	std::shared_ptr<physics::PhysicsContext>

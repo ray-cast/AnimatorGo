@@ -4,6 +4,7 @@
 #include <octoon/game_app.h>
 #include <octoon/game_scene.h>
 #include <octoon/runtime/except.h>
+#include <octoon/physics_feature.h>
 
 namespace octoon
 {
@@ -251,6 +252,7 @@ namespace octoon
 				rigidbody_->setStaticFriction(staticFriction_);
 				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setGroupMask(groupMask_);
+				rigidbody_->setMass(mass_);
 			}
 		}
     }
@@ -290,12 +292,11 @@ namespace octoon
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
+		if (this->getGameScene()->getFeature<PhysicsFeature>()->isFetchResult())
+			return;
+
 		if (rigidbody_ && isKinematic_)
 		{
-			/*auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
-			auto transform = math::transformMultiply(parent->getTransform(), localTransform_);
-			transform.getTransform(position_, rotation_, scaling_);
-			rigidbody_->setPositionAndRotation(position_, rotation_);*/
 			auto transform = this->getComponent<TransformComponent>();
 			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
 		}
@@ -304,6 +305,11 @@ namespace octoon
 	void
 	RigidbodyComponent::updateParentTransform() noexcept
 	{
+		/*auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
+		auto transform = math::transformMultiply(parent->getTransform(), localTransform_);
+		transform.getTransform(position_, rotation_, scaling_);
+		rigidbody_->setPositionAndRotation(position_, rotation_);*/
+
 		auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
 		localTransform_ = math::transformMultiply(parent->getTransformInverse(), transform_);
 		localTransform_.getTransform(localPosition_, localRotation_, localScaling_);

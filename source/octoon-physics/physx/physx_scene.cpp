@@ -86,10 +86,23 @@ namespace octoon
 		}
 
 		void
-		PhysxScene::fetchResults()
+		PhysxScene::fetchStart()
 		{
 			px_scene->fetchResults(true);
 
+			physx::PxU32 nbActiveActors;
+			physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);
+			for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
+			{
+				PhysicsListener* listener = static_cast<PhysicsListener*>(activeActors[i]->userData);
+				if (listener)
+					listener->onFetchResult();
+			}
+		}
+
+		void
+		PhysxScene::fetchFinish()
+		{
 			physx::PxU32 nbActiveActors;
 			physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);
 			for (physx::PxU32 i = 0; i < nbActiveActors; ++i)

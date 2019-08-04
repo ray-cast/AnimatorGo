@@ -197,37 +197,8 @@ namespace octoon
     void
 	RigidbodyComponent::onActivate() except
     {
-		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
-		if (physicsFeature)
-		{
-			this->addComponentDispatch(GameDispatchType::MoveAfter);
-
-			physics::PhysicsRigidbodyDesc desc;
-			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
-			desc.translate = position_;
-			desc.rotation = rotation_;
-			desc.mass = mass_;
-
-			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);
-			if (rigidbody_)
-			{
-				rigidbody_->setOwnerListener(this);
-				rigidbody_->setGroup(this->getGameObject()->getLayer());
-				rigidbody_->setRestitution(restitution_);
-				rigidbody_->setDynamicFriction(dynamicFriction_);
-				rigidbody_->setStaticFriction(staticFriction_);
-				rigidbody_->setPositionAndRotation(position_, rotation_);
-				rigidbody_->setGroupMask(groupMask_);
-
-				if (!isKinematic_)
-				{
-					rigidbody_->setLinearDamping(linearDamping_);
-					rigidbody_->setAngularDamping(angularDamping_);
-				}
-
-				physicsFeature->getScene()->addRigidbody(rigidbody_);
-			}
-		}
+		this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->setupRigidbody();
     }
 
     void
@@ -310,5 +281,39 @@ namespace octoon
 		auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
 		localTransform_ = math::transformMultiply(parent->getTransformInverse(), transform_);
 		localTransform_.getTransform(localPosition_, localRotation_, localScaling_);
+	}
+
+	void
+	RigidbodyComponent::setupRigidbody() noexcept
+	{
+		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+		if (physicsFeature && !rigidbody_)
+		{
+			physics::PhysicsRigidbodyDesc desc;
+			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
+			desc.translate = position_;
+			desc.rotation = rotation_;
+			desc.mass = mass_;
+
+			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);
+			if (rigidbody_)
+			{
+				rigidbody_->setOwnerListener(this);
+				rigidbody_->setGroup(this->getGameObject()->getLayer());
+				rigidbody_->setRestitution(restitution_);
+				rigidbody_->setDynamicFriction(dynamicFriction_);
+				rigidbody_->setStaticFriction(staticFriction_);
+				rigidbody_->setPositionAndRotation(position_, rotation_);
+				rigidbody_->setGroupMask(groupMask_);
+
+				if (!isKinematic_)
+				{
+					rigidbody_->setLinearDamping(linearDamping_);
+					rigidbody_->setAngularDamping(angularDamping_);
+				}
+
+				physicsFeature->getScene()->addRigidbody(rigidbody_);
+			}
+		}
 	}
 }

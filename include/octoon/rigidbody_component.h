@@ -60,18 +60,21 @@ namespace octoon
 		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();
 
     private:
-        virtual void onActivate() except override;
-        virtual void onDeactivate() noexcept override;
+        void onActivate() except override;
+        void onDeactivate() noexcept override;
 
-        virtual void onAttachComponent(const GameComponentPtr& component) noexcept;
-        virtual void onDetachComponent(const GameComponentPtr& component) noexcept;
+        void onAttachComponent(const GameComponentPtr& component) noexcept;
+        void onDetachComponent(const GameComponentPtr& component) noexcept;
 
-		virtual void onFetchResult() noexcept override;
+		void onFetchResult() noexcept override;
 
-		virtual void onLayerChangeAfter() noexcept;
-		virtual void onMoveAfter() noexcept;
+		void onLayerChangeAfter() noexcept;
+		void onMoveAfter() noexcept;
 
-		virtual void updateParentTransform() noexcept;
+		void updateParentTransform() noexcept;
+
+	private:
+		void setupRigidbody() noexcept;
 
     private:
         bool isKinematic_;

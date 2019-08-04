@@ -124,7 +124,7 @@ namespace octoon
 		if (!mesh_)
 			return;
 
-		//if (needUpdate_)
+		if (needUpdate_)
 		{
 			model::Mesh meshes;
 			auto& vertices = meshes.getVertexArray();

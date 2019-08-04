@@ -12,10 +12,10 @@ namespace octoon
 	OctoonImplementSubClass(EditorCameraComponent, GameComponent, "EditorCameraComponent")
 
 	EditorCameraComponent::EditorCameraComponent() noexcept
-		: speed_(10.0)
+		: speed_(1.0)
 		, moveSpeed_(10.0f)
-		, sensitivityX_(1.0)
-		, sensitivityY_(1.0)
+		, sensitivityX_(0.05f)
+		, sensitivityY_(0.05f)
 	{
 	}
 
@@ -87,9 +87,6 @@ namespace octoon
 	EditorCameraComponent::onFrame() noexcept
 	{
 		float step = speed_;
-#if OCTOON_FEATURE_TIMER_ENABLE
-		step *= this->getGameScene()->getFeature<TimerFeature>()->delta();
-#endif
 
 		auto inputFeature = this->getGameScene()->getFeature<InputFeature>();
 		if (inputFeature)

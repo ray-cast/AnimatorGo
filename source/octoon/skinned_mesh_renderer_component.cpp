@@ -123,7 +123,7 @@ namespace octoon
 		if (!mesh_)
 			return;
 
-		//if (needUpdate_)
+		if (needUpdate_)
 		{
 			std::vector<math::float4x4> joints(transforms_.size());
 

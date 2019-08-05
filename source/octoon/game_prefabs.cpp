@@ -335,7 +335,7 @@ namespace octoon
 			if (it->shape == ShapeType::ShapeTypeCircle)
 				gameObject->addComponent<SphereColliderComponent>(it->scale.x);
 			else if (it->shape == ShapeType::ShapeTypeSquare)
-				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale)*2.0f);
+				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale * 2.0f));
 			else if (it->shape == ShapeType::ShapeTypeCapsule)
 				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x, it->scale.y);
 			else
@@ -425,30 +425,25 @@ namespace octoon
 				if (it->rotationLowerLimit.y == 0.0f && it->rotationUpperLimit.y == 0.0f)
 					joint->setAngularYMotion(ConfigurableJointMotion::Locked);
 				else
-				{
-					if (it->rotationLowerLimit.z == 0.0f && it->rotationUpperLimit.z == 0.0f)
-					{
-						joint->setSwingLimit(it->rotationLowerLimit.y, it->rotationUpperLimit.z);
-						joint->setAngularYMotion(ConfigurableJointMotion::Limited);
-						joint->setAngularZMotion(ConfigurableJointMotion::Locked);
-					}
-					else
-					{
-						if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
-							std::swap(it->rotationLowerLimit.y, it->rotationUpperLimit.y);
-						if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
-							std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
+					joint->setAngularYMotion(ConfigurableJointMotion::Limited);
 
-						it->rotationLowerLimit.y = math::clamp(it->rotationLowerLimit.y, -3.1415f, 3.1415f);
-						it->rotationUpperLimit.y = math::clamp(it->rotationUpperLimit.y, -3.1415f, 3.1415f);
-						it->rotationLowerLimit.z = math::clamp(it->rotationLowerLimit.z, -3.1415f, 3.1415f);
-						it->rotationUpperLimit.z = math::clamp(it->rotationUpperLimit.z, -3.1415f, 3.1415f);
+				if (it->rotationLowerLimit.z == 0.0f && it->rotationUpperLimit.z == 0.0f)
+					joint->setAngularZMotion(ConfigurableJointMotion::Locked);
+				else
+					joint->setAngularZMotion(ConfigurableJointMotion::Limited);
 
-						joint->setPyramidSwingLimit(it->rotationLowerLimit.y, it->rotationUpperLimit.y, it->rotationLowerLimit.z, it->rotationUpperLimit.z);
-						joint->setAngularYMotion(ConfigurableJointMotion::Limited);
-						joint->setAngularZMotion(ConfigurableJointMotion::Limited);
-					}
-				}
+				if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
+					std::swap(it->rotationLowerLimit.y, it->rotationUpperLimit.y);
+				if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
+					std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
+
+				auto rotationLimitY = std::min(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y));
+				auto rotationLimitZ = std::min(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z));
+
+				rotationLimitY = math::clamp(it->rotationLowerLimit.y, 1e-5f, 3.1415f);
+				rotationLimitZ = math::clamp(it->rotationUpperLimit.y, 1e-5f, 3.1415f);
+
+				joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 
 				if (it->springMovementConstant.x != 0.0f)
 					joint->setDriveMotionX(it->springMovementConstant.x);

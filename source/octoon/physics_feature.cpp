@@ -10,8 +10,8 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, time_(0.0f)
-		, timeStep_(1000.0f / 60.0f)
-		, timeInterval_(1000.0f / 60.0f)
+		, timeStep_(1000.0f / 120.0f)
+		, timeInterval_(1000.0f / 120.0f)
 		, fetchResult_(false)
 		, fetchResulting_(false)
 	{

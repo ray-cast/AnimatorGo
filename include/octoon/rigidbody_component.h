@@ -55,6 +55,8 @@ namespace octoon
 		float getSleepThreshold() const noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
 
+		void wakeUp() noexcept;
+
 		bool getIsKinematic() const noexcept;
 
 		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();

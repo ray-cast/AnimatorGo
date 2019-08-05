@@ -54,6 +54,7 @@ namespace octoon
 			auto pxGlobalPose = px_rigidbody->getGlobalPose();
 			return math::Quaternion(pxGlobalPose.q.x, pxGlobalPose.q.y, pxGlobalPose.q.z, pxGlobalPose.q.w);
 		}
+
 		void PhysxRigidbody::setRotation(math::Quaternion rotation)
 		{
 			auto pxGlobalPose = px_rigidbody->getGlobalPose();
@@ -67,6 +68,12 @@ namespace octoon
 			pxGlobalPose.p = physx::PxVec3(postion.x, postion.y, postion.z);
 			pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
 			px_rigidbody->setGlobalPose(pxGlobalPose);
+		}
+
+		void
+		PhysxRigidbody::wakeUp()
+		{
+			px_rigidbody->wakeUp();
 		}
 
 		void PhysxRigidbody::setDynamicFriction(float f)

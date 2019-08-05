@@ -20,14 +20,12 @@ namespace octoon
 			PX_UNUSED(constantBlock);
 			PX_UNUSED(constantBlockSize);
 
-			// let triggers through
 			if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 			{
 				pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 				return physx::PxFilterFlags();
 			}
 
-			// Collision Group
 			if (!physx::PxGetGroupCollisionFlag(filterData0.word0, filterData1.word0))
 			{
 				return physx::PxFilterFlag::eSUPPRESS;
@@ -36,7 +34,7 @@ namespace octoon
 			filterData0.word2 = ~filterData0.word2;
 			filterData1.word2 = ~filterData1.word2;
 
-			if ((1 << filterData0.word0) & filterData1.word2 &&
+			if ((1 << filterData0.word0) & filterData1.word2 ||
 				(1 << filterData1.word0) & filterData0.word2)
 			{
 				return physx::PxFilterFlag::eSUPPRESS;

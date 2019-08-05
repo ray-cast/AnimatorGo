@@ -516,15 +516,15 @@ namespace octoon
 				smr->setMaterial(materials[i]);
 				smr->setTransforms(bones);
 
-				auto mat = std::make_shared<LineMaterial>(1.0f);
+				/*auto mat = std::make_shared<LineMaterial>(1.0f);
 				mat->setColor(math::float3(0.4, 0.9, 0.4));
 
 				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
 				sjr->setMaterial(mat);
-				sjr->setTransforms(bones);
+				sjr->setTransforms(bones);*/
 
 				object->addComponent(smr);
-				object->addComponent(sjr);
+				//object->addComponent(sjr);
 			}
 		}
 

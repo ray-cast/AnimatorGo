@@ -194,6 +194,13 @@ namespace octoon
 		return sleepMode_;
 	}
 
+	void
+	RigidbodyComponent::wakeUp() noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+			rigidbody_->wakeUp();
+	}
+
 	bool 
 	RigidbodyComponent::getIsKinematic() const noexcept
 	{
@@ -285,11 +292,11 @@ namespace octoon
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
-			if (rigidbody_ && isKinematic_)
-			{
-				auto transform = this->getComponent<TransformComponent>();
-				rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
-			}
+		if (rigidbody_ && isKinematic_)
+		{
+			auto transform = this->getComponent<TransformComponent>();
+			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
+		}
 	}
 
 	void
@@ -330,7 +337,6 @@ namespace octoon
 
 				rigidbody_->setMass(mass_);
 				rigidbody_->setOwnerListener(this);
-				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setRestitution(restitution_);
 				rigidbody_->setDynamicFriction(dynamicFriction_);
 				rigidbody_->setStaticFriction(staticFriction_);

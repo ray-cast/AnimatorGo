@@ -46,6 +46,8 @@ namespace octoon
 			virtual math::float3 getPosition() override;
 			virtual math::Quaternion getRotation() override;
 
+			virtual void wakeUp() override;
+
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) override;
 			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) override;
 

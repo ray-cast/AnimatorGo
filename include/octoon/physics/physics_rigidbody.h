@@ -72,6 +72,8 @@ namespace octoon
 			virtual float getStaticFriction() const = 0;
 			virtual float getRestitution() const = 0;
 
+			virtual void wakeUp() = 0;
+
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) = 0;
 			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) = 0;
 

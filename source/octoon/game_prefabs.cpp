@@ -335,7 +335,7 @@ namespace octoon
 			if (it->shape == ShapeType::ShapeTypeCircle)
 				gameObject->addComponent<SphereColliderComponent>(it->scale.x);
 			else if (it->shape == ShapeType::ShapeTypeSquare)
-				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale));
+				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale)*2.0f);
 			else if (it->shape == ShapeType::ShapeTypeCapsule)
 				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x, it->scale.y);
 			else
@@ -417,8 +417,8 @@ namespace octoon
 					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
 						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
 
-					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -3.1415f, 3.1415f) - 1e-5);
-					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -3.1415f, 3.1415f) + 1e-5);
+					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -3.1415f, 3.1415f) - 1e-5f);
+					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -3.1415f, 3.1415f) + 1e-5f);
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
 				}
 

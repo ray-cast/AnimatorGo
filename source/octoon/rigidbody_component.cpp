@@ -6,9 +6,9 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(RigidbodyComponent, GameComponent, "RigidbodyComponent")
+    OctoonImplementSubClass(RigidbodyComponent, GameComponent, "RigidbodyComponent")
 
-	RigidbodyComponent::RigidbodyComponent() noexcept
+    RigidbodyComponent::RigidbodyComponent() noexcept
 		: isKinematic_(false)
 		, angularVelocity_(1.0)
 		, gravityScale_(1.0)
@@ -21,8 +21,8 @@ namespace octoon
 		, position_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
 		, groupMask_(0)
-	{
-	}
+    {
+    }
 
 	RigidbodyComponent::RigidbodyComponent(bool type) noexcept
 		: RigidbodyComponent()
@@ -35,8 +35,8 @@ namespace octoon
 	}
 
 	RigidbodyComponent::~RigidbodyComponent()
-	{
-	}
+    {
+    }
 
 	void
 	RigidbodyComponent::setPosition(const math::float3& position) noexcept
@@ -193,7 +193,7 @@ namespace octoon
 
 	GameComponentPtr
 	RigidbodyComponent::clone() const noexcept
-	{
+    {
 		auto instance = std::make_shared<RigidbodyComponent>();
 		instance->setMass(instance->getMass());
 		instance->setDynamicFriction(instance->getDynamicFriction());
@@ -203,46 +203,46 @@ namespace octoon
 		instance->setGravityScale(instance->getGravityScale());
 		instance->setIsKinematic(instance->getIsKinematic());
 		return instance;
-	}
+    }
 
-	void
+    void
 	RigidbodyComponent::onActivate() except
-	{
+    {
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->setupRigidbody(*collider);
-	}
+    }
 
-	void
+    void
 	RigidbodyComponent::onDeactivate() noexcept
-	{
+    {
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		rigidbody_.reset();
-	}
+    }
 
 	void 
 	RigidbodyComponent::onAttachComponent(const GameComponentPtr& component) noexcept
-	{
+    {
 		if (component->isA<ColliderComponent>())
 		{
 			auto collider = component->downcast_pointer<ColliderComponent>();
 			if (collider)
 				this->setupRigidbody(*collider);
 		}
-	}
+    }
 
-	void 
+    void 
 	RigidbodyComponent::onDetachComponent(const GameComponentPtr& component) noexcept
-	{
+    {
 		if (component->isA<ColliderComponent>())
 		{
 			auto collider = component->downcast_pointer<ColliderComponent>();
 			if (collider)
 				rigidbody_->detachShape(collider->getShape());
 		}
-	}
+    }
 
 	void 
 	RigidbodyComponent::onFetchResult() noexcept

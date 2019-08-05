@@ -23,6 +23,9 @@ namespace octoon
 		float getHeight() const noexcept;
 		float getDepth() const noexcept;
 
+		void setSize(const math::float3& sz) noexcept;
+		const math::float3& getSize() const noexcept;
+
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
 
@@ -37,10 +40,7 @@ namespace octoon
 		void onDeactivate() noexcept override;
 
 	private:
-		float width_;
-		float height_;
-		float depth_;
-
+		math::float3 size_;
 		math::float3 center_;
 
 		std::shared_ptr<physics::PhysicsBoxShape> shape_;

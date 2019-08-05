@@ -14,7 +14,7 @@
 namespace octoon
 {
 	using physics::ConfigurableJointMotion;
-	class OCTOON_EXPORT ConfigurableJointComponent : public JointComponent
+	class OCTOON_EXPORT ConfigurableJointComponent final : public JointComponent
 	{
 		OctoonDeclareSubInterface(ConfigurableJointComponent, GameComponent)
 	public:

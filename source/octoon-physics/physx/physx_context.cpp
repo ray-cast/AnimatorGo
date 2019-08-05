@@ -34,7 +34,7 @@ namespace octoon
                 throw runtime::runtime_error::create("PxCreateFoundation failed!");
 
 			// create pvd
-            physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5435, 10000);
+            physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
 			pvd = physx::PxCreatePvd(*foundation);
             pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 

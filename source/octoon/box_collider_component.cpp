@@ -7,25 +7,19 @@ namespace octoon
     OctoonImplementSubClass(BoxColliderComponent, ColliderComponent, "BoxCollider")
 
 	BoxColliderComponent::BoxColliderComponent() noexcept
-		: width_(1.0)
-		, height_(1.0)
-		, depth_(1.0)
+		: size_(math::float3::One)
 		, center_(math::float3::Zero)
     {
     }
 
 	BoxColliderComponent::BoxColliderComponent(const math::float3& size) noexcept
-		: width_(size.x)
-		, height_(size.y)
-		, depth_(size.z)
+		: size_(size)
 		, center_(math::float3::Zero)
 	{
 	}
 
 	BoxColliderComponent::BoxColliderComponent(float x, float y, float z) noexcept
-		: width_(x)
-		, height_(y)
-		, depth_(z)
+		: size_(math::float3(x, y, z))
 		, center_(math::float3::Zero)
 	{
 	}
@@ -39,7 +33,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setWidth(width);
-		this->width_ = width;
+		this->size_.x = width;
 	}
 
 	void 
@@ -47,7 +41,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setHeight(height);
-		this->height_ = height;
+		this->size_.y = height;
 	}
 
 	void
@@ -55,7 +49,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setDepth(depth);
-		this->depth_ = depth;
+		this->size_.z = depth;
 	}
 
 	void
@@ -66,22 +60,40 @@ namespace octoon
 		this->center_ = center;
 	}
 
+	void
+	BoxColliderComponent::setSize(const math::float3& sz) noexcept
+	{
+		if (shape_)
+		{
+			shape_->setWidth(size_.x);
+			shape_->setHeight(size_.y);
+			shape_->setDepth(size_.z);
+		}
+		this->size_ = sz;
+	}
+
+	const math::float3&
+	BoxColliderComponent::getSize() const noexcept
+	{
+		return this->size_;
+	}
+
 	float
 	BoxColliderComponent::getWidth() const noexcept
 	{
-		return this->width_;
+		return this->size_.x;
 	}
 
 	float
 	BoxColliderComponent::getHeight() const noexcept
 	{
-		return this->height_;
+		return this->size_.y;
 	}
 
 	float
 	BoxColliderComponent::getDepth() const noexcept
 	{
-		return this->depth_;
+		return this->size_.z;
 	}
 
 	const math::float3& 
@@ -115,9 +127,9 @@ namespace octoon
 		if (physicsFeature)
 		{
 			physics::PhysicsBoxShapeDesc boxDesc;
-			boxDesc.width = width_;
-			boxDesc.height = height_;
-			boxDesc.depth = depth_;
+			boxDesc.width = size_.x;
+			boxDesc.height = size_.y;
+			boxDesc.depth = size_.z;
 			shape_ = physicsFeature->getContext()->createBoxShape(boxDesc);
 			shape_->setCenter(this->getCenter());
 		}

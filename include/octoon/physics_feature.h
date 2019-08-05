@@ -16,20 +16,20 @@ namespace octoon
 		virtual ~PhysicsFeature() noexcept;
 
 		void setTimeStep(float timeStep) noexcept;
-		float getTimeStep() const noexcept;
-
 		void setTimeInterval(float timeInterval) noexcept;
+
+		float getTimeStep() const noexcept;
 		float getTimeInterval() const noexcept;
 
 	public:
-		virtual void onActivate() except override;
-		virtual void onDeactivate() noexcept override;
+		void onActivate() except override;
+		void onDeactivate() noexcept override;
 
-		virtual void onReset() noexcept override;
+		void onReset() noexcept override;
 
-		virtual void onFrameBegin() noexcept override;
-        virtual void onFrame() except;
-		virtual void onFrameEnd() noexcept override;
+		void onFrameBegin() noexcept override;
+        void onFrame() except;
+		void onFrameEnd() noexcept override;
 
 	public:
 		std::shared_ptr<physics::PhysicsContext> getContext();

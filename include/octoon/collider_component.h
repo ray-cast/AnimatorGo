@@ -13,12 +13,12 @@ namespace octoon
 		ColliderComponent() noexcept;
 		virtual ~ColliderComponent() noexcept;
 
+		virtual void setCenter(const math::float3& center) noexcept = 0;
+		virtual const math::float3& getCenter() const noexcept = 0;
+	
+	private:
+		friend class RigidbodyComponent;
 		virtual std::shared_ptr<physics::PhysicsShape> getShape() noexcept = 0;
-
-	protected:
-		virtual void OnCollisionEnter() noexcept;
-		virtual void OnCollisionExit() noexcept;
-		virtual void OnCollisionStay() noexcept;
 	};
 }
 

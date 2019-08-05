@@ -1,10 +1,6 @@
 #include <octoon/capsule_collider_component.h>
-
-#include <octoon/rigidbody_component.h>
 #include <octoon/physics_feature.h>
-#include <octoon/game_app.h>
 #include <octoon/game_scene.h>
-#include <octoon/runtime/except.h>
 
 namespace octoon
 {
@@ -13,12 +9,14 @@ namespace octoon
 	CapsuleColliderComponent::CapsuleColliderComponent() noexcept
 		: radius_(1.0)
 		, height_(1.0)
+		, center_(math::float3::Zero)
     {
     }
 
 	CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height) noexcept
 		: radius_(radius)
 		, height_(height)
+		, center_(math::float3::Zero)
 	{
 	}
 
@@ -42,16 +40,30 @@ namespace octoon
 		this->height_ = height;
 	}
 	
+	void
+	CapsuleColliderComponent::setCenter(const math::float3& center) noexcept
+	{
+		if (shape_)
+			shape_->setCenter(center);
+		this->center_ = center;
+	}
+
 	float
 	CapsuleColliderComponent::getRadius() const noexcept
 	{
-		return radius_;
+		return this->radius_;
 	}
 
 	float
 	CapsuleColliderComponent::getHeight() const noexcept
 	{
-		return height_;
+		return this->height_;
+	}
+
+	const math::float3& 
+	CapsuleColliderComponent::getCenter() const noexcept
+	{
+		return this->center_;
 	}
 
     GameComponentPtr
@@ -61,6 +73,7 @@ namespace octoon
 		instance->setName(this->getName());
 		instance->setRadius(this->getRadius());
 		instance->setHeight(this->getHeight());
+		instance->setCenter(this->getCenter());
 		return instance;
     }
 
@@ -71,7 +84,7 @@ namespace octoon
 	}
 
     void
-	CapsuleColliderComponent::onActivate() except
+	CapsuleColliderComponent::onActivate() noexcept
     {
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		if (physicsFeature)
@@ -80,6 +93,7 @@ namespace octoon
 			boxDesc.radius = radius_;
 			boxDesc.height = height_;
 			shape_ = physicsFeature->getContext()->createCapsuleShape(boxDesc);
+			shape_->setCenter(this->center_);
 		}
     }
 

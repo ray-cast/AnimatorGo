@@ -23,9 +23,14 @@ namespace octoon
 		float getHeight() const noexcept;
 		float getDepth() const noexcept;
 
-		std::shared_ptr<physics::PhysicsShape> getShape() noexcept override;
+		void setCenter(const math::float3& center) noexcept override;
+		const math::float3& getCenter() const noexcept override;
 
-		GameComponentPtr clone() const noexcept;
+		GameComponentPtr clone() const noexcept override;
+
+	private:
+		friend class RigidbodyComponent;
+		std::shared_ptr<physics::PhysicsShape> getShape() noexcept override;
 
 	private:
 		void onActivate() except override;
@@ -35,6 +40,8 @@ namespace octoon
 		float width_;
 		float height_;
 		float depth_;
+
+		math::float3 center_;
 
 		std::shared_ptr<physics::PhysicsBoxShape> shape_;
 	};

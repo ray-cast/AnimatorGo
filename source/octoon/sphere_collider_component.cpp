@@ -12,6 +12,7 @@ namespace octoon
 
 	SphereColliderComponent::SphereColliderComponent() noexcept
 		: radius_(1.0)
+		, center_(math::float3::Zero)
     {
     }
 
@@ -38,6 +39,20 @@ namespace octoon
 		return this->radius_;
     }
 
+	void
+	SphereColliderComponent::setCenter(const math::float3& center) noexcept
+	{
+		if (shape_)
+			shape_->setCenter(center);
+		this->center_ = center;
+	}
+
+	const math::float3& 
+	SphereColliderComponent::getCenter() const noexcept
+	{
+		return this->center_;
+	}
+
 	std::shared_ptr<physics::PhysicsShape>
 	SphereColliderComponent::getShape() noexcept
 	{
@@ -50,11 +65,12 @@ namespace octoon
 		auto instance = std::make_shared<SphereColliderComponent>();
 		instance->setName(this->getName());
 		instance->setRadius(this->getRadius());
+		instance->setCenter(this->getCenter());
 		return instance;
 	}
 
     void
-	SphereColliderComponent::onActivate() except
+	SphereColliderComponent::onActivate() noexcept
     {
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		if (physicsFeature)
@@ -62,6 +78,7 @@ namespace octoon
 			physics::PhysicsSphereShapeDesc sphereDesc;
 			sphereDesc.radius = radius_;
 			shape_ = physicsFeature->getContext()->createSphereShape(sphereDesc);
+			shape_->setCenter(this->center_);
 		}
     }
 

@@ -1,10 +1,6 @@
 #include <octoon/box_collider_component.h>
-
-#include <octoon/rigidbody_component.h>
 #include <octoon/physics_feature.h>
-#include <octoon/game_app.h>
 #include <octoon/game_scene.h>
-#include <octoon/runtime/except.h>
 
 namespace octoon
 {
@@ -14,6 +10,7 @@ namespace octoon
 		: width_(1.0)
 		, height_(1.0)
 		, depth_(1.0)
+		, center_(math::float3::Zero)
     {
     }
 
@@ -21,6 +18,7 @@ namespace octoon
 		: width_(size.x)
 		, height_(size.y)
 		, depth_(size.z)
+		, center_(math::float3::Zero)
 	{
 	}
 
@@ -28,6 +26,7 @@ namespace octoon
 		: width_(x)
 		, height_(y)
 		, depth_(z)
+		, center_(math::float3::Zero)
 	{
 	}
 
@@ -59,22 +58,36 @@ namespace octoon
 		this->depth_ = depth;
 	}
 
+	void
+	BoxColliderComponent::setCenter(const math::float3& center) noexcept
+	{
+		if (shape_)
+			shape_->setCenter(center);
+		this->center_ = center;
+	}
+
 	float
 	BoxColliderComponent::getWidth() const noexcept
 	{
-		return width_;
+		return this->width_;
 	}
 
 	float
 	BoxColliderComponent::getHeight() const noexcept
 	{
-		return height_;
+		return this->height_;
 	}
 
 	float
 	BoxColliderComponent::getDepth() const noexcept
 	{
-		return depth_;
+		return this->depth_;
+	}
+
+	const math::float3& 
+	BoxColliderComponent::getCenter() const noexcept
+	{
+		return this->center_;
 	}
 
     GameComponentPtr
@@ -85,6 +98,7 @@ namespace octoon
 		instance->setWidth(this->getWidth());
 		instance->setHeight(this->getHeight());
 		instance->setDepth(this->getDepth());
+		instance->setCenter(this->getCenter());
 		return instance;
     }
 
@@ -105,6 +119,7 @@ namespace octoon
 			boxDesc.height = height_;
 			boxDesc.depth = depth_;
 			shape_ = physicsFeature->getContext()->createBoxShape(boxDesc);
+			shape_->setCenter(this->getCenter());
 		}
     }
 

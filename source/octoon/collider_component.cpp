@@ -11,19 +11,4 @@ namespace octoon
 	ColliderComponent::~ColliderComponent() noexcept
 	{
 	}
-
-	void
-	ColliderComponent::OnCollisionEnter() noexcept
-	{
-	}
-	
-	void
-	ColliderComponent::OnCollisionExit() noexcept
-	{
-	}
-
-	void
-	ColliderComponent::OnCollisionStay() noexcept
-	{
-	}
 }

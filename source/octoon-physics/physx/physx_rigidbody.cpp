@@ -113,7 +113,7 @@ namespace octoon
 		}
 
 		void 
-		PhysxRigidbody::isKinematic(bool kinematic) noexcept
+		PhysxRigidbody::setKinematic(bool kinematic) noexcept
 		{
 			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, kinematic);
 		}

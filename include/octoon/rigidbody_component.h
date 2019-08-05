@@ -33,8 +33,6 @@ namespace octoon
 		void setPosition(const math::float3& position) noexcept;
 		void setRotation(const math::Quaternion& quat) noexcept;
 
-		void setGroupMask(std::uint16_t groupMask) noexcept;
-
         void setAngularVelocity(float v) noexcept;
         void setGravityScale(float scale) noexcept;
         void setMass(float m) noexcept;
@@ -45,6 +43,7 @@ namespace octoon
         void setRestitution(float f);
 		void setLinearDamping(float value) noexcept;
 		void setAngularDamping(float value) noexcept;
+		void setGroupMask(std::uint16_t groupMask) noexcept;
 
         float getDynamicFriction() const;
         float getStaticFriction() const;
@@ -52,7 +51,6 @@ namespace octoon
         float getAngularVelocity() const noexcept;
         float getGravityScale() const noexcept;
         float getMass() const noexcept;
-
 		RigidbodySleepMode getSleepMode() const noexcept;
 
 		bool getIsKinematic() const noexcept;
@@ -74,7 +72,7 @@ namespace octoon
 		void updateParentTransform() noexcept;
 
 	private:
-		void setupRigidbody() noexcept;
+		void setupRigidbody(ColliderComponent& collder) noexcept;
 
     private:
         bool isKinematic_;

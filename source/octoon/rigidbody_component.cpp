@@ -57,6 +57,8 @@ namespace octoon
 	void
 	RigidbodyComponent::setGroupMask(std::uint16_t groupMask) noexcept
 	{
+		if (rigidbody_)
+			rigidbody_->setGroupMask(groupMask);
 		groupMask_ = groupMask;
 	}
 
@@ -75,6 +77,8 @@ namespace octoon
 	void
 	RigidbodyComponent::setMass(float mass) noexcept
 	{
+		if (rigidbody_)
+			rigidbody_->setMass(mass);
 		mass_ = mass;
 	}
 
@@ -89,6 +93,8 @@ namespace octoon
 	{
 		if (isKinematic_ != isKinematic)
 		{
+			if (rigidbody_)
+				rigidbody_->setKinematic(isKinematic);
 			isKinematic_ = isKinematic;
 		}
 	}
@@ -191,6 +197,13 @@ namespace octoon
 	RigidbodyComponent::clone() const noexcept
     {
 		auto instance = std::make_shared<RigidbodyComponent>();
+		instance->setMass(instance->getMass());
+		instance->setDynamicFriction(instance->getDynamicFriction());
+		instance->setStaticFriction(instance->getStaticFriction());
+		instance->setRestitution(instance->getRestitution());
+		instance->setAngularVelocity(instance->getAngularVelocity());
+		instance->setGravityScale(instance->getGravityScale());
+		instance->setIsKinematic(instance->getIsKinematic());
 		return instance;
     }
 
@@ -198,7 +211,9 @@ namespace octoon
 	RigidbodyComponent::onActivate() except
     {
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->setupRigidbody();
+		auto collider = this->getComponent<ColliderComponent>();
+		if (collider)
+			this->setupRigidbody(*collider);
     }
 
     void
@@ -216,15 +231,7 @@ namespace octoon
 		{
 			auto collider = component->downcast_pointer<ColliderComponent>();
 			if (collider)
-			{
-				rigidbody_->attachShape(collider->getShape());
-				rigidbody_->setRestitution(restitution_);
-				rigidbody_->setDynamicFriction(dynamicFriction_);
-				rigidbody_->setStaticFriction(staticFriction_);
-				rigidbody_->setGroup(this->getGameObject()->getLayer());
-				rigidbody_->setGroupMask(groupMask_);
-				rigidbody_->setMass(mass_);
-			}
+				this->setupRigidbody(*collider);
 		}
     }
 
@@ -284,7 +291,7 @@ namespace octoon
 	}
 
 	void
-	RigidbodyComponent::setupRigidbody() noexcept
+	RigidbodyComponent::setupRigidbody(ColliderComponent& collider) noexcept
 	{
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		if (physicsFeature && !rigidbody_)
@@ -298,13 +305,18 @@ namespace octoon
 			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);
 			if (rigidbody_)
 			{
+				rigidbody_->attachShape(collider.getShape());
+
+				rigidbody_->setMass(mass_);
 				rigidbody_->setOwnerListener(this);
 				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setRestitution(restitution_);
 				rigidbody_->setDynamicFriction(dynamicFriction_);
 				rigidbody_->setStaticFriction(staticFriction_);
 				rigidbody_->setPositionAndRotation(position_, rotation_);
+				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setGroupMask(groupMask_);
+				rigidbody_->setKinematic(isKinematic_);
 
 				if (!isKinematic_)
 				{

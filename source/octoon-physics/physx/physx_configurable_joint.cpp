@@ -309,7 +309,7 @@ namespace octoon
 		}
 
 		void
-		PhysxConfigurableJoint::PhysxConfigurableJoint::setDriveMotionZ(float motion)
+		PhysxConfigurableJoint::setDriveMotionZ(float motion)
 		{
 			if (motion != 0.0f)
 			{

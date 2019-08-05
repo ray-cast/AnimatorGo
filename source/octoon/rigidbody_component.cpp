@@ -21,6 +21,7 @@ namespace octoon
 		, position_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
 		, groupMask_(0)
+		, sleepThreshold_(0.05)
     {
     }
 
@@ -58,6 +59,14 @@ namespace octoon
 		if (rigidbody_)
 			rigidbody_->setGroupMask(groupMask);
 		groupMask_ = groupMask;
+	}
+
+	void
+	RigidbodyComponent::setSleepThreshold(float threshold) noexcept
+	{
+		if (rigidbody_)
+			rigidbody_->setSleepThreshold(threshold);
+		sleepThreshold_ = threshold;
 	}
 
 	void
@@ -173,6 +182,12 @@ namespace octoon
 		return mass_;
 	}
 
+	float
+	RigidbodyComponent::getSleepThreshold() const noexcept
+	{
+		return sleepThreshold_;
+	}
+
 	RigidbodySleepMode
 	RigidbodyComponent::getSleepMode() const noexcept
 	{
@@ -202,6 +217,7 @@ namespace octoon
 		instance->setAngularVelocity(instance->getAngularVelocity());
 		instance->setGravityScale(instance->getGravityScale());
 		instance->setIsKinematic(instance->getIsKinematic());
+		instance->setSleepThreshold(instance->getSleepThreshold());
 		return instance;
     }
 
@@ -209,6 +225,7 @@ namespace octoon
 	RigidbodyComponent::onActivate() except
     {
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->addComponentDispatch(GameDispatchType::FrameEnd);
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->setupRigidbody(*collider);
@@ -268,11 +285,17 @@ namespace octoon
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
-		if (rigidbody_ && isKinematic_)
-		{
-			auto transform = this->getComponent<TransformComponent>();
-			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
-		}
+			if (rigidbody_ && isKinematic_)
+			{
+				auto transform = this->getComponent<TransformComponent>();
+				rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
+			}
+	}
+
+	void
+	RigidbodyComponent::onFrameEnd() noexcept
+	{
+		this->onFetchResult();
 	}
 
 	void
@@ -315,6 +338,7 @@ namespace octoon
 				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setGroupMask(groupMask_);
 				rigidbody_->setKinematic(isKinematic_);
+				rigidbody_->setSleepThreshold(sleepThreshold_);
 
 				if (!isKinematic_)
 				{

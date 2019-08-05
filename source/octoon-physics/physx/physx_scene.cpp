@@ -36,7 +36,7 @@ namespace octoon
 			filterData0.word2 = ~filterData0.word2;
 			filterData1.word2 = ~filterData1.word2;
 
-			if ((1 << filterData0.word0) & filterData1.word2 ||
+			if ((1 << filterData0.word0) & filterData1.word2 &&
 				(1 << filterData1.word0) & filterData0.word2)
 			{
 				return physx::PxFilterFlag::eSUPPRESS;
@@ -89,15 +89,6 @@ namespace octoon
 		PhysxScene::fetchStart()
 		{
 			px_scene->fetchResults(true);
-
-			physx::PxU32 nbActiveActors;
-			physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);
-			for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
-			{
-				PhysicsListener* listener = static_cast<PhysicsListener*>(activeActors[i]->userData);
-				if (listener)
-					listener->onFetchResult();
-			}
 		}
 
 		void

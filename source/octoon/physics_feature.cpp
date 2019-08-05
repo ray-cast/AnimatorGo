@@ -13,6 +13,7 @@ namespace octoon
 		, timeStep_(1000.0f / 60.0f)
 		, timeInterval_(1000.0f / 60.0f)
 		, fetchResult_(false)
+		, fetchResulting_(false)
 	{
 		
 	}
@@ -69,7 +70,9 @@ namespace octoon
     {
 		if (fetchResult_)
 		{
+			fetchResulting_ = true;
 			physics_scene->fetchStart();
+			fetchResulting_ = false;
 			fetchResult_ = false;
 		}
 

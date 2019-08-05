@@ -332,7 +332,7 @@ namespace octoon
 			gameObject->setLayer(it->group);
 			gameObject->getComponent<TransformComponent>()->setTransform(it->position, math::Quaternion(it->rotation));
 
-			if (it->shape == ShapeType::ShapeTypeCircle)
+			if (it->shape == ShapeType::ShapeTypeSphere)
 				gameObject->addComponent<SphereColliderComponent>(it->scale.x);
 			else if (it->shape == ShapeType::ShapeTypeSquare)
 				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale * 2.0f));
@@ -353,6 +353,7 @@ namespace octoon
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
+			component->setSleepThreshold(0.0f);
 
 			gameObject->addComponent(component);
 
@@ -453,9 +454,9 @@ namespace octoon
 					joint->setDriveMotionZ(it->springMovementConstant.z);
 
 				if (it->springRotationConstant.x != 0.0f)
-					joint->setDriveMotionX(it->springRotationConstant.x);
+					joint->setDriveAngularX(it->springRotationConstant.x);
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
-					joint->setDriveAngularZ(it->springRotationConstant.y);
+					joint->setDriveAngularY((it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f);
 
 				joints.push_back(bodyB->getGameObject()->shared_from_this()->downcast_pointer<GameObject>());
 			}

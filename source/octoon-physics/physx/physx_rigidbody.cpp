@@ -118,19 +118,25 @@ namespace octoon
 			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, kinematic);
 		}
 
+		void
+		PhysxRigidbody::setSleepThreshold(float threshold) noexcept
+		{
+			px_rigidbody->setSleepThreshold(threshold);
+		}
+
 		void PhysxRigidbody::setMass(float f)
 		{
-			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setMass(f);
+			px_rigidbody->setMass(f);
 		}
 
 		void PhysxRigidbody::setLinearDamping(float value)
 		{
-			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setLinearDamping(value);
+			px_rigidbody->setLinearDamping(value);
 		}
 
 		void PhysxRigidbody::setAngularDamping(float value)
 		{
-			dynamic_cast<physx::PxRigidDynamic*>(px_rigidbody)->setAngularDamping(value);
+			px_rigidbody->setAngularDamping(value);
 		}
 
 		float PhysxRigidbody::getStaticFriction() const

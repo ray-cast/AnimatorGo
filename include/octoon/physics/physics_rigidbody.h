@@ -51,6 +51,7 @@ namespace octoon
 			virtual void setOwnerListener(PhysicsListener* listener) = 0;
 
 			virtual void setKinematic(bool kinematic) noexcept = 0;
+			virtual void setSleepThreshold(float threshold) noexcept = 0;
 
 			virtual void setPosition(math::float3 postion) = 0;
 			virtual void setRotation(math::Quaternion rotation) = 0;

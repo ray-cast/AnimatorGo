@@ -44,6 +44,7 @@ namespace octoon
 		void setLinearDamping(float value) noexcept;
 		void setAngularDamping(float value) noexcept;
 		void setGroupMask(std::uint16_t groupMask) noexcept;
+		void setSleepThreshold(float threshold) noexcept;
 
         float getDynamicFriction() const;
         float getStaticFriction() const;
@@ -51,6 +52,7 @@ namespace octoon
         float getAngularVelocity() const noexcept;
         float getGravityScale() const noexcept;
         float getMass() const noexcept;
+		float getSleepThreshold() const noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
 
 		bool getIsKinematic() const noexcept;
@@ -68,6 +70,7 @@ namespace octoon
 
 		void onLayerChangeAfter() noexcept;
 		void onMoveAfter() noexcept;
+		void onFrameEnd() noexcept;
 
 		void updateParentTransform() noexcept;
 
@@ -85,6 +88,7 @@ namespace octoon
         float restitution_;
 		float linearDamping_;
 		float angularDamping_;
+		float sleepThreshold_;
 		std::uint16_t groupMask_;
 
 		math::float3 position_;

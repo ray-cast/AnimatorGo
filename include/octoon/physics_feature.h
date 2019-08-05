@@ -21,6 +21,8 @@ namespace octoon
 		float getTimeStep() const noexcept;
 		float getTimeInterval() const noexcept;
 
+		bool fetchResulting() const { return fetchResulting_; }
+
 	public:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
@@ -45,6 +47,7 @@ namespace octoon
 		float timeInterval_;
 
 		bool fetchResult_;
+		bool fetchResulting_;
 
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;

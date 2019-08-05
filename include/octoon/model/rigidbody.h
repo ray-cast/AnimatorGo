@@ -18,7 +18,7 @@ namespace octoon
 	{
 		enum OCTOON_EXPORT ShapeType
 		{
-			ShapeTypeCircle,
+			ShapeTypeSphere,
 			ShapeTypeSquare,
 			ShapeTypeCapsule
 		};

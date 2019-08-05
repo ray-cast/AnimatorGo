@@ -18,6 +18,7 @@ namespace octoon
 
 	SphereColliderComponent::SphereColliderComponent(float radius) noexcept
 		: radius_(radius)
+		, center_(math::float3::Zero)
 	{
 	}
 

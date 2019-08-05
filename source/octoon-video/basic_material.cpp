@@ -104,7 +104,7 @@ namespace octoon
 
 			hal::GraphicsStateDesc stateDesc;
 			stateDesc.setPrimitiveType(hal::GraphicsVertexType::TriangleList);
-			stateDesc.setCullMode(hal::GraphicsCullMode::None);
+			stateDesc.setCullMode(hal::GraphicsCullMode::Back);
 			stateDesc.setDepthEnable(true);
 			stateDesc.setColorBlends(blends);
 

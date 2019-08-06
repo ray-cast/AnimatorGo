@@ -24,6 +24,7 @@ namespace physx
 	class PxPhysics;
 	class PxCooking;
 	class PxDefaultCpuDispatcher;
+	class PxPvdTransport;
 
 	class PxScene;
 	class PxRigidActor;

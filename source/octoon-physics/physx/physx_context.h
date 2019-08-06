@@ -35,7 +35,6 @@ namespace octoon
 			virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
 			physx::PxPhysics* getPxPhysics();
-			physx::PxDefaultCpuDispatcher* getPxDefaultCpuDispatcher();
 
 		private:
 			PhysxContext(const PhysxContext&) noexcept = delete;
@@ -45,7 +44,7 @@ namespace octoon
             physx::PxPvd* pvd;
             physx::PxPhysics* physics;
             physx::PxCooking* cooking;
-            physx::PxDefaultCpuDispatcher* dispatcher;
+			physx::PxPvdTransport* transport_;
             std::unique_ptr<physx::PxDefaultErrorCallback> defaultErrorCallback;
             std::unique_ptr<physx::PxDefaultAllocator> defaultAllocatorCallback;
 		};

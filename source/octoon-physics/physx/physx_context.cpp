@@ -16,61 +16,63 @@ namespace octoon
 {
 	namespace physics
 	{
-        PhysxContext::PhysxContext()
-            :foundation(nullptr),
-			pvd(nullptr),
-			physics(nullptr),
-			cooking(nullptr),
-            defaultAllocatorCallback(new physx::PxDefaultAllocator),
-            defaultErrorCallback(new physx::PxDefaultErrorCallback)
+		PhysxContext::PhysxContext()
+			: foundation(nullptr)
+			, pvd(nullptr)
+			, physics(nullptr)
+			, cooking(nullptr)
+			, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
+			, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
+			, transport_(nullptr)
 		{
 			physx::PxTolerancesScale scale;
 			scale.length = 1;
-			scale.speed = 1;
+			scale.speed = 9.8f;
 
-			// create foundation
-            foundation = PxCreateFoundation(PX_PHYSICS_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
-            if (!foundation)
-                throw runtime::runtime_error::create("PxCreateFoundation failed!");
+			foundation = PxCreateFoundation(PX_PHYSICS_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);
+			if (!foundation)
+				throw runtime::runtime_error::create("PxCreateFoundation failed!");
 
-			// create pvd
-            physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
+			transport_ = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
 			pvd = physx::PxCreatePvd(*foundation);
-            pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+			pvd->connect(*transport_, physx::PxPvdInstrumentationFlag::eALL);
 
-			// create physics
-            physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, physx::PxTolerancesScale(), true, pvd);
-            if (!physics)
-                throw runtime::runtime_error::create("PxCreatePhysics failed!");
+			physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, scale, true, pvd);
+			if (!physics)
+				 throw runtime::runtime_error::create("PxCreatePhysics failed!");
 
-			// create cooking
-            cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
-            if (!cooking)
-                throw runtime::runtime_error::create("PxCreateCooking failed!");
+			cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, physx::PxCookingParams(scale));
+			if (!cooking)
+				throw runtime::runtime_error::create("PxCreateCooking failed!");
 
-            if (!PxInitExtensions(*physics, pvd))
-                throw runtime::runtime_error::create("PxInitExtensions failed!");
-
-			// create dispatcher
-			dispatcher = physx::PxDefaultCpuDispatcherCreate(4);
+			if (!PxInitExtensions(*physics, pvd))
+				throw runtime::runtime_error::create("PxInitExtensions failed!");
 		}
 
 		PhysxContext::~PhysxContext()
 		{
 			PxCloseExtensions();
 
+			if (cooking)
+				cooking->release();
+
 			if (physics)
-			{
 				physics->release();
-				physics = nullptr;
-			}
+
+			if (pvd)
+				pvd->release();
+
+			if (transport_)
+				transport_->release();
+
+			if (foundation)
+				foundation->release();
 		}
 
-        std::shared_ptr<PhysicsScene> PhysxContext::createScene(PhysicsSceneDesc desc)
-        {
-			auto scene_obj = std::make_shared<PhysxScene>(this, desc);
-			return scene_obj;
-        }
+		std::shared_ptr<PhysicsScene> PhysxContext::createScene(PhysicsSceneDesc desc)
+		{
+			return std::make_shared<PhysxScene>(this, desc);
+		}
 
 		std::shared_ptr<PhysicsRigidbody> PhysxContext::createRigidbody(PhysicsRigidbodyDesc desc)
 		{
@@ -109,10 +111,6 @@ namespace octoon
 		physx::PxPhysics * PhysxContext::getPxPhysics()
 		{
 			return physics;
-		}
-		physx::PxDefaultCpuDispatcher * PhysxContext::getPxDefaultCpuDispatcher()
-		{
-			return dispatcher;
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace octoon
 		{
 			physx::PxSceneDesc sceneDesc(context->getPxPhysics()->getTolerancesScale());
 			sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
-			sceneDesc.cpuDispatcher = context->getPxDefaultCpuDispatcher();
+			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
 			sceneDesc.filterShader = DefaultSimulationFilterShader;
 
 			px_scene = context->getPxPhysics()->createScene(sceneDesc);

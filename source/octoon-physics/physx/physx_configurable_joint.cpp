@@ -211,64 +211,62 @@ namespace octoon
 		void
 		PhysxConfigurableJoint::setLowXLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eX);
-			limit.lower = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, value, joint_->getLinearLimit(physx::PxD6Axis::eX).upper);
 			joint_->setLinearLimit(physx::PxD6Axis::eX, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setLowYLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eY);
-			limit.lower = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, value, joint_->getLinearLimit(physx::PxD6Axis::eY).upper);
 			joint_->setLinearLimit(physx::PxD6Axis::eY, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setLowZLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eZ);
-			limit.lower = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, value, joint_->getLinearLimit(physx::PxD6Axis::eZ).upper);
 			joint_->setLinearLimit(physx::PxD6Axis::eZ, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setHighXLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eX);
-			limit.upper = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, joint_->getLinearLimit(physx::PxD6Axis::eX).lower, value);
 			joint_->setLinearLimit(physx::PxD6Axis::eX, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setHighYLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eY);
-			limit.upper = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, joint_->getLinearLimit(physx::PxD6Axis::eY).lower, value);
 			joint_->setLinearLimit(physx::PxD6Axis::eY, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setHighZLimit(float value)
 		{
-			auto limit = joint_->getLinearLimit(physx::PxD6Axis::eZ);
-			limit.upper = value;
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			auto limit = physx::PxJointLinearLimitPair(scale, joint_->getLinearLimit(physx::PxD6Axis::eZ).lower, value);
 			joint_->setLinearLimit(physx::PxD6Axis::eZ, limit);
 		}
 
 		void
 		PhysxConfigurableJoint::setLowAngularXLimit(float value)
 		{
-			auto twist = joint_->getTwistLimit();
-			twist.lower = value;
+			auto twist = physx::PxJointAngularLimitPair(value, joint_->getTwistLimit().upper);
 			joint_->setTwistLimit(twist);
 		}
 
 		void
 		PhysxConfigurableJoint::setHighAngularXLimit(float value)
 		{
-			auto twist = joint_->getTwistLimit();
-			twist.upper = value;
+			auto twist = physx::PxJointAngularLimitPair(joint_->getTwistLimit().lower, value);
 			joint_->setTwistLimit(twist);
 		}
 

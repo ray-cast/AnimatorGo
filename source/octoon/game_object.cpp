@@ -703,13 +703,13 @@ namespace octoon
 	}
 
 	void
-	GameObject::onFrameBegin() except
+	GameObject::onFixedUpdate() except
 	{
 		assert(!dispatchComponents_.empty());
 
 		auto& components = dispatchComponents_[GameDispatchType::FrameBegin];
 		for (auto& it : components)
-			it->onFrameBegin();
+			it->onFixedUpdate();
 	}
 
 	void

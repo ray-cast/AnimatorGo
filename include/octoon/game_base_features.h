@@ -5,17 +5,21 @@
 
 namespace octoon
 {
-	class GameBaseFeatures final : public GameFeature
+	class GameBaseFeature final : public GameFeature
 	{
-		OctoonDeclareSubClass(GameBaseFeatures, GameFeature)
+		OctoonDeclareSubClass(GameBaseFeature, GameFeature)
 	public:
-		GameBaseFeatures() noexcept;
-		~GameBaseFeatures() noexcept;
+		GameBaseFeature() noexcept;
+		~GameBaseFeature() noexcept;
 
 	private:
+		void onActivate() noexcept override;
+
 		void onFrameBegin() noexcept override;
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
+
+		void onFixedUpdate(const runtime::any& data) noexcept;
 	};
 }
 

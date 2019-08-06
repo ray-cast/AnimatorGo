@@ -73,7 +73,6 @@ namespace octoon
 
 		void onLayerChangeAfter() noexcept;
 		void onMoveAfter() noexcept;
-		void onFrameEnd() noexcept;
 
 		void updateParentTransform() noexcept;
 

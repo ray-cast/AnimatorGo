@@ -15,13 +15,7 @@ namespace octoon
 		PhysicsFeature() except;
 		virtual ~PhysicsFeature() noexcept;
 
-		void setTimeStep(float timeStep) noexcept;
-		void setTimeInterval(float timeInterval) noexcept;
-
-		float getTimeStep() const noexcept;
-		float getTimeInterval() const noexcept;
-
-		bool fetchResulting() const { return fetchResulting_; }
+		bool fetchResulting() const { return needUpdate_; }
 
 	public:
 		void onActivate() except override;
@@ -33,6 +27,8 @@ namespace octoon
         void onFrame() except;
 		void onFrameEnd() noexcept override;
 
+		void onFixedUpdate(const runtime::any& data) noexcept;
+
 	public:
 		std::shared_ptr<physics::PhysicsContext> getContext();
 		std::shared_ptr<physics::PhysicsScene> getScene();
@@ -42,12 +38,7 @@ namespace octoon
 		PhysicsFeature& operator=(const PhysicsFeature&) = delete;
 
     private:
-		float time_;
-		float timeStep_;
-		float timeInterval_;
-
-		bool fetchResult_;
-		bool fetchResulting_;
+		bool needUpdate_;
 
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;

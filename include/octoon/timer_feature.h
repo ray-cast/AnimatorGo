@@ -13,6 +13,12 @@ namespace octoon
 		TimerFeature() noexcept;
 		~TimerFeature() noexcept;
 
+		void setTimeStep(float timeStep) noexcept;
+		void setTimeInterval(float timeInterval) noexcept;
+
+		float getTimeStep() const noexcept;
+		float getTimeInterval() const noexcept;
+
 		float fps() const noexcept;
 		float averageFps() const noexcept;
 
@@ -39,6 +45,10 @@ namespace octoon
 		TimerFeature& operator=(const TimerFeature&) = delete;
 
 	private:
+		float time_;
+		float timeStep_;
+		float timeInterval_;
+
 		std::unique_ptr<runtime::Timer> timer_;
 	};
 }

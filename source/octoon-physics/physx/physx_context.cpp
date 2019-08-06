@@ -53,11 +53,11 @@ namespace octoon
 		{
 			PxCloseExtensions();
 
-			if (cooking)
-				cooking->release();
-
 			if (physics)
 				physics->release();
+
+			if (cooking)
+				cooking->release();
 
 			if (pvd)
 				pvd->release();

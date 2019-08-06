@@ -26,7 +26,7 @@ namespace octoon
 			virtual void simulate(float time) override;
 			
 			virtual void fetchStart() override;
-			virtual void fetchFinish() override;
+			virtual void fetchResult() override;
 
 		private:
 			PhysxScene(const PhysxScene&) noexcept = delete;

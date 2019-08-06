@@ -119,7 +119,7 @@ namespace octoon
 		void onActivate() except;
 		void onDeactivate() noexcept;
 
-		void onFrameBegin() except;
+		void onFixedUpdate() except;
 		void onFrame() except;
 		void onFrameEnd() except;
 

@@ -4,33 +4,44 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(GameBaseFeatures, GameFeature, "GameBaseFeatures")
+	OctoonImplementSubClass(GameBaseFeature, GameFeature, "GameBaseFeatures")
 
-	GameBaseFeatures::GameBaseFeatures() noexcept
+	GameBaseFeature::GameBaseFeature() noexcept
 	{
 		model::TextSystem::instance()->setup();
 	}
 
-	GameBaseFeatures::~GameBaseFeatures() noexcept
+	GameBaseFeature::~GameBaseFeature() noexcept
 	{
 		model::TextSystem::instance()->close();
 	}
 
+    void
+	GameBaseFeature::onActivate() noexcept
+    {
+		this->addMessageListener("feature:timer:fixed", std::bind(&GameBaseFeature::onFixedUpdate, this, std::placeholders::_1));
+    }
+
 	void
-	GameBaseFeatures::onFrameBegin() noexcept
+	GameBaseFeature::onFrameBegin() noexcept
 	{
-		GameObjectManager::instance()->onFrameBegin();
 	}
 
 	void
-	GameBaseFeatures::onFrame() noexcept
+	GameBaseFeature::onFrame() noexcept
 	{
 		GameObjectManager::instance()->onFrame();
 		GameObjectManager::instance()->onFrameEnd();
 	}
 
 	void
-	GameBaseFeatures::onFrameEnd() noexcept
+	GameBaseFeature::onFrameEnd() noexcept
 	{		
+	}
+
+	void
+	GameBaseFeature::onFixedUpdate(const runtime::any& data) noexcept
+	{
+		GameObjectManager::instance()->onFixedUpdate();
 	}
 }

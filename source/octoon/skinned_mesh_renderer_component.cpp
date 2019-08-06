@@ -108,7 +108,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrameBegin() noexcept
+	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
 	}
 

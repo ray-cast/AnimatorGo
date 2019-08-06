@@ -9,11 +9,7 @@ namespace octoon
 		: physics_system()
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
-		, time_(0.0f)
-		, timeStep_(1000.0f / 60.0f)
-		, timeInterval_(1000.0f / 60.0f)
-		, fetchResult_(false)
-		, fetchResulting_(false)
+		, needUpdate_(false)
 	{
 		
 	}
@@ -22,33 +18,11 @@ namespace octoon
 	{
 	}
 
-	void
-	PhysicsFeature::setTimeStep(float timeStep) noexcept
-	{
-		timeStep_ = timeStep;
-	}
-
-	float
-	PhysicsFeature::getTimeStep() const noexcept
-	{
-		return timeStep_;
-	}
-
-	void
-	PhysicsFeature::setTimeInterval(float timeInterval) noexcept
-	{
-		timeInterval_ = timeInterval;
-	}
-	
-	float
-	PhysicsFeature::getTimeInterval() const noexcept
-	{
-		return timeInterval_;
-	}
-
     void
 	PhysicsFeature::onActivate() except
     {
+		this->addMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
+
 		physics_context = physics_system.createContext();
 		physics_scene = physics_context->createScene(physics::PhysicsSceneDesc());
     }
@@ -68,31 +42,22 @@ namespace octoon
     void
 	PhysicsFeature::onFrameBegin() noexcept
     {
-		if (fetchResult_)
-		{
-			fetchResulting_ = true;
-			physics_scene->fetchStart();
-			fetchResulting_ = false;
-			fetchResult_ = false;
-		}
-
-		physics_scene->fetchFinish();
+		physics_scene->fetchResult();
     }
 
     void
 	PhysicsFeature::onFrame() except
     {
-		auto feature = this->getFeature<TimerFeature>();
-		if (feature)
+		if (needUpdate_)
 		{
-			time_ += feature->delta() * CLOCKS_PER_SEC;
-
-			if (time_ > timeStep_)
+			auto timeFeature = this->getFeature<TimerFeature>();
+			if (timeFeature)
 			{
-				fetchResult_ = true;
-				physics_scene->simulate(timeInterval_ / CLOCKS_PER_SEC);
-				time_ -= timeStep_;
+				physics_scene->simulate(timeFeature->getTimeInterval() / CLOCKS_PER_SEC);
+				physics_scene->fetchStart();
 			}
+
+			needUpdate_ = false;
 		}
     }
 
@@ -101,11 +66,18 @@ namespace octoon
     {
     }
 
+	void
+	PhysicsFeature::onFixedUpdate(const runtime::any& data) noexcept
+	{
+		needUpdate_ = true;
+	}
+
 	std::shared_ptr<physics::PhysicsContext>
 	PhysicsFeature::getContext()
 	{
 		return physics_context;
 	}
+
 	std::shared_ptr<physics::PhysicsScene> 
 	PhysicsFeature::getScene()
 	{

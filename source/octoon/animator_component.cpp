@@ -11,9 +11,6 @@ namespace octoon
 	AnimatorComponent::AnimatorComponent() noexcept
 		: enableAnimation_(true)
 		, enableAnimOnVisableOnly_(false)
-		, time_(0.0f)
-		, timeStep_(1000.0f / 24.0f)
-		, timeInterval_(1000.0f / 24.0f)
 	{
 	}
 
@@ -55,30 +52,6 @@ namespace octoon
 
 	AnimatorComponent::~AnimatorComponent() noexcept
 	{
-	}
-
-	void
-	AnimatorComponent::setTimeStep(float timeStep) noexcept
-	{
-		timeStep_ = timeStep;
-	}
-
-	float
-	AnimatorComponent::getTimeStep() const noexcept
-	{
-		return timeStep_;
-	}
-
-	void
-	AnimatorComponent::setTimeInterval(float timeInterval) noexcept
-	{
-		timeInterval_ = timeInterval;
-	}
-	
-	float
-	AnimatorComponent::getTimeInterval() const noexcept
-	{
-		return timeInterval_;
 	}
 
 	bool
@@ -148,7 +121,6 @@ namespace octoon
 		instance->setName(this->getName());
 		instance->setTransforms(this->getTransforms());
 		instance->setClips(this->getClips());
-		instance->setTimeStep(this->getTimeStep());
 
 		return instance;
 	}
@@ -165,19 +137,11 @@ namespace octoon
 	}
 
 	void
-	AnimatorComponent::onFrameBegin() noexcept
+	AnimatorComponent::onFixedUpdate() noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<TimerFeature>();
-		if (feature)
-		{
-			time_ += feature->delta() * CLOCKS_PER_SEC;
-
-			if (time_ > timeStep_)
-			{
-				this->update(timeInterval_ / CLOCKS_PER_SEC);
-				time_ -= timeStep_;
-			}
-		}
+		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
+		if (timeFeature)
+			this->update(timeFeature->getTimeInterval() / CLOCKS_PER_SEC);
 	}
 
 	void

@@ -27,7 +27,7 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onFrameBegin() except override;
+		void onFixedUpdate() except override;
 
 	private:
 		void capture() noexcept;

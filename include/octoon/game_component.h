@@ -76,7 +76,7 @@ namespace octoon
 		virtual void onActivate() except;
 		virtual void onDeactivate() noexcept;
 
-		virtual void onFrameBegin() except;
+		virtual void onFixedUpdate() except;
 		virtual void onFrame() except;
 		virtual void onFrameEnd() except;
 

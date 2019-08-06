@@ -20,7 +20,7 @@ namespace octoon
 
 		const GameObjectRaws& instances() const noexcept;
 
-		void onFrameBegin() noexcept;
+		void onFixedUpdate() noexcept;
 		void onFrame() noexcept;
 		void onFrameEnd() noexcept;
 

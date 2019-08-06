@@ -6,12 +6,39 @@ namespace octoon
 	OctoonImplementSubClass(TimerFeature, GameFeature, "TimerFeature")
 
 	TimerFeature::TimerFeature() noexcept
+		: time_(0.0f)
+		, timeStep_(CLOCKS_PER_SEC / 60.0f)
+		, timeInterval_(CLOCKS_PER_SEC / 60.0f)
 	{
 	}
 
 	TimerFeature::~TimerFeature() noexcept
 	{
 		assert(timer_ == nullptr); // check onDeactivate();
+	}
+
+	void
+	TimerFeature::setTimeStep(float timeStep) noexcept
+	{
+		timeStep_ = timeStep;
+	}
+
+	float
+	TimerFeature::getTimeStep() const noexcept
+	{
+		return timeStep_;
+	}
+
+	void
+	TimerFeature::setTimeInterval(float timeInterval) noexcept
+	{
+		timeInterval_ = timeInterval;
+	}
+	
+	float
+	TimerFeature::getTimeInterval() const noexcept
+	{
+		return timeInterval_;
 	}
 
 	float
@@ -91,6 +118,14 @@ namespace octoon
 	TimerFeature::onFrameBegin() noexcept
 	{
 		timer_->update();
+
+		time_ += timer_->delta() * CLOCKS_PER_SEC;
+
+		if (time_ > timeStep_)
+		{
+			this->sendMessage("feature:timer:fixed", timeInterval_);
+			time_ -= timeStep_;
+		}
 	}
 }
 #endif

@@ -109,7 +109,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedJointRendererComponent::onFrameBegin() noexcept
+	SkinnedJointRendererComponent::onFixedUpdate() noexcept
 	{
 	}
 

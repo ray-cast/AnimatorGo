@@ -114,7 +114,7 @@ namespace octoon
 #endif
 
 #if OCTOON_FEATURE_BASE_ENABLE
-		this->addFeature(std::make_unique<GameBaseFeatures>());
+		this->addFeature(std::make_unique<GameBaseFeature>());
 #endif
 
 #if OCTOON_FEATURE_PHYSICS_ENABLE

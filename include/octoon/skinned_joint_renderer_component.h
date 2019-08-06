@@ -30,7 +30,7 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onFrameBegin() noexcept override;
+		void onFixedUpdate() noexcept override;
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
 

@@ -19,12 +19,6 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
 		~AnimatorComponent() noexcept;
 
-		void setTimeStep(float timeStep) noexcept;
-		float getTimeStep() const noexcept;
-
-		void setTimeInterval(float timeInterval) noexcept;
-		float getTimeInterval() const noexcept;
-
 		bool play(const std::string& status = "default") noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -43,7 +37,7 @@ namespace octoon
 		void onActivate() except;
 		void onDeactivate() noexcept;
 
-		void onFrameBegin() noexcept;
+		void onFixedUpdate() noexcept;
 
 	private:
 		void update(float delta = 0.0f) noexcept;
@@ -52,10 +46,6 @@ namespace octoon
 	private:
 		bool enableAnimation_;
 		bool enableAnimOnVisableOnly_;
-
-		float time_;
-		float timeStep_;
-		float timeInterval_;
 
 		animation::AnimationClips<float> clips_;
 		math::float3s bindpose_;

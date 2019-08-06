@@ -30,7 +30,7 @@ namespace octoon
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
 			virtual void simulate(float time) = 0;
 			virtual void fetchStart() = 0;
-			virtual void fetchFinish() = 0;
+			virtual void fetchResult() = 0;
 
 		private:
 			PhysicsScene(const PhysicsScene&) = delete;

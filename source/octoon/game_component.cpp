@@ -252,7 +252,7 @@ namespace octoon
 	}
 
 	void
-	GameComponent::onFrameBegin() except
+	GameComponent::onFixedUpdate() except
 	{
 	}
 

@@ -243,7 +243,6 @@ namespace octoon
 	RigidbodyComponent::onActivate() except
     {
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->setupRigidbody(*collider);
@@ -308,12 +307,6 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
 		}
-	}
-
-	void
-	RigidbodyComponent::onFrameEnd() noexcept
-	{
-		this->onFetchResult();
 	}
 
 	void

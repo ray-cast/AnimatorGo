@@ -20,6 +20,13 @@ namespace octoon
 			PX_UNUSED(constantBlock);
 			PX_UNUSED(constantBlockSize);
 
+			if (filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD ||
+				filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD)
+			{
+				pairFlags |= physx::PxPairFlag::eSOLVE_CONTACT;
+				pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT;
+			}
+
 			if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 			{
 				pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
@@ -40,7 +47,7 @@ namespace octoon
 				return physx::PxFilterFlag::eSUPPRESS;
 			}
 
-			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+			pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
 
 			return physx::PxFilterFlags();
 		}
@@ -53,9 +60,10 @@ namespace octoon
 			sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
 			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
 			sceneDesc.filterShader = DefaultSimulationFilterShader;
-
+			sceneDesc.ccdMaxPasses = 4;
+			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
+			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
 			px_scene = context->getPxPhysics()->createScene(sceneDesc);
-			px_scene->setFlag(physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
 
 			auto pvdClient = px_scene->getScenePvdClient();
 			if (pvdClient)
@@ -90,7 +98,7 @@ namespace octoon
 		}
 
 		void
-		PhysxScene::fetchFinish()
+		PhysxScene::fetchResult()
 		{
 			physx::PxU32 nbActiveActors;
 			physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);

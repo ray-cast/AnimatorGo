@@ -16,13 +16,7 @@ namespace octoon
 		explicit AnimationComponent(const animation::AnimationClip<float>& clips) noexcept;
 		explicit AnimationComponent(const animation::AnimationClips<float>& clips) noexcept;
 		virtual ~AnimationComponent() noexcept;
-
-		void setTimeStep(float timeStep) noexcept;
-		float getTimeStep() const noexcept;
-
-		void setTimeInterval(float timeInterval) noexcept;
-		float getTimeInterval() const noexcept;
-
+	
 		void play() noexcept;
 		void pause() noexcept;
 		void stop() noexcept;
@@ -33,7 +27,7 @@ namespace octoon
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
 
-		void onFrameBegin() except override;
+		void onFixedUpdate() except override;
 
 	private:
 		void update(float delta = 0.0f) noexcept;

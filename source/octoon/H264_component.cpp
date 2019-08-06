@@ -111,7 +111,7 @@ namespace octoon
 	}
 
 	void
-	H264Component::onFrameBegin() except
+	H264Component::onFixedUpdate() except
 	{
 		auto feature = this->getGameScene()->getFeature<TimerFeature>();
 		if (feature)

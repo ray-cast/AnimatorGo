@@ -43,30 +43,6 @@ namespace octoon
 	}
 
 	void
-	AnimationComponent::setTimeStep(float timeStep) noexcept
-	{
-		timeStep_ = timeStep;
-	}
-
-	float
-	AnimationComponent::getTimeStep() const noexcept
-	{
-		return timeStep_;
-	}
-
-	void
-	AnimationComponent::setTimeInterval(float timeInterval) noexcept
-	{
-		timeInterval_ = timeInterval;
-	}
-	
-	float
-	AnimationComponent::getTimeInterval() const noexcept
-	{
-		return timeInterval_;
-	}
-
-	void
 	AnimationComponent::play() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::FrameBegin);
@@ -103,19 +79,11 @@ namespace octoon
 	}
 
 	void
-	AnimationComponent::onFrameBegin() except
+	AnimationComponent::onFixedUpdate() except
 	{
-		auto feature = this->getGameScene()->getFeature<TimerFeature>();
-		if (feature)
-		{
-			time_ += feature->delta() * CLOCKS_PER_SEC;
-
-			if (time_ > timeStep_)
-			{
-				this->update(timeInterval_ / CLOCKS_PER_SEC);
-				time_ -= timeStep_;
-			}
-		}
+		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
+		if (timeFeature)
+			this->update(timeFeature->getTimeInterval() / CLOCKS_PER_SEC);
 	}
 
 	void

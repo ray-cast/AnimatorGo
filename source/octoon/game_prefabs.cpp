@@ -419,8 +419,8 @@ namespace octoon
 					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
 						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
 
-					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -3.1415f, 3.1415f) - 1e-5f);
-					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -3.1415f, 3.1415f) + 1e-5f);
+					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -6.24318f, 6.24318f) - 1e-5f);
+					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -6.24318f, 6.24318f) + 1e-5f);
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -442,8 +442,8 @@ namespace octoon
 				auto rotationLimitY = std::min(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y));
 				auto rotationLimitZ = std::min(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z));
 
-				rotationLimitY = math::clamp(it->rotationLowerLimit.y, 1e-5f, 3.1415f);
-				rotationLimitZ = math::clamp(it->rotationUpperLimit.y, 1e-5f, 3.1415f);
+				rotationLimitY = math::clamp(rotationLimitY, 1e-5f, 3.1415f);
+				rotationLimitZ = math::clamp(rotationLimitZ, 1e-5f, 3.1415f);
 
 				joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 

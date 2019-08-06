@@ -86,7 +86,7 @@ namespace octoon
 
 		physx::PxMaterial * PhysxCapsuleShape::getPxMaterial()
 		{
-			return nullptr;
+			return px_material;
 		}
     }
 }

@@ -20,13 +20,6 @@ namespace octoon
 			PX_UNUSED(constantBlock);
 			PX_UNUSED(constantBlockSize);
 
-			if (filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD ||
-				filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD)
-			{
-				pairFlags |= physx::PxPairFlag::eSOLVE_CONTACT;
-				pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT;
-			}
-
 			if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 			{
 				pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
@@ -47,9 +40,15 @@ namespace octoon
 				return physx::PxFilterFlag::eSUPPRESS;
 			}
 
+			/*if (filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD && !(filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD) ||
+				filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD && !(filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD))
+			{
+				pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT | physx::PxPairFlag::eSOLVE_CONTACT;
+			}*/
+
 			pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
 
-			return physx::PxFilterFlags();
+			return physx::PxFilterFlag::eDEFAULT;
 		}
 
 		PhysxScene::PhysxScene(PhysxContext* context, PhysicsSceneDesc desc)

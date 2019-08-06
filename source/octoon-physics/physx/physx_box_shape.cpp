@@ -103,7 +103,7 @@ namespace octoon
 
 		physx::PxMaterial * PhysxBoxShape::getPxMaterial()
 		{
-			return nullptr;
+			return px_material;
 		}
     }
 }

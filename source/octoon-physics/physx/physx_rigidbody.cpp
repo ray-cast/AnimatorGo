@@ -24,6 +24,8 @@ namespace octoon
 			{
 				rigidbody->setMass(desc.mass);
 				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
+				if (desc.type != PhysicsRigidbodyType::Static)
+					rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 
 				px_rigidbody = rigidbody;
 			}
@@ -82,39 +84,33 @@ namespace octoon
 
 		void PhysxRigidbody::setDynamicFriction(float f)
 		{
-			if (shape_)
-				shape_->getPxMaterial()->setDynamicFriction(f);
+			shape_->getPxMaterial()->setDynamicFriction(f);
 		}
 
 		float PhysxRigidbody::getDynamicFriction() const
 		{
-			if (shape_)
-				return shape_->getPxMaterial()->getDynamicFriction();
-			else
-				return 0.f;
+			return shape_->getPxMaterial()->getDynamicFriction();
 		}
 
 		void PhysxRigidbody::setStaticFriction(float f)
 		{
-			if (shape_)
-				shape_->getPxMaterial()->setStaticFriction(f);
+			shape_->getPxMaterial()->setStaticFriction(f);
 		}
 
 		void
 		PhysxRigidbody::setGroup(std::uint8_t group)
 		{
-			physx::PxSetGroup(*px_rigidbody, group);
+			physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
+			data.word0 = group;
+			shape_->getPxShape()->setSimulationFilterData(data);
 		}
 
 		void
 		PhysxRigidbody::setGroupMask(std::uint16_t groupMask)
 		{
-			physx::PxGroupsMask mask;
-			mask.bits0 = groupMask;
-			mask.bits1 = 0;
-			mask.bits2 = 0;
-			mask.bits3 = 0;
-			physx::PxSetGroupsMask(*px_rigidbody, mask);
+			physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
+			data.word2 = groupMask;
+			shape_->getPxShape()->setSimulationFilterData(data);
 		}
 
 		void
@@ -158,32 +154,30 @@ namespace octoon
 
 		float PhysxRigidbody::getStaticFriction() const
 		{
-			if (shape_)
-				return shape_->getPxMaterial()->getStaticFriction();
-			else
-				return 0.f;
+			return shape_->getPxMaterial()->getStaticFriction();
 		}
 
 		void PhysxRigidbody::setRestitution(float f)
 		{
-			if (shape_)
-			{
-				shape_->getPxMaterial()->setRestitution(f);
-			}
+			shape_->getPxMaterial()->setRestitution(f);
 		}
 
 		float PhysxRigidbody::getRestitution() const
 		{
-			if (shape_)
-				return shape_->getPxMaterial()->getRestitution();
-			else
-				return 0.f;
+			return shape_->getPxMaterial()->getRestitution();
 		}
 
 		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 		{
 			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
 			px_rigidbody->attachShape(*pxshape->getPxShape());
+			shape_ = pxshape;
+			if (px_rigidbody->getRigidBodyFlags() & physx::PxRigidBodyFlag::eENABLE_CCD)
+			{
+				physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
+				data.word3 = physx::PxRigidBodyFlag::eENABLE_CCD;
+				shape_->getPxShape()->setSimulationFilterData(data);
+			}
 		}
 
 		void PhysxRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)

@@ -9,13 +9,13 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(EditorCameraComponent, GameComponent, "EditorCameraComponent")
+	OctoonImplementSubClass(EditorCameraComponent, GameComponent, "EditorCamera")
 
 	EditorCameraComponent::EditorCameraComponent() noexcept
 		: speed_(1.0)
-		, moveSpeed_(10.0f)
-		, sensitivityX_(0.05f)
-		, sensitivityY_(0.05f)
+		, moveSpeed_(5.0f)
+		, sensitivityX_(0.25f)
+		, sensitivityY_(0.25f)
 	{
 	}
 

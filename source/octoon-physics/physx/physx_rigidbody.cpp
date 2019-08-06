@@ -20,13 +20,17 @@ namespace octoon
 			pose.q = physx::PxQuat(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w);
 
 			auto rigidbody = context->getPxPhysics()->createRigidDynamic(pose);
-			if (!rigidbody)
-				throw  runtime::runtime_error::create("create body failed!");
-			
-			rigidbody->setMass(desc.mass);
-			rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
+			if (rigidbody)
+			{
+				rigidbody->setMass(desc.mass);
+				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
 
-			px_rigidbody = rigidbody;
+				px_rigidbody = rigidbody;
+			}
+			else
+			{
+				throw  runtime::runtime_error::create("create body failed!");
+			}
 		}
 
 		PhysxRigidbody::~PhysxRigidbody()

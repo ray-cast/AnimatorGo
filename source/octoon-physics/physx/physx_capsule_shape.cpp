@@ -16,8 +16,9 @@ namespace octoon
 			physx::PxCapsuleGeometry geometry(radius, height*0.5f);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);
 			px_shape = context->getPxPhysics()->createShape(geometry, *px_material, true);
-			px_shape->setLocalPose(physx::PxTransform(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1))));
-			if (!px_shape)
+			if (px_shape)
+				px_shape->setLocalPose(physx::PxTransform(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1))));
+			else
 				runtime::runtime_error::create("create shape failed!");
 		}
 

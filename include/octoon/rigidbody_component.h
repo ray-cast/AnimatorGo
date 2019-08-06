@@ -45,6 +45,7 @@ namespace octoon
 		void setAngularDamping(float value) noexcept;
 		void setGroupMask(std::uint16_t groupMask) noexcept;
 		void setSleepThreshold(float threshold) noexcept;
+		void setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept;
 
         float getDynamicFriction() const;
         float getStaticFriction() const;
@@ -92,6 +93,8 @@ namespace octoon
 		float angularDamping_;
 		float sleepThreshold_;
 		std::uint16_t groupMask_;
+		std::uint32_t minPositionIters_;
+		std::uint32_t minVelocityIters_;
 
 		math::float3 position_;
 		math::float3 localPosition_;

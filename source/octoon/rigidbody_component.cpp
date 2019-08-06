@@ -22,6 +22,8 @@ namespace octoon
 		, rotation_(math::Quaternion::Zero)
 		, groupMask_(0)
 		, sleepThreshold_(0.05)
+		, minPositionIters_(4)
+		, minVelocityIters_(1)
     {
     }
 
@@ -67,6 +69,15 @@ namespace octoon
 		if (rigidbody_)
 			rigidbody_->setSleepThreshold(threshold);
 		sleepThreshold_ = threshold;
+	}
+
+	void
+	RigidbodyComponent::setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept
+	{
+		if (rigidbody_)
+			rigidbody_->setSolverIterationCounts(minPositionIters, minVelocityIters);
+		minPositionIters_ = minPositionIters;
+		minVelocityIters_ = minVelocityIters;
 	}
 
 	void
@@ -345,6 +356,7 @@ namespace octoon
 				rigidbody_->setGroupMask(groupMask_);
 				rigidbody_->setKinematic(isKinematic_);
 				rigidbody_->setSleepThreshold(sleepThreshold_);
+				rigidbody_->setSolverIterationCounts(minPositionIters_, minVelocityIters_);
 
 				if (!isKinematic_)
 				{

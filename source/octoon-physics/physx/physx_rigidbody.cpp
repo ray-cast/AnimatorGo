@@ -131,6 +131,12 @@ namespace octoon
 			px_rigidbody->setSleepThreshold(threshold);
 		}
 
+		void
+		PhysxRigidbody::setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept
+		{
+			px_rigidbody->setSolverIterationCounts(minPositionIters, minVelocityIters);
+		}
+
 		void PhysxRigidbody::setMass(float f)
 		{
 			px_rigidbody->setMass(f);

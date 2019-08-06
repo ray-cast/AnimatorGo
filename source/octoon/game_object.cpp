@@ -532,13 +532,13 @@ namespace octoon
 		if (this->getActive())
 		{
 			if (type == GameDispatchType::Frame ||
-				type == GameDispatchType::FrameBegin ||
-				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::FixedUpdate ||
+				type == GameDispatchType::LateUpdate ||
 				type == GameDispatchType::Gui)
 			{
 				if (dispatchComponents_[GameDispatchType::Frame].empty() &&
-					dispatchComponents_[GameDispatchType::FrameBegin].empty() &&
-					dispatchComponents_[GameDispatchType::FrameEnd].empty() &&
+					dispatchComponents_[GameDispatchType::FixedUpdate].empty() &&
+					dispatchComponents_[GameDispatchType::LateUpdate].empty() &&
 					dispatchComponents_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, true);
@@ -564,13 +564,13 @@ namespace octoon
 		if (this->getActive())
 		{
 			if (type == GameDispatchType::Frame ||
-				type == GameDispatchType::FrameBegin ||
-				type == GameDispatchType::FrameEnd ||
+				type == GameDispatchType::FixedUpdate ||
+				type == GameDispatchType::LateUpdate ||
 				type == GameDispatchType::Gui)
 			{
 				if (dispatchComponents_[GameDispatchType::Frame].empty() &&
-					dispatchComponents_[GameDispatchType::FrameBegin].empty() &&
-					dispatchComponents_[GameDispatchType::FrameEnd].empty() &&
+					dispatchComponents_[GameDispatchType::FixedUpdate].empty() &&
+					dispatchComponents_[GameDispatchType::LateUpdate].empty() &&
 					dispatchComponents_[GameDispatchType::Gui].empty())
 				{
 					GameObjectManager::instance()->_activeObject(this, false);
@@ -707,7 +707,7 @@ namespace octoon
 	{
 		assert(!dispatchComponents_.empty());
 
-		auto& components = dispatchComponents_[GameDispatchType::FrameBegin];
+		auto& components = dispatchComponents_[GameDispatchType::FixedUpdate];
 		for (auto& it : components)
 			it->onFixedUpdate();
 	}
@@ -727,7 +727,7 @@ namespace octoon
 	{
 		assert(!dispatchComponents_.empty());
 
-		auto& components = dispatchComponents_[GameDispatchType::FrameEnd];
+		auto& components = dispatchComponents_[GameDispatchType::LateUpdate];
 		for (auto& it : components)
 			it->onLateUpdate();
 	}
@@ -744,8 +744,8 @@ namespace octoon
 		if (!dispatchComponents_.empty())
 		{
 			if (!dispatchComponents_[GameDispatchType::Frame].empty() ||
-				!dispatchComponents_[GameDispatchType::FrameBegin].empty() ||
-				!dispatchComponents_[GameDispatchType::FrameEnd].empty() ||
+				!dispatchComponents_[GameDispatchType::FixedUpdate].empty() ||
+				!dispatchComponents_[GameDispatchType::LateUpdate].empty() ||
 				!dispatchComponents_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, true);
@@ -759,8 +759,8 @@ namespace octoon
 		if (!dispatchComponents_.empty())
 		{
 			if (!dispatchComponents_[GameDispatchType::Frame].empty() ||
-				!dispatchComponents_[GameDispatchType::FrameBegin].empty() ||
-				!dispatchComponents_[GameDispatchType::FrameEnd].empty()||
+				!dispatchComponents_[GameDispatchType::FixedUpdate].empty() ||
+				!dispatchComponents_[GameDispatchType::LateUpdate].empty()||
 				!dispatchComponents_[GameDispatchType::Gui].empty())
 			{
 				GameObjectManager::instance()->_activeObject(this, false);

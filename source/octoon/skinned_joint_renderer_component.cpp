@@ -61,7 +61,8 @@ namespace octoon
 	SkinnedJointRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
+		this->addComponentDispatch(GameDispatchType::FixedUpdate);
+		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
 		this->addMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
@@ -81,6 +82,9 @@ namespace octoon
 	SkinnedJointRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+		this->removeComponentDispatch(GameDispatchType::LateUpdate);
+
 		this->removeMessageListener("octoon:mesh:update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
 		this->removeMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		
@@ -111,11 +115,7 @@ namespace octoon
 	void
 	SkinnedJointRendererComponent::onFixedUpdate() noexcept
 	{
-	}
-
-	void
-	SkinnedJointRendererComponent::onUpdate() noexcept
-	{
+		this->needUpdate_ = true;
 	}
 
 	void

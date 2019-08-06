@@ -60,10 +60,10 @@ namespace octoon
 	SkinnedMeshRendererComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
+		this->addComponentDispatch(GameDispatchType::FixedUpdate);
+		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->addMessageListener("octoon:animation:update", std::bind(&SkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		
 		auto transform = this->getComponent<TransformComponent>();
 
@@ -80,8 +80,9 @@ namespace octoon
 	SkinnedMeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->removeMessageListener("octoon:animation:update", std::bind(&SkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		
 		mesh_.reset();
 
@@ -110,6 +111,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
+		needUpdate_ = true;
 	}
 
 	void
@@ -182,12 +184,6 @@ namespace octoon
 		}
 
 		needUpdate_ = true;
-	}
-
-	void
-	SkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
-	{
-		this->needUpdate_ = true;
 	}
 
 	void

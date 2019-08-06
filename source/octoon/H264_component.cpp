@@ -64,7 +64,7 @@ namespace octoon
 	void
 	H264Component::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
@@ -106,7 +106,7 @@ namespace octoon
 			this->height_ = create_param.height;
 			this->ostream_ = stream;
 
-			this->addComponentDispatch(GameDispatchType::FrameBegin);
+			this->addComponentDispatch(GameDispatchType::FixedUpdate);
 		}
 	}
 

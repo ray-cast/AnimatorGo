@@ -131,13 +131,13 @@ namespace octoon
 	void
 	CCDSolverComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
+		this->addComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
 	CCDSolverComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameEnd);
+		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void

@@ -79,10 +79,11 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::FrameEnd);
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->addComponentDispatch(GameDispatchType::FixedUpdate);
+		this->addComponentDispatch(GameDispatchType::LateUpdate);
+
 		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->addMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		this->sendMessage("octoon:mesh:get", nullptr);		
 	}
@@ -91,8 +92,10 @@ namespace octoon
 	OfflineSkinnedMeshRendererComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+		this->removeComponentDispatch(GameDispatchType::LateUpdate);
+
 		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->removeMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
@@ -109,6 +112,12 @@ namespace octoon
 			rprObjectDelete(this->rprMaterial_);
 			this->rprMaterial_ = nullptr;
 		}
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onFixedUpdate() noexcept
+	{
+		this->needUpdate_ = true;
 	}
 
 	void
@@ -205,12 +214,6 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
 	{
-	}
-
-	void
-	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
-	{
-		this->needUpdate_ = true;
 	}
 
 	void

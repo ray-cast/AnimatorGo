@@ -58,7 +58,7 @@ namespace octoon
 	AnimatorComponent::play(const std::string& status) noexcept
 	{
 		this->setName(status);
-		this->addComponentDispatch(GameDispatchType::FrameBegin);
+		this->addComponentDispatch(GameDispatchType::FixedUpdate);
 		this->update();
 
 		enableAnimation_ = true;
@@ -133,7 +133,7 @@ namespace octoon
 	void
 	AnimatorComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void

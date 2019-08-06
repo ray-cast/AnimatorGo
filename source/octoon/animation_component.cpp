@@ -45,20 +45,20 @@ namespace octoon
 	void
 	AnimationComponent::play() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::FrameBegin);
+		this->addComponentDispatch(GameDispatchType::FixedUpdate);
 		this->update();
 	}
 
 	void
 	AnimationComponent::pause() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
 	AnimationComponent::stop() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	GameComponentPtr
@@ -75,7 +75,7 @@ namespace octoon
 	void
 	AnimationComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FrameBegin);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
@@ -138,6 +138,6 @@ namespace octoon
 			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
 
-		this->sendMessageDownwards("octoon:animation:update");
+		this->sendMessage("octoon:animation:update");
 	}
 }

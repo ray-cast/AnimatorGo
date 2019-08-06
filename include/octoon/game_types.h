@@ -48,13 +48,13 @@ namespace octoon
 	{
 		enum Type
 		{
-			FrameBegin,
+			FixedUpdate,
 			Frame,
-			FrameEnd,
+			LateUpdate,
 			Gui,
 			MoveBefore,
 			MoveAfter,
-			BeginRange_ = FrameBegin,
+			BeginRange_ = FixedUpdate,
 			EndRange_ = MoveAfter,
 			RangeSize_ = (EndRange_ - BeginRange_ + 1),
 		};

@@ -34,7 +34,7 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onFrame() noexcept override;
+		void onUpdate() noexcept override;
 
 	private:
 		float speed_;

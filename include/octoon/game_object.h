@@ -119,10 +119,6 @@ namespace octoon
 		void onActivate() except;
 		void onDeactivate() noexcept;
 
-		void onFixedUpdate() except;
-		void onFrame() except;
-		void onFrameEnd() except;
-
 		void onMoveBefore() except;
 		void onMoveAfter() except;
 
@@ -130,6 +126,10 @@ namespace octoon
 		void onLayerChangeAfter() except;
 
 		void onGui() except;
+
+		void onFixedUpdate() except;
+		void onUpdate() except;
+		void onLateUpdate() except;
 
 	private:
 		GameObject(const GameObject& copy) noexcept = delete;

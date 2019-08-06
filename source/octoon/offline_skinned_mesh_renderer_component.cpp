@@ -112,7 +112,7 @@ namespace octoon
 	}
 
 	void
-	OfflineSkinnedMeshRendererComponent::onFrameEnd() noexcept
+	OfflineSkinnedMeshRendererComponent::onLateUpdate() noexcept
 	{
 		if (!mesh_)
 			return;

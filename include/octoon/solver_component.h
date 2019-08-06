@@ -39,7 +39,7 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onFrameEnd() noexcept override;
+		void onLateUpdate() noexcept override;
 
 	private:
 		void evaluateIK() noexcept;

@@ -257,12 +257,12 @@ namespace octoon
 	}
 
 	void
-	GameComponent::onFrame() except
+	GameComponent::onUpdate() except
 	{
 	}
 
 	void
-	GameComponent::onFrameEnd() except
+	GameComponent::onLateUpdate() except
 	{
 	}
 

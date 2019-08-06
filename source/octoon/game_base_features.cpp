@@ -30,8 +30,8 @@ namespace octoon
 	void
 	GameBaseFeature::onFrame() noexcept
 	{
-		GameObjectManager::instance()->onFrame();
-		GameObjectManager::instance()->onFrameEnd();
+		GameObjectManager::instance()->onUpdate();
+		GameObjectManager::instance()->onLateUpdate();
 	}
 
 	void

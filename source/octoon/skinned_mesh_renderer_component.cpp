@@ -113,12 +113,12 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrame() noexcept
+	SkinnedMeshRendererComponent::onUpdate() noexcept
 	{
 	}
 
 	void
-	SkinnedMeshRendererComponent::onFrameEnd() noexcept
+	SkinnedMeshRendererComponent::onLateUpdate() noexcept
 	{
 		if (!mesh_)
 			return;

@@ -84,7 +84,7 @@ namespace octoon
 	}
 
 	void
-	EditorCameraComponent::onFrame() noexcept
+	EditorCameraComponent::onUpdate() noexcept
 	{
 		float step = speed_;
 

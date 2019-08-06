@@ -31,8 +31,8 @@ namespace octoon
 		void onMoveAfter() noexcept override;
 
 		void onFixedUpdate() noexcept override;
-		void onFrame() noexcept override;
-		void onFrameEnd() noexcept override;
+		void onUpdate() noexcept override;
+		void onLateUpdate() noexcept override;
 
 		void onJointReplace(const runtime::any& mesh) noexcept;
 		void onAnimationUpdate(const runtime::any& data) noexcept;

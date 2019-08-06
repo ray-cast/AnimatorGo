@@ -114,12 +114,12 @@ namespace octoon
 	}
 
 	void
-	SkinnedJointRendererComponent::onFrame() noexcept
+	SkinnedJointRendererComponent::onUpdate() noexcept
 	{
 	}
 
 	void
-	SkinnedJointRendererComponent::onFrameEnd() noexcept
+	SkinnedJointRendererComponent::onLateUpdate() noexcept
 	{
 		if (!mesh_)
 			return;

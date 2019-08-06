@@ -37,7 +37,7 @@ namespace octoon
 
 		void onLayerChangeAfter() noexcept override;
 
-		void onFrameEnd() noexcept override;
+		void onLateUpdate() noexcept override;
 
 	protected:
 		void uploadMatData(const video::Material& mat) noexcept;

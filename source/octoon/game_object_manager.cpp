@@ -102,22 +102,22 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::onFrame() noexcept
+	GameObjectManager::onUpdate() noexcept
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
 			if (activeActors_[i])
-				activeActors_[i]->onFrame();
+				activeActors_[i]->onUpdate();
 		}
 	}
 
 	void
-	GameObjectManager::onFrameEnd() noexcept
+	GameObjectManager::onLateUpdate() noexcept
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
 			if (activeActors_[i])
-				activeActors_[i]->onFrameEnd();
+				activeActors_[i]->onLateUpdate();
 		}
 
 		if (hasEmptyActors_)

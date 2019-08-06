@@ -110,7 +110,7 @@ namespace octoon
 	}
 
 	void
-	FirstPersonCameraComponent::onFrame() noexcept
+	FirstPersonCameraComponent::onUpdate() noexcept
 	{
 		float step = speed_;
 #if OCTOON_FEATURE_TIMER_ENABLE

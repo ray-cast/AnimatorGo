@@ -141,7 +141,7 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::onFrameEnd() noexcept
+	CCDSolverComponent::onLateUpdate() noexcept
 	{
 		if (timeStep_ > 0)
 		{

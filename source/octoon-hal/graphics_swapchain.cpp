@@ -14,6 +14,7 @@ namespace octoon
 			, window_(0)
 			, width_(0)
 			, height_(0)
+			,_samplers(0)
 		{
 		}
 
@@ -109,6 +110,18 @@ namespace octoon
 		GraphicsSwapchainDesc::getImageNums() const noexcept
 		{
 			return _imageNums;
+		}
+
+		void
+		GraphicsSwapchainDesc::setMultiSample(std::uint32_t samplers) noexcept
+		{
+			_samplers = samplers;
+		}
+
+		std::uint32_t
+		GraphicsSwapchainDesc::getMultiSample() const noexcept
+		{
+			return _samplers;
 		}
 	}
 }

@@ -345,6 +345,81 @@ namespace octoon
 				return false;
 			}
 
+			if (swapchainDesc.getMultiSample() > 0)
+			{
+				std::size_t index = 0;
+				int attribs[64];
+				attribs[index++] = WGL_DRAW_TO_WINDOW_ARB;
+				attribs[index++] = GL_TRUE;
+
+				attribs[index++] = WGL_SUPPORT_OPENGL_ARB;
+				attribs[index++] = GL_TRUE;
+
+				attribs[index++] = WGL_ACCELERATION_ARB;
+				attribs[index++] = WGL_FULL_ACCELERATION_ARB;
+
+				attribs[index++] = WGL_DOUBLE_BUFFER_ARB;
+				attribs[index++] = GL_TRUE;
+
+				attribs[index++] = WGL_SWAP_METHOD_ARB;
+				attribs[index++] = WGL_SWAP_EXCHANGE_ARB;
+
+				attribs[index++] = WGL_COLOR_BITS_ARB;
+				attribs[index++] = 32;
+
+				if (depthStencilFormat == GraphicsFormat::D16UNorm)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 16;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::X8_D24UNormPack32)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 24;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 32;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 0;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D16UNorm_S8UInt)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 16;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 8;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D24UNorm_S8UInt)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 24;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 8;
+				}
+				else if (depthStencilFormat == GraphicsFormat::D32_SFLOAT_S8UInt)
+				{
+					attribs[index++] = WGL_DEPTH_BITS_ARB;
+					attribs[index++] = 32;
+					attribs[index++] = WGL_STENCIL_BITS_ARB;
+					attribs[index++] = 8;
+				}
+
+				attribs[index++] = WGL_SAMPLES_ARB;
+				attribs[index++] = swapchainDesc.getMultiSample();
+
+				attribs[index++] = GL_NONE;
+				attribs[index++] = GL_NONE;
+
+				int numFormat;
+				wglChoosePixelFormatARB(_hdc, attribs, NULL, 1, &pixelFormat, (UINT*)&numFormat);
+			}
+
 			if (!::SetPixelFormat(_hdc, pixelFormat, &pfd2))
 			{
 				this->getDevice()->downcast<OGLDevice>()->message("SetPixelFormat() fail");

@@ -34,11 +34,15 @@ namespace octoon
 			void setImageNums(std::uint32_t imageNums) noexcept;
 			std::uint32_t getImageNums() const noexcept;
 
+			void setMultiSample(std::uint32_t samplers) noexcept;
+			std::uint32_t getMultiSample() const noexcept;
+
 		private:
 			WindHandle window_;
 			std::uint32_t width_;
 			std::uint32_t height_;
 
+			std::uint32_t _samplers;
 			std::uint32_t _imageNums;
 
 			GraphicsSwapInterval _interval;

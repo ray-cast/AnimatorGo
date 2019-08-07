@@ -49,9 +49,7 @@ namespace octoon
 		void setHighYLimit(float limit) noexcept;
 		void setHighZLimit(float limit) noexcept;
 
-		void setLowAngularXLimit(float limit) noexcept;
-		void setHighAngularXLimit(float limit) noexcept;
-
+		void setTwistLimit(float min, float max) noexcept;
 		void setSwingLimit(float y, float z) noexcept;
 		void setPyramidSwingLimit(float min_y, float max_y, float min_z, float max_z) noexcept;
 

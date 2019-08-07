@@ -26,7 +26,7 @@ namespace octoon
 			, transport_(nullptr)
 		{
 			physx::PxTolerancesScale scale;
-			scale.length = 1;
+			scale.length = 10.0f;
 			scale.speed = 9.8f;
 
 			foundation = PxCreateFoundation(PX_PHYSICS_VERSION, *defaultAllocatorCallback, *defaultErrorCallback);

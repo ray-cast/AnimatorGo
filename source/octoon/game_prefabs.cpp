@@ -349,7 +349,7 @@ namespace octoon
 			component->setMass(it->mass);
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction);
-			component->setDynamicFriction(it->friction);
+			component->setDynamicFriction(it->friction / 1.5f);
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
@@ -387,29 +387,47 @@ namespace octoon
 
 				if (it->movementLowerLimit.x == 0.0f && it->movementUpperLimit.x == 0.0f)
 					joint->setXMotion(ConfigurableJointMotion::Locked);
-				else
+				else if (it->movementLowerLimit.x > it->movementUpperLimit.x)
+					joint->setXMotion(ConfigurableJointMotion::Free);
+				else if (it->movementLowerLimit.x > -10.0f && it->movementUpperLimit.x < 10.0f)
 				{
 					joint->setLowXLimit(it->movementLowerLimit.x);
 					joint->setHighXLimit(it->movementUpperLimit.x);
-					joint->setXMotion(ConfigurableJointMotion::Limited);
+
+					if (it->movementLowerLimit.x == it->movementUpperLimit.x)
+						joint->setXMotion(ConfigurableJointMotion::Locked);
+					else
+						joint->setXMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.y == 0.0f && it->movementUpperLimit.y == 0.0f)
 					joint->setYMotion(ConfigurableJointMotion::Locked);
-				else
+				else if (it->movementLowerLimit.y > it->movementUpperLimit.y)
+					joint->setXMotion(ConfigurableJointMotion::Free);
+				else if (it->movementLowerLimit.y > -10.0f && it->movementUpperLimit.y < 10.0f)
 				{
 					joint->setLowYLimit(it->movementLowerLimit.y);
 					joint->setHighYLimit(it->movementUpperLimit.y);
-					joint->setYMotion(ConfigurableJointMotion::Limited);
+
+					if (it->movementLowerLimit.y == it->movementUpperLimit.y)
+						joint->setYMotion(ConfigurableJointMotion::Locked);
+					else
+						joint->setYMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.z == 0.0f && it->movementUpperLimit.z == 0.0f)
 					joint->setZMotion(ConfigurableJointMotion::Locked);
-				else
+				else if (it->movementLowerLimit.z > it->movementUpperLimit.z)
+					joint->setXMotion(ConfigurableJointMotion::Free);
+				else if (it->movementLowerLimit.z > -10.0f && it->movementUpperLimit.z < 10.0f)
 				{
 					joint->setLowZLimit(it->movementLowerLimit.z);
 					joint->setHighZLimit(it->movementUpperLimit.z);
-					joint->setZMotion(ConfigurableJointMotion::Limited);
+
+					if (it->movementLowerLimit.z == it->movementUpperLimit.z)
+						joint->setZMotion(ConfigurableJointMotion::Locked);
+					else
+						joint->setZMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)
@@ -419,8 +437,7 @@ namespace octoon
 					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
 						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
 
-					joint->setLowAngularXLimit(math::clamp(it->rotationLowerLimit.x, -6.24318f, 6.24318f) - 1e-5f);
-					joint->setHighAngularXLimit(math::clamp(it->rotationUpperLimit.x, -6.24318f, 6.24318f) + 1e-5f);
+					joint->setTwistLimit(math::clamp(it->rotationLowerLimit.x, -6.24318f, 6.24318f) - 1e-5f, math::clamp(it->rotationUpperLimit.x, -6.24318f, 6.24318f) + 1e-5f);
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
 				}
 

@@ -224,19 +224,12 @@ namespace octoon
 	}
 
 	void
-	ConfigurableJointComponent::setLowAngularXLimit(float limit) noexcept
+	ConfigurableJointComponent::setTwistLimit(float min, float max) noexcept
 	{
 		if (joint_)
-			joint_->setLowAngularXLimit(limit);
-		lowAngleXLimit_ = limit;
-	}
-
-	void
-	ConfigurableJointComponent::setHighAngularXLimit(float limit) noexcept
-	{
-		if (joint_)
-			joint_->setHighAngularXLimit(limit);
-		highAngleXLimit_ = limit;
+			joint_->setTwistLimit(min ,max);
+		lowAngleXLimit_ = min;
+		highAngleXLimit_ = max;
 	}
 
 	void

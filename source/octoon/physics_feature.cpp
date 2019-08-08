@@ -10,7 +10,7 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
-		, iterationCounts_(4)
+		, iterationCounts_(3)
 	{		
 	}
 

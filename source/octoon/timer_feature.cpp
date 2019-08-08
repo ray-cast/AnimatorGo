@@ -1,4 +1,4 @@
-#if defined(OCTOON_FEATURE_TIMER_ENABLE)
+﻿#if defined(OCTOON_FEATURE_TIMER_ENABLE)
 #include <octoon/timer_feature.h>
 
 namespace octoon
@@ -7,8 +7,8 @@ namespace octoon
 
 	TimerFeature::TimerFeature() noexcept
 		: time_(0.0f)
-		, timeStep_(0.02)
-		, timeInterval_(0.02)
+		, timeStep_(0.016666f)
+		, timeInterval_(0.016666f)
 	{
 	}
 

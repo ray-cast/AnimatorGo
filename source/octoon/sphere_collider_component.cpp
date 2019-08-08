@@ -24,6 +24,7 @@ namespace octoon
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
+		assert(contactOffset > restOffset);
 	}
 
     SphereColliderComponent::~SphereColliderComponent()

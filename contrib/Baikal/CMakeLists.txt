@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project(Baikal CXX)
 
 option(BAIKAL_ENABLE_RAYMASK "Enable visibility flags for shapes (slows down an intersector)" OFF)
-option(BAIKAL_ENABLE_DENOISER "Use denoising on output" OFF)
+option(BAIKAL_ENABLE_DENOISER "Use denoising on output" ON)
 option(BAIKAL_ENABLE_RPR "Enable RadeonProRender API lib" ON)
 option(BAIKAL_ENABLE_TESTS "Enable tests" OFF)
 option(BAIKAL_ENABLE_STANDALONE "Enable standalone application build" OFF)
@@ -32,7 +32,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 #Find required packages
 find_package(Threads REQUIRED)
-find_package(OIIO REQUIRED)
+if(BAIKAL_ENABLE_IO)
+    find_package(OIIO REQUIRED)
+endif()
 
 if (BAIKAL_ENABLE_STANDALONE OR BAIKAL_ENABLE_RPR)
     find_package(OpenGL REQUIRED)

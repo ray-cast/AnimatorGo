@@ -1,0 +1,20 @@
+NvCloth Release notes.
+[1.0.0]
+Supported platforms:
+* Windows (CPU, CUDA, DX11, RenderCloth)
+* Mac (beta, tested on Sierra, RenderCloth)
+* Linux (beta, tested on Ubuntu 16.04.1 LTS x64)
+* Playstation 4 (beta)
+* XBox one (CPU, DX11, beta)
+Note: beta platforms are not yet optimized.
+
+Supported compilers (via cmake 3.7)
+* Windows: Visual Studio 12, 14 (2013, 2015)
+* Linux: gcc (only x64)
+* Mac: xcode
+* Playstation 4: Visual studio 14 (2015)
+* XBox one: Visual studio 14 (2015)
+
+Known issues:
+DirectX 11 solver doesn’t support triangle collision shapes and air drag/lift
+

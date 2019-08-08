@@ -6,6 +6,7 @@
 #include <octoon/model/ik.h>
 #include <octoon/model/rigidbody.h>
 #include <octoon/model/joint.h>
+#include <octoon/model/softbody.h>
 
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
@@ -30,10 +31,8 @@ namespace octoon
 					(header.magic[1] == 'm' || header.magic[1] == 'M') &&
 					(header.magic[2] == 'x' || header.magic[2] == 'X'))
 				{
-					if (header.version == 2.0)
-					{
+					if (header.version >= 2.0 || header.version <= 2.1)
 						return true;
-					}
 				}
 			}
 			return false;
@@ -426,9 +425,9 @@ namespace octoon
 
 			if (pmx.numRigidbodys > 0)
 			{
-				pmx.rigidbodys.resize(pmx.numRigidbodys);
+				pmx.rigidbodies.resize(pmx.numRigidbodys);
 
-				for (auto& rigidbody : pmx.rigidbodys)
+				for (auto& rigidbody : pmx.rigidbodies)
 				{
 					if (!stream.read((char*)&rigidbody.name.length, sizeof(rigidbody.name.length))) return false;
 					if (!stream.read((char*)&rigidbody.name.name, rigidbody.name.length)) return false;
@@ -483,6 +482,90 @@ namespace octoon
 
 					if (!stream.read((char*)&joint.springMovementConstant, sizeof(joint.springMovementConstant))) return false;
 					if (!stream.read((char*)&joint.springRotationConstant, sizeof(joint.springRotationConstant))) return false;
+				}
+			}
+
+			if (pmx.header.version > 2.0)
+			{
+				if (!stream.read((char*)& pmx.numSoftbodies, sizeof(pmx.numSoftbodies))) return false;
+
+				if (pmx.numSoftbodies > 0)
+				{
+					pmx.softbodies.resize(pmx.numSoftbodies);
+
+					for (auto& body : pmx.softbodies)
+					{
+						if (!stream.read((char*)& body.name.length, sizeof(body.name.length))) return false;
+						if (!stream.read((char*)& body.name.name, body.name.length)) return false;
+						if (!stream.read((char*)& body.nameEng.length, sizeof(body.nameEng.length))) return false;
+						if (!stream.read((char*)& body.nameEng.name, body.nameEng.length)) return false;
+
+						if (!stream.read((char*)& body.type, sizeof(body.type))) return false;
+
+						if (!stream.read((char*)& body.materialIndex, pmx.header.sizeOfMaterial)) return false;
+
+						if (!stream.read((char*)& body.group, sizeof(body.group))) return false;
+						if (!stream.read((char*)& body.groupMask, sizeof(body.groupMask))) return false;
+
+						if (!stream.read((char*)& body.flag, sizeof(body.flag))) return false;
+
+						if (!stream.read((char*)& body.blinkLength, sizeof(body.blinkLength))) return false;
+						if (!stream.read((char*)& body.numClusters, sizeof(body.numClusters))) return false;
+
+						if (!stream.read((char*)& body.totalMass, sizeof(body.totalMass))) return false;
+						if (!stream.read((char*)& body.collisionMargin, sizeof(body.collisionMargin))) return false;
+
+						if (!stream.read((char*)& body.aeroModel, sizeof(body.aeroModel))) return false;
+
+						if (!stream.read((char*)& body.VCF, sizeof(body.VCF))) return false;
+						if (!stream.read((char*)& body.DP, sizeof(body.DP))) return false;
+						if (!stream.read((char*)& body.DG, sizeof(body.DG))) return false;
+						if (!stream.read((char*)& body.LF, sizeof(body.LF))) return false;
+						if (!stream.read((char*)& body.PR, sizeof(body.PR))) return false;
+						if (!stream.read((char*)& body.VC, sizeof(body.VC))) return false;
+						if (!stream.read((char*)& body.DF, sizeof(body.DF))) return false;
+						if (!stream.read((char*)& body.MT, sizeof(body.MT))) return false;
+						if (!stream.read((char*)& body.CHR, sizeof(body.CHR))) return false;
+						if (!stream.read((char*)& body.KHR, sizeof(body.KHR))) return false;
+						if (!stream.read((char*)& body.SHR, sizeof(body.SHR))) return false;
+						if (!stream.read((char*)& body.AHR, sizeof(body.AHR))) return false;
+
+						if (!stream.read((char*)& body.SRHR_CL, sizeof(body.SRHR_CL))) return false;
+						if (!stream.read((char*)& body.SKHR_CL, sizeof(body.SKHR_CL))) return false;
+						if (!stream.read((char*)& body.SSHR_CL, sizeof(body.SSHR_CL))) return false;
+						if (!stream.read((char*)& body.SR_SPLT_CL, sizeof(body.SR_SPLT_CL))) return false;
+						if (!stream.read((char*)& body.SK_SPLT_CL, sizeof(body.SK_SPLT_CL))) return false;
+						if (!stream.read((char*)& body.SS_SPLT_CL, sizeof(body.SS_SPLT_CL))) return false;
+
+						if (!stream.read((char*)& body.V_IT, sizeof(body.V_IT))) return false;
+						if (!stream.read((char*)& body.P_IT, sizeof(body.P_IT))) return false;
+						if (!stream.read((char*)& body.D_IT, sizeof(body.D_IT))) return false;
+						if (!stream.read((char*)& body.C_IT, sizeof(body.C_IT))) return false;
+
+						if (!stream.read((char*)& body.LST, sizeof(body.LST))) return false;
+						if (!stream.read((char*)& body.AST, sizeof(body.AST))) return false;
+						if (!stream.read((char*)& body.VST, sizeof(body.VST))) return false;
+
+						if (!stream.read((char*)& body.numRigidbody, sizeof(body.numRigidbody))) return false;
+						if (body.numRigidbody > 0)
+						{
+							body.anchorRigidbodies.resize(body.numRigidbody);
+
+							for (auto& ar : body.anchorRigidbodies)
+							{
+								if (!stream.read((char*)& ar.rigidBodyIndex, sizeof(ar.rigidBodyIndex))) return false;
+								if (!stream.read((char*)& ar.vertexIndex, sizeof(ar.vertexIndex))) return false;
+								if (!stream.read((char*)& ar.nearMode, sizeof(ar.nearMode))) return false;
+							}
+						}
+
+						if (!stream.read((char*)& body.numIndices, sizeof(body.numIndices))) return false;
+						if (body.numIndices > 0)
+						{
+							body.pinVertexIndices.resize(body.numIndices * pmx.header.sizeOfIndices);
+							if (!stream.read((char*) body.pinVertexIndices.data(), body.numIndices * pmx.header.sizeOfIndices)) return false;
+						}
+					}
 				}
 			}
 
@@ -683,7 +766,7 @@ namespace octoon
 				index++;
 			}
 
-			for (auto& it : pmx.rigidbodys)
+			for (auto& it : pmx.rigidbodies)
 			{
 				auto body = std::make_shared<Rigidbody>();
 				body->name = cv.to_bytes(it.name.name);
@@ -721,6 +804,25 @@ namespace octoon
 				joint->springRotationConstant = it.springRotationConstant;
 
 				model.add(std::move(joint));
+			}
+
+			for (auto& it : pmx.softbodies)
+			{
+				auto softbody = std::make_shared<Softbody>();
+				softbody->name = cv.to_bytes(it.name.name);
+				softbody->materialIndex = it.materialIndex;
+				softbody->group = it.group;
+				softbody->groupMask = it.groupMask;
+				softbody->blinkLength = it.blinkLength;
+				softbody->numClusters = it.numClusters;
+				softbody->totalMass = it.totalMass;
+				softbody->collisionMargin = it.collisionMargin;
+				softbody->anchorRigidbodies.reserve(it.numRigidbody);
+				
+				for (auto& rigidbody : it.anchorRigidbodies)
+					softbody->anchorRigidbodies.push_back(rigidbody.rigidBodyIndex);
+
+				model.add(std::move(softbody));
 			}
 
 			return true;
@@ -1047,7 +1149,7 @@ namespace octoon
 			if (!stream.write((char*)&pmx.numRigidbodys, sizeof(pmx.numRigidbodys))) return false;
 			if (pmx.numRigidbodys)
 			{
-				for (auto& rigidbody : pmx.rigidbodys)
+				for (auto& rigidbody : pmx.rigidbodies)
 				{
 					if (!stream.write((char*)&rigidbody.name.length, sizeof(rigidbody.name.length))) return false;
 					if (rigidbody.name.length)

@@ -41,6 +41,10 @@
 #	include <octoon/physics_feature.h>
 #endif
 
+#if OCTOON_FEATURE_PHYSICS_ENABLE
+#	include <octoon/cloth_feature.h>
+#endif
+
 #if OCTOON_FEATURE_VIDEO_ENABLE
 #	include <octoon/offline_feature.h>
 #endif
@@ -119,6 +123,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_PHYSICS_ENABLE
 		this->addFeature(std::make_unique<PhysicsFeature>());
+#endif
+
+#if OCTOON_FEATURE_PHYSICS_ENABLE
+		this->addFeature(std::make_unique<ClothFeature>());
 #endif
 
 #if OCTOON_FEATURE_HAL_ENABLE

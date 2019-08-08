@@ -59,6 +59,7 @@ namespace octoon
 		class Bone;
 		class IKAttr;
 		class Rigidbody;
+		class Softbody;
 		class Joint;
 		class CombineMesh;
 
@@ -88,6 +89,7 @@ namespace octoon
 		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
 		typedef std::shared_ptr<Rigidbody> RigidbodyPtr;
+		typedef std::shared_ptr<Softbody> SoftbodyPtr;
 		typedef std::shared_ptr<Joint> JointPtr;
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 

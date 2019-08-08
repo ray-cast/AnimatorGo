@@ -53,7 +53,7 @@ add_library(RadeonProRender64 SHARED ${SOURCES})
 target_compile_definitions(RadeonProRender64 PRIVATE RPR_EXPORT_API)
 target_compile_features(RadeonProRender64 PRIVATE cxx_std_14)
 target_include_directories(RadeonProRender64 PUBLIC ${Baikal_SOURCE_DIR}/Rpr)
-target_link_libraries(RadeonProRender64 PUBLIC Baikal OpenGL::GL GLEW::GLEW)
+target_link_libraries(RadeonProRender64 PUBLIC Baikal OpenGL::GL glew)
 
 if(BAIKAL_ENABLE_IO)
     target_link_libraries(RadeonProRender64 PUBLIC BaikalIO)

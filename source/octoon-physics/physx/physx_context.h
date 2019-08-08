@@ -13,7 +13,6 @@
 #include <octoon/physics/physics_configurable_joint.h>
 
 #include "physx_scene.h"
-
 #include "physx_type.h"
 
 namespace octoon
@@ -35,17 +34,19 @@ namespace octoon
 			virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
 			physx::PxPhysics* getPxPhysics();
+			nv::cloth::Factory* getClothFactory();
 
 		private:
 			PhysxContext(const PhysxContext&) noexcept = delete;
 			PhysxContext& operator=(const PhysxContext&) noexcept = delete;
         private:
+			nv::cloth::Factory* factory_;
             physx::PxFoundation* foundation;
             physx::PxPvd* pvd;
             physx::PxPhysics* physics;
             physx::PxCooking* cooking;
 			physx::PxPvdTransport* transport_;
-            std::unique_ptr<physx::PxDefaultErrorCallback> defaultErrorCallback;
+            std::unique_ptr<physx::PxErrorCallback> defaultErrorCallback;
             std::unique_ptr<physx::PxDefaultAllocator> defaultAllocatorCallback;
 		};
 	}

@@ -17,7 +17,8 @@ namespace octoon
 
 namespace physx
 {
-	class PxDefaultErrorCallback;
+	class PxProfilerCallback;
+	class PxErrorCallback;
 	class PxDefaultAllocator;
 	class PxFoundation;
 	class PxPvd;
@@ -42,3 +43,12 @@ namespace physx
 	class PxFixedJoint;
 	class PxD6Joint;
 } // namespace physx
+
+namespace nv
+{
+	namespace cloth
+	{
+		class DxContextManagerCallback;
+		class Factory;
+	}
+}

@@ -40,7 +40,7 @@ namespace octoon
 			_meshes.clear();
 			_bones.clear();
 			_iks.clear();
-			_rigidbodys.clear();
+			_rigidbodies.clear();
 			_joints.clear();
 			_textures.clear();
 			_materials.clear();

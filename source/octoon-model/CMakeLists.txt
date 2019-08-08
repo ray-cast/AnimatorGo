@@ -21,6 +21,8 @@ SET(MODEL_LIST
 	${SOURCE_PATH}/joint.cpp
 	${HEADER_PATH}/rigidbody.h
 	${SOURCE_PATH}/rigidbody.cpp
+	${HEADER_PATH}/softbody.h
+	${SOURCE_PATH}/softbody.cpp
 )
 SOURCE_GROUP(${LIB_NAME} FILES ${MODEL_LIST})
 

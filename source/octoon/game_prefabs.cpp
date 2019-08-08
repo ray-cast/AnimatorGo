@@ -14,6 +14,7 @@
 #include <octoon/model/ik.h>
 #include <octoon/model/rigidbody.h>
 #include <octoon/model/joint.h>
+#include <octoon/model/softbody.h>
 
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>
@@ -39,6 +40,7 @@
 #include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/rotation_link_component.h>
 #include <octoon/rotation_link_limit_component.h>
+#include <octoon/cloth_component.h>
 
 #include <octoon/runtime/except.h>
 #include <octoon/runtime/string.h>
@@ -253,6 +255,9 @@ namespace octoon
 		if (!this->createMeshes(model, actor, bones, path))
 			return false;
 
+		/*if (!this->createSoftbodys(model, actor->getChildren(), rigidbody))
+			return false;*/
+
 		return actor;
 	}
 
@@ -316,6 +321,22 @@ namespace octoon
 				else
 					bones[additiveParent]->addComponent<RotationLinkComponent>(bones[i]);
 			}
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createSoftbodys(const model::Model& model, GameObjects& mesh, GameObjects& rigidbodies) noexcept
+	{
+		for (auto& it : model.get<Model::softbody>())
+		{
+			GameObjects paritices;
+
+			for (auto& body : it->anchorRigidbodies)
+				paritices.push_back(rigidbodies[body]);
+
+			mesh[it->materialIndex]->addComponent<ClothComponent>(paritices);
 		}
 
 		return true;

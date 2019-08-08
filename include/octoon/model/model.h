@@ -14,6 +14,7 @@ namespace octoon
 			using bone_array_t = std::vector<BonePtr>;
 			using ik_array_t = std::vector<IKAttrPtr>;
 			using rigidbody_array_t = std::vector<RigidbodyPtr>;
+			using softbody_array_t = std::vector<SoftbodyPtr>;
 			using joint_array_t = std::vector<JointPtr>;
 			using material_array_t = std::vector<MaterialPtr>;
 			using texture_array_t = std::vector<TexturePtr>;
@@ -25,6 +26,7 @@ namespace octoon
 				bone,
 				ik,
 				rigidbody,
+				softbody,
 				joint,
 				material,
 				texture,
@@ -43,7 +45,8 @@ namespace octoon
 			void add(const MeshPtr& value) noexcept { _meshes.push_back(value); }
 			void add(const BonePtr& value) noexcept { _bones.push_back(value); }
 			void add(const IKAttrPtr& value) noexcept { _iks.push_back(value); }
-			void add(const RigidbodyPtr& value) noexcept { _rigidbodys.push_back(value); }
+			void add(const RigidbodyPtr& value) noexcept { _rigidbodies.push_back(value); }
+			void add(const SoftbodyPtr& value) noexcept { _softbodies.push_back(value); }
 			void add(const JointPtr& value) noexcept { _joints.push_back(value); }
 			void add(const TexturePtr& value) noexcept { _textures.push_back(value); }
 			void add(const MaterialPtr& value) noexcept { _materials.push_back(value); }
@@ -52,7 +55,8 @@ namespace octoon
 			void add(MeshPtr&& value) noexcept { _meshes.push_back(value); }
 			void add(BonePtr&& value) noexcept { _bones.push_back(value); }
 			void add(IKAttrPtr&& value) noexcept { _iks.push_back(value); }
-			void add(RigidbodyPtr&& value) noexcept { _rigidbodys.push_back(value); }
+			void add(RigidbodyPtr&& value) noexcept { _rigidbodies.push_back(value); }
+			void add(SoftbodyPtr&& value) noexcept { _softbodies.push_back(value); }
 			void add(JointPtr&& value) noexcept { _joints.push_back(value); }
 			void add(TexturePtr&& value) noexcept { _textures.push_back(value); }
 			void add(MaterialPtr&& value) noexcept { _materials.push_back(value); }
@@ -61,7 +65,8 @@ namespace octoon
 			void set(mesh_array_t& value) noexcept { _meshes = value; }
 			void set(bone_array_t& value) noexcept { _bones = value; }
 			void set(ik_array_t& value) noexcept { _iks = value; }
-			void set(rigidbody_array_t& value) noexcept { _rigidbodys = value; }
+			void set(rigidbody_array_t& value) noexcept { _rigidbodies = value; }
+			void set(softbody_array_t& value) noexcept { _softbodies = value; }			
 			void set(joint_array_t& value) noexcept { _joints = value; }
 			void set(material_array_t& value) noexcept { _materials = value; }
 			void set(texture_array_t& value) noexcept { _textures = value; }
@@ -70,7 +75,8 @@ namespace octoon
 			void set(mesh_array_t&& value) noexcept { _meshes = std::move(value); }
 			void set(bone_array_t&& value) noexcept { _bones = std::move(value); }
 			void set(ik_array_t&& value) noexcept { _iks = std::move(value); }
-			void set(rigidbody_array_t&& value) noexcept { _rigidbodys = std::move(value); }
+			void set(rigidbody_array_t&& value) noexcept { _rigidbodies = std::move(value); }
+			void set(softbody_array_t&& value) noexcept { _softbodies = std::move(value); }
 			void set(joint_array_t&& value) noexcept { _joints = std::move(value); }
 			void set(material_array_t&& value) noexcept { _materials = std::move(value); }
 			void set(texture_array_t&& value) noexcept { _textures = std::move(value); }
@@ -86,7 +92,10 @@ namespace octoon
 			const ik_array_t& get() const { return _iks; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			const rigidbody_array_t& get() const { return _rigidbodys; }
+			const rigidbody_array_t& get() const { return _rigidbodies; }
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::softbody>>
+			const softbody_array_t & get() const { return _softbodies; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
 			const joint_array_t& get() const { return _joints; }
@@ -110,7 +119,10 @@ namespace octoon
 			const IKAttrPtr& get(std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			const RigidbodyPtr& get(std::size_t n) const { return _rigidbodys[n]; }
+			const RigidbodyPtr& get(std::size_t n) const { return _rigidbodies[n]; }
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::softbody>>
+			const SoftbodyPtr & get(std::size_t n) const { return _softbodies[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
 			const JointPtr& get(std::size_t n) const { return _joints[n]; }
@@ -134,7 +146,10 @@ namespace octoon
 			constexpr std::enable_if_t<type == type_t::ik, bool> empty() const { return _iks.empty(); }
 
 			template<type_t type>
-			constexpr std::enable_if_t<type == type_t::rigidbody, bool> empty() const { return _rigidbodys.empty(); }
+			constexpr std::enable_if_t<type == type_t::rigidbody, bool> empty() const { return _rigidbodies.empty(); }
+
+			template<type_t type>
+			constexpr std::enable_if_t<type == type_t::softbody, bool> empty() const { return _softbodies.empty(); }
 
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::joint, bool> empty() const { return _joints.empty(); }
@@ -158,7 +173,10 @@ namespace octoon
 			const IKAttrPtr& operator[](std::size_t n) const { return _iks[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::rigidbody>>
-			const RigidbodyPtr& operator[](std::size_t n) const { return _rigidbodys[n]; }
+			const RigidbodyPtr& operator[](std::size_t n) const { return _rigidbodies[n]; }
+
+			template<type_t type, typename = std::enable_if_t<type == type_t::softbody>>
+			const SoftbodyPtr & operator[](std::size_t n) const { return _softbodies[n]; }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::joint>>
 			const JointPtr& operator[](std::size_t n) const { return _joints[n]; }
@@ -193,7 +211,8 @@ namespace octoon
 			mesh_array_t _meshes;
 			bone_array_t _bones;
 			ik_array_t _iks;
-			rigidbody_array_t _rigidbodys;
+			rigidbody_array_t _rigidbodies;
+			softbody_array_t _softbodies;
 			joint_array_t _joints;
 			texture_array_t _textures;
 			material_array_t _materials;

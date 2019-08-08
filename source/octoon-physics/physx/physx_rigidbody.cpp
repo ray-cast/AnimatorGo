@@ -82,6 +82,18 @@ namespace octoon
 			px_rigidbody->wakeUp();
 		}
 
+		void
+		PhysxRigidbody::clearForce() noexcept
+		{
+			px_rigidbody->clearForce();
+		}
+
+		void
+		PhysxRigidbody::clearTorque() noexcept
+		{
+			px_rigidbody->clearTorque();
+		}
+
 		void PhysxRigidbody::setDynamicFriction(float f)
 		{
 			shape_->getPxMaterial()->setDynamicFriction(f);

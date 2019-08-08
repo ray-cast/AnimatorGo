@@ -48,6 +48,8 @@ namespace octoon
 			virtual math::Quaternion getRotation() override;
 
 			virtual void wakeUp() override;
+			virtual void clearForce() noexcept override;
+			virtual void clearTorque() noexcept override;			
 
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) override;
 			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) override;

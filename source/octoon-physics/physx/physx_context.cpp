@@ -11,6 +11,7 @@
 #include <octoon/math/math.h>
 
 #include <PxPhysicsAPI.h>
+#include <NvCloth/Factory.h>
 
 namespace octoon
 {
@@ -24,6 +25,7 @@ namespace octoon
 			, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
 			, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
 			, transport_(nullptr)
+			, factory_(nullptr)
 		{
 			physx::PxTolerancesScale scale;
 			scale.length = 10.0f;
@@ -111,6 +113,11 @@ namespace octoon
 		physx::PxPhysics * PhysxContext::getPxPhysics()
 		{
 			return physics;
+		}
+
+		nv::cloth::Factory* PhysxContext::getClothFactory()
+		{
+			return factory_;
 		}
 	}
 }

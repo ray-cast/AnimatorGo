@@ -308,6 +308,84 @@ namespace octoon
 			PmxVector3 springRotationConstant;
 		};
 
+		struct PmxSoftbody
+		{
+			PmxName name;
+			PmxName nameEng;
+
+			PmxUInt8 type; // 0 : TriMesh, 1 : Rope
+
+			std::int16_t materialIndex;
+
+			PmxUInt8  group;
+			PmxUInt16 groupMask;
+
+			enum class SoftbodyMask : uint8_t
+			{
+				BLink = 0x01,
+				Cluster = 0x02,
+				HybridLink = 0x04,
+			};
+			SoftbodyMask	flag;
+
+			std::int32_t blinkLength;
+			std::int32_t numClusters;
+
+			float totalMass;
+			float collisionMargin;
+
+			enum class AeroModel : int32_t
+			{
+				kAeroModelV_TwoSided,
+				kAeroModelV_OneSided,
+				kAeroModelF_TwoSided,
+				kAeroModelF_OneSided,
+			};
+			std::int32_t aeroModel;
+
+			float VCF;
+			float DP;
+			float DG;
+			float LF;
+			float PR;
+			float VC;
+			float DF;
+			float MT;
+			float CHR;
+			float KHR;
+			float SHR;
+			float AHR;
+
+			float SRHR_CL;
+			float SKHR_CL;
+			float SSHR_CL;
+			float SR_SPLT_CL;
+			float SK_SPLT_CL;
+			float SS_SPLT_CL;
+
+			int32_t	V_IT;
+			int32_t	P_IT;
+			int32_t	D_IT;
+			int32_t	C_IT;
+
+			float LST;
+			float AST;
+			float VST;
+
+			struct AnchorRigidbody
+			{
+				int16_t	rigidBodyIndex;
+				int16_t	vertexIndex;
+				uint8_t	nearMode; //0:FF 1:ON
+			};
+
+			std::uint32_t numRigidbody;
+			std::uint32_t numIndices;
+
+			std::vector<AnchorRigidbody> anchorRigidbodies;
+			std::vector<std::uint8_t> pinVertexIndices;
+		};
+
 		struct PMX
 		{
 			PmxHeader      header;
@@ -322,6 +400,7 @@ namespace octoon
 			PmxUInt32 numDisplayFrames;
 			PmxUInt32 numRigidbodys;
 			PmxUInt32 numJoints;
+			PmxUInt32 numSoftbodies;
 
 			std::vector<PmxVertex> vertices;
 			std::vector<PmxIndex> indices;
@@ -330,8 +409,9 @@ namespace octoon
 			std::vector<PmxBone> bones;
 			std::vector<PmxMorph> morphs;
 			std::vector<PmxDisplayFrame> displayFrames;
-			std::vector<PmxRigidbody> rigidbodys;
+			std::vector<PmxRigidbody> rigidbodies;
 			std::vector<PmxJoint> joints;
+			std::vector<PmxSoftbody> softbodies;
 		};
 
 		class PmxLoader : public ModelLoader

@@ -302,10 +302,16 @@ namespace octoon
 	void 
 	RigidbodyComponent::onMoveAfter() noexcept
 	{
-		if (rigidbody_ && isKinematic_)
+		if (rigidbody_ )
 		{
 			auto transform = this->getComponent<TransformComponent>();
 			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
+		}
+
+		if (!isKinematic_)
+		{
+			rigidbody_->clearForce();
+			rigidbody_->clearTorque();
 		}
 	}
 

@@ -12,6 +12,7 @@
 #include <octoon/offline_directional_light_component.h>
 #include <octoon/H264_component.h>
 #include <octoon/timer_feature.h>
+#include <octoon/cloth_component.h>
 #include <fstream>
 #include "../libs/nativefiledialog/nfd.h"
 
@@ -141,6 +142,14 @@ namespace octoon
 			{
 				auto stream = io::ifstream(filepath);
 				auto pmm = PMMFile::load(stream).value();
+
+				auto camera = this->createCamera(pmm);
+				if (camera)
+				{
+					objects_.emplace_back(camera);
+					camera_ = camera;
+				}
+
 				for (auto& it : pmm.model)
 				{
 					std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
@@ -211,6 +220,12 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
+						auto component = model->getComponentInChildren<ClothComponent>();
+						if (component)
+						{
+							component->getGameObject()->addComponent<GuizmoComponent>(camera);
+						}
+
 						objects_.emplace_back(std::move(model));
 					}
 				}
@@ -221,14 +236,7 @@ namespace octoon
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 				mainLight->getComponent<TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 				objects_.push_back(mainLight);
-
-				auto camera = this->createCamera(pmm);
-				if (camera)
-				{
-					objects_.emplace_back(camera);
-					camera_ = camera;
-				}
-
+				
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
 				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
@@ -423,7 +431,7 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			obj->addComponent<AnimationComponent>(clip);
+			//obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);

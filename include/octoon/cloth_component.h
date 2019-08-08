@@ -21,12 +21,12 @@ namespace octoon
 		ClothComponent(const GameObjects& joint) noexcept;
 		~ClothComponent() noexcept;
 
-		void addBone(GameObjectPtr&& bone) noexcept;
-		void addBone(const GameObjectPtr& bone) noexcept;
+		void addCollider(GameObjectPtr&& bone) noexcept;
+		void addCollider(const GameObjectPtr& bone) noexcept;
 
-		void setBones(GameObjects&& joint) noexcept;
-		void setBones(const GameObjects& joint) noexcept;
-		const GameObjects& getBones() const noexcept;
+		void setColliders(GameObjects&& joint) noexcept;
+		void setColliders(const GameObjects& joint) noexcept;
+		const GameObjects& getColliders() const noexcept;
 
 		GameComponentPtr clone() const noexcept;
 	private:
@@ -48,7 +48,7 @@ namespace octoon
 	private:
 		bool needUpdate_;
 		nv::cloth::Cloth* cloth_;
-		GameObjects bones_;
+		GameObjects collides_;
 	};
 }
 

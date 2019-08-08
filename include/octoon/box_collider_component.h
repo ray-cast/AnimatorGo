@@ -11,8 +11,8 @@ namespace octoon
 		OctoonDeclareSubClass(BoxColliderComponent, ColliderComponent)
 	public:
 		BoxColliderComponent() noexcept;
-		BoxColliderComponent(const math::float3& size) noexcept;
-		BoxColliderComponent(float width, float height, float depth) noexcept;
+		BoxColliderComponent(float width, float height, float depth, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
+		explicit BoxColliderComponent(const math::float3& size, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
 		virtual ~BoxColliderComponent();
 
 		void setWidth(float width) noexcept;
@@ -29,6 +29,12 @@ namespace octoon
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
 
+		void setContactOffset(float offset) noexcept override;
+		float getContactOffset() const noexcept override;
+
+		void setRestOffset(float offset) noexcept override;
+		float getRestOffset() const noexcept override;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -40,6 +46,9 @@ namespace octoon
 		void onDeactivate() noexcept override;
 
 	private:
+		float restOffset_;
+		float contactOffset_;
+
 		math::float3 size_;
 		math::float3 center_;
 

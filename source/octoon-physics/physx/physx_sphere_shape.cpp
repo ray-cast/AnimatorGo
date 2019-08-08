@@ -27,17 +27,41 @@ namespace octoon
 			px_shape = nullptr;
 		}
 
+		void PhysxSphereShape::setCenter(math::float3 center)
+		{
+			auto pxLocalPose = px_shape->getLocalPose();
+			pxLocalPose.p = physx::PxVec3(center.x, center.y, center.z);
+			px_shape->setLocalPose(pxLocalPose);
+		}
+
 		math::float3 PhysxSphereShape::getCenter()
 		{
 			auto pxLocalPose = px_shape->getLocalPose();
 			return math::float3(pxLocalPose.p.x, pxLocalPose.p.y, pxLocalPose.p.z);
 		}
 
-		void PhysxSphereShape::setCenter(math::float3 center)
+		void
+		PhysxSphereShape::setContactOffset(float offset)
 		{
-			auto pxLocalPose = px_shape->getLocalPose();
-			pxLocalPose.p = physx::PxVec3(center.x, center.y, center.z);
-			px_shape->setLocalPose(pxLocalPose);
+			px_shape->setContactOffset(offset);
+		}
+
+		float
+		PhysxSphereShape::getContactOffset() const
+		{
+			return px_shape->getContactOffset();
+		}
+
+		void
+		PhysxSphereShape::setRestOffset(float offset)
+		{
+			px_shape->setRestOffset(offset);
+		}
+
+		float 
+		PhysxSphereShape::getRestOffset() const
+		{
+			return px_shape->getRestOffset();
 		}
 
 		float PhysxSphereShape::getRadius()

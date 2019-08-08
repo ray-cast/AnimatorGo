@@ -39,6 +39,30 @@ namespace octoon
 			px_shape->setLocalPose(pxLocalPose);
 		}
 
+		void
+		PhysxBoxShape::setContactOffset(float offset)
+		{
+			px_shape->setContactOffset(offset);
+		}
+
+		float
+		PhysxBoxShape::getContactOffset() const
+		{
+			return px_shape->getContactOffset();
+		}
+
+		void
+		PhysxBoxShape::setRestOffset(float offset)
+		{
+			px_shape->setRestOffset(offset);
+		}
+
+		float 
+		PhysxBoxShape::getRestOffset() const
+		{
+			return px_shape->getRestOffset();
+		}
+
 		void PhysxBoxShape::setWidth(float width)
 		{
 			physx::PxBoxGeometry geometry;

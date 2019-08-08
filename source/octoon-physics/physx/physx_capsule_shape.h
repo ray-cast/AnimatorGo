@@ -22,6 +22,12 @@ namespace octoon
 			virtual math::float3 getCenter() override;
 			virtual void setCenter(math::float3 center) override;
 
+			virtual void setContactOffset(float offset) override;
+			virtual float getContactOffset() const override;
+
+			virtual void setRestOffset(float offset) override;
+			virtual float getRestOffset() const override;
+
 			virtual void setRadius(float width) override;
 			virtual void setHeight(float height) override;
 

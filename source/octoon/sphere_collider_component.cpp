@@ -13,12 +13,16 @@ namespace octoon
 	SphereColliderComponent::SphereColliderComponent() noexcept
 		: radius_(1.0)
 		, center_(math::float3::Zero)
+		, contactOffset_(0.2f)
+		, restOffset_(0.0f)
     {
     }
 
-	SphereColliderComponent::SphereColliderComponent(float radius) noexcept
+	SphereColliderComponent::SphereColliderComponent(float radius, float contactOffset, float restOffset) noexcept
 		: radius_(radius)
 		, center_(math::float3::Zero)
+		, contactOffset_(contactOffset)
+		, restOffset_(restOffset)
 	{
 	}
 
@@ -54,6 +58,34 @@ namespace octoon
 		return this->center_;
 	}
 
+	void
+	SphereColliderComponent::setContactOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setContactOffset(offset);
+		this->contactOffset_ = offset;
+	}
+
+	float
+	SphereColliderComponent::getContactOffset() const noexcept
+	{
+		return this->contactOffset_;
+	}
+
+	void
+	SphereColliderComponent::setRestOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setRestOffset(offset);
+		this->restOffset_ = offset;
+	}
+
+	float
+	SphereColliderComponent::getRestOffset() const noexcept
+	{
+		return this->restOffset_;
+	}
+
 	std::shared_ptr<physics::PhysicsShape>
 	SphereColliderComponent::getShape() noexcept
 	{
@@ -80,6 +112,8 @@ namespace octoon
 			sphereDesc.radius = radius_;
 			shape_ = physicsFeature->getContext()->createSphereShape(sphereDesc);
 			shape_->setCenter(this->center_);
+			shape_->setContactOffset(this->contactOffset_);
+			shape_->setRestOffset(this->restOffset_);
 		}
     }
 

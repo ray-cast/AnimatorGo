@@ -121,6 +121,11 @@ SET(PHYSICS_FEATURES_LIST
 	${SOURCE_PATH}/fixed_joint_component.cpp
 	${HEADER_PATH}/configurable_joint_component.h
 	${SOURCE_PATH}/configurable_joint_component.cpp
+
+	${HEADER_PATH}/cloth_component.h
+	${SOURCE_PATH}/cloth_component.cpp
+	${HEADER_PATH}/cloth_feature.h
+	${SOURCE_PATH}/cloth_feature.cpp
 )
 SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 
@@ -166,17 +171,8 @@ SET(OFFLINE_FEATURES_LIST
 )
 SOURCE_GROUP("system\\offline" FILES ${OFFLINE_FEATURES_LIST})
 
-SET(CLOTH_FEATURES_LIST
-	${HEADER_PATH}/cloth_component.h
-	${SOURCE_PATH}/cloth_component.cpp
-	${HEADER_PATH}/cloth_feature.h
-	${SOURCE_PATH}/cloth_feature.cpp
-)
-SOURCE_GROUP("system\\cloth" FILES ${CLOTH_FEATURES_LIST})
-
 LIST(APPEND OCTOON_LIST ${GAMEBASE_LIST})
 LIST(APPEND OCTOON_LIST ${OFFLINE_FEATURES_LIST})
-LIST(APPEND OCTOON_LIST ${CLOTH_FEATURES_LIST})
 
 IF(OCTOON_FEATURE_IO_ENABLE)
 	LIST(APPEND OCTOON_LIST ${IO_FEATURES_LIST})

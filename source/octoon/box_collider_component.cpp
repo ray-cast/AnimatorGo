@@ -9,18 +9,24 @@ namespace octoon
 	BoxColliderComponent::BoxColliderComponent() noexcept
 		: size_(math::float3::One)
 		, center_(math::float3::Zero)
+		, contactOffset_(0.2f)
+		, restOffset_(0.0f)
     {
     }
 
-	BoxColliderComponent::BoxColliderComponent(const math::float3& size) noexcept
+	BoxColliderComponent::BoxColliderComponent(const math::float3& size, float contactOffset, float restOffset) noexcept
 		: size_(size)
 		, center_(math::float3::Zero)
+		, contactOffset_(contactOffset)
+		, restOffset_(restOffset)
 	{
 	}
 
-	BoxColliderComponent::BoxColliderComponent(float x, float y, float z) noexcept
+	BoxColliderComponent::BoxColliderComponent(float x, float y, float z, float contactOffset, float restOffset) noexcept
 		: size_(math::float3(x, y, z))
 		, center_(math::float3::Zero)
+		, contactOffset_(contactOffset)
+		, restOffset_(restOffset)
 	{
 	}
 
@@ -102,6 +108,34 @@ namespace octoon
 		return this->center_;
 	}
 
+	void
+	BoxColliderComponent::setContactOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setContactOffset(offset);
+		this->contactOffset_ = offset;
+	}
+
+	float
+	BoxColliderComponent::getContactOffset() const noexcept
+	{
+		return this->contactOffset_;
+	}
+
+	void
+	BoxColliderComponent::setRestOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setRestOffset(offset);
+		this->restOffset_ = offset;
+	}
+
+	float
+	BoxColliderComponent::getRestOffset() const noexcept
+	{
+		return this->restOffset_;
+	}
+
     GameComponentPtr
 	BoxColliderComponent::clone() const noexcept
     {
@@ -131,7 +165,11 @@ namespace octoon
 			boxDesc.height = size_.y;
 			boxDesc.depth = size_.z;
 			shape_ = physicsFeature->getContext()->createBoxShape(boxDesc);
+			this->contactOffset_ = shape_->getContactOffset();
+			this->restOffset_ = shape_->getRestOffset();
 			shape_->setCenter(this->getCenter());
+			shape_->setContactOffset(this->contactOffset_);
+			shape_->setRestOffset(this->restOffset_);
 		}
     }
 

@@ -41,6 +41,30 @@ namespace octoon
 			px_shape->setLocalPose(pxLocalPose);
 		}
 
+		void
+		PhysxCapsuleShape::setContactOffset(float offset)
+		{
+			px_shape->setContactOffset(offset);
+		}
+
+		float
+		PhysxCapsuleShape::getContactOffset() const
+		{
+			return px_shape->getContactOffset();
+		}
+
+		void
+		PhysxCapsuleShape::setRestOffset(float offset)
+		{
+			px_shape->setRestOffset(offset);
+		}
+
+		float 
+		PhysxCapsuleShape::getRestOffset() const
+		{
+			return px_shape->getRestOffset();
+		}
+
 		void PhysxCapsuleShape::setRadius(float radius)
 		{
 			physx::PxCapsuleGeometry geometry;

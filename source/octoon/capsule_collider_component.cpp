@@ -10,13 +10,17 @@ namespace octoon
 		: radius_(1.0)
 		, height_(1.0)
 		, center_(math::float3::Zero)
+		, contactOffset_(0.2f)
+		, restOffset_(0.0f)
     {
     }
 
-	CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height) noexcept
+	CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height, float contactOffset, float restOffset) noexcept
 		: radius_(radius)
 		, height_(height)
 		, center_(math::float3::Zero)
+		, contactOffset_(contactOffset)
+		, restOffset_(restOffset)
 	{
 	}
 
@@ -66,6 +70,34 @@ namespace octoon
 		return this->center_;
 	}
 
+	void
+	CapsuleColliderComponent::setContactOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setContactOffset(offset);
+		this->contactOffset_ = offset;
+	}
+
+	float
+	CapsuleColliderComponent::getContactOffset() const noexcept
+	{
+		return this->contactOffset_;
+	}
+
+	void
+	CapsuleColliderComponent::setRestOffset(float offset) noexcept
+	{
+		if (shape_)
+			shape_->setRestOffset(offset);
+		this->restOffset_ = offset;
+	}
+
+	float
+	CapsuleColliderComponent::getRestOffset() const noexcept
+	{
+		return this->restOffset_;
+	}
+
     GameComponentPtr
 	CapsuleColliderComponent::clone() const noexcept
     {
@@ -94,6 +126,8 @@ namespace octoon
 			boxDesc.height = height_;
 			shape_ = physicsFeature->getContext()->createCapsuleShape(boxDesc);
 			shape_->setCenter(this->center_);
+			shape_->setContactOffset(this->contactOffset_);
+			shape_->setRestOffset(this->restOffset_);
 		}
     }
 

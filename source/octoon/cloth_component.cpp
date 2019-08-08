@@ -7,13 +7,18 @@
 #include <octoon/rotation_link_limit_component.h>
 #include <octoon/cloth_feature.h>
 #include <octoon/mesh_filter_component.h>
+#include <octoon/collider_component.h>
+#include <octoon/box_collider_component.h>
+#include <octoon/sphere_collider_component.h>
+#include <octoon/capsule_collider_component.h>
 
 #include <NvCloth/Cloth.h>
 #include <NvCloth/Factory.h>
 #include <NvCloth/Solver.h>
 #include <NvClothExt/ClothFabricCooker.h>
-
-#include <PxPhysicsAPI.h>
+#include <foundation/PxVec2.h>
+#include <foundation/PxVec4.h>
+#include <foundation/PxQuat.h>
 
 namespace octoon
 {
@@ -25,10 +30,10 @@ namespace octoon
 	{
 	}
 
-	ClothComponent::ClothComponent(const GameObjects& bone) noexcept
+	ClothComponent::ClothComponent(const GameObjects& colliders) noexcept
 		: ClothComponent()
 	{
-		this->setBones(bone);
+		this->setColliders(colliders);
 	}
 
 	ClothComponent::~ClothComponent() noexcept
@@ -36,33 +41,33 @@ namespace octoon
 	}
 
 	void
-	ClothComponent::addBone(GameObjectPtr&& joint) noexcept
+	ClothComponent::addCollider(GameObjectPtr&& joint) noexcept
 	{
-		bones_.emplace_back(std::move(joint));
+		collides_.emplace_back(std::move(joint));
 	}
 
 	void
-	ClothComponent::addBone(const GameObjectPtr& joint) noexcept
+	ClothComponent::addCollider(const GameObjectPtr& joint) noexcept
 	{
-		bones_.push_back(joint);
+		collides_.push_back(joint);
 	}
 
 	void
-	ClothComponent::setBones(GameObjects&& bones) noexcept
+	ClothComponent::setColliders(GameObjects&& bones) noexcept
 	{
-		bones_ = std::move(bones);
+		collides_ = std::move(bones);
 	}
 
 	void
-	ClothComponent::setBones(const GameObjects& bones) noexcept
+	ClothComponent::setColliders(const GameObjects& bones) noexcept
 	{
-		bones_ = bones;
+		collides_ = bones;
 	}
 
 	const GameObjects&
-	ClothComponent::getBones() const noexcept
+	ClothComponent::getColliders() const noexcept
 	{
-		return bones_;
+		return collides_;
 	}
 
 	GameComponentPtr
@@ -70,7 +75,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<ClothComponent>();
 		instance->setName(this->getName());
-		instance->setBones(this->getBones());
+		instance->setColliders(this->getColliders());
 
 		return instance;
 	}
@@ -130,6 +135,32 @@ namespace octoon
 		{
 			if (!cloth_->isAsleep())
 			{
+				std::vector<physx::PxVec4> spheres;
+
+				for (auto& it : this->collides_)
+				{
+					auto collide = it->getComponent<ColliderComponent>();
+					if (collide->isInstanceOf<SphereColliderComponent>())
+					{
+						auto radius = collide->downcast<SphereColliderComponent>()->getRadius();
+						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+						spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, radius));
+					}
+					else if (collide->isInstanceOf<CapsuleColliderComponent>())
+					{
+						auto capsule = collide->downcast<CapsuleColliderComponent>();
+						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+					}
+					else if (collide->isInstanceOf<BoxColliderComponent>())
+					{
+						auto box = collide->downcast<BoxColliderComponent>();
+						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+					}
+				}
+
+				nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
+				cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
+
 				auto meshFilter = this->getComponent<MeshFilterComponent>();
 				if (meshFilter)
 				{
@@ -190,6 +221,8 @@ namespace octoon
 			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
 			cloth_->setUserData(this);
 			cloth_->setGravity(gravity);
+			cloth_->setSolverFrequency(240);
+			cloth_->setDragCoefficient(0.1f);
 			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
 			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 			cloth_->clearInertia();

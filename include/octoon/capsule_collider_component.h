@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(CapsuleColliderComponent, ColliderComponent)
 	public:
 		CapsuleColliderComponent() noexcept;
-		CapsuleColliderComponent(float radius, float height) noexcept;
+		CapsuleColliderComponent(float radius, float height, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
 		virtual ~CapsuleColliderComponent();
 
 		void setRadius(float radius) noexcept;
@@ -22,6 +22,12 @@ namespace octoon
 
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
+
+		void setContactOffset(float offset) noexcept override;
+		float getContactOffset() const noexcept override;
+
+		void setRestOffset(float offset) noexcept override;
+		float getRestOffset() const noexcept override;
 
 		GameComponentPtr clone() const noexcept;
 
@@ -36,6 +42,9 @@ namespace octoon
 	private:
 		float radius_;
 		float height_;
+
+		float restOffset_;
+		float contactOffset_;
 
 		math::float3 center_;
 

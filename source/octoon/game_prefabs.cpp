@@ -331,12 +331,16 @@ namespace octoon
 	{
 		for (auto& it : model.get<Model::softbody>())
 		{
-			GameObjects paritices;
+			GameObjects collider;
 
 			for (auto& body : it->anchorRigidbodies)
-				paritices.push_back(rigidbodies[body]);
+			{
+				auto rigidbody = rigidbodies[body]->getComponent<RigidbodyComponent>();
+				if (rigidbody->getIsKinematic())
+					collider.push_back(rigidbodies[body]);
+			}
 
-			mesh[it->materialIndex]->addComponent<ClothComponent>(paritices);
+			mesh[it->materialIndex]->addComponent<ClothComponent>(collider);
 		}
 
 		return true;

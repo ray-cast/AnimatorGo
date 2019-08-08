@@ -15,6 +15,12 @@ namespace octoon
 
 		virtual void setCenter(const math::float3& center) noexcept = 0;
 		virtual const math::float3& getCenter() const noexcept = 0;
+
+		virtual void setContactOffset(float offset) noexcept = 0;
+		virtual float getContactOffset() const noexcept = 0;
+
+		virtual void setRestOffset(float offset) noexcept = 0;
+		virtual float getRestOffset() const noexcept = 0;
 	
 	private:
 		friend class RigidbodyComponent;

@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(SphereColliderComponent, ColliderComponent)
 	public:
 		SphereColliderComponent() noexcept;
-		SphereColliderComponent(float radius) noexcept;
+		explicit SphereColliderComponent(float radius, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
 		virtual ~SphereColliderComponent();
 
 		void setRadius(float r) noexcept;
@@ -19,6 +19,12 @@ namespace octoon
 
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
+
+		void setContactOffset(float offset) noexcept override;
+		float getContactOffset() const noexcept override;
+
+		void setRestOffset(float offset) noexcept override;
+		float getRestOffset() const noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -32,7 +38,11 @@ namespace octoon
 
 	private:
 		float radius_;
+		float restOffset_;
+		float contactOffset_;
+
 		math::float3 center_;
+
 		std::shared_ptr<physics::PhysicsSphereShape> shape_;
 	};
 }

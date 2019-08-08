@@ -20,6 +20,7 @@ namespace octoon
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
+		assert(contactOffset > restOffset);
 	}
 
 	BoxColliderComponent::BoxColliderComponent(float x, float y, float z, float contactOffset, float restOffset) noexcept
@@ -28,6 +29,7 @@ namespace octoon
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
+		assert(contactOffset > restOffset);
 	}
 
     BoxColliderComponent::~BoxColliderComponent()

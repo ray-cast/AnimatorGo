@@ -22,6 +22,7 @@ namespace octoon
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
+		assert(contactOffset > restOffset);
 	}
 
     CapsuleColliderComponent::~CapsuleColliderComponent()

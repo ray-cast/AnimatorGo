@@ -154,11 +154,10 @@ namespace octoon
 				for (std::uint8_t j = 0; j < 4; j++)
 				{
 					auto w = weights[i].weights[j];
-					if (w > 0.0)
-					{
-						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-						n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
-					}
+					if (w == 0.0f)
+						break;
+					v += (joints[weights[i].bones[j]] * vertices[i]) * w;
+					n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
 				}
 
 				skinnedMesh_->getVertexArray()[i] = v;

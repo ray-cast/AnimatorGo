@@ -10,7 +10,7 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
-		, iterationCounts_(3)
+		, iterationCounts_(4)
 	{		
 	}
 
@@ -64,9 +64,10 @@ namespace octoon
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
 			{
+				auto delta = timeFeature->getTimeInterval();
 				for (std::uint8_t i = 0; i < iterationCounts_; i++)
 				{
-					physics_scene->simulate(timeFeature->getTimeInterval() / CLOCKS_PER_SEC / iterationCounts_);
+					physics_scene->simulate(delta / iterationCounts_);
 					physics_scene->fetchStart();
 				}
 			}

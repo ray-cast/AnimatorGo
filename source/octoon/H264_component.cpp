@@ -13,7 +13,7 @@ namespace octoon
 
 	H264Component::H264Component() noexcept
 		: time_(0.0f)
-		, timeStep_(1000.0f / 24.0f)
+		, timeStep_(1.0f / 24.0f)
 	{
 	}
 
@@ -116,7 +116,7 @@ namespace octoon
 		auto feature = this->getGameScene()->getFeature<TimerFeature>();
 		if (feature)
 		{
-			time_ += feature->delta() * CLOCKS_PER_SEC;
+			time_ += feature->delta();
 
 			if (time_ > timeStep_)
 			{

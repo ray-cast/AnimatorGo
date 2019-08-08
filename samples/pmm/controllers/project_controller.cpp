@@ -350,13 +350,6 @@ namespace octoon
 			auto play = runtime::any_cast<bool>(data);
 			if (play)
 			{
-				auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
-				if (timeFeature)
-				{
-					timeFeature->setTimeStep(CLOCKS_PER_SEC / 30.0f);
-					timeFeature->setTimeInterval(CLOCKS_PER_SEC / 30.0f);
-				}
-
 				for (auto& it : objects_)
 				{
 					auto animation = it->getComponent<AnimationComponent>();

@@ -86,7 +86,7 @@ namespace octoon
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
 			{
-				if (solver_->beginSimulation(timeFeature->getTimeInterval() / CLOCKS_PER_SEC))
+				if (solver_->beginSimulation(timeFeature->getTimeInterval()))
 				{
 					for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
 						solver_->simulateChunk(i);

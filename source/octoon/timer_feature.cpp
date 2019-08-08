@@ -7,8 +7,8 @@ namespace octoon
 
 	TimerFeature::TimerFeature() noexcept
 		: time_(0.0f)
-		, timeStep_(CLOCKS_PER_SEC / 60.0f)
-		, timeInterval_(CLOCKS_PER_SEC / 60.0f)
+		, timeStep_(0.02)
+		, timeInterval_(0.02)
 	{
 	}
 
@@ -119,7 +119,7 @@ namespace octoon
 	{
 		timer_->update();
 
-		time_ += timer_->delta() * CLOCKS_PER_SEC;
+		time_ += timer_->delta();
 
 		if (time_ > timeStep_)
 		{

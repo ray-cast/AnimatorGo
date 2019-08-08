@@ -83,7 +83,7 @@ namespace octoon
 	{
 		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
 		if (timeFeature)
-			this->update(timeFeature->getTimeInterval() / CLOCKS_PER_SEC);
+			this->update(timeFeature->getTimeInterval());
 	}
 
 	void

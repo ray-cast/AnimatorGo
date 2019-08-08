@@ -148,7 +148,7 @@ namespace octoon
 			auto feature = this->getGameScene()->getFeature<TimerFeature>();
 			if (feature)
 			{
-				time_ += feature->delta() * CLOCKS_PER_SEC;
+				time_ += feature->delta();
 
 				if (time_ > timeStep_)
 				{

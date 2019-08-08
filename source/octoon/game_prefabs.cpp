@@ -411,11 +411,7 @@ namespace octoon
 				{
 					joint->setLowXLimit(it->movementLowerLimit.x);
 					joint->setHighXLimit(it->movementUpperLimit.x);
-
-					if (it->movementLowerLimit.x == it->movementUpperLimit.x)
-						joint->setXMotion(ConfigurableJointMotion::Locked);
-					else
-						joint->setXMotion(ConfigurableJointMotion::Limited);
+					joint->setXMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.y == 0.0f && it->movementUpperLimit.y == 0.0f)
@@ -426,11 +422,7 @@ namespace octoon
 				{
 					joint->setLowYLimit(it->movementLowerLimit.y);
 					joint->setHighYLimit(it->movementUpperLimit.y);
-
-					if (it->movementLowerLimit.y == it->movementUpperLimit.y)
-						joint->setYMotion(ConfigurableJointMotion::Locked);
-					else
-						joint->setYMotion(ConfigurableJointMotion::Limited);
+					joint->setYMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.z == 0.0f && it->movementUpperLimit.z == 0.0f)
@@ -441,11 +433,14 @@ namespace octoon
 				{
 					joint->setLowZLimit(it->movementLowerLimit.z);
 					joint->setHighZLimit(it->movementUpperLimit.z);
+					joint->setZMotion(ConfigurableJointMotion::Limited);
+				}
 
-					if (it->movementLowerLimit.z == it->movementUpperLimit.z)
-						joint->setZMotion(ConfigurableJointMotion::Locked);
-					else
-						joint->setZMotion(ConfigurableJointMotion::Limited);
+				if (it->movementLowerLimit.x != 0.0f || it->movementUpperLimit.x != 0.0f ||
+					it->movementLowerLimit.y != 0.0f || it->movementUpperLimit.y != 0.0f ||
+					it->movementLowerLimit.z != 0.0f || it->movementUpperLimit.z != 0.0f)
+				{
+					joint->setDistanceLimit(math::distance(it->movementLowerLimit, it->movementUpperLimit));
 				}
 
 				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)

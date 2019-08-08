@@ -10,12 +10,24 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
-	{
-		
+		, iterationCounts_(3)
+	{		
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
 	{
+	}
+
+	void
+	PhysicsFeature::setSolverIterationCounts(std::uint32_t iterationCounts) noexcept
+	{
+		iterationCounts_ = iterationCounts;
+	}
+
+	std::uint32_t
+	PhysicsFeature::getSolverIterationCounts() const noexcept
+	{
+		return iterationCounts_;
 	}
 
     void
@@ -42,9 +54,8 @@ namespace octoon
     void
 	PhysicsFeature::onFrameBegin() noexcept
     {
-		physics_scene->fetchResult();
     }
-
+	
     void
 	PhysicsFeature::onFrame() except
     {
@@ -53,8 +64,11 @@ namespace octoon
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
 			{
-				physics_scene->simulate(timeFeature->getTimeInterval() / CLOCKS_PER_SEC);
-				physics_scene->fetchStart();
+				for (std::uint8_t i = 0; i < iterationCounts_; i++)
+				{
+					physics_scene->simulate(timeFeature->getTimeInterval() / CLOCKS_PER_SEC / iterationCounts_);
+					physics_scene->fetchStart();
+				}
 			}
 
 			needUpdate_ = false;
@@ -69,6 +83,7 @@ namespace octoon
 	void
 	PhysicsFeature::onFixedUpdate(const runtime::any& data) noexcept
 	{
+		physics_scene->fetchResult();
 		needUpdate_ = true;
 	}
 

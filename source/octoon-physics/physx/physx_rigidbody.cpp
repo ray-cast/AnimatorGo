@@ -26,7 +26,6 @@ namespace octoon
 				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
 				if (desc.type != PhysicsRigidbodyType::Static)
 					rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
-
 				px_rigidbody = rigidbody;
 			}
 			else

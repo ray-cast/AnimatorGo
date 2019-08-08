@@ -29,6 +29,7 @@ namespace octoon
 		, highAngleXLimit_(math::PI_2)
 		, highAngleYLimit_(math::PI_2)
 		, highAngleZLimit_(math::PI_2)
+		, distanceLimit_(0.0f)
 		, driveMotion_(math::float3::Zero)
 		, driveAngular_(math::float3::Zero)
 		, targetPosition_(math::float3::Zero)
@@ -221,6 +222,14 @@ namespace octoon
 		if (joint_)
 			joint_->setHighZLimit(limit);
 		this->highZ_ = limit;
+	}
+
+	void
+	ConfigurableJointComponent::setDistanceLimit(float distance) noexcept
+	{
+		if (joint_)
+			joint_->setDistanceLimit(distance);
+		this->distanceLimit_ = distance;
 	}
 
 	void

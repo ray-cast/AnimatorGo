@@ -59,6 +59,7 @@ namespace octoon
 			virtual void setHighYLimit(float limit) = 0;
 			virtual void setHighZLimit(float limit) = 0;
 
+			virtual void setDistanceLimit(float distance) = 0;
 			virtual void setTwistLimit(float min, float max) = 0;
 			virtual void setSwingLimit(float limit_y, float limit_z) = 0;
 			virtual void setPyramidSwingLimit(float min_y, float max_y, float min_z, float max_z) = 0;

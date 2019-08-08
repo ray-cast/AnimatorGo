@@ -257,6 +257,14 @@ namespace octoon
 		}
 
 		void
+		PhysxConfigurableJoint::setDistanceLimit(float distance)
+		{
+			auto scale = this->context_->getPxPhysics()->getTolerancesScale();
+			physx::PxJointLinearLimit limit(scale, distance);
+			joint_->setDistanceLimit(limit);
+		}
+
+		void
 		PhysxConfigurableJoint::setTwistLimit(float min, float max)
 		{
 			physx::PxJointAngularLimitPair twist(min, max);

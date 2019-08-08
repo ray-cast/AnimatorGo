@@ -105,6 +105,7 @@ namespace octoon
 		math::float4x4 transform_;
 		math::float4x4 localTransform_;
 
+		PhysicsFeature* physicsFeature_;
         RigidbodySleepMode sleepMode_;
 
 		std::shared_ptr<physics::PhysicsRigidbody> rigidbody_;

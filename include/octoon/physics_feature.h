@@ -15,7 +15,8 @@ namespace octoon
 		PhysicsFeature() except;
 		virtual ~PhysicsFeature() noexcept;
 
-		bool fetchResulting() const { return needUpdate_; }
+		void setSolverIterationCounts(std::uint32_t iterationCounts) noexcept;
+		std::uint32_t getSolverIterationCounts() const noexcept;
 
 	public:
 		void onActivate() except override;
@@ -39,6 +40,8 @@ namespace octoon
 
     private:
 		bool needUpdate_;
+
+		std::uint32_t iterationCounts_;
 
 		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;

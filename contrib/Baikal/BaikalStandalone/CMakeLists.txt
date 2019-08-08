@@ -64,7 +64,7 @@ target_include_directories(BaikalStandalone
     PRIVATE ${Baikal_SOURCE_DIR}
     PRIVATE .)
 
-target_link_libraries(BaikalStandalone PRIVATE Baikal BaikalIO glfw3::glfw3 OpenGL::GL GLEW::GLEW)
+target_link_libraries(BaikalStandalone PRIVATE Baikal BaikalIO glfw3::glfw3 OpenGL::GL glew)
 
 # Compile definitions
 if (BAIKAL_ENABLE_DENOISER)

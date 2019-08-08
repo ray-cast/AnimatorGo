@@ -40,12 +40,6 @@ namespace octoon
 				return physx::PxFilterFlag::eSUPPRESS;
 			}
 
-			/*if (filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD && !(filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD) ||
-				filterData1.word3 & physx::PxRigidBodyFlag::eENABLE_CCD && !(filterData0.word3 & physx::PxRigidBodyFlag::eENABLE_CCD))
-			{
-				pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT | physx::PxPairFlag::eSOLVE_CONTACT;
-			}*/
-
 			pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
 
 			return physx::PxFilterFlag::eDEFAULT;

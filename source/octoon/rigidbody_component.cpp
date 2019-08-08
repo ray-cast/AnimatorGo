@@ -246,6 +246,7 @@ namespace octoon
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->setupRigidbody(*collider);
+		physicsFeature_ = this->getGameScene()->getFeature<PhysicsFeature>();
     }
 
     void

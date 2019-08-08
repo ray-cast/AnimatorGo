@@ -393,16 +393,13 @@ namespace octoon
 			if (rigidbodys.size() <= it->bodyIndexA || rigidbodys.size() <= it->bodyIndexB)
 				continue;
 
-			auto bodyA = rigidbodys[it->bodyIndexA]->getComponent<RigidbodyComponent>();
-			auto bodyB = rigidbodys[it->bodyIndexB]->getComponent<RigidbodyComponent>();
-
-			if (!bodyA) bodyA = rigidbodys[it->bodyIndexA]->getParent()->getComponent<RigidbodyComponent>();
-			if (!bodyB) bodyB = rigidbodys[it->bodyIndexB]->getParent()->getComponent<RigidbodyComponent>();
+			auto bodyA = rigidbodys[it->bodyIndexA];
+			auto bodyB = rigidbodys[it->bodyIndexB];
 
 			if (bodyA != bodyB)
 			{
-				auto joint = bodyA->getGameObject()->addComponent<ConfigurableJointComponent>();
-				joint->setTarget(bodyB);
+				auto joint = bodyA->addComponent<ConfigurableJointComponent>();
+				joint->setTarget(bodyB->getComponent<RigidbodyComponent>());
 				joint->setTargetPosition(it->position);
 				joint->setTargetRotation(math::Quaternion(it->rotation));
 
@@ -477,8 +474,8 @@ namespace octoon
 				if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
 					std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
 
-				auto rotationLimitY = std::min(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y));
-				auto rotationLimitZ = std::min(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z));
+				auto rotationLimitY = std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y));
+				auto rotationLimitZ = std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z));
 
 				rotationLimitY = math::clamp(rotationLimitY, 1e-5f, 3.1415f);
 				rotationLimitZ = math::clamp(rotationLimitZ, 1e-5f, 3.1415f);
@@ -497,7 +494,7 @@ namespace octoon
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
 					joint->setDriveAngularY((it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f);
 
-				joints.push_back(bodyB->getGameObject()->shared_from_this()->downcast_pointer<GameObject>());
+				joints.push_back(bodyA);
 			}
 		}
 

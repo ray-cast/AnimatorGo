@@ -20,7 +20,10 @@ namespace octoon
 			virtual ~PhysxCapsuleShape() noexcept;
 
 			virtual math::float3 getCenter() override;
-			virtual void setCenter(math::float3 center) override;
+			virtual void setCenter(const math::float3& center) override;
+
+			virtual math::Quaternion getQuaternion() override;
+			virtual void setQuaternion(const math::Quaternion& center) override;
 
 			virtual void setContactOffset(float offset) override;
 			virtual float getContactOffset() const override;

@@ -27,7 +27,7 @@ namespace octoon
 			px_shape = nullptr;
 		}
 
-		void PhysxSphereShape::setCenter(math::float3 center)
+		void PhysxSphereShape::setCenter(const math::float3& center)
 		{
 			auto pxLocalPose = px_shape->getLocalPose();
 			pxLocalPose.p = physx::PxVec3(center.x, center.y, center.z);
@@ -38,6 +38,21 @@ namespace octoon
 		{
 			auto pxLocalPose = px_shape->getLocalPose();
 			return math::float3(pxLocalPose.p.x, pxLocalPose.p.y, pxLocalPose.p.z);
+		}
+
+		math::Quaternion
+		PhysxSphereShape::getQuaternion()
+		{
+			auto pxLocalPose = px_shape->getLocalPose();
+			return math::Quaternion(pxLocalPose.q.x, pxLocalPose.q.y, pxLocalPose.q.z, pxLocalPose.q.w);
+		}
+
+		void
+		PhysxSphereShape::setQuaternion(const math::Quaternion& q)
+		{
+			auto pxLocalPose = px_shape->getLocalPose();
+			pxLocalPose.q = physx::PxQuat(q.x, q.y, q.z, q.w);
+			px_shape->setLocalPose(pxLocalPose);
 		}
 
 		void

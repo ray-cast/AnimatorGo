@@ -32,9 +32,6 @@ namespace octoon
 			PhysicsBoxShape() noexcept;
 			virtual ~PhysicsBoxShape();
 
-			virtual math::float3 getCenter() = 0;
-			virtual void setCenter(math::float3 center) = 0;
-
 			virtual void setWidth(float width) = 0;
 			virtual void setHeight(float height) = 0;
 			virtual void setDepth(float depth) = 0;

@@ -15,16 +15,18 @@ namespace octoon
 		virtual ~SphereColliderComponent();
 
 		void setRadius(float r) noexcept;
+		void setRestOffset(float offset) noexcept override;
+		void setContactOffset(float offset) noexcept override;
+
 		float getRadius() const noexcept;
+		float getRestOffset() const noexcept override;
+		float getContactOffset() const noexcept override;
 
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
 
-		void setContactOffset(float offset) noexcept override;
-		float getContactOffset() const noexcept override;
-
-		void setRestOffset(float offset) noexcept override;
-		float getRestOffset() const noexcept override;
+		void setQuaternion(const math::Quaternion& rotation) noexcept override;
+		const math::Quaternion& getQuaternion() const noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -42,6 +44,7 @@ namespace octoon
 		float contactOffset_;
 
 		math::float3 center_;
+		math::Quaternion rotation_;
 
 		std::shared_ptr<physics::PhysicsSphereShape> shape_;
 	};

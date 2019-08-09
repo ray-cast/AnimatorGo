@@ -13,6 +13,7 @@ namespace octoon
 	SphereColliderComponent::SphereColliderComponent() noexcept
 		: radius_(1.0)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(0.2f)
 		, restOffset_(0.0f)
     {
@@ -21,6 +22,7 @@ namespace octoon
 	SphereColliderComponent::SphereColliderComponent(float radius, float contactOffset, float restOffset) noexcept
 		: radius_(radius)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
@@ -39,12 +41,6 @@ namespace octoon
 		this->radius_ = radius;
     }
 
-    float
-	SphereColliderComponent::getRadius() const noexcept
-    {
-		return this->radius_;
-    }
-
 	void
 	SphereColliderComponent::setCenter(const math::float3& center) noexcept
 	{
@@ -53,10 +49,12 @@ namespace octoon
 		this->center_ = center;
 	}
 
-	const math::float3& 
-	SphereColliderComponent::getCenter() const noexcept
+	void
+	SphereColliderComponent::setQuaternion(const math::Quaternion& rotation) noexcept
 	{
-		return this->center_;
+		if (shape_)
+			shape_->setQuaternion(rotation);
+		this->rotation_ = rotation;
 	}
 
 	void
@@ -67,18 +65,36 @@ namespace octoon
 		this->contactOffset_ = offset;
 	}
 
-	float
-	SphereColliderComponent::getContactOffset() const noexcept
-	{
-		return this->contactOffset_;
-	}
-
 	void
 	SphereColliderComponent::setRestOffset(float offset) noexcept
 	{
 		if (shape_)
 			shape_->setRestOffset(offset);
 		this->restOffset_ = offset;
+	}
+
+    float
+	SphereColliderComponent::getRadius() const noexcept
+    {
+		return this->radius_;
+    }
+
+	const math::float3& 
+	SphereColliderComponent::getCenter() const noexcept
+	{
+		return this->center_;
+	}
+
+	float
+	SphereColliderComponent::getContactOffset() const noexcept
+	{
+		return this->contactOffset_;
+	}
+
+	const math::Quaternion&
+	SphereColliderComponent::getQuaternion() const noexcept
+	{
+		return this->rotation_;
 	}
 
 	float
@@ -113,6 +129,7 @@ namespace octoon
 			sphereDesc.radius = radius_;
 			shape_ = physicsFeature->getContext()->createSphereShape(sphereDesc);
 			shape_->setCenter(this->center_);
+			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
 		}

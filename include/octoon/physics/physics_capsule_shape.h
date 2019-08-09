@@ -30,9 +30,6 @@ namespace octoon
 			PhysicsCapsuleShape() noexcept;
 			virtual ~PhysicsCapsuleShape();
 
-			virtual math::float3 getCenter() = 0;
-			virtual void setCenter(math::float3 center) = 0;
-
 			virtual void setRadius(float width) = 0;
 			virtual void setHeight(float height) = 0;
 

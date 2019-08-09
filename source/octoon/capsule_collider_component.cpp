@@ -10,6 +10,7 @@ namespace octoon
 		: radius_(1.0)
 		, height_(1.0)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(0.2f)
 		, restOffset_(0.0f)
     {
@@ -19,6 +20,7 @@ namespace octoon
 		: radius_(radius)
 		, height_(height)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
@@ -53,6 +55,14 @@ namespace octoon
 		this->center_ = center;
 	}
 
+	void
+	CapsuleColliderComponent::setQuaternion(const math::Quaternion& rotation) noexcept
+	{
+		if (shape_)
+			shape_->setQuaternion(rotation);
+		this->rotation_ = rotation;
+	}
+
 	float
 	CapsuleColliderComponent::getRadius() const noexcept
 	{
@@ -69,6 +79,12 @@ namespace octoon
 	CapsuleColliderComponent::getCenter() const noexcept
 	{
 		return this->center_;
+	}
+
+	const math::Quaternion&
+	CapsuleColliderComponent::getQuaternion() const noexcept
+	{
+		return this->rotation_;
 	}
 
 	void
@@ -127,6 +143,7 @@ namespace octoon
 			boxDesc.height = height_;
 			shape_ = physicsFeature->getContext()->createCapsuleShape(boxDesc);
 			shape_->setCenter(this->center_);
+			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
 		}

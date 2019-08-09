@@ -17,7 +17,10 @@ namespace octoon
 			virtual ~PhysicsShape() noexcept;
 
 			virtual math::float3 getCenter() = 0;
-			virtual void setCenter(math::float3 position) = 0;
+			virtual void setCenter(const math::float3& center) = 0;
+
+			virtual math::Quaternion getQuaternion() = 0;
+			virtual void setQuaternion(const math::Quaternion& center) = 0;
 
 			virtual void setContactOffset(float offset) = 0;
 			virtual float getContactOffset() const = 0;

@@ -34,10 +34,25 @@ namespace octoon
 			return math::float3(pxLocalPose.p.x, pxLocalPose.p.y, pxLocalPose.p.z);
 		}
 
-		void PhysxCapsuleShape::setCenter(math::float3 center)
+		void PhysxCapsuleShape::setCenter(const math::float3& center)
 		{
 			auto pxLocalPose = px_shape->getLocalPose();
 			pxLocalPose.p = physx::PxVec3(center.x, center.y, center.z);
+			px_shape->setLocalPose(pxLocalPose);
+		}
+
+		math::Quaternion
+		PhysxCapsuleShape::getQuaternion()
+		{
+			auto pxLocalPose = px_shape->getLocalPose();
+			return math::Quaternion(pxLocalPose.q.x, pxLocalPose.q.y, pxLocalPose.q.z, pxLocalPose.q.w);
+		}
+
+		void
+		PhysxCapsuleShape::setQuaternion(const math::Quaternion& q)
+		{
+			auto pxLocalPose = px_shape->getLocalPose();
+			pxLocalPose.q = physx::PxQuat(q.x, q.y, q.z, q.w);
 			px_shape->setLocalPose(pxLocalPose);
 		}
 

@@ -28,8 +28,6 @@ namespace octoon
 			PhysicsSphereShape() noexcept;
 			virtual ~PhysicsSphereShape();
 
-			virtual math::float3 getCenter() = 0;
-			virtual void setCenter(math::float3 center) = 0;
 			virtual float getRadius() = 0;
 			virtual void setRadius(float radius) = 0;
 

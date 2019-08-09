@@ -18,10 +18,14 @@ namespace octoon
 		void setWidth(float width) noexcept;
 		void setHeight(float height) noexcept;
 		void setDepth(float depth) noexcept;
+		void setContactOffset(float offset) noexcept override;
+		void setRestOffset(float offset) noexcept override;
 
 		float getWidth() const noexcept;
 		float getHeight() const noexcept;
 		float getDepth() const noexcept;
+		float getRestOffset() const noexcept override;
+		float getContactOffset() const noexcept override;
 
 		void setSize(const math::float3& sz) noexcept;
 		const math::float3& getSize() const noexcept;
@@ -29,11 +33,8 @@ namespace octoon
 		void setCenter(const math::float3& center) noexcept override;
 		const math::float3& getCenter() const noexcept override;
 
-		void setContactOffset(float offset) noexcept override;
-		float getContactOffset() const noexcept override;
-
-		void setRestOffset(float offset) noexcept override;
-		float getRestOffset() const noexcept override;
+		void setQuaternion(const math::Quaternion& rotation) noexcept;
+		const math::Quaternion& getQuaternion() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -51,6 +52,7 @@ namespace octoon
 
 		math::float3 size_;
 		math::float3 center_;
+		math::Quaternion rotation_;
 
 		std::shared_ptr<physics::PhysicsBoxShape> shape_;
 	};

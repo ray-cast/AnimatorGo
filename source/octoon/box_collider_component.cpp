@@ -9,6 +9,7 @@ namespace octoon
 	BoxColliderComponent::BoxColliderComponent() noexcept
 		: size_(math::float3::One)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(0.2f)
 		, restOffset_(0.0f)
     {
@@ -17,6 +18,7 @@ namespace octoon
 	BoxColliderComponent::BoxColliderComponent(const math::float3& size, float contactOffset, float restOffset) noexcept
 		: size_(size)
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
@@ -26,6 +28,7 @@ namespace octoon
 	BoxColliderComponent::BoxColliderComponent(float x, float y, float z, float contactOffset, float restOffset) noexcept
 		: size_(math::float3(x, y, z))
 		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
@@ -80,6 +83,14 @@ namespace octoon
 		this->size_ = sz;
 	}
 
+	void
+	BoxColliderComponent::setQuaternion(const math::Quaternion& rotation) noexcept
+	{
+		if (shape_)
+			shape_->setQuaternion(rotation);
+		this->rotation_ = rotation;
+	}
+
 	const math::float3&
 	BoxColliderComponent::getSize() const noexcept
 	{
@@ -108,6 +119,12 @@ namespace octoon
 	BoxColliderComponent::getCenter() const noexcept
 	{
 		return this->center_;
+	}
+
+	const math::Quaternion&
+	BoxColliderComponent::getQuaternion() const noexcept
+	{
+		return this->rotation_;
 	}
 
 	void
@@ -167,9 +184,8 @@ namespace octoon
 			boxDesc.height = size_.y;
 			boxDesc.depth = size_.z;
 			shape_ = physicsFeature->getContext()->createBoxShape(boxDesc);
-			this->contactOffset_ = shape_->getContactOffset();
-			this->restOffset_ = shape_->getRestOffset();
 			shape_->setCenter(this->getCenter());
+			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
 		}

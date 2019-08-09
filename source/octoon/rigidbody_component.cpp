@@ -22,6 +22,8 @@ namespace octoon
 		, sleepThreshold_(0.05)
 		, minPositionIters_(4)
 		, minVelocityIters_(1)
+		, position_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
     {
     }
 
@@ -38,6 +40,18 @@ namespace octoon
 	RigidbodyComponent::~RigidbodyComponent()
     {
     }
+
+	void
+	RigidbodyComponent::setPosition(const math::float3& position) noexcept
+	{
+		position_ = position;
+	}
+
+	void
+	RigidbodyComponent::setRotation(const math::Quaternion& quat) noexcept
+	{
+		rotation_ = quat;
+	}
 
 	void
 	RigidbodyComponent::setGroupMask(std::uint16_t groupMask) noexcept
@@ -230,7 +244,6 @@ namespace octoon
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->setupRigidbody(*collider);
-		physicsFeature_ = this->getGameScene()->getFeature<PhysicsFeature>();
     }
 
     void

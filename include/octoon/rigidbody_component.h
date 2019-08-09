@@ -1,14 +1,7 @@
 #ifndef OCTOON_RIGIDBODY_COMPONENT_H_
 #define OCTOON_RIGIDBODY_COMPONENT_H_
 
-#include <memory>
-#include <vector>
 #include <octoon/game_component.h>
-#include <octoon/physics_feature.h>
-#include <octoon/collider_component.h>
-#include <octoon/math/math.h>
-#include <octoon/runtime/singleton.h>
-
 #include <octoon/physics/physics_rigidbody.h>
 
 namespace octoon
@@ -29,6 +22,9 @@ namespace octoon
 		RigidbodyComponent(bool type, float mass) noexcept;
         virtual ~RigidbodyComponent();
         virtual GameComponentPtr clone() const noexcept;
+
+		void setPosition(const math::float3& position) noexcept;
+		void setRotation(const math::Quaternion& quat) noexcept;
 
         void setAngularVelocity(float v) noexcept;
         void setGravityScale(float scale) noexcept;
@@ -72,7 +68,7 @@ namespace octoon
 		void onMoveAfter() noexcept;
 
 	private:
-		void setupRigidbody(ColliderComponent& collder) noexcept;
+		void setupRigidbody(class ColliderComponent& collder) noexcept;
 
     private:
         bool isKinematic_;
@@ -90,7 +86,9 @@ namespace octoon
 		std::uint32_t minPositionIters_;
 		std::uint32_t minVelocityIters_;
 
-		PhysicsFeature* physicsFeature_;
+		math::float3 position_;
+		math::Quaternion rotation_;
+
         RigidbodySleepMode sleepMode_;
 
 		std::shared_ptr<physics::PhysicsRigidbody> rigidbody_;

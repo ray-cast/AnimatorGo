@@ -10,8 +10,8 @@ namespace octoon
 		, physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
-		, iterationCounts_(3)
-	{		
+		, iterationCounts_(1)
+	{
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept

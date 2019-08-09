@@ -184,8 +184,8 @@ namespace octoon
 					return;
 
 				auto transform = bone->getComponent<TransformComponent>();
-				math::Vector3 localJointEnd = math::invTranslateVector3(transform->getTransform(), jointEnd);
-				math::Vector3 localJointTarget = math::invTranslateVector3(transform->getTransform(), jointTarget);
+				math::Vector3 localJointEnd = math::rotate(math::inverse(transform->getQuaternion()), jointEnd - transform->getTranslate());
+				math::Vector3 localJointTarget = math::rotate(math::inverse(transform->getQuaternion()), jointTarget - transform->getTranslate());
 
 				localJointEnd = math::normalize(localJointEnd);
 				localJointTarget = math::normalize(localJointTarget);

@@ -419,9 +419,23 @@ namespace octoon
 		template<typename T>
 		inline detail::Vector3<T> rotate(const detail::Quaternion<T>& q, const detail::Vector3<T>& v) noexcept
 		{
+			const float vx = 2.0f * v.x;
+			const float vy = 2.0f * v.y;
+			const float vz = 2.0f * v.z;
+			const float w2 = q.w * q.w - 0.5f;
+			const float dot2 = (q.x * vx + q.y * vy + q.z * vz);
+			return detail::Vector3(
+				(vx * w2 + (q.y * vz - q.z * vy) * q.w + q.x * dot2),
+				(vy * w2 + (q.z * vx - q.x * vz) * q.w + q.y * dot2),
+				(vz * w2 + (q.x * vy - q.y * vx) * q.w + q.z * dot2));
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> rotate(const detail::Vector3<T>& v, const detail::Quaternion<T>& q) noexcept
+		{
 			detail::Quaternion<T> q1(v.x, v.y, v.z, 0.f);
 			detail::Quaternion<T> qinv = inverse(q);
-			detail::Quaternion<T> q2 = cross(q, cross(q1, qinv));
+			detail::Quaternion<T> q2 = cross(q, cross(qinv, q1));
 			return detail::Vector3<T>(q2.x, q2.y, q2.z);
 		}
 

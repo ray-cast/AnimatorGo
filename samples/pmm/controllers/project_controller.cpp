@@ -191,7 +191,11 @@ namespace octoon
 						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 255.0f, key.interpolation_rotation[1] / 255.0f, key.interpolation_rotation[2] / 255.0f, key.interpolation_rotation[3] / 255.0f);
 
 						auto euler = math::eulerAngles(key.quaternion);
-						auto euler2 = math::eulerAngles(it.bone_key_frame[key.pre_index < it.bone_name.size() ? key.pre_index : key.pre_index - it.bone_name.size()].quaternion);
+						auto euler2 = math::float3::Zero;
+						if (key.pre_index < it.bone_name.size())
+							euler2 = math::eulerAngles(it.bone_init_frame[key.pre_index].quaternion);
+						else
+							euler2 = math::eulerAngles(it.bone_key_frame[key.pre_index - it.bone_name.size()].quaternion);
 	
 						if (euler.x < 0.0f)
 							euler.x = std::abs(euler.x - euler2.x) >= math::PI ? math::PI_2 + euler.x : euler.x;

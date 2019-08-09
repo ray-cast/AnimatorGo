@@ -53,6 +53,7 @@ namespace octoon
 		{
 			auto pxLocalPose = px_shape->getLocalPose();
 			pxLocalPose.q = physx::PxQuat(q.x, q.y, q.z, q.w);
+			pxLocalPose.q *= physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1));
 			px_shape->setLocalPose(pxLocalPose);
 		}
 

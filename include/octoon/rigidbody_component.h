@@ -30,9 +30,6 @@ namespace octoon
         virtual ~RigidbodyComponent();
         virtual GameComponentPtr clone() const noexcept;
 
-		void setPosition(const math::float3& position) noexcept;
-		void setRotation(const math::Quaternion& quat) noexcept;
-
         void setAngularVelocity(float v) noexcept;
         void setGravityScale(float scale) noexcept;
         void setMass(float m) noexcept;
@@ -74,8 +71,6 @@ namespace octoon
 		void onLayerChangeAfter() noexcept;
 		void onMoveAfter() noexcept;
 
-		void updateParentTransform() noexcept;
-
 	private:
 		void setupRigidbody(ColliderComponent& collder) noexcept;
 
@@ -94,16 +89,6 @@ namespace octoon
 		std::uint16_t groupMask_;
 		std::uint32_t minPositionIters_;
 		std::uint32_t minVelocityIters_;
-
-		math::float3 position_;
-		math::float3 localPosition_;
-		math::float3 scaling_;
-		math::float3 localScaling_;
-		math::Quaternion rotation_;
-		math::Quaternion localRotation_;
-
-		math::float4x4 transform_;
-		math::float4x4 localTransform_;
 
 		PhysicsFeature* physicsFeature_;
         RigidbodySleepMode sleepMode_;

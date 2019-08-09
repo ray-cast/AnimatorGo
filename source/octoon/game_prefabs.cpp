@@ -367,11 +367,9 @@ namespace octoon
 				assert(false);
 
 			auto component = std::make_shared<RigidbodyComponent>();
-			component->setPosition(it->position);
-			component->setRotation(math::Quaternion(it->rotation));
-			component->setGroupMask(it->groupMask);
 			component->setName(it->name);
 			component->setMass(it->mass);
+			component->setGroupMask(it->groupMask);
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction);
 			component->setDynamicFriction(it->friction / 1.5f);

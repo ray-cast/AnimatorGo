@@ -18,8 +18,6 @@ namespace octoon
 		, restitution_(0.0f)
 		, linearDamping_(0.5f)
 		, angularDamping_(0.5f)
-		, position_(math::float3::Zero)
-		, rotation_(math::Quaternion::Zero)
 		, groupMask_(0)
 		, sleepThreshold_(0.05)
 		, minPositionIters_(4)
@@ -40,20 +38,6 @@ namespace octoon
 	RigidbodyComponent::~RigidbodyComponent()
     {
     }
-
-	void
-	RigidbodyComponent::setPosition(const math::float3& position) noexcept
-	{
-		position_ = position;
-		transform_.makeTransform(position_, rotation_);
-	}
-
-	void
-	RigidbodyComponent::setRotation(const math::Quaternion& quat) noexcept
-	{
-		rotation_ = quat;
-		transform_.makeTransform(position_, rotation_);
-	}
 
 	void
 	RigidbodyComponent::setGroupMask(std::uint16_t groupMask) noexcept
@@ -287,14 +271,11 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			if (transform)
 			{
-				this->position_ = rigidbody_->getPosition();
-				this->rotation_ = rigidbody_->getRotation();
-
 				auto qinv = math::inverse(transform->getLocalQuaternion());
-				auto position = math::rotate(this->position_ - transform->getLocalTranslate(), qinv);
-				auto rotation = this->rotation_ * qinv;
+				auto position = math::rotate(rigidbody_->getPosition() - transform->getLocalTranslate(), qinv);
+				auto rotation = rigidbody_->getRotation() * qinv;
 
-				transform->getGameObject()->getParent()->getComponent<TransformComponent>()->setTransform(position, rotation);
+				this->getGameObject()->getParent()->getComponent<TransformComponent>()->setTransform(position, rotation);
 			}
 		}
 	}
@@ -317,28 +298,17 @@ namespace octoon
 	}
 
 	void
-	RigidbodyComponent::updateParentTransform() noexcept
-	{
-		/*auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
-		auto transform = math::transformMultiply(parent->getTransform(), localTransform_);
-		transform.getTransform(position_, rotation_, scaling_);
-		rigidbody_->setPositionAndRotation(position_, rotation_);*/
-
-		auto parent = this->getGameObject()->getParent()->getComponent<TransformComponent>();
-		localTransform_ = math::transformMultiply(parent->getTransformInverse(), transform_);
-		localTransform_.getTransform(localPosition_, localRotation_, localScaling_);
-	}
-
-	void
 	RigidbodyComponent::setupRigidbody(ColliderComponent& collider) noexcept
 	{
 		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 		if (physicsFeature && !rigidbody_)
 		{
+			auto transform = this->getComponent<TransformComponent>();
+
 			physics::PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
-			desc.translate = position_;
-			desc.rotation = rotation_;
+			desc.translate = transform->getTranslate();
+			desc.rotation = transform->getQuaternion();
 			desc.mass = mass_;
 
 			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);
@@ -351,7 +321,6 @@ namespace octoon
 				rigidbody_->setRestitution(restitution_);
 				rigidbody_->setDynamicFriction(dynamicFriction_);
 				rigidbody_->setStaticFriction(staticFriction_);
-				rigidbody_->setPositionAndRotation(position_, rotation_);
 				rigidbody_->setGroup(this->getGameObject()->getLayer());
 				rigidbody_->setGroupMask(groupMask_);
 				rigidbody_->setKinematic(isKinematic_);

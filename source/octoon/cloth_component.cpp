@@ -135,9 +135,7 @@ namespace octoon
 		{
 			if (!cloth_->isAsleep())
 			{
-				std::vector<physx::PxVec4> spheres;
-
-				for (auto& it : this->collides_)
+				/*for (auto& it : this->collides_)
 				{
 					auto collide = it->getComponent<ColliderComponent>();
 					if (collide->isInstanceOf<SphereColliderComponent>())
@@ -156,10 +154,7 @@ namespace octoon
 						auto box = collide->downcast<BoxColliderComponent>();
 						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
 					}
-				}
-
-				nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
-				cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
+				}*/
 
 				auto meshFilter = this->getComponent<MeshFilterComponent>();
 				if (meshFilter)
@@ -173,6 +168,8 @@ namespace octoon
 						vertices[i].y = particles[i].y;
 						vertices[i].z = particles[i].z;
 					}
+
+					meshFilter->getMesh()->computeVertexNormals();
 
 					meshFilter->uploadMeshData();
 				}
@@ -193,7 +190,7 @@ namespace octoon
 
 			std::vector<float> mass(mesh.getVertexArray().size());
 			for (std::size_t i = 0; i < mass.size(); i++)
-				mass[i] = 100.0f;
+				mass[i] = 10.0f;
 
 			nv::cloth::ClothMeshDesc meshDesc;
 			meshDesc.points.data = mesh.getVertexArray().data();
@@ -212,7 +209,7 @@ namespace octoon
 
 			std::vector<physx::PxVec4> positions;
 			for (auto& it : mesh.getVertexArray())
-				positions.push_back(physx::PxVec4(it.x, it.y, it.z, 100.0f));
+				positions.push_back(physx::PxVec4(it.x, it.y, it.z, 10.0f));
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto translate = transform->getTranslate();
@@ -221,20 +218,20 @@ namespace octoon
 			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
 			cloth_->setUserData(this);
 			cloth_->setGravity(gravity);
-			cloth_->setSolverFrequency(240);
 			cloth_->setDragCoefficient(0.1f);
 			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
 			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 			cloth_->clearInertia();
 
+			physx::PxVec4 spheres[2] = {
+				physx::PxVec4(0.0f, -2.0f, 0.0f, 2.0f)
+			};
+			nv::cloth::Range<const physx::PxVec4> sphereRange(spheres, spheres + 1);
+			cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
+
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
 			for (int i = 0; i < (int)motionConstraints.size(); i++)
-			{
-				if (std::sqrt(std::max(0.0f, 12.5f - positions[i].y) * 0.2f) > 0.0f)
-					motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 1.0f);
-				else
-					motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 0.0f);
-			}
+				motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 6.0f);
 
 			nv::cloth::PhaseConfig* phases = new nv::cloth::PhaseConfig[fabric->getNumPhases()];
 			for (int i = 0; i < fabric->getNumPhases(); i++)
@@ -242,29 +239,47 @@ namespace octoon
 				switch (phaseTypeInfo[i])
 				{
 				case nv::cloth::ClothFabricPhaseType::eINVALID:
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
 					break;
 				case nv::cloth::ClothFabricPhaseType::eVERTICAL:
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
 					break;
 				case nv::cloth::ClothFabricPhaseType::eHORIZONTAL:
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
 					break;
 				case nv::cloth::ClothFabricPhaseType::eBENDING:
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
 					break;
 				case nv::cloth::ClothFabricPhaseType::eSHEARING:
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
 					break;
 				}
-
-				phases[i].mPhaseIndex = i;
-				phases[i].mStiffness = 0.0f;
-				phases[i].mStiffnessMultiplier = 0.0f;
-				phases[i].mCompressionLimit = 1.0f;
-				phases[i].mStretchLimit = 1.0f;
 			}
 
 			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases, phases + fabric->getNumPhases()));
+			clothFeature->getScene()->addCloth(cloth_);
 
 			fabric->decRefCount();
-
-			clothFeature->getScene()->addCloth(cloth_);
 		}
 	}
 }

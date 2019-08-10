@@ -124,9 +124,12 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createPlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir) noexcept
 	{
+		auto mat = std::make_shared<BasicMaterial>();
+		mat->setBaseColor(math::float4(0.4, 0.4, 0.4, 1.0f));
+
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(width, height, depth, widthSegments, heightSegments, depthSegments, u, v, udir, vdir));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(mat);
 		return object;
 	}
 
@@ -142,9 +145,11 @@ namespace octoon
 	GameObjectPtr
 	GamePrefabs::createFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 	{
+		auto mat = std::make_shared<GGXMaterial>();
+
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeFloor(width, height, widthSegments, heightSegments));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(mat);
 		return object;
 	}
 
@@ -329,18 +334,27 @@ namespace octoon
 	bool
 	GamePrefabs::createSoftbodys(const model::Model& model, GameObjects& mesh, GameObjects& rigidbodies) noexcept
 	{
-		for (auto& it : model.get<Model::softbody>())
+		if (rigidbodies.size() > 1)
 		{
 			GameObjects collider;
 
-			for (auto& body : it->anchorRigidbodies)
+			for (auto& body : rigidbodies)
 			{
-				auto rigidbody = rigidbodies[body]->getComponent<RigidbodyComponent>();
+				auto rigidbody = body->getComponent<RigidbodyComponent>();
 				if (rigidbody->getIsKinematic())
-					collider.push_back(rigidbodies[body]);
+					collider.push_back(body);
 			}
 
-			mesh[it->materialIndex]->addComponent<ClothComponent>(collider);
+			for (auto& it : model.get<Model::softbody>())
+			{
+				mesh[it->materialIndex]->addComponent<ClothComponent>(collider);
+			}
+
+			auto plane = GamePrefabs::instance()->createFloor(10.0, 10.0, 100, 100);
+			plane->getComponent<TransformComponent>()->setTranslate(math::float3(0.0, 10, -5.0f));
+			plane->addComponent<ClothComponent>();
+
+			mesh.push_back(plane);
 		}
 
 		return true;

@@ -18,14 +18,14 @@ namespace octoon
 		OctoonDeclareSubClass(ClothComponent, GameComponent)
 	public:
 		ClothComponent() noexcept;
-		ClothComponent(const GameObjects& joint) noexcept;
+		ClothComponent(const GameObjects& collider) noexcept;
 		~ClothComponent() noexcept;
 
-		void addCollider(GameObjectPtr&& bone) noexcept;
-		void addCollider(const GameObjectPtr& bone) noexcept;
+		void addCollider(GameObjectPtr&& collider) noexcept;
+		void addCollider(const GameObjectPtr& collider) noexcept;
 
-		void setColliders(GameObjects&& joint) noexcept;
-		void setColliders(const GameObjects& joint) noexcept;
+		void setColliders(GameObjects&& collider) noexcept;
+		void setColliders(const GameObjects& collider) noexcept;
 		const GameObjects& getColliders() const noexcept;
 
 		GameComponentPtr clone() const noexcept;

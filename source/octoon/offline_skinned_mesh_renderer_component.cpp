@@ -168,10 +168,6 @@ namespace octoon
 
 			this->uploadMeshData(*skinnedMesh_);
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
-
 			needUpdate_ = false;
 		}
 	}

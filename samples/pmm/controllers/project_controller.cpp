@@ -226,7 +226,7 @@ namespace octoon
 						clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 					}
 
-					auto model = GamePrefabs::instance()->createModel(it.path);
+					auto model = GamePrefabs::instance()->createOfflineModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
@@ -436,18 +436,18 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			//obj->addComponent<AnimationComponent>(clip);
+			obj->addComponent<AnimationComponent>(clip);
 			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), -math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
-			//obj->addComponent<OfflineCameraComponent>();
+			obj->addComponent<OfflineCameraComponent>();
 			//obj->addComponent<H264Component>(obj);
 
-			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
+			/*auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);
 			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
-			camera->setClearColor(octoon::math::float4::One);
+			camera->setClearColor(octoon::math::float4::One);*/
 
 			this->sendMessage("editor:camera:set", obj);
 

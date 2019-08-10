@@ -41,6 +41,7 @@ namespace octoon
     private:
 		bool needUpdate_;
 
+		float timeInterval_;
 		std::uint32_t iterationCounts_;
 
 		physics::PhysicsSystem physics_system;

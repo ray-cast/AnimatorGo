@@ -1,5 +1,4 @@
 #include <octoon/cloth_feature.h>
-#include <octoon/timer_feature.h>
 #include <octoon/runtime/except.h>
 
 #include <PxPhysicsAPI.h>
@@ -34,6 +33,7 @@ namespace octoon
 	ClothFeature::ClothFeature() except
 		: factory_(nullptr)
 		, needUpdate_(false)
+		, timeInterval_(0.02f)
 		, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
 		, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
 		, profileCallback_(std::make_unique<ProfilerCallback>())
@@ -83,15 +83,11 @@ namespace octoon
     {
 		if (needUpdate_)
 		{
-			auto timeFeature = this->getFeature<TimerFeature>();
-			if (timeFeature)
+			if (solver_->beginSimulation(timeInterval_))
 			{
-				if (solver_->beginSimulation(timeFeature->getTimeInterval()))
-				{
-					for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
-						solver_->simulateChunk(i);
-					solver_->endSimulation();
-				}
+				for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
+					solver_->simulateChunk(i);
+				solver_->endSimulation();
 			}
 
 			needUpdate_ = false;
@@ -106,7 +102,12 @@ namespace octoon
 	void
 	ClothFeature::onFixedUpdate(const runtime::any& data) noexcept
 	{
-		needUpdate_ = true;
+		if (data.type() == typeid(float))
+		{
+			timeInterval_ = runtime::any_cast<float>(data);
+			if (timeInterval_ > 0.0f)
+				needUpdate_ = true;
+		}
 	}
 
 	nv::cloth::Factory*

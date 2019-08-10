@@ -52,6 +52,7 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
+		float timeInterval_;
 
 		nv::cloth::Solver* solver_;
 		nv::cloth::Factory* factory_;

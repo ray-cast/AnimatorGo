@@ -1,5 +1,4 @@
 #include <octoon/physics_feature.h>
-#include <octoon/timer_feature.h>
 
 namespace octoon
 {
@@ -11,6 +10,7 @@ namespace octoon
 		, physics_scene(nullptr)
 		, needUpdate_(false)
 		, iterationCounts_(3)
+		, timeInterval_(0.02f)
 	{
 	}
 
@@ -42,6 +42,8 @@ namespace octoon
     void
 	PhysicsFeature::onDeactivate() noexcept
     {
+		this->removeMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
+
 		physics_scene.reset();
 		physics_context.reset();
     }
@@ -61,15 +63,10 @@ namespace octoon
     {
 		if (needUpdate_)
 		{
-			auto timeFeature = this->getFeature<TimerFeature>();
-			if (timeFeature)
+			for (std::uint8_t i = 0; i < iterationCounts_; i++)
 			{
-				auto delta = timeFeature->getTimeInterval();
-				for (std::uint8_t i = 0; i < iterationCounts_; i++)
-				{
-					physics_scene->simulate(delta / iterationCounts_);
-					physics_scene->fetchStart();
-				}
+				physics_scene->simulate(timeInterval_ / iterationCounts_);
+				physics_scene->fetchStart();
 			}
 
 			needUpdate_ = false;
@@ -84,8 +81,13 @@ namespace octoon
 	void
 	PhysicsFeature::onFixedUpdate(const runtime::any& data) noexcept
 	{
-		physics_scene->fetchResult();
-		needUpdate_ = true;
+		if (data.type() == typeid(float))
+		{
+			timeInterval_ = runtime::any_cast<float>(data);
+			if (timeInterval_ > 0.0f)
+				needUpdate_ = true;
+			physics_scene->fetchResult();
+		}
 	}
 
 	std::shared_ptr<physics::PhysicsContext>

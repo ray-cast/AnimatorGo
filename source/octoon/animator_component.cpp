@@ -59,7 +59,7 @@ namespace octoon
 	{
 		this->setName(status);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->update();
+		this->setTime(0.0f);
 
 		enableAnimation_ = true;
 		return enableAnimation_;
@@ -69,11 +69,23 @@ namespace octoon
 	AnimatorComponent::pause() noexcept
 	{
 		enableAnimation_ = false;
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
 	AnimatorComponent::stop() noexcept
 	{
+		this->setTime(0.0f);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+	}
+
+	void
+	AnimatorComponent::setTime(float time) noexcept
+	{
+		for (auto& clip : clips_)
+			clip.setTime(time);
+
+		this->update();
 	}
 
 	void
@@ -139,9 +151,12 @@ namespace octoon
 	void
 	AnimatorComponent::onFixedUpdate() noexcept
 	{
-		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
-		if (timeFeature)
-			this->update(timeFeature->getTimeInterval());
+		if (enableAnimation_)
+		{
+			auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
+			if (timeFeature)
+				this->update(timeFeature->getTimeInterval());
+		}
 	}
 
 	void

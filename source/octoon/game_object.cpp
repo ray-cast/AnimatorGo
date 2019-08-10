@@ -561,6 +561,8 @@ namespace octoon
 		if (it == dispatchComponents_[type].end())
 			return;
 
+		dispatchComponents_[type].erase(it);
+
 		if (this->getActive())
 		{
 			if (type == GameDispatchType::Frame ||
@@ -577,8 +579,6 @@ namespace octoon
 				}
 			}
 		}
-
-		dispatchComponents_[type].erase(it);
 	}
 
 	void

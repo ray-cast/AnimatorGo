@@ -16,6 +16,7 @@ namespace octoon
 		, time_(0)
 		, timeStep_(0)
 		, enableAxisLimit_(true)
+		, enableRotationLink_(false)
 	{
 	}
 
@@ -171,6 +172,8 @@ namespace octoon
 		if (!this->getTarget())
 			return;
 
+		this->enableRotationLink_ = false;
+
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();
 
@@ -194,6 +197,8 @@ namespace octoon
 				if (math::abs(cosDeltaAngle) > 1.0 - math::EPSILON_E5)
 					continue;
 
+				this->enableRotationLink_ = true;
+
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
 
@@ -215,7 +220,7 @@ namespace octoon
 				else
 				{
 					transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
-				}	
+				}
 			}
 		}
 	}
@@ -223,6 +228,9 @@ namespace octoon
 	void
 	CCDSolverComponent::evaluateRotationLink() noexcept
 	{
+		if (!this->enableRotationLink_)
+			return;
+
 		for (auto& it : bones_)
 		{
 			auto link = it->getComponent<RotationLinkComponent>();

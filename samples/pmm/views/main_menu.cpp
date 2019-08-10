@@ -104,6 +104,7 @@ namespace octoon
 				if (imgui::beginMenu("Setting"))
 				{
 					if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }
+					if (imgui::menuItem("Stop Render")) { this->sendMessage("editor:menu:setting:render", false); }
 					imgui::endMenu();
 				}
 

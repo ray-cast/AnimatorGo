@@ -58,7 +58,17 @@ namespace octoon
 	void
 	AnimationComponent::stop() noexcept
 	{
+		this->setTime(0.0f);
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+	}
+
+	void
+	AnimationComponent::setTime(float time) noexcept
+	{
+		for (auto& clip : clips_)
+			clip.setTime(0.0f);
+
+		this->update();
 	}
 
 	GameComponentPtr

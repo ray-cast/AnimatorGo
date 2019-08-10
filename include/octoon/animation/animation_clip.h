@@ -90,6 +90,12 @@ namespace octoon
 				for (auto& it : this->curves)
 					it.second.evaluate(delta);
 			}
+
+			void setTime(const _Time& time) noexcept
+			{
+				for (auto& it : this->curves)
+					it.second.setTime(time);
+			}
 		};
 
 		template<typename _Elem, typename _Time = float>

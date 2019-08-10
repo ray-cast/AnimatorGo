@@ -53,6 +53,12 @@ namespace octoon
 				this->curves = std::move(clip);
 			}
 
+			void setTime(const _Time& time) noexcept
+			{
+				for (auto& it : this->curves)
+					it.second.setTime(time);
+			}
+
 			bool empty() const noexcept
 			{
 				return this->curves.empty();

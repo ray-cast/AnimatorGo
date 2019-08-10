@@ -66,17 +66,20 @@ namespace octoon
 				return frames.empty();
 			}
 
+			void setTime(const _Time& time) noexcept
+			{
+				key.time = time;
+				this->evaluate(time);
+			}
+
 			const _Elem& evaluate(const _Time& delta) noexcept
 			{
-				if (delta == 0.0f)
-					return key.value;
-
 				key.time += delta;
 
 				auto it = std::upper_bound(frames.begin(), frames.end(), key.time,
 					[](const _Time& time, const Keyframe<_Elem, _Time>& a)
 					{
-						return time < a.time;
+						return time <= a.time;
 					}
 				);
 

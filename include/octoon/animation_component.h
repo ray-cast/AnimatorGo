@@ -21,6 +21,8 @@ namespace octoon
 		void pause() noexcept;
 		void stop() noexcept;
 
+		void setTime(float time) noexcept;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:

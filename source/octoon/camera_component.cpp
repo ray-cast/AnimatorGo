@@ -76,6 +76,14 @@ namespace octoon
 		return nullptr;
 	}
 
+	hal::GraphicsFramebufferPtr
+	CameraComponent::getSwapFramebuffer() const noexcept
+	{
+		if (camera_->getSwapFramebuffer())
+			return camera_->getSwapFramebuffer();
+		return nullptr;
+	}
+
 	math::float3
 	CameraComponent::worldToScreen(const math::float3& pos) const noexcept
 	{

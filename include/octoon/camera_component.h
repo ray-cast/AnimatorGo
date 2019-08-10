@@ -23,6 +23,7 @@ namespace octoon
 		video::CameraType getCameraType() const noexcept;
 		hal::GraphicsClearFlags getClearFlags() const noexcept;
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
+		hal::GraphicsFramebufferPtr getSwapFramebuffer() const noexcept;
 
 		math::float3 worldToScreen(const math::float3& pos) const noexcept;
 		math::float3 worldToProject(const math::float3& pos) const noexcept;

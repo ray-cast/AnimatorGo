@@ -117,7 +117,7 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
-		this->needUpdate_ = true;
+		//this->needUpdate_ = true;
 	}
 
 	void

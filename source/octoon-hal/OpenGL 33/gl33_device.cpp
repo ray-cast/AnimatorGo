@@ -11,12 +11,14 @@
 #include "gl33_sampler.h"
 #include "gl33_pipeline.h"
 
-#include "gl45_device_context.h"
-#include "gl45_texture.h"
-#include "gl45_framebuffer.h"
-#include "gl45_descriptor.h"
-#include "gl45_graphics_data.h"
-#include "gl45_pipeline.h"
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
+#	include "gl45_device_context.h"
+#	include "gl45_texture.h"
+#	include "gl45_framebuffer.h"
+#	include "gl45_descriptor.h"
+#	include "gl45_graphics_data.h"
+#	include "gl45_pipeline.h"
+#endif
 
 namespace octoon
 {
@@ -67,6 +69,7 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto context = std::make_shared<GL45DeviceContext>();
 				context->setDevice(this->downcast_pointer<GL33Device>());
 				if (context->setup(desc))
@@ -74,6 +77,7 @@ namespace octoon
 					_deviceContexts.push_back(context);
 					return context;
 				}
+#endif
 			}
 
 			return nullptr;
@@ -101,10 +105,12 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto data = std::make_shared<GL45GraphicsData>();
 				data->setDevice(this->downcast_pointer<GL33Device>());
 				if (data->setup(desc))
 					return data;
+#endif
 			}
 			return nullptr;
 		}
@@ -121,10 +127,12 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto texture = std::make_shared<GL45Texture>();
 				texture->setDevice(this->downcast_pointer<GL33Device>());
 				if (texture->setup(desc))
 					return texture;
+#endif
 			}
 			return nullptr;
 		}
@@ -151,10 +159,12 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto framebuffer = std::make_shared<GL45Framebuffer>();
 				framebuffer->setDevice(this->downcast_pointer<GL33Device>());
 				if (framebuffer->setup(desc))
 					return framebuffer;
+#endif
 			}
 			return nullptr;
 		}
@@ -211,10 +221,12 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto pipeline = std::make_shared<GL45Pipeline>();
 				pipeline->setDevice(this->downcast_pointer<GL33Device>());
 				if (pipeline->setup(desc))
 					return pipeline;
+#endif
 			}
 			return nullptr;
 		}
@@ -231,10 +243,12 @@ namespace octoon
 			}
 			else
 			{
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 				auto descriptorSet = std::make_shared<GL45DescriptorSet>();
 				descriptorSet->setDevice(this->downcast_pointer<GL33Device>());
 				if (descriptorSet->setup(desc))
 					return descriptorSet;
+#endif
 			}
 
 			return nullptr;
@@ -267,8 +281,10 @@ namespace octoon
 
 			if (_deviceDesc.getDeviceType() == GraphicsDeviceType::OpenGL33)
 				source->downcast<GL33DescriptorSet>()->copy(descriptorCopyCount, descriptorCopies);
+#if defined(OCTOON_FEATURE_HAL_USE_OPENGL45)
 			else
 				source->downcast<GL45DescriptorSet>()->copy(descriptorCopyCount, descriptorCopies);
+#endif
 		}
 
 		const GraphicsDeviceProperty&

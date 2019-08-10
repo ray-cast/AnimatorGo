@@ -21,6 +21,9 @@ namespace octoon
 		ClothComponent(const GameObjects& collider) noexcept;
 		~ClothComponent() noexcept;
 
+		void setTotalMass(float totalMass) noexcept;
+		float getTotalMass() const noexcept;
+
 		void addCollider(GameObjectPtr&& collider) noexcept;
 		void addCollider(const GameObjectPtr& collider) noexcept;
 
@@ -47,6 +50,8 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
+		float totalMass_;
+
 		nv::cloth::Cloth* cloth_;
 		GameObjects collides_;
 	};

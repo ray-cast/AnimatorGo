@@ -817,6 +817,8 @@ namespace octoon
 				softbody->numClusters = it.numClusters;
 				softbody->totalMass = it.totalMass;
 				softbody->collisionMargin = it.collisionMargin;
+				softbody->aeroModel = it.aeroModel;
+				softbody->LST = it.LST;
 				softbody->anchorRigidbodies.reserve(it.numRigidbody);
 				
 				for (auto& rigidbody : it.anchorRigidbodies)

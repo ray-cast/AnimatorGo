@@ -25,8 +25,12 @@ namespace octoon
 			std::uint8_t group;
 			std::uint16_t groupMask;
 
+			std::uint16_t aeroModel;
+
 			std::int32_t blinkLength;
 			std::int8_t numClusters;
+
+			float LST;
 
 			float totalMass;
 			float collisionMargin;

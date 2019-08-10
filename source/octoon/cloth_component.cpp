@@ -27,6 +27,7 @@ namespace octoon
 	ClothComponent::ClothComponent() noexcept
 		: cloth_(nullptr)
 		, needUpdate_(false)
+		, totalMass_(100.0f)
 	{
 	}
 
@@ -38,6 +39,18 @@ namespace octoon
 
 	ClothComponent::~ClothComponent() noexcept
 	{
+	}
+
+	void
+	ClothComponent::setTotalMass(float totalMass) noexcept
+	{
+		totalMass_ = totalMass;
+	}
+
+	float
+	ClothComponent::getTotalMass() const noexcept
+	{
+		return this->totalMass_;
 	}
 
 	void
@@ -135,7 +148,9 @@ namespace octoon
 		{
 			if (!cloth_->isAsleep())
 			{
-				/*for (auto& it : this->collides_)
+				std::vector<physx::PxVec4> spheres;
+
+				for (auto& it : this->collides_)
 				{
 					auto collide = it->getComponent<ColliderComponent>();
 					if (collide->isInstanceOf<SphereColliderComponent>())
@@ -148,13 +163,22 @@ namespace octoon
 					{
 						auto capsule = collide->downcast<CapsuleColliderComponent>();
 						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+						spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, capsule->getRadius()));
 					}
-					else if (collide->isInstanceOf<BoxColliderComponent>())
-					{
-						auto box = collide->downcast<BoxColliderComponent>();
-						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
-					}
-				}*/
+				}
+
+				for (auto& it : spheres)
+				{
+					auto& rotation = cloth_->getRotation();
+					auto& translate = cloth_->getTranslation();
+					auto xyz = rotation.rotate(it.getXYZ() - translate);
+					it.x = xyz.x;
+					it.y = xyz.y;
+					it.z = xyz.z;
+				}
+
+				nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
+				cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
 
 				auto meshFilter = this->getComponent<MeshFilterComponent>();
 				if (meshFilter)
@@ -170,7 +194,6 @@ namespace octoon
 					}
 
 					meshFilter->getMesh()->computeVertexNormals();
-
 					meshFilter->uploadMeshData();
 				}
 			}
@@ -188,9 +211,9 @@ namespace octoon
 			if (cloth_)
 				delete cloth_;
 
-			std::vector<float> mass(mesh.getVertexArray().size());
-			for (std::size_t i = 0; i < mass.size(); i++)
-				mass[i] = 10.0f;
+			float invMass = totalMass_ / mesh.getVertexArray().size();
+
+			std::vector<float> mass(mesh.getVertexArray().size(), invMass);
 
 			nv::cloth::ClothMeshDesc meshDesc;
 			meshDesc.points.data = mesh.getVertexArray().data();
@@ -209,7 +232,7 @@ namespace octoon
 
 			std::vector<physx::PxVec4> positions;
 			for (auto& it : mesh.getVertexArray())
-				positions.push_back(physx::PxVec4(it.x, it.y, it.z, 10.0f));
+				positions.push_back(physx::PxVec4(it.x, it.y, it.z, invMass));
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto translate = transform->getTranslate();
@@ -222,12 +245,6 @@ namespace octoon
 			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
 			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 			cloth_->clearInertia();
-
-			physx::PxVec4 spheres[2] = {
-				physx::PxVec4(0.0f, -2.0f, 0.0f, 2.0f)
-			};
-			nv::cloth::Range<const physx::PxVec4> sphereRange(spheres, spheres + 1);
-			cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
 
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
 			for (int i = 0; i < (int)motionConstraints.size(); i++)

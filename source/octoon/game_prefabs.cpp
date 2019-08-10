@@ -249,7 +249,7 @@ namespace octoon
 			return false;
 
 		GameObjects rigidbody;
-		if (!this->createRigidbodys(model, bones, rigidbody))
+		if (!this->createRigidbodies(model, bones, rigidbody))
 			return false;
 
 		GameObjects joints;
@@ -260,8 +260,8 @@ namespace octoon
 		if (!this->createMeshes(model, actor, bones, path))
 			return false;
 
-		/*if (!this->createSoftbodys(model, actor->getChildren(), rigidbody))
-			return false;*/
+		if (!this->createSoftbodies(model, actor->getChildren(), rigidbody))
+			return false;
 
 		return actor;
 	}
@@ -279,7 +279,7 @@ namespace octoon
 			return false;
 
 		GameObjects rigidbody;
-		if (!this->createRigidbodys(model, bones, rigidbody))
+		if (!this->createRigidbodies(model, bones, rigidbody))
 			return false;
 
 		GameObjects joints;
@@ -288,6 +288,9 @@ namespace octoon
 
 		GameObjectPtr actor;
 		if (!this->createOfflineMeshes(model, actor, bones, path))
+			return false;
+
+		if (!this->createSoftbodies(model, actor->getChildren(), rigidbody))
 			return false;
 
 		return actor;
@@ -332,37 +335,37 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createSoftbodys(const model::Model& model, GameObjects& mesh, GameObjects& rigidbodies) noexcept
+	GamePrefabs::createSoftbodies(const model::Model& model, GameObjects& meshes, GameObjects& rigidbodies) noexcept
 	{
-		if (rigidbodies.size() > 1)
+		for (auto& it : model.get<Model::softbody>())
 		{
 			GameObjects collider;
 
 			for (auto& body : rigidbodies)
 			{
 				auto rigidbody = body->getComponent<RigidbodyComponent>();
-				if (rigidbody->getIsKinematic())
-					collider.push_back(body);
+				if ((1 << rigidbody->getGroup()) & ~it->groupMask)
+					continue;
+
+				collider.push_back(body);
 			}
 
-			for (auto& it : model.get<Model::softbody>())
-			{
-				mesh[it->materialIndex]->addComponent<ClothComponent>(collider);
-			}
+			auto cloth = ClothComponent::create();
+			cloth->setColliders(collider);
+			cloth->setTotalMass(it->totalMass);
 
-			auto plane = GamePrefabs::instance()->createFloor(10.0, 10.0, 100, 100);
-			plane->getComponent<TransformComponent>()->setTranslate(math::float3(0.0, 10, -5.0f));
-			plane->addComponent<ClothComponent>();
-
-			mesh.push_back(plane);
+			meshes[it->materialIndex]->addComponent(cloth);
 		}
 
 		return true;
 	}
 
 	bool
-	GamePrefabs::createRigidbodys(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept
+	GamePrefabs::createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept
 	{
+		auto material = std::make_shared<video::BasicMaterial>();
+		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
 		for (auto& it : model.get<Model::rigidbody>())
 		{
 			auto gameObject = GameObject::create();
@@ -372,7 +375,7 @@ namespace octoon
 			gameObject->getComponent<TransformComponent>()->setTransform(it->position, math::Quaternion(it->rotation));
 
 			if (it->shape == ShapeType::ShapeTypeSphere)
-				gameObject->addComponent<SphereColliderComponent>(it->scale.x,0.1f);
+				gameObject->addComponent<SphereColliderComponent>(it->scale.x, 0.1f);
 			else if (it->shape == ShapeType::ShapeTypeSquare)
 				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001,0.001,0.001), it->scale * 2.0f), 0.1f);
 			else if (it->shape == ShapeType::ShapeTypeCapsule)

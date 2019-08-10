@@ -214,6 +214,18 @@ namespace octoon
 		return enableCCD_;
 	}
 
+	std::uint32_t
+	RigidbodyComponent::getGroup() const noexcept
+	{
+		return this->getGameObject()->getLayer();
+	}
+
+	std::uint16_t
+	RigidbodyComponent::getGroupMask() const noexcept
+	{
+		return groupMask_;
+	}
+
 	RigidbodySleepMode
 	RigidbodyComponent::getSleepMode() const noexcept
 	{

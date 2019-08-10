@@ -49,6 +49,8 @@ namespace octoon
         float getMass() const noexcept;
 		float getSleepThreshold() const noexcept;
 		bool getEnableCCD() const noexcept;
+		std::uint32_t getGroup() const noexcept;
+		std::uint16_t getGroupMask() const noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
 
 		void wakeUp() noexcept;

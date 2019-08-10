@@ -22,6 +22,7 @@ namespace octoon
 		, sleepThreshold_(0.05)
 		, minPositionIters_(4)
 		, minVelocityIters_(1)
+		, enableCCD_(false)
 		, position_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
     {
@@ -67,6 +68,16 @@ namespace octoon
 		if (rigidbody_)
 			rigidbody_->setSleepThreshold(threshold);
 		sleepThreshold_ = threshold;
+	}
+
+	void
+	RigidbodyComponent::setEnableCCD(bool enable) noexcept
+	{
+		assert(!enable || enable && !isKinematic_);
+
+		if (rigidbody_)
+			rigidbody_->setEnableCCD(enable);
+		enableCCD_ = enable;
 	}
 
 	void
@@ -197,6 +208,12 @@ namespace octoon
 		return sleepThreshold_;
 	}
 
+	bool
+	RigidbodyComponent::getEnableCCD() const noexcept
+	{
+		return enableCCD_;
+	}
+
 	RigidbodySleepMode
 	RigidbodyComponent::getSleepMode() const noexcept
 	{
@@ -234,6 +251,7 @@ namespace octoon
 		instance->setGravityScale(instance->getGravityScale());
 		instance->setIsKinematic(instance->getIsKinematic());
 		instance->setSleepThreshold(instance->getSleepThreshold());
+		instance->setEnableCCD(instance->getEnableCCD());
 		return instance;
     }
 
@@ -339,6 +357,7 @@ namespace octoon
 				rigidbody_->setKinematic(isKinematic_);
 				rigidbody_->setSleepThreshold(sleepThreshold_);
 				rigidbody_->setSolverIterationCounts(minPositionIters_, minVelocityIters_);
+				rigidbody_->setEnableCCD(enableCCD_);
 
 				if (!isKinematic_)
 				{

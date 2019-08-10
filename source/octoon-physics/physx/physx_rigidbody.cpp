@@ -24,8 +24,6 @@ namespace octoon
 			{
 				rigidbody->setMass(desc.mass);
 				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
-				if (desc.type != PhysicsRigidbodyType::Static)
-					rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 				px_rigidbody = rigidbody;
 			}
 			else
@@ -125,6 +123,12 @@ namespace octoon
 		}
 
 		void
+		PhysxRigidbody::setEnableCCD(bool enable)
+		{
+			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enable);
+		}
+
+		void
 		PhysxRigidbody::setOwnerListener(PhysicsListener* listener)
 		{
 			px_rigidbody->userData = listener;
@@ -183,12 +187,6 @@ namespace octoon
 			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
 			px_rigidbody->attachShape(*pxshape->getPxShape());
 			shape_ = pxshape;
-			if (px_rigidbody->getRigidBodyFlags() & physx::PxRigidBodyFlag::eENABLE_CCD)
-			{
-				physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
-				data.word3 = physx::PxRigidBodyFlag::eENABLE_CCD;
-				shape_->getPxShape()->setSimulationFilterData(data);
-			}
 		}
 
 		void PhysxRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)

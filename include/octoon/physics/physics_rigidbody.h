@@ -48,6 +48,8 @@ namespace octoon
 			virtual void setGroup(std::uint8_t group) = 0;
 			virtual void setGroupMask(std::uint16_t groupMask) = 0;
 
+			virtual void setEnableCCD(bool enable) = 0;
+
 			virtual void setOwnerListener(PhysicsListener* listener) = 0;
 
 			virtual void setKinematic(bool kinematic) noexcept = 0;

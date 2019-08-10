@@ -22,6 +22,8 @@ namespace octoon
 			virtual void setGroup(std::uint8_t group) override;
 			virtual void setGroupMask(std::uint16_t groupMask) override;
 
+			virtual void setEnableCCD(bool enable) override;
+
 			virtual void setOwnerListener(PhysicsListener* listener) override;
 
 			virtual void setKinematic(bool kinematic) noexcept override;

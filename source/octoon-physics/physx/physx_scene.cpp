@@ -17,8 +17,7 @@ namespace octoon
 			const void* constantBlock,
 			physx::PxU32 constantBlockSize)
 		{
-			PX_UNUSED(constantBlock);
-			PX_UNUSED(constantBlockSize);
+			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | physx::PxPairFlag::eDETECT_CCD_CONTACT;
 
 			if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 			{
@@ -27,20 +26,10 @@ namespace octoon
 			}
 
 			if (!physx::PxGetGroupCollisionFlag(filterData0.word0, filterData1.word0))
-			{
 				return physx::PxFilterFlag::eSUPPRESS;
-			}
 
-			filterData0.word2 = ~filterData0.word2;
-			filterData1.word2 = ~filterData1.word2;
-
-			if ((1 << filterData0.word0) & filterData1.word2 ||
-				(1 << filterData1.word0) & filterData0.word2)
-			{
+			if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)
 				return physx::PxFilterFlag::eSUPPRESS;
-			}
-
-			pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
 
 			return physx::PxFilterFlag::eDEFAULT;
 		}
@@ -104,4 +93,3 @@ namespace octoon
 		}
 	}
 }
-

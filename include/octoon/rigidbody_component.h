@@ -38,6 +38,7 @@ namespace octoon
 		void setAngularDamping(float value) noexcept;
 		void setGroupMask(std::uint16_t groupMask) noexcept;
 		void setSleepThreshold(float threshold) noexcept;
+		void setEnableCCD(bool enable) noexcept;
 		void setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept;
 
         float getDynamicFriction() const;
@@ -47,6 +48,7 @@ namespace octoon
         float getGravityScale() const noexcept;
         float getMass() const noexcept;
 		float getSleepThreshold() const noexcept;
+		bool getEnableCCD() const noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
 
 		void wakeUp() noexcept;
@@ -72,6 +74,7 @@ namespace octoon
 
     private:
         bool isKinematic_;
+		bool enableCCD_;
 
         float angularVelocity_;
         float gravityScale_;

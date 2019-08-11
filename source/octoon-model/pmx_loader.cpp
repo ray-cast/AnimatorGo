@@ -644,9 +644,17 @@ namespace octoon
 					else if (pmx.header.sizeOfIndices == 4)
 						index = *((std::uint32_t*)pmx.indices.data() + i);
 
-					if (indicesMap.find(index) == indicesMap.end())
-						indicesMap[index] = indicesMap.size();
-					indices_.push_back(indicesMap[index]);
+					auto result = indicesMap.find(index);
+					if (result == indicesMap.end())
+					{
+						std::size_t size = indicesMap.size();
+						indicesMap[index] = size;
+						indices_.push_back(size);
+					}
+					else
+					{
+						indices_.push_back((*result).second);
+					}
 				}
 
 				startIndices += it.FaceCount;

@@ -19,6 +19,7 @@ namespace octoon
     void
 	GameBaseFeature::onActivate() noexcept
     {
+		this->addMessageListener("feature:input:event", std::bind(&GameBaseFeature::onInputEvent, this, std::placeholders::_1));
 		this->addMessageListener("feature:timer:fixed", std::bind(&GameBaseFeature::onFixedUpdate, this, std::placeholders::_1));
     }
 
@@ -37,6 +38,11 @@ namespace octoon
 	void
 	GameBaseFeature::onFrameEnd() noexcept
 	{		
+	}
+
+	void
+	GameBaseFeature::onInputEvent(const runtime::any& data) noexcept
+	{
 	}
 
 	void

@@ -19,6 +19,7 @@ namespace octoon
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
 
+		void onInputEvent(const runtime::any& data) noexcept;
 		void onFixedUpdate(const runtime::any& data) noexcept;
 	};
 }

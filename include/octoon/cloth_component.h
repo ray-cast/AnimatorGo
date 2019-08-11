@@ -31,7 +31,11 @@ namespace octoon
 		void setColliders(const GameObjects& collider) noexcept;
 		const GameObjects& getColliders() const noexcept;
 
+		void setPinVertexIndices(const math::uint1s& indices) noexcept;
+		const math::uint1s&  getPinVertexIndices() const noexcept;
+
 		GameComponentPtr clone() const noexcept;
+
 	private:
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
@@ -53,6 +57,7 @@ namespace octoon
 		float totalMass_;
 
 		GameObjects collides_;
+		math::uint1s pinVertexIndices_;
 
 		nv::cloth::Cloth* cloth_;
 	};

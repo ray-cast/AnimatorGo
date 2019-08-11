@@ -11,6 +11,8 @@
 #include <octoon/box_collider_component.h>
 #include <octoon/sphere_collider_component.h>
 #include <octoon/capsule_collider_component.h>
+#include <octoon/mesh_renderer_component.h>
+#include <octoon/video/basic_material.h>
 
 #include <NvCloth/Cloth.h>
 #include <NvCloth/Factory.h>
@@ -83,6 +85,18 @@ namespace octoon
 		return collides_;
 	}
 
+	void
+	ClothComponent::setPinVertexIndices(const math::uint1s& indices) noexcept
+	{
+		pinVertexIndices_ = indices;
+	}
+
+	const math::uint1s&
+	ClothComponent::getPinVertexIndices() const noexcept
+	{
+		return pinVertexIndices_;
+	}
+
 	GameComponentPtr
 	ClothComponent::clone() const noexcept
 	{
@@ -136,66 +150,98 @@ namespace octoon
 	void
 	ClothComponent::onFixedUpdate() noexcept
 	{
+		if (!cloth_)
+			return;
+
+		if (cloth_->isAsleep())
+			return;
+
 		needUpdate_ = true;
 	}
 
 	void
 	ClothComponent::onLateUpdate() noexcept
 	{
-		if (!cloth_) return;
+		if (!cloth_)
+			return;
+
+		if (cloth_->isAsleep()) 
+			return;
 
 		if (needUpdate_)
 		{
-			if (!cloth_->isAsleep())
+			std::vector<physx::PxVec4> spheres;
+			std::vector<physx::PxU32> capsules;
+
+			auto material = std::make_shared<video::BasicMaterial>();
+			material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
+			for (auto& it : this->collides_)
 			{
-				std::vector<physx::PxVec4> spheres;
-
-				for (auto& it : this->collides_)
+				auto collide = it->getComponent<ColliderComponent>();
+				if (collide->isInstanceOf<SphereColliderComponent>())
 				{
-					auto collide = it->getComponent<ColliderComponent>();
-					if (collide->isInstanceOf<SphereColliderComponent>())
-					{
-						auto radius = collide->downcast<SphereColliderComponent>()->getRadius();
-						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
-						spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, radius));
-					}
-					else if (collide->isInstanceOf<CapsuleColliderComponent>())
-					{
-						auto capsule = collide->downcast<CapsuleColliderComponent>();
-						auto translate = collide->getComponent<TransformComponent>()->getTranslate();
-						spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, capsule->getRadius()));
-					}
+					auto radius = collide->downcast<SphereColliderComponent>()->getRadius();
+					auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+					spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, radius));
+				}
+				else if (collide->isInstanceOf<CapsuleColliderComponent>())
+				{
+					auto capsule = collide->downcast<CapsuleColliderComponent>();
+					auto transform = collide->getComponent<TransformComponent>();
+					auto translate = transform->getTranslate();
+					auto quaternion = transform->getQuaternion();
+					auto height = capsule->getHeight();
+					auto radius = capsule->getRadius();
+					auto halfHeight = height * 0.5f;
+
+					auto s1 = math::float3(0, -halfHeight, 0);
+					auto s2 = math::float3(0, halfHeight, 0);
+
+					s1 = math::rotate(quaternion, s1) + translate;
+					s2 = math::rotate(quaternion, s2) + translate;
+
+					spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, capsule->getRadius()));
+					spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, capsule->getRadius()));
+
+					capsules.push_back(spheres.size() - 2);
+					capsules.push_back(spheres.size() - 1);
+				}
+			}
+
+			for (auto& it : spheres)
+			{
+				auto& rotation = cloth_->getRotation();
+				auto& translate = cloth_->getTranslation();
+				auto xyz = rotation.rotate(it.getXYZ() - translate);
+				it.x = xyz.x;
+				it.y = xyz.y;
+				it.z = xyz.z;
+			}
+
+			nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
+			cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
+
+			nv::cloth::Range<const physx::PxU32> capsuleRange(capsules.data(), capsules.data() + capsules.size());
+			cloth_->setCapsules(capsuleRange, 0, cloth_->getNumCapsules());
+
+			auto meshFilter = this->getComponent<MeshFilterComponent>();
+			if (meshFilter)
+			{
+				auto& vertices = meshFilter->getMesh()->getVertexArray();
+
+				nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
+
+#pragma omp parallel for num_threads(4)
+				for (int i = 0; i < particles.size(); i++)
+				{
+					vertices[i].x = particles[i].x;
+					vertices[i].y = particles[i].y;
+					vertices[i].z = particles[i].z;
 				}
 
-				for (auto& it : spheres)
-				{
-					auto& rotation = cloth_->getRotation();
-					auto& translate = cloth_->getTranslation();
-					auto xyz = rotation.rotate(it.getXYZ() - translate);
-					it.x = xyz.x;
-					it.y = xyz.y;
-					it.z = xyz.z;
-				}
-
-				nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
-				cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
-
-				auto meshFilter = this->getComponent<MeshFilterComponent>();
-				if (meshFilter)
-				{
-					auto& vertices = meshFilter->getMesh()->getVertexArray();
-
-					nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
-					for (int i = 0; i < particles.size(); i++)
-					{
-						vertices[i].x = particles[i].x;
-						vertices[i].y = particles[i].y;
-						vertices[i].z = particles[i].z;
-					}
-
-					meshFilter->getMesh()->computeVertexNormals();
-					meshFilter->uploadMeshData();
-				}
+				meshFilter->getMesh()->computeVertexNormals();
+				meshFilter->uploadMeshData();
 			}
 
 			needUpdate_ = false;
@@ -226,6 +272,12 @@ namespace octoon
 			meshDesc.invMasses.stride = sizeof(float);
 			meshDesc.invMasses.count = mass.size();
 
+			for (auto& index : this->pinVertexIndices_)
+			{
+				if (index < mass.size())
+					mass[index] = 0.0f;
+			}
+
 			physx::PxVec3 gravity(0.0f, -9.8f, 0.0f);
 			nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
 			nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, false);
@@ -238,17 +290,26 @@ namespace octoon
 			auto translate = transform->getTranslate();
 			auto rotation = transform->getQuaternion();
 
+			for (auto& index : this->pinVertexIndices_)
+			{
+				if (index < positions.size())
+					positions[index].w = 0.0f;
+			}
+
 			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
 			cloth_->setUserData(this);
 			cloth_->setGravity(gravity);
-			cloth_->setDragCoefficient(0.1f);
-			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
-			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
-			cloth_->clearInertia();
+			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
 			for (int i = 0; i < (int)motionConstraints.size(); i++)
 				motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 10.0f);
+
+			for (auto& index : this->pinVertexIndices_)
+			{
+				if (index < motionConstraints.size())
+					motionConstraints[index].w = 0.0f;
+			}
 
 			std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
 			for (int i = 0; i < fabric->getNumPhases(); i++)

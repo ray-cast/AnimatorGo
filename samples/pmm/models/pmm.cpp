@@ -89,6 +89,18 @@ namespace octoon
 			}
 		}
 
+		pSJIS = (LPCCH)sjis.c_str();
+		utf16size = ::MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, pSJIS, -1, 0, 0);
+		if (utf16size != 0)
+		{
+			auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
+			if (::MultiByteToWideChar(CP_ACP, 0, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
+			{
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
+				return cv.to_bytes(pUTF16.get());
+			}
+		}
+
 		return utf8_string;
 	}
 

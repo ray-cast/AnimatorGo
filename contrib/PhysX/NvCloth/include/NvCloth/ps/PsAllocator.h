@@ -30,6 +30,7 @@
 #ifndef PSFOUNDATION_PSALLOCATOR_H
 #define PSFOUNDATION_PSALLOCATOR_H
 
+#include "foundation/PxAssert.h"
 #include "foundation/PxAllocatorCallback.h"
 //#include "foundation/PxFoundation.h"
 #include "Ps.h"

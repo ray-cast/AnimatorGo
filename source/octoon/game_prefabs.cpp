@@ -353,6 +353,7 @@ namespace octoon
 			auto cloth = ClothComponent::create();
 			cloth->setColliders(collider);
 			cloth->setTotalMass(it->totalMass);
+			cloth->setPinVertexIndices(it->pinVertexIndices);
 
 			meshes[it->materialIndex]->addComponent(cloth);
 		}

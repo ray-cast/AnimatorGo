@@ -232,12 +232,6 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
-						auto component = model->getComponentInChildren<ClothComponent>();
-						if (component)
-						{
-							component->getGameObject()->addComponent<GuizmoComponent>(camera);
-						}
-
 						objects_.emplace_back(std::move(model));
 					}
 				}

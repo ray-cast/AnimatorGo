@@ -538,7 +538,7 @@ inline void ClothImpl<T>::setSpheres(Range<const physx::PxVec4> spheres, uint32_
 	uint32_t oldSize = uint32_t(getChildCloth()->mStartCollisionSpheres.size());
 	uint32_t newSize = uint32_t(spheres.size()) + oldSize - last + first;
 
-	NV_CLOTH_ASSERT(newSize <= 32);
+	NV_CLOTH_ASSERT(newSize <= 256);
 	NV_CLOTH_ASSERT(first <= oldSize);
 	NV_CLOTH_ASSERT(last <= oldSize);
 
@@ -666,7 +666,7 @@ inline void ClothImpl<T>::setCapsules(Range<const uint32_t> capsules, uint32_t f
 	uint32_t oldSize = uint32_t(getChildCloth()->mCapsuleIndices.size());
 	uint32_t newSize = srcIndicesSize + oldSize - last + first;
 
-	NV_CLOTH_ASSERT(newSize <= 32);
+	NV_CLOTH_ASSERT(newSize <= 256);
 	NV_CLOTH_ASSERT(first <= oldSize);
 	NV_CLOTH_ASSERT(last <= oldSize);
 

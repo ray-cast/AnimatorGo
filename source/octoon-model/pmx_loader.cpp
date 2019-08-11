@@ -628,27 +628,27 @@ namespace octoon
 			}
 
 			PmxUInt32 startIndices = 0;
+			std::vector<std::map<std::uint32_t, std::uint32_t>> indicesMap(pmx.materials.size());
 
-			for (auto& it : pmx.materials)
+			for (std::size_t i = 0; i < pmx.materials.size(); i++)
 			{
-				uint1s indices_;
-				std::map<std::uint32_t, std::uint32_t> indicesMap;
+				uint1s indices_;				
 
-				for (std::size_t i = startIndices; i < startIndices + it.FaceCount; i++)
+				for (std::size_t j = startIndices; j < startIndices + pmx.materials[i].FaceCount; j++)
 				{
 					std::uint32_t index = 0;
 					if (pmx.header.sizeOfIndices == 1)
-						index = *((std::uint8_t*)pmx.indices.data() + i);
+						index = *((std::uint8_t*)pmx.indices.data() + j);
 					else if (pmx.header.sizeOfIndices == 2)
-						index = *((std::uint16_t*)pmx.indices.data() + i);
+						index = *((std::uint16_t*)pmx.indices.data() + j);
 					else if (pmx.header.sizeOfIndices == 4)
-						index = *((std::uint32_t*)pmx.indices.data() + i);
+						index = *((std::uint32_t*)pmx.indices.data() + j);
 
-					auto result = indicesMap.find(index);
-					if (result == indicesMap.end())
+					auto result = indicesMap[i].find(index);
+					if (result == indicesMap[i].end())
 					{
-						std::size_t size = indicesMap.size();
-						indicesMap[index] = size;
+						std::size_t size = indicesMap[i].size();
+						indicesMap[i][index] = size;
 						indices_.push_back(size);
 					}
 					else
@@ -657,21 +657,21 @@ namespace octoon
 					}
 				}
 
-				startIndices += it.FaceCount;
+				startIndices += pmx.materials[i].FaceCount;
 
 				float3s vertices_;
 				float3s normals_;
 				float2s texcoords_;
 				VertexWeights weights;
 
-				vertices_.resize(indicesMap.size());
-				normals_.resize(indicesMap.size());
-				texcoords_.resize(indicesMap.size());
+				vertices_.resize(indicesMap[i].size());
+				normals_.resize(indicesMap[i].size());
+				texcoords_.resize(indicesMap[i].size());
 
 				if (pmx.numBones)
-					weights.resize(indicesMap.size());
+					weights.resize(indicesMap[i].size());
 
-				for (auto& it : indicesMap)
+				for (auto& it : indicesMap[i])
 				{
 					auto& v = pmx.vertices[it.first];
 
@@ -806,6 +806,22 @@ namespace octoon
 				
 				for (auto& rigidbody : it.anchorRigidbodies)
 					softbody->anchorRigidbodies.push_back(rigidbody.rigidBodyIndex);
+
+				auto& map = indicesMap[it.materialIndex];
+				for (std::size_t i = 0; i < it.numIndices; i++)
+				{
+					std::uint32_t index = 0;
+					if (pmx.header.sizeOfIndices == 1)
+						index = *((std::uint8_t*)it.pinVertexIndices.data() + i);
+					else if (pmx.header.sizeOfIndices == 2)
+						index = *((std::uint16_t*)it.pinVertexIndices.data() + i);
+					else if (pmx.header.sizeOfIndices == 4)
+						index = *((std::uint32_t*)it.pinVertexIndices.data() + i);
+
+					auto result = map.find(index);
+					if (result != map.end())
+						softbody->pinVertexIndices.push_back((*result).second);
+				}
 
 				model.add(std::move(softbody));
 			}

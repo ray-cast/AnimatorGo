@@ -40,14 +40,15 @@
 #include <foundation/PxVec4.h>
 #include <foundation/PxVec3.h>
 #include <foundation/PxTransform.h>
+#include "DxFactory.h"
+#include "DxFabric.h"
+#include "ClothImpl.h"
 
 namespace nv
 {
 namespace cloth
 {
 
-class DxFabric;
-class DxFactory;
 struct DxClothData;
 
 struct DxConstraints
@@ -71,7 +72,16 @@ struct DxConstraints
 	Vector<physx::PxVec4>::Type mHostCopy;
 };
 
-class DxCloth : protected DxContextLock
+template<>
+class ClothTraits<DxCloth>
+{
+public:
+	typedef DxFactory FactoryType;
+	typedef DxFabric FabricType;
+	typedef DxContextLock ContextLockType;
+};
+
+class DxCloth : protected DxContextLock, public ClothImpl<DxCloth>
 {
 	DxCloth(const DxCloth&); // not implemented
 	DxCloth& operator = (const DxCloth&); // not implemented
@@ -81,11 +91,9 @@ class DxCloth : protected DxContextLock
 	typedef DxFabric FabricType;
 	typedef DxContextLock ContextLockType;
 
-	template <typename>
-	struct MapTraits;
-
 	typedef DxVectorMap<DxBatchedVector<physx::PxVec3> > MappedVec3fVectorType;
 	typedef DxVectorMap<DxBatchedVector<physx::PxVec4> > MappedVec4fVectorType;
+	typedef DxVectorMap<DxBatchedVector<Vec4us> > MappedVec4usVectorType;
 	typedef DxVectorMap<DxBatchedVector<IndexPair> > MappedIndexVectorType;
 	typedef DxVectorMap<DxBatchedVector<uint32_t> > MappedMaskVectorType;
 
@@ -94,14 +102,24 @@ class DxCloth : protected DxContextLock
 	~DxCloth(); // not virtual on purpose
 
   public:
-	bool isSleeping() const
-	{
-		return mSleepPassCounter >= mSleepAfterCount;
-	}
-	void wakeUp()
-	{
-		mSleepPassCounter = 0;
-	}
+	virtual Cloth* clone(Factory& factory) const;
+	uint32_t getNumParticles() const;
+
+	void lockParticles() const;
+	void unlockParticles() const;
+
+	MappedRange<physx::PxVec4> getCurrentParticles();
+	MappedRange<const physx::PxVec4> getCurrentParticles() const;
+	MappedRange<physx::PxVec4> getPreviousParticles();
+	MappedRange<const physx::PxVec4> getPreviousParticles() const;
+	GpuParticles getGpuParticles();
+
+	void setPhaseConfig(Range<const PhaseConfig> configs);
+	void setSelfCollisionIndices(Range<const uint32_t> indices);
+	uint32_t getNumVirtualParticles() const;
+	Range<physx::PxVec4> getParticleAccelerations();
+	void clearParticleAccelerations();
+	void setVirtualParticles(Range<const uint32_t[4]> indices, Range<const physx::PxVec3> weights);
 
 	void notifyChanged();
 
@@ -109,7 +127,7 @@ class DxCloth : protected DxContextLock
 	uint32_t getSharedMemorySize() const; // without particle data
 
 	// expects transformed configs, doesn't call notifyChanged()
-	void setPhaseConfig(Range<const PhaseConfig>);
+	void setPhaseConfigInternal(Range<const PhaseConfig>);
 
 	Range<physx::PxVec4> push(DxConstraints&);
 	void clear(DxConstraints&);
@@ -136,27 +154,6 @@ class DxCloth : protected DxContextLock
 	bool mDeviceParticlesDirty;
 	bool mHostParticlesDirty;
 
-	physx::PxVec3 mParticleBoundsCenter;
-	physx::PxVec3 mParticleBoundsHalfExtent;
-
-	physx::PxVec3 mGravity;
-	physx::PxVec3 mLogDamping;
-	physx::PxVec3 mLinearLogDrag;
-	physx::PxVec3 mAngularLogDrag;
-	physx::PxVec3 mLinearInertia;
-	physx::PxVec3 mAngularInertia;
-	physx::PxVec3 mCentrifugalInertia;
-	float mSolverFrequency;
-	float mStiffnessFrequency;
-
-	physx::PxTransform mTargetMotion;
-	physx::PxTransform mCurrentMotion;
-	physx::PxVec3 mLinearVelocity;
-	physx::PxVec3 mAngularVelocity;
-
-	float mPrevIterDt;
-	MovingAverage mIterDtAvg;
-
 	DxBatchedVector<DxPhaseConfig> mPhaseConfigs;
 	Vector<PhaseConfig>::Type mHostPhaseConfigs;
 
@@ -177,11 +174,6 @@ class DxCloth : protected DxContextLock
 	DxBatchedVector<physx::PxVec4> mParticleAccelerations;
 	Vector<physx::PxVec4>::Type mParticleAccelerationsHostCopy;
 
-	// wind
-	physx::PxVec3 mWind;
-	float mDragLogCoefficient;
-	float mLiftLogCoefficient;
-
 	// collision stuff
 	DxBatchedVector<IndexPair> mCapsuleIndices;
 	DxBatchedVector<physx::PxVec4> mStartCollisionSpheres;
@@ -196,9 +188,9 @@ class DxCloth : protected DxContextLock
 	float mFriction;
 
 	// virtual particles
-	DxDeviceVector<uint32_t> mVirtualParticleSetSizes;
-	DxDeviceVector<Vec4us> mVirtualParticleIndices;
-	DxDeviceVector<physx::PxVec4> mVirtualParticleWeights;
+	DxBatchedVector<uint32_t> mVirtualParticleSetSizes;
+	DxBatchedVector<Vec4us> mVirtualParticleIndices;
+	DxBatchedVector<physx::PxVec4> mVirtualParticleWeights;
 
 	// self collision
 	float mSelfCollisionDistance;
@@ -213,13 +205,6 @@ class DxCloth : protected DxContextLock
 	DxBatchedVector<uint32_t> mSelfCollisionData;
 
 	bool mInitSelfCollisionData;
-
-	// sleeping
-	uint32_t mSleepTestInterval; // how often to test for movement
-	uint32_t mSleepAfterCount;   // number of tests to pass before sleep
-	float mSleepThreshold;       // max movement delta to pass test
-	uint32_t mSleepPassCounter;  // how many tests passed
-	uint32_t mSleepTestCounter;  // how many iterations since tested
 
 	uint32_t mSharedMemorySize;
 

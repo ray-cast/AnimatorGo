@@ -72,8 +72,16 @@ void foo(const float* ptr)
 * Define Simd4f and Simd4i, which map to four 32bit float or integer tuples.
 * */
 // note: ps4 compiler defines _M_X64 without value
-#define NV_SIMD_SSE2 (defined _M_IX86 || defined _M_X64 || defined __i386__ || defined __x86_64__)
-#define NV_SIMD_NEON (defined _M_ARM || defined __ARM_NEON__)
+#if defined (_M_IX86) || defined (_M_X64) || defined (__i386__) || defined (__x86_64__) || PX_EMSCRIPTEN
+#define NV_SIMD_SSE2 1
+#else
+#define NV_SIMD_SSE2 0
+#endif
+#if defined (_M_ARM) || defined (__ARM_NEON__) || defined (__ARM_NEON)
+#define NV_SIMD_NEON 1
+#else
+#define NV_SIMD_NEON 0
+#endif
 #define NV_SIMD_SIMD (NV_SIMD_SSE2 || NV_SIMD_NEON)
 
 /*! \def NV_SIMD_SCALAR
@@ -90,9 +98,13 @@ void foo(const float* ptr)
 // support shift by vector operarations
 #define NV_SIMD_SHIFT_BY_VECTOR (NV_SIMD_NEON)
 // support inline assembler
-#define NV_SIMD_INLINE_ASSEMBLER !(defined _M_ARM || defined SN_TARGET_PSP2 || defined __arm64__)
+#if defined _M_ARM || defined SN_TARGET_PSP2 || defined __arm64__ || defined __aarch64__
+#define NV_SIMD_INLINE_ASSEMBLER 0
+#else
+#define NV_SIMD_INLINE_ASSEMBLER 1
+#endif
 
-/*! \def NV_SIMD_USE_NAMESPACE
+/*! \def NV_CLOTH_NO_SIMD_NAMESPACE
 * \brief Set to 1 to define the SIMD library types and functions inside the nvidia::simd namespace.
 * By default, the types and functions defined in this header live in the global namespace.
 * This is because MSVC (prior to version 12, Visual Studio 2013) does an inferior job at optimizing
@@ -104,11 +116,11 @@ void foo(const float* ptr)
 * __m128i are wrapped into structs. Arguments need to be passed by reference in this mode.
 * \see NV_SIMD_VECTORCALL, Simd4fArg */
 
-#if defined NV_SIMD_USE_NAMESPACE&& NV_SIMD_USE_NAMESPACE
+#ifndef NV_CLOTH_NO_SIMD_NAMESPACE
 #define NV_SIMD_NAMESPACE_BEGIN                                                                                        \
 	namespace nv                                                                                                       \
 	{                                                                                                                  \
-	namespace simd                                                                                                     \
+	namespace cloth                                                                                                     \
 	{
 #define NV_SIMD_NAMESPACE_END                                                                                          \
 	}                                                                                                                  \

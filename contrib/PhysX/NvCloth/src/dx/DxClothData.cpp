@@ -51,6 +51,9 @@ cloth::DxClothData::DxClothData(DxCloth& cloth)
 	mConstraintOffset = cloth.mFabric.mConstraints.mOffset;
 	mStiffnessOffset = cloth.mFabric.mStiffnessValues.empty() ? -1: cloth.mFabric.mStiffnessValues.mOffset;
 
+	mNumTriangles = cloth.mFabric.getNumTriangles();
+	mStartTriangleOffset = cloth.mFabric.mTriangles.mOffset;
+
 	mNumTethers = cloth.mFabric.mTethers.size();
 	mTetherOffset = cloth.mFabric.mTethers.mOffset;
 	mTetherConstraintScale = cloth.mTetherConstraintScale * cloth.mFabric.mTetherLengthScale;
@@ -67,6 +70,8 @@ cloth::DxClothData::DxClothData(DxCloth& cloth)
 	mConvexMasksOffset = cloth.mConvexMasks.mOffset;
 
 	mNumCollisionTriangles = uint32_t(cloth.mStartCollisionTriangles.size()) / 3;
+
+	mNumVirtualParticleSetSizes = cloth.mVirtualParticleSetSizes.size();
 
 	mEnableContinuousCollision = cloth.mEnableContinuousCollision;
 	mCollisionMassScale = cloth.mCollisionMassScale;
@@ -94,14 +99,25 @@ cloth::DxFrameData::DxFrameData(DxCloth& cloth, uint32_t numSharedPositions, con
 	mFirstIteration = firstIteration;
 	mNumIterations = state.mRemainingIterations;
 
-	Simd4f logStiffness = simd4f(0.0f, cloth.mSelfCollisionLogStiffness, cloth.mMotionConstraintLogStiffness,
-	                             cloth.mTetherConstraintLogStiffness);
 	Simd4f stiffnessExponent = simd4f(cloth.mStiffnessFrequency * mIterDt);
-	Simd4f stiffness = gSimd4fOne - exp2(logStiffness * stiffnessExponent);
+	{
+		Simd4f logStiffness = simd4f(0.0f, cloth.mSelfCollisionLogStiffness, cloth.mMotionConstraintLogStiffness,
+			cloth.mTetherConstraintLogStiffness);
+		Simd4f stiffness = gSimd4fOne - exp2(logStiffness * stiffnessExponent);
 
-	mTetherConstraintStiffness = array(stiffness)[3];
-	mMotionConstraintStiffness = array(stiffness)[2];
-	mSelfCollisionStiffness = array(stiffness)[1];
+		mTetherConstraintStiffness = array(stiffness)[3];
+		mMotionConstraintStiffness = array(stiffness)[2];
+		mSelfCollisionStiffness = array(stiffness)[1];
+	}
+	{
+		Simd4f logStiffness = simd4f(cloth.mDragLogCoefficient, cloth.mLiftLogCoefficient, 0.0f, 0.0f);
+		Simd4f stiffness = gSimd4fOne - exp2(logStiffness * stiffnessExponent);
+		mDragCoefficient = array(stiffness)[0];
+		mLiftCoefficient = array(stiffness)[1];
+		mFluidDensity = cloth.mFluidDensity * 0.5f; //divide by 2 to so we don't have to compensate for double area from cross product in the solver
+		for(int i = 0; i < 9; ++i)
+			mRotation[i] = array(state.mRotationMatrix[i / 3])[i % 3];
+	}
 
 	mStartSphereOffset = cloth.mStartCollisionSpheres.mOffset;
 	mTargetSphereOffset =
@@ -110,7 +126,6 @@ cloth::DxFrameData::DxFrameData(DxCloth& cloth, uint32_t numSharedPositions, con
 	mStartCollisionPlaneOffset = cloth.mStartCollisionPlanes.mOffset;
 	mTargetCollisionPlaneOffset =
 		cloth.mTargetCollisionPlanes.empty() ? mStartCollisionPlaneOffset : cloth.mTargetCollisionPlanes.mOffset;
-
 
 	mStartCollisionTrianglesOffset = cloth.mStartCollisionTriangles.mOffset;
 	mTargetCollisionTrianglesOffset =
@@ -172,6 +187,10 @@ cloth::DxIterationData::DxIterationData(const IterationState<Simd4f>& state)
 	copySquareTransposed(mIntegrationTrafo + 15, array(*state.mCurMatrix));
 
 	mIsTurning = uint32_t(state.mIsTurning);
+
+	mWind[0] = array(state.mWind)[0];
+	mWind[1] = array(state.mWind)[1];
+	mWind[2] = array(state.mWind)[2];
 }
 
 #endif // NV_CLOTH_ENABLE_DX11

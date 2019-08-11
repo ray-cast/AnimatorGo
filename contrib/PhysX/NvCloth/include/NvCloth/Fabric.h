@@ -31,7 +31,7 @@
 
 #include "NvCloth/Callbacks.h"
 #include "NvCloth/Allocator.h"
-#include <PsAtomic.h>
+#include "NvCloth/ps/PsAtomic.h"
 
 namespace nv
 {

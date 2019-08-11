@@ -33,8 +33,8 @@
 #include "NvClothExt/ClothTetherCooker.h"
 
 // from shared foundation
-#include <PsSort.h>
-#include <PsMathUtils.h>
+#include "../../src/ps/PsSort.h"
+#include "NvCloth/ps/PsMathUtils.h"
 #include "NvCloth/Allocator.h"
 
 using namespace physx;
@@ -285,7 +285,7 @@ namespace
 		// point on ray R = o + t * d
 		// for this two points to intersect, we have
 		// |AB -d| | s t | = o - A
-		const float eps = 1e-4;
+		const float eps = 1e-4f;
 
 		PxVec3 OA = O - A;
 		PxVec3 AB = B - A;
@@ -369,14 +369,14 @@ void ClothGeodesicTetherCooker::createTetherData(const ClothMeshDesc &desc)
 	mAttached.resize(mNumParticles);
 	PxStrideIterator<const PxVec3> pIt(reinterpret_cast<const PxVec3*>(desc.points.data), desc.points.stride);
 	PxStrideIterator<const PxReal> wIt(reinterpret_cast<const PxReal*>(desc.invMasses.data), desc.invMasses.stride);
-	for(PxU32 i=0; i<mNumParticles; ++i)
+	for (PxU32 i=0; i<mNumParticles; ++i)
 	{
 		mVertices[i] = *pIt++;
 		mAttached[i] = PxU8(wIt.ptr() ? (*wIt++ == 0.0f) : 0);
 	}
 
 	// build triangle indices
-	if(desc.flags & MeshFlag::e16_BIT_INDICES)
+	if (desc.flags & MeshFlag::e16_BIT_INDICES)
 		gatherIndices<PxU16>(mIndices, desc.triangles, desc.quads);
 	else
 		gatherIndices<PxU32>(mIndices, desc.triangles, desc.quads);
@@ -392,7 +392,7 @@ void ClothGeodesicTetherCooker::createTetherData(const ClothMeshDesc &desc)
 	// build adjacent vertex list
 	nv::cloth::Vector<PxU32>::Type valency(mNumParticles+1, 0);
 	nv::cloth::Vector<PxU32>::Type adjacencies;
-	if(desc.flags & MeshFlag::e16_BIT_INDICES)
+	if (desc.flags & MeshFlag::e16_BIT_INDICES)
 		gatherAdjacencies<PxU16>(valency, adjacencies, desc.triangles, desc.quads);
 	else
 		gatherAdjacencies<PxU32>(valency, adjacencies, desc.triangles, desc.quads);
@@ -400,7 +400,7 @@ void ClothGeodesicTetherCooker::createTetherData(const ClothMeshDesc &desc)
 	// build unique neighbors from adjacencies
 	nv::cloth::Vector<PxU32>::Type mark(valency.size(), 0);
 	nv::cloth::Vector<PxU32>::Type neighbors; neighbors.reserve(adjacencies.size());
-	for(PxU32 i=1, j=0; i<valency.size(); ++i)
+	for (PxU32 i=1, j=0; i<valency.size(); ++i)
 	{
 		for(; j<valency[i]; ++j)
 		{
@@ -765,7 +765,7 @@ int ClothGeodesicTetherCooker::computeVertexIntersection(PxU32 parent, PxU32 src
 			continue;
 
 		// t should be positive, otherwise we just hit the triangle in opposite direction, so ignore
-		const float eps = 1e-5;
+		const float eps = 1e-5f;
 		if (t > -eps)
 		{		
 			PxVec3 ip; // intersection point
@@ -884,7 +884,7 @@ int ClothGeodesicTetherCooker::computeEdgeIntersection(PxU32 parent, PxU32 edge,
 	g = (g - g.dot(n) * n).getNormalized();
 
 	float s = 0.0f, t = 0.0f;
-	const float eps = 1e-5;
+	const float eps = 1e-5f;
 	PxVec3 ip;
 
 	// intersect against edge form p2 to p0

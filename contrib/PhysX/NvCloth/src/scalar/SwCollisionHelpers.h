@@ -29,7 +29,9 @@
 
 #pragma once
 
-namespace physx
+#include "NvCloth/ps/PsMathUtils.h"
+
+namespace nv
 {
 namespace cloth
 {
@@ -46,6 +48,7 @@ uint32_t findBitSet(uint32_t mask)
 
 inline Scalar4i intFloor(const Scalar4f& v)
 {
+	using physx::shdfnd::floor;
 	return Scalar4i(int(floor(v.f4[0])), int(floor(v.f4[1])), int(floor(v.f4[2])), int(floor(v.f4[3])));
 }
 
@@ -66,13 +69,17 @@ struct Gather<Scalar4i>
 
 Gather<Scalar4i>::Gather(const Scalar4i& index)
 {
+	//index are grid positions
+
 	uint32_t mask = /* sGridSize */ 8 - 1;
 
+	// Get grid index (forced within range)
 	mIndex.u4[0] = index.u4[0] & mask;
 	mIndex.u4[1] = index.u4[1] & mask;
 	mIndex.u4[2] = index.u4[2] & mask;
 	mIndex.u4[3] = index.u4[3] & mask;
 
+	// true (filled with all ones = -1) when gridSize <= index || index < 0
 	mOutOfRange.i4[0] = index.u4[0] & ~mask ? 0 : -1;
 	mOutOfRange.i4[1] = index.u4[1] & ~mask ? 0 : -1;
 	mOutOfRange.i4[2] = index.u4[2] & ~mask ? 0 : -1;
@@ -81,6 +88,7 @@ Gather<Scalar4i>::Gather(const Scalar4i& index)
 
 Scalar4i Gather<Scalar4i>::operator()(const Scalar4i* ptr) const
 {
+	//ptr points to the cone/sphere grid
 	const int32_t* base = ptr->i4;
 	const int32_t* index = mIndex.i4;
 	const int32_t* mask = mOutOfRange.i4;
@@ -89,4 +97,4 @@ Scalar4i Gather<Scalar4i>::operator()(const Scalar4i* ptr) const
 }
 
 } // namespace cloth
-} // namespace physx
+} // namespace nv

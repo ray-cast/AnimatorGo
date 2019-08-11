@@ -27,13 +27,12 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#include "foundation/PxAssert.h"
 #include "SwFabric.h"
 #include "SwFactory.h"
-#include "PsSort.h"
+#include "ps/PsSort.h"
 #include "limits.h" // for USHRT_MAX
 #include <algorithm>
-#include "PsUtilities.h"
+#include "../../src/ps/PsUtilities.h"
 
 using namespace nv;
 using namespace physx;
@@ -163,7 +162,7 @@ uint32_t cloth::SwFabric::getNumStiffnessValues() const
 
 uint32_t cloth::SwFabric::getNumSets() const
 {
-	return uint32_t(mSets.size() - 1);
+	return uint32_t(physx::PxMax(0, static_cast<int>(mSets.size() - 1)));
 }
 
 uint32_t cloth::SwFabric::getNumIndices() const

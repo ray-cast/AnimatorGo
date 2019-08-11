@@ -31,7 +31,7 @@
 #pragma once
 
 #include <foundation/Px.h>
-#include "simd.h"
+#include "Simd.h"
 
 namespace nv
 {
@@ -46,7 +46,7 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 #endif
 
-static const uint32_t MaxParticlesInSharedMem = 1975;
+static const uint32_t MaxParticlesInSharedMem = 1969;
 
 
 struct DxPhaseConfig
@@ -106,6 +106,9 @@ struct DxClothData
 	uint32_t mTetherOffset;
 	float mTetherConstraintScale;
 
+	uint32_t mNumTriangles;
+	uint32_t mStartTriangleOffset;
+
 	// motion constraint data
 	float mMotionConstraintScale;
 	float mMotionConstraintBias;
@@ -120,6 +123,8 @@ struct DxClothData
 	uint32_t mConvexMasksOffset;
 
 	uint32_t mNumCollisionTriangles;
+
+	uint32_t mNumVirtualParticleSetSizes;
 
 	uint32_t mEnableContinuousCollision; //bool stored in uint32_t for dx alignment
 	float mCollisionMassScale;
@@ -160,6 +165,12 @@ struct DxFrameData
 	uint32_t mNumIterations;
 
 	float mTetherConstraintStiffness;
+
+	// wind data
+	float mDragCoefficient;
+	float mLiftCoefficient;
+	float mFluidDensity;
+	float mRotation[9];
 
 	// motion constraint data
 	float mMotionConstraintStiffness;
@@ -206,6 +217,7 @@ struct DxIterationData
 	explicit DxIterationData(const IterationState<Simd4f>&);
 #endif
 	float mIntegrationTrafo[24];
+	float mWind[3];
 	uint32_t mIsTurning;
 };
 

@@ -37,7 +37,7 @@ namespace cloth
 {
 
 // acts as a poor mans random access iterator
-template <typename Simd4f, typename BaseIterator>
+template <typename T4f, typename BaseIterator>
 class LerpIterator
 {
 
@@ -50,12 +50,12 @@ class LerpIterator
 	}
 
 	// return the interpolated point at a given index
-	inline Simd4f operator[](size_t index) const
+	inline T4f operator[](size_t index) const
 	{
 		return mStart[index] + (mTarget[index] - mStart[index]) * mAlpha;
 	}
 
-	inline Simd4f operator*() const
+	inline T4f operator*() const
 	{
 		return (*this)[0];
 	}
@@ -70,13 +70,13 @@ class LerpIterator
 
   private:
 	// interpolation parameter
-	const Simd4f mAlpha;
+	const T4f mAlpha;
 
 	BaseIterator mStart;
 	BaseIterator mTarget;
 };
 
-template <typename Simd4f, size_t Stride>
+template <typename T4f, size_t Stride>
 class UnalignedIterator
 {
 
@@ -87,12 +87,12 @@ class UnalignedIterator
 	{
 	}
 
-	inline Simd4f operator[](size_t index) const
+	inline T4f operator[](size_t index) const
 	{
 		return load(mPointer + index * Stride);
 	}
 
-	inline Simd4f operator*() const
+	inline T4f operator*() const
 	{
 		return (*this)[0];
 	}
@@ -109,15 +109,15 @@ class UnalignedIterator
 };
 
 // acts as an iterator but returns a constant
-template <typename Simd4f>
+template <typename T4f>
 class ConstantIterator
 {
   public:
-	ConstantIterator(const Simd4f& value) : mValue(value)
+	ConstantIterator(const T4f& value) : mValue(value)
 	{
 	}
 
-	inline Simd4f operator*() const
+	inline T4f operator*() const
 	{
 		return mValue;
 	}
@@ -129,20 +129,20 @@ class ConstantIterator
 
   private:
 	ConstantIterator& operator = (const ConstantIterator&);
-	const Simd4f mValue;
+	const T4f mValue;
 };
 
 // wraps an iterator with constant scale and bias
-template <typename Simd4f, typename BaseIterator>
+template <typename T4f, typename BaseIterator>
 class ScaleBiasIterator
 {
   public:
-	ScaleBiasIterator(BaseIterator base, const Simd4f& scale, const Simd4f& bias)
+	ScaleBiasIterator(BaseIterator base, const T4f& scale, const T4f& bias)
 	: mScale(scale), mBias(bias), mBaseIterator(base)
 	{
 	}
 
-	inline Simd4f operator*() const
+	inline T4f operator*() const
 	{
 		return (*mBaseIterator) * mScale + mBias;
 	}
@@ -156,8 +156,8 @@ class ScaleBiasIterator
   private:
 	ScaleBiasIterator& operator = (const ScaleBiasIterator&);
 
-	const Simd4f mScale;
-	const Simd4f mBias;
+	const T4f mScale;
+	const T4f mBias;
 
 	BaseIterator mBaseIterator;
 };

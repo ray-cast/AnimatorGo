@@ -61,7 +61,10 @@ struct Simd4iTupleFactory
 	Simd4iTupleFactory(int x, int y, int z, int w)
 	// c++11: : tuple{ x, y, z, w }
 	{
-		tuple[0] = x, tuple[1] = y, tuple[2] = z, tuple[3] = w;
+		tuple[0] = x;
+		tuple[1] = y;
+		tuple[2] = z;
+		tuple[3] = w;
 	}
 	Simd4iTupleFactory& operator = (const Simd4iTupleFactory&); // not implemented
 	inline operator Simd4i() const;

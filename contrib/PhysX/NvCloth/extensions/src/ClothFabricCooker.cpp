@@ -30,24 +30,16 @@
 #include "foundation/PxVec4.h"
 #include "foundation/PxIO.h"
 #include "foundation/PxStrideIterator.h"
+#include "ps/PsSort.h"
+#include "NvCloth/ps/PsMathUtils.h"
 #include "NvClothExt/ClothFabricCooker.h"
 #include "NvClothExt/ClothTetherCooker.h"
-#include "PsSort.h"
 #include "NvCloth/Fabric.h"
 #include "NvCloth/Allocator.h"
 #include "NvCloth/Range.h"
+#include "ClothClone.h"
 
 #include <algorithm>
-#include "PsMathUtils.h"
-
-namespace
-{
-float safeLog2(float x)
-{
-	float saturated = std::max(0.0f, std::min(x, 1.0f));
-	return saturated ? physx::shdfnd::log2(saturated) : -FLT_MAX_EXP;
-}
-}
 
 using namespace physx;
 
@@ -97,7 +89,9 @@ nv::cloth::Range<const T> CreateRange(typename nv::cloth::Vector<T>::Type const&
 template<typename T, typename U>
 nv::cloth::Range<const T> CreateRangeF(typename nv::cloth::Vector<U>::Type const& vector, int offset = 0)
 {
+#ifndef _LIBCPP_HAS_NO_STATIC_ASSERT
 	static_assert(sizeof(T) == sizeof(U), "Type T and U need to be of the same size");
+#endif
 	const T* begin = reinterpret_cast<const T*>(vector.begin()+offset);
 	const T* end = reinterpret_cast<const T*>(vector.end());
 

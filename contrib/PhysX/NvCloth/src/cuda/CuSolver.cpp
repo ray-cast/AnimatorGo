@@ -36,7 +36,7 @@
 #include "CuContextLock.h"
 #include "CuCheckSuccess.h"
 #include "../IterationState.h"
-#include <PsSort.h>
+#include "../Ps/PsSort.h"
 #include <foundation/PxProfiler.h>
 
 #if NV_NVTX
@@ -302,6 +302,28 @@ cloth::CuSolver::~CuSolver()
 	mFactory.mSolverCount--;
 }
 
+void cloth::CuSolver::addClothAppend(Cloth* cloth)
+{
+	CuCloth& cuCloth = *static_cast<CuCloth*>(cloth);
+
+	NV_CLOTH_ASSERT(mCloths.find(&cuCloth) == mCloths.end());
+
+	mCloths.pushBack(&cuCloth);
+	// trigger update of mClothData array
+	cuCloth.notifyChanged();
+}
+
+void cloth::CuSolver::addClothUpdateData()
+{
+	CuContextLock contextLock(mFactory);
+
+	// resize containers and update kernel data
+	mClothDataHostCopy.resize(mCloths.size());
+	mClothData.resize(mCloths.size());
+	mFrameData.resize(mCloths.size());
+	updateKernelData();
+}
+
 void cloth::CuSolver::updateKernelData()
 {
 	mKernelDataHost.mClothIndex = mClothIndex.get();
@@ -326,29 +348,22 @@ struct ClothSimCostGreater
 
 void cloth::CuSolver::addCloth(Cloth* cloth)
 {
-	CuCloth& cuCloth = static_cast<CuClothImpl&>(*cloth).mCloth;
+	addClothAppend(cloth);
+	addClothUpdateData();
+}
 
-	NV_CLOTH_ASSERT(mCloths.find(&cuCloth) == mCloths.end());
-
-	mCloths.pushBack(&cuCloth);
-	// trigger update of mClothData array
-	cuCloth.notifyChanged();
-
-	// sort cloth instances by size
-	shdfnd::sort(mCloths.begin(), mCloths.size(), ClothSimCostGreater(), NonTrackingAllocator());
-
-	CuContextLock contextLock(mFactory);
-
-	// resize containers and update kernel data
-	mClothDataHostCopy.resize(mCloths.size());
-	mClothData.resize(mCloths.size());
-	mFrameData.resize(mCloths.size());
-	updateKernelData();
+void cloth::CuSolver::addCloths(Range<Cloth*> cloths)
+{
+	for (uint32_t i = 0; i < cloths.size(); ++i)
+	{
+		addClothAppend(*(cloths.begin() + i));
+	}
+	addClothUpdateData();
 }
 
 void cloth::CuSolver::removeCloth(Cloth* cloth)
 {
-	CuCloth& cuCloth = static_cast<CuClothImpl&>(*cloth).mCloth;
+	CuCloth& cuCloth = static_cast<CuCloth&>(*cloth);
 
 	ClothVector::Iterator begin = mCloths.begin(), end = mCloths.end();
 	ClothVector::Iterator it = mCloths.find(&cuCloth);
@@ -362,6 +377,18 @@ void cloth::CuSolver::removeCloth(Cloth* cloth)
 	mClothDataHostCopy.remove(index);
 	mClothData.resize(mCloths.size());
 	mClothDataDirty = true;
+}
+
+int cloth::CuSolver::getNumCloths() const
+{
+	return mCloths.size();
+}
+cloth::Cloth * const * cloth::CuSolver::getClothList() const
+{
+	if(getNumCloths())
+		return reinterpret_cast<Cloth* const*>(&mCloths[0]);
+	else
+		return nullptr;
 }
 
 bool cloth::CuSolver::beginSimulation(float dt)
@@ -389,7 +416,8 @@ void cloth::CuSolver::endSimulation()
 
 int cloth::CuSolver::getSimulationChunkCount() const
 {
-	return 1;
+	// 0 chunks when no cloth present in the solver, 1 otherwise
+	return getNumCloths() != 0;
 }
 
 void cloth::CuSolver::beginFrame()
@@ -461,8 +489,9 @@ void cloth::CuSolver::beginFrame()
 		uint32_t numThreadsPerBlock = mFactory.mMaxThreadsPerBlock / numClothsPerSM & ~31;
 		if (mFactory.mNumThreadsPerBlock != numThreadsPerBlock)
 		{
-			checkSuccess(
-			    cuFuncSetBlockShape(mKernelFunction, int(mFactory.mNumThreadsPerBlock = numThreadsPerBlock), 1, 1));
+			mFactory.mNumThreadsPerBlock = numThreadsPerBlock;
+			//checkSuccess(
+			//    cuFuncSetBlockShape(mKernelFunction, int(mFactory.mNumThreadsPerBlock = numThreadsPerBlock), 1, 1));
 		}
 
 		// remember num cloths per SM in terms of max shared memory per block

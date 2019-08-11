@@ -52,16 +52,16 @@ typedef StackAllocator<16> SwKernelAllocator;
 /**
    Collision handler for SwSolver.
  */
-template <typename Simd4f>
+template <typename T4f>
 class SwCollision
 {
-	typedef typename Simd4fToSimd4i<Simd4f>::Type Simd4i;
+	typedef typename Simd4fToSimd4i<T4f>::Type T4i;
 
   public:
 	struct ShapeMask
 	{
-		Simd4i mCones;
-		Simd4i mSpheres;
+		T4i mCones;
+		T4i mSpheres;
 
 		ShapeMask& operator = (const ShapeMask&);
 		ShapeMask& operator &= (const ShapeMask&);
@@ -80,7 +80,7 @@ class SwCollision
 	SwCollision(SwClothData& clothData, SwKernelAllocator& alloc);
 	~SwCollision();
 
-	void operator()(const IterationState<Simd4f>& state);
+	void operator()(const IterationState<T4f>& state);
 
 	static size_t estimateTemporaryMemory(const SwCloth& cloth);
 	static size_t estimatePersistentMemory(const SwCloth& cloth);
@@ -97,32 +97,32 @@ class SwCollision
 	static void mergeAcceleration(uint32_t*);
 	bool buildAcceleration();
 
-	static ShapeMask getShapeMask(const Simd4f&, const Simd4i*, const Simd4i*);
-	ShapeMask getShapeMask(const Simd4f*) const;
-	ShapeMask getShapeMask(const Simd4f*, const Simd4f*) const;
+	static ShapeMask getShapeMask(const T4f&, const T4i*, const T4i*);
+	ShapeMask getShapeMask(const T4f*) const;
+	ShapeMask getShapeMask(const T4f*, const T4f*) const;
 
-	void collideSpheres(const Simd4i&, const Simd4f*, ImpulseAccumulator&) const;
-	Simd4i collideCones(const Simd4f*, ImpulseAccumulator&) const;
+	void collideSpheres(const T4i&, const T4f*, ImpulseAccumulator&) const;
+	T4i collideCones(const T4f*, ImpulseAccumulator&) const;
 
-	void collideSpheres(const Simd4i&, const Simd4f*, Simd4f*, ImpulseAccumulator&) const;
-	Simd4i collideCones(const Simd4f*, Simd4f*, ImpulseAccumulator&) const;
+	void collideSpheres(const T4i&, const T4f*, T4f*, ImpulseAccumulator&) const;
+	T4i collideCones(const T4f*, T4f*, ImpulseAccumulator&) const;
 
 	void collideParticles();
 	void collideVirtualParticles();
 	void collideContinuousParticles();
 
-	void collideConvexes(const IterationState<Simd4f>&);
-	void collideConvexes(const Simd4f*, Simd4f*, ImpulseAccumulator&);
+	void collideConvexes(const IterationState<T4f>&);
+	void collideConvexes(const T4f*, T4f*, ImpulseAccumulator&);
 
-	void collideTriangles(const IterationState<Simd4f>&);
-	void collideTriangles(const TriangleData*, Simd4f*, ImpulseAccumulator&);
+	void collideTriangles(const IterationState<T4f>&);
+	void collideTriangles(const TriangleData*, T4f*, ImpulseAccumulator&);
 
   public:
 	// acceleration structure
 	static const uint32_t sGridSize = 8;
-	Simd4i mSphereGrid[6 * sGridSize / 4];
-	Simd4i mConeGrid[6 * sGridSize / 4];
-	Simd4f mGridScale, mGridBias;
+	T4i mSphereGrid[6 * sGridSize / 4];
+	T4i mConeGrid[6 * sGridSize / 4];
+	T4f mGridScale, mGridBias;
 
 	CollisionData mPrevData;
 	CollisionData mCurData;
@@ -132,8 +132,16 @@ class SwCollision
 
 	uint32_t mNumCollisions;
 
-	static const Simd4f sSkeletonWidth;
+	static const T4f sSkeletonWidth;
 };
+
+//explicit template instantiation declaration
+#if NV_SIMD_SIMD
+extern template class SwCollision<Simd4f>;
+#endif
+#if NV_SIMD_SCALAR
+extern template class SwCollision<Scalar4f>;
+#endif
 
 } // namespace cloth
 } // namespace nv

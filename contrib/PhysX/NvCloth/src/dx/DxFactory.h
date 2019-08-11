@@ -35,6 +35,7 @@
 #include "../IndexPair.h"
 #include <foundation/PxVec4.h>
 #include <foundation/PxVec3.h>
+#include "Vec4T.h"
 
 #if _MSC_VER >= 1700
 #pragma warning(disable : 4471)
@@ -63,7 +64,7 @@ protected:
 
   public:
 	typedef DxFabric FabricType;
-	typedef ClothImpl<DxCloth> ImplType;
+	typedef DxCloth ClothType;
 
 	explicit DxFactory(DxContextManagerCallback*);
 	virtual ~DxFactory();
@@ -81,8 +82,8 @@ protected:
 
 	virtual Cloth* clone(const Cloth& cloth);
 
-	virtual void extractFabricData(const Fabric& fabric, Range<uint32_t> phaseIndices, Range<uint32_t> sets,
-	                               Range<float> restvalues, Range<float> stiffnessValues, Range<uint32_t> indices, Range<uint32_t> anchors,
+	virtual void extractFabricData( const Fabric& fabric, Range<uint32_t> phaseIndices, Range<uint32_t> sets,
+	                                Range<float> restvalues, Range<float> stiffnessValues, Range<uint32_t> indices, Range<uint32_t> anchors,
 	                               Range<float> tetherLengths, Range<uint32_t> triangles) const;
 
 	virtual void extractCollisionData(const Cloth& cloth, Range<physx::PxVec4> spheres, Range<uint32_t> capsules,
@@ -145,6 +146,12 @@ protected:
 
 	DxBatchedStorage<physx::PxVec3> mCollisionTriangles;
 	DxBuffer<physx::PxVec3> mCollisionTrianglesDeviceCopy;
+	DxBatchedStorage<uint32_t> mVirtualParticleSetSizes;
+	DxBuffer<uint32_t> mVirtualParticleSetSizesDeviceCopy;
+	DxBatchedStorage<Vec4us> mVirtualParticleIndices;
+	DxBuffer<Vec4us> mVirtualParticleIndicesDeviceCopy;
+	DxBatchedStorage<physx::PxVec4> mVirtualParticleWeights;
+	DxBuffer<physx::PxVec4> mVirtualParticleWeightsDeviceCopy;
 
 	DxBatchedStorage<physx::PxVec4> mMotionConstraints;
 	DxBatchedStorage<physx::PxVec4> mSeparationConstraints;
@@ -155,6 +162,9 @@ protected:
 	DxBatchedStorage<uint32_t> mSelfCollisionIndices;
 	DxBatchedStorage<physx::PxVec4> mSelfCollisionParticles;
 	DxBatchedStorage<uint32_t> mSelfCollisionData;
+
+	DxBatchedStorage<uint32_t> mTriangles;
+
 };
 }
 }

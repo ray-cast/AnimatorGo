@@ -36,7 +36,7 @@
 #pragma once
 #include <foundation/PxPreprocessor.h>
 #include <foundation/PxProfiler.h>
-#include <foundation/PxAssert.h>
+#include <foundation/PxAllocatorCallback.h>
 #ifndef NV_CLOTH_IMPORT
 #define NV_CLOTH_IMPORT PX_DLL_IMPORT
 #endif
@@ -99,15 +99,30 @@ NV_CLOTH_API(physx::PxAssertHandler*) GetNvClothAssertHandler(); //This function
 #if !PX_ENABLE_ASSERTS
 #if PX_VC
 #define NV_CLOTH_ASSERT(exp) __noop
+#define NV_CLOTH_ASSERT_WITH_MESSAGE(message, exp) __noop
 #else
 #define NV_CLOTH_ASSERT(exp) ((void)0)
+#define NV_CLOTH_ASSERT_WITH_MESSAGE(message, exp) ((void)0)
 #endif
 #else
+#if PX_VC
+#define PX_CODE_ANALYSIS_ASSUME(exp)                                                                                   \
+	__analysis_assume(!!(exp)) // This macro will be used to get rid of analysis warning messages if a NV_CLOTH_ASSERT is used
+																 // to "guard" illegal mem access, for example.
+#else
+#define PX_CODE_ANALYSIS_ASSUME(exp)
+#endif
 #define NV_CLOTH_ASSERT(exp)                                                                                           \
 	{                                                                                                                  \
 		static bool _ignore = false;                                                                                   \
-		(static_cast<void>((!!(exp)) || (!_ignore && ((*nv::cloth::GetNvClothAssertHandler())(#exp, __FILE__, __LINE__, _ignore), false))));    \
+		((void)((!!(exp)) || (!_ignore && ((*nv::cloth::GetNvClothAssertHandler())(#exp, __FILE__, __LINE__, _ignore), false))));    \
 		PX_CODE_ANALYSIS_ASSUME(exp);                                                                                  \
+	}
+#define NV_CLOTH_ASSERT_WITH_MESSAGE(message, exp)                                                                             \
+	{                                                                                                                    \
+		static bool _ignore = false;                                                                                     \
+		((void)((!!(exp)) || (!_ignore && ((*nv::cloth::GetNvClothAssertHandler())(message, __FILE__, __LINE__, _ignore), false)))); \
+		PX_CODE_ANALYSIS_ASSUME(exp);                                                                                    \
 	}
 #endif
 

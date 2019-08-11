@@ -34,9 +34,9 @@
 #include <foundation/PxVec3.h>
 #include <foundation/PxMat44.h>
 #include <foundation/PxMat33.h>
-#include <PsMathUtils.h>
 #include "Vec4T.h"
 #include <algorithm>
+#include "NvCloth/ps/PsMathUtils.h"
 
 namespace nv
 {
@@ -72,21 +72,21 @@ inline physx::PxQuat exp(const physx::PxVec3& v)
 	return physx::PxQuat(v.x * scale, v.y * scale, v.z * scale, physx::PxCos(theta));
 }
 
-template <typename Simd4f, uint32_t N>
-inline void assign(Simd4f (&columns)[N], const physx::PxMat44& matrix)
+template <typename T4f, uint32_t N>
+inline void assign(T4f (&columns)[N], const physx::PxMat44& matrix)
 {
 	for (uint32_t i = 0; i < N; ++i)
 		columns[i] = load(nv::cloth::array(matrix[i]));
 }
 
-template <typename Simd4f>
-inline Simd4f transform(const Simd4f (&columns)[3], const Simd4f& vec)
+template <typename T4f>
+inline T4f transform(const T4f (&columns)[3], const T4f& vec)
 {
 	return splat<0>(vec) * columns[0] + splat<1>(vec) * columns[1] + splat<2>(vec) * columns[2];
 }
 
-template <typename Simd4f>
-inline Simd4f transform(const Simd4f (&columns)[3], const Simd4f& translate, const Simd4f& vec)
+template <typename T4f>
+inline T4f transform(const T4f (&columns)[3], const T4f& translate, const T4f& vec)
 {
 	return translate + splat<0>(vec) * columns[0] + splat<1>(vec) * columns[1] + splat<2>(vec) * columns[2];
 }
@@ -99,17 +99,17 @@ struct IterationStateFactory
 	template <typename MyCloth>
 	IterationStateFactory(MyCloth& cloth, float frameDt);
 
-	template <typename Simd4f, typename MyCloth>
-	IterationState<Simd4f> create(MyCloth const& cloth) const;
+	template <typename T4f, typename MyCloth>
+	IterationState<T4f> create(MyCloth const& cloth) const;
 
-	template <typename Simd4f>
-	static Simd4f lengthSqr(Simd4f const& v)
+	template <typename T4f>
+	static T4f lengthSqr(T4f const& v)
 	{
 		return dot3(v, v);
 	}
 
-	template <typename Simd4f>
-	static physx::PxVec3 castToPxVec3(const Simd4f& v)
+	template <typename T4f>
+	static physx::PxVec3 castToPxVec3(const T4f& v)
 	{
 		return *reinterpret_cast<const physx::PxVec3*>(reinterpret_cast<const char*>(&v));
 	}
@@ -123,7 +123,7 @@ struct IterationStateFactory
 };
 
 /* solver iterations helper functor */
-template <typename Simd4f>
+template <typename T4f>
 struct IterationState
 {
 	// call after each iteration
@@ -133,15 +133,15 @@ struct IterationState
 	inline float getPreviousAlpha() const;
 
   public:
-	Simd4f mRotationMatrix[3]; // should rename to 'mRotation'
+	T4f mRotationMatrix[3]; // should rename to 'mRotation'
 
-	Simd4f mCurBias;  // in local space
-	Simd4f mPrevBias; // in local space
-	Simd4f mWind;     // delta position per iteration
+	T4f mCurBias;  // in local space
+	T4f mPrevBias; // in local space
+	T4f mWind;     // delta position per iteration (wind velocity * mIterDt)
 
-	Simd4f mPrevMatrix[3];
-	Simd4f mCurMatrix[3];
-	Simd4f mDampScaleUpdate;
+	T4f mPrevMatrix[3];
+	T4f mCurMatrix[3];
+	T4f mDampScaleUpdate;
 
 	// iteration counter
 	uint32_t mRemainingIterations;
@@ -157,14 +157,14 @@ struct IterationState
 
 } // namespace cloth
 
-template <typename Simd4f>
-inline float cloth::IterationState<Simd4f>::getCurrentAlpha() const
+template <typename T4f>
+inline float cloth::IterationState<T4f>::getCurrentAlpha() const
 {
 	return getPreviousAlpha() + mInvNumIterations;
 }
 
-template <typename Simd4f>
-inline float cloth::IterationState<Simd4f>::getPreviousAlpha() const
+template <typename T4f>
+inline float cloth::IterationState<T4f>::getPreviousAlpha() const
 {
 	return 1.0f - mRemainingIterations * mInvNumIterations;
 }
@@ -183,11 +183,15 @@ cloth::IterationStateFactory::IterationStateFactory(MyCloth& cloth, float frameD
 	mPrevLinearVelocity = cloth.mLinearVelocity;
 	mPrevAngularVelocity = cloth.mAngularVelocity;
 
-	// update cloth
-	float invFrameDt = 1.0f / frameDt;
-	cloth.mLinearVelocity = invFrameDt * (cloth.mTargetMotion.p - cloth.mCurrentMotion.p);
-	physx::PxQuat dq = cloth.mTargetMotion.q * cloth.mCurrentMotion.q.getConjugate();
-	cloth.mAngularVelocity = log(dq) * invFrameDt;
+	if(!cloth.mIgnoreVelocityDiscontinuityNextFrame)
+	{
+		// update cloth
+		float invFrameDt = 1.0f / frameDt;
+		cloth.mLinearVelocity = invFrameDt * (cloth.mTargetMotion.p - cloth.mCurrentMotion.p);
+		physx::PxQuat dq = cloth.mTargetMotion.q * cloth.mCurrentMotion.q.getConjugate();
+		cloth.mAngularVelocity = log(dq) * invFrameDt;
+	}
+	cloth.mIgnoreVelocityDiscontinuityNextFrame = false;
 
 	cloth.mPrevIterDt = mIterDt;
 	cloth.mIterDtAvg.push(static_cast<uint32_t>(mNumIterations), mIterDt);
@@ -232,36 +236,36 @@ If you change anything in this function, make sure that ClothCustomFloating and
 ClothInertia haven't regressed for any choice of solver frequency.
 */
 
-template <typename Simd4f, typename MyCloth>
-cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const& cloth) const
+template <typename T4f, typename MyCloth>
+cloth::IterationState<T4f> cloth::IterationStateFactory::create(MyCloth const& cloth) const
 {
-	IterationState<Simd4f> result;
+	IterationState<T4f> result;
 
 	result.mRemainingIterations = static_cast<uint32_t>(mNumIterations);
 	result.mInvNumIterations = mInvNumIterations;
 	result.mIterDt = mIterDt;
 
-	Simd4f curLinearVelocity = load(array(cloth.mLinearVelocity));
-	Simd4f prevLinearVelocity = load(array(mPrevLinearVelocity));
+	T4f curLinearVelocity = load(array(cloth.mLinearVelocity));
+	T4f prevLinearVelocity = load(array(mPrevLinearVelocity));
 
-	Simd4f iterDt = simd4f(mIterDt);
-	Simd4f dampExponent = simd4f(cloth.mStiffnessFrequency) * iterDt;
+	T4f iterDt = simd4f(mIterDt);
+	T4f dampExponent = simd4f(cloth.mStiffnessFrequency) * iterDt;
 
-	Simd4f translation = iterDt * curLinearVelocity;
+	T4f translation = iterDt * curLinearVelocity;
 
 	// gravity delta per iteration
-	Simd4f gravity = load(array(cloth.mGravity)) * static_cast<Simd4f>(simd4f(sqr(mIterDtAverage)));
+	T4f gravity = load(array(cloth.mGravity)) * static_cast<T4f>(simd4f(sqr(mIterDtAverage)));
 
 	// scale of local particle velocity per iteration
-	Simd4f dampScale = exp2(load(array(cloth.mLogDamping)) * dampExponent);
+	T4f dampScale = exp2(load(array(cloth.mLogDamping)) * dampExponent);
 	// adjust for the change in time step during the first iteration
-	Simd4f firstDampScale = dampScale * simd4f(mIterDtRatio);
+	T4f firstDampScale = dampScale * simd4f(mIterDtRatio);
 
 	// portion of negative frame velocity to transfer to particle
-	Simd4f linearDrag = (gSimd4fOne - exp2(load(array(cloth.mLinearLogDrag)) * dampExponent)) * translation;
+	T4f linearDrag = (gSimd4fOne - exp2(load(array(cloth.mLinearLogDrag)) * dampExponent)) * translation;
 
 	// portion of frame acceleration to transfer to particle
-	Simd4f linearInertia = load(array(cloth.mLinearInertia)) * iterDt * (prevLinearVelocity - curLinearVelocity);
+	T4f linearInertia = load(array(cloth.mLinearInertia)) * iterDt * (prevLinearVelocity - curLinearVelocity);
 
 	// for inertia, we want to violate newton physics to
 	// match velocity and position as given by the user, which means:
@@ -271,13 +275,13 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 	// specifically, the portion is alpha=(n+1)/2n and 1-alpha.
 
 	float linearAlpha = (mNumIterations + 1) * 0.5f * mInvNumIterations;
-	Simd4f curLinearInertia = linearInertia * simd4f(linearAlpha);
+	T4f curLinearInertia = linearInertia * simd4f(linearAlpha);
 
 	// rotate to local space (use mRotationMatrix temporarily to hold matrix)
 	physx::PxMat44 invRotation = physx::PxMat44(mCurrentRotation.getConjugate());
 	assign(result.mRotationMatrix, invRotation);
 
-	Simd4f maskXYZ = simd4f(simd4i(~0, ~0, ~0, 0));
+	T4f maskXYZ = simd4f(simd4i(~0, ~0, ~0, 0));
 
 	// Previously, we split the bias between previous and current position to
 	// get correct disretized position and velocity. However, this made a
@@ -286,23 +290,23 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 	// timesteps. Instead, we now apply the entire bias to current position
 	// and accept a less noticeable error for a free falling cloth.
 
-	Simd4f bias = gravity - linearDrag;
+	T4f bias = gravity - linearDrag;
 	result.mCurBias = transform(result.mRotationMatrix, curLinearInertia + bias) & maskXYZ;
 	result.mPrevBias = transform(result.mRotationMatrix, linearInertia - curLinearInertia) & maskXYZ;
 
-	Simd4f wind = load(array(cloth.mWind)) * iterDt;
+	T4f wind = load(array(cloth.mWind)) * iterDt; // multiply with delta time here already so we don't have to do it inside the solver
 	result.mWind = transform(result.mRotationMatrix, translation - wind) & maskXYZ;
 
 	result.mIsTurning = mPrevAngularVelocity.magnitudeSquared() + cloth.mAngularVelocity.magnitudeSquared() > 0.0f;
 
 	if (result.mIsTurning)
 	{
-		Simd4f curAngularVelocity = load(array(invRotation.rotate(cloth.mAngularVelocity)));
-		Simd4f prevAngularVelocity = load(array(invRotation.rotate(mPrevAngularVelocity)));
+		T4f curAngularVelocity = load(array(invRotation.rotate(cloth.mAngularVelocity)));
+		T4f prevAngularVelocity = load(array(invRotation.rotate(mPrevAngularVelocity)));
 
 		// rotation for one iteration in local space
-		Simd4f curInvAngle = -iterDt * curAngularVelocity;
-		Simd4f prevInvAngle = -iterDt * prevAngularVelocity;
+		T4f curInvAngle = -iterDt * curAngularVelocity;
+		T4f prevInvAngle = -iterDt * prevAngularVelocity;
 
 		physx::PxQuat curInvRotation = exp(castToPxVec3(curInvAngle));
 		physx::PxQuat prevInvRotation = exp(castToPxVec3(prevInvAngle));
@@ -312,17 +316,17 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 
 		assign(result.mRotationMatrix, curMatrix);
 
-		Simd4f angularDrag = gSimd4fOne - exp2(load(array(cloth.mAngularLogDrag)) * dampExponent);
-		Simd4f centrifugalInertia = load(array(cloth.mCentrifugalInertia));
-		Simd4f angularInertia = load(array(cloth.mAngularInertia));
-		Simd4f angularAcceleration = curAngularVelocity - prevAngularVelocity;
+		T4f angularDrag = gSimd4fOne - exp2(load(array(cloth.mAngularLogDrag)) * dampExponent);
+		T4f centrifugalInertia = load(array(cloth.mCentrifugalInertia));
+		T4f angularInertia = load(array(cloth.mAngularInertia));
+		T4f angularAcceleration = curAngularVelocity - prevAngularVelocity;
 
-		Simd4f epsilon = simd4f(sqrtf(FLT_MIN)); // requirement: sqr(epsilon) > 0
-		Simd4f velocityLengthSqr = lengthSqr(curAngularVelocity) + epsilon;
-		Simd4f dragLengthSqr = lengthSqr(Simd4f(curAngularVelocity * angularDrag)) + epsilon;
-		Simd4f centrifugalLengthSqr = lengthSqr(Simd4f(curAngularVelocity * centrifugalInertia)) + epsilon;
-		Simd4f accelerationLengthSqr = lengthSqr(angularAcceleration) + epsilon;
-		Simd4f inertiaLengthSqr = lengthSqr(Simd4f(angularAcceleration * angularInertia)) + epsilon;
+		T4f epsilon = simd4f(sqrtf(FLT_MIN)); // requirement: sqr(epsilon) > 0
+		T4f velocityLengthSqr = lengthSqr(curAngularVelocity) + epsilon;
+		T4f dragLengthSqr = lengthSqr(T4f(curAngularVelocity * angularDrag)) + epsilon;
+		T4f centrifugalLengthSqr = lengthSqr(T4f(curAngularVelocity * centrifugalInertia)) + epsilon;
+		T4f accelerationLengthSqr = lengthSqr(angularAcceleration) + epsilon;
+		T4f inertiaLengthSqr = lengthSqr(T4f(angularAcceleration * angularInertia)) + epsilon;
 
 		float dragScale = array(rsqrt(velocityLengthSqr * dragLengthSqr) * dragLengthSqr)[0];
 		float inertiaScale =
@@ -337,11 +341,11 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 		    inertiaScale;
 
 		// slightly better in ClothCustomFloating than curInvAngle alone
-		Simd4f centrifugalVelocity = (prevInvAngle + curInvAngle) * simd4f(0.5f);
-		const Simd4f data = lengthSqr(centrifugalVelocity);
+		T4f centrifugalVelocity = (prevInvAngle + curInvAngle) * simd4f(0.5f);
+		const T4f data = lengthSqr(centrifugalVelocity);
 		float centrifugalSqrLength = array(data)[0] * centrifugalScale;
 
-		Simd4f coriolisVelocity = centrifugalVelocity * simd4f(centrifugalScale);
+		T4f coriolisVelocity = centrifugalVelocity * simd4f(centrifugalScale);
 		physx::PxMat33 coriolisMatrix = physx::shdfnd::star(castToPxVec3(coriolisVelocity));
 
 		const float* dampScalePtr = array(firstDampScale);
@@ -369,7 +373,7 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 	}
 	else
 	{
-		Simd4f minusOne = -static_cast<Simd4f>(gSimd4fOne);
+		T4f minusOne = -static_cast<T4f>(gSimd4fOne);
 		result.mRotationMatrix[0] = minusOne;
 		result.mPrevMatrix[0] = select(maskXYZ, firstDampScale, minusOne);
 	}
@@ -380,8 +384,8 @@ cloth::IterationState<Simd4f> cloth::IterationStateFactory::create(MyCloth const
 	return result;
 }
 
-template <typename Simd4f>
-void cloth::IterationState<Simd4f>::update()
+template <typename T4f>
+void cloth::IterationState<T4f>::update()
 {
 	if (mIsTurning)
 	{

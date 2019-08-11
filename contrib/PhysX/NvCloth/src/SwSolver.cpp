@@ -36,8 +36,8 @@
 #include "SwClothData.h"
 #include "SwSolverKernel.h"
 #include "SwInterCollision.h"
-#include <PsFPU.h>
-#include <PsSort.h>
+#include "ps/PsFPU.h"
+#include "ps/PsSort.h"
 
 using namespace physx;
 
@@ -50,7 +50,7 @@ bool neonSolverKernel(SwCloth const&, SwClothData&, SwKernelAllocator&, Iteratio
 }
 
 using namespace nv;
-
+using namespace cloth;
 #if NV_SIMD_SIMD
 typedef Simd4f Simd4fType;
 #else
@@ -93,27 +93,60 @@ void sortTasks(shdfnd::Array<T, cloth::NonTrackingAllocator>& tasks)
 
 void cloth::SwSolver::addCloth(Cloth* cloth)
 {
-	SwCloth& swCloth = static_cast<SwClothImpl&>(*cloth).mCloth;
+	addClothAppend(cloth);
+	sortTasks(mSimulatedCloths);
+}
 
-	mSimulatedCloths.pushBack(SimulatedCloth(swCloth, this));
+void cloth::SwSolver::addCloths(Range<Cloth*> cloths)
+{
+	for (uint32_t i = 0; i < cloths.size(); ++i)
+	{
+		addClothAppend(*(cloths.begin() + i));
+	}
 	sortTasks(mSimulatedCloths);
 }
 
 void cloth::SwSolver::removeCloth(Cloth* cloth)
 {
-	SwCloth& swCloth = static_cast<SwClothImpl&>(*cloth).mCloth;
+	SwCloth& swCloth = *static_cast<SwCloth*>(cloth);
 
-	Vector<SimulatedCloth>::Type::Iterator tIt = mSimulatedCloths.begin();
-	Vector<SimulatedCloth>::Type::Iterator tEnd = mSimulatedCloths.end();
-	while (tIt != tEnd && tIt->mCloth != &swCloth)
-		++tIt;
-
-	if (tIt != tEnd)
+	//Remove from mSimulatedCloths
 	{
-		NV_CLOTH_FREE(tIt->mScratchMemory);
-		mSimulatedCloths.replaceWithLast(tIt);
-		sortTasks(mSimulatedCloths);
+		Vector<SimulatedCloth>::Type::Iterator tIt = mSimulatedCloths.begin();
+		Vector<SimulatedCloth>::Type::Iterator tEnd = mSimulatedCloths.end();
+		while(tIt != tEnd && tIt->mCloth != &swCloth)
+			++tIt;
+
+		if(tIt != tEnd)
+		{
+			NV_CLOTH_FREE(tIt->mScratchMemory);
+			mSimulatedCloths.replaceWithLast(tIt);
+			sortTasks(mSimulatedCloths);
+		}
 	}
+
+	//Remove from mCloths
+	{
+		ClothVector::Iterator tEnd = mCloths.end();
+		ClothVector::Iterator it = mCloths.find(&swCloth);
+
+		if(it != tEnd)
+		{
+			mCloths.replaceWithLast(it);
+		}
+	}
+}
+
+int cloth::SwSolver::getNumCloths() const
+{
+	return mCloths.size();
+}
+cloth::Cloth * const * cloth::SwSolver::getClothList() const
+{
+	if(getNumCloths())
+		return reinterpret_cast<Cloth* const*>(&mCloths[0]);
+	else
+		return nullptr;
 }
 
 bool cloth::SwSolver::beginSimulation(float dt)
@@ -193,6 +226,16 @@ void cloth::SwSolver::interCollision()
 	collider();
 }
 
+void cloth::SwSolver::addClothAppend(Cloth* cloth)
+{
+	SwCloth& swCloth = *static_cast<SwCloth*>(cloth);
+	NV_CLOTH_ASSERT(mCloths.find(&swCloth) == mCloths.end());
+
+	mSimulatedCloths.pushBack(SimulatedCloth(swCloth, this));
+
+	mCloths.pushBack(&swCloth);
+}
+
 void cloth::SwSolver::beginFrame() const
 {
 	mSimulateProfileEventData = NV_CLOTH_PROFILE_START_CROSSTHREAD("cloth::SwSolver::simulate", 0);
@@ -259,9 +302,14 @@ void cloth::SwSolver::SimulatedCloth::Simulate()
 
 	// construct kernel functor and execute
 #if NV_ANDROID
-	// if (!neonSolverKernel(cloth, data, allocator, factory))
-#endif
+	if (!neonSolverKernel(*mCloth, data, allocator, factory))
+	{
+		//NV_CLOTH_LOG_WARNING("No NEON CPU support detected. Falling back to scalar types.");
+		SwSolverKernel<Scalar4f>(*mCloth, data, allocator, factory)();
+	}
+#else
 	SwSolverKernel<Simd4fType>(*mCloth, data, allocator, factory)();
+#endif
 
 	data.reconcile(*mCloth); // update cloth
 }

@@ -849,10 +849,17 @@ __device__ float3 cross3(const float3& u, const float3& v)
 __device__ void applyImpulse(SharedParticleData::ParticleReferenceType pos, const float3& impulse)
 {
 	float scale = -pos.mReferences[3];
-	//Use this instead of atomicAdd function to work around compiler issue treating the pointer as global memory instead of shared memory
-	asm("red.shared.add.f32 [%0], %1;" :: POINTER_CONSTRAINT(pos.mReferences[0].mPtr), "f"(impulse.x * scale));
-	asm("red.shared.add.f32 [%0], %1;" :: POINTER_CONSTRAINT(pos.mReferences[1].mPtr), "f"(impulse.y * scale));
-	asm("red.shared.add.f32 [%0], %1;" :: POINTER_CONSTRAINT(pos.mReferences[2].mPtr), "f"(impulse.z * scale));
+
+#if CONVERT_ADDRESSES
+	// Use this instead of atomicAdd function to work around compiler issue treating the pointer as global memory instead of shared memory
+	asm("red.shared.add.f32 [%0], %1;" ::POINTER_CONSTRAINT(pos.mReferences[0].mPtr), "f"(impulse.x * scale));
+	asm("red.shared.add.f32 [%0], %1;" ::POINTER_CONSTRAINT(pos.mReferences[1].mPtr), "f"(impulse.y * scale));
+	asm("red.shared.add.f32 [%0], %1;" ::POINTER_CONSTRAINT(pos.mReferences[2].mPtr), "f"(impulse.z * scale));
+#else
+	atomicAdd(pos.mReferences[0].mPtr, impulse.x * scale);
+	atomicAdd(pos.mReferences[1].mPtr, impulse.y * scale);
+	atomicAdd(pos.mReferences[2].mPtr, impulse.z * scale);
+#endif	
 }
 __device__ void applyImpulse(GlobalParticleData::ParticleReferenceType pos, const float3& impulse)
 {
@@ -867,6 +874,8 @@ __device__ void applyWind(CurrentT& current, PreviousT& previous)
 {
 	const float dragCoefficient = gFrameData.mDragCoefficient;
 	const float liftCoefficient = gFrameData.mLiftCoefficient;
+	const float fluidDensity = gFrameData.mFluidDensity;
+	const float itrDt = gFrameData.mIterDt;
 
 	if (dragCoefficient == 0.0f && liftCoefficient == 0.0f)
 		return;
@@ -912,20 +921,22 @@ __device__ void applyWind(CurrentT& current, PreviousT& previous)
 
 		float3 normal = cross3(c2 - c0, c1 - c0);
 
-		float doubleArea = sqrtf(dot3(normal, normal));
+		const float doubleArea = sqrtf(dot3(normal, normal));
+		normal = (1.0f / doubleArea) * normal;
 
 		float invSqrScale = dot3(delta, delta);
 		float scale = rsqrtf(invSqrScale);
+		float deltaLength = sqrtf(invSqrScale);
 
-		float cosTheta = dot3(normal, delta) * scale / doubleArea;
+		float cosTheta = dot3(normal, delta) * scale;
 		float sinTheta = sqrtf(max(0.0f, 1.0f - cosTheta * cosTheta));
 
 		float3 liftDir = cross3(cross3(delta, normal), scale * delta);
 
-		float3 lift = liftCoefficient * cosTheta * sinTheta * liftDir;
-		float3 drag = dragCoefficient * abs(cosTheta) * doubleArea * delta;
+		float3 lift = liftCoefficient * cosTheta * sinTheta * ((deltaLength / itrDt) * liftDir);
+		float3 drag = dragCoefficient * abs(cosTheta) * ((deltaLength / itrDt) * delta);
 
-		float3 impulse = invSqrScale < FLT_EPSILON ? make_float3(0.0f, 0.0f, 0.0f) : lift + drag;
+		float3 impulse = invSqrScale < FLT_EPSILON ? make_float3(0.0f, 0.0f, 0.0f) : fluidDensity * doubleArea * (lift + drag);
 
 		applyImpulse(current(i0), impulse);
 		applyImpulse(current(i1), impulse);
@@ -1382,6 +1393,7 @@ __launch_bounds__(512, 1)
 	int32_t configDataSize = gClothData.mNumPhases * gCuPhaseConfigSize;
 	for (int32_t i = threadIdx.x; i < configDataSize; i += blockDim.x)
 		gSharedUnsigned[i] = reinterpret_cast<const uint32_t*>(gClothData.mPhaseConfigs)[i];
+
 
 	Pointer<Shared, uint32_t> scratchPtr = Pointer<Shared, uint32_t>(
 	    gSharedUnsigned + configDataSize + 4 * gFrameData.mNumSharedPositions * gClothData.mNumParticles);

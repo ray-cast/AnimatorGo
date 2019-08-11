@@ -92,6 +92,7 @@ struct SwClothData
 	uint32_t mNumTriangles;
 	float mDragCoefficient;
 	float mLiftCoefficient;
+	float mFluidDensity;
 
 	// motion constraint data
 	const float* mStartMotionConstraints;

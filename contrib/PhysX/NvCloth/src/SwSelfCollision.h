@@ -43,10 +43,10 @@ struct SwClothData;
 
 typedef StackAllocator<16> SwKernelAllocator;
 
-template <typename Simd4f>
+template <typename T4f>
 class SwSelfCollision
 {
-	typedef typename Simd4fToSimd4i<Simd4f>::Type Simd4i;
+	typedef typename Simd4fToSimd4i<T4f>::Type Simd4i;
 
   public:
 	SwSelfCollision(SwClothData& clothData, SwKernelAllocator& alloc);
@@ -61,14 +61,14 @@ class SwSelfCollision
 	static size_t getBufferSize(uint32_t);
 
 	template <bool useRestParticles>
-	void collideParticles(Simd4f&, Simd4f&, const Simd4f&, const Simd4f&);
+	void collideParticles(T4f&, T4f&, const T4f&, const T4f&);
 
 	template <bool useRestParticles>
 	void collideParticles(const uint32_t*, uint16_t, const uint16_t*, uint32_t);
 
-	Simd4f mCollisionDistance;
-	Simd4f mCollisionSquareDistance;
-	Simd4f mStiffness;
+	T4f mCollisionDistance;
+	T4f mCollisionSquareDistance;
+	T4f mStiffness;
 
 	SwClothData& mClothData;
 	SwKernelAllocator& mAllocator;
@@ -77,6 +77,15 @@ class SwSelfCollision
 	mutable uint32_t mNumTests;
 	mutable uint32_t mNumCollisions;
 };
+
+//explicit template instantiation declaration
+#if NV_SIMD_SIMD
+extern template class SwSelfCollision<Simd4f>;
+#endif
+#if NV_SIMD_SCALAR
+extern template class SwSelfCollision<Scalar4f>;
+#endif
+
 
 } // namespace cloth
 

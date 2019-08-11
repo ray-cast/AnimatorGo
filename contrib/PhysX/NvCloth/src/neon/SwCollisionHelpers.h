@@ -33,7 +33,7 @@
 #include <arm_neon.h>
 #endif
 
-namespace physx
+namespace nv
 {
 namespace cloth
 {
@@ -84,4 +84,4 @@ Simd4i Gather<Simd4i>::operator()(const Simd4i* ptr) const
 }
 
 } // namespace cloth
-} // namespace physx
+} // namespace nv

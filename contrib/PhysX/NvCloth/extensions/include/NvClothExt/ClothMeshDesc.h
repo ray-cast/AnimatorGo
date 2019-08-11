@@ -159,7 +159,7 @@ public:
 	PX_INLINE bool isValid() const;
 };
 
-PX_INLINE ClothMeshDesc::ClothMeshDesc()	//constructor sets to default
+PX_INLINE ClothMeshDesc::ClothMeshDesc()
 {
 	flags = 0;
 }
@@ -171,20 +171,20 @@ PX_INLINE void ClothMeshDesc::setToDefault()
 
 PX_INLINE bool ClothMeshDesc::isValid() const
 {
-	if(points.count < 3) 	//at least 1 trig's worth of points
+	if (points.count < 3) 	// at least 1 triangle
 		return false;
-	if((pointsStiffness.count != points.count) && pointsStiffness.count != 0)
-		return false; //Either all or none of the points can have stiffness information
-	if(points.count > 0xffff && flags & MeshFlag::e16_BIT_INDICES)
+	if ((pointsStiffness.count != points.count) && pointsStiffness.count != 0)
+		return false; // either all or none of the points can have stiffness information
+	if (points.count > 0xffff && flags & MeshFlag::e16_BIT_INDICES)
 		return false;
-	if(!points.data)
+	if (!points.data)
 		return false;
-	if(points.stride < sizeof(physx::PxVec3))	//should be at least one point's worth of data
+	if (points.stride < sizeof(physx::PxVec3))	// should be at least one point
 		return false;
 
-	if(invMasses.data && invMasses.stride < sizeof(float))
+	if (invMasses.data && invMasses.stride < sizeof(float))
 		return false;
-	if(invMasses.data && invMasses.count != points.count)
+	if (invMasses.data && invMasses.count != points.count)
 		return false;
 
 	if (!triangles.count && !quads.count)	// no support for non-indexed mesh
@@ -195,9 +195,9 @@ PX_INLINE bool ClothMeshDesc::isValid() const
 		return false;
 
 	physx::PxU32 indexSize = (flags & MeshFlag::e16_BIT_INDICES) ? sizeof(physx::PxU16) : sizeof(physx::PxU32);
-	if(triangles.count && triangles.stride < indexSize*3) 
+	if (triangles.count && triangles.stride < indexSize*3) 
 		return false; 
-	if(quads.count && quads.stride < indexSize*4)
+	if (quads.count && quads.stride < indexSize*4)
 		return false;
 
 	return true;

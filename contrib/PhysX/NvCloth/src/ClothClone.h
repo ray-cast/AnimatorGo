@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include "../SwFactory.h"
-#include "../SwFabric.h"
-#include "../SwCloth.h"
+#include "SwFactory.h"
+#include "SwFabric.h"
+#include "SwCloth.h"
 
-#include "../ClothImpl.h"
-#include "../ClothBase.h"
+#include "ClothImpl.h"
+#include "ClothBase.h"
 #include "NvCloth/Allocator.h"
 
 namespace nv
@@ -125,92 +125,88 @@ inline Range<const uint32_t> getSelfCollisionIndices(const SwCloth& cloth)
 }
 
 // cloth conversion
-template <typename DstFactoryType, typename SrcImplType>
-typename DstFactoryType::ImplType* convertCloth(DstFactoryType& dstFactory, const SrcImplType& srcImpl)
+template <typename DstFactoryType, typename SrcClothType>
+typename DstFactoryType::ClothType* convertCloth(DstFactoryType& dstFactory, const SrcClothType& srcCloth)
 {
 	typedef typename DstFactoryType::FabricType DstFabricType;
-	typedef typename DstFactoryType::ImplType DstImplType;
-	typedef typename DstImplType::ClothType DstClothType;
-	typedef typename SrcImplType::ClothType SrcClothType;
+	typedef typename DstFactoryType::ClothType DstClothType;
 
-	const SrcClothType& srcCloth = srcImpl.mCloth;
 	const Factory& srcFactory = srcCloth.mFactory;
 
 	typename DstClothType::ContextLockType dstLock(dstFactory);
 	typename SrcClothType::ContextLockType srcLock(srcCloth.mFactory);
 
 	// particles
-	MappedRange<const physx::PxVec4> curParticles = srcImpl.getCurrentParticles();
+	MappedRange<const physx::PxVec4> curParticles = srcCloth.getCurrentParticles();
 
 	// fabric
 	DstFabricType& dstFabric = *convertFabric(srcCloth.mFabric, dstFactory);
 
 	// create new cloth
-	DstImplType* dstImpl = static_cast<DstImplType*>(dstFactory.createCloth(curParticles, dstFabric));
-	DstClothType& dstCloth = dstImpl->mCloth;
+	DstClothType* dstCloth = static_cast<DstClothType*>(dstFactory.createCloth(curParticles, dstFabric));
 	dstFabric.decRefCount();
 
 	// copy across common parameters
-	copy(dstCloth, srcCloth);
+	copy(*dstCloth, srcCloth);
 
 	// copy across previous particles
-	MappedRange<const physx::PxVec4> prevParticles = srcImpl.getPreviousParticles();
-	memcpy(dstImpl->getPreviousParticles().begin(), prevParticles.begin(), prevParticles.size() * sizeof(physx::PxVec4));
+	MappedRange<const physx::PxVec4> prevParticles = srcCloth.getPreviousParticles();
+	memcpy(dstCloth->getPreviousParticles().begin(), prevParticles.begin(), prevParticles.size() * sizeof(physx::PxVec4));
 
 	// copy across transformed phase configs
-	setPhaseConfigs(dstCloth, getPhaseConfigs(srcCloth));
+	setPhaseConfigs(*dstCloth, getPhaseConfigs(srcCloth));
 
 	// collision data
-	Vector<physx::PxVec4>::Type spheres(srcImpl.getNumSpheres(), physx::PxVec4(0.0f));
+	Vector<physx::PxVec4>::Type spheres(srcCloth.getNumSpheres(), physx::PxVec4(0.0f));
 	physx::PxVec4* spherePtr = spheres.empty() ? 0 : &spheres.front();
 	Range<physx::PxVec4> sphereRange(spherePtr, spherePtr + spheres.size());
-	Vector<uint32_t>::Type capsules(srcImpl.getNumCapsules() * 2);
+	Vector<uint32_t>::Type capsules(srcCloth.getNumCapsules() * 2);
 	Range<uint32_t> capsuleRange = makeRange(capsules);
-	Vector<physx::PxVec4>::Type planes(srcImpl.getNumPlanes(), physx::PxVec4(0.0f));
+	Vector<physx::PxVec4>::Type planes(srcCloth.getNumPlanes(), physx::PxVec4(0.0f));
 	physx::PxVec4* planePtr = planes.empty() ? 0 : &planes.front();
 	Range<physx::PxVec4> planeRange(planePtr, planePtr + planes.size());
-	Vector<uint32_t>::Type convexes(srcImpl.getNumConvexes());
+	Vector<uint32_t>::Type convexes(srcCloth.getNumConvexes());
 	Range<uint32_t> convexRange = makeRange(convexes);
-	Vector<physx::PxVec3>::Type triangles(srcImpl.getNumTriangles() * 3, physx::PxVec3(0.0f));
+	Vector<physx::PxVec3>::Type triangles(srcCloth.getNumTriangles() * 3, physx::PxVec3(0.0f));
 	physx::PxVec3* trianglePtr = triangles.empty() ? 0 : &triangles.front();
 	Range<physx::PxVec3> triangleRange(trianglePtr, trianglePtr + triangles.size());
 
-	srcFactory.extractCollisionData(srcImpl, sphereRange, capsuleRange, planeRange, convexRange, triangleRange);
-	dstImpl->setSpheres(sphereRange, 0, 0);
-	dstImpl->setCapsules(capsuleRange, 0, 0);
-	dstImpl->setPlanes(planeRange, 0, 0);
-	dstImpl->setConvexes(convexRange, 0, 0);
-	dstImpl->setTriangles(triangleRange, 0, 0);
+	srcFactory.extractCollisionData(srcCloth, sphereRange, capsuleRange, planeRange, convexRange, triangleRange);
+	dstCloth->setSpheres(sphereRange, 0, 0);
+	dstCloth->setCapsules(capsuleRange, 0, 0);
+	dstCloth->setPlanes(planeRange, 0, 0);
+	dstCloth->setConvexes(convexRange, 0, 0);
+	dstCloth->setTriangles(triangleRange, 0, 0);
 
 	// motion constraints, copy directly into new cloth buffer
-	if (srcImpl.getNumMotionConstraints())
-		srcFactory.extractMotionConstraints(srcImpl, dstImpl->getMotionConstraints());
+	if (srcCloth.getNumMotionConstraints())
+		srcFactory.extractMotionConstraints(srcCloth, dstCloth->getMotionConstraints());
 
 	// separation constraints, copy directly into new cloth buffer
-	if (srcImpl.getNumSeparationConstraints())
-		srcFactory.extractSeparationConstraints(srcImpl, dstImpl->getSeparationConstraints());
+	if (srcCloth.getNumSeparationConstraints())
+		srcFactory.extractSeparationConstraints(srcCloth, dstCloth->getSeparationConstraints());
 
 	// particle accelerations
-	if (srcImpl.getNumParticleAccelerations())
+	if (srcCloth.getNumParticleAccelerations())
 	{
 		Range<const physx::PxVec4> accelerations = getParticleAccelerations(srcCloth);
-		memcpy(dstImpl->getParticleAccelerations().begin(), accelerations.begin(),
+		memcpy(dstCloth->getParticleAccelerations().begin(), accelerations.begin(),
 		          accelerations.size() * sizeof(physx::PxVec4));
 	}
 
 	// self-collision indices
-	dstImpl->setSelfCollisionIndices(getSelfCollisionIndices(srcCloth));
+	dstCloth->setSelfCollisionIndices(getSelfCollisionIndices(srcCloth));
 
 	// rest positions
-	Vector<physx::PxVec4>::Type restPositions(srcImpl.getNumRestPositions());
-	srcFactory.extractRestPositions(srcImpl, makeRange(restPositions));
-	dstImpl->setRestPositions(makeRange(restPositions));
+	Vector<physx::PxVec4>::Type restPositions(srcCloth.getNumRestPositions());
+	srcFactory.extractRestPositions(srcCloth, makeRange(restPositions));
+	dstCloth->setRestPositions(makeRange(restPositions));
 
 	// virtual particles
-	if (srcImpl.getNumVirtualParticles())
+	if (srcCloth.getNumVirtualParticles())
 	{
-		Vector<Vec4u>::Type indices(srcImpl.getNumVirtualParticles());
-		Vector<physx::PxVec3>::Type weights(srcImpl.getNumVirtualParticleWeights(), physx::PxVec3(0.0f));
+		Vector<Vec4u>::Type indices(srcCloth.getNumVirtualParticles());
+		Vector<physx::PxVec3>::Type weights(srcCloth.getNumVirtualParticleWeights(), physx::PxVec3(0.0f));
 
 		uint32_t(*indicesPtr)[4] = indices.empty() ? 0 : &array(indices.front());
 		Range<uint32_t[4]> indicesRange(indicesPtr, indicesPtr + indices.size());
@@ -218,12 +214,12 @@ typename DstFactoryType::ImplType* convertCloth(DstFactoryType& dstFactory, cons
 		physx::PxVec3* weightsPtr = weights.empty() ? 0 : &weights.front();
 		Range<physx::PxVec3> weightsRange(weightsPtr, weightsPtr + weights.size());
 
-		srcFactory.extractVirtualParticles(srcImpl, indicesRange, weightsRange);
+		srcFactory.extractVirtualParticles(srcCloth, indicesRange, weightsRange);
 
-		dstImpl->setVirtualParticles(indicesRange, weightsRange);
+		dstCloth->setVirtualParticles(indicesRange, weightsRange);
 	}
 
-	return dstImpl;
+	return dstCloth;
 }
 
 } // namespace cloth

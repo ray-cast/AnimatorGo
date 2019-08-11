@@ -310,6 +310,7 @@ __device__ void CuCollision::buildSphereAcceleration(const CollisionData& data)
 {
 	if (threadIdx.x >= 192)
 		return;
+	unsigned int mask = __ballot_sync(0xffffffff, !(threadIdx.x >= 192));
 
 	int32_t sphereIdx = threadIdx.x & 31;
 	int32_t axisIdx = threadIdx.x >> 6;             // coordinate index (x, y, or z)
@@ -325,7 +326,7 @@ __device__ void CuCollision::buildSphereAcceleration(const CollisionData& data)
 	Pointer<Shared, uint32_t> dst = mShapeGrid + sGridSize * axisIdx;
 	// #pragma unroll
 	for (int32_t i = 0; i < sGridSize; ++i, ++index)
-		dst[i] |= __ballot(int32_t(index) <= 0);
+		dst[i] |= __ballot_sync(mask, int32_t(index) <= 0);
 }
 
 // generate cone masks from sphere masks
@@ -333,7 +334,7 @@ __device__ void CuCollision::buildConeAcceleration()
 {
 	if (threadIdx.x >= 192)
 		return;
-
+	unsigned int mask = __ballot_sync(0xffffffff, !(threadIdx.x >= 192));
 	int32_t coneIdx = threadIdx.x & 31;
 
 	uint32_t sphereMask =
@@ -345,7 +346,7 @@ __device__ void CuCollision::buildConeAcceleration()
 
 	// #pragma unroll
 	for (int32_t i = 0; i < sGridSize; ++i)
-		dst[i] |= __ballot(src[i] & sphereMask);
+		dst[i] |= __ballot_sync(mask,src[i] & sphereMask);
 }
 
 // convert right/left mask arrays into single overlap array
@@ -366,17 +367,17 @@ __device__ void CuCollision::mergeAcceleration()
 namespace
 {
 #if __CUDA_ARCH__ >= 300
-__device__ float mergeBounds(Pointer<Shared, float> buffer)
+__device__ float mergeBounds(unsigned int mask, Pointer<Shared, float> buffer)
 {
 	float value = *buffer;
-	value = max(value, __shfl_down(value, 1));
-	value = max(value, __shfl_down(value, 2));
-	value = max(value, __shfl_down(value, 4));
-	value = max(value, __shfl_down(value, 8));
-	return max(value, __shfl_down(value, 16));
+	value = max(value, __shfl_down_sync(mask, value, 1));
+	value = max(value, __shfl_down_sync(mask, value, 2));
+	value = max(value, __shfl_down_sync(mask, value, 4));
+	value = max(value, __shfl_down_sync(mask, value, 8));
+	return max(value, __shfl_down_sync(mask, value, 16));
 }
 #else
-__device__ float mergeBounds(Pointer<Shared, float> buffer)
+__device__ float mergeBounds(unsigned int mask, Pointer<Shared, float> buffer)
 {
 	// ensure that writes to buffer are visible to all threads
 	__threadfence_block();
@@ -393,6 +394,7 @@ __device__ float mergeBounds(Pointer<Shared, float> buffer)
 __device__ float computeSphereBounds(const CuCollision::CollisionData& data, Pointer<Shared, float> buffer)
 {
 	assert(threadIdx.x < 192);
+	unsigned int mask = __ballot_sync(0xffffffff, threadIdx.x < 192);
 
 	int32_t sphereIdx = min(threadIdx.x & 31, gClothData.mNumSpheres - 1); // sphere index
 	int32_t axisIdx = threadIdx.x >> 6;                                    // coordinate index (x, y, or z)
@@ -401,7 +403,7 @@ __device__ float computeSphereBounds(const CuCollision::CollisionData& data, Poi
 
 	*buffer = data.mSphereW[sphereIdx] + signf * data.mSphereX[sphereIdx + gClothData.mNumSpheres * axisIdx];
 
-	return mergeBounds(buffer);
+	return mergeBounds(mask, buffer);
 }
 
 #if __CUDA_ARCH__ >= 300
@@ -415,6 +417,7 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 
 	if (threadIdxInAxis < numThreadsPerAxis)
 	{
+		unsigned int mask = __ballot_sync(0xffffffff, threadIdxInAxis < numThreadsPerAxis);
 		typename CurrentT::ConstPointerType posIt = current[axis];
 		int32_t i = min(threadIdxInAxis, gClothData.mNumParticles - 1);
 		float minX = posIt[i], maxX = minX;
@@ -425,16 +428,16 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 			maxX = max(maxX, posX);
 		}
 
-		minX = min(minX, __shfl_down(minX, 1));
-		maxX = max(maxX, __shfl_down(maxX, 1));
-		minX = min(minX, __shfl_down(minX, 2));
-		maxX = max(maxX, __shfl_down(maxX, 2));
-		minX = min(minX, __shfl_down(minX, 4));
-		maxX = max(maxX, __shfl_down(maxX, 4));
-		minX = min(minX, __shfl_down(minX, 8));
-		maxX = max(maxX, __shfl_down(maxX, 8));
-		minX = min(minX, __shfl_down(minX, 16));
-		maxX = max(maxX, __shfl_down(maxX, 16));
+		minX = min(minX, __shfl_down_sync(mask,minX, 1));
+		maxX = max(maxX, __shfl_down_sync(mask,maxX, 1));
+		minX = min(minX, __shfl_down_sync(mask,minX, 2));
+		maxX = max(maxX, __shfl_down_sync(mask,maxX, 2));
+		minX = min(minX, __shfl_down_sync(mask,minX, 4));
+		maxX = max(maxX, __shfl_down_sync(mask,maxX, 4));
+		minX = min(minX, __shfl_down_sync(mask,minX, 8));
+		maxX = max(maxX, __shfl_down_sync(mask,maxX, 8));
+		minX = min(minX, __shfl_down_sync(mask,minX, 16));
+		maxX = max(maxX, __shfl_down_sync(mask,maxX, 16));
 
 		if (!laneIdx)
 		{
@@ -448,7 +451,7 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 
 	if (threadIdx.x >= 192)
 		return 0.0f;
-
+	unsigned int mask = __ballot_sync(0xffffffff, !(threadIdx.x >= 192));
 	float value = *buffer;
 	if (laneIdx >= (numThreadsPerAxis >> 5))
 		value = -FLT_MAX;
@@ -456,10 +459,10 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 	// blockDim.x <= 3 * 512, increase to 3 * 1024 by adding a shfl by 16
 	assert(numThreadsPerAxis <= 16 * 32);
 
-	value = max(value, __shfl_down(value, 1));
-	value = max(value, __shfl_down(value, 2));
-	value = max(value, __shfl_down(value, 4));
-	return max(value, __shfl_down(value, 8));
+	value = max(value, __shfl_down_sync(mask,value, 1));
+	value = max(value, __shfl_down_sync(mask,value, 2));
+	value = max(value, __shfl_down_sync(mask,value, 4));
+	return max(value,  __shfl_down_sync(mask,value, 8));
 }
 #else
 template <typename CurrentT>
@@ -467,6 +470,7 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 {
 	if (threadIdx.x >= 192)
 		return 0.0f;
+	unsigned int mask = __ballot_sync(0xffffffff, !(threadIdx.x >= 192));
 
 	int32_t axisIdx = threadIdx.x >> 6; // x, y, or z
 	int32_t signi = threadIdx.x << 26;  // sign bit (min or max)
@@ -480,7 +484,7 @@ __device__ float computeParticleBounds(const CurrentT& current, Pointer<Shared, 
 	while (pIt += 32, pIt < pEnd)
 		*buffer = max(*buffer, *pIt * signf);
 
-	return mergeBounds(buffer);
+	return mergeBounds(mask, buffer);
 }
 #endif
 }
@@ -1160,9 +1164,10 @@ __device__ void apply(ParticleDataT& particleData, const int4& indices, const fl
 	posX.y += delta.y * weights.x; posY.y += delta.y * weights.y; posZ.y += delta.y * weights.z;
 	posX.z += delta.z * weights.x; posY.z += delta.z * weights.y; posZ.z += delta.z * weights.z;
 
-	particleData(indices.x) = posX;
-	particleData(indices.y) = posY;
-	particleData(indices.z) = posZ;
+	//if(particle is not static)        store new position
+	if(particleData(indices.x,3)!= 0) particleData(indices.x) = posX;
+	if(particleData(indices.y,3)!= 0) particleData(indices.y) = posY;
+	if(particleData(indices.z,3)!= 0) particleData(indices.z) = posZ;
 }
 #else
 template <typename PointerT>

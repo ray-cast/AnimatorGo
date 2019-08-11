@@ -174,147 +174,117 @@ namespace nv
 namespace cloth
 {
 
-template <>
-Cloth* ClothImpl<SwCloth>::clone(Factory& factory) const
+Cloth* SwCloth::clone(Factory& factory) const
 {
 	return factory.clone(*this);
 }
 
-template <>
-uint32_t ClothImpl<SwCloth>::getNumParticles() const
+uint32_t SwCloth::getNumParticles() const
 {
-	return uint32_t(mCloth.mCurParticles.size());
+	return uint32_t(mCurParticles.size());
 }
 
-template <>
-void ClothImpl<SwCloth>::lockParticles() const
+void SwCloth::lockParticles() const
 {
 }
 
-template <>
-void ClothImpl<SwCloth>::unlockParticles() const
+void SwCloth::unlockParticles() const
 {
 }
 
-template <>
-MappedRange<PxVec4> ClothImpl<SwCloth>::getCurrentParticles()
+MappedRange<physx::PxVec4> SwCloth::getCurrentParticles()
 {
-	return getMappedParticles(&mCloth.mCurParticles.front());
+	return getMappedParticles(&mCurParticles.front());
 }
 
-template <>
-MappedRange<const PxVec4> ClothImpl<SwCloth>::getCurrentParticles() const
+MappedRange<const physx::PxVec4> SwCloth::getCurrentParticles() const
 {
-	return getMappedParticles(&mCloth.mCurParticles.front());
+	return getMappedParticles(&mCurParticles.front());
 }
 
-template <>
-MappedRange<PxVec4> ClothImpl<SwCloth>::getPreviousParticles()
+MappedRange<physx::PxVec4> SwCloth::getPreviousParticles()
 {
-	return getMappedParticles(&mCloth.mPrevParticles.front());
+	return getMappedParticles(&mPrevParticles.front());
 }
 
-template <>
-MappedRange<const PxVec4> ClothImpl<SwCloth>::getPreviousParticles() const
+MappedRange<const physx::PxVec4> SwCloth::getPreviousParticles() const
 {
-	return getMappedParticles(&mCloth.mPrevParticles.front());
+	return getMappedParticles(&mPrevParticles.front());
 }
 
-template <>
-GpuParticles ClothImpl<SwCloth>::getGpuParticles()
+GpuParticles SwCloth::getGpuParticles()
 {
 	GpuParticles result = { 0, 0, 0 };
 	return result;
 }
 
-template <>
-void ClothImpl<SwCloth>::setPhaseConfig(Range<const PhaseConfig> configs)
+void SwCloth::setPhaseConfig(Range<const PhaseConfig> configs)
 {
-	mCloth.mPhaseConfigs.resize(0);
+	mPhaseConfigs.resize(0);
 
 	// transform phase config to use in solver
 	for (; !configs.empty(); configs.popFront())
 		if (configs.front().mStiffness > 0.0f)
-			mCloth.mPhaseConfigs.pushBack(transform(configs.front()));
+			mPhaseConfigs.pushBack(transform(configs.front()));
 
-	mCloth.wakeUp();
+	wakeUp();
 }
 
-template <>
-void ClothImpl<SwCloth>::setSelfCollisionIndices(Range<const uint32_t> indices)
+void SwCloth::setSelfCollisionIndices(Range<const uint32_t> indices)
 {
-	ContextLockType lock(mCloth.mFactory);
-	mCloth.mSelfCollisionIndices.assign(indices.begin(), indices.end());
-	mCloth.notifyChanged();
-	mCloth.wakeUp();
+	ContextLockType lock(mFactory);
+	mSelfCollisionIndices.assign(indices.begin(), indices.end());
+	notifyChanged();
+	wakeUp();
 }
 
-template <>
-uint32_t ClothImpl<SwCloth>::getNumVirtualParticles() const
+uint32_t SwCloth::getNumVirtualParticles() const
 {
-	return uint32_t(mCloth.mNumVirtualParticles);
+	return uint32_t(mNumVirtualParticles);
 }
 
-template <>
-Range<PxVec4> ClothImpl<SwCloth>::getParticleAccelerations()
+Range<PxVec4> SwCloth::getParticleAccelerations()
 {
-	if (mCloth.mParticleAccelerations.empty())
+	if (mParticleAccelerations.empty())
 	{
-		uint32_t n = uint32_t(mCloth.mCurParticles.size());
-		mCloth.mParticleAccelerations.resize(n, PxVec4(0.0f));
+		uint32_t n = uint32_t(mCurParticles.size());
+		mParticleAccelerations.resize(n, PxVec4(0.0f));
 	}
 
-	mCloth.wakeUp();
+	wakeUp();
 
-	PxVec4* data = &mCloth.mParticleAccelerations.front();
-	return Range<PxVec4>(data, data + mCloth.mParticleAccelerations.size());
+	PxVec4* data = &mParticleAccelerations.front();
+	return Range<PxVec4>(data, data + mParticleAccelerations.size());
 }
 
-template <>
-void ClothImpl<SwCloth>::clearParticleAccelerations()
+void SwCloth::clearParticleAccelerations()
 {
-	Vector<PxVec4>::Type().swap(mCloth.mParticleAccelerations);
-	mCloth.wakeUp();
+	Vector<PxVec4>::Type().swap(mParticleAccelerations);
+	wakeUp();
 }
 
-template <>
-void ClothImpl<SwCloth>::setVirtualParticles(Range<const uint32_t[4]> indices, Range<const PxVec3> weights)
+void SwCloth::setVirtualParticles(Range<const uint32_t[4]> indices, Range<const PxVec3> weights)
 {
-	mCloth.mNumVirtualParticles = 0;
+	mNumVirtualParticles = 0;
 
 	// shuffle indices to form independent SIMD sets
-	uint16_t numParticles = uint16_t(mCloth.mCurParticles.size());
-	TripletScheduler scheduler(indices);
+	uint16_t numParticles = uint16_t(mCurParticles.size());
+	TripletScheduler scheduler(indices); //the TripletScheduler makes a copy so indices is not modified
 	scheduler.simd(numParticles, 4);
 
-	// convert indices to byte offset
-	Vec4us dummy(numParticles, uint16_t(numParticles + 1), uint16_t(numParticles + 2), 0);
-	Vector<uint32_t>::Type::ConstIterator sIt = scheduler.mSetSizes.begin();
-	Vector<uint32_t>::Type::ConstIterator sEnd = scheduler.mSetSizes.end();
-	TripletScheduler::ConstTripletIter tIt = scheduler.mTriplets.begin(), tLast;
-	mCloth.mVirtualParticleIndices.resize(0);
-	mCloth.mVirtualParticleIndices.reserve(indices.size() + 3 * uint32_t(sEnd - sIt));
-	for (; sIt != sEnd; ++sIt)
-	{
-		uint32_t setSize = *sIt;
-		for (tLast = tIt + setSize; tIt != tLast; ++tIt, ++mCloth.mNumVirtualParticles)
-			mCloth.mVirtualParticleIndices.pushBack(Vec4us(*tIt));
-		mCloth.mVirtualParticleIndices.resize((mCloth.mVirtualParticleIndices.size() + 3) & ~3, dummy);
-	}
-	Vector<Vec4us>::Type(mCloth.mVirtualParticleIndices.begin(), mCloth.mVirtualParticleIndices.end())
-	    .swap(mCloth.mVirtualParticleIndices);
+	mVirtualParticleIndices.swap(scheduler.mPaddedTriplets);
 
 	// precompute 1/dot(w,w)
-	Vector<PxVec4>::Type().swap(mCloth.mVirtualParticleWeights);
-	mCloth.mVirtualParticleWeights.reserve(weights.size());
+	Vector<PxVec4>::Type().swap(mVirtualParticleWeights); //clear and trim
+	mVirtualParticleWeights.reserve(weights.size());
 	for (; !weights.empty(); weights.popFront())
 	{
 		PxVec3 w = weights.front();
 		float scale = 1 / w.magnitudeSquared();
-		mCloth.mVirtualParticleWeights.pushBack(PxVec4( w.x, w.y, w.z, scale ));
+		mVirtualParticleWeights.pushBack(PxVec4( w.x, w.y, w.z, scale ));
 	}
 
-	mCloth.notifyChanged();
+	notifyChanged();
 }
 
 } // namespace cloth

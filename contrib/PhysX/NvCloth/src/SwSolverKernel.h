@@ -41,7 +41,7 @@ namespace cloth
 class SwCloth;
 struct SwClothData;
 
-template <typename Simd4f>
+template <typename T4f>
 class SwSolverKernel
 {
   public:
@@ -71,14 +71,23 @@ class SwSolverKernel
 	SwClothData& mClothData;
 	SwKernelAllocator& mAllocator;
 
-	SwCollision<Simd4f> mCollision;
-	SwSelfCollision<Simd4f> mSelfCollision;
-	IterationState<Simd4f> mState;
+	SwCollision<T4f> mCollision;
+	SwSelfCollision<T4f> mSelfCollision;
+	IterationState<T4f> mState;
 
   private:
-	SwSolverKernel<Simd4f>& operator = (const SwSolverKernel<Simd4f>&);
+	SwSolverKernel<T4f>& operator = (const SwSolverKernel<T4f>&);
 	template <typename AccelerationIterator>
-	void integrateParticles(AccelerationIterator& accelIt, const Simd4f&);
+	void integrateParticles(AccelerationIterator& accelIt, const T4f&);
 };
+
+//explicit template instantiation declaration
+#if NV_SIMD_SIMD
+extern template class SwSolverKernel<Simd4f>;
+#endif
+#if NV_SIMD_SCALAR
+extern template class SwSolverKernel<Scalar4f>;
+#endif
+
 }
 }

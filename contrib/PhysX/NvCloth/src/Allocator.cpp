@@ -29,7 +29,6 @@
 
 
 #include "NvCloth/Allocator.h"
-#include "PsAllocator.h"
 
 namespace nv
 {

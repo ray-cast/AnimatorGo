@@ -31,7 +31,7 @@
 #include "SwCloth.h"
 #include "SwFabric.h"
 #include <foundation/Px.h>
-#include <PsUtilities.h>
+#include "ps/PsUtilities.h"
 
 using namespace physx;
 using namespace nv;
@@ -73,6 +73,7 @@ cloth::SwClothData::SwClothData(SwCloth& cloth, const SwFabric& fabric)
 
 	mTethers = fabric.mTethers.begin();
 	mNumTethers = uint32_t(fabric.mTethers.size());
+	//1-(1 - stiffness)^stiffnessExponent
 	mTetherConstraintStiffness = 1.0f - expf(stiffnessExponent * cloth.mTetherConstraintLogStiffness);
 	mTetherConstraintScale = cloth.mTetherConstraintScale * fabric.mTetherLengthScale;
 
@@ -80,6 +81,7 @@ cloth::SwClothData::SwClothData(SwCloth& cloth, const SwFabric& fabric)
 	mNumTriangles = uint32_t(fabric.mTriangles.size()) / 3;
 	mDragCoefficient = 1.0f - expf(stiffnessExponent * cloth.mDragLogCoefficient);
 	mLiftCoefficient = 1.0f - expf(stiffnessExponent * cloth.mLiftLogCoefficient);
+	mFluidDensity = cloth.mFluidDensity * 0.5f; //divide by 2 to so we don't have to compensate for double area from cross product in the solver
 
 	mStartMotionConstraints = cloth.mMotionConstraints.mStart.size() ? array(cloth.mMotionConstraints.mStart.front()) : 0;
 	mTargetMotionConstraints =

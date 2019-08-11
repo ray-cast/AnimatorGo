@@ -32,7 +32,7 @@
 #include <foundation/Px.h>
 
 #ifndef __CUDACC__
-#include "simd.h"
+#include "Simd.h"
 #endif
 
 namespace nv
@@ -135,6 +135,7 @@ struct CuFrameData
 	// wind data
 	float mDragCoefficient;
 	float mLiftCoefficient;
+	float mFluidDensity;
 	float mRotation[9];
 
 	// motion constraint data

@@ -194,6 +194,7 @@ public:
 
 	/** \brief Returns the fabric descriptor to create the fabric. */
 	virtual ClothFabricDesc getDescriptor() const = 0;
+
 	/** \brief Saves the fabric data to a platform and version dependent stream. */
 	virtual void save(physx::PxOutputStream& stream, bool platformMismatch) const = 0;
 };

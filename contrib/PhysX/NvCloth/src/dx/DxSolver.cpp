@@ -34,9 +34,8 @@
 #include "DxFactory.h"
 #include "DxContextLock.h"
 #include "../IterationState.h"
-#include <PsSort.h>
+#include "../ps/PsSort.h"
 #include <foundation/PxProfiler.h>
-#include <PsFoundation.h>
 
 #if NV_CLOTH_ENABLE_DX11
 
@@ -114,26 +113,9 @@ struct ClothSimCostGreater
 
 void cloth::DxSolver::addCloth(Cloth* cloth)
 {
-	DxCloth& dxCloth = static_cast<DxClothImpl&>(*cloth).mCloth;
-
-	NV_CLOTH_ASSERT(mCloths.find(&dxCloth) == mCloths.end());
-
-	mCloths.pushBack(&dxCloth);
-	// trigger update of mClothData array
-	dxCloth.notifyChanged();
-
-	// sort cloth instances by size
-	shdfnd::sort(mCloths.begin(), mCloths.size(), ClothSimCostGreater(), NonTrackingAllocator());
-
-	DxContextLock contextLock(mFactory);
-
-	// resize containers and update kernel data
-	mClothDataHostCopy.resize(mCloths.size());
-	mClothData.resize(mCloths.size());
-	mFrameDataHostCopy.resize(mCloths.size());
-
-	// lazy compilation of compute shader
-	mComputeError |= mFactory.mSolverKernelComputeShader == nullptr;
+	addClothAppend(cloth);
+	addClothUpdateData();
+	
 #if 0
 	if (!mSortComputeShader && !mComputeError)
 	{
@@ -198,7 +180,7 @@ void cloth::DxSolver::addCloth(Cloth* cloth)
 				{
 					uint32_t key = sortElems[i] & ~0xffff;
 					uint32_t keyRef = _SortElemsRef[i] & ~0xffff;
-					PX_ASSERT(key == keyRef);
+					NV_CLOTH_ASSERT(key == keyRef);
 				}
 				_SortElemsHostCopy.unmap();
 			}
@@ -209,12 +191,21 @@ void cloth::DxSolver::addCloth(Cloth* cloth)
 #endif
 }
 
+void cloth::DxSolver::addCloths(Range<Cloth*> cloths)
+{
+	for (uint32_t i = 0; i < cloths.size(); ++i)
+	{
+		addClothAppend(*(cloths.begin() + i));
+	}
+	addClothUpdateData();
+}
+
 void cloth::DxSolver::removeCloth(Cloth* cloth)
 {
-	DxCloth& cuCloth = static_cast<DxClothImpl&>(*cloth).mCloth;
+	DxCloth& dxCloth = static_cast<DxCloth&>(*cloth);
 
 	ClothVector::Iterator begin = mCloths.begin(), end = mCloths.end();
-	ClothVector::Iterator it = mCloths.find(&cuCloth);
+	ClothVector::Iterator it = mCloths.find(&dxCloth);
 
 	if (it == end)
 		return; // not found
@@ -225,6 +216,17 @@ void cloth::DxSolver::removeCloth(Cloth* cloth)
 	mClothDataHostCopy.remove(index);
 	mClothData.resize(mCloths.size());
 	mClothDataDirty = true;
+}
+
+int cloth::DxSolver::getNumCloths() const
+{
+	return mCloths.size();
+}
+cloth::Cloth * const * cloth::DxSolver::getClothList() const
+{
+	if (getNumCloths() != 0)
+		return reinterpret_cast<Cloth* const*>(&mCloths[0]);
+	return nullptr;
 }
 
 bool cloth::DxSolver::beginSimulation(float dt)
@@ -249,7 +251,34 @@ void cloth::DxSolver::endSimulation()
 }
 int cloth::DxSolver::getSimulationChunkCount() const
 {
-	return 1;
+	// 0 chunks when no cloth present in the solver, 1 otherwise
+	return getNumCloths() != 0;
+}
+
+void cloth::DxSolver::addClothAppend(Cloth* cloth)
+{
+	DxCloth& dxCloth = static_cast<DxCloth&>(*cloth);
+	NV_CLOTH_ASSERT(mCloths.find(&dxCloth) == mCloths.end());
+
+	mCloths.pushBack(&dxCloth);
+	// trigger update of mClothData array
+	dxCloth.notifyChanged();
+}
+
+void cloth::DxSolver::addClothUpdateData()
+{
+	// sort cloth instances by size
+	shdfnd::sort(mCloths.begin(), mCloths.size(), ClothSimCostGreater(), NonTrackingAllocator());
+
+	DxContextLock contextLock(mFactory);
+
+	// resize containers and update kernel data
+	mClothDataHostCopy.resize(mCloths.size());
+	mClothData.resize(mCloths.size());
+	mFrameDataHostCopy.resize(mCloths.size());
+
+	// lazy compilation of compute shader
+	mComputeError |= mFactory.mSolverKernelComputeShader == nullptr;
 }
 
 void cloth::DxSolver::beginFrame()
@@ -321,6 +350,9 @@ void cloth::DxSolver::beginFrame()
 	mFactory.mConvexMasksDeviceCopy = mFactory.mConvexMasks.mBuffer;
 	mFactory.mCollisionPlanesDeviceCopy = mFactory.mCollisionPlanes.mBuffer;
 	mFactory.mCollisionTrianglesDeviceCopy = mFactory.mCollisionTriangles.mBuffer;
+	mFactory.mVirtualParticleSetSizesDeviceCopy = mFactory.mVirtualParticleSetSizes.mBuffer;
+	mFactory.mVirtualParticleIndicesDeviceCopy = mFactory.mVirtualParticleIndices.mBuffer;
+	mFactory.mVirtualParticleWeightsDeviceCopy = mFactory.mVirtualParticleWeights.mBuffer;
 //	mFactory.mParticleAccelerations = mFactory.mParticleAccelerationsHostCopy;
 	mFactory.mRestPositionsDeviceCopy = mFactory.mRestPositions.mBuffer;
 }
@@ -340,24 +372,31 @@ void cloth::DxSolver::executeKernel()
 	{
 		context->CSSetShader(mFactory.mSolverKernelComputeShader, NULL, 0);
 
-		ID3D11ShaderResourceView* resourceViews[17] = {
+		// Set shader StructuredBuffer registers t0-t20
+		ID3D11ShaderResourceView* resourceViews[21] = {
 			mClothData.mBuffer.resourceView(), /*mFrameData.mBuffer.resourceView()*/NULL,
 			mIterationData.mBuffer.resourceView(), mFactory.mPhaseConfigs.mBuffer.resourceView(),
 			mFactory.mConstraints.mBuffer.resourceView(), mFactory.mTethers.mBuffer.resourceView(),
 			mFactory.mCapsuleIndicesDeviceCopy.resourceView(), mFactory.mCollisionSpheresDeviceCopy.resourceView(),
 			mFactory.mConvexMasksDeviceCopy.resourceView(), mFactory.mCollisionPlanesDeviceCopy.resourceView(),
-			mFactory.mCollisionTriangles.mBuffer.resourceView(),
+			mFactory.mCollisionTrianglesDeviceCopy.resourceView(),
 			mFactory.mMotionConstraints.mBuffer.resourceView(),
 			mFactory.mSeparationConstraints.mBuffer.resourceView(),
 			mFactory.mParticleAccelerations.mBuffer.resourceView(),
 			mFactory.mRestPositionsDeviceCopy.resourceView(),
 			mFactory.mSelfCollisionIndices.mBuffer.resourceView(),
-			mFactory.mStiffnessValues.mBuffer.resourceView()
-		};
-		context->CSSetShaderResources(0, 17, resourceViews);
+			mFactory.mStiffnessValues.mBuffer.resourceView(),
+			mFactory.mTriangles.mBuffer.resourceView(),
 
+			mFactory.mVirtualParticleSetSizesDeviceCopy.resourceView(),
+			mFactory.mVirtualParticleIndicesDeviceCopy.resourceView(),
+			mFactory.mVirtualParticleWeightsDeviceCopy.resourceView()
+		};
+		context->CSSetShaderResources(0, 21, resourceViews);
+
+		// Set shader RWStructuredBuffer registers u0-u4
 		ID3D11UnorderedAccessView* accessViews[4] = {
-			mFactory.mParticles.mBuffer.accessView(),
+			mFactory.mParticles.mBuffer.accessViewRaw(),
 			mFactory.mSelfCollisionParticles.mBuffer.accessView(),
 			mFactory.mSelfCollisionData.mBuffer.accessView(),
 			mFrameData.mBuffer.accessView()
@@ -368,10 +407,10 @@ void cloth::DxSolver::executeKernel()
 
 		context->CSSetShader(NULL, NULL, 0);
 
-		ID3D11ShaderResourceView* resourceViewsNULL[17] = {
-			NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+		ID3D11ShaderResourceView* resourceViewsNULL[21] = {
+			NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 		};
-		context->CSSetShaderResources(0, 17, resourceViewsNULL);
+		context->CSSetShaderResources(0, 21, resourceViewsNULL);
 		ID3D11UnorderedAccessView* accessViewsNULL[4] = { NULL, NULL, NULL, NULL };
 		context->CSSetUnorderedAccessViews(0, 4, accessViewsNULL, NULL);
 #if 0

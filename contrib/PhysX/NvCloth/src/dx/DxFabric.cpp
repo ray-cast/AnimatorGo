@@ -31,7 +31,7 @@
 #include "DxContextLock.h"
 #include "DxFactory.h"
 #include <algorithm>
-#include <PsUtilities.h>
+#include "ps/PsUtilities.h"
 
 #if NV_CLOTH_ENABLE_DX11
 
@@ -49,6 +49,7 @@ cloth::DxFabric::DxFabric(DxFactory& factory, uint32_t numParticles, Range<const
 , mSets(sets.begin(), sets.end())
 , mConstraints(mFactory.mConstraints)
 , mConstraintsHostCopy(mFactory.mConstraintsHostCopy)
+, mTriangles(mFactory.mTriangles)
 , mStiffnessValues(mFactory.mStiffnessValues)
 , mTethers(mFactory.mTethers)
 , mId(id)
@@ -61,30 +62,33 @@ cloth::DxFabric::DxFabric(DxFactory& factory, uint32_t numParticles, Range<const
 	NV_CLOTH_ASSERT(restvalues.size() == stiffnessValues.size() || stiffnessValues.size() == 0);
 	NV_CLOTH_ASSERT(mNumParticles > *shdfnd::maxElement(indices.begin(), indices.end()));
 
-	// manually convert uint32_t indices to uint16_t in temp memory
-	Vector<DxConstraint>::Type hostConstraints;
-	hostConstraints.resizeUninitialized(restvalues.size());
-	Vector<DxConstraint>::Type::Iterator cIt = hostConstraints.begin();
-	Vector<DxConstraint>::Type::Iterator cEnd = hostConstraints.end();
-
-	const uint32_t* iIt = indices.begin();
-	const float* rIt = restvalues.begin();
-	for (; cIt != cEnd; ++cIt)
+	//constraints
 	{
-		cIt->mRestvalue = *rIt++;
-		cIt->mFirstIndex = uint16_t(*iIt++);
-		cIt->mSecondIndex = uint16_t(*iIt++);
-	}
+		// manually convert uint32_t indices to uint16_t in temp memory
+		Vector<DxConstraint>::Type hostConstraints;
+		hostConstraints.resizeUninitialized(restvalues.size());
+		Vector<DxConstraint>::Type::Iterator cIt = hostConstraints.begin();
+		Vector<DxConstraint>::Type::Iterator cEnd = hostConstraints.end();
 
-	// copy to device vector in one go
+		const uint32_t* iIt = indices.begin();
+		const float* rIt = restvalues.begin();
+		for(; cIt != cEnd; ++cIt)
+		{
+			cIt->mRestvalue = *rIt++;
+			cIt->mFirstIndex = uint16_t(*iIt++);
+			cIt->mSecondIndex = uint16_t(*iIt++);
+		}
+
+		// copy to device vector in one go
 #if 0
 	// Workaround for NvAPI SCG device updateSubresource size limit
-	mConstraintsHostCopy.assign(hostConstraints.begin(), hostConstraints.end());
-	mConstraints.resize(mConstraintsHostCopy.size());
-	mConstraints = mConstraintsHostCopy;
+		mConstraintsHostCopy.assign(hostConstraints.begin(), hostConstraints.end());
+		mConstraints.resize(mConstraintsHostCopy.size());
+		mConstraints = mConstraintsHostCopy;
 #else
-	mConstraints.assign(hostConstraints.begin(), hostConstraints.end());
+		mConstraints.assign(hostConstraints.begin(), hostConstraints.end());
 #endif
+	}
 
 	mStiffnessValues.assign(stiffnessValues.begin(), stiffnessValues.end());
 
@@ -114,12 +118,20 @@ cloth::DxFabric::DxFabric(DxFactory& factory, uint32_t numParticles, Range<const
 	mTethers.assign(tethers.begin(), tethers.end());
 
 	// triangles
-	Vector<uint16_t>::Type hostTriangles;
-	hostTriangles.resizeUninitialized(triangles.size());
-	Vector<uint16_t>::Type::Iterator tIt = hostTriangles.begin();
+	Vector<uint32_t>::Type hostTriangles;
+	mNumTriangles = triangles.size();
+	//make sure there is an even number of elements allocated
+	hostTriangles.resizeUninitialized(triangles.size()>>1);
+	Vector<uint32_t>::Type::Iterator tIt = hostTriangles.begin();
 
 	for (; !triangles.empty(); triangles.popFront())
-		*tIt++ = uint16_t(triangles.front());
+	{
+		uint32_t packed = triangles.front();
+		triangles.popFront();
+		if(!triangles.empty())
+			packed |= triangles.front()<<16;
+		*tIt++ = packed;
+	}
 
 	mTriangles.assign(hostTriangles.begin(), hostTriangles.end());
 
@@ -181,7 +193,7 @@ uint32_t cloth::DxFabric::getNumTethers() const
 
 uint32_t cloth::DxFabric::getNumTriangles() const
 {
-	return uint32_t(mTriangles.size()) / 3;
+	return uint32_t(mNumTriangles) / 3;
 }
 
 void cloth::DxFabric::scaleRestvalues(float scale)

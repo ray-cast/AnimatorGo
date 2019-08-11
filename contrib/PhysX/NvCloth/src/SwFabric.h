@@ -57,7 +57,7 @@ class SwFabric : public Fabric
 #endif
 
 	SwFabric(SwFactory& factory, uint32_t numParticles, Range<const uint32_t> phasesIndices, Range<const uint32_t> sets,
-	         Range<const float> restvalues, Range<const float> stiffnessValues, Range<const uint32_t> indices, Range<const uint32_t> anchors,
+			 Range<const float> restvalues, Range<const float> stiffnessValues, Range<const uint32_t> indices, Range<const uint32_t> anchors,
 	         Range<const float> tetherLengths, Range<const uint32_t> triangles, uint32_t id);
 
 	SwFabric& operator = (const SwFabric&);

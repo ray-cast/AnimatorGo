@@ -43,6 +43,7 @@ struct TripletScheduler
 {
 	typedef Vector<Vec4u>::Type::ConstIterator ConstTripletIter;
 	typedef Vector<Vec4u>::Type::Iterator TripletIter;
+	typedef Vector<uint32_t>::Type::Iterator SetIter;
 
 	TripletScheduler(Range<const uint32_t[4]>);
 	void simd(uint32_t numParticles, uint32_t simdWidth);
@@ -50,6 +51,32 @@ struct TripletScheduler
 
 	Vector<Vec4u>::Type mTriplets;
 	Vector<uint32_t>::Type mSetSizes;
+	Vector<Vec4us>::Type mPaddedTriplets;
 };
 }
 }
+
+//Make TripletScheduler available for the unit tests.
+namespace nv
+{
+namespace cloth
+{
+struct NV_CLOTH_IMPORT TripletSchedulerTestInterface
+{
+private:
+	TripletScheduler* mScheduler;
+
+public:
+	TripletSchedulerTestInterface(Range<const uint32_t[4]> triplets);
+	~TripletSchedulerTestInterface();
+	void simd(uint32_t numParticles, uint32_t simdWidth);
+	void warp(uint32_t numParticles, uint32_t warpWidth);
+
+	Range<const uint32_t> GetTriplets();
+	Range<const uint32_t> GetSetSizes();
+};
+}
+}
+
+NV_CLOTH_API(nv::cloth::TripletSchedulerTestInterface*) NvClothCreateTripletScheduler(nv::cloth::Range<const uint32_t[4]>);
+NV_CLOTH_API(void) NvClothDestroyTripletScheduler(nv::cloth::TripletSchedulerTestInterface*);

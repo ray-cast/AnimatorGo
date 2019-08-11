@@ -33,17 +33,21 @@
 
 #include "SwSolverKernel.cpp"
 
-#include <cpu-features.h>
+#include "../ps/android/cpu-features.h"
 
-namespace physx
+namespace
+{
+	const bool sNeonSupport = ANDROID_CPU_ARM_FEATURE_NEON & android_getCpuFeatures();
+}
+
+namespace nv
 {
 namespace cloth
 {
 bool neonSolverKernel(SwCloth const& cloth, SwClothData& data, SwKernelAllocator& allocator,
-                      IterationStateFactory& factory, PxProfileZone* profileZone)
+                      IterationStateFactory& factory)
 {
-	return ANDROID_CPU_ARM_FEATURE_NEON & android_getCpuFeatures() &&
-	       (SwSolverKernel<Simd4f>(cloth, data, allocator, factory, profileZone)(), true);
+	return sNeonSupport && (SwSolverKernel<Simd4f>(cloth, data, allocator, factory)(), true);
 }
 }
 }

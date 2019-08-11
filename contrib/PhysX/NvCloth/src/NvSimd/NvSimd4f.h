@@ -76,12 +76,18 @@ struct Simd4fTupleFactory
 	Simd4fTupleFactory(float x, float y, float z, float w)
 	// c++11: : tuple{ x, y, z, w }
 	{
-		tuple[0] = x, tuple[1] = y, tuple[2] = z, tuple[3] = w;
+		tuple[0] = x;
+		tuple[1] = y;
+		tuple[2] = z;
+		tuple[3] = w;
 	}
 	Simd4fTupleFactory(unsigned x, unsigned y, unsigned z, unsigned w)
 	{
 		unsigned* ptr = reinterpret_cast<unsigned*>(tuple);
-		ptr[0] = x, ptr[1] = y, ptr[2] = z, ptr[3] = w;
+		ptr[0] = x;
+		ptr[1] = y;
+		ptr[2] = z;
+		ptr[3] = w;
 	}
 	Simd4fTupleFactory& operator = (const Simd4fTupleFactory&); // not implemented
 	inline operator Simd4f() const;

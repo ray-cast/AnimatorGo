@@ -40,112 +40,124 @@ namespace cloth
 
 struct MovingAverage
 {
-	struct Element
-	{
-		uint32_t mCount;
-		float mValue;
-	};
-
   public:
-	MovingAverage(uint32_t n = 1) : mCount(0), mSize(n)
+	MovingAverage(uint32_t n = 1) : mBegin(0), mCount(0), mSize(n)
 	{
+		mData = reinterpret_cast<float*>(NV_CLOTH_ALLOC(mSize *sizeof(float), "MovingAverage"));
 	}
+	MovingAverage(const MovingAverage& other): mData(nullptr), mBegin(0), mCount(0), mSize(0)
+	{
+		*this = other;
+	}
+	MovingAverage& operator=(const MovingAverage& other)
+	{
+		mBegin = other.mBegin;
+		mCount = other.mCount;
+		mSize = other.mSize;
+		NV_CLOTH_FREE(mData);
+		mData = reinterpret_cast<float*>(NV_CLOTH_ALLOC(mSize * sizeof(float), "MovingAverage"));
+		memcpy(mData, other.mData, mSize * sizeof(float));
+		return *this;
+	}
+	~MovingAverage() { NV_CLOTH_FREE(mData); }
 
 	bool empty() const
 	{
-		return mData.empty();
+		return mCount == 0;
 	}
 
 	uint32_t size() const
 	{
 		return mSize;
 	}
-
+	
 	void resize(uint32_t n)
 	{
-		NV_CLOTH_ASSERT(n);
-		mSize = n;
-		trim();
-	}
+		float* newData = reinterpret_cast<float*>(NV_CLOTH_ALLOC(n * sizeof(float), "MovingAverage"));
 
+		const int cutOffFront = std::max(mCount - static_cast<int32_t>(n), 0);
+		int index = (mBegin + cutOffFront) % mSize;
+		for(int i = 0; i < static_cast<int>(n); i++)
+		{
+			newData[i] = mData[index];
+			index = (index + 1) % mSize;
+		}
+
+		mCount -= cutOffFront;
+			
+		NV_CLOTH_FREE(mData);
+
+		mSize = n;
+		mData = newData;
+		mBegin = 0;
+	}
+	
 	void reset()
 	{
-		mData.resize(0);
 		mCount = 0;
+		mBegin = 0;
 	}
 
 	void push(uint32_t n, float value)
 	{
-		n = std::min(n, mSize);
-
-		if (mData.empty() || mData.back().mValue != value)
+		n = std::min(n, static_cast<uint32_t>(mSize));
+		const int start = (mBegin + mCount) % mSize;
+		const int end = start + n;
+		const int end1 = std::min(end, mSize);
+		const int end2 = std::max(end - end1, 0);
+		for(int i = start; i < end1; i++)
 		{
-			Element element = { n, value };
-			mData.pushBack(element);
+			mData[i] = value;
 		}
-		else
+		for(int i = 0; i < end2; i++)
 		{
-			mData.back().mCount += n;
+			mData[i] = value;
 		}
 
-		mCount += n;
-		trim();
+		int newCount = std::min(mCount + static_cast<int32_t>(n), mSize);
+		mBegin = (mBegin + n-(newCount-mCount))%mSize; //move mBegin by the amount of replaced elements
+		mCount = newCount;
 	}
 
 	float average() const
 	{
-		NV_CLOTH_ASSERT(!mData.empty());
+		NV_CLOTH_ASSERT(!empty());
 
 		float sum = 0.0f;
-		Vector<Element>::Type::ConstIterator it = mData.begin(), end = mData.end();
-		for (; it != end; ++it)
-			sum += it->mCount * it->mValue;
-
-		// linear weight ramps at both ends for smoother average
-		uint32_t n = mCount / 8;
-		float ramp = 0.0f, temp = 0.0f;
-		uint32_t countLo = (it = mData.begin())->mCount;
-		uint32_t countHi = (--end)->mCount;
-		for (uint32_t i = 0; i < n; ++i)
+		int totalWeight = 0;
 		{
-			if (i == countLo)
-				countLo += (++it)->mCount;
-			if (i == countHi)
-				countHi += (--end)->mCount;
-
-			temp += it->mValue + end->mValue;
-			ramp += temp;
+			int count = 0;
+			int end = std::min(mBegin + mCount, mSize);
+			int rampSize = std::max(1,mCount / 8);
+			for(int i = mBegin; i < end; i++)
+			{
+				//ramp weight /''''''\ . 
+				int weight = std::min(
+					std::min(count+1, rampSize), //left ramp /'''
+					std::min(mCount-(count), rampSize)); //right ramp  '''\ .
+				sum += mData[i] * weight;
+				totalWeight += weight;
+				count++;
+			}
+			int leftOver = mCount-(end - mBegin);
+			for(int i = 0; i < leftOver; i++)
+			{
+				int weight = std::min(std::min(count + 1, rampSize), std::min(mCount - (count), rampSize));
+				sum += mData[i] * weight;
+				totalWeight += weight;
+				count++;
+			}
+			NV_CLOTH_ASSERT(count == mCount);
 		}
 
-		uint32_t num = (mCount - n) * (n + 1);
-		return (sum * (n + 1) - ramp) / num;
+		return sum / static_cast<float>(totalWeight);
 	}
 
-  private:
-	// remove oldest (front) values until mCount<=mSize
-	void trim()
-	{
-		Vector<Element>::Type::Iterator it = mData.begin();
-		for (uint32_t k = mSize; k < mCount; it += k <= mCount)
-		{
-			k += it->mCount;
-			it->mCount = k - mCount;
-		}
-
-		if (it != mData.begin())
-		{
-			Vector<Element>::Type tmp;
-			tmp.assign(it, mData.end());
-			tmp.swap(mData);
-		}
-
-		mCount = std::min(mCount, mSize);
-	}
-
-	Vector<Element>::Type mData;
-
-	uint32_t mCount;
-	uint32_t mSize;
+private:
+	float* mData; //Ring buffer
+	int32_t mBegin; //Index to first element
+	int32_t mCount; //current number of elements 
+	int32_t mSize; //max ringbuffer size
 };
 }
 }

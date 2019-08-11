@@ -2,7 +2,7 @@
 # Build NvCloth (PROJECT not SOLUTION)
 #
 
-MESSAGE("[NvCloth]cmake/Mac/NvCloth.cmake")
+MESSAGE("[NvCloth]cmake/mac/NvCloth.cmake")
 
 SET(GW_DEPS_ROOT $ENV{GW_DEPS_ROOT})
 FIND_PACKAGE(PxShared REQUIRED)
@@ -15,6 +15,8 @@ SET(NVCLOTH_PLATFORM_INCLUDES
 )
 
 SET(NVCLOTH_PLATFORM_SOURCE_FILES
+	${PROJECT_ROOT_DIR}/src/ps/unix/PsUnixAtomic.cpp
+	${PROJECT_ROOT_DIR}/src/ps/unix/PsUnixFPU.h
 	#${PROJECT_ROOT_DIR}/src/neon/NeonCollision.cpp
 	#${PROJECT_ROOT_DIR}/src/neon/NeonSelfCollision.cpp
 	#${PROJECT_ROOT_DIR}/src/neon/NeonSolverKernel.cpp
@@ -42,11 +44,6 @@ SET(NVCLOTH_LIBTYPE SHARED)
 INCLUDE(../common/NvCloth.cmake)
 
 
-# Add linked libraries
-# TARGET_LINK_LIBRARIES(NvCloth PUBLIC ${NVTOOLSEXT_LIBRARIES} LowLevel LowLevelAABB LowLevelCloth LowLevelDynamics LowLevelParticles PhysXCommon PhysXGpu PxFoundation PxPvdSDK PxTask SceneQuery SimulationController)
-
-TARGET_LINK_LIBRARIES(NvCloth PUBLIC PxFoundation)
-
 SET_TARGET_PROPERTIES(NvCloth PROPERTIES 
 	LINK_FLAGS_DEBUG ""
 	LINK_FLAGS_CHECKED ""
@@ -56,4 +53,4 @@ SET_TARGET_PROPERTIES(NvCloth PROPERTIES
 
 # enable -fPIC so we can link static libs with the editor
 SET_TARGET_PROPERTIES(NvCloth PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-MESSAGE("[NvCloth]cmake/Mac/NvCloth.cmake END")
+MESSAGE("[NvCloth]cmake/mac/NvCloth.cmake END")

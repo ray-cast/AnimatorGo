@@ -103,6 +103,7 @@ const uint32_t sAvxSupport = getAvxSupport(); // 0: no AVX, 1: AVX, 2: AVX+FMA
 #endif
 
 using namespace nv;
+using namespace cloth;
 
 namespace
 {
@@ -124,55 +125,55 @@ const Simd4fTupleFactory sMinusFloatMaxXYZ = simd4f(-FLT_MAX, -FLT_MAX, -FLT_MAX
    The g * dt * dt term is folded into accelIt.
  */
 
-template <typename Simd4f, typename AccelerationIterator>
-void integrateParticles(Simd4f* __restrict curIt, Simd4f* __restrict curEnd, Simd4f* __restrict prevIt,
-                        const Simd4f& scale, const AccelerationIterator& aIt, const Simd4f& prevBias)
+template <typename T4f, typename AccelerationIterator>
+void integrateParticles(T4f* __restrict curIt, T4f* __restrict curEnd, T4f* __restrict prevIt,
+                        const T4f& scale, const AccelerationIterator& aIt, const T4f& prevBias)
 {
 	// local copy to avoid LHS
 	AccelerationIterator accelIt(aIt);
 
 	for (; curIt != curEnd; ++curIt, ++prevIt, ++accelIt)
 	{
-		Simd4f current = *curIt;
-		Simd4f previous = *prevIt;
+		T4f current = *curIt;
+		T4f previous = *prevIt;
 		// if (current.w == 0) current.w = previous.w
 		current = select(current > sMinusFloatMaxXYZ, current, previous);
-		Simd4f finiteMass = splat<3>(previous) > sFloatMaxW;
-		Simd4f delta = (current - previous) * scale + *accelIt;
+		T4f finiteMass = splat<3>(previous) > sFloatMaxW;
+		T4f delta = (current - previous) * scale + *accelIt;
 		*curIt = current + (delta & finiteMass);
 		*prevIt = select(sMaskW, previous, current) + (prevBias & finiteMass);
 	}
 }
 
-template <typename Simd4f, typename AccelerationIterator>
-void integrateParticles(Simd4f* __restrict curIt, Simd4f* __restrict curEnd, Simd4f* __restrict prevIt,
-                        const Simd4f (&prevMatrix)[3], const Simd4f (&curMatrix)[3], const AccelerationIterator& aIt,
-                        const Simd4f& prevBias)
+template <typename T4f, typename AccelerationIterator>
+void integrateParticles(T4f* __restrict curIt, T4f* __restrict curEnd, T4f* __restrict prevIt,
+                        const T4f (&prevMatrix)[3], const T4f (&curMatrix)[3], const AccelerationIterator& aIt,
+                        const T4f& prevBias)
 {
 	// local copy to avoid LHS
 	AccelerationIterator accelIt(aIt);
 
 	for (; curIt != curEnd; ++curIt, ++prevIt, ++accelIt)
 	{
-		Simd4f current = *curIt;
-		Simd4f previous = *prevIt;
+		T4f current = *curIt;
+		T4f previous = *prevIt;
 		// if (current.w == 0) current.w = previous.w
 		current = select(current > sMinusFloatMaxXYZ, current, previous);
-		Simd4f finiteMass = splat<3>(previous) > sFloatMaxW;
+		T4f finiteMass = splat<3>(previous) > sFloatMaxW;
 		// curMatrix * current + prevMatrix * previous + accel
-		Simd4f delta = cloth::transform(curMatrix, cloth::transform(prevMatrix, *accelIt, previous), current);
+		T4f delta = cloth::transform(curMatrix, cloth::transform(prevMatrix, *accelIt, previous), current);
 		*curIt = current + (delta & finiteMass);
 		*prevIt = select(sMaskW, previous, current) + (prevBias & finiteMass);
 	}
 }
 
-template <typename Simd4f, typename ConstraintIterator>
-void constrainMotion(Simd4f* __restrict curIt, const Simd4f* __restrict curEnd, const ConstraintIterator& spheres,
-                     const Simd4f& scaleBiasStiffness)
+template <typename T4f, typename ConstraintIterator>
+void constrainMotion(T4f* __restrict curIt, const T4f* __restrict curEnd, const ConstraintIterator& spheres,
+                     const T4f& scaleBiasStiffness)
 {
-	Simd4f scale = splat<0>(scaleBiasStiffness);
-	Simd4f bias = splat<1>(scaleBiasStiffness);
-	Simd4f stiffness = splat<3>(scaleBiasStiffness);
+	T4f scale = splat<0>(scaleBiasStiffness);
+	T4f bias = splat<1>(scaleBiasStiffness);
+	T4f stiffness = splat<3>(scaleBiasStiffness);
 
 	// local copy of iterator to maintain alignment
 	ConstraintIterator sphIt = spheres;
@@ -180,40 +181,43 @@ void constrainMotion(Simd4f* __restrict curIt, const Simd4f* __restrict curEnd, 
 	for (; curIt < curEnd; curIt += 4)
 	{
 		// todo: use msub where available
-		Simd4f curPos0 = curIt[0];
-		Simd4f curPos1 = curIt[1];
-		Simd4f curPos2 = curIt[2];
-		Simd4f curPos3 = curIt[3];
+		T4f curPos0 = curIt[0];
+		T4f curPos1 = curIt[1];
+		T4f curPos2 = curIt[2];
+		T4f curPos3 = curIt[3];
 
 		//delta.xyz = sphereCenter - currentPosition
 		//delta.w = sphereRadius
-		Simd4f delta0 = *sphIt - (sMaskXYZ & curPos0);
+		T4f delta0 = *sphIt - (sMaskXYZ & curPos0);
 		++sphIt;
-		Simd4f delta1 = *sphIt - (sMaskXYZ & curPos1);
+		T4f delta1 = *sphIt - (sMaskXYZ & curPos1);
 		++sphIt;
-		Simd4f delta2 = *sphIt - (sMaskXYZ & curPos2);
+		T4f delta2 = *sphIt - (sMaskXYZ & curPos2);
 		++sphIt;
-		Simd4f delta3 = *sphIt - (sMaskXYZ & curPos3);
+		T4f delta3 = *sphIt - (sMaskXYZ & curPos3);
 		++sphIt;
 
-		Simd4f deltaX = delta0, deltaY = delta1, deltaZ = delta2, deltaW = delta3;
+		T4f deltaX = delta0, deltaY = delta1, deltaZ = delta2, deltaW = delta3;
 		transpose(deltaX, deltaY, deltaZ, deltaW);
 
-		Simd4f sqrLength = gSimd4fEpsilon + deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
-		Simd4f radius = max(gSimd4fZero, deltaW * scale + bias);
+		T4f sqrLength = gSimd4fEpsilon + deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+		T4f radius = max(gSimd4fZero, deltaW * scale + bias);
 
-		Simd4f slack = gSimd4fOne - radius * rsqrt(sqrLength);
+		T4f slack = gSimd4fOne - radius * rsqrt(sqrLength);
 
 		// if slack <= 0.0f then we don't want to affect particle
 		// and can skip if all particles are unaffected
-		Simd4f isPositive;
+		T4f isPositive;
 		if (anyGreater(slack, gSimd4fZero, isPositive))
 		{
-			// set invMass to zero if radius is zero
+			// set invMass to zero if radius is zero (xyz will be unchanged)
+			// curPos.w = radius > 0 ? curPos.w : 0
+			// the first three components are compared against -FLT_MAX which is always true
 			curPos0 = curPos0 & (splat<0>(radius) > sMinusFloatMaxXYZ);
 			curPos1 = curPos1 & (splat<1>(radius) > sMinusFloatMaxXYZ);
 			curPos2 = curPos2 & (splat<2>(radius) > sMinusFloatMaxXYZ);
 			curPos3 = curPos3 & ((radius) > sMinusFloatMaxXYZ);
+			// we don't have to splat the last one as the 4th element is already in the right place
 
 			slack = slack * stiffness & isPositive;
 
@@ -225,8 +229,8 @@ void constrainMotion(Simd4f* __restrict curIt, const Simd4f* __restrict curEnd, 
 	}
 }
 
-template <typename Simd4f, typename ConstraintIterator>
-void constrainSeparation(Simd4f* __restrict curIt, const Simd4f* __restrict curEnd, const ConstraintIterator& spheres)
+template <typename T4f, typename ConstraintIterator>
+void constrainSeparation(T4f* __restrict curIt, const T4f* __restrict curEnd, const ConstraintIterator& spheres)
 {
 	// local copy of iterator to maintain alignment
 	ConstraintIterator sphIt = spheres;
@@ -234,32 +238,32 @@ void constrainSeparation(Simd4f* __restrict curIt, const Simd4f* __restrict curE
 	for (; curIt < curEnd; curIt += 4)
 	{
 		// todo: use msub where available
-		Simd4f curPos0 = curIt[0];
-		Simd4f curPos1 = curIt[1];
-		Simd4f curPos2 = curIt[2];
-		Simd4f curPos3 = curIt[3];
+		T4f curPos0 = curIt[0];
+		T4f curPos1 = curIt[1];
+		T4f curPos2 = curIt[2];
+		T4f curPos3 = curIt[3];
 
 		//delta.xyz = sphereCenter - currentPosition
 		//delta.w = sphereRadius
-		Simd4f delta0 = *sphIt - (sMaskXYZ & curPos0);
+		T4f delta0 = *sphIt - (sMaskXYZ & curPos0);
 		++sphIt;
-		Simd4f delta1 = *sphIt - (sMaskXYZ & curPos1);
+		T4f delta1 = *sphIt - (sMaskXYZ & curPos1);
 		++sphIt;
-		Simd4f delta2 = *sphIt - (sMaskXYZ & curPos2);
+		T4f delta2 = *sphIt - (sMaskXYZ & curPos2);
 		++sphIt;
-		Simd4f delta3 = *sphIt - (sMaskXYZ & curPos3);
+		T4f delta3 = *sphIt - (sMaskXYZ & curPos3);
 		++sphIt;
 
-		Simd4f deltaX = delta0, deltaY = delta1, deltaZ = delta2, deltaW = delta3;
+		T4f deltaX = delta0, deltaY = delta1, deltaZ = delta2, deltaW = delta3;
 		transpose(deltaX, deltaY, deltaZ, deltaW);
 
-		Simd4f sqrLength = gSimd4fEpsilon + deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+		T4f sqrLength = gSimd4fEpsilon + deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
 
-		Simd4f slack = gSimd4fOne - deltaW * rsqrt<1>(sqrLength);
+		T4f slack = gSimd4fOne - deltaW * rsqrt<1>(sqrLength);
 
 		// if slack >= 0.0f then we don't want to affect particle
 		// and can skip if all particles are unaffected
-		Simd4f isNegative;
+		T4f isNegative;
 		if (anyGreater(gSimd4fZero, slack, isNegative))
 		{
 			slack = slack & isNegative;
@@ -272,25 +276,27 @@ void constrainSeparation(Simd4f* __restrict curIt, const Simd4f* __restrict curE
 	}
 }
 
+
+
 /**
     traditional gauss-seidel internal constraint solver
  */
-template <bool useMultiplier, typename Simd4f>
+template <bool useMultiplier, typename T4f>
 void solveConstraints(float* __restrict posIt, const float* __restrict rIt, const float* __restrict stIt, const float* __restrict rEnd,
-                      const uint16_t* __restrict iIt, const Simd4f& stiffnessEtc, const Simd4f& stiffnessExponent)
+                      const uint16_t* __restrict iIt, const T4f& stiffnessEtc, const T4f& stiffnessExponent)
 {
 	//posIt		particle position (and invMass) iterator
 	//rIt,rEnd	edge rest length iterator
 	//iIt		index set iterator
 
-	Simd4f stretchLimit, compressionLimit, multiplier;
+	T4f stretchLimit, compressionLimit, multiplier;
 	if (useMultiplier)
 	{
 		stretchLimit = splat<3>(stiffnessEtc);
 		compressionLimit = splat<2>(stiffnessEtc);
 		multiplier = splat<1>(stiffnessEtc);
 	}
-	Simd4f stiffness = splat<0>(stiffnessEtc);
+	T4f stiffness = splat<0>(stiffnessEtc);
 	bool useStiffnessPerConstraint = stIt!=nullptr;
 
 	for (; rIt != rEnd; rIt += 4, stIt += 4, iIt += 8)
@@ -307,47 +313,47 @@ void solveConstraints(float* __restrict posIt, const float* __restrict rIt, cons
 
 		//Load particle positions
 		//v.w = invMass
-		Simd4f v0i = loadAligned(posIt, p0i);
-		Simd4f v0j = loadAligned(posIt, p0j);
-		Simd4f v1i = loadAligned(posIt, p1i);
-		Simd4f v1j = loadAligned(posIt, p1j);
-		Simd4f v2i = loadAligned(posIt, p2i);
-		Simd4f v2j = loadAligned(posIt, p2j);
-		Simd4f v3i = loadAligned(posIt, p3i);
-		Simd4f v3j = loadAligned(posIt, p3j);
+		T4f v0i = loadAligned(posIt, p0i);
+		T4f v0j = loadAligned(posIt, p0j);
+		T4f v1i = loadAligned(posIt, p1i);
+		T4f v1j = loadAligned(posIt, p1j);
+		T4f v2i = loadAligned(posIt, p2i);
+		T4f v2j = loadAligned(posIt, p2j);
+		T4f v3i = loadAligned(posIt, p3i);
+		T4f v3j = loadAligned(posIt, p3j);
 
 		//offset.xyz = posB - posA
 		//offset.w = invMassB + invMassA
-		Simd4f h0ij = v0j + v0i * sMinusOneXYZOneW;
-		Simd4f h1ij = v1j + v1i * sMinusOneXYZOneW;
-		Simd4f h2ij = v2j + v2i * sMinusOneXYZOneW;
-		Simd4f h3ij = v3j + v3i * sMinusOneXYZOneW;
+		T4f h0ij = v0j + v0i * sMinusOneXYZOneW;
+		T4f h1ij = v1j + v1i * sMinusOneXYZOneW;
+		T4f h2ij = v2j + v2i * sMinusOneXYZOneW;
+		T4f h3ij = v3j + v3i * sMinusOneXYZOneW;
 
 		//h xyz = offset
 		//vw = invMass sum
-		Simd4f hxij = h0ij, hyij = h1ij, hzij = h2ij, vwij = h3ij;
+		T4f hxij = h0ij, hyij = h1ij, hzij = h2ij, vwij = h3ij;
 		transpose(hxij, hyij, hzij, vwij);
 
 		//load rest lengths
-		Simd4f rij = loadAligned(rIt);
+		T4f rij = loadAligned(rIt);
 
 		//Load/calculate the constraint stiffness
-		Simd4f stij = useStiffnessPerConstraint ? gSimd4fOne - exp2(stiffnessExponent * static_cast<Simd4f>(loadAligned(stIt))) : stiffness;
+		T4f stij = useStiffnessPerConstraint ? gSimd4fOne - exp2(stiffnessExponent * static_cast<T4f>(loadAligned(stIt))) : stiffness;
 
 		//squared distance between particles: e2 = epsilon + |h|^2
-		Simd4f e2ij = gSimd4fEpsilon + hxij * hxij + hyij * hyij + hzij * hzij;
+		T4f e2ij = gSimd4fEpsilon + hxij * hxij + hyij * hyij + hzij * hzij;
 
 		//slack: er = 1 - r / sqrt(e2)
 		//       or er = 0 if rest length < epsilon
-		Simd4f erij = (gSimd4fOne - rij * rsqrt(e2ij)) & (rij > gSimd4fEpsilon);
+		T4f erij = (gSimd4fOne - rij * rsqrt(e2ij)) & (rij > gSimd4fEpsilon);
 
 		if (useMultiplier)
 		{
 			erij = erij - multiplier * max(compressionLimit, min(erij, stretchLimit));
 		}
 
-		//ex = er * stiffness / sqrt(epsilon + vw)
-		Simd4f exij = erij * stij * recip(gSimd4fEpsilon + vwij);
+		//ex = er * stiffness / (epsilon + inMass sum)
+		T4f exij = erij * stij * recip(gSimd4fEpsilon + vwij);
 
 		//h = h * ex
 		h0ij = h0ij * splat<0>(exij) & sMaskXYZ;
@@ -367,27 +373,36 @@ void solveConstraints(float* __restrict posIt, const float* __restrict rIt, cons
 	}
 }
 
-#if PX_WINDOWS_FAMILY
+#if PX_WINDOWS_FAMILY && NV_SIMD_SSE2
 #include "sse2/SwSolveConstraints.h"
 #endif
 
-// calculates upper bound of all position deltas
-template <typename Simd4f>
-Simd4f calculateMaxDelta(const Simd4f* prevIt, const Simd4f* curIt, const Simd4f* curEnd)
+// Calculates upper bound of all position deltas
+template <typename T4f>
+T4f calculateMaxDelta(const T4f* prevIt, const T4f* curIt, const T4f* curEnd)
 {
-	Simd4f maxDelta = gSimd4fZero;
+	T4f maxDelta = gSimd4fZero;
 	for (; curIt < curEnd; ++curIt, ++prevIt)
 		maxDelta = max(maxDelta, abs(*curIt - *prevIt));
 
 	return maxDelta & sMaskXYZ;
 }
 
-template <bool IsTurning, typename Simd4f>
-void applyWind(Simd4f* __restrict curIt, const Simd4f* __restrict prevIt, const uint16_t* __restrict tIt,
-               const uint16_t* __restrict tEnd, Simd4f dragCoefficient, Simd4f liftCoefficient, Simd4f wind,
-               const Simd4f (&rotation)[3])
+template <bool IsTurning, typename T4f>
+void applyWind(T4f* __restrict curIt, const T4f* __restrict prevIt, const uint16_t* __restrict tIt,
+               const uint16_t* __restrict tEnd, float itrDtf, float dragCoefficientf, float liftCoefficientf, float fluidDensityf, T4f wind,
+               const T4f (&rotation)[3])
 {
-	const Simd4f oneThird = simd4f(1.0f / 3.0f);
+	// Note: Enabling wind can amplify bad behavior since the impulse scales with area,
+	//  and the area of triangles increases when constraints are violated.
+	// Using the initial triangle area based on the rest length is one possible way to
+	//  prevent this, but is expensive (and incorrect for intentionally stretchy cloth).
+
+	const T4f dragCoefficient = simd4f(dragCoefficientf);
+	const T4f liftCoefficient = simd4f(liftCoefficientf);
+	const T4f fluidDensity = simd4f(fluidDensityf);
+	const T4f itrDt = simd4f(itrDtf);
+	const T4f oneThird = simd4f(1.0f / 3.0f);
 
 	for (; tIt < tEnd; tIt += 3)
 	{
@@ -397,20 +412,20 @@ void applyWind(Simd4f* __restrict curIt, const Simd4f* __restrict prevIt, const 
 		uint16_t i2 = tIt[2];
 
 		//Get the current particle positions
-		Simd4f c0 = curIt[i0];
-		Simd4f c1 = curIt[i1];
-		Simd4f c2 = curIt[i2];
+		T4f c0 = curIt[i0];
+		T4f c1 = curIt[i1];
+		T4f c2 = curIt[i2];
 
 		//Previous positions
-		Simd4f p0 = prevIt[i0];
-		Simd4f p1 = prevIt[i1];
-		Simd4f p2 = prevIt[i2];
+		T4f p0 = prevIt[i0];
+		T4f p1 = prevIt[i1];
+		T4f p2 = prevIt[i2];
 
-		Simd4f current = oneThird * (c0 + c1 + c2);
-		Simd4f previous = oneThird * (p0 + p1 + p2);
+		T4f current = oneThird * (c0 + c1 + c2);
+		T4f previous = oneThird * (p0 + p1 + p2);
 
 		//offset of the triangle center, including wind
-		Simd4f delta = current - previous + wind;
+		T4f delta = current - previous + wind; //wind is also already multiplied by dt in the iteration state so everything is in the same units
 
 		if (IsTurning)
 		{
@@ -420,62 +435,64 @@ void applyWind(Simd4f* __restrict curIt, const Simd4f* __restrict prevIt, const 
 		}
 
 		//not normalized
-		Simd4f normal = cross3(c2 - c0, c1 - c0);
+		T4f normal = cross3(c2 - c0, c1 - c0);
 
-		Simd4f doubleArea = sqrt(dot3(normal, normal));
+		T4f doubleArea = sqrt(dot3(normal, normal));
+		normal = normal / doubleArea;
 
-		Simd4f invSqrScale = dot3(delta, delta);
-		Simd4f isZero = invSqrScale < gSimd4fEpsilon;
-		Simd4f scale = rsqrt(invSqrScale);
+		T4f invSqrScale = dot3(delta, delta);
+		T4f isZero = invSqrScale < gSimd4fEpsilon;
+		T4f scale = rsqrt(invSqrScale);
+		T4f deltaLength = sqrt(invSqrScale);
 
 		//scale 'normalizes' delta, doubleArea normalized normal
-		Simd4f cosTheta = dot3(normal, delta) * scale / doubleArea;
-		Simd4f sinTheta = sqrt(max(gSimd4fZero, gSimd4fOne - cosTheta * cosTheta));
+		T4f cosTheta = dot3(normal, delta) * scale;
+		T4f sinTheta = sqrt(max(gSimd4fZero, gSimd4fOne - cosTheta * cosTheta));
 
 		// orthogonal to delta, in delta-normal plane, same length as delta
-		Simd4f liftDir = cross3(cross3(delta, normal), delta * scale);
+		T4f liftDir = cross3(cross3(delta, normal), delta * scale);
 
 		// sin(theta) * cos(theta) = 0.5 * sin(2 * theta)
-		Simd4f lift = liftCoefficient * cosTheta * sinTheta * liftDir;
-		Simd4f drag = dragCoefficient * abs(cosTheta) * doubleArea * delta; //dragCoefficient should compensate for double area
+		T4f lift = liftCoefficient * cosTheta * sinTheta * liftDir * deltaLength / itrDt;
+		T4f drag = dragCoefficient * abs(cosTheta) * delta * deltaLength / itrDt; 
 
-		Simd4f impulse = (lift + drag) & ~isZero;
+		T4f impulse = (drag + lift) * fluidDensity * doubleArea & ~isZero; //fluidDensity compensates for double area
 
-		curIt[i0] = c0 - impulse * splat<3>(c0);
-		curIt[i1] = c1 - impulse * splat<3>(c1);
-		curIt[i2] = c2 - impulse * splat<3>(c2);
+		curIt[i0] = c0 - ((impulse * splat<3>(c0)) & sMaskXYZ);
+		curIt[i1] = c1 - ((impulse * splat<3>(c1)) & sMaskXYZ);
+		curIt[i2] = c2 - ((impulse * splat<3>(c2)) & sMaskXYZ);
 	}
 }
 
 } // anonymous namespace
 
-template <typename Simd4f>
-cloth::SwSolverKernel<Simd4f>::SwSolverKernel(SwCloth const& cloth, SwClothData& clothData,
+template <typename T4f>
+cloth::SwSolverKernel<T4f>::SwSolverKernel(SwCloth const& cloth, SwClothData& clothData,
                                               SwKernelAllocator& allocator, IterationStateFactory& factory)
 : mCloth(cloth)
 , mClothData(clothData)
 , mAllocator(allocator)
 , mCollision(clothData, allocator)
 , mSelfCollision(clothData, allocator)
-, mState(factory.create<Simd4f>(cloth))
+, mState(factory.create<T4f>(cloth))
 {
 	mClothData.verify();
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::operator()()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::operator()()
 {
 	simulateCloth();
 }
 
-template <typename Simd4f>
-size_t cloth::SwSolverKernel<Simd4f>::estimateTemporaryMemory(const SwCloth& cloth)
+template <typename T4f>
+size_t cloth::SwSolverKernel<T4f>::estimateTemporaryMemory(const SwCloth& cloth)
 {
-	size_t collisionTempMemory = SwCollision<Simd4f>::estimateTemporaryMemory(cloth);
-	size_t selfCollisionTempMemory = SwSelfCollision<Simd4f>::estimateTemporaryMemory(cloth);
+	size_t collisionTempMemory = SwCollision<T4f>::estimateTemporaryMemory(cloth);
+	size_t selfCollisionTempMemory = SwSelfCollision<T4f>::estimateTemporaryMemory(cloth);
 
 	size_t tempMemory = std::max(collisionTempMemory, selfCollisionTempMemory);
-	size_t persistentMemory = SwCollision<Simd4f>::estimatePersistentMemory(cloth);
+	size_t persistentMemory = SwCollision<T4f>::estimatePersistentMemory(cloth);
 
 	// account for any allocator overhead (this could be exposed in the allocator)
 	size_t maxAllocs = 32;
@@ -485,13 +502,13 @@ size_t cloth::SwSolverKernel<Simd4f>::estimateTemporaryMemory(const SwCloth& clo
 	return maxAllocatorOverhead + persistentMemory + tempMemory;
 }
 
-template <typename Simd4f>
+template <typename T4f>
 template <typename AccelerationIterator>
-void cloth::SwSolverKernel<Simd4f>::integrateParticles(AccelerationIterator& accelIt, const Simd4f& prevBias)
+void cloth::SwSolverKernel<T4f>::integrateParticles(AccelerationIterator& accelIt, const T4f& prevBias)
 {
-	Simd4f* curIt = reinterpret_cast<Simd4f*>(mClothData.mCurParticles);
-	Simd4f* curEnd = curIt + mClothData.mNumParticles;
-	Simd4f* prevIt = reinterpret_cast<Simd4f*>(mClothData.mPrevParticles);
+	T4f* curIt = reinterpret_cast<T4f*>(mClothData.mCurParticles);
+	T4f* curEnd = curIt + mClothData.mNumParticles;
+	T4f* prevIt = reinterpret_cast<T4f*>(mClothData.mPrevParticles);
 
 	if (!mState.mIsTurning)
 	{
@@ -504,32 +521,32 @@ void cloth::SwSolverKernel<Simd4f>::integrateParticles(AccelerationIterator& acc
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::integrateParticles()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::integrateParticles()
 {
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::integrateParticles", /*ProfileContext::None*/ 0);
 
-	const Simd4f* startAccelIt = reinterpret_cast<const Simd4f*>(mClothData.mParticleAccelerations);
+	const T4f* startAccelIt = reinterpret_cast<const T4f*>(mClothData.mParticleAccelerations);
 
 	// dt^2 (todo: should this be the smoothed dt used for gravity?)
-	const Simd4f sqrIterDt = simd4f(sqr(mState.mIterDt)) & static_cast<Simd4f>(sMaskXYZ);
+	const T4f sqrIterDt = simd4f(sqr(mState.mIterDt)) & static_cast<T4f>(sMaskXYZ);
 
 	if (!startAccelIt)
 	{
 		// no per-particle accelerations, use a constant
-		ConstantIterator<Simd4f> accelIt(mState.mCurBias);
+		ConstantIterator<T4f> accelIt(mState.mCurBias);
 		integrateParticles(accelIt, mState.mPrevBias);
 	}
 	else
 	{
 		// iterator implicitly scales by dt^2 and adds gravity
-		ScaleBiasIterator<Simd4f, const Simd4f*> accelIt(startAccelIt, sqrIterDt, mState.mCurBias);
+		ScaleBiasIterator<T4f, const T4f*> accelIt(startAccelIt, sqrIterDt, mState.mCurBias);
 		integrateParticles(accelIt, mState.mPrevBias);
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::constrainTether()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::constrainTether()
 {
 	if (0.0f == mClothData.mTetherConstraintStiffness || !mClothData.mNumTethers)
 		return;
@@ -551,15 +568,15 @@ void cloth::SwSolverKernel<Simd4f>::constrainTether()
 	TetherIter tEnd = tFirst + numTethers;
 
 	//Tether properties
-	Simd4f stiffness =
-	    static_cast<Simd4f>(sMaskXYZ) & simd4f(numParticles * mClothData.mTetherConstraintStiffness / numTethers);
-	Simd4f scale = simd4f(mClothData.mTetherConstraintScale);
+	T4f stiffness =
+	    static_cast<T4f>(sMaskXYZ) & simd4f(numParticles * mClothData.mTetherConstraintStiffness / numTethers);
+	T4f scale = simd4f(mClothData.mTetherConstraintScale);
 
 	//Loop through all particles
 	for (; curIt != curEnd; curIt += 4, ++tFirst)
 	{
-		Simd4f position = loadAligned(curIt); //Get the first particle
-		Simd4f offset = gSimd4fZero; //We accumulate the offset in this variable
+		T4f position = loadAligned(curIt); //Get the first particle
+		T4f offset = gSimd4fZero; //We accumulate the offset in this variable
 
 		//Loop through all tethers connected to our particle
 		for (TetherIter tIt = tFirst; tIt < tEnd; tIt += numParticles)
@@ -567,15 +584,15 @@ void cloth::SwSolverKernel<Simd4f>::constrainTether()
 			NV_CLOTH_ASSERT(tIt->mAnchor < numParticles);
 
 			//Get the particle on the other end of the tether
-			Simd4f anchor = loadAligned(curFirst, tIt->mAnchor * sizeof(PxVec4));
-			Simd4f delta = anchor - position;
-			Simd4f sqrLength = gSimd4fEpsilon + dot3(delta, delta);
+			T4f anchor = loadAligned(curFirst, tIt->mAnchor * sizeof(PxVec4));
+			T4f delta = anchor - position;
+			T4f sqrLength = gSimd4fEpsilon + dot3(delta, delta);
 
-			Simd4f tetherLength = load(&tIt->mLength);
+			T4f tetherLength = load(&tIt->mLength);
 			tetherLength = splat<0>(tetherLength);
 
-			Simd4f radius = tetherLength * scale;
-			Simd4f slack = gSimd4fOne - radius * rsqrt(sqrLength);
+			T4f radius = tetherLength * scale;
+			T4f slack = gSimd4fOne - radius * rsqrt(sqrLength);
 
 			offset = offset + delta * max(slack, gSimd4fZero);
 		}
@@ -584,8 +601,8 @@ void cloth::SwSolverKernel<Simd4f>::constrainTether()
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::solveFabric()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::solveFabric()
 {
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::solveFabric", /*ProfileContext::None*/ 0);
 
@@ -604,7 +621,7 @@ void cloth::SwSolverKernel<Simd4f>::solveFabric()
 
 	uint32_t totalConstraints = 0;
 
-	Simd4f stiffnessExponent = simd4f(mCloth.mStiffnessFrequency * mState.mIterDt);
+	T4f stiffnessExponent = simd4f(mCloth.mStiffnessFrequency * mState.mIterDt);
 
 	//Loop through all phase configs
 	for (; cIt != cEnd; ++cIt)
@@ -623,10 +640,10 @@ void cloth::SwSolverKernel<Simd4f>::solveFabric()
 		totalConstraints += uint32_t(rEnd - rIt);
 
 		// (stiffness, multiplier, compressionLimit, stretchLimit)
-		Simd4f config = load(&cIt->mStiffness);
+		T4f config = load(&cIt->mStiffness);
 		// stiffness specified as fraction of constraint error per-millisecond
-		Simd4f scaledConfig = gSimd4fOne - exp2(config * stiffnessExponent);
-		Simd4f stiffness = select(sMaskXY, scaledConfig, config);
+		T4f scaledConfig = gSimd4fOne - exp2(config * stiffnessExponent);
+		T4f stiffness = select(sMaskXY, scaledConfig, config);
 
 		int neutralMultiplier = allEqual(sMaskYZW & stiffness, gSimd4fZero);
 
@@ -654,52 +671,49 @@ void cloth::SwSolverKernel<Simd4f>::solveFabric()
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::applyWind()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::applyWind()
 {
 	if (mClothData.mDragCoefficient == 0.0f && mClothData.mLiftCoefficient == 0.0f)
 		return;
 
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::applyWind", /*ProfileContext::None*/ 0);
 
-	Simd4f* curIt = reinterpret_cast<Simd4f*>(mClothData.mCurParticles);
-	Simd4f* prevIt = reinterpret_cast<Simd4f*>(mClothData.mPrevParticles);
+	T4f* curIt = reinterpret_cast<T4f*>(mClothData.mCurParticles);
+	T4f* prevIt = reinterpret_cast<T4f*>(mClothData.mPrevParticles);
 
 	const uint16_t* tIt = mClothData.mTriangles;
 	const uint16_t* tEnd = tIt + 3 * mClothData.mNumTriangles;
 
-	Simd4f dragCoefficient = simd4f(mClothData.mDragCoefficient);
-	Simd4f liftCoefficient = simd4f(mClothData.mLiftCoefficient);
-
 	if (mState.mIsTurning)
 	{
-		::applyWind<true>(curIt, prevIt, tIt, tEnd, dragCoefficient, liftCoefficient, mState.mWind,
+		::applyWind<true>(curIt, prevIt, tIt, tEnd, mState.mIterDt, mClothData.mDragCoefficient, mClothData.mLiftCoefficient, mClothData.mFluidDensity, mState.mWind,
 		                  mState.mRotationMatrix);
 	}
 	else
 	{
-		::applyWind<false>(curIt, prevIt, tIt, tEnd, dragCoefficient, liftCoefficient, mState.mWind,
+		::applyWind<false>(curIt, prevIt, tIt, tEnd, mState.mIterDt, mClothData.mDragCoefficient, mClothData.mLiftCoefficient, mClothData.mFluidDensity, mState.mWind,
 		                   mState.mRotationMatrix);
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::constrainMotion()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::constrainMotion()
 {
 	if (!mClothData.mStartMotionConstraints)
 		return;
 
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::constrainMotion", /*ProfileContext::None*/ 0);
 
-	Simd4f* curIt = reinterpret_cast<Simd4f*>(mClothData.mCurParticles);
-	Simd4f* curEnd = curIt + mClothData.mNumParticles;
+	T4f* curIt = reinterpret_cast<T4f*>(mClothData.mCurParticles);
+	T4f* curEnd = curIt + mClothData.mNumParticles;
 
-	const Simd4f* startIt = reinterpret_cast<const Simd4f*>(mClothData.mStartMotionConstraints);
-	const Simd4f* targetIt = reinterpret_cast<const Simd4f*>(mClothData.mTargetMotionConstraints);
+	const T4f* startIt = reinterpret_cast<const T4f*>(mClothData.mStartMotionConstraints);
+	const T4f* targetIt = reinterpret_cast<const T4f*>(mClothData.mTargetMotionConstraints);
 
-	Simd4f scaleBias = load(&mCloth.mMotionConstraintScale);
-	Simd4f stiffness = simd4f(mClothData.mMotionConstraintStiffness);
-	Simd4f scaleBiasStiffness = select(sMaskXYZ, scaleBias, stiffness);
+	T4f scaleBias = load(&mCloth.mMotionConstraintScale);
+	T4f stiffness = simd4f(mClothData.mMotionConstraintStiffness);
+	T4f scaleBiasStiffness = select(sMaskXYZ, scaleBias, stiffness);
 
 	if (!mClothData.mTargetMotionConstraints)
 	{
@@ -714,23 +728,23 @@ void cloth::SwSolverKernel<Simd4f>::constrainMotion()
 	}
 
 	// otherwise use an interpolating iterator
-	LerpIterator<Simd4f, const Simd4f*> interpolator(startIt, targetIt, mState.getCurrentAlpha());
+	LerpIterator<T4f, const T4f*> interpolator(startIt, targetIt, mState.getCurrentAlpha());
 	::constrainMotion(curIt, curEnd, interpolator, scaleBiasStiffness);
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::constrainSeparation()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::constrainSeparation()
 {
 	if (!mClothData.mStartSeparationConstraints)
 		return;
 
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::constrainSeparation", /*ProfileContext::None*/ 0);
 
-	Simd4f* curIt = reinterpret_cast<Simd4f*>(mClothData.mCurParticles);
-	Simd4f* curEnd = curIt + mClothData.mNumParticles;
+	T4f* curIt = reinterpret_cast<T4f*>(mClothData.mCurParticles);
+	T4f* curEnd = curIt + mClothData.mNumParticles;
 
-	const Simd4f* startIt = reinterpret_cast<const Simd4f*>(mClothData.mStartSeparationConstraints);
-	const Simd4f* targetIt = reinterpret_cast<const Simd4f*>(mClothData.mTargetSeparationConstraints);
+	const T4f* startIt = reinterpret_cast<const T4f*>(mClothData.mStartSeparationConstraints);
+	const T4f* targetIt = reinterpret_cast<const T4f*>(mClothData.mTargetSeparationConstraints);
 
 	if (!mClothData.mTargetSeparationConstraints)
 	{
@@ -744,43 +758,43 @@ void cloth::SwSolverKernel<Simd4f>::constrainSeparation()
 		return ::constrainSeparation(curIt, curEnd, targetIt);
 	}
 	// otherwise use an interpolating iterator
-	LerpIterator<Simd4f, const Simd4f*> interpolator(startIt, targetIt, mState.getCurrentAlpha());
+	LerpIterator<T4f, const T4f*> interpolator(startIt, targetIt, mState.getCurrentAlpha());
 	::constrainSeparation(curIt, curEnd, interpolator);
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::collideParticles()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::collideParticles()
 {
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::collideParticles", /*ProfileContext::None*/ 0);
 
 	mCollision(mState);
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::selfCollideParticles()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::selfCollideParticles()
 {
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::selfCollideParticles", /*ProfileContext::None*/ 0);
 
 	mSelfCollision();
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::updateSleepState()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::updateSleepState()
 {
 	NV_CLOTH_PROFILE_ZONE("cloth::SwSolverKernel::updateSleepState", /*ProfileContext::None*/ 0);
 
 	mClothData.mSleepTestCounter += std::max(1u, uint32_t(mState.mIterDt * 1000));
 	if (mClothData.mSleepTestCounter >= mCloth.mSleepTestInterval)
 	{
-		const Simd4f* prevIt = reinterpret_cast<Simd4f*>(mClothData.mPrevParticles);
-		const Simd4f* curIt = reinterpret_cast<Simd4f*>(mClothData.mCurParticles);
-		const Simd4f* curEnd = curIt + mClothData.mNumParticles;
+		const T4f* prevIt = reinterpret_cast<T4f*>(mClothData.mPrevParticles);
+		const T4f* curIt = reinterpret_cast<T4f*>(mClothData.mCurParticles);
+		const T4f* curEnd = curIt + mClothData.mNumParticles;
 
 		// calculate max particle delta since last iteration
-		Simd4f maxDelta = calculateMaxDelta(prevIt, curIt, curEnd);
+		T4f maxDelta = calculateMaxDelta(prevIt, curIt, curEnd);
 
 		++mClothData.mSleepPassCounter;
-		Simd4f threshold = simd4f(mCloth.mSleepThreshold * mState.mIterDt);
+		T4f threshold = simd4f(mCloth.mSleepThreshold * mState.mIterDt);
 		if (anyGreaterEqual(maxDelta, threshold))
 			mClothData.mSleepPassCounter = 0;
 
@@ -788,8 +802,8 @@ void cloth::SwSolverKernel<Simd4f>::updateSleepState()
 	}
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::iterateCloth()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::iterateCloth()
 {
 	// note on invMass (stored in current/previous positions.w):
 	// integrateParticles()
@@ -832,8 +846,8 @@ void cloth::SwSolverKernel<Simd4f>::iterateCloth()
 	updateSleepState();
 }
 
-template <typename Simd4f>
-void cloth::SwSolverKernel<Simd4f>::simulateCloth()
+template <typename T4f>
+void cloth::SwSolverKernel<T4f>::simulateCloth()
 {
 	while (mState.mRemainingIterations)
 	{

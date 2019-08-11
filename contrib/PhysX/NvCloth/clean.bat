@@ -13,6 +13,10 @@ rd .\test\bin /s /q
 md .\test\bin
 rd .\test\lib /s /q
 md .\test\lib
+rd .\samples\bin /s /q
+md .\samples\bin
+rd .\samples\lib /s /q
+md .\samples\lib
 
 for /d %%G in (".\compiler\vc*") do (
 rd %%G /s /q
@@ -25,5 +29,18 @@ rd %%G /s /q
 for /d %%G in (".\RenderCloth\compiler\vc*") do (
 rd %%G /s /q
 )
+
+for /d %%G in (".\samples\compiler\vc*") do (
+rd %%G /s /q
+)
+
+for /d %%G in (".\compiler\android-*") do (
+rd %%G /s /q
+)
+
+for /d %%G in (".\test\compiler\android-*") do (
+rd %%G /s /q
+)
+
 
 pause

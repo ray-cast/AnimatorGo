@@ -30,6 +30,8 @@
 #pragma once
 
 #include "NvCloth/Allocator.h"
+#include "NvCloth/Range.h"
+#include "NvCloth/ps/PsArray.h"
 
 namespace nv
 {
@@ -52,11 +54,20 @@ class Solver : public UserAllocated
   public:
 	virtual ~Solver() {}
 
-	/// Adds cloth object, returns true if successful.
-	virtual void addCloth(Cloth*) = 0;
+	/// Adds cloth object.
+	virtual void addCloth(Cloth* cloth) = 0;
+
+	/// Adds an array of cloth objects.
+	virtual void addCloths(Range<Cloth*> cloths) = 0;
 
 	/// Removes cloth object.
-	virtual void removeCloth(Cloth*) = 0;
+	virtual void removeCloth(Cloth* cloth) = 0;
+
+	/// Returns the numer of cloths added to the solver.
+	virtual int getNumCloths() const = 0;
+
+	/// Returns the pointer to the first cloth added to the solver
+	virtual Cloth * const * getClothList() const = 0;
 
 	// functions executing the simulation work.
 	/**	\brief Begins a simulation frame.
@@ -82,7 +93,8 @@ class Solver : public UserAllocated
 	*/
 	virtual int getSimulationChunkCount() const = 0;
 
-	// inter-collision parameters
+	/// inter-collision parameters
+	/// Note that using intercollision with more than 32 cloths added to the solver will cause undefined behavior
 	virtual void setInterCollisionDistance(float distance) = 0;
 	virtual float getInterCollisionDistance() const = 0;
 	virtual void setInterCollisionStiffness(float stiffness) = 0;

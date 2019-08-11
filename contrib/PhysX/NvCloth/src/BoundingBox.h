@@ -37,26 +37,26 @@ namespace nv
 namespace cloth
 {
 
-template <typename Simd4f>
+template <typename T4f>
 struct BoundingBox
 {
-	Simd4f mLower;
-	Simd4f mUpper;
+	T4f mLower;
+	T4f mUpper;
 };
 
-template <typename Simd4f>
-inline BoundingBox<Simd4f> loadBounds(const float* ptr)
+template <typename T4f>
+inline BoundingBox<T4f> loadBounds(const float* ptr)
 {
-	BoundingBox<Simd4f> result;
+	BoundingBox<T4f> result;
 	result.mLower = load(ptr);
 	result.mUpper = load(ptr + 3);
 	return result;
 }
 
-template <typename Simd4f>
-inline BoundingBox<Simd4f> emptyBounds()
+template <typename T4f>
+inline BoundingBox<T4f> emptyBounds()
 {
-	BoundingBox<Simd4f> result;
+	BoundingBox<T4f> result;
 
 	result.mLower = gSimd4fFloatMax;
 	result.mUpper = -result.mLower;
@@ -64,10 +64,10 @@ inline BoundingBox<Simd4f> emptyBounds()
 	return result;
 }
 
-template <typename Simd4f>
-inline BoundingBox<Simd4f> expandBounds(const BoundingBox<Simd4f>& bounds, const Simd4f* pIt, const Simd4f* pEnd)
+template <typename T4f>
+inline BoundingBox<T4f> expandBounds(const BoundingBox<T4f>& bounds, const T4f* pIt, const T4f* pEnd)
 {
-	BoundingBox<Simd4f> result = bounds;
+	BoundingBox<T4f> result = bounds;
 	for (; pIt != pEnd; ++pIt)
 	{
 		result.mLower = min(result.mLower, *pIt);
@@ -76,26 +76,26 @@ inline BoundingBox<Simd4f> expandBounds(const BoundingBox<Simd4f>& bounds, const
 	return result;
 }
 
-template <typename Simd4f>
-inline BoundingBox<Simd4f> expandBounds(const BoundingBox<Simd4f>& a, const BoundingBox<Simd4f>& b)
+template <typename T4f>
+inline BoundingBox<T4f> expandBounds(const BoundingBox<T4f>& a, const BoundingBox<T4f>& b)
 {
-	BoundingBox<Simd4f> result;
+	BoundingBox<T4f> result;
 	result.mLower = min(a.mLower, b.mLower);
 	result.mUpper = max(a.mUpper, b.mUpper);
 	return result;
 }
 
-template <typename Simd4f>
-inline BoundingBox<Simd4f> intersectBounds(const BoundingBox<Simd4f>& a, const BoundingBox<Simd4f>& b)
+template <typename T4f>
+inline BoundingBox<T4f> intersectBounds(const BoundingBox<T4f>& a, const BoundingBox<T4f>& b)
 {
-	BoundingBox<Simd4f> result;
+	BoundingBox<T4f> result;
 	result.mLower = max(a.mLower, b.mLower);
 	result.mUpper = min(a.mUpper, b.mUpper);
 	return result;
 }
 
-template <typename Simd4f>
-inline bool isEmptyBounds(const BoundingBox<Simd4f>& a)
+template <typename T4f>
+inline bool isEmptyBounds(const BoundingBox<T4f>& a)
 {
 	return anyGreater(a.mLower, a.mUpper) != 0;
 }

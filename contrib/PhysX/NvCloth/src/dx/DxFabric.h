@@ -85,7 +85,8 @@ public:
 	DxBatchedVector<DxTether> mTethers;
 	float mTetherLengthScale;
 
-	Vector<uint16_t>::Type mTriangles;
+	DxBatchedVector<uint32_t> mTriangles; //data stored is actually uint16_t
+	int mNumTriangles;
 
 	Vector<uint32_t>::Type mFirstConstraintInPhase;
 	Vector<uint32_t>::Type mNumConstraintsInPhase;

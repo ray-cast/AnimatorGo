@@ -31,7 +31,6 @@
 #include "SwFabric.h"
 #include "SwCloth.h"
 #include "SwSolver.h"
-#include "ClothImpl.h"
 #include <string.h> // for memcpy
 
 using namespace nv;
@@ -52,21 +51,21 @@ cloth::SwFactory::SwFactory()
 
 cloth::SwFactory::~SwFactory()
 {
-	NV_CLOTH_ASSERT(("All fabrics created by this factory need to be deleted before this factory is destroyed.", mFabrics.size() == 0));
+	NV_CLOTH_ASSERT_WITH_MESSAGE("All fabrics created by this factory need to be deleted before this factory is destroyed.", mFabrics.size() == 0);
 }
 
 cloth::Fabric* cloth::SwFactory::createFabric(uint32_t numParticles, Range<const uint32_t> phaseIndices,
-                                              Range<const uint32_t> sets, Range<const float> restvalues, Range<const float> stiffnessValues,
-                                              Range<const uint32_t> indices, Range<const uint32_t> anchors,
+											  Range<const uint32_t> sets, Range<const float> restvalues, Range<const float> stiffnessValues,
+											  Range<const uint32_t> indices, Range<const uint32_t> anchors,
                                               Range<const float> tetherLengths, Range<const uint32_t> triangles)
 {
 	return NV_CLOTH_NEW(SwFabric)(*this, numParticles, phaseIndices, sets, restvalues, stiffnessValues, indices, anchors, tetherLengths, triangles,
-	                    getNextFabricId());
+								  getNextFabricId());
 }
 
 cloth::Cloth* cloth::SwFactory::createCloth(Range<const PxVec4> particles, Fabric& fabric)
 {
-	return NV_CLOTH_NEW(SwClothImpl)(*this, fabric, particles);
+	return NV_CLOTH_NEW(SwCloth)(*this, static_cast<SwFabric&>(fabric), particles);
 }
 
 cloth::Solver* cloth::SwFactory::createSolver()
@@ -80,7 +79,7 @@ cloth::Cloth* cloth::SwFactory::clone(const Cloth& cloth)
 		return cloth.clone(*this); // forward to CuCloth
 
 	// copy construct
-	return NV_CLOTH_NEW(SwClothImpl)(*this, static_cast<const SwClothImpl&>(cloth));
+	return NV_CLOTH_NEW(SwCloth)(*this, static_cast<const SwCloth&>(cloth));
 }
 
 void cloth::SwFactory::extractFabricData(const Fabric& fabric, Range<uint32_t> phaseIndices, Range<uint32_t> sets,
@@ -157,7 +156,7 @@ void cloth::SwFactory::extractCollisionData(const Cloth& cloth, Range<PxVec4> sp
 {
 	NV_CLOTH_ASSERT(&cloth.getFactory() == this);
 
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 
 	NV_CLOTH_ASSERT(spheres.empty() || spheres.size() == swCloth.mStartCollisionSpheres.size());
 	NV_CLOTH_ASSERT(capsules.empty() || capsules.size() == swCloth.mCapsuleIndices.size() * 2);
@@ -188,7 +187,7 @@ void cloth::SwFactory::extractMotionConstraints(const Cloth& cloth, Range<PxVec4
 {
 	NV_CLOTH_ASSERT(&cloth.getFactory() == this);
 
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 
 	Vector<PxVec4>::Type const& srcConstraints = !swCloth.mMotionConstraints.mTarget.empty()
 	                                               ? swCloth.mMotionConstraints.mTarget
@@ -207,7 +206,7 @@ void cloth::SwFactory::extractSeparationConstraints(const Cloth& cloth, Range<Px
 {
 	NV_CLOTH_ASSERT(&cloth.getFactory() == this);
 
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 
 	Vector<PxVec4>::Type const& srcConstraints = !swCloth.mSeparationConstraints.mTarget.empty()
 	                                               ? swCloth.mSeparationConstraints.mTarget
@@ -226,7 +225,7 @@ void cloth::SwFactory::extractParticleAccelerations(const Cloth& cloth, Range<Px
 {
 	NV_CLOTH_ASSERT(&cloth.getFactory() == this);
 
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 
 	if (!swCloth.mParticleAccelerations.empty())
 	{
@@ -242,7 +241,7 @@ void cloth::SwFactory::extractVirtualParticles(const Cloth& cloth, Range<uint32_
 {
 	NV_CLOTH_ASSERT(this == &cloth.getFactory());
 
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 
 	uint32_t numIndices = cloth.getNumVirtualParticles();
 	uint32_t numWeights = cloth.getNumVirtualParticleWeights();
@@ -286,14 +285,14 @@ void cloth::SwFactory::extractVirtualParticles(const Cloth& cloth, Range<uint32_
 
 void cloth::SwFactory::extractSelfCollisionIndices(const Cloth& cloth, Range<uint32_t> destIndices) const
 {
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 	NV_CLOTH_ASSERT(destIndices.size() == swCloth.mSelfCollisionIndices.size());
 	memcpy(destIndices.begin(), swCloth.mSelfCollisionIndices.begin(), destIndices.size() * sizeof(uint32_t));
 }
 
 void cloth::SwFactory::extractRestPositions(const Cloth& cloth, Range<PxVec4> destRestPositions) const
 {
-	const SwCloth& swCloth = static_cast<const SwClothImpl&>(cloth).mCloth;
+	const SwCloth& swCloth = static_cast<const SwCloth&>(cloth);
 	NV_CLOTH_ASSERT(destRestPositions.size() == swCloth.mRestPositions.size());
 	memcpy(destRestPositions.begin(), swCloth.mRestPositions.begin(), destRestPositions.size() * sizeof(PxVec4));
 }

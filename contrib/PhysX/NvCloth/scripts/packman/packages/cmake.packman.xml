@@ -1,0 +1,7 @@
+<project toolsVersion="3.1">
+	<dependency name="cmake">
+		<package name="cmake-x64" version="3.7.0" platforms="windows"/>
+		<package name="cmake-linux-x86_64" version="3.7.2" platforms="linux"/>
+		<package name="cmake-mac-x86_64" version="3.7.2" platforms="mac"/>
+	</dependency>
+</project>

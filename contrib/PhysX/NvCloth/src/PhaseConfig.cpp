@@ -28,8 +28,9 @@
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
 #include "NvCloth/PhaseConfig.h"
-#include "PsMathUtils.h"
+#include "NvCloth/ps/PsMathUtils.h"
 #include <algorithm>
+#include "ClothImpl.h"
 
 using namespace physx;
 
@@ -43,14 +44,6 @@ PhaseConfig transform(const PhaseConfig&);
 
 using namespace nv;
 
-namespace
-{
-float safeLog2(float x)
-{
-	float saturated = std::max(0.0f, std::min(x, 1.0f));
-	return saturated ? shdfnd::log2(saturated) : -FLT_MAX_EXP;
-}
-}
 
 // convert from user input to solver format
 cloth::PhaseConfig cloth::transform(const PhaseConfig& config)

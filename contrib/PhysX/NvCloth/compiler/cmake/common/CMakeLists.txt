@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
+
+MESSAGE("[NvCloth]cmake/common/CMakeList.txt")
+
 project(NvCloth CXX)
 
 CMAKE_POLICY(SET CMP0057 NEW) # Enable IN_LIST
@@ -7,31 +10,30 @@ SET(GW_DEPS_ROOT $ENV{GW_DEPS_ROOT})
 
 SET(CMAKE_MODULE_PATH $ENV{GW_DEPS_ROOT}/sw/physx/tools/CMakeModules)
 
-IF(EXISTS $ENV{GW_DEPS_ROOT}/Externals/CMakeModules)
-	SET(CMAKE_MODULE_PATH $ENV{GW_DEPS_ROOT}/Externals/CMakeModules)
-ENDIF()
-
-IF(EXISTS $ENV{GW_DEPS_ROOT}/Externals/CMakeModules)
-	SET(CMAKE_MODULE_PATH $ENV{GW_DEPS_ROOT}/Externals/CMakeModules)
-ENDIF()
+MESSAGE( "[NvCloth]cmake/common CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
 
 # Add find modules to the path
 IF(NOT EXISTS ${CMAKE_MODULE_PATH})
 	MESSAGE(FATAL_ERROR "Could not find CMakeModules at ${CMAKE_MODULE_PATH}")
 ENDIF()
 
+MESSAGE("NvCloth Build Platform: " ${TARGET_BUILD_PLATFORM})
+MESSAGE("Using CXX Compiler: " ${CMAKE_CXX_COMPILER})
 
 # TODO: Fail if we didn't find deps
 
 IF(CMAKE_CONFIGURATION_TYPES)
 	SET(CMAKE_CONFIGURATION_TYPES debug checked profile release)
-	SET(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "Reset config to what we need" FORCE)
+	SET(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
+		"Reset config to what we need" 
+		FORCE)
 	
 	SET(CMAKE_SHARED_LINKER_FLAGS_CHECKED "")
 	SET(CMAKE_SHARED_LINKER_FLAGS_PROFILE "")
 
 	# Build PDBs for all configurations
-	SET(CMAKE_SHARED_LINKER_FLAGS "/DEBUG")	
+	SET(CMAKE_SHARED_LINKER_FLAGS "/DEBUG")
+	
 ENDIF()
 
 # Default to appending "DEBUG", "PROFILE", etc to produced artifacts
@@ -76,3 +78,4 @@ IF(USE_RESPONSE_FILES)
 	SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 1)
 	SET(CMAKE_CXX_USE_RESPONSE_FILE_FOR_LIBRARIES 1)
 ENDIF()
+MESSAGE("[NvCloth]cmake/common/CMakeList.txt END")

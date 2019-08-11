@@ -63,32 +63,49 @@ Simd4i intFloor(const Simd4f& v)
 {
 	Simd4i i = _mm_cvttps_epi32(v);
 	return _mm_sub_epi32(i, _mm_srli_epi32(simd4i(v), 31));
+	//Simd4i i = truncate(v);
+	//return i - (simd4i(v) >> 31);
 }
 
 Simd4i horizontalOr(const Simd4i& mask)
 {
 	Simd4i tmp = mask | _mm_shuffle_epi32(mask, 0xb1); // w z y x -> z w x y
 	return tmp | _mm_shuffle_epi32(tmp, 0x4e);         // w z y x -> y x w z
+//	return splat<0>(mask) | splat<1>(mask) | splat<2>(mask) | splat<3>(mask);
 }
 
 Gather<Simd4i>::Gather(const Simd4i& index)
 {
-	mSelectQ = _mm_srai_epi32(index << 29, 31);
-	mSelectD = _mm_srai_epi32(index << 30, 31);
-	mSelectW = _mm_srai_epi32(index << 31, 31);
-	mOutOfRange = (index ^ sIntSignBit) > sSignedMask;
+	//index are grid positions
+	//grid has 8 spaces, grid indices that are within rage use 3 bits (0x7 mask)
+	mSelectQ = _mm_srai_epi32(index << 29, 31); //expand bit 0x4 to the whole register
+	mSelectD = _mm_srai_epi32(index << 30, 31); //expand bit 0x2 to the whole register
+	mSelectW = _mm_srai_epi32(index << 31, 31); //expand the least significant bit (0x1) to the whole register
+	mOutOfRange = (index ^ sIntSignBit) > sSignedMask; //true if index is outside the grid = (index > 0x7 || index < 0x0)
 }
 
 Simd4i Gather<Simd4i>::operator()(const Simd4i* ptr) const
 {
+	//ptr points to the cone/sphere grid
+
 	// more efficient with _mm_shuffle_epi8 (SSSE3)
+
+	//lo contains the bottom 4 grid cells, heigh the top 4
 	Simd4i lo = ptr[0], hi = ptr[1];
+
+	//select correct cell in the grid using binary decision tree
+	//      m  =         select ?     a        :    b
+	//first bit (even/uneven cells)
 	Simd4i m01 = select(mSelectW, splat<1>(lo), splat<0>(lo));
 	Simd4i m23 = select(mSelectW, splat<3>(lo), splat<2>(lo));
 	Simd4i m45 = select(mSelectW, splat<1>(hi), splat<0>(hi));
 	Simd4i m67 = select(mSelectW, splat<3>(hi), splat<2>(hi));
+
+	//second bit
 	Simd4i m0123 = select(mSelectD, m23, m01);
 	Simd4i m4567 = select(mSelectD, m67, m45);
+
+	// third bit							force result zero if it is out of range
 	return select(mSelectQ, m4567, m0123) & ~mOutOfRange;
 }
 

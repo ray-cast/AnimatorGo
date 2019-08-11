@@ -30,7 +30,7 @@
 #pragma once
 
 #include "NvCloth/Factory.h"
-#include <PsArray.h>
+#include "NvCloth/ps/PsArray.h"
 #include <foundation/PxVec4.h>
 #include <foundation/PxVec3.h>
 #include <cuda.h>
@@ -52,7 +52,7 @@ class CuFactory : public Factory
 
   public:
 	typedef CuFabric FabricType;
-	typedef ClothImpl<CuCloth> ImplType;
+	typedef CuCloth ClothType;
 
 	CuFactory(CUcontext);
 	virtual ~CuFactory();

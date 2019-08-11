@@ -30,8 +30,8 @@
 #pragma once
 
 #include "CuDevicePointer.h"
-#include "PsArray.h"
-#include "PsUtilities.h"
+#include "NvCloth/ps/PsArray.h"
+#include "../ps/PsUtilities.h"
 #include <algorithm>
 
 namespace nv

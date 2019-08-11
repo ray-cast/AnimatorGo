@@ -124,6 +124,7 @@ cloth::CuFrameData::CuFrameData(CuCloth& cloth, uint32_t numSharedPositions, con
 	stiffness = gSimd4fOne - exp2(logStiffness * stiffnessExponent);
 	mDragCoefficient = array(stiffness)[0];
 	mLiftCoefficient = array(stiffness)[1];
+	mFluidDensity = cloth.mFluidDensity * 0.5f; //divide by 2 to so we don't have to compensate for double area from cross product in the solver
 	for (int i = 0; i < 9; ++i)
 		mRotation[i] = array(state.mRotationMatrix[i / 3])[i % 3];
 

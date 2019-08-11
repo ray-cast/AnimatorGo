@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "CuCheckSuccess.h"
 #include "NvCloth/Allocator.h"
 
@@ -102,7 +104,7 @@ public:
 
 	void destroy(T* ptr)
 	{
-		core::unused(ptr);
+		PX_UNUSED(ptr);
 		ptr->~T();
 	}
 
@@ -122,13 +124,13 @@ bool operator!=(const CuHostAllocator<T1, Flag1>&, const CuHostAllocator<T2, Fla
 	return false;
 }
 
-//Use CuHostVectorImpl instead of physx::shdfnd::Array<T, typename CuHostAllocator<T, Flags>> 
+//Use CuHostVectorImpl instead of physx::shdfnd::Array<T, CuHostAllocator<T, Flags>> 
 //This entire class is just to make sure that the mDevicePtr from the CuHostAllocator is properly swapped together with mData
 template <typename T, unsigned Flags = 0>
-class CuHostVectorImpl : public physx::shdfnd::Array<T, typename CuHostAllocator<T, Flags>>
+class CuHostVectorImpl : public physx::shdfnd::Array<T, CuHostAllocator<T, Flags>>
 {
-	typedef physx::shdfnd::Array<T, typename CuHostAllocator<T, Flags>> Super;
-	typedef typename CuHostAllocator<T, Flags> Alloc;
+	typedef physx::shdfnd::Array<T, CuHostAllocator<T, Flags>> Super;
+	typedef CuHostAllocator<T, Flags> Alloc;
 public:
 	explicit CuHostVectorImpl(const physx::PxEMPTY v):Super(v){}
 	PX_INLINE explicit CuHostVectorImpl(const Alloc& alloc = Alloc()):Super(alloc){}
@@ -142,10 +144,10 @@ public:
 
 	PX_INLINE explicit CuHostVectorImpl(const T* first, const T* last, const Alloc& alloc = Alloc()):Super(first,last,alloc){}
 
-	void swap(physx::shdfnd::Array<T, typename CuHostAllocator<T, Flags>>& other)
+	void swap(CuHostVectorImpl<T, Flags>& other)
 	{
-		PX_ASSERT(mContext == other.mContext);
-		physx::shdfnd::swap(mDevicePtr, other.mDevicePtr);
+		NV_CLOTH_ASSERT(this->mContext == other.mContext);
+		physx::shdfnd::swap(this->mDevicePtr, other.mDevicePtr);
 		Super::swap(other);
 	}
 };

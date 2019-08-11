@@ -37,15 +37,15 @@
 #include <foundation/PxVec4.h>
 #include <foundation/PxVec3.h>
 #include <foundation/PxTransform.h>
+#include "SwFactory.h"
+#include "SwFabric.h"
+#include "ClothImpl.h"
 
 namespace nv
 {
 
 namespace cloth
 {
-
-class SwFabric;
-class SwFactory;
 
 struct SwConstraints
 {
@@ -62,15 +62,27 @@ struct SwConstraints
 	Vector<physx::PxVec4>::Type mTarget;
 };
 
-class SwCloth
+struct SwContextLock
+{
+	SwContextLock(const SwFactory&)
+	{
+	}
+};
+
+class SwCloth;
+
+template<>
+class ClothTraits<SwCloth>
+{
+public:
+	typedef SwFactory FactoryType;
+	typedef SwFabric FabricType;
+	typedef SwContextLock ContextLockType;
+};
+
+class SwCloth : public ClothImpl<SwCloth>
 {
 	SwCloth& operator = (const SwCloth&); // not implemented
-	struct SwContextLock
-	{
-		SwContextLock(const SwFactory&)
-		{
-		}
-	};
 
   public:
 	typedef SwFactory FactoryType;
@@ -87,14 +99,24 @@ class SwCloth
 	~SwCloth(); // not virtual on purpose
 
   public:
-	bool isSleeping() const
-	{
-		return mSleepPassCounter >= mSleepAfterCount;
-	}
-	void wakeUp()
-	{
-		mSleepPassCounter = 0;
-	}
+	virtual Cloth* clone(Factory& factory) const;
+	uint32_t getNumParticles() const;
+
+	void lockParticles() const;
+	void unlockParticles() const;
+
+	MappedRange<physx::PxVec4> getCurrentParticles();
+	MappedRange<const physx::PxVec4> getCurrentParticles() const;
+	MappedRange<physx::PxVec4> getPreviousParticles();
+	MappedRange<const physx::PxVec4> getPreviousParticles() const;
+	GpuParticles getGpuParticles();
+
+	void setPhaseConfig(Range<const PhaseConfig> configs);
+	void setSelfCollisionIndices(Range<const uint32_t> indices);
+	uint32_t getNumVirtualParticles() const;
+	Range<physx::PxVec4> getParticleAccelerations();
+	void clearParticleAccelerations();
+	void setVirtualParticles(Range<const uint32_t[4]> indices, Range<const physx::PxVec3> weights);
 
 	void notifyChanged()
 	{
@@ -117,27 +139,6 @@ class SwCloth
 	Vector<physx::PxVec4>::Type mCurParticles;
 	Vector<physx::PxVec4>::Type mPrevParticles;
 
-	physx::PxVec3 mParticleBoundsCenter;
-	physx::PxVec3 mParticleBoundsHalfExtent;
-
-	physx::PxVec3 mGravity;
-	physx::PxVec3 mLogDamping;
-	physx::PxVec3 mLinearLogDrag;
-	physx::PxVec3 mAngularLogDrag;
-	physx::PxVec3 mLinearInertia;
-	physx::PxVec3 mAngularInertia;
-	physx::PxVec3 mCentrifugalInertia;
-	float mSolverFrequency;
-	float mStiffnessFrequency;
-
-	physx::PxTransform mTargetMotion;
-	physx::PxTransform mCurrentMotion;
-	physx::PxVec3 mLinearVelocity;
-	physx::PxVec3 mAngularVelocity;
-
-	float mPrevIterDt;
-	MovingAverage mIterDtAvg;
-
 	Vector<PhaseConfig>::Type mPhaseConfigs; // transformed!
 
 	// tether constraints stuff
@@ -155,11 +156,6 @@ class SwCloth
 
 	// particle acceleration stuff
 	Vector<physx::PxVec4>::Type mParticleAccelerations;
-
-	// wind
-	physx::PxVec3 mWind;
-	float mDragLogCoefficient;
-	float mLiftLogCoefficient;
 
 	// collision stuff
 	Vector<IndexPair>::Type mCapsuleIndices;
@@ -187,16 +183,8 @@ class SwCloth
 
 	Vector<physx::PxVec4>::Type mRestPositions;
 
-	// sleeping
-	uint32_t mSleepTestInterval; // how often to test for movement
-	uint32_t mSleepAfterCount;   // number of tests to pass before sleep
-	float mSleepThreshold;       // max movement delta to pass test
-	uint32_t mSleepPassCounter;  // how many tests passed
-	uint32_t mSleepTestCounter;  // how many iterations since tested
-
 	// unused for CPU simulation
 	void* mUserData;
-
 };
 
 } // namespace cloth

@@ -39,7 +39,7 @@
 
 namespace
 {
-#if __CUDA_ARCH__ >= 300
+/*#if __CUDA_ARCH__ >= 300
 template <int>
 __device__ void scanWarp(Pointer<Shared, int32_t> counts)
 {
@@ -60,7 +60,7 @@ __device__ void scanWarp(Pointer<Shared, int32_t> counts)
 	             : "+r"(*generic(counts))
 	             :);
 }
-#else
+#else*/
 template <int stride>
 __device__ void scanWarp(Pointer<Shared, int32_t> counts)
 {
@@ -77,7 +77,7 @@ __device__ void scanWarp(Pointer<Shared, int32_t> counts)
 	if (laneIdx >= 16)
 		*ptr += ptr[-16 * stride];
 }
-#endif
+//#endif
 
 // sorts array by upper 16bits
 // [keys] must be at least 2 * n in length, in/out in first n elements
@@ -112,10 +112,10 @@ __device__ void radixSort(int32_t* keys, int32_t n, Pointer<Shared, int32_t> his
 		for (int32_t i = startIndex; i < endIndex; i += 32)
 		{
 			int32_t key = i < n ? srcKeys[i] >> p : 15;
-			uint32_t ballot1 = __ballot(key & 1);
-			uint32_t ballot2 = __ballot(key & 2);
-			uint32_t ballot4 = __ballot(key & 4);
-			uint32_t ballot8 = __ballot(key & 8);
+			uint32_t ballot1 = __ballot_sync(0xffffffff,key & 1);
+			uint32_t ballot2 = __ballot_sync(0xffffffff,key & 2);
+			uint32_t ballot4 = __ballot_sync(0xffffffff,key & 4);
+			uint32_t ballot8 = __ballot_sync(0xffffffff,key & 8);
 			warpCount += __popc((mask1 ^ ballot1) & (mask2 ^ ballot2) & (mask4 ^ ballot4) & (mask8 ^ ballot8));
 		}
 
@@ -147,10 +147,10 @@ __device__ void radixSort(int32_t* keys, int32_t n, Pointer<Shared, int32_t> his
 		for (int32_t i = startIndex; i < endIndex; i += 32)
 		{
 			int32_t key = i < n ? srcKeys[i] >> p : 15;
-			uint32_t ballot1 = __ballot(key & 1);
-			uint32_t ballot2 = __ballot(key & 2);
-			uint32_t ballot4 = __ballot(key & 4);
-			uint32_t ballot8 = __ballot(key & 8);
+			uint32_t ballot1 = __ballot_sync(0xffffffff,key & 1);
+			uint32_t ballot2 = __ballot_sync(0xffffffff,key & 2);
+			uint32_t ballot4 = __ballot_sync(0xffffffff,key & 4);
+			uint32_t ballot8 = __ballot_sync(0xffffffff,key & 8);
 			uint32_t bits = ((key & 1) - 1 ^ ballot1) & (!!(key & 2) - 1 ^ ballot2) & (!!(key & 4) - 1 ^ ballot4) &
 			                (!!(key & 8) - 1 ^ ballot8);
 			int32_t index = hIt[key & 15] + __popc(bits & laneMask);

@@ -168,6 +168,32 @@ class Cloth : public UserAllocated
 	/** \brief Adjust the position of the cloth without affecting the dynamics (to call after a world origin shift, for example). */
 	virtual void teleport(const physx::PxVec3& delta) = 0;
 
+	/** \brief Adjust the position and rotation of the cloth without affecting the dynamics (to call after a world origin shift, for example). 
+		The velocity will be set to zero this frame, unless setTranslation/setRotation is called with a different value after this function is called.
+		The correct order to use this is:
+		\code
+		cloth->teleportToLocation(pos, rot);
+		pos += velocity * dt;
+		rot += 0.5 * angularVelocity * rot * dt;
+		cloth->setTranslation(pos);
+		cloth->setRotation(rot);
+		\endcode
+		*/
+	virtual void teleportToLocation(const physx::PxVec3& translation, const physx::PxQuat& rotation) = 0;
+
+	/** \brief Don't recalculate the velocity based on the values provided by setTranslation and setRotation for one frame (so it acts as if the velocity was the same as last frame).
+		This is useful when the cloth is moving while teleported, but the integration of the cloth position for that frame is already included in the teleport.
+		Example:
+		\code
+		pos += velocity * dt;
+		rot += 0.5 * angularVelocity * rot * dt;
+		cloth->teleportToLocation(pos, rot);
+		cloth->ignoreVelocityDiscontinuity();
+		\endcode
+		*/
+	virtual void ignoreVelocityDiscontinuity() = 0;
+
+
 	/* solver parameters */
 
 	/** \brief Returns the delta time used for previous iteration.*/
@@ -237,6 +263,7 @@ class Cloth : public UserAllocated
 		\endcode
 	  */
 	virtual void setSpheres(Range<const physx::PxVec4> spheres, uint32_t first, uint32_t last) = 0;
+	virtual void setSpheres(Range<const physx::PxVec4> startSpheres, Range<const physx::PxVec4> targetSpheres) = 0;
 	/// Returns the number of spheres currently set.
 	virtual uint32_t getNumSpheres() const = 0;
 
@@ -265,6 +292,7 @@ class Cloth : public UserAllocated
 		Use setConvexes to enable planes for collision detection.
 	  */
 	virtual void setPlanes(Range<const physx::PxVec4> planes, uint32_t first, uint32_t last) = 0;
+	virtual void setPlanes(Range<const physx::PxVec4> startPlanes, Range<const physx::PxVec4> targetPlanes) = 0;
 	/// Returns the number of planes currently set.
 	virtual uint32_t getNumPlanes() const = 0;
 
@@ -279,10 +307,10 @@ class Cloth : public UserAllocated
 
 	/** \brief Set triangles for collision.
 		Each triangle in the list is defined by of 3 vertices.
-		The values currently in range [first, last[ will be replaced with the content of convexMasks.
+		The values currently in range [first, last[ will be replaced with the content of triangles.
 		*/
 	virtual void setTriangles(Range<const physx::PxVec3> triangles, uint32_t first, uint32_t last) = 0;
-	virtual void setTriangles(Range<const physx::PxVec3> triangles, Range<const physx::PxVec3>, uint32_t first) = 0;
+	virtual void setTriangles(Range<const physx::PxVec3> startTriangles, Range<const physx::PxVec3> targetTriangles, uint32_t first) = 0;
 	/// Returns the number of triangles currently set.
 	virtual uint32_t getNumTriangles() const = 0;
 
@@ -376,6 +404,10 @@ class Cloth : public UserAllocated
 	virtual void setLiftCoefficient(float) = 0;
 	///Returns value set with setLiftCoefficient().
 	virtual float getLiftCoefficient() const = 0;
+	/** /brief Sets the fluid density used for air drag/lift calculations. */
+	virtual void setFluidDensity(float) = 0;
+	///Returns value set with setFluidDensity().
+	virtual float getFluidDensity() const = 0;
 
 	/* self collision */
 
@@ -388,7 +420,12 @@ class Cloth : public UserAllocated
 	///Returns value set with setSelfCollisionStiffness().
 	virtual float getSelfCollisionStiffness() const = 0;
 
+	/** \brief Set self collision indices.
+		Each index in the range indicates that the particle at that index should be used for self collision.
+		If set to an empty range (default) all particles will be used.
+	*/
 	virtual void setSelfCollisionIndices(Range<const uint32_t>) = 0;
+	///Returns the number of self collision indices set.
 	virtual uint32_t getNumSelfCollisionIndices() const = 0;
 
 	/* rest positions */

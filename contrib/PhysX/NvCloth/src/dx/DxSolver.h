@@ -55,8 +55,11 @@ class DxSolver : private DxContextLock, public Solver
 	DxSolver(DxFactory&);
 	~DxSolver();
 
-	virtual void addCloth(Cloth*);
-	virtual void removeCloth(Cloth*);
+	virtual void addCloth(Cloth*) override;
+	virtual void addCloths(Range<Cloth*> cloths) override;
+	virtual void removeCloth(Cloth*) override;
+	virtual int getNumCloths() const override;
+	virtual Cloth * const * getClothList() const override;
 
 	// functions executing the simulation work.
 	virtual bool beginSimulation(float dt);
@@ -99,6 +102,10 @@ class DxSolver : private DxContextLock, public Solver
 	}
 
   private:
+	// add cloth helper functions
+	void addClothAppend(Cloth* cloth);
+	void addClothUpdateData();
+
 	// simulate helper functions
 	void beginFrame();
 	void executeKernel();

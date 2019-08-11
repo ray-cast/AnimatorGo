@@ -57,8 +57,11 @@ public:
 	CuSolver(CuFactory&);
 	~CuSolver();
 
-	virtual void addCloth(Cloth*);
-	virtual void removeCloth(Cloth*);
+	virtual void addCloth(Cloth*) override;
+	virtual void addCloths(Range<Cloth*> cloths) override;
+	virtual void removeCloth(Cloth*) override;
+	virtual int getNumCloths() const override;
+	virtual Cloth * const * getClothList() const override;
 
 	// functions executing the simulation work.
 	virtual bool beginSimulation(float dt);
@@ -101,6 +104,10 @@ public:
 	}
 
   private:
+	// add cloth helper functions
+	void addClothAppend(Cloth* cloth);
+	void addClothUpdateData();
+
 	void updateKernelData(); // context needs to be acquired
 
 	// simulate helper functions

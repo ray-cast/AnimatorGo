@@ -30,7 +30,8 @@
 #include "CuFabric.h"
 #include "CuContextLock.h"
 #include "CuFactory.h"
-#include <PsUtilities.h>
+#include "../ps/PsUtilities.h"
+#include <limits.h>
 
 using namespace physx;
 
@@ -164,7 +165,8 @@ uint32_t cloth::CuFabric::getNumStiffnessValues() const
 
 uint32_t cloth::CuFabric::getNumSets() const
 {
-	return uint32_t(mSets.size() - 1);
+	return uint32_t(physx::PxMax(0, (int)mSets.size() - 1));
+
 }
 
 uint32_t cloth::CuFabric::getNumIndices() const

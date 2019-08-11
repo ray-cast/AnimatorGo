@@ -10,6 +10,21 @@ SET( NV_CLOTH_SOURCE_LIST
 	${PROJECT_SOURCE_DIR}/include/NvCloth/Range.h
 	${PROJECT_SOURCE_DIR}/include/NvCloth/Solver.h
 	
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/Ps.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsAtomic.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsAlignedMalloc.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsAllocator.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsAllocator.cpp
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsArray.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsBasicTemplates.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsBitUtils.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsHash.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsHashInternals.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsHashMap.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsIntrinsics.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsUserAllocated.h
+	${PROJECT_SOURCE_DIR}/include/NvCloth/ps/PsMathUtils.h
+	
 	${PROJECT_SOURCE_DIR}/src/Allocator.cpp
 	${PROJECT_SOURCE_DIR}/src/BoundingBox.h
 	${PROJECT_SOURCE_DIR}/src/Callbacks.cpp
@@ -46,6 +61,7 @@ SET( NV_CLOTH_SOURCE_LIST
 	${PROJECT_SOURCE_DIR}/src/TripletScheduler.cpp
 	${PROJECT_SOURCE_DIR}/src/TripletScheduler.h
 	${PROJECT_SOURCE_DIR}/src/Vec4T.h
+
 	${PROJECT_SOURCE_DIR}/src/NvSimd/NvSimd4f.h
 	${PROJECT_SOURCE_DIR}/src/NvSimd/NvSimd4i.h
 	${PROJECT_SOURCE_DIR}/src/NvSimd/NvSimdTypes.h
@@ -62,6 +78,13 @@ SET( NV_CLOTH_SOURCE_LIST
 	${PROJECT_SOURCE_DIR}/src/sse2/SwCollisionHelpers.h
 	${PROJECT_SOURCE_DIR}/src/sse2/SwSolveConstraints.h
 	
+	${PROJECT_SOURCE_DIR}/src/ps/PsAlloca.h
+	${PROJECT_SOURCE_DIR}/src/ps/PsFPU.h
+	${PROJECT_SOURCE_DIR}/src/ps/PsSort.h
+	${PROJECT_SOURCE_DIR}/src/ps/PsSortInternals.h
+	${PROJECT_SOURCE_DIR}/src/ps/PsUtilities.h
+	${PROJECT_SOURCE_DIR}/src/ps/PxIntrinsics.h
+	
 	${PROJECT_SOURCE_DIR}/extensions/include/NvClothExt/ClothFabricCooker.h
 	${PROJECT_SOURCE_DIR}/extensions/include/NvClothExt/ClothMeshDesc.h
 	${PROJECT_SOURCE_DIR}/extensions/include/NvClothExt/ClothMeshQuadifier.h
@@ -74,14 +97,13 @@ SET( NV_CLOTH_SOURCE_LIST
 
 ADD_LIBRARY(NvCloth ${NVCLOTH_LIBTYPE} ${NV_CLOTH_SOURCE_LIST})
 
-foreach(source IN LISTS NV_CLOTH_SOURCE_LIST)
-	string(LENGTH ${PROJECT_SOURCE_DIR} strlen)
-	string(SUBSTRING ${source} ${strlen} -1 timmedSource)
-	#MESSAGE("${source} -> ${timmedSource}")
-	get_filename_component(source_path "${timmedSource}" PATH)
-	string(REPLACE "/" "\\" source_path_msvc "${source_path}")
-	source_group("${source_path_msvc}" FILES "${source}")
-endforeach()
+FOREACH(source IN LISTS NV_CLOTH_SOURCE_LIST)
+	STRING(LENGTH ${PROJECT_SOURCE_DIR} strlen)
+	STRING(SUBSTRING ${source} ${strlen} -1 timmedSource)
+	GET_FILENAME_COMPONENT(source_path "${timmedSource}" PATH)
+	STRING(REPLACE "/" "\\" source_path_msvc "${source_path}")
+	SOURCE_GROUP("${source_path_msvc}" FILES "${source}")
+ENDFOREACH()
 
 TARGET_INCLUDE_DIRECTORIES(NvCloth PUBLIC ${PROJECT_SOURCE_DIR}/include)
 TARGET_INCLUDE_DIRECTORIES(NvCloth PUBLIC ${PROJECT_SOURCE_DIR}/extensions/include)
@@ -92,17 +114,7 @@ TARGET_INCLUDE_DIRECTORIES(NvCloth PRIVATE ${PXSHARED_PATH}/src/foundation/inclu
 TARGET_INCLUDE_DIRECTORIES(NvCloth PRIVATE ${PROJECT_SOURCE_DIR}/src)
 TARGET_INCLUDE_DIRECTORIES(NvCloth PRIVATE ${PROJECT_SOURCE_DIR}/extensions/src)
 
-TARGET_LINK_LIBRARIES(NvCloth PUBLIC PhysXFoundation)
-#TARGET_LINK_LIBRARIES(NvCloth PUBLIC ${CUDA_CUDA_LIBRARY})
-
 TARGET_COMPILE_DEFINITIONS(NvCloth PRIVATE ${NVCLOTH_COMPILE_DEFS})
-
-SET_TARGET_PROPERTIES(NvCloth PROPERTIES 
-	LINK_FLAGS_DEBUG "/DELAYLOAD:nvcuda.dll /MAP /DELAYLOAD:PhysXFoundationDEBUG_${LIBPATH_SUFFIX}.dll /DEBUG"
-	LINK_FLAGS_CHECKED "/DELAYLOAD:nvcuda.dll /MAP /DELAYLOAD:PhysXFoundationCHECKED_${LIBPATH_SUFFIX}.dll"
-	LINK_FLAGS_PROFILE "/DELAYLOAD:nvcuda.dll /MAP /DELAYLOAD:PhysXFoundationPROFILE_${LIBPATH_SUFFIX}.dll /INCREMENTAL:NO /DEBUG"
-	LINK_FLAGS_RELEASE "/DELAYLOAD:nvcuda.dll /MAP /DELAYLOAD:PhysXFoundation_${LIBPATH_SUFFIX}.dll /INCREMENTAL:NO"
-)
 
 IF(NOT ${NVCLOTH_LIBTYPE} STREQUAL "OBJECT")
 	SET_TARGET_PROPERTIES(NvCloth PROPERTIES 

@@ -619,8 +619,6 @@ namespace octoon
 				model.add(std::move(material));
 			}
 
-			PmxUInt32 startIndices = 0;
-
 			math::float4x4s bindposes;
 			for (auto& it : pmx.bones)
 			{
@@ -629,79 +627,52 @@ namespace octoon
 				bindposes.push_back(bindpose);
 			}
 
+			PmxUInt32 startIndices = 0;
+
 			for (auto& it : pmx.materials)
 			{
-				MeshPtr mesh = std::make_shared<Mesh>();
+				uint1s indices_;
+				std::map<std::uint32_t, std::uint32_t> indicesMap;
 
-				if (pmx.numVertices)
+				for (std::size_t i = startIndices; i < startIndices + it.FaceCount; i++)
 				{
-					float3s vertices_;
-					float3s normals_;
-					float2s texcoords_;
-
-					vertices_.resize(it.FaceCount);
-					normals_.resize(it.FaceCount);
-					texcoords_.resize(it.FaceCount);
-
-					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
+					std::uint32_t index = 0;
 					if (pmx.header.sizeOfIndices == 1)
-					{
-						#pragma omp parallel for
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
-						{
-							auto index = *(std::uint8_t*)(indicesData + pmx.header.sizeOfIndices * i);
-							vertices_[i] = pmx.vertices[index].position;
-							normals_[i] = pmx.vertices[index].normal;
-							texcoords_[i] = pmx.vertices[index].coord;
-						}
-					}
+						index = *((std::uint8_t*)pmx.indices.data() + i);
 					else if (pmx.header.sizeOfIndices == 2)
-					{
-						#pragma omp parallel for
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
-						{
-							auto index = *(std::uint16_t*)(indicesData + pmx.header.sizeOfIndices * i);
-							vertices_[i] = pmx.vertices[index].position;
-							normals_[i] = pmx.vertices[index].normal;
-							texcoords_[i] = pmx.vertices[index].coord;
-						}
-					}
+						index = *((std::uint16_t*)pmx.indices.data() + i);
 					else if (pmx.header.sizeOfIndices == 4)
-					{
-						#pragma omp parallel for
-						for (PmxUInt32 i = 0; i < it.FaceCount; i++)
-						{
-							auto index = *(std::uint32_t*)(indicesData + pmx.header.sizeOfIndices * i);
-							vertices_[i] = pmx.vertices[index].position;
-							normals_[i] = pmx.vertices[index].normal;
-							texcoords_[i] = pmx.vertices[index].coord;
-						}
-					}
+						index = *((std::uint32_t*)pmx.indices.data() + i);
 
-					mesh->setBindposes(bindposes);
-					mesh->setVertexArray(std::move(vertices_));
-					mesh->setNormalArray(std::move(normals_));
-					mesh->setTexcoordArray(std::move(texcoords_));
+					if (indicesMap.find(index) == indicesMap.end())
+						indicesMap[index] = indicesMap.size();
+					indices_.push_back(indicesMap[index]);
 				}
 
+				startIndices += it.FaceCount;
+
+				float3s vertices_;
+				float3s normals_;
+				float2s texcoords_;
+				VertexWeights weights;
+
+				vertices_.resize(indicesMap.size());
+				normals_.resize(indicesMap.size());
+				texcoords_.resize(indicesMap.size());
+
 				if (pmx.numBones)
+					weights.resize(indicesMap.size());
+
+				for (auto& it : indicesMap)
 				{
-					VertexWeights weights(it.FaceCount);
-					auto indicesData = pmx.indices.data() + pmx.header.sizeOfIndices * startIndices;
+					auto& v = pmx.vertices[it.first];
 
-					#pragma omp parallel for
-					for (PmxUInt32 i = 0; i < it.FaceCount; i++)
+					vertices_[it.second] = v.position;
+					normals_[it.second] = v.normal;
+					texcoords_[it.second] = v.coord;
+
+					if (pmx.numBones)
 					{
-						std::uint32_t index = 0;
-						if (pmx.header.sizeOfIndices == 1)
-							index = *(std::uint8_t*)(indicesData + pmx.header.sizeOfIndices * i);
-						else if (pmx.header.sizeOfIndices == 2)
-							index = *(std::uint16_t*)(indicesData + pmx.header.sizeOfIndices * i);
-						else if (pmx.header.sizeOfIndices == 4)
-							index = *(std::uint32_t*)(indicesData + pmx.header.sizeOfIndices * i);
-
-						auto& v = pmx.vertices[index];
-
 						VertexWeight weight;
 						weight.weight1 = v.weight.weight1;
 						weight.weight2 = v.weight.weight2;
@@ -712,15 +683,19 @@ namespace octoon
 						weight.bone3 = v.weight.bone3;
 						weight.bone4 = v.weight.bone4;
 
-						weights[i] = weight;
+						weights[it.second] = weight;
 					}
-
-					mesh->setWeightArray(std::move(weights));
 				}
 
-				model.add(std::move(mesh));
+				MeshPtr mesh = std::make_shared<Mesh>();
+				mesh->setBindposes(bindposes);
+				mesh->setVertexArray(std::move(vertices_));
+				mesh->setNormalArray(std::move(normals_));
+				mesh->setIndicesArray(std::move(indices_));
+				mesh->setTexcoordArray(std::move(texcoords_));
+				mesh->setWeightArray(std::move(weights));
 
-				startIndices += it.FaceCount;
+				model.add(std::move(mesh));
 			}
 
 			std::size_t index = 0;

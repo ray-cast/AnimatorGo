@@ -248,9 +248,9 @@ namespace octoon
 
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
 			for (int i = 0; i < (int)motionConstraints.size(); i++)
-				motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 6.0f);
+				motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 10.0f);
 
-			nv::cloth::PhaseConfig* phases = new nv::cloth::PhaseConfig[fabric->getNumPhases()];
+			std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
 			for (int i = 0; i < fabric->getNumPhases(); i++)
 			{
 				switch (phaseTypeInfo[i])
@@ -285,7 +285,7 @@ namespace octoon
 					break;
 				case nv::cloth::ClothFabricPhaseType::eSHEARING:
 					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.5f;
+					phases[i].mStiffness = 0.75f;
 					phases[i].mStiffnessMultiplier = 1.0f;
 					phases[i].mCompressionLimit = 1.0f;
 					phases[i].mStretchLimit = 1.0f;
@@ -293,7 +293,7 @@ namespace octoon
 				}
 			}
 
-			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases, phases + fabric->getNumPhases()));
+			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases.data(), phases.data() + fabric->getNumPhases()));
 			clothFeature->getScene()->addCloth(cloth_);
 
 			fabric->decRefCount();

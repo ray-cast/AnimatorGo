@@ -52,8 +52,9 @@ namespace octoon
 		bool needUpdate_;
 		float totalMass_;
 
-		nv::cloth::Cloth* cloth_;
 		GameObjects collides_;
+
+		nv::cloth::Cloth* cloth_;
 	};
 }
 

@@ -140,13 +140,15 @@ namespace octoon
 
 			try
 			{
+				GameObjects objects;
+
 				auto stream = io::ifstream(filepath);
 				auto pmm = PMMFile::load(stream).value();
 
 				auto camera = this->createCamera(pmm);
 				if (camera)
 				{
-					objects_.emplace_back(camera);
+					objects.emplace_back(camera);
 					camera_ = camera;
 				}
 
@@ -232,7 +234,15 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
-						objects_.emplace_back(std::move(model));
+						auto component = model->getComponent<AnimatorComponent>();
+						if (component)
+						{
+							auto& transforms = component->getTransforms();
+							if (transforms.size() > 52)
+								transforms[52]->addComponent<GuizmoComponent>(camera);
+						}
+
+						objects.emplace_back(std::move(model));
 					}
 				}
 
@@ -241,13 +251,15 @@ namespace octoon
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setIntensity(10.0f);
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 				mainLight->getComponent<TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
-				objects_.push_back(mainLight);
+				objects.push_back(mainLight);
 				
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
 				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
 
-				objects_.push_back(obj);
+				objects.push_back(obj);
+
+				objects_ = objects;
 			}
 			catch (const std::bad_optional_access&)
 			{

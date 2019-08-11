@@ -28,6 +28,7 @@ namespace octoon
 			~PhysicsScene() noexcept;
 
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
+			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
 			virtual void simulate(float time) = 0;
 			virtual void fetchStart() = 0;
 			virtual void fetchResult() = 0;

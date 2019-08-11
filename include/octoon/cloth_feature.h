@@ -53,6 +53,7 @@ namespace octoon
 	private:
 		bool needUpdate_;
 		float timeInterval_;
+		std::uint32_t iterationCounts_;
 
 		nv::cloth::Solver* solver_;
 		nv::cloth::Factory* factory_;

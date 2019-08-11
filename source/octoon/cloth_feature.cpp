@@ -34,6 +34,7 @@ namespace octoon
 		: factory_(nullptr)
 		, needUpdate_(false)
 		, timeInterval_(0.02f)
+		, iterationCounts_(3)
 		, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
 		, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
 		, profileCallback_(std::make_unique<ProfilerCallback>())
@@ -83,11 +84,14 @@ namespace octoon
     {
 		if (needUpdate_)
 		{
-			if (solver_->beginSimulation(timeInterval_))
+			for (std::size_t i = 0; i < iterationCounts_; i++)
 			{
-				for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
-					solver_->simulateChunk(i);
-				solver_->endSimulation();
+				if (solver_->beginSimulation(timeInterval_ / iterationCounts_))
+				{
+					for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
+						solver_->simulateChunk(i);
+					solver_->endSimulation();
+				}
 			}
 
 			needUpdate_ = false;

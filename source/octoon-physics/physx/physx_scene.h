@@ -23,6 +23,8 @@ namespace octoon
 			virtual ~PhysxScene();
 
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
+			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
+
 			virtual void simulate(float time) override;
 			
 			virtual void fetchStart() override;

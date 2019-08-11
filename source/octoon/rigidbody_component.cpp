@@ -281,7 +281,15 @@ namespace octoon
     {
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
-		rigidbody_.reset();
+		if (rigidbody_)
+		{
+			auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+			if (physicsFeature && !rigidbody_)
+				physicsFeature->getScene()->removeRigidbody(rigidbody_);
+
+			rigidbody_->setOwnerListener(nullptr);
+			rigidbody_ = nullptr;
+		}
     }
 
 	void 

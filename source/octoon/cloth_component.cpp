@@ -128,6 +128,10 @@ namespace octoon
 
 		if (cloth_)
 		{
+			auto clothFeature = this->getGameScene()->getFeature<ClothFeature>();
+			if (clothFeature)
+				clothFeature->getScene()->removeCloth(cloth_);
+
 			delete cloth_;
 			cloth_ = nullptr;
 		}
@@ -142,8 +146,7 @@ namespace octoon
 			auto translate = transform->getTranslate();
 			auto rotation = transform->getQuaternion();
 
-			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
-			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 		}
 	}
 
@@ -155,6 +158,61 @@ namespace octoon
 
 		if (cloth_->isAsleep())
 			return;
+
+		std::vector<physx::PxVec4> spheres;
+		std::vector<physx::PxU32> capsules;
+
+		auto material = std::make_shared<video::BasicMaterial>();
+		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
+		for (auto& it : this->collides_)
+		{
+			auto collide = it->getComponent<ColliderComponent>();
+			if (collide->isInstanceOf<SphereColliderComponent>())
+			{
+				auto radius = collide->downcast<SphereColliderComponent>()->getRadius();
+				auto translate = collide->getComponent<TransformComponent>()->getTranslate();
+				spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, radius));
+			}
+			else if (collide->isInstanceOf<CapsuleColliderComponent>())
+			{
+				auto capsule = collide->downcast<CapsuleColliderComponent>();
+				auto transform = collide->getComponent<TransformComponent>();
+				auto translate = transform->getTranslate();
+				auto quaternion = transform->getQuaternion();
+				auto height = capsule->getHeight();
+				auto radius = capsule->getRadius();
+				auto halfHeight = height * 0.5f;
+
+				auto s1 = math::float3(0, -halfHeight, 0);
+				auto s2 = math::float3(0, halfHeight, 0);
+
+				s1 = math::rotate(quaternion, s1) + translate;
+				s2 = math::rotate(quaternion, s2) + translate;
+
+				spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, capsule->getRadius()));
+				spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, capsule->getRadius()));
+
+				capsules.push_back(spheres.size() - 2);
+				capsules.push_back(spheres.size() - 1);
+			}
+		}
+
+		for (auto& it : spheres)
+		{
+			auto& rotation = cloth_->getRotation();
+			auto& translate = cloth_->getTranslation();
+			auto xyz = rotation.rotate(it.getXYZ() - translate);
+			it.x = xyz.x;
+			it.y = xyz.y;
+			it.z = xyz.z;
+		}
+
+		nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
+		cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
+
+		nv::cloth::Range<const physx::PxU32> capsuleRange(capsules.data(), capsules.data() + capsules.size());
+		cloth_->setCapsules(capsuleRange, 0, cloth_->getNumCapsules());
 
 		needUpdate_ = true;
 	}
@@ -170,61 +228,6 @@ namespace octoon
 
 		if (needUpdate_)
 		{
-			std::vector<physx::PxVec4> spheres;
-			std::vector<physx::PxU32> capsules;
-
-			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
-
-			for (auto& it : this->collides_)
-			{
-				auto collide = it->getComponent<ColliderComponent>();
-				if (collide->isInstanceOf<SphereColliderComponent>())
-				{
-					auto radius = collide->downcast<SphereColliderComponent>()->getRadius();
-					auto translate = collide->getComponent<TransformComponent>()->getTranslate();
-					spheres.push_back(physx::PxVec4(translate.x, translate.y, translate.z, radius));
-				}
-				else if (collide->isInstanceOf<CapsuleColliderComponent>())
-				{
-					auto capsule = collide->downcast<CapsuleColliderComponent>();
-					auto transform = collide->getComponent<TransformComponent>();
-					auto translate = transform->getTranslate();
-					auto quaternion = transform->getQuaternion();
-					auto height = capsule->getHeight();
-					auto radius = capsule->getRadius();
-					auto halfHeight = height * 0.5f;
-
-					auto s1 = math::float3(0, -halfHeight, 0);
-					auto s2 = math::float3(0, halfHeight, 0);
-
-					s1 = math::rotate(quaternion, s1) + translate;
-					s2 = math::rotate(quaternion, s2) + translate;
-
-					spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, capsule->getRadius()));
-					spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, capsule->getRadius()));
-
-					capsules.push_back(spheres.size() - 2);
-					capsules.push_back(spheres.size() - 1);
-				}
-			}
-
-			for (auto& it : spheres)
-			{
-				auto& rotation = cloth_->getRotation();
-				auto& translate = cloth_->getTranslation();
-				auto xyz = rotation.rotate(it.getXYZ() - translate);
-				it.x = xyz.x;
-				it.y = xyz.y;
-				it.z = xyz.z;
-			}
-
-			nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
-			cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
-
-			nv::cloth::Range<const physx::PxU32> capsuleRange(capsules.data(), capsules.data() + capsules.size());
-			cloth_->setCapsules(capsuleRange, 0, cloth_->getNumCapsules());
-
 			auto meshFilter = this->getComponent<MeshFilterComponent>();
 			if (meshFilter)
 			{
@@ -257,7 +260,7 @@ namespace octoon
 			if (cloth_)
 				delete cloth_;
 
-			float invMass = totalMass_ / mesh.getVertexArray().size();
+			float invMass = 1.0f / totalMass_ / mesh.getVertexArray().size();
 
 			std::vector<float> mass(mesh.getVertexArray().size(), invMass);
 
@@ -299,6 +302,10 @@ namespace octoon
 			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
 			cloth_->setUserData(this);
 			cloth_->setGravity(gravity);
+			cloth_->setFriction(0.0f);
+			cloth_->setDamping(physx::PxVec3(0.1f, 0.1f, 0.1f));
+			cloth_->setSelfCollisionDistance(0.07f);
+			cloth_->enableContinuousCollision(true);
 			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
@@ -356,7 +363,7 @@ namespace octoon
 
 			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases.data(), phases.data() + fabric->getNumPhases()));
 			clothFeature->getScene()->addCloth(cloth_);
-
+			
 			fabric->decRefCount();
 		}
 	}

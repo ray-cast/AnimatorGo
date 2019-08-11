@@ -68,6 +68,12 @@ namespace octoon
 			px_scene->addActor(*physx_rigidbody->getPxRigidbody());
 		}
 
+		void PhysxScene::removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
+		{
+			std::shared_ptr<PhysxRigidbody> physx_rigidbody = std::dynamic_pointer_cast<PhysxRigidbody>(rigidbody);
+			px_scene->removeActor(*physx_rigidbody->getPxRigidbody());
+		}
+
 		void PhysxScene::simulate(float time)
 		{
 			px_scene->simulate(time);

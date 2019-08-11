@@ -22,8 +22,17 @@ namespace octoon
 
 		PhysxBoxShape::~PhysxBoxShape() noexcept
 		{
-			px_shape->release();
-			px_shape = nullptr;
+			if (px_material)
+			{
+				px_material->release();
+				px_material = nullptr;
+			}
+
+			if (px_shape)
+			{
+				px_shape->release();
+				px_shape = nullptr;
+			}
 		}
 
 		math::float3 PhysxBoxShape::getCenter()

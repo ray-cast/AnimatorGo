@@ -553,7 +553,7 @@ namespace octoon
 
 							for (auto& ar : body.anchorRigidbodies)
 							{
-								if (!stream.read((char*)& ar.rigidBodyIndex, sizeof(ar.rigidBodyIndex))) return false;
+								if (!stream.read((char*)& ar.rigidBodyIndex, pmx.header.sizeOfBody)) return false;
 								if (!stream.read((char*)& ar.vertexIndex, sizeof(ar.vertexIndex))) return false;
 								if (!stream.read((char*)& ar.nearMode, sizeof(ar.nearMode))) return false;
 							}

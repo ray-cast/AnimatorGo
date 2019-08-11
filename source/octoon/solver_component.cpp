@@ -210,7 +210,7 @@ namespace octoon
 						math::Quaternion q0(axis, math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle()));
 						q0.makeRotation(math::clamp(math::eulerAngles(q0), limit->getMinimumAxis(), limit->getMaximumAxis()));
 
-						transform->setLocalQuaternion(transform->getLocalQuaternion() * q0);
+						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * q0));
 					}
 					else
 					{
@@ -219,7 +219,7 @@ namespace octoon
 				}
 				else
 				{
-					transform->setLocalQuaternion(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle));
+					transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
 				}
 			}
 		}
@@ -247,17 +247,17 @@ namespace octoon
 						transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
 					}
 
-					if (rotationLimit->getAdditiveRotationRatio() != 0.0)
+					if (rotationLimit->getAdditiveRotationRatio() != 0.0f)
 					{
 						auto additiveRotation = link->getDeltaRotation(rotationLimit->getAdditiveUseLocal());
 						if (!math::equal(additiveRotation, math::Quaternion::Zero))
 						{
-							if (rotationLimit->getAdditiveRotationRatio() > 0.0)
+							if (rotationLimit->getAdditiveRotationRatio() > 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
 								transform->setLocalQuaternionAccum(rotation);
 							}
-							else if (rotationLimit->getAdditiveRotationRatio() < 0.0)
+							else if (rotationLimit->getAdditiveRotationRatio() < 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
 								transform->setLocalQuaternionAccum(rotation);

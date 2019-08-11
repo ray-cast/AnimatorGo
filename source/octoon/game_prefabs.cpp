@@ -337,6 +337,9 @@ namespace octoon
 	bool
 	GamePrefabs::createSoftbodies(const model::Model& model, GameObjects& meshes, GameObjects& rigidbodies) noexcept
 	{
+		auto material = std::make_shared<video::BasicMaterial>();
+		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+
 		for (auto& it : model.get<Model::softbody>())
 		{
 			GameObjects collider;
@@ -355,6 +358,13 @@ namespace octoon
 			cloth->setTotalMass(it->totalMass);
 			cloth->setPinVertexIndices(it->pinVertexIndices);
 
+			/*auto object = GameObject::create();
+			object->getComponent<TransformComponent>()->setTranslate(math::float3(0, 20, 0));
+			object->addComponent<MeshFilterComponent>(model::makeFloor(10.0, 10.0, 100.0, 100.0));
+			object->addComponent<MeshRendererComponent>(material);
+			object->addComponent(cloth);
+
+			meshes.push_back(object);*/
 			meshes[it->materialIndex]->addComponent(cloth);
 		}
 

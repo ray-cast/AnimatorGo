@@ -187,31 +187,32 @@ namespace octoon
 						while (index >= it.bone_name.size())
 							index = it.bone_key_frame[index - it.bone_name.size()].pre_index;
 
+						auto frameB = key;
+						auto frameA = PmmKeyframeBone();
+						if (key.pre_index < it.bone_name.size())
+							frameA = it.bone_init_frame[key.pre_index];
+						else
+							frameA = it.bone_key_frame[key.pre_index - it.bone_name.size()];
+
 						auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
 						auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
 						auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
-						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 255.0f, key.interpolation_rotation[1] / 255.0f, key.interpolation_rotation[2] / 255.0f, key.interpolation_rotation[3] / 255.0f);
-
-						auto euler = math::eulerAngles(key.quaternion);
-						auto euler2 = math::float3::Zero;
-						if (key.pre_index < it.bone_name.size())
-							euler2 = math::eulerAngles(it.bone_init_frame[key.pre_index].quaternion);
-						else
-							euler2 = math::eulerAngles(it.bone_key_frame[key.pre_index - it.bone_name.size()].quaternion);
+						auto interpolationRotation = std::make_shared<PathInterpolator<float>>(frameA.interpolation_rotation[0] / 255.0f, frameA.interpolation_rotation[1] / 255.0f, frameA.interpolation_rotation[2] / 255.0f, frameA.interpolation_rotation[3] / 255.0f);
 	
-						if (euler.x < 0.0f)
-							euler.x = std::abs(euler.x - euler2.x) >= math::PI ? math::PI_2 + euler.x : euler.x;
-						if (euler.y < 0.0f)
-							euler.y = std::abs(euler.y - euler2.y) >= math::PI ? math::PI_2 + euler.y : euler.y;
-						if (euler.z < 0.0f)
-							euler.z = std::abs(euler.z - euler2.z) >= math::PI ? math::PI_2 + euler.z : euler.z;
+						for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 15; i++)
+						{
+							auto t = i / ((frameB.frame - frameA.frame) * 15.0f);
+							auto euler = math::eulerAngles(math::slerp(frameA.quaternion, frameB.quaternion, interpolationRotation->interpolator(t)));
+							auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 15.0f) * i;
+
+							rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
+							rotationY[index].emplace_back((float)frame / 30.0f, euler.y);
+							rotationZ[index].emplace_back((float)frame / 30.0f, euler.z);
+						}
 
 						translateX[index].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
 						translateY[index].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
 						translateZ[index].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-						rotationX[index].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
-						rotationY[index].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
-						rotationZ[index].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 					}
 
 					AnimationClips<float> clips(it.bone_init_frame.size());

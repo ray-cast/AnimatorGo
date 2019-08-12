@@ -167,6 +167,7 @@ namespace octoon
 			}
 
 			this->uploadMeshData(*skinnedMesh_);
+			this->getGameScene()->getFeature<OfflineFeature>()->setFramebufferDirty(true);
 
 			needUpdate_ = false;
 		}
@@ -334,7 +335,7 @@ namespace octoon
 				this->rprShape_ = nullptr;
 			}			
 
-			math::uint1s faceArray(mesh.getVertexArray().size() / 3, 3);
+			math::uint1s faceArray(mesh.getIndicesArray().size() / 3, 3);
 
 			rprContextCreateMesh(feature->getContext(), 
 				mesh.getVertexArray().data()->ptr(), mesh.getVertexArray().size() / 3, sizeof(math::float3),

@@ -313,8 +313,8 @@ namespace octoon
 		for (auto& it : model.get<Model::bone>())
 		{
 			auto object = GameObject::create(it->getName());
-			object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			object->addComponent<MeshRendererComponent>(material);
+			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			object->addComponent<MeshRendererComponent>(material);*/
 
 			bones.emplace_back(object);
 		}

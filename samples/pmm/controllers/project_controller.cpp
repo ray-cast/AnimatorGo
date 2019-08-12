@@ -235,14 +235,6 @@ namespace octoon
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
 
-						auto component = model->getComponent<AnimatorComponent>();
-						if (component)
-						{
-							auto& transforms = component->getTransforms();
-							if (transforms.size() > 52)
-								transforms[52]->addComponent<GuizmoComponent>(camera);
-						}
-
 						objects.emplace_back(std::move(model));
 					}
 				}
@@ -453,7 +445,7 @@ namespace octoon
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>(pmm.camera_keyframes[0].fov * 2.0f);
 			camera->setCameraType(video::CameraType::Main);
-			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
+			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::DepthStencilBit);
 			camera->setClearColor(octoon::math::float4::One);
 
 			this->sendMessage("editor:camera:set", obj);

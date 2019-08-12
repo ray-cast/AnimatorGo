@@ -260,8 +260,8 @@ namespace octoon
 		if (!this->createMeshes(model, meshes, bones, path))
 			return false;
 
-		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
-			return false;
+		/*if (!this->createSoftbodies(model, meshes, bones, rigidbody))
+			return false;*/
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
 		actor->addComponent<AnimatorComponent>(bones);
@@ -313,8 +313,8 @@ namespace octoon
 		for (auto& it : model.get<Model::bone>())
 		{
 			auto object = GameObject::create(it->getName());
-			// object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			// object->addComponent<MeshRendererComponent>(material);
+			object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			object->addComponent<MeshRendererComponent>(material);
 
 			bones.emplace_back(object);
 		}

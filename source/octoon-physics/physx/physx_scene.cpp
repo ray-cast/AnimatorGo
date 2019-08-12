@@ -17,7 +17,7 @@ namespace octoon
 			const void* constantBlock,
 			physx::PxU32 constantBlockSize)
 		{
-			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | physx::PxPairFlag::eDETECT_CCD_CONTACT;
+			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
 
 			if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 			{
@@ -30,6 +30,8 @@ namespace octoon
 
 			if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)
 				return physx::PxFilterFlag::eSUPPRESS;
+			
+			pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT;
 
 			return physx::PxFilterFlag::eDEFAULT;
 		}

@@ -597,7 +597,7 @@ namespace octoon
 				sjr->setMaterial(mat);
 				sjr->setTransforms(bones);
 
-				//object->addComponent(sjr);*/
+				object->addComponent(sjr);*/
 			}
 
 			meshes.emplace_back(object);

@@ -31,11 +31,12 @@ namespace octoon
 		void onMoveAfter() noexcept override;
 
 		void onFixedUpdate() noexcept override;
-		void onUpdate() noexcept override;
-		void onLateUpdate() noexcept override;
 
 		void onMeshReplace(const runtime::any& mesh) noexcept;
 		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
+
+		void onPreRender(const video::Camera& camera) noexcept override;
+		void onPostRender(const video::Camera& camera) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
 	

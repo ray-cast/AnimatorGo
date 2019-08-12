@@ -2,11 +2,12 @@
 #define OCTOON_RENDER_COMPONENT_H_
 
 #include <octoon/video/material.h>
+#include <octoon/video/render_object.h>
 #include <octoon/game_component.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT RenderComponent : public GameComponent
+	class OCTOON_EXPORT RenderComponent : public GameComponent, public video::RenderListener
 	{
 		OctoonDeclareSubInterface(RenderComponent, GameComponent)
 	public:

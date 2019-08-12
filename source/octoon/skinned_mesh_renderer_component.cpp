@@ -61,7 +61,6 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		
@@ -69,6 +68,7 @@ namespace octoon
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setActive(true);
+		geometry_->setOwnerListener(this);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 		geometry_->setLayer(this->getGameObject()->getLayer());
@@ -81,7 +81,6 @@ namespace octoon
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
-		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&SkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		
 		mesh_.reset();
@@ -115,16 +114,38 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onUpdate() noexcept
+	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data_) noexcept
 	{
+		if (!this->getMaterial())
+			return;
+
+		auto mesh = runtime::any_cast<model::MeshPtr>(data_);
+		if (mesh)
+		{
+			mesh_ = mesh;
+			skinnedMesh_ = mesh->clone();
+		}
+
+		needUpdate_ = true;
 	}
 
 	void
-	SkinnedMeshRendererComponent::onLateUpdate() noexcept
+	SkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
 	{
-		if (!mesh_)
-			return;
+		if (geometry_)
+			geometry_->setMaterial(material);
+	}
 
+	void
+	SkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
+	{
+		if (geometry_)
+			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
+
+	void
+	SkinnedMeshRendererComponent::onPreRender(const video::Camera& camera) noexcept
+	{
 		if (needUpdate_)
 		{
 			std::vector<math::float4x4> joints(transforms_.size());
@@ -145,7 +166,7 @@ namespace octoon
 			auto& normals = mesh_->getNormalArray();
 			auto& weights = mesh_->getWeightArray();
 
-			#pragma omp parallel for num_threads(4)
+#pragma omp parallel for num_threads(4)
 			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 			{
 				auto w1 = weights[i].weights[0];
@@ -178,33 +199,8 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data_) noexcept
+	SkinnedMeshRendererComponent::onPostRender(const video::Camera& camera) noexcept
 	{
-		if (!this->getMaterial())
-			return;
-
-		auto mesh = runtime::any_cast<model::MeshPtr>(data_);
-		if (mesh)
-		{
-			mesh_ = mesh;
-			skinnedMesh_ = mesh->clone();
-		}
-
-		needUpdate_ = true;
-	}
-
-	void
-	SkinnedMeshRendererComponent::onMaterialReplace(const video::MaterialPtr& material) noexcept
-	{
-		if (geometry_)
-			geometry_->setMaterial(material);
-	}
-
-	void
-	SkinnedMeshRendererComponent::onLayerChangeAfter() noexcept
-	{
-		if (geometry_)
-			geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 
 	void

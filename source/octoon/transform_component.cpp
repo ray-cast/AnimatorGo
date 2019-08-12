@@ -123,6 +123,8 @@ namespace octoon
 	void
 	TransformComponent::setTransform(const math::float3& translate, const math::Quaternion& quat, const math::float3& scale) noexcept
 	{
+		assert(math::abs(math::length(quat) - 1) < 1e-2f);
+
 		if (translate != translate_ || rotation_ != quat || scale != scaling_)
 		{
 			this->onMoveBefore();

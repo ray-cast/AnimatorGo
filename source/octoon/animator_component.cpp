@@ -177,7 +177,7 @@ namespace octoon
 	{
 		for (std::size_t i = 0; i < clips_.size(); i++)
 		{
-			//assert(bones_[i]->getName() == clips_[i].name);
+			assert(bones_[i]->getName() == clips_[i].name);
 
 			auto transform = bones_[i]->getComponent<TransformComponent>();
 

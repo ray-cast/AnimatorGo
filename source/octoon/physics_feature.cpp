@@ -71,6 +71,8 @@ namespace octoon
 
 			needUpdate_ = false;
 		}
+
+		physics_scene->fetchResult();
     }
 
     void
@@ -86,7 +88,6 @@ namespace octoon
 			timeInterval_ = runtime::any_cast<float>(data);
 			if (timeInterval_ > 0.0f)
 				needUpdate_ = true;
-			physics_scene->fetchResult();
 		}
 	}
 

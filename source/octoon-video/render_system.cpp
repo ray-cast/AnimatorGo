@@ -183,6 +183,8 @@ namespace octoon
 					if (!geometry)
 						continue;
 
+					geometry->onRenderBefore(*camera);
+
 					auto material = geometry->getMaterial();
 					if (!material)
 						continue;
@@ -206,6 +208,8 @@ namespace octoon
 						else
 							context.draw(geometry->getNumVertices(), 1, 0, 0);
 					}
+
+					geometry->onRenderAfter(*camera);
 				}
 
 				camera->onRenderAfter(*camera);

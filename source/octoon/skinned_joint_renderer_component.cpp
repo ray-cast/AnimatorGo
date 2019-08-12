@@ -62,7 +62,6 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
 		this->addMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
@@ -71,6 +70,7 @@ namespace octoon
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setActive(true);
+		geometry_->setOwnerListener(this);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 		geometry_->setLayer(this->getGameObject()->getLayer());
@@ -83,7 +83,6 @@ namespace octoon
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
-		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->removeMessageListener("octoon:mesh:update", std::bind(&SkinnedJointRendererComponent::onJointReplace, this, std::placeholders::_1));
 		this->removeMessageListener("octoon:animation:update", std::bind(&SkinnedJointRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
@@ -116,33 +115,6 @@ namespace octoon
 	SkinnedJointRendererComponent::onFixedUpdate() noexcept
 	{
 		this->needUpdate_ = true;
-	}
-
-	void
-	SkinnedJointRendererComponent::onLateUpdate() noexcept
-	{
-		if (!mesh_)
-			return;
-
-		if (needUpdate_)
-		{
-			model::Mesh meshes;
-			auto& vertices = meshes.getVertexArray();
-
-			for (auto& transfrom : transforms_)
-			{
-				if (transfrom->getParent())
-				{
-					vertices.push_back(transfrom->getParent()->getComponent<TransformComponent>()->getTranslate());
-					vertices.push_back(transfrom->getComponent<TransformComponent>()->getTranslate());
-				}
-			}
-
-			if (!vertices.empty())
-				this->uploadJointData(meshes);
-
-			needUpdate_ = false;
-		}
 	}
 
 	void
@@ -179,6 +151,38 @@ namespace octoon
 	{
 		if (geometry_)
 			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
+
+	void
+	SkinnedJointRendererComponent::onPreRender(const video::Camera& camera) noexcept
+	{
+		if (!mesh_)
+			return;
+
+		if (needUpdate_)
+		{
+			model::Mesh meshes;
+			auto& vertices = meshes.getVertexArray();
+
+			for (auto& transfrom : transforms_)
+			{
+				if (transfrom->getParent())
+				{
+					vertices.push_back(transfrom->getParent()->getComponent<TransformComponent>()->getTranslate());
+					vertices.push_back(transfrom->getComponent<TransformComponent>()->getTranslate());
+				}
+			}
+
+			if (!vertices.empty())
+				this->uploadJointData(meshes);
+
+			needUpdate_ = false;
+		}
+	}
+
+	void
+	SkinnedJointRendererComponent::onPostRender(const video::Camera& camera) noexcept
+	{
 	}
 
 	void

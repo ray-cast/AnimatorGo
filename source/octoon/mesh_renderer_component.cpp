@@ -45,6 +45,7 @@ namespace octoon
 
 		geometry_ = std::make_shared<video::Geometry>();
 		geometry_->setActive(true);
+		geometry_->setOwnerListener(this);
 		geometry_->setMaterial(this->getMaterial());
 		geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 		geometry_->setLayer(this->getGameObject()->getLayer());
@@ -103,6 +104,16 @@ namespace octoon
 	{
 		if (geometry_)
 			geometry_->setLayer(this->getGameObject()->getLayer());
+	}
+
+	void
+	MeshRendererComponent::onPreRender(const video::Camera& camera) noexcept
+	{
+	}
+
+	void
+	MeshRendererComponent::onPostRender(const video::Camera& camera) noexcept
+	{
 	}
 
 	void

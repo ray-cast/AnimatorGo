@@ -34,7 +34,7 @@ namespace octoon
 		: factory_(nullptr)
 		, needUpdate_(false)
 		, timeInterval_(0.02f)
-		, iterationCounts_(3)
+		, iterationCounts_(6)
 		, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
 		, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
 		, profileCallback_(std::make_unique<ProfilerCallback>())

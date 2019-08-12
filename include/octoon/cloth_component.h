@@ -22,7 +22,18 @@ namespace octoon
 		~ClothComponent() noexcept;
 
 		void setTotalMass(float totalMass) noexcept;
+		void setFriction(float friction) noexcept;
+		void setSolverFrequency(float solverFrequency) noexcept;
+
 		float getTotalMass() const noexcept;
+		float getFriction() const noexcept;
+		float getSolverFrequency() const noexcept;
+
+		void setTarget(const GameObjectPtr& object) noexcept;
+		GameObjectPtr getTarget() const noexcept;
+
+		void setEnableCCD(bool enableContinuousCollision) noexcept;
+		bool getEnableCCD() const noexcept;
 
 		void addCollider(GameObjectPtr&& collider) noexcept;
 		void addCollider(const GameObjectPtr& collider) noexcept;
@@ -56,9 +67,16 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
+		bool enableContinuousCollision_;
+
 		float totalMass_;
+		float friction_;
+		float solverFrequency_;
+		math::float3 translate_;
 
 		GameObjects collides_;
+		GameObjectPtr target_;
+
 		math::uint1s pinVertexIndices_;
 
 		nv::cloth::Cloth* cloth_;

@@ -30,6 +30,9 @@ namespace octoon
 		: cloth_(nullptr)
 		, needUpdate_(false)
 		, totalMass_(100.0f)
+		, friction_(0.5f)
+		, solverFrequency_(120.0f)
+		, enableContinuousCollision_(false)
 	{
 	}
 
@@ -49,10 +52,65 @@ namespace octoon
 		totalMass_ = totalMass;
 	}
 
+	void
+	ClothComponent::setFriction(float friction) noexcept
+	{
+		if (cloth_)
+			cloth_->setFriction(friction);
+		friction_ = friction;
+	}
+
+	void
+	ClothComponent::setSolverFrequency(float solverFrequency) noexcept
+	{
+		if (cloth_)
+			cloth_->setSolverFrequency(solverFrequency);
+		solverFrequency_ = solverFrequency;
+	}
+
 	float
 	ClothComponent::getTotalMass() const noexcept
 	{
 		return this->totalMass_;
+	}
+
+	float
+	ClothComponent::getFriction() const noexcept
+	{
+		return this->friction_;
+	}
+
+	float
+	ClothComponent::getSolverFrequency() const noexcept
+	{
+		return this->solverFrequency_;
+	}
+
+	void
+	ClothComponent::setTarget(const GameObjectPtr& object) noexcept
+	{
+		target_ = object;
+		translate_ = target_->getComponent<TransformComponent>()->getTranslate();
+	}
+
+	GameObjectPtr
+	ClothComponent::getTarget() const noexcept
+	{
+		return target_;
+	}
+
+	void
+	ClothComponent::setEnableCCD(bool enableContinuousCollision) noexcept
+	{
+		if (cloth_)
+			cloth_->enableContinuousCollision(enableContinuousCollision);
+		enableContinuousCollision_ = enableContinuousCollision;
+	}
+
+	bool
+	ClothComponent::getEnableCCD() const noexcept
+	{
+		return enableContinuousCollision_;
 	}
 
 	void
@@ -166,6 +224,16 @@ namespace octoon
 			this->updateParticesData();
 			needUpdate_ = false;
 		}
+
+		if (target_)
+		{
+			auto transform = target_->getComponent<TransformComponent>();
+			auto translate = transform->getTranslate() - translate_;
+			auto rotation = transform->getQuaternion();
+
+			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
+			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+		}
 	}
 
 	void
@@ -234,12 +302,27 @@ namespace octoon
 
 			nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
 
+			auto transform = target_->getComponent<TransformComponent>();
+			auto translate = transform->getTranslate() - translate_;
+			auto rotation = transform->getQuaternion();
+
 #pragma omp parallel for num_threads(4)
 			for (int i = 0; i < particles.size(); i++)
 			{
 				vertices[i].x = particles[i].x;
 				vertices[i].y = particles[i].y;
 				vertices[i].z = particles[i].z;
+				vertices[i] = math::rotate(rotation, vertices[i]) + translate;
+			}
+
+			for (auto& index : this->pinVertexIndices_)
+			{
+				if (index < particles.size())
+				{
+					vertices[index].x = particles[index].x;
+					vertices[index].y = particles[index].y;
+					vertices[index].z = particles[index].z;
+				}
 			}
 
 			meshFilter->getMesh()->computeVertexNormals();
@@ -273,7 +356,7 @@ namespace octoon
 
 			physx::PxVec3 gravity(0.0f, -9.8f, 0.0f);
 			nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
-			nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, false);
+			nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, true);
 
 			std::vector<physx::PxVec4> positions;
 			for (auto& it : mesh.getVertexArray())
@@ -292,10 +375,13 @@ namespace octoon
 			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
 			cloth_->setUserData(this);
 			cloth_->setGravity(gravity);
-			cloth_->setFriction(0.0f);
+			cloth_->setFriction(this->getFriction());
+			cloth_->setSolverFrequency(this->getSolverFrequency());
 			cloth_->setDamping(physx::PxVec3(0.1f, 0.1f, 0.1f));
 			cloth_->setSelfCollisionDistance(0.07f);
-			cloth_->enableContinuousCollision(true);
+			cloth_->setTetherConstraintScale(1.0f);
+			cloth_->setTetherConstraintStiffness(1.0f);
+			cloth_->enableContinuousCollision(this->getEnableCCD());
 			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 
 			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();

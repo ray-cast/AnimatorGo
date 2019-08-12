@@ -260,8 +260,8 @@ namespace octoon
 		if (!this->createMeshes(model, meshes, bones, path))
 			return false;
 
-		/*if (!this->createSoftbodies(model, meshes, bones, rigidbody))
-			return false;*/
+		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
+			return false;
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
 		actor->addComponent<AnimatorComponent>(bones);
@@ -294,8 +294,8 @@ namespace octoon
 		if (!this->createOfflineMeshes(model, meshes, bones, path))
 			return false;
 
-		/*if (!this->createSoftbodies(model, meshes, bones, rigidbody))
-			return false;*/
+		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
+			return false;
 
 		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
 		actor->addComponent<AnimatorComponent>(bones);
@@ -362,6 +362,9 @@ namespace octoon
 			cloth->setColliders(collider);
 			cloth->setTotalMass(it->totalMass);
 			cloth->setPinVertexIndices(it->pinVertexIndices);
+			cloth->setSolverFrequency(300.0f);
+			cloth->setEnableCCD(true);
+			cloth->setTarget(bones[1]);
 
 			auto meshFilter = meshes[it->materialIndex]->getComponent<MeshFilterComponent>();
 			if (meshFilter)

@@ -234,6 +234,7 @@ namespace octoon
 					{
 						model->setName(it.name);
 						model->getComponent<AnimatorComponent>()->setClips(clips);
+						model->getComponent<AnimatorComponent>()->setTime(0.0f);
 
 						objects.emplace_back(std::move(model));
 					}
@@ -435,11 +436,11 @@ namespace octoon
 			clip.setCurve("Camera:fov", AnimationCurve(std::move(fov)));
 
 			auto obj = GameObject::create("MainCamera");
-			obj->addComponent<AnimationComponent>(clip);
-			obj->addComponent<EditorCameraComponent>();
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
-			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), -math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
+			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
+			obj->addComponent<AnimationComponent>(clip)->setTime(0.0f);
+			obj->addComponent<EditorCameraComponent>();
 			//obj->addComponent<OfflineCameraComponent>();
 			//obj->addComponent<H264Component>(obj);
 

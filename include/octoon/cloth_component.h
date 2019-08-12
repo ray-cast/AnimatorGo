@@ -46,6 +46,8 @@ namespace octoon
 		void onLateUpdate() noexcept override;
 
 	private:
+		void updateCollideData() noexcept;
+		void updateParticesData() noexcept;
 		void uploadMeshData(const model::Mesh& mesh) noexcept;
 
 	private:

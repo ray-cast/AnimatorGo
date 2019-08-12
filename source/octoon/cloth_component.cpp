@@ -153,17 +153,26 @@ namespace octoon
 	void
 	ClothComponent::onFixedUpdate() noexcept
 	{
-		if (!cloth_)
-			return;
+		if (cloth_ && !cloth_->isAsleep())
+			needUpdate_ = true;
+	}
 
-		if (cloth_->isAsleep())
-			return;
+	void
+	ClothComponent::onLateUpdate() noexcept
+	{
+		if (needUpdate_)
+		{
+			this->updateCollideData();
+			this->updateParticesData();
+			needUpdate_ = false;
+		}
+	}
 
+	void
+	ClothComponent::updateCollideData() noexcept
+	{
 		std::vector<physx::PxVec4> spheres;
 		std::vector<physx::PxU32> capsules;
-
-		auto material = std::make_shared<video::BasicMaterial>();
-		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
 
 		for (auto& it : this->collides_)
 		{
@@ -213,41 +222,28 @@ namespace octoon
 
 		nv::cloth::Range<const physx::PxU32> capsuleRange(capsules.data(), capsules.data() + capsules.size());
 		cloth_->setCapsules(capsuleRange, 0, cloth_->getNumCapsules());
-
-		needUpdate_ = true;
 	}
 
 	void
-	ClothComponent::onLateUpdate() noexcept
+	ClothComponent::updateParticesData() noexcept
 	{
-		if (!cloth_)
-			return;
-
-		if (cloth_->isAsleep()) 
-			return;
-
-		if (needUpdate_)
+		auto meshFilter = this->getComponent<MeshFilterComponent>();
+		if (meshFilter)
 		{
-			auto meshFilter = this->getComponent<MeshFilterComponent>();
-			if (meshFilter)
-			{
-				auto& vertices = meshFilter->getMesh()->getVertexArray();
+			auto& vertices = meshFilter->getMesh()->getVertexArray();
 
-				nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
+			nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
 
 #pragma omp parallel for num_threads(4)
-				for (int i = 0; i < particles.size(); i++)
-				{
-					vertices[i].x = particles[i].x;
-					vertices[i].y = particles[i].y;
-					vertices[i].z = particles[i].z;
-				}
-
-				meshFilter->getMesh()->computeVertexNormals();
-				meshFilter->uploadMeshData();
+			for (int i = 0; i < particles.size(); i++)
+			{
+				vertices[i].x = particles[i].x;
+				vertices[i].y = particles[i].y;
+				vertices[i].z = particles[i].z;
 			}
 
-			needUpdate_ = false;
+			meshFilter->getMesh()->computeVertexNormals();
+			meshFilter->uploadMeshData();
 		}
 	}
 
@@ -274,12 +270,6 @@ namespace octoon
 			meshDesc.invMasses.data = mass.data();
 			meshDesc.invMasses.stride = sizeof(float);
 			meshDesc.invMasses.count = mass.size();
-
-			for (auto& index : this->pinVertexIndices_)
-			{
-				if (index < mass.size())
-					mass[index] = 0.0f;
-			}
 
 			physx::PxVec3 gravity(0.0f, -9.8f, 0.0f);
 			nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
@@ -321,44 +311,11 @@ namespace octoon
 			std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
 			for (int i = 0; i < fabric->getNumPhases(); i++)
 			{
-				switch (phaseTypeInfo[i])
-				{
-				case nv::cloth::ClothFabricPhaseType::eINVALID:
-					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.5f;
-					phases[i].mStiffnessMultiplier = 1.0f;
-					phases[i].mCompressionLimit = 1.0f;
-					phases[i].mStretchLimit = 1.0f;
-					break;
-				case nv::cloth::ClothFabricPhaseType::eVERTICAL:
-					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.5f;
-					phases[i].mStiffnessMultiplier = 1.0f;
-					phases[i].mCompressionLimit = 1.0f;
-					phases[i].mStretchLimit = 1.0f;
-					break;
-				case nv::cloth::ClothFabricPhaseType::eHORIZONTAL:
-					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.5f;
-					phases[i].mStiffnessMultiplier = 1.0f;
-					phases[i].mCompressionLimit = 1.0f;
-					phases[i].mStretchLimit = 1.0f;
-					break;
-				case nv::cloth::ClothFabricPhaseType::eBENDING:
-					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.5f;
-					phases[i].mStiffnessMultiplier = 1.0f;
-					phases[i].mCompressionLimit = 1.0f;
-					phases[i].mStretchLimit = 1.0f;
-					break;
-				case nv::cloth::ClothFabricPhaseType::eSHEARING:
-					phases[i].mPhaseIndex = i;
-					phases[i].mStiffness = 0.75f;
-					phases[i].mStiffnessMultiplier = 1.0f;
-					phases[i].mCompressionLimit = 1.0f;
-					phases[i].mStretchLimit = 1.0f;
-					break;
-				}
+				phases[i].mPhaseIndex = i;
+				phases[i].mStiffness = 1.0f;
+				phases[i].mStiffnessMultiplier = 1.0f;
+				phases[i].mCompressionLimit = 1.0f;
+				phases[i].mStretchLimit = 1.0f;
 			}
 
 			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases.data(), phases.data() + fabric->getNumPhases()));

@@ -148,20 +148,28 @@ namespace octoon
 			#pragma omp parallel for num_threads(4)
 			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 			{
-				math::float3 v = math::float3::Zero;
-				math::float3 n = math::float3::Zero;
+				auto w1 = weights[i].weights[0];
+				auto w2 = weights[i].weights[1];
+				auto w3 = weights[i].weights[2];
+				auto w4 = weights[i].weights[3];
 
-				for (std::uint8_t j = 0; j < 4; j++)
+				if (w1 != 0.0f || w2 != 0.0f || w3 != 0.0f || w4 != 0.0f)
 				{
-					auto w = weights[i].weights[j];
-					if (w == 0.0f)
-						break;
-					v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-					n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
-				}
+					math::float3 v = math::float3::Zero;
+					math::float3 n = math::float3::Zero;
 
-				skinnedMesh_->getVertexArray()[i] = v;
-				skinnedMesh_->getNormalArray()[i] = n;
+					for (std::uint8_t j = 0; j < 4; j++)
+					{
+						auto w = weights[i].weights[j];
+						if (w == 0.0f)
+							break;
+						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
+						n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
+					}
+
+					skinnedMesh_->getVertexArray()[i] = v;
+					skinnedMesh_->getNormalArray()[i] = n;
+				}
 			}
 
 			this->uploadMeshData(*skinnedMesh_);

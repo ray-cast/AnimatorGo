@@ -256,12 +256,16 @@ namespace octoon
 		if (!this->createJoints(model, rigidbody, joints))
 			return false;
 
-		GameObjectPtr actor;
-		if (!this->createMeshes(model, actor, bones, path))
+		GameObjects meshes;
+		if (!this->createMeshes(model, meshes, bones, path))
 			return false;
 
-		if (!this->createSoftbodies(model, actor->getChildren(), rigidbody))
+		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
 			return false;
+
+		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
+		actor->addComponent<AnimatorComponent>(bones);
+		actor->addChild(meshes);
 
 		return actor;
 	}
@@ -286,12 +290,16 @@ namespace octoon
 		if (!this->createJoints(model, rigidbody, joints))
 			return false;
 
-		GameObjectPtr actor;
-		if (!this->createOfflineMeshes(model, actor, bones, path))
+		GameObjects meshes;
+		if (!this->createOfflineMeshes(model, meshes, bones, path))
 			return false;
 
-		if (!this->createSoftbodies(model, actor->getChildren(), rigidbody))
-			return false;
+		/*if (!this->createSoftbodies(model, meshes, bones, rigidbody))
+			return false;*/
+
+		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
+		actor->addComponent<AnimatorComponent>(bones);
+		actor->addChild(meshes);
 
 		return actor;
 	}
@@ -335,11 +343,8 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createSoftbodies(const model::Model& model, GameObjects& meshes, GameObjects& rigidbodies) noexcept
+	GamePrefabs::createSoftbodies(const model::Model& model, GameObjects& meshes, const GameObjects& bones, GameObjects& rigidbodies) noexcept
 	{
-		auto material = std::make_shared<video::BasicMaterial>();
-		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
-
 		for (auto& it : model.get<Model::softbody>())
 		{
 			GameObjects collider;
@@ -358,13 +363,20 @@ namespace octoon
 			cloth->setTotalMass(it->totalMass);
 			cloth->setPinVertexIndices(it->pinVertexIndices);
 
-			/*auto object = GameObject::create();
-			object->getComponent<TransformComponent>()->setTranslate(math::float3(0, 20, 0));
-			object->addComponent<MeshFilterComponent>(model::makeFloor(10.0, 10.0, 100.0, 100.0));
-			object->addComponent<MeshRendererComponent>(material);
-			object->addComponent(cloth);
+			auto meshFilter = meshes[it->materialIndex]->getComponent<MeshFilterComponent>();
+			if (meshFilter)
+			{
+				auto mesh = meshFilter->getMesh();
+				auto& weights = mesh->getWeightArray();
 
-			meshes.push_back(object);*/
+				VertexWeights newWeights(weights.size());
+				for (auto& index : it->pinVertexIndices)
+					newWeights[index] = weights[index];
+
+				mesh->setWeightArray(newWeights);
+			}
+
+			
 			meshes[it->materialIndex]->addComponent(cloth);
 		}
 
@@ -406,6 +418,7 @@ namespace octoon
 			component->setIsKinematic(it->physicsOperation == 0);
 			component->setSleepThreshold(0.0f);
 			component->setSolverIterationCounts(8, 1);
+			//component->setEnableCCD(!component->getIsKinematic());
 
 			gameObject->addComponent(component);
 
@@ -552,21 +565,17 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createMeshes(const model::Model& model, GameObjectPtr& actor, const GameObjects& bones, const std::string& path) noexcept
+	GamePrefabs::createMeshes(const model::Model& model, GameObjects& meshes, const GameObjects& bones, const std::string& path) noexcept
 	{
 		video::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
-
-		actor = GameObject::create(runtime::string::filename(path.c_str()));
-		actor->addComponent<AnimatorComponent>(bones);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
 
 			auto object = GameObject::create(mesh->getName());
-			object->setParent(actor);
 			object->addComponent<MeshFilterComponent>(mesh);
 
 			if (bones.empty())
@@ -579,43 +588,44 @@ namespace octoon
 				smr->setMaterial(materials[i]);
 				smr->setTransforms(bones);
 
+				object->addComponent(smr);
+
 				/*auto mat = std::make_shared<LineMaterial>(1.0f);
 				mat->setColor(math::float3(0.4, 0.9, 0.4));
 
 				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
 				sjr->setMaterial(mat);
-				sjr->setTransforms(bones);*/
+				sjr->setTransforms(bones);
 
-				object->addComponent(smr);
-				//object->addComponent(sjr);
+				//object->addComponent(sjr);*/
 			}
+
+			meshes.emplace_back(object);
 		}
 
 		return true;
 	}
 
 	bool
-	GamePrefabs::createOfflineMeshes(const model::Model& model, GameObjectPtr& actor, const GameObjects& bones, const std::string& path) noexcept
+	GamePrefabs::createOfflineMeshes(const model::Model& model, GameObjects& meshes, const GameObjects& bones, const std::string& path) noexcept
 	{
 		video::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
-
-		actor = GameObject::create(runtime::string::filename(path.c_str()));
-		actor->addComponent<AnimatorComponent>(bones);
 
 		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
 
 			auto object = GameObject::create(mesh->getName());
-			object->setParent(actor);
 			object->addComponent<MeshFilterComponent>(mesh);
 
 			if (bones.empty())
 				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
 			else
 				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
+
+			meshes.emplace_back(object);
 		}
 
 		return true;

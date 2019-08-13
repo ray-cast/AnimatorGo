@@ -253,19 +253,24 @@ namespace octoon
 								auto desc = texture->getTextureDesc();
 								texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
 
+								bool hasAlpha = false;
 								std::uint8_t channel = 3;
 								switch (desc.getTexFormat())
 								{
 									case hal::GraphicsFormat::B8G8R8A8UNorm:
+										hasAlpha = true;
 										channel = 4;
 										break;
 									case hal::GraphicsFormat::R8G8B8A8UNorm:
+										hasAlpha = true;
 										channel = 4;
 										break;
 									case hal::GraphicsFormat::B8G8R8A8SRGB:
+										hasAlpha = true;
 										channel = 4;
 										break;
 									case hal::GraphicsFormat::R8G8B8A8SRGB:
+										hasAlpha = true;
 										channel = 4;
 										break;
 								}
@@ -298,7 +303,11 @@ namespace octoon
 								rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 								rprMaterialNodeSetInputImageData(textureNode, "data", image_);
 
-								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION);
+								std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION;
+								if (hasAlpha)
+									layers |= RPR_UBER_MATERIAL_TRANSPARENCY;
+
+								rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", layers);
 								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
 								
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
@@ -310,7 +319,7 @@ namespace octoon
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
 								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
 
-								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.transparency", 0.0f, 1.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.transparency", 0.5f, 1.0f, 1.0f, 1.0f);
 								
 								texture->unmap();
 							}

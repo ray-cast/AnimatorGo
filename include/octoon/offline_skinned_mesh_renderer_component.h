@@ -28,11 +28,12 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
 		void onMeshReplace(const runtime::any& mesh) noexcept;
 		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
+
+		void onAnimationUpdate(const runtime::any& data) noexcept;
 
 		void onLayerChangeAfter() noexcept override;
 
@@ -40,6 +41,7 @@ namespace octoon
 		void onLateUpdate() noexcept override;
 
 	protected:
+		void uploadBoneData() noexcept;
 		void uploadMatData(const video::Material& mat) noexcept;
 		void uploadMeshData(const model::Mesh& mesh) noexcept;
 

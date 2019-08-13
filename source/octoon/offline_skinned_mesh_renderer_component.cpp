@@ -84,6 +84,7 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->addMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		this->sendMessage("octoon:mesh:get", nullptr);		
 	}
@@ -96,6 +97,7 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
+		this->removeMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
@@ -123,59 +125,11 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onLateUpdate() noexcept
 	{
-		if (!mesh_)
-			return;
-
-		if (needUpdate_)
+		if (mesh_ && needUpdate_)
 		{
-			std::vector<math::float4x4> joints(transforms_.size());
-
-			auto& bindposes = mesh_->getBindposes();
-			if (bindposes.size() != transforms_.size())
-			{
-				for (std::size_t i = 0; i < transforms_.size(); ++i)
-					joints[i].makeIdentity();
-			}
-			else
-			{
-				for (std::size_t i = 0; i < transforms_.size(); ++i)
-					joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
-			}
-
-			auto& vertices = mesh_->getVertexArray();
-			auto& normals = mesh_->getNormalArray();
-			auto& weights = mesh_->getWeightArray();
-
-			#pragma omp parallel for num_threads(4)
-			for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
-			{
-				math::float3 v = math::float3::Zero;
-				math::float3 n = math::float3::Zero;
-
-				for (std::uint8_t j = 0; j < 4; j++)
-				{
-					auto w = weights[i].weights[j];
-					if (w > 0.0)
-					{
-						v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-						n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
-					}
-				}
-
-				skinnedMesh_->getVertexArray()[i] = v;
-				skinnedMesh_->getNormalArray()[i] = n;
-			}
-
-			this->uploadMeshData(*skinnedMesh_);
-			this->getGameScene()->getFeature<OfflineFeature>()->setFramebufferDirty(true);
-
+			this->uploadBoneData();
 			needUpdate_ = false;
 		}
-	}
-
-	void
-	OfflineSkinnedMeshRendererComponent::onMoveBefore() noexcept
-	{
 	}
 
 	void
@@ -190,6 +144,12 @@ namespace octoon
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
+	{
+		this->needUpdate_ = true;
 	}
 
 	void
@@ -218,6 +178,51 @@ namespace octoon
 	{
 		if (this->rprShape_)
 			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::uploadBoneData() noexcept
+	{
+		std::vector<math::float4x4> joints(transforms_.size());
+
+		auto& bindposes = mesh_->getBindposes();
+		if (bindposes.size() != transforms_.size())
+		{
+			for (std::size_t i = 0; i < transforms_.size(); ++i)
+				joints[i].makeIdentity();
+		}
+		else
+		{
+			for (std::size_t i = 0; i < transforms_.size(); ++i)
+				joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
+		}
+
+		auto& vertices = mesh_->getVertexArray();
+		auto& normals = mesh_->getNormalArray();
+		auto& weights = mesh_->getWeightArray();
+
+#pragma omp parallel for num_threads(4)
+		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
+		{
+			math::float3 v = math::float3::Zero;
+			math::float3 n = math::float3::Zero;
+
+			for (std::uint8_t j = 0; j < 4; j++)
+			{
+				auto w = weights[i].weights[j];
+				if (w > 0.0)
+				{
+					v += (joints[weights[i].bones[j]] * vertices[i]) * w;
+					n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
+				}
+			}
+
+			skinnedMesh_->getVertexArray()[i] = v;
+			skinnedMesh_->getNormalArray()[i] = n;
+		}
+
+		this->uploadMeshData(*skinnedMesh_);
+		this->getGameScene()->getFeature<OfflineFeature>()->setFramebufferDirty(true);
 	}
 
 	void

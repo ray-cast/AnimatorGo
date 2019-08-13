@@ -17,6 +17,7 @@ namespace octoon
 		void setClearColor(const math::float4& color) noexcept;
 		const math::float4&  getClearColor() const noexcept;
 
+		void setAperture(float value) noexcept;
 		void setFarPlane(float value) noexcept;
 		void setFocalLength(float value) noexcept;
 		void setFocusDistance(float value) noexcept;
@@ -26,6 +27,7 @@ namespace octoon
 		void setOrthoHeight(float value) noexcept;
 		void setOrthoWidth(float value) noexcept;
 
+		float getAperture() const noexcept;
 		float getFarPlane() const noexcept;
 		float getFocalLength() const noexcept;
 		float getFocusDistance() const noexcept;
@@ -58,8 +60,10 @@ namespace octoon
 		void* rprCamera_;
 		void* rprClearImage_;
 
+		float aperture_;
 		float farPlane_;
 		float focalLength_;
+		float filmSize_;
 		float focusDistance_;
 		float fStop_;
 		float mode_;

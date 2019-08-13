@@ -2,6 +2,7 @@
 #define OCTOON_EDITOR_PROJECT_CONTROLLER_H_
 
 #include <octoon/game_component.h>
+#include <octoon/animation/animation_clip.h>
 #include "..//models/pmm.h"
 
 namespace octoon
@@ -28,11 +29,18 @@ namespace octoon
 			void exit(const runtime::any& data) noexcept;
 
 			void play(const runtime::any& data) noexcept;
+			void offlineMode(const runtime::any& data) noexcept;
 
 			void renderVideo(const runtime::any& data) noexcept;
 			void renderPicture(const runtime::any& data) noexcept;
 
 			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
+
+			void setupCameraAnimation(const std::vector<PmmKeyframeCamera>& camera, animation::AnimationClip<float>& clip) noexcept;
+			void setupModelAnimation(const PmmModel& model, animation::AnimationClips<float>& clips) noexcept;
+
+			void setupRenderScene() noexcept;
+			void setupOfflineRenderScene() noexcept;
 
 		private:
 			bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

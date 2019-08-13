@@ -10,7 +10,7 @@ namespace octoon
 		FilmCamera::FilmCamera() noexcept
 			: aperture_(45.0f)
 			, ratio_(1.0f)
-			, znear_(std::numeric_limits<float>::min())
+			, znear_(0.01f)
 			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
 			, height_(0)
@@ -214,7 +214,7 @@ namespace octoon
 				math::float4x4 adjustment;
 				adjustment.makeScale(1.0, -1.0, 1.0);
 
-				project_ = adjustment * math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
+				project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
 				projectInverse_ = math::inverse(project_);
 
 				viewProject_ = project_ * this->getView();

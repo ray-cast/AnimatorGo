@@ -15,6 +15,7 @@ namespace octoon
 		, nearPlane_(0.1f)
 		, farPlane_(1000.0f)
 		, focalLength_(35.0f)
+		, filmSize_(36.0f)
 		, focusDistance_(1.0f)
 		, fStop_(0.0f)
 		, clearColor_(0.8f, 0.9f, 1.0f, 1.0)
@@ -44,6 +45,18 @@ namespace octoon
 	OfflineCameraComponent::getClearColor() const noexcept
 	{
 		return this->clearColor_;
+	}
+
+	void
+	OfflineCameraComponent::setAperture(float aperture) noexcept
+	{
+		if (aperture_ != aperture)
+		{
+			auto ratio = std::tan(math::radians(aperture) * 0.5f) * 2.0f;
+			auto length = filmSize_ / ratio;
+			this->setFocalLength(length);
+			aperture_ = aperture;
+		}
 	}
 
 	void
@@ -128,6 +141,12 @@ namespace octoon
 	OfflineCameraComponent::setOrthoWidth(float orthoWidth) noexcept
 	{
 		orthoWidth_ = orthoWidth;
+	}
+
+	float
+	OfflineCameraComponent::getAperture() const noexcept
+	{
+		return this->aperture_;
 	}
 
 	float
@@ -224,7 +243,7 @@ namespace octoon
 
 			std::uint32_t w, h;
 			feature->getFramebufferScale(w, h);
-			rprCameraSetSensorSize(this->rprCamera_, this->focalLength_ + 1, (this->focalLength_ + 1)  / w * (float)h);
+			rprCameraSetSensorSize(this->rprCamera_, filmSize_, filmSize_ / w * (float)h);
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto eye = transform->getTranslate();

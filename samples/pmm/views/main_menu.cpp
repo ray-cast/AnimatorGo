@@ -11,6 +11,7 @@ namespace octoon
 
 		MainMenu::MainMenu() noexcept
 			: isShowedMainMenu_(true)
+			, isOfflineMode_(false)
 		{
 		}
 
@@ -105,6 +106,15 @@ namespace octoon
 				{
 					if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }
 					if (imgui::menuItem("Stop Render")) { this->sendMessage("editor:menu:setting:render", false); }
+
+					imgui::separator();
+
+					if (imgui::menuItem("Offline Mode", "CTRL+P", isOfflineMode_))
+					{
+						this->sendMessage("editor:menu:setting:mode", !isOfflineMode_);
+						isOfflineMode_ = !isOfflineMode_;
+					}
+
 					imgui::endMenu();
 				}
 

@@ -587,11 +587,11 @@ namespace octoon
 			}
 			else
 			{
-				auto smr = std::make_shared<SkinnedMeshRendererComponent>();
-				smr->setMaterial(materials[i]);
+				auto smr = std::make_shared<SkinnedMeshRendererComponent>(materials[i]);
 				smr->setTransforms(bones);
 
 				object->addComponent(smr);
+				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
 
 				/*auto mat = std::make_shared<LineMaterial>(1.0f);
 				mat->setColor(math::float3(0.4, 0.9, 0.4));

@@ -11,7 +11,7 @@ namespace octoon
 			: aperture_(45.0f)
 			, ratio_(1.0f)
 			, znear_(0.01f)
-			, zfar_(65535.0f)
+			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
 			, height_(0)
 			, needUpdateViewProject_(true)

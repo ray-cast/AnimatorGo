@@ -23,6 +23,7 @@ namespace octoon
 			void onGui() noexcept override;
 
 		private:
+			bool isOfflineMode_;
 			bool isShowedMainMenu_;
 		};
 	}

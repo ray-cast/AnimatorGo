@@ -1031,12 +1031,6 @@ rpr_int rprShapeSetTransform(rpr_shape in_shape, rpr_bool transpose, rpr_float c
         m = m.transpose();
     }
 
-    RadeonRays::matrix rtol(-1.0f, 0.0f, 0.0f, 0.0f,
-                            0.0f, 1.0f, 0.0f, 0.0f,
-                            0.0f, 0.0f, 1.0f, 0.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f);
-    m = rtol * m;
-
     shape->SetTransform(m);
     return RPR_SUCCESS;
 }

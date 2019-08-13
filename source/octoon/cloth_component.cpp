@@ -337,7 +337,10 @@ namespace octoon
 		if (clothFeature)
 		{
 			if (cloth_)
+			{
+				clothFeature->getScene()->removeCloth(cloth_);
 				delete cloth_;
+			}
 
 			float invMass = 1.0f / totalMass_ / mesh.getVertexArray().size();
 

@@ -81,12 +81,15 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->addComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		this->addMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
-		this->sendMessage("octoon:mesh:get", nullptr);		
+		this->sendMessage("octoon:mesh:get", nullptr);
+
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		if (feature)
+			feature->addOfflineListener(this);
 	}
 
 	void
@@ -94,14 +97,16 @@ namespace octoon
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
-		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 
 		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineSkinnedMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		this->removeMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
+		{
+			feature->removeOfflineListener(this);
 			rprSceneDetachShape(feature->getScene(), this->rprShape_);
+		}
 
 		if (this->rprShape_)
 		{
@@ -120,16 +125,6 @@ namespace octoon
 	OfflineSkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
 		//this->needUpdate_ = true;
-	}
-
-	void
-	OfflineSkinnedMeshRendererComponent::onLateUpdate() noexcept
-	{
-		if (mesh_ && needUpdate_)
-		{
-			this->uploadBoneData();
-			needUpdate_ = false;
-		}
 	}
 
 	void
@@ -178,6 +173,16 @@ namespace octoon
 	{
 		if (this->rprShape_)
 			rprShapeSetLayerMask(this->rprShape_, this->getGameObject()->getLayer());
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onPreRender() noexcept
+	{
+		if (mesh_ && needUpdate_)
+		{
+			this->uploadBoneData();
+			needUpdate_ = false;
+		}
 	}
 
 	void

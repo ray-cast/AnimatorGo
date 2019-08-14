@@ -3,10 +3,11 @@
 
 #include <octoon/video/material.h>
 #include <octoon/game_component.h>
+#include <octoon/offline_listener.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT OfflineRenderComponent : public GameComponent
+	class OCTOON_EXPORT OfflineRenderComponent : public GameComponent, public OfflineListener
 	{
 		OctoonDeclareSubInterface(OfflineRenderComponent, GameComponent)
 	public:
@@ -23,6 +24,9 @@ namespace octoon
 		void isSharedMaterial(bool sharedMaterial) noexcept;
 
 	protected:
+		virtual void onPreRender() noexcept override;
+		virtual void onPostRender() noexcept override;
+
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept;
 
 	private:

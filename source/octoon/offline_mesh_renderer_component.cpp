@@ -50,7 +50,11 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		this->sendMessage("octoon:mesh:get", nullptr);		
+		this->sendMessage("octoon:mesh:get", nullptr);
+
+		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		if (feature)
+			feature->addOfflineListener(this);
 	}
 
 	void
@@ -61,7 +65,10 @@ namespace octoon
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && this->rprShape_)
+		{
+			feature->removeOfflineListener(this);
 			rprSceneDetachShape(feature->getScene(), this->rprShape_);
+		}
 
 		if (this->rprShape_)
 		{

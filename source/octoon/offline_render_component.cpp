@@ -64,6 +64,16 @@ namespace octoon
 	}
 
 	void
+	OfflineRenderComponent::onPreRender() noexcept
+	{
+	}
+
+	void
+	OfflineRenderComponent::onPostRender() noexcept
+	{
+	}
+
+	void
 	OfflineRenderComponent::onMaterialReplace(const video::MaterialPtr&) noexcept
 	{
 	}

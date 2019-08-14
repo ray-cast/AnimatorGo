@@ -12,16 +12,18 @@ namespace octoon
 	{
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(video::MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
+		this->setTransforms(std::move(transforms));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const video::MaterialPtr& material, const GameObjects& transforms) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(material);
+		this->setTransforms(transforms);
 	}
 
 	SkinnedMeshRendererComponent::~SkinnedMeshRendererComponent() noexcept

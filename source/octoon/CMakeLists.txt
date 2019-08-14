@@ -169,6 +169,8 @@ SET(OFFLINE_FEATURES_LIST
 	${SOURCE_PATH}/offline_point_light_component.cpp
 	${HEADER_PATH}/offline_material.h
 	${SOURCE_PATH}/offline_material.cpp
+	${HEADER_PATH}/offline_listener.h
+	${SOURCE_PATH}/offline_listener.cpp
 	${HEADER_PATH}/offline_feature.h
 	${SOURCE_PATH}/offline_feature.cpp
 	${HEADER_PATH}/h264_component.h

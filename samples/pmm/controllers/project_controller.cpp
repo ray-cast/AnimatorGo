@@ -10,6 +10,7 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_environment_light_component.h>
 #include <octoon/offline_directional_light_component.h>
+#include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/H264_component.h>
 #include <octoon/timer_feature.h>
 #include <octoon/cloth_component.h>

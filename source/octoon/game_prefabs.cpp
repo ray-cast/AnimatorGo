@@ -270,40 +270,6 @@ namespace octoon
 		return actor;
 	}
 
-	GameObjectPtr
-	GamePrefabs::createOfflineModel(const std::string& path, bool cache) except
-	{
-		Model model(path);
-
-		GameObjects bones;
-		if (!this->createBones(model, bones))
-			return false;
-
-		if (!this->createSolver(model, bones))
-			return false;
-
-		GameObjects rigidbody;
-		if (!this->createRigidbodies(model, bones, rigidbody))
-			return false;
-
-		GameObjects joints;
-		if (!this->createJoints(model, rigidbody, joints))
-			return false;
-
-		GameObjects meshes;
-		if (!this->createOfflineMeshes(model, meshes, bones, path))
-			return false;
-
-		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
-			return false;
-
-		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
-		actor->addComponent<AnimatorComponent>(bones);
-		actor->addChild(meshes);
-
-		return actor;
-	}
-
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
@@ -587,10 +553,7 @@ namespace octoon
 			}
 			else
 			{
-				auto smr = std::make_shared<SkinnedMeshRendererComponent>(materials[i]);
-				smr->setTransforms(bones);
-
-				object->addComponent(smr);
+				object->addComponent<SkinnedMeshRendererComponent>(materials[i], bones);
 				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
 
 				/*auto mat = std::make_shared<LineMaterial>(1.0f);
@@ -602,31 +565,6 @@ namespace octoon
 
 				object->addComponent(sjr);*/
 			}
-
-			meshes.emplace_back(object);
-		}
-
-		return true;
-	}
-
-	bool
-	GamePrefabs::createOfflineMeshes(const model::Model& model, GameObjects& meshes, const GameObjects& bones, const std::string& path) noexcept
-	{
-		video::Materials materials;
-		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
-			return false;
-
-		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
-		{
-			auto mesh = model.get<Model::mesh>(i);
-
-			auto object = GameObject::create(mesh->getName());
-			object->addComponent<MeshFilterComponent>(mesh);
-
-			if (bones.empty())
-				object->addComponent<OfflineMeshRendererComponent>(materials[i]);
-			else
-				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
 
 			meshes.emplace_back(object);
 		}

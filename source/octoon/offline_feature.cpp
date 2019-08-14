@@ -57,6 +57,21 @@ namespace octoon
 	}
 
 	void
+	OfflineFeature::addOfflineListener(OfflineListener* listener) noexcept
+	{
+		assert(std::find(listener_.begin(), listener_.end(), listener) == listener_.end());
+		listener_.push_back(listener);
+	}
+
+	void
+	OfflineFeature::removeOfflineListener(OfflineListener* listener) noexcept
+	{
+		auto it = std::find(listener_.begin(), listener_.end(), listener);
+		if (it != listener_.end())
+			listener_.erase(it);
+	}
+
+	void
 	OfflineFeature::setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept
 	{
 		if (framebuffer_w_ != w || framebuffer_h_ != h)
@@ -203,6 +218,9 @@ namespace octoon
 			std::size_t count = 0;
 			std::size_t type_size = 0;
 
+			for (auto& listener : listener_)
+				listener->onPreRender();
+
 			rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
 			if (count == 0)
 				return;
@@ -235,6 +253,9 @@ namespace octoon
 			}
 
 			rprContextRender(rprContext_);
+
+			for (auto& listener : listener_)
+				listener->onPostRender();
 
 			auto graphics = this->getFeature<GraphicsFeature>();
 			if (graphics)

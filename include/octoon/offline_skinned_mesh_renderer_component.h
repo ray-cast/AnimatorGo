@@ -37,8 +37,9 @@ namespace octoon
 
 		void onLayerChangeAfter() noexcept override;
 
+		void onPreRender() noexcept override;
+
 		void onFixedUpdate() noexcept override;
-		void onLateUpdate() noexcept override;
 
 	protected:
 		void uploadBoneData() noexcept;

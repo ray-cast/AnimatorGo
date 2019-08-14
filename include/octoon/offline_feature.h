@@ -2,6 +2,7 @@
 #define OCTOON_OFFLINE_FEATURE_H_
 
 #include <octoon/game_feature.h>
+#include <octoon/offline_listener.h>
 #include <octoon/hal/graphics_framebuffer.h>
 
 namespace octoon
@@ -13,6 +14,9 @@ namespace octoon
 		OfflineFeature() noexcept;
 		OfflineFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~OfflineFeature() noexcept;
+
+		void addOfflineListener(OfflineListener* listener) noexcept;
+		void removeOfflineListener(OfflineListener* listener) noexcept;
 
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
@@ -57,6 +61,8 @@ namespace octoon
 
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
+
+		std::vector<OfflineListener*> listener_;
 	};
 }
 

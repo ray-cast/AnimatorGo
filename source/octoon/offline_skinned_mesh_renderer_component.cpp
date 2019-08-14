@@ -150,9 +150,6 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
-		if (!this->getMaterial())
-			return;
-
 		auto mesh = runtime::any_cast<model::MeshPtr>(data);
 		if (mesh)
 		{
@@ -180,17 +177,21 @@ namespace octoon
 	{
 		if (mesh_ && needUpdate_)
 		{
-			this->uploadBoneData();
+			this->uploadBoneData(*skinnedMesh_);
 			needUpdate_ = false;
 		}
 	}
 
 	void
-	OfflineSkinnedMeshRendererComponent::uploadBoneData() noexcept
+	OfflineSkinnedMeshRendererComponent::uploadBoneData(model::Mesh& mesh) noexcept
 	{
+		auto offlineFeature = this->getGameScene()->getFeature<OfflineFeature>();
+		if (offlineFeature)
+			offlineFeature->setFramebufferDirty(true);
+
 		std::vector<math::float4x4> joints(transforms_.size());
 
-		auto& bindposes = mesh_->getBindposes();
+		auto& bindposes = mesh.getBindposes();
 		if (bindposes.size() != transforms_.size())
 		{
 			for (std::size_t i = 0; i < transforms_.size(); ++i)
@@ -202,11 +203,11 @@ namespace octoon
 				joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
 		}
 
-		auto& vertices = mesh_->getVertexArray();
-		auto& normals = mesh_->getNormalArray();
-		auto& weights = mesh_->getWeightArray();
+		auto& vertices = mesh.getVertexArray();
+		auto& normals = mesh.getNormalArray();
+		auto& weights = mesh.getWeightArray();
 
-#pragma omp parallel for num_threads(4)
+		#pragma omp parallel for num_threads(4)
 		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 		{
 			math::float3 v = math::float3::Zero;
@@ -222,12 +223,11 @@ namespace octoon
 				}
 			}
 
-			skinnedMesh_->getVertexArray()[i] = v;
-			skinnedMesh_->getNormalArray()[i] = n;
+			vertices[i] = v;
+			normals[i] = n;
 		}
 
 		this->uploadMeshData(*skinnedMesh_);
-		this->getGameScene()->getFeature<OfflineFeature>()->setFramebufferDirty(true);
 	}
 
 	void

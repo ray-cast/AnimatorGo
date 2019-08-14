@@ -60,6 +60,8 @@ namespace octoon
 				return;
 			if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(this->rprLight_, this->getIntensity()))
 				return;
+			if (RPR_SUCCESS != rprLightSetGroupId(this->rprLight_, this->getGameObject()->getLayer()))
+				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;
 		}
@@ -88,5 +90,7 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::onLayerChangeAfter() noexcept
 	{
+		if (RPR_SUCCESS != rprLightSetGroupId(this->rprLight_, this->getGameObject()->getLayer()))
+			return;
 	}
 }

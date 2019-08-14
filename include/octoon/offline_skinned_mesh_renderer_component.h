@@ -42,7 +42,7 @@ namespace octoon
 		void onFixedUpdate() noexcept override;
 
 	protected:
-		void uploadBoneData() noexcept;
+		void uploadBoneData(model::Mesh& mesh) noexcept;
 		void uploadMatData(const video::Material& mat) noexcept;
 		void uploadMeshData(const model::Mesh& mesh) noexcept;
 

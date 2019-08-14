@@ -132,7 +132,9 @@ namespace octoon
 			scaling_ = scale;
 			rotation_ = quat;
 			translate_ = translate;
-			world_need_updates_ = true;
+			transform_.makeTransform(translate_, rotation_, scaling_);
+			transform_inverse_ = math::transformInverse(transform_);
+			world_need_updates_ = false;
 
 			this->updateWorldChildren();
 			this->onMoveAfter();

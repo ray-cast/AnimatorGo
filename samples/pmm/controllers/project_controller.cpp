@@ -478,9 +478,9 @@ namespace octoon
 
 				for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 5; i++)
 				{
-					auto t = i / ((frameB.frame - frameA.frame) * 10.0f);
+					auto t = i / ((frameB.frame - frameA.frame) * 5.0f);
 					auto euler = math::eulerAngles(math::slerp(frameA.quaternion, frameB.quaternion, interpolationRotation->interpolator(t)));
-					auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 10.0f) * i;
+					auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 5.0f) * i;
 
 					rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
 					rotationY[index].emplace_back((float)frame / 30.0f, euler.y);

@@ -10,9 +10,11 @@ namespace octoon
 		OctoonDeclareSubClass(CCDSolverComponent, GameComponent)
 	public:
 		CCDSolverComponent() noexcept;
+		CCDSolverComponent(GameObjectPtr&& target, GameObjects&& bones) noexcept;
+		CCDSolverComponent(const GameObjectPtr& target, const GameObjects& bones) noexcept;
 		~CCDSolverComponent() noexcept;
 
-		void setTarget(const GameObjectPtr& joint) noexcept;
+		void setTarget(const GameObjectPtr& target) noexcept;
 		const GameObjectPtr& getTarget() const noexcept;
 
 		void setIterations(std::uint32_t iterations) noexcept;
@@ -30,8 +32,8 @@ namespace octoon
 		void addBone(GameObjectPtr&& bone) noexcept;
 		void addBone(const GameObjectPtr& bone) noexcept;
 
-		void setBones(GameObjects&& joint) noexcept;
-		void setBones(const GameObjects& joint) noexcept;
+		void setBones(GameObjects&& bones) noexcept;
+		void setBones(const GameObjects& bones) noexcept;
 		const GameObjects& getBones() const noexcept;
 
 		GameComponentPtr clone() const noexcept;

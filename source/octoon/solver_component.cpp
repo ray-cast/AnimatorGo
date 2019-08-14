@@ -20,6 +20,20 @@ namespace octoon
 	{
 	}
 
+	CCDSolverComponent::CCDSolverComponent(GameObjectPtr&& target, GameObjects&& bones) noexcept
+		: CCDSolverComponent()
+	{
+		this->setTarget(std::move(target));
+		this->setBones(std::move(bones));
+	}
+
+	CCDSolverComponent::CCDSolverComponent(const GameObjectPtr& target, const GameObjects& bones) noexcept
+		: CCDSolverComponent()
+	{
+		this->setTarget(target);
+		this->setBones(bones);
+	}
+
 	CCDSolverComponent::~CCDSolverComponent() noexcept
 	{
 	}
@@ -85,15 +99,15 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::addBone(GameObjectPtr&& joint) noexcept
+	CCDSolverComponent::addBone(GameObjectPtr&& bone) noexcept
 	{
-		bones_.emplace_back(std::move(joint));
+		bones_.emplace_back(std::move(bone));
 	}
 
 	void
-	CCDSolverComponent::addBone(const GameObjectPtr& joint) noexcept
+	CCDSolverComponent::addBone(const GameObjectPtr& bone) noexcept
 	{
-		bones_.push_back(joint);
+		bones_.push_back(bone);
 	}
 
 	void

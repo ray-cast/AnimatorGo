@@ -336,15 +336,19 @@ namespace octoon
 		{
 			if (data.type() == typeid(bool))
 			{
-				if (runtime::any_cast<bool>(data))
+				auto enable = runtime::any_cast<bool>(data);
+
+				camera_->getComponent<OfflineCameraComponent>()->setActive(enable);
+				camera_->getComponent<PerspectiveCameraComponent>()->setActive(!enable);
+
+				for (auto& it : objects_)
 				{
-					camera_->getComponent<OfflineCameraComponent>()->setActive(true);
-					camera_->getComponent<PerspectiveCameraComponent>()->setActive(false);
-				}
-				else
-				{
-					camera_->getComponent<OfflineCameraComponent>()->setActive(false);
-					camera_->getComponent<PerspectiveCameraComponent>()->setActive(true);
+					for (auto& child : it->getChildren())
+					{
+						auto meshRenderer = child->getComponent<OfflineSkinnedMeshRendererComponent>();
+						if (meshRenderer)
+							meshRenderer->setActive(enable);
+					}
 				}
 			}
 		}

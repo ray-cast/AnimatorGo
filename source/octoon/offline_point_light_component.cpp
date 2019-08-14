@@ -75,8 +75,6 @@ namespace octoon
 				return;
 			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
 				return;
-			if (RPR_SUCCESS != rprLightSetGroupId(this->rprLight_, this->getGameObject()->getLayer()))
-				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;
 		}

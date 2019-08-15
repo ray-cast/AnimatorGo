@@ -166,7 +166,7 @@ namespace octoon
 					if (model)
 					{
 						model->setName(it.name);
-						model->getComponent<AnimatorComponent>()->setClips(clips);
+						model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(clips));
 						model->getComponent<AnimatorComponent>()->setTime(0.0f);
 
 						objects.emplace_back(std::move(model));

@@ -11,12 +11,10 @@ namespace octoon
 		OctoonDeclareSubClass(AnimatorComponent, GameComponent)
 	public:
 		AnimatorComponent() noexcept;
-		explicit AnimatorComponent(animation::AnimationClip<float>&& clips) noexcept;
-		explicit AnimatorComponent(animation::AnimationClips<float>&& clips) noexcept;
-		explicit AnimatorComponent(const animation::AnimationClip<float>& clips) noexcept;
-		explicit AnimatorComponent(const animation::AnimationClips<float>& clips) noexcept;
-		explicit AnimatorComponent(GameObjects&& transforms) noexcept;
-		explicit AnimatorComponent(const GameObjects& transforms) noexcept;
+		explicit AnimatorComponent(animation::Animation<float>&& animation) noexcept;
+		explicit AnimatorComponent(const animation::Animation<float>& animation) noexcept;
+		explicit AnimatorComponent(GameObjects&& avatar) noexcept;
+		explicit AnimatorComponent(const GameObjects& avatar) noexcept;
 		~AnimatorComponent() noexcept;
 
 		bool play(const std::string& status = "default") noexcept;
@@ -25,13 +23,13 @@ namespace octoon
 
 		void setTime(float time) noexcept;
 
-		void setClips(animation::AnimationClips<float>&& transforms) noexcept;
-		void setClips(const animation::AnimationClips<float>& transforms) noexcept;
-		const animation::AnimationClips<float>& getClips() const noexcept;
-
-		void setAvatar(GameObjects&& transforms) noexcept;
-		void setAvatar(const GameObjects& transforms) noexcept;
+		void setAvatar(GameObjects&& avatar) noexcept;
+		void setAvatar(const GameObjects& avatar) noexcept;
 		const GameObjects& getAvatar() const noexcept;
+
+		void setAnimation(animation::Animation<float>&& animation) noexcept;
+		void setAnimation(const animation::Animation<float>& animation) noexcept;
+		const animation::Animation<float>& getAnimation() const noexcept;
 
 		GameComponentPtr clone() const noexcept;
 
@@ -49,10 +47,10 @@ namespace octoon
 		bool enableAnimation_;
 		bool enableAnimOnVisableOnly_;
 
-		animation::AnimationClips<float> clips_;
+		animation::Animation<float> animation_;
 		math::float3s bindpose_;
 
-		GameObjects bones_;
+		GameObjects avatar_;
 	};
 }
 

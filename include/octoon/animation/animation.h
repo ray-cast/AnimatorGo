@@ -12,9 +12,33 @@ namespace octoon
 		{
 		public:
 			std::string name;
-			std::vector<AnimationClip<_Elem, _Time>> curves;
+			AnimationClips<_Elem, _Time> clips;
 
 			Animation() noexcept
+			{
+			}
+
+			Animation(AnimationClips<_Elem, _Time>&& _clips) noexcept
+				: name("Default")
+				, clips(std::move(_clips))
+			{
+			}
+
+			Animation(const AnimationClips<_Elem, _Time>& _clips) noexcept
+				: name("Default")
+				, clips(_clips)
+			{
+			}
+
+			Animation(std::string&& _name, AnimationClips<_Elem, _Time>&& _clips) noexcept
+				: name(std::move(_name))
+				, clips(std::move(_clips))
+			{
+			}
+
+			Animation(const std::string& _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
+				: name(_name)
+				, clips(_clips)
 			{
 			}
 
@@ -35,38 +59,44 @@ namespace octoon
 
 			void addClip(AnimationClip<_Elem, _Time>&& clip) noexcept
 			{
-				this->curves.push_back(std::move(clip));
+				this->clips.push_back(std::move(clip));
 			}
 
 			void addClip(const AnimationClip<_Elem, _Time>& clip) noexcept
 			{
-				this->curves.push_back(clip);
+				this->clips.push_back(clip);
 			}
 
-			void setClip(const std::string& name, const std::vector<AnimationClip<_Elem, _Time>>& clip) noexcept
+			void setClips(const std::vector<AnimationClip<_Elem, _Time>>& clip) noexcept
 			{
-				this->curves = clip;
+				this->clips = clip;
 			}
 
-			void setClip(const std::string& name, std::vector<AnimationClip<_Elem, _Time>>&& clip) noexcept
+			void setClips(std::vector<AnimationClip<_Elem, _Time>>&& clip) noexcept
 			{
-				this->curves = std::move(clip);
+				this->clips = std::move(clip);
 			}
 
 			void setTime(const _Time& time) noexcept
 			{
-				for (auto& it : this->curves)
-					it.second.setTime(time);
+				for (auto& it : this->clips)
+					it.setTime(time);
+			}
+
+			void evaluate(const _Time& delta) noexcept
+			{
+				for (auto& it : this->clips)
+					it.evaluate(delta);
 			}
 
 			bool empty() const noexcept
 			{
-				return this->curves.empty();
+				return this->clips.empty();
 			}
 
 			std::size_t size() const noexcept
 			{
-				return this->curves.size();
+				return this->clips.size();
 			}
 		};
 	}

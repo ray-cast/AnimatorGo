@@ -14,28 +14,16 @@ namespace octoon
 	{
 	}
 
-	AnimatorComponent::AnimatorComponent(animation::AnimationClip<float>&& clip) noexcept
+	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation) noexcept
 		: AnimatorComponent()
 	{
-		this->clips_.emplace_back(clip);
+		animation_ = std::move(animation);
 	}
 
-	AnimatorComponent::AnimatorComponent(animation::AnimationClips<float>&& clips) noexcept
+	AnimatorComponent::AnimatorComponent(const animation::Animation<float>& animation) noexcept
 		: AnimatorComponent()
 	{
-		this->clips_ = std::move(clips);
-	}
-
-	AnimatorComponent::AnimatorComponent(const animation::AnimationClip<float>& clip) noexcept
-		: AnimatorComponent()
-	{
-		this->clips_.emplace_back(clip);
-	}
-
-	AnimatorComponent::AnimatorComponent(const animation::AnimationClips<float>& clips) noexcept
-		: AnimatorComponent()
-	{
-		this->clips_ = clips;
+		animation_ = animation;
 	}
 
 	AnimatorComponent::AnimatorComponent(GameObjects&& transforms) noexcept
@@ -82,48 +70,46 @@ namespace octoon
 	void
 	AnimatorComponent::setTime(float time) noexcept
 	{
-		for (auto& clip : clips_)
-			clip.setTime(time);
-
+		animation_.setTime(time);
 		this->update();
 	}
 
 	void
-	AnimatorComponent::setClips(animation::AnimationClips<float>&& clips) noexcept
+	AnimatorComponent::setAnimation(animation::Animation<float>&& clips) noexcept
 	{
-		clips_ = std::move(clips);
+		animation_ = std::move(clips);
 	}
 
 	void
-	AnimatorComponent::setClips(const animation::AnimationClips<float>& clips) noexcept
+	AnimatorComponent::setAnimation(const animation::Animation<float>& clips) noexcept
 	{
-		clips_ = clips;
+		animation_ = clips;
 	}
 
-	const animation::AnimationClips<float>&
-	AnimatorComponent::getClips() const noexcept
+	const animation::Animation<float>&
+	AnimatorComponent::getAnimation() const noexcept
 	{
-		return clips_;
-	}
-
-	void
-	AnimatorComponent::setAvatar(GameObjects&& transforms) noexcept
-	{
-		bones_ = std::move(transforms);
-		this->updateBindpose(bones_);
+		return animation_;
 	}
 
 	void
-	AnimatorComponent::setAvatar(const GameObjects& transforms) noexcept
+	AnimatorComponent::setAvatar(GameObjects&& avatar) noexcept
 	{
-		bones_ = transforms;
-		this->updateBindpose(bones_);
+		avatar_ = std::move(avatar);
+		this->updateBindpose(avatar_);
+	}
+
+	void
+	AnimatorComponent::setAvatar(const GameObjects& avatar) noexcept
+	{
+		avatar_ = avatar;
+		this->updateBindpose(avatar_);
 	}
 
 	const GameObjects&
 	AnimatorComponent::getAvatar() const noexcept
 	{
-		return bones_;
+		return avatar_;
 	}
 
 	GameComponentPtr
@@ -132,7 +118,7 @@ namespace octoon
 		auto instance = std::make_shared<AnimatorComponent>();
 		instance->setName(this->getName());
 		instance->setAvatar(this->getAvatar());
-		instance->setClips(this->getClips());
+		instance->setAnimation(this->getAnimation());
 
 		return instance;
 	}
@@ -175,20 +161,20 @@ namespace octoon
 	void
 	AnimatorComponent::update(float delta) noexcept
 	{
-		for (std::size_t i = 0; i < clips_.size(); i++)
-		{
-			//assert(bones_[i]->getName() == clips_[i].name);
+		animation_.evaluate(delta);
 
-			auto transform = bones_[i]->getComponent<TransformComponent>();
+		for (std::size_t i = 0; i < animation_.clips.size(); i++)
+		{
+			//assert(avatar_[i]->getName() == clips_[i].name);
+
+			auto transform = avatar_[i]->getComponent<TransformComponent>();
 
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
 			auto euler = math::eulerAngles(quat);
 
-			clips_[i].evaluate(delta);
-
-			for (auto& curve : clips_[i].curves)
+			for (auto& curve : animation_.clips[i].curves)
 			{
 				if (curve.first == "LocalPosition.x")
 					translate.x = curve.second.key.value + bindpose_[i].x;

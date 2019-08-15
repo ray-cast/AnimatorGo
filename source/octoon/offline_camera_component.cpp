@@ -2,7 +2,6 @@
 #include <octoon/offline_feature.h>
 #include <octoon/transform_component.h>
 #include <octoon/game_scene.h>
-#include <array>
 
 #include <RadeonProRender.h>
 

@@ -1,9 +1,7 @@
 #include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/game_scene.h>
-#include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/render_system.h>
 
 namespace octoon
 {

@@ -224,6 +224,7 @@ namespace octoon
 	OfflineCameraComponent::onActivate() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
+		this->addMessageListener("Camera:fov", std::bind(&OfflineCameraComponent::onFovChange, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
@@ -260,6 +261,7 @@ namespace octoon
 	OfflineCameraComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+		this->addMessageListener("Camera:fov", std::bind(&OfflineCameraComponent::onFovChange, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature && feature->getScene())
@@ -312,5 +314,12 @@ namespace octoon
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
 		if (feature)
 			feature->setFramebufferDirty(true);
+	}
+
+	void
+	OfflineCameraComponent::onFovChange(const runtime::any& data) noexcept
+	{
+		if (data.type() == typeid(float))
+			this->setAperture(runtime::any_cast<float>(data));
 	}
 }

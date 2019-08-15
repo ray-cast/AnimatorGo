@@ -1,14 +1,14 @@
 #ifndef OCTOON_SKINNED_MESH_RENDERER_COMPONENT_H_
 #define OCTOON_SKINNED_MESH_RENDERER_COMPONENT_H_
 
-#include <octoon/render_component.h>
+#include <octoon/mesh_renderer_component.h>
 #include <octoon/video/geometry.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/model/mesh.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT SkinnedMeshRendererComponent final : public RenderComponent
+	class OCTOON_EXPORT SkinnedMeshRendererComponent final : public MeshRendererComponent
 	{
 		OctoonDeclareSubClass(SkinnedMeshRendererComponent, RenderComponent)
 	public:
@@ -21,27 +21,20 @@ namespace octoon
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
 
+		void uploadMeshData(const model::Mesh& mesh) noexcept override;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onMoveBefore() noexcept override;
-		void onMoveAfter() noexcept override;
-
 		void onFixedUpdate() noexcept override;
+		void onAnimationUpdate(const runtime::any& mesh) noexcept;
 
 		void onMeshReplace(const runtime::any& mesh) noexcept;
-		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		void onPreRender(const video::Camera& camera) noexcept override;
-		void onPostRender(const video::Camera& camera) noexcept override;
-
-		void onLayerChangeAfter() noexcept override;
-	
-	private:
-		void uploadMeshData(const model::Mesh& mesh) noexcept;
 
 	private:
 		SkinnedMeshRendererComponent(const SkinnedMeshRendererComponent&) = delete;
@@ -54,7 +47,6 @@ namespace octoon
 		math::BoundingBox boundingBox_;
 		model::MeshPtr mesh_;
 		model::MeshPtr skinnedMesh_;
-		video::GeometryPtr geometry_;
 	};
 }
 

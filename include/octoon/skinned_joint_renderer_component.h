@@ -1,14 +1,14 @@
 #ifndef OCTOON_SKINNED_JOINT_RENDERER_COMPONENT_H_
 #define OCTOON_SKINNED_JOINT_RENDERER_COMPONENT_H_
 
-#include <octoon/render_component.h>
+#include <octoon/mesh_renderer_component.h>
 #include <octoon/video/geometry.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/model/mesh.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT SkinnedJointRendererComponent final : public RenderComponent
+	class OCTOON_EXPORT SkinnedJointRendererComponent final : public MeshRendererComponent
 	{
 		OctoonDeclareSubClass(SkinnedJointRendererComponent, RenderComponent)
 	public:
@@ -27,22 +27,11 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onMoveBefore() noexcept override;
-		void onMoveAfter() noexcept override;
-
 		void onFixedUpdate() noexcept override;
 
-		void onJointReplace(const runtime::any& mesh) noexcept;
 		void onAnimationUpdate(const runtime::any& data) noexcept;
-		void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
 
 		void onPreRender(const video::Camera& camera) noexcept override;
-		void onPostRender(const video::Camera& camera) noexcept override;
-
-		void onLayerChangeAfter() noexcept override;
-	
-	private:
-		void uploadJointData(const model::Mesh& mesh) noexcept;
 
 	private:
 		SkinnedJointRendererComponent(const SkinnedJointRendererComponent&) = delete;
@@ -53,9 +42,6 @@ namespace octoon
 
 		GameObjects transforms_;
 		math::BoundingBox boundingBox_;
-		model::MeshPtr mesh_;
-		model::MeshPtr skinnedMesh_;
-		video::GeometryPtr geometry_;
 	};
 }
 

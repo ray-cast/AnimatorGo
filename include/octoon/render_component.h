@@ -24,6 +24,9 @@ namespace octoon
 		void isSharedMaterial(bool sharedMaterial) noexcept;
 
 	protected:
+		virtual void onPreRender(const video::Camera& camera) noexcept override;
+		virtual void onPostRender(const video::Camera& camera) noexcept override;
+
 		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept;
 
 	private:

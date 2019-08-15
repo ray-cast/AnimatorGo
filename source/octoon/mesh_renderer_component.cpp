@@ -67,11 +67,6 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMoveBefore() noexcept
-	{
-	}
-
-	void
 	MeshRendererComponent::onMoveAfter() noexcept
 	{
 		if (geometry_)
@@ -84,9 +79,6 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
-		if (!this->getMaterial())
-			return;
-
 		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
 		if (mesh)
 			this->uploadMeshData(*mesh);
@@ -104,16 +96,6 @@ namespace octoon
 	{
 		if (geometry_)
 			geometry_->setLayer(this->getGameObject()->getLayer());
-	}
-
-	void
-	MeshRendererComponent::onPreRender(const video::Camera& camera) noexcept
-	{
-	}
-
-	void
-	MeshRendererComponent::onPostRender(const video::Camera& camera) noexcept
-	{
 	}
 
 	void

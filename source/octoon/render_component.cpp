@@ -64,6 +64,16 @@ namespace octoon
 	}
 
 	void
+	RenderComponent::onPreRender(const video::Camera& camera) noexcept
+	{
+	}
+	
+	void
+	RenderComponent::onPostRender(const video::Camera& camera) noexcept
+	{
+	}
+
+	void
 	RenderComponent::onMaterialReplace(const video::MaterialPtr&) noexcept
 	{
 	}

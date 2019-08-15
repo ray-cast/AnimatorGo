@@ -223,8 +223,8 @@ namespace octoon
 				}
 			}
 
-			vertices[i] = v;
-			normals[i] = n;
+			skinnedMesh_->getVertexArray()[i] = v;
+			skinnedMesh_->getNormalArray()[i] = n;
 		}
 
 		this->uploadMeshData(*skinnedMesh_);

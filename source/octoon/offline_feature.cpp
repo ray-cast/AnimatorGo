@@ -132,10 +132,10 @@ namespace octoon
 		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		rprContextCreateScene(rprContext_, &rprScene_);
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
-		rprContextCreatePostEffect(rprContext_, RPR_POST_EFFECT_WAVELET_DENOISER, &rprDenoise_);
+		//rprContextCreatePostEffect(rprContext_, RPR_POST_EFFECT_WAVELET_DENOISER, &rprDenoise_);
 
 		rprContextSetScene(rprContext_, rprScene_);
-		rprContextAttachPostEffect(rprContext_, rprDenoise_);
+		//rprContextAttachPostEffect(rprContext_, rprDenoise_);
 
 		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}
@@ -204,11 +204,6 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::onFrameBegin() noexcept
-	{
-	}
-
-	void
 	OfflineFeature::onFrame() noexcept
 	{
 		rpr_camera camera;
@@ -268,11 +263,6 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::onFrameEnd() noexcept
-	{
-	}
-
-	void
 	OfflineFeature::onFramebufferChange(std::uint32_t w, std::uint32_t h) except
 	{
 		auto context = this->getFeature<GraphicsFeature>()->getContext();
@@ -314,15 +304,15 @@ namespace octoon
 			rpr_framebuffer framebuffer;
 			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &framebuffer))
 			{
-				/*rprContextSetAOV(rprContext_, RPR_AOV_COLOR, framebuffer);
+				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, framebuffer);
 
 				if (this->rprFramebuffer_)
-					rprObjectDelete(this->rprFramebuffer_);*/
+					rprObjectDelete(this->rprFramebuffer_);
 
 				this->rprFramebuffer_ = framebuffer;
 			}
 
-			rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
+			/*rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
 			rpr_framebuffer_desc desc;
 			desc.fb_width = w;
 			desc.fb_height = h;
@@ -338,7 +328,7 @@ namespace octoon
 			rprContextSetAOV(rprContext_, RPR_AOV_WORLD_COORDINATE, positionFramebuffer_);
 			rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer_);
 			rprContextSetAOV(rprContext_, RPR_AOV_OBJECT_ID, objectIdFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_OUTPUT, framebuffer);
+			rprContextSetAOV(rprContext_, RPR_AOV_OUTPUT, framebuffer);*/
 		}
 	}
 }

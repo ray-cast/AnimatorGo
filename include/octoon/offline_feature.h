@@ -36,9 +36,7 @@ namespace octoon
 
 		void onInputEvent(const runtime::any& data) noexcept;
 
-		void onFrameBegin() noexcept override;
 		void onFrame() noexcept override;
-		void onFrameEnd() noexcept override;
 
 		void onFramebufferChange(std::uint32_t w, std::uint32_t h) except;
 

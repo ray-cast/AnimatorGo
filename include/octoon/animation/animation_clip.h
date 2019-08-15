@@ -14,7 +14,7 @@ namespace octoon
 		{
 		public:
 			std::string name;
-			std::map<std::string, AnimationCurve<_Elem, _Time>> curves;
+			std::unordered_map<std::string, AnimationCurve<_Elem, _Time>> curves;
 
 			AnimationClip() noexcept
 			{

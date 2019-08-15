@@ -366,21 +366,22 @@ namespace octoon
 			this->setupCameraAnimation(pmm.camera_keyframes, clip);
 
 			auto obj = GameObject::create("MainCamera");
+
+			auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
+			offlineCamera->setActive(false);
+			offlineCamera->setAperture(pmm.camera_keyframes[0].fov);
+
+			auto camera = obj->addComponent<PerspectiveCameraComponent>();
+			camera->setAperture(pmm.camera_keyframes[0].fov);
+			camera->setCameraType(video::CameraType::Main);
+			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
+			camera->setClearColor(octoon::math::float4::One);
+
 			obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
 			obj->addComponent<AnimationComponent>(clip)->setTime(0.0f);
-			obj->addComponent<EditorCameraComponent>();
-			
-			auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
-			offlineCamera->setActive(false);
-			offlineCamera->setAperture(pmm.camera_keyframes[0].fov * 2.0f);
-
-			auto camera = obj->addComponent<PerspectiveCameraComponent>();
-			camera->setAperture(pmm.camera_keyframes[0].fov * 2.0f);
-			camera->setCameraType(video::CameraType::Main);
-			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
-			camera->setClearColor(octoon::math::float4::One);
+			obj->addComponent<EditorCameraComponent>();			
 
 			this->sendMessage("editor:camera:set", obj);
 
@@ -415,7 +416,7 @@ namespace octoon
 				rotationX.emplace_back((float)it.frame / 30.0f, it.rotation.x, interpolationRotation);
 				rotationY.emplace_back((float)it.frame / 30.0f, it.rotation.y, interpolationRotation);
 				rotationZ.emplace_back((float)it.frame / 30.0f, it.rotation.z, interpolationRotation);
-				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov * 2.0f, interpolationAngleView);
+				fov.emplace_back((float)it.frame / 30.0f, (float)it.fov, interpolationAngleView);
 			}
 
 			clip.setCurve("LocalPosition.x", AnimationCurve(std::move(eyeX)));

@@ -53,6 +53,8 @@ namespace octoon
 			float zoom_;
 			float canvasWidth_;
 
+			math::float2 sensorSize_;
+
 			mutable std::uint32_t width_;
 			mutable std::uint32_t height_;
 

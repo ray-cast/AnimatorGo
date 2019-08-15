@@ -17,6 +17,7 @@ namespace octoon
 			, zoom_(0)
 			, filmSize_(36.0f) // 35mm
 			, focalLength_(50.0f) // 50mm
+			, sensorSize_(math::float2::One)
 			, canvasWidth_(720.0f)
 			, needUpdateViewProject_(true)
 		{
@@ -214,7 +215,11 @@ namespace octoon
 				math::float4x4 adjustment;
 				adjustment.makeScale(1.0, -1.0, 1.0);
 
-				project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
+				math::float2 sensorSize;
+				sensorSize.x = ratio_ * ((float)width / height);
+				sensorSize.y = ratio_ * ((float)width / height);
+
+				project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
 				projectInverse_ = math::inverse(project_);
 
 				viewProject_ = project_ * this->getView();

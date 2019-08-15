@@ -243,7 +243,7 @@ namespace octoon
 
 			std::uint32_t w, h;
 			feature->getFramebufferScale(w, h);
-			rprCameraSetSensorSize(this->rprCamera_, filmSize_, filmSize_ / w * (float)h);
+			rprCameraSetSensorSize(this->rprCamera_, filmSize_ *  w / (float)h, filmSize_);
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto eye = transform->getTranslate();

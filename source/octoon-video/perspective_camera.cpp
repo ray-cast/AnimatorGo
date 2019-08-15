@@ -137,7 +137,11 @@ namespace octoon
 
 			if (needUpdateViewProject_)
 			{
-				project_ = math::makePerspectiveFovLH(aperture_, ratio_ * ((float)width / height), znear_, zfar_);
+				math::float2 sensorSize;
+				sensorSize.x = ratio_ * ((float)width / height);
+				sensorSize.y = 1.0f;
+
+				project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
 				projectInverse_ = math::inverse(project_);
 
 				viewProject_ = project_ * this->getView();

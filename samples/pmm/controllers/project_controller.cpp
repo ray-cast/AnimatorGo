@@ -369,10 +369,10 @@ namespace octoon
 
 			auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
 			offlineCamera->setActive(false);
-			offlineCamera->setAperture(pmm.camera_keyframes[0].fov);
+			offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>();
-			camera->setAperture(pmm.camera_keyframes[0].fov);
+			camera->setAperture((float)pmm.camera_keyframes[0].fov);
 			camera->setCameraType(video::CameraType::Main);
 			camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 			camera->setClearColor(octoon::math::float4::One);

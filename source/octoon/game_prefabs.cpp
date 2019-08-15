@@ -561,7 +561,7 @@ namespace octoon
 
 				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
 				sjr->setMaterial(mat);
-				sjr->setTransforms(bones);
+				sjr->setAvatar(bones);
 
 				object->addComponent(sjr);*/
 			}

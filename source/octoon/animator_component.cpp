@@ -41,13 +41,13 @@ namespace octoon
 	AnimatorComponent::AnimatorComponent(GameObjects&& transforms) noexcept
 		: AnimatorComponent()
 	{
-		this->setTransforms(std::move(transforms));
+		this->setAvatar(std::move(transforms));
 	}
 
 	AnimatorComponent::AnimatorComponent(const GameObjects& transforms) noexcept
 		: AnimatorComponent()
 	{
-		this->setTransforms(transforms);
+		this->setAvatar(transforms);
 	}
 
 	AnimatorComponent::~AnimatorComponent() noexcept
@@ -107,21 +107,21 @@ namespace octoon
 	}
 
 	void
-	AnimatorComponent::setTransforms(GameObjects&& transforms) noexcept
+	AnimatorComponent::setAvatar(GameObjects&& transforms) noexcept
 	{
 		bones_ = std::move(transforms);
 		this->updateBindpose(bones_);
 	}
 
 	void
-	AnimatorComponent::setTransforms(const GameObjects& transforms) noexcept
+	AnimatorComponent::setAvatar(const GameObjects& transforms) noexcept
 	{
 		bones_ = transforms;
 		this->updateBindpose(bones_);
 	}
 
 	const GameObjects&
-	AnimatorComponent::getTransforms() const noexcept
+	AnimatorComponent::getAvatar() const noexcept
 	{
 		return bones_;
 	}
@@ -131,7 +131,7 @@ namespace octoon
 	{
 		auto instance = std::make_shared<AnimatorComponent>();
 		instance->setName(this->getName());
-		instance->setTransforms(this->getTransforms());
+		instance->setAvatar(this->getAvatar());
 		instance->setClips(this->getClips());
 
 		return instance;

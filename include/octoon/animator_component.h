@@ -29,9 +29,9 @@ namespace octoon
 		void setClips(const animation::AnimationClips<float>& transforms) noexcept;
 		const animation::AnimationClips<float>& getClips() const noexcept;
 
-		void setTransforms(GameObjects&& transforms) noexcept;
-		void setTransforms(const GameObjects& transforms) noexcept;
-		const GameObjects& getTransforms() const noexcept;
+		void setAvatar(GameObjects&& transforms) noexcept;
+		void setAvatar(const GameObjects& transforms) noexcept;
+		const GameObjects& getAvatar() const noexcept;
 
 		GameComponentPtr clone() const noexcept;
 

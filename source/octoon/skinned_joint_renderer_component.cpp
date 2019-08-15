@@ -1,6 +1,5 @@
 #include <octoon/skinned_joint_renderer_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/render_system.h>
 
 namespace octoon
 {

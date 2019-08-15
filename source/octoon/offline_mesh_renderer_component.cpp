@@ -113,24 +113,34 @@ namespace octoon
 							rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 							rprMaterialNodeSetInputImageData(textureNode, "data", image_);
 
-							std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION;
-							if (hasAlpha)
-								layers |= RPR_UBER_MATERIAL_TRANSPARENCY;
+							std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_REFLECTION;
+							/*if (hasAlpha)
+								layers |= RPR_UBER_MATERIAL_TRANSPARENCY;*/
 
 							rprMaterialNodeSetInputU(rprMaterial_, "uberv2.layers", layers);
-							rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
-								
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.metalness", 0.0f, 1.0f, 1.0f, 1.0f);
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 1.0f, 0.0f, 1.0f, 1.0f);
 
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+							if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+								rprMaterialNodeSetInputN(rprMaterial_, "uberv2.diffuse.color", textureNode);
+							
+							if (layers & RPR_UBER_MATERIAL_TRANSPARENCY)
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.transparency", 0.5f, 1.0f, 1.0f, 1.0f);
 
-							rprMaterialNodeSetInputF(rprMaterial_, "uberv2.transparency", 0.5f, 1.0f, 1.0f, 1.0f);
-								
+							if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
+							{
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.color", 1.0f, 1.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.metalness", 0.0f, 0.0f, 0.0f, 0.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);
+							}
+
+							if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+							{
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+								rprMaterialNodeSetInputF(rprMaterial_, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+							}
+
+							
 							texture->unmap();
 						}
 						catch (...)

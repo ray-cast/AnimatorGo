@@ -9,9 +9,9 @@ namespace octoon
 
 		PerspectiveCamera::PerspectiveCamera() noexcept
 			: aperture_(45.0f)
-			, ratio_(1.0f)
 			, znear_(0.01f)
 			, zfar_(std::numeric_limits<float>::max())
+			, sensorSize_(math::float2::One)
 			, width_(0)
 			, height_(0)
 			, needUpdateViewProject_(true)
@@ -71,19 +71,19 @@ namespace octoon
 		}
 
 		void
-		PerspectiveCamera::setRatio(float ratio) noexcept
+		PerspectiveCamera::setSensorSize(const math::float2& sensorSize) noexcept
 		{
-			if (ratio_ != ratio)
+			if (sensorSize_ != sensorSize)
 			{
 				needUpdateViewProject_= true;
-				ratio_ = ratio;
+				sensorSize_ = sensorSize;
 			}
 		}
 
-		float
-		PerspectiveCamera::getRatio() const noexcept
+		const math::float2&
+		PerspectiveCamera::getSensorSize() const noexcept
 		{
-			return ratio_;
+			return sensorSize_;
 		}
 
 		const math::float4x4&
@@ -138,8 +138,8 @@ namespace octoon
 			if (needUpdateViewProject_)
 			{
 				math::float2 sensorSize;
-				sensorSize.x = ratio_ * ((float)width / height);
-				sensorSize.y = 1.0f;
+				sensorSize.x = sensorSize_.x * ((float)width / height);
+				sensorSize.y = sensorSize_.y;
 
 				project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
 				projectInverse_ = math::inverse(project_);

@@ -10,11 +10,11 @@ namespace octoon
 		camera_ = dynamic_cast<video::PerspectiveCamera*>(CameraComponent::camera_.get());
 	}
 
-	PerspectiveCameraComponent::PerspectiveCameraComponent(float fov, float ratio, float znear, float zfar) noexcept
+	PerspectiveCameraComponent::PerspectiveCameraComponent(float fov, const math::float2& sensorSize, float znear, float zfar) noexcept
 		: PerspectiveCameraComponent()
 	{
 		this->setAperture(fov);
-		this->setRatio(ratio);
+		this->setSensorSize(sensorSize);
 		this->setNear(znear);
 		this->setFar(zfar);
 	}
@@ -41,12 +41,6 @@ namespace octoon
 		camera_->setAperture(fov);
 	}
 
-	void
-	PerspectiveCameraComponent::setRatio(float ratio) noexcept
-	{
-		camera_->setRatio(ratio);
-	}
-
 	float
 	PerspectiveCameraComponent::getNear() const noexcept
 	{
@@ -65,10 +59,16 @@ namespace octoon
 		return camera_->getAperture();
 	}
 
-	float
-	PerspectiveCameraComponent::getRatio() const noexcept
+	void
+	PerspectiveCameraComponent::setSensorSize(const math::float2& sensorSize) noexcept
 	{
-		return camera_->getRatio();
+		camera_->setSensorSize(sensorSize);
+	}
+
+	const math::float2&
+	PerspectiveCameraComponent::getSensorSize() const noexcept
+	{
+		return camera_->getSensorSize();
 	}
 
 	GameComponentPtr
@@ -79,7 +79,7 @@ namespace octoon
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());
 		instance->setAperture(this->getAperture());
-		instance->setRatio(this->getRatio());
+		instance->setSensorSize(this->getSensorSize());
 		instance->setClearColor(this->getClearColor());
 		instance->setViewport(this->getViewport());
 		instance->setCameraType(this->getCameraType());

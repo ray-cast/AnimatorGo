@@ -27,12 +27,6 @@ namespace octoon
 	}
 
 	void
-	FilmCameraComponent::setRatio(float ratio) noexcept
-	{
-		camera_->setRatio(ratio);
-	}
-
-	void
 	FilmCameraComponent::setZoom(float zoom) noexcept
 	{
 		camera_->setZoom(zoom);
@@ -75,12 +69,6 @@ namespace octoon
 	}
 
 	float
-	FilmCameraComponent::getRatio() const noexcept
-	{
-		return camera_->getRatio();
-	}
-
-	float
 	FilmCameraComponent::getZoom() const noexcept
 	{
 		return camera_->getZoom();
@@ -110,6 +98,18 @@ namespace octoon
 		return camera_->getCanvasWidth();
 	}
 
+	void
+	FilmCameraComponent::setSensorSize(const math::float2& sensorSize) noexcept
+	{
+		camera_->setSensorSize(sensorSize);
+	}
+
+	const math::float2&
+	FilmCameraComponent::getSensorSize() const noexcept
+	{
+		return camera_->getSensorSize();
+	}
+
 	GameComponentPtr
 	FilmCameraComponent::clone() const noexcept
 	{
@@ -118,7 +118,7 @@ namespace octoon
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());
 		instance->setAperture(this->getAperture());
-		instance->setRatio(this->getRatio());
+		instance->setSensorSize(this->getSensorSize());
 		instance->setClearColor(this->getClearColor());
 		instance->setViewport(this->getViewport());
 		instance->setCameraType(this->getCameraType());

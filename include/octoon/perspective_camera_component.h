@@ -11,18 +11,19 @@ namespace octoon
 		OctoonDeclareSubClass(PerspectiveCameraComponent, CameraComponent)
 	public:
 		PerspectiveCameraComponent() noexcept;
-		explicit PerspectiveCameraComponent(float fov, float ratio = 1.0f, float znear = 0.01f, float zfar = 65535.0f) noexcept;
+		explicit PerspectiveCameraComponent(float fov, const math::float2& sensorSize = math::float2::One, float znear = 0.01f, float zfar = 65535.0f) noexcept;
 		virtual ~PerspectiveCameraComponent() noexcept;
 
 		void setAperture(float fov) noexcept;
 		void setNear(float znear) noexcept;
 		void setFar(float zfar) noexcept;
-		void setRatio(float ratio) noexcept;
 
 		float getAperture() const noexcept;
 		float getNear() const noexcept;
 		float getFar() const noexcept;
-		float getRatio() const noexcept;
+
+		void setSensorSize(const math::float2& sensorSize) noexcept;
+		const math::float2& getSensorSize() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 

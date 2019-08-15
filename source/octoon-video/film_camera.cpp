@@ -9,7 +9,6 @@ namespace octoon
 
 		FilmCamera::FilmCamera() noexcept
 			: aperture_(45.0f)
-			, ratio_(1.0f)
 			, znear_(0.01f)
 			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
@@ -48,12 +47,12 @@ namespace octoon
 		}
 
 		void
-		FilmCamera::setRatio(float ratio) noexcept
+		FilmCamera::setSensorSize(const math::float2& sensorSize) noexcept
 		{
-			if (ratio_ != ratio)
+			if (sensorSize_ != sensorSize)
 			{
 				needUpdateViewProject_= true;
-				ratio_ = ratio;
+				sensorSize_ = sensorSize;
 			}
 		}
 
@@ -155,10 +154,10 @@ namespace octoon
 			return zfar_;
 		}
 
-		float
-		FilmCamera::getRatio() const noexcept
+		const math::float2&
+		FilmCamera::getSensorSize() const noexcept
 		{
-			return ratio_;
+			return sensorSize_;
 		}
 
 		const math::float4x4&
@@ -216,8 +215,8 @@ namespace octoon
 				adjustment.makeScale(1.0, -1.0, 1.0);
 
 				math::float2 sensorSize;
-				sensorSize.x = ratio_ * ((float)width / height);
-				sensorSize.y = ratio_ * ((float)width / height);
+				sensorSize.x = sensorSize_.x;
+				sensorSize.y = sensorSize_.y * ((float)width / height);
 
 				project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
 				projectInverse_ = math::inverse(project_);

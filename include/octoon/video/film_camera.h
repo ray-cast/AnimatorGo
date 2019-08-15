@@ -16,7 +16,6 @@ namespace octoon
 
 			void setNear(float znear) noexcept;
 			void setFar(float zfar) noexcept;
-			void setRatio(float ratio) noexcept;
 			void setFilmSize(float width) noexcept;
 			void setCanvasWidth(float width) noexcept;
 			void setFocalLength(float length) noexcept;
@@ -25,12 +24,14 @@ namespace octoon
 
 			float getNear() const noexcept;
 			float getFar() const noexcept;
-			float getRatio() const noexcept;
 			float getZoom() const noexcept;
 			float getAperture() const noexcept;
 			float getFilmSize() const noexcept;
 			float getCanvasWidth() const noexcept;
 			float getFocalLength() const noexcept;
+
+			void setSensorSize(const math::float2& ratio) noexcept;
+			const math::float2& getSensorSize() const noexcept;
 
 			const math::float4x4& getViewProjection() const noexcept override;
 			const math::float4x4& getViewProjectionInverse() const noexcept override;
@@ -46,7 +47,6 @@ namespace octoon
 		private:
 			float znear_;
 			float zfar_;
-			float ratio_;
 			float filmSize_;
 			float focalLength_;
 			float aperture_;

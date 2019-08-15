@@ -238,7 +238,7 @@ namespace octoon
 			shadowCamera->setCameraType(CameraType::Custom);
 			shadowCamera->setAperture(90.0f);
 			shadowCamera->setNear(0.1f);
-			shadowCamera->setRatio(1.0f);
+			shadowCamera->setSensorSize(math::float2::One);
 
 			return true;
 		}

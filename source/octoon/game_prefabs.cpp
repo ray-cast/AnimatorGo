@@ -355,9 +355,6 @@ namespace octoon
 	bool
 	GamePrefabs::createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept
 	{
-		auto material = std::make_shared<video::BasicMaterial>();
-		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
-
 		for (auto& it : model.get<Model::rigidbody>())
 		{
 			auto gameObject = GameObject::create();

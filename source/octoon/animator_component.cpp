@@ -151,11 +151,7 @@ namespace octoon
 		bindpose_.resize(bones.size());
 
 		for (std::size_t i = 0; i < bones.size(); i++)
-		{
-			bindpose_[i] = bones[i]->getComponent<TransformComponent>()->getTranslate();
-			if (bones[i]->getParent())
-				bindpose_[i] -= bones[i]->getParent()->getComponent<TransformComponent>()->getTranslate();
-		}
+			bindpose_[i] = bones[i]->getComponent<TransformComponent>()->getLocalTranslate();
 	}
 
 	void

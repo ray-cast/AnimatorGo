@@ -18,6 +18,18 @@ namespace octoon
 			{
 			}
 
+			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
+				: name("Default")
+			{
+				clips.emplace_back(std::move(_clips));
+			}
+
+			Animation(const AnimationClip<_Elem, _Time>& _clip) noexcept
+				: name("Default")
+			{
+				clips.emplace_back(std::move(_clip));
+			}
+
 			Animation(AnimationClips<_Elem, _Time>&& _clips) noexcept
 				: name("Default")
 				, clips(std::move(_clips))

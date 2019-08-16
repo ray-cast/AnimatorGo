@@ -14,28 +14,16 @@ namespace octoon
 	{
 	}
 
-	AnimationComponent::AnimationComponent(animation::AnimationClip<float>&& clip) noexcept
+	AnimationComponent::AnimationComponent(animation::Animation<float>&& animation) noexcept
 		: AnimationComponent()
 	{
-		clips_.emplace_back(clip);
+		animation_ = std::move(animation);
 	}
 
-	AnimationComponent::AnimationComponent(animation::AnimationClips<float>&& clips) noexcept
+	AnimationComponent::AnimationComponent(const animation::Animation<float>& animation) noexcept
 		: AnimationComponent()
 	{
-		clips_ = std::move(clips);
-	}
-
-	AnimationComponent::AnimationComponent(const animation::AnimationClip<float>& clip) noexcept
-		: AnimationComponent()
-	{
-		clips_.emplace_back(clip);
-	}
-
-	AnimationComponent::AnimationComponent(const animation::AnimationClips<float>& clips) noexcept
-		: AnimationComponent()
-	{
-		clips_ = clips;
+		animation_ = animation;
 	}
 
 	AnimationComponent::~AnimationComponent() noexcept
@@ -65,10 +53,26 @@ namespace octoon
 	void
 	AnimationComponent::setTime(float time) noexcept
 	{
-		for (auto& clip : clips_)
-			clip.setTime(0.0f);
-
+		animation_.setTime(time);
 		this->update();
+	}
+
+	void
+	AnimationComponent::setAnimation(animation::Animation<float>&& clips) noexcept
+	{
+		animation_ = std::move(clips);
+	}
+
+	void
+	AnimationComponent::setAnimation(const animation::Animation<float>& clips) noexcept
+	{
+		animation_ = clips;
+	}
+
+	const animation::Animation<float>&
+	AnimationComponent::getAnimation() const noexcept
+	{
+		return animation_;
 	}
 
 	GameComponentPtr
@@ -99,7 +103,9 @@ namespace octoon
 	void
 	AnimationComponent::update(float delta) noexcept
 	{
-		for (auto& clip : clips_)
+		animation_.evaluate(delta);
+
+		for (auto& clip : animation_.clips)
 		{
 			auto transform = this->getComponent<TransformComponent>();
 			auto scale = transform->getLocalScale();
@@ -107,8 +113,6 @@ namespace octoon
 			auto translate = transform->getLocalTranslate();
 			auto euler = math::eulerAngles(quat);
 			auto move = 0.0f;
-
-			clip.evaluate(delta);
 
 			for (auto& curve : clip.curves)
 			{

@@ -11,10 +11,8 @@ namespace octoon
 		OctoonDeclareSubClass(AnimationComponent, GameComponent)
 	public:
 		AnimationComponent() noexcept;
-		explicit AnimationComponent(animation::AnimationClip<float>&& clips) noexcept;
-		explicit AnimationComponent(animation::AnimationClips<float>&& clips) noexcept;
-		explicit AnimationComponent(const animation::AnimationClip<float>& clips) noexcept;
-		explicit AnimationComponent(const animation::AnimationClips<float>& clips) noexcept;
+		explicit AnimationComponent(animation::Animation<float>&& animation) noexcept;
+		explicit AnimationComponent(const animation::Animation<float>& animation) noexcept;
 		virtual ~AnimationComponent() noexcept;
 	
 		void play() noexcept;
@@ -22,6 +20,10 @@ namespace octoon
 		void stop() noexcept;
 
 		void setTime(float time) noexcept;
+
+		void setAnimation(animation::Animation<float>&& animation) noexcept;
+		void setAnimation(const animation::Animation<float>& animation) noexcept;
+		const animation::Animation<float>& getAnimation() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -43,7 +45,7 @@ namespace octoon
 		float timeStep_;
 		float timeInterval_;
 
-		animation::AnimationClips<float> clips_;
+		animation::Animation<float> animation_;
 	};
 }
 

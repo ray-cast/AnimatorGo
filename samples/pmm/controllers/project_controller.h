@@ -16,9 +16,13 @@ namespace octoon
 			ProjectController() noexcept;
 			~ProjectController() noexcept;
 
+			bool open(const std::string& path) noexcept;
+
 			virtual GameComponentPtr clone() const noexcept override;
 
 		private:
+			void onFileDrop(const runtime::any& data) noexcept;
+
 			void openProject(const runtime::any& data) noexcept;
 			void saveProject(const runtime::any& data) noexcept;
 			void saveAsProject(const runtime::any& data) noexcept;

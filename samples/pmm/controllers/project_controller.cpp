@@ -14,6 +14,9 @@
 #include <octoon/H264_component.h>
 #include <octoon/timer_feature.h>
 #include <octoon/cloth_component.h>
+#include <octoon/game_base_features.h>
+#include <octoon/game_object_manager.h>
+#include <octoon/runtime/string.h>
 #include <fstream>
 #include "../libs/nativefiledialog/nfd.h"
 
@@ -101,48 +104,9 @@ namespace octoon
 			}
 		}
 
-		void
-		ProjectController::onActivate() noexcept
+		bool
+		ProjectController::open(const std::string& filepath) noexcept
 		{
-			this->addComponentDispatch(GameDispatchType::Gui);
-			this->addMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));	
-			this->addMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
-
-			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
-		}
-
-		void
-		ProjectController::onDeactivate() noexcept
-		{
-			this->removeComponentDispatchs();
-			this->removeMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
-
-			this->removeMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
-		}
-
-		void
-		ProjectController::openProject(const runtime::any& data) noexcept
-		{			
-			std::string::value_type filepath[PATHLIMIT];
-			std::memset(filepath, 0, sizeof(filepath));
-
-			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
-				return;
-
 			try
 			{
 				GameObjects objects;
@@ -179,7 +143,7 @@ namespace octoon
 				mainLight->getComponent<OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 				mainLight->getComponent<TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 				objects.push_back(mainLight);
-				
+
 				auto obj = GameObject::create("EnvironmentLight");
 				obj->addComponent<OfflineEnvironmentLightComponent>();
 				obj->getComponent<OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
@@ -187,11 +151,78 @@ namespace octoon
 				objects.push_back(obj);
 
 				objects_ = objects;
+				return true;
 			}
 			catch (const std::bad_optional_access&)
 			{
 				this->sendMessage("editor:message:error", "Failed to open the file");
+				return false;
 			}
+		}
+
+		void
+		ProjectController::onActivate() noexcept
+		{
+			this->addComponentDispatch(GameDispatchType::Gui);
+			this->addMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));	
+			this->addMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
+
+			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
+
+			this->getGameScene()->getFeature<GameBaseFeature>()->getGameObjectManager()->addMessageListener("feature:input:drop", std::bind(&ProjectController::onFileDrop, this, std::placeholders::_1));
+		}
+
+		void
+		ProjectController::onDeactivate() noexcept
+		{
+			this->removeComponentDispatchs();
+			this->removeMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
+
+			this->removeMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
+
+			this->getGameScene()->getFeature<GameBaseFeature>()->getGameObjectManager()->removeMessageListener("feature:input:drop", std::bind(&ProjectController::onFileDrop, this, std::placeholders::_1));
+		}
+
+		void
+		ProjectController::onFileDrop(const runtime::any& data) noexcept
+		{
+			if (data.type() == typeid(const char**))
+			{
+				auto files = runtime::any_cast<const char**>(data);
+
+				std::string_view str(files[0]);
+				auto ext = str.substr(str.find_first_of("."));
+				if (ext == ".pmm")
+				{
+					// this->open(std::string(str));
+				}
+			}
+		}
+
+		void
+		ProjectController::openProject(const runtime::any& data) noexcept
+		{			
+			std::string::value_type filepath[PATHLIMIT];
+			std::memset(filepath, 0, sizeof(filepath));
+
+			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedProject[0]))
+				return;
+
+			this->open(filepath);
 		}
 
 		void

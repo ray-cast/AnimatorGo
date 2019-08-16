@@ -5,12 +5,14 @@
 
 namespace octoon
 {
-	class GameBaseFeature final : public GameFeature
+	class OCTOON_EXPORT GameBaseFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(GameBaseFeature, GameFeature)
 	public:
 		GameBaseFeature() noexcept;
 		~GameBaseFeature() noexcept;
+
+		GameObjectManager* getGameObjectManager() const noexcept;
 
 	private:
 		void onActivate() noexcept override;

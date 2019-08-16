@@ -26,6 +26,10 @@ namespace octoon
 
 		void onGui() noexcept;
 
+		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+
 	private:
 		friend GameObject;
 
@@ -41,6 +45,9 @@ namespace octoon
 
 		std::mutex lock_;
 		std::stack<std::size_t> emptyLists_;
+
+		std::vector<GameComponentRaws> dispatchComponents_;
+		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
 	};
 }
 

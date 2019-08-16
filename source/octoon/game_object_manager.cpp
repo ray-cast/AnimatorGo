@@ -92,6 +92,24 @@ namespace octoon
 	}
 
 	void
+	GameObjectManager::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		dispatchEvents_[event].call_all_slots(data);
+	}
+
+	void
+	GameObjectManager::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].connect(listener);
+	}
+
+	void
+	GameObjectManager::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		dispatchEvents_[event].disconnect(listener);
+	}
+
+	void
 	GameObjectManager::onFixedUpdate() noexcept
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)

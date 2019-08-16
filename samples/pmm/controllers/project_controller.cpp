@@ -15,6 +15,7 @@
 #include <octoon/timer_feature.h>
 #include <octoon/cloth_component.h>
 #include <octoon/game_base_features.h>
+#include <octoon/physics_feature.h>
 #include <octoon/game_object_manager.h>
 #include <octoon/runtime/string.h>
 #include <fstream>
@@ -368,6 +369,10 @@ namespace octoon
 					timeFeature->setTimeInterval(1.0f / 60.0f);
 				}
 
+				auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+				if (physicsFeature)
+					physicsFeature->setSolverIterationCounts(10);
+
 				for (auto& it : objects_)
 				{
 					auto animation = it->getComponent<AnimationComponent>();
@@ -381,6 +386,10 @@ namespace octoon
 			}
 			else
 			{
+				auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+				if (physicsFeature)
+					physicsFeature->setSolverIterationCounts(1);
+
 				for (auto& it : objects_)
 				{
 					auto animation = it->getComponent<AnimationComponent>();

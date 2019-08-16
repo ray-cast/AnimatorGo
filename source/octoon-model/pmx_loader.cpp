@@ -749,6 +749,21 @@ namespace octoon
 				index++;
 			}
 
+			for (auto& it : pmx.morphs)
+			{
+				switch (it.morphType)
+				{
+				case PmxMorphType::MorphTypeVertex:
+				{
+					for (auto& v : it.vertexList)
+					{
+						
+					}
+				}
+				break;
+				}
+			}
+
 			for (auto& it : pmx.rigidbodies)
 			{
 				auto body = std::make_shared<Rigidbody>();

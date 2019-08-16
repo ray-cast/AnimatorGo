@@ -161,17 +161,49 @@ namespace octoon
 		}
 
 		void
+		ProjectController::close() noexcept
+		{
+			try
+			{
+				objects_.clear();
+				objects_.shrink_to_fit();
+			}
+			catch (...)
+			{
+			}
+		}
+
+		bool
+		ProjectController::importModel(const std::string& path) noexcept
+		{
+			auto mdoel = GamePrefabs::instance()->createModel(path);
+			if (mdoel)
+			{
+				objects_.push_back(mdoel);
+				return true;
+			}
+
+			return false;
+		}
+
+		bool
+		ProjectController::exportModel(const std::string& path) noexcept
+		{
+			return false;
+		}
+
+		void
 		ProjectController::onActivate() noexcept
 		{
 			this->addComponentDispatch(GameDispatchType::Gui);
-			this->addMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:open", std::bind(&ProjectController::onOpenProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:save", std::bind(&ProjectController::onSaveProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::onSaveAsProject, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:import", std::bind(&ProjectController::onOpenModel, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:export", std::bind(&ProjectController::onSaveModel, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:file:exit", std::bind(&ProjectController::exit, this, std::placeholders::_1));	
 			this->addMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
-			this->addMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
+			this->addMessageListener("editor:menu:file:video", std::bind(&ProjectController::onRenderVideo, this, std::placeholders::_1));
 
 			this->addMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
 			this->addMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
@@ -183,13 +215,13 @@ namespace octoon
 		ProjectController::onDeactivate() noexcept
 		{
 			this->removeComponentDispatchs();
-			this->removeMessageListener("editor:menu:file:open", std::bind(&ProjectController::openProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:save", std::bind(&ProjectController::saveProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::saveAsProject, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::openModel, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::saveModel, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:open", std::bind(&ProjectController::onOpenProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:save", std::bind(&ProjectController::onSaveProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:saveAs", std::bind(&ProjectController::onSaveAsProject, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:import", std::bind(&ProjectController::onOpenModel, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:export", std::bind(&ProjectController::onSaveModel, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:file:picture", std::bind(&ProjectController::renderPicture, this, std::placeholders::_1));
-			this->removeMessageListener("editor:menu:file:video", std::bind(&ProjectController::renderVideo, this, std::placeholders::_1));
+			this->removeMessageListener("editor:menu:file:video", std::bind(&ProjectController::onRenderVideo, this, std::placeholders::_1));
 
 			this->removeMessageListener("editor:menu:setting:render", std::bind(&ProjectController::play, this, std::placeholders::_1));
 			this->removeMessageListener("editor:menu:setting:mode", std::bind(&ProjectController::offlineMode, this, std::placeholders::_1));
@@ -200,21 +232,21 @@ namespace octoon
 		void
 		ProjectController::onFileDrop(const runtime::any& data) noexcept
 		{
-			if (data.type() == typeid(const char**))
+			if (data.type() == typeid(std::vector<const char*>))
 			{
-				auto files = runtime::any_cast<const char**>(data);
+				auto files = runtime::any_cast<std::vector<const char*>>(data);
+				if (files.empty())
+					return;
 
-				std::string_view str(files[0]);
+				std::string_view str(files.front());
 				auto ext = str.substr(str.find_first_of("."));
 				if (ext == ".pmm")
-				{
-					// this->open(std::string(str));
-				}
+					this->open(std::string(str));
 			}
 		}
 
 		void
-		ProjectController::openProject(const runtime::any& data) noexcept
+		ProjectController::onOpenProject(const runtime::any& data) noexcept
 		{			
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -226,7 +258,7 @@ namespace octoon
 		}
 
 		void
-		ProjectController::saveProject(const runtime::any& data) noexcept
+		ProjectController::onSaveProject(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -236,7 +268,7 @@ namespace octoon
 		}
 
 		void
-		ProjectController::saveAsProject(const runtime::any& data) noexcept
+		ProjectController::onSaveAsProject(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -246,7 +278,7 @@ namespace octoon
 		}
 
 		void
-		ProjectController::openModel(const runtime::any& data) noexcept
+		ProjectController::onOpenModel(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -254,11 +286,11 @@ namespace octoon
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedModel[0]))
 				return;
 
-			objects_.push_back(GamePrefabs::instance()->createModel(filepath));
+			this->importModel(filepath);
 		}
 
 		void
-		ProjectController::saveModel(const runtime::any& data) noexcept
+		ProjectController::onSaveModel(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -268,7 +300,7 @@ namespace octoon
 		}
 
 		void
-		ProjectController::renderVideo(const runtime::any& data) noexcept
+		ProjectController::onRenderVideo(const runtime::any& data) noexcept
 		{
 			std::string::value_type filepath[PATHLIMIT];
 			std::memset(filepath, 0, sizeof(filepath));
@@ -537,16 +569,6 @@ namespace octoon
 				clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY[i])));
 				clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
 			}
-		}
-
-		void
-		ProjectController::setupRenderScene() noexcept
-		{
-		}
-
-		void
-		ProjectController::setupOfflineRenderScene() noexcept
-		{
 		}
 	}
 }

@@ -80,7 +80,12 @@ namespace octoon
 		case input::InputEvent::SizeChangeDPI:
 			break;
 		case input::InputEvent::Drop:
-			GameObjectManager::instance()->sendMessage("feature:input:drop", event.drop.files);
+			{
+				std::vector<const char*> files(event.drop.count);
+				for (std::size_t i = 0; i < event.drop.count; i++)
+					files[i] = event.drop.files[i];
+				GameObjectManager::instance()->sendMessage("feature:input:drop", files);
+			}
 			break;
 		default:
 			return;

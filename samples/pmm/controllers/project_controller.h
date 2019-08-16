@@ -17,34 +17,35 @@ namespace octoon
 			~ProjectController() noexcept;
 
 			bool open(const std::string& path) noexcept;
+			void close() noexcept;
+
+			bool importModel(const std::string& path) noexcept;
+			bool exportModel(const std::string& path) noexcept;
 
 			virtual GameComponentPtr clone() const noexcept override;
 
 		private:
 			void onFileDrop(const runtime::any& data) noexcept;
 
-			void openProject(const runtime::any& data) noexcept;
-			void saveProject(const runtime::any& data) noexcept;
-			void saveAsProject(const runtime::any& data) noexcept;
+			void onOpenProject(const runtime::any& data) noexcept;
+			void onSaveProject(const runtime::any& data) noexcept;
+			void onSaveAsProject(const runtime::any& data) noexcept;
 
-			void openModel(const runtime::any& data) noexcept;
-			void saveModel(const runtime::any& data) noexcept;
+			void onOpenModel(const runtime::any& data) noexcept;
+			void onSaveModel(const runtime::any& data) noexcept;
 
 			void exit(const runtime::any& data) noexcept;
 
 			void play(const runtime::any& data) noexcept;
 			void offlineMode(const runtime::any& data) noexcept;
 
-			void renderVideo(const runtime::any& data) noexcept;
+			void onRenderVideo(const runtime::any& data) noexcept;
 			void renderPicture(const runtime::any& data) noexcept;
 
 			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
 
 			void setupCameraAnimation(const std::vector<PmmKeyframeCamera>& camera, animation::AnimationClip<float>& clip) noexcept;
 			void setupModelAnimation(const PmmModel& model, animation::AnimationClips<float>& clips) noexcept;
-
-			void setupRenderScene() noexcept;
-			void setupOfflineRenderScene() noexcept;
 
 		private:
 			bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

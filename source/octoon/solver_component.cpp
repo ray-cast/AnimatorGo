@@ -221,10 +221,11 @@ namespace octoon
 					auto limit = bone->getComponent<RotationLimitComponent>();
 					if (limit)
 					{
-						math::Quaternion q0(axis, math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle()));
-						q0.makeRotation(math::clamp(math::eulerAngles(q0), limit->getMinimumAxis(), limit->getMaximumAxis()));
+						auto rot = math::eulerAngles(math::Quaternion(axis, deltaAngle));
+						rot = math::clamp(rot, limit->getMininumAngle(), limit->getMaximumAngle());
+						rot = math::clamp(rot, limit->getMinimumAxis(), limit->getMaximumAxis());
 
-						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * q0));
+						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(rot)));
 					}
 					else
 					{

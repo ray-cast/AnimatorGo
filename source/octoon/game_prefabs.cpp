@@ -530,7 +530,8 @@ namespace octoon
 				indices.push_back(v.index);
 			}
 
-			auto animation = mesh->addComponent<SkinnedMorphComponent>(it->name);
+			auto animation = mesh->addComponent<SkinnedMorphComponent>();
+			animation->setName(it->name);
 			animation->setOffsets(offsets);
 			animation->setIndices(indices);
 		}

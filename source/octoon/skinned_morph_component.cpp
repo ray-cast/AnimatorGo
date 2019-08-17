@@ -1,22 +1,11 @@
 #include <octoon/skinned_morph_component.h>
-#include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
-#include <octoon/timer_feature.h>
-#include <octoon/mesh_filter_component.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(SkinnedMorphComponent, SkinnedComponent, "SkinnedMorph")
 
 	SkinnedMorphComponent::SkinnedMorphComponent() noexcept
-		: control_(0.0f)
 	{
-	}
-
-	SkinnedMorphComponent::SkinnedMorphComponent(const std::string& name) noexcept
-		: control_(0.0f)
-	{
-		this->setName(name);
 	}
 
 	SkinnedMorphComponent::SkinnedMorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control) noexcept
@@ -35,18 +24,6 @@ namespace octoon
 
 	SkinnedMorphComponent::~SkinnedMorphComponent() noexcept
 	{
-	}
-
-	void
-	SkinnedMorphComponent::setControl(float control) noexcept
-	{
-		control_ = control;
-	}
-
-	float
-	SkinnedMorphComponent::getControl() const noexcept
-	{
-		return control_;
 	}
 
 	void
@@ -101,19 +78,23 @@ namespace octoon
 	void
 	SkinnedMorphComponent::onDeactivate() noexcept
 	{
-		this->removeMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
+		if (!this->getName().empty())
+			this->removeMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 	}
 
 	void
 	SkinnedMorphComponent::onAnimationUpdate(const runtime::any& value) noexcept
 	{
 		assert(value.type() == typeid(float));
-		control_ = runtime::any_cast<float>(value);
+		this->setControl(runtime::any_cast<float>(value));
 	}
 
 	void
-	SkinnedMorphComponent::update(float delta) noexcept
+	SkinnedMorphComponent::onTargetReplace(const std::string& name) noexcept
 	{
-		this->sendMessage("octoon:animation:update");
+		if (!this->getName().empty())
+			this->removeMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
+		if (!name.empty())
+			this->addMessageListener(name, std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 	}
 }

@@ -12,12 +12,12 @@ namespace octoon
 		GameComponent() noexcept;
 		virtual ~GameComponent() noexcept;
 
-		void setActive(bool active) except;
-		bool getActive() const noexcept;
+		virtual void setActive(bool active) except;
+		virtual bool getActive() const noexcept;
 
-		void setName(const std::string& name) noexcept;
-		void setName(std::string&& name) noexcept;
-		const std::string& getName() const noexcept;
+		virtual void setName(const std::string& name) noexcept;
+		virtual void setName(std::string&& name) noexcept;
+		virtual const std::string& getName() const noexcept;
 
 		GameObject* getGameObject() noexcept;
 		const GameObject* getGameObject() const noexcept;

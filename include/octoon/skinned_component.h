@@ -13,12 +13,22 @@ namespace octoon
 		SkinnedComponent() noexcept;
 		virtual ~SkinnedComponent() noexcept;
 
-		virtual void setControl(float control) noexcept = 0;
-		virtual float getControl() const noexcept = 0;
+		virtual void setName(const std::string& name) noexcept override;
+		virtual void setName(std::string&& name) noexcept override;
+		virtual const std::string& getName() const noexcept override;
+
+		virtual void setControl(float control) noexcept;
+		virtual float getControl() const noexcept;
+
+	private:
+		virtual void onTargetReplace(const std::string& name) noexcept;
 
 	private:
 		SkinnedComponent(const SkinnedComponent&) = delete;
 		SkinnedComponent& operator=(const SkinnedComponent&) = delete;
+
+	private:
+		float control_;
 	};
 }
 

@@ -11,13 +11,9 @@ namespace octoon
 		OctoonDeclareSubClass(SkinnedMorphComponent, SkinnedComponent)
 	public:
 		SkinnedMorphComponent() noexcept;
-		explicit SkinnedMorphComponent(const std::string& name) noexcept;
 		explicit SkinnedMorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control = 0.0f) noexcept;
 		explicit SkinnedMorphComponent(const math::float3s& vertices, const math::uint1s& indices, float control = 0.0f) noexcept;
 		virtual ~SkinnedMorphComponent() noexcept;
-	
-		void setControl(float control) noexcept override;
-		float getControl() const noexcept override;
 
 		void setOffsets(math::float3s&& offsets) noexcept;
 		void setOffsets(const math::float3s& offsets) noexcept;
@@ -34,17 +30,13 @@ namespace octoon
 		void onDeactivate() noexcept override;
 
 		void onAnimationUpdate(const runtime::any& mesh) noexcept;
-
-	private:
-		void update(float delta = 0.0f) noexcept;
+		void onTargetReplace(const std::string& name) noexcept override;
 
 	private:
 		SkinnedMorphComponent(const SkinnedMorphComponent&) = delete;
 		SkinnedMorphComponent& operator=(const SkinnedMorphComponent&) = delete;
 
 	private:
-		float control_;
-
 		math::uint1s indices_;
 		math::float3s offsets_;
 	};

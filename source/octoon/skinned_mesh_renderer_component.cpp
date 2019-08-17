@@ -10,11 +10,25 @@ namespace octoon
 	{
 	}
 
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept
+		: needUpdate_(true)
+	{
+		this->setMaterials(std::move(materials));
+		this->setTransforms(std::move(transforms));
+	}
+
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
+	}
+
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept
+		: needUpdate_(true)
+	{
+		this->setMaterials(materials);
+		this->setTransforms(transforms);
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
@@ -67,7 +81,9 @@ namespace octoon
 		auto& normals = mesh_->getNormalArray();
 		auto& weights = mesh_->getWeightArray();
 
-#pragma omp parallel for num_threads(4)
+		auto& dstVertices = skinnedMesh_->getVertexArray();
+		auto& dstNormals = skinnedMesh_->getNormalArray();
+
 		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 		{
 			math::float3 v = math::float3::Zero;
@@ -82,8 +98,8 @@ namespace octoon
 				n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
 			}
 
-			skinnedMesh_->getVertexArray()[i] = v;
-			skinnedMesh_->getNormalArray()[i] = n;
+			dstVertices[i] = v;
+			dstNormals[i] = n;
 		}
 
 		MeshRendererComponent::uploadMeshData(*skinnedMesh_);

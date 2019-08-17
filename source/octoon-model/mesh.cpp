@@ -337,7 +337,7 @@ namespace octoon
 				mesh->setTexcoordArray(this->getTexcoordArray());
 
 			for (std::size_t i = 0; i < this->getNumSubsets(); i++)
-				mesh->setIndicesArray(this->getIndicesArray(i));
+				mesh->setIndicesArray(this->getIndicesArray(i), i);
 
 			return mesh;
 		}

@@ -532,7 +532,7 @@ namespace octoon
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
 
-		for (std::size_t i = 0; i < model.get<Model::material>().size(); i++)
+		for (std::size_t i = 0; i < model.get<Model::mesh>().size(); i++)
 		{
 			auto mesh = model.get<Model::mesh>(i);
 
@@ -541,12 +541,12 @@ namespace octoon
 
 			if (bones.empty())
 			{
-				object->addComponent<MeshRendererComponent>(materials[i]);
+				object->addComponent<MeshRendererComponent>(materials);
 			}
 			else
 			{
-				object->addComponent<SkinnedMeshRendererComponent>(materials[i], bones);
-				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials[i], bones);
+				object->addComponent<SkinnedMeshRendererComponent>(materials, bones);
+				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials, bones);
 
 				/*auto mat = std::make_shared<LineMaterial>(1.0f);
 				mat->setColor(math::float3(0.4, 0.9, 0.4));

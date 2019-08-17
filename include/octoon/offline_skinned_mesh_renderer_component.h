@@ -12,9 +12,9 @@ namespace octoon
 		OctoonDeclareSubClass(OfflineSkinnedMeshRendererComponent, RenderComponent)
 	public:
 		OfflineSkinnedMeshRendererComponent() noexcept;
-		explicit OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material) noexcept;
-		explicit OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material) noexcept;
+		OfflineSkinnedMeshRendererComponent(model::Materials&& material, GameObjects&& transforms) noexcept;
 		OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept;
+		OfflineSkinnedMeshRendererComponent(const model::Materials& material, const GameObjects& transforms) noexcept;
 		OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept;
 		virtual ~OfflineSkinnedMeshRendererComponent() noexcept;
 

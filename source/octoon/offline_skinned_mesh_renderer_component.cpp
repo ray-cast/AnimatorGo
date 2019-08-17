@@ -12,16 +12,11 @@ namespace octoon
 	{
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
-		this->setMaterial(std::move(material));
-	}
-
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material) noexcept
-		: OfflineSkinnedMeshRendererComponent()
-	{
-		this->setMaterial(material);
+		this->setMaterials(std::move(materials));
+		this->setTransforms(std::move(transforms));
 	}
 
 	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
@@ -29,6 +24,13 @@ namespace octoon
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
+	}
+
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept
+		: OfflineSkinnedMeshRendererComponent()
+	{
+		this->setMaterials(materials);
+		this->setTransforms(transforms);
 	}
 
 	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
@@ -81,6 +83,9 @@ namespace octoon
 		auto& normals = mesh.getNormalArray();
 		auto& weights = mesh.getWeightArray();
 
+		auto& dstVertices = skinnedMesh_->getVertexArray();
+		auto& dstNormals = skinnedMesh_->getNormalArray();
+
 		#pragma omp parallel for num_threads(4)
 		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 		{
@@ -97,8 +102,8 @@ namespace octoon
 				}
 			}
 
-			skinnedMesh_->getVertexArray()[i] = v;
-			skinnedMesh_->getNormalArray()[i] = n;
+			dstVertices[i] = v;
+			dstNormals[i] = n;
 		}
 
 		OfflineMeshRendererComponent::uploadMeshData(*skinnedMesh_);

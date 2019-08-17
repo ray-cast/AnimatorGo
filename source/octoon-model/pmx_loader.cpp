@@ -627,12 +627,54 @@ namespace octoon
 				bindposes.push_back(bindpose);
 			}
 
+			float3s vertices_;
+			float3s normals_;
+			float2s texcoords_;
+			VertexWeights weights;
+
+			vertices_.resize(pmx.numVertices);
+			normals_.resize(pmx.numVertices);
+			texcoords_.resize(pmx.numVertices);
+
+			if (pmx.numBones)
+				weights.resize(pmx.numVertices);
+
+			for (std::size_t i = 0; i < pmx.numVertices; i++)
+			{
+				auto& v = pmx.vertices[i];
+
+				vertices_[i] = v.position;
+				normals_[i] = v.normal;
+				texcoords_[i] = v.coord;
+
+				if (pmx.numBones)
+				{
+					VertexWeight weight;
+					weight.weight1 = v.weight.weight1;
+					weight.weight2 = v.weight.weight2;
+					weight.weight3 = v.weight.weight3;
+					weight.weight4 = v.weight.weight4;
+					weight.bone1 = v.weight.bone1;
+					weight.bone2 = v.weight.bone2;
+					weight.bone3 = v.weight.bone3;
+					weight.bone4 = v.weight.bone4;
+
+					weights[i] = weight;
+				}
+			}
+
+			MeshPtr mesh = std::make_shared<Mesh>();
+			mesh->setBindposes(bindposes);
+			mesh->setVertexArray(std::move(vertices_));
+			mesh->setNormalArray(std::move(normals_));
+			mesh->setTexcoordArray(std::move(texcoords_));
+			mesh->setWeightArray(std::move(weights));
+
 			PmxUInt32 startIndices = 0;
-			std::vector<std::map<std::uint32_t, std::uint32_t>> indicesMap(pmx.materials.size());
 
 			for (std::size_t i = 0; i < pmx.materials.size(); i++)
 			{
-				uint1s indices_;				
+				uint1s indices_(pmx.materials[i].FaceCount);
 
 				for (std::size_t j = startIndices; j < startIndices + pmx.materials[i].FaceCount; j++)
 				{
@@ -644,71 +686,20 @@ namespace octoon
 					else if (pmx.header.sizeOfIndices == 4)
 						index = *((std::uint32_t*)pmx.indices.data() + j);
 
-					auto result = indicesMap[i].find(index);
-					if (result == indicesMap[i].end())
-					{
-						std::size_t size = indicesMap[i].size();
-						indicesMap[i][index] = size;
-						indices_.push_back(size);
-					}
-					else
-					{
-						indices_.push_back((*result).second);
-					}
+					indices_[j - startIndices] = index;
 				}
+
+				mesh->setIndicesArray(std::move(indices_), i);
 
 				startIndices += pmx.materials[i].FaceCount;
-
-				float3s vertices_;
-				float3s normals_;
-				float2s texcoords_;
-				VertexWeights weights;
-
-				vertices_.resize(indicesMap[i].size());
-				normals_.resize(indicesMap[i].size());
-				texcoords_.resize(indicesMap[i].size());
-
-				if (pmx.numBones)
-					weights.resize(indicesMap[i].size());
-
-				for (auto& it : indicesMap[i])
-				{
-					auto& v = pmx.vertices[it.first];
-
-					vertices_[it.second] = v.position;
-					normals_[it.second] = v.normal;
-					texcoords_[it.second] = v.coord;
-
-					if (pmx.numBones)
-					{
-						VertexWeight weight;
-						weight.weight1 = v.weight.weight1;
-						weight.weight2 = v.weight.weight2;
-						weight.weight3 = v.weight.weight3;
-						weight.weight4 = v.weight.weight4;
-						weight.bone1 = v.weight.bone1;
-						weight.bone2 = v.weight.bone2;
-						weight.bone3 = v.weight.bone3;
-						weight.bone4 = v.weight.bone4;
-
-						weights[it.second] = weight;
-					}
-				}
-
-				MeshPtr mesh = std::make_shared<Mesh>();
-				mesh->setBindposes(bindposes);
-				mesh->setVertexArray(std::move(vertices_));
-				mesh->setNormalArray(std::move(normals_));
-				mesh->setIndicesArray(std::move(indices_));
-				mesh->setTexcoordArray(std::move(texcoords_));
-				mesh->setWeightArray(std::move(weights));
-
-				model.add(std::move(mesh));
 			}
 
-			std::size_t index = 0;
-			for (auto& it : pmx.bones)
+			model.add(std::move(mesh));
+
+			for (std::size_t i = 0; i < pmx.bones.size(); i++)
 			{
+				auto& it = pmx.bones[i];
+
 				Bone bone;
 				bone.setName(cv.to_bytes(it.name.name));
 				bone.setPosition(it.position);
@@ -726,7 +717,7 @@ namespace octoon
 				if (it.Flag & PMX_BONE_IK)
 				{
 					IKAttr attr;
-					attr.boneIndex = static_cast<uint16_t>(index);
+					attr.boneIndex = static_cast<uint16_t>(i);
 					attr.targetBoneIndex = it.IKTargetBoneIndex;
 					attr.chainLength = it.IKLinkCount;
 					attr.iterations = it.IKLoopCount;
@@ -745,8 +736,6 @@ namespace octoon
 
 					model.add(std::make_shared<IKAttr>(attr));
 				}
-
-				index++;
 			}
 
 			for (auto& it : pmx.morphs)
@@ -822,7 +811,6 @@ namespace octoon
 				for (auto& rigidbody : it.anchorRigidbodies)
 					softbody->anchorRigidbodies.push_back(rigidbody.rigidBodyIndex);
 
-				auto& map = indicesMap[it.materialIndex];
 				for (std::size_t i = 0; i < it.numIndices; i++)
 				{
 					std::uint32_t index = 0;
@@ -833,9 +821,7 @@ namespace octoon
 					else if (pmx.header.sizeOfIndices == 4)
 						index = *((std::uint32_t*)it.pinVertexIndices.data() + i);
 
-					auto result = map.find(index);
-					if (result != map.end())
-						softbody->pinVertexIndices.push_back((*result).second);
+					softbody->pinVertexIndices.push_back(index);
 				}
 
 				model.add(std::move(softbody));

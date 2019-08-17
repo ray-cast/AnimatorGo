@@ -175,16 +175,18 @@ namespace octoon
 		dataDesc.setStreamSize(data.size() * sizeof(float));
 		dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
+		auto vbo = video::RenderSystem::instance()->createGraphicsData(dataDesc);
+
 		for (std::size_t i = 0; i < mesh.getNumSubsets(); i++)
 		{
 			auto geometry_ = std::make_shared<video::Geometry>();
 			geometry_->setActive(true);
 			geometry_->setOwnerListener(this);
-			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
+			geometry_->setVertexBuffer(vbo);
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
 			geometry_->setBoundingBox(mesh.getBoundingBox());
 
-			auto& indices = mesh.getIndicesArray();
+			auto& indices = mesh.getIndicesArray(i);
 			if (!indices.empty())
 			{
 				hal::GraphicsDataDesc indiceDesc;
@@ -203,9 +205,9 @@ namespace octoon
 		this->onMoveAfter();
 		this->onLayerChangeAfter();
 
-		for (std::size_t i = 0; i < materials_.size(); i++)
+		for (std::size_t i = 0; i < geometries_.size(); i++)
 		{
-			if (i < geometries_.size())
+			if (i < materials_.size())
 				geometries_[i]->setMaterial(materials_[i]);
 			else
 				geometries_[i]->setMaterial(materials_.front());

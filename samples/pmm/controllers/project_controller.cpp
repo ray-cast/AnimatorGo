@@ -124,16 +124,22 @@ namespace octoon
 
 				for (auto& it : pmm.model)
 				{
-					AnimationClips<float> clips;
-					this->setupModelAnimation(it, clips);
+					AnimationClips<float> boneClips;
+					this->setupBoneAnimation(it, boneClips);
+
+					AnimationClip<float> morphClip;
+					this->setupMorphAnimation(it, morphClip);
 
 					auto model = GamePrefabs::instance()->createModel(it.path);
 					if (model)
 					{
 						model->setName(it.name);
 						model->addComponent<AnimatorComponent>(model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
-						model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(clips));
+						model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(boneClips));
 						model->getComponent<AnimatorComponent>()->setTime(0.0f);
+
+						model->addComponent<AnimationComponent>(animation::Animation(morphClip));
+						model->getComponent<AnimationComponent>()->setTime(0.0f);
 
 						objects.emplace_back(std::move(model));
 					}
@@ -503,7 +509,7 @@ namespace octoon
 		}
 
 		void
-		ProjectController::setupModelAnimation(const PmmModel& it, animation::AnimationClips<float>& clips) noexcept
+		ProjectController::setupBoneAnimation(const PmmModel& it, animation::AnimationClips<float>& clips) noexcept
 		{
 			std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
 			std::vector<Keyframes<float>> translateY(it.bone_init_frame.size());
@@ -578,6 +584,32 @@ namespace octoon
 				clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX[i])));
 				clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY[i])));
 				clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
+			}
+		}
+
+		void
+		ProjectController::setupMorphAnimation(const PmmModel& it, animation::AnimationClip<float>& clip) noexcept
+		{
+			std::vector<Keyframes<float>> keyframes(it.morph_name.size());
+
+			for (std::size_t i = 0; i < it.morph_init_frame.size(); i++)
+			{
+				auto& key = it.morph_init_frame[i];
+				keyframes[i].emplace_back((float)key.frame / 30.0f, key.value);
+			}
+
+			for (auto& key : it.morph_key_frame)
+			{
+				auto index = key.pre_index;
+				while (index >= it.morph_name.size())
+					index = it.morph_key_frame[index - it.morph_name.size()].pre_index;
+
+				keyframes[index].emplace_back((float)key.frame / 30.0f, key.value);
+			}
+
+			for (std::size_t i = 0; i < it.morph_name.size(); i++)
+			{
+				clip.setCurve(it.morph_name[i], AnimationCurve(std::move(keyframes[i])));
 			}
 		}
 	}

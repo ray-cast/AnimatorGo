@@ -44,8 +44,9 @@ namespace octoon
 
 			GameObjectPtr createCamera(const PMMFile& camera) noexcept;
 
+			void setupBoneAnimation(const PmmModel& model, animation::AnimationClips<float>& clips) noexcept;
+			void setupMorphAnimation(const PmmModel& model, animation::AnimationClip<float>& clips) noexcept;
 			void setupCameraAnimation(const std::vector<PmmKeyframeCamera>& camera, animation::AnimationClip<float>& clip) noexcept;
-			void setupModelAnimation(const PmmModel& model, animation::AnimationClips<float>& clips) noexcept;
 
 		private:
 			bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

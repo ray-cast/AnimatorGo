@@ -69,7 +69,7 @@ namespace octoon
 	}
 
 	void 
-	SkinnedMorphComponent::onActivate() except
+	SkinnedMorphComponent::onActivate() noexcept
 	{
 		if (!this->getName().empty())
 			this->addMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));

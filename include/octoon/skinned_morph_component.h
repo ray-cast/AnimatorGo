@@ -26,7 +26,7 @@ namespace octoon
 		GameComponentPtr clone() const noexcept override;
 
 	private:
-		void onActivate() except override;
+		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
 		void onAnimationUpdate(const runtime::any& mesh) noexcept;

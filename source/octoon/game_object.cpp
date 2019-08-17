@@ -605,13 +605,15 @@ namespace octoon
 	void
 	GameObject::sendMessage(const std::string& event, const runtime::any& data) noexcept
 	{
-		dispatchEvents_[event].call_all_slots(data);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.call_all_slots(data);
 	}
 
 	void
 	GameObject::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
 	{
-		dispatchEvents_[event].call_all_slots(data);
+		this->sendMessage(event, data);
 
 		auto parent = this->getParent();
 		if (parent)
@@ -621,7 +623,7 @@ namespace octoon
 	void
 	GameObject::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
 	{
-		dispatchEvents_[event].call_all_slots(data);
+		this->sendMessage(event, data);
 
 		for (auto& it : children_)
 			it->sendMessageDownwards(event, data);

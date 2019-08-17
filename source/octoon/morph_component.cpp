@@ -12,6 +12,12 @@ namespace octoon
 	{
 	}
 
+	MorphComponent::MorphComponent(const std::string& name) noexcept
+		: control_(0.0f)
+	{
+		this->setName(name);
+	}
+
 	MorphComponent::MorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control) noexcept
 		: MorphComponent()
 	{
@@ -87,20 +93,19 @@ namespace octoon
 	void 
 	MorphComponent::onActivate() except
 	{
+		if (!this->getName().empty())
+			this->addMessageListener(this->getName(), std::bind(&MorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 	}
 
 	void
 	MorphComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
+		this->removeMessageListener(this->getName(), std::bind(&MorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 	}
 
 	void
-	MorphComponent::onFixedUpdate() except
+	MorphComponent::onAnimationUpdate(const runtime::any& control) noexcept
 	{
-		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
-		if (timeFeature)
-			this->update(timeFeature->getTimeInterval());
 	}
 
 	void

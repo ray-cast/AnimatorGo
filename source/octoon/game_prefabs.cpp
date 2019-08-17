@@ -250,6 +250,9 @@ namespace octoon
 		if (!this->createMeshes(model, actor, bones, path))
 			return false;
 
+		if (!this->createMorph(model, actor))
+			return false;
+
 		return actor;
 	}
 
@@ -527,7 +530,7 @@ namespace octoon
 				indices.push_back(v.index);
 			}
 
-			auto animation = mesh->addComponent<MorphComponent>();
+			auto animation = mesh->addComponent<MorphComponent>(it->name);
 			animation->setOffsets(offsets);
 			animation->setIndices(indices);
 		}

@@ -5,7 +5,7 @@
 #include <octoon/runtime/any.h>
 #include <octoon/runtime/sigslot.h>
 #include <octoon/io/iarchive.h>
-#include <map>
+#include <unordered_map>
 #include <functional>
 
 namespace octoon
@@ -148,7 +148,7 @@ namespace octoon
 
 		GameComponents components_;
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
+		std::unordered_map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
 	};
 }
 

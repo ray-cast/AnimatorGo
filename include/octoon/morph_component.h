@@ -11,6 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(MorphComponent, GameComponent)
 	public:
 		MorphComponent() noexcept;
+		explicit MorphComponent(const std::string& name) noexcept;
 		explicit MorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control = 0.0f) noexcept;
 		explicit MorphComponent(const math::float3s& vertices, const math::uint1s& indices, float control = 0.0f) noexcept;
 		virtual ~MorphComponent() noexcept;
@@ -32,7 +33,7 @@ namespace octoon
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
 
-		void onFixedUpdate() except override;
+		void onAnimationUpdate(const runtime::any& mesh) noexcept;
 
 	private:
 		void update(float delta = 0.0f) noexcept;

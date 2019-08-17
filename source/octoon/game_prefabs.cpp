@@ -18,6 +18,7 @@
 #include <octoon/first_person_camera_component.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/morph_component.h>
 #include <octoon/text_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/animator_component.h>
@@ -245,16 +246,9 @@ namespace octoon
 		if (!this->createJoints(model, rigidbody, joints))
 			return false;
 
-		GameObjects meshes;
-		if (!this->createMeshes(model, meshes, bones, path))
+		GameObjectPtr actor;
+		if (!this->createMeshes(model, actor, bones, path))
 			return false;
-
-		if (!this->createSoftbodies(model, meshes, bones, rigidbody))
-			return false;
-
-		auto actor = GameObject::create(runtime::string::filename(path.c_str()));
-		actor->addComponent<AnimatorComponent>(bones);
-		actor->addChild(meshes);
 
 		return actor;
 	}
@@ -520,40 +514,58 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createMeshes(const model::Model& model, GameObjects& meshes, const GameObjects& bones, const std::string& path) noexcept
+	GamePrefabs::createMorph(const model::Model& model, GameObjectPtr& mesh) noexcept
+	{
+		for (auto& it : model.get<Model::morph>())
+		{
+			math::float3s offsets;
+			math::uint1s indices;
+
+			for (auto& v : it->vertices)
+			{
+				offsets.push_back(v.offset);
+				indices.push_back(v.index);
+			}
+
+			auto animation = mesh->addComponent<MorphComponent>();
+			animation->setOffsets(offsets);
+			animation->setIndices(indices);
+		}
+
+		return true;
+	}
+
+	bool
+	GamePrefabs::createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, const std::string& path) noexcept
 	{
 		model::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
 
-		for (std::size_t i = 0; i < model.get<Model::mesh>().size(); i++)
+		auto mesh = model.get<Model::mesh>(0);
+		auto object = GameObject::create(mesh->getName());
+		object->addComponent<MeshFilterComponent>(mesh);
+
+		if (bones.empty())
 		{
-			auto mesh = model.get<Model::mesh>(i);
-
-			auto object = GameObject::create(mesh->getName());
-			object->addComponent<MeshFilterComponent>(mesh);
-
-			if (bones.empty())
-			{
-				object->addComponent<MeshRendererComponent>(materials);
-			}
-			else
-			{
-				object->addComponent<SkinnedMeshRendererComponent>(materials, bones);
-				object->addComponent<OfflineSkinnedMeshRendererComponent>(materials, bones);
-
-				/*auto mat = std::make_shared<LineMaterial>(1.0f);
-				mat->setColor(math::float3(0.4, 0.9, 0.4));
-
-				auto sjr = std::make_shared<SkinnedJointRendererComponent>();
-				sjr->setMaterial(mat);
-				sjr->setAvatar(bones);
-
-				object->addComponent(sjr);*/
-			}
-
-			meshes.emplace_back(object);
+			object->addComponent<MeshRendererComponent>(materials);
 		}
+		else
+		{
+			object->addComponent<SkinnedMeshRendererComponent>(materials, bones);
+			object->addComponent<OfflineSkinnedMeshRendererComponent>(materials, bones);
+
+			/*auto mat = std::make_shared<LineMaterial>(1.0f);
+			mat->setColor(math::float3(0.4, 0.9, 0.4));
+
+			auto sjr = std::make_shared<SkinnedJointRendererComponent>();
+			sjr->setMaterial(mat);
+			sjr->setAvatar(bones);
+
+			object->addComponent(sjr);*/
+		}
+
+		meshes = object;
 
 		return true;
 	}

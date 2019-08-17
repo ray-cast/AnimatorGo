@@ -37,6 +37,8 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/text_component.cpp
 	${HEADER_PATH}/path_component.h
 	${SOURCE_PATH}/path_component.cpp
+	${HEADER_PATH}/morph_component.h
+	${SOURCE_PATH}/morph_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
@@ -145,8 +147,6 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/rotation_link_component.cpp
 	${HEADER_PATH}/rotation_link_limit_component.h
 	${SOURCE_PATH}/rotation_link_limit_component.cpp
-	${HEADER_PATH}/morph_animation_component.h
-	${SOURCE_PATH}/morph_animation_component.cpp
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 

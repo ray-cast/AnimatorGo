@@ -84,6 +84,9 @@ namespace octoon
 		auto& dstVertices = skinnedMesh_->getVertexArray();
 		auto& dstNormals = skinnedMesh_->getNormalArray();
 
+#if !defined(_DEBUG)
+#		pragma omp parallel for num_threads(4)
+#endif
 		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
 		{
 			math::float3 v = math::float3::Zero;

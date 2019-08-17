@@ -205,6 +205,6 @@ namespace octoon
 			transform->setLocalQuaternion(math::Quaternion(euler));
 		}
 
-		this->sendMessageDownwards("octoon:animation:update");
+		this->sendMessage("octoon:animation:update");
 	}
 }

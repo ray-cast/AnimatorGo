@@ -131,6 +131,7 @@ namespace octoon
 					if (model)
 					{
 						model->setName(it.name);
+						model->addComponent<AnimatorComponent>(model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
 						model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(clips));
 						model->getComponent<AnimatorComponent>()->setTime(0.0f);
 

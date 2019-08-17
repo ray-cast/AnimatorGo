@@ -4,6 +4,7 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/video/geometry.h>
 #include <octoon/mesh_filter_component.h>
+#include <octoon/skinned_component.h>
 
 namespace octoon
 {
@@ -22,6 +23,9 @@ namespace octoon
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
 
+		void setMorphBlendEnable(bool enable) noexcept;
+		bool getMorphBlendEnable() const noexcept;
+
 		void uploadMeshData(const model::Mesh& mesh) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
@@ -33,6 +37,9 @@ namespace octoon
 		void onMeshReplace(const runtime::any& mesh) noexcept override;
 		void onAnimationUpdate(const runtime::any& data) noexcept;
 
+		void onAttachComponent(const GameComponentPtr& component) noexcept override;
+		void onDetachComponent(const GameComponentPtr& component) noexcept override;
+
 		void onPreRender() noexcept override;
 
 	private:
@@ -41,10 +48,14 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
+		bool morphEnable_;
+
 		GameObjects transforms_;
 
 		model::MeshPtr mesh_;
 		model::MeshPtr skinnedMesh_;
+
+		std::vector<SkinnedComponent*> skinnedComponents_;
 	};
 }
 

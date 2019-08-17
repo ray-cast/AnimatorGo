@@ -1,5 +1,6 @@
 #include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/offline_feature.h>
+#include <octoon/skinned_morph_component.h>
 #include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 
@@ -63,6 +64,18 @@ namespace octoon
 	}
 
 	void
+	OfflineSkinnedMeshRendererComponent::setMorphBlendEnable(bool enable) noexcept
+	{
+		morphEnable_ = enable;
+	}
+
+	bool
+	OfflineSkinnedMeshRendererComponent::getMorphBlendEnable() const noexcept
+	{
+		return morphEnable_;
+	}
+
+	void
 	OfflineSkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
 		std::vector<math::float4x4> joints(transforms_.size());
@@ -106,6 +119,28 @@ namespace octoon
 
 			dstVertices[i] = v;
 			dstNormals[i] = n;
+		}
+
+		if (morphEnable_)
+		{
+			for (auto& it : skinnedComponents_)
+			{
+				auto control = it->getControl();
+				if (control > 0.0f)
+				{
+					auto morph = it->downcast<SkinnedMorphComponent>();
+					auto& indices = morph->getIndices();
+					auto& offsets = morph->getOffsets();
+
+					for (std::size_t i = 0; i < indices.size(); i++)
+					{
+						auto offset = offsets[i];
+						auto index = indices[i];
+
+						dstVertices[index] += offset * control;
+					}
+				}
+			}
 		}
 
 		OfflineMeshRendererComponent::uploadMeshData(*skinnedMesh_);
@@ -161,6 +196,24 @@ namespace octoon
 			offlineFeature->setFramebufferDirty(true);
 
 		needUpdate_ = true;
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	{
+		if (component->isInstanceOf<SkinnedMorphComponent>())
+			skinnedComponents_.push_back(component.get()->downcast<SkinnedComponent>());
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+	{
+		if (component->isInstanceOf<SkinnedMorphComponent>())
+		{
+			auto it = std::find(skinnedComponents_.begin(), skinnedComponents_.end(), component.get());
+			if (it != skinnedComponents_.end())
+				skinnedComponents_.erase(it);
+		}
 	}
 
 	void

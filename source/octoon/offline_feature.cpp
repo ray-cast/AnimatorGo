@@ -37,19 +37,10 @@ namespace octoon
 	}
 
 	OfflineFeature::OfflineFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
-		: framebuffer_w_(framebuffer_w)
-		, framebuffer_h_(framebuffer_h)
-		, rprContext_(nullptr)
-		, rprScene_(nullptr)
-		, rprMaterialSystem_(nullptr)
-		, rprFramebuffer_(nullptr)
-		, rprDenoise_(nullptr)
-		, colorFramebuffer_(nullptr)
-		, normalFramebuffer_(nullptr)
-		, positionFramebuffer_(nullptr)
-		, objectIdFramebuffer_(nullptr)
-		, albedoFramebuffer_(nullptr)
+		: OfflineFeature()
 	{
+		framebuffer_w_ = framebuffer_w;
+		framebuffer_h_ = framebuffer_h;
 	}
 
 	OfflineFeature::~OfflineFeature() noexcept

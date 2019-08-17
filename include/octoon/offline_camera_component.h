@@ -3,10 +3,11 @@
 
 #include <octoon/hal/graphics.h>
 #include <octoon/game_component.h>
+#include <octoon/offline_listener.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT OfflineCameraComponent : public GameComponent
+	class OCTOON_EXPORT OfflineCameraComponent : public GameComponent, public OfflineListener
 	{
 		OctoonDeclareSubClass(OfflineCameraComponent, GameComponent)
 	public:
@@ -48,6 +49,9 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
+		void onPreRender() noexcept override;
+		void onPostRender() noexcept override;
+
 		void onLayerChangeAfter() noexcept override;
 
 		void onFrameDirty() noexcept;
@@ -73,6 +77,9 @@ namespace octoon
 		float orthoHeight_;
 		float orthoWidth_;
 		float sensorSize_;
+
+		std::uint32_t spp_;
+		std::uint32_t sppCounter_;
 
 		math::float4 clearColor_;
 	};

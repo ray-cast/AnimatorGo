@@ -18,6 +18,8 @@ namespace octoon
 		, focusDistance_(1.0f)
 		, fStop_(0.0f)
 		, clearColor_(0.8f, 0.9f, 1.0f, 1.0)
+		, spp_(500)
+		, sppCounter_(0)
 	{
 	}
 
@@ -253,6 +255,8 @@ namespace octoon
 
 			rprSceneSetCamera(feature->getScene(), this->rprCamera_);
 			rprSceneSetBackgroundImage(feature->getScene(), this->rprClearImage_);
+
+			feature->addOfflineListener(this);
 		}
 	}
 
@@ -263,10 +267,15 @@ namespace octoon
 		this->addMessageListener("Camera:fov", std::bind(&OfflineCameraComponent::onFovChange, this, std::placeholders::_1));
 
 		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
-		if (feature && feature->getScene())
+		if (feature)
 		{
-			rprSceneSetCamera(feature->getScene(), nullptr);
-			rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+			feature->removeOfflineListener(this);
+
+			if (feature->getScene())
+			{
+				rprSceneSetCamera(feature->getScene(), nullptr);
+				rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+			}
 		}
 
 		if (this->rprCamera_)
@@ -299,6 +308,23 @@ namespace octoon
 			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
 			
 			this->onFrameDirty();
+		}
+	}
+
+	void
+	OfflineCameraComponent::onPreRender() noexcept
+	{
+	}
+
+	void
+	OfflineCameraComponent::onPostRender() noexcept
+	{
+		sppCounter_ += 1;
+
+		if (sppCounter_ >= spp_)
+		{
+			this->sendMessage("octoon:offline:finish");
+			sppCounter_ = 0;
 		}
 	}
 

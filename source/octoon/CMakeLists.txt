@@ -53,10 +53,6 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
-	${HEADER_PATH}/skinned_component.h
-	${SOURCE_PATH}/skinned_component.cpp
-	${HEADER_PATH}/skinned_morph_component.h
-	${SOURCE_PATH}/skinned_morph_component.cpp
 	${HEADER_PATH}/skinned_mesh_renderer_component.h
 	${SOURCE_PATH}/skinned_mesh_renderer_component.cpp
 	${HEADER_PATH}/skinned_joint_renderer_component.h
@@ -149,6 +145,10 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/rotation_link_component.cpp
 	${HEADER_PATH}/rotation_link_limit_component.h
 	${SOURCE_PATH}/rotation_link_limit_component.cpp
+	${HEADER_PATH}/skinned_component.h
+	${SOURCE_PATH}/skinned_component.cpp
+	${HEADER_PATH}/skinned_morph_component.h
+	${SOURCE_PATH}/skinned_morph_component.cpp
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 

@@ -1,4 +1,5 @@
 #include <octoon/skinned_mesh_renderer_component.h>
+#include <octoon/skinned_morph_component.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -7,32 +8,33 @@ namespace octoon
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)
+		, morphEnable_(false)
 	{
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept
-		: needUpdate_(true)
+		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 		this->setTransforms(std::move(transforms));
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
-		: needUpdate_(true)
+		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept
-		: needUpdate_(true)
+		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(materials);
 		this->setTransforms(transforms);
 	}
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
-		: needUpdate_(true)
+		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
 		this->setTransforms(transforms);
@@ -58,6 +60,18 @@ namespace octoon
 	SkinnedMeshRendererComponent::getTransforms() const noexcept
 	{
 		return transforms_;
+	}
+
+	void
+	SkinnedMeshRendererComponent::setMorphBlendEnable(bool enable) noexcept
+	{
+		morphEnable_ = enable;
+	}
+
+	bool
+	SkinnedMeshRendererComponent::getMorphBlendEnable() const noexcept
+	{
+		return morphEnable_;
 	}
 
 	void
@@ -105,6 +119,28 @@ namespace octoon
 			dstNormals[i] = n;
 		}
 
+		if (morphEnable_)
+		{
+			for (auto& it : skinnedComponents_)
+			{
+				auto control = it->getControl();
+				if (control > 0.0f)
+				{
+					auto morph = it->downcast<SkinnedMorphComponent>();				
+					auto& indices = morph->getIndices();
+					auto& offsets = morph->getOffsets();
+
+					for (std::size_t i = 0; i < indices.size(); i++)
+					{
+						auto offset = offsets[i];
+						auto index = indices[i];
+
+						dstVertices[index] += offset * control;
+					}
+				}
+			}
+		}
+
 		MeshRendererComponent::uploadMeshData(*skinnedMesh_);
 	}
 
@@ -147,6 +183,24 @@ namespace octoon
 	SkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& mesh) noexcept
 	{
 		needUpdate_ = true;
+	}
+
+	void
+	SkinnedMeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
+	{
+		if (component->isInstanceOf<SkinnedMorphComponent>())
+			skinnedComponents_.push_back(component.get()->downcast<SkinnedComponent>());
+	}
+
+	void
+	SkinnedMeshRendererComponent::onDetachComponent(const GameComponentPtr& component) noexcept
+	{
+		if (component->isInstanceOf<SkinnedMorphComponent>())
+		{
+			auto it = std::find(skinnedComponents_.begin(), skinnedComponents_.end(), component.get());
+			if (it != skinnedComponents_.end())
+				skinnedComponents_.erase(it);
+		}
 	}
 
 	void

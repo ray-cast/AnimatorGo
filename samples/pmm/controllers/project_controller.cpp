@@ -378,7 +378,7 @@ namespace octoon
 
 				auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
 				if (physicsFeature)
-					physicsFeature->setSolverIterationCounts(1);
+					physicsFeature->setSolverIterationCounts(10);
 
 				for (auto& it : objects_)
 				{

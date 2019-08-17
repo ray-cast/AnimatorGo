@@ -1,20 +1,20 @@
-#ifndef OCTOON_MORPH_COMPONENT_H_
-#define OCTOON_MORPH_COMPONENT_H_
+#ifndef OCTOON_SKINNED_MORPH_COMPONENT_H_
+#define OCTOON_SKINNED_MORPH_COMPONENT_H_
 
 #include <octoon/animation/animation.h>
-#include <octoon/game_component.h>
+#include <octoon/skinned_component.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT MorphComponent final : public GameComponent
+	class OCTOON_EXPORT SkinnedMorphComponent final : public SkinnedComponent
 	{
-		OctoonDeclareSubClass(MorphComponent, GameComponent)
+		OctoonDeclareSubClass(SkinnedMorphComponent, SkinnedComponent)
 	public:
-		MorphComponent() noexcept;
-		explicit MorphComponent(const std::string& name) noexcept;
-		explicit MorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control = 0.0f) noexcept;
-		explicit MorphComponent(const math::float3s& vertices, const math::uint1s& indices, float control = 0.0f) noexcept;
-		virtual ~MorphComponent() noexcept;
+		SkinnedMorphComponent() noexcept;
+		explicit SkinnedMorphComponent(const std::string& name) noexcept;
+		explicit SkinnedMorphComponent(math::float3s&& offsets, math::uint1s&& indices, float control = 0.0f) noexcept;
+		explicit SkinnedMorphComponent(const math::float3s& vertices, const math::uint1s& indices, float control = 0.0f) noexcept;
+		virtual ~SkinnedMorphComponent() noexcept;
 	
 		void setControl(float control) noexcept;
 		float getControl() const noexcept;
@@ -39,8 +39,8 @@ namespace octoon
 		void update(float delta = 0.0f) noexcept;
 
 	private:
-		MorphComponent(const MorphComponent&) = delete;
-		MorphComponent& operator=(const MorphComponent&) = delete;
+		SkinnedMorphComponent(const SkinnedMorphComponent&) = delete;
+		SkinnedMorphComponent& operator=(const SkinnedMorphComponent&) = delete;
 
 	private:
 		float control_;

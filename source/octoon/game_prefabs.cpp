@@ -18,10 +18,10 @@
 #include <octoon/first_person_camera_component.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
-#include <octoon/morph_component.h>
 #include <octoon/text_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/animator_component.h>
+#include <octoon/skinned_morph_component.h>
 #include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/skinned_joint_renderer_component.h>
 #include <octoon/guizmo_component.h>
@@ -530,7 +530,7 @@ namespace octoon
 				indices.push_back(v.index);
 			}
 
-			auto animation = mesh->addComponent<MorphComponent>(it->name);
+			auto animation = mesh->addComponent<SkinnedMorphComponent>(it->name);
 			animation->setOffsets(offsets);
 			animation->setIndices(indices);
 		}
@@ -555,7 +555,12 @@ namespace octoon
 		}
 		else
 		{
-			object->addComponent<SkinnedMeshRendererComponent>(materials, bones);
+			auto smr = SkinnedMeshRendererComponent::create();
+			smr->setMaterials(materials);
+			smr->setTransforms(bones);
+			smr->setMorphBlendEnable(true);
+
+			object->addComponent(smr);
 			object->addComponent<OfflineSkinnedMeshRendererComponent>(materials, bones);
 
 			/*auto mat = std::make_shared<LineMaterial>(1.0f);

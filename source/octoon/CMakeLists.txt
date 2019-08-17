@@ -37,8 +37,6 @@ SET(BASE_FEATURES_LIST
 	${SOURCE_PATH}/text_component.cpp
 	${HEADER_PATH}/path_component.h
 	${SOURCE_PATH}/path_component.cpp
-	${HEADER_PATH}/morph_component.h
-	${SOURCE_PATH}/morph_component.cpp
 )
 SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 
@@ -55,6 +53,10 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/render_component.cpp
 	${HEADER_PATH}/mesh_renderer_component.h
 	${SOURCE_PATH}/mesh_renderer_component.cpp
+	${HEADER_PATH}/skinned_component.h
+	${SOURCE_PATH}/skinned_component.cpp
+	${HEADER_PATH}/skinned_morph_component.h
+	${SOURCE_PATH}/skinned_morph_component.cpp
 	${HEADER_PATH}/skinned_mesh_renderer_component.h
 	${SOURCE_PATH}/skinned_mesh_renderer_component.cpp
 	${HEADER_PATH}/skinned_joint_renderer_component.h

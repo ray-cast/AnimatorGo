@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubInterface(ColliderComponent, GameComponent, "ColliderComponent")
+	OctoonImplementSubInterface(ColliderComponent, GameComponent, "Collider")
 
 	ColliderComponent::ColliderComponent() noexcept
 	{

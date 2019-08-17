@@ -123,7 +123,6 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::FixedUpdate);
 		this->addMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		OfflineMeshRendererComponent::onActivate();
 	}
@@ -131,15 +130,8 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 		this->removeMessageListener("octoon:animation:update", std::bind(&OfflineSkinnedMeshRendererComponent::onAnimationUpdate, this, std::placeholders::_1));
 		OfflineMeshRendererComponent::onDeactivate();
-	}
-
-	void
-	OfflineSkinnedMeshRendererComponent::onFixedUpdate() noexcept
-	{
-		//this->needUpdate_ = true;
 	}
 
 	void

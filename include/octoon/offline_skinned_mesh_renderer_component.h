@@ -35,8 +35,6 @@ namespace octoon
 
 		void onPreRender() noexcept override;
 
-		void onFixedUpdate() noexcept override;
-
 	private:
 		OfflineSkinnedMeshRendererComponent(const OfflineSkinnedMeshRendererComponent&) = delete;
 		OfflineSkinnedMeshRendererComponent& operator=(const OfflineSkinnedMeshRendererComponent&) = delete;

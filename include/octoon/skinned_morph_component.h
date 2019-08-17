@@ -16,8 +16,8 @@ namespace octoon
 		explicit SkinnedMorphComponent(const math::float3s& vertices, const math::uint1s& indices, float control = 0.0f) noexcept;
 		virtual ~SkinnedMorphComponent() noexcept;
 	
-		void setControl(float control) noexcept;
-		float getControl() const noexcept;
+		void setControl(float control) noexcept override;
+		float getControl() const noexcept override;
 
 		void setOffsets(math::float3s&& offsets) noexcept;
 		void setOffsets(const math::float3s& offsets) noexcept;

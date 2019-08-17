@@ -15,6 +15,10 @@ namespace octoon
 
 		virtual void setControl(float control) noexcept = 0;
 		virtual float getControl() const noexcept = 0;
+
+	private:
+		SkinnedComponent(const SkinnedComponent&) = delete;
+		SkinnedComponent& operator=(const SkinnedComponent&) = delete;
 	};
 }
 

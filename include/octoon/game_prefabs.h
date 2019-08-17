@@ -5,7 +5,7 @@
 #include <octoon/runtime/singleton.h>
 #include <octoon/hal/graphics_types.h>
 #include <octoon/model/model.h>
-#include <octoon/video/material.h>
+#include <octoon/model/material.h>
 
 #include <map>
 
@@ -51,7 +51,7 @@ namespace octoon
 		bool createJoints(const model::Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept;
 		bool createSolver(const model::Model& model, GameObjects& bones) noexcept;
 		bool createMeshes(const model::Model& model, GameObjects& mesh, const GameObjects& bones, const std::string& path = "") noexcept;
-		bool createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath = "") noexcept;
+		bool createMaterials(const model::Model& model, model::Materials& materials, const std::string& rootPath = "") noexcept;
 
 	private:
 		using Prefabs = std::map<std::string, GameObjectPtr>;

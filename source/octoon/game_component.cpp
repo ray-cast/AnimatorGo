@@ -201,6 +201,61 @@ namespace octoon
 		gameObject_->removeMessageListener(event, listener);
 	}
 
+	bool
+	GameComponent::trySendMessage(const std::string& event, const runtime::any& data) noexcept
+	{
+		if (gameObject_)
+		{
+			gameObject_->sendMessage(event, data);
+			return true;
+		}
+		return false;
+	}
+
+	bool
+	GameComponent::trySendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		if (gameObject_)
+		{
+			gameObject_->sendMessageUpwards(event, data);
+			return true;
+		}
+		return false;
+	}
+
+	bool
+	GameComponent::trySendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	{
+		if (gameObject_)
+		{
+			gameObject_->sendMessageDownwards(event, data);
+			return true;
+		}
+		return false;
+	}
+
+	bool
+	GameComponent::tryAddMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		if (gameObject_)
+		{
+			gameObject_->addMessageListener(event, listener);
+			return true;
+		}
+		return false;
+	}
+
+	bool
+	GameComponent::tryRemoveMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	{
+		if (gameObject_)
+		{
+			gameObject_->removeMessageListener(event, listener);
+			return true;
+		}
+		return false;
+	}
+
 	void
 	GameComponent::load(const io::archivebuf& reader) except
 	{

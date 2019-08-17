@@ -11,10 +11,7 @@ namespace octoon
 		Material::~Material() noexcept
 		{
 			for (auto& it : _properties)
-			{
-				delete it->data;
-				delete it;
-			}
+				delete it.data;
 		}
 
 		bool
@@ -27,23 +24,22 @@ namespace octoon
 
 			for (; it != end; ++it)
 			{
-				if ((*it)->key == key)
+				if ((*it).key == key)
 				{
-					delete (*it);
 					_properties.erase(it);
 					break;
 				}
 			}
 
-			auto prop = std::make_unique<MaterialParam>();
-			prop->key = key;
-			prop->length = sizeof(int);
-			prop->dataType = PropertyTypeInfoInt;
-			prop->data = new char[prop->length];
+			MaterialParam prop;
+			prop.key = key;
+			prop.length = sizeof(int);
+			prop.dataType = PropertyTypeInfoInt;
+			prop.data = new char[prop.length];
 
-			std::memcpy(prop->data, &value, prop->length);
+			std::memcpy(prop.data, &value, prop.length);
 
-			_properties.push_back(prop.release());
+			_properties.push_back(prop);
 
 			return true;
 		}
@@ -58,24 +54,22 @@ namespace octoon
 
 			for (; it != end; ++it)
 			{
-				if ((*it)->key == key)
+				if ((*it).key == key)
 				{
-					delete (*it);
 					_properties.erase(it);
 					break;
 				}
 			}
 
-			auto prop = std::make_unique<MaterialParam>();
+			MaterialParam prop;
+			prop.key = key;
+			prop.length = sizeof(float);
+			prop.dataType = PropertyTypeInfoFloat;
+			prop.data = new char[prop.length];
 
-			prop->key = key;
-			prop->length = sizeof(float);
-			prop->dataType = PropertyTypeInfoFloat;
-			prop->data = new char[prop->length];
+			std::memcpy(prop.data, &value, prop.length);
 
-			std::memcpy(prop->data, &value, prop->length);
-
-			_properties.push_back(prop.release());
+			_properties.push_back(prop);
 
 			return true;
 		}
@@ -90,24 +84,22 @@ namespace octoon
 
 			for (; it != end; ++it)
 			{
-				if ((*it)->key == key)
+				if ((*it).key == key)
 				{
-					delete (*it);
 					_properties.erase(it);
 					break;
 				}
 			}
 
-			auto prop = std::make_unique<MaterialParam>();
+			MaterialParam prop;
+			prop.key = key;
+			prop.length = sizeof(math::float3);
+			prop.dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+			prop.data = new char[prop.length];
 
-			prop->key = key;
-			prop->length = sizeof(math::Vector3);
-			prop->dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
-			prop->data = new char[prop->length];
+			std::memcpy(prop.data, &value, prop.length);
 
-			std::memcpy(prop->data, &value, prop->length);
-
-			_properties.push_back(prop.release());
+			_properties.push_back(prop);
 
 			return true;
 		}
@@ -122,24 +114,22 @@ namespace octoon
 
 			for (; it != end; ++it)
 			{
-				if ((*it)->key == key)
+				if ((*it).key == key)
 				{
-					delete (*it);
 					_properties.erase(it);
 					break;
 				}
 			}
 
-			auto prop = std::make_unique<MaterialParam>();
+			MaterialParam prop;
+			prop.key = key;
+			prop.length = sizeof(math::float4);
+			prop.dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+			prop.data = new char[prop.length];
 
-			prop->key = key;
-			prop->length = sizeof(math::Vector4);
-			prop->dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
-			prop->data = new char[prop->length];
+			std::memcpy(prop.data, &value, prop.length);
 
-			std::memcpy(prop->data, &value, prop->length);
-
-			_properties.push_back(prop.release());
+			_properties.push_back(prop);
 
 			return true;
 		}
@@ -172,25 +162,30 @@ namespace octoon
 
 			for (; it != end; ++it)
 			{
-				if ((*it)->key == key)
+				if ((*it).key == key)
 				{
-					delete (*it);
 					_properties.erase(it);
 					break;
 				}
 			}
 
-			auto prop = std::make_unique<MaterialParam>();
+			MaterialParam prop;
+			prop.key = key;
+			prop.length = value.length();
+			prop.dataType = PropertyTypeInfoString;
+			prop.data = new char[prop.length];
 
-			prop->key = key;
-			prop->length = value.length();
-			prop->dataType = PropertyTypeInfoString;
-			prop->data = new char[prop->length];
+			std::memcpy(prop.data, value.data(), prop.length);
 
-			std::memcpy(prop->data, value.data(), prop->length);
+			_properties.push_back(prop);
 
-			_properties.push_back(prop.release());
+			return true;
+		}
 
+		bool
+		Material::set(const MaterialParam& value) noexcept
+		{
+			_properties.push_back(value);
 			return true;
 		}
 
@@ -199,14 +194,14 @@ namespace octoon
 		{
 			assert(nullptr != key);
 
-			MaterialParam* prop = nullptr;
-			if (this->get(key, &prop))
+			MaterialParam prop;
+			if (this->get(key, prop))
 			{
-				if (prop->dataType == PropertyTypeInfoInt)
+				if (prop.dataType == PropertyTypeInfoInt)
 				{
-					if (prop->length == sizeof(int))
+					if (prop.length == sizeof(int))
 					{
-						std::memcpy(&value, prop->data, prop->length);
+						std::memcpy(&value, prop.data, prop.length);
 						return true;
 					}
 				}
@@ -220,14 +215,14 @@ namespace octoon
 		{
 			assert(nullptr != key);
 
-			MaterialParam* prop = nullptr;
-			if (this->get(key, &prop))
+			MaterialParam prop;
+			if (this->get(key, prop))
 			{
-				if (prop->dataType == PropertyTypeInfoFloat)
+				if (prop.dataType == PropertyTypeInfoFloat)
 				{
-					if (prop->length == sizeof(float))
+					if (prop.length == sizeof(float))
 					{
-						std::memcpy(&value, prop->data, prop->length);
+						std::memcpy(&value, prop.data, prop.length);
 						return true;
 					}
 				}
@@ -241,15 +236,15 @@ namespace octoon
 		{
 			assert(nullptr != key);
 
-			MaterialParam* prop = nullptr;
-			if (this->get(key, &prop))
+			MaterialParam prop;
+			if (this->get(key, prop))
 			{
-				if (prop->dataType & PropertyTypeInfoFloat &&
-					prop->dataType & PropertyTypeInfoBuffer)
+				if (prop.dataType & PropertyTypeInfoFloat &&
+					prop.dataType & PropertyTypeInfoBuffer)
 				{
-					if (prop->length == sizeof(math::Vector3))
+					if (prop.length == sizeof(math::Vector3))
 					{
-						std::memcpy(&value, prop->data, prop->length);
+						std::memcpy(&value, prop.data, prop.length);
 						return true;
 					}
 				}
@@ -263,15 +258,15 @@ namespace octoon
 		{
 			assert(nullptr != key);
 
-			MaterialParam* prop = nullptr;
-			if (this->get(key, &prop))
+			MaterialParam prop;
+			if (this->get(key, prop))
 			{
-				if (prop->dataType & PropertyTypeInfoFloat &&
-					prop->dataType & PropertyTypeInfoBuffer)
+				if (prop.dataType & PropertyTypeInfoFloat &&
+					prop.dataType & PropertyTypeInfoBuffer)
 				{
-					if (prop->length == sizeof(math::Vector4))
+					if (prop.length == sizeof(math::Vector4))
 					{
-						std::memcpy(&value, prop->data, prop->length);
+						std::memcpy(&value, prop.data, prop.length);
 						return true;
 					}
 				}
@@ -285,12 +280,12 @@ namespace octoon
 		{
 			assert(nullptr != key);
 
-			MaterialParam* prop = nullptr;
-			if (this->get(key, &prop))
+			MaterialParam prop;
+			if (this->get(key, prop))
 			{
-				if (prop->dataType == PropertyTypeInfoString)
+				if (prop.dataType == PropertyTypeInfoString)
 				{
-					value.assign(prop->data, prop->length);
+					value.assign(prop.data, prop.length);
 					return true;
 				}
 			}
@@ -299,21 +294,29 @@ namespace octoon
 		}
 
 		bool
-		Material::get(const char* key, MaterialParam** out) const noexcept
+		Material::get(const char* key, MaterialParam& out) const noexcept
 		{
 			assert(nullptr != key);
-			assert(nullptr != out);
 
 			for (auto& it : _properties)
 			{
-				if (it->key == key)
+				if (it.key == key)
 				{
-					*out = it;
+					out = it;
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		MaterialPtr
+		Material::clone() const noexcept
+		{
+			auto material = std::make_shared<Material>();
+			for (auto& prop : this->_properties)
+				material->set(prop);
+			return material;
 		}
 	}
 }

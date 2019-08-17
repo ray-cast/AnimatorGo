@@ -9,12 +9,12 @@ namespace octoon
 	{
 	}
 
-	OfflineRenderComponent::OfflineRenderComponent(video::MaterialPtr&& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::OfflineRenderComponent(model::MaterialPtr&& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterial(std::move(material), sharedMaterial);
 	}
 
-	OfflineRenderComponent::OfflineRenderComponent(const video::MaterialPtr& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::OfflineRenderComponent(const model::MaterialPtr& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterial(material, sharedMaterial);
 	}
@@ -24,7 +24,7 @@ namespace octoon
 	}
 
 	void
-	OfflineRenderComponent::setMaterial(video::MaterialPtr&& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::setMaterial(model::MaterialPtr&& material, bool sharedMaterial) noexcept
 	{
 		if (material_ != material)
 		{
@@ -35,7 +35,7 @@ namespace octoon
 	}
 
 	void
-	OfflineRenderComponent::setMaterial(const video::MaterialPtr& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::setMaterial(const model::MaterialPtr& material, bool sharedMaterial) noexcept
 	{
 		if (material_ != material)
 		{
@@ -45,7 +45,7 @@ namespace octoon
 		}
 	}
 
-	const video::MaterialPtr&
+	const model::MaterialPtr&
 	OfflineRenderComponent::getMaterial() const noexcept
 	{
 		return material_;
@@ -74,7 +74,7 @@ namespace octoon
 	}
 
 	void
-	OfflineRenderComponent::onMaterialReplace(const video::MaterialPtr&) noexcept
+	OfflineRenderComponent::onMaterialReplace(const model::MaterialPtr&) noexcept
 	{
 	}
 }

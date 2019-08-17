@@ -12,8 +12,8 @@ namespace octoon
 		OctoonDeclareSubClass(OfflineMeshRendererComponent, RenderComponent)
 	public:
 		OfflineMeshRendererComponent() noexcept;
-		OfflineMeshRendererComponent(video::MaterialPtr&& material) noexcept;
-		OfflineMeshRendererComponent(const video::MaterialPtr& material) noexcept;
+		OfflineMeshRendererComponent(model::MaterialPtr&& material) noexcept;
+		OfflineMeshRendererComponent(const model::MaterialPtr& material) noexcept;
 		virtual ~OfflineMeshRendererComponent() noexcept;
 
 		virtual void uploadMeshData(const model::Mesh& mesh) noexcept;
@@ -28,12 +28,12 @@ namespace octoon
 		virtual void onMoveAfter() noexcept override;
 
 		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
-		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept override;
+		virtual void onMaterialReplace(const model::MaterialPtr& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
 
 	private:
-		void uploadMatData(const video::Material& mat) noexcept;
+		void uploadMatData(const model::Material& mat) noexcept;
 
 	private:
 		OfflineMeshRendererComponent(const OfflineMeshRendererComponent&) = delete;

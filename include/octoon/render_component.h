@@ -1,7 +1,7 @@
 #ifndef OCTOON_RENDER_COMPONENT_H_
 #define OCTOON_RENDER_COMPONENT_H_
 
-#include <octoon/video/material.h>
+#include <octoon/model/material.h>
 #include <octoon/video/render_object.h>
 #include <octoon/game_component.h>
 
@@ -12,13 +12,13 @@ namespace octoon
 		OctoonDeclareSubInterface(RenderComponent, GameComponent)
 	public:
 		RenderComponent() noexcept;
-		RenderComponent(video::MaterialPtr&& material, bool sharedMaterial = false) noexcept;
-		RenderComponent(const video::MaterialPtr& material, bool sharedMaterial = false) noexcept;
+		RenderComponent(model::MaterialPtr&& material, bool sharedMaterial = false) noexcept;
+		RenderComponent(const model::MaterialPtr& material, bool sharedMaterial = false) noexcept;
 		virtual ~RenderComponent() noexcept;
 
-		void setMaterial(video::MaterialPtr&& material, bool sharedMaterial = false) noexcept;
-		void setMaterial(const video::MaterialPtr& material, bool sharedMaterial = false) noexcept;
-		const video::MaterialPtr& getMaterial() const noexcept;
+		void setMaterial(model::MaterialPtr&& material, bool sharedMaterial = false) noexcept;
+		void setMaterial(const model::MaterialPtr& material, bool sharedMaterial = false) noexcept;
+		const model::MaterialPtr& getMaterial() const noexcept;
 
 		bool isSharedMaterial() const noexcept;
 		void isSharedMaterial(bool sharedMaterial) noexcept;
@@ -27,7 +27,7 @@ namespace octoon
 		virtual void onPreRender(const video::Camera& camera) noexcept override;
 		virtual void onPostRender(const video::Camera& camera) noexcept override;
 
-		virtual void onMaterialReplace(const video::MaterialPtr& material) noexcept;
+		virtual void onMaterialReplace(const model::MaterialPtr& material) noexcept;
 
 	private:
 		RenderComponent(const RenderComponent&) = delete;
@@ -35,7 +35,7 @@ namespace octoon
 
 	private:
 		bool isSharedMaterial_;
-		video::MaterialPtr material_;
+		model::MaterialPtr material_;
 	};
 }
 

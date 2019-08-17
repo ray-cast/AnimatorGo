@@ -31,16 +31,19 @@ namespace octoon
 			bool set(const char* key, const char* value) noexcept;
 			bool set(const char* key, const unsigned char* value) noexcept;
 			bool set(const char* key, const std::string& value) noexcept;
+			bool set(const MaterialParam& value) noexcept;
 
 			bool get(const char* key, int& value) const noexcept;
 			bool get(const char* key, float& value) const noexcept;
 			bool get(const char* key, math::Vector3& value) const noexcept;
 			bool get(const char* key, math::Vector4& value) const noexcept;
 			bool get(const char* key, std::string& value) const noexcept;
-			bool get(const char* key, MaterialParam** out) const noexcept;
+			bool get(const char* key, MaterialParam& out) const noexcept;
+
+			MaterialPtr clone() const noexcept;
 
 		private:
-			std::vector<MaterialParam*> _properties;
+			std::vector<MaterialParam> _properties;
 		};
 	}
 }

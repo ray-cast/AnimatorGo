@@ -108,7 +108,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCircle(radius, segments, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -117,19 +117,16 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(width, height, widthSegments, heightSegments));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
 	GameObjectPtr
 	GamePrefabs::createPlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir) noexcept
 	{
-		auto mat = std::make_shared<BasicMaterial>();
-		mat->setBaseColor(math::float4(0.4, 0.4, 0.4, 1.0f));
-
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(width, height, depth, widthSegments, heightSegments, depthSegments, u, v, udir, vdir));
-		object->addComponent<MeshRendererComponent>(mat);
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -138,18 +135,16 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlaneWireframe(width, height, depth, widthSegments, heightSegments, depthSegments, u, v, udir, vdir, clear));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
 	GameObjectPtr
 	GamePrefabs::createFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
 	{
-		auto mat = std::make_shared<GGXMaterial>();
-
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeFloor(width, height, widthSegments, heightSegments));
-		object->addComponent<MeshRendererComponent>(mat);
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -158,7 +153,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeNoise(width, height, widthSegments, heightSegments));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -167,7 +162,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCube(width, height, depth, widthSegments, heightSegments, depthSegments));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -176,7 +171,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCubeWireframe(width, height, depth, widthSegments, heightSegments, depthSegments));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -185,7 +180,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeRing(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -194,7 +189,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeSphere(radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -203,7 +198,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeVolumes(fovy, znear, zfar));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -212,7 +207,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeCone(radius, height, segments, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<GGXMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 		return object;
 	}
 
@@ -221,7 +216,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, fontsize })));
-		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 
 		return object;
 	}
@@ -231,7 +226,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<TextComponent>(u8str)->setTextMeshing(std::make_shared<TextMeshing>(fontPath, fontsize));
-		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
 
 		return object;
 	}
@@ -533,7 +528,7 @@ namespace octoon
 	bool
 	GamePrefabs::createMeshes(const model::Model& model, GameObjects& meshes, const GameObjects& bones, const std::string& path) noexcept
 	{
-		video::Materials materials;
+		model::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;
 
@@ -570,28 +565,12 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createMaterials(const model::Model& model, video::Materials& materials, const std::string& rootPath) noexcept
+	GamePrefabs::createMaterials(const model::Model& model, model::Materials& materials, const std::string& rootPath) noexcept
 	{
 		for (auto& it : model.get<Model::material>())
 		{
-			std::string name;
-			std::string textureName;
-
-			math::float3 base;
-			math::float3 ambient;
-
-			it->get(MATKEY_NAME, name);
-			it->get(MATKEY_TEXTURE_DIFFUSE, textureName);
-			it->get(MATKEY_COLOR_DIFFUSE, base);			
-			it->get(MATKEY_COLOR_AMBIENT, ambient);
-
-			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4(base, 1.0));
-
-			if (!textureName.empty())
-				material->setTexture(GamePrefabs::instance()->createTexture(rootPath + textureName));
-
-			materials.push_back(material);
+			it->set(MATKEY_PATH, rootPath);
+			materials.push_back(it);
 		}
 
 		return true;
@@ -602,7 +581,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
-		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(this->createTexture(image)));
+		//object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>(this->createTexture(image)));
 
 		return object;
 	}
@@ -612,7 +591,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane((float)texture->getTextureDesc().getWidth(), (float)texture->getTextureDesc().getHeight()));
-		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
+		//object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>(texture));
 
 		return object;
 	}
@@ -622,7 +601,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makePlane(w, h));
-		object->addComponent<MeshRendererComponent>(std::make_shared<BasicMaterial>(texture));
+		//object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>(texture));
 
 		return object;
 	}

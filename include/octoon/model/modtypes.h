@@ -11,7 +11,8 @@
 
 #define TEXTURE_ARRAY_COUNT 4
 
-#define MATKEY_NAME               "?mat.name"
+#define MATKEY_NAME               "$mat.name"
+#define MATKEY_PATH               "$mat.path"
 #define MATKEY_TWOSIDED           "$mat.twosided"
 #define MATKEY_SHADING_MODEL      "$mat.shadingm"
 #define MATKEY_ENABLE_WIREFRAME   "$mat.wireframe"
@@ -96,6 +97,7 @@ namespace octoon
 		typedef std::vector<VertexWeight> VertexWeights;
 		typedef std::vector<MeshPtr> Meshes;
 		typedef std::vector<Bone> Bones;
+		typedef std::vector<MaterialPtr> Materials;
 		typedef std::vector<IKAttr> InverseKinematics;
 		typedef std::vector<CombineMesh> CombineMeshes;
 		typedef std::vector<TextFilePtr> TextFiles;

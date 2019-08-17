@@ -12,26 +12,26 @@ namespace octoon
 	{
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(video::MaterialPtr&& material) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const video::MaterialPtr& material) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(video::MaterialPtr&& material, GameObjects&& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const video::MaterialPtr& material, const GameObjects& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);

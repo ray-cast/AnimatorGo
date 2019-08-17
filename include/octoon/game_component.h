@@ -53,6 +53,12 @@ namespace octoon
 		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
+		bool trySendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		bool trySendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		bool trySendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		bool tryAddMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		bool tryRemoveMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+
 		virtual void load(const io::archivebuf& reader) except;
 		virtual void save(io::archivebuf& write) except;
 

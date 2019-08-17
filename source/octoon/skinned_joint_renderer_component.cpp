@@ -10,13 +10,13 @@ namespace octoon
 	{
 	}
 
-	SkinnedJointRendererComponent::SkinnedJointRendererComponent(video::MaterialPtr&& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(model::MaterialPtr&& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	SkinnedJointRendererComponent::SkinnedJointRendererComponent(const video::MaterialPtr& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(const model::MaterialPtr& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(material);

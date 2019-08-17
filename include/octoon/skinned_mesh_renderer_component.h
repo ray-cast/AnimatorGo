@@ -42,9 +42,8 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
-
 		GameObjects transforms_;
-		math::BoundingBox boundingBox_;
+
 		model::MeshPtr mesh_;
 		model::MeshPtr skinnedMesh_;
 	};

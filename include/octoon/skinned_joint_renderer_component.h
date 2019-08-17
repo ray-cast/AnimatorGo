@@ -39,9 +39,7 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
-
 		GameObjects transforms_;
-		math::BoundingBox boundingBox_;
 	};
 }
 

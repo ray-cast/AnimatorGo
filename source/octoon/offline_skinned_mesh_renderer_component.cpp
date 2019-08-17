@@ -99,10 +99,12 @@ namespace octoon
 		auto& dstVertices = skinnedMesh_->getVertexArray();
 		auto& dstNormals = skinnedMesh_->getNormalArray();
 
+		auto numVertices = mesh.getNumVertices();
+
 #if !defined(_DEBUG)
 #		pragma omp parallel for num_threads(4)
 #endif
-		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
+		for (std::size_t i = 0; i < numVertices; i++)
 		{
 			math::float3 v = math::float3::Zero;
 			math::float3 n = math::float3::Zero;
@@ -132,7 +134,9 @@ namespace octoon
 					auto& indices = morph->getIndices();
 					auto& offsets = morph->getOffsets();
 
-					for (std::size_t i = 0; i < indices.size(); i++)
+					auto numIndices = indices.size();
+
+					for (std::size_t i = 0; i < numIndices; i++)
 					{
 						auto offset = offsets[i];
 						auto index = indices[i];

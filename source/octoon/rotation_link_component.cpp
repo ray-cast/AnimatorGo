@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(RotationLinkComponent, GameComponent, "RotationLimit")
+	OctoonImplementSubClass(RotationLinkComponent, GameComponent, "RotationLink")
 
 	RotationLinkComponent::RotationLinkComponent() noexcept
 		: rotation_(math::Quaternion::Zero)

@@ -65,7 +65,12 @@ namespace octoon
 	GameComponentPtr
 	SkinnedMorphComponent::clone() const noexcept
 	{
-		return std::make_shared<SkinnedMorphComponent>();
+		auto instance = std::make_shared<SkinnedMorphComponent>();
+		instance->setName(this->getName());
+		instance->setControl(this->getControl());
+		instance->setOffsets(this->getOffsets());
+		instance->setIndices(this->getIndices());
+		return instance;
 	}
 
 	void 

@@ -79,7 +79,7 @@ namespace octoon
 	{
 		std::vector<math::float4x4> joints(transforms_.size());
 
-		auto& bindposes = mesh_->getBindposes();
+		auto& bindposes = mesh.getBindposes();
 		if (bindposes.size() != transforms_.size())
 		{
 			for (std::size_t i = 0; i < transforms_.size(); ++i)
@@ -91,17 +91,19 @@ namespace octoon
 				joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
 		}
 
-		auto& vertices = mesh_->getVertexArray();
-		auto& normals = mesh_->getNormalArray();
-		auto& weights = mesh_->getWeightArray();
+		auto& vertices = mesh.getVertexArray();
+		auto& normals = mesh.getNormalArray();
+		auto& weights = mesh.getWeightArray();
 
 		auto& dstVertices = skinnedMesh_->getVertexArray();
 		auto& dstNormals = skinnedMesh_->getNormalArray();
 
+		auto numVertices = mesh.getNumVertices();
+
 #if !defined(_DEBUG)
 #		pragma omp parallel for num_threads(4)
 #endif
-		for (std::int32_t i = 0; i < (std::int32_t)vertices.size(); i++)
+		for (std::size_t i = 0; i < numVertices; i++)
 		{
 			math::float3 v = math::float3::Zero;
 			math::float3 n = math::float3::Zero;
@@ -129,8 +131,10 @@ namespace octoon
 					auto morph = it->downcast<SkinnedMorphComponent>();
 					auto& indices = morph->getIndices();
 					auto& offsets = morph->getOffsets();
+					
+					auto numIndices = indices.size();
 
-					for (std::size_t i = 0; i < indices.size(); i++)
+					for (std::size_t i = 0; i < numIndices; i++)
 					{
 						auto offset = offsets[i];
 						auto index = indices[i];

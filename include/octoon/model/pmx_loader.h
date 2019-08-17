@@ -180,15 +180,15 @@ namespace octoon
 
 		enum PmxMorphType : std::uint8_t
 		{
-			MorphTypeGroup = 0,
-			MorphTypeVertex = 1,
-			MorphTypeBone = 2,
-			MorphTypeUV = 3,
-			MorphTypeExtraUV1 = 4,
-			MorphTypeExtraUV2 = 5,
-			MorphTypeExtraUV3 = 6,
-			MorphTypeExtraUV4 = 7,
-			MorphTypeMaterial = 8
+			PMX_MorphTypeGroup = 0,
+			PMX_MorphTypeVertex = 1,
+			PMX_MorphTypeBone = 2,
+			PMX_MorphTypeUV = 3,
+			PMX_MorphTypeExtraUV1 = 4,
+			PMX_MorphTypeExtraUV2 = 5,
+			PMX_MorphTypeExtraUV3 = 6,
+			PMX_MorphTypeExtraUV4 = 7,
+			PMX_MorphTypeMaterial = 8
 		};
 
 		struct PmxMorphVertex
@@ -240,8 +240,8 @@ namespace octoon
 			PmxUInt8  morphType;
 			PmxUInt32 morphCount;
 
-			std::vector<PmxMorphGroup>   groupList;
-			std::vector<PmxMorphVertex>   vertexList;
+			std::vector<PmxMorphGroup>    groupList;
+			std::vector<PmxMorphVertex>   vertices;
 			std::vector<PmxMorphBone>     boneList;
 			std::vector<PmxMorphTexcoord> texcoordList;
 			std::vector<PmxMorphMaterial> materialList;

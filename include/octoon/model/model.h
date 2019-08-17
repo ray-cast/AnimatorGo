@@ -1,6 +1,13 @@
 #ifndef OCTOON_MODEL_H_
 #define OCTOON_MODEL_H_
 
+#include <octoon/model/material.h>
+#include <octoon/model/text_meshing.h>
+#include <octoon/model/ik.h>
+#include <octoon/model/rigidbody.h>
+#include <octoon/model/joint.h>
+#include <octoon/model/softbody.h>
+#include <octoon/model/morph.h>
 #include <octoon/model/model_loader.h>
 
 namespace octoon
@@ -19,6 +26,7 @@ namespace octoon
 			using material_array_t = std::vector<MaterialPtr>;
 			using texture_array_t = std::vector<TexturePtr>;
 			using animation_array_t = std::vector<AnimationPtr>;
+			using morph_array_t = std::vector<MorphPtr>;
 
 			enum type_t
 			{
@@ -32,7 +40,8 @@ namespace octoon
 				texture,
 				animation,
 				light,
-				camera
+				camera,
+				morph
 			};
 
 		public:
@@ -51,6 +60,7 @@ namespace octoon
 			void add(const TexturePtr& value) noexcept { _textures.push_back(value); }
 			void add(const MaterialPtr& value) noexcept { _materials.push_back(value); }
 			void add(const AnimationPtr& value) noexcept { _animations.push_back(value); }
+			void add(const MorphPtr& value) noexcept { _morphs.push_back(value); }
 
 			void add(MeshPtr&& value) noexcept { _meshes.push_back(value); }
 			void add(BonePtr&& value) noexcept { _bones.push_back(value); }
@@ -61,6 +71,7 @@ namespace octoon
 			void add(TexturePtr&& value) noexcept { _textures.push_back(value); }
 			void add(MaterialPtr&& value) noexcept { _materials.push_back(value); }
 			void add(AnimationPtr&& value) noexcept { _animations.push_back(value); }
+			void add(MorphPtr&& value) noexcept { _morphs.push_back(value); }
 
 			void set(mesh_array_t& value) noexcept { _meshes = value; }
 			void set(bone_array_t& value) noexcept { _bones = value; }
@@ -71,6 +82,7 @@ namespace octoon
 			void set(material_array_t& value) noexcept { _materials = value; }
 			void set(texture_array_t& value) noexcept { _textures = value; }
 			void set(animation_array_t& value) noexcept { _animations = value; }
+			void set(morph_array_t& value) noexcept { _morphs = value; }
 
 			void set(mesh_array_t&& value) noexcept { _meshes = std::move(value); }
 			void set(bone_array_t&& value) noexcept { _bones = std::move(value); }
@@ -81,6 +93,7 @@ namespace octoon
 			void set(material_array_t&& value) noexcept { _materials = std::move(value); }
 			void set(texture_array_t&& value) noexcept { _textures = std::move(value); }
 			void set(animation_array_t&& value) noexcept { _animations = std::move(value); }
+			void set(morph_array_t&& value) noexcept { _morphs = std::move(value); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
 			const mesh_array_t& get() const { return _meshes; }
@@ -109,6 +122,9 @@ namespace octoon
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
 			const animation_array_t& get() const { return _animations; }
 
+			template<type_t type, typename = std::enable_if_t<type == type_t::morph>>
+			const morph_array_t & get() const { return _morphs; }
+
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
 			const MeshPtr& get(std::size_t n) const { return _meshes[n]; }
 
@@ -136,6 +152,9 @@ namespace octoon
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
 			const AnimationPtr& get(std::size_t n) const { return _animations[n]; }
 
+			template<type_t type, typename = std::enable_if_t<type == type_t::morph>>
+			const MorphPtr & get(std::size_t n) const { return _morphs[n]; }
+
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::mesh, bool> empty() const { return _meshes.empty(); }
 
@@ -162,6 +181,9 @@ namespace octoon
 
 			template<type_t type>
 			constexpr std::enable_if_t<type == type_t::animation, bool> empty() const { return _animations.empty(); }
+			
+			template<type_t type>
+			constexpr std::enable_if_t<type == type_t::morph, bool> empty() const { return _morphs.empty(); }
 
 			template<type_t type, typename = std::enable_if_t<type == type_t::mesh>>
 			const MeshPtr& operator[](std::size_t n) const { return _meshes[n]; }
@@ -190,6 +212,9 @@ namespace octoon
 			template<type_t type, typename = std::enable_if_t<type == type_t::animation>>
 			const AnimationPtr& operator[](std::size_t n) const { return _animations[n]; }
 
+			template<type_t type, typename = std::enable_if_t<type == type_t::morph>>
+			const MorphPtr & operator[](std::size_t n) const { return _morphs[n]; }
+
 			void clear() noexcept;
 
 		public:
@@ -217,6 +242,7 @@ namespace octoon
 			texture_array_t _textures;
 			material_array_t _materials;
 			animation_array_t _animations;
+			morph_array_t _morphs;
 		};
 	}
 }

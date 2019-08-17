@@ -15,6 +15,8 @@ SET(MODEL_LIST
 	${SOURCE_PATH}/mesh.cpp
 	${HEADER_PATH}/texture.h
 	${SOURCE_PATH}/texture.cpp
+	${HEADER_PATH}/morph.h
+	${SOURCE_PATH}/morph.cpp
 	${HEADER_PATH}/material.h
 	${SOURCE_PATH}/material.cpp
 	${HEADER_PATH}/joint.h

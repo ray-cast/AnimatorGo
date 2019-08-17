@@ -7,6 +7,7 @@
 #include <octoon/model/rigidbody.h>
 #include <octoon/model/joint.h>
 #include <octoon/model/softbody.h>
+#include <octoon/model/morph.h>
 
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
@@ -322,7 +323,7 @@ namespace octoon
 					if (!stream.read((char*)&morph.morphType, sizeof(morph.morphType))) return false;
 					if (!stream.read((char*)&morph.morphCount, sizeof(morph.morphCount))) return false;
 
-					if (morph.morphType == PmxMorphType::MorphTypeGroup)
+					if (morph.morphType == PmxMorphType::PMX_MorphTypeGroup)
 					{
 						morph.groupList.resize(morph.morphCount);
 
@@ -332,17 +333,17 @@ namespace octoon
 							if (!stream.read((char*)& group.morphRate, sizeof(group.morphRate))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeVertex)
 					{
-						morph.vertexList.resize(morph.morphCount);
+						morph.vertices.resize(morph.morphCount);
 
-						for (auto& vertex : morph.vertexList)
+						for (auto& vertex : morph.vertices)
 						{
 							if (!stream.read((char*)&vertex.index, pmx.header.sizeOfIndices)) return false;
 							if (!stream.read((char*)&vertex.offset, sizeof(vertex.offset))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeBone)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeBone)
 					{
 						morph.boneList.resize(morph.morphCount);
 
@@ -353,9 +354,9 @@ namespace octoon
 							if (!stream.read((char*)&bone.rotation, sizeof(bone.rotation))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeUV || morph.morphType == PmxMorphType::MorphTypeExtraUV1 ||
-							 morph.morphType == PmxMorphType::MorphTypeExtraUV2 || morph.morphType == PmxMorphType::MorphTypeExtraUV3 ||
-							 morph.morphType == PmxMorphType::MorphTypeExtraUV4)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeUV || morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV1 ||
+							 morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV2 || morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV3 ||
+							 morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV4)
 					{
 						morph.texcoordList.resize(morph.morphCount);
 
@@ -365,7 +366,7 @@ namespace octoon
 							if (!stream.read((char*)&texcoord.offset, sizeof(texcoord.offset))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeMaterial)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeMaterial)
 					{
 						morph.materialList.resize(morph.morphCount);
 
@@ -742,12 +743,23 @@ namespace octoon
 			{
 				switch (it.morphType)
 				{
-				case PmxMorphType::MorphTypeVertex:
+				case PmxMorphType::PMX_MorphTypeVertex:
 				{
-					for (auto& v : it.vertexList)
+					auto morph = std::make_shared<model::Morph>();
+					morph->name = cv.to_bytes(it.name.name);
+					morph->morphType = it.morphType;
+					morph->control = it.control;
+					morph->morphCount = it.morphCount;
+
+					for (auto& v : it.vertices)
 					{
-						
+						model::MorphVertex vertex;
+						vertex.index = v.index;
+						vertex.offset = v.offset;
+						morph->vertices.push_back(vertex);
 					}
+
+					model.add(morph);
 				}
 				break;
 				}
@@ -1061,7 +1073,7 @@ namespace octoon
 					if (!stream.write((char*)&morph.morphType, sizeof(morph.morphType))) return false;
 					if (!stream.write((char*)&morph.morphCount, sizeof(morph.morphCount))) return false;
 
-					if (morph.morphType == PmxMorphType::MorphTypeGroup)
+					if (morph.morphType == PmxMorphType::PMX_MorphTypeGroup)
 					{
 						for (auto& group : morph.groupList)
 						{
@@ -1069,15 +1081,15 @@ namespace octoon
 							if (!stream.write((char*)& group.morphRate, sizeof(group.morphRate))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeVertex)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeVertex)
 					{
-						for (auto& vertex : morph.vertexList)
+						for (auto& vertex : morph.vertices)
 						{
 							if (!stream.write((char*)&vertex.index, pmx.header.sizeOfIndices)) return false;
 							if (!stream.write((char*)&vertex.offset, sizeof(vertex.offset))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeBone)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeBone)
 					{
 						for (auto& bone : morph.boneList)
 						{
@@ -1086,9 +1098,9 @@ namespace octoon
 							if (!stream.write((char*)&bone.rotation, sizeof(bone.rotation))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeUV || morph.morphType == PmxMorphType::MorphTypeExtraUV1 ||
-							 morph.morphType == PmxMorphType::MorphTypeExtraUV2 || morph.morphType == PmxMorphType::MorphTypeExtraUV3 ||
-							 morph.morphType == PmxMorphType::MorphTypeExtraUV4)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeUV || morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV1 ||
+							 morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV2 || morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV3 ||
+							 morph.morphType == PmxMorphType::PMX_MorphTypeExtraUV4)
 					{
 						for (auto& texcoord : morph.texcoordList)
 						{
@@ -1096,7 +1108,7 @@ namespace octoon
 							if (!stream.write((char*)&texcoord.offset, sizeof(texcoord.offset))) return false;
 						}
 					}
-					else if (morph.morphType == PmxMorphType::MorphTypeMaterial)
+					else if (morph.morphType == PmxMorphType::PMX_MorphTypeMaterial)
 					{
 						for (auto& material : morph.materialList)
 						{

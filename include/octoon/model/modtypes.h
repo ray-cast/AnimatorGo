@@ -55,6 +55,7 @@ namespace octoon
 		class Light;
 		class Mesh;
 		class Material;
+		struct Morph;
 
 		class Model;
 		class Bone;
@@ -77,6 +78,7 @@ namespace octoon
 		typedef std::shared_ptr<Texture> TexturePtr;
 		typedef std::shared_ptr<Mesh> MeshPtr;
 		typedef std::shared_ptr<Material> MaterialPtr;
+		typedef std::shared_ptr<Morph> MorphPtr;
 		typedef std::shared_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
@@ -97,6 +99,7 @@ namespace octoon
 		typedef std::vector<VertexWeight> VertexWeights;
 		typedef std::vector<MeshPtr> Meshes;
 		typedef std::vector<Bone> Bones;
+		typedef std::vector<MorphPtr> Morphs;
 		typedef std::vector<MaterialPtr> Materials;
 		typedef std::vector<IKAttr> InverseKinematics;
 		typedef std::vector<CombineMesh> CombineMeshes;

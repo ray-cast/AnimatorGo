@@ -9,12 +9,6 @@
 #include <octoon/video/line_material.h>
 
 #include <octoon/model/model.h>
-#include <octoon/model/material.h>
-#include <octoon/model/text_meshing.h>
-#include <octoon/model/ik.h>
-#include <octoon/model/rigidbody.h>
-#include <octoon/model/joint.h>
-#include <octoon/model/softbody.h>
 
 #include <octoon/camera_component.h>
 #include <octoon/ortho_camera_component.h>

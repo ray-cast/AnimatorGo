@@ -1,10 +1,6 @@
 #include <octoon/sphere_collider_component.h>
-
 #include <octoon/rigidbody_component.h>
 #include <octoon/physics_feature.h>
-#include <octoon/game_app.h>
-#include <octoon/game_scene.h>
-#include <octoon/runtime/except.h>
 
 namespace octoon
 {
@@ -122,7 +118,7 @@ namespace octoon
     void
 	SphereColliderComponent::onActivate() noexcept
     {
-		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+		auto physicsFeature = this->getFeature<PhysicsFeature>();
 		if (physicsFeature)
 		{
 			physics::PhysicsSphereShapeDesc sphereDesc;

@@ -1,6 +1,5 @@
 #include <octoon/capsule_collider_component.h>
 #include <octoon/physics_feature.h>
-#include <octoon/game_scene.h>
 
 namespace octoon
 {
@@ -135,7 +134,7 @@ namespace octoon
     void
 	CapsuleColliderComponent::onActivate() noexcept
     {
-		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+		auto physicsFeature = this->getFeature<PhysicsFeature>();
 		if (physicsFeature)
 		{
 			physics::PhysicsCapsuleShapeDesc boxDesc;

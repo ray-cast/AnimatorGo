@@ -1,6 +1,5 @@
 #include <octoon/animation_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
 
 namespace octoon
@@ -99,7 +98,7 @@ namespace octoon
 	void
 	AnimationComponent::onFixedUpdate() except
 	{
-		auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
+		auto timeFeature = this->getFeature<TimerFeature>();
 		if (timeFeature)
 			this->update(timeFeature->getTimeInterval());
 	}

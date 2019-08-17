@@ -1,6 +1,5 @@
 #include <octoon/offline_environment_light_component.h>
 #include <octoon/offline_feature.h>
-#include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 #include <RadeonProRender.h>
 
@@ -26,7 +25,7 @@ namespace octoon
 		{
 			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->tryGetFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
@@ -46,7 +45,7 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::onActivate() noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
@@ -68,7 +67,7 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::onDeactivate() noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature && this->rprLight_)
 			rprSceneDetachLight(feature->getScene(), this->rprLight_);
 

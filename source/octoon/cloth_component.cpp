@@ -1,6 +1,5 @@
 #include <octoon/cloth_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
@@ -186,7 +185,7 @@ namespace octoon
 
 		if (cloth_)
 		{
-			auto clothFeature = this->getGameScene()->getFeature<ClothFeature>();
+			auto clothFeature = this->getFeature<ClothFeature>();
 			if (clothFeature)
 				clothFeature->getScene()->removeCloth(cloth_);
 
@@ -333,7 +332,7 @@ namespace octoon
 	void
 	ClothComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
-		auto clothFeature = this->getGameScene()->getFeature<ClothFeature>();
+		auto clothFeature = this->tryGetFeature<ClothFeature>();
 		if (clothFeature)
 		{
 			if (cloth_)

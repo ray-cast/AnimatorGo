@@ -1,10 +1,6 @@
 #include <octoon/fixed_joint_component.h>
-
 #include <octoon/physics_feature.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_app.h>
-#include <octoon/game_scene.h>
-#include <octoon/runtime/except.h>
 
 namespace octoon
 {
@@ -64,7 +60,7 @@ namespace octoon
 	{
 		if (!thisBody.expired() && !target_.expired())
 		{
-			auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+			auto physicsFeature = this->tryGetFeature<PhysicsFeature>();
 			auto physicsContext = physicsFeature->getContext();
 			joint = physicsContext->createFixedJoint(thisBody.lock()->getRigidbody(), target_.lock()->getRigidbody());
 		}

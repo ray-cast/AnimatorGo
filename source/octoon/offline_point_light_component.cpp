@@ -1,6 +1,5 @@
 #include <octoon/offline_point_light_component.h>
 #include <octoon/offline_feature.h>
-#include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 #include <RadeonProRender.h>
 
@@ -25,7 +24,7 @@ namespace octoon
 		{
 			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->tryGetFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
@@ -42,7 +41,7 @@ namespace octoon
 			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
 				return;
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->tryGetFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}
@@ -64,7 +63,7 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			auto transform = this->getComponent<TransformComponent>();
@@ -85,7 +84,7 @@ namespace octoon
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature && this->rprLight_)
 			rprSceneDetachLight(feature->getScene(), this->rprLight_);
 
@@ -104,7 +103,7 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr());
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->getFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}

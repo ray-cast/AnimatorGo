@@ -1,4 +1,5 @@
 #include <octoon/game_component.h>
+#include <octoon/game_scene.h>
 #include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
@@ -166,6 +167,20 @@ namespace octoon
 		return name_;
 	}
 
+	GameFeature*
+	GameComponent::getFeature(const runtime::Rtti* rtti) const noexcept
+	{
+		assert(this->getGameScene());
+		return this->getGameScene()->getFeature(rtti);
+	}
+	
+	GameFeature*
+	GameComponent::getFeature(const runtime::Rtti& rtti) const noexcept
+	{
+		assert(this->getGameScene());
+		return this->getGameScene()->getFeature(rtti);
+	}
+
 	void
 	GameComponent::sendMessage(const std::string& event, const runtime::any& data) noexcept
 	{
@@ -199,6 +214,22 @@ namespace octoon
 	{
 		assert(gameObject_);
 		gameObject_->removeMessageListener(event, listener);
+	}
+
+	GameFeature*
+	GameComponent::tryGetFeature(const runtime::Rtti* rtti) const noexcept
+	{
+		if (!this->getGameScene())
+			return nullptr;
+		return this->getGameScene()->getFeature(rtti);
+	}
+	
+	GameFeature*
+	GameComponent::tryGetFeature(const runtime::Rtti& rtti) const noexcept
+	{
+		if (!this->getGameScene())
+			return nullptr;
+		return this->getGameScene()->getFeature(rtti);
 	}
 
 	bool

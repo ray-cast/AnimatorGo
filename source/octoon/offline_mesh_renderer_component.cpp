@@ -1,6 +1,5 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/offline_feature.h>
-#include <octoon/game_scene.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
@@ -43,7 +42,7 @@ namespace octoon
 	void
 	OfflineMeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (!feature)
 			return;
 
@@ -181,7 +180,7 @@ namespace octoon
 	void
 	OfflineMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
 		{
 			for (auto& it : shapes_)
@@ -245,7 +244,7 @@ namespace octoon
 		this->addMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		this->sendMessage("octoon:mesh:get", nullptr);
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 			feature->addOfflineListener(this);
 
@@ -258,7 +257,7 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&OfflineMeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			feature->removeOfflineListener(this);
@@ -283,7 +282,7 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			rprShapeSetTransform(shape, false, transform->getTransform().ptr());
 
-			auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+			auto feature = this->getFeature<OfflineFeature>();
 			if (feature)
 				feature->setFramebufferDirty(true);
 		}

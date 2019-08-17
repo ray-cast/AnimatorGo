@@ -1,7 +1,6 @@
 #include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/skinned_morph_component.h>
-#include <octoon/game_scene.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -178,7 +177,7 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
 	{
-		auto offlineFeature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto offlineFeature = this->getFeature<OfflineFeature>();
 		if (offlineFeature)
 			offlineFeature->setFramebufferDirty(true);
 
@@ -195,7 +194,7 @@ namespace octoon
 			skinnedMesh_ = mesh->clone();
 		}
 
-		auto offlineFeature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto offlineFeature = this->getFeature<OfflineFeature>();
 		if (offlineFeature)
 			offlineFeature->setFramebufferDirty(true);
 

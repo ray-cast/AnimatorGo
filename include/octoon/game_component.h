@@ -47,11 +47,21 @@ namespace octoon
 
 		const GameComponents& getComponents() const noexcept;
 
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		T* getFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
+
 		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
 		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
 		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
 		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
+		T* tryGetFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		GameFeature* tryGetFeature(const runtime::Rtti* rtti) const noexcept;
+		GameFeature* tryGetFeature(const runtime::Rtti& rtti) const noexcept;
 
 		bool trySendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
 		bool trySendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;

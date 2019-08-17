@@ -1,6 +1,4 @@
 #include <octoon/first_person_camera_component.h>
-#include <octoon/game_app.h>
-#include <octoon/game_scene.h>
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
@@ -114,10 +112,10 @@ namespace octoon
 	{
 		float step = speed_;
 #if OCTOON_FEATURE_TIMER_ENABLE
-		step *= this->getGameScene()->getFeature<TimerFeature>()->delta();
+		step *= this->getFeature<TimerFeature>()->delta();
 #endif
 
-		auto inputFeature = this->getGameScene()->getFeature<InputFeature>();
+		auto inputFeature = this->getFeature<InputFeature>();
 		if (inputFeature)
 		{
 			auto input = inputFeature->getInput();

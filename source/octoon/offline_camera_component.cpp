@@ -1,7 +1,6 @@
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
 
 #include <RadeonProRender.h>
 
@@ -201,7 +200,7 @@ namespace octoon
 	hal::GraphicsFramebufferPtr
 	OfflineCameraComponent::getFramebuffer() const noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
 			return feature->getFramebuffer();
 		return nullptr;
@@ -227,7 +226,7 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("Camera:fov", std::bind(&OfflineCameraComponent::onFovChange, this, std::placeholders::_1));
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			rpr_image_format imageFormat = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
@@ -266,7 +265,7 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("Camera:fov", std::bind(&OfflineCameraComponent::onFovChange, this, std::placeholders::_1));
 
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
 			feature->removeOfflineListener(this);
@@ -336,7 +335,7 @@ namespace octoon
 	void
 	OfflineCameraComponent::onFrameDirty() noexcept
 	{
-		auto feature = this->getGameScene()->getFeature<OfflineFeature>();
+		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
 			feature->setFramebufferDirty(true);
 	}

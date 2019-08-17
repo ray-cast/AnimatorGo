@@ -1,7 +1,6 @@
 #include <octoon/h264_component.h>
 #include <octoon/offline_camera_component.h>
 #include <octoon/timer_feature.h>
-#include <octoon/game_scene.h>
 
 #include <fstream>
 #define MINIH264_IMPLEMENTATION
@@ -113,7 +112,7 @@ namespace octoon
 	void
 	H264Component::onFixedUpdate() except
 	{
-		auto feature = this->getGameScene()->getFeature<TimerFeature>();
+		auto feature = this->getFeature<TimerFeature>();
 		if (feature)
 		{
 			time_ += feature->delta();

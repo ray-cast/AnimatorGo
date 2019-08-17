@@ -1,6 +1,5 @@
 #include <octoon/solver_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
 #include <octoon/timer_feature.h>
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
@@ -160,7 +159,7 @@ namespace octoon
 	{
 		if (timeStep_ > 0)
 		{
-			auto feature = this->getGameScene()->getFeature<TimerFeature>();
+			auto feature = this->getFeature<TimerFeature>();
 			if (feature)
 			{
 				time_ += feature->delta();

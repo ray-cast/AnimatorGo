@@ -1,7 +1,6 @@
 #include <octoon/rigidbody_component.h>
 #include <octoon/collider_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/game_scene.h>
 #include <octoon/physics_feature.h>
 
 namespace octoon
@@ -283,7 +282,7 @@ namespace octoon
 
 		if (rigidbody_)
 		{
-			auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+			auto physicsFeature = this->getFeature<PhysicsFeature>();
 			if (physicsFeature && !rigidbody_)
 				physicsFeature->getScene()->removeRigidbody(rigidbody_);
 
@@ -353,7 +352,7 @@ namespace octoon
 	void
 	RigidbodyComponent::setupRigidbody(ColliderComponent& collider) noexcept
 	{
-		auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+		auto physicsFeature = this->tryGetFeature<PhysicsFeature>();
 		if (physicsFeature && !rigidbody_)
 		{
 			auto transform = this->getComponent<TransformComponent>();

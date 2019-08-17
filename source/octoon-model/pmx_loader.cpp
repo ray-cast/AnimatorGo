@@ -664,7 +664,7 @@ namespace octoon
 			}
 
 			MeshPtr mesh = std::make_shared<Mesh>();
-			mesh->setBindposes(bindposes);
+			mesh->setBindposes(std::move(bindposes));
 			mesh->setVertexArray(std::move(vertices_));
 			mesh->setNormalArray(std::move(normals_));
 			mesh->setTexcoordArray(std::move(texcoords_));

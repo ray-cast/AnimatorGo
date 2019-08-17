@@ -20,6 +20,7 @@ namespace octoon
 		typedef std::shared_ptr<class TextMaterial> TextMaterialPtr;
 
 		typedef std::vector<MaterialPtr> Materials;
+		typedef std::vector<GeometryPtr> Geometrys;
 		typedef std::vector<TextMaterialPtr> TextMaterials;
 		typedef std::vector<RenderScene*> RenderScenes;
 		typedef std::vector<Camera*> CameraRaws;

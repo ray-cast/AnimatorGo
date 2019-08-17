@@ -75,7 +75,7 @@ namespace octoon
 		}
 
 		std::size_t
-		Mesh::getNumIndices() const noexcept
+		Mesh::getNumSubsets() const noexcept
 		{
 			return _indices.size();
 		}
@@ -125,9 +125,11 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(const uint1s& array) noexcept
+		Mesh::setIndicesArray(const uint1s& array, std::size_t n) noexcept
 		{
-			_indices = array;
+			if (_indices.size() <= n)
+				_indices.resize(n + 1);
+			_indices[n] = array;
 		}
 
 		void
@@ -174,9 +176,11 @@ namespace octoon
 		}
 
 		void
-		Mesh::setIndicesArray(uint1s&& array) noexcept
+		Mesh::setIndicesArray(uint1s&& array, std::size_t n) noexcept
 		{
-			_indices = std::move(array);
+			if (_indices.size() <= n)
+				_indices.resize(n + 1);
+			_indices[n] = std::move(array);
 		}
 
 		void
@@ -229,9 +233,9 @@ namespace octoon
 		}
 
 		uint1s&
-		Mesh::getIndicesArray() noexcept
+		Mesh::getIndicesArray(std::size_t n) noexcept
 		{
-			return _indices;
+			return _indices[n];
 		}
 
 		float4x4s&
@@ -290,9 +294,9 @@ namespace octoon
 		}
 
 		const uint1s&
-		Mesh::getIndicesArray() const noexcept
+		Mesh::getIndicesArray(std::size_t n) const noexcept
 		{
-			return _indices;
+			return _indices[n];
 		}
 
 		const BoundingBox&
@@ -304,14 +308,16 @@ namespace octoon
 		void
 		Mesh::clear() noexcept
 		{
-			_vertices = float3s();
-			_normals = float3s();
-			_colors = float4s();
-			_tangents = float4s();
-			_indices = uint1s();
+			_vertices.shrink_to_fit();
+			_normals.shrink_to_fit();
+			_colors.shrink_to_fit();
+			_tangents.shrink_to_fit();
 
-			for (std::size_t i = 0; i < 8; i++)
-				_texcoords[i] = float2s();
+			for (auto& it : _indices)
+				it.shrink_to_fit();
+
+			for (auto& it : _texcoords)
+				it.shrink_to_fit();
 		}
 
 		MeshPtr
@@ -352,21 +358,24 @@ namespace octoon
 				_texcoords[0].emplace_back((v.x / radius + 1), (v.y / radius + 1) / 2);
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t i = 1; i <= segments; i++)
 			{
 				std::uint32_t v1 = i;
 				std::uint32_t v2 = i + 1;
 				std::uint32_t v3 = 0;
 
-				_indices.push_back(v1);
-				_indices.push_back(v2);
-				_indices.push_back(v3);
+				indices.push_back(v1);
+				indices.push_back(v2);
+				indices.push_back(v3);
 
 				_normals.push_back(float3::UnitZ);
 				_normals.push_back(float3::UnitZ);
 				_normals.push_back(float3::UnitZ);
 			}
 
+			this->setIndicesArray(std::move(indices));
 			this->computeBoundingBox();
 		}
 
@@ -399,6 +408,8 @@ namespace octoon
 				}
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t iy = 0; iy < gridY; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)
@@ -413,16 +424,17 @@ namespace octoon
 					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
 					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
 
-					_indices.push_back(a);
-					_indices.push_back(b);
-					_indices.push_back(c);
+					indices.push_back(a);
+					indices.push_back(b);
+					indices.push_back(c);
 
-					_indices.push_back(c);
-					_indices.push_back(d);
-					_indices.push_back(a);
+					indices.push_back(c);
+					indices.push_back(d);
+					indices.push_back(a);
 				}
 			}
 
+			this->setIndicesArray(indices);
 			this->computeBoundingBox();
 		}
 
@@ -484,6 +496,8 @@ namespace octoon
 				}
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t iy = 0; iy < gridY; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)
@@ -493,15 +507,17 @@ namespace octoon
 					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
 					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
 
-					_indices.push_back((std::int32_t)(a + offset));
-					_indices.push_back((std::int32_t)(b + offset));
-					_indices.push_back((std::int32_t)(c + offset));
+					indices.push_back((std::int32_t)(a + offset));
+					indices.push_back((std::int32_t)(b + offset));
+					indices.push_back((std::int32_t)(c + offset));
 
-					_indices.push_back((std::int32_t)(c + offset));
-					_indices.push_back((std::int32_t)(d + offset));
-					_indices.push_back((std::int32_t)(a + offset));
+					indices.push_back((std::int32_t)(c + offset));
+					indices.push_back((std::int32_t)(d + offset));
+					indices.push_back((std::int32_t)(a + offset));
 				}
 			}
+
+			this->setIndicesArray(indices);
 		}
 
 		void
@@ -562,6 +578,8 @@ namespace octoon
 				}
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t iy = 0; iy < gridY; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)
@@ -571,19 +589,21 @@ namespace octoon
 					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
 					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
 
-					_indices.push_back((std::int32_t)(a + offset));
-					_indices.push_back((std::int32_t)(b + offset));
+					indices.push_back((std::int32_t)(a + offset));
+					indices.push_back((std::int32_t)(b + offset));
 
-					_indices.push_back((std::int32_t)(b + offset));
-					_indices.push_back((std::int32_t)(c + offset));
+					indices.push_back((std::int32_t)(b + offset));
+					indices.push_back((std::int32_t)(c + offset));
 
-					_indices.push_back((std::int32_t)(c + offset));
-					_indices.push_back((std::int32_t)(d + offset));
+					indices.push_back((std::int32_t)(c + offset));
+					indices.push_back((std::int32_t)(d + offset));
 
-					_indices.push_back((std::int32_t)(d + offset));
-					_indices.push_back((std::int32_t)(a + offset));
+					indices.push_back((std::int32_t)(d + offset));
+					indices.push_back((std::int32_t)(a + offset));
 				}
 			}
+
+			this->setIndicesArray(std::move(indices));
 		}
 
 		void
@@ -645,20 +665,23 @@ namespace octoon
 				}
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t iy = 0; iy < gridX; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < gridY; ix++)
 				{
-					_indices.push_back(ix + gridX1 * iy);
-					_indices.push_back(ix + gridX1 * (iy + 1));
-					_indices.push_back(ix + gridX1 * (iy + 1) + 1);
+					indices.push_back(ix + gridX1 * iy);
+					indices.push_back(ix + gridX1 * (iy + 1));
+					indices.push_back(ix + gridX1 * (iy + 1) + 1);
 
-					_indices.push_back(ix + gridX1 * iy);
-					_indices.push_back(ix + gridX1 * (iy + 1) + 1);
-					_indices.push_back(ix + gridX1 * iy + 1);
+					indices.push_back(ix + gridX1 * iy);
+					indices.push_back(ix + gridX1 * (iy + 1) + 1);
+					indices.push_back(ix + gridX1 * iy + 1);
 				}
 			}
 
+			this->setIndicesArray(std::move(indices));
 			this->computeVertexNormals();
 			this->computeTangents();
 			this->computeBoundingBox();
@@ -731,6 +754,7 @@ namespace octoon
 		{
 			this->clear();
 
+			std::vector<math::uint1> indices;
 			std::vector<std::uint32_t> vertices;
 
 			for (std::uint32_t y = 0; y <= heightSegments; y++)
@@ -764,29 +788,30 @@ namespace octoon
 
 					if (math::abs((_vertices)[v2].y) == radius)
 					{
-						_indices.push_back(v2);
-						_indices.push_back(v3);
-						_indices.push_back(v4);
+						indices.push_back(v2);
+						indices.push_back(v3);
+						indices.push_back(v4);
 					}
 					else if (math::abs((_vertices)[v3].y) == radius)
 					{
-						_indices.push_back(v2);
-						_indices.push_back(v1);
-						_indices.push_back(v3);
+						indices.push_back(v2);
+						indices.push_back(v1);
+						indices.push_back(v3);
 					}
 					else
 					{
-						_indices.push_back(v2);
-						_indices.push_back(v3);
-						_indices.push_back(v4);
+						indices.push_back(v2);
+						indices.push_back(v3);
+						indices.push_back(v4);
 
-						_indices.push_back(v2);
-						_indices.push_back(v1);
-						_indices.push_back(v3);
+						indices.push_back(v2);
+						indices.push_back(v1);
+						indices.push_back(v3);
 					}
 				}
 			}
 
+			this->setIndicesArray(std::move(indices));
 			this->computeTangents();
 			this->computeBoundingBox();
 		}
@@ -865,15 +890,17 @@ namespace octoon
 				_texcoords[0].emplace_back((v.x / radius + 1), (v.y / radius + 1) / 2);
 			}
 
+			math::uint1s indices;
+
 			for (std::uint32_t i = 2; i <= segments + 1; i++)
 			{
 				std::uint32_t v1 = i;
 				std::uint32_t v2 = 0;
 				std::uint32_t v3 = i + 1;
 
-				_indices.push_back(v1);
-				_indices.push_back(v2);
-				_indices.push_back(v3);
+				indices.push_back(v1);
+				indices.push_back(v2);
+				indices.push_back(v3);
 			}
 
 			for (std::uint32_t i = 2; i <= segments + 1; i++)
@@ -882,11 +909,12 @@ namespace octoon
 				std::uint32_t v2 = 1;
 				std::uint32_t v3 = i + 1;
 
-				_indices.push_back(v3);
-				_indices.push_back(v2);
-				_indices.push_back(v1);
+				indices.push_back(v3);
+				indices.push_back(v2);
+				indices.push_back(v1);
 			}
 
+			this->setIndicesArray(indices);
 			this->computeTangents();
 			this->computeBoundingBox();
 		}
@@ -949,7 +977,6 @@ namespace octoon
 					continue;
 
 				maxVertices += mesh->getNumVertices();
-				maxIndices += mesh->getNumIndices();
 
 				hasVertices |= !mesh->getVertexArray().empty();
 				hasNormal |= !mesh->getNormalArray().empty();
@@ -996,7 +1023,6 @@ namespace octoon
 			}
 
 			std::size_t offsetVertices = 0;
-			std::size_t offsetIndices = 0;
 
 			for (std::size_t i = 0; i < numInstance; i++)
 			{
@@ -1017,7 +1043,6 @@ namespace octoon
 				}
 
 				offsetVertices += mesh->getNumVertices();
-				offsetIndices += mesh->getNumIndices();
 			}
 
 			this->computeBoundingBox();
@@ -1045,27 +1070,30 @@ namespace octoon
 			float3s changeVertex;
 			float3s changeNormal;
 
-			for (auto& it : _indices)
+			for (auto& indices : this->_indices)
 			{
-				const Vector3& v = (_vertices)[it];
-				const Vector3& n = (_normals)[it];
-
-				float vkey = math::hash_float(v.x, v.y, v.z);
-				float nkey = math::hash_float(n.z, n.y, n.x);
-
-				std::uint32_t value = vectorMap[std::make_pair(vkey, nkey)];
-				if (value == 0)
+				for (auto& it : indices)
 				{
-					changeVertex.push_back(v);
-					changeNormal.push_back(n);
+					const Vector3& v = (_vertices)[it];
+					const Vector3& n = (_normals)[it];
 
-					math::uint1 size = (math::uint1)changeVertex.size();
-					it = size - 1;
-					vectorMap[std::make_pair(vkey, nkey)] = size;
-				}
-				else
-				{
-					it = value - 1;
+					float vkey = math::hash_float(v.x, v.y, v.z);
+					float nkey = math::hash_float(n.z, n.y, n.x);
+
+					std::uint32_t value = vectorMap[std::make_pair(vkey, nkey)];
+					if (value == 0)
+					{
+						changeVertex.push_back(v);
+						changeNormal.push_back(n);
+
+						math::uint1 size = (math::uint1)changeVertex.size();
+						it = size - 1;
+						vectorMap[std::make_pair(vkey, nkey)] = size;
+					}
+					else
+					{
+						it = value - 1;
+					}
 				}
 			}
 
@@ -1074,31 +1102,36 @@ namespace octoon
 		}
 
 		void
-		Mesh::computeFaceNormals(float3s& faceNormals) noexcept
+		Mesh::computeFaceNormals(std::vector<math::float3s>& faceNormals) noexcept
 		{
-			assert(!_vertices.empty() && !_indices.empty());
+			assert(!_vertices.empty());
 
 			faceNormals.resize(_indices.size());
 
-			std::size_t size = _indices.size();
-			for (std::size_t i = 0; i < size; i += 3)
+			for (std::size_t i = 0; i < _indices.size(); i += 3)
 			{
-				std::size_t f1 = _indices[i];
-				std::size_t f2 = _indices[i + 1];
-				std::size_t f3 = _indices[i + 2];
+				auto& indices = _indices[i];
+				faceNormals[i].resize(indices.size());
 
-				const Vector3& a = _vertices[f1];
-				const Vector3& b = _vertices[f2];
-				const Vector3& c = _vertices[f3];
+				for (std::size_t j = 0; j < _indices[i].size(); j += 3)
+				{
+					std::size_t f1 = indices[j];
+					std::size_t f2 = indices[j + 1];
+					std::size_t f3 = indices[j + 2];
 
-				Vector3 edge1 = c - b;
-				Vector3 edge2 = a - b;
+					const Vector3& a = _vertices[f1];
+					const Vector3& b = _vertices[f2];
+					const Vector3& c = _vertices[f3];
 
-				Vector3 normal = math::normalize(math::cross(edge1, edge2));
+					Vector3 edge1 = c - b;
+					Vector3 edge2 = a - b;
 
-				faceNormals[i] = normal;
-				faceNormals[i + 1] = normal;
-				faceNormals[i + 2] = normal;
+					Vector3 normal = math::normalize(math::cross(edge1, edge2));
+
+					faceNormals[i][j] = normal;
+					faceNormals[i][j + 1] = normal;
+					faceNormals[i][j + 2] = normal;
+				}
 			}
 		}
 
@@ -1131,24 +1164,27 @@ namespace octoon
 			{
 				std::memset(_normals.data(), 0, _normals.size() * sizeof(float3));
 
-				for (std::size_t i = 0; i < _indices.size(); i += 3)
+				for (auto& indices : _indices)
 				{
-					std::uint32_t f1 = (_indices)[i];
-					std::uint32_t f2 = (_indices)[i + 1];
-					std::uint32_t f3 = (_indices)[i + 2];
+					for (std::size_t i = 0; i < indices.size(); i += 3)
+					{
+						std::uint32_t f1 = indices[i];
+						std::uint32_t f2 = indices[i + 1];
+						std::uint32_t f3 = indices[i + 2];
 
-					auto& a = _vertices.at(f1);
-					auto& b = _vertices.at(f2);
-					auto& c = _vertices.at(f3);
+						auto& a = _vertices.at(f1);
+						auto& b = _vertices.at(f2);
+						auto& c = _vertices.at(f3);
 
-					auto edge1 = c - b;
-					auto edge2 = a - b;
+						auto edge1 = c - b;
+						auto edge2 = a - b;
 
-					auto n(math::normalize(math::cross(edge1, edge2)));
+						auto n(math::normalize(math::cross(edge1, edge2)));
 
-					_normals[f1] += n;
-					_normals[f2] += n;
-					_normals[f3] += n;
+						_normals[f1] += n;
+						_normals[f2] += n;
+						_normals[f3] += n;
+					}
 				}
 
 				for (auto& it : _normals)
@@ -1166,16 +1202,18 @@ namespace octoon
 			normal.resize(_vertices.size());
 			std::memset(normal.data(), 0, normal.size() * sizeof(float3));
 
-			std::size_t size = _indices.size();
-			for (size_t i = 0; i < size; i += 3)
+			for (auto& indices : _indices)
 			{
-				std::uint32_t a = (_indices)[i];
-				std::uint32_t b = (_indices)[i + 1];
-				std::uint32_t c = (_indices)[i + 2];
+				for (size_t i = 0; i < indices.size(); i += 3)
+				{
+					auto a = indices[i];
+					auto b = indices[i + 1];
+					auto c = indices[i + 2];
 
-				normal[a] += faceNormals[i];
-				normal[b] += faceNormals[i + 1];
-				normal[c] += faceNormals[i + 2];
+					normal[a] += faceNormals[i];
+					normal[b] += faceNormals[i + 1];
+					normal[c] += faceNormals[i + 2];
+				}
 			}
 
 			for (auto& it : normal)
@@ -1259,46 +1297,48 @@ namespace octoon
 			float3s tan1(_vertices.size(), float3::Zero);
 			float3s tan2(_vertices.size(), float3::Zero);
 
-			std::size_t size = _indices.size();
-			for (std::size_t i = 0; i < size; i += 3)
+			for (auto& indices : _indices)
 			{
-				std::uint32_t f1 = (_indices)[i];
-				std::uint32_t f2 = (_indices)[i + 1];
-				std::uint32_t f3 = (_indices)[i + 2];
-
-				auto& v1 = _vertices[f1];
-				auto& v2 = _vertices[f2];
-				auto& v3 = _vertices[f3];
-
-				auto& w1 = _texcoords[n][f1];
-				auto& w2 = _texcoords[n][f2];
-				auto& w3 = _texcoords[n][f3];
-
-				auto x1 = v2.x - v1.x;
-				auto x2 = v3.x - v1.x;
-				auto y1 = v2.y - v1.y;
-				auto y2 = v3.y - v1.y;
-				auto z1 = v2.z - v1.z;
-				auto z2 = v3.z - v1.z;
-
-				auto s1 = w2.x - w1.x;
-				auto s2 = w3.x - w1.x;
-				auto t1 = w2.y - w1.y;
-				auto t2 = w3.y - w1.y;
-
-				auto r = 1.0f / (s1 * t2 - s2 * t1);
-				if (!std::isinf(r))
+				for (std::size_t i = 0; i < indices.size(); i += 3)
 				{
-					float3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-					float3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+					std::uint32_t f1 = indices[i];
+					std::uint32_t f2 = indices[i + 1];
+					std::uint32_t f3 = indices[i + 2];
 
-					tan1[f1] += sdir;
-					tan1[f2] += sdir;
-					tan1[f3] += sdir;
+					auto& v1 = _vertices[f1];
+					auto& v2 = _vertices[f2];
+					auto& v3 = _vertices[f3];
 
-					tan2[f1] += tdir;
-					tan2[f2] += tdir;
-					tan2[f3] += tdir;
+					auto& w1 = _texcoords[n][f1];
+					auto& w2 = _texcoords[n][f2];
+					auto& w3 = _texcoords[n][f3];
+
+					auto x1 = v2.x - v1.x;
+					auto x2 = v3.x - v1.x;
+					auto y1 = v2.y - v1.y;
+					auto y2 = v3.y - v1.y;
+					auto z1 = v2.z - v1.z;
+					auto z2 = v3.z - v1.z;
+
+					auto s1 = w2.x - w1.x;
+					auto s2 = w3.x - w1.x;
+					auto t1 = w2.y - w1.y;
+					auto t2 = w3.y - w1.y;
+
+					auto r = 1.0f / (s1 * t2 - s2 * t1);
+					if (!std::isinf(r))
+					{
+						float3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+						float3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+
+						tan1[f1] += sdir;
+						tan1[f2] += sdir;
+						tan1[f3] += sdir;
+
+						tan2[f1] += tdir;
+						tan2[f2] += tdir;
+						tan2[f3] += tdir;
+					}
 				}
 			}
 

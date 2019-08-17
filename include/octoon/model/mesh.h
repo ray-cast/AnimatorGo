@@ -30,7 +30,7 @@ namespace octoon
 			void setTangentArray(const math::float4s& array) noexcept;
 			void setTexcoordArray(const math::float2s& array, std::uint8_t n = 0) noexcept;
 			void setWeightArray(const VertexWeights& array) noexcept;
-			void setIndicesArray(const math::uint1s& array) noexcept;
+			void setIndicesArray(const math::uint1s& array, std::size_t n = 0) noexcept;
 			void setBindposes(const math::float4x4s& array) noexcept;
 
 			void setVertexArray(math::float3s&& array) noexcept;
@@ -39,7 +39,7 @@ namespace octoon
 			void setTangentArray(math::float4s&& array) noexcept;
 			void setTexcoordArray(math::float2s&& array, std::uint8_t n = 0) noexcept;
 			void setWeightArray(VertexWeights&& array) noexcept;
-			void setIndicesArray(math::uint1s&& array) noexcept;
+			void setIndicesArray(math::uint1s&& array, std::size_t n = 0) noexcept;
 			void setBindposes(math::float4x4s&& array) noexcept;
 
 			math::float3s& getVertexArray() noexcept;
@@ -48,7 +48,7 @@ namespace octoon
 			math::float4s& getColorArray() noexcept;
 			math::float2s& getTexcoordArray(std::uint8_t n = 0) noexcept;
 			VertexWeights& getWeightArray() noexcept;
-			math::uint1s& getIndicesArray() noexcept;
+			math::uint1s& getIndicesArray(std::size_t n = 0) noexcept;
 			math::float4x4s& getBindposes() noexcept;
 
 			const math::float3s& getVertexArray() const noexcept;
@@ -57,13 +57,13 @@ namespace octoon
 			const math::float4s& getColorArray() const noexcept;
 			const math::float2s& getTexcoordArray(std::uint8_t n = 0) const noexcept;
 			const VertexWeights& getWeightArray() const noexcept;
-			const math::uint1s& getIndicesArray() const noexcept;
+			const math::uint1s& getIndicesArray(std::size_t n = 0) const noexcept;
 
 			const Bones& getBoneArray(const Bones& array) const noexcept;
 			const math::float4x4s& getBindposes() const noexcept;
 
 			std::size_t getNumVertices() const noexcept;
-			std::size_t getNumIndices() const noexcept;
+			std::size_t getNumSubsets() const noexcept;
 			std::size_t getTexcoordNums() const noexcept;
 
 			void makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
@@ -85,7 +85,7 @@ namespace octoon
 
 			void mergeVertices() noexcept;
 
-			void computeFaceNormals(math::float3s& faceNormals) noexcept;
+			void computeFaceNormals(std::vector<math::float3s>& faceNormals) noexcept;
 			void computeVertexNormals() noexcept;
 			void computeVertexNormals(const math::float3s& faceNormals) noexcept;
 			void computeVertexNormals(std::size_t width, std::size_t height) noexcept;
@@ -108,7 +108,7 @@ namespace octoon
 			math::float4s _tangents;
 			math::float4x4s _bindposes;
 
-			math::uint1s _indices;
+			std::vector<math::uint1s> _indices;
 
 			Bones _bones;
 			VertexWeights _weights;

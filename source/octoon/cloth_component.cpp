@@ -398,7 +398,7 @@ namespace octoon
 			}
 
 			std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
-			for (int i = 0; i < fabric->getNumPhases(); i++)
+			for (std::uint16_t i = 0; i < fabric->getNumPhases(); i++)
 			{
 				phases[i].mPhaseIndex = i;
 				phases[i].mStiffness = 1.0f;

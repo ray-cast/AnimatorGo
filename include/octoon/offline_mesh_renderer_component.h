@@ -12,11 +12,14 @@ namespace octoon
 		OctoonDeclareSubClass(OfflineMeshRendererComponent, RenderComponent)
 	public:
 		OfflineMeshRendererComponent() noexcept;
+		OfflineMeshRendererComponent(model::Materials&& material) noexcept;
 		OfflineMeshRendererComponent(model::MaterialPtr&& material) noexcept;
+		OfflineMeshRendererComponent(const model::Materials& material) noexcept;
 		OfflineMeshRendererComponent(const model::MaterialPtr& material) noexcept;
 		virtual ~OfflineMeshRendererComponent() noexcept;
 
 		virtual void uploadMeshData(const model::Mesh& mesh) noexcept;
+		virtual void uploadMaterialData(const model::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -24,24 +27,20 @@ namespace octoon
 		virtual void onActivate() noexcept override;
 		virtual void onDeactivate() noexcept override;
 
-		virtual void onMoveBefore() noexcept override;
 		virtual void onMoveAfter() noexcept override;
 
 		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
-		virtual void onMaterialReplace(const model::MaterialPtr& material) noexcept override;
+		virtual void onMaterialReplace(const model::Materials& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
-
-	private:
-		void uploadMatData(const model::Material& mat) noexcept;
 
 	private:
 		OfflineMeshRendererComponent(const OfflineMeshRendererComponent&) = delete;
 		OfflineMeshRendererComponent& operator=(const OfflineMeshRendererComponent&) = delete;
 
 	private:
-		void* rprShape_;
-		void* rprMaterial_;
+		std::vector<void*> shapes_;
+		std::vector<void*> materials_;
 	};
 }
 

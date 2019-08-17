@@ -178,12 +178,13 @@ namespace octoon
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
+					object->onRenderBefore(*camera);
+
+				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
 					auto geometry = object->downcast<video::Geometry>();
 					if (!geometry)
 						continue;
-
-					geometry->onRenderBefore(*camera);
 
 					auto material = geometry->getMaterial();
 					if (!material)
@@ -208,9 +209,10 @@ namespace octoon
 						else
 							context.draw(geometry->getNumVertices(), 1, 0, 0);
 					}
-
-					geometry->onRenderAfter(*camera);
 				}
+
+				for (auto& object : video::RenderScene::instance()->getRenderObjects())
+					object->onRenderAfter(*camera);
 
 				camera->onRenderAfter(*camera);
 

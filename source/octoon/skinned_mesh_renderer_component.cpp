@@ -136,10 +136,11 @@ namespace octoon
 		auto mesh = runtime::any_cast<model::MeshPtr>(data_);
 		if (mesh)
 		{
-			mesh_ = skinnedMesh_;
+			mesh_ = mesh;
 			skinnedMesh_ = mesh->clone();
 		}
 
+		this->uploadMeshData(*mesh_);
 		needUpdate_ = true;
 	}
 

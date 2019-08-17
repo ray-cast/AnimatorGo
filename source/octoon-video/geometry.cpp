@@ -21,6 +21,7 @@ namespace octoon
 
 		Geometry::~Geometry() noexcept
 		{
+			this->setActive(false);
 		}
 
 		void

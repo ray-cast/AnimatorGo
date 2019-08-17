@@ -19,36 +19,74 @@ namespace octoon
 		this->setMaterial(material, sharedMaterial);
 	}
 
+	OfflineRenderComponent::OfflineRenderComponent(model::Materials&& material, bool sharedMaterial) noexcept
+	{
+		this->setMaterials(std::move(material), sharedMaterial);
+	}
+
+	OfflineRenderComponent::OfflineRenderComponent(const model::Materials& material, bool sharedMaterial) noexcept
+	{
+		this->setMaterials(material, sharedMaterial);
+	}
+
 	OfflineRenderComponent::~OfflineRenderComponent() noexcept
 	{
 	}
 
 	void
-	OfflineRenderComponent::setMaterial(model::MaterialPtr&& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::setMaterial(model::MaterialPtr&& material, std::size_t n, bool sharedMaterial) noexcept
 	{
-		if (material_ != material)
+		if (materials_.size() <= n)
+			materials_.resize(n + 1);
+
+		if (materials_[n] != material)
 		{
-			material_ = std::move(material);
+			materials_[n] = std::move(material);
 			isSharedMaterial_ = sharedMaterial;
-			this->onMaterialReplace(material_);
+			this->onMaterialReplace(materials_);
 		}
 	}
 
 	void
-	OfflineRenderComponent::setMaterial(const model::MaterialPtr& material, bool sharedMaterial) noexcept
+	OfflineRenderComponent::setMaterial(const model::MaterialPtr& material, std::size_t n, bool sharedMaterial) noexcept
 	{
-		if (material_ != material)
+		if (materials_.size() <= n)
+			materials_.resize(n + 1);
+
+		if (materials_[n] != material)
 		{
-			material_ = material;
+			materials_[n] = material;
 			isSharedMaterial_ = sharedMaterial;
-			this->onMaterialReplace(material_);
+			this->onMaterialReplace(materials_);
 		}
 	}
 
 	const model::MaterialPtr&
-	OfflineRenderComponent::getMaterial() const noexcept
+	OfflineRenderComponent::getMaterial(std::size_t n) const noexcept
 	{
-		return material_;
+		return materials_[n];
+	}
+
+	void
+	OfflineRenderComponent::setMaterials(model::Materials&& material, bool sharedMaterial) noexcept
+	{
+		materials_ = std::move(material);
+		isSharedMaterial_ = sharedMaterial;
+		this->onMaterialReplace(materials_);
+	}
+
+	void
+	OfflineRenderComponent::setMaterials(const model::Materials& material, bool sharedMaterial) noexcept
+	{
+		materials_ = material;
+		isSharedMaterial_ = sharedMaterial;
+		this->onMaterialReplace(materials_);
+	}
+
+	const model::Materials&
+	OfflineRenderComponent::getMaterials() const noexcept
+	{
+		return materials_;
 	}
 
 	bool
@@ -63,18 +101,24 @@ namespace octoon
 		isSharedMaterial_ = sharedMaterial;
 	}
 
+	std::size_t
+	OfflineRenderComponent::getNumMaterials() const noexcept
+	{
+		return materials_.size();
+	}
+
 	void
 	OfflineRenderComponent::onPreRender() noexcept
 	{
 	}
-
+	
 	void
 	OfflineRenderComponent::onPostRender() noexcept
 	{
 	}
 
 	void
-	OfflineRenderComponent::onMaterialReplace(const model::MaterialPtr&) noexcept
+	OfflineRenderComponent::onMaterialReplace(const model::Materials&) noexcept
 	{
 	}
 }

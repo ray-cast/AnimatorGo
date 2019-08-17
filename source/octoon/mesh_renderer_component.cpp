@@ -24,6 +24,16 @@ namespace octoon
 		this->setMaterial(material);
 	}
 
+	MeshRendererComponent::MeshRendererComponent(model::Materials&& materials) noexcept
+	{
+		this->setMaterials(std::move(materials));
+	}
+
+	MeshRendererComponent::MeshRendererComponent(const model::Materials& materials) noexcept
+	{
+		this->setMaterials(materials);
+	}
+
 	MeshRendererComponent::~MeshRendererComponent() noexcept
 	{
 	}
@@ -33,7 +43,19 @@ namespace octoon
 	{
 		auto instance = std::make_shared<MeshRendererComponent>();
 		instance->setName(this->getName());
-		instance->setMaterial(this->getMaterial() ? (this->isSharedMaterial() ? this->getMaterial() : this->getMaterial()->clone()) : nullptr, this->isSharedMaterial());
+
+		if (!this->getMaterials().empty())
+		{
+			if (this->isSharedMaterial())
+				instance->setMaterials(this->getMaterials());
+			else
+			{
+				model::Materials materials;
+				for (auto& it : this->getMaterials())
+					materials.push_back(it->clone());
+				instance->setMaterials(std::move(materials));
+			}
+		}
 
 		return instance;
 	}
@@ -44,36 +66,18 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 		
-		geometry_ = std::make_shared<video::Geometry>();
-		geometry_->setActive(true);
-		geometry_->setOwnerListener(this);
-
+		this->onMaterialReplace(this->getMaterials());
 		this->onMoveAfter();
 		this->onLayerChangeAfter();
-		this->onMaterialReplace(this->getMaterial());
 	}
 
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
+		materials_.clear();
+		geometries_.clear();
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-
-		if (geometry_)
-		{
-			geometry_->setActive(false);
-			geometry_ = nullptr;
-		}
-	}
-
-	void
-	MeshRendererComponent::onMoveAfter() noexcept
-	{
-		if (geometry_)
-		{
-			auto transform = this->getComponent<TransformComponent>();
-			geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
-		}
 	}
 
 	void
@@ -86,36 +90,42 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMaterialReplace(const model::MaterialPtr& material) noexcept
+	MeshRendererComponent::onMaterialReplace(const model::Materials& material) noexcept
 	{
-		if (material)
-		{
-			this->uploadMaterialData(*material);
-			this->trySendMessage("octoon:mesh:get", nullptr);
-		}
+		this->uploadMaterialData(material);
+		this->trySendMessage("octoon:mesh:get");
+	}
+
+	void
+	MeshRendererComponent::onMoveAfter() noexcept
+	{
+		auto transform = this->getComponent<TransformComponent>();
+		for (auto& it : geometries_)
+			it->setTransform(transform->getTransform(), transform->getTransformInverse());
 	}
 
 	void
 	MeshRendererComponent::onLayerChangeAfter() noexcept
 	{
-		if (geometry_)
-			geometry_->setLayer(this->getGameObject()->getLayer());
+		auto layer = this->getGameObject()->getLayer();
+		for (auto& it : geometries_)
+			it->setLayer(layer);
 	}
 
 	void
 	MeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
-		if (!geometry_)
-			return;
-		
-		if (!geometry_->getMaterial())
-			return;
+		geometries_.clear();
 
 		auto& vertices = mesh.getVertexArray();
 		auto& texcoord = mesh.getTexcoordArray();
 		auto& normals = mesh.getNormalArray();
 
-		auto inputLayout = geometry_->getMaterial()->getPipeline()->getPipelineDesc().getInputLayout()->getInputLayoutDesc();
+		hal::GraphicsInputLayoutDesc inputLayout;
+		inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
+		inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
+		inputLayout.addVertexBinding(hal::GraphicsVertexBinding(0, inputLayout.getVertexSize()));
+
 		auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
 
 		std::uint32_t offset = 0;
@@ -165,28 +175,49 @@ namespace octoon
 		dataDesc.setStreamSize(data.size() * sizeof(float));
 		dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-		geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
-		geometry_->setNumVertices((std::uint32_t)vertices.size());
-		geometry_->setBoundingBox(mesh.getBoundingBox());
-
-		auto& indices = mesh.getIndicesArray();
-		if (!indices.empty())
+		for (std::size_t i = 0; i < mesh.getNumSubsets(); i++)
 		{
-			hal::GraphicsDataDesc indiceDesc;
-			indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
-			indiceDesc.setStream((std::uint8_t*)indices.data());
-			indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
-			indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+			auto geometry_ = std::make_shared<video::Geometry>();
+			geometry_->setActive(true);
+			geometry_->setOwnerListener(this);
+			geometry_->setVertexBuffer(video::RenderSystem::instance()->createGraphicsData(dataDesc));
+			geometry_->setNumVertices((std::uint32_t)vertices.size());
+			geometry_->setBoundingBox(mesh.getBoundingBox());
 
-			geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
-			geometry_->setNumIndices((std::uint32_t)indices.size());
+			auto& indices = mesh.getIndicesArray();
+			if (!indices.empty())
+			{
+				hal::GraphicsDataDesc indiceDesc;
+				indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
+				indiceDesc.setStream((std::uint8_t*)indices.data());
+				indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
+				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+
+				geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
+				geometry_->setNumIndices((std::uint32_t)indices.size());
+			}
+
+			geometries_.push_back(geometry_);
+		}
+
+		this->onMoveAfter();
+		this->onLayerChangeAfter();
+
+		for (std::size_t i = 0; i < materials_.size(); i++)
+		{
+			if (i < geometries_.size())
+				geometries_[i]->setMaterial(materials_[i]);
+			else
+				geometries_[i]->setMaterial(materials_.front());
 		}
 	}
 
 	void
-	MeshRendererComponent::uploadMaterialData(const model::Material& mat) noexcept
+	MeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
 	{
-		if (geometry_)
+		materials_.clear();
+
+		for (auto& mat : materials)
 		{
 			std::string name;
 			std::string path;
@@ -195,11 +226,11 @@ namespace octoon
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 ambient;
 
-			mat.get(MATKEY_NAME, name);
-			mat.get(MATKEY_PATH, path);
-			mat.get(MATKEY_TEXTURE_DIFFUSE, textureName);
-			mat.get(MATKEY_COLOR_DIFFUSE, base);
-			mat.get(MATKEY_COLOR_AMBIENT, ambient);
+			mat->get(MATKEY_NAME, name);
+			mat->get(MATKEY_PATH, path);
+			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
+			mat->get(MATKEY_COLOR_DIFFUSE, base);
+			mat->get(MATKEY_COLOR_AMBIENT, ambient);
 
 			auto material = std::make_shared<video::BasicMaterial>();
 			material->setBaseColor(math::float4(base, 1.0));
@@ -207,7 +238,15 @@ namespace octoon
 			if (!textureName.empty())
 				material->setTexture(GamePrefabs::instance()->createTexture(path + textureName));
 
-			geometry_->setMaterial(material);
+			materials_.push_back(material);
+		}
+
+		for (std::size_t i = 0; i < geometries_.size(); i++)
+		{
+			if (i < materials_.size())
+				geometries_[i]->setMaterial(materials_[i]);
+			else
+				geometries_[i]->setMaterial(materials_.front());
 		}
 	}
 }

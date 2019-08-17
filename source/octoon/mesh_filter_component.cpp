@@ -48,14 +48,6 @@ namespace octoon
 			if (mesh_->getBoundingBox().empty())
 				mesh_->computeBoundingBox();
 
-			if (mesh_->getIndicesArray().empty())
-			{
-				math::uint1s array;
-				for (std::size_t i = 0; i < mesh_->getVertexArray().size(); i++)
-					array.push_back(i);
-				mesh_->setIndicesArray(std::move(array));
-			}
-
 			isSharedMesh_ = sharedMesh;
 			this->uploadMeshData();
 		}
@@ -69,14 +61,6 @@ namespace octoon
 			mesh_ = mesh;
 			if (mesh_->getBoundingBox().empty())
 				mesh_->computeBoundingBox();
-
-			if (mesh_->getIndicesArray().empty())
-			{
-				math::uint1s array;
-				for (std::size_t i = 0; i < mesh_->getVertexArray().size(); i++)
-					array.push_back(i);
-				mesh_->setIndicesArray(std::move(array));
-			}
 
 			isSharedMesh_ = sharedMesh;
 			this->uploadMeshData();
@@ -126,7 +110,6 @@ namespace octoon
 	void
 	MeshFilterComponent::onMeshReplace() noexcept
 	{
-		if (this->getGameObject())
-			this->sendMessage("octoon:mesh:update", mesh_);
+		this->trySendMessage("octoon:mesh:update", mesh_);
 	}
 }

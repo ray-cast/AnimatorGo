@@ -126,7 +126,7 @@ namespace octoon
 				auto control = it->getControl();
 				if (control > 0.0f)
 				{
-					auto morph = it->downcast<SkinnedMorphComponent>();				
+					auto morph = it->downcast<SkinnedMorphComponent>();
 					auto& indices = morph->getIndices();
 					auto& offsets = morph->getOffsets();
 

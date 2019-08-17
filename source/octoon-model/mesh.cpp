@@ -328,12 +328,16 @@ namespace octoon
 			mesh->setVertexArray(this->getVertexArray());
 			mesh->setNormalArray(this->getNormalArray());
 			mesh->setColorArray(this->getColorArray());
-			mesh->setTexcoordArray(this->getTexcoordArray());
 			mesh->setWeightArray(this->getWeightArray());
 			mesh->setTangentArray(this->getTangentArray());
 			mesh->setBindposes(this->getBindposes());
-			mesh->setIndicesArray(this->getIndicesArray());
 			mesh->_boundingBox = this->_boundingBox;
+
+			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+				mesh->setTexcoordArray(this->getTexcoordArray());
+
+			for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+				mesh->setIndicesArray(this->getIndicesArray(i));
 
 			return mesh;
 		}

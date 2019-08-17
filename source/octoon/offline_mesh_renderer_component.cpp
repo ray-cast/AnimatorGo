@@ -49,7 +49,7 @@ namespace octoon
 			std::string path;
 			std::string textureName;
 
-			math::float3 base;
+			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 ambient;
 
 			mat.get(MATKEY_NAME, name);

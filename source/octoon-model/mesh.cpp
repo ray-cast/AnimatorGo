@@ -300,7 +300,13 @@ namespace octoon
 		}
 
 		const BoundingBox&
-		Mesh::getBoundingBox() const noexcept
+		Mesh::getBoundingBox(std::size_t n) const noexcept
+		{
+			return _boundingBoxs[n];
+		}
+
+		const BoundingBox&
+		Mesh::getBoundingBoxAll() const noexcept
 		{
 			return _boundingBox;
 		}
@@ -1392,7 +1398,16 @@ namespace octoon
 		Mesh::computeBoundingBox() noexcept
 		{
 			_boundingBox.reset();
-			_boundingBox.encapsulate(_vertices.data(), _vertices.size());
+			_boundingBoxs.resize(_indices.size());
+
+			for (std::size_t i = 0; i < _indices.size(); i++)
+			{
+				auto& indices = _indices[i];
+				for (auto& index : indices)
+					_boundingBoxs[i].encapsulate(_vertices[index]);
+
+				_boundingBox.encapsulate(_boundingBoxs[i]);
+			}
 		}
 	}
 }

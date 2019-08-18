@@ -3,6 +3,8 @@
 #include <octoon/game_listener.h>
 #include <octoon/game_component.h>
 #include <octoon/game_server.h>
+#include <octoon/game_base_features.h>
+#include <octoon/game_object_manager.h>
 
 namespace octoon
 {
@@ -62,6 +64,12 @@ namespace octoon
 		this->setActive(false);
 
 		GameSceneManager::instance()->_unsetScene(this);
+	}
+
+	std::size_t
+	GameScene::id() const noexcept
+	{
+		return instance_id_;
 	}
 
 	void
@@ -134,9 +142,21 @@ namespace octoon
 	}
 
 	std::size_t
-	GameScene::id() const noexcept
+	GameScene::raycastHit(const math::Raycast& ray, RaycastHit& hit) noexcept
 	{
-		return instance_id_;
+		auto feature = this->getFeature<GameBaseFeature>();
+		if (feature)
+			return feature->getGameObjectManager()->raycastHit(ray, hit);
+		return 0;
+	}
+
+	std::size_t
+	GameScene::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit) noexcept
+	{
+		auto feature = this->getFeature<GameBaseFeature>();
+		if (feature)
+			return feature->getGameObjectManager()->raycastHit(orgin, end, hit);
+		return 0;
 	}
 
 	void

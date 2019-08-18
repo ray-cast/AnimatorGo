@@ -46,6 +46,11 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
+				Vector3<T> center() const noexcept
+				{
+					return aabb_.center();
+				}
+
 				void reset() noexcept
 				{
 					sphere_.reset();
@@ -78,21 +83,21 @@ namespace octoon
 					sphere_.set(aabb_);
 				}
 
+				void encapsulate(const AABB<T>& aabb) noexcept
+				{
+					aabb_.encapsulate(aabb);
+					sphere_.set(aabb_);
+				}
+
 				void encapsulate(const Sphere<T>& sphere) noexcept
 				{
 					aabb_.encapsulate(sphere.aabb());
 					sphere_.set(aabb_);
 				}
 
-				void transform(const Matrix3x3<T>& m, const Vector3<T>& translate = Vector3<T>::Zero) noexcept
+				void encapsulate(const BoundingBox<T>& box) noexcept
 				{
-					aabb_.transform(m, translate);
-					sphere_.set(aabb_);
-				}
-
-				void transform(const Matrix4x4<T>& m) noexcept
-				{
-					aabb_.transform(m);
+					aabb_.encapsulate(box.aabb());
 					sphere_.set(aabb_);
 				}
 
@@ -132,27 +137,47 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Sphere<T>& sphere_) noexcept
+		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Sphere<T>& sphere) noexcept
 		{
-			return bound.sphere_().intersects(sphere_);
+			return intersects(bound.sphere(), sphere);
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::AABB<T>& aabb_) noexcept
+		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::AABB<T>& aabb) noexcept
 		{
-			return bound.sphere_().intersects(aabb_);
+			return intersects(bound.sphere(), aabb);
 		}
 
 		template<typename T>
 		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Vector3<T>& n, const T& dist) noexcept
 		{
-			return bound.sphere_().intersects(n, dist);
+			return intersects(bound.sphere(), n, dist);
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Vector3<T>& pt1, const detail::Vector3<T>& pt2) noexcept
+		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
 		{
-			return bound.sphere_().intersects(pt1, pt2);
+			return intersects(bound.sphere(), origin, normal);
+		}
+
+		template<typename T>
+		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Raycast<T>& ray) noexcept
+		{
+			return intersects(bound.sphere(), ray);
+		}
+
+		template<typename T>
+		inline detail::BoundingBox<T> transform(const detail::BoundingBox<T> bound, const detail::Matrix4x4<T>& m) noexcept
+		{
+			auto aabb = transform(bound.aabb(), m);
+			return detail::BoundingBox<T>(aabb.min, aabb.max);
+		}
+
+		template<typename T>
+		inline detail::BoundingBox<T> transform(const detail::BoundingBox<T> bound, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate) noexcept
+		{
+			auto aabb = transform(bound.aabb(), m);
+			return detail::BoundingBox<T>(aabb.min, aabb.max);
 		}
 	}
 }

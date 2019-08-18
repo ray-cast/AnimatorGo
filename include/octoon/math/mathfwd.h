@@ -42,6 +42,9 @@ namespace octoon
 			class Triangle;
 
 			template<typename T = float>
+			class Raycast;
+
+			template<typename T = float>
 			class BoundingBox;
 		}
 
@@ -56,6 +59,7 @@ namespace octoon
 		using AABB = detail::AABB<float>;
 		using Sphere = detail::Sphere<float>;
 		using Triangle = detail::Triangle<float>;
+		using Raycast = detail::Raycast<float>;
 		using BoundingBox = detail::BoundingBox<float>;
 
 		// float
@@ -65,6 +69,7 @@ namespace octoon
 		using Quaternionf = detail::Quaternion<float>;
 		using AABBf = detail::AABB<float>;
 		using Spheref = detail::Sphere<float>;
+		using Raycastf = detail::Raycast<float>;
 		using BoundingBoxf = detail::BoundingBox<float>;
 
 		// double
@@ -73,8 +78,9 @@ namespace octoon
 		using double4x4 = detail::Matrix4x4<double>;
 		using Quaterniond = detail::Quaternion<double>;
 		using AABBd = detail::AABB<double>;
-		using Sphered = detail::Sphere<float>;
-		using BoundingBoxd = detail::BoundingBox<float>;
+		using Sphered = detail::Sphere<double>;
+		using Raycastd = detail::Raycast<double>;
+		using BoundingBoxd = detail::BoundingBox<double>;
 
 		// char
 		using char1 = std::int8_t;

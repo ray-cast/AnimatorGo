@@ -17,6 +17,7 @@ SET(MATH_LIST
 	${HEADER_PATH}/trait.h
 	${HEADER_PATH}/AABB.h
 	${HEADER_PATH}/sphere.h
+	${HEADER_PATH}/raycast.h
 	${HEADER_PATH}/boundingbox.h
 	${HEADER_PATH}/hammersley.h
 	${HEADER_PATH}/montecarlo.h

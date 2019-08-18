@@ -45,7 +45,7 @@ namespace octoon
 		if (mesh_ != mesh)
 		{
 			mesh_ = std::move(mesh);
-			if (mesh_->getBoundingBox().empty())
+			if (mesh_->getBoundingBoxAll().empty())
 				mesh_->computeBoundingBox();
 
 			isSharedMesh_ = sharedMesh;
@@ -59,7 +59,7 @@ namespace octoon
 		if (mesh_ != mesh)
 		{
 			mesh_ = mesh;
-			if (mesh_->getBoundingBox().empty())
+			if (mesh_->getBoundingBoxAll().empty())
 				mesh_->computeBoundingBox();
 
 			isSharedMesh_ = sharedMesh;

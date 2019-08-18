@@ -1,4 +1,6 @@
 #include <octoon/game_object_manager.h>
+#include <octoon/mesh_filter_component.h>
+#include <octoon/transform_component.h>
 
 namespace octoon
 {
@@ -107,6 +109,57 @@ namespace octoon
 	GameObjectManager::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
 	{
 		dispatchEvents_[event].disconnect(listener);
+	}
+
+	std::size_t
+	GameObjectManager::raycastHit(const math::Raycast& ray, RaycastHit& hit) noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& object : instanceLists_)
+		{
+			if (!object)
+				continue;
+
+			auto meshFilter = object->getComponent<MeshFilterComponent>();
+			if (meshFilter)
+			{
+				auto mesh = meshFilter->getMesh();
+				if (!mesh)
+					continue;
+
+				auto transform = object->getComponent<TransformComponent>();
+				auto boundingBox = math::transform(mesh->getBoundingBoxAll(), transform->getTransform());
+
+				if (!math::intersects(boundingBox, ray))
+					continue;
+
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+				{
+					auto boundingBox = math::transform(mesh->getBoundingBox(i), transform->getTransform());
+					if (!math::intersects(boundingBox, ray))
+						continue;
+
+					float distance = math::sqrDistance(boundingBox.center(), ray.origin);
+					if (distance < hit.distance)
+					{
+						hit.object = object;
+						hit.mesh = i;
+						hit.distance = distance;
+
+						result++;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	std::size_t
+	GameObjectManager::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit) noexcept
+	{
+		return this->raycastHit(math::Raycast(orgin, end), hit);
 	}
 
 	void

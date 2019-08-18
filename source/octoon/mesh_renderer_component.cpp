@@ -184,7 +184,7 @@ namespace octoon
 			geometry_->setOwnerListener(this);
 			geometry_->setVertexBuffer(vbo);
 			geometry_->setNumVertices((std::uint32_t)vertices.size());
-			geometry_->setBoundingBox(mesh.getBoundingBox());
+			geometry_->setBoundingBox(mesh.getBoundingBox(i));
 
 			auto& indices = mesh.getIndicesArray(i);
 			if (!indices.empty())

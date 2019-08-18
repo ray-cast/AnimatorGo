@@ -2,6 +2,7 @@
 #define OCTOON_MATH_SPHERE_H_
 
 #include <octoon/math/AABB.h>
+#include <octoon/math/raycast.h>
 
 namespace octoon
 {
@@ -80,25 +81,25 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& n, T distance) noexcept
+		inline bool intersects(const detail::Sphere<T>& sphere, const detail::Vector3<T>& n, T distance) noexcept
 		{
-			T dist = dot(sphere_.center, n) - distance;
-			return std::abs(dist) <= sphere_.radius;
+			T dist = dot(sphere.center, n) - distance;
+			return std::abs(dist) <= sphere.radius;
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::Sphere<T>& sphere_, const detail::AABB<T>& aabb_) noexcept
+		inline bool intersects(const detail::Sphere<T>& sphere, const detail::AABB<T>& aabb_) noexcept
 		{
-			detail::Vector3<T> point = closest(aabb_, sphere_.center);
-			return sqrDistance(sphere_.center, point) < (sphere_.radius * sphere_.radius);
+			detail::Vector3<T> point = closest(aabb_, sphere.center);
+			return sqrDistance(sphere.center, point) < (sphere.radius * sphere.radius);
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
+		inline bool intersects(const detail::Sphere<T>& sphere, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
 		{
-			detail::Vector3<T> m = origin - sphere_.center;
+			detail::Vector3<T> m = origin - sphere.center;
 
-			auto c = length2(m) - sphere_.radius * sphere_.radius;
+			auto c = length2(m) - sphere.radius * sphere.radius;
 			if (c <= 0)
 				return true;
 
@@ -114,36 +115,42 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool contains(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& pt) noexcept
+		inline bool intersects(const detail::Sphere<T>& sphere, const detail::Raycast<T>& ray) noexcept
 		{
-			detail::Vector3<T> p = pt - sphere_.center;
+			return intersects(sphere, ray.origin, ray.normal);
+		}
 
-			if (p.x > sphere_.radius) { return false; }
-			if (p.y > sphere_.radius) { return false; }
-			if (p.z > sphere_.radius) { return false; }
+		template<typename T>
+		inline bool contains(const detail::Sphere<T>& sphere, const detail::Vector3<T>& pt) noexcept
+		{
+			detail::Vector3<T> p = pt - sphere.center;
+
+			if (p.x > sphere.radius) { return false; }
+			if (p.y > sphere.radius) { return false; }
+			if (p.z > sphere.radius) { return false; }
 
 			return true;
 		}
 
 		template<typename T>
-		inline T distance(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& pt) noexcept
+		inline T distance(const detail::Sphere<T>& sphere, const detail::Vector3<T>& pt) noexcept
 		{
-			return distance(pt, sphere_.center()) - sphere_.radius();
+			return distance(pt, sphere.center()) - sphere.radius();
 		}
 
 		template<typename T>
-		inline T sqrDistance(const detail::Sphere<T>& sphere_, const detail::Vector3<T>& pt) noexcept
+		inline T sqrDistance(const detail::Sphere<T>& sphere, const detail::Vector3<T>& pt) noexcept
 		{
-			return sqrDistance(pt, sphere_.center()) - sphere_.radius() * sphere_.radius();
+			return sqrDistance(pt, sphere.center()) - sphere.radius() * sphere.radius();
 		}
 
 		template<typename T>
-		inline detail::Vector3<T> closest(const detail::Sphere<T>& sphere_, const detail::Vector3<T> & pt) noexcept
+		inline detail::Vector3<T> closest(const detail::Sphere<T>& sphere, const detail::Vector3<T> & pt) noexcept
 		{
-			detail::Vector3<T>  d = sphere_.center - pt;
+			detail::Vector3<T>  d = sphere.center - pt;
 
 			T len = length(d);
-			T dist = len - sphere_.radius;
+			T dist = len - sphere.radius;
 
 			return pt + dist / len * d;
 		}

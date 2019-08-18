@@ -15,6 +15,8 @@ namespace octoon
 		GameScene(io::archivebuf& reader) noexcept;
 		~GameScene() noexcept;
 
+		std::size_t id() const noexcept;
+
 		void setActive(bool active) except;
 		bool getActive() const noexcept;
 
@@ -32,10 +34,11 @@ namespace octoon
 
 		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
 
+		std::size_t raycastHit(const math::Raycast& ray, struct RaycastHit& hit) noexcept;
+		std::size_t raycastHit(const math::float3& orgin, const math::float3& end, struct RaycastHit& hit) noexcept;
+
 		void load(const io::archivebuf& reader) except;
 		void save(io::archivebuf& write) except;
-
-		std::size_t id() const noexcept;
 
 		const GameObjectPtr& root() const noexcept;
 

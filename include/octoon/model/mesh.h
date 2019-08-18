@@ -93,7 +93,8 @@ namespace octoon
 			void computeTangentQuats(math::float4s& tangentQuat) const noexcept;
 			void computeBoundingBox() noexcept;
 
-			const math::BoundingBox& getBoundingBox() const noexcept;
+			const math::BoundingBox& getBoundingBoxAll() const noexcept;
+			const math::BoundingBox& getBoundingBox(std::size_t n) const noexcept;
 
 			void clear() noexcept;
 			MeshPtr clone() noexcept;
@@ -101,19 +102,19 @@ namespace octoon
 		private:
 			std::string _name;
 
+			Bones _bones;
+			VertexWeights _weights;
+
 			math::float3s _vertices;
 			math::float3s _normals;
 			math::float4s _colors;
 			math::float2s _texcoords[TEXTURE_ARRAY_COUNT];
 			math::float4s _tangents;
 			math::float4x4s _bindposes;
+			math::BoundingBox _boundingBox;
 
 			std::vector<math::uint1s> _indices;
-
-			Bones _bones;
-			VertexWeights _weights;
-
-			math::BoundingBox _boundingBox;
+			std::vector<math::BoundingBox> _boundingBoxs;
 		};
 
 		inline Mesh makeCircle(float radius, std::uint32_t segments, float thetaStart = 0, float thetaLength = math::PI_2) noexcept

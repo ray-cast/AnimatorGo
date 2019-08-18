@@ -588,6 +588,7 @@ namespace octoon
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
+				material->set(MATKEY_COLOR_EDGE, it.EdgeColor);
 				material->set(MATKEY_OPACITY, it.Opacity);
 				material->set(MATKEY_SHININESS, it.Shininess);
 

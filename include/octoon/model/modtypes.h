@@ -31,6 +31,7 @@
 #define MATKEY_COLOR_SPHEREMAP    "$clr.spheremap"
 #define MATKEY_COLOR_TRANSPARENT  "$clr.transparent"
 #define MATKEY_COLOR_REFLECTIVE   "$clr.reflective"
+#define MATKEY_COLOR_EDGE		  "$clr.edge"
 
 #define MATKEY_TEXTURE_DIFFUSE	    "$tex.diffuse"
 #define MATKEY_TEXTURE_SPECULAR	    "$tex.specular"

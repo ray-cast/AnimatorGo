@@ -11,11 +11,6 @@ namespace octoon
 {
 	OctoonImplementSubClass(OfflineMeshRendererComponent, OfflineRenderComponent, "OfflineMeshRenderer")
 
-	float ShininessToSmoothness(float spec)
-	{
-		return 1.0f - std::pow(std::max(0.0f, 2.0f / (spec + 2.0f)), 0.125f);
-	}
-
 	OfflineMeshRendererComponent::OfflineMeshRendererComponent() noexcept
 	{
 	}
@@ -133,30 +128,38 @@ namespace octoon
 		{
 			std::string name;
 			std::string path;
+			std::string normalName;
 			std::string textureName;
 
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 specular = math::float3::One;
 			math::float3 ambient;
+			math::float4 metalness = math::float4::Zero;
 			
 			float opacity = 1.0f;
 			float shininess = 10.0f;
 			
 			mat->get(MATKEY_NAME, name);
 			mat->get(MATKEY_PATH, path);
+			mat->get(MATKEY_TEXTURE_SPECULAR, normalName);
 			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
 			mat->get(MATKEY_COLOR_DIFFUSE, base);
 			mat->get(MATKEY_COLOR_AMBIENT, ambient);			
 			mat->get(MATKEY_COLOR_SPECULAR, specular);
+			mat->get(MATKEY_COLOR_EDGE, metalness);
 			mat->get(MATKEY_OPACITY, opacity);
 			mat->get(MATKEY_SHININESS, shininess);
 
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
 
-			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION;
+			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_REFLECTION;
 			if (opacity < 1.0f)
 				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
+			if (!normalName.empty())
+				layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
+			if (metalness.x == 0.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
 
 			rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
 
@@ -180,12 +183,23 @@ namespace octoon
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
 			{
-				float roughness = 1.0f - ShininessToSmoothness(shininess);
+				float roughness = 1.0f - math::saturate(shininess / 1000.0f);
 
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", 0.0f, 0.0f, 0.0f, 0.0f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);				
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+
+				if (metalness.x > 0.0f)
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", metalness.x, 0.0f, 0.0f, 0.0f);
+				}
+				else
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
+				}
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
@@ -193,6 +207,14 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+			}
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
+			{
+				rpr_material_node textureNode;
+				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
+				rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + normalName));
+				rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
 			}
 
 			materials_.push_back(rprMaterial);

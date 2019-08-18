@@ -28,7 +28,11 @@ namespace octoon
 		void* getContext() const noexcept;
 		void* getMaterialSystem() const noexcept;
 
-		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
+		hal::GraphicsFramebufferPtr getColorFramebuffer() const noexcept;
+
+		void readColorFramebuffer(void* dst) noexcept;
+		void readNormalFramebuffer(void* dst) noexcept;
+		void readAlbedoFramebuffer(void* dst) noexcept;
 
 	private:
 		void onActivate() except override;
@@ -41,21 +45,23 @@ namespace octoon
 		void onFramebufferChange(std::uint32_t w, std::uint32_t h) except;
 
 	private:
+		void cleanupFramebuffers() noexcept;
+
+	private:
 		bool dirty_;
 
 		void* rprScene_;
 		void* rprContext_;
 		void* rprMaterialSystem_;
-		void* rprDenoise_;
 
-		void* rprFramebuffer_;
 		void* colorFramebuffer_;
 		void* normalFramebuffer_;
-		void* positionFramebuffer_;
 		void* albedoFramebuffer_;
-		void* objectIdFramebuffer_;
 
 		hal::GraphicsFramebufferPtr framebuffer_;
+
+		std::uint32_t spp_;
+		std::uint32_t sppCounter_;
 
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;

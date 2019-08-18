@@ -78,9 +78,6 @@ namespace octoon
 		float orthoWidth_;
 		float sensorSize_;
 
-		std::uint32_t spp_;
-		std::uint32_t sppCounter_;
-
 		math::float4 clearColor_;
 	};
 }

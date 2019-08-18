@@ -2452,6 +2452,19 @@ extern "C" {
 
     extern RPR_API_ENTRY rpr_int rprFrameBufferSaveToFile(rpr_framebuffer frame_buffer, rpr_char const * file_path);
 
+	    /** @brief bitblit frame buffer to memory
+    *
+    *   Possible error codes:
+    *      RPR_ERROR_OUT_OF_SYSTEM_MEMORY
+    *      RPR_ERROR_OUT_OF_VIDEO_MEMORY
+    *
+    *  @param  frame_buffer Frame buffer to save
+    *  @param  path         Path to file
+    *  @return              RPR_SUCCESS in case of success, error code otherwise
+    */
+
+    extern RPR_API_ENTRY rpr_int rprFrameBufferBitblit(rpr_framebuffer frame_buffer, void* memory);
+
 
     /** @brief Resolve framebuffer
     *

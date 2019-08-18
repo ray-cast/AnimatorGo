@@ -40,7 +40,7 @@ namespace octoon
 		camera_  = camera;
 	}
 	
-	const GameObjectPtr&
+	GameObjectPtr
 	H264Component::getCamera() const noexcept
 	{
 		return camera_.lock();

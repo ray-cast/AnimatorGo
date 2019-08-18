@@ -2160,6 +2160,26 @@ rpr_int rprFrameBufferSaveToFile(rpr_framebuffer in_frame_buffer, rpr_char const
     return RPR_SUCCESS;
 }
 
+rpr_int rprFrameBufferBitblit(rpr_framebuffer in_frame_buffer, void* memory)
+{
+	//cast
+	FramebufferObject* buff = WrapObject::Cast<FramebufferObject>(in_frame_buffer);
+	if (!buff)
+	{
+		return RPR_ERROR_INVALID_PARAMETER;
+	}
+
+	try
+	{
+		buff->GetData(memory);
+	}
+	catch (Exception& e)
+	{
+		return e.m_error;
+	}
+	return RPR_SUCCESS;
+}
+
 rpr_int rprContextResolveFrameBuffer(rpr_context context, rpr_framebuffer src_frame_buffer, rpr_framebuffer dst_frame_buffer, rpr_bool normalizeOnly)
 {
     UNIMLEMENTED_FUNCTION

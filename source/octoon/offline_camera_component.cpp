@@ -17,8 +17,6 @@ namespace octoon
 		, focusDistance_(1.0f)
 		, fStop_(0.0f)
 		, clearColor_(0.8f, 0.9f, 1.0f, 1.0)
-		, spp_(500)
-		, sppCounter_(0)
 	{
 	}
 
@@ -202,7 +200,7 @@ namespace octoon
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
-			return feature->getFramebuffer();
+			return feature->getColorFramebuffer();
 		return nullptr;
 	}
 
@@ -318,13 +316,6 @@ namespace octoon
 	void
 	OfflineCameraComponent::onPostRender() noexcept
 	{
-		sppCounter_ += 1;
-
-		if (sppCounter_ >= spp_)
-		{
-			this->sendMessage("octoon:offline:finish");
-			sppCounter_ = 0;
-		}
 	}
 
 	void

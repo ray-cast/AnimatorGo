@@ -14,7 +14,7 @@ namespace octoon
 		H264Component(const GameObjectPtr& camera) noexcept;
 
 		void setCamera(const GameObjectPtr& camera) noexcept;
-		const GameObjectPtr& getCamera() const noexcept;
+		GameObjectPtr getCamera() const noexcept;
 
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;

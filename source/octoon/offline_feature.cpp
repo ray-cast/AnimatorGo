@@ -13,6 +13,7 @@
 
 #include <RadeonProRender.h>
 #include <RadeonProRender_GL.h>
+#include <RadeonProRender_CL.h>
 
 #include <GL/GL.h>
 
@@ -26,13 +27,11 @@ namespace octoon
 		, rprContext_(nullptr)
 		, rprScene_(nullptr)
 		, rprMaterialSystem_(nullptr)
-		, rprFramebuffer_(nullptr)
-		, rprDenoise_(nullptr)
 		, colorFramebuffer_(nullptr)
 		, normalFramebuffer_(nullptr)
-		, positionFramebuffer_(nullptr)
-		, objectIdFramebuffer_(nullptr)
 		, albedoFramebuffer_(nullptr)
+		, spp_(0)
+		, sppCounter_(0)
 	{
 	}
 
@@ -110,9 +109,41 @@ namespace octoon
 	}
 
 	hal::GraphicsFramebufferPtr
-	OfflineFeature::getFramebuffer() const noexcept
+	OfflineFeature::getColorFramebuffer() const noexcept
 	{
 		return this->framebuffer_;
+	}
+
+	void
+	OfflineFeature::readColorFramebuffer(void* dst) noexcept
+	{
+		if (colorFramebuffer_)
+			rprFrameBufferBitblit(colorFramebuffer_, dst);
+	}
+
+	void
+	OfflineFeature::readNormalFramebuffer(void* dst) noexcept
+	{
+		if (normalFramebuffer_)
+			rprFrameBufferBitblit(normalFramebuffer_, dst);
+	}
+
+	void
+	OfflineFeature::readAlbedoFramebuffer(void* dst) noexcept
+	{
+		if (albedoFramebuffer_)
+			rprFrameBufferBitblit(albedoFramebuffer_, dst);
+	}
+
+	void
+	OfflineFeature::cleanupFramebuffers() noexcept
+	{
+		if (this->colorFramebuffer_)
+			rprObjectDelete(this->colorFramebuffer_);
+		if (this->normalFramebuffer_)
+			rprObjectDelete(this->normalFramebuffer_);
+		if (this->albedoFramebuffer_)
+			rprObjectDelete(this->albedoFramebuffer_);
 	}
 
 	void
@@ -123,10 +154,8 @@ namespace octoon
 		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		rprContextCreateScene(rprContext_, &rprScene_);
 		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
-		//rprContextCreatePostEffect(rprContext_, RPR_POST_EFFECT_WAVELET_DENOISER, &rprDenoise_);
 
 		rprContextSetScene(rprContext_, rprScene_);
-		//rprContextAttachPostEffect(rprContext_, rprDenoise_);
 
 		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}
@@ -135,23 +164,12 @@ namespace octoon
 	OfflineFeature::onDeactivate() noexcept
 	{
 		this->removeMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
+		this->cleanupFramebuffers();
 
 		if (this->rprMaterialSystem_)
 		{
 			rprObjectDelete(this->rprMaterialSystem_);
 			this->rprMaterialSystem_ = nullptr;
-		}
-
-		if (this->rprFramebuffer_)
-		{
-			rprObjectDelete(this->rprFramebuffer_);
-			this->rprFramebuffer_ = nullptr;
-		}
-
-		if (this->rprDenoise_)
-		{
-			rprObjectDelete(this->rprDenoise_);
-			this->rprDenoise_ = nullptr;
 		}
 
 		if (this->rprScene_)
@@ -217,28 +235,30 @@ namespace octoon
 
 			if (this->dirty_)
 			{
-				if (this->rprFramebuffer_)
-					rprFrameBufferClear(this->rprFramebuffer_);
-
 				if (this->colorFramebuffer_)
 					rprFrameBufferClear(this->colorFramebuffer_);
 
 				if (this->normalFramebuffer_)
 					rprFrameBufferClear(this->normalFramebuffer_);
 
-				if (this->positionFramebuffer_)
-					rprFrameBufferClear(this->positionFramebuffer_);
-
-				if (this->objectIdFramebuffer_)
-					rprFrameBufferClear(this->objectIdFramebuffer_);
-
 				if (this->albedoFramebuffer_)
 					rprFrameBufferClear(this->albedoFramebuffer_);
 
+				this->sppCounter_ = 0;
 				this->dirty_ = false;
 			}
 
-			rprContextRender(rprContext_);
+			if (spp_ > 0)
+			{
+				if (sppCounter_ < spp_)
+					rprContextRender(rprContext_);
+			}
+			else
+			{
+				rprContextRender(rprContext_);
+			}
+
+			sppCounter_ += 1;
 
 			for (auto& listener : listener_)
 				listener->onPostRender();
@@ -259,6 +279,33 @@ namespace octoon
 		auto context = this->getFeature<GraphicsFeature>()->getContext();
 		if (context)
 		{
+			rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
+			rpr_framebuffer_desc desc;
+			desc.fb_width = w;
+			desc.fb_height = h;
+
+			rpr_framebuffer normalFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFrameBuffer(rprContext_, format, &desc, &normalFramebuffer));
+			{
+				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
+
+				if (this->colorFramebuffer_)
+					rprObjectDelete(this->colorFramebuffer_);
+
+				this->normalFramebuffer_ = normalFramebuffer;
+			}
+
+			rpr_framebuffer albedoFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFrameBuffer(rprContext_, format, &desc, &albedoFramebuffer))
+			{
+				rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer);
+
+				if (this->albedoFramebuffer_)
+					rprObjectDelete(this->albedoFramebuffer_);
+
+				this->albedoFramebuffer_ = albedoFramebuffer;
+			}
+
 			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R8G8B8A8UNorm));
 			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
@@ -292,34 +339,16 @@ namespace octoon
 			if (!this->framebuffer_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
-			rpr_framebuffer framebuffer;
-			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &framebuffer))
+			rpr_framebuffer colorFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &colorFramebuffer))
 			{
-				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, framebuffer);
+				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, colorFramebuffer);
 
-				if (this->rprFramebuffer_)
-					rprObjectDelete(this->rprFramebuffer_);
+				if (this->colorFramebuffer_)
+					rprObjectDelete(this->colorFramebuffer_);
 
-				this->rprFramebuffer_ = framebuffer;
+				this->colorFramebuffer_ = colorFramebuffer;
 			}
-
-			/*rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-			rpr_framebuffer_desc desc;
-			desc.fb_width = w;
-			desc.fb_height = h;
-
-			rprContextCreateFrameBuffer(rprContext_, format, &desc, &colorFramebuffer_);
-			rprContextCreateFrameBuffer(rprContext_, format, &desc, &normalFramebuffer_);
-			rprContextCreateFrameBuffer(rprContext_, format, &desc, &positionFramebuffer_);
-			rprContextCreateFrameBuffer(rprContext_, format, &desc, &albedoFramebuffer_);
-			rprContextCreateFrameBuffer(rprContext_, format, &desc, &objectIdFramebuffer_);
-
-			rprContextSetAOV(rprContext_, RPR_AOV_COLOR, colorFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_WORLD_COORDINATE, positionFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_OBJECT_ID, objectIdFramebuffer_);
-			rprContextSetAOV(rprContext_, RPR_AOV_OUTPUT, framebuffer);*/
 		}
 	}
 }

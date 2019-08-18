@@ -37,8 +37,8 @@ namespace octoon
 		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
-		std::size_t raycastHit(const math::Raycast& ray, RaycastHit& hit) noexcept;
-		std::size_t raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit) noexcept;
+		std::size_t raycastHit(const math::Raycast& ray, RaycastHit& hit, float distance = std::numeric_limits<float>::max(), std::uint32_t layerMask = 0) noexcept;
+		std::size_t raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit, float distance = std::numeric_limits<float>::max(), std::uint32_t layerMask = 0) noexcept;
 
 	private:
 		friend GameObject;

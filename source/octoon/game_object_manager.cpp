@@ -112,13 +112,16 @@ namespace octoon
 	}
 
 	std::size_t
-	GameObjectManager::raycastHit(const math::Raycast& ray, RaycastHit& hit) noexcept
+	GameObjectManager::raycastHit(const math::Raycast& ray, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
 	{
 		std::size_t result = 0;
 
 		for (auto& object : instanceLists_)
 		{
 			if (!object)
+				continue;
+
+			if ((1 << object->getLayer()) & layerMask)
 				continue;
 
 			auto meshFilter = object->getComponent<MeshFilterComponent>();
@@ -140,8 +143,8 @@ namespace octoon
 					if (!math::intersects(boundingBox, ray))
 						continue;
 
-					float distance = math::sqrDistance(boundingBox.center(), ray.origin);
-					if (distance < hit.distance)
+					float dist = math::sqrDistance(boundingBox.center(), ray.origin);
+					if (dist < distance)
 					{
 						hit.object = object;
 						hit.mesh = i;
@@ -157,9 +160,9 @@ namespace octoon
 	}
 
 	std::size_t
-	GameObjectManager::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit) noexcept
+	GameObjectManager::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
 	{
-		return this->raycastHit(math::Raycast(orgin, end), hit);
+		return this->raycastHit(math::Raycast(orgin, end), hit, distance, layerMask);
 	}
 
 	void

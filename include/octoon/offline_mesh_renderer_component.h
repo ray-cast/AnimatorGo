@@ -35,6 +35,9 @@ namespace octoon
 		virtual void onLayerChangeAfter() noexcept override;
 
 	private:
+		void* createImage(const std::string& path) noexcept;
+
+	private:
 		OfflineMeshRendererComponent(const OfflineMeshRendererComponent&) = delete;
 		OfflineMeshRendererComponent& operator=(const OfflineMeshRendererComponent&) = delete;
 

@@ -11,6 +11,11 @@ namespace octoon
 {
 	OctoonImplementSubClass(OfflineMeshRendererComponent, OfflineRenderComponent, "OfflineMeshRenderer")
 
+	float ShininessToSmoothness(float spec)
+	{
+		return 1.0f - std::pow(std::max(0.0f, 2.0f / (spec + 2.0f)), 0.125f);
+	}
+
 	OfflineMeshRendererComponent::OfflineMeshRendererComponent() noexcept
 	{
 	}
@@ -39,6 +44,79 @@ namespace octoon
 	{
 	}
 
+	void*
+	OfflineMeshRendererComponent::createImage(const std::string& path) noexcept
+	{
+		auto feature = this->tryGetFeature<OfflineFeature>();
+		if (!feature)
+			return nullptr;
+
+		auto texture = GamePrefabs::instance()->createTexture(path);
+		if (!texture)
+			return nullptr;
+		
+		try
+		{
+			std::uint8_t* data;
+			auto desc = texture->getTextureDesc();
+			texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
+
+			bool hasAlpha = false;
+			std::uint8_t channel = 3;
+			switch (desc.getTexFormat())
+			{
+			case hal::GraphicsFormat::B8G8R8A8UNorm:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			case hal::GraphicsFormat::R8G8B8A8UNorm:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			case hal::GraphicsFormat::B8G8R8A8SRGB:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			case hal::GraphicsFormat::R8G8B8A8SRGB:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			}
+
+			rpr_image_format imageFormat = { channel, RPR_COMPONENT_TYPE_UINT8 };
+			rpr_image_desc imageDesc;
+			imageDesc.image_width = desc.getWidth();
+			imageDesc.image_height = desc.getHeight();
+			imageDesc.image_depth = 1;
+			imageDesc.image_row_pitch = desc.getWidth() * imageFormat.num_components;
+			imageDesc.image_slice_pitch = imageDesc.image_row_pitch * desc.getHeight();
+
+			std::vector<std::uint8_t> array(desc.getWidth() * desc.getHeight() * imageFormat.num_components);
+			for (std::size_t y = 0; y < desc.getHeight(); y++)
+			{
+				for (std::size_t x = 0; x < desc.getWidth(); x++)
+				{
+					auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * imageFormat.num_components;
+					auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
+
+					for (std::uint8_t i = 0; i < imageFormat.num_components; i++)
+						array[dst + i] = data[src + i];
+				}
+			}
+
+			rpr_image image_;
+			rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, array.data(), &image_);
+			texture->unmap();
+
+			return image_;
+		}
+		catch (...)
+		{
+			texture->unmap();
+			return nullptr;
+		}
+	}
+
 	void
 	OfflineMeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
 	{
@@ -58,33 +136,56 @@ namespace octoon
 			std::string textureName;
 
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
+			math::float3 specular = math::float3::One;
 			math::float3 ambient;
-
+			
+			float opacity = 1.0f;
+			float shininess = 10.0f;
+			
 			mat->get(MATKEY_NAME, name);
 			mat->get(MATKEY_PATH, path);
 			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
 			mat->get(MATKEY_COLOR_DIFFUSE, base);
-			mat->get(MATKEY_COLOR_AMBIENT, ambient);
+			mat->get(MATKEY_COLOR_AMBIENT, ambient);			
+			mat->get(MATKEY_COLOR_SPECULAR, specular);
+			mat->get(MATKEY_OPACITY, opacity);
+			mat->get(MATKEY_SHININESS, shininess);
 
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
-			rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
 
 			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE | RPR_UBER_MATERIAL_LAYER_REFLECTION;
-			/*if (hasAlpha)
-				layers |= RPR_UBER_MATERIAL_TRANSPARENCY;*/
+			if (opacity < 1.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
 
 			rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
 
-			if (layers & RPR_UBER_MATERIAL_TRANSPARENCY)
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 0.5f, 1.0f, 1.0f, 1.0f);
+			if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+			{
+				if (!textureName.empty())
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
+				}
+				else
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
+				}
+			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
 			{
+				float roughness = 1.0f - ShininessToSmoothness(shininess);
+
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", 1.0f, 1.0f, 1.0f, 1.0f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", 0.0f, 0.0f, 0.0f, 0.0f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", 0.9f, 0.9f, 0.9f, 0.9f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
@@ -92,77 +193,6 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
-			}
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
-			{
-				auto texture = GamePrefabs::instance()->createTexture(path + textureName);
-				if (texture)
-				{
-					try
-					{
-						std::uint8_t* data;
-						auto desc = texture->getTextureDesc();
-						texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
-
-						bool hasAlpha = false;
-						std::uint8_t channel = 3;
-						switch (desc.getTexFormat())
-						{
-						case hal::GraphicsFormat::B8G8R8A8UNorm:
-							hasAlpha = true;
-							channel = 4;
-							break;
-						case hal::GraphicsFormat::R8G8B8A8UNorm:
-							hasAlpha = true;
-							channel = 4;
-							break;
-						case hal::GraphicsFormat::B8G8R8A8SRGB:
-							hasAlpha = true;
-							channel = 4;
-							break;
-						case hal::GraphicsFormat::R8G8B8A8SRGB:
-							hasAlpha = true;
-							channel = 4;
-							break;
-						}
-
-						rpr_image_format imageFormat = { channel, RPR_COMPONENT_TYPE_UINT8 };
-						rpr_image_desc imageDesc;
-						imageDesc.image_width = desc.getWidth();
-						imageDesc.image_height = desc.getHeight();
-						imageDesc.image_depth = 1;
-						imageDesc.image_row_pitch = desc.getWidth() * imageFormat.num_components;
-						imageDesc.image_slice_pitch = imageDesc.image_row_pitch * desc.getHeight();
-
-						std::vector<std::uint8_t> array(desc.getWidth() * desc.getHeight() * imageFormat.num_components);
-						for (std::size_t y = 0; y < desc.getHeight(); y++)
-						{
-							for (std::size_t x = 0; x < desc.getWidth(); x++)
-							{
-								auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * imageFormat.num_components;
-								auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
-
-								for (std::uint8_t i = 0; i < imageFormat.num_components; i++)
-									array[dst + i] = data[src + i];
-							}
-						}
-
-						rpr_image image_;
-						rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, array.data(), &image_);
-
-						rpr_material_node textureNode;
-						rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-						rprMaterialNodeSetInputImageData(textureNode, "data", image_);
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
-
-						texture->unmap();
-					}
-					catch (...)
-					{
-						texture->unmap();
-					}
-				}
 			}
 
 			materials_.push_back(rprMaterial);

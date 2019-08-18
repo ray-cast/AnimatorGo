@@ -12,7 +12,7 @@ namespace octoon
 
 	H264Component::H264Component() noexcept
 		: time_(0.0f)
-		, timeStep_(1.0f / 24.0f)
+		, timeStep_(0.0f)
 	{
 	}
 
@@ -58,6 +58,9 @@ namespace octoon
 	void
 	H264Component::onActivate() noexcept
 	{
+		auto camera = this->getComponent<OfflineCameraComponent>();
+		if (camera)
+			camera_ = camera->getGameObject()->downcast_pointer<GameObject>();
 	}
 
 	void
@@ -112,18 +115,23 @@ namespace octoon
 	void
 	H264Component::onFixedUpdate() except
 	{
-		auto feature = this->getFeature<TimerFeature>();
-		if (feature)
+		if (timeStep_ > 0.0f)
 		{
-			time_ += feature->delta();
-
-			if (time_ > timeStep_)
+			auto feature = this->getFeature<TimerFeature>();
+			if (feature)
 			{
-				this->capture();
-				this->sendMessageDownwards("octoon:H264:capture");
+				time_ += feature->delta();
 
-				time_ -= timeStep_;
+				if (time_ >= timeStep_)
+				{
+					this->capture();
+					time_ -= timeStep_;
+				}
 			}
+		}
+		else
+		{
+			this->capture();
 		}
 	}
 

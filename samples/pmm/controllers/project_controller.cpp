@@ -316,15 +316,19 @@ namespace octoon
 			if (!showFileSaveBrowse(filepath, PATHLIMIT, g_SupportedVideo[0]))
 				return;
 
-			auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
-			if (timeFeature)
-			{
-				timeFeature->setTimeStep(30.0f);
-				timeFeature->setTimeInterval(1.0f / 30.0f);
-			}
-
 			if (camera_)
 			{
+				auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
+				if (timeFeature)
+				{
+					timeFeature->setTimeStep(30.0f);
+					timeFeature->setTimeInterval(1.0f / 30.0f);
+				}
+
+				auto physicsFeature = this->getGameScene()->getFeature<PhysicsFeature>();
+				if (physicsFeature)
+					physicsFeature->setSolverIterationCounts(10);
+
 				for (auto& it : objects_)
 				{
 					auto animation = it->getComponent<AnimationComponent>();
@@ -338,10 +342,7 @@ namespace octoon
 
 				auto h264 = camera_->getComponent<H264Component>();
 				if (h264)
-				{
-					h264->setTimeStep(30);
 					h264->capture(std::make_shared<std::ofstream>(filepath, io::ios_base::binary));
-				}
 			}
 		}
 
@@ -449,6 +450,7 @@ namespace octoon
 			auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
 			offlineCamera->setActive(false);
 			offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
+			offlineCamera->setClearColor(octoon::math::float4::One);
 
 			auto camera = obj->addComponent<PerspectiveCameraComponent>();
 			camera->setAperture((float)pmm.camera_keyframes[0].fov);
@@ -460,7 +462,8 @@ namespace octoon
 			obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 			obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
 			obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);
-			obj->addComponent<EditorCameraComponent>();			
+			obj->addComponent<EditorCameraComponent>();
+			obj->addComponent<H264Component>();
 
 			this->sendMessage("editor:camera:set", obj);
 

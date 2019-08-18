@@ -338,6 +338,7 @@ namespace octoon
 			mesh->setTangentArray(this->getTangentArray());
 			mesh->setBindposes(this->getBindposes());
 			mesh->_boundingBox = this->_boundingBox;
+			mesh->_boundingBoxs = this->_boundingBoxs;
 
 			for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
 				mesh->setTexcoordArray(this->getTexcoordArray());

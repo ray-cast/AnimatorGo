@@ -149,6 +149,10 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/skinned_component.cpp
 	${HEADER_PATH}/skinned_morph_component.h
 	${SOURCE_PATH}/skinned_morph_component.cpp
+	${HEADER_PATH}/skinned_bone_component.h
+	${SOURCE_PATH}/skinned_bone_component.cpp
+	${HEADER_PATH}/skinned_texture_component.h
+	${SOURCE_PATH}/skinned_texture_component.cpp
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 

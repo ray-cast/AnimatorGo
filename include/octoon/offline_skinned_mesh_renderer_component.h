@@ -26,6 +26,9 @@ namespace octoon
 		void setMorphBlendEnable(bool enable) noexcept;
 		bool getMorphBlendEnable() const noexcept;
 
+		void setTextureBlendEnable(bool enable) noexcept;
+		bool getTextureBlendEnable() const noexcept;
+
 		void uploadMeshData(const model::Mesh& mesh) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
@@ -43,19 +46,29 @@ namespace octoon
 		void onPreRender() noexcept override;
 
 	private:
+		void updateJointData(const model::Mesh& mesh) noexcept;
+		void updateBoneData(const model::Mesh& mesh) noexcept;
+		void updateMorphBlendData() noexcept;
+		void updateTextureBlendData() noexcept;
+
+	private:
 		OfflineSkinnedMeshRendererComponent(const OfflineSkinnedMeshRendererComponent&) = delete;
 		OfflineSkinnedMeshRendererComponent& operator=(const OfflineSkinnedMeshRendererComponent&) = delete;
 
 	private:
 		bool needUpdate_;
 		bool morphEnable_;
+		bool textureEnable_;
 
 		GameObjects transforms_;
+
+		math::float4x4s joints_;
 
 		model::MeshPtr mesh_;
 		model::MeshPtr skinnedMesh_;
 
-		std::vector<SkinnedComponent*> skinnedComponents_;
+		std::vector<class SkinnedMorphComponent*> morphComponents_;
+		std::vector<class SkinnedTextureComponent*> textureComponents_;
 	};
 }
 

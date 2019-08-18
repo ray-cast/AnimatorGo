@@ -1,5 +1,6 @@
 #include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/skinned_morph_component.h>
+#include <octoon/skinned_texture_component.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -9,6 +10,7 @@ namespace octoon
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)
 		, morphEnable_(false)
+		, textureEnable_(false)
 	{
 	}
 
@@ -75,75 +77,24 @@ namespace octoon
 	}
 
 	void
+	SkinnedMeshRendererComponent::setTextureBlendEnable(bool enable) noexcept
+	{
+		textureEnable_ = enable;
+	}
+
+	bool
+	SkinnedMeshRendererComponent::getTextureBlendEnable() const noexcept
+	{
+		return textureEnable_;
+	}
+
+	void
 	SkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
-		std::vector<math::float4x4> joints(transforms_.size());
-
-		auto& bindposes = mesh.getBindposes();
-		if (bindposes.size() != transforms_.size())
-		{
-			for (std::size_t i = 0; i < transforms_.size(); ++i)
-				joints[i].makeIdentity();
-		}
-		else
-		{
-			for (std::size_t i = 0; i < transforms_.size(); ++i)
-				joints[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
-		}
-
-		auto& vertices = mesh.getVertexArray();
-		auto& normals = mesh.getNormalArray();
-		auto& weights = mesh.getWeightArray();
-
-		auto& dstVertices = skinnedMesh_->getVertexArray();
-		auto& dstNormals = skinnedMesh_->getNormalArray();
-
-		auto numVertices = mesh.getNumVertices();
-
-#if !defined(_DEBUG)
-#		pragma omp parallel for num_threads(4)
-#endif
-		for (std::size_t i = 0; i < numVertices; i++)
-		{
-			math::float3 v = math::float3::Zero;
-			math::float3 n = math::float3::Zero;
-
-			for (std::uint8_t j = 0; j < 4; j++)
-			{
-				auto w = weights[i].weights[j];
-				if (w == 0.0f)
-					break;
-				v += (joints[weights[i].bones[j]] * vertices[i]) * w;
-				n += ((math::float3x3)joints[weights[i].bones[j]] * normals[i]) * w;
-			}
-
-			dstVertices[i] = v;
-			dstNormals[i] = n;
-		}
-
-		if (morphEnable_)
-		{
-			for (auto& it : skinnedComponents_)
-			{
-				auto control = it->getControl();
-				if (control > 0.0f)
-				{
-					auto morph = it->downcast<SkinnedMorphComponent>();
-					auto& indices = morph->getIndices();
-					auto& offsets = morph->getOffsets();
-					
-					auto numIndices = indices.size();
-
-					for (std::size_t i = 0; i < numIndices; i++)
-					{
-						auto offset = offsets[i];
-						auto index = indices[i];
-
-						dstVertices[index] += offset * control;
-					}
-				}
-			}
-		}
+		this->updateJointData(mesh);
+		this->updateBoneData(mesh);
+		this->updateMorphBlendData();
+		this->updateTextureBlendData();
 
 		MeshRendererComponent::uploadMeshData(*skinnedMesh_);
 	}
@@ -193,7 +144,9 @@ namespace octoon
 	SkinnedMeshRendererComponent::onAttachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isInstanceOf<SkinnedMorphComponent>())
-			skinnedComponents_.push_back(component.get()->downcast<SkinnedComponent>());
+			morphComponents_.push_back(component.get()->downcast<SkinnedMorphComponent>());
+		else if (component->isInstanceOf<SkinnedTextureComponent>())
+			textureComponents_.push_back(component.get()->downcast<SkinnedTextureComponent>());
 	}
 
 	void
@@ -201,9 +154,15 @@ namespace octoon
 	{
 		if (component->isInstanceOf<SkinnedMorphComponent>())
 		{
-			auto it = std::find(skinnedComponents_.begin(), skinnedComponents_.end(), component.get());
-			if (it != skinnedComponents_.end())
-				skinnedComponents_.erase(it);
+			auto it = std::find(morphComponents_.begin(), morphComponents_.end(), component.get());
+			if (it != morphComponents_.end())
+				morphComponents_.erase(it);
+		}
+		else if (component->isInstanceOf<SkinnedTextureComponent>())
+		{
+			auto it = std::find(textureComponents_.begin(), textureComponents_.end(), component.get());
+			if (it != textureComponents_.end())
+				textureComponents_.erase(it);
 		}
 	}
 
@@ -228,6 +187,116 @@ namespace octoon
 		{
 			this->uploadMeshData(*mesh_);
 			needUpdate_ = false;
+		}
+	}
+
+	void
+	SkinnedMeshRendererComponent::updateJointData(const model::Mesh& mesh) noexcept
+	{
+		joints_.resize(mesh.getBindposes().size());
+
+		auto& bindposes = mesh.getBindposes();
+		if (bindposes.size() != transforms_.size())
+		{
+			for (std::size_t i = 0; i < transforms_.size(); ++i)
+				joints_[i].makeIdentity();
+		}
+		else
+		{
+			for (std::size_t i = 0; i < transforms_.size(); ++i)
+				joints_[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
+		}
+	}
+
+	void
+	SkinnedMeshRendererComponent::updateBoneData(const model::Mesh& mesh) noexcept
+	{
+		auto& vertices = mesh.getVertexArray();
+		auto& normals = mesh.getNormalArray();
+		auto& weights = mesh.getWeightArray();
+
+		auto& dstVertices = skinnedMesh_->getVertexArray();
+		auto& dstNormals = skinnedMesh_->getNormalArray();
+
+		auto numVertices = mesh.getNumVertices();
+
+#if !defined(_DEBUG)
+#		pragma omp parallel for num_threads(4)
+#endif
+		for (std::size_t i = 0; i < numVertices; i++)
+		{
+			math::float3 v = math::float3::Zero;
+			math::float3 n = math::float3::Zero;
+
+			for (std::uint8_t j = 0; j < 4; j++)
+			{
+				auto w = weights[i].weights[j];
+				if (w == 0.0f)
+					break;
+				v += (joints_[weights[i].bones[j]] * vertices[i]) * w;
+				n += ((math::float3x3)joints_[weights[i].bones[j]] * normals[i]) * w;
+			}
+
+			dstVertices[i] = v;
+			dstNormals[i] = n;
+		}
+	}
+
+	void
+	SkinnedMeshRendererComponent::updateMorphBlendData() noexcept
+	{
+		if (morphEnable_)
+		{
+			auto& dstVertices = skinnedMesh_->getVertexArray();
+
+			for (auto& it : morphComponents_)
+			{
+				auto control = it->getControl();
+				if (control > 0.0f)
+				{
+					auto& indices = it->getIndices();
+					auto& offsets = it->getOffsets();
+
+					auto numIndices = indices.size();
+
+					for (std::size_t i = 0; i < numIndices; i++)
+					{
+						auto offset = offsets[i];
+						auto index = indices[i];
+
+						dstVertices[index] += offset * control;
+					}
+				}
+			}
+		}
+	}
+
+	void
+	SkinnedMeshRendererComponent::updateTextureBlendData() noexcept
+	{
+		if (textureEnable_)
+		{
+			auto& dstTextures = skinnedMesh_->getTexcoordArray();
+
+			for (auto& it : textureComponents_)
+			{
+				auto control = it->getControl();
+				if (control > 0.0f)
+				{
+					auto& indices = it->getIndices();
+					auto& offsets = it->getOffsets();
+
+					auto numIndices = indices.size();
+
+					for (std::size_t i = 0; i < numIndices; i++)
+					{
+						auto offset = offsets[i];
+						auto index = indices[i];
+
+						dstTextures[index] += offset * control;
+					}
+				}
+			}
 		}
 	}
 }

@@ -173,6 +173,7 @@ namespace octoon
 		using double2x2s = std::vector<double2x2>;
 		using double3x3s = std::vector<double3x3>;
 		using double4x4s = std::vector<double4x4>;
+		using Quaternions = std::vector<Quaternion>;
 
 		using uint8s = std::vector<std::uint8_t>;
 		using uint16s = std::vector<std::uint16_t>;

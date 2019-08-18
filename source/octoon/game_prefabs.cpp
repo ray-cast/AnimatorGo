@@ -560,9 +560,16 @@ namespace octoon
 			smr->setMaterials(materials);
 			smr->setTransforms(bones);
 			smr->setMorphBlendEnable(true);
+			smr->setTextureBlendEnable(true);
 
 			object->addComponent(smr);
-			object->addComponent<OfflineSkinnedMeshRendererComponent>(materials, bones);
+
+			auto osmr = OfflineSkinnedMeshRendererComponent::create();
+			osmr->setMaterials(materials);
+			osmr->setTransforms(bones);
+			osmr->setMorphBlendEnable(true);
+			osmr->setTextureBlendEnable(true);
+			object->addComponent(osmr);
 
 			/*auto mat = std::make_shared<LineMaterial>(1.0f);
 			mat->setColor(math::float3(0.4, 0.9, 0.4));

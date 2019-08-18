@@ -88,8 +88,9 @@ namespace octoon
 		auto instance = std::make_shared<SkinnedBoneComponent>();
 		instance->setName(this->getName());
 		instance->setControl(this->getControl());
-		instance->setPosition(this->getPosition());
 		instance->setBones(this->getBones());
+		instance->setPosition(this->getPosition());
+		instance->setRotation(this->getRotation());
 		return instance;
 	}
 

@@ -66,10 +66,10 @@ parent   14
 
 index    4
 label    Camera
-x        444
+x        413
 y        21
-size_x   459
-size_y   355
+size_x   427
+size_y   332
 status   0
 active   1
 opened   1
@@ -83,9 +83,9 @@ parent   10
 index    5
 label    Assets
 x        0
-y        376
-size_x   1376
-size_y   392
+y        353
+size_x   1280
+size_y   367
 status   0
 active   1
 opened   1
@@ -100,8 +100,8 @@ index    6
 label    Hierarchy
 x        0
 y        21
-size_x   444
-size_y   355
+size_x   413
+size_y   332
 status   0
 active   1
 opened   1
@@ -114,10 +114,10 @@ parent   10
 
 index    7
 label    Inspector
-x        903
+x        840
 y        21
-size_x   473
-size_y   355
+size_x   440
+size_y   332
 status   0
 active   1
 opened   1
@@ -132,8 +132,8 @@ index    8
 label    DOCK
 x        0
 y        21
-size_x   1376
-size_y   355
+size_x   1280
+size_y   332
 status   0
 active   1
 opened   0
@@ -148,8 +148,8 @@ index    9
 label    ROOT
 x        0
 y        21
-size_x   1376
-size_y   747
+size_x   1280
+size_y   699
 status   0
 active   1
 opened   0
@@ -164,8 +164,8 @@ index    10
 label    DOCK
 x        0
 y        21
-size_x   903
-size_y   355
+size_x   840
+size_y   332
 status   0
 active   1
 opened   0

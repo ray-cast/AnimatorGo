@@ -13,7 +13,6 @@
 
 #include <RadeonProRender.h>
 #include <RadeonProRender_GL.h>
-#include <RadeonProRender_CL.h>
 
 #include <GL/GL.h>
 
@@ -30,8 +29,6 @@ namespace octoon
 		, colorFramebuffer_(nullptr)
 		, normalFramebuffer_(nullptr)
 		, albedoFramebuffer_(nullptr)
-		, spp_(0)
-		, sppCounter_(0)
 	{
 	}
 
@@ -117,22 +114,49 @@ namespace octoon
 	void
 	OfflineFeature::readColorFramebuffer(void* dst) noexcept
 	{
-		if (colorFramebuffer_)
-			rprFrameBufferBitblit(colorFramebuffer_, dst);
+		if (colorTexture_)
+		{
+			auto& desc = colorTexture_->getTextureDesc();
+
+			void* data = nullptr;
+			if (colorTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			{
+				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				colorTexture_->unmap();
+			}
+		}
 	}
 
 	void
 	OfflineFeature::readNormalFramebuffer(void* dst) noexcept
 	{
-		if (normalFramebuffer_)
-			rprFrameBufferBitblit(normalFramebuffer_, dst);
+		if (normalTexture_)
+		{
+			auto& desc = normalTexture_->getTextureDesc();
+
+			void* data = nullptr;
+			if (normalTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			{
+				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				normalTexture_->unmap();
+			}
+		}
 	}
 
 	void
 	OfflineFeature::readAlbedoFramebuffer(void* dst) noexcept
 	{
-		if (albedoFramebuffer_)
-			rprFrameBufferBitblit(albedoFramebuffer_, dst);
+		if (albedoTexture_)
+		{
+			auto& desc = albedoTexture_->getTextureDesc();
+
+			void* data = nullptr;
+			if (albedoTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			{
+				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				albedoTexture_->unmap();
+			}
+		}
 	}
 
 	void
@@ -244,21 +268,10 @@ namespace octoon
 				if (this->albedoFramebuffer_)
 					rprFrameBufferClear(this->albedoFramebuffer_);
 
-				this->sppCounter_ = 0;
 				this->dirty_ = false;
 			}
 
-			if (spp_ > 0)
-			{
-				if (sppCounter_ < spp_)
-					rprContextRender(rprContext_);
-			}
-			else
-			{
-				rprContextRender(rprContext_);
-			}
-
-			sppCounter_ += 1;
+			rprContextRender(rprContext_);
 
 			for (auto& listener : listener_)
 				listener->onPostRender();
@@ -279,65 +292,22 @@ namespace octoon
 		auto context = this->getFeature<GraphicsFeature>()->getContext();
 		if (context)
 		{
-			rpr_image_format format = { 4, RPR_COMPONENT_TYPE_FLOAT32 };
-			rpr_framebuffer_desc desc;
-			desc.fb_width = w;
-			desc.fb_height = h;
-
-			rpr_framebuffer normalFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFrameBuffer(rprContext_, format, &desc, &normalFramebuffer));
-			{
-				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
-
-				if (this->colorFramebuffer_)
-					rprObjectDelete(this->colorFramebuffer_);
-
-				this->normalFramebuffer_ = normalFramebuffer;
-			}
-
-			rpr_framebuffer albedoFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFrameBuffer(rprContext_, format, &desc, &albedoFramebuffer))
-			{
-				rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer);
-
-				if (this->albedoFramebuffer_)
-					rprObjectDelete(this->albedoFramebuffer_);
-
-				this->albedoFramebuffer_ = albedoFramebuffer;
-			}
-
-			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R8G8B8A8UNorm));
-			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
-
 			hal::GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R8G8B8A8UNorm);
-			auto colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
+			colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			hal::GraphicsTextureDesc depthTextureDesc;
-			depthTextureDesc.setWidth(w);
-			depthTextureDesc.setHeight(h);
-			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
-			auto depthTexture_ = context->getDevice()->createTexture(depthTextureDesc);
-			if (!depthTexture_)
+			normalTexture_ = context->getDevice()->createTexture(colorTextureDesc);
+			if (!normalTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			hal::GraphicsFramebufferDesc framebufferDesc;
-			framebufferDesc.setWidth(w);
-			framebufferDesc.setHeight(h);
-			framebufferDesc.setGraphicsFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
-			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
-			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
-
-			this->framebuffer_ = context->getDevice()->createFramebuffer(framebufferDesc);
-			if (!this->framebuffer_)
-				throw runtime::runtime_error::create("createFramebuffer() failed");
+			albedoTexture_ = context->getDevice()->createTexture(colorTextureDesc);
+			if (!albedoTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
 
 			rpr_framebuffer colorFramebuffer = nullptr;
 			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &colorFramebuffer))
@@ -349,6 +319,52 @@ namespace octoon
 
 				this->colorFramebuffer_ = colorFramebuffer;
 			}
+
+			rpr_framebuffer normalFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, normalTexture_->handle(), &normalFramebuffer));
+			{
+				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
+
+				if (this->normalFramebuffer_)
+					rprObjectDelete(this->normalFramebuffer_);
+
+				this->normalFramebuffer_ = normalFramebuffer;
+			}
+
+			rpr_framebuffer albedoFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, albedoTexture_->handle(), &albedoFramebuffer))
+			{
+				rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer);
+
+				if (this->albedoFramebuffer_)
+					rprObjectDelete(this->albedoFramebuffer_);
+
+				this->albedoFramebuffer_ = albedoFramebuffer;
+			}
+
+			hal::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(w);
+			depthTextureDesc.setHeight(h);
+			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
+			auto depthTexture_ = context->getDevice()->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32SFloat));
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
+
+			hal::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(w);
+			framebufferDesc.setHeight(h);
+			framebufferDesc.setGraphicsFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			this->framebuffer_ = context->getDevice()->createFramebuffer(framebufferDesc);
+			if (!this->framebuffer_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
 		}
 	}
 }

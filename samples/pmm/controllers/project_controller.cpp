@@ -11,7 +11,6 @@
 #include <octoon/offline_environment_light_component.h>
 #include <octoon/offline_directional_light_component.h>
 #include <octoon/offline_skinned_mesh_renderer_component.h>
-#include <octoon/H264_component.h>
 #include <octoon/timer_feature.h>
 #include <octoon/cloth_component.h>
 #include <octoon/game_base_features.h>
@@ -19,6 +18,8 @@
 #include <octoon/game_object_manager.h>
 #include <octoon/runtime/string.h>
 #include <fstream>
+
+#include "H264_component.h"
 #include "../libs/nativefiledialog/nfd.h"
 
 using namespace octoon::animation;
@@ -321,7 +322,7 @@ namespace octoon
 				auto timeFeature = this->getGameScene()->getFeature<TimerFeature>();
 				if (timeFeature)
 				{
-					timeFeature->setTimeStep(30.0f);
+					timeFeature->setTimeStep(1.0f);
 					timeFeature->setTimeInterval(1.0f / 30.0f);
 				}
 

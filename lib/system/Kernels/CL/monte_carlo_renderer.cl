@@ -666,9 +666,7 @@ KERNEL void ApplyGammaAndCopyData(
 #endif
 
         v /= v.w;
-        v *= 2.0f;
-        v = Hable(make_float4(v.x, v.y, v.z, 8.0f));
-        v /= v.w;
+        v.xyz = ACES(v.xyz);
 
         float4 val = clamp(native_powr(v, 1.f / gamma), 0.f, 1.f);        
         write_imagef(img, make_int2(global_idx, global_idy), val);

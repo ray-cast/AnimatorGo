@@ -58,10 +58,11 @@ namespace octoon
 		void* normalFramebuffer_;
 		void* albedoFramebuffer_;
 
-		hal::GraphicsFramebufferPtr framebuffer_;
+		hal::GraphicsTexturePtr colorTexture_;
+		hal::GraphicsTexturePtr normalTexture_;
+		hal::GraphicsTexturePtr albedoTexture_;
 
-		std::uint32_t spp_;
-		std::uint32_t sppCounter_;
+		hal::GraphicsFramebufferPtr framebuffer_;
 
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;

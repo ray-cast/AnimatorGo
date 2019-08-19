@@ -124,7 +124,7 @@ namespace octoon
 		if (time_ > timeStep_)
 		{
 			this->sendMessage("feature:timer:fixed", timeInterval_);
-			time_ = 0.0f;
+			time_ -= timeStep_;
 		}
 	}
 }

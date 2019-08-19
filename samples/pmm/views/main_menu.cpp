@@ -92,16 +92,6 @@ namespace octoon
 					imgui::endMenu();
 				}
 
-				if (imgui::beginMenu("GameObject"))
-				{
-					if (imgui::menuItem("Create Game Object")) { this->sendMessage("editor:menu:create:object"); }
-					if (imgui::menuItem("Create Cube Object")) { this->sendMessage("editor:menu:create:cube"); }
-					if (imgui::menuItem("Create Sphere Object")) { this->sendMessage("editor:menu:create:sphere"); }
-					if (imgui::menuItem("Create Plane Object")) { this->sendMessage("editor:menu:create:plane"); }
-
-					imgui::endMenu();
-				}
-
 				if (imgui::beginMenu("Setting"))
 				{
 					if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }

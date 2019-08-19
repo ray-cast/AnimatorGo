@@ -9,7 +9,7 @@ int main(int argc, const char* argv[])
 	if (::OctoonOpenWindow(u8"MysticLit", 1280, 720))
 	{
 		auto object = octoon::GameObject::create();
-		object->addComponent<octoon::editor::MainController>();
+		object->addComponent<MysticLit::MainController>();
 
 		::OctoonMainLoop();
 	}

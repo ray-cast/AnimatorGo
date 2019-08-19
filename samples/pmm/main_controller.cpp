@@ -6,49 +6,42 @@
 #include "views/theme_manager.h"
 #include "views/about_window.h"
 
-#include "controllers/project_controller.h"
-#include "controllers/edit_controller.h"
+#include "mysticlit_behaviour.h"
 
-#include <octoon/octoon.h>
-
-namespace octoon
+namespace MysticLit
 {
-	namespace editor
+	OctoonImplementSubClass(MainController, octoon::GameComponent, "MainController")
+
+	MainController::MainController() noexcept
 	{
-		OctoonImplementSubClass(MainController, GameComponent, "MainController")
+	}
 
-		MainController::MainController() noexcept
-		{
-		}
+	MainController::~MainController() noexcept
+	{
+	}
 
-		MainController::~MainController() noexcept
-		{
-		}
+	void
+	MainController::onActivate() noexcept
+	{
+		main_ = octoon::GameObject::create("MainView");
+		main_->addComponent<octoon::editor::MainMenu>();
+		main_->addComponent<octoon::editor::CameraWindow>();
+		main_->addComponent<octoon::editor::ThemeManager>();
+		main_->addComponent<octoon::editor::MessageWindow>();
+		main_->addComponent<octoon::editor::AboutWindow>();
 
-		void
-		MainController::onActivate() noexcept
-		{
-			main_ = GameObject::create("MainView");
-			main_->addComponent<MainMenu>();
-			main_->addComponent<CameraWindow>();
-			main_->addComponent<ThemeManager>();
-			main_->addComponent<MessageWindow>();
-			main_->addComponent<AboutWindow>();
+		main_->addComponent<MysticlitBehaviour>();
+	}
 
-			main_->addComponent<ProjectController>();
-			main_->addComponent<EditController>();
-		}
+	void
+	MainController::onDeactivate() noexcept
+	{
+		main_.reset();
+	}
 
-		void
-		MainController::onDeactivate() noexcept
-		{
-			main_.reset();
-		}
-
-		GameComponentPtr
-		MainController::clone() const noexcept
-		{
-			return std::make_shared<MainController>();
-		}
+	octoon::GameComponentPtr
+	MainController::clone() const noexcept
+	{
+		return std::make_shared<MainController>();
 	}
 }

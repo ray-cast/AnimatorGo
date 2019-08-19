@@ -26,7 +26,7 @@ namespace octoon
 			void onDeactivate() noexcept override;
 
 		private:
-			GameObjects objects_;
+			GameObjects objects;
 		};
 	}
 }

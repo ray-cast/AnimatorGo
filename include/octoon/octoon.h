@@ -4,7 +4,13 @@
 #include <octoon/game_app.h>
 #include <octoon/game_scene.h>
 #include <octoon/game_object.h>
+#include <octoon/game_object_manager.h>
 #include <octoon/game_prefabs.h>
+
+#include <octoon/game_base_features.h>
+#include <octoon/input_feature.h>
+#include <octoon/timer_feature.h>
+#include <octoon/physics_feature.h>
 
 #include <octoon/video/line_material.h>
 #include <octoon/video/text_material.h>
@@ -36,6 +42,8 @@
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/model/material.h>
+
+#include <octoon/animation/animation.h>
 
 #include <octoon/ui/imgui.h>
 

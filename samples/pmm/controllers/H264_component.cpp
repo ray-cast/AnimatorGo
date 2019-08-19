@@ -98,7 +98,7 @@ namespace MysticLit
 	void
 	H264Component::capture(const std::shared_ptr<std::ofstream>& stream) noexcept
 	{
-		auto camera = this->getContext()->profile->entitiesModule_->camera;
+		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (camera)
 		{
 			auto framebuffer = camera->getComponent<octoon::OfflineCameraComponent>()->getFramebuffer();
@@ -195,7 +195,7 @@ namespace MysticLit
 		run_param.frame_type = model->frame_type;
 		run_param.encode_speed = model->encode_speed;
 
-		auto camera = this->getContext()->profile->entitiesModule_->camera;
+		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (camera)
 		{
 			auto color = oidnMapBuffer(oidnColorBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);

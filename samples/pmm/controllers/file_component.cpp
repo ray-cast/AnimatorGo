@@ -114,7 +114,7 @@ namespace MysticLit
 		auto mdoel = octoon::GamePrefabs::instance()->createModel(path);
 		if (mdoel)
 		{
-			this->getContext()->profile->entitiesModule_->objects.push_back(mdoel);
+			this->getContext()->profile->entitiesModule->objects.push_back(mdoel);
 			return true;
 		}
 
@@ -141,7 +141,7 @@ namespace MysticLit
 			if (camera)
 			{
 				objects.emplace_back(camera);
-				this->getContext()->profile->entitiesModule_->camera = camera;
+				this->getContext()->profile->entitiesModule->camera = camera;
 			}
 
 			for (auto& it : pmm.model)
@@ -180,7 +180,7 @@ namespace MysticLit
 
 			objects.push_back(obj);
 
-			this->getContext()->profile->entitiesModule_->objects = objects;
+			this->getContext()->profile->entitiesModule->objects = objects;
 			return true;
 		}
 		catch (const std::bad_optional_access&)

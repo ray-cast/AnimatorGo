@@ -53,11 +53,11 @@ namespace MysticLit
 		playerComponent_ = std::make_unique<PlayerComponent>();
 		h264Component_ = std::make_unique<H264Component>();
 
-		fileComponent_->init(context_, profile_->fileModule_);
-		entitiesComponent_->init(context_, profile_->entitiesModule_);
-		offlineComponent_->init(context_, profile_->offlineModule_);
-		playerComponent_->init(context_, profile_->timeModule_);
-		h264Component_->init(context_, profile_->h264Module_);
+		fileComponent_->init(context_, profile_->fileModule);
+		entitiesComponent_->init(context_, profile_->entitiesModule);
+		offlineComponent_->init(context_, profile_->offlineModule);
+		playerComponent_->init(context_, profile_->timeModule);
+		h264Component_->init(context_, profile_->h264Module);
 
 		this->addComponent(fileComponent_.get());
 		this->addComponent(entitiesComponent_.get());

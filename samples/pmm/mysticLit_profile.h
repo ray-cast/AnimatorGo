@@ -28,13 +28,13 @@ namespace MysticLit
 		MysticLitProfile& operator=(const MysticLitProfile&) = delete;
 
 	public:
-		std::shared_ptr<FileModule> fileModule_;
-		std::shared_ptr<EntitiesModule> entitiesModule_;
-		std::shared_ptr<DenoiseModule> denoiseModule_;
-		std::shared_ptr<H264Module> h264Module_;
-		std::shared_ptr<PhysicsModule> physicsModule_;
-		std::shared_ptr<TimeModule> timeModule_;
-		std::shared_ptr<OfflineModule> offlineModule_;
+		std::shared_ptr<FileModule> fileModule;
+		std::shared_ptr<EntitiesModule> entitiesModule;
+		std::shared_ptr<DenoiseModule> denoiseModule;
+		std::shared_ptr<H264Module> h264Module;
+		std::shared_ptr<PhysicsModule> physicsModule;
+		std::shared_ptr<TimeModule> timeModule;
+		std::shared_ptr<OfflineModule> offlineModule;
 	};
 }
 

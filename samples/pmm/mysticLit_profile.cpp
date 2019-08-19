@@ -3,13 +3,13 @@
 namespace MysticLit
 {
 	MysticLitProfile::MysticLitProfile() noexcept
-		: denoiseModule_(std::make_shared<DenoiseModule>())
-		, physicsModule_(std::make_shared<PhysicsModule>())
-		, h264Module_(std::make_shared<H264Module>())
-		, timeModule_(std::make_shared<TimeModule>())
-		, fileModule_(std::make_shared<FileModule>())
-		, entitiesModule_(std::make_shared<EntitiesModule>())
-		, offlineModule_(std::make_shared<OfflineModule>())
+		: denoiseModule(std::make_shared<DenoiseModule>())
+		, physicsModule(std::make_shared<PhysicsModule>())
+		, h264Module(std::make_shared<H264Module>())
+		, timeModule(std::make_shared<TimeModule>())
+		, fileModule(std::make_shared<FileModule>())
+		, entitiesModule(std::make_shared<EntitiesModule>())
+		, offlineModule(std::make_shared<OfflineModule>())
 	{
 	}
 

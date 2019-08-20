@@ -65,7 +65,6 @@ namespace MysticLit
 		this->addComponent(playerComponent_.get());
 		this->addComponent(h264Component_.get());
 
-		this->addComponentDispatch(octoon::GameDispatchType::Gui);
 		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		this->addMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
 		this->addMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
@@ -92,7 +91,7 @@ namespace MysticLit
 		context_.reset();
 		profile_.reset();
 
-		this->removeComponentDispatchs();
+		this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		this->removeMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
@@ -186,7 +185,7 @@ namespace MysticLit
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
+		if (!fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
 			return;
 
 		playerComponent_->play();

@@ -4,6 +4,7 @@ namespace MysticLit
 {
 	H264Module::H264Module() noexcept
 	{
+		this->reset();
 	}
 
 	H264Module::~H264Module() noexcept

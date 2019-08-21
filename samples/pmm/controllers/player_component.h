@@ -19,6 +19,10 @@ namespace MysticLit
 		void play() noexcept;
 		void stop() noexcept;
 		void render() noexcept;
+
+	private:
+		void onEnable() noexcept override;
+		void onDisable() noexcept override;
 	};
 }
 

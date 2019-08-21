@@ -72,7 +72,8 @@ namespace octoon
 			needUpdate_ = false;
 		}
 
-		physics_scene->fetchResult();
+		if (iterationCounts_ > 0)
+			physics_scene->fetchResult();
     }
 
     void

@@ -16,6 +16,13 @@ namespace MysticLit
 	private:
 		TimeModule(const TimeModule&) = delete;
 		TimeModule& operator=(const TimeModule&) = delete;
+
+	public:
+		float recordFps;
+		float recordTimeStep;
+
+		float playFps;
+		float playTimeStep;
 	};
 }
 

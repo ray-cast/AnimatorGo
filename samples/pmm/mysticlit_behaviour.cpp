@@ -221,7 +221,7 @@ namespace MysticLit
 		if (!fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
 			return;
 
-		playerComponent_->play();
+		playerComponent_->render();
 		entitiesComponent_->play();
 
 		canvasComponent_->setActive(true);

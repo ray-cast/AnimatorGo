@@ -19,7 +19,9 @@ namespace MysticLit
 		PhysicsModule& operator=(const PhysicsModule&) = delete;
 
 	public:
-		std::uint32_t solverIterationCounts_;
+		std::uint32_t playSolverIterationCounts;
+		std::uint32_t recordSolverIterationCounts;
+		std::uint32_t previewSolverIterationCounts;
 	};
 }
 

@@ -27,38 +27,45 @@ namespace MysticLit
 	void
 	PlayerComponent::play() noexcept
 	{
+		auto& model = this->getModel();
+		auto& context = this->getContext()->profile;
+
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
 		{
-			timeFeature->setTimeStep(1.0f / 60.0f);
-			timeFeature->setTimeInterval(1.0f / 60.0f);
+			timeFeature->setTimeStep(model->playTimeStep);
+			timeFeature->setTimeInterval(1.0f / model->playFps);
 		}
 
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(10);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->playSolverIterationCounts);
 	}
 
 	void
 	PlayerComponent::stop() noexcept
 	{
+		auto& context = this->getContext()->profile;
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(1);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
 	}
 
 	void
 	PlayerComponent::render() noexcept
 	{
+		auto& model = this->getModel();
+		auto& context = this->getContext()->profile;
+
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
 		{
-			timeFeature->setTimeStep(1.0f);
-			timeFeature->setTimeInterval(1.0f / 30.0f);
+			timeFeature->setTimeStep(model->recordTimeStep);
+			timeFeature->setTimeInterval(1.0f / model->recordFps);
 		}
 
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(10);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->recordSolverIterationCounts);
 	}
 }

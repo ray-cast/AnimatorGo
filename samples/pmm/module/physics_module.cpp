@@ -14,6 +14,12 @@ namespace MysticLit
 	void
 	PhysicsModule::reset() noexcept
 	{
-		this->solverIterationCounts_ = 10;
+#if defined(_DEBUG)
+		this->playSolverIterationCounts = 3;
+#else
+		this->playSolverIterationCounts = 10;
+#endif
+		this->recordSolverIterationCounts = 10;
+		this->previewSolverIterationCounts = 1;
 	}
 }

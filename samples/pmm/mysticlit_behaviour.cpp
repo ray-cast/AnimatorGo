@@ -226,6 +226,7 @@ namespace MysticLit
 
 		canvasComponent_->setActive(true);
 		denoiseComponent_->setActive(true);
+		offlineComponent_->setActive(true);
 
 		h264Component_->setActive(true);
 		h264Component_->record(std::make_shared<std::ofstream>(filepath.data(), octoon::io::ios_base::binary));

@@ -4,6 +4,7 @@ namespace MysticLit
 {
 	DenoiseModule::DenoiseModule() noexcept
 	{
+		this->reset();
 	}
 
 	DenoiseModule::~DenoiseModule() noexcept
@@ -13,5 +14,8 @@ namespace MysticLit
 	void
 	DenoiseModule::reset() noexcept
 	{
+		this->active_ = false;
+		this->hdr = false;
+		this->srgb = true;
 	}
 }

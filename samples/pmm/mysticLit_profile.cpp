@@ -10,6 +10,7 @@ namespace MysticLit
 		, fileModule(std::make_shared<FileModule>())
 		, entitiesModule(std::make_shared<EntitiesModule>())
 		, offlineModule(std::make_shared<OfflineModule>())
+		, canvasModule(std::make_shared<CanvasModule>())
 	{
 	}
 

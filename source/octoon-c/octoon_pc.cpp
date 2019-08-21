@@ -310,9 +310,11 @@ bool OCTOON_C_CALL OctoonOpenWindow(const char* title, int w, int h) noexcept
 		::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		::glfwWindowHint(GLFW_VISIBLE, false);
+		::glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 #else
 		::glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		::glfwWindowHint(GLFW_VISIBLE, false);
+		::glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		::glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 #endif
 
 		window_ = ::glfwCreateWindow(w, h, title, nullptr, nullptr);

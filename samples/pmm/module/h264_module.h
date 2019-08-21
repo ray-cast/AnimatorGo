@@ -1,5 +1,5 @@
-#ifndef OCTOON_H264_MODULE_H_
-#define OCTOON_H264_MODULE_H_
+#ifndef MYSTICLIT_H264_MODULE_H_
+#define MYSTICLIT_H264_MODULE_H_
 
 #include <mysticLit_model.h>
 #include <cstdint>
@@ -19,8 +19,8 @@ namespace MysticLit
 		H264Module& operator=(const H264Module&) = delete;
 
 	public:
-		float qp_min;
-		float qp_max;
+		std::uint32_t qp_min;
+		std::uint32_t qp_max;
 
 		std::uint32_t frame_type;
 		std::uint32_t encode_speed;

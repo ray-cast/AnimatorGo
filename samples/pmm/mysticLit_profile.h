@@ -1,5 +1,5 @@
-#ifndef OCTOON_MYSTICLIT_PROFILE_H_
-#define OCTOON_MYSTICLIT_PROFILE_H_
+#ifndef MYSTICLIT_PROFILE_H_
+#define MYSTICLIT_PROFILE_H_
 
 #include <memory>
 #include <string>
@@ -11,6 +11,7 @@
 #include "module/file_module.h"
 #include "module/entities_module.h"
 #include "module/offline_module.h"
+#include "module/canvas_module.h"
 
 namespace MysticLit
 {
@@ -28,6 +29,7 @@ namespace MysticLit
 		MysticLitProfile& operator=(const MysticLitProfile&) = delete;
 
 	public:
+		std::shared_ptr<CanvasModule> canvasModule;
 		std::shared_ptr<FileModule> fileModule;
 		std::shared_ptr<EntitiesModule> entitiesModule;
 		std::shared_ptr<DenoiseModule> denoiseModule;

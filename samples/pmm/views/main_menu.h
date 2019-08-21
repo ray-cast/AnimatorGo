@@ -1,5 +1,5 @@
-#ifndef OCTOON_UI_MAIN_MENU_H_
-#define OCTOON_UI_MAIN_MENU_H_
+#ifndef MYSTICLIT_UI_MAIN_MENU_H_
+#define MYSTICLIT_UI_MAIN_MENU_H_
 
 #include <octoon/game_component.h>
 

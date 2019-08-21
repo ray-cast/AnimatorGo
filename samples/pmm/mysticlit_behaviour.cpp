@@ -1,4 +1,5 @@
 #include "mysticlit_behaviour.h"
+#include <fstream>
 
 namespace MysticLit
 {
@@ -39,6 +40,24 @@ namespace MysticLit
 	}
 
 	void
+	MysticlitBehaviour::enableComponents() noexcept
+	{
+		for (auto& it : components_)
+		{
+			it->onEnable();
+		}
+	}
+
+	void
+	MysticlitBehaviour::disableComponents() noexcept
+	{
+		for (auto& it : components_)
+		{
+			it->onDisable();
+		}
+	}
+
+	void
 	MysticlitBehaviour::onActivate() noexcept
 	{
 		profile_ = std::make_unique<MysticLitProfile>();
@@ -48,22 +67,30 @@ namespace MysticLit
 		context_->profile = profile_.get();
 
 		fileComponent_ = std::make_unique<FileComponent>();
+		canvasComponent_ = std::make_unique<CanvasComponent>();
 		entitiesComponent_ = std::make_unique<EntitiesComponent>();
 		offlineComponent_ = std::make_unique<OfflineComponent>();
 		playerComponent_ = std::make_unique<PlayerComponent>();
+		denoiseComponent_ = std::make_unique<DenoiseComponent>();
 		h264Component_ = std::make_unique<H264Component>();
 
 		fileComponent_->init(context_, profile_->fileModule);
+		canvasComponent_->init(context_, profile_->canvasModule);
 		entitiesComponent_->init(context_, profile_->entitiesModule);
 		offlineComponent_->init(context_, profile_->offlineModule);
 		playerComponent_->init(context_, profile_->timeModule);
+		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h264Component_->init(context_, profile_->h264Module);
 
 		this->addComponent(fileComponent_.get());
+		this->addComponent(canvasComponent_.get());
 		this->addComponent(entitiesComponent_.get());
 		this->addComponent(offlineComponent_.get());
 		this->addComponent(playerComponent_.get());
+		this->addComponent(denoiseComponent_.get());
 		this->addComponent(h264Component_.get());
+
+		this->enableComponents();
 
 		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		this->addMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
@@ -73,7 +100,7 @@ namespace MysticLit
 		this->addMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
 		this->addMessageListener("editor:menu:file:exit", std::bind(&MysticlitBehaviour::exit, this, std::placeholders::_1));	
 		this->addMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRenderVideo, this, std::placeholders::_1));
+		this->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
 
 		this->addMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
 		this->addMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
@@ -98,7 +125,7 @@ namespace MysticLit
 		this->removeMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRenderVideo, this, std::placeholders::_1));
+		this->removeMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
 
 		this->removeMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
@@ -109,8 +136,14 @@ namespace MysticLit
 	void
 	MysticlitBehaviour::onFixedUpdate() noexcept
 	{
-		if (h264Component_->getActive())
-			h264Component_->update();
+		if (this->profile_->offlineModule->offlineEnable)
+		{
+			for (auto& it : components_)
+			{
+				if (it->getActive())
+					it->onPostProcess();
+			}
+		}
 	}
 
 	void
@@ -181,7 +214,7 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::onRenderVideo(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::onRecord(const octoon::runtime::any& data) noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -190,7 +223,12 @@ namespace MysticLit
 
 		playerComponent_->play();
 		entitiesComponent_->play();
-		h264Component_->play();
+
+		canvasComponent_->setActive(true);
+		denoiseComponent_->setActive(true);
+
+		h264Component_->setActive(true);
+		h264Component_->record(std::make_shared<std::ofstream>(filepath.data(), octoon::io::ios_base::binary));
 	}
 
 	void

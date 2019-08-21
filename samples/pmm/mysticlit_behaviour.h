@@ -1,5 +1,5 @@
-#ifndef OCTOON_MYSTICLIT_BEHAVIOUR_H_
-#define OCTOON_MYSTICLIT_BEHAVIOUR_H_
+#ifndef MYSTICLIT_BEHAVIOUR_H_
+#define MYSTICLIT_BEHAVIOUR_H_
 
 #include "mysticLit_profile.h"
 #include "mysticLit_context.h"
@@ -8,7 +8,7 @@
 #include "controllers/denoise_component.h"
 #include "controllers/file_component.h"
 #include "controllers/entities_component.h"
-#include "controllers/edit_controller.h"
+#include "controllers/canvas_component.h"
 #include "controllers/offline_component.h"
 #include "controllers/player_component.h"
 #include "controllers/h264_component.h"
@@ -26,6 +26,9 @@ namespace MysticLit
 
 		void addComponent(IMysticLitComponent* component) noexcept;
 		void removeComponent(const IMysticLitComponent* component) noexcept;
+		void enableComponents() noexcept;
+		void disableComponents() noexcept;
+
 		IMysticLitComponent*  getComponent(const std::type_info& type) const noexcept;
 		template<typename T>
 		IMysticLitComponent* getComponent() const noexcept { return this->getComponent(typeid(T)); }
@@ -45,7 +48,7 @@ namespace MysticLit
 		void play(const octoon::runtime::any& data) noexcept;
 		void offlineMode(const octoon::runtime::any& data) noexcept;
 
-		void onRenderVideo(const octoon::runtime::any& data) noexcept;
+		void onRecord(const octoon::runtime::any& data) noexcept;
 		void onRenderPicture(const octoon::runtime::any& data) noexcept;
 
 	private:
@@ -59,10 +62,12 @@ namespace MysticLit
 		std::shared_ptr<MysticLitContext> context_;
 
 		std::unique_ptr<FileComponent> fileComponent_;
+		std::unique_ptr<CanvasComponent> canvasComponent_;
 		std::unique_ptr<EntitiesComponent> entitiesComponent_;
 		std::unique_ptr<OfflineComponent> offlineComponent_;
 		std::unique_ptr<PlayerComponent> playerComponent_;
-		std::unique_ptr<H264Component> h264Component_;		
+		std::unique_ptr<DenoiseComponent> denoiseComponent_;
+		std::unique_ptr<H264Component> h264Component_;
 
 		std::vector<IMysticLitComponent*> components_;
 	};

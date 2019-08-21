@@ -1,5 +1,5 @@
-#ifndef OCTOON_ENTITIES_MODULE_H_
-#define OCTOON_ENTITIES_MODULE_H_
+#ifndef MYSTICLIT_ENTITIES_MODULE_H_
+#define MYSTICLIT_ENTITIES_MODULE_H_
 
 #include <mysticLit_model.h>
 #include <octoon/game_object.h>

@@ -1,5 +1,5 @@
-#ifndef OCTOON_MYSTICLIT_COMPONENT_H_
-#define OCTOON_MYSTICLIT_COMPONENT_H_
+#ifndef MYSTICLIT_COMPONENT_H_
+#define MYSTICLIT_COMPONENT_H_
 
 #include <memory>
 #include <string>
@@ -18,6 +18,8 @@ namespace MysticLit
 
 		virtual void onEnable() noexcept {}
 		virtual void onDisable() noexcept {}
+
+		virtual void onPostProcess() noexcept {}
 
 		virtual std::shared_ptr<MysticLitModule> model() const noexcept = 0;
 	};
@@ -39,7 +41,7 @@ namespace MysticLit
 			context_ = context;
 		}
 
-		virtual std::shared_ptr<MysticLitContext> getContext() const noexcept
+		virtual const std::shared_ptr<MysticLitContext>& getContext() const noexcept
 		{
 			return context_;
 		}
@@ -49,7 +51,7 @@ namespace MysticLit
 			model_ = model;
 		}
 
-		virtual std::shared_ptr<T> getModel() const noexcept
+		virtual const std::shared_ptr<T>& getModel() const noexcept
 		{
 			return model_;
 		}

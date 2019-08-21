@@ -1,5 +1,5 @@
-#ifndef OCTOON_MYSTICLIT_CONTEXT_H_
-#define OCTOON_MYSTICLIT_CONTEXT_H_
+#ifndef MYSTICLIT_CONTEXT_H_
+#define MYSTICLIT_CONTEXT_H_
 
 namespace MysticLit
 {

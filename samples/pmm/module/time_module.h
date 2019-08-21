@@ -1,5 +1,5 @@
-#ifndef OCTOON_TIME_MODULE_H_
-#define OCTOON_TIME_MODULE_H_
+#ifndef MYSTICLIT_TIME_MODULE_H_
+#define MYSTICLIT_TIME_MODULE_H_
 
 #include <mysticLit_model.h>
 

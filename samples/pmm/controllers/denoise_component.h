@@ -1,8 +1,5 @@
-#ifndef OCTOON_DENOISE_COMPONENT_H_
-#define OCTOON_DENOISE_COMPONENT_H_
-
-#include <octoon/game_component.h>
-#include <octoon/io/iostream.h>
+#ifndef MYSTICLIT_DENOISE_COMPONENT_H_
+#define MYSTICLIT_DENOISE_COMPONENT_H_
 
 #include "module/denoise_module.h"
 #include "mysticLit_component.h"
@@ -17,6 +14,7 @@ namespace MysticLit
 	{
 	public:
 		DenoiseComponent() noexcept;
+		virtual ~DenoiseComponent() noexcept;
 
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
@@ -25,13 +23,13 @@ namespace MysticLit
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
 
+		void onPostProcess() noexcept override;
+
 	private:
 		DenoiseComponent(const DenoiseComponent&) = delete;
 		DenoiseComponent& operator=(const DenoiseComponent&) = delete;
 
 	private:
-		bool active_;
-
 		OIDNFilter filter_;
 		OIDNDevice device_;
 

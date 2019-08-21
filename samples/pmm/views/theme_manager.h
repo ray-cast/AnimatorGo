@@ -1,5 +1,5 @@
-#ifndef OCTOON_UI_THEME_MANAGER_H_
-#define OCTOON_UI_THEME_MANAGER_H_
+#ifndef MYSTICLIT_UI_THEME_MANAGER_H_
+#define MYSTICLIT_UI_THEME_MANAGER_H_
 
 #include <octoon/game_component.h>
 #include <octoon/ui/imgui.h>

@@ -1,5 +1,5 @@
-#ifndef OCTOON_OFFLINE_MODULE_H_
-#define OCTOON_OFFLINE_MODULE_H_
+#ifndef MYSTICLIT_OFFLINE_MODULE_H_
+#define MYSTICLIT_OFFLINE_MODULE_H_
 
 #include <mysticLit_model.h>
 #include <vector>

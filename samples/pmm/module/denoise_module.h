@@ -1,5 +1,5 @@
-#ifndef OCTOON_DENOISE_MODULE_H_
-#define OCTOON_DENOISE_MODULE_H_
+#ifndef MYSTICLIT_DENOISE_MODULE_H_
+#define MYSTICLIT_DENOISE_MODULE_H_
 
 #include <mysticLit_model.h>
 
@@ -16,6 +16,12 @@ namespace MysticLit
 	private:
 		DenoiseModule(const DenoiseModule&) = delete;
 		DenoiseModule& operator=(const DenoiseModule&) = delete;
+
+	public:
+		bool active_;
+
+		bool hdr;
+		bool srgb;
 	};
 }
 

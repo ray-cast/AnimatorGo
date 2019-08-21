@@ -1,5 +1,5 @@
-#ifndef OCTOON_PMM_H_
-#define OCTOON_PMM_H_
+#ifndef MYSTICLIT_PMM_H_
+#define MYSTICLIT_PMM_H_
 
 #include <string>
 #include <vector>

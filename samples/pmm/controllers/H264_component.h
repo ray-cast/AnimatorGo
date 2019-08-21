@@ -1,8 +1,5 @@
-#ifndef OCTOON_H264_COMPONENT_H_
-#define OCTOON_H264_COMPONENT_H_
-
-#include <octoon/game_component.h>
-#include <octoon/io/iostream.h>
+#ifndef MYSTICLIT_H264_COMPONENT_H_
+#define MYSTICLIT_H264_COMPONENT_H_
 
 #include "module/h264_module.h"
 #include "mysticLit_component.h"
@@ -21,23 +18,16 @@ namespace MysticLit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void setTimeStep(float timeStep) noexcept;
-		float getTimeStep() const noexcept;
-
-		void update() noexcept;
-
-		void play() noexcept;
-		void capture(const std::shared_ptr<std::ofstream>& stream) noexcept;
+		void record(std::shared_ptr<std::ofstream> stream) noexcept;
 
 	private:
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
 
-	private:
-		void capture() noexcept;
+		void onPostProcess() noexcept override;
 
+	private:
 		static void rgb2yuv(float* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept;
-		static void rgb2yuv(std::uint8_t* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept;
 
 	private:
 		H264Component(const H264Component&) = delete;
@@ -46,19 +36,8 @@ namespace MysticLit
 	private:
 		bool active_;
 
-		float time_;
-		float timeStep_;
-
-		std::size_t width_;
-		std::size_t height_;
-
-		OIDNFilter filter_;
-		OIDNDevice device_;
-
-		OIDNBuffer oidnColorBuffer_;
-		OIDNBuffer oidnNormalBuffer_;
-		OIDNBuffer oidnAlbedoBuffer_;
-		OIDNBuffer oidnOutputBuffer_;
+		std::uint32_t width_;
+		std::uint32_t height_;
 
 		std::unique_ptr<char[]> enc_;
 		std::unique_ptr<char[]> scratch_;

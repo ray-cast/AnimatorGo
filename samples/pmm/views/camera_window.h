@@ -1,5 +1,5 @@
-#ifndef OCTOON_UI_CAMERA_WINDOW_H_
-#define OCTOON_UI_CAMERA_WINDOW_H_
+#ifndef MYSTICLIT_UI_CAMERA_WINDOW_H_
+#define MYSTICLIT_UI_CAMERA_WINDOW_H_
 
 #include <octoon/game_component.h>
 

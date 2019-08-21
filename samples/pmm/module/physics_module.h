@@ -1,5 +1,5 @@
-#ifndef OCTOON_PHYSICS_MODULE_H_
-#define OCTOON_PHYSICS_MODULE_H_
+#ifndef MYSTICLIT_PHYSICS_MODULE_H_
+#define MYSTICLIT_PHYSICS_MODULE_H_
 
 #include <mysticLit_model.h>
 #include <cstdint>

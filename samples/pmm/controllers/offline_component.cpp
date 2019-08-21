@@ -33,6 +33,8 @@ namespace MysticLit
 						meshRenderer->setActive(active);
 				}
 			}
+
+			this->getModel()->offlineEnable = active;
 		}
 	}
 

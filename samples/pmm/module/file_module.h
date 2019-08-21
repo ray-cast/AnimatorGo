@@ -1,5 +1,5 @@
-#ifndef OCTOON_FILE_MODULE_H_
-#define OCTOON_FILE_MODULE_H_
+#ifndef MYSTICLIT_FILE_MODULE_H_
+#define MYSTICLIT_FILE_MODULE_H_
 
 #include <mysticLit_model.h>
 #include <vector>

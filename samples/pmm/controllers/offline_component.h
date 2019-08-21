@@ -2,7 +2,6 @@
 #define MYSTIC_OFFLINE_COMPONENT_H_
 
 #include "../mysticLit_component.h"
-#include "../utils/pmm.h"
 #include "../module/offline_module.h"
 
 namespace MysticLit

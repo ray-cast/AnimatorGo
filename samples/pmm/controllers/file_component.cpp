@@ -210,10 +210,10 @@ namespace MysticLit
 		camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(octoon::math::float4::One);
 
-		/*obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
+		obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
-		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);*/
+		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);
 		obj->addComponent<EditorCameraComponent>();
 
 		this->getContext()->behaviour->sendMessage("editor:camera:set", obj);

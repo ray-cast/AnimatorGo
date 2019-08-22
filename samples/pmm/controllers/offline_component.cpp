@@ -21,8 +21,11 @@ namespace MysticLit
 	{
 		if (this->getModel()->offlineEnable != active)
 		{
-			this->getContext()->profile->entitiesModule->camera->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
-			this->getContext()->profile->entitiesModule->camera->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
+			if (this->getContext()->profile->entitiesModule->camera)
+			{
+				this->getContext()->profile->entitiesModule->camera->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
+				this->getContext()->profile->entitiesModule->camera->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
+			}
 
 			for (auto& it : this->getContext()->profile->entitiesModule->objects)
 			{

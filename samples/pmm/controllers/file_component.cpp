@@ -216,6 +216,10 @@ namespace MysticLit
 		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);
 		obj->addComponent<EditorCameraComponent>();
 
+		auto active = this->getContext()->profile->offlineModule->offlineEnable;
+		obj->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
+		obj->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
+
 		this->getContext()->behaviour->sendMessage("editor:camera:set", obj);
 
 		return obj;

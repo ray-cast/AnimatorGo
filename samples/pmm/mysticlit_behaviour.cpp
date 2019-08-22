@@ -1,8 +1,10 @@
 #include "mysticlit_behaviour.h"
+#include <octoon/offline_camera_component.h>
+#include <octoon/offline_environment_light_component.h>
 
 namespace MysticLit
 {
-	OctoonImplementSubClass(MysticlitBehaviour, GameComponent, "MysticlitBehaviour")
+	OctoonImplementSubClass(MysticlitBehaviour, octoon::GameComponent, "MysticlitBehaviour")
 
 	MysticlitBehaviour::MysticlitBehaviour() noexcept
 	{
@@ -93,6 +95,7 @@ namespace MysticLit
 		uiComponent_->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
 		uiComponent_->addMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
 		uiComponent_->addMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:enviroment:hdri", std::bind(&MysticlitBehaviour::onLoadHDRi, this, std::placeholders::_1));
 
 		this->addComponent(fileComponent_.get());
 		this->addComponent(canvasComponent_.get());
@@ -111,23 +114,29 @@ namespace MysticLit
 	MysticlitBehaviour::onDeactivate() noexcept
 	{
 		fileComponent_.reset();
+		canvasComponent_.reset();
 		entitiesComponent_.reset();
 		offlineComponent_.reset();
+		playerComponent_.reset();
+		denoiseComponent_.reset();
+		h264Component_.reset();
 
 		context_.reset();
 		profile_.reset();
 
-		this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
-		this->removeMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
+		uiComponent_->removeMessageListener("editor:menu:enviroment:hdri", std::bind(&MysticlitBehaviour::onLoadHDRi, this, std::placeholders::_1));
+		uiComponent_.reset();
 
-		this->removeMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
-		this->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
+		this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 	}
 
 	void
@@ -250,6 +259,18 @@ namespace MysticLit
 	{
 		assert(data.type() == typeid(bool));
 		offlineComponent_->setActive(octoon::runtime::any_cast<bool>(data));
+	}
+
+	void
+	MysticlitBehaviour::onLoadHDRi(const octoon::runtime::any& data) noexcept
+	{
+		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
+		std::string filepath(pathLimits, 0);
+		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->hdriExtensions[0]))
+			return;
+
+		if (this->profile_->entitiesModule->enviromentLight)
+			this->profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);
 	}
 
 	octoon::GameComponentPtr

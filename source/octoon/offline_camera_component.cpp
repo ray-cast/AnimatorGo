@@ -1,7 +1,7 @@
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/transform_component.h>
-
+#include <octoon/image/image.h>
 #include <RadeonProRender.h>
 
 namespace octoon
@@ -195,6 +195,41 @@ namespace octoon
 		return this->orthoWidth_;
 	}
 
+	void
+	OfflineCameraComponent::setBgImage(const std::string& path) noexcept
+	{
+		if (path_ != path)
+		{
+			if (this->rprCamera_ )
+			{
+				if (this->rprClearImage_)
+					rprObjectDelete(rprClearImage_);
+
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+				{
+					if (!path_.empty())
+					{
+						this->rprClearImage_ = this->createImage(path);
+						rprSceneSetBackgroundImage(feature->getScene(), this->rprClearImage_);
+					}
+					else
+					{
+						rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+					}
+				}
+			}
+
+			path_ = path;
+		}
+	}
+	
+	const std::string&
+	OfflineCameraComponent::getBgImage() const noexcept
+	{
+		return path_;
+	}
+
 	hal::GraphicsFramebufferPtr
 	OfflineCameraComponent::getFramebuffer() const noexcept
 	{
@@ -227,10 +262,6 @@ namespace octoon
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
-			rpr_image_format imageFormat = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
-			rpr_image_desc imageDesc = { 1, 1, 1, 3, 3 };
-
-			rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, clearColor_.data(), &this->rprClearImage_);
 			rprContextCreateCamera(feature->getContext(), &this->rprCamera_);
 
 			rprCameraSetNearPlane(this->rprCamera_, this->nearPlane_);
@@ -251,7 +282,20 @@ namespace octoon
 			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
 
 			rprSceneSetCamera(feature->getScene(), this->rprCamera_);
-			rprSceneSetBackgroundImage(feature->getScene(), this->rprClearImage_);
+
+			if (!path_.empty())
+			{
+				this->rprClearImage_ = this->createImage(path_);
+				rprSceneSetBackgroundImage(feature->getScene(), this->rprClearImage_);
+			}
+			else
+			{
+				rpr_image_format imageFormat = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
+				rpr_image_desc imageDesc = { 1, 1, 1, 3, 3 };
+
+				rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, clearColor_.data(), &this->rprClearImage_);
+				rprSceneSetBackgroundImage(feature->getScene(), this->rprClearImage_);
+			}
 
 			feature->addOfflineListener(this);
 		}
@@ -336,5 +380,56 @@ namespace octoon
 	{
 		if (data.type() == typeid(float))
 			this->setAperture(runtime::any_cast<float>(data));
+	}
+
+	void*
+	OfflineCameraComponent::createImage(const std::string& path) noexcept
+	{
+		image::Image image;
+		if (!image.load(path))
+			return nullptr;
+
+		bool hasAlpha = false;
+		std::uint8_t channel = 3;
+		switch (image.format())
+		{
+		case image::Format::B8G8R8A8UNorm:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::R8G8B8A8SNorm:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::R8G8B8A8SRGB:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::B8G8R8A8SRGB:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		}
+
+		rpr_image_format imageFormat;
+		imageFormat.num_components = channel;
+		imageFormat.type = image.format().value_type() == octoon::image::value_t::Float ? RPR_COMPONENT_TYPE_FLOAT32 : RPR_COMPONENT_TYPE_UINT8;
+
+		rpr_image_desc imageDesc;
+		imageDesc.image_width = image.width();
+		imageDesc.image_height = image.height();
+		imageDesc.image_depth = 1;
+		imageDesc.image_row_pitch = imageDesc.image_width * imageFormat.num_components * (imageFormat.type == RPR_COMPONENT_TYPE_FLOAT32 ? 4 : 1);
+		imageDesc.image_slice_pitch = imageDesc.image_row_pitch * imageDesc.image_height;
+
+		auto feature = this->tryGetFeature<OfflineFeature>();
+		if (feature)
+		{
+			rpr_image rprImage = nullptr;
+			if (RPR_SUCCESS == rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, image.data(), &rprImage))
+				return rprImage;
+		}
+
+		return nullptr;
 	}
 }

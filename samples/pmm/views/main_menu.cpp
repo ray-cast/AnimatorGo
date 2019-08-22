@@ -92,6 +92,12 @@ namespace MysticLit
 				imgui::endMenu();
 			}
 
+			if (imgui::beginMenu("Environment"))
+			{
+				if (imgui::menuItem("Load hdri", "CTRL+I")) { this->sendMessage("editor:menu:enviroment:hdri"); };
+				imgui::endMenu();
+			}
+
 			if (imgui::beginMenu("Setting"))
 			{
 				if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }

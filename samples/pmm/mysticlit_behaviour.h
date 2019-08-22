@@ -45,6 +45,7 @@ namespace MysticLit
 
 		void play(const octoon::runtime::any& data) noexcept;
 		void offlineMode(const octoon::runtime::any& data) noexcept;
+		void onLoadHDRi(const octoon::runtime::any& data) noexcept;
 
 		void onRecord(const octoon::runtime::any& data) noexcept;
 		void onRenderPicture(const octoon::runtime::any& data) noexcept;

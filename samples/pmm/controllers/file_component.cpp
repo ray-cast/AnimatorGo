@@ -174,11 +174,12 @@ namespace MysticLit
 			mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 			objects.push_back(mainLight);
 
-			auto obj = octoon::GameObject::create("EnvironmentLight");
-			obj->addComponent<octoon::OfflineEnvironmentLightComponent>();
-			obj->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
+			auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
+			enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
+			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
+			this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 
-			objects.push_back(obj);
+			objects.push_back(enviromentLight);
 
 			this->getContext()->profile->entitiesModule->objects = objects;
 			return true;

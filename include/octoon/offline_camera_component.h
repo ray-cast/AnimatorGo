@@ -38,6 +38,9 @@ namespace octoon
 		float getOrthoHeight() const noexcept;
 		float getOrthoWidth() const noexcept;
 
+		void setBgImage(const std::string& path) noexcept;
+		const std::string& getBgImage() const noexcept;
+
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
@@ -59,6 +62,9 @@ namespace octoon
 		void onFovChange(const runtime::any& fov) noexcept;
 
 	private:
+		void* createImage(const std::string& path) noexcept;
+
+	private:
 		OfflineCameraComponent(const OfflineCameraComponent&) = delete;
 		OfflineCameraComponent& operator=(const OfflineCameraComponent&) = delete;
 
@@ -78,6 +84,7 @@ namespace octoon
 		float orthoWidth_;
 		float sensorSize_;
 
+		std::string path_;
 		math::float4 clearColor_;
 	};
 }

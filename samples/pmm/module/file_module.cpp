@@ -20,5 +20,6 @@ namespace MysticLit
 		this->modelExtensions = { "pmx" };
 		this->imageExtensions = { "png", "jpg" };
 		this->videoExtensions = { "264" };
+		this->hdriExtensions = { "hdr", "hdri" };
 	}
 }

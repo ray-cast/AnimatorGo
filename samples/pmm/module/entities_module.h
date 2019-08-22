@@ -21,6 +21,7 @@ namespace MysticLit
 	public:
 		octoon::GameObjects objects;
 		octoon::GameObjectPtr camera;
+		octoon::GameObjectPtr enviromentLight;
 	};
 }
 

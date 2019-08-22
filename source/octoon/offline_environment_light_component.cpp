@@ -1,6 +1,7 @@
 #include <octoon/offline_environment_light_component.h>
 #include <octoon/offline_feature.h>
 #include <octoon/transform_component.h>
+#include <octoon/image/image.h>
 #include <RadeonProRender.h>
 
 namespace octoon
@@ -11,6 +12,7 @@ namespace octoon
 		: rprLight_(nullptr)
 		, rprImage_(nullptr)
 		, color_(math::float3::One)
+		, useBgImage_(true)
 	{
 	}
 
@@ -33,6 +35,72 @@ namespace octoon
 		OfflineLightComponent::setIntensity(value);
 	}
 
+	void
+	OfflineEnvironmentLightComponent::setBgImage(const std::string& path) noexcept
+	{
+		if (path_ != path)
+		{
+			if (rprLight_ && useBgImage_)
+			{
+				if (this->rprImage_)
+					rprObjectDelete(rprImage_);
+
+				if (!path.empty())
+				{
+					this->rprImage_ = this->createImage(path);
+					rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_);
+
+					auto feature = this->tryGetFeature<OfflineFeature>();
+					if (feature)
+						rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+				}
+				else
+				{
+					rprEnvironmentLightSetImage(this->rprLight_, nullptr);
+				}
+			}
+
+			path_ = path;
+		}
+	}
+	
+	const std::string&
+	OfflineEnvironmentLightComponent::getBgImage() const noexcept
+	{
+		return path_;
+	}
+
+	void
+	OfflineEnvironmentLightComponent::setUseBgImage(bool enable) noexcept
+	{
+		if (useBgImage_ != enable)
+		{
+			if (rprLight_ && !path_.empty())
+			{
+				if (this->rprImage_)
+					rprObjectDelete(rprImage_);
+
+				if (enable)
+				{
+					this->rprImage_ = this->createImage(path_);
+					rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_);
+				}
+				else
+				{
+					rprEnvironmentLightSetImage(this->rprLight_, nullptr);
+				}
+			}
+
+			useBgImage_ = enable;
+		}
+	}
+
+	bool
+	OfflineEnvironmentLightComponent::getUseBgImage() const noexcept
+	{
+		return useBgImage_;
+	}
+
 	GameComponentPtr
 	OfflineEnvironmentLightComponent::clone() const noexcept
 	{
@@ -51,16 +119,28 @@ namespace octoon
 			rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
 			rpr_image_desc desc = { 1, 1, 1, 3, 3 };
 
-			if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, color_.ptr(), &this->rprImage_))
-				return;
 			if (RPR_SUCCESS != rprContextCreateEnvironmentLight(feature->getContext(), &this->rprLight_))
-				return;
-			if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
 				return;
 			if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(this->rprLight_, this->getIntensity()))
 				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;
+			if (RPR_SUCCESS != rprSceneSetBackgroundImage(feature->getScene(), nullptr))
+				return;
+
+			if (this->useBgImage_ && !path_.empty())
+			{
+				this->rprImage_ = this->createImage(path_);
+				if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
+					return;
+			}
+			else
+			{
+				if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, color_.ptr(), &this->rprImage_))
+					return;
+				if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
+					return;
+			}
 		}
 	}
 
@@ -89,5 +169,56 @@ namespace octoon
 	{
 		if (RPR_SUCCESS != rprLightSetGroupId(this->rprLight_, this->getGameObject()->getLayer()))
 			return;
+	}
+
+	void*
+	OfflineEnvironmentLightComponent::createImage(const std::string& path) noexcept
+	{
+		image::Image image;
+		if (!image.load(path))
+			return nullptr;
+
+		bool hasAlpha = false;
+		std::uint8_t channel = 3;
+		switch (image.format())
+		{
+		case image::Format::B8G8R8A8UNorm:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::R8G8B8A8SNorm:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::R8G8B8A8SRGB:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		case image::Format::B8G8R8A8SRGB:
+			hasAlpha = true;
+			channel = 4;
+			break;
+		}
+
+		rpr_image_format imageFormat;
+		imageFormat.num_components = channel;
+		imageFormat.type = image.format().value_type() == octoon::image::value_t::Float ? RPR_COMPONENT_TYPE_FLOAT32 : RPR_COMPONENT_TYPE_UINT8;
+
+		rpr_image_desc imageDesc;
+		imageDesc.image_width = image.width();
+		imageDesc.image_height = image.height();
+		imageDesc.image_depth = 1;
+		imageDesc.image_row_pitch = imageDesc.image_width * imageFormat.num_components * (imageFormat.type == RPR_COMPONENT_TYPE_FLOAT32 ? 4 : 1);
+		imageDesc.image_slice_pitch = imageDesc.image_row_pitch * imageDesc.image_height;
+
+		auto feature = this->tryGetFeature<OfflineFeature>();
+		if (feature)
+		{
+			rpr_image rprImage = nullptr;
+			if (RPR_SUCCESS == rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, image.data(), &rprImage))
+				return rprImage;
+		}
+
+		return nullptr;
 	}
 }

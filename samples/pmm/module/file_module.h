@@ -24,6 +24,7 @@ namespace MysticLit
 		std::vector<const char*> projectExtensions;
 		std::vector<const char*> modelExtensions;
 		std::vector<const char*> imageExtensions;
+		std::vector<const char*> hdriExtensions;
 		std::vector<const char*> videoExtensions;
 	};
 }

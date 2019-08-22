@@ -34,7 +34,7 @@ namespace MysticLit
 	}
 
 	void
-	H264Component::record(std::shared_ptr<std::ofstream> stream) noexcept
+	H264Component::record(const std::string& filepath) noexcept
 	{
 		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (camera)
@@ -68,7 +68,7 @@ namespace MysticLit
 
 			this->width_ = create_param.width;
 			this->height_ = create_param.height;
-			this->ostream_ = stream;
+			this->ostream_ = std::make_shared<std::ofstream>(filepath, std::ios_base::binary);
 		}
 	}
 

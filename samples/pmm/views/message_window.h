@@ -3,37 +3,34 @@
 
 #include <octoon/game_component.h>
 
-namespace octoon
+namespace MysticLit
 {
-	namespace editor
+	class MessageWindow final : public octoon::GameComponent
 	{
-		class MessageWindow final : public GameComponent
-		{
-			OctoonDeclareSubClass(MessageWindow, GameComponent)
-		public:
-			MessageWindow() noexcept;
-			~MessageWindow() noexcept;
+		OctoonDeclareSubClass(MessageWindow, octoon::GameComponent)
+	public:
+		MessageWindow() noexcept;
+		~MessageWindow() noexcept;
 
-			GameComponentPtr clone() const noexcept override;
+		octoon::GameComponentPtr clone() const noexcept override;
 
-		private:
-			void onActivate() noexcept override;
-			void onDeactivate() noexcept override;
+	private:
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-			void onGui() noexcept override;
+		void onGui() noexcept override;
 
-			void showPopupMessage(const runtime::any& data) noexcept;
-			void showErrorPopupMessage(const runtime::any& data) noexcept;
+		void showPopupMessage(const octoon::runtime::any& data) noexcept;
+		void showErrorPopupMessage(const octoon::runtime::any& data) noexcept;
 
-		private:
-			bool _isShowMessage;
-			bool _isShowMessageFirst;
+	private:
+		bool _isShowMessage;
+		bool _isShowMessageFirst;
 
-			std::string _messageTitle;
-			std::string _messageText;
-			std::map<std::string, bool> _ignoreMessage;
-		};
-	}
+		std::string _messageTitle;
+		std::string _messageText;
+		std::map<std::string, bool> _ignoreMessage;
+	};
 }
 
 #endif

@@ -1,5 +1,4 @@
 #include "mysticlit_behaviour.h"
-#include <fstream>
 
 namespace MysticLit
 {
@@ -73,6 +72,7 @@ namespace MysticLit
 		playerComponent_ = std::make_unique<PlayerComponent>();
 		denoiseComponent_ = std::make_unique<DenoiseComponent>();
 		h264Component_ = std::make_unique<H264Component>();
+		uiComponent_ = std::make_unique<UIComponent>();
 
 		fileComponent_->init(context_, profile_->fileModule);
 		canvasComponent_->init(context_, profile_->canvasModule);
@@ -82,6 +82,18 @@ namespace MysticLit
 		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h264Component_->init(context_, profile_->h264Module);
 
+		uiComponent_->init(context_, profile_->canvasModule);
+		uiComponent_->addMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:exit", std::bind(&MysticlitBehaviour::exit, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
+		uiComponent_->addMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
+
 		this->addComponent(fileComponent_.get());
 		this->addComponent(canvasComponent_.get());
 		this->addComponent(entitiesComponent_.get());
@@ -89,23 +101,10 @@ namespace MysticLit
 		this->addComponent(playerComponent_.get());
 		this->addComponent(denoiseComponent_.get());
 		this->addComponent(h264Component_.get());
+		this->addComponent(uiComponent_.get());
+		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 
 		this->enableComponents();
-
-		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
-		this->addMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:exit", std::bind(&MysticlitBehaviour::exit, this, std::placeholders::_1));	
-		this->addMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
-
-		this->addMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
-		this->addMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
-
-		this->getFeature<octoon::GameBaseFeature>()->getGameObjectManager()->addMessageListener("feature:input:drop", std::bind(&MysticlitBehaviour::onFileDrop, this, std::placeholders::_1));
 	}
 
 	void
@@ -129,8 +128,6 @@ namespace MysticLit
 
 		this->removeMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
 		this->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
-
-		this->getFeature<octoon::GameBaseFeature>()->getGameObjectManager()->removeMessageListener("feature:input:drop", std::bind(&MysticlitBehaviour::onFileDrop, this, std::placeholders::_1));
 	}
 
 	void
@@ -143,24 +140,6 @@ namespace MysticLit
 				if (it->getActive())
 					it->onPostProcess();
 			}
-		}
-	}
-
-	void
-	MysticlitBehaviour::onFileDrop(const octoon::runtime::any& data) noexcept
-	{
-		if (data.type() == typeid(std::vector<const char*>))
-		{
-			auto files = octoon::runtime::any_cast<std::vector<const char*>>(data);
-			if (files.empty())
-				return;
-
-			std::string_view str(files.front());
-			auto ext = str.substr(str.find_first_of("."));
-			if (ext == ".pmm")
-				fileComponent_->open(std::string(str));
-			else if (ext == ".pmx")
-				fileComponent_->importModel(std::string(str));
 		}
 	}
 
@@ -220,18 +199,17 @@ namespace MysticLit
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
-			return;
+		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
+		{
+			canvasComponent_->setActive(true);
+			denoiseComponent_->setActive(true);
+			offlineComponent_->setActive(true);
+			h264Component_->setActive(true);
 
-		playerComponent_->render();
-		entitiesComponent_->play();
-
-		canvasComponent_->setActive(true);
-		denoiseComponent_->setActive(true);
-		offlineComponent_->setActive(true);
-
-		h264Component_->setActive(true);
-		h264Component_->record(std::make_shared<std::ofstream>(filepath.data(), octoon::io::ios_base::binary));
+			playerComponent_->render();
+			entitiesComponent_->play();
+			h264Component_->record(filepath.data());
+		}
 	}
 
 	void

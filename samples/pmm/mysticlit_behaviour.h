@@ -4,7 +4,6 @@
 #include "mysticLit_profile.h"
 #include "mysticLit_context.h"
 
-#include "controllers/H264_component.h"
 #include "controllers/denoise_component.h"
 #include "controllers/file_component.h"
 #include "controllers/entities_component.h"
@@ -12,6 +11,7 @@
 #include "controllers/offline_component.h"
 #include "controllers/player_component.h"
 #include "controllers/h264_component.h"
+#include "controllers/ui_component.h"
 
 namespace MysticLit
 {
@@ -34,8 +34,6 @@ namespace MysticLit
 		IMysticLitComponent* getComponent() const noexcept { return this->getComponent(typeid(T)); }
 
 	private:
-		void onFileDrop(const octoon::runtime::any& data) noexcept;
-
 		void onOpenProject(const octoon::runtime::any& data) noexcept;
 		void onSaveProject(const octoon::runtime::any& data) noexcept;
 		void onSaveAsProject(const octoon::runtime::any& data) noexcept;
@@ -68,6 +66,7 @@ namespace MysticLit
 		std::unique_ptr<PlayerComponent> playerComponent_;
 		std::unique_ptr<DenoiseComponent> denoiseComponent_;
 		std::unique_ptr<H264Component> h264Component_;
+		std::unique_ptr<UIComponent> uiComponent_;
 
 		std::vector<IMysticLitComponent*> components_;
 	};

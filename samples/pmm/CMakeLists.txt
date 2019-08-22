@@ -6,8 +6,6 @@ SET(SOURCE_PATH ${OCTOON_PATH_SAMPLES}/${LIB_NAME})
 
 SET(MAIN_LIST
 	${SOURCE_PATH}/main.cpp
-	${SOURCE_PATH}/main_controller.h
-	${SOURCE_PATH}/main_controller.cpp
 	${SOURCE_PATH}/mysticlit_behaviour.h
 	${SOURCE_PATH}/mysticlit_behaviour.cpp
 	${SOURCE_PATH}/mysticlit_component.h
@@ -56,6 +54,8 @@ SET(VIEWS_LIST
 SOURCE_GROUP("pmm\\views" FILES ${VIEWS_LIST})
 
 SET(CONTROLLERS_LIST
+	${SOURCE_PATH}/controllers/ui_component.h
+	${SOURCE_PATH}/controllers/ui_component.cpp
 	${SOURCE_PATH}/controllers/file_component.h
 	${SOURCE_PATH}/controllers/file_component.cpp
 	${SOURCE_PATH}/controllers/player_component.h

@@ -18,7 +18,7 @@ namespace MysticLit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void record(std::shared_ptr<std::ofstream> stream) noexcept;
+		void record(const std::string& filepath) noexcept;
 
 	private:
 		void onEnable() noexcept override;
@@ -43,7 +43,7 @@ namespace MysticLit
 		std::unique_ptr<char[]> scratch_;
 		std::unique_ptr<std::uint8_t[]> buf_;
 
-		std::shared_ptr<std::ofstream> ostream_;
+		std::shared_ptr<std::ostream> ostream_;
 	};
 }
 

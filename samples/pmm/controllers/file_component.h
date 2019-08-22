@@ -31,6 +31,12 @@ namespace MysticLit
 		void setupBoneAnimation(const octoon::PmmModel& model, octoon::animation::AnimationClips<float>& clips) noexcept;
 		void setupMorphAnimation(const octoon::PmmModel& model, octoon::animation::AnimationClip<float>& clips) noexcept;
 		void setupCameraAnimation(const std::vector<octoon::PmmKeyframeCamera>& camera, octoon::animation::AnimationClip<float>& clip) noexcept;
+
+	private:
+		void onFileDrop(const octoon::runtime::any& data) noexcept;
+
+		void onEnable() noexcept override;
+		void onDisable() noexcept override;
 	};
 }
 

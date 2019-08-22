@@ -365,4 +365,46 @@ namespace MysticLit
 			clip.setCurve(it.morph_name[i], AnimationCurve(std::move(keyframes[i])));
 		}
 	}
+
+	void
+	FileComponent::onEnable() noexcept
+	{
+		auto baseFeature = this->getContext()->behaviour->getFeature<octoon::GameBaseFeature>();
+		if (baseFeature)
+		{
+			auto gameObjectManager = baseFeature->getGameObjectManager();
+			if (gameObjectManager)
+				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&FileComponent::onFileDrop, this, std::placeholders::_1));
+		}
+	}
+
+	void
+	FileComponent::onDisable() noexcept
+	{
+		auto baseFeature = this->getContext()->behaviour->getFeature<octoon::GameBaseFeature>();
+		if (baseFeature)
+		{
+			auto gameObjectManager = baseFeature->getGameObjectManager();
+			if (gameObjectManager)
+				gameObjectManager->removeMessageListener("feature:input:drop", std::bind(&FileComponent::onFileDrop, this, std::placeholders::_1));
+		}
+	}
+
+	void
+	FileComponent::onFileDrop(const octoon::runtime::any& data) noexcept
+	{
+		if (data.type() == typeid(std::vector<const char*>))
+		{
+			auto files = octoon::runtime::any_cast<std::vector<const char*>>(data);
+			if (files.empty())
+				return;
+
+			std::string_view str(files.front());
+			auto ext = str.substr(str.find_first_of("."));
+			if (ext == ".pmm")
+				this->open(std::string(str));
+			else if (ext == ".pmx")
+				this->importModel(std::string(str));
+		}
+	}
 }

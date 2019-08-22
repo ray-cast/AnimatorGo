@@ -1,5 +1,5 @@
 #include <octoon/octoon-c.h>
-#include "main_controller.h"
+#include "mysticlit_behaviour.h"
 
 int main(int argc, const char* argv[])
 {
@@ -9,7 +9,7 @@ int main(int argc, const char* argv[])
 	if (::OctoonOpenWindow(u8"MysticLit", 1280, 720))
 	{
 		auto object = octoon::GameObject::create();
-		object->addComponent<MysticLit::MainController>();
+		object->addComponent<MysticLit::MysticlitBehaviour>();
 
 		::OctoonMainLoop();
 	}

@@ -3,30 +3,27 @@
 
 #include <octoon/game_component.h>
 
-namespace octoon
+namespace MysticLit
 {
-	namespace editor
+	class MainMenu final : public octoon::GameComponent
 	{
-		class MainMenu final : public GameComponent
-		{
-			OctoonDeclareSubClass(MainMenu, GameComponent)
-		public:
-			MainMenu() noexcept;
-			~MainMenu() noexcept;
+		OctoonDeclareSubClass(MainMenu, octoon::GameComponent)
+	public:
+		MainMenu() noexcept;
+		~MainMenu() noexcept;
 
-			GameComponentPtr clone() const noexcept override;
+		octoon::GameComponentPtr clone() const noexcept override;
 
-		private:
-			void onActivate() noexcept override;
-			void onDeactivate() noexcept override;
+	private:
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
 
-			void onGui() noexcept override;
+		void onGui() noexcept override;
 
-		private:
-			bool isOfflineMode_;
-			bool isShowedMainMenu_;
-		};
-	}
+	private:
+		bool isOfflineMode_;
+		bool isShowedMainMenu_;
+	};
 }
 
 #endif

@@ -154,7 +154,7 @@ namespace octoon
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
 
 			std::uint32_t layers = 0;
-			if (ambient != math::float3::Zero)
+			if (ambient != math::float3::Zero && base == math::float3::Zero)
 				layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
 			else
 			{

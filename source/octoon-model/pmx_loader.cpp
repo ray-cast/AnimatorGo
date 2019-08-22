@@ -784,6 +784,9 @@ namespace octoon
 				body->friction = it.friction;
 				body->physicsOperation = it.physicsOperation;
 
+				if (body->shape == ShapeType::ShapeTypeCapsule && body->scale.y == 0.0f)
+					body->shape = ShapeType::ShapeTypeSphere;
+
 				model.add(std::move(body));
 			}
 

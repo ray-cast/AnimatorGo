@@ -2,11 +2,10 @@
 #define MYSTICLIT_OFFLINE_MODULE_H_
 
 #include <mysticLit_model.h>
-#include <vector>
 
 namespace MysticLit
 {
-	class OfflineModule : public MysticLitModule
+	class OfflineModule final : public MysticLitModule
 	{
 	public:
 		OfflineModule() noexcept;

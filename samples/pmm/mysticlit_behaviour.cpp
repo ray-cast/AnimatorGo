@@ -159,6 +159,8 @@ namespace MysticLit
 			auto ext = str.substr(str.find_first_of("."));
 			if (ext == ".pmm")
 				fileComponent_->open(std::string(str));
+			else if (ext == ".pmx")
+				fileComponent_->importModel(std::string(str));
 		}
 	}
 

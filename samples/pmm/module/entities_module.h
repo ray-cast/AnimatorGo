@@ -6,7 +6,7 @@
 
 namespace MysticLit
 {
-	class EntitiesModule : public MysticLitModule
+	class EntitiesModule final : public MysticLitModule
 	{
 	public:
 		EntitiesModule() noexcept;

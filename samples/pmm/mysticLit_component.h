@@ -16,12 +16,12 @@ namespace MysticLit
 		virtual void setActive(bool active) noexcept = 0;
 		virtual bool getActive() const noexcept = 0;
 
-		virtual void onEnable() noexcept {}
-		virtual void onDisable() noexcept {}
-
-		virtual void onPostProcess() noexcept {}
-
 		virtual std::shared_ptr<MysticLitModule> model() const noexcept = 0;
+
+		virtual void onEnable() noexcept;
+		virtual void onDisable() noexcept;
+
+		virtual void onPostProcess() noexcept;
 	};
 
 	template<typename T>

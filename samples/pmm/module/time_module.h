@@ -5,7 +5,7 @@
 
 namespace MysticLit
 {
-	class TimeModule : public MysticLitModule
+	class TimeModule final : public MysticLitModule
 	{
 	public:
 		TimeModule() noexcept;

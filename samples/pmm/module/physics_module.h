@@ -6,7 +6,7 @@
 
 namespace MysticLit
 {
-	class PhysicsModule : public MysticLitModule
+	class PhysicsModule final : public MysticLitModule
 	{
 	public:
 		PhysicsModule() noexcept;

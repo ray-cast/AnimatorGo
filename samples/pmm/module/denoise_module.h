@@ -5,7 +5,7 @@
 
 namespace MysticLit
 {
-	class DenoiseModule : public MysticLitModule
+	class DenoiseModule final : public MysticLitModule
 	{
 	public:
 		DenoiseModule() noexcept;

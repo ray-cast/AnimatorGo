@@ -2,7 +2,6 @@
 #define MYSTIC_ENTITIES_COMPONENT_H_
 
 #include "../mysticLit_component.h"
-#include "../utils/pmm.h"
 #include "../module/entities_module.h"
 
 namespace MysticLit

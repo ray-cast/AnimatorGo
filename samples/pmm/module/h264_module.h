@@ -6,7 +6,7 @@
 
 namespace MysticLit
 {
-	class H264Module : public MysticLitModule
+	class H264Module final : public MysticLitModule
 	{
 	public:
 		H264Module() noexcept;

@@ -7,7 +7,7 @@
 
 namespace MysticLit
 {
-	class CanvasModule : public MysticLitModule
+	class CanvasModule final : public MysticLitModule
 	{
 	public:
 		CanvasModule() noexcept;

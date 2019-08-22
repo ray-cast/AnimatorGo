@@ -217,6 +217,8 @@ namespace octoon
 					{
 						rprSceneSetBackgroundImage(feature->getScene(), nullptr);
 					}
+
+					feature->setFramebufferDirty(true);
 				}
 			}
 

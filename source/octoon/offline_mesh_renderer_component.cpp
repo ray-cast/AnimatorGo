@@ -153,13 +153,20 @@ namespace octoon
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
 
-			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_REFLECTION;
-			if (opacity < 1.0f)
-				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
-			if (!normalName.empty())
-				layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
-			if (metalness.x == 0.0f)
-				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
+			std::uint32_t layers = 0;
+			if (ambient != math::float3::Zero)
+				layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
+			else
+			{
+				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
+
+				if (opacity < 1.0f)
+					layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
+				if (!normalName.empty())
+					layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
+				if (metalness.x == 0.0f)
+					layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
+			}
 
 			rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
 
@@ -167,7 +174,10 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.emission.color", ambient[0], ambient[1], ambient[2], 1.0f);
+			{
+				rprMaterialNodeSetInputU_ext(rprMaterial, RPR_UBER_MATERIAL_LAYERS, RPR_UBER_MATERIAL_LAYER_EMISSION);
+				rprMaterialNodeSetInputF_ext(rprMaterial, RPR_UBER_MATERIAL_EMISSION_COLOR, ambient.x, ambient.y, ambient.z, 0.0f);
+			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 			{

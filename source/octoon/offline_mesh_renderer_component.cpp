@@ -166,6 +166,9 @@ namespace octoon
 			if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
 
+			if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.emission.color", ambient[0], ambient[1], ambient[2], 1.0f);
+
 			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 			{
 				if (!textureName.empty())
@@ -204,9 +207,22 @@ namespace octoon
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
 			{
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+				if (!textureName.empty())
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
+
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", textureNode);
+				}
+				else
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+				}
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)

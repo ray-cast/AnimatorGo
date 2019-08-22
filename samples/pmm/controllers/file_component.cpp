@@ -169,14 +169,14 @@ namespace MysticLit
 
 			auto mainLight = octoon::GameObject::create("DirectionalLight");
 			mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(10.0f);
+			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(4.0f);
 			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 			mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 			objects.push_back(mainLight);
 
 			auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 			enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
-			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(4.0f);
+			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(2.0f);
 			this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 
 			objects.push_back(enviromentLight);
@@ -201,19 +201,19 @@ namespace MysticLit
 
 		auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
 		offlineCamera->setActive(false);
-		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
+		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov * 2.0f);
 		offlineCamera->setClearColor(octoon::math::float4::One);
 
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();
-		camera->setAperture((float)pmm.camera_keyframes[0].fov);
+		camera->setAperture((float)pmm.camera_keyframes[0].fov * 2.0f);
 		camera->setCameraType(video::CameraType::Main);
 		camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(octoon::math::float4::One);
 
-		obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
+		/*obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
-		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);
+		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);*/
 		obj->addComponent<EditorCameraComponent>();
 
 		this->getContext()->behaviour->sendMessage("editor:camera:set", obj);

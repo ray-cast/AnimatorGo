@@ -477,12 +477,11 @@ float3 UberV2_Charlie_Sample(
     float3 ks
 )
 {
-    float3 wh;
-    UberV2_Charlie_SampleNormal(shader_data, TEXTURE_ARGS, sample, &wh);
+    const float3 kd = UberV2_Lambert_Evaluate(shader_data, wi, *wo, TEXTURE_ARGS);
 
-    *wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
+    *wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f), 1.f);
 
-    *pdf = UberV2_CharlieDistribution_GetPdf(wh, shader_data, wi, *wo, TEXTURE_ARGS);
+    *pdf = UberV2_Charlie_GetPdf(shader_data, wi, *wo, TEXTURE_ARGS);
 
     return UberV2_Charlie_Evaluate(shader_data, wi, *wo, TEXTURE_ARGS, ks);
 }

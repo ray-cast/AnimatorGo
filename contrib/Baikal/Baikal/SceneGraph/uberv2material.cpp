@@ -50,6 +50,8 @@ UberV2Material::UberV2Material()
     //Diffuse
     RegisterInput("uberv2.diffuse.color", "base diffuse albedo", { InputType::kInputMap });
     SetInputValue("uberv2.diffuse.color", f4_one);
+	RegisterInput("uberv2.diffuse.subsurface", "base diffusion", { InputType::kInputMap });
+	SetInputValue("uberv2.diffuse.subsurface", f4_zero);	
 
     //Reflection
     RegisterInput("uberv2.reflection.color", "base reflection albedo", { InputType::kInputMap });
@@ -117,7 +119,7 @@ void UberV2Material::SetLayers(uint32_t layers)
 {
     layers_ = layers;
 
-    static const std::vector<std::string> diffuse_inputs = {"uberv2.diffuse.color"};
+    static const std::vector<std::string> diffuse_inputs = {"uberv2.diffuse.color", "uberv2.diffuse.subsurface"};
     static const std::vector<std::string> emission_inputs = {"uberv2.emission.color"};
     static const std::vector<std::string> transparency_inputs = {"uberv2.transparency"};
     static const std::vector<std::string> normalmap_inputs = {"uberv2.shading_normal"};

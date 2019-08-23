@@ -15,6 +15,8 @@ typedef struct _UberV2ShaderData
     float4 sss_subsurface_color;
     float4 shading_normal;
 
+    float diffuse_subsurface;
+
     float reflection_roughness;
     float reflection_anisotropy;
     float reflection_anisotropy_rotation;

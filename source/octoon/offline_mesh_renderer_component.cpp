@@ -184,6 +184,7 @@ namespace octoon
 					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
 					rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
 				}
 				else
 				{
@@ -197,8 +198,8 @@ namespace octoon
 
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);				
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
 
 				if (edgeColor.x > 0.0f)
 				{
@@ -206,7 +207,7 @@ namespace octoon
 					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
 					rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.edgeColor", edgeColor.x, 0.0f, 0.0f, 0.0f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
 				}
 				else
 				{

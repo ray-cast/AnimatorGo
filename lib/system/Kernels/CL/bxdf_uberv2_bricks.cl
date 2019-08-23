@@ -399,7 +399,7 @@ float3 UberV2_Charlie_Evaluate(
 
 float UberV2_CharlieDistribution_GetPdf(
     // Halfway vector
-    float3 m,
+    float3 wh,
     // Preprocessed shader input data
     UberV2ShaderData const* shader_data,
     // Incoming direction
@@ -410,9 +410,8 @@ float UberV2_CharlieDistribution_GetPdf(
     TEXTURE_ARG_LIST
 )
 {
-    float mpdf = UberV2_Charlie_D(shader_data->reflection_sheen, m) * fabs(m.y);
-    // See Humphreys and Pharr for derivation
-    float denom = (4.f * fabs(dot(wo, m)));
+    float mpdf = UberV2_Charlie_D(shader_data->reflection_sheen, wh) * fabs(wh.y);
+    float denom = (4.f * fabs(dot(wo, wh)));
 
     return denom > DENOM_EPS ? mpdf / denom : 0.f;
 }
@@ -429,7 +428,7 @@ float UberV2_Charlie_GetPdf(
 )
 {
     float3 wh = normalize(wo + wi);
-    return fabs(wo.y) / PI;
+    return UberV2_CharlieDistribution_GetPdf(wh, shader_data, wi, wo, TEXTURE_ARGS);
 }
 
 // Sample the distribution
@@ -447,12 +446,10 @@ void UberV2_Charlie_SampleNormal(
     float r1 = sample.x;
     float r2 = sample.y;
 
-    // Sample halfway vector first, then reflect wi around that
-    float theta = atan2(native_sqrt(r1), native_sqrt(1.f - r1));
-    float costheta = native_cos(theta);
-    float sintheta = native_sin(theta);
+    float a = shader_data->reflection_sheen;
+    float sintheta = native_powr(r1, a / (2 * a + 1));
+    float costheta = native_sqrt(1 - sintheta * sintheta);
 
-    // phi = 2*PI*ksi2
     float phi = 2.f * PI * r2;
     float cosphi = native_cos(phi);
     float sinphi = native_sin(phi);
@@ -477,11 +474,12 @@ float3 UberV2_Charlie_Sample(
     float3 ks
 )
 {
-    const float3 kd = UberV2_Lambert_Evaluate(shader_data, wi, *wo, TEXTURE_ARGS);
+    float3 wh;
+    UberV2_Charlie_SampleNormal(shader_data, TEXTURE_ARGS, sample, &wh);
 
-    *wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f), 1.f);
+    *wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
 
-    *pdf = UberV2_Charlie_GetPdf(shader_data, wi, *wo, TEXTURE_ARGS);
+    *pdf = UberV2_CharlieDistribution_GetPdf(wh, shader_data, wi, *wo, TEXTURE_ARGS);
 
     return UberV2_Charlie_Evaluate(shader_data, wi, *wo, TEXTURE_ARGS, ks);
 }

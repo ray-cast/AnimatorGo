@@ -367,10 +367,10 @@ float3 UberV2_MicrofacetGGX_Sample(
 
 float UberV2_Charlie_D(float roughness, float3 wh)
 {
-    float rcpR = 1.0f / roughness;
-    float ndoth2 = wh.y * wh.y;
-    float sin2 = 1.0f - ndoth2;
-    float spec = (2.0f + rcpR) * native_powr(sin2, rcpR * 0.5f) / (2.0f * PI);
+    float invAlpha = 1.0f / roughness;
+    float cos2h = wh.y * wh.y;
+    float sin2h = 1.0f - cos2h;
+    float spec = (2 + invAlpha) * native_powr(sin2h, invAlpha * 0.5f) / (2 * PI);
     return spec;
 }
 

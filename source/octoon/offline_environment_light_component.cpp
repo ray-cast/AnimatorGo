@@ -43,7 +43,10 @@ namespace octoon
 			if (rprLight_ && useBgImage_)
 			{
 				if (this->rprImage_)
+				{
 					rprObjectDelete(rprImage_);
+					this->rprImage_ = nullptr;
+				}
 
 				auto feature = this->tryGetFeature<OfflineFeature>();
 				if (feature)
@@ -52,12 +55,14 @@ namespace octoon
 					{
 						this->rprImage_ = this->createImage(path);
 						rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_);
-						rprSceneSetBackgroundImage(feature->getScene(), nullptr);
 					}
 					else
 					{
 						rprEnvironmentLightSetImage(this->rprLight_, nullptr);
 					}
+
+					if (this->rprImage_)
+						rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, this->rprImage_);
 
 					feature->setFramebufferDirty(true);
 				}
@@ -81,7 +86,10 @@ namespace octoon
 			if (rprLight_ && !path_.empty())
 			{
 				if (this->rprImage_)
+				{
 					rprObjectDelete(rprImage_);
+					this->rprImage_ = nullptr;
+				}
 
 				auto feature = this->tryGetFeature<OfflineFeature>();
 				if (feature)
@@ -95,6 +103,9 @@ namespace octoon
 					{
 						rprEnvironmentLightSetImage(this->rprLight_, nullptr);
 					}
+
+					if (this->rprImage_)
+						rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, this->rprImage_);
 
 					feature->setFramebufferDirty(true);
 				}
@@ -150,6 +161,9 @@ namespace octoon
 				if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
 					return;
 			}
+
+			if (this->rprImage_)
+				rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, this->rprImage_);
 		}
 	}
 

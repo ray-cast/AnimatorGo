@@ -174,10 +174,7 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
-			{
-				rprMaterialNodeSetInputU_ext(rprMaterial, RPR_UBER_MATERIAL_LAYERS, RPR_UBER_MATERIAL_LAYER_EMISSION);
-				rprMaterialNodeSetInputF_ext(rprMaterial, RPR_UBER_MATERIAL_EMISSION_COLOR, ambient.x, ambient.y, ambient.z, 0.0f);
-			}
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.emission.color", ambient.x, ambient.y, ambient.z, 0.0f);
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 			{

@@ -15,9 +15,6 @@ namespace octoon
 		OfflineCameraComponent(float focalLength, float focalDistance, float znear, float zfar) noexcept;
 		virtual ~OfflineCameraComponent() noexcept;
 
-		void setClearColor(const math::float4& color) noexcept;
-		const math::float4&  getClearColor() const noexcept;
-
 		void setAperture(float value) noexcept;
 		void setFarPlane(float value) noexcept;
 		void setFocalLength(float value) noexcept;
@@ -37,9 +34,6 @@ namespace octoon
 		float getNearPlane() const noexcept;
 		float getOrthoHeight() const noexcept;
 		float getOrthoWidth() const noexcept;
-
-		void setBgImage(const std::string& path) noexcept;
-		const std::string& getBgImage() const noexcept;
 
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
 
@@ -62,15 +56,11 @@ namespace octoon
 		void onFovChange(const runtime::any& fov) noexcept;
 
 	private:
-		void* createImage(const std::string& path) noexcept;
-
-	private:
 		OfflineCameraComponent(const OfflineCameraComponent&) = delete;
 		OfflineCameraComponent& operator=(const OfflineCameraComponent&) = delete;
 
 	private:
 		void* rprCamera_;
-		void* rprClearImage_;
 
 		float aperture_;
 		float farPlane_;
@@ -83,9 +73,6 @@ namespace octoon
 		float orthoHeight_;
 		float orthoWidth_;
 		float sensorSize_;
-
-		std::string path_;
-		math::float4 clearColor_;
 	};
 }
 

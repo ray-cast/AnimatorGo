@@ -201,11 +201,10 @@ namespace MysticLit
 
 		auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
 		offlineCamera->setActive(false);
-		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov * 2.0f);
-		offlineCamera->setClearColor(octoon::math::float4::One);
+		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
 
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();
-		camera->setAperture((float)pmm.camera_keyframes[0].fov * 2.0f);
+		camera->setAperture((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(video::CameraType::Main);
 		camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(octoon::math::float4::One);

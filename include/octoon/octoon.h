@@ -45,6 +45,13 @@
 #include <octoon/rigidbody_component.h>
 #include <octoon/configurable_joint_component.h>
 #include <octoon/cloth_component.h>
+#include <octoon/offline_camera_component.h>
+#include <octoon/offline_directional_light_component.h>
+#include <octoon/offline_spot_light_component.h>
+#include <octoon/offline_point_light_component.h>
+#include <octoon/offline_environment_light_component.h>
+#include <octoon/offline_mesh_renderer_component.h>
+#include <octoon/offline_skinned_mesh_renderer_component.h>
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>

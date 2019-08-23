@@ -134,7 +134,7 @@ namespace octoon
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 specular = math::float3::One;
 			math::float3 ambient;
-			math::float4 metalness = math::float4::Zero;
+			math::float4 edgeColor = math::float4::Zero;
 			
 			float opacity = 1.0f;
 			float shininess = 10.0f;
@@ -146,7 +146,7 @@ namespace octoon
 			mat->get(MATKEY_COLOR_DIFFUSE, base);
 			mat->get(MATKEY_COLOR_AMBIENT, ambient);			
 			mat->get(MATKEY_COLOR_SPECULAR, specular);
-			mat->get(MATKEY_COLOR_EDGE, metalness);
+			mat->get(MATKEY_COLOR_EDGE, edgeColor);
 			mat->get(MATKEY_OPACITY, opacity);
 			mat->get(MATKEY_SHININESS, shininess);
 
@@ -164,7 +164,7 @@ namespace octoon
 					layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
 				if (!normalName.empty())
 					layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
-				if (metalness.x == 0.0f)
+				if (edgeColor.x == 0.0f)
 					layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
 			}
 
@@ -197,14 +197,16 @@ namespace octoon
 
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);				
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
 
-				if (metalness.x > 0.0f)
+				if (edgeColor.x > 0.0f)
 				{
 					rpr_material_node textureNode;
 					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
 					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
 					rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", metalness.x, 0.0f, 0.0f, 0.0f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.edgeColor", edgeColor.x, 0.0f, 0.0f, 0.0f);
 				}
 				else
 				{

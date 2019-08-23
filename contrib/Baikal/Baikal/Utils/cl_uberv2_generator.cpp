@@ -93,7 +93,8 @@ void CLUberV2Generator::MaterialGeneratePrepareInputs(UberV2Material::Ptr materi
                 {"data->reflection_anisotropy", "GetInputMapFloat"},
                 {"data->reflection_anisotropy_rotation", "GetInputMapFloat"},
                 {"data->reflection_ior", "GetInputMapFloat"},
-                {"data->reflection_metalness", "GetInputMapFloat"}
+                {"data->reflection_metalness", "GetInputMapFloat"},
+				{"data->reflection_sheen", "GetInputMapFloat"}				
             }
         },
         {

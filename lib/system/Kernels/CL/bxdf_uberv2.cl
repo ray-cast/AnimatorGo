@@ -19,8 +19,9 @@ typedef struct _UberV2ShaderData
     float reflection_anisotropy;
     float reflection_anisotropy_rotation;
     float reflection_ior;
-
     float reflection_metalness;
+    float reflection_sheen;
+
     float coating_ior;
     float refraction_roughness;
     float refraction_ior;

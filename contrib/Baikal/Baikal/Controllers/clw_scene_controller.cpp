@@ -965,6 +965,7 @@ namespace Baikal
                     "uberv2.reflection.anisotropy_rotation",
                     "uberv2.reflection.ior",
                     "uberv2.reflection.metalness",
+					"uberv2.reflection.sheen",
                 }
             },
             {

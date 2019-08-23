@@ -64,6 +64,8 @@ UberV2Material::UberV2Material()
     SetInputValue("uberv2.reflection.ior", def_ior);
     RegisterInput("uberv2.reflection.metalness", "metalness of the material", { InputType::kInputMap });
     SetInputValue("uberv2.reflection.metalness", f_zero);
+	RegisterInput("uberv2.reflection.sheen", "sheen of the material", { InputType::kInputMap });
+	SetInputValue("uberv2.reflection.sheen", f_zero);
 
     //Coating
     RegisterInput("uberv2.coating.color", "base coating albedo", { InputType::kInputMap });
@@ -125,7 +127,7 @@ void UberV2Material::SetLayers(uint32_t layers)
 
     static const std::vector<std::string> reflection_inputs =
         {"uberv2.reflection.color", "uberv2.reflection.roughness", "uberv2.reflection.anisotropy",
-         "uberv2.reflection.anisotropy_rotation", "uberv2.reflection.ior", "uberv2.reflection.metalness"};
+         "uberv2.reflection.anisotropy_rotation", "uberv2.reflection.ior", "uberv2.reflection.metalness", "uberv2.reflection.sheen" };
 
     static const std::vector<std::string> refraction_inputs =
         {"uberv2.refraction.color", "uberv2.refraction.roughness", "uberv2.refraction.ior"};

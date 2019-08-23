@@ -68,6 +68,7 @@ namespace
         { "uberv2.reflection.anisotropy_rotation", "uberv2.reflection.anisotropy_rotation" },
         { "uberv2.reflection.ior", "uberv2.reflection.ior" },
         { "uberv2.reflection.metalness", "uberv2.reflection.metalness" },
+		{ "uberv2.reflection.sheen", "uberv2.reflection.sheen" },
         { "uberv2.refraction.color", "uberv2.refraction.color" },
         { "uberv2.refraction.roughness", "uberv2.refraction.roughness" },
         { "uberv2.refraction.ior", "uberv2.refraction.ior" },

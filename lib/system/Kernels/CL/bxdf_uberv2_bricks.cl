@@ -429,7 +429,7 @@ float UberV2_Charlie_GetPdf(
 )
 {
     float3 wh = normalize(wo + wi);
-    return UberV2_CharlieDistribution_GetPdf(wh, shader_data, wi, wo, TEXTURE_ARGS);
+    return fabs(wo.y) / PI;
 }
 
 // Sample the distribution

@@ -367,7 +367,10 @@ namespace octoon
 	OfflineMeshRendererComponent::onLayerChangeAfter() noexcept
 	{
 		for (auto& shape : shapes_)
-			rprShapeSetLayerMask(shape, this->getGameObject()->getLayer());
+			rprShapeSetObjectGroupID(shape, this->getGameObject()->getLayer());
+		auto feature = this->getFeature<OfflineFeature>();
+		if (feature)
+			feature->setFramebufferDirty(true);
 	}
 
 	void

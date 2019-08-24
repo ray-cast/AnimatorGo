@@ -111,7 +111,7 @@ float3 UberV2_Lambert_Evaluate(
     float Fss = mix(1.f, Fss90, f_wo) * mix(1.f, Fss90, f_wi);
     float ss = 1.25f * (Fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
 
-    return shader_data->diffuse_color.xyz * mix(Fd, ss, shader_data->diffuse_subsurface) / PI;
+    return shader_data->diffuse_color.xyz * clamp(mix(Fd, ss, shader_data->diffuse_subsurface),0.0f, 1.0f) / PI;
 }
 
 float UberV2_Lambert_GetPdf(

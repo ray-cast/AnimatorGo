@@ -39,16 +39,16 @@ namespace octoon
 	{
 	}
 
-	void*
-	OfflineMeshRendererComponent::createImage(const std::string& path) noexcept
+	std::pair<void*, void*>
+	OfflineMeshRendererComponent::createImageAndAlpha(const std::string& path) noexcept
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (!feature)
-			return nullptr;
+			return std::make_pair(nullptr, nullptr);
 
 		auto texture = GamePrefabs::instance()->createTexture(path);
 		if (!texture)
-			return nullptr;
+			return std::make_pair(nullptr, nullptr);
 		
 		try
 		{
@@ -61,54 +61,91 @@ namespace octoon
 			switch (desc.getTexFormat())
 			{
 			case hal::GraphicsFormat::B8G8R8A8UNorm:
-				hasAlpha = true;
-				channel = 4;
-				break;
 			case hal::GraphicsFormat::R8G8B8A8UNorm:
-				hasAlpha = true;
-				channel = 4;
-				break;
 			case hal::GraphicsFormat::B8G8R8A8SRGB:
-				hasAlpha = true;
-				channel = 4;
-				break;
 			case hal::GraphicsFormat::R8G8B8A8SRGB:
 				hasAlpha = true;
 				channel = 4;
 				break;
 			}
 
-			rpr_image_format imageFormat = { channel, RPR_COMPONENT_TYPE_UINT8 };
-			rpr_image_desc imageDesc;
-			imageDesc.image_width = desc.getWidth();
-			imageDesc.image_height = desc.getHeight();
-			imageDesc.image_depth = 1;
-			imageDesc.image_row_pitch = desc.getWidth() * imageFormat.num_components;
-			imageDesc.image_slice_pitch = imageDesc.image_row_pitch * desc.getHeight();
+			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };
+			rpr_image_desc rgbDesc;
+			rgbDesc.image_width = desc.getWidth();
+			rgbDesc.image_height = desc.getHeight();
+			rgbDesc.image_depth = 1;
+			rgbDesc.image_row_pitch = desc.getWidth() * rgbFormat.num_components;
+			rgbDesc.image_slice_pitch = rgbDesc.image_row_pitch * rgbDesc.image_height;
 
-			std::vector<std::uint8_t> array(desc.getWidth() * desc.getHeight() * imageFormat.num_components);
-			for (std::size_t y = 0; y < desc.getHeight(); y++)
+			rpr_image_format alphaFormat = { 1, RPR_COMPONENT_TYPE_UINT8 };
+			rpr_image_desc alphaDesc;
+			alphaDesc.image_width = desc.getWidth();
+			alphaDesc.image_height = desc.getHeight();
+			alphaDesc.image_depth = 1;
+			alphaDesc.image_row_pitch = desc.getWidth() * alphaFormat.num_components;
+			alphaDesc.image_slice_pitch = alphaDesc.image_row_pitch * alphaDesc.image_height;
+
+			std::vector<std::uint8_t> srgb;
+			std::vector<std::uint8_t> alpha;
+
+			if (hasAlpha)
 			{
-				for (std::size_t x = 0; x < desc.getWidth(); x++)
-				{
-					auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * imageFormat.num_components;
-					auto src = (y * desc.getWidth() + x) * imageFormat.num_components;
+				srgb.resize(desc.getWidth() * desc.getHeight() * 3);
+				alpha.resize(desc.getWidth() * desc.getHeight());
 
-					for (std::uint8_t i = 0; i < imageFormat.num_components; i++)
-						array[dst + i] = data[src + i];
+				for (std::size_t y = 0; y < desc.getHeight(); y++)
+				{
+					for (std::size_t x = 0; x < desc.getWidth(); x++)
+					{
+						auto dstRGB = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * rgbFormat.num_components;
+						auto dstAlpha = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * alphaFormat.num_components;
+						auto src = (y * desc.getWidth() + x) * 4;
+
+						srgb[dstRGB] = data[src];
+						srgb[dstRGB + 1] = data[src + 1];
+						srgb[dstRGB + 2] = data[src + 2];
+						alpha[dstAlpha] = 255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255.0f;
+					}
+				}
+			}
+			else
+			{
+				srgb.resize(desc.getWidth() * desc.getHeight() * 3);
+
+				for (std::size_t y = 0; y < desc.getHeight(); y++)
+				{
+					for (std::size_t x = 0; x < desc.getWidth(); x++)
+					{
+						auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * rgbFormat.num_components;
+						auto src = (y * desc.getWidth() + x) * rgbFormat.num_components;
+
+						for (std::uint8_t i = 0; i < rgbFormat.num_components; i++)
+							srgb[dst + i] = data[src + i];
+					}
 				}
 			}
 
-			rpr_image image_;
-			rprContextCreateImage(feature->getContext(), imageFormat, &imageDesc, array.data(), &image_);
+			rpr_image image_ = nullptr;
+			rpr_image alphaImage_ = nullptr;
+
+			if (!srgb.empty())
+				rprContextCreateImage(feature->getContext(), rgbFormat, &rgbDesc, srgb.data(), &image_);
+			if (!alpha.empty())
+				rprContextCreateImage(feature->getContext(), alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
+
+			if (image_)
+				images_.push_back(image_);
+			if (alphaImage_)
+				images_.push_back(alphaImage_);
+
 			texture->unmap();
 
-			return image_;
+			return std::make_pair(image_, alphaImage_);
 		}
 		catch (...)
 		{
 			texture->unmap();
-			return nullptr;
+			return std::make_pair(nullptr, nullptr);
 		}
 	}
 
@@ -182,26 +219,7 @@ namespace octoon
 			{
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.roughness", roughness, roughness, roughness, roughness);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
-
-				if (!textureName.empty())
-				{
-					auto image = this->createImage(path + textureName);
-					if (image)
-					{
-						rpr_material_node textureNode;
-						rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-						rprMaterialNodeSetInputImageData(textureNode, "data", image);
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
-					}
-					else
-					{
-						rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
-					}					
-				}
-				else
-				{
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
-				}
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
@@ -210,47 +228,57 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
-
-				if (edgeColor.x > 0.0f)
-				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
-				}
-				else
-				{
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
-				}
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
 			{
-				if (!textureName.empty())
-				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
-
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", textureNode);
-				}
-				else
-				{
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
-				}
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
 			{
 				rpr_material_node textureNode;
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
-				rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + normalName));
+				rprMaterialNodeSetInputImageData(textureNode, "data", this->createImageAndAlpha(path + normalName).first);
 				rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
+			}
+
+			if (!textureName.empty())
+			{
+				auto image = this->createImageAndAlpha(path + textureName);
+				if (image.first)
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", image.first);
+
+					if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
+
+					if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && edgeColor.x > 0.0f)
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
+
+					if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", textureNode);
+				}
+				else
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
+				}
+
+				if (image.second)
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", image.second);
+
+					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", textureNode);
+				}
 			}
 
 			materials_.push_back(rprMaterial);
@@ -360,6 +388,10 @@ namespace octoon
 		for (auto& material : materials_)
 			rprObjectDelete(material);
 		materials_.clear();
+
+		for (auto& image : images_)
+			rprObjectDelete(image);
+		images_.clear();
 	}
 
 	void

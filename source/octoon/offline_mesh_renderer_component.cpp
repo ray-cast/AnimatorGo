@@ -40,7 +40,7 @@ namespace octoon
 	}
 
 	std::pair<void*, void*>
-	OfflineMeshRendererComponent::createImageAndAlpha(const std::string& path) noexcept
+	OfflineMeshRendererComponent::createMaterialTextures(const std::string& path) noexcept
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (!feature)
@@ -243,13 +243,13 @@ namespace octoon
 			{
 				rpr_material_node textureNode;
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
-				rprMaterialNodeSetInputImageData(textureNode, "data", this->createImageAndAlpha(path + normalName).first);
+				rprMaterialNodeSetInputImageData(textureNode, "data", this->createMaterialTextures(path + normalName).first);
 				rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
 			}
 
 			if (!textureName.empty())
 			{
-				auto image = this->createImageAndAlpha(path + textureName);
+				auto image = this->createMaterialTextures(path + textureName);
 				if (image.first)
 				{
 					rpr_material_node textureNode;

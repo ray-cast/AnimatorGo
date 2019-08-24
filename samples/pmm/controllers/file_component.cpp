@@ -169,14 +169,14 @@ namespace MysticLit
 
 			auto mainLight = octoon::GameObject::create("DirectionalLight");
 			mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(4.0f);
+			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(2.0f);
 			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 			mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 			objects.push_back(mainLight);
 
 			auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 			enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
-			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(2.0f);
+			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(1.0f);
 			this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 
 			objects.push_back(enviromentLight);

@@ -91,6 +91,9 @@ float3 UberV2_Lambert_Evaluate(
     TEXTURE_ARG_LIST
 )
 {
+    wi = normalize(wi);
+    wo = normalize(wo);
+
     float ndotwi = fabs(wi.y);
     float ndotwo = fabs(wo.y);
     float3 wh = normalize(wi + wo);
@@ -99,12 +102,12 @@ float3 UberV2_Lambert_Evaluate(
     float f_wo = SchlickFresnelReflectance(ndotwo);
     float f_wi = SchlickFresnelReflectance(ndotwi);
 
-    float Fd90 = 0.5f + 2 * hdotwo * hdotwo * shader_data->reflection_roughness;
+    float Fd90 = 0.5f + 2 * hdotwo * hdotwo * shader_data->diffuse_roughness;
     float FdV = mix(1.f, Fd90, f_wo);
     float FdL = mix(1.f, Fd90, f_wi);
     float Fd = FdV * FdL;
 
-    float Fss90 = hdotwo * hdotwo * shader_data->reflection_roughness;
+    float Fss90 = hdotwo * hdotwo * shader_data->diffuse_roughness;
     float Fss = mix(1.f, Fss90, f_wo) * mix(1.f, Fss90, f_wi);
     float ss = 1.25f * (Fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
 

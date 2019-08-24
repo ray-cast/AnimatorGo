@@ -101,6 +101,7 @@ void CLUberV2Generator::MaterialGeneratePrepareInputs(UberV2Material::Ptr materi
             UberV2Material::Layers::kDiffuseLayer,
             {
                 {"data->diffuse_color", "GetInputMapFloat4"},
+				{"data->diffuse_roughness", "GetInputMapFloat"},
 				{"data->diffuse_subsurface", "GetInputMapFloat"},
             }
         },

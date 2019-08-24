@@ -87,7 +87,7 @@ public:
 		case LayerHelper::LayerTypes::solid:
 		{
 			object = octoon::GamePrefabs::instance()->createSpriteSquare(layer.solid.sw, layer.solid.sh);
-			object->getComponent<octoon::RenderComponent>()->getMaterial()->at("color")->uniform4f(octoon::math::float4(layer.solid.color, 1.0f));
+			object->getComponent<octoon::RenderComponent>()->getMaterial()->get("color")->uniform4f(octoon::math::float4(layer.solid.color, 1.0f));
 		}
 		break;
 		case LayerHelper::LayerTypes::still:
@@ -99,7 +99,7 @@ public:
 		{
 			object = octoon::GamePrefabs::instance()->createText(layer.text.text.c_str(), layer.text.size);
 			object->getComponent<octoon::TextComponent>()->setTextAlign((octoon::model::TextAlign)layer.text.align);
-			object->getComponent<octoon::RenderComponent>()->getMaterial()->at("color")->uniform4f(octoon::math::float4(layer.text.color, 1.0f));
+			object->getComponent<octoon::RenderComponent>()->getMaterial()->get("color")->uniform4f(octoon::math::float4(layer.text.color, 1.0f));
 		}
 		break;
 		case LayerHelper::LayerTypes::shape:

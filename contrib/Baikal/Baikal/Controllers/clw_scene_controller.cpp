@@ -972,6 +972,7 @@ namespace Baikal
                 UberV2Material::Layers::kDiffuseLayer,
                 {
 					"uberv2.diffuse.color",
+					"uberv2.diffuse.roughness",
 					"uberv2.diffuse.subsurface",
 				}
             },

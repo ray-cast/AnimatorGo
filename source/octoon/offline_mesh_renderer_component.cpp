@@ -150,6 +150,8 @@ namespace octoon
 			mat->get(MATKEY_OPACITY, opacity);
 			mat->get(MATKEY_SHININESS, shininess);
 
+			float roughness = 1.0f - math::saturate(shininess / 1000.0f);
+
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
 
@@ -178,13 +180,23 @@ namespace octoon
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 			{
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.roughness", roughness, roughness, roughness, roughness);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
+
 				if (!textureName.empty())
 				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", this->createImage(path + textureName));
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
+					auto image = this->createImage(path + textureName);
+					if (image)
+					{
+						rpr_material_node textureNode;
+						rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+						rprMaterialNodeSetInputImageData(textureNode, "data", image);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
+					}
+					else
+					{
+						rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
+					}					
 				}
 				else
 				{
@@ -194,9 +206,7 @@ namespace octoon
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
 			{
-				float roughness = 1.0f - math::saturate(shininess / 1000.0f);
-
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);				
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);

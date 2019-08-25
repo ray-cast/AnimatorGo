@@ -22,6 +22,9 @@ namespace octoon
 			PhysxScene(PhysxContext* context, PhysicsSceneDesc desc);
 			virtual ~PhysxScene();
 
+			virtual void setGravity(const math::float3& gravity) noexcept override;
+			virtual math::float3 getGravity() const noexcept override;
+
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 

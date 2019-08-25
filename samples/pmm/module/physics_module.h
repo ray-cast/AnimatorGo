@@ -3,6 +3,7 @@
 
 #include <mysticLit_model.h>
 #include <cstdint>
+#include <octoon/math/vector3.h>
 
 namespace MysticLit
 {
@@ -19,6 +20,8 @@ namespace MysticLit
 		PhysicsModule& operator=(const PhysicsModule&) = delete;
 
 	public:
+		octoon::math::float3 gravity;
+
 		std::uint32_t playSolverIterationCounts;
 		std::uint32_t recordSolverIterationCounts;
 		std::uint32_t previewSolverIterationCounts;

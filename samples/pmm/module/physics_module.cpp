@@ -14,12 +14,9 @@ namespace MysticLit
 	void
 	PhysicsModule::reset() noexcept
 	{
+		this->gravity = octoon::math::float3(0.0, -98.0f, 0.0f);
 		this->playSolverIterationCounts = 10;
 		this->recordSolverIterationCounts = 10;
-#if defined(_DEBUG)
-		this->previewSolverIterationCounts = 0;
-#else
 		this->previewSolverIterationCounts = 1;
-#endif
 	}
 }

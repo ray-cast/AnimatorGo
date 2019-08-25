@@ -64,6 +64,19 @@ namespace octoon
 			px_scene = nullptr;
 		}
 
+		void
+		PhysxScene::setGravity(const math::float3& gravity) noexcept
+		{
+			px_scene->setGravity(physx::PxVec3(gravity.x, gravity.y, gravity.z));
+		}
+
+		math::float3
+		PhysxScene::getGravity() const noexcept
+		{
+			auto gravity = px_scene->getGravity();
+			return math::float3(gravity.x, gravity.y, gravity.z);
+		}
+
 		void PhysxScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 		{
 			std::shared_ptr<PhysxRigidbody> physx_rigidbody = std::dynamic_pointer_cast<PhysxRigidbody>(rigidbody);

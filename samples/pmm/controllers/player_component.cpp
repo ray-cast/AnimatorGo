@@ -30,7 +30,10 @@ namespace MysticLit
 		auto& context = this->getContext()->profile;
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
+		{
+			physicsFeature->setGravity(context->physicsModule->gravity);
 			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
+		}
 	}
 
 	void

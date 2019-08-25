@@ -11,11 +11,26 @@ namespace octoon
 		, needUpdate_(false)
 		, iterationCounts_(1)
 		, timeInterval_(0.02f)
+		, gravity_(0.0f, -9.8f, 0.0f)
 	{
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
 	{
+	}
+
+	void
+	PhysicsFeature::setGravity(const math::float3& gravity) noexcept
+	{
+		if (physics_scene)
+			physics_scene->setGravity(gravity);
+		gravity_ = gravity;
+	}
+
+	const math::float3&
+	PhysicsFeature::getGravity() const noexcept
+	{
+		return gravity_;
 	}
 
 	void
@@ -35,8 +50,11 @@ namespace octoon
     {
 		this->addMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
+		physics::PhysicsSceneDesc physicsSceneDesc;
+		physicsSceneDesc.gravity = gravity_;
+
 		physics_context = physics::PhysicsSystem::instance()->createContext();
-		physics_scene = physics_context->createScene(physics::PhysicsSceneDesc());
+		physics_scene = physics_context->createScene(physicsSceneDesc);
     }
 
     void

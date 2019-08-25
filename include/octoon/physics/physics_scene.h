@@ -27,6 +27,9 @@ namespace octoon
 			PhysicsScene() noexcept;
 			~PhysicsScene() noexcept;
 
+			virtual void setGravity(const math::float3& gravity) noexcept = 0;
+			virtual math::float3 getGravity() const noexcept = 0;
+
 			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
 			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
 			virtual void simulate(float time) = 0;

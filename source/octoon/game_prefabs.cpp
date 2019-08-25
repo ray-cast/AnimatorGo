@@ -645,7 +645,7 @@ namespace octoon
 			if (it != textureCaches_.end())
 				return (*it).second;
 
-			vstream stream;
+			ivstream stream;
 			if (!stream.open(path))
 				throw runtime::runtime_error::create("Failed to open file :" + path);
 

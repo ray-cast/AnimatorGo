@@ -259,8 +259,8 @@ namespace octoon
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
-		auto material = std::make_shared<video::BasicMaterial>();
-		material->setBaseColor(math::float4(0.4, 0.9, 0.4, 1.0));
+		/*auto material = std::make_shared<model::Material>();
+		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));*/
 
 		for (auto& it : model.get<Model::bone>())
 		{

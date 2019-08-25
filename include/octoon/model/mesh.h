@@ -16,8 +16,6 @@ namespace octoon
 		{
 		public:
 			Mesh() noexcept;
-			Mesh(Mesh&& mesh) noexcept;
-			Mesh(const Mesh& mesh) noexcept;
 			~Mesh() noexcept;
 
 			void setName(std::string&& name) noexcept;

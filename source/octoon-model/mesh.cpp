@@ -14,38 +14,6 @@ namespace octoon
 		{
 		}
 
-		Mesh::Mesh(Mesh&& mesh) noexcept
-			: _name(std::move(mesh._name))
-			, _vertices(std::move(mesh._vertices))
-			, _normals(std::move(mesh._normals))
-			, _colors(std::move(mesh._colors))
-			, _tangents(std::move(mesh._tangents))
-			, _bindposes(std::move(mesh._bindposes))
-			, _indices(std::move(mesh._indices))
-			, _bones(std::move(mesh._bones))
-			, _weights(std::move(mesh._weights))
-			, _boundingBox(std::move(mesh._boundingBox))
-		{
-			for (int i = 0; i < TEXTURE_ARRAY_COUNT; ++i)
-				_texcoords[i] = std::move(mesh._texcoords[i]);
-		}
-
-		Mesh::Mesh(const Mesh& mesh) noexcept
-			: _name(mesh._name)
-			, _vertices(mesh._vertices)
-			, _normals(mesh._normals)
-			, _colors(mesh._colors)
-			, _tangents(mesh._tangents)
-			, _bindposes(mesh._bindposes)
-			, _indices(mesh._indices)
-			, _bones(mesh._bones)
-			, _weights(mesh._weights)
-			, _boundingBox(mesh._boundingBox)
-		{
-			for (int i = 0; i < TEXTURE_ARRAY_COUNT; ++i)
-				_texcoords[i] = mesh._texcoords[i];
-		}
-
 		Mesh::~Mesh() noexcept
 		{
 		}

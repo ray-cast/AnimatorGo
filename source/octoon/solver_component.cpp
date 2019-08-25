@@ -206,7 +206,7 @@ namespace octoon
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
-				if (deltaAngle < math::EPSILON_E5)
+				if (deltaAngle < math::EPSILON_E6)
 					continue;
 
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));

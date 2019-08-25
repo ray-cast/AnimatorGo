@@ -9,6 +9,7 @@
 #include <octoon/game_server.h>
 
 #include <octoon/hal_feature.h>
+#include <octoon/runtime/except.h>
 
 namespace octoon
 {
@@ -60,8 +61,10 @@ namespace octoon
 		this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 
 		auto graphics = this->getFeature<GraphicsFeature>();
-		if (graphics)
-			video::RenderSystem::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
+		if (!graphics)
+			throw runtime::runtime_error::create("failure to get the HAL from features");
+		
+		video::RenderSystem::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
 	}
 
 	void

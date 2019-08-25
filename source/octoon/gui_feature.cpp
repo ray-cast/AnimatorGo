@@ -83,7 +83,7 @@ namespace octoon
 
 		auto graphics = this->getFeature<GraphicsFeature>();
 		if (!graphics)
-			throw runtime::runtime_error::create("failure to get feature with graphics", runtime::error_code::none);
+			throw runtime::runtime_error::create("failure to get the HAL from features");
 
 		system_ = std::make_unique<imgui::System>(graphics->getDevice());
 		system_->setImeWindowHandle(window_);

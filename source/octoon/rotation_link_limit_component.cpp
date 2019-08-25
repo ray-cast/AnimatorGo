@@ -8,6 +8,10 @@ namespace octoon
 		: additiveMoveRatio_(0.0f)
 		, additiveRotationRatio_(0.0f)
 		, additiveUseLocal_(false)
+		, translate_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, localTranslate_(math::float3::Zero)
+		, localRotation_(math::Quaternion::Zero)
 	{
 	}
 
@@ -15,6 +19,10 @@ namespace octoon
 		: additiveMoveRatio_(move)
 		, additiveRotationRatio_(rotation)
 		, additiveUseLocal_(useLocal)
+		, translate_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, localTranslate_(math::float3::Zero)
+		, localRotation_(math::Quaternion::Zero)
 	{
 	}
 
@@ -52,6 +60,54 @@ namespace octoon
 	RotationLinkLimitComponent::getAdditiveRotationRatio() const noexcept
 	{
 		return additiveRotationRatio_;
+	}
+
+	void
+	RotationLinkLimitComponent::setTranslate(const math::float3& translate) noexcept
+	{
+		this->translate_ = translate;
+	}
+
+	void
+	RotationLinkLimitComponent::setLocalTranslate(const math::float3& translate) noexcept
+	{
+		this->localTranslate_ = translate;
+	}
+
+	void
+	RotationLinkLimitComponent::setQuaternion(const math::Quaternion& quat) noexcept
+	{
+		this->rotation_ = quat;
+	}
+
+	void
+	RotationLinkLimitComponent::setLocalQuaternion(const math::Quaternion& quat) noexcept
+	{
+		this->localRotation_ = quat;
+	}
+
+	const math::float3&
+	RotationLinkLimitComponent::getTranslate() const noexcept
+	{
+		return this->translate_;
+	}
+
+	const math::float3&
+	RotationLinkLimitComponent::getLocalTranslate() const noexcept
+	{
+		return this->localTranslate_;
+	}
+
+	const math::Quaternion&
+	RotationLinkLimitComponent::getQuaternion() const noexcept
+	{
+		return this->rotation_;
+	}
+
+	const math::Quaternion&
+	RotationLinkLimitComponent::getLocalQuaternion() const noexcept
+	{
+		return this->localRotation_;
 	}
 
 	GameComponentPtr

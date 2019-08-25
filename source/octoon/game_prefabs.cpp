@@ -259,14 +259,14 @@ namespace octoon
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
-		/*auto material = std::make_shared<model::Material>();
-		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));*/
+		auto material = std::make_shared<model::Material>();
+		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));
 
 		for (auto& it : model.get<Model::bone>())
 		{
 			auto object = GameObject::create(it->getName());
-			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			object->addComponent<MeshRendererComponent>(material);*/
+			object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			object->addComponent<MeshRendererComponent>(material);
 
 			bones.emplace_back(object);
 		}
@@ -274,20 +274,39 @@ namespace octoon
 		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
 		{
 			auto it = model.get<Model::bone>(i);
-			auto parent = it->getParent();
-			bones[i]->setParent(parent >= 0 && parent < bones.size() ? bones[parent] : nullptr);
-			bones[i]->getComponent<TransformComponent>()->setTranslate(it->getPosition());
 
+			auto parent = it->getParent();
+			if (parent >= 0 && parent < bones.size())
+				bones[i]->setParent(bones[parent]);
+
+			auto transform = bones[i]->getComponent<TransformComponent>();
+			transform->setTranslate(it->getPosition());
+			transform->setQuaternion(it->getRotation());
+			
 			auto additiveParent = it->getAdditiveParent();
 			if (additiveParent >= 0 && additiveParent < bones.size())
 			{
-				bones[i]->addComponent<RotationLinkLimitComponent>(it->getAdditiveMoveRatio(), it->getAdditiveRotationRatio(), it->getAdditiveUseLocal());
+				auto limit = bones[i]->addComponent<RotationLinkLimitComponent>();
+				limit->setTranslate(transform->getTranslate());
+				limit->setQuaternion(transform->getQuaternion());
+				limit->setLocalTranslate(transform->getLocalTranslate());
+				limit->setLocalQuaternion(transform->getLocalQuaternion());
+				limit->setAdditiveMoveRatio(it->getAdditiveMoveRatio());
+				limit->setAdditiveRotationRatio(it->getAdditiveRotationRatio());
+				limit->setAdditiveUseLocal(it->getAdditiveUseLocal());
 
 				auto parentController = bones[additiveParent]->getComponent<RotationLinkComponent>();
 				if (parentController)
 					parentController->addBone(bones[i]);
 				else
-					bones[additiveParent]->addComponent<RotationLinkComponent>(bones[i]);
+				{
+					auto transform = bones[additiveParent]->getComponent<TransformComponent>();
+					auto rotationLink = bones[additiveParent]->addComponent<RotationLinkComponent>(bones[i]);
+					rotationLink->setTranslate(transform->getTranslate());
+					rotationLink->setQuaternion(transform->getQuaternion());
+					rotationLink->setLocalTranslate(transform->getLocalTranslate());
+					rotationLink->setLocalQuaternion(transform->getLocalQuaternion());
+				}
 			}
 		}
 
@@ -571,12 +590,12 @@ namespace octoon
 			osmr->setTextureBlendEnable(true);
 			object->addComponent(osmr);
 
-			/*auto mat = std::make_shared<LineMaterial>(1.0f);
-			mat->setColor(math::float3(0.4, 0.9, 0.4));
+			/*auto material = std::make_shared<model::Material>();
+			material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));
 
 			auto sjr = std::make_shared<SkinnedJointRendererComponent>();
-			sjr->setMaterial(mat);
-			sjr->setAvatar(bones);
+			sjr->setMaterial(material);
+			sjr->setTransforms(bones);
 
 			object->addComponent(sjr);*/
 		}

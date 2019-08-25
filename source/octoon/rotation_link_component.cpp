@@ -6,20 +6,26 @@ namespace octoon
 	OctoonImplementSubClass(RotationLinkComponent, GameComponent, "RotationLink")
 
 	RotationLinkComponent::RotationLinkComponent() noexcept
-		: rotation_(math::Quaternion::Zero)
+		: translate_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, localTranslate_(math::float3::Zero)
 		, localRotation_(math::Quaternion::Zero)
 	{
 	}
 
 	RotationLinkComponent::RotationLinkComponent(const GameObjects& bones) noexcept
-		: rotation_(math::Quaternion::Zero)
+		: translate_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, localTranslate_(math::float3::Zero)
 		, localRotation_(math::Quaternion::Zero)
 		, bones_(bones)
 	{
 	}
 
 	RotationLinkComponent::RotationLinkComponent(const GameObjectPtr& bone) noexcept
-		: rotation_(math::Quaternion::Zero)
+		: translate_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, localTranslate_(math::float3::Zero)
 		, localRotation_(math::Quaternion::Zero)
 	{
 		bones_.push_back(bone);
@@ -128,15 +134,5 @@ namespace octoon
 		return useLocal ?
 			math::inverse(localRotation_) * transform->getLocalQuaternion() :
 			math::inverse(rotation_) * transform->getQuaternion();
-	}
-
-	void
-	RotationLinkComponent::onAttach() noexcept
-	{
-		auto transform = this->getComponent<TransformComponent>();
-		translate_ = transform->getTranslate();
-		rotation_ = transform->getQuaternion();
-		localTranslate_ = transform->getLocalTranslate();
-		localRotation_ = transform->getLocalQuaternion();
 	}
 }

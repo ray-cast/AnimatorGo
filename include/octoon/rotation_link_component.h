@@ -38,9 +38,6 @@ namespace octoon
 		GameComponentPtr clone() const noexcept override;
 
 	private:
-		void onAttach() noexcept override;
-
-	private:
 		RotationLinkComponent(const RotationLinkComponent&) = delete;
 		RotationLinkComponent& operator=(const RotationLinkComponent&) = delete;
 

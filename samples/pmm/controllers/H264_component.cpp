@@ -89,7 +89,8 @@ namespace MysticLit
 		H264E_run_param_t run_param;
 		std::memset(&run_param, 0, sizeof(run_param));
 		run_param.qp_min = model->qp_min;
-		run_param.qp_max = model->qp_min;
+		run_param.qp_max = model->qp_max;
+		run_param.desired_frame_bytes = model->kbps * 1000 / model->fps;
 		run_param.frame_type = model->frame_type;
 		run_param.encode_speed = model->encode_speed;
 

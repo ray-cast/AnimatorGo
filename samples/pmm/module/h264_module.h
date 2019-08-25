@@ -19,6 +19,9 @@ namespace MysticLit
 		H264Module& operator=(const H264Module&) = delete;
 
 	public:
+		std::uint32_t fps;
+		std::uint32_t kbps;
+
 		std::uint32_t qp_min;
 		std::uint32_t qp_max;
 

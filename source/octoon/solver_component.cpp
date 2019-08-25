@@ -187,6 +187,8 @@ namespace octoon
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();
 
+		enableRotationLink_ = false;
+
 		for (std::uint32_t i = 0; i < this->getIterations(); i++)
 		{
 			for (auto& bone : bones_)
@@ -204,9 +206,11 @@ namespace octoon
 				localJointTarget = math::normalize(localJointTarget);
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-				float deltaAngle = math::safe_acos(cosDeltaAngle);
-				if (deltaAngle < math::EPSILON_E5)
+				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E5)
 					continue;
+				float deltaAngle = math::safe_acos(cosDeltaAngle);
+
+				enableRotationLink_ = true;
 
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
 
@@ -237,6 +241,9 @@ namespace octoon
 	void
 	CCDSolverComponent::evaluateRotationLink() noexcept
 	{
+		if (!enableRotationLink_)
+			return;
+
 		for (auto& it : bones_)
 		{
 			auto link = it->getComponent<RotationLinkComponent>();
@@ -250,7 +257,7 @@ namespace octoon
 					auto additiveTranslate = link->getDeltaTranslate(rotationLimit->getAdditiveUseLocal());
 					if (rotationLimit->getAdditiveMoveRatio() != 0.0f)
 					{
-						transform->getComponent<TransformComponent>()->setLocalTranslate(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
+						transform->getComponent<TransformComponent>()->setLocalTranslateAccum(additiveTranslate * rotationLimit->getAdditiveMoveRatio());
 					}
 
 					if (rotationLimit->getAdditiveRotationRatio() != 0.0f)
@@ -261,12 +268,12 @@ namespace octoon
 							if (rotationLimit->getAdditiveRotationRatio() > 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotation);
+								transform->setLocalQuaternionAccum(rotation);
 							}
 							else if (rotationLimit->getAdditiveRotationRatio() < 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotation);
+								transform->setLocalQuaternionAccum(rotation);
 							}
 						}
 					}

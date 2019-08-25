@@ -57,7 +57,8 @@ namespace octoon
 		float tolerance_;
 
 		bool enableAxisLimit_;
-		
+		bool enableRotationLink_;
+
 		std::uint32_t maxIterations_;
 
 		GameObjects bones_;

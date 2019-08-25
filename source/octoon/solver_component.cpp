@@ -15,7 +15,6 @@ namespace octoon
 		, time_(0)
 		, timeStep_(0)
 		, enableAxisLimit_(true)
-		, enableRotationLink_(false)
 	{
 	}
 
@@ -206,7 +205,7 @@ namespace octoon
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
-				if (deltaAngle < math::EPSILON_E6)
+				if (deltaAngle < math::EPSILON_E5)
 					continue;
 
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));

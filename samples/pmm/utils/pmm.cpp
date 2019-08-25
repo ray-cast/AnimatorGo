@@ -979,7 +979,6 @@ namespace octoon
 		, h_scroll_position(0)
 		, h_scroll_scale(0)
 		, bone_operation_kind(0)
-		, looking_at(0)
 		, is_repeat(0)
 		, is_play_from_frame(0)
 		, is_play_to_frame(0)
@@ -1043,6 +1042,9 @@ namespace octoon
 			for (std::size_t i = 0; i < pmm.accessory_count; i++)
 				pmm.accessory_datas.push_back(PmmAccessoryData::load(reader).value());
 
+			if (pmm.accessory_count > 0.0f)
+				return pmm;
+
 			reader.read((char*)& pmm.current_frame_position, sizeof(pmm.current_frame_position));
 			reader.read((char*)& pmm.h_scroll_position, sizeof(pmm.h_scroll_position));
 			reader.read((char*)& pmm.h_scroll_scale, sizeof(pmm.h_scroll_scale));
@@ -1066,6 +1068,7 @@ namespace octoon
 			pmm.background_image_path = PmmName::load_fixed_utf8(reader, 255).value();
 			reader.read((char*)& pmm.is_show_background_image, sizeof(pmm.is_show_background_image));
 			reader.read((char*)& pmm.is_show_infomation, sizeof(pmm.is_show_infomation));
+			reader.read((char*)& pmm.is_low_power, sizeof(pmm.is_low_power));
 			reader.read((char*)& pmm.is_show_axis, sizeof(pmm.is_show_axis));
 			reader.read((char*)& pmm.is_show_groundshadow, sizeof(pmm.is_show_groundshadow));
 			reader.read((char*)& pmm.fps_limit, sizeof(pmm.fps_limit));

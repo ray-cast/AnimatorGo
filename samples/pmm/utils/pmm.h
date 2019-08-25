@@ -394,8 +394,8 @@ namespace octoon
 		PmmKeyframeLight main_light_frame;
 		std::vector<PmmKeyframeLight> main_light_frames;
 		PmmLight main_light;
-		std::uint8_t selected_accessory_index;
-		std::uint32_t accessory_vscroll;
+		std::uint16_t selected_accessory_index;
+		std::uint16_t accessory_vscroll;
 		std::uint8_t accessory_count;
 		std::vector<std::string> accessory_name;
 		std::vector<PmmAccessoryData> accessory_datas;
@@ -422,6 +422,7 @@ namespace octoon
 		std::string background_image_path;
 		std::uint8_t is_show_background_image;
 		std::uint8_t is_show_infomation;
+		std::uint8_t is_low_power;
 		std::uint8_t is_show_axis;
 		std::uint8_t is_show_groundshadow;
 		float fps_limit;

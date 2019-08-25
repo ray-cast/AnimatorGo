@@ -175,11 +175,17 @@ namespace octoon
 	{
 		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
 
-		rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
-		rprContextCreateScene(rprContext_, &rprScene_);
-		rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
+		if (RPR_SUCCESS != rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_))
+			throw runtime::runtime_error::create("rprCreateContext() failed");
 
-		rprContextSetScene(rprContext_, rprScene_);
+		if (RPR_SUCCESS != rprContextCreateScene(rprContext_, &rprScene_))
+			throw runtime::runtime_error::create("rprContextCreateScene() failed");
+
+		if (RPR_SUCCESS != rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_))
+			throw runtime::runtime_error::create("rprContextCreateMaterialSystem() failed");
+
+		if (RPR_SUCCESS != rprContextSetScene(rprContext_, rprScene_))
+			throw runtime::runtime_error::create("rprContextCreateMaterialSystem() failed");
 
 		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}

@@ -2,8 +2,6 @@
 #define OCTOON_PHYSICS_FEATURE_H_
 
 #include <octoon/game_feature.h>
-
-#include <octoon/physics/physics_system.h>
 #include <octoon/physics/physics_context.h>
 
 namespace octoon
@@ -44,7 +42,6 @@ namespace octoon
 		float timeInterval_;
 		std::uint32_t iterationCounts_;
 
-		physics::PhysicsSystem physics_system;
 		std::shared_ptr<physics::PhysicsContext> physics_context;
 		std::shared_ptr<physics::PhysicsScene> physics_scene;
     };

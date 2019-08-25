@@ -1,12 +1,12 @@
 #include <octoon/physics_feature.h>
+#include <octoon/physics/physics_system.h>
 
 namespace octoon
 {
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
 
 	PhysicsFeature::PhysicsFeature() except
-		: physics_system()
-		, physics_context(nullptr)
+		: physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
 		, iterationCounts_(1)
@@ -35,7 +35,7 @@ namespace octoon
     {
 		this->addMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
-		physics_context = physics_system.createContext();
+		physics_context = physics::PhysicsSystem::instance()->createContext();
 		physics_scene = physics_context->createScene(physics::PhysicsSceneDesc());
     }
 

@@ -93,8 +93,13 @@ namespace MysticLit
 			if (outpath)
 			{
 				std::strncpy(buffer, outpath, max_length);
-				free(outpath);
+				if (std::strstr(outpath, ".") == 0)
+				{
+					std::strcat(buffer, ".");
+					std::strcat(buffer, ext_name);
+				}
 
+				free(outpath);
 				return true;
 			}
 

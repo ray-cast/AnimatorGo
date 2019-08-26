@@ -204,7 +204,7 @@ namespace octoon
 				localJointTarget = math::normalize(localJointTarget);
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E6)
+				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E5)
 					continue;
 
 				float deltaAngle = math::safe_acos(cosDeltaAngle);

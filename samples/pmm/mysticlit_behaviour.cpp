@@ -168,10 +168,8 @@ namespace MysticLit
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
-			return;
-
-		fileComponent_->open(filepath.data());
+		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
+			fileComponent_->open(filepath.data());
 	}
 
 	void
@@ -188,10 +186,8 @@ namespace MysticLit
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->modelExtensions[0]))
-			return;
-
-		fileComponent_->importModel(filepath.data());
+		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->modelExtensions[0]))
+			fileComponent_->importModel(filepath.data());
 	}
 
 	void
@@ -281,10 +277,10 @@ namespace MysticLit
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::string filepath(pathLimits, 0);
 		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->hdriExtensions[0]))
-			return;
-
-		if (this->profile_->entitiesModule->enviromentLight)
-			this->profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);
+		{
+			if (this->profile_->entitiesModule->enviromentLight)
+				this->profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);
+		}
 	}
 
 	octoon::GameComponentPtr

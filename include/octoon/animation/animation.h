@@ -106,10 +106,12 @@ namespace octoon
 
 			void evaluate(const _Time& delta) noexcept
 			{
+				this->finish = true;
+
 				for (auto& it : this->clips)
 				{
 					it.evaluate(delta);
-					this->finish |= it.finish;
+					this->finish &= it.finish;
 				}
 			}
 

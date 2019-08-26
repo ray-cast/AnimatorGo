@@ -82,6 +82,10 @@ namespace octoon
 		void removeComponentDispatch(GameDispatchTypes type) noexcept;
 		void removeComponentDispatchs() noexcept;
 
+		void tryAddComponentDispatch(GameDispatchTypes type) noexcept;
+		void tryRemoveComponentDispatch(GameDispatchTypes type) noexcept;
+		void tryRemoveComponentDispatchs() noexcept;
+
 	private:
 		virtual void onAttach() except;
 		virtual void onDetach() noexcept;

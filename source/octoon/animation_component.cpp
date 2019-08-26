@@ -108,11 +108,11 @@ namespace octoon
 	{
 		animation_.evaluate(delta);
 
-		if (animation_.finish)
-			return;
-
 		for (auto& clip : animation_.clips)
 		{
+			if (clip.finish)
+				continue;
+
 			auto transform = this->getComponent<TransformComponent>();
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();

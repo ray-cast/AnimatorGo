@@ -37,9 +37,16 @@ namespace octoon
 	}
 
 	void
-	CCDSolverComponent::setTarget(const GameObjectPtr& joint) noexcept
+	CCDSolverComponent::setTarget(const GameObjectPtr& target) noexcept
 	{
-		target_ = joint;
+		if (target_ != target)
+		{
+			if (target)
+				this->tryAddComponentDispatch(GameDispatchType::LateUpdate);
+			else
+				this->tryRemoveComponentDispatch(GameDispatchType::LateUpdate);
+			target_ = target;
+		}
 	}
 
 	const GameObjectPtr&
@@ -144,7 +151,8 @@ namespace octoon
 	void
 	CCDSolverComponent::onActivate() noexcept
 	{
-		this->addComponentDispatch(GameDispatchType::LateUpdate);
+		if (this->getTarget())
+			this->addComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
@@ -181,9 +189,6 @@ namespace octoon
 	void
 	CCDSolverComponent::evaluateIK() noexcept
 	{
-		if (!this->getTarget())
-			return;
-
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();
 
@@ -215,8 +220,8 @@ namespace octoon
 					auto limit = bone->getComponent<RotationLimitComponent>();
 					if (limit)
 					{
-						auto rot = math::eulerAngles(math::Quaternion(axis, deltaAngle));
-						rot = math::clamp(rot, limit->getMininumAngle(), limit->getMaximumAngle());
+						auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
+						auto rot = math::eulerAngles(math::Quaternion(axis, angle));
 						rot = math::clamp(rot, limit->getMinimumAxis(), limit->getMaximumAxis());
 
 						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(rot)));

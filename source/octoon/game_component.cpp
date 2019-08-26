@@ -100,6 +100,27 @@ namespace octoon
 	}
 
 	void
+	GameComponent::tryAddComponentDispatch(GameDispatchTypes type) noexcept
+	{
+		if (gameObject_)
+			gameObject_->addComponentDispatch(type, this);
+	}
+
+	void
+	GameComponent::tryRemoveComponentDispatch(GameDispatchTypes type) noexcept
+	{
+		if (gameObject_)
+			gameObject_->removeComponentDispatch(type, this);
+	}
+
+	void
+	GameComponent::tryRemoveComponentDispatchs() noexcept
+	{
+		if (gameObject_)
+			gameObject_->removeComponentDispatchs(this);
+	}
+
+	void
 	GameComponent::_setGameObject(GameObject* gameobj) noexcept
 	{
 		gameObject_ = gameobj;

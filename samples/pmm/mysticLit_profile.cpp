@@ -18,10 +18,10 @@ namespace MysticLit
 	{
 	}
 
-	MysticLitProfile
+	std::unique_ptr<MysticLitProfile>
 	MysticLitProfile::load(const std::string& path) noexcept
 	{
-		return MysticLitProfile();
+		return std::make_unique<MysticLitProfile>();
 	}
 
 	bool

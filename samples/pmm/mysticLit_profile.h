@@ -21,7 +21,7 @@ namespace MysticLit
 		MysticLitProfile() noexcept;
 		virtual ~MysticLitProfile() noexcept;
 
-		static MysticLitProfile load(const std::string& path) noexcept;
+		static std::unique_ptr<MysticLitProfile> load(const std::string& path) noexcept;
 		static bool save(const std::string& path, const MysticLitProfile& profile) noexcept;
 
 	private:

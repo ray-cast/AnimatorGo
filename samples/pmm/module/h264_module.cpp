@@ -14,7 +14,7 @@ namespace MysticLit
 	void
 	H264Module::reset() noexcept
 	{
-		this->fps = 24.0f;
+		this->fps = 30;
 		this->kbps = 0;
 
 		this->qp_min = 10;

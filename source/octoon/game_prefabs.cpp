@@ -259,14 +259,14 @@ namespace octoon
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
-		auto material = std::make_shared<model::Material>();
-		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));
+		/*auto material = std::make_shared<model::Material>();
+		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));*/
 
 		for (auto& it : model.get<Model::bone>())
 		{
 			auto object = GameObject::create(it->getName());
-			object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			object->addComponent<MeshRendererComponent>(material);
+			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
+			object->addComponent<MeshRendererComponent>(material);*/
 
 			bones.emplace_back(object);
 		}

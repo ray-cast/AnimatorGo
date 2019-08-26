@@ -61,7 +61,7 @@ namespace MysticLit
 	void
 	MysticlitBehaviour::onActivate() noexcept
 	{
-		profile_ = std::make_unique<MysticLitProfile>();
+		profile_ = MysticLitProfile::load("sys:config/config.conf");
 
 		context_ = std::make_shared<MysticLitContext>();
 		context_->behaviour = this;

@@ -21,6 +21,7 @@
 #include <octoon/runtime/string.h>
 
 #include <fstream>
+#include <unordered_map>
 
 using namespace octoon;
 using namespace octoon::math;
@@ -300,18 +301,23 @@ namespace MysticLit
 			rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 		}
 
+		std::unordered_map<int32_t, uint32_t> key_to_array_index;
+
+		for (int i = 0; i < it.bone_key_frame.size(); i++)
+		    key_to_array_index[it.bone_key_frame[i].data_index] = i;
+
 		for (auto& key : it.bone_key_frame)
 		{
 			auto index = key.pre_index;
 			while (index >= it.bone_name.size())
-				index = it.bone_key_frame[index - it.bone_name.size()].pre_index;
+				index = it.bone_key_frame[key_to_array_index[index]].pre_index;
 
 			auto frameB = key;
 			auto frameA = PmmKeyframeBone();
 			if (key.pre_index < it.bone_name.size())
 				frameA = it.bone_init_frame[key.pre_index];
 			else
-				frameA = it.bone_key_frame[key.pre_index - it.bone_name.size()];
+				frameA = it.bone_key_frame[key_to_array_index[key.pre_index]];
 
 			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
 			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);

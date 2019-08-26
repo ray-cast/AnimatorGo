@@ -158,12 +158,12 @@ namespace octoon
 	{
 		animation_.evaluate(delta);
 
+		if (animation_.finish)
+			return;
+
 		for (std::size_t i = 0; i < animation_.clips.size(); i++)
 		{
 			//assert(avatar_[i]->getName() == clips_[i].name);
-
-			if (animation_.clips[i].finish)
-				continue;
 
 			auto transform = avatar_[i]->getComponent<TransformComponent>();
 

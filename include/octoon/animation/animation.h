@@ -11,21 +11,25 @@ namespace octoon
 		class Animation final
 		{
 		public:
+			bool finish;
 			std::string name;
 			AnimationClips<_Elem, _Time> clips;
 
 			Animation() noexcept
+				: finish(false)
 			{
 			}
 
 			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
 				: name("Default")
+				, finish(false)
 			{
 				clips.emplace_back(std::move(_clips));
 			}
 
 			Animation(const AnimationClip<_Elem, _Time>& _clip) noexcept
 				: name("Default")
+				, finish(false)
 			{
 				clips.emplace_back(std::move(_clip));
 			}
@@ -33,29 +37,34 @@ namespace octoon
 			Animation(AnimationClips<_Elem, _Time>&& _clips) noexcept
 				: name("Default")
 				, clips(std::move(_clips))
+				, finish(false)
 			{
 			}
 
 			Animation(const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: name("Default")
 				, clips(_clips)
+				, finish(false)
 			{
 			}
 
 			Animation(std::string&& _name, AnimationClips<_Elem, _Time>&& _clips) noexcept
 				: name(std::move(_name))
 				, clips(std::move(_clips))
+				, finish(false)
 			{
 			}
 
 			Animation(const std::string& _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: name(_name)
 				, clips(_clips)
+				, finish(false)
 			{
 			}
 
 			explicit Animation(const std::string& _name) noexcept
 				: name(_name)
+				, finish(false)
 			{
 			}
 
@@ -98,7 +107,10 @@ namespace octoon
 			void evaluate(const _Time& delta) noexcept
 			{
 				for (auto& it : this->clips)
+				{
 					it.evaluate(delta);
+					this->finish |= it.finish;
+				}
 			}
 
 			bool empty() const noexcept

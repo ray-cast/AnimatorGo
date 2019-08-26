@@ -225,9 +225,23 @@ namespace MysticLit
 	MysticlitBehaviour::onRenderPicture(const octoon::runtime::any& data) noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->imageExtensions[0]))
-			return;
+		std::string filepath(pathLimits, 0);
+		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->imageExtensions[0]))
+		{
+			canvasComponent_->setActive(true);
+			denoiseComponent_->setActive(true);
+
+			if (this->profile_->offlineModule->offlineEnable)
+			{
+				for (auto& it : components_)
+				{
+					if (it->getActive())
+						it->onPostProcess();
+				}
+			}
+
+			canvasComponent_->save(filepath);
+		}
 	}
 
 	void 

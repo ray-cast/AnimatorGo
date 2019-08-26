@@ -15,6 +15,8 @@ namespace MysticLit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
+		void save(const std::string& filepath) noexcept;
+
 	private:
 		virtual void onEnable() noexcept override;
 		virtual void onDisable() noexcept override;

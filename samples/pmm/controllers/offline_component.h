@@ -14,6 +14,10 @@ namespace MysticLit
 
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
+
+	private:
+		OfflineComponent(const OfflineComponent&) = delete;
+		OfflineComponent& operator=(const OfflineComponent&) = delete;
 	};
 }
 

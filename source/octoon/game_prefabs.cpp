@@ -300,12 +300,12 @@ namespace octoon
 					parentController->addBone(bones[i]);
 				else
 				{
-					auto transform = bones[additiveParent]->getComponent<TransformComponent>();
+					auto additiveTransform = bones[additiveParent]->getComponent<TransformComponent>();
 					auto rotationLink = bones[additiveParent]->addComponent<RotationLinkComponent>(bones[i]);
-					rotationLink->setTranslate(transform->getTranslate());
-					rotationLink->setQuaternion(transform->getQuaternion());
-					rotationLink->setLocalTranslate(transform->getLocalTranslate());
-					rotationLink->setLocalQuaternion(transform->getLocalQuaternion());
+					rotationLink->setTranslate(additiveTransform->getTranslate());
+					rotationLink->setQuaternion(additiveTransform->getQuaternion());
+					rotationLink->setLocalTranslate(additiveTransform->getLocalTranslate());
+					rotationLink->setLocalQuaternion(additiveTransform->getLocalQuaternion());
 				}
 			}
 		}

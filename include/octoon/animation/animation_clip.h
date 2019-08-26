@@ -15,13 +15,16 @@ namespace octoon
 		public:
 			std::string name;
 			std::unordered_map<std::string, AnimationCurve<_Elem, _Time>> curves;
+			bool finish;
 
 			AnimationClip() noexcept
+				: finish(false)
 			{
 			}
 
 			explicit AnimationClip(const std::string& _name) noexcept
 				: name(_name)
+				, finish(false)
 			{				
 			}
 
@@ -88,7 +91,10 @@ namespace octoon
 			void evaluate(const _Time& delta) noexcept
 			{
 				for (auto& it : this->curves)
+				{
 					it.second.evaluate(delta);
+					this->finish |= it.second.finish;
+				}
 			}
 
 			void setTime(const _Time& time) noexcept

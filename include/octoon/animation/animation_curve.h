@@ -7,28 +7,50 @@ namespace octoon
 {
 	namespace animation
 	{
+		enum class AnimationMode
+		{
+			Once,
+			Loop,
+			PingPong,
+			Default,
+			ClampForever
+		};
+
 		template<typename _Elem = float, typename _Time = float>
 		class AnimationCurve final
 		{
 		public:
 			using Keyframes = std::vector<Keyframe<_Elem, _Time>>;
 
+			bool finish;
+			bool negative;
 			Keyframes frames;
 			Keyframe<_Elem, _Time> key;
 			std::shared_ptr<Interpolator<_Time>> interpolator;
+			AnimationMode preWrapMode;
+			AnimationMode postWrapMode;
 
 			AnimationCurve() noexcept
+				: finish(false)
+				, negative(false)
+				, preWrapMode(AnimationMode::Default)
+				, postWrapMode(AnimationMode::Default)
 			{
 			}
 
 			explicit AnimationCurve(Keyframes&& frames_, std::shared_ptr<Interpolator<_Time>>&& interpolator_ = nullptr) noexcept
 				: interpolator(std::move(interpolator_))
+				, finish(false)
+				, negative(false)
+				, preWrapMode(AnimationMode::Default)
+				, postWrapMode(AnimationMode::Default)
 			{
 				this->assign(std::move(frames_));
 			}
 
 			explicit AnimationCurve(const Keyframes& frames_, const std::shared_ptr<Interpolator<_Time>>& interpolator_ = nullptr) noexcept
 				: interpolator(interpolator_)
+				, finish(false)
 			{
 				this->assign(frames_);
 			}
@@ -74,7 +96,10 @@ namespace octoon
 
 			const _Elem& evaluate(const _Time& delta) noexcept
 			{
-				key.time += delta;
+				if (negative)
+					key.time -= delta;
+				else
+					key.time += delta;
 
 				auto it = std::upper_bound(frames.begin(), frames.end(), key.time,
 					[](const _Time& time, const Keyframe<_Elem, _Time>& a)
@@ -84,9 +109,17 @@ namespace octoon
 				);
 
 				if (it == frames.begin())
+				{
+					if (negative)
+						this->updateAnimationMode(this->preWrapMode);
 					key.value = frames.front().value;
+				}
 				else if (it == frames.end())
+				{
+					if (!negative)
+						this->updateAnimationMode(this->postWrapMode);
 					key.value = frames.back().value;
+				}
 				else
 				{
 					auto& a = *(it - 1);
@@ -102,6 +135,31 @@ namespace octoon
 				}
 
 				return key.value;
+			}
+		private:
+			void updateAnimationMode(AnimationMode mode) noexcept
+			{
+				switch (mode)
+				{
+				case AnimationMode::Once:
+					finish = true;
+					break;
+				case AnimationMode::Loop:
+					key.time = 0.0f;
+					break;
+				case AnimationMode::PingPong:
+					negative = true;
+					break;
+				case AnimationMode::Default:
+					negative = false;
+					finish = true;
+					break;
+				case AnimationMode::ClampForever:
+					negative = false;
+					break;
+				default:
+					break;
+				}
 			}
 		};
 	}

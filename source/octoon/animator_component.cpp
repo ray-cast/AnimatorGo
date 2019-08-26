@@ -162,6 +162,9 @@ namespace octoon
 		{
 			//assert(avatar_[i]->getName() == clips_[i].name);
 
+			if (animation_.clips[i].finish)
+				continue;
+
 			auto transform = avatar_[i]->getComponent<TransformComponent>();
 
 			auto scale = transform->getLocalScale();

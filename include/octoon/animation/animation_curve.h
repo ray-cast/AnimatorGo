@@ -91,6 +91,7 @@ namespace octoon
 			void setTime(const _Time& time) noexcept
 			{
 				key.time = time;
+				finish = false;
 				this->evaluate(time);
 			}
 

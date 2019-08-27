@@ -2,6 +2,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
+#include <octoon/video_feature.h>
 
 namespace octoon
 {
@@ -10,24 +11,6 @@ namespace octoon
 	GuizmoComponent::GuizmoComponent() noexcept
 		: op_(imgui::guizmo::Translate)
 	{
-	}
-
-	GuizmoComponent::GuizmoComponent(const GameObjectPtr& camera) noexcept
-		: camera_(camera)
-		, op_(imgui::guizmo::Translate)
-	{
-	}
-
-	void
-	GuizmoComponent::setCamera(const GameObjectPtr& camera) noexcept
-	{
-		camera_ = camera;
-	}
-
-	const GameObjectPtr&
-	GuizmoComponent::getCamera() const noexcept
-	{
-		return camera_;
 	}
 
 	void
@@ -45,6 +28,7 @@ namespace octoon
 	void
 	GuizmoComponent::onGui() noexcept
 	{
+		auto camera_ = this->getFeature<VideoFeature>()->getMainCamera();
 		if (camera_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
@@ -62,7 +46,7 @@ namespace octoon
 
 			imgui::guizmo::BeginFrame();
 			imgui::guizmo::SetRect(0, 0, imgui::getDisplaySize().x, imgui::getDisplaySize().y);
-			imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op_, imgui::guizmo::Mode::Local, model.ptr());
+			imgui::guizmo::Manipulate(view.ptr(), project.ptr(), op_, imgui::guizmo::Mode::World, model.ptr());
 
 			transform->setTransform(model);
 		}

@@ -11,10 +11,6 @@ namespace octoon
 		OctoonDeclareSubClass(GuizmoComponent, GameComponent)
 	public:
 		GuizmoComponent() noexcept;
-		GuizmoComponent(const GameObjectPtr& camera) noexcept;
-
-		void setCamera(const GameObjectPtr& camera) noexcept;
-		const GameObjectPtr& getCamera() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -29,7 +25,6 @@ namespace octoon
 		GuizmoComponent& operator=(const GuizmoComponent&) = delete;
 
 	private:
-		GameObjectPtr camera_;
 		imgui::guizmo::Operation op_;
 	};
 }

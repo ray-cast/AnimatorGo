@@ -3,6 +3,7 @@
 
 #include <octoon/game_feature.h>
 #include <octoon/hal/graphics_framebuffer.h>
+#include <octoon/camera_component.h>
 
 namespace octoon
 {
@@ -13,6 +14,9 @@ namespace octoon
 		VideoFeature() noexcept;
 		VideoFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept;
 		~VideoFeature() noexcept;
+
+		void setMainCamera(CameraComponent* camera) noexcept;
+		CameraComponent* getMainCamera() const noexcept;
 
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
@@ -32,6 +36,8 @@ namespace octoon
 	private:
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
+
+		CameraComponent* camera_;
 	};
 }
 

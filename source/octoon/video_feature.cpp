@@ -18,17 +18,36 @@ namespace octoon
 	VideoFeature::VideoFeature() noexcept
 		: framebuffer_w_(0)
 		, framebuffer_h_(0)
+		, camera_(nullptr)
 	{
 	}
 
 	VideoFeature::VideoFeature(std::uint32_t framebuffer_w, std::uint32_t framebuffer_h) noexcept
 		: framebuffer_w_(framebuffer_w)
 		, framebuffer_h_(framebuffer_h)
+		, camera_(nullptr)
 	{
 	}
 
 	VideoFeature::~VideoFeature() noexcept
 	{
+	}
+
+	void
+	VideoFeature::setMainCamera(CameraComponent* camera) noexcept
+	{
+		if (camera_ != camera)
+		{
+			if (camera_)
+				camera_->setCameraType(video::CameraType::Custom);
+			camera_ = camera;
+		}
+	}
+	
+	CameraComponent*
+	VideoFeature::getMainCamera() const noexcept
+	{
+		return camera_;
 	}
 
 	void

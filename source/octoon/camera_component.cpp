@@ -44,6 +44,16 @@ namespace octoon
 	CameraComponent::setCameraType(video::CameraType type) noexcept
 	{
 		camera_->setCameraType(type);
+
+		if (this->getActive())
+		{
+			if (type == video::CameraType::Main)
+			{
+				auto videoFeature = this->tryGetFeature<VideoFeature>();
+				if (videoFeature)
+					videoFeature->setMainCamera(this);
+			}
+		}
 	}
 
 	void
@@ -181,6 +191,13 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 		camera_->setActive(true);
 		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
+
+		if (camera_->getCameraType() == video::CameraType::Main)
+		{
+			auto videoFeature = this->tryGetFeature<VideoFeature>();
+			if (videoFeature)
+				videoFeature->setMainCamera(this);
+		}
 	}
 
 	void
@@ -189,6 +206,13 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 
 		camera_->setActive(false);
+
+		if (camera_->getCameraType() == video::CameraType::Main)
+		{
+			auto videoFeature = this->tryGetFeature<VideoFeature>();
+			if (videoFeature)
+				videoFeature->setMainCamera(nullptr);
+		}
 	}
 
 	void

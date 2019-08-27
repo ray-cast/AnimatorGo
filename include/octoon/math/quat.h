@@ -228,7 +228,7 @@ namespace octoon
 				friend Quaternion<T>& operator*=(Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
 					q1 = q1 * q2;
-					return a;
+					return q1;
 				}
 
 				template<typename ostream, std::enable_if_t<trait::has_left_shift<ostream, T>::value, int> = 0>

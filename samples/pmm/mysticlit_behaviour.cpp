@@ -2,9 +2,6 @@
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_environment_light_component.h>
 
-#include <iostream>
-using namespace octoon;
-
 namespace MysticLit
 {
 	OctoonImplementSubClass(MysticlitBehaviour, octoon::GameComponent, "MysticlitBehaviour")

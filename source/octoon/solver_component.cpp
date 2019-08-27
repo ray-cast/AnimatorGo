@@ -4,7 +4,7 @@
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
 #include <octoon/rotation_link_limit_component.h>
-#include <iostream>
+
 namespace octoon
 {
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
@@ -138,31 +138,31 @@ namespace octoon
 	{
 		auto instance = std::make_shared<CCDSolverComponent>();
 		instance->setName(this->getName());
-instance->setTarget(this->getTarget());
-instance->setBones(this->getBones());
-instance->setIterations(this->getIterations());
-instance->setTimeStep(this->getTimeStep());
-instance->setTolerance(this->getTolerance());
-instance->setAxisLimitEnable(this->getAxisLimitEnable());
+		instance->setTarget(this->getTarget());
+		instance->setBones(this->getBones());
+		instance->setIterations(this->getIterations());
+		instance->setTimeStep(this->getTimeStep());
+		instance->setTolerance(this->getTolerance());
+		instance->setAxisLimitEnable(this->getAxisLimitEnable());
 
-return instance;
+		return instance;
 	}
 
 	void
-		CCDSolverComponent::onActivate() noexcept
+	CCDSolverComponent::onActivate() noexcept
 	{
 		if (this->getTarget())
 			this->addComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
-		CCDSolverComponent::onDeactivate() noexcept
+	CCDSolverComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
-		CCDSolverComponent::onLateUpdate() noexcept
+	CCDSolverComponent::onLateUpdate() noexcept
 	{
 		if (timeStep_ > 0)
 		{
@@ -209,7 +209,7 @@ return instance;
 				localJointTarget = math::normalize(localJointTarget);
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E5)
+				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E6)
 					continue;
 
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
@@ -222,7 +222,8 @@ return instance;
 					{
 						auto lock = [](float n)
 						{
-							if (std::abs(n) > math::PI - std::abs(n) && math::PI_2 - std::abs(n) > math::PI - std::abs(n))
+							float x = std::abs(n);
+							if (x > math::PI - x)
 								return math::PI * math::sign(n);
 							else
 								return 0.0f;
@@ -231,25 +232,28 @@ return instance;
 						auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
 						auto spin = math::eulerAngles(transform->getLocalQuaternion() * math::Quaternion(axis, angle));
 						
-						if (limit->getMinimumAxis().x != 0 && limit->getMaximumAxis().x != 0)
-							spin.x = math::clamp(spin.x, limit->getMinimumAxis().x, limit->getMaximumAxis().x);
+						auto& low = limit->getMinimumAxis();
+						auto& upper = limit->getMaximumAxis();
 
-						if (limit->getMinimumAxis().y != 0 && limit->getMaximumAxis().y != 0)
-							spin.y = math::clamp(spin.y, limit->getMinimumAxis().y, limit->getMaximumAxis().y);
+						if (low.x != 0 && upper.x != 0)
+							spin.x = math::clamp(spin.x, low.x, upper.x);
 
-						if (limit->getMinimumAxis().z != 0 && limit->getMaximumAxis().z != 0)
-							spin.z = math::clamp(spin.z, limit->getMinimumAxis().z, limit->getMaximumAxis().z);
+						if (low.y != 0 && upper.y != 0)
+							spin.y = math::clamp(spin.y, low.y, upper.y);
 
-						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
-							limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0)
+						if (low.z != 0 && upper.z != 0)
+							spin.z = math::clamp(spin.z, low.z, upper.z);
+
+						if (low.x == 0 && upper.x == 0 &&
+							low.y == 0 && upper.y == 0)
 							spin.x = spin.y = lock(spin.x);
 
-						if (limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0 &&
-							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
+						if (low.y == 0 && upper.y == 0 &&
+							low.z == 0 && upper.z == 0)
 							spin.y = spin.z = lock(spin.y);
 
-						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
-							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
+						if (low.x == 0 && upper.x == 0 &&
+							low.z == 0 && upper.z == 0)
 							spin.z = spin.x = lock(spin.z);
 
 						transform->setLocalQuaternion(math::normalize(math::Quaternion(spin)));

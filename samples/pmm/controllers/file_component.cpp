@@ -169,6 +169,9 @@ namespace MysticLit
 					model->addComponent<AnimationComponent>(animation::Animation(morphClip));
 					model->getComponent<AnimationComponent>()->setTime(0.0f);
 
+					auto transforms = model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms();
+					transforms[3]->addComponent<GuizmoComponent>();
+
 					objects.emplace_back(std::move(model));
 				}
 			}
@@ -277,9 +280,9 @@ namespace MysticLit
 		std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
 		std::vector<Keyframes<float>> translateY(it.bone_init_frame.size());
 		std::vector<Keyframes<float>> translateZ(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size());
+		std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size() * 30.0f);
+		std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size() * 30.0f);
+		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size() * 30.0f);
 		std::vector<Keyframes<float>> rotationW(it.bone_init_frame.size());
 
 		for (std::size_t i = 0; i < it.bone_init_frame.size(); i++)
@@ -324,11 +327,11 @@ namespace MysticLit
 			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
 			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(frameA.interpolation_rotation[0] / 255.0f, frameA.interpolation_rotation[1] / 255.0f, frameA.interpolation_rotation[2] / 255.0f, frameA.interpolation_rotation[3] / 255.0f);
 
-			for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 5; i++)
+			for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 30; i++)
 			{
-				auto t = i / ((frameB.frame - frameA.frame) * 5.0f);
+				auto t = i / ((frameB.frame - frameA.frame) * 30.0f);
 				auto euler = math::eulerAngles(math::slerp(frameA.quaternion, frameB.quaternion, interpolationRotation->interpolator(t)));
-				auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 5.0f) * i;
+				auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 30.0f) * i;
 
 				rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
 				rotationY[index].emplace_back((float)frame / 30.0f, euler.y);

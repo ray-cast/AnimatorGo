@@ -4,7 +4,7 @@
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
 #include <octoon/rotation_link_limit_component.h>
-
+#include <iostream>
 namespace octoon
 {
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
@@ -138,31 +138,31 @@ namespace octoon
 	{
 		auto instance = std::make_shared<CCDSolverComponent>();
 		instance->setName(this->getName());
-		instance->setTarget(this->getTarget());
-		instance->setBones(this->getBones());
-		instance->setIterations(this->getIterations());
-		instance->setTimeStep(this->getTimeStep());
-		instance->setTolerance(this->getTolerance());
-		instance->setAxisLimitEnable(this->getAxisLimitEnable());
+instance->setTarget(this->getTarget());
+instance->setBones(this->getBones());
+instance->setIterations(this->getIterations());
+instance->setTimeStep(this->getTimeStep());
+instance->setTolerance(this->getTolerance());
+instance->setAxisLimitEnable(this->getAxisLimitEnable());
 
-		return instance;
+return instance;
 	}
 
 	void
-	CCDSolverComponent::onActivate() noexcept
+		CCDSolverComponent::onActivate() noexcept
 	{
 		if (this->getTarget())
 			this->addComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
-	CCDSolverComponent::onDeactivate() noexcept
+		CCDSolverComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::LateUpdate);
 	}
 
 	void
-	CCDSolverComponent::onLateUpdate() noexcept
+		CCDSolverComponent::onLateUpdate() noexcept
 	{
 		if (timeStep_ > 0)
 		{
@@ -220,11 +220,41 @@ namespace octoon
 					auto limit = bone->getComponent<RotationLimitComponent>();
 					if (limit)
 					{
+						auto lock = [](float n)
+						{
+							if (std::abs(n) > math::PI - std::abs(n) && math::PI_2 - std::abs(n) > math::PI - std::abs(n))
+								return -math::PI;
+							else
+								return 0.0f;
+						};
+
 						auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
 						auto rot = math::eulerAngles(math::Quaternion(axis, angle));
-						rot = math::clamp(rot, limit->getMinimumAxis(), limit->getMaximumAxis());
+						auto cleamedRot = math::clamp(rot, limit->getMinimumAxis(), limit->getMaximumAxis());
+						auto spin = math::eulerAngles(transform->getLocalQuaternion() * math::Quaternion(rot));
+						
+						if (limit->getMinimumAxis().x != 0 && limit->getMaximumAxis().x != 0)
+							spin.x = math::clamp(spin.x, limit->getMinimumAxis().x, limit->getMaximumAxis().x);
 
-						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(rot)));
+						if (limit->getMinimumAxis().y != 0 && limit->getMaximumAxis().y != 0)
+							spin.y = math::clamp(spin.y, limit->getMinimumAxis().y, limit->getMaximumAxis().y);
+
+						if (limit->getMinimumAxis().z != 0 && limit->getMaximumAxis().z != 0)
+							spin.z = math::clamp(spin.z, limit->getMinimumAxis().z, limit->getMaximumAxis().z);
+
+						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
+							limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0)
+							spin.x = spin.y = lock(spin.y);
+
+						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
+							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
+							spin.x = spin.z = lock(spin.z);
+
+						if (limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0 &&
+							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
+							spin.y = spin.z = lock(spin.y);
+
+						transform->setLocalQuaternion(math::normalize(math::Quaternion(spin)));
 					}
 					else
 					{
@@ -242,6 +272,13 @@ namespace octoon
 	void
 	CCDSolverComponent::evaluateRotationLink() noexcept
 	{
+		for (auto& bone : bones_)
+		{
+			auto transform = bone->getComponent<TransformComponent>();
+			if (bone->id() == 101)
+				std::cout << math::degress(math::eulerAngles(transform->getLocalQuaternion())) << std::endl;
+		}
+
 		for (auto& it : bones_)
 		{
 			auto link = it->getComponent<RotationLinkComponent>();

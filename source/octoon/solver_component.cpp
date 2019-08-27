@@ -223,15 +223,13 @@ return instance;
 						auto lock = [](float n)
 						{
 							if (std::abs(n) > math::PI - std::abs(n) && math::PI_2 - std::abs(n) > math::PI - std::abs(n))
-								return -math::PI;
+								return math::PI * math::sign(n);
 							else
 								return 0.0f;
 						};
 
 						auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
-						auto rot = math::eulerAngles(math::Quaternion(axis, angle));
-						auto cleamedRot = math::clamp(rot, limit->getMinimumAxis(), limit->getMaximumAxis());
-						auto spin = math::eulerAngles(transform->getLocalQuaternion() * math::Quaternion(rot));
+						auto spin = math::eulerAngles(transform->getLocalQuaternion() * math::Quaternion(axis, angle));
 						
 						if (limit->getMinimumAxis().x != 0 && limit->getMaximumAxis().x != 0)
 							spin.x = math::clamp(spin.x, limit->getMinimumAxis().x, limit->getMaximumAxis().x);
@@ -244,15 +242,15 @@ return instance;
 
 						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
 							limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0)
-							spin.x = spin.y = lock(spin.y);
-
-						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
-							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
-							spin.x = spin.z = lock(spin.z);
+							spin.x = spin.y = lock(spin.x);
 
 						if (limit->getMinimumAxis().y == 0 && limit->getMaximumAxis().y == 0 &&
 							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
 							spin.y = spin.z = lock(spin.y);
+
+						if (limit->getMinimumAxis().x == 0 && limit->getMaximumAxis().x == 0 &&
+							limit->getMinimumAxis().z == 0 && limit->getMaximumAxis().z == 0)
+							spin.z = spin.x = lock(spin.z);
 
 						transform->setLocalQuaternion(math::normalize(math::Quaternion(spin)));
 					}
@@ -272,13 +270,6 @@ return instance;
 	void
 	CCDSolverComponent::evaluateRotationLink() noexcept
 	{
-		for (auto& bone : bones_)
-		{
-			auto transform = bone->getComponent<TransformComponent>();
-			if (bone->id() == 101)
-				std::cout << math::degress(math::eulerAngles(transform->getLocalQuaternion())) << std::endl;
-		}
-
 		for (auto& it : bones_)
 		{
 			auto link = it->getComponent<RotationLinkComponent>();

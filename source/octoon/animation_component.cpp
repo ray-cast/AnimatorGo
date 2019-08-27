@@ -33,7 +33,6 @@ namespace octoon
 	AnimationComponent::play() noexcept
 	{
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->update();
 	}
 
 	void

@@ -46,7 +46,6 @@ namespace octoon
 	{
 		this->setName(status);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
-		this->setTime(0.0f);
 
 		enableAnimation_ = true;
 		return enableAnimation_;
@@ -63,6 +62,7 @@ namespace octoon
 	AnimatorComponent::stop() noexcept
 	{
 		this->setTime(0.0f);
+		this->sample();
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
@@ -70,6 +70,11 @@ namespace octoon
 	AnimatorComponent::setTime(float time) noexcept
 	{
 		animation_.setTime(time);
+	}
+
+	void
+	AnimatorComponent::sample() noexcept
+	{
 		this->update();
 	}
 

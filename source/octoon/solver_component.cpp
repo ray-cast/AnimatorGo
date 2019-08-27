@@ -244,17 +244,14 @@ namespace octoon
 						if (low.z != 0 && upper.z != 0)
 							spin.z = math::clamp(spin.z, low.z, upper.z);
 
-						if (low.x == 0 && upper.x == 0 &&
-							low.y == 0 && upper.y == 0)
-							spin.x = spin.y = lock(spin.x);
-
-						if (low.y == 0 && upper.y == 0 &&
-							low.z == 0 && upper.z == 0)
-							spin.y = spin.z = lock(spin.y);
-
-						if (low.x == 0 && upper.x == 0 &&
-							low.z == 0 && upper.z == 0)
-							spin.z = spin.x = lock(spin.z);
+						if (low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
+						{
+							float x = std::abs(spin.y);
+							if (x > math::PI - x)
+								spin.y = spin.z = math::PI * math::sign(spin.y);
+							else
+								spin.y = spin.z = 0.0f;
+						}
 
 						transform->setLocalQuaternion(math::normalize(math::Quaternion(spin)));
 					}

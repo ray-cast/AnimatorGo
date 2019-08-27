@@ -22,7 +22,7 @@ namespace octoon
 		void stop() noexcept;
 
 		void setTime(float time) noexcept;
-		void sample() noexcept;
+		void sample(float delta = 0.0f) noexcept;
 
 		void setAvatar(GameObjects&& avatar) noexcept;
 		void setAvatar(const GameObjects& avatar) noexcept;
@@ -41,8 +41,11 @@ namespace octoon
 		void onFixedUpdate() noexcept;
 
 	private:
-		void update(float delta = 0.0f) noexcept;
-		void updateBindpose(const GameObjects& transforms) noexcept;
+		void updateAvatar(float delta = 0.0f) noexcept;
+		void updateAnimation(float delta = 0.0f) noexcept;
+
+	private:
+		void onAttachAvatar(const GameObjects& avatar) noexcept;
 
 	private:
 		bool enableAnimation_;

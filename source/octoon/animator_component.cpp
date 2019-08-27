@@ -73,9 +73,15 @@ namespace octoon
 	}
 
 	void
-	AnimatorComponent::sample() noexcept
+	AnimatorComponent::sample(float delta) noexcept
 	{
-		this->update();
+		if (delta > 0.0f)
+			animation_.evaluate(delta);
+
+		if (avatar_.empty())
+			this->updateAnimation();
+		else
+			this->updateAvatar();
 	}
 
 	void
@@ -100,14 +106,14 @@ namespace octoon
 	AnimatorComponent::setAvatar(GameObjects&& avatar) noexcept
 	{
 		avatar_ = std::move(avatar);
-		this->updateBindpose(avatar_);
+		this->onAttachAvatar(avatar_);
 	}
 
 	void
 	AnimatorComponent::setAvatar(const GameObjects& avatar) noexcept
 	{
 		avatar_ = avatar;
-		this->updateBindpose(avatar_);
+		this->onAttachAvatar(avatar_);
 	}
 
 	const GameObjects&
@@ -145,37 +151,34 @@ namespace octoon
 		{
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
-				this->update(timeFeature->getTimeInterval());
+				this->sample(timeFeature->getTimeInterval());
 		}
 	}
 
 	void
-	AnimatorComponent::updateBindpose(const GameObjects& bones) noexcept
+	AnimatorComponent::onAttachAvatar(const GameObjects& avatar) noexcept
 	{
-		bindpose_.resize(bones.size());
+		bindpose_.resize(avatar.size());
 
-		for (std::size_t i = 0; i < bones.size(); i++)
-			bindpose_[i] = bones[i]->getComponent<TransformComponent>()->getLocalTranslate();
+		for (std::size_t i = 0; i < avatar.size(); i++)
+			bindpose_[i] = avatar[i]->getComponent<TransformComponent>()->getLocalTranslate();
 	}
 
 	void
-	AnimatorComponent::update(float delta) noexcept
+	AnimatorComponent::updateAvatar(float delta) noexcept
 	{
-		animation_.evaluate(delta);
-
 		if (animation_.finish)
 			return;
 
 		for (std::size_t i = 0; i < animation_.clips.size(); i++)
 		{
-			//assert(avatar_[i]->getName() == clips_[i].name);
-
 			auto transform = avatar_[i]->getComponent<TransformComponent>();
 
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
 			auto euler = math::eulerAngles(quat);
+			auto move = 0.0f;
 
 			for (auto& curve : animation_.clips[i].curves)
 			{
@@ -210,6 +213,65 @@ namespace octoon
 			transform->setLocalScale(scale);
 			transform->setLocalTranslate(translate);
 			transform->setLocalQuaternion(math::Quaternion(euler));
+		}
+
+		this->sendMessage("octoon:animation:update");
+	}
+
+	void
+	AnimatorComponent::updateAnimation(float delta) noexcept
+	{
+		for (auto& clip : animation_.clips)
+		{
+			if (clip.finish)
+				continue;
+
+			auto transform = this->getComponent<TransformComponent>();
+			auto scale = transform->getLocalScale();
+			auto quat = transform->getLocalQuaternion();
+			auto translate = transform->getLocalTranslate();
+			auto euler = math::eulerAngles(quat);
+			auto move = 0.0f;
+
+			for (auto& curve : clip.curves)
+			{
+				if (curve.first == "LocalScale.x")
+					scale.x = curve.second.key.value;
+				else if (curve.first == "LocalScale.y")
+					scale.y = curve.second.key.value;
+				else if (curve.first == "LocalScale.z")
+					scale.z = curve.second.key.value;
+				else if (curve.first == "LocalPosition.x")
+					translate.x = curve.second.key.value;
+				else if (curve.first == "LocalPosition.y")
+					translate.y = curve.second.key.value;
+				else if (curve.first == "LocalPosition.z")
+					translate.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.x")
+					quat.x = curve.second.key.value;
+				else if (curve.first == "LocalRotation.y")
+					quat.y = curve.second.key.value;
+				else if (curve.first == "LocalRotation.z")
+					quat.z = curve.second.key.value;
+				else if (curve.first == "LocalRotation.w")
+					quat.w = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.x")
+					euler.x = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.y")
+					euler.y = curve.second.key.value;
+				else if (curve.first == "LocalEulerAnglesRaw.z")
+					euler.z = curve.second.key.value;
+				else if (curve.first == "Transform:move")
+					move = curve.second.key.value;
+				else
+					this->sendMessage(curve.first, curve.second.key.value);
+			}
+
+			auto rotation = math::Quaternion(euler);
+
+			transform->setLocalScale(scale);
+			transform->setLocalTranslate(translate + math::rotate(rotation, math::float3::Forward) * move);
+			transform->setLocalQuaternion(rotation);
 		}
 
 		this->sendMessage("octoon:animation:update");

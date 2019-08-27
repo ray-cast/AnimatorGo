@@ -1,5 +1,4 @@
 #include "entities_component.h"
-#include <octoon/animation_component.h>
 #include <octoon/animator_component.h>
 
 namespace MysticLit
@@ -28,13 +27,11 @@ namespace MysticLit
 	{
 		for (auto& it : this->getModel()->objects)
 		{
-			auto animation = it->getComponent<octoon::AnimationComponent>();
-			if (animation)
-				animation->play();
-
-			auto animator = it->getComponent<octoon::AnimatorComponent>();
-			if (animator)
-				animator->play();
+			for (auto& it : it->getComponents())
+			{
+				if (it->isA<octoon::AnimatorComponent>())
+					it->downcast<octoon::AnimatorComponent>()->play();
+			}
 		}
 	}
 
@@ -43,13 +40,11 @@ namespace MysticLit
 	{
 		for (auto& it : this->getModel()->objects)
 		{
-			auto animation = it->getComponent<octoon::AnimationComponent>();
-			if (animation)
-				animation->stop();
-
-			auto animator = it->getComponent<octoon::AnimatorComponent>();
-			if (animator)
-				animator->stop();
+			for (auto& it : it->getComponents())
+			{
+				if (it->isA<octoon::AnimatorComponent>())
+					it->downcast<octoon::AnimatorComponent>()->stop();
+			}
 		}
 	}
 }

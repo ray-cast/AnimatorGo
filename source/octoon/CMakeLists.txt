@@ -135,8 +135,6 @@ SOURCE_GROUP("system\\physics" FILES ${PHYSICS_FEATURES_LIST})
 SET(ANIMATION_FEATURES_LIST
 	${HEADER_PATH}/solver_component.h
 	${SOURCE_PATH}/solver_component.cpp
-	${HEADER_PATH}/animation_component.h
-	${SOURCE_PATH}/animation_component.cpp
 	${HEADER_PATH}/animator_component.h
 	${SOURCE_PATH}/animator_component.cpp
 	${HEADER_PATH}/rotation_limit_component.h

@@ -164,10 +164,8 @@ namespace MysticLit
 					model->setName(it.name);
 					model->addComponent<AnimatorComponent>(model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms());
 					model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(boneClips));
-					model->getComponent<AnimatorComponent>()->setTime(0.0f);
-
-					model->addComponent<AnimationComponent>(animation::Animation(morphClip));
-					model->getComponent<AnimationComponent>()->setTime(0.0f);
+					model->getComponent<AnimatorComponent>()->sample();
+					model->addComponent<AnimatorComponent>(animation::Animation(morphClip))->sample();
 
 					objects.emplace_back(std::move(model));
 				}
@@ -218,7 +216,7 @@ namespace MysticLit
 		obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), -math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
-		obj->addComponent<AnimationComponent>(animation::Animation(clip))->setTime(0.0f);
+		obj->addComponent<AnimatorComponent>(animation::Animation(clip))->sample();
 		obj->addComponent<EditorCameraComponent>();
 
 		auto active = this->getContext()->profile->offlineModule->offlineEnable;

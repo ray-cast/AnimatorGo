@@ -169,9 +169,6 @@ namespace MysticLit
 					model->addComponent<AnimationComponent>(animation::Animation(morphClip));
 					model->getComponent<AnimationComponent>()->setTime(0.0f);
 
-					auto transforms = model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms();
-					transforms[3]->addComponent<GuizmoComponent>();
-
 					objects.emplace_back(std::move(model));
 				}
 			}

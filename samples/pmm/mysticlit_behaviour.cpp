@@ -276,7 +276,7 @@ namespace MysticLit
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::string filepath(pathLimits, 0);
-		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->hdriExtensions[0]))
+		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->hdriExtensions[0]))
 		{
 			if (this->profile_->entitiesModule->enviromentLight)
 				this->profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);

@@ -18,7 +18,6 @@
 #include <octoon/io_feature.h>
 #include <octoon/gui_feature.h>
 
-#include <octoon/animation_component.h>
 #include <octoon/animator_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/rotation_limit_component.h>

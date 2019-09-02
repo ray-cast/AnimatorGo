@@ -133,6 +133,13 @@ namespace MysticLit
 		return false;
 	}
 
+	void
+	FileComponent::importHDRi(const std::string& filepath) noexcept
+	{
+		if (this->getContext()->profile->entitiesModule->enviromentLight)
+			this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);
+	}
+
 	bool
 	FileComponent::open(const std::string& filepath) noexcept
 	{
@@ -418,6 +425,8 @@ namespace MysticLit
 				this->open(std::string(str));
 			else if (ext == ".pmx")
 				this->importModel(std::string(str));
+			else if (ext == ".hdr")
+				this->importHDRi(std::string(str));
 		}
 	}
 }

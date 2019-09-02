@@ -23,6 +23,8 @@ namespace MysticLit
 		bool importModel(const std::string& path) noexcept;
 		bool exportModel(const std::string& path) noexcept;
 
+		void importHDRi(const std::string& path) noexcept;
+
 		bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;
 		bool showFileSaveBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;
 

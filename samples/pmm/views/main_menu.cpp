@@ -48,64 +48,43 @@ namespace MysticLit
 			imgui::rootDock(math::float2(0, imgui::getWindowHeight()), size);
 			imgui::pushStyleColor(imgui::GuiCol::Border, math::float4::Zero);
 
-			if (imgui::beginMenu("File"))
+			if (imgui::beginMenu(u8"文件"))
 			{
-				if (imgui::menuItem("Open", "CTRL+O")) { this->sendMessage("editor:menu:file:open"); }
-				if (imgui::menuItem("Save", "CTRL+S")) { this->sendMessage("editor:menu:file:save"); }
-				if (imgui::menuItem("Save As...", "CTRL+SHIFT+S")) { this->sendMessage("editor:menu:file:saveAs"); }
+				if (imgui::menuItem(u8"打开", "CTRL+O")) { this->sendMessage("editor:menu:file:open"); }
+				if (imgui::menuItem(u8"保存", "CTRL+S")) { this->sendMessage("editor:menu:file:save"); }
+				if (imgui::menuItem(u8"另存为...", "CTRL+SHIFT+S")) { this->sendMessage("editor:menu:file:saveAs"); }
 
 				imgui::separator();
 
-				if (imgui::menuItem("render to picture file", "CTRL+B")) { this->sendMessage("editor:menu:file:picture"); }
-				if (imgui::menuItem("render to video file", "CTRL+B")) { this->sendMessage("editor:menu:file:video"); }
+				if (imgui::menuItem(u8"输出图像", "CTRL+B")) { this->sendMessage("editor:menu:file:picture"); }
+				if (imgui::menuItem(u8"输出视频", "CTRL+B")) { this->sendMessage("editor:menu:file:video"); }
 
 				imgui::separator();
 
-				if (imgui::menuItem("Import Model")) { this->sendMessage("editor:menu:file:import"); }
-				if (imgui::menuItem("Export Model")) { this->sendMessage("editor:menu:file:export"); }
+				if (imgui::menuItem(u8"导入模型")) { this->sendMessage("editor:menu:file:import"); }
+				if (imgui::menuItem(u8"导出模型")) { this->sendMessage("editor:menu:file:export"); }
 
 				imgui::separator();
 
-				if (imgui::menuItem("Exit")) { this->sendMessage("editor:menu:file:exit"); }
+				if (imgui::menuItem(u8"退出")) { this->sendMessage("editor:menu:file:exit"); }
 
 				imgui::endMenu();
 			}
 
-			if (imgui::beginMenu("Edit"))
+			if (imgui::beginMenu(u8"环境"))
 			{
-				imgui::menuItem("Undo", "CTRL+Z", false, false);
-				imgui::menuItem("Rndo", "CTRL+Y", false, false);
-
-				imgui::separator();
-
-				if (imgui::beginMenu("Language"))
-				{
-					if (imgui::menuItem("English")) { /*on click() */ }
-					if (imgui::menuItem("Chinese")) { /*on click() */ }
-
-					imgui::endMenu();
-				}
-
-				imgui::separator();
-				imgui::menuItem("Style Editor", 0);
-
+				if (imgui::menuItem(u8"加载天空球", "CTRL+I")) { this->sendMessage("editor:menu:enviroment:hdri"); };
 				imgui::endMenu();
 			}
 
-			if (imgui::beginMenu("Environment"))
+			if (imgui::beginMenu(u8"设置"))
 			{
-				if (imgui::menuItem("Load hdri", "CTRL+I")) { this->sendMessage("editor:menu:enviroment:hdri"); };
-				imgui::endMenu();
-			}
-
-			if (imgui::beginMenu("Setting"))
-			{
-				if (imgui::menuItem("Render")) { this->sendMessage("editor:menu:setting:render", true); }
-				if (imgui::menuItem("Stop Render")) { this->sendMessage("editor:menu:setting:render", false); }
+				if (imgui::menuItem(u8"开始渲染")) { this->sendMessage("editor:menu:setting:render", true); }
+				if (imgui::menuItem(u8"停止渲染")) { this->sendMessage("editor:menu:setting:render", false); }
 
 				imgui::separator();
 
-				if (imgui::menuItem("Offline Mode", "CTRL+P", isOfflineMode_))
+				if (imgui::menuItem(u8"离线模式", "CTRL+P", isOfflineMode_))
 				{
 					this->sendMessage("editor:menu:setting:mode", !isOfflineMode_);
 					isOfflineMode_ = !isOfflineMode_;
@@ -114,9 +93,9 @@ namespace MysticLit
 				imgui::endMenu();
 			}
 
-			if (imgui::beginMenu("Help"))
+			if (imgui::beginMenu(u8"帮助"))
 			{
-				if (imgui::menuItem("About")) { this->sendMessage("editor:menu:help:about"); }
+				if (imgui::menuItem(u8"关于")) { this->sendMessage("editor:menu:help:about"); }
 				imgui::endMenu();
 			}
 

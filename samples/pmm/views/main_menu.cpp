@@ -57,7 +57,7 @@ namespace MysticLit
 				imgui::separator();
 
 				if (imgui::menuItem(u8"Êä³öÍ¼Ïñ", "CTRL+B")) { this->sendMessage("editor:menu:file:picture"); }
-				if (imgui::menuItem(u8"Êä³öÊÓÆµ", "CTRL+B")) { this->sendMessage("editor:menu:file:video"); }
+				if (imgui::menuItem(u8"Êä³öÊÓÆµ", "CTRL+B")) { this->sendMessage("editor:menu:file:video", true); }
 
 				imgui::separator();
 
@@ -79,8 +79,8 @@ namespace MysticLit
 
 			if (imgui::beginMenu(u8"ÉèÖÃ"))
 			{
-				if (imgui::menuItem(u8"¿ªÊ¼äÖÈ¾")) { this->sendMessage("editor:menu:setting:render", true); }
-				if (imgui::menuItem(u8"Í£Ö¹äÖÈ¾")) { this->sendMessage("editor:menu:setting:render", false); }
+				if (imgui::menuItem(u8"¿ªÊ¼²¥·Å")) { this->sendMessage("editor:menu:setting:render", true); }
+				if (imgui::menuItem(u8"Í£Ö¹²¥·Å")) { this->sendMessage("editor:menu:setting:render", false); }
 
 				imgui::separator();
 

@@ -7,65 +7,67 @@ namespace octoon
 {
 	namespace animation
 	{
+		struct AnimatorStateInfo
+		{
+			bool finish;
+		};
+
 		template<typename _Elem = float, typename _Time = float>
 		class Animation final
 		{
-		public:
-			bool finish;
+		public:			
 			std::string name;
+			AnimatorStateInfo state;
 			AnimationClips<_Elem, _Time> clips;
 
 			Animation() noexcept
-				: finish(false)
+				: name("Default")
 			{
+				state.finish = true;
 			}
 
 			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
-				: name("Default")
-				, finish(false)
+				: Animation()
 			{
 				clips.emplace_back(std::move(_clips));
 			}
 
 			Animation(const AnimationClip<_Elem, _Time>& _clip) noexcept
-				: name("Default")
-				, finish(false)
+				: Animation()
 			{
 				clips.emplace_back(std::move(_clip));
 			}
 
 			Animation(AnimationClips<_Elem, _Time>&& _clips) noexcept
-				: name("Default")
-				, clips(std::move(_clips))
-				, finish(false)
+				: Animation()
 			{
+				clips = std::move(_clips);
 			}
 
 			Animation(const AnimationClips<_Elem, _Time>& _clips) noexcept
-				: name("Default")
-				, clips(_clips)
-				, finish(false)
+				: Animation()
 			{
+				clips = _clips;
 			}
 
 			Animation(std::string&& _name, AnimationClips<_Elem, _Time>&& _clips) noexcept
 				: name(std::move(_name))
 				, clips(std::move(_clips))
-				, finish(false)
 			{
+				state.finish = true;
 			}
 
 			Animation(const std::string& _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: name(_name)
 				, clips(_clips)
-				, finish(false)
 			{
+				state.finish = true;
 			}
 
 			explicit Animation(const std::string& _name) noexcept
 				: name(_name)
-				, finish(false)
 			{
+				state.finish = true
 			}
 
 			void setName(std::string&& _name) noexcept
@@ -106,12 +108,12 @@ namespace octoon
 
 			void evaluate(const _Time& delta) noexcept
 			{
-				this->finish = true;
+				this->state.finish = true;
 
 				for (auto& it : this->clips)
 				{
 					it.evaluate(delta);
-					this->finish &= it.finish;
+					this->state.finish &= it.finish;
 				}
 			}
 

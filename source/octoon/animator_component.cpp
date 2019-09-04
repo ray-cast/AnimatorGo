@@ -122,6 +122,12 @@ namespace octoon
 		return avatar_;
 	}
 
+	const animation::AnimatorStateInfo&
+	AnimatorComponent::getCurrentAnimatorStateInfo() const noexcept
+	{
+		return animation_.state;
+	}
+
 	GameComponentPtr
 	AnimatorComponent::clone() const noexcept
 	{
@@ -167,7 +173,7 @@ namespace octoon
 	void
 	AnimatorComponent::updateAvatar(float delta) noexcept
 	{
-		if (animation_.finish)
+		if (this->getCurrentAnimatorStateInfo().finish)
 			return;
 
 		for (std::size_t i = 0; i < animation_.clips.size(); i++)
@@ -178,7 +184,6 @@ namespace octoon
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
 			auto euler = math::eulerAngles(quat);
-			auto move = 0.0f;
 
 			for (auto& curve : animation_.clips[i].curves)
 			{

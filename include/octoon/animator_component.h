@@ -32,6 +32,8 @@ namespace octoon
 		void setAnimation(const animation::Animation<float>& animation) noexcept;
 		const animation::Animation<float>& getAnimation() const noexcept;
 
+		const animation::AnimatorStateInfo& getCurrentAnimatorStateInfo() const noexcept;
+
 		GameComponentPtr clone() const noexcept;
 
 	private:

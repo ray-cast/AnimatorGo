@@ -105,7 +105,6 @@ namespace MysticLit
 		this->addComponent(denoiseComponent_.get());
 		this->addComponent(h264Component_.get());
 		this->addComponent(uiComponent_.get());
-		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 
 		this->enableComponents();
 	}
@@ -135,20 +134,34 @@ namespace MysticLit
 		uiComponent_->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
 		uiComponent_->removeMessageListener("editor:menu:enviroment:hdri", std::bind(&MysticlitBehaviour::onLoadHDRi, this, std::placeholders::_1));
 		uiComponent_.reset();
-
-		this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 	}
 
 	void
 	MysticlitBehaviour::onFixedUpdate() noexcept
 	{
-		if (this->profile_->offlineModule->offlineEnable)
+		bool finish = false;
+		for (auto& it : this->profile_->entitiesModule->objects)
 		{
-			for (auto& it : components_)
+			auto animator = it->getComponent<octoon::AnimatorComponent>();
+			if (animator)
+				finish |= animator->getCurrentAnimatorStateInfo().finish;
+		}
+
+		if (!finish)
+		{
+			if (this->profile_->offlineModule->offlineEnable)
 			{
-				if (it->getActive())
-					it->onPostProcess();
+				for (auto& it : components_)
+				{
+					if (it->getActive())
+						it->onPostProcess();
+				}
 			}
+		}
+		else
+		{
+			this->onRecord(false);
+			this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		}
 	}
 
@@ -202,18 +215,33 @@ namespace MysticLit
 	void
 	MysticlitBehaviour::onRecord(const octoon::runtime::any& data) noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::vector<std::string::value_type> filepath(pathLimits);
-		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
+		auto play = octoon::runtime::any_cast<bool>(data);
+		if (play)
 		{
-			canvasComponent_->setActive(true);
-			denoiseComponent_->setActive(true);
-			offlineComponent_->setActive(true);
-			h264Component_->setActive(true);
+			auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
+			std::vector<std::string::value_type> filepath(pathLimits);
+			if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
+			{
+				canvasComponent_->setActive(true);
+				denoiseComponent_->setActive(true);
+				offlineComponent_->setActive(true);
+				h264Component_->setActive(true);
 
-			playerComponent_->render();
-			entitiesComponent_->play();
-			h264Component_->record(filepath.data());
+				playerComponent_->render();
+				entitiesComponent_->play();
+				h264Component_->record(filepath.data());
+
+				this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
+			}
+		}
+		else
+		{
+			canvasComponent_->setActive(false);
+			denoiseComponent_->setActive(false);
+			offlineComponent_->setActive(false);
+			h264Component_->setActive(false);
+
+			playerComponent_->stop();
 		}
 	}
 

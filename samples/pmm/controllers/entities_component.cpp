@@ -27,10 +27,10 @@ namespace MysticLit
 	{
 		for (auto& it : this->getModel()->objects)
 		{
-			for (auto& it : it->getComponents())
+			for (auto& component : it->getComponents())
 			{
-				if (it->isA<octoon::AnimatorComponent>())
-					it->downcast<octoon::AnimatorComponent>()->play();
+				if (component->isA<octoon::AnimatorComponent>())
+					component->downcast<octoon::AnimatorComponent>()->play();
 			}
 		}
 	}
@@ -40,10 +40,10 @@ namespace MysticLit
 	{
 		for (auto& it : this->getModel()->objects)
 		{
-			for (auto& it : it->getComponents())
+			for (auto& component : it->getComponents())
 			{
-				if (it->isA<octoon::AnimatorComponent>())
-					it->downcast<octoon::AnimatorComponent>()->stop();
+				if (component->isA<octoon::AnimatorComponent>())
+					component->downcast<octoon::AnimatorComponent>()->stop();
 			}
 		}
 	}

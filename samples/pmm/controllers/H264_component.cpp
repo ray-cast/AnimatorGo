@@ -31,6 +31,7 @@ namespace MysticLit
 	void
 	H264Component::onDisable() noexcept
 	{
+		this->ostream_.reset();
 	}
 
 	void

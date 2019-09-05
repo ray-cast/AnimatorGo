@@ -1,49 +1,49 @@
 #include "title_window.h"
 
 TitleBar::TitleBar(QWidget* parent)
-	: maxNormal(false)
+	: maxNormal_(false)
 {
-	maxPix = QIcon::fromTheme("res", QIcon(":res/icons/maximize.png"));
-	restorePix = QIcon::fromTheme("res", QIcon(":res/icons/restore.png"));
+	maxPix_ = QIcon::fromTheme("res", QIcon(":res/icons/maximize.png"));
+	restorePix_ = QIcon::fromTheme("res", QIcon(":res/icons/restore.png"));
 
-	minimizeButton = new QToolButton(this);
-	minimizeButton->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/minimize.png")));
-	minimizeButton->setToolTip(u8"最小化");
+	minimizeButton_ = std::make_unique<QToolButton>(this);
+	minimizeButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/minimize.png")));
+	minimizeButton_->setToolTip(u8"最小化");
 
-	maximizeButton = new QToolButton(this);
-	maximizeButton->setIcon(maxPix);
-	maximizeButton->setToolTip(u8"最大化");
+	maximizeButton_ = std::make_unique<QToolButton>(this);
+	maximizeButton_->setIcon(maxPix_);
+	maximizeButton_->setToolTip(u8"最大化");
 
-	closeButton = new QToolButton(this);
-	closeButton->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/close.png")));
-	closeButton->setToolTip(u8"关闭");
+	closeButton_ = std::make_unique<QToolButton>(this);
+	closeButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/close.png")));
+	closeButton_->setToolTip(u8"关闭");
 
-	settingButton = new QToolButton(this);
-	settingButton->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/setting.png")));
-	settingButton->setToolTip(u8"全局设置");
+	settingButton_ = std::make_unique<QToolButton>(this);
+	settingButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/setting.png")));
+	settingButton_->setToolTip(u8"全局设置");
 
-	logoButton = new QPushButton(this);
-	logoButton->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/logo.png")));
+	logoButton_ = std::make_unique<QPushButton>(this);
+	logoButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/logo.png")));
 
-	QLabel* titleLabel = new QLabel(this);
-	titleLabel->setText(u8"兔纸渲染器");
-	titleLabel->setFont(QFont("Microsoft YaHei", 7, QFont::Normal));
+	titleLabel_ = std::make_unique<QLabel>(this);
+	titleLabel_->setText(u8"兔纸渲染器");
+	titleLabel_->setFont(QFont("Microsoft YaHei", 7, QFont::Normal));
 
-	QHBoxLayout* hbox = new QHBoxLayout(this);
-	hbox->addWidget(logoButton);
-	hbox->addWidget(titleLabel);
-	hbox->addWidget(settingButton);
-	hbox->addWidget(minimizeButton);
-	hbox->addWidget(maximizeButton);
-	hbox->addWidget(closeButton);
+	layout_ = std::make_unique<QHBoxLayout>(this);
+	layout_->addWidget(logoButton_.get());
+	layout_->addWidget(titleLabel_.get());
+	layout_->addWidget(settingButton_.get());
+	layout_->addWidget(minimizeButton_.get());
+	layout_->addWidget(maximizeButton_.get());
+	layout_->addWidget(closeButton_.get());
 
-	hbox->setSpacing(0);
-	hbox->insertStretch(2, 500);
-	hbox->setContentsMargins(10, 0, 10, 0);
+	layout_->setSpacing(0);
+	layout_->insertStretch(2, 500);
+	layout_->setContentsMargins(10, 0, 10, 0);
 
-	this->connect(closeButton, SIGNAL(clicked()), parent, SLOT(close()));
-	this->connect(minimizeButton, SIGNAL(clicked()), this, SLOT(showSmall()));
-	this->connect(maximizeButton, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
+	this->connect(closeButton_.get(), SIGNAL(clicked()), parent, SLOT(close()));
+	this->connect(minimizeButton_.get(), SIGNAL(clicked()), this, SLOT(showSmall()));
+	this->connect(maximizeButton_.get(), SIGNAL(clicked()), this, SLOT(showMaxRestore()));
 
 	this->setFixedHeight(32);
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -62,41 +62,41 @@ TitleBar::showSmall()
 void
 TitleBar::showMaxRestore()
 {
-	if (maxNormal)
+	if (maxNormal_)
 	{
-		parentWidget()->setMinimumSize(size);
+		parentWidget()->setMinimumSize(size_);
 		parentWidget()->showNormal();
 		parentWidget()->showMaximized();
 		parentWidget()->showNormal();
-		maxNormal = !maxNormal;
-		maximizeButton->setIcon(maxPix);
+		maxNormal_ = !maxNormal_;
+		maximizeButton_->setIcon(maxPix_);
 	}
 	else
 	{
-		size = parentWidget()->size();
+		size_ = parentWidget()->size();
 		parentWidget()->showMaximized();
-		maxNormal = !maxNormal;
-		maximizeButton->setIcon(restorePix);
+		maxNormal_ = !maxNormal_;
+		maximizeButton_->setIcon(restorePix_);
 	}
 }
 
 void
 TitleBar::mousePressEvent(QMouseEvent* me)
 {
-	allowMove = true;
-	startPos = me->globalPos();
-	clickPos = mapToParent(me->pos());
+	allowMove_ = true;
+	startPos_ = me->globalPos();
+	clickPos_ = mapToParent(me->pos());
 }
 
 void
 TitleBar::mouseReleaseEvent(QMouseEvent* me)
 {
-	allowMove = false;
+	allowMove_ = false;
 }
 
 void
 TitleBar::mouseMoveEvent(QMouseEvent* me)
 {
-	if (allowMove && !maxNormal)
-		parentWidget()->move(me->globalPos() - clickPos);
+	if (allowMove_ && !maxNormal_)
+		parentWidget()->move(me->globalPos() - clickPos_);
 }

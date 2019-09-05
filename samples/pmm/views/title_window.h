@@ -19,20 +19,29 @@ public Q_SLOTS:
 	void showMaxRestore();
 
 private:
-	void mousePressEvent(QMouseEvent* me) override;
-	void mouseReleaseEvent(QMouseEvent* me) override;
-	void mouseMoveEvent(QMouseEvent* me) override;
+	void mousePressEvent(QMouseEvent* e) override;
+	void mouseReleaseEvent(QMouseEvent* e) override;
+	void mouseMoveEvent(QMouseEvent* e) override;
 
 private:
-	QToolButton* minimizeButton;
-	QToolButton* maximizeButton;
-	QToolButton* closeButton;
-	QToolButton* settingButton;
-	QPushButton* logoButton;
-	QIcon restorePix, maxPix;
-	bool maxNormal;
-	bool allowMove;
-	QPoint startPos;
-	QPoint clickPos;
-	QSize  size;
+	bool maxNormal_;
+	bool allowMove_;
+
+	QSize size_;
+
+	QPoint startPos_;
+	QPoint clickPos_;
+
+	QIcon maxPix_;
+	QIcon restorePix_;
+
+	std::unique_ptr<QHBoxLayout> layout_;
+
+	std::unique_ptr<QLabel> titleLabel_;
+
+	std::unique_ptr<QToolButton> minimizeButton_;
+	std::unique_ptr<QToolButton> maximizeButton_;
+	std::unique_ptr<QToolButton> closeButton_;
+	std::unique_ptr<QToolButton> settingButton_;
+	std::unique_ptr<QPushButton> logoButton_;
 };

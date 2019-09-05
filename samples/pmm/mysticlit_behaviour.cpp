@@ -189,23 +189,18 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::startRecord() noexcept
+	MysticlitBehaviour::startRecord(const std::string& filepath) noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::vector<std::string::value_type> filepath(pathLimits);
-		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
-		{
-			canvasComponent_->setActive(true);
-			denoiseComponent_->setActive(true);
-			offlineComponent_->setActive(true);
-			h264Component_->setActive(true);
+		canvasComponent_->setActive(true);
+		denoiseComponent_->setActive(true);
+		offlineComponent_->setActive(true);
+		h264Component_->setActive(true);
 
-			playerComponent_->render();
-			entitiesComponent_->play();
-			h264Component_->record(filepath.data());
+		playerComponent_->render();
+		entitiesComponent_->play();
+		h264Component_->record(filepath.data());
 
-			this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
-		}
+		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 	}
 
 	void

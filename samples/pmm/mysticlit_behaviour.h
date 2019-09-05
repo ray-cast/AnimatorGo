@@ -30,7 +30,7 @@ namespace MysticLit
 		void openModel() noexcept;
 		void saveModel() noexcept;
 
-		void startRecord() noexcept;
+		void startRecord(const std::string& path) noexcept;
 		void stopRecord() noexcept;
 
 		void play() noexcept;

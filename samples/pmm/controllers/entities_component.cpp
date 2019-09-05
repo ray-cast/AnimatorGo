@@ -30,7 +30,11 @@ namespace MysticLit
 			for (auto& component : it->getComponents())
 			{
 				if (component->isA<octoon::AnimatorComponent>())
+				{
+					component->downcast<octoon::AnimatorComponent>()->setTime(0.0f);
+					component->downcast<octoon::AnimatorComponent>()->sample(0.0f);
 					component->downcast<octoon::AnimatorComponent>()->play();
+				}
 			}
 		}
 	}

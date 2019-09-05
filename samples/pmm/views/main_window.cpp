@@ -125,21 +125,23 @@ MainWindow::onRecordSignal(bool enable) noexcept
 		if (behaviour->isOpen())
 		{
 			if (enable)
-				behaviour->startRecord();
+			{
+				QString fileName = QFileDialog::getSaveFileName(this, u8"±£´æ", "", tr("HDRi Files (*.h264)"));
+				if (!fileName.isEmpty())
+				{
+					behaviour->startRecord(fileName.toUtf8().data());
+					return true;
+				}
+			}
 			else
+			{
 				behaviour->stopRecord();
-
-			return true;
-		}
-		else
-		{
-			return false;
+				return true;
+			}
 		}
 	}
-	else
-	{
-		return false;
-	}
+	
+	return false;
 }
 
 void 

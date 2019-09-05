@@ -306,10 +306,15 @@ namespace MysticLit
 			rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 		}
 
-		std::unordered_map<int32_t, uint32_t> key_to_array_index;
+		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() << 1);
 
 		for (int i = 0; i < it.bone_key_frame.size(); i++)
-		    key_to_array_index[it.bone_key_frame[i].data_index] = i;
+		{
+			auto index = it.bone_key_frame[i].data_index;
+			if (index >= key_to_array_index.size())
+				key_to_array_index.resize(index + 1);
+			key_to_array_index[index] = i;
+		}
 
 		for (auto& key : it.bone_key_frame)
 		{
@@ -371,11 +376,21 @@ namespace MysticLit
 			keyframes[i].emplace_back((float)key.frame / 30.0f, key.value);
 		}
 
+		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() << 1);
+
+		for (int i = 0; i < it.morph_key_frame.size(); i++)
+		{
+			auto index = it.morph_key_frame[i].data_index;
+			if (index >= key_to_array_index.size())
+				key_to_array_index.resize(index + 1);
+			key_to_array_index[index] = i;
+		}
+
 		for (auto& key : it.morph_key_frame)
 		{
 			auto index = key.pre_index;
 			while (index >= it.morph_name.size())
-				index = it.morph_key_frame[index - it.morph_name.size()].pre_index;
+				index = it.morph_key_frame[key_to_array_index[index]].pre_index;
 
 			keyframes[index].emplace_back((float)key.frame / 30.0f, key.value);
 		}

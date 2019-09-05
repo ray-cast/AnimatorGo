@@ -492,16 +492,16 @@ namespace octoon
 				joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 
 				if (it->springMovementConstant.x != 0.0f)
-					joint->setDriveMotionX(it->springMovementConstant.x);
+					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.x));
 				if (it->springMovementConstant.y != 0.0f)
-					joint->setDriveMotionY(it->springMovementConstant.y);
+					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.y));
 				if (it->springMovementConstant.z != 0.0f)
-					joint->setDriveMotionZ(it->springMovementConstant.z);
+					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.z));
 
 				if (it->springRotationConstant.x != 0.0f)
-					joint->setDriveAngularX(it->springRotationConstant.x);
+					joint->setDriveAngularX(std::max(0.0f, it->springRotationConstant.x));
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
-					joint->setDriveAngularY((it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f);
+					joint->setDriveAngularY(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
 
 				joints.push_back(bodyA);
 			}

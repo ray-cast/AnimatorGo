@@ -2,20 +2,19 @@
 
 HideBar::HideBar(QWidget* parent)
 {
-	hideButton = std::make_unique<QPushButton>(this);
-	hideButton->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/show.png")));
-	hideButton->setToolTip(u8"显示工具栏");
-	hideButton->setStyleSheet("QPushButton:hover{background-color:rgb(0,122,204,255);}");
+	hideButton_ = std::make_unique<QPushButton>(this);
+	hideButton_->setObjectName("show");
+	hideButton_->setToolTip(u8"显示工具栏");
 
 	layout_ = std::make_unique<QVBoxLayout>(this);
-	layout_->addWidget(hideButton.get());
+	layout_->addWidget(hideButton_.get());
 	layout_->addStretch();
 	layout_->setSpacing(0);
 	layout_->setContentsMargins(0, 0, 0, 0);
 
 	this->hide();
 	this->setFixedWidth(6);
-	this->connect(hideButton.get(), SIGNAL(clicked()), this, SLOT(showEvent()));
+	this->connect(hideButton_.get(), SIGNAL(clicked()), this, SLOT(showEvent()));
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
@@ -26,7 +25,7 @@ HideBar::~HideBar()
 void
 HideBar::resizeEvent(QResizeEvent* e) noexcept
 {
-	hideButton->setFixedSize(width(), height());
+	hideButton_->setFixedSize(width(), height());
 }
 
 void

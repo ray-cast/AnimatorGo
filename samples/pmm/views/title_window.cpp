@@ -12,7 +12,6 @@ TitleBar::TitleBar(QWidget* parent)
 
 	maximizeButton_ = std::make_unique<QToolButton>(this);
 	maximizeButton_->setObjectName("maximize");
-	maximizeButton_->setIcon(maxPix_);
 	maximizeButton_->setToolTip(u8"×î´ó»¯");
 
 	closeButton_ = std::make_unique<QToolButton>(this);

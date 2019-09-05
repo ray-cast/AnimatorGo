@@ -13,11 +13,11 @@ ToolBar::ToolBar(QWidget* parent)
 	recordOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/record-on.png"));
 
 	hideButton_ = std::make_unique<QToolButton>(this);
-	hideButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/hide.png")));
+	hideButton_->setObjectName("hide");
 	hideButton_->setToolTip(u8"隐藏工具栏");
 
 	importButton_ = std::make_unique<QToolButton>(this);
-	importButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/append.png")));
+	importButton_->setObjectName("import");
 	importButton_->setToolTip(u8"加载文件");
 
 	playButton_ = std::make_unique<QToolButton>(this);
@@ -29,15 +29,15 @@ ToolBar::ToolBar(QWidget* parent)
 	recordButton_->setToolTip(u8"录制视频");
 
 	shotButton_ = std::make_unique<QToolButton>(this);
-	shotButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/shot.png")));
+	shotButton_->setObjectName("shot");
 	shotButton_->setToolTip(u8"截图");
 
 	gpuButton_ = std::make_unique<QToolButton>(this);
-	gpuButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/gpu.png")));
+	gpuButton_->setObjectName("gpu");
 	gpuButton_->setToolTip(u8"高质量渲染");
 
 	hdrButton_ = std::make_unique<QToolButton>(this);
-	hdrButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/hdr.png")));
+	hdrButton_->setObjectName("hdr");
 	hdrButton_->setToolTip(u8"加载高动态图像");
 
 	layout_ = std::make_unique<QVBoxLayout>(this);

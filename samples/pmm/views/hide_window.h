@@ -25,7 +25,7 @@ Q_SIGNALS:
 	void showSignal();
 
 private:
-	std::unique_ptr<QPushButton> hideButton;
+	std::unique_ptr<QPushButton> hideButton_;
 	std::unique_ptr<QVBoxLayout> layout_;
 };
 

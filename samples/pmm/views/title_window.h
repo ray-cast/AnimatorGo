@@ -34,4 +34,5 @@ private:
 	bool allowMove;
 	QPoint startPos;
 	QPoint clickPos;
+	QSize  size;
 };

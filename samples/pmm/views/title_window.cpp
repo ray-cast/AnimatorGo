@@ -64,12 +64,16 @@ TitleBar::showMaxRestore()
 {
 	if (maxNormal)
 	{
+		parentWidget()->setMinimumSize(size);
+		parentWidget()->showNormal();
+		parentWidget()->showMaximized();
 		parentWidget()->showNormal();
 		maxNormal = !maxNormal;
 		maximizeButton->setIcon(maxPix);
 	}
 	else
 	{
+		size = parentWidget()->size();
 		parentWidget()->showMaximized();
 		maxNormal = !maxNormal;
 		maximizeButton->setIcon(restorePix);

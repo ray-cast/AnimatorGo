@@ -1,11 +1,6 @@
 #include "ui_component.h"
-
-#include "views/main_menu.h"
 #include "views/camera_window.h"
-#include "views/message_window.h"
 #include "views/theme_manager.h"
-#include "views/about_window.h"
-
 #include "mysticlit_behaviour.h"
 
 namespace MysticLit
@@ -55,11 +50,8 @@ namespace MysticLit
 		if (!main_)
 		{
 			main_ = octoon::GameObject::create("MainView");
-			//main_->addComponent<MainMenu>();
 			main_->addComponent<CameraWindow>();
 			main_->addComponent<ThemeManager>();
-			main_->addComponent<MessageWindow>();
-			main_->addComponent<AboutWindow>();
 
 			this->getContext()->behaviour->addMessageListener("editor:camera:set", 
 			std::bind([&](const octoon::runtime::any& data) 

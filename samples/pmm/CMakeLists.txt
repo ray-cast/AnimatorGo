@@ -52,14 +52,8 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/hide_window.cpp
 	${SOURCE_PATH}/views/main_window.h
 	${SOURCE_PATH}/views/main_window.cpp
-	${SOURCE_PATH}/views/about_window.h
-	${SOURCE_PATH}/views/about_window.cpp
 	${SOURCE_PATH}/views/camera_window.h
 	${SOURCE_PATH}/views/camera_window.cpp
-	${SOURCE_PATH}/views/message_window.h
-	${SOURCE_PATH}/views/message_window.cpp
-	${SOURCE_PATH}/views/main_menu.h
-	${SOURCE_PATH}/views/main_menu.cpp
 	${SOURCE_PATH}/views/theme_manager.h
 	${SOURCE_PATH}/views/theme_manager.cpp
 )

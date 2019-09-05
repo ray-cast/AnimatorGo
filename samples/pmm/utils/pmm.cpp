@@ -1,6 +1,7 @@
 #include "pmm.h"
 #include <iconv.h>
 #include <codecvt>
+#include <filesystem>
 
 namespace octoon
 {
@@ -131,6 +132,40 @@ namespace octoon
 
 		if (bytes.size() < len - 1)
 			reader.seekg(len - bytes.size() - 1, std::ios_base::cur);
+
+		return sjis2utf8(bytes);
+	}
+
+	std::optional<std::string>
+	PmmName::load_fixed_path(istream& reader, std::size_t len)
+	{
+		auto bytes = std::string();
+		for (std::size_t i = 0; i < len; i++)
+		{
+			char ch = 0;
+			reader.read(&ch, 1);
+			if (ch == 0)
+				break;
+			bytes += ch;
+		}
+
+		if (bytes.size() < len - 1)
+			reader.seekg(len - bytes.size() - 1, std::ios_base::cur);
+
+		if (std::filesystem::exists(bytes))
+		{
+			LPCCH pSJIS = (LPCCH)bytes.c_str();
+			int utf16size = ::MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, pSJIS, -1, 0, 0);
+			if (utf16size != 0)
+			{
+				auto pUTF16 = std::make_unique<WCHAR[]>(utf16size);
+				if (::MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, (LPCCH)pSJIS, -1, pUTF16.get(), utf16size) != 0)
+				{
+					std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
+					return cv.to_bytes(pUTF16.get());
+				}
+			}
+		}
 
 		return sjis2utf8(bytes);
 	}
@@ -707,7 +742,7 @@ namespace octoon
 		reader.read((char*)& data.number, sizeof(data.number));
 		data.name = PmmName::load(reader).value();
 		data.name_en = PmmName::load(reader).value();
-		data.path = PmmName::load_fixed_utf8(reader, 256).value();
+		data.path = PmmName::load_fixed_path(reader, 256).value();
 		reader.read((char*)& data.keyframe_editor_toplevel_rows, sizeof(data.keyframe_editor_toplevel_rows));
 		data.bone_name = PmmName::load_arrays(reader).value();
 		data.morph_name = PmmName::load_arrays(reader).value();
@@ -886,7 +921,7 @@ namespace octoon
 		PmmAccessoryData data;
 		reader.read((char*)& data.index, sizeof(data.index));
 		data.name = PmmName::load_fixed_utf8(reader, 100).value();
-		data.path = PmmName::load_fixed_utf8(reader, 256).value();
+		data.path = PmmName::load_fixed_path(reader, 256).value();
 		reader.read((char*)& data.draw_order, sizeof(data.draw_order));
 		data.init_frame = PmmKeyframe::load(reader).value();
 		data.key_frames = PmmKeyframe::load_arrays(reader).value();
@@ -1056,16 +1091,16 @@ namespace octoon
 			reader.read((char*)& pmm.play_start_frame, sizeof(pmm.play_start_frame));
 			reader.read((char*)& pmm.play_end_frame, sizeof(pmm.play_end_frame));
 			reader.read((char*)& pmm.is_wave_enabled, sizeof(pmm.is_wave_enabled));
-			pmm.wave_path = PmmName::load_fixed_utf8(reader, 256).value();
+			pmm.wave_path = PmmName::load_fixed_path(reader, 256).value();
 			reader.read((char*)& pmm.avi_offset_x, sizeof(pmm.avi_offset_x));
 			reader.read((char*)& pmm.avi_offset_y, sizeof(pmm.avi_offset_y));
 			reader.read((char*)& pmm.avi_scale, sizeof(pmm.avi_scale));
-			pmm.avi_path = PmmName::load_fixed_utf8(reader, 256).value();
+			pmm.avi_path = PmmName::load_fixed_path(reader, 256).value();
 			reader.read((char*)& pmm.is_show_avi, sizeof(pmm.is_show_avi));
 			reader.read((char*)& pmm.background_image_offset_x, sizeof(pmm.background_image_offset_x));
 			reader.read((char*)& pmm.background_image_offset_y, sizeof(pmm.background_image_offset_y));
 			reader.read((char*)& pmm.background_image_scale, sizeof(pmm.background_image_scale));
-			pmm.background_image_path = PmmName::load_fixed_utf8(reader, 255).value();
+			pmm.background_image_path = PmmName::load_fixed_path(reader, 255).value();
 			reader.read((char*)& pmm.is_show_background_image, sizeof(pmm.is_show_background_image));
 			reader.read((char*)& pmm.is_show_infomation, sizeof(pmm.is_show_infomation));
 			reader.read((char*)& pmm.is_low_power, sizeof(pmm.is_low_power));

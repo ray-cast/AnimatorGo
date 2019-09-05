@@ -41,6 +41,7 @@ namespace octoon
 		static std::string sjis2utf8(const std::string& sjis);
 		static std::optional<std::string> load(istream& reader);
 		static std::optional<std::string> load_fixed_utf8(istream& reader, std::size_t len);
+		static std::optional<std::string> load_fixed_path(istream& reader, std::size_t len);
 		static std::optional<std::vector<std::string>> load_arrays(istream& reader);
 	};
 

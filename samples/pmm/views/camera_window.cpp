@@ -29,7 +29,7 @@ namespace MysticLit
 
 		auto camera = camera_->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
 		camera->setCameraType(octoon::video::CameraType::Main);
-		camera->setClearColor(octoon::math::float4(0.2f, 0.2f, 0.2f, 1.0f));
+		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
 		this->addMessageListener("editor:camera:set", std::bind(&CameraWindow::setCamera, this, std::placeholders::_1));
 	}

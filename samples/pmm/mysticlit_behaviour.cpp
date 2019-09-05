@@ -83,19 +83,7 @@ namespace MysticLit
 		playerComponent_->init(context_, profile_->timeModule);
 		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h264Component_->init(context_, profile_->h264Module);
-
 		uiComponent_->init(context_, profile_->canvasModule);
-		uiComponent_->addMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:exit", std::bind(&MysticlitBehaviour::exit, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
-		uiComponent_->addMessageListener("editor:menu:enviroment:hdri", std::bind(&MysticlitBehaviour::onLoadHDRi, this, std::placeholders::_1));
 
 		this->addComponent(fileComponent_.get());
 		this->addComponent(canvasComponent_.get());
@@ -119,20 +107,8 @@ namespace MysticLit
 		playerComponent_.reset();
 		denoiseComponent_.reset();
 		h264Component_.reset();
-
 		context_.reset();
 		profile_.reset();
-
-		uiComponent_->removeMessageListener("editor:menu:file:open", std::bind(&MysticlitBehaviour::onOpenProject, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:save", std::bind(&MysticlitBehaviour::onSaveProject, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:saveAs", std::bind(&MysticlitBehaviour::onSaveAsProject, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:import", std::bind(&MysticlitBehaviour::onOpenModel, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:export", std::bind(&MysticlitBehaviour::onSaveModel, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:picture", std::bind(&MysticlitBehaviour::onRenderPicture, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:file:video", std::bind(&MysticlitBehaviour::onRecord, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:setting:render", std::bind(&MysticlitBehaviour::play, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:setting:mode", std::bind(&MysticlitBehaviour::offlineMode, this, std::placeholders::_1));
-		uiComponent_->removeMessageListener("editor:menu:enviroment:hdri", std::bind(&MysticlitBehaviour::onLoadHDRi, this, std::placeholders::_1));
 		uiComponent_.reset();
 	}
 
@@ -160,33 +136,27 @@ namespace MysticLit
 		}
 		else
 		{
-			this->onRecord(false);
+			this->stopRecord();
 			this->removeComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		}
 	}
 
 	void
-	MysticlitBehaviour::onOpenProject(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::open() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
-			return;
-
-		fileComponent_->open(filepath.data());
-	}
-
-	void
-	MysticlitBehaviour::onSaveProject(const octoon::runtime::any& data) noexcept
-	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::vector<std::string::value_type> filepath(pathLimits);
-		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
+		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
 			fileComponent_->open(filepath.data());
 	}
 
 	void
-	MysticlitBehaviour::onSaveAsProject(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::save() noexcept
+	{
+	}
+
+	void
+	MysticlitBehaviour::saveAs() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -195,7 +165,7 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::onOpenModel(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::openModel() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -204,7 +174,7 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::onSaveModel(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::saveModel() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
@@ -213,40 +183,38 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::onRecord(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::startRecord() noexcept
 	{
-		auto play = octoon::runtime::any_cast<bool>(data);
-		if (play)
+		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
+		std::vector<std::string::value_type> filepath(pathLimits);
+		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
 		{
-			auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-			std::vector<std::string::value_type> filepath(pathLimits);
-			if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->videoExtensions[0]))
-			{
-				canvasComponent_->setActive(true);
-				denoiseComponent_->setActive(true);
-				offlineComponent_->setActive(true);
-				h264Component_->setActive(true);
+			canvasComponent_->setActive(true);
+			denoiseComponent_->setActive(true);
+			offlineComponent_->setActive(true);
+			h264Component_->setActive(true);
 
-				playerComponent_->render();
-				entitiesComponent_->play();
-				h264Component_->record(filepath.data());
+			playerComponent_->render();
+			entitiesComponent_->play();
+			h264Component_->record(filepath.data());
 
-				this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
-			}
-		}
-		else
-		{
-			canvasComponent_->setActive(false);
-			denoiseComponent_->setActive(false);
-			offlineComponent_->setActive(false);
-			h264Component_->setActive(false);
-
-			playerComponent_->stop();
+			this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		}
 	}
 
 	void
-	MysticlitBehaviour::onRenderPicture(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::stopRecord() noexcept
+	{
+		canvasComponent_->setActive(false);
+		denoiseComponent_->setActive(false);
+		offlineComponent_->setActive(false);
+		h264Component_->setActive(false);
+
+		playerComponent_->stop();
+	}
+
+	void
+	MysticlitBehaviour::renderPicture() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::string filepath(pathLimits, 0);
@@ -268,44 +236,36 @@ namespace MysticLit
 		}
 	}
 
-	void 
-	MysticlitBehaviour::exit(const octoon::runtime::any& data) noexcept
+	void
+	MysticlitBehaviour::play() noexcept
 	{
-		std::exit(0);
+		playerComponent_->play();
+		entitiesComponent_->play();
 	}
 
 	void
-	MysticlitBehaviour::play(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::stop() noexcept
 	{
-		assert(data.type() == typeid(bool));
-
-		auto play = octoon::runtime::any_cast<bool>(data);
-		if (play)
-		{
-			playerComponent_->play();
-			entitiesComponent_->play();
-		}
-		else
-		{
-			playerComponent_->stop();
-			entitiesComponent_->stop();
-		}
+		playerComponent_->stop();
+		entitiesComponent_->stop();
 	}
 
 	void
-	MysticlitBehaviour::offlineMode(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::startPathTracing() noexcept
 	{
-		assert(data.type() == typeid(bool));
-		offlineComponent_->setActive(octoon::runtime::any_cast<bool>(data));
+		offlineComponent_->setActive(true);
 	}
 
 	void
-	MysticlitBehaviour::onLoadHDRi(const octoon::runtime::any& data) noexcept
+	MysticlitBehaviour::stopPathTracing() noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::string filepath(pathLimits, 0);
-		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->hdriExtensions[0]))
-			fileComponent_->importHDRi(filepath);
+		offlineComponent_->setActive(false);
+	}
+
+	void
+	MysticlitBehaviour::loadHDRi(const std::string& path) noexcept
+	{
+		fileComponent_->importHDRi(path);
 	}
 
 	octoon::GameComponentPtr

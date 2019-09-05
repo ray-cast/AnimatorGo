@@ -1,0 +1,26 @@
+QWidget{    
+    background: rgb(30, 30, 30);
+}
+
+QLabel{
+    color: rgb(255,255,255);
+}
+
+QPushButton{
+    background-color: rgb(0,0,0,0);
+    border:none;
+    width:32px;
+    height:32px;
+}
+
+QToolButton{
+    background-color: rgb(0,0,0,0);
+    border:none;
+    width:32px;
+    height:32px;
+}
+
+QToolButton:hover{
+    background-color: rgb(255,255,255,30);
+    border:none;
+}

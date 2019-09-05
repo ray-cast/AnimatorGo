@@ -387,7 +387,7 @@ namespace octoon
 
 			auto io = ImGui::GetIO();
 			io.Fonts->ClearFonts();
-			io.Fonts->AddFontFromFileTTF(path, font_size, 0, ranges);
+			io.Fonts->AddFontFromFileTTF(path, font_size, 0, 0);
 			io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
 			GraphicsTextureDesc textureDesc;

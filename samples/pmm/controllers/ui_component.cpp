@@ -55,7 +55,7 @@ namespace MysticLit
 		if (!main_)
 		{
 			main_ = octoon::GameObject::create("MainView");
-			main_->addComponent<MainMenu>();
+			//main_->addComponent<MainMenu>();
 			main_->addComponent<CameraWindow>();
 			main_->addComponent<ThemeManager>();
 			main_->addComponent<MessageWindow>();

@@ -22,7 +22,25 @@ namespace MysticLit
 		MysticlitBehaviour() noexcept;
 		~MysticlitBehaviour() noexcept;
 
-		virtual octoon::GameComponentPtr clone() const noexcept override;
+		void open() noexcept;
+		void save() noexcept;
+		void saveAs() noexcept;
+
+		void openModel() noexcept;
+		void saveModel() noexcept;
+
+		void startRecord() noexcept;
+		void stopRecord() noexcept;
+
+		void play() noexcept;
+		void stop() noexcept;
+
+		void startPathTracing() noexcept;
+		void stopPathTracing() noexcept;
+
+		void loadHDRi(const std::string& path) noexcept;
+
+		void renderPicture() noexcept;
 
 		void addComponent(IMysticLitComponent* component) noexcept;
 		void removeComponent(const IMysticLitComponent* component) noexcept;
@@ -33,22 +51,7 @@ namespace MysticLit
 		template<typename T>
 		IMysticLitComponent* getComponent() const noexcept { return this->getComponent(typeid(T)); }
 
-	private:
-		void onOpenProject(const octoon::runtime::any& data) noexcept;
-		void onSaveProject(const octoon::runtime::any& data) noexcept;
-		void onSaveAsProject(const octoon::runtime::any& data) noexcept;
-
-		void onOpenModel(const octoon::runtime::any& data) noexcept;
-		void onSaveModel(const octoon::runtime::any& data) noexcept;
-
-		void exit(const octoon::runtime::any& data) noexcept;
-
-		void play(const octoon::runtime::any& data) noexcept;
-		void offlineMode(const octoon::runtime::any& data) noexcept;
-		void onLoadHDRi(const octoon::runtime::any& data) noexcept;
-
-		void onRecord(const octoon::runtime::any& data) noexcept;
-		void onRenderPicture(const octoon::runtime::any& data) noexcept;
+		virtual octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
 		void onActivate() noexcept override;

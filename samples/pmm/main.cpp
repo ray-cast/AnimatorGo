@@ -1,19 +1,26 @@
-#include <octoon/octoon-c.h>
-#include "mysticlit_behaviour.h"
+#include <qapplication.h>
+#include <qdesktopwidget.h>
 
-int main(int argc, const char* argv[])
+#include "views/main_window.h"
+
+int main(int argc, char *argv[])
 {
-	if (!::OctoonInit(argv[0], ""))
-		return 1;
+	QFile styleSheet(":res/qss/default.qss");
 
-	if (::OctoonOpenWindow(u8"MysticLit", 1280, 720))
+	if (styleSheet.open(QIODevice::ReadOnly))
 	{
-		auto object = octoon::GameObject::create();
-		object->addComponent<MysticLit::MysticlitBehaviour>();
+		QApplication app(argc, argv);
+		app.setStyleSheet(styleSheet.readAll());
 
-		::OctoonMainLoop();
+		MainWindow w;
+		w.show();
+		w.move((QApplication::desktop()->width() - w.width()) / 2, (QApplication::desktop()->height() - w.height()) / 2);
+
+		return app.exec();
 	}
-
-	::OctoonTerminate();
-	return 0;
+	else
+	{
+		qWarning("Can't open the style sheet file.");
+		return 0;
+	}
 }

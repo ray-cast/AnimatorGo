@@ -27,6 +27,7 @@ TitleBar::TitleBar(QWidget* parent)
 	logoButton_->setObjectName("logo");
 
 	titleLabel_ = std::make_unique<QLabel>(this);
+	titleLabel_->setObjectName("title");
 	titleLabel_->setText(u8"ÍÃÖ½äÖÈ¾Æ÷");
 	titleLabel_->setFont(QFont("Microsoft YaHei", 7, QFont::Normal));
 

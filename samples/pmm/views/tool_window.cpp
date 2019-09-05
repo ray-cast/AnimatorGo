@@ -3,13 +3,14 @@
 ToolBar::ToolBar(QWidget* parent)
 	: gpuEnable_(false)
 	, playEnable_(false)
+	, recordEnable_(false)
 {
 	playIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/play.png"));
 	stopIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/stop.png"));
 	gpuIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/gpu.png"));
 	gpuOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/gpu-on.png"));
 	recordIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/record.png"));
-	recordOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/recordOn.png"));
+	recordOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/record-on.png"));
 
 	hideButton_ = std::make_unique<QToolButton>(this);
 	hideButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/hide.png")));
@@ -96,17 +97,21 @@ ToolBar::playEvent() noexcept
 {
 	if (!playEnable_)
 	{
-		emit playSignal(true);
-		playButton_->setIcon(stopIcon_);
-		playButton_->setToolTip(u8"Í£Ö¹");
-		playEnable_ = true;
+		if (playSignal(true))
+		{
+			playButton_->setIcon(stopIcon_);
+			playButton_->setToolTip(u8"Í£Ö¹");
+			playEnable_ = true;
+		}
 	}
 	else
 	{
-		emit playSignal(false);
-		playButton_->setIcon(playIcon_);
-		playButton_->setToolTip(u8"²¥·Å");
-		playEnable_ = false;
+		if (playSignal(false))
+		{
+			playButton_->setIcon(playIcon_);
+			playButton_->setToolTip(u8"²¥·Å");
+			playEnable_ = false;
+		}
 	}
 }
 
@@ -115,15 +120,21 @@ ToolBar::recordEvent() noexcept
 {
 	if (!recordEnable_)
 	{
-		emit recordSignal(true);
-		recordButton_->setIcon(recordOnIcon_);
-		recordEnable_ = true;
+		if (recordSignal(true))
+		{
+			recordButton_->setIcon(recordOnIcon_);
+			recordEnable_ = true;
+			gpuButton_->setIcon(gpuOnIcon_);
+			gpuEnable_ = true;
+		}
 	}
 	else
 	{
-		emit recordSignal(false);
-		recordButton_->setIcon(recordIcon_);
-		recordEnable_ = false;
+		if (recordSignal(false))
+		{
+			recordButton_->setIcon(recordIcon_);
+			recordEnable_ = false;
+		}
 	}
 }
 
@@ -138,15 +149,19 @@ ToolBar::gpuEvent() noexcept
 {
 	if (!gpuEnable_)
 	{
-		emit gpuSignal(true);
-		gpuButton_->setIcon(gpuOnIcon_);
-		gpuEnable_ = true;
+		if (gpuSignal(true))
+		{
+			gpuButton_->setIcon(gpuOnIcon_);
+			gpuEnable_ = true;
+		}
 	}
 	else
 	{
-		emit gpuSignal(false);
-		gpuButton_->setIcon(gpuIcon_);
-		gpuEnable_ = false;
+		if (gpuSignal(false))
+		{
+			gpuButton_->setIcon(gpuIcon_);
+			gpuEnable_ = false;
+		}
 	}
 }
 

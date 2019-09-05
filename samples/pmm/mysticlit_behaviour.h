@@ -25,6 +25,7 @@ namespace MysticLit
 		void open() noexcept;
 		void save() noexcept;
 		void saveAs() noexcept;
+		bool isOpen() const noexcept;
 
 		void openModel() noexcept;
 		void saveModel() noexcept;

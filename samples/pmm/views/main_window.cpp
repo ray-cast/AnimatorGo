@@ -89,27 +89,53 @@ MainWindow::onImportSignal() noexcept
 		behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->open();
 }
 
-void
+bool
 MainWindow::onPlaySignal(bool enable) noexcept
 {
 	if (behaviour_)
 	{
-		if (enable)
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->play();
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+		{
+			if (enable)
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->play();
+			else
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stop();
+		}
 		else
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stop();
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void
+bool
 MainWindow::onRecordSignal(bool enable) noexcept
 {
 	if (behaviour_)
 	{
-		if (enable)
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startRecord();
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+		{
+			if (enable)
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startRecord();
+			else
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopRecord();
+
+			return true;
+		}
 		else
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopRecord();
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -117,20 +143,37 @@ void
 MainWindow::onScreenShotSignal() noexcept
 {
 	if (behaviour_)
-		behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->renderPicture();
+	{
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->renderPicture();
+	}
 }
 
-void
+bool
 MainWindow::onOfflineModeSignal(bool enable) noexcept
 {
 	if (behaviour_)
 	{
-		if (enable)
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startPathTracing();
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+		{
+			if (enable)
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startPathTracing();
+			else
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopPathTracing();
+
+			return true;
+		}
 		else
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopPathTracing();
+		{
+			return false;
+		}
 	}
-		
+	else
+	{
+		return false;
+	}
 }
 
 void
@@ -138,9 +181,13 @@ MainWindow::onImportHdriSignal() noexcept
 {
 	if (behaviour_)
 	{
-		QString fileName = QFileDialog::getOpenFileName(this, u8"打开", "", tr("HDRi Files (*.hdr)"));
-		if (!fileName.isEmpty())
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->loadHDRi(fileName.toUtf8().data());
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+		{
+			QString fileName = QFileDialog::getOpenFileName(this, u8"打开", "", tr("HDRi Files (*.hdr)"));
+			if (!fileName.isEmpty())
+				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->loadHDRi(fileName.toUtf8().data());
+		}
 	}
 }
 

@@ -15,11 +15,11 @@ public:
 private Q_SLOTS:
 	void onHideToolBarSignal() noexcept;
 	void onShowToolbarSignal() noexcept;
-	void onPlaySignal(bool enable) noexcept;
+	bool onPlaySignal(bool enable) noexcept;
 	void onImportSignal() noexcept;
-	void onRecordSignal(bool enable) noexcept;
+	bool onRecordSignal(bool enable) noexcept;
 	void onScreenShotSignal() noexcept;
-	void onOfflineModeSignal(bool enable) noexcept;
+	bool onOfflineModeSignal(bool enable) noexcept;
 	void onImportHdriSignal() noexcept;
 
 	void onPaintSignal(QPaintEvent* e) noexcept;

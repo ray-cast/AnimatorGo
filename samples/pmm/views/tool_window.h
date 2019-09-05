@@ -29,10 +29,10 @@ private Q_SLOTS:
 Q_SIGNALS:
 	void hideSignal();
 	void importSignal();
-	void playSignal(bool enable);
-	void recordSignal(bool enable);
+	bool playSignal(bool enable);
+	bool recordSignal(bool enable);
 	void shotSignal();
-	void gpuSignal(bool enable);
+	bool gpuSignal(bool enable);
 	void hdrSignal();
 
 private:

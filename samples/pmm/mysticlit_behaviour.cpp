@@ -155,6 +155,12 @@ namespace MysticLit
 	{
 	}
 
+	bool
+	MysticlitBehaviour::isOpen() const noexcept
+	{
+		return !profile_->entitiesModule->objects.empty();
+	}
+
 	void
 	MysticlitBehaviour::saveAs() noexcept
 	{

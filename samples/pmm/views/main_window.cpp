@@ -98,9 +98,9 @@ MainWindow::onPlaySignal(bool enable) noexcept
 		if (behaviour->isOpen())
 		{
 			if (enable)
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->play();
+				behaviour->play();
 			else
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stop();
+				behaviour->stop();
 		}
 		else
 		{
@@ -122,9 +122,9 @@ MainWindow::onRecordSignal(bool enable) noexcept
 		if (behaviour->isOpen())
 		{
 			if (enable)
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startRecord();
+				behaviour->startRecord();
 			else
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopRecord();
+				behaviour->stopRecord();
 
 			return true;
 		}
@@ -146,7 +146,7 @@ MainWindow::onScreenShotSignal() noexcept
 	{
 		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
 		if (behaviour->isOpen())
-			behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->renderPicture();
+			behaviour->renderPicture();
 	}
 }
 
@@ -159,9 +159,9 @@ MainWindow::onOfflineModeSignal(bool enable) noexcept
 		if (behaviour->isOpen())
 		{
 			if (enable)
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->startPathTracing();
+				behaviour->startPathTracing();
 			else
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->stopPathTracing();
+				behaviour->stopPathTracing();
 
 			return true;
 		}
@@ -186,7 +186,7 @@ MainWindow::onImportHdriSignal() noexcept
 		{
 			QString fileName = QFileDialog::getOpenFileName(this, u8"´ò¿ª", "", tr("HDRi Files (*.hdr)"));
 			if (!fileName.isEmpty())
-				behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->loadHDRi(fileName.toUtf8().data());
+				behaviour->loadHDRi(fileName.toUtf8().data());
 		}
 	}
 }

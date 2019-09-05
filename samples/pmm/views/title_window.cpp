@@ -7,23 +7,24 @@ TitleBar::TitleBar(QWidget* parent)
 	restorePix_ = QIcon::fromTheme("res", QIcon(":res/icons/restore.png"));
 
 	minimizeButton_ = std::make_unique<QToolButton>(this);
-	minimizeButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/minimize.png")));
+	minimizeButton_->setObjectName("minimize");
 	minimizeButton_->setToolTip(u8"最小化");
 
 	maximizeButton_ = std::make_unique<QToolButton>(this);
+	maximizeButton_->setObjectName("maximize");
 	maximizeButton_->setIcon(maxPix_);
 	maximizeButton_->setToolTip(u8"最大化");
 
 	closeButton_ = std::make_unique<QToolButton>(this);
-	closeButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/close.png")));
+	closeButton_->setObjectName("close");
 	closeButton_->setToolTip(u8"关闭");
 
 	settingButton_ = std::make_unique<QToolButton>(this);
-	settingButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/setting.png")));
+	settingButton_->setObjectName("setting");
 	settingButton_->setToolTip(u8"全局设置");
 
 	logoButton_ = std::make_unique<QPushButton>(this);
-	logoButton_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/logo.png")));
+	logoButton_->setObjectName("logo");
 
 	titleLabel_ = std::make_unique<QLabel>(this);
 	titleLabel_->setText(u8"兔纸渲染器");

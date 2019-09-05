@@ -18,6 +18,7 @@ SET(MAIN_LIST
 	${SOURCE_PATH}/mysticlit_context.cpp
 	${SOURCE_PATH}/mysticlit_model.h
 	${SOURCE_PATH}/mysticlit_model.cpp
+	${SOURCE_PATH}/resource.rc
 )
 SOURCE_GROUP("pmm" FILES ${MAIN_LIST})
 

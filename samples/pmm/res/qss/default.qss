@@ -24,3 +24,19 @@ QToolButton:hover{
     background-color: rgb(255,255,255,30);
     border:none;
 }
+
+QToolButton#minimize{
+    qproperty-icon: url(:res/icons/minimize.png);
+}
+QToolButton#maximize{
+    qproperty-icon: url(":res/icons/maximize.png");
+}
+QToolButton#close{
+    qproperty-icon: url(":res/icons/close.png");
+}
+QToolButton#setting{
+    qproperty-icon: url(":res/icons/setting.png");
+}
+QPushButton#logo{
+    qproperty-icon: url(":res/icons/logo.png");
+}

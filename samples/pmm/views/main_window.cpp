@@ -2,6 +2,7 @@
 #include "mysticlit_behaviour.h"
 #include <qmimedata.h>
 #include <qfiledialog.h>
+#include <qsplashscreen.h>
 
 MainWindow::MainWindow()
 	: titleBar_(std::make_unique<TitleBar>(this))
@@ -101,6 +102,8 @@ MainWindow::onPlaySignal(bool enable) noexcept
 				behaviour->play();
 			else
 				behaviour->stop();
+
+			return true;
 		}
 		else
 		{

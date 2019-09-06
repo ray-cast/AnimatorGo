@@ -175,17 +175,64 @@ namespace octoon
 	{
 		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
 
-		if (RPR_SUCCESS != rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_))
-			throw runtime::runtime_error::create("rprCreateContext() failed");
+		auto GetErrorString = [](int status)
+		{
+			switch (status)
+			{
+			case RPR_ERROR_COMPUTE_API_NOT_SUPPORTED:         return "RPR_ERROR_COMPUTE_API_NOT_SUPPORTED";
+			case RPR_ERROR_OUT_OF_SYSTEM_MEMORY:              return "RPR_ERROR_OUT_OF_SYSTEM_MEMORY";
+			case RPR_ERROR_OUT_OF_VIDEO_MEMORY:               return "RPR_ERROR_OUT_OF_VIDEO_MEMORY";
+			case RPR_ERROR_INVALID_LIGHTPATH_EXPR:            return "RPR_ERROR_INVALID_LIGHTPATH_EXPR";
+			case RPR_ERROR_INVALID_IMAGE:                     return "RPR_ERROR_INVALID_IMAGE";
+			case RPR_ERROR_INVALID_AA_METHOD:                 return "RPR_ERROR_INVALID_AA_METHOD";
+			case RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT:          return "RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT";
+			case RPR_ERROR_INVALID_GL_TEXTURE:                return "RPR_ERROR_INVALID_GL_TEXTURE";
+			case RPR_ERROR_INVALID_CL_IMAGE:                  return "RPR_ERROR_INVALID_CL_IMAGE";
+			case RPR_ERROR_INVALID_OBJECT:                    return "RPR_ERROR_INVALID_OBJECT";
+			case RPR_ERROR_INVALID_PARAMETER:                 return "RPR_ERROR_INVALID_PARAMETER";
+			case RPR_ERROR_INVALID_TAG:                       return "RPR_ERROR_INVALID_TAG";
+			case RPR_ERROR_INVALID_LIGHT:                     return "RPR_ERROR_INVALID_LIGHT";
+			case RPR_ERROR_INVALID_CONTEXT:                   return "RPR_ERROR_INVALID_CONTEXT";
+			case RPR_ERROR_UNIMPLEMENTED:                     return "RPR_ERROR_UNIMPLEMENTED";
+			case RPR_ERROR_INVALID_API_VERSION:               return "RPR_ERROR_INVALID_API_VERSION";
+			case RPR_ERROR_INTERNAL_ERROR:                    return "RPR_ERROR_INTERNAL_ERROR";
+			case RPR_ERROR_IO_ERROR:                          return "RPR_ERROR_IO_ERROR";
+			case RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE: return "RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE";
+			case RPR_ERROR_MATERIAL_STACK_OVERFLOW:           return "RPR_ERROR_MATERIAL_STACK_OVERFLOW";
+			case RPR_ERROR_INVALID_PARAMETER_TYPE:            return "RPR_ERROR_INVALID_PARAMETER_TYPE";
+			case RPR_ERROR_UNSUPPORTED:                       return "RPR_ERROR_UNSUPPORTED";
+			case RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY:         return "RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY";
+			case RPR_ERROR_OPENGL:                            return "RPR_ERROR_OPENGL";
+			case RPR_ERROR_OPENCL:                            return "RPR_ERROR_OPENCL";
+			case RPR_ERROR_NULLPTR:                           return "RPR_ERROR_NULLPTR";
+			case RPR_ERROR_NODETYPE:                          return "RPR_ERROR_NODETYPE";
+			default: return "RPR_SUCCESS";
+			}
+		};
 
-		if (RPR_SUCCESS != rprContextCreateScene(rprContext_, &rprScene_))
-			throw runtime::runtime_error::create("rprContextCreateScene() failed");
+		auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+		if (RPR_SUCCESS != status)
+		{
+			auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+			if (RPR_SUCCESS != status)
+				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
+		}
 
-		if (RPR_SUCCESS != rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_))
-			throw runtime::runtime_error::create("rprContextCreateMaterialSystem() failed");
+		char count[256];
+		std::size_t type_size = 0;
+		rprContextGetInfo(this->rprContext_, RPR_OBJECT_NAME, 256, &count, &type_size);
 
-		if (RPR_SUCCESS != rprContextSetScene(rprContext_, rprScene_))
-			throw runtime::runtime_error::create("rprContextCreateMaterialSystem() failed");
+		status = rprContextCreateScene(rprContext_, &rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateScene() failed, error : ") + GetErrorString(status));
+
+		status = rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
+
+		status = rprContextSetScene(rprContext_, rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
 
 		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
 	}
@@ -327,7 +374,7 @@ namespace octoon
 			}
 
 			rpr_framebuffer normalFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, normalTexture_->handle(), &normalFramebuffer));
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, normalTexture_->handle(), &normalFramebuffer))
 			{
 				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
 

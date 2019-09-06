@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 		QApplication app(argc, argv);
 		app.setStyleSheet(styleSheet.readAll());
 
-		auto splash = std::make_unique<QSplashScreen>(QPixmap(":res/icons/splash.png"));
+		auto splash = std::make_unique<QSplashScreen>(QPixmap(":res/icons/rabbit.svg"));
 		splash->show();
 
 		MainWindow w;

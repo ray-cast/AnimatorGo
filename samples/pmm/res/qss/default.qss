@@ -57,7 +57,8 @@ QWidget#titleWidget > QToolButton#setting{
 	qproperty-icon: url(":res/icons/setting.png");
 }
 QWidget#titleWidget > QPushButton#logo{
-	qproperty-icon: url(":res/icons/logo.png");
+	qproperty-icon: url(":res/icons/rabbit.svg");
+	qproperty-iconSize: 24px 24px;
 }
 QWidget#titleWidget > QLabel#title{
 	font-family: "Microsoft YaHei";

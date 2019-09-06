@@ -218,10 +218,6 @@ namespace octoon
 				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
 		}
 
-		char count[256];
-		std::size_t type_size = 0;
-		rprContextGetInfo(this->rprContext_, RPR_OBJECT_NAME, 256, &count, &type_size);
-
 		status = rprContextCreateScene(rprContext_, &rprScene_);
 		if (RPR_SUCCESS != status)
 			throw runtime::runtime_error::create(std::string("rprContextCreateScene() failed, error : ") + GetErrorString(status));

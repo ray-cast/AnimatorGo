@@ -30,7 +30,10 @@ MainWindow::MainWindow()
 	mainLayout_->addWidget(toolBar_.get());
 	mainLayout_->addWidget(hideBar_.get());
 
+	connect(titleBar_.get(), &TitleBar::settingSignal, this, &MainWindow::onSettingSignal);
+
 	connect(hideBar_.get(), &HideBar::showSignal, this, &MainWindow::onShowToolbarSignal);
+
 	connect(toolBar_.get(), &ToolBar::hideSignal, this, &MainWindow::onHideToolBarSignal);
 	connect(toolBar_.get(), &ToolBar::importSignal, this, &MainWindow::onImportSignal);
 	connect(toolBar_.get(), &ToolBar::playSignal, this, &MainWindow::onPlaySignal);
@@ -126,7 +129,7 @@ MainWindow::onRecordSignal(bool enable) noexcept
 		{
 			if (enable)
 			{
-				QString fileName = QFileDialog::getSaveFileName(this, u8"保存", "", tr("HDRi Files (*.h264)"));
+				QString fileName = QFileDialog::getSaveFileName(this, u8"录制视频", "", tr("HDRi Files (*.h264)"));
 				if (!fileName.isEmpty())
 				{
 					behaviour->startRecord(fileName.toUtf8().data());
@@ -189,11 +192,19 @@ MainWindow::onImportHdriSignal() noexcept
 		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
 		if (behaviour->isOpen())
 		{
-			QString fileName = QFileDialog::getOpenFileName(this, u8"打开", "", tr("HDRi Files (*.hdr)"));
+			QString fileName = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
 			if (!fileName.isEmpty())
 				behaviour->loadHDRi(fileName.toUtf8().data());
 		}
 	}
+}
+
+void
+MainWindow::onSettingSignal() noexcept
+{
+	settingWindow_ = std::make_unique<SettingWindow>();
+	settingWindow_->move(this->pos().x() + (this->width() - settingWindow_->width()) / 2, this->pos().y() + (this->height() - settingWindow_->height()) / 2);
+	settingWindow_->show();
 }
 
 void

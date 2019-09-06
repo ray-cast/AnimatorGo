@@ -5,6 +5,7 @@
 #include "title_window.h"
 #include "tool_window.h"
 #include "hide_window.h"
+#include "setting_window.h"
 
 class MainWindow final : public QFrame
 {
@@ -21,6 +22,7 @@ private Q_SLOTS:
 	void onScreenShotSignal() noexcept;
 	bool onOfflineModeSignal(bool enable) noexcept;
 	void onImportHdriSignal() noexcept;
+	void onSettingSignal() noexcept;
 
 	void onPaintSignal(QPaintEvent* e) noexcept;
 	void onResizeSignal(QResizeEvent* e) noexcept;
@@ -49,6 +51,7 @@ private:
 	std::unique_ptr<TitleBar> titleBar_;
 	std::unique_ptr<ViewWidget> viewPanel_;
 	std::unique_ptr<HideBar> hideBar_;
+	std::unique_ptr<SettingWindow> settingWindow_;
 
 	std::unique_ptr<QHBoxLayout> mainLayout_;
 	std::unique_ptr<QVBoxLayout> contextLayout_;

@@ -64,6 +64,24 @@ QWidget#titleWidget > QLabel#title{
 	font-family: "Microsoft YaHei";
 	font-size:12px;
 }
+QWidget#settingTitle{
+	min-height:32;
+	max-height:32;
+}
+QWidget#settingTitle > QToolButton{
+	width:32px;
+	height:32px;
+}
+QWidget#settingTitle > QPushButton#setting{
+	qproperty-icon: url(":res/icons/setting.png");
+}
+QWidget#settingTitle > QToolButton#close{
+	qproperty-icon: url(":res/icons/close.png");
+}
+QWidget#settingTitle > QLabel#title{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+}
 QWidget#toolWidget > QToolButton#hide{
 	qproperty-icon: url(":res/icons/hide.png"); 
 }
@@ -84,4 +102,61 @@ QWidget#showWidget > QPushButton#show{
 }
 QWidget#showWidget > QPushButton#show:hover{
 	background-color:rgb(0,122,204,255);
+}
+QListWidget{
+	border:none;
+}
+QScrollArea{
+	border:none;
+}
+QScrollBar:vertical
+{
+    width:8px;
+    background:rgba(0,0,0,0%);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar::handle:vertical
+{
+    width:8px;
+    background:rgba(0,0,0,25%);
+    border-radius:4px;
+    min-height:20;
+}
+QScrollBar::handle:vertical:hover
+{
+    width:8px;
+    background:rgba(0,0,0,50%);
+    border-radius:4px;
+    min-height:20;
+}
+QScrollBar::add-line:vertical
+{
+    height:9px;width:8px;
+    border-image:url(:/images/a/3.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical
+{
+    height:9px;width:8px;
+    border-image:url(:/images/a/1.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-line:vertical:hover
+{
+    height:9px;width:8px;
+    border-image:url(:/images/a/4.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical:hover
+{
+    height:9px;width:8px;
+    border-image:url(:/images/a/2.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
+{
+    background:rgba(0,0,0,10%);
+    border-radius:4px;
 }

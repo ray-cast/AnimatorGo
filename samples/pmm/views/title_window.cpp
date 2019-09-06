@@ -33,7 +33,7 @@ TitleBar::TitleBar(QWidget* parent) noexcept
 	layout_->setObjectName("titleLayout");
 	layout_->addWidget(logoButton_.get());
 	layout_->addWidget(titleLabel_.get());
-	layout_->addWidget(settingButton_.get());
+	//layout_->addWidget(settingButton_.get());
 	layout_->addWidget(minimizeButton_.get());
 	layout_->addWidget(maximizeButton_.get());
 	layout_->addWidget(closeButton_.get());
@@ -45,6 +45,7 @@ TitleBar::TitleBar(QWidget* parent) noexcept
 	this->connect(closeButton_.get(), SIGNAL(clicked()), parent, SLOT(close()));
 	this->connect(minimizeButton_.get(), SIGNAL(clicked()), this, SLOT(showSmall()));
 	this->connect(maximizeButton_.get(), SIGNAL(clicked()), this, SLOT(showMaxRestore()));
+	this->connect(settingButton_.get(), SIGNAL(clicked()), this, SLOT(showSettingPlane()));
 
 	this->setObjectName("titleWidget");
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -79,6 +80,12 @@ TitleBar::showMaxRestore() noexcept
 		maxNormal_ = !maxNormal_;
 		maximizeButton_->setIcon(restorePix_);
 	}
+}
+
+void
+TitleBar::showSettingPlane() noexcept
+{
+	emit settingSignal();
 }
 
 void

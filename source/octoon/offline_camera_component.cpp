@@ -235,6 +235,7 @@ namespace octoon
 			rprSceneSetCamera(feature->getScene(), this->rprCamera_);
 
 			feature->addOfflineListener(this);
+			feature->setFramebufferDirty(true);
 		}
 	}
 

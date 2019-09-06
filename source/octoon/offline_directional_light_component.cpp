@@ -76,6 +76,8 @@ namespace octoon
 				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;
+
+			feature->setFramebufferDirty(true);
 		}
 	}
 

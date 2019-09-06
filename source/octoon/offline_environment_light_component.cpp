@@ -164,6 +164,8 @@ namespace octoon
 
 			if (this->rprImage_)
 				rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, this->rprImage_);
+
+			feature->setFramebufferDirty(true);
 		}
 	}
 

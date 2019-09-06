@@ -362,7 +362,10 @@ namespace octoon
 
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
+		{
 			feature->addOfflineListener(this);
+			feature->setFramebufferDirty(true);
+		}
 
 		this->onMaterialReplace(this->getMaterials());
 	}

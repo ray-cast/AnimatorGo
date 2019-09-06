@@ -5,18 +5,20 @@
 SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 	: QWidget(parent)
 {
+	this->setObjectName("settingContext");
+
 	QStringList strList{ tr(u8"÷˜√Ê∞Â"), tr(u8"‰÷»æ"), tr(u8" ”∆µ") };
 
 	listWidget_ = std::make_unique<QListWidget>(this);
 	listWidget_->setFixedSize(160, 450);
 	listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	listWidget_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	listWidget_->setStyleSheet("background-color: rgb(32,32,32);");
 
 	for (std::size_t i = 0; i < strList.size(); i++)
 	{
 		listWidgetItems_[i] = std::make_unique<QListWidgetItem>();
 		listWidgetItems_[i]->setText(strList[i]);
-		listWidgetItems_[i]->setForeground(QColor(255, 255, 255));
 		listWidgetItems_[i]->setSizeHint(QSize(160, 30));
 		listWidgetItems_[i]->setTextAlignment(Qt::AlignCenter);
 
@@ -26,10 +28,12 @@ SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 	listWidgetItems_[0]->setSelected(true);
 
 	scrollWidget_ = std::make_unique<QWidget>(this);
+	scrollWidget_->setFixedWidth(490);
+	scrollWidget_->setStyleSheet("background-color: rgb(40,40,40);");
 
 	widgetItems_[0] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
-	widgetItems_[1] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
-	widgetItems_[2] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
+	widgetItems_[1] = std::make_unique<SettingMainPlane2>(scrollWidget_.get());
+	widgetItems_[2] = std::make_unique<SettingMainPlane3>(scrollWidget_.get());
 
 	gridLayout_ = std::make_unique<QVBoxLayout>(scrollWidget_.get());
 	gridLayout_->addWidget(widgetItems_[0].get());
@@ -37,11 +41,10 @@ SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 	gridLayout_->addWidget(widgetItems_[2].get());
 
 	scrollArea_ = std::make_unique<QScrollArea>(this);
-	scrollArea_->setFixedSize(490, 450);
 	scrollArea_->setWidget(scrollWidget_.get());
+	scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	layout_ = std::make_unique<QHBoxLayout>(this);
-	layout_->setObjectName("contextLayout");
 	layout_->addWidget(listWidget_.get());
 	layout_->addWidget(scrollArea_.get());
 	layout_->setSpacing(0);

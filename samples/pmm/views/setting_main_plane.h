@@ -10,4 +10,18 @@ public:
 	SettingMainPlane(QWidget* parent);
 };
 
+class SettingMainPlane2 final : public QWidget
+{
+	Q_OBJECT
+public:
+	SettingMainPlane2(QWidget* parent);
+};
+
+class SettingMainPlane3 final : public QWidget
+{
+	Q_OBJECT
+public:
+	SettingMainPlane3(QWidget* parent);
+};
+
 #endif

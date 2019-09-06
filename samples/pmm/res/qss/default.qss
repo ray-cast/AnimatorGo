@@ -105,6 +105,7 @@ QWidget#showWidget > QPushButton#show:hover{
 }
 QScrollArea{
 	border:none;
+	background-color:rgb(40,40,40);
 }
 QScrollBar:vertical
 {
@@ -160,6 +161,9 @@ QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
 QListWidget{
 	border:none;
 	color: rgb(220,220,220);
+	background-color: rgb(32,32,32);
+	max-width:180;
+	max-height:450;
 }
 QListWidget::Item:hover{
 	color: rgb(220,220,220);
@@ -168,6 +172,7 @@ QListWidget::Item:hover{
 QListWidget::Item:selected{
 	color: rgb(220,220,220);
 	background-color: rgb(40,40,40);
+	border-width: 0px;
 }
 QComboBox {
 	max-width: 120px;

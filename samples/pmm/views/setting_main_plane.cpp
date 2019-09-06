@@ -37,7 +37,7 @@ SettingMainPlane::SettingMainPlane(QWidget* parent)
 	QComboBox* gamCombo = new QComboBox(this);
 	gamCombo->addItem(u8"中文");
 	gamCombo->setStyleSheet("color: rgb(200,200,200);");
-	gamCombo->setFont(QFont("Microsoft YaHei", 10, 50));
+	gamCombo->setFont(QFont("Microsoft YaHei", 9, 50));
 
 	QLabel* powerLabel = new QLabel(this);
 	powerLabel->setText(u8"性能");
@@ -86,6 +86,20 @@ SettingMainPlane2::SettingMainPlane2(QWidget* parent)
 	renderLabel->setText(u8"渲染设置");
 	renderLabel->setStyleSheet("color: rgb(255,255,255);");
 
+	QLabel* resolutionLabel = new QLabel(this);
+	resolutionLabel->setText(u8"分辨率");
+	resolutionLabel->setStyleSheet("color: rgb(200,200,200);");
+
+	QComboBox* resolutionCombo = new QComboBox(this);
+	resolutionCombo->addItem(u8"320*240");
+	resolutionCombo->addItem(u8"720*480");
+	resolutionCombo->addItem(u8"800*480");
+	resolutionCombo->addItem(u8"1024*576");
+	resolutionCombo->addItem(u8"1280x720");
+	resolutionCombo->addItem(u8"1920x1080");
+	resolutionCombo->setStyleSheet("color: rgb(200,200,200);");
+	resolutionCombo->setFont(QFont("Microsoft YaHei", 9, 50));
+
 	QLabel* speedLabel = new QLabel(this);
 	speedLabel->setText(u8"帧速率");
 	speedLabel->setStyleSheet("color: rgb(200,200,200);");
@@ -95,12 +109,17 @@ SettingMainPlane2::SettingMainPlane2(QWidget* parent)
 	speedCombo->addItem(u8"30");
 	speedCombo->addItem(u8"60");
 	speedCombo->setStyleSheet("color: rgb(200,200,200);");
-	speedCombo->setFont(QFont("Microsoft YaHei", 10, 50));
+	speedCombo->setFont(QFont("Microsoft YaHei", 9, 50));
 
 	auto layout_ = new QVBoxLayout(this);
 	layout_->addWidget(renderLabel);
 	layout_->addSpacing(10);
+	layout_->addWidget(resolutionLabel);
+	layout_->addSpacing(10);
+	layout_->addWidget(resolutionCombo);
+	layout_->addSpacing(10);
 	layout_->addWidget(speedLabel);
+	layout_->addSpacing(10);	
 	layout_->addWidget(speedCombo);
 }
 

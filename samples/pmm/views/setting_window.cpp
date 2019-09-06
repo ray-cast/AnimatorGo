@@ -10,16 +10,14 @@ SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 	QStringList strList{ tr(u8"÷˜√Ê∞Â"), tr(u8"‰÷»æ"), tr(u8" ”∆µ") };
 
 	listWidget_ = std::make_unique<QListWidget>(this);
-	listWidget_->setFixedSize(160, 450);
 	listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	listWidget_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	listWidget_->setStyleSheet("background-color: rgb(32,32,32);");
 
 	for (std::size_t i = 0; i < strList.size(); i++)
 	{
 		listWidgetItems_[i] = std::make_unique<QListWidgetItem>();
 		listWidgetItems_[i]->setText(strList[i]);
-		listWidgetItems_[i]->setSizeHint(QSize(160, 30));
+		listWidgetItems_[i]->setSizeHint(QSize(180, 30));
 		listWidgetItems_[i]->setTextAlignment(Qt::AlignCenter);
 
 		listWidget_->addItem(listWidgetItems_[i].get());

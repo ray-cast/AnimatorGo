@@ -27,7 +27,7 @@ TitleBar::TitleBar(QWidget* parent) noexcept
 
 	titleLabel_ = std::make_unique<QLabel>(this);
 	titleLabel_->setObjectName("title");
-	titleLabel_->setText(u8"Õ√÷Ω‰÷»æ∆˜");
+	titleLabel_->setText(u8"Õ√ﬂ¥‰÷»æ∆˜");
 
 	layout_ = std::make_unique<QHBoxLayout>(this);
 	layout_->setObjectName("titleLayout");

@@ -169,9 +169,7 @@ namespace MysticLit
 				if (model)
 				{
 					model->setName(it.name);
-					model->addComponent<AnimatorComponent>(model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms());
-					model->getComponent<AnimatorComponent>()->setAnimation(animation::Animation(boneClips));
-					model->getComponent<AnimatorComponent>()->sample();
+					model->addComponent<AnimatorComponent>(animation::Animation(boneClips), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms())->sample();
 					model->addComponent<AnimatorComponent>(animation::Animation(morphClip))->sample();
 
 					objects.emplace_back(std::move(model));

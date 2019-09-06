@@ -13,6 +13,20 @@ namespace octoon
 	{
 	}
 
+	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation, GameObjects&& avatar) noexcept
+		: AnimatorComponent()
+	{
+		this->setAvatar(std::move(avatar));
+		this->setAnimation(std::move(animation));
+	}
+
+	AnimatorComponent::AnimatorComponent(const animation::Animation<float>& animation, const GameObjects& avatar) noexcept
+		: AnimatorComponent()
+	{
+		this->setAvatar(avatar);
+		this->setAnimation(animation);
+	}
+
 	AnimatorComponent::AnimatorComponent(animation::Animation<float>&& animation) noexcept
 		: AnimatorComponent()
 	{
@@ -25,16 +39,16 @@ namespace octoon
 		animation_ = animation;
 	}
 
-	AnimatorComponent::AnimatorComponent(GameObjects&& transforms) noexcept
+	AnimatorComponent::AnimatorComponent(GameObjects&& avatar) noexcept
 		: AnimatorComponent()
 	{
-		this->setAvatar(std::move(transforms));
+		this->setAvatar(std::move(avatar));
 	}
 
-	AnimatorComponent::AnimatorComponent(const GameObjects& transforms) noexcept
+	AnimatorComponent::AnimatorComponent(const GameObjects& avatar) noexcept
 		: AnimatorComponent()
 	{
-		this->setAvatar(transforms);
+		this->setAvatar(avatar);
 	}
 
 	AnimatorComponent::~AnimatorComponent() noexcept

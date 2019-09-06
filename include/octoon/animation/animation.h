@@ -23,7 +23,7 @@ namespace octoon
 			Animation() noexcept
 				: name("Default")
 			{
-				state.finish = true;
+				state.finish = false;
 			}
 
 			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
@@ -54,20 +54,20 @@ namespace octoon
 				: name(std::move(_name))
 				, clips(std::move(_clips))
 			{
-				state.finish = true;
+				state.finish = false;
 			}
 
 			Animation(const std::string& _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: name(_name)
 				, clips(_clips)
 			{
-				state.finish = true;
+				state.finish = false;
 			}
 
 			explicit Animation(const std::string& _name) noexcept
 				: name(_name)
 			{
-				state.finish = true
+				state.finish = false
 			}
 
 			void setName(std::string&& _name) noexcept
@@ -108,7 +108,7 @@ namespace octoon
 
 			void evaluate(const _Time& delta) noexcept
 			{
-				this->state.finish = true;
+				this->state.finish = false;
 
 				for (auto& it : this->clips)
 				{

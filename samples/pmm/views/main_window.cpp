@@ -12,9 +12,9 @@ MainWindow::MainWindow()
 	, init_flag(false)
 {
 	this->setFrameShape(Panel);
+	this->setObjectName("mainWindow");
 	this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
-	this->setAcceptDrops(true);
 
 	mainLayout_ = std::make_unique<QHBoxLayout>(this);
 	mainLayout_->setMargin(0);

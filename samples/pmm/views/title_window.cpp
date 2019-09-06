@@ -1,6 +1,6 @@
 #include "title_window.h"
 
-TitleBar::TitleBar(QWidget* parent)
+TitleBar::TitleBar(QWidget* parent) noexcept
 	: maxNormal_(false)
 {
 	maxPix_ = QIcon::fromTheme("res", QIcon(":res/icons/maximize.png"));
@@ -28,9 +28,9 @@ TitleBar::TitleBar(QWidget* parent)
 	titleLabel_ = std::make_unique<QLabel>(this);
 	titleLabel_->setObjectName("title");
 	titleLabel_->setText(u8"ÍÃÖ½äÖÈ¾Æ÷");
-	titleLabel_->setFont(QFont("Microsoft YaHei", 7, QFont::Normal));
 
 	layout_ = std::make_unique<QHBoxLayout>(this);
+	layout_->setObjectName("titleLayout");
 	layout_->addWidget(logoButton_.get());
 	layout_->addWidget(titleLabel_.get());
 	layout_->addWidget(settingButton_.get());
@@ -46,22 +46,22 @@ TitleBar::TitleBar(QWidget* parent)
 	this->connect(minimizeButton_.get(), SIGNAL(clicked()), this, SLOT(showSmall()));
 	this->connect(maximizeButton_.get(), SIGNAL(clicked()), this, SLOT(showMaxRestore()));
 
-	this->setFixedHeight(32);
+	this->setObjectName("titleWidget");
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
-TitleBar::~TitleBar()
+TitleBar::~TitleBar() noexcept
 {
 }
 
 void
-TitleBar::showSmall()
+TitleBar::showSmall() noexcept
 {
 	parentWidget()->showMinimized();
 }
 
 void
-TitleBar::showMaxRestore()
+TitleBar::showMaxRestore() noexcept
 {
 	if (maxNormal_)
 	{
@@ -82,22 +82,32 @@ TitleBar::showMaxRestore()
 }
 
 void
-TitleBar::mousePressEvent(QMouseEvent* me)
+TitleBar::resizeEvent(QResizeEvent* e) noexcept
 {
-	allowMove_ = true;
-	startPos_ = me->globalPos();
-	clickPos_ = mapToParent(me->pos());
+	/*logoButton_->setFixedSize(height(), height());
+	minimizeButton_->setFixedSize(height(), height());
+	maximizeButton_->setFixedSize(height(), height());
+	closeButton_->setFixedSize(height(), height());
+	settingButton_->setFixedSize(height(), height());*/
 }
 
 void
-TitleBar::mouseReleaseEvent(QMouseEvent* me)
+TitleBar::mousePressEvent(QMouseEvent* e) noexcept
+{
+	allowMove_ = true;
+	startPos_ = e->globalPos();
+	clickPos_ = mapToParent(e->pos());
+}
+
+void
+TitleBar::mouseReleaseEvent(QMouseEvent* e) noexcept
 {
 	allowMove_ = false;
 }
 
 void
-TitleBar::mouseMoveEvent(QMouseEvent* me)
+TitleBar::mouseMoveEvent(QMouseEvent* e) noexcept
 {
 	if (allowMove_ && !maxNormal_)
-		parentWidget()->move(me->globalPos() - clickPos_);
+		parentWidget()->move(e->globalPos() - clickPos_);
 }

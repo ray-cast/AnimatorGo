@@ -20,6 +20,7 @@
 			<file>res/icons/logo.png</file>
 			<file>res/icons/show.png</file>
 			<file>res/icons/splash.png</file>
+			<file>qt/etc/qt.conf</file>
 			<file>res/qss/default.qss</file>
     </qresource>
 </RCC>

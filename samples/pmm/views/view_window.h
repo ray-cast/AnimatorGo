@@ -11,8 +11,8 @@ class ViewWidget final : public QWidget
 {
 	Q_OBJECT
 public:
-	ViewWidget(QWidget* parent = nullptr);
-	~ViewWidget();
+	ViewWidget(QWidget* parent = nullptr) noexcept;
+	~ViewWidget() noexcept;
 
 private Q_SLOTS:
 	void paintEvent(QPaintEvent* e) noexcept override;

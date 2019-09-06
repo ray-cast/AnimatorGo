@@ -11,17 +11,18 @@ class TitleBar final : public QWidget
 {
 	Q_OBJECT
 public:
-	TitleBar(QWidget* parent);
-	~TitleBar();
+	TitleBar(QWidget* parent) noexcept;
+	~TitleBar() noexcept;
 
 public Q_SLOTS:
-	void showSmall();
-	void showMaxRestore();
+	void showSmall() noexcept;
+	void showMaxRestore() noexcept;
 
 private:
-	void mousePressEvent(QMouseEvent* e) override;
-	void mouseReleaseEvent(QMouseEvent* e) override;
-	void mouseMoveEvent(QMouseEvent* e) override;
+	void resizeEvent(QResizeEvent* e) noexcept;
+	void mousePressEvent(QMouseEvent* e) noexcept override;
+	void mouseReleaseEvent(QMouseEvent* e) noexcept override;
+	void mouseMoveEvent(QMouseEvent* e) noexcept override;
 
 private:
 	bool maxNormal_;

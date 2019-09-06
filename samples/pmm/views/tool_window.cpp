@@ -1,6 +1,6 @@
 #include "tool_window.h"
 
-ToolBar::ToolBar(QWidget* parent)
+ToolBar::ToolBar(QWidget* parent) noexcept
 	: gpuEnable_(false)
 	, playEnable_(false)
 	, recordEnable_(false)
@@ -21,10 +21,12 @@ ToolBar::ToolBar(QWidget* parent)
 	importButton_->setToolTip(u8"加载文件");
 
 	playButton_ = std::make_unique<QToolButton>(this);
+	playButton_->setObjectName("play");
 	playButton_->setIcon(playIcon_);
 	playButton_->setToolTip(u8"播放");
 
 	recordButton_ = std::make_unique<QToolButton>(this);
+	recordButton_->setObjectName("record");
 	recordButton_->setIcon(recordIcon_);
 	recordButton_->setToolTip(u8"录制视频");
 
@@ -60,24 +62,12 @@ ToolBar::ToolBar(QWidget* parent)
 	this->connect(gpuButton_.get(), SIGNAL(clicked()), this, SLOT(gpuEvent()));
 	this->connect(hdrButton_.get(), SIGNAL(clicked()), this, SLOT(hdrEvent()));
 
-	this->setFixedWidth(42);
+	this->setObjectName("toolWidget");
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
-ToolBar::~ToolBar()
+ToolBar::~ToolBar() noexcept
 {
-}
-
-void
-ToolBar::resizeEvent(QResizeEvent* e) noexcept
-{
-	hdrButton_->setFixedSize(width(), width());
-	gpuButton_->setFixedSize(width(), width());
-	shotButton_->setFixedSize(width(), width());
-	recordButton_->setFixedSize(width(), width());
-	hideButton_->setFixedSize(width(), width());
-	importButton_->setFixedSize(width(), width());
-	playButton_->setFixedSize(width(), width());
 }
 
 void

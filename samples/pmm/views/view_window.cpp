@@ -1,21 +1,21 @@
 #include "views/view_window.h"
 #include "mysticlit_behaviour.h"
 
-ViewWidget::ViewWidget(QWidget* parent) 
+ViewWidget::ViewWidget(QWidget* parent) noexcept
 	: QWidget()
 	, timer(std::make_unique<QTimer>(this))
 {
 	this->setAttribute(Qt::WA_PaintOnScreen, true);
+	this->setObjectName("viewWidget");
 	this->setMouseTracking(true);
 	this->setUpdatesEnabled(false);
 	this->setAcceptDrops(true);
-	this->setMinimumSize(1280, 720);
 	this->connect(timer.get(), SIGNAL(timeout()), this, SLOT(updateEvent()));
 
 	timer->start();
 }
 
-ViewWidget::~ViewWidget()
+ViewWidget::~ViewWidget() noexcept
 {
 }
 

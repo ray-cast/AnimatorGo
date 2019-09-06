@@ -13,7 +13,7 @@ HideBar::HideBar(QWidget* parent)
 	layout_->setContentsMargins(0, 0, 0, 0);
 
 	this->hide();
-	this->setFixedWidth(6);
+	this->setObjectName("showWidget");
 	this->connect(hideButton_.get(), SIGNAL(clicked()), this, SLOT(showEvent()));
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }

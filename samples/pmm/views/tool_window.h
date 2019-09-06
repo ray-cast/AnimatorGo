@@ -14,8 +14,8 @@ class ToolBar final : public QWidget
 {
 	Q_OBJECT
 public:
-	ToolBar(QWidget* parent);
-	~ToolBar();
+	ToolBar(QWidget* parent) noexcept;
+	~ToolBar() noexcept;
 
 private Q_SLOTS:
 	void hideEvent() noexcept;
@@ -34,9 +34,6 @@ Q_SIGNALS:
 	void shotSignal();
 	bool gpuSignal(bool enable);
 	void hdrSignal();
-
-private:
-	void resizeEvent(QResizeEvent* e) noexcept override;
 
 private:
 	bool gpuEnable_;

@@ -379,7 +379,7 @@ namespace octoon
 
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
-			component->setMass(it->mass);
+			component->setMass(std::max(1.0f, it->mass));
 			component->setGroupMask(it->groupMask);
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction);

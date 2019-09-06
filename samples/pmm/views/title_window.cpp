@@ -82,16 +82,6 @@ TitleBar::showMaxRestore() noexcept
 }
 
 void
-TitleBar::resizeEvent(QResizeEvent* e) noexcept
-{
-	/*logoButton_->setFixedSize(height(), height());
-	minimizeButton_->setFixedSize(height(), height());
-	maximizeButton_->setFixedSize(height(), height());
-	closeButton_->setFixedSize(height(), height());
-	settingButton_->setFixedSize(height(), height());*/
-}
-
-void
 TitleBar::mousePressEvent(QMouseEvent* e) noexcept
 {
 	allowMove_ = true;

@@ -19,7 +19,6 @@ public Q_SLOTS:
 	void showMaxRestore() noexcept;
 
 private:
-	void resizeEvent(QResizeEvent* e) noexcept;
 	void mousePressEvent(QMouseEvent* e) noexcept override;
 	void mouseReleaseEvent(QMouseEvent* e) noexcept override;
 	void mouseMoveEvent(QMouseEvent* e) noexcept override;

@@ -33,7 +33,7 @@ TitleBar::TitleBar(QWidget* parent) noexcept
 	layout_->setObjectName("titleLayout");
 	layout_->addWidget(logoButton_.get());
 	layout_->addWidget(titleLabel_.get());
-	//layout_->addWidget(settingButton_.get());
+	layout_->addWidget(settingButton_.get());
 	layout_->addWidget(minimizeButton_.get());
 	layout_->addWidget(maximizeButton_.get());
 	layout_->addWidget(closeButton_.get());

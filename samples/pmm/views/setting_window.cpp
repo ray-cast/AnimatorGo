@@ -1,8 +1,114 @@
 #include "setting_window.h"
 #include <qlabel.h>
+#include <qscrollbar.h>
+
+SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
+	: QWidget(parent)
+{
+	QStringList strList{ tr(u8"主面板"), tr(u8"渲染"), tr(u8"视频") };
+
+	listWidget_ = std::make_unique<QListWidget>(this);
+	listWidget_->setFixedSize(160, 450);
+	listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	listWidget_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+	for (std::size_t i = 0; i < strList.size(); i++)
+	{
+		listWidgetItems_[i] = std::make_unique<QListWidgetItem>();
+		listWidgetItems_[i]->setText(strList[i]);
+		listWidgetItems_[i]->setForeground(QColor(255, 255, 255));
+		listWidgetItems_[i]->setSizeHint(QSize(160, 30));
+		listWidgetItems_[i]->setTextAlignment(Qt::AlignCenter);
+
+		listWidget_->addItem(listWidgetItems_[i].get());
+	}
+
+	listWidgetItems_[0]->setSelected(true);
+
+	scrollWidget_ = std::make_unique<QWidget>(this);
+
+	widgetItems_[0] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
+	widgetItems_[1] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
+	widgetItems_[2] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
+
+	gridLayout_ = std::make_unique<QVBoxLayout>(scrollWidget_.get());
+	gridLayout_->addWidget(widgetItems_[0].get());
+	gridLayout_->addWidget(widgetItems_[1].get());
+	gridLayout_->addWidget(widgetItems_[2].get());
+
+	scrollArea_ = std::make_unique<QScrollArea>(this);
+	scrollArea_->setFixedSize(490, 450);
+	scrollArea_->setWidget(scrollWidget_.get());
+
+	layout_ = std::make_unique<QHBoxLayout>(this);
+	layout_->setObjectName("contextLayout");
+	layout_->addWidget(listWidget_.get());
+	layout_->addWidget(scrollArea_.get());
+	layout_->setSpacing(0);
+	layout_->setContentsMargins(0, 0, 0, 0);
+
+	connect((const QObject*)scrollArea_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(valueChanged(int)));
+	connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+}
+
+void
+SettingContextPlane::valueChanged(int value)
+{
+	if (scrollArea_->widget()->layout()->count() != listWidget_->count())
+		return;
+
+	if (!m_sign)
+	{
+		for (std::size_t i = 0; i < listWidget_->count(); i++)
+		{
+			auto widget = scrollArea_->widget()->layout()->itemAt(i)->widget();
+			if (!widget->visibleRegion().isEmpty())
+			{
+				listWidget_->item(i)->setSelected(true);
+				return;
+			}
+			else
+			{
+				listWidget_->item(i)->setSelected(false);
+			}
+		}
+	}
+
+	m_sign = false;
+}
+
+void
+SettingContextPlane::itemClicked(QListWidgetItem* item)
+{
+	if (scrollArea_->widget()->layout()->count() != listWidget_->count())
+		return;
+
+	m_sign = true;
+
+	for (std::size_t i = 0; i < listWidget_->count(); i++)
+	{
+		if (item == listWidget_->item(i))
+		{
+			auto widget = scrollArea_->widget()->layout()->itemAt(i)->widget();
+			scrollArea_->verticalScrollBar()->setSliderPosition(widget->pos().y());
+		}
+	}
+}
+
+SettingContextPlane::~SettingContextPlane()
+{
+	for (auto& it : widgetItems_)
+		it.reset();
+
+	gridLayout_.reset();
+	scrollWidget_.reset();
+	scrollArea_.reset();
+	layout_.reset();
+}
 
 SettingWindow::SettingWindow() noexcept
 	: settingTitleWindow_(std::make_unique<SettingTitleWindow>(this))
+	, settingContextPlane_(std::make_unique<SettingContextPlane>(this))
 {
 	this->setObjectName("settingWidget");
 	this->setWindowFlags(Qt::FramelessWindowHint);
@@ -12,7 +118,7 @@ SettingWindow::SettingWindow() noexcept
 
 	contextLayout_ = std::make_unique<QVBoxLayout>(this);
 	contextLayout_->addWidget(settingTitleWindow_.get());
-	contextLayout_->addWidget(this->setupContextWidget());
+	contextLayout_->addWidget(settingContextPlane_.get());
 	contextLayout_->setMargin(0);
 	contextLayout_->setSpacing(0);
 
@@ -22,68 +128,8 @@ SettingWindow::SettingWindow() noexcept
 
 SettingWindow::~SettingWindow() noexcept
 {
-}
-
-QWidget* 
-SettingWindow::setupContextWidget() noexcept
-{
-	auto widget = new QWidget;
-
-	QStringList strList{ tr(u8"主面板"), tr(u8"渲染"), tr(u8"视频") };
-
-	listWidget_ = std::make_unique<QListWidget>(widget);
-	listWidget_->setFixedSize(160, 450);
-	listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	listWidget_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-	for (std::size_t i = 0; i < strList.size(); i++)
-	{
-		listWidgetItems_[i] = std::make_unique<QListWidgetItem>();
-		listWidgetItems_[i]->setText(strList[i]);
-		listWidgetItems_[i]->setTextColor(QColor(255, 255, 255));
-		listWidgetItems_[i]->setSizeHint(QSize(160, 30));
-		listWidgetItems_[i]->setTextAlignment(Qt::AlignCenter);
-
-		listWidget_->addItem(listWidgetItems_[i].get());
-	}
-
-	gridLayout_ = std::make_unique<QGridLayout>();
-
-	for (std::size_t i = 0; i < strList.size(); i++)
-	{
-		QWidget* widget = new QWidget(scrollWidget_.get());
-
-		QLabel* imageLabel = new QLabel(widget);
-		QPixmap pixmap(":res/icons/logo.png");
-		pixmap = pixmap.scaled(200, 200, Qt::KeepAspectRatio);
-		imageLabel->setPixmap(pixmap);
-		imageLabel->setStyleSheet("background: white;");
-		imageLabel->setAlignment(Qt::AlignCenter);
-
-		auto layout_ = new QHBoxLayout(widget);
-		layout_->setObjectName("contextLayout");
-		layout_->addWidget(imageLabel);
-		layout_->setSpacing(0);
-		layout_->setContentsMargins(0, 0, 0, 0);
-
-		gridLayout_->addWidget(widget);
-	}
-
-	scrollWidget_ = std::make_unique<QWidget>();
-	scrollWidget_->setLayout(gridLayout_.get());
-
-	scrollArea_ = std::make_unique<QScrollArea>();
-	scrollArea_->setFixedSize(490, 450);
-	scrollArea_->setWidget(scrollWidget_.get());
-
-	layout_ = std::make_unique<QHBoxLayout>(widget);
-	layout_->setObjectName("contextLayout");
-	layout_->addWidget(listWidget_.get());
-	layout_->addWidget(scrollArea_.get());
-	layout_->setSpacing(0);
-	layout_->setContentsMargins(0, 0, 0, 0);
-
-	return widget;
+	settingContextPlane_.reset();
+	settingTitleWindow_.reset();
 }
 
 void

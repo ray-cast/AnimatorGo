@@ -21,15 +21,15 @@ QLabel{
 	color: rgb(255,255,255);
 }
 QPushButton{
-	background-color: rgb(0,0,0,0);
+	background-color: rgba(0,0,0,0);
 	border:none;
 }
 QToolButton{
-	background-color: rgb(0,0,0,0);
+	background-color: rgba(0,0,0,0);
 	border:none;
 }
 QToolButton:hover{
-	background-color: rgb(255,255,255,30);
+	background-color: rgba(255,255,255,30);
 	border:none;
 }
 QWidget#titleWidget > QToolButton{
@@ -101,7 +101,7 @@ QWidget#showWidget > QPushButton#show{
 	qproperty-icon: url(":res/icons/show.png");
 }
 QWidget#showWidget > QPushButton#show:hover{
-	background-color:rgb(0,122,204,255);
+	background-color:rgba(0,122,204,255);
 }
 QListWidget{
 	border:none;
@@ -159,4 +159,10 @@ QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
 {
     background:rgba(0,0,0,10%);
     border-radius:4px;
+}
+QListWidget::Item:hover{
+	background-color: rgb(36,36,36);
+}
+QListWidget::Item:selected{
+	background-color: rgb(46,46,46);
 }

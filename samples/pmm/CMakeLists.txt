@@ -57,6 +57,8 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/setting_window.cpp
 	${SOURCE_PATH}/views/setting_title_window.h
 	${SOURCE_PATH}/views/setting_title_window.cpp
+	${SOURCE_PATH}/views/setting_main_plane.h
+	${SOURCE_PATH}/views/setting_main_plane.cpp
 	${SOURCE_PATH}/views/camera_window.h
 	${SOURCE_PATH}/views/camera_window.cpp
 	${SOURCE_PATH}/views/theme_manager.h

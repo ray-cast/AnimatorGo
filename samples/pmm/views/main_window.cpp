@@ -20,7 +20,7 @@ MainWindow::MainWindow()
 	mainLayout_->setMargin(0);
 	mainLayout_->setSpacing(0);
 
-	contextLayout_ = std::make_unique<QVBoxLayout>(this);
+	contextLayout_ = std::make_unique<QVBoxLayout>();
 	contextLayout_->addWidget(titleBar_.get());
 	contextLayout_->addWidget(viewPanel_.get());
 	contextLayout_->setMargin(0);

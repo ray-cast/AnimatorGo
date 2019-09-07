@@ -341,19 +341,36 @@ MainWindow::onOfflineModeSignal(bool enable) noexcept
 	}
 }
 
-void
-MainWindow::onImportHdriSignal() noexcept
+bool
+MainWindow::onImportHdriSignal(bool enable) noexcept
 {
 	if (behaviour_)
 	{
-		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
-		if (behaviour->isOpen())
+		if (enable)
 		{
-			QString fileName = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
-			if (!fileName.isEmpty())
-				behaviour->loadHDRi(fileName.toUtf8().data());
+			auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+			if (behaviour->isOpen())
+			{
+				QString fileName = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
+				if (!fileName.isEmpty())
+				{
+					behaviour->loadHDRi(fileName.toUtf8().data());
+					return true;
+				}
+			}
+		}
+		else
+		{
+			auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+			if (behaviour->isOpen())
+			{
+				behaviour->clearHDRi();
+				return true;
+			}
 		}
 	}
+
+	return false;
 }
 
 void

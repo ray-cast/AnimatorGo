@@ -281,6 +281,12 @@ namespace MysticLit
 		fileComponent_->importHDRi(path);
 	}
 
+	void 
+	MysticlitBehaviour::clearHDRi() noexcept
+	{
+		fileComponent_->clearHDRi();
+	}
+
 	octoon::GameComponentPtr
 	MysticlitBehaviour::clone() const noexcept
 	{

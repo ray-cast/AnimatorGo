@@ -43,6 +43,7 @@ namespace MysticLit
 		void stopPathTracing() noexcept;
 
 		void loadHDRi(const std::string& path) noexcept;
+		void clearHDRi() noexcept;
 
 		void renderPicture() noexcept;
 

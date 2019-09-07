@@ -40,13 +40,14 @@ Q_SIGNALS:
 	bool recordSignal(bool enable);
 	void shotSignal();
 	bool gpuSignal(bool enable);
-	void hdrSignal();
+	bool hdrSignal(bool enable);
 	void cleanupSignal();
 
 private:
 	bool gpuEnable_;
 	bool playEnable_;
 	bool recordEnable_;
+	bool hdrEnable_;
 
 	QIcon playIcon_;
 	QIcon playOnIcon_;
@@ -57,6 +58,8 @@ private:
 	QIcon gpuOnIcon_;
 	QIcon recordIcon_;
 	QIcon recordOnIcon_;
+	QIcon hdrIcon_;
+	QIcon hdrOnIcon_;
 
 	std::unique_ptr<QToolButton> hideButton_;
 	std::unique_ptr<QToolButton> importButton_;

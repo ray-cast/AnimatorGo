@@ -4,6 +4,7 @@ ToolBar::ToolBar(QWidget* parent) noexcept
 	: gpuEnable_(false)
 	, playEnable_(false)
 	, recordEnable_(false)
+	, hdrEnable_(false)
 {
 	playIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/play.png"));
 	playOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/play-on.png"));
@@ -11,6 +12,8 @@ ToolBar::ToolBar(QWidget* parent) noexcept
 	gpuOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/gpu-on.png"));
 	recordIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/record.png"));
 	recordOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/record-on.png"));
+	hdrIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/hdr.png"));
+	hdrOnIcon_ = QIcon::fromTheme("res", QIcon(":res/icons/hdr-on.png"));
 
 	hideButton_ = std::make_unique<QToolButton>(this);
 	hideButton_->setObjectName("hide");
@@ -199,7 +202,22 @@ ToolBar::gpuEvent() noexcept
 void
 ToolBar::hdrEvent() noexcept
 {
-	emit hdrSignal();
+	if (!hdrEnable_)
+	{
+		if (hdrSignal(true))
+		{
+			hdrButton_->setIcon(hdrOnIcon_);
+			hdrEnable_ = true;
+		}
+	}
+	else
+	{
+		if (hdrSignal(false))
+		{
+			hdrButton_->setIcon(hdrIcon_);
+			hdrEnable_ = false;
+		}
+	}
 }
 
 void

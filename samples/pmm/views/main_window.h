@@ -24,7 +24,7 @@ private Q_SLOTS:
 	bool onRecordSignal(bool enable) noexcept;
 	void onScreenShotSignal() noexcept;
 	bool onOfflineModeSignal(bool enable) noexcept;
-	void onImportHdriSignal() noexcept;
+	bool onImportHdriSignal(bool enable) noexcept;
 	void onSettingSignal() noexcept;
 	void onCleanupSignal() noexcept;
 

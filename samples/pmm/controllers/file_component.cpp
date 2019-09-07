@@ -137,7 +137,22 @@ namespace MysticLit
 	FileComponent::importHDRi(const std::string& filepath) noexcept
 	{
 		if (this->getContext()->profile->entitiesModule->enviromentLight)
-			this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setBgImage(filepath);
+		{
+			auto environmentLight = this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
+			if (environmentLight)
+				environmentLight->setBgImage(filepath);
+		}
+	}
+
+	void
+	FileComponent::clearHDRi() noexcept
+	{
+		if (this->getContext()->profile->entitiesModule->enviromentLight)
+		{
+			auto environmentLight = this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
+			if (environmentLight)
+				environmentLight->setBgImage("");
+		}
 	}
 
 	bool

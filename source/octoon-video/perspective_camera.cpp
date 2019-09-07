@@ -9,7 +9,7 @@ namespace octoon
 
 		PerspectiveCamera::PerspectiveCamera() noexcept
 			: aperture_(45.0f)
-			, znear_(0.01f)
+			, znear_(0.1f)
 			, zfar_(std::numeric_limits<float>::max())
 			, sensorSize_(math::float2::One)
 			, width_(0)

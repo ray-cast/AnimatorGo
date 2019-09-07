@@ -9,7 +9,7 @@ namespace octoon
 
 		OrthoCamera::OrthoCamera() noexcept
 			: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
-			, znear_(0.01f)
+			, znear_(0.1f)
 			, zfar_(65535.0f)
 			, width_(0)
 			, height_(0)

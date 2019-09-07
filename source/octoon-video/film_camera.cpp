@@ -9,7 +9,7 @@ namespace octoon
 
 		FilmCamera::FilmCamera() noexcept
 			: aperture_(45.0f)
-			, znear_(0.01f)
+			, znear_(0.1f)
 			, zfar_(std::numeric_limits<float>::max())
 			, width_(0)
 			, height_(0)

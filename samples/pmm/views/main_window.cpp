@@ -4,6 +4,124 @@
 #include <qfiledialog.h>
 #include <qsplashscreen.h>
 
+octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
+{
+	switch (key)
+	{
+	case Qt::Key_unknown: return octoon::input::InputKey::Code::None;
+	case Qt::Key_Space: return octoon::input::InputKey::Code::Space;
+	case Qt::Key_Apostrophe: return octoon::input::InputKey::Code::Apostrophe;
+	case Qt::Key_Comma: return octoon::input::InputKey::Code::Comma;
+	case Qt::Key_Minus: return octoon::input::InputKey::Code::Minus;
+	case Qt::Key_Period: return octoon::input::InputKey::Code::Period;
+	case Qt::Key_Slash: return octoon::input::InputKey::Code::Slash;
+	case Qt::Key_0: return octoon::input::InputKey::Code::Key0;
+	case Qt::Key_1: return octoon::input::InputKey::Code::Key1;
+	case Qt::Key_2: return octoon::input::InputKey::Code::Key2;
+	case Qt::Key_3: return octoon::input::InputKey::Code::Key3;
+	case Qt::Key_4: return octoon::input::InputKey::Code::Key4;
+	case Qt::Key_5: return octoon::input::InputKey::Code::Key5;
+	case Qt::Key_6: return octoon::input::InputKey::Code::Key6;
+	case Qt::Key_7: return octoon::input::InputKey::Code::Key7;
+	case Qt::Key_8: return octoon::input::InputKey::Code::Key8;
+	case Qt::Key_9: return octoon::input::InputKey::Code::Key9;
+	case Qt::Key_Semicolon: return octoon::input::InputKey::Code::Semicolon;
+	case Qt::Key_Equal: return octoon::input::InputKey::Code::Equal;
+	case Qt::Key_A: return octoon::input::InputKey::Code::A;
+	case Qt::Key_B: return octoon::input::InputKey::Code::B;
+	case Qt::Key_C: return octoon::input::InputKey::Code::C;
+	case Qt::Key_D: return octoon::input::InputKey::Code::D;
+	case Qt::Key_E: return octoon::input::InputKey::Code::E;
+	case Qt::Key_F: return octoon::input::InputKey::Code::F;
+	case Qt::Key_G: return octoon::input::InputKey::Code::G;
+	case Qt::Key_H: return octoon::input::InputKey::Code::H;
+	case Qt::Key_I: return octoon::input::InputKey::Code::I;
+	case Qt::Key_J: return octoon::input::InputKey::Code::J;
+	case Qt::Key_K: return octoon::input::InputKey::Code::K;
+	case Qt::Key_L: return octoon::input::InputKey::Code::L;
+	case Qt::Key_M: return octoon::input::InputKey::Code::M;
+	case Qt::Key_N: return octoon::input::InputKey::Code::N;
+	case Qt::Key_O: return octoon::input::InputKey::Code::O;
+	case Qt::Key_P: return octoon::input::InputKey::Code::P;
+	case Qt::Key_Q: return octoon::input::InputKey::Code::Q;
+	case Qt::Key_R: return octoon::input::InputKey::Code::R;
+	case Qt::Key_S: return octoon::input::InputKey::Code::S;
+	case Qt::Key_T: return octoon::input::InputKey::Code::T;
+	case Qt::Key_U: return octoon::input::InputKey::Code::U;
+	case Qt::Key_V: return octoon::input::InputKey::Code::V;
+	case Qt::Key_W: return octoon::input::InputKey::Code::W;
+	case Qt::Key_X: return octoon::input::InputKey::Code::X;
+	case Qt::Key_Y: return octoon::input::InputKey::Code::Y;
+	case Qt::Key_Z: return octoon::input::InputKey::Code::Z;
+	case Qt::Key_BracketLeft: return octoon::input::InputKey::Code::LeftBracket;
+	case Qt::Key_Backslash: return octoon::input::InputKey::Code::Backslash;
+	case Qt::Key_BracketRight: return octoon::input::InputKey::Code::RightBracket;
+	case Qt::Key_Word: return octoon::input::InputKey::Code::World1;
+	case Qt::Key_Escape: return octoon::input::InputKey::Code::Escape;
+	case Qt::Key_Enter: return octoon::input::InputKey::Code::Enter;
+	case Qt::Key_Tab: return octoon::input::InputKey::Code::Tab;
+	case Qt::Key_Backspace: return octoon::input::InputKey::Code::Backspace;
+	case Qt::Key_Insert: return octoon::input::InputKey::Code::Insert;
+	case Qt::Key_Delete: return octoon::input::InputKey::Code::Delete;
+	case Qt::Key_Right: return octoon::input::InputKey::Code::ArrowRight;
+	case Qt::Key_Left: return octoon::input::InputKey::Code::ArrowLeft;
+	case Qt::Key_Down: return octoon::input::InputKey::Code::ArrowDown;
+	case Qt::Key_Up: return octoon::input::InputKey::Code::ArrowUp;
+	case Qt::Key_PageUp: return octoon::input::InputKey::Code::PageUp;
+	case Qt::Key_PageDown: return octoon::input::InputKey::Code::PageDown;
+	case Qt::Key_Home: return octoon::input::InputKey::Code::Home;
+	case Qt::Key_End: return octoon::input::InputKey::Code::End;
+	case Qt::Key_CapsLock: return octoon::input::InputKey::Code::CapsLock;
+	case Qt::Key_ScrollLock: return octoon::input::InputKey::Code::ScrollLock;
+	case Qt::Key_NumLock: return octoon::input::InputKey::Code::NumLock;
+	case Qt::Key_Print: return octoon::input::InputKey::Code::PrintScreen;
+	case Qt::Key_Pause: return octoon::input::InputKey::Code::Pause;
+	case Qt::Key_F1: return octoon::input::InputKey::Code::F1;
+	case Qt::Key_F2: return octoon::input::InputKey::Code::F2;
+	case Qt::Key_F3: return octoon::input::InputKey::Code::F3;
+	case Qt::Key_F4: return octoon::input::InputKey::Code::F4;
+	case Qt::Key_F5: return octoon::input::InputKey::Code::F5;
+	case Qt::Key_F6: return octoon::input::InputKey::Code::F6;
+	case Qt::Key_F7: return octoon::input::InputKey::Code::F7;
+	case Qt::Key_F8: return octoon::input::InputKey::Code::F8;
+	case Qt::Key_F9: return octoon::input::InputKey::Code::F9;
+	case Qt::Key_F10: return octoon::input::InputKey::Code::F10;
+	case Qt::Key_F11: return octoon::input::InputKey::Code::F11;
+	case Qt::Key_F12: return octoon::input::InputKey::Code::F12;
+	case Qt::Key_F13: return octoon::input::InputKey::Code::F13;
+	case Qt::Key_F14: return octoon::input::InputKey::Code::F14;
+	case Qt::Key_F15: return octoon::input::InputKey::Code::F15;
+	case Qt::Key_F16: return octoon::input::InputKey::Code::F16;
+	case Qt::Key_F17: return octoon::input::InputKey::Code::F17;
+	case Qt::Key_F18: return octoon::input::InputKey::Code::F18;
+	case Qt::Key_F19: return octoon::input::InputKey::Code::F19;
+	case Qt::Key_F20: return octoon::input::InputKey::Code::F20;
+	case Qt::Key_F21: return octoon::input::InputKey::Code::F21;
+	case Qt::Key_F22: return octoon::input::InputKey::Code::F22;
+	case Qt::Key_F23: return octoon::input::InputKey::Code::F23;
+	case Qt::Key_F24: return octoon::input::InputKey::Code::F24;
+	case Qt::Key_F25: return octoon::input::InputKey::Code::F25;
+	case Qt::Key_Launch0: return octoon::input::InputKey::Code::KP_0;
+	case Qt::Key_Launch1: return octoon::input::InputKey::Code::KP_1;
+	case Qt::Key_Launch2: return octoon::input::InputKey::Code::KP_2;
+	case Qt::Key_Launch3: return octoon::input::InputKey::Code::KP_3;
+	case Qt::Key_Launch4: return octoon::input::InputKey::Code::KP_4;
+	case Qt::Key_Launch5: return octoon::input::InputKey::Code::KP_5;
+	case Qt::Key_Launch6: return octoon::input::InputKey::Code::KP_6;
+	case Qt::Key_Launch7: return octoon::input::InputKey::Code::KP_7;
+	case Qt::Key_Launch8: return octoon::input::InputKey::Code::KP_8;
+	case Qt::Key_Launch9: return octoon::input::InputKey::Code::KP_9;
+	case Qt::Key_Shift: return octoon::input::InputKey::Code::LeftShift;
+	case Qt::Key_Control: return octoon::input::InputKey::Code::LeftControl;
+	case Qt::Key_Alt: return octoon::input::InputKey::Code::LeftAlt;
+	case Qt::Key_Super_L: return octoon::input::InputKey::Code::LeftSuper;
+	case Qt::Key_Super_R: return octoon::input::InputKey::Code::RightShift;
+	case Qt::Key_Menu: return octoon::input::InputKey::Code::Menu;
+	default:
+		return octoon::input::InputKey::Code::None;
+	}
+}
+
 MainWindow::MainWindow()
 	: titleBar_(std::make_unique<TitleBar>(this))
 	, viewPanel_(std::make_unique<ViewWidget>(this))
@@ -48,6 +166,8 @@ MainWindow::MainWindow()
 	connect(viewPanel_.get(), &ViewWidget::mouseMoveSignal, this, &MainWindow::onMouseMoveSignal);
 	connect(viewPanel_.get(), &ViewWidget::mouseReleaseSignal, this, &MainWindow::onMouseReleaseSignal);
 	connect(viewPanel_.get(), &ViewWidget::mouseDoubleClickSignal, this, &MainWindow::onMouseDoubleClickSignal);
+	connect(viewPanel_.get(), &ViewWidget::keyPressSignal, this, &MainWindow::onKeyPressSignal);
+	connect(viewPanel_.get(), &ViewWidget::keyReleaseSignal, this, &MainWindow::onKeyReleaseSignal);
 	connect(viewPanel_.get(), &ViewWidget::wheelSignal, this, &MainWindow::onWheelSignal);
 	connect(viewPanel_.get(), &ViewWidget::dragEnterSignal, this, &MainWindow::onDragEnterSignal);
 	connect(viewPanel_.get(), &ViewWidget::dropSignal, this, &MainWindow::onDropSignal);
@@ -266,6 +386,20 @@ MainWindow::onMouseDoubleClickSignal(QMouseEvent* e) noexcept
 		else if (e->button() == Qt::MiddleButton)
 			gameApp_->doWindowMouseButtonDoubleClick((octoon::WindHandle)viewPanel_->winId(), octoon::input::InputButton::Middle, e->x(), e->y());
 	}
+}
+
+void
+MainWindow::onKeyPressSignal(QKeyEvent* event) noexcept
+{
+	if (gameApp_)
+		gameApp_->doWindowKeyDown((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
+}
+
+void
+MainWindow::onKeyReleaseSignal(QKeyEvent* event) noexcept
+{
+	if (gameApp_)
+		gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 }
 
 void

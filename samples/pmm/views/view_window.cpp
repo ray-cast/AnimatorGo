@@ -8,6 +8,7 @@ ViewWidget::ViewWidget(QWidget* parent) noexcept
 	this->setAttribute(Qt::WA_PaintOnScreen, true);
 	this->setObjectName("viewWidget");
 	this->setMouseTracking(true);
+	this->grabKeyboard();
 	this->setUpdatesEnabled(false);
 	this->setAcceptDrops(true);
 	this->connect(timer.get(), SIGNAL(timeout()), this, SLOT(updateEvent()));
@@ -53,6 +54,18 @@ void
 ViewWidget::mouseDoubleClickEvent(QMouseEvent* e) noexcept
 {
 	emit mouseDoubleClickSignal(e);
+}
+
+void
+ViewWidget::keyPressEvent(QKeyEvent* e) noexcept
+{
+	emit keyPressSignal(e);
+}
+
+void
+ViewWidget::keyReleaseEvent(QKeyEvent* e) noexcept
+{
+	emit keyReleaseSignal(e);
 }
 
 void 

@@ -30,6 +30,8 @@ private Q_SLOTS:
 	void onMouseMoveSignal(QMouseEvent* event) noexcept;
 	void onMouseReleaseSignal(QMouseEvent* event) noexcept;
 	void onMouseDoubleClickSignal(QMouseEvent* event) noexcept;
+	void onKeyPressSignal(QKeyEvent* event) noexcept;
+	void onKeyReleaseSignal(QKeyEvent* event) noexcept;
 	void onWheelSignal(QWheelEvent* event) noexcept;
 	void onDragEnterSignal(QDragEnterEvent* event) noexcept;
 	void onDropSignal(QDropEvent* event) noexcept;

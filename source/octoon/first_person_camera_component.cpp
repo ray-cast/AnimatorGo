@@ -3,19 +3,18 @@
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
-#include <octoon/timer_feature.h>
 
 namespace octoon
 {
 	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCamera")
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
-		: speed_(10.0)
+		: speed_(0.2f)
 		, gravity_(15)
 		, maxVelocityChange_(1.0)
 		, jumpHeight_(10)
-		, sensitivityX_(1.0)
-		, sensitivityY_(1.0)
+		, sensitivityX_(0.25f)
+		, sensitivityY_(0.25f)
 	{
 	}
 
@@ -111,9 +110,6 @@ namespace octoon
 	FirstPersonCameraComponent::onUpdate() noexcept
 	{
 		float step = speed_;
-#if OCTOON_FEATURE_TIMER_ENABLE
-		step *= this->getFeature<TimerFeature>()->delta();
-#endif
 
 		auto inputFeature = this->getFeature<InputFeature>();
 		if (inputFeature)

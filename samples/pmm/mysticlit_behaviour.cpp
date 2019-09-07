@@ -148,6 +148,12 @@ namespace MysticLit
 	}
 
 	void
+	MysticlitBehaviour::close() noexcept
+	{
+		this->profile_->entitiesModule->objects.clear();
+	}
+
+	void
 	MysticlitBehaviour::save() noexcept
 	{
 	}
@@ -206,8 +212,8 @@ namespace MysticLit
 		denoiseComponent_->setActive(false);
 		h264Component_->setActive(false);
 
-		playerComponent_->stop();
-		entitiesComponent_->stop();
+		playerComponent_->reset();
+		entitiesComponent_->reset();
 	}
 
 	void
@@ -238,10 +244,23 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::stop() noexcept
+	MysticlitBehaviour::pause() noexcept
 	{
-		playerComponent_->stop();
-		entitiesComponent_->stop();
+		playerComponent_->pause();
+		entitiesComponent_->pause();
+	}
+
+	void
+	MysticlitBehaviour::reset() noexcept
+	{
+		playerComponent_->reset();
+		entitiesComponent_->reset();
+	}
+
+	void
+	MysticlitBehaviour::sample(float delta) noexcept
+	{
+		entitiesComponent_->sample(delta);
 	}
 
 	void

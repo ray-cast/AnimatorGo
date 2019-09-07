@@ -16,7 +16,9 @@ namespace MysticLit
 		bool getActive() const noexcept override;
 
 		void play() noexcept;
-		void stop() noexcept;
+		void pause() noexcept;
+		void reset() noexcept;
+
 		void render() noexcept;
 
 	private:

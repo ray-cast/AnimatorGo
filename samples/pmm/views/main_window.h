@@ -17,12 +17,16 @@ private Q_SLOTS:
 	void onHideToolBarSignal() noexcept;
 	void onShowToolbarSignal() noexcept;
 	bool onPlaySignal(bool enable) noexcept;
+	void onResetSignal() noexcept;
+	void onLeftSignal() noexcept;
+	void onRightSignal() noexcept;
 	void onImportSignal() noexcept;
 	bool onRecordSignal(bool enable) noexcept;
 	void onScreenShotSignal() noexcept;
 	bool onOfflineModeSignal(bool enable) noexcept;
 	void onImportHdriSignal() noexcept;
 	void onSettingSignal() noexcept;
+	void onCleanupSignal() noexcept;
 
 	void onPaintSignal(QPaintEvent* e) noexcept;
 	void onResizeSignal(QResizeEvent* e) noexcept;

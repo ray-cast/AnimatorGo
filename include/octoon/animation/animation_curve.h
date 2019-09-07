@@ -90,7 +90,7 @@ namespace octoon
 
 			void setTime(const _Time& time) noexcept
 			{
-				key.time = time;
+				key.time = std::clamp(time, frames.front().time, frames.back().time);
 				finish = false;
 				this->evaluate(time);
 			}
@@ -101,6 +101,8 @@ namespace octoon
 					key.time -= delta;
 				else
 					key.time += delta;
+
+				key.time = std::clamp(key.time, frames.front().time, frames.back().time);
 
 				auto it = std::upper_bound(frames.begin(), frames.end(), key.time,
 					[](const _Time& time, const Keyframe<_Elem, _Time>& a)
@@ -127,8 +129,8 @@ namespace octoon
 					auto& b = *(it);
 					auto t = (key.time - a.time) / (b.time - a.time);
 
-					if (a.interpolator)
-						t = a.interpolator->interpolator(t);
+					if (b.interpolator)
+						t = b.interpolator->interpolator(t);
 					else if (interpolator)
 						t = interpolator->interpolator(t);
 

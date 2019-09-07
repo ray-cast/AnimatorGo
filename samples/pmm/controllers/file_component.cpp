@@ -216,7 +216,7 @@ namespace MysticLit
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(video::CameraType::Main);
 		camera->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
-		camera->setClearColor(octoon::math::float4::One);
+		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
 		obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
 		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
@@ -247,12 +247,12 @@ namespace MysticLit
 
 		for (auto& it : camera_keyframes)
 		{
-			auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0] / 255.0f, it.interpolation_distance[1] / 255.0f, it.interpolation_distance[2] / 255.0f, it.interpolation_distance[3] / 255.0f);
-			auto interpolationX = std::make_shared<PathInterpolator<float>>(it.interpolation_x[0] / 255.0f, it.interpolation_x[1] / 255.0f, it.interpolation_x[2] / 255.0f, it.interpolation_x[3] / 255.0f);
-			auto interpolationY = std::make_shared<PathInterpolator<float>>(it.interpolation_y[0] / 255.0f, it.interpolation_y[1] / 255.0f, it.interpolation_y[2] / 255.0f, it.interpolation_y[3] / 255.0f);
-			auto interpolationZ = std::make_shared<PathInterpolator<float>>(it.interpolation_z[0] / 255.0f, it.interpolation_z[1] / 255.0f, it.interpolation_z[2] / 255.0f, it.interpolation_z[3] / 255.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0] / 255.0f, it.interpolation_rotation[1] / 255.0f, it.interpolation_rotation[2] / 255.0f, it.interpolation_rotation[3] / 255.0f);
-			auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0] / 255.0f, it.interpolation_angleview[1] / 255.0f, it.interpolation_angleview[2] / 255.0f, it.interpolation_angleview[3] / 255.0f);
+			auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0] / 127.0f, it.interpolation_distance[2] / 127.0f, it.interpolation_distance[1] / 127.0f, it.interpolation_distance[3] / 127.0f);
+			auto interpolationX = std::make_shared<PathInterpolator<float>>(it.interpolation_x[0] / 127.0f, it.interpolation_x[2] / 127.0f, it.interpolation_x[2] / 127.0f, it.interpolation_x[1] / 127.0f);
+			auto interpolationY = std::make_shared<PathInterpolator<float>>(it.interpolation_y[0] / 127.0f, it.interpolation_y[2] / 127.0f, it.interpolation_y[2] / 127.0f, it.interpolation_y[1] / 127.0f);
+			auto interpolationZ = std::make_shared<PathInterpolator<float>>(it.interpolation_z[0] / 127.0f, it.interpolation_z[2] / 127.0f, it.interpolation_z[2] / 127.0f, it.interpolation_z[1] / 127.0f);
+			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(it.interpolation_rotation[0] / 127.0f, it.interpolation_rotation[2] / 127.0f, it.interpolation_rotation[1] / 127.0f, it.interpolation_rotation[3] / 127.0f);
+			auto interpolationAngleView = std::make_shared<PathInterpolator<float>>(it.interpolation_angleview[0] / 127.0f, it.interpolation_angleview[2] / 127.0f, it.interpolation_angleview[1] / 127.0f, it.interpolation_angleview[3] / 127.0f);
 
 			distance.emplace_back((float)it.frame / 30.0f, it.distance, interpolationDistance);
 			eyeX.emplace_back((float)it.frame / 30.0f, it.eye.x, interpolationX);
@@ -289,10 +289,10 @@ namespace MysticLit
 		{
 			auto& key = it.bone_init_frame[i];
 
-			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
-			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
-			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 255.0f, key.interpolation_rotation[1] / 255.0f, key.interpolation_rotation[2] / 255.0f, key.interpolation_rotation[3] / 255.0f);
+			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
+			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
+			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
+			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 127.0f, key.interpolation_rotation[2] / 127.0f, key.interpolation_rotation[1] / 127.0f, key.interpolation_rotation[3] / 127.0f);
 
 			auto euler = math::eulerAngles(key.quaternion);
 
@@ -327,10 +327,10 @@ namespace MysticLit
 			else
 				frameA = it.bone_key_frame[key_to_array_index[key.pre_index]];
 
-			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 255.0f, key.interpolation_x[1] / 255.0f, key.interpolation_x[2] / 255.0f, key.interpolation_x[3] / 255.0f);
-			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 255.0f, key.interpolation_y[1] / 255.0f, key.interpolation_y[2] / 255.0f, key.interpolation_y[3] / 255.0f);
-			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 255.0f, key.interpolation_z[1] / 255.0f, key.interpolation_z[2] / 255.0f, key.interpolation_z[3] / 255.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(frameA.interpolation_rotation[0] / 255.0f, frameA.interpolation_rotation[1] / 255.0f, frameA.interpolation_rotation[2] / 255.0f, frameA.interpolation_rotation[3] / 255.0f);
+			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
+			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
+			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
+			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(frameA.interpolation_rotation[0] / 127.0f, frameA.interpolation_rotation[2] / 127.0f, frameA.interpolation_rotation[1] / 127.0f, frameA.interpolation_rotation[3] / 127.0f);
 
 			for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 30; i++)
 			{

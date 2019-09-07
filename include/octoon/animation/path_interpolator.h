@@ -45,7 +45,7 @@ namespace octoon
 				T min = 0.0f;
 				T max = 1.0f;
 
-				T t = 0.5f;
+				T t = time;
 				T x = this->evalX(t);
 
 				while (std::fabs(x - time) > math::EPSILON_E4)

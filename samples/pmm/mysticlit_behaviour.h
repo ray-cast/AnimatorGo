@@ -25,6 +25,7 @@ namespace MysticLit
 		void open() noexcept;
 		void save() noexcept;
 		void saveAs() noexcept;
+		void close() noexcept;
 		bool isOpen() const noexcept;
 
 		void openModel() noexcept;
@@ -34,7 +35,9 @@ namespace MysticLit
 		void stopRecord() noexcept;
 
 		void play() noexcept;
-		void stop() noexcept;
+		void pause() noexcept;
+		void reset() noexcept;
+		void sample(float delta) noexcept;
 
 		void startPathTracing() noexcept;
 		void stopPathTracing() noexcept;

@@ -83,19 +83,52 @@ QWidget#settingTitle > QLabel#title{
 	font-size:12px;
 }
 QWidget#toolWidget > QToolButton#hide{
-	qproperty-icon: url(":res/icons/hide.png"); 
+	qproperty-icon: url(":res/icons/hide.png");
 }
 QWidget#toolWidget > QToolButton#import{
-	qproperty-icon: url(":res/icons/append.png"); 
+	qproperty-icon: url(":res/icons/append.png");
+}
+QWidget#toolWidget > QToolButton#play{
+	qproperty-icon: url(":res/icons/play.png");
+}
+QWidget#toolWidget > QToolButton#play-on{
+	qproperty-icon: url(":res/icons/play-on.png");
+}
+QWidget#toolWidget > QToolButton#pause{
+	qproperty-icon: url(":res/icons/pause.png");
+}
+QWidget#toolWidget > QToolButton#stop{
+	qproperty-icon: url(":res/icons/stop.png");
+}
+QWidget#toolWidget > QToolButton#reset{
+	qproperty-icon: url(":res/icons/reset.png");
 }
 QWidget#toolWidget > QToolButton#shot{
-	qproperty-icon: url(":res/icons/shot.png"); 
+	qproperty-icon: url(":res/icons/shot.png");
+}
+QWidget#toolWidget > QToolButton#left{
+	qproperty-icon: url(":res/icons/left.png");
+}
+QWidget#toolWidget > QToolButton#right{
+	qproperty-icon: url(":res/icons/right.png");
+}
+QWidget#toolWidget > QToolButton#record{
+	qproperty-icon: url(":res/icons/record.png");
+}
+QWidget#toolWidget > QToolButton#record-on{
+	qproperty-icon: url(":res/icons/record-on.png");
 }
 QWidget#toolWidget > QToolButton#gpu{
-	qproperty-icon: url(":res/icons/gpu.png"); 
+	qproperty-icon: url(":res/icons/gpu.png");
+}
+QWidget#toolWidget > QToolButton#gpu-on{
+	qproperty-icon: url(":res/icons/gpu-on.png");
 }
 QWidget#toolWidget > QToolButton#hdr{
-	qproperty-icon: url(":res/icons/hdr.png"); 
+	qproperty-icon: url(":res/icons/hdr.png");
+}
+QWidget#toolWidget > QToolButton#cleanup{
+	qproperty-icon: url(":res/icons/cleanup.png");
 }
 QWidget#showWidget > QPushButton#show{
 	qproperty-icon: url(":res/icons/show.png");

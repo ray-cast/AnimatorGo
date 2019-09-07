@@ -60,7 +60,16 @@ namespace MysticLit
 	}
 
 	void
-	PlayerComponent::stop() noexcept
+	PlayerComponent::pause() noexcept
+	{
+		auto& context = this->getContext()->profile;
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
+	}
+
+	void
+	PlayerComponent::reset() noexcept
 	{
 		auto& context = this->getContext()->profile;
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();

@@ -30,24 +30,50 @@ namespace MysticLit
 			for (auto& component : it->getComponents())
 			{
 				if (component->isA<octoon::AnimatorComponent>())
-				{
-					component->downcast<octoon::AnimatorComponent>()->setTime(0.0f);
-					component->downcast<octoon::AnimatorComponent>()->sample(0.0f);
 					component->downcast<octoon::AnimatorComponent>()->play();
-				}
 			}
 		}
 	}
 
 	void
-	EntitiesComponent::stop() noexcept
+	EntitiesComponent::pause() noexcept
 	{
 		for (auto& it : this->getModel()->objects)
 		{
 			for (auto& component : it->getComponents())
 			{
 				if (component->isA<octoon::AnimatorComponent>())
+					component->downcast<octoon::AnimatorComponent>()->pause();
+			}
+		}
+	}
+
+	void
+	EntitiesComponent::reset() noexcept
+	{
+		for (auto& it : this->getModel()->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::AnimatorComponent>())
+				{
+					component->downcast<octoon::AnimatorComponent>()->setTime(0.0f);
+					component->downcast<octoon::AnimatorComponent>()->sample(0.0f);
 					component->downcast<octoon::AnimatorComponent>()->stop();
+				}
+			}
+		}
+	}
+
+	void
+	EntitiesComponent::sample(float delta) noexcept
+	{
+		for (auto& it : this->getModel()->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::AnimatorComponent>())
+					component->downcast<octoon::AnimatorComponent>()->sample(delta);
 			}
 		}
 	}

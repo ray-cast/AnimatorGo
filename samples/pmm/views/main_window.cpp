@@ -155,10 +155,14 @@ MainWindow::MainWindow()
 	connect(toolBar_.get(), &ToolBar::hideSignal, this, &MainWindow::onHideToolBarSignal);
 	connect(toolBar_.get(), &ToolBar::importSignal, this, &MainWindow::onImportSignal);
 	connect(toolBar_.get(), &ToolBar::playSignal, this, &MainWindow::onPlaySignal);
+	connect(toolBar_.get(), &ToolBar::resetSignal, this, &MainWindow::onResetSignal);
+	connect(toolBar_.get(), &ToolBar::leftSignal, this, &MainWindow::onLeftSignal);
+	connect(toolBar_.get(), &ToolBar::rightSignal, this, &MainWindow::onRightSignal);
 	connect(toolBar_.get(), &ToolBar::recordSignal, this, &MainWindow::onRecordSignal);
 	connect(toolBar_.get(), &ToolBar::shotSignal, this, &MainWindow::onScreenShotSignal);
 	connect(toolBar_.get(), &ToolBar::gpuSignal, this, &MainWindow::onOfflineModeSignal);
 	connect(toolBar_.get(), &ToolBar::hdrSignal, this, &MainWindow::onImportHdriSignal);
+	connect(toolBar_.get(), &ToolBar::cleanupSignal, this, &MainWindow::onCleanupSignal);
 
 	connect(viewPanel_.get(), &ViewWidget::paintSignal, this, &MainWindow::onPaintSignal);
 	connect(viewPanel_.get(), &ViewWidget::resizeSignal, this, &MainWindow::onResizeSignal);
@@ -224,7 +228,7 @@ MainWindow::onPlaySignal(bool enable) noexcept
 			if (enable)
 				behaviour->play();
 			else
-				behaviour->stop();
+				behaviour->pause();
 
 			return true;
 		}
@@ -236,6 +240,39 @@ MainWindow::onPlaySignal(bool enable) noexcept
 	else
 	{
 		return false;
+	}
+}
+
+void
+MainWindow::onResetSignal() noexcept
+{
+	if (behaviour_)
+	{
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+			behaviour->reset();
+	}
+}
+
+void
+MainWindow::onLeftSignal() noexcept
+{
+	if (behaviour_)
+	{
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+			behaviour->sample(-1.0f);
+	}
+}
+
+void 
+MainWindow::onRightSignal() noexcept
+{
+	if (behaviour_)
+	{
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+			behaviour->sample(1.0f);
 	}
 }
 
@@ -325,6 +362,17 @@ MainWindow::onSettingSignal() noexcept
 	settingWindow_ = std::make_unique<SettingWindow>();
 	settingWindow_->move(this->pos().x() + (this->width() - settingWindow_->width()) / 2, this->pos().y() + (this->height() - settingWindow_->height()) / 2);
 	settingWindow_->show();
+}
+
+void 
+MainWindow::onCleanupSignal() noexcept
+{
+	if (behaviour_)
+	{
+		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
+		if (behaviour->isOpen())
+			behaviour->close();
+	}
 }
 
 void

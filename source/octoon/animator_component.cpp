@@ -89,7 +89,7 @@ namespace octoon
 	void
 	AnimatorComponent::sample(float delta) noexcept
 	{
-		if (delta > 0.0f)
+		if (delta != 0.0f)
 			animation_.evaluate(delta);
 
 		if (avatar_.empty())

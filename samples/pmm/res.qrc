@@ -8,6 +8,7 @@
 			<file>res/icons/append.png</file>
 			<file>res/icons/hide.png</file>
 			<file>res/icons/play.png</file>
+			<file>res/icons/play-on.png</file>
 			<file>res/icons/pause.png</file>
 			<file>res/icons/stop.png</file>
 			<file>res/icons/record.png</file>
@@ -21,6 +22,11 @@
 			<file>res/icons/rabbit.svg</file>
 			<file>res/icons/show.png</file>
 			<file>res/icons/splash.png</file>
+			<file>res/icons/cleanup.png</file>
+			<file>res/icons/reset.png</file>
+			<file>res/icons/left.png</file>
+			<file>res/icons/right.png</file>
+			<file>res/icons/volume.png</file>
 			<file>res/qss/default.qss</file>
     </qresource>
 </RCC>

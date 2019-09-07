@@ -1,6 +1,7 @@
 #include "canvas_component.h"
 #include "mysticlit_behaviour.h"
 #include <octoon/offline_feature.h>
+#include <octoon/offline_camera_component.h>
 #include <octoon/image/image.h>
 
 namespace MysticLit
@@ -40,10 +41,30 @@ namespace MysticLit
 	CanvasComponent::onPostProcess() noexcept
 	{
 		auto& context = this->getContext();
-		auto offlineFeature = context->behaviour->getFeature<octoon::OfflineFeature>();
-		offlineFeature->readColorFramebuffer(this->getModel()->colorBuffer.data());
-		offlineFeature->readAlbedoFramebuffer(this->getModel()->albedoBuffer.data());
-		offlineFeature->readNormalFramebuffer(this->getModel()->normalBuffer.data());
+
+		if (this->getContext()->profile->offlineModule->offlineEnable)
+		{
+			auto offlineFeature = context->behaviour->getFeature<octoon::OfflineFeature>();
+			offlineFeature->readColorFramebuffer(this->getModel()->colorBuffer.data());
+			offlineFeature->readAlbedoFramebuffer(this->getModel()->albedoBuffer.data());
+			offlineFeature->readNormalFramebuffer(this->getModel()->normalBuffer.data());
+		}
+		else
+		{
+			auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
+			auto colorTexture = camera->getFramebuffer()->getGraphicsFramebufferDesc().getColorAttachments().front().getBindingTexture();
+			if (colorTexture)
+			{
+				auto& desc = colorTexture->getTextureDesc();
+
+				void* data = nullptr;
+				if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+				{
+					std::memcpy(this->getModel()->outputBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+					colorTexture->unmap();
+				}
+			}
+		}
 	}
 
 	void

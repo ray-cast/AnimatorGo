@@ -172,6 +172,8 @@ namespace octoon
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 					context.setFramebuffer(framebuffer);
+				else
+					context.setFramebuffer(fbo_);
 #endif
 
 				context.setViewport(0, camera->getPixelViewport());
@@ -222,6 +224,8 @@ namespace octoon
 					auto& v = camera->getPixelViewport();
 					if (framebuffer)
 						context.blitFramebuffer(framebuffer, v, nullptr, v);
+					else
+						context.blitFramebuffer(fbo_, v, nullptr, v);
 				}
 
 				if (framebuffer)
@@ -242,7 +246,7 @@ namespace octoon
 		RenderSystem::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
 		{
 			GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R8G8B8A8UNorm));
+			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R32G32B32SFloat));
 			framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(1, GraphicsImageLayout::DepthStencilAttachmentOptimal, GraphicsFormat::X8_D24UNormPack32));
 
 			try
@@ -252,7 +256,7 @@ namespace octoon
 				colorTextureDesc.setHeight(h);
 				colorTextureDesc.setTexMultisample(4);
 				colorTextureDesc.setTexDim(GraphicsTextureDim::Texture2DMultisample);
-				colorTextureDesc.setTexFormat(GraphicsFormat::R8G8B8A8UNorm);
+				colorTextureDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
 				colorTexture_ = device_->createTexture(colorTextureDesc);
 				if (!colorTexture_)
 					throw runtime::runtime_error::create("createTexture() failed");

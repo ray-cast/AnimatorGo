@@ -77,8 +77,16 @@ namespace MysticLit
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
 		{
-			timeFeature->setTimeStep(model->recordTimeStep);
-			timeFeature->setTimeInterval(1.0f / model->recordFps);
+			if (this->getContext()->profile->offlineModule->offlineEnable)
+			{
+				timeFeature->setTimeStep(model->recordTimeStep);
+				timeFeature->setTimeInterval(1.0f / model->recordFps);
+			}
+			else
+			{
+				timeFeature->setTimeStep(model->playTimeStep);
+				timeFeature->setTimeInterval(1.0f / model->playFps);
+			}
 		}
 
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();

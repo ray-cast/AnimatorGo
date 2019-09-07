@@ -91,30 +91,33 @@ namespace MysticLit
 	void
 	DenoiseComponent::onPostProcess() noexcept
 	{
-		auto color = oidnMapBuffer(oidnColorBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
-		auto normal = oidnMapBuffer(oidnNormalBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
-		auto albedo = oidnMapBuffer(oidnAlbedoBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
+		if (this->getContext()->profile->offlineModule->offlineEnable)
+		{
+			auto color = oidnMapBuffer(oidnColorBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
+			auto normal = oidnMapBuffer(oidnNormalBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
+			auto albedo = oidnMapBuffer(oidnAlbedoBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
 
-		auto& window = this->getContext()->profile->canvasModule;
-		std::memcpy(color, window->colorBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
-		std::memcpy(normal, window->normalBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
-		std::memcpy(albedo, window->albedoBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
+			auto& window = this->getContext()->profile->canvasModule;
+			std::memcpy(color, window->colorBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
+			std::memcpy(normal, window->normalBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
+			std::memcpy(albedo, window->albedoBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
 
-		oidnUnmapBuffer(oidnColorBuffer_, color);
-		oidnUnmapBuffer(oidnNormalBuffer_, normal);
-		oidnUnmapBuffer(oidnAlbedoBuffer_, albedo);
+			oidnUnmapBuffer(oidnColorBuffer_, color);
+			oidnUnmapBuffer(oidnNormalBuffer_, normal);
+			oidnUnmapBuffer(oidnAlbedoBuffer_, albedo);
 
-		oidnExecuteFilter(filter_);
+			oidnExecuteFilter(filter_);
 
-		const char* errorMessage;
-		if (oidnGetDeviceError(device_, &errorMessage) != OIDN_ERROR_NONE)
-			std::cout << "Error: " << errorMessage << std::endl;
+			const char* errorMessage;
+			if (oidnGetDeviceError(device_, &errorMessage) != OIDN_ERROR_NONE)
+				std::cout << "Error: " << errorMessage << std::endl;
 
-		auto output = oidnMapBuffer(oidnOutputBuffer_, OIDN_ACCESS_READ, 0, 0);
-		if (output)
-		{ 
-			std::memcpy(window->outputBuffer.data(), output, window->width * window->height * sizeof(octoon::math::float3));
-			oidnUnmapBuffer(oidnOutputBuffer_, output);
+			auto output = oidnMapBuffer(oidnOutputBuffer_, OIDN_ACCESS_READ, 0, 0);
+			if (output)
+			{
+				std::memcpy(window->outputBuffer.data(), output, window->width * window->height * sizeof(octoon::math::float3));
+				oidnUnmapBuffer(oidnOutputBuffer_, output);
+			}
 		}
 	}
 }

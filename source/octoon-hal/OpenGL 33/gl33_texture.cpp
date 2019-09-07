@@ -259,11 +259,27 @@ namespace octoon
 				_pboSize = mapSize;
 			}
 
-			glBindTexture(_target, _texture);
-			glGetTexImage(_target, mipLevel, format, type, 0);
+			if (_target == GL_TEXTURE_2D_MULTISAMPLE || _target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
+			{
+				GLenum internalFormat = GL33Types::asTextureInternalFormat(_textureDesc.getTexFormat());
+				if (internalFormat == GL_INVALID_ENUM)
+				{
+					this->getDevice()->downcast<GL33Device>()->message("Invalid texture internal format.");
+					return false;
+				}
 
-			*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
-			(std::uint8_t*&)*data += (y * _textureDesc.getWidth() * num) + x * num;
+				glBindTexture(_target, _texture);
+				glReadPixels(x, y, w, h, format, type, 0);
+
+				*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+			}
+			else
+			{
+				glBindTexture(_target, _texture);
+				glGetTexImage(_target, mipLevel, format, type, 0);
+				*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+				(std::uint8_t * &)* data += (y * _textureDesc.getWidth() * num) + x * num;
+			}
 
 			return *data ? true : false;
 		}

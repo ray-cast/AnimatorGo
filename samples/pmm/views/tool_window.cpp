@@ -114,8 +114,6 @@ ToolBar::recordEvent() noexcept
 		{
 			recordButton_->setIcon(recordOnIcon_);
 			recordEnable_ = true;
-			gpuButton_->setIcon(gpuOnIcon_);
-			gpuEnable_ = true;
 		}
 	}
 	else

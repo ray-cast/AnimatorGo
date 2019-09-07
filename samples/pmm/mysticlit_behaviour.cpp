@@ -125,13 +125,10 @@ namespace MysticLit
 
 		if (!finish)
 		{
-			if (this->profile_->offlineModule->offlineEnable)
+			for (auto& it : components_)
 			{
-				for (auto& it : components_)
-				{
-					if (it->getActive())
-						it->onPostProcess();
-				}
+				if (it->getActive())
+					it->onPostProcess();
 			}
 		}
 		else
@@ -193,7 +190,6 @@ namespace MysticLit
 	{
 		canvasComponent_->setActive(true);
 		denoiseComponent_->setActive(true);
-		offlineComponent_->setActive(true);
 		h264Component_->setActive(true);
 
 		playerComponent_->render();
@@ -208,10 +204,10 @@ namespace MysticLit
 	{
 		canvasComponent_->setActive(false);
 		denoiseComponent_->setActive(false);
-		offlineComponent_->setActive(false);
 		h264Component_->setActive(false);
 
 		playerComponent_->stop();
+		entitiesComponent_->stop();
 	}
 
 	void
@@ -224,13 +220,10 @@ namespace MysticLit
 			canvasComponent_->setActive(true);
 			denoiseComponent_->setActive(true);
 
-			if (this->profile_->offlineModule->offlineEnable)
+			for (auto& it : components_)
 			{
-				for (auto& it : components_)
-				{
-					if (it->getActive())
-						it->onPostProcess();
-				}
+				if (it->getActive())
+					it->onPostProcess();
 			}
 
 			canvasComponent_->save(filepath);

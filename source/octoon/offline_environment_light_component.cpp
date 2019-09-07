@@ -42,27 +42,40 @@ namespace octoon
 		{
 			if (rprLight_ && useBgImage_)
 			{
-				if (this->rprImage_)
-				{
-					rprObjectDelete(rprImage_);
-					this->rprImage_ = nullptr;
-				}
-
 				auto feature = this->tryGetFeature<OfflineFeature>();
 				if (feature)
 				{
-					if (!path.empty())
+					rpr_image rprImage = nullptr;
+
+					if (path.empty())
 					{
-						this->rprImage_ = this->createImage(path);
-						rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_);
+						rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
+						rpr_image_desc desc = { 1, 1, 1, 3, 3 };
+
+						if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, color_.ptr(), &rprImage))
+							return;
 					}
 					else
 					{
-						rprEnvironmentLightSetImage(this->rprLight_, nullptr);
+						rprImage = this->createImage(path);
 					}
 
-					if (this->rprImage_)
-						rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, this->rprImage_);
+					if (rprImage)
+					{
+						if (this->rprImage_)
+						{
+							rprObjectDelete(rprImage_);
+							this->rprImage_ = nullptr;
+						}
+
+						this->rprImage_ = rprImage;
+
+						if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, rprImage))
+							return;
+
+						if (RPR_SUCCESS != rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, rprImage))
+							return;
+					}
 
 					feature->setFramebufferDirty(true);
 				}

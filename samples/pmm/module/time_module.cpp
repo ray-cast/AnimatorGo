@@ -14,7 +14,7 @@ namespace MysticLit
 	void
 	TimeModule::reset() noexcept
 	{
-		this->recordFps = 24.0f;
+		this->recordFps = 30.0f;
 		this->recordTimeStep = 10.0f;
 
 		this->playFps = 60.0f;

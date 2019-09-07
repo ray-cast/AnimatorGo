@@ -85,7 +85,7 @@ namespace MysticLit
 			else
 			{
 				timeFeature->setTimeStep(model->playTimeStep);
-				timeFeature->setTimeInterval(1.0f / model->playFps);
+				timeFeature->setTimeInterval(1.0f / model->recordFps);
 			}
 		}
 

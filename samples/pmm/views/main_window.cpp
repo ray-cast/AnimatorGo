@@ -185,6 +185,10 @@ MainWindow::~MainWindow()
 {
 	MysticLit::MysticLitProfile::save("./config/config.conf", *profile_);
 
+	toolBar_.reset();
+	viewPanel_.reset();
+	profile_.reset();
+
 	if (behaviour_)
 	{
 		behaviour_.reset();

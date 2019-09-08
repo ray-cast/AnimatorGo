@@ -1,5 +1,6 @@
 #include "mysticLit_profile.h"
 #include <fstream>
+#include <filesystem>
 #include <octoon/runtime/json.h>
 
 namespace MysticLit

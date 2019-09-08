@@ -13,6 +13,7 @@ namespace octoon
 		virtual ~OfflineEnvironmentLightComponent() noexcept;
 
 		void setIntensity(float value) noexcept override;
+		void setColor(const math::float3& value) noexcept override;
 
 		void setBgImage(const std::string& path) noexcept;
 		const std::string& getBgImage() const noexcept;

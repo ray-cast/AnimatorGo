@@ -184,8 +184,8 @@ namespace MysticLit
 					this->setupMorphAnimation(it, morphClip);
 
 					model->setName(it.name);
-					model->addComponent<AnimatorComponent>(animation::Animation(boneClips), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms())->sample();
-					model->addComponent<AnimatorComponent>(animation::Animation(morphClip))->sample();
+					model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms())->sample();
+					model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)))->sample();
 
 					objects.emplace_back(std::move(model));
 				}

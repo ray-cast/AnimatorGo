@@ -29,7 +29,7 @@ namespace octoon
 			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
 				: Animation()
 			{
-				clips.emplace_back(std::move(_clips));
+				clips.emplace_back(std::move(_clip));
 			}
 
 			Animation(const AnimationClip<_Elem, _Time>& _clip) noexcept

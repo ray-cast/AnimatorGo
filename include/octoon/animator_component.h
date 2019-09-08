@@ -12,6 +12,8 @@ namespace octoon
 	public:
 		AnimatorComponent() noexcept;
 		AnimatorComponent(animation::Animation<float>&& animation, GameObjects&& avatar) noexcept;
+		AnimatorComponent(animation::Animation<float>&& animation, const GameObjects& avatar) noexcept;
+		AnimatorComponent(const animation::Animation<float>& animation, GameObjects&& avatar) noexcept;
 		AnimatorComponent(const animation::Animation<float>& animation, const GameObjects& avatar) noexcept;
 		explicit AnimatorComponent(animation::Animation<float>&& animation) noexcept;
 		explicit AnimatorComponent(const animation::Animation<float>& animation) noexcept;

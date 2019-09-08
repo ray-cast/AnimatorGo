@@ -259,17 +259,10 @@ namespace octoon
 	bool
 	GamePrefabs::createBones(const Model& model, GameObjects& bones) noexcept
 	{
-		/*auto material = std::make_shared<model::Material>();
-		material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));*/
+		bones.reserve(model.get<Model::bone>().size());
 
 		for (auto& it : model.get<Model::bone>())
-		{
-			auto object = GameObject::create(it->getName());
-			/*object->addComponent<MeshFilterComponent>(model::makeCube(0.2f, 0.2f, 0.2f));
-			object->addComponent<MeshRendererComponent>(material);*/
-
-			bones.emplace_back(object);
-		}
+			bones.emplace_back(GameObject::create(it->getName()));
 
 		for (std::size_t i = 0; i < model.get<Model::bone>().size(); i++)
 		{
@@ -360,6 +353,8 @@ namespace octoon
 	bool
 	GamePrefabs::createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept
 	{
+		rigidbodys.reserve(model.get<Model::rigidbody>().size());
+
 		for (auto& it : model.get<Model::rigidbody>())
 		{
 			auto gameObject = GameObject::create();
@@ -393,7 +388,7 @@ namespace octoon
 
 			gameObject->addComponent(component);
 
-			rigidbodys.push_back(gameObject);
+			rigidbodys.emplace_back(std::move(gameObject));
 		}
 
 		return true;
@@ -402,6 +397,8 @@ namespace octoon
 	bool
 	GamePrefabs::createJoints(const Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept
 	{
+		joints.reserve(model.get<Model::joint>().size());
+
 		for (auto& it : model.get<Model::joint>())
 		{
 			if (rigidbodys.size() <= it->bodyIndexA || rigidbodys.size() <= it->bodyIndexB)
@@ -503,7 +500,7 @@ namespace octoon
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
 					joint->setDriveAngularY(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
 
-				joints.push_back(bodyA);
+				joints.emplace_back(std::move(bodyA));
 			}
 		}
 
@@ -611,6 +608,8 @@ namespace octoon
 	bool
 	GamePrefabs::createMaterials(const model::Model& model, model::Materials& materials, const std::string& rootPath) noexcept
 	{
+		materials.reserve(model.get<Model::material>().size());
+
 		for (auto& it : model.get<Model::material>())
 		{
 			it->set(MATKEY_PATH, rootPath);

@@ -98,8 +98,8 @@ namespace octoon
 	SkinnedMorphComponent::onTargetReplace(const std::string& name) noexcept
 	{
 		if (!this->getName().empty())
-			this->removeMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
+			this->tryRemoveMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 		if (!name.empty())
-			this->addMessageListener(name, std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
+			this->tryAddMessageListener(name, std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));
 	}
 }

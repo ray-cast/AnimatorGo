@@ -414,9 +414,9 @@ namespace MysticLit
 	{
 		std::vector<Keyframes<float>> keyframes(it.morph_name.size());
 
-		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() << 1);
 		std::vector<uint32_t> key_to_animation_count(it.morph_init_frame.size());
-		std::vector<uint32_t> key_to_data_index(it.morph_init_frame.size());
+		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() << 1);
+		std::vector<uint32_t> key_to_data_index(it.morph_key_frame.size());
 
 		std::size_t numMorph = it.morph_name.size();
 

@@ -4,6 +4,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
 #include <octoon/game_prefabs.h>
+#include <octoon/image/image.h>
 
 #include <RadeonProRender.h>
 
@@ -41,29 +42,25 @@ namespace octoon
 
 	std::pair<void*, void*>
 	OfflineMeshRendererComponent::createMaterialTextures(const std::string& path) noexcept
-	{
-		auto feature = this->tryGetFeature<OfflineFeature>();
-		if (!feature)
-			return std::make_pair(nullptr, nullptr);
-
-		auto texture = GamePrefabs::instance()->createTexture(path);
-		if (!texture)
-			return std::make_pair(nullptr, nullptr);
-		
+	{	
 		try
 		{
-			std::uint8_t* data;
-			auto desc = texture->getTextureDesc();
-			texture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)& data);
+			auto feature = this->tryGetFeature<OfflineFeature>();
+			if (!feature)
+				return std::make_pair(nullptr, nullptr);
+
+			image::Image image;
+			if (!image.load(path))
+				return std::make_pair(nullptr, nullptr);
 
 			bool hasAlpha = false;
 			std::uint8_t channel = 3;
-			switch (desc.getTexFormat())
+			switch (image.format())
 			{
-			case hal::GraphicsFormat::B8G8R8A8UNorm:
-			case hal::GraphicsFormat::R8G8B8A8UNorm:
-			case hal::GraphicsFormat::B8G8R8A8SRGB:
-			case hal::GraphicsFormat::R8G8B8A8SRGB:
+			case image::Format::B8G8R8A8UNorm:
+			case image::Format::R8G8B8A8SNorm:
+			case image::Format::R8G8B8A8SRGB:
+			case image::Format::B8G8R8A8SRGB:
 				hasAlpha = true;
 				channel = 4;
 				break;
@@ -71,35 +68,36 @@ namespace octoon
 
 			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };
 			rpr_image_desc rgbDesc;
-			rgbDesc.image_width = desc.getWidth();
-			rgbDesc.image_height = desc.getHeight();
+			rgbDesc.image_width = image.width();
+			rgbDesc.image_height = image.height();
 			rgbDesc.image_depth = 1;
-			rgbDesc.image_row_pitch = desc.getWidth() * rgbFormat.num_components;
+			rgbDesc.image_row_pitch = image.width() * rgbFormat.num_components;
 			rgbDesc.image_slice_pitch = rgbDesc.image_row_pitch * rgbDesc.image_height;
 
 			rpr_image_format alphaFormat = { 1, RPR_COMPONENT_TYPE_UINT8 };
 			rpr_image_desc alphaDesc;
-			alphaDesc.image_width = desc.getWidth();
-			alphaDesc.image_height = desc.getHeight();
+			alphaDesc.image_width = image.width();
+			alphaDesc.image_height = image.height();
 			alphaDesc.image_depth = 1;
-			alphaDesc.image_row_pitch = desc.getWidth() * alphaFormat.num_components;
+			alphaDesc.image_row_pitch = image.width() * alphaFormat.num_components;
 			alphaDesc.image_slice_pitch = alphaDesc.image_row_pitch * alphaDesc.image_height;
 
-			std::vector<std::uint8_t> srgb;
+			auto data = image.data();
+
+			std::vector<std::uint8_t> srgb((rgbDesc.image_width * rgbDesc.image_height * rgbFormat.num_components));
 			std::vector<std::uint8_t> alpha;
 
 			if (hasAlpha)
 			{
-				srgb.resize(desc.getWidth() * desc.getHeight() * 3);
-				alpha.resize(desc.getWidth() * desc.getHeight());
+				alpha.resize(alphaDesc.image_width * alphaDesc.image_height * alphaFormat.num_components);
 
 #				pragma omp parallel for num_threads(4)
-				for (std::size_t y = 0; y < desc.getHeight(); y++)
+				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
 				{
-					auto srcHeight = y * desc.getWidth();
-					auto dstHeight = (desc.getHeight() - 1 - y) * desc.getWidth();
+					auto srcHeight = y * rgbDesc.image_width;
+					auto dstHeight = (rgbDesc.image_height - 1 - y) * rgbDesc.image_width;
 
-					for (std::size_t x = 0; x < desc.getWidth(); x++)
+					for (std::size_t x = 0; x < rgbDesc.image_width; x++)
 					{
 						auto dstRGB = (dstHeight + x) * rgbFormat.num_components;
 						auto dstAlpha = (dstHeight + x) * alphaFormat.num_components;
@@ -114,14 +112,12 @@ namespace octoon
 			}
 			else
 			{
-				srgb.resize(desc.getWidth() * desc.getHeight() * 3);
-
-				for (std::size_t y = 0; y < desc.getHeight(); y++)
+				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
 				{
-					auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth()) * rgbFormat.num_components;
-					auto src = y * desc.getWidth() * rgbFormat.num_components;
+					auto dst = ((rgbDesc.image_height - 1 - y) * rgbDesc.image_width) * rgbFormat.num_components;
+					auto src = y * rgbDesc.image_width * rgbFormat.num_components;
 
-					std::memcpy(srgb.data() + dst, data + src, desc.getWidth() * rgbFormat.num_components);
+					std::memcpy(srgb.data() + dst, data + src, rgbDesc.image_width * rgbFormat.num_components);
 				}
 			}
 
@@ -138,13 +134,11 @@ namespace octoon
 			if (alphaImage_)
 				images_.push_back(alphaImage_);
 
-			texture->unmap();
 
 			return std::make_pair(image_, alphaImage_);
 		}
 		catch (...)
 		{
-			texture->unmap();
 			return std::make_pair(nullptr, nullptr);
 		}
 	}

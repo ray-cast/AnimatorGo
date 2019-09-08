@@ -144,13 +144,14 @@ namespace MysticLit
 		}
 	}
 
-	void
+	std::optional<std::string>
 	MysticlitBehaviour::open() noexcept
 	{
 		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
 		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->projectExtensions[0]))
-			fileComponent_->open(filepath.data());
+			return fileComponent_->open(filepath.data());
+		return std::nullopt;
 	}
 
 	void

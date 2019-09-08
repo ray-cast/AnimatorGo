@@ -155,7 +155,7 @@ namespace MysticLit
 		}
 	}
 
-	bool
+	std::optional<std::string>
 	FileComponent::open(const std::string& filepath) noexcept
 	{
 		try
@@ -174,26 +174,30 @@ namespace MysticLit
 
 			for (auto& it : pmm.model)
 			{
-				AnimationClips<float> boneClips;
-				this->setupBoneAnimation(it, boneClips);
-
-				AnimationClip<float> morphClip;
-				this->setupMorphAnimation(it, morphClip);
-
 				auto model = GamePrefabs::instance()->createModel(it.path);
 				if (model)
 				{
+					AnimationClips<float> boneClips;
+					this->setupBoneAnimation(it, boneClips);
+
+					AnimationClip<float> morphClip;
+					this->setupMorphAnimation(it, morphClip);
+
 					model->setName(it.name);
 					model->addComponent<AnimatorComponent>(animation::Animation(boneClips), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms())->sample();
 					model->addComponent<AnimatorComponent>(animation::Animation(morphClip))->sample();
 
 					objects.emplace_back(std::move(model));
 				}
+				else
+				{
+					return std::string(u8"无法找到文件:" + it.path);
+				}
 			}
 
 			auto mainLight = octoon::GameObject::create("DirectionalLight");
 			mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(1.0f);
+			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(2.0f);
 			mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(pmm.main_light.rgb);
 			mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(math::normalize(math::Quaternion(math::float3::Forward, math::normalize(-pmm.main_light.xyz))));
 			objects.push_back(mainLight);
@@ -207,12 +211,12 @@ namespace MysticLit
 			objects.push_back(enviromentLight);
 
 			this->getContext()->profile->entitiesModule->objects = objects;
-			return true;
+			return std::nullopt;
 		}
 		catch (const std::bad_optional_access&)
 		{
 			this->getContext()->behaviour->sendMessage("editor:message:error", "Failed to open the file");
-			return false;
+			return std::nullopt;
 		}
 	}
 

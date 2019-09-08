@@ -6,6 +6,7 @@
 #include "../module/file_module.h"
 
 #include <octoon/octoon.h>
+#include <optional>
 
 namespace MysticLit
 {
@@ -18,7 +19,7 @@ namespace MysticLit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		bool open(const std::string& path) noexcept;
+		std::optional<std::string> open(const std::string& path) noexcept;
 
 		bool importModel(const std::string& path) noexcept;
 		bool exportModel(const std::string& path) noexcept;

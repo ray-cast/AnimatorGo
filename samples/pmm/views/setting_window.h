@@ -20,7 +20,7 @@ class SettingContextPlane final : public QWidget
 {
 	Q_OBJECT
 public:
-	SettingContextPlane(QWidget* parent) noexcept;
+	SettingContextPlane(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept;
 	~SettingContextPlane() noexcept;
 
 public Q_SLOTS:
@@ -29,10 +29,13 @@ public Q_SLOTS:
 
 private:
 	bool m_sign;
+	std::shared_ptr<MysticLit::MysticLitProfile> profile_;
 
 	std::unique_ptr<QListWidget> listWidget_;
 	std::unique_ptr<QListWidgetItem> listWidgetItems_[3];
-	std::unique_ptr<QWidget> widgetItems_[3];
+	std::unique_ptr<SettingMainPlane> mainPlane_;
+	std::unique_ptr<SettingMainPlane2> mainPlane2_;
+	std::unique_ptr<SettingMainPlane3> mainPlane3_;
 	std::unique_ptr<QVBoxLayout> gridLayout_;
 	std::unique_ptr<QScrollArea> scrollArea_;
 	std::unique_ptr<QWidget> scrollWidget_;
@@ -51,7 +54,6 @@ public Q_SLOTS:
 
 private:
 	std::unique_ptr<QVBoxLayout> contextLayout_;
-	std::shared_ptr<MysticLit::MysticLitProfile> profile_;
 
 	std::unique_ptr<SettingTitleWindow> settingTitleWindow_;
 	std::unique_ptr<SettingContextPlane> settingContextPlane_;

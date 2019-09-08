@@ -561,6 +561,9 @@ namespace octoon
 	bool
 	GamePrefabs::createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, const std::string& path) noexcept
 	{
+		if (model.get<Model::mesh>().size() == 0)
+			return false;
+
 		model::Materials materials;
 		if (!this->createMaterials(model, materials, "file:" + runtime::string::directory(path)))
 			return false;

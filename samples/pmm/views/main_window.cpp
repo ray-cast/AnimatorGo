@@ -3,6 +3,7 @@
 #include <qmimedata.h>
 #include <qfiledialog.h>
 #include <qsplashscreen.h>
+#include <qmessagebox.h>
 
 octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
 {
@@ -183,23 +184,15 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-	MysticLit::MysticLitProfile::save("./config/config.conf", *profile_);
-
 	toolBar_.reset();
 	viewPanel_.reset();
+	settingWindow_.reset();
+
+	MysticLit::MysticLitProfile::save("./config/config.conf", *profile_);
+
 	profile_.reset();
-
-	if (behaviour_)
-	{
-		behaviour_.reset();
-		behaviour_ = nullptr;
-	}
-
-	if (gameApp_)
-	{
-		gameApp_.reset();
-		gameApp_ = nullptr;
-	}
+	behaviour_.reset();
+	gameApp_.reset();
 }
 
 void
@@ -222,7 +215,19 @@ void
 MainWindow::onImportSignal() noexcept
 {
 	if (behaviour_)
-		behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->open();
+	{
+		auto error = behaviour_->getComponent<MysticLit::MysticlitBehaviour>()->open();
+		if (error.has_value())
+		{
+			QMessageBox msg(this);
+			msg.setWindowTitle(QString::fromUtf8(u8"´íÎó"));
+			msg.setText(QString::fromUtf8(error.value().c_str()));
+			msg.setIcon(QMessageBox::Information);
+			msg.setStandardButtons(QMessageBox::Ok);
+
+			msg.exec();
+		}
+	}
 }
 
 bool

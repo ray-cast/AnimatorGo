@@ -66,14 +66,14 @@ namespace octoon
 		bool
 		Model::load(const char* filepath, const char* type) noexcept
 		{
-			io::ifstream stream(filepath);
+			io::ifstream stream(filepath, io::ios_base::binary);
 			return this->load(stream, type);
 		}
 
 		bool
 		Model::load(const std::string& filepath, const char* type) noexcept
 		{
-			io::ifstream stream(filepath);
+			io::ifstream stream(filepath, io::ios_base::binary);
 			return this->load(stream, type);
 		}
 

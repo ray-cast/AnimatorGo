@@ -23,9 +23,6 @@ namespace octoon
         virtual ~RigidbodyComponent();
         virtual GameComponentPtr clone() const noexcept;
 
-		void setPosition(const math::float3& position) noexcept;
-		void setRotation(const math::Quaternion& quat) noexcept;
-
         void setAngularVelocity(float v) noexcept;
         void setGravityScale(float scale) noexcept;
         void setMass(float m) noexcept;
@@ -52,6 +49,9 @@ namespace octoon
 		std::uint32_t getGroup() const noexcept;
 		std::uint16_t getGroupMask() const noexcept;
 		RigidbodySleepMode getSleepMode() const noexcept;
+
+		void rotation(const math::Quaternion& quat) noexcept;
+		void movePosition(const math::float3& position) noexcept;
 
 		void wakeUp() noexcept;
 

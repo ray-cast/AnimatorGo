@@ -2,8 +2,9 @@
 #include <qlabel.h>
 #include <qscrollbar.h>
 
-SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
+SettingContextPlane::SettingContextPlane(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept
 	: QWidget(parent)
+	, profile_(profile)
 {
 	this->setObjectName("settingContext");
 
@@ -29,14 +30,14 @@ SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 	scrollWidget_->setFixedWidth(490);
 	scrollWidget_->setStyleSheet("background-color: rgb(40,40,40);");
 
-	widgetItems_[0] = std::make_unique<SettingMainPlane>(scrollWidget_.get());
-	widgetItems_[1] = std::make_unique<SettingMainPlane2>(scrollWidget_.get());
-	widgetItems_[2] = std::make_unique<SettingMainPlane3>(scrollWidget_.get());
+	mainPlane_ = std::make_unique<SettingMainPlane>(scrollWidget_.get());
+	mainPlane2_ = std::make_unique<SettingMainPlane2>(scrollWidget_.get());
+	mainPlane3_ = std::make_unique<SettingMainPlane3>(scrollWidget_.get());
 
 	gridLayout_ = std::make_unique<QVBoxLayout>(scrollWidget_.get());
-	gridLayout_->addWidget(widgetItems_[0].get());
-	gridLayout_->addWidget(widgetItems_[1].get());
-	gridLayout_->addWidget(widgetItems_[2].get());
+	gridLayout_->addWidget(mainPlane_.get());
+	gridLayout_->addWidget(mainPlane2_.get());
+	gridLayout_->addWidget(mainPlane3_.get());
 
 	scrollArea_ = std::make_unique<QScrollArea>(this);
 	scrollArea_->setWidget(scrollWidget_.get());
@@ -50,6 +51,90 @@ SettingContextPlane::SettingContextPlane(QWidget* parent) noexcept
 
 	connect((const QObject*)scrollArea_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(valueChanged(int)));
 	connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+
+	if (profile->canvasModule->width == 320 && profile->canvasModule->height == 240)
+		mainPlane2_->resolutionCombo->setCurrentIndex(0);
+	else if (profile->canvasModule->width == 720 && profile->canvasModule->height == 480)
+		mainPlane2_->resolutionCombo->setCurrentIndex(1);
+	else if (profile->canvasModule->width == 800 && profile->canvasModule->height == 480)
+		mainPlane2_->resolutionCombo->setCurrentIndex(2);
+	else if (profile->canvasModule->width == 1024 && profile->canvasModule->height == 576)
+		mainPlane2_->resolutionCombo->setCurrentIndex(3);
+	else if (profile->canvasModule->width == 1280 && profile->canvasModule->height == 720)
+		mainPlane2_->resolutionCombo->setCurrentIndex(4);
+	else if (profile->canvasModule->width == 1920 && profile->canvasModule->height == 1080)
+		mainPlane2_->resolutionCombo->setCurrentIndex(5);
+
+	if (profile->timeModule->recordFps == 24)
+		mainPlane2_->speedCombo->setCurrentIndex(0);
+	else if (profile->timeModule->recordFps == 30)
+		mainPlane2_->speedCombo->setCurrentIndex(1);
+	else if (profile->timeModule->recordFps == 60)
+		mainPlane2_->speedCombo->setCurrentIndex(2);
+}
+
+SettingContextPlane::~SettingContextPlane()
+{
+	switch (mainPlane2_->resolutionCombo->currentIndex())
+	{
+		case 0:
+		{
+			profile_->canvasModule->width = 320;
+			profile_->canvasModule->height = 240;
+		}
+		break;
+		case 1:
+		{
+			profile_->canvasModule->width = 720;
+			profile_->canvasModule->height = 480;
+		}
+		break;
+		case 2:
+		{
+			profile_->canvasModule->width = 800;
+			profile_->canvasModule->height = 480;
+		}
+		break;
+		case 3:
+		{
+			profile_->canvasModule->width = 1024;
+			profile_->canvasModule->height = 576;
+		}
+		break;
+		case 4:
+		{
+			profile_->canvasModule->width = 1280;
+			profile_->canvasModule->height = 720;
+		}
+		break;
+		case 5:
+		{
+			profile_->canvasModule->width = 1920;
+			profile_->canvasModule->height = 1080;
+		}
+		break;
+	}
+
+	switch (mainPlane2_->speedCombo->currentIndex())
+	{
+	case 0:
+		profile_->timeModule->recordFps == 24;
+	break;
+	case 1:
+		profile_->timeModule->recordFps == 30;
+	break;
+	case 2:
+		profile_->timeModule->recordFps == 60;
+	break;
+	}
+
+	mainPlane_.reset();
+	mainPlane2_.reset();
+	mainPlane3_.reset();
+	gridLayout_.reset();
+	scrollWidget_.reset();
+	scrollArea_.reset();
+	layout_.reset();
 }
 
 void
@@ -96,25 +181,12 @@ SettingContextPlane::itemClicked(QListWidgetItem* item)
 	}
 }
 
-SettingContextPlane::~SettingContextPlane()
-{
-	for (auto& it : widgetItems_)
-		it.reset();
-
-	gridLayout_.reset();
-	scrollWidget_.reset();
-	scrollArea_.reset();
-	layout_.reset();
-}
-
 SettingWindow::SettingWindow(const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept
 	: settingTitleWindow_(std::make_unique<SettingTitleWindow>(this))
-	, settingContextPlane_(std::make_unique<SettingContextPlane>(this))
-	, profile_(profile)
+	, settingContextPlane_(std::make_unique<SettingContextPlane>(this, profile))
 {
 	this->setObjectName("settingWidget");
 	this->setWindowFlags(Qt::FramelessWindowHint);
-	this->setGeometry(178, 178, 284, 132);
 	this->setWindowModality(Qt::ApplicationModal);
 	this->setMouseTracking(true);
 

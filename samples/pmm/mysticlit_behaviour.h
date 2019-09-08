@@ -23,7 +23,7 @@ namespace MysticLit
 		MysticlitBehaviour(const std::shared_ptr<MysticLitProfile>& profile) noexcept;
 		~MysticlitBehaviour() noexcept;
 
-		void open() noexcept;
+		std::optional<std::string> open() noexcept;
 		void save() noexcept;
 		void saveAs() noexcept;
 		void close() noexcept;

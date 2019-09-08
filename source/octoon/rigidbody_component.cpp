@@ -42,15 +42,25 @@ namespace octoon
     }
 
 	void
-	RigidbodyComponent::setPosition(const math::float3& position) noexcept
+	RigidbodyComponent::movePosition(const math::float3& position) noexcept
 	{
-		position_ = position;
+		if (position_ != position)
+		{
+			if (rigidbody_)
+				rigidbody_->setPosition(position);
+			position_ = position;
+		}
 	}
 
 	void
-	RigidbodyComponent::setRotation(const math::Quaternion& quat) noexcept
+	RigidbodyComponent::rotation(const math::Quaternion& quat) noexcept
 	{
-		rotation_ = quat;
+		if (rotation_ != quat)
+		{
+			if (rigidbody_)
+				rigidbody_->setRotation(quat);
+			rotation_ = quat;
+		}
 	}
 
 	void
@@ -345,6 +355,8 @@ namespace octoon
 		if (rigidbody_ && isKinematic_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
+			rotation_ = transform->getQuaternion();
+			position_ = transform->getTranslate();
 			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
 		}
 	}
@@ -359,8 +371,8 @@ namespace octoon
 
 			physics::PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
-			desc.translate = transform->getTranslate();
-			desc.rotation = transform->getQuaternion();
+			desc.translate = position_ = transform->getTranslate();
+			desc.rotation = rotation_ = transform->getQuaternion();
 			desc.mass = mass_;
 
 			rigidbody_ = physicsFeature->getContext()->createRigidbody(desc);

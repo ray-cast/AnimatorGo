@@ -216,3 +216,6 @@ QListWidget::Item:selected{
 QComboBox {
 	max-width: 120px;
 }
+QComboBox:editable {
+    background: white;
+}

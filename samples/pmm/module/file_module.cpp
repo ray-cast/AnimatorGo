@@ -22,4 +22,14 @@ namespace MysticLit
 		this->videoExtensions = { "264" };
 		this->hdriExtensions = { "hdr", "hdri" };
 	}
+
+	void 
+	FileModule::load(octoon::runtime::json& reader) noexcept
+	{
+	}
+
+	void 
+	FileModule::save(octoon::runtime::json& writer) noexcept
+	{
+	}
 }

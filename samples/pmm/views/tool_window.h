@@ -9,12 +9,13 @@
 #include <qlabel.h>
 #include <QtGui/qevent.h>
 #include <qdockwidget.h>
+#include "mysticLit_profile.h"
 
 class ToolBar final : public QWidget
 {
 	Q_OBJECT
 public:
-	ToolBar(QWidget* parent) noexcept;
+	ToolBar(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept;
 	~ToolBar() noexcept;
 
 private Q_SLOTS:

@@ -123,16 +123,18 @@ octoon::input::InputKey::Code KeyCodetoInputKey(int key) noexcept
 }
 
 MainWindow::MainWindow()
-	: titleBar_(std::make_unique<TitleBar>(this))
-	, viewPanel_(std::make_unique<ViewWidget>(this))
-	, toolBar_(std::make_unique<ToolBar>(this))
-	, hideBar_(std::make_unique<HideBar>(this))
-	, init_flag(false)
+	: init_flag(false)
+	, profile_(MysticLit::MysticLitProfile::load("./config/config.conf"))
 {
 	this->setFrameShape(Panel);
 	this->setObjectName("mainWindow");
 	this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
+
+	titleBar_ = std::make_unique<TitleBar>(this);
+	hideBar_ = std::make_unique<HideBar>(this);
+	toolBar_ = std::make_unique<ToolBar>(this, profile_);
+	viewPanel_ = std::make_unique<ViewWidget>(this, profile_);
 
 	mainLayout_ = std::make_unique<QHBoxLayout>(this);
 	mainLayout_->setMargin(0);
@@ -181,6 +183,8 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+	MysticLit::MysticLitProfile::save("./config/config.conf", *profile_);
+
 	if (behaviour_)
 	{
 		behaviour_.reset();
@@ -311,7 +315,11 @@ MainWindow::onScreenShotSignal() noexcept
 	{
 		auto behaviour = behaviour_->getComponent<MysticLit::MysticlitBehaviour>();
 		if (behaviour->isOpen())
-			behaviour->renderPicture();
+		{
+			QString fileName = QFileDialog::getSaveFileName(this, u8"±£´æÍ¼Ïñ", "", tr("PNG Files (*.png)"));
+			if (!fileName.isEmpty())
+				behaviour->renderPicture(fileName.toUtf8().data());
+		}
 	}
 }
 
@@ -376,7 +384,7 @@ MainWindow::onImportHdriSignal(bool enable) noexcept
 void
 MainWindow::onSettingSignal() noexcept
 {
-	settingWindow_ = std::make_unique<SettingWindow>();
+	settingWindow_ = std::make_unique<SettingWindow>(profile_);
 	settingWindow_->move(this->pos().x() + (this->width() - settingWindow_->width()) / 2, this->pos().y() + (this->height() - settingWindow_->height()) / 2);
 	settingWindow_->show();
 }
@@ -390,6 +398,11 @@ MainWindow::onCleanupSignal() noexcept
 		if (behaviour->isOpen())
 			behaviour->close();
 	}
+}
+
+void
+MainWindow::onProfileSignal(const MysticLit::MysticLitProfile& profile) noexcept
+{
 }
 
 void
@@ -530,7 +543,7 @@ MainWindow::open(int w, int h) noexcept
 		gameApp_->setActive(true);
 
 		behaviour_ = octoon::GameObject::create();
-		behaviour_->addComponent<MysticLit::MysticlitBehaviour>();
+		behaviour_->addComponent<MysticLit::MysticlitBehaviour>(profile_);
 
 		return true;
 	}

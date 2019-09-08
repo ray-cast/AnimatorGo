@@ -16,4 +16,14 @@ namespace MysticLit
 	{
 		this->offlineEnable = false;
 	}
+
+	void 
+	OfflineModule::load(octoon::runtime::json& reader) noexcept
+	{
+	}
+
+	void 
+	OfflineModule::save(octoon::runtime::json& writer) noexcept
+	{
+	}
 }

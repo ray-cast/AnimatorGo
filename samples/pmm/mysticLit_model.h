@@ -1,6 +1,8 @@
 #ifndef MYSTICLIT_MODEL_H_
 #define MYSTICLIT_MODEL_H_
 
+#include <octoon/runtime/json.h>
+
 namespace MysticLit
 {
 	class MysticLitModule
@@ -14,6 +16,9 @@ namespace MysticLit
 
 		virtual void reset() noexcept = 0;
 		virtual void onValidate() noexcept;
+
+		virtual void load(octoon::runtime::json& reader) noexcept = 0;
+		virtual void save(octoon::runtime::json& reader) noexcept = 0;
 
 	private:
 		MysticLitModule(const MysticLitModule&) = delete;

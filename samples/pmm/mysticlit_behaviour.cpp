@@ -10,6 +10,11 @@ namespace MysticLit
 	{
 	}
 
+	MysticlitBehaviour::MysticlitBehaviour(const std::shared_ptr<MysticLitProfile>& profile) noexcept
+		: profile_(profile)
+	{
+	}
+
 	MysticlitBehaviour::~MysticlitBehaviour() noexcept
 	{
 	}
@@ -61,7 +66,8 @@ namespace MysticLit
 	void
 	MysticlitBehaviour::onActivate() noexcept
 	{
-		profile_ = MysticLitProfile::load("sys:config/config.conf");
+		if (!profile_)
+			profile_ = MysticLitProfile::load("sys:config/config.conf");
 
 		context_ = std::make_shared<MysticLitContext>();
 		context_->behaviour = this;
@@ -217,23 +223,18 @@ namespace MysticLit
 	}
 
 	void
-	MysticlitBehaviour::renderPicture() noexcept
+	MysticlitBehaviour::renderPicture(const std::string& filepath) noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
-		std::string filepath(pathLimits, 0);
-		if (fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->imageExtensions[0]))
+		canvasComponent_->setActive(true);
+		denoiseComponent_->setActive(true);
+
+		for (auto& it : components_)
 		{
-			canvasComponent_->setActive(true);
-			denoiseComponent_->setActive(true);
-
-			for (auto& it : components_)
-			{
-				if (it->getActive())
-					it->onPostProcess();
-			}
-
-			canvasComponent_->save(filepath);
+			if (it->getActive())
+				it->onPostProcess();
 		}
+
+		canvasComponent_->save(filepath);
 	}
 
 	void

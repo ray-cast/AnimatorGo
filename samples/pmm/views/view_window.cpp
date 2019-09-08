@@ -1,7 +1,7 @@
 #include "views/view_window.h"
 #include "mysticlit_behaviour.h"
 
-ViewWidget::ViewWidget(QWidget* parent) noexcept
+ViewWidget::ViewWidget(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept
 	: QWidget()
 	, timer(std::make_unique<QTimer>(this))
 {
@@ -12,6 +12,7 @@ ViewWidget::ViewWidget(QWidget* parent) noexcept
 	this->setUpdatesEnabled(false);
 	this->setAcceptDrops(true);
 	this->connect(timer.get(), SIGNAL(timeout()), this, SLOT(updateEvent()));
+	this->setFixedSize(profile->canvasModule->width, profile->canvasModule->height);
 
 	timer->start();
 }

@@ -1,6 +1,6 @@
 #include "tool_window.h"
 
-ToolBar::ToolBar(QWidget* parent) noexcept
+ToolBar::ToolBar(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept
 	: gpuEnable_(false)
 	, playEnable_(false)
 	, recordEnable_(false)

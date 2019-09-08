@@ -14,6 +14,7 @@
 
 #include "setting_main_plane.h"
 #include "setting_title_window.h"
+#include "mysticlit_behaviour.h"
 
 class SettingContextPlane final : public QWidget
 {
@@ -28,6 +29,7 @@ public Q_SLOTS:
 
 private:
 	bool m_sign;
+
 	std::unique_ptr<QListWidget> listWidget_;
 	std::unique_ptr<QListWidgetItem> listWidgetItems_[3];
 	std::unique_ptr<QWidget> widgetItems_[3];
@@ -41,7 +43,7 @@ class SettingWindow final : public QWidget
 {
 	Q_OBJECT
 public:
-	SettingWindow() noexcept;
+	SettingWindow(const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept;
 	~SettingWindow() noexcept;
 
 public Q_SLOTS:
@@ -49,6 +51,7 @@ public Q_SLOTS:
 
 private:
 	std::unique_ptr<QVBoxLayout> contextLayout_;
+	std::shared_ptr<MysticLit::MysticLitProfile> profile_;
 
 	std::unique_ptr<SettingTitleWindow> settingTitleWindow_;
 	std::unique_ptr<SettingContextPlane> settingContextPlane_;

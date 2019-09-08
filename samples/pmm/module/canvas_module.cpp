@@ -22,4 +22,18 @@ namespace MysticLit
 		this->colorBuffer.resize(this->width * this->height);
 		this->outputBuffer.resize(this->width * this->height);
 	}
+
+	void 
+	CanvasModule::load(octoon::runtime::json& reader) noexcept
+	{
+		this->width = reader["width"];
+		this->height = reader["height"];
+	}
+
+	void 
+	CanvasModule::save(octoon::runtime::json& reader) noexcept
+	{
+		reader["width"] = this->width;
+		reader["height"] = this->height;
+	}
 }

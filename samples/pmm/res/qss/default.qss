@@ -14,8 +14,8 @@ QWidget#toolWidget{
 	max-width:42;
 }
 QWidget#viewWidget{
-	min-width:1280;
-	min-height:720;
+	width:1280;
+	height:720;
 }
 QLabel{
 	color: rgb(255,255,255);

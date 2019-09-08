@@ -18,4 +18,14 @@ namespace MysticLit
 		this->objects.clear();
 		this->objects.shrink_to_fit();
 	}
+
+	void 
+	EntitiesModule::load(octoon::runtime::json& reader) noexcept
+	{
+	}
+
+	void 
+	EntitiesModule::save(octoon::runtime::json& reader) noexcept
+	{
+	}
 }

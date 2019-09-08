@@ -6,6 +6,7 @@
 #include "tool_window.h"
 #include "hide_window.h"
 #include "setting_window.h"
+#include "mysticLit_profile.h"
 
 class MainWindow final : public QFrame
 {
@@ -27,6 +28,7 @@ private Q_SLOTS:
 	bool onImportHdriSignal(bool enable) noexcept;
 	void onSettingSignal() noexcept;
 	void onCleanupSignal() noexcept;
+	void onProfileSignal(const MysticLit::MysticLitProfile& profile) noexcept;
 
 	void onPaintSignal(QPaintEvent* e) noexcept;
 	void onResizeSignal(QResizeEvent* e) noexcept;
@@ -52,6 +54,7 @@ private:
 	octoon::GameObjectPtr behaviour_;
 
 	std::unique_ptr<QTimer> timer;
+	std::shared_ptr<MysticLit::MysticLitProfile> profile_;
 
 	std::unique_ptr<ToolBar> toolBar_;
 	std::unique_ptr<TitleBar> titleBar_;

@@ -14,6 +14,9 @@ namespace MysticLit
 
 		virtual void reset() noexcept override;
 
+		virtual void load(octoon::runtime::json& reader) noexcept override;
+		virtual void save(octoon::runtime::json& reader) noexcept override;
+
 	private:
 		FileModule(const FileModule&) = delete;
 		FileModule& operator=(const FileModule&) = delete;

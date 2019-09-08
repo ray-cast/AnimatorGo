@@ -13,6 +13,9 @@ namespace MysticLit
 
 		virtual void reset() noexcept override;
 
+		virtual void load(octoon::runtime::json& reader) noexcept override;
+		virtual void save(octoon::runtime::json& reader) noexcept override;
+
 	private:
 		DenoiseModule(const DenoiseModule&) = delete;
 		DenoiseModule& operator=(const DenoiseModule&) = delete;

@@ -20,6 +20,7 @@ namespace MysticLit
 		OctoonDeclareSubClass(MysticlitBehaviour, octoon::GameComponent)
 	public:
 		MysticlitBehaviour() noexcept;
+		MysticlitBehaviour(const std::shared_ptr<MysticLitProfile>& profile) noexcept;
 		~MysticlitBehaviour() noexcept;
 
 		void open() noexcept;
@@ -45,7 +46,7 @@ namespace MysticLit
 		void loadHDRi(const std::string& path) noexcept;
 		void clearHDRi() noexcept;
 
-		void renderPicture() noexcept;
+		void renderPicture(const std::string& path) noexcept;
 
 		void addComponent(IMysticLitComponent* component) noexcept;
 		void removeComponent(const IMysticLitComponent* component) noexcept;
@@ -65,7 +66,7 @@ namespace MysticLit
 		void onFixedUpdate() noexcept override;
 
 	private:
-		std::unique_ptr<MysticLitProfile> profile_;
+		std::shared_ptr<MysticLitProfile> profile_;
 		std::shared_ptr<MysticLitContext> context_;
 
 		std::unique_ptr<FileComponent> fileComponent_;

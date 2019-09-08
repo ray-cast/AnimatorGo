@@ -19,4 +19,18 @@ namespace MysticLit
 		this->recordSolverIterationCounts = 10;
 		this->previewSolverIterationCounts = 1;
 	}
+
+	void 
+	PhysicsModule::load(octoon::runtime::json& reader) noexcept
+	{
+		this->playSolverIterationCounts = reader["playSolverIterationCounts"];
+		this->recordSolverIterationCounts = reader["recordSolverIterationCounts"];
+	}
+
+	void 
+	PhysicsModule::save(octoon::runtime::json& reader) noexcept
+	{
+		reader["playSolverIterationCounts"] = this->playSolverIterationCounts;
+		reader["recordSolverIterationCounts"] = this->recordSolverIterationCounts;
+	}
 }

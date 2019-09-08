@@ -107,9 +107,10 @@ SettingContextPlane::~SettingContextPlane()
 	layout_.reset();
 }
 
-SettingWindow::SettingWindow() noexcept
+SettingWindow::SettingWindow(const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept
 	: settingTitleWindow_(std::make_unique<SettingTitleWindow>(this))
 	, settingContextPlane_(std::make_unique<SettingContextPlane>(this))
+	, profile_(profile)
 {
 	this->setObjectName("settingWidget");
 	this->setWindowFlags(Qt::FramelessWindowHint);

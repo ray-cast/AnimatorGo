@@ -6,12 +6,13 @@
 #include <qdrag.h>
 
 #include <octoon/octoon.h>
+#include "mysticLit_profile.h"
 
 class ViewWidget final : public QWidget
 {
 	Q_OBJECT
 public:
-	ViewWidget(QWidget* parent = nullptr) noexcept;
+	ViewWidget(QWidget* parent, const std::shared_ptr<MysticLit::MysticLitProfile>& profile) noexcept;
 	~ViewWidget() noexcept;
 
 private Q_SLOTS:

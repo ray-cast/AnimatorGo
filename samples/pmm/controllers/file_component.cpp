@@ -342,9 +342,9 @@ namespace MysticLit
 			translateX[i].reserve(count);
 			translateY[i].reserve(count);
 			translateZ[i].reserve(count);
-			rotationX[i].reserve(count * 10);
-			rotationY[i].reserve(count * 10);
-			rotationZ[i].reserve(count * 10);
+			rotationX[i].reserve(count * 20);
+			rotationY[i].reserve(count * 20);
+			rotationZ[i].reserve(count * 20);
 		}
 
 		for (std::size_t i = 0; i < it.bone_init_frame.size(); i++)
@@ -378,11 +378,11 @@ namespace MysticLit
 
 			auto index = key_to_data_index[i];
 
-			for (std::size_t i = 1; i <= (key.frame - keyLast.frame) * 10; i++)
+			for (std::size_t i = 1; i <= (key.frame - keyLast.frame) * 20; i++)
 			{
-				auto t = i / ((key.frame - keyLast.frame) * 10.0f);
+				auto t = i / ((key.frame - keyLast.frame) * 20.0f);
 				auto euler = math::eulerAngles(math::slerp(keyLast.quaternion, key.quaternion, interpolationRotation->interpolator(t)));
-				auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 10.0f) * i;
+				auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 20.0f) * i;
 
 				rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
 				rotationY[index].emplace_back((float)frame / 30.0f, euler.y);

@@ -5,6 +5,8 @@
 #include <octoon/offline_listener.h>
 #include <octoon/hal/graphics_framebuffer.h>
 
+#include <unordered_map>
+
 namespace octoon
 {
 	class OCTOON_EXPORT OfflineFeature final : public GameFeature
@@ -33,6 +35,8 @@ namespace octoon
 		void readColorFramebuffer(void* dst) noexcept;
 		void readNormalFramebuffer(void* dst) noexcept;
 		void readAlbedoFramebuffer(void* dst) noexcept;
+
+		std::pair<void*, void*> createMaterialTextures(const std::string& path) noexcept;
 
 	private:
 		void onActivate() except override;
@@ -68,6 +72,7 @@ namespace octoon
 		std::uint32_t framebuffer_h_;
 
 		std::vector<OfflineListener*> listener_;
+		std::unordered_map<std::string, std::pair<void*, void*>> images_;
 	};
 }
 

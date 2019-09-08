@@ -4,7 +4,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
 #include <octoon/game_prefabs.h>
-#include <octoon/image/image.h>
 
 #include <RadeonProRender.h>
 
@@ -38,122 +37,6 @@ namespace octoon
 
 	OfflineMeshRendererComponent::~OfflineMeshRendererComponent() noexcept
 	{
-	}
-
-	std::pair<void*, void*>
-	OfflineMeshRendererComponent::createMaterialTextures(const std::string& path) noexcept
-	{	
-		try
-		{
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (!feature)
-				return std::make_pair(nullptr, nullptr);
-
-			image::Image image;
-			if (!image.load(path))
-				return std::make_pair(nullptr, nullptr);
-
-			bool hasAlpha = false;
-			std::uint8_t channel = 3;
-			switch (image.format())
-			{
-			case image::Format::B8G8R8A8UNorm:
-			case image::Format::R8G8B8A8SNorm:
-			case image::Format::R8G8B8A8SRGB:
-			case image::Format::B8G8R8A8SRGB:
-				hasAlpha = true;
-				channel = 4;
-				break;
-			}
-
-			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };
-			rpr_image_desc rgbDesc;
-			rgbDesc.image_width = image.width();
-			rgbDesc.image_height = image.height();
-			rgbDesc.image_depth = 1;
-			rgbDesc.image_row_pitch = image.width() * rgbFormat.num_components;
-			rgbDesc.image_slice_pitch = rgbDesc.image_row_pitch * rgbDesc.image_height;
-
-			rpr_image_format alphaFormat = { 1, RPR_COMPONENT_TYPE_UINT8 };
-			rpr_image_desc alphaDesc;
-			alphaDesc.image_width = image.width();
-			alphaDesc.image_height = image.height();
-			alphaDesc.image_depth = 1;
-			alphaDesc.image_row_pitch = image.width() * alphaFormat.num_components;
-			alphaDesc.image_slice_pitch = alphaDesc.image_row_pitch * alphaDesc.image_height;
-
-			auto data = image.data();
-
-			std::vector<std::uint8_t> srgb((rgbDesc.image_width * rgbDesc.image_height * rgbFormat.num_components));
-			std::vector<std::uint8_t> alpha;
-
-			if (hasAlpha)
-			{
-				alpha.resize(alphaDesc.image_width * alphaDesc.image_height * alphaFormat.num_components);
-
-#				pragma omp parallel for num_threads(4)
-				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
-				{
-					auto srcHeight = y * rgbDesc.image_width;
-					auto dstHeight = (rgbDesc.image_height - 1 - y) * rgbDesc.image_width;
-
-					for (std::size_t x = 0; x < rgbDesc.image_width; x++)
-					{
-						auto dstRGB = (dstHeight + x) * rgbFormat.num_components;
-						auto dstAlpha = (dstHeight + x) * alphaFormat.num_components;
-						auto src = (srcHeight + x) * 4;
-
-						srgb[dstRGB] = data[src];
-						srgb[dstRGB + 1] = data[src + 1];
-						srgb[dstRGB + 2] = data[src + 2];
-						alpha[dstAlpha] = 255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255.0f;
-					}
-				}
-			}
-			else
-			{
-				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
-				{
-					auto dst = ((rgbDesc.image_height - 1 - y) * rgbDesc.image_width) * rgbFormat.num_components;
-					auto src = y * rgbDesc.image_width * rgbFormat.num_components;
-
-					std::memcpy(srgb.data() + dst, data + src, rgbDesc.image_width * rgbFormat.num_components);
-				}
-			}
-
-			rpr_image image_ = nullptr;
-			rpr_image alphaImage_ = nullptr;
-
-			if (!srgb.empty())
-				rprContextCreateImage(feature->getContext(), rgbFormat, &rgbDesc, srgb.data(), &image_);
-
-			if (!alpha.empty())
-			{
-				hasAlpha = false;
-				for (auto& it : alpha)
-				{
-					if (it > 0)
-					{
-						hasAlpha = true;
-						break;
-					}
-				}
-				
-				if (hasAlpha)
-					rprContextCreateImage(feature->getContext(), alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
-			}
-
-			if (image_)
-				images_.push_back(image_);
-			if (alphaImage_)
-				images_.push_back(alphaImage_);
-
-			return std::make_pair(image_, alphaImage_);
-		}
-		catch (...)
-		{
-			return std::make_pair(nullptr, nullptr);
-		}
 	}
 
 	void
@@ -250,13 +133,13 @@ namespace octoon
 			{
 				rpr_material_node textureNode;
 				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
-				rprMaterialNodeSetInputImageData(textureNode, "data", this->createMaterialTextures(path + normalName).first);
+				rprMaterialNodeSetInputImageData(textureNode, "data", feature->createMaterialTextures(path + normalName).first);
 				rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
 			}
 
 			if (!textureName.empty())
 			{
-				auto image = this->createMaterialTextures(path + textureName);
+				auto image = feature->createMaterialTextures(path + textureName);
 				if (image.first)
 				{
 					rpr_material_node textureNode;
@@ -398,10 +281,6 @@ namespace octoon
 		for (auto& material : materials_)
 			rprObjectDelete(material);
 		materials_.clear();
-
-		for (auto& image : images_)
-			rprObjectDelete(image);
-		images_.clear();
 	}
 
 	void

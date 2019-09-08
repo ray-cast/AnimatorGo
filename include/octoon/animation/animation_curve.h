@@ -98,11 +98,11 @@ namespace octoon
 				return frames.empty();
 			}
 
-			void setTime(const _Time& time) noexcept
+			void setTime(const _Time& _time) noexcept
 			{
 				this->finish = false;
-				this->time = std::clamp(time, frames.front().time, frames.back().time);
-				this->evaluate(time);
+				this->time = std::clamp(_time, frames.front().time, frames.back().time);
+				this->evaluate(_time);
 			}
 
 			const _Elem& evaluate(const _Time& delta) noexcept

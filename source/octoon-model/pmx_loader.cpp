@@ -621,13 +621,9 @@ namespace octoon
 				model.add(std::move(material));
 			}
 
-			math::float4x4s bindposes;
-			for (auto& it : pmx.bones)
-			{
-				float4x4 bindpose;
-				bindpose.makeTranslate(-it.position);
-				bindposes.push_back(bindpose);
-			}
+			math::float4x4s bindposes(pmx.bones.size());
+			for (std::size_t i = 0; i < pmx.bones.size(); i++)
+				bindposes[i].makeTranslate(-pmx.bones[i].position);
 
 			float3s vertices_;
 			float3s normals_;
@@ -751,6 +747,7 @@ namespace octoon
 					morph->morphType = it.morphType;
 					morph->control = it.control;
 					morph->morphCount = it.morphCount;
+					morph->vertices.reserve(it.vertices.size());
 
 					for (auto& v : it.vertices)
 					{

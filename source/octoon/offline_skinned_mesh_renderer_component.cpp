@@ -218,9 +218,7 @@ namespace octoon
 
 		auto numVertices = mesh.getNumVertices();
 
-#if !defined(_DEBUG)
 #		pragma omp parallel for num_threads(4)
-#endif
 		for (std::size_t i = 0; i < numVertices; i++)
 		{
 			math::float3 v = math::float3::Zero;

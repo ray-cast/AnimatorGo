@@ -265,6 +265,15 @@ namespace MysticLit
 		Keyframes<float> rotationZ;
 		Keyframes<float> fov;
 
+		distance.reserve(camera_keyframes.size());
+		eyeX.reserve(camera_keyframes.size());
+		eyeY.reserve(camera_keyframes.size());
+		eyeZ.reserve(camera_keyframes.size());
+		rotationX.reserve(camera_keyframes.size());
+		rotationY.reserve(camera_keyframes.size());
+		rotationZ.reserve(camera_keyframes.size());
+		fov.reserve(camera_keyframes.size());
+
 		for (auto& it : camera_keyframes)
 		{
 			auto interpolationDistance = std::make_shared<PathInterpolator<float>>(it.interpolation_distance[0] / 127.0f, it.interpolation_distance[2] / 127.0f, it.interpolation_distance[1] / 127.0f, it.interpolation_distance[3] / 127.0f);
@@ -300,10 +309,43 @@ namespace MysticLit
 		std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
 		std::vector<Keyframes<float>> translateY(it.bone_init_frame.size());
 		std::vector<Keyframes<float>> translateZ(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size() * 30.0f);
-		std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size() * 30.0f);
-		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size() * 30.0f);
-		std::vector<Keyframes<float>> rotationW(it.bone_init_frame.size());
+		std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size());
+		std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size());
+		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size());
+
+		std::vector<uint32_t> key_to_animation_count(it.bone_init_frame.size());
+		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() << 1);
+		std::vector<uint32_t> key_to_data_index(it.bone_key_frame.size());
+
+		std::size_t numBone = it.bone_name.size();
+
+		for (int i = 0; i < it.bone_key_frame.size(); i++)
+		{
+			auto index = it.bone_key_frame[i].data_index;
+			if (index >= key_to_array_index.size())
+				key_to_array_index.resize(index + 1);
+			key_to_array_index[index] = i;
+		}
+
+		for (int i = 0; i < it.bone_key_frame.size(); i++)
+		{
+			auto index = it.bone_key_frame[i].pre_index;
+			while (index >= numBone)
+				index = it.bone_key_frame[key_to_array_index[index]].pre_index;
+			key_to_data_index[i] = index;
+			key_to_animation_count[index]++;
+		}
+
+		for (std::size_t i = 0; i < key_to_animation_count.size(); i++)
+		{
+			auto count = key_to_animation_count[i] + 1;
+			translateX[i].reserve(count);
+			translateY[i].reserve(count);
+			translateZ[i].reserve(count);
+			rotationX[i].reserve(count * 10);
+			rotationY[i].reserve(count * 10);
+			rotationZ[i].reserve(count * 10);
+		}
 
 		for (std::size_t i = 0; i < it.bone_init_frame.size(); i++)
 		{
@@ -324,39 +366,23 @@ namespace MysticLit
 			rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
 		}
 
-		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() << 1);
-
 		for (int i = 0; i < it.bone_key_frame.size(); i++)
 		{
-			auto index = it.bone_key_frame[i].data_index;
-			if (index >= key_to_array_index.size())
-				key_to_array_index.resize(index + 1);
-			key_to_array_index[index] = i;
-		}
-
-		for (auto& key : it.bone_key_frame)
-		{
-			auto index = key.pre_index;
-			while (index >= it.bone_name.size())
-				index = it.bone_key_frame[key_to_array_index[index]].pre_index;
-
-			auto frameB = key;
-			auto frameA = PmmKeyframeBone();
-			if (key.pre_index < it.bone_name.size())
-				frameA = it.bone_init_frame[key.pre_index];
-			else
-				frameA = it.bone_key_frame[key_to_array_index[key.pre_index]];
+			auto& key = it.bone_key_frame[i];
+			auto& keyLast = key.pre_index < numBone ? it.bone_init_frame[key.pre_index] : it.bone_key_frame[key_to_array_index[key.pre_index]];
 
 			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
 			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
 			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(frameA.interpolation_rotation[0] / 127.0f, frameA.interpolation_rotation[2] / 127.0f, frameA.interpolation_rotation[1] / 127.0f, frameA.interpolation_rotation[3] / 127.0f);
+			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(keyLast.interpolation_rotation[0] / 127.0f, keyLast.interpolation_rotation[2] / 127.0f, keyLast.interpolation_rotation[1] / 127.0f, keyLast.interpolation_rotation[3] / 127.0f);
 
-			for (std::size_t i = 1; i <= (frameB.frame - frameA.frame) * 30; i++)
+			auto index = key_to_data_index[i];
+
+			for (std::size_t i = 1; i <= (key.frame - keyLast.frame) * 10; i++)
 			{
-				auto t = i / ((frameB.frame - frameA.frame) * 30.0f);
-				auto euler = math::eulerAngles(math::slerp(frameA.quaternion, frameB.quaternion, interpolationRotation->interpolator(t)));
-				auto frame = frameA.frame + (frameB.frame - frameA.frame) / ((frameB.frame - frameA.frame) * 30.0f) * i;
+				auto t = i / ((key.frame - keyLast.frame) * 10.0f);
+				auto euler = math::eulerAngles(math::slerp(keyLast.quaternion, key.quaternion, interpolationRotation->interpolator(t)));
+				auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 10.0f) * i;
 
 				rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
 				rotationY[index].emplace_back((float)frame / 30.0f, euler.y);
@@ -388,13 +414,11 @@ namespace MysticLit
 	{
 		std::vector<Keyframes<float>> keyframes(it.morph_name.size());
 
-		for (std::size_t i = 0; i < it.morph_init_frame.size(); i++)
-		{
-			auto& key = it.morph_init_frame[i];
-			keyframes[i].emplace_back((float)key.frame / 30.0f, key.value);
-		}
-
 		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() << 1);
+		std::vector<uint32_t> key_to_animation_count(it.morph_init_frame.size());
+		std::vector<uint32_t> key_to_data_index(it.morph_init_frame.size());
+
+		std::size_t numMorph = it.morph_name.size();
 
 		for (int i = 0; i < it.morph_key_frame.size(); i++)
 		{
@@ -404,13 +428,30 @@ namespace MysticLit
 			key_to_array_index[index] = i;
 		}
 
-		for (auto& key : it.morph_key_frame)
+		for (int i = 0; i < it.morph_key_frame.size(); i++)
 		{
-			auto index = key.pre_index;
-			while (index >= it.morph_name.size())
+			auto index = it.morph_key_frame[i].pre_index;
+			while (index >= numMorph)
 				index = it.morph_key_frame[key_to_array_index[index]].pre_index;
+			key_to_data_index[i] = index;
+			key_to_animation_count[index]++;
+		}
 
-			keyframes[index].emplace_back((float)key.frame / 30.0f, key.value);
+		for (std::size_t i = 0; i < it.morph_name.size(); i++)
+		{
+			keyframes[i].reserve(key_to_animation_count[i] + 1);
+		}
+
+		for (std::size_t i = 0; i < it.morph_init_frame.size(); i++)
+		{
+			auto& key = it.morph_init_frame[i];
+			keyframes[i].emplace_back((float)key.frame / 30.0f, key.value);
+		}
+
+		for (int i = 0; i < it.morph_key_frame.size(); i++)
+		{
+			auto& key = it.morph_key_frame[i];
+			keyframes[key_to_data_index[i]].emplace_back((float)key.frame / 30.0f, key.value);
 		}
 
 		for (std::size_t i = 0; i < it.morph_name.size(); i++)

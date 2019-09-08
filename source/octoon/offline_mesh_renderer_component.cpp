@@ -93,13 +93,17 @@ namespace octoon
 				srgb.resize(desc.getWidth() * desc.getHeight() * 3);
 				alpha.resize(desc.getWidth() * desc.getHeight());
 
+#				pragma omp parallel for num_threads(4)
 				for (std::size_t y = 0; y < desc.getHeight(); y++)
 				{
+					auto srcHeight = y * desc.getWidth();
+					auto dstHeight = (desc.getHeight() - 1 - y) * desc.getWidth();
+
 					for (std::size_t x = 0; x < desc.getWidth(); x++)
 					{
-						auto dstRGB = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * rgbFormat.num_components;
-						auto dstAlpha = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * alphaFormat.num_components;
-						auto src = (y * desc.getWidth() + x) * 4;
+						auto dstRGB = (dstHeight + x) * rgbFormat.num_components;
+						auto dstAlpha = (dstHeight + x) * alphaFormat.num_components;
+						auto src = (srcHeight + x) * 4;
 
 						srgb[dstRGB] = data[src];
 						srgb[dstRGB + 1] = data[src + 1];
@@ -114,14 +118,10 @@ namespace octoon
 
 				for (std::size_t y = 0; y < desc.getHeight(); y++)
 				{
-					for (std::size_t x = 0; x < desc.getWidth(); x++)
-					{
-						auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth() + x) * rgbFormat.num_components;
-						auto src = (y * desc.getWidth() + x) * rgbFormat.num_components;
+					auto dst = ((desc.getHeight() - 1 - y) * desc.getWidth()) * rgbFormat.num_components;
+					auto src = y * desc.getWidth() * rgbFormat.num_components;
 
-						for (std::uint8_t i = 0; i < rgbFormat.num_components; i++)
-							srgb[dst + i] = data[src + i];
-					}
+					std::memcpy(srgb.data() + dst, data + src, desc.getWidth() * rgbFormat.num_components);
 				}
 			}
 

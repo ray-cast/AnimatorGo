@@ -202,31 +202,31 @@ namespace octoon
 			for (auto& curve : animation_.clips[i].curves)
 			{
 				if (curve.first == "LocalPosition.x")
-					translate.x = curve.second.key.value + bindpose_[i].x;
+					translate.x = curve.second.value + bindpose_[i].x;
 				else if (curve.first == "LocalPosition.y")
-					translate.y = curve.second.key.value + bindpose_[i].y;
+					translate.y = curve.second.value + bindpose_[i].y;
 				else if (curve.first == "LocalPosition.z")
-					translate.z = curve.second.key.value + bindpose_[i].z;
+					translate.z = curve.second.value + bindpose_[i].z;
 				else if (curve.first == "LocalScale.x")
-					scale.x = curve.second.key.value;
+					scale.x = curve.second.value;
 				else if (curve.first == "LocalScale.y")
-					scale.y = curve.second.key.value;
+					scale.y = curve.second.value;
 				else if (curve.first == "LocalScale.z")
-					scale.z = curve.second.key.value;
+					scale.z = curve.second.value;
 				else if (curve.first == "LocalRotation.x")
-					quat.x = curve.second.key.value;
+					quat.x = curve.second.value;
 				else if (curve.first == "LocalRotation.y")
-					quat.y = curve.second.key.value;
+					quat.y = curve.second.value;
 				else if (curve.first == "LocalRotation.z")
-					quat.z = curve.second.key.value;
+					quat.z = curve.second.value;
 				else if (curve.first == "LocalRotation.w")
-					quat.w = curve.second.key.value;
+					quat.w = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.x")
-					euler.x = curve.second.key.value;
+					euler.x = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.y")
-					euler.y = curve.second.key.value;
+					euler.y = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.z")
-					euler.z = curve.second.key.value;
+					euler.z = curve.second.value;
 			}
 
 			transform->setLocalScale(scale);
@@ -255,35 +255,35 @@ namespace octoon
 			for (auto& curve : clip.curves)
 			{
 				if (curve.first == "LocalScale.x")
-					scale.x = curve.second.key.value;
+					scale.x = curve.second.value;
 				else if (curve.first == "LocalScale.y")
-					scale.y = curve.second.key.value;
+					scale.y = curve.second.value;
 				else if (curve.first == "LocalScale.z")
-					scale.z = curve.second.key.value;
+					scale.z = curve.second.value;
 				else if (curve.first == "LocalPosition.x")
-					translate.x = curve.second.key.value;
+					translate.x = curve.second.value;
 				else if (curve.first == "LocalPosition.y")
-					translate.y = curve.second.key.value;
+					translate.y = curve.second.value;
 				else if (curve.first == "LocalPosition.z")
-					translate.z = curve.second.key.value;
+					translate.z = curve.second.value;
 				else if (curve.first == "LocalRotation.x")
-					quat.x = curve.second.key.value;
+					quat.x = curve.second.value;
 				else if (curve.first == "LocalRotation.y")
-					quat.y = curve.second.key.value;
+					quat.y = curve.second.value;
 				else if (curve.first == "LocalRotation.z")
-					quat.z = curve.second.key.value;
+					quat.z = curve.second.value;
 				else if (curve.first == "LocalRotation.w")
-					quat.w = curve.second.key.value;
+					quat.w = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.x")
-					euler.x = curve.second.key.value;
+					euler.x = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.y")
-					euler.y = curve.second.key.value;
+					euler.y = curve.second.value;
 				else if (curve.first == "LocalEulerAnglesRaw.z")
-					euler.z = curve.second.key.value;
+					euler.z = curve.second.value;
 				else if (curve.first == "Transform:move")
-					move = curve.second.key.value;
+					move = curve.second.value;
 				else
-					this->sendMessage(curve.first, curve.second.key.value);
+					this->sendMessage(curve.first, curve.second.value);
 			}
 
 			auto rotation = math::Quaternion(euler);

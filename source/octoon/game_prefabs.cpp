@@ -666,13 +666,9 @@ namespace octoon
 			if (it != textureCaches_.end())
 				return (*it).second;
 
-			ivstream stream;
-			if (!stream.open(path))
-				throw runtime::runtime_error::create("Failed to open file :" + path);
-
 			Image image;
-			if (!image.load(stream))
-				throw runtime::runtime_error::create("Unknown stream:" + path);
+			if (!image.load(path))
+				throw runtime::runtime_error::create("Failed to open file :" + path);
 
 			GraphicsFormat format = GraphicsFormat::Undefined;
 			switch (image.format())

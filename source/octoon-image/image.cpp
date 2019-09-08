@@ -1,7 +1,7 @@
 #include <octoon/image/image.h>
 #include <octoon/image/image_util.h>
 #include <octoon/runtime/except.h>
-#include <octoon/io/fstream.h>
+#include <octoon/io/vstream.h>
 
 #include "image_all.h"
 
@@ -333,14 +333,14 @@ namespace octoon
 		bool
 		Image::load(const char* filepath, const char* type) noexcept
 		{
-			io::ifstream stream(filepath);
+			io::ivstream stream(filepath);
 			return this->load(stream, type);
 		}
 
 		bool
 		Image::load(const std::string& filepath, const char* type) noexcept
 		{
-			io::ifstream stream(filepath);
+			io::ivstream stream(filepath);
 			return this->load(stream, type);
 		}
 

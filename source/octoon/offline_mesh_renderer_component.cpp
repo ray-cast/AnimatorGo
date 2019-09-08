@@ -126,14 +126,27 @@ namespace octoon
 
 			if (!srgb.empty())
 				rprContextCreateImage(feature->getContext(), rgbFormat, &rgbDesc, srgb.data(), &image_);
+
 			if (!alpha.empty())
-				rprContextCreateImage(feature->getContext(), alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
+			{
+				hasAlpha = false;
+				for (auto& it : alpha)
+				{
+					if (it > 0)
+					{
+						hasAlpha = true;
+						break;
+					}
+				}
+				
+				if (hasAlpha)
+					rprContextCreateImage(feature->getContext(), alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
+			}
 
 			if (image_)
 				images_.push_back(image_);
 			if (alphaImage_)
 				images_.push_back(alphaImage_);
-
 
 			return std::make_pair(image_, alphaImage_);
 		}

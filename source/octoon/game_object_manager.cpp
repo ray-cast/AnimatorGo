@@ -166,7 +166,7 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::onFixedUpdate() noexcept
+	GameObjectManager::onFixedUpdate() except
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
@@ -176,7 +176,7 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::onUpdate() noexcept
+	GameObjectManager::onUpdate() except
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
@@ -186,7 +186,7 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::onLateUpdate() noexcept
+	GameObjectManager::onLateUpdate() except
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{
@@ -209,7 +209,7 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::onGui() noexcept
+	GameObjectManager::onGui() except
 	{
 		for (std::size_t i = 0; i < activeActors_.size(); i++)
 		{

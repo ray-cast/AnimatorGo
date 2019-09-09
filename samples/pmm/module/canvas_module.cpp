@@ -28,6 +28,11 @@ namespace MysticLit
 	{
 		this->width = reader["width"];
 		this->height = reader["height"];
+
+		this->albedoBuffer.resize(this->width * this->height);
+		this->normalBuffer.resize(this->width * this->height);
+		this->colorBuffer.resize(this->width * this->height);
+		this->outputBuffer.resize(this->width * this->height);
 	}
 
 	void 

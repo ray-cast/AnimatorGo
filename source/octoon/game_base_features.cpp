@@ -1,5 +1,6 @@
 #include <octoon/game_base_features.h>
 #include <octoon/game_object_manager.h>
+#include <octoon/game_listener.h>
 #include <octoon/model/text_system.h>
 #include <octoon/input/input.h>
 
@@ -38,8 +39,15 @@ namespace octoon
 	void
 	GameBaseFeature::onFrame() noexcept
 	{
-		GameObjectManager::instance()->onUpdate();
-		GameObjectManager::instance()->onLateUpdate();
+		try
+		{
+			GameObjectManager::instance()->onUpdate();
+			GameObjectManager::instance()->onLateUpdate();
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
 	}
 
 	void

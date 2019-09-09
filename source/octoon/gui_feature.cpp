@@ -2,6 +2,7 @@
 #include <octoon/gui_feature.h>
 #include <octoon/game_app.h>
 #include <octoon/game_server.h>
+#include <octoon/game_listener.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
@@ -160,23 +161,44 @@ namespace octoon
 	void
 	GuiFeature::onFrameBegin() noexcept
 	{
-		system_->newFrame();
+		try
+		{
+			system_->newFrame();
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
 	}
 
 	void
 	GuiFeature::onFrame() noexcept
 	{
-		GameObjectManager::instance()->onGui();
+		try
+		{
+			GameObjectManager::instance()->onGui();
 
-		auto graphics = this->getFeature<GraphicsFeature>();
-		if (graphics)
-			system_->render(*graphics->getContext());
+			auto graphics = this->getFeature<GraphicsFeature>();
+			if (graphics)
+				system_->render(*graphics->getContext());
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
 	}
 
 	void
 	GuiFeature::onFrameEnd() noexcept
 	{
-		system_->endFrame();
+		try
+		{
+			system_->endFrame();
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
 	}
 }
 #endif

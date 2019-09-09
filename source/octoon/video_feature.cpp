@@ -7,6 +7,7 @@
 
 #include <octoon/game_app.h>
 #include <octoon/game_server.h>
+#include <octoon/game_listener.h>
 
 #include <octoon/hal_feature.h>
 #include <octoon/runtime/except.h>
@@ -117,9 +118,16 @@ namespace octoon
 	void
 	VideoFeature::onFrame() noexcept
 	{
-		auto graphics = this->getFeature<GraphicsFeature>();
-		if (graphics)
-			video::RenderSystem::instance()->render(*graphics->getContext());
+		try
+		{
+			auto graphics = this->getFeature<GraphicsFeature>();
+			if (graphics)
+				video::RenderSystem::instance()->render(*graphics->getContext());
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
 	}
 
 	void

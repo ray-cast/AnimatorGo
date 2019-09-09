@@ -87,8 +87,8 @@ namespace octoon
 				layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
 			else
 			{
-				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
-
+				if (math::any(specular))
+					layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
 				if (opacity < 1.0f)
 					layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
 				if (!normalName.empty())

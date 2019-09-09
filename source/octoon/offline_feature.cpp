@@ -6,6 +6,7 @@
 
 #include <octoon/game_app.h>
 #include <octoon/game_server.h>
+#include <octoon/game_listener.h>
 
 #include <octoon/hal_feature.h>
 #include <octoon/hal/graphics.h>
@@ -413,50 +414,57 @@ namespace octoon
 	void
 	OfflineFeature::onFrame() noexcept
 	{
-		rpr_camera camera;
-		rprSceneGetCamera(this->rprScene_, &camera);
-		if (camera)
+		try
 		{
-			std::size_t count = 0;
-			std::size_t type_size = 0;
-
-			for (auto& listener : listener_)
-				listener->onPreRender();
-
-			rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
-			if (count == 0)
-				return;
-
-			rprSceneGetInfo(this->rprScene_, RPR_SCENE_LIGHT_COUNT, 1, &count, &type_size);
-			if (count == 0)
-				return;
-
-			if (this->dirty_)
+			rpr_camera camera;
+			rprSceneGetCamera(this->rprScene_, &camera);
+			if (camera)
 			{
-				if (this->colorFramebuffer_)
-					rprFrameBufferClear(this->colorFramebuffer_);
+				std::size_t count = 0;
+				std::size_t type_size = 0;
 
-				if (this->normalFramebuffer_)
-					rprFrameBufferClear(this->normalFramebuffer_);
+				for (auto& listener : listener_)
+					listener->onPreRender();
 
-				if (this->albedoFramebuffer_)
-					rprFrameBufferClear(this->albedoFramebuffer_);
+				rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
+				if (count == 0)
+					return;
 
-				this->dirty_ = false;
+				rprSceneGetInfo(this->rprScene_, RPR_SCENE_LIGHT_COUNT, 1, &count, &type_size);
+				if (count == 0)
+					return;
+
+				if (this->dirty_)
+				{
+					if (this->colorFramebuffer_)
+						rprFrameBufferClear(this->colorFramebuffer_);
+
+					if (this->normalFramebuffer_)
+						rprFrameBufferClear(this->normalFramebuffer_);
+
+					if (this->albedoFramebuffer_)
+						rprFrameBufferClear(this->albedoFramebuffer_);
+
+					this->dirty_ = false;
+				}
+
+				rprContextRender(rprContext_);
+
+				for (auto& listener : listener_)
+					listener->onPostRender();
+
+				auto graphics = this->getFeature<GraphicsFeature>();
+				if (graphics)
+				{
+					auto context = graphics->getContext();
+					math::float4 viewport(0, 0, this->framebuffer_w_, this->framebuffer_h_);
+					context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
+				}
 			}
-
-			rprContextRender(rprContext_);
-
-			for (auto& listener : listener_)
-				listener->onPostRender();
-
-			auto graphics = this->getFeature<GraphicsFeature>();
-			if (graphics)
-			{
-				auto context = graphics->getContext();
-				math::float4 viewport(0, 0, this->framebuffer_w_, this->framebuffer_h_);
-				context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
-			}
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
 		}
 	}
 

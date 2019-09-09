@@ -260,6 +260,20 @@ namespace octoon
 		return rigidbody_;
 	}
 
+	void
+	RigidbodyComponent::clearForce() noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+			rigidbody_->clearForce();
+	}
+	
+	void
+	RigidbodyComponent::clearTorque() noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+			rigidbody_->clearTorque();
+	}
+
 	GameComponentPtr
 	RigidbodyComponent::clone() const noexcept
     {

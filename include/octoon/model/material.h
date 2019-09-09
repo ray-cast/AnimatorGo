@@ -40,6 +40,8 @@ namespace octoon
 			bool get(const char* key, std::string& value) const noexcept;
 			bool get(const char* key, MaterialParam& out) const noexcept;
 
+			std::size_t hash() const noexcept;
+
 			MaterialPtr clone() const noexcept;
 
 		private:

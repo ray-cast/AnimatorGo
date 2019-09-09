@@ -1,4 +1,5 @@
 #include <octoon/model/material.h>
+#include <functional>
 
 namespace octoon
 {
@@ -308,6 +309,69 @@ namespace octoon
 			}
 
 			return false;
+		}
+
+		std::size_t
+		Material::hash() const noexcept
+		{
+			std::hash<std::string> hash;
+			std::string hash_string;
+
+			for (auto& it : _properties)
+			{
+				if (it.key == MATKEY_NAME || it.key == MATKEY_PATH)
+					continue;
+
+				hash_string += it.key;
+
+				switch (it.dataType)
+				{
+				case PropertyTypeInfoFloat:
+				{
+					float value;
+					std::memcpy(&value, it.data, it.length);
+					hash_string += std::to_string(value);
+				}
+				break;
+				case PropertyTypeInfoFloat | PropertyTypeInfoBuffer:
+				{
+					for (std::size_t i = 0; i < it.length; i += 4)
+					{
+						float value;
+						std::memcpy(&value, it.data + i, 4);
+						hash_string += std::to_string(value);
+					}
+				}
+				break;
+				case PropertyTypeInfoInt:
+				{
+					int value;
+					std::memcpy(&value, it.data, it.length);
+					hash_string += std::to_string(value);
+				}
+				break;
+				case PropertyTypeInfoInt | PropertyTypeInfoBuffer:
+				{
+					for (std::size_t i = 0; i < it.length; i += 4)
+					{
+						int value;
+						std::memcpy(&value, it.data + i, 4);
+						hash_string += std::to_string(value);
+					}
+				}
+				break;
+				case PropertyTypeInfoString:
+				{
+					hash_string += std::string_view(it.data, it.length);
+				}
+				break;
+				default:
+					break;
+				}
+					
+			}
+
+			return hash(hash_string);
 		}
 
 		MaterialPtr

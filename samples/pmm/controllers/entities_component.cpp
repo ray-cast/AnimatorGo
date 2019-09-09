@@ -1,5 +1,7 @@
 #include "entities_component.h"
 #include <octoon/animator_component.h>
+#include <octoon/rigidbody_component.h>
+#include <octoon/transform_component.h>
 
 namespace MysticLit
 {
@@ -73,7 +75,22 @@ namespace MysticLit
 			for (auto& component : it->getComponents())
 			{
 				if (component->isA<octoon::AnimatorComponent>())
-					component->downcast<octoon::AnimatorComponent>()->sample(delta);
+				{
+					auto animator = component->downcast<octoon::AnimatorComponent>();
+					animator->sample(delta);
+
+					auto& avatar = animator->getAvatar();
+					for (auto& bone : avatar)
+					{
+						auto rigidbody = bone->getComponentInChildren<octoon::RigidbodyComponent>();
+						if (rigidbody)
+						{
+							auto transform = rigidbody->getComponent<octoon::TransformComponent>();
+							rigidbody->movePosition(transform->getTranslate());
+							rigidbody->rotation(transform->getQuaternion());
+						}
+					}
+				}
 			}
 		}
 	}

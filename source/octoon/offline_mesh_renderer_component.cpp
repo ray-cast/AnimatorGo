@@ -5,6 +5,7 @@
 #include <octoon/video/render_system.h>
 #include <octoon/game_prefabs.h>
 
+#include <unordered_map>
 #include <RadeonProRender.h>
 
 namespace octoon
@@ -51,8 +52,18 @@ namespace octoon
 
 		this->materials_.clear();
 
+		std::unordered_map<std::size_t, void*> mtlHash;
+
 		for (auto& mat : materials)
 		{
+			auto hash = mat->hash();
+			auto it = mtlHash.find(hash);
+			if (it != mtlHash.end())
+			{
+				materials_.push_back((*it).second);
+				continue;
+			}
+
 			std::string name;
 			std::string path;
 			std::string normalName;
@@ -171,6 +182,7 @@ namespace octoon
 				}
 			}
 
+			mtlHash[hash] = rprMaterial;
 			materials_.push_back(rprMaterial);
 		}
 
@@ -278,8 +290,17 @@ namespace octoon
 			rprObjectDelete(shape);
 		shapes_.clear();
 
+		std::vector<void*> cache;
+
 		for (auto& material : materials_)
-			rprObjectDelete(material);
+		{
+			if (cache.end() == std::find(cache.begin(), cache.end(), material))
+			{
+				rprObjectDelete(material);
+				cache.push_back(material);
+			}
+		}
+
 		materials_.clear();
 	}
 

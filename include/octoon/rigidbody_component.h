@@ -53,6 +53,9 @@ namespace octoon
 		void rotation(const math::Quaternion& quat) noexcept;
 		void movePosition(const math::float3& position) noexcept;
 
+		void clearForce() noexcept;
+		void clearTorque() noexcept;
+
 		void wakeUp() noexcept;
 
 		bool getIsKinematic() const noexcept;

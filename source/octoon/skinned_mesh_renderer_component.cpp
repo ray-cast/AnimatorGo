@@ -91,10 +91,13 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
+		this->skinnedMesh_->setVertexArray(mesh.getVertexArray());
+		this->skinnedMesh_->setNormalArray(mesh.getNormalArray());
+
 		this->updateJointData(mesh);
-		this->updateBoneData(mesh);
 		this->updateMorphBlendData();
 		this->updateTextureBlendData();
+		this->updateBoneData(mesh);
 
 		MeshRendererComponent::uploadMeshData(*skinnedMesh_);
 	}
@@ -211,14 +214,11 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::updateBoneData(const model::Mesh& mesh) noexcept
 	{
-		auto& vertices = mesh.getVertexArray();
-		auto& normals = mesh.getNormalArray();
-		auto& weights = mesh.getWeightArray();
+		auto& vertices = skinnedMesh_->getVertexArray();
+		auto& normals = skinnedMesh_->getNormalArray();
+		auto& weights = skinnedMesh_->getWeightArray();
 
-		auto& dstVertices = skinnedMesh_->getVertexArray();
-		auto& dstNormals = skinnedMesh_->getNormalArray();
-
-		auto numVertices = mesh.getNumVertices();
+		auto numVertices = skinnedMesh_->getNumVertices();
 
 #		pragma omp parallel for num_threads(4)
 		for (std::size_t i = 0; i < numVertices; i++)
@@ -235,8 +235,8 @@ namespace octoon
 				n += ((math::float3x3)joints_[weights[i].bones[j]] * normals[i]) * w;
 			}
 
-			dstVertices[i] = v;
-			dstNormals[i] = n;
+			vertices[i] = v;
+			normals[i] = n;
 		}
 	}
 

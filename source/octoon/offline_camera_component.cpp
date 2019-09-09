@@ -213,26 +213,35 @@ namespace octoon
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
-			rprContextCreateCamera(feature->getContext(), &this->rprCamera_);
-
-			rprCameraSetNearPlane(this->rprCamera_, this->nearPlane_);
-			rprCameraSetFarPlane(this->rprCamera_, this->farPlane_);
-			rprCameraSetFocalLength(this->rprCamera_, this->focalLength_);
-			rprCameraSetFocusDistance(this->rprCamera_, this->focusDistance_);
-			rprCameraSetFStop(this->rprCamera_, this->fStop_);
-			rprCameraSetMode(this->rprCamera_, RPR_CAMERA_MODE_PERSPECTIVE);
+			if (RPR_SUCCESS != rprContextCreateCamera(feature->getContext(), &this->rprCamera_))
+				return;
+			if (RPR_SUCCESS != rprCameraSetNearPlane(this->rprCamera_, this->nearPlane_))
+				return;
+			if (RPR_SUCCESS != rprCameraSetFarPlane(this->rprCamera_, this->farPlane_))
+				return;			
+			if (RPR_SUCCESS != rprCameraSetFocalLength(this->rprCamera_, this->focalLength_))
+				return;
+			if (RPR_SUCCESS != rprCameraSetFocusDistance(this->rprCamera_, this->focusDistance_))
+				return;
+			if (RPR_SUCCESS != rprCameraSetFStop(this->rprCamera_, this->fStop_))
+				return;
+			if (RPR_SUCCESS != rprCameraSetMode(this->rprCamera_, RPR_CAMERA_MODE_PERSPECTIVE))
+				return;
 
 			std::uint32_t w, h;
 			feature->getFramebufferScale(w, h);
-			rprCameraSetSensorSize(this->rprCamera_, filmSize_ *  w / (float)h, filmSize_);
+			if (RPR_SUCCESS != rprCameraSetSensorSize(this->rprCamera_, filmSize_ * w / (float)h, filmSize_))
+				return;
 
 			auto transform = this->getComponent<TransformComponent>();
 			auto eye = transform->getTranslate();
 			auto at = transform->getTranslate() + math::rotate(transform->getQuaternion(), math::float3::UnitZ);
 			auto up = math::rotate(transform->getQuaternion(), math::float3::UnitY);
-			rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]);
+			if (RPR_SUCCESS != rprCameraLookAt(this->rprCamera_, eye[0], eye[1], eye[2], at[0], at[1], at[2], up[0], up[1], up[2]))
+				return;
 
-			rprSceneSetCamera(feature->getScene(), this->rprCamera_);
+			if (RPR_SUCCESS != rprSceneSetCamera(feature->getScene(), this->rprCamera_))
+				return;
 
 			feature->addOfflineListener(this);
 			feature->setFramebufferDirty(true);

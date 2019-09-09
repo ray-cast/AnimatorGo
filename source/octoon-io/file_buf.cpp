@@ -8,6 +8,11 @@ namespace octoon
 		{
 		}
 
+		filebuf::filebuf(filebuf&& move) noexcept
+			: _file(std::move(move._file))
+		{
+		}
+
 		filebuf::~filebuf() noexcept
 		{
 		}

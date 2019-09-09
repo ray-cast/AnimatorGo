@@ -710,8 +710,14 @@ namespace octoon
 		}
 
 		File::File() noexcept
-			:stream_(nullptr)
+			: stream_(nullptr)
 		{
+		}
+
+		File::File(File&& move) noexcept
+			: stream_(move.stream_)
+		{
+			move.stream_ = nullptr;
 		}
 
 		File::File(const char* filename, ios_base::openmode mode) noexcept

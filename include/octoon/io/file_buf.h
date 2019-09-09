@@ -12,6 +12,7 @@ namespace octoon
 		{
 		public:
 			filebuf() noexcept;
+			filebuf(filebuf&& move) noexcept;
 			~filebuf() noexcept;
 
 			bool is_open() const noexcept;
@@ -32,6 +33,10 @@ namespace octoon
 			streamsize size() const noexcept;
 
 			int flush() noexcept;
+
+		private:
+			filebuf(const filebuf&) = delete;
+			filebuf& operator=(const filebuf&) = delete;
 
 		private:
 			File _file;

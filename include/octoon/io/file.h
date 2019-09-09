@@ -11,6 +11,7 @@ namespace octoon
 		{
 		public:
 			File() noexcept;
+			File(File&& move) noexcept;
 			File(const char* filename, ios_base::openmode mode) noexcept;
 			File(const char* filename, ios_base::open_mode mode) noexcept;
 			File(const wchar_t* filename, ios_base::openmode mode) noexcept;
@@ -49,6 +50,10 @@ namespace octoon
 			streamsize cnt() noexcept;
 
 			void swap(File& other) noexcept;
+
+		private:
+			File(const File&) = delete;
+			File& operator=(const File&) = delete;
 
 		private:
 			struct _Iobuf* stream_;

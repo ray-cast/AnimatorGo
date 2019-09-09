@@ -18,6 +18,8 @@ namespace octoon
 
 			bool is_open() const noexcept;
 
+			bool open(const char* path, const ios_base::open_mode mode) noexcept;
+			bool open(const std::string& path, const ios_base::open_mode mode) noexcept;
 			bool open(class IoServer* filesystem, const Orl& orl, const ios_base::open_mode mode) noexcept;
 			void close() noexcept;
 

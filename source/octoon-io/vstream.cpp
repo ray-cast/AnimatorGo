@@ -83,14 +83,23 @@ namespace octoon
 			if (ok)
 			{
 				Orl orl;
-				Orl::parse(path, orl);
+				if (Orl::parse(path, orl))
+				{
+					auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
 
-				auto fs = filesystem_ ? filesystem_.get() : IoServer::instance();
-
-				if (!buf_.open(fs, orl, mode))
-					this->setstate(ios_base::failbit, mode);
+					if (!buf_.open(fs, orl, mode))
+						this->setstate(ios_base::failbit, mode);
+					else
+						this->clear(ios_base::goodbit, mode);
+				}
 				else
-					this->clear(ios_base::goodbit, mode);
+				{
+					if (!buf_.open(path, mode))
+						this->setstate(ios_base::failbit, mode);
+					else
+						this->clear(ios_base::goodbit, mode);
+				}
+
 			}
 
 			return (*this);

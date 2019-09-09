@@ -1,5 +1,6 @@
 #include <octoon/io/virtual_buf.h>
 #include <octoon/io/ioserver.h>
+#include <octoon/io/file_buf.h>
 
 namespace octoon
 {
@@ -17,6 +18,36 @@ namespace octoon
 		virtual_buf::is_open() const noexcept
 		{
 			return buf_ ? buf_->is_open() : false;
+		}
+
+		bool 
+		virtual_buf::open(const char* path, const ios_base::open_mode mode) noexcept
+		{
+			this->close();
+
+			filebuf buf;
+			if (buf.open(path, mode))
+			{
+				buf_ = std::make_unique<filebuf>(std::move(buf));
+				return true;
+			}
+
+			return false;
+		}
+
+		bool
+		virtual_buf::open(const std::string& path, const ios_base::open_mode mode) noexcept
+		{
+			this->close();
+
+			filebuf buf;
+			if (buf.open(path, mode))
+			{
+				buf_ = std::make_unique<filebuf>(std::move(buf));
+				return true;
+			}
+
+			return false;
 		}
 
 		bool

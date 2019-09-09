@@ -187,6 +187,21 @@ namespace MysticLit
 					model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms())->sample();
 					model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)))->sample();
 
+					auto& transforms = model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms();
+					for (auto& bone : transforms)
+					{
+						for (auto& child : bone->getChildren())
+						{
+							auto rigidbody = child->getComponent<octoon::RigidbodyComponent>();
+							if (rigidbody)
+							{
+								auto transform = rigidbody->getComponent<octoon::TransformComponent>();
+								rigidbody->movePosition(transform->getTranslate());
+								rigidbody->rotation(transform->getQuaternion());
+							}
+						}
+					}
+
 					objects.emplace_back(std::move(model));
 				}
 				else

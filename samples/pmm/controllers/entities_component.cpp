@@ -82,12 +82,15 @@ namespace MysticLit
 					auto& avatar = animator->getAvatar();
 					for (auto& bone : avatar)
 					{
-						auto rigidbody = bone->getComponentInChildren<octoon::RigidbodyComponent>();
-						if (rigidbody)
+						for (auto& child : bone->getChildren())
 						{
-							auto transform = rigidbody->getComponent<octoon::TransformComponent>();
-							rigidbody->movePosition(transform->getTranslate());
-							rigidbody->rotation(transform->getQuaternion());
+							auto rigidbody = child->getComponent<octoon::RigidbodyComponent>();
+							if (rigidbody)
+							{
+								auto transform = rigidbody->getComponent<octoon::TransformComponent>();
+								rigidbody->movePosition(transform->getTranslate());
+								rigidbody->rotation(transform->getQuaternion());
+							}
 						}
 					}
 				}

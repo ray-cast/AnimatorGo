@@ -164,6 +164,7 @@ namespace MysticLit
 			{
 				this->getContext()->profile->entitiesModule->objects.clear();
 				this->getContext()->profile->entitiesModule->camera.reset();
+				this->getContext()->profile->entitiesModule->enviromentLight.reset();
 
 				auto offlineFeature = this->getContext()->behaviour->getFeature<OfflineFeature>();
 				if (offlineFeature)
@@ -229,7 +230,7 @@ namespace MysticLit
 
 			auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 			enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
-			enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(octoon::math::float3(0.90196078f, 0.90196078f, 0.925490196f)));
+			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(octoon::math::float3(0.90196078f, 0.90196078f, 0.925490196f)));
 			enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(1.0f);
 			this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 

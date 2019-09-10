@@ -14,6 +14,8 @@ namespace octoon
 		virtual void onPreRender() noexcept = 0;
 		virtual void onPostRender() noexcept = 0;
 
+		virtual void onFramebufferResize(std::uint32_t w, std::uint32_t h) noexcept;
+
 	private:
 		OfflineListener(const OfflineListener&) = delete;
 		OfflineListener& operator=(const OfflineListener&) = delete;

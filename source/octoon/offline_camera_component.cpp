@@ -309,6 +309,17 @@ namespace octoon
 	}
 
 	void
+	OfflineCameraComponent::onFramebufferResize(std::uint32_t w, std::uint32_t h) noexcept
+	{
+		auto feature = this->tryGetFeature<OfflineFeature>();
+		if (feature)
+		{
+			if (RPR_SUCCESS != rprCameraSetSensorSize(this->rprCamera_, filmSize_ * w / (float)h, filmSize_))
+				return;
+		}
+	}
+
+	void
 	OfflineCameraComponent::onLayerChangeAfter() noexcept
 	{
 	}

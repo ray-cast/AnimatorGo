@@ -398,7 +398,6 @@ namespace octoon
 
 		if (this->rprContext_)
 		{
-			rprContextClearMemory(rprContext_);
 			rprObjectDelete(this->rprContext_);
 			this->rprContext_ = nullptr;
 		}
@@ -417,6 +416,9 @@ namespace octoon
 				{
 					if (this->framebuffer_w_ != event.change.w || this->framebuffer_h_ != event.change.h)
 					{
+						for (auto& listener : listener_)
+							listener->onFramebufferResize(event.change.w, event.change.h);
+
 						this->onFramebufferChange(event.change.w, event.change.h);
 						this->framebuffer_w_ = event.change.w;
 						this->framebuffer_h_ = event.change.h;

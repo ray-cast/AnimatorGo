@@ -49,6 +49,8 @@ namespace octoon
 		void onPreRender() noexcept override;
 		void onPostRender() noexcept override;
 
+		void onFramebufferResize(std::uint32_t w, std::uint32_t h) noexcept override;
+
 		void onLayerChangeAfter() noexcept override;
 
 		void onFrameDirty() noexcept;

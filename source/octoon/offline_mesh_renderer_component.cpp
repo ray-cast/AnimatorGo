@@ -129,7 +129,7 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", specular.x, specular.y, specular.z, 1.0f);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base.x * specular.x, base.y * specular.y, base.z * specular.z, 1.0f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
 			}
 
@@ -153,18 +153,14 @@ namespace octoon
 				auto image = feature->createMaterialTextures(path + textureName);
 				if (image.first)
 				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", image.first);
-
 					if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", textureNode);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", image.first);
 
 					if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && edgeColor.x > 0.0f)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", textureNode);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", image.first);
 
 					if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", textureNode);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", image.first);
 				}
 				else
 				{
@@ -173,12 +169,8 @@ namespace octoon
 
 				if (image.second)
 				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", image.second);
-
 					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", textureNode);
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", image.second);
 				}
 			}
 

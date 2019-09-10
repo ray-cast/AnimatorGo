@@ -74,7 +74,9 @@ namespace octoon
 		std::uint32_t framebuffer_h_;
 
 		std::vector<OfflineListener*> listener_;
+
 		std::unordered_map<std::string, std::pair<void*, void*>> images_;
+		std::unordered_map<std::string, std::pair<void*, void*>> imageNodes_;
 	};
 }
 

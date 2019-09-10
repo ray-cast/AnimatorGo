@@ -196,8 +196,8 @@ namespace octoon
 	{
 		try
 		{
-			auto it = images_.find(path);
-			if (it != images_.end())
+			auto it = imageNodes_.find(path);
+			if (it != imageNodes_.end())
 				return (*it).second;
 
 			image::Image image;
@@ -275,8 +275,15 @@ namespace octoon
 			rpr_image image_ = nullptr;
 			rpr_image alphaImage_ = nullptr;
 
+			rpr_material_node textureNode = nullptr;
+			rpr_material_node alphaNode = nullptr;
+
 			if (!srgb.empty())
+			{
 				rprContextCreateImage(this->rprContext_, rgbFormat, &rgbDesc, srgb.data(), &image_);
+				rprMaterialSystemCreateNode(this->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+				rprMaterialNodeSetInputImageData(textureNode, "data", image_);
+			}
 
 			if (!alpha.empty())
 			{
@@ -291,12 +298,17 @@ namespace octoon
 				}
 
 				if (hasAlpha)
+				{
 					rprContextCreateImage(this->rprContext_, alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
+					rprMaterialSystemCreateNode(this->getMaterialSystem(), RPR_MATERIAL_NODE_IMAGE_TEXTURE, &alphaNode);
+					rprMaterialNodeSetInputImageData(alphaNode, "data", alphaImage_);
+				}
 			}
 
 			images_[path] = std::make_pair(image_, alphaImage_);
+			imageNodes_[path] = std::make_pair(textureNode, alphaNode);
 
-			return std::make_pair(image_, alphaImage_);
+			return std::make_pair(textureNode, alphaNode);
 		}
 		catch (...)
 		{
@@ -372,6 +384,16 @@ namespace octoon
 	{
 		this->removeMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
 		this->cleanupFramebuffers();
+
+		for (auto& node : imageNodes_)
+		{
+			if (node.second.first)
+				rprObjectDelete(node.second.first);
+			if (node.second.second)
+				rprObjectDelete(node.second.second);
+		}
+
+		imageNodes_.clear();
 
 		for (auto& image : images_)
 		{

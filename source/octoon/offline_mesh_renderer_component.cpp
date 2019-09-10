@@ -281,6 +281,7 @@ namespace octoon
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
+			feature->setFramebufferDirty(true);
 			feature->removeOfflineListener(this);
 			for (auto& shape : shapes_)
 				rprSceneDetachShape(feature->getScene(), shape);

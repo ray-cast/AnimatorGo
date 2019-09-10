@@ -23,7 +23,7 @@ namespace octoon
 
 		bool play(const std::string& status = "default") noexcept;
 		void pause() noexcept;
-		void stop() noexcept;
+		void reset() noexcept;
 
 		void setTime(float time) noexcept;
 		void sample(float delta = 0.0f) noexcept;

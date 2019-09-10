@@ -59,9 +59,24 @@ namespace MysticLit
 			{
 				if (component->isA<octoon::AnimatorComponent>())
 				{
-					component->downcast<octoon::AnimatorComponent>()->setTime(0.0f);
-					component->downcast<octoon::AnimatorComponent>()->sample(0.0f);
-					component->downcast<octoon::AnimatorComponent>()->stop();
+					auto animator = component->downcast<octoon::AnimatorComponent>();
+					animator->reset();
+					animator->sample();
+
+					auto& avatar = animator->getAvatar();
+					for (auto& bone : avatar)
+					{
+						for (auto& child : bone->getChildren())
+						{
+							auto rigidbody = child->getComponent<octoon::RigidbodyComponent>();
+							if (rigidbody)
+							{
+								auto transform = rigidbody->getComponent<octoon::TransformComponent>();
+								rigidbody->movePosition(transform->getTranslate());
+								rigidbody->rotation(transform->getQuaternion());
+							}
+						}
+					}
 				}
 			}
 		}

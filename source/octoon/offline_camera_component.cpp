@@ -257,12 +257,17 @@ namespace octoon
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 		{
+			feature->setFramebufferDirty(true);
 			feature->removeOfflineListener(this);
 
 			if (feature->getScene())
 			{
-				rprSceneSetCamera(feature->getScene(), nullptr);
-				rprSceneSetBackgroundImage(feature->getScene(), nullptr);
+				rpr_camera camera = nullptr;
+				if (RPR_SUCCESS == rprSceneGetCamera(feature->getScene(), &camera))
+				{
+					if (camera == this->rprCamera_)
+						rprSceneSetCamera(feature->getScene(), nullptr);
+				}
 			}
 		}
 

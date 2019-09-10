@@ -229,9 +229,12 @@ namespace octoon
 	{
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature && this->rprLight_)
+		{
+			feature->setFramebufferDirty(true);
 			rprSceneDetachLight(feature->getScene(), this->rprLight_);
+		}
 
-		if (feature && this->rprLight_)
+		if (this->rprLight_)
 		{
 			rprObjectDelete(this->rprLight_);
 			this->rprLight_ = nullptr;

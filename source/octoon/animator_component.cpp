@@ -87,10 +87,9 @@ namespace octoon
 	}
 
 	void
-	AnimatorComponent::stop() noexcept
+	AnimatorComponent::reset() noexcept
 	{
 		this->setTime(0.0f);
-		this->sample();
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 

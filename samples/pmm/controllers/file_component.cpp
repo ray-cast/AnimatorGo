@@ -160,6 +160,16 @@ namespace MysticLit
 	{
 		try
 		{
+			if (!this->getContext()->profile->entitiesModule->objects.empty())
+			{
+				this->getContext()->profile->entitiesModule->objects.clear();
+				this->getContext()->profile->entitiesModule->camera.reset();
+
+				auto offlineFeature = this->getContext()->behaviour->getFeature<OfflineFeature>();
+				if (offlineFeature)
+					offlineFeature->clearMemory();
+			}
+
 			octoon::GameObjects objects;
 
 			auto stream = octoon::io::ifstream(filepath);
@@ -244,7 +254,6 @@ namespace MysticLit
 		auto obj = GameObject::create("MainCamera");
 
 		auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
-		offlineCamera->setActive(false);
 		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
 
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();

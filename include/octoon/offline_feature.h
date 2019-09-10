@@ -36,6 +36,8 @@ namespace octoon
 		void readNormalFramebuffer(void* dst) noexcept;
 		void readAlbedoFramebuffer(void* dst) noexcept;
 
+		void clearMemory() noexcept;
+
 		std::pair<void*, void*> createMaterialTextures(const std::string& path) noexcept;
 
 	private:

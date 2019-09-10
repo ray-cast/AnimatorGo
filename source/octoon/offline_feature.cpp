@@ -162,14 +162,32 @@ namespace octoon
 	}
 
 	void
+	OfflineFeature::clearMemory() noexcept
+	{
+		this->onDeactivate();
+		this->onActivate();
+	}
+
+	void
 	OfflineFeature::cleanupFramebuffers() noexcept
 	{
 		if (this->colorFramebuffer_)
+		{
 			rprObjectDelete(this->colorFramebuffer_);
+			this->colorFramebuffer_ = nullptr;
+		}
+
 		if (this->normalFramebuffer_)
+		{
 			rprObjectDelete(this->normalFramebuffer_);
+			this->normalFramebuffer_ = nullptr;
+		}
+
 		if (this->albedoFramebuffer_)
+		{
 			rprObjectDelete(this->albedoFramebuffer_);
+			this->albedoFramebuffer_ = nullptr;
+		}
 	}
 
 

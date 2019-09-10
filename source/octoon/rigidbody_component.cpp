@@ -345,13 +345,13 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			if (transform)
 			{
-				auto qinv = math::normalize(math::inverse(transform->getLocalQuaternion()));
-				auto position = math::rotate(rigidbody_->getPosition() - transform->getLocalTranslate(), qinv);
-				auto rotation = rigidbody_->getRotation() * qinv;
-
 				auto parent = this->getGameObject()->getParent();
 				if (parent)
-					parent->getComponent<TransformComponent>()->setTransform(position, rotation);
+				{
+					this->position_ = rigidbody_->getPosition();
+					this->rotation_ = rigidbody_->getRotation();
+					parent->getComponent<TransformComponent>()->setTransform(math::float4x4(this->rotation_, this->position_) * transform->getLocalTransformInverse());
+				}
 			}
 		}
 	}

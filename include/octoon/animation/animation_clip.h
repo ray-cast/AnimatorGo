@@ -90,12 +90,12 @@ namespace octoon
 
 			void evaluate(const _Time& delta) noexcept
 			{
-				this->finish = true;
+				this->finish = false;
 
 				for (auto& it : this->curves)
 				{
 					it.second.evaluate(delta);
-					this->finish &= it.second.finish;
+					this->finish |= it.second.finish;
 				}
 			}
 

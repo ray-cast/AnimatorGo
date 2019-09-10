@@ -114,20 +114,13 @@ namespace octoon
 
 				this->time = std::clamp(this->time, frames.front().time, frames.back().time);
 
-				auto it = std::upper_bound(frames.begin(), frames.end(), this->time,
-					[](const _Time& time, const Keyframe<_Elem, _Time>& a)
-					{
-						return time <= a.time;
-					}
-				);
-
-				if (it == frames.begin())
+				if (this->time <= frames.front().time)
 				{
 					if (negative)
 						this->updateAnimationMode(this->preWrapMode);
 					this->value = frames.front().value;
 				}
-				else if (it == frames.end())
+				else if (this->time >= frames.back().time)
 				{
 					if (!negative)
 						this->updateAnimationMode(this->postWrapMode);
@@ -135,6 +128,13 @@ namespace octoon
 				}
 				else
 				{
+					auto it = std::upper_bound(frames.begin(), frames.end(), this->time,
+						[](const _Time& time, const Keyframe<_Elem, _Time>& a)
+					{
+						return time <= a.time;
+					}
+					);
+
 					auto& a = *(it - 1);
 					auto& b = *(it);
 					auto t = (this->time - a.time) / (b.time - a.time);

@@ -14,6 +14,7 @@ namespace MysticLit
 		, entitiesModule(std::make_shared<EntitiesModule>())
 		, offlineModule(std::make_shared<OfflineModule>())
 		, canvasModule(std::make_shared<CanvasModule>())
+		, markModule(std::make_shared<MarkModule>())
 	{
 	}
 
@@ -34,6 +35,7 @@ namespace MysticLit
 				this->entitiesModule->load(json["entities"]);
 				this->offlineModule->load(json["offline"]);
 				this->canvasModule->load(json["canvas"]);
+				this->markModule->load(json["mark"]);
 			}
 		}
 		catch (...)

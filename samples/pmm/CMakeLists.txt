@@ -39,6 +39,8 @@ SET(MODULES_LIST
 	${SOURCE_PATH}/module/physics_module.cpp
 	${SOURCE_PATH}/module/time_module.h
 	${SOURCE_PATH}/module/time_module.cpp
+	${SOURCE_PATH}/module/mark_module.h
+	${SOURCE_PATH}/module/mark_module.cpp
 )
 SOURCE_GROUP("pmm\\module" FILES ${MODULES_LIST})
 
@@ -83,6 +85,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/h264_component.cpp
 	${SOURCE_PATH}/controllers/denoise_component.h
 	${SOURCE_PATH}/controllers/denoise_component.cpp
+	${SOURCE_PATH}/controllers/mark_component.h
+	${SOURCE_PATH}/controllers/mark_component.cpp
 )
 SOURCE_GROUP("pmm\\controllers" FILES ${CONTROLLERS_LIST})
 

@@ -81,6 +81,7 @@ namespace MysticLit
 		denoiseComponent_ = std::make_unique<DenoiseComponent>();
 		h264Component_ = std::make_unique<H264Component>();
 		uiComponent_ = std::make_unique<UIComponent>();
+		markComponent_ = std::make_unique<MarkComponent>();
 
 		fileComponent_->init(context_, profile_->fileModule);
 		canvasComponent_->init(context_, profile_->canvasModule);
@@ -90,6 +91,7 @@ namespace MysticLit
 		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h264Component_->init(context_, profile_->h264Module);
 		uiComponent_->init(context_, profile_->canvasModule);
+		markComponent_->init(context_, profile_->markModule);
 
 		this->addComponent(fileComponent_.get());
 		this->addComponent(canvasComponent_.get());
@@ -97,6 +99,7 @@ namespace MysticLit
 		this->addComponent(offlineComponent_.get());
 		this->addComponent(playerComponent_.get());
 		this->addComponent(denoiseComponent_.get());
+		this->addComponent(markComponent_.get());
 		this->addComponent(h264Component_.get());
 		this->addComponent(uiComponent_.get());
 

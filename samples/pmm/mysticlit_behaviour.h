@@ -12,6 +12,7 @@
 #include "controllers/player_component.h"
 #include "controllers/h264_component.h"
 #include "controllers/ui_component.h"
+#include "controllers/mark_component.h"
 
 namespace MysticLit
 {
@@ -77,6 +78,7 @@ namespace MysticLit
 		std::unique_ptr<DenoiseComponent> denoiseComponent_;
 		std::unique_ptr<H264Component> h264Component_;
 		std::unique_ptr<UIComponent> uiComponent_;
+		std::unique_ptr<MarkComponent> markComponent_;
 
 		std::vector<IMysticLitComponent*> components_;
 	};

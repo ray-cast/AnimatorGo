@@ -132,6 +132,17 @@ MainWindow::MainWindow()
 	this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
 
+	QImage image(":res/icons/logo.png");
+	auto w = image.width();
+	auto h = image.height();
+	auto bits = image.bits();
+
+	profile_->markModule->width = w;
+	profile_->markModule->height = h;
+	profile_->markModule->markEnable = true;
+	profile_->markModule->pixels.resize(w * h * 4);
+	std::memcpy(profile_->markModule->pixels.data(), bits, w * h * 4);
+
 	titleBar_ = std::make_unique<TitleBar>(this);
 	hideBar_ = std::make_unique<HideBar>(this);
 	toolBar_ = std::make_unique<ToolBar>(this, profile_);

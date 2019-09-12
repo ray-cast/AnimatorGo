@@ -12,6 +12,7 @@
 #include "module/entities_module.h"
 #include "module/offline_module.h"
 #include "module/canvas_module.h"
+#include "module/mark_module.h"
 
 namespace MysticLit
 {
@@ -38,6 +39,7 @@ namespace MysticLit
 		std::shared_ptr<PhysicsModule> physicsModule;
 		std::shared_ptr<TimeModule> timeModule;
 		std::shared_ptr<OfflineModule> offlineModule;
+		std::shared_ptr<MarkModule> markModule;
 	};
 }
 

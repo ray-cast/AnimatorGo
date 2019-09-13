@@ -2,6 +2,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/timer_feature.h>
+#include <octoon/rigidbody_component.h>
 
 namespace octoon
 {
@@ -105,10 +106,28 @@ namespace octoon
 		if (delta != 0.0f)
 			animation_.evaluate(delta);
 
-		if (avatar_.empty())
-			this->updateAnimation();
-		else
+		if (!avatar_.empty())
+		{
 			this->updateAvatar();
+
+			for (auto& bone : avatar_)
+			{
+				for (auto& child : bone->getChildren())
+				{
+					auto rigidbody = child->getComponent<RigidbodyComponent>();
+					if (rigidbody)
+					{
+						auto transform = child->getComponent<octoon::TransformComponent>();
+						rigidbody->movePosition(transform->getTranslate());
+						rigidbody->rotation(transform->getQuaternion());
+					}
+				}
+			}
+		}
+		else
+		{
+			this->updateAnimation();
+		}
 	}
 
 	void

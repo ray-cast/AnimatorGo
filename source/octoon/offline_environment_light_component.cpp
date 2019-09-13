@@ -11,7 +11,6 @@ namespace octoon
 	OfflineEnvironmentLightComponent::OfflineEnvironmentLightComponent() noexcept
 		: rprLight_(nullptr)
 		, rprImage_(nullptr)
-		, color_(math::float3::One)
 		, useBgImage_(true)
 	{
 	}
@@ -94,7 +93,7 @@ namespace octoon
 						rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
 						rpr_image_desc desc = { 1, 1, 1, 3, 3 };
 
-						if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, color_.ptr(), &rprImage))
+						if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, this->getColor().ptr(), &rprImage))
 							return;
 					}
 					else
@@ -211,7 +210,7 @@ namespace octoon
 			}
 			else
 			{
-				if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, color_.ptr(), &this->rprImage_))
+				if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, this->getColor().ptr(), &this->rprImage_))
 					return;
 				if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, this->rprImage_))
 					return;

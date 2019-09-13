@@ -42,7 +42,6 @@ namespace octoon
 		void* rprImage_;
 		void* rprLight_;
 
-		math::float3 color_;
 		std::string path_;
 	};
 }

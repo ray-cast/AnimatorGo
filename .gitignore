@@ -20,3 +20,4 @@ document/OctoonAPI/OctoonAPI.chm
 document/OctoonAPI/*.tmp
 
 samples/pmm/*
+samples/tuji/*

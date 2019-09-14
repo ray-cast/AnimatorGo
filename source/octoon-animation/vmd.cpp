@@ -45,11 +45,11 @@ namespace octoon
 		bool
 		VMDHandler::doCanRead(io::istream& stream) const noexcept
 		{
-			static_assert(sizeof(VMDMotion) == 111);
-			static_assert(sizeof(VMDMorph) == 23);
-			static_assert(sizeof(VMDCamera) == 61);
-			static_assert(sizeof(VMDLight) == 28);
-			static_assert(sizeof(VMDSelfShadow) == 9);
+			static_assert(sizeof(VMDMotion) == 111, "");
+			static_assert(sizeof(VMDMorph) == 23, "");
+			static_assert(sizeof(VMDCamera) == 61, "");
+			static_assert(sizeof(VMDLight) == 28, "");
+			static_assert(sizeof(VMDSelfShadow) == 9, "");
 
 			VMD_Header hdr;
 
@@ -122,13 +122,13 @@ namespace octoon
 					motions[it.name].setName(sjis2utf8(vmd.Header.name));
 
 				auto& clip = motions[it.name];
-				clip.getCurve("Position.X").insert(Keyframe((float)it.frame, it.location.x));
-				clip.getCurve("Position.Y").insert(Keyframe((float)it.frame, it.location.y));
-				clip.getCurve("Position.Z").insert(Keyframe((float)it.frame, it.location.z));
-				clip.getCurve("Rotation.X").insert(Keyframe((float)it.frame, it.rotate.x));
-				clip.getCurve("Rotation.Y").insert(Keyframe((float)it.frame, it.rotate.y));
-				clip.getCurve("Rotation.Z").insert(Keyframe((float)it.frame, it.rotate.z));
-				clip.getCurve("Rotation.W").insert(Keyframe((float)it.frame, it.rotate.w));
+				clip.getCurve("Position.X").insert(Keyframe<float, float>((float)it.frame, it.location.x));
+				clip.getCurve("Position.Y").insert(Keyframe<float, float>((float)it.frame, it.location.y));
+				clip.getCurve("Position.Z").insert(Keyframe<float, float>((float)it.frame, it.location.z));
+				clip.getCurve("Rotation.X").insert(Keyframe<float, float>((float)it.frame, it.rotate.x));
+				clip.getCurve("Rotation.Y").insert(Keyframe<float, float>((float)it.frame, it.rotate.y));
+				clip.getCurve("Rotation.Z").insert(Keyframe<float, float>((float)it.frame, it.rotate.z));
+				clip.getCurve("Rotation.W").insert(Keyframe<float, float>((float)it.frame, it.rotate.w));
 			}
 
 			animation.setName(sjis2utf8(vmd.Header.name));

@@ -32,6 +32,7 @@ namespace octoon
 		, friction_(0.5f)
 		, solverFrequency_(120.0f)
 		, enableContinuousCollision_(false)
+		, materialId_(0)
 	{
 	}
 
@@ -86,16 +87,21 @@ namespace octoon
 	}
 
 	void
-	ClothComponent::setTarget(const GameObjectPtr& object) noexcept
+	ClothComponent::setTarget(const GameObjectPtr& target) noexcept
 	{
-		target_ = object;
-		translate_ = target_->getComponent<TransformComponent>()->getTranslate();
+		target_ = target;
 	}
 
 	GameObjectPtr
 	ClothComponent::getTarget() const noexcept
 	{
 		return target_;
+	}
+
+	void
+	ClothComponent::setMaterialId(std::uint32_t n) noexcept
+	{
+		materialId_ = n;
 	}
 
 	void
@@ -140,6 +146,30 @@ namespace octoon
 	ClothComponent::getColliders() const noexcept
 	{
 		return collides_;
+	}
+
+	void
+	ClothComponent::setPartices(const math::float4s& partices) noexcept
+	{
+		partices_ = partices;
+	}
+	
+	const math::float4s&
+	ClothComponent::getPartices() const noexcept
+	{
+		return partices_;
+	}
+
+	void
+	ClothComponent::setIndices(const math::uint1s& indices) noexcept
+	{
+		particesIndices_ = indices;
+	}
+
+	const math::uint1s&
+	ClothComponent::getIndices() const noexcept
+	{
+		return particesIndices_;
 	}
 
 	void
@@ -195,19 +225,6 @@ namespace octoon
 	}
 
 	void
-	ClothComponent::onMoveAfter() noexcept
-	{
-		if (cloth_)
-		{
-			auto transform = this->getComponent<TransformComponent>();
-			auto translate = transform->getTranslate();
-			auto rotation = transform->getQuaternion();
-
-			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
-		}
-	}
-
-	void
 	ClothComponent::onFixedUpdate() noexcept
 	{
 		if (cloth_ && !cloth_->isAsleep())
@@ -217,21 +234,20 @@ namespace octoon
 	void
 	ClothComponent::onLateUpdate() noexcept
 	{
+		if (target_)
+		{
+			auto transform = target_->getComponent<TransformComponent>();
+			auto translate = transform->getTranslate();
+			auto rotation = transform->getQuaternion();
+
+			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+		}
+
 		if (needUpdate_)
 		{
 			this->updateCollideData();
 			this->updateParticesData();
 			needUpdate_ = false;
-		}
-
-		if (target_)
-		{
-			auto transform = target_->getComponent<TransformComponent>();
-			auto translate = transform->getTranslate() - translate_;
-			auto rotation = transform->getQuaternion();
-
-			cloth_->setTranslation(physx::PxVec3(translate.x, translate.y, translate.z));
-			cloth_->setRotation(physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
 		}
 	}
 
@@ -294,121 +310,110 @@ namespace octoon
 	void
 	ClothComponent::updateParticesData() noexcept
 	{
-		auto meshFilter = this->getComponent<MeshFilterComponent>();
-		if (meshFilter)
-		{
-			auto& vertices = meshFilter->getMesh()->getVertexArray();
-
-			nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
-
-			auto transform = target_->getComponent<TransformComponent>();
-			auto translate = transform->getTranslate() - translate_;
-			auto rotation = transform->getQuaternion();
-
-#pragma omp parallel for num_threads(4)
-			for (int i = 0; i < particles.size(); i++)
-			{
-				vertices[i].x = particles[i].x;
-				vertices[i].y = particles[i].y;
-				vertices[i].z = particles[i].z;
-				vertices[i] = math::rotate(rotation, vertices[i]) + translate;
-			}
-
-			for (auto& index : this->pinVertexIndices_)
-			{
-				if (index < particles.size())
-				{
-					vertices[index].x = particles[index].x;
-					vertices[index].y = particles[index].y;
-					vertices[index].z = particles[index].z;
-				}
-			}
-
-			meshFilter->getMesh()->computeVertexNormals();
-			meshFilter->uploadMeshData();
-		}
+		nv::cloth::MappedRange<physx::PxVec4> particles = cloth_->getCurrentParticles();
+		std::memcpy(partices_.data(), &particles.front(), particles.size() * sizeof(math::float4));
 	}
 
 	void
 	ClothComponent::uploadMeshData(const model::Mesh& mesh) noexcept
 	{
 		auto clothFeature = this->tryGetFeature<ClothFeature>();
-		if (clothFeature)
+		if (!clothFeature)
+			return;
+
+		if (cloth_)
 		{
-			if (cloth_)
+			clothFeature->getScene()->removeCloth(cloth_);
+			delete cloth_;
+		}
+
+		auto& vertices = mesh.getVertexArray();
+		auto& triangles = mesh.getIndicesArray(materialId_);
+
+		std::vector<std::uint32_t> indices;
+		std::map<std::uint32_t, std::uint32_t> indicesMap;
+
+		for (auto& it : triangles)
+		{
+			if (indicesMap.find(it) == indicesMap.end())
+				indicesMap[it] = indicesMap.size();
+			indices.push_back(indicesMap[it]);
+		}
+
+		partices_.resize(indicesMap.size());
+		particesIndices_.resize(indicesMap.size());
+
+		float invMass = 1.0f / (totalMass_ / indices.size());
+		for (auto& index : indicesMap)
+		{
+			partices_[index.second] = math::float4(vertices[index.first], invMass);
+			particesIndices_[index.second] = index.first;
+		}
+		
+		nv::cloth::ClothMeshDesc meshDesc;
+		meshDesc.points.data = partices_.data();
+		meshDesc.points.stride = sizeof(math::float4);
+		meshDesc.points.count = partices_.size();
+		meshDesc.triangles.data = indices.data();
+		meshDesc.triangles.stride = sizeof(std::uint32_t) * 3;
+		meshDesc.triangles.count = indices.size() / 3;
+		meshDesc.invMasses.data = &partices_.front().w;
+		meshDesc.invMasses.stride = sizeof(math::float4);
+		meshDesc.invMasses.count = partices_.size();
+
+		physx::PxVec3 gravity(0.0f, -98.0f, 0.0f);
+		nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
+		nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, true);
+
+		try
+		{
+			if (fabric)
 			{
-				clothFeature->getScene()->removeCloth(cloth_);
-				delete cloth_;
+				cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>((physx::PxVec4*)partices_.data(), (physx::PxVec4*)partices_.data() + partices_.size()), *fabric);
+				cloth_->setUserData(this);
+				cloth_->setGravity(gravity);
+				cloth_->setFriction(this->getFriction());
+				cloth_->setSolverFrequency(this->getSolverFrequency());
+				cloth_->setDamping(physx::PxVec3(0.1f, 0.1f, 0.1f));
+				cloth_->setSelfCollisionDistance(0.07f);
+				cloth_->setTetherConstraintScale(1.0f);
+				cloth_->setTetherConstraintStiffness(1.0f);
+				cloth_->enableContinuousCollision(this->getEnableCCD());
+
+				auto transform = this->getComponent<TransformComponent>();
+				auto translate = transform->getTranslate();
+				auto rotation = transform->getQuaternion();
+				cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
+
+				nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
+				for (int i = 0; i < (int)motionConstraints.size(); i++)
+					motionConstraints[i] = physx::PxVec4(partices_[i].x, partices_[i].y, partices_[i].z, 10.0f);
+
+				for (auto& index : this->pinVertexIndices_)
+				{
+					auto it = indicesMap.find(index);
+					if (it != indicesMap.end())
+						motionConstraints[(*it).second].w = 0.0f;
+				}
+
+				std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
+				for (std::uint16_t i = 0; i < fabric->getNumPhases(); i++)
+				{
+					phases[i].mPhaseIndex = i;
+					phases[i].mStiffness = 1.0f;
+					phases[i].mStiffnessMultiplier = 1.0f;
+					phases[i].mCompressionLimit = 1.0f;
+					phases[i].mStretchLimit = 1.0f;
+				}
+
+				cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases.data(), phases.data() + fabric->getNumPhases()));
+				clothFeature->getScene()->addCloth(cloth_);
 			}
 
-			float invMass = 1.0f / totalMass_ / mesh.getVertexArray().size();
-
-			std::vector<float> mass(mesh.getVertexArray().size(), invMass);
-
-			nv::cloth::ClothMeshDesc meshDesc;
-			meshDesc.points.data = mesh.getVertexArray().data();
-			meshDesc.points.stride = sizeof(math::float3);
-			meshDesc.points.count = mesh.getVertexArray().size();
-			meshDesc.triangles.data = mesh.getIndicesArray().data();
-			meshDesc.triangles.stride = sizeof(std::uint32_t) * 3;
-			meshDesc.triangles.count = mesh.getIndicesArray().size() / 3;
-			meshDesc.invMasses.data = mass.data();
-			meshDesc.invMasses.stride = sizeof(float);
-			meshDesc.invMasses.count = mass.size();
-
-			physx::PxVec3 gravity(0.0f, -9.8f, 0.0f);
-			nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
-			nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, true);
-
-			std::vector<physx::PxVec4> positions;
-			for (auto& it : mesh.getVertexArray())
-				positions.push_back(physx::PxVec4(it.x, it.y, it.z, invMass));
-
-			auto transform = this->getComponent<TransformComponent>();
-			auto translate = transform->getTranslate();
-			auto rotation = transform->getQuaternion();
-
-			for (auto& index : this->pinVertexIndices_)
-			{
-				if (index < positions.size())
-					positions[index].w = 0.0f;
-			}
-
-			cloth_ = clothFeature->getContext()->createCloth(nv::cloth::Range<physx::PxVec4>(positions.data(), positions.data() + positions.size()), *fabric);
-			cloth_->setUserData(this);
-			cloth_->setGravity(gravity);
-			cloth_->setFriction(this->getFriction());
-			cloth_->setSolverFrequency(this->getSolverFrequency());
-			cloth_->setDamping(physx::PxVec3(0.1f, 0.1f, 0.1f));
-			cloth_->setSelfCollisionDistance(0.07f);
-			cloth_->setTetherConstraintScale(1.0f);
-			cloth_->setTetherConstraintStiffness(1.0f);
-			cloth_->enableContinuousCollision(this->getEnableCCD());
-			cloth_->teleportToLocation(physx::PxVec3(translate.x, translate.y, translate.z), physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w));
-
-			nv::cloth::Range<physx::PxVec4> motionConstraints = cloth_->getMotionConstraints();
-			for (int i = 0; i < (int)motionConstraints.size(); i++)
-				motionConstraints[i] = physx::PxVec4(positions[i].getXYZ(), 10.0f);
-
-			for (auto& index : this->pinVertexIndices_)
-			{
-				if (index < motionConstraints.size())
-					motionConstraints[index].w = 0.0f;
-			}
-
-			std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());
-			for (std::uint16_t i = 0; i < fabric->getNumPhases(); i++)
-			{
-				phases[i].mPhaseIndex = i;
-				phases[i].mStiffness = 1.0f;
-				phases[i].mStiffnessMultiplier = 1.0f;
-				phases[i].mCompressionLimit = 1.0f;
-				phases[i].mStretchLimit = 1.0f;
-			}
-
-			cloth_->setPhaseConfig(nv::cloth::Range<nv::cloth::PhaseConfig>(phases.data(), phases.data() + fabric->getNumPhases()));
-			clothFeature->getScene()->addCloth(cloth_);
-			
+			fabric->decRefCount();
+		}
+		catch (...)
+		{
 			fabric->decRefCount();
 		}
 	}

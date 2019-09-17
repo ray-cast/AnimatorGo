@@ -85,6 +85,7 @@ namespace octoon
 
 			void computeFaceNormals(std::vector<math::float3s>& faceNormals) noexcept;
 			void computeVertexNormals() noexcept;
+			void computeVertexNormals(std::size_t i) noexcept;
 			void computeVertexNormals(const math::float3s& faceNormals) noexcept;
 			void computeVertexNormals(std::size_t width, std::size_t height) noexcept;
 			void computeTangents(std::uint8_t texSlot = 0) noexcept;

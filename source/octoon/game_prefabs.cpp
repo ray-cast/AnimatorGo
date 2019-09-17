@@ -253,6 +253,9 @@ namespace octoon
 		if (!this->createMorph(model, actor))
 			return false;
 
+		if (!this->createClothes(model, actor, bones, rigidbody))
+			return false;
+
 		return actor;
 	}
 
@@ -307,7 +310,7 @@ namespace octoon
 	}
 
 	bool
-	GamePrefabs::createSoftbodies(const model::Model& model, GameObjects& meshes, const GameObjects& bones, GameObjects& rigidbodies) noexcept
+	GamePrefabs::createClothes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, GameObjects& rigidbodies) noexcept
 	{
 		for (auto& it : model.get<Model::softbody>())
 		{
@@ -328,23 +331,19 @@ namespace octoon
 			cloth->setPinVertexIndices(it->pinVertexIndices);
 			cloth->setSolverFrequency(300.0f);
 			cloth->setEnableCCD(true);
-			cloth->setTarget(bones[1]);
+			cloth->setMaterialId(it->materialIndex);
 
-			auto meshFilter = meshes[it->materialIndex]->getComponent<MeshFilterComponent>();
-			if (meshFilter)
+			if (!it->anchorRigidbodies.empty())
 			{
-				auto mesh = meshFilter->getMesh();
-				auto& weights = mesh->getWeightArray();
-
-				VertexWeights newWeights(weights.size());
-				for (auto& index : it->pinVertexIndices)
-					newWeights[index] = weights[index];
-
-				mesh->setWeightArray(newWeights);
+				auto rigidbody = rigidbodies[it->anchorRigidbodies.front()];
+				if (rigidbody)
+				{
+					if (rigidbody->getParent())
+						cloth->setTarget(rigidbody->getParent()->downcast_pointer<GameObject>());
+				}
 			}
-
 			
-			meshes[it->materialIndex]->addComponent(cloth);
+			meshes->addComponent(cloth);
 		}
 
 		return true;

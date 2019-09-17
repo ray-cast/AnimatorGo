@@ -88,8 +88,8 @@ namespace octoon
 			{
 				if (solver_->beginSimulation(timeInterval_ / iterationCounts_))
 				{
-					for (int i = 0; i < solver_->getSimulationChunkCount(); i++)
-						solver_->simulateChunk(i);
+					for (int j = 0; j < solver_->getSimulationChunkCount(); j++)
+						solver_->simulateChunk(j);
 					solver_->endSimulation();
 				}
 			}

@@ -9,8 +9,9 @@ namespace octoon
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)
-		, morphEnable_(false)
-		, textureEnable_(false)
+		, clothEnable_(true)
+		, morphEnable_(true)
+		, textureEnable_(true)
 	{
 	}
 
@@ -65,6 +66,18 @@ namespace octoon
 	}
 
 	void
+	SkinnedMeshRendererComponent::setClothBlendEnable(bool enable) noexcept
+	{
+		clothEnable_ = enable;
+	}
+
+	bool
+	SkinnedMeshRendererComponent::getClothBlendEnable() const noexcept
+	{
+		return clothEnable_;
+	}
+
+	void
 	SkinnedMeshRendererComponent::setMorphBlendEnable(bool enable) noexcept
 	{
 		morphEnable_ = enable;
@@ -95,6 +108,7 @@ namespace octoon
 		this->skinnedMesh_->setNormalArray(mesh.getNormalArray());
 
 		this->updateJointData(mesh);
+		this->updateClothBlendData();
 		this->updateMorphBlendData();
 		this->updateTextureBlendData();
 		this->updateBoneData(mesh);
@@ -150,6 +164,8 @@ namespace octoon
 			morphComponents_.push_back(component.get()->downcast<SkinnedMorphComponent>());
 		else if (component->isInstanceOf<SkinnedTextureComponent>())
 			textureComponents_.push_back(component.get()->downcast<SkinnedTextureComponent>());
+		else if (component->isInstanceOf<ClothComponent>())
+			clothComponents_.push_back(component.get()->downcast<ClothComponent>());		
 	}
 
 	void
@@ -166,6 +182,12 @@ namespace octoon
 			auto it = std::find(textureComponents_.begin(), textureComponents_.end(), component.get());
 			if (it != textureComponents_.end())
 				textureComponents_.erase(it);
+		}
+		else if (component->isInstanceOf<ClothComponent>())
+		{
+			auto it = std::find(clothComponents_.begin(), clothComponents_.end(), component.get());
+			if (it != clothComponents_.end())
+				clothComponents_.erase(it);
 		}
 	}
 
@@ -223,20 +245,44 @@ namespace octoon
 #		pragma omp parallel for num_threads(4)
 		for (std::size_t i = 0; i < numVertices; i++)
 		{
-			math::float3 v = math::float3::Zero;
-			math::float3 n = math::float3::Zero;
+			auto& blend = weights[i];
 
-			for (std::uint8_t j = 0; j < 4; j++)
+			if (blend.weight1 != 0 || blend.weight2 != 0 || blend.weight3 != 0 || blend.weight4 != 0)
 			{
-				auto w = weights[i].weights[j];
-				if (w == 0.0f)
-					break;
-				v += (joints_[weights[i].bones[j]] * vertices[i]) * w;
-				n += ((math::float3x3)joints_[weights[i].bones[j]] * normals[i]) * w;
-			}
+				math::float3 v = math::float3::Zero;
+				math::float3 n = math::float3::Zero;
 
-			vertices[i] = v;
-			normals[i] = n;
+				for (std::uint8_t j = 0; j < 4; j++)
+				{
+					auto w = blend.weights[j];
+					if (w == 0.0f)
+						break;
+					v += (joints_[blend.bones[j]] * vertices[i]) * w;
+					n += ((math::float3x3)joints_[blend.bones[j]] * normals[i]) * w;
+				}
+
+				vertices[i] = v;
+				normals[i] = n;
+			}
+		}
+	}
+
+	void
+	SkinnedMeshRendererComponent::updateClothBlendData() noexcept
+	{
+		if (clothEnable_)
+		{
+			auto& dstVertices = skinnedMesh_->getVertexArray();
+
+			for (auto& it : clothComponents_)
+			{
+				auto& indices = it->getIndices();
+				auto& partices = it->getPartices();
+
+				std::size_t numIndices = indices.size();
+				for (std::size_t i = 0; i < numIndices; i++)
+					dstVertices[indices[i]] = partices[i].xyz();
+			}
 		}
 	}
 

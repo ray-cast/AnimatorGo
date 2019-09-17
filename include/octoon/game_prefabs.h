@@ -46,7 +46,7 @@ namespace octoon
 
 	private:
 		bool createBones(const model::Model& model, GameObjects& bones) noexcept;
-		bool createSoftbodies(const model::Model& model, GameObjects& mesh, const GameObjects& bones, GameObjects& rigidbodys) noexcept;
+		bool createClothes(const model::Model& model, GameObjectPtr& mesh, const GameObjects& bones, GameObjects& rigidbodys) noexcept;
 		bool createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept;
 		bool createJoints(const model::Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept;
 		bool createSolver(const model::Model& model, GameObjects& bones) noexcept;

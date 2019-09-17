@@ -4,6 +4,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/skinned_component.h>
+#include <octoon/cloth_component.h>
 #include <octoon/video/geometry.h>
 #include <octoon/model/mesh.h>
 
@@ -23,6 +24,9 @@ namespace octoon
 		void setTransforms(const GameObjects& transforms) noexcept;
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
+
+		void setClothBlendEnable(bool enable) noexcept;
+		bool getClothBlendEnable() const noexcept;
 
 		void setMorphBlendEnable(bool enable) noexcept;
 		bool getMorphBlendEnable() const noexcept;
@@ -51,6 +55,8 @@ namespace octoon
 	private:
 		void updateJointData(const model::Mesh& mesh) noexcept;
 		void updateBoneData(const model::Mesh& mesh) noexcept;
+
+		void updateClothBlendData() noexcept;
 		void updateMorphBlendData() noexcept;
 		void updateTextureBlendData() noexcept;
 
@@ -60,6 +66,7 @@ namespace octoon
 
 	private:
 		bool needUpdate_;
+		bool clothEnable_;
 		bool morphEnable_;
 		bool textureEnable_;
 
@@ -70,6 +77,7 @@ namespace octoon
 		model::MeshPtr mesh_;
 		model::MeshPtr skinnedMesh_;
 
+		std::vector<class ClothComponent*> clothComponents_;
 		std::vector<class SkinnedMorphComponent*> morphComponents_;
 		std::vector<class SkinnedTextureComponent*> textureComponents_;
 	};

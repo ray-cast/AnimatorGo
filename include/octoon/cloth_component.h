@@ -32,6 +32,8 @@ namespace octoon
 		void setTarget(const GameObjectPtr& object) noexcept;
 		GameObjectPtr getTarget() const noexcept;
 
+		void setMaterialId(std::uint32_t n) noexcept;
+
 		void setEnableCCD(bool enableContinuousCollision) noexcept;
 		bool getEnableCCD() const noexcept;
 
@@ -42,6 +44,12 @@ namespace octoon
 		void setColliders(const GameObjects& collider) noexcept;
 		const GameObjects& getColliders() const noexcept;
 
+		void setPartices(const math::float4s& partices) noexcept;
+		const math::float4s& getPartices() const noexcept;
+
+		void setIndices(const math::uint1s& indices) noexcept;
+		const math::uint1s& getIndices() const noexcept;
+
 		void setPinVertexIndices(const math::uint1s& indices) noexcept;
 		const math::uint1s&  getPinVertexIndices() const noexcept;
 
@@ -50,8 +58,6 @@ namespace octoon
 	private:
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
-
-		void onMoveAfter() noexcept override;
 
 		void onFixedUpdate() noexcept override;
 		void onLateUpdate() noexcept override;
@@ -69,15 +75,19 @@ namespace octoon
 		bool needUpdate_;
 		bool enableContinuousCollision_;
 
+		std::uint32_t materialId_;
+
 		float totalMass_;
 		float friction_;
 		float solverFrequency_;
-		math::float3 translate_;
 
 		GameObjects collides_;
 		GameObjectPtr target_;
 
 		math::uint1s pinVertexIndices_;
+
+		math::float4s partices_;
+		math::uint1s  particesIndices_;
 
 		nv::cloth::Cloth* cloth_;
 	};

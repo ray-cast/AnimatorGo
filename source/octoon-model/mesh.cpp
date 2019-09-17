@@ -1172,6 +1172,38 @@ namespace octoon
 		}
 
 		void
+		Mesh::computeVertexNormals(std::size_t n) noexcept
+		{
+			auto& indices = _indices[n];
+			
+			for (auto& i : indices)
+				_normals[i] = math::float3::Zero;
+
+			for (std::size_t i = 0; i < indices.size(); i += 3)
+			{
+				std::uint32_t f1 = indices[i];
+				std::uint32_t f2 = indices[i + 1];
+				std::uint32_t f3 = indices[i + 2];
+
+				auto& a = _vertices.at(f1);
+				auto& b = _vertices.at(f2);
+				auto& c = _vertices.at(f3);
+
+				auto edge1 = c - b;
+				auto edge2 = a - b;
+
+				auto n(math::normalize(math::cross(edge1, edge2)));
+
+				_normals[f1] += n;
+				_normals[f2] += n;
+				_normals[f3] += n;
+			}
+
+			for (auto& i : indices)
+				_normals[i] = math::normalize(_normals[i]);
+		}
+
+		void
 		Mesh::computeVertexNormals(const float3s& faceNormals) noexcept
 		{
 			assert(faceNormals.size() == _indices.size());

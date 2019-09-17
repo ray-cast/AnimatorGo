@@ -203,7 +203,16 @@ namespace octoon
 		{
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
-				this->sample(timeFeature->getTimeInterval());
+			{
+				auto delta = timeFeature->getTimeInterval();
+				if (delta != 0.0f)
+					animation_.evaluate(delta);
+
+				if (!avatar_.empty())
+					this->updateAvatar();
+				else
+					this->updateAnimation();
+			}
 		}
 	}
 

@@ -96,6 +96,7 @@ namespace octoon
 		this->skinnedMesh_->setNormalArray(mesh.getNormalArray());
 
 		this->updateJointData(mesh);
+		this->updateClothBlendData();
 		this->updateMorphBlendData();
 		this->updateTextureBlendData();
 		this->updateBoneData(mesh);
@@ -162,6 +163,8 @@ namespace octoon
 			morphComponents_.push_back(component.get()->downcast<SkinnedMorphComponent>());
 		else if (component->isInstanceOf<SkinnedTextureComponent>())
 			textureComponents_.push_back(component.get()->downcast<SkinnedTextureComponent>());
+		else if (component->isInstanceOf<ClothComponent>())
+			clothComponents_.push_back(component.get()->downcast<ClothComponent>());
 	}
 
 	void
@@ -178,6 +181,12 @@ namespace octoon
 			auto it = std::find(textureComponents_.begin(), textureComponents_.end(), component.get());
 			if (it != textureComponents_.end())
 				textureComponents_.erase(it);
+		}
+		else if (component->isInstanceOf<ClothComponent>())
+		{
+			auto it = std::find(clothComponents_.begin(), clothComponents_.end(), component.get());
+			if (it != clothComponents_.end())
+				clothComponents_.erase(it);
 		}
 	}
 
@@ -235,6 +244,25 @@ namespace octoon
 
 			vertices[i] = v;
 			normals[i] = n;
+		}
+	}
+
+	void
+	OfflineSkinnedMeshRendererComponent::updateClothBlendData() noexcept
+	{
+		if (clothEnable_)
+		{
+			auto& dstVertices = skinnedMesh_->getVertexArray();
+
+			for (auto& it : clothComponents_)
+			{
+				auto& indices = it->getIndices();
+				auto& partices = it->getPartices();
+
+				std::size_t numIndices = indices.size();
+				for (std::size_t i = 0; i < numIndices; i++)
+					dstVertices[indices[i]] = partices[i].xyz();
+			}
 		}
 	}
 

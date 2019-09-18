@@ -10,6 +10,7 @@ namespace octoon
 
 	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)
+		, clothEnable_(true)
 		, morphEnable_(false)
 		, textureEnable_(false)
 	{
@@ -230,20 +231,25 @@ namespace octoon
 #		pragma omp parallel for num_threads(4)
 		for (std::size_t i = 0; i < numVertices; i++)
 		{
-			math::float3 v = math::float3::Zero;
-			math::float3 n = math::float3::Zero;
+			auto& blend = weights[i];
 
-			for (std::uint8_t j = 0; j < 4; j++)
+			if (blend.weight1 != 0 || blend.weight2 != 0 || blend.weight3 != 0 || blend.weight4 != 0)
 			{
-				auto w = weights[i].weights[j];
-				if (w == 0.0f)
-					break;
-				v += (joints_[weights[i].bones[j]] * vertices[i]) * w;
-				n += ((math::float3x3)joints_[weights[i].bones[j]] * normals[i]) * w;
-			}
+				math::float3 v = math::float3::Zero;
+				math::float3 n = math::float3::Zero;
 
-			vertices[i] = v;
-			normals[i] = n;
+				for (std::uint8_t j = 0; j < 4; j++)
+				{
+					auto w = blend.weights[j];
+					if (w == 0.0f)
+						break;
+					v += (joints_[blend.bones[j]] * vertices[i]) * w;
+					n += ((math::float3x3)joints_[blend.bones[j]] * normals[i]) * w;
+				}
+
+				vertices[i] = v;
+				normals[i] = n;
+			}
 		}
 	}
 

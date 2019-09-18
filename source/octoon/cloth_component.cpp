@@ -393,7 +393,7 @@ namespace octoon
 				{
 					auto it = indicesMap.find(index);
 					if (it != indicesMap.end())
-						motionConstraints[(*it).second].w = 0.0f;
+						motionConstraints[(*it).second].w = 1e-5f;
 				}
 
 				std::vector<nv::cloth::PhaseConfig> phases(fabric->getNumPhases());

@@ -33,6 +33,7 @@ namespace octoon
 		, solverFrequency_(120.0f)
 		, enableContinuousCollision_(false)
 		, materialId_(0)
+		, gravity_(math::float3(0.0f, -98.0f, 0.0f))
 	{
 	}
 
@@ -146,6 +147,27 @@ namespace octoon
 	ClothComponent::getColliders() const noexcept
 	{
 		return collides_;
+	}
+
+	void
+	ClothComponent::setGravity(const math::float3& gravity) noexcept
+	{
+		if (gravity_ != gravity)
+		{
+			if (cloth_)
+			{
+				physx::PxVec3 gravity(gravity.x, gravity.y, gravity.z);
+				cloth_->setGravity(gravity);
+			}
+
+			gravity_ = gravity;
+		}
+	}
+	
+	const math::float3&
+	ClothComponent::getGravity() const noexcept
+	{
+		return gravity_;
 	}
 
 	void
@@ -282,15 +304,15 @@ namespace octoon
 				s1 = math::rotate(quaternion, s1) + translate;
 				s2 = math::rotate(quaternion, s2) + translate;
 
-				spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, capsule->getRadius()));
-				spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, capsule->getRadius()));
+				spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, radius));
+				spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, radius));
 
 				capsules.push_back(spheres.size() - 2);
 				capsules.push_back(spheres.size() - 1);
 			}
 		}
 
-		for (auto& it : spheres)
+		/*for (auto& it : spheres)
 		{
 			auto& rotation = cloth_->getRotation();
 			auto& translate = cloth_->getTranslation();
@@ -298,7 +320,7 @@ namespace octoon
 			it.x = xyz.x;
 			it.y = xyz.y;
 			it.z = xyz.z;
-		}
+		}*/
 
 		nv::cloth::Range<const physx::PxVec4> sphereRange(spheres.data(), spheres.data() + spheres.size());
 		cloth_->setSpheres(sphereRange, 0, cloth_->getNumSpheres());
@@ -361,7 +383,7 @@ namespace octoon
 		meshDesc.invMasses.stride = sizeof(math::float4);
 		meshDesc.invMasses.count = partices_.size();
 
-		physx::PxVec3 gravity(0.0f, -98.0f, 0.0f);
+		physx::PxVec3 gravity(gravity_.x, gravity_.y, gravity_.z);
 		nv::cloth::Vector<int32_t>::Type phaseTypeInfo;
 		nv::cloth::Fabric* fabric = NvClothCookFabricFromMesh(clothFeature->getContext(), meshDesc, gravity, &phaseTypeInfo, true);
 

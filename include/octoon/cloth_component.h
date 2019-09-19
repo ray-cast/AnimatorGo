@@ -44,6 +44,9 @@ namespace octoon
 		void setColliders(const GameObjects& collider) noexcept;
 		const GameObjects& getColliders() const noexcept;
 
+		void setGravity(const math::float3& gravity) noexcept;
+		const math::float3& getGravity() const noexcept;
+
 		void setPartices(const math::float4s& partices) noexcept;
 		const math::float4s& getPartices() const noexcept;
 
@@ -84,6 +87,7 @@ namespace octoon
 		GameObjects collides_;
 		GameObjectPtr target_;
 
+		math::float3 gravity_;
 		math::uint1s pinVertexIndices_;
 
 		math::float4s partices_;

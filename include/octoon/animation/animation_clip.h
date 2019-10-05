@@ -16,15 +16,18 @@ namespace octoon
 			std::string name;
 			std::unordered_map<std::string, AnimationCurve<_Elem, _Time>> curves;
 			bool finish;
+			_Time timeLength;
 
 			AnimationClip() noexcept
 				: finish(false)
+				, timeLength(0)
 			{
 			}
 
 			explicit AnimationClip(const std::string& _name) noexcept
 				: name(_name)
 				, finish(false)
+				, timeLength(0)
 			{				
 			}
 
@@ -41,21 +44,33 @@ namespace octoon
 			void setCurve(const char* _name, AnimationCurve<_Elem, _Time>&& curve) noexcept
 			{
 				this->curves[_name] = std::move(curve);
+				timeLength = 0;
+				for (auto& it : this->curves)
+					timeLength = std::max(it.second.timeLength, timeLength);
 			}
 
 			void setCurve(const char* _name, const AnimationCurve<_Elem, _Time>& curve) noexcept
 			{
 				this->curves[_name] = curve;
+				timeLength = 0;
+				for (auto& it : this->curves)
+					timeLength = std::max(it.second.timeLength, timeLength);
 			}
 
 			void setCurve(const std::string& _name, AnimationCurve<_Elem, _Time>&& curve) noexcept
 			{
 				this->curves[_name] = std::move(curve);
+				timeLength = 0;
+				for (auto& it : this->curves)
+					timeLength = std::max(it.second.timeLength, timeLength);
 			}
 
 			void setCurve(const std::string& _name, const AnimationCurve<_Elem, _Time>& curve) noexcept
 			{
 				this->curves[_name] = curve;
+				timeLength = 0;
+				for (auto& it : this->curves)
+					timeLength = std::max(it.second.timeLength, timeLength);
 			}
 
 			AnimationCurve<_Elem, _Time>& getCurve(const char* _name) noexcept

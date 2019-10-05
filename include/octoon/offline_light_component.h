@@ -22,7 +22,7 @@ namespace octoon
 		OfflineLightComponent(const OfflineLightComponent&) = delete;
 		OfflineLightComponent& operator=(const OfflineLightComponent&) = delete;
 
-	private:
+	protected:
 		float intensity_;
 		math::float3 color_;
 	};

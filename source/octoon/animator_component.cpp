@@ -94,6 +94,12 @@ namespace octoon
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
+	float
+	AnimatorComponent::timeLength() const noexcept
+	{
+		return animation_.timeLength();
+	}
+
 	void
 	AnimatorComponent::setTime(float time) noexcept
 	{

@@ -9,14 +9,13 @@ namespace octoon
 
 	OfflineDirectionalLightComponent::OfflineDirectionalLightComponent() noexcept
 		: rprLight_(nullptr)
-		, color_(math::float3::One)
 	{
 	}
 
 	OfflineDirectionalLightComponent::~OfflineDirectionalLightComponent() noexcept
 	{
 	}
-
+	
 	void
 	OfflineDirectionalLightComponent::setIntensity(float value) noexcept
 	{
@@ -35,18 +34,21 @@ namespace octoon
 	void
 	OfflineDirectionalLightComponent::setColor(const math::float3& value) noexcept
 	{
-		if (this->rprLight_)
+		if (color_ != value)
 		{
-			auto intensity = this->getIntensity();
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
-				return;
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setColor(value);
 		}
-
-		OfflineLightComponent::setColor(value);
 	}
 
 	GameComponentPtr

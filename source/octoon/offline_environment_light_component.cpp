@@ -37,43 +37,46 @@ namespace octoon
 	void
 	OfflineEnvironmentLightComponent::setColor(const math::float3& value) noexcept
 	{
-		if (this->rprLight_)
+		if (color_ != value)
 		{
-			if (path_.empty())
+			if (this->rprLight_)
 			{
-				auto feature = this->tryGetFeature<OfflineFeature>();
-				if (feature)
+				if (path_.empty())
 				{
-					rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
-					rpr_image_desc desc = { 1, 1, 1, 3, 3 };
-
-					rpr_image rprImage = nullptr;
-					if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, value.ptr(), &rprImage))
-						return;
-
-					if (rprImage)
+					auto feature = this->tryGetFeature<OfflineFeature>();
+					if (feature)
 					{
-						if (this->rprImage_)
+						rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
+						rpr_image_desc desc = { 1, 1, 1, 3, 3 };
+
+						rpr_image rprImage = nullptr;
+						if (RPR_SUCCESS != rprContextCreateImage(feature->getContext(), format, &desc, value.ptr(), &rprImage))
+							return;
+
+						if (rprImage)
 						{
-							rprObjectDelete(rprImage_);
-							this->rprImage_ = nullptr;
+							if (this->rprImage_)
+							{
+								rprObjectDelete(rprImage_);
+								this->rprImage_ = nullptr;
+							}
+
+							this->rprImage_ = rprImage;
+
+							if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, rprImage))
+								return;
+
+							if (RPR_SUCCESS != rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, rprImage))
+								return;
 						}
 
-						this->rprImage_ = rprImage;
-
-						if (RPR_SUCCESS != rprEnvironmentLightSetImage(this->rprLight_, rprImage))
-							return;
-
-						if (RPR_SUCCESS != rprSceneSetEnvironmentOverride(feature->getScene(), RPR_SCENE_ENVIRONMENT_OVERRIDE_BACKGROUND, rprImage))
-							return;
+						feature->setFramebufferDirty(true);
 					}
-
-					feature->setFramebufferDirty(true);
 				}
 			}
-		}
 
-		OfflineLightComponent::setColor(value);
+			OfflineLightComponent::setColor(value);
+		}
 	}
 
 	void

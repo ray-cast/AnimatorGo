@@ -3,13 +3,14 @@
 
 #include <octoon/io/stream_buf.h>
 #include <octoon/io/file.h>
+#include <octoon/runtime/json.h>
 #include <vector>
 
 namespace octoon
 {
 	namespace io
 	{
-		class httpbuf final : public stream_buf
+		class OCTOON_EXPORT httpbuf final : public stream_buf
 		{
 		public:
 			httpbuf() noexcept;
@@ -17,10 +18,15 @@ namespace octoon
 
 			bool is_open() const noexcept;
 
-			bool open(const char* url, ios_base::openmode mode) noexcept;
-			bool open(const std::string& url, ios_base::openmode mode) noexcept;
+			bool get(const char* url, std::uint32_t timeout = 0) noexcept;
+			bool get(const std::string& url, std::uint32_t timeout = 0) noexcept;
+
+			bool post(const char* url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0) noexcept;
+			bool post(const std::string& url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0) noexcept;
 
 			bool close() noexcept;
+
+			runtime::json json() const noexcept;
 
 			streamsize read(char* str, std::streamsize cnt) noexcept;
 			streamsize write(const char* str, std::streamsize cnt) noexcept;

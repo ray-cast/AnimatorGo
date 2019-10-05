@@ -25,6 +25,8 @@ namespace octoon
 		void pause() noexcept;
 		void reset() noexcept;
 
+		float timeLength() const noexcept;
+
 		void setTime(float time) noexcept;
 		void sample(float delta = 0.0f) noexcept;
 

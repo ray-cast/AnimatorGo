@@ -38,7 +38,7 @@ namespace octoon
 			const isentry ok(this);
 			if (ok)
 			{
-				if (!http_.open(path, mode))
+				if (!http_.get(path))
 					this->setstate(ios_base::failbit, mode);
 				else
 					this->clear(ios_base::goodbit, mode);
@@ -100,7 +100,7 @@ namespace octoon
 			const osentry ok(this);
 			if (ok)
 			{
-				if (!http_.open(path, mode))
+				if (!http_.get(path))
 					this->setstate(ios_base::failbit, mode);
 				else
 					this->clear(ios_base::goodbit, mode);
@@ -156,7 +156,7 @@ namespace octoon
 			const osentry ok(this);
 			if (ok)
 			{
-				if (!http_.open(path, mode))
+				if (!http_.get(path))
 					this->setstate(ios_base::failbit, mode);
 				else
 					this->clear(ios_base::goodbit, mode);

@@ -10,6 +10,7 @@ namespace octoon
 		struct AnimatorStateInfo
 		{
 			bool finish;
+			float timeLength;
 		};
 
 		template<typename _Elem = float, typename _Time = float>
@@ -24,30 +25,43 @@ namespace octoon
 				: name("Default")
 			{
 				state.finish = false;
+				state.timeLength = 0;
 			}
 
 			Animation(AnimationClip<_Elem, _Time>&& _clip) noexcept
 				: Animation()
 			{
 				clips.emplace_back(std::move(_clip));
+
+				for (auto& clip : clips)
+					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
 			Animation(const AnimationClip<_Elem, _Time>& _clip) noexcept
 				: Animation()
 			{
 				clips.emplace_back(std::move(_clip));
+
+				for (auto& clip : clips)
+					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
 			Animation(AnimationClips<_Elem, _Time>&& _clips) noexcept
 				: Animation()
 			{
 				clips = std::move(_clips);
+
+				for (auto& clip : clips)
+					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
 			Animation(const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: Animation()
 			{
 				clips = _clips;
+
+				for (auto& clip : clips)
+					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
 			Animation(std::string&& _name, AnimationClips<_Elem, _Time>&& _clips) noexcept
@@ -98,6 +112,11 @@ namespace octoon
 			void setClips(std::vector<AnimationClip<_Elem, _Time>>&& clip) noexcept
 			{
 				this->clips = std::move(clip);
+			}
+
+			float timeLength() const noexcept
+			{
+				return state.timeLength;
 			}
 
 			void setTime(const _Time& time) noexcept

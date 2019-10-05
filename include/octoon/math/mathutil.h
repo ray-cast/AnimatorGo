@@ -122,6 +122,13 @@ namespace octoon
 			return t1 * (1.0f - t) + t2 * t;
 		}
 
+		template<typename _Tx, typename _Ty>
+		constexpr auto smoothlerp(const _Tx t1, const _Tx t2, const _Ty t) noexcept
+		{
+			float r = saturate((t - t1) / (t2 - t1));
+			return r * r * (3.0f - (2.0f * r));
+		}
+
 		template<typename T>
 		constexpr auto smoothlerp(const T x, const T x1, const T x2, const T q00, const T q01) noexcept
 		{

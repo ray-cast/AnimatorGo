@@ -25,6 +25,7 @@ namespace octoon
 			bool finish;
 			bool negative;
 			_Time time;
+			_Time timeLength;
 			_Elem value;
 			Keyframes frames;
 			std::shared_ptr<Interpolator<_Time>> interpolator;
@@ -34,6 +35,7 @@ namespace octoon
 			AnimationCurve() noexcept
 				: finish(false)
 				, negative(false)
+				, timeLength(0)
 				, preWrapMode(AnimationMode::Default)
 				, postWrapMode(AnimationMode::Default)
 			{
@@ -43,6 +45,7 @@ namespace octoon
 				: interpolator(std::move(interpolator_))
 				, finish(false)
 				, negative(false)
+				, timeLength(0)
 				, preWrapMode(AnimationMode::Default)
 				, postWrapMode(AnimationMode::Default)
 			{
@@ -52,6 +55,7 @@ namespace octoon
 			explicit AnimationCurve(const Keyframes& frames_, const std::shared_ptr<Interpolator<_Time>>& interpolator_ = nullptr) noexcept
 				: interpolator(interpolator_)
 				, finish(false)
+				, timeLength(0)
 			{
 				this->assign(frames_);
 			}
@@ -59,33 +63,37 @@ namespace octoon
 			void assign(Keyframes&& frames_) noexcept
 			{
 				frames = std::move(frames_);
-				this->time = frames.front().time;
-				this->value = frames.front().value;
 				this->sort();
+				this->time = frames.front().time;
+				this->timeLength = frames.back().time;
+				this->value = frames.front().value;
 			}
 
 			void assign(const Keyframes& frames_) noexcept
 			{
 				frames = frames_;
-				this->time = frames.front().time;
-				this->value = frames.front().value;
 				this->sort();
+				this->time = frames.front().time;
+				this->timeLength = frames.back().time;
+				this->value = frames.front().value;
 			}
 
 			void insert(Keyframe<_Elem, _Time>&& frame_) noexcept
 			{
 				frames.emplace_back(std::move(frame_));
-				this->time = frames.front().time;
-				this->value = frames.front().value;
 				this->sort();
+				this->time = frames.front().time;
+				this->timeLength = frames.back().time;
+				this->value = frames.front().value;
 			}
 
 			void insert(const Keyframe<_Elem, _Time>& frame_) noexcept
 			{
 				frames.emplace_back(frame_);				
-				this->time = frames.front().time;
-				this->value = frames.front().value;
 				this->sort();
+				this->time = frames.front().time;
+				this->timeLength = frames.back().time;
+				this->value = frames.front().value;
 			}
 
 			void sort() noexcept
@@ -113,8 +121,13 @@ namespace octoon
 					this->time += delta;
 
 				this->time = std::clamp(this->time, frames.front().time, frames.back().time);
-
-				if (this->time <= frames.front().time)
+				if (frames.size() == 1)
+				{
+					if (!negative)
+						this->updateAnimationMode(this->postWrapMode);
+					this->value = frames.back().value;
+				}
+				else if (this->time <= frames.front().time)
 				{
 					if (negative)
 						this->updateAnimationMode(this->preWrapMode);

@@ -38,7 +38,7 @@ namespace octoon
 		}
 
 		bool
-		httpbuf::open(const char* url, ios_base::openmode mode) noexcept
+		httpbuf::get(const char* url, std::uint32_t timeout) noexcept
 		{
 			assert(!this->is_open());
 
@@ -49,11 +49,57 @@ namespace octoon
 				return false;
 			}
 
+			struct curl_slist* head = NULL;
+			head = curl_slist_append(head, "Content-Type:application/x-www-form-urlencoded;charset=UTF-8");
+
+			curl_ = curl_easy_init();
+			curl_easy_setopt(curl_, CURLOPT_URL, url);
+			curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout);
+			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (void *)this);
+			curl_easy_setopt(curl_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, head);
+
+			res = ::curl_easy_perform(curl_);
+			if (res != CURLE_OK)
+			{
+				std::cout << "curl_easy_perform() failed:" << curl_easy_strerror(res) << std::endl;
+				return false;
+			}
+
+			return true;
+		}
+
+		bool
+		httpbuf::get(const std::string& url, std::uint32_t timeout) noexcept
+		{
+			return this->get(url.c_str(), timeout);
+		}
+
+		bool
+		httpbuf::post(const char* url, const std::string& data, const std::string& header_dict, std::uint32_t timeout) noexcept
+		{
+			assert(!this->is_open());
+
+			CURLcode res = curl_global_init(CURL_GLOBAL_ALL);
+			if (res != CURLE_OK)
+			{
+				std::cout << "curl_global_init() failed:" << curl_easy_strerror(res) << std::endl;
+				return false;
+			}
+
+			struct curl_slist* headers = nullptr;
+			headers = curl_slist_append(headers, header_dict.c_str());
+
 			curl_ = curl_easy_init(); /* init the curl session */
-			curl_easy_setopt(curl_, CURLOPT_URL, url); /* specify URL to get */
-			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteMemoryCallback); /* send all data to this function  */
-			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (void *)this); /* we pass our 'chunk' struct to the callback function */
-			curl_easy_setopt(curl_, CURLOPT_USERAGENT, "libcurl-agent/1.0"); /* some servers don't like requests that are made without a user-agent field, so we provide one */
+			curl_easy_setopt(curl_, CURLOPT_POST, 1L);
+			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
+			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, data.data());
+			curl_easy_setopt(curl_, CURLOPT_URL, url);
+			curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout);
+			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (void *)this);
+			curl_easy_setopt(curl_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 		
 			res = ::curl_easy_perform(curl_);
 			if (res != CURLE_OK)
@@ -66,9 +112,9 @@ namespace octoon
 		}
 
 		bool
-		httpbuf::open(const std::string& url, ios_base::openmode mode) noexcept
+		httpbuf::post(const std::string& url, const std::string& data, const std::string& header_dict, std::uint32_t timeout) noexcept
 		{
-			return this->open(url.c_str(), mode);
+			return this->post(url.c_str(), data, header_dict, timeout);
 		}
 
 		streamsize
@@ -156,6 +202,15 @@ namespace octoon
 			}
 
 			return true;
+		}
+
+		runtime::json
+		httpbuf::json() const noexcept
+		{
+			if (memory_.empty())
+				return runtime::json();
+			std::string_view str = std::string_view(memory_.data(), memory_.size());
+			return runtime::json::parse(std::string(str));
 		}
 	}
 }

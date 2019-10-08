@@ -18,11 +18,11 @@ namespace octoon
 
 			bool is_open() const noexcept;
 
-			bool get(const char* url, std::uint32_t timeout = 0) noexcept;
-			bool get(const std::string& url, std::uint32_t timeout = 0) noexcept;
+			bool get(const char* url, std::uint32_t timeout = 0, const std::string & ssl="") noexcept;
+			bool get(const std::string& url, std::uint32_t timeout = 0, const std::string & ssl ="") noexcept;
 
-			bool post(const char* url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0) noexcept;
-			bool post(const std::string& url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0) noexcept;
+			bool post(const char* url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0, const std::string& ssl = "") noexcept;
+			bool post(const std::string& url, const std::string& data, const std::string& headers = "content-type:application/json", std::uint32_t timeout = 0, const std::string & ssl = "") noexcept;
 
 			bool close() noexcept;
 

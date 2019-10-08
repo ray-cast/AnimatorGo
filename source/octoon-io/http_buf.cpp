@@ -38,7 +38,7 @@ namespace octoon
 		}
 
 		bool
-		httpbuf::get(const char* url, std::uint32_t timeout) noexcept
+		httpbuf::get(const char* url, std::uint32_t timeout, const std::string& ssl) noexcept
 		{
 			assert(!this->is_open());
 
@@ -60,6 +60,13 @@ namespace octoon
 			curl_easy_setopt(curl_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
 			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, head);
 
+			if (!ssl.empty())
+			{
+				curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 1);
+				curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 2);
+				curl_easy_setopt(curl_, CURLOPT_CAINFO, ssl.c_str());
+			}
+
 			res = ::curl_easy_perform(curl_);
 			if (res != CURLE_OK)
 			{
@@ -71,13 +78,13 @@ namespace octoon
 		}
 
 		bool
-		httpbuf::get(const std::string& url, std::uint32_t timeout) noexcept
+		httpbuf::get(const std::string& url, std::uint32_t timeout, const std::string& ssl) noexcept
 		{
-			return this->get(url.c_str(), timeout);
+			return this->get(url.c_str(), timeout, ssl);
 		}
 
 		bool
-		httpbuf::post(const char* url, const std::string& data, const std::string& header_dict, std::uint32_t timeout) noexcept
+		httpbuf::post(const char* url, const std::string& data, const std::string& header_dict, std::uint32_t timeout, const std::string& ssl) noexcept
 		{
 			assert(!this->is_open());
 
@@ -100,6 +107,13 @@ namespace octoon
 			curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 			curl_easy_setopt(curl_, CURLOPT_WRITEDATA, (void *)this);
 			curl_easy_setopt(curl_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+			if (!ssl.empty())
+			{
+				curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYPEER, 1);
+				curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 2);
+				curl_easy_setopt(curl_, CURLOPT_CAINFO, ssl.c_str());
+			}
 		
 			res = ::curl_easy_perform(curl_);
 			if (res != CURLE_OK)
@@ -112,9 +126,9 @@ namespace octoon
 		}
 
 		bool
-		httpbuf::post(const std::string& url, const std::string& data, const std::string& header_dict, std::uint32_t timeout) noexcept
+		httpbuf::post(const std::string& url, const std::string& data, const std::string& header_dict, std::uint32_t timeout, const std::string& ssl) noexcept
 		{
-			return this->post(url.c_str(), data, header_dict, timeout);
+			return this->post(url.c_str(), data, header_dict, timeout, ssl);
 		}
 
 		streamsize

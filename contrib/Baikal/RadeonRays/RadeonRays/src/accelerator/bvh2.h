@@ -57,6 +57,11 @@ namespace RadeonRays
         {
         }
 
+		~Bvh2()
+		{
+			this->Clear();
+		}
+
         // Build function
         template <typename Iter>
         void Build(Iter begin, Iter end);

@@ -29,6 +29,7 @@ namespace octoon
 
 		void setTime(float time) noexcept;
 		void sample(float delta = 0.0f) noexcept;
+		void evaluate(float delta = 0.0f) noexcept;
 
 		void setAvatar(GameObjects&& avatar) noexcept;
 		void setAvatar(const GameObjects& avatar) noexcept;

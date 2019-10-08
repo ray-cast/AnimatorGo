@@ -21,7 +21,9 @@ namespace octoon
 	{
 		if (this->rprLight_)
 		{
-			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
+			auto intensity = this->getIntensity();
+			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x * intensity, color_.y * intensity, color_.z * intensity))
+				return;
 
 			auto feature = this->tryGetFeature<OfflineFeature>();
 			if (feature)

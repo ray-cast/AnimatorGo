@@ -156,8 +156,7 @@ namespace RadeonRays
         std::iota(refs.begin(), refs.end(), 0);
 
         m_nodecount = 2 * num_aabbs - 1;
-        m_nodes = reinterpret_cast<Node*>(
-            Allocate(sizeof(Node) * m_nodecount, 16u));
+        m_nodes = reinterpret_cast<Node*>(Allocate(sizeof(Node) * m_nodecount, 16u));
 
         for (auto i = 0u; i < m_nodecount; ++i)
             new (&m_nodes[i]) Node;

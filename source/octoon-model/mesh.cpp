@@ -1192,11 +1192,11 @@ namespace octoon
 				auto edge1 = c - b;
 				auto edge2 = a - b;
 
-				auto n(math::normalize(math::cross(edge1, edge2)));
+				auto normal = math::normalize(math::cross(edge1, edge2));
 
-				_normals[f1] += n;
-				_normals[f2] += n;
-				_normals[f3] += n;
+				_normals[f1] += normal;
+				_normals[f2] += normal;
+				_normals[f3] += normal;
 			}
 
 			for (auto& i : indices)

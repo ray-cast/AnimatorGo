@@ -118,6 +118,11 @@ namespace octoon
 			{
 				for (auto& it : this->curves)
 					it.second.setTime(time);
+
+				this->finish = true;
+
+				for (auto& it : this->curves)
+					this->finish &= it.second.finish;
 			}
 		};
 

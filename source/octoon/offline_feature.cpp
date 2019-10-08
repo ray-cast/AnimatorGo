@@ -204,14 +204,19 @@ namespace octoon
 			if (!image.load(path))
 				return std::make_pair(nullptr, nullptr);
 
+			bool bgra = false;
 			bool hasAlpha = false;
 			std::uint8_t channel = 3;
 			switch (image.format())
 			{
-			case image::Format::B8G8R8A8UNorm:
 			case image::Format::R8G8B8A8SNorm:
 			case image::Format::R8G8B8A8SRGB:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			case image::Format::B8G8R8A8UNorm:
 			case image::Format::B8G8R8A8SRGB:
+				bgra = true;
 				hasAlpha = true;
 				channel = 4;
 				break;
@@ -254,9 +259,19 @@ namespace octoon
 						auto dstAlpha = (dstHeight + x) * alphaFormat.num_components;
 						auto src = (srcHeight + x) * 4;
 
-						srgb[dstRGB] = data[src];
-						srgb[dstRGB + 1] = data[src + 1];
-						srgb[dstRGB + 2] = data[src + 2];
+						if (bgra)
+						{
+							srgb[dstRGB] = data[src + 2];
+							srgb[dstRGB + 1] = data[src + 1];
+							srgb[dstRGB + 2] = data[src];
+						}
+						else
+						{
+							srgb[dstRGB] = data[src];
+							srgb[dstRGB + 1] = data[src + 1];
+							srgb[dstRGB + 2] = data[src + 2];
+						}
+
 						alpha[dstAlpha] = 255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255.0f;
 					}
 				}

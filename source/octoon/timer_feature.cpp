@@ -121,10 +121,10 @@ namespace octoon
 
 		time_ += timer_->delta();
 
-		if (time_ > timeStep_)
+		while (time_ > timeStep_)
 		{
 			this->sendMessage("feature:timer:fixed", timeInterval_);
-			time_  = 0;
+			time_  -= timeStep_;
 		}
 	}
 }

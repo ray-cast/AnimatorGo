@@ -137,6 +137,18 @@ namespace octoon
 	}
 
 	void
+	AnimatorComponent::evaluate(float delta) noexcept
+	{
+		if (delta != 0.0f)
+			animation_.evaluate(delta);
+
+		if (!avatar_.empty())
+			this->updateAvatar();
+		else
+			this->updateAnimation();
+	}
+
+	void
 	AnimatorComponent::setAnimation(animation::Animation<float>&& clips) noexcept
 	{
 		animation_ = std::move(clips);

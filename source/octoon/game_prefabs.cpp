@@ -450,7 +450,9 @@ namespace octoon
 					it->movementLowerLimit.y != 0.0f || it->movementUpperLimit.y != 0.0f ||
 					it->movementLowerLimit.z != 0.0f || it->movementUpperLimit.z != 0.0f)
 				{
-					joint->setDistanceLimit(math::distance(it->movementLowerLimit, it->movementUpperLimit));
+					auto length = math::distance(it->movementLowerLimit, it->movementUpperLimit);
+					if (length > 0.0f)
+						joint->setDistanceLimit(length);
 				}
 
 				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)

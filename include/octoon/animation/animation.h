@@ -123,6 +123,11 @@ namespace octoon
 			{
 				for (auto& it : this->clips)
 					it.setTime(time);
+
+				this->state.finish = true;
+
+				for (auto& it : this->clips)
+					this->state.finish &= it.finish;
 			}
 
 			void evaluate(const _Time& delta) noexcept

@@ -110,7 +110,7 @@ namespace octoon
 			{
 				this->finish = false;
 				this->time = std::clamp(_time, frames.front().time, frames.back().time);
-				this->evaluate(_time);
+				this->evaluate(0);
 			}
 
 			const _Elem& evaluate(const _Time& delta) noexcept
@@ -157,6 +157,7 @@ namespace octoon
 					else if (interpolator)
 						t = interpolator->interpolator(t);
 
+					this->finish = false;
 					this->value = a.value * (1.0f - t) + b.value * t;
 				}
 

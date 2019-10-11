@@ -106,6 +106,12 @@ namespace octoon
 		animation_.setTime(time);
 	}
 
+	float
+	AnimatorComponent::getTime() const noexcept
+	{
+		return animation_.getTime();
+	}
+
 	void
 	AnimatorComponent::sample(float delta) noexcept
 	{
@@ -186,7 +192,7 @@ namespace octoon
 		return avatar_;
 	}
 
-	const animation::AnimatorStateInfo&
+	const animation::AnimatorStateInfo<float>&
 	AnimatorComponent::getCurrentAnimatorStateInfo() const noexcept
 	{
 		return animation_.state;

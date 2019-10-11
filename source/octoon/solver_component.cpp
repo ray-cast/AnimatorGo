@@ -4,7 +4,7 @@
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>
 #include <octoon/rotation_link_limit_component.h>
-
+#include <iostream>
 namespace octoon
 {
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
@@ -202,17 +202,17 @@ namespace octoon
 					return;
 
 				auto transform = bone->getComponent<TransformComponent>();
-				math::Vector3 localJointEnd = math::rotate(math::inverse(transform->getQuaternion()), jointEnd - transform->getTranslate());
-				math::Vector3 localJointTarget = math::rotate(math::inverse(transform->getQuaternion()), jointTarget - transform->getTranslate());
+				math::Vector3 localJointEnd = transform->getTransformInverse() * jointEnd;
+				math::Vector3 localJointTarget = transform->getTransformInverse() * jointTarget;
 
 				localJointEnd = math::normalize(localJointEnd);
 				localJointTarget = math::normalize(localJointTarget);
 
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-				if (std::abs(cosDeltaAngle) > 1.0f - math::EPSILON_E6)
+				float deltaAngle = math::safe_acos(cosDeltaAngle);
+				if (std::abs(deltaAngle) < math::EPSILON_E5)
 					continue;
 
-				float deltaAngle = math::safe_acos(cosDeltaAngle);
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
 
 				if (this->enableAxisLimit_)
@@ -220,40 +220,25 @@ namespace octoon
 					auto limit = bone->getComponent<RotationLimitComponent>();
 					if (limit)
 					{
-						auto lock = [](float n)
-						{
-							float x = std::abs(n);
-							if (x > math::PI - x)
-								return math::PI * math::sign(n);
-							else
-								return 0.0f;
-						};
-
 						auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
-						auto spin = math::eulerAngles(transform->getLocalQuaternion() * math::Quaternion(axis, angle));
-						
+						auto spin = transform->getLocalQuaternion() * math::Quaternion(axis, angle);
+						auto spinAxis = math::axis(spin);
+						auto spinAngle = math::angle(spin);
+
 						auto& low = limit->getMinimumAxis();
 						auto& upper = limit->getMaximumAxis();
 
-						if (low.x != 0 && upper.x != 0)
-							spin.x = math::clamp(spin.x, low.x, upper.x);
-
-						if (low.y != 0 && upper.y != 0)
-							spin.y = math::clamp(spin.y, low.y, upper.y);
-
-						if (low.z != 0 && upper.z != 0)
-							spin.z = math::clamp(spin.z, low.z, upper.z);
-
-						if (low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
-						{
-							float x = std::abs(spin.y);
-							if (x > math::PI - x)
-								spin.y = spin.z = math::PI * math::sign(spin.y);
-							else
-								spin.y = spin.z = 0.0f;
-						}
-
-						transform->setLocalQuaternion(math::normalize(math::Quaternion(spin)));
+						auto rotation = math::Quaternion::Zero;
+						if ((low.x != 0 || upper.x != 0) && low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
+							rotation = math::Quaternion(math::float3::UnitX, math::clamp(math::sign(spinAxis.x) * spinAngle, low.x, upper.x));
+						else if ((low.y != 0 || upper.y != 0) && low.x == 0 && upper.x == 0 && low.z == 0 && upper.z == 0)
+							rotation = math::Quaternion(math::float3::UnitY, math::clamp(math::sign(spinAxis.y) * spinAngle, low.x, upper.x));
+						else if ((low.z != 0 || upper.z != 0) && low.x == 0 && upper.x == 0 && low.y == 0 && upper.y == 0)
+							rotation = math::Quaternion(math::float3::UnitZ, math::clamp(math::sign(spinAxis.z) * spinAngle, low.x, upper.x));
+						else
+							rotation = math::Quaternion(spin);
+						
+						transform->setLocalQuaternion(math::normalize(rotation));
 					}
 					else
 					{

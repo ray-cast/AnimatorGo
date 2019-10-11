@@ -161,7 +161,7 @@ namespace octoon
 
 			for (std::size_t i = 0; i < numpixels; i++)
 			{
-				RGBE_decode(&rgbe[i], &data[RGBE_DATA_RED], &data[RGBE_DATA_GREEN], &data[RGBE_DATA_BLUE]);
+				RGBE_decode(&rgbe[i * 4], &data[RGBE_DATA_RED], &data[RGBE_DATA_GREEN], &data[RGBE_DATA_BLUE]);
 				data += RGBE_DATA_SIZE;
 			}
 
@@ -176,7 +176,7 @@ namespace octoon
 				return rgbe_error(rgbe_read_error, NULL);
 
 			if ((((unsigned)rgbe[2]) << 8 | rgbe[3]) != wdith)
-				return rgbe_error(rgbe_format_error, "wrong scanline width");
+				rgbe_error(rgbe_format_error, "wrong scanline width");
 
 			if ((wdith < 8) || (wdith > 0x7fff) || (rgbe[0] != 2) || (rgbe[1] != 2) || (rgbe[2] & 0x80))
 			{

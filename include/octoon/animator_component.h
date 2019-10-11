@@ -28,6 +28,8 @@ namespace octoon
 		float timeLength() const noexcept;
 
 		void setTime(float time) noexcept;
+		float getTime() const noexcept;
+
 		void sample(float delta = 0.0f) noexcept;
 		void evaluate(float delta = 0.0f) noexcept;
 
@@ -37,9 +39,9 @@ namespace octoon
 
 		void setAnimation(animation::Animation<float>&& animation) noexcept;
 		void setAnimation(const animation::Animation<float>& animation) noexcept;
+		
 		const animation::Animation<float>& getAnimation() const noexcept;
-
-		const animation::AnimatorStateInfo& getCurrentAnimatorStateInfo() const noexcept;
+		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept;
 
 		GameComponentPtr clone() const noexcept;
 

@@ -228,15 +228,14 @@ namespace octoon
 						auto& low = limit->getMinimumAxis();
 						auto& upper = limit->getMaximumAxis();
 
-						auto rotation = spin;
 						if ((low.x != 0 || upper.x != 0) && low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
-							rotation = math::Quaternion(math::float3::UnitX, math::clamp(math::sign(spinAxis.x) * spinAngle, low.x, upper.x));
+							spin = math::Quaternion(math::float3::UnitX, math::clamp(math::sign(spinAxis.x) * spinAngle, low.x, upper.x));
 						else if ((low.y != 0 || upper.y != 0) && low.x == 0 && upper.x == 0 && low.z == 0 && upper.z == 0)
-							rotation = math::Quaternion(math::float3::UnitY, math::clamp(math::sign(spinAxis.y) * spinAngle, low.x, upper.x));
+							spin = math::Quaternion(math::float3::UnitY, math::clamp(math::sign(spinAxis.y) * spinAngle, low.x, upper.x));
 						else if ((low.z != 0 || upper.z != 0) && low.x == 0 && upper.x == 0 && low.y == 0 && upper.y == 0)
-							rotation = math::Quaternion(math::float3::UnitZ, math::clamp(math::sign(spinAxis.z) * spinAngle, low.x, upper.x));
+							spin = math::Quaternion(math::float3::UnitZ, math::clamp(math::sign(spinAxis.z) * spinAngle, low.x, upper.x));
 						
-						transform->setLocalQuaternion(math::normalize(rotation));
+						transform->setLocalQuaternion(math::normalize(spin));
 					}
 					else
 					{

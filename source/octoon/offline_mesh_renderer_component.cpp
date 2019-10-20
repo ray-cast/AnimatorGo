@@ -88,7 +88,7 @@ namespace octoon
 			mat->get(MATKEY_OPACITY, opacity);
 			mat->get(MATKEY_SHININESS, shininess);
 
-			float roughness = 1.0f - math::saturate(shininess / 1000.0f);
+			float roughness = std::pow(1.0f - math::saturate(shininess / 1000.0f), 2);
 
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);

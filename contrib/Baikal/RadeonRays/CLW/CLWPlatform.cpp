@@ -76,7 +76,8 @@ void CLWPlatform::CreateAllPlatforms(std::vector<CLWPlatform>& platforms)
         std::string versionstr(version.begin(), version.end());
 
         if (versionstr.find("OpenCL 1.0 ") != std::string::npos ||
-            versionstr.find("OpenCL 1.1") != std::string::npos)
+            versionstr.find("OpenCL 1.1") != std::string::npos ||
+			versionstr.find("OpenCL 2.0") != std::string::npos)
         {
             continue;
         }

@@ -335,7 +335,7 @@ namespace octoon
 		System::setViewport(std::uint32_t w, std::uint32_t h) noexcept
 		{
 			ImGui::SetCurrentContext(imguiContext_);
-			ImGui::GetIO().DisplaySize = ImVec2(w, h);
+			ImGui::GetIO().DisplaySize = ImVec2((float)w, (float)h);
 		}
 
 		void

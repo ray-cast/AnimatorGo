@@ -85,18 +85,35 @@ namespace octoon
 		if (!device_)
 			throw runtime::runtime_error::create("createDevice() failed");
 
-		hal::GraphicsSwapchainDesc swapchainDesc;
-		swapchainDesc.setWindHandle(window_);
-		swapchainDesc.setWidth(framebuffer_w_);
-		swapchainDesc.setHeight(framebuffer_h_);
-		swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Vsync);
-		swapchainDesc.setImageNums(2);
-		swapchainDesc.setColorFormat(hal::GraphicsFormat::B8G8R8A8UNorm);
-		swapchainDesc.setDepthStencilFormat(hal::GraphicsFormat::X8_D24UNormPack32);
-		swapchainDesc.setMultiSample(4);
-		swapchain_ = device_->createSwapchain(swapchainDesc);
-		if (!swapchain_)
-			throw runtime::runtime_error::create("createSwapchain() failed");
+		try
+		{
+			hal::GraphicsSwapchainDesc swapchainDesc;
+			swapchainDesc.setWindHandle(window_);
+			swapchainDesc.setWidth(framebuffer_w_);
+			swapchainDesc.setHeight(framebuffer_h_);
+			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Vsync);
+			swapchainDesc.setImageNums(2);
+			swapchainDesc.setColorFormat(hal::GraphicsFormat::B8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(hal::GraphicsFormat::X8_D24UNormPack32);
+			swapchainDesc.setMultiSample(4);
+			swapchain_ = device_->createSwapchain(swapchainDesc);
+			if (!swapchain_)
+				throw runtime::runtime_error::create("createSwapchain() failed");
+		}
+		catch (...)
+		{
+			hal::GraphicsSwapchainDesc swapchainDesc;
+			swapchainDesc.setWindHandle(window_);
+			swapchainDesc.setWidth(framebuffer_w_);
+			swapchainDesc.setHeight(framebuffer_h_);
+			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Vsync);
+			swapchainDesc.setImageNums(2);
+			swapchainDesc.setColorFormat(hal::GraphicsFormat::B8G8R8A8UNorm);
+			swapchainDesc.setDepthStencilFormat(hal::GraphicsFormat::X8_D24UNormPack32);
+			swapchain_ = device_->createSwapchain(swapchainDesc);
+			if (!swapchain_)
+				throw runtime::runtime_error::create("createSwapchain() failed");
+		}
 
 		hal::GraphicsContextDesc contextDesc;
 		contextDesc.setSwapchain(swapchain_);

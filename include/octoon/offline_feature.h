@@ -41,16 +41,18 @@ namespace octoon
 		std::pair<void*, void*> createMaterialTextures(const std::string& path) noexcept;
 
 	private:
-		void onActivate() except override;
+		void onActivate() noexcept(false) override;
 		void onDeactivate() noexcept override;
 
 		void onInputEvent(const runtime::any& data) noexcept;
 
 		void onFrame() noexcept override;
 
-		void onFramebufferChange(std::uint32_t w, std::uint32_t h) except;
+		void setupFramebuffers(std::uint32_t w, std::uint32_t h) noexcept(false);
 
 	private:
+		void setupProRender() noexcept(false);
+		void cleanupProRender() noexcept;
 		void cleanupFramebuffers() noexcept;
 
 	private:

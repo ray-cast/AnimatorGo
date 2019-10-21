@@ -164,7 +164,7 @@ namespace octoon
 			}
 
 			void connect(SlotType f) { impl.connect(f); }
-			void disconnect(SlotType f) { impl.connect(f); }
+			void disconnect(SlotType f) { impl.disconnect(f); }
 
 			void connect(SignalType& sig)
 			{
@@ -295,7 +295,7 @@ namespace octoon
 				if (!sig)return;
 				for (auto it = slots.begin(); it != slots.end(); ++it)
 				{
-					if (&sig == &**it)
+					if (&sig == &*it)
 					{
 						slots.erase(it);
 						break;

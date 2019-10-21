@@ -164,8 +164,152 @@ namespace octoon
 	void
 	OfflineFeature::clearMemory() noexcept
 	{
-		this->onDeactivate();
-		this->onActivate();
+		this->cleanupFramebuffers();
+		this->cleanupProRender();
+		this->setupProRender();
+	}
+
+	void
+	OfflineFeature::onActivate() noexcept(false)
+	{
+		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
+		this->setupProRender();
+	}
+
+	void
+	OfflineFeature::onDeactivate() noexcept
+	{
+		this->removeMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
+		this->cleanupFramebuffers();
+		this->cleanupProRender();		
+	}
+
+	void
+	OfflineFeature::onInputEvent(const runtime::any& data) noexcept
+	{
+		auto event = runtime::any_cast<input::InputEvent>(data);
+		switch (event.event)
+		{
+		case input::InputEvent::SizeChange:
+		case input::InputEvent::SizeChangeDPI:
+			{
+				if (event.change.w > 0 && event.change.h > 0)
+				{
+					if (this->framebuffer_w_ != event.change.w || this->framebuffer_h_ != event.change.h)
+					{
+						for (auto& listener : listener_)
+							listener->onFramebufferResize(event.change.w, event.change.h);
+
+						this->setupFramebuffers(event.change.w, event.change.h);
+						this->framebuffer_w_ = event.change.w;
+						this->framebuffer_h_ = event.change.h;
+					}
+				}
+			}
+			break;
+		default:
+			return;
+		}
+	}
+
+	void
+	OfflineFeature::onFrame() noexcept
+	{
+		try
+		{
+			rpr_camera camera;
+			rprSceneGetCamera(this->rprScene_, &camera);
+			if (camera)
+			{
+				std::size_t count = 0;
+				std::size_t type_size = 0;
+
+				for (auto& listener : listener_)
+					listener->onPreRender();
+
+				rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
+				if (count == 0)
+					return;
+
+				rprSceneGetInfo(this->rprScene_, RPR_SCENE_LIGHT_COUNT, 1, &count, &type_size);
+				if (count == 0)
+					return;
+
+				if (this->dirty_)
+				{
+					if (this->colorFramebuffer_)
+						rprFrameBufferClear(this->colorFramebuffer_);
+
+					if (this->normalFramebuffer_)
+						rprFrameBufferClear(this->normalFramebuffer_);
+
+					if (this->albedoFramebuffer_)
+						rprFrameBufferClear(this->albedoFramebuffer_);
+
+					this->dirty_ = false;
+				}
+
+				rprContextRender(rprContext_);
+
+				for (auto& listener : listener_)
+					listener->onPostRender();
+
+				auto graphics = this->getFeature<GraphicsFeature>();
+				if (graphics)
+				{
+					auto context = graphics->getContext();
+					math::float4 viewport(0, 0, this->framebuffer_w_, this->framebuffer_h_);
+					context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
+				}
+			}
+		}
+		catch (const std::exception& e)
+		{
+			this->getGameListener()->onMessage(e.what());
+		}
+	}
+
+	void
+	OfflineFeature::cleanupProRender() noexcept
+	{
+		for (auto& node : imageNodes_)
+		{
+			if (node.second.first)
+				rprObjectDelete(node.second.first);
+			if (node.second.second)
+				rprObjectDelete(node.second.second);
+		}
+
+		imageNodes_.clear();
+
+		for (auto& image : images_)
+		{
+			if (image.second.first)
+				rprObjectDelete(image.second.first);
+			if (image.second.second)
+				rprObjectDelete(image.second.second);
+		}
+
+		images_.clear();
+
+		if (this->rprMaterialSystem_)
+		{
+			rprObjectDelete(this->rprMaterialSystem_);
+			this->rprMaterialSystem_ = nullptr;
+		}
+
+		if (this->rprScene_)
+		{
+			rprSceneClear(rprScene_);
+			rprObjectDelete(this->rprScene_);
+			this->rprScene_ = nullptr;
+		}
+
+		if (this->rprContext_)
+		{
+			rprObjectDelete(this->rprContext_);
+			this->rprContext_ = nullptr;
+		}
 	}
 
 	void
@@ -190,6 +334,66 @@ namespace octoon
 		}
 	}
 
+	void
+	OfflineFeature::setupProRender() noexcept(false)
+	{
+		auto GetErrorString = [](int status)
+		{
+			switch (status)
+			{
+			case RPR_ERROR_COMPUTE_API_NOT_SUPPORTED:         return "RPR_ERROR_COMPUTE_API_NOT_SUPPORTED";
+			case RPR_ERROR_OUT_OF_SYSTEM_MEMORY:              return "RPR_ERROR_OUT_OF_SYSTEM_MEMORY";
+			case RPR_ERROR_OUT_OF_VIDEO_MEMORY:               return "RPR_ERROR_OUT_OF_VIDEO_MEMORY";
+			case RPR_ERROR_INVALID_LIGHTPATH_EXPR:            return "RPR_ERROR_INVALID_LIGHTPATH_EXPR";
+			case RPR_ERROR_INVALID_IMAGE:                     return "RPR_ERROR_INVALID_IMAGE";
+			case RPR_ERROR_INVALID_AA_METHOD:                 return "RPR_ERROR_INVALID_AA_METHOD";
+			case RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT:          return "RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT";
+			case RPR_ERROR_INVALID_GL_TEXTURE:                return "RPR_ERROR_INVALID_GL_TEXTURE";
+			case RPR_ERROR_INVALID_CL_IMAGE:                  return "RPR_ERROR_INVALID_CL_IMAGE";
+			case RPR_ERROR_INVALID_OBJECT:                    return "RPR_ERROR_INVALID_OBJECT";
+			case RPR_ERROR_INVALID_PARAMETER:                 return "RPR_ERROR_INVALID_PARAMETER";
+			case RPR_ERROR_INVALID_TAG:                       return "RPR_ERROR_INVALID_TAG";
+			case RPR_ERROR_INVALID_LIGHT:                     return "RPR_ERROR_INVALID_LIGHT";
+			case RPR_ERROR_INVALID_CONTEXT:                   return "RPR_ERROR_INVALID_CONTEXT";
+			case RPR_ERROR_UNIMPLEMENTED:                     return "RPR_ERROR_UNIMPLEMENTED";
+			case RPR_ERROR_INVALID_API_VERSION:               return "RPR_ERROR_INVALID_API_VERSION";
+			case RPR_ERROR_INTERNAL_ERROR:                    return "RPR_ERROR_INTERNAL_ERROR";
+			case RPR_ERROR_IO_ERROR:                          return "RPR_ERROR_IO_ERROR";
+			case RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE: return "RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE";
+			case RPR_ERROR_MATERIAL_STACK_OVERFLOW:           return "RPR_ERROR_MATERIAL_STACK_OVERFLOW";
+			case RPR_ERROR_INVALID_PARAMETER_TYPE:            return "RPR_ERROR_INVALID_PARAMETER_TYPE";
+			case RPR_ERROR_UNSUPPORTED:                       return "RPR_ERROR_UNSUPPORTED";
+			case RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY:         return "RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY";
+			case RPR_ERROR_OPENGL:                            return "RPR_ERROR_OPENGL";
+			case RPR_ERROR_OPENCL:                            return "RPR_ERROR_OPENCL";
+			case RPR_ERROR_NULLPTR:                           return "RPR_ERROR_NULLPTR";
+			case RPR_ERROR_NODETYPE:                          return "RPR_ERROR_NODETYPE";
+			default: return "RPR_SUCCESS";
+			}
+		};
+
+		auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+		if (RPR_SUCCESS != status)
+		{
+			auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+			if (RPR_SUCCESS != status)
+				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
+		}
+
+		status = rprContextCreateScene(rprContext_, &rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateScene() failed, error : ") + GetErrorString(status));
+
+		status = rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
+
+		status = rprContextSetScene(rprContext_, rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
+
+		this->setupFramebuffers(this->framebuffer_w_, this->framebuffer_h_);
+	}
 
 	std::pair<void*, void*>
 	OfflineFeature::createMaterialTextures(const std::string& path) noexcept
@@ -332,201 +536,7 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::onActivate() except
-	{
-		this->addMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
-
-		auto GetErrorString = [](int status)
-		{
-			switch (status)
-			{
-			case RPR_ERROR_COMPUTE_API_NOT_SUPPORTED:         return "RPR_ERROR_COMPUTE_API_NOT_SUPPORTED";
-			case RPR_ERROR_OUT_OF_SYSTEM_MEMORY:              return "RPR_ERROR_OUT_OF_SYSTEM_MEMORY";
-			case RPR_ERROR_OUT_OF_VIDEO_MEMORY:               return "RPR_ERROR_OUT_OF_VIDEO_MEMORY";
-			case RPR_ERROR_INVALID_LIGHTPATH_EXPR:            return "RPR_ERROR_INVALID_LIGHTPATH_EXPR";
-			case RPR_ERROR_INVALID_IMAGE:                     return "RPR_ERROR_INVALID_IMAGE";
-			case RPR_ERROR_INVALID_AA_METHOD:                 return "RPR_ERROR_INVALID_AA_METHOD";
-			case RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT:          return "RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT";
-			case RPR_ERROR_INVALID_GL_TEXTURE:                return "RPR_ERROR_INVALID_GL_TEXTURE";
-			case RPR_ERROR_INVALID_CL_IMAGE:                  return "RPR_ERROR_INVALID_CL_IMAGE";
-			case RPR_ERROR_INVALID_OBJECT:                    return "RPR_ERROR_INVALID_OBJECT";
-			case RPR_ERROR_INVALID_PARAMETER:                 return "RPR_ERROR_INVALID_PARAMETER";
-			case RPR_ERROR_INVALID_TAG:                       return "RPR_ERROR_INVALID_TAG";
-			case RPR_ERROR_INVALID_LIGHT:                     return "RPR_ERROR_INVALID_LIGHT";
-			case RPR_ERROR_INVALID_CONTEXT:                   return "RPR_ERROR_INVALID_CONTEXT";
-			case RPR_ERROR_UNIMPLEMENTED:                     return "RPR_ERROR_UNIMPLEMENTED";
-			case RPR_ERROR_INVALID_API_VERSION:               return "RPR_ERROR_INVALID_API_VERSION";
-			case RPR_ERROR_INTERNAL_ERROR:                    return "RPR_ERROR_INTERNAL_ERROR";
-			case RPR_ERROR_IO_ERROR:                          return "RPR_ERROR_IO_ERROR";
-			case RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE: return "RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE";
-			case RPR_ERROR_MATERIAL_STACK_OVERFLOW:           return "RPR_ERROR_MATERIAL_STACK_OVERFLOW";
-			case RPR_ERROR_INVALID_PARAMETER_TYPE:            return "RPR_ERROR_INVALID_PARAMETER_TYPE";
-			case RPR_ERROR_UNSUPPORTED:                       return "RPR_ERROR_UNSUPPORTED";
-			case RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY:         return "RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY";
-			case RPR_ERROR_OPENGL:                            return "RPR_ERROR_OPENGL";
-			case RPR_ERROR_OPENCL:                            return "RPR_ERROR_OPENCL";
-			case RPR_ERROR_NULLPTR:                           return "RPR_ERROR_NULLPTR";
-			case RPR_ERROR_NODETYPE:                          return "RPR_ERROR_NODETYPE";
-			default: return "RPR_SUCCESS";
-			}
-		};
-
-		auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
-		if (RPR_SUCCESS != status)
-		{
-			auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
-			if (RPR_SUCCESS != status)
-				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
-		}
-
-		status = rprContextCreateScene(rprContext_, &rprScene_);
-		if (RPR_SUCCESS != status)
-			throw runtime::runtime_error::create(std::string("rprContextCreateScene() failed, error : ") + GetErrorString(status));
-
-		status = rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
-		if (RPR_SUCCESS != status)
-			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
-
-		status = rprContextSetScene(rprContext_, rprScene_);
-		if (RPR_SUCCESS != status)
-			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
-
-		this->onFramebufferChange(this->framebuffer_w_, this->framebuffer_h_);
-	}
-
-	void
-	OfflineFeature::onDeactivate() noexcept
-	{
-		this->removeMessageListener("feature:input:event", std::bind(&OfflineFeature::onInputEvent, this, std::placeholders::_1));
-		this->cleanupFramebuffers();
-
-		for (auto& node : imageNodes_)
-		{
-			if (node.second.first)
-				rprObjectDelete(node.second.first);
-			if (node.second.second)
-				rprObjectDelete(node.second.second);
-		}
-
-		imageNodes_.clear();
-
-		for (auto& image : images_)
-		{
-			if (image.second.first)
-				rprObjectDelete(image.second.first);
-			if (image.second.second)
-				rprObjectDelete(image.second.second);
-		}
-
-		images_.clear();
-
-		if (this->rprMaterialSystem_)
-		{
-			rprObjectDelete(this->rprMaterialSystem_);
-			this->rprMaterialSystem_ = nullptr;
-		}
-
-		if (this->rprScene_)
-		{
-			rprSceneClear(rprScene_);
-			rprObjectDelete(this->rprScene_);
-			this->rprScene_ = nullptr;
-		}
-
-		if (this->rprContext_)
-		{
-			rprObjectDelete(this->rprContext_);
-			this->rprContext_ = nullptr;
-		}
-	}
-
-	void
-	OfflineFeature::onInputEvent(const runtime::any& data) noexcept
-	{
-		auto event = runtime::any_cast<input::InputEvent>(data);
-		switch (event.event)
-		{
-		case input::InputEvent::SizeChange:
-		case input::InputEvent::SizeChangeDPI:
-			{
-				if (event.change.w > 0 && event.change.h > 0)
-				{
-					if (this->framebuffer_w_ != event.change.w || this->framebuffer_h_ != event.change.h)
-					{
-						for (auto& listener : listener_)
-							listener->onFramebufferResize(event.change.w, event.change.h);
-
-						this->onFramebufferChange(event.change.w, event.change.h);
-						this->framebuffer_w_ = event.change.w;
-						this->framebuffer_h_ = event.change.h;
-					}
-				}
-			}
-			break;
-		default:
-			return;
-		}
-	}
-
-	void
-	OfflineFeature::onFrame() noexcept
-	{
-		try
-		{
-			rpr_camera camera;
-			rprSceneGetCamera(this->rprScene_, &camera);
-			if (camera)
-			{
-				std::size_t count = 0;
-				std::size_t type_size = 0;
-
-				for (auto& listener : listener_)
-					listener->onPreRender();
-
-				rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
-				if (count == 0)
-					return;
-
-				rprSceneGetInfo(this->rprScene_, RPR_SCENE_LIGHT_COUNT, 1, &count, &type_size);
-				if (count == 0)
-					return;
-
-				if (this->dirty_)
-				{
-					if (this->colorFramebuffer_)
-						rprFrameBufferClear(this->colorFramebuffer_);
-
-					if (this->normalFramebuffer_)
-						rprFrameBufferClear(this->normalFramebuffer_);
-
-					if (this->albedoFramebuffer_)
-						rprFrameBufferClear(this->albedoFramebuffer_);
-
-					this->dirty_ = false;
-				}
-
-				rprContextRender(rprContext_);
-
-				for (auto& listener : listener_)
-					listener->onPostRender();
-
-				auto graphics = this->getFeature<GraphicsFeature>();
-				if (graphics)
-				{
-					auto context = graphics->getContext();
-					math::float4 viewport(0, 0, this->framebuffer_w_, this->framebuffer_h_);
-					context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
-				}
-			}
-		}
-		catch (const std::exception& e)
-		{
-			this->getGameListener()->onMessage(e.what());
-		}
-	}
-
-	void
-	OfflineFeature::onFramebufferChange(std::uint32_t w, std::uint32_t h) except
+	OfflineFeature::setupFramebuffers(std::uint32_t w, std::uint32_t h) noexcept(false)
 	{
 		auto context = this->getFeature<GraphicsFeature>()->getContext();
 		if (context)

@@ -142,35 +142,49 @@ namespace octoon
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
 			{
-				rpr_material_node textureNode;
-				rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
-				rprMaterialNodeSetInputImageData(textureNode, "data", feature->createMaterialTextures(path + normalName).first);
-				rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
+				try
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", feature->createMaterialTextures(path + normalName).first);
+					rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
+				}
+				catch (...)
+				{
+					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers & ~RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL);
+				}
 			}
 
 			if (!textureName.empty())
 			{
-				auto image = feature->createMaterialTextures(path + textureName);
-				if (image.first)
+				try
 				{
-					if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", image.first);
+					auto image = feature->createMaterialTextures(path + textureName);
+					if (image.first)
+					{
+						if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", image.first);
 
-					if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && edgeColor.x > 0.0f)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", image.first);
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && edgeColor.x > 0.0f)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", image.first);
 
-					if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", image.first);
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", image.first);
+					}
+					else
+					{
+						rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
+					}
+
+					if (image.second)
+					{
+						rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", image.second);
+					}
 				}
-				else
+				catch (...)
 				{
 					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
-				}
-
-				if (image.second)
-				{
-					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", image.second);
 				}
 			}
 

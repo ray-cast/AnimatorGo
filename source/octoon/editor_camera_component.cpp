@@ -11,7 +11,7 @@ namespace octoon
 
 	EditorCameraComponent::EditorCameraComponent() noexcept
 		: speed_(1.0)
-		, moveSpeed_(5.0f)
+		, moveSpeed_(3.0f)
 		, sensitivityX_(0.25f)
 		, sensitivityY_(0.25f)
 	{

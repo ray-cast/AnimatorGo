@@ -399,7 +399,7 @@ namespace octoon
 	}
 
 	void
-	GameServer::update() noexcept
+	GameServer::update() noexcept(false)
 	{
 		if (this->isQuitRequest() || !this->getActive())
 			return;
@@ -424,6 +424,8 @@ namespace octoon
 				listener_->onMessage(e.what());
 
 			isQuitRequest_ = true;
+
+			throw e;
 		}
 	}
 

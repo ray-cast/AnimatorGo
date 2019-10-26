@@ -259,7 +259,7 @@ namespace octoon
 						if (!stream.read((char*)&bone.Offset, sizeof(bone.Offset))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_ADD_PARENT)
+					if ((bone.Flag & (PMX_BONE_ADD_ROTATION | PMX_BONE_ADD_MOVE)) != 0)
 					{
 						if (!stream.read((char*)&bone.ProvidedParentBoneIndex, pmx.header.sizeOfBone)) return false;
 						if (!stream.read((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;
@@ -279,6 +279,11 @@ namespace octoon
 					{
 						if (!stream.read((char*)&bone.DimentionXDirection, sizeof(bone.DimentionXDirection))) return false;
 						if (!stream.read((char*)&bone.DimentionZDirection, sizeof(bone.DimentionZDirection))) return false;
+					}
+
+					if (bone.Flag & PMX_BONE_EXTERNAL_PARENT_TRANSFORM)
+					{
+						if (!stream.read((char*)& bone.ExternalParent, sizeof(bone.ExternalParent))) return false;
 					}
 
 					if (bone.Flag & PMX_BONE_IK)
@@ -1018,7 +1023,7 @@ namespace octoon
 						if (!stream.write((char*)&bone.Offset, sizeof(bone.Offset))) return false;
 					}
 
-					if (bone.Flag & PMX_BONE_ADD_PARENT)
+					if (bone.Flag & (PMX_BONE_ADD_ROTATION | PMX_BONE_ADD_MOVE))
 					{
 						if (!stream.write((char*)&bone.ProvidedParentBoneIndex, pmx.header.sizeOfBone)) return false;
 						if (!stream.write((char*)&bone.ProvidedRatio, sizeof(bone.ProvidedRatio))) return false;

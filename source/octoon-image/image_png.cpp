@@ -29,8 +29,7 @@ namespace octoon
 
 		void PNGAPI png_warn(png_structp png_ptr, png_const_charp message)
 		{
-			PNGInfoStruct* info = (PNGInfoStruct*)png_get_io_ptr(png_ptr);
-			longjmp(info->jmpbuf, 1);
+			std::cout << "libpng warning: " << message << std::endl;
 		}
 
 		void PNGAPI png_flush_ptr(png_structp png_ptr)
@@ -104,6 +103,9 @@ namespace octoon
 
 				if (!::png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, 0, 0))
 					throw runtime::runtime_error::create("png_get_IHDR() failed.");
+
+				if (interlace_type == PNG_INTERLACE_ADAM7)
+					::png_set_interlace_handling(png_ptr);
 
 				if (color_type == PNG_COLOR_TYPE_PALETTE)
 					::png_set_expand(png_ptr);
@@ -199,6 +201,7 @@ namespace octoon
 
 				::png_set_strip_16(png_ptr);
 				::png_set_packing(png_ptr);
+				::png_set_interlace_handling(png_ptr);
 				::png_set_write_fn(png_ptr, &info, &PNG_stream_write, &png_flush_ptr);
 				::png_set_benign_errors(png_ptr, 1);
 				::png_set_PLTE(png_ptr, info_ptr, palette.get(), PNG_MAX_PALETTE_LENGTH);

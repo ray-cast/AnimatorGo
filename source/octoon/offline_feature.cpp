@@ -213,7 +213,7 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::onFrame() noexcept
+	OfflineFeature::onFrame() noexcept(false)
 	{
 		try
 		{
@@ -396,7 +396,7 @@ namespace octoon
 	}
 
 	std::pair<void*, void*>
-	OfflineFeature::createMaterialTextures(const std::string& path) noexcept
+	OfflineFeature::createMaterialTextures(const std::string& path) noexcept(false)
 	{
 		try
 		{
@@ -413,6 +413,12 @@ namespace octoon
 			std::uint8_t channel = 3;
 			switch (image.format())
 			{
+			case image::Format::R8G8B8SNorm:
+			case image::Format::R8G8B8SRGB:
+			case image::Format::B8G8R8UNorm:
+			case image::Format::B8G8R8SRGB:
+				hasAlpha = false;
+				break;
 			case image::Format::R8G8B8A8SNorm:
 			case image::Format::R8G8B8A8SRGB:
 				hasAlpha = true;
@@ -424,6 +430,8 @@ namespace octoon
 				hasAlpha = true;
 				channel = 4;
 				break;
+			default:
+				throw runtime::runtime_error::create("This image type is not supported by this function:" + path);
 			}
 
 			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };

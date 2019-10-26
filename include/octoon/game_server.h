@@ -60,7 +60,7 @@ namespace octoon
 
 		GameApp* getGameApp() noexcept;
 
-		void update() noexcept;
+		void update() noexcept(false);
 
 	private:
 		void onActivate() except;

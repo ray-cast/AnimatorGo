@@ -98,6 +98,12 @@ void ConfigManager::CreateConfigs(
             Config cfg;
             cfg.caninterop = false;
 
+			if (interop)
+			{
+				if (platforms[i].GetName().find("Intel") != std::string::npos)
+					continue;
+			}
+
             if (platforms[i].GetDevice(d).HasGlInterop() && !hasprimary && interop)
             {
 #ifdef WIN32

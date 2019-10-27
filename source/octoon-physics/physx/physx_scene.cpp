@@ -30,20 +30,50 @@ namespace octoon
 
 			if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)
 				return physx::PxFilterFlag::eSUPPRESS;
-			
+
 			pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT;
 
 			return physx::PxFilterFlag::eDEFAULT;
-		}
+		};
+
+		class SimulationEventCallback : public physx::PxSimulationEventCallback
+		{
+		public:
+			void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) override
+			{
+			}
+
+			void onWake(physx::PxActor** actors, physx::PxU32 count) override
+			{
+			}
+			
+			void onSleep(physx::PxActor** actors, physx::PxU32 count) override
+			{
+			}
+
+			void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override
+			{
+			}
+
+			void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count) override
+			{
+			}
+
+			void onAdvance(const  physx::PxRigidBody* const* bodyBuffer, const  physx::PxTransform* poseBuffer, const  physx::PxU32 count) override
+			{
+			}
+		};
 
 		PhysxScene::PhysxScene(PhysxContext* context, PhysicsSceneDesc desc)
 			: context(nullptr)
 			, px_scene(nullptr)
+			, simulationEventCallback_(std::make_unique<SimulationEventCallback>())
 		{
 			physx::PxSceneDesc sceneDesc(context->getPxPhysics()->getTolerancesScale());
 			sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
 			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
 			sceneDesc.filterShader = DefaultSimulationFilterShader;
+			sceneDesc.simulationEventCallback = simulationEventCallback_.get();
 			sceneDesc.ccdMaxPasses = 4;
 			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
 			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;

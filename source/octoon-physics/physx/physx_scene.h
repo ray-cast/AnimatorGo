@@ -39,6 +39,7 @@ namespace octoon
         private:
 			PhysxContext* context;
 			physx::PxScene* px_scene;
+			std::unique_ptr<class SimulationEventCallback> simulationEventCallback_;
 			std::vector<std::shared_ptr<PhysxRigidbody>> rigidbody_;
 		};
 	}

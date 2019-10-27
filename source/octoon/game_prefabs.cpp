@@ -417,32 +417,32 @@ namespace octoon
 					joint->setXMotion(ConfigurableJointMotion::Locked);
 				else if (it->movementLowerLimit.x > it->movementUpperLimit.x)
 					joint->setXMotion(ConfigurableJointMotion::Free);
-				else if (it->movementLowerLimit.x > -10.0f && it->movementUpperLimit.x < 10.0f)
+				else
 				{
-					joint->setLowXLimit(it->movementLowerLimit.x);
-					joint->setHighXLimit(it->movementUpperLimit.x);
+					joint->setLowXLimit(std::max(it->movementLowerLimit.x, -10.0f));
+					joint->setHighXLimit(std::min(it->movementUpperLimit.x, 10.0f));
 					joint->setXMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.y == 0.0f && it->movementUpperLimit.y == 0.0f)
 					joint->setYMotion(ConfigurableJointMotion::Locked);
 				else if (it->movementLowerLimit.y > it->movementUpperLimit.y)
-					joint->setXMotion(ConfigurableJointMotion::Free);
-				else if (it->movementLowerLimit.y > -10.0f && it->movementUpperLimit.y < 10.0f)
+					joint->setYMotion(ConfigurableJointMotion::Free);
+				else
 				{
-					joint->setLowYLimit(it->movementLowerLimit.y);
-					joint->setHighYLimit(it->movementUpperLimit.y);
+					joint->setLowYLimit(std::max(it->movementLowerLimit.y, -10.0f));
+					joint->setHighYLimit(std::min(it->movementUpperLimit.y, 10.0f));
 					joint->setYMotion(ConfigurableJointMotion::Limited);
 				}
 
 				if (it->movementLowerLimit.z == 0.0f && it->movementUpperLimit.z == 0.0f)
 					joint->setZMotion(ConfigurableJointMotion::Locked);
 				else if (it->movementLowerLimit.z > it->movementUpperLimit.z)
-					joint->setXMotion(ConfigurableJointMotion::Free);
-				else if (it->movementLowerLimit.z > -10.0f && it->movementUpperLimit.z < 10.0f)
+					joint->setZMotion(ConfigurableJointMotion::Free);
+				else
 				{
-					joint->setLowZLimit(it->movementLowerLimit.z);
-					joint->setHighZLimit(it->movementUpperLimit.z);
+					joint->setLowZLimit(std::max(it->movementLowerLimit.z, -10.0f));
+					joint->setHighZLimit(std::min(it->movementUpperLimit.z, 10.0f));
 					joint->setZMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -458,13 +458,7 @@ namespace octoon
 				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)
 					joint->setAngularXMotion(ConfigurableJointMotion::Locked);
 				else
-				{
-					if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
-						std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
-
-					joint->setTwistLimit(math::clamp(it->rotationLowerLimit.x, -6.24318f, 6.24318f) - 1e-5f, math::clamp(it->rotationUpperLimit.x, -6.24318f, 6.24318f) + 1e-5f);
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
-				}
 
 				if (it->rotationLowerLimit.y == 0.0f && it->rotationUpperLimit.y == 0.0f)
 					joint->setAngularYMotion(ConfigurableJointMotion::Locked);
@@ -476,30 +470,39 @@ namespace octoon
 				else
 					joint->setAngularZMotion(ConfigurableJointMotion::Limited);
 
+				if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
+					std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
 				if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
 					std::swap(it->rotationLowerLimit.y, it->rotationUpperLimit.y);
 				if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
 					std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
 
-				auto rotationLimitY = std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y));
-				auto rotationLimitZ = std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z));
+				if (it->rotationLowerLimit.x != 0.0f || it->rotationUpperLimit.x != 0.0f)
+				{
+					auto lower = math::clamp(it->rotationLowerLimit.x, -math::radians(60.0f), math::radians(60.0f)) - 1e-5f;
+					auto upper = math::clamp(it->rotationUpperLimit.x, -math::radians(60.0f), math::radians(60.0f)) + 1e-5f;
+					joint->setTwistLimit(lower, upper);
+				}
 
-				rotationLimitY = math::clamp(rotationLimitY, 1e-5f, 3.1415f);
-				rotationLimitZ = math::clamp(rotationLimitZ, 1e-5f, 3.1415f);
-
-				joint->setSwingLimit(rotationLimitY, rotationLimitZ);
+				if (it->rotationLowerLimit.y != 0.0f || it->rotationUpperLimit.y != 0.0f ||
+					it->rotationLowerLimit.z != 0.0f || it->rotationUpperLimit.z != 0.0f)
+				{
+					auto rotationLimitY = math::clamp(std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y)), 0.0f, math::radians(60.0f));
+					auto rotationLimitZ = math::clamp(std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z)), 0.0f, math::radians(60.0f));
+					joint->setSwingLimit(rotationLimitY, rotationLimitZ);
+				}
 
 				if (it->springMovementConstant.x != 0.0f)
 					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.x));
 				if (it->springMovementConstant.y != 0.0f)
-					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.y));
+					joint->setDriveMotionY(std::max(0.0f, it->springMovementConstant.y));
 				if (it->springMovementConstant.z != 0.0f)
-					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.z));
+					joint->setDriveMotionZ(std::max(0.0f, it->springMovementConstant.z));
 
 				if (it->springRotationConstant.x != 0.0f)
 					joint->setDriveAngularX(std::max(0.0f, it->springRotationConstant.x));
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
-					joint->setDriveAngularY(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
+					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
 
 				joints.emplace_back(std::move(bodyA));
 			}

@@ -84,14 +84,14 @@ namespace octoon
 			for (std::uint8_t i = 0; i < iterationCounts_; i++)
 			{
 				physics_scene->simulate(timeInterval_ / iterationCounts_);
-				physics_scene->fetchStart();
+				physics_scene->fetchResults();
 			}
 
 			needUpdate_ = false;
 		}
 
 		if (iterationCounts_ > 0)
-			physics_scene->fetchResult();
+			physics_scene->fetchFinish();
     }
 
     void

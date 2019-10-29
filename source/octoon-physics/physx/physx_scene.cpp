@@ -125,13 +125,13 @@ namespace octoon
 		}
 
 		void
-		PhysxScene::fetchStart()
+		PhysxScene::fetchResults()
 		{
 			px_scene->fetchResults(true);
 		}
 
 		void
-		PhysxScene::fetchResult()
+		PhysxScene::fetchFinish()
 		{
 			physx::PxU32 nbActiveActors;
 			physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);

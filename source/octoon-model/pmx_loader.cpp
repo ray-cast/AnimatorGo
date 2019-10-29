@@ -250,6 +250,11 @@ namespace octoon
 					if (!stream.read((char*)&bone.Level, sizeof(bone.Level))) return false;
 					if (!stream.read((char*)&bone.Flag, sizeof(bone.Flag))) return false;
 
+					if (bone.Flag & PMX_BONE_DISPLAY)
+						bone.Visable = true;
+					else
+						bone.Visable = false;
+
 					if (bone.Flag & PMX_BONE_INDEX)
 					{
 						if (!stream.read((char*)&bone.ConnectedBoneIndex, pmx.header.sizeOfBone)) return false;
@@ -707,6 +712,7 @@ namespace octoon
 				bone.setName(cv.to_bytes(it.name.name));
 				bone.setPosition(it.position);
 				bone.setParent(it.Parent);
+				bone.setVisable(it.Visable);
 				bone.setAdditiveParent(it.ProvidedParentBoneIndex);
 				bone.setAdditiveUseLocal(!(it.Flag & PMX_BONE_ADD_LOCAL));
 

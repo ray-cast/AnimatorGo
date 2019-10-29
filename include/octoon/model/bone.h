@@ -15,6 +15,7 @@ namespace octoon
 			~Bone() noexcept;
 
 			void setName(const std::string& name) noexcept;
+			void setVisable(bool visable) noexcept;
 			void setParent(std::int16_t parent) noexcept;
 			void setAdditiveParent(std::int16_t parent) noexcept;
 			void setAdditiveUseLocal(bool enable) noexcept;
@@ -26,6 +27,7 @@ namespace octoon
 			const std::string& getName() const noexcept;
 			std::int16_t getParent() const noexcept;
 			std::int16_t getAdditiveParent() const noexcept;
+			bool getVisable() const noexcept;
 			bool getAdditiveUseLocal() const noexcept;
 			float getAdditiveMoveRatio() const noexcept;
 			float getAdditiveRotationRatio() const noexcept;
@@ -36,6 +38,7 @@ namespace octoon
 			float _moveRatio;
 			float _rotationRatio;
 
+			bool _visable;
 			bool _additiveUseLocal;
 
 			std::string _name;

@@ -8,6 +8,7 @@ namespace octoon
 	{
 		Bone::Bone() noexcept
 			: _parent(-1)
+			, _visable(true)
 			, _additivePrent(-1)
 			, _additiveUseLocal(false)
 			, _rotation(0.0f, 0.0f, 0.0f, 1.0f)
@@ -39,6 +40,12 @@ namespace octoon
 		}
 
 		void
+		Bone::setVisable(bool visable) noexcept
+		{
+			_visable = visable;
+		}
+
+		void
 		Bone::setParent(std::int16_t parent) noexcept
 		{
 			_parent = parent;
@@ -66,6 +73,12 @@ namespace octoon
 		Bone::setAdditiveRotationRatio(float ratio) noexcept
 		{
 			_rotationRatio = ratio;
+		}
+
+		bool
+		Bone::getVisable() const noexcept
+		{
+			return _visable;
 		}
 
 		std::int16_t

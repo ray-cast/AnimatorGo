@@ -163,6 +163,7 @@ namespace octoon
 			PmxUInt16  Parent;
 			PmxUInt32  Level;
 			PmxUInt16  Flag;
+			PmxUInt16  Visable;
 			PmxUInt16  ConnectedBoneIndex;
 			PmxUInt16  ProvidedParentBoneIndex;
 			PmxFloat   ProvidedRatio;

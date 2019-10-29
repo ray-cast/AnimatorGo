@@ -26,6 +26,5 @@ namespace octoon
 				px_lhs->getPxRigidbody(), physx::PxTransform(0.f, 0.f, 0.f),
 				px_rhs->getPxRigidbody(), physx::PxTransform(0.f, 0.f, 0.f));
 		}
-
 	}
 }

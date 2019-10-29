@@ -657,10 +657,10 @@ namespace octoon
 					weight.weight2 = v.weight.weight2;
 					weight.weight3 = v.weight.weight3;
 					weight.weight4 = v.weight.weight4;
-					weight.bone1 = v.weight.bone1;
-					weight.bone2 = v.weight.bone2;
-					weight.bone3 = v.weight.bone3;
-					weight.bone4 = v.weight.bone4;
+					weight.bone1 = v.weight.bone1 < pmx.numBones ? v.weight.bone1 : 0;
+					weight.bone2 = v.weight.bone2 < pmx.numBones ? v.weight.bone2 : 0;
+					weight.bone3 = v.weight.bone3 < pmx.numBones ? v.weight.bone3 : 0;
+					weight.bone4 = v.weight.bone4 < pmx.numBones ? v.weight.bone4 : 0;
 
 					weights[i] = weight;
 				}

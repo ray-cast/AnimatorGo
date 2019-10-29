@@ -7,7 +7,6 @@ namespace octoon
 	OctoonImplementSubInterface(FixedJointComponent, JointComponent, "FixedJointComponent")
 
 	FixedJointComponent::FixedJointComponent() noexcept
-		:joint(), thisBody(), target_()
 	{
 	}
 

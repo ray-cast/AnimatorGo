@@ -373,16 +373,16 @@ namespace octoon
 
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
-			component->setMass(std::max(1.0f, it->mass));
+			component->setMass(std::clamp(it->mass, 0.1f, 10.0f));
 			component->setGroupMask(it->groupMask);
 			component->setRestitution(it->elasticity);
-			component->setStaticFriction(it->friction);
-			component->setDynamicFriction(it->friction / 1.5f);
+			component->setStaticFriction(it->friction * 1.5f);
+			component->setDynamicFriction(it->friction);
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
 			component->setSleepThreshold(0.0f);
-			component->setSolverIterationCounts(10, 10);
+			component->setSolverIterationCounts(12, 3);
 			//component->setEnableCCD(!component->getIsKinematic());
 
 			gameObject->addComponent(component);
@@ -446,49 +446,38 @@ namespace octoon
 					joint->setZMotion(ConfigurableJointMotion::Limited);
 				}
 
-				if (it->movementLowerLimit.x != 0.0f || it->movementUpperLimit.x != 0.0f ||
-					it->movementLowerLimit.y != 0.0f || it->movementUpperLimit.y != 0.0f ||
-					it->movementLowerLimit.z != 0.0f || it->movementUpperLimit.z != 0.0f)
-				{
-					auto length = math::distance(it->movementLowerLimit, it->movementUpperLimit);
-					if (length > 0.0f)
-						joint->setDistanceLimit(length);
-				}
-
 				if (it->rotationLowerLimit.x == 0.0f && it->rotationUpperLimit.x == 0.0f)
 					joint->setAngularXMotion(ConfigurableJointMotion::Locked);
+				else if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
+					joint->setAngularXMotion(ConfigurableJointMotion::Free);
 				else
 					joint->setAngularXMotion(ConfigurableJointMotion::Limited);
 
 				if (it->rotationLowerLimit.y == 0.0f && it->rotationUpperLimit.y == 0.0f)
 					joint->setAngularYMotion(ConfigurableJointMotion::Locked);
+				else if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
+					joint->setAngularYMotion(ConfigurableJointMotion::Free);
 				else
 					joint->setAngularYMotion(ConfigurableJointMotion::Limited);
 
 				if (it->rotationLowerLimit.z == 0.0f && it->rotationUpperLimit.z == 0.0f)
 					joint->setAngularZMotion(ConfigurableJointMotion::Locked);
+				else if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
+					joint->setAngularZMotion(ConfigurableJointMotion::Free);
 				else
 					joint->setAngularZMotion(ConfigurableJointMotion::Limited);
 
-				if (it->rotationLowerLimit.x > it->rotationUpperLimit.x)
-					std::swap(it->rotationLowerLimit.x, it->rotationUpperLimit.x);
-				if (it->rotationLowerLimit.y > it->rotationUpperLimit.y)
-					std::swap(it->rotationLowerLimit.y, it->rotationUpperLimit.y);
-				if (it->rotationLowerLimit.z > it->rotationUpperLimit.z)
-					std::swap(it->rotationLowerLimit.z, it->rotationUpperLimit.z);
-
-				if (it->rotationLowerLimit.x != 0.0f || it->rotationUpperLimit.x != 0.0f)
+				if (it->rotationLowerLimit.x < it->rotationUpperLimit.x)
 				{
-					auto lower = math::clamp(it->rotationLowerLimit.x, -math::radians(60.0f), math::radians(60.0f)) - 1e-5f;
-					auto upper = math::clamp(it->rotationUpperLimit.x, -math::radians(60.0f), math::radians(60.0f)) + 1e-5f;
+					auto lower = math::clamp(it->rotationLowerLimit.x, -math::radians(120.0f), math::radians(120.0f)) - 1e-5f;
+					auto upper = math::clamp(it->rotationUpperLimit.x, -math::radians(120.0f), math::radians(120.0f)) + 1e-5f;
 					joint->setTwistLimit(lower, upper);
 				}
 
-				if (it->rotationLowerLimit.y != 0.0f || it->rotationUpperLimit.y != 0.0f ||
-					it->rotationLowerLimit.z != 0.0f || it->rotationUpperLimit.z != 0.0f)
+				if (it->rotationLowerLimit.y < it->rotationUpperLimit.y || it->rotationLowerLimit.z < it->rotationUpperLimit.z)
 				{
-					auto rotationLimitY = math::clamp(std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y)), math::EPSILON_E5, math::radians(60.0f));
-					auto rotationLimitZ = math::clamp(std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z)), math::EPSILON_E5, math::radians(60.0f));
+					auto rotationLimitY = math::clamp(std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y)), math::EPSILON_E5, math::radians(120.0f));
+					auto rotationLimitZ = math::clamp(std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z)), math::EPSILON_E5, math::radians(120.0f));
 					joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 				}
 

@@ -4,6 +4,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/basic_material.h>
 #include <octoon/game_prefabs.h>
+#include <octoon/video/render_system.h>
 
 namespace octoon
 {
@@ -271,6 +272,16 @@ namespace octoon
 			for (std::size_t i = 0; i < transforms_.size(); ++i)
 				joints_[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
 		}
+
+		/*if (!jointData_)
+		{
+			hal::GraphicsDataDesc jointDesc;
+			jointDesc.setStreamSize(sizeof(math::float4x4) * static_cast<std::uint16_t>(joints_.size()));
+			jointDesc.setUsage(hal::GraphicsUsageFlagBits::WriteBit);
+			jointDesc.setType(hal::GraphicsDataType::UniformBuffer);
+
+			jointData_ = video::RenderSystem::instance()->createGraphicsData(jointDesc);
+		}*/
 	}
 
 	void
@@ -283,7 +294,7 @@ namespace octoon
 		auto numVertices = skinnedMesh_->getNumVertices();
 
 #		pragma omp parallel for num_threads(4)
-		for (std::size_t i = 0; i < numVertices; i++)
+		for (std::int32_t i = 0; i < numVertices; i++)
 		{
 			auto& blend = weights[i];
 

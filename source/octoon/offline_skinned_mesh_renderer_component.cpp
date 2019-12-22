@@ -229,7 +229,7 @@ namespace octoon
 		auto numVertices = skinnedMesh_->getNumVertices();
 
 #		pragma omp parallel for num_threads(4)
-		for (std::size_t i = 0; i < numVertices; i++)
+		for (std::int32_t i = 0; i < numVertices; i++)
 		{
 			auto& blend = weights[i];
 

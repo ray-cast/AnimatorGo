@@ -460,7 +460,7 @@ namespace octoon
 				alpha.resize(alphaDesc.image_width * alphaDesc.image_height * alphaFormat.num_components);
 
 #				pragma omp parallel for num_threads(4)
-				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
+				for (std::int32_t y = 0; y < rgbDesc.image_height; y++)
 				{
 					auto srcHeight = y * rgbDesc.image_width;
 					auto dstHeight = (rgbDesc.image_height - 1 - y) * rgbDesc.image_width;

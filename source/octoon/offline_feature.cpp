@@ -553,7 +553,7 @@ namespace octoon
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
-			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
 			colorTexture_ = context->getDevice()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");

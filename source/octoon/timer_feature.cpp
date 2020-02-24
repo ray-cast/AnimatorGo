@@ -74,7 +74,7 @@ namespace octoon
 	float
 	TimerFeature::delta() const noexcept
 	{
-		return timer_->delta();
+		return timeInterval_;
 	}
 
 	float
@@ -105,7 +105,6 @@ namespace octoon
 	TimerFeature::onActivate() except
 	{
 		timer_ = std::make_unique<runtime::Timer>();
-		timer_->reset();
 	}
 
 	void

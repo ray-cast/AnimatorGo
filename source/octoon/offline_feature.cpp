@@ -114,48 +114,93 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::readColorFramebuffer(void* dst) noexcept
+	OfflineFeature::readColorFramebuffer(float output[]) noexcept
 	{
 		if (colorTexture_)
 		{
 			auto& desc = colorTexture_->getTextureDesc();
 
-			void* data = nullptr;
-			if (colorTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			math::float4* data = nullptr;
+			if (colorTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
 			{
-				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				auto width = desc.getWidth();
+				auto height = desc.getHeight();
+
+				for (std::int32_t y = 0; y < height; y++)
+				{
+					for (std::uint32_t x = 0; x < width; x++)
+					{
+						auto src = y * width + x;
+						auto dst = (y * width + x) * 3;
+
+						output[dst] = data[src].x;
+						output[dst + 1] = data[src].y;
+						output[dst + 2] = data[src].z;
+					}
+				}
+
 				colorTexture_->unmap();
 			}
 		}
 	}
 
 	void
-	OfflineFeature::readNormalFramebuffer(void* dst) noexcept
+	OfflineFeature::readNormalFramebuffer(float output[]) noexcept
 	{
 		if (normalTexture_)
 		{
 			auto& desc = normalTexture_->getTextureDesc();
 
-			void* data = nullptr;
-			if (normalTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			math::float4* data = nullptr;
+			if (normalTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
 			{
-				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				auto width = desc.getWidth();
+				auto height = desc.getHeight();
+
+				for (std::int32_t y = 0; y < height; y++)
+				{
+					for (std::uint32_t x = 0; x < width; x++)
+					{
+						auto src = y * width + x;
+						auto dst = (y * width + x) * 3;
+
+						output[dst] = data[src].x;
+						output[dst + 1] = data[src].y;
+						output[dst + 2] = data[src].z;
+					}
+				}
+
 				normalTexture_->unmap();
 			}
 		}
 	}
 
 	void
-	OfflineFeature::readAlbedoFramebuffer(void* dst) noexcept
+	OfflineFeature::readAlbedoFramebuffer(float output[]) noexcept
 	{
 		if (albedoTexture_)
 		{
 			auto& desc = albedoTexture_->getTextureDesc();
 
-			void* data = nullptr;
-			if (albedoTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			math::float4* data = nullptr;
+			if (albedoTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
 			{
-				std::memcpy(dst, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				auto width = desc.getWidth();
+				auto height = desc.getHeight();
+
+				for (std::int32_t y = 0; y < height; y++)
+				{
+					for (std::uint32_t x = 0; x < width; x++)
+					{
+						auto src = y * width + x;
+						auto dst = (y * width + x) * 3;
+
+						output[dst] = data[src].x;
+						output[dst + 1] = data[src].y;
+						output[dst + 2] = data[src].z;
+					}
+				}
+
 				albedoTexture_->unmap();
 			}
 		}

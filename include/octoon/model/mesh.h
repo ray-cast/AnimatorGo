@@ -96,7 +96,7 @@ namespace octoon
 			const math::BoundingBox& getBoundingBox(std::size_t n) const noexcept;
 
 			void clear() noexcept;
-			MeshPtr clone() noexcept;
+			MeshPtr clone() const noexcept;
 
 		private:
 			std::string _name;

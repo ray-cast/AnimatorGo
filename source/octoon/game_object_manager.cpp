@@ -139,11 +139,11 @@ namespace octoon
 
 				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 				{
-					auto boundingBox = math::transform(mesh->getBoundingBox(i), transform->getTransform());
-					if (!math::intersects(boundingBox, ray))
+					auto childBox = math::transform(mesh->getBoundingBox(i), transform->getTransform());
+					if (!math::intersects(childBox, ray))
 						continue;
 
-					float dist = math::sqrDistance(boundingBox.center(), ray.origin);
+					float dist = math::sqrDistance(childBox.center(), ray.origin);
 					if (dist < distance)
 					{
 						hit.object = object;

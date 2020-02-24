@@ -59,7 +59,7 @@ namespace octoon
 		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
-		T* tryGetFeature() const noexcept { return dynamic_cast<T*>(this->getFeature(T::RTTI)); }
+		T* tryGetFeature() const noexcept { return dynamic_cast<T*>(this->tryGetFeature(T::RTTI)); }
 		GameFeature* tryGetFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* tryGetFeature(const runtime::Rtti& rtti) const noexcept;
 

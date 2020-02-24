@@ -2,7 +2,6 @@
 #define OCTOON_SKINNED_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/physics/physics_shape.h>
 
 namespace octoon
 {

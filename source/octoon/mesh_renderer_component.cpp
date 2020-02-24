@@ -86,7 +86,7 @@ namespace octoon
 		assert(mesh_.type() == typeid(model::MeshPtr));
 		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
 		if (mesh)
-			this->uploadMeshData(*mesh);
+			this->uploadMeshData(mesh);
 	}
 
 	void
@@ -113,104 +113,107 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	MeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
 	{
 		geometries_.clear();
 
-		auto& vertices = mesh.getVertexArray();
-		auto& texcoord = mesh.getTexcoordArray();
-		auto& normals = mesh.getNormalArray();
-
-		hal::GraphicsInputLayoutDesc inputLayout;
-		inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
-		inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
-		inputLayout.addVertexBinding(hal::GraphicsVertexBinding(0, inputLayout.getVertexSize()));
-
-		auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
-
-		std::uint32_t offset = 0;
-		std::vector<float> data(vertices.size() * vertexSize);
-
-		for (auto& layout : inputLayout.getVertexLayouts())
+		if (mesh)
 		{
-			if (layout.getSemantic() == "POSITION")
+			auto& vertices = mesh->getVertexArray();
+			auto& texcoord = mesh->getTexcoordArray();
+			auto& normals = mesh->getNormalArray();
+
+			hal::GraphicsInputLayoutDesc inputLayout;
+			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
+			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
+			inputLayout.addVertexBinding(hal::GraphicsVertexBinding(0, inputLayout.getVertexSize()));
+
+			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
+
+			std::uint32_t offset = 0;
+			std::vector<float> data(vertices.size() * vertexSize);
+
+			for (auto& layout : inputLayout.getVertexLayouts())
 			{
-				auto v = data.data() + offset;
-				for (auto& it : vertices)
+				if (layout.getSemantic() == "POSITION")
 				{
-					v[0] = it.x;
-					v[1] = it.y;
-					v[2] = it.z;
-					v += vertexSize;
+					auto v = data.data() + offset;
+					for (auto& it : vertices)
+					{
+						v[0] = it.x;
+						v[1] = it.y;
+						v[2] = it.z;
+						v += vertexSize;
+					}
 				}
-			}
-			else if (layout.getSemantic() == "TEXCOORD")
-			{
-				auto t = data.data() + offset;
-				for (auto& it : texcoord)
+				else if (layout.getSemantic() == "TEXCOORD")
 				{
-					t[0] = it.x;
-					t[1] = it.y;
-					t += vertexSize;
+					auto t = data.data() + offset;
+					for (auto& it : texcoord)
+					{
+						t[0] = it.x;
+						t[1] = it.y;
+						t += vertexSize;
+					}
 				}
-			}
-			else if (layout.getSemantic() == "NORMAL")
-			{
-				auto n = data.data() + offset;
-				for (auto& it : normals)
+				else if (layout.getSemantic() == "NORMAL")
 				{
-					n[0] = it.x;
-					n[1] = it.y;
-					n[2] = it.z;
-					n += vertexSize;
+					auto n = data.data() + offset;
+					for (auto& it : normals)
+					{
+						n[0] = it.x;
+						n[1] = it.y;
+						n[2] = it.z;
+						n += vertexSize;
+					}
 				}
+
+				offset += layout.getVertexCount();
 			}
 
-			offset += layout.getVertexCount();
-		}
+			hal::GraphicsDataDesc dataDesc;
+			dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
+			dataDesc.setStream((std::uint8_t*)data.data());
+			dataDesc.setStreamSize(data.size() * sizeof(float));
+			dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-		hal::GraphicsDataDesc dataDesc;
-		dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
-		dataDesc.setStream((std::uint8_t*)data.data());
-		dataDesc.setStreamSize(data.size() * sizeof(float));
-		dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+			auto vbo = video::RenderSystem::instance()->createGraphicsData(dataDesc);
 
-		auto vbo = video::RenderSystem::instance()->createGraphicsData(dataDesc);
-
-		for (std::size_t i = 0; i < mesh.getNumSubsets(); i++)
-		{
-			auto geometry_ = std::make_shared<video::Geometry>();
-			geometry_->setActive(true);
-			geometry_->setOwnerListener(this);
-			geometry_->setVertexBuffer(vbo);
-			geometry_->setNumVertices((std::uint32_t)vertices.size());
-			geometry_->setBoundingBox(mesh.getBoundingBox(i));
-
-			auto& indices = mesh.getIndicesArray(i);
-			if (!indices.empty())
+			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
-				hal::GraphicsDataDesc indiceDesc;
-				indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
-				indiceDesc.setStream((std::uint8_t*)indices.data());
-				indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
-				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+				auto geometry_ = std::make_shared<video::Geometry>();
+				geometry_->setActive(true);
+				geometry_->setOwnerListener(this);
+				geometry_->setVertexBuffer(vbo);
+				geometry_->setNumVertices((std::uint32_t)vertices.size());
+				geometry_->setBoundingBox(mesh->getBoundingBox(i));
 
-				geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
-				geometry_->setNumIndices((std::uint32_t)indices.size());
+				auto& indices = mesh->getIndicesArray(i);
+				if (!indices.empty())
+				{
+					hal::GraphicsDataDesc indiceDesc;
+					indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
+					indiceDesc.setStream((std::uint8_t*)indices.data());
+					indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
+					indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+
+					geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
+					geometry_->setNumIndices((std::uint32_t)indices.size());
+				}
+
+				geometries_.push_back(geometry_);
 			}
 
-			geometries_.push_back(geometry_);
-		}
+			this->onMoveAfter();
+			this->onLayerChangeAfter();
 
-		this->onMoveAfter();
-		this->onLayerChangeAfter();
-
-		for (std::size_t i = 0; i < geometries_.size(); i++)
-		{
-			if (i < materials_.size())
-				geometries_[i]->setMaterial(materials_[i]);
-			else
-				geometries_[i]->setMaterial(materials_.front());
+			for (std::size_t i = 0; i < geometries_.size(); i++)
+			{
+				if (i < materials_.size())
+					geometries_[i]->setMaterial(materials_[i]);
+				else
+					geometries_[i]->setMaterial(materials_.front());
+			}
 		}
 	}
 

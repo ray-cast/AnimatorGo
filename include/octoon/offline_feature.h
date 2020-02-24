@@ -32,9 +32,9 @@ namespace octoon
 
 		hal::GraphicsFramebufferPtr getColorFramebuffer() const noexcept;
 
-		void readColorFramebuffer(void* dst) noexcept;
-		void readNormalFramebuffer(void* dst) noexcept;
-		void readAlbedoFramebuffer(void* dst) noexcept;
+		void readColorFramebuffer(float dst[]) noexcept;
+		void readNormalFramebuffer(float dst[]) noexcept;
+		void readAlbedoFramebuffer(float dst[]) noexcept;
 
 		void clearMemory() noexcept;
 

@@ -17,7 +17,7 @@ namespace octoon
 		explicit MeshRendererComponent(const model::MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
-		virtual void uploadMeshData(const model::Mesh& mesh) noexcept;
+		virtual void uploadMeshData(const model::MeshPtr& mesh) noexcept;
 		virtual void uploadMaterialData(const model::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;

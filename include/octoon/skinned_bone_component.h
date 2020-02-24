@@ -1,7 +1,6 @@
 #ifndef OCTOON_SKINNED_BONE_COMPONENT_H_
 #define OCTOON_SKINNED_BONE_COMPONENT_H_
 
-#include <octoon/animation/animation.h>
 #include <octoon/skinned_component.h>
 
 namespace octoon

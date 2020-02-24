@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(AnimatorComponent, GameComponent, "Animator")
+	OctoonImplementSubClass(AnimatorComponent, AnimationComponent, "Animator")
 
 	AnimatorComponent::AnimatorComponent() noexcept
 		: enableAnimation_(true)
@@ -92,12 +92,6 @@ namespace octoon
 	{
 		this->setTime(0.0f);
 		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
-	}
-
-	float
-	AnimatorComponent::timeLength() const noexcept
-	{
-		return animation_.timeLength();
 	}
 
 	void

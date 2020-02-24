@@ -71,7 +71,7 @@ namespace octoon
 
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 specular = math::float3::One;
-			math::float3 ambient;
+			math::float3 ambient = math::float3::Zero;
 			math::float4 edgeColor = math::float4::Zero;
 			
 			float opacity = 1.0f;
@@ -202,7 +202,7 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	OfflineMeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
@@ -215,38 +215,41 @@ namespace octoon
 
 			shapes_.clear();
 
-			for (std::size_t i = 0; i < mesh.getNumSubsets(); i++)
+			if (mesh)
 			{
-				math::uint1s faceArray(mesh.getIndicesArray(i).size() / 3, 3);
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+				{
+					math::uint1s faceArray(mesh->getIndicesArray(i).size() / 3, 3);
 
-				rpr_shape rprShape;
-				rprContextCreateMesh(feature->getContext(),
-					mesh.getVertexArray().data()->ptr(), mesh.getVertexArray().size() / 3, sizeof(math::float3),
-					mesh.getNormalArray().data()->ptr(), mesh.getNormalArray().size() / 3, sizeof(math::float3),
-					mesh.getTexcoordArray().data()->ptr(), mesh.getTexcoordArray().size() / 2, sizeof(math::float2),
-					(rpr_int*)mesh.getIndicesArray(i).data(), sizeof(rpr_int),
-					(rpr_int*)mesh.getIndicesArray(i).data(), sizeof(rpr_int),
-					(rpr_int*)mesh.getIndicesArray(i).data(), sizeof(rpr_int),
-					(rpr_int*)faceArray.data(), faceArray.size(),
-					&rprShape);
+					rpr_shape rprShape;
+					rprContextCreateMesh(feature->getContext(),
+						mesh->getVertexArray().data()->ptr(), mesh->getVertexArray().size() / 3, sizeof(math::float3),
+						mesh->getNormalArray().data()->ptr(), mesh->getNormalArray().size() / 3, sizeof(math::float3),
+						mesh->getTexcoordArray().data()->ptr(), mesh->getTexcoordArray().size() / 2, sizeof(math::float2),
+						(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+						(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+						(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+						(rpr_int*)faceArray.data(), faceArray.size(),
+						&rprShape);
 
-				rprShapeSetShadow(rprShape, true);
-				rprShapeSetShadowCatcher(rprShape, true);
-				rprShapeSetVisibility(rprShape, true);
-				rprShapeSetLayerMask(rprShape, this->getGameObject()->getLayer());
-				rprShapeSetObjectGroupID(rprShape, (rpr_uint)this->getGameObject()->id());
-				rprShapeSetTransform(rprShape, false, this->getComponent<TransformComponent>()->getTransform().ptr());
-				rprSceneAttachShape(feature->getScene(), rprShape);
+					rprShapeSetShadow(rprShape, true);
+					rprShapeSetShadowCatcher(rprShape, true);
+					rprShapeSetVisibility(rprShape, true);
+					rprShapeSetLayerMask(rprShape, this->getGameObject()->getLayer());
+					rprShapeSetObjectGroupID(rprShape, (rpr_uint)this->getGameObject()->id());
+					rprShapeSetTransform(rprShape, false, this->getComponent<TransformComponent>()->getTransform().ptr());
+					rprSceneAttachShape(feature->getScene(), rprShape);
 
-				shapes_.push_back(rprShape);
-			}
+					shapes_.push_back(rprShape);
+				}
 
-			for (std::size_t i = 0; i < materials_.size(); i++)
-			{
-				if (i < shapes_.size())
-					rprShapeSetMaterial(shapes_[i], materials_[i]);
-				else
-					rprShapeSetMaterial(shapes_[i], materials_.front());
+				for (std::size_t i = 0; i < materials_.size(); i++)
+				{
+					if (i < shapes_.size())
+						rprShapeSetMaterial(shapes_[i], materials_[i]);
+					else
+						rprShapeSetMaterial(shapes_[i], materials_.front());
+				}
 			}
 		}
 	}
@@ -338,9 +341,7 @@ namespace octoon
 	void
 	OfflineMeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
-		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
-		if (mesh && this->getMaterial())
-			this->uploadMeshData(*mesh);
+		this->uploadMeshData(runtime::any_cast<model::MeshPtr>(mesh_));
 	}
 
 	void

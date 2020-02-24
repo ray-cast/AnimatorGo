@@ -12,7 +12,7 @@ namespace octoon
 {
 	class OCTOON_EXPORT SkinnedMeshRendererComponent final : public MeshRendererComponent
 	{
-		OctoonDeclareSubClass(SkinnedMeshRendererComponent, RenderComponent)
+		OctoonDeclareSubClass(SkinnedMeshRendererComponent, MeshRendererComponent)
 	public:
 		SkinnedMeshRendererComponent() noexcept;
 		SkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept;
@@ -34,7 +34,7 @@ namespace octoon
 		void setTextureBlendEnable(bool enable) noexcept;
 		bool getTextureBlendEnable() const noexcept;
 
-		void uploadMeshData(const model::Mesh& mesh) noexcept override;
+		void uploadMeshData(const model::MeshPtr& mesh) noexcept override;
 		void uploadMaterialData(const model::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
@@ -54,9 +54,9 @@ namespace octoon
 		void onPreRender(const video::Camera& camera) noexcept override;
 
 	private:
-		void updateJointData(const model::Mesh& mesh) noexcept;
-		void updateBoneData(const model::Mesh& mesh) noexcept;
-
+		void updateMeshData() noexcept;
+		void updateJointData() noexcept;
+		void updateBoneData() noexcept;
 		void updateClothBlendData() noexcept;
 		void updateMorphBlendData() noexcept;
 		void updateTextureBlendData() noexcept;

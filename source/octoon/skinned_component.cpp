@@ -5,7 +5,7 @@ namespace octoon
 	OctoonImplementSubInterface(SkinnedComponent, GameComponent, "Skinned")
 
 	SkinnedComponent::SkinnedComponent() noexcept
-		: control_(0.0f)
+		: control_(0)
 	{
 	}
 

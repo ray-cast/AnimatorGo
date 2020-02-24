@@ -88,8 +88,8 @@ namespace octoon
 	{
 		if (needUpdate_)
 		{
-			model::Mesh meshes;
-			auto& vertices = meshes.getVertexArray();
+			auto meshes = std::make_shared<model::Mesh>();
+			auto& vertices = meshes->getVertexArray();
 
 			for (auto& transfrom : transforms_)
 			{

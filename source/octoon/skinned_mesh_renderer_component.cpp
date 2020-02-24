@@ -8,7 +8,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(SkinnedMeshRendererComponent, RenderComponent, "SkinnedMeshRenderer")
+	OctoonImplementSubClass(SkinnedMeshRendererComponent, MeshRendererComponent, "SkinnedMeshRenderer")
 
 	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)
@@ -105,18 +105,40 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	SkinnedMeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
 	{
-		this->skinnedMesh_->setVertexArray(mesh.getVertexArray());
-		this->skinnedMesh_->setNormalArray(mesh.getNormalArray());
+		mesh_ = mesh;
+		needUpdate_ = false;
+		this->updateMeshData();
+	}
 
-		this->updateJointData(mesh);
-		this->updateClothBlendData();
-		this->updateMorphBlendData();
-		this->updateTextureBlendData();
-		this->updateBoneData(mesh);
+	void
+	SkinnedMeshRendererComponent::updateMeshData() noexcept
+	{
+		if (mesh_)
+		{
+			if (this->skinnedMesh_)
+			{
+				this->skinnedMesh_->setVertexArray(mesh_->getVertexArray());
+				this->skinnedMesh_->setNormalArray(mesh_->getNormalArray());
+			}
+			else
+			{
+				skinnedMesh_ = mesh_->clone();
+			}
 
-		MeshRendererComponent::uploadMeshData(*skinnedMesh_);
+			this->updateJointData();
+			this->updateClothBlendData();
+			this->updateMorphBlendData();
+			this->updateTextureBlendData();
+			this->updateBoneData();
+
+			MeshRendererComponent::uploadMeshData(skinnedMesh_);
+		}
+		else
+		{
+			MeshRendererComponent::uploadMeshData(nullptr);
+		}
 	}
 
 	void
@@ -233,35 +255,27 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data_) noexcept
+	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
-		auto mesh = runtime::any_cast<model::MeshPtr>(data_);
-		if (mesh)
-		{
-			mesh_ = mesh;
-			skinnedMesh_ = mesh->clone();
-		}
-
-		this->uploadMeshData(*mesh_);
-		needUpdate_ = true;
+		this->uploadMeshData(runtime::any_cast<model::MeshPtr>(data));
 	}
 
 	void
 	SkinnedMeshRendererComponent::onPreRender(const video::Camera& camera) noexcept
 	{
-		if (needUpdate_ && skinnedMesh_)
+		if (needUpdate_)
 		{
-			this->uploadMeshData(*mesh_);
+			this->updateMeshData();
 			needUpdate_ = false;
 		}
 	}
 
 	void
-	SkinnedMeshRendererComponent::updateJointData(const model::Mesh& mesh) noexcept
+	SkinnedMeshRendererComponent::updateJointData() noexcept
 	{
-		joints_.resize(mesh.getBindposes().size());
+		joints_.resize(skinnedMesh_->getBindposes().size());
 
-		auto& bindposes = mesh.getBindposes();
+		auto& bindposes = skinnedMesh_->getBindposes();
 		if (bindposes.size() != transforms_.size())
 		{
 			for (std::size_t i = 0; i < transforms_.size(); ++i)
@@ -285,7 +299,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::updateBoneData(const model::Mesh& mesh) noexcept
+	SkinnedMeshRendererComponent::updateBoneData() noexcept
 	{
 		auto& vertices = skinnedMesh_->getVertexArray();
 		auto& normals = skinnedMesh_->getNormalArray();
@@ -352,12 +366,7 @@ namespace octoon
 					auto numIndices = indices.size();
 
 					for (std::size_t i = 0; i < numIndices; i++)
-					{
-						auto offset = offsets[i];
-						auto index = indices[i];
-
-						dstVertices[index] += offset * control;
-					}
+						dstVertices[indices[i]] += offsets[i] * control;
 				}
 			}
 		}
@@ -381,12 +390,7 @@ namespace octoon
 					auto numIndices = indices.size();
 
 					for (std::size_t i = 0; i < numIndices; i++)
-					{
-						auto offset = offsets[i];
-						auto index = indices[i];
-
-						dstTextures[index] += offset * control;
-					}
+						dstTextures[indices[i]] += offsets[i] * control;
 				}
 			}
 		}

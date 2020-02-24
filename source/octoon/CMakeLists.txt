@@ -137,6 +137,8 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/solver_component.cpp
 	${HEADER_PATH}/animator_component.h
 	${SOURCE_PATH}/animator_component.cpp
+	${HEADER_PATH}/animation_component.h
+	${SOURCE_PATH}/animation_component.cpp
 	${HEADER_PATH}/rotation_limit_component.h
 	${SOURCE_PATH}/rotation_limit_component.cpp
 	${HEADER_PATH}/rotation_link_component.h
@@ -151,6 +153,8 @@ SET(ANIMATION_FEATURES_LIST
 	${SOURCE_PATH}/skinned_bone_component.cpp
 	${HEADER_PATH}/skinned_texture_component.h
 	${SOURCE_PATH}/skinned_texture_component.cpp
+	${HEADER_PATH}/mesh_animation_component.h
+	${SOURCE_PATH}/mesh_animation_component.cpp	
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 
@@ -229,6 +233,8 @@ ELSE()
 	ADD_LIBRARY(${LIB_NAME} STATIC ${OCTOON_LIST})
 ENDIF()
 
+FIND_PACKAGE(Alembic CONFIG REQUIRED)
+
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-math)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-runtime)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-image)
@@ -237,6 +243,7 @@ TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE NvCloth)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE PhysX)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE PhysXExtensions)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE RadeonProRender64)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE Alembic::Alembic)
 
 IF(OCTOON_FEATURE_ANIMATION_ENABLE)
 	TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-animation)

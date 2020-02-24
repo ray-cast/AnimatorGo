@@ -1,14 +1,13 @@
 #ifndef OCTOON_ANIMATOR_COMPONENT_H_
 #define OCTOON_ANIMATOR_COMPONENT_H_
 
-#include <octoon/game_component.h>
-#include <octoon/animation/animation.h>
+#include <octoon/animation_component.h>
 
 namespace octoon
 {
-	class OCTOON_EXPORT AnimatorComponent final : public GameComponent
+	class OCTOON_EXPORT AnimatorComponent final : public AnimationComponent
 	{
-		OctoonDeclareSubClass(AnimatorComponent, GameComponent)
+		OctoonDeclareSubClass(AnimatorComponent, AnimationComponent)
 	public:
 		AnimatorComponent() noexcept;
 		AnimatorComponent(animation::Animation<float>&& animation, GameObjects&& avatar) noexcept;
@@ -21,17 +20,15 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& avatar) noexcept;
 		~AnimatorComponent() noexcept;
 
-		bool play(const std::string& status = "default") noexcept;
-		void pause() noexcept;
-		void reset() noexcept;
+		bool play(const std::string& status = "default") noexcept override;
+		void pause() noexcept override;
+		void reset() noexcept override;
 
-		float timeLength() const noexcept;
+		void setTime(float time) noexcept override;
+		float getTime() const noexcept override;
 
-		void setTime(float time) noexcept;
-		float getTime() const noexcept;
-
-		void sample(float delta = 0.0f) noexcept;
-		void evaluate(float delta = 0.0f) noexcept;
+		void sample(float delta = 0.0f) noexcept override;
+		void evaluate(float delta = 0.0f) noexcept override;
 
 		void setAvatar(GameObjects&& avatar) noexcept;
 		void setAvatar(const GameObjects& avatar) noexcept;
@@ -41,7 +38,7 @@ namespace octoon
 		void setAnimation(const animation::Animation<float>& animation) noexcept;
 		
 		const animation::Animation<float>& getAnimation() const noexcept;
-		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept;
+		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
 
 		GameComponentPtr clone() const noexcept;
 

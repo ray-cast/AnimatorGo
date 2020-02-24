@@ -295,7 +295,7 @@ namespace octoon
 		}
 
 		MeshPtr
-		Mesh::clone() noexcept
+		Mesh::clone() const noexcept
 		{
 			auto mesh = std::make_shared<Mesh>();
 			mesh->setName(this->getName());

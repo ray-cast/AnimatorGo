@@ -18,6 +18,3 @@ document/OctoonAPI/html
 document/OctoonAPI/latex
 document/OctoonAPI/OctoonAPI.chm
 document/OctoonAPI/*.tmp
-
-samples/pmm/*
-samples/rabbit/*

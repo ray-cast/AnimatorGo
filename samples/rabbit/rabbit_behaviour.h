@@ -44,7 +44,7 @@ namespace rabbit
 
 		void addComponent(IRabbitComponent* component) noexcept;
 		void removeComponent(const IRabbitComponent* component) noexcept;
-		const std::vector<IRabbitComponent*> getComponents() const noexcept;
+		const std::vector<IRabbitComponent*>& getComponents() const noexcept;
 		void enableComponents() noexcept;
 		void disableComponents() noexcept;
 

@@ -80,7 +80,6 @@ namespace rabbit
 		materialButton_ = std::make_unique<QToolButton>(this);
 		materialButton_->setObjectName("material");
 		materialButton_->setToolTip(u8"²ÄÖÊ");
-		materialButton_->hide();
 
 		layout_ = std::make_unique<QVBoxLayout>(this);
 		layout_->addWidget(hideButton_.get(), 0, Qt::AlignCenter);

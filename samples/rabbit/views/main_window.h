@@ -71,7 +71,6 @@ namespace rabbit
 		void onDropSignal(QDropEvent* event) noexcept;
 		void onShowSignal(QShowEvent* event) noexcept;
 		void onUpdateSignal() noexcept;
-		void showEvent(QShowEvent* event);
 
 		bool eventFilter(QObject* watched, QEvent* event);
 

@@ -39,7 +39,7 @@ namespace rabbit
 			components_.erase(it);
 	}
 
-	const std::vector<IRabbitComponent*>
+	const std::vector<IRabbitComponent*>&
 	RabbitBehaviour::getComponents() const noexcept
 	{
 		return components_;

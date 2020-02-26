@@ -77,10 +77,6 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/login_window.cpp
 	${SOURCE_PATH}/views/info_window.h
 	${SOURCE_PATH}/views/info_window.cpp
-	${SOURCE_PATH}/views/camera_window.h
-	${SOURCE_PATH}/views/camera_window.cpp
-	${SOURCE_PATH}/views/theme_manager.h
-	${SOURCE_PATH}/views/theme_manager.cpp
 	${SOURCE_PATH}/views/record_window.h
 	${SOURCE_PATH}/views/record_window.cpp
 	${SOURCE_PATH}/views/material_window.h
@@ -89,6 +85,10 @@ SET(VIEWS_LIST
 SOURCE_GROUP("rabbit\\views" FILES ${VIEWS_LIST})
 
 SET(CONTROLLERS_LIST
+	${SOURCE_PATH}/controllers/camera_window.h
+	${SOURCE_PATH}/controllers/camera_window.cpp
+	${SOURCE_PATH}/controllers/theme_manager.h
+	${SOURCE_PATH}/controllers/theme_manager.cpp
 	${SOURCE_PATH}/controllers/ui_component.h
 	${SOURCE_PATH}/controllers/ui_component.cpp
 	${SOURCE_PATH}/controllers/file_component.h

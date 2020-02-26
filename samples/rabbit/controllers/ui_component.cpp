@@ -1,6 +1,6 @@
 #include "ui_component.h"
-#include "views/camera_window.h"
-#include "views/theme_manager.h"
+#include "controllers/camera_window.h"
+#include "controllers/theme_manager.h"
 #include "rabbit_behaviour.h"
 
 namespace rabbit

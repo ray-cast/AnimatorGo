@@ -1058,11 +1058,6 @@ namespace rabbit
 			gameApp_->update();
 	}
 
-	void
-	MainWindow::showEvent(QShowEvent* event)
-	{
-	}
-
 	bool
 	MainWindow::eventFilter(QObject* watched, QEvent* event)
 	{
@@ -1092,16 +1087,14 @@ namespace rabbit
 			listener_->splash_ = nullptr;
 
 			auto behaviour = behaviour_->addComponent<rabbit::RabbitBehaviour>(profile_);
-			behaviour->addMessageListener("rabbit:project:open",
-				[this](const std::any&)
+			behaviour->addMessageListener("rabbit:project:open", [this](const std::any&)
 			{
 				recordWindow_->repaint();
 				sunWindow_->repaint();
 				environmentWindow_->repaint();
 			});
 
-			behaviour->addMessageListener("rabbit:player:finish",
-				[this](const std::any&)
+			behaviour->addMessageListener("rabbit:player:finish", [this](const std::any&)
 			{
 				toolBar_->playButton_->setIcon(toolBar_->playIcon_);
 				toolBar_->playButton_->setToolTip(u8"²¥·Å");
@@ -1112,8 +1105,7 @@ namespace rabbit
 				recordWindow_->okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
 			});
 
-			behaviour->addMessageListener("rabbit:offline",
-				[this](const std::any& enable)
+			behaviour->addMessageListener("rabbit:offline", [this](const std::any& enable)
 			{
 				if (std::any_cast<bool>(enable))
 				{

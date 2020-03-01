@@ -161,7 +161,7 @@ namespace octoon
 				a += it->second[i].second;
 			}
 
-			a = a / it->second.size();
+			a = a / static_cast<float>(it->second.size());
 			for (int i = 0; i < it->second.size(); i++) {
 				normals[it->second[i].first] = a;
 			}
@@ -208,8 +208,8 @@ namespace octoon
 
 	void read_indices(const IPolyMeshSchema& schema_, const IPolyMeshSchema::Sample& sample, math::uint1s& indices)
 	{
-		auto& faceIndices = sample.getFaceIndices();
-		auto& faceCounts = sample.getFaceCounts();
+		auto faceIndices = sample.getFaceIndices();
+		auto faceCounts = sample.getFaceCounts();
 
 		std::size_t numFaces = faceCounts->size();
 		std::size_t numIndices = faceIndices->size();
@@ -569,8 +569,8 @@ namespace octoon
 				if (numSamps > 0)
 				{
 					auto iTsmp = schema.getTimeSampling();
-					minTime_ = iTsmp->getSampleTime(0);
-					maxTime_ = iTsmp->getSampleTime(numSamps - 1);
+					minTime_ = static_cast<float>(iTsmp->getSampleTime(0));
+					maxTime_ = static_cast<float>(iTsmp->getSampleTime(numSamps - 1));
 
 					animationState_.timeLength = maxTime_;
 				}
@@ -586,10 +586,10 @@ namespace octoon
 			auto matrix = xs.getMatrix();
 			auto transform = this->getComponent<TransformComponent>();
 			transform->setTransform(math::float4x4(
-				matrix.x[0][0], matrix.x[0][1], matrix.x[0][2], matrix.x[0][3],
-				matrix.x[1][0], matrix.x[1][1], matrix.x[1][2], matrix.x[1][3],
-				matrix.x[2][0], matrix.x[2][1], matrix.x[2][2], matrix.x[2][3],
-				matrix.x[3][0], matrix.x[3][1], matrix.x[3][2], matrix.x[3][3]));
+				(float)matrix.x[0][0], (float)matrix.x[0][1], (float)matrix.x[0][2], (float)matrix.x[0][3],
+				(float)matrix.x[1][0], (float)matrix.x[1][1], (float)matrix.x[1][2], (float)matrix.x[1][3],
+				(float)matrix.x[2][0], (float)matrix.x[2][1], (float)matrix.x[2][2], (float)matrix.x[2][3],
+				(float)matrix.x[3][0], (float)matrix.x[3][1], (float)matrix.x[3][2], (float)matrix.x[3][3]));
 
 			object_ = xform;
 		}

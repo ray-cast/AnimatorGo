@@ -29,6 +29,7 @@ namespace octoon
 		math::float3 worldToProject(const math::float3& pos) const noexcept;
 		math::float3 screenToWorld(const math::float3& pos) const noexcept;
 		math::float3 screenToView(const math::float2& pos) const noexcept;
+		math::Raycast screenToRay(const math::float2& pos) const noexcept;
 
 		const math::float4& getClearColor() const noexcept;
 		const math::float4& getViewport() const noexcept;

@@ -117,6 +117,14 @@ namespace octoon
 		return camera_->screenToView(pos);
 	}
 
+	math::Raycast
+	CameraComponent::screenToRay(const math::float2& pos) const noexcept
+	{
+		auto worldPos = camera_->screenToWorld(octoon::math::float3(pos, 0));
+		auto worldPos2 = camera_->screenToWorld(octoon::math::float3(pos, 1));
+		return octoon::math::Raycast(worldPos, worldPos2);
+	}
+
 	const math::float4&
 	CameraComponent::getClearColor() const noexcept
 	{

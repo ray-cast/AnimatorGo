@@ -126,7 +126,7 @@ namespace octoon
 				auto width = desc.getWidth();
 				auto height = desc.getHeight();
 
-				for (std::int32_t y = 0; y < height; y++)
+				for (std::uint32_t y = 0; y < height; y++)
 				{
 					for (std::uint32_t x = 0; x < width; x++)
 					{
@@ -157,7 +157,7 @@ namespace octoon
 				auto width = desc.getWidth();
 				auto height = desc.getHeight();
 
-				for (std::int32_t y = 0; y < height; y++)
+				for (std::uint32_t y = 0; y < height; y++)
 				{
 					for (std::uint32_t x = 0; x < width; x++)
 					{
@@ -188,7 +188,7 @@ namespace octoon
 				auto width = desc.getWidth();
 				auto height = desc.getHeight();
 
-				for (std::int32_t y = 0; y < height; y++)
+				for (std::uint32_t y = 0; y < height; y++)
 				{
 					for (std::uint32_t x = 0; x < width; x++)
 					{
@@ -303,7 +303,7 @@ namespace octoon
 				if (graphics)
 				{
 					auto context = graphics->getContext();
-					math::float4 viewport(0, 0, this->framebuffer_w_, this->framebuffer_h_);
+					math::float4 viewport(0, 0, static_cast<float>(this->framebuffer_w_), static_cast<float>(this->framebuffer_h_));
 					context->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
 				}
 			}
@@ -420,7 +420,7 @@ namespace octoon
 		auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 		if (RPR_SUCCESS != status)
 		{
-			auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+			status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
 			if (RPR_SUCCESS != status)
 				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
 		}
@@ -504,8 +504,7 @@ namespace octoon
 			{
 				alpha.resize(alphaDesc.image_width * alphaDesc.image_height * alphaFormat.num_components);
 
-#				pragma omp parallel for num_threads(4)
-				for (std::int32_t y = 0; y < rgbDesc.image_height; y++)
+				for (rpr_uint y = 0; y < rgbDesc.image_height; y++)
 				{
 					auto srcHeight = y * rgbDesc.image_width;
 					auto dstHeight = (rgbDesc.image_height - 1 - y) * rgbDesc.image_width;
@@ -529,7 +528,7 @@ namespace octoon
 							srgb[dstRGB + 2] = data[src + 2];
 						}
 
-						alpha[dstAlpha] = 255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255.0f;
+						alpha[dstAlpha] = static_cast<std::uint8_t>(255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255);
 					}
 				}
 			}
@@ -560,9 +559,9 @@ namespace octoon
 			if (!alpha.empty())
 			{
 				hasAlpha = false;
-				for (auto& it : alpha)
+				for (auto& value : alpha)
 				{
-					if (it > 0)
+					if (value > 0)
 					{
 						hasAlpha = true;
 						break;
@@ -612,7 +611,7 @@ namespace octoon
 				throw runtime::runtime_error::create("createTexture() failed");
 
 			rpr_framebuffer colorFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, colorTexture_->handle(), &colorFramebuffer))
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(colorTexture_->handle()), &colorFramebuffer))
 			{
 				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, colorFramebuffer);
 
@@ -623,7 +622,7 @@ namespace octoon
 			}
 
 			rpr_framebuffer normalFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, normalTexture_->handle(), &normalFramebuffer))
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(normalTexture_->handle()), &normalFramebuffer))
 			{
 				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
 
@@ -634,7 +633,7 @@ namespace octoon
 			}
 
 			rpr_framebuffer albedoFramebuffer = nullptr;
-			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, albedoTexture_->handle(), &albedoFramebuffer))
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(albedoTexture_->handle()), &albedoFramebuffer))
 			{
 				rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer);
 

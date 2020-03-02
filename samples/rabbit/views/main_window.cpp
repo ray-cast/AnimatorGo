@@ -1028,16 +1028,29 @@ namespace rabbit
 		if (gameApp_)
 		{
 			auto urls = event->mimeData()->urls();
+			if (!urls.isEmpty())
+			{
+				std::vector<QByteArray> utf8bytes;
+				for (auto& it : urls)
+					utf8bytes.push_back(it.path().toUtf8());
 
-			std::vector<QByteArray> utf8bytes;
-			for (auto& it : urls)
-				utf8bytes.push_back(it.path().toUtf8());
+				std::vector<char*> utf8s;
+				for (auto& it : utf8bytes)
+					utf8s.push_back(it.data() + 1);
 
-			std::vector<char*> utf8s;
-			for (auto& it : utf8bytes)
-				utf8s.push_back(it.data() + 1);
+				gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
 
-			gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
+				event->accept();
+			}
+
+			QString str = event->mimeData()->text();
+			if (!str.isEmpty())
+			{
+				std::cout << str.toStdString() << std::endl;
+
+				event->setDropAction(Qt::MoveAction);
+				event->accept();
+			}
 		}
 	}
 

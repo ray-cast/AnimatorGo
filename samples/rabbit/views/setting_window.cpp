@@ -204,6 +204,7 @@ namespace rabbit
 		listWidget_ = std::make_unique<QListWidget>(this);
 		listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		listWidget_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		listWidget_->verticalScrollBar()->setFixedWidth(8);
 
 		for (std::size_t i = 0; i < strList.size(); i++)
 		{
@@ -233,6 +234,7 @@ namespace rabbit
 		scrollArea_ = std::make_unique<QScrollArea>(this);
 		scrollArea_->setWidget(scrollWidget_.get());
 		scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		scrollArea_->verticalScrollBar()->setObjectName("settingScrollBar");
 
 		layout_ = std::make_unique<QHBoxLayout>(this);
 		layout_->addWidget(listWidget_.get());

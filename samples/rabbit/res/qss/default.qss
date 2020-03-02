@@ -188,6 +188,13 @@ QScrollArea{
 }
 QScrollBar:vertical
 {
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar#settingScrollBar:vertical
+{
     width:8px;
     background:rgb(40,40,40);
     margin:0px,0px,0px,0px;
@@ -197,14 +204,14 @@ QScrollBar:vertical
 QScrollBar::handle:vertical
 {
     width:8px;
-    background:rgb(48,48,48);
+    background:rgb(50,50,50);
     border-radius:3px;
     min-height:20;
 }
 QScrollBar::handle:vertical:hover
 {
     width:8px;
-    background:rgb(58,58,58);
+    background:rgb(60,60,60);
     border-radius:4px;
     min-height:20;
 }
@@ -241,8 +248,6 @@ QListWidget{
 	border:none;
 	color: rgb(220,220,220);
 	background-color: rgb(32,32,32);
-	max-width:180;
-	max-height:450;
 }
 QListWidget::Item:hover{
 	color: rgb(220,220,220);

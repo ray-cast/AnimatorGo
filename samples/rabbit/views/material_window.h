@@ -12,12 +12,33 @@
 #include <optional>
 #include <qlineedit.h>
 #include <qspinbox.h>
+#include <qlistwidget.h>
+#include <qcheckbox.h>
 #include <qtimer.h>
 #include "rabbit_behaviour.h"
 #include <octoon/game_object.h>
 
 namespace rabbit
 {
+	class ListDragWidget final : public QListWidget
+	{
+		Q_OBJECT
+	public:
+		ListDragWidget();
+		ListDragWidget(QWidget* parent);
+		~ListDragWidget();
+
+	protected:
+		void mousePressEvent(QMouseEvent* event);
+		void mouseMoveEvent(QMouseEvent* event);
+
+		void dragEnterEvent(QDragEnterEvent* event);
+		void dragMoveEvent(QDragMoveEvent* event);
+		void dropEvent(QDropEvent* event);
+	private:
+		QPoint dragPoint_;
+	};
+
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT
@@ -33,9 +54,10 @@ namespace rabbit
 	private:
 		std::unique_ptr<QLabel> title_;
 		std::unique_ptr<QToolButton> closeButton_;
-		std::unique_ptr<QHBoxLayout> layout_;
+		std::unique_ptr<QHBoxLayout> titleLayout_;
+		std::unique_ptr<QVBoxLayout> materialLayout_;
 		std::unique_ptr<QVBoxLayout> mainLayout_;
-		std::unique_ptr<QTimer> timer_;
+		std::unique_ptr<QListWidget> listWidget_;
 		octoon::GameObjectPtr behaviour_;
 	};
 }

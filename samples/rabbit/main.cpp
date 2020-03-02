@@ -6,6 +6,10 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef _WINDOWS_
+	::SetConsoleOutputCP(CP_UTF8);
+#endif
+
 	QFile styleSheet(":res/qss/default.qss");
 
 	if (styleSheet.open(QIODevice::ReadOnly))

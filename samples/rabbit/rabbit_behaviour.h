@@ -42,6 +42,8 @@ namespace rabbit
 
 		void renderPicture(const std::string& path) noexcept(false);
 
+		std::size_t raycastHit(const octoon::math::float2& pos, octoon::RaycastHit& hit) noexcept;
+
 		void addComponent(IRabbitComponent* component) noexcept;
 		void removeComponent(const IRabbitComponent* component) noexcept;
 		const std::vector<IRabbitComponent*>& getComponents() const noexcept;

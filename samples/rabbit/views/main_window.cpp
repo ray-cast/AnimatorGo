@@ -1046,7 +1046,18 @@ namespace rabbit
 			QString str = event->mimeData()->text();
 			if (!str.isEmpty())
 			{
-				std::cout << str.toStdString() << std::endl;
+				if (behaviour_)
+				{
+					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+					if (behaviour->isOpen())
+					{
+						octoon::RaycastHit hit;
+						if (behaviour->raycastHit(octoon::math::float2(event->pos().x(), event->pos().y()), hit))
+						{
+							std::cout << str.toStdString() << std::endl;
+						}
+					}
+				}
 
 				event->setDropAction(Qt::MoveAction);
 				event->accept();

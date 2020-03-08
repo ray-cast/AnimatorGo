@@ -10,7 +10,6 @@ namespace octoon
 		Geometry::Geometry() noexcept
 			: isCastShadow_(true)
 			, isReceiveShadow_(true)
-			, drawType_(DrawType::Triangles)
 			, indexType_(GraphicsIndexType::Uint32)
 			, vertexOffset_(0)
 			, indexOffset_(0)
@@ -88,18 +87,6 @@ namespace octoon
 		Geometry::getIndexBuffer() const noexcept
 		{
 			return indices_;
-		}
-
-		void
-		Geometry::setDrawType(DrawType type) noexcept
-		{
-			drawType_ = type;
-		}
-
-		DrawType
-		Geometry::getDrawType() const noexcept
-		{
-			return drawType_;
 		}
 
 		void

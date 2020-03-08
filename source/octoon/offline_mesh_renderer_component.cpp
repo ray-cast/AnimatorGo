@@ -93,28 +93,20 @@ namespace octoon
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
 
-			std::uint32_t layers = 0;
-			if (ambient != math::float3::Zero)
-				layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
-			else
-			{
-				if (math::any(specular))
-					layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
-				if (opacity < 1.0f)
-					layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
-				if (!normalName.empty())
-					layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
-				if (edgeColor.x == 0.0f)
-					layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
-			}
+			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE;
+			if (math::any(specular))
+				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
+			if (opacity < 1.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
+			/*if (!normalName.empty())
+				layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
+			if (edgeColor.x == 0.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;*/
 
 			rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.emission.color", ambient.x, ambient.y, ambient.z, 0.0f);
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 			{
@@ -127,10 +119,10 @@ namespace octoon
 			{
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base.x * specular.x, base.y * specular.y, base.z * specular.z, 1.0f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
+				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
+				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
+				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base.x * specular.x, base.y * specular.y, base.z * specular.z, 1.0f);
+				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
@@ -140,7 +132,7 @@ namespace octoon
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
 			}
 
-			if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
+			/*if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
 			{
 				try
 				{
@@ -153,7 +145,7 @@ namespace octoon
 				{
 					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers & ~RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL);
 				}
-			}
+			}*/
 
 			if (!textureName.empty())
 			{

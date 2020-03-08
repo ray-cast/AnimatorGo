@@ -20,21 +20,18 @@
 
 namespace rabbit
 {
-	class ListDragWidget final : public QListWidget
+	class MaterialListWidget final : public QListWidget
 	{
 		Q_OBJECT
 	public:
-		ListDragWidget();
-		ListDragWidget(QWidget* parent);
-		~ListDragWidget();
+		MaterialListWidget();
+		MaterialListWidget(QWidget* parent);
+		~MaterialListWidget();
 
 	protected:
 		void mousePressEvent(QMouseEvent* event);
 		void mouseMoveEvent(QMouseEvent* event);
 
-		void dragEnterEvent(QDragEnterEvent* event);
-		void dragMoveEvent(QDragMoveEvent* event);
-		void dropEvent(QDropEvent* event);
 	private:
 		QPoint dragPoint_;
 	};
@@ -46,7 +43,12 @@ namespace rabbit
 		MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
 		~MaterialWindow() noexcept;
 
-		virtual void showEvent(QShowEvent* event) override;
+		void import(std::wstring& filepath) noexcept;
+
+		void showEvent(QShowEvent* event) noexcept override;
+
+		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
+		void dropEvent(QDropEvent* event) noexcept override;
 
 	private Q_SLOTS:
 		void closeEvent();

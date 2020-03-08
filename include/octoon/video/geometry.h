@@ -25,9 +25,6 @@ namespace octoon
 			void setMaterial(const MaterialPtr& material) noexcept;
 			const MaterialPtr& getMaterial() const noexcept;
 
-			void setDrawType(DrawType type) noexcept;
-			DrawType getDrawType() const noexcept;
-
 			void setNumVertices(std::uint32_t numVertice) noexcept;
 			std::uint32_t getNumVertices() const noexcept;
 
@@ -41,7 +38,6 @@ namespace octoon
 			const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
 
 		private:
-
 			bool isCastShadow_;
 			bool isReceiveShadow_;
 
@@ -52,7 +48,6 @@ namespace octoon
 			std::intptr_t indexOffset_;
 
 			MaterialPtr material_;
-			DrawType drawType_;
 			GraphicsIndexType indexType_;
 			hal::GraphicsDataPtr vertices_;
 			hal::GraphicsDataPtr indices_;

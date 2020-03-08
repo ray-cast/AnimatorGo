@@ -1032,13 +1032,29 @@ namespace rabbit
 			{
 				std::vector<QByteArray> utf8bytes;
 				for (auto& it : urls)
-					utf8bytes.push_back(it.path().toUtf8());
+				{
+					auto path = it.toString().toStdWString();
+					if (path.find(L".mtl") != std::string::npos)
+					{
+						if (path.find(L"file:///") == 0)
+							path = path.substr(8);
 
-				std::vector<char*> utf8s;
-				for (auto& it : utf8bytes)
-					utf8s.push_back(it.data() + 1);
+						materialWindow_->import(path);
+					}
+					else
+					{
+						utf8bytes.push_back(it.path().toUtf8());
+					}
+				}
 
-				gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
+				if (!utf8bytes.empty())
+				{
+					std::vector<char*> utf8s;
+					for (auto& it : utf8bytes)
+						utf8s.push_back(it.data() + 1);
+
+					gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
+				}
 
 				event->accept();
 			}
@@ -1059,7 +1075,6 @@ namespace rabbit
 					}
 				}
 
-				event->setDropAction(Qt::MoveAction);
 				event->accept();
 			}
 		}

@@ -135,6 +135,12 @@ SET(QRCODEGEN_LIST
 )
 SOURCE_GROUP("rabbit\\libs\\qrcodegen" FILES ${QRCODEGEN_LIST})
 
+SET(TINYOBJ_LIST 
+	libs/tinyobj/tiny_obj_loader.h
+	libs/tinyobj/tiny_obj_loader.cpp
+)
+SOURCE_GROUP("rabbit\\libs\\tinyobj" FILES ${TINYOBJ_LIST})
+
 SET(NATIVE_FILED_DIALOG_LIST 
 	libs/nativefiledialog/nfd.h
 	libs/nativefiledialog/nfd_common.c
@@ -174,6 +180,7 @@ ADD_EXECUTABLE(${LIB_OUTNAME}
 	${NATIVE_FILED_DIALOG_LIST}
 	${OIDN_LIST}
 	${QRCODEGEN_LIST}
+	${TINYOBJ_LIST}
 	${RESOURCES}
 )
 

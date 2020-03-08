@@ -1,4 +1,5 @@
 #include "material_window.h"
+#include "../libs/tinyobj/tiny_obj_loader.h"
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qevent.h>
@@ -6,27 +7,29 @@
 #include <qdrag.h>
 #include <qmimedata.h>
 #include <qapplication.h>
+#include <fstream>
+#include <codecvt>
 
 namespace rabbit
 {
-	ListDragWidget::ListDragWidget()
+	MaterialListWidget::MaterialListWidget()
 	{
 		this->setAcceptDrops(true);
 	}
 
-	ListDragWidget::ListDragWidget(QWidget* parent)
+	MaterialListWidget::MaterialListWidget(QWidget* parent)
 		: QListWidget(parent)
 	{
 		this->setAcceptDrops(true);
 	}
 
-	ListDragWidget::~ListDragWidget()
+	MaterialListWidget::~MaterialListWidget()
 	{
 
 	}
 	
 	void
-	ListDragWidget::mousePressEvent(QMouseEvent* event)
+	MaterialListWidget::mousePressEvent(QMouseEvent* event)
 	{
 		if (event->button() == Qt::LeftButton)
 			dragPoint_ = event->pos();
@@ -35,7 +38,7 @@ namespace rabbit
 	}
 
 	void
-	ListDragWidget::mouseMoveEvent(QMouseEvent* event)
+	MaterialListWidget::mouseMoveEvent(QMouseEvent* event)
 	{
 		if (event->buttons() & Qt::LeftButton)
 		{
@@ -59,37 +62,6 @@ namespace rabbit
 		QListWidget::mouseMoveEvent(event);
 	}
 
-	void
-	ListDragWidget::dragEnterEvent(QDragEnterEvent* event)
-	{
-		event->setDropAction(Qt::MoveAction);
-		event->accept();
-	}
-
-	void
-	ListDragWidget::dragMoveEvent(QDragMoveEvent* event)
-	{
-		event->setDropAction(Qt::MoveAction);
-		event->accept();
-	}
-
-	void
-	ListDragWidget::dropEvent(QDropEvent* event)
-	{
-		QString str = event->mimeData()->text();
-		if (!str.isEmpty())
-		{
-			auto item = this->itemAt(event->pos());
-			if (!item)
-				this->addItem(str);
-			else
-				this->insertItem(this->row(item), str);
-
-			event->setDropAction(Qt::MoveAction);
-			event->accept();
-		}
-	}
-
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
 		: behaviour_(behaviour)
 	{
@@ -97,6 +69,7 @@ namespace rabbit
 		this->setObjectName("materialWindow");
 		this->setWindowTitle(u8"²ÄÖÊ");
 		this->setFixedWidth(340);
+		this->setAcceptDrops(true);
 
 		title_ = std::make_unique<QLabel>();
 		title_->setText(u8"²ÄÖÊ");
@@ -105,7 +78,7 @@ namespace rabbit
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"¹Ø±Õ");
 
-		listWidget_ = std::make_unique<ListDragWidget>();
+		listWidget_ = std::make_unique<MaterialListWidget>();
 		listWidget_->setIconSize(QSize(210, 210));
 		listWidget_->setResizeMode(QListView::Adjust);
 		listWidget_->setViewMode(QListView::IconMode);
@@ -116,39 +89,13 @@ namespace rabbit
 		listWidget_->setStyleSheet("background:transparent;");
 		listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		
-		for (std::size_t i = 0; i < 22; i++)
-		{
-			QListWidgetItem* item = new QListWidgetItem;
-			item->setText(tr(u8"Í¼Æ¬%1").arg(i));
-			item->setSizeHint(QSize(this->width() / 2 - 28, 158));
-
-			QLabel* imageLabel = new QLabel;
-			QPixmap pixmap(":res/icons/material.png");
-			imageLabel->setPixmap(pixmap);
-
-			QLabel* txtLabel = new QLabel(tr(u8"Í¼Æ¬%1").arg(i));
-			txtLabel->setFixedHeight(30);
-
-			QVBoxLayout* widgetLayout = new QVBoxLayout;
-			widgetLayout->setMargin(0);
-			widgetLayout->setSpacing(0);
-			widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
-			widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);
-
-			QWidget* widget = new QWidget;
-			widget->setLayout(widgetLayout);
-
-			listWidget_->addItem(item);
-			listWidget_->setItemWidget(item, widget);
-		}
-
 		titleLayout_ = std::make_unique<QHBoxLayout>();
 		titleLayout_->addWidget(title_.get(), 0, Qt::AlignLeft);
 		titleLayout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
 
 		mainLayout_ = std::make_unique<QVBoxLayout>(this);
 		mainLayout_->addLayout(titleLayout_.get());
-		mainLayout_->addWidget(listWidget_.get(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(listWidget_.get(), 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addStretch(500);
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 
@@ -164,7 +111,68 @@ namespace rabbit
 	}
 
 	void
-	MaterialWindow::showEvent(QShowEvent* event)
+	MaterialWindow::import(std::wstring& filepath) noexcept
+	{
+		std::ifstream stream(filepath);
+		if (stream)
+		{
+			std::map<std::string, int> materialMap;
+
+			std::vector<tinyobj::material_t> materials;
+			auto err = tinyobj::LoadMtl(materialMap, materials, stream);
+			if (err.empty())
+			{
+				std::wstring dirpath = filepath.substr(0, filepath.find_last_of(L"/") + 1);
+
+				std::map<QString, std::shared_ptr<QPixmap>> imageTable;
+
+				for (auto& material : materials)
+				{
+					QListWidgetItem* item = new QListWidgetItem;
+					item->setText(QString::fromStdString(material.name));
+					item->setSizeHint(QSize(130, 160));
+
+					QLabel* imageLabel = new QLabel;
+
+					if (material.diffuse_texname.empty())
+					{
+						QPixmap pixmap(":res/icons/material.png");
+						imageLabel->setPixmap(pixmap);
+					}
+					else
+					{
+						auto texpath = QString::fromStdWString(dirpath) + QString::fromStdString(material.diffuse_texname);
+						if (!imageTable[texpath])
+						{
+							QImage image(texpath);
+							image.convertTo(QImage::Format::Format_RGB888);
+							imageTable[texpath] = std::make_shared<QPixmap>(QPixmap::fromImage(image.scaled(QSize(130, 130))));
+						}
+
+						imageLabel->setPixmap(*imageTable[texpath]);
+					}
+
+					QLabel* txtLabel = new QLabel(QString::fromStdString(material.name));
+					txtLabel->setFixedHeight(30);
+
+					QVBoxLayout* widgetLayout = new QVBoxLayout;
+					widgetLayout->setMargin(0);
+					widgetLayout->setSpacing(0);
+					widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
+					widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);
+
+					QWidget* widget = new QWidget;
+					widget->setLayout(widgetLayout);
+
+					listWidget_->addItem(item);
+					listWidget_->setItemWidget(item, widget);
+				}
+			}
+		}
+	}
+
+	void
+	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
 		this->repaint();
 
@@ -177,5 +185,32 @@ namespace rabbit
 	{
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
+	}
+
+	void
+	MaterialWindow::dragEnterEvent(QDragEnterEvent* event) noexcept
+	{
+		event->acceptProposedAction();
+		event->accept();
+	}
+
+	void
+	MaterialWindow::dropEvent(QDropEvent* event) noexcept
+	{
+		auto urls = event->mimeData()->urls();
+		if (!urls.isEmpty())
+		{
+			std::vector<std::wstring> paths;
+			for (auto& it : urls)
+			{
+				auto path = it.toString().toStdWString();
+				if (path.find(L"file:///") == 0)
+					path = path.substr(8);
+
+				this->import(path);
+			}
+
+			event->accept();
+		}
 	}
 }

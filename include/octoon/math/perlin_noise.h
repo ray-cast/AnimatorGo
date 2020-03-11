@@ -39,4 +39,4 @@ namespace octoon
 	}
 }
 
-#endif // !OCTOON_PERLIN_NOISE_H_
+#endif

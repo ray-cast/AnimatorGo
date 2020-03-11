@@ -111,60 +111,6 @@ namespace octoon
 		dispatchEvents_[event].disconnect(listener);
 	}
 
-	std::size_t
-	GameObjectManager::raycastHit(const math::Raycast& ray, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
-	{
-		std::size_t result = 0;
-
-		for (auto& object : instanceLists_)
-		{
-			if (!object)
-				continue;
-
-			if ((1 << object->getLayer()) & layerMask)
-				continue;
-
-			auto meshFilter = object->getComponent<MeshFilterComponent>();
-			if (meshFilter)
-			{
-				auto mesh = meshFilter->getMesh();
-				if (!mesh)
-					continue;
-
-				auto transform = object->getComponent<TransformComponent>();
-				auto boundingBox = math::transform(mesh->getBoundingBoxAll(), transform->getTransform());
-
-				if (!math::intersects(boundingBox, ray))
-					continue;
-
-				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
-				{
-					auto childBox = math::transform(mesh->getBoundingBox(i), transform->getTransform());
-					if (!math::intersects(childBox, ray))
-						continue;
-
-					float dist = math::sqrDistance(childBox.center(), ray.origin);
-					if (dist < distance)
-					{
-						hit.object = object;
-						hit.mesh = i;
-						hit.distance = distance;
-
-						result++;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	std::size_t
-	GameObjectManager::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
-	{
-		return this->raycastHit(math::Raycast(orgin, end), hit, distance, layerMask);
-	}
-
 	void
 	GameObjectManager::onFixedUpdate() except
 	{

@@ -1067,8 +1067,8 @@ namespace rabbit
 					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 					if (behaviour->isOpen())
 					{
-						octoon::RaycastHit hit;
-						if (behaviour->raycastHit(octoon::math::float2(event->pos().x(), event->pos().y()), hit))
+						auto hit = behaviour->raycastHit(octoon::math::float2(event->pos().x(), event->pos().y()));
+						if (hit)
 						{
 							std::cout << str.toStdString() << std::endl;
 						}

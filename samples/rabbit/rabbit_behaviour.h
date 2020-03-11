@@ -15,6 +15,8 @@
 #include "controllers/mark_component.h"
 #include "controllers/client_component.h"
 
+#include <octoon/raycaster.h>
+
 namespace rabbit
 {
 	class RabbitBehaviour final : public octoon::GameComponent
@@ -42,7 +44,7 @@ namespace rabbit
 
 		void renderPicture(const std::string& path) noexcept(false);
 
-		std::size_t raycastHit(const octoon::math::float2& pos, octoon::RaycastHit& hit) noexcept;
+		std::optional<octoon::RaycastHit> raycastHit(const octoon::math::float2& pos) noexcept;
 
 		void addComponent(IRabbitComponent* component) noexcept;
 		void removeComponent(const IRabbitComponent* component) noexcept;

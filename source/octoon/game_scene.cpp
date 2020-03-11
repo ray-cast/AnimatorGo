@@ -141,24 +141,6 @@ namespace octoon
 		return gameServer_->sendMessage(event, data);
 	}
 
-	std::size_t
-	GameScene::raycastHit(const math::Raycast& ray, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
-	{
-		auto feature = this->getFeature<GameBaseFeature>();
-		if (feature)
-			return feature->getGameObjectManager()->raycastHit(ray, hit, distance, layerMask);
-		return 0;
-	}
-
-	std::size_t
-	GameScene::raycastHit(const math::float3& orgin, const math::float3& end, RaycastHit& hit, float distance, std::uint32_t layerMask) noexcept
-	{
-		auto feature = this->getFeature<GameBaseFeature>();
-		if (feature)
-			return feature->getGameObjectManager()->raycastHit(orgin, end, hit, distance, layerMask);
-		return 0;
-	}
-
 	void
 	GameScene::load(const io::archivebuf& reader) except
 	{

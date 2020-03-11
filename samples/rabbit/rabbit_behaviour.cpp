@@ -289,20 +289,24 @@ namespace rabbit
 		fileComponent_->clearHDRi();
 	}
 
-	std::size_t
-	RabbitBehaviour::raycastHit(const octoon::math::float2& pos, octoon::RaycastHit& hit) noexcept
+	std::optional<octoon::RaycastHit>
+	RabbitBehaviour::raycastHit(const octoon::math::float2& pos) noexcept
 	{
 		if (this->profile_->entitiesModule->camera)
 		{
 			auto cameraComponent = this->profile_->entitiesModule->camera->getComponent<octoon::CameraComponent>();
 			if (cameraComponent)
 			{
-				auto ray = cameraComponent->screenToRay(pos);
-				return octoon::GameObjectManager::instance()->raycastHit(ray, hit);
+				octoon::Raycaster raycaster(cameraComponent->screenToRay(pos));
+				auto& hits = raycaster.intersectObjects(this->profile_->entitiesModule->objects);
+				if (!hits.empty())
+				{
+					return hits.front();
+				}
 			}
 		}
 
-		return 0;
+		return std::nullopt;
 	}
 
 	octoon::GameComponentPtr

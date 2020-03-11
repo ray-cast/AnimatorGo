@@ -93,7 +93,6 @@ namespace octoon
 	MeshRendererComponent::onMaterialReplace(const model::Materials& material) noexcept
 	{
 		this->uploadMaterialData(material);
-		this->trySendMessage("octoon:mesh:get");
 	}
 
 	void

@@ -300,9 +300,7 @@ namespace rabbit
 				octoon::Raycaster raycaster(cameraComponent->screenToRay(pos));
 				auto& hits = raycaster.intersectObjects(this->profile_->entitiesModule->objects);
 				if (!hits.empty())
-				{
 					return hits.front();
-				}
 			}
 		}
 

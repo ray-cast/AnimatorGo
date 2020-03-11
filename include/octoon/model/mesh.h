@@ -12,6 +12,14 @@ namespace octoon
 {
 	namespace model
 	{
+		struct RaycastHit
+		{
+			Mesh* object;
+			std::size_t mesh;
+			float distance;
+			math::float3 point;
+		};
+
 		class OCTOON_EXPORT Mesh final
 		{
 		public:
@@ -94,6 +102,8 @@ namespace octoon
 
 			const math::BoundingBox& getBoundingBoxAll() const noexcept;
 			const math::BoundingBox& getBoundingBox(std::size_t n) const noexcept;
+
+			void raycast(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept;
 
 			void clear() noexcept;
 			MeshPtr clone() const noexcept;

@@ -2,7 +2,6 @@
 #define OCTOON_MATH_SPHERE_H_
 
 #include <octoon/math/AABB.h>
-#include <octoon/math/raycast.h>
 
 namespace octoon
 {
@@ -112,12 +111,6 @@ namespace octoon
 				return false;
 
 			return true;
-		}
-
-		template<typename T>
-		inline bool intersects(const detail::Sphere<T>& sphere, const detail::Raycast<T>& ray) noexcept
-		{
-			return intersects(sphere, ray.origin, ray.normal);
 		}
 
 		template<typename T>

@@ -1070,7 +1070,12 @@ namespace rabbit
 						auto hit = behaviour->raycastHit(octoon::math::float2(event->pos().x(), event->pos().y()));
 						if (hit)
 						{
-							std::cout << str.toStdString() << std::endl;
+							auto meshRenderer = hit->object->getComponent<octoon::MeshRendererComponent>();
+
+							std::string name;
+							meshRenderer->setMaterial(materialWindow_->getMaterial(""), hit->mesh);
+
+							std::cout << name << std::endl;
 						}
 					}
 				}

@@ -280,6 +280,41 @@ namespace octoon
 		}
 
 		void
+		Mesh::raycast(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept
+		{
+			if (!math::intersect(ray, this->getBoundingBoxAll()))
+				return;
+
+			for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+			{
+				if (math::intersect(ray, this->getBoundingBox(i)))
+				{
+					auto& indices = _indices[i];
+
+					for (std::size_t j = 0; j < _indices[i].size(); j += 3)
+					{
+						std::size_t f1 = indices[j];
+						std::size_t f2 = indices[j + 1];
+						std::size_t f3 = indices[j + 2];
+
+						auto& v0 = _vertices[f1];
+						auto& v1 = _vertices[f2];
+						auto& v2 = _vertices[f3];
+
+						RaycastHit hit;
+						if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
+						{
+							hit.mesh = i;
+							hit.object = this;
+
+							hits.emplace_back(hit);
+						}
+					}
+				}
+			}
+		}
+
+		void
 		Mesh::clear() noexcept
 		{
 			_vertices.shrink_to_fit();

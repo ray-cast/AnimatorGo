@@ -16,6 +16,8 @@
 #include <qcheckbox.h>
 #include <qtimer.h>
 #include "rabbit_behaviour.h"
+#include "../libs/tinyobj/tiny_obj_loader.h"
+
 #include <octoon/game_object.h>
 
 namespace rabbit
@@ -50,6 +52,11 @@ namespace rabbit
 		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
 		void dropEvent(QDropEvent* event) noexcept override;
 
+		octoon::model::MaterialPtr getMaterial(const std::string& name) const noexcept;
+
+	private:
+		void initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string& rootPath);
+
 	private Q_SLOTS:
 		void closeEvent();
 
@@ -61,6 +68,8 @@ namespace rabbit
 		std::unique_ptr<QVBoxLayout> mainLayout_;
 		std::unique_ptr<QListWidget> listWidget_;
 		octoon::GameObjectPtr behaviour_;
+		octoon::model::MaterialPtr selected_;
+		std::vector<octoon::model::MaterialPtr> materials_;
 	};
 }
 

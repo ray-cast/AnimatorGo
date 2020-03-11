@@ -161,12 +161,6 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Raycast<T>& ray) noexcept
-		{
-			return intersects(bound.sphere(), ray);
-		}
-
-		template<typename T>
 		inline detail::BoundingBox<T> transform(const detail::BoundingBox<T> bound, const detail::Matrix4x4<T>& m) noexcept
 		{
 			auto aabb = transform(bound.aabb(), m);

@@ -1,5 +1,4 @@
 #include "material_window.h"
-#include "../libs/tinyobj/tiny_obj_loader.h"
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qevent.h>
@@ -88,7 +87,7 @@ namespace rabbit
 		listWidget_->setMinimumWidth(this->width());
 		listWidget_->setStyleSheet("background:transparent;");
 		listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		
+	
 		titleLayout_ = std::make_unique<QHBoxLayout>();
 		titleLayout_->addWidget(title_.get(), 0, Qt::AlignLeft);
 		titleLayout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
@@ -124,10 +123,14 @@ namespace rabbit
 			{
 				std::wstring dirpath = filepath.substr(0, filepath.find_last_of(L"/") + 1);
 
+				this->initMaterials(materials, QString::fromStdWString(dirpath).toStdString());
+
 				std::map<QString, std::shared_ptr<QPixmap>> imageTable;
 
-				for (auto& material : materials)
+				for (std::size_t i = 0; i < materials.size(); i++)
 				{
+					auto& material = materials[i];
+
 					QListWidgetItem* item = new QListWidgetItem;
 					item->setText(QString::fromStdString(material.name));
 					item->setSizeHint(QSize(130, 160));
@@ -211,6 +214,27 @@ namespace rabbit
 			}
 
 			event->accept();
+		}
+	}
+
+	octoon::model::MaterialPtr
+	MaterialWindow::getMaterial(const std::string& name) const noexcept
+	{
+		return this->materials_.front();
+	}
+
+	void
+	MaterialWindow::initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string& rootPath)
+	{
+		for (auto& it : materials)
+		{
+			auto material = std::make_shared<octoon::model::Material>();
+			material->set(MATKEY_NAME, it.name);
+			material->set(MATKEY_PATH, rootPath);
+			material->set(MATKEY_COLOR_DIFFUSE, octoon::math::float3::One);
+			material->set(MATKEY_TEXTURE_DIFFUSE, it.diffuse_texname);
+
+			this->materials_.emplace_back(std::move(material));
 		}
 	}
 }

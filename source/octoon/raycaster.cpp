@@ -77,7 +77,7 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<model::RaycastHit> hits;
+		std::vector<model::RaycastHit> hitObjects;
 
 		for (auto& object : entities)
 		{
@@ -93,10 +93,10 @@ namespace octoon
 					auto transform = object->getComponent<TransformComponent>();
 					ray.transform(transform->getTransformInverse());
 
-					hits.clear();
-					mesh->raycast(ray, hits);
+					hitObjects.clear();
+					mesh->raycast(ray, hitObjects);
 
-					for (auto& it : hits) {
+					for (auto& it : hitObjects) {
 						RaycastHit hit;
 						hit.object = object;
 						hit.distance = it.distance;

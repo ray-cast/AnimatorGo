@@ -3,7 +3,6 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
-#include <octoon/game_prefabs.h>
 
 #include <unordered_map>
 #include <RadeonProRender.h>

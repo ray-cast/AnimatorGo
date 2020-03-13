@@ -93,8 +93,6 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/theme_manager.cpp
 	${SOURCE_PATH}/controllers/ui_component.h
 	${SOURCE_PATH}/controllers/ui_component.cpp
-	${SOURCE_PATH}/controllers/file_component.h
-	${SOURCE_PATH}/controllers/file_component.cpp
 	${SOURCE_PATH}/controllers/player_component.h
 	${SOURCE_PATH}/controllers/player_component.cpp
 	${SOURCE_PATH}/controllers/entities_component.h

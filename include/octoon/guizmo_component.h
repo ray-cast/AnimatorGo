@@ -23,9 +23,6 @@ namespace octoon
 	private:
 		GuizmoComponent(const GuizmoComponent&) = delete;
 		GuizmoComponent& operator=(const GuizmoComponent&) = delete;
-
-	private:
-		imgui::guizmo::Operation op_;
 	};
 }
 

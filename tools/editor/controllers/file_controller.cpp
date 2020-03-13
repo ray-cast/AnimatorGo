@@ -147,7 +147,7 @@ namespace octoon
 			if (!showFileOpenBrowse(filepath, PATHLIMIT, g_SupportedModel[0]))
 				return;
 
-			objects_.push_back(GamePrefabs::instance()->createModel(filepath));
+			objects_.push_back(MeshLoader::load(filepath));
 		}
 
 		void

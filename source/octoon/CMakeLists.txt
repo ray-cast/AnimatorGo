@@ -62,6 +62,34 @@ SET(VIDEO_FEATURES_LIST
 )
 SOURCE_GROUP("system\\video" FILES ${VIDEO_FEATURES_LIST})
 
+SET(HELPER_LIST
+	${HEADER_PATH}/raycaster.h
+	${SOURCE_PATH}/raycaster.cpp
+	${HEADER_PATH}/ortho_camera_helper.h
+	${SOURCE_PATH}/ortho_camera_helper.cpp
+	${HEADER_PATH}/perspective_camera_helper.h
+	${SOURCE_PATH}/perspective_camera_helper.cpp
+	${HEADER_PATH}/film_camera_helper.h
+	${SOURCE_PATH}/film_camera_helper.cpp
+	${HEADER_PATH}/circle_helper.h
+	${SOURCE_PATH}/circle_helper.cpp
+	${HEADER_PATH}/plane_helper.h
+	${SOURCE_PATH}/plane_helper.cpp
+	${HEADER_PATH}/ring_helper.h
+	${SOURCE_PATH}/ring_helper.cpp
+	${HEADER_PATH}/sphere_helper.h
+	${SOURCE_PATH}/sphere_helper.cpp
+	${HEADER_PATH}/cube_helper.h
+	${SOURCE_PATH}/cube_helper.cpp
+	${HEADER_PATH}/cone_helper.h
+	${SOURCE_PATH}/cone_helper.cpp
+	${HEADER_PATH}/text_helper.h
+	${SOURCE_PATH}/text_helper.cpp
+	${HEADER_PATH}/volume_helper.h
+	${SOURCE_PATH}/volume_helper.cpp
+)
+SOURCE_GROUP("system\\helper" FILES ${HELPER_LIST})
+
 SET(INPUT_FEATURES_LIST
 	${HEADER_PATH}/input_feature.h
 	${SOURCE_PATH}/input_feature.cpp
@@ -95,10 +123,16 @@ SOURCE_GROUP("system\\timer" FILES ${TIMER_FEATURES_LIST})
 SET(IO_FEATURES_LIST
 	${HEADER_PATH}/io_feature.h
 	${SOURCE_PATH}/io_feature.cpp
-	${HEADER_PATH}/game_prefabs.h
-	${SOURCE_PATH}/game_prefabs.cpp
 )
 SOURCE_GROUP("system\\io" FILES ${IO_FEATURES_LIST})
+
+SET(LOADER_LIST
+	${HEADER_PATH}/mesh_loader.h
+	${SOURCE_PATH}/mesh_loader.cpp
+	${HEADER_PATH}/texture_loader.h
+	${SOURCE_PATH}/texture_loader.cpp
+)
+SOURCE_GROUP("system\\loader" FILES ${LOADER_LIST})
 
 SET(PHYSICS_FEATURES_LIST
 	${HEADER_PATH}/physics_feature.h
@@ -186,15 +220,10 @@ SET(OFFLINE_FEATURES_LIST
 )
 SOURCE_GROUP("system\\offline" FILES ${OFFLINE_FEATURES_LIST})
 
-SET(HELPER_LIST
-	${HEADER_PATH}/raycaster.h
-	${SOURCE_PATH}/raycaster.cpp
-)
-SOURCE_GROUP("system\\helper" FILES ${HELPER_LIST})
-
 LIST(APPEND OCTOON_LIST ${GAMEBASE_LIST})
 LIST(APPEND OCTOON_LIST ${OFFLINE_FEATURES_LIST})
 LIST(APPEND OCTOON_LIST ${HELPER_LIST})
+LIST(APPEND OCTOON_LIST ${LOADER_LIST})
 
 IF(OCTOON_FEATURE_IO_ENABLE)
 	LIST(APPEND OCTOON_LIST ${IO_FEATURES_LIST})

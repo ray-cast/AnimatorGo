@@ -3,7 +3,7 @@
 #include <octoon/skinned_texture_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/basic_material.h>
-#include <octoon/game_prefabs.h>
+#include <octoon/texture_loader.h>
 #include <octoon/video/render_system.h>
 
 namespace octoon
@@ -165,7 +165,7 @@ namespace octoon
 			material->setBaseColor(math::float4(base, 1.0));
 
 			if (!textureName.empty())
-				material->setTexture(GamePrefabs::instance()->createTexture(path + textureName));
+				material->setTexture(TextureLoader::load(path + textureName));
 
 			materials_.push_back(material);
 		}

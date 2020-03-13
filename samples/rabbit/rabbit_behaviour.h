@@ -5,7 +5,6 @@
 #include "rabbit_context.h"
 
 #include "controllers/denoise_component.h"
-#include "controllers/file_component.h"
 #include "controllers/entities_component.h"
 #include "controllers/canvas_component.h"
 #include "controllers/offline_component.h"
@@ -16,7 +15,7 @@
 #include "controllers/client_component.h"
 #include "controllers/material_component.h"
 
-#include <octoon/raycaster.h>
+#include <octoon/octoon.h>
 
 namespace rabbit
 {
@@ -79,7 +78,6 @@ namespace rabbit
 		std::shared_ptr<RabbitProfile> profile_;
 		std::shared_ptr<RabbitContext> context_;
 
-		std::unique_ptr<FileComponent> fileComponent_;
 		std::unique_ptr<CanvasComponent> canvasComponent_;
 		std::unique_ptr<EntitiesComponent> entitiesComponent_;
 		std::unique_ptr<OfflineComponent> offlineComponent_;

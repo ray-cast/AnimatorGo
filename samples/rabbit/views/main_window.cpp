@@ -1069,15 +1069,11 @@ namespace rabbit
 						{
 							auto meshRenderer = hit->object->getComponent<octoon::MeshRendererComponent>();
 
-							auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-							if (behaviour)
-							{
-								auto materialComponent = behaviour->getComponent<MaterialComponent>();
-								auto& materials = materialComponent->getMaterials();
+							auto materialComponent = behaviour->getComponent<MaterialComponent>();
+							auto& materials = materialComponent->getMaterials();
 
-								std::string name;
-								meshRenderer->setMaterial(materials[materialWindow_->currentRow()], hit->mesh);
-							}
+							std::string name;
+							meshRenderer->setMaterial(materials[materialWindow_->currentRow()], hit->mesh);
 						}
 					}
 				}

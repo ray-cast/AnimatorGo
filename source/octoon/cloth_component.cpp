@@ -156,8 +156,7 @@ namespace octoon
 		{
 			if (cloth_)
 			{
-				physx::PxVec3 gravity(gravity.x, gravity.y, gravity.z);
-				cloth_->setGravity(gravity);
+				cloth_->setGravity(physx::PxVec3(gravity.x, gravity.y, gravity.z));
 			}
 
 			gravity_ = gravity;
@@ -307,8 +306,8 @@ namespace octoon
 				spheres.push_back(physx::PxVec4(s1.x, s1.y, s1.z, radius));
 				spheres.push_back(physx::PxVec4(s2.x, s2.y, s2.z, radius));
 
-				capsules.push_back(spheres.size() - 2);
-				capsules.push_back(spheres.size() - 1);
+				capsules.push_back(static_cast<std::uint32_t>(spheres.size() - 2));
+				capsules.push_back(static_cast<std::uint32_t>(spheres.size() - 1));
 			}
 		}
 
@@ -358,7 +357,7 @@ namespace octoon
 		for (auto& it : triangles)
 		{
 			if (indicesMap.find(it) == indicesMap.end())
-				indicesMap[it] = indicesMap.size();
+				indicesMap[it] = static_cast<std::uint32_t>(indicesMap.size());
 			indices.push_back(indicesMap[it]);
 		}
 
@@ -375,13 +374,13 @@ namespace octoon
 		nv::cloth::ClothMeshDesc meshDesc;
 		meshDesc.points.data = partices_.data();
 		meshDesc.points.stride = sizeof(math::float4);
-		meshDesc.points.count = partices_.size();
+		meshDesc.points.count = static_cast<physx::PxU32>(partices_.size());
 		meshDesc.triangles.data = indices.data();
 		meshDesc.triangles.stride = sizeof(std::uint32_t) * 3;
-		meshDesc.triangles.count = indices.size() / 3;
+		meshDesc.triangles.count = static_cast<physx::PxU32>(indices.size() / 3);
 		meshDesc.invMasses.data = &partices_.front().w;
 		meshDesc.invMasses.stride = sizeof(math::float4);
-		meshDesc.invMasses.count = partices_.size();
+		meshDesc.invMasses.count = static_cast<physx::PxU32>(partices_.size());
 
 		physx::PxVec3 gravity(gravity_.x, gravity_.y, gravity_.z);
 		nv::cloth::Vector<int32_t>::Type phaseTypeInfo;

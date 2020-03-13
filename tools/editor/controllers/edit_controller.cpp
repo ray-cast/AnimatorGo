@@ -45,19 +45,19 @@ namespace octoon
 		void
 		EditController::createCubeObject(const runtime::any& data) noexcept
 		{
-			objects_.push_back(GamePrefabs::instance()->createCube(1, 1, 1));
+			objects_.push_back(CubeHelper::create(1, 1, 1));
 		}
 
 		void
 		EditController::createSphereObject(const runtime::any& data) noexcept
 		{
-			objects_.push_back(GamePrefabs::instance()->createSphere(1));
+			objects_.push_back(SphereHelper::create(1));
 		}
 
 		void
 		EditController::createPlaneObject(const runtime::any& data) noexcept
 		{
-			objects_.push_back(GamePrefabs::instance()->createPlane(10, 10));
+			objects_.push_back(PlaneHelper::create(10, 10));
 		}
 
 		GameComponentPtr 

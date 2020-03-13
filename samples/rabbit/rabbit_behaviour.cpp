@@ -109,7 +109,6 @@ namespace rabbit
 		context_->behaviour = this;
 		context_->profile = profile_.get();
 
-		fileComponent_ = std::make_unique<FileComponent>();
 		canvasComponent_ = std::make_unique<CanvasComponent>();
 		entitiesComponent_ = std::make_unique<EntitiesComponent>();
 		offlineComponent_ = std::make_unique<OfflineComponent>();
@@ -121,7 +120,6 @@ namespace rabbit
 		clientComponent_ = std::make_unique<ClientComponent>();
 		materialComponent_ = std::make_unique<MaterialComponent>();
 
-		fileComponent_->init(context_, profile_->fileModule);
 		canvasComponent_->init(context_, profile_->canvasModule);
 		entitiesComponent_->init(context_, profile_->entitiesModule);
 		offlineComponent_->init(context_, profile_->offlineModule);
@@ -133,7 +131,6 @@ namespace rabbit
 		clientComponent_->init(context_, profile_->clientModule);
 		materialComponent_->init(context_, profile_->materialModule);
 
-		this->addComponent(fileComponent_.get());
 		this->addComponent(canvasComponent_.get());
 		this->addComponent(entitiesComponent_.get());
 		this->addComponent(offlineComponent_.get());
@@ -163,7 +160,6 @@ namespace rabbit
 	void
 	RabbitBehaviour::onDeactivate() noexcept
 	{
-		fileComponent_.reset();
 		canvasComponent_.reset();
 		entitiesComponent_.reset();
 		offlineComponent_.reset();
@@ -230,7 +226,7 @@ namespace rabbit
 	void
 	RabbitBehaviour::open(const std::string_view& filepath) noexcept(false)
 	{
-		fileComponent_->open(filepath.data());
+		entitiesComponent_->open(filepath.data());
 	}
 
 	void
@@ -251,18 +247,18 @@ namespace rabbit
 	void
 	RabbitBehaviour::openModel() noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
+		auto pathLimits = this->profile_->fileModule->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (fileComponent_->showFileOpenBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->modelExtensions[0]))
-			fileComponent_->importModel(filepath.data());
+		if (entitiesComponent_->showFileOpenBrowse(filepath.data(), pathLimits, this->profile_->fileModule->modelExtensions[0]))
+			entitiesComponent_->importModel(filepath.data());
 	}
 
 	void
 	RabbitBehaviour::saveModel() noexcept
 	{
-		auto pathLimits = fileComponent_->getModel()->PATHLIMIT;
+		auto pathLimits = this->profile_->fileModule->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
-		if (!fileComponent_->showFileSaveBrowse(filepath.data(), pathLimits, fileComponent_->getModel()->modelExtensions[0]))
+		if (!entitiesComponent_->showFileSaveBrowse(filepath.data(), pathLimits, this->profile_->fileModule->modelExtensions[0]))
 			return;
 	}
 
@@ -324,13 +320,13 @@ namespace rabbit
 	void
 	RabbitBehaviour::loadHDRi(const std::string_view& path) noexcept
 	{
-		fileComponent_->importHDRi(path);
+		entitiesComponent_->importHDRi(path);
 	}
 
 	void 
 	RabbitBehaviour::clearHDRi() noexcept
 	{
-		fileComponent_->clearHDRi();
+		entitiesComponent_->clearHDRi();
 	}
 
 	void

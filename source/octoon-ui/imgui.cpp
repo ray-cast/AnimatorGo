@@ -2,9 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_dock.h>
-#include <imgui_internal.h>
 #include <imgui_user.h>
-#include <ImGuizmo.h>
 
 #include <cstring> // std::memcpy
 
@@ -1883,44 +1881,6 @@ namespace octoon
 		void labelTextExV(const char* label, const char* fmt, va_list args) noexcept
 		{
 			ImGui::LabelTextExV(label, fmt, args);
-		}
-
-		namespace guizmo
-		{
-			void SetDrawlist()
-			{
-				ImGuizmo::SetDrawlist();
-			}
-
-			void BeginFrame()
-			{
-				ImGuizmo::BeginFrame();
-			}
-
-			bool IsOver()
-			{
-				return ImGuizmo::IsOver();
-			}
-
-			bool IsUsing()
-			{
-				return ImGuizmo::IsUsing();
-			}
-
-			void Enable(bool enable)
-			{
-				ImGuizmo::Enable(enable);
-			}
-
-			void SetRect(float x, float y, float width, float height)
-			{
-				ImGuizmo::SetRect(x, y, width, height);
-			}
-
-			void Manipulate(const float *view, const float *projection, Operation operation, Mode mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
-			{
-				ImGuizmo::Manipulate(view, projection, (ImGuizmo::OPERATION)operation, (ImGuizmo::MODE)mode, matrix, deltaMatrix, snap, localBounds, boundsSnap);
-			}
 		}
 	}
 }

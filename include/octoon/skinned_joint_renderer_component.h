@@ -4,7 +4,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/video/geometry.h>
 #include <octoon/mesh_filter_component.h>
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 
 namespace octoon
 {

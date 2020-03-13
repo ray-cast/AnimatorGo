@@ -2,7 +2,7 @@
 #define OCTOON_MODEL_CONTOUR_GROUP_H_
 
 #include <octoon/math/math.h>
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 #include <octoon/model/contour.h>
 
 namespace octoon

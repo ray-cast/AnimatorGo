@@ -5,7 +5,7 @@
 #include "../module/material_module.h"
 #include "../libs/tinyobj/tiny_obj_loader.h"
 
-#include <octoon/model/material.h>
+#include <octoon/material/material.h>
 #include <octoon/runtime/any.h>
 
 namespace rabbit

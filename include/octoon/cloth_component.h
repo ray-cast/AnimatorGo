@@ -2,7 +2,7 @@
 #define OCTOON_CLOTH_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 
 namespace nv
 {

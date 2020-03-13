@@ -22,7 +22,8 @@
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
-#include <octoon/model/material.h>
+#include <octoon/mesh/mesh.h>
+#include <octoon/material/material.h>
 
 #include <octoon/animation/animation_curve.h>
 #include <octoon/animation/animation_clip.h>

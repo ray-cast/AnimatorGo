@@ -1,0 +1,12 @@
+SET(LIB_OUTNAME ui)
+
+SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_OUTNAME})
+SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
+
+SET(UI_LIST
+    ${HEADER_PATH}/imgui.h
+    ${SOURCE_PATH}/imgui.cpp
+    ${HEADER_PATH}/imgui_system.h
+    ${SOURCE_PATH}/imgui_system.cpp
+)
+SOURCE_GROUP("ui" FILES ${UI_LIST})

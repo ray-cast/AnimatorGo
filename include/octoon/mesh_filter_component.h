@@ -1,7 +1,7 @@
 #ifndef OCTOON_MESH_FILTER_COMPONENT_H_
 #define OCTOON_MESH_FILTER_COMPONENT_H_
 
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 #include <octoon/game_component.h>
 
 namespace octoon

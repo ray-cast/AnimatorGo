@@ -1,7 +1,7 @@
 #ifndef OCTOON_MESH_ANIMATION_COMPONENT_H_
 #define OCTOON_MESH_ANIMATION_COMPONENT_H_
 
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 #include <octoon/animation_component.h>
 
 namespace Alembic {

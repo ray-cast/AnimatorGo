@@ -1,7 +1,7 @@
 #ifndef OCTOON_RENDER_COMPONENT_H_
 #define OCTOON_RENDER_COMPONENT_H_
 
-#include <octoon/model/material.h>
+#include <octoon/material/material.h>
 #include <octoon/video/render_object.h>
 #include <octoon/game_component.h>
 

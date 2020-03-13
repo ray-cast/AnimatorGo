@@ -6,7 +6,7 @@
 #include <octoon/skinned_component.h>
 #include <octoon/cloth_component.h>
 #include <octoon/video/geometry.h>
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 
 namespace octoon
 {

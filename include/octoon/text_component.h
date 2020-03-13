@@ -1,7 +1,7 @@
 #ifndef OCTOON_TEXT_COMPONENT_H_
 #define OCTOON_TEXT_COMPONENT_H_
 
-#include <octoon/model/mesh.h>
+#include <octoon/mesh/mesh.h>
 #include <octoon/model/text_meshing.h>
 #include <octoon/game_component.h>
 

@@ -1,7 +1,7 @@
 #ifndef OCTOON_OFFLINE_RENDER_COMPONENT_H_
 #define OCTOON_OFFLINE_RENDER_COMPONENT_H_
 
-#include <octoon/model/material.h>
+#include <octoon/material/material.h>
 #include <octoon/game_component.h>
 #include <octoon/offline_listener.h>
 

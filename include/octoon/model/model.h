@@ -1,7 +1,7 @@
 #ifndef OCTOON_MODEL_H_
 #define OCTOON_MODEL_H_
 
-#include <octoon/model/material.h>
+#include <octoon/material/material.h>
 
 namespace octoon
 {

@@ -19,13 +19,13 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void open(const std::string& path) noexcept(false);
+		void open(const std::string_view& path) noexcept(false);
 
-		bool importAbc(const std::string& path) noexcept;
-		bool importModel(const std::string& path) noexcept;
-		bool exportModel(const std::string& path) noexcept;
+		bool importAbc(const std::string_view& path) noexcept;
+		bool importModel(const std::string_view& path) noexcept;
+		bool exportModel(const std::string_view& path) noexcept;
 
-		void importHDRi(const std::string& path) noexcept;
+		void importHDRi(const std::string_view& path) noexcept;
 		void clearHDRi() noexcept;
 
 		bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;
@@ -43,10 +43,10 @@ namespace rabbit
 		void setupCameraAnimation(const std::vector<octoon::PmmKeyframeCamera>& camera, octoon::animation::AnimationClip<float>& clip) noexcept;
 
 	private:
-		void onFileDrop(const octoon::runtime::any& data) noexcept;
-
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
+
+		void onDrop(const std::string_view& data) noexcept override;
 	};
 }
 

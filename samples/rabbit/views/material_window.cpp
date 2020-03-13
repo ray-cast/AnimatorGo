@@ -110,71 +110,6 @@ namespace rabbit
 	}
 
 	void
-	MaterialWindow::import(std::wstring& filepath) noexcept
-	{
-		std::ifstream stream(filepath);
-		if (stream)
-		{
-			std::map<std::string, int> materialMap;
-
-			std::vector<tinyobj::material_t> materials;
-			auto err = tinyobj::LoadMtl(materialMap, materials, stream);
-			if (err.empty())
-			{
-				std::wstring dirpath = filepath.substr(0, filepath.find_last_of(L"/") + 1);
-
-				this->initMaterials(materials, QString::fromStdWString(dirpath).toStdString());
-
-				std::map<QString, std::shared_ptr<QPixmap>> imageTable;
-
-				for (std::size_t i = 0; i < materials.size(); i++)
-				{
-					auto& material = materials[i];
-
-					QListWidgetItem* item = new QListWidgetItem;
-					item->setText(QString::fromStdString(material.name));
-					item->setSizeHint(QSize(130, 160));
-
-					QLabel* imageLabel = new QLabel;
-
-					if (material.diffuse_texname.empty())
-					{
-						QPixmap pixmap(":res/icons/material.png");
-						imageLabel->setPixmap(pixmap);
-					}
-					else
-					{
-						auto texpath = QString::fromStdWString(dirpath) + QString::fromStdString(material.diffuse_texname);
-						if (!imageTable[texpath])
-						{
-							QImage image(texpath);
-							image.convertTo(QImage::Format::Format_RGB888);
-							imageTable[texpath] = std::make_shared<QPixmap>(QPixmap::fromImage(image.scaled(QSize(130, 130))));
-						}
-
-						imageLabel->setPixmap(*imageTable[texpath]);
-					}
-
-					QLabel* txtLabel = new QLabel(QString::fromStdString(material.name));
-					txtLabel->setFixedHeight(30);
-
-					QVBoxLayout* widgetLayout = new QVBoxLayout;
-					widgetLayout->setMargin(0);
-					widgetLayout->setSpacing(0);
-					widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
-					widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);
-
-					QWidget* widget = new QWidget;
-					widget->setLayout(widgetLayout);
-
-					listWidget_->addItem(item);
-					listWidget_->setItemWidget(item, widget);
-				}
-			}
-		}
-	}
-
-	void
 	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
 		this->repaint();
@@ -209,32 +144,87 @@ namespace rabbit
 				auto path = it.toString().toStdWString();
 				if (path.find(L"file:///") == 0)
 					path = path.substr(8);
-
-				this->import(path);
 			}
 
 			event->accept();
 		}
 	}
 
-	octoon::model::MaterialPtr
-	MaterialWindow::getMaterial(const std::string& name) const noexcept
+	int
+	MaterialWindow::currentRow() const noexcept
 	{
-		return this->materials_[this->listWidget_->currentRow()];
+		return this->listWidget_->currentRow();
 	}
 
 	void
-	MaterialWindow::initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string& rootPath)
+	MaterialWindow::updateList()
 	{
-		for (auto& it : materials)
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
 		{
-			auto material = std::make_shared<octoon::model::Material>();
-			material->set(MATKEY_NAME, it.name);
-			material->set(MATKEY_PATH, rootPath);
-			material->set(MATKEY_COLOR_DIFFUSE, octoon::math::float3::One);
-			material->set(MATKEY_TEXTURE_DIFFUSE, it.diffuse_texname);
+			auto materialComponent = behaviour->getComponent<MaterialComponent>();
+			auto& materials = materialComponent->getMaterials();
 
-			this->materials_.emplace_back(std::move(material));
+			listWidget_->clear();
+
+			std::map<QString, std::shared_ptr<QPixmap>> imageTable;
+
+			for (std::size_t i = 0; i < materials.size(); i++)
+			{
+				auto& mat = materials[i];
+
+				std::string name;
+				std::string path;
+				std::string textureName;
+
+				octoon::math::float3 base = octoon::math::float3(1.0f, 0.0f, 1.0f);
+				octoon::math::float3 ambient;
+
+				mat->get(MATKEY_NAME, name);
+				mat->get(MATKEY_PATH, path);
+				mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
+				mat->get(MATKEY_COLOR_DIFFUSE, base);
+				mat->get(MATKEY_COLOR_AMBIENT, ambient);
+
+				QListWidgetItem* item = new QListWidgetItem;
+				item->setText(QString::fromStdString(name));
+				item->setSizeHint(QSize(130, 160));
+
+				QLabel* imageLabel = new QLabel;
+
+				if (textureName.empty())
+				{
+					QPixmap pixmap(":res/icons/material.png");
+					imageLabel->setPixmap(pixmap);
+				}
+				else
+				{
+					auto texpath = QString::fromStdString(path + textureName);
+					if (!imageTable[texpath])
+					{
+						QImage image(texpath);
+						image.convertTo(QImage::Format::Format_RGB888);
+						imageTable[texpath] = std::make_shared<QPixmap>(QPixmap::fromImage(image.scaled(QSize(130, 130))));
+					}
+
+					imageLabel->setPixmap(*imageTable[texpath]);
+				}
+
+				QLabel* txtLabel = new QLabel(QString::fromStdString(name));
+				txtLabel->setFixedHeight(30);
+
+				QVBoxLayout* widgetLayout = new QVBoxLayout;
+				widgetLayout->setMargin(0);
+				widgetLayout->setSpacing(0);
+				widgetLayout->addWidget(imageLabel, 0, Qt::AlignCenter);
+				widgetLayout->addWidget(txtLabel, 0, Qt::AlignCenter);
+
+				QWidget* widget = new QWidget;
+				widget->setLayout(widgetLayout);
+
+				listWidget_->addItem(item);
+				listWidget_->setItemWidget(item, widget);
+			}
 		}
 	}
 }

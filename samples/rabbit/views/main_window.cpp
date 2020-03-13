@@ -1032,20 +1032,7 @@ namespace rabbit
 			{
 				std::vector<QByteArray> utf8bytes;
 				for (auto& it : urls)
-				{
-					auto path = it.toString().toStdWString();
-					if (path.find(L".mtl") != std::string::npos)
-					{
-						if (path.find(L"file:///") == 0)
-							path = path.substr(8);
-
-						materialWindow_->import(path);
-					}
-					else
-					{
-						utf8bytes.push_back(it.path().toUtf8());
-					}
-				}
+					utf8bytes.push_back(it.path().toUtf8());
 
 				if (!utf8bytes.empty())
 				{
@@ -1054,6 +1041,16 @@ namespace rabbit
 						utf8s.push_back(it.data() + 1);
 
 					gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
+
+					for (auto& it : urls)
+					{
+						auto path = it.toString().toStdWString();
+						if (path.find(L".mtl") != std::string::npos)
+						{
+							materialWindow_->updateList();
+							break;
+						}
+					}
 				}
 
 				event->accept();
@@ -1072,10 +1069,15 @@ namespace rabbit
 						{
 							auto meshRenderer = hit->object->getComponent<octoon::MeshRendererComponent>();
 
-							std::string name;
-							meshRenderer->setMaterial(materialWindow_->getMaterial(""), hit->mesh);
+							auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+							if (behaviour)
+							{
+								auto materialComponent = behaviour->getComponent<MaterialComponent>();
+								auto& materials = materialComponent->getMaterials();
 
-							std::cout << name << std::endl;
+								std::string name;
+								meshRenderer->setMaterial(materials[materialWindow_->currentRow()], hit->mesh);
+							}
 						}
 					}
 				}

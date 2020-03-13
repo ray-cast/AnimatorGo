@@ -24,6 +24,8 @@ namespace rabbit
 		virtual void onUpdate() noexcept(false);
 		virtual void onLateUpdate() noexcept(false);
 
+		virtual void onDrop(const std::string_view& data) noexcept;
+
 		virtual void onPostProcess() noexcept(false);
 	};
 

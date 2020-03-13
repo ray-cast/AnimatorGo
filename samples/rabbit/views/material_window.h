@@ -45,17 +45,14 @@ namespace rabbit
 		MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
 		~MaterialWindow() noexcept;
 
-		void import(std::wstring& filepath) noexcept;
-
 		void showEvent(QShowEvent* event) noexcept override;
 
 		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
 		void dropEvent(QDropEvent* event) noexcept override;
 
-		octoon::model::MaterialPtr getMaterial(const std::string& name) const noexcept;
+		int currentRow() const noexcept;
 
-	private:
-		void initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string& rootPath);
+		void updateList();
 
 	private Q_SLOTS:
 		void closeEvent();
@@ -68,8 +65,6 @@ namespace rabbit
 		std::unique_ptr<QVBoxLayout> mainLayout_;
 		std::unique_ptr<QListWidget> listWidget_;
 		octoon::GameObjectPtr behaviour_;
-		octoon::model::MaterialPtr selected_;
-		std::vector<octoon::model::MaterialPtr> materials_;
 	};
 }
 

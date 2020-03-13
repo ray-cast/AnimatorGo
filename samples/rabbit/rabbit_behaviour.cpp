@@ -72,7 +72,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::sendMessage(const std::string& event, const std::any& data) noexcept
+	RabbitBehaviour::sendMessage(const std::string_view& event, const std::any& data) noexcept
 	{
 		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
@@ -80,15 +80,23 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::addMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept
+	RabbitBehaviour::addMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].connect(listener);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.connect(listener);
+		else
+			dispatchEvents_[std::string(event)].connect(listener);
 	}
 
 	void
-	RabbitBehaviour::removeMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept
+	RabbitBehaviour::removeMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].disconnect(listener);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.disconnect(listener);
+		else
+			dispatchEvents_[std::string(event)].disconnect(listener);
 	}
 
 	void
@@ -142,6 +150,14 @@ namespace rabbit
 		this->addComponentDispatch(octoon::GameDispatchType::FixedUpdate);
 		this->addComponentDispatch(octoon::GameDispatchType::Frame);
 		this->addComponentDispatch(octoon::GameDispatchType::LateUpdate);
+
+		auto baseFeature = this->getFeature<octoon::GameBaseFeature>();
+		if (baseFeature)
+		{
+			auto gameObjectManager = baseFeature->getGameObjectManager();
+			if (gameObjectManager)
+				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
+		}
 	}
 
 	void
@@ -157,6 +173,14 @@ namespace rabbit
 		context_.reset();
 		profile_.reset();
 		uiComponent_.reset();
+
+		auto baseFeature = this->getFeature<octoon::GameBaseFeature>();
+		if (baseFeature)
+		{
+			auto gameObjectManager = baseFeature->getGameObjectManager();
+			if (gameObjectManager)
+				gameObjectManager->removeMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
+		}
 	}
 
 	void
@@ -180,6 +204,23 @@ namespace rabbit
 			it->onLateUpdate();
 	}
 
+	void
+	RabbitBehaviour::onDrop(const octoon::runtime::any& data) noexcept
+	{
+		if (data.type() == typeid(std::vector<const char*>))
+		{
+			auto files = octoon::runtime::any_cast<std::vector<const char*>>(data);
+			for (auto& path : files)
+			{
+				for (auto& it : components_)
+				{
+					if (it->getActive())
+						it->onDrop(std::string_view(path));
+				}
+			}
+		}
+	}
+
 	const std::shared_ptr<RabbitProfile>&
 	RabbitBehaviour::getProfile() const noexcept
 	{
@@ -187,7 +228,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::open(const std::string& filepath) noexcept(false)
+	RabbitBehaviour::open(const std::string_view& filepath) noexcept(false)
 	{
 		fileComponent_->open(filepath.data());
 	}
@@ -226,7 +267,7 @@ namespace rabbit
 	}
 
 	bool
-	RabbitBehaviour::startRecord(const std::string& filepath) noexcept
+	RabbitBehaviour::startRecord(const std::string_view& filepath) noexcept
 	{
 		try
 		{
@@ -263,7 +304,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::renderPicture(const std::string& filepath) noexcept(false)
+	RabbitBehaviour::renderPicture(const std::string_view& filepath) noexcept(false)
 	{
 		canvasComponent_->setActive(true);
 		denoiseComponent_->setActive(true);
@@ -281,7 +322,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::loadHDRi(const std::string& path) noexcept
+	RabbitBehaviour::loadHDRi(const std::string_view& path) noexcept
 	{
 		fileComponent_->importHDRi(path);
 	}
@@ -290,6 +331,12 @@ namespace rabbit
 	RabbitBehaviour::clearHDRi() noexcept
 	{
 		fileComponent_->clearHDRi();
+	}
+
+	void
+	RabbitBehaviour::loadMaterial(const std::string_view& path) noexcept(false)
+	{
+		materialComponent_->loadMaterial(path);
 	}
 
 	std::optional<octoon::RaycastHit>

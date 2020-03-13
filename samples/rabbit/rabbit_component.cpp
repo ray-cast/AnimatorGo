@@ -31,4 +31,9 @@ namespace rabbit
 	IRabbitComponent::onLateUpdate() noexcept(false)
 	{
 	}
+
+	void
+	IRabbitComponent::onDrop(const std::string_view& data) noexcept
+	{
+	}
 }

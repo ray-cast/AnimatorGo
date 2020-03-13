@@ -15,7 +15,7 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void save(const std::string& filepath) noexcept;
+		void save(const std::string_view& filepath) noexcept;
 
 		virtual const std::type_info& type_info() const noexcept
 		{

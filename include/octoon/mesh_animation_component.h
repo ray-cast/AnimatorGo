@@ -6,7 +6,7 @@
 
 namespace Alembic {
 	namespace Abc {
-		namespace v11 {
+		namespace v12 {
 			class IObject;
 		}
 	}
@@ -52,7 +52,7 @@ namespace octoon
 
 	private:
 		void setupAnimationData(const std::string& path) noexcept(false);
-		void setupAnimationData(const Alembic::Abc::v11::IObject& object) noexcept(false);
+		void setupAnimationData(const Alembic::Abc::v12::IObject& object) noexcept(false);
 
 	private:
 		MeshAnimationComponent(const MeshAnimationComponent&) = delete;
@@ -71,7 +71,7 @@ namespace octoon
 
 		animation::AnimatorStateInfo<float> animationState_;
 
-		std::shared_ptr<Alembic::Abc::v11::IObject> object_;
+		std::shared_ptr<Alembic::Abc::v12::IObject> object_;
 	};
 }
 

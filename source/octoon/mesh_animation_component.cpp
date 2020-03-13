@@ -555,7 +555,7 @@ namespace octoon
 	}
 
 	void 
-	MeshAnimationComponent::setupAnimationData(const Alembic::Abc::v11::IObject& object) noexcept(false)
+	MeshAnimationComponent::setupAnimationData(const Alembic::Abc::v12::IObject& object) noexcept(false)
 	{
 		auto& object_header = object.getHeader();
 		if (IPolyMesh::matches(object_header))
@@ -595,7 +595,7 @@ namespace octoon
 		}
 		else
 		{
-			object_ = std::make_shared<Alembic::Abc::v11::IObject>(object);
+			object_ = std::make_shared<Alembic::Abc::v12::IObject>(object);
 		}
 
 		for (std::size_t i = 0; i < object_->getNumChildren(); ++i)

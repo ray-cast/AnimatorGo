@@ -340,9 +340,6 @@ namespace octoon
 	OfflineMeshRendererComponent::onMaterialReplace(const model::Materials& material) noexcept
 	{
 		if (this->getGameScene())
-		{
 			this->uploadMaterialData(material);
-			this->trySendMessage("octoon:mesh:get");
-		}
 	}
 }

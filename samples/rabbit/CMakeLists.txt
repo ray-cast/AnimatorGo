@@ -47,6 +47,8 @@ SET(MODULES_LIST
 	${SOURCE_PATH}/module/mark_module.cpp
 	${SOURCE_PATH}/module/client_module.h
 	${SOURCE_PATH}/module/client_module.cpp
+	${SOURCE_PATH}/module/material_module.h
+	${SOURCE_PATH}/module/material_module.cpp
 )
 SOURCE_GROUP("rabbit\\module" FILES ${MODULES_LIST})
 
@@ -109,6 +111,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/mark_component.cpp
 	${SOURCE_PATH}/controllers/client_component.h
 	${SOURCE_PATH}/controllers/client_component.cpp
+	${SOURCE_PATH}/controllers/material_component.h
+	${SOURCE_PATH}/controllers/material_component.cpp
 )
 SOURCE_GROUP("rabbit\\controllers" FILES ${CONTROLLERS_LIST})
 

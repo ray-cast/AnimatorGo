@@ -220,7 +220,7 @@ namespace rabbit
 	octoon::model::MaterialPtr
 	MaterialWindow::getMaterial(const std::string& name) const noexcept
 	{
-		return this->materials_.front();
+		return this->materials_[this->listWidget_->currentRow()];
 	}
 
 	void

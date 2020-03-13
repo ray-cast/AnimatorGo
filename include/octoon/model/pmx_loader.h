@@ -1,7 +1,7 @@
 #ifndef OCTOON_PMX_LOADER_H_
 #define OCTOON_PMX_LOADER_H_
 
-#include <octoon/model/model_loader.h>
+#include <octoon/model/model.h>
 
 #ifndef MAX_PATH
 #	define MAX_PATH 256
@@ -415,7 +415,7 @@ namespace octoon
 			std::vector<PmxSoftbody> softbodies;
 		};
 
-		class PmxLoader : public ModelLoader
+		class OCTOON_EXPORT PmxLoader final
 		{
 		public:
 			PmxLoader() = default;

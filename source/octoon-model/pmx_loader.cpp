@@ -3,11 +3,6 @@
 #include <octoon/model/mesh.h>
 #include <octoon/model/material.h>
 #include <octoon/model/model.h>
-#include <octoon/model/ik.h>
-#include <octoon/model/rigidbody.h>
-#include <octoon/model/joint.h>
-#include <octoon/model/softbody.h>
-#include <octoon/model/morph.h>
 
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
@@ -628,7 +623,7 @@ namespace octoon
 					material->set(MATKEY_TEXTURE_TOON, u8_conv);
 				}		
 
-				model.add(std::move(material));
+				model.materials.emplace_back(std::move(material));
 			}
 
 			math::float4x4s bindposes(pmx.bones.size());
@@ -702,7 +697,7 @@ namespace octoon
 				startIndices += pmx.materials[i].FaceCount;
 			}
 
-			model.add(std::move(mesh));
+			model.meshes.emplace_back(std::move(mesh));
 
 			for (std::size_t i = 0; i < pmx.bones.size(); i++)
 			{
@@ -721,7 +716,7 @@ namespace octoon
 				if (it.Flag & PMX_BONE_ADD_ROTATION)
 					bone.setAdditiveRotationRatio(it.ProvidedRatio);
 
-				model.add(std::make_shared<Bone>(bone));
+				model.bones.emplace_back(std::make_shared<Bone>(bone));
 
 				if (it.Flag & PMX_BONE_IK)
 				{
@@ -743,7 +738,7 @@ namespace octoon
 						attr.child.push_back(child);
 					}
 
-					model.add(std::make_shared<IKAttr>(attr));
+					model.iks.emplace_back(std::make_shared<IKAttr>(attr));
 				}
 			}
 
@@ -768,7 +763,7 @@ namespace octoon
 						morph->vertices.push_back(vertex);
 					}
 
-					model.add(morph);
+					model.morphs.emplace_back(morph);
 				}
 				break;
 				}
@@ -795,7 +790,7 @@ namespace octoon
 				if (body->shape == ShapeType::ShapeTypeCapsule && body->scale.y == 0.0f)
 					body->shape = ShapeType::ShapeTypeSphere;
 
-				model.add(std::move(body));
+				model.rigidbodies.emplace_back(std::move(body));
 			}
 
 			for (auto& it : pmx.joints)
@@ -814,7 +809,7 @@ namespace octoon
 				joint->springMovementConstant = it.springMovementConstant;
 				joint->springRotationConstant = it.springRotationConstant;
 
-				model.add(std::move(joint));
+				model.joints.emplace_back(std::move(joint));
 			}
 
 			for (auto& it : pmx.softbodies)
@@ -848,7 +843,7 @@ namespace octoon
 					softbody->pinVertexIndices.push_back(index);
 				}
 
-				model.add(std::move(softbody));
+				model.softbodies.emplace_back(std::move(softbody));
 			}
 
 			return true;

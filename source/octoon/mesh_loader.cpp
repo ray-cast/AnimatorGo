@@ -20,18 +20,21 @@
 #include <octoon/rotation_link_limit_component.h>
 #include <octoon/cloth_component.h>
 
+#include <octoon/io/fstream.h>
+#include <octoon/model/pmx_loader.h>
+
 namespace octoon
 {
 	void createBones(const model::Model& model, GameObjects& bones) noexcept(false)
 	{
-		bones.reserve(model.get<model::Model::bone>().size());
+		bones.reserve(model.bones.size());
 
-		for (auto& it : model.get<model::Model::bone>())
+		for (auto& it : model.bones)
 			bones.emplace_back(GameObject::create(it->getName()));
 
-		for (std::size_t i = 0; i < model.get<model::Model::bone>().size(); i++)
+		for (std::size_t i = 0; i < model.bones.size(); i++)
 		{
-			auto it = model.get<model::Model::bone>(i);
+			auto it = model.bones[i];
 
 			auto parent = it->getParent();
 			if (parent >= 0 && parent < bones.size())
@@ -71,7 +74,7 @@ namespace octoon
 
 	void createClothes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, GameObjects& rigidbodies) noexcept(false)
 	{
-		for (auto& it : model.get<model::Model::softbody>())
+		for (auto& it : model.softbodies)
 		{
 			GameObjects collider;
 
@@ -108,9 +111,9 @@ namespace octoon
 
 	void createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept(false)
 	{
-		rigidbodys.reserve(model.get<model::Model::rigidbody>().size());
+		rigidbodys.reserve(model.rigidbodies.size());
 
-		for (auto& it : model.get<model::Model::rigidbody>())
+		for (auto& it : model.rigidbodies)
 		{
 			auto gameObject = GameObject::create();
 			gameObject->setName(it->name);
@@ -149,9 +152,9 @@ namespace octoon
 
 	void createJoints(const model::Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept(false)
 	{
-		joints.reserve(model.get<model::Model::joint>().size());
+		joints.reserve(model.joints.size());
 
-		for (auto& it : model.get<model::Model::joint>())
+		for (auto& it : model.joints)
 		{
 			if (rigidbodys.size() <= it->bodyIndexA || rigidbodys.size() <= it->bodyIndexB)
 				continue;
@@ -253,7 +256,7 @@ namespace octoon
 
 	void createSolver(const model::Model& model, GameObjects& bones) noexcept(false)
 	{
-		for (auto& it : model.get<model::Model::ik>())
+		for (auto& it : model.iks)
 		{
 			auto iksolver = std::make_shared<CCDSolverComponent>();
 			iksolver->setTarget(bones[it->targetBoneIndex]);
@@ -275,7 +278,7 @@ namespace octoon
 
 	void createMorph(const model::Model& model, GameObjectPtr& mesh) noexcept(false)
 	{
-		for (auto& it : model.get<model::Model::morph>())
+		for (auto& it : model.morphs)
 		{
 			math::float3s offsets;
 			math::uint1s indices;
@@ -295,9 +298,9 @@ namespace octoon
 
 	void createMaterials(const model::Model& model, model::Materials& materials, const std::string& rootPath) noexcept(false)
 	{
-		materials.reserve(model.get<model::Model::material>().size());
+		materials.reserve(model.materials.size());
 
-		for (auto& it : model.get<model::Model::material>())
+		for (auto& it : model.materials)
 		{
 			it->set(MATKEY_PATH, rootPath);
 			materials.push_back(it);
@@ -309,7 +312,7 @@ namespace octoon
 		model::Materials materials;
 		createMaterials(model, materials, "file:" + runtime::string::directory(path));
 
-		auto mesh = model.get<model::Model::mesh>(0);
+		auto mesh = model.meshes[0];
 		auto object = GameObject::create(mesh->getName());
 		object->addComponent<MeshFilterComponent>(mesh);
 
@@ -351,9 +354,14 @@ namespace octoon
 	MeshLoader::load(const std::string_view& filepath, bool cache) noexcept(false)
 	{
 		model::Model model;
-		model.load(std::string(filepath));
 
-		if (!model.get<model::Model::mesh>().empty())
+		io::ifstream stream;
+		stream.open(std::string(filepath));
+
+		model::PmxLoader load;
+		load.doLoad(stream, model);
+
+		if (!model.meshes.empty())
 		{
 			GameObjectPtr actor;
 

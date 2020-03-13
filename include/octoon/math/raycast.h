@@ -79,10 +79,10 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersect(const detail::Raycast<T>& ray, const detail::Triangle<T>& t, detail::Vector3<T>& intersectPoint, T& distance) noexcept
+		inline bool intersect(const detail::Raycast<T>& ray, const detail::Triangle<T>& tri, detail::Vector3<T>& intersectPoint, T& distance) noexcept
 		{
-			detail::Vector3<T> u = t.b - t.a;
-			detail::Vector3<T> v = t.c - t.a;
+			detail::Vector3<T> u = tri.b - tri.a;
+			detail::Vector3<T> v = tri.c - tri.a;
 			detail::Vector3<T> n = math::normalize(math::cross(u, v));
 
 			if (n != detail::Vector3<T>::Zero)
@@ -90,7 +90,7 @@ namespace octoon
 				auto b = math::dot(n, ray.normal);
 				if (std::abs(b) > 1e-5)
 				{
-					auto w0 = ray.origin - t.a;
+					auto w0 = ray.origin - tri.a;
 
 					auto a = -math::dot(n, w0);
 					auto r = a / b;
@@ -103,7 +103,7 @@ namespace octoon
 						auto uv = math::dot(u, v);
 						auto vv = math::dot(v, v);
 
-						auto w = interPoint - t.a;
+						auto w = interPoint - tri.a;
 
 						auto wu = math::dot(w, u);
 						auto wv = math::dot(w, v);

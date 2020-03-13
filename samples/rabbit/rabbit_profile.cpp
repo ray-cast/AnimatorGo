@@ -18,6 +18,7 @@ namespace rabbit
 		, sunModule(std::make_shared<SunModule>())
 		, environmentModule(std::make_shared<EnvironmentModule>())
 		, clientModule(std::make_shared<ClientModule>())
+		, materialModule(std::make_shared<MaterialModule>())
 	{
 	}
 
@@ -40,6 +41,7 @@ namespace rabbit
 			this->sunModule->load(json["sun"]);
 			this->environmentModule->load(json["environment"]);
 			this->clientModule->load(json["client"]);
+			this->materialModule->load(json["material"]);
 		}
 		else
 		{
@@ -76,6 +78,7 @@ namespace rabbit
 			profile.sunModule->save(json["sun"]);
 			profile.environmentModule->save(json["environment"]);
 			profile.clientModule->save(json["client"]);
+			profile.materialModule->save(json["material"]);
 
 			auto string = json.dump();
 			stream.write(string.c_str(), string.size());

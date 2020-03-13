@@ -14,6 +14,7 @@
 #include "controllers/ui_component.h"
 #include "controllers/mark_component.h"
 #include "controllers/client_component.h"
+#include "controllers/material_component.h"
 
 #include <octoon/raycaster.h>
 
@@ -84,6 +85,7 @@ namespace rabbit
 		std::unique_ptr<UIComponent> uiComponent_;
 		std::unique_ptr<MarkComponent> markComponent_;
 		std::unique_ptr<ClientComponent> clientComponent_;
+		std::unique_ptr<MaterialComponent> materialComponent_;
 
 		std::vector<IRabbitComponent*> components_;
 		std::unordered_map<std::string, octoon::runtime::signal<void(const std::any&)>> dispatchEvents_;

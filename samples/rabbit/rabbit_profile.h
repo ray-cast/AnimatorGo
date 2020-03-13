@@ -16,6 +16,7 @@
 #include "module/sun_module.h"
 #include "module/environment_module.h"
 #include "module/client_module.h"
+#include "module/material_module.h"
 
 namespace rabbit
 {
@@ -46,6 +47,7 @@ namespace rabbit
 		std::shared_ptr<ClientModule> clientModule;
 		std::shared_ptr<SunModule> sunModule;
 		std::shared_ptr<EnvironmentModule> environmentModule;
+		std::shared_ptr<MaterialModule> materialModule;
 	};
 }
 

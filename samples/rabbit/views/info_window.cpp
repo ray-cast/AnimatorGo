@@ -242,7 +242,7 @@ namespace rabbit
 
 			countLabel_->setText((std::string(u8"¿ÉÓÃÍÃ±Ò") + std::to_string(behaviour_->getProfile()->clientModule->coin) + u8"¸ö").c_str());
 		}
-		catch (const std::exception& e)
+		catch (const std::exception&)
 		{
 
 		}
@@ -336,7 +336,7 @@ namespace rabbit
 				timer_->stop();
 			}
 		}
-		catch (const std::exception& e)
+		catch (const std::exception&)
 		{
 		}
 	}
@@ -367,7 +367,7 @@ namespace rabbit
 				}
 			}
 		}
-		catch (const std::exception& e)
+		catch (const std::exception&)
 		{
 		}
 	}

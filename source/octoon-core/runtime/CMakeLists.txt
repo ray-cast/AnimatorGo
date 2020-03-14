@@ -28,7 +28,6 @@ SET(RUNTIME_LIST
 	${HEADER_PATH}/uuid.h
 	${SOURCE_PATH}/uuid.cpp
 	${HEADER_PATH}/sigslot.h
-	${HEADER_PATH}/any.h
 	${HEADER_PATH}/variant.h
 )
 SOURCE_GROUP("runtime" FILES ${RUNTIME_LIST})

@@ -33,7 +33,7 @@ namespace rabbit
 	}
 
 	void
-	IRabbitComponent::onDrop(const std::string_view& data) noexcept
+	IRabbitComponent::onDrop(std::string_view data) noexcept
 	{
 	}
 }

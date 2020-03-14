@@ -215,7 +215,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& mesh) noexcept
+	SkinnedMeshRendererComponent::onAnimationUpdate(const std::any& mesh) noexcept
 	{
 		needUpdate_ = true;
 	}
@@ -255,9 +255,9 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
+	SkinnedMeshRendererComponent::onMeshReplace(const std::any& data) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(data));
+		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(data));
 	}
 
 	void

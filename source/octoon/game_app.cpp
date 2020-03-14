@@ -54,7 +54,7 @@ namespace octoon
 	class GameAppListener final : public GameListener
 	{
 	public:
-		virtual void onMessage(const std::string& message) noexcept override
+		virtual void onMessage(std::string_view message) noexcept override
 		{
 			std::cerr << message << std::endl;
 		}
@@ -218,7 +218,7 @@ namespace octoon
 	}
 
 	bool
-	GameApp::openScene(const std::string& name) except
+	GameApp::openScene(std::string_view name) except
 	{
 		if (server_)
 			return server_->openScene(name);
@@ -236,7 +236,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::closeScene(const std::string& name) noexcept
+	GameApp::closeScene(std::string_view name) noexcept
 	{
 		assert(server_);
 
@@ -245,7 +245,7 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameApp::findScene(const std::string& name) noexcept
+	GameApp::findScene(std::string_view name) noexcept
 	{
 		assert(server_);
 		return server_ ? server_->findScene(name) : nullptr;
@@ -312,7 +312,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::sendMessage(const std::string& event, const runtime::any& data) except
+	GameApp::sendMessage(std::string_view event, const std::any& data) except
 	{
 		if (server_)
 			server_->sendMessage(event, data);
@@ -321,7 +321,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except
+	GameApp::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except
 	{
 		if (server_)
 			server_->addMessageListener(event, listener);
@@ -330,7 +330,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except
+	GameApp::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except
 	{
 		if (server_)
 			server_->removeMessageListener(event, listener);
@@ -360,7 +360,7 @@ namespace octoon
 	}
 
 	void
-	GameApp::onMessage(const std::string& message) noexcept
+	GameApp::onMessage(std::string_view message) noexcept
 	{
 		if (listener_)
 			listener_->onMessage(message);

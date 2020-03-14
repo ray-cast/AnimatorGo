@@ -67,21 +67,21 @@ namespace octoon
 	}
 
 	void
-	GameFeature::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameFeature::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
 		assert(server_);
 		server_->sendMessage(event, data);
 	}
 
 	void
-	GameFeature::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameFeature::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		assert(server_);
 		server_->addMessageListener(event, listener);
 	}
 
 	void
-	GameFeature::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameFeature::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		assert(server_);
 		server_->removeMessageListener(event, listener);

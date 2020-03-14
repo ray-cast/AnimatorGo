@@ -29,22 +29,22 @@ namespace rabbit
 
 		const std::shared_ptr<RabbitProfile>& getProfile() const noexcept;
 
-		void open(const std::string_view& filepath) noexcept(false);
+		void open(std::string_view filepath) noexcept(false);
 		void close() noexcept;
 		bool isOpen() const noexcept;
 
 		void openModel() noexcept;
 		void saveModel() noexcept;
 
-		bool startRecord(const std::string_view& path) noexcept;
+		bool startRecord(std::string_view path) noexcept;
 		void stopRecord() noexcept;
 
-		void loadHDRi(const std::string_view& path) noexcept;
+		void loadHDRi(std::string_view path) noexcept;
 		void clearHDRi() noexcept;
 
-		void loadMaterial(const std::string_view& path) noexcept(false);
+		void loadMaterial(std::string_view path) noexcept(false);
 
-		void renderPicture(const std::string_view& path) noexcept(false);
+		void renderPicture(std::string_view path) noexcept(false);
 
 		std::optional<octoon::RaycastHit> raycastHit(const octoon::math::float2& pos) noexcept;
 
@@ -58,9 +58,9 @@ namespace rabbit
 		template<typename T>
 		T* getComponent() const noexcept { return dynamic_cast<T*>(this->getComponent(typeid(T))); }
 
-		void sendMessage(const std::string_view& event, const std::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept;
-		void removeMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
@@ -72,7 +72,7 @@ namespace rabbit
 		void onUpdate() noexcept override;
 		void onLateUpdate() noexcept override;
 
-		void onDrop(const octoon::runtime::any& data) noexcept;
+		void onDrop(const std::any& data) noexcept;
 
 	private:
 		std::shared_ptr<RabbitProfile> profile_;

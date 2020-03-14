@@ -20,13 +20,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setName(std::string&& name) noexcept
-		{
-			_name = std::move(name);
-		}
-
-		void
-		Mesh::setName(const std::string& name) noexcept
+		Mesh::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}

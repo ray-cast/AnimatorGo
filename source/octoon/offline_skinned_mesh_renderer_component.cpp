@@ -165,7 +165,7 @@ namespace octoon
 	}
 
 	void
-	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
+	OfflineSkinnedMeshRendererComponent::onAnimationUpdate(const std::any& data) noexcept
 	{
 		auto offlineFeature = this->getFeature<OfflineFeature>();
 		if (offlineFeature)
@@ -175,9 +175,9 @@ namespace octoon
 	}
 
 	void
-	OfflineSkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
+	OfflineSkinnedMeshRendererComponent::onMeshReplace(const std::any& data) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(data));
+		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(data));
 
 		auto offlineFeature = this->getFeature<OfflineFeature>();
 		if (offlineFeature)

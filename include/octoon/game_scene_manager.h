@@ -13,8 +13,7 @@ namespace octoon
 		GameSceneManager() noexcept;
 		~GameSceneManager() noexcept;
 
-		GameScenePtr find(const char* name) noexcept;
-		GameScenePtr find(const std::string& name) noexcept;
+		GameScenePtr find(std::string_view name) noexcept;
 
 		GameScene* defaultScene() noexcept;
 

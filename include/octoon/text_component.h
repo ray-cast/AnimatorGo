@@ -12,12 +12,10 @@ namespace octoon
 		OctoonDeclareSubClass(TextComponent, GameComponent)
 	public:
 		TextComponent() noexcept;
-		TextComponent(std::string&& u8str, bool sharedText = false) noexcept;
-		TextComponent(const std::string& u8str, bool sharedText = false) noexcept;
+		TextComponent(std::string_view u8str, bool sharedText = false) noexcept;
 		virtual ~TextComponent() noexcept;
 
-		void setText(std::string&& u8str, bool sharedText = false) noexcept;
-		void setText(const std::string& u8str, bool sharedText = false) noexcept;
+		void setText(std::string_view u8str, bool sharedText = false) noexcept;
 		const std::string& getText() const noexcept;
 
 		void setTextMeshing(model::TextMeshingPtr&& meshing) noexcept;

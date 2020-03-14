@@ -68,7 +68,7 @@ namespace rabbit
 	}
 
 	void
-	CanvasComponent::save(const std::string_view& filepath) noexcept
+	CanvasComponent::save(std::string_view filepath) noexcept
 	{
 		auto canvas = this->getContext()->profile->canvasModule;
 		auto width = canvas->width;

@@ -13,7 +13,7 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameSceneManager::find(const char* name) noexcept
+	GameSceneManager::find(std::string_view name) noexcept
 	{
 		for (auto& it : instanceLists_)
 		{
@@ -25,12 +25,6 @@ namespace octoon
 		}
 
 		return nullptr;
-	}
-
-	GameScenePtr
-	GameSceneManager::find(const std::string& name) noexcept
-	{
-		return this->find(name.c_str());
 	}
 
 	GameScene*

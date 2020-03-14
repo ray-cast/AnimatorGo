@@ -98,10 +98,10 @@ namespace rabbit
 	}
 
 	bool
-	EntitiesComponent::importAbc(const std::string_view& path) noexcept
+	EntitiesComponent::importAbc(std::string_view path) noexcept
 	{
 		auto model = octoon::GameObject::create();
-		model->addComponent<octoon::MeshAnimationComponent>(std::string(path));
+		model->addComponent<octoon::MeshAnimationComponent>(path);
 
 		this->getContext()->profile->entitiesModule->objects.push_back(model);
 
@@ -110,9 +110,9 @@ namespace rabbit
 	}
 
 	bool
-	EntitiesComponent::importModel(const std::string_view& path) noexcept
+	EntitiesComponent::importModel(std::string_view path) noexcept
 	{
-		auto model = octoon::MeshLoader::load(std::string(path));
+		auto model = octoon::MeshLoader::load(path);
 		if (model)
 		{
 			this->getContext()->profile->entitiesModule->objects.push_back(model);
@@ -123,19 +123,19 @@ namespace rabbit
 	}
 
 	bool
-	EntitiesComponent::exportModel(const std::string_view& path) noexcept
+	EntitiesComponent::exportModel(std::string_view path) noexcept
 	{
 		return false;
 	}
 
 	void
-	EntitiesComponent::importHDRi(const std::string_view& filepath) noexcept
+	EntitiesComponent::importHDRi(std::string_view filepath) noexcept
 	{
 		if (this->getContext()->profile->entitiesModule->enviromentLight)
 		{
 			auto environmentLight = this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 			if (environmentLight)
-				environmentLight->setBgImage(std::string(filepath));
+				environmentLight->setBgImage(filepath);
 		}
 	}
 
@@ -151,7 +151,7 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::open(const std::string_view& filepath) noexcept(false)
+	EntitiesComponent::open(std::string_view filepath) noexcept(false)
 	{
 		auto& context = this->getContext();
 		if (!context->profile->entitiesModule->objects.empty())
@@ -497,16 +497,16 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::onDrop(const std::string_view& path) noexcept
+	EntitiesComponent::onDrop(std::string_view path) noexcept
 	{
 		auto ext = path.substr(path.find_last_of("."));
 		if (ext == ".pmm")
-			this->open(std::string(path));
+			this->open(path);
 		else if (ext == ".pmx")
-			this->importModel(std::string(path));
+			this->importModel(path);
 		else if (ext == ".hdr")
-			this->importHDRi(std::string(path));
+			this->importHDRi(path);
 		else if (ext == ".abc")
-			this->importAbc(std::string(path));
+			this->importAbc(path);
 	}
 }

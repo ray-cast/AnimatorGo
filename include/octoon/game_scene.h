@@ -11,7 +11,7 @@ namespace octoon
 	public:
 		GameScene() noexcept;
 		GameScene(std::string&& name) noexcept;
-		GameScene(const std::string& name) noexcept;
+		GameScene(std::string_view name) noexcept;
 		GameScene(io::archivebuf& reader) noexcept;
 		~GameScene() noexcept;
 
@@ -20,8 +20,7 @@ namespace octoon
 		void setActive(bool active) except;
 		bool getActive() const noexcept;
 
-		void setName(std::string&& name) noexcept;
-		void setName(const std::string& name) noexcept;
+		void setName(std::string_view name) noexcept;
 		const std::string& getName() const noexcept;
 
 		void setGameListener(const GameListenerPtr& listener) noexcept;
@@ -32,7 +31,7 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
 
 		void load(const io::archivebuf& reader) except;
 		void save(io::archivebuf& write) except;
@@ -42,8 +41,7 @@ namespace octoon
 		GameScenePtr clone() const noexcept;
 
 	public:
-		static GameScenePtr find(const char* name) noexcept;
-		static GameScenePtr find(const std::string& name) noexcept;
+		static GameScenePtr find(std::string_view name) noexcept;
 
 	private:
 		friend GameServer;

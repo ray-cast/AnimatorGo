@@ -42,10 +42,10 @@ namespace rabbit
 	}
 
 	void 
-	CameraWindow::setCamera(const octoon::runtime::any& data) noexcept
+	CameraWindow::setCamera(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(octoon::GameObjectPtr))
-			camera_ = octoon::runtime::any_cast<octoon::GameObjectPtr>(data);
+			camera_ = std::any_cast<octoon::GameObjectPtr>(data);
 	}
 
 	octoon::GameComponentPtr

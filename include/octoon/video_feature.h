@@ -27,7 +27,7 @@ namespace octoon
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
 
-		void onInputEvent(const runtime::any& data) noexcept;
+		void onInputEvent(const std::any& data) noexcept;
 
 		void onFrameBegin() noexcept override;
 		void onFrame() noexcept override;

@@ -18,7 +18,7 @@ namespace octoon
 		{
 		}
 
-		Bone::Bone(const std::string& name) noexcept
+		Bone::Bone(std::string_view name) noexcept
 		{
 			_name = name;
 		}
@@ -28,7 +28,7 @@ namespace octoon
 		}
 
 		void
-		Bone::setName(const std::string& name) noexcept
+		Bone::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}

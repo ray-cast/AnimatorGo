@@ -78,7 +78,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedJointRendererComponent::onAnimationUpdate(const runtime::any& data) noexcept
+	SkinnedJointRendererComponent::onAnimationUpdate(const std::any& data) noexcept
 	{
 		this->needUpdate_ = true;
 	}

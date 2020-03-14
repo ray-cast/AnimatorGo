@@ -6,7 +6,6 @@
 #include "../libs/tinyobj/tiny_obj_loader.h"
 
 #include <octoon/material/material.h>
-#include <octoon/runtime/any.h>
 
 namespace rabbit
 {
@@ -24,7 +23,7 @@ namespace rabbit
 			return typeid(MaterialComponent);
 		}
 
-		void loadMaterial(const std::string_view& rootPath) noexcept(false);
+		void loadMaterial(std::string_view rootPath) noexcept(false);
 
 		const octoon::material::Materials& getMaterials() const noexcept;
 
@@ -32,10 +31,10 @@ namespace rabbit
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
 
-		void onDrop(const std::string_view& data) noexcept override;
+		void onDrop(std::string_view data) noexcept override;
 
 	private:
-		void initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string_view& rootPath);
+		void initMaterials(const std::vector<tinyobj::material_t>& materials, std::string_view rootPath);
 
 	private:
 		MaterialComponent(const MaterialComponent&) = delete;

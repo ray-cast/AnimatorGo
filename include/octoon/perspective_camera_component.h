@@ -31,7 +31,7 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onFovChange(const runtime::any& fov) noexcept;
+		void onFovChange(const std::any& fov) noexcept;
 
 	private:
 		PerspectiveCameraComponent(const PerspectiveCameraComponent&) = delete;

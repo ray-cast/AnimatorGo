@@ -37,7 +37,7 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::loadMaterial(const std::string_view& mtlPath) noexcept(false)
+	MaterialComponent::loadMaterial(std::string_view mtlPath) noexcept(false)
 	{
 		std::ifstream stream(QString::fromStdString(std::string(mtlPath)).toStdWString());
 		if (stream)
@@ -58,7 +58,7 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::initMaterials(const std::vector<tinyobj::material_t>& materials, const std::string_view& rootPath)
+	MaterialComponent::initMaterials(const std::vector<tinyobj::material_t>& materials, std::string_view rootPath)
 	{
 		for (auto& it : materials)
 		{
@@ -73,10 +73,10 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::onDrop(const std::string_view& path) noexcept
+	MaterialComponent::onDrop(std::string_view path) noexcept
 	{
 		auto ext = path.substr(path.find_last_of("."));
 		if (ext == ".mtl")
-			this->loadMaterial(std::string(path));
+			this->loadMaterial(path);
 	}
 }

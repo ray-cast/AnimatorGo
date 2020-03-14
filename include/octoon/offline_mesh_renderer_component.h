@@ -29,7 +29,7 @@ namespace octoon
 
 		virtual void onMoveAfter() noexcept override;
 
-		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
+		virtual void onMeshReplace(const std::any& mesh) noexcept;
 		virtual void onMaterialReplace(const material::Materials& material) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;

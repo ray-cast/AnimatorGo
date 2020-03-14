@@ -100,11 +100,11 @@ namespace octoon
     }
 
 	void
-	PhysicsFeature::onFixedUpdate(const runtime::any& data) noexcept
+	PhysicsFeature::onFixedUpdate(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(float))
 		{
-			timeInterval_ = runtime::any_cast<float>(data);
+			timeInterval_ = std::any_cast<float>(data);
 			if (timeInterval_ > 0.0f)
 				needUpdate_ = true;
 		}

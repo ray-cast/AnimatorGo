@@ -25,7 +25,7 @@ namespace rabbit
 	{
 	public:
 		MainListener(SplashScreen* splash, const std::string& path);
-		void onMessage(const std::string& message) noexcept override;
+		void onMessage(std::string_view message) noexcept override;
 
 	public:
 		SplashScreen* splash_;

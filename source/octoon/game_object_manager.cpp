@@ -65,7 +65,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObjectManager::find(const char* name) noexcept
+	GameObjectManager::find(std::string_view name) noexcept
 	{
 		std::lock_guard<std::mutex> guard_lock(lock_);
 
@@ -81,12 +81,6 @@ namespace octoon
 		return nullptr;
 	}
 
-	GameObjectPtr
-	GameObjectManager::find(const std::string& name) noexcept
-	{
-		return this->find(name.c_str());
-	}
-
 	const GameObjectRaws&
 	GameObjectManager::instances() const noexcept
 	{
@@ -94,21 +88,21 @@ namespace octoon
 	}
 
 	void
-	GameObjectManager::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameObjectManager::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
-		dispatchEvents_[event].call_all_slots(data);
+		dispatchEvents_[std::string(event)].call_all_slots(data);
 	}
 
 	void
-	GameObjectManager::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameObjectManager::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].connect(listener);
+		dispatchEvents_[std::string(event)].connect(listener);
 	}
 
 	void
-	GameObjectManager::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameObjectManager::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].disconnect(listener);
+		dispatchEvents_[std::string(event)].disconnect(listener);
 	}
 
 	void

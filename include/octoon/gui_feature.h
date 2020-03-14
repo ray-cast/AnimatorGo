@@ -32,7 +32,7 @@ namespace octoon
 		void onFrame() noexcept override;
 		void onFrameEnd() noexcept override;
 
-		void onInputEvent(const runtime::any& data) noexcept;
+		void onInputEvent(const std::any& data) noexcept;
 
 	private:
 		WindHandle window_;

@@ -71,7 +71,7 @@ namespace octoon
 	}
 
 	bool
-	AnimatorComponent::play(const std::string& status) noexcept
+	AnimatorComponent::play(std::string_view status) noexcept
 	{
 		this->setName(status);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);

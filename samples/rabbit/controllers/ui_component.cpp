@@ -25,13 +25,13 @@ namespace rabbit
 	}
 
 	void
-	UIComponent::addMessageListener(const std::string& event, std::function<void(const octoon::runtime::any&)> listener) noexcept
+	UIComponent::addMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept
 	{
 		main_->addMessageListener(event, listener);
 	}
 	
 	void
-	UIComponent::removeMessageListener(const std::string& event, std::function<void(const octoon::runtime::any&)> listener) noexcept
+	UIComponent::removeMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept
 	{
 		main_->removeMessageListener(event, listener);
 	}
@@ -53,7 +53,7 @@ namespace rabbit
 			main_->addComponent<CameraWindow>();
 			main_->addComponent<ThemeManager>();
 
-			this->getContext()->behaviour->addMessageListener("editor:camera:set", std::bind([&](const octoon::runtime::any& data) { main_->sendMessage("editor:camera:set", data); }, std::placeholders::_1));
+			this->getContext()->behaviour->addMessageListener("editor:camera:set", std::bind([&](const std::any& data) { main_->sendMessage("editor:camera:set", data); }, std::placeholders::_1));
 		}
 	}
 

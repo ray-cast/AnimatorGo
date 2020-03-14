@@ -88,14 +88,14 @@ namespace octoon
 	}
 
 	void
-	SkinnedMorphComponent::onAnimationUpdate(const runtime::any& value) noexcept
+	SkinnedMorphComponent::onAnimationUpdate(const std::any& value) noexcept
 	{
 		assert(value.type() == typeid(float));
-		this->setControl(runtime::any_cast<float>(value));
+		this->setControl(std::any_cast<float>(value));
 	}
 
 	void
-	SkinnedMorphComponent::onTargetReplace(const std::string& name) noexcept
+	SkinnedMorphComponent::onTargetReplace(std::string_view name) noexcept
 	{
 		if (!this->getName().empty())
 			this->tryRemoveMessageListener(this->getName(), std::bind(&SkinnedMorphComponent::onAnimationUpdate, this, std::placeholders::_1));

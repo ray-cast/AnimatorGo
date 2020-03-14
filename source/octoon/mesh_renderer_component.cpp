@@ -81,10 +81,10 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
+	MeshRendererComponent::onMeshReplace(const std::any& mesh_) noexcept
 	{
 		assert(mesh_.type() == typeid(mesh::MeshPtr));
-		auto mesh = runtime::any_cast<mesh::MeshPtr>(mesh_);
+		auto mesh = std::any_cast<mesh::MeshPtr>(mesh_);
 		if (mesh)
 			this->uploadMeshData(mesh);
 	}

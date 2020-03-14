@@ -296,21 +296,21 @@ namespace octoon
 		}
 	}
 
-	void createMaterials(const model::Model& model, material::Materials& materials, const std::string& rootPath) noexcept(false)
+	void createMaterials(const model::Model& model, material::Materials& materials, std::string_view rootPath) noexcept(false)
 	{
 		materials.reserve(model.materials.size());
 
 		for (auto& it : model.materials)
 		{
-			it->set(MATKEY_PATH, rootPath);
+			it->set(MATKEY_PATH, std::string(rootPath));
 			materials.push_back(it);
 		}
 	}
 
-	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, const std::string& path) noexcept(false)
+	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)
 	{
 		material::Materials materials;
-		createMaterials(model, materials, "file:" + runtime::string::directory(path));
+		createMaterials(model, materials, "file:" + runtime::string::directory(std::string(path)));
 
 		auto mesh = model.meshes[0];
 		auto object = GameObject::create(mesh->getName());
@@ -351,7 +351,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	MeshLoader::load(const std::string_view& filepath, bool cache) noexcept(false)
+	MeshLoader::load(std::string_view filepath, bool cache) noexcept(false)
 	{
 		model::Model model;
 

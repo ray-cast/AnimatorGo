@@ -105,9 +105,9 @@ namespace octoon
 	}
 
 	void
-	PerspectiveCameraComponent::onFovChange(const runtime::any& data) noexcept
+	PerspectiveCameraComponent::onFovChange(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(float))
-			this->setAperture(runtime::any_cast<float>(data));
+			this->setAperture(std::any_cast<float>(data));
 	}
 }

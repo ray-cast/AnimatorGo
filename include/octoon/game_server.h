@@ -2,8 +2,9 @@
 #define OCTOON_GAME_SERVER_H_
 
 #include <octoon/game_types.h>
-#include <octoon/runtime/any.h>
 #include <octoon/runtime/sigslot.h>
+
+#include <any>
 #include <map>
 
 namespace octoon
@@ -24,13 +25,13 @@ namespace octoon
 
 		bool isQuitRequest() const noexcept;
 
-		bool openScene(const std::string& scene_name) noexcept;
-		void closeScene(const std::string& scene_name) noexcept;
+		bool openScene(std::string_view scene_name) noexcept;
+		void closeScene(std::string_view scene_name) noexcept;
 
 		bool addScene(const GameScenePtr& scene) noexcept;
 		void closeScene(const GameScenePtr& scene) noexcept;
 
-		GameScenePtr findScene(const std::string& scene_name) noexcept;
+		GameScenePtr findScene(std::string_view scene_name) noexcept;
 		const GameScenes& getScenes() const noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
@@ -54,9 +55,9 @@ namespace octoon
 		void cleanupScenes() noexcept;
 		void cleanupFeatures() noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		GameApp* getGameApp() noexcept;
 
@@ -83,7 +84,7 @@ namespace octoon
 
 		GameApp* gameApp_;
 		GameListenerPtr listener_;
-		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
+		std::map<std::string, runtime::signal<void(const std::any&)>> dispatchEvents_;
 	};
 }
 

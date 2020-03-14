@@ -70,10 +70,10 @@ namespace octoon
 	}
 
 	void
-	InputFeature::onInputEvent(const runtime::any& data) noexcept
+	InputFeature::onInputEvent(const std::any& data) noexcept
 	{
 		assert(input_);
-		input_->sendInputEvent(runtime::any_cast<input::InputEvent>(data));
+		input_->sendInputEvent(std::any_cast<input::InputEvent>(data));
 	}
 
 	void

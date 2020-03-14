@@ -72,7 +72,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::sendMessage(const std::string_view& event, const std::any& data) noexcept
+	RabbitBehaviour::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
 		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
@@ -80,7 +80,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::addMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept
+	RabbitBehaviour::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
@@ -90,13 +90,11 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::removeMessageListener(const std::string_view& event, std::function<void(const std::any&)> listener) noexcept
+	RabbitBehaviour::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
 			(*it).second.disconnect(listener);
-		else
-			dispatchEvents_[std::string(event)].disconnect(listener);
 	}
 
 	void
@@ -201,17 +199,17 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onDrop(const octoon::runtime::any& data) noexcept
+	RabbitBehaviour::onDrop(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(std::vector<const char*>))
 		{
-			auto files = octoon::runtime::any_cast<std::vector<const char*>>(data);
+			auto files = std::any_cast<std::vector<const char*>>(data);
 			for (auto& path : files)
 			{
 				for (auto& it : components_)
 				{
 					if (it->getActive())
-						it->onDrop(std::string_view(path));
+						it->onDrop(path);
 				}
 			}
 		}
@@ -224,9 +222,9 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::open(const std::string_view& filepath) noexcept(false)
+	RabbitBehaviour::open(std::string_view filepath) noexcept(false)
 	{
-		entitiesComponent_->open(filepath.data());
+		entitiesComponent_->open(filepath);
 	}
 
 	void
@@ -263,7 +261,7 @@ namespace rabbit
 	}
 
 	bool
-	RabbitBehaviour::startRecord(const std::string_view& filepath) noexcept
+	RabbitBehaviour::startRecord(std::string_view filepath) noexcept
 	{
 		try
 		{
@@ -277,7 +275,7 @@ namespace rabbit
 			else
 				offlineComponent_->setActive(false);
 
-			if (h264Component_->record(filepath.data()))
+			if (h264Component_->record(filepath))
 				return true;
 
 			this->stopRecord();
@@ -300,7 +298,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::renderPicture(const std::string_view& filepath) noexcept(false)
+	RabbitBehaviour::renderPicture(std::string_view filepath) noexcept(false)
 	{
 		canvasComponent_->setActive(true);
 		denoiseComponent_->setActive(true);
@@ -318,7 +316,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::loadHDRi(const std::string_view& path) noexcept
+	RabbitBehaviour::loadHDRi(std::string_view path) noexcept
 	{
 		entitiesComponent_->importHDRi(path);
 	}
@@ -330,7 +328,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::loadMaterial(const std::string_view& path) noexcept(false)
+	RabbitBehaviour::loadMaterial(std::string_view path) noexcept(false)
 	{
 		materialComponent_->loadMaterial(path);
 	}

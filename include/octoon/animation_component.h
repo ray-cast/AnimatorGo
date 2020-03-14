@@ -13,7 +13,7 @@ namespace octoon
 		AnimationComponent() noexcept;
 		virtual ~AnimationComponent() noexcept;
 
-		virtual bool play(const std::string& status = "default") noexcept = 0;
+		virtual bool play(std::string_view status = "default") noexcept = 0;
 		virtual void pause() noexcept = 0;
 		virtual void reset() noexcept = 0;
 

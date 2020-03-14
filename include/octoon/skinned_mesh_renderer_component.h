@@ -44,12 +44,12 @@ namespace octoon
 		void onDeactivate() noexcept override;
 
 		void onFixedUpdate() noexcept override;
-		void onAnimationUpdate(const runtime::any& mesh) noexcept;
+		void onAnimationUpdate(const std::any& mesh) noexcept;
 
 		void onAttachComponent(const GameComponentPtr& component) noexcept override;
 		void onDetachComponent(const GameComponentPtr& component) noexcept override;
 
-		void onMeshReplace(const runtime::any& mesh) noexcept;
+		void onMeshReplace(const std::any& mesh) noexcept;
 
 		void onPreRender(const video::Camera& camera) noexcept override;
 

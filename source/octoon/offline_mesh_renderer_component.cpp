@@ -330,9 +330,9 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
+	OfflineMeshRendererComponent::onMeshReplace(const std::any& mesh_) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(mesh_));
+		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(mesh_));
 	}
 
 	void

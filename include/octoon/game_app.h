@@ -1,11 +1,12 @@
 #ifndef OCTOON_GAME_APP_H_
 #define OCTOON_GAME_APP_H_
 
+#include <any>
 #include <chrono>
 #include <functional>
+
 #include <octoon/input/input.h>
 #include <octoon/game_types.h>
-#include <octoon/runtime/any.h>
 #include <octoon/runtime/singleton.h>
 
 namespace octoon
@@ -30,10 +31,12 @@ namespace octoon
 		bool isQuitRequest() const noexcept;
 
 		bool openScene(const GameScenePtr& scene) except;
-		bool openScene(const std::string& name) except;
 		void closeScene(const GameScenePtr& name) noexcept;
-		void closeScene(const std::string& name) noexcept;
-		GameScenePtr findScene(const std::string& name) noexcept;
+
+		bool openScene(std::string_view name) except;
+		void closeScene(std::string_view name) noexcept;
+
+		GameScenePtr findScene(std::string_view name) noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		void addFeature(Args&&... args) except { this->addFeature(std::make_shared<T>(std::forward<Args>(args)...)); }
@@ -52,9 +55,9 @@ namespace octoon
 
 		void sendInputEvent(const input::InputEvent& event) except;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) except;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) except;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) except;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except;
 
 		void doWindowResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
 		void doWindowFramebufferResize(WindHandle window, std::uint32_t w, std::uint32_t h) except;
@@ -77,7 +80,7 @@ namespace octoon
 		void update() except;
 
 	protected:
-		void onMessage(const std::string& message) noexcept;
+		void onMessage(std::string_view message) noexcept;
 
 	private:
 		GameApp(const GameApp&) noexcept = delete;

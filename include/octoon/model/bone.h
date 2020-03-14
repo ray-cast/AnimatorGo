@@ -11,10 +11,10 @@ namespace octoon
 		{
 		public:
 			Bone() noexcept;
-			Bone(const std::string& name) noexcept;
+			Bone(std::string_view name) noexcept;
 			~Bone() noexcept;
 
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			void setVisable(bool visable) noexcept;
 			void setParent(std::int16_t parent) noexcept;
 			void setAdditiveParent(std::int16_t parent) noexcept;

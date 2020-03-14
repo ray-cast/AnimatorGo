@@ -2,7 +2,8 @@
 #define OCTOON_GAME_FEATURE_H_
 
 #include <octoon/game_types.h>
-#include <octoon/runtime/any.h>
+
+#include <any>
 #include <functional>
 
 namespace octoon
@@ -25,9 +26,9 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 		const GameFeatures& getFeaturs() const noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		GameServer* getGameServer() noexcept;
 

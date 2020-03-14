@@ -29,7 +29,7 @@ namespace octoon
 
 		void onFixedUpdate() noexcept override;
 
-		void onAnimationUpdate(const runtime::any& data) noexcept;
+		void onAnimationUpdate(const std::any& data) noexcept;
 
 		void onPreRender(const video::Camera& camera) noexcept override;
 

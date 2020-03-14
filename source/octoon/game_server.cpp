@@ -79,13 +79,14 @@ namespace octoon
 	}
 
 	bool
-	GameServer::openScene(const std::string& filename) noexcept
+	GameServer::openScene(std::string_view filename) noexcept
 	{
 		assert(!filename.empty());
 
 		try
 		{
-			io::JsonReader json(filename);
+			io::JsonReader json;
+			json.open(std::string(filename));
 			if (json)
 			{
 				auto scene = std::make_shared<GameScene>();
@@ -110,7 +111,7 @@ namespace octoon
 	}
 
 	void
-	GameServer::closeScene(const std::string& sceneName) noexcept
+	GameServer::closeScene(std::string_view sceneName) noexcept
 	{
 		assert(!sceneName.empty());
 
@@ -120,7 +121,7 @@ namespace octoon
 	}
 
 	GameScenePtr
-	GameServer::findScene(const std::string& sceneName) noexcept
+	GameServer::findScene(std::string_view sceneName) noexcept
 	{
 		assert(!sceneName.empty());
 
@@ -369,21 +370,21 @@ namespace octoon
 	}
 
 	void
-	GameServer::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameServer::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
-		dispatchEvents_[event].call_all_slots(data);
+		dispatchEvents_[std::string(event)].call_all_slots(data);
 	}
 
 	void 
-	GameServer::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameServer::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].connect(listener);
+		dispatchEvents_[std::string(event)].connect(listener);
 	}
 
 	void 
-	GameServer::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameServer::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].disconnect(listener);
+		dispatchEvents_[std::string(event)].disconnect(listener);
 	}
 
 	void

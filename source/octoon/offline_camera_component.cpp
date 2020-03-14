@@ -333,9 +333,9 @@ namespace octoon
 	}
 
 	void
-	OfflineCameraComponent::onFovChange(const runtime::any& data) noexcept
+	OfflineCameraComponent::onFovChange(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(float))
-			this->setAperture(runtime::any_cast<float>(data));
+			this->setAperture(std::any_cast<float>(data));
 	}
 }

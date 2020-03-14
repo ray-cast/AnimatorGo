@@ -16,8 +16,8 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void addMessageListener(const std::string& event, std::function<void(const octoon::runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const octoon::runtime::any&)> listener) noexcept;
+		void addMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept;
 
 		virtual void init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<CanvasModule>& model) noexcept override;
 

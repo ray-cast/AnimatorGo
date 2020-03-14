@@ -15,8 +15,7 @@ namespace octoon
 		virtual void setActive(bool active) except;
 		virtual bool getActive() const noexcept;
 
-		virtual void setName(const std::string& name) noexcept;
-		virtual void setName(std::string&& name) noexcept;
+		virtual void setName(std::string_view name) noexcept;
 		virtual const std::string& getName() const noexcept;
 
 		GameObject* getGameObject() noexcept;
@@ -52,22 +51,22 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessageUpwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessageDownwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		template<typename T, typename = std::enable_if_t<std::is_base_of<GameFeature, T>::value>>
 		T* tryGetFeature() const noexcept { return dynamic_cast<T*>(this->tryGetFeature(T::RTTI)); }
 		GameFeature* tryGetFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* tryGetFeature(const runtime::Rtti& rtti) const noexcept;
 
-		bool trySendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		bool trySendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		bool trySendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		bool tryAddMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		bool tryRemoveMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		bool trySendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		bool trySendMessageUpwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		bool trySendMessageDownwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		bool tryAddMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		bool tryRemoveMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		virtual void load(const io::archivebuf& reader) except;
 		virtual void save(io::archivebuf& write) except;

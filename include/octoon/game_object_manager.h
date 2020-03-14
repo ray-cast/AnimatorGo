@@ -15,8 +15,7 @@ namespace octoon
 		GameObjectManager() noexcept;
 		~GameObjectManager() noexcept;
 
-		GameObjectPtr find(const char* name) noexcept;
-		GameObjectPtr find(const std::string& name) noexcept;
+		GameObjectPtr find(std::string_view name) noexcept;
 
 		const GameObjectRaws& instances() const noexcept;
 
@@ -26,9 +25,9 @@ namespace octoon
 
 		void onGui() except;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 	private:
 		friend GameObject;
@@ -47,7 +46,7 @@ namespace octoon
 		std::stack<std::size_t> emptyLists_;
 
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
+		std::map<std::string, runtime::signal<void(const std::any&)>> dispatchEvents_;
 	};
 }
 

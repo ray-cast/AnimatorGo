@@ -55,7 +55,7 @@ namespace octoon
 
 		void onFrameDirty() noexcept;
 
-		void onFovChange(const runtime::any& fov) noexcept;
+		void onFovChange(const std::any& fov) noexcept;
 
 	private:
 		OfflineCameraComponent(const OfflineCameraComponent&) = delete;

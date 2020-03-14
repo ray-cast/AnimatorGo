@@ -285,10 +285,10 @@ namespace octoon
 		}
 	}
 
-	std::string utf8_to_gb2312(std::string const& strUtf8)
+	std::string utf8_to_gb2312(std::string_view strUtf8)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>> cutf8;
-		std::wstring wTemp = cutf8.from_bytes(strUtf8);
+		std::wstring wTemp = cutf8.from_bytes(std::string(strUtf8));
 #ifdef _MSC_VER
 		std::locale loc("zh-CN");
 #else
@@ -321,7 +321,7 @@ namespace octoon
 		animationState_.timeLength = 0;
 	}
 
-	MeshAnimationComponent::MeshAnimationComponent(const std::string& path) noexcept(false)
+	MeshAnimationComponent::MeshAnimationComponent(std::string_view path) noexcept(false)
 		: MeshAnimationComponent()
 	{
 		path_ = path;
@@ -332,7 +332,7 @@ namespace octoon
 	}
 
 	bool
-	MeshAnimationComponent::play(const std::string& status) noexcept
+	MeshAnimationComponent::play(std::string_view status) noexcept
 	{
 		this->setName(status);
 		this->addComponentDispatch(GameDispatchType::FixedUpdate);
@@ -537,7 +537,7 @@ namespace octoon
 	}
 
 	void 
-	MeshAnimationComponent::setupAnimationData(const std::string& path) noexcept(false)
+	MeshAnimationComponent::setupAnimationData(std::string_view path) noexcept(false)
 	{
 		Alembic::AbcCoreFactory::IFactory factor;
 		auto archive = factor.getArchive(utf8_to_gb2312(path));
@@ -550,7 +550,7 @@ namespace octoon
 		}
 		else
 		{
-			throw runtime::runtime_error::create(std::string("Alembic::AbcCoreFactory::IFactory failed."));
+			throw runtime::runtime_error::create("Alembic::AbcCoreFactory::IFactory failed.");
 		}
 	}
 

@@ -135,11 +135,11 @@ namespace rabbit
 	}
 
 	void 
-	MainListener::onMessage(const std::string& message) noexcept
+	MainListener::onMessage(std::string_view message) noexcept
 	{
 		if (splash_)
 		{
-			splash_->message_->setText(message.c_str());
+			splash_->message_->setText(QString::fromStdString(std::string(message)));
 			splash_->repaint();
 		}
 

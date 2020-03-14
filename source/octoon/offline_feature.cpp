@@ -230,9 +230,9 @@ namespace octoon
 	}
 
 	void
-	OfflineFeature::onInputEvent(const runtime::any& data) noexcept
+	OfflineFeature::onInputEvent(const std::any& data) noexcept
 	{
-		auto event = runtime::any_cast<input::InputEvent>(data);
+		auto event = std::any_cast<input::InputEvent>(data);
 		switch (event.event)
 		{
 		case input::InputEvent::SizeChange:
@@ -441,16 +441,16 @@ namespace octoon
 	}
 
 	std::pair<void*, void*>
-	OfflineFeature::createMaterialTextures(const std::string& path) noexcept(false)
+	OfflineFeature::createMaterialTextures(std::string_view path) noexcept(false)
 	{
 		try
 		{
-			auto it = imageNodes_.find(path);
+			auto it = imageNodes_.find(std::string(path));
 			if (it != imageNodes_.end())
 				return (*it).second;
 
 			image::Image image;
-			if (!image.load(path))
+			if (!image.load(std::string(path)))
 				return std::make_pair(nullptr, nullptr);
 
 			bool bgra = false;
@@ -476,7 +476,7 @@ namespace octoon
 				channel = 4;
 				break;
 			default:
-				throw runtime::runtime_error::create("This image type is not supported by this function:" + path);
+				throw runtime::runtime_error::create("This image type is not supported by this function:" + std::string(path));
 			}
 
 			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };
@@ -576,8 +576,8 @@ namespace octoon
 				}
 			}
 
-			images_[path] = std::make_pair(image_, alphaImage_);
-			imageNodes_[path] = std::make_pair(textureNode, alphaNode);
+			images_[std::string(path)] = std::make_pair(image_, alphaImage_);
+			imageNodes_[std::string(path)] = std::make_pair(textureNode, alphaNode);
 
 			return std::make_pair(textureNode, alphaNode);
 		}

@@ -15,7 +15,7 @@ namespace octoon
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
 
-		void setBgImage(const std::string& path) noexcept;
+		void setBgImage(std::string_view path) noexcept;
 		const std::string& getBgImage() const noexcept;
 
 		void setUseBgImage(bool enable) noexcept;
@@ -30,7 +30,7 @@ namespace octoon
 		void onLayerChangeAfter() noexcept override;
 
 	private:
-		void* createImage(const std::string& path) noexcept;
+		void* createImage(std::string_view path) noexcept;
 
 	private:
 		OfflineEnvironmentLightComponent(const OfflineEnvironmentLightComponent&) = delete;

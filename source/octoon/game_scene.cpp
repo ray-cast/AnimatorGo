@@ -51,7 +51,7 @@ namespace octoon
 		this->setName(std::move(name));
 	}
 
-	GameScene::GameScene(const std::string& name) noexcept
+	GameScene::GameScene(std::string_view name) noexcept
 		: GameScene()
 	{
 		this->setName(name);
@@ -103,13 +103,7 @@ namespace octoon
 	}
 
 	void
-	GameScene::setName(std::string&& name) noexcept
-	{
-		name_ = std::move(name);
-	}
-
-	void
-	GameScene::setName(const std::string& name) noexcept
+	GameScene::setName(std::string_view name) noexcept
 	{
 		name_ = name;
 	}
@@ -135,7 +129,7 @@ namespace octoon
 	}
 
 	void
-	GameScene::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameScene::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
 		assert(gameServer_);
 		return gameServer_->sendMessage(event, data);
@@ -168,14 +162,8 @@ namespace octoon
 		return scene;
 	}
 
-	GameScenePtr
-	GameScene::find(const char* name) noexcept
-	{
-		return GameSceneManager::instance()->find(name);
-	}
-
 	GameScenePtr 
-	GameScene::find(const std::string& name) noexcept
+	GameScene::find(std::string_view name) noexcept
 	{
 		return GameSceneManager::instance()->find(name);
 	}

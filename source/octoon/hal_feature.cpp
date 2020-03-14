@@ -128,9 +128,9 @@ namespace octoon
 	}
 
 	void
-	GraphicsFeature::onInputEvent(const runtime::any& data) noexcept
+	GraphicsFeature::onInputEvent(const std::any& data) noexcept
 	{
-		auto event = runtime::any_cast<input::InputEvent>(data);
+		auto event = std::any_cast<input::InputEvent>(data);
 		switch (event.event)
 		{
 		case input::InputEvent::SizeChangeDPI:

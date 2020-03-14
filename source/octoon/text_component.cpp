@@ -11,13 +11,7 @@ namespace octoon
 	{
 	}
 
-	TextComponent::TextComponent(std::string&& mesh, bool sharedText) noexcept
-		: TextComponent()
-	{
-		this->setText(std::move(mesh), sharedText);
-	}
-
-	TextComponent::TextComponent(const std::string& mesh, bool sharedText) noexcept
+	TextComponent::TextComponent(std::string_view mesh, bool sharedText) noexcept
 		: TextComponent()
 	{
 		this->setText(mesh, sharedText);
@@ -28,18 +22,7 @@ namespace octoon
 	}
 
 	void
-	TextComponent::setText(std::string&& mesh, bool sharedText) noexcept
-	{
-		if (u8str_ != mesh)
-		{
-			u8str_ = std::move(mesh);
-			isSharedText_ = sharedText;
-			this->uploadTextData();
-		}
-	}
-
-	void
-	TextComponent::setText(const std::string& mesh, bool sharedText) noexcept
+	TextComponent::setText(std::string_view mesh, bool sharedText) noexcept
 	{
 		if (u8str_ != mesh)
 		{

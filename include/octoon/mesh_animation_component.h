@@ -19,10 +19,10 @@ namespace octoon
 		OctoonDeclareSubClass(MeshAnimationComponent, AnimationComponent)
 	public:
 		MeshAnimationComponent() noexcept;
-		explicit MeshAnimationComponent(const std::string& path) noexcept(false);
+		explicit MeshAnimationComponent(std::string_view path) noexcept(false);
 		virtual ~MeshAnimationComponent() noexcept;
 
-		bool play(const std::string& status = "default") noexcept override;
+		bool play(std::string_view status = "default") noexcept override;
 		void pause() noexcept override;
 		void reset() noexcept override;
 
@@ -51,7 +51,7 @@ namespace octoon
 		void onAnimationUpdate() noexcept;
 
 	private:
-		void setupAnimationData(const std::string& path) noexcept(false);
+		void setupAnimationData(std::string_view path) noexcept(false);
 		void setupAnimationData(const Alembic::Abc::v12::IObject& object) noexcept(false);
 
 	private:

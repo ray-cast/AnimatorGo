@@ -2,9 +2,10 @@
 #define OCTOON_GAME_OBJECT_H_
 
 #include <octoon/game_types.h>
-#include <octoon/runtime/any.h>
 #include <octoon/runtime/sigslot.h>
 #include <octoon/io/iarchive.h>
+
+#include <any>
 #include <unordered_map>
 #include <functional>
 
@@ -15,13 +16,11 @@ namespace octoon
 		OctoonDeclareSubClass(GameObject, runtime::RttiInterface)
 	public:
 		GameObject() noexcept;
-		GameObject(std::string&& name) noexcept;
-		GameObject(const std::string& name) noexcept;
+		GameObject(std::string_view name) noexcept;
 		GameObject(io::archivebuf& reader) except;
 		virtual ~GameObject() noexcept;
 
-		void setName(const std::string& name) noexcept;
-		void setName(std::string&& name) noexcept;
+		void setName(std::string_view name) noexcept;
 		const std::string& getName() const noexcept;
 
 		void setActive(bool active) except;
@@ -43,7 +42,7 @@ namespace octoon
 		void addChild(const GameObjectPtr& child) noexcept;
 		void removeChild(const GameObjectPtr& child) noexcept;
 		void cleanupChildren() noexcept;
-		GameObjectPtr findChild(const std::string& name, bool recurse = true) noexcept;
+		GameObjectPtr findChild(std::string_view name, bool recurse = true) noexcept;
 
 		std::size_t getChildCount() const noexcept;
 		GameObjects& getChildren() noexcept;
@@ -86,11 +85,11 @@ namespace octoon
 
 		void destroy() noexcept;
 
-		void sendMessage(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void sendMessageUpwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void sendMessageDownwards(const std::string& event, const runtime::any& data = nullptr) noexcept;
-		void addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
-		void removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessageUpwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessageDownwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
+		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
 		virtual GameScene* getGameScene() noexcept;
 		virtual const GameScene* getGameScene() const noexcept;
@@ -102,7 +101,7 @@ namespace octoon
 
 	public:
 		static GameObjectPtr find(const char* name) noexcept;
-		static GameObjectPtr find(const std::string& name) noexcept;
+		static GameObjectPtr find(std::string_view name) noexcept;
 
 		static const GameObjectRaws& instances() noexcept;
 
@@ -148,7 +147,7 @@ namespace octoon
 
 		GameComponents components_;
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::unordered_map<std::string, runtime::signal<void(const runtime::any&)>> dispatchEvents_;
+		std::unordered_map<std::string, runtime::signal<void(const std::any&)>> dispatchEvents_;
 	};
 }
 

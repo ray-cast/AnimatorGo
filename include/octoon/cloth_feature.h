@@ -40,7 +40,7 @@ namespace octoon
 		void onFrame() except;
 		void onFrameEnd() noexcept override;
 
-		void onFixedUpdate(const runtime::any& data) noexcept;
+		void onFixedUpdate(const std::any& data) noexcept;
 
 	public:
 		nv::cloth::Factory* getContext();

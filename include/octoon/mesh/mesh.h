@@ -28,8 +28,7 @@ namespace octoon
 			Mesh() noexcept;
 			virtual ~Mesh() noexcept;
 
-			void setName(std::string&& name) noexcept;
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
 
 			void setVertexArray(const math::float3s& array) noexcept;

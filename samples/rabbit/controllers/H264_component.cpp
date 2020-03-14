@@ -175,7 +175,7 @@ namespace rabbit
 	}
 
 	bool
-	H264Component::record(const std::string& filepath) noexcept(false)
+	H264Component::record(std::string_view filepath) noexcept(false)
 	{
 		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (!camera)
@@ -186,7 +186,7 @@ namespace rabbit
 		this->height_ = context->profile->canvasModule->height;
 		this->buf_ = std::make_unique<std::uint8_t[]>(this->width_ * this->height_ * 3);
 		this->filepath_ = filepath;
-		this->ostream_ = std::make_shared<std::ofstream>(filepath + ".tmp", std::ios_base::binary);
+		this->ostream_ = std::make_shared<std::ofstream>(this->filepath_ + ".tmp", std::ios_base::binary);
 		if (!this->ostream_->good())
 			throw std::runtime_error("ofstream() failed");
 

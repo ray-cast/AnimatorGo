@@ -41,8 +41,8 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onMeshReplace(const runtime::any& mesh) noexcept override;
-		void onAnimationUpdate(const runtime::any& data) noexcept;
+		void onMeshReplace(const std::any& mesh) noexcept override;
+		void onAnimationUpdate(const std::any& data) noexcept;
 
 		void onAttachComponent(const GameComponentPtr& component) noexcept override;
 		void onDetachComponent(const GameComponentPtr& component) noexcept override;

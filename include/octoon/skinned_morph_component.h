@@ -29,8 +29,8 @@ namespace octoon
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onAnimationUpdate(const runtime::any& mesh) noexcept;
-		void onTargetReplace(const std::string& name) noexcept override;
+		void onAnimationUpdate(const std::any& mesh) noexcept;
+		void onTargetReplace(std::string_view name) noexcept override;
 
 	private:
 		SkinnedMorphComponent(const SkinnedMorphComponent&) = delete;

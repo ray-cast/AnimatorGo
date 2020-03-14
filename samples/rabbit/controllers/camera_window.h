@@ -15,7 +15,7 @@ namespace rabbit
 		octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
-		void setCamera(const octoon::runtime::any& data) noexcept;
+		void setCamera(const std::any& data) noexcept;
 
 	private:
 		void onActivate() noexcept override;

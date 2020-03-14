@@ -80,7 +80,7 @@ namespace octoon
 	}
 
 	void
-	OfflineEnvironmentLightComponent::setBgImage(const std::string& path) noexcept
+	OfflineEnvironmentLightComponent::setBgImage(std::string_view path) noexcept
 	{
 		if (path_ != path)
 		{
@@ -257,10 +257,10 @@ namespace octoon
 	}
 
 	void*
-	OfflineEnvironmentLightComponent::createImage(const std::string& path) noexcept
+	OfflineEnvironmentLightComponent::createImage(std::string_view path) noexcept
 	{
 		image::Image image;
-		if (!image.load(path))
+		if (!image.load(std::string(path)))
 			return nullptr;
 
 		bool hasAlpha = false;

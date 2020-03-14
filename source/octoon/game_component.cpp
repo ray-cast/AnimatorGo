@@ -171,15 +171,9 @@ namespace octoon
 	}
 
 	void
-	GameComponent::setName(const std::string& name) noexcept
+	GameComponent::setName(std::string_view name) noexcept
 	{
 		name_ = name;
-	}
-
-	void
-	GameComponent::setName(std::string&& name) noexcept
-	{
-		name_ = std::move(name);
 	}
 
 	const std::string&
@@ -203,35 +197,35 @@ namespace octoon
 	}
 
 	void
-	GameComponent::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
 		assert(gameObject_);
 		gameObject_->sendMessage(event, data);
 	}
 
 	void
-	GameComponent::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::sendMessageUpwards(std::string_view event, const std::any& data) noexcept
 	{
 		assert(gameObject_);
 		gameObject_->sendMessageUpwards(event, data);
 	}
 
 	void
-	GameComponent::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::sendMessageDownwards(std::string_view event, const std::any& data) noexcept
 	{
 		assert(gameObject_);
 		gameObject_->sendMessageDownwards(event, data);
 	}
 
 	void
-	GameComponent::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameComponent::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		assert(gameObject_);
 		gameObject_->addMessageListener(event, listener);
 	}
 
 	void
-	GameComponent::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameComponent::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		assert(gameObject_);
 		gameObject_->removeMessageListener(event, listener);
@@ -254,7 +248,7 @@ namespace octoon
 	}
 
 	bool
-	GameComponent::trySendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::trySendMessage(std::string_view event, const std::any& data) noexcept
 	{
 		if (gameObject_)
 		{
@@ -265,7 +259,7 @@ namespace octoon
 	}
 
 	bool
-	GameComponent::trySendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::trySendMessageUpwards(std::string_view event, const std::any& data) noexcept
 	{
 		if (gameObject_)
 		{
@@ -276,7 +270,7 @@ namespace octoon
 	}
 
 	bool
-	GameComponent::trySendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	GameComponent::trySendMessageDownwards(std::string_view event, const std::any& data) noexcept
 	{
 		if (gameObject_)
 		{
@@ -287,7 +281,7 @@ namespace octoon
 	}
 
 	bool
-	GameComponent::tryAddMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameComponent::tryAddMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		if (gameObject_)
 		{
@@ -298,7 +292,7 @@ namespace octoon
 	}
 
 	bool
-	GameComponent::tryRemoveMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameComponent::tryRemoveMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
 		if (gameObject_)
 		{

@@ -17,13 +17,7 @@ namespace octoon
 		this->addComponent<TransformComponent>();
 	}
 
-	GameObject::GameObject(std::string&& name) noexcept
-		:GameObject()
-	{
-		this->setName(std::move(name));
-	}
-
-	GameObject::GameObject(const std::string& name) noexcept
+	GameObject::GameObject(std::string_view name) noexcept
 		: GameObject()
 	{
 		this->setName(name);
@@ -44,15 +38,9 @@ namespace octoon
 	}
 
 	void
-	GameObject::setName(const std::string& name) noexcept
+	GameObject::setName(std::string_view name) noexcept
 	{
 		name_ = name;
-	}
-
-	void
-	GameObject::setName(std::string&& name) noexcept
-	{
-		name_ = std::move(name);
 	}
 
 	const std::string&
@@ -259,7 +247,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObject::findChild(const std::string& name, bool recuse) noexcept
+	GameObject::findChild(std::string_view name, bool recuse) noexcept
 	{
 		for (auto& it : children_)
 		{
@@ -603,15 +591,15 @@ namespace octoon
 	}
 
 	void
-	GameObject::sendMessage(const std::string& event, const runtime::any& data) noexcept
+	GameObject::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
-		auto it = dispatchEvents_.find(event);
+		auto it = dispatchEvents_.find(std::string(event));
 		if (it != dispatchEvents_.end())
 			(*it).second.call_all_slots(data);
 	}
 
 	void
-	GameObject::sendMessageUpwards(const std::string& event, const runtime::any& data) noexcept
+	GameObject::sendMessageUpwards(std::string_view event, const std::any& data) noexcept
 	{
 		this->sendMessage(event, data);
 
@@ -621,7 +609,7 @@ namespace octoon
 	}
 
 	void
-	GameObject::sendMessageDownwards(const std::string& event, const runtime::any& data) noexcept
+	GameObject::sendMessageDownwards(std::string_view event, const std::any& data) noexcept
 	{
 		this->sendMessage(event, data);
 
@@ -630,15 +618,21 @@ namespace octoon
 	}
 
 	void
-	GameObject::addMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameObject::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].connect(listener);
+		auto it = dispatchEvents_.find(std::string(event));
+		if (it != dispatchEvents_.end())
+			(*it).second.connect(listener);
+		else
+			dispatchEvents_[std::string(event)].connect(listener);
 	}
 
 	void
-	GameObject::removeMessageListener(const std::string& event, std::function<void(const runtime::any&)> listener) noexcept
+	GameObject::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[event].disconnect(listener);
+		auto it = dispatchEvents_.find(std::string(event));
+		if (it != dispatchEvents_.end())
+			(*it).second.disconnect(listener);
 	}
 
 	void
@@ -693,7 +687,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	GameObject::find(const std::string& name) noexcept
+	GameObject::find(std::string_view name) noexcept
 	{
 		return GameObjectManager::instance()->find(name);
 	}

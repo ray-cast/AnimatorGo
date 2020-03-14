@@ -20,7 +20,7 @@ namespace octoon
 		explicit AnimatorComponent(const GameObjects& avatar) noexcept;
 		~AnimatorComponent() noexcept;
 
-		bool play(const std::string& status = "default") noexcept override;
+		bool play(std::string_view status = "default") noexcept override;
 		void pause() noexcept override;
 		void reset() noexcept override;
 

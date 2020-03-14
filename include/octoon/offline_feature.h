@@ -38,13 +38,13 @@ namespace octoon
 
 		void clearMemory() noexcept;
 
-		std::pair<void*, void*> createMaterialTextures(const std::string& path) noexcept(false);
+		std::pair<void*, void*> createMaterialTextures(std::string_view path) noexcept(false);
 
 	private:
 		void onActivate() noexcept(false) override;
 		void onDeactivate() noexcept override;
 
-		void onInputEvent(const runtime::any& data) noexcept;
+		void onInputEvent(const std::any& data) noexcept;
 
 		void onFrame() noexcept(false) override;
 

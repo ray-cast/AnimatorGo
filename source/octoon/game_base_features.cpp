@@ -56,11 +56,11 @@ namespace octoon
 	}
 
 	void
-	GameBaseFeature::onInputEvent(const runtime::any& data) noexcept
+	GameBaseFeature::onInputEvent(const std::any& data) noexcept
 	{
 		assert(data.type() == typeid(input::InputEvent));
 
-		auto event = runtime::any_cast<input::InputEvent>(data);
+		auto event = std::any_cast<input::InputEvent>(data);
 		switch (event.event)
 		{
 		case input::InputEvent::MouseMotion:
@@ -101,7 +101,7 @@ namespace octoon
 	}
 
 	void
-	GameBaseFeature::onFixedUpdate(const runtime::any& data) noexcept
+	GameBaseFeature::onFixedUpdate(const std::any& data) noexcept
 	{
 		GameObjectManager::instance()->onFixedUpdate();
 	}

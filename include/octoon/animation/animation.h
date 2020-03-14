@@ -95,12 +95,7 @@ namespace octoon
 				state.finish = false
 			}
 
-			void setName(std::string&& _name) noexcept
-			{
-				this->name = std::move(_name);
-			}
-
-			void setName(const std::string& _name) noexcept
+			void setName(std::string_view _name) noexcept
 			{
 				this->name = name;
 			}

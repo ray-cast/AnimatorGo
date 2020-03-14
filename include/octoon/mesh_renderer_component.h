@@ -3,6 +3,7 @@
 
 #include <octoon/render_component.h>
 #include <octoon/video/geometry.h>
+#include <octoon/mesh/mesh.h>
 
 namespace octoon
 {
@@ -11,14 +12,14 @@ namespace octoon
 		OctoonDeclareSubClass(MeshRendererComponent, RenderComponent)
 	public:
 		MeshRendererComponent() noexcept;
-		explicit MeshRendererComponent(model::Materials&& materials) noexcept;
-		explicit MeshRendererComponent(model::MaterialPtr&& material) noexcept;
-		explicit MeshRendererComponent(const model::Materials& materials) noexcept;
-		explicit MeshRendererComponent(const model::MaterialPtr& material) noexcept;
+		explicit MeshRendererComponent(material::Materials&& materials) noexcept;
+		explicit MeshRendererComponent(material::MaterialPtr&& material) noexcept;
+		explicit MeshRendererComponent(const material::Materials& materials) noexcept;
+		explicit MeshRendererComponent(const material::MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
-		virtual void uploadMeshData(const model::MeshPtr& mesh) noexcept;
-		virtual void uploadMaterialData(const model::Materials& material) noexcept;
+		virtual void uploadMeshData(const mesh::MeshPtr& mesh) noexcept;
+		virtual void uploadMaterialData(const material::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -29,7 +30,7 @@ namespace octoon
 		virtual void onMoveAfter() noexcept override;
 
 		virtual void onMeshReplace(const runtime::any& mesh) noexcept;
-		virtual void onMaterialReplace(const model::Materials& materials) noexcept override;
+		virtual void onMaterialReplace(const material::Materials& materials) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
 
@@ -39,7 +40,7 @@ namespace octoon
 
 	protected:
 		video::Geometrys geometries_;
-		video::Materials materials_;
+		video::HALMaterials materials_;
 	};
 }
 

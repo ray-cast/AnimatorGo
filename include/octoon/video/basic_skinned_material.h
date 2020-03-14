@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT BasicSkinnedMaterial final : public Material
+		class OCTOON_EXPORT BasicSkinnedMaterial final : public HALMaterial
 		{
 		public:
 			BasicSkinnedMaterial() except;
@@ -25,7 +25,7 @@ namespace octoon
 			const hal::GraphicsPipelinePtr& getPipeline() const noexcept override;
 			const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			BasicSkinnedMaterial(const BasicSkinnedMaterial&) = delete;

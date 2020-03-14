@@ -229,7 +229,7 @@ namespace octoon
 			return shininess_->getFloat();
 		}
 
-		MaterialPtr
+		HALMaterialPtr
 		BlinnMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<BlinnMaterial>();

@@ -34,7 +34,7 @@ namespace octoon
 
 		void uploadMeshData() noexcept;
 
-		const model::MeshPtr& getMesh() const noexcept;
+		const mesh::MeshPtr& getMesh() const noexcept;
 
 		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
 
@@ -67,7 +67,7 @@ namespace octoon
 		bool needUpdate_;
 		bool enableAnimation_;
 
-		model::MeshPtr mesh_;
+		mesh::MeshPtr mesh_;
 
 		animation::AnimatorStateInfo<float> animationState_;
 

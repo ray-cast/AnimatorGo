@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	namespace model
+	namespace material
 	{
 		Material::Material() noexcept
 		{
@@ -374,7 +374,7 @@ namespace octoon
 			return hash(hash_string);
 		}
 
-		MaterialPtr
+		std::shared_ptr<Material>
 		Material::clone() const noexcept
 		{
 			auto material = std::make_shared<Material>();

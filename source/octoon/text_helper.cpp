@@ -12,7 +12,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<MeshFilterComponent>(model::makeMesh(model::makeTextContours(text, { fontPath, fontsize })));
-		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<material::Material>());
 
 		return object;
 	}
@@ -22,7 +22,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("GameObject");
 		object->addComponent<TextComponent>(u8str)->setTextMeshing(std::make_shared<model::TextMeshing>(fontPath, fontsize));
-		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
+		object->addComponent<MeshRendererComponent>(std::make_shared<material::Material>());
 
 		return object;
 	}

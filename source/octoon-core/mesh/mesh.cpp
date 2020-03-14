@@ -1,5 +1,4 @@
 #include <octoon/mesh/mesh.h>
-#include <octoon/math/perlin_noise.h>
 
 #include <map>
 #include <cstring>
@@ -8,8 +7,10 @@ using namespace octoon::math;
 
 namespace octoon
 {
-	namespace model
+	namespace mesh
 	{
+		OctoonImplementSubClass(Mesh, runtime::RttiInterface, "Mesh");
+
 		Mesh::Mesh() noexcept
 		{
 		}
@@ -107,7 +108,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setWeightArray(const VertexWeights& array) noexcept
+		Mesh::setWeightArray(const model::VertexWeights& array) noexcept
 		{
 			_weights = array;
 		}
@@ -152,7 +153,7 @@ namespace octoon
 		}
 
 		void
-		Mesh::setWeightArray(VertexWeights&& array) noexcept
+		Mesh::setWeightArray(model::VertexWeights&& array) noexcept
 		{
 			_weights = std::move(array);
 		}
@@ -194,7 +195,7 @@ namespace octoon
 			return _texcoords[n];
 		}
 
-		VertexWeights&
+		model::VertexWeights&
 		Mesh::getWeightArray() noexcept
 		{
 			return _weights;
@@ -243,7 +244,7 @@ namespace octoon
 			return _texcoords[n];
 		}
 
-		const VertexWeights&
+		const model::VertexWeights&
 		Mesh::getWeightArray() const noexcept
 		{
 			return _weights;
@@ -255,8 +256,8 @@ namespace octoon
 			return _bindposes;
 		}
 
-		const Bones&
-		Mesh::getBoneArray(const Bones& array) const noexcept
+		const model::Bones&
+		Mesh::getBoneArray(const model::Bones& array) const noexcept
 		{
 			return _bones;
 		}
@@ -329,7 +330,7 @@ namespace octoon
 				it.shrink_to_fit();
 		}
 
-		MeshPtr
+		std::shared_ptr<Mesh>
 		Mesh::clone() const noexcept
 		{
 			auto mesh = std::make_shared<Mesh>();
@@ -352,589 +353,8 @@ namespace octoon
 			return mesh;
 		}
 
-		void
-		Mesh::makeCircle(float radius, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
-		{
-			this->clear();
-
-			for (std::uint32_t i = 0; i <= segments; i++)
-			{
-				float3 v;
-
-				float segment = thetaStart + (float)i / segments * thetaLength;
-
-				v.x = radius * math::cos(segment);
-				v.y = radius * math::sin(segment);
-				v.z = 0;
-
-				_vertices.push_back(v);
-
-				_texcoords[0].emplace_back((v.x / radius + 1), (v.y / radius + 1) / 2);
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t i = 1; i <= segments; i++)
-			{
-				std::uint32_t v1 = i;
-				std::uint32_t v2 = i + 1;
-				std::uint32_t v3 = 0;
-
-				indices.push_back(v1);
-				indices.push_back(v2);
-				indices.push_back(v3);
-
-				_normals.push_back(float3::UnitZ);
-				_normals.push_back(float3::UnitZ);
-				_normals.push_back(float3::UnitZ);
-			}
-
-			this->setIndicesArray(std::move(indices));
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makePlane(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
-		{
-			this->clear();
-
-			std::uint32_t gridX = widthSegments;
-			std::uint32_t gridY = heightSegments;
-
-			std::uint32_t gridX1 = gridX + 1;
-			std::uint32_t gridY1 = gridY + 1;
-
-			float segmentWidth = width / gridX;
-			float segmentHeight = height / gridY;
-
-			const float3& normal = Vector3::UnitZ;
-
-			for (std::uint32_t iz = 0; iz < gridY1; iz++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX1; ix++)
-				{
-					float x = ix * segmentWidth;
-					float z = iz * segmentHeight - segmentHeight;
-
-					_vertices.emplace_back(x, z, 0.0f);
-
-					_normals.push_back(normal);
-				}
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t iy = 0; iy < gridY; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX; ix++)
-				{
-					_texcoords[0].emplace_back((float)ix / gridX, (float)(iy + 1) / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)(iy + 1) / gridY);
-					_texcoords[0].emplace_back((float)ix / gridX, (float)iy / gridY);
-					_texcoords[0].emplace_back((float)(ix + 1) / gridX, (float)iy / gridY);
-
-					std::int32_t a = static_cast<std::int32_t>(ix + gridX1 * iy);
-					std::int32_t b = static_cast<std::int32_t>(ix + gridX1 * (iy + 1));
-					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
-					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
-
-					indices.push_back(a);
-					indices.push_back(b);
-					indices.push_back(c);
-
-					indices.push_back(c);
-					indices.push_back(d);
-					indices.push_back(a);
-				}
-			}
-
-			this->setIndicesArray(indices);
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makePlane(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
-		{
-			if (clear)
-				this->clear();
-
-			std::uint32_t gridX = widthSegments;
-			std::uint32_t gridY = heightSegments;
-
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-
-			std::uint8_t w = 0;
-			if ((u == 'x' && v == 'y') || (u == 'y' && v == 'x'))
-			{
-				w = 'z';
-			}
-			else if ((u == 'x' && v == 'z') || (u == 'z' && v == 'x'))
-			{
-				w = 'y';
-				gridY = depthSegments;
-			}
-			else if ((u == 'z' && v == 'y') || (u == 'y' && v == 'z'))
-			{
-				w = 'x';
-				gridX = depthSegments;
-			}
-			else
-			{
-				assert(false);
-			}
-
-			std::uint32_t gridX1 = gridX + 1;
-			std::uint32_t gridY1 = gridY + 1;
-
-			std::uint32_t offset = (std::uint32_t)_vertices.size();
-
-			float segmentWidth = width / gridX;
-			float segmentHeight = height / gridY;
-
-			Vector3 n = Vector3::Zero;
-			n.get(w) = depth >= 0.0f ? 1.0f : -1.0f;
-
-			for (std::uint32_t iy = 0; iy < gridY1; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX1; ix++)
-				{
-					Vector3 vec;
-					vec.get(u) = (ix * segmentWidth - widthHalf) * udir;
-					vec.get(v) = (iy * segmentHeight - heightHalf) * vdir;
-					vec.get(w) = depth;
-
-					_vertices.push_back(vec);
-					_normals.push_back(n);
-					_texcoords[0].emplace_back((float)ix / gridX, 1.0f - (float)iy / gridY);
-				}
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t iy = 0; iy < gridY; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX; ix++)
-				{
-					std::int32_t a = static_cast<std::int32_t>(ix + gridX1 * iy);
-					std::int32_t b = static_cast<std::int32_t>(ix + gridX1 * (iy + 1));
-					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
-					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
-
-					indices.push_back((std::int32_t)(a + offset));
-					indices.push_back((std::int32_t)(b + offset));
-					indices.push_back((std::int32_t)(c + offset));
-
-					indices.push_back((std::int32_t)(c + offset));
-					indices.push_back((std::int32_t)(d + offset));
-					indices.push_back((std::int32_t)(a + offset));
-				}
-			}
-
-			this->setIndicesArray(indices);
-		}
-
-		void
-		Mesh::makePlaneWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments, std::uint8_t u, std::uint8_t v, float udir, float vdir, bool clear) noexcept
-		{
-			if (clear)
-				this->clear();
-
-			std::uint32_t gridX = widthSegments;
-			std::uint32_t gridY = heightSegments;
-
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-
-			std::uint8_t w = 0;
-			if ((u == 'x' && v == 'y') || (u == 'y' && v == 'x'))
-			{
-				w = 'z';
-			}
-			else if ((u == 'x' && v == 'z') || (u == 'z' && v == 'x'))
-			{
-				w = 'y';
-				gridY = depthSegments;
-			}
-			else if ((u == 'z' && v == 'y') || (u == 'y' && v == 'z'))
-			{
-				w = 'x';
-				gridX = depthSegments;
-			}
-			else
-			{
-				assert(false);
-			}
-
-			std::uint32_t gridX1 = gridX + 1;
-			std::uint32_t gridY1 = gridY + 1;
-
-			std::uint32_t offset = (std::uint32_t)_vertices.size();
-
-			float segmentWidth = width / gridX;
-			float segmentHeight = height / gridY;
-
-			Vector3 n = Vector3::Zero;
-			n.get(w) = depth >= 0.0f ? 1.0f : -1.0f;
-
-			for (std::uint32_t iy = 0; iy < gridY1; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX1; ix++)
-				{
-					Vector3 vec;
-					vec.get(u) = (ix * segmentWidth - widthHalf) * udir;
-					vec.get(v) = (iy * segmentHeight - heightHalf) * vdir;
-					vec.get(w) = depth;
-
-					_vertices.push_back(vec);
-					_normals.push_back(n);
-					_texcoords[0].emplace_back((float)ix / gridX, 1.0f - (float)iy / gridY);
-				}
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t iy = 0; iy < gridY; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridX; ix++)
-				{
-					std::int32_t a = static_cast<std::int32_t>(ix + gridX1 * iy);
-					std::int32_t b = static_cast<std::int32_t>(ix + gridX1 * (iy + 1));
-					std::int32_t c = static_cast<std::int32_t>(ix + gridX1 * (iy + 1) + 1);
-					std::int32_t d = static_cast<std::int32_t>(ix + gridX1 * iy + 1);
-
-					indices.push_back((std::int32_t)(a + offset));
-					indices.push_back((std::int32_t)(b + offset));
-
-					indices.push_back((std::int32_t)(b + offset));
-					indices.push_back((std::int32_t)(c + offset));
-
-					indices.push_back((std::int32_t)(c + offset));
-					indices.push_back((std::int32_t)(d + offset));
-
-					indices.push_back((std::int32_t)(d + offset));
-					indices.push_back((std::int32_t)(a + offset));
-				}
-			}
-
-			this->setIndicesArray(std::move(indices));
-		}
-
-		void
-		Mesh::makeFloor(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
-		{
-			this->clear();
-			this->makePlane(width, height, 0, widthSegments, 0, heightSegments, 'x', 'z', 1.0, 1.0);
-
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeNoise(float width, float height, std::uint32_t widthSegments, std::uint32_t heightSegments) noexcept
-		{
-			this->clear();
-
-			PerlinNoise2 PL;
-
-			std::uint32_t gridX = widthSegments;
-			std::uint32_t gridY = heightSegments;
-
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-			float widthSegment = width / widthSegments;
-			float heightSegment = height / heightSegments;
-
-			float invfre = 0.013f;
-
-			auto makePosition = [&](float x, float y, float z) -> Vector3
-			{
-				float posX = -widthHalf + x * widthSegment;
-				float posZ = -heightHalf + z * heightSegment;
-
-				return Vector3(posX, y, posZ);
-			};
-
-			std::uint32_t gridX1 = gridX + 1;
-			std::uint32_t gridY1 = gridY + 1;
-
-			for (std::uint32_t y = 0; y < gridX1; y++)
-			{
-				for (std::uint32_t x = 0; x < gridY1; x++)
-				{
-					float accum = 0;
-
-					accum += PL.noise(x * invfre, y * invfre, 0.8f) * 1.0f;
-					accum += PL.noise(x * invfre, y * invfre, 3.0f) * 0.17f;
-
-					accum *= 0.1f;
-					accum += 0.5f;
-
-					accum *= width;
-
-					accum -= heightHalf;
-
-					_vertices.push_back(makePosition((float)x, accum, (float)y));
-					_texcoords[0].push_back(Vector2((float)x, (float)y));
-				}
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t iy = 0; iy < gridX; iy++)
-			{
-				for (std::uint32_t ix = 0; ix < gridY; ix++)
-				{
-					indices.push_back(ix + gridX1 * iy);
-					indices.push_back(ix + gridX1 * (iy + 1));
-					indices.push_back(ix + gridX1 * (iy + 1) + 1);
-
-					indices.push_back(ix + gridX1 * iy);
-					indices.push_back(ix + gridX1 * (iy + 1) + 1);
-					indices.push_back(ix + gridX1 * iy + 1);
-				}
-			}
-
-			this->setIndicesArray(std::move(indices));
-			this->computeVertexNormals();
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeCube(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
-		{
-			this->clear();
-
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-			float depthHalf = depth * 0.5f;
-
-			this->makePlane(depth, height, widthHalf, widthSegments, heightSegments, depthSegments, 'z', 'y', -1, -1, false); // px
-			this->makePlane(depth, height, -widthHalf, widthSegments, heightSegments, depthSegments, 'z', 'y', 1, -1, false); // nx
-			this->makePlane(width, depth, heightHalf, widthSegments, heightSegments, depthSegments, 'x', 'z', 1, 1, false); // py
-			this->makePlane(width, depth, -heightHalf, widthSegments, heightSegments, depthSegments, 'x', 'z', 1, -1, false); // ny
-			this->makePlane(width, height, depthHalf, widthSegments, heightSegments, depthSegments, 'x', 'y', 1, -1, false); // pz
-			this->makePlane(width, height, -depthHalf, widthSegments, heightSegments, depthSegments, 'x', 'y', -1, -1, false); // nz
-
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeCubeWireframe(float width, float height, float depth, std::uint32_t widthSegments, std::uint32_t heightSegments, std::uint32_t depthSegments) noexcept
-		{
-			this->clear();
-
-			float widthHalf = width * 0.5f;
-			float heightHalf = height * 0.5f;
-			float depthHalf = depth * 0.5f;
-
-			this->makePlaneWireframe(depth, height, widthHalf, widthSegments, heightSegments, depthSegments, 'z', 'y', -1, -1, false); // px
-			this->makePlaneWireframe(depth, height, -widthHalf, widthSegments, heightSegments, depthSegments, 'z', 'y', 1, -1, false); // nx
-			this->makePlaneWireframe(width, depth, heightHalf, widthSegments, heightSegments, depthSegments, 'x', 'z', 1, 1, false); // py
-			this->makePlaneWireframe(width, depth, -heightHalf, widthSegments, heightSegments, depthSegments, 'x', 'z', 1, -1, false); // ny
-			this->makePlaneWireframe(width, height, depthHalf, widthSegments, heightSegments, depthSegments, 'x', 'y', 1, -1, false); // pz
-			this->makePlaneWireframe(width, height, -depthHalf, widthSegments, heightSegments, depthSegments, 'x', 'y', -1, -1, false); // nz
-
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeRing(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart, float thetaLength) noexcept
-		{
-			this->clear();
-
-			innerRadius = innerRadius || 0;
-			outerRadius = outerRadius || 50;
-
-			thetaStart = thetaStart ? thetaStart : 0;
-			thetaLength = thetaLength ? thetaLength : PI * 2;
-
-			thetaSegments = thetaSegments ? std::max((std::uint32_t)3, thetaSegments) : 8;
-			phiSegments = phiSegments ? std::max((std::uint32_t)3, phiSegments) : 8;
-
-			for (size_t i = 0; i <= phiSegments; i++)
-			{
-				for (size_t j = 0; j <= thetaSegments; j++)
-				{
-				}
-			}
-		}
-
-		void
-		Mesh::makeSphere(float radius, std::uint32_t widthSegments, std::uint32_t heightSegments, float phiStart, float phiLength, float thetaStart, float thetaLength) noexcept
-		{
-			this->clear();
-
-			std::vector<math::uint1> indices;
-			std::vector<std::uint32_t> vertices;
-
-			for (std::uint32_t y = 0; y <= heightSegments; y++)
-			{
-				for (std::uint32_t x = 0; x <= widthSegments; x++)
-				{
-					float u = (float)(x) / widthSegments;
-					float v = (float)(y) / heightSegments;
-
-					Vector3 vertex;
-					vertex.x = -radius * math::sin(thetaStart + v * thetaLength) * math::cos(phiStart + u * phiLength);
-					vertex.y = radius * math::cos(thetaStart + v * thetaLength);
-					vertex.z = radius * math::sin(thetaStart + v * thetaLength) * math::sin(phiStart + u * phiLength);
-
-					_vertices.push_back(vertex);
-					_normals.push_back(math::normalize(vertex));
-					_texcoords[0].emplace_back(u, v);
-
-					vertices.push_back((std::uint32_t)_vertices.size() - 1);
-				}
-			}
-
-			for (std::uint32_t y = 0; y < heightSegments; y++)
-			{
-				for (std::uint32_t x = 0; x < widthSegments; x++)
-				{
-					std::uint32_t v1 = vertices[y * (widthSegments + 1) + x];
-					std::uint32_t v2 = vertices[y * (widthSegments + 1) + x + 1];
-					std::uint32_t v3 = vertices[(y + 1) * (widthSegments + 1) + x];
-					std::uint32_t v4 = vertices[(y + 1) * (widthSegments + 1) + x + 1];
-
-					if (math::abs((_vertices)[v2].y) == radius)
-					{
-						indices.push_back(v2);
-						indices.push_back(v3);
-						indices.push_back(v4);
-					}
-					else if (math::abs((_vertices)[v3].y) == radius)
-					{
-						indices.push_back(v2);
-						indices.push_back(v1);
-						indices.push_back(v3);
-					}
-					else
-					{
-						indices.push_back(v2);
-						indices.push_back(v3);
-						indices.push_back(v4);
-
-						indices.push_back(v2);
-						indices.push_back(v1);
-						indices.push_back(v3);
-					}
-				}
-			}
-
-			this->setIndicesArray(std::move(indices));
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeVolumes(float fovy, float znear, float zfar) noexcept
-		{
-			this->clear();
-
-			float tanFovy_2 = math::tan(fovy * PI / 360.0f);
-
-			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(-tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-
-			_vertices.emplace_back(tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-
-			_vertices.emplace_back(tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-
-			_vertices.emplace_back(-tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(-tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-
-			_vertices.emplace_back(-tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(tanFovy_2 * znear, tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-			_vertices.emplace_back(-tanFovy_2 * znear, -tanFovy_2 * znear, -znear);
-
-			_vertices.emplace_back(tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * zfar, tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(-tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-			_vertices.emplace_back(tanFovy_2 * zfar, -tanFovy_2 * zfar, -zfar);
-
-			this->computeBoundingBox();
-		}
-
-		void
-		Mesh::makeCone(float radius, float height, std::uint32_t segments, float thetaStart, float thetaLength) noexcept
-		{
-			this->clear();
-
-			_vertices.emplace_back(0.0f, 0.0f, 0.0f);
-			_vertices.emplace_back(0.0f, 0.0f, -height);
-
-			_normals.emplace_back(0.0f, 0.0f, 0.0f);
-			_normals.emplace_back(0.0f, 0.0f, -1.0f);
-
-			_texcoords[0].emplace_back(0.0f, 0.0f);
-			_texcoords[0].emplace_back(1.0f, 1.0f);
-
-			float segment = thetaLength / segments;
-
-			for (std::uint32_t i = 0; i <= segments; i++)
-			{
-				float sin;
-				float cos;
-
-				math::sinCos(&sin, &cos, thetaStart + i * segment);
-
-				Vector3 v;
-				v.x = radius * cos;
-				v.y = -radius * sin;
-				v.z = 0;
-
-				_vertices.push_back(v);
-				_normals.push_back(math::normalize(v));
-
-				_texcoords[0].emplace_back((v.x / radius + 1), (v.y / radius + 1) / 2);
-			}
-
-			math::uint1s indices;
-
-			for (std::uint32_t i = 2; i <= segments + 1; i++)
-			{
-				std::uint32_t v1 = i;
-				std::uint32_t v2 = 0;
-				std::uint32_t v3 = i + 1;
-
-				indices.push_back(v1);
-				indices.push_back(v2);
-				indices.push_back(v3);
-			}
-
-			for (std::uint32_t i = 2; i <= segments + 1; i++)
-			{
-				std::uint32_t v1 = i;
-				std::uint32_t v2 = 1;
-				std::uint32_t v3 = i + 1;
-
-				indices.push_back(v3);
-				indices.push_back(v2);
-				indices.push_back(v1);
-			}
-
-			this->setIndicesArray(indices);
-			this->computeTangents();
-			this->computeBoundingBox();
-		}
-
 		bool
-		Mesh::combineMeshes(const Mesh& mesh, bool force) noexcept
+		Mesh::mergeMeshes(const Mesh& mesh, bool force) noexcept
 		{
 			if (!force)
 			{
@@ -970,7 +390,7 @@ namespace octoon
 		}
 
 		bool
-		Mesh::combineMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
+		Mesh::mergeMeshes(const mesh::CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
 		{
 			this->clear();
 
@@ -1065,9 +485,9 @@ namespace octoon
 		}
 
 		bool
-		Mesh::combineMeshes(const CombineMeshes& instances, bool merge) noexcept
+		Mesh::mergeMeshes(const std::vector<CombineMesh>& instances, bool merge) noexcept
 		{
-			return this->combineMeshes(instances.data(), instances.size(), merge);
+			return this->mergeMeshes(instances.data(), instances.size(), merge);
 		}
 
 		void

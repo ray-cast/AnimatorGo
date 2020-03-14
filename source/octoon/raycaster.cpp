@@ -35,7 +35,7 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<model::RaycastHit> result;
+		std::vector<mesh::RaycastHit> result;
 
 		for (auto& object : entities)
 		{
@@ -77,7 +77,7 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<model::RaycastHit> hitObjects;
+		std::vector<mesh::RaycastHit> hitObjects;
 
 		for (auto& object : entities)
 		{

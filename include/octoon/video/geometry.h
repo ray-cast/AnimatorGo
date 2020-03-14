@@ -21,9 +21,9 @@ namespace octoon
 			void setReceiveShadow(bool enable) noexcept;
 			bool getReceiveShadow() const noexcept;
 
-			void setMaterial(MaterialPtr&& material) noexcept;
-			void setMaterial(const MaterialPtr& material) noexcept;
-			const MaterialPtr& getMaterial() const noexcept;
+			void setMaterial(HALMaterialPtr&& material) noexcept;
+			void setMaterial(const HALMaterialPtr& material) noexcept;
+			const HALMaterialPtr& getMaterial() const noexcept;
 
 			void setNumVertices(std::uint32_t numVertice) noexcept;
 			std::uint32_t getNumVertices() const noexcept;
@@ -47,7 +47,7 @@ namespace octoon
 			std::intptr_t vertexOffset_;
 			std::intptr_t indexOffset_;
 
-			MaterialPtr material_;
+			HALMaterialPtr material_;
 			GraphicsIndexType indexType_;
 			hal::GraphicsDataPtr vertices_;
 			hal::GraphicsDataPtr indices_;

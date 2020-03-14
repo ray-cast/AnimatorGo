@@ -54,7 +54,7 @@ namespace rabbit
 
 			while (x265_encoder_encode(encoder_, &nals, &inal, nullptr, nullptr) > 0)
 			{
-				for (auto j = 0;j < inal;j++)
+				for (std::uint32_t j = 0;j < inal;j++)
 					ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
 			}
 

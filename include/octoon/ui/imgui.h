@@ -659,32 +659,6 @@ namespace octoon
 		OCTOON_EXPORT bool beginToolbar(const char* str_id, const float2& screen_pos, const float2& size) noexcept;
 		OCTOON_EXPORT void endToolbar() noexcept;
 		OCTOON_EXPORT bool toolbarButton(GuiTextureID texture, const char* tooltip, bool selected = false, bool enabled = true) noexcept;
-
-		namespace guizmo
-		{
-			enum Operation
-			{
-				Translate,
-				Rotation,
-				Scale
-			};
-
-			enum Mode
-			{
-				Local,
-				World
-			};
-
-			OCTOON_EXPORT void SetDrawlist();
-			OCTOON_EXPORT void BeginFrame();
-			OCTOON_EXPORT bool IsOver();
-			OCTOON_EXPORT bool IsUsing();
-			OCTOON_EXPORT void Enable(bool enable);
-
-			OCTOON_EXPORT void SetRect(float x, float y, float width, float height);
-
-			OCTOON_EXPORT void Manipulate(const float *view, const float *projection, Operation operation, Mode mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
-		};
 	}
 }
 

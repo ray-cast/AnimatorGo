@@ -15,10 +15,10 @@ namespace octoon
 		OctoonDeclareSubClass(SkinnedMeshRendererComponent, MeshRendererComponent)
 	public:
 		SkinnedMeshRendererComponent() noexcept;
-		SkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept;
-		SkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept;
-		SkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept;
-		SkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept;
+		SkinnedMeshRendererComponent(material::Materials&& materials, GameObjects&& transforms) noexcept;
+		SkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept;
+		SkinnedMeshRendererComponent(const material::Materials& materials, const GameObjects& transforms) noexcept;
+		SkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept;
 		virtual ~SkinnedMeshRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;
@@ -34,8 +34,8 @@ namespace octoon
 		void setTextureBlendEnable(bool enable) noexcept;
 		bool getTextureBlendEnable() const noexcept;
 
-		void uploadMeshData(const model::MeshPtr& mesh) noexcept override;
-		void uploadMaterialData(const model::Materials& material) noexcept;
+		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
+		void uploadMaterialData(const material::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -76,8 +76,8 @@ namespace octoon
 		math::float4x4s joints_;
 		hal::GraphicsDataPtr jointData_;
 
-		model::MeshPtr mesh_;
-		model::MeshPtr skinnedMesh_;
+		mesh::MeshPtr mesh_;
+		mesh::MeshPtr skinnedMesh_;
 
 		std::vector<class ClothComponent*> clothComponents_;
 		std::vector<class SkinnedMorphComponent*> morphComponents_;

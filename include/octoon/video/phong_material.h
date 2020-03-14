@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT PhongMaterial final : public Material
+		class OCTOON_EXPORT PhongMaterial final : public HALMaterial
 		{
 		public:
 			PhongMaterial() except;
@@ -41,7 +41,7 @@ namespace octoon
 			const math::float3& getDarkColor() const noexcept;
 			float getShininess() const noexcept;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			PhongMaterial(const PhongMaterial&) = delete;

@@ -15,22 +15,22 @@ namespace octoon
 	{
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(model::Materials&& materials) noexcept
+	OfflineMeshRendererComponent::OfflineMeshRendererComponent(material::Materials&& materials) noexcept
 	{
 		this->setMaterials(std::move(materials));
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(model::MaterialPtr&& material) noexcept
+	OfflineMeshRendererComponent::OfflineMeshRendererComponent(material::MaterialPtr&& material) noexcept
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(const model::Materials& materials) noexcept
+	OfflineMeshRendererComponent::OfflineMeshRendererComponent(const material::Materials& materials) noexcept
 	{
 		this->setMaterials(materials);
 	}
 
-	OfflineMeshRendererComponent::OfflineMeshRendererComponent(const model::MaterialPtr& material) noexcept
+	OfflineMeshRendererComponent::OfflineMeshRendererComponent(const material::MaterialPtr& material) noexcept
 	{
 		this->setMaterial(material);
 	}
@@ -40,7 +40,7 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
+	OfflineMeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (!feature)
@@ -193,7 +193,7 @@ namespace octoon
 	}
 
 	void
-	OfflineMeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
+	OfflineMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		auto feature = this->tryGetFeature<OfflineFeature>();
 		if (feature)
@@ -332,11 +332,11 @@ namespace octoon
 	void
 	OfflineMeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<model::MeshPtr>(mesh_));
+		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(mesh_));
 	}
 
 	void
-	OfflineMeshRendererComponent::onMaterialReplace(const model::Materials& material) noexcept
+	OfflineMeshRendererComponent::onMaterialReplace(const material::Materials& material) noexcept
 	{
 		if (this->getGameScene())
 			this->uploadMaterialData(material);

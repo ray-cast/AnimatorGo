@@ -14,10 +14,10 @@ namespace octoon
 		OctoonDeclareSubClass(OfflineSkinnedMeshRendererComponent, OfflineMeshRendererComponent)
 	public:
 		OfflineSkinnedMeshRendererComponent() noexcept;
-		OfflineSkinnedMeshRendererComponent(model::Materials&& material, GameObjects&& transforms) noexcept;
-		OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept;
-		OfflineSkinnedMeshRendererComponent(const model::Materials& material, const GameObjects& transforms) noexcept;
-		OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept;
+		OfflineSkinnedMeshRendererComponent(material::Materials&& material, GameObjects&& transforms) noexcept;
+		OfflineSkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept;
+		OfflineSkinnedMeshRendererComponent(const material::Materials& material, const GameObjects& transforms) noexcept;
+		OfflineSkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept;
 		virtual ~OfflineSkinnedMeshRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;
@@ -33,7 +33,7 @@ namespace octoon
 		void setTextureBlendEnable(bool enable) noexcept;
 		bool getTextureBlendEnable() const noexcept;
 
-		void uploadMeshData(const model::MeshPtr& mesh) noexcept override;
+		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -71,8 +71,8 @@ namespace octoon
 
 		math::float4x4s joints_;
 
-		model::MeshPtr mesh_;
-		model::MeshPtr skinnedMesh_;
+		mesh::MeshPtr mesh_;
+		mesh::MeshPtr skinnedMesh_;
 
 		std::vector<class ClothComponent*> clothComponents_;
 		std::vector<class SkinnedMorphComponent*> morphComponents_;

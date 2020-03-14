@@ -185,7 +185,7 @@ namespace octoon
 			return descriptorSet_;
 		}
 
-		MaterialPtr
+		HALMaterialPtr
 		BasicMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<BasicMaterial>();

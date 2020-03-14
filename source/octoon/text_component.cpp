@@ -184,9 +184,9 @@ namespace octoon
 		if (is_ok)
 		{
 			if (meshing_)
-				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8, align_), 0.0f));
+				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8, align_), 0.0f));
 			else
-				mesh_ = std::make_shared<model::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8, align_), 0.0f));
+				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8, align_), 0.0f));
 		}
 		else
 		{

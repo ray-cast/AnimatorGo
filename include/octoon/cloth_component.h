@@ -68,7 +68,7 @@ namespace octoon
 	private:
 		void updateCollideData() noexcept;
 		void updateParticesData() noexcept;
-		void uploadMeshData(const model::Mesh& mesh) noexcept;
+		void uploadMeshData(const mesh::Mesh& mesh) noexcept;
 
 	private:
 		ClothComponent(const ClothComponent&) = delete;

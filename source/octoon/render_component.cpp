@@ -9,22 +9,22 @@ namespace octoon
 	{
 	}
 
-	RenderComponent::RenderComponent(model::MaterialPtr&& material, bool sharedMaterial) noexcept
+	RenderComponent::RenderComponent(material::MaterialPtr&& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterial(std::move(material), sharedMaterial);
 	}
 
-	RenderComponent::RenderComponent(const model::MaterialPtr& material, bool sharedMaterial) noexcept
+	RenderComponent::RenderComponent(const material::MaterialPtr& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterial(material, sharedMaterial);
 	}
 
-	RenderComponent::RenderComponent(model::Materials&& material, bool sharedMaterial) noexcept
+	RenderComponent::RenderComponent(material::Materials&& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterials(std::move(material), sharedMaterial);
 	}
 
-	RenderComponent::RenderComponent(const model::Materials& material, bool sharedMaterial) noexcept
+	RenderComponent::RenderComponent(const material::Materials& material, bool sharedMaterial) noexcept
 	{
 		this->setMaterials(material, sharedMaterial);
 	}
@@ -34,7 +34,7 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterial(model::MaterialPtr&& material, std::size_t n, bool sharedMaterial) noexcept
+	RenderComponent::setMaterial(material::MaterialPtr&& material, std::size_t n, bool sharedMaterial) noexcept
 	{
 		if (materials_.size() <= n)
 			materials_.resize(n + 1);
@@ -48,7 +48,7 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterial(const model::MaterialPtr& material, std::size_t n, bool sharedMaterial) noexcept
+	RenderComponent::setMaterial(const material::MaterialPtr& material, std::size_t n, bool sharedMaterial) noexcept
 	{
 		if (materials_.size() <= n)
 			materials_.resize(n + 1);
@@ -61,14 +61,14 @@ namespace octoon
 		}
 	}
 
-	const model::MaterialPtr&
+	const material::MaterialPtr&
 	RenderComponent::getMaterial(std::size_t n) const noexcept
 	{
 		return materials_[n];
 	}
 
 	void
-	RenderComponent::setMaterials(model::Materials&& material, bool sharedMaterial) noexcept
+	RenderComponent::setMaterials(material::Materials&& material, bool sharedMaterial) noexcept
 	{
 		materials_ = std::move(material);
 		isSharedMaterial_ = sharedMaterial;
@@ -76,14 +76,14 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::setMaterials(const model::Materials& material, bool sharedMaterial) noexcept
+	RenderComponent::setMaterials(const material::Materials& material, bool sharedMaterial) noexcept
 	{
 		materials_ = material;
 		isSharedMaterial_ = sharedMaterial;
 		this->onMaterialReplace(materials_);
 	}
 
-	const model::Materials&
+	const material::Materials&
 	RenderComponent::getMaterials() const noexcept
 	{
 		return materials_;
@@ -118,7 +118,7 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::onMaterialReplace(const model::Materials&) noexcept
+	RenderComponent::onMaterialReplace(const material::Materials&) noexcept
 	{
 	}
 }

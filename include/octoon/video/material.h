@@ -8,13 +8,13 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT Material
+		class OCTOON_EXPORT HALMaterial
 		{
 		public:
-			Material() noexcept;
-			Material(std::string&& name) noexcept;
-			Material(const std::string& name) noexcept;
-			~Material() noexcept;
+			HALMaterial() noexcept;
+			HALMaterial(std::string&& name) noexcept;
+			HALMaterial(const std::string& name) noexcept;
+			~HALMaterial() noexcept;
 
 			void setName(std::string&& name) noexcept;
 			void setName(const std::string& name) noexcept;
@@ -28,11 +28,11 @@ namespace octoon
 
 			virtual hal::GraphicsUniformSetPtr at(const std::string& name) const;
 
-			virtual MaterialPtr clone() const noexcept = 0;
+			virtual HALMaterialPtr clone() const noexcept = 0;
 
 		private:
-			Material(const Material&) = delete;
-			Material& operator=(const Material&) = delete;
+			HALMaterial(const HALMaterial&) = delete;
+			HALMaterial& operator=(const HALMaterial&) = delete;
 
 		private:
 			std::string _name;

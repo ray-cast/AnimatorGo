@@ -2,25 +2,25 @@
 
 namespace octoon
 {
-	namespace model
+	namespace mesh
 	{
 		CombineMesh::CombineMesh() noexcept
 		{
 		}
 
-		CombineMesh::CombineMesh(const MeshPtr& mesh, const math::float4x4& transform) noexcept
+		CombineMesh::CombineMesh(const std::shared_ptr<mesh::Mesh>& mesh, const math::float4x4& transform) noexcept
 			: _mesh(mesh)
 			, _transform(transform)
 		{
 		}
 
 		void
-		CombineMesh::setMesh(const MeshPtr& other) noexcept
+		CombineMesh::setMesh(const std::shared_ptr<mesh::Mesh>& other) noexcept
 		{
 			_mesh = other;
 		}
 
-		const MeshPtr&
+		const std::shared_ptr<mesh::Mesh>&
 		CombineMesh::getMesh() const noexcept
 		{
 			return _mesh;

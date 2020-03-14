@@ -296,7 +296,7 @@ namespace octoon
 		}
 	}
 
-	void createMaterials(const model::Model& model, model::Materials& materials, const std::string& rootPath) noexcept(false)
+	void createMaterials(const model::Model& model, material::Materials& materials, const std::string& rootPath) noexcept(false)
 	{
 		materials.reserve(model.materials.size());
 
@@ -309,7 +309,7 @@ namespace octoon
 
 	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, const std::string& path) noexcept(false)
 	{
-		model::Materials materials;
+		material::Materials materials;
 		createMaterials(model, materials, "file:" + runtime::string::directory(path));
 
 		auto mesh = model.meshes[0];
@@ -337,7 +337,7 @@ namespace octoon
 			osmr->setTextureBlendEnable(true);
 			object->addComponent(osmr);
 
-			/*auto material = std::make_shared<model::Material>();
+			/*auto material = std::make_shared<material::Material>();
 			material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));
 
 			auto sjr = std::make_shared<SkinnedJointRendererComponent>();

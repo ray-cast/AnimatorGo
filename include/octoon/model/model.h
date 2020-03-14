@@ -1,6 +1,8 @@
 #ifndef OCTOON_MODEL_H_
 #define OCTOON_MODEL_H_
 
+#include <octoon/model/modtypes.h>
+#include <octoon/mesh/mesh.h>
 #include <octoon/material/material.h>
 
 namespace octoon
@@ -134,10 +136,10 @@ namespace octoon
 			std::uint8_t group;
 			std::uint16_t groupMask;
 
-			std::uint16_t aeroModel;
+			std::int32_t aeroModel;
 
 			std::int32_t blinkLength;
-			std::int8_t numClusters;
+			std::int32_t numClusters;
 
 			float LST;
 
@@ -178,13 +180,13 @@ namespace octoon
 
 		struct Model final
 		{
-			using mesh_array_t = std::vector<MeshPtr>;
+			using mesh_array_t = std::vector<std::shared_ptr<mesh::Mesh>>;
 			using bone_array_t = std::vector<BonePtr>;
 			using ik_array_t = std::vector<IKAttrPtr>;
 			using rigidbody_array_t = std::vector<std::shared_ptr<Rigidbody>>;
 			using softbody_array_t = std::vector<std::shared_ptr<Softbody>>;
 			using joint_array_t = std::vector<std::shared_ptr<Joint>>;
-			using material_array_t = std::vector<MaterialPtr>;
+			using material_array_t = std::vector<material::MaterialPtr>;
 			using texture_array_t = std::vector<std::shared_ptr<Texture>>;
 			using morph_array_t = std::vector<std::shared_ptr<Morph>>;
 

@@ -588,7 +588,7 @@ namespace octoon
 
 			for (auto& it : pmx.materials)
 			{
-				auto material = std::make_shared<Material>();
+				auto material = std::make_shared<material::Material>();
 				material->set(MATKEY_NAME, cv.to_bytes(it.name.name));
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
@@ -666,7 +666,7 @@ namespace octoon
 				}
 			}
 
-			MeshPtr mesh = std::make_shared<Mesh>();
+			auto mesh = std::make_shared<mesh::Mesh>();
 			mesh->setBindposes(std::move(bindposes));
 			mesh->setVertexArray(std::move(vertices_));
 			mesh->setNormalArray(std::move(normals_));

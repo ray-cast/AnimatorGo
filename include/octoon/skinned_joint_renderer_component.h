@@ -13,8 +13,8 @@ namespace octoon
 		OctoonDeclareSubClass(SkinnedJointRendererComponent, RenderComponent)
 	public:
 		SkinnedJointRendererComponent() noexcept;
-		SkinnedJointRendererComponent(model::MaterialPtr&& material) noexcept;
-		SkinnedJointRendererComponent(const model::MaterialPtr& material) noexcept;
+		SkinnedJointRendererComponent(material::MaterialPtr&& material) noexcept;
+		SkinnedJointRendererComponent(const material::MaterialPtr& material) noexcept;
 		virtual ~SkinnedJointRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;

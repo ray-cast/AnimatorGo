@@ -143,7 +143,7 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		void makeMesh(Mesh& mesh, const Contours& contours, float thickness) noexcept
+		void makeMesh(mesh::Mesh& mesh, const Contours& contours, float thickness) noexcept
 		{
 			math::float3s tris(max_count(contours) * 6);
 			math::float3* trisData = tris.data();
@@ -173,7 +173,7 @@ namespace octoon
 			}
 		}
 
-		void makeMeshTess(Mesh& mesh, const Contours& contours, float thickness) noexcept
+		void makeMeshTess(mesh::Mesh& mesh, const Contours& contours, float thickness) noexcept
 		{
 			math::float3s& trisMesh = mesh.getVertexArray();
 
@@ -224,9 +224,9 @@ namespace octoon
 			gluDeleteTess(tobj);
 		}
 
-		Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
+		mesh::Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
 		{
-			Mesh mesh;
+			mesh::Mesh mesh;
 			makeMesh(mesh, contours, thickness);
 			if (!hollow) makeMeshTess(mesh, contours, thickness);
 
@@ -234,14 +234,14 @@ namespace octoon
 			return mesh;
 		}
 
-		Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
+		mesh::Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
 		{
 			return makeMesh(group.getContours(), thickness, hollow);
 		}
 
-		Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
+		mesh::Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
 		{
-			Mesh mesh;
+			mesh::Mesh mesh;
 
 			for (auto& group : groups)
 			{
@@ -253,9 +253,9 @@ namespace octoon
 			return mesh;
 		}
 
-		Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
+		mesh::Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
 		{
-			Mesh mesh;
+			mesh::Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
 			math::uint1s& indices = mesh.getIndicesArray();
@@ -294,14 +294,14 @@ namespace octoon
 			return mesh;
 		}
 
-		Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+		mesh::Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
 		{
 			return makeMeshWireframe(group.getContours(), thickness);
 		}
 
-		Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
+		mesh::Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
 		{
-			Mesh mesh;
+			mesh::Mesh mesh;
 
 			math::float3s& tris = mesh.getVertexArray();
 			math::uint1s& indices = mesh.getIndicesArray();

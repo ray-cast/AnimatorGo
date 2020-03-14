@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT GGXMaterial final : public Material
+		class OCTOON_EXPORT GGXMaterial final : public HALMaterial
 		{
 		public:
 			GGXMaterial() except;
@@ -41,7 +41,7 @@ namespace octoon
 			float getSmoothness() const noexcept;
 			float getMetalness() const noexcept;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			GGXMaterial(const GGXMaterial&) = delete;

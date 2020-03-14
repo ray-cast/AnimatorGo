@@ -48,18 +48,18 @@ namespace octoon
 		}
 
 		void
-		Geometry::setMaterial(video::MaterialPtr&& material) noexcept
+		Geometry::setMaterial(video::HALMaterialPtr&& material) noexcept
 		{
 			material_ = std::move(material);
 		}
 
 		void
-		Geometry::setMaterial(const video::MaterialPtr& material) noexcept
+		Geometry::setMaterial(const video::HALMaterialPtr& material) noexcept
 		{
 			material_ = material;
 		}
 
-		const video::MaterialPtr&
+		const video::HALMaterialPtr&
 		Geometry::getMaterial() const noexcept
 		{
 			return material_;

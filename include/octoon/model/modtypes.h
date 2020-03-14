@@ -17,9 +17,6 @@ namespace octoon
 	{
 		class Camera;
 		class Light;
-		class Mesh;
-		class Material;
-
 		class Bone;
 		class CombineMesh;
 
@@ -40,8 +37,6 @@ namespace octoon
 		// default
 		using VertexWeight = detail::VertexWeight<std::uint16_t, float>;
 
-		typedef std::shared_ptr<Mesh> MeshPtr;
-		typedef std::shared_ptr<Material> MaterialPtr;
 		typedef std::shared_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
@@ -55,11 +50,8 @@ namespace octoon
 		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
 
 		typedef std::vector<VertexWeight> VertexWeights;
-		typedef std::vector<MeshPtr> Meshes;
 		typedef std::vector<Bone> Bones;
-		typedef std::vector<MaterialPtr> Materials;
 		typedef std::vector<IKAttr> InverseKinematics;
-		typedef std::vector<CombineMesh> CombineMeshes;
 		typedef std::vector<TextFilePtr> TextFiles;
 		typedef std::vector<ContourPtr> Contours;
 		typedef std::vector<ContourGroupPtr> ContourGroups;
@@ -81,14 +73,6 @@ namespace octoon
 			TextureTypeDisplacement,
 			TextureTypeLightmap,
 			TextureTypeReflection,
-		};
-
-		enum PropertyTypeInfo
-		{
-			PropertyTypeInfoFloat = 0x01,
-			PropertyTypeInfoString = 0x02,
-			PropertyTypeInfoInt = 0x04,
-			PropertyTypeInfoBuffer = 0x08,
 		};
 
 		using istream = io::istream;

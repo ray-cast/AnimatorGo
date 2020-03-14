@@ -14,12 +14,12 @@ namespace octoon
 		typedef std::shared_ptr<class PerspectiveCamera> PerspectiveCameraPtr;
 		typedef std::shared_ptr<class FilmCamera> FilmCameraPtr;
 		typedef std::shared_ptr<class Geometry> GeometryPtr;
-		typedef std::shared_ptr<class Material> MaterialPtr;
+		typedef std::shared_ptr<class HALMaterial> HALMaterialPtr;
 		typedef std::shared_ptr<class RenderObject> RenderObjectPtr;
 		typedef std::shared_ptr<class RenderScene> RenderScenePtr;
 		typedef std::shared_ptr<class TextMaterial> TextMaterialPtr;
 
-		typedef std::vector<MaterialPtr> Materials;
+		typedef std::vector<HALMaterialPtr> HALMaterials;
 		typedef std::vector<GeometryPtr> Geometrys;
 		typedef std::vector<TextMaterialPtr> TextMaterials;
 		typedef std::vector<RenderScene*> RenderScenes;

@@ -11,16 +11,16 @@ namespace octoon
 		OctoonDeclareSubClass(MeshFilterComponent, GameComponent)
 	public:
 		MeshFilterComponent() noexcept;
-		MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
-		MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
-		MeshFilterComponent(const model::Mesh& mesh, bool sharedMesh = false) noexcept;
-		MeshFilterComponent(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(mesh::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(mesh::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const mesh::Mesh& mesh, bool sharedMesh = false) noexcept;
+		MeshFilterComponent(const mesh::MeshPtr& mesh, bool sharedMesh = false) noexcept;
 		virtual ~MeshFilterComponent() noexcept;
 
-		void setMesh(model::Mesh&& mesh, bool sharedMesh = false) noexcept;
-		void setMesh(model::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
-		void setMesh(const model::MeshPtr& mesh, bool sharedMesh = false) noexcept;
-		const model::MeshPtr& getMesh() const noexcept;
+		void setMesh(mesh::Mesh&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(mesh::MeshPtr&& mesh, bool sharedMesh = false) noexcept;
+		void setMesh(const mesh::MeshPtr& mesh, bool sharedMesh = false) noexcept;
+		const mesh::MeshPtr& getMesh() const noexcept;
 
 		bool isSharedMesh() const noexcept;
 
@@ -40,7 +40,7 @@ namespace octoon
 
 	private:
 		bool isSharedMesh_;
-		model::MeshPtr mesh_;
+		mesh::MeshPtr mesh_;
 	};
 }
 

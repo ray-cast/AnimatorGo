@@ -18,28 +18,28 @@ namespace octoon
 	{
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(material::Materials&& materials, GameObjects&& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 		this->setTransforms(std::move(transforms));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const material::Materials& materials, const GameObjects& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(materials);
 		this->setTransforms(transforms);
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
@@ -105,7 +105,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
+	SkinnedMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		mesh_ = mesh;
 		needUpdate_ = false;
@@ -142,7 +142,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
+	SkinnedMeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
 		materials_.clear();
 
@@ -257,7 +257,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<model::MeshPtr>(data));
+		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(data));
 	}
 
 	void

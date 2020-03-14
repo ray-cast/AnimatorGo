@@ -1,6 +1,7 @@
 #include <octoon/ring_helper.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/mesh/ring_mesh.h>
 
 namespace octoon
 {
@@ -8,8 +9,8 @@ namespace octoon
 	RingHelper::create(float innerRadius, float outerRadius, std::uint32_t thetaSegments, std::uint32_t phiSegments, float thetaStart, float thetaLength) noexcept(false)
 	{
 		auto object = GameObject::create("GameObject");
-		object->addComponent<MeshFilterComponent>(model::makeRing(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength));
-		object->addComponent<MeshRendererComponent>(std::make_shared<model::Material>());
+		object->addComponent<MeshFilterComponent>(mesh::RingMesh::create(innerRadius, outerRadius, thetaSegments, phiSegments, thetaStart, thetaLength));
+		object->addComponent<MeshRendererComponent>(std::make_shared<material::Material>());
 		return object;
 	}
 }

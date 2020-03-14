@@ -46,7 +46,7 @@ namespace octoon
 	private:
 		bool isSharedText_;
 		std::string u8str_;
-		model::MeshPtr mesh_;
+		mesh::MeshPtr mesh_;
 		model::TextAlign align_;
 		model::TextMeshingPtr meshing_;
 	};

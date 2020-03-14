@@ -9,22 +9,22 @@ namespace octoon
 	{
 	}
 
-	MeshFilterComponent::MeshFilterComponent(model::Mesh&& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(mesh::Mesh&& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)), sharedMesh);
+		this->setMesh(std::make_shared<mesh::Mesh>(std::move(mesh)), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(const model::Mesh& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const mesh::Mesh& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::make_shared<model::Mesh>(mesh), sharedMesh);
+		this->setMesh(std::make_shared<mesh::Mesh>(mesh), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(model::MeshPtr&& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(mesh::MeshPtr&& mesh, bool sharedMesh) noexcept
 	{
 		this->setMesh(std::move(mesh), sharedMesh);
 	}
 
-	MeshFilterComponent::MeshFilterComponent(const model::MeshPtr& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::MeshFilterComponent(const mesh::MeshPtr& mesh, bool sharedMesh) noexcept
 	{
 		this->setMesh(mesh, sharedMesh);
 	}
@@ -34,13 +34,13 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::setMesh(model::Mesh&& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::setMesh(mesh::Mesh&& mesh, bool sharedMesh) noexcept
 	{
-		this->setMesh(std::make_shared<model::Mesh>(std::move(mesh)));
+		this->setMesh(std::make_shared<mesh::Mesh>(std::move(mesh)));
 	}
 
 	void
-	MeshFilterComponent::setMesh(model::MeshPtr&& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::setMesh(mesh::MeshPtr&& mesh, bool sharedMesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -54,7 +54,7 @@ namespace octoon
 	}
 
 	void
-	MeshFilterComponent::setMesh(const model::MeshPtr& mesh, bool sharedMesh) noexcept
+	MeshFilterComponent::setMesh(const mesh::MeshPtr& mesh, bool sharedMesh) noexcept
 	{
 		if (mesh_ != mesh)
 		{
@@ -67,7 +67,7 @@ namespace octoon
 		}
 	}
 
-	const model::MeshPtr&
+	const mesh::MeshPtr&
 	MeshFilterComponent::getMesh() const noexcept
 	{
 		return mesh_;

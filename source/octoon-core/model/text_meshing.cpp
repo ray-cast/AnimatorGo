@@ -339,17 +339,17 @@ namespace octoon
 			return groups;
 		}
 
-		Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
+		mesh::Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 		{
-			Mesh mesh = makeMesh(makeTextContours(string, params, bezierSteps), thickness, false);
+			mesh::Mesh mesh = makeMesh(makeTextContours(string, params, bezierSteps), thickness, false);
 			mesh.computeBoundingBox();
 
 			return mesh;
 		}
 
-		Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
+		mesh::Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness, std::uint16_t bezierSteps) noexcept(false)
 		{
-			Mesh mesh = makeMeshWireframe(makeTextContours(string, params, bezierSteps), thickness);
+			mesh::Mesh mesh = makeMeshWireframe(makeTextContours(string, params, bezierSteps), thickness);
 			mesh.computeBoundingBox();
 
 			return mesh;

@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT LambertMaterial final : public Material
+		class OCTOON_EXPORT LambertMaterial final : public HALMaterial
 		{
 		public:
 			LambertMaterial() except;
@@ -36,7 +36,7 @@ namespace octoon
 			const math::float3& getAmbientColor() const noexcept;
 			const math::float3& getDarkColor() const noexcept;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			LambertMaterial(const LambertMaterial&) = delete;

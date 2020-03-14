@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT TextMaterial final : public Material
+		class OCTOON_EXPORT TextMaterial final : public HALMaterial
 		{
 		public:
 			TextMaterial() except;
@@ -31,7 +31,7 @@ namespace octoon
 
 			const math::float3& getTextColor(TextColor::Type which) const except;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			TextMaterial(const TextMaterial&) = delete;

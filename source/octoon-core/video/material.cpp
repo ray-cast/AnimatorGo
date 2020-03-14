@@ -5,44 +5,44 @@ namespace octoon
 {
 	namespace video
 	{
-		Material::Material() noexcept
+		HALMaterial::HALMaterial() noexcept
 		{
 		}
 
-		Material::Material(std::string&& name) noexcept
+		HALMaterial::HALMaterial(std::string&& name) noexcept
 		{
 			this->setName(std::move(name));
 		}
 
-		Material::Material(const std::string& name) noexcept
+		HALMaterial::HALMaterial(const std::string& name) noexcept
 		{
 			this->setName(name);
 		}
 
-		Material::~Material() noexcept
+		HALMaterial::~HALMaterial() noexcept
 		{
 		}
 
 		void
-		Material::setName(std::string&& name) noexcept
+		HALMaterial::setName(std::string&& name) noexcept
 		{
 			_name = std::move(name);
 		}
 
 		void
-		Material::setName(const std::string& name) noexcept
+		HALMaterial::setName(const std::string& name) noexcept
 		{
 			_name = name;
 		}
 
 		const std::string&
-		Material::getName() const noexcept
+		HALMaterial::getName() const noexcept
 		{
 			return _name;
 		}
 
 		hal::GraphicsUniformSetPtr 
-		Material::at(const std::string& name) const
+		HALMaterial::at(const std::string& name) const
 		{
 			auto begin = this->getDescriptorSet()->getUniformSets().begin();
 			auto end = this->getDescriptorSet()->getUniformSets().end();

@@ -336,7 +336,7 @@ namespace octoon
 	}
 
 	void
-	ClothComponent::uploadMeshData(const model::Mesh& mesh) noexcept
+	ClothComponent::uploadMeshData(const mesh::Mesh& mesh) noexcept
 	{
 		auto clothFeature = this->tryGetFeature<ClothFeature>();
 		if (!clothFeature)

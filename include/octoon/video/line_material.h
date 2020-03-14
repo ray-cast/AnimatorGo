@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT LineMaterial final : public Material
+		class OCTOON_EXPORT LineMaterial final : public HALMaterial
 		{
 		public:
 			LineMaterial() except;
@@ -26,7 +26,7 @@ namespace octoon
 			void setColor(const math::float3& colors) noexcept;
 			const math::float3& getColor() const noexcept;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			LineMaterial(const LineMaterial&) = delete;

@@ -14,22 +14,22 @@ namespace octoon
 	{
 	}
 
-	MeshRendererComponent::MeshRendererComponent(model::MaterialPtr&& material) noexcept
+	MeshRendererComponent::MeshRendererComponent(material::MaterialPtr&& material) noexcept
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	MeshRendererComponent::MeshRendererComponent(const model::MaterialPtr& material) noexcept
+	MeshRendererComponent::MeshRendererComponent(const material::MaterialPtr& material) noexcept
 	{
 		this->setMaterial(material);
 	}
 
-	MeshRendererComponent::MeshRendererComponent(model::Materials&& materials) noexcept
+	MeshRendererComponent::MeshRendererComponent(material::Materials&& materials) noexcept
 	{
 		this->setMaterials(std::move(materials));
 	}
 
-	MeshRendererComponent::MeshRendererComponent(const model::Materials& materials) noexcept
+	MeshRendererComponent::MeshRendererComponent(const material::Materials& materials) noexcept
 	{
 		this->setMaterials(materials);
 	}
@@ -50,7 +50,7 @@ namespace octoon
 				instance->setMaterials(this->getMaterials());
 			else
 			{
-				model::Materials materials;
+				material::Materials materials;
 				for (auto& it : this->getMaterials())
 					materials.push_back(it->clone());
 				instance->setMaterials(std::move(materials));
@@ -83,14 +83,14 @@ namespace octoon
 	void
 	MeshRendererComponent::onMeshReplace(const runtime::any& mesh_) noexcept
 	{
-		assert(mesh_.type() == typeid(model::MeshPtr));
-		auto mesh = runtime::any_cast<model::MeshPtr>(mesh_);
+		assert(mesh_.type() == typeid(mesh::MeshPtr));
+		auto mesh = runtime::any_cast<mesh::MeshPtr>(mesh_);
 		if (mesh)
 			this->uploadMeshData(mesh);
 	}
 
 	void
-	MeshRendererComponent::onMaterialReplace(const model::Materials& material) noexcept
+	MeshRendererComponent::onMaterialReplace(const material::Materials& material) noexcept
 	{
 		this->uploadMaterialData(material);
 	}
@@ -112,7 +112,7 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
+	MeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		geometries_.clear();
 
@@ -217,7 +217,7 @@ namespace octoon
 	}
 
 	void
-	MeshRendererComponent::uploadMaterialData(const model::Materials& materials) noexcept
+	MeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
 		materials_.clear();
 

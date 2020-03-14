@@ -8,7 +8,7 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT BlinnMaterial final : public Material
+		class OCTOON_EXPORT BlinnMaterial final : public HALMaterial
 		{
 		public:
 			BlinnMaterial() except;
@@ -32,7 +32,7 @@ namespace octoon
 			const math::float3& getAmbientColor() const noexcept;
 			float getShininess() const noexcept;
 
-			MaterialPtr clone() const noexcept override;
+			HALMaterialPtr clone() const noexcept override;
 
 		private:
 			BlinnMaterial(const BlinnMaterial&) = delete;

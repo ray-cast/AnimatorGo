@@ -26,7 +26,7 @@ namespace rabbit
 
 		void loadMaterial(const std::string_view& rootPath) noexcept(false);
 
-		const octoon::model::Materials& getMaterials() const noexcept;
+		const octoon::material::Materials& getMaterials() const noexcept;
 
 	private:
 		void onEnable() noexcept override;
@@ -42,7 +42,7 @@ namespace rabbit
 		MaterialComponent& operator=(const MaterialComponent&) = delete;
 
 	private:
-		octoon::model::Materials materials_;
+		octoon::material::Materials materials_;
 	};
 }
 

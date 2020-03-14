@@ -16,28 +16,28 @@ namespace octoon
 	{
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::Materials&& materials, GameObjects&& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(material::Materials&& materials, GameObjects&& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 		this->setTransforms(std::move(transforms));
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(model::MaterialPtr&& material, GameObjects&& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::Materials& materials, const GameObjects& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const material::Materials& materials, const GameObjects& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterials(materials);
 		this->setTransforms(transforms);
 	}
 
-	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const model::MaterialPtr& material, const GameObjects& transforms) noexcept
+	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept
 		: OfflineSkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
@@ -103,7 +103,7 @@ namespace octoon
 	}
 
 	void
-	OfflineSkinnedMeshRendererComponent::uploadMeshData(const model::MeshPtr& mesh) noexcept
+	OfflineSkinnedMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		mesh_ = mesh;
 		needUpdate_ = false;
@@ -177,7 +177,7 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onMeshReplace(const runtime::any& data) noexcept
 	{
-		this->uploadMeshData(runtime::any_cast<model::MeshPtr>(data));
+		this->uploadMeshData(runtime::any_cast<mesh::MeshPtr>(data));
 
 		auto offlineFeature = this->getFeature<OfflineFeature>();
 		if (offlineFeature)

@@ -249,7 +249,7 @@ namespace octoon
 			return shininess_->getFloat();
 		}
 
-		MaterialPtr
+		HALMaterialPtr
 		PhongMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<PhongMaterial>();

@@ -3,6 +3,7 @@
 
 #include <octoon/model/path.h>
 #include <octoon/game_component.h>
+#include <octoon/mesh/mesh.h>
 #include <functional>
 
 namespace octoon
@@ -39,7 +40,7 @@ namespace octoon
 	private:
 		bool isSharedPath_;
 		model::Paths paths_;
-		model::MeshPtr mesh_;
+		mesh::MeshPtr mesh_;
 	};
 }
 

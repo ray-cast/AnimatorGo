@@ -1,7 +1,10 @@
 #ifndef OCTOON_MODEL_MATERIAL_H_
 #define OCTOON_MODEL_MATERIAL_H_
 
-#include <octoon/model/modtypes.h>
+#include <octoon/math/math.h>
+#include <octoon/runtime/platform.h>
+
+#include <memory>
 
 #define MATKEY_NAME               "$mat.name"
 #define MATKEY_PATH               "$mat.path"
@@ -40,8 +43,16 @@
 
 namespace octoon
 {
-	namespace model
+	namespace material
 	{
+		enum PropertyTypeInfo
+		{
+			PropertyTypeInfoFloat = 0x01,
+			PropertyTypeInfoString = 0x02,
+			PropertyTypeInfoInt = 0x04,
+			PropertyTypeInfoBuffer = 0x08,
+		};
+
 		class OCTOON_EXPORT Material final
 		{
 		public:
@@ -77,11 +88,14 @@ namespace octoon
 
 			std::size_t hash() const noexcept;
 
-			MaterialPtr clone() const noexcept;
+			std::shared_ptr<Material> clone() const noexcept;
 
 		private:
 			std::vector<MaterialParam> _properties;
 		};
+
+		using MaterialPtr = std::shared_ptr<Material>;
+		using Materials = std::vector<MaterialPtr>;
 	}
 }
 

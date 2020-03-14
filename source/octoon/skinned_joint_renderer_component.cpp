@@ -10,13 +10,13 @@ namespace octoon
 	{
 	}
 
-	SkinnedJointRendererComponent::SkinnedJointRendererComponent(model::MaterialPtr&& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(material::MaterialPtr&& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(std::move(material));
 	}
 
-	SkinnedJointRendererComponent::SkinnedJointRendererComponent(const model::MaterialPtr& material) noexcept
+	SkinnedJointRendererComponent::SkinnedJointRendererComponent(const material::MaterialPtr& material) noexcept
 		: needUpdate_(true)
 	{
 		this->setMaterial(material);
@@ -88,7 +88,7 @@ namespace octoon
 	{
 		if (needUpdate_)
 		{
-			auto meshes = std::make_shared<model::Mesh>();
+			auto meshes = std::make_shared<mesh::Mesh>();
 			auto& vertices = meshes->getVertexArray();
 
 			for (auto& transfrom : transforms_)

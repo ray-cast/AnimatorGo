@@ -593,7 +593,7 @@ namespace octoon
 	void
 	GameObject::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
-		auto it = dispatchEvents_.find(std::string(event));
+		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
 			(*it).second.call_all_slots(data);
 	}
@@ -620,7 +620,7 @@ namespace octoon
 	void
 	GameObject::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		auto it = dispatchEvents_.find(std::string(event));
+		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
 			(*it).second.connect(listener);
 		else
@@ -630,7 +630,7 @@ namespace octoon
 	void
 	GameObject::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		auto it = dispatchEvents_.find(std::string(event));
+		auto it = dispatchEvents_.find(event);
 		if (it != dispatchEvents_.end())
 			(*it).second.disconnect(listener);
 	}
@@ -678,12 +678,6 @@ namespace octoon
 			instance->addChild(it->clone());
 
 		return instance;
-	}
-
-	GameObjectPtr
-	GameObject::find(const char* name) noexcept
-	{
-		return GameObjectManager::instance()->find(name);
 	}
 
 	GameObjectPtr

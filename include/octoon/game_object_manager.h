@@ -46,7 +46,7 @@ namespace octoon
 		std::stack<std::size_t> emptyLists_;
 
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::map<std::string, runtime::signal<void(const std::any&)>> dispatchEvents_;
+		std::map<std::string, runtime::signal<void(const std::any&)>, std::less<>> dispatchEvents_;
 	};
 }
 

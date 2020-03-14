@@ -6,7 +6,6 @@
 #include <octoon/io/iarchive.h>
 
 #include <any>
-#include <unordered_map>
 #include <functional>
 
 namespace octoon
@@ -100,7 +99,6 @@ namespace octoon
 		GameObjectPtr clone() const except;
 
 	public:
-		static GameObjectPtr find(const char* name) noexcept;
 		static GameObjectPtr find(std::string_view name) noexcept;
 
 		static const GameObjectRaws& instances() noexcept;
@@ -147,7 +145,7 @@ namespace octoon
 
 		GameComponents components_;
 		std::vector<GameComponentRaws> dispatchComponents_;
-		std::unordered_map<std::string, runtime::signal<void(const std::any&)>> dispatchEvents_;
+		std::map<std::string, runtime::signal<void(const std::any&)>, std::less<>> dispatchEvents_;
 	};
 }
 

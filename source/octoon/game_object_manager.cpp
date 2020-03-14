@@ -90,19 +90,27 @@ namespace octoon
 	void
 	GameObjectManager::sendMessage(std::string_view event, const std::any& data) noexcept
 	{
-		dispatchEvents_[std::string(event)].call_all_slots(data);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.call_all_slots(data);
 	}
 
 	void
 	GameObjectManager::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[std::string(event)].connect(listener);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.connect(listener);
+		else
+			dispatchEvents_[std::string(event)].connect(listener);
 	}
 
 	void
 	GameObjectManager::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
 	{
-		dispatchEvents_[std::string(event)].disconnect(listener);
+		auto it = dispatchEvents_.find(event);
+		if (it != dispatchEvents_.end())
+			(*it).second.disconnect(listener);
 	}
 
 	void

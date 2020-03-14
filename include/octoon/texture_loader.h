@@ -8,7 +8,7 @@ namespace octoon
 	class OCTOON_EXPORT TextureLoader final
 	{
 	public:
-		static hal::GraphicsTexturePtr load(const std::string_view& path, bool cache = true) noexcept(false);
+		static hal::GraphicsTexturePtr load(std::string_view path, bool cache = true) noexcept(false);
 	};
 }
 

@@ -11,7 +11,7 @@ namespace octoon
 	std::map<std::string, hal::GraphicsTexturePtr, std::less<>> textureCaches_;
 
 	hal::GraphicsTexturePtr
-	TextureLoader::load(const std::string_view& filepath, bool cache) noexcept(false)
+	TextureLoader::load(std::string_view filepath, bool cache) noexcept(false)
 	{
 		assert(!filepath.empty());
 

@@ -5,7 +5,7 @@ namespace octoon
 {
 	namespace runtime
 	{
-		Rtti::Rtti(const std::string& name, RttiConstruct creator, const Rtti* parent) noexcept
+		Rtti::Rtti(std::string_view name, RttiConstruct creator, const Rtti* parent) noexcept
 			: name_(name)
 			, parent_(parent)
 			, construct_(creator)
@@ -55,28 +55,12 @@ namespace octoon
 		}
 
 		bool
-		Rtti::isDerivedFrom(const std::string& name) const noexcept
+		Rtti::isDerivedFrom(std::string_view name) const noexcept
 		{
 			for (const Rtti* cur = this; cur != 0; cur = cur->getParent())
 			{
 				if (cur->name_ == name)
-				{
 					return true;
-				}
-			}
-
-			return false;
-		}
-
-		bool
-		Rtti::isDerivedFrom(const char* const name) const noexcept
-		{
-			for (const Rtti* cur = this; cur != 0; cur = cur->getParent())
-			{
-				if (cur->name_ == name)
-				{
-					return true;
-				}
 			}
 
 			return false;

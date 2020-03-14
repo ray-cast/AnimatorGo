@@ -23,8 +23,7 @@ namespace octoon
 
 			bool isInstanceOf(const Rtti* rtti) const noexcept;
 			bool isInstanceOf(const Rtti& rtti) const noexcept;
-			bool isInstanceOf(const char* const className) const noexcept;
-			bool isInstanceOf(const std::string& className) const noexcept;
+			bool isInstanceOf(std::string_view className) const noexcept;
 
 			template<typename T>
 			bool isInstanceOf() const noexcept
@@ -34,8 +33,7 @@ namespace octoon
 
 			bool isA(const Rtti* rtti) const noexcept;
 			bool isA(const Rtti& rtti) const noexcept;
-			bool isA(const char* const rttiName) const noexcept;
-			bool isA(const std::string& rttiName) const noexcept;
+			bool isA(std::string_view rttiName) const noexcept;
 
 			template<typename T>
 			bool isA() const noexcept

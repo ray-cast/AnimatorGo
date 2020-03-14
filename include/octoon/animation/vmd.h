@@ -81,15 +81,6 @@ namespace octoon
 
 #pragma pack(pop)
 
-		class VmdName
-		{
-		public:
-			static std::string sjis2utf8(const std::string& sjis);
-			static std::optional<std::string> load(io::istream& reader);
-			static std::optional<std::string> load_fixed_utf8(io::istream& reader, std::size_t len);
-			static std::optional<std::vector<std::string>> load_arrays(io::istream& reader);
-		};
-
 		struct VMD
 		{
 			VMD_Header Header;

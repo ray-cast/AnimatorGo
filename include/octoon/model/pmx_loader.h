@@ -422,7 +422,7 @@ namespace octoon
 			~PmxLoader() = default;
 
 			bool doCanRead(istream& stream) const noexcept;
-			bool doCanRead(const std::string& type) const noexcept;
+			bool doCanRead(std::string_view type) const noexcept;
 			bool doCanRead(const char* type) const noexcept;
 
 			bool doLoad(istream& stream, PMX& pmx) noexcept;

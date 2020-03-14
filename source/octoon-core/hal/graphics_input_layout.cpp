@@ -102,7 +102,7 @@ namespace octoon
 		}
 
 		void
-		GraphicsVertexLayout::setSemantic(const std::string& name) noexcept
+		GraphicsVertexLayout::setSemantic(std::string_view name) noexcept
 		{
 			_name = name;
 		}

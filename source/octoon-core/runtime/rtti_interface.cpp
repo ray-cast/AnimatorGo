@@ -19,13 +19,7 @@ namespace octoon
 		}
 
 		bool
-		RttiInterface::isInstanceOf(const std::string& className) const noexcept
-		{
-			return this->rtti()->type_name() == className;
-		}
-
-		bool
-		RttiInterface::isInstanceOf(const char* const className) const noexcept
+		RttiInterface::isInstanceOf(std::string_view className) const noexcept
 		{
 			return this->rtti()->type_name() == className;
 		}
@@ -43,13 +37,7 @@ namespace octoon
 		}
 
 		bool
-		RttiInterface::isA(const char* const rttiName) const noexcept
-		{
-			return this->rtti()->isDerivedFrom(rttiName);
-		}
-
-		bool
-		RttiInterface::isA(const std::string& rttiName) const noexcept
+		RttiInterface::isA(std::string_view rttiName) const noexcept
 		{
 			return this->rtti()->isDerivedFrom(rttiName);
 		}

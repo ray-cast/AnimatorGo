@@ -38,7 +38,7 @@ namespace octoon
 			GraphicsVertexLayout(std::uint8_t slot, const std::string& semantic, std::uint8_t semanticIndex, GraphicsFormat format, std::uint16_t offset = 0) noexcept;
 			~GraphicsVertexLayout() noexcept;
 
-			void setSemantic(const std::string& semantic) noexcept;
+			void setSemantic(std::string_view semantic) noexcept;
 			const std::string& getSemantic() const noexcept;
 
 			void setSemanticIndex(std::uint8_t index) noexcept;

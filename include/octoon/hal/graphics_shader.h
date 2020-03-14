@@ -24,11 +24,11 @@ namespace octoon
 			void setStage(GraphicsShaderStageFlags type) noexcept;
 			GraphicsShaderStageFlags getStage() const noexcept;
 
-			void setByteCodes(const std::string& codes) noexcept;
+			void setByteCodes(std::string_view codes) noexcept;
 			void setByteCodes(std::string&& codes) noexcept;
 			const std::string& getByteCodes() const noexcept;
 
-			void setEntryPoint(const std::string& codes) noexcept;
+			void setEntryPoint(std::string_view codes) noexcept;
 			void setEntryPoint(std::string&& codes) noexcept;
 			const std::string& getEntryPoint() const noexcept;
 

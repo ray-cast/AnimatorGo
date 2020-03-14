@@ -12,12 +12,10 @@ namespace octoon
 		{
 		public:
 			HALMaterial() noexcept;
-			HALMaterial(std::string&& name) noexcept;
-			HALMaterial(const std::string& name) noexcept;
+			HALMaterial(std::string_view name) noexcept;
 			~HALMaterial() noexcept;
 
-			void setName(std::string&& name) noexcept;
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
 
 			virtual void setTransform(const math::float4x4& vp) noexcept = 0;
@@ -26,7 +24,7 @@ namespace octoon
 			virtual const hal::GraphicsPipelinePtr& getPipeline() const noexcept = 0;
 			virtual const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept = 0;
 
-			virtual hal::GraphicsUniformSetPtr at(const std::string& name) const;
+			virtual hal::GraphicsUniformSetPtr at(std::string_view name) const;
 
 			virtual HALMaterialPtr clone() const noexcept = 0;
 

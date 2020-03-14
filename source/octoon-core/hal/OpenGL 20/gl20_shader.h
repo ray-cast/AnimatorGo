@@ -14,7 +14,7 @@ namespace octoon
 			GL20GraphicsAttribute() noexcept;
 			~GL20GraphicsAttribute() noexcept;
 
-			void setSemantic(const std::string& semantic) noexcept;
+			void setSemantic(std::string_view semantic) noexcept;
 			const std::string& getSemantic() const noexcept override;
 
 			void setSemanticIndex(std::uint32_t index) noexcept;
@@ -44,10 +44,10 @@ namespace octoon
 			GL20GraphicsUniform() noexcept;
 			~GL20GraphicsUniform() noexcept;
 
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept override;
 
-			void setSamplerName(const std::string& name) noexcept;
+			void setSamplerName(std::string_view name) noexcept;
 			const std::string& getSamplerName() const noexcept override;
 
 			void setType(GraphicsUniformType type) noexcept;
@@ -133,7 +133,7 @@ namespace octoon
 
 		private:
 			static GraphicsFormat toGraphicsFormat(GLenum type) noexcept;
-			static GraphicsUniformType toGraphicsUniformType(const std::string& name, GLenum type) noexcept;
+			static GraphicsUniformType toGraphicsUniformType(std::string_view name, GLenum type) noexcept;
 
 		private:
 			friend class GL20Device;

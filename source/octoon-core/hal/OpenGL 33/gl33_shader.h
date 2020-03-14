@@ -14,7 +14,7 @@ namespace octoon
 			GL33GraphicsAttribute() noexcept;
 			~GL33GraphicsAttribute() noexcept;
 
-			void setSemantic(const std::string& semantic) noexcept;
+			void setSemantic(std::string_view semantic) noexcept;
 			const std::string& getSemantic() const noexcept;
 
 			void setSemanticIndex(std::uint32_t index) noexcept;
@@ -44,10 +44,10 @@ namespace octoon
 			GL33GraphicsUniform() noexcept;
 			~GL33GraphicsUniform() noexcept;
 
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
 
-			void setSamplerName(const std::string& name) noexcept;
+			void setSamplerName(std::string_view name) noexcept;
 			const std::string& getSamplerName() const noexcept;
 
 			void setType(GraphicsUniformType type) noexcept;
@@ -82,7 +82,7 @@ namespace octoon
 			GL33GraphicsUniformBlock() noexcept;
 			~GL33GraphicsUniformBlock() noexcept;
 
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
 
 			void setType(GraphicsUniformType type) noexcept;
@@ -174,7 +174,7 @@ namespace octoon
 
 		private:
 			static GraphicsFormat toGraphicsFormat(GLenum type) noexcept;
-			static GraphicsUniformType toGraphicsUniformType(const std::string& name, GLenum type) noexcept;
+			static GraphicsUniformType toGraphicsUniformType(std::string_view name, GLenum type) noexcept;
 
 		private:
 			friend class GL33Device;

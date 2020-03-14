@@ -23,19 +23,14 @@ namespace octoon
 			{
 			}
 
-			explicit AnimationClip(const std::string& _name) noexcept
+			explicit AnimationClip(std::string_view _name) noexcept
 				: name(_name)
 				, finish(false)
 				, timeLength(0)
 			{				
 			}
 
-			void setName(std::string&& _name) noexcept
-			{
-				this->name = std::move(_name);
-			}
-
-			void setName(const std::string& _name) noexcept
+			void setName(std::string_view _name) noexcept
 			{
 				this->name = _name;
 			}

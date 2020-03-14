@@ -74,7 +74,7 @@ namespace octoon
 		}
 
 		void
-		GraphicsShaderDesc::setByteCodes(const std::string& codes) noexcept
+		GraphicsShaderDesc::setByteCodes(std::string_view codes) noexcept
 		{
 			_bytecodes = codes;
 		}
@@ -92,7 +92,7 @@ namespace octoon
 		}
 
 		void
-		GraphicsShaderDesc::setEntryPoint(const std::string& main) noexcept
+		GraphicsShaderDesc::setEntryPoint(std::string_view main) noexcept
 		{
 			_main = main;
 		}

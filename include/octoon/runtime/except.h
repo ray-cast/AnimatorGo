@@ -33,16 +33,14 @@ namespace octoon
 			virtual const error_code& code() const noexcept;
 
 		protected:
-			exception(const char* msg, const error_code& code) noexcept;
-			exception(const std::string& msg, const error_code& code) noexcept;
-			exception(std::string&& msg, const error_code& code) noexcept;
-			exception(std::string&& msg, error_code&& code) noexcept;
+			exception(std::string_view msg, error_code&& code) noexcept;
+			exception(std::string_view msg, const error_code& code) noexcept;
 			exception(exception&& move) noexcept;
 			virtual ~exception() noexcept;
 
-			static std::string name(const std::string& ename, const error_code& id)
+			static std::string name(std::string_view ename, const error_code& id)
 			{
-				return "[octoon.exception." + ename + "." + std::to_string(id.value()) + "] ";
+				return "[octoon.exception." + std::string(ename) + "." + std::to_string(id.value()) + "] ";
 			}
 
 		private:
@@ -57,14 +55,14 @@ namespace octoon
 		class invalid_iterator final : public exception
 		{
 		public:
-			static invalid_iterator create(const std::string& what_arg, const error_code& code = error_code::none)
+			static invalid_iterator create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("invalid_iterator", code) + what_arg;
+				std::string w = exception::name("invalid_iterator", code) + std::string(what_arg);
 				return invalid_iterator(w, code);
 			}
 
 		private:
-			invalid_iterator(const std::string& what_arg, const error_code& code)
+			invalid_iterator(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};
@@ -72,14 +70,14 @@ namespace octoon
 		class type_error final : public exception
 		{
 		public:
-			static type_error create(const std::string& what_arg, const error_code& code = error_code::none)
+			static type_error create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("type_error", code) + what_arg;
+				std::string w = exception::name("type_error", code) + std::string(what_arg);
 				return type_error(w, code);
 			}
 
 		private:
-			type_error(const std::string& what_arg, const error_code& code)
+			type_error(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};
@@ -87,14 +85,14 @@ namespace octoon
 		class out_of_range : public exception
 		{
 		public:
-			static out_of_range create(const std::string& what_arg, const error_code& code = error_code::none)
+			static out_of_range create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("out_of_range", code) + what_arg;
+				std::string w = exception::name("out_of_range", code) + std::string(what_arg);
 				return out_of_range(w, code);
 			}
 
 		private:
-			out_of_range(const std::string& what_arg, const error_code& code)
+			out_of_range(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};
@@ -102,14 +100,14 @@ namespace octoon
 		class runtime_error : public exception
 		{
 		public:
-			static runtime_error create(const std::string& what_arg, const error_code& code = error_code::none)
+			static runtime_error create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("runtime_error", code) + what_arg;
+				std::string w = exception::name("runtime_error", code) + std::string(what_arg);
 				return runtime_error(w, code);
 			}
 
 		private:
-			runtime_error(const std::string& what_arg, const error_code& code)
+			runtime_error(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};
@@ -117,14 +115,14 @@ namespace octoon
 		class null_reference : public exception
 		{
 		public:
-			static null_reference create(const std::string& what_arg, const error_code& code = error_code::none)
+			static null_reference create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("null_reference", code) + what_arg;
+				std::string w = exception::name("null_reference", code) + std::string(what_arg);
 				return null_reference(w, code);
 			}
 
 		private:
-			null_reference(const std::string& what_arg, const error_code& code)
+			null_reference(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};
@@ -132,14 +130,14 @@ namespace octoon
 		class not_implemented : public exception
 		{
 		public:
-			static not_implemented create(const std::string& what_arg, const error_code& code = error_code::none)
+			static not_implemented create(std::string_view what_arg, const error_code& code = error_code::none)
 			{
-				std::string w = exception::name("not_implemented", code) + what_arg;
+				std::string w = exception::name("not_implemented", code) + std::string(what_arg);
 				return not_implemented(w, code);
 			}
 
 		private:
-			not_implemented(const std::string& what_arg, const error_code& code)
+			not_implemented(std::string_view what_arg, const error_code& code)
 				: exception(what_arg, code)
 			{}
 		};

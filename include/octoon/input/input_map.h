@@ -67,7 +67,7 @@ namespace octoon
 		typedef std::pair<std::string, InputOp> bind_t;
 
 		template <typename First, typename ...Args>
-		bind_t bind(const std::string& id, First&& first, Args&& ...args)
+		bind_t bind(std::string_view id, First&& first, Args&& ...args)
 		{
 			InputOp ops;
 			impl::bind_ops(ops, first, args...);
@@ -86,7 +86,7 @@ namespace octoon
 			bool isInput(const std::string& id) const;
 		private:
 			DefaultInputPtr input_;
-			std::map<std::string, InputOp> table_;
+			std::map<std::string, InputOp, std::less<>> table_;
 		};
 	}
 }

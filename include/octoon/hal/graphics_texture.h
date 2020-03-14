@@ -13,7 +13,7 @@ namespace octoon
 			GraphicsTextureDesc() noexcept;
 			~GraphicsTextureDesc() noexcept;
 
-			void setName(const std::string& name) noexcept;
+			void setName(std::string_view name) noexcept;
 			void setWidth(std::uint32_t w) noexcept;
 			void setHeight(std::uint32_t h) noexcept;
 			void setDepth(std::uint32_t d) noexcept;

@@ -23,19 +23,7 @@ namespace octoon
 		}
 
 		Rtti*
-		RttiFactory::getRtti(const std::string& name) noexcept
-		{
-			return rttiLists_[name];
-		}
-
-		Rtti*
-		RttiFactory::getRtti(const char* name) noexcept
-		{
-			return rttiLists_[name];
-		}
-
-		const Rtti*
-		RttiFactory::getRtti(const std::string& name) const noexcept
+		RttiFactory::getRtti(std::string_view name) noexcept
 		{
 			auto it = rttiLists_.lower_bound(name);
 			for (; it != rttiLists_.end(); ++it)
@@ -45,7 +33,7 @@ namespace octoon
 		}
 
 		const Rtti*
-		RttiFactory::getRtti(const char* name) const noexcept
+		RttiFactory::getRtti(std::string_view name) const noexcept
 		{
 			auto it = rttiLists_.lower_bound(name);
 			for (; it != rttiLists_.end(); ++it)
@@ -70,7 +58,7 @@ namespace octoon
 		}
 
 		RttiInterfacePtr
-		RttiFactory::createInstance(const std::string& name, const Rtti& base) const except
+		RttiFactory::createInstance(std::string_view name, const Rtti& base) const except
 		{
 			assert(!name.empty());
 

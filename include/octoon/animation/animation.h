@@ -78,7 +78,7 @@ namespace octoon
 					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
-			Animation(const std::string& _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
+			Animation(std::string_view _name, const AnimationClips<_Elem, _Time>& _clips) noexcept
 				: name(_name)
 				, clips(_clips)
 			{
@@ -89,7 +89,7 @@ namespace octoon
 					state.timeLength = std::max(clip.timeLength, state.timeLength);
 			}
 
-			explicit Animation(const std::string& _name) noexcept
+			explicit Animation(std::string_view _name) noexcept
 				: name(_name)
 			{
 				state.finish = false

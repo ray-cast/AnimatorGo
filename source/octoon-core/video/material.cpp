@@ -9,12 +9,7 @@ namespace octoon
 		{
 		}
 
-		HALMaterial::HALMaterial(std::string&& name) noexcept
-		{
-			this->setName(std::move(name));
-		}
-
-		HALMaterial::HALMaterial(const std::string& name) noexcept
+		HALMaterial::HALMaterial(std::string_view name) noexcept
 		{
 			this->setName(name);
 		}
@@ -24,13 +19,7 @@ namespace octoon
 		}
 
 		void
-		HALMaterial::setName(std::string&& name) noexcept
-		{
-			_name = std::move(name);
-		}
-
-		void
-		HALMaterial::setName(const std::string& name) noexcept
+		HALMaterial::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}
@@ -42,7 +31,7 @@ namespace octoon
 		}
 
 		hal::GraphicsUniformSetPtr 
-		HALMaterial::at(const std::string& name) const
+		HALMaterial::at(std::string_view name) const
 		{
 			auto begin = this->getDescriptorSet()->getUniformSets().begin();
 			auto end = this->getDescriptorSet()->getUniformSets().end();

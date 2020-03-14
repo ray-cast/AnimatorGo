@@ -34,7 +34,7 @@ namespace octoon
 			return false;
 		}
 
-		bool PmxLoader::doCanRead(const std::string& type) const noexcept
+		bool PmxLoader::doCanRead(std::string_view type) const noexcept
 		{
 			return type.compare("pmx") == 0;
 		}

@@ -18,7 +18,7 @@ namespace octoon
 		public:
 			typedef RttiInterface*(*RttiConstruct)();
 		public:
-			Rtti(const std::string& name, RttiConstruct creator, const Rtti* parent) noexcept;
+			Rtti(std::string_view name, RttiConstruct creator, const Rtti* parent) noexcept;
 			~Rtti() = default;
 
 			std::shared_ptr<class RttiInterface> create() const except; // throw(std::bad_alloc)
@@ -29,8 +29,7 @@ namespace octoon
 
 			bool isDerivedFrom(const Rtti* other) const noexcept;
 			bool isDerivedFrom(const Rtti& other) const noexcept;
-			bool isDerivedFrom(const char* const name) const noexcept;
-			bool isDerivedFrom(const std::string& name) const noexcept;
+			bool isDerivedFrom(std::string_view name) const noexcept;
 
 		private:
 			std::string name_;

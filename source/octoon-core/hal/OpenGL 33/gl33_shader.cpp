@@ -33,7 +33,7 @@ namespace octoon
 		}
 
 		void
-		GL33GraphicsAttribute::setSemantic(const std::string& semantic) noexcept
+		GL33GraphicsAttribute::setSemantic(std::string_view semantic) noexcept
 		{
 			_semantic = semantic;
 		}
@@ -93,7 +93,7 @@ namespace octoon
 		}
 
 		void
-		GL33GraphicsUniform::setName(const std::string& name) noexcept
+		GL33GraphicsUniform::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}
@@ -105,7 +105,7 @@ namespace octoon
 		}
 
 		void
-		GL33GraphicsUniform::setSamplerName(const std::string& name) noexcept
+		GL33GraphicsUniform::setSamplerName(std::string_view name) noexcept
 		{
 			_samplerName = name;
 		}
@@ -177,7 +177,7 @@ namespace octoon
 		}
 
 		void
-		GL33GraphicsUniformBlock::setName(const std::string& name) noexcept
+		GL33GraphicsUniformBlock::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}
@@ -794,7 +794,7 @@ namespace octoon
 		}
 
 		GraphicsUniformType
-		GL33Program::toGraphicsUniformType(const std::string& name, GLenum type) noexcept
+		GL33Program::toGraphicsUniformType(std::string_view name, GLenum type) noexcept
 		{
 			if (type == GL_SAMPLER_2D ||
 				type == GL_SAMPLER_3D ||
@@ -806,7 +806,7 @@ namespace octoon
 			}
 			else
 			{
-				bool isArray = strstr(name.c_str(), "[") != nullptr;
+				bool isArray = name.find("[") != std::string::npos;
 				if (type == GL_BOOL)
 				{
 					return GraphicsUniformType::Boolean;

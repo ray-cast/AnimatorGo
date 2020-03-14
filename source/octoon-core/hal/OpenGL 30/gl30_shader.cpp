@@ -30,7 +30,7 @@ namespace octoon
 		}
 
 		void
-		GL30GraphicsAttribute::setSemantic(const std::string& semantic) noexcept
+		GL30GraphicsAttribute::setSemantic(std::string_view semantic) noexcept
 		{
 			_semantic = semantic;
 		}
@@ -90,7 +90,7 @@ namespace octoon
 		}
 
 		void
-		GL30GraphicsUniform::setName(const std::string& name) noexcept
+		GL30GraphicsUniform::setName(std::string_view name) noexcept
 		{
 			_name = name;
 		}
@@ -102,7 +102,7 @@ namespace octoon
 		}
 
 		void
-		GL30GraphicsUniform::setSamplerName(const std::string& name) noexcept
+		GL30GraphicsUniform::setSamplerName(std::string_view name) noexcept
 		{
 			_samplerName = name;
 		}
@@ -607,7 +607,7 @@ namespace octoon
 		}
 
 		GraphicsUniformType
-		GL30Program::toGraphicsUniformType(const std::string& name, GLenum type) noexcept
+		GL30Program::toGraphicsUniformType(std::string_view name, GLenum type) noexcept
 		{
 			if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE)
 			{

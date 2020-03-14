@@ -26,27 +26,15 @@ namespace octoon
 			return val_;
 		}
 
-		exception::exception(const char* msg, const error_code& code) noexcept
-			: message_(msg)
-			, code_(code)
-		{
-		}
-
-		exception::exception(const std::string& msg, const error_code& code) noexcept
-			: message_(msg)
-			, code_(code)
-		{
-		}
-
-		exception::exception(std::string&& msg, const error_code& code) noexcept
-			: message_(std::move(msg))
-			, code_(code)
-		{
-		}
-
-		exception::exception(std::string&& msg, error_code&& code) noexcept
+		exception::exception(std::string_view msg, error_code&& code) noexcept
 			: message_(std::move(msg))
 			, code_(std::move(code))
+		{
+		}
+
+		exception::exception(std::string_view msg, const error_code& code) noexcept
+			: message_(msg)
+			, code_(code)
 		{
 		}
 

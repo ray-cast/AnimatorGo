@@ -32,7 +32,7 @@ namespace octoon
 		}
 
 		void
-		AboutWindow::showAboutWindow(const runtime::any& data) noexcept
+		AboutWindow::showAboutWindow(const std::any& data) noexcept
 		{
 			auto str = "Octoon Studio Ver.0.1 beta\n\n Licensed under the MIT.\n\n Copyright (c) 2018-2019. All rights reserved.";
 			this->sendMessage("editor:message", std::make_pair("About", str));

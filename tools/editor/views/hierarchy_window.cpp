@@ -73,9 +73,9 @@ namespace octoon
 		}
 
 		void
-		HierarchyWindow::onObjectSelected(const runtime::any& data) noexcept
+		HierarchyWindow::onObjectSelected(const std::any& data) noexcept
 		{
-			auto object = runtime::any_cast<GameObject*>(data);
+			auto object = std::any_cast<GameObject*>(data);
 			if (object)
 				selectedObject_ = object;
 		}

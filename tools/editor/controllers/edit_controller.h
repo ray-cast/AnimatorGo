@@ -14,10 +14,10 @@ namespace octoon
 			EditController() noexcept;
 			~EditController() noexcept;
 
-			virtual void createGameObject(const runtime::any& data) noexcept;
-			virtual void createCubeObject(const runtime::any& data) noexcept;
-			virtual void createSphereObject(const runtime::any& data) noexcept;
-			virtual void createPlaneObject(const runtime::any& data) noexcept;
+			virtual void createGameObject(const std::any& data) noexcept;
+			virtual void createCubeObject(const std::any& data) noexcept;
+			virtual void createSphereObject(const std::any& data) noexcept;
+			virtual void createPlaneObject(const std::any& data) noexcept;
 
 			virtual GameComponentPtr clone() const noexcept override;
 

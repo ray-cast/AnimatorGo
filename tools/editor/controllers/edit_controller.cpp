@@ -37,25 +37,25 @@ namespace octoon
 		}
 
 		void
-		EditController::createGameObject(const runtime::any& data) noexcept
+		EditController::createGameObject(const std::any& data) noexcept
 		{
 			objects_.push_back(GameObject::create("GameObject"));
 		}
 
 		void
-		EditController::createCubeObject(const runtime::any& data) noexcept
+		EditController::createCubeObject(const std::any& data) noexcept
 		{
 			objects_.push_back(CubeHelper::create(1, 1, 1));
 		}
 
 		void
-		EditController::createSphereObject(const runtime::any& data) noexcept
+		EditController::createSphereObject(const std::any& data) noexcept
 		{
 			objects_.push_back(SphereHelper::create(1));
 		}
 
 		void
-		EditController::createPlaneObject(const runtime::any& data) noexcept
+		EditController::createPlaneObject(const std::any& data) noexcept
 		{
 			objects_.push_back(PlaneHelper::create(10, 10));
 		}

@@ -22,7 +22,7 @@ namespace octoon
 
 			void onGui() noexcept override;
 
-			void showAboutWindow(const runtime::any& data) noexcept;
+			void showAboutWindow(const std::any& data) noexcept;
 		};
 	}
 }

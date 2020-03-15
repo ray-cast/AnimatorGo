@@ -22,7 +22,7 @@ namespace octoon
 
 			void onGui() noexcept override;
 
-			void showPopupMessage(const runtime::any& data) noexcept;
+			void showPopupMessage(const std::any& data) noexcept;
 
 		private:
 			bool _isShowMessage;

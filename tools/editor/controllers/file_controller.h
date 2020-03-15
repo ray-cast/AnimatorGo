@@ -14,14 +14,14 @@ namespace octoon
 			FileController() noexcept;
 			~FileController() noexcept;
 
-			virtual void openProject(const runtime::any& data) noexcept;
-			virtual void saveProject(const runtime::any& data) noexcept;
-			virtual void saveAsProject(const runtime::any& data) noexcept;
+			virtual void openProject(const std::any& data) noexcept;
+			virtual void saveProject(const std::any& data) noexcept;
+			virtual void saveAsProject(const std::any& data) noexcept;
 
-			virtual void openModel(const runtime::any& data) noexcept;
-			virtual void saveModel(const runtime::any& data) noexcept;
+			virtual void openModel(const std::any& data) noexcept;
+			virtual void saveModel(const std::any& data) noexcept;
 
-			virtual void exit(const runtime::any& data) noexcept;
+			virtual void exit(const std::any& data) noexcept;
 
 			virtual GameComponentPtr clone() const noexcept override;
 

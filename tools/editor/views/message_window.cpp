@@ -34,11 +34,11 @@ namespace octoon
 		}
 
 		void
-		MessageWindow::showPopupMessage(const runtime::any& data) noexcept
+		MessageWindow::showPopupMessage(const std::any& data) noexcept
 		{
 			if (!_isShowMessageFirst)
 			{
-				auto pair = runtime::any_cast<std::pair<const char*, const char*>>(data);
+				auto pair = std::any_cast<std::pair<const char*, const char*>>(data);
 
 				_messageText = pair.second;
 				_messageTitle = pair.first;

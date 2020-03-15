@@ -120,9 +120,9 @@ namespace octoon
 		}
 
 		void
-		InspectorWindow::onObjectSelected(const runtime::any& data) noexcept
+		InspectorWindow::onObjectSelected(const std::any& data) noexcept
 		{
-			auto object = runtime::any_cast<GameObject*>(data);
+			auto object = std::any_cast<GameObject*>(data);
 			if (object)
 				selected_ = object->cast_pointer<GameObject>();
 		}

@@ -12,7 +12,6 @@
 #include "controllers/h264_component.h"
 #include "controllers/ui_component.h"
 #include "controllers/mark_component.h"
-#include "controllers/client_component.h"
 #include "controllers/material_component.h"
 
 #include <octoon/octoon.h>
@@ -86,7 +85,6 @@ namespace rabbit
 		std::unique_ptr<H264Component> h264Component_;
 		std::unique_ptr<UIComponent> uiComponent_;
 		std::unique_ptr<MarkComponent> markComponent_;
-		std::unique_ptr<ClientComponent> clientComponent_;
 		std::unique_ptr<MaterialComponent> materialComponent_;
 
 		std::vector<IRabbitComponent*> components_;

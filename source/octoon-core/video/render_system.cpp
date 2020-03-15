@@ -1,7 +1,7 @@
 #include <octoon/video/render_system.h>
 #include <octoon/video/camera.h>
 #include <octoon/video/geometry.h>
-#include <octoon/video/material.h>
+#include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_scene.h>
 
 #include <octoon/runtime/except.h>
@@ -188,7 +188,7 @@ namespace octoon
 					if (!geometry)
 						continue;
 
-					auto material = geometry->getMaterial();
+					auto material = geometry->getRenderPipeline();
 					if (!material)
 						continue;
 

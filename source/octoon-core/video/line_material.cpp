@@ -150,7 +150,7 @@ namespace octoon
 			return color_->getFloat3();
 		}
 
-		HALMaterialPtr
+		RenderPipelinePtr
 		LineMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<LineMaterial>();

@@ -495,18 +495,6 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					if (!profile_->clientModule->isLogin())
-					{
-						QMessageBox msg(this);
-						msg.setWindowTitle(u8"提示");
-						msg.setText(u8"请先登录后在尝试");
-						msg.setIcon(QMessageBox::Information);
-						msg.setStandardButtons(QMessageBox::Ok);
-
-						msg.exec();
-						return false;
-					}
-
 					if (recordWindow_->isHidden())
 					{
 						this->setFixedWidth(this->width() + recordWindow_->minimumWidth());
@@ -557,18 +545,6 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					if (!profile_->clientModule->isLogin())
-					{
-						QMessageBox msg(this);
-						msg.setWindowTitle(u8"提示");
-						msg.setText(u8"请先登录后在尝试");
-						msg.setIcon(QMessageBox::Information);
-						msg.setStandardButtons(QMessageBox::Ok);
-
-						msg.exec();
-						return;
-					}
-
 					QString fileName = QFileDialog::getSaveFileName(this, u8"保存图像", "", tr("PNG Files (*.png)"));
 					if (!fileName.isEmpty())
 						behaviour->renderPicture(fileName.toUtf8().data());
@@ -607,18 +583,6 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					if (profile_->clientModule->token.empty())
-					{
-						QMessageBox msg(this);
-						msg.setWindowTitle(u8"提示");
-						msg.setText(u8"请先登录后在尝试");
-						msg.setIcon(QMessageBox::Information);
-						msg.setStandardButtons(QMessageBox::Ok);
-
-						msg.exec();
-						return false;
-					}
-
 					auto offline = behaviour->getComponent<OfflineComponent>();
 					if (offline)
 					{
@@ -1160,9 +1124,6 @@ namespace rabbit
 					toolBar_->gpuEnable_ = false;
 				}
 			});
-
-			if (profile_->clientModule->isLogin())
-				titleBar_->loginSuccess();
 
 			return true;
 		}

@@ -6,19 +6,19 @@ namespace octoon
 {
 	namespace video
 	{
-		BasicMaterial::BasicMaterial() except
+		BasicPipeline::BasicPipeline() except
 		{
 			this->setup();
 		}
 
-		BasicMaterial::BasicMaterial(const hal::GraphicsTexturePtr& texture) except
+		BasicPipeline::BasicPipeline(const hal::GraphicsTexturePtr& texture) except
 		{
 			this->setup();
 			this->setTexture(texture);
 		}
 
 		void
-		BasicMaterial::setup() except
+		BasicPipeline::setup() except
 		{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 			const char* vert = R"(
@@ -136,30 +136,30 @@ namespace octoon
 			hasTexture_->uniform1b(false);
 		}
 
-		BasicMaterial::~BasicMaterial() noexcept
+		BasicPipeline::~BasicPipeline() noexcept
 		{
 		}
 
 		void
-		BasicMaterial::setTransform(const math::float4x4& m) noexcept
+		BasicPipeline::setTransform(const math::float4x4& m) noexcept
 		{
 			model_->uniform4fmat(m);
 		}
 
 		void
-		BasicMaterial::setViewProjection(const math::float4x4& vp) noexcept
+		BasicPipeline::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
 		}
 
 		void 
-		BasicMaterial::setBaseColor(const math::float4& color) noexcept
+		BasicPipeline::setBaseColor(const math::float4& color) noexcept
 		{
 			color_->uniform4f(color);
 		}
 
 		void
-		BasicMaterial::setTexture(const hal::GraphicsTexturePtr& texture) noexcept
+		BasicPipeline::setTexture(const hal::GraphicsTexturePtr& texture) noexcept
 		{
 			if (texture)
 			{
@@ -174,21 +174,21 @@ namespace octoon
 		}
 
 		const hal::GraphicsPipelinePtr&
-		BasicMaterial::getPipeline() const noexcept
+		BasicPipeline::getPipeline() const noexcept
 		{
 			return pipeline_;
 		}
 
 		const hal::GraphicsDescriptorSetPtr&
-		BasicMaterial::getDescriptorSet() const noexcept
+		BasicPipeline::getDescriptorSet() const noexcept
 		{
 			return descriptorSet_;
 		}
 
-		HALMaterialPtr
-		BasicMaterial::clone() const noexcept
+		RenderPipelinePtr
+		BasicPipeline::clone() const noexcept
 		{
-			auto instance = std::make_shared<BasicMaterial>();
+			auto instance = std::make_shared<BasicPipeline>();
 
 
 			return instance;

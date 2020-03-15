@@ -29,6 +29,7 @@ namespace rabbit
 		settingButton_->setToolTip(u8"全局设置");
 
 		vipButton_ = std::make_unique<QToolButton>(this);
+		vipButton_->setVisible(false);
 		vipButton_->setObjectName("vip");
 		vipButton_->setToolTip(u8"会员");
 

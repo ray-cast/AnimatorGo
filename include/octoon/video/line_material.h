@@ -1,14 +1,14 @@
 #ifndef OCTOON_LINE_MATERIAL_H_
 #define OCTOON_LINE_MATERIAL_H_
 
-#include <octoon/video/material.h>
+#include <octoon/video/render_pipeline.h>
 #include <octoon/hal/graphics.h>
 
 namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT LineMaterial final : public HALMaterial
+		class OCTOON_EXPORT LineMaterial final : public RenderPipeline
 		{
 		public:
 			LineMaterial() except;
@@ -26,7 +26,7 @@ namespace octoon
 			void setColor(const math::float3& colors) noexcept;
 			const math::float3& getColor() const noexcept;
 
-			HALMaterialPtr clone() const noexcept override;
+			RenderPipelinePtr clone() const noexcept override;
 
 		private:
 			LineMaterial(const LineMaterial&) = delete;

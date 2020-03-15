@@ -28,15 +28,6 @@ namespace octoon
 		struct Joint;
 		struct Texture;
 
-		namespace detail
-		{
-			template<typename _Tx = std::uint16_t, typename _Ty = float>
-			class VertexWeight;
-		}
-
-		// default
-		using VertexWeight = detail::VertexWeight<std::uint16_t, float>;
-
 		typedef std::shared_ptr<class Path> PathPtr;
 		typedef std::shared_ptr<class PathEdge> PathEdgePtr;
 		typedef std::shared_ptr<class PathGroup> PathGroupPtr;		
@@ -45,12 +36,7 @@ namespace octoon
 		typedef std::shared_ptr<class TextFile> TextFilePtr;
 		typedef std::shared_ptr<class TextMeshing> TextMeshingPtr;
 
-		typedef std::shared_ptr<Bone> BonePtr;
 		typedef std::shared_ptr<IKAttr> IKAttrPtr;
-		typedef std::shared_ptr<VertexWeight> VertexWeightPtr;
-
-		typedef std::vector<VertexWeight> VertexWeights;
-		typedef std::vector<Bone> Bones;
 		typedef std::vector<IKAttr> InverseKinematics;
 		typedef std::vector<TextFilePtr> TextFiles;
 		typedef std::vector<ContourPtr> Contours;

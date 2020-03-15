@@ -329,7 +329,7 @@ namespace octoon
 			return decal_->getTexture();
 		}
 
-		HALMaterialPtr
+		RenderPipelinePtr
 		GGXMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<GGXMaterial>();

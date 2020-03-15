@@ -413,23 +413,11 @@ namespace rabbit
 
 			animation_->setText(QString(u8"视频动作帧数：%1").arg(animLength));
 			summary_->setText(QString(u8"视频渲染帧数：%1").arg(timeLength));				
-			coinTotal_->setText(QString(u8"可用兔币：%1个").arg(behaviour->getProfile()->clientModule->coin));
 
 			if (select1_->isChecked())
 			{
 				timeTotal_->setText(QString(u8"视频渲染预估时间：%1分钟").arg((timeLength * 10 / 60)));
 				expense_->setText(QString(u8"视频总消耗兔币：%1个").arg(timeLength));
-
-				if (behaviour->getProfile()->clientModule->coin < timeLength)
-				{
-					okButton_->setEnabled(false);
-					warning_->setText(QString(u8"兔币余额不足，当前兔币总数：%1个").arg(behaviour->getProfile()->clientModule->coin));
-				}
-				else
-				{
-					okButton_->setEnabled(true);
-					warning_->setText(QString(u8"消耗兔币：%1个").arg(timeLength));
-				}		
 			}
 			else
 			{

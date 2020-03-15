@@ -215,7 +215,7 @@ namespace octoon
 			}
 		}
 
-		HALMaterialPtr
+		RenderPipelinePtr
 		TextMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<TextMaterial>();

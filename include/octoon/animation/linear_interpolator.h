@@ -3,23 +3,20 @@
 
 #include <octoon/animation/interpolator.h>
 
-namespace octoon
+namespace octoon::animation
 {
-	namespace animation
+	template<typename T>
+	class LinearInterpolator final : public Interpolator<T(T)>
 	{
-		template<typename T>
-		class LinearInterpolator final : public Interpolator<T(T)>
-		{
-		public:
-			LinearInterpolator() noexcept = default;
-			virtual ~LinearInterpolator() noexcept = default;
+	public:
+		LinearInterpolator() noexcept = default;
+		virtual ~LinearInterpolator() noexcept = default;
 
-			virtual T interpolator(T t) const noexcept override
-			{
-				return t;
-			}
-		};
-	}
+		virtual T interpolator(T t) const noexcept override
+		{
+			return t;
+		}
+	};
 }
 
 #endif

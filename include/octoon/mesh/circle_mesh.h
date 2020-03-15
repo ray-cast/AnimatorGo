@@ -3,18 +3,15 @@
 
 #include <octoon/mesh/mesh.h>
 
-namespace octoon
+namespace octoon::mesh
 {
-	namespace mesh
+	class OCTOON_EXPORT CircleMesh final : public Mesh
 	{
-		class OCTOON_EXPORT CircleMesh final : public Mesh
-		{
-			OctoonDeclareSubClass(CircleMesh, Mesh)
-		public:
-			CircleMesh() noexcept;
-			CircleMesh(float radius, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
-		};
-	}
+		OctoonDeclareSubClass(CircleMesh, Mesh)
+	public:
+		CircleMesh() noexcept;
+		CircleMesh(float radius, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
+	};
 }
 
 #endif

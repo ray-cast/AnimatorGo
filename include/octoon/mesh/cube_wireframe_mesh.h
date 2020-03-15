@@ -3,18 +3,15 @@
 
 #include <octoon/mesh/mesh.h>
 
-namespace octoon
+namespace octoon::mesh
 {
-	namespace mesh
+	class OCTOON_EXPORT CubeWireframeMesh final : public Mesh
 	{
-		class OCTOON_EXPORT CubeWireframeMesh final : public Mesh
-		{
-			OctoonDeclareSubClass(CubeWireframeMesh, Mesh)
-		public:
-			CubeWireframeMesh() noexcept;
-			CubeWireframeMesh(float width, float height, float depth, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1, std::uint32_t depthSegments = 1) noexcept;
-		};
-	}
+		OctoonDeclareSubClass(CubeWireframeMesh, Mesh)
+	public:
+		CubeWireframeMesh() noexcept;
+		CubeWireframeMesh(float width, float height, float depth, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1, std::uint32_t depthSegments = 1) noexcept;
+	};
 }
 
 #endif

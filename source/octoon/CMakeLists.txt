@@ -131,6 +131,8 @@ SET(LOADER_LIST
 	${SOURCE_PATH}/mesh_loader.cpp
 	${HEADER_PATH}/texture_loader.h
 	${SOURCE_PATH}/texture_loader.cpp
+	${HEADER_PATH}/vmd_loader.h
+	${SOURCE_PATH}/vmd_loader.cpp
 )
 SOURCE_GROUP("system\\loader" FILES ${LOADER_LIST})
 
@@ -270,6 +272,8 @@ ELSE()
 ENDIF()
 
 FIND_PACKAGE(Alembic CONFIG REQUIRED)
+FIND_PACKAGE(unofficial-iconv CONFIG REQUIRED)
+
 
 TARGET_LINK_LIBRARIES(${LIB_NAME} PUBLIC octoon-core)
 
@@ -278,6 +282,7 @@ TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE PhysX)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE PhysXExtensions)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE RadeonProRender64)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE Alembic::Alembic)
+TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE unofficial::iconv::libiconv unofficial::iconv::libcharset)
 
 TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_INCLUDE})
 

@@ -3,18 +3,15 @@
 
 #include <octoon/mesh/mesh.h>
 
-namespace octoon
+namespace octoon::mesh
 {
-	namespace mesh
+	class OCTOON_EXPORT VolumeMesh final : public Mesh
 	{
-		class OCTOON_EXPORT VolumeMesh final : public Mesh
-		{
-			OctoonDeclareSubClass(VolumeMesh, Mesh)
-		public:
-			VolumeMesh() noexcept;
-			VolumeMesh(float fovy, float znear, float zfar) noexcept;
-		};
-	}
+		OctoonDeclareSubClass(VolumeMesh, Mesh)
+	public:
+		VolumeMesh() noexcept;
+		VolumeMesh(float fovy, float znear, float zfar) noexcept;
+	};
 }
 
 #endif

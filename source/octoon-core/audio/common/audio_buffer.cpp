@@ -1,15 +1,12 @@
 #include <octoon/audio/common/audio_buffer.h>
 
-namespace octoon
+namespace octoon::audio
 {
-    namespace audio
+    AudioBuffer::AudioBuffer() noexcept
     {
-        AudioBuffer::AudioBuffer() noexcept
-        {
-        }
+    }
 
-        AudioBuffer::~AudioBuffer() noexcept
-        {
-        }
+    AudioBuffer::~AudioBuffer() noexcept
+    {
     }
 }

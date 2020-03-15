@@ -38,9 +38,9 @@ namespace octoon
 		MeshRendererComponent(const MeshRendererComponent&) = delete;
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;
 
-	protected:
+	private:
 		video::Geometrys geometries_;
-		video::HALMaterials materials_;
+		video::RenderPipelines pipelines_;
 	};
 }
 

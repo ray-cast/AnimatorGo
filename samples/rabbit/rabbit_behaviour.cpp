@@ -115,7 +115,6 @@ namespace rabbit
 		h264Component_ = std::make_unique<H264Component>();
 		uiComponent_ = std::make_unique<UIComponent>();
 		markComponent_ = std::make_unique<MarkComponent>();
-		clientComponent_ = std::make_unique<ClientComponent>();
 		materialComponent_ = std::make_unique<MaterialComponent>();
 
 		canvasComponent_->init(context_, profile_->canvasModule);
@@ -126,7 +125,6 @@ namespace rabbit
 		h264Component_->init(context_, profile_->h264Module);
 		uiComponent_->init(context_, profile_->canvasModule);
 		markComponent_->init(context_, profile_->markModule);
-		clientComponent_->init(context_, profile_->clientModule);
 		materialComponent_->init(context_, profile_->materialModule);
 
 		this->addComponent(canvasComponent_.get());
@@ -137,7 +135,6 @@ namespace rabbit
 		this->addComponent(markComponent_.get());
 		this->addComponent(h264Component_.get());
 		this->addComponent(uiComponent_.get());
-		this->addComponent(clientComponent_.get());
 		this->addComponent(materialComponent_.get());
 
 		this->enableComponents();
@@ -310,9 +307,6 @@ namespace rabbit
 		}
 
 		canvasComponent_->save(filepath);
-
-		if (profile_->offlineModule->offlineEnable)
-			clientComponent_->coin(1);
 	}
 
 	void

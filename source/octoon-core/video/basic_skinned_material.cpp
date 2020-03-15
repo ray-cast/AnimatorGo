@@ -186,7 +186,7 @@ namespace octoon
 			return descriptorSet_;
 		}
 
-		HALMaterialPtr
+		RenderPipelinePtr
 		BasicSkinnedMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<BasicSkinnedMaterial>();

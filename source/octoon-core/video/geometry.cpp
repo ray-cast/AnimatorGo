@@ -1,116 +1,109 @@
 #include <octoon/video/geometry.h>
-#include <octoon/video/camera.h>
 
-namespace octoon
+namespace octoon::video
 {
-	namespace video
+	OctoonImplementSubClass(Geometry, RenderObject, "Geometry")
+
+	Geometry::Geometry() noexcept
+		: isCastShadow_(true)
+		, isReceiveShadow_(true)
+		, numVertices_(0)
+		, numIndices_(0)
 	{
-		OctoonImplementSubClass(Geometry, RenderObject, "Geometry")
+	}
 
-		Geometry::Geometry() noexcept
-			: isCastShadow_(true)
-			, isReceiveShadow_(true)
-			, indexType_(GraphicsIndexType::Uint32)
-			, vertexOffset_(0)
-			, indexOffset_(0)
-			, numVertices_(0)
-			, numIndices_(0)
-		{
-		}
+	Geometry::~Geometry() noexcept
+	{
+		this->setActive(false);
+	}
 
-		Geometry::~Geometry() noexcept
-		{
-			this->setActive(false);
-		}
+	void
+	Geometry::setReceiveShadow(bool enable) noexcept
+	{
+		isReceiveShadow_ = enable;
+	}
 
-		void
-		Geometry::setReceiveShadow(bool enable) noexcept
-		{
-			isReceiveShadow_ = enable;
-		}
+	bool
+	Geometry::getReceiveShadow() const noexcept
+	{
+		return isReceiveShadow_;
+	}
 
-		bool
-		Geometry::getReceiveShadow() const noexcept
-		{
-			return isReceiveShadow_;
-		}
+	void
+	Geometry::setCastShadow(bool value) noexcept
+	{
+		isCastShadow_ = value;
+	}
 
-		void
-		Geometry::setCastShadow(bool value) noexcept
-		{
-			isCastShadow_ = value;
-		}
+	bool
+	Geometry::getCastShadow()  const noexcept
+	{
+		return isCastShadow_;
+	}
 
-		bool
-		Geometry::getCastShadow()  const noexcept
-		{
-			return isCastShadow_;
-		}
+	void
+	Geometry::setRenderPipeline(video::RenderPipelinePtr&& pipeline) noexcept
+	{
+		pipeline_ = std::move(pipeline);
+	}
 
-		void
-		Geometry::setMaterial(video::HALMaterialPtr&& material) noexcept
-		{
-			material_ = std::move(material);
-		}
+	void
+	Geometry::setRenderPipeline(const video::RenderPipelinePtr& pipeline) noexcept
+	{
+		pipeline_ = pipeline;
+	}
 
-		void
-		Geometry::setMaterial(const video::HALMaterialPtr& material) noexcept
-		{
-			material_ = material;
-		}
+	const video::RenderPipelinePtr&
+	Geometry::getRenderPipeline() const noexcept
+	{
+		return pipeline_;
+	}
 
-		const video::HALMaterialPtr&
-		Geometry::getMaterial() const noexcept
-		{
-			return material_;
-		}
+	void
+	Geometry::setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept
+	{
+		vertices_ = data;
+	}
 
-		void
-		Geometry::setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept
-		{
-			vertices_ = data;
-		}
+	const hal::GraphicsDataPtr&
+	Geometry::getVertexBuffer() const noexcept
+	{
+		return vertices_;
+	}
 
-		const hal::GraphicsDataPtr&
-		Geometry::getVertexBuffer() const noexcept
-		{
-			return vertices_;
-		}
+	void
+	Geometry::setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept
+	{
+		indices_ = data;
+	}
 
-		void
-		Geometry::setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept
-		{
-			indices_ = data;
-		}
+	const hal::GraphicsDataPtr&
+	Geometry::getIndexBuffer() const noexcept
+	{
+		return indices_;
+	}
 
-		const hal::GraphicsDataPtr&
-		Geometry::getIndexBuffer() const noexcept
-		{
-			return indices_;
-		}
+	void
+	Geometry::setNumVertices(std::uint32_t numVertice) noexcept
+	{
+		numVertices_ = numVertice;
+	}
 
-		void
-		Geometry::setNumVertices(std::uint32_t numVertice) noexcept
-		{
-			numVertices_ = numVertice;
-		}
+	std::uint32_t
+	Geometry::getNumVertices() const noexcept
+	{
+		return numVertices_;
+	}
 
-		std::uint32_t
-		Geometry::getNumVertices() const noexcept
-		{
-			return numVertices_;
-		}
+	void
+	Geometry::setNumIndices(std::uint32_t numIndices) noexcept
+	{
+		numIndices_ = numIndices;
+	}
 
-		void
-		Geometry::setNumIndices(std::uint32_t numIndices) noexcept
-		{
-			numIndices_ = numIndices;
-		}
-
-		std::uint32_t
-		Geometry::getNumIndices() const noexcept
-		{
-			return numIndices_;
-		}
+	std::uint32_t
+	Geometry::getNumIndices() const noexcept
+	{
+		return numIndices_;
 	}
 }

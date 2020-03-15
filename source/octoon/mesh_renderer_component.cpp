@@ -1,7 +1,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/material.h>
+#include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_system.h>
 #include <octoon/video/basic_material.h>
 #include <octoon/texture_loader.h>
@@ -74,7 +74,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
-		materials_.clear();
+		pipelines_.clear();
 		geometries_.clear();
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
@@ -208,10 +208,10 @@ namespace octoon
 
 			for (std::size_t i = 0; i < geometries_.size(); i++)
 			{
-				if (i < materials_.size())
-					geometries_[i]->setMaterial(materials_[i]);
+				if (i < pipelines_.size())
+					geometries_[i]->setRenderPipeline(pipelines_[i]);
 				else
-					geometries_[i]->setMaterial(materials_.front());
+					geometries_[i]->setRenderPipeline(pipelines_.front());
 			}
 		}
 	}
@@ -219,7 +219,7 @@ namespace octoon
 	void
 	MeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
-		materials_.clear();
+		pipelines_.clear();
 
 		for (auto& mat : materials)
 		{
@@ -236,21 +236,22 @@ namespace octoon
 			mat->get(MATKEY_COLOR_DIFFUSE, base);
 			mat->get(MATKEY_COLOR_AMBIENT, ambient);
 
-			auto material = std::make_shared<video::BasicMaterial>();
-			material->setBaseColor(math::float4(base, 1.0));
+			auto pipeline = std::make_shared<video::BasicPipeline>();
+			pipeline->setMaterial(mat);
+			pipeline->setBaseColor(math::float4(base, 1.0));
 
 			if (!textureName.empty())
-				material->setTexture(TextureLoader::load(path + textureName));
+				pipeline->setTexture(TextureLoader::load(path + textureName));
 
-			materials_.push_back(material);
+			pipelines_.push_back(pipeline);
 		}
 
 		for (std::size_t i = 0; i < geometries_.size(); i++)
 		{
-			if (i < materials_.size())
-				geometries_[i]->setMaterial(materials_[i]);
+			if (i < pipelines_.size())
+				geometries_[i]->setRenderPipeline(pipelines_[i]);
 			else
-				geometries_[i]->setMaterial(materials_.front());
+				geometries_[i]->setRenderPipeline(pipelines_.front());
 		}
 	}
 }

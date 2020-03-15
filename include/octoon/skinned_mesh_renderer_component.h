@@ -35,7 +35,6 @@ namespace octoon
 		bool getTextureBlendEnable() const noexcept;
 
 		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
-		void uploadMaterialData(const material::Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 

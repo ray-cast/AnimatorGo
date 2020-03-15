@@ -3,18 +3,15 @@
 
 #include <octoon/mesh/mesh.h>
 
-namespace octoon
+namespace octoon::mesh
 {
-	namespace mesh
+	class OCTOON_EXPORT ConeMesh final : public Mesh
 	{
-		class OCTOON_EXPORT ConeMesh final : public Mesh
-		{
-			OctoonDeclareSubClass(ConeMesh, Mesh)
-		public:
-			ConeMesh() noexcept;
-			ConeMesh(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
-		};
-	}
+		OctoonDeclareSubClass(ConeMesh, Mesh)
+	public:
+		ConeMesh() noexcept;
+		ConeMesh(float radius, float height, std::uint32_t segments = 32, float thetaStart = 0, float thetaLength = math::PI_2) noexcept;
+	};
 }
 
 #endif

@@ -10,6 +10,8 @@ SET(VIDEO_GRAPHICS_LIST
 	${SOURCE_PATH}/render_scene.cpp
 	${HEADER_PATH}/render_system.h
 	${SOURCE_PATH}/render_system.cpp
+	${HEADER_PATH}/render_pipeline.h
+	${SOURCE_PATH}/render_pipeline.cpp
 	${HEADER_PATH}/render_types.h
 )
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})
@@ -27,8 +29,6 @@ SET(VIDEO_CAMERA_LIST
 SOURCE_GROUP(camera FILES ${VIDEO_CAMERA_LIST})
 
 SET(VIDEO_MATERIAL_LIST
-	${HEADER_PATH}/material.h
-	${SOURCE_PATH}/material.cpp
 	${HEADER_PATH}/phong_material.h
 	${SOURCE_PATH}/phong_material.cpp
 	${HEADER_PATH}/blinn_material.h
@@ -46,7 +46,7 @@ SET(VIDEO_MATERIAL_LIST
 	${HEADER_PATH}/basic_skinned_material.h
 	${SOURCE_PATH}/basic_skinned_material.cpp
 )
-SOURCE_GROUP(renderer\\material FILES ${VIDEO_MATERIAL_LIST})
+SOURCE_GROUP(renderer\\pipeline FILES ${VIDEO_MATERIAL_LIST})
 
 SET(VIDEO_GEOMETRY_LIST
 	${HEADER_PATH}/geometry.h

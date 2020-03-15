@@ -12,19 +12,16 @@
 #include <octoon/audio/common/audio_types.h>
 #include <octoon/audio/common/audio_reader.h>
 
-namespace octoon
+namespace octoon::audio
 {
-    namespace audio
+    class OCTOON_EXPORT AudioSourceListener
     {
-        class OCTOON_EXPORT AudioSourceListener
-        {
-        public:
-            AudioSourceListener() noexcept;
-            virtual ~AudioSourceListener() noexcept;
+    public:
+        AudioSourceListener() noexcept;
+        virtual ~AudioSourceListener() noexcept;
 
-            virtual void on_play_end() noexcept = 0;
-        };
-    }
+        virtual void on_play_end() noexcept = 0;
+    };
 }
 
 #endif // OCTOON_AUDIO_SOURCE_LISTENER_H_

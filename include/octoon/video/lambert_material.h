@@ -1,14 +1,14 @@
 #ifndef OCTOON_LAMBERT_MATERIAL_H_
 #define OCTOON_LAMBERT_MATERIAL_H_
 
-#include <octoon/video/material.h>
+#include <octoon/video/render_pipeline.h>
 #include <octoon/hal/graphics.h>
 
 namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT LambertMaterial final : public HALMaterial
+		class OCTOON_EXPORT LambertMaterial final : public RenderPipeline
 		{
 		public:
 			LambertMaterial() except;
@@ -36,7 +36,7 @@ namespace octoon
 			const math::float3& getAmbientColor() const noexcept;
 			const math::float3& getDarkColor() const noexcept;
 
-			HALMaterialPtr clone() const noexcept override;
+			RenderPipelinePtr clone() const noexcept override;
 
 		private:
 			LambertMaterial(const LambertMaterial&) = delete;

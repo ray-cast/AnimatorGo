@@ -3,20 +3,24 @@
 
 #include <octoon/video/render_types.h>
 #include <octoon/hal/graphics_types.h>
+#include <octoon/material/material.h>
 
 namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT HALMaterial
+		class OCTOON_EXPORT RenderPipeline
 		{
 		public:
-			HALMaterial() noexcept;
-			HALMaterial(std::string_view name) noexcept;
-			~HALMaterial() noexcept;
+			RenderPipeline() noexcept;
+			RenderPipeline(std::string_view name) noexcept;
+			~RenderPipeline() noexcept;
 
 			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
+
+			void setMaterial(const material::MaterialPtr& material) noexcept;
+			const material::MaterialPtr& getMaterial() const noexcept;
 
 			virtual void setTransform(const math::float4x4& vp) noexcept = 0;
 			virtual void setViewProjection(const math::float4x4& vp) noexcept = 0;
@@ -26,14 +30,15 @@ namespace octoon
 
 			virtual hal::GraphicsUniformSetPtr at(std::string_view name) const;
 
-			virtual HALMaterialPtr clone() const noexcept = 0;
+			virtual std::shared_ptr<RenderPipeline> clone() const noexcept = 0;
 
 		private:
-			HALMaterial(const HALMaterial&) = delete;
-			HALMaterial& operator=(const HALMaterial&) = delete;
+			RenderPipeline(const RenderPipeline&) = delete;
+			RenderPipeline& operator=(const RenderPipeline&) = delete;
 
 		private:
-			std::string _name;
+			std::string name_;
+			material::MaterialPtr material_;
 		};
 	}
 }

@@ -181,7 +181,7 @@ namespace octoon
 		struct Model final
 		{
 			using mesh_array_t = std::vector<std::shared_ptr<mesh::Mesh>>;
-			using bone_array_t = std::vector<BonePtr>;
+			using bone_array_t = std::vector<skelecton::BonePtr>;
 			using ik_array_t = std::vector<IKAttrPtr>;
 			using rigidbody_array_t = std::vector<std::shared_ptr<Rigidbody>>;
 			using softbody_array_t = std::vector<std::shared_ptr<Softbody>>;

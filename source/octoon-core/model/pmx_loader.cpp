@@ -633,7 +633,7 @@ namespace octoon
 			float3s vertices_;
 			float3s normals_;
 			float2s texcoords_;
-			VertexWeights weights;
+			skelecton::VertexWeights weights;
 
 			vertices_.resize(pmx.numVertices);
 			normals_.resize(pmx.numVertices);
@@ -652,7 +652,7 @@ namespace octoon
 
 				if (pmx.numBones)
 				{
-					VertexWeight weight;
+					skelecton::VertexWeight weight;
 					weight.weight1 = v.weight.weight1;
 					weight.weight2 = v.weight.weight2;
 					weight.weight3 = v.weight.weight3;
@@ -703,7 +703,7 @@ namespace octoon
 			{
 				auto& it = pmx.bones[i];
 
-				Bone bone;
+				skelecton::Bone bone;
 				bone.setName(cv.to_bytes(it.name.name));
 				bone.setPosition(it.position);
 				bone.setParent(it.Parent);
@@ -716,7 +716,7 @@ namespace octoon
 				if (it.Flag & PMX_BONE_ADD_ROTATION)
 					bone.setAdditiveRotationRatio(it.ProvidedRatio);
 
-				model.bones.emplace_back(std::make_shared<Bone>(bone));
+				model.bones.emplace_back(std::make_shared<skelecton::Bone>(bone));
 
 				if (it.Flag & PMX_BONE_IK)
 				{

@@ -33,7 +33,7 @@ namespace rabbit
 	MarkComponent::onPostProcess() noexcept
 	{
 		auto& markModule = this->getContext()->profile->markModule;
-		if (this->getContext()->profile->markModule->markEnable && this->getContext()->profile->clientModule->token.empty())
+		if (this->getContext()->profile->markModule->markEnable)
 		{
 			auto& window = this->getContext()->profile->canvasModule;
 

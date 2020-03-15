@@ -1,19 +1,19 @@
 #ifndef OCTOON_BASIC_MATERIAL_H_
 #define OCTOON_BASIC_MATERIAL_H_
 
-#include <octoon/video/material.h>
+#include <octoon/video/render_pipeline.h>
 #include <octoon/hal/graphics.h>
 
 namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT BasicMaterial final : public HALMaterial
+		class OCTOON_EXPORT BasicPipeline final : public RenderPipeline
 		{
 		public:
-			BasicMaterial() except;
-			BasicMaterial(const hal::GraphicsTexturePtr& texture) except;
-			~BasicMaterial() noexcept;
+			BasicPipeline() except;
+			BasicPipeline(const hal::GraphicsTexturePtr& texture) except;
+			~BasicPipeline() noexcept;
 
 			void setup() except;
 
@@ -25,11 +25,11 @@ namespace octoon
 			const hal::GraphicsPipelinePtr& getPipeline() const noexcept override;
 			const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept override;
 
-			HALMaterialPtr clone() const noexcept override;
+			RenderPipelinePtr clone() const noexcept override;
 
 		private:
-			BasicMaterial(const BasicMaterial&) = delete;
-			BasicMaterial& operator=(const BasicMaterial&) = delete;
+			BasicPipeline(const BasicPipeline&) = delete;
+			BasicPipeline& operator=(const BasicPipeline&) = delete;
 
 		private:
 			hal::GraphicsPipelinePtr pipeline_;

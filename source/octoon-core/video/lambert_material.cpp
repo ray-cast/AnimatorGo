@@ -213,7 +213,7 @@ namespace octoon
 			return darkColor_->getFloat3();
 		}
 
-		HALMaterialPtr
+		RenderPipelinePtr
 		LambertMaterial::clone() const noexcept
 		{
 			auto instance = std::make_shared<LambertMaterial>();

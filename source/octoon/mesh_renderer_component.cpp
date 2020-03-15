@@ -3,7 +3,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_system.h>
-#include <octoon/video/basic_pipeline.h>
 #include <octoon/texture_loader.h>
 
 namespace octoon
@@ -236,7 +235,7 @@ namespace octoon
 			mat->get(MATKEY_COLOR_DIFFUSE, base);
 			mat->get(MATKEY_COLOR_AMBIENT, ambient);
 
-			auto pipeline = std::make_shared<video::BasicPipeline>();
+			auto pipeline = std::make_shared<video::RenderPipeline>();
 			pipeline->setMaterial(mat);
 			pipeline->setBaseColor(math::float4(base, 1.0));
 

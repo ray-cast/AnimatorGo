@@ -14,23 +14,26 @@ namespace octoon
 		public:
 			RenderPipeline() noexcept;
 			RenderPipeline(std::string_view name) noexcept;
-			~RenderPipeline() noexcept;
+			virtual ~RenderPipeline() noexcept;
 
 			void setName(std::string_view name) noexcept;
 			const std::string& getName() const noexcept;
 
-			void setMaterial(const material::MaterialPtr& material) noexcept;
-			const material::MaterialPtr& getMaterial() const noexcept;
+			virtual void setMaterial(const material::MaterialPtr& material) noexcept;
+			virtual const material::MaterialPtr& getMaterial() const noexcept;
 
-			virtual void setTransform(const math::float4x4& vp) noexcept = 0;
-			virtual void setViewProjection(const math::float4x4& vp) noexcept = 0;
+			virtual void setTransform(const math::float4x4& vp) noexcept;
+			virtual void setViewProjection(const math::float4x4& vp) noexcept;
 
-			virtual const hal::GraphicsPipelinePtr& getPipeline() const noexcept = 0;
-			virtual const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept = 0;
+			virtual const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
+			virtual const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-			virtual hal::GraphicsUniformSetPtr at(std::string_view name) const;
+			void setBaseColor(const math::float4& texture) noexcept;
+			void setTexture(const hal::GraphicsTexturePtr& texture) noexcept;
 
-			virtual std::shared_ptr<RenderPipeline> clone() const noexcept = 0;
+			hal::GraphicsUniformSetPtr at(std::string_view name) const;
+
+			virtual std::shared_ptr<RenderPipeline> clone() const noexcept;
 
 		private:
 			virtual void onMaterialReplace(const material::MaterialPtr& material) noexcept(false);
@@ -42,6 +45,16 @@ namespace octoon
 		private:
 			std::string name_;
 			material::MaterialPtr material_;
+
+			hal::GraphicsPipelinePtr pipeline_;
+			hal::GraphicsStatePtr renderState_;
+			hal::GraphicsDescriptorSetPtr descriptorSet_;
+
+			hal::GraphicsUniformSetPtr proj_;
+			hal::GraphicsUniformSetPtr model_;
+			hal::GraphicsUniformSetPtr color_;
+			hal::GraphicsUniformSetPtr decal_;
+			hal::GraphicsUniformSetPtr hasTexture_;
 		};
 	}
 }

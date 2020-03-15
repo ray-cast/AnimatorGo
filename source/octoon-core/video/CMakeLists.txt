@@ -12,8 +12,6 @@ SET(VIDEO_GRAPHICS_LIST
 	${SOURCE_PATH}/render_system.cpp
 	${HEADER_PATH}/render_pipeline.h
 	${SOURCE_PATH}/render_pipeline.cpp
-	${HEADER_PATH}/basic_pipeline.h
-	${SOURCE_PATH}/basic_pipeline.cpp
 	${HEADER_PATH}/render_types.h
 )
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})

@@ -207,10 +207,18 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(context->profile->environmentModule->intensity);
 		objects.push_back(enviromentLight);
 
+		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(context->profile->environmentModule->color));
+		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
+
+		auto enviroment = octoon::GameObject::create("Environment");
+		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000));
+		enviroment->addComponent<octoon::MeshRendererComponent>(envMaterial);
+
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = camera;
 		context->profile->entitiesModule->sunLight = mainLight;
 		context->profile->entitiesModule->enviromentLight = enviromentLight;
+		context->profile->entitiesModule->enviroment = enviroment;
 		context->profile->entitiesModule->objects = objects;
 
 		this->sendMessage("rabbit:project:open");
@@ -228,7 +236,7 @@ namespace rabbit
 		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
 
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();
-		camera->setFar(1000.0f);
+		camera->setFar(2000.0f);
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(camera::CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);

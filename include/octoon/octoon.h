@@ -22,8 +22,20 @@
 
 #include <octoon/model/model.h>
 #include <octoon/model/text_meshing.h>
+
 #include <octoon/mesh/mesh.h>
+#include <octoon/mesh/circle_mesh.h>
+#include <octoon/mesh/sphere_mesh.h>
+#include <octoon/mesh/cube_mesh.h>
+#include <octoon/mesh/cube_wireframe_mesh.h>
+#include <octoon/mesh/plane_mesh.h>
+#include <octoon/mesh/ring_mesh.h>
+#include <octoon/mesh/volume_mesh.h>
+
 #include <octoon/material/material.h>
+#include <octoon/material/line_basic_material.h>
+#include <octoon/material/mesh_basic_material.h>
+#include <octoon/material/mesh_standard_material.h>
 
 #include <octoon/animation/animation_curve.h>
 #include <octoon/animation/animation_clip.h>

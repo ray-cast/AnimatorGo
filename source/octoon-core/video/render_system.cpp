@@ -162,6 +162,36 @@ namespace octoon
 		}
 
 		void
+		RenderSystem::renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const RenderObjectRaws& objects) noexcept
+		{
+			for (auto& object : objects)
+			{
+				auto geometry = object->downcast<video::Geometry>();
+
+				auto pipeline = geometry->getRenderPipeline();
+				if (!pipeline)
+					continue;
+
+				pipeline->setTransform(geometry->getTransform());
+				pipeline->setViewProjection(camera.getViewProjection());
+
+				if (geometry->getVertexBuffer())
+				{
+					context.setRenderPipeline(pipeline->getPipeline());
+					context.setDescriptorSet(pipeline->getDescriptorSet());
+					context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
+					context.setIndexBufferData(geometry->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
+
+					auto indices = geometry->getNumIndices();
+					if (indices > 0)
+						context.drawIndexed(indices, 1, 0, 0, 0);
+					else
+						context.draw(geometry->getNumVertices(), 1, 0, 0);
+				}
+			}
+		}
+
+		void
 		RenderSystem::render(hal::GraphicsContext& context) noexcept
 		{
 			for (auto& camera : video::RenderScene::instance()->getCameraList())
@@ -182,8 +212,14 @@ namespace octoon
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 					object->onRenderBefore(*camera);
 
+				renderable_[0].clear();
+				renderable_[1].clear();
+
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 				{
+					if (camera->getLayer() != object->getLayer())
+						continue;
+
 					auto geometry = object->downcast<video::Geometry>();
 					if (!geometry)
 						continue;
@@ -191,30 +227,19 @@ namespace octoon
 					if (!geometry->getVisible())
 						continue;
 
-					auto material = geometry->getRenderPipeline();
-					if (!material)
+					auto pipeline = geometry->getRenderPipeline();
+					if (!pipeline)
 						continue;
 
-					if (camera->getLayer() != object->getLayer())
-						continue;
-
-					material->setTransform(geometry->getTransform());
-					material->setViewProjection(camera->getViewProjection());
-
-					if (geometry->getVertexBuffer())
-					{
-						context.setRenderPipeline(material->getPipeline());
-						context.setDescriptorSet(material->getDescriptorSet());
-						context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
-						context.setIndexBufferData(geometry->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
-
-						auto indices = geometry->getNumIndices();
-						if (indices > 0)
-							context.drawIndexed(indices, 1, 0, 0, 0);
-						else
-							context.draw(geometry->getNumVertices(), 1, 0, 0);
-					}
+					auto material = pipeline->getMaterial();
+					if (material->getDepthEnable())
+						renderable_[0].emplace_back(geometry);
+					else
+						renderable_[1].emplace_back(geometry);
 				}
+
+				this->renderObjects(context, *camera, renderable_[0]);
+				this->renderObjects(context, *camera, renderable_[1]);
 
 				for (auto& object : video::RenderScene::instance()->getRenderObjects())
 					object->onRenderAfter(*camera);

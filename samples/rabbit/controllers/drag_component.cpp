@@ -59,13 +59,8 @@ namespace rabbit
 	void
 	DragComponent::onEnable() noexcept
 	{
-		this->gizmoSelectedMtl_ = std::make_shared<octoon::material::Material>();
-		this->gizmoSelectedMtl_->set(MATKEY_COLOR_DIFFUSE, octoon::math::float3(0, 0, 1));
-		this->gizmoSelectedMtl_->setPrimitiveType(octoon::hal::GraphicsVertexType::LineList);
-
-		this->gizmoHoverMtl_ = std::make_shared<octoon::material::Material>();
-		this->gizmoHoverMtl_->set(MATKEY_COLOR_DIFFUSE, octoon::math::float3(0, 1, 0));
-		this->gizmoHoverMtl_->setPrimitiveType(octoon::hal::GraphicsVertexType::LineList);
+		this->gizmoHoverMtl_ = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0, 1, 0));
+		this->gizmoSelectedMtl_ = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0, 0, 1));
 
 		gizmoHover_ = octoon::GameObject::create("GizmoHover");
 		gizmoHover_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));

@@ -1,15 +1,15 @@
-#include <octoon/material/lambert_material.h>
+#include <octoon/material/mesh_basic_material.h>
 
 namespace octoon::material
 {
-	OctoonImplementSubClass(LambertMaterial, Material, "LambertMaterial");
+	OctoonImplementSubClass(MeshBasicMaterial, Material, "MeshBasicMaterial");
 
-	LambertMaterial::LambertMaterial() noexcept
-		: LambertMaterial(math::float3::One)
+	MeshBasicMaterial::MeshBasicMaterial() noexcept
+		: MeshBasicMaterial(math::float3::One)
 	{
 	}
 
-	LambertMaterial::LambertMaterial(const math::float3& color) noexcept
+	MeshBasicMaterial::MeshBasicMaterial(const math::float3& color) noexcept
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -81,53 +81,53 @@ namespace octoon::material
 		this->set(MATKEY_SHADER_FRAG, frag);
 	}
 
-	LambertMaterial::~LambertMaterial() noexcept
+	MeshBasicMaterial::~MeshBasicMaterial() noexcept
 	{
 	}
 
 	void
-	LambertMaterial::setColor(const math::float3& color) noexcept
+	MeshBasicMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->set(MATKEY_COLOR_DIFFUSE, color);
 		this->color_ = color;
 	}
 
 	const math::float3&
-	LambertMaterial::getColor() const noexcept
+	MeshBasicMaterial::getColor() const noexcept
 	{
 		return this->color_;
 	}
 
 	void
-	LambertMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
+	MeshBasicMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->set(MATKEY_TEXTURE_DIFFUSE, map);
 		this->colorTexture_ = map;
 	}
 
 	const hal::GraphicsTexturePtr&
-	LambertMaterial::getColorTexture() const noexcept
+	MeshBasicMaterial::getColorTexture() const noexcept
 	{
 		return this->colorTexture_;
 	}
 
 	void
-	LambertMaterial::setOpacity(float opacity) noexcept
+	MeshBasicMaterial::setOpacity(float opacity) noexcept
 	{
 		this->set(MATKEY_OPACITY, opacity);
 		this->opacity_ = opacity;
 	}
 
 	float
-	LambertMaterial::getOpacity() const noexcept
+	MeshBasicMaterial::getOpacity() const noexcept
 	{
 		return opacity_;
 	}
 
 	std::shared_ptr<Material>
-	LambertMaterial::clone() const noexcept
+	MeshBasicMaterial::clone() const noexcept
 	{
-		auto instance = std::make_shared<LambertMaterial>();
+		auto instance = std::make_shared<MeshBasicMaterial>();
 		instance->setColor(this->getColor());
 
 		return instance;

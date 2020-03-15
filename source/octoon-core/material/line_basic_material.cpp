@@ -1,15 +1,16 @@
-#include <octoon/material/lambert_material.h>
+#include <octoon/material/line_basic_material.h>
 
 namespace octoon::material
 {
-	OctoonImplementSubClass(LambertMaterial, Material, "LambertMaterial");
+	OctoonImplementSubClass(LineBasicMaterial, Material, "LineBasicMaterial");
 
-	LambertMaterial::LambertMaterial() noexcept
-		: LambertMaterial(math::float3::One)
+	LineBasicMaterial::LineBasicMaterial() noexcept
+		: LineBasicMaterial(math::float3::One)
 	{
+		this->setColor(math::float3::One);
 	}
 
-	LambertMaterial::LambertMaterial(const math::float3& color) noexcept
+	LineBasicMaterial::LineBasicMaterial(const math::float3& color) noexcept
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -61,74 +62,60 @@ namespace octoon::material
 		const char* frag = R"(#version 330
 			layout(location  = 0) out vec4 fragColor;
 
-			uniform sampler2D decal;
 			uniform vec4 color;
-			uniform bool hasTexture;
 
 			in vec2 oTexcoord0;
 
 			void main()
 			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
+				fragColor = pow(color, vec4(1.0 / 2.2));
 			})";
 #endif
 
 		this->setColor(color);
 		this->setOpacity(1.0f);
+		this->setDepthEnable(false);
+		this->setPrimitiveType(octoon::hal::GraphicsVertexType::LineList);
 		this->set(MATKEY_SHADER_VERT, vert);
 		this->set(MATKEY_SHADER_FRAG, frag);
 	}
 
-	LambertMaterial::~LambertMaterial() noexcept
+	LineBasicMaterial::~LineBasicMaterial() noexcept
 	{
 	}
 
 	void
-	LambertMaterial::setColor(const math::float3& color) noexcept
+	LineBasicMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->set(MATKEY_COLOR_DIFFUSE, color);
 		this->color_ = color;
 	}
 
 	const math::float3&
-	LambertMaterial::getColor() const noexcept
+	LineBasicMaterial::getColor() const noexcept
 	{
 		return this->color_;
 	}
 
 	void
-	LambertMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
-	{
-		this->set(MATKEY_TEXTURE_DIFFUSE, map);
-		this->colorTexture_ = map;
-	}
-
-	const hal::GraphicsTexturePtr&
-	LambertMaterial::getColorTexture() const noexcept
-	{
-		return this->colorTexture_;
-	}
-
-	void
-	LambertMaterial::setOpacity(float opacity) noexcept
+	LineBasicMaterial::setOpacity(float opacity) noexcept
 	{
 		this->set(MATKEY_OPACITY, opacity);
 		this->opacity_ = opacity;
 	}
 
 	float
-	LambertMaterial::getOpacity() const noexcept
+	LineBasicMaterial::getOpacity() const noexcept
 	{
 		return opacity_;
 	}
 
 	std::shared_ptr<Material>
-	LambertMaterial::clone() const noexcept
+	LineBasicMaterial::clone() const noexcept
 	{
-		auto instance = std::make_shared<LambertMaterial>();
+		auto instance = std::make_shared<LineBasicMaterial>();
 		instance->setColor(this->getColor());
+		instance->setOpacity(this->getOpacity());
 
 		return instance;
 	}

@@ -1,17 +1,17 @@
-#ifndef OCTOON_LAMBERT_MATERIAL_H_
-#define OCTOON_LAMBERT_MATERIAL_H_
+#ifndef OCTOON_MESH_STANDARD_MATERIAL_H_
+#define OCTOON_MESH_STANDARD_MATERIAL_H_
 
 #include <octoon/material/material.h>
 
 namespace octoon::material
 {
-	class OCTOON_EXPORT LambertMaterial final : public Material
+	class OCTOON_EXPORT MeshStandardMaterial final : public Material
 	{
-		OctoonDeclareSubClass(LambertMaterial, Material);
+		OctoonDeclareSubClass(MeshStandardMaterial, Material);
 	public:
-		LambertMaterial() noexcept;
-		LambertMaterial(const math::float3& color) noexcept;
-		virtual ~LambertMaterial() noexcept;
+		MeshStandardMaterial() noexcept;
+		MeshStandardMaterial(const math::float3& color) noexcept;
+		virtual ~MeshStandardMaterial() noexcept;
 
 		void setColor(const math::float3& color) noexcept;
 		const math::float3& getColor() const noexcept;
@@ -25,8 +25,8 @@ namespace octoon::material
 		std::shared_ptr<Material> clone() const noexcept override;
 
 	private:
-		LambertMaterial(const LambertMaterial&) = delete;
-		LambertMaterial& operator=(const LambertMaterial&) = delete;
+		MeshStandardMaterial(const MeshStandardMaterial&) = delete;
+		MeshStandardMaterial& operator=(const MeshStandardMaterial&) = delete;
 
 	private:
 		float opacity_;

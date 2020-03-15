@@ -4,7 +4,6 @@
 #include <octoon/math/math.h>
 #include <octoon/hal/graphics_state.h>
 
-#define MATKEY_NAME               "$mat.name"
 #define MATKEY_PATH               "$mat.path"
 #define MATKEY_TWOSIDED           "$mat.twosided"
 #define MATKEY_SHADING_MODEL      "$mat.shadingm"
@@ -39,6 +38,9 @@
 #define MATKEY_TEXTURE_REFLECTION	"$tex.reflection"
 #define MATKEY_TEXTURE_TOON			"$tex.toon"
 
+#define MATKEY_SHADER_VERT			"$shader.vert"
+#define MATKEY_SHADER_FRAG			"$shader.frag"
+
 namespace octoon::material
 {
 	enum PropertyTypeInfo
@@ -47,24 +49,30 @@ namespace octoon::material
 		PropertyTypeInfoString = 0x02,
 		PropertyTypeInfoInt = 0x04,
 		PropertyTypeInfoBuffer = 0x08,
+		PropertyTypeInfoTexture = 0x16,
 	};
 
-	class OCTOON_EXPORT Material final
+	class OCTOON_EXPORT Material : public runtime::RttiInterface
 	{
+		OctoonDeclareSubClass(Material, runtime::RttiInterface);
 	public:
 		struct MaterialParam
 		{
 			std::string key;
 
 			std::size_t length;
-			std::size_t dataType;
+			std::size_t type;
 
 			char* data;
+			hal::GraphicsTexturePtr texture;
 		};
 
 	public:
 		Material() noexcept;
-		~Material() noexcept;
+		virtual ~Material() noexcept;
+
+		void setName(std::string_view name) noexcept;
+		const std::string& getName() const noexcept;
 
 		void setColorBlends(hal::GraphicsColorBlends&& blends) noexcept;
 		void setColorBlends(const hal::GraphicsColorBlends& blends) noexcept;
@@ -147,27 +155,29 @@ namespace octoon::material
 		hal::GraphicsStencilOp getStencilBackZFail() const noexcept;
 		hal::GraphicsStencilOp getStencilBackPass() const noexcept;
 
-		bool set(const char* key, int value) noexcept;
-		bool set(const char* key, float value) noexcept;
-		bool set(const char* key, const math::Vector3& value) noexcept;
-		bool set(const char* key, const math::Vector4& value) noexcept;
-		bool set(const char* key, const char* value) noexcept;
-		bool set(const char* key, const unsigned char* value) noexcept;
-		bool set(const char* key, const std::string& value) noexcept;
+		bool set(std::string_view key, int value) noexcept;
+		bool set(std::string_view key, float value) noexcept;
+		bool set(std::string_view key, const math::Vector3& value) noexcept;
+		bool set(std::string_view key, const math::Vector4& value) noexcept;
+		bool set(std::string_view key, std::string_view value) noexcept;
+		bool set(std::string_view key, const hal::GraphicsTexturePtr& value) noexcept;
 		bool set(const MaterialParam& value) noexcept;
 
-		bool get(const char* key, int& value) const noexcept;
-		bool get(const char* key, float& value) const noexcept;
-		bool get(const char* key, math::Vector3& value) const noexcept;
-		bool get(const char* key, math::Vector4& value) const noexcept;
-		bool get(const char* key, std::string& value) const noexcept;
-		bool get(const char* key, MaterialParam& out) const noexcept;
+		bool get(std::string_view key, int& value) const noexcept;
+		bool get(std::string_view key, float& value) const noexcept;
+		bool get(std::string_view key, math::Vector3& value) const noexcept;
+		bool get(std::string_view key, math::Vector4& value) const noexcept;
+		bool get(std::string_view key, std::string& value) const noexcept;
+		bool get(std::string_view key, hal::GraphicsTexturePtr& value) const noexcept;
+		bool get(std::string_view key, MaterialParam& out) const noexcept;
 
 		std::size_t hash() const noexcept;
 
-		std::shared_ptr<Material> clone() const noexcept;
+		virtual std::shared_ptr<Material> clone() const noexcept;
 
 	private:
+		std::string name_;
+
 		bool _enableScissorTest;
 		bool _enableSrgb;
 		bool _enableMultisample;

@@ -146,21 +146,19 @@ namespace rabbit
 			{
 				auto& mat = materials[i];
 
-				std::string name;
 				std::string path;
 				std::string textureName;
 
 				octoon::math::float3 base = octoon::math::float3(1.0f, 0.0f, 1.0f);
 				octoon::math::float3 ambient;
 
-				mat->get(MATKEY_NAME, name);
 				mat->get(MATKEY_PATH, path);
 				mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
 				mat->get(MATKEY_COLOR_DIFFUSE, base);
 				mat->get(MATKEY_COLOR_AMBIENT, ambient);
 
 				QListWidgetItem* item = new QListWidgetItem;
-				item->setText(QString::fromStdString(name));
+				item->setText(QString::fromStdString(mat->getName()));
 				item->setSizeHint(QSize(130, 160));
 
 				QLabel* imageLabel = new QLabel;
@@ -183,7 +181,7 @@ namespace rabbit
 					imageLabel->setPixmap(*imageTable[texpath]);
 				}
 
-				QLabel* txtLabel = new QLabel(QString::fromStdString(name));
+				QLabel* txtLabel = new QLabel(QString::fromStdString(mat->getName()));
 				txtLabel->setFixedHeight(30);
 
 				QVBoxLayout* widgetLayout = new QVBoxLayout;

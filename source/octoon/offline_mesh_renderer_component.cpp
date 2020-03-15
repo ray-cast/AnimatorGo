@@ -63,7 +63,6 @@ namespace octoon
 				continue;
 			}
 
-			std::string name;
 			std::string path;
 			std::string normalName;
 			std::string textureName;
@@ -76,7 +75,6 @@ namespace octoon
 			float opacity = 1.0f;
 			float shininess = 10.0f;
 			
-			mat->get(MATKEY_NAME, name);
 			mat->get(MATKEY_PATH, path);
 			mat->get(MATKEY_TEXTURE_SPECULAR, normalName);
 			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);

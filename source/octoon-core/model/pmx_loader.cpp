@@ -589,7 +589,7 @@ namespace octoon
 			for (auto& it : pmx.materials)
 			{
 				auto material = std::make_shared<material::Material>();
-				material->set(MATKEY_NAME, cv.to_bytes(it.name.name));
+				material->setName(cv.to_bytes(it.name.name));
 				material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
 				material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
 				material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));

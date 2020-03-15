@@ -251,14 +251,13 @@ namespace octoon
 
 		for (auto& mat : materials)
 		{
-			std::string name;
+			const std::string& name = mat->getName();
 			std::string path;
 			std::string textureName;
 
 			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
 			math::float3 ambient;
 
-			mat->get(MATKEY_NAME, name);
 			mat->get(MATKEY_PATH, path);
 			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
 			mat->get(MATKEY_COLOR_DIFFUSE, base);

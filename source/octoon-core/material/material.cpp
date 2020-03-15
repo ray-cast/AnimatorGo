@@ -3,6 +3,8 @@
 
 namespace octoon::material
 {
+	OctoonImplementSubClass(Material, runtime::RttiInterface, "Material");
+	
 	Material::Material() noexcept
 		: _enableScissorTest(false)
 		, _enableSrgb(false)
@@ -48,10 +50,22 @@ namespace octoon::material
 			delete it.data;
 	}
 
-	bool
-	Material::set(const char* key, int value) noexcept
+	void
+	Material::setName(std::string_view name) noexcept
 	{
-		assert(nullptr != key);
+		this->name_ = name;
+	}
+
+	const std::string&
+	Material::getName() const noexcept
+	{
+		return this->name_;
+	}
+
+	bool
+	Material::set(std::string_view key, int value) noexcept
+	{
+		assert(key.size());
 
 		auto it = _properties.begin();
 		auto end = _properties.end();
@@ -68,7 +82,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(int);
-		prop.dataType = PropertyTypeInfoInt;
+		prop.type = PropertyTypeInfoInt;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -79,9 +93,9 @@ namespace octoon::material
 	}
 
 	bool
-	Material::set(const char* key, float value) noexcept
+	Material::set(std::string_view key, float value) noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		auto it = _properties.begin();
 		auto end = _properties.end();
@@ -98,7 +112,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(float);
-		prop.dataType = PropertyTypeInfoFloat;
+		prop.type = PropertyTypeInfoFloat;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -109,9 +123,9 @@ namespace octoon::material
 	}
 
 	bool
-	Material::set(const char* key, const math::Vector3& value) noexcept
+	Material::set(std::string_view key, const math::Vector3& value) noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		auto it = _properties.begin();
 		auto end = _properties.end();
@@ -128,7 +142,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(math::float3);
-		prop.dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -139,9 +153,9 @@ namespace octoon::material
 	}
 
 	bool
-	Material::set(const char* key, const math::Vector4& value) noexcept
+	Material::set(std::string_view key, const math::Vector4& value) noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		auto it = _properties.begin();
 		auto end = _properties.end();
@@ -158,7 +172,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(math::float4);
-		prop.dataType = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -169,27 +183,9 @@ namespace octoon::material
 	}
 
 	bool
-	Material::set(const char* key, const char* value) noexcept
+	Material::set(std::string_view key, std::string_view value) noexcept
 	{
-		assert(nullptr != key);
-
-		std::string str(value);
-		return this->set(key, str);
-	}
-
-	bool
-	Material::set(const char* key, const unsigned char* value) noexcept
-	{
-		assert(nullptr != key);
-
-		std::string str((char*)value);
-		return this->set(key, str);
-	}
-
-	bool
-	Material::set(const char* key, const std::string& value) noexcept
-	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		auto it = _properties.begin();
 		auto end = _properties.end();
@@ -206,10 +202,37 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = value.length();
-		prop.dataType = PropertyTypeInfoString;
+		prop.type = PropertyTypeInfoString;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, value.data(), prop.length);
+
+		_properties.push_back(prop);
+
+		return true;
+	}
+
+	bool
+	Material::set(std::string_view key, const hal::GraphicsTexturePtr& value) noexcept
+	{
+		assert(key.size());
+
+		auto it = _properties.begin();
+		auto end = _properties.end();
+
+		for (; it != end; ++it)
+		{
+			if ((*it).key == key)
+			{
+				_properties.erase(it);
+				break;
+			}
+		}
+
+		MaterialParam prop;
+		prop.key = key;
+		prop.type = PropertyTypeInfoTexture;
+		prop.texture = value;
 
 		_properties.push_back(prop);
 
@@ -224,14 +247,14 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, int& value) const noexcept
+	Material::get(std::string_view key, int& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.dataType == PropertyTypeInfoInt)
+			if (prop.type == PropertyTypeInfoInt)
 			{
 				if (prop.length == sizeof(int))
 				{
@@ -245,14 +268,14 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, float& value) const noexcept
+	Material::get(std::string_view key, float& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.dataType == PropertyTypeInfoFloat)
+			if (prop.type == PropertyTypeInfoFloat)
 			{
 				if (prop.length == sizeof(float))
 				{
@@ -266,15 +289,15 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, math::Vector3& value) const noexcept
+	Material::get(std::string_view key, math::Vector3& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.dataType & PropertyTypeInfoFloat &&
-				prop.dataType & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat &&
+				prop.type & PropertyTypeInfoBuffer)
 			{
 				if (prop.length == sizeof(math::Vector3))
 				{
@@ -288,15 +311,15 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, math::Vector4& value) const noexcept
+	Material::get(std::string_view key, math::Vector4& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.dataType & PropertyTypeInfoFloat &&
-				prop.dataType & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat &&
+				prop.type & PropertyTypeInfoBuffer)
 			{
 				if (prop.length == sizeof(math::Vector4))
 				{
@@ -310,14 +333,14 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, std::string& value) const noexcept
+	Material::get(std::string_view key, std::string& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
 
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.dataType == PropertyTypeInfoString)
+			if (prop.type == PropertyTypeInfoString)
 			{
 				value.assign(prop.data, prop.length);
 				return true;
@@ -328,9 +351,27 @@ namespace octoon::material
 	}
 
 	bool
-	Material::get(const char* key, MaterialParam& out) const noexcept
+	Material::get(std::string_view key, hal::GraphicsTexturePtr& value) const noexcept
 	{
-		assert(nullptr != key);
+		assert(key.size());
+
+		MaterialParam prop;
+		if (this->get(key, prop))
+		{
+			if (prop.type == PropertyTypeInfoString)
+			{
+				value = prop.texture;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool
+	Material::get(std::string_view key, MaterialParam& out) const noexcept
+	{
+		assert(key.size());
 
 		for (auto& it : _properties)
 		{
@@ -796,12 +837,12 @@ namespace octoon::material
 
 		for (auto& it : _properties)
 		{
-			if (it.key == MATKEY_NAME || it.key == MATKEY_PATH)
+			if (it.key == MATKEY_PATH)
 				continue;
 
 			hash_string += it.key;
 
-			switch (it.dataType)
+			switch (it.type)
 			{
 			case PropertyTypeInfoFloat:
 			{

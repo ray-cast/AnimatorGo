@@ -63,7 +63,7 @@ namespace rabbit
 		for (auto& it : materials)
 		{
 			auto material = std::make_shared<octoon::material::Material>();
-			material->set(MATKEY_NAME, it.name);
+			material->setName(it.name);
 			material->set(MATKEY_PATH, std::string(rootPath));
 			material->set(MATKEY_COLOR_DIFFUSE, octoon::math::float3::One);
 			material->set(MATKEY_TEXTURE_DIFFUSE, it.diffuse_texname);

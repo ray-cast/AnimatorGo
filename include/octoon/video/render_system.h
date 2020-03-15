@@ -44,6 +44,9 @@ namespace octoon
 			void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 		private:
+			void renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const RenderObjectRaws& objects) noexcept;
+
+		private:
 			RenderSystem(const RenderSystem&) = delete;
 			RenderSystem& operator=(const RenderSystem&) = delete;
 
@@ -55,6 +58,8 @@ namespace octoon
 			hal::GraphicsTexturePtr depthTexture_;
 
 			hal::GraphicsDevicePtr device_;
+
+			RenderObjectRaws renderable_[2];
 		};
 	}
 }

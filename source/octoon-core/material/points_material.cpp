@@ -1,15 +1,15 @@
-#include <octoon/material/lambert_material.h>
+#include <octoon/material/points_material.h>
 
 namespace octoon::material
 {
-	OctoonImplementSubClass(LambertMaterial, Material, "LambertMaterial");
+	OctoonImplementSubClass(PointsMaterial, Material, "PointsMaterial");
 
-	LambertMaterial::LambertMaterial() noexcept
-		: LambertMaterial(math::float3::One)
+	PointsMaterial::PointsMaterial() noexcept
+		: PointsMaterial(math::float3::One)
 	{
 	}
 
-	LambertMaterial::LambertMaterial(const math::float3& color) noexcept
+	PointsMaterial::PointsMaterial(const math::float3& color) noexcept
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -61,74 +61,60 @@ namespace octoon::material
 		const char* frag = R"(#version 330
 			layout(location  = 0) out vec4 fragColor;
 
-			uniform sampler2D decal;
 			uniform vec4 color;
-			uniform bool hasTexture;
 
 			in vec2 oTexcoord0;
 
 			void main()
 			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
+				fragColor = pow(color, vec4(1.0 / 2.2));
 			})";
 #endif
 
 		this->setColor(color);
 		this->setOpacity(1.0f);
+		this->setDepthEnable(false);
+		this->setPrimitiveType(octoon::hal::GraphicsVertexType::PointList);
 		this->set(MATKEY_SHADER_VERT, vert);
 		this->set(MATKEY_SHADER_FRAG, frag);
 	}
 
-	LambertMaterial::~LambertMaterial() noexcept
+	PointsMaterial::~PointsMaterial() noexcept
 	{
 	}
 
 	void
-	LambertMaterial::setColor(const math::float3& color) noexcept
+	PointsMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->set(MATKEY_COLOR_DIFFUSE, color);
 		this->color_ = color;
 	}
 
 	const math::float3&
-	LambertMaterial::getColor() const noexcept
+	PointsMaterial::getColor() const noexcept
 	{
 		return this->color_;
 	}
 
 	void
-	LambertMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
-	{
-		this->set(MATKEY_TEXTURE_DIFFUSE, map);
-		this->colorTexture_ = map;
-	}
-
-	const hal::GraphicsTexturePtr&
-	LambertMaterial::getColorTexture() const noexcept
-	{
-		return this->colorTexture_;
-	}
-
-	void
-	LambertMaterial::setOpacity(float opacity) noexcept
+	PointsMaterial::setOpacity(float opacity) noexcept
 	{
 		this->set(MATKEY_OPACITY, opacity);
 		this->opacity_ = opacity;
 	}
 
 	float
-	LambertMaterial::getOpacity() const noexcept
+	PointsMaterial::getOpacity() const noexcept
 	{
 		return opacity_;
 	}
 
 	std::shared_ptr<Material>
-	LambertMaterial::clone() const noexcept
+	PointsMaterial::clone() const noexcept
 	{
-		auto instance = std::make_shared<LambertMaterial>();
+		auto instance = std::make_shared<PointsMaterial>();
 		instance->setColor(this->getColor());
+		instance->setOpacity(this->getOpacity());
 
 		return instance;
 	}

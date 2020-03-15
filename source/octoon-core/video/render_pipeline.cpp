@@ -34,7 +34,8 @@ namespace octoon
 			void main()
 			{
 				fragColor = color;
-				if (hasTexture) fragColor *= texture(decal, oTexcoord0);
+				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
+				fragColor = pow(fragColor, vec4(1.0 / 2.2));
 			})";
 #else
 		const char* vert = R"(#version 330
@@ -64,7 +65,8 @@ namespace octoon
 			void main()
 			{
 				fragColor = color;
-				if (hasTexture) fragColor *= texture(decal, oTexcoord0);
+				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
+				fragColor = pow(fragColor, vec4(1.0 / 2.2));
 			})";
 #endif
 
@@ -236,9 +238,13 @@ namespace octoon
 				stateDesc.setStencilBackPass(material->getStencilBackPass());
 				auto renderState = RenderSystem::instance()->createRenderState(stateDesc);
 
+				std::string vs = vert, fs = frag;
+				material_->get(MATKEY_SHADER_VERT, vs);
+				material_->get(MATKEY_SHADER_FRAG, fs);
+
 				hal::GraphicsProgramDesc programDesc;
-				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vert, "main", hal::GraphicsShaderLang::GLSL)));
-				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, frag, "main", hal::GraphicsShaderLang::GLSL)));
+				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vs, "main", hal::GraphicsShaderLang::GLSL)));
+				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, fs, "main", hal::GraphicsShaderLang::GLSL)));
 				auto program = RenderSystem::instance()->createProgram(programDesc);
 
 				hal::GraphicsInputLayoutDesc layoutDesc;
@@ -269,11 +275,24 @@ namespace octoon
 
 					proj_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 					model_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
-					decal_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
-					color_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
-					hasTexture_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "hasTexture"; });
-					color_->uniform4f(math::float4::Zero);
-					hasTexture_->uniform1b(false);
+
+					auto decal = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
+					if (decal != end)
+						decal_ = *decal;
+
+					auto color = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
+					if (color != end)
+					{
+						color_ = *color;
+						color_->uniform4f(math::float4::Zero);
+					}
+
+					auto hasTexture = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "hasTexture"; });
+					if (hasTexture != end)
+					{
+						hasTexture_ = *hasTexture;
+						hasTexture_->uniform1b(false);
+					}
 				}
 			}
 			else

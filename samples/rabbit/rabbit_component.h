@@ -79,12 +79,18 @@ namespace rabbit
 		template<typename T>
 		IRabbitComponent* getComponent() const noexcept
 		{
-			return context_.behaviour->getComponent<T>();
+			return context_->behaviour->getComponent<T>();
 		}
 
 		IRabbitComponent* getComponent(const std::type_info& type) const noexcept
 		{
-			return context_.behaviour->getComponent(type);
+			return context_->behaviour->getComponent(type);
+		}
+
+		template<typename T, typename = std::enable_if_t<std::is_base_of<octoon::GameFeature, T>::value>>
+		T* getFeature() const noexcept
+		{
+			return dynamic_cast<T*>(context_->behaviour->getFeature(T::RTTI));
 		}
 
 		void sendMessage(const std::string& event, const std::any& data = nullptr) noexcept

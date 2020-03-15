@@ -75,8 +75,6 @@ namespace octoon::mesh
 				}
 			}
 
-			math::uint1s indices;
-
 			for (std::uint32_t iy = 0; iy < gridY; iy++)
 			{
 				for (std::uint32_t ix = 0; ix < gridX; ix++)

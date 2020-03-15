@@ -188,6 +188,9 @@ namespace octoon
 					if (!geometry)
 						continue;
 
+					if (!geometry->getVisible())
+						continue;
+
 					auto material = geometry->getRenderPipeline();
 					if (!material)
 						continue;

@@ -10,31 +10,54 @@ namespace octoon
 	OctoonImplementSubClass(MeshRendererComponent, RenderComponent, "MeshRenderer")
 
 	MeshRendererComponent::MeshRendererComponent() noexcept
+		: visible_(true)
 	{
 	}
 
 	MeshRendererComponent::MeshRendererComponent(material::MaterialPtr&& material) noexcept
+		: MeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 	}
 
 	MeshRendererComponent::MeshRendererComponent(const material::MaterialPtr& material) noexcept
+		: MeshRendererComponent()
 	{
 		this->setMaterial(material);
 	}
 
 	MeshRendererComponent::MeshRendererComponent(material::Materials&& materials) noexcept
+		: MeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 	}
 
 	MeshRendererComponent::MeshRendererComponent(const material::Materials& materials) noexcept
+		: MeshRendererComponent()
 	{
 		this->setMaterials(materials);
 	}
 
 	MeshRendererComponent::~MeshRendererComponent() noexcept
 	{
+	}
+
+	void
+	MeshRendererComponent::setVisible(bool visible) noexcept
+	{
+		if (this->visible_ != visible)
+		{
+			for (auto& it : this->geometries_)
+				it->setVisible(visible);
+
+			this->visible_ = visible;
+		}
+	}
+
+	bool
+	MeshRendererComponent::getVisible() const noexcept
+	{
+		return this->visible_;
 	}
 
 	GameComponentPtr
@@ -68,6 +91,8 @@ namespace octoon
 		this->onMaterialReplace(this->getMaterials());
 		this->onMoveAfter();
 		this->onLayerChangeAfter();
+
+		this->sendMessage("octoon:mesh:get");
 	}
 
 	void
@@ -181,6 +206,7 @@ namespace octoon
 			{
 				auto geometry_ = std::make_shared<video::Geometry>();
 				geometry_->setActive(true);
+				geometry_->setVisible(this->getVisible());
 				geometry_->setOwnerListener(this);
 				geometry_->setVertexBuffer(vbo);
 				geometry_->setNumVertices((std::uint32_t)vertices.size());
@@ -205,12 +231,15 @@ namespace octoon
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
 
-			for (std::size_t i = 0; i < geometries_.size(); i++)
+			if (!pipelines_.empty())
 			{
-				if (i < pipelines_.size())
-					geometries_[i]->setRenderPipeline(pipelines_[i]);
-				else
-					geometries_[i]->setRenderPipeline(pipelines_.front());
+				for (std::size_t i = 0; i < geometries_.size(); i++)
+				{
+					if (i < pipelines_.size())
+						geometries_[i]->setRenderPipeline(pipelines_[i]);
+					else
+						geometries_[i]->setRenderPipeline(pipelines_.front());
+				}
 			}
 		}
 	}

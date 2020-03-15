@@ -1019,31 +1019,6 @@ namespace rabbit
 
 				event->accept();
 			}
-
-			QString str = event->mimeData()->text();
-			if (!str.isEmpty())
-			{
-				if (behaviour_)
-				{
-					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-					if (behaviour->isOpen())
-					{
-						auto hit = behaviour->raycastHit(octoon::math::float2(event->pos().x(), event->pos().y()));
-						if (hit)
-						{
-							auto meshRenderer = hit->object->getComponent<octoon::MeshRendererComponent>();
-
-							auto materialComponent = behaviour->getComponent<MaterialComponent>();
-							auto& materials = materialComponent->getMaterials();
-
-							std::string name;
-							meshRenderer->setMaterial(materials[materialWindow_->currentRow()], hit->mesh);
-						}
-					}
-				}
-
-				event->accept();
-			}
 		}
 	}
 

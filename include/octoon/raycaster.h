@@ -13,6 +13,16 @@ namespace octoon
 		math::float3 point;
 	};
 
+	inline bool operator==(const RaycastHit& a, const RaycastHit& b)
+	{
+		return a.object == a.object && a.mesh == b.mesh;
+	}
+
+	inline bool operator!=(const RaycastHit& a, const RaycastHit& b)
+	{
+		return a.object != a.object || a.mesh != b.mesh;
+	}
+
 	class OCTOON_EXPORT Raycaster final
 	{
 	public:

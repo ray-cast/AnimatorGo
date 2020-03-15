@@ -11,56 +11,6 @@
 
 namespace rabbit
 {
-	MaterialListWidget::MaterialListWidget()
-	{
-		this->setAcceptDrops(true);
-	}
-
-	MaterialListWidget::MaterialListWidget(QWidget* parent)
-		: QListWidget(parent)
-	{
-		this->setAcceptDrops(true);
-	}
-
-	MaterialListWidget::~MaterialListWidget()
-	{
-
-	}
-	
-	void
-	MaterialListWidget::mousePressEvent(QMouseEvent* event)
-	{
-		if (event->button() == Qt::LeftButton)
-			dragPoint_ = event->pos();
-
-		QListWidget::mousePressEvent(event);
-	}
-
-	void
-	MaterialListWidget::mouseMoveEvent(QMouseEvent* event)
-	{
-		if (event->buttons() & Qt::LeftButton)
-		{
-			QPoint temp = event->pos() - dragPoint_;
-
-			if (temp.manhattanLength() > QApplication::startDragDistance())
-			{
-				auto dragItem = this->itemAt(event->pos());
-				if (dragItem)
-				{
-					QMimeData* mimeData = new QMimeData;
-					mimeData->setText(dragItem->text());
-
-					QDrag* drag = new QDrag(this);
-					drag->setMimeData(mimeData);
-					drag->exec(Qt::CopyAction | Qt::MoveAction);
-				}
-			}
-		}
-
-		QListWidget::mouseMoveEvent(event);
-	}
-
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
 		: behaviour_(behaviour)
 	{
@@ -77,7 +27,7 @@ namespace rabbit
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"¹Ø±Õ");
 
-		listWidget_ = std::make_unique<MaterialListWidget>();
+		listWidget_ = std::make_unique<QListWidget>();
 		listWidget_->setIconSize(QSize(210, 210));
 		listWidget_->setResizeMode(QListView::Adjust);
 		listWidget_->setViewMode(QListView::IconMode);
@@ -99,6 +49,7 @@ namespace rabbit
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 
 		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(listWidget_.get(), SIGNAL(itemSelectionChanged()), this, SLOT(itemSelectionChanged()));
 	}
 
 	MaterialWindow::~MaterialWindow() noexcept
@@ -123,6 +74,28 @@ namespace rabbit
 	{
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
+	}
+
+	void
+	MaterialWindow::itemSelectionChanged()
+	{
+		if (behaviour_)
+		{
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour->isOpen())
+			{
+				auto selectedItem = behaviour->getComponent<DragComponent>()->getSelectedItem();
+				if (selectedItem)
+				{
+					auto hit = selectedItem.value();
+					auto materialComponent = behaviour->getComponent<MaterialComponent>();
+					auto& materials = materialComponent->getMaterials();
+
+					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
+					meshRenderer->setMaterial(materials[this->currentRow()], hit.mesh);
+				}
+			}
+		}
 	}
 
 	void

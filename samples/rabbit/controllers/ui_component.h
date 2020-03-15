@@ -1,5 +1,5 @@
-#ifndef RABBIT_MAIN_CONTROLLER_H_
-#define RABBIT_MAIN_CONTROLLER_H_
+#ifndef RABBIT_UI_CONTROLLER_H_
+#define RABBIT_UI_CONTROLLER_H_
 
 #include <octoon/game_object.h>
 #include <rabbit_component.h>

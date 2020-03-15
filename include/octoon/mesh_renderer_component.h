@@ -18,6 +18,9 @@ namespace octoon
 		explicit MeshRendererComponent(const material::MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
+		virtual void setVisible(bool visable) noexcept;
+		virtual bool getVisible() const noexcept;
+
 		virtual void uploadMeshData(const mesh::MeshPtr& mesh) noexcept;
 		virtual void uploadMaterialData(const material::Materials& material) noexcept;
 
@@ -39,6 +42,8 @@ namespace octoon
 		MeshRendererComponent& operator=(const MeshRendererComponent&) = delete;
 
 	private:
+		bool visible_;
+
 		video::Geometrys geometries_;
 		video::RenderPipelines pipelines_;
 	};

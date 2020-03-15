@@ -22,22 +22,6 @@
 
 namespace rabbit
 {
-	class MaterialListWidget final : public QListWidget
-	{
-		Q_OBJECT
-	public:
-		MaterialListWidget();
-		MaterialListWidget(QWidget* parent);
-		~MaterialListWidget();
-
-	protected:
-		void mousePressEvent(QMouseEvent* event);
-		void mouseMoveEvent(QMouseEvent* event);
-
-	private:
-		QPoint dragPoint_;
-	};
-
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT
@@ -56,6 +40,7 @@ namespace rabbit
 
 	private Q_SLOTS:
 		void closeEvent();
+		void itemSelectionChanged();
 
 	private:
 		std::unique_ptr<QLabel> title_;

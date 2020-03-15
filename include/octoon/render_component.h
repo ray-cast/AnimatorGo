@@ -18,6 +18,9 @@ namespace octoon
 		explicit RenderComponent(const material::MaterialPtr& material, bool sharedMaterial = false) noexcept;
 		virtual ~RenderComponent() noexcept;
 
+		virtual void setVisible(bool visable) noexcept = 0;
+		virtual bool getVisible() const noexcept = 0;
+
 		void setMaterial(material::MaterialPtr&& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
 		void setMaterial(const material::MaterialPtr& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
 		const material::MaterialPtr& getMaterial(std::size_t n = 0) const noexcept;

@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(OfflineSkinnedMeshRendererComponent, OfflineRenderComponent, "OfflineMeshRenderer")
+	OctoonImplementSubClass(OfflineSkinnedMeshRendererComponent, OfflineMeshRendererComponent, "OfflineSkinnedMeshRendererComponent")
 
 	OfflineSkinnedMeshRendererComponent::OfflineSkinnedMeshRendererComponent() noexcept
 		: needUpdate_(true)

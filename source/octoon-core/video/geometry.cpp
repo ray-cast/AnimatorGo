@@ -42,24 +42,6 @@ namespace octoon::video
 	}
 
 	void
-	Geometry::setRenderPipeline(video::RenderPipelinePtr&& pipeline) noexcept
-	{
-		pipeline_ = std::move(pipeline);
-	}
-
-	void
-	Geometry::setRenderPipeline(const video::RenderPipelinePtr& pipeline) noexcept
-	{
-		pipeline_ = pipeline;
-	}
-
-	const video::RenderPipelinePtr&
-	Geometry::getRenderPipeline() const noexcept
-	{
-		return pipeline_;
-	}
-
-	void
 	Geometry::setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept
 	{
 		vertices_ = data;
@@ -105,5 +87,23 @@ namespace octoon::video
 	Geometry::getNumIndices() const noexcept
 	{
 		return numIndices_;
+	}
+
+	void
+	Geometry::setRenderPipeline(video::RenderPipelinePtr&& pipeline) noexcept
+	{
+		pipeline_ = std::move(pipeline);
+	}
+
+	void
+	Geometry::setRenderPipeline(const video::RenderPipelinePtr& pipeline) noexcept
+	{
+		pipeline_ = pipeline;
+	}
+
+	const video::RenderPipelinePtr&
+	Geometry::getRenderPipeline() const noexcept
+	{
+		return pipeline_;
 	}
 }

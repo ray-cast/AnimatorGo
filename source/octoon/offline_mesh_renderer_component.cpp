@@ -46,12 +46,21 @@ namespace octoon
 		if (!feature)
 			return;
 
-		for (auto& it : this->materials_)
-			rprObjectDelete(it);
+		std::vector<void*> cache;
 
+		for (auto& material : materials_)
+		{
+			if (cache.end() == std::find(cache.begin(), cache.end(), material))
+			{
+				rprObjectDelete(material);
+				cache.push_back(material);
+			}
+		}
+
+		this->refCount_.clear();
 		this->materials_.clear();
 
-		std::unordered_map<std::size_t, void*> mtlHash;
+		std::unordered_map<std::size_t, rpr_material_node> mtlHash;
 
 		for (auto& mat : materials)
 		{
@@ -59,6 +68,7 @@ namespace octoon
 			auto it = mtlHash.find(hash);
 			if (it != mtlHash.end())
 			{
+				refCount_[(*it).second]++;
 				materials_.push_back((*it).second);
 				continue;
 			}
@@ -177,6 +187,7 @@ namespace octoon
 				}
 			}
 
+			refCount_[rprMaterial]++;
 			mtlHash[hash] = rprMaterial;
 			materials_.push_back(rprMaterial);
 		}
@@ -300,6 +311,7 @@ namespace octoon
 			}
 		}
 
+		refCount_.clear();
 		materials_.clear();
 	}
 

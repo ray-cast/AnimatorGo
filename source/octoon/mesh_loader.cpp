@@ -21,7 +21,7 @@
 #include <octoon/cloth_component.h>
 
 #include <octoon/io/fstream.h>
-#include <octoon/model/pmx_loader.h>
+#include <octoon/pmx_loader.h>
 
 namespace octoon
 {
@@ -358,7 +358,7 @@ namespace octoon
 		io::ifstream stream;
 		stream.open(std::string(filepath));
 
-		model::PmxLoader load;
+		PmxLoader load;
 		load.doLoad(stream, model);
 
 		if (!model.meshes.empty())

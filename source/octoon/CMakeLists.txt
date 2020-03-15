@@ -133,6 +133,8 @@ SET(LOADER_LIST
 	${SOURCE_PATH}/texture_loader.cpp
 	${HEADER_PATH}/vmd_loader.h
 	${SOURCE_PATH}/vmd_loader.cpp
+	${HEADER_PATH}/pmx_loader.h
+	${SOURCE_PATH}/pmx_loader.cpp
 )
 SOURCE_GROUP("system\\loader" FILES ${LOADER_LIST})
 

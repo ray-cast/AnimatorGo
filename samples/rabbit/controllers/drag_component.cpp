@@ -120,13 +120,13 @@ namespace rabbit
 
 				if (input->isButtonPressed(octoon::input::InputButton::Left)) {
 					this->onMousePress(x, y);
-				} else {
+				} else if (!input->isButtonPressed(octoon::input::InputButton::Right) && !input->isButtonPressed(octoon::input::InputButton::Middle)) {
 					this->onMouseMotion(x, y);
 				}
 			}
 		}
 
-		if (this->selectedItem_.has_value())
+		if (this->selectedItem_)
 		{
 			auto hit = this->selectedItem_.value();
 
@@ -145,7 +145,7 @@ namespace rabbit
 			gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(false);
 		}
 
-		if (this->selectedItemHover_.has_value() && this->selectedItem_ != this->selectedItemHover_)
+		if (this->selectedItemHover_ && this->selectedItem_ != this->selectedItemHover_)
 		{
 			auto hit = this->selectedItemHover_.value();
 

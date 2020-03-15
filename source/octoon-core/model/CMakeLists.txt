@@ -3,15 +3,6 @@ SET(LIB_OUTNAME model)
 SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_OUTNAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 
-SET(LOADER_LIST
-	${HEADER_PATH}/modtypes.h
-	${HEADER_PATH}/model.h
-	${SOURCE_PATH}/model.cpp
-	${HEADER_PATH}/pmx_loader.h
-	${SOURCE_PATH}/pmx_loader.cpp
-)
-SOURCE_GROUP(loader  FILES ${LOADER_LIST})
-
 SET(CONTOUER_LIST
 	${HEADER_PATH}/contour.h
 	${SOURCE_PATH}/contour.cpp
@@ -23,6 +14,9 @@ SET(CONTOUER_LIST
 	${SOURCE_PATH}/path_edge.cpp
 	${HEADER_PATH}/path_group.h
 	${SOURCE_PATH}/path_group.cpp
+	${HEADER_PATH}/modtypes.h
+	${HEADER_PATH}/model.h
+	${SOURCE_PATH}/model.cpp
 )
 SOURCE_GROUP(contour  FILES ${CONTOUER_LIST})
 

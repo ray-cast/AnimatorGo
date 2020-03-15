@@ -19,10 +19,6 @@ namespace octoon::video
 		void setReceiveShadow(bool enable) noexcept;
 		bool getReceiveShadow() const noexcept;
 
-		void setRenderPipeline(RenderPipelinePtr&& pipeline) noexcept;
-		void setRenderPipeline(const RenderPipelinePtr& pipeline) noexcept;
-		const RenderPipelinePtr& getRenderPipeline() const noexcept;
-
 		void setNumVertices(std::uint32_t numVertice) noexcept;
 		std::uint32_t getNumVertices() const noexcept;
 
@@ -34,6 +30,10 @@ namespace octoon::video
 
 		void setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept;
 		const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
+
+		void setRenderPipeline(RenderPipelinePtr&& pipeline) noexcept;
+		void setRenderPipeline(const RenderPipelinePtr& pipeline) noexcept;
+		const RenderPipelinePtr& getRenderPipeline() const noexcept;
 
 	private:
 		bool isCastShadow_;

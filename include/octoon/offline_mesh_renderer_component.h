@@ -41,6 +41,7 @@ namespace octoon
 	private:
 		std::vector<void*> shapes_;
 		std::vector<void*> materials_;
+		std::map<void*, std::int32_t> refCount_;
 	};
 }
 

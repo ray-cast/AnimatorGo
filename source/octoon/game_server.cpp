@@ -2,7 +2,6 @@
 #include <octoon/game_scene.h>
 #include <octoon/game_feature.h>
 #include <octoon/game_listener.h>
-#include <octoon/runtime/algorithm.h>
 #include <octoon/io/json_reader.h>
 
 namespace octoon
@@ -240,7 +239,7 @@ namespace octoon
 	{
 		assert(feature);
 
-		auto it = octoon::runtime::find_if(features_, [&](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
+		auto it = std::find_if(features_.begin(), features_.end(), [&](const GameFeaturePtr& it) { return feature->isInstanceOf(it->rtti()); });
 		if (it != features_.end())
 		{
 			if (listener_)
@@ -302,7 +301,7 @@ namespace octoon
 	void
 	GameServer::removeFeature(const runtime::Rtti* rtti) noexcept
 	{
-		auto it = octoon::runtime::find_if(features_, [rtti](const GameFeaturePtr& it) { return it->isInstanceOf(rtti); });
+		auto it = std::find_if(features_.begin(), features_.end(), [rtti](const GameFeaturePtr& it) { return it->isInstanceOf(rtti); });
 		if (it != features_.end())
 		{
 			if (listener_)
@@ -328,7 +327,7 @@ namespace octoon
 	GameServer::removeFeature(const GameFeaturePtr& feature) noexcept
 	{
 		assert(feature);
-		auto it = octoon::runtime::find(features_, feature);
+		auto it = std::find(features_.begin(), features_.end(), feature);
 		if (it != features_.end())
 		{
 			if (listener_)

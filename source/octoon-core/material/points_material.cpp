@@ -10,6 +10,7 @@ namespace octoon::material
 	}
 
 	PointsMaterial::PointsMaterial(const math::float3& color) noexcept
+		: opacity_(1.0f)
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -75,8 +76,7 @@ namespace octoon::material
 		this->setOpacity(1.0f);
 		this->setDepthEnable(false);
 		this->setPrimitiveType(octoon::hal::GraphicsVertexType::PointList);
-		this->set(MATKEY_SHADER_VERT, vert);
-		this->set(MATKEY_SHADER_FRAG, frag);
+		this->setShader(std::make_shared<Shader>(vert, frag));
 	}
 
 	PointsMaterial::~PointsMaterial() noexcept
@@ -86,7 +86,7 @@ namespace octoon::material
 	void
 	PointsMaterial::setColor(const math::float3& color) noexcept
 	{
-		this->set(MATKEY_COLOR_DIFFUSE, color);
+		this->set("color", math::float4(color, opacity_));
 		this->color_ = color;
 	}
 
@@ -99,7 +99,7 @@ namespace octoon::material
 	void
 	PointsMaterial::setOpacity(float opacity) noexcept
 	{
-		this->set(MATKEY_OPACITY, opacity);
+		this->set("color", math::float4(color_, opacity));
 		this->opacity_ = opacity;
 	}
 

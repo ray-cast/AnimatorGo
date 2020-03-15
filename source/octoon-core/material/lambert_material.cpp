@@ -77,8 +77,7 @@ namespace octoon::material
 
 		this->setColor(color);
 		this->setOpacity(1.0f);
-		this->set(MATKEY_SHADER_VERT, vert);
-		this->set(MATKEY_SHADER_FRAG, frag);
+		this->setShader(std::make_shared<Shader>(vert, frag));
 	}
 
 	LambertMaterial::~LambertMaterial() noexcept
@@ -88,8 +87,8 @@ namespace octoon::material
 	void
 	LambertMaterial::setColor(const math::float3& color) noexcept
 	{
-		this->set(MATKEY_COLOR_DIFFUSE, color);
 		this->color_ = color;
+		this->set("color", math::float4(this->color_, this->opacity_));
 	}
 
 	const math::float3&
@@ -101,8 +100,9 @@ namespace octoon::material
 	void
 	LambertMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
 	{
-		this->set(MATKEY_TEXTURE_DIFFUSE, map);
 		this->colorTexture_ = map;
+		this->set("decal", map);
+		this->set("hasTexture", map ? true : false);
 	}
 
 	const hal::GraphicsTexturePtr&
@@ -114,8 +114,8 @@ namespace octoon::material
 	void
 	LambertMaterial::setOpacity(float opacity) noexcept
 	{
-		this->set(MATKEY_OPACITY, opacity);
 		this->opacity_ = opacity;
+		this->set("color", math::float4(this->color_, this->opacity_));
 	}
 
 	float

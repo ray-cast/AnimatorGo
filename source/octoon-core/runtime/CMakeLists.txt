@@ -5,8 +5,7 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 
 SET(RUNTIME_LIST
 	${HEADER_PATH}/def.h
-	${HEADER_PATH}/algorithm.h
-	${HEADER_PATH}/json.h
+		${HEADER_PATH}/json.h
 	${HEADER_PATH}/assert.h
 	${HEADER_PATH}/platform.h
 	${HEADER_PATH}/singleton.h
@@ -28,6 +27,5 @@ SET(RUNTIME_LIST
 	${HEADER_PATH}/uuid.h
 	${SOURCE_PATH}/uuid.cpp
 	${HEADER_PATH}/sigslot.h
-	${HEADER_PATH}/variant.h
 )
 SOURCE_GROUP("runtime" FILES ${RUNTIME_LIST})

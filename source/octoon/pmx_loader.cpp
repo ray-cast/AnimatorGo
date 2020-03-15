@@ -1,11 +1,13 @@
 #include <octoon/pmx_loader.h>
 #include <octoon/model/modtypes.h>
 #include <octoon/mesh/mesh.h>
-#include <octoon/material/material.h>
+#include <octoon/material/mesh_basic_material.h>
 #include <octoon/model/model.h>
-
+#include <octoon/texture_loader.h>
+#include <octoon/io/fstream.h>
 #include <octoon/math/mathfwd.h>
 #include <octoon/math/mathutil.h>
+#include <octoon/runtime/string.h>
 
 #include <map>
 #include <cstring>
@@ -42,8 +44,11 @@ namespace octoon
 		return std::strncmp(type, "pmx", 3) == 0;
 	}
 
-	bool PmxLoader::doLoad(io::istream& stream, PMX& pmx) noexcept
+	bool PmxLoader::doLoad(std::string_view filepath, PMX& pmx) noexcept
 	{
+		io::ifstream stream;
+		if (!stream.open(std::string(filepath))) return false;
+
 		if (!stream.read((char*)&pmx.header, sizeof(pmx.header))) return false;
 		if (!stream.read((char*)&pmx.description.japanModelLength, sizeof(pmx.description.japanModelLength))) return false;
 
@@ -576,24 +581,22 @@ namespace octoon
 		return true;
 	}
 
-	bool PmxLoader::doLoad(istream& stream, model::Model& model) noexcept
+	bool PmxLoader::doLoad(std::string_view filepath, model::Model& model) noexcept
 	{
 		PMX pmx;
-		if (!this->doLoad(stream, pmx))
+		if (!this->doLoad(filepath, pmx))
 			return false;
+
+		auto rootPath = runtime::string::directory(std::string(filepath));
 
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> cv;
 
 		for (auto& it : pmx.materials)
 		{
-			auto material = std::make_shared<material::Material>();
+			auto material = std::make_shared<material::MeshBasicMaterial>();
 			material->setName(cv.to_bytes(it.name.name));
-			material->set(MATKEY_COLOR_DIFFUSE, math::srgb2linear(it.Diffuse));
-			material->set(MATKEY_COLOR_AMBIENT, math::srgb2linear(it.Ambient));
-			material->set(MATKEY_COLOR_SPECULAR, math::srgb2linear(it.Specular));
-			material->set(MATKEY_COLOR_EDGE, it.EdgeColor);
-			material->set(MATKEY_OPACITY, it.Opacity);
-			material->set(MATKEY_SHININESS, it.Shininess);
+			material->setColor(math::srgb2linear(it.Diffuse));
+			material->setOpacity(it.Opacity);
 
 			std::uint32_t limits = 0;
 			if (pmx.header.sizeOfTexture == 1)
@@ -606,20 +609,8 @@ namespace octoon
 			if (it.TextureIndex < limits)
 			{
 				std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
-				material->set(MATKEY_TEXTURE_DIFFUSE, u8_conv);
+				material->setColorTexture(TextureLoader::load(rootPath + "/" + u8_conv));
 			}
-
-			if (it.SphereTextureIndex < limits)
-			{
-				std::string u8_conv = cv.to_bytes(pmx.textures[it.SphereTextureIndex].name);
-				material->set(MATKEY_TEXTURE_SPECULAR, u8_conv);
-			}
-
-			if (it.ToonTexture < limits)
-			{
-				std::string u8_conv = cv.to_bytes(pmx.textures[it.ToonTexture].name);
-				material->set(MATKEY_TEXTURE_TOON, u8_conv);
-			}		
 
 			bool hasAlphaTexture = it.TextureIndex < limits ? std::wstring_view(pmx.textures[it.TextureIndex].name).find(L".png") != std::string::npos : false;
 			if (it.Opacity < 1.0 || hasAlphaTexture) {

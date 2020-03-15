@@ -3,6 +3,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
+#include <octoon/material/mesh_basic_material.h>
 
 #include <unordered_map>
 #include <RadeonProRender.h>
@@ -73,29 +74,24 @@ namespace octoon
 				continue;
 			}
 
+			auto meshBasicMaterial = mat->downcast<material::MeshBasicMaterial>();
+
 			std::string path;
 			std::string normalName;
 			std::string textureName;
 
-			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
+			math::float3 base = meshBasicMaterial->getColor();
 			math::float3 specular = math::float3::One;
 			math::float3 ambient = math::float3::Zero;
 			math::float4 edgeColor = math::float4::Zero;
 			
-			float opacity = 1.0f;
+			float opacity = meshBasicMaterial->getOpacity();
 			float shininess = 10.0f;
-			
-			mat->get(MATKEY_PATH, path);
-			mat->get(MATKEY_TEXTURE_SPECULAR, normalName);
-			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
-			mat->get(MATKEY_COLOR_DIFFUSE, base);
-			mat->get(MATKEY_COLOR_AMBIENT, ambient);			
-			mat->get(MATKEY_COLOR_SPECULAR, specular);
-			mat->get(MATKEY_COLOR_EDGE, edgeColor);
-			mat->get(MATKEY_OPACITY, opacity);
-			mat->get(MATKEY_SHININESS, shininess);
+			float roughness = 1.0f;
 
-			float roughness = std::pow(1.0f - math::saturate(shininess / 1000.0f), 2);
+			auto colorTexture = meshBasicMaterial->getColorTexture();
+			if (colorTexture)
+				textureName = colorTexture->getTextureDesc().getName();
 
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);

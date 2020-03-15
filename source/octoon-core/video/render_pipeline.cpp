@@ -74,25 +74,13 @@ namespace octoon
 		{
 		}
 
-		RenderPipeline::RenderPipeline(std::string_view name) noexcept
+		RenderPipeline::RenderPipeline(const material::MaterialPtr& material) noexcept
 		{
-			this->setName(name);
+			this->setMaterial(material);
 		}
 
 		RenderPipeline::~RenderPipeline() noexcept
 		{
-		}
-
-		void
-		RenderPipeline::setName(std::string_view name) noexcept
-		{
-			name_ = name;
-		}
-
-		const std::string&
-		RenderPipeline::getName() const noexcept
-		{
-			return name_;
 		}
 
 		void
@@ -111,19 +99,6 @@ namespace octoon
 			return this->material_;
 		}
 
-		hal::GraphicsUniformSetPtr 
-		RenderPipeline::at(std::string_view name) const
-		{
-			auto begin = this->getDescriptorSet()->getUniformSets().begin();
-			auto end = this->getDescriptorSet()->getUniformSets().end();
-
-			auto it = std::find_if(begin, end, [&](const hal::GraphicsUniformSetPtr& set){ return set->getName() == name; });
-			if (it != end)
-				return *it;
-
-			return nullptr;
-		}
-
 		void
 		RenderPipeline::setTransform(const math::float4x4& m) noexcept
 		{
@@ -134,27 +109,6 @@ namespace octoon
 		RenderPipeline::setViewProjection(const math::float4x4& vp) noexcept
 		{
 			proj_->uniform4fmat(vp);
-		}
-
-		void 
-		RenderPipeline::setBaseColor(const math::float4& color) noexcept
-		{
-			color_->uniform4f(color);
-		}
-
-		void
-		RenderPipeline::setTexture(const hal::GraphicsTexturePtr& texture) noexcept
-		{
-			if (texture)
-			{
-				hasTexture_->uniform1b(true);
-				decal_->uniformTexture(texture);
-			}
-			else
-			{
-				hasTexture_->uniform1b(false);
-				decal_->uniformTexture(texture);
-			}
 		}
 
 		const hal::GraphicsPipelinePtr&
@@ -238,13 +192,11 @@ namespace octoon
 				stateDesc.setStencilBackPass(material->getStencilBackPass());
 				auto renderState = RenderSystem::instance()->createRenderState(stateDesc);
 
-				std::string vs = vert, fs = frag;
-				material_->get(MATKEY_SHADER_VERT, vs);
-				material_->get(MATKEY_SHADER_FRAG, fs);
+				auto shader = material_->getShader();
 
 				hal::GraphicsProgramDesc programDesc;
-				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vs, "main", hal::GraphicsShaderLang::GLSL)));
-				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, fs, "main", hal::GraphicsShaderLang::GLSL)));
+				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, shader->vs, "main", hal::GraphicsShaderLang::GLSL)));
+				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, shader->fs, "main", hal::GraphicsShaderLang::GLSL)));
 				auto program = RenderSystem::instance()->createProgram(programDesc);
 
 				hal::GraphicsInputLayoutDesc layoutDesc;
@@ -276,22 +228,58 @@ namespace octoon
 					proj_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 					model_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
 
-					auto decal = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "decal"; });
-					if (decal != end)
-						decal_ = *decal;
-
-					auto color = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "color"; });
-					if (color != end)
+					for (auto& prop : material->getMaterialParams())
 					{
-						color_ = *color;
-						color_->uniform4f(math::float4::Zero);
-					}
+						auto it = std::find_if(begin, end, [&](const hal::GraphicsUniformSetPtr& set) {
+							return set->getName() == prop.key;
+						});
 
-					auto hasTexture = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "hasTexture"; });
-					if (hasTexture != end)
-					{
-						hasTexture_ = *hasTexture;
-						hasTexture_->uniform1b(false);
+						if (it != end)
+						{
+							auto uniform = *it;
+							switch (prop.type)
+							{
+							case material::PropertyTypeInfoBool:
+							{
+								auto value = (bool*)prop.data;
+								uniform->uniform1b(*value);
+							}
+							break;
+							case material::PropertyTypeInfoInt | material::PropertyTypeInfoBuffer:
+							{
+								auto value = (int*)prop.data;
+								if (prop.length == 4)
+									uniform->uniform1i(value[0]);
+								else if (prop.length == 8)
+									uniform->uniform2i(value[0], value[1]);
+								else if (prop.length == 12)
+									uniform->uniform3i(value[0], value[1], value[2]);
+								else if (prop.length == 16)
+									uniform->uniform4i(value[0], value[1], value[2], value[3]);
+							}
+							break;
+							case material::PropertyTypeInfoFloat | material::PropertyTypeInfoBuffer:
+							{
+								auto value = (float*)prop.data;
+								if (prop.length == 4)
+									uniform->uniform1f(value[0]);
+								else if (prop.length == 8)
+									uniform->uniform2f(value[0], value[1]);
+								else if (prop.length == 12)
+									uniform->uniform3f(value[0], value[1], value[2]);
+								else if (prop.length == 16)
+									uniform->uniform4f(value[0], value[1], value[2], value[3]);
+							}
+							break;
+							case material::PropertyTypeInfoTexture:
+							{
+								uniform->uniformTexture(prop.texture);
+							}
+							break;
+							default:
+								break;
+							}
+						}						
 					}
 				}
 			}

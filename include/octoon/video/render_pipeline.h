@@ -1,5 +1,5 @@
-#ifndef OCTOON_MATERIAL_H_
-#define OCTOON_MATERIAL_H_
+#ifndef OCTOON_RENDER_PIPELINE_H_
+#define OCTOON_RENDER_PIPELINE_H_
 
 #include <octoon/video/render_types.h>
 #include <octoon/hal/graphics_types.h>
@@ -13,11 +13,8 @@ namespace octoon
 		{
 		public:
 			RenderPipeline() noexcept;
-			RenderPipeline(std::string_view name) noexcept;
+			RenderPipeline(const material::MaterialPtr& material) noexcept;
 			virtual ~RenderPipeline() noexcept;
-
-			void setName(std::string_view name) noexcept;
-			const std::string& getName() const noexcept;
 
 			virtual void setMaterial(const material::MaterialPtr& material) noexcept;
 			virtual const material::MaterialPtr& getMaterial() const noexcept;
@@ -27,11 +24,6 @@ namespace octoon
 
 			virtual const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 			virtual const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
-
-			void setBaseColor(const math::float4& texture) noexcept;
-			void setTexture(const hal::GraphicsTexturePtr& texture) noexcept;
-
-			hal::GraphicsUniformSetPtr at(std::string_view name) const;
 
 			virtual std::shared_ptr<RenderPipeline> clone() const noexcept;
 
@@ -43,7 +35,6 @@ namespace octoon
 			RenderPipeline& operator=(const RenderPipeline&) = delete;
 
 		private:
-			std::string name_;
 			material::MaterialPtr material_;
 
 			hal::GraphicsPipelinePtr pipeline_;

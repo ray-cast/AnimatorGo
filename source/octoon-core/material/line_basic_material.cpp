@@ -11,6 +11,7 @@ namespace octoon::material
 	}
 
 	LineBasicMaterial::LineBasicMaterial(const math::float3& color) noexcept
+		: opacity_(1.0f)
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -76,8 +77,7 @@ namespace octoon::material
 		this->setOpacity(1.0f);
 		this->setDepthEnable(false);
 		this->setPrimitiveType(octoon::hal::GraphicsVertexType::LineList);
-		this->set(MATKEY_SHADER_VERT, vert);
-		this->set(MATKEY_SHADER_FRAG, frag);
+		this->setShader(std::make_shared<Shader>(vert, frag));
 	}
 
 	LineBasicMaterial::~LineBasicMaterial() noexcept
@@ -87,8 +87,8 @@ namespace octoon::material
 	void
 	LineBasicMaterial::setColor(const math::float3& color) noexcept
 	{
-		this->set(MATKEY_COLOR_DIFFUSE, color);
 		this->color_ = color;
+		this->set("color", math::float4(color_, opacity_));
 	}
 
 	const math::float3&
@@ -100,8 +100,8 @@ namespace octoon::material
 	void
 	LineBasicMaterial::setOpacity(float opacity) noexcept
 	{
-		this->set(MATKEY_OPACITY, opacity);
 		this->opacity_ = opacity;
+		this->set("color", math::float4(color_, opacity_));
 	}
 
 	float

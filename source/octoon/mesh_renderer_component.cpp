@@ -250,28 +250,7 @@ namespace octoon
 		pipelines_.clear();
 
 		for (auto& mat : materials)
-		{
-			const std::string& name = mat->getName();
-			std::string path;
-			std::string textureName;
-
-			math::float3 base = math::float3(1.0f, 0.0f, 1.0f);
-			math::float3 ambient;
-
-			mat->get(MATKEY_PATH, path);
-			mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
-			mat->get(MATKEY_COLOR_DIFFUSE, base);
-			mat->get(MATKEY_COLOR_AMBIENT, ambient);
-
-			auto pipeline = std::make_shared<video::RenderPipeline>();
-			pipeline->setMaterial(mat);
-			pipeline->setBaseColor(math::float4(base, 1.0));
-
-			if (!textureName.empty())
-				pipeline->setTexture(TextureLoader::load(path + textureName));
-
-			pipelines_.push_back(pipeline);
-		}
+			pipelines_.emplace_back(std::make_shared<video::RenderPipeline>(mat));
 
 		for (std::size_t i = 0; i < geometries_.size(); i++)
 		{

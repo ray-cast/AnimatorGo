@@ -3,10 +3,10 @@
 
 #include <list>
 #include <memory>
+#include <variant>
 #include <stdexcept>
 #include <octoon/math/math.h>
 #include <octoon/runtime/platform.h>
-#include <octoon/runtime/variant.h>
 #include <octoon/runtime/rtti_factory.h>
 
 namespace octoon
@@ -33,7 +33,7 @@ namespace octoon
 			using const_iterator = map_t::const_iterator;
 			using const_reverse_iterator = map_t::const_reverse_iterator;
 
-			using variant_t = runtime::variant<
+			using variant_t = std::variant<
 				void*,
 				boolean_t,
 				number_integer_t,

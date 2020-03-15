@@ -147,18 +147,20 @@ namespace rabbit
 
 			for (std::size_t i = 0; i < materials.size(); i++)
 			{
-				auto& mat = materials[i];
+				auto mat = materials[i]->downcast<octoon::material::MeshBasicMaterial>();
 
 				std::string path;
+				std::string normalName;
 				std::string textureName;
 
-				octoon::math::float3 base = octoon::math::float3(1.0f, 0.0f, 1.0f);
-				octoon::math::float3 ambient;
+				octoon::math::float3 base = mat->getColor();
+				octoon::math::float3 specular = octoon::math::float3::One;
+				octoon::math::float3 ambient = octoon::math::float3::Zero;
+				octoon::math::float4 edgeColor = octoon::math::float4::Zero;
 
-				mat->get(MATKEY_PATH, path);
-				mat->get(MATKEY_TEXTURE_DIFFUSE, textureName);
-				mat->get(MATKEY_COLOR_DIFFUSE, base);
-				mat->get(MATKEY_COLOR_AMBIENT, ambient);
+				auto colorTexture = mat->getColorTexture();
+				if (colorTexture)
+					textureName = colorTexture->getTextureDesc().getName();
 
 				QListWidgetItem* item = new QListWidgetItem;
 				item->setText(QString::fromStdString(mat->getName()));

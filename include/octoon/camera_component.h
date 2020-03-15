@@ -1,7 +1,7 @@
 #ifndef OCTOON_CAMERA_COMPONENT_H_
 #define OCTOON_CAMERA_COMPONENT_H_
 
-#include <octoon/video/camera.h>
+#include <octoon/camera/camera.h>
 #include <octoon/game_component.h>
 
 namespace octoon
@@ -11,16 +11,16 @@ namespace octoon
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
 	public:
 		CameraComponent() noexcept;
-		CameraComponent(video::CameraPtr&& camera) noexcept;
+		CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept;
 		virtual ~CameraComponent() noexcept;
 
 		void setClearColor(const math::float4& color) noexcept;
 		void setViewport(const math::float4& viewport) noexcept;
 		void setClearFlags(hal::GraphicsClearFlags clearflags) noexcept;
-		void setCameraType(video::CameraType type) noexcept;
+		void setCameraType(camera::CameraType type) noexcept;
 		void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept;
 
-		video::CameraType getCameraType() const noexcept;
+		camera::CameraType getCameraType() const noexcept;
 		hal::GraphicsClearFlags getClearFlags() const noexcept;
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
 		hal::GraphicsFramebufferPtr getSwapFramebuffer() const noexcept;
@@ -52,8 +52,8 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onPreRender(const video::Camera& camera) noexcept override;
-		void onPostRender(const video::Camera& camera) noexcept override;
+		void onPreRender(const camera::Camera& camera) noexcept override;
+		void onPostRender(const camera::Camera& camera) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
 
@@ -62,7 +62,7 @@ namespace octoon
 		CameraComponent& operator=(const CameraComponent&) = delete;
 
 	protected:
-		video::CameraPtr camera_;
+		std::shared_ptr<camera::Camera> camera_;
 	};
 }
 

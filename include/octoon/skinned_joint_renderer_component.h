@@ -31,7 +31,7 @@ namespace octoon
 
 		void onAnimationUpdate(const std::any& data) noexcept;
 
-		void onPreRender(const video::Camera& camera) noexcept override;
+		void onPreRender(const camera::Camera& camera) noexcept override;
 
 	private:
 		SkinnedJointRendererComponent(const SkinnedJointRendererComponent&) = delete;

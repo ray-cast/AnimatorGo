@@ -1,6 +1,7 @@
 #ifndef OCTOON_LIGHT_H_
 #define OCTOON_LIGHT_H_
 
+#include <octoon/camera/camera.h>
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_texture.h>
 
@@ -46,7 +47,7 @@ namespace octoon::light
 
 	class OCTOON_EXPORT Light final : public video::RenderObject, public video::RenderListener
 	{
-		OctoonDeclareSubClass(Light, RenderObject)
+		OctoonDeclareSubClass(Light, video::RenderObject)
 	public:
 		Light() noexcept;
 		virtual ~Light() noexcept;
@@ -90,7 +91,7 @@ namespace octoon::light
 		void setSkyLightingSpecular(const hal::GraphicsTexturePtr& texture) noexcept;
 		const hal::GraphicsTexturePtr& getSkyLightingSpecular() const noexcept;
 
-		const video::CameraPtr& getCamera() const noexcept;
+		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
 
 		video::RenderObjectPtr clone() const noexcept;
 
@@ -107,8 +108,8 @@ namespace octoon::light
 		void onSceneChangeBefore() noexcept;
 		void onSceneChangeAfter() noexcept;
 			
-		void onPreRender(const video::Camera& camera) noexcept;
-		void onPostRender(const video::Camera& camera) noexcept;
+		void onPreRender(const camera::Camera& camera) noexcept;
+		void onPostRender(const camera::Camera& camera) noexcept;
 
 		void onMoveAfter() noexcept;
 
@@ -133,7 +134,7 @@ namespace octoon::light
 
 		float _shadowBias;
 		float _shadowFactor;
-		video::CameraPtr _shadowCamera;
+		std::shared_ptr<camera::Camera> _shadowCamera;
 		ShadowMode _shadowMode;
 
 		hal::GraphicsTexturePtr _skybox;

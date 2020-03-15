@@ -84,7 +84,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedJointRendererComponent::onPreRender(const video::Camera& camera) noexcept
+	SkinnedJointRendererComponent::onPreRender(const camera::Camera& camera) noexcept
 	{
 		if (needUpdate_)
 		{

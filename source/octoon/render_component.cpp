@@ -108,12 +108,12 @@ namespace octoon
 	}
 
 	void
-	RenderComponent::onPreRender(const video::Camera& camera) noexcept
+	RenderComponent::onPreRender(const camera::Camera& camera) noexcept
 	{
 	}
 	
 	void
-	RenderComponent::onPostRender(const video::Camera& camera) noexcept
+	RenderComponent::onPostRender(const camera::Camera& camera) noexcept
 	{
 	}
 

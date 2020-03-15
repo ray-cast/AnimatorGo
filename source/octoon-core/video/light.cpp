@@ -1,12 +1,12 @@
 #include <octoon/video/light.h>
-#include <octoon/video/camera.h>
-#include <octoon/video/perspective_camera.h>
-#include <octoon/video/ortho_camera.h>
+#include <octoon/camera/camera.h>
+#include <octoon/camera/perspective_camera.h>
+#include <octoon/camera/ortho_camera.h>
 #include <octoon/hal/graphics_texture.h>
 
 namespace octoon::light
 {
-	OctoonImplementSubClass(Light, RenderObject, "Light")
+	OctoonImplementSubClass(Light, video::RenderObject, "Light")
 
 	Light::Light() noexcept
 		: _lightType(LightType::LightTypePoint)
@@ -159,7 +159,7 @@ namespace octoon::light
 		return _enableGlobalIllumination;
 	}
 
-	const video::CameraPtr&
+	const std::shared_ptr<camera::Camera>&
 	Light::getCamera() const noexcept
 	{
 		return _shadowCamera;
@@ -231,9 +231,9 @@ namespace octoon::light
 	bool
 	Light::setupShadowMap() noexcept
 	{
-		auto shadowCamera = std::make_shared<video::PerspectiveCamera>();
+		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
 		shadowCamera->setOwnerListener(this);
-		shadowCamera->setCameraType(video::CameraType::Custom);
+		shadowCamera->setCameraType(camera::CameraType::Custom);
 		shadowCamera->setAperture(90.0f);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
@@ -349,12 +349,12 @@ namespace octoon::light
 	}
 
 	void
-	Light::onPreRender(const video::Camera& camera) noexcept
+	Light::onPreRender(const camera::Camera& camera) noexcept
 	{
 	}
 
 	void
-	Light::onPostRender(const video::Camera& camera) noexcept
+	Light::onPostRender(const camera::Camera& camera) noexcept
 	{
 	}
 

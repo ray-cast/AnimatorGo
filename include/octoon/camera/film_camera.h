@@ -1,9 +1,9 @@
 #ifndef OCTOON_FILM_CAMERA_H_
 #define OCTOON_FILM_CAMERA_H_
 
-#include <octoon/video/perspective_camera.h>
+#include <octoon/camera/perspective_camera.h>
 
-namespace octoon::video
+namespace octoon::camera
 {
 	class OCTOON_EXPORT FilmCamera final : public Camera
 	{

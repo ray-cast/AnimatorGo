@@ -1,5 +1,5 @@
 #include <octoon/video/render_scene.h>
-#include <octoon/video/camera.h>
+#include <octoon/camera/camera.h>
 
 namespace octoon
 {
@@ -16,7 +16,7 @@ namespace octoon
 		}
 
 		void
-		RenderScene::addCamera(Camera* camera) noexcept
+		RenderScene::addCamera(camera::Camera* camera) noexcept
 		{
 			assert(camera);
 
@@ -25,7 +25,7 @@ namespace octoon
 			{
 				cameras_.push_back(camera);
 
-				std::sort(cameras_.begin(), cameras_.end(), [](const Camera* a, const Camera* b)
+				std::sort(cameras_.begin(), cameras_.end(), [](const camera::Camera* a, const camera::Camera* b)
 				{
 					return a->getCameraType() < b->getCameraType();
 				});
@@ -33,7 +33,7 @@ namespace octoon
 		}
 
 		void
-		RenderScene::removeCamera(Camera* camera) noexcept
+		RenderScene::removeCamera(camera::Camera* camera) noexcept
 		{
 			assert(camera);
 
@@ -53,8 +53,8 @@ namespace octoon
 		{
 			assert(object);
 
-			if (object->isA<Camera>())
-				this->addCamera(object->downcast<Camera>());
+			if (object->isA<camera::Camera>())
+				this->addCamera(object->downcast<camera::Camera>());
 			else
 				renderables_.push_back(object);
 		}
@@ -64,9 +64,9 @@ namespace octoon
 		{
 			assert(object);
 
-			if (object->isA<Camera>())
+			if (object->isA<camera::Camera>())
 			{
-				auto it = std::find(cameras_.begin(), cameras_.end(), object->downcast<Camera>());
+				auto it = std::find(cameras_.begin(), cameras_.end(), object->downcast<camera::Camera>());
 				if (it != cameras_.end())
 					cameras_.erase(it);
 			}

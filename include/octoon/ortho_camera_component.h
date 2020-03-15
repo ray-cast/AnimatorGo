@@ -1,7 +1,7 @@
 #ifndef OCTOON_ORTHO_CAMERA_COMPONENT_H_
 #define OCTOON_ORTHO_CAMERA_COMPONENT_H_
 
-#include <octoon/video/ortho_camera.h>
+#include <octoon/camera/ortho_camera.h>
 #include <octoon/camera_component.h>
 
 namespace octoon
@@ -31,7 +31,7 @@ namespace octoon
 		OrthoCameraComponent& operator=(const OrthoCameraComponent&) = delete;
 
 	private:
-		video::OrthoCamera* camera_;
+		camera::OrthoCamera* camera_;
 	};
 }
 

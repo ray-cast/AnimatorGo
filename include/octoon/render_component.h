@@ -32,8 +32,8 @@ namespace octoon
 		std::size_t getNumMaterials() const noexcept;
 
 	protected:
-		virtual void onPreRender(const video::Camera& camera) noexcept override;
-		virtual void onPostRender(const video::Camera& camera) noexcept override;
+		virtual void onPreRender(const camera::Camera& camera) noexcept override;
+		virtual void onPostRender(const camera::Camera& camera) noexcept override;
 
 		virtual void onMaterialReplace(const material::Materials& material) noexcept;
 

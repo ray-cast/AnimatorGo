@@ -7,12 +7,12 @@ namespace octoon
 	OctoonImplementSubInterface(CameraComponent, GameComponent, "CameraComponent")
 
 	CameraComponent::CameraComponent() noexcept
-		: camera_(std::make_shared<video::Camera>())
+		: camera_(std::make_shared<camera::Camera>())
 	{
 		camera_->setOwnerListener(this);
 	}
 
-	CameraComponent::CameraComponent(video::CameraPtr&& camera) noexcept
+	CameraComponent::CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept
 		: camera_(camera)
 	{
 		camera_->setOwnerListener(this);
@@ -41,13 +41,13 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setCameraType(video::CameraType type) noexcept
+	CameraComponent::setCameraType(camera::CameraType type) noexcept
 	{
 		camera_->setCameraType(type);
 
 		if (this->getActive())
 		{
-			if (type == video::CameraType::Main)
+			if (type == camera::CameraType::Main)
 			{
 				auto videoFeature = this->tryGetFeature<VideoFeature>();
 				if (videoFeature)
@@ -62,7 +62,7 @@ namespace octoon
 		camera_->setFramebuffer(framebuffer);
 	}
 
-	video::CameraType
+	camera::CameraType
 	CameraComponent::getCameraType() const noexcept
 	{
 		return camera_->getCameraType();
@@ -200,7 +200,7 @@ namespace octoon
 		camera_->setActive(true);
 		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
-		if (camera_->getCameraType() == video::CameraType::Main)
+		if (camera_->getCameraType() == camera::CameraType::Main)
 		{
 			auto videoFeature = this->tryGetFeature<VideoFeature>();
 			if (videoFeature)
@@ -215,7 +215,7 @@ namespace octoon
 
 		camera_->setActive(false);
 
-		if (camera_->getCameraType() == video::CameraType::Main)
+		if (camera_->getCameraType() == camera::CameraType::Main)
 		{
 			auto videoFeature = this->tryGetFeature<VideoFeature>();
 			if (videoFeature)
@@ -236,12 +236,12 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::onPreRender(const video::Camera& camera) noexcept
+	CameraComponent::onPreRender(const camera::Camera& camera) noexcept
 	{
 	}
 
 	void
-	CameraComponent::onPostRender(const video::Camera& camera) noexcept
+	CameraComponent::onPostRender(const camera::Camera& camera) noexcept
 	{
 	}
 

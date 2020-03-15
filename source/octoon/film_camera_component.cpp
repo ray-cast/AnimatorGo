@@ -5,9 +5,9 @@ namespace octoon
 	OctoonImplementSubClass(FilmCameraComponent, CameraComponent, "FilmCameraComponent")
 
 	FilmCameraComponent::FilmCameraComponent() noexcept
-		: CameraComponent(std::make_shared<video::FilmCamera>())
+		: CameraComponent(std::make_shared<camera::FilmCamera>())
 	{
-		camera_ = dynamic_cast<video::FilmCamera*>(CameraComponent::camera_.get());
+		camera_ = dynamic_cast<camera::FilmCamera*>(CameraComponent::camera_.get());
 	}
 
 	FilmCameraComponent::~FilmCameraComponent() noexcept

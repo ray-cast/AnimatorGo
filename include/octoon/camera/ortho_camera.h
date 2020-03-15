@@ -1,9 +1,9 @@
 #ifndef OCTOON_ORTHO_CAMERA_H_
 #define OCTOON_ORTHO_CAMERA_H_
 
-#include <octoon/video/camera.h>
+#include <octoon/camera/camera.h>
 
-namespace octoon::video
+namespace octoon::camera
 {
 	class OCTOON_EXPORT OrthoCamera final : public Camera
 	{

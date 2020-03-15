@@ -4,11 +4,18 @@
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_types.h>
 
-namespace octoon::video
+namespace octoon::camera
 {
-	class OCTOON_EXPORT Camera : public RenderObject
+	enum class CameraType
 	{
-		OctoonDeclareSubClass(Camera, RenderObject)
+		Custom,
+		Main,
+		UI
+	};
+
+	class OCTOON_EXPORT Camera : public video::RenderObject
+	{
+		OctoonDeclareSubClass(Camera, video::RenderObject)
 	public:
 		Camera() noexcept;
 		virtual ~Camera() noexcept;

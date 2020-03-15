@@ -152,7 +152,7 @@ namespace octoon
 		}
 
 		void
-		RenderObject::onRenderBefore(const Camera& camera) noexcept
+		RenderObject::onRenderBefore(const camera::Camera& camera) noexcept
 		{
 			auto listener = this->getOwnerListener();
 			if (listener)
@@ -160,7 +160,7 @@ namespace octoon
 		}
 
 		void
-		RenderObject::onRenderAfter(const Camera& camera) noexcept
+		RenderObject::onRenderAfter(const camera::Camera& camera) noexcept
 		{
 			auto listener = this->getOwnerListener();
 			if (listener)

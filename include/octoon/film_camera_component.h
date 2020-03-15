@@ -1,7 +1,7 @@
 #ifndef OCTOON_FILM_CAMERA_COMPONENT_H_
 #define OCTOON_FILM_CAMERA_COMPONENT_H_
 
-#include <octoon/video/film_camera.h>
+#include <octoon/camera/film_camera.h>
 #include <octoon/camera_component.h>
 
 namespace octoon
@@ -39,7 +39,7 @@ namespace octoon
 		FilmCameraComponent& operator=(const FilmCameraComponent&) = delete;
 
 	private:
-		video::FilmCamera* camera_;
+		camera::FilmCamera* camera_;
 	};
 }
 

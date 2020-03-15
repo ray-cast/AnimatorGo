@@ -9,7 +9,7 @@ namespace octoon
 		auto object = GameObject::create("MainCamera");
 
 		auto camera = object->addComponent<PerspectiveCameraComponent>(fov, sensorSize, znear, zfar);
-		camera->setCameraType(video::CameraType::Main);
+		camera->setCameraType(camera::CameraType::Main);
 
 		return object;
 	}

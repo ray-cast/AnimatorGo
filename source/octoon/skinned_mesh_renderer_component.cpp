@@ -220,7 +220,7 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::onPreRender(const video::Camera& camera) noexcept
+	SkinnedMeshRendererComponent::onPreRender(const camera::Camera& camera) noexcept
 	{
 		if (needUpdate_)
 		{

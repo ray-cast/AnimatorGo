@@ -1,7 +1,7 @@
 #ifndef OCTOON_PERSPECTIVE_CAMERA_COMPONENT_H_
 #define OCTOON_PERSPECTIVE_CAMERA_COMPONENT_H_
 
-#include <octoon/video/perspective_camera.h>
+#include <octoon/camera/perspective_camera.h>
 #include <octoon/camera_component.h>
 
 namespace octoon
@@ -38,7 +38,7 @@ namespace octoon
 		PerspectiveCameraComponent& operator=(const PerspectiveCameraComponent&) = delete;
 
 	private:
-		video::PerspectiveCamera* camera_;
+		camera::PerspectiveCamera* camera_;
 	};
 }
 

@@ -50,7 +50,7 @@ namespace octoon
 
 		void onMeshReplace(const std::any& mesh) noexcept;
 
-		void onPreRender(const video::Camera& camera) noexcept override;
+		void onPreRender(const camera::Camera& camera) noexcept override;
 
 	private:
 		void updateMeshData() noexcept;

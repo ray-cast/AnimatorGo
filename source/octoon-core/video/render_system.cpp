@@ -1,5 +1,5 @@
 #include <octoon/video/render_system.h>
-#include <octoon/video/camera.h>
+#include <octoon/camera/camera.h>
 #include <octoon/video/geometry.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_scene.h>
@@ -219,7 +219,7 @@ namespace octoon
 				camera->onRenderAfter(*camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-				if (camera->getCameraType() == CameraType::Main)
+				if (camera->getCameraType() == camera::CameraType::Main)
 				{
 					auto& v = camera->getPixelViewport();
 					if (framebuffer)

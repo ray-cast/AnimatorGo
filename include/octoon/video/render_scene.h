@@ -15,8 +15,8 @@ namespace octoon
 			RenderScene() noexcept;
 			~RenderScene() noexcept;
 
-			void addCamera(Camera* camera) noexcept;
-			void removeCamera(Camera* camera) noexcept;
+			void addCamera(camera::Camera* camera) noexcept;
+			void removeCamera(camera::Camera* camera) noexcept;
 			const CameraRaws& getCameraList() const noexcept;
 
 			void addRenderObject(RenderObject* object) noexcept;

@@ -9,7 +9,7 @@ namespace octoon
 		auto object = GameObject::create("MainCamera");
 
 		auto camera = object->addComponent<FilmCameraComponent>();
-		camera->setCameraType(video::CameraType::Main);
+		camera->setCameraType(camera::CameraType::Main);
 		camera->setCanvasWidth(canvasWidth);
 		camera->setZoom(zoom);
 

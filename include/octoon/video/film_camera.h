@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_FILM_CAMERA_H_
-#define OCTOON_VIDEO_FILM_CAMERA_H_
+#ifndef OCTOON_FILM_CAMERA_H_
+#define OCTOON_FILM_CAMERA_H_
 
 #include <octoon/video/perspective_camera.h>
 

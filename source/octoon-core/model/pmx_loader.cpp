@@ -623,6 +623,19 @@ namespace octoon
 					material->set(MATKEY_TEXTURE_TOON, u8_conv);
 				}		
 
+				bool hasAlphaTexture = it.TextureIndex < limits ? std::wstring_view(pmx.textures[it.TextureIndex].name).find(L".png") != std::string::npos : false;
+				if (it.Opacity < 1.0 || hasAlphaTexture) {
+					hal::GraphicsColorBlend blend;
+					blend.setBlendEnable(true);
+					blend.setBlendSrc(hal::GraphicsBlendFactor::SrcAlpha);
+					blend.setBlendDest(hal::GraphicsBlendFactor::OneMinusSrcAlpha);
+
+					std::vector<hal::GraphicsColorBlend> blends;
+					blends.push_back(blend);
+
+					material->setColorBlends(std::move(blends));
+				}
+
 				model.materials.emplace_back(std::move(material));
 			}
 

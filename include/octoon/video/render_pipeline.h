@@ -33,6 +33,9 @@ namespace octoon
 			virtual std::shared_ptr<RenderPipeline> clone() const noexcept = 0;
 
 		private:
+			virtual void onMaterialReplace(const material::MaterialPtr& material) noexcept(false);
+
+		private:
 			RenderPipeline(const RenderPipeline&) = delete;
 			RenderPipeline& operator=(const RenderPipeline&) = delete;
 

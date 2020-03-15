@@ -33,7 +33,11 @@ namespace octoon
 		void
 		RenderPipeline::setMaterial(const material::MaterialPtr& material) noexcept
 		{
-			this->material_ = material;
+			if (this->material_ != material)
+			{
+				this->material_ = material;
+				this->onMaterialReplace(this->material_);
+			}
 		}
 		
 		const material::MaterialPtr&
@@ -53,6 +57,11 @@ namespace octoon
 				return *it;
 
 			return nullptr;
-		}		
+		}
+
+		void
+		RenderPipeline::onMaterialReplace(const material::MaterialPtr& material) noexcept(false)
+		{
+		}
 	}
 }

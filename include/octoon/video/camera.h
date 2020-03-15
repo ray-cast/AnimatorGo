@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_CAMERA_H_
-#define OCTOON_VIDEO_CAMERA_H_
+#ifndef OCTOON_CAMERA_H_
+#define OCTOON_CAMERA_H_
 
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_types.h>

@@ -13,6 +13,7 @@
 #include "controllers/ui_component.h"
 #include "controllers/mark_component.h"
 #include "controllers/material_component.h"
+#include "controllers/client_component.h"
 
 #include <octoon/octoon.h>
 

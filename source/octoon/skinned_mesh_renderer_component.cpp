@@ -2,9 +2,6 @@
 #include <octoon/skinned_morph_component.h>
 #include <octoon/skinned_texture_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/basic_material.h>
-#include <octoon/texture_loader.h>
-#include <octoon/video/render_system.h>
 
 namespace octoon
 {

@@ -1,5 +1,5 @@
-#ifndef OCTOON_BASIC_SKINNED_MATERIAL_H_
-#define OCTOON_BASIC_SKINNED_MATERIAL_H_
+#ifndef OCTOON_BASIC_MATERIAL_H_
+#define OCTOON_BASIC_MATERIAL_H_
 
 #include <octoon/video/render_pipeline.h>
 #include <octoon/hal/graphics.h>
@@ -8,14 +8,12 @@ namespace octoon
 {
 	namespace video
 	{
-		class OCTOON_EXPORT BasicSkinnedMaterial final : public RenderPipeline
+		class OCTOON_EXPORT BasicPipeline final : public RenderPipeline
 		{
 		public:
-			BasicSkinnedMaterial() except;
-			BasicSkinnedMaterial(const hal::GraphicsTexturePtr& texture) except;
-			~BasicSkinnedMaterial() noexcept;
-
-			void setup() except;
+			BasicPipeline() except;
+			BasicPipeline(const hal::GraphicsTexturePtr& texture) except;
+			~BasicPipeline() noexcept;
 
 			void setTransform(const math::float4x4& m) noexcept override;
 			void setViewProjection(const math::float4x4& vp) noexcept override;
@@ -28,11 +26,15 @@ namespace octoon
 			RenderPipelinePtr clone() const noexcept override;
 
 		private:
-			BasicSkinnedMaterial(const BasicSkinnedMaterial&) = delete;
-			BasicSkinnedMaterial& operator=(const BasicSkinnedMaterial&) = delete;
+			void onMaterialReplace(const material::MaterialPtr& material) noexcept(false) override;
+
+		private:
+			BasicPipeline(const BasicPipeline&) = delete;
+			BasicPipeline& operator=(const BasicPipeline&) = delete;
 
 		private:
 			hal::GraphicsPipelinePtr pipeline_;
+			hal::GraphicsStatePtr renderState_;
 			hal::GraphicsDescriptorSetPtr descriptorSet_;
 
 			hal::GraphicsUniformSetPtr proj_;

@@ -12,6 +12,8 @@ SET(VIDEO_GRAPHICS_LIST
 	${SOURCE_PATH}/render_system.cpp
 	${HEADER_PATH}/render_pipeline.h
 	${SOURCE_PATH}/render_pipeline.cpp
+	${HEADER_PATH}/basic_pipeline.h
+	${SOURCE_PATH}/basic_pipeline.cpp
 	${HEADER_PATH}/render_types.h
 )
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})
@@ -28,26 +30,6 @@ SET(VIDEO_CAMERA_LIST
 )
 SOURCE_GROUP(camera FILES ${VIDEO_CAMERA_LIST})
 
-SET(VIDEO_MATERIAL_LIST
-	${HEADER_PATH}/phong_material.h
-	${SOURCE_PATH}/phong_material.cpp
-	${HEADER_PATH}/blinn_material.h
-	${SOURCE_PATH}/blinn_material.cpp
-	${HEADER_PATH}/ggx_material.h
-	${SOURCE_PATH}/ggx_material.cpp
-	${HEADER_PATH}/line_material.h
-	${SOURCE_PATH}/line_material.cpp
-	${HEADER_PATH}/text_material.h
-	${SOURCE_PATH}/text_material.cpp
-	${HEADER_PATH}/lambert_material.h
-	${SOURCE_PATH}/lambert_material.cpp
-	${HEADER_PATH}/basic_material.h
-	${SOURCE_PATH}/basic_material.cpp
-	${HEADER_PATH}/basic_skinned_material.h
-	${SOURCE_PATH}/basic_skinned_material.cpp
-)
-SOURCE_GROUP(renderer\\pipeline FILES ${VIDEO_MATERIAL_LIST})
-
 SET(VIDEO_GEOMETRY_LIST
 	${HEADER_PATH}/geometry.h
 	${SOURCE_PATH}/geometry.cpp
@@ -60,4 +42,4 @@ SET(VIDEO_LIGHT_LIST
 )
 SOURCE_GROUP(light FILES ${VIDEO_LIGHT_LIST})
 
-LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_CAMERA_LIST} ${VIDEO_MATERIAL_LIST} ${VIDEO_GEOMETRY_LIST} ${VIDEO_LIGHT_LIST})
+LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_CAMERA_LIST} ${VIDEO_GEOMETRY_LIST} ${VIDEO_LIGHT_LIST})

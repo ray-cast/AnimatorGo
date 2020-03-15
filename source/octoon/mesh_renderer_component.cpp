@@ -3,7 +3,7 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_system.h>
-#include <octoon/video/basic_material.h>
+#include <octoon/video/basic_pipeline.h>
 #include <octoon/texture_loader.h>
 
 namespace octoon

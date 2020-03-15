@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_ORTHO_CAMERA_H_
-#define OCTOON_VIDEO_ORTHO_CAMERA_H_
+#ifndef OCTOON_ORTHO_CAMERA_H_
+#define OCTOON_ORTHO_CAMERA_H_
 
 #include <octoon/video/camera.h>
 

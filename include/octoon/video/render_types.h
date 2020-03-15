@@ -46,18 +46,6 @@ namespace octoon
 			Triangles
 		};
 
-		struct TextColor
-		{
-			enum Type
-			{
-				FrontColor,
-				SideColor,
-				BeginRange_ = FrontColor,
-				EndRange_ = SideColor,
-				RangeSize_ = (EndRange_ - BeginRange_) + 1,
-			};
-		};
-
 		enum class TextShaingMode
 		{
 			PureColor,

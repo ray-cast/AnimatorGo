@@ -11,7 +11,6 @@
 #include <octoon/sphere_collider_component.h>
 #include <octoon/capsule_collider_component.h>
 #include <octoon/mesh_renderer_component.h>
-#include <octoon/video/basic_material.h>
 
 #include <NvCloth/Cloth.h>
 #include <NvCloth/Factory.h>

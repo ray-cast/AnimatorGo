@@ -161,7 +161,6 @@ namespace rabbit
 		this->setFrameShape(Panel);
 		this->setObjectName("mainWindow");
 		this->setWindowFlags(Qt::FramelessWindowHint);
-		this->setMouseTracking(true);
 		this->installEventFilter(this);
 
 		QImage image(":res/icons/rabbit.png");
@@ -228,8 +227,6 @@ namespace rabbit
 		connect(viewPanel_.get(), &ViewWidget::mouseMoveSignal, this, &MainWindow::onMouseMoveSignal);
 		connect(viewPanel_.get(), &ViewWidget::mouseReleaseSignal, this, &MainWindow::onMouseReleaseSignal);
 		connect(viewPanel_.get(), &ViewWidget::mouseDoubleClickSignal, this, &MainWindow::onMouseDoubleClickSignal);
-		connect(viewPanel_.get(), &ViewWidget::keyPressSignal, this, &MainWindow::onKeyPressSignal);
-		connect(viewPanel_.get(), &ViewWidget::keyReleaseSignal, this, &MainWindow::onKeyReleaseSignal);
 		connect(viewPanel_.get(), &ViewWidget::wheelSignal, this, &MainWindow::onWheelSignal);
 		connect(viewPanel_.get(), &ViewWidget::dragEnterSignal, this, &MainWindow::onDragEnterSignal);
 		connect(viewPanel_.get(), &ViewWidget::dropSignal, this, &MainWindow::onDropSignal);
@@ -953,20 +950,6 @@ namespace rabbit
 	}
 
 	void
-	MainWindow::onKeyPressSignal(QKeyEvent* event) noexcept
-	{
-		if (gameApp_ && !profile_->timeModule->playing_)
-			gameApp_->doWindowKeyDown((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
-	}
-
-	void
-	MainWindow::onKeyReleaseSignal(QKeyEvent* event) noexcept
-	{
-		if (gameApp_ && !profile_->timeModule->playing_)
-			gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
-	}
-
-	void
 	MainWindow::onWheelSignal(QWheelEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->timeModule->playing_)
@@ -1037,6 +1020,20 @@ namespace rabbit
 
 		if (gameApp_)
 			gameApp_->update();
+	}
+
+	void
+	MainWindow::keyPressEvent(QKeyEvent* event) noexcept
+	{
+		if (gameApp_ && !profile_->timeModule->playing_)
+			gameApp_->doWindowKeyDown((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
+	}
+	
+	void
+	MainWindow::keyReleaseEvent(QKeyEvent* event) noexcept
+	{
+		if (gameApp_ && !profile_->timeModule->playing_)
+			gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 	}
 
 	bool

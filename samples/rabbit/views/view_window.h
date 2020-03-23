@@ -28,8 +28,6 @@ namespace rabbit
 		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
 		void dropEvent(QDropEvent* event) noexcept override;
 		void showEvent(QShowEvent* event) noexcept override;
-		void keyPressEvent(QKeyEvent* event) noexcept override;
-		void keyReleaseEvent(QKeyEvent* event) noexcept override;
 		void updateEvent() noexcept;
 
 		virtual QPaintEngine* paintEngine() const noexcept override;
@@ -41,8 +39,6 @@ namespace rabbit
 		void mouseMoveSignal(QMouseEvent* event);
 		void mouseReleaseSignal(QMouseEvent* event);
 		void mouseDoubleClickSignal(QMouseEvent* event);
-		void keyPressSignal(QKeyEvent* event);
-		void keyReleaseSignal(QKeyEvent* event);
 		void wheelSignal(QWheelEvent* event);
 		void dragEnterSignal(QDragEnterEvent* event);
 		void dropSignal(QDropEvent* event);

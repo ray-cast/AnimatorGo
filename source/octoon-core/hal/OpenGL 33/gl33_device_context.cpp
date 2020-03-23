@@ -90,6 +90,9 @@ namespace octoon
 		{
 			assert(_glcontext);
 			_glcontext->setActive(true);
+			
+			this->setRenderPipeline(nullptr);
+			this->setIndexBufferData(nullptr);
 
 			if (_needEnableDebugControl)
 			{

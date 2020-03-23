@@ -28,14 +28,6 @@ namespace rabbit
 	{
 		return this->selectedItem_;
 	}
-
-	void
-	DragComponent::init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<DragModule>& model) noexcept
-	{
-		this->setContext(context);
-		this->setModel(model);
-		this->onEnable();
-	}
 	
 	std::optional<octoon::RaycastHit>
 	DragComponent::intersectObjects(float x, float y) noexcept

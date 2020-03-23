@@ -20,6 +20,7 @@ namespace rabbit
 		, clientModule(std::make_shared<ClientModule>())
 		, materialModule(std::make_shared<MaterialModule>())
 		, dragModule(std::make_shared<DragModule>())
+		, gridModule(std::make_shared<GridModule>())
 	{
 	}
 
@@ -44,6 +45,7 @@ namespace rabbit
 			this->clientModule->load(json["client"]);
 			this->materialModule->load(json["material"]);
 			this->dragModule->load(json["drag"]);
+			this->gridModule->load(json["grid"]);
 		}
 		else
 		{
@@ -82,6 +84,7 @@ namespace rabbit
 			profile.clientModule->save(json["client"]);
 			profile.materialModule->save(json["material"]);
 			profile.dragModule->save(json["drag"]);
+			profile.gridModule->save(json["grid"]);
 
 			auto string = json.dump();
 			stream.write(string.c_str(), string.size());

@@ -246,7 +246,7 @@ namespace rabbit
 		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
 		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), -math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
 		obj->addComponent<AnimatorComponent>(animation::Animation(clip));
-		obj->addComponent<EditorCameraComponent>();
+		obj->addComponent<FirstPersonCameraComponent>();
 
 		auto active = this->getContext()->profile->offlineModule->offlineEnable;
 		obj->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
@@ -478,7 +478,7 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
-		mainCamera->addComponent<octoon::EditorCameraComponent>();
+		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->addComponent<OfflineCameraComponent>();
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);

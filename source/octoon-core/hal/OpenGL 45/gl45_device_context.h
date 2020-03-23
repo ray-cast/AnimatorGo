@@ -44,7 +44,7 @@ namespace octoon
 			void setVertexBufferData(std::uint32_t i, const GraphicsDataPtr& data, std::intptr_t offset) noexcept;
 			GraphicsDataPtr getVertexBufferData(std::uint32_t i) const noexcept;
 
-			void setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset, GraphicsIndexType indexType) noexcept;
+			void setIndexBufferData(const GraphicsDataPtr& data, std::intptr_t offset = 0, GraphicsIndexType indexType = GraphicsIndexType::UInt32) noexcept;
 			GraphicsDataPtr getIndexBufferData() const noexcept;
 
 			void generateMipmap(const GraphicsTexturePtr& texture) noexcept;

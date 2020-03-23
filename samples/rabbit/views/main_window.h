@@ -64,8 +64,6 @@ namespace rabbit
 		void onMouseMoveSignal(QMouseEvent* event) noexcept;
 		void onMouseReleaseSignal(QMouseEvent* event) noexcept;
 		void onMouseDoubleClickSignal(QMouseEvent* event) noexcept;
-		void onKeyPressSignal(QKeyEvent* event) noexcept;
-		void onKeyReleaseSignal(QKeyEvent* event) noexcept;
 		void onWheelSignal(QWheelEvent* event) noexcept;
 		void onDragEnterSignal(QDragEnterEvent* event) noexcept;
 		void onDropSignal(QDropEvent* event) noexcept;
@@ -73,6 +71,9 @@ namespace rabbit
 		void onUpdateSignal() noexcept;
 
 		bool eventFilter(QObject* watched, QEvent* event);
+
+		void keyPressEvent(QKeyEvent* event) noexcept override;
+		void keyReleaseEvent(QKeyEvent* event) noexcept override;
 
 	private:
 		bool open(int w, int h) noexcept;

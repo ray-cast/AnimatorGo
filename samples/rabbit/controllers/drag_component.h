@@ -1,5 +1,5 @@
-#ifndef RABBIT_DRAG_CONTROLLER_H_
-#define RABBIT_DRAG_CONTROLLER_H_
+#ifndef RABBIT_DRAG_COMPONENT_H_
+#define RABBIT_DRAG_COMPONENT_H_
 
 #include <rabbit_component.h>
 
@@ -23,8 +23,6 @@ namespace rabbit
 		bool getActive() const noexcept override;
 
 		const std::optional<octoon::RaycastHit>& getSelectedItem() const noexcept;
-
-		virtual void init(const std::shared_ptr<RabbitContext>& context, const std::shared_ptr<DragModule>& model) noexcept override;
 
 		virtual const std::type_info& type_info() const noexcept
 		{

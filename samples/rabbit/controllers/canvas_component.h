@@ -1,5 +1,5 @@
-#ifndef RABBIT_CANVAS_CONTROLLER_H_
-#define RABBIT_CANVAS_CONTROLLER_H_
+#ifndef RABBIT_CANVAS_COMPONENT_H_
+#define RABBIT_CANVAS_COMPONENT_H_
 
 #include <rabbit_component.h>
 #include <module/canvas_module.h>

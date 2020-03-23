@@ -87,6 +87,9 @@ namespace octoon
 		{
 			assert(_glcontext);
 			_glcontext->setActive(true);
+
+			this->setRenderPipeline(nullptr);
+			this->setIndexBufferData(nullptr, 0, GraphicsIndexType::UInt32);
 		}
 
 		void

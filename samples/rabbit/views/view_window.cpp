@@ -13,7 +13,7 @@ namespace rabbit
 		this->setUpdatesEnabled(false);
 		this->setAcceptDrops(true);
 		this->setMinimumSize(profile->canvasModule->width, profile->canvasModule->height);
-		this->grabKeyboard();
+		this->setFocusPolicy(Qt::StrongFocus);
 
 		this->connect(timer.get(), SIGNAL(timeout()), this, SLOT(updateEvent()));
 
@@ -58,18 +58,6 @@ namespace rabbit
 	ViewWidget::mouseDoubleClickEvent(QMouseEvent* e) noexcept
 	{
 		emit mouseDoubleClickSignal(e);
-	}
-
-	void
-	ViewWidget::keyPressEvent(QKeyEvent* e) noexcept
-	{
-		emit keyPressSignal(e);
-	}
-
-	void
-	ViewWidget::keyReleaseEvent(QKeyEvent* e) noexcept
-	{
-		emit keyReleaseSignal(e);
 	}
 
 	void 

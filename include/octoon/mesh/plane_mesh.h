@@ -10,7 +10,7 @@ namespace octoon::mesh
 		OctoonDeclareSubClass(PlaneMesh, Mesh)
 	public:
 		PlaneMesh() noexcept;
-		PlaneMesh(float width, float height, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1) noexcept;
+		PlaneMesh(float width, float height, std::uint32_t widthSegments = 1, std::uint32_t heightSegments = 1, bool wireframe = false) noexcept;
 	};
 }
 

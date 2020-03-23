@@ -34,8 +34,7 @@ namespace rabbit
 		this->gizmo_ = octoon::GameObject::create("CoordinateSystem");
 		this->gizmo_->getComponent<octoon::TransformComponent>()->setQuaternion(octoon::math::Quaternion(octoon::math::float3(octoon::math::PI * 0.5f, 0, 0)));
 		this->gizmo_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::PlaneMesh::create(100.0f, 100.0f, 20, 20, true));
-
-		auto meshRender = this->gizmo_->addComponent<octoon::MeshRendererComponent>(material);
+		this->gizmo_->addComponent<octoon::MeshRendererComponent>(material);
 	}
 
 	void

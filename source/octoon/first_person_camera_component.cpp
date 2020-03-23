@@ -138,6 +138,12 @@ namespace octoon
 				if (input->isKeyPressed(input::InputKey::Code::E))
 					upCamera(step);
 
+				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
+					moveCamera(step);
+
+				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
+					moveCamera(-step);
+
 				if (input->isButtonPressed(input::InputButton::Code::Right))
 					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);
 			}

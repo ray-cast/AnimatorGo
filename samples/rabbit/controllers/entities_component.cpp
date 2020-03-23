@@ -211,7 +211,7 @@ namespace rabbit
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
 
 		auto enviroment = octoon::GameObject::create("Environment");
-		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000));
+		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
 		enviroment->addComponent<octoon::MeshRendererComponent>(envMaterial);
 
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
@@ -480,6 +480,7 @@ namespace rabbit
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->addComponent<OfflineCameraComponent>();
+		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
 		camera->setCameraType(octoon::CameraType::Main);

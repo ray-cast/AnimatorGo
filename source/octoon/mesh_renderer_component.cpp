@@ -11,6 +11,7 @@ namespace octoon
 
 	MeshRendererComponent::MeshRendererComponent() noexcept
 		: visible_(true)
+		, renderOrder_(0)
 	{
 	}
 
@@ -58,6 +59,24 @@ namespace octoon
 	MeshRendererComponent::getVisible() const noexcept
 	{
 		return this->visible_;
+	}
+
+	void
+	MeshRendererComponent::setRenderOrder(std::int32_t order) noexcept
+	{
+		if (this->renderOrder_ != order)
+		{
+			for (auto& it : this->geometries_)
+				it->setRenderOrder(order);
+
+			this->renderOrder_ = order;
+		}
+	}
+
+	std::int32_t
+	MeshRendererComponent::getRenderOrder() const noexcept
+	{
+		return this->renderOrder_;
 	}
 
 	GameComponentPtr
@@ -206,8 +225,9 @@ namespace octoon
 			{
 				auto geometry_ = std::make_shared<video::Geometry>();
 				geometry_->setActive(true);
-				geometry_->setVisible(this->getVisible());
 				geometry_->setOwnerListener(this);
+				geometry_->setVisible(this->getVisible());
+				geometry_->setRenderOrder(this->getRenderOrder());
 				geometry_->setVertexBuffer(vbo);
 				geometry_->setNumVertices((std::uint32_t)vertices.size());
 				geometry_->setBoundingBox(mesh->getBoundingBox(i));

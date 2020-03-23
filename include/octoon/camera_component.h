@@ -6,6 +6,13 @@
 
 namespace octoon
 {
+	enum class CameraType
+	{
+		Custom,
+		Main,
+		UI
+	};
+
 	class OCTOON_EXPORT CameraComponent : public GameComponent, public video::RenderListener
 	{
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
@@ -17,10 +24,10 @@ namespace octoon
 		void setClearColor(const math::float4& color) noexcept;
 		void setViewport(const math::float4& viewport) noexcept;
 		void setClearFlags(hal::GraphicsClearFlags clearflags) noexcept;
-		void setCameraType(camera::CameraType type) noexcept;
+		void setCameraType(CameraType type) noexcept;
 		void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept;
 
-		camera::CameraType getCameraType() const noexcept;
+		CameraType getCameraType() const noexcept;
 		hal::GraphicsClearFlags getClearFlags() const noexcept;
 		hal::GraphicsFramebufferPtr getFramebuffer() const noexcept;
 		hal::GraphicsFramebufferPtr getSwapFramebuffer() const noexcept;
@@ -62,6 +69,7 @@ namespace octoon
 		CameraComponent& operator=(const CameraComponent&) = delete;
 
 	protected:
+		CameraType cameraType_;
 		std::shared_ptr<camera::Camera> camera_;
 	};
 }

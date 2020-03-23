@@ -19,6 +19,7 @@ namespace octoon
 			: active_(false)
 			, visible_(true)
 			, layer_(0)
+			, order_(0)
 			, transform_(math::float4x4::One)
 			, transformInverse_(math::float4x4::One)
 			, renderListener_(nullptr)
@@ -60,6 +61,18 @@ namespace octoon
 		RenderObject::getLayer() const noexcept
 		{
 			return layer_;
+		}
+
+		void
+		RenderObject::setRenderOrder(std::int32_t order) noexcept
+		{
+			order_ = order;
+		}
+
+		std::int32_t
+		RenderObject::getRenderOrder() const noexcept
+		{
+			return order_;
 		}
 
 		void

@@ -23,6 +23,9 @@ namespace octoon
 			void removeRenderObject(RenderObject* object) noexcept;
 			const RenderObjectRaws& getRenderObjects() const noexcept;
 
+			void sortCameras() noexcept;
+			void sortRenderObjects() noexcept;
+
 		private:
 			RenderScene(const RenderScene&) = delete;
 			RenderScene& operator=(const RenderScene&) = delete;

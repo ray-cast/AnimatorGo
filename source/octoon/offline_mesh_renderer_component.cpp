@@ -86,7 +86,6 @@ namespace octoon
 			math::float4 edgeColor = math::float4::Zero;
 			
 			float opacity = meshBasicMaterial->getOpacity();
-			float shininess = 10.0f;
 			float roughness = 1.0f;
 
 			auto colorTexture = meshBasicMaterial->getColorTexture();

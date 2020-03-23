@@ -20,6 +20,7 @@ namespace octoon
 			, fbo_(0)
 			, colorTexture_(0)
 			, depthTexture_(0)
+			, enableSortObjects_(true)
 		{
 		}
 
@@ -166,7 +167,15 @@ namespace octoon
 		{
 			for (auto& object : objects)
 			{
+				if (camera.getLayer() != object->getLayer())
+					continue;
+
 				auto geometry = object->downcast<video::Geometry>();
+				if (!geometry)
+					continue;
+
+				if (!geometry->getVisible())
+					continue;
 
 				auto pipeline = geometry->getRenderPipeline();
 				if (!pipeline)
@@ -194,7 +203,10 @@ namespace octoon
 		void
 		RenderSystem::render(hal::GraphicsContext& context) noexcept
 		{
-			for (auto& camera : video::RenderScene::instance()->getCameraList())
+			if (this->enableSortObjects_)
+				RenderScene::instance()->sortCameras();
+
+			for (auto& camera : RenderScene::instance()->getCameraList())
 			{
 				camera->onRenderBefore(*camera);
 
@@ -209,45 +221,21 @@ namespace octoon
 				context.setViewport(0, camera->getPixelViewport());
 				context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
-				for (auto& object : video::RenderScene::instance()->getRenderObjects())
+				for (auto& object : RenderScene::instance()->getRenderObjects())
 					object->onRenderBefore(*camera);
 
-				renderable_[0].clear();
-				renderable_[1].clear();
+				if (this->enableSortObjects_)
+					RenderScene::instance()->sortRenderObjects();
 
-				for (auto& object : video::RenderScene::instance()->getRenderObjects())
-				{
-					if (camera->getLayer() != object->getLayer())
-						continue;
+				this->renderObjects(context, *camera, RenderScene::instance()->getRenderObjects());
 
-					auto geometry = object->downcast<video::Geometry>();
-					if (!geometry)
-						continue;
-
-					if (!geometry->getVisible())
-						continue;
-
-					auto pipeline = geometry->getRenderPipeline();
-					if (!pipeline)
-						continue;
-
-					auto material = pipeline->getMaterial();
-					if (material->getDepthEnable())
-						renderable_[0].emplace_back(geometry);
-					else
-						renderable_[1].emplace_back(geometry);
-				}
-
-				this->renderObjects(context, *camera, renderable_[0]);
-				this->renderObjects(context, *camera, renderable_[1]);
-
-				for (auto& object : video::RenderScene::instance()->getRenderObjects())
+				for (auto& object : RenderScene::instance()->getRenderObjects())
 					object->onRenderAfter(*camera);
 
 				camera->onRenderAfter(*camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-				if (camera->getCameraType() == camera::CameraType::Main)
+				if (camera->getBlitToScreen())
 				{
 					auto& v = camera->getPixelViewport();
 					if (framebuffer)

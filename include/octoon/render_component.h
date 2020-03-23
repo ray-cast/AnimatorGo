@@ -21,6 +21,9 @@ namespace octoon
 		virtual void setVisible(bool visable) noexcept = 0;
 		virtual bool getVisible() const noexcept = 0;
 
+		virtual void setRenderOrder(std::int32_t order) noexcept = 0;
+		virtual std::int32_t getRenderOrder() const noexcept = 0;
+
 		void setMaterial(material::MaterialPtr&& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
 		void setMaterial(const material::MaterialPtr& material, std::size_t n = 0, bool sharedMaterial = false) noexcept;
 		const material::MaterialPtr& getMaterial(std::size_t n = 0) const noexcept;

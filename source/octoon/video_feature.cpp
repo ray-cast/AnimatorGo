@@ -40,7 +40,7 @@ namespace octoon
 		if (camera_ != camera)
 		{
 			if (camera_ && camera)
-				camera_->setCameraType(camera::CameraType::Custom);
+				camera_->setCameraType(CameraType::Custom);
 			camera_ = camera;
 		}
 	}

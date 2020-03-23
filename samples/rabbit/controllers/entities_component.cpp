@@ -238,7 +238,7 @@ namespace rabbit
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();
 		camera->setFar(2000.0f);
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
-		camera->setCameraType(camera::CameraType::Main);
+		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -482,7 +482,7 @@ namespace rabbit
 		mainCamera->addComponent<OfflineCameraComponent>();
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
-		camera->setCameraType(octoon::camera::CameraType::Main);
+		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
 		auto active = this->getContext()->profile->offlineModule->offlineEnable;

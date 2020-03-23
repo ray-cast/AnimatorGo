@@ -51,6 +51,8 @@ namespace octoon
 			RenderSystem& operator=(const RenderSystem&) = delete;
 
 		private:
+			bool enableSortObjects_;
+
 			std::uint32_t width_, height_;
 
 			hal::GraphicsFramebufferPtr fbo_;
@@ -58,8 +60,6 @@ namespace octoon
 			hal::GraphicsTexturePtr depthTexture_;
 
 			hal::GraphicsDevicePtr device_;
-
-			RenderObjectRaws renderable_[2];
 		};
 	}
 }

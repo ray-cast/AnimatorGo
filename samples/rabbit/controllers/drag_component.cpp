@@ -64,11 +64,15 @@ namespace rabbit
 
 		gizmoHover_ = octoon::GameObject::create("GizmoHover");
 		gizmoHover_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
-		gizmoHover_->addComponent<octoon::MeshRendererComponent>(this->gizmoHoverMtl_)->setVisible(false);
+		auto meshRenderHover = gizmoHover_->addComponent<octoon::MeshRendererComponent>(this->gizmoHoverMtl_);
+		meshRenderHover->setVisible(false);
+		meshRenderHover->setRenderOrder(1);
 
 		gizmoSelected_ = octoon::GameObject::create("GizmoSelect");
 		gizmoSelected_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::CubeWireframeMesh::create(1.0f, 1.0f, 1.0f));
-		gizmoSelected_->addComponent<octoon::MeshRendererComponent>(this->gizmoSelectedMtl_)->setVisible(false);
+		auto meshRenderSelected = gizmoSelected_->addComponent<octoon::MeshRendererComponent>(this->gizmoSelectedMtl_);
+		meshRenderSelected->setVisible(false);
+		meshRenderSelected->setRenderOrder(1);
 	}
 
 	void

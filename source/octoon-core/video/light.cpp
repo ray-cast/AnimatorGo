@@ -4,6 +4,8 @@
 #include <octoon/camera/ortho_camera.h>
 #include <octoon/hal/graphics_texture.h>
 
+#include <limits>
+
 namespace octoon::light
 {
 	OctoonImplementSubClass(Light, video::RenderObject, "Light")
@@ -232,11 +234,11 @@ namespace octoon::light
 	Light::setupShadowMap() noexcept
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
-		shadowCamera->setOwnerListener(this);
-		shadowCamera->setCameraType(camera::CameraType::Custom);
 		shadowCamera->setAperture(90.0f);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
+		shadowCamera->setOwnerListener(this);
+		shadowCamera->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
 
 		return true;
 	}

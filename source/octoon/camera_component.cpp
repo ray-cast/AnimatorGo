@@ -41,19 +41,30 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::setCameraType(camera::CameraType type) noexcept
+	CameraComponent::setCameraType(CameraType type) noexcept
 	{
-		camera_->setCameraType(type);
+		if (type == CameraType::Main)
+		{
+			camera_->setRenderOrder(std::numeric_limits<std::int32_t>::max());
+			camera_->setBlitToScreen(true);
+		}
+		else
+		{
+			camera_->setRenderOrder(0);
+			camera_->setBlitToScreen(false);
+		}
 
 		if (this->getActive())
 		{
-			if (type == camera::CameraType::Main)
+			if (type == CameraType::Main)
 			{
 				auto videoFeature = this->tryGetFeature<VideoFeature>();
 				if (videoFeature)
 					videoFeature->setMainCamera(this);
 			}
 		}
+
+		cameraType_ = type;
 	}
 
 	void
@@ -62,10 +73,10 @@ namespace octoon
 		camera_->setFramebuffer(framebuffer);
 	}
 
-	camera::CameraType
+	CameraType
 	CameraComponent::getCameraType() const noexcept
 	{
-		return camera_->getCameraType();
+		return cameraType_;
 	}
 
 	hal::GraphicsClearFlags
@@ -200,7 +211,7 @@ namespace octoon
 		camera_->setActive(true);
 		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
-		if (camera_->getCameraType() == camera::CameraType::Main)
+		if (this->getCameraType() == CameraType::Main)
 		{
 			auto videoFeature = this->tryGetFeature<VideoFeature>();
 			if (videoFeature)
@@ -215,7 +226,7 @@ namespace octoon
 
 		camera_->setActive(false);
 
-		if (camera_->getCameraType() == camera::CameraType::Main)
+		if (this->getCameraType() == CameraType::Main)
 		{
 			auto videoFeature = this->tryGetFeature<VideoFeature>();
 			if (videoFeature)

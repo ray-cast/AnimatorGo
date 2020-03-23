@@ -10,7 +10,7 @@ namespace octoon::camera
 	Camera::Camera() noexcept
 		: viewport_(0.0f, 0.0f, 1.0f, 1.0f)
 		, clearColor_(math::float4(0.0f, 0.0f, 0.0f, 1.0f))
-		, cameraType_(CameraType::Custom)
+		, blitToScreen_(false)
 		, project_(math::float4x4::One)
 		, projectInverse_(math::float4x4::One)
 		, viewProject_(math::float4x4::One)
@@ -36,15 +36,15 @@ namespace octoon::camera
 	}
 
 	void
-	Camera::setClearFlags(hal::GraphicsClearFlags clearflags) noexcept
+	Camera::setBlitToScreen(bool enable) noexcept
 	{
-		clearflags_ = clearflags;
+		blitToScreen_ = enable;
 	}
 
 	void
-	Camera::setCameraType(CameraType type) noexcept
+	Camera::setClearFlags(hal::GraphicsClearFlags clearflags) noexcept
 	{
-		cameraType_ = type;
+		clearflags_ = clearflags;
 	}
 
 	void
@@ -200,10 +200,10 @@ namespace octoon::camera
 		return screen_;
 	}
 
-	CameraType
-	Camera::getCameraType() const noexcept
+	bool
+	Camera::getBlitToScreen() const noexcept
 	{
-		return cameraType_;
+		return blitToScreen_;
 	}
 
 	hal::GraphicsClearFlags

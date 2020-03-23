@@ -22,14 +22,7 @@ namespace octoon
 
 			auto it = std::find(cameras_.begin(), cameras_.end(), camera);
 			if (it == cameras_.end())
-			{
 				cameras_.push_back(camera);
-
-				std::sort(cameras_.begin(), cameras_.end(), [](const camera::Camera* a, const camera::Camera* b)
-				{
-					return a->getCameraType() < b->getCameraType();
-				});
-			}
 		}
 
 		void
@@ -82,6 +75,24 @@ namespace octoon
 		RenderScene::getRenderObjects() const noexcept
 		{
 			return renderables_;
+		}
+
+		void
+		RenderScene::sortCameras() noexcept
+		{
+			std::sort(cameras_.begin(), cameras_.end(), [](const camera::Camera* a, const camera::Camera* b)
+			{
+				return a->getRenderOrder() < b->getRenderOrder();
+			});
+		}
+
+		void
+		RenderScene::sortRenderObjects() noexcept
+		{
+			std::sort(renderables_.begin(), renderables_.end(), [](const video::RenderObject* a, const video::RenderObject* b)
+			{
+				return a->getRenderOrder() < b->getRenderOrder();
+			});
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("MainCamera");
 		auto camera = object->addComponent<OrthoCameraComponent>(ortho, znear, zfar);
-		camera->setCameraType(camera::CameraType::Main);
+		camera->setCameraType(CameraType::Main);
 
 		return object;
 	}
@@ -18,7 +18,7 @@ namespace octoon
 	{
 		auto object = GameObject::create("MainCamera");
 		auto camera = object->addComponent<OrthoCameraComponent>(left, right, bottom, top, znear, zfar);
-		camera->setCameraType(camera::CameraType::Main);
+		camera->setCameraType(CameraType::Main);
 
 		return object;
 	}

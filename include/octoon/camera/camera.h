@@ -6,13 +6,6 @@
 
 namespace octoon::camera
 {
-	enum class CameraType
-	{
-		Custom,
-		Main,
-		UI
-	};
-
 	class OCTOON_EXPORT Camera : public video::RenderObject
 	{
 		OctoonDeclareSubClass(Camera, video::RenderObject)
@@ -22,15 +15,15 @@ namespace octoon::camera
 
 		virtual void setClearColor(const math::float4& color) noexcept;
 		virtual void setViewport(const math::float4& viewport) noexcept;
+		virtual void setBlitToScreen(bool enable) noexcept;
 
 		virtual void setClearFlags(hal::GraphicsClearFlags clearflags) noexcept;
-		virtual void setCameraType(CameraType type) noexcept;
 		virtual void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept;
 
 		virtual void setProjection(math::float4x4& projection) const noexcept;
 		virtual void setProjectionInverse(math::float4x4& projection) const noexcept;
 
-		virtual CameraType getCameraType() const noexcept;
+		virtual bool getBlitToScreen() const noexcept;
 		virtual hal::GraphicsClearFlags getClearFlags() const noexcept;
 		virtual const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 		virtual const hal::GraphicsFramebufferPtr& getSwapFramebuffer() const noexcept;
@@ -61,7 +54,7 @@ namespace octoon::camera
 		math::float4 viewport_;
 		mutable math::float4 screen_;
 
-		CameraType cameraType_;
+		bool blitToScreen_;
 
 		hal::GraphicsClearFlags clearflags_;
 

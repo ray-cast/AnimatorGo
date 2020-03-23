@@ -18,8 +18,11 @@ namespace octoon
 		explicit MeshRendererComponent(const material::MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
-		virtual void setVisible(bool visable) noexcept;
-		virtual bool getVisible() const noexcept;
+		virtual void setVisible(bool visable) noexcept override;
+		virtual bool getVisible() const noexcept override;
+
+		virtual void setRenderOrder(std::int32_t order) noexcept override;
+		virtual std::int32_t getRenderOrder() const noexcept override;
 
 		virtual void uploadMeshData(const mesh::MeshPtr& mesh) noexcept;
 		virtual void uploadMaterialData(const material::Materials& material) noexcept;
@@ -43,6 +46,8 @@ namespace octoon
 
 	private:
 		bool visible_;
+
+		std::int32_t renderOrder_;
 
 		video::Geometrys geometries_;
 		video::RenderPipelines pipelines_;

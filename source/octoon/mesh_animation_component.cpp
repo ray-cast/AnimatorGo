@@ -4,7 +4,7 @@
 #include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/timer_feature.h>
-#include <octoon/material/mesh_basic_material.h>
+#include <octoon/material/mesh_standard_material.h>
 
 #include <Alembic/Abc/All.h>
 #include <Alembic/AbcCoreFactory/All.h>
@@ -606,7 +606,7 @@ namespace octoon
 
 			if (IPolyMesh::matches(child_header))
 			{
-				auto material = std::make_shared<material::MeshBasicMaterial>();
+				auto material = std::make_shared<material::MeshStandardMaterial>();
 				material->setColor(math::float3(0.9f, 0.9f, 0.9f));
 
 				auto gameObject = GameObject::create(child.getName());

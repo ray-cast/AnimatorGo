@@ -3,7 +3,7 @@
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_system.h>
-#include <octoon/material/mesh_basic_material.h>
+#include <octoon/material/mesh_standard_material.h>
 
 #include <unordered_map>
 #include <RadeonProRender.h>
@@ -74,7 +74,7 @@ namespace octoon
 				continue;
 			}
 
-			auto meshBasicMaterial = mat->downcast<material::MeshBasicMaterial>();
+			auto meshBasicMaterial = mat->downcast<material::MeshStandardMaterial>();
 
 			std::string path;
 			std::string normalName;

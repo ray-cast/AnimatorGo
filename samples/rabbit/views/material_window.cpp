@@ -64,7 +64,7 @@ namespace rabbit
 	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
 		this->repaint();
-
+		this->updateList();
 		QMargins margins = mainLayout_->contentsMargins();
 		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
 	}
@@ -147,7 +147,7 @@ namespace rabbit
 
 			for (std::size_t i = 0; i < materials.size(); i++)
 			{
-				auto mat = materials[i]->downcast<octoon::material::MeshBasicMaterial>();
+				auto mat = materials[i]->downcast<octoon::material::MeshStandardMaterial>();
 
 				std::string path;
 				std::string normalName;

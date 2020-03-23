@@ -62,7 +62,7 @@ namespace rabbit
 	{
 		for (auto& it : materials)
 		{
-			auto material = std::make_shared<octoon::material::MeshBasicMaterial>();
+			auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
 			material->setName(it.name);
 			material->setColor(octoon::math::float3::One);
 			material->setColorTexture(octoon::TextureLoader::load(std::string(rootPath) + it.diffuse_texname));

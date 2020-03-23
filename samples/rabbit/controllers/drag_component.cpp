@@ -15,12 +15,13 @@ namespace rabbit
 	void
 	DragComponent::setActive(bool active) noexcept
 	{
+		this->getModel()->setEnable(active);
 	}
 
 	bool
 	DragComponent::getActive() const noexcept
 	{
-		return true;
+		return this->getModel()->getEnable();
 	}
 
 	const std::optional<octoon::RaycastHit>&

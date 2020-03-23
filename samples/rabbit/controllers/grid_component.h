@@ -2,14 +2,8 @@
 #define RABBIT_GRID_COMPONENT_H_
 
 #include <rabbit_component.h>
-
-#include <octoon/raycaster.h>
 #include <octoon/game_object.h>
-#include <octoon/material/material.h>
-
 #include <module/grid_module.h>
-
-#include <optional>
 
 namespace rabbit
 {

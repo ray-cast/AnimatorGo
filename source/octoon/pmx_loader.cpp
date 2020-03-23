@@ -1,7 +1,7 @@
 #include <octoon/pmx_loader.h>
 #include <octoon/model/modtypes.h>
 #include <octoon/mesh/mesh.h>
-#include <octoon/material/mesh_basic_material.h>
+#include <octoon/material/mesh_standard_material.h>
 #include <octoon/model/model.h>
 #include <octoon/texture_loader.h>
 #include <octoon/io/fstream.h>
@@ -593,7 +593,7 @@ namespace octoon
 
 		for (auto& it : pmx.materials)
 		{
-			auto material = std::make_shared<material::MeshBasicMaterial>();
+			auto material = std::make_shared<material::MeshStandardMaterial>();
 			material->setName(cv.to_bytes(it.name.name));
 			material->setColor(math::srgb2linear(it.Diffuse));
 			material->setOpacity(it.Opacity);

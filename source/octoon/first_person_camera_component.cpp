@@ -10,6 +10,7 @@ namespace octoon
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
 		: speed_(1.0f)
+		, wheelSpeed_(2.0f)
 		, gravity_(15)
 		, maxVelocityChange_(1.0)
 		, jumpHeight_(10)
@@ -139,10 +140,18 @@ namespace octoon
 					upCamera(step);
 
 				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
-					moveCamera(step);
+					moveCamera(step * wheelSpeed_);
 
 				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
-					moveCamera(-step);
+					moveCamera(-step * wheelSpeed_);
+
+				if (input->isButtonPressed(input::InputButton::Code::Middle))
+				{
+					auto x = input->getAxis(input::InputAxis::MouseX) * step;
+					auto y = input->getAxis(input::InputAxis::MouseY) * step;
+					upCamera(y);
+					yawCamera(-x);
+				}
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))
 					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);

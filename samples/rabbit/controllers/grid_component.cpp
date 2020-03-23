@@ -1,5 +1,6 @@
 #include "grid_component.h"
 #include "rabbit_behaviour.h"
+#include <octoon/material/material.h>
 #include <octoon/mesh/cube_wireframe_mesh.h>
 
 namespace rabbit

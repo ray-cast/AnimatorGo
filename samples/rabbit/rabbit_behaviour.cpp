@@ -161,6 +161,8 @@ namespace rabbit
 	void
 	RabbitBehaviour::onDeactivate() noexcept
 	{
+		this->disableComponents();
+
 		canvasComponent_.reset();
 		entitiesComponent_.reset();
 		offlineComponent_.reset();
@@ -170,6 +172,9 @@ namespace rabbit
 		context_.reset();
 		profile_.reset();
 		uiComponent_.reset();
+		materialComponent_.reset();
+		dragComponent_.reset();
+		gridComponent_.reset();
 
 		auto baseFeature = this->getFeature<octoon::GameBaseFeature>();
 		if (baseFeature)

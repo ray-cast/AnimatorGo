@@ -34,7 +34,7 @@ namespace rabbit
 		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
 		void dropEvent(QDropEvent* event) noexcept override;
 
-		int currentRow() const noexcept;
+		std::string currentItem() const noexcept;
 
 		void updateList();
 

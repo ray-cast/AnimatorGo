@@ -89,13 +89,13 @@ namespace rabbit
 				{
 					auto hit = selectedItem.value();
 					auto materialComponent = behaviour->getComponent<MaterialComponent>();
-					auto& materials = materialComponent->getMaterials();
+					auto material = materialComponent->getMaterial(this->currentItem());
 
 					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
-					meshRenderer->setMaterial(materials[this->currentRow()], hit.mesh);
+					meshRenderer->setMaterial(material, hit.mesh);
 
 					auto offlineMeshRenderer = hit.object->getComponent<octoon::OfflineMeshRendererComponent>();
-					offlineMeshRenderer->setMaterial(materials[this->currentRow()], hit.mesh);
+					offlineMeshRenderer->setMaterial(material, hit.mesh);
 				}
 			}
 		}
@@ -126,10 +126,10 @@ namespace rabbit
 		}
 	}
 
-	int
-	MaterialWindow::currentRow() const noexcept
+	std::string
+	MaterialWindow::currentItem() const noexcept
 	{
-		return this->listWidget_->currentRow();
+		return this->listWidget_->currentItem()->text().toStdString();
 	}
 
 	void
@@ -139,31 +139,30 @@ namespace rabbit
 		if (behaviour)
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
-			auto& materials = materialComponent->getMaterials();
+			auto& materials = materialComponent->getMaterialList();
 
 			listWidget_->clear();
 
 			std::map<QString, std::shared_ptr<QPixmap>> imageTable;
 
-			for (std::size_t i = 0; i < materials.size(); i++)
+			for (auto& it : materials)
 			{
-				auto mat = materials[i]->downcast<octoon::material::MeshStandardMaterial>();
-
 				std::string path;
 				std::string normalName;
 				std::string textureName;
 
-				octoon::math::float3 base = mat->getColor();
+				auto mat = it.second;
+
+				if (mat.find("preview") != mat.end())
+					textureName = mat["preview"].get<nlohmann::json::string_t>();
+
+				octoon::math::float3 base(mat["color"][0], mat["color"][1], mat["color"][2]);
 				octoon::math::float3 specular = octoon::math::float3::One;
 				octoon::math::float3 ambient = octoon::math::float3::Zero;
 				octoon::math::float4 edgeColor = octoon::math::float4::Zero;
 
-				auto colorTexture = mat->getColorTexture();
-				if (colorTexture)
-					textureName = colorTexture->getTextureDesc().getName();
-
 				QListWidgetItem* item = new QListWidgetItem;
-				item->setText(QString::fromStdString(mat->getName()));
+				item->setText(QString::fromStdString(mat["uuid"]));
 				item->setSizeHint(QSize(130, 160));
 
 				QLabel* imageLabel = new QLabel;
@@ -177,16 +176,12 @@ namespace rabbit
 				{
 					auto texpath = QString::fromStdString(path + textureName);
 					if (!imageTable[texpath])
-					{
-						QImage image(texpath);
-						image.convertTo(QImage::Format::Format_RGB888);
-						imageTable[texpath] = std::make_shared<QPixmap>(QPixmap::fromImage(image.scaled(QSize(130, 130))));
-					}
+						imageTable[texpath] = std::make_shared<QPixmap>(texpath);
 
 					imageLabel->setPixmap(*imageTable[texpath]);
 				}
 
-				QLabel* txtLabel = new QLabel(QString::fromStdString(mat->getName()));
+				QLabel* txtLabel = new QLabel(QString::fromStdString(mat["name"]));
 				txtLabel->setFixedHeight(30);
 
 				QVBoxLayout* widgetLayout = new QVBoxLayout;

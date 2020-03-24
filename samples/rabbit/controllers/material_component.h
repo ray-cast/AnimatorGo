@@ -5,6 +5,7 @@
 #include "../module/material_module.h"
 #include "../libs/tinyobj/tiny_obj_loader.h"
 
+#include <map>
 #include <octoon/material/material.h>
 
 namespace rabbit
@@ -25,7 +26,8 @@ namespace rabbit
 
 		void loadMaterial(std::string_view rootPath) noexcept(false);
 
-		const octoon::material::Materials& getMaterials() const noexcept;
+		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;
+		const std::shared_ptr<octoon::material::Material> getMaterial(std::string_view uuid) noexcept;
 
 	private:
 		void onEnable() noexcept override;
@@ -34,6 +36,7 @@ namespace rabbit
 		void onDrop(std::string_view data) noexcept override;
 
 	private:
+		void initMaterials(std::string_view path);
 		void initMaterials(const std::vector<tinyobj::material_t>& materials, std::string_view rootPath);
 
 	private:
@@ -41,7 +44,8 @@ namespace rabbit
 		MaterialComponent& operator=(const MaterialComponent&) = delete;
 
 	private:
-		octoon::material::Materials materials_;
+		std::map<std::string, nlohmann::json, std::less<>> materialList_;
+		std::map<std::string, std::shared_ptr<octoon::material::Material>, std::less<>> materials_;
 	};
 }
 

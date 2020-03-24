@@ -21,7 +21,7 @@ namespace rabbit
 		MaterialModule& operator=(const MaterialModule&) = delete;
 
 	public:
-		bool offlineEnable;
+		std::string path;
 	};
 }
 

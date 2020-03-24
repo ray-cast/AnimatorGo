@@ -20,8 +20,6 @@ namespace rabbit
 		DragModule(const DragModule&) = delete;
 		DragModule& operator=(const DragModule&) = delete;
 
-	public:
-		bool enable;
 	};
 }
 

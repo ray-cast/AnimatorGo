@@ -4,6 +4,8 @@
 #include <octoon/video/render_types.h>
 #include <octoon/hal/graphics_types.h>
 #include <octoon/material/material.h>
+#include <octoon/video/geometry.h>
+#include <octoon/camera/camera.h>
 
 namespace octoon
 {
@@ -16,22 +18,24 @@ namespace octoon
 			RenderPipeline(const material::MaterialPtr& material) noexcept;
 			virtual ~RenderPipeline() noexcept;
 
-			virtual void setMaterial(const material::MaterialPtr& material) noexcept;
-			virtual const material::MaterialPtr& getMaterial() const noexcept;
+			void setMaterial(const material::MaterialPtr& material) noexcept;
+			const material::MaterialPtr& getMaterial() const noexcept;
 
-			virtual void setTransform(const math::float4x4& vp) noexcept;
-			virtual void setViewProjection(const math::float4x4& vp) noexcept;
+			void setTransform(const math::float4x4& vp) noexcept;
+			void setViewProjection(const math::float4x4& vp) noexcept;
 
-			virtual const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
-			virtual const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
+			const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
+			const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-			virtual std::shared_ptr<RenderPipeline> clone() const noexcept;
+			void update(const camera::Camera& camera, const video::Geometry& geometry) noexcept;
+
+			std::shared_ptr<RenderPipeline> clone() const noexcept;
 
 		private:
 			void updateParameters() noexcept;
 
 		private:
-			virtual void onMaterialReplace(const material::MaterialPtr& material) noexcept(false);
+			virtual void updateMaterial(const material::MaterialPtr& material) noexcept(false);
 
 		private:
 			RenderPipeline(const RenderPipeline&) = delete;
@@ -46,9 +50,6 @@ namespace octoon
 
 			hal::GraphicsUniformSetPtr proj_;
 			hal::GraphicsUniformSetPtr model_;
-			hal::GraphicsUniformSetPtr color_;
-			hal::GraphicsUniformSetPtr decal_;
-			hal::GraphicsUniformSetPtr hasTexture_;
 		};
 	}
 }

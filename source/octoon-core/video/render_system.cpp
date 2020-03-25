@@ -181,8 +181,7 @@ namespace octoon
 				if (!pipeline)
 					continue;
 
-				pipeline->setTransform(geometry->getTransform());
-				pipeline->setViewProjection(camera.getViewProjection());
+				pipeline->update(camera, *geometry);
 
 				if (geometry->getVertexBuffer())
 				{

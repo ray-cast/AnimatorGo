@@ -42,6 +42,7 @@ namespace octoon::material
 		, _stencilBackFail(hal::GraphicsStencilOp::Keep)
 		, _stencilBackZFail(hal::GraphicsStencilOp::Keep)
 		, _stencilBackPass(hal::GraphicsStencilOp::Keep)
+		, _needUpdate(true)
 	{
 	}
 
@@ -111,6 +112,8 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
+		this->needUpdate(true);
+
 		return true;
 	}
 
@@ -140,6 +143,8 @@ namespace octoon::material
 		std::memcpy(prop.data, &value, prop.length);
 
 		_properties.push_back(prop);
+
+		this->needUpdate(true);
 
 		return true;
 	}
@@ -171,6 +176,8 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
+		this->needUpdate(true);
+
 		return true;
 	}
 
@@ -200,6 +207,8 @@ namespace octoon::material
 		std::memcpy(prop.data, &value, prop.length);
 
 		_properties.push_back(prop);
+
+		this->needUpdate(true);
 
 		return true;
 	}
@@ -231,6 +240,8 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
+		this->needUpdate(true);
+
 		return true;
 	}
 
@@ -261,6 +272,8 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
+		this->needUpdate(true);
+
 		return true;
 	}
 
@@ -289,6 +302,8 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
+		this->needUpdate(true);
+
 		return true;
 	}
 
@@ -296,6 +311,7 @@ namespace octoon::material
 	Material::set(const MaterialParam& value) noexcept
 	{
 		_properties.push_back(value);
+		this->needUpdate(true);
 		return true;
 	}
 
@@ -437,6 +453,18 @@ namespace octoon::material
 		}
 
 		return false;
+	}
+	
+	void
+	Material::needUpdate(bool update) noexcept
+	{
+		this->_needUpdate = update;
+	}
+
+	bool
+	Material::needUpdate() const noexcept
+	{
+		return this->_needUpdate;
 	}
 
 	const std::vector<MaterialParam>&

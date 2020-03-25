@@ -15,13 +15,54 @@
 #include <qlistwidget.h>
 #include <qcheckbox.h>
 #include <qtimer.h>
+#include <QParallelAnimationGroup>
+#include <QScrollArea>
+
 #include "rabbit_behaviour.h"
 #include "../libs/tinyobj/tiny_obj_loader.h"
-
+#include "./color_dialog.h"
 #include <octoon/game_object.h>
 
 namespace rabbit
 {
+	class Spoiler : public QWidget {
+		Q_OBJECT
+	private:
+		QGridLayout mainLayout;
+		QToolButton toggleButton;
+		QFrame headerLine;
+		QParallelAnimationGroup toggleAnimation;
+		QScrollArea contentArea;
+		int animationDuration{ 300 };
+	public:
+		explicit Spoiler(const QString& title = "", const int animationDuration = 200, QWidget* parent = 0);
+		void setContentLayout(QLayout& contentLayout);
+	};
+
+	class MaterialModifyWindow final : public QWidget
+	{
+		Q_OBJECT
+	public:
+		MaterialModifyWindow(QWidget* widget);
+		~MaterialModifyWindow();
+
+		void repaint();
+
+		virtual void showEvent(QShowEvent* event) override;
+
+	public Q_SLOTS:
+		void colorSelected(QColor);
+
+	private:
+		QLabel* imageLabel_;
+		QLabel* textLabel_;
+		ColorDialog* albedoColor_;
+		ColorDialog* normalColor_;
+		ColorDialog* smoothnessColor_;
+		ColorDialog* metalnessColor_;
+		ColorDialog* emissiveColor_;
+	};
+
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT
@@ -40,7 +81,8 @@ namespace rabbit
 
 	private Q_SLOTS:
 		void closeEvent();
-		void itemSelectionChanged();
+		void itemClicked(QListWidgetItem* item);
+		void itemDoubleClicked(QListWidgetItem* item);
 
 	private:
 		std::unique_ptr<QLabel> title_;
@@ -49,6 +91,8 @@ namespace rabbit
 		std::unique_ptr<QVBoxLayout> materialLayout_;
 		std::unique_ptr<QVBoxLayout> mainLayout_;
 		std::unique_ptr<QListWidget> listWidget_;
+		std::unique_ptr<MaterialModifyWindow> modifyWidget_;
+		QScrollArea* modifyMaterialArea_;
 		octoon::GameObjectPtr behaviour_;
 	};
 }

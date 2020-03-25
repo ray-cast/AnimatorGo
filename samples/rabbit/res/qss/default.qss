@@ -339,7 +339,7 @@ QWidget#showWidget > QPushButton#show{
 QWidget#showWidget > QPushButton#show:hover{
 	background-color:rgba(0,122,204,255);
 }
-QWidget#sunWindow QScrollBar
+QWidget#sunWindow QScrollBar, QWidget#materialWindow QScrollBar
 {
 	width:8px;
     background:rgb(45,45,45);

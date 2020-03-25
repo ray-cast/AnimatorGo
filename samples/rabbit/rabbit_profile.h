@@ -26,11 +26,11 @@ namespace rabbit
 	{
 	public:
 		RabbitProfile() noexcept;
-		RabbitProfile(const std::string& path) noexcept(false);
+		RabbitProfile(std::string_view path) noexcept(false);
 		virtual ~RabbitProfile() noexcept;
 
-		static std::unique_ptr<RabbitProfile> load(const std::string& path) noexcept(false);
-		static void save(const std::string& path, const RabbitProfile& profile) noexcept(false);
+		static std::unique_ptr<RabbitProfile> load(std::string_view path) noexcept(false);
+		static void save(std::string_view path, const RabbitProfile& profile) noexcept(false);
 
 	private:
 		RabbitProfile(const RabbitProfile&) = delete;

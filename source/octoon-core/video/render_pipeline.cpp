@@ -192,7 +192,7 @@ namespace octoon
 				stateDesc.setStencilBackPass(material->getStencilBackPass());
 				auto renderState = RenderSystem::instance()->createRenderState(stateDesc);
 
-				auto shader = material_->getShader();
+				auto shader = material->getShader();
 
 				hal::GraphicsProgramDesc programDesc;
 				programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, shader->vs, "main", hal::GraphicsShaderLang::GLSL)));
@@ -228,64 +228,70 @@ namespace octoon
 					proj_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "proj"; });
 					model_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "model"; });
 
-					for (auto& prop : material->getMaterialParams())
-					{
-						auto it = std::find_if(begin, end, [&](const hal::GraphicsUniformSetPtr& set) {
-							return set->getName() == prop.key;
-						});
-
-						if (it != end)
-						{
-							auto uniform = *it;
-							switch (prop.type)
-							{
-							case material::PropertyTypeInfoBool:
-							{
-								auto value = (bool*)prop.data;
-								uniform->uniform1b(*value);
-							}
-							break;
-							case material::PropertyTypeInfoInt | material::PropertyTypeInfoBuffer:
-							{
-								auto value = (int*)prop.data;
-								if (prop.length == 4)
-									uniform->uniform1i(value[0]);
-								else if (prop.length == 8)
-									uniform->uniform2i(value[0], value[1]);
-								else if (prop.length == 12)
-									uniform->uniform3i(value[0], value[1], value[2]);
-								else if (prop.length == 16)
-									uniform->uniform4i(value[0], value[1], value[2], value[3]);
-							}
-							break;
-							case material::PropertyTypeInfoFloat | material::PropertyTypeInfoBuffer:
-							{
-								auto value = (float*)prop.data;
-								if (prop.length == 4)
-									uniform->uniform1f(value[0]);
-								else if (prop.length == 8)
-									uniform->uniform2f(value[0], value[1]);
-								else if (prop.length == 12)
-									uniform->uniform3f(value[0], value[1], value[2]);
-								else if (prop.length == 16)
-									uniform->uniform4f(value[0], value[1], value[2], value[3]);
-							}
-							break;
-							case material::PropertyTypeInfoTexture:
-							{
-								uniform->uniformTexture(prop.texture);
-							}
-							break;
-							default:
-								break;
-							}
-						}						
-					}
+					this->updateParameters();
 				}
 			}
 			else
 			{
 				pipeline_ = nullptr;
+			}
+		}
+
+		void
+		RenderPipeline::updateParameters() noexcept
+		{
+			auto begin = descriptorSet_->getUniformSets().begin();
+			auto end = descriptorSet_->getUniformSets().end();
+
+			for (auto& prop : material_->getMaterialParams())
+			{
+				auto it = std::find_if(begin, end, [&](const hal::GraphicsUniformSetPtr& set) { return set->getName() == prop.key; });
+				if (it != end)
+				{
+					auto uniform = *it;
+					switch (prop.type)
+					{
+					case material::PropertyTypeInfoBool:
+					{
+						auto value = (bool*)prop.data;
+						uniform->uniform1b(*value);
+					}
+					break;
+					case material::PropertyTypeInfoInt | material::PropertyTypeInfoBuffer:
+					{
+						auto value = (int*)prop.data;
+						if (prop.length == 4)
+							uniform->uniform1i(value[0]);
+						else if (prop.length == 8)
+							uniform->uniform2i(value[0], value[1]);
+						else if (prop.length == 12)
+							uniform->uniform3i(value[0], value[1], value[2]);
+						else if (prop.length == 16)
+							uniform->uniform4i(value[0], value[1], value[2], value[3]);
+					}
+					break;
+					case material::PropertyTypeInfoFloat | material::PropertyTypeInfoBuffer:
+					{
+						auto value = (float*)prop.data;
+						if (prop.length == 4)
+							uniform->uniform1f(value[0]);
+						else if (prop.length == 8)
+							uniform->uniform2f(value[0], value[1]);
+						else if (prop.length == 12)
+							uniform->uniform3f(value[0], value[1], value[2]);
+						else if (prop.length == 16)
+							uniform->uniform4f(value[0], value[1], value[2], value[3]);
+					}
+					break;
+					case material::PropertyTypeInfoTexture:
+					{
+						uniform->uniformTexture(prop.texture);
+					}
+					break;
+					default:
+						break;
+					}
+				}
 			}
 		}
 

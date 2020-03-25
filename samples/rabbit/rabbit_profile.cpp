@@ -24,7 +24,7 @@ namespace rabbit
 	{
 	}
 
-	RabbitProfile::RabbitProfile(const std::string& path) noexcept(false)
+	RabbitProfile::RabbitProfile(std::string_view path) noexcept(false)
 		: RabbitProfile()
 	{
 		std::ifstream stream(path);
@@ -49,7 +49,7 @@ namespace rabbit
 		}
 		else
 		{
-			throw std::runtime_error(u8"无法打开文件: " + path);
+			throw std::runtime_error(u8"无法打开文件: " + std::string(path));
 		}
 	}
 
@@ -58,13 +58,13 @@ namespace rabbit
 	}
 
 	std::unique_ptr<RabbitProfile>
-	RabbitProfile::load(const std::string& path) noexcept(false)
+	RabbitProfile::load(std::string_view path) noexcept(false)
 	{
 		return std::make_unique<RabbitProfile>(path);
 	}
 
 	void
-	RabbitProfile::save(const std::string& path, const RabbitProfile& profile) noexcept(false)
+	RabbitProfile::save(std::string_view path, const RabbitProfile& profile) noexcept(false)
 	{
 		std::ofstream stream(path);
 		if (stream)
@@ -91,7 +91,7 @@ namespace rabbit
 		}
 		else
 		{
-			throw std::runtime_error(u8"无法创建文件: " + path);
+			throw std::runtime_error(u8"无法创建文件: " + std::string(path));
 		}
 	}
 }

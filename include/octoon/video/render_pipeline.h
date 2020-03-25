@@ -28,6 +28,9 @@ namespace octoon
 			virtual std::shared_ptr<RenderPipeline> clone() const noexcept;
 
 		private:
+			void updateParameters() noexcept;
+
+		private:
 			virtual void onMaterialReplace(const material::MaterialPtr& material) noexcept(false);
 
 		private:

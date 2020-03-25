@@ -1,44 +1,3 @@
-QWidget{    
-	border:none;
-	background: rgb(30, 30, 30);
-}
-QWidget#showWidget{
-	min-width:8;
-	max-width:8;
-}
-QWidget#titleWidget{
-	min-height:32;
-	max-height:32;
-}
-QWidget#toolWidget{
-	min-width:42;
-	max-width:42;
-}
-QWidget#viewWidget{
-	width:1280;
-	height:720;
-}
-QWidget#loginWidget{
-	border:1px solid #101010;
-	border-radius:5px;
-	min-width:380;
-	min-height:500;
-	color: rgb(30, 30, 30);
-	background: rgb(30, 30, 30);
-}
-QWidget#infoWindow{
-	border:1px solid #101010;
-	border-radius:5px;
-	min-width:660;
-	max-width:660;
-	min-height:560;
-	max-height:560;
-	color: rgb(30, 30, 30);
-	background: rgb(30, 30, 30);
-}
-QWidget#recordWindow{
-	min-width:340;
-}
 QLabel{
 	color: rgb(255,255,255);
 }
@@ -55,6 +14,196 @@ QToolButton:hover{
 	background-color: rgba(255,255,255,30);
 	border:none;
 }
+QToolButton#close{
+	qproperty-icon: url(":res/icons/close.png");
+}
+QSlider{
+	border-radius:10px;
+}
+QSlider::add-page:Horizontal{
+	background-color: rgb(87, 97, 106);
+	height:10px;
+	border-radius:10px;
+	border-top-left-radius:0px;
+	border-bottom-left-radius:0px;
+}
+QSlider::sub-page:Horizontal{
+	background-color: rgb(87, 97, 106);
+	height:10px;
+	border-radius:10px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+QSlider#H{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),stop:0.15 rgba(255, 255, 0, 255),stop:0.33 rgba(0, 255, 0, 255),stop:0.49 rgba(1, 255, 255, 255),stop:0.67 rgba(0, 0, 255, 255),stop:0.84 rgba(255, 0, 255, 255),stop:1 rgba(255, 0, 0, 255));
+}
+QSlider::add-page:Horizontal#H, QSlider::sub-page:Horizontal#H{
+	background-color:transparent;
+	height:10px;
+	border-radius:10px;
+	border-top-left-radius:0px;
+	border-bottom-left-radius:0px;
+}
+QSlider::sub-page:Horizontal#S{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(180,220,255,255), stop:1 rgba(50,150,224,255));
+	height:10px;
+	border-radius:10px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+QSlider::sub-page:Horizontal#Value{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
+	height:10px;
+	border-radius:10px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+QSlider::sub-page:Horizontal#Intensity{
+	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
+	height:10px;
+	border-radius:10px;
+	border-top-right-radius:0px;
+	border-bottom-right-radius:0px;
+}
+QSlider::groove:Horizontal{
+	background:transparent;
+	height:20px;
+	border-radius:10px;
+}
+QSlider::handle:Horizontal{
+	height:20px;
+	width:20px;
+	background:transparent;
+	border-radius:10px;
+	border-image: url(:/res/icons/handle.png);
+}
+QSpinBox{
+	color:rgb(150,150,150);
+	border:1px solid #141414;
+	border-radius:3px;
+}
+QSpinBox::up-button{
+	height: 0px;
+	width: 0px;
+}
+QSpinBox::down-button{
+	height: 0px;
+	width: 0px;
+}
+QDoubleSpinBox{
+	color:rgb(150,150,150);
+	border:1px solid #141414;
+	border-radius:3px;
+}
+QDoubleSpinBox::up-button{
+	height: 0px;
+	width: 0px;
+}
+QDoubleSpinBox::down-button{
+	height: 0px;
+	width: 0px;
+}
+QScrollArea{
+	border:none;
+	background-color:rgb(40,40,40);
+}
+QScrollBar:vertical{
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar#settingScrollBar:vertical{
+    width:8px;
+    background:rgb(40,40,40);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
+QScrollBar::handle:vertical{
+    width:8px;
+    background:rgb(50,50,50);
+    border-radius:3px;
+    min-height:20;
+}
+QScrollBar::handle:vertical:hover{
+    width:8px;
+    background:rgb(60,60,60);
+    border-radius:4px;
+    min-height:20;
+}
+QScrollBar::add-line:vertical{
+    height:9px;width:8px;
+    border-image:url(:/images/a/3.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical{
+    height:9px;width:8px;
+    border-image:url(:/images/a/1.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-line:vertical:hover{
+    height:9px;width:8px;
+    border-image:url(:/images/a/4.png);
+    subcontrol-position:bottom;
+}
+QScrollBar::sub-line:vertical:hover{
+    height:9px;width:8px;
+    border-image:url(:/images/a/2.png);
+    subcontrol-position:top;
+}
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+    background:rgba(0,0,0,10%);
+    border-radius:4px;
+}
+QListWidget{
+	border:none;
+	color: rgb(220,220,220);
+	background-color: rgb(32,32,32);
+}
+QListWidget::Item:hover{
+	color: rgb(220,220,220);
+	background-color: rgb(36,36,36);
+}
+QListWidget::Item:selected{
+	color: rgb(220,220,220);
+	background-color: rgb(40,40,40);
+	border-width: 0px;
+}
+QComboBox{
+	max-width: 120px;
+}
+QComboBox:editable{
+    background: white;
+}
+QColorDialog{
+	color:rgb(48,48,48);
+	background-color:rgb(48,48,48);
+}
+QColorDialog > QColorLuminancePicker{
+  background-color: transparent;
+}
+QColorDialog > QLabel{
+	color:rgb(150,150,150);
+	background-color: transparent;
+}
+QColorDialog > QTextEdit,QLineEdit,QPushButton{
+  color:rgb(150,150,150);
+  background-color: transparent;
+  border: 1px solid #1c1c1c;
+}
+QWidget{    
+	border:none;
+	background: rgb(30, 30, 30);
+}
+QWidget#viewWidget{
+	width:1280;
+	height:720;
+}
+QWidget#titleWidget{
+	min-height:32;
+	max-height:32;
+}
 QWidget#titleWidget > QToolButton{
 	min-width:32px;
 	min-height:32px;
@@ -66,12 +215,6 @@ QWidget#titleWidget > QPushButton{
 	min-height:32px;
 	max-width:32px;
 	max-height:32px;
-}
-QWidget#toolWidget > QToolButton{
-	min-width:40px;
-	min-height:40px;
-	max-width:40px;
-	max-height:40px;
 }
 QWidget#titleWidget > QToolButton#minimize{
 	qproperty-icon: url(":res/icons/minimize.png");
@@ -116,6 +259,16 @@ QWidget#settingTitle > QToolButton#close{
 QWidget#settingTitle > QLabel#title{
 	font-family: "Microsoft YaHei";
 	font-size:12px;
+}
+QWidget#toolWidget{
+	min-width:42;
+	max-width:42;
+}
+QWidget#toolWidget > QToolButton{
+	min-width:40px;
+	min-height:40px;
+	max-width:40px;
+	max-height:40px;
 }
 QWidget#toolWidget > QToolButton#hide{
 	qproperty-icon: url(":res/icons/hide.png");
@@ -176,109 +329,31 @@ QWidget#toolWidget > QToolButton#sun{
 QWidget#toolWidget > QToolButton#material{
 	qproperty-icon: url(":res/icons/material.png");
 }
+QWidget#showWidget{
+	min-width:8;
+	max-width:8;
+}
 QWidget#showWidget > QPushButton#show{
 	qproperty-icon: url(":res/icons/show.png");
 }
 QWidget#showWidget > QPushButton#show:hover{
 	background-color:rgba(0,122,204,255);
 }
-QScrollArea{
-	border:none;
-	background-color:rgb(40,40,40);
-}
-QScrollBar:vertical
+QWidget#sunWindow QScrollBar
 {
+	width:8px;
     background:rgb(45,45,45);
     margin:0px,0px,0px,0px;
     padding-top:9px;
     padding-bottom:9px;
 }
-QScrollBar#settingScrollBar:vertical
-{
-    width:8px;
-    background:rgb(40,40,40);
-    margin:0px,0px,0px,0px;
-    padding-top:9px;
-    padding-bottom:9px;
-}
-QScrollBar::handle:vertical
-{
-    width:8px;
-    background:rgb(50,50,50);
-    border-radius:3px;
-    min-height:20;
-}
-QScrollBar::handle:vertical:hover
-{
-    width:8px;
-    background:rgb(60,60,60);
-    border-radius:4px;
-    min-height:20;
-}
-QScrollBar::add-line:vertical
-{
-    height:9px;width:8px;
-    border-image:url(:/images/a/3.png);
-    subcontrol-position:bottom;
-}
-QScrollBar::sub-line:vertical
-{
-    height:9px;width:8px;
-    border-image:url(:/images/a/1.png);
-    subcontrol-position:top;
-}
-QScrollBar::add-line:vertical:hover
-{
-    height:9px;width:8px;
-    border-image:url(:/images/a/4.png);
-    subcontrol-position:bottom;
-}
-QScrollBar::sub-line:vertical:hover
-{
-    height:9px;width:8px;
-    border-image:url(:/images/a/2.png);
-    subcontrol-position:top;
-}
-QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical
-{
-    background:rgba(0,0,0,10%);
-    border-radius:4px;
-}
-QListWidget{
-	border:none;
-	color: rgb(220,220,220);
-	background-color: rgb(32,32,32);
-}
-QListWidget::Item:hover{
-	color: rgb(220,220,220);
-	background-color: rgb(36,36,36);
-}
-QListWidget::Item:selected{
-	color: rgb(220,220,220);
-	background-color: rgb(40,40,40);
-	border-width: 0px;
-}
-QComboBox {
-	max-width: 120px;
-}
-QComboBox:editable {
-    background: white;
-}
-QColorDialog{
-	color:rgb(48,48,48);
-	background-color:rgb(48,48,48);
-}
-QColorDialog > QColorLuminancePicker {
-  background-color: transparent;
-}
-QColorDialog > QLabel{
-	color:rgb(150,150,150);
-	background-color: transparent;
-}
-QColorDialog > QTextEdit,QLineEdit,QPushButton {
-  color:rgb(150,150,150);
-  background-color: transparent;
-  border: 1px solid #1c1c1c;
+QWidget#loginWidget{
+	border:1px solid #101010;
+	border-radius:5px;
+	min-width:380;
+	min-height:500;
+	color: rgb(30, 30, 30);
+	background: rgb(30, 30, 30);
 }
 QWidget#loginWidget > QToolButton#close{
 	qproperty-icon: url(":res/icons/close2.png");
@@ -353,6 +428,16 @@ QWidget#registerWidget > QToolButton#close{
 	qproperty-icon: url(":res/icons/close2.png");
 	margin:0px,5px,0px,5px;
 }
+QWidget#infoWindow{
+	border:1px solid #101010;
+	border-radius:5px;
+	min-width:660;
+	max-width:660;
+	min-height:560;
+	max-height:560;
+	color: rgb(30, 30, 30);
+	background: rgb(30, 30, 30);
+}
 QWidget#infoWindow > QPushButton#logo{
 	qproperty-icon: url(":res/icons/vip-on.png");
 	qproperty-iconSize: 36px 36px;
@@ -392,6 +477,9 @@ QWidget#infoWindow > QPushButton#qrcode{
 	min-height:180;
 	max-height:180;
 	background-color: rgb(255,255,255);
+}
+QWidget#recordWindow{
+	min-width:340;
 }
 QWidget#recordWindow > QRadioButton{
 	color:rgb(200,200,200);
@@ -475,110 +563,4 @@ QWidget#ColorDialog > QLabel{
 QWidget#ColorDialog > ColorPlane{
 	color: rgb(255,255,255);
 	background-color: rgb(255,255,255);
-}
-QToolButton#close
-{
-	qproperty-icon: url(":res/icons/close.png");
-}
-QSlider
-{
-	border-radius:10px;
-}
-QSlider::add-page:Horizontal
-{
-	background-color: rgb(87, 97, 106);
-	height:10px;
-	border-radius:10px;
-	border-top-left-radius:0px;
-	border-bottom-left-radius:0px;
-}
-QSlider::sub-page:Horizontal
-{
-	background-color: rgb(87, 97, 106);
-	height:10px;
-	border-radius:10px;
-	border-top-right-radius:0px;
-	border-bottom-right-radius:0px;
-}
-QSlider#H
-{
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 0, 0, 255),stop:0.15 rgba(255, 255, 0, 255),stop:0.33 rgba(0, 255, 0, 255),stop:0.49 rgba(1, 255, 255, 255),stop:0.67 rgba(0, 0, 255, 255),stop:0.84 rgba(255, 0, 255, 255),stop:1 rgba(255, 0, 0, 255));
-}
-QSlider::add-page:Horizontal#H, QSlider::sub-page:Horizontal#H
-{
-	background-color:transparent;
-	height:10px;
-	border-radius:10px;
-	border-top-left-radius:0px;
-	border-bottom-left-radius:0px;
-}
-QSlider::sub-page:Horizontal#S
-{
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(180,220,255,255), stop:1 rgba(50,150,224,255));
-	height:10px;
-	border-radius:10px;
-	border-top-right-radius:0px;
-	border-bottom-right-radius:0px;
-}
-QSlider::sub-page:Horizontal#Value
-{
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
-	height:10px;
-	border-radius:10px;
-	border-top-right-radius:0px;
-	border-bottom-right-radius:0px;
-}
-QSlider::sub-page:Horizontal#Intensity
-{
-	background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,255), stop:1 rgba(220,220,220,220));
-	height:10px;
-	border-radius:10px;
-	border-top-right-radius:0px;
-	border-bottom-right-radius:0px;
-}
-QSlider::groove:Horizontal 
-{
-	background:transparent;
-	height:20px;
-	border-radius:10px;
-}
-QSlider::handle:Horizontal 
-{
-	height:20px;
-	width:20px;
-	background:transparent;
-	border-radius:10px;
-	border-image: url(:/res/icons/handle.png);
-}
-QSpinBox
-{
-	color:rgb(150,150,150);
-	border:1px solid #141414;
-	border-radius:3px;
-}
-QSpinBox::up-button
-{
-	height: 0px;
-	width: 0px;
-}
-QSpinBox::down-button
-{
-	height: 0px;
-	width: 0px;
-}
-QDoubleSpinBox
-{
-	color:rgb(150,150,150);
-	border:1px solid #141414;
-	border-radius:3px;
-}
-QDoubleSpinBox::up-button
-{
-	height: 0px;
-	width: 0px;
-}
-QDoubleSpinBox::down-button
-{
-	height: 0px;
-	width: 0px;
 }

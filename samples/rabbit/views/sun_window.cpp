@@ -1,4 +1,5 @@
 ﻿#include "sun_window.h"
+#include <qscrollbar.h>
 #include <octoon/transform_component.h>
 #include <octoon/offline_directional_light_component.h>
 
@@ -23,7 +24,7 @@ namespace rabbit
 	SunWindow::SunWindow(const std::shared_ptr<rabbit::RabbitProfile>& profile)
 		: profile_(profile)
 	{
-		this->setObjectName("SunWindow");
+		this->setObjectName("sunWindow");
 		this->setMinimumWidth(340);
 		this->grabKeyboard();
 		this->hide();

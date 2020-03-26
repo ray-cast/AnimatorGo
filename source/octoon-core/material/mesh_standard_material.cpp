@@ -11,6 +11,8 @@ namespace octoon::material
 
 	MeshStandardMaterial::MeshStandardMaterial(const math::float3& color) noexcept
 		: opacity_(1.0f)
+		, smoothness_(0.0f)
+		, metalness_(0.0f)
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -64,6 +66,7 @@ namespace octoon::material
 
 			uniform sampler2D decal;
 			uniform vec4 color;
+			uniform vec3 emissive;
 			uniform bool hasTexture;
 
 			in vec2 oTexcoord0;
@@ -72,11 +75,12 @@ namespace octoon::material
 			{
 				fragColor = color;
 				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
+				fragColor = pow(fragColor + vec4(emissive, 0.0f), vec4(1.0 / 2.2));
 			})";
 #endif
 
 		this->setColor(color);
+		this->setEmissive(math::float3::Zero);
 		this->setOpacity(1.0f);
 		this->setShader(std::make_shared<Shader>(vert, frag));
 	}
@@ -96,6 +100,19 @@ namespace octoon::material
 	MeshStandardMaterial::getColor() const noexcept
 	{
 		return this->color_;
+	}
+
+	void
+	MeshStandardMaterial::setEmissive(const math::float3& color) noexcept
+	{
+		this->emissive_ = color;
+		this->set("emissive", this->emissive_);
+	}
+
+	const math::float3&
+	MeshStandardMaterial::getEmissive()const noexcept
+	{
+		return this->emissive_;
 	}
 
 	void
@@ -123,6 +140,30 @@ namespace octoon::material
 	MeshStandardMaterial::getOpacity() const noexcept
 	{
 		return opacity_;
+	}
+
+	void
+	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
+	{
+		this->smoothness_ = smoothness;
+	}
+
+	float
+	MeshStandardMaterial::getSmoothness() const noexcept
+	{
+		return this->smoothness_;
+	}
+
+	void
+	MeshStandardMaterial::setMetalness(float metalness) noexcept
+	{
+		this->metalness_ = metalness;
+	}
+
+	float
+	MeshStandardMaterial::getMetalness() const noexcept
+	{
+		return this->metalness_;
 	}
 
 	std::shared_ptr<Material>

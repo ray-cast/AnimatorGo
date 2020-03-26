@@ -74,21 +74,22 @@ namespace octoon
 				continue;
 			}
 
-			auto meshBasicMaterial = mat->downcast<material::MeshStandardMaterial>();
+			auto material = mat->downcast<material::MeshStandardMaterial>();
 
 			std::string path;
 			std::string normalName;
 			std::string textureName;
 
-			math::float3 base = meshBasicMaterial->getColor();
+			math::float3 base = material->getColor();
 			math::float3 specular = math::float3::One;
 			math::float3 ambient = math::float3::Zero;
 			math::float4 edgeColor = math::float4::Zero;
 			
-			float opacity = meshBasicMaterial->getOpacity();
-			float roughness = 1.0f;
+			float opacity = material->getOpacity();
+			float roughness = 1.0f - material->getSmoothness();
+			float metalness = material->getMetalness();
 
-			auto colorTexture = meshBasicMaterial->getColorTexture();
+			auto colorTexture = material->getColorTexture();
 			if (colorTexture)
 				textureName = colorTexture->getTextureDesc().getName();
 
@@ -121,10 +122,10 @@ namespace octoon
 			{
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
 				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", metalness, metalness, metalness, metalness);
 				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
 				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
 				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base.x * specular.x, base.y * specular.y, base.z * specular.z, 1.0f);
-				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", edgeColor.x, edgeColor.x, edgeColor.x, edgeColor.x);
 			}
 
 			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)

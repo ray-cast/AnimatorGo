@@ -13,6 +13,22 @@
 
 namespace rabbit
 {
+	class DoubleSpinBox final : public QDoubleSpinBox
+	{
+	public:
+		void focusInEvent(QFocusEvent* event) override
+		{
+			this->grabKeyboard();
+			QDoubleSpinBox::focusInEvent(event);
+		}
+
+		void focusOutEvent(QFocusEvent* event) override
+		{
+			this->releaseKeyboard();
+			QDoubleSpinBox::focusOutEvent(event);
+		}
+	};
+
 	Spoiler::Spoiler(const QString& title, const int animationDuration, QWidget* parent) : QWidget(parent), animationDuration(animationDuration) {
 		toggleButton.setStyleSheet("QToolButton { border: none; }");
 		toggleButton.setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -68,6 +84,35 @@ namespace rabbit
 	MaterialModifyWindow::MaterialModifyWindow(QWidget* widget)
 		: QWidget(widget)
 	{
+		okButton_ = new QToolButton();
+		okButton_->setText(u8"确定");
+
+		auto mainLayout_ = new QVBoxLayout(this);
+		mainLayout_->addWidget(this->createSummary(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
+		mainLayout_->addWidget(this->createNormal(), 0,  Qt::AlignTop);
+		mainLayout_->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
+		mainLayout_->addWidget(this->createMetalness(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createEmissive(), 0, Qt::AlignTop);
+		mainLayout_->addStretch(500);
+		mainLayout_->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
+		mainLayout_->setContentsMargins(0, 10, 20, 10);
+
+		connect(smoothnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(smoothEditEvent(double)));
+		connect(smoothnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(smoothSliderEvent(int)));
+		connect(metalnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
+		connect(metalnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(metalSliderEvent(int)));
+		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
+		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
+	}
+
+	MaterialModifyWindow::~MaterialModifyWindow()
+	{
+	}
+
+	QWidget*
+	MaterialModifyWindow::createSummary()
+	{
 		QPixmap pixmap(":res/icons/material.png");
 
 		imageLabel_ = new QLabel();
@@ -87,95 +132,220 @@ namespace rabbit
 		QWidget* summaryWidget = new QWidget;
 		summaryWidget->setLayout(summaryLayout);
 
+		return summaryWidget;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createAlbedo()
+	{
 		albedoColor_ = new ColorDialog();
 		albedoColor_->setMaximumWidth(260);
 		albedoColor_->setCurrentColor(QColor(255, 255, 255));
 
-		normalColor_ = new ColorDialog();
-		normalColor_->setMaximumWidth(260);
-		normalColor_->setCurrentColor(QColor(255, 255, 255));
-
-		smoothnessColor_ = new ColorDialog();
-		smoothnessColor_->setMaximumWidth(260);
-		smoothnessColor_->setCurrentColor(QColor(255, 255, 255));
-
-		metalnessColor_ = new ColorDialog();
-		metalnessColor_->setMaximumWidth(260);
-		metalnessColor_->setCurrentColor(QColor(255, 255, 255));
-
-		emissiveColor_ = new ColorDialog();
-		emissiveColor_->setMaximumWidth(260);
-		emissiveColor_->setCurrentColor(QColor(255, 255, 255));
-
 		auto albedoLayout = new QVBoxLayout();
 		albedoLayout->addWidget(albedoColor_);
 
-		auto normalLayout = new QVBoxLayout();
-		normalLayout->addWidget(normalColor_);
-
-		auto smoothnessLayout = new QVBoxLayout();
-		smoothnessLayout->addWidget(smoothnessColor_);
-
-		auto metalnessLayout = new QVBoxLayout();
-		metalnessLayout->addWidget(metalnessColor_);
-
-		auto emissiveLayout = new QVBoxLayout();
-		emissiveLayout->addWidget(emissiveColor_);
-		
 		auto baseColor = new Spoiler(u8"基本颜色");
 		baseColor->setFixedWidth(340);
 		baseColor->setContentLayout(*albedoLayout);
+
+		return baseColor;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createNormal()
+	{
+		QPixmap pixmap(":res/icons/material.png");
+
+		normalLabel_ = new QLabel();
+		normalLabel_->setFixedSize(QSize(160, 160));
+		normalLabel_->setPixmap(pixmap.scaled(160, 160));
+
+		auto normalLayout = new QVBoxLayout();
+		normalLayout->addWidget(normalLabel_);
 
 		auto normal = new Spoiler(u8"法线");
 		normal->setFixedWidth(340);
 		normal->setContentLayout(*normalLayout);
 
+		return normal;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createSmoothness()
+	{
+		smoothnessLabel_ = new QLabel;
+		smoothnessLabel_->setText(u8"光滑度");
+
+		smoothnessSlider_ = new QSlider;
+		smoothnessSlider_->setObjectName("Value");
+		smoothnessSlider_->setOrientation(Qt::Horizontal);
+		smoothnessSlider_->setMinimum(0);
+		smoothnessSlider_->setMaximum(100);
+		smoothnessSlider_->setValue(0);
+		smoothnessSlider_->setFixedWidth(260);
+
+		smoothnessSpinBox_ = new DoubleSpinBox;
+		smoothnessSpinBox_->setFixedWidth(50);
+		smoothnessSpinBox_->setMaximum(1.0f);
+		smoothnessSpinBox_->setSingleStep(0.03f);
+		smoothnessSpinBox_->setAlignment(Qt::AlignRight);
+		smoothnessSpinBox_->setValue(0.0f);
+
+		auto smoothnessHLayout = new QHBoxLayout();
+		smoothnessHLayout->addWidget(smoothnessLabel_, 0, Qt::AlignLeft);
+		smoothnessHLayout->addWidget(smoothnessSpinBox_, 0, Qt::AlignRight);
+
+		auto smoothnessLayout = new QVBoxLayout();
+		smoothnessLayout->addLayout(smoothnessHLayout);
+		smoothnessLayout->addWidget(smoothnessSlider_);
+		smoothnessLayout->setContentsMargins(30, 5, 50, 0);
+
 		auto smoothness = new Spoiler(u8"光滑度");
 		smoothness->setFixedWidth(340);
 		smoothness->setContentLayout(*smoothnessLayout);
+
+		return smoothness;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createMetalness()
+	{
+		metalnessLabel_ = new QLabel;
+		metalnessLabel_->setText(u8"金属程度");
+
+		metalnessSlider_ = new QSlider;
+		metalnessSlider_->setObjectName("Value");
+		metalnessSlider_->setOrientation(Qt::Horizontal);
+		metalnessSlider_->setMinimum(0);
+		metalnessSlider_->setMaximum(100);
+		metalnessSlider_->setValue(0);
+		metalnessSlider_->setFixedWidth(260);
+
+		metalnessSpinBox_ = new DoubleSpinBox;
+		metalnessSpinBox_->setFixedWidth(50);
+		metalnessSpinBox_->setMaximum(1.0f);
+		metalnessSpinBox_->setSingleStep(0.03f);
+		metalnessSpinBox_->setAlignment(Qt::AlignRight);
+		metalnessSpinBox_->setValue(0.0f);
+
+		auto metalnessHLayout = new QHBoxLayout();
+		metalnessHLayout->addWidget(metalnessLabel_, 0, Qt::AlignLeft);
+		metalnessHLayout->addWidget(metalnessSpinBox_, 0, Qt::AlignRight);
+
+		auto metalnessLayout = new QVBoxLayout();
+		metalnessLayout->addLayout(metalnessHLayout);
+		metalnessLayout->addWidget(metalnessSlider_);
+		metalnessLayout->setContentsMargins(30, 5, 50, 0);
 
 		auto metalness = new Spoiler(u8"金属程度");
 		metalness->setFixedWidth(340);
 		metalness->setContentLayout(*metalnessLayout);
 
+		return metalness;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createEmissive()
+	{
+		emissiveColor_ = new ColorDialog();
+		emissiveColor_->setMaximumWidth(260);
+		emissiveColor_->setCurrentColor(QColor(255, 255, 255));
+
+		auto emissiveLayout = new QVBoxLayout();
+		emissiveLayout->addWidget(emissiveColor_);
+
 		auto emissive = new Spoiler(u8"自发光");
 		emissive->setFixedWidth(340);
-		emissive->setContentLayout(*metalnessLayout);
+		emissive->setContentLayout(*emissiveLayout);
 
-		auto mainLayout_ = new QVBoxLayout(this);
-		mainLayout_->addWidget(summaryWidget, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addWidget(baseColor, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addWidget(normal, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addWidget(smoothness, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addWidget(metalness, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addWidget(emissive, 0, Qt::AlignHCenter | Qt::AlignTop);
-		mainLayout_->addStretch(500);
-		mainLayout_->setContentsMargins(0, 10, 10, 10);
-
-		connect(albedoColor_, SIGNAL(colorSelected(QColor)), this, SLOT(colorSelected(QColor)));
-	}
-
-	MaterialModifyWindow::~MaterialModifyWindow()
-	{
+		return emissive;
 	}
 
 	void
-	MaterialModifyWindow::repaint()
+	MaterialModifyWindow::setMaterial(const std::shared_ptr<octoon::material::Material>& material)
 	{
-		albedoColor_->setCurrentColor(QColor(255,255,255));
+		if (this->material_ != material)
+		{
+			auto standard = material->downcast_pointer<octoon::material::MeshStandardMaterial>();
+
+			auto colorTexture = standard->getColorTexture();
+			if (colorTexture) {
+				QPixmap pixmap;
+				pixmap.load(QString::fromStdString(colorTexture->getTextureDesc().getName()));
+				imageLabel_->setPixmap(pixmap.scaled(130, 130));
+			}
+
+			textLabel_->setText(QString::fromStdString(standard->getName()));
+			albedoColor_->setCurrentColor(QColor::fromRgbF(standard->getColor().x, standard->getColor().y, standard->getColor().z));
+			smoothnessSpinBox_->setValue(standard->getSmoothness());
+			metalnessSpinBox_->setValue(standard->getMetalness());
+			emissiveColor_->setCurrentColor(QColor::fromRgbF(standard->getEmissive().x, standard->getEmissive().y, standard->getEmissive().z));
+
+			this->material_ = material;
+		}
 	}
 
 	void
-	MaterialModifyWindow::showEvent(QShowEvent* event)
+	MaterialModifyWindow::albedoColorChanged(QColor color)
 	{
-		this->repaint();
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+		}
 	}
 
 	void
-	MaterialModifyWindow::colorSelected(QColor color)
+	MaterialModifyWindow::emissiveColorChanged(QColor color)
 	{
-		this->close();
-		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+		}
+	}
+
+	void
+	MaterialModifyWindow::smoothEditEvent(double value)
+	{
+		smoothnessSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setSmoothness(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::smoothSliderEvent(int value)
+	{
+		smoothnessSpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::metalEditEvent(double value)
+	{
+		metalnessSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setMetalness(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::metalSliderEvent(int value)
+	{
+		metalnessSpinBox_->setValue(value / 100.0f);
+	}
+
+	void 
+	MaterialModifyWindow::closeEvent()
+	{
+		this->hide();
 	}
 
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
@@ -210,6 +380,7 @@ namespace rabbit
 		titleLayout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
 
 		modifyWidget_ = std::make_unique<MaterialModifyWindow>(this);
+		modifyWidget_->setFixedWidth(340);
 
 		modifyMaterialArea_ = new QScrollArea();
 		modifyMaterialArea_->setFixedHeight(700);
@@ -226,6 +397,7 @@ namespace rabbit
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 
 		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
 		connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
 		connect(listWidget_.get(), SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 	}
@@ -252,6 +424,13 @@ namespace rabbit
 	{
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
+	}
+
+	void
+	MaterialWindow::okEvent()
+	{
+		modifyMaterialArea_->hide();
+		listWidget_->show();
 	}
 
 	void
@@ -282,8 +461,19 @@ namespace rabbit
 	void
 	MaterialWindow::itemDoubleClicked(QListWidgetItem* item)
 	{
-		//listWidget_->hide();
-		//modifyMaterialArea_->show();
+		if (behaviour_)
+		{
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour->isOpen())
+			{
+				auto materialComponent = behaviour->getComponent<MaterialComponent>();
+				auto material = materialComponent->getMaterial(item->text().toStdString());
+
+				listWidget_->hide();
+				modifyWidget_->setMaterial(material);
+				modifyMaterialArea_->show();
+			}
+		}
 	}
 
 	void

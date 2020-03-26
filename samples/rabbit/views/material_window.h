@@ -46,21 +46,44 @@ namespace rabbit
 		MaterialModifyWindow(QWidget* widget);
 		~MaterialModifyWindow();
 
-		void repaint();
-
-		virtual void showEvent(QShowEvent* event) override;
-
-	public Q_SLOTS:
-		void colorSelected(QColor);
+		void setMaterial(const std::shared_ptr<octoon::material::Material>& material);
 
 	private:
+		QWidget* createSummary();
+		QWidget* createAlbedo();
+		QWidget* createNormal();
+		QWidget* createSmoothness();
+		QWidget* createMetalness();
+		QWidget* createEmissive();
+
+	public Q_SLOTS:
+		void albedoColorChanged(QColor);
+		void emissiveColorChanged(QColor);
+
+		void smoothEditEvent(double);
+		void smoothSliderEvent(int);
+
+		void metalEditEvent(double);
+		void metalSliderEvent(int);
+
+		void closeEvent();
+
+	public:
 		QLabel* imageLabel_;
 		QLabel* textLabel_;
+		QLabel* normalLabel_;
+		QLabel* albedoLabel_;
 		ColorDialog* albedoColor_;
-		ColorDialog* normalColor_;
-		ColorDialog* smoothnessColor_;
-		ColorDialog* metalnessColor_;
+		QSlider* smoothnessSlider_;
+		QLabel* smoothnessLabel_;
+		QDoubleSpinBox* smoothnessSpinBox_;
+		QSlider* metalnessSlider_;
+		QLabel* metalnessLabel_;
+		QDoubleSpinBox* metalnessSpinBox_;
+		QLabel* emissiveLabel_;
 		ColorDialog* emissiveColor_;
+		QToolButton* okButton_;
+		std::shared_ptr<octoon::material::Material> material_;
 	};
 
 	class MaterialWindow final : public QWidget
@@ -81,6 +104,7 @@ namespace rabbit
 
 	private Q_SLOTS:
 		void closeEvent();
+		void okEvent();
 		void itemClicked(QListWidgetItem* item);
 		void itemDoubleClicked(QListWidgetItem* item);
 

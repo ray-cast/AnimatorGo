@@ -60,6 +60,7 @@ namespace octoon
 
 		this->refCount_.clear();
 		this->materials_.clear();
+		this->materialBinds_.clear();
 
 		std::unordered_map<std::size_t, rpr_material_node> mtlHash;
 
@@ -74,119 +75,16 @@ namespace octoon
 				continue;
 			}
 
-			auto material = mat->downcast<material::MeshStandardMaterial>();
-
-			std::string path;
-			std::string normalName;
-			std::string textureName;
-
-			math::float3 base = material->getColor();
-			math::float3 specular = math::float3::One;
-			math::float3 ambient = math::float3::Zero;
-			math::float4 edgeColor = math::float4::Zero;
-			
-			float opacity = material->getOpacity();
-			float roughness = 1.0f - material->getSmoothness();
-			float metalness = material->getMetalness();
-
-			auto colorTexture = material->getColorTexture();
-			if (colorTexture)
-				textureName = colorTexture->getTextureDesc().getName();
-
 			rpr_material_node rprMaterial;
 			rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
-
-			std::uint32_t layers = RPR_UBER_MATERIAL_LAYER_DIFFUSE;
-			if (math::any(specular))
-				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
-			if (opacity < 1.0f)
-				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
-			/*if (!normalName.empty())
-				layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;
-			if (edgeColor.x == 0.0f)
-				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;*/
-
-			rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
-			{
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.roughness", roughness, roughness, roughness, roughness);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
-			}
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
-			{
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", metalness, metalness, metalness, metalness);
-				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
-				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
-				//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base.x * specular.x, base.y * specular.y, base.z * specular.z, 1.0f);
-			}
-
-			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
-			{
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
-				rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
-			}
-
-			/*if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
-			{
-				try
-				{
-					rpr_material_node textureNode;
-					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
-					rprMaterialNodeSetInputImageData(textureNode, "data", feature->createMaterialTextures(path + normalName).first);
-					rprMaterialNodeSetInputN(rprMaterial, "uberv2.normal", textureNode);
-				}
-				catch (...)
-				{
-					rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers & ~RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL);
-				}
-			}*/
-
-			if (!textureName.empty())
-			{
-				try
-				{
-					auto image = feature->createMaterialTextures(path + textureName);
-					if (image.first)
-					{
-						if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
-							rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", image.first);
-
-						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && edgeColor.x > 0.0f)
-							rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", image.first);
-
-						if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
-							rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", image.first);
-					}
-					else
-					{
-						rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
-					}
-
-					if (image.second)
-					{
-						rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
-						rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", image.second);
-					}
-				}
-				catch (...)
-				{
-					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
-				}
-			}
 
 			refCount_[rprMaterial]++;
 			mtlHash[hash] = rprMaterial;
 			materials_.push_back(rprMaterial);
+			materialBinds_.push_back(std::make_pair(rprMaterial, mat));
 		}
+
+		this->updateMaterial(true);
 
 		for (std::size_t i = 0; i < shapes_.size(); i++)
 		{
@@ -258,6 +156,132 @@ namespace octoon
 		instance->setMaterial(this->getMaterial() ? (this->isSharedMaterial() ? this->getMaterial() : this->getMaterial()->clone()) : nullptr, this->isSharedMaterial());
 
 		return instance;
+	}
+
+	void
+	OfflineMeshRendererComponent::updateMaterial(bool force) noexcept
+	{
+		auto feature = this->tryGetFeature<OfflineFeature>();
+		if (!feature)
+			return;
+
+		for (auto& it : this->materialBinds_)
+		{
+			auto material = it.second->downcast<material::MeshStandardMaterial>();
+			if (!material->needUpdate() && !force)
+				continue;
+
+			material->needUpdate(false);
+
+			std::string path;
+			std::string normalName;
+			std::string textureName;
+
+			math::float3 base = material->getColor();
+			math::float3 emissive = material->getEmissive();
+
+			float opacity = material->getOpacity();
+			float roughness = (1.0f - material->getSmoothness()) * (1.0f - material->getSmoothness());
+			float metalness = material->getMetalness();
+
+			auto colorTexture = material->getColorTexture();
+			if (colorTexture)
+				textureName = colorTexture->getTextureDesc().getName();
+
+			std::uint32_t layers = 0; 
+			if (metalness == 0.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
+			if (roughness < 1.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
+			if (opacity < 1.0f)
+				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
+			if (math::any(emissive))
+				layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
+			/*if (!normalName.empty())
+				layers |= RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL;*/
+
+			rprMaterialNodeSetInputU(it.first, "uberv2.layers", layers);
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
+				rprMaterialNodeSetInputF(it.first, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+			{
+				rprMaterialNodeSetInputF(it.first, "uberv2.diffuse.roughness", roughness, roughness, roughness, roughness);
+				//rprMaterialNodeSetInputF(it.first, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
+				rprMaterialNodeSetInputF(it.first, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
+			}
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
+			{
+				rprMaterialNodeSetInputF(it.first, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+				rprMaterialNodeSetInputF(it.first, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+				rprMaterialNodeSetInputF(it.first, "uberv2.reflection.metalness", metalness, metalness, metalness, metalness);
+				rprMaterialNodeSetInputF(it.first, "uberv2.reflection.color", base[0], base[1], base[2], 1.0f);
+				//rprMaterialNodeSetInputF(it.first, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
+				//rprMaterialNodeSetInputF(it.first, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
+			}
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+			{
+				rprMaterialNodeSetInputF(it.first, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+				rprMaterialNodeSetInputF(it.first, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+				rprMaterialNodeSetInputF(it.first, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+			}
+
+			if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
+			{
+				rprMaterialNodeSetInputF(it.first, "uberv2.emission.color", emissive[0], emissive[1], emissive[2], 1.0f);
+			}
+
+			/*if (layers & RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL)
+			{
+				try
+				{
+					rpr_material_node textureNode;
+					rprMaterialSystemCreateNode(feature->getMaterialSystem(), RPR_MATERIAL_NODE_NORMAL_MAP, &textureNode);
+					rprMaterialNodeSetInputImageData(textureNode, "data", feature->createMaterialTextures(path + normalName).first);
+					rprMaterialNodeSetInputN(it.first, "uberv2.normal", textureNode);
+				}
+				catch (...)
+				{
+					rprMaterialNodeSetInputU(it.first, "uberv2.layers", layers & ~RPR_UBER_MATERIAL_LAYER_SHADING_NORMAL);
+				}
+			}*/
+
+			if (!textureName.empty())
+			{
+				try
+				{
+					auto image = feature->createMaterialTextures(path + textureName);
+					if (image.first)
+					{
+						if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+							rprMaterialNodeSetInputN(it.first, "uberv2.diffuse.color", image.first);
+
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && metalness > 0.0f)
+							rprMaterialNodeSetInputN(it.first, "uberv2.reflection.color", image.first);
+
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+							rprMaterialNodeSetInputN(it.first, "uberv2.refraction.color", image.first);
+					}
+					else
+					{
+						rprMaterialNodeSetInputF(it.first, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
+					}
+
+					if (image.second)
+					{
+						rprMaterialNodeSetInputU(it.first, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
+						rprMaterialNodeSetInputN(it.first, "uberv2.transparency", image.second);
+					}
+				}
+				catch (...)
+				{
+					rprMaterialNodeSetInputF(it.first, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
+				}
+			}
+		}
 	}
 
 	void
@@ -333,6 +357,12 @@ namespace octoon
 		auto feature = this->getFeature<OfflineFeature>();
 		if (feature)
 			feature->setFramebufferDirty(true);
+	}
+
+	void
+	OfflineMeshRendererComponent::onPreRender() noexcept
+	{
+		this->updateMaterial(false);
 	}
 
 	void

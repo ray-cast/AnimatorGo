@@ -306,8 +306,6 @@ namespace octoon
 						}
 					}
 				}
-
-				this->material_->needUpdate(false);
 			}
 		}
 

@@ -221,6 +221,8 @@ namespace octoon
 	void
 	OfflineSkinnedMeshRendererComponent::onPreRender() noexcept
 	{
+		OfflineMeshRendererComponent::onPreRender();
+
 		if (mesh_ && needUpdate_)
 		{
 			this->updateMeshData();

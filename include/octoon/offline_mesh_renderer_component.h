@@ -23,6 +23,9 @@ namespace octoon
 
 		GameComponentPtr clone() const noexcept override;
 
+	private:
+		void updateMaterial(bool force) noexcept;
+
 	protected:
 		virtual void onActivate() noexcept override;
 		virtual void onDeactivate() noexcept override;
@@ -34,6 +37,8 @@ namespace octoon
 
 		virtual void onLayerChangeAfter() noexcept override;
 
+		virtual void onPreRender() noexcept override;
+
 	private:
 		OfflineMeshRendererComponent(const OfflineMeshRendererComponent&) = delete;
 		OfflineMeshRendererComponent& operator=(const OfflineMeshRendererComponent&) = delete;
@@ -41,6 +46,7 @@ namespace octoon
 	private:
 		std::vector<void*> shapes_;
 		std::vector<void*> materials_;
+		std::vector<std::pair<void*, material::MaterialPtr>> materialBinds_;
 		std::map<void*, std::int32_t> refCount_;
 	};
 }

@@ -146,6 +146,7 @@ namespace octoon::material
 	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
 	{
 		this->smoothness_ = smoothness;
+		this->set("smoothness", smoothness);
 	}
 
 	float
@@ -158,6 +159,7 @@ namespace octoon::material
 	MeshStandardMaterial::setMetalness(float metalness) noexcept
 	{
 		this->metalness_ = metalness;
+		this->set("metalness", metalness);
 	}
 
 	float

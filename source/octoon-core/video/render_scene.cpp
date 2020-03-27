@@ -73,6 +73,8 @@ namespace octoon
 
 			if (object->isA<camera::Camera>())
 				this->addCamera(object->downcast<camera::Camera>());
+			else if (object->isA<light::Light>())
+				this->addLight(object->downcast<light::Light>());
 			else
 				renderables_.push_back(object);
 		}
@@ -83,9 +85,9 @@ namespace octoon
 			assert(object);
 
 			if (object->isA<camera::Camera>())
-				this->addCamera(object->downcast<camera::Camera>());
+				this->removeCamera(object->downcast<camera::Camera>());
 			else if (object->isA<light::Light>())
-				this->addLight(object->downcast<light::Light>());
+				this->removeLight(object->downcast<light::Light>());
 			else
 			{
 				auto it = std::find(renderables_.begin(), renderables_.end(), object);

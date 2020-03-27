@@ -35,7 +35,7 @@ namespace octoon
 				cameras_.erase(it);
 		}
 
-		const CameraRaws&
+		const std::vector<camera::Camera*>&
 		RenderScene::getCameraList() const noexcept
 		{
 			return cameras_;

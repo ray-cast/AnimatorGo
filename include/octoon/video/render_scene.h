@@ -17,7 +17,7 @@ namespace octoon
 
 			void addCamera(camera::Camera* camera) noexcept;
 			void removeCamera(camera::Camera* camera) noexcept;
-			const CameraRaws& getCameraList() const noexcept;
+			const std::vector<camera::Camera*>& getCameraList() const noexcept;
 
 			void addRenderObject(RenderObject* object) noexcept;
 			void removeRenderObject(RenderObject* object) noexcept;
@@ -31,7 +31,7 @@ namespace octoon
 			RenderScene& operator=(const RenderScene&) = delete;
 
 		private:
-			CameraRaws cameras_;
+			std::vector<camera::Camera*> cameras_;
 			RenderObjectRaws renderables_;
 		};
 	}

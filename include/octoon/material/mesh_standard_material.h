@@ -28,6 +28,9 @@ namespace octoon::material
 		void setMetalness(float metalness) noexcept;
 		float getMetalness() const noexcept;
 
+		void setReflectivity(float reflectivity) noexcept;
+		float getReflectivity() const noexcept;
+
 		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
 		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
 
@@ -41,6 +44,7 @@ namespace octoon::material
 		float opacity_;
 		float metalness_;
 		float smoothness_;
+		float reflectivity_;
 		math::float3 color_;
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorTexture_;

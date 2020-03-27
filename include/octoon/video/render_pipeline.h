@@ -27,7 +27,7 @@ namespace octoon
 			const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 			const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-			void update(const camera::Camera& camera, const video::Geometry& geometry) noexcept;
+			void update(const camera::Camera& camera, const geometry::Geometry& geometry) noexcept;
 
 			std::shared_ptr<RenderPipeline> clone() const noexcept;
 

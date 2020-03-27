@@ -124,7 +124,7 @@ namespace octoon
 		}
 
 		void
-		RenderPipeline::update(const camera::Camera& camera, const video::Geometry& geometry) noexcept
+		RenderPipeline::update(const camera::Camera& camera, const geometry::Geometry& geometry) noexcept
 		{
 			if (this->material_)
 			{

@@ -3,7 +3,6 @@
 #include <octoon/transform_component.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_system.h>
-#include <octoon/texture_loader.h>
 
 namespace octoon
 {
@@ -223,7 +222,7 @@ namespace octoon
 
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
-				auto geometry_ = std::make_shared<video::Geometry>();
+				auto geometry_ = std::make_shared<geometry::Geometry>();
 				geometry_->setActive(true);
 				geometry_->setOwnerListener(this);
 				geometry_->setVisible(this->getVisible());

@@ -183,6 +183,7 @@ namespace octoon
 			float opacity = material->getOpacity();
 			float roughness = (1.0f - material->getSmoothness()) * (1.0f - material->getSmoothness());
 			float metalness = material->getMetalness();
+			float reflectivity = material->getReflectivity();
 
 			auto colorTexture = material->getColorTexture();
 			if (colorTexture)
@@ -191,7 +192,7 @@ namespace octoon
 			std::uint32_t layers = 0; 
 			if (metalness == 0.0f)
 				layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
-			if (roughness < 1.0f)
+			if (reflectivity > 0.0f)
 				layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
 			if (opacity < 1.0f)
 				layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
@@ -259,7 +260,7 @@ namespace octoon
 						if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 							rprMaterialNodeSetInputN(it.first, "uberv2.diffuse.color", image.first);
 
-						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && metalness > 0.0f)
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && reflectivity > 0.0f)
 							rprMaterialNodeSetInputN(it.first, "uberv2.reflection.color", image.first);
 
 						if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)

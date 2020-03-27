@@ -170,7 +170,7 @@ namespace octoon
 				if (camera.getLayer() != object->getLayer())
 					continue;
 
-				auto geometry = object->downcast<video::Geometry>();
+				auto geometry = object->downcast<geometry::Geometry>();
 				if (!geometry)
 					continue;
 

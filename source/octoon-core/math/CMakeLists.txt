@@ -25,5 +25,6 @@ SET(MATH_LIST
     ${SOURCE_PATH}/mathutil.cpp
 	${HEADER_PATH}/perlin_noise.h
 	${SOURCE_PATH}/perlin_noise.cpp
+	${HEADER_PATH}/SH.h
 )
 SOURCE_GROUP("math" FILES ${MATH_LIST})

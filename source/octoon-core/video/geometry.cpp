@@ -1,6 +1,6 @@
 #include <octoon/video/geometry.h>
 
-namespace octoon::video
+namespace octoon::geometry
 {
 	OctoonImplementSubClass(Geometry, RenderObject, "Geometry")
 

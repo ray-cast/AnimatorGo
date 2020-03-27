@@ -11,5 +11,6 @@
 #include <octoon/math/triangle.h>
 #include <octoon/math/raycast.h>
 #include <octoon/math/boundingbox.h>
+#include <octoon/math/sh.h>
 
 #endif

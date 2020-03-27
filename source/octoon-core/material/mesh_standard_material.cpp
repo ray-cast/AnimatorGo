@@ -13,6 +13,7 @@ namespace octoon::material
 		: opacity_(1.0f)
 		, smoothness_(0.0f)
 		, metalness_(0.0f)
+		, reflectivity_(0.5f)
 	{
 #if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
 		const char* vert = R"(
@@ -166,6 +167,19 @@ namespace octoon::material
 	MeshStandardMaterial::getMetalness() const noexcept
 	{
 		return this->metalness_;
+	}
+
+	void
+	MeshStandardMaterial::setReflectivity(float reflectivity) noexcept
+	{
+		this->reflectivity_ = reflectivity;
+		this->set("reflectivity", reflectivity);
+	}
+
+	float
+	MeshStandardMaterial::getReflectivity() const noexcept
+	{
+		return this->reflectivity_;
 	}
 
 	std::shared_ptr<Material>

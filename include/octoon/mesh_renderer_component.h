@@ -49,8 +49,8 @@ namespace octoon
 
 		std::int32_t renderOrder_;
 
-		video::Geometrys geometries_;
-		video::RenderPipelines pipelines_;
+		std::vector<std::shared_ptr<geometry::Geometry>> geometries_;
+		std::vector<std::shared_ptr<video::RenderPipeline>> pipelines_;
 	};
 }
 

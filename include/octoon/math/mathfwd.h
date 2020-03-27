@@ -46,6 +46,9 @@ namespace octoon
 
 			template<typename T = float>
 			class BoundingBox;
+
+			template<typename T, std::uint8_t N>
+			class SH;
 		}
 
 		// default
@@ -81,6 +84,22 @@ namespace octoon
 		using Sphered = detail::Sphere<double>;
 		using Raycastd = detail::Raycast<double>;
 		using BoundingBoxd = detail::BoundingBox<double>;
+
+		using H4 = detail::SH<float, 4>;
+		using H6 = detail::SH<float, 6>;
+
+		using SH4 = detail::SH<float, 4>;
+		using SH9 = detail::SH<float, 9>;
+		using SH16 = detail::SH<float, 16>;
+		using SH25 = detail::SH<float, 25>;
+
+		using H4Color = detail::SH<Vector3, 4>;
+		using H6Color = detail::SH<Vector3, 6>;
+
+		using SH4Color = detail::SH<Vector3, 4>;
+		using SH9Color = detail::SH<Vector3, 9>;
+		using SH16Color = detail::SH<Vector3, 16>;
+		using SH25Color = detail::SH<Vector3, 25>;
 
 		// char
 		using char1 = std::int8_t;

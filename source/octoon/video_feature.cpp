@@ -76,6 +76,18 @@ namespace octoon
 	}
 
 	void
+	VideoFeature::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
+	{
+		video::Renderer::instance()->setOverrideMaterial(material);
+	}
+
+	std::shared_ptr<material::Material>
+	VideoFeature::getOverrideMaterial() const noexcept
+	{
+		return video::Renderer::instance()->getOverrideMaterial();
+	}
+
+	void
 	VideoFeature::onActivate() except
 	{
 		this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));

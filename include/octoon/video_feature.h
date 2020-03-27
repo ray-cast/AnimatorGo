@@ -2,8 +2,8 @@
 #define OCTOON_VIDEO_FEATURE_H_
 
 #include <octoon/game_feature.h>
-#include <octoon/hal/graphics_framebuffer.h>
 #include <octoon/camera_component.h>
+#include <octoon/material/material.h>
 
 namespace octoon
 {
@@ -20,6 +20,9 @@ namespace octoon
 
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
+
+		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
+		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 

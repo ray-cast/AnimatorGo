@@ -212,50 +212,6 @@ namespace octoon::video
 		}
 	}
 
-	bool
-	Renderer::setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
-	{
-		if (mesh)
-		{
-			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
-			if (!buffer)
-				buffer = std::make_shared<RenderBuffer>(mesh);
-
-			context.setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-			context.setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
-
-			this->currentBuffer_ = buffer;
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool
-	Renderer::setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
-	{
-		if (material)
-		{
-			auto& pipeline = pipelines_[((std::intptr_t)material.get())];
-			if (!pipeline)
-				pipeline = std::make_shared<RenderPipeline>(material);
-
-			pipeline->update(camera, geometry);
-
-			context.setRenderPipeline(pipeline->getPipeline());
-			context.setDescriptorSet(pipeline->getDescriptorSet());
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	void
 	Renderer::render(hal::GraphicsContext& context) noexcept
 	{
@@ -376,6 +332,50 @@ namespace octoon::video
 			fbo_ = device_->createFramebuffer(framebufferDesc);
 			if (!fbo_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
+		}
+	}
+
+	bool
+	Renderer::setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
+	{
+		if (mesh)
+		{
+			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
+			if (!buffer)
+				buffer = std::make_shared<RenderBuffer>(mesh);
+
+			context.setVertexBufferData(0, buffer->getVertexBuffer(), 0);
+			context.setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+
+			this->currentBuffer_ = buffer;
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool
+	Renderer::setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
+	{
+		if (material)
+		{
+			auto& pipeline = pipelines_[((std::intptr_t)material.get())];
+			if (!pipeline)
+				pipeline = std::make_shared<RenderPipeline>(material);
+
+			pipeline->update(camera, geometry);
+
+			context.setRenderPipeline(pipeline->getPipeline());
+			context.setDescriptorSet(pipeline->getDescriptorSet());
+
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 }

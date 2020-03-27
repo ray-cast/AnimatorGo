@@ -6,10 +6,14 @@
 #include <octoon/timer_feature.h>
 #include <octoon/material/mesh_standard_material.h>
 
+#pragma warning(push)
+#pragma warning(disable:4244)
+#pragma warning(disable:4245)
 #include <Alembic/Abc/All.h>
 #include <Alembic/AbcCoreFactory/All.h>
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcMaterial/All.h>
+#pragma warning(pop)
 
 #include <codecvt>
 

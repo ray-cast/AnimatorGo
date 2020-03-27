@@ -17,8 +17,8 @@ namespace octoon
 			bool setup(const GraphicsDataDesc& desc) noexcept;
 			void close() noexcept;
 
-			int flush() noexcept;
-			int flush(GLintptr offset, GLsizeiptr cnt) noexcept;
+			std::ptrdiff_t flush() noexcept;
+			std::ptrdiff_t flush(GLintptr offset, GLsizeiptr cnt) noexcept;
 
 			bool map(std::ptrdiff_t offset, std::ptrdiff_t count, void** data) noexcept override;
 			void unmap() noexcept override;

@@ -110,7 +110,7 @@ namespace octoon
 			{
 				glEnableVertexAttribArray(it.index);
 				glVertexAttribBinding(it.index, it.slot);
-				glVertexAttribFormat(it.index, it.count, it.type, it.normalize, it.offset);
+				glVertexAttribFormat(it.index, it.count, it.type, it.normalize, (GLuint)it.offset);
 			}
 
 			for (auto& it : _bindings)

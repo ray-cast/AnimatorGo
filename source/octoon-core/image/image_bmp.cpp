@@ -182,7 +182,7 @@ namespace octoon
 			std::uint32_t nums = columns * rows;
 
 			std::size_t length = (std::size_t)(nums * info.info.bpp / 8);
-			std::int32_t padding = std::max<std::int32_t>(0, info.info.size_image - length) / rows;
+			std::size_t padding = std::max<std::size_t>(0, info.info.size_image - length) / rows;
 
 			std::vector<std::uint8_t> buffers(length);
 			std::uint8_t* buf = (std::uint8_t*)buffers.data();
@@ -213,7 +213,7 @@ namespace octoon
 			if (info.info.bpp == BMP_24BPP)
 			{
 				std::uint8_t* rgb = (std::uint8_t*)image.data();
-				std::uint8_t channel = info.info.bpp / 8;
+				std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
 
 				for (std::size_t i = 0; i < rows; i++)
 				{
@@ -235,7 +235,7 @@ namespace octoon
 			else if (info.info.bpp == BMP_32BPP)
 			{
 				std::uint8_t* rgb = (std::uint8_t*)image.data();
-				std::uint8_t channel = info.info.bpp / 8;
+				std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
 
 				for (std::size_t i = 0; i < rows; i++)
 				{

@@ -2,8 +2,6 @@
 #define OCTOON_OFFLINE_SKINNED_MESH_RENDERER_COMPONENT_H_
 
 #include <octoon/offline_mesh_renderer_component.h>
-#include <octoon/video/geometry.h>
-#include <octoon/mesh_filter_component.h>
 #include <octoon/skinned_component.h>
 #include <octoon/cloth_component.h>
 

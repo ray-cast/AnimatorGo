@@ -69,7 +69,6 @@ namespace rabbit
 
 			try
 			{
-				auto& model = this->getModel();
 				auto& timeModule = this->getContext()->profile->timeModule;
 			
 				auto inFilename = filepath_ + ".tmp";

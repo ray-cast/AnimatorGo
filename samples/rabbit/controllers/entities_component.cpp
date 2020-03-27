@@ -1,7 +1,11 @@
 #include "entities_component.h"
-#include "../libs/nativefiledialog/nfd.h"
 #include "../rabbit_profile.h"
 #include "../rabbit_behaviour.h"
+
+#pragma warning(push)
+#pragma warning(disable:4245)
+#include "../libs/nativefiledialog/nfd.h"
+#pragma warning(pop)
 
 #include <fstream>
 #include <unordered_map>

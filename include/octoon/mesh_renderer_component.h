@@ -2,8 +2,7 @@
 #define OCTOON_MESH_RENDERER_COMPONENT_H_
 
 #include <octoon/render_component.h>
-#include <octoon/video/geometry.h>
-#include <octoon/mesh/mesh.h>
+#include <octoon/geometry/geometry.h>
 
 namespace octoon
 {
@@ -50,7 +49,6 @@ namespace octoon
 		std::int32_t renderOrder_;
 
 		std::vector<std::shared_ptr<geometry::Geometry>> geometries_;
-		std::vector<std::shared_ptr<video::RenderPipeline>> pipelines_;
 	};
 }
 

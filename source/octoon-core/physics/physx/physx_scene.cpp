@@ -25,7 +25,7 @@ namespace octoon
 				return physx::PxFilterFlags();
 			}
 
-			if (!physx::PxGetGroupCollisionFlag(filterData0.word0, filterData1.word0))
+			if (!physx::PxGetGroupCollisionFlag((physx::PxU16)filterData0.word0, (physx::PxU16)filterData1.word0))
 				return physx::PxFilterFlag::eSUPPRESS;
 
 			if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)

@@ -2,8 +2,8 @@
 #define OCTOON_OFFLINE_MESH_RENDERER_COMPONENT_H_
 
 #include <octoon/offline_render_component.h>
-#include <octoon/video/geometry.h>
-#include <octoon/mesh_filter_component.h>
+#include <octoon/mesh/mesh.h>
+#include <octoon/material/material.h>
 
 namespace octoon
 {

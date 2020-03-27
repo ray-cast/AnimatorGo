@@ -59,13 +59,13 @@ namespace octoon
 			}
 		}
 
-		int
+		std::ptrdiff_t
 		GL30GraphicsData::flush() noexcept
 		{
 			return this->flush(0, _desc.getStreamSize());
 		}
 
-		int
+		std::ptrdiff_t
 		GL30GraphicsData::flush(GLintptr offset, GLsizeiptr cnt) noexcept
 		{
 			glBindBuffer(_target, _buffer);

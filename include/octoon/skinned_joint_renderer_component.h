@@ -2,7 +2,7 @@
 #define OCTOON_SKINNED_JOINT_RENDERER_COMPONENT_H_
 
 #include <octoon/mesh_renderer_component.h>
-#include <octoon/video/geometry.h>
+#include <octoon/geometry/geometry.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/mesh/mesh.h>
 

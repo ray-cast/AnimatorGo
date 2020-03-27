@@ -1,13 +1,10 @@
 #ifndef OCTOON_GEOMETRY_H_
 #define OCTOON_GEOMETRY_H_
 
+#include <octoon/mesh/mesh.h>
+#include <octoon/material/material.h>
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_data.h>
-
-namespace octoon::video
-{
-	class RenderPipeline;
-}
 
 namespace octoon::geometry
 {
@@ -36,9 +33,9 @@ namespace octoon::geometry
 		void setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept;
 		const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
 
-		void setRenderPipeline(std::shared_ptr<video::RenderPipeline>&& pipeline) noexcept;
-		void setRenderPipeline(const std::shared_ptr<video::RenderPipeline>& pipeline) noexcept;
-		const std::shared_ptr<video::RenderPipeline>& getRenderPipeline() const noexcept;
+		void setMaterial(std::shared_ptr<material::Material>&& material) noexcept;
+		void setMaterial(const std::shared_ptr<material::Material>& material) noexcept;
+		const std::shared_ptr<material::Material>& getMaterial() const noexcept;
 
 	private:
 		bool isCastShadow_;
@@ -47,10 +44,10 @@ namespace octoon::geometry
 		std::uint32_t numVertices_;
 		std::uint32_t numIndices_;
 
-		std::shared_ptr<video::RenderPipeline> pipeline_;
-
 		hal::GraphicsDataPtr vertices_;
 		hal::GraphicsDataPtr indices_;
+
+		std::shared_ptr<material::Material> material_;
 	};
 }
 

@@ -1,6 +1,12 @@
 #include "client_component.h"
-#include "../libs/sha1/sha1.hpp"
 #include "../rabbit_profile.h"
+
+#pragma warning(push)
+#pragma warning(disable:4458)
+#pragma warning(disable:4267)
+#pragma warning(disable:4244)
+#include "../libs/sha1/sha1.hpp"
+#pragma warning(pop)
 
 #include <octoon/io/http_buf.h>
 #include <octoon/offline_camera_component.h>

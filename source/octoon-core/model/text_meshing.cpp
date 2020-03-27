@@ -147,7 +147,7 @@ namespace octoon
 					addEdge(*paths[i], points, tags, index);
 				}
 
-				paths += math::float3(offset, 0, 0);
+				paths += math::float3((float)offset, 0, 0);
 
 				return std::move(paths);
 			};

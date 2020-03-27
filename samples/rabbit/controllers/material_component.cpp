@@ -104,14 +104,14 @@ namespace rabbit
 			{
 				auto mat = (*it).second;
 
-				auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
-				material->setName(mat["name"].get<nlohmann::json::string_t>());
-				material->setColor(octoon::math::float3::One);
-				material->setColorTexture(octoon::TextureLoader::load(mat["map"].get<nlohmann::json::string_t>()));
+				auto standard = std::make_shared<octoon::material::MeshStandardMaterial>();
+				standard->setName(mat["name"].get<nlohmann::json::string_t>());
+				standard->setColor(octoon::math::float3::One);
+				standard->setColorTexture(octoon::TextureLoader::load(mat["map"].get<nlohmann::json::string_t>()));
 
-				this->materials_[std::string(uuid)] = material;
+				this->materials_[std::string(uuid)] = standard;
 
-				return material;
+				return standard;
 			}
 			else
 			{

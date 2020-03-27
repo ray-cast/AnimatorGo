@@ -34,7 +34,7 @@ namespace octoon
 
 			std::size_t srcBlendCount = srcBlends.size();
 			std::size_t destBlendCount = destBlends.size();
-			for (GLuint i = srcBlendCount; i < destBlendCount; i++)
+			for (std::size_t i = srcBlendCount; i < destBlendCount; i++)
 			{
 				auto& destBlend = destBlends[i];
 				if (destBlend.getBlendEnable())

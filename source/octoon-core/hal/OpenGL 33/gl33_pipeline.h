@@ -39,7 +39,7 @@ namespace octoon
 				GLuint count;
 				GLuint stride;
 				GLboolean normalize;
-				GLintptr offset;
+				GLuint offset;
 			};
 
 			struct VertexBinding

@@ -1,8 +1,8 @@
-#include <octoon/video/geometry.h>
+#include <octoon/geometry/geometry.h>
 
 namespace octoon::geometry
 {
-	OctoonImplementSubClass(Geometry, RenderObject, "Geometry")
+	OctoonImplementSubClass(Geometry, video::RenderObject, "Geometry")
 
 	Geometry::Geometry() noexcept
 		: isCastShadow_(true)
@@ -90,20 +90,20 @@ namespace octoon::geometry
 	}
 
 	void
-	Geometry::setRenderPipeline(std::shared_ptr<video::RenderPipeline>&& pipeline) noexcept
+	Geometry::setMaterial(std::shared_ptr<material::Material>&& material) noexcept
 	{
-		pipeline_ = std::move(pipeline);
+		material_ = std::move(material);
 	}
 
 	void
-	Geometry::setRenderPipeline(const std::shared_ptr<video::RenderPipeline>& pipeline) noexcept
+	Geometry::setMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
-		pipeline_ = pipeline;
+		material_ = material;
 	}
 
-	const std::shared_ptr<video::RenderPipeline>&
-	Geometry::getRenderPipeline() const noexcept
+	const std::shared_ptr<material::Material>&
+	Geometry::getMaterial() const noexcept
 	{
-		return pipeline_;
+		return material_;
 	}
 }

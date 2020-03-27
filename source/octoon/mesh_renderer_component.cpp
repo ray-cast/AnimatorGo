@@ -116,7 +116,6 @@ namespace octoon
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
-		pipelines_.clear();
 		geometries_.clear();
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
@@ -249,34 +248,19 @@ namespace octoon
 
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
-
-			if (!pipelines_.empty())
-			{
-				for (std::size_t i = 0; i < geometries_.size(); i++)
-				{
-					if (i < pipelines_.size())
-						geometries_[i]->setRenderPipeline(pipelines_[i]);
-					else
-						geometries_[i]->setRenderPipeline(pipelines_.front());
-				}
-			}
+			this->uploadMaterialData(this->getMaterials());
 		}
 	}
 
 	void
 	MeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
-		pipelines_.clear();
-
-		for (auto& mat : materials)
-			pipelines_.emplace_back(std::make_shared<video::RenderPipeline>(mat));
-
 		for (std::size_t i = 0; i < geometries_.size(); i++)
 		{
-			if (i < pipelines_.size())
-				geometries_[i]->setRenderPipeline(pipelines_[i]);
+			if (i < materials.size())
+				geometries_[i]->setMaterial(materials[i]);
 			else
-				geometries_[i]->setRenderPipeline(pipelines_.front());
+				geometries_[i]->setMaterial(materials.front());
 		}
 	}
 }

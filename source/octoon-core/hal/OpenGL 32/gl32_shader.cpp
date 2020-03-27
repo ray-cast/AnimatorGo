@@ -507,7 +507,7 @@ namespace octoon
 
 					auto attrib = std::make_shared<GL32GraphicsAttribute>();
 					attrib->setSemantic(semantic);
-					attrib->setSemanticIndex(semanticIndex);
+					attrib->setSemanticIndex((std::uint8_t)semanticIndex);
 					attrib->setBindingPoint(location);
 					attrib->setType(toGraphicsFormat(type));
 

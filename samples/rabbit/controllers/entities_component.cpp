@@ -135,17 +135,14 @@ namespace rabbit
 	void
 	EntitiesComponent::importHDRi(std::string_view filepath) noexcept
 	{
-		if (this->getContext()->profile->entitiesModule->enviromentLight)
+		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
+		if (environmentLight)
 		{
-			auto environmentLight = this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-			if (environmentLight)
-				environmentLight->setBgImage(filepath);
-		}
+			auto light = environmentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
+			if (light)
+				light->setBgImage(filepath);
 
-		if (this->getContext()->profile->entitiesModule->enviroment)
-		{
-			auto enviroment = this->getContext()->profile->entitiesModule->enviroment;
-			auto material = enviroment->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
 			material->setColorTexture(TextureLoader::load(filepath));
 		}
 	}
@@ -153,17 +150,14 @@ namespace rabbit
 	void
 	EntitiesComponent::clearHDRi() noexcept
 	{
-		if (this->getContext()->profile->entitiesModule->enviromentLight)
+		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
+		if (environmentLight)
 		{
-			auto environmentLight = this->getContext()->profile->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-			if (environmentLight)
-				environmentLight->setBgImage("");
-		}
+			auto light = environmentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
+			if (light)
+				light->setBgImage("");
 
-		if (this->getContext()->profile->entitiesModule->enviroment)
-		{
-			auto enviroment = this->getContext()->profile->entitiesModule->enviroment;
-			auto material = enviroment->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
 			material->setColorTexture(nullptr);
 		}
 	}
@@ -474,17 +468,15 @@ namespace rabbit
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 
+		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
+		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
+
 		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
-
-		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
-		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
-
-		auto enviroment = octoon::GameObject::create("Environment");
-		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
-		enviroment->addComponent<octoon::MeshRendererComponent>(envMaterial);
+		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
+		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
@@ -501,11 +493,8 @@ namespace rabbit
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;
-		this->getContext()->profile->entitiesModule->enviroment = enviroment;
 		this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 		this->getContext()->profile->entitiesModule->objects.push_back(mainCamera);
-		this->getContext()->profile->entitiesModule->objects.push_back(mainLight);
-		this->getContext()->profile->entitiesModule->objects.push_back(enviromentLight);
 
 		this->sendMessage("editor:camera:set", mainCamera);
 	}

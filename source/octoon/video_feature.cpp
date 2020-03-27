@@ -1,6 +1,7 @@
 #if defined(OCTOON_FEATURE_VIDEO_ENABLE)
 #include <octoon/video_feature.h>
 #include <octoon/video/renderer.h>
+#include <octoon/video/render_scene.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
@@ -134,7 +135,7 @@ namespace octoon
 		{
 			auto graphics = this->getFeature<GraphicsFeature>();
 			if (graphics)
-				video::Renderer::instance()->render(*graphics->getContext());
+				video::Renderer::instance()->render(*video::RenderScene::instance(), *graphics->getContext());
 		}
 		catch (const std::exception& e)
 		{

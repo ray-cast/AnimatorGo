@@ -4,8 +4,9 @@
 #include <octoon/runtime/singleton.h>
 
 #include <octoon/hal/graphics.h>
+
 #include <octoon/camera/camera.h>
-#include <octoon/material/material.h>
+#include <octoon/light/light.h>
 #include <octoon/geometry/geometry.h>
 
 #include <octoon/video/render_object.h>
@@ -51,12 +52,13 @@ namespace octoon::video
 		hal::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
 		hal::GraphicsDescriptorPoolPtr createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept;
 
-		void render(hal::GraphicsContext& context) noexcept;
+		void render(RenderScene& scene, hal::GraphicsContext& context) noexcept;
 
 	private:
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 	private:
+		void prepareLights(hal::GraphicsContext& context, const std::vector<light::Light*>& light, const camera::Camera& camera) noexcept;
 		void renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
 
 	private:
@@ -70,8 +72,6 @@ namespace octoon::video
 	private:
 		bool sortObjects_;
 
-		std::shared_ptr<material::Material> overrideMaterial_;
-
 		std::uint32_t width_, height_;
 
 		hal::GraphicsFramebufferPtr fbo_;
@@ -80,7 +80,10 @@ namespace octoon::video
 
 		hal::GraphicsDevicePtr device_;
 
+		std::vector<light::Light*> lights_;
+
 		std::shared_ptr<RenderBuffer> currentBuffer_;
+		std::shared_ptr<material::Material> overrideMaterial_;
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderPipeline>> pipelines_;

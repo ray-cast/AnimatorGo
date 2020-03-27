@@ -183,6 +183,28 @@ namespace octoon::video
 	}
 
 	void
+	Renderer::prepareLights(hal::GraphicsContext& context, const std::vector<light::Light*>& lights, const camera::Camera& camera) noexcept
+	{
+		this->lights_.clear();
+
+		for (auto& light : lights)
+		{
+			if (camera.getLayer() != light->getLayer())
+				continue;
+
+			if (light->getVisible())
+			{
+				light->onRenderBefore(camera);
+
+
+				light->onRenderAfter(camera);
+
+				this->lights_.emplace_back(light);
+			}
+		}
+	}
+
+	void
 	Renderer::renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
 	{
 		for (auto& geometry : geometries)
@@ -212,15 +234,15 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::render(hal::GraphicsContext& context) noexcept
+	Renderer::render(RenderScene& scene, hal::GraphicsContext& context) noexcept
 	{
 		if (this->sortObjects_)
 		{
-			RenderScene::instance()->sortCameras();
-			RenderScene::instance()->sortGeometries();
+			scene.sortCameras();
+			scene.sortGeometries();
 		}
 
-		for (auto& camera : RenderScene::instance()->getCameraList())
+		for (auto& camera : scene.getCameraList())
 		{
 			camera->onRenderBefore(*camera);
 
@@ -235,7 +257,8 @@ namespace octoon::video
 			context.setViewport(0, camera->getPixelViewport());
 			context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
-			this->renderObjects(context, RenderScene::instance()->getGeometries(), *camera);
+			this->prepareLights(context, scene.getLights(), *camera);
+			this->renderObjects(context, scene.getGeometries(), *camera);
 
 			camera->onRenderAfter(*camera);
 

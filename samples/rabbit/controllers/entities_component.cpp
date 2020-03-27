@@ -141,6 +141,13 @@ namespace rabbit
 			if (environmentLight)
 				environmentLight->setBgImage(filepath);
 		}
+
+		if (this->getContext()->profile->entitiesModule->enviroment)
+		{
+			auto enviroment = this->getContext()->profile->entitiesModule->enviroment;
+			auto material = enviroment->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			material->setColorTexture(TextureLoader::load(filepath));
+		}
 	}
 
 	void
@@ -152,6 +159,13 @@ namespace rabbit
 			if (environmentLight)
 				environmentLight->setBgImage("");
 		}
+
+		if (this->getContext()->profile->entitiesModule->enviroment)
+		{
+			auto enviroment = this->getContext()->profile->entitiesModule->enviroment;
+			auto material = enviroment->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			material->setColorTexture(nullptr);
+		}
 	}
 
 	void
@@ -162,7 +176,6 @@ namespace rabbit
 		{
 			context->profile->entitiesModule->objects.clear();
 			context->profile->entitiesModule->camera.reset();
-			context->profile->entitiesModule->enviromentLight.reset();
 		}
 
 		octoon::GameObjects objects;
@@ -205,24 +218,9 @@ namespace rabbit
 		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
 		objects.push_back(mainLight);
 
-		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
-		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
-		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(context->profile->environmentModule->color));
-		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(context->profile->environmentModule->intensity);
-		objects.push_back(enviromentLight);
-
-		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(context->profile->environmentModule->color));
-		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
-
-		auto enviroment = octoon::GameObject::create("Environment");
-		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
-		enviroment->addComponent<octoon::MeshRendererComponent>(envMaterial);
-
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = camera;
 		context->profile->entitiesModule->sunLight = mainLight;
-		context->profile->entitiesModule->enviromentLight = enviromentLight;
-		context->profile->entitiesModule->enviroment = enviroment;
 		context->profile->entitiesModule->objects = objects;
 
 		this->sendMessage("rabbit:project:open");
@@ -481,6 +479,13 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 
+		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
+		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
+
+		auto enviroment = octoon::GameObject::create("Environment");
+		enviroment->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
+		enviroment->addComponent<octoon::MeshRendererComponent>(envMaterial);
+
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->addComponent<OfflineCameraComponent>();
@@ -496,6 +501,7 @@ namespace rabbit
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;
+		this->getContext()->profile->entitiesModule->enviroment = enviroment;
 		this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
 		this->getContext()->profile->entitiesModule->objects.push_back(mainCamera);
 		this->getContext()->profile->entitiesModule->objects.push_back(mainLight);

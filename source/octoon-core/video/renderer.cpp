@@ -183,32 +183,31 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::renderObjects(hal::GraphicsContext& context, const std::vector<RenderObject*>& objects, const camera::Camera& camera) noexcept
+	Renderer::renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
 	{
-		for (auto& object : objects)
+		for (auto& geometry : geometries)
 		{
-			if (camera.getLayer() != object->getLayer())
+			if (camera.getLayer() != geometry->getLayer())
 				continue;
 
-			object->onRenderBefore(camera);
+			if (geometry->getVisible())
+			{
+				geometry->onRenderBefore(camera);
 
-			auto geometry = object->downcast<geometry::Geometry>();
-			if (!geometry->getVisible())
-				continue;
+				if (!this->setProgram(context, this->overrideMaterial_ ? this->overrideMaterial_ : geometry->getMaterial(), camera, *geometry))
+					continue;
 
-			if (!this->setProgram(context, this->overrideMaterial_ ? this->overrideMaterial_ : geometry->getMaterial(), camera, *geometry))
-				continue;
+				if (!this->setBuffer(context, geometry->getMesh(), geometry->getMeshSubset()))
+					continue;
 
-			if (!this->setBuffer(context, geometry->getMesh(), geometry->getMeshSubset()))
-				continue;
+				auto indices = currentBuffer_->getNumIndices(geometry->getMeshSubset());
+				if (indices > 0)
+					context.drawIndexed(indices, 1, 0, 0, 0);
+				else
+					context.draw(currentBuffer_->getNumVertices(), 1, 0, 0);
 
-			auto indices = currentBuffer_->getNumIndices(geometry->getMeshSubset());
-			if (indices > 0)
-				context.drawIndexed(indices, 1, 0, 0, 0);
-			else
-				context.draw(currentBuffer_->getNumVertices(), 1, 0, 0);
-
-			object->onRenderAfter(camera);
+				geometry->onRenderAfter(camera);
+			}
 		}
 	}
 
@@ -218,7 +217,7 @@ namespace octoon::video
 		if (this->sortObjects_)
 		{
 			RenderScene::instance()->sortCameras();
-			RenderScene::instance()->sortRenderObjects();
+			RenderScene::instance()->sortGeometries();
 		}
 
 		for (auto& camera : RenderScene::instance()->getCameraList())
@@ -236,7 +235,7 @@ namespace octoon::video
 			context.setViewport(0, camera->getPixelViewport());
 			context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
-			this->renderObjects(context, RenderScene::instance()->getRenderObjects(), *camera);
+			this->renderObjects(context, RenderScene::instance()->getGeometries(), *camera);
 
 			camera->onRenderAfter(*camera);
 

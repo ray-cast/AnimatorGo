@@ -57,7 +57,7 @@ namespace octoon::video
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 	private:
-		void renderObjects(hal::GraphicsContext& context, const std::vector<RenderObject*>& objects, const camera::Camera& camera) noexcept;
+		void renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
 
 	private:
 		bool setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);

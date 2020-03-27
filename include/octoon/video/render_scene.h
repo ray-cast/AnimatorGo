@@ -3,6 +3,7 @@
 
 #include <octoon/light/light.h>
 #include <octoon/camera/camera.h>
+#include <octoon/geometry/geometry.h>
 
 #include <octoon/runtime/singleton.h>
 
@@ -19,16 +20,19 @@ namespace octoon::video
 		void removeCamera(camera::Camera* camera) noexcept;
 		const std::vector<camera::Camera*>& getCameraList() const noexcept;
 
-		void addLight(light::Light* camera) noexcept;
-		void removeLight(light::Light* camera) noexcept;
+		void addLight(light::Light* light) noexcept;
+		void removeLight(light::Light* light) noexcept;
 		const std::vector<light::Light*>& getLights() const noexcept;
+
+		void addGeometry(geometry::Geometry* geometry) noexcept;
+		void removeGeometry(geometry::Geometry* geometry) noexcept;
+		const std::vector<geometry::Geometry*>& getGeometries() const noexcept;
 
 		void addRenderObject(RenderObject* object) noexcept;
 		void removeRenderObject(RenderObject* object) noexcept;
-		const std::vector<RenderObject*>& getRenderObjects() const noexcept;
 
 		void sortCameras() noexcept;
-		void sortRenderObjects() noexcept;
+		void sortGeometries() noexcept;
 
 	private:
 		RenderScene(const RenderScene&) = delete;
@@ -37,7 +41,7 @@ namespace octoon::video
 	private:
 		std::vector<light::Light*> lights_;
 		std::vector<camera::Camera*> cameras_;
-		std::vector<RenderObject*> renderables_;
+		std::vector<geometry::Geometry*> renderables_;
 	};
 }
 

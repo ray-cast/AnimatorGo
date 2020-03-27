@@ -90,18 +90,18 @@ namespace octoon::geometry
 	}
 
 	void
-	Geometry::setRenderPipeline(video::RenderPipelinePtr&& pipeline) noexcept
+	Geometry::setRenderPipeline(std::shared_ptr<video::RenderPipeline>&& pipeline) noexcept
 	{
 		pipeline_ = std::move(pipeline);
 	}
 
 	void
-	Geometry::setRenderPipeline(const video::RenderPipelinePtr& pipeline) noexcept
+	Geometry::setRenderPipeline(const std::shared_ptr<video::RenderPipeline>& pipeline) noexcept
 	{
 		pipeline_ = pipeline;
 	}
 
-	const video::RenderPipelinePtr&
+	const std::shared_ptr<video::RenderPipeline>&
 	Geometry::getRenderPipeline() const noexcept
 	{
 		return pipeline_;

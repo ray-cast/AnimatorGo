@@ -12,7 +12,7 @@ namespace octoon::light
 		DirectionalLight() noexcept;
 		virtual ~DirectionalLight() noexcept;
 
-		video::RenderObjectPtr clone() const noexcept;
+		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
 		DirectionalLight(const DirectionalLight&) noexcept = delete;

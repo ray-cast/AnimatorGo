@@ -68,7 +68,7 @@ namespace octoon::light
 		return _shadowFactor;
 	}
 
-	video::RenderObjectPtr
+	std::shared_ptr<video::RenderObject>
 	PointLight::clone() const noexcept
 	{
 		auto light = std::make_shared<PointLight>();

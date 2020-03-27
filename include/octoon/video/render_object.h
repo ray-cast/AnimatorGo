@@ -74,7 +74,7 @@ namespace octoon
 			math::BoundingBox boundingBox_;
 
 			RenderListener* renderListener_;
-			RenderScenePtr  renderScene_;
+			std::shared_ptr<class RenderScene>  renderScene_;
 		};
 	}
 }

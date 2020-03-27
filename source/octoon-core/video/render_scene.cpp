@@ -96,7 +96,7 @@ namespace octoon
 			}
 		}
 
-		const RenderObjectRaws&
+		const std::vector<RenderObject*>&
 		RenderScene::getRenderObjects() const noexcept
 		{
 			return renderables_;

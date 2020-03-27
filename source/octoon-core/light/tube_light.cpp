@@ -12,7 +12,7 @@ namespace octoon::light
 	{
 	}
 
-	video::RenderObjectPtr
+	std::shared_ptr<video::RenderObject>
 	TubeLight::clone() const noexcept
 	{
 		auto light = std::make_shared<TubeLight>();

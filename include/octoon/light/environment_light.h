@@ -22,7 +22,7 @@ namespace octoon::light
 		void setSkySpecularTexture(const hal::GraphicsTexturePtr& texture) noexcept;
 		const hal::GraphicsTexturePtr& getSkySpecularTexture() const noexcept;
 
-		video::RenderObjectPtr clone() const noexcept;
+		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
 		EnvironmentLight(const EnvironmentLight&) noexcept = delete;

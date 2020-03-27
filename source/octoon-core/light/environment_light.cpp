@@ -51,7 +51,7 @@ namespace octoon::light
 		return _skySpecularIBL;
 	}
 
-	video::RenderObjectPtr
+	std::shared_ptr<video::RenderObject>
 	EnvironmentLight::clone() const noexcept
 	{
 		return std::make_shared<EnvironmentLight>();

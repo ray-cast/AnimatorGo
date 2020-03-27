@@ -40,7 +40,7 @@ namespace octoon::light
 		return _spotOuterCone;
 	}
 
-	video::RenderObjectPtr
+	std::shared_ptr<video::RenderObject>
 	SpotLight::clone() const noexcept
 	{
 		auto light = std::make_shared<SpotLight>();

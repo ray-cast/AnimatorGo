@@ -29,7 +29,7 @@ namespace octoon::light
 		return sh_;
 	}
 
-	video::RenderObjectPtr
+	std::shared_ptr<video::RenderObject>
 	LightProbe::clone() const noexcept
 	{
 		auto light = std::make_shared<LightProbe>();

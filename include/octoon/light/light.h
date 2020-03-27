@@ -21,7 +21,7 @@ namespace octoon::light
 
 		const math::float3& getLightColor() const noexcept;
 
-		video::RenderObjectPtr clone() const noexcept;
+		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
 		void onPreRender(const camera::Camera& camera) noexcept;

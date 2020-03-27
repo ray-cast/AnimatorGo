@@ -11,17 +11,6 @@ namespace octoon
 	{
 		class Camera;
 	}
-
-	namespace video
-	{
-		typedef std::shared_ptr<class RenderPipeline> RenderPipelinePtr;
-		typedef std::shared_ptr<class RenderObject> RenderObjectPtr;
-		typedef std::shared_ptr<class RenderScene> RenderScenePtr;
-
-		typedef std::vector<RenderPipelinePtr> RenderPipelines;
-		typedef std::vector<RenderScene*> RenderScenes;
-		typedef std::vector<RenderObject*> RenderObjectRaws;
-	}
 }
 
 #endif

@@ -27,7 +27,7 @@ namespace octoon
 
 			void addRenderObject(RenderObject* object) noexcept;
 			void removeRenderObject(RenderObject* object) noexcept;
-			const RenderObjectRaws& getRenderObjects() const noexcept;
+			const std::vector<RenderObject*>& getRenderObjects() const noexcept;
 
 			void sortCameras() noexcept;
 			void sortRenderObjects() noexcept;
@@ -39,7 +39,7 @@ namespace octoon
 		private:
 			std::vector<light::Light*> lights_;
 			std::vector<camera::Camera*> cameras_;
-			RenderObjectRaws renderables_;
+			std::vector<RenderObject*> renderables_;
 		};
 	}
 }

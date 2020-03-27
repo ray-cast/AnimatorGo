@@ -163,7 +163,7 @@ namespace octoon
 		}
 
 		void
-		RenderSystem::renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const RenderObjectRaws& objects) noexcept
+		RenderSystem::renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const std::vector<RenderObject*>& objects) noexcept
 		{
 			for (auto& object : objects)
 			{

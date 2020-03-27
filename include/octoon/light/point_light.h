@@ -42,7 +42,7 @@ namespace octoon::light
 		float getShadowFactor() const noexcept;
 		ShadowMode getShadowMode() const noexcept;
 
-		video::RenderObjectPtr clone() const noexcept;
+		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
 

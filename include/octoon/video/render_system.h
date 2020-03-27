@@ -2,7 +2,7 @@
 #define OCTOON_RENDER_SYSTEM_H_
 
 #include <octoon/runtime/singleton.h>
-#include <octoon/video/render_types.h>
+#include <octoon/video/render_object.h>
 #include <octoon/hal/graphics.h>
 
 namespace octoon
@@ -44,7 +44,7 @@ namespace octoon
 			void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 		private:
-			void renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const RenderObjectRaws& objects) noexcept;
+			void renderObjects(hal::GraphicsContext& context, const camera::Camera& camera, const std::vector<RenderObject*>& objects) noexcept;
 
 		private:
 			RenderSystem(const RenderSystem&) = delete;

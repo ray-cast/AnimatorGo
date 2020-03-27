@@ -19,7 +19,7 @@ namespace octoon::light
 		const math::float2& getSpotInnerCone() const noexcept;
 		const math::float2& getSpotOuterCone() const noexcept;
 
-		video::RenderObjectPtr clone() const noexcept;
+		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
 		SpotLight(const SpotLight&) noexcept = delete;

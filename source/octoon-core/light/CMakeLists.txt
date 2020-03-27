@@ -18,6 +18,8 @@ SET(LIGHT_LIST
 	${SOURCE_PATH}/disk_light.cpp
 	${HEADER_PATH}/tube_light.h
 	${SOURCE_PATH}/tube_light.cpp
+	${HEADER_PATH}/ambient_light.h
+	${SOURCE_PATH}/ambient_light.cpp
 	${HEADER_PATH}/environment_light.h
 	${SOURCE_PATH}/environment_light.cpp
 	${HEADER_PATH}/light_probe.h

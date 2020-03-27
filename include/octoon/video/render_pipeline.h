@@ -5,16 +5,18 @@
 #include <octoon/geometry/geometry.h>
 #include <octoon/material/material.h>
 
+#include <octoon/video/render_context.h>
+
 namespace octoon::video
 {
 	class OCTOON_EXPORT RenderPipeline final
 	{
 	public:
 		RenderPipeline() noexcept;
-		RenderPipeline(const material::MaterialPtr& material) noexcept;
+		RenderPipeline(const material::MaterialPtr& material, const RenderContext& context) noexcept;
 		virtual ~RenderPipeline() noexcept;
 
-		void setMaterial(const material::MaterialPtr& material) noexcept;
+		void setMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept;
 		const material::MaterialPtr& getMaterial() const noexcept;
 
 		void setTransform(const math::float4x4& vp) noexcept;
@@ -25,11 +27,9 @@ namespace octoon::video
 
 		void update(const camera::Camera& camera, const geometry::Geometry& geometry) noexcept;
 
-		std::shared_ptr<RenderPipeline> clone() const noexcept;
-
 	private:
 		void updateParameters() noexcept;
-		void updateMaterial(const material::MaterialPtr& material) noexcept(false);
+		void updateMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept(false);
 
 	private:
 		RenderPipeline(const RenderPipeline&) = delete;

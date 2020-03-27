@@ -18,6 +18,8 @@ SET(VIDEO_FORWARE_LIST
 	${SOURCE_PATH}/render_pipeline.cpp
 	${HEADER_PATH}/render_buffer.h
 	${SOURCE_PATH}/render_buffer.cpp
+	${HEADER_PATH}/render_context.h
+	${SOURCE_PATH}/render_context.cpp
 )
 SOURCE_GROUP(renderer\\internal FILES ${VIDEO_FORWARE_LIST})
 

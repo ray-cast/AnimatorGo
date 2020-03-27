@@ -4,77 +4,13 @@
 
 namespace octoon::video
 {
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
-	const char* vert = R"(
-		precision mediump float;
-		uniform mat4 proj;
-		uniform mat4 model;
-
-		attribute vec4 POSITION0;
-		attribute vec4 NORMAL0;
-
-		varying vec3 oTexcoord0;
-
-		void main()
-		{
-			oTexcoord0 = NORMAL0;
-			gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-		})";
-
-	const char* frag = R"(
-		precision mediump float;
-
-		uniform sampler2D decal;
-		uniform vec4 color;
-		uniform bool hasTexture;
-
-		varying vec2 oTexcoord0;
-		void main()
-		{
-			fragColor = color;
-			if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-			fragColor = pow(fragColor, vec4(1.0 / 2.2));
-		})";
-#else
-	const char* vert = R"(#version 330
-		uniform mat4 proj;
-		uniform mat4 model;
-
-		layout(location  = 0) in vec4 POSITION0;
-		layout(location  = 1) in vec2 TEXCOORD0;
-
-		out vec2 oTexcoord0;
-
-		void main()
-		{
-			oTexcoord0 = TEXCOORD0;
-			gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-		})";
-
-	const char* frag = R"(#version 330
-		layout(location  = 0) out vec4 fragColor;
-
-		uniform sampler2D decal;
-		uniform vec4 color;
-		uniform bool hasTexture;
-
-		in vec2 oTexcoord0;
-
-		void main()
-		{
-			fragColor = color;
-			if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-			fragColor = pow(fragColor, vec4(1.0 / 2.2));
-		})";
-#endif
-
 	RenderPipeline::RenderPipeline() noexcept
 	{
 	}
 
-	RenderPipeline::RenderPipeline(const material::MaterialPtr& material) noexcept
+	RenderPipeline::RenderPipeline(const material::MaterialPtr& material, const RenderContext& context) noexcept
 	{
-		this->setMaterial(material);
+		this->setMaterial(material, context);
 	}
 
 	RenderPipeline::~RenderPipeline() noexcept
@@ -82,12 +18,12 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::setMaterial(const material::MaterialPtr& material) noexcept
+	RenderPipeline::setMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept
 	{
 		if (this->material_ != material)
 		{
 			this->material_ = material;
-			this->updateMaterial(this->material_);
+			this->updateMaterial(this->material_, context);
 		}
 	}
 		
@@ -133,7 +69,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::updateMaterial(const material::MaterialPtr& material) noexcept(false)
+	RenderPipeline::updateMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept(false)
 	{
 		if (material) {
 			hal::GraphicsStateDesc stateDesc;
@@ -307,14 +243,5 @@ namespace octoon::video
 
 			this->material_->needUpdate(false);
 		}
-	}
-
-	std::shared_ptr<RenderPipeline>
-	RenderPipeline::clone() const noexcept
-	{
-		auto instance = std::make_shared<RenderPipeline>();
-		instance->setMaterial(this->getMaterial());
-
-		return instance;
 	}
 }

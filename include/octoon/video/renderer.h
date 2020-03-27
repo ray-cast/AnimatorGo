@@ -12,6 +12,7 @@
 #include <octoon/video/render_object.h>
 #include <octoon/video/render_buffer.h>
 #include <octoon/video/render_pipeline.h>
+#include <octoon/video/render_context.h>
 
 #include <unordered_map>
 
@@ -79,6 +80,8 @@ namespace octoon::video
 		hal::GraphicsTexturePtr depthTexture_;
 
 		hal::GraphicsDevicePtr device_;
+
+		RenderContext context_;
 
 		std::vector<light::Light*> lights_;
 

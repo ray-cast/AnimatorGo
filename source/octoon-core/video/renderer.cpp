@@ -2,6 +2,15 @@
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_scene.h>
 
+#include <octoon/light/ambient_light.h>
+#include <octoon/light/directional_light.h>
+#include <octoon/light/point_light.h>
+#include <octoon/light/spot_light.h>
+#include <octoon/light/disk_light.h>
+#include <octoon/light/rectangle_light.h>
+#include <octoon/light/environment_light.h>
+#include <octoon/light/tube_light.h>
+
 #include <octoon/runtime/except.h>
 
 using namespace octoon::hal;
@@ -187,6 +196,13 @@ namespace octoon::video
 	{
 		this->lights_.clear();
 
+		this->context_.light.numAmbient = 0;
+		this->context_.light.numDirectional = 0;
+		this->context_.light.numSpot = 0;
+		this->context_.light.numPoint = 0;
+		this->context_.light.numEnvironment = 0;
+		this->context_.light.numArea = 0;
+
 		for (auto& light : lights)
 		{
 			if (camera.getLayer() != light->getLayer())
@@ -196,6 +212,19 @@ namespace octoon::video
 			{
 				light->onRenderBefore(camera);
 
+				if (light->isA<light::AmbientLight>()) {
+					this->context_.light.numAmbient++;
+				} else if (light->isA<light::DirectionalLight>()) {
+					this->context_.light.numDirectional++;
+				} else if (light->isA<light::SpotLight>()) {
+					this->context_.light.numSpot++;
+				} else if (light->isA<light::PointLight>()) {
+					this->context_.light.numPoint++;
+				} else if (light->isA<light::EnvironmentLight>()) {
+					this->context_.light.numEnvironment++;
+				} else if (light->isA<light::RectangleLight>()) {
+					this->context_.light.numArea++;
+				}
 
 				light->onRenderAfter(camera);
 
@@ -386,7 +415,7 @@ namespace octoon::video
 		{
 			auto& pipeline = pipelines_[((std::intptr_t)material.get())];
 			if (!pipeline)
-				pipeline = std::make_shared<RenderPipeline>(material);
+				pipeline = std::make_shared<RenderPipeline>(material, this->context_);
 
 			pipeline->update(camera, geometry);
 

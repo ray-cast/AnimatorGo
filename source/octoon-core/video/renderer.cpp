@@ -202,9 +202,9 @@ namespace octoon::video
 
 				auto indices = currentBuffer_->getNumIndices(geometry->getMeshSubset());
 				if (indices > 0)
-					context.drawIndexed(indices, 1, 0, 0, 0);
+					context.drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
 				else
-					context.draw(currentBuffer_->getNumVertices(), 1, 0, 0);
+					context.draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
 
 				geometry->onRenderAfter(camera);
 			}

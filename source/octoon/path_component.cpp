@@ -56,7 +56,7 @@ namespace octoon
 	PathComponent::uploadPathData() noexcept
 	{
 		if (!paths_.empty())
-			mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(model::makeTextContours(paths_)));
+			mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(font::makeTextContours(paths_), 1.0f, false));
 		else
 			mesh_ = nullptr;
 

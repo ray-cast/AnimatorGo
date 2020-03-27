@@ -1,5 +1,6 @@
 #include <octoon/model/contour_group.h>
 #include <octoon/model/path_group.h>
+#include <octoon/mesh/shape_mesh.h>
 
 #include <cstring>
 #include <iostream>
@@ -9,36 +10,6 @@ namespace octoon
 {
 	namespace model
 	{
-		static std::vector<math::float3> g_tris;
-
-		void APIENTRY beginCallback(GLenum which)
-		{
-			g_tris.clear();
-		}
-
-		void APIENTRY endCallback(void)
-		{
-		}
-
-		void APIENTRY flagCallback(GLboolean)
-		{
-		}
-
-		void APIENTRY errorCallback(GLenum errorCode)
-		{
-			std::cerr << "Tessellation Error:" << ::gluErrorString(errorCode) << std::endl;
-		}
-
-		void APIENTRY vertexCallback(GLvoid* vertex)
-		{
-			const GLdouble *d = (GLdouble *)vertex;
-			g_tris.emplace_back((float)d[0], (float)d[1], (float)d[2]);
-		}
-
-		void APIENTRY combineCallback(GLdouble coords[3], GLdouble* points[4], GLfloat weight[4], GLdouble* dataOut[3])
-		{
-		}
-
 		ContourGroup::ContourGroup() noexcept
 		{
 		}
@@ -143,8 +114,10 @@ namespace octoon
 			return *contours_[index];
 		}
 
-		void makeMesh(mesh::Mesh& mesh, const Contours& contours, float thickness) noexcept
+		mesh::Mesh makeMesh(const Contours& contours, float thickness) noexcept
 		{
+			mesh::Mesh mesh;
+
 			math::float3s tris(max_count(contours) * 6);
 			math::float3* trisData = tris.data();
 			math::float3s& trisMesh = mesh.getVertexArray();
@@ -171,67 +144,17 @@ namespace octoon
 				trisMesh.resize(trisMesh.size() + written);
 				std::memcpy(trisMesh.data() + (trisMesh.size() - written), trisData, written * sizeof(math::float3));
 			}
-		}
-
-		void makeMeshTess(mesh::Mesh& mesh, const Contours& contours, float thickness) noexcept
-		{
-			math::float3s& trisMesh = mesh.getVertexArray();
-
-			std::vector<math::double3> vertices(sum(contours) * 2);
-
-			GLUtesselator* tobj = gluNewTess();
-
-			gluTessCallback(tobj, GLU_TESS_BEGIN, (void(APIENTRY *) ()) &beginCallback);
-			gluTessCallback(tobj, GLU_TESS_END, (void(APIENTRY *) ()) &endCallback);
-			gluTessCallback(tobj, GLU_TESS_VERTEX, (void(APIENTRY *) ()) &vertexCallback);
-			gluTessCallback(tobj, GLU_TESS_ERROR, (void(APIENTRY *) ()) &errorCallback);
-			gluTessCallback(tobj, GLU_TESS_COMBINE, (void(APIENTRY *) ()) &combineCallback);
-			gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, (void(APIENTRY *) ()) &flagCallback);
-
-			gluTessProperty(tobj, GLU_TESS_TOLERANCE, 0);
-			gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_ODD);
-
-			std::size_t index = 0;
-
-			for (std::uint8_t face = 0; face < 2; face++)
-			{
-				gluTessBeginPolygon(tobj, nullptr);
-				gluTessNormal(tobj, 0.0f, 0.0f, face ? 1.0f : -1.0f);
-
-				for (auto& contour_ : contours)
-				{
-					gluTessBeginContour(tobj);
-
-					for (auto& it : contour_->points())
-					{
-						auto& d = vertices[index++];
-						d[0] = it.x;
-						d[1] = it.y;
-						d[2] = it.z + face ? -thickness * 0.5f : thickness * 0.5f;
-
-						gluTessVertex(tobj, d.ptr(), d.ptr());
-					}
-
-					gluTessEndContour(tobj);
-				}
-
-				gluTessEndPolygon(tobj);
-
-				trisMesh.resize(trisMesh.size() + g_tris.size());
-				std::memcpy(trisMesh.data() + (trisMesh.size() - g_tris.size()), g_tris.data(), g_tris.size() * sizeof(math::float3));
-			}
-
-			gluDeleteTess(tobj);
-		}
-
-		mesh::Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
-		{
-			mesh::Mesh mesh;
-			makeMesh(mesh, contours, thickness);
-			if (!hollow) makeMeshTess(mesh, contours, thickness);
 
 			mesh.computeVertexNormals();
 			return mesh;
+		}
+	
+		mesh::Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
+		{
+			if (hollow) 
+				return makeMesh(contours, thickness);
+			else
+				return mesh::ShapeMesh(contours, thickness);
 		}
 
 		mesh::Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
@@ -245,11 +168,9 @@ namespace octoon
 
 			for (auto& group : groups)
 			{
-				makeMesh(mesh, group->getContours(), thickness);
-				if (!hollow) makeMeshTess(mesh, group->getContours(), thickness);
+				mesh.mergeMeshes(makeMesh(group->getContours(), thickness));
+				if (!hollow) mesh.mergeMeshes(mesh::ShapeMesh(group->getContours(), thickness));
 			}
-
-			mesh.computeVertexNormals();
 			return mesh;
 		}
 

@@ -26,5 +26,7 @@ SET(MESH_LIST
 	${SOURCE_PATH}/volume_mesh.cpp
 	${HEADER_PATH}/noise_mesh.h
 	${SOURCE_PATH}/noise_mesh.cpp
+	${HEADER_PATH}/shape_mesh.h
+	${SOURCE_PATH}/shape_mesh.cpp
 )
 SOURCE_GROUP(mesh FILES ${MESH_LIST})

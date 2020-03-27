@@ -1,7 +1,7 @@
 #include <octoon/game_base_features.h>
 #include <octoon/game_object_manager.h>
 #include <octoon/game_listener.h>
-#include <octoon/model/text_system.h>
+#include <octoon/model/font_system.h>
 #include <octoon/input/input.h>
 
 namespace octoon
@@ -10,12 +10,12 @@ namespace octoon
 
 	GameBaseFeature::GameBaseFeature() noexcept
 	{
-		model::TextSystem::instance()->setup();
+		font::FontSystem::instance()->setup();
 	}
 
 	GameBaseFeature::~GameBaseFeature() noexcept
 	{
-		model::TextSystem::instance()->close();
+		font::FontSystem::instance()->close();
 	}
 
 	GameObjectManager*

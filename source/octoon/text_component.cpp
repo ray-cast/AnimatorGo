@@ -7,7 +7,7 @@ namespace octoon
 
 	TextComponent::TextComponent() noexcept
 		: isSharedText_(false)
-		, align_(model::TextAlign::Left)
+		, align_(font::TextAlign::Left)
 	{
 	}
 
@@ -39,7 +39,7 @@ namespace octoon
 	}
 
 	void
-	TextComponent::setTextMeshing(model::TextMeshingPtr&& meshing) noexcept
+	TextComponent::setTextMeshing(std::shared_ptr<font::TextMeshing>&& meshing) noexcept
 	{
 		if (meshing_ != meshing)
 		{
@@ -49,7 +49,7 @@ namespace octoon
 	}
 
 	void
-	TextComponent::setTextMeshing(const model::TextMeshingPtr& meshing) noexcept
+	TextComponent::setTextMeshing(const std::shared_ptr<font::TextMeshing>& meshing) noexcept
 	{
 		if (meshing_ != meshing)
 		{
@@ -58,14 +58,14 @@ namespace octoon
 		}
 	}
 
-	const model::TextMeshingPtr&
+	const std::shared_ptr<font::TextMeshing>&
 	TextComponent::getTextMeshing() const noexcept
 	{
 		return meshing_;
 	}
 
 	void
-	TextComponent::setTextAlign(model::TextAlign align) noexcept
+	TextComponent::setTextAlign(font::TextAlign align) noexcept
 	{
 		if (align_ != align)
 		{
@@ -74,7 +74,7 @@ namespace octoon
 		}
 	}
 
-	model::TextAlign
+	font::TextAlign
 	TextComponent::getTextAlign() const noexcept
 	{
 		return align_;
@@ -167,9 +167,9 @@ namespace octoon
 		if (is_ok)
 		{
 			if (meshing_)
-				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(model::makeTextContours(u16str, *meshing_, 8, align_), 0.0f));
+				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(font::makeTextContours(u16str, *meshing_, 8, align_), 0.0f, false));
 			else
-				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(model::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8, align_), 0.0f));
+				mesh_ = std::make_shared<mesh::Mesh>(model::makeMesh(font::makeTextContours(u16str, { "../../system/fonts/DroidSansFallback.ttf", 24 }, 8, align_), 0.0f, false));
 		}
 		else
 		{

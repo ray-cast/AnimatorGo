@@ -21,12 +21,12 @@ SET(CONTOUER_LIST
 SOURCE_GROUP(contour  FILES ${CONTOUER_LIST})
 
 SET(TEXT_LIST
-	${HEADER_PATH}/text_file.h
-	${SOURCE_PATH}/text_file.cpp
+	${HEADER_PATH}/font.h
+	${SOURCE_PATH}/font.cpp
 	${HEADER_PATH}/text_meshing.h
 	${SOURCE_PATH}/text_meshing.cpp
-	${HEADER_PATH}/text_system.h
-	${SOURCE_PATH}/text_system.cpp
+	${HEADER_PATH}/font_system.h
+	${SOURCE_PATH}/font_system.cpp
 )
 SOURCE_GROUP(text  FILES ${TEXT_LIST})
 

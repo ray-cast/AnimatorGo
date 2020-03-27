@@ -118,9 +118,9 @@ namespace octoon
 			return aabb;
 		}
 
-		OCTOON_EXPORT mesh::Mesh makeMesh(const Contours& contours, float thickness = 1.0f, bool hollow = false) noexcept;
-		OCTOON_EXPORT mesh::Mesh makeMesh(const ContourGroup& group, float thickness = 1.0f, bool hollow = false) noexcept;
-		OCTOON_EXPORT mesh::Mesh makeMesh(const ContourGroups& groups, float thickness = 1.0f, bool hollow = false) noexcept;
+		OCTOON_EXPORT mesh::Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept;
+		OCTOON_EXPORT mesh::Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept;
+		OCTOON_EXPORT mesh::Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept;
 
 		OCTOON_EXPORT mesh::Mesh makeMeshWireframe(const Contours& contours, float thickness = 1.0f) noexcept;
 		OCTOON_EXPORT mesh::Mesh makeMeshWireframe(const ContourGroup& group, float thickness = 1.0f) noexcept;

@@ -18,12 +18,12 @@ namespace octoon
 		void setText(std::string_view u8str, bool sharedText = false) noexcept;
 		const std::string& getText() const noexcept;
 
-		void setTextMeshing(model::TextMeshingPtr&& meshing) noexcept;
-		void setTextMeshing(const model::TextMeshingPtr& meshing) noexcept;
-		const model::TextMeshingPtr& getTextMeshing() const noexcept;
+		void setTextMeshing(std::shared_ptr<font::TextMeshing>&& meshing) noexcept;
+		void setTextMeshing(const std::shared_ptr<font::TextMeshing>& meshing) noexcept;
+		const std::shared_ptr<font::TextMeshing>& getTextMeshing() const noexcept;
 
-		void setTextAlign(model::TextAlign align) noexcept;
-		model::TextAlign getTextAlign() const noexcept;
+		void setTextAlign(font::TextAlign align) noexcept;
+		font::TextAlign getTextAlign() const noexcept;
 
 		bool isSharedText() const noexcept;
 
@@ -45,8 +45,8 @@ namespace octoon
 		bool isSharedText_;
 		std::string u8str_;
 		mesh::MeshPtr mesh_;
-		model::TextAlign align_;
-		model::TextMeshingPtr meshing_;
+		font::TextAlign align_;
+		std::shared_ptr<font::TextMeshing> meshing_;
 	};
 }
 

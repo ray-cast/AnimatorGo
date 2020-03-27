@@ -1,5 +1,5 @@
-#ifndef OCTOON_MODEL_MESH_H_
-#define OCTOON_MODEL_MESH_H_
+#ifndef OCTOON_MESH_H_
+#define OCTOON_MESH_H_
 
 #include <octoon/model/bone.h>
 #include <octoon/mesh/combine_mesh.h>
@@ -7,7 +7,7 @@
 #include <octoon/math/math.h>
 #include <octoon/runtime/rtti_interface.h>
 
-#include <string>
+#define TEXTURE_ARRAY_COUNT 4
 
 namespace octoon::mesh
 {

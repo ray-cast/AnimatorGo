@@ -3,55 +3,53 @@
 
 #include <octoon/model/path_group.h>
 #include <octoon/model/contour_group.h>
+#include <octoon/model/font.h>
 
-namespace octoon
+namespace octoon::font
 {
-	namespace model
+	enum class TextAlign
 	{
-		enum class TextAlign
-		{
-			Left,
-			Right,
-			Middle
-		};
+		Left,
+		Right,
+		Middle
+	};
 
-		class OCTOON_EXPORT TextMeshing final
-		{
-		public:
-			TextMeshing() noexcept;
-			TextMeshing(const char* path, std::uint16_t pixelsSize = 12) noexcept;
-			TextMeshing(const std::string& path, std::uint16_t pixelsSize = 12) noexcept;
-			TextMeshing(TextFilePtr&& font, std::uint16_t pixelsSize = 12) noexcept;
-			TextMeshing(const TextFilePtr& font, std::uint16_t pixelsSize = 12) noexcept;
-			virtual ~TextMeshing() noexcept;
+	class OCTOON_EXPORT TextMeshing final
+	{
+	public:
+		TextMeshing() noexcept;
+		TextMeshing(const char* path, std::uint16_t pixelsSize = 12) noexcept;
+		TextMeshing(const std::string& path, std::uint16_t pixelsSize = 12) noexcept;
+		TextMeshing(std::shared_ptr<Font>&& font, std::uint16_t pixelsSize = 12) noexcept;
+		TextMeshing(const std::shared_ptr<Font>& font, std::uint16_t pixelsSize = 12) noexcept;
+		virtual ~TextMeshing() noexcept;
 
-			void setFont(TextFilePtr&& font) noexcept;
-			void setFont(const TextFilePtr& font) noexcept;
-			const TextFilePtr& getFont() const noexcept;
+		void setFont(std::shared_ptr<Font>&& font) noexcept;
+		void setFont(const std::shared_ptr<Font>& font) noexcept;
+		const std::shared_ptr<Font>& getFont() const noexcept;
 
-			void setPixelsSize(std::uint16_t pixelsSize) noexcept;
-			std::uint16_t getPixelsSize() const noexcept;
+		void setPixelsSize(std::uint16_t pixelsSize) noexcept;
+		std::uint16_t getPixelsSize() const noexcept;
 
-			virtual TextMeshingPtr clone() const noexcept;
+		virtual std::shared_ptr<TextMeshing> clone() const noexcept;
 
-		private:
-			TextMeshing(const TextMeshing&) = delete;
-			TextMeshing& operator=(const TextMeshing&) = delete;
+	private:
+		TextMeshing(const TextMeshing&) = delete;
+		TextMeshing& operator=(const TextMeshing&) = delete;
 
-		private:
-			TextFilePtr font_;
-			std::uint16_t pixelSize_;
-		};
+	private:
+		std::shared_ptr<Font> font_;
+		std::uint16_t pixelSize_;
+	};
 
-		OCTOON_EXPORT PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false);
+	OCTOON_EXPORT model::PathGroups makeTextPaths(const std::wstring& string, const TextMeshing& params) noexcept(false);
 
-		OCTOON_EXPORT Contours makeTextContours(const Paths& paths, std::uint16_t bezierSteps = 8) noexcept(false);
-		OCTOON_EXPORT ContourGroups makeTextContours(const PathGroups& paths, std::uint16_t bezierSteps = 8) noexcept(false);
-		OCTOON_EXPORT ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps = 8, TextAlign align = TextAlign::Left) noexcept(false);
+	OCTOON_EXPORT model::Contours makeTextContours(const model::Paths& paths, std::uint16_t bezierSteps = 8) noexcept(false);
+	OCTOON_EXPORT model::ContourGroups makeTextContours(const model::PathGroups& paths, std::uint16_t bezierSteps = 8) noexcept(false);
+	OCTOON_EXPORT model::ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps = 8, TextAlign align = TextAlign::Left) noexcept(false);
 
-		OCTOON_EXPORT mesh::Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
-		OCTOON_EXPORT mesh::Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
-	}
+	OCTOON_EXPORT mesh::Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
+	OCTOON_EXPORT mesh::Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
 }
 
 #endif

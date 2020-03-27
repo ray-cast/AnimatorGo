@@ -1,5 +1,5 @@
 #include <octoon/camera/camera.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 #include <octoon/runtime/except.h>
 #include <octoon/hal/graphics.h>
 
@@ -183,7 +183,7 @@ namespace octoon::camera
 		std::uint32_t width = 1920, height = 1080;
 
 		if (!fbo_[0])
-			video::RenderSystem::instance()->getFramebufferSize(width, height);
+			video::Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
 			width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
@@ -237,7 +237,7 @@ namespace octoon::camera
 		colorTextureDesc.setTexMultisample(multisample);
 		colorTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		colorTextureDesc.setTexFormat(format);
-		colorTexture_[0] = video::RenderSystem::instance()->createTexture(colorTextureDesc);
+		colorTexture_[0] = video::Renderer::instance()->createTexture(colorTextureDesc);
 		if (!colorTexture_[0])
 			throw runtime::runtime_error::create("createTexture() failed");
 
@@ -247,18 +247,18 @@ namespace octoon::camera
 		depthTextureDesc.setTexMultisample(multisample);
 		depthTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		depthTextureDesc.setTexFormat(depthStencil);
-		depthTexture_[0] = video::RenderSystem::instance()->createTexture(depthTextureDesc);
+		depthTexture_[0] = video::Renderer::instance()->createTexture(depthTextureDesc);
 		if (!depthTexture_[0])
 			throw runtime::runtime_error::create("createTexture() failed");
 
 		hal::GraphicsFramebufferDesc framebufferDesc;
 		framebufferDesc.setWidth(w);
 		framebufferDesc.setHeight(h);
-		framebufferDesc.setGraphicsFramebufferLayout(video::RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+		framebufferDesc.setGraphicsFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
 		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[0], 0, 0));
 		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[0], 0, 0));
 
-		fbo_[0] = video::RenderSystem::instance()->createFramebuffer(framebufferDesc);
+		fbo_[0] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
 		if (!fbo_[0])
 			throw runtime::runtime_error::create("createFramebuffer() failed");
 	}
@@ -276,7 +276,7 @@ namespace octoon::camera
 		colorTextureDesc.setTexMultisample(multisample);
 		colorTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		colorTextureDesc.setTexFormat(format);
-		colorTexture_[1] = video::RenderSystem::instance()->createTexture(colorTextureDesc);
+		colorTexture_[1] = video::Renderer::instance()->createTexture(colorTextureDesc);
 		if (!colorTexture_[1])
 			throw runtime::runtime_error::create("createTexture() failed");
 
@@ -286,18 +286,18 @@ namespace octoon::camera
 		depthTextureDesc.setTexMultisample(multisample);
 		depthTextureDesc.setTexDim(multisample > 0 ? hal::GraphicsTextureDim::Texture2DMultisample : hal::GraphicsTextureDim::Texture2D);
 		depthTextureDesc.setTexFormat(depthStencil);
-		depthTexture_[1] = video::RenderSystem::instance()->createTexture(depthTextureDesc);
+		depthTexture_[1] = video::Renderer::instance()->createTexture(depthTextureDesc);
 		if (!depthTexture_[1])
 			throw runtime::runtime_error::create("createTexture() failed");
 
 		hal::GraphicsFramebufferDesc framebufferDesc;
 		framebufferDesc.setWidth(w);
 		framebufferDesc.setHeight(h);
-		framebufferDesc.setGraphicsFramebufferLayout(video::RenderSystem::instance()->createFramebufferLayout(framebufferLayoutDesc));
+		framebufferDesc.setGraphicsFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
 		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[1], 0, 0));
 		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[1], 0, 0));
 
-		fbo_[1] = video::RenderSystem::instance()->createFramebuffer(framebufferDesc);
+		fbo_[1] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
 		if (!fbo_[1])
 			throw runtime::runtime_error::create("createFramebuffer() failed");
 	}

@@ -1,6 +1,6 @@
 #if defined(OCTOON_FEATURE_VIDEO_ENABLE)
 #include <octoon/video_feature.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
@@ -59,20 +59,20 @@ namespace octoon
 			framebuffer_w_ = w;
 			framebuffer_h_ = h;
 
-			video::RenderSystem::instance()->setFramebufferSize(w, h);
+			video::Renderer::instance()->setFramebufferSize(w, h);
 		}
 	}
 
 	void
 	VideoFeature::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		video::RenderSystem::instance()->getFramebufferSize(w, h);
+		video::Renderer::instance()->getFramebufferSize(w, h);
 	}
 
 	const hal::GraphicsFramebufferPtr&
 	VideoFeature::getFramebuffer() const noexcept
 	{
-		return video::RenderSystem::instance()->getFramebuffer();
+		return video::Renderer::instance()->getFramebuffer();
 	}
 
 	void
@@ -84,14 +84,14 @@ namespace octoon
 		if (!graphics)
 			throw runtime::runtime_error::create("failure to get the HAL from features");
 		
-		video::RenderSystem::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
+		video::Renderer::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
 	}
 
 	void
 	VideoFeature::onDeactivate() noexcept
 	{
 		this->removeMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
-		video::RenderSystem::instance()->close();
+		video::Renderer::instance()->close();
 	}
 
 	void
@@ -103,7 +103,7 @@ namespace octoon
 		case input::InputEvent::SizeChange:
 		case input::InputEvent::SizeChangeDPI:
 			if (event.change.w > 0 && event.change.h > 0)
-				video::RenderSystem::instance()->setFramebufferSize(event.change.w, event.change.h);
+				video::Renderer::instance()->setFramebufferSize(event.change.w, event.change.h);
 			break;
 		default:
 			return;
@@ -122,7 +122,7 @@ namespace octoon
 		{
 			auto graphics = this->getFeature<GraphicsFeature>();
 			if (graphics)
-				video::RenderSystem::instance()->render(*graphics->getContext());
+				video::Renderer::instance()->render(*graphics->getContext());
 		}
 		catch (const std::exception& e)
 		{

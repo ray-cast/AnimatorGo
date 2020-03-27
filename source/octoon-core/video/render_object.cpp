@@ -1,205 +1,202 @@
 #include <octoon/video/render_object.h>
 #include <octoon/video/render_scene.h>
 
-namespace octoon
+namespace octoon::video
 {
-	namespace video
+	OctoonImplementSubInterface(RenderObject, runtime::RttiInterface, "RenderObject")
+
+	RenderListener::RenderListener() noexcept
 	{
-		OctoonImplementSubInterface(RenderObject, runtime::RttiInterface, "RenderObject")
+	}
 
-		RenderListener::RenderListener() noexcept
+	RenderListener::~RenderListener() noexcept
+	{
+	}
+
+	RenderObject::RenderObject() noexcept
+		: active_(false)
+		, visible_(true)
+		, layer_(0)
+		, order_(0)
+		, transform_(math::float4x4::One)
+		, transformInverse_(math::float4x4::One)
+		, renderListener_(nullptr)
+	{
+	}
+
+	RenderObject::~RenderObject() noexcept
+	{
+		this->setActive(false);
+	}
+
+	void
+	RenderObject::setActive(bool active) noexcept
+	{
+		if (active_ != active)
 		{
+			if (active)
+				this->onActivate();
+			else
+				this->onDeactivate();
+
+			active_ = active;
 		}
+	}
 
-		RenderListener::~RenderListener() noexcept
-		{
-		}
+	bool
+	RenderObject::getActive() const noexcept
+	{
+		return active_;
+	}
 
-		RenderObject::RenderObject() noexcept
-			: active_(false)
-			, visible_(true)
-			, layer_(0)
-			, order_(0)
-			, transform_(math::float4x4::One)
-			, transformInverse_(math::float4x4::One)
-			, renderListener_(nullptr)
-		{
-		}
+	void
+	RenderObject::setLayer(std::uint8_t layer) noexcept
+	{
+		layer_ = layer;
+	}
 
-		RenderObject::~RenderObject() noexcept
-		{
-			this->setActive(false);
-		}
+	std::uint8_t
+	RenderObject::getLayer() const noexcept
+	{
+		return layer_;
+	}
 
-		void
-		RenderObject::setActive(bool active) noexcept
-		{
-			if (active_ != active)
-			{
-				if (active)
-					this->onActivate();
-				else
-					this->onDeactivate();
+	void
+	RenderObject::setRenderOrder(std::int32_t order) noexcept
+	{
+		order_ = order;
+	}
 
-				active_ = active;
-			}
-		}
+	std::int32_t
+	RenderObject::getRenderOrder() const noexcept
+	{
+		return order_;
+	}
 
-		bool
-		RenderObject::getActive() const noexcept
-		{
-			return active_;
-		}
+	void
+	RenderObject::setVisible(bool enable) noexcept
+	{
+		visible_ = enable;
+	}
 
-		void
-		RenderObject::setLayer(std::uint8_t layer) noexcept
-		{
-			layer_ = layer;
-		}
+	bool
+	RenderObject::getVisible() const noexcept
+	{
+		return visible_;
+	}
 
-		std::uint8_t
-		RenderObject::getLayer() const noexcept
-		{
-			return layer_;
-		}
+	void
+	RenderObject::setOwnerListener(RenderListener* listener) noexcept
+	{
+		renderListener_ = listener;
+	}
 
-		void
-		RenderObject::setRenderOrder(std::int32_t order) noexcept
-		{
-			order_ = order;
-		}
+	RenderListener*
+	RenderObject::getOwnerListener() noexcept
+	{
+		return renderListener_;
+	}
 
-		std::int32_t
-		RenderObject::getRenderOrder() const noexcept
-		{
-			return order_;
-		}
+	void
+	RenderObject::setBoundingBox(const math::BoundingBox& bound) noexcept
+	{
+		boundingBox_ = bound;
+	}
 
-		void
-		RenderObject::setVisible(bool enable) noexcept
-		{
-			visible_ = enable;
-		}
+	const math::BoundingBox& 
+	RenderObject::getBoundingBox() const noexcept
+	{
+		return boundingBox_;
+	}
 
-		bool
-		RenderObject::getVisible() const noexcept
-		{
-			return visible_;
-		}
+	void
+	RenderObject::setTransform(const math::float4x4& transform) noexcept
+	{
+		this->setTransform(transform, math::transformInverse(transform));
+	}
 
-		void
-		RenderObject::setOwnerListener(RenderListener* listener) noexcept
-		{
-			renderListener_ = listener;
-		}
+	void
+	RenderObject::setTransform(const math::float4x4& transform, const math::float4x4& transformInverse) noexcept
+	{
+		this->onMoveBefore();
 
-		RenderListener*
-		RenderObject::getOwnerListener() noexcept
-		{
-			return renderListener_;
-		}
+		transform_ = transform;
+		transformInverse_ = transformInverse;
 
-		void
-		RenderObject::setBoundingBox(const math::BoundingBox& bound) noexcept
-		{
-			boundingBox_ = bound;
-		}
+		this->onMoveAfter();
+	}
 
-		const math::BoundingBox& 
-		RenderObject::getBoundingBox() const noexcept
-		{
-			return boundingBox_;
-		}
+	const math::float3&
+	RenderObject::getRight() const noexcept
+	{
+		return transform_.getRight();
+	}
 
-		void
-		RenderObject::setTransform(const math::float4x4& transform) noexcept
-		{
-			this->setTransform(transform, math::transformInverse(transform));
-		}
+	const math::float3&
+	RenderObject::getUp() const noexcept
+	{
+		return transform_.getUp();
+	}
 
-		void
-		RenderObject::setTransform(const math::float4x4& transform, const math::float4x4& transformInverse) noexcept
-		{
-			this->onMoveBefore();
+	const math::float3&
+	RenderObject::getForward() const noexcept
+	{
+		return transform_.getForward();
+	}
 
-			transform_ = transform;
-			transformInverse_ = transformInverse;
+	const math::float3&
+	RenderObject::getTranslate() const noexcept
+	{
+		return transform_.getTranslate();
+	}
 
-			this->onMoveAfter();
-		}
+	const math::float4x4&
+	RenderObject::getTransform() const noexcept
+	{
+		return transform_;
+	}
 
-		const math::float3&
-		RenderObject::getRight() const noexcept
-		{
-			return transform_.getRight();
-		}
+	const math::float4x4&
+	RenderObject::getTransformInverse() const noexcept
+	{
+		return transformInverse_;
+	}
 
-		const math::float3&
-		RenderObject::getUp() const noexcept
-		{
-			return transform_.getUp();
-		}
+	void
+	RenderObject::onRenderBefore(const camera::Camera& camera) noexcept
+	{
+		auto listener = this->getOwnerListener();
+		if (listener)
+			listener->onPreRender(camera);
+	}
 
-		const math::float3&
-		RenderObject::getForward() const noexcept
-		{
-			return transform_.getForward();
-		}
+	void
+	RenderObject::onRenderAfter(const camera::Camera& camera) noexcept
+	{
+		auto listener = this->getOwnerListener();
+		if (listener)
+			listener->onPostRender(camera);
+	}
 
-		const math::float3&
-		RenderObject::getTranslate() const noexcept
-		{
-			return transform_.getTranslate();
-		}
+	void
+	RenderObject::onMoveBefore() noexcept
+	{
+	}
 
-		const math::float4x4&
-		RenderObject::getTransform() const noexcept
-		{
-			return transform_;
-		}
+	void
+	RenderObject::onMoveAfter() noexcept
+	{
+	}
 
-		const math::float4x4&
-		RenderObject::getTransformInverse() const noexcept
-		{
-			return transformInverse_;
-		}
+	void
+	RenderObject::onActivate() noexcept
+	{
+		RenderScene::instance()->addRenderObject(this);
+	}
 
-		void
-		RenderObject::onRenderBefore(const camera::Camera& camera) noexcept
-		{
-			auto listener = this->getOwnerListener();
-			if (listener)
-				listener->onPreRender(camera);
-		}
-
-		void
-		RenderObject::onRenderAfter(const camera::Camera& camera) noexcept
-		{
-			auto listener = this->getOwnerListener();
-			if (listener)
-				listener->onPostRender(camera);
-		}
-
-		void
-		RenderObject::onMoveBefore() noexcept
-		{
-		}
-
-		void
-		RenderObject::onMoveAfter() noexcept
-		{
-		}
-
-		void
-		RenderObject::onActivate() noexcept
-		{
-			RenderScene::instance()->addRenderObject(this);
-		}
-
-		void
-		RenderObject::onDeactivate() noexcept
-		{
-			RenderScene::instance()->removeRenderObject(this);
-		}
+	void
+	RenderObject::onDeactivate() noexcept
+	{
+		RenderScene::instance()->removeRenderObject(this);
 	}
 }

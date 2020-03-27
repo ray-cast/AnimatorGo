@@ -1,4 +1,4 @@
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_scene.h>
 
@@ -8,9 +8,9 @@ using namespace octoon::hal;
 
 namespace octoon::video
 {
-	OctoonImplementSingleton(RenderSystem)
+	OctoonImplementSingleton(Renderer)
 
-	RenderSystem::RenderSystem() noexcept
+	Renderer::Renderer() noexcept
 		: width_(0)
 		, height_(0)
 		, fbo_(0)
@@ -20,13 +20,13 @@ namespace octoon::video
 	{
 	}
 
-	RenderSystem::~RenderSystem() noexcept
+	Renderer::~Renderer() noexcept
 	{
 		this->close();
 	}
 
 	void
-	RenderSystem::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
+	Renderer::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 	{
 		device_ = device;
 
@@ -34,7 +34,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderSystem::close() noexcept
+	Renderer::close() noexcept
 	{
 		fbo_.reset();
 		colorTexture_.reset();
@@ -43,7 +43,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderSystem::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
+	Renderer::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
 	{
 		if (width_ != w || height_ != h)
 		{
@@ -55,135 +55,135 @@ namespace octoon::video
 	}
 
 	void
-	RenderSystem::getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept
+	Renderer::getFramebufferSize(std::uint32_t& w, std::uint32_t& h) const noexcept
 	{
 		w = width_;
 		h = height_;
 	}
 
 	const GraphicsFramebufferPtr&
-	RenderSystem::getFramebuffer() const noexcept
+	Renderer::getFramebuffer() const noexcept
 	{
 		return fbo_;
 	}
 
 	void
-	RenderSystem::setSortObjects(bool sortObject) noexcept
+	Renderer::setSortObjects(bool sortObject) noexcept
 	{
 		this->sortObjects_ = sortObject;
 	}
 
 	bool
-	RenderSystem::getSortObject() const noexcept
+	Renderer::getSortObject() const noexcept
 	{
 		return this->sortObjects_;
 	}
 
 	void
-	RenderSystem::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
+	Renderer::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
 		this->overrideMaterial_ = material;
 	}
 
 	std::shared_ptr<material::Material>
-	RenderSystem::getOverrideMaterial() const noexcept
+	Renderer::getOverrideMaterial() const noexcept
 	{
 		return this->overrideMaterial_;
 	}
 
 	GraphicsInputLayoutPtr
-	RenderSystem::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
+	Renderer::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createInputLayout(desc);
 	}
 
 	GraphicsDataPtr
-	RenderSystem::createGraphicsData(const GraphicsDataDesc& desc) noexcept
+	Renderer::createGraphicsData(const GraphicsDataDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createGraphicsData(desc);
 	}
 
 	GraphicsTexturePtr
-	RenderSystem::createTexture(const GraphicsTextureDesc& desc) noexcept
+	Renderer::createTexture(const GraphicsTextureDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createTexture(desc);
 	}
 
 	GraphicsSamplerPtr
-	RenderSystem::createSampler(const GraphicsSamplerDesc& desc) noexcept
+	Renderer::createSampler(const GraphicsSamplerDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createSampler(desc);
 	}
 
 	GraphicsFramebufferPtr
-	RenderSystem::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
+	Renderer::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createFramebuffer(desc);
 	}
 
 	GraphicsFramebufferLayoutPtr
-	RenderSystem::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
+	Renderer::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createFramebufferLayout(desc);
 	}
 
 	GraphicsShaderPtr
-	RenderSystem::createShader(const GraphicsShaderDesc& desc) noexcept
+	Renderer::createShader(const GraphicsShaderDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createShader(desc);
 	}
 
 	GraphicsProgramPtr
-	RenderSystem::createProgram(const GraphicsProgramDesc& desc) noexcept
+	Renderer::createProgram(const GraphicsProgramDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createProgram(desc);
 	}
 
 	GraphicsStatePtr
-	RenderSystem::createRenderState(const GraphicsStateDesc& desc) noexcept
+	Renderer::createRenderState(const GraphicsStateDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createRenderState(desc);
 	}
 
 	GraphicsPipelinePtr
-	RenderSystem::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
+	Renderer::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createRenderPipeline(desc);
 	}
 
 	GraphicsDescriptorSetPtr
-	RenderSystem::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
+	Renderer::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createDescriptorSet(desc);
 	}
 
 	GraphicsDescriptorSetLayoutPtr
-	RenderSystem::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
+	Renderer::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createDescriptorSetLayout(desc);
 	}
 
 	GraphicsDescriptorPoolPtr
-	RenderSystem::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
+	Renderer::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
 	{
 		assert(device_);
 		return device_->createDescriptorPool(desc);
 	}
 
 	void
-	RenderSystem::renderObjects(hal::GraphicsContext& context, const std::vector<RenderObject*>& objects, const camera::Camera& camera) noexcept
+	Renderer::renderObjects(hal::GraphicsContext& context, const std::vector<RenderObject*>& objects, const camera::Camera& camera) noexcept
 	{
 		for (auto& object : objects)
 		{
@@ -199,24 +199,43 @@ namespace octoon::video
 			if (!this->setProgram(context, this->overrideMaterial_ ? this->overrideMaterial_ : geometry->getMaterial(), camera, *geometry))
 				continue;
 
-			if (geometry->getVertexBuffer())
-			{
-				context.setVertexBufferData(0, geometry->getVertexBuffer(), 0);
-				context.setIndexBufferData(geometry->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
+			if (!this->setBuffer(context, geometry->getMesh(), geometry->getMeshSubset()))
+				continue;
 
-				auto indices = geometry->getNumIndices();
-				if (indices > 0)
-					context.drawIndexed(indices, 1, 0, 0, 0);
-				else
-					context.draw(geometry->getNumVertices(), 1, 0, 0);
-			}
+			auto indices = currentBuffer_->getNumIndices(geometry->getMeshSubset());
+			if (indices > 0)
+				context.drawIndexed(indices, 1, 0, 0, 0);
+			else
+				context.draw(currentBuffer_->getNumVertices(), 1, 0, 0);
 
 			object->onRenderAfter(camera);
 		}
 	}
 
 	bool
-	RenderSystem::setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
+	Renderer::setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
+	{
+		if (mesh)
+		{
+			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
+			if (!buffer)
+				buffer = std::make_shared<RenderBuffer>(mesh);
+
+			context.setVertexBufferData(0, buffer->getVertexBuffer(), 0);
+			context.setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+
+			this->currentBuffer_ = buffer;
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool
+	Renderer::setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
 	{
 		if (material)
 		{
@@ -238,7 +257,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderSystem::render(hal::GraphicsContext& context) noexcept
+	Renderer::render(hal::GraphicsContext& context) noexcept
 	{
 		if (this->sortObjects_)
 		{
@@ -290,7 +309,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderSystem::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
+	Renderer::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
 	{
 		GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 		framebufferLayoutDesc.addComponent(GraphicsAttachmentLayout(0, GraphicsImageLayout::ColorAttachmentOptimal, GraphicsFormat::R32G32B32SFloat));

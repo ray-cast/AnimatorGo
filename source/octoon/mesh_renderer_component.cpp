@@ -1,8 +1,7 @@
 #include <octoon/mesh_renderer_component.h>
-#include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/video/render_pipeline.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 
 namespace octoon
 {
@@ -125,9 +124,7 @@ namespace octoon
 	MeshRendererComponent::onMeshReplace(const std::any& mesh_) noexcept
 	{
 		assert(mesh_.type() == typeid(mesh::MeshPtr));
-		auto mesh = std::any_cast<mesh::MeshPtr>(mesh_);
-		if (mesh)
-			this->uploadMeshData(mesh);
+		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(mesh_));
 	}
 
 	void
@@ -155,69 +152,9 @@ namespace octoon
 	void
 	MeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
-		geometries_.clear();
-
 		if (mesh)
 		{
-			auto& vertices = mesh->getVertexArray();
-			auto& texcoord = mesh->getTexcoordArray();
-			auto& normals = mesh->getNormalArray();
-
-			hal::GraphicsInputLayoutDesc inputLayout;
-			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
-			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
-			inputLayout.addVertexBinding(hal::GraphicsVertexBinding(0, inputLayout.getVertexSize()));
-
-			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
-
-			std::uint32_t offset = 0;
-			std::vector<float> data(vertices.size() * vertexSize);
-
-			for (auto& layout : inputLayout.getVertexLayouts())
-			{
-				if (layout.getSemantic() == "POSITION")
-				{
-					auto v = data.data() + offset;
-					for (auto& it : vertices)
-					{
-						v[0] = it.x;
-						v[1] = it.y;
-						v[2] = it.z;
-						v += vertexSize;
-					}
-				}
-				else if (layout.getSemantic() == "TEXCOORD")
-				{
-					auto t = data.data() + offset;
-					for (auto& it : texcoord)
-					{
-						t[0] = it.x;
-						t[1] = it.y;
-						t += vertexSize;
-					}
-				}
-				else if (layout.getSemantic() == "NORMAL")
-				{
-					auto n = data.data() + offset;
-					for (auto& it : normals)
-					{
-						n[0] = it.x;
-						n[1] = it.y;
-						n[2] = it.z;
-						n += vertexSize;
-					}
-				}
-
-				offset += layout.getVertexCount();
-			}
-
-			hal::GraphicsDataDesc dataDesc;
-			dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
-			dataDesc.setStream((std::uint8_t*)data.data());
-			dataDesc.setStreamSize(data.size() * sizeof(float));
-			dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
-
-			auto vbo = video::RenderSystem::instance()->createGraphicsData(dataDesc);
+			geometries_.resize(mesh->getNumSubsets(), nullptr);
 
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
@@ -226,29 +163,20 @@ namespace octoon
 				geometry_->setOwnerListener(this);
 				geometry_->setVisible(this->getVisible());
 				geometry_->setRenderOrder(this->getRenderOrder());
-				geometry_->setVertexBuffer(vbo);
-				geometry_->setNumVertices((std::uint32_t)vertices.size());
 				geometry_->setBoundingBox(mesh->getBoundingBox(i));
+				geometry_->setMesh(mesh);
+				geometry_->setMeshSubset(i);
 
-				auto& indices = mesh->getIndicesArray(i);
-				if (!indices.empty())
-				{
-					hal::GraphicsDataDesc indiceDesc;
-					indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
-					indiceDesc.setStream((std::uint8_t*)indices.data());
-					indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
-					indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
-
-					geometry_->setIndexBuffer(video::RenderSystem::instance()->createGraphicsData(indiceDesc));
-					geometry_->setNumIndices((std::uint32_t)indices.size());
-				}
-
-				geometries_.push_back(geometry_);
+				geometries_[i] = std::move(geometry_);
 			}
 
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
 			this->uploadMaterialData(this->getMaterials());
+		}
+		else
+		{
+			geometries_.clear();
 		}
 	}
 

@@ -2,7 +2,7 @@
 #include <octoon/offline_feature.h>
 #include <octoon/mesh_filter_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 #include <octoon/material/mesh_standard_material.h>
 
 #include <unordered_map>

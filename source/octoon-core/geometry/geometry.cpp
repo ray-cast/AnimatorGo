@@ -7,8 +7,7 @@ namespace octoon::geometry
 	Geometry::Geometry() noexcept
 		: isCastShadow_(true)
 		, isReceiveShadow_(true)
-		, numVertices_(0)
-		, numIndices_(0)
+		, subset_(0)
 	{
 	}
 
@@ -42,51 +41,33 @@ namespace octoon::geometry
 	}
 
 	void
-	Geometry::setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept
+	Geometry::setMeshSubset(std::size_t index) noexcept
 	{
-		vertices_ = data;
+		this->subset_ = index;
 	}
 
-	const hal::GraphicsDataPtr&
-	Geometry::getVertexBuffer() const noexcept
+	std::size_t
+	Geometry::getMeshSubset() const noexcept
 	{
-		return vertices_;
-	}
-
-	void
-	Geometry::setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept
-	{
-		indices_ = data;
-	}
-
-	const hal::GraphicsDataPtr&
-	Geometry::getIndexBuffer() const noexcept
-	{
-		return indices_;
+		return this->subset_;
 	}
 
 	void
-	Geometry::setNumVertices(std::uint32_t numVertice) noexcept
+	Geometry::setMesh(std::shared_ptr<mesh::Mesh>&& mesh) noexcept
 	{
-		numVertices_ = numVertice;
-	}
-
-	std::uint32_t
-	Geometry::getNumVertices() const noexcept
-	{
-		return numVertices_;
+		this->mesh_ = std::move(mesh);
 	}
 
 	void
-	Geometry::setNumIndices(std::uint32_t numIndices) noexcept
+	Geometry::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept
 	{
-		numIndices_ = numIndices;
+		this->mesh_ = mesh;
 	}
 
-	std::uint32_t
-	Geometry::getNumIndices() const noexcept
+	const std::shared_ptr<mesh::Mesh>&
+	Geometry::getMesh() const noexcept
 	{
-		return numIndices_;
+		return this->mesh_;
 	}
 
 	void

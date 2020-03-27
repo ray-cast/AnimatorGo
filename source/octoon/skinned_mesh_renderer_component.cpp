@@ -253,7 +253,7 @@ namespace octoon
 			jointDesc.setUsage(hal::GraphicsUsageFlagBits::WriteBit);
 			jointDesc.setType(hal::GraphicsDataType::UniformBuffer);
 
-			jointData_ = video::RenderSystem::instance()->createGraphicsData(jointDesc);
+			jointData_ = video::Renderer::instance()->createGraphicsData(jointDesc);
 		}*/
 	}
 

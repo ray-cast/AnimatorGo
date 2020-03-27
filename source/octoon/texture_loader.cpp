@@ -2,7 +2,7 @@
 #include <octoon/image/image.h>
 #include <octoon/runtime/except.h>
 #include <octoon/hal/graphics_texture.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 
 #include <map>
 
@@ -78,7 +78,7 @@ namespace octoon
 		textureDesc.setLayerBase(image.layerBase());
 		textureDesc.setLayerNums(image.layerLevel());
 
-		auto texture = video::RenderSystem::instance()->createTexture(textureDesc);
+		auto texture = video::Renderer::instance()->createTexture(textureDesc);
 		if (!texture)
 			return nullptr;
 

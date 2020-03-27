@@ -29,9 +29,7 @@ namespace octoon::video
 
 	private:
 		void updateParameters() noexcept;
-
-	private:
-		virtual void updateMaterial(const material::MaterialPtr& material) noexcept(false);
+		void updateMaterial(const material::MaterialPtr& material) noexcept(false);
 
 	private:
 		RenderPipeline(const RenderPipeline&) = delete;

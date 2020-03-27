@@ -1,5 +1,5 @@
-#ifndef OCTOON_RENDER_SYSTEM_H_
-#define OCTOON_RENDER_SYSTEM_H_
+#ifndef OCTOON_RENDERER_H_
+#define OCTOON_RENDERER_H_
 
 #include <octoon/runtime/singleton.h>
 
@@ -9,18 +9,19 @@
 #include <octoon/geometry/geometry.h>
 
 #include <octoon/video/render_object.h>
+#include <octoon/video/render_buffer.h>
 #include <octoon/video/render_pipeline.h>
 
 #include <unordered_map>
 
 namespace octoon::video
 {
-	class OCTOON_EXPORT RenderSystem final
+	class OCTOON_EXPORT Renderer final
 	{
-		OctoonDeclareSingleton(RenderSystem)
+		OctoonDeclareSingleton(Renderer)
 	public:
-		RenderSystem() noexcept;
-		~RenderSystem() noexcept;
+		Renderer() noexcept;
+		~Renderer() noexcept;
 
 		void setup(const hal::GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except;
 		void close() noexcept;
@@ -59,11 +60,12 @@ namespace octoon::video
 		void renderObjects(hal::GraphicsContext& context, const std::vector<RenderObject*>& objects, const camera::Camera& camera) noexcept;
 
 	private:
+		bool setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
 		bool setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
 
 	private:
-		RenderSystem(const RenderSystem&) = delete;
-		RenderSystem& operator=(const RenderSystem&) = delete;
+		Renderer(const Renderer&) = delete;
+		Renderer& operator=(const Renderer&) = delete;
 
 	private:
 		bool sortObjects_;
@@ -78,6 +80,9 @@ namespace octoon::video
 
 		hal::GraphicsDevicePtr device_;
 
+		std::shared_ptr<RenderBuffer> currentBuffer_;
+
+		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderPipeline>> pipelines_;
 	};
 }

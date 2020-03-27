@@ -1,5 +1,5 @@
 #include <octoon/camera/film_camera.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 
 namespace octoon::camera
 {
@@ -192,7 +192,7 @@ namespace octoon::camera
 		std::uint32_t width = 1920, height = 1080;
 
 		if (!fbo_[0])
-			video::RenderSystem::instance()->getFramebufferSize(width, height);
+			video::Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
 			width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();

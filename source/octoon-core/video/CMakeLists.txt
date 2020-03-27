@@ -8,15 +8,16 @@ SET(VIDEO_GRAPHICS_LIST
 	${SOURCE_PATH}/render_object.cpp
 	${HEADER_PATH}/render_scene.h
 	${SOURCE_PATH}/render_scene.cpp
-	${HEADER_PATH}/render_system.h
-	${SOURCE_PATH}/render_system.cpp
-	${HEADER_PATH}/render_types.h
+	${HEADER_PATH}/renderer.h
+	${SOURCE_PATH}/renderer.cpp
 )
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})
 
 SET(VIDEO_FORWARE_LIST
 	${HEADER_PATH}/render_pipeline.h
 	${SOURCE_PATH}/render_pipeline.cpp
+	${HEADER_PATH}/render_buffer.h
+	${SOURCE_PATH}/render_buffer.cpp
 )
 SOURCE_GROUP(renderer\\forware FILES ${VIDEO_FORWARE_LIST})
 

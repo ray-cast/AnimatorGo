@@ -4,7 +4,6 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/material/material.h>
 #include <octoon/video/render_object.h>
-#include <octoon/hal/graphics_data.h>
 
 namespace octoon::geometry
 {
@@ -21,17 +20,12 @@ namespace octoon::geometry
 		void setReceiveShadow(bool enable) noexcept;
 		bool getReceiveShadow() const noexcept;
 
-		void setNumVertices(std::uint32_t numVertice) noexcept;
-		std::uint32_t getNumVertices() const noexcept;
+		void setMeshSubset(std::size_t index) noexcept;
+		std::size_t getMeshSubset() const noexcept;
 
-		void setNumIndices(std::uint32_t numIndices) noexcept;
-		std::uint32_t getNumIndices() const noexcept;
-
-		void setVertexBuffer(const hal::GraphicsDataPtr& data) noexcept;
-		const hal::GraphicsDataPtr& getVertexBuffer() const noexcept;
-
-		void setIndexBuffer(const hal::GraphicsDataPtr& data) noexcept;
-		const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
+		void setMesh(std::shared_ptr<mesh::Mesh>&& mesh) noexcept;
+		void setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept;
+		const std::shared_ptr<mesh::Mesh>& getMesh() const noexcept;
 
 		void setMaterial(std::shared_ptr<material::Material>&& material) noexcept;
 		void setMaterial(const std::shared_ptr<material::Material>& material) noexcept;
@@ -41,12 +35,9 @@ namespace octoon::geometry
 		bool isCastShadow_;
 		bool isReceiveShadow_;
 
-		std::uint32_t numVertices_;
-		std::uint32_t numIndices_;
+		std::size_t subset_;
 
-		hal::GraphicsDataPtr vertices_;
-		hal::GraphicsDataPtr indices_;
-
+		std::shared_ptr<mesh::Mesh> mesh_;
 		std::shared_ptr<material::Material> material_;
 	};
 }

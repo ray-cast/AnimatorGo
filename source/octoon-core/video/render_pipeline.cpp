@@ -1,5 +1,5 @@
 #include <octoon/video/render_pipeline.h>
-#include <octoon/video/render_system.h>
+#include <octoon/video/renderer.h>
 #include <octoon/hal/graphics.h>
 
 namespace octoon::video
@@ -199,14 +199,14 @@ namespace octoon::video
 			stateDesc.setStencilBackFail(material->getStencilBackFail());
 			stateDesc.setStencilBackZFail(material->getStencilBackZFail());
 			stateDesc.setStencilBackPass(material->getStencilBackPass());
-			auto renderState = RenderSystem::instance()->createRenderState(stateDesc);
+			auto renderState = Renderer::instance()->createRenderState(stateDesc);
 
 			auto shader = material->getShader();
 
 			hal::GraphicsProgramDesc programDesc;
-			programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, shader->vs, "main", hal::GraphicsShaderLang::GLSL)));
-			programDesc.addShader(RenderSystem::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, shader->fs, "main", hal::GraphicsShaderLang::GLSL)));
-			auto program = RenderSystem::instance()->createProgram(programDesc);
+			programDesc.addShader(Renderer::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, shader->vs, "main", hal::GraphicsShaderLang::GLSL)));
+			programDesc.addShader(Renderer::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, shader->fs, "main", hal::GraphicsShaderLang::GLSL)));
+			auto program = Renderer::instance()->createProgram(programDesc);
 
 			hal::GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
@@ -217,17 +217,17 @@ namespace octoon::video
 			descriptor_set_layout.setUniformComponents(program->getActiveParams());
 
 			hal::GraphicsPipelineDesc pipeline;
-			pipeline.setGraphicsInputLayout(RenderSystem::instance()->createInputLayout(layoutDesc));
+			pipeline.setGraphicsInputLayout(Renderer::instance()->createInputLayout(layoutDesc));
 			pipeline.setGraphicsState(renderState);
 			pipeline.setGraphicsProgram(std::move(program));
-			pipeline.setGraphicsDescriptorSetLayout(RenderSystem::instance()->createDescriptorSetLayout(descriptor_set_layout));
+			pipeline.setGraphicsDescriptorSetLayout(Renderer::instance()->createDescriptorSetLayout(descriptor_set_layout));
 
-			pipeline_ = RenderSystem::instance()->createRenderPipeline(pipeline);
+			pipeline_ = Renderer::instance()->createRenderPipeline(pipeline);
 			if (pipeline_)
 			{
 				hal::GraphicsDescriptorSetDesc descriptorSet;
 				descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
-				descriptorSet_ = RenderSystem::instance()->createDescriptorSet(descriptorSet);
+				descriptorSet_ = Renderer::instance()->createDescriptorSet(descriptorSet);
 				if (!descriptorSet_)
 					return;
 

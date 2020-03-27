@@ -1,8 +1,10 @@
 #ifndef OCTOON_RENDER_SCENE_H_
 #define OCTOON_RENDER_SCENE_H_
 
+#include <octoon/light/light.h>
+#include <octoon/camera/camera.h>
+
 #include <octoon/runtime/singleton.h>
-#include <octoon/video/render_types.h>
 
 namespace octoon
 {
@@ -19,6 +21,10 @@ namespace octoon
 			void removeCamera(camera::Camera* camera) noexcept;
 			const std::vector<camera::Camera*>& getCameraList() const noexcept;
 
+			void addLight(light::Light* camera) noexcept;
+			void removeLight(light::Light* camera) noexcept;
+			const std::vector<light::Light*>& getLights() const noexcept;
+
 			void addRenderObject(RenderObject* object) noexcept;
 			void removeRenderObject(RenderObject* object) noexcept;
 			const RenderObjectRaws& getRenderObjects() const noexcept;
@@ -31,6 +37,7 @@ namespace octoon
 			RenderScene& operator=(const RenderScene&) = delete;
 
 		private:
+			std::vector<light::Light*> lights_;
 			std::vector<camera::Camera*> cameras_;
 			RenderObjectRaws renderables_;
 		};

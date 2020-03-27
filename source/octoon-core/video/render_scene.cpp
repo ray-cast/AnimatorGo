@@ -1,5 +1,4 @@
 #include <octoon/video/render_scene.h>
-#include <octoon/camera/camera.h>
 
 namespace octoon
 {
@@ -42,6 +41,32 @@ namespace octoon
 		}
 
 		void
+		RenderScene::addLight(light::Light* light) noexcept
+		{
+			assert(light);
+
+			auto it = std::find(lights_.begin(), lights_.end(), light);
+			if (it == lights_.end())
+				lights_.push_back(light);
+		}
+
+		void
+		RenderScene::removeLight(light::Light* light) noexcept
+		{
+			assert(light);
+
+			auto it = std::find(lights_.begin(), lights_.end(), light);
+			if (it != lights_.end())
+				lights_.erase(it);
+		}
+
+		const std::vector<light::Light*>&
+		RenderScene::getLights() const noexcept
+		{
+			return lights_;
+		}
+
+		void
 		RenderScene::addRenderObject(RenderObject* object) noexcept
 		{
 			assert(object);
@@ -58,11 +83,9 @@ namespace octoon
 			assert(object);
 
 			if (object->isA<camera::Camera>())
-			{
-				auto it = std::find(cameras_.begin(), cameras_.end(), object->downcast<camera::Camera>());
-				if (it != cameras_.end())
-					cameras_.erase(it);
-			}
+				this->addCamera(object->downcast<camera::Camera>());
+			else if (object->isA<light::Light>())
+				this->addLight(object->downcast<light::Light>());
 			else
 			{
 				auto it = std::find(renderables_.begin(), renderables_.end(), object);

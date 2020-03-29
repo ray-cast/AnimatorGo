@@ -1178,12 +1178,6 @@ rpr_int rprLightSetTransform(rpr_light in_light, rpr_bool in_transpose, rpr_floa
         m = m.transpose();
     }
 
-    RadeonRays::matrix rtol(-1.0f, 0.0f, 0.0f, 0.0f,
-                            0.0f, 1.0f, 0.0f, 0.0f,
-                            0.0f, 0.0f, 1.0f, 0.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f);
-    m = rtol * m;
-
     light->SetTransform(m);
 
     return RPR_SUCCESS;

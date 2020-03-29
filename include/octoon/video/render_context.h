@@ -61,8 +61,9 @@ namespace octoon::video
 		std::size_t numSpot;
 		std::size_t numArea;
 		std::size_t numPoint;
-		std::size_t numAmbient;
 		std::size_t numEnvironment;
+
+		math::float3 ambientLightColors;
 
 		std::vector<DirectionalLight> directionalLights;
 

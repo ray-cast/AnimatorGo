@@ -46,7 +46,7 @@ namespace octoon::video
 		hal::GraphicsStatePtr renderState_;
 		hal::GraphicsDescriptorSetPtr descriptorSet_;
 
-		hal::GraphicsUniformSetPtr ambientLights_;
+		hal::GraphicsUniformSetPtr ambientLightColor_;
 		hal::GraphicsUniformSetPtr directionalLights_;
 		hal::GraphicsUniformSetPtr spotLights_;
 		hal::GraphicsUniformSetPtr rectAreaLights_;

@@ -208,13 +208,13 @@ namespace octoon::video
 	{
 		this->lights_.clear();
 
-		this->context_.light.numAmbient = 0;
 		this->context_.light.numDirectional = 0;
 		this->context_.light.numSpot = 0;
 		this->context_.light.numPoint = 0;
 		this->context_.light.numEnvironment = 0;
 		this->context_.light.numArea = 0;
 
+		this->context_.light.ambientLightColors = math::float3::Zero;
 		this->context_.light.directionalLights.clear();
 
 		for (auto& light : lights)
@@ -227,11 +227,11 @@ namespace octoon::video
 				light->onRenderBefore(camera);
 
 				if (light->isA<light::AmbientLight>()) {
-					this->context_.light.numAmbient++;
+					this->context_.light.ambientLightColors += light->getColor() * light->getIntensity();
 				} else if (light->isA<light::DirectionalLight>()) {
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
-					directionLight.color.set(light->getLightColor() * light->getLightIntensity());
+					directionLight.color.set(light->getColor() * light->getIntensity());
 					directionLight.direction.set(light->getForward());
 					directionLight.shadow = false;
 					directionLight.shadowBias = it->getShadowBias();

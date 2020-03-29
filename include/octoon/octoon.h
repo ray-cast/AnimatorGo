@@ -58,6 +58,7 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/directional_light_component.h>
+#include <octoon/ambient_light_component.h>
 
 #include <octoon/offline_camera_component.h>
 #include <octoon/offline_mesh_renderer_component.h>

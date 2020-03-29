@@ -725,174 +725,6 @@ float BlinnExponentToGGXRoughness( const in float blinnExponent ) {
 	return sqrt( 2.0 / ( blinnExponent + 2.0 ) );
 }
 )";
-static char* lights_physical_fragment = R"(
-PhysicalMaterial material;
-material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
-material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
-#ifdef STANDARD
-	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
-#else
-	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
-	material.clearCoat = saturate( clearCoat ); // Burley clearcoat model
-	material.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );
-#endif
-)";
-static char* lights_template = R"(
-/**
- * This is a template that can be used to light a material, it uses pluggable
- * RenderEquations (RE)for specific lighting scenarios.
- *
- * Instructions for use:
- * - Ensure that both RE_Direct, RE_IndirectDiffuse and RE_IndirectSpecular are defined
- * - If you have defined an RE_IndirectSpecular, you need to also provide a Material_LightProbeLOD. <---- ???
- * - Create a material parameter that is to be passed as the third parameter to your lighting functions.
- *
- * TODO:
- * - Add area light support.
- * - Add sphere light support.
- * - Add diffuse light probe (irradiance cubemap) support.
- */
-
-GeometricContext geometry;
-
-geometry.position = - vViewPosition;
-geometry.normal = normal;
-geometry.viewDir = normalize( vViewPosition );
-
-IncidentLight directLight;
-
-#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )
-
-	PointLight pointLight;
-
-	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
-
-		pointLight = pointLights[ i ];
-
-		getPointDirectLightIrradiance( pointLight, geometry, directLight );
-
-		#ifdef USE_SHADOWMAP
-		directLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;
-		#endif
-
-		RE_Direct( directLight, geometry, material, reflectedLight );
-
-	}
-
-#endif
-
-#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )
-
-	SpotLight spotLight;
-
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-
-		spotLight = spotLights[ i ];
-
-		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
-
-		#ifdef USE_SHADOWMAP
-		directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
-		#endif
-
-		RE_Direct( directLight, geometry, material, reflectedLight );
-
-	}
-
-#endif
-
-#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )
-
-	DirectionalLight directionalLight;
-
-	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
-		directionalLight.direction = directionalLights.lights[i].direction;
-		directionalLight.color = directionalLights.lights[i].color;
-		directionalLight.shadow = directionalLights.lights[i].shadow;
-		directionalLight.shadowBias = directionalLights.lights[i].shadowBias;
-		directionalLight.shadowRadius = directionalLights.lights[i].shadowRadius;
-		directionalLight.shadowMapSize = directionalLights.lights[i].shadowMapSize;
-
-		getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );
-
-		#ifdef USE_SHADOWMAP
-		directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
-		#endif
-
-		RE_Direct( directLight, geometry, material, reflectedLight );
-
-	}
-
-#endif
-
-#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )
-
-	RectAreaLight rectAreaLight;
-
-	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {
-
-		rectAreaLight = rectAreaLights[ i ];
-		RE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );
-
-	}
-
-#endif
-
-#if defined( RE_IndirectDiffuse )
-
-	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );
-
-	#ifdef USE_LIGHTMAP
-
-		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
-
-		#ifndef PHYSICALLY_CORRECT_LIGHTS
-
-			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
-
-		#endif
-
-		irradiance += lightMapIrradiance;
-
-	#endif
-
-	#if ( NUM_HEMI_LIGHTS > 0 )
-
-		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
-
-			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );
-
-		}
-
-	#endif
-
-	#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )
-
-		// TODO, replace 8 with the real maxMIPLevel
-		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 8 );
-
-	#endif
-
-	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
-
-#endif
-
-#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
-
-	// TODO, replace 8 with the real maxMIPLevel
-	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 8 );
-
-	#ifndef STANDARD
-		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );
-	#else
-		vec3 clearCoatRadiance = vec3( 0.0 );
-	#endif
-
-	RE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );
-
-#endif
-
-)";
 static char* lights_pars = R"(
 uniform vec3 ambientLightColor;
 
@@ -1192,7 +1024,6 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 	}
 
 #endif
-
 )";
 static char* lights_physical_pars_fragment = R"(
 struct PhysicalMaterial {
@@ -1329,6 +1160,174 @@ float computeSpecularOcclusion( const in float dotNV, const in float ambientOccl
 }
 )";
 
+		static char* lights_physical_fragment = R"(
+PhysicalMaterial material;
+material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
+material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
+#ifdef STANDARD
+	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
+#else
+	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
+	material.clearCoat = saturate( clearCoat ); // Burley clearcoat model
+	material.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );
+#endif
+)";
+		static char* lights_template = R"(
+/**
+ * This is a template that can be used to light a material, it uses pluggable
+ * RenderEquations (RE)for specific lighting scenarios.
+ *
+ * Instructions for use:
+ * - Ensure that both RE_Direct, RE_IndirectDiffuse and RE_IndirectSpecular are defined
+ * - If you have defined an RE_IndirectSpecular, you need to also provide a Material_LightProbeLOD. <---- ???
+ * - Create a material parameter that is to be passed as the third parameter to your lighting functions.
+ *
+ * TODO:
+ * - Add area light support.
+ * - Add sphere light support.
+ * - Add diffuse light probe (irradiance cubemap) support.
+ */
+
+GeometricContext geometry;
+
+geometry.position = - vViewPosition;
+geometry.normal = normal;
+geometry.viewDir = normalize( vViewPosition );
+
+IncidentLight directLight;
+
+#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )
+
+	PointLight pointLight;
+
+	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
+
+		pointLight = pointLights[ i ];
+
+		getPointDirectLightIrradiance( pointLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )
+
+	SpotLight spotLight;
+
+	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
+
+		spotLight = spotLights[ i ];
+
+		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )
+
+	DirectionalLight directionalLight;
+
+	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
+		directionalLight.direction = directionalLights.lights[i].direction;
+		directionalLight.color = directionalLights.lights[i].color;
+		directionalLight.shadow = directionalLights.lights[i].shadow;
+		directionalLight.shadowBias = directionalLights.lights[i].shadowBias;
+		directionalLight.shadowRadius = directionalLights.lights[i].shadowRadius;
+		directionalLight.shadowMapSize = directionalLights.lights[i].shadowMapSize;
+
+		getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )
+
+	RectAreaLight rectAreaLight;
+
+	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {
+
+		rectAreaLight = rectAreaLights[ i ];
+		RE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if defined( RE_IndirectDiffuse )
+
+	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );
+
+	#ifdef USE_LIGHTMAP
+
+		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
+
+		#ifndef PHYSICALLY_CORRECT_LIGHTS
+
+			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
+
+		#endif
+
+		irradiance += lightMapIrradiance;
+
+	#endif
+
+	#if ( NUM_HEMI_LIGHTS > 0 )
+
+		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
+
+			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );
+
+		}
+
+	#endif
+
+	#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )
+
+		// TODO, replace 8 with the real maxMIPLevel
+		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 8 );
+
+	#endif
+
+	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
+
+#endif
+
+#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
+
+	// TODO, replace 8 with the real maxMIPLevel
+	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 8 );
+
+	#ifndef STANDARD
+		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );
+	#else
+		vec3 clearCoatRadiance = vec3( 0.0 );
+	#endif
+
+	RE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );
+
+#endif
+
+)";
 static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"common", common },
 	{"packing", packing },
@@ -1426,17 +1425,20 @@ namespace octoon::video
 	{
 		if (this->material_)
 		{
-			if (modelMatrix_)
-				modelMatrix_->uniform4fmat(geometry.getTransform());
+			if (this->modelMatrix_)
+				this->modelMatrix_->uniform4fmat(geometry.getTransform());
 			
-			if (modelViewMatrix_)
-				modelViewMatrix_->uniform4fmat(camera.getView() * geometry.getTransform());
+			if (this->modelViewMatrix_)
+				this->modelViewMatrix_->uniform4fmat(camera.getView() * geometry.getTransform());
 			
-			if (projectionMatrix_)
-				projectionMatrix_->uniform4fmat(camera.getProjection());
+			if (this->projectionMatrix_)
+				this->projectionMatrix_->uniform4fmat(camera.getProjection());
 			
-			if (normalMatrix_)
-				normalMatrix_->uniform3fmat((math::float3x3)geometry.getTransform());
+			if (this->normalMatrix_)
+				this->normalMatrix_->uniform3fmat((math::float3x3)geometry.getTransform());
+
+			if (this->ambientLightColor_)
+				this->ambientLightColor_->uniform3f(context.light.ambientLightColors);
 
 			if (this->directionalLights_)
 				this->directionalLights_->uniformBuffer(context.light.directionLightBuffer);
@@ -1516,6 +1518,7 @@ namespace octoon::video
 		std::string fragmentShader = "#version 330\n\t";
 		fragmentShader += "layout(location  = 0) out vec4 fragColor;\n";
 		//fragmentShader += "#define TONE_MAPPING\n";
+		fragmentShader += "#define PHYSICALLY_CORRECT_LIGHTS\n";
 		fragmentShader += shader->fs;
 
 		this->parseIncludes(vertexShader);
@@ -1644,9 +1647,9 @@ namespace octoon::video
 				modelViewMatrix_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "modelViewMatrix"; });
 				projectionMatrix_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "projectionMatrix"; });
 
-				auto ambientLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "ambientLights"; });
-				if (ambientLights  != end)
-					ambientLights_ = *ambientLights;
+				auto ambientLightColor = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "ambientLightColor"; });
+				if (ambientLightColor != end)
+					ambientLightColor_ = *ambientLightColor;
 
 				auto directionalLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "DirectionalLights"; });
 				if (directionalLights != end)

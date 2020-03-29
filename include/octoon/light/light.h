@@ -12,14 +12,14 @@ namespace octoon::light
 		Light() noexcept;
 		virtual ~Light() noexcept;
 
-		void setLightRange(float range) noexcept;
-		void setLightIntensity(float intensity) noexcept;
-		void setLightColor(const math::float3& color) noexcept;
+		void setRange(float range) noexcept;
+		void setIntensity(float intensity) noexcept;
+		void setColor(const math::float3& color) noexcept;
 
-		float getLightRange() const noexcept;
-		float getLightIntensity() const noexcept;
+		float getRange() const noexcept;
+		float getIntensity() const noexcept;
 
-		const math::float3& getLightColor() const noexcept;
+		const math::float3& getColor() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 

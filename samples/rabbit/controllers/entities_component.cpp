@@ -480,6 +480,9 @@ namespace rabbit
 		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
+		enviromentLight->addComponent<octoon::AmbientLightComponent>();
+		enviromentLight->getComponent<octoon::AmbientLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
+		enviromentLight->getComponent<octoon::AmbientLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity * math::PI);
 		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
 

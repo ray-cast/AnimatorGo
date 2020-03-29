@@ -17,37 +17,37 @@ namespace octoon::light
 	}
 
 	void
-	Light::setLightIntensity(float intensity) noexcept
+	Light::setIntensity(float intensity) noexcept
 	{
 		_lightIntensity = intensity;
 	}
 
 	void
-	Light::setLightRange(float range) noexcept
+	Light::setRange(float range) noexcept
 	{
 		_lightRange = range;
 	}
 
 	void
-	Light::setLightColor(const math::float3& color) noexcept
+	Light::setColor(const math::float3& color) noexcept
 	{
 		_lightColor = color;
 	}
 
 	float
-	Light::getLightIntensity() const noexcept
+	Light::getIntensity() const noexcept
 	{
 		return _lightIntensity;
 	}
 
 	float
-	Light::getLightRange() const noexcept
+	Light::getRange() const noexcept
 	{
 		return _lightRange;
 	}
 
 	const math::float3&
-	Light::getLightColor() const noexcept
+	Light::getColor() const noexcept
 	{
 		return _lightColor;
 	}
@@ -66,9 +66,9 @@ namespace octoon::light
 	Light::clone() const noexcept
 	{
 		auto light = std::make_shared<Light>();
-		light->setLightColor(this->getLightColor());
-		light->setLightIntensity(this->getLightIntensity());
-		light->setLightRange(this->getLightRange());
+		light->setColor(this->getColor());
+		light->setIntensity(this->getIntensity());
+		light->setRange(this->getRange());
 		light->setTransform(this->getTransform(), this->getTransformInverse());
 		light->setBoundingBox(this->getBoundingBox());
 

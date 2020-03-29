@@ -39,13 +39,25 @@ namespace octoon::video
 	{
 		device_ = device;
 
+		hal::GraphicsDataDesc directionalLightDesc;
+		directionalLightDesc.setType(hal::GraphicsDataType::UniformBuffer);
+		directionalLightDesc.setStream(nullptr);
+		directionalLightDesc.setStreamSize(sizeof(light::DirectionalLight));
+		directionalLightDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit);
+
+		this->context_.light.directionLightBuffer = this->createGraphicsData(directionalLightDesc);
+
 		this->setFramebufferSize(w, h);
 	}
 
 	void
 	Renderer::close() noexcept
 	{
+		this->context_.light.directionLightBuffer.reset();
+		this->buffers_.clear();
+		this->pipelines_.clear();
 		fbo_.reset();
+		currentBuffer_.reset();
 		colorTexture_.reset();
 		depthTexture_.reset();
 		device_.reset();
@@ -203,6 +215,8 @@ namespace octoon::video
 		this->context_.light.numEnvironment = 0;
 		this->context_.light.numArea = 0;
 
+		this->context_.light.directionalLights.clear();
+
 		for (auto& light : lights)
 		{
 			if (camera.getLayer() != light->getLayer())
@@ -215,6 +229,15 @@ namespace octoon::video
 				if (light->isA<light::AmbientLight>()) {
 					this->context_.light.numAmbient++;
 				} else if (light->isA<light::DirectionalLight>()) {
+					auto it = light->downcast<light::DirectionalLight>();
+					DirectionalLight directionLight;
+					directionLight.color.set(light->getLightColor() * light->getLightIntensity());
+					directionLight.direction.set(light->getForward());
+					directionLight.shadow = false;
+					directionLight.shadowBias = it->getShadowBias();
+					directionLight.shadowRadius = it->getShadowRadius();
+					directionLight.shadowMapSize = math::float2::Zero;
+					this->context_.light.directionalLights.emplace_back(directionLight);
 					this->context_.light.numDirectional++;
 				} else if (light->isA<light::SpotLight>()) {
 					this->context_.light.numSpot++;
@@ -229,6 +252,28 @@ namespace octoon::video
 				light->onRenderAfter(camera);
 
 				this->lights_.emplace_back(light);
+			}
+		}
+
+		if (this->context_.light.numDirectional)
+		{
+			auto desc = this->context_.light.directionLightBuffer->getDataDesc();
+			if (desc.getStreamSize() < this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight))
+			{
+				hal::GraphicsDataDesc indiceDesc;
+				indiceDesc.setType(hal::GraphicsDataType::UniformBuffer);
+				indiceDesc.setStream((std::uint8_t*)this->context_.light.directionalLights.data());
+				indiceDesc.setStreamSize(this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight));
+				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit);
+
+				this->context_.light.directionLightBuffer = this->createGraphicsData(indiceDesc);
+			}
+			else
+			{
+				void* data;
+				if (this->context_.light.directionLightBuffer->map(0, desc.getStreamSize(), &data))
+					std::memcpy(data, this->context_.light.directionalLights.data(), this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight));
+				this->context_.light.directionLightBuffer->unmap();
 			}
 		}
 	}
@@ -417,7 +462,7 @@ namespace octoon::video
 			if (!pipeline)
 				pipeline = std::make_shared<RenderPipeline>(material, this->context_);
 
-			pipeline->update(camera, geometry);
+			pipeline->update(camera, geometry, this->context_);
 
 			context.setRenderPipeline(pipeline->getPipeline());
 			context.setDescriptorSet(pipeline->getDescriptorSet());

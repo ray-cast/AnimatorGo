@@ -13,23 +13,26 @@ namespace octoon::video
 	{
 	public:
 		RenderPipeline() noexcept;
-		RenderPipeline(const material::MaterialPtr& material, const RenderContext& context) noexcept;
+		RenderPipeline(const material::MaterialPtr& material, const RenderProfile& context) noexcept;
 		virtual ~RenderPipeline() noexcept;
 
-		void setMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept;
+		void setMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept;
 		const material::MaterialPtr& getMaterial() const noexcept;
-
-		void setTransform(const math::float4x4& vp) noexcept;
-		void setViewProjection(const math::float4x4& vp) noexcept;
 
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-		void update(const camera::Camera& camera, const geometry::Geometry& geometry) noexcept;
+		void update(const camera::Camera& camera, const geometry::Geometry& geometry, const RenderProfile& context) noexcept;
 
 	private:
 		void updateParameters() noexcept;
-		void updateMaterial(const material::MaterialPtr& material, const RenderContext& context) noexcept(false);
+		void updateMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept(false);
+
+		void setupProgram(const material::MaterialPtr& material, const RenderProfile& context);
+		void setupRenderState(const material::MaterialPtr& material);
+
+		void parseIncludes(std::string& shader);
+		void replaceLightNums(std::string& shader, const LightModule& parameters);
 
 	private:
 		RenderPipeline(const RenderPipeline&) = delete;
@@ -38,12 +41,21 @@ namespace octoon::video
 	private:
 		material::MaterialPtr material_;
 
+		hal::GraphicsProgramPtr program_;
 		hal::GraphicsPipelinePtr pipeline_;
 		hal::GraphicsStatePtr renderState_;
 		hal::GraphicsDescriptorSetPtr descriptorSet_;
 
-		hal::GraphicsUniformSetPtr proj_;
-		hal::GraphicsUniformSetPtr model_;
+		hal::GraphicsUniformSetPtr ambientLights_;
+		hal::GraphicsUniformSetPtr directionalLights_;
+		hal::GraphicsUniformSetPtr spotLights_;
+		hal::GraphicsUniformSetPtr rectAreaLights_;
+		hal::GraphicsUniformSetPtr hemisphereLights_;
+
+		hal::GraphicsUniformSetPtr normalMatrix_;
+		hal::GraphicsUniformSetPtr modelMatrix_;
+		hal::GraphicsUniformSetPtr modelViewMatrix_;
+		hal::GraphicsUniformSetPtr projectionMatrix_;
 	};
 }
 

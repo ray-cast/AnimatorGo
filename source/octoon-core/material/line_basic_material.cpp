@@ -1,5 +1,32 @@
 #include <octoon/material/line_basic_material.h>
 
+static const char* line_vert = R"(
+#include <common>
+#include <color_pars_vertex>
+void main() {
+#include <color_vertex>
+#include <begin_vertex>
+#include <project_vertex>
+})";
+static const char* line_frag = R"(
+uniform vec3 diffuse;
+uniform float opacity;
+#include <common>
+#include <packing>
+#include <color_pars_fragment>
+#include <encodings_pars_fragment>
+void main() {
+	vec3 outgoingLight = vec3( 0.0 );
+	vec4 diffuseColor = vec4( diffuse, opacity );
+	#include <color_fragment>
+	#include <alphatest_fragment>
+	outgoingLight = diffuseColor.rgb;
+	fragColor = vec4( outgoingLight, diffuseColor.a );
+	#include <premultiplied_alpha_fragment>
+	#include <tonemapping_fragment>
+	fragColor = LinearToGamma(fragColor, 2.2);
+})";
+
 namespace octoon::material
 {
 	OctoonImplementSubClass(LineBasicMaterial, Material, "LineBasicMaterial");
@@ -13,71 +40,12 @@ namespace octoon::material
 	LineBasicMaterial::LineBasicMaterial(const math::float3& color) noexcept
 		: opacity_(1.0f)
 	{
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
-		const char* vert = R"(
-			precision mediump float;
-			uniform mat4 proj;
-			uniform mat4 model;
-
-			attribute vec4 POSITION0;
-			attribute vec4 NORMAL0;
-
-			varying vec3 oTexcoord0;
-
-			void main()
-			{
-				oTexcoord0 = NORMAL0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
-
-		const char* frag = R"(
-			precision mediump float;
-
-			uniform sampler2D decal;
-			uniform vec4 color;
-			uniform bool hasTexture;
-
-			varying vec2 oTexcoord0;
-			void main()
-			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
-			})";
-#else
-		const char* vert = R"(#version 330
-			uniform mat4 proj;
-			uniform mat4 model;
-
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec2 TEXCOORD0;
-
-			out vec2 oTexcoord0;
-
-			void main()
-			{
-				oTexcoord0 = TEXCOORD0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
-
-		const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-
-			uniform vec4 color;
-
-			in vec2 oTexcoord0;
-
-			void main()
-			{
-				fragColor = pow(color, vec4(1.0 / 2.2));
-			})";
-#endif
 
 		this->setColor(color);
 		this->setOpacity(1.0f);
 		this->setDepthEnable(false);
 		this->setPrimitiveType(octoon::hal::GraphicsVertexType::LineList);
-		this->setShader(std::make_shared<Shader>(vert, frag));
+		this->setShader(std::make_shared<Shader>(line_vert, line_frag));
 	}
 
 	LineBasicMaterial::~LineBasicMaterial() noexcept
@@ -88,7 +56,7 @@ namespace octoon::material
 	LineBasicMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->color_ = color;
-		this->set("color", math::float4(color_, opacity_));
+		this->set("diffuse", color_);
 	}
 
 	const math::float3&
@@ -101,7 +69,7 @@ namespace octoon::material
 	LineBasicMaterial::setOpacity(float opacity) noexcept
 	{
 		this->opacity_ = opacity;
-		this->set("color", math::float4(color_, opacity_));
+		this->set("opacity", opacity_);
 	}
 
 	float

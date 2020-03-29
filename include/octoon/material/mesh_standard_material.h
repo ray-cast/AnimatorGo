@@ -31,8 +31,20 @@ namespace octoon::material
 		void setReflectivity(float reflectivity) noexcept;
 		float getReflectivity() const noexcept;
 
+		void setClearCoat(float clearCoat) noexcept;
+		float getClearCoat() const noexcept;
+
+		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
+		float getClearCoatRoughness() const noexcept;
+
 		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
 		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
+
+		void setOffset(const math::float2& offset) noexcept;
+		const math::float2& getOffset() const noexcept;
+
+		void setRepeat(const math::float2& repeat) noexcept;
+		const math::float2& getRepeat() const noexcept;
 
 		std::shared_ptr<Material> clone() const noexcept override;
 
@@ -45,6 +57,10 @@ namespace octoon::material
 		float metalness_;
 		float smoothness_;
 		float reflectivity_;
+		float clearCoat_;
+		float clearCoatRoughness_;
+		math::float2 offset_;
+		math::float2 repeat_;
 		math::float3 color_;
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorTexture_;

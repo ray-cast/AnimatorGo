@@ -81,7 +81,7 @@ namespace octoon::video
 
 		hal::GraphicsDevicePtr device_;
 
-		RenderContext context_;
+		RenderProfile context_;
 
 		std::vector<light::Light*> lights_;
 

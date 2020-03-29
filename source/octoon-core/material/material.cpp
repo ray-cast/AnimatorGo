@@ -182,6 +182,38 @@ namespace octoon::material
 	}
 
 	bool
+	Material::set(std::string_view key, const math::Vector2& value) noexcept
+	{
+		assert(key.size());
+
+		auto it = _properties.begin();
+		auto end = _properties.end();
+
+		for (; it != end; ++it)
+		{
+			if ((*it).key == key)
+			{
+				_properties.erase(it);
+				break;
+			}
+		}
+
+		MaterialParam prop;
+		prop.key = key;
+		prop.length = sizeof(math::float2);
+		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.data = new char[prop.length];
+
+		std::memcpy(prop.data, &value, prop.length);
+
+		_properties.push_back(prop);
+
+		this->needUpdate(true);
+
+		return true;
+	}
+
+	bool
 	Material::set(std::string_view key, const math::Vector3& value) noexcept
 	{
 		assert(key.size());
@@ -348,6 +380,28 @@ namespace octoon::material
 				prop.type & PropertyTypeInfoBuffer)
 			{
 				if (prop.length == sizeof(float))
+				{
+					std::memcpy(&value, prop.data, prop.length);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool
+	Material::get(std::string_view key, math::Vector2& value) const noexcept
+	{
+		assert(key.size());
+
+		MaterialParam prop;
+		if (this->get(key, prop))
+		{
+			if (prop.type & PropertyTypeInfoFloat &&
+				prop.type & PropertyTypeInfoBuffer)
+			{
+				if (prop.length == sizeof(math::Vector2))
 				{
 					std::memcpy(&value, prop.data, prop.length);
 					return true;

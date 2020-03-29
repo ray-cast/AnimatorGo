@@ -642,6 +642,8 @@ namespace octoon
 			GLuint textureUnit = 0;
 			for (GLint i = 0; i < numUniform; ++i)
 			{
+				std::memset(nameUniform.data(), 0, maxUniformLength);
+
 				GLint size;
 				GLenum type;
 				GLsizei length;

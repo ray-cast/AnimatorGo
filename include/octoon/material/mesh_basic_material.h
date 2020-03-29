@@ -16,6 +16,12 @@ namespace octoon::material
 		void setColor(const math::float3& color) noexcept;
 		const math::float3& getColor() const noexcept;
 
+		void setOffset(const math::float2& offset) noexcept;
+		const math::float2& getOffset() const noexcept;
+
+		void setRepeat(const math::float2& repeat) noexcept;
+		const math::float2& getRepeat() const noexcept;
+
 		void setOpacity(float opacity) noexcept;
 		float getOpacity() const noexcept;
 
@@ -31,6 +37,8 @@ namespace octoon::material
 	private:
 		float opacity_;
 		math::float3 color_;
+		math::float2 offset_;
+		math::float2 repeat_;
 		hal::GraphicsTexturePtr colorTexture_;
 	};
 }

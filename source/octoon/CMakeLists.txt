@@ -57,6 +57,10 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/skinned_mesh_renderer_component.cpp
 	${HEADER_PATH}/skinned_joint_renderer_component.h
 	${SOURCE_PATH}/skinned_joint_renderer_component.cpp
+	${HEADER_PATH}/light_component.h
+	${SOURCE_PATH}/light_component.cpp
+	${HEADER_PATH}/directional_light_component.h
+	${SOURCE_PATH}/directional_light_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )

@@ -139,6 +139,7 @@ namespace octoon::material
 		bool set(std::string_view key, bool value) noexcept;
 		bool set(std::string_view key, int value) noexcept;
 		bool set(std::string_view key, float value) noexcept;
+		bool set(std::string_view key, const math::Vector2& value) noexcept;
 		bool set(std::string_view key, const math::Vector3& value) noexcept;
 		bool set(std::string_view key, const math::Vector4& value) noexcept;
 		bool set(std::string_view key, std::string_view value) noexcept;
@@ -147,6 +148,7 @@ namespace octoon::material
 
 		bool get(std::string_view key, int& value) const noexcept;
 		bool get(std::string_view key, float& value) const noexcept;
+		bool get(std::string_view key, math::Vector2& value) const noexcept;
 		bool get(std::string_view key, math::Vector3& value) const noexcept;
 		bool get(std::string_view key, math::Vector4& value) const noexcept;
 		bool get(std::string_view key, std::string& value) const noexcept;

@@ -209,6 +209,7 @@ namespace octoon
 
 		auto transform = this->getComponent<TransformComponent>();
 		camera_->setActive(true);
+		camera_->setLayer(this->getGameObject()->getLayer());
 		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		if (this->getCameraType() == CameraType::Main)

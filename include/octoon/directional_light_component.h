@@ -1,0 +1,38 @@
+#ifndef OCTOON_DIRECTIONAL_LIGHT_COMPONENT_H_
+#define OCTOON_DIRECTIONAL_LIGHT_COMPONENT_H_
+
+#include <octoon/light_component.h>
+#include <octoon/light/directional_light.h>
+
+namespace octoon
+{
+	class OCTOON_EXPORT DirectionalLightComponent final : public LightComponent
+	{
+		OctoonDeclareSubInterface(DirectionalLightComponent, LightComponent)
+	public:
+		DirectionalLightComponent() noexcept;
+		virtual ~DirectionalLightComponent() noexcept;
+
+		void setIntensity(float value) noexcept override;
+		void setColor(const math::float3& value) noexcept override;
+
+		GameComponentPtr clone() const noexcept override;
+
+	private:
+		void onActivate() noexcept override;
+		void onDeactivate() noexcept override;
+
+		void onMoveAfter() noexcept override;
+
+		void onLayerChangeAfter() noexcept override;
+
+	private:
+		DirectionalLightComponent(const DirectionalLightComponent&) = delete;
+		DirectionalLightComponent& operator=(const DirectionalLightComponent&) = delete;
+
+	private:
+		std::shared_ptr<light::DirectionalLight> directionalLight_;
+	};
+}
+
+#endif

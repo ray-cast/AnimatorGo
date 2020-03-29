@@ -181,6 +181,16 @@ namespace rabbit
 		if (camera)
 			objects.emplace_back(camera);
 
+		auto mainLight = octoon::GameObject::create("DirectionalLight");
+		auto rotation = math::normalize(math::Quaternion(math::float3::Forward, math::normalize(pmm.main_light.xyz * math::float3(1, -1, -1))));
+		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
+		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(context->profile->sunModule->color);
+		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(context->profile->sunModule->intensity);
+		mainLight->addComponent<octoon::DirectionalLightComponent>();
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
+		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
+
 		for (auto& it : pmm.model)
 		{
 			auto model = octoon::MeshLoader::load(it.path);
@@ -203,14 +213,6 @@ namespace rabbit
 				throw std::runtime_error(u8"无法找到文件:" + it.path);
 			}
 		}
-
-		auto mainLight = octoon::GameObject::create("DirectionalLight");
-		auto rotation = math::normalize(math::Quaternion(math::float3::Forward, math::normalize(pmm.main_light.xyz * math::float3(1, -1, -1))));
-		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(context->profile->sunModule->color);
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(context->profile->sunModule->intensity);
-		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
-		objects.push_back(mainLight);
 
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = camera;
@@ -467,6 +469,9 @@ namespace rabbit
 		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
+		mainLight->addComponent<octoon::DirectionalLightComponent>();
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 
 		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);

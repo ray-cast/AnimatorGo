@@ -1,5 +1,46 @@
 #include <octoon/material/mesh_basic_material.h>
 
+static const char* basic_vert = R"(
+#include <common>
+#include <uv_pars_vertex>
+#include <color_pars_vertex>
+void main() {
+#include <uv_vertex>
+#include <color_vertex>
+#include <begin_vertex>
+#include <project_vertex>
+})";
+
+static const char* basic_frag = R"(
+uniform vec3 diffuse;
+uniform float opacity;
+#ifndef FLAT_SHADED
+in vec3 vNormal;
+#endif
+#include <common>
+#include <packing>
+#include <encodings_pars_fragment>
+#include <uv_pars_fragment>
+#include <map_pars_fragment>
+#include <color_pars_fragment>
+#include <alphamap_pars_fragment>
+#include <aomap_pars_fragment>
+#include <lightmap_pars_fragment>
+#include <envmap_pars_fragment>
+void main() {
+	vec3 outgoingLight = vec3( 0.0 );
+	vec4 diffuseColor = vec4( diffuse, opacity );
+	#include <map_fragment>
+	#include <color_fragment>
+	#include <alphamap_fragment>
+	#include <alphatest_fragment>
+	outgoingLight = diffuseColor.rgb;
+	fragColor = vec4( outgoingLight, diffuseColor.a );
+	#include <premultiplied_alpha_fragment>
+	#include <tonemapping_fragment>
+	fragColor = LinearToGamma(fragColor, 2.2);
+})";
+
 namespace octoon::material
 {
 	OctoonImplementSubClass(MeshBasicMaterial, Material, "MeshBasicMaterial");
@@ -12,73 +53,11 @@ namespace octoon::material
 	MeshBasicMaterial::MeshBasicMaterial(const math::float3& color) noexcept
 		: opacity_(1.0f)
 	{
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
-		const char* vert = R"(
-			precision mediump float;
-			uniform mat4 proj;
-			uniform mat4 model;
-
-			attribute vec4 POSITION0;
-			attribute vec4 NORMAL0;
-
-			varying vec3 oTexcoord0;
-
-			void main()
-			{
-				oTexcoord0 = NORMAL0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
-
-		const char* frag = R"(
-			precision mediump float;
-
-			uniform sampler2D decal;
-			uniform vec4 color;
-			uniform bool hasTexture;
-
-			varying vec2 oTexcoord0;
-			void main()
-			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
-			})";
-#else
-		const char* vert = R"(#version 330
-			uniform mat4 proj;
-			uniform mat4 model;
-
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec2 TEXCOORD0;
-
-			out vec2 oTexcoord0;
-
-			void main()
-			{
-				oTexcoord0 = TEXCOORD0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
-
-		const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-
-			uniform sampler2D decal;
-			uniform vec4 color;
-			uniform bool hasTexture;
-
-			in vec2 oTexcoord0;
-
-			void main()
-			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
-			})";
-#endif
-
 		this->setColor(color);
 		this->setOpacity(1.0f);
-		this->setShader(std::make_shared<Shader>(vert, frag));
+		this->setOffset(math::float2::Zero);
+		this->setRepeat(math::float2::One);
+		this->setShader(std::make_shared<Shader>(basic_vert, basic_frag));
 	}
 
 	MeshBasicMaterial::~MeshBasicMaterial() noexcept
@@ -89,7 +68,7 @@ namespace octoon::material
 	MeshBasicMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->color_ = color;
-		this->set("color", math::float4(this->color_, this->opacity_));
+		this->set("diffuse", this->color_);
 	}
 
 	const math::float3&
@@ -99,11 +78,37 @@ namespace octoon::material
 	}
 
 	void
+	MeshBasicMaterial::setOffset(const math::float2& offset) noexcept
+	{
+		this->offset_ = offset;
+		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
+	}
+
+	const math::float2&
+	MeshBasicMaterial::getOffset() const noexcept
+	{
+		return this->offset_;
+	}
+
+	void
+	MeshBasicMaterial::setRepeat(const math::float2& repeat) noexcept
+	{
+		this->repeat_ = repeat;
+		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
+	}
+
+	const math::float2&
+	MeshBasicMaterial::getRepeat() const noexcept
+	{
+		return this->repeat_;
+	}
+
+	void
 	MeshBasicMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->colorTexture_ = map;
-		this->set("decal", map);
-		this->set("hasTexture", map ? true : false);
+		this->set("map", map);
+		this->set("mapEnable", map ? true : false);
 	}
 
 	const hal::GraphicsTexturePtr&
@@ -116,7 +121,7 @@ namespace octoon::material
 	MeshBasicMaterial::setOpacity(float opacity) noexcept
 	{
 		this->opacity_ = opacity;
-		this->set("color", math::float4(this->color_, this->opacity_));
+		this->set("opacity", this->opacity_);
 	}
 
 	float

@@ -60,6 +60,15 @@ namespace octoon
 				~Matrix4x4() = default;
 
 				template<typename S, typename = std::enable_if_t<trait::is_integral_v<S> || trait::is_floating_point_v<S>>>
+				explicit operator Matrix3x3<S>() const noexcept
+				{
+					return Matrix3x3<S>(
+						static_cast<S>(a1), static_cast<S>(a2), static_cast<S>(a3),
+						static_cast<S>(b1), static_cast<S>(b2), static_cast<S>(b3),
+						static_cast<S>(c1), static_cast<S>(c2), static_cast<S>(c3));
+				}
+
+				template<typename S, typename = std::enable_if_t<trait::is_integral_v<S> || trait::is_floating_point_v<S>>>
 				explicit operator Matrix4x4<S>() const noexcept
 				{
 					return Matrix4x4<S>(

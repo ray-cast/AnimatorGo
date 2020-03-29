@@ -17,15 +17,6 @@ vViewPosition = -mvPosition.xyz;
 })";
 
 static const char* standard_frag = R"(
-uniform vec3 diffuse;
-uniform vec3 emissive;
-uniform float opacity;
-uniform float roughness;
-uniform float metalness;
-uniform float clearCoat;
-uniform float clearCoatRoughness;
-uniform float reflectivity;
-in vec3 vViewPosition;
 #include <common>
 #include <packing>
 #include <encodings_pars_fragment>
@@ -45,6 +36,19 @@ in vec3 vViewPosition;
 #include <bsdfs>
 #include <lights_pars>
 #include <lights_physical_pars_fragment>
+#include <tonemapping_pars_fragment>
+
+uniform vec3 diffuse;
+uniform vec3 emissive;
+uniform float opacity;
+uniform float roughness;
+uniform float metalness;
+uniform float clearCoat;
+uniform float clearCoatRoughness;
+uniform float reflectivity;
+
+in vec3 vViewPosition;
+
 void main() {
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );

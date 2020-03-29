@@ -288,8 +288,6 @@ namespace octoon::video
 
 			if (geometry->getVisible())
 			{
-				geometry->onRenderBefore(camera);
-
 				if (!this->setProgram(context, this->overrideMaterial_ ? this->overrideMaterial_ : geometry->getMaterial(), camera, *geometry))
 					continue;
 
@@ -301,8 +299,6 @@ namespace octoon::video
 					context.drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
 				else
 					context.draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
-
-				geometry->onRenderAfter(camera);
 			}
 		}
 	}
@@ -310,6 +306,20 @@ namespace octoon::video
 	void
 	Renderer::render(RenderScene& scene, hal::GraphicsContext& context) noexcept
 	{
+		for (auto& camera : scene.getCameraList())
+		{
+			camera->onRenderBefore(*camera);
+
+			for (auto& it : scene.getGeometries())
+			{
+				if (camera->getLayer() != it->getLayer())
+					continue;
+
+				if (it->getVisible())
+					it->onRenderBefore(*camera);
+			}
+		}
+
 		if (this->sortObjects_)
 		{
 			scene.sortCameras();
@@ -318,8 +328,6 @@ namespace octoon::video
 
 		for (auto& camera : scene.getCameraList())
 		{
-			camera->onRenderBefore(*camera);
-
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			auto framebuffer = camera->getFramebuffer();
 			if (framebuffer)
@@ -333,8 +341,6 @@ namespace octoon::video
 
 			this->prepareLights(context, scene.getLights(), *camera);
 			this->renderObjects(context, scene.getGeometries(), *camera);
-
-			camera->onRenderAfter(*camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			if (camera->getBlitToScreen())
@@ -357,6 +363,20 @@ namespace octoon::video
 				}
 			}
 #endif
+		}
+
+		for (auto& camera : scene.getCameraList())
+		{
+			for (auto& it : scene.getGeometries())
+			{
+				if (camera->getLayer() != it->getLayer())
+					continue;
+
+				if (it->getVisible())
+					it->onRenderAfter(*camera);
+			}
+
+			camera->onRenderAfter(*camera);
 		}
 	}
 

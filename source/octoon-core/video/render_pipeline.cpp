@@ -426,9 +426,20 @@ static char* lightmap_pars_fragment = R"(
 	uniform float lightMapIntensity;
 #endif
 )";
+static char* tonemapping_pars_fragment = R"(
+vec3 ACES(vec3 x)
+{
+	const float A = 2.51f;
+	const float B = 0.03f;
+	const float C = 2.43f;
+	const float D = 0.59f;
+	const float E = 0.14f;
+	return (x * (A * x + B)) / (x * (C * x + D) + E);
+}
+)";
 static char* tonemapping_fragment = R"(
 #if defined( TONE_MAPPING )
-  fragColor.rgb = toneMapping( fragColor.rgb );
+  fragColor.rgb = ACES( fragColor.rgb );
 #endif
 )";
 static char* bsdfs = R"(
@@ -1342,6 +1353,7 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"map_particle_pars_fragment", map_particle_pars_fragment },
 	{"map_particle_fragment", map_particle_fragment },
 	{"premultiplied_alpha_fragment", premultiplied_alpha_fragment },
+	{"tonemapping_pars_fragment", tonemapping_pars_fragment },
 	{"tonemapping_fragment", tonemapping_fragment },
 	{"encodings_pars_fragment", encodings_pars_fragment },
 	{"alphatest_fragment", alphatest_fragment },
@@ -1502,7 +1514,8 @@ namespace octoon::video
 		vertexShader += shader->vs;
 
 		std::string fragmentShader = "#version 330\n\t";
-		fragmentShader += R"(layout(location  = 0) out vec4 fragColor;)";
+		fragmentShader += "layout(location  = 0) out vec4 fragColor;\n";
+		//fragmentShader += "#define TONE_MAPPING\n";
 		fragmentShader += shader->fs;
 
 		this->parseIncludes(vertexShader);

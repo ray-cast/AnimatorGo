@@ -12,21 +12,21 @@ void main() {
 })";
 
 static const char* basic_frag = R"(
-uniform vec3 diffuse;
-uniform float opacity;
-#ifndef FLAT_SHADED
-in vec3 vNormal;
-#endif
 #include <common>
 #include <packing>
 #include <encodings_pars_fragment>
 #include <uv_pars_fragment>
+#include <normal_pars_vertex>
 #include <map_pars_fragment>
 #include <color_pars_fragment>
 #include <alphamap_pars_fragment>
 #include <aomap_pars_fragment>
 #include <lightmap_pars_fragment>
 #include <envmap_pars_fragment>
+#include <tonemapping_pars_fragment>
+uniform vec3 diffuse;
+uniform float opacity;
+
 void main() {
 	vec3 outgoingLight = vec3( 0.0 );
 	vec4 diffuseColor = vec4( diffuse, opacity );

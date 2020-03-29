@@ -15,6 +15,7 @@ uniform float opacity;
 #include <packing>
 #include <color_pars_fragment>
 #include <encodings_pars_fragment>
+#include <tonemapping_pars_fragment>
 void main() {
 	vec3 outgoingLight = vec3( 0.0 );
 	vec4 diffuseColor = vec4( diffuse, opacity );

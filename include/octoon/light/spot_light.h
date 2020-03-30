@@ -13,11 +13,11 @@ namespace octoon::light
 		SpotLight() noexcept;
 		virtual ~SpotLight() noexcept;
 
-		void setSpotInnerCone(float value) noexcept;
-		void setSpotOuterCone(float value) noexcept;
+		void setInnerCone(float value) noexcept;
+		void setOuterCone(float value) noexcept;
 
-		const math::float2& getSpotInnerCone() const noexcept;
-		const math::float2& getSpotOuterCone() const noexcept;
+		const math::float2& getInnerCone() const noexcept;
+		const math::float2& getOuterCone() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 

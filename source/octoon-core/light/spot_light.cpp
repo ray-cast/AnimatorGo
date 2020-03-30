@@ -15,27 +15,27 @@ namespace octoon::light
 	}
 
 	void
-	SpotLight::setSpotInnerCone(float value) noexcept
+	SpotLight::setInnerCone(float value) noexcept
 	{
 		_spotInnerCone.x = math::min(_spotOuterCone.x, value);
 		_spotInnerCone.y = math::cos(math::radians(_spotInnerCone.x));
 	}
 
 	void
-	SpotLight::setSpotOuterCone(float value) noexcept
+	SpotLight::setOuterCone(float value) noexcept
 	{
 		_spotOuterCone.x = math::max(_spotInnerCone.x, value);
 		_spotOuterCone.y = math::cos(math::radians(_spotOuterCone.x));
 	}
 
 	const math::float2&
-	SpotLight::getSpotInnerCone() const noexcept
+	SpotLight::getInnerCone() const noexcept
 	{
 		return _spotInnerCone;
 	}
 
 	const math::float2&
-	SpotLight::getSpotOuterCone() const noexcept
+	SpotLight::getOuterCone() const noexcept
 	{
 		return _spotOuterCone;
 	}
@@ -44,8 +44,8 @@ namespace octoon::light
 	SpotLight::clone() const noexcept
 	{
 		auto light = std::make_shared<SpotLight>();
-		light->setSpotInnerCone(this->getSpotInnerCone().x);
-		light->setSpotOuterCone(this->getSpotOuterCone().x);
+		light->setInnerCone(this->getInnerCone().x);
+		light->setOuterCone(this->getOuterCone().x);
 
 		return light;
 	}

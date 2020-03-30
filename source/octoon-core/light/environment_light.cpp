@@ -13,42 +13,29 @@ namespace octoon::light
 	}
 
 	void
-	EnvironmentLight::setSkyTexture(const hal::GraphicsTexturePtr& texture) noexcept
+	EnvironmentLight::setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept
 	{
-		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
-		_skybox = texture;
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		irradiance_ = texture;
 	}
 
 	const hal::GraphicsTexturePtr&
-	EnvironmentLight::getSkyTexture() const noexcept
+	EnvironmentLight::getIrradiance() const noexcept
 	{
-		return _skybox;
+		return irradiance_;
 	}
 
 	void
-	EnvironmentLight::setSkyDiffuseTexture(const hal::GraphicsTexturePtr& texture) noexcept
+	EnvironmentLight::setRadiance(const hal::GraphicsTexturePtr& texture) noexcept
 	{
-		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube);
-		_skyDiffuseIBL = texture;
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		radiance_ = texture;
 	}
 
 	const hal::GraphicsTexturePtr&
-	EnvironmentLight::getSkyDiffuseTexture() const noexcept
+	EnvironmentLight::getRadiance() const noexcept
 	{
-		return _skyDiffuseIBL;
-	}
-
-	void
-	EnvironmentLight::setSkySpecularTexture(const hal::GraphicsTexturePtr& texture) noexcept
-	{
-		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube);
-		_skySpecularIBL = texture;
-	}
-
-	const hal::GraphicsTexturePtr&
-	EnvironmentLight::getSkySpecularTexture() const noexcept
-	{
-		return _skySpecularIBL;
+		return radiance_;
 	}
 
 	std::shared_ptr<video::RenderObject>

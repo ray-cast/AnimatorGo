@@ -30,6 +30,32 @@ namespace octoon
 		LightComponent::setColor(value);
 	}
 
+	void
+	EnvironmentLightComponent::setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		irradiance_ = texture;
+	}
+
+	const hal::GraphicsTexturePtr&
+	EnvironmentLightComponent::getIrradiance() const noexcept
+	{
+		return irradiance_;
+	}
+
+	void
+	EnvironmentLightComponent::setRadiance(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		radiance_ = texture;
+	}
+
+	const hal::GraphicsTexturePtr&
+	EnvironmentLightComponent::getRadiance() const noexcept
+	{
+		return radiance_;
+	}
+
 	GameComponentPtr
 	EnvironmentLightComponent::clone() const noexcept
 	{

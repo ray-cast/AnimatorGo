@@ -624,7 +624,7 @@ vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
 // alpha is "roughness squared" in Disney’s reparameterization
 float G_GGX_Smith( const in float alpha, const in float dotNL, const in float dotNV ) {
 
-	// geometry term = G(l)G(v) / 4(n⋅l)(n⋅v)
+	// geometry term = G(l)G(v) / 4(n·l)(n·v)
 
 	float a2 = pow2( alpha );
 
@@ -1584,6 +1584,9 @@ namespace octoon::video
 			if (this->directionalLights_)
 				this->directionalLights_->uniformBuffer(context.light.directionLightBuffer);
 
+			if (this->envmap_)
+				this->directionalLights_->uniformTexture(context.light.environmentLights.front().radiance);
+
 			this->updateParameters();
 		}
 	}
@@ -1629,7 +1632,7 @@ namespace octoon::video
 		replace(str, "NUM_SPOT_LIGHTS", std::to_string(parameters.numSpot));
 		replace(str, "NUM_RECT_AREA_LIGHTS", std::to_string(parameters.numRectangle));
 		replace(str, "NUM_POINT_LIGHTS", std::to_string(parameters.numPoint));
-		replace(str, "NUM_HEMI_LIGHTS", std::to_string(parameters.numEnvironment));
+		replace(str, "NUM_HEMI_LIGHTS", std::to_string(parameters.numHemi));
 	}
 
 	void

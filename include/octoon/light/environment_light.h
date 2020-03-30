@@ -13,14 +13,11 @@ namespace octoon::light
 		EnvironmentLight() noexcept;
 		virtual ~EnvironmentLight() noexcept;
 
-		void setSkyTexture(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getSkyTexture() const noexcept;
+		void setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept;
+		const hal::GraphicsTexturePtr& getIrradiance() const noexcept;
 
-		void setSkyDiffuseTexture(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getSkyDiffuseTexture() const noexcept;
-
-		void setSkySpecularTexture(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getSkySpecularTexture() const noexcept;
+		void setRadiance(const hal::GraphicsTexturePtr& texture) noexcept;
+		const hal::GraphicsTexturePtr& getRadiance() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
@@ -29,9 +26,8 @@ namespace octoon::light
 		EnvironmentLight& operator=(const EnvironmentLight&) noexcept = delete;
 
 	private:
-		hal::GraphicsTexturePtr _skybox;
-		hal::GraphicsTexturePtr _skyDiffuseIBL;
-		hal::GraphicsTexturePtr _skySpecularIBL;
+		hal::GraphicsTexturePtr radiance_;
+		hal::GraphicsTexturePtr irradiance_;
 	};
 }
 

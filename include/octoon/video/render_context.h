@@ -2,6 +2,7 @@
 #define OCTOON_RENDER_CONTEXT_H_
 
 #include <octoon/hal/graphics_data.h>
+#include <octoon/hal/graphics_texture.h>
 
 namespace octoon::video
 {
@@ -33,6 +34,11 @@ namespace octoon::video
 		math::float2 shadowMapSize;
 	};
 
+	struct EnvironmentLight {
+		hal::GraphicsTexturePtr radiance;
+		hal::GraphicsTexturePtr irradiance;
+	};
+
 	struct PointLight {
 		math::float4 position;
 		math::float4 color;
@@ -61,6 +67,7 @@ namespace octoon::video
 		std::size_t numSpot;
 		std::size_t numRectangle;
 		std::size_t numPoint;
+		std::size_t numHemi;
 		std::size_t numEnvironment;
 
 		math::float3 ambientLightColors;
@@ -69,6 +76,7 @@ namespace octoon::video
 		std::vector<SpotLight> spotLights;
 		std::vector<RectAreaLight> rectangleLights;
 		std::vector<DirectionalLight> directionalLights;
+		std::vector<EnvironmentLight> environmentLights;
 
 		hal::GraphicsDataPtr spotLightBuffer;
 		hal::GraphicsDataPtr pointLightBuffer;

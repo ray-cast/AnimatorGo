@@ -203,6 +203,7 @@ namespace octoon::video
 		this->context_.light.numDirectional = 0;
 		this->context_.light.numSpot = 0;
 		this->context_.light.numPoint = 0;
+		this->context_.light.numHemi = 0;
 		this->context_.light.numEnvironment = 0;
 		this->context_.light.numRectangle = 0;
 
@@ -237,6 +238,10 @@ namespace octoon::video
 					spotLight.color.set(it->getColor() * it->getIntensity());
 					spotLight.direction.set(it->getForward());
 					spotLight.position.set(it->getTranslate());
+					spotLight.distance = 0;
+					spotLight.decay = 0;
+					spotLight.coneCos = it->getInnerCone().y;
+					spotLight.penumbraCos = it->getOuterCone().y;
 					spotLight.shadow = false;
 					spotLight.shadowBias = 0.0;
 					spotLight.shadowRadius = it->getRange();
@@ -248,6 +253,8 @@ namespace octoon::video
 					PointLight pointLight;
 					pointLight.color.set(it->getColor() * it->getIntensity());
 					pointLight.position.set(it->getTranslate());
+					pointLight.distance = 0;
+					pointLight.decay = 0;
 					pointLight.shadow = false;
 					pointLight.shadowBias = 0.0;
 					pointLight.shadowRadius = it->getRange();
@@ -255,6 +262,13 @@ namespace octoon::video
 					this->context_.light.pointLights.emplace_back(pointLight);
 					this->context_.light.numPoint++;
 				} else if (light->isA<light::EnvironmentLight>()) {
+					auto it = light->downcast<light::EnvironmentLight>();
+					EnvironmentLight environmentLight;
+					environmentLight.radiance = it->getRadiance();
+					environmentLight.irradiance = it->getIrradiance();
+					if (!environmentLight.irradiance)
+						this->context_.light.ambientLightColors += light->getColor() * light->getIntensity();
+					this->context_.light.environmentLights.emplace_back(environmentLight);
 					this->context_.light.numEnvironment++;
 				} else if (light->isA<light::RectangleLight>()) {
 					auto it = light->downcast<light::RectangleLight>();
@@ -262,7 +276,7 @@ namespace octoon::video
 					rectangleLight.color.set(it->getColor() * it->getIntensity());
 					rectangleLight.position.set(it->getTranslate());
 					rectangleLight.halfWidth.set(math::float3::One);
-					rectangleLight.halfWidth.set(math::float3::One);
+					rectangleLight.halfHeight.set(math::float3::One);
 					this->context_.light.rectangleLights.emplace_back(rectangleLight);
 					this->context_.light.numRectangle++;
 				}

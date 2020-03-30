@@ -31,6 +31,9 @@ namespace octoon::material
 		void setReflectivity(float reflectivity) noexcept;
 		float getReflectivity() const noexcept;
 
+		void setRefractionRatio(float refractionRatio) noexcept;
+		float getRefractionRatio() const noexcept;		
+
 		void setClearCoat(float clearCoat) noexcept;
 		float getClearCoat() const noexcept;
 
@@ -46,6 +49,9 @@ namespace octoon::material
 		void setRepeat(const math::float2& repeat) noexcept;
 		const math::float2& getRepeat() const noexcept;
 
+		void setGamma(float gamma) noexcept;
+		float getGamma() const noexcept;
+
 		std::shared_ptr<Material> clone() const noexcept override;
 
 	private:
@@ -53,10 +59,12 @@ namespace octoon::material
 		MeshStandardMaterial& operator=(const MeshStandardMaterial&) = delete;
 
 	private:
+		float gamma_;
 		float opacity_;
 		float metalness_;
 		float smoothness_;
 		float reflectivity_;
+		float refractionRatio_;
 		float clearCoat_;
 		float clearCoatRoughness_;
 		math::float2 offset_;

@@ -45,7 +45,15 @@ namespace octoon::video
 	void
 	Renderer::close() noexcept
 	{
+		this->context_.light.pointLightBuffer.reset();
+		this->context_.light.spotLightBuffer.reset();
+		this->context_.light.rectangleLightBuffer.reset();
 		this->context_.light.directionLightBuffer.reset();
+		this->context_.light.pointLights.clear();
+		this->context_.light.spotLights.clear();
+		this->context_.light.directionalLights.clear();
+		this->context_.light.rectangleLights.clear();
+		this->context_.light.environmentLights.clear();
 		this->buffers_.clear();
 		this->pipelines_.clear();
 		fbo_.reset();
@@ -208,7 +216,11 @@ namespace octoon::video
 		this->context_.light.numRectangle = 0;
 
 		this->context_.light.ambientLightColors = math::float3::Zero;
+		this->context_.light.pointLights.clear();
+		this->context_.light.spotLights.clear();
+		this->context_.light.rectangleLights.clear();
 		this->context_.light.directionalLights.clear();
+		this->context_.light.environmentLights.clear();
 
 		for (auto& light : lights)
 		{
@@ -264,6 +276,7 @@ namespace octoon::video
 				} else if (light->isA<light::EnvironmentLight>()) {
 					auto it = light->downcast<light::EnvironmentLight>();
 					EnvironmentLight environmentLight;
+					environmentLight.intensity = it->getIntensity();
 					environmentLight.radiance = it->getRadiance();
 					environmentLight.irradiance = it->getIrradiance();
 					if (!environmentLight.irradiance)

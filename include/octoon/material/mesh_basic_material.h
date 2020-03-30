@@ -28,6 +28,9 @@ namespace octoon::material
 		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
 		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
 
+		void setGamma(float gamma) noexcept;
+		float getGamma() const noexcept;
+
 		std::shared_ptr<Material> clone() const noexcept override;
 
 	private:
@@ -35,6 +38,7 @@ namespace octoon::material
 		MeshBasicMaterial& operator=(const MeshBasicMaterial&) = delete;
 
 	private:
+		float gamma_;
 		float opacity_;
 		math::float3 color_;
 		math::float2 offset_;

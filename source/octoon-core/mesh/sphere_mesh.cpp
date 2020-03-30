@@ -30,9 +30,11 @@ namespace octoon::mesh
 				vertex.y = radius * math::cos(thetaStart + v * thetaLength);
 				vertex.z = radius * math::sin(thetaStart + v * thetaLength) * math::sin(phiStart + u * phiLength);
 
+				math::Vector3 normal = math::normalize(vertex);
+
 				vertices.push_back(vertex);
-				normals.push_back(math::normalize(vertex));
-				texcoords.emplace_back(u, v);
+				normals.push_back(normal);
+				texcoords.emplace_back(math::float2((atan2(normal.x, normal.z) * math::PI_INV * 0.5f + 0.5f), v));
 
 				position.push_back((std::uint32_t)vertices.size() - 1);
 			}

@@ -34,6 +34,8 @@ namespace octoon
 	EnvironmentLightComponent::setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept
 	{
 		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		if (environmentLight_)
+			environmentLight_->setIrradiance(texture);
 		irradiance_ = texture;
 	}
 
@@ -47,6 +49,8 @@ namespace octoon
 	EnvironmentLightComponent::setRadiance(const hal::GraphicsTexturePtr& texture) noexcept
 	{
 		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		if (environmentLight_)
+			environmentLight_->setRadiance(texture);
 		radiance_ = texture;
 	}
 
@@ -75,6 +79,8 @@ namespace octoon
 		environmentLight_->setLayer(this->getGameObject()->getLayer());
 		environmentLight_->setColor(this->getColor());
 		environmentLight_->setIntensity(this->getIntensity());
+		environmentLight_->setIrradiance(this->irradiance_);
+		environmentLight_->setRadiance(this->radiance_);
 		environmentLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);

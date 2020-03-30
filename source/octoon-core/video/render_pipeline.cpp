@@ -204,7 +204,6 @@ vec4 LogLuvToLinear( in vec4 value ) {
 )";
 static char* cube_uv_reflection_fragment = R"(
 #ifdef ENVMAP_TYPE_CUBE_UV
-
 #define cubeUV_textureSize (1024.0)
 
 int getFaceFromDirection(vec3 direction) {
@@ -304,7 +303,7 @@ vec2 getCubeUV(vec3 direction, float roughnessLevel, float mipLevel) {
 
 #define cubeUV_maxLods3 (log2(cubeUV_textureSize*0.25) - 3.0)
 
-vec4 textureCubeUV(vec3 reflectedDirection, float roughness ) {
+vec4 textureCubeUV(sampler2D texture, vec3 reflectedDirection, float roughness ) {
 	float roughnessVal = roughness* cubeUV_maxLods3;
 	float r1 = floor(roughnessVal);
 	float r2 = r1 + 1.0;
@@ -320,17 +319,22 @@ vec4 textureCubeUV(vec3 reflectedDirection, float roughness ) {
 
 	// Tri linear interpolation.
 	vec2 uv_10 = getCubeUV(reflectedDirection, r1, level0);
-	vec4 color10 = envMapTexelToLinear(texture2D(envMap, uv_10));
+	vec4 color10 = LinearToLinear(texture2D(texture, uv_10));
 
 	vec2 uv_20 = getCubeUV(reflectedDirection, r2, level0);
-	vec4 color20 = envMapTexelToLinear(texture2D(envMap, uv_20));
+	vec4 color20 = LinearToLinear(texture2D(texture, uv_20));
 
 	vec4 result = mix(color10, color20, t);
 
 	return vec4(result.rgb, 1.0);
 }
-
 #endif
+
+vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, float roughness )
+{
+	vec2 uv = vec2((atan(reflectedDirection.x, reflectedDirection.z) * RECIPROCAL_PI * 0.5f + 0.5f), acos(reflectedDirection.y) * RECIPROCAL_PI);
+	return LinearToLinear(texture2D(texture, uv));
+}
 
 )";
 static char* begin_vertex = R"(
@@ -430,7 +434,7 @@ static char* map_fragment = R"(
 if (mapEnable)
 {
 	vec4 texelColor = texture2D( map, vUv );
-	texelColor = GammaToLinear( texelColor, 2.2);
+	texelColor = GammaToLinear( texelColor, gamma);
 	diffuseColor *= texelColor;
 }
 )";
@@ -529,7 +533,6 @@ static char* aomap_pars_fragment = R"(
 )";
 static char* envmap_pars_fragment = R"(
 #if defined( USE_ENVMAP ) || defined( PHYSICAL )
-	uniform float reflectivity;
 	uniform float envMapIntensity;
 #endif
 #ifdef USE_ENVMAP
@@ -1024,7 +1027,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 
 
-#if defined( USE_ENVMAP ) && defined( PHYSICAL )
+#if defined( USE_ENVMAP )
 	vec3 getLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in int maxMIPLevel ) {
 
 		vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );
@@ -1047,12 +1050,17 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 			#endif
 
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+			envMapColor.rgb = LinearToLinear( envMapColor ).rgb;
 
 		#elif defined( ENVMAP_TYPE_CUBE_UV )
 
 			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-			vec4 envMapColor = textureCubeUV( queryVec, 1.0 );
+			vec4 envMapColor = textureCubeUV(envMap, queryVec, 1.0 );
+
+		#elif defined( ENVMAP_TYPE_LATLONG_UV )
+
+			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
+			vec4 envMapColor = textureLatlongUV(envMap, queryVec, 1.0);
 
 		#else
 
@@ -1107,12 +1115,16 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 			#endif
 
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+			envMapColor.rgb = LinearToLinear( envMapColor ).rgb;
 
 		#elif defined( ENVMAP_TYPE_CUBE_UV )
 
 			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-			vec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
+			vec4 envMapColor = textureCubeUV(envMap, queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
+		#elif defined( ENVMAP_TYPE_LATLONG_UV )
+
+			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
+			vec4 envMapColor = textureLatlongUV(envMap, queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
 
 		#elif defined( ENVMAP_TYPE_EQUIREC )
 
@@ -1130,7 +1142,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 			#endif
 
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+			envMapColor.rgb = LinearToLinear( envMapColor ).rgb;
 
 		#elif defined( ENVMAP_TYPE_SPHERE )
 
@@ -1146,7 +1158,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 			#endif
 
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+			envMapColor.rgb = LinearToLinear( envMapColor ).rgb;
 
 		#endif
 
@@ -1432,7 +1444,7 @@ IncidentLight directLight;
 
 	#endif
 
-	#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )
+	#if defined( USE_ENVMAP ) && defined( PHYSICAL )
 
 		// TODO, replace 8 with the real maxMIPLevel
 		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 8 );
@@ -1522,6 +1534,28 @@ namespace octoon::video
 
 	RenderPipeline::~RenderPipeline() noexcept
 	{
+		material_.reset();
+
+		ambientLightColor_.reset();
+		directionalLights_.reset();
+		pointLights_.reset();
+		spotLights_.reset();
+		rectAreaLights_.reset();
+		hemisphereLights_.reset();
+		flipEnvMap_.reset();
+		envMap_.reset();
+		envMapIntensity_.reset();
+
+		viewMatrix_.reset();
+		normalMatrix_.reset();
+		modelMatrix_.reset();
+		modelViewMatrix_.reset();
+		projectionMatrix_.reset();
+
+		program_.reset();
+		renderState_.reset();
+		descriptorSet_.reset();
+		pipeline_.reset();
 	}
 
 	void
@@ -1560,6 +1594,9 @@ namespace octoon::video
 			if (this->modelMatrix_)
 				this->modelMatrix_->uniform4fmat(geometry.getTransform());
 			
+			if (this->viewMatrix_)
+				this->viewMatrix_->uniform4fmat(camera.getView());
+
 			if (this->modelViewMatrix_)
 				this->modelViewMatrix_->uniform4fmat(camera.getView() * geometry.getTransform());
 			
@@ -1567,7 +1604,7 @@ namespace octoon::video
 				this->projectionMatrix_->uniform4fmat(camera.getProjection());
 			
 			if (this->normalMatrix_)
-				this->normalMatrix_->uniform3fmat((math::float3x3)geometry.getTransform());
+				this->normalMatrix_->uniform3fmat((math::float3x3)(camera.getView() * geometry.getTransform()));
 
 			if (this->ambientLightColor_)
 				this->ambientLightColor_->uniform3f(context.light.ambientLightColors);
@@ -1584,8 +1621,14 @@ namespace octoon::video
 			if (this->directionalLights_)
 				this->directionalLights_->uniformBuffer(context.light.directionLightBuffer);
 
-			if (this->envmap_)
-				this->directionalLights_->uniformTexture(context.light.environmentLights.front().radiance);
+			if (this->flipEnvMap_)
+				this->flipEnvMap_->uniform1f(1.0f);
+
+			if (this->envMap_)
+				this->envMap_->uniformTexture(context.light.environmentLights.front().irradiance);
+
+			if (this->envMapIntensity_)
+				this->envMapIntensity_->uniform1f(context.light.environmentLights.front().intensity);
 
 			this->updateParameters();
 		}
@@ -1661,7 +1704,12 @@ namespace octoon::video
 
 		std::string fragmentShader = "#version 330\n\t";
 		fragmentShader += "layout(location  = 0) out vec4 fragColor;\n";
+		fragmentShader += "uniform mat4 viewMatrix;\n";
 		//fragmentShader += "#define TONE_MAPPING\n";
+		fragmentShader += "#define USE_ENVMAP\n";
+		fragmentShader += "#define ENVMAP_TYPE_LATLONG_UV\n";
+		fragmentShader += "#define ENVMAP_MODE_REFLECTION\n";
+		fragmentShader += "#define PHYSICAL\n";
 		fragmentShader += "#define PHYSICALLY_CORRECT_LIGHTS\n";
 		fragmentShader += shader->fs;
 
@@ -1784,6 +1832,10 @@ namespace octoon::video
 				if (modelMatrix != end)
 					modelMatrix_ = *modelMatrix;
 
+				auto viewMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "viewMatrix"; });
+				if (viewMatrix != end)
+					viewMatrix_ = *viewMatrix;
+
 				auto normalMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "normalMatrix"; });
 				if (normalMatrix != end)
 					normalMatrix_ = *normalMatrix;
@@ -1814,6 +1866,18 @@ namespace octoon::video
 				auto hemisphereLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "hemisphereLights"; });
 				if (hemisphereLights != end)
 					hemisphereLights_ = *hemisphereLights;
+				
+				auto flipEnvMap = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "flipEnvMap"; });
+				if (flipEnvMap != end)
+					flipEnvMap_ = *flipEnvMap;
+
+				auto envmap = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "envMap"; });
+				if (envmap != end)
+					envMap_ = *envmap;
+
+				auto envmapIntensity = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "envMapIntensity"; });
+				if (envmapIntensity != end)
+					envMapIntensity_ = *envmapIntensity;
 
 				this->updateParameters();
 			}

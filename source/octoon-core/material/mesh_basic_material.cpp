@@ -26,7 +26,7 @@ static const char* basic_frag = R"(
 #include <tonemapping_pars_fragment>
 uniform vec3 diffuse;
 uniform float opacity;
-
+uniform float gamma;
 void main() {
 	vec3 outgoingLight = vec3( 0.0 );
 	vec4 diffuseColor = vec4( diffuse, opacity );
@@ -57,6 +57,7 @@ namespace octoon::material
 		this->setOpacity(1.0f);
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);
+		this->setGamma(2.2f);
 		this->setShader(std::make_shared<Shader>(basic_vert, basic_frag));
 	}
 
@@ -115,6 +116,19 @@ namespace octoon::material
 	MeshBasicMaterial::getColorTexture() const noexcept
 	{
 		return this->colorTexture_;
+	}
+
+	void
+	MeshBasicMaterial::setGamma(float gamma) noexcept
+	{
+		this->gamma_ = gamma;
+		this->set("gamma", gamma);
+	}
+
+	float
+	MeshBasicMaterial::getGamma() const noexcept
+	{
+		return this->gamma_;
 	}
 
 	void

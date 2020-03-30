@@ -52,8 +52,11 @@ namespace octoon::video
 		hal::GraphicsUniformSetPtr spotLights_;
 		hal::GraphicsUniformSetPtr rectAreaLights_;
 		hal::GraphicsUniformSetPtr hemisphereLights_;
-		hal::GraphicsUniformSetPtr envmap_;
+		hal::GraphicsUniformSetPtr flipEnvMap_;
+		hal::GraphicsUniformSetPtr envMap_;
+		hal::GraphicsUniformSetPtr envMapIntensity_;
 
+		hal::GraphicsUniformSetPtr viewMatrix_;
 		hal::GraphicsUniformSetPtr normalMatrix_;
 		hal::GraphicsUniformSetPtr modelMatrix_;
 		hal::GraphicsUniformSetPtr modelViewMatrix_;

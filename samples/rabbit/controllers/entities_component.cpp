@@ -475,14 +475,17 @@ namespace rabbit
 
 		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
+		envMaterial->setColorTexture(TextureLoader::load(u8"D:/Resources/ÊÒÄÚ3k/skybox.hdr"));
+		envMaterial->setGamma(1.0f);
 
 		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
-		enviromentLight->addComponent<octoon::AmbientLightComponent>();
-		enviromentLight->getComponent<octoon::AmbientLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
-		enviromentLight->getComponent<octoon::AmbientLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity * math::PI);
+		enviromentLight->addComponent<octoon::EnvironmentLightComponent>();
+		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
+		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity * math::PI);
+		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIrradiance(TextureLoader::load(u8"D:/Resources/ÊÒÄÚ3k/skybox.hdr"));
 		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
 

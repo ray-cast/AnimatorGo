@@ -20,7 +20,6 @@ static const char* standard_frag = R"(
 #include <common>
 #include <packing>
 #include <encodings_pars_fragment>
-#include <cube_uv_reflection_fragment>
 #include <uv_pars_fragment>
 #include <normal_pars_fragment>
 #include <map_pars_fragment>
@@ -34,6 +33,7 @@ static const char* standard_frag = R"(
 #include <bumpmap_pars_fragment>
 #include <roughnessmap_pars_fragment>
 #include <metalnessmap_pars_fragment>
+#include <cube_uv_reflection_fragment>
 #include <bsdfs>
 #include <lights_pars>
 #include <lights_physical_pars_fragment>
@@ -47,6 +47,7 @@ uniform float metalness;
 uniform float clearCoat;
 uniform float clearCoatRoughness;
 uniform float reflectivity;
+uniform float gamma;
 
 in vec3 vViewPosition;
 
@@ -90,8 +91,10 @@ namespace octoon::material
 		this->setSmoothness(0.0f);
 		this->setMetalness(0.0f);
 		this->setReflectivity(0.5f);
+		this->setRefractionRatio(1.0f);
 		this->setClearCoat(0.0f);
 		this->setClearCoatRoughness(0.0f);
+		this->setGamma(2.2f);
 		this->setShader(std::make_shared<Shader>(standard_vert, standard_frag));
 	}
 
@@ -218,6 +221,19 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setRefractionRatio(float refractionRatio) noexcept
+	{
+		this->refractionRatio_ = refractionRatio;
+		this->set("refractionRatio", refractionRatio);
+	}
+
+	float
+	MeshStandardMaterial::getRefractionRatio() const noexcept
+	{
+		return this->refractionRatio_;
+	}
+
+	void
 	MeshStandardMaterial::setClearCoat(float clearCoat) noexcept
 	{
 		this->clearCoat_ = clearCoat;
@@ -241,6 +257,19 @@ namespace octoon::material
 	MeshStandardMaterial::getClearCoatRoughness() const noexcept
 	{
 		return this->clearCoatRoughness_;
+	}
+
+	void
+	MeshStandardMaterial::setGamma(float gamma) noexcept
+	{
+		this->gamma_ = gamma;
+		this->set("gamma", gamma);
+	}
+
+	float
+	MeshStandardMaterial::getGamma() const noexcept
+	{
+		return this->gamma_;
 	}
 
 	std::shared_ptr<Material>

@@ -1,5 +1,6 @@
 ﻿#include "environment_window.h"
 #include <octoon/offline_environment_light_component.h>
+#include <octoon/ambient_light_component.h>
 
 namespace rabbit
 {
@@ -110,9 +111,12 @@ namespace rabbit
 	void
 	EnvironmentWindow::closeEvent(QCloseEvent* event)
 	{
-		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-		if (envLight)
-			envLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+		auto offlineEnvLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
+		if (offlineEnvLight)
+			offlineEnvLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+		auto ambientLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::AmbientLightComponent>();
+		if (ambientLight)
+			ambientLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 	}
 
 	void 
@@ -132,6 +136,9 @@ namespace rabbit
 		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 		if (envLight)
 			envLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+		auto ambientLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::AmbientLightComponent>();
+		if (ambientLight)
+			ambientLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
 	}
@@ -146,6 +153,12 @@ namespace rabbit
 			{
 				profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 				envLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+			}
+			auto ambient = profile_->entitiesModule->enviromentLight->getComponent<octoon::AmbientLightComponent>();
+			if (ambient)
+			{
+				profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
+				ambient->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 			}
 		}
 
@@ -165,7 +178,9 @@ namespace rabbit
 		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value / 10.0f);
-
+		auto ambient = profile_->entitiesModule->enviromentLight->getComponent<octoon::AmbientLightComponent>();
+		if (ambient)
+			ambient->setIntensity(value / 10.0f);
 		editIntensity_->setValue(value / 10.0f);
 	}
 
@@ -175,7 +190,9 @@ namespace rabbit
 		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value);
-
+		auto ambient = profile_->entitiesModule->enviromentLight->getComponent<octoon::AmbientLightComponent>();
+		if (ambient)
+			ambient->setIntensity(value);
 		sliderIntensity_->setValue(value * 10.0f);
 	}
 }

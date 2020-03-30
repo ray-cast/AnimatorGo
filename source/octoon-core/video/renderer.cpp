@@ -39,14 +39,6 @@ namespace octoon::video
 	{
 		device_ = device;
 
-		hal::GraphicsDataDesc directionalLightDesc;
-		directionalLightDesc.setType(hal::GraphicsDataType::UniformBuffer);
-		directionalLightDesc.setStream(nullptr);
-		directionalLightDesc.setStreamSize(sizeof(light::DirectionalLight));
-		directionalLightDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit);
-
-		this->context_.light.directionLightBuffer = this->createGraphicsData(directionalLightDesc);
-
 		this->setFramebufferSize(w, h);
 	}
 
@@ -212,7 +204,7 @@ namespace octoon::video
 		this->context_.light.numSpot = 0;
 		this->context_.light.numPoint = 0;
 		this->context_.light.numEnvironment = 0;
-		this->context_.light.numArea = 0;
+		this->context_.light.numRectangle = 0;
 
 		this->context_.light.ambientLightColors = math::float3::Zero;
 		this->context_.light.directionalLights.clear();
@@ -231,8 +223,8 @@ namespace octoon::video
 				} else if (light->isA<light::DirectionalLight>()) {
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
-					directionLight.color.set(light->getColor() * light->getIntensity());
-					directionLight.direction.set(light->getForward());
+					directionLight.color.set(it->getColor() * it->getIntensity());
+					directionLight.direction.set(it->getForward());
 					directionLight.shadow = false;
 					directionLight.shadowBias = it->getShadowBias();
 					directionLight.shadowRadius = it->getShadowRadius();
@@ -240,13 +232,39 @@ namespace octoon::video
 					this->context_.light.directionalLights.emplace_back(directionLight);
 					this->context_.light.numDirectional++;
 				} else if (light->isA<light::SpotLight>()) {
+					auto it = light->downcast<light::SpotLight>();
+					SpotLight spotLight;
+					spotLight.color.set(it->getColor() * it->getIntensity());
+					spotLight.direction.set(it->getForward());
+					spotLight.position.set(it->getTranslate());
+					spotLight.shadow = false;
+					spotLight.shadowBias = 0.0;
+					spotLight.shadowRadius = it->getRange();
+					spotLight.shadowMapSize = math::float2::Zero;
+					this->context_.light.spotLights.emplace_back(spotLight);
 					this->context_.light.numSpot++;
 				} else if (light->isA<light::PointLight>()) {
+					auto it = light->downcast<light::PointLight>();
+					PointLight pointLight;
+					pointLight.color.set(it->getColor() * it->getIntensity());
+					pointLight.position.set(it->getTranslate());
+					pointLight.shadow = false;
+					pointLight.shadowBias = 0.0;
+					pointLight.shadowRadius = it->getRange();
+					pointLight.shadowMapSize = math::float2::Zero;
+					this->context_.light.pointLights.emplace_back(pointLight);
 					this->context_.light.numPoint++;
 				} else if (light->isA<light::EnvironmentLight>()) {
 					this->context_.light.numEnvironment++;
 				} else if (light->isA<light::RectangleLight>()) {
-					this->context_.light.numArea++;
+					auto it = light->downcast<light::RectangleLight>();
+					RectAreaLight rectangleLight;
+					rectangleLight.color.set(it->getColor() * it->getIntensity());
+					rectangleLight.position.set(it->getTranslate());
+					rectangleLight.halfWidth.set(math::float3::One);
+					rectangleLight.halfWidth.set(math::float3::One);
+					this->context_.light.rectangleLights.emplace_back(rectangleLight);
+					this->context_.light.numRectangle++;
 				}
 
 				light->onRenderAfter(camera);
@@ -255,25 +273,135 @@ namespace octoon::video
 			}
 		}
 
-		if (this->context_.light.numDirectional)
+		if (this->context_.light.numSpot)
 		{
-			auto desc = this->context_.light.directionLightBuffer->getDataDesc();
-			if (desc.getStreamSize() < this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight))
+			if (!this->context_.light.spotLightBuffer)
 			{
-				hal::GraphicsDataDesc indiceDesc;
-				indiceDesc.setType(hal::GraphicsDataType::UniformBuffer);
-				indiceDesc.setStream((std::uint8_t*)this->context_.light.directionalLights.data());
-				indiceDesc.setStreamSize(this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight));
-				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit);
-
-				this->context_.light.directionLightBuffer = this->createGraphicsData(indiceDesc);
+				this->context_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					hal::GraphicsDataType::UniformBuffer,
+					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+					this->context_.light.spotLights.data(),
+					sizeof(SpotLight) * this->context_.light.numSpot
+				));
 			}
 			else
 			{
-				void* data;
-				if (this->context_.light.directionLightBuffer->map(0, desc.getStreamSize(), &data))
-					std::memcpy(data, this->context_.light.directionalLights.data(), this->context_.light.directionalLights.size() * sizeof(light::DirectionalLight));
-				this->context_.light.directionLightBuffer->unmap();
+				auto desc = this->context_.light.spotLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->context_.light.spotLights.size() * sizeof(SpotLight))
+				{
+					this->context_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+						hal::GraphicsDataType::UniformBuffer,
+						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+						this->context_.light.spotLights.data(),
+						sizeof(SpotLight) * this->context_.light.numSpot
+					));
+				}
+				else
+				{
+					void* data;
+					if (this->context_.light.spotLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->context_.light.spotLights.data(), this->context_.light.spotLights.size() * sizeof(SpotLight));
+					this->context_.light.spotLightBuffer->unmap();
+				}
+			}
+		}
+
+		if (this->context_.light.numPoint)
+		{
+			if (!this->context_.light.pointLightBuffer)
+			{
+				this->context_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					hal::GraphicsDataType::UniformBuffer,
+					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+					this->context_.light.pointLights.data(),
+					sizeof(PointLight) * this->context_.light.numPoint
+				));
+			}
+			else
+			{
+				auto desc = this->context_.light.pointLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->context_.light.pointLights.size() * sizeof(PointLight))
+				{
+					this->context_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+						hal::GraphicsDataType::UniformBuffer,
+						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+						this->context_.light.pointLights.data(),
+						sizeof(PointLight) * this->context_.light.numPoint
+					));
+				}
+				else
+				{
+					void* data;
+					if (this->context_.light.pointLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->context_.light.pointLights.data(), this->context_.light.pointLights.size() * sizeof(PointLight));
+					this->context_.light.pointLightBuffer->unmap();
+				}
+			}
+		}
+
+		if (this->context_.light.numRectangle)
+		{
+			if (!this->context_.light.rectangleLightBuffer)
+			{
+				this->context_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					hal::GraphicsDataType::UniformBuffer,
+					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+					this->context_.light.rectangleLights.data(),
+					sizeof(RectAreaLight) * this->context_.light.numRectangle
+				));
+			}
+			else
+			{
+				auto desc = this->context_.light.rectangleLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->context_.light.rectangleLights.size() * sizeof(RectAreaLight))
+				{
+					this->context_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+						hal::GraphicsDataType::UniformBuffer,
+						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+						this->context_.light.rectangleLights.data(),
+						sizeof(RectAreaLight) * this->context_.light.numRectangle
+					));
+				}
+				else
+				{
+					void* data;
+					if (this->context_.light.rectangleLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->context_.light.rectangleLights.data(), this->context_.light.rectangleLights.size() * sizeof(RectAreaLight));
+					this->context_.light.rectangleLightBuffer->unmap();
+				}
+			}
+		}
+
+		if (this->context_.light.numDirectional)
+		{
+			if (!this->context_.light.directionLightBuffer)
+			{
+				this->context_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					hal::GraphicsDataType::UniformBuffer,
+					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+					this->context_.light.directionalLights.data(),
+					sizeof(DirectionalLight) * this->context_.light.numDirectional
+				));
+			}
+			else
+			{
+				auto desc = this->context_.light.directionLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->context_.light.directionalLights.size() * sizeof(DirectionalLight))
+				{
+					this->context_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+						hal::GraphicsDataType::UniformBuffer,
+						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
+						this->context_.light.directionalLights.data(),
+						sizeof(DirectionalLight) * this->context_.light.numDirectional
+					));
+				}
+				else
+				{
+					void* data;
+					if (this->context_.light.directionLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->context_.light.directionalLights.data(), this->context_.light.directionalLights.size() * sizeof(DirectionalLight));
+					this->context_.light.directionLightBuffer->unmap();
+				}
 			}
 		}
 	}

@@ -12,16 +12,16 @@ namespace octoon::video
 	};
 
 	struct RectAreaLight {
-		math::float3 color;
-		math::float3 position;
-		math::float3 halfWidth;
-		math::float3 halfHeight;
+		math::float4 color;
+		math::float4 position;
+		math::float4 halfWidth;
+		math::float4 halfHeight;
 	};
 
 	struct SpotLight {
-		math::float3 position;
-		math::float3 direction;
-		math::float3 color;
+		math::float4 position;
+		math::float4 direction;
+		math::float4 color;
 		float distance;
 		float decay;
 		float coneCos;
@@ -34,8 +34,8 @@ namespace octoon::video
 	};
 
 	struct PointLight {
-		math::float3 position;
-		math::float3 color;
+		math::float4 position;
+		math::float4 color;
 		float distance;
 		float decay;
 
@@ -59,14 +59,20 @@ namespace octoon::video
 	{
 		std::size_t numDirectional;
 		std::size_t numSpot;
-		std::size_t numArea;
+		std::size_t numRectangle;
 		std::size_t numPoint;
 		std::size_t numEnvironment;
 
 		math::float3 ambientLightColors;
 
+		std::vector<PointLight> pointLights;
+		std::vector<SpotLight> spotLights;
+		std::vector<RectAreaLight> rectangleLights;
 		std::vector<DirectionalLight> directionalLights;
 
+		hal::GraphicsDataPtr spotLightBuffer;
+		hal::GraphicsDataPtr pointLightBuffer;
+		hal::GraphicsDataPtr rectangleLightBuffer;
 		hal::GraphicsDataPtr directionLightBuffer;
 	};
 

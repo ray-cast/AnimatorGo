@@ -48,6 +48,7 @@ namespace octoon::video
 
 		hal::GraphicsUniformSetPtr ambientLightColor_;
 		hal::GraphicsUniformSetPtr directionalLights_;
+		hal::GraphicsUniformSetPtr pointLights_;
 		hal::GraphicsUniformSetPtr spotLights_;
 		hal::GraphicsUniformSetPtr rectAreaLights_;
 		hal::GraphicsUniformSetPtr hemisphereLights_;

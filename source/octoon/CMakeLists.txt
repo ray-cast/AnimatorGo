@@ -59,10 +59,18 @@ SET(VIDEO_FEATURES_LIST
 	${SOURCE_PATH}/skinned_joint_renderer_component.cpp
 	${HEADER_PATH}/light_component.h
 	${SOURCE_PATH}/light_component.cpp
-	${HEADER_PATH}/directional_light_component.h
-	${SOURCE_PATH}/directional_light_component.cpp
 	${HEADER_PATH}/ambient_light_component.h
 	${SOURCE_PATH}/ambient_light_component.cpp
+	${HEADER_PATH}/directional_light_component.h
+	${SOURCE_PATH}/directional_light_component.cpp
+	${HEADER_PATH}/point_light_component.h
+	${SOURCE_PATH}/point_light_component.cpp
+	${HEADER_PATH}/spot_light_component.h
+	${SOURCE_PATH}/spot_light_component.cpp
+	${HEADER_PATH}/rectangle_light_component.h
+	${SOURCE_PATH}/rectangle_light_component.cpp
+	${HEADER_PATH}/environment_light_component.h
+	${SOURCE_PATH}/environment_light_component.cpp
 	${HEADER_PATH}/video_feature.h
 	${SOURCE_PATH}/video_feature.cpp
 )

@@ -1440,6 +1440,15 @@ namespace octoon::video
 			if (this->ambientLightColor_)
 				this->ambientLightColor_->uniform3f(context.light.ambientLightColors);
 
+			if (this->spotLights_)
+				this->spotLights_->uniformBuffer(context.light.spotLightBuffer);
+
+			if (this->pointLights_)
+				this->pointLights_->uniformBuffer(context.light.pointLightBuffer);
+
+			if (this->rectAreaLights_)
+				this->rectAreaLights_->uniformBuffer(context.light.rectangleLightBuffer);
+
 			if (this->directionalLights_)
 				this->directionalLights_->uniformBuffer(context.light.directionLightBuffer);
 
@@ -1486,7 +1495,7 @@ namespace octoon::video
 
 		replace(str, "NUM_DIR_LIGHTS", std::to_string(parameters.numDirectional));
 		replace(str, "NUM_SPOT_LIGHTS", std::to_string(parameters.numSpot));
-		replace(str, "NUM_RECT_AREA_LIGHTS", std::to_string(parameters.numArea));
+		replace(str, "NUM_RECT_AREA_LIGHTS", std::to_string(parameters.numRectangle));
 		replace(str, "NUM_POINT_LIGHTS", std::to_string(parameters.numPoint));
 		replace(str, "NUM_HEMI_LIGHTS", std::to_string(parameters.numEnvironment));
 	}
@@ -1654,6 +1663,10 @@ namespace octoon::video
 				auto directionalLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "DirectionalLights"; });
 				if (directionalLights != end)
 					directionalLights_ = *directionalLights;
+
+				auto pointLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "pointLights"; });
+				if (pointLights != end)
+					pointLights_ = *pointLights;
 
 				auto spotLights = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "spotLights"; });
 				if (spotLights != end)

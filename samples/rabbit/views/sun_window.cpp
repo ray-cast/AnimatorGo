@@ -1,6 +1,7 @@
 ﻿#include "sun_window.h"
 #include <qscrollbar.h>
 #include <octoon/transform_component.h>
+#include <octoon/directional_light_component.h>
 #include <octoon/offline_directional_light_component.h>
 
 namespace rabbit
@@ -236,6 +237,9 @@ namespace rabbit
 		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
 		if (sunLight)
 			sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
+		auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+		if (sunLight2)
+			sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 	}
 
 	void 
@@ -246,6 +250,9 @@ namespace rabbit
 			auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
 			if (sunLight)
 				sunLight->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
+			auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+			if (sunLight2)
+				sunLight2->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 		}
 	}
 
@@ -255,6 +262,9 @@ namespace rabbit
 		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
 		if (sunLight)
 			sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
+		auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+		if (sunLight2)
+			sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(profile_->sunModule->rotation)));
@@ -272,6 +282,12 @@ namespace rabbit
 			{
 				profile_->sunModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 				sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
+			}
+			auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+			if (sunLight2)
+			{
+				profile_->sunModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
+				sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 			}
 		}
 
@@ -296,7 +312,9 @@ namespace rabbit
 		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value / 10.0f);
-
+		auto envLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+		if (envLight2)
+			envLight2->setIntensity(value / 10.0f);
 		editIntensity_->setValue(value / 10.0f);
 	}
 
@@ -306,7 +324,9 @@ namespace rabbit
 		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value);
-
+		auto envLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
+		if (envLight2)
+			envLight2->setIntensity(value);
 		sliderIntensity_->setValue(value * 10.0f);
 	}
 

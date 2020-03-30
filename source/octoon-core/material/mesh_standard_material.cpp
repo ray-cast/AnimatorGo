@@ -20,6 +20,7 @@ static const char* standard_frag = R"(
 #include <common>
 #include <packing>
 #include <encodings_pars_fragment>
+#include <cube_uv_reflection_fragment>
 #include <uv_pars_fragment>
 #include <normal_pars_fragment>
 #include <map_pars_fragment>

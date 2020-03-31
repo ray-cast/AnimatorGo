@@ -17,7 +17,61 @@ void main()
 	gl_Position = vec4(vec3(POSITION0), 1);
 })";
 
-constexpr auto pmrem_frag = R"(
+constexpr auto irradiance_frag = R"(
+#define PI 3.14159265359
+#define PI2 6.28318530718
+#define RECIPROCAL_PI 0.31830988618
+
+#define saturate(a) clamp( a, 0.0, 1.0 )
+
+uniform sampler2D environmentMap;
+in vec2 vUv;
+
+vec3 SphereNormal(vec2 uv)
+{
+	vec3 normal;
+	normal.x = -sin(uv.y * PI) * sin(uv.x * PI2);
+	normal.y = cos(uv.y * PI);
+	normal.z = sin(uv.y * PI) * cos(uv.x * PI2);
+	return normal;
+}
+
+vec4 textureLatlongUV(sampler2D texture, vec3 L, float mipLevel)
+{
+	vec2 uv = vec2((atan(L.x, L.z) * RECIPROCAL_PI * 0.5f + 0.5f), acos(L.y) * RECIPROCAL_PI);
+	return textureLod(texture, uv, mipLevel);
+}
+
+void main()
+{
+	vec3 irradiance = vec3(0.0);  
+
+	vec3 normal = SphereNormal(vUv);
+	vec3 up    = vec3(0.0, 1.0, 0.0);
+	vec3 right = cross(up, normal);
+	up         = cross(normal, right);
+
+	float sampleDelta = 0.025;
+	float nrSamples = 0.0; 
+	for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
+	{
+		for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta)
+		{
+			// spherical to cartesian (in tangent space)
+			vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+			// tangent space to world
+			vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normal; 
+
+			irradiance += textureLatlongUV(environmentMap, sampleVec, 0).rgb * cos(theta) * sin(theta);
+			nrSamples++;
+		}
+	}
+
+	fragColor = vec4(PI * irradiance * (1.0 / float(nrSamples)), 1.0);
+}
+)";
+
+constexpr auto radiance_frag = R"(
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define RECIPROCAL_PI 0.31830988618
@@ -129,6 +183,15 @@ void main()
     fragColor = vec4(prefilteredColor, 1.0);
 })";
 
+constexpr auto copy_frag = R"(
+in vec2 vUv;
+uniform sampler2D environmentMap;
+void main()
+{
+	fragColor = texture(environmentMap, vUv);
+}
+)";
+
 float D_GGX(float nh, float roughness)
 {
 	float m = roughness * roughness;
@@ -186,25 +249,47 @@ float D_GGX(float nh, float roughness)
 					throw runtime::runtime_error::create("createFramebuffer() failed");
 			}
 
-			auto material = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, pmrem_frag));
-			material->set("environmentMap", environmentMap);
-			material->set("environmentSize", (float)environmentMap->getTextureDesc().getWidth() * environmentMap->getTextureDesc().getHeight());
-			material->setDepthEnable(false);
-			material->setDepthWriteEnable(false);
+			auto irradiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, irradiance_frag));
+			irradiance->set("environmentMap", environmentMap);
+			irradiance->setDepthEnable(false);
+			irradiance->setDepthWriteEnable(false);
 
-			geometry::Geometry geometry;
-			geometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
-			geometry.setMaterial(material);
+			auto radiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, radiance_frag));
+			radiance->set("environmentMap", environmentMap);
+			radiance->set("environmentSize", (float)environmentMap->getTextureDesc().getWidth() * environmentMap->getTextureDesc().getHeight());
+			radiance->setDepthEnable(false);
+			radiance->setDepthWriteEnable(false);
+
+			auto copyMaterial = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, copy_frag));
+			copyMaterial->set("environmentMap", environmentMap);
+			copyMaterial->setDepthEnable(false);
+			copyMaterial->setDepthWriteEnable(false);
+
+			geometry::Geometry irradianceGeometry;
+			irradianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			irradianceGeometry.setMaterial(irradiance);
+
+			geometry::Geometry radianceGeometry;
+			radianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			radianceGeometry.setMaterial(radiance);
+
+			geometry::Geometry copyGeometry;
+			copyGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			copyGeometry.setMaterial(copyMaterial);
 
 			camera::OrthoCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{
-				material->set("roughness", float(i) / (mipNums - 1));
+				radiance->set("roughness", float(i) / (mipNums - 1));
 
 				video::Renderer::instance()->setFramebuffer(framebuffers[i]);
 				video::Renderer::instance()->clearFramebuffer(0, hal::GraphicsClearFlagBits::ColorDepthBit);
-				video::Renderer::instance()->renderObject(geometry, camera);
+
+				if (i == 0)
+					video::Renderer::instance()->renderObject(copyGeometry, camera);
+				else
+					video::Renderer::instance()->renderObject(radianceGeometry, camera);
 			}
 
 			return colorTexture;

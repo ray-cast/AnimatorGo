@@ -250,7 +250,7 @@ namespace octoon::video
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
 					directionLight.color.set(it->getColor() * it->getIntensity());
-					directionLight.direction.set(it->getForward());
+					directionLight.direction.set(float3x3(camera.getView()) * it->getForward());
 					directionLight.shadow = false;
 					directionLight.shadowBias = it->getShadowBias();
 					directionLight.shadowRadius = it->getShadowRadius();
@@ -261,7 +261,7 @@ namespace octoon::video
 					auto it = light->downcast<light::SpotLight>();
 					SpotLight spotLight;
 					spotLight.color.set(it->getColor() * it->getIntensity());
-					spotLight.direction.set(it->getForward());
+					spotLight.direction.set(float3x3(camera.getView()) * it->getForward());
 					spotLight.position.set(it->getTranslate());
 					spotLight.distance = 0;
 					spotLight.decay = 0;

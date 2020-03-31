@@ -72,7 +72,6 @@ namespace octoon::light
 		light->setTransform(this->getTransform(), this->getTransformInverse());
 		light->setBoundingBox(this->getBoundingBox());
 
-
 		return light;
 	}
 }

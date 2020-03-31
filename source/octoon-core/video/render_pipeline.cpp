@@ -1943,7 +1943,7 @@ namespace octoon::video
 				}
 			}
 
-			//this->material_->needUpdate(false);
+			this->material_->needUpdate(false);
 		}
 	}
 }

@@ -498,17 +498,15 @@ namespace rabbit
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
-		mainCamera->addComponent<OfflineCameraComponent>();
-		mainCamera->getComponent<OfflineCameraComponent>()->setAperture(60.0f);
+		mainCamera->addComponent<octoon::OfflineCameraComponent>();
+		mainCamera->getComponent<octoon::OfflineCameraComponent>()->setAperture(60.0f);
+		mainCamera->getComponent<octoon::OfflineCameraComponent>()->setActive(this->getContext()->profile->offlineModule->offlineEnable);
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
+		camera->setActive(!this->getContext()->profile->offlineModule->offlineEnable);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
-
-		auto active = this->getContext()->profile->offlineModule->offlineEnable;
-		mainCamera->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
-		mainCamera->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;

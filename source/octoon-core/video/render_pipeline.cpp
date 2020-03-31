@@ -1616,7 +1616,7 @@ namespace octoon::video
 				this->flipEnvMap_->uniform1f(1.0f);
 
 			if (this->envMap_)
-				this->envMap_->uniformTexture(context.light.environmentLights.front().radiance);
+				this->envMap_->uniformTexture(context.light.environmentLights.front().radiance.lock());
 
 			if (this->envMapIntensity_)
 				this->envMapIntensity_->uniform1f(context.light.environmentLights.front().intensity);

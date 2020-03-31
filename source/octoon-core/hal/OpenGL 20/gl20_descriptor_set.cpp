@@ -802,6 +802,11 @@ namespace octoon
 							GL_CHECK(glBindTexture(gltexture->getTarget(), gltexture->getInstanceID()));
 							gltexture->setSampler(it->getTextureSampler());
 						}
+						else
+						{
+							GL_CHECK(glActiveTexture(GL_TEXTURE0 + location));
+							GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
+						}
 					}
 					break;
 				case GraphicsUniformType::StorageTexelBuffer:

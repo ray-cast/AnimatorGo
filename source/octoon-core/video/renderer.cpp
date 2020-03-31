@@ -291,7 +291,7 @@ namespace octoon::video
 					EnvironmentLight environmentLight;
 					environmentLight.intensity = it->getIntensity();
 					environmentLight.radiance = it->getEnvironmentMap();
-					if (!environmentLight.radiance)
+					if (!it->getEnvironmentMap())
 						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity();
 					this->profile_.light.environmentLights.emplace_back(environmentLight);
 					this->profile_.light.numEnvironment++;

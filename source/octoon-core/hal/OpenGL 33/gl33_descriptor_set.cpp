@@ -879,6 +879,10 @@ namespace octoon
 						auto ubo = buffer->downcast<GL33GraphicsData>();
 						glBindBufferBase(GL_UNIFORM_BUFFER, location, ubo->getInstanceID());
 					}
+					else
+					{
+						glBindBufferBase(GL_UNIFORM_BUFFER, location, 0);
+					}
 				}
 				break;
 				case GraphicsUniformType::UniformBufferDynamic:

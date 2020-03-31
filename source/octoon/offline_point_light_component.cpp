@@ -20,33 +20,41 @@ namespace octoon
 	void
 	OfflinePointLightComponent::setIntensity(float value) noexcept
 	{
-		if (this->rprLight_)
+		if (intensity_ != value)
 		{
-			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprPointLightSetRadiantPower3f(this->rprLight_, color_.x * intensity, color_.y * intensity, color_.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setIntensity(value);
 		}
-
-		OfflineLightComponent::setIntensity(value);
 	}
 
 	void
 	OfflinePointLightComponent::setColor(const math::float3& value) noexcept
 	{
-		if (this->rprLight_)
+		if (color_ != value)
 		{
-			auto intensity = this->getIntensity();
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
-				return;
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprPointLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setColor(value);
 		}
-
-		OfflineLightComponent::setColor(value);
 	}
 
 	GameComponentPtr
@@ -54,7 +62,8 @@ namespace octoon
 	{
 		auto instance = std::make_shared<OfflinePointLightComponent>();
 		instance->setName(this->getName());
-
+		instance->setColor(this->getColor());
+		instance->setIntensity(this->getIntensity());
 		return instance;
 	}
 

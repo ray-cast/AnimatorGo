@@ -19,18 +19,21 @@ namespace octoon
 	void
 	OfflineDirectionalLightComponent::setIntensity(float value) noexcept
 	{
-		if (this->rprLight_)
+		if (intensity_ != value)
 		{
-			auto intensity = this->getIntensity();
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x * intensity, color_.y * intensity, color_.z * intensity))
-				return;
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x * intensity, color_.y * intensity, color_.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setIntensity(value);
 		}
-
-		OfflineLightComponent::setIntensity(value);
 	}
 
 	void
@@ -58,7 +61,8 @@ namespace octoon
 	{
 		auto instance = std::make_shared<OfflineDirectionalLightComponent>();
 		instance->setName(this->getName());
-
+		instance->setColor(this->getColor());
+		instance->setIntensity(this->getIntensity());
 		return instance;
 	}
 
@@ -74,7 +78,7 @@ namespace octoon
 
 			if (RPR_SUCCESS != rprContextCreateDirectionalLight(feature->getContext(), &this->rprLight_))
 				return;
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
+			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x * this->intensity_, color_.y * this->intensity_, color_.z * this->intensity_))
 				return;
 			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
 				return;

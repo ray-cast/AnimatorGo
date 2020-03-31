@@ -22,33 +22,41 @@ namespace octoon
 	void
 	OfflineSpotLightComponent::setIntensity(float value) noexcept
 	{
-		if (this->rprLight_)
+		if (intensity_ != value)
 		{
-			rprEnvironmentLightSetIntensityScale(this->rprLight_, value);
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(this->rprLight_, color_.x * intensity, color_.y * intensity, color_.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setIntensity(value);
 		}
-
-		OfflineLightComponent::setIntensity(value);
 	}
 
 	void
 	OfflineSpotLightComponent::setColor(const math::float3& value) noexcept
 	{
-		if (this->rprLight_)
+		if (color_ != value)
 		{
-			auto intensity = this->getIntensity();
-			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
-				return;
+			if (this->rprLight_)
+			{
+				auto intensity = this->getIntensity();
+				if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(this->rprLight_, value.x * intensity, value.y * intensity, value.z * intensity))
+					return;
 
-			auto feature = this->tryGetFeature<OfflineFeature>();
-			if (feature)
-				feature->setFramebufferDirty(true);
+				auto feature = this->tryGetFeature<OfflineFeature>();
+				if (feature)
+					feature->setFramebufferDirty(true);
+			}
+
+			OfflineLightComponent::setColor(value);
 		}
-
-		OfflineLightComponent::setColor(value);
 	}
 
 	void
@@ -106,7 +114,10 @@ namespace octoon
 	{
 		auto instance = std::make_shared<OfflineSpotLightComponent>();
 		instance->setName(this->getName());
-
+		instance->setColor(this->getColor());
+		instance->setIntensity(this->getIntensity());
+		instance->setInnerAngle(this->getInnerAngle());
+		instance->setOuterAngle(this->getOuterAngle());
 		return instance;
 	}
 
@@ -124,7 +135,7 @@ namespace octoon
 				return;
 			if (RPR_SUCCESS != rprSpotLightSetConeShape(this->rprLight_, innerAngle_, outerAngle_))
 				return;
-			if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(this->rprLight_, color_.x, color_.y, color_.z))
+			if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(this->rprLight_, color_.x * intensity_, color_.y * intensity_, color_.z * intensity_))
 				return;
 			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
 				return;

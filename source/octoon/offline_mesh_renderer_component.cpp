@@ -171,6 +171,8 @@ namespace octoon
 			if (!material->needUpdate() && !force)
 				continue;
 
+			material->needUpdate(false);
+
 			std::string path;
 			std::string normalName;
 			std::string textureName;

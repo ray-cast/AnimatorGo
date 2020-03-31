@@ -31,6 +31,7 @@
 #include <octoon/mesh/plane_mesh.h>
 #include <octoon/mesh/ring_mesh.h>
 #include <octoon/mesh/volume_mesh.h>
+#include <octoon/mesh/torusknot_mesh.h>
 
 #include <octoon/material/material.h>
 #include <octoon/material/line_basic_material.h>

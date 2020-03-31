@@ -22,6 +22,8 @@ SET(MESH_LIST
 	${SOURCE_PATH}/plane_mesh.cpp
 	${HEADER_PATH}/ring_mesh.h
 	${SOURCE_PATH}/ring_mesh.cpp
+	${HEADER_PATH}/torusknot_mesh.h
+	${SOURCE_PATH}/torusknot_mesh.cpp
 	${HEADER_PATH}/volume_mesh.h
 	${SOURCE_PATH}/volume_mesh.cpp
 	${HEADER_PATH}/noise_mesh.h

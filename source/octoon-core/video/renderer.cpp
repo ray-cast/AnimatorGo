@@ -245,7 +245,7 @@ namespace octoon::video
 				light->onRenderBefore(camera);
 
 				if (light->isA<light::AmbientLight>()) {
-					this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity();
+					this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
 				} else if (light->isA<light::DirectionalLight>()) {
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
@@ -292,7 +292,7 @@ namespace octoon::video
 					environmentLight.intensity = it->getIntensity();
 					environmentLight.radiance = it->getEnvironmentMap();
 					if (!it->getEnvironmentMap())
-						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity();
+						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
 					this->profile_.light.environmentLights.emplace_back(environmentLight);
 					this->profile_.light.numEnvironment++;
 				} else if (light->isA<light::RectangleLight>()) {

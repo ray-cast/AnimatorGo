@@ -449,10 +449,12 @@ namespace rabbit
 					auto material = materialComponent->getMaterial(item->text().toStdString());
 
 					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
-					meshRenderer->setMaterial(material, hit.mesh);
+					if (meshRenderer)
+						meshRenderer->setMaterial(material, hit.mesh);
 
 					auto offlineMeshRenderer = hit.object->getComponent<octoon::OfflineMeshRendererComponent>();
-					offlineMeshRenderer->setMaterial(material, hit.mesh);
+					if (offlineMeshRenderer)
+						offlineMeshRenderer->setMaterial(material, hit.mesh);
 				}
 			}
 		}

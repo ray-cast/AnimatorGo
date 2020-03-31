@@ -499,6 +499,7 @@ namespace rabbit
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->addComponent<OfflineCameraComponent>();
+		mainCamera->getComponent<OfflineCameraComponent>()->setAperture(60.0f);
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);

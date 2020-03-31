@@ -13,29 +13,16 @@ namespace octoon::light
 	}
 
 	void
-	EnvironmentLight::setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept
+	EnvironmentLight::setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept
 	{
 		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
-		irradiance_ = texture;
+		environmentMap_ = texture;
 	}
 
 	const hal::GraphicsTexturePtr&
-	EnvironmentLight::getIrradiance() const noexcept
+	EnvironmentLight::getEnvironmentMap() const noexcept
 	{
-		return irradiance_;
-	}
-
-	void
-	EnvironmentLight::setRadiance(const hal::GraphicsTexturePtr& texture) noexcept
-	{
-		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
-		radiance_ = texture;
-	}
-
-	const hal::GraphicsTexturePtr&
-	EnvironmentLight::getRadiance() const noexcept
-	{
-		return radiance_;
+		return environmentMap_;
 	}
 
 	std::shared_ptr<video::RenderObject>

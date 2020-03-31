@@ -38,7 +38,7 @@ namespace octoon::mesh
 
 				vertices.emplace_back(x, z, 0.0f);
 				normals.emplace_back(normal);
-				texcoords.emplace_back((float)(ix + 1) / gridX, (float)(iz + 1) / gridY);
+				texcoords.emplace_back((float)ix / gridX, (float)iz / gridY);
 			}
 		}
 

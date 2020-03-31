@@ -13,11 +13,8 @@ namespace octoon::light
 		EnvironmentLight() noexcept;
 		virtual ~EnvironmentLight() noexcept;
 
-		void setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getIrradiance() const noexcept;
-
-		void setRadiance(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getRadiance() const noexcept;
+		void setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept;
+		const hal::GraphicsTexturePtr& getEnvironmentMap() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
@@ -27,7 +24,7 @@ namespace octoon::light
 
 	private:
 		hal::GraphicsTexturePtr radiance_;
-		hal::GraphicsTexturePtr irradiance_;
+		hal::GraphicsTexturePtr environmentMap_;
 	};
 }
 

@@ -16,11 +16,8 @@ namespace octoon
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
 
-		void setIrradiance(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getIrradiance() const noexcept;
-
-		void setRadiance(const hal::GraphicsTexturePtr& texture) noexcept;
-		const hal::GraphicsTexturePtr& getRadiance() const noexcept;
+		void setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept;
+		const hal::GraphicsTexturePtr& getEnvironmentMap() const noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -38,7 +35,7 @@ namespace octoon
 
 	private:
 		hal::GraphicsTexturePtr radiance_;
-		hal::GraphicsTexturePtr irradiance_;
+		hal::GraphicsTexturePtr environmentMap_;
 		std::shared_ptr<light::EnvironmentLight> environmentLight_;
 	};
 }

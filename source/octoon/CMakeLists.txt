@@ -149,6 +149,8 @@ SET(LOADER_LIST
 	${SOURCE_PATH}/vmd_loader.cpp
 	${HEADER_PATH}/pmx_loader.h
 	${SOURCE_PATH}/pmx_loader.cpp
+	${HEADER_PATH}/PMREM_loader.h
+	${SOURCE_PATH}/PMREM_loader.cpp
 )
 SOURCE_GROUP("system\\loader" FILES ${LOADER_LIST})
 

@@ -96,6 +96,7 @@
 
 #include <octoon/mesh_loader.h>
 #include <octoon/texture_loader.h>
+#include <octoon/PMREM_loader.h>
 
 #include <octoon/raycaster.h>
 #include <octoon/ortho_camera_helper.h>

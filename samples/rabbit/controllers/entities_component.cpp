@@ -142,6 +142,10 @@ namespace rabbit
 			if (light)
 				light->setBgImage(filepath);
 
+			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+			if (envLight)
+				envLight->setEnvironmentMap(PMREMLoader::load(filepath));
+
 			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
 			material->setColorTexture(TextureLoader::load(filepath));
 		}
@@ -156,6 +160,10 @@ namespace rabbit
 			auto light = environmentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 			if (light)
 				light->setBgImage("");
+
+			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+			if (envLight)
+				envLight->setEnvironmentMap(nullptr);
 
 			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
 			material->setColorTexture(nullptr);
@@ -472,10 +480,10 @@ namespace rabbit
 		mainLight->addComponent<octoon::DirectionalLightComponent>();
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
+		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(octoon::math::Quaternion(octoon::math::radians(this->getContext()->profile->sunModule->rotation)));
 
 		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
-		envMaterial->setColorTexture(TextureLoader::load(u8"D:/Resources/ÊÒÄÚ3k/skybox.hdr"));
 		envMaterial->setGamma(1.0f);
 
 		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
@@ -484,9 +492,8 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 		enviromentLight->addComponent<octoon::EnvironmentLightComponent>();
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
-		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity * math::PI);
-		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIrradiance(TextureLoader::load(u8"D:/Resources/ÊÒÄÚ3k/skybox.hdr"));
-		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32));
+		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
+		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32, math::PI * 0.5));
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");

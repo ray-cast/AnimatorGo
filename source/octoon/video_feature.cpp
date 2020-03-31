@@ -91,13 +91,18 @@ namespace octoon
 	void
 	VideoFeature::onActivate() except
 	{
-		this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
-
 		auto graphics = this->getFeature<GraphicsFeature>();
-		if (!graphics)
+		if (graphics)
+		{
+			video::Renderer::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
+			video::Renderer::instance()->setGraphicsContext(graphics->getContext());
+
+			this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
+		}
+		else
+		{
 			throw runtime::runtime_error::create("failure to get the HAL from features");
-		
-		video::Renderer::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
+		}
 	}
 
 	void
@@ -133,9 +138,7 @@ namespace octoon
 	{
 		try
 		{
-			auto graphics = this->getFeature<GraphicsFeature>();
-			if (graphics)
-				video::Renderer::instance()->render(*video::RenderScene::instance(), *graphics->getContext());
+			video::Renderer::instance()->render(*video::RenderScene::instance());
 		}
 		catch (const std::exception& e)
 		{

@@ -213,8 +213,8 @@ namespace rabbit
 		editRotationX_->setValue(profile_->sunModule->rotation.x + 180.0f);
 		editRotationY_->setValue(profile_->sunModule->rotation.y + 180.0f);
 		editRotationZ_->setValue(profile_->sunModule->rotation.z);
-		editIntensity_->setValue(profile_->environmentModule->intensity);
-		colorDialog_->setCurrentColor(QColor(profile_->environmentModule->color.x * 255.0f, profile_->environmentModule->color.y * 255.0f, profile_->environmentModule->color.z * 255.0f));
+		editIntensity_->setValue(profile_->sunModule->intensity);
+		colorDialog_->setCurrentColor(QColor(profile_->sunModule->color.x * 255.0f, profile_->sunModule->color.y * 255.0f, profile_->sunModule->color.z * 255.0f));
 	}
 
 	void

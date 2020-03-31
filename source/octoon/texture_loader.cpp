@@ -11,7 +11,7 @@ namespace octoon
 	std::map<std::string, hal::GraphicsTexturePtr, std::less<>> textureCaches_;
 
 	hal::GraphicsTexturePtr
-	TextureLoader::load(std::string_view filepath, bool cache) noexcept(false)
+	TextureLoader::load(std::string_view filepath, bool generateMipmap, bool cache) noexcept(false)
 	{
 		assert(!filepath.empty());
 
@@ -73,14 +73,26 @@ namespace octoon
 		textureDesc.setTexFormat(format);
 		textureDesc.setStream(image.data());
 		textureDesc.setStreamSize(image.size());
-		textureDesc.setMipBase(image.mipBase());
-		textureDesc.setMipNums(image.mipLevel());
 		textureDesc.setLayerBase(image.layerBase());
 		textureDesc.setLayerNums(image.layerLevel());
+
+		if (generateMipmap)
+		{
+			textureDesc.setMipBase(0);
+			textureDesc.setMipNums(8);
+		}
+		else
+		{
+			textureDesc.setMipBase(image.mipBase());
+			textureDesc.setMipNums(image.mipLevel());
+		}
 
 		auto texture = video::Renderer::instance()->createTexture(textureDesc);
 		if (!texture)
 			return nullptr;
+
+		if (generateMipmap)
+			video::Renderer::instance()->generateMipmap(texture);
 
 		if (cache)
 			textureCaches_[path] = texture;

@@ -330,10 +330,10 @@ vec4 textureCubeUV(sampler2D texture, vec3 reflectedDirection, float roughness )
 }
 #endif
 
-vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, float roughness )
+vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, float roughness)
 {
 	vec2 uv = vec2((atan(reflectedDirection.x, reflectedDirection.z) * RECIPROCAL_PI * 0.5f + 0.5f), acos(reflectedDirection.y) * RECIPROCAL_PI);
-	return LinearToLinear(texture2D(texture, uv));
+	return LinearToLinear(textureLod(texture, uv, roughness * 7));
 }
 
 )";
@@ -360,27 +360,18 @@ in vec3 vNormal;
 )";
 static char* normal_fragment = R"(
 #ifdef FLAT_SHADED
-
 	// Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
-
 	vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );
 	vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );
 	vec3 normal = normalize( cross( fdx, fdy ) );
-
 #else
-
 	vec3 normal = normalize( vNormal ) * flipNormal;
-
 #endif
 
 #ifdef USE_NORMALMAP
-
 	normal = perturbNormal2Arb( -vViewPosition, normal );
-
 #elif defined( USE_BUMPMAP )
-
 	normal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );
-
 #endif
 
 )";
@@ -1303,7 +1294,7 @@ float computeSpecularOcclusion( const in float dotNV, const in float ambientOccl
 }
 )";
 
-		static char* lights_physical_fragment = R"(
+static char* lights_physical_fragment = R"(
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
@@ -1315,7 +1306,7 @@ material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
 	material.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );
 #endif
 )";
-		static char* lights_template = R"(
+static char* lights_template = R"(
 /**
  * This is a template that can be used to light a material, it uses pluggable
  * RenderEquations (RE)for specific lighting scenarios.
@@ -1446,8 +1437,8 @@ IncidentLight directLight;
 
 	#if defined( USE_ENVMAP ) && defined( PHYSICAL )
 
-		// TODO, replace 8 with the real maxMIPLevel
-		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 8 );
+		// TODO, replace 7 with the real maxMIPLevel
+		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 7 );
 
 	#endif
 
@@ -1457,11 +1448,11 @@ IncidentLight directLight;
 
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
 
-	// TODO, replace 8 with the real maxMIPLevel
-	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 8 );
+	// TODO, replace 7 with the real maxMIPLevel
+	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 7 );
 
 	#ifndef STANDARD
-		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );
+		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 7 );
 	#else
 		vec3 clearCoatRadiance = vec3( 0.0 );
 	#endif
@@ -1625,7 +1616,7 @@ namespace octoon::video
 				this->flipEnvMap_->uniform1f(1.0f);
 
 			if (this->envMap_)
-				this->envMap_->uniformTexture(context.light.environmentLights.front().irradiance);
+				this->envMap_->uniformTexture(context.light.environmentLights.front().radiance);
 
 			if (this->envMapIntensity_)
 				this->envMapIntensity_->uniform1f(context.light.environmentLights.front().intensity);
@@ -1840,8 +1831,13 @@ namespace octoon::video
 				if (normalMatrix != end)
 					normalMatrix_ = *normalMatrix;
 
-				modelViewMatrix_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "modelViewMatrix"; });
-				projectionMatrix_ = *std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "projectionMatrix"; });
+				auto modelViewMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "modelViewMatrix"; });
+				if (modelViewMatrix != end)
+					modelViewMatrix_ = *modelViewMatrix;
+
+				auto projectionMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "projectionMatrix"; });
+				if (projectionMatrix != end)
+					projectionMatrix_ = *projectionMatrix;
 
 				auto ambientLightColor = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "ambientLightColor"; });
 				if (ambientLightColor != end)

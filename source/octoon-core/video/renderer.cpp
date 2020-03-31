@@ -45,21 +45,22 @@ namespace octoon::video
 	void
 	Renderer::close() noexcept
 	{
-		this->context_.light.pointLightBuffer.reset();
-		this->context_.light.spotLightBuffer.reset();
-		this->context_.light.rectangleLightBuffer.reset();
-		this->context_.light.directionLightBuffer.reset();
-		this->context_.light.pointLights.clear();
-		this->context_.light.spotLights.clear();
-		this->context_.light.directionalLights.clear();
-		this->context_.light.rectangleLights.clear();
-		this->context_.light.environmentLights.clear();
+		this->profile_.light.pointLightBuffer.reset();
+		this->profile_.light.spotLightBuffer.reset();
+		this->profile_.light.rectangleLightBuffer.reset();
+		this->profile_.light.directionLightBuffer.reset();
+		this->profile_.light.pointLights.clear();
+		this->profile_.light.spotLights.clear();
+		this->profile_.light.directionalLights.clear();
+		this->profile_.light.rectangleLights.clear();
+		this->profile_.light.environmentLights.clear();
 		this->buffers_.clear();
 		this->pipelines_.clear();
 		fbo_.reset();
 		currentBuffer_.reset();
 		colorTexture_.reset();
 		depthTexture_.reset();
+		context_.reset();
 		device_.reset();
 	}
 
@@ -98,6 +99,18 @@ namespace octoon::video
 	Renderer::getSortObject() const noexcept
 	{
 		return this->sortObjects_;
+	}
+
+	void
+	Renderer::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
+	{
+		this->context_ = context;
+	}
+	
+	const hal::GraphicsContextPtr&
+	Renderer::getGraphicsContext() const noexcept(false)
+	{
+		return this->context_;
 	}
 
 	void
@@ -204,23 +217,23 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::prepareLights(hal::GraphicsContext& context, const std::vector<light::Light*>& lights, const camera::Camera& camera) noexcept
+	Renderer::prepareLights(const std::vector<light::Light*>& lights, const camera::Camera& camera) noexcept
 	{
 		this->lights_.clear();
 
-		this->context_.light.numDirectional = 0;
-		this->context_.light.numSpot = 0;
-		this->context_.light.numPoint = 0;
-		this->context_.light.numHemi = 0;
-		this->context_.light.numEnvironment = 0;
-		this->context_.light.numRectangle = 0;
+		this->profile_.light.numDirectional = 0;
+		this->profile_.light.numSpot = 0;
+		this->profile_.light.numPoint = 0;
+		this->profile_.light.numHemi = 0;
+		this->profile_.light.numEnvironment = 0;
+		this->profile_.light.numRectangle = 0;
 
-		this->context_.light.ambientLightColors = math::float3::Zero;
-		this->context_.light.pointLights.clear();
-		this->context_.light.spotLights.clear();
-		this->context_.light.rectangleLights.clear();
-		this->context_.light.directionalLights.clear();
-		this->context_.light.environmentLights.clear();
+		this->profile_.light.ambientLightColors = math::float3::Zero;
+		this->profile_.light.pointLights.clear();
+		this->profile_.light.spotLights.clear();
+		this->profile_.light.rectangleLights.clear();
+		this->profile_.light.directionalLights.clear();
+		this->profile_.light.environmentLights.clear();
 
 		for (auto& light : lights)
 		{
@@ -232,7 +245,7 @@ namespace octoon::video
 				light->onRenderBefore(camera);
 
 				if (light->isA<light::AmbientLight>()) {
-					this->context_.light.ambientLightColors += light->getColor() * light->getIntensity();
+					this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity();
 				} else if (light->isA<light::DirectionalLight>()) {
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
@@ -242,8 +255,8 @@ namespace octoon::video
 					directionLight.shadowBias = it->getShadowBias();
 					directionLight.shadowRadius = it->getShadowRadius();
 					directionLight.shadowMapSize = math::float2::Zero;
-					this->context_.light.directionalLights.emplace_back(directionLight);
-					this->context_.light.numDirectional++;
+					this->profile_.light.directionalLights.emplace_back(directionLight);
+					this->profile_.light.numDirectional++;
 				} else if (light->isA<light::SpotLight>()) {
 					auto it = light->downcast<light::SpotLight>();
 					SpotLight spotLight;
@@ -258,8 +271,8 @@ namespace octoon::video
 					spotLight.shadowBias = 0.0;
 					spotLight.shadowRadius = it->getRange();
 					spotLight.shadowMapSize = math::float2::Zero;
-					this->context_.light.spotLights.emplace_back(spotLight);
-					this->context_.light.numSpot++;
+					this->profile_.light.spotLights.emplace_back(spotLight);
+					this->profile_.light.numSpot++;
 				} else if (light->isA<light::PointLight>()) {
 					auto it = light->downcast<light::PointLight>();
 					PointLight pointLight;
@@ -271,18 +284,17 @@ namespace octoon::video
 					pointLight.shadowBias = 0.0;
 					pointLight.shadowRadius = it->getRange();
 					pointLight.shadowMapSize = math::float2::Zero;
-					this->context_.light.pointLights.emplace_back(pointLight);
-					this->context_.light.numPoint++;
+					this->profile_.light.pointLights.emplace_back(pointLight);
+					this->profile_.light.numPoint++;
 				} else if (light->isA<light::EnvironmentLight>()) {
 					auto it = light->downcast<light::EnvironmentLight>();
 					EnvironmentLight environmentLight;
 					environmentLight.intensity = it->getIntensity();
-					environmentLight.radiance = it->getRadiance();
-					environmentLight.irradiance = it->getIrradiance();
-					if (!environmentLight.irradiance)
-						this->context_.light.ambientLightColors += light->getColor() * light->getIntensity();
-					this->context_.light.environmentLights.emplace_back(environmentLight);
-					this->context_.light.numEnvironment++;
+					environmentLight.radiance = it->getEnvironmentMap();
+					if (!environmentLight.radiance)
+						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity();
+					this->profile_.light.environmentLights.emplace_back(environmentLight);
+					this->profile_.light.numEnvironment++;
 				} else if (light->isA<light::RectangleLight>()) {
 					auto it = light->downcast<light::RectangleLight>();
 					RectAreaLight rectangleLight;
@@ -290,8 +302,8 @@ namespace octoon::video
 					rectangleLight.position.set(it->getTranslate());
 					rectangleLight.halfWidth.set(math::float3::One);
 					rectangleLight.halfHeight.set(math::float3::One);
-					this->context_.light.rectangleLights.emplace_back(rectangleLight);
-					this->context_.light.numRectangle++;
+					this->profile_.light.rectangleLights.emplace_back(rectangleLight);
+					this->profile_.light.numRectangle++;
 				}
 
 				light->onRenderAfter(camera);
@@ -300,166 +312,194 @@ namespace octoon::video
 			}
 		}
 
-		if (this->context_.light.numSpot)
+		if (this->profile_.light.numSpot)
 		{
-			if (!this->context_.light.spotLightBuffer)
+			if (!this->profile_.light.spotLightBuffer)
 			{
-				this->context_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+				this->profile_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-					this->context_.light.spotLights.data(),
-					sizeof(SpotLight) * this->context_.light.numSpot
+					this->profile_.light.spotLights.data(),
+					sizeof(SpotLight) * this->profile_.light.numSpot
 				));
 			}
 			else
 			{
-				auto desc = this->context_.light.spotLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < this->context_.light.spotLights.size() * sizeof(SpotLight))
+				auto desc = this->profile_.light.spotLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->profile_.light.spotLights.size() * sizeof(SpotLight))
 				{
-					this->context_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					this->profile_.light.spotLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-						this->context_.light.spotLights.data(),
-						sizeof(SpotLight) * this->context_.light.numSpot
+						this->profile_.light.spotLights.data(),
+						sizeof(SpotLight) * this->profile_.light.numSpot
 					));
 				}
 				else
 				{
 					void* data;
-					if (this->context_.light.spotLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, this->context_.light.spotLights.data(), this->context_.light.spotLights.size() * sizeof(SpotLight));
-					this->context_.light.spotLightBuffer->unmap();
+					if (this->profile_.light.spotLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->profile_.light.spotLights.data(), this->profile_.light.spotLights.size() * sizeof(SpotLight));
+					this->profile_.light.spotLightBuffer->unmap();
 				}
 			}
 		}
 
-		if (this->context_.light.numPoint)
+		if (this->profile_.light.numPoint)
 		{
-			if (!this->context_.light.pointLightBuffer)
+			if (!this->profile_.light.pointLightBuffer)
 			{
-				this->context_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+				this->profile_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-					this->context_.light.pointLights.data(),
-					sizeof(PointLight) * this->context_.light.numPoint
+					this->profile_.light.pointLights.data(),
+					sizeof(PointLight) * this->profile_.light.numPoint
 				));
 			}
 			else
 			{
-				auto desc = this->context_.light.pointLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < this->context_.light.pointLights.size() * sizeof(PointLight))
+				auto desc = this->profile_.light.pointLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->profile_.light.pointLights.size() * sizeof(PointLight))
 				{
-					this->context_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					this->profile_.light.pointLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-						this->context_.light.pointLights.data(),
-						sizeof(PointLight) * this->context_.light.numPoint
+						this->profile_.light.pointLights.data(),
+						sizeof(PointLight) * this->profile_.light.numPoint
 					));
 				}
 				else
 				{
 					void* data;
-					if (this->context_.light.pointLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, this->context_.light.pointLights.data(), this->context_.light.pointLights.size() * sizeof(PointLight));
-					this->context_.light.pointLightBuffer->unmap();
+					if (this->profile_.light.pointLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->profile_.light.pointLights.data(), this->profile_.light.pointLights.size() * sizeof(PointLight));
+					this->profile_.light.pointLightBuffer->unmap();
 				}
 			}
 		}
 
-		if (this->context_.light.numRectangle)
+		if (this->profile_.light.numRectangle)
 		{
-			if (!this->context_.light.rectangleLightBuffer)
+			if (!this->profile_.light.rectangleLightBuffer)
 			{
-				this->context_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+				this->profile_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-					this->context_.light.rectangleLights.data(),
-					sizeof(RectAreaLight) * this->context_.light.numRectangle
+					this->profile_.light.rectangleLights.data(),
+					sizeof(RectAreaLight) * this->profile_.light.numRectangle
 				));
 			}
 			else
 			{
-				auto desc = this->context_.light.rectangleLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < this->context_.light.rectangleLights.size() * sizeof(RectAreaLight))
+				auto desc = this->profile_.light.rectangleLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->profile_.light.rectangleLights.size() * sizeof(RectAreaLight))
 				{
-					this->context_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					this->profile_.light.rectangleLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-						this->context_.light.rectangleLights.data(),
-						sizeof(RectAreaLight) * this->context_.light.numRectangle
+						this->profile_.light.rectangleLights.data(),
+						sizeof(RectAreaLight) * this->profile_.light.numRectangle
 					));
 				}
 				else
 				{
 					void* data;
-					if (this->context_.light.rectangleLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, this->context_.light.rectangleLights.data(), this->context_.light.rectangleLights.size() * sizeof(RectAreaLight));
-					this->context_.light.rectangleLightBuffer->unmap();
+					if (this->profile_.light.rectangleLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->profile_.light.rectangleLights.data(), this->profile_.light.rectangleLights.size() * sizeof(RectAreaLight));
+					this->profile_.light.rectangleLightBuffer->unmap();
 				}
 			}
 		}
 
-		if (this->context_.light.numDirectional)
+		if (this->profile_.light.numDirectional)
 		{
-			if (!this->context_.light.directionLightBuffer)
+			if (!this->profile_.light.directionLightBuffer)
 			{
-				this->context_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+				this->profile_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-					this->context_.light.directionalLights.data(),
-					sizeof(DirectionalLight) * this->context_.light.numDirectional
+					this->profile_.light.directionalLights.data(),
+					sizeof(DirectionalLight) * this->profile_.light.numDirectional
 				));
 			}
 			else
 			{
-				auto desc = this->context_.light.directionLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < this->context_.light.directionalLights.size() * sizeof(DirectionalLight))
+				auto desc = this->profile_.light.directionLightBuffer->getDataDesc();
+				if (desc.getStreamSize() < this->profile_.light.directionalLights.size() * sizeof(DirectionalLight))
 				{
-					this->context_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
+					this->profile_.light.directionLightBuffer = this->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
-						this->context_.light.directionalLights.data(),
-						sizeof(DirectionalLight) * this->context_.light.numDirectional
+						this->profile_.light.directionalLights.data(),
+						sizeof(DirectionalLight) * this->profile_.light.numDirectional
 					));
 				}
 				else
 				{
 					void* data;
-					if (this->context_.light.directionLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, this->context_.light.directionalLights.data(), this->context_.light.directionalLights.size() * sizeof(DirectionalLight));
-					this->context_.light.directionLightBuffer->unmap();
+					if (this->profile_.light.directionLightBuffer->map(0, desc.getStreamSize(), &data))
+						std::memcpy(data, this->profile_.light.directionalLights.data(), this->profile_.light.directionalLights.size() * sizeof(DirectionalLight));
+					this->profile_.light.directionLightBuffer->unmap();
 				}
 			}
 		}
 	}
 
 	void
-	Renderer::renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
+	Renderer::setViewport(const math::float4& viewport) noexcept(false)
+	{
+		this->context_->setViewport(0, viewport);
+	}
+
+	void
+	Renderer::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false)
+	{
+		this->context_->setFramebuffer(framebuffer);
+	}
+
+	void
+	Renderer::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
+	{
+		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
+	}
+
+	void
+	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		this->context_->generateMipmap(texture);
+	}
+
+	void
+	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept
+	{
+		if (camera.getLayer() != geometry.getLayer())
+			return;
+
+		if (geometry.getVisible())
+		{
+			if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterial(), camera, geometry))
+				return;
+
+			if (!this->setBuffer(geometry.getMesh(), geometry.getMeshSubset()))
+				return;
+
+			auto indices = currentBuffer_->getNumIndices(geometry.getMeshSubset());
+			if (indices > 0)
+				this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
+			else
+				this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
+		}
+	}
+
+	void
+	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
 	{
 		for (auto& geometry : geometries)
-		{
-			if (camera.getLayer() != geometry->getLayer())
-				continue;
-
-			if (geometry->getVisible())
-			{
-				if (!this->setProgram(context, this->overrideMaterial_ ? this->overrideMaterial_ : geometry->getMaterial(), camera, *geometry))
-					continue;
-
-				if (!this->setBuffer(context, geometry->getMesh(), geometry->getMeshSubset()))
-					continue;
-
-				auto indices = currentBuffer_->getNumIndices(geometry->getMeshSubset());
-				if (indices > 0)
-					context.drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
-				else
-					context.draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
-			}
-		}
+			this->renderObject(*geometry, camera);
 	}
 
 	void
-	Renderer::render(RenderScene& scene, hal::GraphicsContext& context) noexcept
+	Renderer::render(RenderScene& scene) noexcept
 	{
 		for (auto& camera : scene.getCameraList())
 		{
@@ -486,25 +526,25 @@ namespace octoon::video
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			auto framebuffer = camera->getFramebuffer();
 			if (framebuffer)
-				context.setFramebuffer(framebuffer);
+				this->context_->setFramebuffer(framebuffer);
 			else
-				context.setFramebuffer(fbo_);
+				this->context_->setFramebuffer(fbo_);
 #endif
 
-			context.setViewport(0, camera->getPixelViewport());
-			context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+			this->context_->setViewport(0, camera->getPixelViewport());
+			this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
-			this->prepareLights(context, scene.getLights(), *camera);
-			this->renderObjects(context, scene.getGeometries(), *camera);
+			this->prepareLights(scene.getLights(), *camera);
+			this->renderObjects(scene.getGeometries(), *camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			if (camera->getBlitToScreen())
 			{
 				auto& v = camera->getPixelViewport();
 				if (framebuffer)
-					context.blitFramebuffer(framebuffer, v, nullptr, v);
+					this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
 				else
-					context.blitFramebuffer(fbo_, v, nullptr, v);
+					this->context_->blitFramebuffer(fbo_, v, nullptr, v);
 			}
 
 			if (framebuffer)
@@ -514,7 +554,7 @@ namespace octoon::video
 				{
 					math::float4 v1(0, 0, (float)framebuffer->getGraphicsFramebufferDesc().getWidth(), (float)framebuffer->getGraphicsFramebufferDesc().getHeight());
 					math::float4 v2(0, 0, (float)swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), (float)swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
-					context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 				}
 			}
 #endif
@@ -607,7 +647,7 @@ namespace octoon::video
 	}
 
 	bool
-	Renderer::setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
+	Renderer::setBuffer(const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
 	{
 		if (mesh)
 		{
@@ -615,8 +655,8 @@ namespace octoon::video
 			if (!buffer)
 				buffer = std::make_shared<RenderBuffer>(mesh);
 
-			context.setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-			context.setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+			this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
+			this->context_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
 
 			this->currentBuffer_ = buffer;
 
@@ -629,18 +669,18 @@ namespace octoon::video
 	}
 
 	bool
-	Renderer::setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
+	Renderer::setProgram(const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
 	{
 		if (material)
 		{
 			auto& pipeline = pipelines_[((std::intptr_t)material.get())];
 			if (!pipeline)
-				pipeline = std::make_shared<RenderPipeline>(material, this->context_);
+				pipeline = std::make_shared<RenderPipeline>(material, this->profile_);
 
-			pipeline->update(camera, geometry, this->context_);
+			pipeline->update(camera, geometry, this->profile_);
 
-			context.setRenderPipeline(pipeline->getPipeline());
-			context.setDescriptorSet(pipeline->getDescriptorSet());
+			this->context_->setRenderPipeline(pipeline->getPipeline());
+			this->context_->setDescriptorSet(pipeline->getDescriptorSet());
 
 			return true;
 		}

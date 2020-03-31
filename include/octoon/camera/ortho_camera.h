@@ -10,6 +10,7 @@ namespace octoon::camera
 		OctoonDeclareSubClass(OrthoCamera, Camera)
 	public:
 		OrthoCamera() noexcept;
+		OrthoCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept;
 		virtual ~OrthoCamera() noexcept;
 		
 		void setNear(float znear) noexcept;

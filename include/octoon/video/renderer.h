@@ -34,6 +34,9 @@ namespace octoon::video
 		void setSortObjects(bool sortObject) noexcept;
 		bool getSortObject() const noexcept;
 
+		void setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false);
+		const hal::GraphicsContextPtr& getGraphicsContext() const noexcept(false);
+
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
 
@@ -53,18 +56,25 @@ namespace octoon::video
 		hal::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
 		hal::GraphicsDescriptorPoolPtr createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept;
 
-		void render(RenderScene& scene, hal::GraphicsContext& context) noexcept;
+		void setViewport(const math::float4& viewport) noexcept(false);
+		void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false);
+		void clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color = math::float4::Zero, float depth = 1.0f, std::int32_t stencil = 0) noexcept;
+
+		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
+
+		void render(RenderScene& scene) noexcept;
+		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept;
+		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
 
 	private:
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 	private:
-		void prepareLights(hal::GraphicsContext& context, const std::vector<light::Light*>& light, const camera::Camera& camera) noexcept;
-		void renderObjects(hal::GraphicsContext& context, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
+		void prepareLights(const std::vector<light::Light*>& light, const camera::Camera& camera) noexcept;
 
 	private:
-		bool setBuffer(hal::GraphicsContext& context, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
-		bool setProgram(hal::GraphicsContext& context, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
+		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
+		bool setProgram(const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
 
 	private:
 		Renderer(const Renderer&) = delete;
@@ -80,8 +90,9 @@ namespace octoon::video
 		hal::GraphicsTexturePtr depthTexture_;
 
 		hal::GraphicsDevicePtr device_;
+		hal::GraphicsContextPtr context_;
 
-		RenderProfile context_;
+		RenderProfile profile_;
 
 		std::vector<light::Light*> lights_;
 

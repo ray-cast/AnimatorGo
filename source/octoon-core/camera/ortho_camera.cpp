@@ -15,6 +15,16 @@ namespace octoon::camera
 	{
 	}
 
+	OrthoCamera::OrthoCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept
+		: ortho_(left, right, bottom, top) // left, right, bottom, top
+		, znear_(znear)
+		, zfar_(zfar)
+		, width_(0)
+		, height_(0)
+		, needUpdateViewProject_(true)
+	{
+	}
+
 	OrthoCamera::~OrthoCamera() noexcept
 	{
 	}

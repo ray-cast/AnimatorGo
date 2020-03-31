@@ -9,7 +9,7 @@ namespace octoon
 	{
 		class GL33Sampler final : public GraphicsSampler
 		{
-			OctoonDeclareSubClass(GL33Sampler, SamplerObject)
+			OctoonDeclareSubClass(GL33Sampler, GraphicsSampler)
 		public:
 			GL33Sampler() noexcept;
 			~GL33Sampler() noexcept;

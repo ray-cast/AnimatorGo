@@ -10,6 +10,7 @@ namespace octoon
 	MeshRendererComponent::MeshRendererComponent() noexcept
 		: visible_(true)
 		, renderOrder_(0)
+		, globalIllumination_(false)
 	{
 	}
 
@@ -46,9 +47,7 @@ namespace octoon
 	{
 		if (this->visible_ != visible)
 		{
-			for (auto& it : this->geometries_)
-				it->setVisible(visible);
-
+			this->geometry_->setVisible(visible);
 			this->visible_ = visible;
 		}
 	}
@@ -64,9 +63,8 @@ namespace octoon
 	{
 		if (this->renderOrder_ != order)
 		{
-			for (auto& it : this->geometries_)
-				it->setRenderOrder(order);
-
+			if (this->geometry_)
+				this->geometry_->setRenderOrder(order);
 			this->renderOrder_ = order;
 		}
 	}
@@ -75,6 +73,23 @@ namespace octoon
 	MeshRendererComponent::getRenderOrder() const noexcept
 	{
 		return this->renderOrder_;
+	}
+
+	void
+	MeshRendererComponent::setGlobalIllumination(bool enable) noexcept
+	{
+		if (this->globalIllumination_ != enable)
+		{
+			if (this->geometry_)
+				this->geometry_->setGlobalIllumination(enable);
+			this->globalIllumination_ = enable;
+		}
+	}
+
+	bool
+	MeshRendererComponent::getGlobalIllumination() const noexcept
+	{
+		return this->globalIllumination_;
 	}
 
 	GameComponentPtr
@@ -115,7 +130,7 @@ namespace octoon
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
-		geometries_.clear();
+		this->geometry_.reset();
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 	}
@@ -137,16 +152,15 @@ namespace octoon
 	MeshRendererComponent::onMoveAfter() noexcept
 	{
 		auto transform = this->getComponent<TransformComponent>();
-		for (auto& it : geometries_)
-			it->setTransform(transform->getTransform(), transform->getTransformInverse());
+		if (this->geometry_)
+			this->geometry_->setTransform(transform->getTransform(), transform->getTransformInverse());
 	}
 
 	void
 	MeshRendererComponent::onLayerChangeAfter() noexcept
 	{
-		auto layer = this->getGameObject()->getLayer();
-		for (auto& it : geometries_)
-			it->setLayer(layer);
+		if (this->geometry_)
+			this->geometry_->setLayer(this->getGameObject()->getLayer());
 	}
 
 	void
@@ -154,41 +168,29 @@ namespace octoon
 	{
 		if (mesh)
 		{
-			geometries_.resize(mesh->getNumSubsets(), nullptr);
-
-			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
-			{
-				auto geometry_ = std::make_shared<geometry::Geometry>();
-				geometry_->setActive(true);
-				geometry_->setOwnerListener(this);
-				geometry_->setVisible(this->getVisible());
-				geometry_->setRenderOrder(this->getRenderOrder());
-				geometry_->setBoundingBox(mesh->getBoundingBox(i));
-				geometry_->setMesh(mesh);
-				geometry_->setMeshSubset(i);
-
-				geometries_[i] = std::move(geometry_);
-			}
+			geometry_ = std::make_shared<geometry::Geometry>();
+			geometry_->setActive(true);
+			geometry_->setOwnerListener(this);
+			geometry_->setVisible(this->getVisible());
+			geometry_->setGlobalIllumination(this->getGlobalIllumination());
+			geometry_->setRenderOrder(this->getRenderOrder());
+			geometry_->setBoundingBox(mesh->getBoundingBoxAll());
+			geometry_->setMesh(mesh);
+			geometry_->setMaterials(this->getMaterials());
 
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
-			this->uploadMaterialData(this->getMaterials());
 		}
 		else
 		{
-			geometries_.clear();
+			geometry_.reset();
 		}
 	}
 
 	void
 	MeshRendererComponent::uploadMaterialData(const material::Materials& materials) noexcept
 	{
-		for (std::size_t i = 0; i < geometries_.size(); i++)
-		{
-			if (i < materials.size())
-				geometries_[i]->setMaterial(materials[i]);
-			else
-				geometries_[i]->setMaterial(materials.front());
-		}
+		if (geometry_)
+			geometry_->setMaterials(materials);
 	}
 }

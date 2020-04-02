@@ -310,6 +310,8 @@ namespace octoon
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];
+		mesh->computeLightMap(512, 512);
+
 		auto object = GameObject::create(mesh->getName());
 		object->addComponent<MeshFilterComponent>(mesh);
 
@@ -324,6 +326,7 @@ namespace octoon
 			smr->setTransforms(bones);
 			smr->setMorphBlendEnable(true);
 			smr->setTextureBlendEnable(true);
+			smr->setGlobalIllumination(true);
 
 			object->addComponent(smr);
 

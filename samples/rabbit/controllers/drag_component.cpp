@@ -129,7 +129,7 @@ namespace rabbit
 
 			auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
 			auto mesh = meshFilter->getMesh();
-			auto& box = mesh->getBoundingBox(hit.mesh).aabb();
+			auto& box = mesh->getBoundingBox(hit.mesh).box();
 
 			auto transform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
 			transform->setTranslate(box.center());
@@ -148,7 +148,7 @@ namespace rabbit
 
 			auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
 			auto mesh = meshFilter->getMesh();
-			auto& box = mesh->getBoundingBox(hit.mesh).aabb();
+			auto& box = mesh->getBoundingBox(hit.mesh).box();
 
 			auto transform = this->gizmoHover_->getComponent<octoon::TransformComponent>();
 			transform->setTranslate(box.center());

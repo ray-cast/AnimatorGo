@@ -14,6 +14,8 @@
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_context.h>
 
+#include <octoon/lightmap/lightmap.h>
+
 #include <unordered_map>
 
 namespace octoon::video
@@ -71,6 +73,7 @@ namespace octoon::video
 
 	private:
 		void prepareLights(const std::vector<light::Light*>& light, const camera::Camera& camera) noexcept;
+		void prepareLightMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
 
 	private:
 		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
@@ -101,6 +104,7 @@ namespace octoon::video
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderPipeline>> pipelines_;
+		std::unordered_map<std::intptr_t, std::shared_ptr<bake::Lightmap>> lightmaps_;
 	};
 }
 

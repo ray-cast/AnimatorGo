@@ -16,6 +16,9 @@ namespace octoon::material
 		void setColor(const math::float3& color) noexcept;
 		const math::float3& getColor() const noexcept;
 
+		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
+
 		void setEmissive(const math::float3& color) noexcept;
 		const math::float3& getEmissive() const noexcept;
 
@@ -40,8 +43,11 @@ namespace octoon::material
 		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
 		float getClearCoatRoughness() const noexcept;
 
-		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
+		void setLightMapIntensity(float intensity) noexcept;
+		float getLightMapIntensity() const noexcept;
+
+		void setLightMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getLightMap() const noexcept;
 
 		void setOffset(const math::float2& offset) noexcept;
 		const math::float2& getOffset() const noexcept;
@@ -67,11 +73,13 @@ namespace octoon::material
 		float refractionRatio_;
 		float clearCoat_;
 		float clearCoatRoughness_;
+		float lightMapIntensity_;
 		math::float2 offset_;
 		math::float2 repeat_;
 		math::float3 color_;
 		math::float3 emissive_;
-		hal::GraphicsTexturePtr colorTexture_;
+		hal::GraphicsTexturePtr colorMap_;
+		hal::GraphicsTexturePtr lightMap_;
 	};
 }
 

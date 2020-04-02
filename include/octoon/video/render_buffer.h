@@ -10,11 +10,11 @@ namespace octoon::video
 	{
 	public:
 		RenderBuffer() noexcept;
-		RenderBuffer(const mesh::MeshPtr& mesh) noexcept(false);
+		RenderBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 		virtual ~RenderBuffer() noexcept;
 
-		void setMesh(const mesh::MeshPtr& mesh) noexcept(false);
-		const mesh::MeshPtr& getMesh() const noexcept;
+		void setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		const std::shared_ptr<mesh::Mesh>& getMesh() const noexcept;
 
 		std::size_t getNumVertices() const noexcept;
 		std::size_t getNumIndices(std::size_t n) const noexcept;
@@ -23,7 +23,7 @@ namespace octoon::video
 		const hal::GraphicsDataPtr& getIndexBuffer(std::size_t n) const noexcept;
 
 	private:
-		void updateData(const mesh::MeshPtr& mesh) noexcept(false);
+		void updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 
 	private:
 		RenderBuffer(const RenderBuffer&) = delete;

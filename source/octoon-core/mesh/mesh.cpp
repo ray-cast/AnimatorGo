@@ -1,4 +1,5 @@
 #include <octoon/mesh/mesh.h>
+#include <octoon/lightmap/lightmap_pack.h>
 
 #include <map>
 #include <cstring>
@@ -272,15 +273,46 @@ namespace octoon::mesh
 		return _boundingBox;
 	}
 
-	void
-	Mesh::raycast(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept
+	bool
+	Mesh::raycast(const math::Raycast& ray, RaycastHit& hit) noexcept
 	{
-		if (!math::intersect(ray, this->getBoundingBoxAll()))
-			return;
+		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+		{
+			if (math::intersect(ray, this->getBoundingBox(i).box()))
+			{
+				auto& indices = this->_indices[i];
+
+				for (std::size_t j = 0; j < indices.size(); j += 3)
+				{
+					auto& v0 = this->_vertices[indices[j]];
+					auto& v1 = this->_vertices[indices[j+1]];
+					auto& v2 = this->_vertices[indices[j+2]];
+
+					if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
+					{
+						if (hit.distance > 0 && hit.distance < ray.maxDistance)
+						{
+							hit.mesh = i;
+							hit.object = this;
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool
+	Mesh::raycastAll(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept
+	{
+		if (!math::intersect(ray, this->getBoundingBoxAll().box()))
+			return false;
 
 		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
 		{
-			if (math::intersect(ray, this->getBoundingBox(i)))
+			if (math::intersect(ray, this->getBoundingBox(i).box()))
 			{
 				auto& indices = _indices[i];
 
@@ -297,14 +329,19 @@ namespace octoon::mesh
 					RaycastHit hit;
 					if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
 					{
-						hit.mesh = i;
-						hit.object = this;
+						if (hit.distance > 0 && hit.distance < ray.maxDistance)
+						{
+							hit.mesh = i;
+							hit.object = this;
 
-						hits.emplace_back(hit);
+							hits.emplace_back(hit);
+						}
 					}
 				}
 			}
 		}
+
+		return !hits.empty();
 	}
 
 	void
@@ -337,7 +374,7 @@ namespace octoon::mesh
 		mesh->_boundingBoxs = this->_boundingBoxs;
 
 		for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
-			mesh->setTexcoordArray(this->getTexcoordArray());
+			mesh->setTexcoordArray(this->getTexcoordArray(i), i);
 
 		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
 			mesh->setIndicesArray(this->getIndicesArray(i), i);
@@ -855,6 +892,38 @@ namespace octoon::mesh
 				_boundingBoxs[i].encapsulate(_vertices[index]);
 
 			_boundingBox.encapsulate(_boundingBoxs[i]);
+		}
+	}
+
+	void
+	Mesh::computeLightMap(std::size_t width, std::size_t height) noexcept
+	{
+		std::vector<std::uint32_t> totalIndices;
+		std::vector<math::float2> texcoords(this->_vertices.size());
+
+		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+		{
+			for (auto& it : this->getIndicesArray(i))
+				totalIndices.push_back(it);
+		}
+
+		std::size_t count = 0;
+
+		std::vector<math::float2> uvs(totalIndices.size()); // allocate buffer for each output uv
+
+		std::vector<std::uint32_t> remap(totalIndices.size()); // allocate buffer for each vertex index
+		std::vector<std::uint32_t> outIndices(totalIndices.size()); // allocate buffer for each output uv
+
+		if (uvmapper::lightmappack<std::uint32_t>((float*)this->_vertices.data(), totalIndices.data(), totalIndices.size(), width, height, 2, remap.data(), (float*)uvs.data(), outIndices.data(), count))
+		{
+			for (std::size_t i = 0; i < count; i++)
+				texcoords[remap[i]] = uvs[i];
+
+			this->setTexcoordArray(std::move(texcoords), 1);
+		}
+		else
+		{
+			std::cerr << "Failed to pack all triangles into the map!" << std::endl;
 		}
 	}
 }

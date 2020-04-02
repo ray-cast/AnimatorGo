@@ -52,7 +52,7 @@ namespace octoon
 					ray.transform(transform->getTransformInverse());
 
 					result.clear();
-					mesh->raycast(ray, result);
+					mesh->raycastAll(ray, result);
 
 					for (auto& it : result) {
 						RaycastHit hit;
@@ -94,7 +94,7 @@ namespace octoon
 					ray.transform(transform->getTransformInverse());
 
 					hitObjects.clear();
-					mesh->raycast(ray, hitObjects);
+					mesh->raycastAll(ray, hitObjects);
 
 					for (auto& it : hitObjects) {
 						RaycastHit hit;

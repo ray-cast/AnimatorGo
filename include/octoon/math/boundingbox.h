@@ -28,82 +28,82 @@ namespace octoon
 				BoundingBox(const Vector3<T> pt[], const std::uint16_t* indices, std::size_t indicesCount) noexcept { this->reset(); this->encapsulate(pt, indices, indicesCount); }
 				BoundingBox(const Vector3<T> pt[], const std::uint32_t* indices, std::size_t indicesCount) noexcept { this->reset(); this->encapsulate(pt, indices, indicesCount); }
 
-				void set(const AABB<T>& aabb) noexcept
+				void set(const Box3<T>& aabb) noexcept
 				{
-					aabb_ = aabb;
+					box_ = aabb;
 					sphere_.set(aabb);
 				}
 
 				void set(const Vector3<T>& min_, const Vector3<T>& max_) noexcept
 				{
-					aabb_ = AABB<T>(min_, max_);
-					sphere_.set(aabb_);
+					box_ = Box3<T>(min_, max_);
+					sphere_.set(box_);
 				}
 
 				void setCenter(const Vector3<T>& center) noexcept
 				{
-					aabb_.setCenter(center);
-					sphere_.set(aabb_);
+					box_.setCenter(center);
+					sphere_.set(box_);
 				}
 
 				Vector3<T> center() const noexcept
 				{
-					return aabb_.center();
+					return box_.center();
 				}
 
 				void reset() noexcept
 				{
 					sphere_.reset();
-					aabb_.reset();
+					box_.reset();
 				}
 
 				void encapsulate(const Vector3<T>& pt) noexcept
 				{
-					aabb_.encapsulate(pt);
-					sphere_.set(aabb_);
+					box_.encapsulate(pt);
+					sphere_.set(box_);
 				}
 
 				void encapsulate(const Vector3<T> pt[], std::size_t n) noexcept
 				{
 					assert(pt);
 
-					aabb_.encapsulate(pt, n);
-					sphere_.set(aabb_);
+					box_.encapsulate(pt, n);
+					sphere_.set(box_);
 				}
 
 				void encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
-					aabb_.encapsulate(points);
-					sphere_.set(aabb_);
+					box_.encapsulate(points);
+					sphere_.set(box_);
 				}
 
 				void encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
 				{
-					aabb_.encapsulate(points);
-					sphere_.set(aabb_);
+					box_.encapsulate(points);
+					sphere_.set(box_);
 				}
 
-				void encapsulate(const AABB<T>& aabb) noexcept
+				void encapsulate(const Box3<T>& aabb) noexcept
 				{
-					aabb_.encapsulate(aabb);
-					sphere_.set(aabb_);
+					box_.encapsulate(aabb);
+					sphere_.set(box_);
 				}
 
 				void encapsulate(const Sphere<T>& sphere) noexcept
 				{
-					aabb_.encapsulate(sphere.aabb());
-					sphere_.set(aabb_);
+					box_.encapsulate(sphere.aabb());
+					sphere_.set(box_);
 				}
 
 				void encapsulate(const BoundingBox<T>& box) noexcept
 				{
-					aabb_.encapsulate(box.aabb());
-					sphere_.set(aabb_);
+					box_.encapsulate(box.box());
+					sphere_.set(box_);
 				}
 
-				const AABB<T>& aabb() const noexcept
+				const Box3<T>& box() const noexcept
 				{
-					return aabb_;
+					return box_;
 				}
 
 				const Sphere<T>& sphere() const noexcept
@@ -113,11 +113,11 @@ namespace octoon
 
 				bool empty() const noexcept
 				{
-					return aabb_.empty();
+					return box_.empty();
 				}
 
 			private:
-				AABB<T> aabb_;
+				Box3<T> box_;
 				Sphere<T> sphere_;
 			};
 
@@ -143,7 +143,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::AABB<T>& aabb) noexcept
+		inline bool intersects(const detail::BoundingBox<T>& bound, const detail::Box3<T>& aabb) noexcept
 		{
 			return intersects(bound.sphere(), aabb);
 		}
@@ -163,14 +163,14 @@ namespace octoon
 		template<typename T>
 		inline detail::BoundingBox<T> transform(const detail::BoundingBox<T> bound, const detail::Matrix4x4<T>& m) noexcept
 		{
-			auto aabb = transform(bound.aabb(), m);
+			auto aabb = transform(bound.box(), m);
 			return detail::BoundingBox<T>(aabb.min, aabb.max);
 		}
 
 		template<typename T>
 		inline detail::BoundingBox<T> transform(const detail::BoundingBox<T> bound, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate) noexcept
 		{
-			auto aabb = transform(bound.aabb(), m);
+			auto aabb = transform(bound.box(), m);
 			return detail::BoundingBox<T>(aabb.min, aabb.max);
 		}
 	}

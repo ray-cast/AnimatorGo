@@ -33,7 +33,10 @@ namespace octoon
 			class Quaternion;
 
 			template<typename T = float>
-			class AABB;
+			class Box2;
+
+			template<typename T = float>
+			class Box3;
 
 			template<typename T = float>
 			class Sphere;
@@ -59,7 +62,8 @@ namespace octoon
 		using Matrix3x3 = detail::Matrix3x3<float>;
 		using Matrix4x4 = detail::Matrix4x4<float>;
 		using Quaternion = detail::Quaternion<float>;
-		using AABB = detail::AABB<float>;
+		using Box2 = detail::Box2<float>;
+		using AABB = detail::Box3<float>;
 		using Sphere = detail::Sphere<float>;
 		using Triangle = detail::Triangle<float>;
 		using Raycast = detail::Raycast<float>;
@@ -70,7 +74,8 @@ namespace octoon
 		using float3x3 = detail::Matrix3x3<float>;
 		using float4x4 = detail::Matrix4x4<float>;
 		using Quaternionf = detail::Quaternion<float>;
-		using AABBf = detail::AABB<float>;
+		using Box2f = detail::Box2<float>;
+		using AABBf = detail::Box3<float>;
 		using Spheref = detail::Sphere<float>;
 		using Raycastf = detail::Raycast<float>;
 		using BoundingBoxf = detail::BoundingBox<float>;
@@ -80,7 +85,8 @@ namespace octoon
 		using double3x3 = detail::Matrix3x3<double>;
 		using double4x4 = detail::Matrix4x4<double>;
 		using Quaterniond = detail::Quaternion<double>;
-		using AABBd = detail::AABB<double>;
+		using Box2d = detail::Box2<double>;
+		using AABBd = detail::Box3<double>;
 		using Sphered = detail::Sphere<double>;
 		using Raycastd = detail::Raycast<double>;
 		using BoundingBoxd = detail::BoundingBox<double>;

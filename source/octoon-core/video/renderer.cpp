@@ -11,6 +11,8 @@
 #include <octoon/light/environment_light.h>
 #include <octoon/light/tube_light.h>
 
+#include <octoon/material/mesh_standard_material.h>
+
 #include <octoon/runtime/except.h>
 
 using namespace octoon::hal;
@@ -446,6 +448,72 @@ namespace octoon::video
 	}
 
 	void
+	Renderer::prepareLightMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
+	{
+		for (auto& geometry : geometries)
+		{
+			if (camera.getLayer() != geometry->getLayer())
+				return;
+
+			if (geometry->getVisible() && geometry->getGlobalIllumination())
+			{
+				auto& lightmap = lightmaps_[((std::intptr_t)geometry->getMesh().get())];
+				if (!lightmap)
+				{
+					lightmap = std::make_shared<bake::Lightmap>();
+					lightmap->build(*geometry);
+
+					for (auto& light : lights)
+					{
+						if (camera.getLayer() != light->getLayer())
+							continue;
+
+						if (light->getVisible())
+						{
+							if (light->isA<light::DirectionalLight>())
+								lightmap->renderLight(*light->downcast<light::DirectionalLight>());
+							else if (light->isA<light::EnvironmentLight>())
+								lightmap->renderLight(*light->downcast<light::EnvironmentLight>());
+						}
+					}
+
+					lightmap->render();
+				}
+
+				for (auto& it : geometry->getMaterials())
+				{
+					if (it->isA<material::MeshStandardMaterial>())
+					{
+						auto material = it->downcast< material::MeshStandardMaterial>();
+						auto map = material->getLightMap();
+						if (!map)
+						{
+							GraphicsTextureDesc lightMapDesc;
+							lightMapDesc.setWidth(lightmap->width());
+							lightMapDesc.setHeight(lightmap->height());
+							lightMapDesc.setTexDim(GraphicsTextureDim::Texture2D);
+							lightMapDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
+							lightMapDesc.setStream(lightmap->fronBuffer().data());
+							lightMapDesc.setStreamSize(lightmap->fronBuffer().size() * sizeof(math::float3));
+
+							material->setLightMap(device_->createTexture(lightMapDesc));
+						}
+						else
+						{
+							void* data;
+							if (map->map(0, 0, map->getTextureDesc().getWidth(), map->getTextureDesc().getHeight(), 0, &data))
+							{
+								std::memcpy(data, lightmap->fronBuffer().data(), lightmap->fronBuffer().size() * sizeof(math::float3));
+								map->unmap();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void
 	Renderer::setViewport(const math::float4& viewport) noexcept(false)
 	{
 		this->context_->setViewport(0, viewport);
@@ -477,17 +545,20 @@ namespace octoon::video
 
 		if (geometry.getVisible())
 		{
-			if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterial(), camera, geometry))
-				return;
+			for (std::size_t i = 0; i < geometry.getMaterials().size(); i++)
+			{
+				if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterials()[i], camera, geometry))
+					return;
 
-			if (!this->setBuffer(geometry.getMesh(), geometry.getMeshSubset()))
-				return;
+				if (!this->setBuffer(geometry.getMesh(), i))
+					return;
 
-			auto indices = currentBuffer_->getNumIndices(geometry.getMeshSubset());
-			if (indices > 0)
-				this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
-			else
-				this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
+				auto indices = currentBuffer_->getNumIndices(i);
+				if (indices > 0)
+					this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
+				else
+					this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
+			}
 		}
 	}
 
@@ -535,6 +606,7 @@ namespace octoon::video
 			this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
 			this->prepareLights(scene.getLights(), *camera);
+			this->prepareLightMaps(scene.getLights(), scene.getGeometries(), *camera);
 			this->renderObjects(scene.getGeometries(), *camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)

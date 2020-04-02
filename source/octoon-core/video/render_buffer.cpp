@@ -3,7 +3,7 @@
 
 namespace octoon::video
 {
-	RenderBuffer::RenderBuffer(const mesh::MeshPtr& mesh) noexcept(false)
+	RenderBuffer::RenderBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		this->setMesh(mesh);
 	}
@@ -13,7 +13,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderBuffer::setMesh(const mesh::MeshPtr& mesh) noexcept(false)
+	RenderBuffer::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		if (this->mesh_ != mesh)
 		{
@@ -22,7 +22,7 @@ namespace octoon::video
 		}
 	}
 
-	const mesh::MeshPtr&
+	const std::shared_ptr<mesh::Mesh>&
 	RenderBuffer::getMesh() const noexcept
 	{
 		return this->mesh_;
@@ -53,18 +53,22 @@ namespace octoon::video
 	}
 
 	void
-	RenderBuffer::updateData(const mesh::MeshPtr& mesh) noexcept(false)
+	RenderBuffer::updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		if (mesh)
 		{
 			auto& vertices = mesh->getVertexArray();
 			auto& texcoord = mesh->getTexcoordArray();
+			auto& texcoord1 = mesh->getTexcoordArray(1);
 			auto& normals = mesh->getNormalArray();
 
 			hal::GraphicsInputLayoutDesc inputLayout;
 			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
-			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
 			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "NORMAL", 0, hal::GraphicsFormat::R32G32B32SFloat));
+			inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
+			if (!texcoord1.empty())
+				inputLayout.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 1, hal::GraphicsFormat::R32G32SFloat));
+
 			inputLayout.addVertexBinding(hal::GraphicsVertexBinding(0, inputLayout.getVertexSize()));
 
 			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
@@ -85,10 +89,20 @@ namespace octoon::video
 						v += vertexSize;
 					}
 				}
-				else if (layout.getSemantic() == "TEXCOORD")
+				else if (layout.getSemantic() == "TEXCOORD" && layout.getSemanticIndex() == 0)
 				{
 					auto t = data.data() + offset;
 					for (auto& it : texcoord)
+					{
+						t[0] = it.x;
+						t[1] = it.y;
+						t += vertexSize;
+					}
+				}
+				else if (layout.getSemantic() == "TEXCOORD" && layout.getSemanticIndex() == 1)
+				{
+					auto t = data.data() + offset;
+					for (auto& it : texcoord1)
 					{
 						t[0] = it.x;
 						t[1] = it.y;

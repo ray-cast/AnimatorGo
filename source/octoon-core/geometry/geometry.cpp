@@ -7,7 +7,7 @@ namespace octoon::geometry
 	Geometry::Geometry() noexcept
 		: isCastShadow_(true)
 		, isReceiveShadow_(true)
-		, subset_(0)
+		, isGlobalIllumination_(false)
 	{
 	}
 
@@ -41,15 +41,15 @@ namespace octoon::geometry
 	}
 
 	void
-	Geometry::setMeshSubset(std::size_t index) noexcept
+	Geometry::setGlobalIllumination(bool enable) noexcept
 	{
-		this->subset_ = index;
+		this->isGlobalIllumination_ = enable;
 	}
-
-	std::size_t
-	Geometry::getMeshSubset() const noexcept
+	
+	bool
+	Geometry::getGlobalIllumination() const noexcept
 	{
-		return this->subset_;
+		return this->isGlobalIllumination_;
 	}
 
 	void
@@ -73,18 +73,39 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterial(std::shared_ptr<material::Material>&& material) noexcept
 	{
-		material_ = std::move(material);
+		this->materials_.clear();
+		this->materials_.push_back(std::move(material));
 	}
-
+	
 	void
 	Geometry::setMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
-		material_ = material;
+		this->materials_.clear();
+		this->materials_.push_back(material);
+	}
+	
+	const std::shared_ptr<material::Material>&
+	Geometry::getMaterial(std::size_t n) const noexcept
+	{
+		assert(this->materials_.size() > n);
+		return this->materials_[n];
 	}
 
-	const std::shared_ptr<material::Material>&
-	Geometry::getMaterial() const noexcept
+	void
+	Geometry::setMaterials(std::vector<std::shared_ptr<material::Material>>&& materials) noexcept
 	{
-		return material_;
+		materials_ = std::move(materials);
+	}
+
+	void
+	Geometry::setMaterials(const std::vector<std::shared_ptr<material::Material>>& materials) noexcept
+	{
+		materials_ = materials;
+	}
+
+	const std::vector<std::shared_ptr<material::Material>>&
+	Geometry::getMaterials() const noexcept
+	{
+		return materials_;
 	}
 }

@@ -53,6 +53,7 @@ namespace octoon
 				T operator[](std::uint8_t i) const noexcept { return *(&x + i); }
 				reference operator[](std::uint8_t i) noexcept { return *(&x + i); }
 
+				void set(T xy) noexcept { x = xy; y = xy; }
 				void set(T xx, T yy) noexcept { x = xx; y = yy; }
 				void set(T xy[2]) noexcept { x = xy[0]; y = xy[1]; }
 				void set(const Vector2<T>& v) noexcept { x = v.x; y = v.y; }
@@ -440,6 +441,12 @@ namespace octoon
 		inline detail::Vector2<T> floor(const detail::Vector2<T>& v) noexcept
 		{
 			return detail::Vector2<T>(std::floor(v.x), std::floor(v.y));
+		}
+
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
+		inline detail::Vector2<T> round(const detail::Vector2<T>& v) noexcept
+		{
+			return detail::Vector2<T>(std::round(v.x), std::round(v.y));
 		}
 	}
 }

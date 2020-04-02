@@ -1,7 +1,7 @@
 #ifndef OCTOON_MATH_SPHERE_H_
 #define OCTOON_MATH_SPHERE_H_
 
-#include <octoon/math/AABB.h>
+#include <octoon/math/box3.h>
 
 namespace octoon
 {
@@ -26,7 +26,7 @@ namespace octoon
 				Sphere(const Vector3<T>& pt, T radius) noexcept : center(pt), radius(radius) {}
 				Sphere(const Vector3<T>& min, const Vector3<T>& max) noexcept { this->set(min, max); }
 
-				explicit Sphere(const AABB<T>& aabb_) noexcept { this->set(aabb_); };
+				explicit Sphere(const Box3<T>& box_) noexcept { this->set(box_); };
 
 				union
 				{
@@ -39,15 +39,15 @@ namespace octoon
 					};
 				};
 
-				void set(const AABB<T>& aabb_) noexcept
+				void set(const Box3<T>& box_) noexcept
 				{
-					center = aabb_.center();
-					radius = max3(aabb_.size()) * 0.5f;
+					center = box_.center();
+					radius = max3(box_.size()) * 0.5f;
 				}
 
 				void set(const Vector3<T>& min, const Vector3<T>& max) noexcept
 				{
-					this->set(AABB<T>(min, max));
+					this->set(Box3<T>(min, max));
 				}
 
 				void reset() noexcept
@@ -56,13 +56,13 @@ namespace octoon
 					center = Vector3<T>::Zero;
 				}
 
-				AABB<T> aabb() const
+				Box3<T> aabb() const
 				{
 					Vector3<T> min = center;
 					min -= radius;
 					Vector3<T> max = center;
 					max += radius;
-					return AABB<T>{ min, max };
+					return Box3<T>{ min, max };
 				}
 			};
 
@@ -87,9 +87,9 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::Sphere<T>& sphere, const detail::AABB<T>& aabb_) noexcept
+		inline bool intersects(const detail::Sphere<T>& sphere, const detail::Box3<T>& box_) noexcept
 		{
-			detail::Vector3<T> point = closest(aabb_, sphere.center);
+			detail::Vector3<T> point = closest(box_, sphere.center);
 			return sqrDistance(sphere.center, point) < (sphere.radius * sphere.radius);
 		}
 

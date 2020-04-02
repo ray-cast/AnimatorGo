@@ -3,11 +3,13 @@
 static const char* standard_vert = R"(
 #include <common>
 #include <uv_pars_vertex>
+#include <uv2_pars_vertex>
 #include <color_pars_vertex>
 #include <normal_pars_vertex>
 out vec3 vViewPosition;
 void main() {
 #include <uv_vertex>
+#include <uv2_vertex>
 #include <color_vertex>
 #include <beginnormal_vertex>
 #include <defaultnormal_vertex>
@@ -21,6 +23,7 @@ static const char* standard_frag = R"(
 #include <packing>
 #include <encodings_pars_fragment>
 #include <uv_pars_fragment>
+#include <uv2_pars_fragment>
 #include <normal_pars_fragment>
 #include <map_pars_fragment>
 #include <color_pars_fragment>
@@ -82,6 +85,7 @@ namespace octoon::material
 	}
 
 	MeshStandardMaterial::MeshStandardMaterial(const math::float3& color) noexcept
+		: lightMapIntensity_(1.0f)
 	{
 		this->setColor(color);
 		this->setOpacity(1.0f);
@@ -170,7 +174,7 @@ namespace octoon::material
 	void
 	MeshStandardMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
 	{
-		this->colorTexture_ = map;
+		this->colorMap_ = map;
 		this->set("map", map);
 		this->set("mapEnable", map ? true : false);
 	}
@@ -178,7 +182,35 @@ namespace octoon::material
 	const hal::GraphicsTexturePtr&
 	MeshStandardMaterial::getColorTexture() const noexcept
 	{
-		return this->colorTexture_;
+		return this->colorMap_;
+	}
+
+	void
+	MeshStandardMaterial::setLightMapIntensity(float intensity) noexcept
+	{
+		this->lightMapIntensity_ = intensity;
+		this->set("lightMapIntensity", intensity);
+	}
+
+	float
+	MeshStandardMaterial::getLightMapIntensity() const noexcept
+	{
+		return this->lightMapIntensity_;
+	}
+
+	void
+	MeshStandardMaterial::setLightMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->lightMap_ = map;
+		this->set("lightMap", map);
+		this->set("lightMapIntensity", this->lightMapIntensity_);
+		this->set("lightMapEnable", map ? true : false);
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getLightMap() const noexcept
+	{
+		return this->lightMap_;
 	}
 
 	void

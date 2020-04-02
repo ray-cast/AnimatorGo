@@ -11,7 +11,7 @@ namespace octoon
 		namespace detail
 		{
 			template<typename T>
-			class AABB final
+			class Box3 final
 			{
 			public:
 				typedef typename trait::type_addition<T>::value_type value_type;
@@ -30,18 +30,18 @@ namespace octoon
 					};
 				};
 
-				static const AABB<T> Empty;
-				static const AABB<T> One;
+				static const Box3<T> Empty;
+				static const Box3<T> One;
 
-				AABB() noexcept { this->reset(); };
-				AABB(const Vector3<T> pt[], std::size_t n) noexcept { this->reset(); this->encapsulate(pt, n); }
-				AABB(const Vector3<T>& min_, const Vector3<T>& max_) noexcept : min(min_), max(max_) { assert(!empty()); }
-				~AABB() = default;
+				Box3() noexcept { this->reset(); };
+				Box3(const Vector3<T> pt[], std::size_t n) noexcept { this->reset(); this->encapsulate(pt, n); }
+				Box3(const Vector3<T>& min_, const Vector3<T>& max_) noexcept : min(min_), max(max_) { assert(!empty()); }
+				~Box3() = default;
 
-				AABB<T>& operator+=(const Vector3<T>& v) noexcept { min += v; max += v; return *this; }
-				AABB<T>& operator-=(const Vector3<T>& v) noexcept { min -= v; max -= v; return *this; }
-				AABB<T>& operator*=(const Vector3<T>& v) noexcept { min *= v; max *= v; return *this; }
-				AABB<T>& operator/=(const Vector3<T>& v) noexcept { min /= v; max /= v; return *this; }
+				Box3<T>& operator+=(const Vector3<T>& v) noexcept { min += v; max += v; return *this; }
+				Box3<T>& operator-=(const Vector3<T>& v) noexcept { min -= v; max -= v; return *this; }
+				Box3<T>& operator*=(const Vector3<T>& v) noexcept { min *= v; max *= v; return *this; }
+				Box3<T>& operator/=(const Vector3<T>& v) noexcept { min /= v; max /= v; return *this; }
 
 				void set(const Vector3<T>& min_, const Vector3<T>& max_) noexcept
 				{
@@ -82,14 +82,14 @@ namespace octoon
 					return lerp(min, max, 0.5f);
 				}
 
-				AABB<T>& expand(const Vector3<T>& amount) noexcept
+				Box3<T>& expand(const Vector3<T>& amount) noexcept
 				{
 					min -= amount;
 					max += amount;
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const AABB<T>& box) noexcept
+				Box3<T>& encapsulate(const Box3<T>& box) noexcept
 				{
 					if (box.min.x < min.x) min.x = box.min.x;
 					if (box.min.y < min.y) min.y = box.min.y;
@@ -102,7 +102,7 @@ namespace octoon
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const Vector3<T>& pt) noexcept
+				Box3<T>& encapsulate(const Vector3<T>& pt) noexcept
 				{
 					if (pt.x < min.x) min.x = pt.x;
 					if (pt.y < min.y) min.y = pt.y;
@@ -115,7 +115,7 @@ namespace octoon
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const Vector3<T> pt[], std::size_t n) noexcept
+				Box3<T>& encapsulate(const Vector3<T> pt[], std::size_t n) noexcept
 				{
 					assert(pt && n > 0);
 
@@ -125,7 +125,7 @@ namespace octoon
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const std::vector<Vector3<T>>& points) noexcept
+				Box3<T>& encapsulate(const std::vector<Vector3<T>>& points) noexcept
 				{
 					for (auto& pt : points)
 						this->encapsulate(pt);
@@ -133,7 +133,7 @@ namespace octoon
 					return *this;
 				}
 
-				AABB<T>& encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
+				Box3<T>& encapsulate(const std::initializer_list<Vector3<T>>& points) noexcept
 				{
 					for (auto& pt : points)
 						this->encapsulate(pt);
@@ -141,43 +141,43 @@ namespace octoon
 					return *this;
 				}
 
-				friend AABB<T> operator==(const AABB<T>& a, const AABB<T>& b) noexcept
+				friend Box3<T> operator==(const Box3<T>& a, const Box3<T>& b) noexcept
 				{
 					return a.min == b.min && a.max == b.max;
 				}
 
-				friend AABB<T> operator!=(const AABB<T>& a, const AABB<T>& b) noexcept
+				friend Box3<T> operator!=(const Box3<T>& a, const Box3<T>& b) noexcept
 				{
 					return !(a == b);
 				}
 
-				friend AABB<T> operator+(const AABB<T>& aabb_, const Vector3<T>& translate) noexcept
+				friend Box3<T> operator+(const Box3<T>& aabb_, const Vector3<T>& translate) noexcept
 				{
-					return AABB<T>(aabb_.min + translate, aabb_.max + translate);
+					return Box3<T>(aabb_.min + translate, aabb_.max + translate);
 				}
 
-				friend AABB<T> operator-(const AABB<T>& aabb_, const Vector3<T>& translate) noexcept
+				friend Box3<T> operator-(const Box3<T>& aabb_, const Vector3<T>& translate) noexcept
 				{
-					return AABB<T>(aabb_.min - translate, aabb_.max - translate);
+					return Box3<T>(aabb_.min - translate, aabb_.max - translate);
 				}
 
-				friend AABB<T> operator*(const AABB<T>& aabb_, const Vector3<T>& scaling) noexcept
+				friend Box3<T> operator*(const Box3<T>& aabb_, const Vector3<T>& scaling) noexcept
 				{
-					return AABB<T>(aabb_.min * scaling, aabb_.max * scaling);
+					return Box3<T>(aabb_.min * scaling, aabb_.max * scaling);
 				}
 
-				friend AABB<T> operator/(const AABB<T>& aabb_, const Vector3<T>& scaling) noexcept
+				friend Box3<T> operator/(const Box3<T>& aabb_, const Vector3<T>& scaling) noexcept
 				{
-					return AABB<T>(aabb_.min / scaling, aabb_.max / scaling);
+					return Box3<T>(aabb_.min / scaling, aabb_.max / scaling);
 				}
 			};
 
-			template<typename T> const AABB<T> AABB<T>::Empty(Vector3<T>::Zero, Vector3<T>::Zero);
-			template<typename T> const AABB<T> AABB<T>::One(Vector3<T>::One, Vector3<T>::One);
+			template<typename T> const Box3<T> Box3<T>::Empty(Vector3<T>::Zero, Vector3<T>::Zero);
+			template<typename T> const Box3<T> Box3<T>::One(Vector3<T>::One, Vector3<T>::One);
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::AABB<T>& a, const detail::AABB<T>& b) noexcept
+		inline bool intersects(const detail::Box3<T>& a, const detail::Box3<T>& b) noexcept
 		{
 			if (a.max.x < b.min.x || a.min.x > b.max.x) { return false; }
 			if (a.max.y < b.min.y || a.min.y > b.max.y) { return false; }
@@ -187,41 +187,13 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
+		inline bool intersects(const detail::Box3<T>& aabb_, const detail::Vector3<T>& pt) noexcept
 		{
 			return (pt > aabb_.min && pt < aabb_.max) ? true : false;
 		}
 
 		template<typename T>
-		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& origin, const detail::Vector3<T>& normal) noexcept
-		{
-			std::uint8_t symbol[3];
-			symbol[0] = origin.x > 0 ? 1 : 0;
-			symbol[1] = origin.y > 0 ? 1 : 0;
-			symbol[2] = origin.z > 0 ? 1 : 0;
-
-			detail::Vector3<T> tmin, tmax;
-			tmin.x = (1 - symbol[0]) == 0 ? aabb_.min.x : aabb_.max.x;
-			tmin.y = (1 - symbol[1]) == 0 ? aabb_.min.y : aabb_.max.y;
-			tmin.z = (1 - symbol[2]) == 0 ? aabb_.min.z : aabb_.max.z;
-
-			tmax.x = symbol[0] == 0 ? aabb_.min.x : aabb_.max.x;
-			tmax.y = symbol[1] == 0 ? aabb_.min.y : aabb_.max.y;
-			tmax.z = symbol[2] == 0 ? aabb_.min.z : aabb_.max.z;
-
-			detail::Vector3<T> inv = 1.0f / (normal + 1e-16);
-
-			tmin = (tmin - origin) * inv;
-			tmax = (tmax - origin) * inv;
-
-			tmin.x = max3(tmin);
-			tmax.x = max3(tmax);
-
-			return (tmin.x < tmax.x) ? true : false;
-		}
-
-		template<typename T>
-		inline bool intersects(const detail::AABB<T>& aabb_, const detail::Vector3<T>& n, const T& distance) noexcept
+		inline bool intersects(const detail::Box3<T>& aabb_, const detail::Vector3<T>& n, const T& distance) noexcept
 		{
 			T minD, maxD;
 
@@ -262,27 +234,27 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T surfaceArea(const detail::AABB<T>& aabb_) noexcept
+		inline T surfaceArea(const detail::Box3<T>& aabb_) noexcept
 		{
 			detail::Vector3<T> ext = aabb_.max - aabb_.min;
 			return 2 * (ext.x * ext.y + ext.x * ext.z + ext.y * ext.z);
 		}
 
 		template<typename T>
-		inline T volume(const detail::AABB<T>& aabb_) noexcept
+		inline T volume(const detail::Box3<T>& aabb_) noexcept
 		{
 			detail::Vector3<T> ext = aabb_.max - aabb_.min;
 			return ext.x * ext.y * ext.z;
 		}
 
 		template<typename T>
-		inline T diagonal(const detail::AABB<T>& aabb_) noexcept
+		inline T diagonal(const detail::Box3<T>& aabb_) noexcept
 		{
 			return aabb_.max - aabb_.min;
 		}
 
 		template<typename T>
-		inline detail::Vector3<T> closest(const detail::AABB<T>& aabb_, const detail::Vector3<T>& pt) noexcept
+		inline detail::Vector3<T> closest(const detail::Box3<T>& aabb_, const detail::Vector3<T>& pt) noexcept
 		{
 			T x = pt.x;
 			T y = pt.y;
@@ -299,11 +271,11 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
+		inline detail::Box3<T> transform(const detail::Box3<T>& aabb, const detail::Matrix3x3<T>& m, const detail::Vector3<T>& translate = detail::Vector3<T>::Zero) noexcept
 		{
 			assert(!aabb.empty());
 
-			detail::AABB<T> aabb_ = aabb;
+			detail::Box3<T> aabb_ = aabb;
 			aabb_.min.x = aabb_.max.x = translate.x;
 			aabb_.min.y = aabb_.max.y = translate.y;
 			aabb_.min.z = aabb_.max.z = translate.z;
@@ -332,11 +304,11 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline detail::AABB<T> transform(const detail::AABB<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
+		inline detail::Box3<T> transform(const detail::Box3<T>& aabb, const detail::Matrix4x4<T>& m) noexcept
 		{
 			assert(!aabb.empty());
 
-			detail::AABB<T> aabb_ = detail::AABB<T>::Empty;
+			detail::Box3<T> aabb_ = detail::Box3<T>::Empty;
 			aabb_.min.x = aabb_.max.x = m.d1;
 			aabb_.min.y = aabb_.max.y = m.d2;
 			aabb_.min.z = aabb_.max.z = m.d3;

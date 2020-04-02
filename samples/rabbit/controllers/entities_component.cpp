@@ -190,7 +190,7 @@ namespace rabbit
 			objects.emplace_back(camera);
 
 		auto mainLight = octoon::GameObject::create("DirectionalLight");
-		auto rotation = math::normalize(math::Quaternion(math::float3::Forward, math::normalize(pmm.main_light.xyz * math::float3(-1, -1, -1))));
+		auto rotation = math::Quaternion(math::float3(-0.1, 0.5f, 0.0f));
 		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(context->profile->sunModule->color);
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(context->profile->sunModule->intensity);
@@ -495,6 +495,7 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(1000, 24, 32, math::PI * 0.5));
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
+		enviromentLight->getComponent<octoon::MeshRendererComponent>()->setRenderOrder(-2);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();

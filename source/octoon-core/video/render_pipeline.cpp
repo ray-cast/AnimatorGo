@@ -412,6 +412,15 @@ static char* uv_vertex = R"(
 static char* uv_pars_fragment = R"(
 	in vec2 vUv;
 )";
+static char* uv2_pars_vertex = R"(
+	out vec2 vUv2;
+)";
+static char* uv2_vertex = R"(
+	vUv2 = TEXCOORD1;
+)";
+static char* uv2_pars_fragment = R"(
+	in vec2 vUv2;
+)";
 static char* worldpos_vertex = R"(
 #if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
@@ -546,10 +555,9 @@ static char* envmap_pars_fragment = R"(
 #endif
 )";
 static char* lightmap_pars_fragment = R"(
-#ifdef USE_LIGHTMAP
-	uniform sampler2D lightMap;
-	uniform float lightMapIntensity;
-#endif
+uniform bool lightMapEnable;
+uniform sampler2D lightMap;
+uniform float lightMapIntensity;
 )";
 static char* tonemapping_pars_fragment = R"(
 vec3 ACES(vec3 x)
@@ -1411,20 +1419,6 @@ IncidentLight directLight;
 
 	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );
 
-	#ifdef USE_LIGHTMAP
-
-		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
-
-		#ifndef PHYSICALLY_CORRECT_LIGHTS
-
-			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
-
-		#endif
-
-		irradiance += lightMapIrradiance;
-
-	#endif
-
 	#if ( NUM_HEMI_LIGHTS > 0 )
 
 		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
@@ -1444,6 +1438,18 @@ IncidentLight directLight;
 
 	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
 
+	if (lightMapEnable)
+	{
+		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
+
+		#ifndef PHYSICALLY_CORRECT_LIGHTS
+
+			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
+
+		#endif
+
+		reflectedLight.indirectDiffuse  += lightMapIrradiance;
+	}
 #endif
 
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
@@ -1474,6 +1480,9 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"uv_vertex", uv_vertex },
 	{"uv_pars_vertex", uv_pars_vertex },
 	{"uv_pars_fragment", uv_pars_fragment },
+	{"uv2_vertex", uv2_vertex },
+	{"uv2_pars_vertex", uv2_pars_vertex },
+	{"uv2_pars_fragment", uv2_pars_fragment },
 	{"beginnormal_vertex", beginnormal_vertex},
 	{"defaultnormal_vertex", defaultnormal_vertex},
 	{"normal_pars_vertex", normal_pars_vertex},
@@ -1679,6 +1688,7 @@ namespace octoon::video
 				layout(location = 0) in vec4 POSITION0;
 				layout(location = 1) in vec2 TEXCOORD0;
 				layout(location = 2) in vec3 NORMAL0;
+				layout(location = 3) in vec2 TEXCOORD1;
 
 				uniform mat4 modelMatrix;
 				uniform mat4 modelViewMatrix;
@@ -1794,8 +1804,18 @@ namespace octoon::video
 
 			hal::GraphicsInputLayoutDesc layoutDesc;
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
-			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "NORMAL", 0, hal::GraphicsFormat::R32G32B32SFloat));
+			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
+
+			for (auto& it : this->program_->getActiveAttributes())
+			{
+				if (it->getSemantic() == "TEXCOORD" && it->getSemanticIndex() == 1)
+				{
+					layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 1, hal::GraphicsFormat::R32G32SFloat));
+					break;
+				}
+			}
+
 			layoutDesc.addVertexBinding(hal::GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 
 			hal::GraphicsDescriptorSetLayoutDesc descriptor_set_layout;

@@ -18,15 +18,19 @@ namespace octoon
 			public:
 				Vector3<T> origin;
 				Vector3<T> normal;
+				float maxDistance;
 
 				Raycast() noexcept
+					: maxDistance(std::numeric_limits<float>::infinity())
 				{
 				}
 
 				Raycast(const Vector3<T>& pt1, const Vector3<T>& pt2) noexcept
 				{
 					origin = pt1;
-					normal = math::normalize(pt2 - pt1);
+					normal = pt2 - pt1;
+					maxDistance = math::length(normal);
+					normal /= maxDistance;
 				}
 
 				void setNormal(const Vector3<T>& n) noexcept
@@ -76,6 +80,36 @@ namespace octoon
 		inline bool intersect(const detail::Raycast<T>& ray, const detail::BoundingBox<T>& bound) noexcept
 		{
 			return intersects(bound.sphere(), ray.origin, ray.normal);
+		}
+
+		template<typename T>
+		inline bool intersect(const detail::Raycast<T>& ray, const detail::Box3<T>& aabb_) noexcept
+		{
+			float tmin = 0.0f;
+			float tmax = std::numeric_limits<float>::max();
+
+			for (int i = 0; i < 3; i++)
+			{
+				if (std::abs(ray.normal[i]) < math::EPSILON_E5)
+				{
+					if (ray.origin[i] < aabb_.min[i] || ray.origin[i] > aabb_.max[i])
+						return false;
+				}
+				else
+				{
+					float ood = 1.0f / ray.normal[i];
+					float t1 = (aabb_.min[i] - ray.origin[i]) * ood;
+					float t2 = (aabb_.max[i] - ray.origin[i]) * ood;
+
+					if (t1 > t2) std::swap(t1, t2);
+					if (t1 > tmin) tmin = t1;
+					if (t2 > tmax) tmax = t2;
+
+					if (tmin > tmax) return false;
+				}
+			}
+
+			return true;
 		}
 
 		template<typename T>

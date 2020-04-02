@@ -23,6 +23,9 @@ namespace octoon
 		virtual void setRenderOrder(std::int32_t order) noexcept override;
 		virtual std::int32_t getRenderOrder() const noexcept override;
 
+		virtual void setGlobalIllumination(bool enable) noexcept;
+		virtual bool getGlobalIllumination() const noexcept;
+
 		virtual void uploadMeshData(const mesh::MeshPtr& mesh) noexcept;
 		virtual void uploadMaterialData(const material::Materials& material) noexcept;
 
@@ -45,10 +48,10 @@ namespace octoon
 
 	private:
 		bool visible_;
+		bool globalIllumination_;
 
 		std::int32_t renderOrder_;
-
-		std::vector<std::shared_ptr<geometry::Geometry>> geometries_;
+		std::shared_ptr<geometry::Geometry> geometry_;
 	};
 }
 

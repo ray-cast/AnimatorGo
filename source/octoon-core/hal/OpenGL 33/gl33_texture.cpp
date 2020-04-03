@@ -66,8 +66,8 @@ namespace octoon
 				}
 				else
 				{
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 				}
 
 				if (!applyMipmapLimit(target, mipBase, mipLevel))

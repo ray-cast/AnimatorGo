@@ -7,6 +7,8 @@ namespace octoon
 	OctoonImplementSubInterface(PointLightComponent, LightComponent, "PointLight")
 
 	PointLightComponent::PointLightComponent() noexcept
+		: shadowBias_(0.0f)
+		, shadowEnable_(false)
 	{
 	}
 
@@ -30,6 +32,34 @@ namespace octoon
 		LightComponent::setColor(value);
 	}
 
+	void
+	PointLightComponent::setShadowEnable(bool enable) noexcept
+	{
+		if (this->pointLight_)
+			this->pointLight_->setShadowEnable(enable);
+		this->shadowEnable_ = enable;
+	}
+	
+	bool
+	PointLightComponent::getShadowEnable() const noexcept
+	{
+		return this->shadowEnable_;
+	}
+
+	void
+	PointLightComponent::setShadowBias(float bias) noexcept
+	{
+		if (this->pointLight_)
+			this->pointLight_->setShadowBias(bias);
+		this->shadowBias_ = bias;
+	}
+
+	float
+	PointLightComponent::getShadowBias() const noexcept
+	{
+		return this->shadowBias_;
+	}
+
 	GameComponentPtr
 	PointLightComponent::clone() const noexcept
 	{
@@ -49,6 +79,8 @@ namespace octoon
 		pointLight_->setLayer(this->getGameObject()->getLayer());
 		pointLight_->setColor(this->getColor());
 		pointLight_->setIntensity(this->getIntensity());
+		pointLight_->setShadowBias(this->getShadowBias());
+		pointLight_->setShadowEnable(this->getShadowEnable());
 		pointLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);

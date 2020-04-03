@@ -5,28 +5,6 @@
 
 namespace octoon::light
 {
-	enum class ShadowMode : std::uint8_t
-	{
-		ShadowModeNone,
-		ShadowModeHard,
-		ShadowModeSoft,
-		ShadowModeBeginRange = ShadowModeNone,
-		ShadowModeEndRange = ShadowModeSoft,
-		ShadowModeRangeSize = (ShadowModeEndRange - ShadowModeBeginRange + 1),
-	};
-
-	enum class ShadowQuality : std::uint8_t
-	{
-		ShadowQualityNone,
-		ShadowQualityLow,
-		ShadowQualityMedium,
-		ShadowQualityHigh,
-		ShadowQualityVeryHigh,
-		ShadowQualityBeginRange = ShadowQualityNone,
-		ShadowQualityEndRange = ShadowQualityVeryHigh,
-		ShadowQualityRangeSize = (ShadowQualityEndRange - ShadowQualityBeginRange + 1),
-	};
-
 	class OCTOON_EXPORT PointLight final : public Light
 	{
 		OctoonDeclareSubClass(PointLight, Light)
@@ -34,13 +12,11 @@ namespace octoon::light
 		PointLight() noexcept;
 		virtual ~PointLight() noexcept;
 
-		void setShadowBias(float bias) noexcept;
-		void setShadowFactor(float factor) noexcept;
-		void setShadowMode(ShadowMode shadowType) noexcept;
+		void setShadowEnable(bool enable) noexcept;
+		bool getShadowEnable() const noexcept;
 
+		void setShadowBias(float bias) noexcept;
 		float getShadowBias() const noexcept;
-		float getShadowFactor() const noexcept;
-		ShadowMode getShadowMode() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
@@ -51,12 +27,10 @@ namespace octoon::light
 		PointLight& operator=(const PointLight&) noexcept = delete;
 
 	private:
-		bool _enableSoftShadow;
+		bool shadowEnable_;
 
-		float _shadowBias;
-		float _shadowFactor;
-		std::shared_ptr<camera::Camera> _shadowCamera;
-		ShadowMode _shadowMode;
+		float shadowBias_;
+		std::shared_ptr<camera::Camera> shadowCamera_;
 	};
 }
 

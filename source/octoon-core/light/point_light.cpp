@@ -6,10 +6,8 @@ namespace octoon::light
 	OctoonImplementSubClass(PointLight, Light, "PointLight")
 
 	PointLight::PointLight() noexcept
-		: _enableSoftShadow(false)
-		, _shadowMode(ShadowMode::ShadowModeNone)
-		, _shadowBias(0.1f)
-		, _shadowFactor(600.0f)
+		: shadowEnable_(false)
+		, shadowBias_(0.1f)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
 		shadowCamera->setAperture(90.0f);
@@ -24,48 +22,38 @@ namespace octoon::light
 	}
 
 	void
-	PointLight::setShadowMode(ShadowMode shadowMode) noexcept
+	PointLight::setShadowEnable(bool enable) noexcept
 	{
-		if (_shadowMode != shadowMode)
+		if (this->shadowEnable_ != enable)
 		{
-			_shadowMode = shadowMode;
+			if (this->shadowCamera_)
+				this->shadowCamera_->setActive(enable);
+			this->shadowEnable_ = enable;
 		}
 	}
 
-	ShadowMode
-	PointLight::getShadowMode() const noexcept
+	bool
+	PointLight::getShadowEnable() const noexcept
 	{
-		return _shadowMode;
+		return this->shadowEnable_;
 	}
 
 	const std::shared_ptr<camera::Camera>&
 	PointLight::getCamera() const noexcept
 	{
-		return _shadowCamera;
+		return this->shadowCamera_;
 	}
 
 	void
 	PointLight::setShadowBias(float bias) noexcept
 	{
-		_shadowBias = bias;
-	}
-
-	void
-	PointLight::setShadowFactor(float factor) noexcept
-	{
-		_shadowFactor = factor;
+		shadowBias_ = bias;
 	}
 
 	float
 	PointLight::getShadowBias() const noexcept
 	{
-		return _shadowBias;
-	}
-
-	float
-	PointLight::getShadowFactor() const noexcept
-	{
-		return _shadowFactor;
+		return shadowBias_;
 	}
 
 	std::shared_ptr<video::RenderObject>

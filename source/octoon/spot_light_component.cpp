@@ -7,6 +7,8 @@ namespace octoon
 	OctoonImplementSubInterface(SpotLightComponent, LightComponent, "SpotLight")
 
 	SpotLightComponent::SpotLightComponent() noexcept
+		: shadowBias_(0.0f)
+		, shadowEnable_(false)
 	{
 	}
 
@@ -30,6 +32,34 @@ namespace octoon
 		LightComponent::setColor(value);
 	}
 
+	void
+	SpotLightComponent::setShadowEnable(bool enable) noexcept
+	{
+		if (this->spotLight_)
+			this->spotLight_->setShadowEnable(enable);
+		this->shadowEnable_ = enable;
+	}
+	
+	bool
+	SpotLightComponent::getShadowEnable() const noexcept
+	{
+		return this->shadowEnable_;
+	}
+
+	void
+	SpotLightComponent::setShadowBias(float bias) noexcept
+	{
+		if (this->spotLight_)
+			this->spotLight_->setShadowBias(bias);
+		this->shadowBias_ = bias;
+	}
+
+	float
+	SpotLightComponent::getShadowBias() const noexcept
+	{
+		return this->shadowBias_;
+	}
+
 	GameComponentPtr
 	SpotLightComponent::clone() const noexcept
 	{
@@ -49,6 +79,8 @@ namespace octoon
 		spotLight_->setLayer(this->getGameObject()->getLayer());
 		spotLight_->setColor(this->getColor());
 		spotLight_->setIntensity(this->getIntensity());
+		spotLight_->setShadowBias(this->getShadowBias());
+		spotLight_->setShadowEnable(this->getShadowEnable());
 		spotLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);

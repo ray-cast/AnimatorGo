@@ -7,6 +7,9 @@ namespace octoon
 	OctoonImplementSubInterface(DirectionalLightComponent, LightComponent, "DirectionalLight")
 
 	DirectionalLightComponent::DirectionalLightComponent() noexcept
+		: shadowBias_(0.0f)
+		, shadowRadius_(0.0f)
+		, shadowEnable_(false)
 	{
 	}
 
@@ -30,6 +33,48 @@ namespace octoon
 		LightComponent::setColor(value);
 	}
 
+	void
+	DirectionalLightComponent::setShadowEnable(bool enable) noexcept
+	{
+		if (this->directionalLight_)
+			this->directionalLight_->setShadowEnable(enable);
+		this->shadowEnable_ = enable;
+	}
+	
+	bool
+	DirectionalLightComponent::getShadowEnable() const noexcept
+	{
+		return this->shadowEnable_;
+	}
+
+	void
+	DirectionalLightComponent::setShadowBias(float bias) noexcept
+	{
+		if (this->directionalLight_)
+			this->directionalLight_->setShadowBias(bias);
+		this->shadowBias_ = bias;
+	}
+
+	float
+	DirectionalLightComponent::getShadowBias() const noexcept
+	{
+		return this->shadowBias_;
+	}
+
+	void
+	DirectionalLightComponent::setShadowRadius(float radius) noexcept
+	{
+		if (this->directionalLight_)
+			this->directionalLight_->setShadowRadius(radius);
+		this->shadowRadius_ = radius;
+	}
+
+	float
+	DirectionalLightComponent::getShadowRadius() const noexcept
+	{
+		return this->shadowRadius_;
+	}
+
 	GameComponentPtr
 	DirectionalLightComponent::clone() const noexcept
 	{
@@ -49,6 +94,9 @@ namespace octoon
 		directionalLight_->setLayer(this->getGameObject()->getLayer());
 		directionalLight_->setColor(this->getColor());
 		directionalLight_->setIntensity(this->getIntensity());
+		directionalLight_->setShadowEnable(this->getShadowEnable());
+		directionalLight_->setShadowBias(this->getShadowBias());
+		directionalLight_->setShadowRadius(this->getShadowRadius());
 		directionalLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);

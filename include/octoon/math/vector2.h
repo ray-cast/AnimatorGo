@@ -198,9 +198,15 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline T dot(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
+		inline T dot(const detail::Vector2<T>& a, const detail::Vector2<T>& b) noexcept
 		{
-			return v1.x * v2.x + v1.y * v2.y;
+			return a.x * b.x + a.y * b.y;
+		}
+
+		template<typename T>
+		inline T cross(const detail::Vector2<T>& a, const detail::Vector2<T>& b) noexcept
+		{
+			return a.x * b.y - a.y * b.x;
 		}
 
 		template<typename T>
@@ -261,14 +267,6 @@ namespace octoon
 		inline bool isfinite(const detail::Vector2<T>& v) noexcept
 		{
 			return std::isfinite(v.x) && std::isfinite(v.y);
-		}
-
-		template<typename T>
-		inline detail::Vector2<T> cross(const detail::Vector2<T>& v1, const detail::Vector2<T>& v2) noexcept
-		{
-			return detail::Vector2<T>(
-				v1.y * v2.x - v1.x * v2.y,
-				v1.x * v2.y - v1.y * v2.x);
 		}
 
 		template<typename T>
@@ -447,6 +445,27 @@ namespace octoon
 		inline detail::Vector2<T> round(const detail::Vector2<T>& v) noexcept
 		{
 			return detail::Vector2<T>(std::round(v.x), std::round(v.y));
+		}
+
+		template<typename T, typename = std::enable_if_t<trait::is_floating_point_v<T>>>
+		inline detail::Vector2<T> barycentric(const detail::Vector2<T>& p1, const detail::Vector2<T>& p2, const detail::Vector2<T>& p3, const detail::Vector2<T>& p)
+		{
+			// http://www.blackpawn.com/texts/pointinpoly/
+			auto v0 = p3 - p1;
+			auto v1 = p2 - p1;
+			auto v2 = p - p1;
+
+			T dot00 = math::dot(v0, v0);
+			T dot01 = math::dot(v0, v1);
+			T dot02 = math::dot(v0, v2);
+			T dot11 = math::dot(v1, v1);
+			T dot12 = math::dot(v1, v2);
+
+			T invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+			T u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			T v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+			return detail::Vector2<T>(u, v);
 		}
 	}
 }

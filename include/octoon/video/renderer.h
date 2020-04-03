@@ -20,6 +20,28 @@
 
 namespace octoon::video
 {
+	enum class ShadowMode : std::uint8_t
+	{
+		ShadowModeNone,
+		ShadowModeHard,
+		ShadowModeSoft,
+		ShadowModeBeginRange = ShadowModeNone,
+		ShadowModeEndRange = ShadowModeSoft,
+		ShadowModeRangeSize = (ShadowModeEndRange - ShadowModeBeginRange + 1),
+	};
+
+	enum class ShadowQuality : std::uint8_t
+	{
+		ShadowQualityNone,
+		ShadowQualityLow,
+		ShadowQualityMedium,
+		ShadowQualityHigh,
+		ShadowQualityVeryHigh,
+		ShadowQualityBeginRange = ShadowQualityNone,
+		ShadowQualityEndRange = ShadowQualityVeryHigh,
+		ShadowQualityRangeSize = (ShadowQualityEndRange - ShadowQualityBeginRange + 1),
+	};
+
 	class OCTOON_EXPORT Renderer final
 	{
 		OctoonDeclareSingleton(Renderer)

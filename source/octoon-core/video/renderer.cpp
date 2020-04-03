@@ -461,7 +461,7 @@ namespace octoon::video
 				if (!lightmap)
 				{
 					lightmap = std::make_shared<bake::Lightmap>();
-					lightmap->build(*geometry);
+					lightmap->setGeometry(*geometry);
 
 					for (auto& light : lights)
 					{
@@ -472,8 +472,8 @@ namespace octoon::video
 						{
 							if (light->isA<light::DirectionalLight>())
 								lightmap->renderLight(*light->downcast<light::DirectionalLight>());
-							else if (light->isA<light::EnvironmentLight>())
-								lightmap->renderLight(*light->downcast<light::EnvironmentLight>());
+							/*else if (light->isA<light::EnvironmentLight>())
+								lightmap->renderLight(*light->downcast<light::EnvironmentLight>());*/
 						}
 					}
 
@@ -606,7 +606,7 @@ namespace octoon::video
 			this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
 			this->prepareLights(scene.getLights(), *camera);
-			this->prepareLightMaps(scene.getLights(), scene.getGeometries(), *camera);
+			//this->prepareLightMaps(scene.getLights(), scene.getGeometries(), *camera);
 			this->renderObjects(scene.getGeometries(), *camera);
 
 #if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)

@@ -2,7 +2,6 @@
 #define OCTOON_SPOT_LIGHT_H_
 
 #include <octoon/light/light.h>
-#include <octoon/hal/graphics_texture.h>
 
 namespace octoon::light
 {
@@ -19,6 +18,15 @@ namespace octoon::light
 		const math::float2& getInnerCone() const noexcept;
 		const math::float2& getOuterCone() const noexcept;
 
+		void setShadowEnable(bool enable) noexcept;
+		bool getShadowEnable() const noexcept;
+
+		void setShadowBias(float bias) noexcept;
+		float getShadowBias() const noexcept;
+
+		void setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept;
+		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
+
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
@@ -26,8 +34,15 @@ namespace octoon::light
 		SpotLight& operator=(const SpotLight&) noexcept = delete;
 
 	private:
+		bool shadowEnable_;
+
+		float shadowBias_;
+		float shadowRadius_;
+
 		math::float2 _spotInnerCone;
 		math::float2 _spotOuterCone;
+
+		std::shared_ptr<camera::Camera> shadowCamera_;
 	};
 }
 

@@ -310,7 +310,7 @@ namespace octoon
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];
-		mesh->computeLightMap(512, 512);
+		mesh->computeLightMap(200, 200);
 
 		auto object = GameObject::create(mesh->getName());
 		object->addComponent<MeshFilterComponent>(mesh);

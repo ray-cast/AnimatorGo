@@ -16,6 +16,15 @@ namespace octoon
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
 
+		void setShadowEnable(bool enable) noexcept;
+		bool getShadowEnable() const noexcept;
+
+		void setShadowBias(float bias) noexcept;
+		float getShadowBias() const noexcept;
+
+		void setShadowRadius(float radius) noexcept;
+		float getShadowRadius() const noexcept;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -31,6 +40,10 @@ namespace octoon
 		PointLightComponent& operator=(const PointLightComponent&) = delete;
 
 	private:
+		bool shadowEnable_;
+
+		float shadowBias_;
+		float shadowRadius_;
 		std::shared_ptr<light::PointLight> pointLight_;
 	};
 }

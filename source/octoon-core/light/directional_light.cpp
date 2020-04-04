@@ -95,7 +95,7 @@ namespace octoon::light
 	void
 	DirectionalLight::onActivate() noexcept
 	{
-		if (this->shadowCamera_)
+		if (this->shadowCamera_ && this->getShadowEnable())
 			this->shadowCamera_->setActive(true);
 		Light::onActivate();
 	}
@@ -103,7 +103,7 @@ namespace octoon::light
 	void
 	DirectionalLight::onDeactivate() noexcept
 	{
-		if (this->shadowCamera_)
+		if (this->shadowCamera_ && this->getShadowEnable())
 			this->shadowCamera_->setActive(false);
 		Light::onDeactivate();
 	}

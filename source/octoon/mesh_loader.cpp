@@ -301,7 +301,10 @@ namespace octoon
 		materials.reserve(model.materials.size());
 
 		for (auto& it : model.materials)
+		{
+			it->setCullMode(hal::GraphicsCullMode::None);
 			materials.push_back(it);
+		}
 	}
 
 	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)

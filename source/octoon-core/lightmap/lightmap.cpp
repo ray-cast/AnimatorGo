@@ -94,9 +94,6 @@ namespace octoon::bake
 	{
 		this->computeIndirectLightBounce();
 
-		for (std::size_t i = 0; i < this->directLightBuffer_.size(); i++)
-			this->lightmap.data[i] += this->directLightBuffer_[i];
-
 		/*for (std::size_t y = 0; y < this->lightmap.height * 2; y++)
 		{
 			for (std::size_t x = 0; x < this->lightmap.width * 2; x++)
@@ -143,19 +140,18 @@ namespace octoon::bake
 
 		auto columns = patches_.size();
 
+		auto lightDir = math::normalize(-light.getForward());
+
 #		pragma omp parallel for
 		for (std::int32_t i = 0; i < columns; ++i)
 		{
 			auto& sourcePatch = this->patches_[i];
 
-			auto lightDir = math::normalize(light.getForward());
-			auto L = lightDir;
-
 			math::Raycast ray;
 			ray.origin = sourcePatch.position + lightDir * 0.01f;
 			ray.normal = lightDir;
 
-			auto nl = std::max(math::dot(L, sourcePatch.normal), 0.0f);
+			auto nl = std::max(math::dot(lightDir, sourcePatch.normal), 0.0f);
 			if (nl > 0.0f)
 			{
 				mesh::RaycastHit hit;
@@ -210,7 +206,7 @@ namespace octoon::bake
 				}
 			}
 
-			this->lightmap.data[sourcePatch.texelIndex] = sourcePatch.color * value;
+			this->lightmap.data[sourcePatch.texelIndex] = value;
 		}
 	}
 

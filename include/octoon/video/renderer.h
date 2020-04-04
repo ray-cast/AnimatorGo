@@ -127,6 +127,7 @@ namespace octoon::video
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderPipeline>> pipelines_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<bake::Lightmap>> lightmaps_;
+		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }
 

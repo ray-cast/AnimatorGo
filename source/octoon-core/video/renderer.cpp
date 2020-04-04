@@ -276,7 +276,6 @@ namespace octoon::video
 
 						this->profile_.light.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 						this->profile_.light.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
-						this->profile_.light.directionalLights.emplace_back(directionLight);
 					}
 					else
 					{
@@ -284,6 +283,7 @@ namespace octoon::video
 					}
 
 					this->profile_.light.numDirectional++;
+					this->profile_.light.directionalLights.emplace_back(directionLight);
 				} else if (light->isA<light::SpotLight>()) {
 					auto it = light->downcast<light::SpotLight>();
 					SpotLight spotLight;
@@ -509,34 +509,36 @@ namespace octoon::video
 					}
 
 					lightmap->render();
-				}
 
-				for (auto& it : geometry->getMaterials())
-				{
-					if (it->isA<material::MeshStandardMaterial>())
+					auto& texture = lightTextures_[((std::intptr_t)geometry->getMesh().get())];
+					if (!texture)
 					{
-						auto material = it->downcast< material::MeshStandardMaterial>();
-						auto map = material->getLightMap();
-						if (!map)
-						{
-							GraphicsTextureDesc lightMapDesc;
-							lightMapDesc.setWidth(lightmap->width());
-							lightMapDesc.setHeight(lightmap->height());
-							lightMapDesc.setTexDim(GraphicsTextureDim::Texture2D);
-							lightMapDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
-							lightMapDesc.setStream(lightmap->fronBuffer().data());
-							lightMapDesc.setStreamSize(lightmap->fronBuffer().size() * sizeof(math::float3));
+						GraphicsTextureDesc lightMapDesc;
+						lightMapDesc.setWidth(lightmap->width());
+						lightMapDesc.setHeight(lightmap->height());
+						lightMapDesc.setTexDim(GraphicsTextureDim::Texture2D);
+						lightMapDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
+						lightMapDesc.setStream(lightmap->fronBuffer().data());
+						lightMapDesc.setStreamSize(lightmap->fronBuffer().size() * sizeof(math::float3));
 
-							material->setLightMap(device_->createTexture(lightMapDesc));
-						}
-						else
+						texture = device_->createTexture(lightMapDesc);
+					}
+					else
+					{
+						void* data;
+						if (texture->map(0, 0, texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight(), 0, &data))
 						{
-							void* data;
-							if (map->map(0, 0, map->getTextureDesc().getWidth(), map->getTextureDesc().getHeight(), 0, &data))
-							{
-								std::memcpy(data, lightmap->fronBuffer().data(), lightmap->fronBuffer().size() * sizeof(math::float3));
-								map->unmap();
-							}
+							std::memcpy(data, lightmap->fronBuffer().data(), lightmap->fronBuffer().size() * sizeof(math::float3));
+							texture->unmap();
+						}
+					}
+
+					for (auto& it : geometry->getMaterials())
+					{
+						if (it->isA<material::MeshStandardMaterial>())
+						{
+							auto material = it->downcast< material::MeshStandardMaterial>();
+							material->setLightMap(texture);
 						}
 					}
 				}

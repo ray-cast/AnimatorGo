@@ -1414,6 +1414,17 @@ IncidentLight directLight;
 
 	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );
 
+	if (lightMapEnable)
+	{
+		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
+
+		#ifndef PHYSICALLY_CORRECT_LIGHTS
+			lightMapIrradiance *= PI;
+		#endif
+
+		irradiance += lightMapIrradiance;
+	}
+
 	#if ( NUM_HEMI_LIGHTS > 0 )
 
 		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
@@ -1432,19 +1443,6 @@ IncidentLight directLight;
 	#endif
 
 	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
-
-	if (lightMapEnable)
-	{
-		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
-
-		#ifndef PHYSICALLY_CORRECT_LIGHTS
-
-			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
-
-		#endif
-
-		reflectedLight.indirectDiffuse  += lightMapIrradiance;
-	}
 #endif
 
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )

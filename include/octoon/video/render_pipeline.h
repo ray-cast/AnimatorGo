@@ -61,6 +61,9 @@ namespace octoon::video
 		hal::GraphicsUniformSetPtr modelMatrix_;
 		hal::GraphicsUniformSetPtr modelViewMatrix_;
 		hal::GraphicsUniformSetPtr projectionMatrix_;
+
+		std::vector<hal::GraphicsUniformSetPtr> directionalShadowMaps_;
+		std::vector<hal::GraphicsUniformSetPtr> directionalShadowMatrixs_;
 	};
 }
 

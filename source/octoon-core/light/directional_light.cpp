@@ -1,5 +1,5 @@
 #include <octoon/light/directional_light.h>
-#include <octoon/camera/ortho_camera.h>
+#include <octoon/camera/perspective_camera.h>
 
 namespace octoon::light
 {
@@ -7,12 +7,12 @@ namespace octoon::light
 
 	DirectionalLight::DirectionalLight() noexcept
 		: shadowBias_(0.0f)
-		, shadowRadius_(0.0f)
+		, shadowRadius_(1.0f)
 		, shadowEnable_(false)
 	{
-		auto shadowCamera = std::make_shared<camera::OrthoCamera>(-100, 100, -100, 100, 0.1f, 100.f);
-		shadowCamera->setOwnerListener(this);
-		shadowCamera->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
+		this->shadowCamera_ = std::make_shared<camera::PerspectiveCamera>(45.f, 0.1f, 1000.f);
+		this->shadowCamera_->setOwnerListener(this);
+		this->shadowCamera_->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
 	}
 
 	DirectionalLight::~DirectionalLight() noexcept
@@ -25,7 +25,18 @@ namespace octoon::light
 		if (this->shadowEnable_ != enable)
 		{
 			if (this->shadowCamera_)
-				this->shadowCamera_->setActive(enable);
+			{
+				if (enable)
+				{
+					this->shadowCamera_->setActive(enable);
+					this->shadowCamera_->setupFramebuffers(512, 512, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+				}
+				else
+				{
+					this->shadowCamera_->setActive(false);
+				}
+			}
+
 			this->shadowEnable_ = enable;
 		}
 	}
@@ -84,7 +95,7 @@ namespace octoon::light
 	void
 	DirectionalLight::onActivate() noexcept
 	{
-		if (this->shadowCamera_ && shadowEnable_)
+		if (this->shadowCamera_)
 			this->shadowCamera_->setActive(true);
 		Light::onActivate();
 	}
@@ -92,8 +103,16 @@ namespace octoon::light
 	void
 	DirectionalLight::onDeactivate() noexcept
 	{
-		if (this->shadowCamera_ && !shadowEnable_)
+		if (this->shadowCamera_)
 			this->shadowCamera_->setActive(false);
 		Light::onDeactivate();
+	}
+
+	void
+	DirectionalLight::onMoveAfter() noexcept
+	{
+		if (this->shadowCamera_)
+			this->shadowCamera_->setTransform(this->getTransform(), this->getTransformInverse());
+		Light::onMoveAfter();
 	}
 }

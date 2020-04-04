@@ -46,6 +46,7 @@ namespace octoon
 				Matrix4x4() = default;
 				Matrix4x4(const Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept { this->makeMatrix(m1, m2); }
 				Matrix4x4(const Vector3<T>& axis, T angle, const Vector3<T>& translate) noexcept { this->makeRotation(axis, angle, translate); }
+				Matrix4x4(const Quaternion<T>& q) noexcept { this->makeRotation(q); }
 				Matrix4x4(const Quaternion<T>& q, const Vector3<T>& translate) noexcept { this->makeRotation(q, translate); }
 				Matrix4x4(T mt00, T mt01, T mt02, T mt03, T mt10, T mt11, T mt12, T mt13, T mt20, T mt21, T mt22, T mt23, T mt30, T mt31, T mt32, T mt33) noexcept
 					: a1(mt00), a2(mt01), a3(mt02), a4(mt03)

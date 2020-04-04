@@ -10,6 +10,7 @@ namespace octoon::camera
 		OctoonDeclareSubClass(PerspectiveCamera, Camera)
 	public:
 		PerspectiveCamera() noexcept;
+		PerspectiveCamera(float fov, float znear, float zfar) noexcept;
 		virtual ~PerspectiveCamera() noexcept;
 
 		void setAperture(float fov) noexcept;

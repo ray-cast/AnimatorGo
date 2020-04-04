@@ -340,6 +340,15 @@ vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, float roughnes
 static char* begin_vertex = R"(
 vec3 transformed = vec3( POSITION0 );
 )";
+static char* worldpos_vertex = R"(
+#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
+	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
+#endif
+)";
+static char* project_vertex = R"(
+vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
+gl_Position = projectionMatrix * mvPosition;
+)";
 static char* beginnormal_vertex = R"(
 vec3 objectNormal = vec3( NORMAL0 );
 )";
@@ -421,15 +430,6 @@ static char* uv2_vertex = R"(
 static char* uv2_pars_fragment = R"(
 	in vec2 vUv2;
 )";
-static char* worldpos_vertex = R"(
-#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
-	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
-#endif
-)";
-static char* project_vertex = R"(
-vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
-gl_Position = projectionMatrix * mvPosition;
-)";
 static char* map_fragment = R"(
 if (mapEnable)
 {
@@ -457,11 +457,6 @@ static char* map_particle_fragment = R"(
 static char* premultiplied_alpha_fragment = R"(
 #ifdef PREMULTIPLIED_ALPHA
 	fragColor.rgb *= fragColor.a;
-#endif
-)";
-static char* shadowmap_pars_fragment = R"(
-#ifdef USE_SHADOWMAP
-	uniform sampler2D shadowMap;
 #endif
 )";
 static char* bumpmap_pars_fragment = R"(
@@ -1466,8 +1461,330 @@ IncidentLight directLight;
 	RE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );
 
 #endif
+)";
+
+		static char* shadowmap_vertex = R"(
+#ifdef USE_SHADOWMAP
+
+	#if NUM_DIR_LIGHTS > 0
+
+	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
+
+		vDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * worldPosition;
+
+	}
+
+	#endif
+
+	#if NUM_SPOT_LIGHTS > 0
+
+	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
+
+		vSpotShadowCoord[ i ] = spotShadowMatrix[ i ] * worldPosition;
+
+	}
+
+	#endif
+
+	#if NUM_POINT_LIGHTS > 0
+
+	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
+
+		vPointShadowCoord[ i ] = pointShadowMatrix[ i ] * worldPosition;
+
+	}
+
+	#endif
+
+	/*
+	#if NUM_RECT_AREA_LIGHTS > 0
+
+		// TODO (abelnation): update vAreaShadowCoord with area light info
+
+	#endif
+	*/
+
+#endif
+)";
+		static char* shadowmap_pars_vertex = R"(
+#ifdef USE_SHADOWMAP
+
+	#if NUM_DIR_LIGHTS > 0
+
+		uniform mat4 directionalShadowMatrix[ NUM_DIR_LIGHTS ];
+		out vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];
+
+	#endif
+
+	#if NUM_SPOT_LIGHTS > 0
+
+		uniform mat4 spotShadowMatrix[ NUM_SPOT_LIGHTS ];
+		out vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];
+
+	#endif
+
+	#if NUM_POINT_LIGHTS > 0
+
+		uniform mat4 pointShadowMatrix[ NUM_POINT_LIGHTS ];
+		out vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];
+
+	#endif
+
+	/*
+	#if NUM_RECT_AREA_LIGHTS > 0
+
+		// TODO (abelnation): uniforms for area light shadows
+
+	#endif
+	*/
+
+#endif
 
 )";
+		static char* shadowmap_pars_fragment = R"(
+#ifdef USE_SHADOWMAP
+
+	#if NUM_DIR_LIGHTS > 0
+
+		uniform sampler2D directionalShadowMap[ NUM_DIR_LIGHTS ];
+		in vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];
+
+	#endif
+
+	#if NUM_SPOT_LIGHTS > 0
+
+		uniform sampler2D spotShadowMap[ NUM_SPOT_LIGHTS ];
+		in vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];
+
+	#endif
+
+	#if NUM_POINT_LIGHTS > 0
+
+		uniform sampler2D pointShadowMap[ NUM_POINT_LIGHTS ];
+		in vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];
+
+	#endif
+
+	/*
+	#if NUM_RECT_AREA_LIGHTS > 0
+
+		// TODO (abelnation): create uniforms for area light shadows
+
+	#endif
+	*/
+
+	float texture2DCompare( sampler2D depths, vec2 uv, float compare ) {
+
+		return step( compare, texture2D( depths, uv ).r );
+
+	}
+
+	float texture2DShadowLerp( sampler2D depths, vec2 size, vec2 uv, float compare ) {
+
+		const vec2 offset = vec2( 0.0, 1.0 );
+
+		vec2 texelSize = vec2( 1.0 ) / size;
+		vec2 centroidUV = floor( uv * size + 0.5 ) / size;
+
+		float lb = texture2DCompare( depths, centroidUV + texelSize * offset.xx, compare );
+		float lt = texture2DCompare( depths, centroidUV + texelSize * offset.xy, compare );
+		float rb = texture2DCompare( depths, centroidUV + texelSize * offset.yx, compare );
+		float rt = texture2DCompare( depths, centroidUV + texelSize * offset.yy, compare );
+
+		vec2 f = fract( uv * size + 0.5 );
+
+		float a = mix( lb, lt, f.y );
+		float b = mix( rb, rt, f.y );
+		float c = mix( a, b, f.x );
+
+		return c;
+
+	}
+
+	float getShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {
+
+		float shadow = 1.0;
+
+		shadowCoord.xyz /= shadowCoord.w;
+		shadowCoord.z += shadowBias;
+
+		// if ( something && something ) breaks ATI OpenGL shader compiler
+		// if ( all( something, something ) ) using this instead
+
+		bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );
+		bool inFrustum = all( inFrustumVec );
+
+		bvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );
+
+		bool frustumTest = all( frustumTestVec );
+
+		if ( frustumTest ) {
+
+		#if defined( SHADOWMAP_TYPE_PCF )
+
+			vec2 texelSize = vec2( 1.0 ) / shadowMapSize;
+
+			float dx0 = - texelSize.x * shadowRadius;
+			float dy0 = - texelSize.y * shadowRadius;
+			float dx1 = + texelSize.x * shadowRadius;
+			float dy1 = + texelSize.y * shadowRadius;
+
+			shadow = (
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +
+				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )
+			) * ( 1.0 / 9.0 );
+
+		#elif defined( SHADOWMAP_TYPE_PCF_SOFT )
+
+			vec2 texelSize = vec2( 1.0 ) / shadowMapSize;
+
+			float dx0 = - texelSize.x * shadowRadius;
+			float dy0 = - texelSize.y * shadowRadius;
+			float dx1 = + texelSize.x * shadowRadius;
+			float dy1 = + texelSize.y * shadowRadius;
+
+			shadow = (
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy, shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +
+				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )
+			) * ( 1.0 / 9.0 );
+
+		#else // no percentage-closer filtering:
+
+			shadow = texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z );
+
+		#endif
+
+		}
+
+		return shadow;
+
+	}
+
+	// cubeToUV() maps a 3D direction vector suitable for cube texture mapping to a 2D
+	// vector suitable for 2D texture mapping. This code uses the following layout for the
+	// 2D texture:
+	//
+	// xzXZ
+	//  y Y
+	//
+	// Y - Positive y direction
+	// y - Negative y direction
+	// X - Positive x direction
+	// x - Negative x direction
+	// Z - Positive z direction
+	// z - Negative z direction
+	//
+	// Source and test bed:
+	// https://gist.github.com/tschw/da10c43c467ce8afd0c4
+
+	vec2 cubeToUV( vec3 v, float texelSizeY ) {
+
+		// Number of texels to avoid at the edge of each square
+
+		vec3 absV = abs( v );
+
+		// Intersect unit cube
+
+		float scaleToCube = 1.0 / max( absV.x, max( absV.y, absV.z ) );
+		absV *= scaleToCube;
+
+		// Apply scale to avoid seams
+
+		// two texels less per square (one texel will do for NEAREST)
+		v *= scaleToCube * ( 1.0 - 2.0 * texelSizeY );
+
+		// Unwrap
+
+		// space: -1 ... 1 range for each square
+		//
+		// #X##		dim    := ( 4 , 2 )
+		//  # #		center := ( 1 , 1 )
+
+		vec2 planar = v.xy;
+
+		float almostATexel = 1.5 * texelSizeY;
+		float almostOne = 1.0 - almostATexel;
+
+		if ( absV.z >= almostOne ) {
+
+			if ( v.z > 0.0 )
+				planar.x = 4.0 - v.x;
+
+		} else if ( absV.x >= almostOne ) {
+
+			float signX = sign( v.x );
+			planar.x = v.z * signX + 2.0 * signX;
+
+		} else if ( absV.y >= almostOne ) {
+
+			float signY = sign( v.y );
+			planar.x = v.x + 2.0 * signY + 2.0;
+			planar.y = v.z * signY - 2.0;
+
+		}
+
+		// Transform to UV space
+
+		// scale := 0.5 / dim
+		// translate := ( center + 0.5 ) / dim
+		return vec2( 0.125, 0.25 ) * planar + vec2( 0.375, 0.75 );
+
+	}
+
+	float getPointShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {
+
+		vec2 texelSize = vec2( 1.0 ) / ( shadowMapSize * vec2( 4.0, 2.0 ) );
+
+		// for point lights, the uniform @vShadowCoord is re-purposed to hold
+		// the distance from the light to the world-space position of the fragment.
+		vec3 lightToPosition = shadowCoord.xyz;
+
+		// bd3D = base direction 3D
+		vec3 bd3D = normalize( lightToPosition );
+		// dp = distance from light to fragment position
+		float dp = ( length( lightToPosition ) - shadowBias ) / 1000.0;
+
+		#if defined( SHADOWMAP_TYPE_PCF ) || defined( SHADOWMAP_TYPE_PCF_SOFT )
+
+			vec2 offset = vec2( - 1, 1 ) * shadowRadius * texelSize.y;
+
+			return (
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyy, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyy, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyx, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyx, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxy, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxy, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxx, texelSize.y ), dp ) +
+				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxx, texelSize.y ), dp )
+			) * ( 1.0 / 9.0 );
+
+		#else // no percentage-closer filtering
+
+			return texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp );
+
+		#endif
+
+	}
+
+#endif
+)";
+
 static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"common", common },
 	{"packing", packing },
@@ -1505,7 +1822,6 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"lightmap_pars_fragment", lightmap_pars_fragment },
 	{"aomap_pars_fragment", aomap_pars_fragment },
 	{"envmap_pars_fragment", envmap_pars_fragment },
-	{"shadowmap_pars_fragment", shadowmap_pars_fragment},
 	{"bumpmap_pars_fragment", bumpmap_pars_fragment},
 	{"smoothnessmap_pars_fragment", smoothnessmap_pars_fragment},
 	{"roughnessmap_pars_fragment", roughnessmap_pars_fragment},
@@ -1519,6 +1835,9 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"lights_physical_pars_fragment", lights_physical_pars_fragment },
 	{"lights_physical_fragment", lights_physical_fragment },
 	{"lights_template", lights_template },
+	{"shadowmap_vertex", shadowmap_vertex},
+	{"shadowmap_pars_vertex", shadowmap_pars_vertex},
+	{"shadowmap_pars_fragment", shadowmap_pars_fragment},
 };
 
 namespace octoon::video
@@ -1630,6 +1949,20 @@ namespace octoon::video
 			if (this->envMapIntensity_)
 				this->envMapIntensity_->uniform1f(context.light.environmentLights.front().intensity);
 
+			if (this->directionalShadowMaps_.size() > 0)
+			{
+				for (std::size_t i = 0, j = 0; i < context.light.directionalLights.size(); i++)
+				{
+					auto& it = context.light.directionalLights[i];
+					if (it.shadow)
+					{
+						this->directionalShadowMaps_[j]->uniformTexture(context.light.directionalShadows[i]);
+						this->directionalShadowMatrixs_[j]->uniform4fmat(context.light.directionalShadowMatrix[i]);
+						j++;
+					}
+				}
+			}
+
 			this->updateParameters();
 		}
 	}
@@ -1700,6 +2033,8 @@ namespace octoon::video
 				#ifdef USE_COLOR
 					attribute vec3 color;
 				#endif
+				
+				#define USE_SHADOWMAP
 			)";
 		vertexShader += shader->vs;
 
@@ -1712,6 +2047,8 @@ namespace octoon::video
 		fragmentShader += "#define ENVMAP_MODE_REFLECTION\n";
 		fragmentShader += "#define PHYSICAL\n";
 		fragmentShader += "#define PHYSICALLY_CORRECT_LIGHTS\n";
+		fragmentShader += "#define USE_SHADOWMAP\n";
+		fragmentShader += "#define SHADOWMAP_TYPE_PCF_SOFT\n";
 		fragmentShader += shader->fs;
 
 		this->parseIncludes(vertexShader);
@@ -1894,6 +2231,20 @@ namespace octoon::video
 				auto envmapIntensity = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "envMapIntensity"; });
 				if (envmapIntensity != end)
 					envMapIntensity_ = *envmapIntensity;
+
+				for (std::size_t i = 0; i < context.light.directionalLights.size(); i++)
+				{
+					auto& it = context.light.directionalLights[i];
+					if (it.shadow)
+					{
+						auto shadowMap = std::find_if(begin, end, [i](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "directionalShadowMap[" + std::to_string(i) + "]"; });
+						if (shadowMap != end)
+							this->directionalShadowMaps_.emplace_back(*shadowMap);
+						auto shadowMatrix = std::find_if(begin, end, [i](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "directionalShadowMatrix[" + std::to_string(i) + "]"; });
+						if (shadowMatrix != end)
+							this->directionalShadowMatrixs_.emplace_back(*shadowMatrix);
+					}
+				}
 
 				this->updateParameters();
 			}

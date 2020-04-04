@@ -53,8 +53,7 @@ namespace octoon::video
 
 	struct DirectionalLight {
 		math::float4 direction;
-		math::float4 color;
-
+		math::float3 color;
 		int shadow;
 		float shadowBias;
 		float shadowRadius;
@@ -77,6 +76,14 @@ namespace octoon::video
 		std::vector<RectAreaLight> rectangleLights;
 		std::vector<DirectionalLight> directionalLights;
 		std::vector<EnvironmentLight> environmentLights;
+
+		std::vector<hal::GraphicsTexturePtr> pointShadows;
+		std::vector<hal::GraphicsTexturePtr> spotShadows;
+		std::vector<hal::GraphicsTexturePtr> rectangleShadows;
+		std::vector<hal::GraphicsTexturePtr> directionalShadows;
+		std::vector<hal::GraphicsTexturePtr> environmentShadows;
+
+		std::vector<math::float4x4> directionalShadowMatrix;
 
 		hal::GraphicsDataPtr spotLightBuffer;
 		hal::GraphicsDataPtr pointLightBuffer;

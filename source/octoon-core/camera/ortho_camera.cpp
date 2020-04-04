@@ -105,35 +105,17 @@ namespace octoon::camera
 	void
 	OrthoCamera::_updateViewProject() const noexcept
 	{
-		std::uint32_t width = 1920, height = 1080;
-
-		if (!fbo_[0])
-			video::Renderer::instance()->getFramebufferSize(width, height);
-		else
-		{
-			width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
-			height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
-		}
-
-		if (width_ != width || height_ != height)
-		{
-			width_ = width;
-			height_ = height;
-
-			needUpdateViewProject_ = true;
-		}
-
 		if (needUpdateViewProject_)
 		{
-			auto left = width * ortho_.x;
-			auto right = width * ortho_.y;
-			auto bottom = height * ortho_.z;
-			auto top = height * ortho_.w;
+			auto left = ortho_.x;
+			auto right = ortho_.y;
+			auto bottom = ortho_.z;
+			auto top = ortho_.w;
 
 			math::float4x4 adjustment;
 			adjustment.makeScale(1.0, -1.0, 1.0);
 
-			project_ = adjustment * math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
+			project_ = math::makeOrthoLH(left, right, bottom, top, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 
 			viewProject_ = project_ * this->getView();

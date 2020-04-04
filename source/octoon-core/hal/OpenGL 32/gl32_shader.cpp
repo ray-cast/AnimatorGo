@@ -543,7 +543,7 @@ namespace octoon
 					continue;
 
 				auto uniform = std::make_shared<GL32GraphicsUniform>();
-				uniform->setName(nameUniform.substr(0, std::min((std::size_t)length, nameUniform.find('['))));
+				uniform->setName(nameUniform);
 				uniform->setBindingPoint(location);
 				uniform->setType(toGraphicsUniformType(nameUniform, type));
 				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::All);
@@ -617,7 +617,6 @@ namespace octoon
 			else
 			{
 				bool isArray = name.find("[0]") != std::string::npos;
-
 				if (type == GL_BOOL)
 				{
 					return GraphicsUniformType::Boolean;

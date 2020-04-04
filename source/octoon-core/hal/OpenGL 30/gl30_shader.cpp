@@ -545,7 +545,7 @@ namespace octoon
 					continue;
 
 				auto uniform = std::make_shared<GL30GraphicsUniform>();
-				uniform->setName(nameUniform.substr(0, std::min((std::size_t)length, nameUniform.find('['))));
+				uniform->setName(nameUniform);
 				uniform->setBindingPoint(location);
 				uniform->setType(toGraphicsUniformType(nameUniform, type));
 				uniform->setShaderStageFlags(GraphicsShaderStageFlagBits::All);

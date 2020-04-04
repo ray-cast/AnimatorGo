@@ -267,7 +267,10 @@ namespace rabbit
 			sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
+		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(profile_->sunModule->rotation)));
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+		}
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
 	}
@@ -344,7 +347,10 @@ namespace rabbit
 
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
+		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(octoon::math::radians(value - 180.0f), y, z)));
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+		}
 
 		sliderRotationX_->setValue(value);
 	}
@@ -363,7 +369,10 @@ namespace rabbit
 
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
+		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(x, octoon::math::radians(value - 180.0f), z)));
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+		}
 
 		sliderRotationY_->setValue(value);
 	}
@@ -382,7 +391,10 @@ namespace rabbit
 
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
+		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(x, y, octoon::math::radians(value))));
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+		}
 
 		sliderRotationZ_->setValue(value);
 	}

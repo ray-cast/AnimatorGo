@@ -6,6 +6,7 @@ static const char* standard_vert = R"(
 #include <uv2_pars_vertex>
 #include <color_pars_vertex>
 #include <normal_pars_vertex>
+#include <shadowmap_pars_vertex>
 out vec3 vViewPosition;
 void main() {
 #include <uv_vertex>
@@ -14,6 +15,8 @@ void main() {
 #include <beginnormal_vertex>
 #include <defaultnormal_vertex>
 #include <begin_vertex>
+#include <worldpos_vertex>
+#include <shadowmap_vertex>
 #include <project_vertex>
 vViewPosition = -mvPosition.xyz;
 })";

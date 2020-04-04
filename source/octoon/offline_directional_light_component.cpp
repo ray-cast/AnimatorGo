@@ -75,12 +75,14 @@ namespace octoon
 		if (feature)
 		{
 			auto transform = this->getComponent<TransformComponent>();
+			math::float4x4 matrix = transform->getTransform();
+			matrix.makeTransform(transform->getTranslate(), transform->getQuaternion() * math::Quaternion(math::float3::UnitY, math::PI));
 
 			if (RPR_SUCCESS != rprContextCreateDirectionalLight(feature->getContext(), &this->rprLight_))
 				return;
 			if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(this->rprLight_, color_.x * this->intensity_, color_.y * this->intensity_, color_.z * this->intensity_))
 				return;
-			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr()))
+			if (RPR_SUCCESS != rprLightSetTransform(this->rprLight_, false, matrix.ptr()))
 				return;
 			if (RPR_SUCCESS != rprSceneAttachLight(feature->getScene(), this->rprLight_))
 				return;
@@ -114,7 +116,10 @@ namespace octoon
 		if (this->rprLight_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
-			rprLightSetTransform(this->rprLight_, false, transform->getTransform().ptr());
+			math::float4x4 matrix = transform->getTransform();
+			matrix.makeTransform(transform->getTranslate(), transform->getQuaternion() * math::Quaternion(math::float3::UnitY, math::PI));
+
+			rprLightSetTransform(this->rprLight_, false, matrix.ptr());
 
 			auto feature = this->getFeature<OfflineFeature>();
 			if (feature)

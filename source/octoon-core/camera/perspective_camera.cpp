@@ -6,9 +6,14 @@ namespace octoon::camera
 	OctoonImplementSubClass(PerspectiveCamera, Camera, "PerspectiveCamera")
 
 	PerspectiveCamera::PerspectiveCamera() noexcept
-		: aperture_(45.0f)
-		, znear_(0.1f)
-		, zfar_(std::numeric_limits<float>::max())
+		: PerspectiveCamera(45.0f, 0.1f, std::numeric_limits<float>::max())
+	{
+	}
+
+	PerspectiveCamera::PerspectiveCamera(float fov, float znear, float zfar) noexcept
+		: aperture_(fov)
+		, znear_(znear)
+		, zfar_(zfar)
 		, sensorSize_(math::float2::One)
 		, width_(0)
 		, height_(0)

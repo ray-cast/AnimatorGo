@@ -30,6 +30,8 @@ namespace octoon::light
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
+		void onMoveAfter() noexcept override;
+
 	private:
 		DirectionalLight(const DirectionalLight&) noexcept = delete;
 		DirectionalLight& operator=(const DirectionalLight&) noexcept = delete;

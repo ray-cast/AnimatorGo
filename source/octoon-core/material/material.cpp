@@ -19,7 +19,7 @@ namespace octoon::material
 		, _enableDepthBiasClamp(false)
 		, _enableStencil(false)
 		, _lineWidth(1.0f)
-		, _cullMode(hal::GraphicsCullMode::Back)
+		, _cullMode(hal::GraphicsCullMode::None)
 		, _polygonMode(hal::GraphicsPolygonMode::Solid)
 		, _primitiveType(hal::GraphicsVertexType::TriangleList)
 		, _frontFace(hal::GraphicsFrontFace::CW)

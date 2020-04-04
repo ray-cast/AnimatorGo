@@ -237,6 +237,12 @@ namespace octoon::video
 		this->profile_.light.directionalLights.clear();
 		this->profile_.light.environmentLights.clear();
 
+		this->profile_.light.pointShadows.clear();
+		this->profile_.light.spotShadows.clear();
+		this->profile_.light.rectangleShadows.clear();
+		this->profile_.light.directionalShadows.clear();
+		this->profile_.light.environmentShadows.clear();
+
 		for (auto& light : lights)
 		{
 			if (camera.getLayer() != light->getLayer())
@@ -251,13 +257,31 @@ namespace octoon::video
 				} else if (light->isA<light::DirectionalLight>()) {
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
-					directionLight.color.set(it->getColor() * it->getIntensity());
-					directionLight.direction.set(float3x3(camera.getView()) * it->getForward());
-					directionLight.shadow = false;
-					directionLight.shadowBias = it->getShadowBias();
-					directionLight.shadowRadius = it->getShadowRadius();
-					directionLight.shadowMapSize = math::float2::Zero;
-					this->profile_.light.directionalLights.emplace_back(directionLight);
+					directionLight.direction = math::float4(float3x3(camera.getView()) * -it->getForward(), 0);
+					directionLight.color = it->getColor() * it->getIntensity();
+					
+					auto framebuffer = it->getCamera()->getFramebuffer();
+					if (framebuffer && it->getShadowEnable())
+					{
+						directionLight.shadow = it->getShadowEnable();
+						directionLight.shadowBias = it->getShadowBias();
+						directionLight.shadowRadius = it->getShadowRadius();
+
+						directionLight.shadowMapSize = math::float2(framebuffer->getGraphicsFramebufferDesc().getWidth(), framebuffer->getGraphicsFramebufferDesc().getHeight());
+						this->profile_.light.directionalShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+
+						math::float4x4 viewport;
+						viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
+						viewport.translate(math::float3(0.5f, 0.5f, 0.5f));
+
+						this->profile_.light.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
+						this->profile_.light.directionalLights.emplace_back(directionLight);
+					}
+					else
+					{
+						directionLight.shadow = false;
+					}
+
 					this->profile_.light.numDirectional++;
 				} else if (light->isA<light::SpotLight>()) {
 					auto it = light->downcast<light::SpotLight>();
@@ -269,10 +293,13 @@ namespace octoon::video
 					spotLight.decay = 0;
 					spotLight.coneCos = it->getInnerCone().y;
 					spotLight.penumbraCos = it->getOuterCone().y;
-					spotLight.shadow = false;
-					spotLight.shadowBias = 0.0;
+					spotLight.shadow = it->getShadowEnable();
+					spotLight.shadowBias = it->getShadowBias();
 					spotLight.shadowRadius = it->getRange();
 					spotLight.shadowMapSize = math::float2::Zero;
+					auto framebuffer = it->getCamera()->getFramebuffer();
+					if (framebuffer)
+						this->profile_.light.spotShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 					this->profile_.light.spotLights.emplace_back(spotLight);
 					this->profile_.light.numSpot++;
 				} else if (light->isA<light::PointLight>()) {
@@ -282,10 +309,13 @@ namespace octoon::video
 					pointLight.position.set(it->getTranslate());
 					pointLight.distance = 0;
 					pointLight.decay = 0;
-					pointLight.shadow = false;
-					pointLight.shadowBias = 0.0;
+					pointLight.shadow = it->getShadowEnable();
+					pointLight.shadowBias = it->getShadowBias();
 					pointLight.shadowRadius = it->getRange();
 					pointLight.shadowMapSize = math::float2::Zero;
+					auto framebuffer = it->getCamera()->getFramebuffer();
+					if (framebuffer)
+						this->profile_.light.pointShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 					this->profile_.light.pointLights.emplace_back(pointLight);
 					this->profile_.light.numPoint++;
 				} else if (light->isA<light::EnvironmentLight>()) {

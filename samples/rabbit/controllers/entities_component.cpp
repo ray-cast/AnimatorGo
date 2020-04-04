@@ -190,14 +190,16 @@ namespace rabbit
 			objects.emplace_back(camera);
 
 		auto mainLight = octoon::GameObject::create("DirectionalLight");
-		auto rotation = math::Quaternion(math::float3(-0.1, 0.5f, 0.0f));
+		auto rotation = math::Quaternion(math::float3(-0.1, math::PI + 0.5f, 0.0f));
 		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(context->profile->sunModule->color);
 		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(context->profile->sunModule->intensity);
 		mainLight->addComponent<octoon::DirectionalLightComponent>();
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowEnable(true);
 		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
+		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 50);
 
 		for (auto& it : pmm.model)
 		{

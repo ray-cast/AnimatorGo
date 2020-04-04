@@ -124,7 +124,7 @@ namespace octoon
 			virtual ~GraphicsFramebuffer() = default;
 
 			virtual const std::uint64_t handle() const noexcept = 0;
-			virtual const GraphicsFramebufferDesc& getGraphicsFramebufferDesc() const noexcept = 0;
+			virtual const GraphicsFramebufferDesc& getFramebufferDesc() const noexcept = 0;
 
 		private:
 			GraphicsFramebuffer(GraphicsFramebuffer&) noexcept = delete;

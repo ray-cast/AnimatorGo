@@ -73,7 +73,7 @@ namespace octoon
 #endif
 				if (framebuffer)
 				{
-					auto texture = framebuffer->getGraphicsFramebufferDesc().getColorAttachment().getBindingTexture();
+					auto texture = framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture();
 					if (texture)
 						imgui::image(texture.get(), size, math::float2::UnitY, math::float2::UnitX);
 				}

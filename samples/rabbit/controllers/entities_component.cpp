@@ -199,7 +199,7 @@ namespace rabbit
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowEnable(true);
 		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
-		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 50);
+		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 60);
 
 		for (auto& it : pmm.model)
 		{

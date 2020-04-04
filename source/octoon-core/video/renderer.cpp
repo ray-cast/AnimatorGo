@@ -266,14 +266,13 @@ namespace octoon::video
 						directionLight.shadow = it->getShadowEnable();
 						directionLight.shadowBias = it->getShadowBias();
 						directionLight.shadowRadius = it->getShadowRadius();
-
-						directionLight.shadowMapSize = math::float2(framebuffer->getGraphicsFramebufferDesc().getWidth(), framebuffer->getGraphicsFramebufferDesc().getHeight());
-						this->profile_.light.directionalShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						directionLight.shadowMapSize = math::float2(framebuffer->getFramebufferDesc().getWidth(), framebuffer->getFramebufferDesc().getHeight());
 
 						math::float4x4 viewport;
 						viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
 						viewport.translate(math::float3(0.5f, 0.5f, 0.5f));
 
+						this->profile_.light.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 						this->profile_.light.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
 						this->profile_.light.directionalLights.emplace_back(directionLight);
 					}
@@ -299,7 +298,7 @@ namespace octoon::video
 					spotLight.shadowMapSize = math::float2::Zero;
 					auto framebuffer = it->getCamera()->getFramebuffer();
 					if (framebuffer)
-						this->profile_.light.spotShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						this->profile_.light.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 					this->profile_.light.spotLights.emplace_back(spotLight);
 					this->profile_.light.numSpot++;
 				} else if (light->isA<light::PointLight>()) {
@@ -315,7 +314,7 @@ namespace octoon::video
 					pointLight.shadowMapSize = math::float2::Zero;
 					auto framebuffer = it->getCamera()->getFramebuffer();
 					if (framebuffer)
-						this->profile_.light.pointShadows.emplace_back(framebuffer->getGraphicsFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						this->profile_.light.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 					this->profile_.light.pointLights.emplace_back(pointLight);
 					this->profile_.light.numPoint++;
 				} else if (light->isA<light::EnvironmentLight>()) {
@@ -654,8 +653,8 @@ namespace octoon::video
 				auto& swapFramebuffer = camera->getSwapFramebuffer();
 				if (swapFramebuffer)
 				{
-					math::float4 v1(0, 0, (float)framebuffer->getGraphicsFramebufferDesc().getWidth(), (float)framebuffer->getGraphicsFramebufferDesc().getHeight());
-					math::float4 v2(0, 0, (float)swapFramebuffer->getGraphicsFramebufferDesc().getWidth(), (float)swapFramebuffer->getGraphicsFramebufferDesc().getHeight());
+					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
 					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 				}
 			}

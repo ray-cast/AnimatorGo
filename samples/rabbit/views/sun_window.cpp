@@ -269,7 +269,7 @@ namespace rabbit
 		if (transform)
 		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::radians(profile_->sunModule->rotation)));
-			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 60);
 		}
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
@@ -349,7 +349,7 @@ namespace rabbit
 		if (transform)
 		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(octoon::math::radians(value - 180.0f), y, z)));
-			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 60);
 		}
 
 		sliderRotationX_->setValue(value);
@@ -371,7 +371,7 @@ namespace rabbit
 		if (transform)
 		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(x, octoon::math::radians(value - 180.0f), z)));
-			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 60);
 		}
 
 		sliderRotationY_->setValue(value);
@@ -393,7 +393,7 @@ namespace rabbit
 		if (transform)
 		{
 			transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(x, y, octoon::math::radians(value))));
-			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 50);
+			transform->setTranslate(-octoon::math::rotate(transform->getQuaternion(), octoon::math::float3::UnitZ) * 60);
 		}
 
 		sliderRotationZ_->setValue(value);

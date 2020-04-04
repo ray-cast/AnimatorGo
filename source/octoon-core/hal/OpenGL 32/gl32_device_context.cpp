@@ -128,7 +128,7 @@ namespace octoon
 			{
 				std::uint32_t height;
 				if (_framebuffer)
-					height = _framebuffer->getGraphicsFramebufferDesc().getHeight();
+					height = _framebuffer->getFramebufferDesc().getHeight();
 				else
 					height = _glcontext->getGraphicsSwapchainDesc().getHeight();
 
@@ -438,7 +438,7 @@ namespace octoon
 					auto framebuffer = target->downcast_pointer<GL32Framebuffer>();
 					glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->getInstanceID());
 
-					auto& framebufferDesc = framebuffer->getGraphicsFramebufferDesc();
+					auto& framebufferDesc = framebuffer->getFramebufferDesc();
 					auto& colorAttachment = framebufferDesc.getColorAttachments();
 
 					std::uint32_t viewportCount = std::max<std::uint32_t>(1, static_cast<std::uint32_t>(colorAttachment.size()));
@@ -470,7 +470,7 @@ namespace octoon
 			if (_stateCaptured.getScissorTestEnable())
 			{
 				if (_framebuffer)
-					glScissor(0, 0, _framebuffer->getGraphicsFramebufferDesc().getWidth(), _framebuffer->getGraphicsFramebufferDesc().getHeight());
+					glScissor(0, 0, _framebuffer->getFramebufferDesc().getWidth(), _framebuffer->getFramebufferDesc().getHeight());
 				else
 					glScissor(0, 0, _glcontext->getGraphicsSwapchainDesc().getWidth(), _glcontext->getGraphicsSwapchainDesc().getHeight());
 			}
@@ -530,8 +530,8 @@ namespace octoon
 			{
 				if (_framebuffer)
 				{
-					auto w = _framebuffer->getGraphicsFramebufferDesc().getWidth();
-					auto h = _framebuffer->getGraphicsFramebufferDesc().getWidth();
+					auto w = _framebuffer->getFramebufferDesc().getWidth();
+					auto h = _framebuffer->getFramebufferDesc().getWidth();
 					glScissor(0, 0, w, h);
 				}
 				else
@@ -571,7 +571,7 @@ namespace octoon
 			assert(_framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getGraphicsFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
+			const auto& layoutDesc = _framebuffer->getFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
 			if (layoutDesc.getComponents().size() > i)
 			{
 				auto& attachment = layoutDesc.getComponents().at(i);

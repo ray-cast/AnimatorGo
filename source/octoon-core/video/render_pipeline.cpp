@@ -1463,7 +1463,7 @@ IncidentLight directLight;
 #endif
 )";
 
-		static char* shadowmap_vertex = R"(
+static char* shadowmap_vertex = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1506,7 +1506,7 @@ IncidentLight directLight;
 
 #endif
 )";
-		static char* shadowmap_pars_vertex = R"(
+static char* shadowmap_pars_vertex = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1916,6 +1916,9 @@ namespace octoon::video
 			if (this->viewMatrix_)
 				this->viewMatrix_->uniform4fmat(camera.getView());
 
+			if (this->viewProjMatrix_)
+				this->viewProjMatrix_->uniform4fmat(camera.getViewProjection());
+
 			if (this->modelViewMatrix_)
 				this->modelViewMatrix_->uniform4fmat(camera.getView() * geometry.getTransform());
 			
@@ -2027,6 +2030,7 @@ namespace octoon::video
 				uniform mat4 modelViewMatrix;
 				uniform mat4 projectionMatrix;
 				uniform mat4 viewMatrix;
+				uniform mat4 viewProjMatrix;
 				uniform mat3 normalMatrix;
 				uniform vec3 cameraPosition;
 
@@ -2183,6 +2187,10 @@ namespace octoon::video
 				auto viewMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "viewMatrix"; });
 				if (viewMatrix != end)
 					viewMatrix_ = *viewMatrix;
+
+				auto viewProjMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "viewProjMatrix"; });
+				if (viewProjMatrix != end)
+					viewProjMatrix_ = *viewProjMatrix;
 
 				auto normalMatrix = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "normalMatrix"; });
 				if (normalMatrix != end)

@@ -57,6 +57,7 @@ namespace octoon::video
 		hal::GraphicsUniformSetPtr envMapIntensity_;
 
 		hal::GraphicsUniformSetPtr viewMatrix_;
+		hal::GraphicsUniformSetPtr viewProjMatrix_;
 		hal::GraphicsUniformSetPtr normalMatrix_;
 		hal::GraphicsUniformSetPtr modelMatrix_;
 		hal::GraphicsUniformSetPtr modelViewMatrix_;

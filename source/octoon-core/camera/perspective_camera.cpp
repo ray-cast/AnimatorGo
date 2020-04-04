@@ -126,8 +126,8 @@ namespace octoon::camera
 			video::Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
-			width = fbo_[0]->getGraphicsFramebufferDesc().getWidth();
-			height = fbo_[0]->getGraphicsFramebufferDesc().getHeight();
+			width = fbo_[0]->getFramebufferDesc().getWidth();
+			height = fbo_[0]->getFramebufferDesc().getHeight();
 		}
 
 		if (width_ != width || height_ != height)

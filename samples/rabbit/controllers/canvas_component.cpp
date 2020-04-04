@@ -52,7 +52,7 @@ namespace rabbit
 		else
 		{
 			auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
-			auto colorTexture = camera->getFramebuffer()->getGraphicsFramebufferDesc().getColorAttachments().front().getBindingTexture();
+			auto colorTexture = camera->getFramebuffer()->getFramebufferDesc().getColorAttachments().front().getBindingTexture();
 			if (colorTexture)
 			{
 				auto& desc = colorTexture->getTextureDesc();

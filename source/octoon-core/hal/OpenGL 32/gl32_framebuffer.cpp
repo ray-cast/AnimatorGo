@@ -216,7 +216,7 @@ namespace octoon
 		}
 
 		const GraphicsFramebufferDesc&
-		GL32Framebuffer::getGraphicsFramebufferDesc() const noexcept
+		GL32Framebuffer::getFramebufferDesc() const noexcept
 		{
 			return _framebufferDesc;
 		}

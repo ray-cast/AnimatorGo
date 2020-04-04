@@ -198,7 +198,7 @@ namespace octoon
 		}
 
 		const GraphicsFramebufferDesc&
-		GL20Framebuffer::getGraphicsFramebufferDesc() const noexcept
+		GL20Framebuffer::getFramebufferDesc() const noexcept
 		{
 			return _framebufferDesc;
 		}

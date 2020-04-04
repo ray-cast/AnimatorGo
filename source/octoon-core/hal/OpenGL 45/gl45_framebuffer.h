@@ -20,7 +20,7 @@ namespace octoon
 			GLuint getInstanceID() noexcept;
 
 			const std::uint64_t handle() const noexcept override;
-			const GraphicsFramebufferDesc& getGraphicsFramebufferDesc() const noexcept override;
+			const GraphicsFramebufferDesc& getFramebufferDesc() const noexcept override;
 
 		private:
 			bool bindRenderTexture(GraphicsTexturePtr target, GLenum attachment, GLint level, GLint layer) noexcept;

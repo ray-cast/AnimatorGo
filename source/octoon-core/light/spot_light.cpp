@@ -10,13 +10,13 @@ namespace octoon::light
 		, _spotOuterCone(40.0f, math::cos(math::radians(40.0f)))
 		, shadowEnable_(false)
 		, shadowBias_(0.1f)
+		, shadowRadius_(1.0f)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
 		shadowCamera->setAperture(_spotOuterCone.x);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
 		shadowCamera->setOwnerListener(this);
-		shadowCamera->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
 	}
 
 	SpotLight::~SpotLight() noexcept
@@ -54,8 +54,9 @@ namespace octoon::light
 	{
 		if (this->shadowEnable_ != enable)
 		{
-			if (this->shadowCamera_)
-				this->shadowCamera_->setActive(enable);
+			if (this->shadowCamera_ && enable)
+				this->shadowCamera_->setupFramebuffers(512, 512, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+
 			this->shadowEnable_ = enable;
 		}
 	}
@@ -76,6 +77,18 @@ namespace octoon::light
 	SpotLight::getShadowBias() const noexcept
 	{
 		return shadowBias_;
+	}
+
+	void
+	SpotLight::setShadowRadius(float radius) noexcept
+	{
+		this->shadowRadius_ = radius;
+	}
+	
+	float
+	SpotLight::getShadowRadius() const noexcept
+	{
+		return this->shadowRadius_;
 	}
 
 	void

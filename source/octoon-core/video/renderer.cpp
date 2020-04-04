@@ -47,15 +47,7 @@ namespace octoon::video
 	void
 	Renderer::close() noexcept
 	{
-		this->profile_.light.pointLightBuffer.reset();
-		this->profile_.light.spotLightBuffer.reset();
-		this->profile_.light.rectangleLightBuffer.reset();
-		this->profile_.light.directionLightBuffer.reset();
-		this->profile_.light.pointLights.clear();
-		this->profile_.light.spotLights.clear();
-		this->profile_.light.directionalLights.clear();
-		this->profile_.light.rectangleLights.clear();
-		this->profile_.light.environmentLights.clear();
+		this->profile_.reset();
 		this->buffers_.clear();
 		this->pipelines_.clear();
 		fbo_.reset();
@@ -219,31 +211,109 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::prepareLights(const std::vector<light::Light*>& lights, const camera::Camera& camera) noexcept
+	Renderer::setViewport(const math::float4& viewport) noexcept(false)
 	{
-		this->lights_.clear();
+		this->context_->setViewport(0, viewport);
+	}
 
-		this->profile_.light.numDirectional = 0;
-		this->profile_.light.numSpot = 0;
-		this->profile_.light.numPoint = 0;
-		this->profile_.light.numHemi = 0;
-		this->profile_.light.numEnvironment = 0;
-		this->profile_.light.numRectangle = 0;
+	void
+	Renderer::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false)
+	{
+		this->context_->setFramebuffer(framebuffer);
+	}
 
-		this->profile_.light.ambientLightColors = math::float3::Zero;
-		this->profile_.light.pointLights.clear();
-		this->profile_.light.spotLights.clear();
-		this->profile_.light.rectangleLights.clear();
-		this->profile_.light.directionalLights.clear();
-		this->profile_.light.environmentLights.clear();
+	void
+	Renderer::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
+	{
+		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
+	}
 
-		this->profile_.light.pointShadows.clear();
-		this->profile_.light.spotShadows.clear();
-		this->profile_.light.rectangleShadows.clear();
-		this->profile_.light.directionalShadows.clear();
-		this->profile_.light.environmentShadows.clear();
+	void
+	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		this->context_->generateMipmap(texture);
+	}
 
-		this->profile_.light.directionalShadowMatrix.clear();
+	void
+	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept
+	{
+		if (camera.getLayer() != geometry.getLayer())
+			return;
+
+		if (geometry.getVisible())
+		{
+			for (std::size_t i = 0; i < geometry.getMaterials().size(); i++)
+			{
+				if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterials()[i], camera, geometry))
+					return;
+
+				if (!this->setBuffer(geometry.getMesh(), i))
+					return;
+
+				auto indices = currentBuffer_->getNumIndices(i);
+				if (indices > 0)
+					this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
+				else
+					this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
+			}
+		}
+	}
+
+	void
+	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
+	{
+		for (auto& geometry : geometries)
+			this->renderObject(*geometry, camera);
+	}
+
+	void
+	Renderer::prepareShadowMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& objects) noexcept
+	{
+		for (auto& light : lights)
+		{
+			if (!light->getVisible())
+				continue;
+
+			if (light->isA<light::DirectionalLight>())
+			{
+				auto directionalLight = light->cast<light::DirectionalLight>();
+				if (directionalLight->getShadowEnable())
+				{
+					auto camera = directionalLight->getCamera();
+					auto framebuffer = camera->getFramebuffer();
+
+					this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+					this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+					this->context_->setViewport(0, camera->getPixelViewport());
+
+					this->prepareLights(*camera, lights);
+					this->renderObjects(objects, *directionalLight->getCamera());
+
+					if (camera->getRenderToScreen())
+					{
+						auto& v = camera->getPixelViewport();
+						if (framebuffer)
+							this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
+						else
+							this->context_->blitFramebuffer(fbo_, v, nullptr, v);
+					}
+
+					auto& swapFramebuffer = camera->getSwapFramebuffer();
+					if (swapFramebuffer && framebuffer)
+					{
+						math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+						math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
+						this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+					}
+				}
+			}
+		}
+	}
+
+	void
+	Renderer::prepareLights(const camera::Camera& camera, const std::vector<light::Light*>& lights) noexcept
+	{
+		this->profile_.reset();
 
 		for (auto& light : lights)
 		{
@@ -254,21 +324,36 @@ namespace octoon::video
 			{
 				light->onRenderBefore(camera);
 
-				if (light->isA<light::AmbientLight>()) {
+				if (light->isA<light::AmbientLight>())
+				{
 					this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
-				} else if (light->isA<light::DirectionalLight>()) {
+				}
+				else if (light->isA<light::EnvironmentLight>())
+				{
+					auto it = light->downcast<light::EnvironmentLight>();
+					EnvironmentLight environmentLight;
+					environmentLight.intensity = it->getIntensity();
+					environmentLight.radiance = it->getEnvironmentMap();
+					if (!it->getEnvironmentMap())
+						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
+					this->profile_.light.environmentLights.emplace_back(environmentLight);
+					this->profile_.light.numEnvironment++;
+				}
+				else if (light->isA<light::DirectionalLight>())
+				{
 					auto it = light->downcast<light::DirectionalLight>();
 					DirectionalLight directionLight;
 					directionLight.direction = math::float4(float3x3(camera.getView()) * -it->getForward(), 0);
 					directionLight.color = it->getColor() * it->getIntensity();
-					
+					directionLight.shadow = it->getShadowEnable();
+
 					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer && it->getShadowEnable())
+					if (framebuffer && directionLight.shadow)
 					{
 						directionLight.shadow = it->getShadowEnable();
 						directionLight.shadowBias = it->getShadowBias();
 						directionLight.shadowRadius = it->getShadowRadius();
-						directionLight.shadowMapSize = math::float2(framebuffer->getFramebufferDesc().getWidth(), framebuffer->getFramebufferDesc().getHeight());
+						directionLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
 
 						math::float4x4 viewport;
 						viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
@@ -277,14 +362,12 @@ namespace octoon::video
 						this->profile_.light.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
 						this->profile_.light.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
 					}
-					else
-					{
-						directionLight.shadow = false;
-					}
 
 					this->profile_.light.numDirectional++;
 					this->profile_.light.directionalLights.emplace_back(directionLight);
-				} else if (light->isA<light::SpotLight>()) {
+				}
+				else if (light->isA<light::SpotLight>())
+				{
 					auto it = light->downcast<light::SpotLight>();
 					SpotLight spotLight;
 					spotLight.color.set(it->getColor() * it->getIntensity());
@@ -295,15 +378,22 @@ namespace octoon::video
 					spotLight.coneCos = it->getInnerCone().y;
 					spotLight.penumbraCos = it->getOuterCone().y;
 					spotLight.shadow = it->getShadowEnable();
-					spotLight.shadowBias = it->getShadowBias();
-					spotLight.shadowRadius = it->getRange();
-					spotLight.shadowMapSize = math::float2::Zero;
+
 					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer)
+					if (framebuffer && spotLight.shadow)
+					{						
+						spotLight.shadowBias = it->getShadowBias();
+						spotLight.shadowRadius = it->getShadowRadius();
+						spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+
 						this->profile_.light.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+					}
+
 					this->profile_.light.spotLights.emplace_back(spotLight);
 					this->profile_.light.numSpot++;
-				} else if (light->isA<light::PointLight>()) {
+				}
+				else if (light->isA<light::PointLight>())
+				{
 					auto it = light->downcast<light::PointLight>();
 					PointLight pointLight;
 					pointLight.color.set(it->getColor() * it->getIntensity());
@@ -311,24 +401,22 @@ namespace octoon::video
 					pointLight.distance = 0;
 					pointLight.decay = 0;
 					pointLight.shadow = it->getShadowEnable();
-					pointLight.shadowBias = it->getShadowBias();
-					pointLight.shadowRadius = it->getRange();
-					pointLight.shadowMapSize = math::float2::Zero;
+
 					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer)
+					if (framebuffer && pointLight.shadow)
+					{
+						pointLight.shadowBias = it->getShadowBias();
+						pointLight.shadowRadius = it->getShadowRadius();
+						pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+
 						this->profile_.light.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+					}
+
 					this->profile_.light.pointLights.emplace_back(pointLight);
 					this->profile_.light.numPoint++;
-				} else if (light->isA<light::EnvironmentLight>()) {
-					auto it = light->downcast<light::EnvironmentLight>();
-					EnvironmentLight environmentLight;
-					environmentLight.intensity = it->getIntensity();
-					environmentLight.radiance = it->getEnvironmentMap();
-					if (!it->getEnvironmentMap())
-						this->profile_.light.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
-					this->profile_.light.environmentLights.emplace_back(environmentLight);
-					this->profile_.light.numEnvironment++;
-				} else if (light->isA<light::RectangleLight>()) {
+				}
+				else if (light->isA<light::RectangleLight>())
+				{
 					auto it = light->downcast<light::RectangleLight>();
 					RectAreaLight rectangleLight;
 					rectangleLight.color.set(it->getColor() * it->getIntensity());
@@ -340,8 +428,6 @@ namespace octoon::video
 				}
 
 				light->onRenderAfter(camera);
-
-				this->lights_.emplace_back(light);
 			}
 		}
 
@@ -479,7 +565,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::prepareLightMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
+	Renderer::prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
 	{
 		for (auto& geometry : geometries)
 		{
@@ -547,62 +633,6 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::setViewport(const math::float4& viewport) noexcept(false)
-	{
-		this->context_->setViewport(0, viewport);
-	}
-
-	void
-	Renderer::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false)
-	{
-		this->context_->setFramebuffer(framebuffer);
-	}
-
-	void
-	Renderer::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
-	{
-		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
-	}
-
-	void
-	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
-	{
-		this->context_->generateMipmap(texture);
-	}
-
-	void
-	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept
-	{
-		if (camera.getLayer() != geometry.getLayer())
-			return;
-
-		if (geometry.getVisible())
-		{
-			for (std::size_t i = 0; i < geometry.getMaterials().size(); i++)
-			{
-				if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterials()[i], camera, geometry))
-					return;
-
-				if (!this->setBuffer(geometry.getMesh(), i))
-					return;
-
-				auto indices = currentBuffer_->getNumIndices(i);
-				if (indices > 0)
-					this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
-				else
-					this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
-			}
-		}
-	}
-
-	void
-	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
-	{
-		for (auto& geometry : geometries)
-			this->renderObject(*geometry, camera);
-	}
-
-	void
 	Renderer::render(RenderScene& scene) noexcept
 	{
 		for (auto& camera : scene.getCameraList())
@@ -625,25 +655,20 @@ namespace octoon::video
 			scene.sortGeometries();
 		}
 
+		this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
+
 		for (auto& camera : scene.getCameraList())
 		{
-#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
 			auto framebuffer = camera->getFramebuffer();
-			if (framebuffer)
-				this->context_->setFramebuffer(framebuffer);
-			else
-				this->context_->setFramebuffer(fbo_);
-#endif
-
-			this->context_->setViewport(0, camera->getPixelViewport());
+			this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
 			this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+			this->context_->setViewport(0, camera->getPixelViewport());
 
-			this->prepareLights(scene.getLights(), *camera);
+			this->prepareLights(*camera, scene.getLights());
 			//this->prepareLightMaps(scene.getLights(), scene.getGeometries(), *camera);
 			this->renderObjects(scene.getGeometries(), *camera);
 
-#if !defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)
-			if (camera->getBlitToScreen())
+			if (camera->getRenderToScreen())
 			{
 				auto& v = camera->getPixelViewport();
 				if (framebuffer)
@@ -652,17 +677,13 @@ namespace octoon::video
 					this->context_->blitFramebuffer(fbo_, v, nullptr, v);
 			}
 
-			if (framebuffer)
+			auto& swapFramebuffer = camera->getSwapFramebuffer();
+			if (framebuffer && swapFramebuffer)
 			{
-				auto& swapFramebuffer = camera->getSwapFramebuffer();
-				if (swapFramebuffer)
-				{
-					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-				}
+				math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+				math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
+				this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 			}
-#endif
 		}
 
 		for (auto& camera : scene.getCameraList())

@@ -312,6 +312,18 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<MeshStandardMaterial>();
 		instance->setColor(this->getColor());
+		instance->setColorTexture(this->getColorTexture());
+		instance->setOpacity(this->getOpacity());
+		instance->setSmoothness(this->getSmoothness());
+		instance->setMetalness(this->getMetalness());
+		instance->setEmissive(this->getEmissive());
+		instance->setReflectivity(this->getReflectivity());
+		instance->setRefractionRatio(this->getRefractionRatio());
+		instance->setClearCoat(this->getClearCoat());
+		instance->setClearCoatRoughness(this->getClearCoatRoughness());
+		instance->setGamma(this->getGamma());
+		instance->setRepeat(this->getRepeat());
+		instance->setOffset(this->getOffset());
 
 		return instance;
 	}

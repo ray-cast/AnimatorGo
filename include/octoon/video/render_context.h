@@ -91,9 +91,12 @@ namespace octoon::video
 		hal::GraphicsDataPtr directionLightBuffer;
 	};
 
-	struct RenderProfile
+	class RenderProfile
 	{
+	public:
 		LightModule light;
+
+		void reset() noexcept;
 	};
 }
 

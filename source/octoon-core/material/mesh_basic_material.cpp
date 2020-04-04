@@ -149,6 +149,11 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<MeshBasicMaterial>();
 		instance->setColor(this->getColor());
+		instance->setColorTexture(this->getColorTexture());
+		instance->setOpacity(this->getOpacity());
+		instance->setGamma(this->getGamma());
+		instance->setRepeat(this->getRepeat());
+		instance->setOffset(this->getOffset());
 
 		return instance;
 	}

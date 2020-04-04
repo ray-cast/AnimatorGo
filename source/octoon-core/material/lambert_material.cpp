@@ -11,69 +11,36 @@ namespace octoon::material
 
 	LambertMaterial::LambertMaterial(const math::float3& color) noexcept
 	{
-#if defined(OCTOON_BUILD_PLATFORM_EMSCRIPTEN) || defined(OCTOON_BUILD_PLATFORM_ANDROID)
-		const char* vert = R"(
-			precision mediump float;
-			uniform mat4 proj;
-			uniform mat4 model;
+	const char* vert = R"(#version 330
+		uniform mat4 proj;
+		uniform mat4 model;
 
-			attribute vec4 POSITION0;
-			attribute vec4 NORMAL0;
+		layout(location  = 0) in vec4 POSITION0;
+		layout(location  = 1) in vec2 TEXCOORD0;
 
-			varying vec3 oTexcoord0;
+		out vec2 oTexcoord0;
 
-			void main()
-			{
-				oTexcoord0 = NORMAL0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
+		void main()
+		{
+			oTexcoord0 = TEXCOORD0;
+			gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
+		})";
 
-		const char* frag = R"(
-			precision mediump float;
+	const char* frag = R"(#version 330
+		layout(location  = 0) out vec4 fragColor;
 
-			uniform sampler2D decal;
-			uniform vec4 color;
-			uniform bool hasTexture;
+		uniform sampler2D decal;
+		uniform vec4 color;
+		uniform bool hasTexture;
 
-			varying vec2 oTexcoord0;
-			void main()
-			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
-			})";
-#else
-		const char* vert = R"(#version 330
-			uniform mat4 proj;
-			uniform mat4 model;
+		in vec2 oTexcoord0;
 
-			layout(location  = 0) in vec4 POSITION0;
-			layout(location  = 1) in vec2 TEXCOORD0;
-
-			out vec2 oTexcoord0;
-
-			void main()
-			{
-				oTexcoord0 = TEXCOORD0;
-				gl_Position = proj * model * (POSITION0 * vec4(1,1,1,1));
-			})";
-
-		const char* frag = R"(#version 330
-			layout(location  = 0) out vec4 fragColor;
-
-			uniform sampler2D decal;
-			uniform vec4 color;
-			uniform bool hasTexture;
-
-			in vec2 oTexcoord0;
-
-			void main()
-			{
-				fragColor = color;
-				if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
-				fragColor = pow(fragColor, vec4(1.0 / 2.2));
-			})";
-#endif
+		void main()
+		{
+			fragColor = color;
+			if (hasTexture) fragColor *= pow(texture(decal, oTexcoord0), vec4(2.2));
+			fragColor = pow(fragColor, vec4(1.0 / 2.2));
+		})";
 
 		this->setColor(color);
 		this->setOpacity(1.0f);
@@ -129,7 +96,8 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<LambertMaterial>();
 		instance->setColor(this->getColor());
-
+		instance->setColorTexture(this->getColorTexture());
+		instance->setOpacity(this->getOpacity());
 		return instance;
 	}
 }

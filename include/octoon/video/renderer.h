@@ -94,8 +94,10 @@ namespace octoon::video
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 	private:
-		void prepareLights(const std::vector<light::Light*>& light, const camera::Camera& camera) noexcept;
-		void prepareLightMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
+		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects) noexcept;
+
+		void prepareLights(const camera::Camera& camera, const std::vector<light::Light*>& light) noexcept;
+		void prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects) noexcept;
 
 	private:
 		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
@@ -118,8 +120,6 @@ namespace octoon::video
 		hal::GraphicsContextPtr context_;
 
 		RenderProfile profile_;
-
-		std::vector<light::Light*> lights_;
 
 		std::shared_ptr<RenderBuffer> currentBuffer_;
 		std::shared_ptr<material::Material> overrideMaterial_;

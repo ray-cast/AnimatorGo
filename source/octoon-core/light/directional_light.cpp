@@ -9,10 +9,10 @@ namespace octoon::light
 		: shadowBias_(0.0f)
 		, shadowRadius_(1.0f)
 		, shadowEnable_(false)
+		, shadowSize_(512, 512)
 	{
-		this->shadowCamera_ = std::make_shared<camera::OrthoCamera>(-20, 20, -20, 20, 0.01f, 1000.f);
+		this->shadowCamera_ = std::make_shared<camera::OrthoCamera>(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 1000.f);
 		this->shadowCamera_->setOwnerListener(this);
-		this->shadowCamera_->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
 	}
 
 	DirectionalLight::~DirectionalLight() noexcept
@@ -24,18 +24,8 @@ namespace octoon::light
 	{
 		if (this->shadowEnable_ != enable)
 		{
-			if (this->shadowCamera_)
-			{
-				if (enable)
-				{
-					this->shadowCamera_->setActive(enable);
-					this->shadowCamera_->setupFramebuffers(512, 512, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
-				}
-				else
-				{
-					this->shadowCamera_->setActive(false);
-				}
-			}
+			if (this->shadowCamera_ && enable)
+				this->shadowCamera_->setupFramebuffers(shadowSize_.x, shadowSize_.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
 
 			this->shadowEnable_ = enable;
 		}
@@ -72,6 +62,23 @@ namespace octoon::light
 	}
 
 	void
+	DirectionalLight::setShadowMapSize(const math::float2& size) noexcept
+	{
+		if (this->shadowSize_ != size)
+		{
+			if (this->shadowCamera_ && this->shadowEnable_)
+				this->shadowCamera_->setupFramebuffers(size.x, size.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+			this->shadowSize_ = size;
+		}
+	}
+
+	const math::float2&
+	DirectionalLight::getShadowMapSize() const noexcept
+	{
+		return this->shadowSize_;
+	}
+
+	void
 	DirectionalLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
 	{
 		this->shadowCamera_ = camera;
@@ -95,16 +102,12 @@ namespace octoon::light
 	void
 	DirectionalLight::onActivate() noexcept
 	{
-		if (this->shadowCamera_ && this->getShadowEnable())
-			this->shadowCamera_->setActive(true);
 		Light::onActivate();
 	}
 
 	void
 	DirectionalLight::onDeactivate() noexcept
 	{
-		if (this->shadowCamera_ && this->getShadowEnable())
-			this->shadowCamera_->setActive(false);
 		Light::onDeactivate();
 	}
 

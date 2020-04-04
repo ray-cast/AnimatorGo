@@ -36,7 +36,7 @@ namespace octoon::camera
 	}
 
 	void
-	Camera::setBlitToScreen(bool enable) noexcept
+	Camera::setRenderToScreen(bool enable) noexcept
 	{
 		blitToScreen_ = enable;
 	}
@@ -201,7 +201,7 @@ namespace octoon::camera
 	}
 
 	bool
-	Camera::getBlitToScreen() const noexcept
+	Camera::getRenderToScreen() const noexcept
 	{
 		return blitToScreen_;
 	}

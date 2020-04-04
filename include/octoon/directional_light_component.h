@@ -25,6 +25,9 @@ namespace octoon
 		void setShadowRadius(float radius) noexcept;
 		float getShadowRadius() const noexcept;
 
+		void setShadowMapSize(const math::float2& size) noexcept;
+		const math::float2& getShadowMapSize() const noexcept;
+
 		GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -44,6 +47,7 @@ namespace octoon
 
 		float shadowBias_;
 		float shadowRadius_;
+		math::float2 shadowMapSize_;
 		std::shared_ptr<light::DirectionalLight> directionalLight_;
 	};
 }

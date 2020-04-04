@@ -487,6 +487,8 @@ namespace rabbit
 		auto envMaterial = octoon::material::MeshBasicMaterial::create(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		envMaterial->setCullMode(octoon::hal::GraphicsCullMode::None);
 		envMaterial->setGamma(1.0f);
+		envMaterial->setDepthEnable(false);
+		envMaterial->setDepthWriteEnable(false);
 
 		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
 		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();

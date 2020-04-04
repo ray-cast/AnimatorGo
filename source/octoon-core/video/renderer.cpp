@@ -243,6 +243,8 @@ namespace octoon::video
 		this->profile_.light.directionalShadows.clear();
 		this->profile_.light.environmentShadows.clear();
 
+		this->profile_.light.directionalShadowMatrix.clear();
+
 		for (auto& light : lights)
 		{
 			if (camera.getLayer() != light->getLayer())

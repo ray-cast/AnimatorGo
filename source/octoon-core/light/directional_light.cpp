@@ -1,5 +1,5 @@
 #include <octoon/light/directional_light.h>
-#include <octoon/camera/perspective_camera.h>
+#include <octoon/camera/ortho_camera.h>
 
 namespace octoon::light
 {
@@ -10,7 +10,7 @@ namespace octoon::light
 		, shadowRadius_(1.0f)
 		, shadowEnable_(false)
 	{
-		this->shadowCamera_ = std::make_shared<camera::PerspectiveCamera>(45.f, 0.1f, 1000.f);
+		this->shadowCamera_ = std::make_shared<camera::OrthoCamera>(-20, 20, -20, 20, 0.01f, 1000.f);
 		this->shadowCamera_->setOwnerListener(this);
 		this->shadowCamera_->setRenderOrder(-std::numeric_limits<std::int32_t>::max());
 	}

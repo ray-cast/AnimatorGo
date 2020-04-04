@@ -341,7 +341,7 @@ static char* begin_vertex = R"(
 vec3 transformed = vec3( POSITION0 );
 )";
 static char* worldpos_vertex = R"(
-#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
+#if defined ( USE_SHADOWMAP )
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
 #endif
 )";
@@ -1541,7 +1541,7 @@ static char* shadowmap_pars_vertex = R"(
 #endif
 
 )";
-		static char* shadowmap_pars_fragment = R"(
+static char* shadowmap_pars_fragment = R"(
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0

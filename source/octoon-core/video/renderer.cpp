@@ -661,7 +661,7 @@ namespace octoon::video
 			this->context_->setViewport(0, camera->getPixelViewport());
 
 			this->prepareLights(*camera, scene.getLights());
-			//this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
+			this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
 			this->renderObjects(scene.getGeometries(), *camera);
 
 			if (camera->getRenderToScreen())

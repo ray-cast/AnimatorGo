@@ -16,6 +16,7 @@ namespace octoon::bake
 		math::float3 normal;
 		math::float3 position;
 		math::float3 color;
+		math::float3 emissive;
 
 		math::float3 v1;
 		math::float3 v2;

@@ -870,10 +870,12 @@ namespace octoon
 				return 3 * typeSize;
 			else if (format == GL_RGBA || format == GL_BGRA || format == GL_ABGR_EXT || format == GL_SRGB_ALPHA)
 				return 4 * typeSize;
+			else if (format == GL_DEPTH_COMPONENT)
+				return 1 * typeSize;
 			else
 			{
 				assert(false);
-				return 0;
+				return 1;
 			}
 		}
 

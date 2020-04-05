@@ -91,7 +91,7 @@ namespace octoon
 			swapchainDesc.setWindHandle(window_);
 			swapchainDesc.setWidth(framebuffer_w_);
 			swapchainDesc.setHeight(framebuffer_h_);
-			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Vsync);
+			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Free);
 			swapchainDesc.setImageNums(2);
 			swapchainDesc.setColorFormat(hal::GraphicsFormat::B8G8R8A8UNorm);
 			swapchainDesc.setDepthStencilFormat(hal::GraphicsFormat::X8_D24UNormPack32);
@@ -106,7 +106,7 @@ namespace octoon
 			swapchainDesc.setWindHandle(window_);
 			swapchainDesc.setWidth(framebuffer_w_);
 			swapchainDesc.setHeight(framebuffer_h_);
-			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Vsync);
+			swapchainDesc.setSwapInterval(hal::GraphicsSwapInterval::Free);
 			swapchainDesc.setImageNums(2);
 			swapchainDesc.setColorFormat(hal::GraphicsFormat::B8G8R8A8UNorm);
 			swapchainDesc.setDepthStencilFormat(hal::GraphicsFormat::X8_D24UNormPack32);

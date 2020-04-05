@@ -100,8 +100,29 @@ namespace octoon::bake
 	void
 	Lightmap::render(const camera::Camera& camera)
 	{
+#if 0
+		for (std::uint8_t level = 0; level < this->mipLevel_; level++)
+		{
+			auto columns = patches_[level].size();
+			for (std::int32_t i = 0; i < columns; ++i)
+			{
+				auto& sourcePatch = this->patches_[level][i];
+				this->directLightBuffer_[level][sourcePatch.texelIndex] += sourcePatch.emissive;
+			}
+		}
+#endif
+
 		this->computeIndirectLightBounce(camera);
 
+#if 0
+		auto columns = patches_[0].size();
+		for (std::int32_t i = 0; i < columns; ++i)
+		{
+			auto& sourcePatch = this->patches_[0][i];
+			if (math::any(sourcePatch.emissive))
+				this->lightmap.data[sourcePatch.texelIndex] += math::PI;
+		}
+#endif
 		/*for (std::size_t y = 0; y < this->lightmap.height * 2; y++)
 		{
 			for (std::size_t x = 0; x < this->lightmap.width * 2; x++)
@@ -182,11 +203,9 @@ namespace octoon::bake
 		for (std::int32_t i = 0; i < columns; ++i)
 		{
 			auto& sourcePatch = this->patches_[0][i];
-			if (math::dot(sourcePatch.normal, -camera.getForward()) < 0.0f)
-				continue;
 
-			auto& destPaths = this->patches_[3];
-			auto& destDirectLightBuffer = this->directLightBuffer_[3];
+			auto& destPaths = this->patches_[4];
+			auto& destDirectLightBuffer = this->directLightBuffer_[4];
 
 			auto destColumns = destPaths.size();
 
@@ -332,6 +351,10 @@ namespace octoon::bake
 						patch.position = this->meshPosition.sample.position;
 						patch.normal = this->meshPosition.sample.direction;
 						patch.color = this->meshPosition.triangle.color;
+						if (this->meshPosition.triangle.color.y > (this->meshPosition.triangle.color.x + this->meshPosition.triangle.color.z))
+							patch.emissive = this->meshPosition.triangle.color;
+						else
+							patch.emissive = math::float3::Zero;
 
 						return true;
 					}

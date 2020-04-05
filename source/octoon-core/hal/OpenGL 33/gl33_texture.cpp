@@ -66,8 +66,8 @@ namespace octoon
 				}
 				else
 				{
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 				}
 
 				if (!applyMipmapLimit(target, mipBase, mipLevel))
@@ -115,21 +115,17 @@ namespace octoon
 				}
 
 				GLsizei offset = 0;
-				GLsizei pixelSize = stream ? GL33Types::getFormatNum(format, type) : 1;
+				GLsizei pixelSize = GL33Types::getFormatNum(format, type);
+				GLsizei packWidth = pixelSize;
 
-				GLint oldPackStore = 1;
-				glGetIntegerv(GL_UNPACK_ALIGNMENT, &oldPackStore);
-
-				if (pixelSize == 1)
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				else if (pixelSize == 2)
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-				else if (pixelSize == 4 || pixelSize == 12)
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+				if (packWidth == 4 || packWidth == 12)
+					packWidth = 4;
 				else if (pixelSize == 8 || pixelSize == 16)
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
-				else
-					glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+					packWidth = 8;
+
+				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, width);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, height);
+				glPixelStorei(GL_UNPACK_ALIGNMENT, packWidth);
 
 				if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)
 				{
@@ -195,8 +191,6 @@ namespace octoon
 						}
 					}
 				}
-
-				glPixelStorei(GL_UNPACK_ALIGNMENT, oldPackStore);
 			}
 
 			glBindTexture(target, GL_NONE);
@@ -316,6 +310,25 @@ namespace octoon
 			{
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo);
 				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+
+				GLenum format = GL33Types::asTextureFormat(_textureDesc.getTexFormat());
+				GLenum type = GL33Types::asTextureType(_textureDesc.getTexFormat());
+
+				GLsizei pixelSize = GL33Types::getFormatNum(format, type);
+				GLsizei packWidth = pixelSize;
+
+				if (packWidth == 4 || packWidth == 12)
+					packWidth = 4;
+				else if (pixelSize == 8 || pixelSize == 16)
+					packWidth = 8;
+				
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(_target, _texture);
+				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, _textureDesc.getWidth());
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, _textureDesc.getHeight());
+				glPixelStorei(GL_UNPACK_ALIGNMENT, packWidth);
+				glTexSubImage2D(_target, 0, 0, 0, this->getTextureDesc().getWidth(), this->getTextureDesc().getHeight(), format, type, 0);
+
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 			}
 			else

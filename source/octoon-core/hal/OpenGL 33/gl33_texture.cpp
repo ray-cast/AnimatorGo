@@ -123,8 +123,6 @@ namespace octoon
 				else if (pixelSize == 8 || pixelSize == 16)
 					packWidth = 8;
 
-				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, width);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, height);
 				glPixelStorei(GL_UNPACK_ALIGNMENT, packWidth);
 
 				if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY)

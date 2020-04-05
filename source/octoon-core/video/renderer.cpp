@@ -292,10 +292,7 @@ namespace octoon::video
 					if (camera->getRenderToScreen())
 					{
 						auto& v = camera->getPixelViewport();
-						if (framebuffer)
-							this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
-						else
-							this->context_->blitFramebuffer(fbo_, v, nullptr, v);
+						this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
 					}
 
 					auto& swapFramebuffer = camera->getSwapFramebuffer();
@@ -665,16 +662,13 @@ namespace octoon::video
 			this->context_->setViewport(0, camera->getPixelViewport());
 
 			this->prepareLights(*camera, scene.getLights());
-			//this->prepareLightMaps(scene.getLights(), scene.getGeometries(), *camera);
+			this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
 			this->renderObjects(scene.getGeometries(), *camera);
 
 			if (camera->getRenderToScreen())
 			{
 				auto& v = camera->getPixelViewport();
-				if (framebuffer)
-					this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
-				else
-					this->context_->blitFramebuffer(fbo_, v, nullptr, v);
+				this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
 			}
 
 			auto& swapFramebuffer = camera->getSwapFramebuffer();

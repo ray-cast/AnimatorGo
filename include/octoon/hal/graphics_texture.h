@@ -33,11 +33,13 @@ namespace octoon
 			void setTexTiling(GraphicsImageTiling tiling) noexcept;
 			void setTexUsage(GraphicsViewUsageFlags flags) noexcept;
 			void setTexMultisample(std::uint32_t samples) noexcept;
+			void setUsageFlagBits(GraphicsUsageFlags flags) noexcept;
 
 			GraphicsFormat getTexFormat()  const noexcept;
 			GraphicsTextureDim getTexDim() const noexcept;
 			GraphicsImageTiling getTexTiling() const noexcept;
 			GraphicsViewUsageFlags getTexUsage() const noexcept;
+			GraphicsUsageFlags getUsageFlagBits() const noexcept;
 
 			const std::string& getName() const noexcept;
 
@@ -73,6 +75,7 @@ namespace octoon
 			GraphicsTextureDim _dim;
 			GraphicsImageTiling _tiling;
 			GraphicsViewUsageFlags _textureUsage;
+			GraphicsUsageFlags _usageFlags;
 
 			const void* _data;
 			std::size_t _dataSize;

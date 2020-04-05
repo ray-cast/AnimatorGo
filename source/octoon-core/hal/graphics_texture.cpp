@@ -16,6 +16,7 @@ namespace octoon
 			, _dim(GraphicsTextureDim::Texture2D)
 			, _textureUsage(GraphicsViewUsageFlagBits::SampledBit)
 			, _tiling(GraphicsImageTiling::Optimal)
+			, _usageFlags(GraphicsUsageFlagBits::ReadBit)
 			, _data(nullptr)
 			, _dataSize(0)
 			, _samples(0)
@@ -112,6 +113,12 @@ namespace octoon
 			_samples = samples;
 		}
 
+		void
+		GraphicsTextureDesc::setUsageFlagBits(GraphicsUsageFlags flags) noexcept
+		{
+			_usageFlags = flags;
+		}
+
 		GraphicsFormat
 		GraphicsTextureDesc::getTexFormat() const noexcept
 		{
@@ -140,6 +147,12 @@ namespace octoon
 		GraphicsTextureDesc::getTexMultisample() const noexcept
 		{
 			return _samples;
+		}
+
+		GraphicsUsageFlags
+		GraphicsTextureDesc::getUsageFlagBits() const noexcept
+		{
+			return _usageFlags;
 		}
 
 		void

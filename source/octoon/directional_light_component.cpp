@@ -7,7 +7,7 @@ namespace octoon
 	OctoonImplementSubInterface(DirectionalLightComponent, LightComponent, "DirectionalLight")
 
 	DirectionalLightComponent::DirectionalLightComponent() noexcept
-		: shadowBias_(-0.000015f)
+		: shadowBias_(-0.00002f)
 		, shadowRadius_(1.0f)
 		, shadowEnable_(false)
 		, shadowMapSize_(512, 512)

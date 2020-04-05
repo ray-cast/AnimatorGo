@@ -66,8 +66,8 @@ namespace octoon
 				}
 				else
 				{
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+					GL_CHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 				}
 
 				if (!applyMipmapLimit(target, mipBase, mipLevel))
@@ -255,15 +255,24 @@ namespace octoon
 			if (num == 0)
 				return false;
 
+			glBindTexture(_target, _texture);
+
 			if (_pbo == GL_NONE)
 				glGenBuffers(1, &_pbo);
 
-			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
+			if (this->getTextureDesc().getUsageFlagBits() & GraphicsUsageFlagBits::WriteBit)
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo);
+			else
+				glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
 
 			GLsizei mapSize = _textureDesc.getWidth() * _textureDesc.getHeight() * num;
 			if (_pboSize < mapSize)
 			{
-				glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_STREAM_READ);
+				if (this->getTextureDesc().getUsageFlagBits() & GraphicsUsageFlagBits::WriteBit)
+					glBufferData(GL_PIXEL_UNPACK_BUFFER, mapSize, nullptr, GL_DYNAMIC_DRAW);
+				else
+					glBufferData(GL_PIXEL_PACK_BUFFER, mapSize, nullptr, GL_DYNAMIC_DRAW);
+				
 				_pboSize = mapSize;
 			}
 
@@ -275,17 +284,25 @@ namespace octoon
 					this->getDevice()->downcast<GL33Device>()->message("Invalid texture internal format.");
 					return false;
 				}
-
-				glBindTexture(_target, _texture);
-				glReadPixels(x, y, w, h, format, type, 0);
-
-				*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+							
+				if (this->getTextureDesc().getUsageFlagBits() & GraphicsUsageFlagBits::WriteBit)
+					*data = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, mapSize, GL_MAP_WRITE_BIT);
+				else
+				{
+					glReadPixels(x, y, w, h, format, type, 0);
+					*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+				}
 			}
 			else
 			{
-				glBindTexture(_target, _texture);
-				glGetTexImage(_target, mipLevel, format, type, 0);
-				*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+				if (this->getTextureDesc().getUsageFlagBits() & GraphicsUsageFlagBits::WriteBit)
+					*data = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, mapSize, GL_MAP_WRITE_BIT);
+				else
+				{
+					glGetTexImage(_target, mipLevel, format, type, 0);
+					*data = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, mapSize, GL_MAP_READ_BIT);
+				}
+				
 				(std::uint8_t * &)* data += (y * _textureDesc.getWidth() * num) + x * num;
 			}
 
@@ -295,8 +312,18 @@ namespace octoon
 		void
 		GL33Texture::unmap() noexcept
 		{
-			glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
-			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+			if (this->getTextureDesc().getUsageFlagBits() & GraphicsUsageFlagBits::WriteBit)
+			{
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _pbo);
+				glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+			}
+			else
+			{
+				glBindBuffer(GL_PIXEL_PACK_BUFFER, _pbo);
+				glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+				glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+			}
 		}
 
 		GLenum

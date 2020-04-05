@@ -576,45 +576,35 @@ namespace octoon::video
 				{
 					lightmap = std::make_shared<bake::Lightmap>();
 					lightmap->setGeometry(*geometry);
+				}
 
-					for (auto& light : lights)
+				for (auto& light : lights)
+				{
+					if (camera.getLayer() != light->getLayer())
+						continue;
+
+					if (light->getVisible())
 					{
-						if (camera.getLayer() != light->getLayer())
-							continue;
-
-						if (light->getVisible())
-						{
-							if (light->isA<light::DirectionalLight>())
-								lightmap->renderLight(*light->downcast<light::DirectionalLight>());
-							/*else if (light->isA<light::EnvironmentLight>())
-								lightmap->renderLight(*light->downcast<light::EnvironmentLight>());*/
-						}
+						if (light->isA<light::DirectionalLight>())
+							lightmap->renderLight(*light->downcast<light::DirectionalLight>());
 					}
+				}
 
-					lightmap->render();
+				lightmap->render(camera);
 
-					auto& texture = lightTextures_[((std::intptr_t)geometry->getMesh().get())];
-					if (!texture)
-					{
-						GraphicsTextureDesc lightMapDesc;
-						lightMapDesc.setWidth(lightmap->width());
-						lightMapDesc.setHeight(lightmap->height());
-						lightMapDesc.setTexDim(GraphicsTextureDim::Texture2D);
-						lightMapDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
-						lightMapDesc.setStream(lightmap->fronBuffer().data());
-						lightMapDesc.setStreamSize(lightmap->fronBuffer().size() * sizeof(math::float3));
+				auto& texture = lightTextures_[((std::intptr_t)geometry->getMesh().get())];
+				if (!texture)
+				{
+					GraphicsTextureDesc lightMapDesc;
+					lightMapDesc.setWidth(lightmap->width());
+					lightMapDesc.setHeight(lightmap->height());
+					lightMapDesc.setTexDim(GraphicsTextureDim::Texture2D);
+					lightMapDesc.setTexFormat(GraphicsFormat::R32G32B32SFloat);
+					lightMapDesc.setUsageFlagBits(GraphicsUsageFlagBits::WriteBit);
+					lightMapDesc.setStream(lightmap->fronBuffer().data());
+					lightMapDesc.setStreamSize(lightmap->fronBuffer().size() * sizeof(math::float3));
 
-						texture = device_->createTexture(lightMapDesc);
-					}
-					else
-					{
-						void* data;
-						if (texture->map(0, 0, texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight(), 0, &data))
-						{
-							std::memcpy(data, lightmap->fronBuffer().data(), lightmap->fronBuffer().size() * sizeof(math::float3));
-							texture->unmap();
-						}
-					}
+					texture = device_->createTexture(lightMapDesc);
 
 					for (auto& it : geometry->getMaterials())
 					{
@@ -623,6 +613,15 @@ namespace octoon::video
 							auto material = it->downcast< material::MeshStandardMaterial>();
 							material->setLightMap(texture);
 						}
+					}
+				}
+				else
+				{
+					void* data;
+					if (texture->map(0, 0, texture->getTextureDesc().getWidth(), texture->getTextureDesc().getHeight(), 0, &data))
+					{
+						std::memcpy(data, lightmap->fronBuffer().data(), lightmap->fronBuffer().size() * sizeof(math::float3));
+						texture->unmap();
 					}
 				}
 			}
@@ -662,7 +661,7 @@ namespace octoon::video
 			this->context_->setViewport(0, camera->getPixelViewport());
 
 			this->prepareLights(*camera, scene.getLights());
-			this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
+			//this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
 			this->renderObjects(scene.getGeometries(), *camera);
 
 			if (camera->getRenderToScreen())

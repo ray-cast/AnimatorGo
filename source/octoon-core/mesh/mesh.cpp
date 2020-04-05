@@ -914,7 +914,7 @@ namespace octoon::mesh
 		std::vector<std::uint32_t> remap(totalIndices.size()); // allocate buffer for each vertex index
 		std::vector<std::uint32_t> outIndices(totalIndices.size()); // allocate buffer for each output uv
 
-		if (uvmapper::lightmappack<std::uint32_t>((float*)this->_vertices.data(), totalIndices.data(), totalIndices.size(), width, height, 2, remap.data(), (float*)uvs.data(), outIndices.data(), count))
+		if (uvmapper::lightmappack<std::uint32_t>((float*)this->_vertices.data(), totalIndices.data(), totalIndices.size(), width, height, 4, remap.data(), (float*)uvs.data(), outIndices.data(), count))
 		{
 			for (std::size_t i = 0; i < count; i++)
 				texcoords[remap[i]] = uvs[i];

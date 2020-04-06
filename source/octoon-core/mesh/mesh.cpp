@@ -373,10 +373,10 @@ namespace octoon::mesh
 		mesh->_boundingBox = this->_boundingBox;
 		mesh->_boundingBoxs = this->_boundingBoxs;
 
-		for (std::size_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
+		for (std::uint8_t i = 0; i < TEXTURE_ARRAY_COUNT; i++)
 			mesh->setTexcoordArray(this->getTexcoordArray(i), i);
 
-		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+		for (std::uint8_t i = 0; i < this->getNumSubsets(); i++)
 			mesh->setIndicesArray(this->getIndicesArray(i), i);
 
 		return mesh;
@@ -896,7 +896,7 @@ namespace octoon::mesh
 	}
 
 	void
-	Mesh::computeLightMap(std::size_t width, std::size_t height) noexcept
+	Mesh::computeLightMap(std::uint32_t width, std::uint32_t height) noexcept
 	{
 		std::vector<std::uint32_t> totalIndices;
 		std::vector<math::float2> texcoords(this->_vertices.size());

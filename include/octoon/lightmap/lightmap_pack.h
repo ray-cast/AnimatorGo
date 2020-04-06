@@ -289,21 +289,21 @@ namespace octoon
 			{
 				if (t1 && t2)
 				{
-					edge.x = 2 << ((int)std::round(std::log2((t1->w + t2->w) / 2)));
-					edge.y = 2 << ((int)std::round(std::log2((t1->h + t2->h))));
+					edge.x = _Tx(2 << ((int)std::round(std::log2((t1->w + t2->w) / 2))));
+					edge.y = _Tx(2 << ((int)std::round(std::log2((t1->h + t2->h)))));
 				}
 				else
 				{
 					if (t1)
 					{
-						edge.x = 2 << ((int)std::round(std::log2(t1->w)));
-						edge.y = 2 << ((int)std::round(std::log2(t1->h * 2)));
+						edge.x = _Tx(2 << ((int)std::round(std::log2(t1->w))));
+						edge.y = _Tx(2 << ((int)std::round(std::log2(t1->h * 2))));
 					}
 
 					if (t2)
 					{
-						edge.x = 2 << ((int)std::round(std::log2(t1->w)));
-						edge.y = 2 << ((int)std::round(std::log2(t1->h * 2)));
+						edge.x = _Tx(2 << ((int)std::round(std::log2(t1->w))));
+						edge.y = _Tx(2 << ((int)std::round(std::log2(t1->h * 2))));
 					}
 				}
 			}
@@ -475,7 +475,7 @@ namespace octoon
 			std::vector<quad_t> quad(indexCount / 6);
 			std::vector<triangle_t> tris(indexCount / 3);
 
-			for (size_type index = 0, i = 0; i < quad.size(); i++)
+			for (index_t index = 0, i = 0; i < quad.size(); i++)
 			{
 				auto v1 = *indices; indices++;
 				auto v2 = *indices; indices++;
@@ -574,7 +574,7 @@ namespace octoon
 				auto t1 = (quad_t*)a;
 				auto t2 = (quad_t*)b;
 				auto dh = t2->edge.y - t1->edge.y;
-				return dh != 0 ? dh : (t2->edge.x - t1->edge.x);
+				return int(dh != 0 ? dh : t2->edge.x - t1->edge.x);
 			});
 
 			auto processed = lightmappack2(quad, width, height, border, outUVs);

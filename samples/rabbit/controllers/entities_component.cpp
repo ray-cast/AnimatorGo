@@ -197,7 +197,7 @@ namespace rabbit
 		mainLight->addComponent<octoon::DirectionalLightComponent>();
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
-		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowMapSize(math::float2(2048, 2048));
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowMapSize(math::uint2(2048, 2048));
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowEnable(true);
 		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
 		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 60);

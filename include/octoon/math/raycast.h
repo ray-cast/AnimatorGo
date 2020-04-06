@@ -88,7 +88,7 @@ namespace octoon
 			float tmin = 0.0f;
 			float tmax = std::numeric_limits<float>::max();
 
-			for (int i = 0; i < 3; i++)
+			for (std::uint8_t i = 0; i < 3; i++)
 			{
 				if (std::abs(ray.normal[i]) < math::EPSILON_E5)
 				{

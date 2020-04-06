@@ -92,6 +92,23 @@ namespace octoon::light
 	}
 
 	void
+	SpotLight::setShadowMapSize(const math::uint2& size) noexcept
+	{
+		if (this->shadowSize_ != size)
+		{
+			if (this->shadowCamera_ && this->shadowEnable_)
+				this->shadowCamera_->setupFramebuffers(size.x, size.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+			this->shadowSize_ = size;
+		}
+	}
+
+	const math::uint2&
+	SpotLight::getShadowMapSize() const noexcept
+	{
+		return this->shadowSize_;
+	}
+
+	void
 	SpotLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
 	{
 		this->shadowCamera_ = camera;

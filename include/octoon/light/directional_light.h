@@ -21,8 +21,8 @@ namespace octoon::light
 		void setShadowRadius(float radius) noexcept;
 		float getShadowRadius() const noexcept;
 
-		void setShadowMapSize(const math::float2& size) noexcept;
-		const math::float2& getShadowMapSize() const noexcept;
+		void setShadowMapSize(const math::uint2& size) noexcept;
+		const math::uint2& getShadowMapSize() const noexcept;
 
 		void setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept;
 		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
@@ -44,7 +44,7 @@ namespace octoon::light
 
 		float shadowBias_;
 		float shadowRadius_;
-		math::float2 shadowSize_;
+		math::uint2 shadowSize_;
 
 		std::shared_ptr<camera::Camera> shadowCamera_;
 	};

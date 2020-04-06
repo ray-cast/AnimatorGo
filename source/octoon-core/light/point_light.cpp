@@ -9,6 +9,7 @@ namespace octoon::light
 		: shadowEnable_(false)
 		, shadowBias_(0.1f)
 		, shadowRadius_(1.0f)
+		, shadowSize_(512, 512)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
 		shadowCamera->setAperture(90.0f);
@@ -39,12 +40,6 @@ namespace octoon::light
 		return this->shadowEnable_;
 	}
 
-	const std::shared_ptr<camera::Camera>&
-	PointLight::getCamera() const noexcept
-	{
-		return this->shadowCamera_;
-	}
-
 	void
 	PointLight::setShadowBias(float bias) noexcept
 	{
@@ -67,6 +62,29 @@ namespace octoon::light
 	PointLight::getShadowRadius() const noexcept
 	{
 		return this->shadowRadius_;
+	}
+
+	void
+	PointLight::setShadowMapSize(const math::uint2& size) noexcept
+	{
+		if (this->shadowSize_ != size)
+		{
+			if (this->shadowCamera_ && this->shadowEnable_)
+				this->shadowCamera_->setupFramebuffers(size.x, size.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+			this->shadowSize_ = size;
+		}
+	}
+
+	const math::uint2&
+	PointLight::getShadowMapSize() const noexcept
+	{
+		return this->shadowSize_;
+	}
+
+	const std::shared_ptr<camera::Camera>&
+	PointLight::getCamera() const noexcept
+	{
+		return this->shadowCamera_;
 	}
 
 	std::shared_ptr<video::RenderObject>

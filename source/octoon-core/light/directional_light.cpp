@@ -62,7 +62,7 @@ namespace octoon::light
 	}
 
 	void
-	DirectionalLight::setShadowMapSize(const math::float2& size) noexcept
+	DirectionalLight::setShadowMapSize(const math::uint2& size) noexcept
 	{
 		if (this->shadowSize_ != size)
 		{
@@ -72,7 +72,7 @@ namespace octoon::light
 		}
 	}
 
-	const math::float2&
+	const math::uint2&
 	DirectionalLight::getShadowMapSize() const noexcept
 	{
 		return this->shadowSize_;

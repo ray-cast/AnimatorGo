@@ -85,7 +85,7 @@ namespace octoon::mesh
 		void computeTangents(std::uint8_t texSlot = 0) noexcept;
 		void computeTangentQuats(math::float4s& tangentQuat) const noexcept;
 		void computeBoundingBox() noexcept;
-		void computeLightMap(std::size_t width, std::size_t height) noexcept;
+		void computeLightMap(std::uint32_t width, std::uint32_t height) noexcept;
 
 		const math::BoundingBox& getBoundingBoxAll() const noexcept;
 		const math::BoundingBox& getBoundingBox(std::size_t n) const noexcept;

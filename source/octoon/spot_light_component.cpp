@@ -9,6 +9,7 @@ namespace octoon
 	SpotLightComponent::SpotLightComponent() noexcept
 		: shadowBias_(0.0f)
 		, shadowEnable_(false)
+		, shadowMapSize_(512, 512)
 	{
 	}
 
@@ -60,6 +61,20 @@ namespace octoon
 		return this->shadowBias_;
 	}
 
+	void
+	SpotLightComponent::setShadowMapSize(const math::uint2& size) noexcept
+	{
+		if (this->spotLight_)
+			this->spotLight_->setShadowMapSize(size);
+		this->shadowMapSize_ = size;
+	}
+
+	const math::uint2&
+	SpotLightComponent::getShadowMapSize() const noexcept
+	{
+		return this->shadowMapSize_;
+	}
+
 	GameComponentPtr
 	SpotLightComponent::clone() const noexcept
 	{
@@ -81,6 +96,7 @@ namespace octoon
 		spotLight_->setIntensity(this->getIntensity());
 		spotLight_->setShadowBias(this->getShadowBias());
 		spotLight_->setShadowEnable(this->getShadowEnable());
+		spotLight_->setShadowMapSize(this->getShadowMapSize());
 		spotLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);

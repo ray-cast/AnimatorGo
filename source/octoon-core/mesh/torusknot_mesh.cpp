@@ -18,11 +18,11 @@ namespace octoon::mesh
 		std::vector<math::float3> normals;
 		std::vector<math::float2> texcoords;
 
-		auto calculatePositionOnCurve = [](float u, float p, float q, float radius) {
+		auto calculatePositionOnCurve = [](float u, std::uint32_t p, std::uint32_t q, float radius) {
 
 			auto cu = std::cos(u);
 			auto su = std::sin(u);
-			auto quOverP = q / p * u;
+			auto quOverP = float(q) / p * u;
 			auto cs = std::cos(quOverP);
 
 			math::float3 position;
@@ -38,7 +38,7 @@ namespace octoon::mesh
 			auto u = float(i) / tubularSegments * p * math::PI_2;
 
 			auto P1 = calculatePositionOnCurve(u, p, q, radius);
-			auto P2 = calculatePositionOnCurve(u + 0.01, p, q, radius);
+			auto P2 = calculatePositionOnCurve(u + 0.01f, p, q, radius);
 
 			auto T = P2 - P1;
 			auto N = P2 + P1;
@@ -61,7 +61,7 @@ namespace octoon::mesh
 
 				vertices.push_back(vertex);
 				normals.push_back(math::normalize(vertex - P1));
-				texcoords.push_back(math::float2(i / tubularSegments, j / radialSegments));
+				texcoords.push_back(math::float2(float(i) / tubularSegments, float(j) / radialSegments));
 			}
 		}
 

@@ -9,6 +9,7 @@ namespace octoon
 	PointLightComponent::PointLightComponent() noexcept
 		: shadowBias_(0.0f)
 		, shadowEnable_(false)
+		, shadowMapSize_(512, 512)
 	{
 	}
 
@@ -58,6 +59,20 @@ namespace octoon
 	PointLightComponent::getShadowBias() const noexcept
 	{
 		return this->shadowBias_;
+	}
+
+	void
+	PointLightComponent::setShadowMapSize(const math::uint2& size) noexcept
+	{
+		if (this->pointLight_)
+			this->pointLight_->setShadowMapSize(size);
+		this->shadowMapSize_ = size;
+	}
+
+	const math::uint2&
+	PointLightComponent::getShadowMapSize() const noexcept
+	{
+		return this->shadowMapSize_;
 	}
 
 	GameComponentPtr

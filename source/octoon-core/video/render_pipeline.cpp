@@ -2043,7 +2043,7 @@ namespace octoon::video
 		std::string fragmentShader = "#version 330\n\t";
 		fragmentShader += "layout(location  = 0) out vec4 fragColor;\n";
 		fragmentShader += "uniform mat4 viewMatrix;\n";
-		fragmentShader += "#define TONE_MAPPING\n";
+		//fragmentShader += "#define TONE_MAPPING\n";
 		fragmentShader += "#define USE_ENVMAP\n";
 		fragmentShader += "#define ENVMAP_TYPE_LATLONG_UV\n";
 		fragmentShader += "#define ENVMAP_MODE_REFLECTION\n";

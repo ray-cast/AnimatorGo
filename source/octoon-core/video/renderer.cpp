@@ -11,6 +11,7 @@
 #include <octoon/light/environment_light.h>
 #include <octoon/light/tube_light.h>
 
+#include <octoon/material/mesh_depth_material.h>
 #include <octoon/material/mesh_standard_material.h>
 
 #include <octoon/runtime/except.h>
@@ -40,7 +41,7 @@ namespace octoon::video
 	Renderer::setup(const GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except
 	{
 		device_ = device;
-
+		depthMaterial_ = material::MeshDepthMaterial::create();
 		this->setFramebufferSize(w, h);
 	}
 
@@ -235,7 +236,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept
+	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
 		if (camera.getLayer() != geometry.getLayer())
 			return;
@@ -244,7 +245,7 @@ namespace octoon::video
 		{
 			for (std::size_t i = 0; i < geometry.getMaterials().size(); i++)
 			{
-				if (!this->setProgram(this->overrideMaterial_ ? this->overrideMaterial_ : geometry.getMaterials()[i], camera, geometry))
+				if (!this->setProgram(overrideMaterial ? overrideMaterial : geometry.getMaterials()[i], camera, geometry))
 					return;
 
 				if (!this->setBuffer(geometry.getMesh(), i))
@@ -260,14 +261,14 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera) noexcept
+	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
 		for (auto& geometry : geometries)
-			this->renderObject(*geometry, camera);
+			this->renderObject(*geometry, camera, overrideMaterial);
 	}
 
 	void
-	Renderer::prepareShadowMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& objects) noexcept
+	Renderer::prepareShadowMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
 	{
 		for (auto& light : lights)
 		{
@@ -287,7 +288,12 @@ namespace octoon::video
 					this->context_->setViewport(0, camera->getPixelViewport());
 
 					this->prepareLights(*camera, lights);
-					this->renderObjects(objects, *directionalLight->getCamera());
+
+					for (auto& geometry : geometries)
+					{
+						if (geometry->getMaterial()->getPrimitiveType() == this->depthMaterial_->getPrimitiveType())
+							this->renderObject(*geometry, *camera, this->depthMaterial_);
+					}
 
 					if (camera->getRenderToScreen())
 					{
@@ -356,7 +362,7 @@ namespace octoon::video
 						viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
 						viewport.translate(math::float3(0.5f, 0.5f, 0.5f));
 
-						this->profile_.light.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						this->profile_.light.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
 						this->profile_.light.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
 					}
 
@@ -383,7 +389,7 @@ namespace octoon::video
 						spotLight.shadowRadius = it->getShadowRadius();
 						spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
 
-						this->profile_.light.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						this->profile_.light.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
 					}
 
 					this->profile_.light.spotLights.emplace_back(spotLight);
@@ -406,7 +412,7 @@ namespace octoon::video
 						pointLight.shadowRadius = it->getShadowRadius();
 						pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
 
-						this->profile_.light.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getDepthStencilAttachment().getBindingTexture());
+						this->profile_.light.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
 					}
 
 					this->profile_.light.pointLights.emplace_back(pointLight);
@@ -662,7 +668,7 @@ namespace octoon::video
 
 			this->prepareLights(*camera, scene.getLights());
 			//this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
-			this->renderObjects(scene.getGeometries(), *camera);
+			this->renderObjects(scene.getGeometries(), *camera, this->overrideMaterial_);
 
 			if (camera->getRenderToScreen())
 			{

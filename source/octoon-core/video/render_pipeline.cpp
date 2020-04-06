@@ -1573,7 +1573,7 @@ static char* shadowmap_pars_fragment = R"(
 
 	float texture2DCompare( sampler2D depths, vec2 uv, float compare ) {
 
-		return step( compare, texture2D( depths, uv ).r );
+		return step( compare, unpackRGBAToDepth(texture2D( depths, uv )));
 
 	}
 
@@ -2145,15 +2145,7 @@ namespace octoon::video
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "POSITION", 0, hal::GraphicsFormat::R32G32B32SFloat));
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "NORMAL", 0, hal::GraphicsFormat::R32G32B32SFloat));
 			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 0, hal::GraphicsFormat::R32G32SFloat));
-
-			for (auto& it : this->program_->getActiveAttributes())
-			{
-				if (it->getSemantic() == "TEXCOORD" && it->getSemanticIndex() == 1)
-				{
-					layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 1, hal::GraphicsFormat::R32G32SFloat));
-					break;
-				}
-			}
+			layoutDesc.addVertexLayout(hal::GraphicsVertexLayout(0, "TEXCOORD", 1, hal::GraphicsFormat::R32G32SFloat));
 
 			layoutDesc.addVertexBinding(hal::GraphicsVertexBinding(0, layoutDesc.getVertexSize()));
 

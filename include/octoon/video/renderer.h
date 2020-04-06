@@ -87,8 +87,8 @@ namespace octoon::video
 		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
 
 		void render(RenderScene& scene) noexcept;
-		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera) noexcept;
-		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera) noexcept;
+		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
+		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
@@ -122,6 +122,7 @@ namespace octoon::video
 		RenderProfile profile_;
 
 		std::shared_ptr<RenderBuffer> currentBuffer_;
+		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;

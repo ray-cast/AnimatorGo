@@ -2,7 +2,7 @@
 
 static const char* depth_vert = R"(
 #include <common>
-out float3 vViewPosition;
+out vec3 vViewPosition;
 void main() {
 #include <begin_vertex>
 #include <project_vertex>
@@ -11,7 +11,7 @@ vViewPosition = -mvPosition.xyz;
 static const char* depth_frag = R"(
 #include <common>
 #include <packing>
-in float3 vViewPosition;
+in vec3 vViewPosition;
 void main() {
 	fragColor = packDepthToRGBA( gl_FragCoord.z );
 })";

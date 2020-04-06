@@ -9,7 +9,7 @@ namespace octoon
 	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCamera")
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
-		: speed_(1.0f)
+		: speed_(0.5f)
 		, wheelSpeed_(2.0f)
 		, gravity_(15)
 		, maxVelocityChange_(1.0)

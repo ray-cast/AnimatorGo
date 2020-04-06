@@ -11,7 +11,7 @@ namespace octoon
     {
         PhysxCapsuleShape::PhysxCapsuleShape(PhysxContext* context, float radius, float height)
 			: px_shape(nullptr)
-			, context_(context)
+			, renderer_(context)
 		{
 			physx::PxCapsuleGeometry geometry(radius, height*0.5f);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);

@@ -11,7 +11,7 @@ namespace octoon
     {
         PhysxBoxShape::PhysxBoxShape(PhysxContext* context, float hx, float hy, float hz)
 			:px_shape(nullptr)
-			, context_(context)
+			, renderer_(context)
 		{
 			physx::PxBoxGeometry geometry(hx*0.5f, hy*0.5f, hz*0.5f);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);

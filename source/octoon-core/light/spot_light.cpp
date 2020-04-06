@@ -6,14 +6,14 @@ namespace octoon::light
 	OctoonImplementSubClass(SpotLight, Light, "SpotLight")
 
 	SpotLight::SpotLight() noexcept
-		: _spotInnerCone(5.0f, math::cos(math::radians(5.0f)))
-		, _spotOuterCone(40.0f, math::cos(math::radians(40.0f)))
+		: innerCone_(5.0f, math::cos(math::radians(5.0f)))
+		, outerCone_(40.0f, math::cos(math::radians(40.0f)))
 		, shadowEnable_(false)
 		, shadowBias_(0.1f)
 		, shadowRadius_(1.0f)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
-		shadowCamera->setAperture(_spotOuterCone.x);
+		shadowCamera->setAperture(outerCone_.x);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
 		shadowCamera->setOwnerListener(this);
@@ -26,27 +26,27 @@ namespace octoon::light
 	void
 	SpotLight::setInnerCone(float value) noexcept
 	{
-		_spotInnerCone.x = math::min(_spotOuterCone.x, value);
-		_spotInnerCone.y = math::cos(math::radians(_spotInnerCone.x));
+		innerCone_.x = math::min(outerCone_.x, value);
+		innerCone_.y = math::cos(math::radians(innerCone_.x));
 	}
 
 	void
 	SpotLight::setOuterCone(float value) noexcept
 	{
-		_spotOuterCone.x = math::max(_spotInnerCone.x, value);
-		_spotOuterCone.y = math::cos(math::radians(_spotOuterCone.x));
+		outerCone_.x = math::max(innerCone_.x, value);
+		outerCone_.y = math::cos(math::radians(outerCone_.x));
 	}
 
 	const math::float2&
 	SpotLight::getInnerCone() const noexcept
 	{
-		return _spotInnerCone;
+		return innerCone_;
 	}
 
 	const math::float2&
 	SpotLight::getOuterCone() const noexcept
 	{
-		return _spotOuterCone;
+		return outerCone_;
 	}
 
 	void

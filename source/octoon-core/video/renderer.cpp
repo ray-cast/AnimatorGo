@@ -55,7 +55,7 @@ namespace octoon::video
 		currentBuffer_.reset();
 		colorTexture_.reset();
 		depthTexture_.reset();
-		context_.reset();
+		renderer_.reset();
 		device_.reset();
 	}
 
@@ -99,13 +99,13 @@ namespace octoon::video
 	void
 	Renderer::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
 	{
-		this->context_ = context;
+		this->renderer_ = context;
 	}
 	
 	const hal::GraphicsContextPtr&
 	Renderer::getGraphicsContext() const noexcept(false)
 	{
-		return this->context_;
+		return this->renderer_;
 	}
 
 	void
@@ -214,25 +214,25 @@ namespace octoon::video
 	void
 	Renderer::setViewport(const math::float4& viewport) noexcept(false)
 	{
-		this->context_->setViewport(0, viewport);
+		this->renderer_->setViewport(0, viewport);
 	}
 
 	void
 	Renderer::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false)
 	{
-		this->context_->setFramebuffer(framebuffer);
+		this->renderer_->setFramebuffer(framebuffer);
 	}
 
 	void
 	Renderer::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept
 	{
-		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
+		this->renderer_->clearFramebuffer(i, flags, color, depth, stencil);
 	}
 
 	void
 	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
 	{
-		this->context_->generateMipmap(texture);
+		this->renderer_->generateMipmap(texture);
 	}
 
 	void
@@ -253,9 +253,9 @@ namespace octoon::video
 
 				auto indices = currentBuffer_->getNumIndices(i);
 				if (indices > 0)
-					this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
+					this->renderer_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
 				else
-					this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
+					this->renderer_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
 			}
 		}
 	}
@@ -275,39 +275,65 @@ namespace octoon::video
 			if (!light->getVisible())
 				continue;
 
+			std::uint32_t faceCount = 0;
+			std::shared_ptr<camera::Camera> camera;
+
 			if (light->isA<light::DirectionalLight>())
 			{
 				auto directionalLight = light->cast<light::DirectionalLight>();
 				if (directionalLight->getShadowEnable())
 				{
-					auto camera = directionalLight->getCamera();
-					auto framebuffer = camera->getFramebuffer();
+					faceCount = 1;
+					camera = directionalLight->getCamera();
+				}
+			}
+			else if (light->isA<light::SpotLight>())
+			{
+				auto spotLight = light->cast<light::SpotLight>();
+				if (spotLight->getShadowEnable())
+				{
+					faceCount = 1;
+					camera = spotLight->getCamera();
+				}
+			}
+			else if (light->isA<light::PointLight>())
+			{
+				auto pointLight = light->cast<light::PointLight>();
+				if (pointLight->getShadowEnable())
+				{
+					faceCount = 6;
+					camera = pointLight->getCamera();
+				}
+			}
 
-					this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
-					this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-					this->context_->setViewport(0, camera->getPixelViewport());
+			for (std::uint32_t face = 0; face < faceCount; face++)
+			{
+				auto framebuffer = camera->getFramebuffer();
 
-					this->prepareLights(*camera, lights);
+				this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+				this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+				this->renderer_->setViewport(0, camera->getPixelViewport());
 
-					for (auto& geometry : geometries)
-					{
-						if (geometry->getMaterial()->getPrimitiveType() == this->depthMaterial_->getPrimitiveType())
-							this->renderObject(*geometry, *camera, this->depthMaterial_);
-					}
+				this->prepareLights(*camera, lights);
 
-					if (camera->getRenderToScreen())
-					{
-						auto& v = camera->getPixelViewport();
-						this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
-					}
+				for (auto& geometry : geometries)
+				{
+					if (geometry->getMaterial()->getPrimitiveType() == this->depthMaterial_->getPrimitiveType())
+						this->renderObject(*geometry, *camera, this->depthMaterial_);
+				}
 
-					auto& swapFramebuffer = camera->getSwapFramebuffer();
-					if (swapFramebuffer && framebuffer)
-					{
-						math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-						math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-						this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-					}
+				if (camera->getRenderToScreen())
+				{
+					auto& v = camera->getPixelViewport();
+					this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+				}
+
+				auto& swapFramebuffer = camera->getSwapFramebuffer();
+				if (swapFramebuffer && framebuffer)
+				{
+					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
+					this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 				}
 			}
 		}
@@ -662,9 +688,9 @@ namespace octoon::video
 		for (auto& camera : scene.getCameraList())
 		{
 			auto framebuffer = camera->getFramebuffer();
-			this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
-			this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-			this->context_->setViewport(0, camera->getPixelViewport());
+			this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+			this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+			this->renderer_->setViewport(0, camera->getPixelViewport());
 
 			this->prepareLights(*camera, scene.getLights());
 			//this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
@@ -673,7 +699,7 @@ namespace octoon::video
 			if (camera->getRenderToScreen())
 			{
 				auto& v = camera->getPixelViewport();
-				this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+				this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
 			}
 
 			auto& swapFramebuffer = camera->getSwapFramebuffer();
@@ -681,7 +707,7 @@ namespace octoon::video
 			{
 				math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
 				math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-				this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+				this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 			}
 		}
 
@@ -780,8 +806,8 @@ namespace octoon::video
 			if (!buffer)
 				buffer = std::make_shared<RenderBuffer>(mesh);
 
-			this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-			this->context_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+			this->renderer_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
+			this->renderer_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
 
 			this->currentBuffer_ = buffer;
 
@@ -804,8 +830,8 @@ namespace octoon::video
 
 			pipeline->update(camera, geometry, this->profile_);
 
-			this->context_->setRenderPipeline(pipeline->getPipeline());
-			this->context_->setDescriptorSet(pipeline->getDescriptorSet());
+			this->renderer_->setRenderPipeline(pipeline->getPipeline());
+			this->renderer_->setDescriptorSet(pipeline->getDescriptorSet());
 
 			return true;
 		}

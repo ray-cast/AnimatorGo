@@ -46,8 +46,8 @@ namespace octoon::light
 		float shadowRadius_;
 
 		math::uint2 shadowSize_;
-		math::float2 _spotInnerCone;
-		math::float2 _spotOuterCone;
+		math::float2 innerCone_;
+		math::float2 outerCone_;
 
 		std::shared_ptr<camera::Camera> shadowCamera_;
 	};

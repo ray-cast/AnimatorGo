@@ -45,7 +45,7 @@ namespace octoon
 			PhysxSphereShape(const PhysxSphereShape&) noexcept = delete;
 			PhysxSphereShape& operator=(const PhysxSphereShape&) noexcept = delete;
 		private:
-			PhysicsContext* context_;
+			PhysicsContext* renderer_;
 			physx::PxShape* px_shape;
 			physx::PxMaterial* px_material;
 		};

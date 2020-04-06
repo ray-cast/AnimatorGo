@@ -70,7 +70,7 @@ namespace octoon
 			PhysxConfigurableJoint& operator=(const PhysxConfigurableJoint&) = delete;
 
 		private:
-			PhysxContext* context_;
+			PhysxContext* renderer_;
 			physx::PxD6Joint* joint_;
 		};
 	}

@@ -117,7 +117,7 @@ namespace octoon::video
 		hal::GraphicsTexturePtr depthTexture_;
 
 		hal::GraphicsDevicePtr device_;
-		hal::GraphicsContextPtr context_;
+		hal::GraphicsContextPtr renderer_;
 
 		RenderProfile profile_;
 

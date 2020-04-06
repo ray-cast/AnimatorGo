@@ -8,8 +8,7 @@ namespace octoon
 	namespace physics
 	{
 		PhysxConfigurableJoint::PhysxConfigurableJoint(PhysxContext* context) noexcept
-			: renderer_(context)
-			, joint_(nullptr)
+			: joint_(nullptr)
 		{
 		}
 

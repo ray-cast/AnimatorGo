@@ -12,7 +12,6 @@ namespace octoon
     {
         PhysxSphereShape::PhysxSphereShape(PhysxContext* context, float radius)
 			:px_shape(nullptr)
-			, renderer_(context)
 		{
 			physx::PxSphereGeometry geometry(radius);
 			px_material = context->getPxPhysics()->createMaterial(0.f, 0.f, 0.f);

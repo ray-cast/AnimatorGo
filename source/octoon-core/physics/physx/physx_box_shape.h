@@ -51,7 +51,6 @@ namespace octoon
 			float height_;
 			float depth_;
 
-			PhysicsContext* renderer_;
 			physx::PxShape* px_shape;
 			physx::PxMaterial* px_material;
 		};

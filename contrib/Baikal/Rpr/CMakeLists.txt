@@ -49,11 +49,12 @@ source_group("Utils" FILES ${UTILS_SOURCES})
 
 list(APPEND SOURCES ${WRAP_OBJECT_SOURCES} ${UTILS_SOURCES})
 
+find_package(GLEW REQUIRED)
 add_library(RadeonProRender64 SHARED ${SOURCES})
 target_compile_definitions(RadeonProRender64 PRIVATE RPR_EXPORT_API)
 target_compile_features(RadeonProRender64 PRIVATE cxx_std_14)
 target_include_directories(RadeonProRender64 PUBLIC ${Baikal_SOURCE_DIR}/Rpr)
-target_link_libraries(RadeonProRender64 PUBLIC Baikal OpenGL::GL glew)
+target_link_libraries(RadeonProRender64 PUBLIC Baikal OpenGL::GL GLEW::GLEW)
 
 if(BAIKAL_ENABLE_IO)
     target_link_libraries(RadeonProRender64 PUBLIC BaikalIO)

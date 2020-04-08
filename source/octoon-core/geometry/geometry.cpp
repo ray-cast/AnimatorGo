@@ -19,6 +19,7 @@ namespace octoon::geometry
 	void
 	Geometry::setReceiveShadow(bool enable) noexcept
 	{
+		this->setDirty(true);
 		isReceiveShadow_ = enable;
 	}
 
@@ -31,6 +32,7 @@ namespace octoon::geometry
 	void
 	Geometry::setCastShadow(bool value) noexcept
 	{
+		this->setDirty(true);
 		isCastShadow_ = value;
 	}
 
@@ -43,6 +45,7 @@ namespace octoon::geometry
 	void
 	Geometry::setGlobalIllumination(bool enable) noexcept
 	{
+		this->setDirty(true);
 		this->isGlobalIllumination_ = enable;
 	}
 	
@@ -55,12 +58,14 @@ namespace octoon::geometry
 	void
 	Geometry::setMesh(std::shared_ptr<mesh::Mesh>&& mesh) noexcept
 	{
+		this->setDirty(true);
 		this->mesh_ = std::move(mesh);
 	}
 
 	void
 	Geometry::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept
 	{
+		this->setDirty(true);
 		this->mesh_ = mesh;
 	}
 
@@ -73,6 +78,7 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterial(std::shared_ptr<material::Material>&& material) noexcept
 	{
+		this->setDirty(true);
 		this->materials_.clear();
 		this->materials_.push_back(std::move(material));
 	}
@@ -80,6 +86,7 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
+		this->setDirty(true);
 		this->materials_.clear();
 		this->materials_.push_back(material);
 	}
@@ -94,12 +101,14 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterials(std::vector<std::shared_ptr<material::Material>>&& materials) noexcept
 	{
+		this->setDirty(true);
 		materials_ = std::move(materials);
 	}
 
 	void
 	Geometry::setMaterials(const std::vector<std::shared_ptr<material::Material>>& materials) noexcept
 	{
+		this->setDirty(true);
 		materials_ = materials;
 	}
 

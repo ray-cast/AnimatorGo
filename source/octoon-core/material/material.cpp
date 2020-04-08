@@ -65,6 +65,7 @@ namespace octoon::material
 	Material::setName(std::string_view name) noexcept
 	{
 		this->name_ = name;
+		this->setDirty(true);
 	}
 
 	const std::string&

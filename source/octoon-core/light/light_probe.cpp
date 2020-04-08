@@ -21,6 +21,7 @@ namespace octoon::light
 	LightProbe::setCoeff(const math::SH9& sh) noexcept
 	{
 		sh_ = sh;
+		this->setDirty(true);
 	}
 
 	const math::SH9&

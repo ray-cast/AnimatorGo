@@ -40,6 +40,7 @@ namespace octoon::video
 			else
 				this->onDeactivate();
 
+			this->setDirty(true);
 			active_ = active;
 		}
 	}
@@ -104,6 +105,7 @@ namespace octoon::video
 	void
 	RenderObject::setOwnerListener(RenderListener* listener) noexcept
 	{
+		this->setDirty(true);
 		renderListener_ = listener;
 	}
 
@@ -116,6 +118,7 @@ namespace octoon::video
 	void
 	RenderObject::setBoundingBox(const math::BoundingBox& bound) noexcept
 	{
+		this->setDirty(true);
 		boundingBox_ = bound;
 	}
 

@@ -9,9 +9,7 @@
 #pragma warning(pop)
 
 #include <octoon/io/http_buf.h>
-#include <octoon/offline_camera_component.h>
 #include <octoon/perspective_camera_component.h>
-#include <octoon/offline_skinned_mesh_renderer_component.h>
 
 namespace rabbit
 {

@@ -62,6 +62,9 @@ namespace octoon::video
 		void setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false);
 		const hal::GraphicsContextPtr& getGraphicsContext() const noexcept(false);
 
+		void setGlobalIllumination(bool enable) noexcept;
+		bool getGlobalIllumination() const noexcept;
+
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
 
@@ -110,6 +113,7 @@ namespace octoon::video
 
 	private:
 		bool sortObjects_;
+		bool enableGlobalIllumination_;
 
 		std::uint32_t width_, height_;
 

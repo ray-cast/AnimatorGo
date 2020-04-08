@@ -77,6 +77,18 @@ namespace octoon
 	}
 
 	void
+	VideoFeature::setGlobalIllumination(bool enable) noexcept
+	{
+		video::Renderer::instance()->setGlobalIllumination(enable);
+	}
+
+	bool
+	VideoFeature::getGlobalIllumination() const noexcept
+	{
+		return video::Renderer::instance()->getGlobalIllumination();
+	}
+
+	void
 	VideoFeature::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
 		video::Renderer::instance()->setOverrideMaterial(material);

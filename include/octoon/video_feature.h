@@ -18,6 +18,9 @@ namespace octoon
 		void setMainCamera(CameraComponent* camera) noexcept;
 		CameraComponent* getMainCamera() const noexcept;
 
+		void setGlobalIllumination(bool enable) noexcept;
+		bool getGlobalIllumination() const noexcept;
+
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 

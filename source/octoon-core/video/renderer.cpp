@@ -29,6 +29,7 @@ namespace octoon::video
 		, colorTexture_(0)
 		, depthTexture_(0)
 		, sortObjects_(true)
+		, enableGlobalIllumination_(true)
 	{
 	}
 
@@ -108,6 +109,18 @@ namespace octoon::video
 	Renderer::getGraphicsContext() const noexcept(false)
 	{
 		return this->renderer_;
+	}
+
+	void
+	Renderer::setGlobalIllumination(bool enable) noexcept
+	{
+		enableGlobalIllumination_ = enable;
+	}
+
+	bool
+	Renderer::getGlobalIllumination() const noexcept
+	{
+		return this->enableGlobalIllumination_;
 	}
 
 	void
@@ -685,40 +698,48 @@ namespace octoon::video
 			scene.sortGeometries();
 		}
 
-		this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
-
-		for (auto& camera : scene.getCameras())
+		if (this->enableGlobalIllumination_)
 		{
-			/*this->montecarlo_->render(
-				*camera,
-				scene.getLights(),
-				scene.getGeometries(),
-				0,
-				camera->getPixelViewport().x,
-				camera->getPixelViewport().y,
-				camera->getPixelViewport().width,
-				camera->getPixelViewport().height);*/
-
-			auto framebuffer = camera->getFramebuffer();
-			this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
-			this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-			this->renderer_->setViewport(0, camera->getPixelViewport());
-
-			this->prepareLights(*camera, scene.getLights());
-			this->renderObjects(scene.getGeometries(), *camera, this->overrideMaterial_);
-
-			if (camera->getRenderToScreen())
+			for (auto& camera : scene.getCameras())
 			{
-				auto& v = camera->getPixelViewport();
-				this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+				this->montecarlo_->render(
+					*camera,
+					scene.getLights(),
+					scene.getGeometries(),
+					0,
+					camera->getPixelViewport().x,
+					camera->getPixelViewport().y,
+					camera->getPixelViewport().width,
+					camera->getPixelViewport().height);
 			}
+		}
+		else
+		{
+			this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
 
-			auto& swapFramebuffer = camera->getSwapFramebuffer();
-			if (framebuffer && swapFramebuffer)
+			for (auto& camera : scene.getCameras())
 			{
-				math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-				math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-				this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+				auto framebuffer = camera->getFramebuffer();
+				this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+				this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+				this->renderer_->setViewport(0, camera->getPixelViewport());
+
+				this->prepareLights(*camera, scene.getLights());
+				this->renderObjects(scene.getGeometries(), *camera, this->overrideMaterial_);
+
+				if (camera->getRenderToScreen())
+				{
+					auto& v = camera->getPixelViewport();
+					this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+				}
+
+				auto& swapFramebuffer = camera->getSwapFramebuffer();
+				if (framebuffer && swapFramebuffer)
+				{
+					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
+					this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+				}
 			}
 		}
 

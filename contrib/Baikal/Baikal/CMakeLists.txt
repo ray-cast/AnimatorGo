@@ -204,16 +204,12 @@ file(TO_NATIVE_PATH ${Baikal_SOURCE_DIR}/${BAIKAL_KERNELS_DIR} BAIKAL_KERNELS_SR
 file(TO_NATIVE_PATH ${PROJECT_BINARY_DIR}/${BAIKAL_KERNELS_DIR} BAIKAL_KERNELS_DST)
 
 if (WIN32)
-    add_custom_target(BaikalKernelsDir ALL
-        COMMAND IF NOT EXIST ${BAIKAL_KERNELS_DST} mklink /D ${BAIKAL_KERNELS_DST} ${BAIKAL_KERNELS_SRC}
-    )
+    add_custom_target(BaikalKernelsDir ALL COMMAND IF NOT EXIST ${BAIKAL_KERNELS_DST} mklink /D ${BAIKAL_KERNELS_DST} ${BAIKAL_KERNELS_SRC})
 else ()
-    add_custom_target(BaikalKernelsDir ALL
-        COMMAND ${CMAKE_COMMAND} -E create_symlink ${BAIKAL_KERNELS_SRC} ${BAIKAL_KERNELS_DST}
-    )
+    add_custom_target(BaikalKernelsDir ALL COMMAND ${CMAKE_COMMAND} -E create_symlink ${BAIKAL_KERNELS_SRC} ${BAIKAL_KERNELS_DST})
 endif ()
 
-add_dependencies(Baikal BaikalKernelsDir ResourcesDir)
+add_dependencies(Baikal BaikalKernelsDir)
 
 # Install target
 if (WIN32)

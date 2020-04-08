@@ -13,7 +13,6 @@
 #include <octoon/video/render_buffer.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_context.h>
-#include <octoon/video/montecarlo.h>
 
 #include <octoon/lightmap/lightmap.h>
 
@@ -125,7 +124,8 @@ namespace octoon::video
 		hal::GraphicsContextPtr renderer_;
 
 		RenderProfile profile_;
-		std::shared_ptr<MonteCarlo> montecarlo_;
+		std::unique_ptr<class MonteCarlo> montecarlo_;
+		std::unique_ptr<class RtxManager> rtxManager_;
 
 		std::shared_ptr<RenderBuffer> currentBuffer_;
 		std::shared_ptr<material::Material> depthMaterial_;

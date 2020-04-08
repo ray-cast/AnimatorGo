@@ -1,6 +1,4 @@
 set(CONTROLLERS_SOURCES
-    Controllers/clw_scene_controller.cpp
-    Controllers/clw_scene_controller.h
     Controllers/scene_controller.h
     Controllers/scene_controller.inl
     Controllers/scene_controller.cpp)
@@ -11,11 +9,9 @@ set(ESTIMATORS_SOURCES
     Estimators/path_tracing_estimator.h)
 
 set(OUTPUT_SOURCES
-    Output/clwoutput.h
     Output/output.h)
     
 set(POSTEFFECT_SOURCES
-    PostEffects/clw_post_effect.h
     PostEffects/post_effect.h
     PostEffects/bilateral_denoiser.h
     PostEffects/wavelet_denoiser.h
@@ -30,12 +26,9 @@ set(RENDERERS_SOURCES
     Renderers/renderer.h)
 
 set(RENDERFACTORY_SOURCES
-    RenderFactory/clw_render_factory.cpp
-    RenderFactory/clw_render_factory.h
     RenderFactory/render_factory.h)
 
 set(UTILS_SOURCES
-    Utils/clw_class.h
     Utils/distribution1d.cpp
     Utils/distribution1d.h
     Utils/eLut.h
@@ -66,7 +59,6 @@ set(UTILS_SOURCES
 set(SCENEGRAPH_SOURCES
     SceneGraph/camera.cpp
     SceneGraph/camera.h
-    SceneGraph/clwscene.h
     SceneGraph/iterator.h
     SceneGraph/light.cpp
     SceneGraph/light.h
@@ -88,10 +80,6 @@ set(SCENEGRAPH_SOURCES
 set(SCENEGRAPH_COLLECTOR_SOURCES
     SceneGraph/Collector/collector.cpp
     SceneGraph/Collector/collector.h)
-       
-set(XML_SOURCES
-    XML/tinyxml2.cpp
-    XML/tinyxml2.h)
 
 set(KERNELS_SOURCES
     Kernels/CL/bxdf.cl
@@ -121,6 +109,17 @@ set(KERNELS_SOURCES
     Kernels/CL/fill_aovs_uberv2.cl
     )
 
+set(CLW_SOURCES
+    Controllers/clw_scene_controller.cpp
+    Controllers/clw_scene_controller.h
+    PostEffects/clw_post_effect.h
+    Output/clwoutput.h
+    RenderFactory/clw_render_factory.cpp
+    RenderFactory/clw_render_factory.h
+    Utils/clw_class.h
+    SceneGraph/clwscene.h
+    )
+
 set(SOURCES
     ${CONTROLLERS_SOURCES}
     ${ESTIMATORS_SOURCES}
@@ -132,10 +131,11 @@ set(SOURCES
     ${SCENEGRAPH_SOURCES}
     ${SCENEGRAPH_COLLECTOR_SOURCES}
     ${SCENEGRAPH_IO_SOURCES}
-    ${XML_SOURCES}
     ${KERNELS_SOURCES}
+    ${CLW_SOURCES}
     )
-    
+
+source_group("CLW" FILES ${CLW_SOURCES})    
 source_group("Controllers" FILES ${CONTROLLERS_SOURCES})
 source_group("Estimators" FILES ${ESTIMATORS_SOURCES})
 source_group("Output" FILES ${OUTPUT_SOURCES})
@@ -145,7 +145,6 @@ source_group("RenderFactory" FILES ${RENDERFACTORY_SOURCES})
 source_group("Utils" FILES ${UTILS_SOURCES})
 source_group("SceneGraph" FILES ${SCENEGRAPH_SOURCES})
 source_group("SceneGraph\\Collector" FILES ${SCENEGRAPH_COLLECTOR_SOURCES})
-source_group("XML" FILES ${XML_SOURCES})
 source_group("Kernels\\CL" FILES ${KERNELS_SOURCES})
 
 # Set CMAKE_EXPORT_ALL_SYMBOLS flag for exporting dll

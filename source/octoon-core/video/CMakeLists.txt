@@ -20,9 +20,39 @@ SET(VIDEO_FORWARE_LIST
 	${SOURCE_PATH}/render_buffer.cpp
 	${HEADER_PATH}/render_context.h
 	${SOURCE_PATH}/render_context.cpp
-	${HEADER_PATH}/montecarlo.h
-	${SOURCE_PATH}/montecarlo.cpp
 )
-SOURCE_GROUP(renderer\\internal FILES ${VIDEO_FORWARE_LIST})
+SOURCE_GROUP(renderer\\forward FILES ${VIDEO_FORWARE_LIST})
 
-LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST})
+SET(OFFLINE_LIST
+	${HEADER_PATH}/monte_carlo_render.h
+	${SOURCE_PATH}/monte_carlo_render.cpp
+)
+SOURCE_GROUP(renderer\\offline FILES ${OFFLINE_LIST})
+
+SET(OUTPUT_LIST
+	${SOURCE_PATH}/output.h
+	${SOURCE_PATH}/output.cpp
+)
+SOURCE_GROUP(renderer\\rtx\\output FILES ${OUTPUT_LIST})
+
+SET(FACTORY_LIST
+	${SOURCE_PATH}/render_factory.h
+	${SOURCE_PATH}/render_factory.cpp
+)
+SOURCE_GROUP(renderer\\rtx\\factory FILES ${FACTORY_LIST})
+
+SET(CLW_LIST
+	${SOURCE_PATH}/clw_output.h
+	${SOURCE_PATH}/clw_output.cpp
+	${SOURCE_PATH}/clw_render_factory.h
+	${SOURCE_PATH}/clw_render_factory.cpp
+)
+SOURCE_GROUP(renderer\\rtx\\clw FILES ${CLW_LIST})
+
+SET(MANAGER_LIST
+	${SOURCE_PATH}/rtx_manager.h
+	${SOURCE_PATH}/rtx_manager.cpp
+)
+SOURCE_GROUP(renderer\\rtx\\manager FILES ${MANAGER_LIST})
+
+LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST} ${OFFLINE_LIST} ${OUTPUT_LIST} ${CLW_LIST} ${FACTORY_LIST} ${MANAGER_LIST})

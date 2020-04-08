@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_MONTECARLO_H_
-#define OCTOON_VIDEO_MONTECARLO_H_
+#ifndef OCTOON_VIDEO_MONTE_CARLO_RENDERER_H_
+#define OCTOON_VIDEO_MONTE_CARLO_RENDERER_H_
 
 #include <algorithm>
 #include <vector>

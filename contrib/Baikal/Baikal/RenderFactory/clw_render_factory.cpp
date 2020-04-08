@@ -18,14 +18,7 @@ namespace Baikal
     : m_context(context)
     , m_cache_path(cache_path)
     , m_program_manager(cache_path)
-    , m_intersector(
-        CreateFromOpenClContext(
-            context, 
-            context.GetDevice(0).GetID(), 
-            context.GetCommandQueue(0)
-        )
-        , RadeonRays::IntersectionApi::Delete
-    )
+    , m_intersector(CreateFromOpenClContext(context, context.GetDevice(0).GetID(), context.GetCommandQueue(0)), RadeonRays::IntersectionApi::Delete)
     
     {
     }

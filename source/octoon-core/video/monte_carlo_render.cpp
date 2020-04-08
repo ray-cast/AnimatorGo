@@ -1,4 +1,4 @@
-#include <octoon/video/montecarlo.h>
+#include <octoon/video/monte_carlo_render.h>
 #include <octoon/runtime/except.h>
 
 #include <octoon/camera/ortho_camera.h>

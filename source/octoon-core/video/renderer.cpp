@@ -1,6 +1,7 @@
 #include <octoon/video/renderer.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_scene.h>
+#include <octoon/video/monte_carlo_render.h>
 
 #include <octoon/light/ambient_light.h>
 #include <octoon/light/directional_light.h>
@@ -15,6 +16,8 @@
 #include <octoon/material/mesh_standard_material.h>
 
 #include <octoon/runtime/except.h>
+
+#include "rtx_manager.h"
 
 using namespace octoon::hal;
 
@@ -43,7 +46,8 @@ namespace octoon::video
 	{
 		device_ = device;
 		depthMaterial_ = material::MeshDepthMaterial::create();
-		montecarlo_ = std::make_shared<MonteCarlo>(w, h);
+		montecarlo_ = std::make_unique<MonteCarlo>(w, h);
+		rtxManager_ = std::make_unique<RtxManager>();
 
 		this->setFramebufferSize(w, h);
 	}

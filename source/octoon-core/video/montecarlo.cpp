@@ -171,7 +171,7 @@ namespace octoon::video
 					std::size_t nfaces = mesh->getIndicesArray(j).size() / 3;
 
 					RadeonRays::Shape* rrShape = this->api_->CreateMesh((float*)vertdata, (int)nvert, sizeof(math::float3), (int*)indices, 0, nullptr, (int)nfaces);
-					rrShape->SetId(this->sceneId_.size());
+					rrShape->SetId(RadeonRays::Id(this->sceneId_.size()));
 
 					assert(rrShape != nullptr);
 					this->api_->AttachShape(rrShape);

@@ -18,7 +18,7 @@ namespace octoon::video
 
 		void addCamera(camera::Camera* camera) noexcept;
 		void removeCamera(camera::Camera* camera) noexcept;
-		const std::vector<camera::Camera*>& getCameraList() const noexcept;
+		const std::vector<camera::Camera*>& getCameras() const noexcept;
 
 		void addLight(light::Light* light) noexcept;
 		void removeLight(light::Light* light) noexcept;

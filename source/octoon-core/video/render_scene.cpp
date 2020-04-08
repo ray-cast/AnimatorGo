@@ -33,7 +33,7 @@ namespace octoon::video
 	}
 
 	const std::vector<camera::Camera*>&
-	RenderScene::getCameraList() const noexcept
+	RenderScene::getCameras() const noexcept
 	{
 		return cameras_;
 	}

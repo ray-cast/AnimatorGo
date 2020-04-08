@@ -665,7 +665,7 @@ namespace octoon::video
 	void
 	Renderer::render(RenderScene& scene) noexcept
 	{
-		for (auto& camera : scene.getCameraList())
+		for (auto& camera : scene.getCameras())
 		{
 			camera->onRenderBefore(*camera);
 
@@ -687,7 +687,7 @@ namespace octoon::video
 
 		this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
 
-		for (auto& camera : scene.getCameraList())
+		for (auto& camera : scene.getCameras())
 		{
 			/*this->montecarlo_->render(
 				*camera,
@@ -722,7 +722,7 @@ namespace octoon::video
 			}
 		}
 
-		for (auto& camera : scene.getCameraList())
+		for (auto& camera : scene.getCameras())
 		{
 			for (auto& it : scene.getGeometries())
 			{

@@ -42,6 +42,8 @@ namespace octoon::video
 	{
 		device_ = device;
 		depthMaterial_ = material::MeshDepthMaterial::create();
+		montecarlo_ = std::make_shared<MonteCarlo>(w, h);
+
 		this->setFramebufferSize(w, h);
 	}
 
@@ -687,13 +689,22 @@ namespace octoon::video
 
 		for (auto& camera : scene.getCameraList())
 		{
+			/*this->montecarlo_->render(
+				*camera,
+				scene.getLights(),
+				scene.getGeometries(),
+				0,
+				camera->getPixelViewport().x,
+				camera->getPixelViewport().y,
+				camera->getPixelViewport().width,
+				camera->getPixelViewport().height);*/
+
 			auto framebuffer = camera->getFramebuffer();
 			this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
 			this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 			this->renderer_->setViewport(0, camera->getPixelViewport());
 
 			this->prepareLights(*camera, scene.getLights());
-			//this->prepareLightMaps(*camera, scene.getLights(), scene.getGeometries());
 			this->renderObjects(scene.getGeometries(), *camera, this->overrideMaterial_);
 
 			if (camera->getRenderToScreen())

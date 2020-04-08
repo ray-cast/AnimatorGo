@@ -13,6 +13,7 @@
 #include <octoon/video/render_buffer.h>
 #include <octoon/video/render_pipeline.h>
 #include <octoon/video/render_context.h>
+#include <octoon/video/montecarlo.h>
 
 #include <octoon/lightmap/lightmap.h>
 
@@ -94,10 +95,10 @@ namespace octoon::video
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
 	private:
-		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects) noexcept;
+		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 		void prepareLights(const camera::Camera& camera, const std::vector<light::Light*>& light) noexcept;
-		void prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& objects) noexcept;
+		void prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 	private:
 		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
@@ -120,6 +121,7 @@ namespace octoon::video
 		hal::GraphicsContextPtr renderer_;
 
 		RenderProfile profile_;
+		std::shared_ptr<MonteCarlo> montecarlo_;
 
 		std::shared_ptr<RenderBuffer> currentBuffer_;
 		std::shared_ptr<material::Material> depthMaterial_;

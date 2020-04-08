@@ -2244,7 +2244,7 @@ namespace octoon::video
 					}
 				}
 
-				this->updateParameters();
+				this->updateParameters(true);
 			}
 		}
 		else
@@ -2254,9 +2254,9 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::updateParameters() noexcept
+	RenderPipeline::updateParameters(bool force) noexcept
 	{
-		if (this->material_->isDirty())
+		if (this->material_->isDirty() || force)
 		{
 			auto begin = descriptorSet_->getUniformSets().begin();
 			auto end = descriptorSet_->getUniformSets().end();

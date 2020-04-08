@@ -78,6 +78,7 @@ namespace octoon::material
 	Material::setShader(const std::shared_ptr<Shader>& shader) noexcept
 	{
 		_shader = shader;
+		this->setDirty(true);
 	}
 
 	std::shared_ptr<Shader>

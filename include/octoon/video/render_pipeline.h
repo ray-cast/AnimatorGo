@@ -25,7 +25,7 @@ namespace octoon::video
 		void update(const camera::Camera& camera, const geometry::Geometry& geometry, const RenderProfile& context) noexcept;
 
 	private:
-		void updateParameters() noexcept;
+		void updateParameters(bool force = false) noexcept;
 		void updateMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept(false);
 
 		void setupProgram(const material::MaterialPtr& material, const RenderProfile& context);

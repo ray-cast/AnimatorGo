@@ -28,7 +28,7 @@ namespace rabbit
 	void
 	GridComponent::onEnable() noexcept
 	{
-		auto material = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0.5, 0.5, 0.5));
+		auto material = std::make_shared<octoon::material::LineBasicMaterial>(octoon::math::float3(0.5f, 0.5f, 0.5f));
 		material->setDepthEnable(false);
 		material->setDepthWriteEnable(false);
 

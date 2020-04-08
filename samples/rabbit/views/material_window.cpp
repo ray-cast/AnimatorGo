@@ -451,10 +451,6 @@ namespace rabbit
 					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
 					if (meshRenderer)
 						meshRenderer->setMaterial(material, hit.mesh);
-
-					auto offlineMeshRenderer = hit.object->getComponent<octoon::OfflineMeshRendererComponent>();
-					if (offlineMeshRenderer)
-						offlineMeshRenderer->setMaterial(material, hit.mesh);
 				}
 			}
 		}

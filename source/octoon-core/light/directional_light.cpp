@@ -26,7 +26,7 @@ namespace octoon::light
 		{
 			if (this->shadowCamera_ && enable)
 				this->shadowCamera_->setupFramebuffers(shadowSize_.x, shadowSize_.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
-
+			this->setDirty(true);
 			this->shadowEnable_ = enable;
 		}
 	}
@@ -40,12 +40,14 @@ namespace octoon::light
 	void
 	DirectionalLight::setShadowBias(float bias) noexcept
 	{
+		this->setDirty(true);
 		shadowBias_ = bias;
 	}
 
 	void
 	DirectionalLight::setShadowRadius(float radius) noexcept
 	{
+		this->setDirty(true);
 		shadowRadius_ = radius;
 	}
 
@@ -81,6 +83,7 @@ namespace octoon::light
 	void
 	DirectionalLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
 	{
+		this->setDirty(true);
 		this->shadowCamera_ = camera;
 	}
 

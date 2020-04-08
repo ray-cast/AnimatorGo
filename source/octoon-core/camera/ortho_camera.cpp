@@ -34,6 +34,7 @@ namespace octoon::camera
 	{
 		ortho_ = ortho;
 		needUpdateViewProject_= true;
+		this->setDirty(true);
 	}
 
 	const math::float4&
@@ -47,6 +48,7 @@ namespace octoon::camera
 	{
 		if (znear_ != znear)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			znear_ = znear;
 		}
@@ -63,6 +65,7 @@ namespace octoon::camera
 	{
 		if (zfar_ != zfar)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			zfar_ = zfar;
 		}

@@ -14,8 +14,6 @@
 #include <octoon/box_collider_component.h>
 #include <octoon/capsule_collider_component.h>
 #include <octoon/configurable_joint_component.h>
-#include <octoon/offline_mesh_renderer_component.h>
-#include <octoon/offline_skinned_mesh_renderer_component.h>
 #include <octoon/rotation_link_component.h>
 #include <octoon/rotation_link_limit_component.h>
 #include <octoon/cloth_component.h>
@@ -313,7 +311,6 @@ namespace octoon
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];
-		mesh->computeLightMap(200, 200);
 
 		auto object = GameObject::create(mesh->getName());
 		object->addComponent<MeshFilterComponent>(mesh);
@@ -332,13 +329,6 @@ namespace octoon
 			smr->setGlobalIllumination(true);
 
 			object->addComponent(smr);
-
-			auto osmr = OfflineSkinnedMeshRendererComponent::create();
-			osmr->setMaterials(materials);
-			osmr->setTransforms(bones);
-			osmr->setMorphBlendEnable(true);
-			osmr->setTextureBlendEnable(true);
-			object->addComponent(osmr);
 
 			/*auto material = std::make_shared<material::Material>();
 			material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));

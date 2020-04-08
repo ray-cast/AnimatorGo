@@ -1,59 +1,46 @@
 #include <octoon/video/montecarlo.h>
-#include "math.h"
+#include <octoon/runtime/except.h>
+
+#include <octoon/camera/ortho_camera.h>
+#include <octoon/camera/perspective_camera.h>
+
+#include <octoon/light/ambient_light.h>
+#include <octoon/light/directional_light.h>
+#include <octoon/light/point_light.h>
+#include <octoon/light/spot_light.h>
+#include <octoon/light/disk_light.h>
+#include <octoon/light/rectangle_light.h>
+#include <octoon/light/environment_light.h>
+#include <octoon/light/tube_light.h>
+
+#include <octoon/image/image.h>
+#include <octoon/material/mesh_standard_material.h>
+
 #include <assert.h>
 #include <atomic>
 #include <string>
 #include <CL/cl.h>
 #include <stdexcept>
 
+#include <GL/GL.h>
+
+#include <RadeonProRender.h>
+#include <RadeonProRender_GL.h>
+
 namespace octoon::video
 {
-	float GetPhysicalLightAttenuation(const RadeonRays::float3& L)
-	{
-		return 1.0f / std::max(1.0f, L.sqnorm());
-	}
-
-	float GetPhysicalLightAttenuation(const RadeonRays::float3& L, float radius, float attenuationBulbSize)
-	{
-		const float invRadius = 1.0f / radius;
-		float d = std::sqrt(L.sqnorm());
-		float fadeoutFactor = std::min(1.0f, std::max(0.0f, (radius - d) * (invRadius / 0.2f)));
-		d = std::max(d - attenuationBulbSize, 0.0f);
-		float denom = 1.0f + d / attenuationBulbSize;
-		float attenuation = fadeoutFactor * fadeoutFactor / (denom * denom);
-		return attenuation;
-	}
-
-	RadeonRays::float3 InterpolateVertices(const math::float3* vec, const math::uint1* indices, int prim_id, const RadeonRays::float4& barycentrics)
-	{
-		auto i0 = indices[prim_id * 3];
-		auto i1 = indices[prim_id * 3 + 1];
-		auto i2 = indices[prim_id * 3 + 2];
-
-		RadeonRays::float3 a(vec[i0 * 3].x, vec[i0 * 3].y, vec[i0 * 3].z);
-		RadeonRays::float3 b(vec[i1 * 3].x, vec[i1 * 3].y, vec[i1 * 3].z);
-		RadeonRays::float3 c(vec[i2 * 3].x, vec[i2 * 3].y, vec[i2 * 3].z);
-
-		return a * (1 - barycentrics.x - barycentrics.y) + b * barycentrics.x + c * barycentrics.y;
-	}
-
-	RadeonRays::float3 InterpolateNormals(const math::float3* vec, const math::uint1* indices, int prim_id, const RadeonRays::float4& barycentrics)
-	{
-		return RadeonRays::normalize(InterpolateVertices(vec, indices, prim_id, barycentrics));
-	}
-
 	MonteCarlo::MonteCarlo() noexcept
-		: numBounces_(1)
-		, tileNums_(0)
-		, width_(0)
+		: width_(0)
 		, height_(0)
-		, api_(nullptr)
+		, rprContext_(nullptr)
+		, rprScene_(nullptr)
+		, rprMaterialSystem_(nullptr)
+		, colorFramebuffer_(nullptr)
+		, normalFramebuffer_(nullptr)
+		, albedoFramebuffer_(nullptr)
+		, tileNums_(0)
+		, dirty_(true)
 	{
-		renderData_.numEstimate = 0;
-		renderData_.fr_rays = nullptr;
-		renderData_.fr_hits = nullptr;
-		renderData_.fr_shadowrays = nullptr;
-		renderData_.fr_shadowhits = nullptr;
 	}
 
 	MonteCarlo::MonteCarlo(std::uint32_t w, std::uint32_t h) noexcept
@@ -64,16 +51,6 @@ namespace octoon::video
 
 	MonteCarlo::~MonteCarlo() noexcept
 	{
-		if (renderData_.fr_rays)
-			api_->DeleteBuffer(renderData_.fr_rays);
-		if (renderData_.fr_hits)
-			api_->DeleteBuffer(renderData_.fr_hits);
-		if (renderData_.fr_shadowhits)
-			api_->DeleteBuffer(renderData_.fr_shadowhits);
-		if (renderData_.fr_shadowrays)
-			api_->DeleteBuffer(renderData_.fr_shadowrays);
-		if (api_)
-			RadeonRays::IntersectionApi::Delete(api_);
 	}
 
 	void
@@ -82,507 +59,675 @@ namespace octoon::video
 		width_ = w;
 		height_ = h;
 
-		if (!init_Gbuffers(w, h)) throw std::runtime_error("init_Gbuffers() fail");
-		if (!init_RadeonRays()) throw std::runtime_error("init_RadeonRays() fail");
+		auto GetErrorString = [](int status)
+		{
+			switch (status)
+			{
+			case RPR_ERROR_COMPUTE_API_NOT_SUPPORTED:         return "RPR_ERROR_COMPUTE_API_NOT_SUPPORTED";
+			case RPR_ERROR_OUT_OF_SYSTEM_MEMORY:              return "RPR_ERROR_OUT_OF_SYSTEM_MEMORY";
+			case RPR_ERROR_OUT_OF_VIDEO_MEMORY:               return "RPR_ERROR_OUT_OF_VIDEO_MEMORY";
+			case RPR_ERROR_INVALID_LIGHTPATH_EXPR:            return "RPR_ERROR_INVALID_LIGHTPATH_EXPR";
+			case RPR_ERROR_INVALID_IMAGE:                     return "RPR_ERROR_INVALID_IMAGE";
+			case RPR_ERROR_INVALID_AA_METHOD:                 return "RPR_ERROR_INVALID_AA_METHOD";
+			case RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT:          return "RPR_ERROR_UNSUPPORTED_IMAGE_FORMAT";
+			case RPR_ERROR_INVALID_GL_TEXTURE:                return "RPR_ERROR_INVALID_GL_TEXTURE";
+			case RPR_ERROR_INVALID_CL_IMAGE:                  return "RPR_ERROR_INVALID_CL_IMAGE";
+			case RPR_ERROR_INVALID_OBJECT:                    return "RPR_ERROR_INVALID_OBJECT";
+			case RPR_ERROR_INVALID_PARAMETER:                 return "RPR_ERROR_INVALID_PARAMETER";
+			case RPR_ERROR_INVALID_TAG:                       return "RPR_ERROR_INVALID_TAG";
+			case RPR_ERROR_INVALID_LIGHT:                     return "RPR_ERROR_INVALID_LIGHT";
+			case RPR_ERROR_INVALID_CONTEXT:                   return "RPR_ERROR_INVALID_CONTEXT";
+			case RPR_ERROR_UNIMPLEMENTED:                     return "RPR_ERROR_UNIMPLEMENTED";
+			case RPR_ERROR_INVALID_API_VERSION:               return "RPR_ERROR_INVALID_API_VERSION";
+			case RPR_ERROR_INTERNAL_ERROR:                    return "RPR_ERROR_INTERNAL_ERROR";
+			case RPR_ERROR_IO_ERROR:                          return "RPR_ERROR_IO_ERROR";
+			case RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE: return "RPR_ERROR_UNSUPPORTED_SHADER_PARAMETER_TYPE";
+			case RPR_ERROR_MATERIAL_STACK_OVERFLOW:           return "RPR_ERROR_MATERIAL_STACK_OVERFLOW";
+			case RPR_ERROR_INVALID_PARAMETER_TYPE:            return "RPR_ERROR_INVALID_PARAMETER_TYPE";
+			case RPR_ERROR_UNSUPPORTED:                       return "RPR_ERROR_UNSUPPORTED";
+			case RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY:         return "RPR_ERROR_OPENCL_OUT_OF_HOST_MEMORY";
+			case RPR_ERROR_OPENGL:                            return "RPR_ERROR_OPENGL";
+			case RPR_ERROR_OPENCL:                            return "RPR_ERROR_OPENCL";
+			case RPR_ERROR_NULLPTR:                           return "RPR_ERROR_NULLPTR";
+			case RPR_ERROR_NODETYPE:                          return "RPR_ERROR_NODETYPE";
+			default: return "RPR_SUCCESS";
+			}
+		};
+
+		auto status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+		if (RPR_SUCCESS != status)
+		{
+			status = rprCreateContext(RPR_API_VERSION, 0, 0, RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP, 0, 0, &this->rprContext_);
+			if (RPR_SUCCESS != status)
+				throw runtime::runtime_error::create(std::string("rprCreateContext() failed, error : ") + GetErrorString(status));
+		}
+
+		status = rprContextCreateScene(rprContext_, &rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateScene() failed, error : ") + GetErrorString(status));
+
+		status = rprContextCreateMaterialSystem(rprContext_, 0, &this->rprMaterialSystem_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
+
+		status = rprContextSetScene(rprContext_, rprScene_);
+		if (RPR_SUCCESS != status)
+			throw runtime::runtime_error::create(std::string("rprContextCreateMaterialSystem() failed, error : ") + GetErrorString(status));
+	}
+
+	void
+	MonteCarlo::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
+	{
+		this->renderer_ = context;
+	}
+
+	const hal::GraphicsContextPtr&
+	MonteCarlo::getGraphicsContext() const noexcept(false)
+	{
+		return this->renderer_;
+	}
+
+	std::pair<void*, void*>
+	MonteCarlo::createMaterialTextures(std::string_view path) noexcept(false)
+	{
+		try
+		{
+			auto it = imageNodes_.find(std::string(path));
+			if (it != imageNodes_.end())
+				return (*it).second;
+
+			image::Image image;
+			if (!image.load(std::string(path)))
+				return std::make_pair(nullptr, nullptr);
+
+			bool bgra = false;
+			bool hasAlpha = false;
+			std::uint8_t channel = 3;
+			switch (image.format())
+			{
+			case image::Format::R8G8B8SNorm:
+			case image::Format::R8G8B8SRGB:
+			case image::Format::B8G8R8UNorm:
+			case image::Format::B8G8R8SRGB:
+				hasAlpha = false;
+				break;
+			case image::Format::R8G8B8A8SNorm:
+			case image::Format::R8G8B8A8SRGB:
+				hasAlpha = true;
+				channel = 4;
+				break;
+			case image::Format::B8G8R8A8UNorm:
+			case image::Format::B8G8R8A8SRGB:
+				bgra = true;
+				hasAlpha = true;
+				channel = 4;
+				break;
+			default:
+				throw runtime::runtime_error::create("This image type is not supported by this function:" + std::string(path));
+			}
+
+			rpr_image_format rgbFormat = { 3, RPR_COMPONENT_TYPE_UINT8 };
+			rpr_image_desc rgbDesc;
+			rgbDesc.image_width = image.width();
+			rgbDesc.image_height = image.height();
+			rgbDesc.image_depth = 1;
+			rgbDesc.image_row_pitch = image.width() * rgbFormat.num_components;
+			rgbDesc.image_slice_pitch = rgbDesc.image_row_pitch * rgbDesc.image_height;
+
+			rpr_image_format alphaFormat = { 1, RPR_COMPONENT_TYPE_UINT8 };
+			rpr_image_desc alphaDesc;
+			alphaDesc.image_width = image.width();
+			alphaDesc.image_height = image.height();
+			alphaDesc.image_depth = 1;
+			alphaDesc.image_row_pitch = image.width() * alphaFormat.num_components;
+			alphaDesc.image_slice_pitch = alphaDesc.image_row_pitch * alphaDesc.image_height;
+
+			auto data = image.data();
+
+			std::vector<std::uint8_t> srgb((rgbDesc.image_width * rgbDesc.image_height * rgbFormat.num_components));
+			std::vector<std::uint8_t> alpha;
+
+			if (hasAlpha)
+			{
+				alpha.resize(alphaDesc.image_width * alphaDesc.image_height * alphaFormat.num_components);
+
+				for (rpr_uint y = 0; y < rgbDesc.image_height; y++)
+				{
+					auto srcHeight = y * rgbDesc.image_width;
+					auto dstHeight = (rgbDesc.image_height - 1 - y) * rgbDesc.image_width;
+
+					for (std::size_t x = 0; x < rgbDesc.image_width; x++)
+					{
+						auto dstRGB = (dstHeight + x) * rgbFormat.num_components;
+						auto dstAlpha = (dstHeight + x) * alphaFormat.num_components;
+						auto src = (srcHeight + x) * 4;
+
+						if (bgra)
+						{
+							srgb[dstRGB] = data[src + 2];
+							srgb[dstRGB + 1] = data[src + 1];
+							srgb[dstRGB + 2] = data[src];
+						}
+						else
+						{
+							srgb[dstRGB] = data[src];
+							srgb[dstRGB + 1] = data[src + 1];
+							srgb[dstRGB + 2] = data[src + 2];
+						}
+
+						alpha[dstAlpha] = static_cast<std::uint8_t>(255 - std::pow(data[src + 3] / 255.0f, 2.2f) * 255);
+					}
+				}
+			}
+			else
+			{
+				for (std::size_t y = 0; y < rgbDesc.image_height; y++)
+				{
+					auto dst = ((rgbDesc.image_height - 1 - y) * rgbDesc.image_width) * rgbFormat.num_components;
+					auto src = y * rgbDesc.image_width * rgbFormat.num_components;
+
+					std::memcpy(srgb.data() + dst, data + src, rgbDesc.image_width * rgbFormat.num_components);
+				}
+			}
+
+			rpr_image image_ = nullptr;
+			rpr_image alphaImage_ = nullptr;
+
+			rpr_material_node textureNode = nullptr;
+			rpr_material_node alphaNode = nullptr;
+
+			if (!srgb.empty())
+			{
+				rprContextCreateImage(this->rprContext_, rgbFormat, &rgbDesc, srgb.data(), &image_);
+				rprMaterialSystemCreateNode(this->rprMaterialSystem_, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &textureNode);
+				rprMaterialNodeSetInputImageData(textureNode, "data", image_);
+			}
+
+			if (!alpha.empty())
+			{
+				hasAlpha = false;
+				for (auto& value : alpha)
+				{
+					if (value > 0)
+					{
+						hasAlpha = true;
+						break;
+					}
+				}
+
+				if (hasAlpha)
+				{
+					rprContextCreateImage(this->rprContext_, alphaFormat, &alphaDesc, alpha.data(), &alphaImage_);
+					rprMaterialSystemCreateNode(this->rprMaterialSystem_, RPR_MATERIAL_NODE_IMAGE_TEXTURE, &alphaNode);
+					rprMaterialNodeSetInputImageData(alphaNode, "data", alphaImage_);
+				}
+			}
+
+			images_[std::string(path)] = std::make_pair(image_, alphaImage_);
+			imageNodes_[std::string(path)] = std::make_pair(textureNode, alphaNode);
+
+			return std::make_pair(textureNode, alphaNode);
+		}
+		catch (...)
+		{
+			return std::make_pair(nullptr, nullptr);
+		}
 	}
 
 	bool
-	MonteCarlo::init_Gbuffers(std::uint32_t, std::uint32_t h) noexcept
+	MonteCarlo::compileCamera(const camera::Camera* camera) noexcept(false)
 	{
-		auto allocSize = width_ * height_;
-		ldr_.resize(allocSize);
-		hdr_.resize(allocSize);
+		bool force = false;
+
+		auto& rprCamera = this->cameras_[camera];
+		if (!rprCamera)
+		{
+			if (camera->isA<camera::PerspectiveCamera>())
+			{
+				if (RPR_SUCCESS != rprContextCreateCamera(this->rprContext_, &rprCamera))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetMode(rprCamera, RPR_CAMERA_MODE_PERSPECTIVE))
+					return false;
+
+				force = true;
+			}
+			else if (camera->isA<camera::OrthoCamera>())
+			{
+				if (RPR_SUCCESS != rprContextCreateCamera(this->rprContext_, &rprCamera))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetMode(rprCamera, RPR_CAMERA_MODE_ORTHOGRAPHIC))
+					return false;
+
+				force = true;
+			}
+		}
+
+		if (camera->isDirty() && rprCamera || force)
+		{
+			if (camera->isA<camera::PerspectiveCamera>())
+			{
+				auto eye = camera->getTranslate();
+				auto at = camera->getTranslate() + math::float3x3(camera->getTransform()) * math::float3::UnitZ;
+				auto up = math::float3x3(camera->getTransform()) * math::float3::UnitY;
+
+				auto filmSize_ = 36.0f;
+				auto perspective = camera->downcast<camera::PerspectiveCamera>();
+				auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
+				auto focalLength = filmSize_ / ratio;
+
+				if (RPR_SUCCESS != rprCameraSetNearPlane(rprCamera, perspective->getNear()))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetFarPlane(rprCamera, perspective->getFar()))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetFocalLength(rprCamera, focalLength))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetFocusDistance(rprCamera, 1.0f))
+					return false;
+				if (RPR_SUCCESS != rprCameraSetSensorSize(rprCamera, filmSize_ * this->width_ / (float)this->height_, filmSize_))
+					return false;
+				if (RPR_SUCCESS != rprCameraLookAt(rprCamera, eye.x, eye.y, eye.z, at.x, at.y, at.z, up.x, up.y, up.z))
+					return false;
+				if (RPR_SUCCESS != rprSceneSetCamera(this->rprScene_, rprCamera))
+					return false;
+			}
+
+			this->dirty_ = true;
+		}
+		else
+		{
+			rprSceneSetCamera(this->rprScene_, rprCamera);
+		}
 
 		return true;
 	}
 
 	bool
-	MonteCarlo::init_RadeonRays() noexcept
+	MonteCarlo::compileLight(const light::Light* light) noexcept(false)
 	{
-		RadeonRays::IntersectionApi::SetPlatform(RadeonRays::DeviceInfo::kAny);
+		bool force = false;
 
-		auto deviceidx = std::string::npos;
-		for (auto i = 0U; i < RadeonRays::IntersectionApi::GetDeviceCount(); ++i)
+		auto& rprLight = this->lights_[light];
+		if (!rprLight)
 		{
-			RadeonRays::DeviceInfo devinfo;
-			RadeonRays::IntersectionApi::GetDeviceInfo(i, devinfo);
-
-			if (devinfo.type == RadeonRays::DeviceInfo::kGpu)
+			if (light->isA<light::EnvironmentLight>())
 			{
-				std::string info_name(devinfo.name);
-				if (info_name.find("Intel") != std::string::npos)
-					continue;
-				deviceidx = i;
-				break;
+				if (RPR_SUCCESS != rprContextCreateEnvironmentLight(this->rprContext_, &rprLight))
+					return false;
+				if (RPR_SUCCESS != rprSceneAttachLight(this->rprScene_, rprLight))
+					return false;
+				force = true;
+			}
+			else if (light->isA<light::DirectionalLight>())
+			{
+				if (RPR_SUCCESS != rprContextCreateDirectionalLight(this->rprContext_, &rprLight))
+					return false;
+				if (RPR_SUCCESS != rprSceneAttachLight(this->rprScene_, rprLight))
+					return false;
+				force = true;
+			}
+			else if (light->isA<light::SpotLight>())
+			{
+				if (RPR_SUCCESS != rprContextCreateSpotLight(this->rprContext_, &rprLight))
+					return false;
+				if (RPR_SUCCESS != rprSceneAttachLight(this->rprScene_, rprLight))
+					return false;
+				force = true;
+			}
+			else if (light->isA<light::PointLight>())
+			{
+				if (RPR_SUCCESS != rprContextCreatePointLight(this->rprContext_, &rprLight))
+					return false;
+				if (RPR_SUCCESS != rprSceneAttachLight(this->rprScene_, rprLight))
+					return false;
+				force = true;
 			}
 		}
 
-		if (deviceidx == std::string::npos)
+		if (light->isDirty() && rprLight || force)
 		{
-			for (auto i = 0U; i < RadeonRays::IntersectionApi::GetDeviceCount(); ++i)
-			{
-				RadeonRays::DeviceInfo devinfo;
-				RadeonRays::IntersectionApi::GetDeviceInfo(i, devinfo);
+			math::float4x4 matrix = light->getTransform();
+			matrix = light->getTransform() * math::Quaternion(math::float3::UnitY, math::PI);
+			matrix.setTranslate(light->getTranslate());
 
-				if (devinfo.type == RadeonRays::DeviceInfo::kCpu)
-				{
-					deviceidx = i;
-					break;
-				}
+			auto color = light->getColor() * light->getIntensity();
+
+			if (light->isA<light::EnvironmentLight>())
+			{
+				rpr_image rprImage = nullptr;
+				rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
+				rpr_image_desc desc = { 1, 1, 1, 3, 3 };
+
+				if (RPR_SUCCESS != rprContextCreateImage(this->rprContext_, format, &desc, light->getColor().data(), &rprImage))
+					return false;
+				if (RPR_SUCCESS != rprEnvironmentLightSetImage(rprLight, rprImage))
+					return false;
+				if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(rprLight, light->getIntensity()))
+					return false;
 			}
+			else if (light->isA<light::DirectionalLight>())
+			{
+				if (RPR_SUCCESS != rprDirectionalLightSetRadiantPower3f(rprLight, color.x, color.y, color.z))
+					return false;
+				if (RPR_SUCCESS != rprLightSetTransform(rprLight, false, matrix.ptr()))
+					return false;
+			}
+			else if (light->isA<light::SpotLight>())
+			{
+				if (RPR_SUCCESS != rprSpotLightSetRadiantPower3f(rprLight, color.x, color.y, color.z))
+					return false;
+				if (RPR_SUCCESS != rprLightSetTransform(rprLight, false, matrix.ptr()))
+					return false;
+			}
+			else if (light->isA<light::PointLight>())
+			{
+				if (RPR_SUCCESS != rprPointLightSetRadiantPower3f(rprLight, color.x, color.y, color.z))
+					return false;
+				if (RPR_SUCCESS != rprLightSetTransform(rprLight, false, matrix.ptr()))
+					return false;
+			}
+
+			this->dirty_ = true;
 		}
 
-		if (deviceidx == std::string::npos) return false;
-
-		this->api_ = RadeonRays::IntersectionApi::Create((std::uint32_t)deviceidx);
-		return this->api_ != nullptr;
-	}
-
-	const std::uint32_t*
-	MonteCarlo::data() const noexcept
-	{
-		return ldr_.data();
+		return true;
 	}
 
 	bool
-	MonteCarlo::compileScene(const std::vector<geometry::Geometry*>& geometries) noexcept(false)
+	MonteCarlo::compileGeometry(const geometry::Geometry* geometry) noexcept(false)
 	{
-		bool needCommit = false;
+		bool force = false;
 
-		for (std::int32_t i = 0; i < geometries.size(); i++)
+		auto& mesh = geometry->getMesh();
+		auto& materials = geometry->getMaterials();
+
+		for (auto& it : materials)
 		{
-			auto& geometry = geometries[i];
-			if (!geometry->getVisible())
+			if (!it->isA<material::MeshStandardMaterial>())
 				continue;
 
-			if (!geometry->getGlobalIllumination())
-				continue;
-
-			auto& mesh = geometry->getMesh();
-
-			for (std::int32_t j = 0; j < geometry->getMaterials().size(); j++)
+			auto& rprMaterial = this->materials_[it.get()];
+			if (!rprMaterial)
 			{
-				math::float3* vertdata = mesh->getVertexArray().data();
-				math::uint1* indices = mesh->getIndicesArray(j).data();
-				auto it = sceneId_.find(indices);
-				if (it == sceneId_.end())
+				rprMaterialSystemCreateNode(this->rprMaterialSystem_, RPR_MATERIAL_NODE_UBERV2, &rprMaterial);
+				force = true;
+			}
+
+			if (it->isDirty() && rprMaterial || force)
+			{
+				std::string path;
+				std::string normalName;
+				std::string textureName;
+
+				auto material = it->downcast<material::MeshStandardMaterial>();
+				math::float3 base = material->getColor();
+				math::float3 emissive = material->getEmissive();
+
+				float opacity = material->getOpacity();
+				float roughness = (1.0f - material->getSmoothness()) * (1.0f - material->getSmoothness());
+				float metalness = material->getMetalness();
+				float reflectivity = material->getReflectivity();
+
+				auto colorTexture = material->getColorTexture();
+				if (colorTexture)
+					textureName = colorTexture->getTextureDesc().getName();
+
+				std::uint32_t layers = 0;
+				if (metalness == 0.0f)
+					layers |= RPR_UBER_MATERIAL_LAYER_DIFFUSE;
+				if (reflectivity > 0.0f)
+					layers |= RPR_UBER_MATERIAL_LAYER_REFLECTION;
+				if (opacity < 1.0f)
+					layers |= RPR_UBER_MATERIAL_LAYER_TRANSPARENCY;
+				if (math::any(emissive))
+					layers |= RPR_UBER_MATERIAL_LAYER_EMISSION;
+
+				rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers);
+
+				if (layers & RPR_UBER_MATERIAL_LAYER_TRANSPARENCY)
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.transparency", 1.0f - opacity, 1.0f, 1.0f, 1.0f);
+
+				if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
 				{
-					std::size_t nvert = mesh->getVertexArray().size();
-					std::size_t nfaces = mesh->getIndicesArray(j).size() / 3;
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.roughness", roughness, roughness, roughness, roughness);
+					//rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.subsurface", edgeColor.z, edgeColor.z, edgeColor.z, edgeColor.z);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", base[0], base[1], base[2], 1.0f);
+				}
 
-					RadeonRays::Shape* rrShape = this->api_->CreateMesh((float*)vertdata, (int)nvert, sizeof(math::float3), (int*)indices, 0, nullptr, (int)nfaces);
-					rrShape->SetId(RadeonRays::Id(this->sceneId_.size()));
+				if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION)
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.roughness", roughness, roughness, roughness, roughness);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.metalness", metalness, metalness, metalness, metalness);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.color", base[0], base[1], base[2], 1.0f);
+					//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.anisotropy", edgeColor.w, edgeColor.w, edgeColor.w, edgeColor.w);
+					//rprMaterialNodeSetInputF(rprMaterial, "uberv2.reflection.sheen", edgeColor.y, edgeColor.y, edgeColor.y, edgeColor.y);
+				}
 
-					assert(rrShape != nullptr);
-					this->api_->AttachShape(rrShape);
+				if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.ior", 1.5f, 1.5f, 1.5f, 1.5f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.roughness", 1.0f, 1.0f, 1.0f, 1.0f);
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.refraction.color", 1.0f, 1.0f, 1.0f, 1.0f);
+				}
 
-					auto shape = std::make_shared<Shape>();
-					shape->mesh.positions = mesh->getVertexArray();
-					shape->mesh.normals = mesh->getNormalArray();
-					shape->mesh.texcoords = mesh->getTexcoordArray();
-					shape->mesh.indices = mesh->getIndicesArray();
+				if (layers & RPR_UBER_MATERIAL_LAYER_EMISSION)
+				{
+					rprMaterialNodeSetInputF(rprMaterial, "uberv2.emission.color", emissive[0], emissive[1], emissive[2], 1.0f);
+				}
 
-					auto mat = geometry->getMaterial(j);
-
-					auto material = std::make_shared<Material>();
-					mat->get("diffuse", material->albedo);
-					mat->get("emissive", material->emissive);
-
-					needCommit = true;
-
-					if (rrShape->GetId() >= this->scene_.size())
+				if (!textureName.empty())
+				{
+					auto image = this->createMaterialTextures(path + textureName);
+					if (image.first)
 					{
-						this->scene_.resize((rrShape->GetId() | 1) << 1);
-						this->materials_.resize((rrShape->GetId() | 1) << 1);
+						if (layers & RPR_UBER_MATERIAL_LAYER_DIFFUSE)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.diffuse.color", image.first);
+
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFLECTION && reflectivity > 0.0f)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.reflection.color", image.first);
+
+						if (layers & RPR_UBER_MATERIAL_LAYER_REFRACTION)
+							rprMaterialNodeSetInputN(rprMaterial, "uberv2.refraction.color", image.first);
+					}
+					else
+					{
+						rprMaterialNodeSetInputF(rprMaterial, "uberv2.diffuse.color", 1.0f, 0.0f, 1.0f, 1.0f);
 					}
 
-					this->scene_[rrShape->GetId()] = shape;
-					this->materials_[rrShape->GetId()] = material;
-					this->sceneId_[indices] = rrShape;
+					if (image.second)
+					{
+						rprMaterialNodeSetInputU(rprMaterial, "uberv2.layers", layers | RPR_UBER_MATERIAL_LAYER_TRANSPARENCY);
+						rprMaterialNodeSetInputN(rprMaterial, "uberv2.transparency", image.second);
+					}
 				}
+
+				force = false;
+				this->dirty_ = true;
 			}
 		}
 
-		if (needCommit)
-			this->api_->Commit();
+		for (std::int32_t i = 0; i < mesh->getNumSubsets(); i++)
+		{
+			auto& rprShape = shape_[mesh->getIndicesArray(i).data()];
+			if (!rprShape)
+			{
+				math::uint1s faceArray(mesh->getIndicesArray(i).size() / 3, 3);
 
-		return !this->scene_.empty();
+				rprContextCreateMesh(this->rprContext_,
+					mesh->getVertexArray().data()->ptr(), mesh->getVertexArray().size() / 3, sizeof(math::float3),
+					mesh->getNormalArray().data()->ptr(), mesh->getNormalArray().size() / 3, sizeof(math::float3),
+					mesh->getTexcoordArray().data()->ptr(), mesh->getTexcoordArray().size() / 2, sizeof(math::float2),
+					(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+					(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+					(rpr_int*)mesh->getIndicesArray(i).data(), sizeof(rpr_int),
+					(rpr_int*)faceArray.data(), faceArray.size(),
+					&rprShape);
+
+				rprShapeSetShadow(rprShape, true);
+				rprShapeSetShadowCatcher(rprShape, true);
+				rprShapeSetVisibility(rprShape, true);
+				rprShapeSetTransform(rprShape, false, geometry->getTransform().ptr());
+				rprSceneAttachShape(this->rprScene_, rprShape);
+
+				rprShapeSetMaterial(rprShape, this->materials_[geometry->getMaterial(i).get()]);
+			}
+		}
+
+		return true;
+	}
+
+	bool
+	MonteCarlo::compileScene(const camera::Camera* camera, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept(false)
+	{
+		this->compileCamera(camera);
+
+		for (auto& light : lights)
+		{
+			if (camera->getLayer() == light->getLayer())
+			{
+				if (light->getVisible())
+					this->compileLight(light);
+			}
+		
+		}
+
+		for (auto& geometry : geometries)
+		{
+			if (geometry->getVisible() && geometry->getGlobalIllumination())
+				this->compileGeometry(geometry);
+		}
+
+		return true;
 	}
 
 	void
-	MonteCarlo::GenerateWorkspace(std::int32_t numEstimate)
+	MonteCarlo::generateWorkspace(std::uint32_t numEstimate)
 	{
 		if (tileNums_ < numEstimate)
 		{
-			renderData_.hits.resize(numEstimate);
-			renderData_.samples.resize(numEstimate);
-			renderData_.samplesAccum.resize(numEstimate);
-			renderData_.random.resize(numEstimate);
-			renderData_.weights.resize(numEstimate);
-			renderData_.shadowRays.resize(numEstimate);
-			renderData_.shadowHits.resize(numEstimate);
+			hal::GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(this->width_);
+			colorTextureDesc.setHeight(this->height_);
+			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
+			colorTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			if (!colorTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
 
-			renderData_.rays[0].resize(numEstimate);
-			renderData_.rays[1].resize(numEstimate);
+			normalTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			if (!normalTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
 
-			if (renderData_.fr_rays)
-				api_->DeleteBuffer(renderData_.fr_rays);
+			albedoTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			if (!albedoTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
 
-			if (renderData_.fr_hits)
-				api_->DeleteBuffer(renderData_.fr_hits);
-
-			if (renderData_.fr_shadowrays)
-				api_->DeleteBuffer(renderData_.fr_shadowrays);
-
-			if (renderData_.fr_shadowhits)
-				api_->DeleteBuffer(renderData_.fr_shadowhits);
-
-			renderData_.fr_rays = api_->CreateBuffer(sizeof(RadeonRays::ray) * numEstimate, nullptr);
-			renderData_.fr_hits = api_->CreateBuffer(sizeof(RadeonRays::Intersection) * numEstimate, nullptr);
-			renderData_.fr_shadowrays = api_->CreateBuffer(sizeof(RadeonRays::ray) * numEstimate, nullptr);
-			renderData_.fr_shadowhits = api_->CreateBuffer(sizeof(RadeonRays::Intersection) * numEstimate, nullptr);
-
-			tileNums_ = numEstimate;
-		}
-
-		this->renderData_.numEstimate = numEstimate;
-	}
-
-	void
-	MonteCarlo::GenerateCamera(const camera::Camera& camera, const RadeonRays::int2& offset, const RadeonRays::int2& size) noexcept
-	{
-		RadeonRays::ray* rays = nullptr;
-		RadeonRays::Event* e = nullptr;
-		api_->MapBuffer(renderData_.fr_rays, RadeonRays::kMapWrite, 0, sizeof(RadeonRays::ray) * this->renderData_.numEstimate, (void**)&rays, &e); e->Wait(); api_->DeleteEvent(e);
-
-		float aspect = (float)width_ / height_;
-		float xstep = 2.0f / (float)this->width_;
-		float ystep = 2.0f / (float)this->height_;
-
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
-		{
-			auto ix = offset.x + i % size.x;
-			auto iy = offset.y + i / size.x;
-
-			float x = xstep * ix - 1.0f + (renderData_.random[i].x * 2 - 1) / (float)this->width_;
-			float y = ystep * iy - 1.0f + (renderData_.random[i].y * 2 - 1) / (float)this->height_;
-			float z = 1.0f;
-
-			auto& ray = rays[i];
-			ray.o = RadeonRays::float4(camera.getTranslate().x, camera.getTranslate().y, camera.getTranslate().z);
-			ray.d = RadeonRays::normalize(RadeonRays::float3(x * aspect, y, z - ray.o.z));
-			ray.SetMaxT(std::numeric_limits<float>::max());
-			ray.SetTime(0.0f);
-			ray.SetMask(-1);
-			ray.SetActive(true);
-		}
-
-		std::memcpy(renderData_.rays[0].data(), rays, sizeof(RadeonRays::ray) * this->renderData_.numEstimate);
-
-		api_->UnmapBuffer(renderData_.fr_rays, rays, &e); e->Wait(); api_->DeleteEvent(e);
-	}
-
-	void
-	MonteCarlo::GenerateRays(std::uint32_t pass) noexcept
-	{
-		RadeonRays::ray* data = nullptr;
-		RadeonRays::Event* e = nullptr;
-		api_->MapBuffer(renderData_.fr_rays, RadeonRays::kMapWrite, 0, sizeof(RadeonRays::ray) * this->renderData_.numEstimate, (void**)&data, &e); e->Wait(); api_->DeleteEvent(e);
-
-		std::memset(renderData_.weights.data(), 0, sizeof(RadeonRays::float3) * this->renderData_.numEstimate);
-		std::memset(renderData_.rays[(pass & 1) ^ 1].data(), 0, sizeof(RadeonRays::ray) * this->renderData_.numEstimate);
-
-		auto& rays = renderData_.rays[(pass & 1) ^ 1];
-		auto& views = renderData_.rays[pass & 1];
-
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
-		{
-			auto& hit = renderData_.hits[i];
-			auto& ray = rays[i];
-			auto& view = views[i];
-
-			if (hit.shapeid != RadeonRays::kNullId && hit.primid != RadeonRays::kNullId)
+			rpr_framebuffer colorFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(colorTexture_->handle()), &colorFramebuffer))
 			{
-				auto& mesh = scene_[hit.shapeid]->mesh;
-				auto& mat = materials_[hit.shapeid];
+				rprContextSetAOV(rprContext_, RPR_AOV_COLOR, colorFramebuffer);
 
-				if (mat->isEmissive())
-					continue;
+				if (this->colorFramebuffer_)
+					rprObjectDelete(this->colorFramebuffer_);
 
-				auto ro = InterpolateVertices(mesh.positions.data(), mesh.indices.data(), hit.primid, hit.uvwt);
-				auto norm = InterpolateNormals(mesh.normals.data(), mesh.indices.data(), hit.primid, hit.uvwt);
-
-				RadeonRays::float3 L;
-				renderData_.weights[i] = 1.0f;//Disney_Sample(norm, -view.d, mat, renderData_.random[i], L);
-
-				assert(renderData_.weights[i].w > 0.0f);
-				ray.d = L;
-				ray.o = ro + L * 1e-5f;
-				ray.SetMaxT(std::numeric_limits<float>::max());
-				ray.SetTime(0.0f);
-				ray.SetMask(-1);
-				ray.SetActive(true);
+				this->colorFramebuffer_ = colorFramebuffer;
 			}
-		}
 
-		std::memcpy(data, renderData_.rays[(pass & 1) ^ 1].data(), sizeof(RadeonRays::ray) * this->renderData_.numEstimate);
-
-		api_->UnmapBuffer(renderData_.fr_rays, data, &e); e->Wait(); api_->DeleteEvent(e);
-	}
-
-	void
-	MonteCarlo::GenerateLightRays(const light::Light& light) noexcept
-	{
-		RadeonRays::ray* rays = nullptr;
-		RadeonRays::Event* e = nullptr;
-		api_->MapBuffer(renderData_.fr_shadowrays, RadeonRays::kMapWrite, 0, sizeof(RadeonRays::ray) * this->renderData_.numEstimate, (void**)&rays, &e); e->Wait(); api_->DeleteEvent(e);
-
-		std::memset(renderData_.shadowRays.data(), 0, sizeof(RadeonRays::ray) * this->renderData_.numEstimate);
-
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
-		{
-			auto& hit = renderData_.hits[i];
-			if (hit.shapeid != RadeonRays::kNullId && hit.primid != RadeonRays::kNullId)
+			rpr_framebuffer normalFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(normalTexture_->handle()), &normalFramebuffer))
 			{
-				auto& mesh = scene_[hit.shapeid]->mesh;
-				auto& mat = materials_[mesh.material_ids[hit.primid]];
+				rprContextSetAOV(rprContext_, RPR_AOV_SHADING_NORMAL, normalFramebuffer);
 
-				if (mat->isEmissive())
-					continue;
-					
-				auto ro = InterpolateVertices(mesh.positions.data(), mesh.indices.data(), hit.primid, hit.uvwt);
-				auto norm = InterpolateNormals(mesh.normals.data(), mesh.indices.data(), hit.primid, hit.uvwt);
+				if (this->normalFramebuffer_)
+					rprObjectDelete(this->normalFramebuffer_);
 
-				RadeonRays::float4 L = RadeonRays::float4(0, 0, 0, 0);//light.sample(ro, norm, mat, renderData_.random[i]);
-				assert(std::isfinite(L[0] + L[1] + L[2]));
-
-				if (L.w > 0.0f)
-				{
-					auto& ray = renderData_.shadowRays[i];
-					ray.d = RadeonRays::float3(L[0], L[1], L[2]);
-					ray.o = ro + ray.d * 1e-5f;
-					ray.SetMaxT(L.w);
-					ray.SetTime(0.0f);
-					ray.SetMask(-1);
-					ray.SetActive(true);
-				}
+				this->normalFramebuffer_ = normalFramebuffer;
 			}
-		}
 
-		std::memcpy(rays, renderData_.shadowRays.data(), sizeof(RadeonRays::ray) * this->renderData_.numEstimate);
-
-		api_->UnmapBuffer(renderData_.fr_shadowrays, rays, &e); e->Wait(); api_->DeleteEvent(e);
-	}
-
-	void
-	MonteCarlo::GatherHits() noexcept
-	{
-		RadeonRays::Event* e = nullptr;
-		RadeonRays::Intersection* hit = nullptr;
-
-		api_->MapBuffer(renderData_.fr_hits, RadeonRays::kMapRead, 0, sizeof(RadeonRays::Intersection) * this->renderData_.numEstimate, (void**)&hit, &e); e->Wait(); api_->DeleteEvent(e);
-
-		std::memcpy(renderData_.hits.data(), hit, sizeof(RadeonRays::Intersection) * this->renderData_.numEstimate);
-
-		api_->UnmapBuffer(renderData_.fr_hits, hit, &e); e->Wait(); api_->DeleteEvent(e);
-	}
-
-	void
-	MonteCarlo::GatherShadowHits() noexcept
-	{
-		RadeonRays::Event* e = nullptr;
-		RadeonRays::Intersection* hit = nullptr;
-
-		api_->MapBuffer(renderData_.fr_shadowhits, RadeonRays::kMapRead, 0, sizeof(RadeonRays::Intersection) * this->renderData_.numEstimate, (void**)&hit, &e); e->Wait(); api_->DeleteEvent(e);
-
-		std::memcpy(renderData_.shadowHits.data(), hit, sizeof(RadeonRays::Intersection) * this->renderData_.numEstimate);
-
-		api_->UnmapBuffer(renderData_.fr_shadowhits, hit, &e); e->Wait(); api_->DeleteEvent(e);
-	}
-
-	void
-	MonteCarlo::GatherFirstSampling() noexcept
-	{
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
-		{
-			renderData_.samples[i] = 0;
-			renderData_.samplesAccum[i] = 0;
-
-			auto& hit = renderData_.hits[i];
-			if (hit.shapeid != RadeonRays::kNullId)
+			rpr_framebuffer albedoFramebuffer = nullptr;
+			if (RPR_SUCCESS == rprContextCreateFramebufferFromGLTexture2D(rprContext_, GL_TEXTURE_2D, 0, static_cast<rpr_uint>(albedoTexture_->handle()), &albedoFramebuffer))
 			{
-				auto& mesh = scene_[hit.shapeid]->mesh;
-				auto& mat = materials_[hit.shapeid];
+				rprContextSetAOV(rprContext_, RPR_AOV_ALBEDO, albedoFramebuffer);
 
-				if (mat->isEmissive())
-					renderData_.samplesAccum[i] += RadeonRays::float3(mat->emissive.x, mat->emissive.y, mat->emissive.z);
-					
-				renderData_.samples[i] = RadeonRays::float3(1, 1, 1);
-			}					
-		}
-	}
+				if (this->albedoFramebuffer_)
+					rprObjectDelete(this->albedoFramebuffer_);
 
-	void
-	MonteCarlo::GatherSampling(std::int32_t pass) noexcept
-	{
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
-		{
-			auto& hit = renderData_.hits[i];
-			if (hit.shapeid != RadeonRays::kNullId)
-			{
-				auto& mesh = scene_[hit.shapeid]->mesh;
-				auto& mat = materials_[hit.primid];
-
-				auto ro = InterpolateVertices(mesh.positions.data(), mesh.indices.data(), hit.primid, hit.uvwt);
-				auto atten = GetPhysicalLightAttenuation(renderData_.rays[pass & 1][i].o - ro);
-					
-				assert(renderData_.weights[i].w > 0);
-
-				auto& sample = renderData_.samples[i];
-				sample *= renderData_.weights[i] * (1.0f / renderData_.weights[i].w) * atten;
-
-				if (mat->isEmissive())
-				{
-					renderData_.samplesAccum[i] += renderData_.samples[i] * RadeonRays::float3(mat->emissive.x, mat->emissive.y, mat->emissive.z);
-				}
+				this->albedoFramebuffer_ = albedoFramebuffer;
 			}
+
+			hal::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(this->width_);
+			depthTextureDesc.setHeight(this->height_);
+			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
+			auto depthTexture_ = renderer_->getDevice()->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32SFloat));
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
+
+			hal::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(this->width_);
+			framebufferDesc.setHeight(this->height_);
+			framebufferDesc.setFramebufferLayout(renderer_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			this->framebuffer_ = renderer_->getDevice()->createFramebuffer(framebufferDesc);
+			if (!this->framebuffer_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			this->tileNums_ = numEstimate;
 		}
 	}
 
 	void
-	MonteCarlo::GatherLightSamples(std::uint32_t pass, const light::Light& light) noexcept
+	MonteCarlo::estimate(const camera::Camera* camera, std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size)
 	{
-		auto& rays = renderData_.shadowRays;
-		auto& views = renderData_.rays[pass & 1];
+		this->generateWorkspace(size.x * size.y);
 
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < this->renderData_.numEstimate; ++i)
+		rpr_camera rprCamera;
+		rprSceneGetCamera(this->rprScene_, &rprCamera);
+		if (rprCamera)
 		{
-			if (rays[i].IsActive())
+			std::size_t count = 0;
+			std::size_t type_size = 0;
+
+			rprSceneGetInfo(this->rprScene_, RPR_SCENE_SHAPE_COUNT, 1, &count, &type_size);
+			if (count == 0)
+				return;
+
+			rprSceneGetInfo(this->rprScene_, RPR_SCENE_LIGHT_COUNT, 1, &count, &type_size);
+			if (count == 0)
+				return;
+
+			if (this->dirty_)
 			{
-				auto& hit = renderData_.hits[i];
-				auto& shadowHit = renderData_.shadowHits[i];
-				if (shadowHit.shapeid != RadeonRays::kNullId)
-					continue;
+				if (this->colorFramebuffer_)
+					rprFrameBufferClear(this->colorFramebuffer_);
 
-				auto& mesh = scene_[hit.shapeid]->mesh;
-				auto& mat = materials_[mesh.material_ids[hit.primid]];
+				if (this->normalFramebuffer_)
+					rprFrameBufferClear(this->normalFramebuffer_);
 
-				auto norm = InterpolateNormals(mesh.normals.data(), mesh.indices.data(), hit.primid, hit.uvwt);
-				auto sample = renderData_.samples[i];// *light.Li(norm, -views[i].d, rays[i].d, mat, renderData_.random[i]);
+				if (this->albedoFramebuffer_)
+					rprFrameBufferClear(this->albedoFramebuffer_);
 
-				renderData_.samplesAccum[i] += sample * (1.0f / (rays[i].GetMaxT() * rays[i].GetMaxT()));
+				this->dirty_ = false;
 			}
+
+			rprContextRender(rprContext_);
+
+			math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));
+			this->renderer_->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
 		}
 	}
 
 	void
-	MonteCarlo::Estimate(const camera::Camera& camera, std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size)
+	MonteCarlo::render(const camera::Camera* camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries, std::uint32_t frame, std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) noexcept
 	{
-		this->GenerateWorkspace(size.x * size.y);
-		this->GenerateCamera(camera, offset, size);
-
-		for (std::int32_t pass = 0; pass < this->numBounces_; pass++)
-		{
-			api_->QueryIntersection(
-				renderData_.fr_rays,
-				renderData_.numEstimate,
-				renderData_.fr_hits,
-				nullptr,
-				nullptr
-			);
-
-			this->GatherHits();
-
-			if (pass == 0)
-				this->GatherFirstSampling();
-			else
-				this->GatherSampling(pass);
-
-			/*for (auto& light : RenderScene::instance().getLightList())
-			{
-				if (light->getLayer() != camera.getLayer())
-					continue;
-
-				this->GenerateLightRays(*light);
-
-				api_->QueryIntersection(
-					renderData_.fr_shadowrays,
-					renderData_.numEstimate,
-					renderData_.fr_shadowhits,
-					nullptr,
-					nullptr
-				);
-
-				this->GatherShadowHits();
-				this->GatherLightSamples(pass, *light);
-			}*/
-
-			// prepare ray for indirect lighting gathering
-			if (pass + 1 < this->numBounces_)
-				this->GenerateRays(pass);
-		}
-
-		this->AccumSampling(frame, offset, size);
-		this->AdaptiveSampling();
-
-		this->ColorTonemapping(frame, offset, size);
-	}
-
-	void
-	MonteCarlo::AccumSampling(std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size) noexcept
-	{
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < size.x * size.y; ++i)
-		{
-			auto ix = offset.x + i % size.x;
-			auto iy = offset.y + i / size.x;
-			auto index = iy * this->width_ + ix;
-
-			auto& hdr = hdr_[index];
-			hdr.x += renderData_.samplesAccum[i].x;
-			hdr.y += renderData_.samplesAccum[i].y;
-			hdr.z += renderData_.samplesAccum[i].z;
-		}
-	}
-
-	void
-	MonteCarlo::AdaptiveSampling() noexcept
-	{
-	}
-
-	void
-	MonteCarlo::ColorTonemapping(std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size) noexcept
-	{
-#pragma omp parallel for
-		for (std::int32_t i = 0; i < size.x * size.y; ++i)
-		{
-			auto ix = offset.x + i % size.x;
-			auto iy = offset.y + i / size.x;
-			auto index = iy * this->width_ + ix;
-
-			auto& hdr = hdr_[index];
-			assert(std::isfinite(hdr.x));
-			assert(std::isfinite(hdr.y));
-			assert(std::isfinite(hdr.z));
-
-			std::uint8_t r = std::uint8_t(hdr.x / frame * 255);
-			std::uint8_t g = std::uint8_t(hdr.y / frame * 255);
-			std::uint8_t b = std::uint8_t(hdr.z / frame * 255);
-
-			ldr_[index] = 0xFF << 24 | b << 16 | g << 8 | r;
-		}
-	}
-
-	void
-	MonteCarlo::render(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries, std::uint32_t frame, std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) noexcept
-	{
-		if (this->compileScene(geometries))
-			this->Estimate(camera, frame, RadeonRays::int2(x, y), RadeonRays::int2(w, h));
+		if (this->compileScene(camera, light, geometries))
+			this->estimate(camera, frame, RadeonRays::int2(x, y), RadeonRays::int2(w, h));
 	}
 }

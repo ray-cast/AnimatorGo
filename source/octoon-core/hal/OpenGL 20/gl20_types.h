@@ -281,7 +281,7 @@ namespace octoon
 
 		struct GL20VertexBuffer
 		{
-			bool needUpdate;
+			bool setDirty;
 			std::intptr_t offset;
 			GL20GraphicsDataPtr vbo;
 		};

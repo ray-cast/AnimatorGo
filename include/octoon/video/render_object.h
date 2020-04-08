@@ -41,6 +41,9 @@ namespace octoon::video
 		void setVisible(bool enable) noexcept;
 		bool getVisible() const noexcept;
 
+		void setDirty(bool dirty) noexcept;
+		bool isDirty() const noexcept;
+
 		void setOwnerListener(RenderListener* listener) noexcept;
 		RenderListener* getOwnerListener() noexcept;
 
@@ -70,6 +73,7 @@ namespace octoon::video
 	private:
 		bool active_;
 		bool visible_;
+		bool dirty_;
 
 		std::uint8_t layer_;
 		std::int32_t order_;

@@ -29,7 +29,7 @@ namespace octoon::video
 		, colorTexture_(0)
 		, depthTexture_(0)
 		, sortObjects_(true)
-		, enableGlobalIllumination_(true)
+		, enableGlobalIllumination_(false)
 	{
 	}
 
@@ -102,6 +102,7 @@ namespace octoon::video
 	void
 	Renderer::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
 	{
+		this->montecarlo_->setGraphicsContext(context);
 		this->renderer_ = context;
 	}
 	
@@ -703,14 +704,14 @@ namespace octoon::video
 			for (auto& camera : scene.getCameras())
 			{
 				this->montecarlo_->render(
-					*camera,
+					camera,
 					scene.getLights(),
 					scene.getGeometries(),
 					0,
-					camera->getPixelViewport().x,
-					camera->getPixelViewport().y,
-					camera->getPixelViewport().width,
-					camera->getPixelViewport().height);
+					(std::uint32_t)camera->getPixelViewport().x,
+					(std::uint32_t)camera->getPixelViewport().y,
+					(std::uint32_t)camera->getPixelViewport().width,
+					(std::uint32_t)camera->getPixelViewport().height);
 			}
 		}
 		else
@@ -755,6 +756,17 @@ namespace octoon::video
 			}
 
 			camera->onRenderAfter(*camera);
+			camera->setDirty(false);
+		}
+
+		for (auto& it : scene.getLights())
+			it->setDirty(false);
+
+		for (auto& it : scene.getGeometries())
+		{
+			for (auto& material : it->getMaterials())
+				material->setDirty(false);
+			it->setDirty(false);
 		}
 	}
 

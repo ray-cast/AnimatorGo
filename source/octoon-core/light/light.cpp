@@ -19,18 +19,21 @@ namespace octoon::light
 	void
 	Light::setIntensity(float intensity) noexcept
 	{
+		this->setDirty(true);
 		_lightIntensity = intensity;
 	}
 
 	void
 	Light::setRange(float range) noexcept
 	{
+		this->setDirty(true);
 		_lightRange = range;
 	}
 
 	void
 	Light::setColor(const math::float3& color) noexcept
 	{
+		this->setDirty(true);
 		_lightColor = color;
 	}
 

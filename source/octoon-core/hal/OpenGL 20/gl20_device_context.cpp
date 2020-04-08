@@ -360,7 +360,7 @@ namespace octoon
 			{
 				_vertexBuffers[i].vbo = vbo;
 				_vertexBuffers[i].offset = offset;
-				_vertexBuffers[i].needUpdate = true;
+				_vertexBuffers[i].setDirty = true;
 				_needUpdateVertexBuffers = true;
 			}
 		}

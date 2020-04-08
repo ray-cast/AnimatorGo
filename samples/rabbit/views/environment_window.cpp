@@ -1,5 +1,4 @@
 ﻿#include "environment_window.h"
-#include <octoon/offline_environment_light_component.h>
 #include <octoon/environment_light_component.h>
 #include <octoon/mesh_renderer_component.h>
 
@@ -112,12 +111,8 @@ namespace rabbit
 	void
 	EnvironmentWindow::closeEvent(QCloseEvent* event)
 	{
-		auto offlineEnvLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-
-		if (offlineEnvLight)
-			offlineEnvLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 
 		if (environmentLight)
 			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
@@ -129,12 +124,8 @@ namespace rabbit
 	void
 	EnvironmentWindow::rejected()
 	{
-		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-		
-		if (envLight)
-			envLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));		
 		
 		if (environmentLight)
 			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
@@ -151,12 +142,8 @@ namespace rabbit
 	{
 		if (color.isValid())
 		{
-			auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-
-			if (envLight)
-				envLight->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 
 			if (environmentLight)
 				environmentLight->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
@@ -173,13 +160,9 @@ namespace rabbit
 		{
 			profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 
-			auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
 			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
 
-			if (envLight)
-				envLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-			
 			if (environmentLight)
 				environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 
@@ -200,9 +183,6 @@ namespace rabbit
 	void
 	EnvironmentWindow::sliderIntensityEvent(int value)
 	{
-		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-		if (envLight)
-			envLight->setIntensity(value / 10.0f);
 		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 		if (environmentLight)
 			environmentLight->setIntensity(value / 10.0f);
@@ -212,9 +192,6 @@ namespace rabbit
 	void
 	EnvironmentWindow::editIntensityEvent(double value)
 	{
-		auto envLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-		if (envLight)
-			envLight->setIntensity(value);
 		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 		if (environmentLight)
 			environmentLight->setIntensity(value);

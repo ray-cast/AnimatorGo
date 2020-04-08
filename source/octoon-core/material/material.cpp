@@ -42,7 +42,7 @@ namespace octoon::material
 		, _stencilBackFail(hal::GraphicsStencilOp::Keep)
 		, _stencilBackZFail(hal::GraphicsStencilOp::Keep)
 		, _stencilBackPass(hal::GraphicsStencilOp::Keep)
-		, _needUpdate(true)
+		, dirty_(true)
 	{
 	}
 
@@ -112,7 +112,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -144,7 +144,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -176,7 +176,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -208,7 +208,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -240,7 +240,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -272,7 +272,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -304,7 +304,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -334,7 +334,7 @@ namespace octoon::material
 
 		_properties.push_back(prop);
 
-		this->needUpdate(true);
+		this->setDirty(true);
 
 		return true;
 	}
@@ -343,7 +343,7 @@ namespace octoon::material
 	Material::set(const MaterialParam& value) noexcept
 	{
 		_properties.push_back(value);
-		this->needUpdate(true);
+		this->setDirty(true);
 		return true;
 	}
 
@@ -510,15 +510,15 @@ namespace octoon::material
 	}
 	
 	void
-	Material::needUpdate(bool update) noexcept
+	Material::setDirty(bool dirty) noexcept
 	{
-		this->_needUpdate = update;
+		this->dirty_ = dirty;
 	}
 
 	bool
-	Material::needUpdate() const noexcept
+	Material::isDirty() const noexcept
 	{
-		return this->_needUpdate;
+		return this->dirty_;
 	}
 
 	const std::vector<MaterialParam>&

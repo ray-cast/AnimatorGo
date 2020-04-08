@@ -212,36 +212,7 @@ SET(ANIMATION_FEATURES_LIST
 )
 SOURCE_GROUP("system\\animation" FILES ${ANIMATION_FEATURES_LIST})
 
-SET(OFFLINE_FEATURES_LIST
-	${HEADER_PATH}/offline_camera_component.h
-	${SOURCE_PATH}/offline_camera_component.cpp
-	${HEADER_PATH}/offline_render_component.h
-	${SOURCE_PATH}/offline_render_component.cpp
-	${HEADER_PATH}/offline_mesh_renderer_component.h
-	${SOURCE_PATH}/offline_mesh_renderer_component.cpp
-	${HEADER_PATH}/offline_skinned_mesh_renderer_component.h
-	${SOURCE_PATH}/offline_skinned_mesh_renderer_component.cpp
-	${HEADER_PATH}/offline_light_component.h
-	${SOURCE_PATH}/offline_light_component.cpp
-	${HEADER_PATH}/offline_environment_light_component.h
-	${SOURCE_PATH}/offline_environment_light_component.cpp
-	${HEADER_PATH}/offline_directional_light_component.h
-	${SOURCE_PATH}/offline_directional_light_component.cpp
-	${HEADER_PATH}/offline_spot_light_component.h
-	${SOURCE_PATH}/offline_spot_light_component.cpp
-	${HEADER_PATH}/offline_point_light_component.h
-	${SOURCE_PATH}/offline_point_light_component.cpp
-	${HEADER_PATH}/offline_material.h
-	${SOURCE_PATH}/offline_material.cpp
-	${HEADER_PATH}/offline_listener.h
-	${SOURCE_PATH}/offline_listener.cpp
-	${HEADER_PATH}/offline_feature.h
-	${SOURCE_PATH}/offline_feature.cpp
-)
-SOURCE_GROUP("system\\offline" FILES ${OFFLINE_FEATURES_LIST})
-
 LIST(APPEND OCTOON_LIST ${GAMEBASE_LIST})
-LIST(APPEND OCTOON_LIST ${OFFLINE_FEATURES_LIST})
 LIST(APPEND OCTOON_LIST ${HELPER_LIST})
 LIST(APPEND OCTOON_LIST ${LOADER_LIST})
 

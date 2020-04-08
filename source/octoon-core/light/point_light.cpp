@@ -29,7 +29,7 @@ namespace octoon::light
 		{
 			if (this->shadowCamera_ && enable)
 				this->shadowCamera_->setupFramebuffers(512, 512, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
-
+			this->setDirty(true);
 			this->shadowEnable_ = enable;
 		}
 	}
@@ -43,6 +43,7 @@ namespace octoon::light
 	void
 	PointLight::setShadowBias(float bias) noexcept
 	{
+		this->setDirty(true);
 		shadowBias_ = bias;
 	}
 
@@ -55,6 +56,7 @@ namespace octoon::light
 	void
 	PointLight::setShadowRadius(float radius) noexcept
 	{
+		this->setDirty(true);
 		this->shadowRadius_ = radius;
 	}
 	
@@ -71,6 +73,7 @@ namespace octoon::light
 		{
 			if (this->shadowCamera_ && this->shadowEnable_)
 				this->shadowCamera_->setupFramebuffers(size.x, size.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+			this->setDirty(true);
 			this->shadowSize_ = size;
 		}
 	}

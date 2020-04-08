@@ -16,6 +16,7 @@ namespace octoon::video
 	RenderObject::RenderObject() noexcept
 		: active_(false)
 		, visible_(true)
+		, dirty_(true)
 		, layer_(0)
 		, order_(0)
 		, transform_(math::float4x4::One)
@@ -53,6 +54,7 @@ namespace octoon::video
 	RenderObject::setLayer(std::uint8_t layer) noexcept
 	{
 		layer_ = layer;
+		this->setDirty(true);
 	}
 
 	std::uint8_t
@@ -65,6 +67,7 @@ namespace octoon::video
 	RenderObject::setRenderOrder(std::int32_t order) noexcept
 	{
 		order_ = order;
+		this->setDirty(true);
 	}
 
 	std::int32_t
@@ -77,12 +80,25 @@ namespace octoon::video
 	RenderObject::setVisible(bool enable) noexcept
 	{
 		visible_ = enable;
+		this->setDirty(true);
 	}
 
 	bool
 	RenderObject::getVisible() const noexcept
 	{
 		return visible_;
+	}
+
+	void
+	RenderObject::setDirty(bool dirty) noexcept
+	{
+		this->dirty_ = dirty;
+	}
+
+	bool
+	RenderObject::isDirty() const noexcept
+	{
+		return this->dirty_;
 	}
 
 	void
@@ -122,7 +138,8 @@ namespace octoon::video
 
 		transform_ = transform;
 		transformInverse_ = transformInverse;
-
+		
+		this->setDirty(true);
 		this->onMoveAfter();
 	}
 

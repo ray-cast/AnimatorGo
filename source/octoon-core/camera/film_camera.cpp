@@ -29,6 +29,7 @@ namespace octoon::camera
 	{
 		if (znear_ != znear)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			znear_ = znear;
 		}
@@ -39,6 +40,7 @@ namespace octoon::camera
 	{
 		if (zfar_ != zfar)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			zfar_ = zfar;
 		}
@@ -49,6 +51,7 @@ namespace octoon::camera
 	{
 		if (sensorSize_ != sensorSize)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			sensorSize_ = sensorSize;
 		}
@@ -69,6 +72,7 @@ namespace octoon::camera
 	{
 		if (zoom_ != zoom)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_ = true;
 			aperture_ = math::degress(std::atan(canvasWidth_ / zoom * 0.5f)) * 2.0f;
 			zoom_ = zoom;
@@ -80,6 +84,7 @@ namespace octoon::camera
 	{
 		if (canvasWidth_ != width)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_ = true;
 			aperture_ = math::degress(std::atan(width / zoom_ * 0.5f)) * 2.0f;
 			canvasWidth_ = width;

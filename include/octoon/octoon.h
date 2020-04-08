@@ -65,21 +65,8 @@
 #include <octoon/rectangle_light_component.h>
 #include <octoon/environment_light_component.h>
 
-#include <octoon/offline_camera_component.h>
-#include <octoon/offline_mesh_renderer_component.h>
-#include <octoon/offline_environment_light_component.h>
-#include <octoon/offline_directional_light_component.h>
-#include <octoon/offline_skinned_mesh_renderer_component.h>
-#include <octoon/offline_directional_light_component.h>
-#include <octoon/offline_spot_light_component.h>
-#include <octoon/offline_point_light_component.h>
-#include <octoon/offline_environment_light_component.h>
-#include <octoon/offline_mesh_renderer_component.h>
-#include <octoon/offline_skinned_mesh_renderer_component.h>
-
-#include <octoon/mesh_animation_component.h>
-
 #include <octoon/animator_component.h>
+#include <octoon/mesh_animation_component.h>
 #include <octoon/solver_component.h>
 #include <octoon/rotation_limit_component.h>
 #include <octoon/rotation_link_component.h>

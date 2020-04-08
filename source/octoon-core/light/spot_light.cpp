@@ -26,6 +26,7 @@ namespace octoon::light
 	void
 	SpotLight::setInnerCone(float value) noexcept
 	{
+		this->setDirty(true);
 		innerCone_.x = math::min(outerCone_.x, value);
 		innerCone_.y = math::cos(math::radians(innerCone_.x));
 	}
@@ -33,6 +34,7 @@ namespace octoon::light
 	void
 	SpotLight::setOuterCone(float value) noexcept
 	{
+		this->setDirty(true);
 		outerCone_.x = math::max(innerCone_.x, value);
 		outerCone_.y = math::cos(math::radians(outerCone_.x));
 	}
@@ -56,7 +58,7 @@ namespace octoon::light
 		{
 			if (this->shadowCamera_ && enable)
 				this->shadowCamera_->setupFramebuffers(512, 512, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
-
+			this->setDirty(true);
 			this->shadowEnable_ = enable;
 		}
 	}
@@ -98,6 +100,7 @@ namespace octoon::light
 		{
 			if (this->shadowCamera_ && this->shadowEnable_)
 				this->shadowCamera_->setupFramebuffers(size.x, size.y, 0, hal::GraphicsFormat::R8G8B8A8UNorm, hal::GraphicsFormat::D32_SFLOAT);
+			this->setDirty(true);
 			this->shadowSize_ = size;
 		}
 	}
@@ -111,6 +114,7 @@ namespace octoon::light
 	void
 	SpotLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
 	{
+		this->setDirty(true);
 		this->shadowCamera_ = camera;
 	}
 

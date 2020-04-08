@@ -145,7 +145,7 @@ namespace octoon
 				if (!vbos[slot].vbo)
 					continue;
 
-				if (vbos[slot].needUpdate || forceUpdate)
+				if (vbos[slot].setDirty || forceUpdate)
 				{
 					glBindBuffer(GL_ARRAY_BUFFER, vbos[slot].vbo->getInstanceID());
 
@@ -155,7 +155,7 @@ namespace octoon
 						glVertexAttribPointer(it.index, it.count, it.type, it.normalize, it.stride, (GLbyte*)nullptr + vbos[slot].offset + it.offset);
 					}
 
-					vbos[slot].needUpdate = false;
+					vbos[slot].setDirty = false;
 				}
 			}
 		}

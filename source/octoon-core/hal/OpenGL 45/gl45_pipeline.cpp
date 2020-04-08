@@ -148,12 +148,12 @@ namespace octoon
 					if (!vbos[it.slot].vbo)
 						continue;
 
-					if (vbos[it.slot].needUpdate)
+					if (vbos[it.slot].setDirty)
 					{
 						GLuint64 addr = vbos[it.slot].vbo->getInstanceAddr() + vbos[it.slot].offset;
 						GLsizeiptr size = vbos[it.slot].vbo->getDataDesc().getStreamSize() - vbos[it.slot].offset;
 						glBufferAddressRangeNV(GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, it.slot, addr, size);
-						vbos[it.slot].needUpdate = false;
+						vbos[it.slot].setDirty = false;
 					}
 				}
 			}
@@ -164,10 +164,10 @@ namespace octoon
 					if (!vbos[it.slot].vbo)
 						continue;
 
-					if (vbos[it.slot].needUpdate || forceUpdate)
+					if (vbos[it.slot].setDirty || forceUpdate)
 					{
 						glBindVertexBuffer(it.slot, vbos[it.slot].vbo->getInstanceID(), vbos[it.slot].offset, _bindings[it.slot].stride);
-						vbos[it.slot].needUpdate = false;
+						vbos[it.slot].setDirty = false;
 					}
 				}
 			}

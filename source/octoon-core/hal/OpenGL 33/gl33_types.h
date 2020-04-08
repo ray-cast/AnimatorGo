@@ -80,14 +80,14 @@ namespace octoon
 
 		struct GL33VertexBuffer
 		{
-			bool needUpdate;
+			bool setDirty;
 			std::intptr_t offset;
 			GL33GraphicsDataPtr vbo;
 		};
 
 		struct GL45VertexBuffer
 		{
-			bool needUpdate;
+			bool setDirty;
 			std::intptr_t offset;
 			GL45GraphicsDataPtr vbo;
 		};

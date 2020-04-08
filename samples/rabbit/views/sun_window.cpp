@@ -2,7 +2,6 @@
 #include <qscrollbar.h>
 #include <octoon/transform_component.h>
 #include <octoon/directional_light_component.h>
-#include <octoon/offline_directional_light_component.h>
 
 namespace rabbit
 {
@@ -234,12 +233,9 @@ namespace rabbit
 	void
 	SunWindow::closeEvent(QCloseEvent* event)
 	{
-		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (sunLight)
 			sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
-		auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-		if (sunLight2)
-			sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 	}
 
 	void 
@@ -247,24 +243,18 @@ namespace rabbit
 	{
 		if (color.isValid())
 		{
-			auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+			auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 			if (sunLight)
 				sunLight->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
-			auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-			if (sunLight2)
-				sunLight2->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 		}
 	}
 
 	void
 	SunWindow::rejected()
 	{
-		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+		auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (sunLight)
 			sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
-		auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-		if (sunLight2)
-			sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 		auto transform = profile_->entitiesModule->sunLight->getComponent<octoon::TransformComponent>();
 		if (transform)
 		{
@@ -280,17 +270,11 @@ namespace rabbit
 	{
 		if (color.isValid())
 		{
-			auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+			auto sunLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 			if (sunLight)
 			{
 				profile_->sunModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 				sunLight->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
-			}
-			auto sunLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-			if (sunLight2)
-			{
-				profile_->sunModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
-				sunLight2->setColor(octoon::math::srgb2linear(profile_->sunModule->color));
 			}
 		}
 
@@ -312,24 +296,18 @@ namespace rabbit
 	void
 	SunWindow::sliderIntensityEvent(int value)
 	{
-		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value / 10.0f);
-		auto envLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-		if (envLight2)
-			envLight2->setIntensity(value / 10.0f);
 		editIntensity_->setValue(value / 10.0f);
 	}
 
 	void
 	SunWindow::editIntensityEvent(double value)
 	{
-		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::OfflineDirectionalLightComponent>();
+		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (envLight)
 			envLight->setIntensity(value);
-		auto envLight2 = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
-		if (envLight2)
-			envLight2->setIntensity(value);
 		sliderIntensity_->setValue(value * 10.0f);
 	}
 

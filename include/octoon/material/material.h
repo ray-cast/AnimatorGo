@@ -155,8 +155,8 @@ namespace octoon::material
 		bool get(std::string_view key, hal::GraphicsTexturePtr& value) const noexcept;
 		bool get(std::string_view key, MaterialParam& out) const noexcept;
 
-		void needUpdate(bool update) noexcept;
-		bool needUpdate() const noexcept;
+		void setDirty(bool dirty) noexcept;
+		bool isDirty() const noexcept;
 
 		const std::vector<MaterialParam>& getMaterialParams() const noexcept;
 
@@ -167,7 +167,7 @@ namespace octoon::material
 	private:
 		std::string name_;
 
-		bool _needUpdate;
+		bool dirty_;
 
 		bool _enableScissorTest;
 		bool _enableSrgb;

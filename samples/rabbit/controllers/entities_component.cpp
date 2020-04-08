@@ -138,10 +138,6 @@ namespace rabbit
 		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
 		if (environmentLight)
 		{
-			auto light = environmentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-			if (light)
-				light->setBgImage(filepath);
-
 			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
 			if (envLight)
 				envLight->setEnvironmentMap(PMREMLoader::load(filepath));
@@ -157,10 +153,6 @@ namespace rabbit
 		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
 		if (environmentLight)
 		{
-			auto light = environmentLight->getComponent<octoon::OfflineEnvironmentLightComponent>();
-			if (light)
-				light->setBgImage("");
-
 			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
 			if (envLight)
 				envLight->setEnvironmentMap(nullptr);
@@ -189,12 +181,9 @@ namespace rabbit
 		if (camera)
 			objects.emplace_back(camera);
 
-		auto mainLight = octoon::GameObject::create("DirectionalLight");
 		auto rotation = math::Quaternion(math::float3(-0.1, math::PI + 0.5f, 0.0f));
-		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(context->profile->sunModule->color);
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(context->profile->sunModule->intensity);
-		mainLight->addComponent<octoon::DirectionalLightComponent>();
+
+		auto& mainLight = this->getContext()->profile->entitiesModule->sunLight;
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowMapSize(math::uint2(2048, 2048));
@@ -214,7 +203,7 @@ namespace rabbit
 				this->setupMorphAnimation(it, morphClip);
 
 				model->setName(it.name);
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<OfflineSkinnedMeshRendererComponent>()->getTransforms());
+				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
 				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
 
 				objects.emplace_back(std::move(model));
@@ -227,7 +216,6 @@ namespace rabbit
 
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = camera;
-		context->profile->entitiesModule->sunLight = mainLight;
 		context->profile->entitiesModule->objects = objects;
 
 		this->sendMessage("rabbit:project:open");
@@ -240,9 +228,6 @@ namespace rabbit
 		this->setupCameraAnimation(pmm.camera_keyframes, clip);
 
 		auto obj = GameObject::create("MainCamera");
-
-		auto offlineCamera = obj->addComponent<OfflineCameraComponent>();
-		offlineCamera->setAperture((float)pmm.camera_keyframes[0].fov);
 
 		auto camera = obj->addComponent<PerspectiveCameraComponent>();
 		camera->setFar(2000.0f);
@@ -258,7 +243,6 @@ namespace rabbit
 		obj->addComponent<FirstPersonCameraComponent>();
 
 		auto active = this->getContext()->profile->offlineModule->offlineEnable;
-		obj->getComponent<octoon::OfflineCameraComponent>()->setActive(active);
 		obj->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
 
 		this->getContext()->behaviour->sendMessage("editor:camera:set", obj);
@@ -477,9 +461,6 @@ namespace rabbit
 	EntitiesComponent::onEnable() noexcept
 	{
 		auto mainLight = octoon::GameObject::create("DirectionalLight");
-		mainLight->addComponent<octoon::OfflineDirectionalLightComponent>();
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
-		mainLight->getComponent<octoon::OfflineDirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
 		mainLight->addComponent<octoon::DirectionalLightComponent>();
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
 		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
@@ -492,9 +473,6 @@ namespace rabbit
 		envMaterial->setDepthWriteEnable(false);
 
 		auto enviromentLight = octoon::GameObject::create("EnvironmentLight");
-		enviromentLight->addComponent<octoon::OfflineEnvironmentLightComponent>();
-		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
-		enviromentLight->getComponent<octoon::OfflineEnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 		enviromentLight->addComponent<octoon::EnvironmentLightComponent>();
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
@@ -504,9 +482,6 @@ namespace rabbit
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
-		mainCamera->addComponent<octoon::OfflineCameraComponent>();
-		mainCamera->getComponent<octoon::OfflineCameraComponent>()->setAperture(60.0f);
-		mainCamera->getComponent<octoon::OfflineCameraComponent>()->setActive(this->getContext()->profile->offlineModule->offlineEnable);
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);

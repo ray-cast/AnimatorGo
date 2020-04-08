@@ -127,10 +127,10 @@ namespace octoon
 				if (!vbos[it.slot].vbo)
 					continue;
 
-				if (vbos[it.slot].needUpdate || forceUpdate)
+				if (vbos[it.slot].setDirty || forceUpdate)
 				{
 					glBindVertexBuffer(it.slot, vbos[it.slot].vbo->getInstanceID(), vbos[it.slot].offset, _bindings[it.slot].stride);
-					vbos[it.slot].needUpdate = false;
+					vbos[it.slot].setDirty = false;
 				}
 			}
 		}

@@ -30,6 +30,7 @@ namespace octoon::camera
 	{
 		if (aperture_ != aperture)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			aperture_ = aperture;
 		}
@@ -46,6 +47,7 @@ namespace octoon::camera
 	{
 		if (znear_ != znear)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			znear_ = znear;
 		}
@@ -62,6 +64,7 @@ namespace octoon::camera
 	{
 		if (zfar_ != zfar)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			zfar_ = zfar;
 		}
@@ -78,6 +81,7 @@ namespace octoon::camera
 	{
 		if (sensorSize_ != sensorSize)
 		{
+			this->setDirty(true);
 			needUpdateViewProject_= true;
 			sensorSize_ = sensorSize;
 		}

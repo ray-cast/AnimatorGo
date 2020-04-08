@@ -281,7 +281,7 @@ namespace octoon
 
 		struct GL30VertexBuffer
 		{
-			bool needUpdate;
+			bool setDirty;
 			std::intptr_t offset;
 			GL30GraphicsDataPtr vbo;
 		};

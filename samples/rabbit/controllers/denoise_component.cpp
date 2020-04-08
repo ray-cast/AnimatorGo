@@ -1,7 +1,6 @@
 #include "denoise_component.h"
 #include "rabbit_behaviour.h"
 #include <OpenImageDenoise/oidn.hpp>
-#include <octoon/offline_feature.h>
 
 namespace rabbit
 {

@@ -1,7 +1,6 @@
 #include <octoon/mesh_animation_component.h>
 #include <octoon/runtime/except.h>
 #include <octoon/skinned_mesh_renderer_component.h>
-#include <octoon/offline_mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 #include <octoon/timer_feature.h>
 #include <octoon/material/mesh_standard_material.h>
@@ -615,7 +614,6 @@ namespace octoon
 
 				auto gameObject = GameObject::create(child.getName());
 				gameObject->addComponent<MeshRendererComponent>(material);
-				gameObject->addComponent<OfflineMeshRendererComponent>(material);
 
 				auto mesh = gameObject->addComponent<MeshAnimationComponent>();
 				mesh->setupAnimationData(child);

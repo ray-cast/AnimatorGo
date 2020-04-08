@@ -15,7 +15,6 @@
 #include <octoon/gui_feature.h>
 #include <octoon/physics_feature.h>
 #include <octoon/video_feature.h>
-#include <octoon/offline_feature.h>
 #include <octoon/timer_feature.h>
 
 #include <octoon/io/fstream.h>

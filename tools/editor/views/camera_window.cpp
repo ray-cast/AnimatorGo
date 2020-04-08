@@ -3,6 +3,7 @@
 #include <octoon/octoon.h>
 #include <octoon/ui/imgui.h>
 #include <octoon/editor_camera_component.h>
+#include <octoon/hal/graphics.h>
 
 namespace octoon
 {

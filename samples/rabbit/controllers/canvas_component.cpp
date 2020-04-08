@@ -1,8 +1,8 @@
 #include "canvas_component.h"
 #include "rabbit_behaviour.h"
-#include <octoon/offline_feature.h>
-#include <octoon/offline_camera_component.h>
+#include <octoon/camera_component.h>
 #include <octoon/image/image.h>
+#include <octoon/hal/graphics.h>
 
 namespace rabbit
 {
@@ -42,27 +42,17 @@ namespace rabbit
 	{
 		auto& context = this->getContext();
 
-		if (this->getContext()->profile->offlineModule->offlineEnable)
+		auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
+		auto colorTexture = camera->getFramebuffer()->getFramebufferDesc().getColorAttachments().front().getBindingTexture();
+		if (colorTexture)
 		{
-			auto offlineFeature = context->behaviour->getFeature<octoon::OfflineFeature>();
-			offlineFeature->readColorFramebuffer((float*)this->getModel()->colorBuffer.data());
-			offlineFeature->readAlbedoFramebuffer((float*)this->getModel()->albedoBuffer.data());
-			offlineFeature->readNormalFramebuffer((float*)this->getModel()->normalBuffer.data());
-		}
-		else
-		{
-			auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
-			auto colorTexture = camera->getFramebuffer()->getFramebufferDesc().getColorAttachments().front().getBindingTexture();
-			if (colorTexture)
-			{
-				auto& desc = colorTexture->getTextureDesc();
+			auto& desc = colorTexture->getTextureDesc();
 
-				void* data = nullptr;
-				if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
-				{
-					std::memcpy(this->getModel()->outputBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
-					colorTexture->unmap();
-				}
+			void* data = nullptr;
+			if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			{
+				std::memcpy(this->getModel()->outputBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				colorTexture->unmap();
 			}
 		}
 	}

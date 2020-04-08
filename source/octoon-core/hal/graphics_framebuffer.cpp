@@ -235,13 +235,13 @@ namespace octoon
 		}
 
 		void
-		GraphicsFramebufferDesc::setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr&& layout) noexcept
+		GraphicsFramebufferDesc::setFramebufferLayout(GraphicsFramebufferLayoutPtr&& layout) noexcept
 		{
 			_framebufferLayout = std::move(layout);
 		}
 
 		void
-		GraphicsFramebufferDesc::setGraphicsFramebufferLayout(const GraphicsFramebufferLayoutPtr& layout) noexcept
+		GraphicsFramebufferDesc::setFramebufferLayout(const GraphicsFramebufferLayoutPtr& layout) noexcept
 		{
 			_framebufferLayout = layout;
 		}

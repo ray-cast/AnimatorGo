@@ -88,8 +88,8 @@ namespace octoon
 			void setDepthStencilAttachment(const GraphicsAttachmentBinding& target) noexcept;
 			const GraphicsAttachmentBinding& getDepthStencilAttachment() const noexcept;
 
-			void setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr&& layout) noexcept;
-			void setGraphicsFramebufferLayout(const GraphicsFramebufferLayoutPtr& layout) noexcept;
+			void setFramebufferLayout(GraphicsFramebufferLayoutPtr&& layout) noexcept;
+			void setFramebufferLayout(const GraphicsFramebufferLayoutPtr& layout) noexcept;
 			GraphicsFramebufferLayoutPtr getFramebufferLayout() const noexcept;
 
 		private:

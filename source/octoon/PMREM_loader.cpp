@@ -240,7 +240,7 @@ float D_GGX(float nh, float roughness)
 				hal::GraphicsFramebufferDesc framebufferDesc;
 				framebufferDesc.setWidth(width >> i);
 				framebufferDesc.setHeight(height >> i);
-				framebufferDesc.setGraphicsFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
 				framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture, i, 0));
 				framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture, i, 0));
 

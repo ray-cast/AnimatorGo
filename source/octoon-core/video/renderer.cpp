@@ -769,7 +769,7 @@ namespace octoon::video
 			GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(w);
 			framebufferDesc.setHeight(h);
-			framebufferDesc.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
@@ -798,7 +798,7 @@ namespace octoon::video
 			GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(w);
 			framebufferDesc.setHeight(h);
-			framebufferDesc.setGraphicsFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(device_->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(GraphicsAttachmentBinding(colorTexture_, 0, 0));
 

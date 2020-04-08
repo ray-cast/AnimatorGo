@@ -80,7 +80,7 @@ namespace octoon
 		}
 
 		void
-		GraphicsPipelineDesc::setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr framebufferLayout) noexcept
+		GraphicsPipelineDesc::setFramebufferLayout(GraphicsFramebufferLayoutPtr framebufferLayout) noexcept
 		{
 			_framebufferLayout = framebufferLayout;
 		}

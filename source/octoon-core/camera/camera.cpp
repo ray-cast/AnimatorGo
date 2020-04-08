@@ -254,7 +254,7 @@ namespace octoon::camera
 		hal::GraphicsFramebufferDesc framebufferDesc;
 		framebufferDesc.setWidth(w);
 		framebufferDesc.setHeight(h);
-		framebufferDesc.setGraphicsFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+		framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
 		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[0], 0, 0));
 		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[0], 0, 0));
 
@@ -293,7 +293,7 @@ namespace octoon::camera
 		hal::GraphicsFramebufferDesc framebufferDesc;
 		framebufferDesc.setWidth(w);
 		framebufferDesc.setHeight(h);
-		framebufferDesc.setGraphicsFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+		framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
 		framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_[1], 0, 0));
 		framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_[1], 0, 0));
 

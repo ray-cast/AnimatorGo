@@ -659,7 +659,7 @@ namespace octoon
 			hal::GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(w);
 			framebufferDesc.setHeight(h);
-			framebufferDesc.setGraphicsFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(context->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 

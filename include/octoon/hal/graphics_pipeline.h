@@ -38,7 +38,7 @@ namespace octoon
 			void setGraphicsDescriptorSetLayout(GraphicsDescriptorSetLayoutPtr descriptorSet) noexcept;
 			GraphicsDescriptorSetLayoutPtr getDescriptorSetLayout() const noexcept;
 
-			void setGraphicsFramebufferLayout(GraphicsFramebufferLayoutPtr framebufferLayout) noexcept;
+			void setFramebufferLayout(GraphicsFramebufferLayoutPtr framebufferLayout) noexcept;
 			GraphicsFramebufferLayoutPtr getFramebufferLayout() const noexcept;
 
 			void setGraphicsState(GraphicsStatePtr state) noexcept;

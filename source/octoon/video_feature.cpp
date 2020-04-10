@@ -106,8 +106,7 @@ namespace octoon
 		auto graphics = this->getFeature<GraphicsFeature>();
 		if (graphics)
 		{
-			video::Renderer::instance()->setup(graphics->getDevice(), framebuffer_w_, framebuffer_h_);
-			video::Renderer::instance()->setGraphicsContext(graphics->getContext());
+			video::Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
 
 			this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		}

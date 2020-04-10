@@ -16,6 +16,9 @@ namespace octoon::video
 		RenderScene() noexcept;
 		~RenderScene() noexcept;
 
+		void setMainCamera(camera::Camera* camera) noexcept;
+		const camera::Camera* getMainCamera() const noexcept;
+
 		void addCamera(camera::Camera* camera) noexcept;
 		void removeCamera(camera::Camera* camera) noexcept;
 		const std::vector<camera::Camera*>& getCameras() const noexcept;
@@ -39,6 +42,7 @@ namespace octoon::video
 		RenderScene& operator=(const RenderScene&) = delete;
 
 	private:
+		camera::Camera* mainCamera_;
 		std::vector<light::Light*> lights_;
 		std::vector<camera::Camera*> cameras_;
 		std::vector<geometry::Geometry*> renderables_;

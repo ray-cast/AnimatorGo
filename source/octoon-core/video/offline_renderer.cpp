@@ -1,4 +1,4 @@
-#include <octoon/video/monte_carlo_render.h>
+#include "offline_renderer.h"
 #include <octoon/runtime/except.h>
 
 #include <octoon/camera/ortho_camera.h>
@@ -118,13 +118,13 @@ namespace octoon::video
 	void
 	MonteCarlo::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
 	{
-		this->renderer_ = context;
+		this->context_ = context;
 	}
 
 	const hal::GraphicsContextPtr&
 	MonteCarlo::getGraphicsContext() const noexcept(false)
 	{
-		return this->renderer_;
+		return this->context_;
 	}
 
 	std::pair<void*, void*>
@@ -610,15 +610,15 @@ namespace octoon::video
 			colorTextureDesc.setHeight(this->height_);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
-			colorTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			colorTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			normalTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			normalTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
 			if (!normalTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
-			albedoTexture_ = renderer_->getDevice()->createTexture(colorTextureDesc);
+			albedoTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
 			if (!albedoTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -660,7 +660,7 @@ namespace octoon::video
 			depthTextureDesc.setHeight(this->height_);
 			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
-			auto depthTexture_ = renderer_->getDevice()->createTexture(depthTextureDesc);
+			auto depthTexture_ = context_->getDevice()->createTexture(depthTextureDesc);
 			if (!depthTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -671,11 +671,11 @@ namespace octoon::video
 			hal::GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(this->width_);
 			framebufferDesc.setHeight(this->height_);
-			framebufferDesc.setFramebufferLayout(renderer_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-			this->framebuffer_ = renderer_->getDevice()->createFramebuffer(framebufferDesc);
+			this->framebuffer_ = context_->getDevice()->createFramebuffer(framebufferDesc);
 			if (!this->framebuffer_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
@@ -720,7 +720,7 @@ namespace octoon::video
 			rprContextRender(rprContext_);
 
 			math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));
-			this->renderer_->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
+			this->context_->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
 		}
 	}
 

@@ -1,17 +1,17 @@
-#ifndef OCTOON_RENDER_BUFFER_H_
-#define OCTOON_RENDER_BUFFER_H_
+#ifndef OCTOON_VIDEO_FORWARD_BUFFER_H_
+#define OCTOON_VIDEO_FORWARD_BUFFER_H_
 
 #include <octoon/mesh/mesh.h>
 #include <octoon/hal/graphics_data.h>
 
 namespace octoon::video
 {
-	class OCTOON_EXPORT RenderBuffer final
+	class OCTOON_EXPORT ForwardBuffer final
 	{
 	public:
-		RenderBuffer() noexcept;
-		RenderBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
-		virtual ~RenderBuffer() noexcept;
+		ForwardBuffer() noexcept;
+		ForwardBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		virtual ~ForwardBuffer() noexcept;
 
 		void setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 		const std::shared_ptr<mesh::Mesh>& getMesh() const noexcept;
@@ -26,8 +26,8 @@ namespace octoon::video
 		void updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 
 	private:
-		RenderBuffer(const RenderBuffer&) = delete;
-		RenderBuffer& operator=(const RenderBuffer&) = delete;
+		ForwardBuffer(const ForwardBuffer&) = delete;
+		ForwardBuffer& operator=(const ForwardBuffer&) = delete;
 
 	private:
 		std::uint32_t numVertices_;

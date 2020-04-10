@@ -1,19 +1,19 @@
-#include <octoon/video/render_buffer.h>
+#include <octoon/video/forward_buffer.h>
 #include <octoon/video/renderer.h>
 
 namespace octoon::video
 {
-	RenderBuffer::RenderBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::ForwardBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		this->setMesh(mesh);
 	}
 
-	RenderBuffer::~RenderBuffer() noexcept
+	ForwardBuffer::~ForwardBuffer() noexcept
 	{
 	}
 
 	void
-	RenderBuffer::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		if (this->mesh_ != mesh)
 		{
@@ -23,37 +23,37 @@ namespace octoon::video
 	}
 
 	const std::shared_ptr<mesh::Mesh>&
-	RenderBuffer::getMesh() const noexcept
+	ForwardBuffer::getMesh() const noexcept
 	{
 		return this->mesh_;
 	}
 
 	const hal::GraphicsDataPtr&
-	RenderBuffer::getVertexBuffer() const noexcept
+	ForwardBuffer::getVertexBuffer() const noexcept
 	{
 		return vertices_;
 	}
 
 	const hal::GraphicsDataPtr&
-	RenderBuffer::getIndexBuffer(std::size_t n) const noexcept
+	ForwardBuffer::getIndexBuffer(std::size_t n) const noexcept
 	{
 		return indices_[n];
 	}
 
 	std::size_t
-	RenderBuffer::getNumVertices() const noexcept
+	ForwardBuffer::getNumVertices() const noexcept
 	{
 		return mesh_->getVertexArray().size();
 	}
 
 	std::size_t
-	RenderBuffer::getNumIndices(std::size_t n) const noexcept
+	ForwardBuffer::getNumIndices(std::size_t n) const noexcept
 	{
 		return mesh_->getIndicesArray(n).size();
 	}
 
 	void
-	RenderBuffer::updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		if (mesh)
 		{

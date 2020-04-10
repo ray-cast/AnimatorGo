@@ -1,5 +1,5 @@
-#ifndef OCTOON_VIDEO_MONTE_CARLO_RENDERER_H_
-#define OCTOON_VIDEO_MONTE_CARLO_RENDERER_H_
+#ifndef OCTOON_VIDEO_OFFLINE_RENDERER_H_
+#define OCTOON_VIDEO_OFFLINE_RENDERER_H_
 
 #include <algorithm>
 #include <vector>
@@ -63,7 +63,7 @@ namespace octoon::video
 		void* normalFramebuffer_;
 		void* albedoFramebuffer_;
 
-		hal::GraphicsContextPtr renderer_;
+		hal::GraphicsContextPtr context_;
 
 		hal::GraphicsTexturePtr colorTexture_;
 		hal::GraphicsTexturePtr normalTexture_;

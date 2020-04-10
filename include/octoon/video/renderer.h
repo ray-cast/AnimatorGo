@@ -10,9 +10,9 @@
 #include <octoon/geometry/geometry.h>
 
 #include <octoon/video/render_object.h>
-#include <octoon/video/render_buffer.h>
-#include <octoon/video/render_pipeline.h>
-#include <octoon/video/render_context.h>
+#include <octoon/video/forward_buffer.h>
+#include <octoon/video/forward_material.h>
+#include <octoon/video/forward_scene.h>
 
 #include <octoon/lightmap/lightmap.h>
 
@@ -49,7 +49,7 @@ namespace octoon::video
 		Renderer() noexcept;
 		~Renderer() noexcept;
 
-		void setup(const hal::GraphicsDevicePtr& device, std::uint32_t w, std::uint32_t h) except;
+		void setup(const hal::GraphicsContextPtr& context, std::uint32_t w, std::uint32_t h) except;
 		void close() noexcept;
 
 		void setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept;
@@ -58,14 +58,11 @@ namespace octoon::video
 		void setSortObjects(bool sortObject) noexcept;
 		bool getSortObject() const noexcept;
 
-		void setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false);
-		const hal::GraphicsContextPtr& getGraphicsContext() const noexcept(false);
-
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
 
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
-		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
+		const std::shared_ptr<material::Material>& getOverrideMaterial() const noexcept;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
@@ -90,17 +87,11 @@ namespace octoon::video
 		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
 
 		void render(RenderScene& scene) noexcept;
-		void renderCamera(camera::Camera& camera, RenderScene& scene) noexcept;
 		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
-		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
-
-	private:
 		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
-
-		void prepareLights(const camera::Camera& camera, const std::vector<light::Light*>& light) noexcept;
 		void prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 	private:
@@ -117,23 +108,19 @@ namespace octoon::video
 
 		std::uint32_t width_, height_;
 
-		hal::GraphicsFramebufferPtr fbo_;
-		hal::GraphicsTexturePtr colorTexture_;
-		hal::GraphicsTexturePtr depthTexture_;
+		hal::GraphicsContextPtr context_;
 
-		hal::GraphicsDevicePtr device_;
-		hal::GraphicsContextPtr renderer_;
-
-		RenderProfile profile_;
+		ForwardScene profile_;
 		std::unique_ptr<class MonteCarlo> montecarlo_;
 		std::unique_ptr<class RtxManager> rtxManager_;
+		std::unique_ptr<class ForwardRenderer> forwardRenderer_;
 
-		std::shared_ptr<RenderBuffer> currentBuffer_;
+		std::shared_ptr<ForwardBuffer> currentBuffer_;
 		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
 
-		std::unordered_map<std::intptr_t, std::shared_ptr<RenderBuffer>> buffers_;
-		std::unordered_map<std::intptr_t, std::shared_ptr<RenderPipeline>> pipelines_;
+		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardBuffer>> buffers_;
+		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardMaterial>> materials_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<bake::Lightmap>> lightmaps_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};

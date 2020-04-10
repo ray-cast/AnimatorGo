@@ -42,11 +42,11 @@ namespace octoon::video
 		void setRenderScene(RenderScene* scene) noexcept;
 		const RenderScene* getRenderScene() const noexcept;
 
-		void render(const camera::Camera* camera);
+		void render(RenderScene* scene);
 
 	private:
 		void prepareScene(RenderScene* scene) noexcept;
-		void CreateFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture);
+		void createFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture);
 
 	private:
 		struct Config

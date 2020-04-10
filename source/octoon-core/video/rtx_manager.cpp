@@ -133,7 +133,7 @@ namespace octoon::video
 	}
 
 	void
-	RtxManager::CreateFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture)
+	RtxManager::createFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture)
 	{
 		if (target != GL_TEXTURE_2D)
 		{
@@ -167,12 +167,16 @@ namespace octoon::video
 	void
 	RtxManager::prepareScene(RenderScene* scene) noexcept
 	{
+		for (auto& c : configs_)
+			c.controller->compileScene(scene);
 	}
 
 	void
-	RtxManager::render(const camera::Camera* camera)
+	RtxManager::render(RenderScene* scene)
 	{
 		this->prepareScene(this->scene_);
 
+		for (auto& c : configs_)
+			c.pipeline->render(c.controller->getCachedScene(this->scene_));
 	}
 }

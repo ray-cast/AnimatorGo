@@ -1,42 +1,42 @@
-#ifndef OCTOON_RENDER_PIPELINE_H_
-#define OCTOON_RENDER_PIPELINE_H_
+#ifndef OCTOON_VIDEO_FORWARD_MATERIAL_H_
+#define OCTOON_VIDEO_FORWARD_MATERIAL_H_
 
 #include <octoon/camera/camera.h>
 #include <octoon/geometry/geometry.h>
 #include <octoon/material/material.h>
 
-#include <octoon/video/render_context.h>
+#include "forward_scene.h"
 
 namespace octoon::video
 {
-	class OCTOON_EXPORT RenderPipeline final
+	class OCTOON_EXPORT ForwardMaterial final
 	{
 	public:
-		RenderPipeline() noexcept;
-		RenderPipeline(const material::MaterialPtr& material, const RenderProfile& context) noexcept;
-		virtual ~RenderPipeline() noexcept;
+		ForwardMaterial() noexcept;
+		ForwardMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept;
+		virtual ~ForwardMaterial() noexcept;
 
-		void setMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept;
+		void setMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept;
 		const material::MaterialPtr& getMaterial() const noexcept;
 
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-		void update(const camera::Camera& camera, const geometry::Geometry& geometry, const RenderProfile& context) noexcept;
+		void update(const camera::Camera& camera, const geometry::Geometry& geometry, const ForwardScene& context) noexcept;
 
 	private:
 		void updateParameters(bool force = false) noexcept;
-		void updateMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept(false);
+		void updateMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept(false);
 
-		void setupProgram(const material::MaterialPtr& material, const RenderProfile& context);
+		void setupProgram(const material::MaterialPtr& material, const ForwardScene& context);
 		void setupRenderState(const material::MaterialPtr& material);
 
 		void parseIncludes(std::string& shader);
-		void replaceLightNums(std::string& shader, const LightModule& parameters);
+		void replaceLightNums(std::string& shader, const ForwardScene& parameters);
 
 	private:
-		RenderPipeline(const RenderPipeline&) = delete;
-		RenderPipeline& operator=(const RenderPipeline&) = delete;
+		ForwardMaterial(const ForwardMaterial&) = delete;
+		ForwardMaterial& operator=(const ForwardMaterial&) = delete;
 
 	private:
 		material::MaterialPtr material_;

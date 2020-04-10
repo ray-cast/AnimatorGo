@@ -5,11 +5,24 @@ namespace octoon::video
 	OctoonImplementSingleton(RenderScene)
 
 	RenderScene::RenderScene() noexcept
+		: mainCamera_(nullptr)
 	{
 	}
 
 	RenderScene::~RenderScene() noexcept
 	{
+	}
+
+	void
+	RenderScene::setMainCamera(camera::Camera* camera) noexcept
+	{
+		this->mainCamera_ = camera;
+	}
+	
+	const camera::Camera*
+	RenderScene::getMainCamera() const noexcept
+	{
+		return this->mainCamera_;
 	}
 
 	void

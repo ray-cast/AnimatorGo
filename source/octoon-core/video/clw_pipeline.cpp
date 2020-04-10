@@ -10,4 +10,9 @@ namespace octoon::video
 	ClwPipeline::~ClwPipeline() noexcept
 	{
 	}
+
+	void
+	ClwPipeline::render(CompiledScene& scene) noexcept
+	{
+	}
 }

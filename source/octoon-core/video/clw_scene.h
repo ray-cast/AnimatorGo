@@ -2,26 +2,71 @@
 #define OCTOON_VIDEO_CLW_SCENE_H_
 
 #include <CLW.h>
-
-#include "output.h"
+#include <radeon_rays.h>
+#undef PI
+#include <octoon/video/compiled_scene.h>
 
 namespace octoon::video
 {
-	class ClwScene : public Output
+    enum class CameraType
+    {
+        kPerspective,
+        kPhysicalPerspective,
+        kSpherical,
+        kFisheye,
+        kOrthographic
+    };
+
+    class Bundle
+    {
+    public:
+        virtual ~Bundle() = 0;
+    };
+
+    using namespace RadeonRays;
+
+	class ClwScene : public CompiledScene
 	{
 	public:
-		ClwScene(CLWContext context, std::uint32_t w, std::uint32_t h);
+		ClwScene(CLWContext context);
 
-		void getData(math::float4* data) const override;
-		void getData(math::float4* data, std::size_t offset, std::size_t elems_count) const override;
+        #include "Kernels/CL/payload.cl"
 
-		void clear(math::float4 const& val) override;
+        CLWBuffer<RadeonRays::float3> vertices;
+        CLWBuffer<RadeonRays::float3> normals;
+        CLWBuffer<RadeonRays::float2> uvs;
+        CLWBuffer<int> indices;
 
-		const CLWBuffer<math::float4>& data() const noexcept;
+        CLWBuffer<Shape> shapes;
+        CLWBuffer<ShapeAdditionalData> shapes_additional;
+
+        CLWBuffer<std::int32_t> material_attributes;
+        CLWBuffer<Light> lights;
+        CLWBuffer<Volume> volumes;
+        CLWBuffer<Texture> textures;
+        CLWBuffer<char> texturedata;
+
+        CLWBuffer<Camera> camera;
+        CLWBuffer<int> light_distributions;
+        CLWBuffer<InputMapData> input_map_data;
+
+        std::unique_ptr<Bundle> material_bundle;
+        std::unique_ptr<Bundle> volume_bundle;
+        std::unique_ptr<Bundle> texture_bundle;
+        std::unique_ptr<Bundle> input_map_leafs_bundle;
+        std::unique_ptr<Bundle> input_map_bundle;
+
+        int num_lights;
+        int num_volumes;
+        int envmapidx;
+        int background_idx;
+        int camera_volume_index;
+
+        std::vector<RadeonRays::Shape*> isect_shapes;
+        std::vector<RadeonRays::Shape*> visible_shapes;
 
 	private:
 		CLWContext context_;
-		CLWBuffer<math::float4> data_;
 	};
 }
 

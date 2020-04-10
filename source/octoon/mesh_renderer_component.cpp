@@ -1,6 +1,5 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
-#include <octoon/video/render_pipeline.h>
 #include <octoon/video/renderer.h>
 
 namespace octoon

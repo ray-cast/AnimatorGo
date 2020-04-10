@@ -1,8 +1,10 @@
-#ifndef OCTOON_RENDER_CONTEXT_H_
-#define OCTOON_RENDER_CONTEXT_H_
+#ifndef OCTOON_VIDEO_FORWARD_SCENE_H_
+#define OCTOON_VIDEO_FORWARD_SCENE_H_
 
-#include <octoon/hal/graphics_data.h>
-#include <octoon/hal/graphics_texture.h>
+#include <octoon/hal/graphics_context.h>
+#include <octoon/camera/camera.h>
+#include <octoon/geometry/geometry.h>
+#include "compiled_scene.h"
 
 namespace octoon::video
 {
@@ -91,12 +93,43 @@ namespace octoon::video
 		hal::GraphicsDataPtr directionLightBuffer;
 	};
 
-	class RenderProfile
+	class ForwardScene : public CompiledScene
 	{
 	public:
-		LightModule light;
-
 		void reset() noexcept;
+
+		const camera::Camera* camera;
+
+		std::size_t numDirectional;
+		std::size_t numSpot;
+		std::size_t numRectangle;
+		std::size_t numPoint;
+		std::size_t numHemi;
+		std::size_t numEnvironment;
+
+		math::float3 ambientLightColors;
+
+		std::vector<PointLight> pointLights;
+		std::vector<SpotLight> spotLights;
+		std::vector<RectAreaLight> rectangleLights;
+		std::vector<DirectionalLight> directionalLights;
+		std::vector<EnvironmentLight> environmentLights;
+
+		std::vector<hal::GraphicsTexturePtr> pointShadows;
+		std::vector<hal::GraphicsTexturePtr> spotShadows;
+		std::vector<hal::GraphicsTexturePtr> rectangleShadows;
+		std::vector<hal::GraphicsTexturePtr> directionalShadows;
+		std::vector<hal::GraphicsTexturePtr> environmentShadows;
+
+		std::vector<math::float4x4> directionalShadowMatrix;
+
+		hal::GraphicsDataPtr spotLightBuffer;
+		hal::GraphicsDataPtr pointLightBuffer;
+		hal::GraphicsDataPtr rectangleLightBuffer;
+		hal::GraphicsDataPtr directionLightBuffer;
+
+		std::vector<geometry::Geometry*> geometries;
+
 	};
 }
 

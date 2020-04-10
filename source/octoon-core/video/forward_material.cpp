@@ -1,4 +1,4 @@
-﻿#include <octoon/video/render_pipeline.h>
+﻿#include <octoon/video/forward_material.h>
 #include <octoon/video/renderer.h>
 #include <octoon/hal/graphics.h>
 #include <regex>
@@ -1840,16 +1840,16 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 
 namespace octoon::video
 {
-	RenderPipeline::RenderPipeline() noexcept
+	ForwardMaterial::ForwardMaterial() noexcept
 	{
 	}
 
-	RenderPipeline::RenderPipeline(const material::MaterialPtr& material, const RenderProfile& context) noexcept
+	ForwardMaterial::ForwardMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept
 	{
 		this->setMaterial(material, context);
 	}
 
-	RenderPipeline::~RenderPipeline() noexcept
+	ForwardMaterial::~ForwardMaterial() noexcept
 	{
 		material_.reset();
 
@@ -1876,7 +1876,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::setMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept
+	ForwardMaterial::setMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept
 	{
 		if (this->material_ != material)
 		{
@@ -1886,25 +1886,25 @@ namespace octoon::video
 	}
 		
 	const material::MaterialPtr&
-	RenderPipeline::getMaterial() const noexcept
+	ForwardMaterial::getMaterial() const noexcept
 	{
 		return this->material_;
 	}
 
 	const hal::GraphicsPipelinePtr&
-	RenderPipeline::getPipeline() const noexcept
+	ForwardMaterial::getPipeline() const noexcept
 	{
 		return pipeline_;
 	}
 
 	const hal::GraphicsDescriptorSetPtr&
-	RenderPipeline::getDescriptorSet() const noexcept
+	ForwardMaterial::getDescriptorSet() const noexcept
 	{
 		return descriptorSet_;
 	}
 
 	void
-	RenderPipeline::update(const camera::Camera& camera, const geometry::Geometry& geometry, const RenderProfile& context) noexcept
+	ForwardMaterial::update(const camera::Camera& camera, const geometry::Geometry& geometry, const ForwardScene& context) noexcept
 	{
 		if (this->material_)
 		{
@@ -1927,38 +1927,38 @@ namespace octoon::video
 				this->normalMatrix_->uniform3fmat((math::float3x3)(camera.getView() * geometry.getTransform()));
 
 			if (this->ambientLightColor_)
-				this->ambientLightColor_->uniform3f(context.light.ambientLightColors);
+				this->ambientLightColor_->uniform3f(context.ambientLightColors);
 
 			if (this->spotLights_)
-				this->spotLights_->uniformBuffer(context.light.spotLightBuffer);
+				this->spotLights_->uniformBuffer(context.spotLightBuffer);
 
 			if (this->pointLights_)
-				this->pointLights_->uniformBuffer(context.light.pointLightBuffer);
+				this->pointLights_->uniformBuffer(context.pointLightBuffer);
 
 			if (this->rectAreaLights_)
-				this->rectAreaLights_->uniformBuffer(context.light.rectangleLightBuffer);
+				this->rectAreaLights_->uniformBuffer(context.rectangleLightBuffer);
 
 			if (this->directionalLights_)
-				this->directionalLights_->uniformBuffer(context.light.directionLightBuffer);
+				this->directionalLights_->uniformBuffer(context.directionLightBuffer);
 
 			if (this->flipEnvMap_)
 				this->flipEnvMap_->uniform1f(1.0f);
 
 			if (this->envMap_)
-				this->envMap_->uniformTexture(context.light.environmentLights.front().radiance.lock());
+				this->envMap_->uniformTexture(context.environmentLights.front().radiance.lock());
 
 			if (this->envMapIntensity_)
-				this->envMapIntensity_->uniform1f(context.light.environmentLights.front().intensity);
+				this->envMapIntensity_->uniform1f(context.environmentLights.front().intensity);
 
 			if (this->directionalShadowMaps_.size() > 0)
 			{
-				for (std::size_t i = 0, j = 0; i < context.light.directionalLights.size(); i++)
+				for (std::size_t i = 0, j = 0; i < context.directionalLights.size(); i++)
 				{
-					auto& it = context.light.directionalLights[i];
+					auto& it = context.directionalLights[i];
 					if (it.shadow)
 					{
-						this->directionalShadowMaps_[j]->uniformTexture(context.light.directionalShadows[i]);
-						this->directionalShadowMatrixs_[j]->uniform4fmat(context.light.directionalShadowMatrix[i]);
+						this->directionalShadowMaps_[j]->uniformTexture(context.directionalShadows[i]);
+						this->directionalShadowMatrixs_[j]->uniform4fmat(context.directionalShadowMatrix[i]);
 						j++;
 					}
 				}
@@ -1969,7 +1969,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::parseIncludes(std::string& str)
+	ForwardMaterial::parseIncludes(std::string& str)
 	{
 		std::regex pattern("#include +<([^<>]*)>");
 		std::smatch m;
@@ -1993,7 +1993,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::replaceLightNums(std::string& str, const LightModule& parameters)
+	ForwardMaterial::replaceLightNums(std::string& str, const ForwardScene& parameters)
 	{
 		auto replace = [](std::string& str, std::string_view patten, std::string_view right)
 		{
@@ -2013,7 +2013,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::setupProgram(const material::MaterialPtr& material, const RenderProfile& context)
+	ForwardMaterial::setupProgram(const material::MaterialPtr& material, const ForwardScene& context)
 	{
 		auto shader = material->getShader();
 
@@ -2056,8 +2056,8 @@ namespace octoon::video
 		this->parseIncludes(vertexShader);
 		this->parseIncludes(fragmentShader);
 
-		this->replaceLightNums(vertexShader, context.light);
-		this->replaceLightNums(fragmentShader, context.light);
+		this->replaceLightNums(vertexShader, context);
+		this->replaceLightNums(fragmentShader, context);
 
 		hal::GraphicsProgramDesc programDesc;
 		programDesc.addShader(Renderer::instance()->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vertexShader, "main", hal::GraphicsShaderLang::GLSL)));
@@ -2066,7 +2066,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::setupRenderState(const material::MaterialPtr& material)
+	ForwardMaterial::setupRenderState(const material::MaterialPtr& material)
 	{
 		hal::GraphicsStateDesc stateDesc;
 		stateDesc.setColorBlends(material->getColorBlends());
@@ -2135,7 +2135,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::updateMaterial(const material::MaterialPtr& material, const RenderProfile& context) noexcept(false)
+	ForwardMaterial::updateMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept(false)
 	{
 		if (material) {
 			this->setupRenderState(material);
@@ -2230,9 +2230,9 @@ namespace octoon::video
 				if (envmapIntensity != end)
 					envMapIntensity_ = *envmapIntensity;
 
-				for (std::size_t i = 0; i < context.light.directionalLights.size(); i++)
+				for (std::size_t i = 0; i < context.directionalLights.size(); i++)
 				{
-					auto& it = context.light.directionalLights[i];
+					auto& it = context.directionalLights[i];
 					if (it.shadow)
 					{
 						auto shadowMap = std::find_if(begin, end, [i](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "directionalShadowMap[" + std::to_string(i) + "]"; });
@@ -2254,7 +2254,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderPipeline::updateParameters(bool force) noexcept
+	ForwardMaterial::updateParameters(bool force) noexcept
 	{
 		if (this->material_->isDirty() || force)
 		{

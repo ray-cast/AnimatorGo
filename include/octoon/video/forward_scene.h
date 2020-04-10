@@ -62,37 +62,6 @@ namespace octoon::video
 		math::float2 shadowMapSize;
 	};
 
-	struct LightModule
-	{
-		std::size_t numDirectional;
-		std::size_t numSpot;
-		std::size_t numRectangle;
-		std::size_t numPoint;
-		std::size_t numHemi;
-		std::size_t numEnvironment;
-
-		math::float3 ambientLightColors;
-
-		std::vector<PointLight> pointLights;
-		std::vector<SpotLight> spotLights;
-		std::vector<RectAreaLight> rectangleLights;
-		std::vector<DirectionalLight> directionalLights;
-		std::vector<EnvironmentLight> environmentLights;
-
-		std::vector<hal::GraphicsTexturePtr> pointShadows;
-		std::vector<hal::GraphicsTexturePtr> spotShadows;
-		std::vector<hal::GraphicsTexturePtr> rectangleShadows;
-		std::vector<hal::GraphicsTexturePtr> directionalShadows;
-		std::vector<hal::GraphicsTexturePtr> environmentShadows;
-
-		std::vector<math::float4x4> directionalShadowMatrix;
-
-		hal::GraphicsDataPtr spotLightBuffer;
-		hal::GraphicsDataPtr pointLightBuffer;
-		hal::GraphicsDataPtr rectangleLightBuffer;
-		hal::GraphicsDataPtr directionLightBuffer;
-	};
-
 	class ForwardScene : public CompiledScene
 	{
 	public:

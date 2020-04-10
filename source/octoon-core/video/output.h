@@ -5,24 +5,24 @@
 
 namespace octoon::video
 {
-    class Output
-    {
-    public:
-        Output(std::uint32_t w, std::uint32_t h) noexcept;
-        virtual ~Output() noexcept;
+	class Output
+	{
+	public:
+		Output(std::uint32_t w, std::uint32_t h) noexcept;
+		virtual ~Output() noexcept;
 
-        virtual void getData(math::float4* data) const = 0;
-        virtual void getData(math::float4* data, std::size_t offset, std::size_t elems_count) const = 0;
+		virtual void getData(math::float4* data) const = 0;
+		virtual void getData(math::float4* data, std::size_t offset, std::size_t elems_count) const = 0;
 
-        virtual void clear(math::float4 const& val) = 0;
+		virtual void clear(math::float4 const& val) = 0;
 
-        std::uint32_t width() const;
-        std::uint32_t height() const;
+		std::uint32_t width() const;
+		std::uint32_t height() const;
 
-    private:
-        std::uint32_t width_;
-        std::uint32_t height_;
-    };
+	private:
+		std::uint32_t width_;
+		std::uint32_t height_;
+	};
 }
 
 #endif

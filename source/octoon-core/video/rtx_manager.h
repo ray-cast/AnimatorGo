@@ -10,46 +10,58 @@
 #include <GL/glew.h>
 
 #include "clw_output.h"
+#include "clw_pipeline.h"
+#include "clw_scene_controller.h"
 #include "clw_render_factory.h"
+
+#include <octoon/camera/camera.h>
+#include <octoon/video/render_scene.h>
 
 namespace octoon::video
 {
-    enum DeviceType
-    {
-        kPrimary,
-        kSecondary
-    };
+	enum DeviceType
+	{
+		kPrimary,
+		kSecondary
+	};
 
-    enum Mode
-    {
-        kUseAll,
-        kUseGpus,
-        kUseSingleGpu,
-        kUseSingleCpu,
-        kUseCpus
-    };
+	enum Mode
+	{
+		kUseAll,
+		kUseGpus,
+		kUseSingleGpu,
+		kUseSingleCpu,
+		kUseCpus
+	};
 
-    class RtxManager
-    {
-    public:
-        RtxManager();
+	class RtxManager
+	{
+	public:
+		RtxManager();
 
-    private:
-        void CreateFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture);
+		void setRenderScene(RenderScene* scene) noexcept;
+		const RenderScene* getRenderScene() const noexcept;
 
-    private:
-        struct Config
-        {
-            DeviceType type;
-            //std::unique_ptr<octoon::Renderer> renderer;
-            //std::unique_ptr<octoon::SceneController<Baikal::ClwScene>> controller;
-            std::unique_ptr<octoon::video::RenderFactory> factory;
-            CLWContext context;
-            bool caninterop;
-        };
+		void render(const camera::Camera* camera);
 
-        std::vector<Config> configs_;
-    };
+	private:
+		void prepareScene(RenderScene* scene) noexcept;
+		void CreateFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture);
+
+	private:
+		struct Config
+		{
+			DeviceType type;
+			std::unique_ptr<octoon::video::Pipeline> pipeline;
+			std::unique_ptr<octoon::video::SceneController> controller;
+			std::unique_ptr<octoon::video::RenderFactory> factory;
+			CLWContext context;
+			bool caninterop;
+		};
+
+		RenderScene* scene_;
+		std::vector<Config> configs_;
+	};
 }
 
 #endif

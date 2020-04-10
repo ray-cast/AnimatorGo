@@ -681,97 +681,103 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::render(RenderScene& scene) noexcept
+	Renderer::renderCamera(camera::Camera& camera, RenderScene& scene) noexcept
 	{
-		for (auto& camera : scene.getCameras())
+		camera.onRenderBefore(camera);
+
+		for (auto& it : scene.getGeometries())
 		{
-			camera->onRenderBefore(*camera);
+			if (camera.getLayer() != it->getLayer())
+				continue;
 
-			for (auto& it : scene.getGeometries())
+			if (it->getVisible())
+				it->onRenderBefore(camera);
+		}
+
+		if (this->sortObjects_)
+			scene.sortGeometries();
+
+		if (this->enableGlobalIllumination_)
+		{
+#if 0
+			this->rtxManager_->setRenderScene(&scene);
+			this->rtxManager_->render(&camera);
+#else
+			this->montecarlo_->render(
+				&camera,
+				scene.getLights(),
+				scene.getGeometries(),
+				0,
+				(std::uint32_t)camera.getPixelViewport().x,
+				(std::uint32_t)camera.getPixelViewport().y,
+				(std::uint32_t)camera.getPixelViewport().width,
+				(std::uint32_t)camera.getPixelViewport().height);
+#endif
+		}
+		else
+		{
+			auto framebuffer = camera.getFramebuffer();
+			this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+			this->renderer_->clearFramebuffer(0, camera.getClearFlags(), camera.getClearColor(), 1.0f, 0);
+			this->renderer_->setViewport(0, camera.getPixelViewport());
+
+			this->prepareLights(camera, scene.getLights());
+			this->renderObjects(scene.getGeometries(), camera, this->overrideMaterial_);
+
+			if (camera.getRenderToScreen())
 			{
-				if (camera->getLayer() != it->getLayer())
-					continue;
+				auto& v = camera.getPixelViewport();
+				this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+			}
 
-				if (it->getVisible())
-					it->onRenderBefore(*camera);
+			auto& swapFramebuffer = camera.getSwapFramebuffer();
+			if (framebuffer && swapFramebuffer)
+			{
+				math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
+				math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
+				this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 			}
 		}
 
+		for (auto& it : scene.getLights())
+		{
+			if (camera.getLayer() != it->getLayer())
+				continue;
+
+			it->setDirty(false);
+		}
+
+		for (auto& it : scene.getGeometries())
+		{
+			if (camera.getLayer() != it->getLayer())
+				continue;
+
+			if (it->getVisible())
+				it->onRenderAfter(camera);
+
+			for (auto& material : it->getMaterials())
+				material->setDirty(false);
+
+			it->setDirty(false);
+		}
+
+		camera.onRenderAfter(camera);
+		camera.setDirty(false);
+	}
+
+	void
+	Renderer::render(RenderScene& scene) noexcept
+	{
 		if (this->sortObjects_)
 		{
 			scene.sortCameras();
 			scene.sortGeometries();
 		}
 
-		if (this->enableGlobalIllumination_)
-		{
-			for (auto& camera : scene.getCameras())
-			{
-				this->montecarlo_->render(
-					camera,
-					scene.getLights(),
-					scene.getGeometries(),
-					0,
-					(std::uint32_t)camera->getPixelViewport().x,
-					(std::uint32_t)camera->getPixelViewport().y,
-					(std::uint32_t)camera->getPixelViewport().width,
-					(std::uint32_t)camera->getPixelViewport().height);
-			}
-		}
-		else
-		{
-			this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
-
-			for (auto& camera : scene.getCameras())
-			{
-				auto framebuffer = camera->getFramebuffer();
-				this->renderer_->setFramebuffer(framebuffer ? framebuffer : fbo_);
-				this->renderer_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-				this->renderer_->setViewport(0, camera->getPixelViewport());
-
-				this->prepareLights(*camera, scene.getLights());
-				this->renderObjects(scene.getGeometries(), *camera, this->overrideMaterial_);
-
-				if (camera->getRenderToScreen())
-				{
-					auto& v = camera->getPixelViewport();
-					this->renderer_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
-				}
-
-				auto& swapFramebuffer = camera->getSwapFramebuffer();
-				if (framebuffer && swapFramebuffer)
-				{
-					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-					this->renderer_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-				}
-			}
-		}
+		this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
 
 		for (auto& camera : scene.getCameras())
-		{
-			for (auto& it : scene.getGeometries())
-			{
-				if (camera->getLayer() != it->getLayer())
-					continue;
-
-				if (it->getVisible())
-					it->onRenderAfter(*camera);
-			}
-
-			camera->onRenderAfter(*camera);
-			camera->setDirty(false);
-		}
-
-		for (auto& it : scene.getLights())
-			it->setDirty(false);
-
-		for (auto& it : scene.getGeometries())
-		{
-			for (auto& material : it->getMaterials())
-				material->setDirty(false);
-			it->setDirty(false);
-		}
+			this->renderCamera(*camera, scene);
 	}
 
 	void

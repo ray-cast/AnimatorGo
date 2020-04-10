@@ -35,6 +35,12 @@ SET(OUTPUT_LIST
 )
 SOURCE_GROUP(renderer\\rtx\\output FILES ${OUTPUT_LIST})
 
+SET(PIPELINE_LIST
+	${SOURCE_PATH}/pipeline.h
+	${SOURCE_PATH}/pipeline.cpp
+)
+SOURCE_GROUP(renderer\\rtx\\pipeline FILES ${PIPELINE_LIST})
+
 SET(FACTORY_LIST
 	${SOURCE_PATH}/render_factory.h
 	${SOURCE_PATH}/render_factory.cpp
@@ -46,13 +52,21 @@ SET(CLW_LIST
 	${SOURCE_PATH}/clw_output.cpp
 	${SOURCE_PATH}/clw_render_factory.h
 	${SOURCE_PATH}/clw_render_factory.cpp
+	${SOURCE_PATH}/clw_scene.h
+	${SOURCE_PATH}/clw_scene.cpp
+	${SOURCE_PATH}/clw_scene_controller.h
+	${SOURCE_PATH}/clw_scene_controller.cpp
+	${SOURCE_PATH}/clw_pipeline.h
+	${SOURCE_PATH}/clw_pipeline.cpp
 )
 SOURCE_GROUP(renderer\\rtx\\clw FILES ${CLW_LIST})
 
 SET(MANAGER_LIST
 	${SOURCE_PATH}/rtx_manager.h
 	${SOURCE_PATH}/rtx_manager.cpp
+	${SOURCE_PATH}/scene_controller.h
+	${SOURCE_PATH}/scene_controller.cpp
 )
 SOURCE_GROUP(renderer\\rtx\\manager FILES ${MANAGER_LIST})
 
-LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST} ${OFFLINE_LIST} ${OUTPUT_LIST} ${CLW_LIST} ${FACTORY_LIST} ${MANAGER_LIST})
+LIST(APPEND VIDEO_LIST ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST} ${OFFLINE_LIST} ${OUTPUT_LIST} ${CLW_LIST} ${FACTORY_LIST} ${PIPELINE_LIST} ${MANAGER_LIST})

@@ -12,7 +12,7 @@ namespace octoon::video
 		SceneController();
 
 		virtual void compileScene(RenderScene* scene) noexcept = 0;
-		virtual CompiledScene& getCachedScene(RenderScene* scene) const noexcept(false) = 0;
+		virtual CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false) = 0;
 	};
 }
 

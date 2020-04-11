@@ -41,6 +41,17 @@ namespace octoon::video
 		}
 	}
 
+	CompiledScene&
+	ForwardSceneController::getCachedScene(const RenderScene* scene) const noexcept(false)
+	{
+		auto iter = sceneCache_.find(scene);
+
+		if (iter != sceneCache_.cend())
+			return *iter->second.get();
+		else
+			throw std::runtime_error("Scene has not been compiled");
+	}
+
 	void
 	ForwardSceneController::updateCamera(const RenderScene* scene, ForwardScene& out) const
 	{
@@ -74,7 +85,7 @@ namespace octoon::video
 				else if (light->isA<light::EnvironmentLight>())
 				{
 					auto it = light->downcast<light::EnvironmentLight>();
-					EnvironmentLight environmentLight;
+					ForwardScene::EnvironmentLight environmentLight;
 					environmentLight.intensity = it->getIntensity();
 					environmentLight.radiance = it->getEnvironmentMap();
 					if (!it->getEnvironmentMap())
@@ -85,7 +96,7 @@ namespace octoon::video
 				else if (light->isA<light::DirectionalLight>())
 				{
 					auto it = light->downcast<light::DirectionalLight>();
-					DirectionalLight directionLight;
+					ForwardScene::DirectionalLight directionLight;
 					directionLight.direction = math::float4(math::float3x3(out.camera->getView()) * -it->getForward(), 0);
 					directionLight.color = it->getColor() * it->getIntensity();
 					directionLight.shadow = it->getShadowEnable();
@@ -112,7 +123,7 @@ namespace octoon::video
 				else if (light->isA<light::SpotLight>())
 				{
 					auto it = light->downcast<light::SpotLight>();
-					SpotLight spotLight;
+					ForwardScene::SpotLight spotLight;
 					spotLight.color.set(it->getColor() * it->getIntensity());
 					spotLight.direction.set(math::float3x3(out.camera->getView()) * it->getForward());
 					spotLight.position.set(it->getTranslate());
@@ -138,7 +149,7 @@ namespace octoon::video
 				else if (light->isA<light::PointLight>())
 				{
 					auto it = light->downcast<light::PointLight>();
-					PointLight pointLight;
+					ForwardScene::PointLight pointLight;
 					pointLight.color.set(it->getColor() * it->getIntensity());
 					pointLight.position.set(it->getTranslate());
 					pointLight.distance = 0;
@@ -161,7 +172,7 @@ namespace octoon::video
 				else if (light->isA<light::RectangleLight>())
 				{
 					auto it = light->downcast<light::RectangleLight>();
-					RectAreaLight rectangleLight;
+					ForwardScene::RectAreaLight rectangleLight;
 					rectangleLight.color.set(it->getColor() * it->getIntensity());
 					rectangleLight.position.set(it->getTranslate());
 					rectangleLight.halfWidth.set(math::float3::One);
@@ -182,26 +193,26 @@ namespace octoon::video
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.spotLights.data(),
-					sizeof(SpotLight) * out.numSpot
+					sizeof(ForwardScene::SpotLight) * out.numSpot
 				));
 			}
 			else
 			{
 				auto desc = out.spotLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < out.spotLights.size() * sizeof(SpotLight))
+				if (desc.getStreamSize() < out.spotLights.size() * sizeof(ForwardScene::SpotLight))
 				{
 					out.spotLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.spotLights.data(),
-						sizeof(SpotLight) * out.numSpot
+						sizeof(ForwardScene::SpotLight) * out.numSpot
 					));
 				}
 				else
 				{
 					void* data;
 					if (out.spotLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, out.spotLights.data(), out.spotLights.size() * sizeof(SpotLight));
+						std::memcpy(data, out.spotLights.data(), out.spotLights.size() * sizeof(ForwardScene::SpotLight));
 					out.spotLightBuffer->unmap();
 				}
 			}
@@ -215,26 +226,26 @@ namespace octoon::video
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.pointLights.data(),
-					sizeof(PointLight) * out.numPoint
+					sizeof(ForwardScene::PointLight) * out.numPoint
 				));
 			}
 			else
 			{
 				auto desc = out.pointLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < out.pointLights.size() * sizeof(PointLight))
+				if (desc.getStreamSize() < out.pointLights.size() * sizeof(ForwardScene::PointLight))
 				{
 					out.pointLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.pointLights.data(),
-						sizeof(PointLight) * out.numPoint
+						sizeof(ForwardScene::PointLight) * out.numPoint
 					));
 				}
 				else
 				{
 					void* data;
 					if (out.pointLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, out.pointLights.data(), out.pointLights.size() * sizeof(PointLight));
+						std::memcpy(data, out.pointLights.data(), out.pointLights.size() * sizeof(ForwardScene::PointLight));
 					out.pointLightBuffer->unmap();
 				}
 			}
@@ -248,26 +259,26 @@ namespace octoon::video
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.rectangleLights.data(),
-					sizeof(RectAreaLight) * out.numRectangle
+					sizeof(ForwardScene::RectAreaLight) * out.numRectangle
 				));
 			}
 			else
 			{
 				auto desc = out.rectangleLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < out.rectangleLights.size() * sizeof(RectAreaLight))
+				if (desc.getStreamSize() < out.rectangleLights.size() * sizeof(ForwardScene::RectAreaLight))
 				{
 					out.rectangleLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.rectangleLights.data(),
-						sizeof(RectAreaLight) * out.numRectangle
+						sizeof(ForwardScene::RectAreaLight) * out.numRectangle
 					));
 				}
 				else
 				{
 					void* data;
 					if (out.rectangleLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, out.rectangleLights.data(), out.rectangleLights.size() * sizeof(RectAreaLight));
+						std::memcpy(data, out.rectangleLights.data(), out.rectangleLights.size() * sizeof(ForwardScene::RectAreaLight));
 					out.rectangleLightBuffer->unmap();
 				}
 			}
@@ -281,40 +292,29 @@ namespace octoon::video
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.directionalLights.data(),
-					sizeof(DirectionalLight) * out.numDirectional
+					sizeof(ForwardScene::DirectionalLight) * out.numDirectional
 				));
 			}
 			else
 			{
 				auto desc = out.directionLightBuffer->getDataDesc();
-				if (desc.getStreamSize() < out.directionalLights.size() * sizeof(DirectionalLight))
+				if (desc.getStreamSize() < out.directionalLights.size() * sizeof(ForwardScene::DirectionalLight))
 				{
 					out.directionLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.directionalLights.data(),
-						sizeof(DirectionalLight) * out.numDirectional
+						sizeof(ForwardScene::DirectionalLight) * out.numDirectional
 					));
 				}
 				else
 				{
 					void* data;
 					if (out.directionLightBuffer->map(0, desc.getStreamSize(), &data))
-						std::memcpy(data, out.directionalLights.data(), out.directionalLights.size() * sizeof(DirectionalLight));
+						std::memcpy(data, out.directionalLights.data(), out.directionalLights.size() * sizeof(ForwardScene::DirectionalLight));
 					out.directionLightBuffer->unmap();
 				}
 			}
 		}
-	}
-
-	CompiledScene&
-	ForwardSceneController::getCachedScene(RenderScene* scene) const noexcept(false)
-	{
-		auto iter = sceneCache_.find(scene);
-
-		if (iter != sceneCache_.cend())
-			return *iter->second.get();
-		else
-			throw std::runtime_error("Scene has not been compiled");
 	}
 }

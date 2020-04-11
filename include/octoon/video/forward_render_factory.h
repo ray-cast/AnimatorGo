@@ -6,7 +6,7 @@
 
 namespace octoon::video
 {
-	class ForwardRenderFactory : public RenderFactory
+	class OCTOON_EXPORT ForwardRenderFactory final : public RenderFactory
 	{
 	public:
 		ForwardRenderFactory(const hal::GraphicsContextPtr& context, std::string_view cache_path = "") noexcept;

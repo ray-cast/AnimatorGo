@@ -15,7 +15,7 @@ namespace octoon::video
 		ClwSceneController(CLWContext context);
 
 		void compileScene(RenderScene* scene) noexcept override;
-		CompiledScene& getCachedScene(RenderScene* scene) const noexcept(false);
+		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
 
 	private:
 		void updateCamera(const RenderScene* scene, ClwScene& out) const;
@@ -23,7 +23,7 @@ namespace octoon::video
 
 	private:
 		CLWContext context_;
-		std::unordered_map<RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
+		std::unordered_map<const RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
 	};
 }
 

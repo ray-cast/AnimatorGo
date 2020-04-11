@@ -92,7 +92,6 @@ namespace octoon::video
 
 	private:
 		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
-		void prepareLightMaps(const camera::Camera& camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 	private:
 		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
@@ -121,7 +120,6 @@ namespace octoon::video
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardBuffer>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardMaterial>> materials_;
-		std::unordered_map<std::intptr_t, std::shared_ptr<bake::Lightmap>> lightmaps_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }

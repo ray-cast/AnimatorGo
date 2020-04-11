@@ -6,7 +6,7 @@
 
 namespace octoon::video
 {
-	class ForwardOutput : public Output
+	class OCTOON_EXPORT ForwardOutput final : public Output
 	{
 	public:
 		ForwardOutput(hal::GraphicsContextPtr context, std::uint32_t w, std::uint32_t h);
@@ -17,6 +17,10 @@ namespace octoon::video
 		void clear(math::float4 const& val) override;
 
 		const hal::GraphicsTexturePtr& ForwardOutput::data() const noexcept;
+
+	private:
+		ForwardOutput(const ForwardOutput&) = delete;
+		ForwardOutput& operator=(const ForwardOutput&) = delete;
 
 	private:
 		hal::GraphicsContextPtr context_;

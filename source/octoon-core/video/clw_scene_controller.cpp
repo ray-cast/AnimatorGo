@@ -20,6 +20,16 @@ namespace octoon::video
 		}
 	}
 
+	CompiledScene&
+	ClwSceneController::getCachedScene(const RenderScene* scene) const noexcept(false)
+	{
+		auto iter = sceneCache_.find(scene);
+		if (iter != sceneCache_.cend())
+			return *iter->second.get();
+		else
+			throw std::runtime_error("Scene has not been compiled");
+	}
+
 	void
 	ClwSceneController::updateCamera(const RenderScene* scene, ClwScene& out) const
 	{
@@ -62,15 +72,4 @@ namespace octoon::video
     ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
     {
     }
-
-	CompiledScene&
-	ClwSceneController::getCachedScene(RenderScene* scene) const noexcept(false)
-	{
-		auto iter = sceneCache_.find(scene);
-
-		if (iter != sceneCache_.cend())
-			return *iter->second.get();
-		else
-			throw std::runtime_error("Scene has not been compiled");
-	}
 }

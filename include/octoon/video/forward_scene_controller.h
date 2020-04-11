@@ -9,13 +9,13 @@
 
 namespace octoon::video
 {
-	class ForwardSceneController : public SceneController
+	class OCTOON_EXPORT ForwardSceneController final : public SceneController
 	{
 	public:
 		ForwardSceneController(const hal::GraphicsContextPtr& context);
 
 		void compileScene(RenderScene* scene) noexcept override;
-		CompiledScene& getCachedScene(RenderScene* scene) const noexcept(false);
+		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
 
 	private:
 		void updateCamera(const RenderScene* scene, ForwardScene& out) const;
@@ -23,8 +23,12 @@ namespace octoon::video
 		void updateLights(const RenderScene* scene, ForwardScene& out) noexcept;
 
 	private:
+		ForwardSceneController(const ForwardSceneController&) = delete;
+		ForwardSceneController& operator=(const ForwardSceneController&) = delete;
+
+	private:
 		hal::GraphicsContextPtr context_;
-		std::unordered_map<RenderScene*, std::unique_ptr<ForwardScene>> sceneCache_;
+		std::unordered_map<const RenderScene*, std::unique_ptr<ForwardScene>> sceneCache_;
 	};
 }
 

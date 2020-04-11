@@ -8,63 +8,63 @@
 
 namespace octoon::video
 {
-	struct HemisphereLight {
-		math::float3 direction;
-		math::float3 skyColor;
-		math::float3 groundColor;
-	};
-
-	struct RectAreaLight {
-		math::float4 color;
-		math::float4 position;
-		math::float4 halfWidth;
-		math::float4 halfHeight;
-	};
-
-	struct SpotLight {
-		math::float4 position;
-		math::float4 direction;
-		math::float4 color;
-		float distance;
-		float decay;
-		float coneCos;
-		float penumbraCos;
-
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		math::float2 shadowMapSize;
-	};
-
-	struct EnvironmentLight {
-		float intensity;
-		hal::GraphicsTextureWeakPtr radiance;
-	};
-
-	struct PointLight {
-		math::float4 position;
-		math::float4 color;
-		float distance;
-		float decay;
-
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		math::float2 shadowMapSize;
-	};
-
-	struct DirectionalLight {
-		math::float4 direction;
-		math::float3 color;
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		math::float2 shadowMapSize;
-	};
-
-	class ForwardScene : public CompiledScene
+	class OCTOON_EXPORT ForwardScene final : public CompiledScene
 	{
 	public:
+		struct HemisphereLight {
+			math::float3 direction;
+			math::float3 skyColor;
+			math::float3 groundColor;
+		};
+
+		struct RectAreaLight {
+			math::float4 color;
+			math::float4 position;
+			math::float4 halfWidth;
+			math::float4 halfHeight;
+		};
+
+		struct SpotLight {
+			math::float4 position;
+			math::float4 direction;
+			math::float4 color;
+			float distance;
+			float decay;
+			float coneCos;
+			float penumbraCos;
+
+			int shadow;
+			float shadowBias;
+			float shadowRadius;
+			math::float2 shadowMapSize;
+		};
+
+		struct EnvironmentLight {
+			float intensity;
+			hal::GraphicsTextureWeakPtr radiance;
+		};
+
+		struct PointLight {
+			math::float4 position;
+			math::float4 color;
+			float distance;
+			float decay;
+
+			int shadow;
+			float shadowBias;
+			float shadowRadius;
+			math::float2 shadowMapSize;
+		};
+
+		struct DirectionalLight {
+			math::float4 direction;
+			math::float3 color;
+			int shadow;
+			float shadowBias;
+			float shadowRadius;
+			math::float2 shadowMapSize;
+		};
+
 		void reset() noexcept;
 
 		const camera::Camera* camera;
@@ -98,7 +98,6 @@ namespace octoon::video
 		hal::GraphicsDataPtr directionLightBuffer;
 
 		std::vector<geometry::Geometry*> geometries;
-
 	};
 }
 

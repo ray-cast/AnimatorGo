@@ -3,6 +3,10 @@
 
 namespace octoon::video
 {
+	ForwardBuffer::ForwardBuffer() noexcept
+	{
+	}
+
 	ForwardBuffer::ForwardBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		this->setMesh(mesh);

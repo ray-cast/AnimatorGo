@@ -35,6 +35,10 @@ namespace octoon::video
 		bool setProgram(ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
 
 	private:
+		ForwardPipeline(const ForwardPipeline&) = delete;
+		ForwardPipeline& operator=(const ForwardPipeline&) = delete;
+
+	private:
 		hal::GraphicsContextPtr context_;
 
 		hal::GraphicsFramebufferPtr fbo_;

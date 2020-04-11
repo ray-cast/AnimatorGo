@@ -10,7 +10,7 @@
 
 namespace octoon::video
 {
-	class ForwardRenderer
+	class OCTOON_EXPORT ForwardRenderer final
 	{
 	public:
 		ForwardRenderer(const hal::GraphicsContextPtr& context) noexcept;
@@ -25,6 +25,10 @@ namespace octoon::video
 
 	private:
 		void prepareScene(RenderScene* scene) noexcept;
+
+	private:
+		ForwardRenderer(const ForwardRenderer&) = delete;
+		ForwardRenderer& operator=(const ForwardRenderer&) = delete;
 
 	private:
 		std::uint32_t width_;

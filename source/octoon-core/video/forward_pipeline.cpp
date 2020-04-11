@@ -145,14 +145,14 @@ namespace octoon::video
 	void
 	ForwardPipeline::render(CompiledScene& scene) noexcept
 	{
-		auto compiled = dynamic_cast<ForwardScene&>(scene);
-		auto camera = compiled.camera;
+		auto compiled = dynamic_cast<ForwardScene*>(&scene);
+		auto camera = compiled->camera;
 		auto framebuffer = camera->getFramebuffer();
 		this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
 		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 		this->context_->setViewport(0, camera->getPixelViewport());
 
-		this->renderObjects(compiled, compiled.geometries, *camera, this->overrideMaterial_);
+		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 
 		if (camera->getRenderToScreen())
 		{

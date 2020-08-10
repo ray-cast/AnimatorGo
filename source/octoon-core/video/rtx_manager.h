@@ -1,11 +1,8 @@
-#ifndef OCTOON_VIDEO_CONFIG_MANAGER_H_
-#define OCTOON_VIDEO_CONFIG_MANAGER_H_
+#ifndef OCTOON_VIDEO_RTX_MANAGER_H_
+#define OCTOON_VIDEO_RTX_MANAGER_H_
 
 #include <vector>
 #include <memory>
-
-#include <CLW.h>
-#include <RadeonProRender.h>
 
 #include <GL/glew.h>
 

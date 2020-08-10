@@ -74,6 +74,11 @@ SET(VIDEO_CLW_LIST
 	${SOURCE_PATH}/clw_scene_controller.cpp
 	${SOURCE_PATH}/clw_render_factory.h
 	${SOURCE_PATH}/clw_render_factory.cpp
+	${SOURCE_PATH}/clw_class.h
+	${SOURCE_PATH}/cl_program.h
+	${SOURCE_PATH}/cl_program.cpp
+	${SOURCE_PATH}/cl_program_manager.h
+	${SOURCE_PATH}/cl_program_manager.cpp
 	${SOURCE_PATH}/rtx_manager.h
 	${SOURCE_PATH}/rtx_manager.cpp
 )

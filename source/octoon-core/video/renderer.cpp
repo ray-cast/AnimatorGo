@@ -45,7 +45,7 @@ namespace octoon::video
 	{
 		context_ = context;
 		depthMaterial_ = material::MeshDepthMaterial::create();
-		montecarlo_ = std::make_unique<MonteCarlo>(w, h);
+		montecarlo_ = std::make_unique<OfflineRenderer>(w, h);
 		montecarlo_->setGraphicsContext(context);
 		rtxManager_ = std::make_unique<RtxManager>();
 		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
@@ -359,11 +359,11 @@ namespace octoon::video
 
 			if (this->enableGlobalIllumination_)
 			{
-#if 1
+#if 0
 				this->rtxManager_->render(&scene);
 #else
 				this->montecarlo_->render(
-					&camera,
+					camera,
 					scene.getLights(),
 					scene.getGeometries(),
 					0,

@@ -23,12 +23,12 @@
 
 namespace octoon::video
 {
-	class MonteCarlo
+	class OfflineRenderer
 	{
 	public:
-		MonteCarlo() noexcept;
-		MonteCarlo(std::uint32_t w, std::uint32_t h) noexcept;
-		~MonteCarlo() noexcept;
+		OfflineRenderer() noexcept;
+		OfflineRenderer(std::uint32_t w, std::uint32_t h) noexcept;
+		~OfflineRenderer() noexcept;
 
 		void setup(std::uint32_t w, std::uint32_t h) noexcept(false);
 

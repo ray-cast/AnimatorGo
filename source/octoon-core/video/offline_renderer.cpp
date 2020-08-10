@@ -29,7 +29,7 @@
 
 namespace octoon::video
 {
-	MonteCarlo::MonteCarlo() noexcept
+	OfflineRenderer::OfflineRenderer() noexcept
 		: width_(0)
 		, height_(0)
 		, rprContext_(nullptr)
@@ -43,18 +43,18 @@ namespace octoon::video
 	{
 	}
 
-	MonteCarlo::MonteCarlo(std::uint32_t w, std::uint32_t h) noexcept
-		: MonteCarlo()
+	OfflineRenderer::OfflineRenderer(std::uint32_t w, std::uint32_t h) noexcept
+		: OfflineRenderer()
 	{
 		this->setup(w, h);
 	}
 
-	MonteCarlo::~MonteCarlo() noexcept
+	OfflineRenderer::~OfflineRenderer() noexcept
 	{
 	}
 
 	void
-	MonteCarlo::setup(std::uint32_t w, std::uint32_t h) noexcept(false)
+	OfflineRenderer::setup(std::uint32_t w, std::uint32_t h) noexcept(false)
 	{
 		width_ = w;
 		height_ = h;
@@ -116,19 +116,19 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarlo::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
+	OfflineRenderer::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
 	{
 		this->context_ = context;
 	}
 
 	const hal::GraphicsContextPtr&
-	MonteCarlo::getGraphicsContext() const noexcept(false)
+	OfflineRenderer::getGraphicsContext() const noexcept(false)
 	{
 		return this->context_;
 	}
 
 	std::pair<void*, void*>
-	MonteCarlo::createMaterialTextures(std::string_view path) noexcept(false)
+	OfflineRenderer::createMaterialTextures(std::string_view path) noexcept(false)
 	{
 		try
 		{
@@ -275,7 +275,7 @@ namespace octoon::video
 	}
 
 	bool
-	MonteCarlo::compileCamera(const camera::Camera* camera) noexcept(false)
+	OfflineRenderer::compileCamera(const camera::Camera* camera) noexcept(false)
 	{
 		bool force = false;
 
@@ -342,7 +342,7 @@ namespace octoon::video
 	}
 
 	bool
-	MonteCarlo::compileLight(const light::Light* light) noexcept(false)
+	OfflineRenderer::compileLight(const light::Light* light) noexcept(false)
 	{
 		bool force = false;
 
@@ -397,8 +397,35 @@ namespace octoon::video
 				rpr_image_format format = { 3, RPR_COMPONENT_TYPE_FLOAT32 };
 				rpr_image_desc desc = { 1, 1, 1, 3, 3 };
 
-				if (RPR_SUCCESS != rprContextCreateImage(this->rprContext_, format, &desc, light->getColor().data(), &rprImage))
-					return false;
+				rpr_image oldImage = nullptr;
+				rprLightGetInfo(rprLight, RPR_ENVIRONMENT_LIGHT_IMAGE, 0, &oldImage, 0);
+				if (oldImage) {
+					rprObjectDelete(oldImage);
+				}
+
+				auto environment = light->downcast<light::EnvironmentLight>();
+				auto envmap = environment->getEnvironmentMap();
+				if (envmap)
+				{
+					auto textureDesc = envmap->getTextureDesc();
+					desc.image_width = textureDesc.getWidth();
+					desc.image_height = textureDesc.getHeight();
+
+					void* mapData = nullptr;
+					if (envmap->map(0, 0, desc.image_width, desc.image_height, 0, &mapData))
+					{
+						if (RPR_SUCCESS != rprContextCreateImage(this->rprContext_, format, &desc, mapData, &rprImage))
+							return false;
+					}
+
+					envmap->unmap();
+				}
+				else
+				{
+					if (RPR_SUCCESS != rprContextCreateImage(this->rprContext_, format, &desc, color.data(), &rprImage))
+						return false;
+				}
+				
 				if (RPR_SUCCESS != rprEnvironmentLightSetImage(rprLight, rprImage))
 					return false;
 				if (RPR_SUCCESS != rprEnvironmentLightSetIntensityScale(rprLight, light->getIntensity()))
@@ -433,7 +460,7 @@ namespace octoon::video
 	}
 
 	bool
-	MonteCarlo::compileGeometry(const geometry::Geometry* geometry) noexcept(false)
+	OfflineRenderer::compileGeometry(const geometry::Geometry* geometry) noexcept(false)
 	{
 		bool force = false;
 
@@ -577,7 +604,7 @@ namespace octoon::video
 	}
 
 	bool
-	MonteCarlo::compileScene(const camera::Camera* camera, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept(false)
+	OfflineRenderer::compileScene(const camera::Camera* camera, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept(false)
 	{
 		this->compileCamera(camera);
 
@@ -601,7 +628,7 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarlo::generateWorkspace(std::uint32_t numEstimate)
+	OfflineRenderer::generateWorkspace(std::uint32_t numEstimate)
 	{
 		if (tileNums_ < numEstimate)
 		{
@@ -684,7 +711,7 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarlo::estimate(const camera::Camera* camera, std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size)
+	OfflineRenderer::estimate(const camera::Camera* camera, std::uint32_t frame, const RadeonRays::int2& offset, const RadeonRays::int2& size)
 	{
 		this->generateWorkspace(size.x * size.y);
 
@@ -725,7 +752,7 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarlo::render(const camera::Camera* camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries, std::uint32_t frame, std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) noexcept
+	OfflineRenderer::render(const camera::Camera* camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries, std::uint32_t frame, std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) noexcept
 	{
 		if (this->compileScene(camera, light, geometries))
 			this->estimate(camera, frame, RadeonRays::int2(x, y), RadeonRays::int2(w, h));

@@ -17,6 +17,7 @@ namespace octoon::light
 	{
 		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
 		environmentMap_ = texture;
+		this->setDirty(true);
 	}
 
 	const hal::GraphicsTexturePtr&

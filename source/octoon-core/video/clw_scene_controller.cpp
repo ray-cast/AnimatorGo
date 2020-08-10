@@ -1,10 +1,12 @@
 #include "clw_scene_controller.h"
 #include <octoon/camera/perspective_camera.h>
+#include <set>
 
 namespace octoon::video
 {
-	ClwSceneController::ClwSceneController(CLWContext context)
+	ClwSceneController::ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api)
 		: context_(context)
+		, api_(api)
 	{
 	}
 
@@ -16,7 +18,13 @@ namespace octoon::video
 		{
 			auto clwscene = std::make_unique<ClwScene>(this->context_);
 			this->updateCamera(scene, *clwscene);
+			this->updateShapes(scene, *clwscene);
 			sceneCache_[scene] = std::move(clwscene);
+		}
+		else
+		{
+			this->updateCamera(scene, *(*iter).second);
+			this->updateShapes(scene, *(*iter).second);
 		}
 	}
 
@@ -53,13 +61,12 @@ namespace octoon::video
 
             if (camera->isA<camera::PerspectiveCamera>())
             {
-                auto physical_camera = camera->downcast<camera::PerspectiveCamera>();
-				data[i].aperture = physical_camera->getAperture();
                 auto filmSize_ = 36.0f;
                 auto perspective = camera->downcast<camera::PerspectiveCamera>();
                 auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
                 auto focalLength = filmSize_ / ratio;
 
+				data[i].aperture = perspective->getAperture();
 				data[i].focal_length = focalLength;
 				data[i].focus_distance = 1.0f;
             }
@@ -71,5 +78,71 @@ namespace octoon::video
     void
     ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
     {
+        for (auto& shape : out.isect_shapes)
+        {
+            api_->DetachShape(shape);
+            api_->DeleteShape(shape);
+        }
+
+        out.isect_shapes.clear();
+        out.visible_shapes.clear();
+
+        int id = 1;
+        for (auto& geometry : scene->getGeometries())
+        {
+			auto& mesh = geometry->getMesh();
+			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+			{
+				auto shape = api_->CreateMesh(
+					(float*)mesh->getVertexArray().data(),
+					static_cast<int>(mesh->getVertexArray().size() / 3),
+					sizeof(float3),
+					reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
+					0,
+					nullptr,
+					static_cast<int>(mesh->getIndicesArray(i).size() / 3)
+				);
+
+				auto transform = geometry->getTransform();
+				auto transformInverse = geometry->getTransformInverse();
+
+				RadeonRays::matrix m(
+					transform.a1, transform.a2, transform.a3, transform.a4,
+					transform.b1, transform.b2, transform.b3, transform.b4,
+					transform.c1, transform.c2, transform.c3, transform.c4,
+					transform.d1, transform.d2, transform.d3, transform.d4);
+
+				RadeonRays::matrix minv(
+					transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
+					transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
+					transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
+					transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
+
+				shape->SetId(id++);
+				shape->SetTransform(m, inverse(m));
+
+				out.isect_shapes.push_back(shape);
+				out.visible_shapes.push_back(shape);
+			}
+        }
     }
+
+	void
+	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
+	{
+		bool dirty = false;
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (geometry->isDirty())
+			{
+				dirty = true;
+				break;
+			}
+		}
+
+		if (dirty)
+		{
+			this->updateIntersector(scene, out);
+		}
+	}
 }

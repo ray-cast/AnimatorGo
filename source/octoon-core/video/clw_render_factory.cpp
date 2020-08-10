@@ -27,12 +27,12 @@ namespace octoon::video
 	std::unique_ptr<SceneController>
 	ClwRenderFactory::createSceneController() const
 	{
-		return std::make_unique<ClwSceneController>(context_);
+		return std::make_unique<ClwSceneController>(context_, intersector_);
 	}
 
 	std::unique_ptr<Pipeline>
 	ClwRenderFactory::createPipeline() const
 	{
-		return std::make_unique<ClwPipeline>(context_);
+		return std::make_unique<ClwPipeline>(context_, intersector_);
 	}
 }

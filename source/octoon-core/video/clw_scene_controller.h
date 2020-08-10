@@ -12,17 +12,19 @@ namespace octoon::video
 	class ClwSceneController : public SceneController
 	{
 	public:
-		ClwSceneController(CLWContext context);
+		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api);
 
 		void compileScene(RenderScene* scene) noexcept override;
 		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
 
 	private:
 		void updateCamera(const RenderScene* scene, ClwScene& out) const;
+		void updateShapes(const RenderScene* scene, ClwScene& out) const;
 		void updateIntersector(const RenderScene* scene, ClwScene& out) const;
 
 	private:
 		CLWContext context_;
+		std::shared_ptr<RadeonRays::IntersectionApi> api_;
 		std::unordered_map<const RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
 	};
 }

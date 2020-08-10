@@ -2,8 +2,9 @@
 
 namespace octoon::video
 {
-	ClwPipeline::ClwPipeline(CLWContext context) noexcept
+	ClwPipeline::ClwPipeline(CLWContext context, std::shared_ptr<RadeonRays::IntersectionApi> api) noexcept
 		: context_(context)
+		, api_(api)
 	{
 	}
 

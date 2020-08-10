@@ -1,4 +1,5 @@
 #include "rtx_manager.h"
+#include <RadeonProRender.h>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -174,9 +175,9 @@ namespace octoon::video
 	void
 	RtxManager::render(RenderScene* scene)
 	{
-		this->prepareScene(this->scene_);
+		this->prepareScene(scene);
 
 		for (auto& c : configs_)
-			c.pipeline->render(c.controller->getCachedScene(this->scene_));
+			c.pipeline->render(c.controller->getCachedScene(scene));
 	}
 }

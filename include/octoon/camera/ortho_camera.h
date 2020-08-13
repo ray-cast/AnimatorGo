@@ -1,17 +1,17 @@
-#ifndef OCTOON_ORTHO_CAMERA_H_
-#define OCTOON_ORTHO_CAMERA_H_
+#ifndef OCTOON_ORTHOGRAPHIC_CAMERA_H_
+#define OCTOON_ORTHOGRAPHIC_CAMERA_H_
 
 #include <octoon/camera/camera.h>
 
 namespace octoon::camera
 {
-	class OCTOON_EXPORT OrthoCamera final : public Camera
+	class OCTOON_EXPORT OrthographicCamera final : public Camera
 	{
-		OctoonDeclareSubClass(OrthoCamera, Camera)
+		OctoonDeclareSubClass(OrthographicCamera, Camera)
 	public:
-		OrthoCamera() noexcept;
-		OrthoCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept;
-		virtual ~OrthoCamera() noexcept;
+		OrthographicCamera() noexcept;
+		OrthographicCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept;
+		virtual ~OrthographicCamera() noexcept;
 		
 		void setNear(float znear) noexcept;
 		void setFar(float zfar) noexcept;

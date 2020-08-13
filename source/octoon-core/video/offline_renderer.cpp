@@ -291,7 +291,7 @@ namespace octoon::video
 
 				force = true;
 			}
-			else if (camera->isA<camera::OrthoCamera>())
+			else if (camera->isA<camera::OrthographicCamera>())
 			{
 				if (RPR_SUCCESS != rprContextCreateCamera(this->rprContext_, &rprCamera))
 					return false;

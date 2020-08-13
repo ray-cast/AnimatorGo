@@ -1,12 +1,31 @@
 #include "clw_scene_controller.h"
 #include <octoon/camera/perspective_camera.h>
+#include <octoon/camera/ortho_camera.h>
 #include <set>
 
 namespace octoon::video
 {
-	ClwSceneController::ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api)
+	static CameraType GetCameraType(const camera::Camera& camera)
+	{
+		auto perspective = dynamic_cast<const camera::PerspectiveCamera*>(&camera);
+		if (perspective)
+		{
+			return perspective->getAperture() > 0.f ? CameraType::kPhysicalPerspective : CameraType::kPerspective;
+		}
+
+		auto ortho = dynamic_cast<const camera::OrthographicCamera*>(&camera);
+		if (ortho)
+		{
+			return CameraType::kOrthographic;
+		}
+
+		return CameraType::kPerspective;
+	}
+
+	ClwSceneController::ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager)
 		: context_(context)
 		, api_(api)
+		, programManager_(program_manager)
 	{
 	}
 
@@ -44,33 +63,33 @@ namespace octoon::video
 		if (out.camera.GetElementCount() == 0)
 			out.camera = context_.CreateBuffer<ClwScene::Camera>(scene->getCameras().size(), CL_MEM_READ_ONLY);
 
+		auto camera = scene->getMainCamera();
+		out.camera_type = GetCameraType(*camera);
+
 		ClwScene::Camera* data = nullptr;
 		context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
 
-		for (std::size_t i = 0; i < scene->getCameras().size(); i++)
-		{
-			auto camera = scene->getCameras()[i];
+		auto sensorSize = camera->getPixelViewport();
 
-			data[i].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
-			data[i].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
-			data[i].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
-			data[i].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
-			data[i].aspect_ratio = float(camera->getPixelViewport().width) / camera->getPixelViewport().height;
-            //data->dim = camera->GetSensorSize();
-            //data->zcap = camera->GetDepthRange();
+		data[0].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
+		data[0].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
+		data[0].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
+		data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
+		data[0].aspect_ratio = float(sensorSize.width) / sensorSize.height;
 
-            if (camera->isA<camera::PerspectiveCamera>())
-            {
-                auto filmSize_ = 36.0f;
-                auto perspective = camera->downcast<camera::PerspectiveCamera>();
-                auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
-                auto focalLength = filmSize_ / ratio;
+        if (camera->isA<camera::PerspectiveCamera>())
+        {
+            auto filmSize_ = 36.0f;
+            auto perspective = camera->downcast<camera::PerspectiveCamera>();
+            auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
+            auto focalLength = filmSize_ / ratio;
 
-				data[i].aperture = perspective->getAperture();
-				data[i].focal_length = focalLength;
-				data[i].focus_distance = 1.0f;
-            }
-		}
+			data[0].aperture = 0;
+			data[0].focal_length = focalLength;
+			data[0].focus_distance = 1.0f;
+			data[0].dim = RadeonRays::float2(filmSize_ * sensorSize.width / sensorSize.height, filmSize_);
+			data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
+        }
 
 		context_.UnmapBuffer(0, out.camera, data);
 	}
@@ -78,11 +97,10 @@ namespace octoon::video
     void
     ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
     {
+		api_->DetachAll();
+
         for (auto& shape : out.isect_shapes)
-        {
-            api_->DetachShape(shape);
             api_->DeleteShape(shape);
-        }
 
         out.isect_shapes.clear();
         out.visible_shapes.clear();
@@ -90,13 +108,17 @@ namespace octoon::video
         int id = 1;
         for (auto& geometry : scene->getGeometries())
         {
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
 			auto& mesh = geometry->getMesh();
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
-				auto shape = api_->CreateMesh(
+				auto shape = this->api_->CreateMesh(
 					(float*)mesh->getVertexArray().data(),
-					static_cast<int>(mesh->getVertexArray().size() / 3),
-					sizeof(float3),
+					static_cast<int>(mesh->getVertexArray().size()),
+					3 * sizeof(float),
 					reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
 					0,
 					nullptr,
@@ -121,9 +143,13 @@ namespace octoon::video
 				shape->SetId(id++);
 				shape->SetTransform(m, inverse(m));
 
+				this->api_->AttachShape(shape);
+
 				out.isect_shapes.push_back(shape);
 				out.visible_shapes.push_back(shape);
 			}
+
+			this->api_->Commit();
         }
     }
 

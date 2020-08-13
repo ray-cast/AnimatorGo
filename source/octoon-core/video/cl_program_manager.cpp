@@ -5,36 +5,40 @@
 
 namespace octoon::video
 {
-	std::uint32_t CLProgramManager::m_next_program_id = 0;
+	std::uint32_t CLProgramManager::nextProgramId_ = 0;
 
-	std::string ReadFile(const std::string& fname)
+	std::string ReadFile(const std::string& path)
 	{
-		std::ifstream file(fname);
-		if (!file)
+		std::ifstream file(path);
+		if (file)
+		{
+			std::string str;
+
+			file.seekg(0, std::ios::end);
+			str.reserve(file.tellg());
+			file.seekg(0, std::ios::beg);
+
+			str.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+			return str;
+		}
+		else
 		{
 			return "";
 		}
-		std::string str;
-
-		file.seekg(0, std::ios::end);
-		str.reserve(file.tellg());
-		file.seekg(0, std::ios::beg);
-
-		str.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-		return str;
 	}
 
-	CLProgramManager::CLProgramManager(const std::string& cache_path)
-		: m_cache_path(cache_path)
+	CLProgramManager::CLProgramManager(std::string_view cache_path)
+		: cachePath_(cache_path)
 	{
 	}
 
 	std::uint32_t
-	CLProgramManager::CreateProgramFromFile(CLWContext context, const std::string& fname) const
+	CLProgramManager::CreateProgramFromFile(CLWContext context, std::string_view filepath) const
 	{
 		std::regex delimiter("\\\\");
-		auto fullpath = std::regex_replace(fname, delimiter, "/");
 
+		auto path = std::string(filepath);
+		auto fullpath = std::regex_replace(path, delimiter, "/");
 		auto filename_start = fullpath.find_last_of('/');
 
 		if (filename_start == std::string::npos)
@@ -49,31 +53,31 @@ namespace octoon::video
 
 		auto name = fullpath.substr(filename_start, filename_end - filename_start);
 
-		return CLProgramManager::CreateProgramFromSource(context, name, ReadFile(fname));
+		return CLProgramManager::CreateProgramFromSource(context, name, ReadFile(path));
 	}
 
 	std::uint32_t
-	CLProgramManager::CreateProgramFromSource(CLWContext context, const std::string& name, const std::string& source) const
+	CLProgramManager::CreateProgramFromSource(CLWContext context, std::string_view name, std::string_view source) const
 	{
-		CLProgram prg(this, m_next_program_id++, context, name, m_cache_path);
-		prg.SetSource(source);
-		m_programs.insert(std::make_pair(prg.GetId(), prg));
-		return prg.GetId();
+		CLProgram prg(this, nextProgramId_++, context, name, cachePath_);
+		prg.setSource(source);
+		programs_.insert(std::make_pair(prg.getId(), prg));
+		return prg.getId();
 	}
 
 	void
 	CLProgramManager::AddHeader(const std::string& header, const std::string& source) const
 	{
-		std::string currect_header_code = m_headers[header];
+		std::string currect_header_code = headers_[header];
 		if (currect_header_code != source)
 		{
-			m_headers[header] = source;
+			headers_[header] = source;
 
-			for (auto& program : m_programs)
+			for (auto& program : programs_)
 			{
-				if (program.second.IsHeaderNeeded(header))
+				if (program.second.isHeaderNeeded(header))
 				{
-					program.second.SetDirty();
+					program.second.setDirty();
 				}
 			}
 		}
@@ -89,20 +93,20 @@ namespace octoon::video
 	const std::string&
 	CLProgramManager::ReadHeader(const std::string& header) const
 	{
-		return m_headers[header];
+		return headers_[header];
 	}
 
 	CLWProgram
 	CLProgramManager::GetProgram(uint32_t id, const std::string& opts) const
 	{
-		CLProgram& program = m_programs[id];
-		return program.GetCLWProgram(opts);
+		CLProgram& program = programs_[id];
+		return program.getCLWProgram(opts);
 	}
 
 	void
 	CLProgramManager::CompileProgram(uint32_t id, const std::string& opts) const
 	{
-		CLProgram& program = m_programs[id];
-		program.Compile(opts);
+		CLProgram& program = programs_[id];
+		program.compile(opts);
 	}
 }

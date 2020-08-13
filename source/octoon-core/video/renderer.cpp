@@ -48,6 +48,7 @@ namespace octoon::video
 		montecarlo_ = std::make_unique<OfflineRenderer>(w, h);
 		montecarlo_->setGraphicsContext(context);
 		rtxManager_ = std::make_unique<RtxManager>();
+		rtxManager_->setGraphicsContext(context);
 		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
 
 		this->setFramebufferSize(w, h);
@@ -59,6 +60,8 @@ namespace octoon::video
 		this->profile_.reset();
 		this->buffers_.clear();
 		this->materials_.clear();
+		this->rtxManager_.reset();
+		this->montecarlo_.reset();
 		currentBuffer_.reset();
 		context_.reset();
 	}
@@ -103,7 +106,21 @@ namespace octoon::video
 	void
 	Renderer::setGlobalIllumination(bool enable) noexcept
 	{
-		enableGlobalIllumination_ = enable;
+		if (enableGlobalIllumination_ != enable)
+		{
+			if (enable)
+			{
+				auto scene = video::RenderScene::instance();
+				for (auto& camera : scene->getCameras())
+					camera->setDirty(true);
+				for (auto& camera : scene->getGeometries())
+					camera->setDirty(true);
+				for (auto& camera : scene->getLights())
+					camera->setDirty(true);
+			}
+
+			this->enableGlobalIllumination_ = enable;
+		}
 	}
 
 	bool

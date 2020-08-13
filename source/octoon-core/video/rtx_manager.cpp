@@ -1,5 +1,6 @@
 #include "rtx_manager.h"
 #include <RadeonProRender.h>
+#include <octoon/runtime/except.h>
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -16,6 +17,8 @@
 namespace octoon::video
 {
 	RtxManager::RtxManager()
+		: width_(0)
+		, height_(0)
 	{
 		std::vector<CLWPlatform> platforms;
 
@@ -134,23 +137,15 @@ namespace octoon::video
 	}
 
 	void
-	RtxManager::createFrameBufferFromGLTexture(GLenum target, GLint miplevel, GLuint texture)
+	RtxManager::setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false)
 	{
-		if (target != GL_TEXTURE_2D)
-		{
-			throw std::runtime_error("Unsupported GL texture target.");
-		}
+		this->context_ = context;
+	}
 
-		GLint width, height;
-		GLint backup_tex = 0;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &backup_tex);
-		glBindTexture(target, texture);
-		glGetTexLevelParameteriv(target, miplevel, GL_TEXTURE_WIDTH, (GLint*)&width);
-		glGetTexLevelParameteriv(target, miplevel, GL_TEXTURE_HEIGHT, (GLint*)&height);
-
-		//create interop image
-		this->configs_[0].context.CreateImage2DFromGLTexture(texture);
-		glBindTexture(target, backup_tex);
+	const hal::GraphicsContextPtr&
+	RtxManager::getGraphicsContext() const noexcept(false)
+	{
+		return this->context_;
 	}
 
 	void
@@ -166,6 +161,94 @@ namespace octoon::video
 	}
 
 	void
+	RtxManager::setOutput(OutputType type, Output* output)
+	{
+		auto idx = static_cast<std::size_t>(type);
+		if (idx >= static_cast<std::size_t>(OutputType::kMax))
+			throw std::out_of_range("Output type is out of supported range");
+
+		for (auto& it : configs_)
+			it.pipeline->setOutput(type, output);
+
+		outputs_[idx] = output;
+	}
+	
+	Output*
+	RtxManager::getOutput(OutputType type) const
+	{
+		auto idx = static_cast<std::size_t>(type);
+		if (idx >= static_cast<std::size_t>(OutputType::kMax))
+			throw std::out_of_range("Output type is out of supported range");
+		return outputs_[idx];
+	}
+
+	void
+	RtxManager::generateWorkspace(std::uint32_t width, std::uint32_t height)
+	{
+		if (width_ != width || height_ != height)
+		{
+			this->width_ = width;
+			this->height_ = height;
+
+			hal::GraphicsTextureDesc colorTextureDesc;
+			colorTextureDesc.setWidth(this->width_);
+			colorTextureDesc.setHeight(this->height_);
+			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32A32SFloat);
+			colorTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			if (!colorTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			normalTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			if (!normalTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			albedoTexture_ = context_->getDevice()->createTexture(colorTextureDesc);
+			if (!albedoTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setWidth(this->width_);
+			depthTextureDesc.setHeight(this->height_);
+			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D32_SFLOAT);
+			auto depthTexture_ = context_->getDevice()->createTexture(depthTextureDesc);
+			if (!depthTexture_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32SFloat));
+			framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::D32_SFLOAT));
+
+			hal::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(this->width_);
+			framebufferDesc.setHeight(this->height_);
+			framebufferDesc.setFramebufferLayout(context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
+			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
+
+			this->framebuffer_ = context_->getDevice()->createFramebuffer(framebufferDesc);
+			if (!this->framebuffer_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			//TODO:: implement for several devices
+			if (configs_.size() != 1)
+			{
+				throw std::runtime_error("ContextObject: invalid config count.");
+			}
+
+			auto& c = configs_[0];
+			this->colorImage_ = c.factory->createTextureOutput(colorTexture_->handle(), this->width_, this->height_);
+			this->normalImage_ = c.factory->createTextureOutput(normalTexture_->handle(), this->width_, this->height_);
+			this->albedoImage_ = c.factory->createTextureOutput(albedoTexture_->handle(), this->width_, this->height_);
+
+			this->setOutput(OutputType::kColor, this->colorImage_.get());
+			this->setOutput(OutputType::kWorldShadingNormal, this->normalImage_.get());
+			this->setOutput(OutputType::kAlbedo, this->albedoImage_.get());
+		}
+	}
+
+	void
 	RtxManager::prepareScene(RenderScene* scene) noexcept
 	{
 		for (auto& c : configs_)
@@ -178,6 +261,14 @@ namespace octoon::video
 		this->prepareScene(scene);
 
 		for (auto& c : configs_)
+		{
+			auto mainCamera = scene->getMainCamera();
+			auto viewport = mainCamera->getPixelViewport();
+			this->generateWorkspace(viewport.width, viewport.height);
 			c.pipeline->render(c.controller->getCachedScene(scene));
+		}
+
+		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));
+		this->context_->blitFramebuffer(framebuffer_, viewport, nullptr, viewport);
 	}
 }

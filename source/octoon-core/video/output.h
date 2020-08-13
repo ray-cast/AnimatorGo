@@ -5,6 +5,30 @@
 
 namespace octoon::video
 {
+    enum class OutputType
+    {
+        kColor = 0,
+        kOpacity,
+        kVisibility,
+        kMaxMultiPassOutput,
+        kWorldPosition,
+        kWorldShadingNormal,
+        kViewShadingNormal,
+        kWorldGeometricNormal,
+        kUv,
+        kWireframe,
+        kAlbedo,
+        kWorldTangent,
+        kWorldBitangent,
+        kGloss,
+        kMeshID,
+        kGroupID,
+        kBackground,
+        kDepth,
+        kShapeId,
+        kMax
+    };
+
 	class Output
 	{
 	public:

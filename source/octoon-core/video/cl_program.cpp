@@ -1,4 +1,5 @@
 #include "cl_program.h"
+#include "cl_program_manager.h"
 
 #include <assert.h>
 #include <chrono>
@@ -9,7 +10,6 @@
 #include <regex>
 #include <filesystem>
 
-#include "cl_program_manager.h"
 #include "Utils/mkpath.h"
 
 namespace octoon::video
@@ -74,26 +74,25 @@ namespace octoon::video
 			out.write((char*)&data[0], data.size());
 	}
 
-	CLProgram::CLProgram(const CLProgramManager* program_manager, uint32_t id, CLWContext context,
-		const std::string& program_name, const std::string& cache_path) :
-		m_program_manager(program_manager),
-		m_program_name(program_name),
-		m_cache_path(cache_path),
-		m_id(id),
-		m_context(context)
+	CLProgram::CLProgram(const CLProgramManager* program_manager, uint32_t id, CLWContext context, std::string_view program_name, std::string_view cache_path)
+		: programManager_(program_manager)
+		, programName_(program_name)
+		, cachePath_(cache_path)
+		, id_(id)
+		, context_(context)
 	{
 	}
 
 	void
-	CLProgram::SetSource(const std::string& source)
+	CLProgram::setSource(std::string_view source)
 	{
-		m_compiled_source.reserve(1024 * 1024);
-		m_program_source = source;
-		ParseSource(m_program_source);
+		compiledSource_.reserve(1024 * 1024);
+		programSource_ = source;
+		parseSource(programSource_);
 	}
 
 	void
-	CLProgram::ParseSource(const std::string& source)
+	CLProgram::parseSource(const std::string& source)
 	{
 		std::string::size_type offset = 0;
 		std::string::size_type position = 0;
@@ -109,15 +108,15 @@ namespace octoon::video
 			fname = fname.substr(position + 1, fname.length() - position);
 			offset = end_position;
 
-			m_program_manager->LoadHeader(fname);
-			m_required_headers.insert(fname);
-			std::string arr = m_program_manager->ReadHeader(fname);
-			ParseSource(arr);
+			programManager_->LoadHeader(fname);
+			requiredHeaders_.insert(fname);
+			std::string arr = programManager_->ReadHeader(fname);
+			parseSource(arr);
 		}
 	}
 
 	void
-	CLProgram::BuildSource(const std::string& source)
+	CLProgram::buildSource(const std::string& source)
 	{
 		std::string::size_type offset = 0;
 		std::string::size_type position = 0;
@@ -126,7 +125,7 @@ namespace octoon::video
 		{
 			// Append not-include part of source
 			if (position != offset)
-				m_compiled_source += source.substr(offset, position - offset - 1);
+				compiledSource_ += source.substr(offset, position - offset - 1);
 
 			// Get include file name
 			std::string::size_type end_position = source.find(">", position);
@@ -137,20 +136,20 @@ namespace octoon::video
 			fname = fname.substr(position + 1, fname.length() - position);
 			offset = end_position + 1;
 
-			if (m_included_headers.find(fname) == m_included_headers.end())
+			if (includedHeaders_.find(fname) == includedHeaders_.end())
 			{
-				m_included_headers.insert(fname);
-				// Append included file to source
-				BuildSource(m_program_manager->ReadHeader(fname));
+				includedHeaders_.insert(fname);
+				// Append included file to source¡­¡­
+				buildSource(programManager_->ReadHeader(fname));
 			}
 		}
 
 		// Append rest of the file
-		m_compiled_source += source.substr(offset);
+		compiledSource_ += source.substr(offset);
 	}
 
 	CLWProgram
-	CLProgram::Compile(const std::string& opts)
+	CLProgram::compile(const std::string& opts)
 	{
 		std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 		start = std::chrono::high_resolution_clock::now();
@@ -158,7 +157,7 @@ namespace octoon::video
 		CLWProgram compiled_program;
 		try
 		{
-			compiled_program = CLWProgram::CreateFromSource(m_compiled_source.c_str(), m_compiled_source.size(), opts.c_str(), m_context);
+			compiled_program = CLWProgram::CreateFromSource(compiledSource_.c_str(), compiledSource_.size(), opts.c_str(), context_);
 #ifdef DUMP_PROGRAM_SOURCE
 			auto e = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 			std::ofstream file(m_program_name + std::to_string(e) + ".cl");
@@ -169,10 +168,10 @@ namespace octoon::video
 		catch (CLWException&)
 		{
 			std::cerr << "Compilation failed!" << std::endl;
-			std::cerr << "Dumping source to file:" << m_program_name << ".cl.failed" << std::endl;
-			std::string fname = m_program_name + ".cl.failed";
+			std::cerr << "Dumping source to file:" << programName_ << ".cl.failed" << std::endl;
+			std::string fname = programName_ + ".cl.failed";
 			std::ofstream file(fname);
-			file << m_compiled_source;
+			file << compiledSource_;
 			file.close();
 			throw;
 		}
@@ -181,41 +180,40 @@ namespace octoon::video
 		int elapsed_ms = (int)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		std::cerr << "Program compilation time: " << elapsed_ms << " ms" << std::endl;
 
-		m_is_dirty = false;
+		isDirty_ = false;
 		return compiled_program;
 	}
 
 	bool
-	CLProgram::IsHeaderNeeded(const std::string& header_name) const
+	CLProgram::isHeaderNeeded(const std::string& header_name) const
 	{
-		return (m_required_headers.find(header_name) != m_required_headers.end());
+		return (requiredHeaders_.find(header_name) != requiredHeaders_.end());
 	}
 
 	CLWProgram
-	CLProgram::GetCLWProgram(const std::string& opts)
+	CLProgram::getCLWProgram(const std::string& opts)
 	{
-		// global dirty flag
-		if (m_is_dirty)
+		if (isDirty_)
 		{
-			m_programs.clear();
-			m_compiled_source.clear();
-			m_included_headers.clear();
-			BuildSource(m_program_source);
+			programs_.clear();
+			compiledSource_.clear();
+			includedHeaders_.clear();
+			buildSource(programSource_);
 		}
 
-		auto it = m_programs.find(opts);
-		if (it != m_programs.end())
+		auto it = programs_.find(opts);
+		if (it != programs_.end())
 		{
 			return it->second;
 		}
 
 		CLWProgram result;
-		//check if we can get it from cache
-		if (!m_cache_path.empty())
-		{
-			std::string filename = GetFilenameHash(opts);
 
-			auto cached_program_path = m_cache_path;
+		if (!cachePath_.empty())
+		{
+			std::string filename = getFilenameHash(opts);
+
+			auto cached_program_path = cachePath_;
 			cached_program_path.append("/");
 			cached_program_path.append(filename);
 			cached_program_path.append(".bin");
@@ -226,13 +224,13 @@ namespace octoon::video
 				// Create from binary
 				std::size_t size = binary.size();
 				auto binaries = &binary[0];
-				result = CLWProgram::CreateFromBinary(&binaries, &size, m_context);
-				m_programs[opts] = result;
+				result = CLWProgram::CreateFromBinary(&binaries, &size, context_);
+				programs_[opts] = result;
 			}
 			else
 			{
-				result = Compile(opts);
-				m_programs[opts] = result;
+				result = compile(opts);
+				programs_[opts] = result;
 
 				// Save binaries
 				result.GetBinaries(0, binary);
@@ -240,15 +238,15 @@ namespace octoon::video
 			}
 		}
 
-		m_is_dirty = false;
+		isDirty_ = false;
 		return result;
 	}
 
 	std::string
-	CLProgram::GetFilenameHash(std::string const& opts) const
+	CLProgram::getFilenameHash(std::string const& opts) const
 	{
-		auto name = m_program_name;
-		auto device_name = m_context.GetDevice(0).GetName();
+		auto name = programName_;
+		auto device_name = context_.GetDevice(0).GetName();
 
 		std::regex forbidden("(\\\\)|[\\./:<>\\\"\\|\\?\\*]");
 
@@ -258,7 +256,7 @@ namespace octoon::video
 		name.append("_");
 		name.append(device_name);
 
-		auto extra = m_context.GetDevice(0).GetVersion();
+		auto extra = context_.GetDevice(0).GetVersion();
 		extra.append(opts);
 
 		std::ostringstream oss;
@@ -268,7 +266,7 @@ namespace octoon::video
 		name.append(oss.str());
 
 
-		std::uint32_t file_hash = CheckSum(m_compiled_source);
+		std::uint32_t file_hash = CheckSum(compiledSource_);
 
 		name.append("_");
 		name.append(std::to_string(file_hash));

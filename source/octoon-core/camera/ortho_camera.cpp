@@ -3,9 +3,9 @@
 
 namespace octoon::camera
 {
-	OctoonImplementSubClass(OrthoCamera, Camera, "OrthoCamera")
+	OctoonImplementSubClass(OrthographicCamera, Camera, "OrthographicCamera")
 
-	OrthoCamera::OrthoCamera() noexcept
+	OrthographicCamera::OrthographicCamera() noexcept
 		: ortho_(-1.0, 1.0, -1.0, 1.0) // left, right, bottom, top
 		, znear_(0.1f)
 		, zfar_(65535.0f)
@@ -15,7 +15,7 @@ namespace octoon::camera
 	{
 	}
 
-	OrthoCamera::OrthoCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept
+	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top, float znear, float zfar) noexcept
 		: ortho_(left, right, bottom, top) // left, right, bottom, top
 		, znear_(znear)
 		, zfar_(zfar)
@@ -25,12 +25,12 @@ namespace octoon::camera
 	{
 	}
 
-	OrthoCamera::~OrthoCamera() noexcept
+	OrthographicCamera::~OrthographicCamera() noexcept
 	{
 	}
 
 	void
-	OrthoCamera::setOrtho(const math::float4& ortho) noexcept
+	OrthographicCamera::setOrtho(const math::float4& ortho) noexcept
 	{
 		ortho_ = ortho;
 		needUpdateViewProject_= true;
@@ -38,13 +38,13 @@ namespace octoon::camera
 	}
 
 	const math::float4&
-	OrthoCamera::getOrtho() const noexcept
+	OrthographicCamera::getOrtho() const noexcept
 	{
 		return ortho_;
 	}
 
 	void
-	OrthoCamera::setNear(float znear) noexcept
+	OrthographicCamera::setNear(float znear) noexcept
 	{
 		if (znear_ != znear)
 		{
@@ -55,13 +55,13 @@ namespace octoon::camera
 	}
 
 	float
-	OrthoCamera::getNear() const noexcept
+	OrthographicCamera::getNear() const noexcept
 	{
 		return znear_;
 	}
 
 	void
-	OrthoCamera::setFar(float zfar) noexcept
+	OrthographicCamera::setFar(float zfar) noexcept
 	{
 		if (zfar_ != zfar)
 		{
@@ -72,41 +72,41 @@ namespace octoon::camera
 	}
 
 	float
-	OrthoCamera::getFar() const noexcept
+	OrthographicCamera::getFar() const noexcept
 	{
 		return zfar_;
 	}
 
 	const math::float4x4&
-	OrthoCamera::getProjection() const noexcept
+	OrthographicCamera::getProjection() const noexcept
 	{
 		_updateViewProject();
 		return project_;
 	}
 
 	const math::float4x4&
-	OrthoCamera::getProjectionInverse() const noexcept
+	OrthographicCamera::getProjectionInverse() const noexcept
 	{
 		_updateViewProject();
 		return projectInverse_;
 	}
 
 	const math::float4x4&
-	OrthoCamera::getViewProjection() const noexcept
+	OrthographicCamera::getViewProjection() const noexcept
 	{
 		_updateViewProject();
 		return viewProject_;
 	}
 
 	const math::float4x4&
-	OrthoCamera::getViewProjectionInverse() const noexcept
+	OrthographicCamera::getViewProjectionInverse() const noexcept
 	{
 		_updateViewProject();
 		return viewProjectInverse_;
 	}
 
 	void
-	OrthoCamera::_updateViewProject() const noexcept
+	OrthographicCamera::_updateViewProject() const noexcept
 	{
 		if (needUpdateViewProject_)
 		{
@@ -129,7 +129,7 @@ namespace octoon::camera
 	}
 
 	void
-	OrthoCamera::onMoveAfter() noexcept
+	OrthographicCamera::onMoveAfter() noexcept
 	{
 		RenderObject::onMoveAfter();
 		needUpdateViewProject_= true;

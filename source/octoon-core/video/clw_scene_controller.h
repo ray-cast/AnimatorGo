@@ -5,6 +5,7 @@
 #include <map>
 
 #include "clw_scene.h"
+#include "cl_program_manager.h"
 #include "scene_controller.h"
 
 namespace octoon::video
@@ -12,7 +13,7 @@ namespace octoon::video
 	class ClwSceneController : public SceneController
 	{
 	public:
-		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api);
+		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager);
 
 		void compileScene(RenderScene* scene) noexcept override;
 		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
@@ -24,6 +25,7 @@ namespace octoon::video
 
 	private:
 		CLWContext context_;
+		const CLProgramManager* programManager_;
 		std::shared_ptr<RadeonRays::IntersectionApi> api_;
 		std::unordered_map<const RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
 	};

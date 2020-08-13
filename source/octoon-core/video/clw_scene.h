@@ -61,6 +61,7 @@ namespace octoon::video
         int envmapidx;
         int background_idx;
         int camera_volume_index;
+        CameraType camera_type;
 
         std::vector<RadeonRays::Shape*> isect_shapes;
         std::vector<RadeonRays::Shape*> visible_shapes;

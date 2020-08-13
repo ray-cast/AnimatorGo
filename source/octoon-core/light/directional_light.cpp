@@ -11,7 +11,7 @@ namespace octoon::light
 		, shadowEnable_(false)
 		, shadowSize_(512, 512)
 	{
-		this->shadowCamera_ = std::make_shared<camera::OrthoCamera>(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 1000.f);
+		this->shadowCamera_ = std::make_shared<camera::OrthographicCamera>(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 1000.f);
 		this->shadowCamera_->setOwnerListener(this);
 	}
 

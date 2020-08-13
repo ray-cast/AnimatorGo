@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <octoon/math/trait.h>
 
+#undef PI
+
 namespace octoon
 {
 	namespace math

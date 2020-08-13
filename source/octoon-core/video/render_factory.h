@@ -17,6 +17,7 @@ namespace octoon::video
 		virtual ~RenderFactory() noexcept;
 
 		virtual std::unique_ptr<Output> createOutput(std::uint32_t w, std::uint32_t h) const = 0;
+		virtual std::unique_ptr<Output> createTextureOutput(std::uint32_t texture, std::uint32_t w, std::uint32_t h) const = 0;
 		virtual std::unique_ptr<SceneController> createSceneController() const = 0;
 		virtual std::unique_ptr<Pipeline> createPipeline() const = 0;
 

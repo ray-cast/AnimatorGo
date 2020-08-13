@@ -11,43 +11,44 @@
 namespace octoon::video
 {
     class CLProgramManager;
-    class CLProgram
+    class CLProgram final
     {
     public:
         CLProgram() = default;
-        CLProgram(const CLProgramManager *program_manager, uint32_t id, CLWContext context, const std::string &program_name, const std::string &cache_path);
+        CLProgram(const CLProgramManager *program_manager, uint32_t id, CLWContext context, std::string_view program_name, std::string_view cache_path);
 
-        bool IsDirty() const { return m_is_dirty; }
-        void SetDirty() { m_is_dirty = true; }
+        bool isDirty() const { return isDirty_; }
+        void setDirty() { isDirty_ = true; }
 
-        std::uint32_t GetId() const { return m_id; }
+        std::uint32_t getId() const { return id_; }
 
-        void SetSource(const std::string &source);
+        void setSource(std::string_view source);
 
-        bool IsHeaderNeeded(const std::string& header_name) const;
+        bool isHeaderNeeded(const std::string& header_name) const;
 
-        CLWProgram Compile(const std::string& opts);
-        CLWProgram GetCLWProgram(const std::string &opts);
+        CLWProgram compile(const std::string& opts);
+        CLWProgram getCLWProgram(const std::string &opts);
 
     private:
-        void ParseSource(const std::string &source);
-        void BuildSource(const std::string &source);
+        void parseSource(const std::string &source);
+        void buildSource(const std::string &source);
 
-        std::string GetFilenameHash(std::string const& opts) const;
+        std::string getFilenameHash(std::string const& opts) const;
 
-        const CLProgramManager* m_program_manager;
+    private:
+        const CLProgramManager* programManager_;
 
-        std::string m_program_name;
-        std::string m_cache_path;
-        std::string m_compiled_source;
-        std::string m_program_source;
-        std::unordered_set<std::string> m_required_headers;
-        std::unordered_map<std::string, CLWProgram> m_programs;
+        std::string programName_;
+        std::string cachePath_;
+        std::string compiledSource_;
+        std::string programSource_;
+        std::unordered_set<std::string> requiredHeaders_;
+        std::unordered_map<std::string, CLWProgram> programs_;
 
-        bool m_is_dirty = true;
-        uint32_t m_id;
-        CLWContext m_context;
-        std::set<std::string> m_included_headers;
+        bool isDirty_ = true;
+        uint32_t id_;
+        CLWContext context_;
+        std::set<std::string> includedHeaders_;
     };
 }
 

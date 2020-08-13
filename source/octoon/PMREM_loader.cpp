@@ -277,7 +277,7 @@ float D_GGX(float nh, float roughness)
 			copyGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
 			copyGeometry.setMaterial(copyMaterial);
 
-			camera::OrthoCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
+			camera::OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{

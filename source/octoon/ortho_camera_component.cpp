@@ -5,9 +5,9 @@ namespace octoon
 	OctoonImplementSubClass(OrthoCameraComponent, CameraComponent, "OrthoCameraComponent")
 
 	OrthoCameraComponent::OrthoCameraComponent() noexcept
-		: CameraComponent(std::make_shared<camera::OrthoCamera>())
+		: CameraComponent(std::make_shared<camera::OrthographicCamera>())
 	{
-		camera_ = dynamic_cast<camera::OrthoCamera*>(CameraComponent::camera_.get());
+		camera_ = dynamic_cast<camera::OrthographicCamera*>(CameraComponent::camera_.get());
 	}
 
 	OrthoCameraComponent::OrthoCameraComponent(const math::float4& ortho, float znear, float zfar) noexcept

@@ -31,7 +31,7 @@ namespace octoon
 		OrthoCameraComponent& operator=(const OrthoCameraComponent&) = delete;
 
 	private:
-		camera::OrthoCamera* camera_;
+		camera::OrthographicCamera* camera_;
 	};
 }
 

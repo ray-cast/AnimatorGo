@@ -11,20 +11,23 @@ namespace octoon::video
 	class OCTOON_EXPORT ForwardScene final : public CompiledScene
 	{
 	public:
-		struct HemisphereLight {
+		struct HemisphereLight
+		{
 			math::float3 direction;
 			math::float3 skyColor;
 			math::float3 groundColor;
 		};
 
-		struct RectAreaLight {
+		struct RectAreaLight
+		{
 			math::float4 color;
 			math::float4 position;
 			math::float4 halfWidth;
 			math::float4 halfHeight;
 		};
 
-		struct SpotLight {
+		struct SpotLight
+		{
 			math::float4 position;
 			math::float4 direction;
 			math::float4 color;
@@ -39,12 +42,14 @@ namespace octoon::video
 			math::float2 shadowMapSize;
 		};
 
-		struct EnvironmentLight {
+		struct EnvironmentLight
+		{
 			float intensity;
 			hal::GraphicsTextureWeakPtr radiance;
 		};
 
-		struct PointLight {
+		struct PointLight
+		{
 			math::float4 position;
 			math::float4 color;
 			float distance;
@@ -56,7 +61,8 @@ namespace octoon::video
 			math::float2 shadowMapSize;
 		};
 
-		struct DirectionalLight {
+		struct DirectionalLight
+		{
 			math::float4 direction;
 			math::float3 color;
 			int shadow;

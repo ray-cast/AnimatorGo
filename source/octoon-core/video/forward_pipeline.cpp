@@ -41,7 +41,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::renderObject(ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	ForwardPipeline::renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
 		if (camera.getLayer() != geometry.getLayer())
 			return;
@@ -66,7 +66,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::renderObjects(ForwardScene& scene, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	ForwardPipeline::renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
 		for (auto& geometry : geometries)
 			this->renderObject(scene , *geometry, camera, overrideMaterial);
@@ -143,9 +143,9 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::render(CompiledScene& scene) noexcept
+	ForwardPipeline::render(const CompiledScene& scene)
 	{
-		auto compiled = dynamic_cast<ForwardScene*>(&scene);
+		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
 		auto camera = compiled->camera;
 		auto framebuffer = camera->getFramebuffer();
 		this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
@@ -167,6 +167,11 @@ namespace octoon::video
 			math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
 			this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 		}
+	}
+
+	void
+	ForwardPipeline::renderTile(const CompiledScene& scene, const math::int2& tileOrigin, const math::int2& tileSize)
+	{
 	}
 
 	void
@@ -241,7 +246,7 @@ namespace octoon::video
 	}
 
 	bool
-	ForwardPipeline::setBuffer(ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
+	ForwardPipeline::setBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
 	{
 		if (mesh)
 		{
@@ -263,13 +268,13 @@ namespace octoon::video
 	}
 
 	bool
-	ForwardPipeline::setProgram(ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
+	ForwardPipeline::setProgram(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
 	{
 		if (material)
 		{
 			auto& pipeline = materials_[((std::intptr_t)material.get())];
 			if (!pipeline)
-				pipeline = std::make_shared<ForwardMaterial>(material, dynamic_cast<ForwardScene&>(scene));
+				pipeline = std::make_shared<ForwardMaterial>(material, dynamic_cast<const ForwardScene&>(scene));
 
 			pipeline->update(camera, geometry, scene);
 

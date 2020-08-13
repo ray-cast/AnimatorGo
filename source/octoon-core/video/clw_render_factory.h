@@ -4,6 +4,7 @@
 #include <CLW.h>
 
 #include "render_factory.h"
+#include "cl_program_manager.h"
 
 namespace RadeonRays
 {
@@ -19,6 +20,8 @@ namespace octoon::video
 		virtual ~ClwRenderFactory() noexcept;
 
 		virtual std::unique_ptr<Output> createOutput(std::uint32_t w, std::uint32_t h) const override;
+		virtual std::unique_ptr<Output> createTextureOutput(std::uint32_t texture, std::uint32_t w, std::uint32_t h) const override;
+
 		virtual std::unique_ptr<SceneController> createSceneController() const override;
 		virtual std::unique_ptr<Pipeline> createPipeline() const override;
 
@@ -28,7 +31,7 @@ namespace octoon::video
 
 	private:
 		CLWContext context_;
-
+		CLProgramManager programManager_;
 		std::shared_ptr<RadeonRays::IntersectionApi> intersector_;
 	};
 }

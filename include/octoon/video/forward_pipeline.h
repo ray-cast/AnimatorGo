@@ -23,16 +23,17 @@ namespace octoon::video
 
 		void prepareShadowMaps(ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
-		void renderObject(ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept;
-		void renderObjects(ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
+		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept;
+		void renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
-		void render(CompiledScene& scene) noexcept;
+		void render(const CompiledScene& scene) override;
+		void renderTile(const CompiledScene& scene, const math::int2& tileOrigin, const math::int2& tileSize) override;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
-		bool setBuffer(ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
-		bool setProgram(ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
+		bool setBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
+		bool setProgram(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
 
 	private:
 		ForwardPipeline(const ForwardPipeline&) = delete;

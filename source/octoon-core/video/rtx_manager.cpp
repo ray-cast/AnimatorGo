@@ -265,6 +265,8 @@ namespace octoon::video
 			auto mainCamera = scene->getMainCamera();
 			auto viewport = mainCamera->getPixelViewport();
 			this->generateWorkspace(viewport.width, viewport.height);
+			if (mainCamera->isDirty())
+				c.pipeline->clear(math::float4::Zero);
 			c.pipeline->render(c.controller->getCachedScene(scene));
 		}
 

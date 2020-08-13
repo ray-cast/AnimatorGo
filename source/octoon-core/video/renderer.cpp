@@ -376,7 +376,7 @@ namespace octoon::video
 
 			if (this->enableGlobalIllumination_)
 			{
-#if 0
+#if 1
 				this->rtxManager_->render(&scene);
 #else
 				this->montecarlo_->render(

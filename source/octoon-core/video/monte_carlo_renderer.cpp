@@ -14,7 +14,7 @@ namespace octoon::video
 		, estimator_(std::move(estimator))
 		, sampleCounter_(0)
 	{
-		estimator_->SetWorkBufferSize(kTileSizeX * kTileSizeY);
+		estimator_->setWorkBufferSize(kTileSizeX * kTileSizeY);
 	}
 
 	MonteCarloRenderer::~MonteCarloRenderer() noexcept
@@ -22,9 +22,9 @@ namespace octoon::video
 	}
 
 	void
-	MonteCarloRenderer::clear(const math::float4& val, Output& output)
+	MonteCarloRenderer::clear(const math::float4& val)
 	{
-		static_cast<ClwOutput&>(output).clear(val);
+		this->getOutput(octoon::video::OutputType::kColor)->clear(val);
 		sampleCounter_ = 0u;
 	}
 
@@ -132,10 +132,10 @@ namespace octoon::video
 		generate_kernel.SetArg(argc++, tile_size.y);
 		generate_kernel.SetArg(argc++, rand_uint());
 		generate_kernel.SetArg(argc++, sampleCounter_);
-		generate_kernel.SetArg(argc++, estimator_->GetRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
-		generate_kernel.SetArg(argc++, estimator_->GetRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
-		generate_kernel.SetArg(argc++, estimator_->GetOutputIndexBuffer());
-		generate_kernel.SetArg(argc++, estimator_->GetRayCountBuffer());
+		generate_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
+		generate_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
+		generate_kernel.SetArg(argc++, estimator_->getOutputIndexBuffer());
+		generate_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
 
 		size_t gs[] = { static_cast<size_t>((tile_size.x + 15) / 16 * 16), static_cast<size_t>((tile_size.y + 15) / 16 * 16) };
 		size_t ls[] = { 16, 16 };
@@ -169,13 +169,13 @@ namespace octoon::video
 		genkernel.SetArg(argc++, clwScene->camera);
 		genkernel.SetArg(argc++, output.width());
 		genkernel.SetArg(argc++, output.height());
-		genkernel.SetArg(argc++, estimator_->GetOutputIndexBuffer());
-		genkernel.SetArg(argc++, estimator_->GetRayCountBuffer());
+		genkernel.SetArg(argc++, estimator_->getOutputIndexBuffer());
+		genkernel.SetArg(argc++, estimator_->getRayCountBuffer());
 		genkernel.SetArg(argc++, (int)rand_uint());
 		genkernel.SetArg(argc++, sampleCounter_);
-		genkernel.SetArg(argc++, estimator_->GetRayBuffer());
-		genkernel.SetArg(argc++, estimator_->GetRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
-		genkernel.SetArg(argc++, estimator_->GetRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
+		genkernel.SetArg(argc++, estimator_->getRayBuffer());
+		genkernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
+		genkernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
 
 		int globalsize = tile_size.x * tile_size.y;
 		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, genkernel);

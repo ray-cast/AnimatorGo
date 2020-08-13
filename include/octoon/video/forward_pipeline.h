@@ -21,6 +21,8 @@ namespace octoon::video
 
 		void setupFramebuffers(std::uint32_t w, std::uint32_t h) except;
 
+		void clear(const math::float4& val) override;
+
 		void prepareShadowMaps(ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept;

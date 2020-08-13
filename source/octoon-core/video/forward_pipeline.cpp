@@ -41,6 +41,11 @@ namespace octoon::video
 	}
 
 	void
+	ForwardPipeline::clear(const math::float4& val)
+	{
+	}
+
+	void
 	ForwardPipeline::renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
 		if (camera.getLayer() != geometry.getLayer())

@@ -357,6 +357,70 @@ KERNEL void ShadeMiss(
     }
 }
 
+
+///< Illuminate missing rays
+KERNEL void ShadeSurface(
+    GLOBAL ray const* restrict rays,
+    GLOBAL Intersection const* restrict isects,
+    GLOBAL int const* restrict pixel_indices,
+    GLOBAL int const*  restrict output_indices,
+    GLOBAL int const* restrict num_rays,
+    GLOBAL float4* restrict output,
+
+    GLOBAL float3 const* restrict vertices,
+    GLOBAL float3 const* restrict normals,
+    GLOBAL float2 const* restrict uvs,
+    GLOBAL int const* restrict indices,
+    GLOBAL Shape const* restrict shapes,
+
+    GLOBAL ray* restrict indirect_rays
+)
+{
+    Scene2 scene =
+    {
+        vertices,
+        normals,
+        uvs,
+        indices,
+        shapes,
+    };
+
+    int global_id = get_global_id(0);
+    if (global_id < *num_rays)
+    {
+        int pixel_idx = pixel_indices[global_id];
+        int output_index = output_indices[pixel_idx];
+
+        // Determine shape and polygon
+
+        int shape_idx = isects[global_id].shapeid - 1;
+        if (shape_idx >= 0)
+        {
+            int prim_idx = isects[global_id].primid;
+
+            // Get barycentrics
+            float2 barycentrics = isects[global_id].uvwt.xy;
+
+            // Extract shape data
+            Shape shape = scene.shapes[shape_idx];
+
+            // Interpolate attributes
+            float3 p;
+            float3 n;
+            float2 uv;
+            float area;
+            Scene_InterpolateAttributes2(&scene, shape_idx, prim_idx, barycentrics, &p, &n, &uv, &area);
+
+            n = n * make_float3(0.5, 0.5, 0.5) + make_float3(0.5, 0.5, 0.5);
+            ADD_FLOAT4(&output[output_index], make_float4(n.x, n.y, n.z, 0));
+        }
+        else
+        {
+            ADD_FLOAT4(&output[output_index], make_float4(0,0,0,0));
+        }
+    }
+}
+
 ///< Advance iteration count. Used on missed rays
 KERNEL void AdvanceIterationCount(
     // Pixel indices

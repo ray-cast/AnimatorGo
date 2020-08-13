@@ -15,7 +15,7 @@ namespace octoon::video
 		MonteCarloRenderer(CLWContext context, const CLProgramManager* programManager, std::unique_ptr<PathTracingEstimator> estimator) noexcept;
 		virtual ~MonteCarloRenderer() noexcept;
 
-		void clear(const math::float4& val, Output& output);
+		void clear(const math::float4& val) override;
 
 		void render(const CompiledScene& scene) override;
 		void renderTile(const CompiledScene& scene, const math::int2& tile_origin, const math::int2& tile_size) override;

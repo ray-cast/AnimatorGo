@@ -14,7 +14,7 @@ namespace octoon::video
 		Pipeline() noexcept;
 		virtual ~Pipeline() noexcept;
 
-		//virtual void clear(const math::float4& val, Output& output) = 0;
+		virtual void clear(const math::float4& val) = 0;
 
 		virtual void setOutput(OutputType type, Output* output);
 		virtual Output* getOutput(OutputType type) const;

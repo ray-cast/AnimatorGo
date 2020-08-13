@@ -92,70 +92,13 @@ namespace octoon::video
         }
 
 		context_.UnmapBuffer(0, out.camera, data);
+
+		out.camera_volume_index = -1;
 	}
 
     void
     ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
     {
-		api_->DetachAll();
-
-        for (auto& shape : out.isect_shapes)
-            api_->DeleteShape(shape);
-
-        out.isect_shapes.clear();
-        out.visible_shapes.clear();
-
-        int id = 1;
-        for (auto& geometry : scene->getGeometries())
-        {
-			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-				continue;
-			}
-
-			auto& mesh = geometry->getMesh();
-			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
-			{
-				auto shape = this->api_->CreateMesh(
-					(float*)mesh->getVertexArray().data(),
-					static_cast<int>(mesh->getVertexArray().size()),
-					3 * sizeof(float),
-					reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
-					0,
-					nullptr,
-					static_cast<int>(mesh->getIndicesArray(i).size() / 3)
-				);
-
-				auto transform = geometry->getTransform();
-				auto transformInverse = geometry->getTransformInverse();
-
-				RadeonRays::matrix m(
-					transform.a1, transform.a2, transform.a3, transform.a4,
-					transform.b1, transform.b2, transform.b3, transform.b4,
-					transform.c1, transform.c2, transform.c3, transform.c4,
-					transform.d1, transform.d2, transform.d3, transform.d4);
-
-				RadeonRays::matrix minv(
-					transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
-					transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
-					transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
-					transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
-
-				shape->SetId(id++);
-				shape->SetTransform(m, inverse(m));
-
-				this->api_->AttachShape(shape);
-
-				out.isect_shapes.push_back(shape);
-				out.visible_shapes.push_back(shape);
-			}
-
-			this->api_->Commit();
-        }
-    }
-
-	void
-	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
-	{
 		bool dirty = false;
 		for (auto& geometry : scene->getGeometries())
 		{
@@ -168,7 +111,182 @@ namespace octoon::video
 
 		if (dirty)
 		{
-			this->updateIntersector(scene, out);
+			api_->DetachAll();
+
+			for (auto& shape : out.isect_shapes)
+				api_->DeleteShape(shape);
+
+			out.isect_shapes.clear();
+			out.visible_shapes.clear();
+
+			int id = 1;
+			for (auto& geometry : scene->getGeometries())
+			{
+				if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+					continue;
+				}
+
+				auto& mesh = geometry->getMesh();
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+				{
+					auto shape = this->api_->CreateMesh(
+						(float*)mesh->getVertexArray().data(),
+						static_cast<int>(mesh->getVertexArray().size()),
+						3 * sizeof(float),
+						reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
+						0,
+						nullptr,
+						static_cast<int>(mesh->getIndicesArray(i).size() / 3)
+					);
+
+					auto transform = geometry->getTransform();
+					auto transformInverse = geometry->getTransformInverse();
+
+					RadeonRays::matrix m(
+						transform.a1, transform.a2, transform.a3, transform.a4,
+						transform.b1, transform.b2, transform.b3, transform.b4,
+						transform.c1, transform.c2, transform.c3, transform.c4,
+						transform.d1, transform.d2, transform.d3, transform.d4);
+
+					RadeonRays::matrix minv(
+						transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
+						transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
+						transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
+						transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
+
+					shape->SetId(id++);
+					shape->SetTransform(m, inverse(m));
+
+					this->api_->AttachShape(shape);
+
+					out.isect_shapes.push_back(shape);
+					out.visible_shapes.push_back(shape);
+				}
+
+				this->api_->Commit();
+			}
 		}
+    }
+
+	void
+	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
+	{
+		std::size_t num_vertices = 0;
+		std::size_t num_indices = 0;
+		std::size_t num_shapes = 0;
+
+		std::size_t num_vertices_written = 0;
+		std::size_t num_normals_written = 0;
+		std::size_t num_uvs_written = 0;
+		std::size_t num_indices_written = 0;
+		std::size_t num_shapes_written = 0;
+
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			auto& mesh = geometry->getMesh();
+			num_vertices += mesh->getVertexArray().size();
+
+			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+			{
+				num_indices += mesh->getIndicesArray(i).size();
+				num_shapes++;
+			}
+		}
+
+		out.vertices = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
+		out.normals = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
+		out.uvs = context_.CreateBuffer<math::float2>(num_vertices, CL_MEM_READ_ONLY);
+		out.indices = context_.CreateBuffer<int>(num_indices, CL_MEM_READ_ONLY);
+
+		out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
+		out.shapes_additional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
+
+		math::float4* vertices = nullptr;
+		math::float4* normals = nullptr;
+		math::float2* uvs = nullptr;
+		int* indices = nullptr;
+		ClwScene::Shape* shapes = nullptr;
+		ClwScene::ShapeAdditionalData* shapes_additional = nullptr;
+
+		// Map arrays and prepare to write data
+		context_.MapBuffer(0, out.vertices, CL_MAP_WRITE, &vertices);
+		context_.MapBuffer(0, out.normals, CL_MAP_WRITE, &normals);
+		context_.MapBuffer(0, out.uvs, CL_MAP_WRITE, &uvs);
+		context_.MapBuffer(0, out.indices, CL_MAP_WRITE, &indices);
+		context_.MapBuffer(0, out.shapes, CL_MAP_WRITE, &shapes).Wait();
+		context_.MapBuffer(0, out.shapes_additional, CL_MAP_WRITE, &shapes_additional).Wait();
+
+		std::size_t id = 1;
+
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			auto& mesh = geometry->getMesh();
+
+			auto mesh_vertex_array = mesh->getVertexArray().data();
+			auto mesh_num_vertices = mesh->getVertexArray().size();
+
+			auto mesh_normal_array = mesh->getNormalArray().data();
+			auto mesh_num_normals = mesh->getNormalArray().size();
+
+			auto mesh_uv_array = mesh->getTexcoordArray().data();
+			auto mesh_num_uvs = mesh->getTexcoordArray().size();
+
+			for (auto i = 0; i < mesh_num_vertices; i++)
+			{
+				vertices[num_vertices_written + i].set(mesh_vertex_array[i]);
+				normals[num_normals_written + i].set(mesh_normal_array[i]);
+			}
+
+			std::copy(mesh_uv_array, mesh_uv_array + mesh_num_uvs, uvs + num_uvs_written);
+
+			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+			{
+				ClwScene::Shape shape;
+				shape.id = id++;
+				shape.startvtx = static_cast<int>(num_vertices_written);
+				shape.startidx = static_cast<int>(num_indices_written);
+
+				auto transform = geometry->getTransform();
+				shape.transform.m0 = { transform.a1, transform.a2, transform.a3, transform.a4 };
+				shape.transform.m1 = { transform.b1, transform.b2, transform.b3, transform.b4 };
+				shape.transform.m2 = { transform.c1, transform.c2, transform.c3, transform.c4 };
+				shape.transform.m3 = { transform.d1, transform.d2, transform.d3, transform.d4 };
+
+				shape.linearvelocity = float3(0.0f, 0.f, 0.f);
+				shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);
+				shape.material.offset = 0;
+				shape.material.layers = 0;
+				shape.volume_idx = 0;
+
+				auto mesh_index_array = mesh->getIndicesArray(i).data();
+				auto mesh_num_indices = mesh->getIndicesArray(i).size();
+
+				std::copy(mesh_index_array, mesh_index_array + mesh_num_indices, indices + num_indices_written);
+				num_indices_written += mesh_num_indices;
+
+				shapes[num_shapes_written++] = shape;
+			}
+
+			num_vertices_written += mesh_num_vertices;
+			num_normals_written += mesh_num_normals;
+			num_uvs_written += mesh_num_uvs;
+		}
+
+		context_.UnmapBuffer(0, out.vertices, vertices);
+		context_.UnmapBuffer(0, out.normals, normals);
+		context_.UnmapBuffer(0, out.uvs, uvs);
+		context_.UnmapBuffer(0, out.indices, indices);
+		context_.UnmapBuffer(0, out.shapes, shapes).Wait();
+		context_.UnmapBuffer(0, out.shapes_additional, shapes_additional).Wait();
+
+		this->updateIntersector(scene, out);
 	}
 }

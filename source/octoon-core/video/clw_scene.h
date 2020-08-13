@@ -32,9 +32,9 @@ namespace octoon::video
 
         #include "Kernels/CL/payload.cl"
 
-        CLWBuffer<RadeonRays::float3> vertices;
-        CLWBuffer<RadeonRays::float3> normals;
-        CLWBuffer<RadeonRays::float2> uvs;
+        CLWBuffer<math::float4> vertices;
+        CLWBuffer<math::float4> normals;
+        CLWBuffer<math::float2> uvs;
         CLWBuffer<int> indices;
 
         CLWBuffer<Shape> shapes;

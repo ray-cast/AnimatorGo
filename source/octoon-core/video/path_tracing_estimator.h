@@ -11,6 +11,15 @@ namespace octoon::video
 {
 	class PathTracingEstimator final : public Estimator, protected ClwClass
 	{
+        struct PathState
+        {
+            float4 throughput;
+            int volume;
+            int flags;
+            int extra0;
+            int extra1;
+        };
+
         struct RenderData
         {
             CLWBuffer<RadeonRays::ray> rays[2];
@@ -26,7 +35,7 @@ namespace octoon::video
             CLWBuffer<int> iota;
 
             CLWBuffer<RadeonRays::float3> lightsamples;
-            //CLWBuffer<PathState> paths;
+            CLWBuffer<PathState> paths;
             CLWBuffer<std::uint32_t> random;
             CLWBuffer<std::uint32_t> sobolmat;
             CLWBuffer<int> hitcount;
@@ -57,24 +66,31 @@ namespace octoon::video
 		PathTracingEstimator(CLWContext context, std::shared_ptr<RadeonRays::IntersectionApi> api, const CLProgramManager* programManager);
 		virtual ~PathTracingEstimator() override;
 
-        std::size_t GetWorkBufferSize() const;
-        void SetWorkBufferSize(std::size_t size);
+        void setWorkBufferSize(std::size_t size);
+        std::size_t getWorkBufferSize() const;
+
+        void setMaxBounces(std::uint32_t num_bounces);
+        std::uint32_t getMaxBounces() const;
 
         std::shared_ptr<RadeonRays::IntersectionApi> getIntersector() const {
             return intersector_;
         }
 
-        CLWBuffer<RadeonRays::ray> GetRayBuffer() const;
-        CLWBuffer<int> GetOutputIndexBuffer() const;
-        CLWBuffer<int> GetRayCountBuffer() const;
-        CLWBuffer<std::uint32_t> GetRandomBuffer(RandomBufferType buffer) const;
+        CLWBuffer<RadeonRays::ray> getRayBuffer() const;
+        CLWBuffer<int> getOutputIndexBuffer() const;
+        CLWBuffer<int> getRayCountBuffer() const;
+        CLWBuffer<std::uint32_t> getRandomBuffer(RandomBufferType buffer) const;
 
         void estimate(const ClwScene& scene, std::size_t num_estimates, CLWBuffer<math::float4> output, bool use_output_indices = true, bool atomic_update = false);
 
     private:
-        void ShadeMiss(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void initPathData(std::size_t size, int volume_idx);
+        void advanceIterationCount(int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void restorePixelIndices(int pass, std::size_t size);
+        void shadeSurface(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
 
     private:
+        std::uint32_t maxBounces_;
         std::unique_ptr<RenderData> renderData_;
         std::shared_ptr<RadeonRays::IntersectionApi> intersector_;
 	};

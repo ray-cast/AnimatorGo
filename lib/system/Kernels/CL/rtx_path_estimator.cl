@@ -299,8 +299,7 @@ KERNEL void ShadeSurface(
 
         const float2 sample = Sampler_Sample2D(&sampler, SAMPLER_ARGS);
         wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
-        wo = matrix_mul_vector3(diffgeo.tangent_to_world, wo);
-        wo = normalize(wo);
+        wo = normalize(matrix_mul_vector3(diffgeo.tangent_to_world, wo));
 
         float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
         radiance = make_float3(diffuse.x, diffuse.y, diffuse.z);// * ndotwo;

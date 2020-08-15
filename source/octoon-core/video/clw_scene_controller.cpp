@@ -138,11 +138,11 @@ namespace octoon::video
 					ClwScene::Material material;
 					material.offset = static_cast<int>(mat_buffer.size());
 					material.diffuse = RadeonRays::float4(standard->getColor().x, standard->getColor().y, standard->getColor().z, 1);
-					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse;
+					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
 
 					if (i == 0)
 					{
-						material.emissive = material.diffuse * 10;
+						material.emissive = material.diffuse * 100;
 						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
 					}
 

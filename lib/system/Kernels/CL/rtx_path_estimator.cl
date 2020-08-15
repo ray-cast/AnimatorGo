@@ -241,12 +241,18 @@ KERNEL void ShadeSurface(
 
         DifferentialGeometry diffgeo;
         Scene_FillDifferentialGeometry(&scene, &isect, &diffgeo);
+        DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
 
         Path_SetFlags(&diffgeo, path);
 
         float3 wi = -normalize(rays[hit_idx].d.xyz);
         float ngdotwi = dot(diffgeo.ng, wi);
         bool backfacing = ngdotwi < 0.f;
+
+        if (!Bxdf_IsTransparency(&diffgeo))
+        {
+            Path_SetOpacityFlag(path);
+        }
 
         if (Bxdf_IsEmissive(&diffgeo))
         {
@@ -275,6 +281,8 @@ KERNEL void ShadeSurface(
             return;
         }
 
+        float s = Bxdf_IsBtdf(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
+
         float light_pdf = 0.f;
         float bxdf_light_pdf = 0.f;
         float bxdf_pdf = 0.f;
@@ -287,15 +295,24 @@ KERNEL void ShadeSurface(
         float bxdf_weight = 1.f;
         float light_weight = 1.f;
 
-        float3 throughput = Path_GetThroughput(path);
-
         float4 diffuse = diffgeo.mat.diffuse;
-        Path_MulThroughput(path, make_float3(diffuse.x, diffuse.y, diffuse.z));
 
-        light_samples[global_id] = Path_GetThroughput(path);
+        const float2 sample = Sampler_Sample2D(&sampler, SAMPLER_ARGS);
+        wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
+        wo = matrix_mul_vector3(diffgeo.tangent_to_world, wo);
+        wo = normalize(wo);
 
-        Path_Kill(path);
-        Ray_SetInactive(indirect_rays + global_id);
+        float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
+        radiance = make_float3(diffuse.x, diffuse.y, diffuse.z);// * ndotwo;
+
+        Path_MulThroughput(path, radiance);
+
+        float3 indirect_ray_dir = wo;
+        float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+        int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
+
+        Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
+        Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
     }
 }
 

@@ -28,6 +28,7 @@ Support rendering backends:
 * OpenGL ES 2.0
 * OpenGL ES 3.0
 * OpenGL ES 3.2
+* OpenCL 2.0
 
 Contribution
 ------

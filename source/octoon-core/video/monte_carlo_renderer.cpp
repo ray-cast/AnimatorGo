@@ -9,7 +9,7 @@ namespace octoon::video
 	int constexpr kTileSizeY = 1440;
 
 	MonteCarloRenderer::MonteCarloRenderer(CLWContext context, const CLProgramManager* programManager, std::unique_ptr<PathTracingEstimator> estimator) noexcept
-		: ClwClass(context, programManager, "../../system/Kernels/CL/monte_carlo_renderer.cl", "")
+		: ClwClass(context, programManager, "../../system/Kernels/CL/rtx_renderer.cl", "")
 		, context_(context)
 		, estimator_(std::move(estimator))
 		, sampleCounter_(0)
@@ -162,7 +162,7 @@ namespace octoon::video
 		};
 
 		auto clwScene = dynamic_cast<const ClwScene*>(&scene);
-		auto kernel_name = getCameraKernelName(clwScene->camera_type);
+		auto kernel_name = getCameraKernelName(clwScene->cameraType);
 		auto genkernel = getKernel(kernel_name, generate_at_pixel_center ? "-D BAIKAL_GENERATE_SAMPLE_AT_PIXEL_CENTER " : "");
 
 		int argc = 0;

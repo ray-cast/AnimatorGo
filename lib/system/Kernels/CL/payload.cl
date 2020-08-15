@@ -57,6 +57,16 @@ typedef struct
     float aperture;
 } Camera;
 
+enum BxdfFlags
+{
+    kBxdfFlagsSingular = (1 << 0),
+    kBxdfFlagsBrdf = (1 << 1),
+    kBxdfFlagsEmissive = (1 << 2),
+    kBxdfFlagsTransparency = (1 << 3),
+    kBxdfFlagsDiffuse = (1 << 4),
+    kBxdfFlagsAll = (kBxdfFlagsSingular | kBxdfFlagsBrdf | kBxdfFlagsEmissive | kBxdfFlagsTransparency | kBxdfFlagsDiffuse)
+};
+
 enum UberMaterialLayers
 {
     kEmissionLayer = 0x1,
@@ -75,6 +85,8 @@ typedef struct
     int layers;
     int flags;
     int padding;
+    float4 diffuse;
+    float4 emissive;
 } Material;
 
 // Shape description

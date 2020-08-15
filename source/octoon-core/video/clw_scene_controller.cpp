@@ -37,12 +37,14 @@ namespace octoon::video
 		{
 			auto clwscene = std::make_unique<ClwScene>(this->context_);
 			this->updateCamera(scene, *clwscene);
+			this->updateMaterials(scene, *clwscene);
 			this->updateShapes(scene, *clwscene);
 			sceneCache_[scene] = std::move(clwscene);
 		}
 		else
 		{
 			this->updateCamera(scene, *(*iter).second);
+			this->updateMaterials(scene, *(*iter).second);
 			this->updateShapes(scene, *(*iter).second);
 		}
 	}
@@ -57,6 +59,16 @@ namespace octoon::video
 			throw std::runtime_error("Scene has not been compiled");
 	}
 
+	ClwScene::Material
+	ClwSceneController::getMaterialIndex(const material::MaterialPtr& material) const
+	{
+		auto it = materialidToOffset_.find(material.get());
+		if (it != materialidToOffset_.end())
+			return it->second;
+		else
+			throw std::runtime_error("Cannot find the material");
+	}
+
 	void
 	ClwSceneController::updateCamera(const RenderScene* scene, ClwScene& out) const
 	{
@@ -64,7 +76,7 @@ namespace octoon::video
 			out.camera = context_.CreateBuffer<ClwScene::Camera>(scene->getCameras().size(), CL_MEM_READ_ONLY);
 
 		auto camera = scene->getMainCamera();
-		out.camera_type = GetCameraType(*camera);
+		out.cameraType = GetCameraType(*camera);
 
 		ClwScene::Camera* data = nullptr;
 		context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
@@ -93,7 +105,60 @@ namespace octoon::video
 
 		context_.UnmapBuffer(0, out.camera, data);
 
-		out.camera_volume_index = -1;
+		out.cameraVolumeIndex = -1;
+	}
+
+	void
+	ClwSceneController::updateTextures(const RenderScene* scene, ClwScene& out)
+	{
+		ClwScene::Texture texture;
+	}
+
+	void
+	ClwSceneController::updateMaterials(const RenderScene* scene, ClwScene& out)
+	{
+		std::vector<int> mat_buffer;
+		mat_buffer.reserve(1024 * 1024);
+
+		this->materialidToOffset_.clear();
+
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			for (std::size_t i = 0 ; i < geometry->getMaterials().size(); ++i)
+			{
+				auto& mat = geometry->getMaterial(i);
+				if (mat->isInstanceOf<material::MeshStandardMaterial>())
+				{
+					auto standard = mat->downcast<material::MeshStandardMaterial>();
+
+					ClwScene::Material material;
+					material.offset = static_cast<int>(mat_buffer.size());
+					material.diffuse = RadeonRays::float4(standard->getColor().x, standard->getColor().y, standard->getColor().z, 1);
+					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse;
+
+					if (i == 0)
+					{
+						material.emissive = material.diffuse * 10;
+						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
+					}
+
+					this->materialidToOffset_[mat.get()] = material;
+				}
+			}
+		}
+
+		if (mat_buffer.size() >= out.materialAttributes.GetElementCount())
+			out.materialAttributes = context_.CreateBuffer<std::int32_t>(std::max<std::size_t>(mat_buffer.size(), 1), CL_MEM_READ_ONLY);
+
+		std::int32_t* materials = nullptr;
+
+		context_.MapBuffer(0, out.materialAttributes, CL_MAP_WRITE, &materials).Wait();
+		memcpy(materials, mat_buffer.data(), mat_buffer.size() * sizeof(std::int32_t));
+		context_.UnmapBuffer(0, out.materialAttributes, materials);
 	}
 
     void
@@ -113,11 +178,11 @@ namespace octoon::video
 		{
 			api_->DetachAll();
 
-			for (auto& shape : out.isect_shapes)
+			for (auto& shape : out.isectShapes)
 				api_->DeleteShape(shape);
 
-			out.isect_shapes.clear();
-			out.visible_shapes.clear();
+			out.isectShapes.clear();
+			out.visibleShapes.clear();
 
 			int id = 1;
 			for (auto& geometry : scene->getGeometries())
@@ -159,8 +224,8 @@ namespace octoon::video
 
 					this->api_->AttachShape(shape);
 
-					out.isect_shapes.push_back(shape);
-					out.visible_shapes.push_back(shape);
+					out.isectShapes.push_back(shape);
+					out.visibleShapes.push_back(shape);
 				}
 
 				this->api_->Commit();
@@ -203,14 +268,14 @@ namespace octoon::video
 		out.indices = context_.CreateBuffer<int>(num_indices, CL_MEM_READ_ONLY);
 
 		out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
-		out.shapes_additional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
+		out.shapesAdditional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
 
 		math::float4* vertices = nullptr;
 		math::float4* normals = nullptr;
 		math::float2* uvs = nullptr;
 		int* indices = nullptr;
 		ClwScene::Shape* shapes = nullptr;
-		ClwScene::ShapeAdditionalData* shapes_additional = nullptr;
+		ClwScene::ShapeAdditionalData* shapesAdditional = nullptr;
 
 		// Map arrays and prepare to write data
 		context_.MapBuffer(0, out.vertices, CL_MAP_WRITE, &vertices);
@@ -218,7 +283,7 @@ namespace octoon::video
 		context_.MapBuffer(0, out.uvs, CL_MAP_WRITE, &uvs);
 		context_.MapBuffer(0, out.indices, CL_MAP_WRITE, &indices);
 		context_.MapBuffer(0, out.shapes, CL_MAP_WRITE, &shapes).Wait();
-		context_.MapBuffer(0, out.shapes_additional, CL_MAP_WRITE, &shapes_additional).Wait();
+		context_.MapBuffer(0, out.shapesAdditional, CL_MAP_WRITE, &shapesAdditional).Wait();
 
 		std::size_t id = 1;
 
@@ -262,8 +327,7 @@ namespace octoon::video
 
 				shape.linearvelocity = float3(0.0f, 0.f, 0.f);
 				shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);
-				shape.material.offset = 0;
-				shape.material.layers = 0;
+				shape.material = this->getMaterialIndex(geometry->getMaterial(i));
 				shape.volume_idx = 0;
 
 				auto mesh_index_array = mesh->getIndicesArray(i).data();
@@ -285,7 +349,7 @@ namespace octoon::video
 		context_.UnmapBuffer(0, out.uvs, uvs);
 		context_.UnmapBuffer(0, out.indices, indices);
 		context_.UnmapBuffer(0, out.shapes, shapes).Wait();
-		context_.UnmapBuffer(0, out.shapes_additional, shapes_additional).Wait();
+		context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 
 		this->updateIntersector(scene, out);
 	}

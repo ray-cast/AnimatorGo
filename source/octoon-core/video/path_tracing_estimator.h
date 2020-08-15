@@ -72,9 +72,7 @@ namespace octoon::video
         void setMaxBounces(std::uint32_t num_bounces);
         std::uint32_t getMaxBounces() const;
 
-        std::shared_ptr<RadeonRays::IntersectionApi> getIntersector() const {
-            return intersector_;
-        }
+        std::shared_ptr<RadeonRays::IntersectionApi> getIntersector() const;
 
         CLWBuffer<RadeonRays::ray> getRayBuffer() const;
         CLWBuffer<int> getOutputIndexBuffer() const;
@@ -87,10 +85,14 @@ namespace octoon::video
         void initPathData(std::size_t size, int volume_idx);
         void advanceIterationCount(int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
         void restorePixelIndices(int pass, std::size_t size);
-        void shadeSurface(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void filterPathStream(int pass, std::size_t size);
+        void shadeBackground(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void shadeSurface(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void gatherDirectLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
 
     private:
         std::uint32_t maxBounces_;
+        std::uint32_t sampleCounter_;
         std::unique_ptr<RenderData> renderData_;
         std::shared_ptr<RadeonRays::IntersectionApi> intersector_;
 	};

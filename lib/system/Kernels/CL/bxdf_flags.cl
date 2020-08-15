@@ -25,18 +25,6 @@
 #define DENOM_EPS 1e-8f
 #define ROUGHNESS_EPS 0.0001f
 
-enum BxdfFlags
-{
-    kBxdfFlagsSingular = (1 << 0),
-    kBxdfFlagsBrdf = (1 << 1),
-    kBxdfFlagsEmissive = (1 << 2),
-    kBxdfFlagsTransparency = (1 << 3),
-    kBxdfFlagsDiffuse = (1 << 4),
-
-    //Used to mask value from bxdf_flags
-    kBxdfFlagsAll = (kBxdfFlagsSingular | kBxdfFlagsBrdf | kBxdfFlagsEmissive | kBxdfFlagsTransparency | kBxdfFlagsDiffuse)
-};
-
 enum BxdfUberV2SampledComponent
 {
     kBxdfUberV2SampleTransparency = 0,

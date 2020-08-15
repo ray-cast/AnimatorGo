@@ -30,7 +30,7 @@ namespace octoon::video
 	public:
 		ClwScene(CLWContext context);
 
-        #include "Kernels/CL/payload.cl"
+        #include "../../lib/system/Kernels/CL/payload.cl"
 
         CLWBuffer<math::float4> vertices;
         CLWBuffer<math::float4> normals;
@@ -38,33 +38,33 @@ namespace octoon::video
         CLWBuffer<int> indices;
 
         CLWBuffer<Shape> shapes;
-        CLWBuffer<ShapeAdditionalData> shapes_additional;
+        CLWBuffer<ShapeAdditionalData> shapesAdditional;
 
-        CLWBuffer<std::int32_t> material_attributes;
+        CLWBuffer<std::int32_t> materialAttributes;
         CLWBuffer<Light> lights;
         CLWBuffer<Volume> volumes;
         CLWBuffer<Texture> textures;
         CLWBuffer<char> texturedata;
 
         CLWBuffer<Camera> camera;
-        CLWBuffer<int> light_distributions;
-        CLWBuffer<InputMapData> input_map_data;
+        CLWBuffer<int> lightDistributions;
+        CLWBuffer<InputMapData> inputMapData;
 
-        std::unique_ptr<Bundle> material_bundle;
-        std::unique_ptr<Bundle> volume_bundle;
-        std::unique_ptr<Bundle> texture_bundle;
-        std::unique_ptr<Bundle> input_map_leafs_bundle;
-        std::unique_ptr<Bundle> input_map_bundle;
+        std::unique_ptr<Bundle> materialBundle;
+        std::unique_ptr<Bundle> volumeBundle;
+        std::unique_ptr<Bundle> textureBundle;
+        std::unique_ptr<Bundle> inputMapLeafsBundle;
+        std::unique_ptr<Bundle> inputMapBundle;
 
-        int num_lights;
-        int num_volumes;
+        int numLights;
+        int numVolumes;
         int envmapidx;
-        int background_idx;
-        int camera_volume_index;
-        CameraType camera_type;
+        int backgroundIdx;
+        int cameraVolumeIndex;
+        CameraType cameraType;
 
-        std::vector<RadeonRays::Shape*> isect_shapes;
-        std::vector<RadeonRays::Shape*> visible_shapes;
+        std::vector<RadeonRays::Shape*> isectShapes;
+        std::vector<RadeonRays::Shape*> visibleShapes;
 
 	private:
 		CLWContext context_;

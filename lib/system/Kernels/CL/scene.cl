@@ -52,20 +52,6 @@ typedef struct
     GLOBAL int const* restrict light_distribution;
 } Scene;
 
-typedef struct
-{
-    // Vertices
-    GLOBAL float3 const* restrict vertices;
-    // Normals
-    GLOBAL float3 const* restrict normals;
-    // UVs
-    GLOBAL float2 const* restrict uvs;
-    // Indices
-    GLOBAL int const* restrict indices;
-    // Shapes
-    GLOBAL Shape const* restrict shapes;
-} Scene2;
-
 // Get triangle vertices given scene, shape index and prim index
 INLINE void Scene_GetTriangleVertices(Scene const* scene, int shape_idx, int prim_idx, float3* v0, float3* v1, float3* v2)
 {
@@ -103,39 +89,6 @@ INLINE void Scene_GetTriangleUVs(Scene const* scene, int shape_idx, int prim_idx
 
 // Interpolate position, normal and uv
 INLINE void Scene_InterpolateAttributes(Scene const* scene, int shape_idx, int prim_idx, float2 barycentrics, float3* p, float3* n, float2* uv, float* area)
-{
-    // Extract shape data
-    Shape shape = scene->shapes[shape_idx];
-
-    // Fetch indices starting from startidx and offset by prim_idx
-    int i0 = scene->indices[shape.startidx + 3 * prim_idx];
-    int i1 = scene->indices[shape.startidx + 3 * prim_idx + 1];
-    int i2 = scene->indices[shape.startidx + 3 * prim_idx + 2];
-
-    // Fetch normals
-    float3 n0 = scene->normals[shape.startvtx + i0];
-    float3 n1 = scene->normals[shape.startvtx + i1];
-    float3 n2 = scene->normals[shape.startvtx + i2];
-
-    // Fetch positions and transform to world space
-    float3 v0 = matrix_mul_point3(shape.transform, scene->vertices[shape.startvtx + i0]);
-    float3 v1 = matrix_mul_point3(shape.transform, scene->vertices[shape.startvtx + i1]);
-    float3 v2 = matrix_mul_point3(shape.transform, scene->vertices[shape.startvtx + i2]);
-
-    // Fetch UVs
-    float2 uv0 = scene->uvs[shape.startvtx + i0];
-    float2 uv1 = scene->uvs[shape.startvtx + i1];
-    float2 uv2 = scene->uvs[shape.startvtx + i2];
-
-    // Calculate barycentric position and normal
-    *p = (1.f - barycentrics.x - barycentrics.y) * v0 + barycentrics.x * v1 + barycentrics.y * v2;
-    *n = normalize(matrix_mul_vector3(shape.transform, (1.f - barycentrics.x - barycentrics.y) * n0 + barycentrics.x * n1 + barycentrics.y * n2));
-    *uv = (1.f - barycentrics.x - barycentrics.y) * uv0 + barycentrics.x * uv1 + barycentrics.y * uv2;
-    *area = 0.5f * length(cross(v2 - v0, v1 - v0));
-}
-
-// Interpolate position, normal and uv
-INLINE void Scene_InterpolateAttributes2(Scene2 const* scene, int shape_idx, int prim_idx, float2 barycentrics, float3* p, float3* n, float2* uv, float* area)
 {
     // Extract shape data
     Shape shape = scene->shapes[shape_idx];

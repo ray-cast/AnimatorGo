@@ -81,12 +81,37 @@ enum UberMaterialLayers
 
 typedef struct
 {
+    float3 base_color;
+    float3 emissive;
+    float metallic;
+    float roughness;
+    float anisotropy;
+    float specular;
+    float specular_tint;
+    float sheen;
+    float sheen_tint;
+    float clearcoat;
+    float clearcoat_gloss;
+    float subsurface;
+    int base_color_map_idx;
+    int metallic_map_idx;
+    int specular_map_idx;
+    int anisotropy_map_idx;
+    int roughness_map_idx;
+    int specular_tint_map_idx;
+    int sheen_tint_map_idx;
+    int sheen_map_idx;
+    int clearcoat_gloss_map_idx;
+    int clearcoat_map_idx;
+} Disney;
+
+typedef struct
+{
     int offset;
     int layers;
     int flags;
     int padding;
-    float4 diffuse;
-    float4 emissive;
+    Disney disney;
 } Material;
 
 // Shape description

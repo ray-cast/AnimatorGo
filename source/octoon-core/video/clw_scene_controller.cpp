@@ -137,13 +137,41 @@ namespace octoon::video
 
 					ClwScene::Material material;
 					material.offset = static_cast<int>(mat_buffer.size());
-					material.diffuse = RadeonRays::float4(standard->getColor().x, standard->getColor().y, standard->getColor().z, 1);
 					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
+
+					material.disney.base_color = RadeonRays::float3(standard->getColor().x, standard->getColor().y, standard->getColor().z);
+					material.disney.base_color_map_idx = -1;
+					material.disney.metallic = 0;
+					material.disney.metallic_map_idx = -1;
+					material.disney.roughness = 0;
+					material.disney.roughness_map_idx = -1;
+					material.disney.anisotropy = 0;
+					material.disney.anisotropy_map_idx = -1;
+					material.disney.sheen = 0;
+					material.disney.sheen_map_idx = -1;
+					material.disney.sheen_tint = 0;
+					material.disney.sheen_tint_map_idx = -1;
+					material.disney.clearcoat = 0.0;
+					material.disney.clearcoat_map_idx = -1;
+					material.disney.clearcoat_gloss = 0;
+					material.disney.clearcoat_gloss_map_idx = -1;	
+					material.disney.specular = 0.0;
+					material.disney.specular_map_idx = -1;
+					material.disney.specular_tint = 0;
+					material.disney.specular_tint_map_idx = -1;
+					material.disney.subsurface = 0;
 
 					if (i == 0)
 					{
-						material.emissive = material.diffuse * 100;
+						material.disney.emissive = material.disney.base_color * 1000 * math::PI;
 						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
+					}
+
+					if (i == 6)
+					{
+						material.disney.base_color = RadeonRays::float3(0.95, 0.93, 0.88);
+						material.disney.metallic = 1;
+						material.disney.roughness = 0.01;
 					}
 
 					this->materialidToOffset_[mat.get()] = material;

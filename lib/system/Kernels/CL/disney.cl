@@ -10,13 +10,6 @@
 
 #define WHITE make_float3(1.f, 1.f, 1.f)
 
-INLINE float SchlickFresnelReflectance(float u)
-{
-    float m = clamp(1.f - u, 0.f, 1.f);
-    float m2 = m * m;
-    return m2 * m2 * m;
-}
-
 float GTR1(float ndoth, float a)
 {
     if (a >= 1.f) return 1.f / PI;
@@ -43,7 +36,6 @@ float GTR2_Aniso(float ndoth, float hdotx, float hdoty, float ax, float ay)
     return denom > 1e-5 ? (1.f / (PI * ax * ay * denom * denom)) : 0.f;
 }
 
-
 float SmithGGX_G(float ndotv, float a)
 {
     float a2 = a * a;
@@ -57,7 +49,6 @@ float SmithGGX_G_Aniso(float ndotv, float vdotx, float vdoty, float ax, float ay
     float vdotyay2 = (vdoty * ay) * (vdoty * ay);
     return 1.f / (ndotv + native_sqrt( vdotxax2 + vdotyay2 + ndotv * ndotv));
 }
-
 
 INLINE float Disney_GetPdf(
     // Geometry
@@ -221,13 +212,8 @@ INLINE float3 Disney_Sample(
     float clearcoat_gloss = Texture_GetValue1f(dg->mat.disney.clearcoat_gloss, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_gloss_map_idx));
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
-    
-    float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));
-    float ay = max(0.001f, roughness * roughness * ( 1.f - anisotropy));
-    
-    float mis_weight = 1.f;
+       
     float3 wh;
-    
     
     if (sample.x < clearcoat)
     {
@@ -241,7 +227,6 @@ INLINE float3 Disney_Sample(
                                    native_sin(2.f * PI * sample.x) * sintheta));
         
         *wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
-        
     }
     else
     {
@@ -249,45 +234,37 @@ INLINE float3 Disney_Sample(
         sample.x /= (1.f - clearcoat);
 
         float3 cd_lin = native_powr(base_color, 2.2f);
-        // Luminance approximmation
         float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
 
-        // Normalize lum. to isolate hue+sat
         float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
-
-        float3 c_spec0 = mix(specular * 0.3f * mix(WHITE,
-            c_tint, specular_tint),
-            cd_lin, metallic);
+        float3 c_spec0 = mix(specular * 0.3f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);
 
         float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));
-
         float cs_w = cs_lum / (cs_lum + (1.f - metallic) * cd_lum);
         
         if (sample.y < cs_w)
         {
             sample.y /= cs_w;
+
+            float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));
+            float ay = max(0.001f, roughness * roughness * ( 1.f - anisotropy));
             
             float t = native_sqrt(sample.y / (1.f - sample.y));
-            wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x),
-                                              1.f,
-                                              t * ay * native_sin(2.f * PI * sample.x)));
+            wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
+            wh = matrix_mul_vector3(dg->tangent_to_world, wh);
             
-            *wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
+            *wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
         }
         else
         {
             sample.y -= cs_w;
             sample.y /= (1.f - cs_w);
             
-            *wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
-            
-            wh = normalize(*wo + wi);
+            *wo = matrix_mul_vector3(dg->tangent_to_world, Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f));
         }
     }
-
-    //float ndotwh = fabs(wh.y);
-    //float hdotwo = fabs(dot(wh, *wo));
     
+    *wo = normalize(*wo);
     *pdf = Disney_GetPdf(dg, wi, *wo, TEXTURE_ARGS);
     
     return Disney_Evaluate(dg, wi, *wo, TEXTURE_ARGS);

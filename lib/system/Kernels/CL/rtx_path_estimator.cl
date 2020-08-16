@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <../../system/Kernels/CL/scene.cl>
 #include <../../system/Kernels/CL/volumetrics.cl>
 #include <../../system/Kernels/CL/path.cl>
+#include <../../system/Kernels/CL/disney.cl>
 
 KERNEL
 void InitPathData(
@@ -269,7 +270,7 @@ KERNEL void ShadeSurface(
                     weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, bxdf_light_pdf) : 1.f;
                 }
 
-                float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * make_float3(diffgeo.mat.emissive.x,diffgeo.mat.emissive.y,diffgeo.mat.emissive.z) * weight);
+                float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * diffgeo.mat.disney.emissive * weight);
                 ADD_FLOAT3(&output[output_indices[pixel_idx]], v);
             }
 
@@ -282,36 +283,49 @@ KERNEL void ShadeSurface(
         }
 
         float s = Bxdf_IsBtdf(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
+        if (backfacing && !Bxdf_IsBtdf(&diffgeo))
+        {
+            diffgeo.n = -diffgeo.n;
+            diffgeo.dpdu = -diffgeo.dpdu;
+            diffgeo.dpdv = -diffgeo.dpdv;
+            s = -s;
+        }
 
-        float light_pdf = 0.f;
-        float bxdf_light_pdf = 0.f;
-        float bxdf_pdf = 0.f;
-        float light_bxdf_pdf = 0.f;
-        float selection_pdf = 0.f;
-        float3 radiance = 0.f;
-        float3 lightwo;
+        float2 sample = Sampler_Sample2D(&sampler, SAMPLER_ARGS);
+        
         float3 bxdfwo;
-        float3 wo;
-        float bxdf_weight = 1.f;
-        float light_weight = 1.f;
+        float bxdf_pdf = 0.f;
+        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, sample, &bxdfwo, &bxdf_pdf);
 
-        float4 diffuse = diffgeo.mat.diffuse;
+        float3 t = bxdf * fabs(dot(diffgeo.n, bxdfwo));
+        if (NON_BLACK(t))
+        {
+            Path_MulThroughput(path, t / bxdf_pdf);
 
-        const float2 sample = Sampler_Sample2D(&sampler, SAMPLER_ARGS);
-        wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
-        wo = normalize(matrix_mul_vector3(diffgeo.tangent_to_world, wo));
+            if (Bxdf_IsBtdf(&diffgeo))
+            {
+                if (backfacing)
+                {
+                    Path_SetVolumeIdx(path, INVALID_IDX);
+                }
+                else
+                {
+                    Path_SetVolumeIdx(path, Scene_GetVolumeIndex(&scene, isect.shapeid - 1));
+                }
+            }
 
-        float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-        radiance = make_float3(diffuse.x, diffuse.y, diffuse.z);// * ndotwo;
+            float3 indirect_ray_dir = bxdfwo;
+            float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+            int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
-        Path_MulThroughput(path, radiance);
-
-        float3 indirect_ray_dir = wo;
-        float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
-        int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
-
-        Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-        Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+            Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
+            Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+        }
+        else
+        {
+            Path_Kill(path);
+            Ray_SetInactive(indirect_rays + global_id);
+        }
     }
 }
 

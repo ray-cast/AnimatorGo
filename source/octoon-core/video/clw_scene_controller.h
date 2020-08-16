@@ -26,6 +26,9 @@ namespace octoon::video
 		void updateMaterials(const RenderScene* scene, ClwScene& out);
 		void updateShapes(const RenderScene* scene, ClwScene& out) const;
 		void updateIntersector(const RenderScene* scene, ClwScene& out) const;
+		void updateLights(const RenderScene* scene, ClwScene& out);
+
+		void WriteLight(const RenderScene* scene, light::Light const& light, void* data) const;
 
 		ClwScene::Material getMaterialIndex(const material::MaterialPtr& material) const;
 

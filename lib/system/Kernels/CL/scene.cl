@@ -294,7 +294,7 @@ INLINE void DifferentialGeometry_CalculateTangentTransforms(DifferentialGeometry
     diffgeo->tangent_to_world.m2.w = diffgeo->p.z;
 }
 
-#define POWER_SAMPLING
+//#define POWER_SAMPLING
 
 // Sample light index
 INLINE int Scene_SampleLight(Scene const* scene, float sample, float* pdf)

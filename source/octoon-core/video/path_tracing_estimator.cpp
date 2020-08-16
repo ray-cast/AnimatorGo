@@ -165,16 +165,16 @@ namespace octoon::video
 
 			this->shadeSurface(scene, pass, num_estimates, output, use_output_indices);
 
-			/*this->getIntersector()->QueryOcclusion(
+			this->getIntersector()->QueryOcclusion(
 				renderData_->fr_shadowrays,
 				renderData_->fr_hitcount,
 				(std::uint32_t)num_estimates,
 				renderData_->fr_shadowhits,
 				nullptr,
 				nullptr
-			);*/
+			);
 
-			this->gatherDirectLightSamples(scene, pass, num_estimates, output, use_output_indices);
+			this->gatherLightSamples(scene, pass, num_estimates, output, use_output_indices);
 
 			this->getContext().Flush(0);
 		}
@@ -306,19 +306,17 @@ namespace octoon::video
 	}
 
 	void
-	PathTracingEstimator::gatherDirectLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
+	PathTracingEstimator::gatherLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
         auto gatherkernel = getKernel("GatherLightSamples");
         auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;
-		gatherkernel.SetArg(argc++, renderData_->compacted_indices);
 		gatherkernel.SetArg(argc++, renderData_->pixelindices[pass & 0x1]);
 		gatherkernel.SetArg(argc++, output_indices);
 		gatherkernel.SetArg(argc++, renderData_->hitcount);
         gatherkernel.SetArg(argc++, renderData_->shadowhits);
         gatherkernel.SetArg(argc++, renderData_->lightsamples);
-        gatherkernel.SetArg(argc++, renderData_->paths);
         gatherkernel.SetArg(argc++, output);
 
         this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, gatherkernel);

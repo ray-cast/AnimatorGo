@@ -156,6 +156,10 @@ KERNEL void ShadeBackgroundEnvMap(
             {
                 v.xyz = light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.ibl_mirror_x);
             }
+            else
+            {
+                v.xyz = light.intensity;
+            }
         }
 
         ADD_FLOAT4(&output[output_index], v);
@@ -247,6 +251,7 @@ KERNEL void ShadeSurface(
         Path_SetFlags(&diffgeo, path);
 
         float3 wi = -normalize(rays[hit_idx].d.xyz);
+
         float ngdotwi = dot(diffgeo.ng, wi);
         bool backfacing = ngdotwi < 0.f;
 
@@ -291,11 +296,52 @@ KERNEL void ShadeSurface(
             s = -s;
         }
 
-        float2 sample = Sampler_Sample2D(&sampler, SAMPLER_ARGS);
-        
+        float3 throughput = Path_GetThroughput(path);
         float3 bxdfwo;
         float bxdf_pdf = 0.f;
-        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, sample, &bxdfwo, &bxdf_pdf);
+        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), &bxdfwo, &bxdf_pdf);
+
+        float3 radiance = 0.f;
+        float3 wo;
+
+        float selection_pdf = 1.f;
+        int light_idx = Scene_SampleLight(&scene, Sampler_Sample1D(&sampler, SAMPLER_ARGS), &selection_pdf);
+        if (light_idx > -1)
+        {
+            int bxdf_flags = Path_GetBxdfFlags(path);
+            
+            float light_pdf = 0.f;
+            float3 lightwo;
+            float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
+            float light_bxdf_pdf = Disney_GetPdf(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS);
+            float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
+
+            if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && !Bxdf_IsSingular(&diffgeo))
+            {
+                wo = lightwo;
+                float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
+                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(wo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
+            }        
+        }
+
+        if (NON_BLACK(radiance))
+        {
+            float3 shadow_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+            float3 temp = diffgeo.p + wo - shadow_ray_o;
+            float3 shadow_ray_dir = normalize(temp);
+            float shadow_ray_length = length(temp);
+            int shadow_ray_mask = VISIBILITY_MASK_BOUNCE_SHADOW(bounce);
+
+            Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
+            Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
+
+            light_samples[global_id] = REASONABLE_RADIANCE(radiance);
+        }
+        else
+        {
+            Ray_SetInactive(shadow_rays + global_id);
+            light_samples[global_id] = 0;
+        }
 
         float3 t = bxdf * fabs(dot(diffgeo.n, bxdfwo));
         if (NON_BLACK(t))
@@ -330,30 +376,26 @@ KERNEL void ShadeSurface(
 }
 
 KERNEL void GatherLightSamples(
-    GLOBAL int const* restrict hit_indices,
     GLOBAL int const* restrict pixel_indices,
     GLOBAL int const*  restrict output_indices,
-    GLOBAL int const* restrict hit_count,
+    GLOBAL int* restrict num_rays,
     GLOBAL int const* restrict shadow_hits,
     GLOBAL float3 const* restrict light_samples,
-    GLOBAL Path const* restrict paths,
     GLOBAL float4* restrict output
 )
 {
     int global_id = get_global_id(0);
-    if (global_id < *hit_count)
+    if (global_id < *num_rays)
     {
         int pixel_idx = pixel_indices[global_id];
         int output_index = output_indices[pixel_idx];
 
-        float4 radiance = 0.f;
-
-        //if (shadow_hits[global_id] == -1)
+        if (shadow_hits[global_id] == -1)
         {
+            float4 radiance = 0.f;
             radiance.xyz += light_samples[global_id];
+            ADD_FLOAT4(&output[output_index], radiance);
         }
-
-        ADD_FLOAT4(&output[output_index], radiance);
     }
 }
 

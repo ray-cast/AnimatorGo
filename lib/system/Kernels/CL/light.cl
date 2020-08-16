@@ -156,8 +156,7 @@ float3 EnvironmentLight_Sample(// Light
 
     if (tex == -1)
     {
-        *pdf = 0.f;
-        return 0.f;
+        return light->intensity;
     }
 
     // Sample envmap
@@ -660,14 +659,14 @@ float3 Light_Sample(// Light index
     {
         case kIbl:
             return EnvironmentLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, bxdf_flags, interaction_type, wo, pdf);
-        case kArea:
-            return AreaLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
+        //case kArea:
+        //    return AreaLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
         case kDirectional:
             return DirectionalLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
-        case kPoint:
-            return PointLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
-        case kSpot:
-            return SpotLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
+        //case kPoint:
+        //    return PointLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
+        //case kSpot:
+        //    return SpotLight_Sample(&light, scene, dg, TEXTURE_ARGS, sample, wo, pdf);
     }
 
     *pdf = 0.f;

@@ -88,7 +88,7 @@ namespace octoon::video
         void filterPathStream(int pass, std::size_t size);
         void shadeBackground(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
         void shadeSurface(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
-        void gatherDirectLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void gatherLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
 
     private:
         std::uint32_t maxBounces_;

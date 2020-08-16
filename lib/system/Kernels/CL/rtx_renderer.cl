@@ -932,5 +932,4 @@ KERNEL void ShadeBackgroundImage(
     }
 }
 
-
 #endif // RTX_RENDERER_CL

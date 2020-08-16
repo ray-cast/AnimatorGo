@@ -1,6 +1,10 @@
 #include "clw_scene_controller.h"
 #include <octoon/camera/perspective_camera.h>
 #include <octoon/camera/ortho_camera.h>
+#include <octoon/light/point_light.h>
+#include <octoon/light/spot_light.h>
+#include <octoon/light/directional_light.h>
+#include <octoon/light/environment_light.h>
 #include <set>
 
 namespace octoon::video
@@ -39,6 +43,7 @@ namespace octoon::video
 			this->updateCamera(scene, *clwscene);
 			this->updateMaterials(scene, *clwscene);
 			this->updateShapes(scene, *clwscene);
+			this->updateLights(scene, *clwscene);
 			sceneCache_[scene] = std::move(clwscene);
 		}
 		else
@@ -46,6 +51,7 @@ namespace octoon::video
 			this->updateCamera(scene, *(*iter).second);
 			this->updateMaterials(scene, *(*iter).second);
 			this->updateShapes(scene, *(*iter).second);
+			this->updateLights(scene, *(*iter).second);
 		}
 	}
 
@@ -163,7 +169,7 @@ namespace octoon::video
 
 					if (i == 0)
 					{
-						material.disney.emissive = material.disney.base_color * 1000 * math::PI;
+						material.disney.emissive = material.disney.base_color * 1000;
 						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
 					}
 
@@ -380,5 +386,112 @@ namespace octoon::video
 		context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 
 		this->updateIntersector(scene, out);
+	}
+
+	void
+	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
+	{
+		auto clw_light = reinterpret_cast<ClwScene::Light*>(data);
+
+		auto& translate = light.getTranslate();
+		auto& direction = light.getForward();
+		auto power = light.getColor() * light.getIntensity();
+
+		if (light.isA<light::PointLight>())
+		{
+			clw_light->type = ClwScene::kPoint;
+			clw_light->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
+		}
+		else if (light.isA<light::DirectionalLight>())
+		{
+			clw_light->type = ClwScene::kDirectional;
+			clw_light->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * 0;
+		}
+		else if (light.isA<light::SpotLight>())
+		{
+			clw_light->type = ClwScene::kSpot;
+			clw_light->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clw_light->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clw_light->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
+			clw_light->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
+		}
+		else if (light.isA<light::EnvironmentLight>())
+		{
+			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
+			clw_light->type = ClwScene::kIbl;
+			clw_light->multiplier = ibl.getIntensity();
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * 0;
+			clw_light->tex = -1;
+			clw_light->tex_reflection = -1;			
+			clw_light->tex_refraction = -1;			
+			clw_light->tex_transparency = -1;			
+			clw_light->tex_background = -1;
+			clw_light->ibl_mirror_x = false;
+		}
+	}
+
+	void
+	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
+	{
+		std::size_t num_lights_written = 0;
+		std::size_t num_lights = scene->getLights().size();
+		std::size_t distribution_buffer_size = (1 + 1 + num_lights + num_lights);
+
+		if (num_lights > out.lights.GetElementCount())
+		{
+			out.lights = context_.CreateBuffer<ClwScene::Light>(num_lights, CL_MEM_READ_ONLY);
+			out.lightDistributions = context_.CreateBuffer<int>(distribution_buffer_size, CL_MEM_READ_ONLY);
+		}
+
+		ClwScene::Light* lights = nullptr;
+
+		context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
+		
+		out.envmapidx = -1;
+
+		std::vector<float> light_power(num_lights);
+		std::uint32_t k = 0;
+
+		for (auto& light : scene->getLights())
+		{
+			WriteLight(scene, *light, lights + num_lights_written);
+
+			if (light->isA<light::EnvironmentLight>())
+			{
+				out.envmapidx = num_lights_written;
+			}
+
+			++num_lights_written;
+
+			auto power = light->getColor() * light->getIntensity();
+			light_power[k++] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;
+		}
+
+		context_.UnmapBuffer(0, out.lights, lights);
+
+		// Create distribution over light sources based on their power
+		/*Distribution1D light_distribution(&light_power[0], (std::uint32_t)light_power.size());
+
+		int* distribution_ptr = nullptr;
+		context_.MapBuffer(0, out.lightDistributions, CL_MAP_WRITE, &distribution_ptr).Wait();
+		auto current = distribution_ptr;
+
+		*current++ = (int)light_distribution.m_num_segments;
+
+		auto values = reinterpret_cast<float*>(current);
+		for (auto i = 0u; i < light_distribution.m_num_segments + 1; ++i)
+			values[i] = light_distribution.m_cdf[i];
+
+		values += light_distribution.m_num_segments + 1;
+
+		for (auto i = 0u; i < light_distribution.m_num_segments; ++i)
+			values[i] = light_distribution.m_func_values[i] / light_distribution.m_func_sum;
+
+		context_.UnmapBuffer(0, out.lightDistributions, distribution_ptr);*/
+
+		out.numLights = static_cast<int>(num_lights_written);
 	}
 }

@@ -406,8 +406,6 @@ KERNEL void ShadeSurfaceUberV2(
             s = -s;
         }
 
-        float ndotwi = fabs(dot(diffgeo.n, wi));
-
         float light_pdf = 0.f;
         float bxdf_light_pdf = 0.f;
         float bxdf_pdf = 0.f;

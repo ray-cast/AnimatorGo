@@ -88,7 +88,11 @@ namespace octoon::video
 	Renderer::getFramebuffer() const noexcept
 	{
 		assert(this->forwardRenderer_);
-		return this->forwardRenderer_->getFramebuffer();
+
+		if (this->enableGlobalIllumination_)
+			return this->rtxManager_->getFramebuffer();
+		else
+			return this->forwardRenderer_->getFramebuffer();
 	}
 
 	void

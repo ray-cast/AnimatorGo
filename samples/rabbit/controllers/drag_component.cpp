@@ -128,14 +128,17 @@ namespace rabbit
 			auto hit = this->selectedItem_.value();
 
 			auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
-			auto mesh = meshFilter->getMesh();
-			auto& box = mesh->getBoundingBox(hit.mesh).box();
+			if (meshFilter)
+			{
+				auto mesh = meshFilter->getMesh();
+				auto& box = mesh->getBoundingBox(hit.mesh).box();
 
-			auto transform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
-			transform->setTranslate(box.center());
-			transform->setScale(box.size());
+				auto transform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
+				transform->setTranslate(box.center());
+				transform->setScale(box.size());
 
-			gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
+				gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
+			}
 		}
 		else
 		{

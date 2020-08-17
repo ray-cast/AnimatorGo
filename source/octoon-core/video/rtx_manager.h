@@ -45,6 +45,8 @@ namespace octoon::video
 		void setOutput(OutputType type, Output* output);
 		Output* getOutput(OutputType type) const;
 
+		const hal::GraphicsFramebufferPtr& getFramebuffer() const;
+
 		void render(RenderScene* scene);
 
 	private:

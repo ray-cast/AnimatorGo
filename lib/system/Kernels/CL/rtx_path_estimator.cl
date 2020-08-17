@@ -296,10 +296,13 @@ KERNEL void ShadeSurface(
             s = -s;
         }
 
+        wi = matrix_mul_vector3(diffgeo.world_to_tangent, wi);
+
         float3 throughput = Path_GetThroughput(path);
-        float3 bxdfwo;
+        float3 bxdf_wo;
         float bxdf_pdf = 0.f;
-        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), &bxdfwo, &bxdf_pdf);
+        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), &bxdf_wo, &bxdf_pdf);
+        bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
 
         float3 radiance = 0.f;
         float3 wo;
@@ -313,15 +316,16 @@ KERNEL void ShadeSurface(
             float light_pdf = 0.f;
             float3 lightwo;
             float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
+            lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
             float light_bxdf_pdf = Disney_GetPdf(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS);
             float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
 
             if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && !Bxdf_IsSingular(&diffgeo))
             {
-                wo = lightwo;
+                wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(wo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
-            }        
+                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
+            }
         }
 
         if (NON_BLACK(radiance))
@@ -343,7 +347,7 @@ KERNEL void ShadeSurface(
             light_samples[global_id] = 0;
         }
 
-        float3 t = bxdf * fabs(dot(diffgeo.n, bxdfwo));
+        float3 t = bxdf * fabs(dot(diffgeo.n, bxdf_wo));
         if (NON_BLACK(t))
         {
             Path_MulThroughput(path, t / bxdf_pdf);
@@ -360,7 +364,7 @@ KERNEL void ShadeSurface(
                 }
             }
 
-            float3 indirect_ray_dir = bxdfwo;
+            float3 indirect_ray_dir = bxdf_wo;
             float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
             int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 

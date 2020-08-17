@@ -151,7 +151,7 @@ namespace octoon::video
 					material.disney.metallic_map_idx = -1;
 					material.disney.roughness = 0;
 					material.disney.roughness_map_idx = -1;
-					material.disney.anisotropy = 0;
+					material.disney.anisotropy = 0.0;
 					material.disney.anisotropy_map_idx = -1;
 					material.disney.sheen = 0;
 					material.disney.sheen_map_idx = -1;
@@ -169,16 +169,16 @@ namespace octoon::video
 
 					if (i == 0)
 					{
-						material.disney.emissive = material.disney.base_color * 1000;
+						material.disney.emissive = material.disney.base_color * 1000 * math::PI;
 						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
 					}
 
-					if (i == 6)
+					/*if (i == 6)
 					{
 						material.disney.base_color = RadeonRays::float3(0.95, 0.93, 0.88);
 						material.disney.metallic = 1;
 						material.disney.roughness = 0.01;
-					}
+					}*/
 
 					this->materialidToOffset_[mat.get()] = material;
 				}
@@ -423,7 +423,7 @@ namespace octoon::video
 			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
 			clw_light->type = ClwScene::kIbl;
 			clw_light->multiplier = ibl.getIntensity();
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * 0;
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
 			clw_light->tex = -1;
 			clw_light->tex_reflection = -1;			
 			clw_light->tex_refraction = -1;			

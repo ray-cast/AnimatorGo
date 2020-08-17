@@ -51,7 +51,17 @@ namespace rabbit
 			void* data = nullptr;
 			if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
 			{
-				std::memcpy(this->getModel()->outputBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+				{
+					auto& colorBuffer = this->getModel()->colorBuffer;
+					for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+						colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+				}
+				else
+				{
+					std::memcpy(this->getModel()->colorBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+				}
+				
 				colorTexture->unmap();
 			}
 		}
@@ -63,7 +73,7 @@ namespace rabbit
 		auto canvas = this->getContext()->profile->canvasModule;
 		auto width = canvas->width;
 		auto height = canvas->height;
-		auto output = canvas->outputBuffer.data();
+		auto output = this->getContext()->profile->offlineModule->offlineEnable ? canvas->outputBuffer.data() : canvas->colorBuffer.data();
 
 		octoon::image::Image image;
 

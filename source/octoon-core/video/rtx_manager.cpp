@@ -182,6 +182,12 @@ namespace octoon::video
 		return outputs_[idx];
 	}
 
+	const hal::GraphicsFramebufferPtr&
+	RtxManager::getFramebuffer() const
+	{
+		return this->framebuffer_;
+	}
+
 	void
 	RtxManager::generateWorkspace(std::uint32_t width, std::uint32_t height)
 	{

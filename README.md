@@ -5,7 +5,8 @@ Octoon is a cross-platform graphic engine. It is free and open-source under MIT 
 
 Octoon provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.
 
-<img style="vertical-align: top;" src="./screenshot.png" alt="logo">
+<img style="vertical-align: top;" src="./screenshot1.png" alt="logo">
+<img style="vertical-align: top;" src="./screenshot2.png" alt="logo">
 
 Supported compilers:
 ------

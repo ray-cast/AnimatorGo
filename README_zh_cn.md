@@ -5,6 +5,9 @@ Octoon是一个免费和开源的跨平台图形引擎，采用MIT协议。 用�
 
 Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 ECS系统的形式支持许多功能，如图形，物理，音频和视频。 通过附加各种组件，对象可以灵活地执行不同的任务。
 
+<img style="vertical-align: top;" src="./screenshot1.png" alt="logo">
+<img style="vertical-align: top;" src="./screenshot2.png" alt="logo">
+
 支持的编译器:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)

@@ -415,6 +415,10 @@ namespace octoon::video
 				if (it->getVisible())
 					it->onRenderAfter(*camera);
 
+				auto mesh = it->getMesh();
+				if (mesh)
+					mesh->setDirty(false);
+
 				for (auto& material : it->getMaterials())
 					material->setDirty(false);
 

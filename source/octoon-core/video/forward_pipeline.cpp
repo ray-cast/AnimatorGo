@@ -256,7 +256,7 @@ namespace octoon::video
 		if (mesh)
 		{
 			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
-			if (!buffer)
+			if (!buffer || mesh->isDirty())
 				buffer = std::make_shared<ForwardBuffer>(mesh);
 
 			this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);

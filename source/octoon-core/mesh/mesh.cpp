@@ -11,6 +11,7 @@ namespace octoon::mesh
 	OctoonImplementSubClass(Mesh, runtime::RttiInterface, "Mesh");
 
 	Mesh::Mesh() noexcept
+		: _dirty(true)
 	{
 	}
 
@@ -271,6 +272,18 @@ namespace octoon::mesh
 	Mesh::getBoundingBoxAll() const noexcept
 	{
 		return _boundingBox;
+	}
+
+	void
+	Mesh::setDirty(bool dirty) noexcept
+	{
+		this->_dirty = dirty;
+	}
+
+	bool
+	Mesh::isDirty() const noexcept
+	{
+		return this->_dirty;
 	}
 
 	bool

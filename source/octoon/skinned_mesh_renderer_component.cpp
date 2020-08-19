@@ -130,6 +130,8 @@ namespace octoon
 			this->updateTextureBlendData();
 			this->updateBoneData();
 
+			skinnedMesh_->setDirty(true);
+
 			MeshRendererComponent::uploadMeshData(skinnedMesh_);
 		}
 		else

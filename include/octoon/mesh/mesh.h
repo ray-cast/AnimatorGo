@@ -90,6 +90,9 @@ namespace octoon::mesh
 		const math::BoundingBox& getBoundingBoxAll() const noexcept;
 		const math::BoundingBox& getBoundingBox(std::size_t n) const noexcept;
 
+		void setDirty(bool dirty) noexcept;
+		bool isDirty() const noexcept;
+
 		bool raycast(const math::Raycast& ray, RaycastHit& hit) noexcept;
 		bool raycastAll(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept;
 
@@ -98,6 +101,7 @@ namespace octoon::mesh
 
 	private:
 		std::string _name;
+		bool _dirty;
 
 		math::float3s _vertices;
 		math::float3s _normals;

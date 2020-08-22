@@ -47,10 +47,6 @@ namespace rabbit
 			this->dragModule->load(json["drag"]);
 			this->gridModule->load(json["grid"]);
 		}
-		else
-		{
-			throw std::runtime_error(u8"无法打开文件: " + std::string(path));
-		}
 	}
 
 	RabbitProfile::~RabbitProfile() noexcept

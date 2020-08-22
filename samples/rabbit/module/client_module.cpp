@@ -21,7 +21,11 @@ namespace rabbit
 	void
 	ClientModule::reset() noexcept
 	{
-		ssl = std::filesystem::canonical("./config/public.pem").string();
+		if (std::filesystem::exists("./config/public.pem"))
+			ssl = std::filesystem::canonical("./config/public.pem").string();
+		else
+			ssl.clear();
+
 		token.clear();
 		username.clear();
 		password.clear();

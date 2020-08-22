@@ -149,6 +149,8 @@ SET(LOADER_LIST
 	${SOURCE_PATH}/vmd_loader.cpp
 	${HEADER_PATH}/pmx_loader.h
 	${SOURCE_PATH}/pmx_loader.cpp
+	${HEADER_PATH}/mdl_loader.h
+	${SOURCE_PATH}/mdl_loader.cpp
 	${HEADER_PATH}/PMREM_loader.h
 	${SOURCE_PATH}/PMREM_loader.cpp
 )
@@ -274,5 +276,6 @@ TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE Alembic::Alembic)
 TARGET_LINK_LIBRARIES(${LIB_NAME} PRIVATE unofficial::iconv::libiconv unofficial::iconv::libcharset)
 
 TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_INCLUDE})
+TARGET_INCLUDE_DIRECTORIES(${LIB_NAME} PRIVATE ${OCTOON_PATH_DEPENDENCIES}/mdl/include)
 
 SET_TARGET_ATTRIBUTE(${LIB_NAME} "octoon")

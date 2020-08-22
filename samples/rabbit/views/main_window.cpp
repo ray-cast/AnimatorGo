@@ -6,6 +6,7 @@
 #include <qsplashscreen.h>
 #include <qmessagebox.h>
 #include <fstream>
+#include <filesystem>
 #include "controllers/offline_component.h"
 
 namespace rabbit
@@ -245,7 +246,7 @@ namespace rabbit
 		titleBar_.reset();
 		recordWindow_.reset();
 		materialWindow_.reset();
-
+		std::filesystem::create_directories("config");
 		rabbit::RabbitProfile::save("./config/config.conf", *profile_);
 
 		profile_.reset();

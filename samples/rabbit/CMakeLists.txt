@@ -213,10 +213,10 @@ TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/tbb.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/tbbmalloc.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/OpenImageDenoise.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} Qt5::Core Qt5::Widgets Qt5::QuickWidgets)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug $ENV{VCPKG_ROOT}/installed/x64-windows/debug/lib/libx264.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug $ENV{VCPKG_ROOT}/installed/x64-windows/debug/lib/x265-static.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized $ENV{VCPKG_ROOT}/installed/x64-windows/lib/libx264.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized $ENV{VCPKG_ROOT}/installed/x64-windows/lib/x265-static.lib)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x264")
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x265-static")
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-windows/lib/x264")
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-windows/lib/x265-static")
 
 TARGET_COPY_TO_OUTPUT_DIR(TARGET ${LIB_OUTNAME} FILES
 		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.0.0/bin/OpenImageDenoise.dll"

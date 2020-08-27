@@ -1,0 +1,19 @@
+{
+  "name": "octoon",
+  "version-string": "0.9.9",
+  "dependencies": [
+    "ffmpeg",
+    "opencl",
+    "libjpeg-turbo",
+    "libpng",
+    "curl",
+    "nlohmann-json",
+    "freetype",
+    "libiconv",
+    "openal-soft",
+    "glew",
+    "glfw3",
+    "alembic",
+    "x264"
+  ]
+}

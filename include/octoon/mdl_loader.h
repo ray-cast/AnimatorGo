@@ -6,7 +6,8 @@
 
 namespace octoon
 {
-	class MDLLoader final
+	class MDLContext;
+	class OCTOON_EXPORT MDLLoader final
 	{
 	public:
 		MDLLoader() noexcept;
@@ -21,6 +22,9 @@ namespace octoon
 	private:
 		MDLLoader(const MDLLoader&) = delete;
 		MDLLoader& operator=(const MDLLoader&) = delete;
+
+	private:
+		std::unique_ptr<MDLContext> context_;
 	};
 }
 

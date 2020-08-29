@@ -30,37 +30,37 @@ namespace rabbit
 		hideButton = new QToolButton(this);
 		hideButton->setObjectName("hide");
 		hideButton->setText(u8"隐藏");
-		hideButton->setToolTip(u8"隐藏工具栏");
+		hideButton->setToolTip(u8"隐藏侧边工具栏");
 		hideButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		importButton = new QToolButton(this);
 		importButton->setObjectName("import");
 		importButton->setText(u8"打开");
-		importButton->setToolTip(u8"加载文件");
+		importButton->setToolTip(u8"加载工程文件(.pmm)");
 		importButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		playButton = new QToolButton(this);
 		playButton->setObjectName("play");
 		playButton->setText(u8"播放");
-		playButton->setToolTip(u8"播放");
+		playButton->setToolTip(u8"播放动画");
 		playButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		resetButton = new QToolButton(this);
 		resetButton->setObjectName("reset");
 		resetButton->setText(u8"重置");
-		resetButton->setToolTip(u8"重置");
+		resetButton->setToolTip(u8"重置动画");
 		resetButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		leftButton = new QToolButton(this);
 		leftButton->setObjectName("left");
 		leftButton->setText(u8"后退");
-		leftButton->setToolTip(u8"快退");
+		leftButton->setToolTip(u8"后退1秒");
 		leftButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		rightButton = new QToolButton(this);
 		rightButton->setObjectName("right");
 		rightButton->setText(u8"快进");
-		rightButton->setToolTip(u8"快进");
+		rightButton->setToolTip(u8"快进1秒");
 		rightButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		recordButton = new QToolButton(this);
@@ -87,29 +87,29 @@ namespace rabbit
 		cleanupButton->setToolTip(u8"清空项目");
 		cleanupButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+		materialButton = new QToolButton(this);
+		materialButton->setObjectName("material");
+		materialButton->setText(u8"材质");
+		materialButton->setToolTip(u8"打开材质库面板");
+		materialButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
 		hdrButton = new QToolButton(this);
 		hdrButton->setObjectName("hdr");
 		hdrButton->setText(u8"全局光");
-		hdrButton->setToolTip(u8"加载高动态图像");
+		hdrButton->setToolTip(u8"加载高动态图像用于全局光照");
 		hdrButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		sunButton = new QToolButton(this);
 		sunButton->setObjectName("sun");
 		sunButton->setText(u8"主光源");
-		sunButton->setToolTip(u8"主光源");
+		sunButton->setToolTip(u8"主光源设置");
 		sunButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		environmentButton = new QToolButton(this);
 		environmentButton->setObjectName("environment");
 		environmentButton->setText(u8"环境光");
-		environmentButton->setToolTip(u8"环境光");
+		environmentButton->setToolTip(u8"环境光设置");
 		environmentButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
-		materialButton = new QToolButton(this);
-		materialButton->setObjectName("material");
-		materialButton->setText(u8"材质");
-		materialButton->setToolTip(u8"材质");
-		materialButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		layout = new QVBoxLayout(this);
 		layout->addSpacing(1);
@@ -122,13 +122,13 @@ namespace rabbit
 		layout->addWidget(recordButton, 0, Qt::AlignCenter);
 		layout->addWidget(shotButton, 0, Qt::AlignCenter);
 		layout->addWidget(gpuButton, 0, Qt::AlignCenter);
+		layout->addWidget(materialButton, 0, Qt::AlignCenter);
 		layout->addWidget(hdrButton, 0, Qt::AlignCenter);
 		layout->addWidget(sunButton, 0, Qt::AlignCenter);
 		layout->addWidget(environmentButton, 0, Qt::AlignCenter);
-		layout->addWidget(materialButton, 0, Qt::AlignCenter);
 		layout->addWidget(cleanupButton, 0, Qt::AlignCenter);
 		layout->addStretch();
-		layout->setSpacing(0);
+		layout->setSpacing(4);
 		layout->setContentsMargins(0, 0, 0, 0);
 
 		this->connect(hideButton, SIGNAL(clicked()), this, SLOT(hideEvent()));

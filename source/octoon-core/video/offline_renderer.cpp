@@ -127,6 +127,12 @@ namespace octoon::video
 		return this->context_;
 	}
 
+	const hal::GraphicsFramebufferPtr&
+	OfflineRenderer::getFramebuffer() const
+	{
+		return this->framebuffer_;
+	}
+
 	std::pair<void*, void*>
 	OfflineRenderer::createMaterialTextures(std::string_view path) noexcept(false)
 	{
@@ -466,8 +472,6 @@ namespace octoon::video
 	bool
 	OfflineRenderer::compileGeometry(const geometry::Geometry* geometry) noexcept(false)
 	{
-		bool force = false;
-
 		auto& mesh = geometry->getMesh();
 		auto& materials = geometry->getMaterials();
 
@@ -475,6 +479,8 @@ namespace octoon::video
 		{
 			if (!it->isA<material::MeshStandardMaterial>())
 				continue;
+
+			bool force = false;
 
 			auto& rprMaterial = this->materials_[it.get()];
 			if (!rprMaterial)
@@ -581,7 +587,7 @@ namespace octoon::video
 		{
 			auto& pair = shapes_[mesh->getIndicesArray(i).data()];
 			auto& rprShape = pair.first;
-			if (!rprShape)
+			if (!rprShape | mesh->isDirty())
 			{
 				math::uint1s faceArray(mesh->getIndicesArray(i).size() / 3, 3);
 
@@ -640,11 +646,11 @@ namespace octoon::video
 				this->compileGeometry(geometry);
 		}
 
-		for (auto& it = this->cameras_.begin(), end = this->cameras_.end(); it != end;)
+		for (auto it = this->cameras_.begin(), end = this->cameras_.end(); it != end;)
 		{
-			auto camera = (*it).second;
-			if (!camera.second) {
-				rprObjectDelete(camera.first);
+			auto camera_ = (*it).second;
+			if (!camera_.second) {
+				rprObjectDelete(camera_.first);
 				it = this->cameras_.erase(it);
 				this->dirty_ = true;
 			}
@@ -654,7 +660,7 @@ namespace octoon::video
 			}
 		}
 
-		for (auto& it = this->lights_.begin(), end = this->lights_.end(); it != end;)
+		for (auto it = this->lights_.begin(), end = this->lights_.end(); it != end;)
 		{
 			auto light = (*it).second;
 			if (!light.second) {
@@ -669,7 +675,7 @@ namespace octoon::video
 			}
 		}
 
-		for (auto& it = this->shapes_.begin(), end = this->shapes_.end(); it != end;)
+		for (auto it = this->shapes_.begin(), end = this->shapes_.end(); it != end;)
 		{
 			auto shape = (*it).second;
 			if (!shape.second) {

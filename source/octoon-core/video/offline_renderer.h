@@ -35,6 +35,8 @@ namespace octoon::video
 		void setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false);
 		const hal::GraphicsContextPtr& getGraphicsContext() const noexcept(false);
 
+		const hal::GraphicsFramebufferPtr& getFramebuffer() const;
+
 		void render(const camera::Camera* camera, const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries, std::uint32_t frame, std::uint32_t x, std::uint32_t y, std::uint32_t w, std::uint32_t h) noexcept;
 
 	private:

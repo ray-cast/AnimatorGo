@@ -21,6 +21,8 @@
 #include "rtx_manager.h"
 #include "offline_renderer.h"
 
+#define RTX_ON 0
+
 namespace octoon::video
 {
 	OctoonImplementSingleton(Renderer)
@@ -43,10 +45,14 @@ namespace octoon::video
 	{
 		context_ = context;
 		depthMaterial_ = material::MeshDepthMaterial::create();
-		montecarlo_ = std::make_unique<OfflineRenderer>(w, h);
-		montecarlo_->setGraphicsContext(context);
+#if RTX_ON
 		rtxManager_ = std::make_unique<RtxManager>();
 		rtxManager_->setGraphicsContext(context);
+#else
+		baikalRenderer_ = std::make_unique<OfflineRenderer>(w, h);
+		baikalRenderer_->setGraphicsContext(context);
+#endif
+
 		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
 
 		this->setFramebufferSize(w, h);
@@ -59,7 +65,7 @@ namespace octoon::video
 		this->buffers_.clear();
 		this->materials_.clear();
 		this->rtxManager_.reset();
-		this->montecarlo_.reset();
+		this->baikalRenderer_.reset();
 		currentBuffer_.reset();
 		context_.reset();
 	}
@@ -88,7 +94,11 @@ namespace octoon::video
 		assert(this->forwardRenderer_);
 
 		if (this->enableGlobalIllumination_)
+#if RTX_ON
 			return this->rtxManager_->getFramebuffer();
+#else
+			return this->baikalRenderer_->getFramebuffer();
+#endif
 		else
 			return this->forwardRenderer_->getFramebuffer();
 	}
@@ -115,10 +125,10 @@ namespace octoon::video
 				auto scene = video::RenderScene::instance();
 				for (auto& camera : scene->getCameras())
 					camera->setDirty(true);
-				for (auto& camera : scene->getGeometries())
-					camera->setDirty(true);
-				for (auto& camera : scene->getLights())
-					camera->setDirty(true);
+				for (auto& light : scene->getLights())
+					light->setDirty(true);
+				for (auto& geometry : scene->getGeometries())
+					geometry->setDirty(true);
 			}
 
 			this->enableGlobalIllumination_ = enable;
@@ -378,10 +388,10 @@ namespace octoon::video
 
 			if (this->enableGlobalIllumination_)
 			{
-#if 0
+#if RTX_ON
 				this->rtxManager_->render(&scene);
 #else
-				this->montecarlo_->render(
+				this->baikalRenderer_->render(
 					camera,
 					scene.getLights(),
 					scene.getGeometries(),

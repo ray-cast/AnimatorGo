@@ -14,7 +14,6 @@ PROJECT(octoon)
 SET(OCTOON_PATH ${PROJECT_SOURCE_DIR} CACHE STRING "Adds a path to octoon" FORCE)
 SET(OCTOON_PATH_BIN ${OCTOON_PATH}/lib/ CACHE STRING "Adds a path to output dir" FORCE)
 SET(OCTOON_PATH_DEPENDENCIES ${OCTOON_PATH}/contrib CACHE STRING "Adds a path to octoon dependencies" FORCE)
-SET(OCTOON_PATH_TOOLS ${OCTOON_PATH}/tools CACHE STRING "Adds a path to octoon tools" FORCE)
 SET(OCTOON_PATH_SAMPLES ${OCTOON_PATH}/samples CACHE STRING "Adds a path to octoon samples" FORCE)
 SET(OCTOON_PATH_INCLUDE ${OCTOON_PATH}/include CACHE STRING "Adds a path to octoon header" FORCE)
 SET(OCTOON_PATH_HEADER ${OCTOON_PATH_INCLUDE}/octoon CACHE STRING "Adds a path to octoon header" FORCE)
@@ -315,9 +314,6 @@ ENDIF()
 
 # 添加项目
 ADD_SUBDIRECTORY(source)
-
-# 工具
-ADD_SUBDIRECTORY(tools)
 
 # 示例
 ADD_SUBDIRECTORY(samples)

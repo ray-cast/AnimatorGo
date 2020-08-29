@@ -52,7 +52,7 @@ namespace octoon::video
 		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
 
-		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardBuffer>> buffers_;
+		std::unordered_map<std::intptr_t, std::pair<std::shared_ptr<ForwardBuffer>, bool>> buffers_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardMaterial>> materials_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};

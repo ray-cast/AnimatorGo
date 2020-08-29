@@ -157,6 +157,9 @@ namespace octoon::video
 		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 		this->context_->setViewport(0, camera->getPixelViewport());
 
+		for (auto& it : buffers_)
+			it.second.second = true;
+
 		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 
 		if (camera->getRenderToScreen())
@@ -256,13 +259,16 @@ namespace octoon::video
 		if (mesh)
 		{
 			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
-			if (!buffer || mesh->isDirty())
-				buffer = std::make_shared<ForwardBuffer>(mesh);
+			if (!buffer.first || mesh->isDirty() && buffer.second)
+			{
+				buffer.first = std::make_shared<ForwardBuffer>(mesh);
+				buffer.second = false;
+			}
 
-			this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-			this->context_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+			this->context_->setVertexBufferData(0, buffer.first->getVertexBuffer(), 0);
+			this->context_->setIndexBufferData(buffer.first->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
 
-			this->currentBuffer_ = buffer;
+			this->currentBuffer_ = buffer.first;
 
 			return true;
 		}
@@ -293,4 +299,6 @@ namespace octoon::video
 			return false;
 		}
 	}
+
+
 }

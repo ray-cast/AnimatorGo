@@ -1,6 +1,4 @@
 #include "rabbit_behaviour.h"
-#include <octoon/mdl_loader.h>
-#include <fstream>
 
 namespace rabbit
 {
@@ -104,24 +102,6 @@ namespace rabbit
 	{
 		if (!profile_)
 			profile_ = RabbitProfile::load("sys:config/config.conf");
-
-		std::vector<std::string> meshMaterials =
-		{
-			"::OSPRay::Alloy",
-			"::OSPRay::Glass",
-			"::OSPRay::ThinGlass",
-			"::OSPRay::MetallicPaint",
-			"::OSPRay::OBJMaterial",
-			"::OSPRay::CarPaint",
-			"::OSPRay::Principled"
-		};
-
-		octoon::io::ifstream stream("C:/Users/ray/Desktop/OSPRay.mdl");
-		if (stream)
-		{
-			octoon::MDLLoader loader;
-			auto material = loader.load(stream, meshMaterials[0]);
-		}
 
 		context_ = std::make_shared<RabbitContext>();
 		context_->behaviour = this;

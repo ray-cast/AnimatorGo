@@ -28,6 +28,10 @@ namespace octoon::video
 		void updateIntersector(const RenderScene* scene, ClwScene& out) const;
 		void updateLights(const RenderScene* scene, ClwScene& out);
 
+		bool hasLightDiry(const RenderScene* scene);
+		bool hasShapeDiry(const RenderScene* scene);
+		bool hasMaterialDiry(const RenderScene* scene);
+
 		void WriteLight(const RenderScene* scene, light::Light const& light, void* data) const;
 
 		ClwScene::Material getMaterialIndex(const material::MaterialPtr& material) const;

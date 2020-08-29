@@ -49,9 +49,14 @@ namespace octoon::video
 		else
 		{
 			this->updateCamera(scene, *(*iter).second);
-			this->updateMaterials(scene, *(*iter).second);
-			this->updateShapes(scene, *(*iter).second);
-			this->updateLights(scene, *(*iter).second);
+			if (this->hasMaterialDiry(scene))
+				this->updateMaterials(scene, *(*iter).second);
+
+			/*if (this->hasShapeDiry(scene))
+				this->updateShapes(scene, *(*iter).second);*/
+
+			if (this->hasLightDiry(scene))
+				this->updateLights(scene, *(*iter).second);
 		}
 	}
 
@@ -75,6 +80,54 @@ namespace octoon::video
 			throw std::runtime_error("Cannot find the material");
 	}
 
+	bool
+	ClwSceneController::hasLightDiry(const RenderScene* scene)
+	{
+		for (auto& light : scene->getLights())
+		{
+			if (light->isDirty())
+				return true;
+		}
+
+		return false;
+	}
+
+	bool 
+	ClwSceneController::hasShapeDiry(const RenderScene* scene)
+	{
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			if (geometry->getMesh()->isDirty())
+				return true;
+		}
+
+		return false;
+	}
+
+	bool
+	ClwSceneController::hasMaterialDiry(const RenderScene* scene)
+	{
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
+			{
+				auto& mat = geometry->getMaterial(i);
+				if (mat->isDirty())
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	void
 	ClwSceneController::updateCamera(const RenderScene* scene, ClwScene& out) const
 	{
@@ -82,36 +135,39 @@ namespace octoon::video
 			out.camera = context_.CreateBuffer<ClwScene::Camera>(scene->getCameras().size(), CL_MEM_READ_ONLY);
 
 		auto camera = scene->getMainCamera();
-		out.cameraType = GetCameraType(*camera);
+		if (camera->isDirty())
+		{
+			out.cameraType = GetCameraType(*camera);
 
-		ClwScene::Camera* data = nullptr;
-		context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
+			ClwScene::Camera* data = nullptr;
+			context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
 
-		auto sensorSize = camera->getPixelViewport();
+			auto sensorSize = camera->getPixelViewport();
 
-		data[0].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
-		data[0].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
-		data[0].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
-		data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
-		data[0].aspect_ratio = float(sensorSize.width) / sensorSize.height;
+			data[0].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
+			data[0].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
+			data[0].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
+			data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
+			data[0].aspect_ratio = float(sensorSize.width) / sensorSize.height;
 
-        if (camera->isA<camera::PerspectiveCamera>())
-        {
-            auto filmSize_ = 36.0f;
-            auto perspective = camera->downcast<camera::PerspectiveCamera>();
-            auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
-            auto focalLength = filmSize_ / ratio;
+			if (camera->isA<camera::PerspectiveCamera>())
+			{
+				auto filmSize_ = 36.0f;
+				auto perspective = camera->downcast<camera::PerspectiveCamera>();
+				auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
+				auto focalLength = filmSize_ / ratio;
 
-			data[0].aperture = 0;
-			data[0].focal_length = focalLength;
-			data[0].focus_distance = 1.0f;
-			data[0].dim = RadeonRays::float2(filmSize_ * sensorSize.width / sensorSize.height, filmSize_);
-			data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
-        }
+				data[0].aperture = 0;
+				data[0].focal_length = focalLength;
+				data[0].focus_distance = 1.0f;
+				data[0].dim = RadeonRays::float2(filmSize_ * sensorSize.width / sensorSize.height, filmSize_);
+				data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
+			}
 
-		context_.UnmapBuffer(0, out.camera, data);
+			context_.UnmapBuffer(0, out.camera, data);
 
-		out.cameraVolumeIndex = -1;
+			out.cameraVolumeIndex = -1;
+		}
 	}
 
 	void
@@ -145,7 +201,8 @@ namespace octoon::video
 					material.offset = static_cast<int>(mat_buffer.size());
 					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
 
-					/*material.disney.base_color = RadeonRays::float3(standard->getColor().x, standard->getColor().y, standard->getColor().z);
+#if RTX_ON
+					material.disney.base_color = RadeonRays::float3(standard->getColor().x, standard->getColor().y, standard->getColor().z);
 					material.disney.base_color_map_idx = -1;
 					material.disney.metallic = 0;
 					material.disney.metallic_map_idx = -1;
@@ -167,18 +224,19 @@ namespace octoon::video
 					material.disney.specular_tint_map_idx = -1;
 					material.disney.subsurface = 0;
 
-					if (i == 0)
+					/*if (i == 0)
 					{
 						material.disney.emissive = material.disney.base_color * 1000 * math::PI;
 						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
-					}*/
+					}
 
-					/*if (i == 6)
+					if (i == 6)
 					{
 						material.disney.base_color = RadeonRays::float3(0.95, 0.93, 0.88);
 						material.disney.metallic = 1;
 						material.disney.roughness = 0.01;
 					}*/
+#endif
 
 					this->materialidToOffset_[mat.get()] = material;
 				}
@@ -407,7 +465,7 @@ namespace octoon::video
 		{
 			clw_light->type = ClwScene::kDirectional;
 			clw_light->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * 0;
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
 		}
 		else if (light.isA<light::SpotLight>())
 		{
@@ -423,7 +481,7 @@ namespace octoon::video
 			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
 			clw_light->type = ClwScene::kIbl;
 			clw_light->multiplier = ibl.getIntensity();
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
 			clw_light->tex = -1;
 			clw_light->tex_reflection = -1;			
 			clw_light->tex_refraction = -1;			

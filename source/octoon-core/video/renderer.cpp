@@ -21,8 +21,6 @@
 #include "rtx_manager.h"
 #include "offline_renderer.h"
 
-#define RTX_ON 0
-
 namespace octoon::video
 {
 	OctoonImplementSingleton(Renderer)

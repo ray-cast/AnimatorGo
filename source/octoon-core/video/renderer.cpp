@@ -21,8 +21,6 @@
 #include "rtx_manager.h"
 #include "offline_renderer.h"
 
-using namespace octoon::hal;
-
 namespace octoon::video
 {
 	OctoonImplementSingleton(Renderer)
@@ -84,7 +82,7 @@ namespace octoon::video
 		h = height_;
 	}
 
-	const GraphicsFramebufferPtr&
+	const hal::GraphicsFramebufferPtr&
 	Renderer::getFramebuffer() const noexcept
 	{
 		assert(this->forwardRenderer_);
@@ -145,80 +143,80 @@ namespace octoon::video
 		return this->overrideMaterial_;
 	}
 
-	GraphicsInputLayoutPtr
-	Renderer::createInputLayout(const GraphicsInputLayoutDesc& desc) noexcept
+	hal::GraphicsInputLayoutPtr
+	Renderer::createInputLayout(const hal::GraphicsInputLayoutDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createInputLayout(desc);
 	}
 
-	GraphicsDataPtr
-	Renderer::createGraphicsData(const GraphicsDataDesc& desc) noexcept
+	hal::GraphicsDataPtr
+	Renderer::createGraphicsData(const hal::GraphicsDataDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createGraphicsData(desc);
 	}
 
-	GraphicsTexturePtr
-	Renderer::createTexture(const GraphicsTextureDesc& desc) noexcept
+	hal::GraphicsTexturePtr
+	Renderer::createTexture(const hal::GraphicsTextureDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createTexture(desc);
 	}
 
-	GraphicsSamplerPtr
-	Renderer::createSampler(const GraphicsSamplerDesc& desc) noexcept
+	hal::GraphicsSamplerPtr
+	Renderer::createSampler(const hal::GraphicsSamplerDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createSampler(desc);
 	}
 
-	GraphicsFramebufferPtr
-	Renderer::createFramebuffer(const GraphicsFramebufferDesc& desc) noexcept
+	hal::GraphicsFramebufferPtr
+	Renderer::createFramebuffer(const hal::GraphicsFramebufferDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createFramebuffer(desc);
 	}
 
-	GraphicsFramebufferLayoutPtr
-	Renderer::createFramebufferLayout(const GraphicsFramebufferLayoutDesc& desc) noexcept
+	hal::GraphicsFramebufferLayoutPtr
+	Renderer::createFramebufferLayout(const hal::GraphicsFramebufferLayoutDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createFramebufferLayout(desc);
 	}
 
-	GraphicsShaderPtr
-	Renderer::createShader(const GraphicsShaderDesc& desc) noexcept
+	hal::GraphicsShaderPtr
+	Renderer::createShader(const hal::GraphicsShaderDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createShader(desc);
 	}
 
-	GraphicsProgramPtr
-	Renderer::createProgram(const GraphicsProgramDesc& desc) noexcept
+	hal::GraphicsProgramPtr
+	Renderer::createProgram(const hal::GraphicsProgramDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createProgram(desc);
 	}
 
-	GraphicsStatePtr
-	Renderer::createRenderState(const GraphicsStateDesc& desc) noexcept
+	hal::GraphicsStatePtr
+	Renderer::createRenderState(const hal::GraphicsStateDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createRenderState(desc);
 	}
 
-	GraphicsPipelinePtr
-	Renderer::createRenderPipeline(const GraphicsPipelineDesc& desc) noexcept
+	hal::GraphicsPipelinePtr
+	Renderer::createRenderPipeline(const hal::GraphicsPipelineDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createRenderPipeline(desc);
 	}
 
-	GraphicsDescriptorSetPtr
-	Renderer::createDescriptorSet(const GraphicsDescriptorSetDesc& desc) noexcept
+	hal::GraphicsDescriptorSetPtr
+	Renderer::createDescriptorSet(const hal::GraphicsDescriptorSetDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createDescriptorSet(desc);
 	}
 
-	GraphicsDescriptorSetLayoutPtr
-	Renderer::createDescriptorSetLayout(const GraphicsDescriptorSetLayoutDesc& desc) noexcept
+	hal::GraphicsDescriptorSetLayoutPtr
+	Renderer::createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createDescriptorSetLayout(desc);
 	}
 
-	GraphicsDescriptorPoolPtr
-	Renderer::createDescriptorPool(const GraphicsDescriptorPoolDesc& desc) noexcept
+	hal::GraphicsDescriptorPoolPtr
+	Renderer::createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept
 	{
 		return this->context_->getDevice()->createDescriptorPool(desc);
 	}
@@ -236,7 +234,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept
+	Renderer::clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept
 	{
 		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
 	}
@@ -380,7 +378,7 @@ namespace octoon::video
 
 			if (this->enableGlobalIllumination_)
 			{
-#if 1
+#if 0
 				this->rtxManager_->render(&scene);
 #else
 				this->montecarlo_->render(

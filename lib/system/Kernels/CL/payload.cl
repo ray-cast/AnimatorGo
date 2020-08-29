@@ -111,7 +111,7 @@ typedef struct
     int layers;
     int flags;
     int padding;
-    Disney disney;
+    //Disney disney;
 } Material;
 
 // Shape description

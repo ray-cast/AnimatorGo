@@ -64,7 +64,7 @@ void PerspectiveCamera_GeneratePaths(
     if (global_id < *num_pixels)
     {
         int idx = pixel_idx[global_id];
-        int y = idx / output_width;
+        int y = output_height - idx / output_width - 1;
         int x = idx % output_width;
 
         // Get pointer to ray & path handles
@@ -152,7 +152,7 @@ KERNEL void PerspectiveCameraDof_GeneratePaths(
     if (global_id < *num_pixels)
     {
         int idx = pixel_idx[global_id];
-        int y = idx / output_width;
+        int y = output_height - idx / output_width - 1;
         int x = idx % output_width;
 
         // Get pointer to ray & path handles
@@ -255,7 +255,7 @@ void PerspectiveCamera_GenerateVertices(
     if (global_id < *num_pixels)
     {
         int idx = pixel_idx[global_id];
-        int y = idx / output_width;
+        int y = output_height - idx / output_width - 1;
         int x = idx % output_width;
 
         // Get pointer to ray & path handles
@@ -369,7 +369,7 @@ void PerspectiveCameraDof_GenerateVertices(
     if (global_id < *num_pixels)
     {
         int idx = pixel_idx[global_id];
-        int y = idx / output_width;
+        int y = output_height - idx / output_width - 1;
         int x = idx % output_width;
 
         // Get pointer to ray & path handles
@@ -828,7 +828,7 @@ void  OrthographicCamera_GeneratePaths(
     if (global_id < *num_pixels)
     {
         int idx = pixel_idx[global_id];
-        int y = idx / output_width;
+        int y = output_height - idx / output_width - 1;
         int x = idx % output_width;
         
         // Get pointer to ray & path handles

@@ -5,72 +5,56 @@ namespace rabbit
 	SplashScreen::SplashScreen()
 	{
 		this->setFrameShape(Panel);
-		this->setObjectName("splashScreen");
+		this->setObjectName("SplashWindow");
 		this->setWindowFlags(Qt::FramelessWindowHint);
-		this->setFixedSize(500, 300);
 
-		logo_ = std::make_unique<QPushButton>(this);
-		logo_->setIcon(QIcon::fromTheme("res", QIcon(":res/icons/splash.png")));
-		logo_->setIconSize(QSize(110, 110));
-		logo_->setContentsMargins(0, 0, 0, 0);
+		logo = new QPushButton(this);
+		logo->setObjectName("logo");
 
-		widget_ = std::make_unique<QWidget>(this);
-		widget_->setFixedSize(310, 100);
+		widget = new QWidget(this);
+		widget->setFixedSize(310, 100);
 
-		englishName_ = std::make_unique<QLabel>(widget_.get());
-		englishName_->setText(u8"Rabbit Toolbox 2019");
-		englishName_->setFont(QFont("Microsoft Yahei", 14, QFont::Normal));
-		englishName_->setAlignment(Qt::AlignLeft);
-		englishName_->setStyleSheet("color:#c78ced;");
+		englishName = new QLabel(widget);
+		englishName->setObjectName("title");
+		englishName->setText(u8"Rabbit Toolbox 2019");
+		englishName->setAlignment(Qt::AlignLeft);
 
-		copyrightInfo_ = std::make_unique<QLabel>(widget_.get());
-		copyrightInfo_->setText(u8"© 2019 Rabbit-Softwares. All Rights Reserved.");
-		copyrightInfo_->setFont(QFont("Microsoft Yahei", 8, QFont::Normal));
-		copyrightInfo_->setAlignment(Qt::AlignLeft);
-		copyrightInfo_->setStyleSheet("color:#a5a5a5;");
+		copyrightInfo = new QLabel(widget);
+		copyrightInfo->setObjectName("copyright");
+		copyrightInfo->setText(u8"© 2019 Rabbit-Softwares. All Rights Reserved.");
+		copyrightInfo->setAlignment(Qt::AlignLeft);
 
-		vlayout_ = std::make_unique<QVBoxLayout>(widget_.get());
-		vlayout_->addWidget(englishName_.get());
-		vlayout_->addWidget(copyrightInfo_.get());
-		vlayout_->setContentsMargins(0, 0, 0, 10);
+		vlayout = new QVBoxLayout(widget);
+		vlayout->addWidget(englishName);
+		vlayout->addWidget(copyrightInfo);
+		vlayout->setContentsMargins(0, 0, 0, 10);
 
-		hlayout_ = std::make_unique<QHBoxLayout>();
-		hlayout_->addWidget(logo_.get(), 0, Qt::AlignRight);
-		hlayout_->addWidget(widget_.get(), 0, Qt::AlignLeft);
-		hlayout_->setContentsMargins(0, 0, 0, 0);
-		hlayout_->setSpacing(24);
+		hlayout = new QHBoxLayout();
+		hlayout->addWidget(logo, 0, Qt::AlignRight);
+		hlayout->addWidget(widget, 0, Qt::AlignLeft);
+		hlayout->setContentsMargins(0, 0, 0, 0);
+		hlayout->setSpacing(24);
 
-		versionInfo_ = std::make_unique<QLabel>(this);
-		versionInfo_->setText(u8"Version: 1.0.0");
-		versionInfo_->setFont(QFont("Microsoft Yahei", 8, QFont::Normal));
-		versionInfo_->setAlignment(Qt::AlignRight);
-		versionInfo_->setStyleSheet("color:#505050;");
-		versionInfo_->setContentsMargins(0, 10, 10, 0);
+		versionInfo = new QLabel(this);
+		versionInfo->setObjectName("version");
+		versionInfo->setText(u8"Version: 1.0.0");
+		versionInfo->setAlignment(Qt::AlignRight);
 
-		message_ = std::make_unique<QLabel>(this);
-		message_->setText(u8"Loading...");
-		message_->setFont(QFont("Microsoft Yahei", 8, QFont::Normal));
-		message_->setAlignment(Qt::AlignLeft);
-		message_->setStyleSheet("color:#505050;");
-		message_->setContentsMargins(10, 0, 0, 10);
-		message_->setFixedWidth(500);
+		message = new QLabel(this);
+		message->setObjectName("message");
+		message->setText(u8"Loading...");
+		message->setAlignment(Qt::AlignLeft);
 
-		mainLayout_ = std::make_unique<QVBoxLayout>();
-		mainLayout_->addWidget(versionInfo_.get(), 0, Qt::AlignRight | Qt::AlignTop);
-		mainLayout_->addLayout(hlayout_.get());
-		mainLayout_->addWidget(message_.get(), 0, Qt::AlignLeft | Qt::AlignBottom);
-		mainLayout_->setContentsMargins(0, 0, 0, 0);
+		mainLayout = new QVBoxLayout();
+		mainLayout->addWidget(versionInfo, 0, Qt::AlignRight | Qt::AlignTop);
+		mainLayout->addLayout(hlayout);
+		mainLayout->addWidget(message, 0, Qt::AlignLeft | Qt::AlignBottom);
+		mainLayout->setContentsMargins(0, 0, 0, 0);
 
-		this->setLayout(mainLayout_.get());
+		this->setLayout(mainLayout);
 	}
 
 	SplashScreen::~SplashScreen()
 	{
-		englishName_.reset();
-		copyrightInfo_.reset();
-		vlayout_.reset();
-		widget_.reset();
-		logo_.reset();
-		hlayout_.reset();
 	}
 }

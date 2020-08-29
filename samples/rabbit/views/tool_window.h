@@ -91,23 +91,23 @@ namespace rabbit
 		QIcon environmentIcon_;
 		QIcon environmentOnIcon_;
 
-		std::unique_ptr<QToolButton> hideButton_;
-		std::unique_ptr<QToolButton> importButton_;
-		std::unique_ptr<QToolButton> saveButton_;
-		std::unique_ptr<QToolButton> playButton_;
-		std::unique_ptr<QToolButton> resetButton_;
-		std::unique_ptr<QToolButton> leftButton_;
-		std::unique_ptr<QToolButton> rightButton_;
-		std::unique_ptr<QToolButton> recordButton_;
-		std::unique_ptr<QToolButton> shotButton_;
-		std::unique_ptr<QToolButton> gpuButton_;
-		std::unique_ptr<QToolButton> hdrButton_;
-		std::unique_ptr<QToolButton> cleanupButton_;
-		std::unique_ptr<QToolButton> sunButton_;
-		std::unique_ptr<QToolButton> environmentButton_;
-		std::unique_ptr<QToolButton> materialButton_;
+		QToolButton* hideButton;
+		QToolButton* importButton;
+		QToolButton* saveButton;
+		QToolButton* playButton;
+		QToolButton* resetButton;
+		QToolButton* leftButton;
+		QToolButton* rightButton;
+		QToolButton* recordButton;
+		QToolButton* shotButton;
+		QToolButton* gpuButton;
+		QToolButton* hdrButton;
+		QToolButton* cleanupButton;
+		QToolButton* sunButton;
+		QToolButton* environmentButton;
+		QToolButton* materialButton;
 
-		std::unique_ptr<QVBoxLayout> layout_;
+		QVBoxLayout* layout;
 
 		octoon::GameObjectPtr behaviour_;
 	};

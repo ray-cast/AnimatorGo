@@ -15,15 +15,15 @@ namespace rabbit
 		SplashScreen();
 		~SplashScreen();
 
-		std::unique_ptr<QPushButton> logo_;
-		std::unique_ptr<QWidget> widget_;
-		std::unique_ptr<QLabel> englishName_;
-		std::unique_ptr<QLabel> versionInfo_;
-		std::unique_ptr<QLabel> copyrightInfo_;
-		std::unique_ptr<QLabel> message_;
-		std::unique_ptr<QHBoxLayout> hlayout_;
-		std::unique_ptr<QVBoxLayout> vlayout_;
-		std::unique_ptr<QVBoxLayout> mainLayout_;
+		QPushButton* logo;
+		QWidget* widget;
+		QLabel* englishName;
+		QLabel* versionInfo;
+		QLabel* copyrightInfo;
+		QLabel* message;
+		QHBoxLayout* hlayout;
+		QVBoxLayout* vlayout;
+		QVBoxLayout* mainLayout;
 	};
 }
 

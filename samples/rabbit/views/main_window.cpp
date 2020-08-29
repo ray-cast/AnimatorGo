@@ -140,7 +140,7 @@ namespace rabbit
 	{
 		if (splash_)
 		{
-			splash_->message_->setText(QString::fromStdString(std::string(message)));
+			splash_->message->setText(QString::fromStdString(std::string(message)));
 			splash_->repaint();
 		}
 
@@ -1075,8 +1075,8 @@ namespace rabbit
 
 			behaviour->addMessageListener("rabbit:player:finish", [this](const std::any&)
 			{
-				toolBar_->playButton_->setIcon(toolBar_->playIcon_);
-				toolBar_->playButton_->setToolTip(u8"²¥·Å");
+				toolBar_->playButton->setIcon(toolBar_->playIcon_);
+				toolBar_->playButton->setToolTip(u8"²¥·Å");
 				toolBar_->playEnable_ = false;
 				recordWindow_->timer_->stop();
 				recordWindow_->start_->setEnabled(true);
@@ -1088,12 +1088,12 @@ namespace rabbit
 			{
 				if (std::any_cast<bool>(enable))
 				{
-					toolBar_->gpuButton_->setIcon(toolBar_->gpuOnIcon_);
+					toolBar_->gpuButton->setIcon(toolBar_->gpuOnIcon_);
 					toolBar_->gpuEnable_ = true;
 				}
 				else
 				{
-					toolBar_->gpuButton_->setIcon(toolBar_->gpuIcon_);
+					toolBar_->gpuButton->setIcon(toolBar_->gpuIcon_);
 					toolBar_->gpuEnable_ = false;
 				}
 			});

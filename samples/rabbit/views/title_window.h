@@ -53,16 +53,16 @@ namespace rabbit
 		QIcon vipPix_;
 		QIcon vipOnPix_;
 
-		std::unique_ptr<QHBoxLayout> layout_;
+		QHBoxLayout* layout_;
 
-		std::unique_ptr<QLabel> titleLabel_;
+		QLabel* titleLabel_;
 
-		std::unique_ptr<QToolButton> minimizeButton_;
-		std::unique_ptr<QToolButton> maximizeButton_;
-		std::unique_ptr<QToolButton> closeButton_;
-		std::unique_ptr<QToolButton> settingButton_;
-		std::unique_ptr<QToolButton> vipButton_;
-		std::unique_ptr<QPushButton> logoButton_;
+		QToolButton* minimizeButton_;
+		QToolButton* maximizeButton_;
+		QToolButton* closeButton_;
+		QToolButton* settingButton_;
+		QToolButton* vipButton_;
+		QPushButton* logoButton_;
 
 		std::shared_ptr<rabbit::RabbitProfile> profile_;
 	};

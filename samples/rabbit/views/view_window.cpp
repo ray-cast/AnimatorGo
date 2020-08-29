@@ -8,7 +8,7 @@ namespace rabbit
 		, timer(std::make_unique<QTimer>(this))
 	{
 		this->setAttribute(Qt::WA_PaintOnScreen, true);
-		this->setObjectName("viewWidget");
+		this->setObjectName("ViewWindow");
 		this->setMouseTracking(true);
 		this->setUpdatesEnabled(false);
 		this->setAcceptDrops(true);

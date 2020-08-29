@@ -196,49 +196,84 @@ QWidget{
 	border:none;
 	background: rgb(30, 30, 30);
 }
-QWidget#viewWidget{
+QWidget#SplashWindow{
+	min-width:500px;
+	max-width:500px;
+	min-height:300px;
+	max-height:300px;
+}
+QWidget#SplashWindow > QPushButton#logo{
+	qproperty-icon: url(":res/icons/splash.png");
+	qproperty-iconSize: 110px 110px;
+	margin: 0 0 0 0;
+}
+QWidget#SplashWindow QLabel#title{
+	font-family: "Microsoft YaHei";
+	font-size:18px;
+	color:#c78ced;
+}
+QWidget#SplashWindow QLabel#copyright{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#a5a5a5;
+}
+QWidget#SplashWindow QLabel#version{
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#505050;
+	margin: 10px 10px 0 0;
+}
+QWidget#SplashWindow QLabel#message{
+	min-width:500px;
+	max-width:500px;
+	font-family: "Microsoft YaHei";
+	font-size:12px;
+	color:#505050;
+	margin: 0 0 10px 10px;
+}
+QWidget#ViewWindow{
 	width:1280;
 	height:720;
 }
-QWidget#titleWidget{
+QWidget#TitleWindow{
 	min-height:32;
 	max-height:32;
 }
-QWidget#titleWidget > QToolButton{
+QWidget#TitleWindow > QToolButton{
 	min-width:32px;
 	min-height:32px;
 	max-width:32px;
 	max-height:32px;
 }
-QWidget#titleWidget > QPushButton{
+QWidget#TitleWindow > QPushButton{
 	min-width:32px;
 	min-height:32px;
 	max-width:32px;
 	max-height:32px;
 }
-QWidget#titleWidget > QToolButton#minimize{
+QWidget#TitleWindow > QToolButton#minimize{
 	qproperty-icon: url(":res/icons/minimize.png");
 }
-QWidget#titleWidget > QToolButton#maximize{
+QWidget#TitleWindow > QToolButton#maximize{
 	qproperty-icon: url(":res/icons/maximize.png");
 }
-QWidget#titleWidget > QToolButton#close{
+QWidget#TitleWindow > QToolButton#close{
 	qproperty-icon: url(":res/icons/close.png");
 }
-QWidget#titleWidget > QToolButton#setting{
+QWidget#TitleWindow > QToolButton#setting{
 	qproperty-icon: url(":res/icons/setting.png");
 }
-QWidget#titleWidget > QPushButton#logo{
+QWidget#TitleWindow > QPushButton#logo{
 	qproperty-icon: url(":res/icons/rabbit.png");
 	qproperty-iconSize: 24px 24px;
 }
-QWidget#titleWidget > QToolButton#vip{
+QWidget#TitleWindow > QToolButton#vip{
 	qproperty-icon: url(":res/icons/vip.png");
 }
-QWidget#titleWidget > QToolButton#vipOn{
+QWidget#TitleWindow > QToolButton#vipOn{
 	qproperty-icon: url(":res/icons/vip-on.png");
 }
-QWidget#titleWidget > QLabel#title{
+QWidget#TitleWindow > QLabel#title{
 	font-family: "Microsoft YaHei";
 	font-size:12px;
 }
@@ -260,73 +295,75 @@ QWidget#settingTitle > QLabel#title{
 	font-family: "Microsoft YaHei";
 	font-size:12px;
 }
-QWidget#toolWidget{
-	min-width:42;
-	max-width:42;
+QWidget#ToolWindow{
+	min-width:50;
+	max-width:50;
 }
-QWidget#toolWidget > QToolButton{
-	min-width:40px;
-	min-height:40px;
-	max-width:40px;
-	max-height:40px;
+QWidget#ToolWindow > QToolButton{
+	min-width:50px;
+	max-width:50px;
+	min-height:46px;
+	max-height:46px;
+	font-size:14px;
+	font-family: "Microsoft YaHei";
 }
-QWidget#toolWidget > QToolButton#hide{
+QWidget#ToolWindow > QToolButton#hide{
 	qproperty-icon: url(":res/icons/hide.png");
 }
-QWidget#toolWidget > QToolButton#import{
+QWidget#ToolWindow > QToolButton#import{
 	qproperty-icon: url(":res/icons/append.png");
 }
-QWidget#toolWidget > QToolButton#play{
+QWidget#ToolWindow > QToolButton#play{
 	qproperty-icon: url(":res/icons/play.png");
 }
-QWidget#toolWidget > QToolButton#play-on{
+QWidget#ToolWindow > QToolButton#play-on{
 	qproperty-icon: url(":res/icons/play-on.png");
 }
-QWidget#toolWidget > QToolButton#pause{
+QWidget#ToolWindow > QToolButton#pause{
 	qproperty-icon: url(":res/icons/pause.png");
 }
-QWidget#toolWidget > QToolButton#stop{
+QWidget#ToolWindow > QToolButton#stop{
 	qproperty-icon: url(":res/icons/stop.png");
 }
-QWidget#toolWidget > QToolButton#reset{
+QWidget#ToolWindow > QToolButton#reset{
 	qproperty-icon: url(":res/icons/reset.png");
 }
-QWidget#toolWidget > QToolButton#shot{
+QWidget#ToolWindow > QToolButton#shot{
 	qproperty-icon: url(":res/icons/shot.png");
 }
-QWidget#toolWidget > QToolButton#left{
+QWidget#ToolWindow > QToolButton#left{
 	qproperty-icon: url(":res/icons/left.png");
 }
-QWidget#toolWidget > QToolButton#right{
+QWidget#ToolWindow > QToolButton#right{
 	qproperty-icon: url(":res/icons/right.png");
 }
-QWidget#toolWidget > QToolButton#record{
+QWidget#ToolWindow > QToolButton#record{
 	qproperty-icon: url(":res/icons/record.png");
 }
-QWidget#toolWidget > QToolButton#record-on{
+QWidget#ToolWindow > QToolButton#record-on{
 	qproperty-icon: url(":res/icons/record-on.png");
 }
-QWidget#toolWidget > QToolButton#gpu{
+QWidget#ToolWindow > QToolButton#gpu{
 	qproperty-icon: url(":res/icons/gpu.png");
 }
-QWidget#toolWidget > QToolButton#gpu-on{
+QWidget#ToolWindow > QToolButton#gpu-on{
 	qproperty-icon: url(":res/icons/gpu-on.png");
 }
-QWidget#toolWidget > QToolButton#hdr{
+QWidget#ToolWindow > QToolButton#hdr{
 	qproperty-icon: url(":res/icons/hdr.png");
 }
-QWidget#toolWidget > QToolButton#cleanup{
+QWidget#ToolWindow > QToolButton#cleanup{
 	qproperty-icon: url(":res/icons/cleanup.png");
 }
-QWidget#toolWidget > QToolButton#environment{
+QWidget#ToolWindow > QToolButton#environment{
 	qproperty-icon: url(":res/icons/environment.png");
 	qproperty-iconSize: 22px 22px;
 }
-QWidget#toolWidget > QToolButton#sun{
+QWidget#ToolWindow > QToolButton#sun{
 	qproperty-icon: url(":res/icons/sun.png");
 	qproperty-iconSize: 27px 27px;
 }
-QWidget#toolWidget > QToolButton#material{
+QWidget#ToolWindow > QToolButton#material{
 	qproperty-icon: url(":res/icons/material.png");
 }
 QWidget#showWidget{

@@ -73,10 +73,10 @@ namespace octoon::video
 
 		std::uint32_t tileNums_;
 
-		std::unordered_map<const light::Light*, void*> lights_;
-		std::unordered_map<const camera::Camera*, void*> cameras_;
+		std::unordered_map<const light::Light*, std::pair<void*, bool>> lights_;
+		std::unordered_map<const camera::Camera*, std::pair<void*, bool>> cameras_;
 		std::unordered_map<const material::Material*, void*> materials_;
-		std::unordered_map<void*, void*> shape_;
+		std::unordered_map<void*, std::pair<void*, bool>> shapes_;
 
 		std::unordered_map<std::string, std::pair<void*, void*>> images_;
 		std::unordered_map<std::string, std::pair<void*, void*>> imageNodes_;

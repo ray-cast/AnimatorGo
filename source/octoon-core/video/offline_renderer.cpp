@@ -279,7 +279,8 @@ namespace octoon::video
 	{
 		bool force = false;
 
-		auto& rprCamera = this->cameras_[camera];
+		auto& pair = this->cameras_[camera];
+		auto& rprCamera = pair.first;
 		if (!rprCamera)
 		{
 			if (camera->isA<camera::PerspectiveCamera>())
@@ -338,6 +339,7 @@ namespace octoon::video
 			rprSceneSetCamera(this->rprScene_, rprCamera);
 		}
 
+		pair.second = true;
 		return true;
 	}
 
@@ -346,7 +348,8 @@ namespace octoon::video
 	{
 		bool force = false;
 
-		auto& rprLight = this->lights_[light];
+		auto& pair = this->lights_[light];
+		auto& rprLight = pair.first;
 		if (!rprLight)
 		{
 			if (light->isA<light::EnvironmentLight>())
@@ -456,6 +459,7 @@ namespace octoon::video
 			this->dirty_ = true;
 		}
 
+		pair.second = true;
 		return true;
 	}
 
@@ -575,7 +579,8 @@ namespace octoon::video
 
 		for (std::int32_t i = 0; i < mesh->getNumSubsets(); i++)
 		{
-			auto& rprShape = shape_[mesh->getIndicesArray(i).data()];
+			auto& pair = shapes_[mesh->getIndicesArray(i).data()];
+			auto& rprShape = pair.first;
 			if (!rprShape)
 			{
 				math::uint1s faceArray(mesh->getIndicesArray(i).size() / 3, 3);
@@ -598,6 +603,8 @@ namespace octoon::video
 
 				rprShapeSetMaterial(rprShape, this->materials_[geometry->getMaterial(i).get()]);
 			}
+
+			pair.second = true;
 		}
 
 		return true;
@@ -606,6 +613,15 @@ namespace octoon::video
 	bool
 	OfflineRenderer::compileScene(const camera::Camera* camera, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept(false)
 	{
+		for (auto& it : this->cameras_)
+			it.second.second = false;
+
+		for (auto& it : this->lights_)
+			it.second.second = false;
+
+		for (auto& it : this->shapes_)
+			it.second.second = false;
+
 		this->compileCamera(camera);
 
 		for (auto& light : lights)
@@ -622,6 +638,50 @@ namespace octoon::video
 		{
 			if (geometry->getVisible() && geometry->getGlobalIllumination())
 				this->compileGeometry(geometry);
+		}
+
+		for (auto& it = this->cameras_.begin(), end = this->cameras_.end(); it != end;)
+		{
+			auto camera = (*it).second;
+			if (!camera.second) {
+				rprObjectDelete(camera.first);
+				it = this->cameras_.erase(it);
+				this->dirty_ = true;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		for (auto& it = this->lights_.begin(), end = this->lights_.end(); it != end;)
+		{
+			auto light = (*it).second;
+			if (!light.second) {
+				rprSceneDetachLight(rprScene_, light.first);
+				rprObjectDelete(light.first);
+				it = this->lights_.erase(it);
+				this->dirty_ = true;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		for (auto& it = this->shapes_.begin(), end = this->shapes_.end(); it != end;)
+		{
+			auto shape = (*it).second;
+			if (!shape.second) {
+				rprSceneDetachShape(rprScene_, shape.first);
+				rprObjectDelete(shape.first);
+				it = this->shapes_.erase(it);
+				this->dirty_ = true;
+			}
+			else
+			{
+				++it;
+			}
 		}
 
 		return true;

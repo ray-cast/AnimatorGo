@@ -46,6 +46,7 @@ namespace octoon::material
 		OctoonDeclareSubClass(Material, runtime::RttiInterface);
 	public:
 		Material() noexcept;
+		Material(std::string_view name) noexcept;
 		Material(const std::shared_ptr<Shader>& shader) noexcept;
 		virtual ~Material() noexcept;
 

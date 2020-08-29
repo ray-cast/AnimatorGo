@@ -46,6 +46,12 @@ namespace octoon::material
 	{
 	}
 
+	Material::Material(std::string_view name) noexcept
+		: Material()
+	{
+		this->setName(name);
+	}
+
 	Material::Material(const std::shared_ptr<Shader>& shader) noexcept
 		: Material()
 	{

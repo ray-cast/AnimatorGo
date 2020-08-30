@@ -110,7 +110,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     float ndoth = fabs(h.y);
     float hdotwo = fabs(dot(h, wo));
     
-    float3 cd_lin = native_powr(base_color, 2.2f);
+    float3 cd_lin = base_color;
     float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
     
     float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;    

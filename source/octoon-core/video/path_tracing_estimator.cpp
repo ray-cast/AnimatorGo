@@ -7,7 +7,7 @@ namespace octoon::video
 		: ClwClass(context, programManager, "../../system/Kernels/CL/rtx_path_estimator.cl", "")
 		, renderData_(std::make_unique<RenderData>())
 		, intersector_(intersector)
-		, maxBounces_(3)
+		, maxBounces_(4)
 		, sampleCounter_(0)
 	{
 		renderData_->pp = CLWParallelPrimitives(context, getFullBuildOpts().c_str());

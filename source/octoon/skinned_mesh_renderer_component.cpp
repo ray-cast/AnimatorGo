@@ -172,7 +172,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
-		needUpdate_ = true;
+		//needUpdate_ = true;
 	}
 
 	void

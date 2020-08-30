@@ -237,7 +237,6 @@ namespace octoon::video
 			if (!this->framebuffer_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
-			//TODO:: implement for several devices
 			if (configs_.size() != 1)
 			{
 				throw std::runtime_error("ContextObject: invalid config count.");
@@ -271,9 +270,17 @@ namespace octoon::video
 			auto mainCamera = scene->getMainCamera();
 			auto viewport = mainCamera->getPixelViewport();
 			this->generateWorkspace(viewport.width, viewport.height);
-			if (mainCamera->isDirty())
+
+			CompiledScene& compiledScene = c.controller->getCachedScene(scene);
+
+			auto& clwscene = dynamic_cast<ClwScene&>(compiledScene);
+			if (clwscene.dirty)
+			{
 				c.pipeline->clear(math::float4::Zero);
-			c.pipeline->render(c.controller->getCachedScene(scene));
+				clwscene.dirty = false;
+			}
+
+			c.pipeline->render(compiledScene);
 		}
 
 		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));

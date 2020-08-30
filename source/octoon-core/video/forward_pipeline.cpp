@@ -299,6 +299,4 @@ namespace octoon::video
 			return false;
 		}
 	}
-
-
 }

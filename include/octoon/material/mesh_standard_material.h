@@ -46,8 +46,8 @@ namespace octoon::material
 		void setLightMapIntensity(float intensity) noexcept;
 		float getLightMapIntensity() const noexcept;
 
-		void setLightMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getLightMap() const noexcept;
+		void setLightTexture(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getLightTexture() const noexcept;
 
 		void setOffset(const math::float2& offset) noexcept;
 		const math::float2& getOffset() const noexcept;

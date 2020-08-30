@@ -4,6 +4,8 @@
 #include <CLW.h>
 #include <radeon_rays.h>
 #undef PI
+
+#include <octoon/video/collector.h>
 #include <octoon/video/compiled_scene.h>
 
 namespace octoon::video
@@ -17,12 +19,6 @@ namespace octoon::video
         kOrthographic
     };
 
-    class Bundle
-    {
-    public:
-        virtual ~Bundle() = 0;
-    };
-
     using namespace RadeonRays;
 
 	class ClwScene : public CompiledScene
@@ -32,6 +28,8 @@ namespace octoon::video
 
         #include "../../lib/system/Kernels/CL/payload.cl"
 
+        bool dirty;
+
         CLWBuffer<math::float4> vertices;
         CLWBuffer<math::float4> normals;
         CLWBuffer<math::float2> uvs;
@@ -40,21 +38,22 @@ namespace octoon::video
         CLWBuffer<Shape> shapes;
         CLWBuffer<ShapeAdditionalData> shapesAdditional;
 
-        CLWBuffer<std::int32_t> materialAttributes;
         CLWBuffer<Light> lights;
         CLWBuffer<Volume> volumes;
         CLWBuffer<Texture> textures;
+        CLWBuffer<Material> materials;
+        CLWBuffer<std::int32_t> materialAttributes;
         CLWBuffer<char> texturedata;
 
         CLWBuffer<Camera> camera;
         CLWBuffer<int> lightDistributions;
         CLWBuffer<InputMapData> inputMapData;
 
-        std::unique_ptr<Bundle> materialBundle;
-        std::unique_ptr<Bundle> volumeBundle;
-        std::unique_ptr<Bundle> textureBundle;
-        std::unique_ptr<Bundle> inputMapLeafsBundle;
-        std::unique_ptr<Bundle> inputMapBundle;
+        std::unique_ptr<Bundle> material_bundle;
+        std::unique_ptr<Bundle> volume_bundle;
+        std::unique_ptr<Bundle> texture_bundle;
+        std::unique_ptr<Bundle> input_map_leafs_bundle;
+        std::unique_ptr<Bundle> input_map_bundle;
 
         int numLights;
         int numVolumes;

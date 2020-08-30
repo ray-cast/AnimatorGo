@@ -4,6 +4,7 @@
 #include <CLW.h>
 #include <map>
 
+#include <octoon/video/collector.h>
 #include <octoon/material/mesh_standard_material.h>
 
 #include "clw_scene.h"
@@ -28,11 +29,9 @@ namespace octoon::video
 		void updateIntersector(const RenderScene* scene, ClwScene& out) const;
 		void updateLights(const RenderScene* scene, ClwScene& out);
 
-		bool hasLightDiry(const RenderScene* scene);
-		bool hasShapeDiry(const RenderScene* scene);
-		bool hasMaterialDiry(const RenderScene* scene);
-
 		void WriteLight(const RenderScene* scene, light::Light const& light, void* data) const;
+		void WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const;
+		void WriteTextureData(hal::GraphicsTexture& texture, void* data) const;
 
 		ClwScene::Material getMaterialIndex(const material::MaterialPtr& material) const;
 
@@ -43,6 +42,9 @@ namespace octoon::video
 		std::unordered_map<void*, std::int32_t> textureToOffset_;
 		std::unordered_map<void*, ClwScene::Material> materialidToOffset_;
 		std::unordered_map<const RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
+
+		Collector textureCollector;
+		Collector materialCollector;
 	};
 }
 

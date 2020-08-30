@@ -12,6 +12,8 @@ SET(VIDEO_GRAPHICS_LIST
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})
 
 SET(VIDEO_COMMON_LIST
+	${HEADER_PATH}/collector.h
+	${SOURCE_PATH}/collector.cpp
 	${SOURCE_PATH}/output.h
 	${SOURCE_PATH}/output.cpp
 	${SOURCE_PATH}/estimator.h

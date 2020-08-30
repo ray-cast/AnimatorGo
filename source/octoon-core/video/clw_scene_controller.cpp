@@ -9,6 +9,11 @@
 
 namespace octoon::video
 {
+	static std::size_t align16(std::size_t value)
+	{
+		return (value + 0xF) / 0x10 * 0x10;
+	}
+
 	static CameraType GetCameraType(const camera::Camera& camera)
 	{
 		auto perspective = dynamic_cast<const camera::PerspectiveCamera*>(&camera);
@@ -26,6 +31,23 @@ namespace octoon::video
 		return CameraType::kPerspective;
 	}
 
+	static ClwScene::TextureFormat GetTextureFormat(hal::GraphicsFormat texture)
+	{
+		switch (texture)
+		{
+		case hal::GraphicsFormat::R8G8B8A8SRGB:
+		case hal::GraphicsFormat::R8G8B8A8UNorm:
+			return ClwScene::TextureFormat::RGBA8;
+		case hal::GraphicsFormat::R16G16B16A16SFloat:
+			return ClwScene::TextureFormat::RGBA16;
+		case hal::GraphicsFormat::R32G32B32A32SFloat:
+			return ClwScene::TextureFormat::RGBA32;
+		default:
+			assert(false);
+			return ClwScene::TextureFormat::UNKNOWN;
+		}
+	}
+
 	ClwSceneController::ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager)
 		: context_(context)
 		, api_(api)
@@ -36,11 +58,36 @@ namespace octoon::video
 	void
 	ClwSceneController::compileScene(RenderScene* scene) noexcept
 	{
+		textureCollector.Clear();
+		materialCollector.Clear();
+
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+				continue;
+			}
+
+			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
+			{
+				auto& mat = geometry->getMaterial(i);
+				if (mat->isInstanceOf<material::MeshStandardMaterial>())
+				{
+					materialCollector.Collect(mat);
+
+					auto standard = mat->downcast<material::MeshStandardMaterial>();
+					if (standard->getColorTexture())
+						textureCollector.Collect(standard->getColorTexture());
+				}
+			}
+		}
+
 		auto iter = sceneCache_.find(scene);
 		if (iter == sceneCache_.cend())
 		{
 			auto clwscene = std::make_unique<ClwScene>(this->context_);
+			clwscene->dirty = true;
 			this->updateCamera(scene, *clwscene);
+			this->updateTextures(scene, *clwscene);
 			this->updateMaterials(scene, *clwscene);
 			this->updateShapes(scene, *clwscene);
 			this->updateLights(scene, *clwscene);
@@ -48,15 +95,62 @@ namespace octoon::video
 		}
 		else
 		{
-			this->updateCamera(scene, *(*iter).second);
-			if (this->hasMaterialDiry(scene))
-				this->updateMaterials(scene, *(*iter).second);
+			auto& out = (*iter).second;
 
-			/*if (this->hasShapeDiry(scene))
-				this->updateShapes(scene, *(*iter).second);*/
+			bool should_update_textures = !out->texture_bundle || textureCollector.NeedsUpdate(out->texture_bundle.get(),
+				[](runtime::RttiInterface* ptr)->bool
+			{
+				return false;
+			});
 
-			if (this->hasLightDiry(scene))
-				this->updateLights(scene, *(*iter).second);
+			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
+				[](runtime::RttiInterface* ptr)->bool
+				{
+					auto mat = ptr->downcast<material::Material>();
+					return mat->isDirty();
+				});
+
+			bool should_update_lights = false;
+			for (auto& light : scene->getLights())
+			{
+				if (light->isDirty())
+				{
+					should_update_lights = true;
+					break;
+				}
+			}
+
+			bool should_update_shapes = false;
+			for (auto& geometry : scene->getGeometries())
+			{
+				if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+					continue;
+				}
+
+				if (geometry->isDirty())
+				{
+					should_update_shapes = true;
+					break;
+				}
+			}
+
+			auto camera = scene->getMainCamera();
+			if (camera->isDirty())
+				this->updateCamera(scene, *out);
+
+			if (should_update_textures)
+				this->updateTextures(scene, *out);
+
+			if (should_update_materials)
+				this->updateMaterials(scene, *out);
+
+			if (should_update_lights)
+				this->updateLights(scene, *out);
+
+			if (should_update_shapes)
+				this->updateShapes(scene, *out);
+
+			out->dirty = camera->isDirty() | should_update_textures | should_update_materials | should_update_lights | should_update_shapes;
 		}
 	}
 
@@ -80,248 +174,328 @@ namespace octoon::video
 			throw std::runtime_error("Cannot find the material");
 	}
 
-	bool
-	ClwSceneController::hasLightDiry(const RenderScene* scene)
-	{
-		for (auto& light : scene->getLights())
-		{
-			if (light->isDirty())
-				return true;
-		}
-
-		return false;
-	}
-
-	bool 
-	ClwSceneController::hasShapeDiry(const RenderScene* scene)
-	{
-		for (auto& geometry : scene->getGeometries())
-		{
-			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-				continue;
-			}
-
-			if (geometry->getMesh()->isDirty())
-				return true;
-		}
-
-		return false;
-	}
-
-	bool
-	ClwSceneController::hasMaterialDiry(const RenderScene* scene)
-	{
-		for (auto& geometry : scene->getGeometries())
-		{
-			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-				continue;
-			}
-
-			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
-			{
-				auto& mat = geometry->getMaterial(i);
-				if (mat->isDirty())
-					return true;
-			}
-		}
-
-		return false;
-	}
-
 	void
 	ClwSceneController::updateCamera(const RenderScene* scene, ClwScene& out) const
 	{
 		if (out.camera.GetElementCount() == 0)
 			out.camera = context_.CreateBuffer<ClwScene::Camera>(scene->getCameras().size(), CL_MEM_READ_ONLY);
 
+		ClwScene::Camera* data = nullptr;
+		context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
+
 		auto camera = scene->getMainCamera();
-		if (camera->isDirty())
+		auto viewport = camera->getPixelViewport();
+
+		data[0].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
+		data[0].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
+		data[0].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
+		data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
+		data[0].aspect_ratio = float(viewport.width) / viewport.height;
+
+		if (camera->isA<camera::PerspectiveCamera>())
 		{
-			out.cameraType = GetCameraType(*camera);
+			auto filmSize_ = 36.0f;
+			auto perspective = camera->downcast<camera::PerspectiveCamera>();
+			auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
+			auto focalLength = filmSize_ / ratio;
 
-			ClwScene::Camera* data = nullptr;
-			context_.MapBuffer(0, out.camera, CL_MAP_WRITE, &data).Wait();
+			data[0].aperture = 0;
+			data[0].focal_length = focalLength;
+			data[0].focus_distance = 1.0f;
+			data[0].dim = RadeonRays::float2(filmSize_ * viewport.width / viewport.height, filmSize_);
+			data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
+		}
 
-			auto sensorSize = camera->getPixelViewport();
+		context_.UnmapBuffer(0, out.camera, data);
 
-			data[0].forward = RadeonRays::float3(camera->getForward().x, camera->getForward().y, camera->getForward().z);
-			data[0].up = RadeonRays::float3(camera->getUp().x, camera->getUp().y, camera->getUp().z);
-			data[0].right = RadeonRays::float3(camera->getRight().x, camera->getRight().y, camera->getRight().z);
-			data[0].p = RadeonRays::float3(camera->getTranslate().x, camera->getTranslate().y, camera->getTranslate().z);
-			data[0].aspect_ratio = float(sensorSize.width) / sensorSize.height;
+		out.cameraType = GetCameraType(*camera);
+		out.cameraVolumeIndex = -1;
+	}
 
-			if (camera->isA<camera::PerspectiveCamera>())
-			{
-				auto filmSize_ = 36.0f;
-				auto perspective = camera->downcast<camera::PerspectiveCamera>();
-				auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
-				auto focalLength = filmSize_ / ratio;
+	void
+	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
+	{
+		auto clwLight = reinterpret_cast<ClwScene::Light*>(data);
 
-				data[0].aperture = 0;
-				data[0].focal_length = focalLength;
-				data[0].focus_distance = 1.0f;
-				data[0].dim = RadeonRays::float2(filmSize_ * sensorSize.width / sensorSize.height, filmSize_);
-				data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
-			}
+		auto& translate = light.getTranslate();
+		auto& direction = light.getForward();
+		auto power = light.getColor() * light.getIntensity();
 
-			context_.UnmapBuffer(0, out.camera, data);
+		if (light.isA<light::PointLight>())
+		{
+			clwLight->type = ClwScene::kPoint;
+			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+		}
+		else if (light.isA<light::DirectionalLight>())
+		{
+			clwLight->type = ClwScene::kDirectional;
+			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
+		}
+		else if (light.isA<light::SpotLight>())
+		{
+			clwLight->type = ClwScene::kSpot;
+			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clwLight->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
+			clwLight->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
+		}
+		else if (light.isA<light::EnvironmentLight>())
+		{
+			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
+			clwLight->type = ClwScene::kIbl;
+			clwLight->multiplier = ibl.getIntensity();
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
+			clwLight->tex = -1;
+			clwLight->tex_reflection = -1;			
+			clwLight->tex_refraction = -1;			
+			clwLight->tex_transparency = -1;			
+			clwLight->tex_background = -1;
+			clwLight->ibl_mirror_x = false;
+		}
+	}
 
-			out.cameraVolumeIndex = -1;
+	void
+	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
+	{
+		std::size_t numLightsWritten = 0;
+		std::size_t numLights = scene->getLights().size();
+		std::size_t distribution_buffer_size = (1 + 1 + numLights + numLights);
+
+		if (numLights > out.lights.GetElementCount())
+		{
+			out.lights = context_.CreateBuffer<ClwScene::Light>(numLights, CL_MEM_READ_ONLY);
+			out.lightDistributions = context_.CreateBuffer<int>(distribution_buffer_size, CL_MEM_READ_ONLY);
+		}
+
+		ClwScene::Light* lights = nullptr;
+		context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
+		
+		out.envmapidx = -1;
+
+		std::vector<float> lightPower(numLights);
+
+		for (auto& light : scene->getLights())
+		{
+			WriteLight(scene, *light, lights + numLightsWritten);
+
+			if (light->isA<light::EnvironmentLight>())
+				out.envmapidx = numLightsWritten;
+
+			auto power = light->getColor() * light->getIntensity();
+			lightPower[numLightsWritten] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;
+
+			numLightsWritten++;
+		}
+
+		context_.UnmapBuffer(0, out.lights, lights);
+
+		// Create distribution over light sources based on their power
+		/*Distribution1D light_distribution(&light_power[0], (std::uint32_t)light_power.size());
+
+		int* distribution_ptr = nullptr;
+		context_.MapBuffer(0, out.lightDistributions, CL_MAP_WRITE, &distribution_ptr).Wait();
+		auto current = distribution_ptr;
+
+		*current++ = (int)light_distribution.m_num_segments;
+
+		auto values = reinterpret_cast<float*>(current);
+		for (auto i = 0u; i < light_distribution.m_num_segments + 1; ++i)
+			values[i] = light_distribution.m_cdf[i];
+
+		values += light_distribution.m_num_segments + 1;
+
+		for (auto i = 0u; i < light_distribution.m_num_segments; ++i)
+			values[i] = light_distribution.m_func_values[i] / light_distribution.m_func_sum;
+
+		context_.UnmapBuffer(0, out.lightDistributions, distribution_ptr);*/
+
+		out.numLights = static_cast<int>(numLightsWritten);
+	}
+
+	void
+	ClwSceneController::WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const
+	{
+		auto& desc = texture.getTextureDesc();
+
+		auto clw_texture = reinterpret_cast<ClwScene::Texture*>(data);
+		clw_texture->w = desc.getWidth();
+		clw_texture->h = desc.getHeight();;
+		clw_texture->d = desc.getDepth();;
+		clw_texture->fmt = GetTextureFormat(desc.getTexFormat());
+		clw_texture->dataoffset = static_cast<int>(data_offset);
+	}
+
+	void
+	ClwSceneController::WriteTextureData(hal::GraphicsTexture& texture, void* dest) const
+	{
+		auto& desc = texture.getTextureDesc();
+		
+		char* data = nullptr;
+		if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
+		{
+			std::copy(data, data + desc.getStreamSize(), static_cast<char*>(data));
+			texture.unmap();
 		}
 	}
 
 	void
 	ClwSceneController::updateTextures(const RenderScene* scene, ClwScene& out)
 	{
-		ClwScene::Texture texture;
+		out.texture_bundle.reset(textureCollector.CreateBundle());
+
+		auto numTextures = textureCollector.GetNumItems();
+		if (numTextures > 0)
+		{
+			std::size_t numTexturesWritten = 0;
+			std::size_t numTexDataBufferSize = 0;
+
+			if (numTextures > out.textures.GetElementCount())
+				out.textures = context_.CreateBuffer<ClwScene::Texture>(numTextures, CL_MEM_READ_ONLY);
+
+			ClwScene::Texture* textures;
+			context_.MapBuffer(0, out.textures, CL_MAP_WRITE, &textures).Wait();
+
+			std::unique_ptr<Iterator> tex_iter(textureCollector.CreateIterator());
+			for (; tex_iter->IsValid(); tex_iter->Next())
+			{
+				auto tex = tex_iter->ItemAs<hal::GraphicsTexture>();
+				this->WriteTexture(*tex, numTexDataBufferSize, textures + numTexturesWritten);
+
+				numTexturesWritten++;
+				numTexDataBufferSize += align16(tex->getTextureDesc().getStreamSize());
+			}
+
+			context_.UnmapBuffer(0, out.textures, textures);
+
+			if (numTexDataBufferSize > out.texturedata.GetElementCount())
+				out.texturedata = context_.CreateBuffer<char>(numTexDataBufferSize, CL_MEM_READ_ONLY);
+
+			char* data = nullptr;
+			context_.MapBuffer(0, out.texturedata, CL_MAP_WRITE, &data).Wait();
+
+			std::size_t numBytesWritten = 0;
+			for (; tex_iter->IsValid(); tex_iter->Next())
+			{
+				auto tex = tex_iter->ItemAs<hal::GraphicsTexture>();
+				this->WriteTextureData(*tex, data + numBytesWritten);
+				numBytesWritten += align16(tex->getTextureDesc().getStreamSize());
+			}
+
+			context_.UnmapBuffer(0, out.texturedata, data);
+		}
 	}
 
 	void
 	ClwSceneController::updateMaterials(const RenderScene* scene, ClwScene& out)
 	{
-		std::vector<int> mat_buffer;
-		mat_buffer.reserve(1024 * 1024);
+		out.material_bundle.reset(materialCollector.CreateBundle());
 
 		this->materialidToOffset_.clear();
 
+		if (materialCollector.GetNumItems() >= out.materials.GetElementCount())
+			out.materials = context_.CreateBuffer<ClwScene::Material>(std::max<std::size_t>(materialCollector.GetNumItems(), 1), CL_MEM_READ_ONLY);
+
+		ClwScene::Material* materials = nullptr;
+		context_.MapBuffer(0, out.materials, CL_MAP_WRITE, &materials).Wait();
+
+		std::unique_ptr<Iterator> mat_iter(materialCollector.CreateIterator());
+		for (std::size_t i = 0; mat_iter->IsValid(); mat_iter->Next(), i++)
+		{
+			auto mat = mat_iter->ItemAs<material::MeshStandardMaterial>();
+
+			auto& material = materials[i];
+			material.offset = 0;
+			material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
+
+#if RTX_ON
+			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
+			material.disney.base_color_map_idx = -1;
+			material.disney.metallic = 0;
+			material.disney.metallic_map_idx = -1;
+			material.disney.roughness = 0;
+			material.disney.roughness_map_idx = -1;
+			material.disney.anisotropy = 0.0;
+			material.disney.anisotropy_map_idx = -1;
+			material.disney.sheen = 0;
+			material.disney.sheen_map_idx = -1;
+			material.disney.sheen_tint = 0;
+			material.disney.sheen_tint_map_idx = -1;
+			material.disney.clearcoat = 0.0;
+			material.disney.clearcoat_map_idx = -1;
+			material.disney.clearcoat_gloss = 0;
+			material.disney.clearcoat_gloss_map_idx = -1;	
+			material.disney.specular = 0.0;
+			material.disney.specular_map_idx = -1;
+			material.disney.specular_tint = 0;
+			material.disney.specular_tint_map_idx = -1;
+			material.disney.subsurface = 0;
+#endif
+
+			this->materialidToOffset_[mat] = material;
+		}
+
+		context_.UnmapBuffer(0, out.materials, materials);
+	}
+
+    void
+    ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
+    {
+		api_->DetachAll();
+
+		for (auto& shape : out.isectShapes)
+			api_->DeleteShape(shape);
+
+		out.isectShapes.clear();
+		out.visibleShapes.clear();
+
+		int id = 1;
 		for (auto& geometry : scene->getGeometries())
 		{
 			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
 				continue;
 			}
 
-			for (std::size_t i = 0 ; i < geometry->getMaterials().size(); ++i)
+			auto& mesh = geometry->getMesh();
+			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
-				auto& mat = geometry->getMaterial(i);
-				if (mat->isInstanceOf<material::MeshStandardMaterial>())
-				{
-					auto standard = mat->downcast<material::MeshStandardMaterial>();
+				auto shape = this->api_->CreateMesh(
+					(float*)mesh->getVertexArray().data(),
+					static_cast<int>(mesh->getVertexArray().size()),
+					3 * sizeof(float),
+					reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
+					0,
+					nullptr,
+					static_cast<int>(mesh->getIndicesArray(i).size() / 3)
+				);
 
-					ClwScene::Material material;
-					material.offset = static_cast<int>(mat_buffer.size());
-					material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
+				auto transform = geometry->getTransform();
+				auto transformInverse = geometry->getTransformInverse();
 
-#if RTX_ON
-					material.disney.base_color = RadeonRays::float3(standard->getColor().x, standard->getColor().y, standard->getColor().z);
-					material.disney.base_color_map_idx = -1;
-					material.disney.metallic = 0;
-					material.disney.metallic_map_idx = -1;
-					material.disney.roughness = 0;
-					material.disney.roughness_map_idx = -1;
-					material.disney.anisotropy = 0.0;
-					material.disney.anisotropy_map_idx = -1;
-					material.disney.sheen = 0;
-					material.disney.sheen_map_idx = -1;
-					material.disney.sheen_tint = 0;
-					material.disney.sheen_tint_map_idx = -1;
-					material.disney.clearcoat = 0.0;
-					material.disney.clearcoat_map_idx = -1;
-					material.disney.clearcoat_gloss = 0;
-					material.disney.clearcoat_gloss_map_idx = -1;	
-					material.disney.specular = 0.0;
-					material.disney.specular_map_idx = -1;
-					material.disney.specular_tint = 0;
-					material.disney.specular_tint_map_idx = -1;
-					material.disney.subsurface = 0;
+				RadeonRays::matrix m(
+					transform.a1, transform.a2, transform.a3, transform.a4,
+					transform.b1, transform.b2, transform.b3, transform.b4,
+					transform.c1, transform.c2, transform.c3, transform.c4,
+					transform.d1, transform.d2, transform.d3, transform.d4);
 
-					/*if (i == 0)
-					{
-						material.disney.emissive = material.disney.base_color * 1000 * math::PI;
-						material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
-					}
+				RadeonRays::matrix minv(
+					transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
+					transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
+					transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
+					transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
 
-					if (i == 6)
-					{
-						material.disney.base_color = RadeonRays::float3(0.95, 0.93, 0.88);
-						material.disney.metallic = 1;
-						material.disney.roughness = 0.01;
-					}*/
-#endif
+				shape->SetId(id++);
+				shape->SetTransform(m, inverse(m));
 
-					this->materialidToOffset_[mat.get()] = material;
-				}
+				this->api_->AttachShape(shape);
+
+				out.isectShapes.push_back(shape);
+				out.visibleShapes.push_back(shape);
 			}
-		}
 
-		if (mat_buffer.size() >= out.materialAttributes.GetElementCount())
-			out.materialAttributes = context_.CreateBuffer<std::int32_t>(std::max<std::size_t>(mat_buffer.size(), 1), CL_MEM_READ_ONLY);
-
-		std::int32_t* materials = nullptr;
-
-		context_.MapBuffer(0, out.materialAttributes, CL_MAP_WRITE, &materials).Wait();
-		memcpy(materials, mat_buffer.data(), mat_buffer.size() * sizeof(std::int32_t));
-		context_.UnmapBuffer(0, out.materialAttributes, materials);
-	}
-
-    void
-    ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
-    {
-		bool dirty = false;
-		for (auto& geometry : scene->getGeometries())
-		{
-			if (geometry->isDirty())
-			{
-				dirty = true;
-				break;
-			}
-		}
-
-		if (dirty)
-		{
-			api_->DetachAll();
-
-			for (auto& shape : out.isectShapes)
-				api_->DeleteShape(shape);
-
-			out.isectShapes.clear();
-			out.visibleShapes.clear();
-
-			int id = 1;
-			for (auto& geometry : scene->getGeometries())
-			{
-				if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-					continue;
-				}
-
-				auto& mesh = geometry->getMesh();
-				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
-				{
-					auto shape = this->api_->CreateMesh(
-						(float*)mesh->getVertexArray().data(),
-						static_cast<int>(mesh->getVertexArray().size()),
-						3 * sizeof(float),
-						reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
-						0,
-						nullptr,
-						static_cast<int>(mesh->getIndicesArray(i).size() / 3)
-					);
-
-					auto transform = geometry->getTransform();
-					auto transformInverse = geometry->getTransformInverse();
-
-					RadeonRays::matrix m(
-						transform.a1, transform.a2, transform.a3, transform.a4,
-						transform.b1, transform.b2, transform.b3, transform.b4,
-						transform.c1, transform.c2, transform.c3, transform.c4,
-						transform.d1, transform.d2, transform.d3, transform.d4);
-
-					RadeonRays::matrix minv(
-						transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
-						transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
-						transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
-						transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
-
-					shape->SetId(id++);
-					shape->SetTransform(m, inverse(m));
-
-					this->api_->AttachShape(shape);
-
-					out.isectShapes.push_back(shape);
-					out.visibleShapes.push_back(shape);
-				}
-
-				this->api_->Commit();
-			}
+			this->api_->Commit();
 		}
     }
 
@@ -369,7 +543,6 @@ namespace octoon::video
 		ClwScene::Shape* shapes = nullptr;
 		ClwScene::ShapeAdditionalData* shapesAdditional = nullptr;
 
-		// Map arrays and prepare to write data
 		context_.MapBuffer(0, out.vertices, CL_MAP_WRITE, &vertices);
 		context_.MapBuffer(0, out.normals, CL_MAP_WRITE, &normals);
 		context_.MapBuffer(0, out.uvs, CL_MAP_WRITE, &uvs);
@@ -444,112 +617,5 @@ namespace octoon::video
 		context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 
 		this->updateIntersector(scene, out);
-	}
-
-	void
-	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
-	{
-		auto clw_light = reinterpret_cast<ClwScene::Light*>(data);
-
-		auto& translate = light.getTranslate();
-		auto& direction = light.getForward();
-		auto power = light.getColor() * light.getIntensity();
-
-		if (light.isA<light::PointLight>())
-		{
-			clw_light->type = ClwScene::kPoint;
-			clw_light->p = RadeonRays::float3(translate.x, translate.y, translate.z);
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
-		}
-		else if (light.isA<light::DirectionalLight>())
-		{
-			clw_light->type = ClwScene::kDirectional;
-			clw_light->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
-		}
-		else if (light.isA<light::SpotLight>())
-		{
-			clw_light->type = ClwScene::kSpot;
-			clw_light->p = RadeonRays::float3(translate.x, translate.y, translate.z);
-			clw_light->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z);
-			clw_light->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
-			clw_light->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
-		}
-		else if (light.isA<light::EnvironmentLight>())
-		{
-			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
-			clw_light->type = ClwScene::kIbl;
-			clw_light->multiplier = ibl.getIntensity();
-			clw_light->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
-			clw_light->tex = -1;
-			clw_light->tex_reflection = -1;			
-			clw_light->tex_refraction = -1;			
-			clw_light->tex_transparency = -1;			
-			clw_light->tex_background = -1;
-			clw_light->ibl_mirror_x = false;
-		}
-	}
-
-	void
-	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
-	{
-		std::size_t num_lights_written = 0;
-		std::size_t num_lights = scene->getLights().size();
-		std::size_t distribution_buffer_size = (1 + 1 + num_lights + num_lights);
-
-		if (num_lights > out.lights.GetElementCount())
-		{
-			out.lights = context_.CreateBuffer<ClwScene::Light>(num_lights, CL_MEM_READ_ONLY);
-			out.lightDistributions = context_.CreateBuffer<int>(distribution_buffer_size, CL_MEM_READ_ONLY);
-		}
-
-		ClwScene::Light* lights = nullptr;
-
-		context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
-		
-		out.envmapidx = -1;
-
-		std::vector<float> light_power(num_lights);
-		std::uint32_t k = 0;
-
-		for (auto& light : scene->getLights())
-		{
-			WriteLight(scene, *light, lights + num_lights_written);
-
-			if (light->isA<light::EnvironmentLight>())
-			{
-				out.envmapidx = num_lights_written;
-			}
-
-			++num_lights_written;
-
-			auto power = light->getColor() * light->getIntensity();
-			light_power[k++] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;
-		}
-
-		context_.UnmapBuffer(0, out.lights, lights);
-
-		// Create distribution over light sources based on their power
-		/*Distribution1D light_distribution(&light_power[0], (std::uint32_t)light_power.size());
-
-		int* distribution_ptr = nullptr;
-		context_.MapBuffer(0, out.lightDistributions, CL_MAP_WRITE, &distribution_ptr).Wait();
-		auto current = distribution_ptr;
-
-		*current++ = (int)light_distribution.m_num_segments;
-
-		auto values = reinterpret_cast<float*>(current);
-		for (auto i = 0u; i < light_distribution.m_num_segments + 1; ++i)
-			values[i] = light_distribution.m_cdf[i];
-
-		values += light_distribution.m_num_segments + 1;
-
-		for (auto i = 0u; i < light_distribution.m_num_segments; ++i)
-			values[i] = light_distribution.m_func_values[i] / light_distribution.m_func_sum;
-
-		context_.UnmapBuffer(0, out.lightDistributions, distribution_ptr);*/
-
-		out.numLights = static_cast<int>(num_lights_written);
 	}
 }

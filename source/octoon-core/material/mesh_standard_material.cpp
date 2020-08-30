@@ -202,7 +202,7 @@ namespace octoon::material
 	}
 
 	void
-	MeshStandardMaterial::setLightMap(const hal::GraphicsTexturePtr& map) noexcept
+	MeshStandardMaterial::setLightTexture(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->lightMap_ = map;
 		this->set("lightMap", map);
@@ -211,7 +211,7 @@ namespace octoon::material
 	}
 
 	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getLightMap() const noexcept
+	MeshStandardMaterial::getLightTexture() const noexcept
 	{
 		return this->lightMap_;
 	}

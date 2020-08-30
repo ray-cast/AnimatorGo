@@ -22,7 +22,7 @@ THE SOFTWARE.
 #ifndef PAYLOAD_CL
 #define PAYLOAD_CL
 
-#define RTX_ON 0
+#define RTX_ON 1
 
 #define TEXTURED_INPUT(x) union { struct { float4 value; } float_value; struct { int value[4]; } int_value; } x
 #define TEXTURED_INPUT_HAS_TEXTURE(x) ((x).int_value.value[3] != -1)

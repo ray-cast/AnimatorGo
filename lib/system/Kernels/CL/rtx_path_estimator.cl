@@ -324,7 +324,7 @@ KERNEL void ShadeSurface(
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance =  PI * le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 

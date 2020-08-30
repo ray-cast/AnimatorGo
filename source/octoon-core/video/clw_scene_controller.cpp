@@ -31,6 +31,25 @@ namespace octoon::video
 		return CameraType::kPerspective;
 	}
 
+	static std::size_t GetTextureSize(const hal::GraphicsTextureDesc& desc)
+	{
+		switch (desc.getTexFormat())
+		{
+		case hal::GraphicsFormat::R8G8B8A8SRGB:
+		case hal::GraphicsFormat::R8G8B8A8UNorm:
+			return align16(desc.getStreamSize());
+		case hal::GraphicsFormat::R16G16B16A16SFloat:
+			return align16(desc.getStreamSize());
+		case hal::GraphicsFormat::R32G32B32A32SFloat:
+			return align16(desc.getStreamSize());
+		case hal::GraphicsFormat::R32G32B32SFloat:
+			return align16(desc.getWidth() * desc.getHeight() * sizeof(math::float4));
+		default:
+			assert(false);
+			return 0;
+		}
+	}
+
 	static ClwScene::TextureFormat GetTextureFormat(hal::GraphicsFormat texture)
 	{
 		switch (texture)
@@ -40,12 +59,19 @@ namespace octoon::video
 			return ClwScene::TextureFormat::RGBA8;
 		case hal::GraphicsFormat::R16G16B16A16SFloat:
 			return ClwScene::TextureFormat::RGBA16;
+		case hal::GraphicsFormat::R32G32B32SFloat:
+			return ClwScene::TextureFormat::RGBA32;
 		case hal::GraphicsFormat::R32G32B32A32SFloat:
 			return ClwScene::TextureFormat::RGBA32;
 		default:
 			assert(false);
 			return ClwScene::TextureFormat::UNKNOWN;
 		}
+	}
+
+	int GetTextureIndex(Collector const& collector, const hal::GraphicsTexturePtr& texture)
+	{
+		return texture ? collector.GetItemIndex(texture.get()) : (-1);
 	}
 
 	ClwSceneController::ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager)
@@ -60,6 +86,15 @@ namespace octoon::video
 	{
 		textureCollector.Clear();
 		materialCollector.Clear();
+
+		for (auto& light : scene->getLights())
+		{
+			if (light->isA<light::EnvironmentLight>()) {
+				auto env = light->downcast<light::EnvironmentLight>();
+				if (env->getEnvironmentMap())
+					textureCollector.Collect(env->getEnvironmentMap());
+			}
+		}
 
 		for (auto& geometry : scene->getGeometries())
 		{
@@ -80,6 +115,9 @@ namespace octoon::video
 				}
 			}
 		}
+
+		textureCollector.Commit();
+		materialCollector.Commit();
 
 		auto iter = sceneCache_.find(scene);
 		if (iter == sceneCache_.cend())
@@ -231,7 +269,7 @@ namespace octoon::video
 		{
 			clwLight->type = ClwScene::kDirectional;
 			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
 		}
 		else if (light.isA<light::SpotLight>())
 		{
@@ -247,8 +285,8 @@ namespace octoon::video
 			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
 			clwLight->type = ClwScene::kIbl;
 			clwLight->multiplier = ibl.getIntensity();
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z) * math::PI;
-			clwLight->tex = -1;
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clwLight->tex = GetTextureIndex(textureCollector, ibl.getEnvironmentMap());
 			clwLight->tex_reflection = -1;			
 			clwLight->tex_refraction = -1;			
 			clwLight->tex_transparency = -1;			
@@ -333,11 +371,35 @@ namespace octoon::video
 	{
 		auto& desc = texture.getTextureDesc();
 		
-		char* data = nullptr;
-		if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
+		switch (desc.getTexFormat())
 		{
-			std::copy(data, data + desc.getStreamSize(), static_cast<char*>(data));
-			texture.unmap();
+		case hal::GraphicsFormat::R8G8B8A8SRGB:
+		case hal::GraphicsFormat::R8G8B8A8UNorm:
+		case hal::GraphicsFormat::R16G16B16A16SFloat:
+		case hal::GraphicsFormat::R32G32B32A32SFloat:
+		{
+			char* data = nullptr;
+			if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
+			{
+				std::copy(data, data + desc.getStreamSize(), static_cast<char*>(dest));
+				texture.unmap();
+			}
+		}
+		break;
+		case hal::GraphicsFormat::R32G32B32SFloat:
+		{
+			math::float3* data = nullptr;
+			if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
+			{
+				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); i++)
+					((math::float4*)dest)[i].set(data[i]);
+
+				texture.unmap();
+			}
+		}
+		break;
+		default:
+			assert(false);
 		}
 	}
 
@@ -365,7 +427,7 @@ namespace octoon::video
 				this->WriteTexture(*tex, numTexDataBufferSize, textures + numTexturesWritten);
 
 				numTexturesWritten++;
-				numTexDataBufferSize += align16(tex->getTextureDesc().getStreamSize());
+				numTexDataBufferSize += GetTextureSize(tex->getTextureDesc());
 			}
 
 			context_.UnmapBuffer(0, out.textures, textures);
@@ -377,11 +439,11 @@ namespace octoon::video
 			context_.MapBuffer(0, out.texturedata, CL_MAP_WRITE, &data).Wait();
 
 			std::size_t numBytesWritten = 0;
-			for (; tex_iter->IsValid(); tex_iter->Next())
+			for (tex_iter->Reset(); tex_iter->IsValid(); tex_iter->Next())
 			{
 				auto tex = tex_iter->ItemAs<hal::GraphicsTexture>();
 				this->WriteTextureData(*tex, data + numBytesWritten);
-				numBytesWritten += align16(tex->getTextureDesc().getStreamSize());
+				numBytesWritten += GetTextureSize(tex->getTextureDesc());
 			}
 
 			context_.UnmapBuffer(0, out.texturedata, data);
@@ -412,7 +474,7 @@ namespace octoon::video
 
 #if RTX_ON
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
-			material.disney.base_color_map_idx = -1;
+			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorTexture());
 			material.disney.metallic = 0;
 			material.disney.metallic_map_idx = -1;
 			material.disney.roughness = 0;

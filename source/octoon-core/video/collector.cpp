@@ -124,9 +124,7 @@ namespace octoon::video
 
 		int idx = 0;
 		for (auto& i : impl->m_set)
-		{
 			impl->m_map[i] = idx++;
-		}
 	}
 
 	void

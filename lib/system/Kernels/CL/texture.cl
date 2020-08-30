@@ -51,7 +51,9 @@ float4 Texture_Sample2D(float2 uv, TEXTURE_ARG_LIST_IDX(texidx))
     // Reverse Y:
     // it is needed as textures are loaded with Y axis going top to down
     // and our axis goes from down to top
+#if RTX_ON == 0
     uv.y = 1.f - uv.y;
+#endif
 
     // Calculate integer coordinates
     int x0 = clamp((int)floor(uv.x * width), 0, width - 1);

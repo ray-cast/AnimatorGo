@@ -163,11 +163,11 @@ QListWidget{
 }
 QListWidget::Item:hover{
 	color: rgb(220,220,220);
-	background-color: rgb(36,36,36);
+	background-color: rgb(48,48,48);
 }
 QListWidget::Item:selected{
 	color: rgb(220,220,220);
-	background-color: rgb(40,40,40);
+	background-color: rgb(64,64,64);
 	border-width: 0px;
 }
 QComboBox{

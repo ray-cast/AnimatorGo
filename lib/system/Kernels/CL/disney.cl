@@ -127,8 +127,8 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
     float ss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
     
-    float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));
-    float ay = max(0.001f, roughness * roughness * ( 1.f - anisotropy));
+    float ax = max(0.0006f, roughness * roughness * ( 1.f + anisotropy));
+    float ay = max(0.0006f, roughness * roughness * ( 1.f - anisotropy));
     float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay);
     float fh = SchlickFresnelReflectance(hdotwo);
     float3 fs = mix(c_spec0, WHITE, fh);

@@ -42,14 +42,13 @@ namespace rabbit
 		headerLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
 		contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		// start out collapsed
 		contentArea.setMaximumHeight(0);
 		contentArea.setMinimumHeight(0);
-		// let the entire widget grow and shrink with its content
+
 		toggleAnimation.addAnimation(new QPropertyAnimation(this, "minimumHeight"));
 		toggleAnimation.addAnimation(new QPropertyAnimation(this, "maximumHeight"));
 		toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
-		// don't waste space
+
 		mainLayout.setVerticalSpacing(0);
 		mainLayout.setContentsMargins(0, 0, 0, 0);
 		int row = 0;
@@ -302,7 +301,7 @@ namespace rabbit
 		if (this->material_)
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			standard->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 		}
 	}
 

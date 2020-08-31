@@ -80,7 +80,6 @@ namespace rabbit
 		QLabel* smoothnessLabel_;
 		QLabel* metalnessLabel_;
 		QLabel* anisotropyLabel_;
-		ColorDialog* albedoColor_;
 		QSlider* smoothnessSlider_;
 		QSlider* metalnessSlider_;
 		QSlider* anisotropySlider_;		
@@ -88,6 +87,7 @@ namespace rabbit
 		QDoubleSpinBox* metalnessSpinBox_;
 		QDoubleSpinBox* anisotropySpinBox_;
 		QLabel* emissiveLabel_;
+		ColorDialog* albedoColor_;
 		ColorDialog* emissiveColor_;
 		QToolButton* okButton_;
 		std::shared_ptr<octoon::material::Material> material_;

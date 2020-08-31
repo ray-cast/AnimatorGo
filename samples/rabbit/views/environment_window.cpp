@@ -38,8 +38,8 @@ namespace rabbit
 		colorDialog_ = std::make_unique<ColorDialog>();
 		colorDialog_->setCurrentColor(QColor(profile->environmentModule->color.x * 255.0f, profile->environmentModule->color.y * 255.0f, profile->environmentModule->color.z * 255.0f));
 
-		okButton_ = std::make_unique<QToolButton>();
-		okButton_->setText(u8"确定");
+		resetButton_ = std::make_unique<QToolButton>();
+		resetButton_->setText(u8"重置");
 
 		labelIntensity_ = std::make_unique<QLabel>();
 		labelIntensity_->setText(u8"光强");
@@ -74,15 +74,14 @@ namespace rabbit
 		mainLayout_->addLayout(layoutIntensity_.get(), 0);
 		mainLayout_->addWidget(sliderIntensity_.get(), 0, Qt::AlignHCenter);
 		mainLayout_->addStretch(100);
-		mainLayout_->addWidget(okButton_.get(), 0, Qt::AlignBottom | Qt::AlignRight);
+		mainLayout_->addWidget(resetButton_.get(), 0, Qt::AlignBottom | Qt::AlignRight);
 		mainLayout_->setContentsMargins(0, 10, 10, 10);
 
-		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(rejected()));
-		connect(okButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(resetButton_.get(), SIGNAL(clicked()), this, SLOT(resetEvent()));
 		connect(editIntensity_.get(), SIGNAL(valueChanged(double)), this, SLOT(editIntensityEvent(double)));
 		connect(sliderIntensity_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderIntensityEvent(int)));
 		connect(colorDialog_.get(), SIGNAL(currentColorChanged(QColor)), this, SLOT(currentColorChanged(QColor)));
-		connect(colorDialog_.get(), SIGNAL(colorSelected(QColor)), this, SLOT(colorSelected(QColor)));
 	}
 
 	EnvironmentWindow::~EnvironmentWindow()
@@ -111,30 +110,9 @@ namespace rabbit
 	void
 	EnvironmentWindow::closeEvent(QCloseEvent* event)
 	{
-		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-
-		if (environmentLight)
-			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-
-		if (meshRenderer)
-			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
-	}
-
-	void
-	EnvironmentWindow::rejected()
-	{
-		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-		
-		if (environmentLight)
-			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-		
-		if (meshRenderer)
-			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
-		
-		this->close();
-		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
+		auto color = colorDialog_->getCurrentColor();
+		profile_->environmentModule->intensity = editIntensity_->value();
+		profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 	}
 
 	void 
@@ -154,30 +132,27 @@ namespace rabbit
 	}
 
 	void
-	EnvironmentWindow::colorSelected(QColor color)
+	EnvironmentWindow::closeEvent()
 	{
-		if (color.isValid())
-		{
-			profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
-
-			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-
-			if (environmentLight)
-				environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-
-			if (meshRenderer)
-				meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
-		}
-
 		this->close();
 		parentWidget()->setFixedWidth(parentWidget()->width() - this->width());
 	}
 
 	void
-	EnvironmentWindow::closeEvent()
+	EnvironmentWindow::resetEvent()
 	{
-		this->colorSelected(colorDialog_->getCurrentColor());
+		this->repaint();
+
+		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
+		if (environmentLight)
+		{
+			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+			environmentLight->setIntensity(profile_->environmentModule->intensity);
+		}
+
+		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
+		if (meshRenderer)
+			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
 	}
 
 	void

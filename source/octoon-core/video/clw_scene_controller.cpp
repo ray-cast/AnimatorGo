@@ -482,7 +482,7 @@ namespace octoon::video
 			material.disney.metallic_map_idx = -1;
 			material.disney.roughness = 1 - mat->getSmoothness();
 			material.disney.roughness_map_idx = -1;
-			material.disney.anisotropy = 0.0;
+			material.disney.anisotropy = mat->getAnisotropy();
 			material.disney.anisotropy_map_idx = -1;
 			material.disney.sheen = 0;
 			material.disney.sheen_map_idx = -1;

@@ -92,19 +92,29 @@ namespace rabbit
 		mainLayout_->addWidget(this->createNormal(), 0,  Qt::AlignTop);
 		mainLayout_->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
 		mainLayout_->addWidget(this->createMetalness(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createAnisotropy(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createSheen(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createClearCoat(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createSubsurface(), 0, Qt::AlignTop);
 		mainLayout_->addWidget(this->createEmissive(), 0, Qt::AlignTop);
 		mainLayout_->addStretch(500);
 		mainLayout_->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
 		mainLayout_->setContentsMargins(0, 10, 20, 10);
 
+		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
 		connect(smoothnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(smoothEditEvent(double)));
 		connect(smoothnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(smoothSliderEvent(int)));
 		connect(metalnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
 		connect(metalnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(metalSliderEvent(int)));
 		connect(anisotropySpinBox_, SIGNAL(valueChanged(double)), this, SLOT(anisotropyEditEvent(double)));
 		connect(anisotropySlider_, SIGNAL(valueChanged(int)), this, SLOT(anisotropySliderEvent(int)));
-		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
+		connect(sheenSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(sheenEditEvent(double)));
+		connect(sheenSlider_, SIGNAL(valueChanged(int)), this, SLOT(sheenSliderEvent(int)));
+		connect(clearcoatSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(clearcoatEditEvent(double)));
+		connect(clearcoatSlider_, SIGNAL(valueChanged(int)), this, SLOT(clearcoatSliderEvent(int)));
+		connect(clearcoatRoughnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(clearcoatRoughnessEditEvent(double)));
+		connect(clearcoatRoughnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(clearcoatRoughnessSliderEvent(int)));
+		connect(subsurfaceSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(subsurfaceEditEvent(double)));
+		connect(subsurfaceSlider_, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
 		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
 	}
 
@@ -235,21 +245,6 @@ namespace rabbit
 		metalnessHLayout->addWidget(metalnessLabel_, 0, Qt::AlignLeft);
 		metalnessHLayout->addWidget(metalnessSpinBox_, 0, Qt::AlignRight);
 
-		auto metalnessLayout = new QVBoxLayout();
-		metalnessLayout->addLayout(metalnessHLayout);
-		metalnessLayout->addWidget(metalnessSlider_);
-		metalnessLayout->setContentsMargins(30, 5, 50, 0);
-
-		auto metalness = new Spoiler(u8"金属程度");
-		metalness->setFixedWidth(340);
-		metalness->setContentLayout(*metalnessLayout);
-
-		return metalness;
-	}
-
-	QWidget*
-	MaterialModifyWindow::createAnisotropy()
-	{
 		anisotropyLabel_ = new QLabel;
 		anisotropyLabel_->setText(u8"各向异性");
 
@@ -272,16 +267,154 @@ namespace rabbit
 		anisotropyHLayout->addWidget(anisotropyLabel_, 0, Qt::AlignLeft);
 		anisotropyHLayout->addWidget(anisotropySpinBox_, 0, Qt::AlignRight);
 
-		auto anisotropyLayout = new QVBoxLayout();
-		anisotropyLayout->addLayout(anisotropyHLayout);
-		anisotropyLayout->addWidget(anisotropySlider_);
-		anisotropyLayout->setContentsMargins(30, 5, 50, 0);
+		auto metalnessLayout = new QVBoxLayout();
+		metalnessLayout->addLayout(metalnessHLayout);
+		metalnessLayout->addWidget(metalnessSlider_);
+		metalnessLayout->addLayout(anisotropyHLayout);
+		metalnessLayout->addWidget(anisotropySlider_);
+		metalnessLayout->setContentsMargins(30, 5, 50, 0);
 
-		auto anisotropy = new Spoiler(u8"各向异性");
-		anisotropy->setFixedWidth(340);
-		anisotropy->setContentLayout(*anisotropyLayout);
+		auto metalness = new Spoiler(u8"金属程度");
+		metalness->setFixedWidth(340);
+		metalness->setContentLayout(*metalnessLayout);
 
-		return anisotropy;
+		return metalness;
+	}
+
+
+	QWidget*
+	MaterialModifyWindow::createSheen()
+	{
+		sheenLabel_ = new QLabel;
+		sheenLabel_->setText(u8"布料");
+
+		sheenSlider_ = new QSlider;
+		sheenSlider_->setObjectName("Value");
+		sheenSlider_->setOrientation(Qt::Horizontal);
+		sheenSlider_->setMinimum(0);
+		sheenSlider_->setMaximum(100);
+		sheenSlider_->setValue(0);
+		sheenSlider_->setFixedWidth(260);
+
+		sheenSpinBox_ = new DoubleSpinBox;
+		sheenSpinBox_->setFixedWidth(50);
+		sheenSpinBox_->setMaximum(1.0f);
+		sheenSpinBox_->setSingleStep(0.03f);
+		sheenSpinBox_->setAlignment(Qt::AlignRight);
+		sheenSpinBox_->setValue(0.0f);
+
+		auto sheenHLayout = new QHBoxLayout();
+		sheenHLayout->addWidget(sheenLabel_, 0, Qt::AlignLeft);
+		sheenHLayout->addWidget(sheenSpinBox_, 0, Qt::AlignRight);
+
+		auto sheenLayout = new QVBoxLayout();
+		sheenLayout->addLayout(sheenHLayout);
+		sheenLayout->addWidget(sheenSlider_);
+		sheenLayout->setContentsMargins(30, 5, 50, 0);
+
+		auto sheen = new Spoiler(u8"光泽度");
+		sheen->setFixedWidth(340);
+		sheen->setContentLayout(*sheenLayout);
+
+		return sheen;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createClearCoat()
+	{
+		clearcoatLabel_ = new QLabel;
+		clearcoatLabel_->setText(u8"清漆");
+
+		clearcoatSlider_ = new QSlider;
+		clearcoatSlider_->setObjectName("Value");
+		clearcoatSlider_->setOrientation(Qt::Horizontal);
+		clearcoatSlider_->setMinimum(0);
+		clearcoatSlider_->setMaximum(100);
+		clearcoatSlider_->setValue(0);
+		clearcoatSlider_->setFixedWidth(260);
+
+		clearcoatSpinBox_ = new DoubleSpinBox;
+		clearcoatSpinBox_->setFixedWidth(50);
+		clearcoatSpinBox_->setMaximum(1.0f);
+		clearcoatSpinBox_->setSingleStep(0.03f);
+		clearcoatSpinBox_->setAlignment(Qt::AlignRight);
+		clearcoatSpinBox_->setValue(0.0f);
+
+		clearcoatRoughnessLabel_ = new QLabel;
+		clearcoatRoughnessLabel_->setText(u8"粗糙度");
+
+		clearcoatRoughnessSlider_ = new QSlider;
+		clearcoatRoughnessSlider_->setObjectName("Value");
+		clearcoatRoughnessSlider_->setOrientation(Qt::Horizontal);
+		clearcoatRoughnessSlider_->setMinimum(0);
+		clearcoatRoughnessSlider_->setMaximum(100);
+		clearcoatRoughnessSlider_->setValue(0);
+		clearcoatRoughnessSlider_->setFixedWidth(260);
+
+		clearcoatRoughnessSpinBox_ = new DoubleSpinBox;
+		clearcoatRoughnessSpinBox_->setFixedWidth(50);
+		clearcoatRoughnessSpinBox_->setMaximum(1.0f);
+		clearcoatRoughnessSpinBox_->setSingleStep(0.03f);
+		clearcoatRoughnessSpinBox_->setAlignment(Qt::AlignRight);
+		clearcoatRoughnessSpinBox_->setValue(0.0f);
+
+		auto clearcoatHLayout = new QHBoxLayout();
+		clearcoatHLayout->addWidget(clearcoatLabel_, 0, Qt::AlignLeft);
+		clearcoatHLayout->addWidget(clearcoatSpinBox_, 0, Qt::AlignRight);
+
+		auto clearcoatRoughnessHLayout = new QHBoxLayout();
+		clearcoatRoughnessHLayout->addWidget(clearcoatRoughnessLabel_, 0, Qt::AlignLeft);
+		clearcoatRoughnessHLayout->addWidget(clearcoatRoughnessSpinBox_, 0, Qt::AlignRight);
+
+		auto clearcoatLayout = new QVBoxLayout();
+		clearcoatLayout->addLayout(clearcoatHLayout);
+		clearcoatLayout->addWidget(clearcoatSlider_);
+		clearcoatLayout->addLayout(clearcoatRoughnessHLayout);
+		clearcoatLayout->addWidget(clearcoatRoughnessSlider_);
+		clearcoatLayout->setContentsMargins(30, 5, 50, 0);
+
+		auto clearcoat = new Spoiler(u8"光泽度");
+		clearcoat->setFixedWidth(340);
+		clearcoat->setContentLayout(*clearcoatLayout);
+
+		return clearcoat;
+	}
+
+	QWidget*
+	MaterialModifyWindow::createSubsurface()
+	{
+		subsurfaceLabel_ = new QLabel;
+		subsurfaceLabel_->setText(u8"次表面散射");
+
+		subsurfaceSlider_ = new QSlider;
+		subsurfaceSlider_->setObjectName("Value");
+		subsurfaceSlider_->setOrientation(Qt::Horizontal);
+		subsurfaceSlider_->setMinimum(0);
+		subsurfaceSlider_->setMaximum(100);
+		subsurfaceSlider_->setValue(0);
+		subsurfaceSlider_->setFixedWidth(260);
+
+		subsurfaceSpinBox_ = new DoubleSpinBox;
+		subsurfaceSpinBox_->setFixedWidth(50);
+		subsurfaceSpinBox_->setMaximum(1.0f);
+		subsurfaceSpinBox_->setSingleStep(0.03f);
+		subsurfaceSpinBox_->setAlignment(Qt::AlignRight);
+		subsurfaceSpinBox_->setValue(0.0f);
+
+		auto subsurfaceHLayout = new QHBoxLayout();
+		subsurfaceHLayout->addWidget(subsurfaceLabel_, 0, Qt::AlignLeft);
+		subsurfaceHLayout->addWidget(subsurfaceSpinBox_, 0, Qt::AlignRight);
+
+		auto subsurfaceLayout = new QVBoxLayout();
+		subsurfaceLayout->addLayout(subsurfaceHLayout);
+		subsurfaceLayout->addWidget(subsurfaceSlider_);
+		subsurfaceLayout->setContentsMargins(30, 5, 50, 0);
+
+		auto subsurface = new Spoiler(u8"散射程度");
+		subsurface->setFixedWidth(340);
+		subsurface->setContentLayout(*subsurfaceLayout);
+
+		return subsurface;
 	}
 
 	QWidget*
@@ -319,6 +452,11 @@ namespace rabbit
 			albedoColor_->setCurrentColor(QColor::fromRgbF(standard->getColor().x, standard->getColor().y, standard->getColor().z));
 			smoothnessSpinBox_->setValue(standard->getSmoothness());
 			metalnessSpinBox_->setValue(standard->getMetalness());
+			anisotropySpinBox_->setValue(standard->getAnisotropy());
+			sheenSpinBox_->setValue(standard->getSheen());
+			clearcoatSpinBox_->setValue(standard->getClearCoat());
+			clearcoatRoughnessSpinBox_->setValue(standard->getClearCoatRoughness());
+			subsurfaceSpinBox_->setValue(standard->getSubsurface());
 			emissiveColor_->setCurrentColor(QColor::fromRgbF(standard->getEmissive().x, standard->getEmissive().y, standard->getEmissive().z));
 
 			this->material_ = material;
@@ -397,6 +535,78 @@ namespace rabbit
 	MaterialModifyWindow::anisotropySliderEvent(int value)
 	{
 		anisotropySpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::clearcoatEditEvent(double value)
+	{
+		clearcoatSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setClearCoat(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::clearcoatSliderEvent(int value)
+	{
+		clearcoatSpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::clearcoatRoughnessEditEvent(double value)
+	{
+		clearcoatRoughnessSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setClearCoatRoughness(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::clearcoatRoughnessSliderEvent(int value)
+	{
+		clearcoatRoughnessSpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::sheenEditEvent(double value)
+	{
+		sheenSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setSheen(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::sheenSliderEvent(int value)
+	{
+		sheenSpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::subsurfaceEditEvent(double value)
+	{
+		subsurfaceSlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setSubsurface(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::subsurfaceSliderEvent(int value)
+	{
+		subsurfaceSpinBox_->setValue(value / 100.0f);
 	}
 
 	void 

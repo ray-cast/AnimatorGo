@@ -54,7 +54,9 @@ namespace rabbit
 		QWidget* createNormal();
 		QWidget* createSmoothness();
 		QWidget* createMetalness();
-		QWidget* createAnisotropy();
+		QWidget* createSheen();
+		QWidget* createClearCoat();
+		QWidget* createSubsurface();
 		QWidget* createEmissive();
 
 	public Q_SLOTS:
@@ -70,6 +72,18 @@ namespace rabbit
 		void anisotropyEditEvent(double);
 		void anisotropySliderEvent(int);
 
+		void clearcoatEditEvent(double);
+		void clearcoatSliderEvent(int);
+
+		void clearcoatRoughnessEditEvent(double);
+		void clearcoatRoughnessSliderEvent(int);
+
+		void sheenEditEvent(double);
+		void sheenSliderEvent(int);
+
+		void subsurfaceEditEvent(double);
+		void subsurfaceSliderEvent(int);
+
 		void closeEvent();
 
 	public:
@@ -80,12 +94,24 @@ namespace rabbit
 		QLabel* smoothnessLabel_;
 		QLabel* metalnessLabel_;
 		QLabel* anisotropyLabel_;
+		QLabel* clearcoatLabel_;
+		QLabel* clearcoatRoughnessLabel_;
+		QLabel* sheenLabel_;
+		QLabel* subsurfaceLabel_;
 		QSlider* smoothnessSlider_;
 		QSlider* metalnessSlider_;
-		QSlider* anisotropySlider_;		
+		QSlider* anisotropySlider_;
+		QSlider* clearcoatSlider_;
+		QSlider* clearcoatRoughnessSlider_;
+		QSlider* sheenSlider_;
+		QSlider* subsurfaceSlider_;
 		QDoubleSpinBox* smoothnessSpinBox_;		
 		QDoubleSpinBox* metalnessSpinBox_;
 		QDoubleSpinBox* anisotropySpinBox_;
+		QDoubleSpinBox* clearcoatSpinBox_;
+		QDoubleSpinBox* clearcoatRoughnessSpinBox_;
+		QDoubleSpinBox* sheenSpinBox_;
+		QDoubleSpinBox* subsurfaceSpinBox_;
 		QLabel* emissiveLabel_;
 		ColorDialog* albedoColor_;
 		ColorDialog* emissiveColor_;

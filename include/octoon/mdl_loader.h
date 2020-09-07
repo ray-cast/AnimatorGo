@@ -20,8 +20,9 @@ namespace octoon
 
 		void addModulePath(std::string_view modulePath);
 
-		std::unique_ptr<material::Material> load(io::istream& stream, std::string_view material) noexcept(false);
-		std::unique_ptr<material::Material> load(std::string_view material, std::string_view moduleName, std::string_view source) noexcept(false);
+		void load(std::string_view moduleName, io::istream& stream) noexcept(false);
+		void load(std::string_view moduleName, std::string_view source = "") noexcept(false);
+
 		void save(io::ostream& stream, const material::Material& material) noexcept(false);
 
 	private:
@@ -35,6 +36,7 @@ namespace octoon
 		bool verboseLogging_;
 		std::set<std::string> modulePaths_;
 		std::unique_ptr<MDLContext> context_;
+		std::vector<std::unique_ptr<material::Material>> materials_;
 	};
 }
 

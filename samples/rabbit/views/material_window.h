@@ -54,6 +54,7 @@ namespace rabbit
 		QWidget* createNormal();
 		QWidget* createSmoothness();
 		QWidget* createMetalness();
+		QWidget* createAnisotropy();
 		QWidget* createEmissive();
 
 	public Q_SLOTS:
@@ -65,6 +66,9 @@ namespace rabbit
 
 		void metalEditEvent(double);
 		void metalSliderEvent(int);
+		
+		void anisotropyEditEvent(double);
+		void anisotropySliderEvent(int);
 
 		void closeEvent();
 
@@ -73,14 +77,17 @@ namespace rabbit
 		QLabel* textLabel_;
 		QLabel* normalLabel_;
 		QLabel* albedoLabel_;
-		ColorDialog* albedoColor_;
-		QSlider* smoothnessSlider_;
 		QLabel* smoothnessLabel_;
-		QDoubleSpinBox* smoothnessSpinBox_;
-		QSlider* metalnessSlider_;
 		QLabel* metalnessLabel_;
+		QLabel* anisotropyLabel_;
+		QSlider* smoothnessSlider_;
+		QSlider* metalnessSlider_;
+		QSlider* anisotropySlider_;		
+		QDoubleSpinBox* smoothnessSpinBox_;		
 		QDoubleSpinBox* metalnessSpinBox_;
+		QDoubleSpinBox* anisotropySpinBox_;
 		QLabel* emissiveLabel_;
+		ColorDialog* albedoColor_;
 		ColorDialog* emissiveColor_;
 		QToolButton* okButton_;
 		std::shared_ptr<octoon::material::Material> material_;

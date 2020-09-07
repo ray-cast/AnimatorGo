@@ -134,7 +134,11 @@ float3 Texture_SampleEnvMap(float3 d, TEXTURE_ARG_LIST_IDX(texidx), bool mirror_
     // Map to [0,1]x[0,1] range and reverse Y axis
     float2 uv;
     uv.x = (mirror_x) ? (1.f - phi / (2 * PI)) : phi / (2 * PI);
+#if RTX_ON == 0
     uv.y = 1.f - theta / PI;
+#else
+    uv.y = theta / PI;
+#endif
 
     // Sample the texture
     return Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).xyz;

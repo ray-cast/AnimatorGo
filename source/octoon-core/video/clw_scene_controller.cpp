@@ -158,17 +158,20 @@ namespace octoon::video
 				}
 			}
 
-			bool should_update_shapes = false;
-			for (auto& geometry : scene->getGeometries())
+			bool should_update_shapes = should_update_materials;
+			if (!should_update_shapes)
 			{
-				if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-					continue;
-				}
-
-				if (geometry->isDirty())
+				for (auto& geometry : scene->getGeometries())
 				{
-					should_update_shapes = true;
-					break;
+					if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+						continue;
+					}
+
+					if (geometry->isDirty())
+					{
+						should_update_shapes = true;
+						break;
+					}
 				}
 			}
 
@@ -291,7 +294,7 @@ namespace octoon::video
 			clwLight->tex_refraction = -1;			
 			clwLight->tex_transparency = -1;			
 			clwLight->tex_background = -1;
-			clwLight->ibl_mirror_x = false;
+			clwLight->ibl_mirror_x = true;
 		}
 	}
 
@@ -475,25 +478,31 @@ namespace octoon::video
 #if RTX_ON
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorTexture());
-			material.disney.metallic = 0;
+			material.disney.metallic = mat->getMetalness();
 			material.disney.metallic_map_idx = -1;
-			material.disney.roughness = 0;
+			material.disney.roughness = 1 - mat->getSmoothness();
 			material.disney.roughness_map_idx = -1;
-			material.disney.anisotropy = 0.0;
+			material.disney.anisotropy = mat->getAnisotropy();
 			material.disney.anisotropy_map_idx = -1;
 			material.disney.sheen = 0;
 			material.disney.sheen_map_idx = -1;
 			material.disney.sheen_tint = 0;
 			material.disney.sheen_tint_map_idx = -1;
-			material.disney.clearcoat = 0.0;
+			material.disney.clearcoat = mat->getClearCoat();
 			material.disney.clearcoat_map_idx = -1;
-			material.disney.clearcoat_gloss = 0;
+			material.disney.clearcoat_gloss = mat->getClearCoatRoughness();
 			material.disney.clearcoat_gloss_map_idx = -1;	
-			material.disney.specular = 0.0;
+			material.disney.specular = mat->getReflectivity();
 			material.disney.specular_map_idx = -1;
 			material.disney.specular_tint = 0;
 			material.disney.specular_tint_map_idx = -1;
 			material.disney.subsurface = 0;
+
+			if (math::any(mat->getEmissive()))
+			{
+				material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * 1000;
+				material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
+			}
 #endif
 
 			this->materialidToOffset_[mat] = material;
@@ -590,10 +599,14 @@ namespace octoon::video
 			}
 		}
 
-		out.vertices = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
-		out.normals = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
-		out.uvs = context_.CreateBuffer<math::float2>(num_vertices, CL_MEM_READ_ONLY);
-		out.indices = context_.CreateBuffer<int>(num_indices, CL_MEM_READ_ONLY);
+		if (num_vertices > out.vertices.GetElementCount())
+			out.vertices = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
+		if (num_vertices > out.normals.GetElementCount())
+			out.normals = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
+		if (num_vertices > out.uvs.GetElementCount())
+			out.uvs = context_.CreateBuffer<math::float2>(num_vertices, CL_MEM_READ_ONLY);
+		if (num_indices > out.indices.GetElementCount())
+			out.indices = context_.CreateBuffer<int>(num_indices, CL_MEM_READ_ONLY);
 
 		out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
 		out.shapesAdditional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);

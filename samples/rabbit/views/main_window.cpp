@@ -495,6 +495,7 @@ namespace rabbit
 				{
 					if (recordWindow_->isHidden())
 					{
+						this->hideSliderWindow();
 						this->setFixedWidth(this->width() + recordWindow_->minimumWidth());
 						recordWindow_->show();
 					}
@@ -689,6 +690,7 @@ namespace rabbit
 				{
 					if (sunWindow_->isHidden())
 					{
+						this->hideSliderWindow();
 						this->setFixedWidth(this->width() + sunWindow_->minimumWidth());
 						sunWindow_->show();
 					}
@@ -734,6 +736,7 @@ namespace rabbit
 				{
 					if (environmentWindow_->isHidden())
 					{
+						this->hideSliderWindow();
 						this->setFixedWidth(this->width() + environmentWindow_->minimumWidth());
 						environmentWindow_->show();
 					}
@@ -779,6 +782,7 @@ namespace rabbit
 				{
 					if (materialWindow_->isHidden())
 					{
+						this->hideSliderWindow();
 						this->setFixedWidth(this->width() + materialWindow_->minimumWidth());
 						materialWindow_->show();
 					}
@@ -1116,6 +1120,31 @@ namespace rabbit
 			gameApp_ = nullptr;
 
 			exit(0);
+		}
+	}
+
+	void
+	MainWindow::hideSliderWindow() noexcept
+	{
+		if (!recordWindow_->isHidden())
+		{
+			recordWindow_->close();
+			this->setFixedWidth(this->width() - recordWindow_->width());
+		}
+		if (!sunWindow_->isHidden())
+		{
+			sunWindow_->close();
+			this->setFixedWidth(this->width() - sunWindow_->width());
+		}
+		if (!environmentWindow_->isHidden())
+		{
+			environmentWindow_->close();
+			this->setFixedWidth(this->width() - environmentWindow_->width());
+		}
+		if (!materialWindow_->isHidden())
+		{
+			materialWindow_->close();
+			this->setFixedWidth(this->width() - materialWindow_->width());
 		}
 	}
 }

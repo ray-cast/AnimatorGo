@@ -96,6 +96,8 @@ namespace octoon::material
 		this->setRepeat(math::float2::One);
 		this->setEmissive(math::float3::Zero);
 		this->setSmoothness(0.0f);
+		this->setAnisotropy(0.0f);
+		this->setSheen(0.0f);
 		this->setMetalness(0.0f);
 		this->setReflectivity(0.5f);
 		this->setRefractionRatio(1.0f);
@@ -240,6 +242,32 @@ namespace octoon::material
 	MeshStandardMaterial::getMetalness() const noexcept
 	{
 		return this->metalness_;
+	}
+
+	void
+	MeshStandardMaterial::setAnisotropy(float anisotropy) noexcept
+	{
+		this->anisotropy_ = anisotropy;
+		this->set("anisotropy", anisotropy);
+	}
+
+	float
+	MeshStandardMaterial::getAnisotropy() const noexcept
+	{
+		return this->anisotropy_;
+	}
+
+	void
+	MeshStandardMaterial::setSheen(float sheen) noexcept
+	{
+		this->sheen_ = sheen;
+		this->set("sheen", sheen);
+	}
+
+	float
+	MeshStandardMaterial::getSheen() const noexcept
+	{
+		return this->sheen_;
 	}
 
 	void

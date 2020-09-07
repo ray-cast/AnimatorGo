@@ -21,9 +21,8 @@ namespace rabbit
 
 	public Q_SLOTS:
 		void currentColorChanged(QColor);
-		void colorSelected(QColor);
-		void rejected();
 		void closeEvent();
+		void resetEvent();
 		void sliderIntensityEvent(int);
 		void editIntensityEvent(double value);
 
@@ -37,7 +36,7 @@ namespace rabbit
 		std::unique_ptr<QHBoxLayout> layout_;
 		std::unique_ptr<QHBoxLayout> layoutIntensity_;
 		std::unique_ptr<QVBoxLayout> mainLayout_;
-		std::unique_ptr<QToolButton> okButton_;
+		std::unique_ptr<QToolButton> resetButton_;
 		std::shared_ptr<rabbit::RabbitProfile> profile_;
 	};
 }

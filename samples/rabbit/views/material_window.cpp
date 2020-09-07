@@ -42,14 +42,13 @@ namespace rabbit
 		headerLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
 		contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		// start out collapsed
 		contentArea.setMaximumHeight(0);
 		contentArea.setMinimumHeight(0);
-		// let the entire widget grow and shrink with its content
+
 		toggleAnimation.addAnimation(new QPropertyAnimation(this, "minimumHeight"));
 		toggleAnimation.addAnimation(new QPropertyAnimation(this, "maximumHeight"));
 		toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
-		// don't waste space
+
 		mainLayout.setVerticalSpacing(0);
 		mainLayout.setContentsMargins(0, 0, 0, 0);
 		int row = 0;
@@ -93,6 +92,7 @@ namespace rabbit
 		mainLayout_->addWidget(this->createNormal(), 0,  Qt::AlignTop);
 		mainLayout_->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
 		mainLayout_->addWidget(this->createMetalness(), 0, Qt::AlignTop);
+		mainLayout_->addWidget(this->createAnisotropy(), 0, Qt::AlignTop);
 		mainLayout_->addWidget(this->createEmissive(), 0, Qt::AlignTop);
 		mainLayout_->addStretch(500);
 		mainLayout_->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
@@ -102,6 +102,8 @@ namespace rabbit
 		connect(smoothnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(smoothSliderEvent(int)));
 		connect(metalnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
 		connect(metalnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(metalSliderEvent(int)));
+		connect(anisotropySpinBox_, SIGNAL(valueChanged(double)), this, SLOT(anisotropyEditEvent(double)));
+		connect(anisotropySlider_, SIGNAL(valueChanged(int)), this, SLOT(anisotropySliderEvent(int)));
 		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
 		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
 	}
@@ -246,6 +248,43 @@ namespace rabbit
 	}
 
 	QWidget*
+	MaterialModifyWindow::createAnisotropy()
+	{
+		anisotropyLabel_ = new QLabel;
+		anisotropyLabel_->setText(u8"各向异性");
+
+		anisotropySlider_ = new QSlider;
+		anisotropySlider_->setObjectName("Value");
+		anisotropySlider_->setOrientation(Qt::Horizontal);
+		anisotropySlider_->setMinimum(0);
+		anisotropySlider_->setMaximum(100);
+		anisotropySlider_->setValue(0);
+		anisotropySlider_->setFixedWidth(260);
+
+		anisotropySpinBox_ = new DoubleSpinBox;
+		anisotropySpinBox_->setFixedWidth(50);
+		anisotropySpinBox_->setMaximum(1.0f);
+		anisotropySpinBox_->setSingleStep(0.03f);
+		anisotropySpinBox_->setAlignment(Qt::AlignRight);
+		anisotropySpinBox_->setValue(0.0f);
+
+		auto anisotropyHLayout = new QHBoxLayout();
+		anisotropyHLayout->addWidget(anisotropyLabel_, 0, Qt::AlignLeft);
+		anisotropyHLayout->addWidget(anisotropySpinBox_, 0, Qt::AlignRight);
+
+		auto anisotropyLayout = new QVBoxLayout();
+		anisotropyLayout->addLayout(anisotropyHLayout);
+		anisotropyLayout->addWidget(anisotropySlider_);
+		anisotropyLayout->setContentsMargins(30, 5, 50, 0);
+
+		auto anisotropy = new Spoiler(u8"各向异性");
+		anisotropy->setFixedWidth(340);
+		anisotropy->setContentLayout(*anisotropyLayout);
+
+		return anisotropy;
+	}
+
+	QWidget*
 	MaterialModifyWindow::createEmissive()
 	{
 		emissiveColor_ = new ColorDialog();
@@ -302,7 +341,7 @@ namespace rabbit
 		if (this->material_)
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			standard->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 		}
 	}
 
@@ -340,6 +379,24 @@ namespace rabbit
 	MaterialModifyWindow::metalSliderEvent(int value)
 	{
 		metalnessSpinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialModifyWindow::anisotropyEditEvent(double value)
+	{
+		anisotropySlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setAnisotropy(value);
+		}
+	}
+
+	void
+	MaterialModifyWindow::anisotropySliderEvent(int value)
+	{
+		anisotropySpinBox_->setValue(value / 100.0f);
 	}
 
 	void 

@@ -31,6 +31,12 @@ namespace octoon::material
 		void setMetalness(float metalness) noexcept;
 		float getMetalness() const noexcept;
 
+		void setAnisotropy(float anisotropy) noexcept;
+		float getAnisotropy() const noexcept;
+
+		void setSheen(float sheen) noexcept;
+		float getSheen() const noexcept;
+
 		void setReflectivity(float reflectivity) noexcept;
 		float getReflectivity() const noexcept;
 
@@ -69,6 +75,8 @@ namespace octoon::material
 		float opacity_;
 		float metalness_;
 		float smoothness_;
+		float anisotropy_;
+		float sheen_;
 		float reflectivity_;
 		float refractionRatio_;
 		float clearCoat_;

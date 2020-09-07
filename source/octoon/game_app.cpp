@@ -52,7 +52,11 @@ namespace octoon
 	public:
 		virtual void onMessage(std::string_view message) noexcept override
 		{
+#if _VISUAL_STUDIO_2017_
+			std::cerr << std::string(message) << std::endl;
+#else
 			std::cerr << message << std::endl;
+#endif
 		}
 	};
 

@@ -321,8 +321,13 @@ namespace octoon
 			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(mdlMaterialName.c_str()));
 			if (!materialDefinition)
 			{
+#if _VISUAL_STUDIO_2017_
+				if (this->verboseLogging_)
+					std::cout << "[MDL] Loading material definition for \"" << material << "\" from module \"" << std::string(moduleName) << "\"" << std::endl;
+#else
 				if (this->verboseLogging_)
 					std::cout << "[MDL] Loading material definition for \"" << material << "\" from module \"" << moduleName << "\"" << std::endl;
+#endif
 
 				if (source.empty())
 				{

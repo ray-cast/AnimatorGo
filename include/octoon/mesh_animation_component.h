@@ -4,16 +4,9 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/animation_component.h>
 
-namespace Alembic {
-	namespace Abc {
-		namespace v12 {
-			class IObject;
-		}
-	}
-}
-
 namespace octoon
 {
+	class AnimationData;
 	class OCTOON_EXPORT MeshAnimationComponent final : public AnimationComponent
 	{
 		OctoonDeclareSubClass(MeshAnimationComponent, AnimationComponent)
@@ -52,7 +45,7 @@ namespace octoon
 
 	private:
 		void setupAnimationData(std::string_view path) noexcept(false);
-		void setupAnimationData(const Alembic::Abc::v12::IObject& object) noexcept(false);
+		void setupAnimationData(const AnimationData& animationData) noexcept(false);
 
 	private:
 		MeshAnimationComponent(const MeshAnimationComponent&) = delete;
@@ -71,7 +64,7 @@ namespace octoon
 
 		animation::AnimatorStateInfo<float> animationState_;
 
-		std::shared_ptr<Alembic::Abc::v12::IObject> object_;
+		std::shared_ptr<AnimationData> animationData_;
 	};
 }
 

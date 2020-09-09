@@ -23,7 +23,14 @@ namespace octoon
 {
 	OctoonImplementSubClass(MeshAnimationComponent, AnimationComponent, "MeshAnimation")
 
-	struct PackedVertex {
+	class AnimationData
+	{
+	public:
+		std::shared_ptr<Alembic::Abc::v12::IObject> object;
+	};
+
+	struct PackedVertex
+	{
 		math::float3 vertex;
 		math::float2 uv;
 		math::float3 normal;
@@ -33,9 +40,7 @@ namespace octoon
 		};
 	};
 
-	bool get_similar_vertex_index(const PackedVertex& packed,
-		std::map<PackedVertex, std::uint32_t>& vertex_pack_map,
-		std::uint32_t& result)
+	bool get_similar_vertex_index(const PackedVertex& packed, std::map<PackedVertex, std::uint32_t>& vertex_pack_map, std::uint32_t& result)
 	{
 		std::map<PackedVertex, std::uint32_t>::iterator it = vertex_pack_map.find(packed);
 		if (it == vertex_pack_map.end())
@@ -47,7 +52,8 @@ namespace octoon
 		}
 	}
 
-	struct SimpleVertex {
+	struct SimpleVertex
+	{
 		math::float3 vertex;
 
 		bool operator<(const SimpleVertex that) const
@@ -473,7 +479,7 @@ namespace octoon
 	void
 	MeshAnimationComponent::onAnimationUpdate() noexcept
 	{
-		auto& object_header = object_->getHeader();
+		auto& object_header = this->animationData_->object->getHeader();
 		if (IPoints::matches(object_header))
 			std::cout << object_header.getMetaData().serialize() << std::endl;
 		else if (ICamera::matches(object_header))
@@ -482,7 +488,7 @@ namespace octoon
 		{
 			if (animationState_.time >= minTime_&& animationState_.time <= maxTime_)
 			{
-				auto mesh = std::dynamic_pointer_cast<IPolyMesh>(object_);
+				auto mesh = std::dynamic_pointer_cast<IPolyMesh>(this->animationData_->object);
 
 				auto& schema = mesh->getSchema();
 				if (schema.isConstant())
@@ -549,8 +555,11 @@ namespace octoon
 		{
 			auto object = archive.getTop();
 
+			AnimationData animationData;
+			animationData.object = std::make_shared<IObject>(object);
+
 			this->getGameObject()->setName(object.getName());
-			this->setupAnimationData(object);
+			this->setupAnimationData(animationData);
 		}
 		else
 		{
@@ -559,14 +568,15 @@ namespace octoon
 	}
 
 	void 
-	MeshAnimationComponent::setupAnimationData(const Alembic::Abc::v12::IObject& object) noexcept(false)
+	MeshAnimationComponent::setupAnimationData(const AnimationData& animationData) noexcept(false)
 	{
-		auto& object_header = object.getHeader();
+		auto& object_header = animationData.object->getHeader();
 		if (IPolyMesh::matches(object_header))
 		{
-			object_ = std::make_shared<IPolyMesh>(object);
+			animationData_ = std::make_shared<AnimationData>();
+			animationData_->object = std::make_shared<IPolyMesh>(*animationData.object);
 
-			auto& schema = std::dynamic_pointer_cast<IPolyMesh>(object_)->getSchema();
+			auto& schema = std::dynamic_pointer_cast<IPolyMesh>(animationData_->object)->getSchema();
 			if (!schema.isConstant())
 			{
 				std::size_t numSamps = schema.getNumSamples();
@@ -582,7 +592,7 @@ namespace octoon
 		}
 		else if (IXform::matches(object_header))
 		{
-			auto xform = std::make_shared<IXform>(object, kWrapExisting);
+			auto xform = std::make_shared<IXform>(*animationData.object, kWrapExisting);
 
 			XformSample xs;
 			xform->getSchema().get(xs);
@@ -595,16 +605,18 @@ namespace octoon
 				(float)matrix.x[2][0], (float)matrix.x[2][1], (float)matrix.x[2][2], (float)matrix.x[2][3],
 				(float)matrix.x[3][0], (float)matrix.x[3][1], (float)matrix.x[3][2], (float)matrix.x[3][3]));
 
-			object_ = xform;
+			animationData_ = std::make_shared<AnimationData>();
+			animationData_->object = xform;
 		}
 		else
 		{
-			object_ = std::make_shared<Alembic::Abc::v12::IObject>(object);
+			animationData_ = std::make_shared<AnimationData>();
+			animationData_->object = std::make_shared<Alembic::Abc::v12::IObject>(*animationData.object);
 		}
 
-		for (std::size_t i = 0; i < object_->getNumChildren(); ++i)
+		for (std::size_t i = 0; i < animationData_->object->getNumChildren(); ++i)
 		{
-			auto child = object_->getChild(i);
+			auto child = animationData_->object->getChild(i);
 			auto& child_header = child.getHeader();
 
 			if (IPolyMesh::matches(child_header))
@@ -616,7 +628,7 @@ namespace octoon
 				gameObject->addComponent<MeshRendererComponent>(material);
 
 				auto mesh = gameObject->addComponent<MeshAnimationComponent>();
-				mesh->setupAnimationData(child);
+				mesh->setupAnimationData(*animationData_);
 
 				this->getGameObject()->addChild(gameObject);
 			}
@@ -624,7 +636,7 @@ namespace octoon
 			{
 				auto gameObject = GameObject::create(child.getName());
 				auto mesh = gameObject->addComponent<MeshAnimationComponent>();
-				mesh->setupAnimationData(child);
+				mesh->setupAnimationData(*animationData_);
 
 				this->getGameObject()->addChild(gameObject);
 			}

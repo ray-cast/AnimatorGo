@@ -29,9 +29,6 @@ namespace octoon::video
 		RenderObject() noexcept;
 		virtual ~RenderObject() noexcept;
 
-		void setActive(bool active) noexcept;
-		bool getActive() const noexcept;
-
 		void setLayer(std::uint8_t layer) noexcept;
 		std::uint8_t getLayer() const noexcept;
 
@@ -61,9 +58,6 @@ namespace octoon::video
 		const math::float3& getTranslate() const noexcept;
 
 	public:
-		virtual void onActivate() noexcept;
-		virtual void onDeactivate() noexcept;
-
 		virtual void onMoveBefore() noexcept;
 		virtual void onMoveAfter() noexcept;
 
@@ -71,7 +65,6 @@ namespace octoon::video
 		virtual void onRenderAfter(const camera::Camera& camera) noexcept;
 
 	private:
-		bool active_;
 		bool visible_;
 		bool dirty_;
 
@@ -83,7 +76,6 @@ namespace octoon::video
 		math::BoundingBox boundingBox_;
 
 		RenderListener* renderListener_;
-		std::shared_ptr<class RenderScene>  renderScene_;
 	};
 }
 

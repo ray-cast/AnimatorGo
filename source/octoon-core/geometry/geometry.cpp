@@ -13,7 +13,6 @@ namespace octoon::geometry
 
 	Geometry::~Geometry() noexcept
 	{
-		this->setActive(false);
 	}
 
 	void

@@ -45,21 +45,20 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		ambientLight_ = std::make_shared<light::AmbientLight>();
-		ambientLight_->setActive(true);
 		ambientLight_->setLayer(this->getGameObject()->getLayer());
 		ambientLight_->setColor(this->getColor());
 		ambientLight_->setIntensity(this->getIntensity());
 		ambientLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(ambientLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	AmbientLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(ambientLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		ambientLight_->setActive(false);
 	}
 
 	void

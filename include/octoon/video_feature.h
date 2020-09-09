@@ -19,6 +19,12 @@ namespace octoon
 		void setMainCamera(CameraComponent* camera) noexcept;
 		CameraComponent* getMainCamera() const noexcept;
 
+		void setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
+		const std::shared_ptr<video::RenderScene>& getMainScene() const noexcept;
+
+		void setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
+		const std::shared_ptr<video::RenderScene>& getRenderScene() const noexcept;
+
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
 
@@ -27,10 +33,6 @@ namespace octoon
 
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
-
-		void setRenderScene(video::RenderScene* scene) noexcept;
-		video::RenderScene* getRenderScene() noexcept;
-		const video::RenderScene* getRenderScene() const noexcept;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
@@ -49,7 +51,9 @@ namespace octoon
 		std::uint32_t framebuffer_h_;
 
 		CameraComponent* camera_;
-		video::RenderScene* renderScene_;
+		std::shared_ptr<video::RenderScene> mainScene_;
+		std::shared_ptr<video::RenderScene> mainSceneDefault_;
+		std::shared_ptr<video::RenderScene> renderScene_;
 	};
 }
 

@@ -82,9 +82,9 @@ namespace octoon::video
 
 			for (auto i = start_index; i < end_index; ++i)
 			{
-				auto output = dynamic_cast<ClwTextureOutput*>(getOutput(static_cast<OutputType>(i)));
-				if (output)
-					output->syncData(copyKernel);
+				auto aov = dynamic_cast<ClwTextureOutput*>(getOutput(static_cast<OutputType>(i)));
+				if (aov)
+					aov->syncData(copyKernel);
 			}
 
 			++sampleCounter_;

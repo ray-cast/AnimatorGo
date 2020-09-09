@@ -5,13 +5,10 @@
 #include <octoon/camera/camera.h>
 #include <octoon/geometry/geometry.h>
 
-#include <octoon/runtime/singleton.h>
-
 namespace octoon::video
 {
 	class OCTOON_EXPORT RenderScene final
 	{
-		OctoonDeclareSingleton(RenderScene)
 	public:
 		RenderScene() noexcept;
 		~RenderScene() noexcept;

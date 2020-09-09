@@ -45,21 +45,20 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		rectangleLight_ = std::make_shared<light::RectangleLight>();
-		rectangleLight_->setActive(true);
 		rectangleLight_->setLayer(this->getGameObject()->getLayer());
 		rectangleLight_->setColor(this->getColor());
 		rectangleLight_->setIntensity(this->getIntensity());
 		rectangleLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(rectangleLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	RectangleLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(rectangleLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		rectangleLight_->setActive(false);
 	}
 
 	void

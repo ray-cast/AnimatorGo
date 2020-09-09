@@ -2,8 +2,6 @@
 
 namespace octoon::video
 {
-	OctoonImplementSingleton(RenderScene)
-
 	RenderScene::RenderScene() noexcept
 		: mainCamera_(nullptr)
 	{

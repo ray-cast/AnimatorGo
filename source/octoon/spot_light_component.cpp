@@ -90,7 +90,6 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		spotLight_ = std::make_shared<light::SpotLight>();
-		spotLight_->setActive(true);
 		spotLight_->setLayer(this->getGameObject()->getLayer());
 		spotLight_->setColor(this->getColor());
 		spotLight_->setIntensity(this->getIntensity());
@@ -99,15 +98,15 @@ namespace octoon
 		spotLight_->setShadowMapSize(this->getShadowMapSize());
 		spotLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(spotLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	SpotLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(spotLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		spotLight_->setActive(false);
 	}
 
 	void

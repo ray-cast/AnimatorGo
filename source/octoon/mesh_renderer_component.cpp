@@ -1,5 +1,6 @@
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/transform_component.h>
+#include <octoon/video_feature.h>
 #include <octoon/video/renderer.h>
 
 namespace octoon
@@ -129,7 +130,12 @@ namespace octoon
 	void
 	MeshRendererComponent::onDeactivate() noexcept
 	{
-		this->geometry_.reset();
+		if (geometry_)
+		{
+			this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(geometry_.get());
+			this->geometry_.reset();
+		}
+
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
 		this->removeMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
 	}
@@ -167,8 +173,10 @@ namespace octoon
 	{
 		if (mesh)
 		{
+			if (geometry_)
+				this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(geometry_.get());
+
 			geometry_ = std::make_shared<geometry::Geometry>();
-			geometry_->setActive(true);
 			geometry_->setOwnerListener(this);
 			geometry_->setVisible(this->getVisible());
 			geometry_->setGlobalIllumination(this->getGlobalIllumination());
@@ -177,6 +185,7 @@ namespace octoon
 			geometry_->setMesh(mesh);
 			geometry_->setMaterials(this->getMaterials());
 
+			this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(geometry_.get());
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
 		}

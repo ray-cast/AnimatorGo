@@ -100,18 +100,24 @@ namespace octoon
 	}
 
 	void
-	VideoFeature::setRenderScene(video::RenderScene* scene) noexcept
+	VideoFeature::setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept
+	{
+		this->mainScene_ = scene ? scene : this->mainSceneDefault_;
+	}
+	
+	const std::shared_ptr<video::RenderScene>&
+	VideoFeature::getMainScene() const noexcept
+	{
+		return this->mainScene_;
+	}
+
+	void
+	VideoFeature::setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept
 	{
 		this->renderScene_ = scene;
 	}
 
-	video::RenderScene*
-	VideoFeature::getRenderScene() noexcept
-	{
-		return this->renderScene_;
-	}
-	
-	const video::RenderScene*
+	const std::shared_ptr<video::RenderScene>&
 	VideoFeature::getRenderScene() const noexcept
 	{
 		return this->renderScene_;
@@ -124,8 +130,11 @@ namespace octoon
 		if (graphics)
 		{
 			video::Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
+			
+			this->mainSceneDefault_ = std::make_shared<video::RenderScene>();
 
-			this->setRenderScene(video::RenderScene::instance());
+			this->setMainScene(this->mainSceneDefault_);
+			this->setRenderScene(this->mainSceneDefault_);
 			this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		}
 		else
@@ -137,7 +146,7 @@ namespace octoon
 	void
 	VideoFeature::onDeactivate() noexcept
 	{
-		this->setRenderScene(nullptr);
+		this->setMainScene(nullptr);
 		this->removeMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		video::Renderer::instance()->close();
 	}

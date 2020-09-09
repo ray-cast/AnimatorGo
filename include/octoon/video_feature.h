@@ -4,6 +4,7 @@
 #include <octoon/game_feature.h>
 #include <octoon/camera_component.h>
 #include <octoon/material/material.h>
+#include <octoon/video/render_scene.h>
 
 namespace octoon
 {
@@ -27,6 +28,10 @@ namespace octoon
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
 
+		void setRenderScene(video::RenderScene* scene) noexcept;
+		video::RenderScene* getRenderScene() noexcept;
+		const video::RenderScene* getRenderScene() const noexcept;
+
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
@@ -44,6 +49,7 @@ namespace octoon
 		std::uint32_t framebuffer_h_;
 
 		CameraComponent* camera_;
+		video::RenderScene* renderScene_;
 	};
 }
 

@@ -1,7 +1,6 @@
 #if defined(OCTOON_FEATURE_VIDEO_ENABLE)
 #include <octoon/video_feature.h>
 #include <octoon/video/renderer.h>
-#include <octoon/video/render_scene.h>
 
 #include <octoon/input_feature.h>
 #include <octoon/input/input_event.h>
@@ -101,6 +100,24 @@ namespace octoon
 	}
 
 	void
+	VideoFeature::setRenderScene(video::RenderScene* scene) noexcept
+	{
+		this->renderScene_ = scene;
+	}
+
+	video::RenderScene*
+	VideoFeature::getRenderScene() noexcept
+	{
+		return this->renderScene_;
+	}
+	
+	const video::RenderScene*
+	VideoFeature::getRenderScene() const noexcept
+	{
+		return this->renderScene_;
+	}
+
+	void
 	VideoFeature::onActivate() except
 	{
 		auto graphics = this->getFeature<GraphicsFeature>();
@@ -108,6 +125,7 @@ namespace octoon
 		{
 			video::Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
 
+			this->setRenderScene(video::RenderScene::instance());
 			this->addMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		}
 		else
@@ -119,6 +137,7 @@ namespace octoon
 	void
 	VideoFeature::onDeactivate() noexcept
 	{
+		this->setRenderScene(nullptr);
 		this->removeMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
 		video::Renderer::instance()->close();
 	}
@@ -149,7 +168,9 @@ namespace octoon
 	{
 		try
 		{
-			video::Renderer::instance()->render(*video::RenderScene::instance());
+			auto scene = this->getRenderScene();
+			if (scene)
+				video::Renderer::instance()->render(*scene);
 		}
 		catch (const std::exception& e)
 		{

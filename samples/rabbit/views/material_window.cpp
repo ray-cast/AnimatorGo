@@ -286,7 +286,7 @@ namespace rabbit
 	MaterialModifyWindow::createSheen()
 	{
 		sheenLabel_ = new QLabel;
-		sheenLabel_->setText(u8"布料");
+		sheenLabel_->setText(u8"光泽度");
 
 		sheenSlider_ = new QSlider;
 		sheenSlider_->setObjectName("Value");
@@ -312,7 +312,7 @@ namespace rabbit
 		sheenLayout->addWidget(sheenSlider_);
 		sheenLayout->setContentsMargins(30, 5, 50, 0);
 
-		auto sheen = new Spoiler(u8"光泽度");
+		auto sheen = new Spoiler(u8"布料");
 		sheen->setFixedWidth(340);
 		sheen->setContentLayout(*sheenLayout);
 
@@ -323,7 +323,7 @@ namespace rabbit
 	MaterialModifyWindow::createClearCoat()
 	{
 		clearcoatLabel_ = new QLabel;
-		clearcoatLabel_->setText(u8"清漆");
+		clearcoatLabel_->setText(u8"光泽度");
 
 		clearcoatSlider_ = new QSlider;
 		clearcoatSlider_->setObjectName("Value");
@@ -373,7 +373,7 @@ namespace rabbit
 		clearcoatLayout->addWidget(clearcoatRoughnessSlider_);
 		clearcoatLayout->setContentsMargins(30, 5, 50, 0);
 
-		auto clearcoat = new Spoiler(u8"光泽度");
+		auto clearcoat = new Spoiler(u8"清漆");
 		clearcoat->setFixedWidth(340);
 		clearcoat->setContentLayout(*clearcoatLayout);
 
@@ -384,7 +384,7 @@ namespace rabbit
 	MaterialModifyWindow::createSubsurface()
 	{
 		subsurfaceLabel_ = new QLabel;
-		subsurfaceLabel_->setText(u8"次表面散射");
+		subsurfaceLabel_->setText(u8"散射程度");
 
 		subsurfaceSlider_ = new QSlider;
 		subsurfaceSlider_->setObjectName("Value");
@@ -410,7 +410,7 @@ namespace rabbit
 		subsurfaceLayout->addWidget(subsurfaceSlider_);
 		subsurfaceLayout->setContentsMargins(30, 5, 50, 0);
 
-		auto subsurface = new Spoiler(u8"散射程度");
+		auto subsurface = new Spoiler(u8"次表面散射");
 		subsurface->setFixedWidth(340);
 		subsurface->setContentLayout(*subsurfaceLayout);
 
@@ -667,6 +667,11 @@ namespace rabbit
 		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
 		connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
 		connect(listWidget_.get(), SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
+
+		behaviour->addMessageListener("editor:material:change", [this](const std::any&) {
+			if (this->isVisible())
+				this->updateList();
+		});
 	}
 
 	MaterialWindow::~MaterialWindow() noexcept
@@ -713,7 +718,7 @@ namespace rabbit
 				{
 					auto hit = selectedItem.value();
 					auto materialComponent = behaviour->getComponent<MaterialComponent>();
-					auto material = materialComponent->getMaterial(item->text().toStdString());
+					auto material = materialComponent->getMaterial(item->data(Qt::UserRole).toString().toStdString());
 
 					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
 					if (meshRenderer)
@@ -732,11 +737,13 @@ namespace rabbit
 			if (behaviour->isOpen())
 			{
 				auto materialComponent = behaviour->getComponent<MaterialComponent>();
-				auto material = materialComponent->getMaterial(item->text().toStdString());
-
-				listWidget_->hide();
-				modifyWidget_->setMaterial(material);
-				modifyMaterialArea_->show();
+				auto material = materialComponent->getMaterial(item->data(Qt::UserRole).toString().toStdString());
+				if (material)
+				{
+					listWidget_->hide();
+					modifyWidget_->setMaterial(material);
+					modifyMaterialArea_->show();
+				}
 			}
 		}
 	}

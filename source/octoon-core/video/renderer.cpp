@@ -430,7 +430,10 @@ namespace octoon::video
 					mesh->setDirty(false);
 
 				for (auto& material : it->getMaterials())
-					material->setDirty(false);
+				{
+					if (material)
+						material->setDirty(false);
+				}
 
 				it->setDirty(false);
 			}

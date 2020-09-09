@@ -72,32 +72,6 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::sendMessage(std::string_view event, const std::any& data) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.call_all_slots(data);
-	}
-
-	void
-	RabbitBehaviour::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.connect(listener);
-		else
-			dispatchEvents_[std::string(event)].connect(listener);
-	}
-
-	void
-	RabbitBehaviour::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.disconnect(listener);
-	}
-
-	void
 	RabbitBehaviour::onActivate() noexcept
 	{
 		if (!profile_)

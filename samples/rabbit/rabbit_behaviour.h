@@ -60,10 +60,6 @@ namespace rabbit
 		template<typename T>
 		T* getComponent() const noexcept { return dynamic_cast<T*>(this->getComponent(typeid(T))); }
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
-		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
-		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
-
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
@@ -93,7 +89,6 @@ namespace rabbit
 		std::unique_ptr<GridComponent> gridComponent_;
 
 		std::vector<IRabbitComponent*> components_;
-		std::map<std::string, octoon::runtime::signal<void(const std::any&)>, std::less<>> dispatchEvents_;
 	};
 }
 

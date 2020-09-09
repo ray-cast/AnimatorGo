@@ -36,7 +36,6 @@ namespace rabbit
 
 	private:
 		void initMaterials(std::string_view path);
-		void initMaterials(const std::vector<tinyobj::material_t>& materials, std::string_view rootPath);
 
 	private:
 		MaterialComponent(const MaterialComponent&) = delete;

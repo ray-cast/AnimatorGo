@@ -10,6 +10,7 @@ namespace octoon::material
 		OctoonDeclareSubClass(MeshStandardMaterial, Material);
 	public:
 		MeshStandardMaterial() noexcept;
+		MeshStandardMaterial(std::string_view name) noexcept;
 		MeshStandardMaterial(const math::float3& color) noexcept;
 		virtual ~MeshStandardMaterial() noexcept;
 

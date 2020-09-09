@@ -325,7 +325,7 @@ namespace octoon
 
 		for (mi::Size i = 0; i < material_count; i++)
 		{
-			auto material = std::make_unique<material::Material>(module->get_material(i));
+			auto material = std::make_shared<material::MeshStandardMaterial>(module->get_material(i));
 			auto materialName = material->getName();
 			auto name = materialName.substr(materialName.rfind(':') + 1);
 
@@ -443,8 +443,14 @@ namespace octoon
 	}
 
 	void
-	MDLLoader::save(io::ostream& stream, const material::Material& animation) noexcept(false)
+	MDLLoader::save(io::ostream& stream, const material::MeshStandardMaterial& animation) noexcept(false)
 	{
+	}
+
+	const std::vector<std::shared_ptr<material::MeshStandardMaterial>>&
+	MDLLoader::getMaterials() const noexcept
+	{
+		return this->materials_;
 	}
 
 	void

@@ -24,7 +24,8 @@ namespace rabbit
 			return typeid(MaterialComponent);
 		}
 
-		void loadMaterial(std::string_view rootPath) noexcept(false);
+		void importMtl(std::string_view path) noexcept(false);
+		void importMdl(std::string_view path) noexcept(false);
 
 		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;
 		const std::shared_ptr<octoon::material::Material> getMaterial(std::string_view uuid) noexcept;
@@ -32,8 +33,6 @@ namespace rabbit
 	private:
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
-
-		void onDrop(std::string_view data) noexcept override;
 
 	private:
 		void initMaterials(std::string_view path);

@@ -2,7 +2,7 @@
 #define OCTOON_MDL_LOADER_H_
 
 #include <octoon/io/iostream.h>
-#include <octoon/material/material.h>
+#include <octoon/material/mesh_standard_material.h>
 
 #include <set>
 
@@ -23,7 +23,9 @@ namespace octoon
 		void load(std::string_view moduleName, io::istream& stream) noexcept(false);
 		void load(std::string_view moduleName, std::string_view source = "") noexcept(false);
 
-		void save(io::ostream& stream, const material::Material& material) noexcept(false);
+		void save(io::ostream& stream, const material::MeshStandardMaterial& material) noexcept(false);
+
+		const std::vector<std::shared_ptr<material::MeshStandardMaterial>>& getMaterials() const noexcept;
 
 	private:
 		std::string preprocessSource(std::string_view source);
@@ -36,7 +38,7 @@ namespace octoon
 		bool verboseLogging_;
 		std::set<std::string> modulePaths_;
 		std::unique_ptr<MDLContext> context_;
-		std::vector<std::unique_ptr<material::Material>> materials_;
+		std::vector<std::shared_ptr<material::MeshStandardMaterial>> materials_;
 	};
 }
 

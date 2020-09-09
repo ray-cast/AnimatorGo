@@ -213,13 +213,7 @@ namespace rabbit
 		{
 			auto files = std::any_cast<std::vector<const char*>>(data);
 			for (auto& path : files)
-			{
-				for (auto& it : components_)
-				{
-					if (it->getActive())
-						it->onDrop(path);
-				}
-			}
+				this->open(path);
 		}
 	}
 
@@ -230,9 +224,21 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::open(std::string_view filepath) noexcept(false)
+	RabbitBehaviour::open(std::string_view path) noexcept(false)
 	{
-		entitiesComponent_->open(filepath);
+		auto ext = path.substr(path.find_last_of("."));
+		if (ext == ".pmm")
+			entitiesComponent_->importPMM(path);
+		else if (ext == ".pmx")
+			entitiesComponent_->importModel(path);
+		else if (ext == ".hdr")
+			entitiesComponent_->importHDRi(path);
+		else if (ext == ".abc")
+			entitiesComponent_->importAbc(path);
+		else if (ext == ".mtl")
+			materialComponent_->importMtl(path);
+		else if (ext == ".mdl")
+			materialComponent_->importMdl(path);
 	}
 
 	void
@@ -335,7 +341,7 @@ namespace rabbit
 	void
 	RabbitBehaviour::loadMaterial(std::string_view path) noexcept(false)
 	{
-		materialComponent_->loadMaterial(path);
+		materialComponent_->importMtl(path);
 	}
 
 	std::optional<octoon::RaycastHit>

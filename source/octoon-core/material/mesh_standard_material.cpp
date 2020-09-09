@@ -87,6 +87,12 @@ namespace octoon::material
 	{
 	}
 
+	MeshStandardMaterial::MeshStandardMaterial(std::string_view name) noexcept
+		: MeshStandardMaterial(math::float3::One)
+	{
+		this->setName(name);
+	}
+
 	MeshStandardMaterial::MeshStandardMaterial(const math::float3& color) noexcept
 		: lightMapIntensity_(1.0f)
 	{

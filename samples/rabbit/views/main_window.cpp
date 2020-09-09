@@ -280,7 +280,7 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour)
 				{
-					QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("PMM Files (*.pmm)"));
+					QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.pmm *.pmx *.abc *.hdr *.mdl);; PMM Files (*.pmm);; PMX Files (*.pmx);; Abc Files (*.abc);; HDRi Files (*.hdr);; MDL Files (*.mdl)"));
 					if (!fileName.isEmpty())
 					{
 						try
@@ -300,7 +300,6 @@ namespace rabbit
 					}
 				}
 			}
-
 		}
 		catch (const std::exception& e)
 		{

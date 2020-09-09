@@ -1,13 +1,16 @@
 #include "material_component.h"
-#include <fstream>
+
 #include "../rabbit_profile.h"
 #include "../rabbit_behaviour.h"
-#include <qstring.h>
-#include <quuid>
-#include <octoon/game_base_features.h>
+
+#include <octoon/mdl_loader.h>
+
 #include <filesystem>
 #include <fstream>
+
 #include <qimage.h>
+#include <qstring.h>
+#include <quuid.h>
 
 namespace rabbit
 {
@@ -79,17 +82,49 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::loadMaterial(std::string_view mtlPath) noexcept(false)
+	MaterialComponent::importMtl(std::string_view path) noexcept(false)
 	{
-		std::ifstream stream(QString::fromStdString(std::string(mtlPath)).toStdWString());
+		std::ifstream stream(QString::fromStdString(std::string(path)).toStdWString());
 		if (stream)
 		{
 			std::map<std::string, int> materialMap;
 			std::vector<tinyobj::material_t> materials;
 			auto err = tinyobj::LoadMtl(materialMap, materials, stream);
-			auto dirpath = mtlPath.substr(0, mtlPath.find_last_of("/") + 1);
+			auto dirpath = path.substr(0, path.find_last_of("/") + 1);
 
 			this->initMaterials(materials, dirpath);
+		}
+	}
+
+	void
+	MaterialComponent::importMdl(std::string_view path) noexcept(false)
+	{
+		octoon::io::ifstream stream(QString::fromStdString(std::string(path)).toStdWString());
+		if (stream)
+		{
+			octoon::MDLLoader loader;
+			loader.load("resource", stream);
+			auto& materials = loader.getMaterials();
+
+			for (auto& mat : materials)
+			{
+				auto id = QUuid::createUuid().toString();
+				auto uuid = id.toStdString().substr(1, id.length() - 2);
+
+				auto color = mat->getColor();
+				auto colorMap = mat->getColorTexture();
+
+				nlohmann::json item;
+				item["uuid"] = uuid;
+				item["name"] = mat->getName();
+				item["color"] =  { color.x, color.y, color.z};
+
+				if (colorMap)
+					item["map"] = colorMap->getTextureDesc().getName();
+
+				this->materialList_[uuid] = item;
+				this->materials_[std::string(uuid)] = mat;
+			}
 		}
 	}
 
@@ -179,13 +214,5 @@ namespace rabbit
 				}
 			}
 		}
-	}
-
-	void
-	MaterialComponent::onDrop(std::string_view path) noexcept
-	{
-		auto ext = path.substr(path.find_last_of("."));
-		if (ext == ".mtl")
-			this->loadMaterial(path);
 	}
 }

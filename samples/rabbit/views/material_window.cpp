@@ -769,7 +769,7 @@ namespace rabbit
 	std::string
 	MaterialWindow::currentItem() const noexcept
 	{
-		return this->listWidget_->currentItem()->text().toStdString();
+		return this->listWidget_->currentItem()->data(Qt::UserRole).toString().toStdString();
 	}
 
 	void
@@ -802,7 +802,7 @@ namespace rabbit
 				octoon::math::float4 edgeColor = octoon::math::float4::Zero;
 
 				QListWidgetItem* item = new QListWidgetItem;
-				item->setText(QString::fromStdString(mat["uuid"]));
+				item->setData(Qt::UserRole, QString::fromStdString(mat["uuid"]));
 				item->setSizeHint(QSize(130, 160));
 
 				QLabel* imageLabel = new QLabel;

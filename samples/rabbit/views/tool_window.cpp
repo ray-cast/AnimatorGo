@@ -35,8 +35,8 @@ namespace rabbit
 
 		importButton = new QToolButton(this);
 		importButton->setObjectName("import");
-		importButton->setText(u8"打开");
-		importButton->setToolTip(u8"加载工程文件(.pmm)");
+		importButton->setText(u8"加载");
+		importButton->setToolTip(u8"加载资源文件(.pmm, .mdl)");
 		importButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		playButton = new QToolButton(this);

@@ -87,6 +87,12 @@ namespace octoon::material
 	{
 	}
 
+	MeshStandardMaterial::MeshStandardMaterial(std::string_view name) noexcept
+		: MeshStandardMaterial(math::float3::One)
+	{
+		this->setName(name);
+	}
+
 	MeshStandardMaterial::MeshStandardMaterial(const math::float3& color) noexcept
 		: lightMapIntensity_(1.0f)
 	{
@@ -103,6 +109,7 @@ namespace octoon::material
 		this->setRefractionRatio(1.0f);
 		this->setClearCoat(0.0f);
 		this->setClearCoatRoughness(0.0f);
+		this->setSubsurface(0.0f);
 		this->setGamma(2.2f);
 		this->setShader(std::make_shared<Shader>(standard_vert, standard_frag));
 	}
@@ -320,6 +327,19 @@ namespace octoon::material
 	MeshStandardMaterial::getClearCoatRoughness() const noexcept
 	{
 		return this->clearCoatRoughness_;
+	}
+
+	void
+	MeshStandardMaterial::setSubsurface(float subsurface) noexcept
+	{
+		this->subsurface_ = subsurface;
+		this->set("subsurface", subsurface);
+	}
+
+	float
+	MeshStandardMaterial::getSubsurface() const noexcept
+	{
+		return this->subsurface_;
 	}
 
 	void

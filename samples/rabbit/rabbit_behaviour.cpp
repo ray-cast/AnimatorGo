@@ -72,32 +72,6 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::sendMessage(std::string_view event, const std::any& data) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.call_all_slots(data);
-	}
-
-	void
-	RabbitBehaviour::addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.connect(listener);
-		else
-			dispatchEvents_[std::string(event)].connect(listener);
-	}
-
-	void
-	RabbitBehaviour::removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept
-	{
-		auto it = dispatchEvents_.find(event);
-		if (it != dispatchEvents_.end())
-			(*it).second.disconnect(listener);
-	}
-
-	void
 	RabbitBehaviour::onActivate() noexcept
 	{
 		if (!profile_)
@@ -213,13 +187,7 @@ namespace rabbit
 		{
 			auto files = std::any_cast<std::vector<const char*>>(data);
 			for (auto& path : files)
-			{
-				for (auto& it : components_)
-				{
-					if (it->getActive())
-						it->onDrop(path);
-				}
-			}
+				this->open(path);
 		}
 	}
 
@@ -230,9 +198,21 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::open(std::string_view filepath) noexcept(false)
+	RabbitBehaviour::open(std::string_view path) noexcept(false)
 	{
-		entitiesComponent_->open(filepath);
+		auto ext = path.substr(path.find_last_of("."));
+		if (ext == ".pmm")
+			entitiesComponent_->importPMM(path);
+		else if (ext == ".pmx")
+			entitiesComponent_->importModel(path);
+		else if (ext == ".hdr")
+			entitiesComponent_->importHDRi(path);
+		else if (ext == ".abc")
+			entitiesComponent_->importAbc(path);
+		else if (ext == ".mtl")
+			materialComponent_->importMtl(path);
+		else if (ext == ".mdl")
+			materialComponent_->importMdl(path);
 	}
 
 	void
@@ -335,7 +315,7 @@ namespace rabbit
 	void
 	RabbitBehaviour::loadMaterial(std::string_view path) noexcept(false)
 	{
-		materialComponent_->loadMaterial(path);
+		materialComponent_->importMtl(path);
 	}
 
 	std::optional<octoon::RaycastHit>

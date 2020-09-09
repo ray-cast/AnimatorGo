@@ -43,14 +43,6 @@ namespace octoon::video
 	{
 		context_ = context;
 		depthMaterial_ = material::MeshDepthMaterial::create();
-#if RTX_ON
-		rtxManager_ = std::make_unique<RtxManager>();
-		rtxManager_->setGraphicsContext(context);
-#else
-		baikalRenderer_ = std::make_unique<OfflineRenderer>(w, h);
-		baikalRenderer_->setGraphicsContext(context);
-#endif
-
 		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
 
 		this->setFramebufferSize(w, h);
@@ -116,21 +108,7 @@ namespace octoon::video
 	void
 	Renderer::setGlobalIllumination(bool enable) noexcept
 	{
-		if (enableGlobalIllumination_ != enable)
-		{
-			if (enable)
-			{
-				auto scene = video::RenderScene::instance();
-				for (auto& camera : scene->getCameras())
-					camera->setDirty(true);
-				for (auto& light : scene->getLights())
-					light->setDirty(true);
-				for (auto& geometry : scene->getGeometries())
-					geometry->setDirty(true);
-			}
-
-			this->enableGlobalIllumination_ = enable;
-		}
+		this->enableGlobalIllumination_ = enable;
 	}
 
 	bool
@@ -387,8 +365,20 @@ namespace octoon::video
 			if (this->enableGlobalIllumination_)
 			{
 #if RTX_ON
+				if (!rtxManager_)
+				{
+					rtxManager_ = std::make_unique<RtxManager>();
+					rtxManager_->setGraphicsContext(this->context_);
+				}
+
 				this->rtxManager_->render(&scene);
 #else
+				if (!baikalRenderer_)
+				{
+					baikalRenderer_ = std::make_unique<OfflineRenderer>(w, h);
+					baikalRenderer_->setGraphicsContext(context);
+				}
+
 				this->baikalRenderer_->render(
 					camera,
 					scene.getLights(),
@@ -426,7 +416,10 @@ namespace octoon::video
 					mesh->setDirty(false);
 
 				for (auto& material : it->getMaterials())
-					material->setDirty(false);
+				{
+					if (material)
+						material->setDirty(false);
+				}
 
 				it->setDirty(false);
 			}

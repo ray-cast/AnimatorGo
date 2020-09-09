@@ -60,22 +60,21 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		environmentLight_ = std::make_shared<light::EnvironmentLight>();
-		environmentLight_->setActive(true);
 		environmentLight_->setLayer(this->getGameObject()->getLayer());
 		environmentLight_->setColor(this->getColor());
 		environmentLight_->setIntensity(this->getIntensity());
 		environmentLight_->setEnvironmentMap(this->environmentMap_);
 		environmentLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(environmentLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	EnvironmentLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(environmentLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		environmentLight_->setActive(false);
 	}
 
 	void

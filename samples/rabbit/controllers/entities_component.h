@@ -20,13 +20,12 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		void open(std::string_view path) noexcept(false);
-
 		bool importAbc(std::string_view path) noexcept;
+		void importPMM(std::string_view path) noexcept(false);
 		bool importModel(std::string_view path) noexcept;
-		bool exportModel(std::string_view path) noexcept;
-
 		void importHDRi(std::string_view path) noexcept;
+
+		bool exportModel(std::string_view path) noexcept;
 		void clearHDRi() noexcept;
 
 		bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;
@@ -46,8 +45,6 @@ namespace rabbit
 	private:
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
-
-		void onDrop(std::string_view data) noexcept override;
 	};
 }
 

@@ -16,6 +16,7 @@
     "alembic",
     "x264",
     "x265",
-    "zlib"
+    "zlib",
+    "qt5"
   ]
 }

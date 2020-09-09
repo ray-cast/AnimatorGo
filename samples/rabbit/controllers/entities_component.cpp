@@ -113,6 +113,65 @@ namespace rabbit
 		return true;
 	}
 
+	void
+	EntitiesComponent::importPMM(std::string_view path) noexcept(false)
+	{
+		auto& context = this->getContext();
+		if (!context->profile->entitiesModule->objects.empty())
+		{
+			context->profile->entitiesModule->objects.clear();
+			context->profile->entitiesModule->camera.reset();
+		}
+
+		octoon::GameObjects objects;
+
+		auto stream = octoon::io::ifstream(std::string(path));
+		auto pmm = octoon::PMMFile::load(stream).value();
+
+		auto camera = this->createCamera(pmm);
+		if (camera)
+			objects.emplace_back(camera);
+
+		auto rotation = math::Quaternion(math::float3(-0.1, math::PI + 0.5f, 0.0f));
+
+		auto& mainLight = this->getContext()->profile->entitiesModule->sunLight;
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowMapSize(math::uint2(2048, 2048));
+		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowEnable(true);
+		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
+		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 60);
+
+		for (auto& it : pmm.model)
+		{
+			auto model = octoon::MeshLoader::load(it.path);
+			if (model)
+			{
+				AnimationClips<float> boneClips;
+				this->setupBoneAnimation(it, boneClips);
+
+				AnimationClip<float> morphClip;
+				this->setupMorphAnimation(it, morphClip);
+
+				model->setName(it.name);
+				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
+				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
+
+				objects.emplace_back(std::move(model));
+			}
+			else
+			{
+				throw std::runtime_error(u8"无法找到文件:" + it.path);
+			}
+		}
+
+		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
+		context->profile->entitiesModule->camera = camera;
+		context->profile->entitiesModule->objects = objects;
+
+		this->sendMessage("rabbit:project:open");
+	}
+
 	bool
 	EntitiesComponent::importModel(std::string_view path) noexcept
 	{
@@ -160,65 +219,6 @@ namespace rabbit
 			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
 			material->setColorTexture(nullptr);
 		}
-	}
-
-	void
-	EntitiesComponent::open(std::string_view filepath) noexcept(false)
-	{
-		auto& context = this->getContext();
-		if (!context->profile->entitiesModule->objects.empty())
-		{
-			context->profile->entitiesModule->objects.clear();
-			context->profile->entitiesModule->camera.reset();
-		}
-
-		octoon::GameObjects objects;
-
-		auto stream = octoon::io::ifstream(std::string(filepath));
-		auto pmm = octoon::PMMFile::load(stream).value();
-
-		auto camera = this->createCamera(pmm);
-		if (camera)
-			objects.emplace_back(camera);
-
-		auto rotation = math::Quaternion(math::float3(-0.1, math::PI + 0.5f, 0.0f));
-
-		auto& mainLight = this->getContext()->profile->entitiesModule->sunLight;
-		mainLight->getComponent<octoon::DirectionalLightComponent>()->setIntensity(this->getContext()->profile->sunModule->intensity);
-		mainLight->getComponent<octoon::DirectionalLightComponent>()->setColor(this->getContext()->profile->sunModule->color);
-		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowMapSize(math::uint2(2048, 2048));
-		mainLight->getComponent<octoon::DirectionalLightComponent>()->setShadowEnable(true);
-		mainLight->getComponent<octoon::TransformComponent>()->setQuaternion(rotation);
-		mainLight->getComponent<octoon::TransformComponent>()->setTranslate(-math::rotate(rotation, math::float3::UnitZ) * 60);
-
-		for (auto& it : pmm.model)
-		{
-			auto model = octoon::MeshLoader::load(it.path);
-			if (model)
-			{
-				AnimationClips<float> boneClips;
-				this->setupBoneAnimation(it, boneClips);
-
-				AnimationClip<float> morphClip;
-				this->setupMorphAnimation(it, morphClip);
-
-				model->setName(it.name);
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
-
-				objects.emplace_back(std::move(model));
-			}
-			else
-			{
-				throw std::runtime_error(u8"无法找到文件:" + it.path);
-			}
-		}
-
-		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
-		context->profile->entitiesModule->camera = camera;
-		context->profile->entitiesModule->objects = objects;
-
-		this->sendMessage("rabbit:project:open");
 	}
 
 	GameObjectPtr
@@ -500,19 +500,5 @@ namespace rabbit
 	void
 	EntitiesComponent::onDisable() noexcept
 	{
-	}
-
-	void
-	EntitiesComponent::onDrop(std::string_view path) noexcept
-	{
-		auto ext = path.substr(path.find_last_of("."));
-		if (ext == ".pmm")
-			this->open(path);
-		else if (ext == ".pmx")
-			this->importModel(path);
-		else if (ext == ".hdr")
-			this->importHDRi(path);
-		else if (ext == ".abc")
-			this->importAbc(path);
 	}
 }

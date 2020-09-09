@@ -4,6 +4,7 @@
 #include <octoon/game_feature.h>
 #include <octoon/camera_component.h>
 #include <octoon/material/material.h>
+#include <octoon/video/render_scene.h>
 
 namespace octoon
 {
@@ -17,6 +18,12 @@ namespace octoon
 
 		void setMainCamera(CameraComponent* camera) noexcept;
 		CameraComponent* getMainCamera() const noexcept;
+
+		void setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
+		const std::shared_ptr<video::RenderScene>& getMainScene() const noexcept;
+
+		void setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
+		const std::shared_ptr<video::RenderScene>& getRenderScene() const noexcept;
 
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
@@ -44,6 +51,9 @@ namespace octoon
 		std::uint32_t framebuffer_h_;
 
 		CameraComponent* camera_;
+		std::shared_ptr<video::RenderScene> mainScene_;
+		std::shared_ptr<video::RenderScene> mainSceneDefault_;
+		std::shared_ptr<video::RenderScene> renderScene_;
 	};
 }
 

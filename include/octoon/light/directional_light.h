@@ -30,9 +30,6 @@ namespace octoon::light
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
-		void onActivate() noexcept override;
-		void onDeactivate() noexcept override;
-
 		void onMoveAfter() noexcept override;
 
 	private:

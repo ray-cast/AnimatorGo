@@ -103,18 +103,6 @@ namespace octoon::light
 	}
 
 	void
-	DirectionalLight::onActivate() noexcept
-	{
-		Light::onActivate();
-	}
-
-	void
-	DirectionalLight::onDeactivate() noexcept
-	{
-		Light::onDeactivate();
-	}
-
-	void
 	DirectionalLight::onMoveAfter() noexcept
 	{
 		if (this->shadowCamera_)

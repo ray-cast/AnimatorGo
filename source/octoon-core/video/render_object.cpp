@@ -14,8 +14,7 @@ namespace octoon::video
 	}
 
 	RenderObject::RenderObject() noexcept
-		: active_(false)
-		, visible_(true)
+		: visible_(true)
 		, dirty_(true)
 		, layer_(0)
 		, order_(0)
@@ -27,28 +26,6 @@ namespace octoon::video
 
 	RenderObject::~RenderObject() noexcept
 	{
-		this->setActive(false);
-	}
-
-	void
-	RenderObject::setActive(bool active) noexcept
-	{
-		if (active_ != active)
-		{
-			if (active)
-				this->onActivate();
-			else
-				this->onDeactivate();
-
-			this->setDirty(true);
-			active_ = active;
-		}
-	}
-
-	bool
-	RenderObject::getActive() const noexcept
-	{
-		return active_;
 	}
 
 	void
@@ -206,17 +183,5 @@ namespace octoon::video
 	void
 	RenderObject::onMoveAfter() noexcept
 	{
-	}
-
-	void
-	RenderObject::onActivate() noexcept
-	{
-		RenderScene::instance()->addRenderObject(this);
-	}
-
-	void
-	RenderObject::onDeactivate() noexcept
-	{
-		RenderScene::instance()->removeRenderObject(this);
 	}
 }

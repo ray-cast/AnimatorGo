@@ -1,13 +1,16 @@
 #include "material_component.h"
-#include <fstream>
+
 #include "../rabbit_profile.h"
 #include "../rabbit_behaviour.h"
-#include <qstring.h>
-#include <quuid>
-#include <octoon/game_base_features.h>
+
+#include <octoon/mdl_loader.h>
+
 #include <filesystem>
 #include <fstream>
+
 #include <qimage.h>
+#include <qstring.h>
+#include <quuid.h>
 
 namespace rabbit
 {
@@ -79,17 +82,95 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::loadMaterial(std::string_view mtlPath) noexcept(false)
+	MaterialComponent::importMtl(std::string_view path) noexcept(false)
 	{
-		std::ifstream stream(QString::fromStdString(std::string(mtlPath)).toStdWString());
+		std::ifstream stream(QString::fromStdString(std::string(path)).toStdWString());
 		if (stream)
 		{
 			std::map<std::string, int> materialMap;
 			std::vector<tinyobj::material_t> materials;
 			auto err = tinyobj::LoadMtl(materialMap, materials, stream);
-			auto dirpath = mtlPath.substr(0, mtlPath.find_last_of("/") + 1);
+			auto rootPath = path.substr(0, path.find_last_of("/") + 1);
 
-			this->initMaterials(materials, dirpath);
+			for (auto& it : materials)
+			{
+				auto id = QUuid::createUuid().toString();
+				auto uuid = id.toStdString().substr(1, id.length() - 2);
+				auto directory = this->getModel()->path + "/" + uuid;
+
+				if (std::filesystem::create_directory(directory))
+				{
+					try
+					{
+						auto from = QString::fromStdString(std::string(rootPath) + it.diffuse_texname).toStdWString();
+						auto to = QString::fromStdString(directory + "/" + it.diffuse_texname).toStdWString();
+						std::filesystem::copy_file(from, to);
+					}
+					catch (std::filesystem::filesystem_error & e)
+					{
+						std::cout << "Could not copy sandbox/abc: " << e.what() << '\n';
+					}
+
+					std::ofstream ifs(directory + "/data.json");
+					if (ifs)
+					{
+						nlohmann::json item;
+						item["uuid"] = uuid;
+						item["name"] = it.name;
+						item["color"] = { 1.0, 1.0, 1.0 };
+						item["map"] = directory + "/" + it.diffuse_texname;
+
+						if (!item["map"].is_null()) {
+							auto image = QImage();
+							image.load(QString::fromStdString(std::string(rootPath) + it.diffuse_texname));
+							image.scaled(QSize(130, 130)).save(QString::fromStdString(directory + "/preview.jpeg"));
+
+							item["preview"] = directory + "/preview.jpeg";
+						}
+
+						auto data = item.dump();
+						ifs.write(data.c_str(), data.size());
+
+						this->materialList_[uuid] = item;
+					}
+				}
+			}
+
+			this->sendMessage("editor:material:change");
+		}
+	}
+
+	void
+	MaterialComponent::importMdl(std::string_view path) noexcept(false)
+	{
+		octoon::io::ifstream stream(QString::fromStdString(std::string(path)).toStdWString());
+		if (stream)
+		{
+			octoon::MDLLoader loader;
+			loader.load("resource", stream);
+			auto& materials = loader.getMaterials();
+
+			for (auto& mat : materials)
+			{
+				auto id = QUuid::createUuid().toString();
+				auto uuid = id.toStdString().substr(1, id.length() - 2);
+
+				auto& color = mat->getColor();
+				auto& colorMap = mat->getColorTexture();
+
+				nlohmann::json item;
+				item["uuid"] = uuid;
+				item["name"] = mat->getName();
+				item["color"] =  { color.x, color.y, color.z};
+
+				if (colorMap)
+					item["map"] = colorMap->getTextureDesc().getName();
+
+				this->materialList_[uuid] = item;
+				this->materials_[std::string(uuid)] = mat;
+			}
+
+			this->sendMessage("editor:material:change");
 		}
 	}
 
@@ -133,59 +214,5 @@ namespace rabbit
 			auto json = nlohmann::json::parse(ifs);
 			this->materialList_[json["uuid"]] = json;
 		}
-	}
-
-	void
-	MaterialComponent::initMaterials(const std::vector<tinyobj::material_t>& materials, std::string_view rootPath)
-	{
-		for (auto& it : materials)
-		{
-			auto id = QUuid::createUuid().toString();
-			auto uuid = id.toStdString().substr(1, id.length() - 2);
-			auto path = this->getModel()->path + "/" + uuid;
-
-			if (std::filesystem::create_directory(path))
-			{
-				try {
-					auto from = QString::fromStdString(std::string(rootPath) + it.diffuse_texname).toStdWString();
-					auto to = QString::fromStdString(path + "/" + it.diffuse_texname).toStdWString();
-					std::filesystem::copy_file(from, to);
-				}
-				catch (std::filesystem::filesystem_error & e) {
-					std::cout << "Could not copy sandbox/abc: " << e.what() << '\n';
-				}
-
-				std::ofstream ifs(path + "/data.json");
-				if (ifs)
-				{
-					nlohmann::json item;
-					item["uuid"] = uuid;
-					item["name"] = it.name;
-					item["color"] = { 1.0, 1.0, 1.0 };
-					item["map"] = path + "/" + it.diffuse_texname;
-
-					if (!item["map"].is_null()) {
-						auto image = QImage();
-						image.load(QString::fromStdString(std::string(rootPath) + it.diffuse_texname));
-						image.scaled(QSize(130, 130)).save(QString::fromStdString(path + "/preview.jpeg"));
-
-						item["preview"] = path + "/preview.jpeg";
-					}
-
-					auto data = item.dump();
-					ifs.write(data.c_str(), data.size());
-
-					this->materialList_[uuid] = item;
-				}
-			}
-		}
-	}
-
-	void
-	MaterialComponent::onDrop(std::string_view path) noexcept
-	{
-		auto ext = path.substr(path.find_last_of("."));
-		if (ext == ".mtl")
-			this->loadMaterial(path);
 	}
 }

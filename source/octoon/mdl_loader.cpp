@@ -286,8 +286,8 @@ namespace octoon
 		return false;
 	}
 
-	std::unique_ptr<material::Material>
-	MDLLoader::load(io::istream& stream, std::string_view material) noexcept(false)
+	void
+	MDLLoader::load(std::string_view moduleName, io::istream& stream) noexcept(false)
 	{
 		auto streamsize = stream.size();
 		if (streamsize > 0)
@@ -295,171 +295,162 @@ namespace octoon
 			const std::string mdlSource(streamsize, '0');
 			stream.read((char*)mdlSource.data(), mdlSource.size());
 
-			const std::size_t p = material.rfind("::");
+			this->load(moduleName, mdlSource);
+		}
+	}
 
-			std::string_view moduleName = material.substr(0, p);
-			std::string_view materialName = (p == std::string::npos) ? material : material.substr(p + 2, material.size() - p);
+	void
+	MDLLoader::load(std::string_view moduleName, std::string_view source) noexcept(false)
+	{
+		this->materials_.clear();
 
-			return this->load(materialName, moduleName, mdlSource);
+		auto mdlModuleName = moduleName.find("::") == 0 ? std::string(moduleName) : "::" + std::string(moduleName);
+
+		auto transaction = mi::base::make_handle(this->context_->globalScope->create_transaction());
+		if (source.empty())
+		{
+			if (this->context_->compiler->load_module(transaction.get(), mdlModuleName.c_str()) < 0)
+				throw std::runtime_error("Loading \"" + std::string(moduleName) + ".mdl\" failed");
 		}
 		else
 		{
-			return nullptr;
+			if (this->context_->compiler->load_module_from_string(transaction.get(), mdlModuleName.c_str(), std::string(source).c_str()) < 0)
+				throw std::runtime_error("Loading \"" + std::string(moduleName) + "\" from memory failed");
 		}
 
-	}
+		auto module = mi::base::Handle<const mi::neuraylib::IModule>(transaction->access<mi::neuraylib::IModule>(("mdl" + mdlModuleName).c_str()));
+		mi::Size material_count = module->get_material_count();
+		if (this->verboseLogging_)
+			std::cout << "The module contains the following material definitions:" << std::endl;
 
-	std::unique_ptr<material::Material>
-	MDLLoader::load(std::string_view name, std::string_view moduleName, std::string_view source) noexcept(false)
-	{
-		auto material = std::make_unique<material::Material>(name);
-		auto mdlModuleName = moduleName.find("::") == 0 ? std::string(moduleName) : "::" + std::string(moduleName);
-		auto mdlMaterialName = "mdl" + mdlModuleName + "::" + material->getName();
-
-		auto transaction = mi::base::make_handle(this->context_->globalScope->create_transaction());
+		for (mi::Size i = 0; i < material_count; i++)
 		{
-			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(mdlMaterialName.c_str()));
-			if (!materialDefinition)
+			auto material = std::make_shared<material::MeshStandardMaterial>(module->get_material(i));
+			auto materialName = material->getName();
+			auto name = materialName.substr(materialName.rfind(':') + 1);
+
+			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(materialName.c_str()));
+			if (materialDefinition)
 			{
+				mi::Sint32 errors;
+				mi::base::Handle<const mi::neuraylib::IExpression_list> arguments;
+				mi::base::Handle<mi::neuraylib::IMaterial_instance> materialInstance = mi::base::make_handle(materialDefinition->create_material_instance(arguments.get(), &errors));
+				check_success(errors, "Creating material instance failed");
+
+				transaction->store(materialInstance.get(), std::string(name).c_str());
+
+				mi::neuraylib::Argument_editor editor(transaction.get(), std::string(name).c_str(), this->context_->factory.get());
+
 				if (this->verboseLogging_)
-					std::cout << "[MDL] Loading material definition for \"" << material << "\" from module \"" << moduleName << "\"" << std::endl;
+					std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;
 
-				if (source.empty())
+				for (mi::Size i = 0; i < editor.get_parameter_count(); ++i)
 				{
-					if (this->context_->compiler->load_module(transaction.get(), mdlModuleName.c_str()) < 0)
-						throw std::runtime_error("Loading \"" + std::string(moduleName) + ".mdl\" failed");
-				}
-				else
-				{
-					if (this->context_->compiler->load_module_from_string(transaction.get(), mdlModuleName.c_str(), std::string(source).c_str()) < 0)
-						throw std::runtime_error("Loading \"" + std::string(moduleName) + "\" from memory failed");
+					const char* name = editor.get_parameter_name(i);
+					auto types = mi::base::Handle<const mi::neuraylib::IType_list>(editor.get_parameter_types());
+					auto type = mi::base::Handle<const mi::neuraylib::IType>(types->get_type(name));
+					auto resolvedType = mi::base::Handle<const mi::neuraylib::IType>(type->skip_all_type_aliases());
+					auto kind = resolvedType->get_kind();
+
+					switch (kind)
+					{
+					case mi::neuraylib::IType::Kind::TK_BOOL:
+					{
+						bool value;
+						editor.get_value(name, value);
+						material->set(name, value);
+					}
+					break;
+					case mi::neuraylib::IType::Kind::TK_FLOAT:
+					{
+						float value;
+						editor.get_value(name, value);
+						material->set(name, value);
+					}
+					break;
+					case mi::neuraylib::IType::Kind::TK_DOUBLE:
+					{
+						double value;
+						editor.get_value(name, value);
+						material->set(name, (float)value);
+					}
+					break;
+					case mi::neuraylib::IType::Kind::TK_INT:
+					{
+						int value;
+						editor.get_value(name, value);
+						material->set(name, value);
+					}
+					break;
+					case mi::neuraylib::IType::Kind::TK_TEXTURE:
+					{
+						int value;
+						editor.get_value(name, value);
+						material->set(name, value);
+					}
+					break;
+					case mi::neuraylib::IType::Kind::TK_COLOR:
+					{
+						mi::math::Color value;
+						editor.get_value(name, value);
+						material->set(name, math::float4(value.r, value.g, value.b, value.a));
+					}
+					break;
+					default:
+						if (this->verboseLogging_)
+							std::cout << "[MDL] Warning: Unhandled parameter type: " << (int)kind << std::endl;
+						break;
+					}
+
+					if (this->verboseLogging_)
+					{
+						auto TypeToString = [](mi::neuraylib::IType::Kind kind) -> std::string
+						{
+							switch (kind)
+							{
+							case mi::neuraylib::IType::Kind::TK_BOOL:
+								return "bool";
+							case mi::neuraylib::IType::Kind::TK_COLOR:
+								return "color";
+							case mi::neuraylib::IType::Kind::TK_DOUBLE:
+								return "double";
+							case mi::neuraylib::IType::Kind::TK_FLOAT:
+								return "float";
+							case mi::neuraylib::IType::Kind::TK_INT:
+								return "int";
+							case mi::neuraylib::IType::Kind::TK_TEXTURE:
+								return "texture";
+							default:
+								return "other";
+							}
+						};
+
+						std::cout << "[MDL]      " << name << " (type: " << TypeToString(kind) << ")" << std::endl;
+					}
 				}
 
-				materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(mdlMaterialName.c_str()));
+				this->materials_.emplace_back(std::move(material));
 			}
 			else
 			{
 				if (this->verboseLogging_)
-					std::cout << "[MDL] Loaded material definition for \"" << material << "\" from database" << std::endl;
-			}
-
-			check_success(materialDefinition, "Material " + mdlMaterialName + " not found");
-
-			mi::Sint32 errors;
-			mi::base::Handle<const mi::neuraylib::IExpression_list> arguments;
-			mi::base::Handle<mi::neuraylib::IMaterial_instance> materialInstance = mi::base::make_handle(materialDefinition->create_material_instance(arguments.get(), &errors));
-			check_success(errors, "Creating material instance failed");
-
-			transaction->store(materialInstance.get(), material->getName().c_str());
-		}
-
-		transaction->commit();
-
-		transaction = mi::base::make_handle(this->context_->globalScope->create_transaction());
-		{
-			mi::neuraylib::Argument_editor editor(transaction.get(), material->getName().c_str(), this->context_->factory.get());
-
-			if (this->verboseLogging_)
-				std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;
-
-			for (mi::Size i = 0; i < editor.get_parameter_count(); ++i)
-			{
-				const char* name = editor.get_parameter_name(i);
-				auto types = editor.get_parameter_types();
-				auto type = types->get_type(name);
-				auto resolvedType = type->skip_all_type_aliases();
-				auto kind = resolvedType->get_kind();
-
-				switch (kind)
-				{
-				case mi::neuraylib::IType::Kind::TK_BOOL:
-				{
-					bool value;
-					editor.get_value(name, value);
-					material->set(name, value);
-				}
-				break;
-				case mi::neuraylib::IType::Kind::TK_FLOAT:
-				{
-					float value;
-					editor.get_value(name, value);
-					material->set(name, value);
-				}
-				break;
-				case mi::neuraylib::IType::Kind::TK_DOUBLE:
-				{
-					double value;
-					editor.get_value(name, value);
-					material->set(name, (float)value);
-				}
-				break;
-				case mi::neuraylib::IType::Kind::TK_INT:
-				{
-					int value;
-					editor.get_value(name, value);
-					material->set(name, value);
-				}
-				break;
-				case mi::neuraylib::IType::Kind::TK_TEXTURE:
-				{
-					int value;
-					editor.get_value(name, value);
-					material->set(name, value);
-				}
-				break;
-				case mi::neuraylib::IType::Kind::TK_COLOR:
-				{
-					mi::math::Color value;
-					editor.get_value(name, value);
-					material->set(name, math::float4(value.r, value.g, value.b, value.a));
-				}
-				break;
-				default:
-					if (this->verboseLogging_)
-						std::cout << "[MDL] Warning: Unhandled parameter type: " << (int)kind << std::endl;
-					break;
-				}
-
-				if (this->verboseLogging_)
-				{
-					auto TypeToString = [](mi::neuraylib::IType::Kind kind) -> std::string
-					{
-						switch (kind)
-						{
-						case mi::neuraylib::IType::Kind::TK_BOOL:
-							return "bool";
-						case mi::neuraylib::IType::Kind::TK_COLOR:
-							return "color";
-						case mi::neuraylib::IType::Kind::TK_DOUBLE:
-							return "double";
-						case mi::neuraylib::IType::Kind::TK_FLOAT:
-							return "float";
-						case mi::neuraylib::IType::Kind::TK_INT:
-							return "int";
-						case mi::neuraylib::IType::Kind::TK_TEXTURE:
-							return "texture";
-						default:
-							return "other";
-						}
-					};
-
-					std::cout << "[MDL]      " << name << " (type: " << TypeToString(kind) << ")" << std::endl;
-				}
-
-				resolvedType->release();
-				type->release();
-				types->release();
+					std::cout << "[MDL] Loading material definition for \"" << materialName << "\" from database failed" << std::endl;
 			}
 		}
 
+		module.reset();
 		transaction->commit();
-
-		return std::move(material);
 	}
 
 	void
-	MDLLoader::save(io::ostream& stream, const material::Material& animation) noexcept(false)
+	MDLLoader::save(io::ostream& stream, const material::MeshStandardMaterial& animation) noexcept(false)
 	{
+	}
+
+	const std::vector<std::shared_ptr<material::MeshStandardMaterial>>&
+	MDLLoader::getMaterials() const noexcept
+	{
+		return this->materials_;
 	}
 
 	void

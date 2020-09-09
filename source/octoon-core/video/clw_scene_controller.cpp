@@ -484,7 +484,7 @@ namespace octoon::video
 			material.disney.roughness_map_idx = -1;
 			material.disney.anisotropy = mat->getAnisotropy();
 			material.disney.anisotropy_map_idx = -1;
-			material.disney.sheen = 0;
+			material.disney.sheen = mat->getSheen();
 			material.disney.sheen_map_idx = -1;
 			material.disney.sheen_tint = 0;
 			material.disney.sheen_tint_map_idx = -1;
@@ -496,7 +496,7 @@ namespace octoon::video
 			material.disney.specular_map_idx = -1;
 			material.disney.specular_tint = 0;
 			material.disney.specular_tint_map_idx = -1;
-			material.disney.subsurface = 0;
+			material.disney.subsurface = mat->getSubsurface();
 
 			if (math::any(mat->getEmissive()))
 			{

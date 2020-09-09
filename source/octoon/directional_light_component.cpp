@@ -105,7 +105,6 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		directionalLight_ = std::make_shared<light::DirectionalLight>();
-		directionalLight_->setActive(true);
 		directionalLight_->setLayer(this->getGameObject()->getLayer());
 		directionalLight_->setColor(this->getColor());
 		directionalLight_->setIntensity(this->getIntensity());
@@ -115,15 +114,15 @@ namespace octoon
 		directionalLight_->setShadowEnable(this->getShadowEnable());
 		directionalLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(directionalLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	DirectionalLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(directionalLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		directionalLight_->setActive(false);
 	}
 
 	void

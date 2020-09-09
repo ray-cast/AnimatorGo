@@ -192,14 +192,6 @@ void main()
 }
 )";
 
-float D_GGX(float nh, float roughness)
-{
-	float m = roughness * roughness;
-	float m2 = m * m;
-	float spec = (nh * m2 - nh) * nh + 1;
-	return m2 / (spec * spec);
-}
-
 	hal::GraphicsTexturePtr
 	PMREMLoader::load(std::string_view filepath, std::uint8_t mipNums, bool cache) noexcept(false)
 	{

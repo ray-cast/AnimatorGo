@@ -10,6 +10,7 @@ namespace octoon::material
 		OctoonDeclareSubClass(MeshStandardMaterial, Material);
 	public:
 		MeshStandardMaterial() noexcept;
+		MeshStandardMaterial(std::string_view name) noexcept;
 		MeshStandardMaterial(const math::float3& color) noexcept;
 		virtual ~MeshStandardMaterial() noexcept;
 
@@ -49,6 +50,9 @@ namespace octoon::material
 		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
 		float getClearCoatRoughness() const noexcept;
 
+		void setSubsurface(float subsurface) noexcept;
+		float getSubsurface() const noexcept;
+
 		void setLightMapIntensity(float intensity) noexcept;
 		float getLightMapIntensity() const noexcept;
 
@@ -81,6 +85,7 @@ namespace octoon::material
 		float refractionRatio_;
 		float clearCoat_;
 		float clearCoatRoughness_;
+		float subsurface_;
 		float lightMapIntensity_;
 		math::float2 offset_;
 		math::float2 repeat_;

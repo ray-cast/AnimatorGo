@@ -208,9 +208,9 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 
 		auto transform = this->getComponent<TransformComponent>();
-		camera_->setActive(true);
 		camera_->setLayer(this->getGameObject()->getLayer());
 		camera_->setTransform(transform->getTransform(), transform->getTransformInverse());
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(camera_.get());
 
 		if (this->getCameraType() == CameraType::Main)
 		{
@@ -224,8 +224,7 @@ namespace octoon
 	CameraComponent::onDeactivate() noexcept
 	{
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		camera_->setActive(false);
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(camera_.get());
 
 		if (this->getCameraType() == CameraType::Main)
 		{

@@ -90,7 +90,6 @@ namespace octoon
 		auto transform = this->getComponent<TransformComponent>();
 
 		pointLight_ = std::make_shared<light::PointLight>();
-		pointLight_->setActive(true);
 		pointLight_->setLayer(this->getGameObject()->getLayer());
 		pointLight_->setColor(this->getColor());
 		pointLight_->setIntensity(this->getIntensity());
@@ -98,15 +97,15 @@ namespace octoon
 		pointLight_->setShadowEnable(this->getShadowEnable());
 		pointLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(pointLight_.get());
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}
 
 	void
 	PointLightComponent::onDeactivate() noexcept
 	{
+		this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(pointLight_.get());
 		this->removeComponentDispatch(GameDispatchType::MoveAfter);
-
-		pointLight_->setActive(false);
 	}
 
 	void

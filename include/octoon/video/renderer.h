@@ -10,6 +10,7 @@
 #include <octoon/geometry/geometry.h>
 
 #include <octoon/video/render_object.h>
+#include <octoon/video/render_scene.h>
 #include <octoon/video/forward_buffer.h>
 #include <octoon/video/forward_material.h>
 #include <octoon/video/forward_scene.h>

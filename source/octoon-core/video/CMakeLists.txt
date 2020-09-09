@@ -4,8 +4,6 @@ SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_OUTNAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 
 SET(VIDEO_GRAPHICS_LIST
-	${HEADER_PATH}/render_object.h
-	${SOURCE_PATH}/render_object.cpp
 	${HEADER_PATH}/renderer.h
 	${SOURCE_PATH}/renderer.cpp
 )
@@ -24,6 +22,8 @@ SET(VIDEO_COMMON_LIST
 	${SOURCE_PATH}/scene_controller.cpp
 	${HEADER_PATH}/render_scene.h
 	${SOURCE_PATH}/render_scene.cpp
+	${HEADER_PATH}/render_object.h
+	${SOURCE_PATH}/render_object.cpp
 	${HEADER_PATH}/compiled_scene.h
 	${SOURCE_PATH}/compiled_scene.cpp
 	${SOURCE_PATH}/render_factory.h

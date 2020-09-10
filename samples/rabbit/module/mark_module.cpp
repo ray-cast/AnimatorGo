@@ -19,7 +19,7 @@ namespace rabbit
 		width = 0;
 		height = 0;
 		channel = 8;
-		markEnable = true;
+		markEnable = false;
 	}
 
 	void 

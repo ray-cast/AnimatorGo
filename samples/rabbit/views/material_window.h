@@ -7,38 +7,22 @@
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
 #include <qpushbutton.h>
-#include <qtoolbutton.h>
 #include <qlabel.h>
-#include <optional>
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qlistwidget.h>
 #include <qcheckbox.h>
 #include <qtimer.h>
-#include <QParallelAnimationGroup>
-#include <QScrollArea>
+
+#include <optional>
 
 #include "rabbit_behaviour.h"
-#include "../libs/tinyobj/tiny_obj_loader.h"
-#include "./color_dialog.h"
+#include "color_dialog.h"
+#include "spoiler.h"
 #include <octoon/game_object.h>
 
 namespace rabbit
 {
-	class Spoiler : public QWidget {
-		Q_OBJECT
-	private:
-		QGridLayout mainLayout;
-		QToolButton toggleButton;
-		QFrame headerLine;
-		QParallelAnimationGroup toggleAnimation;
-		QScrollArea contentArea;
-		int animationDuration{ 300 };
-	public:
-		explicit Spoiler(const QString& title = "", const int animationDuration = 200, QWidget* parent = 0);
-		void setContentLayout(QLayout& contentLayout);
-	};
-
 	class MaterialModifyWindow final : public QWidget
 	{
 		Q_OBJECT

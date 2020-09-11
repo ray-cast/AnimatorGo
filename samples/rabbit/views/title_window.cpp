@@ -15,53 +15,46 @@ namespace rabbit
 		vipPix_ = QIcon::fromTheme("res", QIcon(":res/icons/vip.png"));
 		vipOnPix_ = QIcon::fromTheme("res", QIcon(":res/icons/vip-on.png"));
 
-		minimizeButton_ = new QToolButton(this);
-		minimizeButton_->setObjectName("minimize");
-		minimizeButton_->setToolTip(u8"最小化");
+		minimizeButton_.setObjectName("minimize");
+		minimizeButton_.setToolTip(u8"最小化");
 
-		maximizeButton_ = new QToolButton(this);
-		maximizeButton_->setObjectName("maximize");
-		maximizeButton_->setToolTip(u8"最大化");
+		maximizeButton_.setObjectName("maximize");
+		maximizeButton_.setToolTip(u8"最大化");
 
-		closeButton_ = new QToolButton(this);
-		closeButton_->setObjectName("close");
-		closeButton_->setToolTip(u8"关闭");
+		closeButton_.setObjectName("close");
+		closeButton_.setToolTip(u8"关闭");
 
-		settingButton_ = new QToolButton(this);
-		settingButton_->setObjectName("setting");
-		settingButton_->setToolTip(u8"全局设置");
+		settingButton_.setObjectName("setting");
+		settingButton_.setToolTip(u8"全局设置");
 
-		vipButton_ = new QToolButton(this);
-		vipButton_->setVisible(false);
-		vipButton_->setObjectName("vip");
-		vipButton_->setToolTip(u8"会员");
+		vipButton_.setVisible(false);
+		vipButton_.setObjectName("vip");
+		vipButton_.setToolTip(u8"会员");
 
-		logoButton_ = new QPushButton(this);
-		logoButton_->setObjectName("logo");
+		logoButton_.setObjectName("logo");
 
-		titleLabel_ = new QLabel(this);
-		titleLabel_->setObjectName("title");
-		titleLabel_->setText(u8"兔叽渲染器（内测版）");
+		titleLabel_.setObjectName("title");
+		titleLabel_.setText(u8"兔叽渲染器（内测版）");
 
-		layout_ = new QHBoxLayout(this);
-		layout_->setObjectName("titleLayout");
-		layout_->addWidget(logoButton_);
-		layout_->addWidget(titleLabel_);
-		layout_->addWidget(vipButton_);
-		layout_->addWidget(settingButton_);
-		layout_->addWidget(minimizeButton_);
-		layout_->addWidget(maximizeButton_);
-		layout_->addWidget(closeButton_);
+		layout_.setObjectName("titleLayout");
+		layout_.addWidget(&logoButton_);
+		layout_.addWidget(&titleLabel_);
+		layout_.addWidget(&vipButton_);
+		layout_.addWidget(&settingButton_);
+		layout_.addWidget(&minimizeButton_);
+		layout_.addWidget(&maximizeButton_);
+		layout_.addWidget(&closeButton_);
 
-		layout_->setSpacing(0);
-		layout_->insertStretch(2, 500);
-		layout_->setContentsMargins(10, 0, 10, 0);
+		layout_.setSpacing(0);
+		layout_.insertStretch(2, 500);
+		layout_.setContentsMargins(10, 0, 10, 0);
+		setLayout(&layout_);
 
-		this->connect(closeButton_, SIGNAL(clicked()), parent, SLOT(close()));
-		this->connect(minimizeButton_, SIGNAL(clicked()), this, SLOT(showSmall()));
-		this->connect(maximizeButton_, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
-		this->connect(settingButton_, SIGNAL(clicked()), this, SLOT(showSettingPlane()));
-		this->connect(vipButton_, SIGNAL(clicked()), this, SLOT(showVipPlane()));
+		this->connect(&closeButton_, SIGNAL(clicked()), parent, SLOT(close()));
+		this->connect(&minimizeButton_, SIGNAL(clicked()), this, SLOT(showSmall()));
+		this->connect(&maximizeButton_, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
+		this->connect(&settingButton_, SIGNAL(clicked()), this, SLOT(showSettingPlane()));
+		this->connect(&vipButton_, SIGNAL(clicked()), this, SLOT(showVipPlane()));
 	}
 
 	TitleWindow::~TitleWindow() noexcept
@@ -84,14 +77,14 @@ namespace rabbit
 			parentWidget()->showMaximized();
 			parentWidget()->showNormal();
 			maxNormal_ = !maxNormal_;
-			maximizeButton_->setIcon(maxPix_);
+			maximizeButton_.setIcon(maxPix_);
 		}
 		else
 		{
 			size_ = parentWidget()->size();
 			parentWidget()->showMaximized();
 			maxNormal_ = !maxNormal_;
-			maximizeButton_->setIcon(restorePix_);
+			maximizeButton_.setIcon(restorePix_);
 		}
 	}
 
@@ -110,13 +103,13 @@ namespace rabbit
 	void
 	TitleWindow::loginSuccess() noexcept
 	{
-		vipButton_->setIcon(vipOnPix_);
+		vipButton_.setIcon(vipOnPix_);
 	}
 
 	void
 	TitleWindow::loginOut() noexcept
 	{
-		vipButton_->setIcon(vipPix_);
+		vipButton_.setIcon(vipPix_);
 	}
 
 	void

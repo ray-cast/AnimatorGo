@@ -46,10 +46,11 @@ namespace rabbit
 		void updateSignal();
 
 	private:
+		QTimer timer;
+
 		octoon::GameAppPtr gameApp_;
 		octoon::GameObjectPtr behaviour_;
 
-		std::unique_ptr<QTimer> timer;
 		std::shared_ptr<rabbit::RabbitProfile> profile_;
 	};
 }

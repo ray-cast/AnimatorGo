@@ -91,23 +91,23 @@ namespace rabbit
 		QIcon environmentIcon_;
 		QIcon environmentOnIcon_;
 
-		QToolButton* hideButton;
-		QToolButton* importButton;
-		QToolButton* saveButton;
-		QToolButton* playButton;
-		QToolButton* resetButton;
-		QToolButton* leftButton;
-		QToolButton* rightButton;
-		QToolButton* recordButton;
-		QToolButton* shotButton;
-		QToolButton* gpuButton;
-		QToolButton* hdrButton;
-		QToolButton* cleanupButton;
-		QToolButton* sunButton;
-		QToolButton* environmentButton;
-		QToolButton* materialButton;
+		QToolButton hideButton;
+		QToolButton importButton;
+		QToolButton saveButton;
+		QToolButton playButton;
+		QToolButton resetButton;
+		QToolButton leftButton;
+		QToolButton rightButton;
+		QToolButton recordButton;
+		QToolButton shotButton;
+		QToolButton gpuButton;
+		QToolButton hdrButton;
+		QToolButton cleanupButton;
+		QToolButton sunButton;
+		QToolButton environmentButton;
+		QToolButton materialButton;
 
-		QVBoxLayout* layout;
+		QVBoxLayout layout;
 
 		octoon::GameObjectPtr behaviour_;
 	};

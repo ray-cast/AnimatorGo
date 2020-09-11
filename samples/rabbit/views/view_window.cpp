@@ -5,7 +5,7 @@ namespace rabbit
 {
 	ViewWidget::ViewWidget(QWidget* parent, const std::shared_ptr<rabbit::RabbitProfile>& profile) noexcept
 		: QWidget(parent)
-		, timer(std::make_unique<QTimer>(this))
+		, timer(this)
 	{
 		this->setAttribute(Qt::WA_PaintOnScreen, true);
 		this->setObjectName("ViewWindow");
@@ -15,9 +15,9 @@ namespace rabbit
 		this->setMinimumSize(profile->canvasModule->width, profile->canvasModule->height);
 		this->setFocusPolicy(Qt::StrongFocus);
 
-		this->connect(timer.get(), SIGNAL(timeout()), this, SLOT(updateEvent()));
+		this->connect(&timer, SIGNAL(timeout()), this, SLOT(updateEvent()));
 
-		timer->start();
+		timer.start();
 	}
 
 	ViewWidget::~ViewWidget() noexcept

@@ -9,7 +9,6 @@
 #include <fstream>
 #include <codecvt>
 #include <qtreewidget.h>
-#include <qpropertyanimation.h>
 
 namespace rabbit
 {
@@ -28,57 +27,6 @@ namespace rabbit
 			QDoubleSpinBox::focusOutEvent(event);
 		}
 	};
-
-	Spoiler::Spoiler(const QString& title, const int animationDuration, QWidget* parent) : QWidget(parent), animationDuration(animationDuration) {
-		toggleButton.setStyleSheet("QToolButton { border: none; }");
-		toggleButton.setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-		toggleButton.setArrowType(Qt::ArrowType::RightArrow);
-		toggleButton.setText(title);
-		toggleButton.setCheckable(true);
-		toggleButton.setChecked(false);
-
-		headerLine.setFrameShape(QFrame::HLine);
-		headerLine.setFrameShadow(QFrame::Sunken);
-		headerLine.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-
-		contentArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-		contentArea.setMaximumHeight(0);
-		contentArea.setMinimumHeight(0);
-
-		toggleAnimation.addAnimation(new QPropertyAnimation(this, "minimumHeight"));
-		toggleAnimation.addAnimation(new QPropertyAnimation(this, "maximumHeight"));
-		toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
-
-		mainLayout.setVerticalSpacing(0);
-		mainLayout.setContentsMargins(0, 0, 0, 0);
-		int row = 0;
-		mainLayout.addWidget(&toggleButton, row, 0, 1, 1, Qt::AlignLeft);
-		mainLayout.addWidget(&headerLine, row++, 2, 1, 1);
-		mainLayout.addWidget(&contentArea, row, 0, 1, 3);
-		setLayout(&mainLayout);
-		QObject::connect(&toggleButton, &QToolButton::clicked, [this](const bool checked) {
-			toggleButton.setArrowType(checked ? Qt::ArrowType::DownArrow : Qt::ArrowType::RightArrow);
-			toggleAnimation.setDirection(checked ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);
-			toggleAnimation.start();
-		});
-	}
-
-	void Spoiler::setContentLayout(QLayout& contentLayout) {
-		delete contentArea.layout();
-		contentArea.setLayout(&contentLayout);
-		const auto collapsedHeight = sizeHint().height() - contentArea.maximumHeight();
-		auto contentHeight = contentLayout.sizeHint().height();
-		for (int i = 0; i < toggleAnimation.animationCount() - 1; ++i) {
-			QPropertyAnimation* spoilerAnimation = static_cast<QPropertyAnimation*>(toggleAnimation.animationAt(i));
-			spoilerAnimation->setDuration(animationDuration);
-			spoilerAnimation->setStartValue(collapsedHeight);
-			spoilerAnimation->setEndValue(collapsedHeight + contentHeight);
-		}
-		QPropertyAnimation* contentAnimation = static_cast<QPropertyAnimation*>(toggleAnimation.animationAt(toggleAnimation.animationCount() - 1));
-		contentAnimation->setDuration(animationDuration);
-		contentAnimation->setStartValue(0);
-		contentAnimation->setEndValue(contentHeight);
-	}
 
 	MaterialModifyWindow::MaterialModifyWindow(QWidget* widget)
 		: QWidget(widget)
@@ -189,9 +137,8 @@ namespace rabbit
 		smoothnessLabel_ = new QLabel;
 		smoothnessLabel_->setText(u8"光滑度");
 
-		smoothnessSlider_ = new QSlider;
+		smoothnessSlider_ = new QSlider(Qt::Horizontal);
 		smoothnessSlider_->setObjectName("Value");
-		smoothnessSlider_->setOrientation(Qt::Horizontal);
 		smoothnessSlider_->setMinimum(0);
 		smoothnessSlider_->setMaximum(100);
 		smoothnessSlider_->setValue(0);
@@ -211,7 +158,7 @@ namespace rabbit
 		auto smoothnessLayout = new QVBoxLayout();
 		smoothnessLayout->addLayout(smoothnessHLayout);
 		smoothnessLayout->addWidget(smoothnessSlider_);
-		smoothnessLayout->setContentsMargins(30, 5, 50, 0);
+		smoothnessLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto smoothness = new Spoiler(u8"光滑度");
 		smoothness->setFixedWidth(340);
@@ -226,9 +173,8 @@ namespace rabbit
 		metalnessLabel_ = new QLabel;
 		metalnessLabel_->setText(u8"金属程度");
 
-		metalnessSlider_ = new QSlider;
+		metalnessSlider_ = new QSlider(Qt::Horizontal);
 		metalnessSlider_->setObjectName("Value");
-		metalnessSlider_->setOrientation(Qt::Horizontal);
 		metalnessSlider_->setMinimum(0);
 		metalnessSlider_->setMaximum(100);
 		metalnessSlider_->setValue(0);
@@ -248,9 +194,8 @@ namespace rabbit
 		anisotropyLabel_ = new QLabel;
 		anisotropyLabel_->setText(u8"各向异性");
 
-		anisotropySlider_ = new QSlider;
+		anisotropySlider_ = new QSlider(Qt::Horizontal);
 		anisotropySlider_->setObjectName("Value");
-		anisotropySlider_->setOrientation(Qt::Horizontal);
 		anisotropySlider_->setMinimum(0);
 		anisotropySlider_->setMaximum(100);
 		anisotropySlider_->setValue(0);
@@ -272,7 +217,7 @@ namespace rabbit
 		metalnessLayout->addWidget(metalnessSlider_);
 		metalnessLayout->addLayout(anisotropyHLayout);
 		metalnessLayout->addWidget(anisotropySlider_);
-		metalnessLayout->setContentsMargins(30, 5, 50, 0);
+		metalnessLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto metalness = new Spoiler(u8"金属程度");
 		metalness->setFixedWidth(340);
@@ -288,9 +233,8 @@ namespace rabbit
 		sheenLabel_ = new QLabel;
 		sheenLabel_->setText(u8"光泽度");
 
-		sheenSlider_ = new QSlider;
+		sheenSlider_ = new QSlider(Qt::Horizontal);
 		sheenSlider_->setObjectName("Value");
-		sheenSlider_->setOrientation(Qt::Horizontal);
 		sheenSlider_->setMinimum(0);
 		sheenSlider_->setMaximum(100);
 		sheenSlider_->setValue(0);
@@ -310,7 +254,7 @@ namespace rabbit
 		auto sheenLayout = new QVBoxLayout();
 		sheenLayout->addLayout(sheenHLayout);
 		sheenLayout->addWidget(sheenSlider_);
-		sheenLayout->setContentsMargins(30, 5, 50, 0);
+		sheenLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto sheen = new Spoiler(u8"布料");
 		sheen->setFixedWidth(340);
@@ -325,9 +269,8 @@ namespace rabbit
 		clearcoatLabel_ = new QLabel;
 		clearcoatLabel_->setText(u8"光泽度");
 
-		clearcoatSlider_ = new QSlider;
+		clearcoatSlider_ = new QSlider(Qt::Horizontal);
 		clearcoatSlider_->setObjectName("Value");
-		clearcoatSlider_->setOrientation(Qt::Horizontal);
 		clearcoatSlider_->setMinimum(0);
 		clearcoatSlider_->setMaximum(100);
 		clearcoatSlider_->setValue(0);
@@ -343,9 +286,8 @@ namespace rabbit
 		clearcoatRoughnessLabel_ = new QLabel;
 		clearcoatRoughnessLabel_->setText(u8"粗糙度");
 
-		clearcoatRoughnessSlider_ = new QSlider;
+		clearcoatRoughnessSlider_ = new QSlider(Qt::Horizontal);
 		clearcoatRoughnessSlider_->setObjectName("Value");
-		clearcoatRoughnessSlider_->setOrientation(Qt::Horizontal);
 		clearcoatRoughnessSlider_->setMinimum(0);
 		clearcoatRoughnessSlider_->setMaximum(100);
 		clearcoatRoughnessSlider_->setValue(0);
@@ -371,7 +313,7 @@ namespace rabbit
 		clearcoatLayout->addWidget(clearcoatSlider_);
 		clearcoatLayout->addLayout(clearcoatRoughnessHLayout);
 		clearcoatLayout->addWidget(clearcoatRoughnessSlider_);
-		clearcoatLayout->setContentsMargins(30, 5, 50, 0);
+		clearcoatLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto clearcoat = new Spoiler(u8"清漆");
 		clearcoat->setFixedWidth(340);
@@ -386,9 +328,8 @@ namespace rabbit
 		subsurfaceLabel_ = new QLabel;
 		subsurfaceLabel_->setText(u8"散射程度");
 
-		subsurfaceSlider_ = new QSlider;
+		subsurfaceSlider_ = new QSlider(Qt::Horizontal);
 		subsurfaceSlider_->setObjectName("Value");
-		subsurfaceSlider_->setOrientation(Qt::Horizontal);
 		subsurfaceSlider_->setMinimum(0);
 		subsurfaceSlider_->setMaximum(100);
 		subsurfaceSlider_->setValue(0);
@@ -408,7 +349,7 @@ namespace rabbit
 		auto subsurfaceLayout = new QVBoxLayout();
 		subsurfaceLayout->addLayout(subsurfaceHLayout);
 		subsurfaceLayout->addWidget(subsurfaceSlider_);
-		subsurfaceLayout->setContentsMargins(30, 5, 50, 0);
+		subsurfaceLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto subsurface = new Spoiler(u8"次表面散射");
 		subsurface->setFixedWidth(340);

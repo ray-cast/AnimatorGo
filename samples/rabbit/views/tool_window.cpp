@@ -27,124 +27,110 @@ namespace rabbit
 		this->setObjectName("ToolWindow");
 		this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
-		hideButton = new QToolButton(this);
-		hideButton->setObjectName("hide");
-		hideButton->setText(u8"隐藏");
-		hideButton->setToolTip(u8"隐藏侧边工具栏");
-		hideButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		hideButton.setObjectName("hide");
+		hideButton.setText(u8"隐藏");
+		hideButton.setToolTip(u8"隐藏侧边工具栏");
+		hideButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		importButton = new QToolButton(this);
-		importButton->setObjectName("import");
-		importButton->setText(u8"加载");
-		importButton->setToolTip(u8"加载资源文件(.pmm, .mdl)");
-		importButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		importButton.setObjectName("import");
+		importButton.setText(u8"加载");
+		importButton.setToolTip(u8"加载资源文件(.pmm, .mdl)");
+		importButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		playButton = new QToolButton(this);
-		playButton->setObjectName("play");
-		playButton->setText(u8"播放");
-		playButton->setToolTip(u8"播放动画");
-		playButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		playButton.setObjectName("play");
+		playButton.setText(u8"播放");
+		playButton.setToolTip(u8"播放动画");
+		playButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		resetButton = new QToolButton(this);
-		resetButton->setObjectName("reset");
-		resetButton->setText(u8"重置");
-		resetButton->setToolTip(u8"重置动画");
-		resetButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		resetButton.setObjectName("reset");
+		resetButton.setText(u8"重置");
+		resetButton.setToolTip(u8"重置动画");
+		resetButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		leftButton = new QToolButton(this);
-		leftButton->setObjectName("left");
-		leftButton->setText(u8"后退");
-		leftButton->setToolTip(u8"后退1秒");
-		leftButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		leftButton.setObjectName("left");
+		leftButton.setText(u8"后退");
+		leftButton.setToolTip(u8"后退1秒");
+		leftButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		rightButton = new QToolButton(this);
-		rightButton->setObjectName("right");
-		rightButton->setText(u8"快进");
-		rightButton->setToolTip(u8"快进1秒");
-		rightButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		rightButton.setObjectName("right");
+		rightButton.setText(u8"快进");
+		rightButton.setToolTip(u8"快进1秒");
+		rightButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		recordButton = new QToolButton(this);
-		recordButton->setObjectName("record");
-		recordButton->setText(u8"录制");
-		recordButton->setToolTip(u8"录制视频");
-		recordButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		recordButton.setObjectName("record");
+		recordButton.setText(u8"录制");
+		recordButton.setToolTip(u8"录制视频");
+		recordButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		shotButton = new QToolButton(this);
-		shotButton->setObjectName("shot");
-		shotButton->setText(u8"截图");
-		shotButton->setToolTip(u8"降噪截图");
-		shotButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		shotButton.setObjectName("shot");
+		shotButton.setText(u8"截图");
+		shotButton.setToolTip(u8"降噪截图");
+		shotButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		gpuButton = new QToolButton(this);
-		gpuButton->setObjectName("gpu");
-		gpuButton->setText(u8"渲染");
-		gpuButton->setToolTip(u8"开启高质量渲染模式");
-		gpuButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		gpuButton.setObjectName("gpu");
+		gpuButton.setText(u8"渲染");
+		gpuButton.setToolTip(u8"开启高质量渲染模式");
+		gpuButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		cleanupButton = new QToolButton(this);
-		cleanupButton->setObjectName("cleanup");
-		cleanupButton->setText(u8"清空");
-		cleanupButton->setToolTip(u8"清空项目");
-		cleanupButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		cleanupButton.setObjectName("cleanup");
+		cleanupButton.setText(u8"清空");
+		cleanupButton.setToolTip(u8"清空项目");
+		cleanupButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		materialButton = new QToolButton(this);
-		materialButton->setObjectName("material");
-		materialButton->setText(u8"材质");
-		materialButton->setToolTip(u8"打开材质库面板");
-		materialButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		materialButton.setObjectName("material");
+		materialButton.setText(u8"材质");
+		materialButton.setToolTip(u8"打开材质库面板");
+		materialButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		hdrButton = new QToolButton(this);
-		hdrButton->setObjectName("hdr");
-		hdrButton->setText(u8"全局光");
-		hdrButton->setToolTip(u8"加载高动态图像用于全局光照");
-		hdrButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		hdrButton.setObjectName("hdr");
+		hdrButton.setText(u8"全局光");
+		hdrButton.setToolTip(u8"加载高动态图像用于全局光照");
+		hdrButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		sunButton = new QToolButton(this);
-		sunButton->setObjectName("sun");
-		sunButton->setText(u8"主光源");
-		sunButton->setToolTip(u8"主光源设置");
-		sunButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		sunButton.setObjectName("sun");
+		sunButton.setText(u8"主光源");
+		sunButton.setToolTip(u8"主光源设置");
+		sunButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		environmentButton = new QToolButton(this);
-		environmentButton->setObjectName("environment");
-		environmentButton->setText(u8"环境光");
-		environmentButton->setToolTip(u8"环境光设置");
-		environmentButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+		environmentButton.setObjectName("environment");
+		environmentButton.setText(u8"环境光");
+		environmentButton.setToolTip(u8"环境光设置");
+		environmentButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		layout = new QVBoxLayout(this);
-		layout->addSpacing(1);
-		layout->addWidget(hideButton, 0, Qt::AlignCenter);
-		layout->addWidget(importButton, 0, Qt::AlignCenter);
-		layout->addWidget(playButton, 0, Qt::AlignCenter);
-		layout->addWidget(resetButton, 0, Qt::AlignCenter);
-		layout->addWidget(leftButton, 0, Qt::AlignCenter);
-		layout->addWidget(rightButton, 0, Qt::AlignCenter);
-		layout->addWidget(recordButton, 0, Qt::AlignCenter);
-		layout->addWidget(shotButton, 0, Qt::AlignCenter);
-		layout->addWidget(gpuButton, 0, Qt::AlignCenter);
-		layout->addWidget(materialButton, 0, Qt::AlignCenter);
-		layout->addWidget(hdrButton, 0, Qt::AlignCenter);
-		layout->addWidget(sunButton, 0, Qt::AlignCenter);
-		layout->addWidget(environmentButton, 0, Qt::AlignCenter);
-		layout->addWidget(cleanupButton, 0, Qt::AlignCenter);
-		layout->addStretch();
-		layout->setSpacing(4);
-		layout->setContentsMargins(0, 0, 0, 0);
+		layout.addSpacing(1);
+		layout.addWidget(&hideButton, 0, Qt::AlignCenter);
+		layout.addWidget(&importButton, 0, Qt::AlignCenter);
+		layout.addWidget(&playButton, 0, Qt::AlignCenter);
+		layout.addWidget(&resetButton, 0, Qt::AlignCenter);
+		layout.addWidget(&leftButton, 0, Qt::AlignCenter);
+		layout.addWidget(&rightButton, 0, Qt::AlignCenter);
+		layout.addWidget(&recordButton, 0, Qt::AlignCenter);
+		layout.addWidget(&shotButton, 0, Qt::AlignCenter);
+		layout.addWidget(&gpuButton, 0, Qt::AlignCenter);
+		layout.addWidget(&materialButton, 0, Qt::AlignCenter);
+		layout.addWidget(&hdrButton, 0, Qt::AlignCenter);
+		layout.addWidget(&sunButton, 0, Qt::AlignCenter);
+		layout.addWidget(&environmentButton, 0, Qt::AlignCenter);
+		layout.addWidget(&cleanupButton, 0, Qt::AlignCenter);
+		layout.addStretch();
+		layout.setSpacing(4);
+		layout.setContentsMargins(0, 0, 0, 0);
+		setLayout(&layout);
 
-		this->connect(hideButton, SIGNAL(clicked()), this, SLOT(hideEvent()));
-		this->connect(importButton, SIGNAL(clicked()), this, SLOT(importEvent()));
-		this->connect(playButton, SIGNAL(clicked()), this, SLOT(playEvent()));
-		this->connect(leftButton, SIGNAL(clicked()), this, SLOT(leftEvent()));
-		this->connect(rightButton, SIGNAL(clicked()), this, SLOT(rightEvent()));
-		this->connect(resetButton, SIGNAL(clicked()), this, SLOT(resetEvent()));
-		this->connect(recordButton, SIGNAL(clicked()), this, SLOT(recordEvent()));
-		this->connect(shotButton, SIGNAL(clicked()), this, SLOT(shotEvent()));
-		this->connect(gpuButton, SIGNAL(clicked()), this, SLOT(gpuEvent()));
-		this->connect(hdrButton, SIGNAL(clicked()), this, SLOT(hdrEvent()));
-		this->connect(cleanupButton, SIGNAL(clicked()), this, SLOT(cleanupEvent()));
-		this->connect(sunButton, SIGNAL(clicked()), this, SLOT(sunEvent()));
-		this->connect(environmentButton, SIGNAL(clicked()), this, SLOT(environmentEvent()));
-		this->connect(materialButton, SIGNAL(clicked()), this, SLOT(materialEvent()));
+		this->connect(&hideButton, SIGNAL(clicked()), this, SLOT(hideEvent()));
+		this->connect(&importButton, SIGNAL(clicked()), this, SLOT(importEvent()));
+		this->connect(&playButton, SIGNAL(clicked()), this, SLOT(playEvent()));
+		this->connect(&leftButton, SIGNAL(clicked()), this, SLOT(leftEvent()));
+		this->connect(&rightButton, SIGNAL(clicked()), this, SLOT(rightEvent()));
+		this->connect(&resetButton, SIGNAL(clicked()), this, SLOT(resetEvent()));
+		this->connect(&recordButton, SIGNAL(clicked()), this, SLOT(recordEvent()));
+		this->connect(&shotButton, SIGNAL(clicked()), this, SLOT(shotEvent()));
+		this->connect(&gpuButton, SIGNAL(clicked()), this, SLOT(gpuEvent()));
+		this->connect(&hdrButton, SIGNAL(clicked()), this, SLOT(hdrEvent()));
+		this->connect(&cleanupButton, SIGNAL(clicked()), this, SLOT(cleanupEvent()));
+		this->connect(&sunButton, SIGNAL(clicked()), this, SLOT(sunEvent()));
+		this->connect(&environmentButton, SIGNAL(clicked()), this, SLOT(environmentEvent()));
+		this->connect(&materialButton, SIGNAL(clicked()), this, SLOT(materialEvent()));
 	}
 
 	ToolWindow::~ToolWindow() noexcept
@@ -175,8 +161,8 @@ namespace rabbit
 		{
 			if (playSignal(true))
 			{
-				playButton->setIcon(playOnIcon_);
-				playButton->setToolTip(u8"暂停");
+				playButton.setIcon(playOnIcon_);
+				playButton.setToolTip(u8"暂停");
 				playEnable_ = true;
 			}
 		}
@@ -184,8 +170,8 @@ namespace rabbit
 		{
 			if (playSignal(false))
 			{
-				playButton->setIcon(playIcon_);
-				playButton->setToolTip(u8"播放");
+				playButton.setIcon(playIcon_);
+				playButton.setToolTip(u8"播放");
 				playEnable_ = false;
 			}
 		}
@@ -196,8 +182,8 @@ namespace rabbit
 	{
 		if (resetSignal())
 		{
-			playButton->setIcon(playIcon_);
-			playButton->setToolTip(u8"播放");
+			playButton.setIcon(playIcon_);
+			playButton.setToolTip(u8"播放");
 			playEnable_ = false;
 		}
 	}
@@ -221,7 +207,7 @@ namespace rabbit
 		{
 			if (recordSignal(true))
 			{
-				recordButton->setIcon(recordOnIcon_);
+				recordButton.setIcon(recordOnIcon_);
 				recordEnable_ = true;
 			}
 		}
@@ -229,7 +215,7 @@ namespace rabbit
 		{
 			if (recordSignal(false))
 			{
-				recordButton->setIcon(recordIcon_);
+				recordButton.setIcon(recordIcon_);
 				recordEnable_ = false;
 			}
 		}
@@ -248,7 +234,7 @@ namespace rabbit
 		{
 			if (gpuSignal(true))
 			{
-				gpuButton->setIcon(gpuOnIcon_);
+				gpuButton.setIcon(gpuOnIcon_);
 				gpuEnable_ = true;
 			}
 		}
@@ -256,7 +242,7 @@ namespace rabbit
 		{
 			if (gpuSignal(false))
 			{
-				gpuButton->setIcon(gpuIcon_);
+				gpuButton.setIcon(gpuIcon_);
 				gpuEnable_ = false;
 			}
 		}
@@ -269,7 +255,7 @@ namespace rabbit
 		{
 			if (hdrSignal(true))
 			{
-				hdrButton->setIcon(hdrOnIcon_);
+				hdrButton.setIcon(hdrOnIcon_);
 				hdrEnable_ = true;
 			}
 		}
@@ -277,7 +263,7 @@ namespace rabbit
 		{
 			if (hdrSignal(false))
 			{
-				hdrButton->setIcon(hdrIcon_);
+				hdrButton.setIcon(hdrIcon_);
 				hdrEnable_ = false;
 			}
 		}

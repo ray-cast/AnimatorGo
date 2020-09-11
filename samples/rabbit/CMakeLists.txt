@@ -87,6 +87,8 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/record_window.cpp
 	${SOURCE_PATH}/views/material_window.h
 	${SOURCE_PATH}/views/material_window.cpp
+	${SOURCE_PATH}/views/spoiler.h
+	${SOURCE_PATH}/views/spoiler.cpp
 )
 SOURCE_GROUP("rabbit\\views" FILES ${VIEWS_LIST})
 

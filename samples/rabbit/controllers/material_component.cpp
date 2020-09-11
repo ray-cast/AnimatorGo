@@ -4,6 +4,9 @@
 #include "../rabbit_behaviour.h"
 
 #include <octoon/mdl_loader.h>
+#include <octoon/PMREM_loader.h>
+#include <octoon/texture_loader.h>
+#include <octoon/environment_light_component.h>
 
 #include <filesystem>
 #include <fstream>
@@ -38,8 +41,8 @@ namespace rabbit
 	{
 		try
 		{
-			std::uint32_t width = 128;
-			std::uint32_t height = 128;
+			std::uint32_t width = 256;
+			std::uint32_t height = 256;
 
 			octoon::hal::GraphicsTextureDesc textureDesc;
 			textureDesc.setSize(width, height);
@@ -82,17 +85,21 @@ namespace rabbit
 			geometry_->setMesh(octoon::mesh::SphereMesh::create(0.5));
 
 			octoon::math::Quaternion q1;
-			q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 15);
+			q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 2.75);
 			octoon::math::Quaternion q2;
-			q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 15);
+			q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 4.6);
 
 			light_ = std::make_shared<octoon::light::DirectionalLight>();
 			light_->setColor(octoon::math::float3(1, 1, 1));
 			light_->setTransform(octoon::math::float4x4(q1 * q2));
 
+			envlight_ = std::make_shared<octoon::light::EnvironmentLight>();
+			envlight_->setEnvironmentMap(octoon::PMREMLoader::load("../../system/hdri/Ditch-River_2k.hdr"));
+
 			scene_ = std::make_unique<octoon::video::RenderScene>();
 			scene_->addRenderObject(camera_.get());
 			scene_->addRenderObject(light_.get());
+			scene_->addRenderObject(envlight_.get());
 			scene_->addRenderObject(geometry_.get());
 
 			std::ifstream ifs(this->getModel()->path + "/material.json");
@@ -301,6 +308,7 @@ namespace rabbit
 			}
 
 			pixmap.convertFromImage(image);
+			pixmap = pixmap.scaled(128, 128, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
 			colorTexture->unmap();
 		}

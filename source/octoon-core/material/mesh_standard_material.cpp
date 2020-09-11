@@ -239,6 +239,20 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->roughnessMap_ = map;
+		this->set("roughnessMap", map);
+		this->set("roughnessMapEnable", map ? true : false);
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getRoughnessMap() const noexcept
+	{
+		return this->roughnessMap_;
+	}
+
+	void
 	MeshStandardMaterial::setMetalness(float metalness) noexcept
 	{
 		this->metalness_ = metalness;

@@ -38,6 +38,63 @@ namespace rabbit
 	{
 		try
 		{
+			std::uint32_t width = 128;
+			std::uint32_t height = 128;
+
+			octoon::hal::GraphicsTextureDesc textureDesc;
+			textureDesc.setSize(width, height);
+			textureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
+			textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8UNorm);
+			auto colorTexture = octoon::video::Renderer::instance()->createTexture(textureDesc);
+			if (!colorTexture)
+				throw std::runtime_error("createTexture() failed");
+
+			octoon::hal::GraphicsTextureDesc depthTextureDesc;
+			depthTextureDesc.setSize(width, height);
+			depthTextureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc.setTexFormat(octoon::hal::GraphicsFormat::D16UNorm);
+			auto depthTexture = octoon::video::Renderer::instance()->createTexture(depthTextureDesc);
+			if (!depthTexture)
+				throw std::runtime_error("createTexture() failed");
+
+			octoon::hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(0, octoon::hal::GraphicsImageLayout::ColorAttachmentOptimal, octoon::hal::GraphicsFormat::R8G8B8UNorm));
+			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(1, octoon::hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, octoon::hal::GraphicsFormat::D16UNorm));
+
+			octoon::hal::GraphicsFramebufferDesc framebufferDesc;
+			framebufferDesc.setWidth(width);
+			framebufferDesc.setHeight(height);
+			framebufferDesc.setFramebufferLayout(octoon::video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setDepthStencilAttachment(octoon::hal::GraphicsAttachmentBinding(depthTexture, 0, 0));
+			framebufferDesc.addColorAttachment(octoon::hal::GraphicsAttachmentBinding(colorTexture, 0, 0));
+
+			framebuffer_ = octoon::video::Renderer::instance()->createFramebuffer(framebufferDesc);
+			if (!framebuffer_)
+				throw std::runtime_error("createFramebuffer() failed");
+
+			camera_ = std::make_shared<octoon::camera::PerspectiveCamera>(60, 1, 100);
+			camera_->setClearColor(octoon::math::float4(0.117, 0.117, 0.117, 1));
+			camera_->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
+			camera_->setFramebuffer(framebuffer_);
+			camera_->setTransform(octoon::math::makeLookatRH(octoon::math::float3(0, 0, 1), octoon::math::float3::Zero, octoon::math::float3::UnitY));
+
+			geometry_ = std::make_shared<octoon::geometry::Geometry>();
+			geometry_->setMesh(octoon::mesh::SphereMesh::create(0.5));
+
+			octoon::math::Quaternion q1;
+			q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 15);
+			octoon::math::Quaternion q2;
+			q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 15);
+
+			light_ = std::make_shared<octoon::light::DirectionalLight>();
+			light_->setColor(octoon::math::float3(1, 1, 1));
+			light_->setTransform(octoon::math::float4x4(q1 * q2));
+
+			scene_ = std::make_unique<octoon::video::RenderScene>();
+			scene_->addRenderObject(camera_.get());
+			scene_->addRenderObject(light_.get());
+			scene_->addRenderObject(geometry_.get());
+
 			std::ifstream ifs(this->getModel()->path + "/material.json");
 			if (ifs)
 			{
@@ -202,6 +259,50 @@ namespace rabbit
 		else
 		{
 			return (*material).second;
+		}
+	}
+
+	void
+	MaterialComponent::repaintMaterial(const nlohmann::json& json, QPixmap& pixmap)
+	{
+		octoon::math::float3 base(json["color"][0], json["color"][1], json["color"][2]);
+
+		auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
+		material->setColor(base);
+
+		this->repaintMaterial(material->downcast_pointer<octoon::material::Material>(), pixmap);
+	}
+
+	void
+	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap)
+	{
+		assert(material);
+
+		geometry_->setMaterial(material);
+		octoon::video::Renderer::instance()->render(*scene_);
+
+		auto framebufferDesc = framebuffer_->getFramebufferDesc();
+		auto width = framebufferDesc.getWidth();
+		auto height = framebufferDesc.getHeight();
+
+		auto colorTexture = framebufferDesc.getColorAttachment(0).getBindingTexture();
+
+		std::uint8_t* data;
+		if (colorTexture->map(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight(), 0, (void**)&data))
+		{
+			QImage image(width, height, QImage::Format_RGB888);
+			for (std::size_t y = 0; y < height; y++)
+			{
+				for (std::size_t x = 0; x < width; x++)
+				{
+					auto index = (y * height + x) * 3;
+					image.setPixelColor(x, y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
+				}
+			}
+
+			pixmap.convertFromImage(image);
+
+			colorTexture->unmap();
 		}
 	}
 

@@ -31,7 +31,7 @@ namespace octoon::mesh
 				vertex.z = radius * math::sin(thetaStart + v * thetaLength) * math::sin(phiStart + u * phiLength);
 
 				vertices.push_back(vertex);
-				normals.push_back(math::normalize(vertex));
+				normals.push_back(-math::normalize(vertex));
 				texcoords.emplace_back(u, v);
 
 				position.push_back((std::uint32_t)vertices.size() - 1);

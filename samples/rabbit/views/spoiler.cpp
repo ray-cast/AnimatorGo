@@ -26,13 +26,14 @@ namespace rabbit
 		toggleAnimation.addAnimation(new QPropertyAnimation(this, "maximumHeight"));
 		toggleAnimation.addAnimation(new QPropertyAnimation(&contentArea, "maximumHeight"));
 
+		int row = 0;
 		mainLayout.setVerticalSpacing(0);
 		mainLayout.setContentsMargins(0, 0, 0, 0);
-		int row = 0;
 		mainLayout.addWidget(&toggleButton, row, 0, 1, 1, Qt::AlignLeft);
 		mainLayout.addWidget(&headerLine, row++, 2, 1, 1);
 		mainLayout.addWidget(&contentArea, row, 0, 1, 3);
 		setLayout(&mainLayout);
+
 		QObject::connect(&toggleButton, &QToolButton::clicked, [this](const bool checked) {
 			toggleButton.setArrowType(checked ? Qt::ArrowType::DownArrow : Qt::ArrowType::RightArrow);
 			toggleAnimation.setDirection(checked ? QAbstractAnimation::Forward : QAbstractAnimation::Backward);

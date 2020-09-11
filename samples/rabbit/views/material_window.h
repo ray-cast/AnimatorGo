@@ -23,13 +23,14 @@
 
 namespace rabbit
 {
-	class MaterialModifyWindow final : public QWidget
+	class MaterialEditWindow final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		MaterialModifyWindow(QWidget* widget);
-		~MaterialModifyWindow();
+		MaterialEditWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour);
+		~MaterialEditWindow();
 
+		void repaint();
 		void setMaterial(const std::shared_ptr<octoon::material::Material>& material);
 
 	private:
@@ -101,13 +102,14 @@ namespace rabbit
 		ColorDialog* emissiveColor_;
 		QToolButton* okButton_;
 		std::shared_ptr<octoon::material::Material> material_;
+		octoon::GameObjectPtr behaviour_;
 	};
 
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT
 	public:
-		MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
+		MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept(false);
 		~MaterialWindow() noexcept;
 
 		void showEvent(QShowEvent* event) noexcept override;
@@ -126,13 +128,13 @@ namespace rabbit
 		void itemDoubleClicked(QListWidgetItem* item);
 
 	private:
-		std::unique_ptr<QLabel> title_;
-		std::unique_ptr<QToolButton> closeButton_;
-		std::unique_ptr<QHBoxLayout> titleLayout_;
-		std::unique_ptr<QVBoxLayout> materialLayout_;
-		std::unique_ptr<QVBoxLayout> mainLayout_;
-		std::unique_ptr<QListWidget> listWidget_;
-		std::unique_ptr<MaterialModifyWindow> modifyWidget_;
+		QLabel* title_;
+		QToolButton* closeButton_;
+		QHBoxLayout* titleLayout_;
+		QVBoxLayout* materialLayout_;
+		QVBoxLayout* mainLayout_;
+		QListWidget* listWidget_;
+		MaterialEditWindow* modifyWidget_;
 		QScrollArea* modifyMaterialArea_;
 		octoon::GameObjectPtr behaviour_;
 	};

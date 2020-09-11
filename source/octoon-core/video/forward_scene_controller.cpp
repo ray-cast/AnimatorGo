@@ -156,14 +156,17 @@ namespace octoon::video
 					pointLight.decay = 0;
 					pointLight.shadow = it->getShadowEnable();
 
-					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer && pointLight.shadow)
+					if (pointLight.shadow)
 					{
-						pointLight.shadowBias = it->getShadowBias();
-						pointLight.shadowRadius = it->getShadowRadius();
-						pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+						auto framebuffer = it->getCamera()->getFramebuffer();
+						if (framebuffer && pointLight.shadow)
+						{
+							pointLight.shadowBias = it->getShadowBias();
+							pointLight.shadowRadius = it->getShadowRadius();
+							pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
 
-						out.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+							out.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+						}
 					}
 
 					out.pointLights.emplace_back(pointLight);

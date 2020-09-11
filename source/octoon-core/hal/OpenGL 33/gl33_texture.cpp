@@ -122,6 +122,8 @@ namespace octoon
 					packWidth = 4;
 				else if (pixelSize == 8 || pixelSize == 16)
 					packWidth = 8;
+				else
+					packWidth = 1;
 
 				glPixelStorei(GL_UNPACK_ALIGNMENT, packWidth);
 

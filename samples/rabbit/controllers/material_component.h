@@ -6,6 +6,9 @@
 #include "../libs/tinyobj/tiny_obj_loader.h"
 
 #include <map>
+#include <qpixmap.h>
+#include <octoon/video/renderer.h>
+#include <octoon/camera/perspective_camera.h>
 #include <octoon/material/material.h>
 
 namespace rabbit
@@ -27,6 +30,9 @@ namespace rabbit
 		void importMtl(std::string_view path) noexcept(false);
 		void importMdl(std::string_view path) noexcept(false);
 
+		void repaintMaterial(const nlohmann::json& json, QPixmap& pixmap);
+		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap);
+
 		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;
 		const std::shared_ptr<octoon::material::Material> getMaterial(std::string_view uuid) noexcept;
 
@@ -42,8 +48,14 @@ namespace rabbit
 		MaterialComponent& operator=(const MaterialComponent&) = delete;
 
 	private:
+		octoon::hal::GraphicsFramebufferPtr framebuffer_;
 		std::map<std::string, nlohmann::json, std::less<>> materialList_;
 		std::map<std::string, std::shared_ptr<octoon::material::Material>, std::less<>> materials_;
+
+		std::shared_ptr<octoon::camera::PerspectiveCamera> camera_;
+		std::shared_ptr<octoon::geometry::Geometry> geometry_;
+		std::shared_ptr<octoon::light::DirectionalLight> light_;
+		std::shared_ptr<octoon::video::RenderScene> scene_;
 	};
 }
 

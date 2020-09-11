@@ -1924,7 +1924,7 @@ namespace octoon::video
 				this->projectionMatrix_->uniform4fmat(camera.getProjection());
 			
 			if (this->normalMatrix_)
-				this->normalMatrix_->uniform3fmat((math::float3x3)(camera.getView() * geometry.getTransform()));
+				this->normalMatrix_->uniform3fmat((math::float3x3)camera.getView() * (math::float3x3)geometry.getTransform());
 
 			if (this->ambientLightColor_)
 				this->ambientLightColor_->uniform3f(context.ambientLightColors);
@@ -1944,10 +1944,10 @@ namespace octoon::video
 			if (this->flipEnvMap_)
 				this->flipEnvMap_->uniform1f(1.0f);
 
-			if (this->envMap_)
+			if (this->envMap_ && context.environmentLights.size())
 				this->envMap_->uniformTexture(context.environmentLights.front().radiance.lock());
 
-			if (this->envMapIntensity_)
+			if (this->envMapIntensity_&& context.environmentLights.size())
 				this->envMapIntensity_->uniform1f(context.environmentLights.front().intensity);
 
 			if (this->directionalShadowMaps_.size() > 0)

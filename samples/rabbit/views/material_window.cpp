@@ -28,25 +28,26 @@ namespace rabbit
 		}
 	};
 
-	MaterialModifyWindow::MaterialModifyWindow(QWidget* widget)
+	MaterialEditWindow::MaterialEditWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour)
 		: QWidget(widget)
+		, behaviour_(behaviour)
 	{
-		okButton_ = new QToolButton();
+		okButton_ = new QToolButton;
 		okButton_->setText(u8"确定");
 
-		auto mainLayout_ = new QVBoxLayout(this);
-		mainLayout_->addWidget(this->createSummary(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
-		mainLayout_->addWidget(this->createNormal(), 0,  Qt::AlignTop);
-		mainLayout_->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
-		mainLayout_->addWidget(this->createMetalness(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createSheen(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createClearCoat(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createSubsurface(), 0, Qt::AlignTop);
-		mainLayout_->addWidget(this->createEmissive(), 0, Qt::AlignTop);
-		mainLayout_->addStretch(500);
-		mainLayout_->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
-		mainLayout_->setContentsMargins(0, 10, 20, 10);
+		auto mainLayout = new QVBoxLayout(this);
+		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
+		mainLayout->addWidget(this->createNormal(), 0,  Qt::AlignTop);
+		mainLayout->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
+		mainLayout->addWidget(this->createMetalness(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createSheen(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createClearCoat(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createSubsurface(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createEmissive(), 0, Qt::AlignTop);
+		mainLayout->addStretch(500);
+		mainLayout->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
+		mainLayout->setContentsMargins(0, 10, 20, 10);
 
 		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
 		connect(smoothnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(smoothEditEvent(double)));
@@ -66,18 +67,17 @@ namespace rabbit
 		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
 	}
 
-	MaterialModifyWindow::~MaterialModifyWindow()
+	MaterialEditWindow::~MaterialEditWindow()
 	{
 	}
 
 	QWidget*
-	MaterialModifyWindow::createSummary()
+	MaterialEditWindow::createSummary()
 	{
 		QPixmap pixmap(":res/icons/material.png");
 
 		imageLabel_ = new QLabel();
-		imageLabel_->setFixedSize(QSize(160, 160));
-		imageLabel_->setPixmap(pixmap.scaled(160, 160));
+		imageLabel_->setFixedSize(QSize(128, 128));
 
 		textLabel_ = new QLabel();
 		textLabel_->setText(u8"material");
@@ -87,7 +87,7 @@ namespace rabbit
 		summaryLayout->setSpacing(0);
 		summaryLayout->addWidget(imageLabel_, 0, Qt::AlignCenter);
 		summaryLayout->addWidget(textLabel_, 0, Qt::AlignCenter);
-		summaryLayout->setContentsMargins(0, 0, 50, 0);
+		summaryLayout->setContentsMargins(0, 0, 10, 0);
 
 		QWidget* summaryWidget = new QWidget;
 		summaryWidget->setLayout(summaryLayout);
@@ -96,7 +96,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createAlbedo()
+	MaterialEditWindow::createAlbedo()
 	{
 		albedoColor_ = new ColorDialog();
 		albedoColor_->setMaximumWidth(260);
@@ -104,6 +104,7 @@ namespace rabbit
 
 		auto albedoLayout = new QVBoxLayout();
 		albedoLayout->addWidget(albedoColor_);
+		albedoLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto baseColor = new Spoiler(u8"基本颜色");
 		baseColor->setFixedWidth(340);
@@ -113,7 +114,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createNormal()
+	MaterialEditWindow::createNormal()
 	{
 		QPixmap pixmap(":res/icons/material.png");
 
@@ -123,6 +124,7 @@ namespace rabbit
 
 		auto normalLayout = new QVBoxLayout();
 		normalLayout->addWidget(normalLabel_);
+		normalLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto normal = new Spoiler(u8"法线");
 		normal->setFixedWidth(340);
@@ -132,7 +134,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createSmoothness()
+	MaterialEditWindow::createSmoothness()
 	{
 		smoothnessLabel_ = new QLabel;
 		smoothnessLabel_->setText(u8"光滑度");
@@ -168,7 +170,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createMetalness()
+	MaterialEditWindow::createMetalness()
 	{
 		metalnessLabel_ = new QLabel;
 		metalnessLabel_->setText(u8"金属程度");
@@ -228,7 +230,7 @@ namespace rabbit
 
 
 	QWidget*
-	MaterialModifyWindow::createSheen()
+	MaterialEditWindow::createSheen()
 	{
 		sheenLabel_ = new QLabel;
 		sheenLabel_->setText(u8"光泽度");
@@ -264,7 +266,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createClearCoat()
+	MaterialEditWindow::createClearCoat()
 	{
 		clearcoatLabel_ = new QLabel;
 		clearcoatLabel_->setText(u8"光泽度");
@@ -323,7 +325,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createSubsurface()
+	MaterialEditWindow::createSubsurface()
 	{
 		subsurfaceLabel_ = new QLabel;
 		subsurfaceLabel_->setText(u8"散射程度");
@@ -359,7 +361,7 @@ namespace rabbit
 	}
 
 	QWidget*
-	MaterialModifyWindow::createEmissive()
+	MaterialEditWindow::createEmissive()
 	{
 		emissiveColor_ = new ColorDialog();
 		emissiveColor_->setMaximumWidth(260);
@@ -367,6 +369,7 @@ namespace rabbit
 
 		auto emissiveLayout = new QVBoxLayout();
 		emissiveLayout->addWidget(emissiveColor_);
+		emissiveLayout->setContentsMargins(20, 5, 50, 0);
 
 		auto emissive = new Spoiler(u8"自发光");
 		emissive->setFixedWidth(340);
@@ -376,18 +379,24 @@ namespace rabbit
 	}
 
 	void
-	MaterialModifyWindow::setMaterial(const std::shared_ptr<octoon::material::Material>& material)
+	MaterialEditWindow::repaint()
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour && this->material_)
+		{
+			auto materialComponent = behaviour->getComponent<MaterialComponent>();
+			QPixmap pixmap;
+			materialComponent->repaintMaterial(this->material_, pixmap);
+			imageLabel_->setPixmap(pixmap);
+		}
+	}
+
+	void
+	MaterialEditWindow::setMaterial(const std::shared_ptr<octoon::material::Material>& material)
 	{
 		if (this->material_ != material)
 		{
 			auto standard = material->downcast_pointer<octoon::material::MeshStandardMaterial>();
-
-			auto colorTexture = standard->getColorTexture();
-			if (colorTexture) {
-				QPixmap pixmap;
-				pixmap.load(QString::fromStdString(colorTexture->getTextureDesc().getName()));
-				imageLabel_->setPixmap(pixmap.scaled(130, 130));
-			}
 
 			textLabel_->setText(QString::fromStdString(standard->getName()));
 			albedoColor_->setCurrentColor(QColor::fromRgbF(standard->getColor().x, standard->getColor().y, standard->getColor().z));
@@ -401,31 +410,34 @@ namespace rabbit
 			emissiveColor_->setCurrentColor(QColor::fromRgbF(standard->getEmissive().x, standard->getEmissive().y, standard->getEmissive().z));
 
 			this->material_ = material;
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::albedoColorChanged(QColor color)
+	MaterialEditWindow::albedoColorChanged(QColor color)
 	{
 		if (this->material_)
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::emissiveColorChanged(QColor color)
+	MaterialEditWindow::emissiveColorChanged(QColor color)
 	{
 		if (this->material_)
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::smoothEditEvent(double value)
+	MaterialEditWindow::smoothEditEvent(double value)
 	{
 		smoothnessSlider_->setValue(value * 100.f);
 
@@ -433,17 +445,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setSmoothness(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::smoothSliderEvent(int value)
+	MaterialEditWindow::smoothSliderEvent(int value)
 	{
 		smoothnessSpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::metalEditEvent(double value)
+	MaterialEditWindow::metalEditEvent(double value)
 	{
 		metalnessSlider_->setValue(value * 100.f);
 
@@ -451,17 +464,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setMetalness(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::metalSliderEvent(int value)
+	MaterialEditWindow::metalSliderEvent(int value)
 	{
 		metalnessSpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::anisotropyEditEvent(double value)
+	MaterialEditWindow::anisotropyEditEvent(double value)
 	{
 		anisotropySlider_->setValue(value * 100.f);
 
@@ -469,17 +483,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setAnisotropy(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::anisotropySliderEvent(int value)
+	MaterialEditWindow::anisotropySliderEvent(int value)
 	{
 		anisotropySpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::clearcoatEditEvent(double value)
+	MaterialEditWindow::clearcoatEditEvent(double value)
 	{
 		clearcoatSlider_->setValue(value * 100.f);
 
@@ -487,17 +502,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setClearCoat(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::clearcoatSliderEvent(int value)
+	MaterialEditWindow::clearcoatSliderEvent(int value)
 	{
 		clearcoatSpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::clearcoatRoughnessEditEvent(double value)
+	MaterialEditWindow::clearcoatRoughnessEditEvent(double value)
 	{
 		clearcoatRoughnessSlider_->setValue(value * 100.f);
 
@@ -505,17 +521,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setClearCoatRoughness(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::clearcoatRoughnessSliderEvent(int value)
+	MaterialEditWindow::clearcoatRoughnessSliderEvent(int value)
 	{
 		clearcoatRoughnessSpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::sheenEditEvent(double value)
+	MaterialEditWindow::sheenEditEvent(double value)
 	{
 		sheenSlider_->setValue(value * 100.f);
 
@@ -523,17 +540,18 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setSheen(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::sheenSliderEvent(int value)
+	MaterialEditWindow::sheenSliderEvent(int value)
 	{
 		sheenSpinBox_->setValue(value / 100.0f);
 	}
 
 	void
-	MaterialModifyWindow::subsurfaceEditEvent(double value)
+	MaterialEditWindow::subsurfaceEditEvent(double value)
 	{
 		subsurfaceSlider_->setValue(value * 100.f);
 
@@ -541,22 +559,23 @@ namespace rabbit
 		{
 			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
 			standard->setSubsurface(value);
+			this->repaint();
 		}
 	}
 
 	void
-	MaterialModifyWindow::subsurfaceSliderEvent(int value)
+	MaterialEditWindow::subsurfaceSliderEvent(int value)
 	{
 		subsurfaceSpinBox_->setValue(value / 100.0f);
 	}
 
 	void 
-	MaterialModifyWindow::closeEvent()
+	MaterialEditWindow::closeEvent()
 	{
 		this->hide();
 	}
 
-	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
+	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept(false)
 		: behaviour_(behaviour)
 	{
 		this->hide();
@@ -565,14 +584,14 @@ namespace rabbit
 		this->setFixedWidth(340);
 		this->setAcceptDrops(true);
 
-		title_ = std::make_unique<QLabel>();
+		title_ = new QLabel();
 		title_->setText(u8"材质");
 
-		closeButton_ = std::make_unique<QToolButton>();
+		closeButton_ = new QToolButton();
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"关闭");
 
-		listWidget_ = std::make_unique<QListWidget>();
+		listWidget_ = new QListWidget();
 		listWidget_->setIconSize(QSize(210, 210));
 		listWidget_->setResizeMode(QListView::Adjust);
 		listWidget_->setViewMode(QListView::IconMode);
@@ -583,31 +602,31 @@ namespace rabbit
 		listWidget_->setStyleSheet("background:transparent;");
 		listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	
-		titleLayout_ = std::make_unique<QHBoxLayout>();
-		titleLayout_->addWidget(title_.get(), 0, Qt::AlignLeft);
-		titleLayout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
+		titleLayout_ = new QHBoxLayout();
+		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
+		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
-		modifyWidget_ = std::make_unique<MaterialModifyWindow>(this);
+		modifyWidget_ = new MaterialEditWindow(this, behaviour);
 		modifyWidget_->setFixedWidth(340);
 
 		modifyMaterialArea_ = new QScrollArea();
 		modifyMaterialArea_->setFixedHeight(700);
-		modifyMaterialArea_->setWidget(modifyWidget_.get());
+		modifyMaterialArea_->setWidget(modifyWidget_);
 		modifyMaterialArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		modifyMaterialArea_->setWidgetResizable(true);
 		modifyMaterialArea_->hide();
 
-		mainLayout_ = std::make_unique<QVBoxLayout>(this);
-		mainLayout_->addLayout(titleLayout_.get());
-		mainLayout_->addWidget(listWidget_.get(), 0, Qt::AlignTop | Qt::AlignCenter);
+		mainLayout_ = new QVBoxLayout(this);
+		mainLayout_->addLayout(titleLayout_);
+		mainLayout_->addWidget(listWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addWidget(modifyMaterialArea_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addStretch(500);
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 
-		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
-		connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
-		connect(listWidget_.get(), SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
+		connect(listWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+		connect(listWidget_, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 
 		behaviour->addMessageListener("editor:material:change", [this](const std::any&) {
 			if (this->isVisible())
@@ -617,19 +636,14 @@ namespace rabbit
 
 	MaterialWindow::~MaterialWindow() noexcept
 	{
-		title_.reset();
-		closeButton_.reset();
-		titleLayout_.reset();
-		mainLayout_.reset();
 	}
 
 	void
 	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
-		this->repaint();
-		this->updateList();
 		QMargins margins = mainLayout_->contentsMargins();
 		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
+		this->updateList();
 	}
 
 	void
@@ -757,7 +771,8 @@ namespace rabbit
 
 				if (textureName.empty())
 				{
-					QPixmap pixmap(":res/icons/material.png");
+					QPixmap pixmap;
+					materialComponent->repaintMaterial(mat, pixmap);
 					imageLabel->setPixmap(pixmap);
 				}
 				else

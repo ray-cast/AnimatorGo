@@ -30,7 +30,6 @@ namespace rabbit
 		void importMtl(std::string_view path) noexcept(false);
 		void importMdl(std::string_view path) noexcept(false);
 
-		void repaintMaterial(const nlohmann::json& json, QPixmap& pixmap);
 		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap);
 
 		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;

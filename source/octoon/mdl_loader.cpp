@@ -325,11 +325,11 @@ namespace octoon
 
 		for (mi::Size i = 0; i < material_count; i++)
 		{
-			auto material = std::make_shared<material::MeshStandardMaterial>(module->get_material(i));
-			auto materialName = material->getName();
-			auto name = materialName.substr(materialName.rfind(':') + 1);
+			auto fullname = std::string(module->get_material(i));
+			auto name = fullname.substr(fullname.rfind(':') + 1);
+			auto material = std::make_shared<material::MeshStandardMaterial>(name);
 
-			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(materialName.c_str()));
+			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(fullname.c_str()));
 			if (materialDefinition)
 			{
 				mi::Sint32 errors;
@@ -393,7 +393,10 @@ namespace octoon
 					{
 						mi::math::Color value;
 						editor.get_value(name, value);
-						material->set(name, math::float4(value.r, value.g, value.b, value.a));
+						if (std::string_view(name) == "base_color")
+							material->setColor(math::float3(value.r, value.g, value.b));
+						else
+							material->set(name, math::float4(value.r, value.g, value.b, value.a));
 					}
 					break;
 					default:
@@ -434,7 +437,7 @@ namespace octoon
 			else
 			{
 				if (this->verboseLogging_)
-					std::cout << "[MDL] Loading material definition for \"" << materialName << "\" from database failed" << std::endl;
+					std::cout << "[MDL] Loading material definition for \"" << fullname << "\" from database failed" << std::endl;
 			}
 		}
 

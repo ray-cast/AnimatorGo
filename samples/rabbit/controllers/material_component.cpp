@@ -270,17 +270,6 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::repaintMaterial(const nlohmann::json& json, QPixmap& pixmap)
-	{
-		octoon::math::float3 base(json["color"][0], json["color"][1], json["color"][2]);
-
-		auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
-		material->setColor(base);
-
-		this->repaintMaterial(material->downcast_pointer<octoon::material::Material>(), pixmap);
-	}
-
-	void
 	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap)
 	{
 		assert(material);

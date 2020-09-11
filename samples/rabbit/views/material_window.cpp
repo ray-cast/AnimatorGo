@@ -771,8 +771,11 @@ namespace rabbit
 
 				if (textureName.empty())
 				{
+					auto materialComponent = behaviour->getComponent<MaterialComponent>();
+					auto material = materialComponent->getMaterial(mat["uuid"].get<nlohmann::json::string_t>());
+
 					QPixmap pixmap;
-					materialComponent->repaintMaterial(mat, pixmap);
+					materialComponent->repaintMaterial(material, pixmap);
 					imageLabel->setPixmap(pixmap);
 				}
 				else

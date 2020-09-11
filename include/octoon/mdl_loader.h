@@ -21,7 +21,7 @@ namespace octoon
 		void addModulePath(std::string_view modulePath);
 
 		void load(std::string_view moduleName, io::istream& stream) noexcept(false);
-		void load(std::string_view moduleName, std::string_view source = "") noexcept(false);
+		void load(std::string_view moduleName, std::string_view source = "", std::string_view target_model = "ue4") noexcept(false);
 
 		void save(io::ostream& stream, const material::MeshStandardMaterial& material) noexcept(false);
 

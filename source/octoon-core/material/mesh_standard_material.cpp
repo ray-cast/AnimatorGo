@@ -266,6 +266,20 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setMetalnessMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->metalnessMap_ = map;
+		this->set("metalnessMap", map);
+		this->set("metalnessMapEnable", map ? true : false);
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getMetalnessMap() const noexcept
+	{
+		return this->metalnessMap_;
+	}
+
+	void
 	MeshStandardMaterial::setAnisotropy(float anisotropy) noexcept
 	{
 		this->anisotropy_ = anisotropy;

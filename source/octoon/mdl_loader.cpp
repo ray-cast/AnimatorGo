@@ -277,7 +277,7 @@ namespace octoon
 	}
 
 	void setup_target_material(
-		const std::string& target_model,
+		std::string_view target_model,
 		mi::neuraylib::ITransaction* transaction,
 		const mi::neuraylib::ICompiled_material* cm,
 		Material& out_material)
@@ -656,17 +656,12 @@ namespace octoon
 		}
 	};
 	void process_target_material(
-		const std::string& target_model,
 		const std::string& material_name,
 		const Material& material,
 		bool save_baked_textures,
 		bool parallel,
 		mi::neuraylib::IMdl_impexp_api* mdl_impexp_api)
 	{
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
-		std::cout << "Material model: " << target_model << std::endl;
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
-
 		Canvas_exporter canvas_exporter(parallel);
 		for (Material::const_iterator it = material.begin();
 			it != material.end(); ++it)
@@ -739,8 +734,8 @@ namespace octoon
 		mi::base::Handle<mi::neuraylib::INeuray> neuray;
 		mi::base::Handle<mi::neuraylib::IDatabase> database;
 		mi::base::Handle<mi::neuraylib::IScope> globalScope;
-		mi::base::Handle<mi::neuraylib::IMdl_compiler> compiler;
 		mi::base::Handle<mi::neuraylib::IImage_api> imageAPI;
+		mi::base::Handle<mi::neuraylib::ITransaction> transaction;
 		mi::base::Handle<mi::neuraylib::IMdl_impexp_api> impexp_api;
 		mi::base::Handle<mi::neuraylib::IMdl_factory> factory;
 		mi::base::Handle<mi::neuraylib::IMdl_execution_context> executionContext;
@@ -838,30 +833,22 @@ namespace octoon
 		}
 	};
 
-
-	mi::neuraylib::ICompiled_material* compile_material_instance(
-		const mi::neuraylib::IMaterial_instance* material_instance,
-		mi::neuraylib::IMdl_execution_context* context,
-		bool class_compilation)
+	mi::neuraylib::ICompiled_material* compile_material_instance(const mi::neuraylib::IMaterial_instance* material_instance, mi::neuraylib::IMdl_execution_context* context, bool class_compilation)
 	{
-		mi::Uint32 flags = class_compilation
-			? mi::neuraylib::IMaterial_instance::CLASS_COMPILATION
-			: mi::neuraylib::IMaterial_instance::DEFAULT_OPTIONS;
-		mi::neuraylib::ICompiled_material* compiled_material =
-			material_instance->create_compiled_material(flags, context);
+		mi::Uint32 flags = class_compilation ? mi::neuraylib::IMaterial_instance::CLASS_COMPILATION : mi::neuraylib::IMaterial_instance::DEFAULT_OPTIONS;
+		mi::neuraylib::ICompiled_material* compiled_material = material_instance->create_compiled_material(flags, context);
 
 		return compiled_material;
 	}
 
-	const mi::neuraylib::ICompiled_material* create_distilled_material(mi::neuraylib::IMdl_distiller_api* distiller_api, const mi::neuraylib::ICompiled_material* compiled_material,const char* target_model)
+	const mi::neuraylib::ICompiled_material* create_distilled_material(mi::neuraylib::IMdl_distiller_api* distiller_api, const mi::neuraylib::ICompiled_material* compiled_material, std::string_view target_model)
 	{
 		mi::Sint32 result = 0;
-		mi::base::Handle<const mi::neuraylib::ICompiled_material> distilled_material(distiller_api->distill_material(compiled_material, target_model, nullptr, &result));
+		auto distilled_material = mi::base::make_handle(distiller_api->distill_material(compiled_material, std::string(target_model).c_str(), nullptr, &result));
 
 		distilled_material->retain();
 		return distilled_material.get();
 	}
-
 
 	MDLLoader::MDLLoader() noexcept(false)
 		: context_(std::make_unique<MDLContext>())
@@ -883,16 +870,18 @@ namespace octoon
 
 		mi::base::Handle<mi::base::ILogger> logger(new DefaultLogger());
 
-		this->context_->compiler = this->context_->neuray->get_api_component<mi::neuraylib::IMdl_compiler>();
-		this->context_->compiler->deprecated_set_logger(logger.get());
+		auto example = "C:/Users/ray/Downloads/mdl-sdk-334300.2228/examples/mdl_sdk/shared/../../mdl";
 
-		this->addModulePath(".");
+		mi::base::Handle<mi::neuraylib::IMdl_configuration> mdl_config(this->context_->neuray->get_api_component<mi::neuraylib::IMdl_configuration>());
+		mdl_config->set_logger(logger.get());
+		mdl_config->add_mdl_system_paths();
+		mdl_config->add_mdl_user_paths();
+		mdl_config->add_mdl_path(example);
+		mdl_config->add_resource_path(example);
 
-		if (this->context_->compiler->deprecated_load_plugin_library(lib_nv_freeimage.c_str()) < 0)
-			throw std::runtime_error("Failed to load plugin " + lib_nv_freeimage);
-
-		if (this->context_->compiler->deprecated_load_plugin_library(lib_dds.c_str()) < 0)
-			throw std::runtime_error("Failed to load plugin " + lib_dds);
+		mi::base::Handle<mi::neuraylib::IPlugin_configuration> plug_config(this->context_->neuray->get_api_component<mi::neuraylib::IPlugin_configuration>());
+		if (plug_config->load_plugin_library("nv_freeimage" MI_BASE_DLL_FILE_EXT) != 0)
+			throw std::runtime_error("Fatal: Failed to load the nv_freeimage plugin.\n");
 
 		if (this->context_->neuray->start() < 0)
 			throw std::runtime_error("Starting MDL SDK failed");
@@ -904,14 +893,7 @@ namespace octoon
 		this->context_->executionContext = this->context_->factory->create_execution_context();
 		this->context_->imageAPI = this->context_->neuray->get_api_component<mi::neuraylib::IImage_api>();
 		this->context_->distilling = this->context_->neuray->get_api_component<mi::neuraylib::IMdl_distiller_api>();
-
-		mi::base::Handle<mi::neuraylib::ITransaction> transaction = mi::base::make_handle(this->context_->globalScope->create_transaction());
-		{
-			mi::base::Handle<mi::neuraylib::IImage> image(transaction->create<mi::neuraylib::IImage>("Image"));
-			transaction->store(image.get(), "dummyImage");
-		}
-
-		transaction->commit();
+		this->context_->transaction = this->context_->globalScope->create_transaction();
 	}
 
 	MDLLoader::~MDLLoader() noexcept
@@ -951,7 +933,7 @@ namespace octoon
 	}
 
 	void
-	MDLLoader::load(std::string_view moduleName, std::string_view source) noexcept(false)
+	MDLLoader::load(std::string_view moduleName, std::string_view source, std::string_view target_model) noexcept(false)
 	{
 		mi::neuraylib::Baker_resource   baker_resource = mi::neuraylib::BAKE_ON_CPU;
 		mi::Uint32                      baking_samples = 4;
@@ -959,25 +941,22 @@ namespace octoon
 		bool save_baked_textures = true;
 		bool                            parallel = true;
 
-		std::string target_model = "ue4";
-
 		this->materials_.clear();
 
 		auto mdlModuleName = moduleName.find("::") == 0 ? std::string(moduleName) : "::" + std::string(moduleName);
 
-		auto transaction = mi::base::make_handle(this->context_->globalScope->create_transaction());
 		if (source.empty())
 		{
-			if (this->context_->impexp_api->load_module(transaction.get(), mdlModuleName.c_str()) < 0)
+			if (this->context_->impexp_api->load_module(this->context_->transaction.get(), mdlModuleName.c_str()) < 0)
 				throw std::runtime_error("Loading \"" + std::string(moduleName) + ".mdl\" failed");
 		}
 		else
 		{
-			if (this->context_->impexp_api->load_module_from_string(transaction.get(), mdlModuleName.c_str(), std::string(source).c_str()) < 0)
+			if (this->context_->impexp_api->load_module_from_string(this->context_->transaction.get(), mdlModuleName.c_str(), std::string(source).c_str()) < 0)
 				throw std::runtime_error("Loading \"" + std::string(moduleName) + "\" from memory failed");
 		}
 
-		auto module = mi::base::Handle<const mi::neuraylib::IModule>(transaction->access<mi::neuraylib::IModule>(("mdl" + mdlModuleName).c_str()));
+		auto module = mi::base::Handle<const mi::neuraylib::IModule>(this->context_->transaction->access<mi::neuraylib::IModule>(("mdl" + std::string(mdlModuleName)).c_str()));
 		mi::Size material_count = module->get_material_count();
 		if (this->verboseLogging_)
 			std::cout << "The module contains the following material definitions:" << std::endl;
@@ -988,202 +967,210 @@ namespace octoon
 			auto name = material_db_name.substr(material_db_name.rfind(':') + 1);
 			auto material = std::make_shared<material::MeshStandardMaterial>(name);
 
-			auto materialDefinition = mi::base::make_handle(transaction->access<mi::neuraylib::IMaterial_definition>(material_db_name.c_str()));
+			auto materialDefinition = mi::base::make_handle(this->context_->transaction->access<mi::neuraylib::IMaterial_definition>(material_db_name.c_str()));
 			if (materialDefinition)
 			{
 				mi::Sint32 errors;
 				auto materialInstance = mi::base::make_handle(materialDefinition->create_material_instance(0, &errors));
 				check_success(errors, "Creating material instance failed");
 
-#if 1
-				mi::base::Handle<const mi::neuraylib::ICompiled_material> compiled_material(
-					compile_material_instance(materialInstance.get(), this->context_->executionContext.get(), false));
-
-				mi::base::Handle<mi::neuraylib::IMdl_distiller_api> distilling_api(this->context_->neuray->get_api_component<mi::neuraylib::IMdl_distiller_api>());
-
-				mi::Sint32 result = 0;
-				mi::base::Handle<const mi::neuraylib::ICompiled_material> distilled_material(
-					create_distilled_material(
-						distilling_api.get(),
-						compiled_material.get(), 
-						target_model.c_str()));
-
-				Material out_material;
-				setup_target_material(
-					target_model, 
-					transaction.get(), 
-					compiled_material.get(), 
-					out_material);
-
-				bake_target_material_inputs(
-					baker_resource,
-					baking_samples,
-					baking_resolution,
-					transaction.get(),
-					distilled_material.get(),
-					distilling_api.get(),
-					this->context_->imageAPI.get(),
-					out_material
-				);
-
-				process_target_material(
-					target_model,
-					name,
-					out_material,
-					save_baked_textures,
-					parallel,
-					this->context_->impexp_api.get());
-
-				for (auto& it : out_material)
+				if (!target_model.empty())
 				{
-					const std::string& param_name = it.first;
-					const Material_parameter& param = it.second;
+					auto compiled_material = mi::base::make_handle(compile_material_instance(materialInstance.get(), this->context_->executionContext.get(), false));
+					auto distilled_material = mi::base::make_handle(create_distilled_material(this->context_->distilling.get(), compiled_material.get(), target_model));
 
-					std::cout << "Parameter: '" << param_name << "': ";
-					if (param.bake_path.empty())
-					{
-						std::cout << " no matching bake path found in target material." << std::endl;
+					Material out_material;
+					setup_target_material(
+						target_model,
+						this->context_->transaction.get(),
+						distilled_material.get(),
+						out_material);
 
-						if (param.value)   std::cout << "--> value set to ";
-						if (param.texture) std::cout << "--> calculated ";
-					}
-					else
-					{
-						std::cout << "path '" << param.bake_path << "' baked to ";
-					}
+					bake_target_material_inputs(
+						baker_resource,
+						baking_samples,
+						baking_resolution,
+						this->context_->transaction.get(),
+						distilled_material.get(),
+						this->context_->distilling.get(),
+						this->context_->imageAPI.get(),
+						out_material
+					);
 
-					if (param_name == "color")
+					process_target_material(
+						name,
+						out_material,
+						save_baked_textures,
+						parallel,
+						this->context_->impexp_api.get());
+
+					for (auto& it : out_material)
 					{
-						if (param.texture)
+						const std::string& param_name = it.first;
+						const Material_parameter& param = it.second;
+
+						std::cout << "Parameter: '" << param_name << "': ";
+						if (param.bake_path.empty())
 						{
-							std::stringstream file_name;
-							file_name << name << "-" << param_name << ".png";
-							material->setColorTexture(octoon::TextureLoader::load(file_name.str()));
+							std::cout << " no matching bake path found in target material." << std::endl;
+
+							if (param.value)   std::cout << "--> value set to ";
+							if (param.texture) std::cout << "--> calculated ";
 						}
 						else
 						{
-							mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
-							mi::Color c;
-							color->get_value(c);
-							material->setColor(math::float3(c.r, c.g, c.b));
+							std::cout << "path '" << param.bake_path << "' baked to ";
+						}
+
+						if (param_name == "base_color")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setColorTexture(octoon::TextureLoader::load(file_name.str()));
+							}
+							else
+							{
+								mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
+								mi::Color c;
+								color->get_value(c);
+								material->setColor(math::float3(c.r, c.g, c.b));
+							}
+						}
+						else if (param_name == "roughness")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setRoughnessMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setSmoothness(v);
+							}
+						}
+						else if (param_name == "metallic")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setMetalnessMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setMetalness(v);
+							}
 						}
 					}
 
-					if (param_name == "roughness")
-					{
-						if (param.texture)
-						{
-							std::stringstream file_name;
-							file_name << name << "-" << param_name << ".png";
-							material->setRoughnessMap(octoon::TextureLoader::load(file_name.str()));
-						}
-						else
-						{
-							mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
-							mi::Float32 v;
-							value->get_value(v);
-							material->setSmoothness(v);
-						}
-					}
+					this->materials_.emplace_back(std::move(material));
 				}
-
-				this->materials_.emplace_back(std::move(material));
-#else
-				mi::neuraylib::Argument_editor editor(transaction.get(), std::string(name).c_str(), this->context_->factory.get());
-
-				if (this->verboseLogging_)
-					std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;
-
-				for (mi::Size i = 0; i < editor.get_parameter_count(); ++i)
-				{
-					const char* name = editor.get_parameter_name(i);
-					auto types = mi::base::Handle<const mi::neuraylib::IType_list>(editor.get_parameter_types());
-					auto type = mi::base::Handle<const mi::neuraylib::IType>(types->get_type(name));
-					auto resolvedType = mi::base::Handle<const mi::neuraylib::IType>(type->skip_all_type_aliases());
-					auto kind = resolvedType->get_kind();
-
-					switch (kind)
-					{
-					case mi::neuraylib::IType::Kind::TK_BOOL:
-					{
-						bool value;
-						editor.get_value(name, value);
-						material->set(name, value);
-					}
-					break;
-					case mi::neuraylib::IType::Kind::TK_FLOAT:
-					{
-						float value;
-						editor.get_value(name, value);
-						material->set(name, value);
-					}
-					break;
-					case mi::neuraylib::IType::Kind::TK_DOUBLE:
-					{
-						double value;
-						editor.get_value(name, value);
-						material->set(name, (float)value);
-					}
-					break;
-					case mi::neuraylib::IType::Kind::TK_INT:
-					{
-						int value;
-						editor.get_value(name, value);
-						material->set(name, value);
-					}
-					break;
-					case mi::neuraylib::IType::Kind::TK_TEXTURE:
-					{
-						int value;
-						editor.get_value(name, value);
-						material->set(name, value);
-					}
-					break;
-					case mi::neuraylib::IType::Kind::TK_COLOR:
-					{
-						mi::math::Color value;
-						editor.get_value(name, value);
-						if (std::string_view(name) == "base_color")
-							material->setColor(math::float3(value.r, value.g, value.b));
-						else
-							material->set(name, math::float4(value.r, value.g, value.b, value.a));
-					}
-					break;
-					default:
-						if (this->verboseLogging_)
-							std::cout << "[MDL] Warning: Unhandled parameter type: " << (int)kind << std::endl;
-						break;
-					}
+				else
+				{ 
+					mi::neuraylib::Argument_editor editor(this->context_->transaction.get(), std::string(name).c_str(), this->context_->factory.get());
 
 					if (this->verboseLogging_)
+						std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;
+
+					for (mi::Size i = 0; i < editor.get_parameter_count(); ++i)
 					{
-						auto TypeToString = [](mi::neuraylib::IType::Kind kind) -> std::string
+						const char* name = editor.get_parameter_name(i);
+						auto types = mi::base::Handle<const mi::neuraylib::IType_list>(editor.get_parameter_types());
+						auto type = mi::base::Handle<const mi::neuraylib::IType>(types->get_type(name));
+						auto resolvedType = mi::base::Handle<const mi::neuraylib::IType>(type->skip_all_type_aliases());
+						auto kind = resolvedType->get_kind();
+
+						switch (kind)
 						{
-							switch (kind)
+						case mi::neuraylib::IType::Kind::TK_BOOL:
+						{
+							bool value;
+							editor.get_value(name, value);
+							material->set(name, value);
+						}
+						break;
+						case mi::neuraylib::IType::Kind::TK_FLOAT:
+						{
+							float value;
+							editor.get_value(name, value);
+							material->set(name, value);
+						}
+						break;
+						case mi::neuraylib::IType::Kind::TK_DOUBLE:
+						{
+							double value;
+							editor.get_value(name, value);
+							material->set(name, (float)value);
+						}
+						break;
+						case mi::neuraylib::IType::Kind::TK_INT:
+						{
+							int value;
+							editor.get_value(name, value);
+							material->set(name, value);
+						}
+						break;
+						case mi::neuraylib::IType::Kind::TK_TEXTURE:
+						{
+							int value;
+							editor.get_value(name, value);
+							material->set(name, value);
+						}
+						break;
+						case mi::neuraylib::IType::Kind::TK_COLOR:
+						{
+							mi::math::Color value;
+							editor.get_value(name, value);
+							if (std::string_view(name) == "base_color")
+								material->setColor(math::float3(value.r, value.g, value.b));
+							else
+								material->set(name, math::float4(value.r, value.g, value.b, value.a));
+						}
+						break;
+						default:
+							if (this->verboseLogging_)
+								std::cout << "[MDL] Warning: Unhandled parameter type: " << (int)kind << std::endl;
+							break;
+						}
+
+						if (this->verboseLogging_)
+						{
+							auto TypeToString = [](mi::neuraylib::IType::Kind kind) -> std::string
 							{
-							case mi::neuraylib::IType::Kind::TK_BOOL:
-								return "bool";
-							case mi::neuraylib::IType::Kind::TK_COLOR:
-								return "color";
-							case mi::neuraylib::IType::Kind::TK_DOUBLE:
-								return "double";
-							case mi::neuraylib::IType::Kind::TK_FLOAT:
-								return "float";
-							case mi::neuraylib::IType::Kind::TK_INT:
-								return "int";
-							case mi::neuraylib::IType::Kind::TK_TEXTURE:
-								return "texture";
-							default:
-								return "other";
-							}
-						};
+								switch (kind)
+								{
+								case mi::neuraylib::IType::Kind::TK_BOOL:
+									return "bool";
+								case mi::neuraylib::IType::Kind::TK_COLOR:
+									return "color";
+								case mi::neuraylib::IType::Kind::TK_DOUBLE:
+									return "double";
+								case mi::neuraylib::IType::Kind::TK_FLOAT:
+									return "float";
+								case mi::neuraylib::IType::Kind::TK_INT:
+									return "int";
+								case mi::neuraylib::IType::Kind::TK_TEXTURE:
+									return "texture";
+								default:
+									return "other";
+								}
+							};
 
-						std::cout << "[MDL]      " << name << " (type: " << TypeToString(kind) << ")" << std::endl;
+							std::cout << "[MDL]      " << name << " (type: " << TypeToString(kind) << ")" << std::endl;
+						}
 					}
-				}
 
-				this->materials_.emplace_back(std::move(material));
-#endif
+					this->materials_.emplace_back(std::move(material));
+				}
 			}
 			else
 			{
@@ -1193,7 +1180,7 @@ namespace octoon
 		}
 
 		module.reset();
-		transaction->commit();
+		this->context_->transaction->commit();
 	}
 
 	void
@@ -1217,7 +1204,6 @@ namespace octoon
 
 		if (this->modulePaths_.find(path) == this->modulePaths_.end())
 		{
-			this->context_->compiler->deprecated_add_module_path(path.c_str());
 			this->modulePaths_.insert(path);
 		}
 	}

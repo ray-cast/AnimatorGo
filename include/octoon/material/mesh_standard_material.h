@@ -35,6 +35,9 @@ namespace octoon::material
 		void setMetalness(float metalness) noexcept;
 		float getMetalness() const noexcept;
 
+		void setMetalnessMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getMetalnessMap() const noexcept;
+
 		void setAnisotropy(float anisotropy) noexcept;
 		float getAnisotropy() const noexcept;
 
@@ -96,6 +99,7 @@ namespace octoon::material
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorMap_;
 		hal::GraphicsTexturePtr roughnessMap_;
+		hal::GraphicsTexturePtr metalnessMap_;
 		hal::GraphicsTexturePtr lightMap_;
 	};
 }

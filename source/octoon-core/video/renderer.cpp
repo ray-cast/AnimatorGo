@@ -106,18 +106,6 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::setGlobalIllumination(bool enable) noexcept
-	{
-		this->enableGlobalIllumination_ = enable;
-	}
-
-	bool
-	Renderer::getGlobalIllumination() const noexcept
-	{
-		return this->enableGlobalIllumination_;
-	}
-
-	void
 	Renderer::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
 		this->overrideMaterial_ = material;
@@ -362,7 +350,7 @@ namespace octoon::video
 			if (this->sortObjects_)
 				scene.sortGeometries();
 
-			if (this->enableGlobalIllumination_)
+			if (scene.getGlobalIllumination())
 			{
 #if RTX_ON
 				if (!rtxManager_)

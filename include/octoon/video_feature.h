@@ -47,10 +47,13 @@ namespace octoon
 		void onFrameEnd() noexcept override;
 
 	private:
+		bool enableGlobalIllumination_;
+
 		std::uint32_t framebuffer_w_;
 		std::uint32_t framebuffer_h_;
 
 		CameraComponent* camera_;
+
 		std::shared_ptr<video::RenderScene> mainScene_;
 		std::shared_ptr<video::RenderScene> mainSceneDefault_;
 		std::shared_ptr<video::RenderScene> renderScene_;

@@ -4,6 +4,7 @@ namespace octoon::video
 {
 	RenderScene::RenderScene() noexcept
 		: mainCamera_(nullptr)
+		, enableGlobalIllumination_(false)
 	{
 	}
 
@@ -21,6 +22,18 @@ namespace octoon::video
 	RenderScene::getMainCamera() const noexcept
 	{
 		return this->mainCamera_;
+	}
+
+	void
+	RenderScene::setGlobalIllumination(bool enable) noexcept
+	{
+		this->enableGlobalIllumination_ = enable;
+	}
+
+	bool
+	RenderScene::getGlobalIllumination() const noexcept
+	{
+		return this->enableGlobalIllumination_;
 	}
 
 	void

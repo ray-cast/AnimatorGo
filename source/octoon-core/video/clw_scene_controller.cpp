@@ -35,7 +35,12 @@ namespace octoon::video
 	{
 		switch (desc.getTexFormat())
 		{
+		case hal::GraphicsFormat::R8G8B8SRGB:
+		case hal::GraphicsFormat::R8G8B8SNorm:
+		case hal::GraphicsFormat::R8G8B8UNorm:
+			return align16(desc.getWidth() * desc.getHeight() * sizeof(math::uchar4));
 		case hal::GraphicsFormat::R8G8B8A8SRGB:
+		case hal::GraphicsFormat::R8G8B8A8SNorm:
 		case hal::GraphicsFormat::R8G8B8A8UNorm:
 			return align16(desc.getStreamSize());
 		case hal::GraphicsFormat::R16G16B16A16SFloat:
@@ -54,7 +59,11 @@ namespace octoon::video
 	{
 		switch (texture)
 		{
+		case hal::GraphicsFormat::R8G8B8SRGB:
+		case hal::GraphicsFormat::R8G8B8SNorm:
+		case hal::GraphicsFormat::R8G8B8UNorm:
 		case hal::GraphicsFormat::R8G8B8A8SRGB:
+		case hal::GraphicsFormat::R8G8B8A8SNorm:
 		case hal::GraphicsFormat::R8G8B8A8UNorm:
 			return ClwScene::TextureFormat::RGBA8;
 		case hal::GraphicsFormat::R16G16B16A16SFloat:
@@ -385,6 +394,20 @@ namespace octoon::video
 			if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
 			{
 				std::copy(data, data + desc.getStreamSize(), static_cast<char*>(dest));
+				texture.unmap();
+			}
+		}
+		break;
+		case hal::GraphicsFormat::R8G8B8SRGB:
+		case hal::GraphicsFormat::R8G8B8SNorm:
+		case hal::GraphicsFormat::R8G8B8UNorm:
+		{
+			math::uchar3* data = nullptr;
+			if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
+			{
+				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); i++)
+					((math::uchar4*)dest)[i].set(data[i]);
+
 				texture.unmap();
 			}
 		}

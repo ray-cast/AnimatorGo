@@ -20,6 +20,7 @@ namespace octoon
 		: framebuffer_w_(0)
 		, framebuffer_h_(0)
 		, camera_(nullptr)
+		, enableGlobalIllumination_(false)
 	{
 	}
 
@@ -27,6 +28,7 @@ namespace octoon
 		: framebuffer_w_(framebuffer_w)
 		, framebuffer_h_(framebuffer_h)
 		, camera_(nullptr)
+		, enableGlobalIllumination_(false)
 	{
 	}
 
@@ -78,13 +80,16 @@ namespace octoon
 	void
 	VideoFeature::setGlobalIllumination(bool enable) noexcept
 	{
-		video::Renderer::instance()->setGlobalIllumination(enable);
+		this->enableGlobalIllumination_ = enable;
+
+		if (this->renderScene_)
+			this->renderScene_->setGlobalIllumination(enable);
 	}
 
 	bool
 	VideoFeature::getGlobalIllumination() const noexcept
 	{
-		return video::Renderer::instance()->getGlobalIllumination();
+		return enableGlobalIllumination_;
 	}
 
 	void
@@ -103,6 +108,7 @@ namespace octoon
 	VideoFeature::setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept
 	{
 		this->mainScene_ = scene ? scene : this->mainSceneDefault_;
+		this->mainScene_->setGlobalIllumination(this->enableGlobalIllumination_);
 	}
 	
 	const std::shared_ptr<video::RenderScene>&
@@ -132,6 +138,7 @@ namespace octoon
 			video::Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
 			
 			this->mainSceneDefault_ = std::make_shared<video::RenderScene>();
+			this->mainSceneDefault_->setGlobalIllumination(this->enableGlobalIllumination_);
 
 			this->setMainScene(this->mainSceneDefault_);
 			this->setRenderScene(this->mainSceneDefault_);

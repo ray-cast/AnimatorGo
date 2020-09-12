@@ -59,9 +59,6 @@ namespace octoon::video
 		void setSortObjects(bool sortObject) noexcept;
 		bool getSortObject() const noexcept;
 
-		void setGlobalIllumination(bool enable) noexcept;
-		bool getGlobalIllumination() const noexcept;
-
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		const std::shared_ptr<material::Material>& getOverrideMaterial() const noexcept;
 

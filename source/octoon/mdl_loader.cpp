@@ -740,6 +740,7 @@ namespace octoon
 		mi::base::Handle<mi::neuraylib::IMdl_factory> factory;
 		mi::base::Handle<mi::neuraylib::IMdl_execution_context> executionContext;
 		mi::base::Handle<mi::neuraylib::IMdl_distiller_api> distilling;
+		mi::base::Handle<mi::neuraylib::IMdl_configuration> config;
 
 		static inline mi::neuraylib::INeuray* load_and_get_ineuray(const char* filename = 0)
 		{
@@ -854,30 +855,16 @@ namespace octoon
 		: context_(std::make_unique<MDLContext>())
 		, verboseLogging_(false)
 	{
-#ifdef MI_PLATFORM_WINDOWS
-		const std::string lib_mdl_sdk = "libmdl_sdk.dll";
-		const std::string lib_nv_freeimage = "nv_freeimage.dll";
-		const std::string lib_dds = "dds.dll";
-#else
-		const std::string lib_mdl_sdk = "libmdl_sdk.so";
-		const std::string lib_nv_freeimage = "nv_freeimage.so";
-		const std::string lib_dds = "dds.so";
-#endif
-
 		this->context_->neuray = MDLContext::load_and_get_ineuray();
 		if (!this->context_->neuray.is_valid_interface())
 			throw std::runtime_error("Starting MDL neuray failed");
 
 		mi::base::Handle<mi::base::ILogger> logger(new DefaultLogger());
 
-		auto example = "C:/Users/ray/Downloads/mdl-sdk-334300.2228/examples/mdl_sdk/shared/../../mdl";
-
-		mi::base::Handle<mi::neuraylib::IMdl_configuration> mdl_config(this->context_->neuray->get_api_component<mi::neuraylib::IMdl_configuration>());
-		mdl_config->set_logger(logger.get());
-		mdl_config->add_mdl_system_paths();
-		mdl_config->add_mdl_user_paths();
-		mdl_config->add_mdl_path(example);
-		mdl_config->add_resource_path(example);
+		this->context_->config = this->context_->neuray->get_api_component<mi::neuraylib::IMdl_configuration>();
+		this->context_->config->set_logger(logger.get());
+		this->context_->config->add_mdl_system_paths();
+		this->context_->config->add_mdl_user_paths();
 
 		mi::base::Handle<mi::neuraylib::IPlugin_configuration> plug_config(this->context_->neuray->get_api_component<mi::neuraylib::IPlugin_configuration>());
 		if (plug_config->load_plugin_library("nv_freeimage" MI_BASE_DLL_FILE_EXT) != 0)
@@ -1204,6 +1191,8 @@ namespace octoon
 
 		if (this->modulePaths_.find(path) == this->modulePaths_.end())
 		{
+			this->context_->config->add_mdl_path(path.c_str());
+			this->context_->config->add_resource_path(path.c_str());
 			this->modulePaths_.insert(path);
 		}
 	}

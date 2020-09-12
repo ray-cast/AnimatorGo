@@ -504,7 +504,7 @@ namespace octoon::video
 				float metalness = material->getMetalness();
 				float reflectivity = material->getReflectivity();
 
-				auto colorTexture = material->getColorTexture();
+				auto colorTexture = material->getColorMap();
 				if (colorTexture)
 					textureName = colorTexture->getTextureDesc().getName();
 

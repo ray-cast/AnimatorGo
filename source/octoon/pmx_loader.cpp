@@ -609,7 +609,7 @@ namespace octoon
 			if (it.TextureIndex < limits)
 			{
 				std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
-				material->setColorTexture(TextureLoader::load(rootPath + "/" + u8_conv));
+				material->setColorMap(TextureLoader::load(rootPath + "/" + u8_conv));
 			}
 
 			bool hasAlphaTexture = it.TextureIndex < limits ? std::wstring_view(pmx.textures[it.TextureIndex].name).find(L".png") != std::string::npos : false;

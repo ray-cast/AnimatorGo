@@ -25,8 +25,8 @@ namespace octoon::material
 		void setOpacity(float opacity) noexcept;
 		float getOpacity() const noexcept;
 
-		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
+		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getColorMap() const noexcept;
 
 		void setGamma(float gamma) noexcept;
 		float getGamma() const noexcept;

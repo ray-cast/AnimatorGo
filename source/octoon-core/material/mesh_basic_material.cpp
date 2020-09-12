@@ -105,7 +105,7 @@ namespace octoon::material
 	}
 
 	void
-	MeshBasicMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
+	MeshBasicMaterial::setColorMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->colorTexture_ = map;
 		this->set("map", map);
@@ -113,7 +113,7 @@ namespace octoon::material
 	}
 
 	const hal::GraphicsTexturePtr&
-	MeshBasicMaterial::getColorTexture() const noexcept
+	MeshBasicMaterial::getColorMap() const noexcept
 	{
 		return this->colorTexture_;
 	}
@@ -149,7 +149,7 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<MeshBasicMaterial>();
 		instance->setColor(this->getColor());
-		instance->setColorTexture(this->getColorTexture());
+		instance->setColorMap(this->getColorMap());
 		instance->setOpacity(this->getOpacity());
 		instance->setGamma(this->getGamma());
 		instance->setRepeat(this->getRepeat());

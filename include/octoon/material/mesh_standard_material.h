@@ -17,11 +17,17 @@ namespace octoon::material
 		void setColor(const math::float3& color) noexcept;
 		const math::float3& getColor() const noexcept;
 
-		void setColorTexture(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getColorTexture() const noexcept;
+		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getColorMap() const noexcept;
+
+		void setNormalMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getNormalMap() const noexcept;
 
 		void setEmissive(const math::float3& color) noexcept;
 		const math::float3& getEmissive() const noexcept;
+
+		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
 
 		void setOpacity(float opacity) noexcept;
 		float getOpacity() const noexcept;
@@ -98,9 +104,11 @@ namespace octoon::material
 		math::float3 color_;
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorMap_;
+		hal::GraphicsTexturePtr normalMap_;
 		hal::GraphicsTexturePtr roughnessMap_;
 		hal::GraphicsTexturePtr metalnessMap_;
 		hal::GraphicsTexturePtr lightMap_;
+		hal::GraphicsTexturePtr emissiveMap_;
 	};
 }
 

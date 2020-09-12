@@ -30,6 +30,7 @@ static const char* standard_frag = R"(
 #include <normal_pars_fragment>
 #include <map_pars_fragment>
 #include <color_pars_fragment>
+#include <normalmap_pars_fragment>
 #include <alphamap_pars_fragment>
 #include <aomap_pars_fragment>
 #include <lightmap_pars_fragment>
@@ -158,6 +159,20 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->emissiveMap_ = map;
+		this->set("emissiveMap", map);
+		this->set("emissiveMapEnable", map ? true : false);
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getEmissiveMap() const noexcept
+	{
+		return this->emissiveMap_;
+	}
+
+	void
 	MeshStandardMaterial::setOffset(const math::float2& offset) noexcept
 	{
 		this->offset_ = offset;
@@ -184,7 +199,7 @@ namespace octoon::material
 	}
 
 	void
-	MeshStandardMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
+	MeshStandardMaterial::setColorMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->colorMap_ = map;
 		this->set("map", map);
@@ -192,9 +207,22 @@ namespace octoon::material
 	}
 
 	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getColorTexture() const noexcept
+	MeshStandardMaterial::getColorMap() const noexcept
 	{
 		return this->colorMap_;
+	}
+
+	void
+	MeshStandardMaterial::setNormalMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->normalMap_ = map;
+		this->set("normalMap", map);
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getNormalMap() const noexcept
+	{
+		return this->normalMap_;
 	}
 
 	void
@@ -388,7 +416,7 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<MeshStandardMaterial>();
 		instance->setColor(this->getColor());
-		instance->setColorTexture(this->getColorTexture());
+		instance->setColorMap(this->getColorMap());
 		instance->setOpacity(this->getOpacity());
 		instance->setSmoothness(this->getSmoothness());
 		instance->setMetalness(this->getMetalness());

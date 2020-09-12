@@ -1015,7 +1015,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << name << "-" << param_name << ".png";
-								material->setColorTexture(octoon::TextureLoader::load(file_name.str()));
+								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else
 							{
@@ -1023,6 +1023,15 @@ namespace octoon
 								mi::Color c;
 								color->get_value(c);
 								material->setColor(math::float3(c.r, c.g, c.b));
+							}
+						}
+						if (param_name == "normal")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setNormalMap(octoon::TextureLoader::load(file_name.str()));
 							}
 						}
 						else if (param_name == "roughness")
@@ -1041,6 +1050,16 @@ namespace octoon
 								material->setSmoothness(v);
 							}
 						}
+						else if (param_name == "specular")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setReflectivity(v);
+							}
+						}
 						else if (param_name == "metallic")
 						{
 							if (param.texture)
@@ -1055,6 +1074,42 @@ namespace octoon
 								mi::Float32 v;
 								value->get_value(v);
 								material->setMetalness(v);
+							}
+						}
+						else if (param_name == "clearcoat_weight")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setClearCoat(v);
+							}
+						}
+						else if (param_name == "clearcoat_roughness")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setClearCoatRoughness(v);
+							}
+						}
+						else if (param_name == "emissive")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else
+							{
+								mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
+								mi::Color c;
+								color->get_value(c);
+								material->setColor(math::float3(c.r, c.g, c.b));
 							}
 						}
 					}

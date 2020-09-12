@@ -110,8 +110,8 @@ namespace octoon::video
 					materialCollector.Collect(mat);
 
 					auto standard = mat->downcast<material::MeshStandardMaterial>();
-					if (standard->getColorTexture())
-						textureCollector.Collect(standard->getColorTexture());
+					if (standard->getColorMap())
+						textureCollector.Collect(standard->getColorMap());
 				}
 			}
 		}
@@ -477,7 +477,7 @@ namespace octoon::video
 
 #if RTX_ON
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
-			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorTexture());
+			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());
 			material.disney.metallic = mat->getMetalness();
 			material.disney.metallic_map_idx = -1;
 			material.disney.roughness = 1 - mat->getSmoothness();

@@ -202,7 +202,7 @@ namespace rabbit
 				envLight->setEnvironmentMap(PMREMLoader::load(filepath));
 
 			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
-			material->setColorTexture(TextureLoader::load(filepath));
+			material->setColorMap(TextureLoader::load(filepath));
 		}
 	}
 
@@ -217,7 +217,7 @@ namespace rabbit
 				envLight->setEnvironmentMap(nullptr);
 
 			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
-			material->setColorTexture(nullptr);
+			material->setColorMap(nullptr);
 		}
 	}
 

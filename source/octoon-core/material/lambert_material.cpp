@@ -65,7 +65,7 @@ namespace octoon::material
 	}
 
 	void
-	LambertMaterial::setColorTexture(const hal::GraphicsTexturePtr& map) noexcept
+	LambertMaterial::setColorMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->colorTexture_ = map;
 		this->set("decal", map);
@@ -73,7 +73,7 @@ namespace octoon::material
 	}
 
 	const hal::GraphicsTexturePtr&
-	LambertMaterial::getColorTexture() const noexcept
+	LambertMaterial::getColorMap() const noexcept
 	{
 		return this->colorTexture_;
 	}
@@ -96,7 +96,7 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<LambertMaterial>();
 		instance->setColor(this->getColor());
-		instance->setColorTexture(this->getColorTexture());
+		instance->setColorMap(this->getColorMap());
 		instance->setOpacity(this->getOpacity());
 		return instance;
 	}

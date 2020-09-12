@@ -220,7 +220,7 @@ namespace rabbit
 				auto uuid = id.toStdString().substr(1, id.length() - 2);
 
 				auto& color = mat->getColor();
-				auto& colorMap = mat->getColorTexture();
+				auto& colorMap = mat->getColorMap();
 
 				nlohmann::json item;
 				item["uuid"] = uuid;
@@ -252,7 +252,7 @@ namespace rabbit
 				auto standard = std::make_shared<octoon::material::MeshStandardMaterial>();
 				standard->setName(mat["name"].get<nlohmann::json::string_t>());
 				standard->setColor(octoon::math::float3::One);
-				standard->setColorTexture(octoon::TextureLoader::load(mat["map"].get<nlohmann::json::string_t>()));
+				standard->setColorMap(octoon::TextureLoader::load(mat["map"].get<nlohmann::json::string_t>()));
 
 				this->materials_[std::string(uuid)] = standard;
 

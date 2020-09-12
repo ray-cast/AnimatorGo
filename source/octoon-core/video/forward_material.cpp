@@ -1,5 +1,6 @@
 ﻿#include <octoon/video/forward_material.h>
 #include <octoon/video/renderer.h>
+#include <octoon/material/mesh_standard_material.h>
 #include <octoon/hal/graphics.h>
 #include <regex>
 
@@ -384,6 +385,35 @@ static char* normal_fragment = R"(
 #endif
 
 )";
+static char* normalmap_pars_fragment = R"(
+#ifdef USE_NORMALMAP
+
+	uniform sampler2D normalMap;
+	uniform vec2 normalScale;
+
+	// Per-Pixel Tangent Space Normal Mapping
+	// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
+
+	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {
+
+		vec3 q0 = dFdx( eye_pos.xyz );
+		vec3 q1 = dFdy( eye_pos.xyz );
+		vec2 st0 = dFdx( vUv.st );
+		vec2 st1 = dFdy( vUv.st );
+
+		vec3 S = normalize( q0 * st1.t - q1 * st0.t );
+		vec3 T = normalize( -q0 * st1.s + q1 * st0.s );
+		vec3 N = normalize( surf_norm );
+
+		vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+		mapN.xy = normalScale * mapN.xy;
+		mat3 tsn = mat3( S, T, N );
+		return normalize( tsn * mapN );
+
+	}
+
+#endif
+)";
 static char* defaultnormal_vertex = R"(
 vec3 transformedNormal = normalMatrix * objectNormal;
 #ifdef FLIP_SIDED
@@ -431,16 +461,16 @@ static char* uv2_pars_fragment = R"(
 	in vec2 vUv2;
 )";
 static char* map_fragment = R"(
-if (mapEnable)
-{
+#ifdef USE_MAP
 	vec4 texelColor = texture2D( map, vUv );
 	texelColor = GammaToLinear( texelColor, gamma);
 	diffuseColor *= texelColor;
-}
+#endif
 )";
 static char* map_pars_fragment = R"(
+#ifdef USE_MAP
 	uniform sampler2D map;
-	uniform bool mapEnable;
+#endif
 )";
 static char* map_particle_pars_fragment = R"(
 #ifdef USE_MAP
@@ -476,9 +506,9 @@ static char* roughnessmap_pars_fragment = R"(
 )";
 static char* roughnessmap_fragment = R"(
 float roughnessFactor = roughness;
-#ifdef USE_METALNESSMAP
+#ifdef USE_ROUGHNESSMAP
 	vec4 texelRoughness = texture2D( roughnessMap, vUv );
-	roughnessFactor *= texelRoughness.r;
+	roughnessFactor = texelRoughness.r;
 #endif
 )";
 static char* metalnessmap_pars_fragment = R"(
@@ -490,7 +520,7 @@ static char* metalnessmap_fragment = R"(
 float metalnessFactor = metalness;
 #ifdef USE_METALNESSMAP
 	vec4 texelMetalness = texture2D( metalnessMap, vUv );
-	metalnessFactor *= texelMetalness.b;
+	metalnessFactor = texelMetalness.r;
 #endif
 )";
 static char* emissivemap_pars_fragment = R"(
@@ -1804,6 +1834,7 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"normal_flip", normal_flip},
 	{"normal_fragment", normal_fragment},
 	{"normal_pars_fragment", normal_pars_fragment},
+	{"normalmap_pars_fragment", normalmap_pars_fragment},
 	{"begin_vertex", begin_vertex },
 	{"project_vertex", project_vertex },
 	{"worldpos_vertex", worldpos_vertex },
@@ -2044,13 +2075,29 @@ namespace octoon::video
 		fragmentShader += "layout(location  = 0) out vec4 fragColor;\n";
 		fragmentShader += "uniform mat4 viewMatrix;\n";
 		//fragmentShader += "#define TONE_MAPPING\n";
-		fragmentShader += "#define USE_ENVMAP\n";
 		fragmentShader += "#define ENVMAP_TYPE_LATLONG_UV\n";
 		fragmentShader += "#define ENVMAP_MODE_REFLECTION\n";
 		fragmentShader += "#define PHYSICAL\n";
 		fragmentShader += "#define PHYSICALLY_CORRECT_LIGHTS\n";
-		fragmentShader += "#define USE_SHADOWMAP\n";
 		fragmentShader += "#define SHADOWMAP_TYPE_PCF_SOFT\n";
+		fragmentShader += "#define USE_ENVMAP\n";
+		fragmentShader += "#define USE_SHADOWMAP\n";
+
+		if (material->isInstanceOf<material::MeshStandardMaterial>())
+		{
+			auto standard = material->downcast<material::MeshStandardMaterial>();
+			if (standard->getColorMap())
+				fragmentShader += "#define USE_MAP\n";
+			if (standard->getNormalMap())
+				fragmentShader += "#define USE_NORMALMAP\n";
+			if (standard->getRoughnessMap())
+				fragmentShader += "#define USE_ROUGHNESSMAP\n";
+			if (standard->getMetalnessMap())
+				fragmentShader += "#define USE_METALNESSMAP\n";
+			if (standard->getEmissiveMap())
+				fragmentShader += "#define USE_EMISSIVEMAP\n";
+		}
+
 		fragmentShader += shader->fs;
 
 		this->parseIncludes(vertexShader);

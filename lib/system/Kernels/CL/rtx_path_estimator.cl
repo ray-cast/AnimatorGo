@@ -123,6 +123,71 @@ KERNEL void AdvanceIterationCount(
     }
 }
 
+///< Illuminate missing rays
+KERNEL void ShadeMiss(
+    // Ray batch
+    GLOBAL ray const* restrict rays,
+    // Intersection data
+    GLOBAL Intersection const* restrict isects,
+    // Pixel indices
+    GLOBAL int const* restrict pixel_indices,
+    // Output indices
+    GLOBAL int const*  restrict output_indices,
+    // Number of rays
+    GLOBAL int const* restrict num_rays,
+    GLOBAL Light const* restrict lights,
+    // Light distribution
+    GLOBAL int const* restrict light_distribution,
+    // Number of emissive objects
+    int num_lights,
+    int env_light_idx,
+    // Textures
+    TEXTURE_ARG_LIST,
+    GLOBAL Path const* restrict paths,
+    GLOBAL Volume const* restrict volumes,
+    // Output values
+    GLOBAL float4* restrict output
+)
+{
+    int global_id = get_global_id(0);
+    if (global_id < *num_rays)
+    {
+        int pixel_idx = pixel_indices[global_id];
+        int output_index = output_indices[pixel_idx];
+
+        GLOBAL Path const* path = paths + pixel_idx;
+
+        // In case of a miss
+        if (isects[global_id].shapeid < 0 && Path_IsAlive(path))
+        {
+            Light light = lights[env_light_idx];
+
+            // Apply MIS
+            int bxdf_flags = Path_GetBxdfFlags(path);
+            float selection_pdf = Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
+            float light_pdf = EnvironmentLight_GetPdf(&light, 0, 0, bxdf_flags, kLightInteractionSurface, rays[global_id].d.xyz, TEXTURE_ARGS);
+            float2 extra = Ray_GetExtra(&rays[global_id]);
+            float weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, light_pdf * selection_pdf) : 1.f;
+
+            float3 t = Path_GetThroughput(path);
+            float4 v = 0.f;
+
+            int tex = EnvironmentLight_GetTexture(&light, bxdf_flags);
+            if (tex != -1)
+            {
+                v.xyz = weight * light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.ibl_mirror_x) * t;
+                v.xyz = REASONABLE_RADIANCE(v.xyz);
+            }
+            else
+            {
+                v.xyz = light.intensity;
+            }
+
+            ADD_FLOAT4(&output[output_index], v);
+        }
+    }
+}
+
 KERNEL void ShadeBackgroundEnvMap(
     GLOBAL ray const* restrict rays,
     GLOBAL Intersection const* restrict isects,

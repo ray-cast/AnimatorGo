@@ -2088,14 +2088,14 @@ namespace octoon::video
 			auto standard = material->downcast<material::MeshStandardMaterial>();
 			if (standard->getColorMap())
 				fragmentShader += "#define USE_MAP\n";
-			if (standard->getNormalMap())
+			/*if (standard->getNormalMap())
 				fragmentShader += "#define USE_NORMALMAP\n";
 			if (standard->getRoughnessMap())
 				fragmentShader += "#define USE_ROUGHNESSMAP\n";
 			if (standard->getMetalnessMap())
 				fragmentShader += "#define USE_METALNESSMAP\n";
 			if (standard->getEmissiveMap())
-				fragmentShader += "#define USE_EMISSIVEMAP\n";
+				fragmentShader += "#define USE_EMISSIVEMAP\n";*/
 		}
 
 		fragmentShader += shader->fs;

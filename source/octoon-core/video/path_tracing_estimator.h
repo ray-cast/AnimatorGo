@@ -84,6 +84,7 @@ namespace octoon::video
     private:
         void initPathData(std::size_t size, int volume_idx);
         void advanceIterationCount(int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
+        void ShadeMiss(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);
         void restorePixelIndices(int pass, std::size_t size);
         void filterPathStream(int pass, std::size_t size);
         void shadeBackground(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices);

@@ -387,6 +387,7 @@ namespace rabbit
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
 			QPixmap pixmap;
 			materialComponent->repaintMaterial(this->material_, pixmap);
+			this->material_->setDirty(true);
 			imageLabel_->setPixmap(pixmap);
 		}
 	}
@@ -642,7 +643,9 @@ namespace rabbit
 	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
 		QMargins margins = mainLayout_->contentsMargins();
+		modifyMaterialArea_->hide();
 		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
+		listWidget_->show();
 		this->updateList();
 	}
 
@@ -771,9 +774,7 @@ namespace rabbit
 
 				if (textureName.empty())
 				{
-					auto materialComponent = behaviour->getComponent<MaterialComponent>();
 					auto material = materialComponent->getMaterial(mat["uuid"].get<nlohmann::json::string_t>());
-
 					QPixmap pixmap;
 					materialComponent->repaintMaterial(material, pixmap);
 					imageLabel->setPixmap(pixmap);

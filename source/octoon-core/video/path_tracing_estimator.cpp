@@ -142,6 +142,13 @@ namespace octoon::video
 				nullptr
 			);
 
+			bool has_some_environment = scene.envmapidx > -1;
+
+			if ((pass > 0) && has_some_environment)
+			{
+				ShadeMiss(scene, pass, num_estimates, output, use_output_indices);
+			}
+
 			this->filterPathStream(pass, num_estimates);
 
 			renderData_->pp.Compact(
@@ -208,6 +215,32 @@ namespace octoon::video
 		misskernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
 		misskernel.SetArg(argc++, output_indices);
 		misskernel.SetArg(argc++, (cl_int)size);
+		misskernel.SetArg(argc++, output);
+
+		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, misskernel);
+	}
+
+	void
+	PathTracingEstimator::ShadeMiss(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
+	{
+		auto misskernel = getKernel("ShadeMiss");
+
+		auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
+
+		int argc = 0;
+		misskernel.SetArg(argc++, renderData_->rays[pass & 0x1]);
+		misskernel.SetArg(argc++, renderData_->intersections);
+		misskernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
+		misskernel.SetArg(argc++, output_indices);
+		misskernel.SetArg(argc++, renderData_->hitcount);
+		misskernel.SetArg(argc++, scene.lights);
+		misskernel.SetArg(argc++, scene.lightDistributions);
+		misskernel.SetArg(argc++, scene.numLights);
+		misskernel.SetArg(argc++, scene.envmapidx);
+		misskernel.SetArg(argc++, scene.textures);
+		misskernel.SetArg(argc++, scene.texturedata);
+		misskernel.SetArg(argc++, renderData_->paths);
+		misskernel.SetArg(argc++, scene.volumes);
 		misskernel.SetArg(argc++, output);
 
 		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, misskernel);

@@ -19,7 +19,6 @@
 #include <octoon/runtime/except.h>
 
 #include "rtx_manager.h"
-#include "offline_renderer.h"
 
 namespace octoon::video
 {
@@ -55,7 +54,6 @@ namespace octoon::video
 		this->buffers_.clear();
 		this->materials_.clear();
 		this->rtxManager_.reset();
-		this->baikalRenderer_.reset();
 		currentBuffer_.reset();
 		context_.reset();
 	}
@@ -84,11 +82,7 @@ namespace octoon::video
 		assert(this->forwardRenderer_);
 
 		if (this->enableGlobalIllumination_)
-#if RTX_ON
 			return this->rtxManager_->getFramebuffer();
-#else
-			return this->baikalRenderer_->getFramebuffer();
-#endif
 		else
 			return this->forwardRenderer_->getFramebuffer();
 	}
@@ -352,7 +346,6 @@ namespace octoon::video
 
 			if (scene.getGlobalIllumination())
 			{
-#if RTX_ON
 				if (!rtxManager_)
 				{
 					rtxManager_ = std::make_unique<RtxManager>();
@@ -360,23 +353,6 @@ namespace octoon::video
 				}
 
 				this->rtxManager_->render(&scene);
-#else
-				if (!baikalRenderer_)
-				{
-					baikalRenderer_ = std::make_unique<OfflineRenderer>(w, h);
-					baikalRenderer_->setGraphicsContext(context);
-				}
-
-				this->baikalRenderer_->render(
-					camera,
-					scene.getLights(),
-					scene.getGeometries(),
-					0,
-					(std::uint32_t)camera->getPixelViewport().x,
-					(std::uint32_t)camera->getPixelViewport().y,
-					(std::uint32_t)camera->getPixelViewport().width,
-					(std::uint32_t)camera->getPixelViewport().height);
-#endif
 			}
 			else
 			{

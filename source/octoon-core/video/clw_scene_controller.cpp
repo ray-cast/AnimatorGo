@@ -497,8 +497,6 @@ namespace octoon::video
 			auto& material = materials[i];
 			material.offset = 0;
 			material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
-
-#if RTX_ON
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());
 			material.disney.metallic = mat->getMetalness();
@@ -526,7 +524,6 @@ namespace octoon::video
 				material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * 1000;
 				material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
 			}
-#endif
 
 			this->materialidToOffset_[mat] = material;
 		}

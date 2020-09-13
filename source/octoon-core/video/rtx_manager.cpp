@@ -1,5 +1,5 @@
 #include "rtx_manager.h"
-#include <RadeonProRender.h>
+#include <radeon_rays.h>
 #include <octoon/runtime/except.h>
 
 #ifdef __APPLE__
@@ -13,6 +13,18 @@
 #include <GL/glew.h>
 #include <GL/glx.h>
 #endif
+
+#define RPR_CREATION_FLAGS_ENABLE_GPU0 (1 << 0) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU1 (1 << 1) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU2 (1 << 2) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU3 (1 << 3) 
+#define RPR_CREATION_FLAGS_ENABLE_CPU (1 << 4) 
+#define RPR_CREATION_FLAGS_ENABLE_GL_INTEROP (1 << 5) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU4 (1 << 6) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU5 (1 << 7) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU6 (1 << 8) 
+#define RPR_CREATION_FLAGS_ENABLE_GPU7 (1 << 9) 
+#define RPR_CREATION_FLAGS_ENABLE_METAL (1 << 10) 
 
 namespace octoon::video
 {
@@ -31,7 +43,7 @@ namespace octoon::video
 
 		this->configs_.clear();
 
-		static const std::vector<rpr_uint> kGpuFlags =
+		static const std::vector<std::uint32_t> kGpuFlags =
 		{
 			RPR_CREATION_FLAGS_ENABLE_GPU0,
 			RPR_CREATION_FLAGS_ENABLE_GPU1,
@@ -43,12 +55,12 @@ namespace octoon::video
 			RPR_CREATION_FLAGS_ENABLE_GPU7
 		};
 
-		rpr_creation_flags flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP;
+		auto flags = RPR_CREATION_FLAGS_ENABLE_GPU0 | RPR_CREATION_FLAGS_ENABLE_GPU1 | RPR_CREATION_FLAGS_ENABLE_GL_INTEROP;
 		bool use_cpu = (flags & RPR_CREATION_FLAGS_ENABLE_CPU) == RPR_CREATION_FLAGS_ENABLE_CPU;
 		bool interop = (flags & RPR_CREATION_FLAGS_ENABLE_GL_INTEROP) == RPR_CREATION_FLAGS_ENABLE_GL_INTEROP;
 		bool hasprimary = false;
 
-		rpr_uint gpu_counter = 0;
+		std::uint32_t gpu_counter = 0;
 
 		for (std::size_t i = 0; i < platforms.size(); ++i)
 		{

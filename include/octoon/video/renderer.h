@@ -108,7 +108,6 @@ namespace octoon::video
 		hal::GraphicsContextPtr context_;
 
 		ForwardScene profile_;
-		std::unique_ptr<class OfflineRenderer> baikalRenderer_;
 		std::unique_ptr<class RtxManager> rtxManager_;
 		std::unique_ptr<class ForwardRenderer> forwardRenderer_;
 

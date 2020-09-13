@@ -10,8 +10,6 @@
 #include <regex>
 #include <filesystem>
 
-#include "Utils/mkpath.h"
-
 namespace octoon::video
 {
 	inline std::uint32_t jenkins_one_at_a_time_hash(char const* key, size_t len)

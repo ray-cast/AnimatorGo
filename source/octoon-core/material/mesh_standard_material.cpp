@@ -128,6 +128,7 @@ namespace octoon::material
 	MeshStandardMaterial::setColor(const math::float3& color) noexcept
 	{
 		this->color_ = color;
+		this->setDirty(false);
 		this->set("diffuse", this->color_);
 	}
 
@@ -141,6 +142,7 @@ namespace octoon::material
 	MeshStandardMaterial::setOpacity(float opacity) noexcept
 	{
 		this->opacity_ = opacity;
+		this->setDirty(false);
 		this->set("opacity", this->opacity_);
 	}
 
@@ -154,6 +156,7 @@ namespace octoon::material
 	MeshStandardMaterial::setEmissive(const math::float3& color) noexcept
 	{
 		this->emissive_ = color;
+		this->setDirty(false);
 		this->set("emissive", this->emissive_* this->emissiveIntensity_);
 	}
 
@@ -167,6 +170,7 @@ namespace octoon::material
 	MeshStandardMaterial::setEmissiveIntensity(float intensity) noexcept
 	{
 		this->emissiveIntensity_ = intensity;
+		this->setDirty(false);
 		this->set("emissive", this->emissive_ * this->emissiveIntensity_);
 	}
 
@@ -194,6 +198,7 @@ namespace octoon::material
 	MeshStandardMaterial::setOffset(const math::float2& offset) noexcept
 	{
 		this->offset_ = offset;
+		this->setDirty(false);
 		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
 	}
 
@@ -207,6 +212,7 @@ namespace octoon::material
 	MeshStandardMaterial::setRepeat(const math::float2& repeat) noexcept
 	{
 		this->repeat_ = repeat;
+		this->setDirty(false);
 		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
 	}
 
@@ -247,6 +253,7 @@ namespace octoon::material
 	MeshStandardMaterial::setLightMapIntensity(float intensity) noexcept
 	{
 		this->lightMapIntensity_ = intensity;
+		this->setDirty(false);
 		this->set("lightMapIntensity", intensity);
 	}
 
@@ -275,6 +282,7 @@ namespace octoon::material
 	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
 	{
 		this->smoothness_ = smoothness;
+		this->setDirty(false);
 		this->set("roughness", 1 - smoothness);
 	}
 
@@ -302,6 +310,7 @@ namespace octoon::material
 	MeshStandardMaterial::setMetalness(float metalness) noexcept
 	{
 		this->metalness_ = metalness;
+		this->setDirty(false);
 		this->set("metalness", metalness);
 	}
 
@@ -329,6 +338,7 @@ namespace octoon::material
 	MeshStandardMaterial::setAnisotropy(float anisotropy) noexcept
 	{
 		this->anisotropy_ = anisotropy;
+		this->setDirty(false);
 		this->set("anisotropy", anisotropy);
 	}
 
@@ -342,6 +352,7 @@ namespace octoon::material
 	MeshStandardMaterial::setSheen(float sheen) noexcept
 	{
 		this->sheen_ = sheen;
+		this->setDirty(false);
 		this->set("sheen", sheen);
 	}
 
@@ -355,6 +366,7 @@ namespace octoon::material
 	MeshStandardMaterial::setReflectivity(float reflectivity) noexcept
 	{
 		this->reflectivity_ = reflectivity;
+		this->setDirty(false);
 		this->set("reflectivity", reflectivity);
 	}
 
@@ -368,6 +380,7 @@ namespace octoon::material
 	MeshStandardMaterial::setRefractionRatio(float refractionRatio) noexcept
 	{
 		this->refractionRatio_ = refractionRatio;
+		this->setDirty(false);
 		this->set("refractionRatio", refractionRatio);
 	}
 
@@ -381,6 +394,7 @@ namespace octoon::material
 	MeshStandardMaterial::setClearCoat(float clearCoat) noexcept
 	{
 		this->clearCoat_ = clearCoat;
+		this->setDirty(false);
 		this->set("clearCoat", clearCoat);
 	}
 
@@ -394,6 +408,7 @@ namespace octoon::material
 	MeshStandardMaterial::setClearCoatRoughness(float clearCoatRoughness) noexcept
 	{
 		this->clearCoatRoughness_ = clearCoatRoughness;
+		this->setDirty(false);
 		this->set("clearCoatRoughness", clearCoatRoughness);
 	}
 
@@ -407,6 +422,7 @@ namespace octoon::material
 	MeshStandardMaterial::setSubsurface(float subsurface) noexcept
 	{
 		this->subsurface_ = subsurface;
+		this->setDirty(false);
 		this->set("subsurface", subsurface);
 	}
 
@@ -420,6 +436,7 @@ namespace octoon::material
 	MeshStandardMaterial::setGamma(float gamma) noexcept
 	{
 		this->gamma_ = gamma;
+		this->setDirty(false);
 		this->set("gamma", gamma);
 	}
 

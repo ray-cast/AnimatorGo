@@ -284,7 +284,7 @@ namespace octoon::video
 		if (material)
 		{
 			auto& pipeline = materials_[((std::intptr_t)material.get())];
-			if (!pipeline)
+			if (!pipeline || material->isDirty())
 				pipeline = std::make_shared<ForwardMaterial>(material, dynamic_cast<const ForwardScene&>(scene));
 
 			pipeline->update(camera, geometry, scene);

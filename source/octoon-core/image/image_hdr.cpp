@@ -308,15 +308,15 @@ namespace octoon
 			for (std::uint32_t cur = 0; cur < numbytes;)
 			{
 				std::uint32_t beg_run = cur;
-				std::uint32_t run_count = 0;
-				std::uint32_t old_run_count = 0;
+				std::uint8_t run_count = 0;
+				std::uint8_t old_run_count = 0;
 
 				while ((run_count < RGBE_MINRUN_LENGTH) && (beg_run < numbytes))
 				{
 					beg_run += run_count;
 					old_run_count = run_count;
 					run_count = 1;
-
+					
 					while ((beg_run + run_count < numbytes) && (run_count < 127) && (data[beg_run] == data[beg_run + run_count]))
 						run_count++;
 				}
@@ -333,7 +333,7 @@ namespace octoon
 				{
 					auto nonrun_count = std::min<std::uint32_t>(128, beg_run - cur);
 
-					stream[written++] = nonrun_count;
+					stream[written++] = static_cast<std::uint8_t>(nonrun_count);
 
 					for (std::uint32_t i = 0; i < nonrun_count; i++)
 						stream[written++] = data[cur + i];
@@ -365,8 +365,8 @@ namespace octoon
 			{
 				encodes[0] = 2;
 				encodes[1] = 2;
-				encodes[2] = width >> 8;
-				encodes[3] = width & 0xFF;
+				encodes[2] = static_cast<std::uint8_t>(width >> 8);
+				encodes[3] = static_cast<std::uint8_t>(width & 0xFF);
 
 				std::size_t written = 4;
 

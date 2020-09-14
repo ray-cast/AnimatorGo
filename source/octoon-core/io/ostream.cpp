@@ -125,9 +125,9 @@ namespace octoon
 			const osentry ok(this);
 
 			if (!this->fail())
-				return (this->rdbuf()->tellg());
+				return ios_base::pos_type(this->rdbuf()->tellg());
 			else
-				return (ios_base::pos_type(ios_base::_BADOFF));
+				return ios_base::pos_type(ios_base::_BADOFF);
 		}
 
 		ostream&

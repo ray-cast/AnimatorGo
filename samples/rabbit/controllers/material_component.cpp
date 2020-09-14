@@ -287,12 +287,12 @@ namespace rabbit
 		if (colorTexture->map(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight(), 0, (void**)&data))
 		{
 			QImage image(width, height, QImage::Format_RGB888);
-			for (std::size_t y = 0; y < height; y++)
+			for (std::uint32_t y = 0; y < height; y++)
 			{
-				for (std::size_t x = 0; x < width; x++)
+				for (std::uint32_t x = 0; x < width; x++)
 				{
 					auto index = (y * height + x) * 3;
-					image.setPixelColor(x, y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
+					image.setPixelColor((int)x, (int)y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
 				}
 			}
 

@@ -161,9 +161,9 @@ SET(NATIVE_FILED_DIALOG_LIST
 SOURCE_GROUP("rabbit\\libs\\NativeFiledDialog" FILES ${NATIVE_FILED_DIALOG_LIST})
 
 SET(OIDN_LIST 
-	libs/oidn-1.0.0/include/OpenImageDenoise/oidn.h
-	libs/oidn-1.0.0/include/OpenImageDenoise/oidn.hpp
-	libs/oidn-1.0.0/include/OpenImageDenoise/version.h
+	libs/oidn-1.2.3/include/OpenImageDenoise/oidn.h
+	libs/oidn-1.2.3/include/OpenImageDenoise/oidn.hpp
+	libs/oidn-1.2.3/include/OpenImageDenoise/version.h
 )
 SOURCE_GROUP("rabbit\\libs\\oidn" FILES ${OIDN_LIST})
 
@@ -204,16 +204,16 @@ FIND_PACKAGE(unofficial-iconv CONFIG REQUIRED)
 
 TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${SOURCE_PATH})
 TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${SOURCE_PATH}/libs)
-TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${SOURCE_PATH}/libs/oidn-1.0.0/include)
+TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${SOURCE_PATH}/libs/oidn-1.2.3/include)
 TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${OCTOON_PATH_INCLUDE})
 TARGET_INCLUDE_DIRECTORIES(${LIB_OUTNAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} octoon)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} unofficial::iconv::libiconv unofficial::iconv::libcharset)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${FFMPEG_LIBRARIES})
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/tbb.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/tbbmalloc.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.0.0/lib/OpenImageDenoise.lib)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbb.lib)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbbmalloc.lib)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/OpenImageDenoise.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} Qt5::Core Qt5::Widgets Qt5::QuickWidgets)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x264")
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x265-static")
@@ -221,9 +221,9 @@ TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-window
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-windows/lib/x265-static")
 
 TARGET_COPY_TO_OUTPUT_DIR(TARGET ${LIB_OUTNAME} FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.0.0/bin/OpenImageDenoise.dll"
-		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.0.0/bin/tbb.dll"
-		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.0.0/bin/tbbmalloc.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.2.3/bin/OpenImageDenoise.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.2.3/bin/tbb.dll"
+		"${CMAKE_CURRENT_SOURCE_DIR}/libs/oidn-1.2.3/bin/tbbmalloc.dll"
 	)
 
 IF(OCTOON_BUILD_PLATFORM_EMSCRIPTEN)

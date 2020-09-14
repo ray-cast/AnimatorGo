@@ -25,6 +25,12 @@ namespace rabbit
 	}
 
 	const std::optional<octoon::RaycastHit>&
+	DragComponent::getHoverItem() const noexcept
+	{
+		return this->selectedItemHover_;
+	}
+
+	const std::optional<octoon::RaycastHit>&
 	DragComponent::getSelectedItem() const noexcept
 	{
 		return this->selectedItem_;

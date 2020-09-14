@@ -26,6 +26,7 @@ namespace rabbit
 		void mouseDoubleClickEvent(QMouseEvent* event) noexcept override;
 		void wheelEvent(QWheelEvent* event) noexcept override;
 		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
+		void dragMoveEvent(QDragMoveEvent *event) noexcept override;
 		void dropEvent(QDropEvent* event) noexcept override;
 		void showEvent(QShowEvent* event) noexcept override;
 		void updateEvent() noexcept;
@@ -41,6 +42,7 @@ namespace rabbit
 		void mouseDoubleClickSignal(QMouseEvent* event);
 		void wheelSignal(QWheelEvent* event);
 		void dragEnterSignal(QDragEnterEvent* event);
+		void dragMoveSignal(QDragMoveEvent* event);
 		void dropSignal(QDropEvent* event);
 		void showSignal(QShowEvent* event);
 		void updateSignal();

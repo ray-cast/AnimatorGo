@@ -67,6 +67,7 @@ namespace rabbit
 		void onWheelSignal(QWheelEvent* event) noexcept;
 		void onDragEnterSignal(QDragEnterEvent* event) noexcept;
 		void onDropSignal(QDropEvent* event) noexcept;
+		void onDragMoveSignal(QDragMoveEvent *e) noexcept;
 		void onShowSignal(QShowEvent* event) noexcept;
 		void onUpdateSignal() noexcept;
 

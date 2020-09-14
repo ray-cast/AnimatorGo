@@ -105,6 +105,20 @@ namespace rabbit
 		octoon::GameObjectPtr behaviour_;
 	};
 
+	class MaterialListWindow final : public QListWidget
+	{
+		Q_OBJECT
+	public:
+		MaterialListWindow() noexcept(false);
+		~MaterialListWindow() noexcept;
+
+		void mouseMoveEvent(QMouseEvent *event);
+		void mousePressEvent(QMouseEvent *event);
+
+	private:
+		QPoint startPos;
+	};
+
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT

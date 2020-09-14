@@ -79,6 +79,12 @@ namespace rabbit
 	}
 
 	void
+	ViewWidget::dragMoveEvent(QDragMoveEvent *e) noexcept
+	{
+		emit dragMoveSignal(e);
+	}
+
+	void
 	ViewWidget::dropEvent(QDropEvent* e) noexcept
 	{
 		emit dropSignal(e);

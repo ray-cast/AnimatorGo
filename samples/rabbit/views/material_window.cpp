@@ -576,6 +576,48 @@ namespace rabbit
 		this->hide();
 	}
 
+	MaterialListWindow::MaterialListWindow() noexcept(false)
+	{
+	}
+
+	MaterialListWindow::~MaterialListWindow() noexcept
+	{
+	}
+
+	void
+	MaterialListWindow::mouseMoveEvent(QMouseEvent *event)
+	{
+		if (event->button() == Qt::LeftButton)
+			startPos = event->pos();
+
+		QListWidget::mousePressEvent(event);
+	}
+
+	void
+	MaterialListWindow::mousePressEvent(QMouseEvent *event)
+	{
+		QListWidget::mousePressEvent(event);
+
+		QListWidgetItem* item = currentItem();
+		if (item)
+		{
+			auto widget = this->itemWidget(item);
+			auto layout = widget->layout();
+			auto label = dynamic_cast<QLabel*>(layout->itemAt(0)->widget());
+			if (label)
+			{
+				auto mimeData = new QMimeData;
+				mimeData->setData("object/material", item->data(Qt::UserRole).toByteArray());
+
+				QDrag *drag = new QDrag(this);
+				drag->setMimeData(mimeData);
+				drag->setPixmap(*label->pixmap());
+
+				drag->exec(Qt::MoveAction, Qt::MoveAction);
+			}
+		}
+	}
+
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept(false)
 		: behaviour_(behaviour)
 	{
@@ -583,7 +625,7 @@ namespace rabbit
 		this->setObjectName("materialWindow");
 		this->setWindowTitle(u8"²ÄÖÊ");
 		this->setFixedWidth(340);
-		this->setAcceptDrops(true);
+		this->setMouseTracking(true);
 
 		title_ = new QLabel();
 		title_->setText(u8"²ÄÖÊ");
@@ -592,11 +634,15 @@ namespace rabbit
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"¹Ø±Õ");
 
-		listWidget_ = new QListWidget();
+		listWidget_ = new MaterialListWindow();
 		listWidget_->setIconSize(QSize(210, 210));
 		listWidget_->setResizeMode(QListView::Adjust);
 		listWidget_->setViewMode(QListView::IconMode);
 		listWidget_->setMovement(QListView::Static);
+		listWidget_->setDragEnabled(true);
+		listWidget_->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
+		listWidget_->setDragDropOverwriteMode(false);
+		listWidget_->setDefaultDropAction(Qt::DropAction::MoveAction);
 		listWidget_->setSpacing(10);
 		listWidget_->setMinimumHeight(this->height());
 		listWidget_->setMinimumWidth(this->width());
@@ -757,27 +803,23 @@ namespace rabbit
 				std::string textureName;
 
 				auto mat = it.second;
-
 				if (mat.find("preview") != mat.end())
 					textureName = mat["preview"].get<nlohmann::json::string_t>();
-
-				octoon::math::float3 base(mat["color"][0], mat["color"][1], mat["color"][2]);
-				octoon::math::float3 specular = octoon::math::float3::One;
-				octoon::math::float3 ambient = octoon::math::float3::Zero;
-				octoon::math::float4 edgeColor = octoon::math::float4::Zero;
 
 				QListWidgetItem* item = new QListWidgetItem;
 				item->setData(Qt::UserRole, QString::fromStdString(mat["uuid"]));
 				item->setSizeHint(QSize(130, 160));
 
 				QLabel* imageLabel = new QLabel;
-
 				if (textureName.empty())
 				{
 					auto material = materialComponent->getMaterial(mat["uuid"].get<nlohmann::json::string_t>());
-					QPixmap pixmap;
-					materialComponent->repaintMaterial(material, pixmap);
-					imageLabel->setPixmap(pixmap);
+					if (material)
+					{
+						QPixmap pixmap;
+						materialComponent->repaintMaterial(material, pixmap);
+						imageLabel->setPixmap(pixmap);
+					}
 				}
 				else
 				{

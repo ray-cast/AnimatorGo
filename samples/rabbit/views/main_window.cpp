@@ -230,6 +230,7 @@ namespace rabbit
 		connect(viewPanel_.get(), &ViewWidget::mouseDoubleClickSignal, this, &MainWindow::onMouseDoubleClickSignal);
 		connect(viewPanel_.get(), &ViewWidget::wheelSignal, this, &MainWindow::onWheelSignal);
 		connect(viewPanel_.get(), &ViewWidget::dragEnterSignal, this, &MainWindow::onDragEnterSignal);
+		connect(viewPanel_.get(), &ViewWidget::dragMoveSignal, this, &MainWindow::onDragMoveSignal);
 		connect(viewPanel_.get(), &ViewWidget::dropSignal, this, &MainWindow::onDropSignal);
 		connect(viewPanel_.get(), &ViewWidget::showSignal, this, &MainWindow::onShowSignal);
 		connect(viewPanel_.get(), &ViewWidget::updateSignal, this, &MainWindow::onUpdateSignal);
@@ -992,21 +993,37 @@ namespace rabbit
 						utf8s.push_back(it.data() + 1);
 
 					gameApp_->doWindowDrop((octoon::WindHandle)viewPanel_->winId(), (std::uint32_t)utf8s.size(), (const char**)utf8s.data());
-
-					for (auto& it : urls)
-					{
-						auto path = it.toString().toStdWString();
-						if (path.find(L".mtl") != std::string::npos)
-						{
-							materialWindow_->updateList();
-							break;
-						}
-					}
 				}
 
 				event->accept();
 			}
+			else
+			{
+				auto data = event->mimeData()->data("object/material");
+				if (!data.isEmpty())
+				{
+					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+					auto selectedItem = behaviour->getComponent<DragComponent>()->getHoverItem();
+					if (selectedItem)
+					{
+						auto hit = selectedItem.value();
+						auto materialComponent = behaviour->getComponent<MaterialComponent>();
+						auto material = materialComponent->getMaterial(data.toStdString());
+
+						auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
+						if (meshRenderer)
+							meshRenderer->setMaterial(material, hit.mesh);
+					}
+				}
+			}
 		}
+	}
+
+	void
+	MainWindow::onDragMoveSignal(QDragMoveEvent *e) noexcept
+	{
+		if (gameApp_ && !profile_->timeModule->playing_)
+			gameApp_->doWindowMouseMotion((octoon::WindHandle)viewPanel_->winId(), e->pos().x(), e->pos().y());
 	}
 
 	void

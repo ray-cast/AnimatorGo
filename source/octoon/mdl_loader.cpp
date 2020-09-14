@@ -266,8 +266,7 @@ namespace octoon
 			}
 			return;
 		}
-		mi::base::Handle<mi::IFloat32> value(
-			ii->get_interface<mi::IFloat32>());
+		mi::base::Handle<mi::IFloat32> value(ii->get_interface<mi::IFloat32>());
 		if (value)
 		{
 			mi::Float32 f;
@@ -282,12 +281,8 @@ namespace octoon
 		const mi::neuraylib::ICompiled_material* cm,
 		Material& out_material)
 	{
-		// Access surface.scattering function
-		mi::base::Handle<const mi::neuraylib::IExpression_direct_call> parent_call(
-			lookup_call("surface.scattering", cm));
-		// ... and get its semantic
-		mi::neuraylib::IFunction_definition::Semantics semantic(
-			get_call_semantic(transaction, parent_call.get()));
+		mi::base::Handle<const mi::neuraylib::IExpression_direct_call> parent_call(lookup_call("surface.scattering", cm));
+		mi::neuraylib::IFunction_definition::Semantics semantic(get_call_semantic(transaction, parent_call.get()));
 
 		if (target_model == "diffuse")
 		{
@@ -430,8 +425,7 @@ namespace octoon
 				out_material["base_color"].bake_path = path_prefix + "components.1.component.tint";
 
 				// Chain further
-				parent_call = lookup_call(
-					"components.0.component", cm, parent_call.get());
+				parent_call = lookup_call("components.0.component", cm, parent_call.get());
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "components.0.component.";
 			}
@@ -464,8 +458,7 @@ namespace octoon
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "components.0.component.";
 			}
-			if (semantic ==
-				mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_MICROFACET_GGX_VCAVITIES_BSDF)
+			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_MICROFACET_GGX_VCAVITIES_BSDF)
 			{
 				if (out_material["metallic"].bake_path.empty())
 					out_material["metallic"].value = create_value(transaction, "Float32", 1.0f);
@@ -474,16 +467,14 @@ namespace octoon
 				if (out_material["base_color"].bake_path.empty())
 					out_material["base_color"].bake_path = path_prefix + "tint";
 			}
-			else if (semantic ==
-				mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_DIFFUSE_REFLECTION_BSDF)
+			else if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_DIFFUSE_REFLECTION_BSDF)
 			{
 				if (out_material["base_color"].bake_path.empty())
 					out_material["base_color"].bake_path = path_prefix + "tint";
 			}
 
 			// Check for cutout-opacity
-			mi::base::Handle<const mi::neuraylib::IExpression> cutout(
-				cm->lookup_sub_expression("geometry.cutout_opacity"));
+			mi::base::Handle<const mi::neuraylib::IExpression> cutout(cm->lookup_sub_expression("geometry.cutout_opacity"));
 			if (cutout.is_valid_interface())
 				out_material["opacity"].bake_path = "geometry.cutout_opacity";
 		}
@@ -499,9 +490,6 @@ namespace octoon
 			out_material["opacity"] = Material_parameter("Float32");
 			out_material["normal_map"] = Material_parameter("Float32<3>", remap_normal);
 
-			// Specular-glossy distillation can result in a diffuse bsdf, a glossy bsdf 
-			// or a curve-weighted combination of both. Explicitly check the cases
-			// and save the corresponding bake paths.
 			switch (semantic)
 			{
 			case mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_DIFFUSE_REFLECTION_BSDF:
@@ -513,18 +501,14 @@ namespace octoon
 				out_material["f0_color"].bake_path = "surface.scattering.tint";
 				out_material["f0_refl"].value = create_value(transaction, "Float32", 1.0f);
 				out_material["f0_weight"].value = create_value(transaction, "Float32", 1.0f);
-				out_material["glossiness"].bake_path =
-					"surface.scattering.roughness_u"; // needs inversion
+				out_material["glossiness"].bake_path = "surface.scattering.roughness_u"; // needs inversion
 				break;
 			case mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_CUSTOM_CURVE_LAYER:
 				out_material["base_color"].bake_path = "surface.scattering.base.tint";
-
 				out_material["f0_color"].bake_path = "surface.scattering.layer.tint";
 				out_material["f0_refl"].bake_path = "surface.scattering.normal_reflectivity";
 				out_material["f0_weight"].bake_path = "surface.scattering.weight";
-
-				out_material["glossiness"].bake_path =
-					"surface.scattering.layer.roughness_u"; // needs inversion
+				out_material["glossiness"].bake_path = "surface.scattering.layer.roughness_u"; // needs inversion
 
 				break;
 			default:
@@ -535,7 +519,6 @@ namespace octoon
 			out_material["opacity"].bake_path = "geometry.cutout_opacity";
 		}
 	}
-
 
 	void bake_target_material_inputs(
 		mi::neuraylib::Baker_resource baker_resource,
@@ -598,9 +581,7 @@ namespace octoon
 			else
 			{
 				// Create a canvas
-				mi::base::Handle<mi::neuraylib::ICanvas> canvas(
-					image_api->create_canvas(param.value_type.c_str(), baking_resolution, baking_resolution));
-
+				mi::base::Handle<mi::neuraylib::ICanvas> canvas(image_api->create_canvas(param.value_type.c_str(), baking_resolution, baking_resolution));
 				// Bake texture
 				mi::Sint32 result = baker->bake_texture(canvas.get(), baking_samples);
 
@@ -663,8 +644,7 @@ namespace octoon
 		mi::neuraylib::IMdl_impexp_api* mdl_impexp_api)
 	{
 		Canvas_exporter canvas_exporter(parallel);
-		for (Material::const_iterator it = material.begin();
-			it != material.end(); ++it)
+		for (Material::const_iterator it = material.begin(); it != material.end(); ++it)
 		{
 			const std::string& param_name = it->first;
 			const Material_parameter& param = it->second;
@@ -696,33 +676,29 @@ namespace octoon
 			else if (param.value)
 			{
 				std::cout << "constant ";
+
 				if (param.value_type == "Rgb_fp")
 				{
-					mi::base::Handle<mi::IColor> color(
-						param.value->get_interface<mi::IColor>());
+					mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
 					mi::Color c;
 					color->get_value(c);
-					std::cout << "color ("
-						<< c.r << ", " << c.g << ", " << c.b << ")." << std::endl << std::endl;
+					std::cout << "color (" << c.r << ", " << c.g << ", " << c.b << ")." << std::endl;
 				}
 				else if (param.value_type == "Float32")
 				{
-					mi::base::Handle<mi::IFloat32> value(
-						param.value->get_interface<mi::IFloat32>());
+					mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 					mi::Float32 v;
 					value->get_value(v);
 					std::cout << "float " << v << "." << std::endl;
 				}
 				else if (param.value_type == "Float32<3>")
 				{
-					mi::base::Handle<mi::IFloat32_3> value(
-						param.value->get_interface<mi::IFloat32_3>());
+					mi::base::Handle<mi::IFloat32_3> value(param.value->get_interface<mi::IFloat32_3>());
 					mi::Float32_3 v;
 					value->get_value(v);
-					std::cout << "vector ("<< v.x << ", " << v.y << ", " << v.z << ")." << std::endl << std::endl;
+					std::cout << "vector (" << v.x << ", " << v.y << ", " << v.z << ")." << std::endl;
 				}
 			}
-			std::cout << "--------------------------------------------------------------------------------" << std::endl;
 		}
 
 		canvas_exporter.do_export(mdl_impexp_api);

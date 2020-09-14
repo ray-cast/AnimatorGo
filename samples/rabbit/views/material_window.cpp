@@ -578,6 +578,13 @@ namespace rabbit
 
 	MaterialListWindow::MaterialListWindow() noexcept(false)
 	{
+		this->setResizeMode(QListView::Adjust);
+		this->setViewMode(QListView::IconMode);
+		this->setMovement(QListView::Static);
+		this->setDefaultDropAction(Qt::DropAction::MoveAction);
+		this->setSpacing(10);
+		this->setStyleSheet("background:transparent;");
+		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
 
 	MaterialListWindow::~MaterialListWindow() noexcept
@@ -587,7 +594,7 @@ namespace rabbit
 	void
 	MaterialListWindow::mouseMoveEvent(QMouseEvent *event)
 	{
-		if (event->button() == Qt::LeftButton || event->button() == Qt::NoButton)
+		if (event->buttons() & Qt::LeftButton)
 		{
 			QPoint length = event->pos() - startPos;
 			if (length.manhattanLength() > QApplication::startDragDistance())
@@ -619,7 +626,7 @@ namespace rabbit
 	void
 	MaterialListWindow::mousePressEvent(QMouseEvent *event)
 	{
-		if (event->button() == Qt::LeftButton || event->button() == Qt::NoButton)
+		if (event->button() == Qt::LeftButton)
 			startPos = event->pos();
 
 		QListWidget::mousePressEvent(event);
@@ -643,19 +650,8 @@ namespace rabbit
 
 		listWidget_ = new MaterialListWindow();
 		listWidget_->setIconSize(QSize(210, 210));
-		listWidget_->setResizeMode(QListView::Adjust);
-		listWidget_->setViewMode(QListView::IconMode);
-		listWidget_->setMovement(QListView::Static);
-		listWidget_->setDragEnabled(true);
-		listWidget_->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
-		listWidget_->setDragDropOverwriteMode(false);
-		listWidget_->setDefaultDropAction(Qt::DropAction::MoveAction);
-		listWidget_->setSpacing(10);
-		listWidget_->setMinimumHeight(this->height());
-		listWidget_->setMinimumWidth(this->width());
-		listWidget_->setStyleSheet("background:transparent;");
-		listWidget_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	
+		listWidget_->setMinimumSize(QSize(this->width(), this->height()));
+
 		titleLayout_ = new QHBoxLayout();
 		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);

@@ -127,12 +127,6 @@ namespace rabbit
 		~MaterialWindow() noexcept;
 
 		void showEvent(QShowEvent* event) noexcept override;
-
-		void dragEnterEvent(QDragEnterEvent* event) noexcept override;
-		void dropEvent(QDropEvent* event) noexcept override;
-
-		std::string currentItem() const noexcept;
-
 		void updateList();
 
 	private Q_SLOTS:

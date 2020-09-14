@@ -598,7 +598,7 @@ namespace rabbit
 	{
 		QListWidget::mousePressEvent(event);
 
-		QListWidgetItem* item = currentItem();
+		QListWidgetItem* item = this->itemAt(event->pos());
 		if (item)
 		{
 			auto widget = this->itemWidget(item);
@@ -611,9 +611,10 @@ namespace rabbit
 
 				QDrag *drag = new QDrag(this);
 				drag->setMimeData(mimeData);
-				drag->setPixmap(*label->pixmap());
+				drag->setPixmap(label->pixmap(Qt::ReturnByValue));
+				drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
 
-				drag->exec(Qt::MoveAction, Qt::MoveAction);
+				drag->exec(Qt::MoveAction);
 			}
 		}
 	}
@@ -750,37 +751,6 @@ namespace rabbit
 				}
 			}
 		}
-	}
-
-	void
-	MaterialWindow::dragEnterEvent(QDragEnterEvent* event) noexcept
-	{
-		event->acceptProposedAction();
-		event->accept();
-	}
-
-	void
-	MaterialWindow::dropEvent(QDropEvent* event) noexcept
-	{
-		auto urls = event->mimeData()->urls();
-		if (!urls.isEmpty())
-		{
-			std::vector<std::wstring> paths;
-			for (auto& it : urls)
-			{
-				auto path = it.toString().toStdWString();
-				if (path.find(L"file:///") == 0)
-					path = path.substr(8);
-			}
-
-			event->accept();
-		}
-	}
-
-	std::string
-	MaterialWindow::currentItem() const noexcept
-	{
-		return this->listWidget_->currentItem()->data(Qt::UserRole).toString().toStdString();
 	}
 
 	void

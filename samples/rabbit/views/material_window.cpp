@@ -656,7 +656,7 @@ namespace rabbit
 
 						auto drag = new QDrag(this);
 						drag->setMimeData(mimeData);
-						drag->setPixmap(label->pixmap(Qt::ReturnByValue));
+						drag->setPixmap(*label->pixmap());
 						drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
 						drag->exec(Qt::MoveAction);
 					}

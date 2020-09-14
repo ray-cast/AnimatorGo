@@ -172,7 +172,7 @@ namespace octoon::video
 	Collector::GetItemIndex(runtime::RttiInterface* item) const
 	{
 		auto iter = impl->m_map.find(item);
-		if (iter == impl->m_map.cend())
+		if (iter == impl->m_map.end())
 			throw std::runtime_error("No such item in the collector");
 
 		return iter->second;

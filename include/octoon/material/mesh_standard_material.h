@@ -15,73 +15,55 @@ namespace octoon::material
 		virtual ~MeshStandardMaterial() noexcept;
 
 		void setColor(const math::float3& color) noexcept;
-		const math::float3& getColor() const noexcept;
-
-		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getColorMap() const noexcept;
-
-		void setNormalMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getNormalMap() const noexcept;
-
 		void setEmissive(const math::float3& color) noexcept;
+		void setEmissiveIntensity(float intensity) noexcept;
+		void setOpacity(float opacity) noexcept;
+		void setSmoothness(float smoothness) noexcept;
+		void setMetalness(float metalness) noexcept;
+		void setAnisotropy(float anisotropy) noexcept;
+		void setSheen(float sheen) noexcept;
+		void setReflectivity(float reflectivity) noexcept;
+		void setRefractionRatio(float refractionRatio) noexcept;
+		void setClearCoat(float clearCoat) noexcept;
+		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
+		void setSubsurface(float subsurface) noexcept;
+		void setLightMapIntensity(float intensity) noexcept;
+		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setNormalMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setMetalnessMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setLightTexture(const hal::GraphicsTexturePtr& map) noexcept;
+		void setOffset(const math::float2& offset) noexcept;
+		void setRepeat(const math::float2& repeat) noexcept;
+		void setGamma(float gamma) noexcept;
+
+		const math::float3& getColor() const noexcept;
 		const math::float3& getEmissive() const noexcept;
 
-		void setEmissiveIntensity(float intensity) noexcept;
 		float getEmissiveIntensity() const noexcept;
-
-		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
-
-		void setOpacity(float opacity) noexcept;
 		float getOpacity() const noexcept;
-
-		void setSmoothness(float smoothness) noexcept;
 		float getSmoothness() const noexcept;
-
-		void setRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getRoughnessMap() const noexcept;
-
-		void setMetalness(float metalness) noexcept;
 		float getMetalness() const noexcept;
-
-		void setMetalnessMap(const hal::GraphicsTexturePtr& map) noexcept;
-		const hal::GraphicsTexturePtr& getMetalnessMap() const noexcept;
-
-		void setAnisotropy(float anisotropy) noexcept;
 		float getAnisotropy() const noexcept;
-
-		void setSheen(float sheen) noexcept;
 		float getSheen() const noexcept;
-
-		void setReflectivity(float reflectivity) noexcept;
 		float getReflectivity() const noexcept;
-
-		void setRefractionRatio(float refractionRatio) noexcept;
-		float getRefractionRatio() const noexcept;		
-
-		void setClearCoat(float clearCoat) noexcept;
+		float getRefractionRatio() const noexcept;
 		float getClearCoat() const noexcept;
-
-		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
 		float getClearCoatRoughness() const noexcept;
-
-		void setSubsurface(float subsurface) noexcept;
 		float getSubsurface() const noexcept;
-
-		void setLightMapIntensity(float intensity) noexcept;
 		float getLightMapIntensity() const noexcept;
+		float getGamma() const noexcept;
 
-		void setLightTexture(const hal::GraphicsTexturePtr& map) noexcept;
+		const hal::GraphicsTexturePtr& getColorMap() const noexcept;
+		const hal::GraphicsTexturePtr& getNormalMap() const noexcept;
+		const hal::GraphicsTexturePtr& getRoughnessMap() const noexcept;
+		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
+		const hal::GraphicsTexturePtr& getMetalnessMap() const noexcept;
 		const hal::GraphicsTexturePtr& getLightTexture() const noexcept;
 
-		void setOffset(const math::float2& offset) noexcept;
 		const math::float2& getOffset() const noexcept;
-
-		void setRepeat(const math::float2& repeat) noexcept;
 		const math::float2& getRepeat() const noexcept;
-
-		void setGamma(float gamma) noexcept;
-		float getGamma() const noexcept;
 
 		std::shared_ptr<Material> clone() const noexcept override;
 

@@ -958,7 +958,7 @@ namespace rabbit
 	MainWindow::onWheelSignal(QWheelEvent* e) noexcept
 	{
 		if (gameApp_ && !profile_->timeModule->playing_)
-			gameApp_->doWindowScrool((octoon::WindHandle)viewPanel_->winId(), 0, e->delta());
+			gameApp_->doWindowScrool((octoon::WindHandle)viewPanel_->winId(), e->angleDelta().x(), e->angleDelta().y());
 	}
 
 	void
@@ -999,8 +999,8 @@ namespace rabbit
 			}
 			else
 			{
-				auto data = event->mimeData()->data("object/material");
-				if (!data.isEmpty())
+				auto mineData = event->mimeData()->data("object/material");
+				if (!mineData.isEmpty())
 				{
 					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 					auto selectedItem = behaviour->getComponent<DragComponent>()->getHoverItem();
@@ -1008,7 +1008,7 @@ namespace rabbit
 					{
 						auto hit = selectedItem.value();
 						auto materialComponent = behaviour->getComponent<MaterialComponent>();
-						auto material = materialComponent->getMaterial(data.toStdString());
+						auto material = materialComponent->getMaterial(mineData.toStdString());
 
 						auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
 						if (meshRenderer)

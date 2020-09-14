@@ -121,6 +121,14 @@ namespace octoon::video
 					auto standard = mat->downcast<material::MeshStandardMaterial>();
 					if (standard->getColorMap())
 						textureCollector.Collect(standard->getColorMap());
+					if (standard->getRoughnessMap())
+						textureCollector.Collect(standard->getRoughnessMap());
+					if (standard->getMetalnessMap())
+						textureCollector.Collect(standard->getMetalnessMap());
+					if (standard->getNormalMap())
+						textureCollector.Collect(standard->getNormalMap());
+					if (standard->getEmissiveMap())
+						textureCollector.Collect(standard->getEmissiveMap());
 				}
 			}
 		}
@@ -499,10 +507,10 @@ namespace octoon::video
 			material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());
-			material.disney.metallic = mat->getMetalness();
-			material.disney.metallic_map_idx = -1;
 			material.disney.roughness = 1 - mat->getSmoothness();
-			material.disney.roughness_map_idx = -1;
+			material.disney.roughness_map_idx = GetTextureIndex(textureCollector, mat->getRoughnessMap());
+			material.disney.metallic = mat->getMetalness();
+			material.disney.metallic_map_idx = GetTextureIndex(textureCollector, mat->getMetalnessMap());
 			material.disney.anisotropy = mat->getAnisotropy();
 			material.disney.anisotropy_map_idx = -1;
 			material.disney.sheen = mat->getSheen();

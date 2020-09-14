@@ -20,8 +20,6 @@ namespace octoon::video
 		void render(const CompiledScene& scene) override;
 		void renderTile(const CompiledScene& scene, const math::int2& tile_origin, const math::int2& tile_size) override;
 
-		CLWKernel GetCopyKernel();
-
 	private:
 		Output* findFirstNonZeroOutput(bool includeMultipass = true, bool includeSinglepass = true) const noexcept;
 
@@ -30,6 +28,11 @@ namespace octoon::video
 
 	private:
 		CLWContext context_;
+		CLWKernel copyKernel_;
+		CLWKernel generateKernel_;
+		CLWKernel perspectiveCameraKernel_;
+		CLWKernel perspectiveCameraDofKernel_;
+		CLWKernel orthographicCameraKernel_;
 
 		std::uint32_t sampleCounter_;
 		std::unique_ptr<PathTracingEstimator> estimator_;

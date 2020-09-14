@@ -15,6 +15,12 @@ namespace octoon::video
 		, sampleCounter_(0)
 	{
 		estimator_->setWorkBufferSize(kTileSizeX * kTileSizeY);
+
+		copyKernel_ = getKernel("ApplyGammaAndCopyData");
+		generateKernel_ = getKernel("GenerateTileDomain");
+		perspectiveCameraKernel_ = getKernel("PerspectiveCamera_GeneratePaths");
+		perspectiveCameraDofKernel_ = getKernel("PerspectiveCameraDof_GeneratePaths");
+		orthographicCameraKernel_ = getKernel("OrthographicCamera_GeneratePaths");
 	}
 
 	MonteCarloRenderer::~MonteCarloRenderer() noexcept
@@ -78,13 +84,11 @@ namespace octoon::video
 			std::uint32_t start_index = 0;
 			std::uint32_t end_index = static_cast<std::uint32_t>(OutputType::kMax);
 
-			auto copyKernel = GetCopyKernel();
-
 			for (auto i = start_index; i < end_index; ++i)
 			{
 				auto aov = dynamic_cast<ClwTextureOutput*>(getOutput(static_cast<OutputType>(i)));
 				if (aov)
-					aov->syncData(copyKernel);
+					aov->syncData(this->copyKernel_);
 			}
 
 			++sampleCounter_;
@@ -121,49 +125,46 @@ namespace octoon::video
 	void
 	MonteCarloRenderer::generateTileDomain(const math::int2& output_size, const math::int2& tile_origin, const math::int2& tile_size)
 	{
-		CLWKernel generate_kernel = getKernel("GenerateTileDomain");
-
 		int argc = 0;
-		generate_kernel.SetArg(argc++, output_size.x);
-		generate_kernel.SetArg(argc++, output_size.y);
-		generate_kernel.SetArg(argc++, tile_origin.x);
-		generate_kernel.SetArg(argc++, tile_origin.y);
-		generate_kernel.SetArg(argc++, tile_size.x);
-		generate_kernel.SetArg(argc++, tile_size.y);
-		generate_kernel.SetArg(argc++, rand_uint());
-		generate_kernel.SetArg(argc++, sampleCounter_);
-		generate_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
-		generate_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
-		generate_kernel.SetArg(argc++, estimator_->getOutputIndexBuffer());
-		generate_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
+		generateKernel_.SetArg(argc++, output_size.x);
+		generateKernel_.SetArg(argc++, output_size.y);
+		generateKernel_.SetArg(argc++, tile_origin.x);
+		generateKernel_.SetArg(argc++, tile_origin.y);
+		generateKernel_.SetArg(argc++, tile_size.x);
+		generateKernel_.SetArg(argc++, tile_size.y);
+		generateKernel_.SetArg(argc++, rand_uint());
+		generateKernel_.SetArg(argc++, sampleCounter_);
+		generateKernel_.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
+		generateKernel_.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
+		generateKernel_.SetArg(argc++, estimator_->getOutputIndexBuffer());
+		generateKernel_.SetArg(argc++, estimator_->getRayCountBuffer());
 
 		size_t gs[] = { static_cast<size_t>((tile_size.x + 15) / 16 * 16), static_cast<size_t>((tile_size.y + 15) / 16 * 16) };
 		size_t ls[] = { 16, 16 };
 
-		getContext().Launch2D(0, gs, ls, generate_kernel);
+		getContext().Launch2D(0, gs, ls, generateKernel_);
 	}
 
 	void
 	MonteCarloRenderer::generatePrimaryRays(const CompiledScene& scene, Output const& output, math::int2 const& tile_size, bool generate_at_pixel_center)
 	{
-		auto getCameraKernelName = [](CameraType type)
-		{
-			switch (type) {
-			case CameraType::kPerspective:
-				return "PerspectiveCamera_GeneratePaths";
-			case CameraType::kPhysicalPerspective:
-				return "PerspectiveCameraDof_GeneratePaths";
-			case CameraType::kOrthographic:
-				return "OrthographicCamera_GeneratePaths";
-			default:
-				assert(false);
-				return "none";
-			}
-		};
-
 		auto clwScene = dynamic_cast<const ClwScene*>(&scene);
-		auto kernel_name = getCameraKernelName(clwScene->cameraType);
-		auto genkernel = getKernel(kernel_name, generate_at_pixel_center ? "-D BAIKAL_GENERATE_SAMPLE_AT_PIXEL_CENTER " : "");
+
+		CLWKernel genkernel;
+		switch (clwScene->cameraType)
+		{
+		case CameraType::kPerspective:
+			genkernel = this->perspectiveCameraKernel_;
+			break;
+		case CameraType::kPhysicalPerspective:
+			genkernel = this->perspectiveCameraDofKernel_;
+			break;
+		case CameraType::kOrthographic:
+			genkernel = this->orthographicCameraKernel_;
+			break;
+		default:
+			assert(false);
+		}
 
 		int argc = 0;
 		genkernel.SetArg(argc++, clwScene->camera);
@@ -179,11 +180,5 @@ namespace octoon::video
 
 		int globalsize = tile_size.x * tile_size.y;
 		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, genkernel);
-	}
-	
-	CLWKernel
-	MonteCarloRenderer::GetCopyKernel()
-	{
-		return this->getKernel("ApplyGammaAndCopyData");
 	}
 }

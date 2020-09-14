@@ -112,8 +112,8 @@ namespace rabbit
 		MaterialListWindow() noexcept(false);
 		~MaterialListWindow() noexcept;
 
-		void mouseMoveEvent(QMouseEvent *event);
-		void mousePressEvent(QMouseEvent *event);
+		void mouseMoveEvent(QMouseEvent *event) override;
+		void mousePressEvent(QMouseEvent *event) override;
 
 	private:
 		QPoint startPos;

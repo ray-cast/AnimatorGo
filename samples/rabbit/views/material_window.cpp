@@ -587,36 +587,42 @@ namespace rabbit
 	void
 	MaterialListWindow::mouseMoveEvent(QMouseEvent *event)
 	{
-		if (event->button() == Qt::LeftButton)
-			startPos = event->pos();
+		if (event->button() == Qt::LeftButton || event->button() == Qt::NoButton)
+		{
+			QPoint length = event->pos() - startPos;
+			if (length.manhattanLength() > QApplication::startDragDistance())
+			{
+				QListWidgetItem* item = this->itemAt(this->startPos);
+				if (item)
+				{
+					auto widget = this->itemWidget(item);
+					auto layout = widget->layout();
+					auto label = dynamic_cast<QLabel*>(layout->itemAt(0)->widget());
+					if (label)
+					{
+						auto mimeData = new QMimeData;
+						mimeData->setData("object/material", item->data(Qt::UserRole).toByteArray());
 
-		QListWidget::mousePressEvent(event);
+						auto drag = new QDrag(this);
+						drag->setMimeData(mimeData);
+						drag->setPixmap(label->pixmap(Qt::ReturnByValue));
+						drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
+						drag->exec(Qt::MoveAction);
+					}
+				}
+			}
+		}
+
+		QListWidget::mouseMoveEvent(event);
 	}
 
 	void
 	MaterialListWindow::mousePressEvent(QMouseEvent *event)
 	{
+		if (event->button() == Qt::LeftButton || event->button() == Qt::NoButton)
+			startPos = event->pos();
+
 		QListWidget::mousePressEvent(event);
-
-		QListWidgetItem* item = this->itemAt(event->pos());
-		if (item)
-		{
-			auto widget = this->itemWidget(item);
-			auto layout = widget->layout();
-			auto label = dynamic_cast<QLabel*>(layout->itemAt(0)->widget());
-			if (label)
-			{
-				auto mimeData = new QMimeData;
-				mimeData->setData("object/material", item->data(Qt::UserRole).toByteArray());
-
-				QDrag *drag = new QDrag(this);
-				drag->setMimeData(mimeData);
-				drag->setPixmap(label->pixmap(Qt::ReturnByValue));
-				drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
-
-				drag->exec(Qt::MoveAction);
-			}
-		}
 	}
 
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept(false)

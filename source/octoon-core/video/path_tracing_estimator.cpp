@@ -12,6 +12,15 @@ namespace octoon::video
 	{
 		renderData_->pp = CLWParallelPrimitives(context, getFullBuildOpts().c_str());
 		renderData_->sobolmat = context.CreateBuffer<unsigned int>(1024 * 52, CL_MEM_READ_ONLY, &g_SobolMatrices[0]);
+
+		initKernel = getKernel("InitPathData");
+		advanceIterationCountKernel = getKernel("AdvanceIterationCount");
+		misskernel = getKernel("ShadeMiss");
+		restorekernel = getKernel("RestorePixelIndices");
+		filterPathStreamKernel = getKernel("FilterPathStream");
+		shadeBackgroundEnvMapKernel = this->getKernel("ShadeBackgroundEnvMap");
+		shadeSurfaceKernel = getKernel("ShadeSurface");
+		gatherkernel = getKernel("GatherLightSamples");
 	}
 
 	PathTracingEstimator::~PathTracingEstimator()
@@ -192,39 +201,33 @@ namespace octoon::video
 	void
 	PathTracingEstimator::initPathData(std::size_t size, int volume_idx)
 	{
-		auto init_kernel = getKernel("InitPathData");
-
 		int argc = 0;
-		init_kernel.SetArg(argc++, renderData_->pixelindices[0]);
-		init_kernel.SetArg(argc++, renderData_->pixelindices[1]);
-		init_kernel.SetArg(argc++, renderData_->hitcount);
-		init_kernel.SetArg(argc++, (cl_int)volume_idx);
-		init_kernel.SetArg(argc++, renderData_->paths);
+		initKernel.SetArg(argc++, renderData_->pixelindices[0]);
+		initKernel.SetArg(argc++, renderData_->pixelindices[1]);
+		initKernel.SetArg(argc++, renderData_->hitcount);
+		initKernel.SetArg(argc++, (cl_int)volume_idx);
+		initKernel.SetArg(argc++, renderData_->paths);
 
-		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, init_kernel);
+		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, initKernel);
 	}
 
 	void
 	PathTracingEstimator::advanceIterationCount(int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
-		auto misskernel = getKernel("AdvanceIterationCount");
-
 		auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;
-		misskernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
-		misskernel.SetArg(argc++, output_indices);
-		misskernel.SetArg(argc++, (cl_int)size);
-		misskernel.SetArg(argc++, output);
+		advanceIterationCountKernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
+		advanceIterationCountKernel.SetArg(argc++, output_indices);
+		advanceIterationCountKernel.SetArg(argc++, (cl_int)size);
+		advanceIterationCountKernel.SetArg(argc++, output);
 
-		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, misskernel);
+		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, advanceIterationCountKernel);
 	}
 
 	void
 	PathTracingEstimator::ShadeMiss(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
-		auto misskernel = getKernel("ShadeMiss");
-
 		auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;
@@ -249,8 +252,6 @@ namespace octoon::video
 	void
 	PathTracingEstimator::restorePixelIndices(int pass, std::size_t size)
 	{
-		CLWKernel restorekernel = getKernel("RestorePixelIndices");
-
 		int argc = 0;
 		restorekernel.SetArg(argc++, renderData_->compacted_indices);
 		restorekernel.SetArg(argc++, renderData_->hitcount);
@@ -263,85 +264,80 @@ namespace octoon::video
 	void
 	PathTracingEstimator::filterPathStream(int pass, std::size_t size)
 	{
-		auto restorekernel = getKernel("FilterPathStream");
-
 		int argc = 0;
-		restorekernel.SetArg(argc++, renderData_->intersections);
-		restorekernel.SetArg(argc++, renderData_->hitcount);
-		restorekernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
-		restorekernel.SetArg(argc++, renderData_->paths);
-		restorekernel.SetArg(argc++, renderData_->hits);
+		filterPathStreamKernel.SetArg(argc++, renderData_->intersections);
+		filterPathStreamKernel.SetArg(argc++, renderData_->hitcount);
+		filterPathStreamKernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
+		filterPathStreamKernel.SetArg(argc++, renderData_->paths);
+		filterPathStreamKernel.SetArg(argc++, renderData_->hits);
 
-		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, restorekernel);
+		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, filterPathStreamKernel);
 	}
 
 	void
 	PathTracingEstimator::shadeBackground(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
-		auto misskernel = this->getKernel("ShadeBackgroundEnvMap");
 		auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;
-		misskernel.SetArg(argc++, renderData_->rays[pass & 0x1]);
-		misskernel.SetArg(argc++, renderData_->intersections);
-		misskernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
-		misskernel.SetArg(argc++, output_indices);
-		misskernel.SetArg(argc++, (cl_int)size);
-		misskernel.SetArg(argc++, scene.lights);
-		misskernel.SetArg(argc++, scene.envmapidx);
-		misskernel.SetArg(argc++, scene.textures);
-		misskernel.SetArg(argc++, scene.texturedata);
-		misskernel.SetArg(argc++, renderData_->paths);
-		misskernel.SetArg(argc++, scene.volumes);
-		misskernel.SetArg(argc++, output);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, renderData_->rays[pass & 0x1]);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, renderData_->intersections);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, renderData_->pixelindices[(pass + 1) & 0x1]);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, output_indices);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, (cl_int)size);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, scene.lights);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, scene.envmapidx);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, scene.textures);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, scene.texturedata);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, renderData_->paths);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, scene.volumes);
+		shadeBackgroundEnvMapKernel.SetArg(argc++, output);
 
-		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, misskernel);
+		this->getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, shadeBackgroundEnvMapKernel);
 	}
 
 	void
 	PathTracingEstimator::shadeSurface(ClwScene const& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
-		auto shadekernel = getKernel("ShadeSurface");
 		auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;
-		shadekernel.SetArg(argc++, renderData_->rays[pass & 0x1]);
-		shadekernel.SetArg(argc++, renderData_->intersections);
-		shadekernel.SetArg(argc++, renderData_->compacted_indices);
-		shadekernel.SetArg(argc++, renderData_->pixelindices[pass & 0x1]);
-		shadekernel.SetArg(argc++, output_indices);
-		shadekernel.SetArg(argc++, renderData_->hitcount);
-		shadekernel.SetArg(argc++, scene.vertices);
-		shadekernel.SetArg(argc++, scene.normals);
-		shadekernel.SetArg(argc++, scene.uvs);
-		shadekernel.SetArg(argc++, scene.indices);
-		shadekernel.SetArg(argc++, scene.shapes);
-		shadekernel.SetArg(argc++, scene.materialAttributes);
-		shadekernel.SetArg(argc++, scene.inputMapData);
-		shadekernel.SetArg(argc++, scene.lights);
-		shadekernel.SetArg(argc++, scene.lightDistributions);
-		shadekernel.SetArg(argc++, scene.envmapidx);
-		shadekernel.SetArg(argc++, scene.numLights);
-		shadekernel.SetArg(argc++, scene.textures);
-		shadekernel.SetArg(argc++, scene.texturedata);
-		shadekernel.SetArg(argc++, rand_uint());
-		shadekernel.SetArg(argc++, renderData_->random);
-		shadekernel.SetArg(argc++, renderData_->sobolmat);
-		shadekernel.SetArg(argc++, pass);
-		shadekernel.SetArg(argc++, sampleCounter_);
-		shadekernel.SetArg(argc++, renderData_->shadowrays);
-		shadekernel.SetArg(argc++, renderData_->lightsamples);
-		shadekernel.SetArg(argc++, renderData_->paths);
-		shadekernel.SetArg(argc++, renderData_->rays[(pass + 1) & 0x1]);
-		shadekernel.SetArg(argc++, output);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->rays[pass & 0x1]);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->intersections);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->compacted_indices);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->pixelindices[pass & 0x1]);
+		shadeSurfaceKernel.SetArg(argc++, output_indices);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->hitcount);
+		shadeSurfaceKernel.SetArg(argc++, scene.vertices);
+		shadeSurfaceKernel.SetArg(argc++, scene.normals);
+		shadeSurfaceKernel.SetArg(argc++, scene.uvs);
+		shadeSurfaceKernel.SetArg(argc++, scene.indices);
+		shadeSurfaceKernel.SetArg(argc++, scene.shapes);
+		shadeSurfaceKernel.SetArg(argc++, scene.materialAttributes);
+		shadeSurfaceKernel.SetArg(argc++, scene.inputMapData);
+		shadeSurfaceKernel.SetArg(argc++, scene.lights);
+		shadeSurfaceKernel.SetArg(argc++, scene.lightDistributions);
+		shadeSurfaceKernel.SetArg(argc++, scene.envmapidx);
+		shadeSurfaceKernel.SetArg(argc++, scene.numLights);
+		shadeSurfaceKernel.SetArg(argc++, scene.textures);
+		shadeSurfaceKernel.SetArg(argc++, scene.texturedata);
+		shadeSurfaceKernel.SetArg(argc++, rand_uint());
+		shadeSurfaceKernel.SetArg(argc++, renderData_->random);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->sobolmat);
+		shadeSurfaceKernel.SetArg(argc++, pass);
+		shadeSurfaceKernel.SetArg(argc++, sampleCounter_);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->shadowrays);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->lightsamples);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->paths);
+		shadeSurfaceKernel.SetArg(argc++, renderData_->rays[(pass + 1) & 0x1]);
+		shadeSurfaceKernel.SetArg(argc++, output);
 
-		getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, shadekernel);
+		getContext().Launch1D(0, ((size + 63) / 64) * 64, 64, shadeSurfaceKernel);
 	}
 
 	void
 	PathTracingEstimator::gatherLightSamples(const ClwScene& scene, int pass, std::size_t size, CLWBuffer<math::float4> output, bool use_output_indices)
 	{
-        auto gatherkernel = getKernel("GatherLightSamples");
         auto output_indices = use_output_indices ? renderData_->output_indices : renderData_->iota;
 
 		int argc = 0;

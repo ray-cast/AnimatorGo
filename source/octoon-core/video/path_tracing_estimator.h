@@ -94,6 +94,16 @@ namespace octoon::video
     private:
         std::uint32_t maxBounces_;
         std::uint32_t sampleCounter_;
+
+		CLWKernel initKernel;
+		CLWKernel misskernel;
+		CLWKernel advanceIterationCountKernel;
+		CLWKernel restorekernel;
+		CLWKernel filterPathStreamKernel;
+		CLWKernel shadeBackgroundEnvMapKernel;
+		CLWKernel shadeSurfaceKernel;
+		CLWKernel gatherkernel;
+
         std::unique_ptr<RenderData> renderData_;
         std::shared_ptr<RadeonRays::IntersectionApi> intersector_;
 	};

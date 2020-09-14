@@ -46,7 +46,10 @@ namespace rabbit
 
 	public Q_SLOTS:
 		void albedoColorChanged(QColor);
+
 		void emissiveColorChanged(QColor);
+		void emissiveEditEvent(double);
+		void emissiveSliderEvent(int);
 
 		void smoothEditEvent(double);
 		void smoothSliderEvent(int);
@@ -90,6 +93,7 @@ namespace rabbit
 		QSlider* clearcoatRoughnessSlider_;
 		QSlider* sheenSlider_;
 		QSlider* subsurfaceSlider_;
+		QSlider* emissiveSlider_;
 		QDoubleSpinBox* smoothnessSpinBox_;		
 		QDoubleSpinBox* metalnessSpinBox_;
 		QDoubleSpinBox* anisotropySpinBox_;
@@ -97,6 +101,7 @@ namespace rabbit
 		QDoubleSpinBox* clearcoatRoughnessSpinBox_;
 		QDoubleSpinBox* sheenSpinBox_;
 		QDoubleSpinBox* subsurfaceSpinBox_;
+		QDoubleSpinBox* emissiveSpinBox_;
 		QLabel* emissiveLabel_;
 		ColorDialog* albedoColor_;
 		ColorDialog* emissiveColor_;

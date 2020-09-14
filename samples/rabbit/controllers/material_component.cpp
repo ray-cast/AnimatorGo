@@ -274,32 +274,35 @@ namespace rabbit
 	{
 		assert(material);
 
-		geometry_->setMaterial(material);
-		octoon::video::Renderer::instance()->render(*scene_);
-
-		auto framebufferDesc = framebuffer_->getFramebufferDesc();
-		auto width = framebufferDesc.getWidth();
-		auto height = framebufferDesc.getHeight();
-
-		auto colorTexture = framebufferDesc.getColorAttachment(0).getBindingTexture();
-
-		std::uint8_t* data;
-		if (colorTexture->map(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight(), 0, (void**)&data))
+		if (scene_)
 		{
-			QImage image(width, height, QImage::Format_RGB888);
-			for (std::uint32_t y = 0; y < height; y++)
+			geometry_->setMaterial(material);
+			octoon::video::Renderer::instance()->render(*scene_);
+
+			auto framebufferDesc = framebuffer_->getFramebufferDesc();
+			auto width = framebufferDesc.getWidth();
+			auto height = framebufferDesc.getHeight();
+
+			auto colorTexture = framebufferDesc.getColorAttachment(0).getBindingTexture();
+
+			std::uint8_t* data;
+			if (colorTexture->map(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight(), 0, (void**)&data))
 			{
-				for (std::uint32_t x = 0; x < width; x++)
+				QImage image(width, height, QImage::Format_RGB888);
+				for (std::uint32_t y = 0; y < height; y++)
 				{
-					auto index = (y * height + x) * 3;
-					image.setPixelColor((int)x, (int)y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
+					for (std::uint32_t x = 0; x < width; x++)
+					{
+						auto index = (y * height + x) * 3;
+						image.setPixelColor((int)x, (int)y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
+					}
 				}
+
+				pixmap.convertFromImage(image);
+				pixmap = pixmap.scaled(128, 128, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+				colorTexture->unmap();
 			}
-
-			pixmap.convertFromImage(image);
-			pixmap = pixmap.scaled(128, 128, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-			colorTexture->unmap();
 		}
 	}
 

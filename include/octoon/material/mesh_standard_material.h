@@ -26,6 +26,9 @@ namespace octoon::material
 		void setEmissive(const math::float3& color) noexcept;
 		const math::float3& getEmissive() const noexcept;
 
+		void setEmissiveIntensity(float intensity) noexcept;
+		float getEmissiveIntensity() const noexcept;
+
 		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
 		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
 
@@ -99,6 +102,7 @@ namespace octoon::material
 		float clearCoatRoughness_;
 		float subsurface_;
 		float lightMapIntensity_;
+		float emissiveIntensity_;
 		math::float2 offset_;
 		math::float2 repeat_;
 		math::float3 color_;

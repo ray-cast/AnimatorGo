@@ -65,6 +65,8 @@ namespace rabbit
 		connect(subsurfaceSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(subsurfaceEditEvent(double)));
 		connect(subsurfaceSlider_, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
 		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
+		connect(emissiveSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emissiveEditEvent(double)));
+		connect(emissiveSlider_, SIGNAL(valueChanged(int)), this, SLOT(emissiveSliderEvent(int)));
 	}
 
 	MaterialEditWindow::~MaterialEditWindow()
@@ -367,9 +369,31 @@ namespace rabbit
 		emissiveColor_->setMaximumWidth(260);
 		emissiveColor_->setCurrentColor(QColor(255, 255, 255));
 
+		auto labelIntensity_ = new QLabel();
+		labelIntensity_->setText(u8"光强");
+
+		emissiveSpinBox_ = new DoubleSpinBox();
+		emissiveSpinBox_->setFixedWidth(50);
+		emissiveSpinBox_->setMaximum(10.0f);
+		emissiveSpinBox_->setSingleStep(0.1f);
+		emissiveSpinBox_->setAlignment(Qt::AlignRight);
+
+		emissiveSlider_ = new QSlider();
+		emissiveSlider_->setObjectName("Intensity");
+		emissiveSlider_->setOrientation(Qt::Horizontal);
+		emissiveSlider_->setMinimum(0);
+		emissiveSlider_->setMaximum(100);
+		emissiveSlider_->setFixedWidth(240);
+
+		auto layoutIntensity_ = new QHBoxLayout();
+		layoutIntensity_->addWidget(labelIntensity_, 0, Qt::AlignLeft);
+		layoutIntensity_->addWidget(emissiveSpinBox_, 0, Qt::AlignRight);
+
 		auto emissiveLayout = new QVBoxLayout();
 		emissiveLayout->addWidget(emissiveColor_);
-		emissiveLayout->setContentsMargins(20, 5, 50, 0);
+		emissiveLayout->addLayout(layoutIntensity_);
+		emissiveLayout->addWidget(emissiveSlider_);
+		emissiveLayout->setContentsMargins(40, 5, 50, 0);
 
 		auto emissive = new Spoiler(u8"自发光");
 		emissive->setFixedWidth(340);
@@ -409,6 +433,7 @@ namespace rabbit
 			clearcoatRoughnessSpinBox_->setValue(standard->getClearCoatRoughness());
 			subsurfaceSpinBox_->setValue(standard->getSubsurface());
 			emissiveColor_->setCurrentColor(QColor::fromRgbF(standard->getEmissive().x, standard->getEmissive().y, standard->getEmissive().z));
+			emissiveSpinBox_->setValue(standard->getEmissiveIntensity());
 
 			this->material_ = material;
 			this->repaint();
@@ -435,6 +460,25 @@ namespace rabbit
 			standard->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 			this->repaint();
 		}
+	}
+
+	void
+	MaterialEditWindow::emissiveEditEvent(double value)
+	{
+		emissiveSlider_->setValue(value * 10.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setEmissiveIntensity(value);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::emissiveSliderEvent(int value)
+	{
+		emissiveSpinBox_->setValue(value / 10.0f);
 	}
 
 	void

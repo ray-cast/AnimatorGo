@@ -73,7 +73,11 @@ void main() {
 	#include <emissivemap_fragment>
 	#include <lights_physical_fragment>
 	#include <lights_template>
-	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
+	vec3 outgoingLight = vec3(0);
+	if (dot(totalEmissiveRadiance, totalEmissiveRadiance) > 0.0)
+		outgoingLight = totalEmissiveRadiance * (1 + pow(dot(normal, geometry.viewDir), 2));
+	else
+		outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular;
 	fragColor = vec4( outgoingLight, diffuseColor.a );
 	#include <tonemapping_fragment>
 	fragColor = LinearToGamma(fragColor, 2.2);
@@ -96,6 +100,7 @@ namespace octoon::material
 
 	MeshStandardMaterial::MeshStandardMaterial(const math::float3& color) noexcept
 		: lightMapIntensity_(1.0f)
+		, emissiveIntensity_(1.0f)
 	{
 		this->setColor(color);
 		this->setOpacity(1.0f);
@@ -149,13 +154,26 @@ namespace octoon::material
 	MeshStandardMaterial::setEmissive(const math::float3& color) noexcept
 	{
 		this->emissive_ = color;
-		this->set("emissive", this->emissive_);
+		this->set("emissive", this->emissive_* this->emissiveIntensity_);
 	}
 
 	const math::float3&
 	MeshStandardMaterial::getEmissive()const noexcept
 	{
 		return this->emissive_;
+	}
+
+	void
+	MeshStandardMaterial::setEmissiveIntensity(float intensity) noexcept
+	{
+		this->emissiveIntensity_ = intensity;
+		this->set("emissive", this->emissive_ * this->emissiveIntensity_);
+	}
+
+	float
+	MeshStandardMaterial::getEmissiveIntensity() const noexcept
+	{
+		return this->emissiveIntensity_;
 	}
 
 	void

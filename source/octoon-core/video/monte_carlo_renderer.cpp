@@ -13,7 +13,6 @@ namespace octoon::video
 		, context_(context)
 		, estimator_(std::move(estimator))
 		, sampleCounter_(0)
-		, AOVKernels(context, programManager, "../../system/Kernels/CL/fill_aovs.cl", "")
 	{
 		estimator_->setWorkBufferSize(kTileSizeX * kTileSizeY);
 
@@ -22,6 +21,7 @@ namespace octoon::video
 		perspectiveCameraKernel_ = getKernel("PerspectiveCamera_GeneratePaths");
 		perspectiveCameraDofKernel_ = getKernel("PerspectiveCameraDof_GeneratePaths");
 		orthographicCameraKernel_ = getKernel("OrthographicCamera_GeneratePaths");
+		fillKernel_ = getKernel("FillAOVs");
 	}
 
 	MonteCarloRenderer::~MonteCarloRenderer() noexcept
@@ -207,51 +207,49 @@ namespace octoon::video
 
 		estimator_->traceFirstHit(*clwScene, num_rays);
 
-		CLWKernel fill_kernel = AOVKernels.getKernel("FillAOVsUberV2");
-
 		auto argc = 0U;
-		fill_kernel.SetArg(argc++, estimator_->getRayBuffer());
-		fill_kernel.SetArg(argc++, estimator_->getFirstHitBuffer());
-		fill_kernel.SetArg(argc++, estimator_->getOutputIndexBuffer());
-		fill_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
-		fill_kernel.SetArg(argc++, clwScene->vertices);
-		fill_kernel.SetArg(argc++, clwScene->normals);
-		fill_kernel.SetArg(argc++, clwScene->uvs);
-		fill_kernel.SetArg(argc++, clwScene->indices);
-		fill_kernel.SetArg(argc++, clwScene->shapes);
-		fill_kernel.SetArg(argc++, clwScene->shapesAdditional);
-		fill_kernel.SetArg(argc++, clwScene->materialAttributes);
-		fill_kernel.SetArg(argc++, clwScene->textures);
-		fill_kernel.SetArg(argc++, clwScene->texturedata);
-		fill_kernel.SetArg(argc++, clwScene->envmapidx);
-		fill_kernel.SetArg(argc++, clwScene->backgroundIdx);
-		fill_kernel.SetArg(argc++, output_size.x);
-		fill_kernel.SetArg(argc++, output_size.y);
-		fill_kernel.SetArg(argc++, clwScene->lights);
-		fill_kernel.SetArg(argc++, clwScene->numLights);
-		fill_kernel.SetArg(argc++, clwScene->camera);
-		fill_kernel.SetArg(argc++, rand_uint());
-		fill_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
-		fill_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
-		fill_kernel.SetArg(argc++, sampleCounter_);
+		fillKernel_.SetArg(argc++, estimator_->getRayBuffer());
+		fillKernel_.SetArg(argc++, estimator_->getFirstHitBuffer());
+		fillKernel_.SetArg(argc++, estimator_->getOutputIndexBuffer());
+		fillKernel_.SetArg(argc++, estimator_->getRayCountBuffer());
+		fillKernel_.SetArg(argc++, clwScene->vertices);
+		fillKernel_.SetArg(argc++, clwScene->normals);
+		fillKernel_.SetArg(argc++, clwScene->uvs);
+		fillKernel_.SetArg(argc++, clwScene->indices);
+		fillKernel_.SetArg(argc++, clwScene->shapes);
+		fillKernel_.SetArg(argc++, clwScene->shapesAdditional);
+		fillKernel_.SetArg(argc++, clwScene->materialAttributes);
+		fillKernel_.SetArg(argc++, clwScene->textures);
+		fillKernel_.SetArg(argc++, clwScene->texturedata);
+		fillKernel_.SetArg(argc++, clwScene->envmapidx);
+		fillKernel_.SetArg(argc++, clwScene->backgroundIdx);
+		fillKernel_.SetArg(argc++, output_size.x);
+		fillKernel_.SetArg(argc++, output_size.y);
+		fillKernel_.SetArg(argc++, clwScene->lights);
+		fillKernel_.SetArg(argc++, clwScene->numLights);
+		fillKernel_.SetArg(argc++, clwScene->camera);
+		fillKernel_.SetArg(argc++, rand_uint());
+		fillKernel_.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
+		fillKernel_.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
+		fillKernel_.SetArg(argc++, sampleCounter_);
 
 		for (auto i = static_cast<std::uint32_t>(OutputType::kMaxMultiPassOutput) + 1; i < static_cast<std::uint32_t>(OutputType::kMax); ++i)
 		{
 			if (auto aov = static_cast<ClwOutput*>(getOutput(static_cast<OutputType>(i))))
 			{
-				fill_kernel.SetArg(argc++, 1);
-				fill_kernel.SetArg(argc++, aov->data());
+				fillKernel_.SetArg(argc++, 1);
+				fillKernel_.SetArg(argc++, aov->data());
 			}
 			else
 			{
-				fill_kernel.SetArg(argc++, 0);
-				fill_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
+				fillKernel_.SetArg(argc++, 0);
+				fillKernel_.SetArg(argc++, estimator_->getRayCountBuffer());
 			}
 		}
 
-		fill_kernel.SetArg(argc++, clwScene->inputMapData);
+		fillKernel_.SetArg(argc++, clwScene->inputMapData);
 		
 		int globalsize = tile_size.x * tile_size.y;
-		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, fill_kernel);
+		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, fillKernel_);
 	}
 }

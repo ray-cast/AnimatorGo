@@ -34,8 +34,7 @@ namespace octoon::video
 		CLWKernel perspectiveCameraKernel_;
 		CLWKernel perspectiveCameraDofKernel_;
 		CLWKernel orthographicCameraKernel_;
-
-		ClwClass AOVKernels;
+		CLWKernel fillKernel_;
 
 		std::uint32_t sampleCounter_;
 		std::unique_ptr<PathTracingEstimator> estimator_;

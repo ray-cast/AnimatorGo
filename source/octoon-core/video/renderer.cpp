@@ -76,6 +76,24 @@ namespace octoon::video
 		h = height_;
 	}
 
+	void
+	Renderer::readColorBuffer(math::float3 data[])
+	{
+		return this->rtxManager_->readColorBuffer(data);
+	}
+
+	void
+	Renderer::readAlbedoBuffer(math::float3 data[])
+	{
+		return this->rtxManager_->readAlbedoBuffer(data);
+	}
+
+	void
+	Renderer::readNormalBuffer(math::float3 data[])
+	{
+		return this->rtxManager_->readNormalBuffer(data);
+	}
+
 	const hal::GraphicsFramebufferPtr&
 	Renderer::getFramebuffer() const noexcept
 	{

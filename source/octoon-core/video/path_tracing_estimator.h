@@ -48,9 +48,6 @@ namespace octoon::video
             RadeonRays::Buffer* fr_intersections;
             RadeonRays::Buffer* fr_hitcount;
 
-            //Collector mat_collector;
-            //Collector tex_collector;
-
             RenderData()
                 : fr_shadowrays(nullptr)
                 , fr_shadowhits(nullptr)
@@ -75,10 +72,12 @@ namespace octoon::video
         std::shared_ptr<RadeonRays::IntersectionApi> getIntersector() const;
 
         CLWBuffer<RadeonRays::ray> getRayBuffer() const;
+        CLWBuffer<RadeonRays::Intersection> getFirstHitBuffer() const;
         CLWBuffer<int> getOutputIndexBuffer() const;
         CLWBuffer<int> getRayCountBuffer() const;
         CLWBuffer<std::uint32_t> getRandomBuffer(RandomBufferType buffer) const;
 
+        void traceFirstHit(const ClwScene& scene, std::size_t num_estimates);
         void estimate(const ClwScene& scene, std::size_t num_estimates, CLWBuffer<math::float4> output, bool use_output_indices = true, bool atomic_update = false);
 
     private:

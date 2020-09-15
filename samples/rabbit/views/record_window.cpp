@@ -131,17 +131,8 @@ namespace rabbit
 		summary_ = std::make_unique<QLabel>();
 		summary_->setContentsMargins(20, 0, 0, 0);
 
-		expense_ = std::make_unique<QLabel>();
-		expense_->setContentsMargins(20, 0, 0, 0);
-
 		timeTotal_ = std::make_unique<QLabel>();
 		timeTotal_->setContentsMargins(20, 0, 0, 0);
-
-		coin_ = std::make_unique<QLabel>();
-		coin_->setText(u8"兔币");
-
-		coinTotal_ = std::make_unique<QLabel>();
-		coinTotal_->setContentsMargins(20, 0, 0, 0);
 
 		warning_ = std::make_unique<QLabel>();
 		warning_->setContentsMargins(20, 0, 0, 0);
@@ -192,11 +183,7 @@ namespace rabbit
 		mainLayout_->addWidget(animation_.get());
 		mainLayout_->addWidget(summary_.get());
 		mainLayout_->addWidget(timeTotal_.get());
-		mainLayout_->addWidget(expense_.get());
 		mainLayout_->addSpacing(10);
-		mainLayout_->addWidget(coin_.get());
-		mainLayout_->addSpacing(10);
-		mainLayout_->addWidget(coinTotal_.get());
 		mainLayout_->addWidget(warning_.get());
 		mainLayout_->addStretch(100);
 		mainLayout_->addWidget(okButton_.get(), 0, Qt::AlignCenter);
@@ -232,8 +219,6 @@ namespace rabbit
 		videoRatioLayout_.reset();
 		okButton_.reset();
 		summary_.reset();
-		expense_.reset();
-		coin_.reset();
 		warning_.reset();
 		frame_.reset();
 		start_.reset();
@@ -417,13 +402,11 @@ namespace rabbit
 			if (select1_->isChecked())
 			{
 				timeTotal_->setText(QString(u8"视频渲染预估时间：%1分钟").arg((timeLength * 10 / 60)));
-				expense_->setText(QString(u8"视频总消耗兔币：%1个").arg(timeLength));
 			}
 			else
 			{
 				okButton_->setEnabled(true);
 				timeTotal_->setText(QString(u8"视频渲染预估时间：%1分钟").arg((timeLength / 15 / 60)));
-				expense_->setText(QString(u8"视频总消耗兔币：%1个").arg(0));
 				warning_->setText(QString(u8"总计消耗兔币：%1个").arg(0));
 			}
 		}

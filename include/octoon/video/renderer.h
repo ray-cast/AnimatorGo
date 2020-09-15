@@ -62,6 +62,10 @@ namespace octoon::video
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		const std::shared_ptr<material::Material>& getOverrideMaterial() const noexcept;
 
+		void readColorBuffer(math::float3 data[]);
+		void readAlbedoBuffer(math::float3 data[]);
+		void readNormalBuffer(math::float3 data[]);
+
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 		hal::GraphicsInputLayoutPtr createInputLayout(const hal::GraphicsInputLayoutDesc& desc) noexcept;

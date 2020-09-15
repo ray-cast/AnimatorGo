@@ -44,8 +44,8 @@ namespace rabbit
 
 		filter_ = oidnNewFilter(device_, "RT");
 		oidnSetFilterImage(filter_, "color", oidnColorBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);
-		/*oidnSetFilterImage(filter_, "albedo", oidnAlbedoBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);
-		oidnSetFilterImage(filter_, "normal", oidnNormalBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);*/
+		oidnSetFilterImage(filter_, "albedo", oidnAlbedoBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);
+		oidnSetFilterImage(filter_, "normal", oidnNormalBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);
 		oidnSetFilterImage(filter_, "output", oidnOutputBuffer_, OIDN_FORMAT_FLOAT3, window->width, window->height, 0, 0, 0);
 		oidnSetFilter1b(filter_, "hdr", this->getModel()->hdr);
 		oidnSetFilter1b(filter_, "srgb", this->getModel()->srgb);
@@ -94,16 +94,16 @@ namespace rabbit
 			auto& window = this->getContext()->profile->canvasModule;
 
 			auto color = oidnMapBuffer(oidnColorBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
-			//auto normal = oidnMapBuffer(oidnNormalBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
-			//auto albedo = oidnMapBuffer(oidnAlbedoBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
+			auto normal = oidnMapBuffer(oidnNormalBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
+			auto albedo = oidnMapBuffer(oidnAlbedoBuffer_, OIDN_ACCESS_WRITE_DISCARD, 0, 0);
 
 			std::memcpy(color, window->colorBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
-			//std::memcpy(normal, window->normalBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
-			//std::memcpy(albedo, window->albedoBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
+			std::memcpy(normal, window->normalBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
+			std::memcpy(albedo, window->albedoBuffer.data(), window->width * window->height * sizeof(octoon::math::float3));
 
 			oidnUnmapBuffer(oidnColorBuffer_, color);
-			//oidnUnmapBuffer(oidnNormalBuffer_, normal);
-			//oidnUnmapBuffer(oidnAlbedoBuffer_, albedo);
+			oidnUnmapBuffer(oidnNormalBuffer_, normal);
+			oidnUnmapBuffer(oidnAlbedoBuffer_, albedo);
 
 			oidnExecuteFilter(filter_);
 

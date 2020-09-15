@@ -54,10 +54,7 @@ namespace rabbit
 		std::unique_ptr<QLabel> frame_;
 		std::unique_ptr<QLabel> animation_;
 		std::unique_ptr<QLabel> summary_;
-		std::unique_ptr<QLabel> coin_;
-		std::unique_ptr<QLabel> coinTotal_;
 		std::unique_ptr<QLabel> timeTotal_;
-		std::unique_ptr<QLabel> expense_;
 		std::unique_ptr<QLabel> warning_;
 		std::unique_ptr<QButtonGroup> group_;
 		std::unique_ptr<QButtonGroup> speedGroup_;

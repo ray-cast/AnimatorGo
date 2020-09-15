@@ -194,6 +194,72 @@ namespace octoon::video
 		return outputs_[idx];
 	}
 
+	void
+	RtxManager::readColorBuffer(math::float3 colorBuffer[])
+	{
+		auto& desc = colorTexture_->getTextureDesc();
+
+		void* data = nullptr;
+		if (colorTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+		{
+			if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+			{
+				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+					colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+			}
+			else
+			{
+				std::memcpy(colorBuffer, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+			}
+
+			colorTexture_->unmap();
+		}
+	}
+
+	void
+	RtxManager::readAlbedoBuffer(math::float3 albedoBuffer[])
+	{
+		auto& desc = albedoTexture_->getTextureDesc();
+
+		void* data = nullptr;
+		if (albedoTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+		{
+			if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+			{
+				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+					albedoBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+			}
+			else
+			{
+				std::memcpy(albedoBuffer, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+			}
+
+			albedoTexture_->unmap();
+		}
+	}
+	
+	void
+	RtxManager::readNormalBuffer(math::float3 normalBuffer[])
+	{
+		auto& desc = normalTexture_->getTextureDesc();
+
+		void* data = nullptr;
+		if (normalTexture_->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+		{
+			if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+			{
+				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+					normalBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+			}
+			else
+			{
+				std::memcpy(normalBuffer, data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+			}
+
+			normalTexture_->unmap();
+		}
+	}
+
 	const hal::GraphicsFramebufferPtr&
 	RtxManager::getFramebuffer() const
 	{

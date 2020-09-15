@@ -130,6 +130,24 @@ namespace octoon
 	}
 
 	void
+	VideoFeature::readColorBuffer(math::float3 data[])
+	{
+		return video::Renderer::instance()->readColorBuffer(data);
+	}
+
+	void
+	VideoFeature::readAlbedoBuffer(math::float3 data[])
+	{
+		return video::Renderer::instance()->readAlbedoBuffer(data);
+	}
+
+	void
+	VideoFeature::readNormalBuffer(math::float3 data[])
+	{
+		return video::Renderer::instance()->readNormalBuffer(data);
+	}
+
+	void
 	VideoFeature::onActivate() except
 	{
 		auto graphics = this->getFeature<GraphicsFeature>();

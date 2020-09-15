@@ -45,6 +45,10 @@ namespace octoon::video
 		void setOutput(OutputType type, Output* output);
 		Output* getOutput(OutputType type) const;
 
+		void readColorBuffer(math::float3 data[]);
+		void readAlbedoBuffer(math::float3 data[]);
+		void readNormalBuffer(math::float3 data[]);
+
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const;
 
 		void render(RenderScene* scene);

@@ -28,6 +28,10 @@ namespace octoon
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
 
+		void readColorBuffer(math::float3 data[]);
+		void readAlbedoBuffer(math::float3 data[]);
+		void readNormalBuffer(math::float3 data[]);
+
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 

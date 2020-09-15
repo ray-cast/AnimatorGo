@@ -281,14 +281,11 @@ void Scene_FillDifferentialGeometry(// Scene
 INLINE void DifferentialGeometry_CalculateTangentTransforms(DifferentialGeometry* diffgeo)
 {
     diffgeo->world_to_tangent = matrix_from_rows3(diffgeo->dpdu, diffgeo->n, diffgeo->dpdv);
-
     diffgeo->world_to_tangent.m0.w = -dot(diffgeo->dpdu, diffgeo->p);
     diffgeo->world_to_tangent.m1.w = -dot(diffgeo->n, diffgeo->p);
     diffgeo->world_to_tangent.m2.w = -dot(diffgeo->dpdv, diffgeo->p);
 
-    diffgeo->tangent_to_world = matrix_from_cols3(diffgeo->world_to_tangent.m0.xyz, 
-        diffgeo->world_to_tangent.m1.xyz, diffgeo->world_to_tangent.m2.xyz);
-
+    diffgeo->tangent_to_world = matrix_from_cols3(diffgeo->world_to_tangent.m0.xyz, diffgeo->world_to_tangent.m1.xyz, diffgeo->world_to_tangent.m2.xyz);
     diffgeo->tangent_to_world.m0.w = diffgeo->p.x;
     diffgeo->tangent_to_world.m1.w = diffgeo->p.y;
     diffgeo->tangent_to_world.m2.w = diffgeo->p.z;

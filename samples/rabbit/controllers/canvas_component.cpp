@@ -3,6 +3,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/image/image.h>
 #include <octoon/hal/graphics.h>
+#include <octoon/video_feature.h>
 
 namespace rabbit
 {
@@ -42,27 +43,37 @@ namespace rabbit
 	{
 		auto& context = this->getContext();
 
-		auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
-		auto colorTexture = camera->getFramebuffer()->getFramebufferDesc().getColorAttachments().front().getBindingTexture();
-		if (colorTexture)
+		if (this->getContext()->profile->offlineModule->offlineEnable)
 		{
-			auto& desc = colorTexture->getTextureDesc();
-
-			void* data = nullptr;
-			if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
+			auto videoFeature = this->getFeature<octoon::VideoFeature>();
+			videoFeature->readColorBuffer(this->getModel()->colorBuffer.data());
+			videoFeature->readNormalBuffer(this->getModel()->normalBuffer.data());
+			videoFeature->readAlbedoBuffer(this->getModel()->albedoBuffer.data());
+		}
+		else
+		{
+			auto camera = context->profile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
+			auto colorTexture = camera->getFramebuffer()->getFramebufferDesc().getColorAttachments().front().getBindingTexture();
+			if (colorTexture)
 			{
-				if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+				auto& desc = colorTexture->getTextureDesc();
+
+				void* data = nullptr;
+				if (colorTexture->map(0, 0, desc.getWidth(), desc.getHeight(), 0, &data))
 				{
-					auto& colorBuffer = this->getModel()->colorBuffer;
-					for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
-						colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+					if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
+					{
+						auto& colorBuffer = this->getModel()->colorBuffer;
+						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+							colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+					}
+					else
+					{
+						std::memcpy(this->getModel()->colorBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+					}
+
+					colorTexture->unmap();
 				}
-				else
-				{
-					std::memcpy(this->getModel()->colorBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
-				}
-				
-				colorTexture->unmap();
 			}
 		}
 	}

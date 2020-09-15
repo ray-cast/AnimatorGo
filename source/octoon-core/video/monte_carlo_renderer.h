@@ -25,6 +25,7 @@ namespace octoon::video
 
 		void generateTileDomain(const math::int2& output_size, const math::int2& tile_origin, const math::int2& tile_size);
 		void generatePrimaryRays(const CompiledScene& scene, Output const& output, math::int2 const& tile_size, bool generate_at_pixel_center = false);
+		void fillAOVs(const CompiledScene& scene, math::int2 const& tile_origin, math::int2 const& tile_size);
 
 	private:
 		CLWContext context_;
@@ -33,6 +34,8 @@ namespace octoon::video
 		CLWKernel perspectiveCameraKernel_;
 		CLWKernel perspectiveCameraDofKernel_;
 		CLWKernel orthographicCameraKernel_;
+
+		ClwClass AOVKernels;
 
 		std::uint32_t sampleCounter_;
 		std::unique_ptr<PathTracingEstimator> estimator_;

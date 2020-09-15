@@ -13,6 +13,7 @@ namespace octoon::video
 		, context_(context)
 		, estimator_(std::move(estimator))
 		, sampleCounter_(0)
+		, AOVKernels(context, programManager, "../../system/Kernels/CL/fill_aovs.cl", "")
 	{
 		estimator_->setWorkBufferSize(kTileSizeX * kTileSizeY);
 
@@ -30,8 +31,17 @@ namespace octoon::video
 	void
 	MonteCarloRenderer::clear(const math::float4& val)
 	{
-		this->getOutput(octoon::video::OutputType::kColor)->clear(val);
-		sampleCounter_ = 0u;
+		std::uint32_t start_index = 0;
+		std::uint32_t end_index = static_cast<std::uint32_t>(OutputType::kMax);
+
+		for (auto i = start_index; i < end_index; ++i)
+		{
+			auto output = getOutput(static_cast<OutputType>(i));
+			if (output)
+				output->clear(val);
+		}
+
+		sampleCounter_ = 0;
 	}
 
 	Output*
@@ -117,7 +127,7 @@ namespace octoon::video
 		bool aov_pass_needed = (this->findFirstNonZeroOutput(false) != nullptr);
 		if (aov_pass_needed)
 		{
-			//this->FillAOVs(scene, tile_origin, tile_size);
+			this->fillAOVs(scene, tile_origin, tile_size);
 			this->getContext().Flush(0);
 		}
 	}
@@ -180,5 +190,68 @@ namespace octoon::video
 
 		int globalsize = tile_size.x * tile_size.y;
 		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, genkernel);
+	}
+
+	void
+	MonteCarloRenderer::fillAOVs(const CompiledScene& scene, math::int2 const& tile_origin, math::int2 const& tile_size)
+	{
+		auto clwScene = dynamic_cast<const ClwScene*>(&scene);
+
+		auto output = findFirstNonZeroOutput(false);
+		auto output_size = math::int2(output->width(), output->height());
+
+		generateTileDomain(output_size, tile_origin, tile_size);
+		generatePrimaryRays(scene, *output, tile_size, true);
+
+		auto num_rays = tile_size.x * tile_size.y;
+
+		estimator_->traceFirstHit(*clwScene, num_rays);
+
+		CLWKernel fill_kernel = AOVKernels.getKernel("FillAOVsUberV2");
+
+		auto argc = 0U;
+		fill_kernel.SetArg(argc++, estimator_->getRayBuffer());
+		fill_kernel.SetArg(argc++, estimator_->getFirstHitBuffer());
+		fill_kernel.SetArg(argc++, estimator_->getOutputIndexBuffer());
+		fill_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
+		fill_kernel.SetArg(argc++, clwScene->vertices);
+		fill_kernel.SetArg(argc++, clwScene->normals);
+		fill_kernel.SetArg(argc++, clwScene->uvs);
+		fill_kernel.SetArg(argc++, clwScene->indices);
+		fill_kernel.SetArg(argc++, clwScene->shapes);
+		fill_kernel.SetArg(argc++, clwScene->shapesAdditional);
+		fill_kernel.SetArg(argc++, clwScene->materialAttributes);
+		fill_kernel.SetArg(argc++, clwScene->textures);
+		fill_kernel.SetArg(argc++, clwScene->texturedata);
+		fill_kernel.SetArg(argc++, clwScene->envmapidx);
+		fill_kernel.SetArg(argc++, clwScene->backgroundIdx);
+		fill_kernel.SetArg(argc++, output_size.x);
+		fill_kernel.SetArg(argc++, output_size.y);
+		fill_kernel.SetArg(argc++, clwScene->lights);
+		fill_kernel.SetArg(argc++, clwScene->numLights);
+		fill_kernel.SetArg(argc++, clwScene->camera);
+		fill_kernel.SetArg(argc++, rand_uint());
+		fill_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kRandomSeed));
+		fill_kernel.SetArg(argc++, estimator_->getRandomBuffer(Estimator::RandomBufferType::kSobolLUT));
+		fill_kernel.SetArg(argc++, sampleCounter_);
+
+		for (auto i = static_cast<std::uint32_t>(OutputType::kMaxMultiPassOutput) + 1; i < static_cast<std::uint32_t>(OutputType::kMax); ++i)
+		{
+			if (auto aov = static_cast<ClwOutput*>(getOutput(static_cast<OutputType>(i))))
+			{
+				fill_kernel.SetArg(argc++, 1);
+				fill_kernel.SetArg(argc++, aov->data());
+			}
+			else
+			{
+				fill_kernel.SetArg(argc++, 0);
+				fill_kernel.SetArg(argc++, estimator_->getRayCountBuffer());
+			}
+		}
+
+		fill_kernel.SetArg(argc++, clwScene->inputMapData);
+		
+		int globalsize = tile_size.x * tile_size.y;
+		getContext().Launch1D(0, ((globalsize + 63) / 64) * 64, 64, fill_kernel);
 	}
 }

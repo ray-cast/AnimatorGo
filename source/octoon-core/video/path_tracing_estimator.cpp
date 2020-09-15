@@ -100,6 +100,12 @@ namespace octoon::video
 		return this->renderData_->rays[0];
 	}
 
+	CLWBuffer<RadeonRays::Intersection>
+	PathTracingEstimator::getFirstHitBuffer() const
+	{
+		return this->renderData_->intersections;
+	}
+
 	CLWBuffer<int>
 	PathTracingEstimator::getOutputIndexBuffer() const
 	{
@@ -124,6 +130,19 @@ namespace octoon::video
 		}
 
 		return CLWBuffer<std::uint32_t>();
+	}
+
+	void
+	PathTracingEstimator::traceFirstHit(const ClwScene& scene, std::size_t num_estimates)
+	{
+		this->getIntersector()->QueryIntersection(
+			renderData_->fr_rays[0],
+			renderData_->fr_hitcount,
+			(std::uint32_t)num_estimates,
+			renderData_->fr_intersections,
+			nullptr,
+			nullptr
+		);
 	}
 
 	void

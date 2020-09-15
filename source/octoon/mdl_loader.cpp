@@ -340,8 +340,13 @@ namespace octoon
 			out_material["clearcoat_roughness"] = Material_parameter("Float32");
 			out_material["clearcoat_normal"] = Material_parameter("Float32<3>", remap_normal);
 			out_material["opacity"] = Material_parameter("Float32");
-			out_material["emission"] = Material_parameter("Rgb_fp");
-			out_material["emission"].value = create_value(transaction, "Color", mi::Color(0.0f));
+
+			mi::base::Handle<const mi::neuraylib::IExpression> emission(cm->lookup_sub_expression("surface.emission.emission"));
+			if (emission.is_valid_interface())
+			{
+				out_material["emission"] = Material_parameter("Rgb_fp");
+				out_material["emission"].bake_path = "surface.emission.emission";
+			}
 
 			mi::base::Handle<const mi::neuraylib::IExpression> intensity(cm->lookup_sub_expression("surface.emission.intensity"));
 			if (intensity.is_valid_interface())
@@ -534,6 +539,8 @@ namespace octoon
 
 			// Create baker for current path
 			mi::base::Handle<const mi::neuraylib::IBaker> baker(distiller_api->create_baker(cm, param.bake_path.c_str(), baker_resource));
+			if (!baker.is_valid_interface())
+				continue;
 
 			if (baker->is_uniform())
 			{
@@ -1071,7 +1078,7 @@ namespace octoon
 								file_name << name << "-" << param_name << ".png";
 								material->setEmissiveMap(octoon::TextureLoader::load(file_name.str()));
 							}
-							else
+							else if (param.value)
 							{
 								mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
 								mi::Color c;

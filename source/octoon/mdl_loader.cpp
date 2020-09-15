@@ -132,14 +132,9 @@ namespace octoon
 	}
 
 	template <typename T>
-	mi::IData* create_value(
-		mi::neuraylib::ITransaction* transaction,
-		const char* type_name,
-		const T& default_value)
+	mi::IData* create_value(mi::neuraylib::ITransaction* transaction, const char* type_name, const T& default_value)
 	{
-		mi::base::Handle<mi::base::IInterface> value(
-			transaction->create(type_name));
-
+		mi::base::Handle<mi::base::IInterface> value(transaction->create(type_name));
 		mi::base::Handle<mi::IData> data(value->get_interface<mi::IData>());
 		mi::set_value(data.get(), default_value);
 
@@ -220,8 +215,7 @@ namespace octoon
 
 		if (parent_call == nullptr)
 		{
-			mi::base::Handle<const mi::neuraylib::IExpression> expr(
-				cm->lookup_sub_expression(path.c_str()));
+			mi::base::Handle<const mi::neuraylib::IExpression> expr(cm->lookup_sub_expression(path.c_str()));
 			result_call = to_direct_call(expr.get(), cm);
 		}
 		else
@@ -342,12 +336,19 @@ namespace octoon
 			out_material["specular"] = Material_parameter("Float32");
 			out_material["roughness"] = Material_parameter("Float32");
 			out_material["normal"] = Material_parameter("Float32<3>", remap_normal);
-
 			out_material["clearcoat_weight"] = Material_parameter("Float32");
 			out_material["clearcoat_roughness"] = Material_parameter("Float32");
 			out_material["clearcoat_normal"] = Material_parameter("Float32<3>", remap_normal);
-
 			out_material["opacity"] = Material_parameter("Float32");
+			out_material["emission"] = Material_parameter("Rgb_fp");
+			out_material["emission"].value = create_value(transaction, "Color", mi::Color(0.0f));
+
+			mi::base::Handle<const mi::neuraylib::IExpression> intensity(cm->lookup_sub_expression("surface.emission.intensity"));
+			if (intensity.is_valid_interface())
+			{
+				out_material["emission_intensity"] = Material_parameter("Float32");
+				out_material["emission_intensity"].bake_path = "surface.emission.intensity";
+			}
 
 			std::string path_prefix = "surface.scattering.";
 
@@ -374,8 +375,7 @@ namespace octoon
 				out_material["attenuation_distance"].bake_path = "volume.scattering_coefficient.s.v.distance";
 				out_material["volume_ior"].bake_path = "ior";
 			}
-
-			// Check for a clearcoat layer, first. If present, it is the outermost layer
+			
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_CUSTOM_CURVE_LAYER)
 			{
 				// Setup clearcoat bake paths
@@ -383,17 +383,11 @@ namespace octoon
 				out_material["clearcoat_roughness"].bake_path = path_prefix + "layer.roughness_u";
 				out_material["clearcoat_normal"].bake_path = path_prefix + "normal";
 
-				// Get clear-coat base layer
 				parent_call = lookup_call("base", cm, parent_call.get());
-				// Get clear-coat base layer semantic
 				semantic = get_call_semantic(transaction, parent_call.get());
-				// Extend path prefix
 				path_prefix += "base.";
 			}
 
-			// Check for a weighted layer. Sole purpose of this layer is the transportation of  
-			// the under-clearcoat-normal. It contains an empty base and a layer with the
-			// actual material body
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_WEIGHTED_LAYER)
 			{
 				// Collect under-clearcoat normal
@@ -530,8 +524,7 @@ namespace octoon
 		mi::neuraylib::IImage_api* image_api,
 		Material& out_material)
 	{
-		for (Material::iterator it = out_material.begin();
-			it != out_material.end(); ++it)
+		for (Material::iterator it = out_material.begin(); it != out_material.end(); ++it)
 		{
 			Material_parameter& param = it->second;
 
@@ -644,6 +637,7 @@ namespace octoon
 		mi::neuraylib::IMdl_impexp_api* mdl_impexp_api)
 	{
 		Canvas_exporter canvas_exporter(parallel);
+
 		for (Material::const_iterator it = material.begin(); it != material.end(); ++it)
 		{
 			const std::string& param_name = it->first;
@@ -969,21 +963,8 @@ namespace octoon
 
 					for (auto& it : out_material)
 					{
-						const std::string& param_name = it.first;
-						const Material_parameter& param = it.second;
-
-						std::cout << "Parameter: '" << param_name << "': ";
-						if (param.bake_path.empty())
-						{
-							std::cout << " no matching bake path found in target material." << std::endl;
-
-							if (param.value)   std::cout << "--> value set to ";
-							if (param.texture) std::cout << "--> calculated ";
-						}
-						else
-						{
-							std::cout << "path '" << param.bake_path << "' baked to ";
-						}
+						auto& param_name = it.first;
+						auto& param = it.second;
 
 						if (param_name == "base_color")
 						{
@@ -1052,6 +1033,16 @@ namespace octoon
 								material->setMetalness(v);
 							}
 						}
+						else if (param_name == "anisotropy")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setAnisotropy(v);
+							}
+						}						
 						else if (param_name == "clearcoat_weight")
 						{
 							if (param.value)
@@ -1072,20 +1063,30 @@ namespace octoon
 								material->setClearCoatRoughness(v);
 							}
 						}
-						else if (param_name == "emissive")
+						else if (param_name == "emission")
 						{
 							if (param.texture)
 							{
 								std::stringstream file_name;
 								file_name << name << "-" << param_name << ".png";
-								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
+								material->setEmissiveMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else
 							{
 								mi::base::Handle<mi::IColor> color(param.value->get_interface<mi::IColor>());
 								mi::Color c;
 								color->get_value(c);
-								material->setColor(math::float3(c.r, c.g, c.b));
+								material->setEmissive(math::float3(c.r, c.g, c.b));
+							}
+						}
+						else if (param_name == "emission_intensity")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setEmissiveIntensity(v);
 							}
 						}
 					}

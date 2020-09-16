@@ -136,6 +136,7 @@ namespace octoon
 			this->updateTextureBlendData();
 			this->updateBoneData();
 
+			skinnedMesh_->computeBoundingBox();
 			skinnedMesh_->setDirty(true);
 
 			MeshRendererComponent::uploadMeshData(skinnedMesh_);

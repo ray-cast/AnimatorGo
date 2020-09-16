@@ -133,16 +133,24 @@ namespace rabbit
 		{
 			auto hit = this->selectedItem_.value();
 
-			auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
-			if (meshFilter)
+			octoon::mesh::MeshPtr mesh;
+			auto skinnedMesh = hit.object->getComponent<octoon::SkinnedMeshRendererComponent>();
+			if (skinnedMesh)
+				mesh = skinnedMesh->getSkinnedMesh();
+			else
 			{
-				auto mesh = meshFilter->getMesh();
+				auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
+				if (meshFilter)
+					mesh = meshFilter->getMesh();
+			}
+
+			if (mesh)
+			{
 				auto& box = mesh->getBoundingBox(hit.mesh).box();
 
-				auto transform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
-				transform->setTranslate(box.center());
-				transform->setScale(box.size());
-				transform->setQuaternion(hit.object->getComponent<octoon::TransformComponent>()->getQuaternion());
+				auto gizmoTransform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
+				gizmoTransform->setLocalScale(box.size());
+				gizmoTransform->setLocalTranslate(hit.object->getComponent<octoon::TransformComponent>()->getTransform() * box.center());
 
 				gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
 			}
@@ -156,16 +164,27 @@ namespace rabbit
 		{
 			auto hit = this->selectedItemHover_.value();
 
-			auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
-			auto mesh = meshFilter->getMesh();
-			auto& box = mesh->getBoundingBox(hit.mesh).box();
+			octoon::mesh::MeshPtr mesh;
+			auto skinnedMesh = hit.object->getComponent<octoon::SkinnedMeshRendererComponent>();
+			if (skinnedMesh)
+				mesh = skinnedMesh->getSkinnedMesh();
+			else
+			{
+				auto meshFilter = hit.object->getComponent<octoon::MeshFilterComponent>();
+				if (meshFilter)
+					mesh = meshFilter->getMesh();
+			}
 
-			auto transform = this->gizmoHover_->getComponent<octoon::TransformComponent>();
-			transform->setTranslate(box.center());
-			transform->setScale(box.size());
-			transform->setQuaternion(hit.object->getComponent<octoon::TransformComponent>()->getQuaternion());
+			if (mesh)
+			{
+				auto& box = mesh->getBoundingBox(hit.mesh).box();
 
-			gizmoHover_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
+				auto gizmoTransform = this->gizmoHover_->getComponent<octoon::TransformComponent>();
+				gizmoTransform->setLocalScale(box.size());
+				gizmoTransform->setLocalTranslate(hit.object->getComponent<octoon::TransformComponent>()->getTransform() * box.center());
+
+				gizmoHover_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
+			}
 		}
 		else
 		{

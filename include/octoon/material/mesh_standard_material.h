@@ -34,6 +34,7 @@ namespace octoon::material
 		void setRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setMetalnessMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setAnisotropyMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setSheenMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setClearCoatMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setClearCoatRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
@@ -65,6 +66,7 @@ namespace octoon::material
 		const hal::GraphicsTexturePtr& getRoughnessMap() const noexcept;
 		const hal::GraphicsTexturePtr& getMetalnessMap() const noexcept;
 		const hal::GraphicsTexturePtr& getAnisotropyMap() const noexcept;
+		const hal::GraphicsTexturePtr& getSheenMap() const noexcept;
 		const hal::GraphicsTexturePtr& getClearCoatMap() const noexcept;
 		const hal::GraphicsTexturePtr& getClearCoatRoughnessMap() const noexcept;		
 		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
@@ -103,6 +105,7 @@ namespace octoon::material
 		hal::GraphicsTexturePtr roughnessMap_;
 		hal::GraphicsTexturePtr metalnessMap_;
 		hal::GraphicsTexturePtr anisotropyMap_;
+		hal::GraphicsTexturePtr sheenMap_;
 		hal::GraphicsTexturePtr clearcoatMap_;
 		hal::GraphicsTexturePtr clearcoatRoughnessMap_;
 		hal::GraphicsTexturePtr lightMap_;

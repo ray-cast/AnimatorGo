@@ -330,6 +330,14 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setSheenMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->sheenMap_ = map;
+		this->set("sheenMap", map);
+		this->set("sheenMapEnable", map ? true : false);
+	}
+
+	void
 	MeshStandardMaterial::setClearCoatMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->clearcoatMap_ = map;
@@ -440,6 +448,12 @@ namespace octoon::material
 	MeshStandardMaterial::getAnisotropyMap() const noexcept
 	{
 		return this->anisotropyMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getSheenMap() const noexcept
+	{
+		return this->sheenMap_;
 	}
 
 	const hal::GraphicsTexturePtr&

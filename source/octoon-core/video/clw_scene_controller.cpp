@@ -526,7 +526,7 @@ namespace octoon::video
 			material.disney.specular_tint = 0;
 			material.disney.specular_tint_map_idx = -1;
 			material.disney.sheen = mat->getSheen();
-			material.disney.sheen_map_idx = -1;
+			material.disney.sheen_map_idx = GetTextureIndex(textureCollector, mat->getSheenMap());
 			material.disney.sheen_tint = 0;
 			material.disney.sheen_tint_map_idx = -1;
 			material.disney.clearcoat = mat->getClearCoat();

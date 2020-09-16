@@ -27,7 +27,20 @@ namespace octoon::video
 	void
 	RenderScene::setGlobalIllumination(bool enable) noexcept
 	{
-		this->enableGlobalIllumination_ = enable;
+		if (this->enableGlobalIllumination_ != enable)
+		{
+			if (enable)
+			{
+				for (auto& it : cameras_)
+					it->setDirty(true);
+				for (auto& it : renderables_)
+					it->setDirty(true);
+				for (auto& it : lights_)
+					it->setDirty(true);
+			}
+
+			this->enableGlobalIllumination_ = enable;
+		}
 	}
 
 	bool

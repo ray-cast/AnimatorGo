@@ -824,7 +824,6 @@ namespace rabbit
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
 			auto& materials = materialComponent->getMaterialList();
-			auto& materialSelected = materialComponent->getSelectedMaterial();
 
 			listWidget_->clear();
 

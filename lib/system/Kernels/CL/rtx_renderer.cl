@@ -1139,6 +1139,8 @@ KERNEL void FillAOVs(
                     diffgeo.dpdv = -diffgeo.dpdv;
                 }
 
+                DifferentialGeometry_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS_IDX(diffgeo.mat.disney.normal_map_idx));
+
                 aov_world_shading_normal[idx].xyz += diffgeo.n;
                 aov_world_shading_normal[idx].w += 1.f;
                 CORRECT_VALUE(aov_world_shading_normal[idx])

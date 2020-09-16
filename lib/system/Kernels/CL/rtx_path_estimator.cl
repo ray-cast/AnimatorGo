@@ -311,6 +311,7 @@ KERNEL void ShadeSurface(
 
         DifferentialGeometry diffgeo;
         Scene_FillDifferentialGeometry(&scene, &isect, &diffgeo);
+        DifferentialGeometry_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS_IDX(diffgeo.mat.disney.normal_map_idx));
         DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
 
         Path_SetFlags(&diffgeo, path);

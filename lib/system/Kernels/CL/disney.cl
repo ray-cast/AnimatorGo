@@ -63,7 +63,7 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo,
     float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
-    
+
     float aspect = native_sqrt(1.f - anisotropy * 0.9f);
     
     float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));

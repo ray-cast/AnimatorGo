@@ -180,7 +180,7 @@ KERNEL void ShadeMiss(
             }
             else
             {
-                v.xyz = light.intensity;
+                v.xyz = REASONABLE_RADIANCE(weight * light.intensity * t);
             }
 
             ADD_FLOAT4(&output[output_index], v);

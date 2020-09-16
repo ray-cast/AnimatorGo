@@ -174,7 +174,7 @@ namespace octoon::video
 
 			if ((pass > 0) && has_some_environment)
 			{
-				ShadeMiss(scene, pass, num_estimates, output, use_output_indices);
+				//ShadeMiss(scene, pass, num_estimates, output, use_output_indices);
 			}
 
 			this->filterPathStream(pass, num_estimates);

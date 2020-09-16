@@ -51,9 +51,6 @@ float4 Texture_Sample2D(float2 uv, TEXTURE_ARG_LIST_IDX(texidx))
     // Reverse Y:
     // it is needed as textures are loaded with Y axis going top to down
     // and our axis goes from down to top
-#if RTX_ON == 0
-    uv.y = 1.f - uv.y;
-#endif
 
     // Calculate integer coordinates
     int x0 = clamp((int)floor(uv.x * width), 0, width - 1);
@@ -134,11 +131,7 @@ float3 Texture_SampleEnvMap(float3 d, TEXTURE_ARG_LIST_IDX(texidx), bool mirror_
     // Map to [0,1]x[0,1] range and reverse Y axis
     float2 uv;
     uv.x = (mirror_x) ? (1.f - phi / (2 * PI)) : phi / (2 * PI);
-#if RTX_ON == 0
-    uv.y = 1.f - theta / PI;
-#else
     uv.y = theta / PI;
-#endif
 
     // Sample the texture
     return Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).xyz;

@@ -490,7 +490,7 @@ namespace octoon::material
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.type == PropertyTypeInfoString)
+			if (prop.type == PropertyTypeInfoTexture)
 			{
 				value = prop.texture;
 				return true;

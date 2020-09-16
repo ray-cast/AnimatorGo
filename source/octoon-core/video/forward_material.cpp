@@ -2129,6 +2129,12 @@ namespace octoon::video
 			if (standard->getEmissiveMap())
 				fragmentShader += "#define USE_EMISSIVEMAP\n";
 		}
+		else
+		{
+			octoon::hal::GraphicsTexturePtr texture;
+			if (material->get("map", texture))
+				fragmentShader += "#define USE_MAP\n";
+		}
 
 		fragmentShader += shader->fs;
 

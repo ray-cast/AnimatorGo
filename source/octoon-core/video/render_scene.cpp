@@ -29,14 +29,15 @@ namespace octoon::video
 	{
 		if (this->enableGlobalIllumination_ != enable)
 		{
-			if (enable)
+			for (auto& it : cameras_)
+				it->setDirty(true);
+			for (auto& it : lights_)
+				it->setDirty(true);
+			for (auto& it : renderables_)
 			{
-				for (auto& it : cameras_)
-					it->setDirty(true);
-				for (auto& it : renderables_)
-					it->setDirty(true);
-				for (auto& it : lights_)
-					it->setDirty(true);
+				it->setDirty(true);
+				for (auto& mat : it->getMaterials())
+					mat->setDirty(true);
 			}
 
 			this->enableGlobalIllumination_ = enable;

@@ -542,7 +542,7 @@ namespace octoon::video
 
 			if (math::any(mat->getEmissive()))
 			{
-				material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * 1000;
+				material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * mat->getEmissiveIntensity();
 				material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
 			}
 

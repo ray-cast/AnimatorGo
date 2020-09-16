@@ -374,8 +374,8 @@ namespace rabbit
 
 		emissiveSpinBox_ = new DoubleSpinBox();
 		emissiveSpinBox_->setFixedWidth(50);
-		emissiveSpinBox_->setMaximum(10.0f);
-		emissiveSpinBox_->setSingleStep(0.1f);
+		emissiveSpinBox_->setMaximum(100.0f);
+		emissiveSpinBox_->setSingleStep(1.0f);
 		emissiveSpinBox_->setAlignment(Qt::AlignRight);
 
 		emissiveSlider_ = new QSlider();
@@ -465,7 +465,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::emissiveEditEvent(double value)
 	{
-		emissiveSlider_->setValue(value * 10.f);
+		emissiveSlider_->setValue(value);
 
 		if (this->material_)
 		{
@@ -478,7 +478,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::emissiveSliderEvent(int value)
 	{
-		emissiveSpinBox_->setValue(value / 10.0f);
+		emissiveSpinBox_->setValue(value);
 	}
 
 	void

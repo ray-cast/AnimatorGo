@@ -121,6 +121,8 @@ namespace octoon::video
 					auto standard = mat->downcast<material::MeshStandardMaterial>();
 					if (standard->getColorMap())
 						textureCollector.Collect(standard->getColorMap());
+					if (standard->getOpacityMap())
+						textureCollector.Collect(standard->getOpacityMap());
 					if (standard->getNormalMap())
 						textureCollector.Collect(standard->getNormalMap());
 					if (standard->getRoughnessMap())
@@ -516,6 +518,7 @@ namespace octoon::video
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());
 			material.disney.opacity = mat->getOpacity();
+			material.disney.opacity_map_idx = GetTextureIndex(textureCollector, mat->getOpacityMap());
 			material.disney.normal_map_idx = GetTextureIndex(textureCollector, mat->getNormalMap());
 			material.disney.roughness = 1 - mat->getSmoothness();
 			material.disney.roughness_map_idx = GetTextureIndex(textureCollector, mat->getRoughnessMap());

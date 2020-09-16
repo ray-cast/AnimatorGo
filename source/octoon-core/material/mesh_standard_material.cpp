@@ -265,6 +265,14 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setOpacityMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->alphaMap_ = map;
+		this->set("alphaMap", map);
+		this->set("alphaMapEnable", map ? true : false);
+	}
+
+	void
 	MeshStandardMaterial::setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
 		this->emissiveMap_ = map;
@@ -418,6 +426,12 @@ namespace octoon::material
 	MeshStandardMaterial::getColorMap() const noexcept
 	{
 		return this->colorMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getOpacityMap() const noexcept
+	{
+		return this->alphaMap_;
 	}
 
 	const hal::GraphicsTexturePtr&

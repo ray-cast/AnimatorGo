@@ -95,6 +95,7 @@ typedef struct
     float clearcoat_roughness;
     float subsurface;
     int base_color_map_idx;
+    int opacity_map_idx;
     int normal_map_idx;
     int metallic_map_idx;
     int specular_map_idx;
@@ -105,7 +106,6 @@ typedef struct
     int sheen_map_idx;
     int clearcoat_map_idx;
     int clearcoat_roughness_map_idx;
-    int padding1;
     int padding2;
 } Disney;
 

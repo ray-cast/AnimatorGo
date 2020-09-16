@@ -1114,9 +1114,9 @@ namespace octoon
 					if (this->verboseLogging_)
 						std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;
 
-					for (mi::Size i = 0; i < editor.get_parameter_count(); ++i)
+					for (mi::Size j = 0; j < editor.get_parameter_count(); ++j)
 					{
-						const char* name = editor.get_parameter_name(i);
+						const char* name = editor.get_parameter_name(j);
 						auto types = mi::base::Handle<const mi::neuraylib::IType_list>(editor.get_parameter_types());
 						auto type = mi::base::Handle<const mi::neuraylib::IType>(types->get_type(name));
 						auto resolvedType = mi::base::Handle<const mi::neuraylib::IType>(type->skip_all_type_aliases());

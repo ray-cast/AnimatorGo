@@ -29,6 +29,7 @@ namespace octoon::material
 		void setSubsurface(float subsurface) noexcept;
 		void setLightMapIntensity(float intensity) noexcept;
 		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setOpacityMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setNormalMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setSpecularMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
@@ -61,6 +62,7 @@ namespace octoon::material
 		float getGamma() const noexcept;
 
 		const hal::GraphicsTexturePtr& getColorMap() const noexcept;
+		const hal::GraphicsTexturePtr& getOpacityMap() const noexcept;
 		const hal::GraphicsTexturePtr& getNormalMap() const noexcept;
 		const hal::GraphicsTexturePtr& getSpecularMap() const noexcept;
 		const hal::GraphicsTexturePtr& getRoughnessMap() const noexcept;
@@ -100,6 +102,7 @@ namespace octoon::material
 		math::float3 color_;
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorMap_;
+		hal::GraphicsTexturePtr alphaMap_;
 		hal::GraphicsTexturePtr normalMap_;
 		hal::GraphicsTexturePtr specularMap_;
 		hal::GraphicsTexturePtr roughnessMap_;

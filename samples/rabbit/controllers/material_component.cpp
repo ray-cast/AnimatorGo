@@ -118,6 +118,52 @@ namespace rabbit
 					}
 				}
 			}
+
+			this->addMessageListener("editor:selected", [this](const std::any& data) {
+				if (data.has_value())
+				{
+					auto hit = std::any_cast<octoon::RaycastHit>(data);
+
+					octoon::material::Materials materials;
+					auto renderComponent = hit.object->getComponent<octoon::MeshRendererComponent>();
+					if (renderComponent)
+						materials = renderComponent->getMaterials();
+					else
+					{
+						auto smr = hit.object->getComponent<octoon::SkinnedMeshRendererComponent>();
+						if (smr)
+							materials = smr->getMaterials();
+					}
+
+					for (auto& mat : materials)
+					{
+						if (this->materialSets_.find((void*)mat.get()) != this->materialSets_.end())
+							continue;
+
+						auto standard = mat->downcast<octoon::material::MeshStandardMaterial>();
+
+						auto id = QUuid::createUuid().toString();
+						auto uuid = id.toStdString().substr(1, id.length() - 2);
+
+						auto& color = standard->getColor();
+						auto& colorMap = standard->getColorMap();
+
+						nlohmann::json item;
+						item["uuid"] = uuid;
+						item["name"] = mat->getName();
+						item["color"] = { color.x, color.y, color.z };
+
+						if (colorMap)
+							item["map"] = colorMap->getTextureDesc().getName();
+
+						this->materialList_[uuid] = item;
+						this->materials_[std::string(uuid)] = mat;
+						this->materialSets_.insert((void*)mat.get());
+					}
+
+					this->sendMessage("editor:material:change");
+				}
+			});
 		}
 		catch (...)
 		{

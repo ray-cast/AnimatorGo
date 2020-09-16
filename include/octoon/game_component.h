@@ -51,9 +51,9 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
-		void sendMessageUpwards(std::string_view event, const std::any& data = nullptr) noexcept;
-		void sendMessageDownwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = std::any()) noexcept;
+		void sendMessageUpwards(std::string_view event, const std::any& data = std::any()) noexcept;
+		void sendMessageDownwards(std::string_view event, const std::any& data = std::any()) noexcept;
 		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 
@@ -62,9 +62,9 @@ namespace octoon
 		GameFeature* tryGetFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* tryGetFeature(const runtime::Rtti& rtti) const noexcept;
 
-		bool trySendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
-		bool trySendMessageUpwards(std::string_view event, const std::any& data = nullptr) noexcept;
-		bool trySendMessageDownwards(std::string_view event, const std::any& data = nullptr) noexcept;
+		bool trySendMessage(std::string_view event, const std::any& data = std::any()) noexcept;
+		bool trySendMessageUpwards(std::string_view event, const std::any& data = std::any()) noexcept;
+		bool trySendMessageDownwards(std::string_view event, const std::any& data = std::any()) noexcept;
 		bool tryAddMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 		bool tryRemoveMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 

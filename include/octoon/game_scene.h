@@ -31,7 +31,7 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti* rtti) const noexcept;
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = std::any()) noexcept;
 
 		void load(const io::archivebuf& reader) except;
 		void save(io::archivebuf& write) except;

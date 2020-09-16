@@ -91,7 +91,7 @@ namespace rabbit
 			return dynamic_cast<T*>(context_->behaviour->getFeature(T::RTTI));
 		}
 
-		void sendMessage(const std::string& event, const std::any& data = nullptr) noexcept
+		void sendMessage(const std::string& event, const std::any& data = std::any()) noexcept
 		{
 			context_->behaviour->sendMessage(event, data);
 		}

@@ -26,7 +26,7 @@ namespace octoon
 		GameFeature* getFeature(const runtime::Rtti& rtti) const noexcept;
 		const GameFeatures& getFeaturs() const noexcept;
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = std::any()) noexcept;
 		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 

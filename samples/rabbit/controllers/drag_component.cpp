@@ -82,7 +82,16 @@ namespace rabbit
 	void
 	DragComponent::onMouseDown(float x, float y) noexcept
 	{
-		this->selectedItem_ = this->intersectObjects(x, y);
+		auto selected = this->intersectObjects(x, y);
+		if (this->selectedItem_ != selected)
+		{
+			this->selectedItem_ = selected;
+
+			if (selected)
+				this->sendMessage("editor:selected", selected.value());
+			else
+				this->sendMessage("editor:selected");
+		}
 	}
 
 	void
@@ -98,7 +107,16 @@ namespace rabbit
 	void
 	DragComponent::onMouseMotion(float x, float y) noexcept
 	{
-		this->selectedItemHover_ = this->intersectObjects(x, y);
+		auto hover = this->intersectObjects(x, y);
+		if (this->selectedItemHover_ != hover)
+		{
+			this->selectedItemHover_ = hover;
+
+			if (hover)
+				this->sendMessage("editor:hover", hover.value());
+			else
+				this->sendMessage("editor:hover");
+		}
 	}
 
 	void

@@ -5,6 +5,7 @@
 #include "../module/material_module.h"
 #include "../libs/tinyobj/tiny_obj_loader.h"
 
+#include <set>
 #include <map>
 #include <qpixmap.h>
 #include <octoon/video/renderer.h>
@@ -48,6 +49,7 @@ namespace rabbit
 
 	private:
 		octoon::hal::GraphicsFramebufferPtr framebuffer_;
+		std::set<void*> materialSets_;
 		std::map<std::string, nlohmann::json, std::less<>> materialList_;
 		std::map<std::string, std::shared_ptr<octoon::material::Material>, std::less<>> materials_;
 

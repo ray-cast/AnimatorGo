@@ -299,10 +299,7 @@ namespace octoon
 		materials.reserve(model.materials.size());
 
 		for (auto& it : model.materials)
-		{
-			it->setCullMode(hal::GraphicsCullMode::None);
 			materials.push_back(it);
-		}
 	}
 
 	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)
@@ -311,7 +308,6 @@ namespace octoon
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];
-
 		auto object = GameObject::create(mesh->getName());
 		object->addComponent<MeshFilterComponent>(mesh);
 
@@ -329,15 +325,6 @@ namespace octoon
 			smr->setGlobalIllumination(true);
 
 			object->addComponent(smr);
-
-			/*auto material = std::make_shared<material::Material>();
-			material->set(MATKEY_COLOR_DIFFUSE, math::float3(0.4, 0.9, 0.4));
-
-			auto sjr = std::make_shared<SkinnedJointRendererComponent>();
-			sjr->setMaterial(material);
-			sjr->setTransforms(bones);
-
-			object->addComponent(sjr);*/
 		}
 
 		meshes = object;

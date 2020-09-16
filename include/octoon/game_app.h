@@ -55,7 +55,7 @@ namespace octoon
 
 		void sendInputEvent(const input::InputEvent& event) except;
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) except;
+		void sendMessage(std::string_view event, const std::any& data = std::any()) except;
 		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except;
 		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) except;
 

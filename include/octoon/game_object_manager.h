@@ -25,7 +25,7 @@ namespace octoon
 
 		void onGui() except;
 
-		void sendMessage(std::string_view event, const std::any& data = nullptr) noexcept;
+		void sendMessage(std::string_view event, const std::any& data = std::any()) noexcept;
 		void addMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 		void removeMessageListener(std::string_view event, std::function<void(const std::any&)> listener) noexcept;
 

@@ -726,6 +726,23 @@ namespace rabbit
 			if (this->isVisible())
 				this->updateList();
 		});
+
+		behaviour->addMessageListener("editor:material:selected", [this](const std::any& data) {
+			if (this->isVisible())
+			{
+				auto uuid = QString::fromStdString(std::any_cast<std::string>(data));
+				auto count = this->listWidget_->count();
+				for (int i = 0; i < count; i++)
+				{
+					auto item = this->listWidget_->item(i);
+					if (item->data(Qt::UserRole).toString() == uuid)
+					{
+						this->listWidget_->setCurrentItem(item);
+						break;
+					}
+				}
+			}
+		});
 	}
 
 	MaterialWindow::~MaterialWindow() noexcept
@@ -807,6 +824,7 @@ namespace rabbit
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
 			auto& materials = materialComponent->getMaterialList();
+			auto& materialSelected = materialComponent->getSelectedMaterial();
 
 			listWidget_->clear();
 

@@ -135,6 +135,8 @@ namespace rabbit
 							materials = smr->getMaterials();
 					}
 
+					bool dirty = false;
+
 					for (auto& mat : materials)
 					{
 						if (this->materialSets_.find((void*)mat.get()) != this->materialSets_.end())
@@ -157,11 +159,22 @@ namespace rabbit
 							item["map"] = colorMap->getTextureDesc().getName();
 
 						this->materialList_[uuid] = item;
-						this->materials_[std::string(uuid)] = mat;
+						this->materials_[uuid] = mat;
 						this->materialSets_.insert((void*)mat.get());
+						this->materialsRemap_[mat] = uuid;
+						
+						dirty = true;
 					}
 
-					this->sendMessage("editor:material:change");
+					if (dirty)
+						this->sendMessage("editor:material:change");
+
+					this->selectedMaterial_ = this->materialsRemap_[materials[hit.mesh]];
+					this->sendMessage("editor:material:selected", this->selectedMaterial_.value());
+				}
+				else
+				{
+					this->selectedMaterial_.reset();
 				}
 			});
 		}
@@ -183,6 +196,12 @@ namespace rabbit
 			auto data = uuids.dump();
 			ifs.write(data.c_str(), data.size());
 		}
+	}
+
+	std::optional<std::string>
+	MaterialComponent::getSelectedMaterial()
+	{
+		return this->selectedMaterial_;
 	}
 
 	const std::map<std::string, nlohmann::json, std::less<>>&

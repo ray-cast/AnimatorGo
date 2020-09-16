@@ -7,6 +7,7 @@
 
 #include <set>
 #include <map>
+#include <optional>
 #include <qpixmap.h>
 #include <octoon/video/renderer.h>
 #include <octoon/camera/perspective_camera.h>
@@ -33,6 +34,8 @@ namespace rabbit
 
 		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap);
 
+		std::optional<std::string> getSelectedMaterial();
+
 		const std::map<std::string, nlohmann::json, std::less<>>& getMaterialList() const noexcept;
 		const std::shared_ptr<octoon::material::Material> getMaterial(std::string_view uuid) noexcept;
 
@@ -49,9 +52,13 @@ namespace rabbit
 
 	private:
 		octoon::hal::GraphicsFramebufferPtr framebuffer_;
+
 		std::set<void*> materialSets_;
 		std::map<std::string, nlohmann::json, std::less<>> materialList_;
-		std::map<std::string, std::shared_ptr<octoon::material::Material>, std::less<>> materials_;
+		std::map<std::string, octoon::material::MaterialPtr, std::less<>> materials_;
+		std::map<octoon::material::MaterialPtr, std::string, std::less<>> materialsRemap_;
+
+		std::optional<std::string> selectedMaterial_;
 
 		std::shared_ptr<octoon::camera::PerspectiveCamera> camera_;
 		std::shared_ptr<octoon::geometry::Geometry> geometry_;

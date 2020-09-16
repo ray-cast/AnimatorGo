@@ -523,6 +523,30 @@ float metalnessFactor = metalness;
 	metalnessFactor = texelMetalness.r;
 #endif
 )";
+static char* clearcoatmap_pars_fragment = R"(
+#ifdef USE_CLEARCOATMAP
+	uniform sampler2D clearCoatMap;
+#endif
+)";
+static char* clearcoatmap_fragment = R"(
+float clearCoatFactor = clearCoat;
+#ifdef USE_CLEARCOATMAP
+	vec4 texelClearcoat = texture2D( clearCoatMap, vUv );
+	clearCoatFactor = texelClearcoat.r;
+#endif
+)";
+static char* clearcoatRoughnessmap_pars_fragment = R"(
+#ifdef USE_CLEARCOATROUGHNESSMAP
+	uniform sampler2D clearCoatRoughnessMap;
+#endif
+)";
+static char* clearcoatRoughnessmap_fragment = R"(
+float clearCoatRoughnessFactor = clearCoatRoughness;
+#ifdef USE_CLEARCOATROUGHNESSMAP
+	vec4 texelClearcoatRoughness = texture2D( clearCoatRoughnessMap, vUv );
+	clearCoatRoughnessFactor = texelClearcoatRoughness.r;
+#endif
+)";
 static char* emissivemap_pars_fragment = R"(
 #ifdef USE_EMISSIVEMAP
 	uniform sampler2D emissiveMap;
@@ -1335,8 +1359,8 @@ material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
 	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 #else
 	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
-	material.clearCoat = saturate( clearCoat ); // Burley clearcoat model
-	material.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );
+	material.clearCoat = saturate( clearCoatFactor ); // Burley clearcoat model
+	material.clearCoatRoughness = clamp( clearCoatRoughnessFactor, 0.04, 1.0 );
 #endif
 )";
 static char* lights_template = R"(
@@ -1857,6 +1881,10 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"roughnessmap_fragment", roughnessmap_fragment},
 	{"metalnessmap_fragment", metalnessmap_fragment},
 	{"metalnessmap_pars_fragment", metalnessmap_pars_fragment},
+	{"clearcoatmap_pars_fragment", clearcoatmap_pars_fragment},
+	{"clearcoatRoughnessmap_pars_fragment", clearcoatRoughnessmap_pars_fragment},
+	{"clearcoatmap_fragment", clearcoatmap_fragment},
+	{"clearcoatRoughnessmap_fragment", clearcoatRoughnessmap_fragment},
 	{"emissivemap_fragment", emissivemap_fragment},
 	{"emissivemap_pars_fragment", emissivemap_pars_fragment },	
 	{"bsdfs", bsdfs },
@@ -2094,6 +2122,10 @@ namespace octoon::video
 				fragmentShader += "#define USE_ROUGHNESSMAP\n";
 			if (standard->getMetalnessMap())
 				fragmentShader += "#define USE_METALNESSMAP\n";
+			if (standard->getClearCoatMap())
+				fragmentShader += "#define USE_CLEARCOATMAP\n";
+			if (standard->getClearCoatRoughnessMap())
+				fragmentShader += "#define USE_CLEARCOATROUGHNESSMAP\n";
 			if (standard->getEmissiveMap())
 				fragmentShader += "#define USE_EMISSIVEMAP\n";
 		}

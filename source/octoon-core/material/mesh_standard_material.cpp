@@ -40,6 +40,8 @@ static const char* standard_frag = R"(
 #include <bumpmap_pars_fragment>
 #include <roughnessmap_pars_fragment>
 #include <metalnessmap_pars_fragment>
+#include <clearcoatmap_pars_fragment>
+#include <clearcoatRoughnessmap_pars_fragment>
 #include <cube_uv_reflection_fragment>
 #include <bsdfs>
 #include <lights_pars>
@@ -70,6 +72,8 @@ void main() {
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
+	#include <clearcoatmap_fragment>
+	#include <clearcoatRoughnessmap_fragment>
 	#include <emissivemap_fragment>
 	#include <lights_physical_fragment>
 	#include <lights_template>
@@ -111,7 +115,7 @@ namespace octoon::material
 		this->setAnisotropy(0.0f);
 		this->setSheen(0.0f);
 		this->setMetalness(0.0f);
-		this->setReflectivity(0.5f);
+		this->setSpecular(0.5f);
 		this->setRefractionRatio(1.0f);
 		this->setClearCoat(0.0f);
 		this->setClearCoatRoughness(0.0f);
@@ -132,24 +136,12 @@ namespace octoon::material
 		this->set("diffuse", this->color_);
 	}
 
-	const math::float3&
-	MeshStandardMaterial::getColor() const noexcept
-	{
-		return this->color_;
-	}
-
 	void
 	MeshStandardMaterial::setOpacity(float opacity) noexcept
 	{
 		this->opacity_ = opacity;
 		this->setDirty(false);
 		this->set("opacity", this->opacity_);
-	}
-
-	float
-	MeshStandardMaterial::getOpacity() const noexcept
-	{
-		return opacity_;
 	}
 
 	void
@@ -160,12 +152,6 @@ namespace octoon::material
 		this->set("emissive", this->emissive_* this->emissiveIntensity_);
 	}
 
-	const math::float3&
-	MeshStandardMaterial::getEmissive()const noexcept
-	{
-		return this->emissive_;
-	}
-
 	void
 	MeshStandardMaterial::setEmissiveIntensity(float intensity) noexcept
 	{
@@ -174,24 +160,68 @@ namespace octoon::material
 		this->set("emissive", this->emissive_ * this->emissiveIntensity_);
 	}
 
-	float
-	MeshStandardMaterial::getEmissiveIntensity() const noexcept
+	void
+	MeshStandardMaterial::setAnisotropy(float anisotropy) noexcept
 	{
-		return this->emissiveIntensity_;
+		this->anisotropy_ = anisotropy;
+		this->setDirty(false);
+		this->set("anisotropy", anisotropy);
 	}
 
 	void
-	MeshStandardMaterial::setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept
+	MeshStandardMaterial::setSpecular(float reflectivity) noexcept
 	{
-		this->emissiveMap_ = map;
-		this->set("emissiveMap", map);
-		this->set("emissiveMapEnable", map ? true : false);
+		this->reflectivity_ = reflectivity;
+		this->setDirty(false);
+		this->set("reflectivity", reflectivity);
 	}
 
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getEmissiveMap() const noexcept
+	void
+	MeshStandardMaterial::setSheen(float sheen) noexcept
 	{
-		return this->emissiveMap_;
+		this->sheen_ = sheen;
+		this->setDirty(false);
+		this->set("sheen", sheen);
+	}
+
+	void
+	MeshStandardMaterial::setRefractionRatio(float refractionRatio) noexcept
+	{
+		this->refractionRatio_ = refractionRatio;
+		this->setDirty(false);
+		this->set("refractionRatio", refractionRatio);
+	}
+
+	void
+	MeshStandardMaterial::setClearCoat(float clearCoat) noexcept
+	{
+		this->clearCoat_ = clearCoat;
+		this->setDirty(false);
+		this->set("clearCoat", clearCoat);
+	}
+
+	void
+	MeshStandardMaterial::setClearCoatRoughness(float clearCoatRoughness) noexcept
+	{
+		this->clearCoatRoughness_ = clearCoatRoughness;
+		this->setDirty(false);
+		this->set("clearCoatRoughness", clearCoatRoughness);
+	}
+
+	void
+	MeshStandardMaterial::setSubsurface(float subsurface) noexcept
+	{
+		this->subsurface_ = subsurface;
+		this->setDirty(false);
+		this->set("subsurface", subsurface);
+	}
+
+	void
+	MeshStandardMaterial::setGamma(float gamma) noexcept
+	{
+		this->gamma_ = gamma;
+		this->setDirty(false);
+		this->set("gamma", gamma);
 	}
 
 	void
@@ -202,51 +232,12 @@ namespace octoon::material
 		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
 	}
 
-	const math::float2&
-	MeshStandardMaterial::getOffset() const noexcept
-	{
-		return this->offset_;
-	}
-
 	void
 	MeshStandardMaterial::setRepeat(const math::float2& repeat) noexcept
 	{
 		this->repeat_ = repeat;
 		this->setDirty(false);
 		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
-	}
-
-	const math::float2&
-	MeshStandardMaterial::getRepeat() const noexcept
-	{
-		return this->repeat_;
-	}
-
-	void
-	MeshStandardMaterial::setColorMap(const hal::GraphicsTexturePtr& map) noexcept
-	{
-		this->colorMap_ = map;
-		this->set("map", map);
-		this->set("mapEnable", map ? true : false);
-	}
-
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getColorMap() const noexcept
-	{
-		return this->colorMap_;
-	}
-
-	void
-	MeshStandardMaterial::setNormalMap(const hal::GraphicsTexturePtr& map) noexcept
-	{
-		this->normalMap_ = map;
-		this->set("normalMap", map);
-	}
-
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getNormalMap() const noexcept
-	{
-		return this->normalMap_;
 	}
 
 	void
@@ -257,10 +248,36 @@ namespace octoon::material
 		this->set("lightMapIntensity", intensity);
 	}
 
-	float
-	MeshStandardMaterial::getLightMapIntensity() const noexcept
+	void
+	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
 	{
-		return this->lightMapIntensity_;
+		this->smoothness_ = smoothness;
+		this->setDirty(false);
+		this->set("roughness", 1 - smoothness);
+	}
+
+	void
+	MeshStandardMaterial::setColorMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->colorMap_ = map;
+		this->set("map", map);
+		this->set("mapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->emissiveMap_ = map;
+		this->set("emissiveMap", map);
+		this->set("emissiveMapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setNormalMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->normalMap_ = map;
+		this->set("normalMap", map);
+		this->set("normalMapEnable", map);
 	}
 
 	void
@@ -272,24 +289,12 @@ namespace octoon::material
 		this->set("lightMapEnable", map ? true : false);
 	}
 
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getLightTexture() const noexcept
-	{
-		return this->lightMap_;
-	}
-
 	void
-	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
+	MeshStandardMaterial::setSpecularMap(const hal::GraphicsTexturePtr& map) noexcept
 	{
-		this->smoothness_ = smoothness;
-		this->setDirty(false);
-		this->set("roughness", 1 - smoothness);
-	}
-
-	float
-	MeshStandardMaterial::getSmoothness() const noexcept
-	{
-		return this->smoothness_;
+		this->specularMap_ = map;
+		this->set("specularMap", map);
+		this->set("specularMapEnable", map ? true : false);
 	}
 
 	void
@@ -300,24 +305,12 @@ namespace octoon::material
 		this->set("roughnessMapEnable", map ? true : false);
 	}
 
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getRoughnessMap() const noexcept
-	{
-		return this->roughnessMap_;
-	}
-
 	void
 	MeshStandardMaterial::setMetalness(float metalness) noexcept
 	{
 		this->metalness_ = metalness;
 		this->setDirty(false);
 		this->set("metalness", metalness);
-	}
-
-	float
-	MeshStandardMaterial::getMetalness() const noexcept
-	{
-		return this->metalness_;
 	}
 
 	void
@@ -328,18 +321,143 @@ namespace octoon::material
 		this->set("metalnessMapEnable", map ? true : false);
 	}
 
+	void
+	MeshStandardMaterial::setAnisotropyMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->anisotropyMap_ = map;
+		this->set("anisotropyMap", map);
+		this->set("anisotropyMapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setClearCoatMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->clearcoatMap_ = map;
+		this->set("clearCoatMap", map);
+		this->set("clearCoatMapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setClearCoatRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->clearcoatRoughnessMap_ = map;
+		this->set("clearCoatRoughnessMap", map);
+		this->set("clearCoatRoughnessMap", map ? true : false);
+	}
+
+	const math::float3&
+	MeshStandardMaterial::getColor() const noexcept
+	{
+		return this->color_;
+	}
+
+	float
+	MeshStandardMaterial::getOpacity() const noexcept
+	{
+		return opacity_;
+	}
+
+	const math::float3&
+	MeshStandardMaterial::getEmissive()const noexcept
+	{
+		return this->emissive_;
+	}
+
+	float
+	MeshStandardMaterial::getEmissiveIntensity() const noexcept
+	{
+		return this->emissiveIntensity_;
+	}
+
+	float
+	MeshStandardMaterial::getSmoothness() const noexcept
+	{
+		return this->smoothness_;
+	}
+
+	float
+	MeshStandardMaterial::getLightMapIntensity() const noexcept
+	{
+		return this->lightMapIntensity_;
+	}
+
+
+	const math::float2&
+	MeshStandardMaterial::getOffset() const noexcept
+	{
+		return this->offset_;
+	}
+
+	const math::float2&
+	MeshStandardMaterial::getRepeat() const noexcept
+	{
+		return this->repeat_;
+	}
+
+	float
+	MeshStandardMaterial::getMetalness() const noexcept
+	{
+		return this->metalness_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getEmissiveMap() const noexcept
+	{
+		return this->emissiveMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getColorMap() const noexcept
+	{
+		return this->colorMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getSpecularMap() const noexcept
+	{
+		return this->specularMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getRoughnessMap() const noexcept
+	{
+		return this->roughnessMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getNormalMap() const noexcept
+	{
+		return this->normalMap_;
+	}
+
 	const hal::GraphicsTexturePtr&
 	MeshStandardMaterial::getMetalnessMap() const noexcept
 	{
 		return this->metalnessMap_;
 	}
 
-	void
-	MeshStandardMaterial::setAnisotropy(float anisotropy) noexcept
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getAnisotropyMap() const noexcept
 	{
-		this->anisotropy_ = anisotropy;
-		this->setDirty(false);
-		this->set("anisotropy", anisotropy);
+		return this->anisotropyMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getClearCoatMap() const noexcept
+	{
+		return this->clearcoatMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getClearCoatRoughnessMap() const noexcept
+	{
+		return this->clearcoatRoughnessMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getLightTexture() const noexcept
+	{
+		return this->lightMap_;
 	}
 
 	float
@@ -348,40 +466,16 @@ namespace octoon::material
 		return this->anisotropy_;
 	}
 
-	void
-	MeshStandardMaterial::setSheen(float sheen) noexcept
-	{
-		this->sheen_ = sheen;
-		this->setDirty(false);
-		this->set("sheen", sheen);
-	}
-
 	float
 	MeshStandardMaterial::getSheen() const noexcept
 	{
 		return this->sheen_;
 	}
 
-	void
-	MeshStandardMaterial::setReflectivity(float reflectivity) noexcept
-	{
-		this->reflectivity_ = reflectivity;
-		this->setDirty(false);
-		this->set("reflectivity", reflectivity);
-	}
-
 	float
-	MeshStandardMaterial::getReflectivity() const noexcept
+	MeshStandardMaterial::getSpecular() const noexcept
 	{
 		return this->reflectivity_;
-	}
-
-	void
-	MeshStandardMaterial::setRefractionRatio(float refractionRatio) noexcept
-	{
-		this->refractionRatio_ = refractionRatio;
-		this->setDirty(false);
-		this->set("refractionRatio", refractionRatio);
 	}
 
 	float
@@ -390,26 +484,10 @@ namespace octoon::material
 		return this->refractionRatio_;
 	}
 
-	void
-	MeshStandardMaterial::setClearCoat(float clearCoat) noexcept
-	{
-		this->clearCoat_ = clearCoat;
-		this->setDirty(false);
-		this->set("clearCoat", clearCoat);
-	}
-
 	float
 	MeshStandardMaterial::getClearCoat() const noexcept
 	{
 		return this->clearCoat_;
-	}
-
-	void
-	MeshStandardMaterial::setClearCoatRoughness(float clearCoatRoughness) noexcept
-	{
-		this->clearCoatRoughness_ = clearCoatRoughness;
-		this->setDirty(false);
-		this->set("clearCoatRoughness", clearCoatRoughness);
 	}
 
 	float
@@ -418,26 +496,10 @@ namespace octoon::material
 		return this->clearCoatRoughness_;
 	}
 
-	void
-	MeshStandardMaterial::setSubsurface(float subsurface) noexcept
-	{
-		this->subsurface_ = subsurface;
-		this->setDirty(false);
-		this->set("subsurface", subsurface);
-	}
-
 	float
 	MeshStandardMaterial::getSubsurface() const noexcept
 	{
 		return this->subsurface_;
-	}
-
-	void
-	MeshStandardMaterial::setGamma(float gamma) noexcept
-	{
-		this->gamma_ = gamma;
-		this->setDirty(false);
-		this->set("gamma", gamma);
 	}
 
 	float
@@ -451,15 +513,24 @@ namespace octoon::material
 	{
 		auto instance = std::make_shared<MeshStandardMaterial>();
 		instance->setColor(this->getColor());
-		instance->setColorMap(this->getColorMap());
 		instance->setOpacity(this->getOpacity());
 		instance->setSmoothness(this->getSmoothness());
 		instance->setMetalness(this->getMetalness());
-		instance->setEmissive(this->getEmissive());
-		instance->setReflectivity(this->getReflectivity());
+		instance->setAnisotropy(this->getAnisotropy());
+		instance->setSheen(this->getSheen());
+		instance->setSpecular(this->getSpecular());
 		instance->setRefractionRatio(this->getRefractionRatio());
 		instance->setClearCoat(this->getClearCoat());
 		instance->setClearCoatRoughness(this->getClearCoatRoughness());
+		instance->setEmissive(this->getEmissive());
+		instance->setColorMap(this->getColorMap());
+		instance->setRoughnessMap(this->getRoughnessMap());
+		instance->setMetalnessMap(this->getMetalnessMap());
+		instance->setAnisotropyMap(this->getAnisotropyMap());
+		instance->setSpecularMap(this->getSpecularMap());
+		instance->setClearCoatMap(this->getClearCoatMap());
+		instance->setClearCoatRoughnessMap(this->getClearCoatRoughnessMap());
+		instance->setEmissiveMap(this->getEmissiveMap());
 		instance->setGamma(this->getGamma());
 		instance->setRepeat(this->getRepeat());
 		instance->setOffset(this->getOffset());

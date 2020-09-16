@@ -121,12 +121,20 @@ namespace octoon::video
 					auto standard = mat->downcast<material::MeshStandardMaterial>();
 					if (standard->getColorMap())
 						textureCollector.Collect(standard->getColorMap());
+					if (standard->getNormalMap())
+						textureCollector.Collect(standard->getNormalMap());
 					if (standard->getRoughnessMap())
 						textureCollector.Collect(standard->getRoughnessMap());
 					if (standard->getMetalnessMap())
 						textureCollector.Collect(standard->getMetalnessMap());
-					if (standard->getNormalMap())
-						textureCollector.Collect(standard->getNormalMap());
+					if (standard->getAnisotropyMap())
+						textureCollector.Collect(standard->getAnisotropyMap());
+					if (standard->getSpecularMap())
+						textureCollector.Collect(standard->getSpecularMap());
+					if (standard->getClearCoatMap())
+						textureCollector.Collect(standard->getClearCoatMap());
+					if (standard->getClearCoatRoughnessMap())
+						textureCollector.Collect(standard->getClearCoatRoughnessMap());
 					if (standard->getEmissiveMap())
 						textureCollector.Collect(standard->getEmissiveMap());
 				}
@@ -512,19 +520,19 @@ namespace octoon::video
 			material.disney.metallic = mat->getMetalness();
 			material.disney.metallic_map_idx = GetTextureIndex(textureCollector, mat->getMetalnessMap());
 			material.disney.anisotropy = mat->getAnisotropy();
-			material.disney.anisotropy_map_idx = -1;
+			material.disney.anisotropy_map_idx = GetTextureIndex(textureCollector, mat->getAnisotropyMap());
+			material.disney.specular = mat->getSpecular();
+			material.disney.specular_map_idx = GetTextureIndex(textureCollector, mat->getSpecularMap());
+			material.disney.specular_tint = 0;
+			material.disney.specular_tint_map_idx = -1;
 			material.disney.sheen = mat->getSheen();
 			material.disney.sheen_map_idx = -1;
 			material.disney.sheen_tint = 0;
 			material.disney.sheen_tint_map_idx = -1;
 			material.disney.clearcoat = mat->getClearCoat();
-			material.disney.clearcoat_map_idx = -1;
-			material.disney.clearcoat_gloss = mat->getClearCoatRoughness();
-			material.disney.clearcoat_gloss_map_idx = -1;	
-			material.disney.specular = mat->getReflectivity();
-			material.disney.specular_map_idx = -1;
-			material.disney.specular_tint = 0;
-			material.disney.specular_tint_map_idx = -1;
+			material.disney.clearcoat_map_idx = GetTextureIndex(textureCollector, mat->getClearCoatMap());
+			material.disney.clearcoat_roughness = mat->getClearCoatRoughness();
+			material.disney.clearcoat_roughness_map_idx = GetTextureIndex(textureCollector, mat->getClearCoatRoughnessMap());
 			material.disney.subsurface = mat->getSubsurface();
 
 			if (math::any(mat->getEmissive()))

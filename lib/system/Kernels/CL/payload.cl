@@ -91,7 +91,7 @@ typedef struct
     float sheen;
     float sheen_tint;
     float clearcoat;
-    float clearcoat_gloss;
+    float clearcoat_roughness;
     float subsurface;
     int base_color_map_idx;
     int metallic_map_idx;
@@ -101,8 +101,8 @@ typedef struct
     int specular_tint_map_idx;
     int sheen_tint_map_idx;
     int sheen_map_idx;
-    int clearcoat_gloss_map_idx;
     int clearcoat_map_idx;
+    int clearcoat_roughness_map_idx;
 } Disney;
 
 typedef struct

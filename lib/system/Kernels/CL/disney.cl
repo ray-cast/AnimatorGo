@@ -60,7 +60,7 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo,
     float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
     float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
     float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_gloss = Texture_GetValue1f(dg->mat.disney.clearcoat_gloss, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_gloss_map_idx));
+    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
     
@@ -74,7 +74,7 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo,
 
     float d_pdf = fabs(wo.y) / PI;
     float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
-    float c_pdf = GTR1(ndotwh, mix(0.1f,0.001f, clearcoat_gloss)) * ndotwh / (4.f * hdotwo);
+    float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
     
     float3 cd_lin = native_powr(base_color, 2.2f);
     float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
@@ -99,7 +99,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
     float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
     float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_gloss = Texture_GetValue1f(dg->mat.disney.clearcoat_gloss, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_gloss_map_idx));
+    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
     
@@ -139,7 +139,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     
     float3 f_sheen = fh * sheen * c_sheen;
     
-    float dr = GTR1(ndoth, mix(0.1f,0.001f, clearcoat_gloss));
+    float dr = GTR1(ndoth, mix(0.001f, 0.1f, clearcoat_roughness));
     float fr = mix(0.04f, 1.f, fh);
     float gr = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
     
@@ -169,7 +169,7 @@ INLINE float3 Disney_Sample(
     float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
     float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
     float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_gloss = Texture_GetValue1f(dg->mat.disney.clearcoat_gloss, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_gloss_map_idx));
+    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
        
@@ -179,7 +179,7 @@ INLINE float3 Disney_Sample(
     {
         sample.x /= (clearcoat);
         
-        float a = mix(0.1f,0.001f, clearcoat_gloss);
+        float a = mix(0.001f, 0.1f, clearcoat_roughness);
         float ndotwh = native_sqrt((1.f - native_powr(a*a, 1.f - sample.y)) / (1.f - a*a));
         float sintheta = native_sqrt(1.f - ndotwh * ndotwh);
         wh = normalize(make_float3(native_cos(2.f * PI * sample.x) * sintheta,

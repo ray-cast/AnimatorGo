@@ -269,24 +269,17 @@ namespace octoon
 		}
 	}
 
-	void setup_target_material(
-		std::string_view target_model,
-		mi::neuraylib::ITransaction* transaction,
-		const mi::neuraylib::ICompiled_material* cm,
-		Material& out_material)
+	void setup_target_material(std::string_view target_model, mi::neuraylib::ITransaction* transaction, const mi::neuraylib::ICompiled_material* cm, Material& out_material)
 	{
 		mi::base::Handle<const mi::neuraylib::IExpression_direct_call> parent_call(lookup_call("surface.scattering", cm));
 		mi::neuraylib::IFunction_definition::Semantics semantic(get_call_semantic(transaction, parent_call.get()));
 
 		if (target_model == "diffuse")
 		{
-			// The target model is supposed to be a diffuse reflection bsdf
-			// Setup diffuse material parameters
 			out_material["color"] = Material_parameter("Rgb_fp");
 			out_material["roughness"] = Material_parameter("Float32");
 			out_material["normal"] = Material_parameter("Float32<3>", remap_normal);
 
-			// Specify bake paths
 			out_material["color"].bake_path = "surface.scattering.tint";
 			out_material["roughness"].bake_path = "surface.scattering.roughness";
 			out_material["normal"].bake_path = "geometry.normal";
@@ -294,17 +287,12 @@ namespace octoon
 		}
 		else if (target_model == "diffuse_glossy")
 		{
-			// Setup parameters for a simple diffuse - glossy material model
 			out_material["diffuse_color"] = Material_parameter("Rgb_fp");
 			out_material["glossy_color"] = Material_parameter("Rgb_fp");
 			out_material["glossy_roughness"] = Material_parameter("Float32");
 			out_material["glossy_weight"] = Material_parameter("Float32");
 			out_material["ior"] = Material_parameter("Float32");
 			out_material["normal"] = Material_parameter("Float32<3>", remap_normal);
-
-			// Diffuse-glossy distillation can result in a diffuse bsdf, a glossy bsdf 
-			// or a fresnel weighted combination of both. Explicitly check the cases
-			// and save the corresponding bake paths.
 
 			switch (semantic)
 			{
@@ -323,14 +311,12 @@ namespace octoon
 				out_material["ior"].bake_path = "surface.scattering.ior";
 				break;
 			default:
-				// unknown function, nothing to bake
 				break;
 			}
 			out_material["normal"].bake_path = "geometry.normal";
 		}
 		else if (target_model == "ue4" || target_model == "transmissive_pbr")
 		{
-			// Setup some UE4 material parameters
 			out_material["base_color"] = Material_parameter("Rgb_fp");
 			out_material["metallic"] = Material_parameter("Float32");
 			out_material["specular"] = Material_parameter("Float32");
@@ -362,19 +348,15 @@ namespace octoon
 			{
 				is_transmissive_pbr = true;
 
-				// insert parameters that only apply to transmissive_pbr
 				out_material["anisotropy"] = Material_parameter("Float32");
 				out_material["anisotropy_rotation"] = Material_parameter("Float32");
 				out_material["transparency"] = Material_parameter("Float32");
 				out_material["transmission_color"] = Material_parameter("Rgb_fp");
-
-				// uniform
 				out_material["attenuation_color"] = Material_parameter("Rgb_fp");
 				out_material["attenuation_distance"] = Material_parameter("Float32");
 				out_material["subsurface_color"] = Material_parameter("Rgb_fp");
 				out_material["volume_ior"] = Material_parameter("Rgb_fp");
 
-				// collect volume properties, they are guaranteed to exist
 				out_material["attenuation_color"].bake_path = "volume.absorption_coefficient.s.v.attenuation";
 				out_material["subsurface_color"].bake_path = "volume.absorption_coefficient.s.v.subsurface";
 				out_material["attenuation_distance"].bake_path = "volume.scattering_coefficient.s.v.distance";
@@ -383,7 +365,6 @@ namespace octoon
 			
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_CUSTOM_CURVE_LAYER)
 			{
-				// Setup clearcoat bake paths
 				out_material["clearcoat_weight"].bake_path = path_prefix + "weight";
 				out_material["clearcoat_roughness"].bake_path = path_prefix + "layer.roughness_u";
 				out_material["clearcoat_normal"].bake_path = path_prefix + "normal";
@@ -395,42 +376,36 @@ namespace octoon
 
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_WEIGHTED_LAYER)
 			{
-				// Collect under-clearcoat normal
 				out_material["normal"].bake_path = path_prefix + "normal";
 
-				// Chain further
 				parent_call = lookup_call("layer", cm, parent_call.get());
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "layer.";
 			}
-			// Check for a normalized mix. This mix combines the metallic and dielectric parts
-			// of the material
+
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_NORMALIZED_MIX)
 			{
-				// The top-mix component is supposed to be a glossy bsdf
-				// Collect metallic weight
 				out_material["metallic"].bake_path = path_prefix + "components.1.weight";
 
-				// And other metallic parameters
 				if (is_transmissive_pbr) {
 					out_material["roughness"].bake_path = path_prefix + "components.1.component.roughness_u.s.r.roughness";
 					out_material["anisotropy"].bake_path = path_prefix + "components.1.component.roughness_u.s.r.anisotropy";
 					out_material["anisotropy_rotation"].bake_path = path_prefix + "components.1.component.roughness_u.s.r.rotation";
 				}
 				else
+				{
 					out_material["roughness"].bake_path = path_prefix + "components.1.component.roughness_u";
-				// Base_color can be taken from any of the leaf-bsdfs. It is supposed to
-				// be the same.
+				}
+
 				out_material["base_color"].bake_path = path_prefix + "components.1.component.tint";
 
-				// Chain further
 				parent_call = lookup_call("components.0.component", cm, parent_call.get());
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "components.0.component.";
 			}
+
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_CUSTOM_CURVE_LAYER)
 			{
-				// Collect specular parameters
 				out_material["specular"].bake_path = path_prefix + "weight";
 				if (is_transmissive_pbr)
 				{
@@ -443,16 +418,16 @@ namespace octoon
 					out_material["roughness"].bake_path = path_prefix + "layer.roughness_u";
 				}
 
-				// Chain further
 				parent_call = lookup_call("base", cm, parent_call.get());
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "base.";
 			}
+
 			if (semantic == mi::neuraylib::IFunction_definition::DS_INTRINSIC_DF_NORMALIZED_MIX)
 			{
 				out_material["transparency"].bake_path = path_prefix + "components.1.weight";
 				out_material["transmission_color"].bake_path = path_prefix + "components.1.component.tint";
-				// Chain further
+
 				parent_call = lookup_call("components.0.component", cm, parent_call.get());
 				semantic = get_call_semantic(transaction, parent_call.get());
 				path_prefix += "components.0.component.";
@@ -472,14 +447,12 @@ namespace octoon
 					out_material["base_color"].bake_path = path_prefix + "tint";
 			}
 
-			// Check for cutout-opacity
 			mi::base::Handle<const mi::neuraylib::IExpression> cutout(cm->lookup_sub_expression("geometry.cutout_opacity"));
 			if (cutout.is_valid_interface())
 				out_material["opacity"].bake_path = "geometry.cutout_opacity";
 		}
 		else if (target_model == "specular_glossy")
 		{
-			// Setup parameters for the specular - glossy material model
 			out_material["base_color"] = Material_parameter("Rgb_fp");
 			out_material["f0"] = Material_parameter("Rgb_fp");
 			out_material["f0_color"] = Material_parameter("Rgb_fp");
@@ -511,9 +484,9 @@ namespace octoon
 
 				break;
 			default:
-				// unknown function, nothing to bake
 				break;
 			}
+
 			out_material["normal_map"].bake_path = "geometry.normal";
 			out_material["opacity"].bake_path = "geometry.cutout_opacity";
 		}
@@ -1014,16 +987,6 @@ namespace octoon
 								material->setSmoothness(v);
 							}
 						}
-						else if (param_name == "specular")
-						{
-							if (param.value)
-							{
-								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
-								mi::Float32 v;
-								value->get_value(v);
-								material->setReflectivity(v);
-							}
-						}
 						else if (param_name == "metallic")
 						{
 							if (param.texture)
@@ -1042,17 +1005,45 @@ namespace octoon
 						}
 						else if (param_name == "anisotropy")
 						{
-							if (param.value)
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setAnisotropyMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
 							{
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;
 								value->get_value(v);
 								material->setAnisotropy(v);
 							}
-						}						
+						}
+						else if (param_name == "specular")
+						{
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setSpecularMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setSpecular(v);
+							}
+						}
 						else if (param_name == "clearcoat_weight")
 						{
-							if (param.value)
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setClearCoatMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
 							{
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;
@@ -1062,7 +1053,13 @@ namespace octoon
 						}
 						else if (param_name == "clearcoat_roughness")
 						{
-							if (param.value)
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << name << "-" << param_name << ".png";
+								material->setClearCoatRoughnessMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
 							{
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;

@@ -350,7 +350,7 @@ namespace octoon::material
 	{
 		this->clearcoatRoughnessMap_ = map;
 		this->set("clearCoatRoughnessMap", map);
-		this->set("clearCoatRoughnessMap", map ? true : false);
+		this->set("clearCoatRoughnessMapEnable", map ? true : false);
 	}
 
 	const math::float3&

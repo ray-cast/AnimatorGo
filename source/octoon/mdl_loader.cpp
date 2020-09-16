@@ -962,7 +962,17 @@ namespace octoon
 								material->setColor(math::float3(c.r, c.g, c.b));
 							}
 						}
-						if (param_name == "normal")
+						else if (param_name == "opacity")
+						{
+							if (param.value)
+							{
+								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
+								mi::Float32 v;
+								value->get_value(v);
+								material->setOpacity(v);
+							}
+						}
+						else if (param_name == "normal")
 						{
 							if (param.texture)
 							{

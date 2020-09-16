@@ -1,5 +1,6 @@
 #include <octoon/raycaster.h>
 #include <octoon/mesh_filter_component.h>
+#include <octoon/skinned_mesh_renderer_component.h>
 #include <octoon/transform_component.h>
 
 namespace octoon
@@ -42,27 +43,34 @@ namespace octoon
 			if (!object)
 				continue;
 
-			auto meshFilter = object->getComponent<MeshFilterComponent>();
-			if (meshFilter)
+			mesh::MeshPtr mesh = nullptr;
+
+			auto skinnedMesh = object->getComponent<SkinnedMeshRendererComponent>();
+			if (skinnedMesh)
+				mesh = skinnedMesh->getSkinnedMesh();
+			else
 			{
-				auto mesh = meshFilter->getMesh();
-				if (mesh)
-				{
-					auto transform = object->getComponent<TransformComponent>();
-					ray.transform(transform->getTransformInverse());
+				auto meshFilter = object->getComponent<MeshFilterComponent>();
+				if (meshFilter)
+					mesh = meshFilter->getMesh();
+			}
 
-					result.clear();
-					mesh->raycastAll(ray, result);
+			if (mesh)
+			{
+				auto transform = object->getComponent<TransformComponent>();
+				ray.transform(transform->getTransformInverse());
 
-					for (auto& it : result) {
-						RaycastHit hit;
-						hit.object = object.get();
-						hit.distance = it.distance;
-						hit.mesh = it.mesh;
-						hit.point = it.point * transform->getTransform();
+				result.clear();
+				mesh->raycastAll(ray, result);
 
-						this->hits.emplace_back(hit);
-					}
+				for (auto& it : result) {
+					RaycastHit hit;
+					hit.object = object.get();
+					hit.distance = it.distance;
+					hit.mesh = it.mesh;
+					hit.point = it.point * transform->getTransform();
+
+					this->hits.emplace_back(hit);
 				}
 			}
 		}

@@ -32,6 +32,8 @@ namespace octoon
 		void setTextureBlendEnable(bool enable) noexcept;
 		bool getTextureBlendEnable() const noexcept;
 
+		const mesh::MeshPtr& getSkinnedMesh() const noexcept;
+
 		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
 
 		GameComponentPtr clone() const noexcept override;

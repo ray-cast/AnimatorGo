@@ -515,6 +515,8 @@ namespace octoon::video
 			material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());
+			material.disney.opacity = mat->getOpacity();
+			material.disney.normal_map_idx = GetTextureIndex(textureCollector, mat->getNormalMap());
 			material.disney.roughness = 1 - mat->getSmoothness();
 			material.disney.roughness_map_idx = GetTextureIndex(textureCollector, mat->getRoughnessMap());
 			material.disney.metallic = mat->getMetalness();

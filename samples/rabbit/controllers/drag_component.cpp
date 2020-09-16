@@ -142,6 +142,7 @@ namespace rabbit
 				auto transform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
 				transform->setTranslate(box.center());
 				transform->setScale(box.size());
+				transform->setQuaternion(hit.object->getComponent<octoon::TransformComponent>()->getQuaternion());
 
 				gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
 			}
@@ -162,6 +163,7 @@ namespace rabbit
 			auto transform = this->gizmoHover_->getComponent<octoon::TransformComponent>();
 			transform->setTranslate(box.center());
 			transform->setScale(box.size());
+			transform->setQuaternion(hit.object->getComponent<octoon::TransformComponent>()->getQuaternion());
 
 			gizmoHover_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
 		}

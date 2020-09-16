@@ -101,6 +101,12 @@ namespace octoon
 		return textureEnable_;
 	}
 
+	const mesh::MeshPtr&
+	SkinnedMeshRendererComponent::getSkinnedMesh() const noexcept
+	{
+		return this->skinnedMesh_;
+	}
+
 	void
 	SkinnedMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{

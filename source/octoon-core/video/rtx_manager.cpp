@@ -321,9 +321,9 @@ namespace octoon::video
 			}
 
 			auto& c = configs_[0];
-			this->colorImage_ = c.factory->createTextureOutput(colorTexture_->handle(), this->width_, this->height_);
-			this->normalImage_ = c.factory->createTextureOutput(normalTexture_->handle(), this->width_, this->height_);
-			this->albedoImage_ = c.factory->createTextureOutput(albedoTexture_->handle(), this->width_, this->height_);
+			this->colorImage_ = c.factory->createTextureOutput(static_cast<std::uint32_t>(colorTexture_->handle()), this->width_, this->height_);
+			this->normalImage_ = c.factory->createTextureOutput(static_cast<std::uint32_t>(normalTexture_->handle()), this->width_, this->height_);
+			this->albedoImage_ = c.factory->createTextureOutput(static_cast<std::uint32_t>(albedoTexture_->handle()), this->width_, this->height_);
 
 			this->setOutput(OutputType::kColor, this->colorImage_.get());
 			this->setOutput(OutputType::kWorldShadingNormal, this->normalImage_.get());

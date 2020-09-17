@@ -328,7 +328,7 @@ namespace octoon::video
 	void
 	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
 	{
-		std::size_t numLightsWritten = 0;
+		int numLightsWritten = 0;
 		std::size_t numLights = scene->getLights().size();
 		std::size_t distribution_buffer_size = (1 + 1 + numLights + numLights);
 
@@ -666,7 +666,7 @@ namespace octoon::video
 		context_.MapBuffer(0, out.shapes, CL_MAP_WRITE, &shapes).Wait();
 		context_.MapBuffer(0, out.shapesAdditional, CL_MAP_WRITE, &shapesAdditional).Wait();
 
-		std::size_t id = 1;
+		int id = 1;
 
 		for (auto& geometry : scene->getGeometries())
 		{

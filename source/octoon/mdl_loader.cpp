@@ -543,9 +543,7 @@ namespace octoon
 					continue;
 				}
 
-				// Bake constant value
-				mi::Sint32 result = baker->bake_constant(value.get());
-
+				baker->bake_constant(value.get());
 				if (param.remap_func)
 					param.remap_func(value.get());
 
@@ -553,11 +551,9 @@ namespace octoon
 			}
 			else
 			{
-				// Create a canvas
 				mi::base::Handle<mi::neuraylib::ICanvas> canvas(image_api->create_canvas(param.value_type.c_str(), baking_resolution, baking_resolution));
-				// Bake texture
-				mi::Sint32 result = baker->bake_texture(canvas.get(), baking_samples);
 
+				baker->bake_texture(canvas.get(), baking_samples);
 				if (param.remap_func)
 					param.remap_func(canvas.get());
 
@@ -901,8 +897,8 @@ namespace octoon
 		for (mi::Size i = 0; i < material_count; i++)
 		{
 			auto material_db_name = std::string(module->get_material(i));
-			auto name = material_db_name.substr(material_db_name.rfind(':') + 1);
-			auto material = std::make_shared<material::MeshStandardMaterial>(name);
+			auto simple_name = material_db_name.substr(material_db_name.rfind(':') + 1);
+			auto material = std::make_shared<material::MeshStandardMaterial>(simple_name);
 
 			auto materialDefinition = mi::base::make_handle(this->context_->transaction->access<mi::neuraylib::IMaterial_definition>(material_db_name.c_str()));
 			if (materialDefinition)
@@ -935,7 +931,7 @@ namespace octoon
 					);
 
 					process_target_material(
-						name,
+						simple_name,
 						out_material,
 						save_baked_textures,
 						parallel,
@@ -951,7 +947,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else
@@ -977,7 +973,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setNormalMap(octoon::TextureLoader::load(file_name.str()));
 							}
 						}
@@ -986,7 +982,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1002,7 +998,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setMetalnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1018,7 +1014,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setAnisotropyMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1034,7 +1030,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setSpecularMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1050,7 +1046,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setClearCoatMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1066,7 +1062,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setClearCoatRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1082,7 +1078,7 @@ namespace octoon
 							if (param.texture)
 							{
 								std::stringstream file_name;
-								file_name << name << "-" << param_name << ".png";
+								file_name << simple_name << "-" << param_name << ".png";
 								material->setEmissiveMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1109,7 +1105,7 @@ namespace octoon
 				}
 				else
 				{ 
-					mi::neuraylib::Argument_editor editor(this->context_->transaction.get(), std::string(name).c_str(), this->context_->factory.get());
+					mi::neuraylib::Argument_editor editor(this->context_->transaction.get(), simple_name.c_str(), this->context_->factory.get());
 
 					if (this->verboseLogging_)
 						std::cout << "[MDL]  - Parameters: " << editor.get_parameter_count() << std::endl;

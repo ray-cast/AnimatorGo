@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 
 		auto splash = std::make_unique<rabbit::SplashScreen>();
 		splash->show();
+		app.processEvents();
 
 		rabbit::MainWindow w(splash.get());
 		w.show();

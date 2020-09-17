@@ -122,7 +122,7 @@ namespace rabbit
 	MaterialEditWindow::createOpacity()
 	{
 		opacityLabel_ = new QLabel;
-		opacityLabel_->setText(u8"透明度");
+		opacityLabel_->setText(u8"不透明度");
 
 		opacitySlider_ = new QSlider(Qt::Horizontal);
 		opacitySlider_->setObjectName("Value");
@@ -147,7 +147,7 @@ namespace rabbit
 		opacityLayout->addWidget(opacitySlider_);
 		opacityLayout->setContentsMargins(20, 5, 50, 0);
 
-		auto opacity = new Spoiler(u8"透明度");
+		auto opacity = new Spoiler(u8"不透明度");
 		opacity->setFixedWidth(340);
 		opacity->setContentLayout(*opacityLayout);
 

@@ -47,7 +47,7 @@ namespace rabbit
 			octoon::hal::GraphicsTextureDesc textureDesc;
 			textureDesc.setSize(width, height);
 			textureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
-			textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8UNorm);
+			textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8A8UNorm);
 			auto colorTexture = octoon::video::Renderer::instance()->createTexture(textureDesc);
 			if (!colorTexture)
 				throw std::runtime_error("createTexture() failed");
@@ -61,7 +61,7 @@ namespace rabbit
 				throw std::runtime_error("createTexture() failed");
 
 			octoon::hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(0, octoon::hal::GraphicsImageLayout::ColorAttachmentOptimal, octoon::hal::GraphicsFormat::R8G8B8UNorm));
+			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(0, octoon::hal::GraphicsImageLayout::ColorAttachmentOptimal, octoon::hal::GraphicsFormat::R8G8B8A8UNorm));
 			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(1, octoon::hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, octoon::hal::GraphicsFormat::D16UNorm));
 
 			octoon::hal::GraphicsFramebufferDesc framebufferDesc;
@@ -76,7 +76,7 @@ namespace rabbit
 				throw std::runtime_error("createFramebuffer() failed");
 
 			camera_ = std::make_shared<octoon::camera::PerspectiveCamera>(60, 1, 100);
-			camera_->setClearColor(octoon::math::float4(0.117, 0.117, 0.117, 1));
+			camera_->setClearColor(octoon::math::float4::Zero);
 			camera_->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 			camera_->setFramebuffer(framebuffer_);
 			camera_->setTransform(octoon::math::makeLookatRH(octoon::math::float3(0, 0, 1), octoon::math::float3::Zero, octoon::math::float3::UnitY));
@@ -354,12 +354,24 @@ namespace rabbit
 			if (colorTexture->map(0, 0, framebufferDesc.getWidth(), framebufferDesc.getHeight(), 0, (void**)&data))
 			{
 				QImage image(width, height, QImage::Format_RGB888);
+
+				constexpr auto size = 16;
+
 				for (std::uint32_t y = 0; y < height; y++)
 				{
 					for (std::uint32_t x = 0; x < width; x++)
 					{
-						auto index = (y * height + x) * 3;
-						image.setPixelColor((int)x, (int)y, QColor::fromRgb(data[index], data[index + 1], data[index + 2]));
+						auto n = (y * height + x) * 4;
+
+						std::uint8_t u = x / size % 2;
+						std::uint8_t v = y / size % 2;
+						std::uint8_t bg = (u == 0 && v == 0 || u == v) ? 200u : 255u;
+
+						auto r = octoon::math::lerp(bg, data[n], data[n + 3] / 255.f);
+						auto g = octoon::math::lerp(bg, data[n + 1], data[n + 3] / 255.f);
+						auto b = octoon::math::lerp(bg, data[n + 2], data[n + 3] / 255.f);
+
+						image.setPixelColor((int)x, (int)y, QColor::fromRgb(r, g, b));
 					}
 				}
 

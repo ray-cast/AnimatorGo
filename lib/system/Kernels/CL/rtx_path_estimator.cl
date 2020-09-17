@@ -390,7 +390,7 @@ KERNEL void ShadeSurface(
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance =  PI * le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 
@@ -414,7 +414,7 @@ KERNEL void ShadeSurface(
         }
 
         float3 t = bxdf * fabs(dot(diffgeo.n, bxdf_wo));
-        if (NON_BLACK(t))
+        if (NON_BLACK(t) && bxdf_pdf > 0)
         {
             Path_MulThroughput(path, t / bxdf_pdf);
 

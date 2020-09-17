@@ -473,22 +473,21 @@ namespace rabbit
 	{
 		if (this->material_ != material)
 		{
-			auto standard = material->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			this->material_ = material->downcast_pointer<octoon::material::MeshStandardMaterial>();
 
-			textLabel_->setText(QString::fromStdString(standard->getName()));
-			albedoColor_->setCurrentColor(QColor::fromRgbF(standard->getColor().x, standard->getColor().y, standard->getColor().z));
-			opacitySpinBox_->setValue(standard->getOpacity());
-			smoothnessSpinBox_->setValue(standard->getSmoothness());
-			metalnessSpinBox_->setValue(standard->getMetalness());
-			anisotropySpinBox_->setValue(standard->getAnisotropy());
-			sheenSpinBox_->setValue(standard->getSheen());
-			clearcoatSpinBox_->setValue(standard->getClearCoat());
-			clearcoatRoughnessSpinBox_->setValue(standard->getClearCoatRoughness());
-			subsurfaceSpinBox_->setValue(standard->getSubsurface());
-			emissiveColor_->setCurrentColor(QColor::fromRgbF(standard->getEmissive().x, standard->getEmissive().y, standard->getEmissive().z));
-			emissiveSpinBox_->setValue(standard->getEmissiveIntensity());
+			textLabel_->setText(QString::fromStdString(material_->getName()));
+			albedoColor_->setCurrentColor(QColor::fromRgbF(material_->getColor().x, material_->getColor().y, material_->getColor().z));
+			opacitySpinBox_->setValue(material_->getOpacity());
+			smoothnessSpinBox_->setValue(material_->getSmoothness());
+			metalnessSpinBox_->setValue(material_->getMetalness());
+			anisotropySpinBox_->setValue(material_->getAnisotropy());
+			sheenSpinBox_->setValue(material_->getSheen());
+			clearcoatSpinBox_->setValue(material_->getClearCoat());
+			clearcoatRoughnessSpinBox_->setValue(material_->getClearCoatRoughness());
+			subsurfaceSpinBox_->setValue(material_->getSubsurface());
+			emissiveColor_->setCurrentColor(QColor::fromRgbF(material_->getEmissive().x, material_->getEmissive().y, material_->getEmissive().z));
+			emissiveSpinBox_->setValue(material_->getEmissiveIntensity());
 
-			this->material_ = material;
 			this->repaint();
 		}
 	}
@@ -498,8 +497,7 @@ namespace rabbit
 	{
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			material_->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 			this->repaint();
 		}
 	}
@@ -515,8 +513,7 @@ namespace rabbit
 	{
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+			material_->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 			this->repaint();
 		}
 	}
@@ -528,8 +525,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setEmissiveIntensity(value);
+			material_->setEmissiveIntensity(value);
 			this->repaint();
 		}
 	}
@@ -547,8 +543,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setOpacity(value);
+			material_->setOpacity(value);
 			if (value < 1.0f)
 			{
 				octoon::hal::GraphicsColorBlend blend;
@@ -559,11 +554,11 @@ namespace rabbit
 				std::vector<octoon::hal::GraphicsColorBlend> blends;
 				blends.push_back(blend);
 
-				standard->setColorBlends(std::move(blends));
+				material_->setColorBlends(std::move(blends));
 			}
 			else
 			{
-				standard->getColorBlends().shrink_to_fit();
+				material_->getColorBlends().shrink_to_fit();
 			}
 
 			this->repaint();
@@ -577,8 +572,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setSmoothness(value);
+			material_->setSmoothness(value);
 			this->repaint();
 		}
 	}
@@ -596,8 +590,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setMetalness(value);
+			material_->setMetalness(value);
 			this->repaint();
 		}
 	}
@@ -615,8 +608,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setAnisotropy(value);
+			material_->setAnisotropy(value);
 			this->repaint();
 		}
 	}
@@ -634,8 +626,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setClearCoat(value);
+			material_->setClearCoat(value);
 			this->repaint();
 		}
 	}
@@ -653,8 +644,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setClearCoatRoughness(value);
+			material_->setClearCoatRoughness(value);
 			this->repaint();
 		}
 	}
@@ -672,8 +662,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setSheen(value);
+			material_->setSheen(value);
 			this->repaint();
 		}
 	}
@@ -691,8 +680,7 @@ namespace rabbit
 
 		if (this->material_)
 		{
-			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
-			standard->setSubsurface(value);
+			material_->setSubsurface(value);
 			this->repaint();
 		}
 	}

@@ -605,6 +605,7 @@ namespace octoon
 			}
 		}
 	};
+
 	void process_target_material(
 		const std::string& material_name,
 		const Material& material,
@@ -634,7 +635,7 @@ namespace octoon
 
 			if (param.texture)
 			{
-				std::cout << "texture." << std::endl << std::endl;
+				std::cout << "texture." << std::endl;
 
 				// write texture to disc
 				std::stringstream file_name;
@@ -668,6 +669,10 @@ namespace octoon
 					value->get_value(v);
 					std::cout << "vector (" << v.x << ", " << v.y << ", " << v.z << ")." << std::endl;
 				}
+			}
+			else
+			{
+				std::cout << std::endl;
 			}
 		}
 
@@ -960,7 +965,13 @@ namespace octoon
 						}
 						else if (param_name == "opacity")
 						{
-							if (param.value)
+							if (param.texture)
+							{
+								std::stringstream file_name;
+								file_name << simple_name << "-" << param_name << ".png";
+								material->setOpacityMap(octoon::TextureLoader::load(file_name.str()));
+							}
+							else if (param.value)
 							{
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;
@@ -990,7 +1001,7 @@ namespace octoon
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;
 								value->get_value(v);
-								material->setSmoothness(v);
+								material->setSmoothness(1 - v);
 							}
 						}
 						else if (param_name == "metallic")

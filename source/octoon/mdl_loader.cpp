@@ -965,6 +965,8 @@ namespace octoon
 						}
 						else if (param_name == "opacity")
 						{
+							mi::Float32 v = 1.0f;
+
 							if (param.texture)
 							{
 								std::stringstream file_name;
@@ -974,22 +976,21 @@ namespace octoon
 							else if (param.value)
 							{
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
-								mi::Float32 v;
 								value->get_value(v);
 								material->setOpacity(v);
+							}
 
-								if (v < 1.0f)
-								{
-									octoon::hal::GraphicsColorBlend blend;
-									blend.setBlendEnable(true);
-									blend.setBlendSrc(octoon::hal::GraphicsBlendFactor::SrcAlpha);
-									blend.setBlendDest(octoon::hal::GraphicsBlendFactor::OneMinusSrcAlpha);
+							if (param.texture || v < 1.0f)
+							{
+								octoon::hal::GraphicsColorBlend blend;
+								blend.setBlendEnable(true);
+								blend.setBlendSrc(octoon::hal::GraphicsBlendFactor::SrcAlpha);
+								blend.setBlendDest(octoon::hal::GraphicsBlendFactor::OneMinusSrcAlpha);
 
-									std::vector<octoon::hal::GraphicsColorBlend> blends;
-									blends.push_back(blend);
+								std::vector<octoon::hal::GraphicsColorBlend> blends;
+								blends.push_back(blend);
 
-									material->setColorBlends(std::move(blends));
-								}
+								material->setColorBlends(std::move(blends));
 							}
 						}
 						else if (param_name == "normal")

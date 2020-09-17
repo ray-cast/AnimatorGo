@@ -2176,6 +2176,8 @@ namespace octoon::video
 				fragmentShader += "#define USE_ROUGHNESSMAP\n";
 			if (standard->getMetalnessMap())
 				fragmentShader += "#define USE_METALNESSMAP\n";
+			if (standard->getAnisotropyMap())
+				fragmentShader += "#define USE_ANISOTROPYMAP\n";
 			if (standard->getClearCoatMap())
 				fragmentShader += "#define USE_CLEARCOATMAP\n";
 			if (standard->getClearCoatRoughnessMap())

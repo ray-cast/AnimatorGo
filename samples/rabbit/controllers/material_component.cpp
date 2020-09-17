@@ -252,7 +252,7 @@ namespace rabbit
 						if (!item["map"].is_null()) {
 							auto image = QImage();
 							image.load(QString::fromStdString(std::string(rootPath) + it.diffuse_texname));
-							image.scaled(QSize(130, 130)).save(QString::fromStdString(directory + "/preview.jpeg"));
+							image.scaled(QSize(128, 128)).save(QString::fromStdString(directory + "/preview.jpeg"));
 
 							item["preview"] = directory + "/preview.jpeg";
 						}

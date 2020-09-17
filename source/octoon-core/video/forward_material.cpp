@@ -747,15 +747,15 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 } // validated
 
 // GGX Distribution, Schlick Fresnel, GGX-Smith Visibility
-vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float roughness, const in float anisotropic ) {
+vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float roughness, const in float anisotropy ) {
 	vec3 X = normalize(cross(geometry.normal, vec3(0,1,0)));
 	vec3 Y = normalize(cross(geometry.normal, X));
 
-	float aspect = inversesqrt(1.0 - anisotropic * 0.9);
-	float ax = 1.0 / (roughness * aspect);
-	float ay = aspect / roughness;
-
 	float alpha = pow2( roughness ); // UE4's roughness
+
+	float aspect = inversesqrt(1.0 - anisotropy * 0.9);
+	float ax = 1.0 / (alpha * aspect);
+	float ay = aspect / alpha;
 
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 

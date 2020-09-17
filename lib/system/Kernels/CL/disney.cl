@@ -127,8 +127,10 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
     float ss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
     
-    float ax = max(0.0006f, roughness * roughness * ( 1.f + anisotropy));
-    float ay = max(0.0006f, roughness * roughness * ( 1.f - anisotropy));
+    float alpha = roughness * roughness;
+    float aspect = 1.0 / native_sqrt(1.0 - anisotropy * 0.9);
+    float ax = 1.0 / (alpha * aspect);
+    float ay = aspect / alpha;
     float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay);
     float fh = SchlickFresnelReflectance(hdotwo);
     float3 fs = mix(c_spec0, WHITE, fh);
@@ -206,9 +208,11 @@ INLINE float3 Disney_Sample(
         {
             sample.y /= cs_w;
 
-            float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));
-            float ay = max(0.001f, roughness * roughness * ( 1.f - anisotropy));
-            
+            float alpha = roughness * roughness;
+            float aspect = 1.0 / native_sqrt(1.0 - anisotropy * 0.9);
+            float ax = 1.0 / (alpha * aspect);
+            float ay = aspect / alpha;
+
             float t = native_sqrt(sample.y / (1.f - sample.y));
             wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
             

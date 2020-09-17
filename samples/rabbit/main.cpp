@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 
 		auto splash = std::make_unique<rabbit::SplashScreen>();
 		splash->show();
+		splash->move((QApplication::desktop()->width() - splash->width()) / 2, (QApplication::desktop()->height() - splash->height()) / 2);
 		app.processEvents();
 
 		rabbit::MainWindow w(splash.get());

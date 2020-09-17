@@ -133,6 +133,8 @@ namespace octoon::video
 						textureCollector.Collect(standard->getAnisotropyMap());
 					if (standard->getSpecularMap())
 						textureCollector.Collect(standard->getSpecularMap());
+					if (standard->getSheenMap())
+						textureCollector.Collect(standard->getSheenMap());
 					if (standard->getClearCoatMap())
 						textureCollector.Collect(standard->getClearCoatMap());
 					if (standard->getClearCoatRoughnessMap())

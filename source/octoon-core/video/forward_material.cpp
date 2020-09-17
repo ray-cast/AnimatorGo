@@ -19,6 +19,7 @@ static char* common = R"(
 float pow2( const in float x ) { return x*x; }
 float pow3( const in float x ) { return x*x*x; }
 float pow4( const in float x ) { float x2 = x*x; return x2*x2; }
+float pow5( const in float x ) { float x2 = x*x; return x2*x2*x; }
 float average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }
 // expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.
 // do not collapse into a single function per: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
@@ -543,8 +544,20 @@ static char* sheenmap_pars_fragment = R"(
 static char* sheenmap_fragment = R"(
 float sheenFactor = sheen;
 #ifdef USE_SHEENMAP
-	vec4 texelSheen = texture2D( metalnessMap, vUv );
+	vec4 texelSheen = texture2D( sheenMap, vUv );
 	sheenFactor = texelSheen.r;
+#endif
+)";
+static char* subsurfacemap_pars_fragment = R"(
+#ifdef USE_SUBSURFACEMAP
+	uniform sampler2D subsurfaceMap;
+#endif
+)";
+static char* subsurfacemap_fragment = R"(
+float subsurfaceFactor = subsurface;
+#ifdef USE_SUBSURFACEMAP
+	vec4 texelSubsurface = texture2D( subsurfaceMap, vUv );
+	subsurfaceFactor = texelSubsurface.r;
 #endif
 )";
 static char* clearcoatmap_pars_fragment = R"(
@@ -682,10 +695,36 @@ vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
 
 } // validated
 
+vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 diffuseColor, const in float roughness, const in float subsurface) {
+	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
+
+	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
+	float dotNV = abs( dot( geometry.normal, geometry.viewDir ) );
+	float dotNH = saturate( dot( geometry.normal, halfDir ) );
+	float dotVH = saturate( dot( geometry.viewDir, halfDir ) );
+
+	float energyBias = 0.5 * roughness;
+	float energyFactor = mix(1, 1 / 1.51, roughness);
+	
+	float f_wo = pow5(1 - max(dotNV, 0.1));
+	float f_wi = pow5(1 - dotNL);
+
+	float Fd90 = energyBias + 2.0 * dotVH * dotVH * roughness;
+	float FdV = mix(1, Fd90, f_wo);
+	float FdL = mix(1, Fd90, f_wi);
+	float Fd = FdV * FdL * energyFactor;
+
+    float fss90 = dotVH * dotVH * roughness;
+    float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
+    float ss = 1.25f * (fss * (1.f / (dotNV + dotNL) - 0.5f) + 0.5f);
+
+	return RECIPROCAL_PI * diffuseColor * mix(Fd, ss, subsurface);
+} // validated
+
 vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
 
 	// Original approximation by Christophe Schlick '94
-	// float fresnel = pow( 1.0 - dotLH, 5.0 );
+	// float fresnel = pow5( 1.0 - dotLH);
 
 	// Optimized variant (presented by Epic at SIGGRAPH '13)
 	float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );
@@ -1394,12 +1433,13 @@ static char* lights_physical_pars_fragment = R"(
 struct PhysicalMaterial {
 
 	vec3	diffuseColor;
-	float	specularRoughness;
+	float	roughness;
 	float	specularAnisotropy;
 	vec3	specularColor;
 
 	#ifndef STANDARD
 		float sheen;
+		float subsurface;
 		float clearCoat;
 		float clearCoatRoughness;
 	#endif
@@ -1427,7 +1467,7 @@ float clearCoatDHRApprox( const in float roughness, const in float dotNL ) {
 		vec3 halfWidth = rectAreaLight.halfWidth;
 		vec3 halfHeight = rectAreaLight.halfHeight;
 		vec3 lightColor = rectAreaLight.color;
-		float roughness = material.specularRoughness;
+		float roughness = material.roughness;
 
 		vec3 rectCoords[ 4 ];
 		rectCoords[ 0 ] = lightPos - halfWidth - halfHeight; // counterclockwise
@@ -1467,11 +1507,11 @@ void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricC
 
 	#endif
 
-	vec3 spec = BRDF_Specular_GGX_Aniso( directLight, geometry, material.specularColor, material.specularRoughness, material.specularAnisotropy);
+	vec3 spec = BRDF_Specular_GGX_Aniso( directLight, geometry, material.specularColor, material.roughness, material.specularAnisotropy);
 
 	#ifndef STANDARD
 		float clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );
-		vec3 sheenSpec = BRDF_Specular_Sheen(directLight, geometry, material.specularColor, material.specularRoughness);
+		vec3 sheenSpec = BRDF_Specular_Sheen(directLight, geometry, material.specularColor, material.roughness);
 		reflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * mix(spec, sheenSpec, material.sheen);
 		reflectedLight.directSpecular += irradiance * material.clearCoat * BRDF_Specular_GGX( directLight, geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );
 	#else
@@ -1479,12 +1519,12 @@ void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricC
 		reflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * spec;
 	#endif
 
-	reflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+	reflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Burley(directLight, geometry, material.diffuseColor, material.roughness, material.subsurface );
 }
 
 void RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 
-	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor ) * (1 - BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness ));
+	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor ) * (1 - BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.roughness ));
 
 }
 
@@ -1498,10 +1538,10 @@ void RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 clearCo
 		float clearCoatDHR = 0.0;
 	#endif
 
-	vec3 spec = BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );
+	vec3 spec = BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.roughness );
 
 	#ifndef STANDARD
-		vec3 sheenSpec = BRDF_Specular_Sheen_Environment( geometry, material.specularColor, material.specularRoughness );
+		vec3 sheenSpec = BRDF_Specular_Sheen_Environment( geometry, material.specularColor, material.roughness );
 		reflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * mix(spec, sheenSpec, material.sheen);
 	#else
 		reflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * spec;
@@ -1520,7 +1560,7 @@ void RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 clearCo
 #define RE_IndirectDiffuse		RE_IndirectDiffuse_Physical
 #define RE_IndirectSpecular		RE_IndirectSpecular_Physical
 
-#define Material_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.specularRoughness )
+#define Material_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.roughness )
 #define Material_ClearCoat_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.clearCoatRoughness )
 
 // ref: http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr_v2.pdf
@@ -1534,13 +1574,14 @@ float computeSpecularOcclusion( const in float dotNV, const in float ambientOccl
 static char* lights_physical_fragment = R"(
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
-material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
+material.roughness = clamp( roughnessFactor, 0.04, 1.0 );
 material.specularAnisotropy = anisotropyFactor;
 #ifdef STANDARD
 	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 #else
 	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
 	material.sheen = sheenFactor;
+	material.subsurface = subsurfaceFactor;
 	material.clearCoat = saturate( clearCoatFactor ); // Burley clearcoat model
 	material.clearCoatRoughness = clamp( clearCoatRoughnessFactor, 0.04, 1.0 );
 #endif
@@ -2067,6 +2108,8 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"metalnessmap_pars_fragment", metalnessmap_pars_fragment},
 	{"sheenmap_fragment", sheenmap_fragment},
 	{"sheenmap_pars_fragment", sheenmap_pars_fragment},
+	{"subsurfacemap_pars_fragment", subsurfacemap_pars_fragment},
+	{"subsurfacemap_fragment", subsurfacemap_fragment},	
 	{"clearcoatmap_pars_fragment", clearcoatmap_pars_fragment},
 	{"clearcoatRoughnessmap_pars_fragment", clearcoatRoughnessmap_pars_fragment},
 	{"clearcoatmap_fragment", clearcoatmap_fragment},
@@ -2312,6 +2355,8 @@ namespace octoon::video
 				fragmentShader += "#define USE_METALNESSMAP\n";
 			if (standard->getAnisotropyMap())
 				fragmentShader += "#define USE_ANISOTROPYMAP\n";
+			if (standard->getSheenMap())
+				fragmentShader += "#define USE_SHEENMAP\n";
 			if (standard->getClearCoatMap())
 				fragmentShader += "#define USE_CLEARCOATMAP\n";
 			if (standard->getClearCoatRoughnessMap())

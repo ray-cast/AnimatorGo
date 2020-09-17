@@ -42,6 +42,7 @@ static const char* standard_frag = R"(
 #include <metalnessmap_pars_fragment>
 #include <anisotropymap_pars_fragment>
 #include <sheenmap_pars_fragment>
+#include <subsurfacemap_pars_fragment>
 #include <clearcoatmap_pars_fragment>
 #include <clearcoatRoughnessmap_pars_fragment>
 #include <cube_uv_reflection_fragment>
@@ -60,6 +61,7 @@ uniform float clearCoatRoughness;
 uniform float reflectivity;
 uniform float anisotropy;
 uniform float sheen;
+uniform float subsurface;
 uniform float gamma;
 
 in vec3 vViewPosition;
@@ -80,6 +82,7 @@ void main() {
 	#include <sheenmap_fragment>
 	#include <clearcoatmap_fragment>
 	#include <clearcoatRoughnessmap_fragment>
+	#include <subsurfacemap_fragment>
 	#include <emissivemap_fragment>
 	#include <lights_physical_fragment>
 	#include <lights_template>

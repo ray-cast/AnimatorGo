@@ -33,7 +33,7 @@ namespace rabbit
 		, behaviour_(behaviour)
 	{
 		okButton_ = new QToolButton;
-		okButton_->setText(u8"È·¶¨");
+		okButton_->setText(u8"·µ»Ø");
 
 		auto mainLayout = new QVBoxLayout(this);
 		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);

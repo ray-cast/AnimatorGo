@@ -31,7 +31,7 @@ static const char* standard_frag = R"(
 #include <map_pars_fragment>
 #include <color_pars_fragment>
 #include <normalmap_pars_fragment>
-#include <alphamap_pars_fragment>
+#include <opacitymap_pars_fragment>
 #include <aomap_pars_fragment>
 #include <lightmap_pars_fragment>
 #include <emissivemap_pars_fragment>
@@ -68,7 +68,7 @@ void main() {
 	#include <normal_fragment>
 	#include <map_fragment>
 	#include <color_fragment>
-	#include <alphamap_fragment>
+	#include <opacitymap_fragment>
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>

@@ -36,6 +36,7 @@ namespace rabbit
 	private:
 		QWidget* createSummary();
 		QWidget* createAlbedo();
+		QWidget* createOpacity();
 		QWidget* createNormal();
 		QWidget* createSmoothness();
 		QWidget* createMetalness();
@@ -50,6 +51,9 @@ namespace rabbit
 		void emissiveColorChanged(QColor);
 		void emissiveEditEvent(double);
 		void emissiveSliderEvent(int);
+
+		void opacityEditEvent(double);
+		void opacitySliderEvent(int);
 
 		void smoothEditEvent(double);
 		void smoothSliderEvent(int);
@@ -79,6 +83,7 @@ namespace rabbit
 		QLabel* textLabel_;
 		QLabel* normalLabel_;
 		QLabel* albedoLabel_;
+		QLabel* opacityLabel_;
 		QLabel* smoothnessLabel_;
 		QLabel* metalnessLabel_;
 		QLabel* anisotropyLabel_;
@@ -86,6 +91,7 @@ namespace rabbit
 		QLabel* clearcoatRoughnessLabel_;
 		QLabel* sheenLabel_;
 		QLabel* subsurfaceLabel_;
+		QSlider* opacitySlider_;
 		QSlider* smoothnessSlider_;
 		QSlider* metalnessSlider_;
 		QSlider* anisotropySlider_;
@@ -94,7 +100,8 @@ namespace rabbit
 		QSlider* sheenSlider_;
 		QSlider* subsurfaceSlider_;
 		QSlider* emissiveSlider_;
-		QDoubleSpinBox* smoothnessSpinBox_;		
+		QDoubleSpinBox* opacitySpinBox_;
+		QDoubleSpinBox* smoothnessSpinBox_;
 		QDoubleSpinBox* metalnessSpinBox_;
 		QDoubleSpinBox* anisotropySpinBox_;
 		QDoubleSpinBox* clearcoatSpinBox_;

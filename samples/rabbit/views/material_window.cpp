@@ -38,6 +38,7 @@ namespace rabbit
 		auto mainLayout = new QVBoxLayout(this);
 		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
+		mainLayout->addWidget(this->createOpacity(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->createNormal(), 0,  Qt::AlignTop);
 		mainLayout->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
 		mainLayout->addWidget(this->createMetalness(), 0, Qt::AlignTop);
@@ -50,6 +51,8 @@ namespace rabbit
 		mainLayout->setContentsMargins(0, 10, 20, 10);
 
 		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
+		connect(opacitySpinBox_, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
+		connect(opacitySlider_, SIGNAL(valueChanged(int)), this, SLOT(opacitySliderEvent(int)));
 		connect(smoothnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(smoothEditEvent(double)));
 		connect(smoothnessSlider_, SIGNAL(valueChanged(int)), this, SLOT(smoothSliderEvent(int)));
 		connect(metalnessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
@@ -113,6 +116,42 @@ namespace rabbit
 		baseColor->setContentLayout(*albedoLayout);
 
 		return baseColor;
+	}
+
+	QWidget*
+	MaterialEditWindow::createOpacity()
+	{
+		opacityLabel_ = new QLabel;
+		opacityLabel_->setText(u8"透明度");
+
+		opacitySlider_ = new QSlider(Qt::Horizontal);
+		opacitySlider_->setObjectName("Value");
+		opacitySlider_->setMinimum(0);
+		opacitySlider_->setMaximum(100);
+		opacitySlider_->setValue(0);
+		opacitySlider_->setFixedWidth(260);
+
+		opacitySpinBox_ = new DoubleSpinBox;
+		opacitySpinBox_->setFixedWidth(50);
+		opacitySpinBox_->setMaximum(1.0f);
+		opacitySpinBox_->setSingleStep(0.03f);
+		opacitySpinBox_->setAlignment(Qt::AlignRight);
+		opacitySpinBox_->setValue(0.0f);
+
+		auto opacityHLayout = new QHBoxLayout();
+		opacityHLayout->addWidget(opacityLabel_, 0, Qt::AlignLeft);
+		opacityHLayout->addWidget(opacitySpinBox_, 0, Qt::AlignRight);
+
+		auto opacityLayout = new QVBoxLayout();
+		opacityLayout->addLayout(opacityHLayout);
+		opacityLayout->addWidget(opacitySlider_);
+		opacityLayout->setContentsMargins(20, 5, 50, 0);
+
+		auto opacity = new Spoiler(u8"透明度");
+		opacity->setFixedWidth(340);
+		opacity->setContentLayout(*opacityLayout);
+
+		return opacity;
 	}
 
 	QWidget*
@@ -425,6 +464,7 @@ namespace rabbit
 
 			textLabel_->setText(QString::fromStdString(standard->getName()));
 			albedoColor_->setCurrentColor(QColor::fromRgbF(standard->getColor().x, standard->getColor().y, standard->getColor().z));
+			opacitySpinBox_->setValue(standard->getOpacity());
 			smoothnessSpinBox_->setValue(standard->getSmoothness());
 			metalnessSpinBox_->setValue(standard->getMetalness());
 			anisotropySpinBox_->setValue(standard->getAnisotropy());
@@ -452,6 +492,12 @@ namespace rabbit
 	}
 
 	void
+	MaterialEditWindow::emissiveSliderEvent(int value)
+	{
+		emissiveSpinBox_->setValue(value);
+	}
+
+	void
 	MaterialEditWindow::emissiveColorChanged(QColor color)
 	{
 		if (this->material_)
@@ -476,9 +522,39 @@ namespace rabbit
 	}
 
 	void
-	MaterialEditWindow::emissiveSliderEvent(int value)
+	MaterialEditWindow::opacitySliderEvent(int value)
 	{
-		emissiveSpinBox_->setValue(value);
+		opacitySpinBox_->setValue(value / 100.f);
+	}
+
+	void
+	MaterialEditWindow::opacityEditEvent(double value)
+	{
+		opacitySlider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			auto standard = this->material_->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			standard->setOpacity(value);
+			if (value < 1.0f)
+			{
+				octoon::hal::GraphicsColorBlend blend;
+				blend.setBlendEnable(true);
+				blend.setBlendSrc(octoon::hal::GraphicsBlendFactor::SrcAlpha);
+				blend.setBlendDest(octoon::hal::GraphicsBlendFactor::OneMinusSrcAlpha);
+
+				std::vector<octoon::hal::GraphicsColorBlend> blends;
+				blends.push_back(blend);
+
+				standard->setColorBlends(std::move(blends));
+			}
+			else
+			{
+				standard->getColorBlends().shrink_to_fit();
+			}
+
+			this->repaint();
+		}
 	}
 
 	void

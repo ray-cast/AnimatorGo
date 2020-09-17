@@ -19,7 +19,7 @@ static const char* basic_frag = R"(
 #include <normal_pars_vertex>
 #include <map_pars_fragment>
 #include <color_pars_fragment>
-#include <alphamap_pars_fragment>
+#include <opacitymap_pars_fragment>
 #include <aomap_pars_fragment>
 #include <lightmap_pars_fragment>
 #include <envmap_pars_fragment>
@@ -32,7 +32,7 @@ void main() {
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	#include <map_fragment>
 	#include <color_fragment>
-	#include <alphamap_fragment>
+	#include <opacitymap_fragment>
 	#include <alphatest_fragment>
 	outgoingLight = diffuseColor.rgb;
 	fragColor = vec4( outgoingLight, diffuseColor.a );

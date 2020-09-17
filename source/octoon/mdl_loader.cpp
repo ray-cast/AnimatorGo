@@ -977,6 +977,19 @@ namespace octoon
 								mi::Float32 v;
 								value->get_value(v);
 								material->setOpacity(v);
+
+								if (v < 1.0f)
+								{
+									octoon::hal::GraphicsColorBlend blend;
+									blend.setBlendEnable(true);
+									blend.setBlendSrc(octoon::hal::GraphicsBlendFactor::SrcAlpha);
+									blend.setBlendDest(octoon::hal::GraphicsBlendFactor::OneMinusSrcAlpha);
+
+									std::vector<octoon::hal::GraphicsColorBlend> blends;
+									blends.push_back(blend);
+
+									material->setColorBlends(std::move(blends));
+								}
 							}
 						}
 						else if (param_name == "normal")

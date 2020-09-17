@@ -564,14 +564,14 @@ static char* alphatest_fragment = R"(
 	if ( diffuseColor.a < ALPHATEST ) discard;
 #endif
 )";
-static char* alphamap_pars_fragment = R"(
-#ifdef USE_ALPHAMAP
-	uniform sampler2D alphaMap;
+static char* opacitymap_pars_fragment = R"(
+#ifdef USE_OPACITYMAP
+	uniform sampler2D opacityMap;
 #endif
 )";
-static char* alphamap_fragment = R"(
-#ifdef USE_ALPHAMAP
-	diffuseColor.a *= texture2D( alphaMap, vUv ).g;
+static char* opacitymap_fragment = R"(
+#ifdef USE_OPACITYMAP
+	diffuseColor.a *= texture2D( opacityMap, vUv ).g;
 #endif
 )";
 static char* aomap_pars_fragment = R"(
@@ -1870,8 +1870,8 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"tonemapping_pars_fragment", tonemapping_pars_fragment },
 	{"tonemapping_fragment", tonemapping_fragment },
 	{"alphatest_fragment", alphatest_fragment },
-	{"alphamap_pars_fragment", alphamap_pars_fragment },
-	{"alphamap_fragment", alphamap_fragment },
+	{"opacitymap_pars_fragment", opacitymap_pars_fragment },
+	{"opacitymap_fragment", opacitymap_fragment },
 	{"lightmap_pars_fragment", lightmap_pars_fragment },
 	{"aomap_pars_fragment", aomap_pars_fragment },
 	{"envmap_pars_fragment", envmap_pars_fragment },
@@ -2116,6 +2116,8 @@ namespace octoon::video
 			auto standard = material->downcast<material::MeshStandardMaterial>();
 			if (standard->getColorMap())
 				fragmentShader += "#define USE_MAP\n";
+			if (standard->getOpacityMap())
+				fragmentShader += "#define USE_OPACITYMAP\n";			
 			if (standard->getNormalMap())
 				fragmentShader += "#define USE_NORMALMAP\n";
 			if (standard->getRoughnessMap())
@@ -2134,6 +2136,8 @@ namespace octoon::video
 			octoon::hal::GraphicsTexturePtr texture;
 			if (material->get("map", texture))
 				fragmentShader += "#define USE_MAP\n";
+			if (material->get("opacityMap", texture))
+				fragmentShader += "#define USE_OPACITYMAP\n";
 		}
 
 		fragmentShader += shader->fs;

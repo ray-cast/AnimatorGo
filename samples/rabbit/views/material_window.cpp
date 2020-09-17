@@ -287,7 +287,7 @@ namespace rabbit
 	MaterialEditWindow::createSheen()
 	{
 		sheenLabel_ = new QLabel;
-		sheenLabel_->setText(u8"光泽度");
+		sheenLabel_->setText(u8"布料程度");
 
 		sheenSlider_ = new QSlider(Qt::Horizontal);
 		sheenSlider_->setObjectName("Value");

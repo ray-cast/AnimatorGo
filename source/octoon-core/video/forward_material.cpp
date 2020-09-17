@@ -511,6 +511,18 @@ float roughnessFactor = roughness;
 	roughnessFactor = texelRoughness.r;
 #endif
 )";
+static char* anisotropymap_pars_fragment = R"(
+#ifdef USE_ANISOTROPYMAP
+	uniform sampler2D anisotropyMap;
+#endif
+)";
+static char* anisotropymap_fragment = R"(
+float anisotropyFactor = anisotropy;
+#ifdef USE_ANISOTROPYMAP
+	vec4 texelAnisotropy = texture2D( anisotropyMap, vUv );
+	anisotropyFactor = texelAnisotropy.r;
+#endif
+)";
 static char* metalnessmap_pars_fragment = R"(
 #ifdef USE_METALNESSMAP
 	uniform sampler2D metalnessMap;
@@ -729,6 +741,34 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 	float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
 
 	float D = D_GGX( alpha, dotNH );
+
+	return F * ( G * D );
+
+} // validated
+
+// GGX Distribution, Schlick Fresnel, GGX-Smith Visibility
+vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float roughness, const in float anisotropic ) {
+	vec3 X = normalize(cross(geometry.normal, vec3(0,1,0)));
+	vec3 Y = normalize(cross(geometry.normal, X));
+
+	float aspect = inversesqrt(1.0 - anisotropic * 0.9);
+	float ax = 1.0 / (roughness * aspect);
+	float ay = aspect / roughness;
+
+	float alpha = pow2( roughness ); // UE4's roughness
+
+	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
+
+	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
+	float dotNH = saturate( dot( geometry.normal, halfDir ) );
+	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
+
+	float D = pow2(dot(X, halfDir) * ax) + pow2(dot(Y, halfDir) * ay) + dotNH * dotNH;
+	D = (ax * ay) / (D * D) * RECIPROCAL_PI;
+
+	vec3 F = F_Schlick( specularColor, dotLH );
+	float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
 
 	return F * ( G * D );
 
@@ -1133,15 +1173,23 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 	}
 
-	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in int maxMIPLevel ) {
+	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in float anisotropy, const in int maxMIPLevel ) {
+
+		vec3 X = normalize(cross(geometry.normal, vec3(0,1,0)));
+		vec3 Y = normalize(cross(geometry.normal, X));
+
+		vec3 ax = cross(-geometry.viewDir, Y);
+		vec3 ay = cross(ax, Y);
+
+		vec3 bentNormal = normalize(mix(geometry.normal, ay, anisotropy * anisotropy));
 
 		#ifdef ENVMAP_MODE_REFLECTION
 
-			vec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );
+			vec3 reflectVec = reflect( -geometry.viewDir, bentNormal );
 
 		#else
 
-			vec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );
+			vec3 reflectVec = refract( -geometry.viewDir, bentNormal, refractionRatio );
 
 		#endif
 
@@ -1221,6 +1269,7 @@ struct PhysicalMaterial {
 
 	vec3	diffuseColor;
 	float	specularRoughness;
+	float	specularAnisotropy;
 	vec3	specularColor;
 
 	#ifndef STANDARD
@@ -1297,13 +1346,13 @@ void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricC
 		float clearCoatDHR = 0.0;
 	#endif
 
-	reflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Specular_GGX( directLight, geometry, material.specularColor, material.specularRoughness );
+	reflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Specular_GGX_Aniso( directLight, geometry, material.specularColor, material.specularRoughness, material.specularAnisotropy );
 
 	reflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 
 	#ifndef STANDARD
 
-		reflectedLight.directSpecular += irradiance * material.clearCoat * BRDF_Specular_GGX( directLight, geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );
+		reflectedLight.directSpecular += irradiance * material.clearCoat * BRDF_Specular_GGX_Aniso( directLight, geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness, material.specularAnisotropy );
 
 	#endif
 
@@ -1355,6 +1404,7 @@ static char* lights_physical_fragment = R"(
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
+material.specularAnisotropy = anisotropyFactor;
 #ifdef STANDARD
 	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 #else
@@ -1502,10 +1552,10 @@ IncidentLight directLight;
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
 
 	// TODO, replace 7 with the real maxMIPLevel
-	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 7 );
+	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), material.specularAnisotropy, 7 );
 
 	#ifndef STANDARD
-		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 7 );
+		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), material.specularAnisotropy, 7 );
 	#else
 		vec3 clearCoatRadiance = vec3( 0.0 );
 	#endif
@@ -1879,6 +1929,8 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"smoothnessmap_pars_fragment", smoothnessmap_pars_fragment},
 	{"roughnessmap_pars_fragment", roughnessmap_pars_fragment},
 	{"roughnessmap_fragment", roughnessmap_fragment},
+	{"anisotropymap_fragment", anisotropymap_fragment},
+	{"anisotropymap_pars_fragment", anisotropymap_pars_fragment},
 	{"metalnessmap_fragment", metalnessmap_fragment},
 	{"metalnessmap_pars_fragment", metalnessmap_pars_fragment},
 	{"clearcoatmap_pars_fragment", clearcoatmap_pars_fragment},

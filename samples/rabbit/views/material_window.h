@@ -40,6 +40,7 @@ namespace rabbit
 		QWidget* createNormal();
 		QWidget* createSmoothness();
 		QWidget* createMetalness();
+		QWidget* createAnisotropy();
 		QWidget* createSheen();
 		QWidget* createClearCoat();
 		QWidget* createSubsurface();

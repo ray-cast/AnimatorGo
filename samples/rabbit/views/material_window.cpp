@@ -42,6 +42,7 @@ namespace rabbit
 		mainLayout->addWidget(this->createNormal(), 0,  Qt::AlignTop);
 		mainLayout->addWidget(this->createSmoothness(), 0,  Qt::AlignTop);
 		mainLayout->addWidget(this->createMetalness(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->createAnisotropy(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->createSheen(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->createClearCoat(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->createSubsurface(), 0, Qt::AlignTop);
@@ -234,6 +235,21 @@ namespace rabbit
 		metalnessHLayout->addWidget(metalnessLabel_, 0, Qt::AlignLeft);
 		metalnessHLayout->addWidget(metalnessSpinBox_, 0, Qt::AlignRight);
 
+		auto metalnessLayout = new QVBoxLayout();
+		metalnessLayout->addLayout(metalnessHLayout);
+		metalnessLayout->addWidget(metalnessSlider_);
+		metalnessLayout->setContentsMargins(20, 5, 50, 0);
+
+		auto metalness = new Spoiler(u8"金属程度");
+		metalness->setFixedWidth(340);
+		metalness->setContentLayout(*metalnessLayout);
+
+		return metalness;
+	}
+
+	QWidget*
+	MaterialEditWindow::createAnisotropy()
+	{
 		anisotropyLabel_ = new QLabel;
 		anisotropyLabel_->setText(u8"各向异性");
 
@@ -255,20 +271,17 @@ namespace rabbit
 		anisotropyHLayout->addWidget(anisotropyLabel_, 0, Qt::AlignLeft);
 		anisotropyHLayout->addWidget(anisotropySpinBox_, 0, Qt::AlignRight);
 
-		auto metalnessLayout = new QVBoxLayout();
-		metalnessLayout->addLayout(metalnessHLayout);
-		metalnessLayout->addWidget(metalnessSlider_);
-		metalnessLayout->addLayout(anisotropyHLayout);
-		metalnessLayout->addWidget(anisotropySlider_);
-		metalnessLayout->setContentsMargins(20, 5, 50, 0);
+		auto anisotropyLayout = new QVBoxLayout();
+		anisotropyLayout->addLayout(anisotropyHLayout);
+		anisotropyLayout->addWidget(anisotropySlider_);
+		anisotropyLayout->setContentsMargins(20, 5, 50, 0);
 
-		auto metalness = new Spoiler(u8"金属程度");
-		metalness->setFixedWidth(340);
-		metalness->setContentLayout(*metalnessLayout);
+		auto anisotropy = new Spoiler(u8"各向异性");
+		anisotropy->setFixedWidth(340);
+		anisotropy->setContentLayout(*anisotropyLayout);
 
-		return metalness;
+		return anisotropy;
 	}
-
 
 	QWidget*
 	MaterialEditWindow::createSheen()

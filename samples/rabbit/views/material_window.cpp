@@ -808,7 +808,7 @@ namespace rabbit
 
 		connect(closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
-		connect(listWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
+		//connect(listWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
 		connect(listWidget_, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 
 		behaviour->addMessageListener("editor:material:change", [this](const std::any&) {

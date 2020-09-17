@@ -64,10 +64,9 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo,
     float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     float subsurface = dg->mat.disney.subsurface;
 
-    float aspect = native_sqrt(1.f - anisotropy * 0.9f);
-    
-    float ax = max(0.001f, roughness * roughness * ( 1.f + anisotropy));
-    float ay = max(0.001f, roughness * roughness * ( 1.f - anisotropy));
+    float alpha = roughness * roughness;
+    float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+    float ay = max(0.001f, alpha * ( 1.f - anisotropy));
     float3 wh = normalize(wo + wi);
     float ndotwh = fabs(wh.y);
     float hdotwo = fabs(dot(wh, wo));
@@ -128,9 +127,8 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     float ss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
     
     float alpha = roughness * roughness;
-    float aspect = 1.0 / native_sqrt(1.0 - anisotropy * 0.9);
-    float ax = 1.0 / (alpha * aspect);
-    float ay = aspect / alpha;
+    float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+    float ay = max(0.001f, alpha * ( 1.f - anisotropy));
     float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay);
     float fh = SchlickFresnelReflectance(hdotwo);
     float3 fs = mix(c_spec0, WHITE, fh);
@@ -209,10 +207,8 @@ INLINE float3 Disney_Sample(
             sample.y /= cs_w;
 
             float alpha = roughness * roughness;
-            float aspect = 1.0 / native_sqrt(1.0 - anisotropy * 0.9);
-            float ax = 1.0 / (alpha * aspect);
-            float ay = aspect / alpha;
-
+            float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+            float ay = max(0.001f, alpha * ( 1.f - anisotropy));
             float t = native_sqrt(sample.y / (1.f - sample.y));
             wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
             

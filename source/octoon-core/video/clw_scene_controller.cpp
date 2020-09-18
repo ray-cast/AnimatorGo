@@ -541,6 +541,7 @@ namespace octoon::video
 			material.disney.clearcoat_roughness = mat->getClearCoatRoughness();
 			material.disney.clearcoat_roughness_map_idx = GetTextureIndex(textureCollector, mat->getClearCoatRoughnessMap());
 			material.disney.subsurface = mat->getSubsurface();
+			material.disney.emissive_map_idx = GetTextureIndex(textureCollector, mat->getEmissiveMap());
 
 			if (math::any(mat->getEmissive()))
 			{

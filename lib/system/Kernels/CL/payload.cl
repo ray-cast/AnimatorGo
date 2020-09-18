@@ -106,7 +106,7 @@ typedef struct
     int sheen_map_idx;
     int clearcoat_map_idx;
     int clearcoat_roughness_map_idx;
-    int padding2;
+    int emissive_map_idx;
 } Disney;
 
 typedef struct

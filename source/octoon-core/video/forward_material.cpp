@@ -831,9 +831,10 @@ vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in Geo
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
-    float ax = max(0.001f, alpha * ( 1.f + anisotropy));
-    float ay = max(0.001f, alpha * ( 1.f - anisotropy));
-	float D = pow2(dot(X, halfDir) / ax) + pow2(dot(Y, halfDir) / ay) + dotNH * dotNH;
+	float aspect = inversesqrt(1.0 - anisotropy * 0.9);
+	float ax = 1.0 / (alpha * aspect);
+	float ay = aspect / alpha;
+	float D = pow2(dot(X, halfDir) * ax) + pow2(dot(Y, halfDir) * ay) + dotNH * dotNH;
 	D = (ax * ay) / (D * D) * RECIPROCAL_PI;
 
 	vec3 F = F_Schlick( specularColor, dotLH );

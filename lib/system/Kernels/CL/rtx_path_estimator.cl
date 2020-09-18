@@ -345,7 +345,7 @@ KERNEL void ShadeSurface(
                     weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, bxdf_light_pdf) : 1.f;
                 }
 
-                float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * diffgeo.mat.disney.emissive * weight);
+                float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * shader_data.emissive * weight);
                 ADD_FLOAT3(&output[output_indices[pixel_idx]], v);
             }
 

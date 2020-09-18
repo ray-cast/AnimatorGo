@@ -65,12 +65,13 @@ typedef struct DisneyShaderData
     float clearcoat;
     float clearcoat_roughness;
     float subsurface;
+    float padding;
 } DisneyShaderData;
 
 INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIST, DisneyShaderData* shader_data)
 {
     shader_data->base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
-    shader_data->emissive = Texture_GetValue3f(dg->mat.disney.emissive.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.emissive_map_idx));
+    shader_data->opacity = Texture_GetValue1f(dg->mat.disney.opacity, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.opacity_map_idx));
     shader_data->metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
     shader_data->specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
     shader_data->anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));
@@ -81,6 +82,7 @@ INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIS
     shader_data->clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
     shader_data->clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
     shader_data->subsurface = dg->mat.disney.subsurface;
+    shader_data->emissive = Texture_GetValue3f(dg->mat.disney.emissive.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.emissive_map_idx));
 }
 
 INLINE void Disney_ApplyShadingNormal(DifferentialGeometry* dg, TEXTURE_ARG_LIST)
@@ -187,6 +189,44 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
     float gr = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
     
     return ((1.f / PI) * mix(fd, ss, subsurface) * cd_lin + f_sheen) * (1.f - metallic) + gs * fs * ds + clearcoat * gr * fr * dr;
+}
+
+float3 IdealRefract_Sample(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
+{
+    const float3 ks = shader_data->base_color.xyz;
+
+    float etai = 1.f;
+    float etat = 1.5f;
+    float cosi = wi.y;
+
+    bool entering = cosi > 0.f;
+
+    // Revert normal and eta if needed
+    if (!entering)
+    {
+        float tmp = etai;
+        etai = etat;
+        etat = tmp;
+    }
+
+    float eta = etai / etat;
+    float sini2 = 1.f - cosi * cosi;
+    float sint2 = eta * eta * sini2;
+
+    if (sint2 >= 1.f)
+    {
+        *pdf = 0.f;
+        return 0.f;
+    }
+
+    float cost = native_sqrt(max(0.f, 1.f - sint2));
+
+    // Transmitted ray
+    *wo = normalize(make_float3(eta * -wi.x, entering ? -cost : cost, eta * -wi.z));
+
+    *pdf = 1.f;
+
+    return cost > DENOM_EPS ? (eta * eta * ks / cost) : 0.f;
 }
 
 INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)

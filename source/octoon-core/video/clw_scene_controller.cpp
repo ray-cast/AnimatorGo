@@ -217,7 +217,7 @@ namespace octoon::video
 			if (should_update_lights)
 				this->updateLights(scene, *out);
 
-			if (should_update_shapes)
+			if (should_update_shapes | should_update_textures)
 				this->updateShapes(scene, *out);
 
 			out->dirty = camera->isDirty() | should_update_textures | should_update_materials | should_update_lights | should_update_shapes;
@@ -541,13 +541,8 @@ namespace octoon::video
 			material.disney.clearcoat_roughness = mat->getClearCoatRoughness();
 			material.disney.clearcoat_roughness_map_idx = GetTextureIndex(textureCollector, mat->getClearCoatRoughnessMap());
 			material.disney.subsurface = mat->getSubsurface();
+			material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * mat->getEmissiveIntensity();
 			material.disney.emissive_map_idx = GetTextureIndex(textureCollector, mat->getEmissiveMap());
-
-			if (math::any(mat->getEmissive()))
-			{
-				material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * mat->getEmissiveIntensity();
-				material.flags = ClwScene::BxdfFlags::kBxdfFlagsEmissive;
-			}
 
 			this->materialidToOffset_[mat] = material;
 		}

@@ -330,7 +330,7 @@ KERNEL void ShadeSurface(
             Path_SetOpacityFlag(path);
         }
 
-        if (Bxdf_IsEmissive(&diffgeo))
+        if (NON_BLACK(shader_data.emissive))
         {
             if (!backfacing)
             {
@@ -357,8 +357,8 @@ KERNEL void ShadeSurface(
             return;
         }
 
-        float s = Bxdf_IsBtdf(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
-        if (backfacing && !Bxdf_IsBtdf(&diffgeo))
+        float s = (shader_data.opacity < 1.0f) ? (-sign(ngdotwi)) : 1.f;
+        if (backfacing && !(shader_data.opacity < 1.0f))
         {
             diffgeo.n = -diffgeo.n;
             diffgeo.dpdu = -diffgeo.dpdu;
@@ -394,7 +394,7 @@ KERNEL void ShadeSurface(
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = PI * le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 
@@ -417,12 +417,28 @@ KERNEL void ShadeSurface(
             light_samples[global_id] = 0;
         }
 
+        float q = max(min(0.5f, 0.2126f * throughput.x + 0.7152f * throughput.y + 0.0722f * throughput.z), 0.01f);
+        bool rr_apply = bounce > 3;
+        bool rr_stop = Sampler_Sample1D(&sampler, SAMPLER_ARGS) > q && rr_apply;
+
+        if (rr_apply)
+        {
+            Path_MulThroughput(path, 1.f / q);
+        }
+
         float3 t = bxdf * fabs(dot(diffgeo.n, bxdf_wo));
-        if (NON_BLACK(t) && bxdf_pdf > 0)
+        if (NON_BLACK(t) && bxdf_pdf > 0 && !rr_stop)
         {
             Path_MulThroughput(path, t / bxdf_pdf);
 
-            if (Bxdf_IsBtdf(&diffgeo))
+            float3 indirect_ray_dir = bxdf_wo;
+            float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+            int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
+
+            Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
+            Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+
+            if (shader_data.opacity < 1.0f)
             {
                 if (backfacing)
                 {
@@ -433,13 +449,6 @@ KERNEL void ShadeSurface(
                     Path_SetVolumeIdx(path, Scene_GetVolumeIndex(&scene, isect.shapeid - 1));
                 }
             }
-
-            float3 indirect_ray_dir = bxdf_wo;
-            float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
-            int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
-
-            Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-            Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
         }
         else
         {

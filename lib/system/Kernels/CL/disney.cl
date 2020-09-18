@@ -211,7 +211,7 @@ INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData con
         sample.x -= (shader_data->clearcoat);
         sample.x /= (1.f - shader_data->clearcoat);
 
-        float3 cd_lin = native_powr(shader_data->base_color, 2.2f);
+        float3 cd_lin = shader_data->base_color;
         float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
 
         float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;

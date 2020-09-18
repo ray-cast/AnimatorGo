@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <../../system/Kernels/CL/volumetrics.cl>
 #include <../../system/Kernels/CL/path.cl>
 #include <../../system/Kernels/CL/vertex.cl>
+#include <../../system/Kernels/CL/disney.cl>
 
 // Pinhole camera implementation.
 // This kernel is being used if aperture value = 0.
@@ -1139,7 +1140,7 @@ KERNEL void FillAOVs(
                     diffgeo.dpdv = -diffgeo.dpdv;
                 }
 
-                DifferentialGeometry_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS_IDX(diffgeo.mat.disney.normal_map_idx));
+                Disney_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS);
 
                 aov_world_shading_normal[idx].xyz += diffgeo.n;
                 aov_world_shading_normal[idx].w += 1.f;

@@ -276,17 +276,6 @@ void Scene_FillDifferentialGeometry(// Scene
     }
 }
 
-INLINE void DifferentialGeometry_ApplyShadingNormal(DifferentialGeometry* dg, TEXTURE_ARG_LIST_IDX(texidx))
-{
-    if (texidx != -1)
-    {
-        float3 shading_normal = Texture_Sample2D(dg->uv, TEXTURE_ARGS_IDX(texidx)).xyz;
-        dg->n = normalize(shading_normal.z * dg->n + shading_normal.x * dg->dpdu + shading_normal.y * dg->dpdv);
-        dg->dpdv = normalize(cross(dg->n, dg->dpdu));
-        dg->dpdu = normalize(cross(dg->dpdv, dg->n));
-    }
-}
-
 // Calculate tangent transform matrices inside differential geometry
 INLINE void DifferentialGeometry_CalculateTangentTransforms(DifferentialGeometry* diffgeo)
 {

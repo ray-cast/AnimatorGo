@@ -311,7 +311,11 @@ KERNEL void ShadeSurface(
 
         DifferentialGeometry diffgeo;
         Scene_FillDifferentialGeometry(&scene, &isect, &diffgeo);
-        DifferentialGeometry_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS_IDX(diffgeo.mat.disney.normal_map_idx));
+
+        DisneyShaderData shader_data;
+        Disney_PrepareInputs(&diffgeo, TEXTURE_ARGS, &shader_data);
+        Disney_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS);
+
         DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
 
         Path_SetFlags(&diffgeo, path);
@@ -367,7 +371,7 @@ KERNEL void ShadeSurface(
         float3 throughput = Path_GetThroughput(path);
         float3 bxdf_wo;
         float bxdf_pdf = 0.f;
-        float3 bxdf = Disney_Sample(&diffgeo, wi, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), &bxdf_wo, &bxdf_pdf);
+        float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
         bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
 
         float3 radiance = 0.f;
@@ -383,14 +387,14 @@ KERNEL void ShadeSurface(
             float3 lightwo;
             float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
             lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
-            float light_bxdf_pdf = Disney_GetPdf(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS);
+            float light_bxdf_pdf = Disney_GetPdf(&diffgeo, &shader_data, wi, normalize(lightwo));
             float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
 
             if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && !Bxdf_IsSingular(&diffgeo))
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, wi, normalize(lightwo), TEXTURE_ARGS) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance = PI * le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 
@@ -435,7 +439,7 @@ KERNEL void ShadeSurface(
             int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
             Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-            Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+            Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
         }
         else
         {

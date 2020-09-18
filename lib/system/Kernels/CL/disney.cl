@@ -50,19 +50,63 @@ float SmithGGX_G_Aniso(float ndotv, float vdotx, float vdoty, float ax, float ay
     return 1.f / (ndotv + native_sqrt( vdotxax2 + vdotyay2 + ndotv * ndotv));
 }
 
-INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo, TEXTURE_ARG_LIST )
+typedef struct DisneyShaderData
 {
-    float3 base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
-    float metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
-    float specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
-    float anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));
-    float roughness = Texture_GetValue1f(dg->mat.disney.roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.roughness_map_idx));
-    float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
-    float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
-    float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
-    float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
-    float subsurface = dg->mat.disney.subsurface;
+    float3 base_color;
+    float3 emissive;
+    float opacity;
+    float metallic;
+    float roughness;
+    float anisotropy;
+    float specular;
+    float specular_tint;
+    float sheen;
+    float sheen_tint;
+    float clearcoat;
+    float clearcoat_roughness;
+    float subsurface;
+} DisneyShaderData;
+
+INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIST, DisneyShaderData* shader_data)
+{
+    shader_data->base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
+    shader_data->emissive = Texture_GetValue3f(dg->mat.disney.emissive.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.emissive_map_idx));
+    shader_data->metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
+    shader_data->specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
+    shader_data->anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));
+    shader_data->roughness = Texture_GetValue1f(dg->mat.disney.roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.roughness_map_idx));
+    shader_data->specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
+    shader_data->sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
+    shader_data->sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
+    shader_data->clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
+    shader_data->clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
+    shader_data->subsurface = dg->mat.disney.subsurface;
+}
+
+INLINE void Disney_ApplyShadingNormal(DifferentialGeometry* dg, TEXTURE_ARG_LIST)
+{
+    if (dg->mat.disney.normal_map_idx != -1)
+    {
+        float3 shading_normal = Texture_Sample2D(dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.normal_map_idx)).xyz;
+        dg->n = normalize(shading_normal.z * dg->n + shading_normal.x * dg->dpdu + shading_normal.y * dg->dpdv);
+        dg->dpdv = normalize(cross(dg->n, dg->dpdu));
+        dg->dpdu = normalize(cross(dg->dpdv, dg->n));
+    }
+}
+
+INLINE float Disney_GetPdf(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float3 wi, float3 wo)
+{
+    float3 base_color = shader_data->base_color;
+    float metallic = shader_data->metallic;
+    float specular = shader_data->specular;
+    float anisotropy = shader_data->anisotropy;
+    float roughness = shader_data->roughness;
+    float specular_tint = shader_data->specular_tint;
+    float sheen_tint = shader_data->sheen_tint;
+    float sheen = shader_data->sheen;
+    float clearcoat_roughness = shader_data->clearcoat_roughness;
+    float clearcoat = shader_data->clearcoat;
+    float subsurface = shader_data->subsurface;
 
     float alpha = roughness * roughness;
     float ax = max(0.001f, alpha * ( 1.f + anisotropy));
@@ -87,20 +131,19 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, float3 wi, float3 wo,
     return c_pdf * clearcoat + (1.f - clearcoat) * (cs_w * r_pdf + (1.f - cs_w) * d_pdf);
 }
 
-
-INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 wo, TEXTURE_ARG_LIST)
+INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float3 wi, float3 wo)
 {
-    float3 base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
-    float metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
-    float specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
-    float anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));
-    float roughness = Texture_GetValue1f(dg->mat.disney.roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.roughness_map_idx));
-    float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
-    float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
-    float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
-    float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
-    float subsurface = dg->mat.disney.subsurface;
+    float3 base_color = shader_data->base_color;
+    float metallic = shader_data->metallic;
+    float specular = shader_data->specular;
+    float anisotropy = shader_data->anisotropy;
+    float roughness = shader_data->roughness;
+    float specular_tint = shader_data->specular_tint;
+    float sheen_tint = shader_data->sheen_tint;
+    float sheen = shader_data->sheen;
+    float clearcoat_roughness = shader_data->clearcoat_roughness;
+    float clearcoat = shader_data->clearcoat;
+    float subsurface = shader_data->subsurface;
     
     float ndotwi = fabs(wi.y);
     float ndotwo = fabs(wo.y);
@@ -146,40 +189,15 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, float3 wi, float3 
     return ((1.f / PI) * mix(fd, ss, subsurface) * cd_lin + f_sheen) * (1.f - metallic) + gs * fs * ds + clearcoat * gr * fr * dr;
 }
 
-INLINE float3 Disney_Sample(
-                            // Geometry
-                            DifferentialGeometry const* dg,
-                            // Incoming direction
-                            float3 wi,
-                            // Texture args
-                            TEXTURE_ARG_LIST,
-                            // Sample
-                            float2 sample,
-                            // Outgoing  direction
-                            float3* wo,
-                            // PDF at wo
-                            float* pdf
-                            )
+INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
 {
-    float3 base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
-    float metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
-    float specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
-    float anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));
-    float roughness = Texture_GetValue1f(dg->mat.disney.roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.roughness_map_idx));
-    float specular_tint = Texture_GetValue1f(dg->mat.disney.specular_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_tint_map_idx));
-    float sheen_tint = Texture_GetValue1f(dg->mat.disney.sheen_tint, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_tint_map_idx));
-    float sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
-    float clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
-    float clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
-    float subsurface = dg->mat.disney.subsurface;
-       
     float3 wh;
     
-    if (sample.x < clearcoat)
+    if (sample.x < shader_data->clearcoat)
     {
-        sample.x /= (clearcoat);
+        sample.x /= (shader_data->clearcoat);
         
-        float a = mix(0.001f, 0.1f, clearcoat_roughness);
+        float a = mix(0.001f, 0.1f, shader_data->clearcoat_roughness);
         float ndotwh = native_sqrt((1.f - native_powr(a*a, 1.f - sample.y)) / (1.f - a*a));
         float sintheta = native_sqrt(1.f - ndotwh * ndotwh);
         wh = normalize(make_float3(native_cos(2.f * PI * sample.x) * sintheta,
@@ -190,25 +208,25 @@ INLINE float3 Disney_Sample(
     }
     else
     {
-        sample.x -= (clearcoat);
-        sample.x /= (1.f - clearcoat);
+        sample.x -= (shader_data->clearcoat);
+        sample.x /= (1.f - shader_data->clearcoat);
 
-        float3 cd_lin = native_powr(base_color, 2.2f);
+        float3 cd_lin = native_powr(shader_data->base_color, 2.2f);
         float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
 
         float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
-        float3 c_spec0 = mix(specular * 0.3f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);
+        float3 c_spec0 = mix(shader_data->specular * 0.3f * mix(WHITE, c_tint, shader_data->specular_tint), cd_lin, shader_data->metallic);
 
         float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));
-        float cs_w = cs_lum / (cs_lum + (1.f - metallic) * cd_lum);
+        float cs_w = cs_lum / (cs_lum + (1.f - shader_data->metallic) * cd_lum);
         
         if (sample.y < cs_w)
         {
             sample.y /= cs_w;
 
-            float alpha = roughness * roughness;
-            float ax = max(0.001f, alpha * ( 1.f + anisotropy));
-            float ay = max(0.001f, alpha * ( 1.f - anisotropy));
+            float alpha = shader_data->roughness * shader_data->roughness;
+            float ax = max(0.001f, alpha * ( 1.f + shader_data->anisotropy));
+            float ay = max(0.001f, alpha * ( 1.f - shader_data->anisotropy));
             float t = native_sqrt(sample.y / (1.f - sample.y));
             wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
             
@@ -224,9 +242,9 @@ INLINE float3 Disney_Sample(
     }
     
     *wo = normalize(*wo);
-    *pdf = Disney_GetPdf(dg, wi, *wo, TEXTURE_ARGS);
+    *pdf = Disney_GetPdf(dg, shader_data, wi, *wo);
     
-    return Disney_Evaluate(dg, wi, *wo, TEXTURE_ARGS);
+    return Disney_Evaluate(dg, shader_data, wi, *wo);
 }
 
 #endif

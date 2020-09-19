@@ -211,10 +211,10 @@ namespace octoon::video
 			if (should_update_textures)
 				this->updateTextures(scene, *out);
 
-			if (should_update_materials)
+			if (should_update_materials | should_update_textures)
 				this->updateMaterials(scene, *out);
 
-			if (should_update_lights)
+			if (should_update_lights | should_update_textures)
 				this->updateLights(scene, *out);
 
 			if (should_update_shapes | should_update_textures)

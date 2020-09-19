@@ -229,9 +229,11 @@ float3 IdealRefract_Sample(DifferentialGeometry const* dg, DisneyShaderData cons
     return cost > DENOM_EPS ? (eta * eta * ks / cost) : 0.f;
 }
 
-INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
+INLINE float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
 {
     float3 wh;
+
+    int bxdf_flags = kBxdfFlagsBrdf;
     
     if (sample.x < shader_data->clearcoat)
     {
@@ -243,7 +245,11 @@ INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData con
         wh = normalize(make_float3(native_cos(2.f * PI * sample.x) * sintheta,
                                    ndotwh,
                                    native_sin(2.f * PI * sample.x) * sintheta));
-        
+
+        Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+        bxdf_flags |= kBxdfFlagsSingular;
+        Bxdf_SetFlags(dg, bxdf_flags);
+
         *wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
     }
     else
@@ -270,12 +276,20 @@ INLINE float3 Disney_Sample(DifferentialGeometry const* dg, DisneyShaderData con
             float t = native_sqrt(sample.y / (1.f - sample.y));
             wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
             
+            Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+            bxdf_flags |= kBxdfFlagsSingular;
+            Bxdf_SetFlags(dg, bxdf_flags);
+
             *wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
         }
         else
         {
             sample.y -= cs_w;
             sample.y /= (1.f - cs_w);
+
+            Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleDiffuse);
+            bxdf_flags |= kBxdfFlagsBrdf;
+            Bxdf_SetFlags(dg, bxdf_flags);
             
             *wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
         }

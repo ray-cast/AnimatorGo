@@ -394,7 +394,7 @@ KERNEL void ShadeSurface(
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance = PI * le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 
@@ -436,7 +436,7 @@ KERNEL void ShadeSurface(
             int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
             Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-            Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+            Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
 
             if (shader_data.opacity < 1.0f)
             {

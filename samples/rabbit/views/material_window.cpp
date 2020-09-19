@@ -733,7 +733,7 @@ namespace rabbit
 
 						auto drag = new QDrag(this);
 						drag->setMimeData(mimeData);
-						drag->setPixmap(*label->pixmap());
+						drag->setPixmap(label->pixmap(Qt::ReturnByValue));
 						drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
 						drag->exec(Qt::MoveAction);
 					}
@@ -781,7 +781,6 @@ namespace rabbit
 		modifyWidget_->setFixedWidth(340);
 
 		modifyMaterialArea_ = new QScrollArea();
-		modifyMaterialArea_->setFixedHeight(700);
 		modifyMaterialArea_->setWidget(modifyWidget_);
 		modifyMaterialArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		modifyMaterialArea_->setWidgetResizable(true);
@@ -804,10 +803,10 @@ namespace rabbit
 				this->updateList();
 		});
 
-		behaviour->addMessageListener("editor:material:selected", [this](const std::any& data) {
+		behaviour->addMessageListener("editor:material:selected", [this](const std::any& any_data) {
 			if (this->isVisible())
 			{
-				auto uuid = QString::fromStdString(std::any_cast<std::string>(data));
+				auto uuid = QString::fromStdString(std::any_cast<std::string>(any_data));
 				auto count = this->listWidget_->count();
 				for (int i = 0; i < count; i++)
 				{
@@ -831,6 +830,7 @@ namespace rabbit
 	{
 		QMargins margins = mainLayout_->contentsMargins();
 		modifyMaterialArea_->hide();
+		modifyMaterialArea_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
 		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
 		listWidget_->show();
 		this->updateList();

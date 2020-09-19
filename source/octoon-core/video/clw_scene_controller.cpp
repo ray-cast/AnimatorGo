@@ -426,7 +426,7 @@ namespace octoon::video
 			if (texture.map(0, 0, desc.getWidth(), desc.getHeight(), 0, (void**)&data))
 			{
 				for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); i++)
-					((math::uchar4*)dest)[i].set(data[i]);
+					((math::uchar4*)dest)[i].set(data[i].x, data[i].y, data[i].z, 1);
 
 				texture.unmap();
 			}

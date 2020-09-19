@@ -70,8 +70,10 @@ float SmithGGX_G_Aniso(float ndotv, float vdotx, float vdoty, float ax, float ay
 
 INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIST, DisneyShaderData* shader_data)
 {
-	shader_data->base_color = Texture_GetValue3f(dg->mat.disney.base_color.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
-	shader_data->transparency = 1.f - Texture_GetValue1f(dg->mat.disney.opacity, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.opacity_map_idx));
+	float4 color = Texture_GetValue4f(make_float4(dg->mat.disney.base_color.x,dg->mat.disney.base_color.y,dg->mat.disney.base_color.z,1), dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));
+
+	shader_data->base_color = color.xyz;
+	shader_data->transparency = 1.f - Texture_GetValue1f(dg->mat.disney.opacity, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.opacity_map_idx)) * color.w;
 	shader_data->metallic = Texture_GetValue1f(dg->mat.disney.metallic, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.metallic_map_idx));
 	shader_data->specular = Texture_GetValue1f(dg->mat.disney.specular, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.specular_map_idx));
 	shader_data->anisotropy = Texture_GetValue1f(dg->mat.disney.anisotropy, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.anisotropy_map_idx));

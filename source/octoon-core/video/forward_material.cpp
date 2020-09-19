@@ -1344,8 +1344,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		vec3 ax = cross(-geometry.viewDir, Y);
 		vec3 ay = cross(ax, Y);
 
-		vec3 bentNormal = normalize(mix(geometry.normal, ay, anisotropy * anisotropy));
-		bentNormal = mix(geometry.normal, bentNormal, roughness);
+		vec3 bentNormal = mix(geometry.normal, normalize(mix(geometry.normal, ay, anisotropy * anisotropy)), roughness);
 
 		#ifdef ENVMAP_MODE_REFLECTION
 

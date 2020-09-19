@@ -703,12 +703,12 @@ vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in Geometri
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotVH = saturate( dot( geometry.viewDir, halfDir ) );
 
-	float energyBias = 0.5 * roughness;
-	float energyFactor = mix(1, 1 / 1.51, roughness);
-	
 	float f_wo = pow5(1 - max(dotNV, 0.1));
 	float f_wi = pow5(1 - dotNL);
 
+	float energyBias = 0.5 * roughness;
+	float energyFactor = mix(1, 1 / 1.51, roughness);
+	
 	float Fd90 = energyBias + 2.0 * dotVH * dotVH * roughness;
 	float FdV = mix(1, Fd90, f_wo);
 	float FdL = mix(1, Fd90, f_wi);
@@ -819,7 +819,7 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 
 // GGX Distribution, Schlick Fresnel, GGX-Smith Visibility
 vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float roughness, const in float anisotropy ) {
-	vec3 X = normalize(cross(geometry.normal, vec3(0,1,0)));
+	vec3 X = normalize(cross(geometry.normal, vec3(1,0,0)));
 	vec3 Y = normalize(cross(geometry.normal, X));
 
 	float alpha = pow2( roughness ); // UE4's roughness
@@ -831,11 +831,10 @@ vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in Geo
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
-	float aspect = inversesqrt(1.0 - anisotropy * 0.9);
-	float ax = 1.0 / (alpha * aspect);
-	float ay = aspect / alpha;
-	float D = pow2(dot(X, halfDir) / ax) + pow2(dot(Y, halfDir) / ay) + dotNH * dotNH;
-	D = 1.0 / (PI * ax * ay * D * D);
+    float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+    float ay = max(0.001f, alpha * ( 1.f - anisotropy));
+	float denom = pow2(dot(X, halfDir) / ax) + pow2(dot(Y, halfDir) / ay) + dotNH * dotNH;
+	float D = denom > 1e-5 ? (1.f / (PI * ax * ay * denom * denom)) : 0.f;
 
 	vec3 F = F_Schlick( specularColor, dotLH );
 	float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
@@ -1339,7 +1338,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 	vec3 getLightProbeIndirectRadianceAniso( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in float anisotropy, const in int maxMIPLevel ) {
 
-		vec3 X = normalize(cross(geometry.normal, vec3(0,1,0)));
+		vec3 X = normalize(cross(geometry.normal, vec3(1,0,0)));
 		vec3 Y = normalize(cross(geometry.normal, X));
 
 		vec3 ax = cross(-geometry.viewDir, Y);

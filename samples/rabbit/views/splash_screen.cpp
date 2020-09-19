@@ -12,7 +12,7 @@ namespace rabbit
 		logo->setObjectName("logo");
 
 		widget = new QWidget(this);
-		widget->setFixedSize(310, 100);
+		widget->setFixedSize(320, 100);
 
 		englishName = new QLabel(widget);
 		englishName->setObjectName("title");
@@ -33,7 +33,7 @@ namespace rabbit
 		hlayout->addWidget(logo, 0, Qt::AlignRight);
 		hlayout->addWidget(widget, 0, Qt::AlignLeft);
 		hlayout->setContentsMargins(0, 0, 0, 0);
-		hlayout->setSpacing(24);
+		hlayout->setSpacing(20);
 
 		versionInfo = new QLabel(this);
 		versionInfo->setObjectName("version");

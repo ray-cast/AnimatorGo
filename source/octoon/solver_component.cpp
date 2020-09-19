@@ -270,7 +270,7 @@ namespace octoon
 
 								transform->setLocalQuaternion(math::normalize(spin));
 							}
-						}					
+						}
 					}
 					else
 					{

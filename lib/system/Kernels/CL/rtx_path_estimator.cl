@@ -325,7 +325,7 @@ KERNEL void ShadeSurface(
         float ngdotwi = dot(diffgeo.ng, wi);
         bool backfacing = ngdotwi < 0.f;
 
-        if (!Bxdf_IsTransparency(&diffgeo))
+        if (!(shader_data.transparency > 0.f))
         {
             Path_SetOpacityFlag(path);
         }
@@ -357,8 +357,8 @@ KERNEL void ShadeSurface(
             return;
         }
 
-        float s = (shader_data.opacity < 1.0f) ? (-sign(ngdotwi)) : 1.f;
-        if (backfacing && !(shader_data.opacity < 1.0f))
+        float s = (shader_data.transparency > 0.0f) ? (-sign(ngdotwi)) : 1.f;
+        if (backfacing && !(shader_data.transparency > 0.0f))
         {
             diffgeo.n = -diffgeo.n;
             diffgeo.dpdu = -diffgeo.dpdu;
@@ -438,7 +438,7 @@ KERNEL void ShadeSurface(
             Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
             Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
 
-            if (shader_data.opacity < 1.0f)
+            if (shader_data.transparency > 0.0f)
             {
                 if (backfacing)
                 {

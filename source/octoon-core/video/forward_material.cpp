@@ -1336,7 +1336,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 	}
 
-	vec3 getLightProbeIndirectRadianceAniso( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in float anisotropy, const in int maxMIPLevel ) {
+	vec3 getLightProbeIndirectRadianceAniso( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float roughness, const in float anisotropy, const in int maxMIPLevel ) {
 
 		vec3 X = normalize(cross(geometry.normal, vec3(1,0,0)));
 		vec3 Y = normalize(cross(geometry.normal, X));
@@ -1345,6 +1345,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		vec3 ay = cross(ax, Y);
 
 		vec3 bentNormal = normalize(mix(geometry.normal, ay, anisotropy * anisotropy));
+		bentNormal = mix(geometry.normal, bentNormal, roughness);
 
 		#ifdef ENVMAP_MODE_REFLECTION
 
@@ -1358,6 +1359,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 		reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
 
+		float blinnShininessExponent = GGXRoughnessToBlinnExponent(roughness);
 		float specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );
 
 		#ifdef ENVMAP_TYPE_CUBE
@@ -1723,7 +1725,7 @@ IncidentLight directLight;
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
 
 	// TODO, replace 7 with the real maxMIPLevel
-	vec3 radiance = getLightProbeIndirectRadianceAniso( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), material.specularAnisotropy, 7 );
+	vec3 radiance = getLightProbeIndirectRadianceAniso( /*specularLightProbe,*/ geometry, material.roughness, material.specularAnisotropy, 7 );
 
 	#ifndef STANDARD
 		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 7 );

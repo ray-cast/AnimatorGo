@@ -36,22 +36,46 @@ namespace rabbit
 	private:
 		QWidget* createSummary();
 		QWidget* createAlbedo();
-		QWidget* createOpacity();
-		QWidget* createNormal();
-		QWidget* createSmoothness();
-		QWidget* createMetalness();
-		QWidget* createAnisotropy();
-		QWidget* createSheen();
-		QWidget* createClearCoat();
-		QWidget* createSubsurface();
 		QWidget* createEmissive();
 
-	public Q_SLOTS:
-		void albedoColorChanged(QColor);
+		void setAlbedoMap(const QString& fileName);
+		void setOpacityMap(const QString& fileName);
+		void setNormalMap(const QString& fileName);
+		void setRoughnessMap(const QString& fileName);
+		void setMetalnessMap(const QString& fileName);
+		void setAnisotropyMap(const QString& fileName);
+		void setSheenMap(const QString& fileName);
+		void setClearCoatMap(const QString& fileName);
+		void setClearCoatRoughnessMap(const QString& fileName);
+		void setSubsurfaceMap(const QString& fileName);
+		void setEmissiveMap(const QString& fileName);
 
-		void emissiveColorChanged(QColor);
-		void emissiveEditEvent(double);
-		void emissiveSliderEvent(int);
+	public Q_SLOTS:
+		void colorMapClickEvent();
+		void normalMapClickEvent();
+		void opacityMapClickEvent();
+		void smoothnessMapClickEvent();
+		void metalnessMapClickEvent();
+		void anisotropyMapClickEvent();
+		void clearcoatMapClickEvent();
+		void clearcoatRoughnessMapClickEvent();
+		void sheenMapClickEvent();
+		void subsurfaceMapClickEvent();
+		void emissiveMapClickEvent();
+
+		void colorMapCheckEvent(int);
+		void normalMapCheckEvent(int);
+		void opacityMapCheckEvent(int);
+		void smoothnessMapCheckEvent(int);
+		void metalnessMapCheckEvent(int);
+		void anisotropyMapCheckEvent(int);
+		void clearcoatMapCheckEvent(int);
+		void clearcoatRoughnessMapCheckEvent(int);
+		void sheenMapCheckEvent(int);
+		void subsurfaceMapCheckEvent(int);
+		void emissiveMapCheckEvent(int);
+
+		void albedoColorChanged(QColor);
 
 		void opacityEditEvent(double);
 		void opacitySliderEvent(int);
@@ -77,38 +101,59 @@ namespace rabbit
 		void subsurfaceEditEvent(double);
 		void subsurfaceSliderEvent(int);
 
+		void emissiveColorChanged(QColor);
+		void emissiveEditEvent(double);
+		void emissiveSliderEvent(int);
+
 		void closeEvent();
 
 	public:
-		QLabel* imageLabel_;
+		enum CreateFlags
+		{
+			SpoilerBit = 1 << 0,
+			ValueBit = 1 << 2,
+		};
+
+		struct MaterialUi
+		{
+			QToolButton* image;
+			QCheckBox* check;
+			QLabel* title;
+			QLabel* path;
+			QLabel* label_;
+			QSlider* slider_;
+			QDoubleSpinBox* spinBox_;
+
+			QHBoxLayout* titleLayout;
+			QVBoxLayout* rightLayout;
+			QHBoxLayout* mapLayout;
+			QLayout* mainLayout;
+
+			Spoiler* spoiler;
+
+			octoon::hal::GraphicsTexturePtr texture;
+
+			void init(const QString& name, std::uint32_t flags);
+			void resetState();
+		};
+
+		MaterialUi albedo_;
+		MaterialUi opacity_;
+		MaterialUi normal_;
+		MaterialUi smoothness_;
+		MaterialUi metalness_;
+		MaterialUi anisotropy_;
+		MaterialUi clearcoat_;
+		MaterialUi clearcoatRoughness_;
+		MaterialUi sheen_;
+		MaterialUi subsurface_;
+		MaterialUi emissive_;
+
+		Spoiler* clearCoatSpoiler_;
+
 		QLabel* textLabel_;
-		QLabel* normalLabel_;
-		QLabel* albedoLabel_;
-		QLabel* opacityLabel_;
-		QLabel* smoothnessLabel_;
-		QLabel* metalnessLabel_;
-		QLabel* anisotropyLabel_;
-		QLabel* clearcoatLabel_;
-		QLabel* clearcoatRoughnessLabel_;
-		QLabel* sheenLabel_;
-		QLabel* subsurfaceLabel_;
-		QSlider* opacitySlider_;
-		QSlider* smoothnessSlider_;
-		QSlider* metalnessSlider_;
-		QSlider* anisotropySlider_;
-		QSlider* clearcoatSlider_;
-		QSlider* clearcoatRoughnessSlider_;
-		QSlider* sheenSlider_;
-		QSlider* subsurfaceSlider_;
+		QLabel* imageLabel_;
 		QSlider* emissiveSlider_;
-		QDoubleSpinBox* opacitySpinBox_;
-		QDoubleSpinBox* smoothnessSpinBox_;
-		QDoubleSpinBox* metalnessSpinBox_;
-		QDoubleSpinBox* anisotropySpinBox_;
-		QDoubleSpinBox* clearcoatSpinBox_;
-		QDoubleSpinBox* clearcoatRoughnessSpinBox_;
-		QDoubleSpinBox* sheenSpinBox_;
-		QDoubleSpinBox* subsurfaceSpinBox_;
 		QDoubleSpinBox* emissiveSpinBox_;
 		QLabel* emissiveLabel_;
 		ColorDialog* albedoColor_;

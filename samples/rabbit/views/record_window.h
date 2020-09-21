@@ -30,6 +30,9 @@ namespace rabbit
 		void update();
 		void repaint();
 
+		void startRecord(QString fileName);
+		void stopRecord();
+
 	private Q_SLOTS:
 		void closeEvent();
 		void clickEvent();

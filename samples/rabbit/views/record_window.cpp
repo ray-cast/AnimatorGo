@@ -227,6 +227,46 @@ namespace rabbit
 	}
 
 	void
+	RecordWindow::startRecord(QString fileName)
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+		{
+			if (behaviour->startRecord(fileName.toUtf8().data()))
+			{
+				start_->setEnabled(false);
+				end_->setEnabled(false);
+				timer_->start();
+				okButton_->setText(u8"Í£Ö¹äÖÈ¾");
+			}
+			else
+			{
+				QMessageBox msg(this);
+				msg.setWindowTitle(u8"´íÎó");
+				msg.setText(u8"´´½¨ÎÄ¼þÊ§°Ü");
+				msg.setIcon(QMessageBox::Information);
+				msg.setStandardButtons(QMessageBox::Ok);
+
+				msg.exec();
+			}
+		}
+	}
+
+	void
+	RecordWindow::stopRecord()
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+		{
+			timer_->stop();
+			start_->setEnabled(true);
+			end_->setEnabled(true);
+			okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
+			behaviour->stopRecord();
+		}
+	}
+
+	void
 	RecordWindow::showEvent(QShowEvent* event)
 	{
 		this->repaint();
@@ -257,33 +297,11 @@ namespace rabbit
 			{
 				QString fileName = QFileDialog::getSaveFileName(this, u8"Â¼ÖÆÊÓÆµ", "", tr("HDRi Files (*.mp4)"));
 				if (!fileName.isEmpty())
-				{
-					if (behaviour->startRecord(fileName.toUtf8().data()))
-					{
-						start_->setEnabled(false);
-						end_->setEnabled(false);
-						timer_->start();
-						okButton_->setText(u8"Í£Ö¹äÖÈ¾");
-					}
-					else
-					{
-						QMessageBox msg(this);
-						msg.setWindowTitle(u8"´íÎó");
-						msg.setText(u8"´´½¨ÎÄ¼þÊ§°Ü");
-						msg.setIcon(QMessageBox::Information);
-						msg.setStandardButtons(QMessageBox::Ok);
-
-						msg.exec();
-					}
-				}
+					this->startRecord(fileName);
 			}
 			else
 			{
-				timer_->stop();
-				behaviour->stopRecord();
-				start_->setEnabled(true);
-				end_->setEnabled(true);
-				okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
+				this->stopRecord();
 			}
 		}
 	}

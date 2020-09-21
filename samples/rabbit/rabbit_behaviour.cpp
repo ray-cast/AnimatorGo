@@ -163,21 +163,30 @@ namespace rabbit
 	RabbitBehaviour::onFixedUpdate() noexcept
 	{
 		for (auto& it : components_)
-			it->onFixedUpdate();
+		{
+			if (it->getActive())
+				it->onFixedUpdate();
+		}
 	}
 
 	void
 	RabbitBehaviour::onUpdate() noexcept
 	{
 		for (auto& it : components_)
-			it->onUpdate();
+		{
+			if (it->getActive())
+				it->onUpdate();
+		}
 	}
 
 	void
 	RabbitBehaviour::onLateUpdate() noexcept
 	{
 		for (auto& it : components_)
-			it->onLateUpdate();
+		{
+			if (it->getActive())
+				it->onLateUpdate();
+		}
 	}
 
 	void
@@ -248,6 +257,20 @@ namespace rabbit
 			return;
 	}
 
+	void
+	RabbitBehaviour::play() noexcept
+	{
+		playerComponent_->play();
+		dragComponent_->setActive(false);
+	}
+
+	void
+	RabbitBehaviour::stop() noexcept
+	{
+		playerComponent_->stop();
+		dragComponent_->setActive(true);
+	}
+
 	bool
 	RabbitBehaviour::startRecord(std::string_view filepath) noexcept
 	{
@@ -256,6 +279,7 @@ namespace rabbit
 			canvasComponent_->setActive(true);
 			denoiseComponent_->setActive(true);
 			h264Component_->setActive(true);
+			dragComponent_->setActive(false);
 			playerComponent_->render();
 
 			if (profile_->h264Module->quality == VideoQuality::High)
@@ -282,6 +306,7 @@ namespace rabbit
 		canvasComponent_->setActive(false);
 		denoiseComponent_->setActive(false);
 		h264Component_->setActive(false);
+		dragComponent_->setActive(true);
 		playerComponent_->stop();
 	}
 

@@ -324,14 +324,10 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					auto player = dynamic_cast<PlayerComponent*>(behaviour->getComponent<PlayerComponent>());
-					if (player)
-					{
-						if (enable)
-							player->play();
-						else
-							player->stop();
-					}
+					if (enable)
+						behaviour->play();
+					else
+						behaviour->stop();
 
 					return true;
 				}
@@ -1095,13 +1091,10 @@ namespace rabbit
 
 			behaviour->addMessageListener("rabbit:player:finish", [this](const std::any&)
 			{
-				toolBar_->playButton.setIcon(toolBar_->playIcon_);
-				toolBar_->playButton.setToolTip(u8"²¥·Å");
-				toolBar_->playEnable_ = false;
-				recordWindow_->timer_->stop();
-				recordWindow_->start_->setEnabled(true);
-				recordWindow_->end_->setEnabled(true);
-				recordWindow_->okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
+				if (toolBar_->playEnable_)
+					toolBar_->stop();
+				else
+					recordWindow_->stopRecord();
 			});
 
 			behaviour->addMessageListener("rabbit:offline", [this](const std::any& enable)

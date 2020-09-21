@@ -138,6 +138,34 @@ namespace rabbit
 	}
 
 	void
+	ToolWindow::play()
+	{
+		if (!playEnable_)
+		{
+			if (playSignal(true))
+			{
+				playButton.setIcon(playOnIcon_);
+				playButton.setToolTip(u8"ÔÝÍ£");
+				playEnable_ = true;
+			}
+		}
+	}
+
+	void
+	ToolWindow::stop()
+	{
+		if (playEnable_)
+		{
+			if (playSignal(false))
+			{
+				playButton.setIcon(playIcon_);
+				playButton.setToolTip(u8"²¥·Å");
+				playEnable_ = false;
+			}
+		}
+	}
+
+	void
 	ToolWindow::showEvent(QShowEvent* e) noexcept
 	{
 	}

@@ -38,6 +38,9 @@ namespace rabbit
 		void openModel() noexcept;
 		void saveModel() noexcept;
 
+		void play() noexcept;
+		void stop() noexcept;
+
 		bool startRecord(std::string_view path) noexcept;
 		void stopRecord() noexcept;
 

@@ -318,7 +318,8 @@ namespace rabbit
 					if (profile->h264Module->quality == VideoQuality::High)
 					{
 						auto clientComponent_ = dynamic_cast<ClientComponent*>(context->behaviour->getComponent<ClientComponent>());
-						clientComponent_->coin((int)std::round(this->time() * profile->timeModule->recordFps));
+						if (clientComponent_)
+							clientComponent_->coin((int)std::round(this->time() * profile->timeModule->recordFps));
 					}
 				}
 

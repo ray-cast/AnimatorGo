@@ -22,6 +22,9 @@ namespace rabbit
 		ToolWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
 		~ToolWindow() noexcept;
 
+		void play();
+		void stop();
+
 	private Q_SLOTS:
 		void hideEvent() noexcept;
 		void importEvent() noexcept;

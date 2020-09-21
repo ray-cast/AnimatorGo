@@ -15,7 +15,16 @@ namespace rabbit
 	void
 	DragComponent::setActive(bool active) noexcept
 	{
-		this->getModel()->setEnable(active);
+		auto enable = this->getModel()->getEnable();
+		if (enable != active)
+		{
+			if (active)
+				this->onEnable();
+			else
+				this->onDisable();
+
+			this->getModel()->setEnable(active);
+		}
 	}
 
 	bool
@@ -77,6 +86,8 @@ namespace rabbit
 	void
 	DragComponent::onDisable() noexcept
 	{
+		this->gizmoHover_ = nullptr;
+		this->gizmoSelected_ = nullptr;
 	}
 
 	void

@@ -283,109 +283,6 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
-	{
-		auto clwLight = reinterpret_cast<ClwScene::Light*>(data);
-
-		auto& translate = light.getTranslate();
-		auto& direction = light.getForward();
-		auto power = light.getColor() * light.getIntensity();
-
-		if (light.isA<light::PointLight>())
-		{
-			clwLight->type = ClwScene::kPoint;
-			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
-		}
-		else if (light.isA<light::DirectionalLight>())
-		{
-			clwLight->type = ClwScene::kDirectional;
-			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
-		}
-		else if (light.isA<light::SpotLight>())
-		{
-			clwLight->type = ClwScene::kSpot;
-			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
-			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
-			clwLight->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
-			clwLight->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
-		}
-		else if (light.isA<light::EnvironmentLight>())
-		{
-			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
-			clwLight->type = ClwScene::kIbl;
-			clwLight->multiplier = ibl.getIntensity();
-			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
-			clwLight->tex = GetTextureIndex(textureCollector, ibl.getEnvironmentMap());
-			clwLight->tex_reflection = -1;			
-			clwLight->tex_refraction = -1;			
-			clwLight->tex_transparency = -1;			
-			clwLight->tex_background = -1;
-			clwLight->ibl_mirror_x = true;
-		}
-	}
-
-	void
-	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
-	{
-		int numLightsWritten = 0;
-		std::size_t numLights = scene->getLights().size();
-		std::size_t distribution_buffer_size = (1 + 1 + numLights + numLights);
-
-		if (numLights > out.lights.GetElementCount())
-		{
-			out.lights = context_.CreateBuffer<ClwScene::Light>(numLights, CL_MEM_READ_ONLY);
-			out.lightDistributions = context_.CreateBuffer<int>(distribution_buffer_size, CL_MEM_READ_ONLY);
-		}
-
-		ClwScene::Light* lights = nullptr;
-		context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
-		
-		out.envmapidx = -1;
-
-		std::vector<float> lightPower(numLights);
-
-		for (auto& light : scene->getLights())
-		{
-			WriteLight(scene, *light, lights + numLightsWritten);
-
-			if (light->isA<light::EnvironmentLight>())
-				out.envmapidx = numLightsWritten;
-
-			auto power = light->getColor() * light->getIntensity();
-			lightPower[numLightsWritten] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;
-
-			numLightsWritten++;
-		}
-
-		context_.UnmapBuffer(0, out.lights, lights);
-
-		// Create distribution over light sources based on their power
-		/*Distribution1D light_distribution(&light_power[0], (std::uint32_t)light_power.size());
-
-		int* distribution_ptr = nullptr;
-		context_.MapBuffer(0, out.lightDistributions, CL_MAP_WRITE, &distribution_ptr).Wait();
-		auto current = distribution_ptr;
-
-		*current++ = (int)light_distribution.m_num_segments;
-
-		auto values = reinterpret_cast<float*>(current);
-		for (auto i = 0u; i < light_distribution.m_num_segments + 1; ++i)
-			values[i] = light_distribution.m_cdf[i];
-
-		values += light_distribution.m_num_segments + 1;
-
-		for (auto i = 0u; i < light_distribution.m_num_segments; ++i)
-			values[i] = light_distribution.m_func_values[i] / light_distribution.m_func_sum;
-
-		context_.UnmapBuffer(0, out.lightDistributions, distribution_ptr);*/
-
-		out.numLights = static_cast<int>(numLightsWritten);
-	}
-
-	void
 	ClwSceneController::WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const
 	{
 		auto& desc = texture.getTextureDesc();
@@ -497,6 +394,112 @@ namespace octoon::video
 	}
 
 	void
+	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
+	{
+		auto clwLight = reinterpret_cast<ClwScene::Light*>(data);
+
+		auto& translate = light.getTranslate();
+		auto& direction = light.getForward();
+		auto power = light.getColor() * light.getIntensity();
+
+		if (light.isA<light::PointLight>())
+		{
+			clwLight->type = ClwScene::kPoint;
+			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+		}
+		else if (light.isA<light::DirectionalLight>())
+		{
+			clwLight->type = ClwScene::kDirectional;
+			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+		}
+		else if (light.isA<light::SpotLight>())
+		{
+			clwLight->type = ClwScene::kSpot;
+			clwLight->p = RadeonRays::float3(translate.x, translate.y, translate.z);
+			clwLight->d = RadeonRays::float3(direction.x, direction.y, direction.z);
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clwLight->ia = light.downcast<light::SpotLight>()->getInnerCone().x;
+			clwLight->oa = light.downcast<light::SpotLight>()->getOuterCone().x;
+		}
+		else if (light.isA<light::EnvironmentLight>())
+		{
+			auto& ibl = static_cast<light::EnvironmentLight const&>(light);
+			clwLight->type = ClwScene::kIbl;
+			clwLight->multiplier = ibl.getIntensity();
+			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
+			clwLight->tex = GetTextureIndex(textureCollector, ibl.getEnvironmentMap());
+			clwLight->tex_reflection = -1;			
+			clwLight->tex_refraction = -1;			
+			clwLight->tex_transparency = -1;			
+			clwLight->tex_background = -1;
+			clwLight->ibl_mirror_x = true;
+		}
+	}
+
+	void
+	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
+	{
+		int numLightsWritten = 0;
+		std::size_t numLights = scene->getLights().size();
+		std::size_t distribution_buffer_size = (1 + 1 + numLights + numLights);
+
+		if (numLights > 0)
+		{
+			if (numLights > out.lights.GetElementCount())
+			{
+				out.lights = context_.CreateBuffer<ClwScene::Light>(numLights, CL_MEM_READ_ONLY);
+				out.lightDistributions = context_.CreateBuffer<int>(distribution_buffer_size, CL_MEM_READ_ONLY);
+			}
+
+			ClwScene::Light* lights = nullptr;
+			context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
+
+			out.envmapidx = -1;
+
+			std::vector<float> lightPower(numLights);
+
+			for (auto& light : scene->getLights())
+			{
+				WriteLight(scene, *light, lights + numLightsWritten);
+
+				if (light->isA<light::EnvironmentLight>())
+					out.envmapidx = numLightsWritten;
+
+				auto power = light->getColor() * light->getIntensity();
+				lightPower[numLightsWritten] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;
+
+				numLightsWritten++;
+			}
+
+			context_.UnmapBuffer(0, out.lights, lights);
+
+			// Create distribution over light sources based on their power
+			/*Distribution1D light_distribution(&light_power[0], (std::uint32_t)light_power.size());
+
+			int* distribution_ptr = nullptr;
+			context_.MapBuffer(0, out.lightDistributions, CL_MAP_WRITE, &distribution_ptr).Wait();
+			auto current = distribution_ptr;
+
+			*current++ = (int)light_distribution.m_num_segments;
+
+			auto values = reinterpret_cast<float*>(current);
+			for (auto i = 0u; i < light_distribution.m_num_segments + 1; ++i)
+				values[i] = light_distribution.m_cdf[i];
+
+			values += light_distribution.m_num_segments + 1;
+
+			for (auto i = 0u; i < light_distribution.m_num_segments; ++i)
+				values[i] = light_distribution.m_func_values[i] / light_distribution.m_func_sum;
+
+			context_.UnmapBuffer(0, out.lightDistributions, distribution_ptr);*/
+		}
+
+		out.numLights = static_cast<int>(numLightsWritten);
+	}
+
+	void
 	ClwSceneController::updateMaterials(const RenderScene* scene, ClwScene& out)
 	{
 		out.material_bundle.reset(materialCollector.CreateBundle());
@@ -604,10 +607,11 @@ namespace octoon::video
 				out.isectShapes.push_back(shape);
 				out.visibleShapes.push_back(shape);
 			}
-
-			this->api_->Commit();
 		}
-    }
+
+		if (!out.isectShapes.empty())
+			this->api_->Commit();
+	}
 
 	void
 	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
@@ -647,88 +651,91 @@ namespace octoon::video
 		if (num_indices > out.indices.GetElementCount())
 			out.indices = context_.CreateBuffer<int>(num_indices, CL_MEM_READ_ONLY);
 
-		out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
-		out.shapesAdditional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
-
-		math::float4* vertices = nullptr;
-		math::float4* normals = nullptr;
-		math::float2* uvs = nullptr;
-		int* indices = nullptr;
-		ClwScene::Shape* shapes = nullptr;
-		ClwScene::ShapeAdditionalData* shapesAdditional = nullptr;
-
-		context_.MapBuffer(0, out.vertices, CL_MAP_WRITE, &vertices);
-		context_.MapBuffer(0, out.normals, CL_MAP_WRITE, &normals);
-		context_.MapBuffer(0, out.uvs, CL_MAP_WRITE, &uvs);
-		context_.MapBuffer(0, out.indices, CL_MAP_WRITE, &indices);
-		context_.MapBuffer(0, out.shapes, CL_MAP_WRITE, &shapes).Wait();
-		context_.MapBuffer(0, out.shapesAdditional, CL_MAP_WRITE, &shapesAdditional).Wait();
-
-		int id = 1;
-
-		for (auto& geometry : scene->getGeometries())
+		if (num_shapes > 0)
 		{
-			if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
-				continue;
-			}
+			out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
+			out.shapesAdditional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
 
-			auto& mesh = geometry->getMesh();
+			math::float4* vertices = nullptr;
+			math::float4* normals = nullptr;
+			math::float2* uvs = nullptr;
+			int* indices = nullptr;
+			ClwScene::Shape* shapes = nullptr;
+			ClwScene::ShapeAdditionalData* shapesAdditional = nullptr;
 
-			auto mesh_vertex_array = mesh->getVertexArray().data();
-			auto mesh_num_vertices = mesh->getVertexArray().size();
+			context_.MapBuffer(0, out.vertices, CL_MAP_WRITE, &vertices);
+			context_.MapBuffer(0, out.normals, CL_MAP_WRITE, &normals);
+			context_.MapBuffer(0, out.uvs, CL_MAP_WRITE, &uvs);
+			context_.MapBuffer(0, out.indices, CL_MAP_WRITE, &indices);
+			context_.MapBuffer(0, out.shapes, CL_MAP_WRITE, &shapes).Wait();
+			context_.MapBuffer(0, out.shapesAdditional, CL_MAP_WRITE, &shapesAdditional).Wait();
 
-			auto mesh_normal_array = mesh->getNormalArray().data();
-			auto mesh_num_normals = mesh->getNormalArray().size();
+			int id = 1;
 
-			auto mesh_uv_array = mesh->getTexcoordArray().data();
-			auto mesh_num_uvs = mesh->getTexcoordArray().size();
-
-			for (auto i = 0; i < mesh_num_vertices; i++)
+			for (auto& geometry : scene->getGeometries())
 			{
-				vertices[num_vertices_written + i].set(mesh_vertex_array[i]);
-				normals[num_normals_written + i].set(mesh_normal_array[i]);
+				if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
+					continue;
+				}
+
+				auto& mesh = geometry->getMesh();
+
+				auto mesh_vertex_array = mesh->getVertexArray().data();
+				auto mesh_num_vertices = mesh->getVertexArray().size();
+
+				auto mesh_normal_array = mesh->getNormalArray().data();
+				auto mesh_num_normals = mesh->getNormalArray().size();
+
+				auto mesh_uv_array = mesh->getTexcoordArray().data();
+				auto mesh_num_uvs = mesh->getTexcoordArray().size();
+
+				for (auto i = 0; i < mesh_num_vertices; i++)
+				{
+					vertices[num_vertices_written + i].set(mesh_vertex_array[i]);
+					normals[num_normals_written + i].set(mesh_normal_array[i]);
+				}
+
+				std::copy(mesh_uv_array, mesh_uv_array + mesh_num_uvs, uvs + num_uvs_written);
+
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+				{
+					ClwScene::Shape shape;
+					shape.id = id++;
+					shape.startvtx = static_cast<int>(num_vertices_written);
+					shape.startidx = static_cast<int>(num_indices_written);
+
+					auto transform = geometry->getTransform();
+					shape.transform.m0 = { transform.a1, transform.a2, transform.a3, transform.a4 };
+					shape.transform.m1 = { transform.b1, transform.b2, transform.b3, transform.b4 };
+					shape.transform.m2 = { transform.c1, transform.c2, transform.c3, transform.c4 };
+					shape.transform.m3 = { transform.d1, transform.d2, transform.d3, transform.d4 };
+
+					shape.linearvelocity = float3(0.0f, 0.f, 0.f);
+					shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);
+					shape.material = this->getMaterialIndex(geometry->getMaterial(i));
+					shape.volume_idx = 0;
+
+					auto mesh_index_array = mesh->getIndicesArray(i).data();
+					auto mesh_num_indices = mesh->getIndicesArray(i).size();
+
+					std::copy(mesh_index_array, mesh_index_array + mesh_num_indices, indices + num_indices_written);
+					num_indices_written += mesh_num_indices;
+
+					shapes[num_shapes_written++] = shape;
+				}
+
+				num_vertices_written += mesh_num_vertices;
+				num_normals_written += mesh_num_normals;
+				num_uvs_written += mesh_num_uvs;
 			}
 
-			std::copy(mesh_uv_array, mesh_uv_array + mesh_num_uvs, uvs + num_uvs_written);
-
-			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
-			{
-				ClwScene::Shape shape;
-				shape.id = id++;
-				shape.startvtx = static_cast<int>(num_vertices_written);
-				shape.startidx = static_cast<int>(num_indices_written);
-
-				auto transform = geometry->getTransform();
-				shape.transform.m0 = { transform.a1, transform.a2, transform.a3, transform.a4 };
-				shape.transform.m1 = { transform.b1, transform.b2, transform.b3, transform.b4 };
-				shape.transform.m2 = { transform.c1, transform.c2, transform.c3, transform.c4 };
-				shape.transform.m3 = { transform.d1, transform.d2, transform.d3, transform.d4 };
-
-				shape.linearvelocity = float3(0.0f, 0.f, 0.f);
-				shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);
-				shape.material = this->getMaterialIndex(geometry->getMaterial(i));
-				shape.volume_idx = 0;
-
-				auto mesh_index_array = mesh->getIndicesArray(i).data();
-				auto mesh_num_indices = mesh->getIndicesArray(i).size();
-
-				std::copy(mesh_index_array, mesh_index_array + mesh_num_indices, indices + num_indices_written);
-				num_indices_written += mesh_num_indices;
-
-				shapes[num_shapes_written++] = shape;
-			}
-
-			num_vertices_written += mesh_num_vertices;
-			num_normals_written += mesh_num_normals;
-			num_uvs_written += mesh_num_uvs;
+			context_.UnmapBuffer(0, out.vertices, vertices);
+			context_.UnmapBuffer(0, out.normals, normals);
+			context_.UnmapBuffer(0, out.uvs, uvs);
+			context_.UnmapBuffer(0, out.indices, indices);
+			context_.UnmapBuffer(0, out.shapes, shapes).Wait();
+			context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 		}
-
-		context_.UnmapBuffer(0, out.vertices, vertices);
-		context_.UnmapBuffer(0, out.normals, normals);
-		context_.UnmapBuffer(0, out.uvs, uvs);
-		context_.UnmapBuffer(0, out.indices, indices);
-		context_.UnmapBuffer(0, out.shapes, shapes).Wait();
-		context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 
 		this->updateIntersector(scene, out);
 	}

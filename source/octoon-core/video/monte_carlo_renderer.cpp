@@ -90,7 +90,6 @@ namespace octoon::video
 				renderTile(scene, math::int2(), output_size);
 			}
 
-
 			std::uint32_t start_index = 0;
 			std::uint32_t end_index = static_cast<std::uint32_t>(OutputType::kMax);
 

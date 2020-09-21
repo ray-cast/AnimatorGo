@@ -379,7 +379,7 @@ KERNEL void ShadeSurface(
 
         float selection_pdf = 1.f;
         int light_idx = Scene_SampleLight(&scene, Sampler_Sample1D(&sampler, SAMPLER_ARGS), &selection_pdf);
-        if (light_idx > -1 && light_idx != env_light_idx)
+        if (light_idx > -1)
         {
             int bxdf_flags = Path_GetBxdfFlags(path);
             
@@ -388,9 +388,10 @@ KERNEL void ShadeSurface(
             float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
             lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
             float light_bxdf_pdf = Disney_GetPdf(&diffgeo, &shader_data, wi, normalize(lightwo));
+            bool isLightSingular = Light_IsSingular(&scene.lights[light_idx]);
             float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
 
-            if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f))
+            if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && (!Bxdf_IsSingular(&diffgeo) || isLightSingular))
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
                 float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
@@ -436,7 +437,7 @@ KERNEL void ShadeSurface(
             int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
             Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-            Ray_SetExtra(indirect_rays + global_id, make_float2(0.f, 0.f));
+            Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
 
             if (shader_data.transparency > 0.0f)
             {

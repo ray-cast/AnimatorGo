@@ -35,7 +35,7 @@ namespace rabbit
 	{
 		this->enable = false;
 
-		this->crf = 20;
+		this->crf = 15;
 		this->frame_type = 0;
 		this->encode_speed = 0;
 		this->quality = VideoQuality::Medium;

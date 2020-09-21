@@ -80,7 +80,7 @@ namespace octoon::video
 
 				if (light->isA<light::AmbientLight>())
 				{
-					out.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
+					out.ambientLightColors += light->getColor() * light->getIntensity();
 				}
 				else if (light->isA<light::EnvironmentLight>())
 				{
@@ -89,7 +89,7 @@ namespace octoon::video
 					environmentLight.intensity = it->getIntensity();
 					environmentLight.radiance = it->getEnvironmentMap();
 					if (!it->getEnvironmentMap())
-						out.ambientLightColors += light->getColor() * light->getIntensity() * math::PI;
+						out.ambientLightColors += light->getColor() * light->getIntensity();
 					out.environmentLights.emplace_back(environmentLight);
 					out.numEnvironment++;
 				}

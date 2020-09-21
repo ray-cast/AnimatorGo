@@ -2348,7 +2348,6 @@ namespace octoon::video
 		fragmentShader += "#define ENVMAP_TYPE_LATLONG_UV\n";
 		fragmentShader += "#define ENVMAP_MODE_REFLECTION\n";
 		fragmentShader += "#define PHYSICAL\n";
-		fragmentShader += "#define PHYSICALLY_CORRECT_LIGHTS\n";
 		fragmentShader += "#define SHADOWMAP_TYPE_PCF_SOFT\n";
 		fragmentShader += "#define USE_ENVMAP\n";
 		fragmentShader += "#define USE_SHADOWMAP\n";

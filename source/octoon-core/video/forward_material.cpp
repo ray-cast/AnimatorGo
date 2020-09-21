@@ -509,19 +509,19 @@ static char* roughnessmap_fragment = R"(
 float roughnessFactor = roughness;
 #ifdef USE_ROUGHNESSMAP
 	vec4 texelRoughness = texture2D( roughnessMap, vUv );
-	roughnessFactor = texelRoughness.r;
+	roughnessFactor *= texelRoughness.r;
 #endif
 )";
-static char* anisotropymap_pars_fragment = R"(
-#ifdef USE_ANISOTROPYMAP
-	uniform sampler2D anisotropyMap;
+static char* specularmap_pars_fragment = R"(
+#ifdef USE_SPECULARMAP
+	uniform sampler2D specularMap;
 #endif
 )";
-static char* anisotropymap_fragment = R"(
-float anisotropyFactor = anisotropy;
-#ifdef USE_ANISOTROPYMAP
-	vec4 texelAnisotropy = texture2D( anisotropyMap, vUv );
-	anisotropyFactor = texelAnisotropy.r;
+static char* specularmap_fragment = R"(
+float specularFactor = specular;
+#ifdef USE_SPECULARMAP
+	vec4 texelSpecular = texture2D( specularMap, vUv );
+	specularFactor *= texelSpecular.r;
 #endif
 )";
 static char* metalnessmap_pars_fragment = R"(
@@ -533,7 +533,19 @@ static char* metalnessmap_fragment = R"(
 float metalnessFactor = metalness;
 #ifdef USE_METALNESSMAP
 	vec4 texelMetalness = texture2D( metalnessMap, vUv );
-	metalnessFactor = texelMetalness.r;
+	metalnessFactor *= texelMetalness.r;
+#endif
+)";
+static char* anisotropymap_pars_fragment = R"(
+#ifdef USE_ANISOTROPYMAP
+	uniform sampler2D anisotropyMap;
+#endif
+)";
+static char* anisotropymap_fragment = R"(
+float anisotropyFactor = anisotropy;
+#ifdef USE_ANISOTROPYMAP
+	vec4 texelAnisotropy = texture2D( anisotropyMap, vUv );
+	anisotropyFactor *= texelAnisotropy.r;
 #endif
 )";
 static char* sheenmap_pars_fragment = R"(
@@ -545,7 +557,7 @@ static char* sheenmap_fragment = R"(
 float sheenFactor = sheen;
 #ifdef USE_SHEENMAP
 	vec4 texelSheen = texture2D( sheenMap, vUv );
-	sheenFactor = texelSheen.r;
+	sheenFactor *= texelSheen.r;
 #endif
 )";
 static char* subsurfacemap_pars_fragment = R"(
@@ -557,7 +569,7 @@ static char* subsurfacemap_fragment = R"(
 float subsurfaceFactor = subsurface;
 #ifdef USE_SUBSURFACEMAP
 	vec4 texelSubsurface = texture2D( subsurfaceMap, vUv );
-	subsurfaceFactor = texelSubsurface.r;
+	subsurfaceFactor *= texelSubsurface.r;
 #endif
 )";
 static char* clearcoatmap_pars_fragment = R"(
@@ -569,7 +581,7 @@ static char* clearcoatmap_fragment = R"(
 float clearCoatFactor = clearCoat;
 #ifdef USE_CLEARCOATMAP
 	vec4 texelClearcoat = texture2D( clearCoatMap, vUv );
-	clearCoatFactor = texelClearcoat.r;
+	clearCoatFactor *= texelClearcoat.r;
 #endif
 )";
 static char* clearcoatRoughnessmap_pars_fragment = R"(
@@ -581,7 +593,7 @@ static char* clearcoatRoughnessmap_fragment = R"(
 float clearCoatRoughnessFactor = clearCoatRoughness;
 #ifdef USE_CLEARCOATROUGHNESSMAP
 	vec4 texelClearcoatRoughness = texture2D( clearCoatRoughnessMap, vUv );
-	clearCoatRoughnessFactor = texelClearcoatRoughness.r;
+	clearCoatRoughnessFactor *= texelClearcoatRoughness.r;
 #endif
 )";
 static char* emissivemap_pars_fragment = R"(
@@ -1578,7 +1590,7 @@ material.specularAnisotropy = anisotropyFactor;
 #ifdef STANDARD
 	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 #else
-	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
+	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( specularFactor ) ), diffuseColor.rgb, metalnessFactor );
 	material.sheen = sheenFactor;
 	material.subsurface = subsurfaceFactor;
 	material.clearCoat = saturate( clearCoatFactor ); // Burley clearcoat model
@@ -2101,6 +2113,8 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"smoothnessmap_pars_fragment", smoothnessmap_pars_fragment},
 	{"roughnessmap_pars_fragment", roughnessmap_pars_fragment},
 	{"roughnessmap_fragment", roughnessmap_fragment},
+	{"specularmap_pars_fragment", specularmap_pars_fragment},
+	{"specularmap_fragment", specularmap_fragment},
 	{"anisotropymap_fragment", anisotropymap_fragment},
 	{"anisotropymap_pars_fragment", anisotropymap_pars_fragment},
 	{"metalnessmap_fragment", metalnessmap_fragment},
@@ -2350,6 +2364,8 @@ namespace octoon::video
 				fragmentShader += "#define USE_NORMALMAP\n";
 			if (standard->getRoughnessMap())
 				fragmentShader += "#define USE_ROUGHNESSMAP\n";
+			if (standard->getSpecularMap())
+				fragmentShader += "#define USE_SPECULARMAP\n";
 			if (standard->getMetalnessMap())
 				fragmentShader += "#define USE_METALNESSMAP\n";
 			if (standard->getAnisotropyMap())

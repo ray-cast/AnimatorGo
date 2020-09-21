@@ -137,8 +137,9 @@ namespace rabbit
 		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->opacity_.init(u8"不透明度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->normal_.init(u8"法线", CreateFlags::SpoilerBit);
-		this->smoothness_.init(u8"光滑度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
+		this->roughness_.init(u8"粗糙度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->metalness_.init(u8"金属", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
+		this->specular_.init(u8"反射", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->anisotropy_.init(u8"各向异性", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->sheen_.init(u8"布料", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->clearcoat_.init(u8"清漆", CreateFlags::ValueBit);
@@ -162,7 +163,8 @@ namespace rabbit
 		mainLayout->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
 		mainLayout->addWidget(this->opacity_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->normal_.spoiler, 0,  Qt::AlignTop);
-		mainLayout->addWidget(this->smoothness_.spoiler, 0,  Qt::AlignTop);
+		mainLayout->addWidget(this->roughness_.spoiler, 0,  Qt::AlignTop);
+		mainLayout->addWidget(this->specular_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->metalness_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->anisotropy_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
@@ -174,15 +176,19 @@ namespace rabbit
 		mainLayout->setContentsMargins(0, 10, 20, 10);
 
 		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
-		connect(smoothness_.image, SIGNAL(clicked()), this, SLOT(smoothnessMapClickEvent()));
-		connect(smoothness_.check, SIGNAL(stateChanged(int)), this, SLOT(smoothnessMapCheckEvent(int)));
-		connect(smoothness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(smoothEditEvent(double)));
-		connect(smoothness_.slider_, SIGNAL(valueChanged(int)), this, SLOT(smoothSliderEvent(int)));
 		connect(opacity_.image, SIGNAL(clicked()), this, SLOT(opacityMapClickEvent()));
 		connect(opacity_.check, SIGNAL(stateChanged(int)), this, SLOT(opacityMapCheckEvent(int)));
 		connect(opacity_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
 		connect(opacity_.slider_, SIGNAL(valueChanged(int)), this, SLOT(opacitySliderEvent(int)));
 		connect(normal_.image, SIGNAL(clicked()), this, SLOT(normalMapClickEvent()));
+		connect(roughness_.image, SIGNAL(clicked()), this, SLOT(smoothnessMapClickEvent()));
+		connect(roughness_.check, SIGNAL(stateChanged(int)), this, SLOT(smoothnessMapCheckEvent(int)));
+		connect(roughness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(roughnessEditEvent(double)));
+		connect(roughness_.slider_, SIGNAL(valueChanged(int)), this, SLOT(roughnessSliderEvent(int)));
+		connect(specular_.image, SIGNAL(clicked()), this, SLOT(specularMapClickEvent()));
+		connect(specular_.check, SIGNAL(stateChanged(int)), this, SLOT(specularMapCheckEvent(int)));
+		connect(specular_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(specularEditEvent(double)));
+		connect(specular_.slider_, SIGNAL(valueChanged(int)), this, SLOT(specularSliderEvent(int)));
 		connect(metalness_.image, SIGNAL(clicked()), this, SLOT(metalnessMapClickEvent()));
 		connect(metalness_.check, SIGNAL(stateChanged(int)), this, SLOT(metalnessMapCheckEvent(int)));
 		connect(metalness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
@@ -225,6 +231,7 @@ namespace rabbit
 			this->albedo_.check->setCheckState(Qt::CheckState::Checked);
 			this->albedo_.image->setIcon(QIcon(path));
 			this->albedo_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->material_->setColor(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setColorMap(this->albedo_.texture);
 		}
 		else
@@ -263,6 +270,8 @@ namespace rabbit
 			this->opacity_.check->setCheckState(Qt::CheckState::Checked);
 			this->opacity_.image->setIcon(QIcon(path));
 			this->opacity_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->opacity_.spinBox_->setValue(1.0f);
+			this->material_->setOpacity(1.0f);
 			this->material_->setOpacityMap(this->opacity_.texture);
 		}
 		else
@@ -278,15 +287,38 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->smoothness_.path->setText(QFileInfo(path).fileName());
-			this->smoothness_.check->setCheckState(Qt::CheckState::Checked);
-			this->smoothness_.image->setIcon(QIcon(path));
-			this->smoothness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->material_->setRoughnessMap(this->smoothness_.texture);
+			this->roughness_.path->setText(QFileInfo(path).fileName());
+			this->roughness_.check->setCheckState(Qt::CheckState::Checked);
+			this->roughness_.image->setIcon(QIcon(path));
+			this->roughness_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->roughness_.spinBox_->setValue(1.0f);
+			this->material_->setRoughness(1.0f);
+			this->material_->setRoughnessMap(this->roughness_.texture);
 		}
 		else
 		{
 			this->material_->setRoughnessMap(nullptr);
+		}
+
+		this->repaint();
+	}
+
+	void
+	MaterialEditWindow::setSpecularMap(const QString& path)
+	{
+		if (!path.isEmpty())
+		{
+			this->specular_.path->setText(QFileInfo(path).fileName());
+			this->specular_.check->setCheckState(Qt::CheckState::Checked);
+			this->specular_.image->setIcon(QIcon(path));
+			this->specular_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->specular_.spinBox_->setValue(1.0f);
+			this->material_->setSpecular(1.0f);
+			this->material_->setSpecularMap(this->specular_.texture);
+		}
+		else
+		{
+			this->material_->setSpecularMap(nullptr);
 		}
 
 		this->repaint();
@@ -301,6 +333,8 @@ namespace rabbit
 			this->metalness_.check->setCheckState(Qt::CheckState::Checked);
 			this->metalness_.image->setIcon(QIcon(path));
 			this->metalness_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->metalness_.spinBox_->setValue(1.0f);
+			this->material_->setMetalness(1.0f);
 			this->material_->setMetalnessMap(this->metalness_.texture);
 		}
 		else
@@ -320,6 +354,8 @@ namespace rabbit
 			this->anisotropy_.check->setCheckState(Qt::CheckState::Checked);
 			this->anisotropy_.image->setIcon(QIcon(path));
 			this->anisotropy_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->anisotropy_.spinBox_->setValue(1.0f);
+			this->material_->setAnisotropy(1.0f);
 			this->material_->setAnisotropyMap(this->anisotropy_.texture);
 		}
 		else
@@ -339,6 +375,8 @@ namespace rabbit
 			this->sheen_.check->setCheckState(Qt::CheckState::Checked);
 			this->sheen_.image->setIcon(QIcon(path));
 			this->sheen_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->sheen_.spinBox_->setValue(1.0f);
+			this->material_->setSheen(1.0f);
 			this->material_->setSheenMap(this->sheen_.texture);
 		}
 		else
@@ -358,6 +396,8 @@ namespace rabbit
 			this->clearcoat_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoat_.image->setIcon(QIcon(path));
 			this->clearcoat_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->clearcoat_.spinBox_->setValue(1.0f);
+			this->material_->setClearCoat(1.0f);
 			this->material_->setClearCoatMap(this->clearcoat_.texture);
 		}
 		else
@@ -377,6 +417,8 @@ namespace rabbit
 			this->clearcoatRoughness_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoatRoughness_.image->setIcon(QIcon(path));
 			this->clearcoatRoughness_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->clearcoatRoughness_.spinBox_->setValue(1.0f);
+			this->material_->setClearCoatRoughness(1.0f);
 			this->material_->setClearCoatRoughnessMap(this->clearcoatRoughness_.texture);
 		}
 		else
@@ -401,6 +443,7 @@ namespace rabbit
 			this->emissive_.check->setCheckState(Qt::CheckState::Checked);
 			this->emissive_.image->setIcon(QIcon(path));
 			this->emissive_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->material_->setEmissive(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setEmissiveMap(this->emissive_.texture);
 		}
 		else
@@ -433,6 +476,14 @@ namespace rabbit
 		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
 		if (!path.isEmpty())
 			this->setNormalMap(path);
+	}
+
+	void
+	MaterialEditWindow::specularMapClickEvent()
+	{
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		if (!path.isEmpty())
+			this->setSpecularMap(path);
 	}
 
 	void
@@ -548,9 +599,23 @@ namespace rabbit
 		{
 			this->setRoughnessMap("");
 		}
-		else if (this->smoothness_.texture)
+		else if (this->roughness_.texture)
 		{
-			this->material_->setRoughnessMap(this->smoothness_.texture);
+			this->material_->setRoughnessMap(this->roughness_.texture);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::specularMapCheckEvent(int state)
+	{
+		if (state == Qt::Unchecked)
+		{
+			this->setSpecularMap("");
+		}
+		else if (this->specular_.texture)
+		{
+			this->material_->setSpecularMap(this->specular_.texture);
 			this->repaint();
 		}
 	}
@@ -754,7 +819,8 @@ namespace rabbit
 
 			this->opacity_.resetState();
 			this->normal_.resetState();
-			this->smoothness_.resetState();
+			this->roughness_.resetState();
+			this->specular_.resetState();
 			this->metalness_.resetState();
 			this->anisotropy_.resetState();
 			this->sheen_.resetState();
@@ -766,7 +832,8 @@ namespace rabbit
 			this->textLabel_->setText(QString::fromStdString(material_->getName()));
 			this->albedoColor_->setCurrentColor(QColor::fromRgbF(material_->getColor().x, material_->getColor().y, material_->getColor().z));
 			this->opacity_.spinBox_->setValue(material_->getOpacity());
-			this->smoothness_.spinBox_->setValue(material_->getSmoothness());
+			this->roughness_.spinBox_->setValue(material_->getRoughness());
+			this->specular_.spinBox_->setValue(material_->getSpecular());
 			this->metalness_.spinBox_->setValue(material_->getMetalness());
 			this->anisotropy_.spinBox_->setValue(material_->getAnisotropy());
 			this->sheen_.spinBox_->setValue(material_->getSheen());
@@ -886,21 +953,21 @@ namespace rabbit
 	}
 
 	void
-	MaterialEditWindow::smoothEditEvent(double value)
+	MaterialEditWindow::roughnessEditEvent(double value)
 	{
-		this->smoothness_.slider_->setValue(value * 100.f);
+		this->roughness_.slider_->setValue(value * 100.f);
 
 		if (this->material_)
 		{
-			material_->setSmoothness(value);
+			material_->setRoughness(value);
 			this->repaint();
 		}
 	}
 
 	void
-	MaterialEditWindow::smoothSliderEvent(int value)
+	MaterialEditWindow::roughnessSliderEvent(int value)
 	{
-		this->smoothness_.spinBox_->setValue(value / 100.0f);
+		this->roughness_.spinBox_->setValue(value / 100.0f);
 	}
 
 	void
@@ -919,6 +986,24 @@ namespace rabbit
 	MaterialEditWindow::metalSliderEvent(int value)
 	{
 		this->metalness_.spinBox_->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialEditWindow::specularEditEvent(double value)
+	{
+		this->specular_.slider_->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			material_->setSpecular(value);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::specularSliderEvent(int value)
+	{
+		this->specular_.spinBox_->setValue(value / 100.0f);
 	}
 
 	void

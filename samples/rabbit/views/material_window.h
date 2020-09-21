@@ -42,6 +42,7 @@ namespace rabbit
 		void setOpacityMap(const QString& fileName);
 		void setNormalMap(const QString& fileName);
 		void setRoughnessMap(const QString& fileName);
+		void setSpecularMap(const QString& fileName);
 		void setMetalnessMap(const QString& fileName);
 		void setAnisotropyMap(const QString& fileName);
 		void setSheenMap(const QString& fileName);
@@ -55,6 +56,7 @@ namespace rabbit
 		void normalMapClickEvent();
 		void opacityMapClickEvent();
 		void smoothnessMapClickEvent();
+		void specularMapClickEvent();
 		void metalnessMapClickEvent();
 		void anisotropyMapClickEvent();
 		void clearcoatMapClickEvent();
@@ -67,6 +69,7 @@ namespace rabbit
 		void normalMapCheckEvent(int);
 		void opacityMapCheckEvent(int);
 		void smoothnessMapCheckEvent(int);
+		void specularMapCheckEvent(int);
 		void metalnessMapCheckEvent(int);
 		void anisotropyMapCheckEvent(int);
 		void clearcoatMapCheckEvent(int);
@@ -80,11 +83,14 @@ namespace rabbit
 		void opacityEditEvent(double);
 		void opacitySliderEvent(int);
 
-		void smoothEditEvent(double);
-		void smoothSliderEvent(int);
+		void roughnessEditEvent(double);
+		void roughnessSliderEvent(int);
 
 		void metalEditEvent(double);
 		void metalSliderEvent(int);
+
+		void specularEditEvent(double);
+		void specularSliderEvent(int);
 		
 		void anisotropyEditEvent(double);
 		void anisotropySliderEvent(int);
@@ -140,8 +146,9 @@ namespace rabbit
 		MaterialUi albedo_;
 		MaterialUi opacity_;
 		MaterialUi normal_;
-		MaterialUi smoothness_;
+		MaterialUi roughness_;
 		MaterialUi metalness_;
+		MaterialUi specular_;
 		MaterialUi anisotropy_;
 		MaterialUi clearcoat_;
 		MaterialUi clearcoatRoughness_;

@@ -139,6 +139,28 @@ float3 Texture_SampleEnvMap(float3 d, TEXTURE_ARG_LIST_IDX(texidx), bool mirror_
 
 /// Get data from parameter value or texture
 inline
+float Texture_GetValue1f(
+                        // Value
+                        float v,
+                        // Texture coordinate
+                        float2 uv,
+                        // Texture args
+                        TEXTURE_ARG_LIST_IDX(texidx)
+                        )
+{
+    // If texture present sample from texture
+    if (texidx != -1)
+    {
+        // Sample texture
+        return v * Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).x;
+    }
+
+    // Return fixed color otherwise
+    return v;
+}
+
+/// Get data from parameter value or texture
+inline
 float3 Texture_GetValue3f(
                 // Value
                 float3 v,
@@ -152,7 +174,7 @@ float3 Texture_GetValue3f(
     if (texidx != -1)
     {
         // Sample texture
-        return native_powr(Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).xyz, 2.2f);
+        return v * native_powr(Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).xyz, 2.2f);
     }
 
     // Return fixed color otherwise
@@ -174,29 +196,7 @@ float4 Texture_GetValue4f(
     if (texidx != -1)
     {
         // Sample texture
-        return native_powr(Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)), 2.2f);
-    }
-
-    // Return fixed color otherwise
-    return v;
-}
-
-/// Get data from parameter value or texture
-inline
-float Texture_GetValue1f(
-                        // Value
-                        float v,
-                        // Texture coordinate
-                        float2 uv,
-                        // Texture args
-                        TEXTURE_ARG_LIST_IDX(texidx)
-                        )
-{
-    // If texture present sample from texture
-    if (texidx != -1)
-    {
-        // Sample texture
-        return Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)).x;
+        return v * native_powr(Texture_Sample2D(uv, TEXTURE_ARGS_IDX(texidx)), 2.2f);
     }
 
     // Return fixed color otherwise

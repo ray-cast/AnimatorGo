@@ -19,6 +19,7 @@ namespace octoon::material
 		void setEmissiveIntensity(float intensity) noexcept;
 		void setOpacity(float opacity) noexcept;
 		void setSmoothness(float smoothness) noexcept;
+		void setRoughness(float roughness) noexcept;
 		void setMetalness(float metalness) noexcept;
 		void setAnisotropy(float anisotropy) noexcept;
 		void setSheen(float sheen) noexcept;
@@ -50,6 +51,7 @@ namespace octoon::material
 		float getEmissiveIntensity() const noexcept;
 		float getOpacity() const noexcept;
 		float getSmoothness() const noexcept;
+		float getRoughness() const noexcept;
 		float getMetalness() const noexcept;
 		float getAnisotropy() const noexcept;
 		float getSheen() const noexcept;
@@ -87,10 +89,10 @@ namespace octoon::material
 		float gamma_;
 		float opacity_;
 		float metalness_;
-		float smoothness_;
+		float roughness_;
 		float anisotropy_;
 		float sheen_;
-		float reflectivity_;
+		float specular_;
 		float refractionRatio_;
 		float clearCoat_;
 		float clearCoatRoughness_;

@@ -39,6 +39,7 @@ static const char* standard_frag = R"(
 #include <shadowmap_pars_fragment>
 #include <bumpmap_pars_fragment>
 #include <roughnessmap_pars_fragment>
+#include <specularmap_pars_fragment>
 #include <metalnessmap_pars_fragment>
 #include <anisotropymap_pars_fragment>
 #include <sheenmap_pars_fragment>
@@ -58,7 +59,7 @@ uniform float roughness;
 uniform float metalness;
 uniform float clearCoat;
 uniform float clearCoatRoughness;
-uniform float reflectivity;
+uniform float specular;
 uniform float anisotropy;
 uniform float sheen;
 uniform float subsurface;
@@ -77,6 +78,7 @@ void main() {
 	#include <opacitymap_fragment>
 	#include <alphatest_fragment>
 	#include <roughnessmap_fragment>
+	#include <specularmap_fragment>
 	#include <metalnessmap_fragment>
 	#include <anisotropymap_fragment>
 	#include <sheenmap_fragment>
@@ -178,11 +180,11 @@ namespace octoon::material
 	}
 
 	void
-	MeshStandardMaterial::setSpecular(float reflectivity) noexcept
+	MeshStandardMaterial::setSpecular(float specular) noexcept
 	{
-		this->reflectivity_ = reflectivity;
+		this->specular_ = specular;
 		this->setDirty(false);
-		this->set("reflectivity", reflectivity);
+		this->set("specular", specular);
 	}
 
 	void
@@ -260,9 +262,17 @@ namespace octoon::material
 	void
 	MeshStandardMaterial::setSmoothness(float smoothness) noexcept
 	{
-		this->smoothness_ = smoothness;
+		this->roughness_ = 1 - smoothness;
 		this->setDirty(false);
-		this->set("roughness", 1 - smoothness);
+		this->set("roughness", this->roughness_);
+	}
+
+	void
+	MeshStandardMaterial::setRoughness(float roughness) noexcept
+	{
+		this->roughness_ = roughness;
+		this->setDirty(false);
+		this->set("roughness", roughness);
 	}
 
 	void
@@ -397,7 +407,19 @@ namespace octoon::material
 	float
 	MeshStandardMaterial::getSmoothness() const noexcept
 	{
-		return this->smoothness_;
+		return 1 - this->roughness_;
+	}
+
+	float
+	MeshStandardMaterial::getRoughness() const noexcept
+	{
+		return this->roughness_;
+	}
+
+	float
+	MeshStandardMaterial::getMetalness() const noexcept
+	{
+		return this->metalness_;
 	}
 
 	float
@@ -417,12 +439,6 @@ namespace octoon::material
 	MeshStandardMaterial::getRepeat() const noexcept
 	{
 		return this->repeat_;
-	}
-
-	float
-	MeshStandardMaterial::getMetalness() const noexcept
-	{
-		return this->metalness_;
 	}
 
 	const hal::GraphicsTexturePtr&
@@ -512,7 +528,7 @@ namespace octoon::material
 	float
 	MeshStandardMaterial::getSpecular() const noexcept
 	{
-		return this->reflectivity_;
+		return this->specular_;
 	}
 
 	float

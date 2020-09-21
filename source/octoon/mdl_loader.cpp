@@ -953,6 +953,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setColor(math::float3(1.0f, 1.0f, 1.0f));
 								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else
@@ -971,6 +972,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setOpacity(1.0f);
 								material->setOpacityMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1008,6 +1010,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setRoughness(1.0f);
 								material->setRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1015,7 +1018,7 @@ namespace octoon
 								mi::base::Handle<mi::IFloat32> value(param.value->get_interface<mi::IFloat32>());
 								mi::Float32 v;
 								value->get_value(v);
-								material->setSmoothness(1 - v);
+								material->setRoughness(v);
 							}
 						}
 						else if (param_name == "metallic")
@@ -1024,6 +1027,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setMetalness(1.0f);
 								material->setMetalnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1040,6 +1044,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setAnisotropy(1.0f);
 								material->setAnisotropyMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1056,6 +1061,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setSpecular(1.0f);
 								material->setSpecularMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1072,6 +1078,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setClearCoat(1.0f);
 								material->setClearCoatMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1088,6 +1095,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setClearCoatRoughness(1.0f);
 								material->setClearCoatRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)
@@ -1104,6 +1112,7 @@ namespace octoon
 							{
 								std::stringstream file_name;
 								file_name << simple_name << "-" << param_name << ".png";
+								material->setEmissive(math::float3(1.0f, 1.0f, 1.0f));
 								material->setEmissiveMap(octoon::TextureLoader::load(file_name.str()));
 							}
 							else if (param.value)

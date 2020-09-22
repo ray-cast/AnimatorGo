@@ -8,6 +8,8 @@
 #include <qapplication.h>
 #include <fstream>
 #include <codecvt>
+#include <qpainter.h>
+#include <qcolordialog.h>
 #include <qtreewidget.h>
 
 namespace rabbit
@@ -27,6 +29,15 @@ namespace rabbit
 			QDoubleSpinBox::focusOutEvent(event);
 		}
 	};
+
+	QIcon createColorIcon(QColor color, int w = 50, int h = 22)
+	{
+		QPixmap pixmap(w, h);
+		QPainter painter(&pixmap);
+		painter.setPen(Qt::NoPen);
+		painter.fillRect(QRect(0, 0, w, h), color);
+		return QIcon(pixmap);
+	}
 
 	void
 	MaterialEditWindow::MaterialUi::init(const QString& name, std::uint32_t flags)
@@ -50,9 +61,23 @@ namespace rabbit
 		this->titleLayout->setContentsMargins(0, 2, 0, 0);
 
 		this->rightLayout = new QVBoxLayout;
+		this->rightLayout->setSpacing(0);
+		this->rightLayout->setContentsMargins(0, 0, 0, 0);
 		this->rightLayout->addLayout(this->titleLayout);
 		this->rightLayout->addWidget(this->path, 0, Qt::AlignLeft);
 		this->rightLayout->addStretch(100);
+
+		if (flags & CreateFlags::ColorBit)
+		{
+			this->color = new QPushButton;
+			this->color->setIconSize(QSize(50, 22));
+
+			this->rightLayout->addWidget(this->color, 0, Qt::AlignRight);
+		}
+		else
+		{
+			this->color = nullptr;
+		}		
 
 		this->mapLayout = new QHBoxLayout;
 		this->mapLayout->addWidget(image);
@@ -63,28 +88,28 @@ namespace rabbit
 			this->label_ = new QLabel;
 			this->label_->setText(name);
 
-			this->slider_ = new QSlider(Qt::Horizontal);
-			this->slider_->setObjectName("Value");
-			this->slider_->setMinimum(0);
-			this->slider_->setMaximum(100);
-			this->slider_->setValue(0);
-			this->slider_->setFixedWidth(260);
+			this->slider = new QSlider(Qt::Horizontal);
+			this->slider->setObjectName("Value");
+			this->slider->setMinimum(0);
+			this->slider->setMaximum(100);
+			this->slider->setValue(0);
+			this->slider->setFixedWidth(260);
 
-			this->spinBox_ = new DoubleSpinBox;
-			this->spinBox_->setFixedWidth(50);
-			this->spinBox_->setMaximum(1.0f);
-			this->spinBox_->setSingleStep(0.03f);
-			this->spinBox_->setAlignment(Qt::AlignRight);
-			this->spinBox_->setValue(0.0f);
+			this->spinBox = new DoubleSpinBox;
+			this->spinBox->setFixedWidth(50);
+			this->spinBox->setMaximum(1.0f);
+			this->spinBox->setSingleStep(0.03f);
+			this->spinBox->setAlignment(Qt::AlignRight);
+			this->spinBox->setValue(0.0f);
 
 			auto HLayout = new QHBoxLayout();
 			HLayout->addWidget(this->label_, 0, Qt::AlignLeft);
-			HLayout->addWidget(this->spinBox_, 0, Qt::AlignRight);
+			HLayout->addWidget(this->spinBox, 0, Qt::AlignRight);
 
 			auto layout = new QVBoxLayout();
 			layout->addLayout(this->mapLayout);
 			layout->addLayout(HLayout);
-			layout->addWidget(this->slider_);
+			layout->addWidget(this->slider);
 			layout->setContentsMargins(20, 5, 50, 0);
 			this->mainLayout = layout;
 
@@ -102,8 +127,8 @@ namespace rabbit
 		else
 		{
 			this->label_ = nullptr;
-			this->slider_ = nullptr;
-			this->spinBox_ = nullptr;
+			this->slider = nullptr;
+			this->spinBox = nullptr;
 			this->mapLayout->setContentsMargins(20, 5, 50, 0);
 
 			if (flags & CreateFlags::SpoilerBit)
@@ -134,7 +159,7 @@ namespace rabbit
 		okButton_ = new QToolButton;
 		okButton_->setText(u8"返回");
 
-		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
+		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
 		this->opacity_.init(u8"不透明度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->normal_.init(u8"法线", CreateFlags::SpoilerBit);
 		this->roughness_.init(u8"粗糙度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
@@ -145,7 +170,7 @@ namespace rabbit
 		this->clearcoat_.init(u8"清漆", CreateFlags::ValueBit);
 		this->clearcoatRoughness_.init(u8"清漆粗糙度", CreateFlags::ValueBit);
 		this->subsurface_.init(u8"次表面散射", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->emissive_.init(u8"自发光", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
+		this->emissive_.init(u8"自发光", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::ColorBit);
 
 		this->clearcoat_.mainLayout->setContentsMargins(0, 0, 0, 0);
 		this->clearcoatRoughness_.mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -158,9 +183,13 @@ namespace rabbit
 		this->clearCoatSpoiler_ = new Spoiler(u8"清漆");
 		this->clearCoatSpoiler_->setContentLayout(*clearlayout);
 
+		this->emissive_.spinBox->setMaximum(100.f);
+		this->albedoColor_.setWindowModality(Qt::ApplicationModal);
+		this->emissiveColor_.setWindowModality(Qt::ApplicationModal);
+
 		auto mainLayout = new QVBoxLayout(this);
 		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);
-		mainLayout->addWidget(this->createAlbedo(), 0,Qt::AlignTop);
+		mainLayout->addWidget(this->albedo_.spoiler, 0,Qt::AlignTop);
 		mainLayout->addWidget(this->opacity_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->normal_.spoiler, 0,  Qt::AlignTop);
 		mainLayout->addWidget(this->roughness_.spoiler, 0,  Qt::AlignTop);
@@ -170,52 +199,56 @@ namespace rabbit
 		mainLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
 		mainLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->createEmissive(), 0, Qt::AlignTop);
+		mainLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addStretch(500);
 		mainLayout->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
 		mainLayout->setContentsMargins(0, 10, 20, 10);
 
-		connect(albedoColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(albedoColorChanged(QColor)));
+		connect(albedo_.image, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
+		connect(albedo_.color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
+		connect(&albedoColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(colorChangeEvent(const QColor&)));
+		connect(&emissiveColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(emissiveChangeEvent(const QColor&)));
 		connect(opacity_.image, SIGNAL(clicked()), this, SLOT(opacityMapClickEvent()));
 		connect(opacity_.check, SIGNAL(stateChanged(int)), this, SLOT(opacityMapCheckEvent(int)));
-		connect(opacity_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
-		connect(opacity_.slider_, SIGNAL(valueChanged(int)), this, SLOT(opacitySliderEvent(int)));
+		connect(opacity_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
+		connect(opacity_.slider, SIGNAL(valueChanged(int)), this, SLOT(opacitySliderEvent(int)));
 		connect(normal_.image, SIGNAL(clicked()), this, SLOT(normalMapClickEvent()));
 		connect(roughness_.image, SIGNAL(clicked()), this, SLOT(smoothnessMapClickEvent()));
 		connect(roughness_.check, SIGNAL(stateChanged(int)), this, SLOT(smoothnessMapCheckEvent(int)));
-		connect(roughness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(roughnessEditEvent(double)));
-		connect(roughness_.slider_, SIGNAL(valueChanged(int)), this, SLOT(roughnessSliderEvent(int)));
+		connect(roughness_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(roughnessEditEvent(double)));
+		connect(roughness_.slider, SIGNAL(valueChanged(int)), this, SLOT(roughnessSliderEvent(int)));
 		connect(specular_.image, SIGNAL(clicked()), this, SLOT(specularMapClickEvent()));
 		connect(specular_.check, SIGNAL(stateChanged(int)), this, SLOT(specularMapCheckEvent(int)));
-		connect(specular_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(specularEditEvent(double)));
-		connect(specular_.slider_, SIGNAL(valueChanged(int)), this, SLOT(specularSliderEvent(int)));
+		connect(specular_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(specularEditEvent(double)));
+		connect(specular_.slider, SIGNAL(valueChanged(int)), this, SLOT(specularSliderEvent(int)));
 		connect(metalness_.image, SIGNAL(clicked()), this, SLOT(metalnessMapClickEvent()));
 		connect(metalness_.check, SIGNAL(stateChanged(int)), this, SLOT(metalnessMapCheckEvent(int)));
-		connect(metalness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
-		connect(metalness_.slider_, SIGNAL(valueChanged(int)), this, SLOT(metalSliderEvent(int)));
+		connect(metalness_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(metalEditEvent(double)));
+		connect(metalness_.slider, SIGNAL(valueChanged(int)), this, SLOT(metalSliderEvent(int)));
 		connect(anisotropy_.image, SIGNAL(clicked()), this, SLOT(anisotropyMapClickEvent()));
 		connect(anisotropy_.check, SIGNAL(stateChanged(int)), this, SLOT(anisotropyMapCheckEvent(int)));
-		connect(anisotropy_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(anisotropyEditEvent(double)));
-		connect(anisotropy_.slider_, SIGNAL(valueChanged(int)), this, SLOT(anisotropySliderEvent(int)));
+		connect(anisotropy_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(anisotropyEditEvent(double)));
+		connect(anisotropy_.slider, SIGNAL(valueChanged(int)), this, SLOT(anisotropySliderEvent(int)));
 		connect(sheen_.image, SIGNAL(clicked()), this, SLOT(sheenMapClickEvent()));
 		connect(sheen_.check, SIGNAL(stateChanged(int)), this, SLOT(sheenMapCheckEvent(int)));
-		connect(sheen_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(sheenEditEvent(double)));
-		connect(sheen_.slider_, SIGNAL(valueChanged(int)), this, SLOT(sheenSliderEvent(int)));
+		connect(sheen_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(sheenEditEvent(double)));
+		connect(sheen_.slider, SIGNAL(valueChanged(int)), this, SLOT(sheenSliderEvent(int)));
 		connect(clearcoat_.image, SIGNAL(clicked()), this, SLOT(clearcoatMapClickEvent()));
 		connect(clearcoat_.check, SIGNAL(stateChanged(int)), this, SLOT(clearcoatMapCheckEvent(int)));
-		connect(clearcoat_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(clearcoatEditEvent(double)));
-		connect(clearcoat_.slider_, SIGNAL(valueChanged(int)), this, SLOT(clearcoatSliderEvent(int)));
+		connect(clearcoat_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(clearcoatEditEvent(double)));
+		connect(clearcoat_.slider, SIGNAL(valueChanged(int)), this, SLOT(clearcoatSliderEvent(int)));
 		connect(clearcoatRoughness_.image, SIGNAL(clicked()), this, SLOT(clearcoatRoughnessMapClickEvent()));
 		connect(clearcoatRoughness_.check, SIGNAL(stateChanged(int)), this, SLOT(clearcoatRoughnessMapCheckEvent(int)));
-		connect(clearcoatRoughness_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(clearcoatRoughnessEditEvent(double)));
-		connect(clearcoatRoughness_.slider_, SIGNAL(valueChanged(int)), this, SLOT(clearcoatRoughnessSliderEvent(int)));
+		connect(clearcoatRoughness_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(clearcoatRoughnessEditEvent(double)));
+		connect(clearcoatRoughness_.slider, SIGNAL(valueChanged(int)), this, SLOT(clearcoatRoughnessSliderEvent(int)));
 		connect(subsurface_.image, SIGNAL(clicked()), this, SLOT(subsurfaceMapClickEvent()));
 		connect(subsurface_.check, SIGNAL(stateChanged(int)), this, SLOT(subsurfaceMapCheckEvent(int)));
-		connect(subsurface_.spinBox_, SIGNAL(valueChanged(double)), this, SLOT(subsurfaceEditEvent(double)));
-		connect(subsurface_.slider_, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
-		connect(emissiveColor_, SIGNAL(currentColorChanged(QColor)), this, SLOT(emissiveColorChanged(QColor)));
-		connect(emissiveSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emissiveEditEvent(double)));
-		connect(emissiveSlider_, SIGNAL(valueChanged(int)), this, SLOT(emissiveSliderEvent(int)));
+		connect(subsurface_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(subsurfaceEditEvent(double)));
+		connect(subsurface_.slider, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
+		connect(emissive_.image, SIGNAL(clicked()), this, SLOT(emissiveMapClickEvent()));
+		connect(emissive_.color, SIGNAL(clicked()), this, SLOT(emissiveClickEvent()));
+		connect(emissive_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(emissiveEditEvent(double)));
+		connect(emissive_.slider, SIGNAL(valueChanged(int)), this, SLOT(emissiveSliderEvent(int)));
 	}
 
 	MaterialEditWindow::~MaterialEditWindow()
@@ -231,6 +264,7 @@ namespace rabbit
 			this->albedo_.check->setCheckState(Qt::CheckState::Checked);
 			this->albedo_.image->setIcon(QIcon(path));
 			this->albedo_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->albedo_.color->setIcon(createColorIcon(QColor(1.0f, 1.0f, 1.0f)));
 			this->material_->setColor(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setColorMap(this->albedo_.texture);
 		}
@@ -270,7 +304,7 @@ namespace rabbit
 			this->opacity_.check->setCheckState(Qt::CheckState::Checked);
 			this->opacity_.image->setIcon(QIcon(path));
 			this->opacity_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->opacity_.spinBox_->setValue(1.0f);
+			this->opacity_.spinBox->setValue(1.0f);
 			this->material_->setOpacity(1.0f);
 			this->material_->setOpacityMap(this->opacity_.texture);
 		}
@@ -291,7 +325,7 @@ namespace rabbit
 			this->roughness_.check->setCheckState(Qt::CheckState::Checked);
 			this->roughness_.image->setIcon(QIcon(path));
 			this->roughness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->roughness_.spinBox_->setValue(1.0f);
+			this->roughness_.spinBox->setValue(1.0f);
 			this->material_->setRoughness(1.0f);
 			this->material_->setRoughnessMap(this->roughness_.texture);
 		}
@@ -312,7 +346,7 @@ namespace rabbit
 			this->specular_.check->setCheckState(Qt::CheckState::Checked);
 			this->specular_.image->setIcon(QIcon(path));
 			this->specular_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->specular_.spinBox_->setValue(1.0f);
+			this->specular_.spinBox->setValue(1.0f);
 			this->material_->setSpecular(1.0f);
 			this->material_->setSpecularMap(this->specular_.texture);
 		}
@@ -333,7 +367,7 @@ namespace rabbit
 			this->metalness_.check->setCheckState(Qt::CheckState::Checked);
 			this->metalness_.image->setIcon(QIcon(path));
 			this->metalness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->metalness_.spinBox_->setValue(1.0f);
+			this->metalness_.spinBox->setValue(1.0f);
 			this->material_->setMetalness(1.0f);
 			this->material_->setMetalnessMap(this->metalness_.texture);
 		}
@@ -354,7 +388,7 @@ namespace rabbit
 			this->anisotropy_.check->setCheckState(Qt::CheckState::Checked);
 			this->anisotropy_.image->setIcon(QIcon(path));
 			this->anisotropy_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->anisotropy_.spinBox_->setValue(1.0f);
+			this->anisotropy_.spinBox->setValue(1.0f);
 			this->material_->setAnisotropy(1.0f);
 			this->material_->setAnisotropyMap(this->anisotropy_.texture);
 		}
@@ -375,7 +409,7 @@ namespace rabbit
 			this->sheen_.check->setCheckState(Qt::CheckState::Checked);
 			this->sheen_.image->setIcon(QIcon(path));
 			this->sheen_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->sheen_.spinBox_->setValue(1.0f);
+			this->sheen_.spinBox->setValue(1.0f);
 			this->material_->setSheen(1.0f);
 			this->material_->setSheenMap(this->sheen_.texture);
 		}
@@ -396,7 +430,7 @@ namespace rabbit
 			this->clearcoat_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoat_.image->setIcon(QIcon(path));
 			this->clearcoat_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->clearcoat_.spinBox_->setValue(1.0f);
+			this->clearcoat_.spinBox->setValue(1.0f);
 			this->material_->setClearCoat(1.0f);
 			this->material_->setClearCoatMap(this->clearcoat_.texture);
 		}
@@ -417,7 +451,7 @@ namespace rabbit
 			this->clearcoatRoughness_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoatRoughness_.image->setIcon(QIcon(path));
 			this->clearcoatRoughness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->clearcoatRoughness_.spinBox_->setValue(1.0f);
+			this->clearcoatRoughness_.spinBox->setValue(1.0f);
 			this->material_->setClearCoatRoughness(1.0f);
 			this->material_->setClearCoatRoughnessMap(this->clearcoatRoughness_.texture);
 		}
@@ -443,6 +477,7 @@ namespace rabbit
 			this->emissive_.check->setCheckState(Qt::CheckState::Checked);
 			this->emissive_.image->setIcon(QIcon(path));
 			this->emissive_.texture = octoon::TextureLoader::load(path.toStdString());
+			this->emissive_.color->setIcon(createColorIcon(QColor(1.0f, 1.0f, 1.0f)));
 			this->material_->setEmissive(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setEmissiveMap(this->emissive_.texture);
 		}
@@ -451,6 +486,34 @@ namespace rabbit
 			this->material_->setEmissiveMap(nullptr);
 		}
 
+		this->repaint();
+	}
+
+	void
+	MaterialEditWindow::colorClickEvent()
+	{
+		albedoColor_.show();
+	}
+
+	void
+	MaterialEditWindow::colorChangeEvent(const QColor &color)
+	{
+		this->albedo_.color->setIcon(createColorIcon(color));
+		this->material_->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+		this->repaint();
+	}
+
+	void
+	MaterialEditWindow::emissiveClickEvent()
+	{
+		emissiveColor_.show();
+	}
+
+	void
+	MaterialEditWindow::emissiveChangeEvent(const QColor &color)
+	{
+		this->emissive_.color->setIcon(createColorIcon(color));
+		this->material_->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
 		this->repaint();
 	}
 
@@ -738,64 +801,6 @@ namespace rabbit
 		return summaryWidget;
 	}
 
-	QWidget*
-	MaterialEditWindow::createAlbedo()
-	{
-		albedoColor_ = new ColorDialog();
-		albedoColor_->setMaximumWidth(260);
-		albedoColor_->setCurrentColor(QColor(255, 255, 255));
-
-		auto albedoLayout = new QVBoxLayout();
-		albedoLayout->addWidget(albedoColor_);
-		albedoLayout->setContentsMargins(20, 5, 50, 0);
-
-		auto baseColor = new Spoiler(u8"基本颜色");
-		baseColor->setFixedWidth(340);
-		baseColor->setContentLayout(*albedoLayout);
-
-		return baseColor;
-	}
-
-	QWidget*
-	MaterialEditWindow::createEmissive()
-	{
-		emissiveColor_ = new ColorDialog();
-		emissiveColor_->setMaximumWidth(260);
-		emissiveColor_->setCurrentColor(QColor(255, 255, 255));
-
-		auto labelIntensity_ = new QLabel();
-		labelIntensity_->setText(u8"光强");
-
-		emissiveSpinBox_ = new DoubleSpinBox();
-		emissiveSpinBox_->setFixedWidth(50);
-		emissiveSpinBox_->setMaximum(100.0f);
-		emissiveSpinBox_->setSingleStep(1.0f);
-		emissiveSpinBox_->setAlignment(Qt::AlignRight);
-
-		emissiveSlider_ = new QSlider();
-		emissiveSlider_->setObjectName("Intensity");
-		emissiveSlider_->setOrientation(Qt::Horizontal);
-		emissiveSlider_->setMinimum(0);
-		emissiveSlider_->setMaximum(100);
-		emissiveSlider_->setFixedWidth(240);
-
-		auto layoutIntensity_ = new QHBoxLayout();
-		layoutIntensity_->addWidget(labelIntensity_, 0, Qt::AlignLeft);
-		layoutIntensity_->addWidget(emissiveSpinBox_, 0, Qt::AlignRight);
-
-		auto emissiveLayout = new QVBoxLayout();
-		emissiveLayout->addWidget(emissiveColor_);
-		emissiveLayout->addLayout(layoutIntensity_);
-		emissiveLayout->addWidget(emissiveSlider_);
-		emissiveLayout->setContentsMargins(40, 5, 50, 0);
-
-		auto emissive = new Spoiler(u8"自发光");
-		emissive->setFixedWidth(340);
-		emissive->setContentLayout(*emissiveLayout);
-
-		return emissive;
-	}
-
 	void
 	MaterialEditWindow::repaint()
 	{
@@ -830,18 +835,18 @@ namespace rabbit
 			this->emissive_.resetState();
 
 			this->textLabel_->setText(QString::fromStdString(material_->getName()));
-			this->albedoColor_->setCurrentColor(QColor::fromRgbF(material_->getColor().x, material_->getColor().y, material_->getColor().z));
-			this->opacity_.spinBox_->setValue(material_->getOpacity());
-			this->roughness_.spinBox_->setValue(material_->getRoughness());
-			this->specular_.spinBox_->setValue(material_->getSpecular());
-			this->metalness_.spinBox_->setValue(material_->getMetalness());
-			this->anisotropy_.spinBox_->setValue(material_->getAnisotropy());
-			this->sheen_.spinBox_->setValue(material_->getSheen());
-			this->clearcoat_.spinBox_->setValue(material_->getClearCoat());
-			this->clearcoatRoughness_.spinBox_->setValue(material_->getClearCoatRoughness());
-			this->subsurface_.spinBox_->setValue(material_->getSubsurface());
-			this->emissiveColor_->setCurrentColor(QColor::fromRgbF(material_->getEmissive().x, material_->getEmissive().y, material_->getEmissive().z));
-			this->emissiveSpinBox_->setValue(material_->getEmissiveIntensity());
+			this->albedo_.color->setIcon(createColorIcon(QColor::fromRgbF(material_->getColor().x, material_->getColor().y, material_->getColor().z)));
+			this->opacity_.spinBox->setValue(material_->getOpacity());
+			this->roughness_.spinBox->setValue(material_->getRoughness());
+			this->specular_.spinBox->setValue(material_->getSpecular());
+			this->metalness_.spinBox->setValue(material_->getMetalness());
+			this->anisotropy_.spinBox->setValue(material_->getAnisotropy());
+			this->sheen_.spinBox->setValue(material_->getSheen());
+			this->clearcoat_.spinBox->setValue(material_->getClearCoat());
+			this->clearcoatRoughness_.spinBox->setValue(material_->getClearCoatRoughness());
+			this->subsurface_.spinBox->setValue(material_->getSubsurface());
+			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(material_->getEmissive().x, material_->getEmissive().y, material_->getEmissive().z)));
+			this->emissive_.spinBox->setValue(material_->getEmissiveIntensity());
 
 			auto colorMap = material_->getColorMap();
 			if (colorMap)
@@ -880,35 +885,15 @@ namespace rabbit
 	}
 
 	void
-	MaterialEditWindow::albedoColorChanged(QColor color)
-	{
-		if (this->material_)
-		{
-			material_->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
-			this->repaint();
-		}
-	}
-
-	void
 	MaterialEditWindow::emissiveSliderEvent(int value)
 	{
-		emissiveSpinBox_->setValue(value);
-	}
-
-	void
-	MaterialEditWindow::emissiveColorChanged(QColor color)
-	{
-		if (this->material_)
-		{
-			material_->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
-			this->repaint();
-		}
+		this->emissive_.spinBox->setValue(value);
 	}
 
 	void
 	MaterialEditWindow::emissiveEditEvent(double value)
 	{
-		emissiveSlider_->setValue(value);
+		this->emissive_.slider->setValue(value);
 
 		if (this->material_)
 		{
@@ -920,13 +905,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::opacitySliderEvent(int value)
 	{
-		this->opacity_.spinBox_->setValue(value / 100.f);
+		this->opacity_.spinBox->setValue(value / 100.f);
 	}
 
 	void
 	MaterialEditWindow::opacityEditEvent(double value)
 	{
-		this->opacity_.slider_->setValue(value * 100.f);
+		this->opacity_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -955,7 +940,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::roughnessEditEvent(double value)
 	{
-		this->roughness_.slider_->setValue(value * 100.f);
+		this->roughness_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -967,13 +952,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::roughnessSliderEvent(int value)
 	{
-		this->roughness_.spinBox_->setValue(value / 100.0f);
+		this->roughness_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::metalEditEvent(double value)
 	{
-		this->metalness_.slider_->setValue(value * 100.f);
+		this->metalness_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -985,13 +970,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::metalSliderEvent(int value)
 	{
-		this->metalness_.spinBox_->setValue(value / 100.0f);
+		this->metalness_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::specularEditEvent(double value)
 	{
-		this->specular_.slider_->setValue(value * 100.f);
+		this->specular_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1003,13 +988,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::specularSliderEvent(int value)
 	{
-		this->specular_.spinBox_->setValue(value / 100.0f);
+		this->specular_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::anisotropyEditEvent(double value)
 	{
-		this->anisotropy_.slider_->setValue(value * 100.f);
+		this->anisotropy_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1021,13 +1006,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::anisotropySliderEvent(int value)
 	{
-		this->anisotropy_.spinBox_->setValue(value / 100.0f);
+		this->anisotropy_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::clearcoatEditEvent(double value)
 	{
-		this->clearcoat_.slider_->setValue(value * 100.f);
+		this->clearcoat_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1039,13 +1024,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::clearcoatSliderEvent(int value)
 	{
-		this->clearcoat_.spinBox_->setValue(value / 100.0f);
+		this->clearcoat_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::clearcoatRoughnessEditEvent(double value)
 	{
-		this->clearcoatRoughness_.slider_->setValue(value * 100.f);
+		this->clearcoatRoughness_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1057,13 +1042,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::clearcoatRoughnessSliderEvent(int value)
 	{
-		this->clearcoatRoughness_.spinBox_->setValue(value / 100.0f);
+		this->clearcoatRoughness_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::sheenEditEvent(double value)
 	{
-		this->sheen_.slider_->setValue(value * 100.f);
+		this->sheen_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1075,13 +1060,13 @@ namespace rabbit
 	void
 	MaterialEditWindow::sheenSliderEvent(int value)
 	{
-		this->sheen_.spinBox_->setValue(value / 100.0f);
+		this->sheen_.spinBox->setValue(value / 100.0f);
 	}
 
 	void
 	MaterialEditWindow::subsurfaceEditEvent(double value)
 	{
-		this->subsurface_.slider_->setValue(value * 100.f);
+		this->subsurface_.slider->setValue(value * 100.f);
 
 		if (this->material_)
 		{
@@ -1093,7 +1078,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::subsurfaceSliderEvent(int value)
 	{
-		this->subsurface_.spinBox_->setValue(value / 100.0f);
+		this->subsurface_.spinBox->setValue(value / 100.0f);
 	}
 
 	void 

@@ -13,7 +13,7 @@
 #include <qlistwidget.h>
 #include <qcheckbox.h>
 #include <qtimer.h>
-
+#include <qcolordialog.h>
 #include <optional>
 
 #include "rabbit_behaviour.h"
@@ -35,8 +35,6 @@ namespace rabbit
 
 	private:
 		QWidget* createSummary();
-		QWidget* createAlbedo();
-		QWidget* createEmissive();
 
 		void setAlbedoMap(const QString& fileName);
 		void setOpacityMap(const QString& fileName);
@@ -52,6 +50,11 @@ namespace rabbit
 		void setEmissiveMap(const QString& fileName);
 
 	public Q_SLOTS:
+		void colorClickEvent();
+		void colorChangeEvent(const QColor &color);
+		void emissiveClickEvent();
+		void emissiveChangeEvent(const QColor &color);
+
 		void colorMapClickEvent();
 		void normalMapClickEvent();
 		void opacityMapClickEvent();
@@ -77,8 +80,6 @@ namespace rabbit
 		void sheenMapCheckEvent(int);
 		void subsurfaceMapCheckEvent(int);
 		void emissiveMapCheckEvent(int);
-
-		void albedoColorChanged(QColor);
 
 		void opacityEditEvent(double);
 		void opacitySliderEvent(int);
@@ -107,7 +108,6 @@ namespace rabbit
 		void subsurfaceEditEvent(double);
 		void subsurfaceSliderEvent(int);
 
-		void emissiveColorChanged(QColor);
 		void emissiveEditEvent(double);
 		void emissiveSliderEvent(int);
 
@@ -117,6 +117,7 @@ namespace rabbit
 		enum CreateFlags
 		{
 			SpoilerBit = 1 << 0,
+			ColorBit = 1 << 1,
 			ValueBit = 1 << 2,
 		};
 
@@ -127,8 +128,9 @@ namespace rabbit
 			QLabel* title;
 			QLabel* path;
 			QLabel* label_;
-			QSlider* slider_;
-			QDoubleSpinBox* spinBox_;
+			QPushButton* color;
+			QSlider* slider;
+			QDoubleSpinBox* spinBox;
 
 			QHBoxLayout* titleLayout;
 			QVBoxLayout* rightLayout;
@@ -160,11 +162,8 @@ namespace rabbit
 
 		QLabel* textLabel_;
 		QLabel* imageLabel_;
-		QSlider* emissiveSlider_;
-		QDoubleSpinBox* emissiveSpinBox_;
-		QLabel* emissiveLabel_;
-		ColorDialog* albedoColor_;
-		ColorDialog* emissiveColor_;
+		QColorDialog albedoColor_;
+		QColorDialog emissiveColor_;
 		QToolButton* okButton_;
 		std::shared_ptr<octoon::material::MeshStandardMaterial> material_;
 		octoon::GameObjectPtr behaviour_;

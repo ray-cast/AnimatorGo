@@ -4,10 +4,6 @@
 #include "module/h265_module.h"
 #include "rabbit_component.h"
 
-typedef struct OIDNFilterImpl* OIDNFilter;
-typedef struct OIDNDeviceImpl* OIDNDevice;
-typedef struct OIDNBufferImpl* OIDNBuffer;
-
 struct x265_param;
 struct x265_encoder;
 struct x265_picture;

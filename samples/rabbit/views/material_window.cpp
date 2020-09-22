@@ -537,7 +537,7 @@ namespace rabbit
 	MaterialEditWindow::colorChangeEvent(const QColor &color)
 	{
 		this->albedo_.color->setIcon(createColorIcon(color));
-		this->material_->setColor(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+		this->material_->setColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 		this->repaint();
 	}
 
@@ -551,7 +551,7 @@ namespace rabbit
 	MaterialEditWindow::emissiveChangeEvent(const QColor &color)
 	{
 		this->emissive_.color->setIcon(createColorIcon(color));
-		this->material_->setEmissive(octoon::math::float3(color.redF(), color.greenF(), color.blueF()));
+		this->material_->setEmissive(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 		this->repaint();
 	}
 
@@ -872,8 +872,11 @@ namespace rabbit
 			this->subsurface_.resetState();
 			this->emissive_.resetState();
 
+			auto albedoColor = octoon::math::linear2srgb(material_->getColor());
+			auto emissiveColor = octoon::math::linear2srgb(material_->getEmissive());
+
 			this->textLabel_->setText(QString::fromStdString(material_->getName()));
-			this->albedo_.color->setIcon(createColorIcon(QColor::fromRgbF(material_->getColor().x, material_->getColor().y, material_->getColor().z)));
+			this->albedo_.color->setIcon(createColorIcon(QColor::fromRgbF(albedoColor.x, albedoColor.y, albedoColor.z)));
 			this->opacity_.spinBox->setValue(material_->getOpacity());
 			this->roughness_.spinBox->setValue(material_->getRoughness());
 			this->specular_.spinBox->setValue(material_->getSpecular());
@@ -883,7 +886,7 @@ namespace rabbit
 			this->clearcoat_.spinBox->setValue(material_->getClearCoat());
 			this->clearcoatRoughness_.spinBox->setValue(material_->getClearCoatRoughness());
 			this->subsurface_.spinBox->setValue(material_->getSubsurface());
-			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(material_->getEmissive().x, material_->getEmissive().y, material_->getEmissive().z)));
+			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(emissiveColor.x, emissiveColor.y, emissiveColor.z)));
 			this->emissive_.spinBox->setValue(material_->getEmissiveIntensity());
 
 			auto colorMap = material_->getColorMap();

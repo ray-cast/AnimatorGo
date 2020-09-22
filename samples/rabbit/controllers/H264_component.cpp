@@ -241,7 +241,7 @@ namespace rabbit
 			if (result < 0)
 				throw std::runtime_error("x265_encoder_encode() failed");
 
-			for (auto j = 0;j < inal;j++)
+			for (std::uint32_t j = 0;j < inal; j++)
 				ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
 		}
 	}

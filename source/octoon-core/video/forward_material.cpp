@@ -783,7 +783,7 @@ float D_GGX( const in float alpha, const in float dotNH ) {
 
 	float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0; // avoid alpha = 0 with dotNH = 1
 
-	return RECIPROCAL_PI * a2 / pow2( denom );
+	return a2 / pow2(PI * denom);
 
 }
 
@@ -797,7 +797,7 @@ vec3 BRDF_Specular_Sheen( const in IncidentLight incidentLight, const in Geometr
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
 	float sin2 = (1 - dotNH * dotNH);
-	float spec = (2 + 1 / roughness) * pow(sin2, 0.5 / roughness) / (2  * RECIPROCAL_PI);
+	float spec = (2 + 1 / roughness) * pow(sin2, 0.5 / roughness) / (2  * PI);
 
 	vec3 F = F_Schlick( specularColor, dotLH );
 
@@ -1445,7 +1445,7 @@ struct PhysicalMaterial {
 
 	vec3	diffuseColor;
 	float	roughness;
-	float	specularAnisotropy;
+	float	anisotropy;
 	vec3	specularColor;
 
 	#ifndef STANDARD
@@ -1518,7 +1518,7 @@ void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricC
 
 	#endif
 
-	vec3 spec = BRDF_Specular_GGX_Aniso( directLight, geometry, material.specularColor, material.roughness, material.specularAnisotropy);
+	vec3 spec = BRDF_Specular_GGX_Aniso( directLight, geometry, material.specularColor, material.roughness, material.anisotropy);
 
 	#ifndef STANDARD
 		float clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );
@@ -1586,13 +1586,13 @@ static char* lights_physical_fragment = R"(
 PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.roughness = clamp( roughnessFactor, 0.04, 1.0 );
-material.specularAnisotropy = anisotropyFactor;
 #ifdef STANDARD
 	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 #else
 	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( specularFactor ) ), diffuseColor.rgb, metalnessFactor );
 	material.sheen = sheenFactor;
 	material.subsurface = subsurfaceFactor;
+	material.anisotropy = anisotropyFactor;
 	material.clearCoat = saturate( clearCoatFactor ); // Burley clearcoat model
 	material.clearCoatRoughness = clamp( clearCoatRoughnessFactor, 0.04, 1.0 );
 #endif
@@ -1736,7 +1736,7 @@ IncidentLight directLight;
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
 
 	// TODO, replace 7 with the real maxMIPLevel
-	vec3 radiance = getLightProbeIndirectRadianceAniso( /*specularLightProbe,*/ geometry, material.roughness, material.specularAnisotropy, 7 );
+	vec3 radiance = getLightProbeIndirectRadianceAniso( /*specularLightProbe,*/ geometry, material.roughness, material.anisotropy, 7 );
 
 	#ifndef STANDARD
 		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 7 );

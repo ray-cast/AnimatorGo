@@ -347,7 +347,7 @@ namespace octoon::video
 		{
 			auto mainCamera = scene->getMainCamera();
 			auto viewport = mainCamera->getPixelViewport();
-			this->generateWorkspace(viewport.width, viewport.height);
+			this->generateWorkspace((std::uint32_t)viewport.width, (std::uint32_t)viewport.height);
 
 			CompiledScene& compiledScene = c.controller->getCachedScene(scene);
 

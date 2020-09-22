@@ -1,4 +1,4 @@
-#include "h264_component.h"
+#include "h265_component.h"
 #include "rabbit_behaviour.h"
 
 extern "C"
@@ -7,20 +7,21 @@ extern "C"
 };
 
 #include <x264.h>
+#include <x265.h>
 #include <fstream>
 #include <filesystem>
 
 namespace rabbit
 {
-	H264Component::H264Component() noexcept
+	H265Component::H265Component() noexcept
 		: encoder_(nullptr)
-		, encoded_frame_(nullptr)
-		, frame_(nullptr)
+		, picture_(nullptr)
+		, param_(nullptr)
 	{
 	}
 
 	void
-	H264Component::setActive(bool active) noexcept
+	H265Component::setActive(bool active) noexcept
 	{
 		if (this->getModel()->enable != active)
 		{
@@ -34,54 +35,32 @@ namespace rabbit
 	}
 
 	bool
-	H264Component::getActive() const noexcept
+	H265Component::getActive() const noexcept
 	{
 		return this->getModel()->enable;
 	}
 	void
-	H264Component::onEnable() noexcept
+	H265Component::onEnable() noexcept
 	{
 	}
 
 	void
-	H264Component::onDisable() noexcept
+	H265Component::onDisable() noexcept
 	{
 		if (this->ostream_)
 		{
-			int iFrameSize = 0;
-			int iNal = 0;
-			x264_nal_t* pNals = NULL;
+			x265_nal* nals = nullptr;
+			std::uint32_t inal = 0;
 
-			int frame_size = x264_encoder_encode(encoder_, &pNals, &iNal, frame_, encoded_frame_);
-			if (frame_size > 0 && iNal > 0)
+			while (x265_encoder_encode(encoder_, &nals, &inal, nullptr, nullptr) > 0)
 			{
-				for (int i = 0; i < iNal; ++i)
-				{
-					std::int32_t i_num_nal_h = 0;
-
-					if (pNals[i].i_payload > 4)
-					{
-						while (i_num_nal_h < 5 && pNals[i].p_payload[i_num_nal_h] == 0)
-							i_num_nal_h++;
-
-						static char nal_head_s[3] = { 0, 0, 0 };
-
-						if (i_num_nal_h < 3)
-						{
-							ostream_->write(nal_head_s, 3 - i_num_nal_h);
-							iFrameSize += (3 - i_num_nal_h);
-						}
-					}
-
-					ostream_->write((char*)pNals[i].p_payload, pNals[i].i_payload);
-
-					iFrameSize += pNals[i].i_payload;
-				}
+				for (std::uint32_t j = 0;j < inal;j++)
+					ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
 			}
 
-			x264_encoder_close(encoder_);
-			x264_picture_clean(frame_);
-			x264_picture_clean(encoded_frame_);
+			x265_encoder_close(encoder_);
+			x265_picture_free(picture_);
+			x265_param_free(param_);
 
 			this->ostream_.reset();
 
@@ -91,7 +70,7 @@ namespace rabbit
 			try
 			{
 				auto& timeModule = this->getContext()->profile->timeModule;
-
+			
 				auto inFilename = filepath_ + ".tmp";
 				auto outFilename = filepath_;
 
@@ -190,13 +169,17 @@ namespace rabbit
 
 					avformat_free_context(oformat);
 				}
-			}
+			}			
 		}
 	}
 
 	bool
-	H264Component::record(std::string_view filepath) noexcept(false)
+	H265Component::record(std::string_view filepath) noexcept(false)
 	{
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (!camera)
+			return false;
+		
 		auto& context = this->getContext();
 		this->width_ = context->profile->canvasModule->width;
 		this->height_ = context->profile->canvasModule->height;
@@ -206,107 +189,65 @@ namespace rabbit
 		if (!this->ostream_->good())
 			throw std::runtime_error("ofstream() failed");
 
-		x264_param_t encode_param_;
-		x264_param_default(&encode_param_);
-		x264_param_default_preset(&encode_param_, "fast", "zerolatency");
-		x264_param_apply_profile(&encode_param_, "baseline");
+		param_ = x265_param_alloc();
+		if (!param_)
+			throw std::runtime_error("x265_param_alloc() failed");
 
-		encode_param_.b_repeat_headers = 1;
-		encode_param_.b_cabac = 1;
-		encode_param_.b_sliced_threads = 0;
+		x265_param_default(param_);
+		x265_param_parse(param_, "--crf", std::to_string(this->getModel()->crf).c_str());
+		x265_param_parse(param_, "--preset", "8");
+		x265_param_parse(param_, "--qcomp", "0.5");
 
-		encode_param_.i_frame_reference = 6;
-		encode_param_.i_bframe = 6;
-		encode_param_.i_keyint_min = 1;
-		encode_param_.i_keyint_max = std::numeric_limits<int>::infinity();
-		encode_param_.i_scenecut_threshold = 60;
-		encode_param_.i_deblocking_filter_alphac0 = 1;
-		encode_param_.i_deblocking_filter_beta = 1;
-		encode_param_.i_level_idc = 40;
-		encode_param_.i_log_level = X264_LOG_NONE;
-		encode_param_.i_width = this->width_;
-		encode_param_.i_height = this->height_;
-		encode_param_.i_threads = 1;
-		encode_param_.i_fps_num = context->profile->timeModule->recordFps;
-		encode_param_.i_fps_den = 1;
-		encode_param_.analyse.b_psnr = 1;
-		encode_param_.analyse.f_psy_rd = 0.3;
+		param_->bRepeatHeaders = 1;
+		param_->internalCsp = X265_CSP_I420;
+		param_->sourceWidth = this->width_;
+		param_->sourceHeight = this->height_;
+		param_->fpsNum = context->profile->timeModule->recordFps;
+		param_->fpsDenom = 1;
 
-		encode_param_.rc.i_rc_method = X264_RC_CRF;
-		encode_param_.rc.i_aq_mode = X264_AQ_AUTOVARIANCE;
-		encode_param_.rc.f_aq_strength = 0.8;
-		encode_param_.rc.f_qcompress = 0.5f;
-		encode_param_.rc.f_rf_constant = 10;
-		encode_param_.rc.f_rf_constant_max = this->getModel()->crf;
-		encode_param_.rc.f_rate_tolerance = 1.f;
+		encoder_ = x265_encoder_open(param_);
+		if (!encoder_)
+			throw std::runtime_error("x265_encoder_open() failed");
 
-		if ((encoder_ = x264_encoder_open(&encode_param_)) == NULL)
-			return false;
+		picture_ = x265_picture_alloc();
+		if (!picture_)
+			throw std::runtime_error("x265_picture_alloc() failed");
 
-		encoded_frame_ = new x264_picture_t;
-		frame_ = new x264_picture_t;
-
-		x264_picture_init(encoded_frame_);
-		x264_picture_alloc(frame_, X264_CSP_I420, this->width_, this->height_);
+		x265_picture_init(param_, picture_);
+		picture_->planes[0] = this->buf_.get();
+		picture_->planes[1] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight;
+		picture_->planes[2] = this->buf_.get() + param_->sourceWidth * param_->sourceHeight * 5 / 4;
+		picture_->stride[0] = param_->sourceWidth;
+		picture_->stride[1] = param_->sourceWidth / 2;
+		picture_->stride[2] = param_->sourceWidth / 2;
+		picture_->height = param_->sourceHeight;
 
 		return this->ostream_->good();
 	}
 
 	void
-	H264Component::onPostProcess() noexcept(false)
+	H265Component::onPostProcess() noexcept(false)
 	{
 		if (ostream_)
 		{
 			auto& context = this->getContext();
 
 			auto output = context->profile->canvasModule->outputBuffer.data();
-			this->convert((float*)output, this->width_, this->height_, this->buf_.get());
+			this->convert((float*)output, context->profile->canvasModule->width, context->profile->canvasModule->height, this->buf_.get());
 
-			std::uint8_t* yuv[3];
-			yuv[0] = this->buf_.get();
-			yuv[1] = this->buf_.get() + this->width_ * this->height_;
-			yuv[2] = this->buf_.get() + this->width_ * this->height_ * 5 / 4;
+			x265_nal* nals = nullptr;
+			std::uint32_t inal = 0;
+			auto result = x265_encoder_encode(encoder_, &nals, &inal, picture_, nullptr);
+			if (result < 0)
+				throw std::runtime_error("x265_encoder_encode() failed");
 
-			int y_size = this->width_ * this->height_;
-			memcpy(frame_->img.plane[0] + 0, yuv[0], y_size);
-			memcpy(frame_->img.plane[0] + y_size, yuv[1], y_size / 4);
-			memcpy(frame_->img.plane[0] + y_size * 5 / 4, yuv[2], y_size / 4);
-
-			int iFrameSize = 0;
-			int iNal = 0;
-			x264_nal_t* pNals = NULL;
-
-			int frame_size = x264_encoder_encode(encoder_, &pNals, &iNal, frame_, encoded_frame_);
-			if (frame_size > 0 && iNal > 0)
-			{
-				for (int i = 0; i < iNal; ++i)
-				{
-					std::int32_t i_num_nal_h = 0;
-
-					if (pNals[i].i_payload > 4)
-					{
-						while (i_num_nal_h < 5 && pNals[i].p_payload[i_num_nal_h] == 0)
-							i_num_nal_h++;
-
-						static char nal_head_s[3] = { 0, 0, 0 };
-
-						if (i_num_nal_h < 3)
-						{
-							ostream_->write(nal_head_s, 3 - i_num_nal_h);
-							iFrameSize += (3 - i_num_nal_h);
-						}
-					}
-
-					ostream_->write((char*)pNals[i].p_payload, pNals[i].i_payload);
-
-					iFrameSize += pNals[i].i_payload;
-				}
-			}
+			for (std::uint32_t j = 0;j < inal; j++)
+				ostream_->write((char*)nals[j].payload, nals[j].sizeBytes);
 		}
 	}
 
 	void
-	H264Component::convert(float* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept
+	H265Component::convert(float* rgb, int w, int h, std::uint8_t* yuvBuf) noexcept
 	{
 		auto ptrY = yuvBuf;
 		auto ptrU = ptrY + this->width_ * this->height_;

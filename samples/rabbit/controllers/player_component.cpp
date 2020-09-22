@@ -288,7 +288,7 @@ namespace rabbit
 
 		if (!finish)
 		{
-			if (profile->h264Module->enable)
+			if (profile->h265Module->enable)
 			{
 				if (needUpdate_)
 				{
@@ -315,7 +315,7 @@ namespace rabbit
 			{
 				if (profile->offlineModule->offlineEnable)
 				{
-					if (profile->h264Module->quality == VideoQuality::High)
+					if (profile->h265Module->quality == VideoQuality::High)
 					{
 						auto clientComponent_ = dynamic_cast<ClientComponent*>(context->behaviour->getComponent<ClientComponent>());
 						if (clientComponent_)

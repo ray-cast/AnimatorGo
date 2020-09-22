@@ -1,18 +1,18 @@
-#include "h264_module.h"
+#include "h265_module.h"
 
 namespace rabbit
 {
-	H264Module::H264Module() noexcept
+	H265Module::H265Module() noexcept
 	{
 		this->reset();
 	}
 
-	H264Module::~H264Module() noexcept
+	H265Module::~H265Module() noexcept
 	{
 	}
 
 	void
-	H264Module::setVideoQuality(VideoQuality quality_)
+	H265Module::setVideoQuality(VideoQuality quality_)
 	{
 		switch (quality_)
 		{
@@ -31,7 +31,7 @@ namespace rabbit
 	}
 
 	void
-	H264Module::reset() noexcept
+	H265Module::reset() noexcept
 	{
 		this->enable = false;
 
@@ -42,7 +42,7 @@ namespace rabbit
 	}
 
 	void 
-	H264Module::load(octoon::runtime::json& reader) noexcept
+	H265Module::load(octoon::runtime::json& reader) noexcept
 	{
 		if (reader.find("crf") != reader.end())
 			this->crf = reader["crf"];
@@ -53,7 +53,7 @@ namespace rabbit
 	}
 
 	void 
-	H264Module::save(octoon::runtime::json& writer) noexcept
+	H265Module::save(octoon::runtime::json& writer) noexcept
 	{
 		writer["crf"] = this->crf;
 		writer["frame_type"] = this->frame_type;

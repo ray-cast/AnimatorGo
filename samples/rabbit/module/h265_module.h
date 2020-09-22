@@ -1,5 +1,5 @@
-#ifndef RABBIT_H264_MODULE_H_
-#define RABBIT_H264_MODULE_H_
+#ifndef RABBIT_H265_MODULE_H_
+#define RABBIT_H265_MODULE_H_
 
 #include <rabbit_model.h>
 #include <cstdint>
@@ -13,11 +13,11 @@ namespace rabbit
 		High
 	};
 
-	class H264Module final : public RabbitModule
+	class H265Module final : public RabbitModule
 	{
 	public:
-		H264Module() noexcept;
-		virtual ~H264Module() noexcept;
+		H265Module() noexcept;
+		virtual ~H265Module() noexcept;
 
 		void setVideoQuality(VideoQuality quality);
 
@@ -28,8 +28,8 @@ namespace rabbit
 		virtual void save(octoon::runtime::json& reader) noexcept override;
 
 	private:
-		H264Module(const H264Module&) = delete;
-		H264Module& operator=(const H264Module&) = delete;
+		H265Module(const H265Module&) = delete;
+		H265Module& operator=(const H265Module&) = delete;
 
 	public:
 		bool enable;

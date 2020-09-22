@@ -5,7 +5,7 @@
 #include <string>
 
 #include "module/denoise_module.h"
-#include "module/h264_module.h"
+#include "module/h265_module.h"
 #include "module/physics_module.h"
 #include "module/time_module.h"
 #include "module/file_module.h"
@@ -41,7 +41,7 @@ namespace rabbit
 		std::shared_ptr<FileModule> fileModule;
 		std::shared_ptr<EntitiesModule> entitiesModule;
 		std::shared_ptr<DenoiseModule> denoiseModule;
-		std::shared_ptr<H264Module> h264Module;
+		std::shared_ptr<H265Module> h265Module;
 		std::shared_ptr<PhysicsModule> physicsModule;
 		std::shared_ptr<TimeModule> timeModule;
 		std::shared_ptr<OfflineModule> offlineModule;

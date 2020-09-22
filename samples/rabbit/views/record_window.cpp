@@ -291,7 +291,7 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 		{
-			behaviour->getProfile()->h264Module->setVideoQuality(quality);
+			behaviour->getProfile()->h265Module->setVideoQuality(quality);
 
 			if (okButton_->text() != u8"Õ£÷π‰÷»æ")
 			{

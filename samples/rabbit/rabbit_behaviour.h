@@ -9,7 +9,7 @@
 #include "controllers/canvas_component.h"
 #include "controllers/offline_component.h"
 #include "controllers/player_component.h"
-#include "controllers/h264_component.h"
+#include "controllers/h265_component.h"
 #include "controllers/ui_component.h"
 #include "controllers/mark_component.h"
 #include "controllers/material_component.h"
@@ -84,7 +84,7 @@ namespace rabbit
 		std::unique_ptr<OfflineComponent> offlineComponent_;
 		std::unique_ptr<PlayerComponent> playerComponent_;
 		std::unique_ptr<DenoiseComponent> denoiseComponent_;
-		std::unique_ptr<H264Component> h264Component_;
+		std::unique_ptr<H265Component> h265Component_;
 		std::unique_ptr<UIComponent> uiComponent_;
 		std::unique_ptr<MarkComponent> markComponent_;
 		std::unique_ptr<MaterialComponent> materialComponent_;

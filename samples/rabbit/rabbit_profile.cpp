@@ -8,7 +8,7 @@ namespace rabbit
 	RabbitProfile::RabbitProfile() noexcept
 		: denoiseModule(std::make_shared<DenoiseModule>())
 		, physicsModule(std::make_shared<PhysicsModule>())
-		, h264Module(std::make_shared<H264Module>())
+		, h265Module(std::make_shared<H265Module>())
 		, timeModule(std::make_shared<TimeModule>())
 		, fileModule(std::make_shared<FileModule>())
 		, entitiesModule(std::make_shared<EntitiesModule>())
@@ -33,7 +33,7 @@ namespace rabbit
 			auto json = octoon::runtime::json::parse(stream);
 			this->denoiseModule->load(json["denoise"]);
 			this->physicsModule->load(json["physics"]);
-			this->h264Module->load(json["h264"]);
+			this->h265Module->load(json["h265"]);
 			this->timeModule->load(json["time"]);
 			this->fileModule->load(json["file"]);
 			this->entitiesModule->load(json["entities"]);
@@ -68,7 +68,7 @@ namespace rabbit
 			octoon::runtime::json json;
 			profile.denoiseModule->save(json["denoise"]);
 			profile.physicsModule->save(json["physics"]);
-			profile.h264Module->save(json["h264"]);
+			profile.h265Module->save(json["h265"]);
 			profile.timeModule->save(json["time"]);
 			profile.fileModule->save(json["file"]);
 			profile.entitiesModule->save(json["entities"]);

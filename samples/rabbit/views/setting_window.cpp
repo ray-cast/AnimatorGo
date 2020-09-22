@@ -270,7 +270,7 @@ namespace rabbit
 			mainPlane2_->speedCombo->setCurrentIndex(3);
 
 		mainPlane2_->sppSpinbox->setValue(profile->timeModule->spp);
-		mainPlane2_->crfSpinbox->setValue(profile->h264Module->crf);
+		mainPlane2_->crfSpinbox->setValue(profile->h265Module->crf);
 
 		connect(scrollArea_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(valueChanged(int)));
 		connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
@@ -448,7 +448,7 @@ namespace rabbit
 	void
 	SettingContextPlane::onCrfChanged(double value)
 	{
-		behaviour_->getProfile()->h264Module->crf = value;
+		behaviour_->getProfile()->h265Module->crf = value;
 	}
 
 	SettingWindow::SettingWindow(const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept

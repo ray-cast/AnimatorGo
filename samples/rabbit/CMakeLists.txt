@@ -35,8 +35,8 @@ SET(MODULES_LIST
 	${SOURCE_PATH}/module/entities_module.cpp
 	${SOURCE_PATH}/module/offline_module.h
 	${SOURCE_PATH}/module/offline_module.cpp
-	${SOURCE_PATH}/module/h264_module.h
-	${SOURCE_PATH}/module/h264_module.cpp
+	${SOURCE_PATH}/module/h265_module.h
+	${SOURCE_PATH}/module/h265_module.cpp
 	${SOURCE_PATH}/module/denoise_module.h
 	${SOURCE_PATH}/module/denoise_module.cpp
 	${SOURCE_PATH}/module/physics_module.h
@@ -109,6 +109,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/canvas_component.cpp
 	${SOURCE_PATH}/controllers/h264_component.h
 	${SOURCE_PATH}/controllers/h264_component.cpp
+	${SOURCE_PATH}/controllers/h265_component.h
+	${SOURCE_PATH}/controllers/h265_component.cpp
 	${SOURCE_PATH}/controllers/denoise_component.h
 	${SOURCE_PATH}/controllers/denoise_component.cpp
 	${SOURCE_PATH}/controllers/mark_component.h

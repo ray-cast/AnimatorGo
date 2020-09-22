@@ -319,7 +319,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->h264Module->enable)
+			if (behaviour_ && !profile_->h265Module->enable)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -484,7 +484,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && (!profile_->timeModule->playing_ || profile_->h264Module->enable))
+			if (behaviour_ && (!profile_->timeModule->playing_ || profile_->h265Module->enable))
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -573,7 +573,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->h264Module->enable)
+			if (behaviour_ && !profile_->h265Module->enable)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())

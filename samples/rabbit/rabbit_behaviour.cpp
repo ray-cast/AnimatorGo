@@ -86,7 +86,7 @@ namespace rabbit
 		offlineComponent_ = std::make_unique<OfflineComponent>();
 		playerComponent_ = std::make_unique<PlayerComponent>();
 		denoiseComponent_ = std::make_unique<DenoiseComponent>();
-		h264Component_ = std::make_unique<H264Component>();
+		h265Component_ = std::make_unique<H265Component>();
 		uiComponent_ = std::make_unique<UIComponent>();
 		markComponent_ = std::make_unique<MarkComponent>();
 		materialComponent_ = std::make_unique<MaterialComponent>();
@@ -98,7 +98,7 @@ namespace rabbit
 		offlineComponent_->init(context_, profile_->offlineModule);
 		playerComponent_->init(context_, profile_->timeModule);
 		denoiseComponent_->init(context_, profile_->denoiseModule);
-		h264Component_->init(context_, profile_->h264Module);
+		h265Component_->init(context_, profile_->h265Module);
 		uiComponent_->init(context_, profile_->canvasModule);
 		markComponent_->init(context_, profile_->markModule);
 		materialComponent_->init(context_, profile_->materialModule);
@@ -111,7 +111,7 @@ namespace rabbit
 		this->addComponent(playerComponent_.get());
 		this->addComponent(denoiseComponent_.get());
 		this->addComponent(markComponent_.get());
-		this->addComponent(h264Component_.get());
+		this->addComponent(h265Component_.get());
 		this->addComponent(uiComponent_.get());
 		this->addComponent(materialComponent_.get());
 		this->addComponent(dragComponent_.get());
@@ -142,7 +142,7 @@ namespace rabbit
 		offlineComponent_.reset();
 		playerComponent_.reset();
 		denoiseComponent_.reset();
-		h264Component_.reset();
+		h265Component_.reset();
 		context_.reset();
 		profile_.reset();
 		uiComponent_.reset();
@@ -278,16 +278,16 @@ namespace rabbit
 		{
 			canvasComponent_->setActive(true);
 			denoiseComponent_->setActive(true);
-			h264Component_->setActive(true);
+			h265Component_->setActive(true);
 			dragComponent_->setActive(false);
 			playerComponent_->render();
 
-			if (profile_->h264Module->quality == VideoQuality::High)
+			if (profile_->h265Module->quality == VideoQuality::High)
 				offlineComponent_->setActive(true);
 			else
 				offlineComponent_->setActive(false);
 
-			if (h264Component_->record(filepath))
+			if (h265Component_->record(filepath))
 				return true;
 
 			this->stopRecord();
@@ -305,7 +305,7 @@ namespace rabbit
 	{
 		canvasComponent_->setActive(false);
 		denoiseComponent_->setActive(false);
-		h264Component_->setActive(false);
+		h265Component_->setActive(false);
 		dragComponent_->setActive(true);
 		playerComponent_->stop();
 	}

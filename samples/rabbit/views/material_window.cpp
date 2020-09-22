@@ -166,6 +166,17 @@ namespace rabbit
 		okButton_ = new QToolButton;
 		okButton_->setText(u8"返回");
 
+		title_ = new QLabel();
+		title_->setText(u8"材质");
+
+		closeButton_ = new QToolButton();
+		closeButton_->setObjectName("close");
+		closeButton_->setToolTip(u8"关闭");
+
+		titleLayout_ = new QHBoxLayout();
+		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
+		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
+
 		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
 		this->opacity_.init(u8"不透明度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->normal_.init(u8"法线", CreateFlags::SpoilerBit);
@@ -195,6 +206,7 @@ namespace rabbit
 		this->emissiveColor_.setWindowModality(Qt::ApplicationModal);
 
 		auto mainLayout = new QVBoxLayout(this);
+		mainLayout->addLayout(titleLayout_);
 		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);
 		mainLayout->addWidget(this->albedo_.spoiler, 0,Qt::AlignTop);
 		mainLayout->addWidget(this->opacity_.spoiler, 0, Qt::AlignTop);
@@ -209,7 +221,7 @@ namespace rabbit
 		mainLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
 		mainLayout->addStretch(500);
 		mainLayout->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
-		mainLayout->setContentsMargins(0, 10, 20, 10);
+		mainLayout->setContentsMargins(10, 10, 10, 10);
 
 		connect(albedo_.image, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
 		connect(albedo_.check, SIGNAL(stateChanged(int)), this, SLOT(colorMapCheckEvent(int)));
@@ -1184,6 +1196,40 @@ namespace rabbit
 		QListWidget::mousePressEvent(event);
 	}
 
+	MaterialListPanel::MaterialListPanel()
+	{
+		title_ = new QLabel();
+		title_->setText(u8"材质");
+
+		closeButton_ = new QToolButton();
+		closeButton_->setObjectName("close");
+		closeButton_->setToolTip(u8"关闭");
+
+		titleLayout_ = new QHBoxLayout();
+		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
+		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
+
+		listWidget_ = new MaterialListWindow;
+		listWidget_->setIconSize(QSize(210, 210));
+
+		mainLayout_ = new QVBoxLayout(this);
+		mainLayout_->addLayout(titleLayout_);
+		mainLayout_->addWidget(listWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
+		mainLayout_->addStretch(500);
+		mainLayout_->setContentsMargins(10, 10, 10, 10);
+	}
+
+	MaterialListPanel::~MaterialListPanel() noexcept
+	{
+	}
+
+	void
+	MaterialListPanel::showEvent(QShowEvent* event) noexcept
+	{
+		QMargins margins = mainLayout_->contentsMargins();
+		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
+	}
+
 	MaterialWindow::MaterialWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept(false)
 		: behaviour_(behaviour)
 	{
@@ -1193,20 +1239,9 @@ namespace rabbit
 		this->setFixedWidth(340);
 		this->setMouseTracking(true);
 
-		title_ = new QLabel();
-		title_->setText(u8"材质");
-
-		closeButton_ = new QToolButton();
-		closeButton_->setObjectName("close");
-		closeButton_->setToolTip(u8"关闭");
-
-		listWidget_ = new MaterialListWindow();
-		listWidget_->setIconSize(QSize(210, 210));
-		listWidget_->setMinimumSize(QSize(this->width(), this->height()));
-
-		titleLayout_ = new QHBoxLayout();
-		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
-		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
+		listPanel_ = new MaterialListPanel();
+		listPanel_->listWidget_->setMinimumSize(QSize(this->width(), this->height()));
+		listPanel_->setMinimumSize(QSize(this->width(), this->height()));
 
 		modifyWidget_ = new MaterialEditWindow(this, behaviour);
 		modifyWidget_->setFixedWidth(340);
@@ -1218,16 +1253,15 @@ namespace rabbit
 		modifyMaterialArea_->hide();
 
 		mainLayout_ = new QVBoxLayout(this);
-		mainLayout_->addLayout(titleLayout_);
-		mainLayout_->addWidget(listWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
+		mainLayout_->addWidget(listPanel_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addWidget(modifyMaterialArea_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addStretch(500);
-		mainLayout_->setContentsMargins(10, 10, 10, 10);
+		mainLayout_->setContentsMargins(0, 0, 0, 0);
 
-		connect(closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
-		//connect(listWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
-		connect(listWidget_, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
+		connect(listPanel_->closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(modifyWidget_->closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(listPanel_->listWidget_, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 
 		behaviour->addMessageListener("editor:material:change", [this](const std::any&) {
 			if (this->isVisible())
@@ -1238,13 +1272,13 @@ namespace rabbit
 			if (this->isVisible())
 			{
 				auto uuid = QString::fromStdString(std::any_cast<std::string>(any_data));
-				auto count = this->listWidget_->count();
+				auto count = this->listPanel_->listWidget_->count();
 				for (int i = 0; i < count; i++)
 				{
-					auto item = this->listWidget_->item(i);
+					auto item = this->listPanel_->listWidget_->item(i);
 					if (item->data(Qt::UserRole).toString() == uuid)
 					{
-						this->listWidget_->setCurrentItem(item);
+						this->listPanel_->listWidget_->setCurrentItem(item);
 						break;
 					}
 				}
@@ -1261,9 +1295,9 @@ namespace rabbit
 	{
 		QMargins margins = mainLayout_->contentsMargins();
 		modifyMaterialArea_->hide();
-		modifyMaterialArea_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
-		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
-		listWidget_->show();
+		modifyMaterialArea_->setMinimumSize(this->size());
+		listPanel_->show();
+		listPanel_->setMinimumSize(this->size());
 		this->updateList();
 	}
 
@@ -1278,7 +1312,7 @@ namespace rabbit
 	MaterialWindow::okEvent()
 	{
 		modifyMaterialArea_->hide();
-		listWidget_->show();
+		listPanel_->show();
 	}
 
 	void
@@ -1316,7 +1350,7 @@ namespace rabbit
 				auto material = materialComponent->getMaterial(item->data(Qt::UserRole).toString().toStdString());
 				if (material)
 				{
-					listWidget_->hide();
+					listPanel_->hide();
 					modifyWidget_->setMaterial(material);
 					modifyMaterialArea_->show();
 				}
@@ -1333,7 +1367,7 @@ namespace rabbit
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
 			auto& materials = materialComponent->getMaterialList();
 
-			listWidget_->clear();
+			listPanel_->listWidget_->clear();
 
 			std::map<QString, std::shared_ptr<QPixmap>> imageTable;
 
@@ -1383,8 +1417,8 @@ namespace rabbit
 				QWidget* widget = new QWidget;
 				widget->setLayout(widgetLayout);
 
-				listWidget_->addItem(item);
-				listWidget_->setItemWidget(item, widget);
+				listPanel_->listWidget_->addItem(item);
+				listPanel_->listWidget_->setItemWidget(item, widget);
 			}
 		}
 	}

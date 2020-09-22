@@ -160,6 +160,9 @@ namespace rabbit
 
 		Spoiler* clearCoatSpoiler_;
 
+		QLabel* title_;
+		QToolButton* closeButton_;
+		QHBoxLayout* titleLayout_;
 		QLabel* textLabel_;
 		QLabel* imageLabel_;
 		QColorDialog albedoColor_;
@@ -183,6 +186,23 @@ namespace rabbit
 		QPoint startPos;
 	};
 
+	class MaterialListPanel final : public QWidget
+	{
+		Q_OBJECT
+	public:
+		MaterialListPanel() noexcept(false);
+		~MaterialListPanel() noexcept;
+
+		void showEvent(QShowEvent* event) noexcept override;
+
+	public:
+		QLabel* title_;
+		QToolButton* closeButton_;
+		QHBoxLayout* titleLayout_;
+		QListWidget* listWidget_;
+		QVBoxLayout* mainLayout_;
+	};
+
 	class MaterialWindow final : public QWidget
 	{
 		Q_OBJECT
@@ -200,12 +220,9 @@ namespace rabbit
 		void itemDoubleClicked(QListWidgetItem* item);
 
 	private:
-		QLabel* title_;
-		QToolButton* closeButton_;
-		QHBoxLayout* titleLayout_;
 		QVBoxLayout* materialLayout_;
 		QVBoxLayout* mainLayout_;
-		QListWidget* listWidget_;
+		MaterialListPanel* listPanel_;
 		MaterialEditWindow* modifyWidget_;
 		QScrollArea* modifyMaterialArea_;
 		octoon::GameObjectPtr behaviour_;

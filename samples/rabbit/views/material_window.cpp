@@ -52,6 +52,7 @@ namespace rabbit
 		this->title->setText(name + u8"ÌùÍ¼");
 
 		this->path = new QLabel;
+		this->path->setMinimumSize(QSize(160, 20));
 
 		this->titleLayout = new QHBoxLayout;
 		this->titleLayout->addWidget(check, 0, Qt::AlignLeft);
@@ -60,24 +61,30 @@ namespace rabbit
 		this->titleLayout->setSpacing(0);
 		this->titleLayout->setContentsMargins(0, 2, 0, 0);
 
-		this->rightLayout = new QVBoxLayout;
-		this->rightLayout->setSpacing(0);
-		this->rightLayout->setContentsMargins(0, 0, 0, 0);
-		this->rightLayout->addLayout(this->titleLayout);
-		this->rightLayout->addWidget(this->path, 0, Qt::AlignLeft);
-		this->rightLayout->addStretch(100);
+		auto textLayout = new QHBoxLayout;
+		textLayout->setSpacing(0);
+		textLayout->setContentsMargins(0, 2, 0, 0);
+		textLayout->addWidget(this->path, 0, Qt::AlignLeft | Qt::AlignCenter);
+		textLayout->addStretch(300);
 
 		if (flags & CreateFlags::ColorBit)
 		{
 			this->color = new QPushButton;
 			this->color->setIconSize(QSize(50, 22));
 
-			this->rightLayout->addWidget(this->color, 0, Qt::AlignRight);
+			textLayout->addWidget(this->color, 0, Qt::AlignRight);
 		}
 		else
 		{
 			this->color = nullptr;
 		}		
+
+		this->rightLayout = new QVBoxLayout;
+		this->rightLayout->setSpacing(0);
+		this->rightLayout->setContentsMargins(0, 0, 0, 0);
+		this->rightLayout->addLayout(this->titleLayout);
+		this->rightLayout->addLayout(textLayout);
+		this->rightLayout->addStretch(100);
 
 		this->mapLayout = new QHBoxLayout;
 		this->mapLayout->addWidget(image);
@@ -205,6 +212,7 @@ namespace rabbit
 		mainLayout->setContentsMargins(0, 10, 20, 10);
 
 		connect(albedo_.image, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
+		connect(albedo_.check, SIGNAL(stateChanged(int)), this, SLOT(colorMapCheckEvent(int)));
 		connect(albedo_.color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(&albedoColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(colorChangeEvent(const QColor&)));
 		connect(&emissiveColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(emissiveChangeEvent(const QColor&)));
@@ -247,6 +255,7 @@ namespace rabbit
 		connect(subsurface_.slider, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
 		connect(emissive_.image, SIGNAL(clicked()), this, SLOT(emissiveMapClickEvent()));
 		connect(emissive_.color, SIGNAL(clicked()), this, SLOT(emissiveClickEvent()));
+		connect(emissive_.check, SIGNAL(stateChanged(int)), this, SLOT(emissiveMapCheckEvent(int)));
 		connect(emissive_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(emissiveEditEvent(double)));
 		connect(emissive_.slider, SIGNAL(valueChanged(int)), this, SLOT(emissiveSliderEvent(int)));
 	}
@@ -260,12 +269,13 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->albedo_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->albedo_.path->setText(name);
 			this->albedo_.check->setCheckState(Qt::CheckState::Checked);
 			this->albedo_.image->setIcon(QIcon(path));
 			this->albedo_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->albedo_.color->setIcon(createColorIcon(QColor(1.0f, 1.0f, 1.0f)));
-			this->material_->setColor(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setColorMap(this->albedo_.texture);
 		}
 		else
@@ -281,7 +291,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->normal_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->normal_.path->setText(name);
 			this->normal_.check->setCheckState(Qt::CheckState::Checked);
 			this->normal_.image->setIcon(QIcon(path));
 			this->normal_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -300,7 +313,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->opacity_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->opacity_.path->setText(name);
 			this->opacity_.check->setCheckState(Qt::CheckState::Checked);
 			this->opacity_.image->setIcon(QIcon(path));
 			this->opacity_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -321,7 +337,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->roughness_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->roughness_.path->setText(name);
 			this->roughness_.check->setCheckState(Qt::CheckState::Checked);
 			this->roughness_.image->setIcon(QIcon(path));
 			this->roughness_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -342,7 +361,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->specular_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->specular_.path->setText(name);
 			this->specular_.check->setCheckState(Qt::CheckState::Checked);
 			this->specular_.image->setIcon(QIcon(path));
 			this->specular_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -363,7 +385,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->metalness_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->metalness_.path->setText(name);
 			this->metalness_.check->setCheckState(Qt::CheckState::Checked);
 			this->metalness_.image->setIcon(QIcon(path));
 			this->metalness_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -384,7 +409,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->anisotropy_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->anisotropy_.path->setText(name);
 			this->anisotropy_.check->setCheckState(Qt::CheckState::Checked);
 			this->anisotropy_.image->setIcon(QIcon(path));
 			this->anisotropy_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -405,7 +433,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->sheen_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->sheen_.path->setText(name);
 			this->sheen_.check->setCheckState(Qt::CheckState::Checked);
 			this->sheen_.image->setIcon(QIcon(path));
 			this->sheen_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -426,7 +457,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->clearcoat_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->clearcoat_.path->setText(name);
 			this->clearcoat_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoat_.image->setIcon(QIcon(path));
 			this->clearcoat_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -447,7 +481,10 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->clearcoatRoughness_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->clearcoatRoughness_.path->setText(name);
 			this->clearcoatRoughness_.check->setCheckState(Qt::CheckState::Checked);
 			this->clearcoatRoughness_.image->setIcon(QIcon(path));
 			this->clearcoatRoughness_.texture = octoon::TextureLoader::load(path.toStdString());
@@ -473,12 +510,13 @@ namespace rabbit
 	{
 		if (!path.isEmpty())
 		{
-			this->emissive_.path->setText(QFileInfo(path).fileName());
+			QFontMetrics metrics(this->albedo_.path->font());
+			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+
+			this->emissive_.path->setText(name);
 			this->emissive_.check->setCheckState(Qt::CheckState::Checked);
 			this->emissive_.image->setIcon(QIcon(path));
 			this->emissive_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->emissive_.color->setIcon(createColorIcon(QColor(1.0f, 1.0f, 1.0f)));
-			this->material_->setEmissive(octoon::math::float3(1.0f, 1.0f, 1.0f));
 			this->material_->setEmissiveMap(this->emissive_.texture);
 		}
 		else

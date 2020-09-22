@@ -828,7 +828,7 @@ namespace rabbit
 
 		QVBoxLayout* summaryLayout = new QVBoxLayout;
 		summaryLayout->setMargin(0);
-		summaryLayout->setSpacing(0);
+		summaryLayout->setSpacing(2);
 		summaryLayout->addWidget(imageLabel_, 0, Qt::AlignCenter);
 		summaryLayout->addWidget(textLabel_, 0, Qt::AlignCenter);
 		summaryLayout->setContentsMargins(0, 0, 10, 0);

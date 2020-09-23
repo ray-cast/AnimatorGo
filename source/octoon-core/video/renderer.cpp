@@ -334,7 +334,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::render(RenderScene& scene) noexcept
+	Renderer::render(RenderScene& scene) noexcept(false)
 	{
 		if (this->sortObjects_)
 		{

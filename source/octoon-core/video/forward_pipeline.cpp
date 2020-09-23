@@ -227,7 +227,7 @@ namespace octoon::video
 			hal::GraphicsTextureDesc colorTextureDesc;
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
-			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R8G8B8A8UNorm);
+			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
 			colorTexture_ = this->context_->getDevice()->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
@@ -235,7 +235,7 @@ namespace octoon::video
 			hal::GraphicsTextureDesc depthTextureDesc;
 			depthTextureDesc.setWidth(w);
 			depthTextureDesc.setHeight(h);
-			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D16UNorm);
+			depthTextureDesc.setTexFormat(hal::GraphicsFormat::X8_D24UNormPack32);
 			depthTexture_ = this->context_->getDevice()->createTexture(depthTextureDesc);
 			if (!depthTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");

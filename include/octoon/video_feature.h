@@ -51,7 +51,7 @@ namespace octoon
 		void onInputEvent(const std::any& data) noexcept;
 
 		void onFrameBegin() noexcept override;
-		void onFrame() noexcept override;
+		void onFrame() noexcept(false) override;
 		void onFrameEnd() noexcept override;
 
 	private:

@@ -210,7 +210,7 @@ namespace octoon
 	}
 
 	void
-	VideoFeature::onFrame() noexcept
+	VideoFeature::onFrame() noexcept(false)
 	{
 		try
 		{

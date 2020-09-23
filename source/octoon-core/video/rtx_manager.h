@@ -34,7 +34,7 @@ namespace octoon::video
 	class RtxManager
 	{
 	public:
-		RtxManager();
+		RtxManager() noexcept(false);
 
 		void setRenderScene(RenderScene* scene) noexcept;
 		const RenderScene* getRenderScene() const noexcept;

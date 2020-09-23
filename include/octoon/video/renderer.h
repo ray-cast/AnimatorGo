@@ -88,7 +88,7 @@ namespace octoon::video
 
 		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
 
-		void render(RenderScene& scene) noexcept;
+		void render(RenderScene& scene) noexcept(false);
 		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 

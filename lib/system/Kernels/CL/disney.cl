@@ -68,6 +68,13 @@ float SmithGGX_G_Aniso(float ndotv, float vdotx, float vdoty, float ax, float ay
 	return 1.f / (ndotv + native_sqrt( vdotxax2 + vdotyay2 + ndotv * ndotv));
 }
 
+float SchlickFresnelReflectance(float u)
+{
+	float m = clamp(1.f - u, 0.f, 1.f);
+	float m2 = m * m;
+	return m2 * m2 * m;
+}
+
 INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIST, DisneyShaderData* shader_data)
 {
 	float4 color = Texture_GetValue4f(make_float4(dg->mat.disney.base_color.x,dg->mat.disney.base_color.y,dg->mat.disney.base_color.z,1), dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.base_color_map_idx));

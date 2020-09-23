@@ -23,6 +23,9 @@ THE SOFTWARE.
 #define BXDF_CL
 
 #include <../../system/Kernels/CL/bxdf_flags.cl>
+#include <../../system/Kernels/CL/utils.cl>
+#include <../../system/Kernels/CL/texture.cl>
+#include <../../system/Kernels/CL/payload.cl>
 
 /// Schlick's approximation of Fresnel equtions
 float SchlickFresnel(float eta, float ndotw)
@@ -40,22 +43,6 @@ float FresnelDielectric(float etai, float etat, float ndotwi, float ndotwt)
     float rparl = ((etat * ndotwi) - (etai * ndotwt)) / ((etat * ndotwi) + (etai * ndotwt));
     float rperp = ((etai * ndotwi) - (etat * ndotwt)) / ((etai * ndotwi) + (etat * ndotwt));
     return (rparl*rparl + rperp*rperp) * 0.5f;
-}
-
-#include <../../system/Kernels/CL/utils.cl>
-#include <../../system/Kernels/CL/texture.cl>
-#include <../../system/Kernels/CL/payload.cl>
-#include <../../system/Kernels/CL/bxdf_uberv2.cl>
-
-/// Emissive BRDF sampling
-float3 Emissive_GetLe(
-    // Geometry
-    DifferentialGeometry const* dg,
-    // Texture args
-    TEXTURE_ARG_LIST,
-    UberV2ShaderData const* shader_data)
-{
-    return shader_data->emission_color.xyz;
 }
 
 /// BxDF singularity check
@@ -89,7 +76,5 @@ bool Bxdf_IsRefraction(DifferentialGeometry const* dg)
 {
     return Bxdf_IsBtdf(dg) && !Bxdf_IsTransparency(dg);
 }
-
-#include <uberv2_generated.cl>
 
 #endif // BXDF_CL

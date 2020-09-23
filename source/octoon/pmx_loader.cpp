@@ -13,9 +13,6 @@
 #include <cstring>
 #include <codecvt>
 
-using namespace octoon::io;
-using namespace octoon::math;
-
 namespace octoon
 {
 	bool PmxLoader::doCanRead(io::istream& stream) const noexcept
@@ -598,7 +595,7 @@ namespace octoon
 				material->setName(cv.to_bytes(it.name.name));
 			else
 				material->setName(u8"Î´ÃüÃû");
-			material->setColor(math::srgb2linear(it.Diffuse));
+			material->setColor(math::srgb2linear(math::float3(it.Diffuse.x, it.Diffuse.y, it.Diffuse.z)));
 			material->setOpacity(it.Opacity);
 
 			std::uint32_t limits = 0;
@@ -633,11 +630,11 @@ namespace octoon
 
 		math::float4x4s bindposes(pmx.bones.size());
 		for (std::size_t i = 0; i < pmx.bones.size(); i++)
-			bindposes[i].makeTranslate(-pmx.bones[i].position);
+			bindposes[i].makeTranslate(-math::float3(pmx.bones[i].position.x, pmx.bones[i].position.y, pmx.bones[i].position.z));
 
-		float3s vertices_;
-		float3s normals_;
-		float2s texcoords_;
+		math::float3s vertices_;
+		math::float3s normals_;
+		math::float2s texcoords_;
 		skelecton::VertexWeights weights;
 
 		vertices_.resize(pmx.numVertices);
@@ -651,9 +648,9 @@ namespace octoon
 		{
 			auto& v = pmx.vertices[i];
 
-			vertices_[i] = v.position;
-			normals_[i] = v.normal;
-			texcoords_[i] = v.coord;
+			vertices_[i].set(v.position.x, v.position.y, v.position.z);
+			normals_[i].set(v.normal.x, v.normal.y, v.normal.z);
+			texcoords_[i].set(v.coord.x, v.coord.y);
 
 			if (pmx.numBones)
 			{
@@ -682,7 +679,7 @@ namespace octoon
 
 		for (std::size_t i = 0; i < pmx.materials.size(); i++)
 		{
-			uint1s indices_(pmx.materials[i].FaceCount);
+			math::uint1s indices_(pmx.materials[i].FaceCount);
 
 			for (std::size_t j = startIndices; j < startIndices + pmx.materials[i].FaceCount; j++)
 			{
@@ -710,7 +707,7 @@ namespace octoon
 
 			skelecton::Bone bone;
 			bone.setName(cv.to_bytes(it.name.name));
-			bone.setPosition(it.position);
+			bone.setPosition(math::float3(it.position.x, it.position.y, it.position.z));
 			bone.setParent(it.Parent);
 			bone.setVisable(it.Visable);
 			bone.setAdditiveParent(it.ProvidedParentBoneIndex);
@@ -736,8 +733,8 @@ namespace octoon
 					model::IKChild child;
 					child.boneIndex = ik.BoneIndex;
 					child.angleRadian = it.IKLimitedRadian;
-					child.minimumRadian = ik.minimumRadian;
-					child.maximumRadian = ik.maximumRadian;
+					child.minimumRadian.set(ik.minimumRadian.x, ik.minimumRadian.y, ik.minimumRadian.z);
+					child.maximumRadian.set(ik.maximumRadian.x, ik.maximumRadian.y, ik.maximumRadian.z);
 					child.rotateLimited = ik.rotateLimited;
 
 					attr.child.push_back(child);
@@ -764,7 +761,7 @@ namespace octoon
 				{
 					model::MorphVertex vertex;
 					vertex.index = v.index;
-					vertex.offset = v.offset;
+					vertex.offset.set(v.offset.x, v.offset.y, v.offset.z);
 					morph->vertices.push_back(vertex);
 				}
 
@@ -782,9 +779,9 @@ namespace octoon
 			body->group = it.group;
 			body->groupMask = it.groupMask;
 			body->shape = (model::ShapeType)it.shape;
-			body->scale = it.scale;
-			body->position = it.position;
-			body->rotation = it.rotate;
+			body->scale.set(it.scale.x, it.scale.y, it.scale.z);
+			body->position.set(it.position.x, it.position.y, it.position.z);
+			body->rotation.set(it.rotate.x, it.rotate.y, it.rotate.z);
 			body->mass = it.mass;
 			body->movementDecay = it.movementDecay;
 			body->rotationDecay = it.rotationDecay;
@@ -805,14 +802,14 @@ namespace octoon
 			joint->type = it.type;
 			joint->bodyIndexA = it.relatedRigidBodyIndexA;
 			joint->bodyIndexB = it.relatedRigidBodyIndexB;
-			joint->position = it.position;
-			joint->rotation = it.rotation;
-			joint->movementLowerLimit = it.movementLowerLimit;
-			joint->movementUpperLimit = it.movementUpperLimit;
-			joint->rotationLowerLimit = it.rotationLowerLimit;
-			joint->rotationUpperLimit = it.rotationUpperLimit;
-			joint->springMovementConstant = it.springMovementConstant;
-			joint->springRotationConstant = it.springRotationConstant;
+			joint->position.set(it.position.x, it.position.y, it.position.z);
+			joint->rotation.set(it.rotation.x, it.rotation.y, it.rotation.z);
+			joint->movementLowerLimit.set(it.movementLowerLimit.x, it.movementLowerLimit.y, it.movementLowerLimit.z);
+			joint->movementUpperLimit.set(it.movementUpperLimit.x, it.movementUpperLimit.y, it.movementUpperLimit.z);
+			joint->rotationLowerLimit.set(it.rotationLowerLimit.x, it.rotationLowerLimit.y, it.rotationLowerLimit.z);
+			joint->rotationUpperLimit.set(it.rotationUpperLimit.x, it.rotationUpperLimit.y, it.rotationUpperLimit.z);
+			joint->springMovementConstant.set(it.springMovementConstant.x, it.springMovementConstant.y, it.springMovementConstant.z);
+			joint->springRotationConstant.set(it.springRotationConstant.x, it.springRotationConstant.y, it.springRotationConstant.z);
 
 			model.joints.emplace_back(std::move(joint));
 		}
@@ -854,7 +851,7 @@ namespace octoon
 		return true;
 	}
 
-	bool PmxLoader::doSave(ostream& stream, const PMX& pmx) noexcept
+	bool PmxLoader::doSave(io::ostream& stream, const PMX& pmx) noexcept
 	{
 		if (!stream.write((char*)&pmx.header, sizeof(pmx.header))) return false;
 
@@ -1240,7 +1237,7 @@ namespace octoon
 		return true;
 	}
 
-	bool PmxLoader::doSave(ostream& stream, const model::Model& model) noexcept
+	bool PmxLoader::doSave(io::ostream& stream, const model::Model& model) noexcept
 	{
 		return false;
 	}

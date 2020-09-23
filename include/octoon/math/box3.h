@@ -20,15 +20,7 @@ namespace octoon
 				typedef typename trait::type_addition<T>::reference reference;
 				typedef typename trait::type_addition<T>::const_reference const_reference;
 
-				union
-				{
-					T values[6];
-
-					struct
-					{
-						Vector3<T> min, max;
-					};
-				};
+				Vector3<T> min, max;
 
 				static const Box3<T> Empty;
 				static const Box3<T> One;

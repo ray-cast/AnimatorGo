@@ -79,52 +79,40 @@ namespace octoon::video
 			std::uint32_t offset = 0;
 			std::vector<float> data(vertices.size() * vertexSize);
 
-			for (auto& layout : inputLayout.getVertexLayouts())
+			auto dst = data.data() + offset;
+			auto numVertices = vertices.size();
+
+			for (std::size_t i = 0; i< numVertices; i++, dst += vertexSize)
 			{
-				if (layout.getSemantic() == "POSITION")
+				if (!vertices.empty())
 				{
-					auto v = data.data() + offset;
-					for (auto& it : vertices)
-					{
-						v[0] = it.x;
-						v[1] = it.y;
-						v[2] = it.z;
-						v += vertexSize;
-					}
-				}
-				else if (layout.getSemantic() == "TEXCOORD" && layout.getSemanticIndex() == 0)
-				{
-					auto t = data.data() + offset;
-					for (auto& it : texcoord)
-					{
-						t[0] = it.x;
-						t[1] = it.y;
-						t += vertexSize;
-					}
-				}
-				else if (layout.getSemantic() == "TEXCOORD" && layout.getSemanticIndex() == 1)
-				{
-					auto t = data.data() + offset;
-					for (auto& it : texcoord1)
-					{
-						t[0] = it.x;
-						t[1] = it.y;
-						t += vertexSize;
-					}
-				}
-				else if (layout.getSemantic() == "NORMAL")
-				{
-					auto n = data.data() + offset;
-					for (auto& it : normals)
-					{
-						n[0] = it.x;
-						n[1] = it.y;
-						n[2] = it.z;
-						n += vertexSize;
-					}
+					auto& v = vertices[i];
+					dst[0] = v.x;
+					dst[1] = v.y;
+					dst[2] = v.z;
 				}
 
-				offset += layout.getVertexCount();
+				if (!normals.empty())
+				{
+					auto& n = normals[i];
+					dst[3] = n.x;
+					dst[4] = n.y;
+					dst[5] = n.z;
+				}
+
+				if (!texcoord.empty())
+				{
+					auto& uv = texcoord[i];
+					dst[6] = uv.x;
+					dst[7] = uv.y;
+				}
+
+				if (!texcoord1.empty())
+				{
+					auto& uv = texcoord1[i];
+					dst[8] = uv.x;
+					dst[9] = uv.y;
+				}
 			}
 
 			hal::GraphicsDataDesc dataDesc;

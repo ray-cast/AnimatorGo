@@ -177,7 +177,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(float);
-		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -209,7 +209,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(math::float2);
-		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat2;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -241,7 +241,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(math::float3);
-		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat3;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -273,7 +273,7 @@ namespace octoon::material
 		MaterialParam prop;
 		prop.key = key;
 		prop.length = sizeof(math::float4);
-		prop.type = PropertyTypeInfoFloat | PropertyTypeInfoBuffer;
+		prop.type = PropertyTypeInfoFloat4;
 		prop.data = new char[prop.length];
 
 		std::memcpy(prop.data, &value, prop.length);
@@ -384,8 +384,7 @@ namespace octoon::material
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.type & PropertyTypeInfoFloat &&
-				prop.type & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat)
 			{
 				if (prop.length == sizeof(float))
 				{
@@ -406,8 +405,7 @@ namespace octoon::material
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.type & PropertyTypeInfoFloat &&
-				prop.type & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat2)
 			{
 				if (prop.length == sizeof(math::Vector2))
 				{
@@ -428,8 +426,7 @@ namespace octoon::material
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.type & PropertyTypeInfoFloat &&
-				prop.type & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat3)
 			{
 				if (prop.length == sizeof(math::Vector3))
 				{
@@ -450,8 +447,7 @@ namespace octoon::material
 		MaterialParam prop;
 		if (this->get(key, prop))
 		{
-			if (prop.type & PropertyTypeInfoFloat &&
-				prop.type & PropertyTypeInfoBuffer)
+			if (prop.type & PropertyTypeInfoFloat4)
 			{
 				if (prop.length == sizeof(math::Vector4))
 				{
@@ -1005,7 +1001,9 @@ namespace octoon::material
 				hash_string += std::to_string(value);
 			}
 			break;
-			case PropertyTypeInfoFloat | PropertyTypeInfoBuffer:
+			case PropertyTypeInfoFloat2:
+			case PropertyTypeInfoFloat3:
+			case PropertyTypeInfoFloat4:
 			{
 				for (std::size_t i = 0; i < it.length; i += 4)
 				{

@@ -64,7 +64,7 @@ namespace octoon::video
 		struct DirectionalLight
 		{
 			math::float4 direction;
-			math::float3 color;
+			float color[3];
 			int shadow;
 			float shadowBias;
 			float shadowRadius;

@@ -96,9 +96,12 @@ namespace octoon::video
 				else if (light->isA<light::DirectionalLight>())
 				{
 					auto it = light->downcast<light::DirectionalLight>();
+					auto color = it->getColor() * it->getIntensity();
 					ForwardScene::DirectionalLight directionLight;
 					directionLight.direction = math::float4(math::float3x3(out.camera->getView()) * -it->getForward(), 0);
-					directionLight.color = it->getColor() * it->getIntensity();
+					directionLight.color[0] = color.x;
+					directionLight.color[1] = color.y;
+					directionLight.color[2] = color.z;
 					directionLight.shadow = it->getShadowEnable();
 
 					auto framebuffer = it->getCamera()->getFramebuffer();

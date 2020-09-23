@@ -9,14 +9,6 @@
 
 namespace octoon
 {
-	typedef math::Vector2 VMD_Vector2;
-	typedef math::Vector3 VMD_Vector3;
-	typedef math::Vector4 VMD_Vector4;
-	typedef math::Quaternion VMD_Quaternion;
-
-	typedef math::Vector3 VMD_Color3;
-	typedef math::Vector4 VMD_Color4;
-
 	typedef char          VMD_char;
 	typedef std::int8_t   VMD_int8_t;
 	typedef std::uint8_t  VMD_uint8_t;
@@ -27,6 +19,35 @@ namespace octoon
 
 #pragma pack(push)
 #pragma pack(1)
+
+	struct VMD_Vector2
+	{
+		float x;
+		float y;
+	};
+
+	struct VMD_Vector3
+	{
+		float x;
+		float y;
+		float z;
+	};
+
+	struct VMD_Vector4
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
+
+	struct VMD_Quaternion
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
 
 	struct VMD_Header
 	{

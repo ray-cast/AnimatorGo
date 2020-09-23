@@ -20,7 +20,7 @@ namespace octoon
 				typedef typename trait::type_addition<T>::reference reference;
 				typedef typename trait::type_addition<T>::const_reference const_reference;
 
-				T x, y, z;
+				T x, y, z, padding;
 
 				static const Vector3<T> Zero;
 				static const Vector3<T> One;

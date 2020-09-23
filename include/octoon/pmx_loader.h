@@ -24,16 +24,6 @@
 
 namespace octoon
 {
-	typedef math::Vector2  PmxVector2;
-	typedef math::Vector3  PmxVector3;
-	typedef math::Vector4  PmxVector4;
-	typedef math::Quaternion PmxQuaternion;
-
-	typedef math::Vector3  PmxColor3;
-	typedef math::Vector4  PmxColor4;
-	typedef math::float3x3 PmxFloat3x3;
-	typedef math::float4x4 PmxFloat4x4;
-
 	typedef wchar_t                PmxChar;
 	typedef std::int8_t            PmxInt8;
 	typedef std::uint8_t           PmxUInt8;
@@ -53,6 +43,34 @@ namespace octoon
 
 #pragma pack(push)
 #pragma pack(push,1)
+	struct PmxVector2
+	{
+		float x;
+		float y;
+	};
+
+	struct PmxVector3
+	{
+		float x;
+		float y;
+		float z;
+	};
+
+	struct PmxVector4
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
+
+	struct PmxQuaternion
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
 
 	struct PmxHeader
 	{
@@ -127,11 +145,11 @@ namespace octoon
 	{
 		PmxName    name;
 		PmxName    nameEng;
-		PmxColor3  Diffuse;
+		PmxVector3 Diffuse;
 		PmxFloat   Opacity;
-		PmxColor3  Specular;
+		PmxVector3 Specular;
 		PmxFloat   Shininess;
-		PmxColor3  Ambient;
+		PmxVector3 Ambient;
 		PmxUInt8   Flag;
 		PmxVector4 EdgeColor;
 		PmxFloat   EdgeSize;
@@ -213,15 +231,15 @@ namespace octoon
 	{
 		PmxUInt32 index;
 		PmxUInt8  offset;
-		PmxColor4 diffuse;
+		PmxVector4 diffuse;
 		PmxFloat  shininess;
-		PmxColor3 specular;
-		PmxColor3 ambient;
-		PmxColor4 edgeColor;
+		PmxVector3 specular;
+		PmxVector3 ambient;
+		PmxVector4 edgeColor;
 		PmxFloat  edgeSize;
-		PmxColor4 tex;
-		PmxColor4 sphere;
-		PmxColor4 toon;
+		PmxVector4 tex;
+		PmxVector4 sphere;
+		PmxVector4 toon;
 	};
 
 	struct PmxMorphGroup

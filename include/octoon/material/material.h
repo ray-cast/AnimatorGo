@@ -8,12 +8,15 @@ namespace octoon::material
 {
 	enum PropertyTypeInfo
 	{
-		PropertyTypeInfoFloat = 0x01,
-		PropertyTypeInfoString = 0x02,
-		PropertyTypeInfoBool = 0x04,
-		PropertyTypeInfoInt = 0x08,
-		PropertyTypeInfoBuffer = 0x016,
-		PropertyTypeInfoTexture = 0x32,
+		PropertyTypeInfoFloat = 1 << 0,
+		PropertyTypeInfoFloat2 = 1 << 1,
+		PropertyTypeInfoFloat3 = 1 << 2,
+		PropertyTypeInfoFloat4 = 1 << 3,
+		PropertyTypeInfoString = 1 << 4,
+		PropertyTypeInfoBool = 1 << 5,
+		PropertyTypeInfoInt = 1 << 6,
+		PropertyTypeInfoBuffer = 1 << 7,
+		PropertyTypeInfoTexture = 1 << 8,
 	};
 
 	struct MaterialParam

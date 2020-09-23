@@ -2624,17 +2624,28 @@ namespace octoon::video
 							uniform->uniform4i(value[0], value[1], value[2], value[3]);
 					}
 					break;
-					case material::PropertyTypeInfoFloat | material::PropertyTypeInfoBuffer:
+					case material::PropertyTypeInfoFloat:
 					{
 						auto value = (float*)prop.data;
-						if (prop.length == 4)
-							uniform->uniform1f(value[0]);
-						else if (prop.length == 8)
-							uniform->uniform2f(value[0], value[1]);
-						else if (prop.length == 12)
-							uniform->uniform3f(value[0], value[1], value[2]);
-						else if (prop.length == 16)
-							uniform->uniform4f(value[0], value[1], value[2], value[3]);
+						uniform->uniform1f(value[0]);
+					}
+					break;
+					case material::PropertyTypeInfoFloat2:
+					{
+						auto value = (float*)prop.data;
+						uniform->uniform2f(value[0], value[1]);
+					}
+					break;
+					case material::PropertyTypeInfoFloat3:
+					{
+						auto value = (float*)prop.data;
+						uniform->uniform3f(value[0], value[1], value[2]);
+					}
+					break;
+					case material::PropertyTypeInfoFloat4:
+					{
+						auto value = (float*)prop.data;
+						uniform->uniform4f(value[0], value[1], value[2], value[3]);
 					}
 					break;
 					case material::PropertyTypeInfoTexture:

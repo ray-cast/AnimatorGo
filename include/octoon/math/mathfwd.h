@@ -2,7 +2,7 @@
 #define OCTOON_MATH_MATHFWD_H_
 
 #include <vector>
-
+#include <smmintrin.h>
 #include <octoon/math/mathutil.h>
 
 namespace octoon

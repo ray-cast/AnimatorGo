@@ -6,6 +6,7 @@
 #include <octoon/mdl_loader.h>
 #include <octoon/PMREM_loader.h>
 #include <octoon/texture_loader.h>
+#include <octoon/video_feature.h>
 #include <octoon/environment_light_component.h>
 
 #include <filesystem>
@@ -44,63 +45,67 @@ namespace rabbit
 			std::uint32_t width = 256;
 			std::uint32_t height = 256;
 
-			octoon::hal::GraphicsTextureDesc textureDesc;
-			textureDesc.setSize(width, height);
-			textureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
-			textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8A8UNorm);
-			auto colorTexture = octoon::video::Renderer::instance()->createTexture(textureDesc);
-			if (!colorTexture)
-				throw std::runtime_error("createTexture() failed");
+			auto renderer = this->getFeature<octoon::VideoFeature>()->getRenderer();
+			if (renderer)
+			{
+				octoon::hal::GraphicsTextureDesc textureDesc;
+				textureDesc.setSize(width, height);
+				textureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
+				textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8A8UNorm);
+				auto colorTexture = renderer->createTexture(textureDesc);
+				if (!colorTexture)
+					throw std::runtime_error("createTexture() failed");
 
-			octoon::hal::GraphicsTextureDesc depthTextureDesc;
-			depthTextureDesc.setSize(width, height);
-			depthTextureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
-			depthTextureDesc.setTexFormat(octoon::hal::GraphicsFormat::D16UNorm);
-			auto depthTexture = octoon::video::Renderer::instance()->createTexture(depthTextureDesc);
-			if (!depthTexture)
-				throw std::runtime_error("createTexture() failed");
+				octoon::hal::GraphicsTextureDesc depthTextureDesc;
+				depthTextureDesc.setSize(width, height);
+				depthTextureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
+				depthTextureDesc.setTexFormat(octoon::hal::GraphicsFormat::D16UNorm);
+				auto depthTexture = renderer->createTexture(depthTextureDesc);
+				if (!depthTexture)
+					throw std::runtime_error("createTexture() failed");
 
-			octoon::hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
-			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(0, octoon::hal::GraphicsImageLayout::ColorAttachmentOptimal, octoon::hal::GraphicsFormat::R8G8B8A8UNorm));
-			framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(1, octoon::hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, octoon::hal::GraphicsFormat::D16UNorm));
+				octoon::hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
+				framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(0, octoon::hal::GraphicsImageLayout::ColorAttachmentOptimal, octoon::hal::GraphicsFormat::R8G8B8A8UNorm));
+				framebufferLayoutDesc.addComponent(octoon::hal::GraphicsAttachmentLayout(1, octoon::hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, octoon::hal::GraphicsFormat::D16UNorm));
 
-			octoon::hal::GraphicsFramebufferDesc framebufferDesc;
-			framebufferDesc.setWidth(width);
-			framebufferDesc.setHeight(height);
-			framebufferDesc.setFramebufferLayout(octoon::video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
-			framebufferDesc.setDepthStencilAttachment(octoon::hal::GraphicsAttachmentBinding(depthTexture, 0, 0));
-			framebufferDesc.addColorAttachment(octoon::hal::GraphicsAttachmentBinding(colorTexture, 0, 0));
+				octoon::hal::GraphicsFramebufferDesc framebufferDesc;
+				framebufferDesc.setWidth(width);
+				framebufferDesc.setHeight(height);
+				framebufferDesc.setFramebufferLayout(renderer->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDesc.setDepthStencilAttachment(octoon::hal::GraphicsAttachmentBinding(depthTexture, 0, 0));
+				framebufferDesc.addColorAttachment(octoon::hal::GraphicsAttachmentBinding(colorTexture, 0, 0));
 
-			framebuffer_ = octoon::video::Renderer::instance()->createFramebuffer(framebufferDesc);
-			if (!framebuffer_)
-				throw std::runtime_error("createFramebuffer() failed");
+				framebuffer_ = renderer->createFramebuffer(framebufferDesc);
+				if (!framebuffer_)
+					throw std::runtime_error("createFramebuffer() failed");
 
-			camera_ = std::make_shared<octoon::camera::PerspectiveCamera>(60, 1, 100);
-			camera_->setClearColor(octoon::math::float4::Zero);
-			camera_->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
-			camera_->setFramebuffer(framebuffer_);
-			camera_->setTransform(octoon::math::makeLookatRH(octoon::math::float3(0, 0, 1), octoon::math::float3::Zero, octoon::math::float3::UnitY));
+				camera_ = std::make_shared<octoon::camera::PerspectiveCamera>(60, 1, 100);
+				camera_->setClearColor(octoon::math::float4::Zero);
+				camera_->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
+				camera_->setFramebuffer(framebuffer_);
+				camera_->setTransform(octoon::math::makeLookatRH(octoon::math::float3(0, 0, 1), octoon::math::float3::Zero, octoon::math::float3::UnitY));
 
-			geometry_ = std::make_shared<octoon::geometry::Geometry>();
-			geometry_->setMesh(octoon::mesh::SphereMesh::create(0.5));
+				geometry_ = std::make_shared<octoon::geometry::Geometry>();
+				geometry_->setMesh(octoon::mesh::SphereMesh::create(0.5));
 
-			octoon::math::Quaternion q1;
-			q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 2.75);
-			octoon::math::Quaternion q2;
-			q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 4.6);
+				octoon::math::Quaternion q1;
+				q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 2.75);
+				octoon::math::Quaternion q2;
+				q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 4.6);
 
-			light_ = std::make_shared<octoon::light::DirectionalLight>();
-			light_->setColor(octoon::math::float3(1, 1, 1));
-			light_->setTransform(octoon::math::float4x4(q1 * q2));
+				light_ = std::make_shared<octoon::light::DirectionalLight>();
+				light_->setColor(octoon::math::float3(1, 1, 1));
+				light_->setTransform(octoon::math::float4x4(q1 * q2));
 
-			envlight_ = std::make_shared<octoon::light::EnvironmentLight>();
-			envlight_->setEnvironmentMap(octoon::PMREMLoader::load("../../system/hdri/Ditch-River_2k.hdr"));
+				envlight_ = std::make_shared<octoon::light::EnvironmentLight>();
+				envlight_->setEnvironmentMap(octoon::PMREMLoader::load("../../system/hdri/Ditch-River_2k.hdr"));
 
-			scene_ = std::make_unique<octoon::video::RenderScene>();
-			scene_->addRenderObject(camera_.get());
-			scene_->addRenderObject(light_.get());
-			scene_->addRenderObject(envlight_.get());
-			scene_->addRenderObject(geometry_.get());
+				scene_ = std::make_unique<octoon::video::RenderScene>();
+				scene_->addRenderObject(camera_.get());
+				scene_->addRenderObject(light_.get());
+				scene_->addRenderObject(envlight_.get());
+				scene_->addRenderObject(geometry_.get());
+			}
 
 			std::ifstream ifs(this->getModel()->path + "/material.json");
 			if (ifs)
@@ -342,7 +347,10 @@ namespace rabbit
 		if (scene_)
 		{
 			geometry_->setMaterial(material);
-			octoon::video::Renderer::instance()->render(*scene_);
+
+			auto renderer = this->getFeature<octoon::VideoFeature>()->getRenderer();
+			if (renderer)
+				renderer->render(*scene_);
 
 			auto framebufferDesc = framebuffer_->getFramebufferDesc();
 			auto width = framebufferDesc.getWidth();

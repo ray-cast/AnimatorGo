@@ -129,6 +129,18 @@ namespace octoon
 		return this->renderScene_;
 	}
 
+	video::Renderer*
+	VideoFeature::getRenderer() noexcept
+	{
+		return video::Renderer::instance();
+	}
+
+	const video::Renderer*
+	VideoFeature::getRenderer() const noexcept
+	{
+		return video::Renderer::instance();
+	}
+
 	void
 	VideoFeature::readColorBuffer(math::float3 data[])
 	{

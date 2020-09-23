@@ -5,6 +5,7 @@
 #include <octoon/camera_component.h>
 #include <octoon/material/material.h>
 #include <octoon/video/render_scene.h>
+#include <octoon/video/renderer.h>
 
 namespace octoon
 {
@@ -24,6 +25,9 @@ namespace octoon
 
 		void setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
 		const std::shared_ptr<video::RenderScene>& getRenderScene() const noexcept;
+
+		video::Renderer* getRenderer() noexcept;
+		const video::Renderer* getRenderer() const noexcept;
 
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;

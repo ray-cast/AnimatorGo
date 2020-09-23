@@ -711,11 +711,11 @@ vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in Geometri
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = abs( dot( geometry.normal, geometry.viewDir ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotVH = saturate( dot( geometry.viewDir, halfDir ) );
 
-	float f_wo = pow5(1 - max(dotNV, 0.1));
+	float f_wo = pow5(1 - dotNV);
 	float f_wi = pow5(1 - dotNL);
 
 	float energyBias = 0.5 * roughness;

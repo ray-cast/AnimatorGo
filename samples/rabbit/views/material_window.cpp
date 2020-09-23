@@ -233,6 +233,7 @@ namespace rabbit
 		connect(opacity_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
 		connect(opacity_.slider, SIGNAL(valueChanged(int)), this, SLOT(opacitySliderEvent(int)));
 		connect(normal_.image, SIGNAL(clicked()), this, SLOT(normalMapClickEvent()));
+		connect(normal_.check, SIGNAL(stateChanged(int)), this, SLOT(normalMapCheckEvent(int)));
 		connect(roughness_.image, SIGNAL(clicked()), this, SLOT(smoothnessMapClickEvent()));
 		connect(roughness_.check, SIGNAL(stateChanged(int)), this, SLOT(smoothnessMapCheckEvent(int)));
 		connect(roughness_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(roughnessEditEvent(double)));

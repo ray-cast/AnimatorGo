@@ -56,7 +56,7 @@ namespace rabbit
 		void addComponent(IRabbitComponent* component) noexcept;
 		void removeComponent(const IRabbitComponent* component) noexcept;
 		const std::vector<IRabbitComponent*>& getComponents() const noexcept;
-		void enableComponents() noexcept;
+		void enableComponents() noexcept(false);
 		void disableComponents() noexcept;
 
 		IRabbitComponent* getComponent(const std::type_info& type) const noexcept;
@@ -66,7 +66,7 @@ namespace rabbit
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
-		void onActivate() noexcept override;
+		void onActivate() noexcept(false) override;
 		void onDeactivate() noexcept override;
 
 		void onFixedUpdate() noexcept override;

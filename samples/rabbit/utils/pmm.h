@@ -12,16 +12,45 @@
 
 namespace octoon
 {
-	typedef math::Vector3  PmmVector3;
-	typedef math::Vector4  PmmVector4;
-	typedef math::Quaternion  PmmQuaternion;
-
-	typedef math::Vector3  PmmColor3;
-	typedef math::Vector4  PmmColor4;
-	typedef math::float3x3 PmmFloat3x3;
-	typedef math::float4x4 PmmFloat4x4;
-
 	typedef io::istream istream;
+
+	struct PmmVector2
+	{
+		float x;
+		float y;
+	};
+
+	struct PmmVector3
+	{
+		float x;
+		float y;
+		float z;
+
+		PmmVector3() = default;
+		PmmVector3(float xx, float yy, float zz) : x(xx), y(yy), z(zz) {};
+	};
+
+	struct PmmVector4
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+
+		PmmVector4() = default;
+		PmmVector4(float xx, float yy, float zz, float ww) : x(xx), y(yy), z(zz), w(ww) {};
+	};
+
+	struct PmmQuaternion
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+
+		PmmQuaternion() = default;
+		PmmQuaternion(float xx, float yy, float zz, float ww) : x(xx), y(yy), z(zz), w(ww) {};
+	};
 
 	class PmmInt2
 	{

@@ -12,6 +12,8 @@ namespace octoon
 		GameBaseFeature() noexcept;
 		~GameBaseFeature() noexcept;
 
+		void log(std::string_view message) noexcept;
+
 		GameObjectManager* getGameObjectManager() const noexcept;
 
 	private:

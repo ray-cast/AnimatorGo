@@ -21,6 +21,13 @@ namespace octoon
 		return GameObjectManager::instance();
 	}
 
+	void
+	GameBaseFeature::log(std::string_view message) noexcept
+	{
+		if (this->getGameListener())
+			this->getGameListener()->onMessage(message);
+	}
+
     void
 	GameBaseFeature::onActivate() noexcept
     {

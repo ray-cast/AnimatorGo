@@ -616,8 +616,6 @@ namespace octoon::video
 	void
 	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
 	{
-		static_assert(sizeof(octoon::math::float3) == 16);
-
 		std::size_t num_vertices = 0;
 		std::size_t num_indices = 0;
 		std::size_t num_shapes = 0;
@@ -645,9 +643,9 @@ namespace octoon::video
 		}
 
 		if (num_vertices > out.vertices.GetElementCount())
-			out.vertices = context_.CreateBuffer<math::float3>(num_vertices, CL_MEM_READ_ONLY);
+			out.vertices = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
 		if (num_vertices > out.normals.GetElementCount())
-			out.normals = context_.CreateBuffer<math::float3>(num_vertices, CL_MEM_READ_ONLY);
+			out.normals = context_.CreateBuffer<math::float4>(num_vertices, CL_MEM_READ_ONLY);
 		if (num_vertices > out.uvs.GetElementCount())
 			out.uvs = context_.CreateBuffer<math::float2>(num_vertices, CL_MEM_READ_ONLY);
 		if (num_indices > out.indices.GetElementCount())
@@ -658,10 +656,10 @@ namespace octoon::video
 			out.shapes = context_.CreateBuffer<ClwScene::Shape>(num_shapes, CL_MEM_READ_ONLY);
 			out.shapesAdditional = context_.CreateBuffer<ClwScene::ShapeAdditionalData>(num_shapes, CL_MEM_READ_ONLY);
 
-			math::float3* vertices = nullptr;
-			math::float3* normals = nullptr;
+			math::float4* vertices = nullptr;
+			math::float4* normals = nullptr;
 			math::float2* uvs = nullptr;
-			int* indices = nullptr;
+			std::int32_t* indices = nullptr;
 			ClwScene::Shape* shapes = nullptr;
 			ClwScene::ShapeAdditionalData* shapesAdditional = nullptr;
 
@@ -691,8 +689,12 @@ namespace octoon::video
 				auto mesh_uv_array = mesh->getTexcoordArray().data();
 				auto mesh_num_uvs = mesh->getTexcoordArray().size();
 
-				std::copy(mesh_vertex_array, mesh_vertex_array + mesh_num_vertices, vertices + num_vertices_written);
-				std::copy(mesh_normal_array, mesh_normal_array + mesh_num_normals, normals + num_normals_written);
+				for (auto i = 0; i < mesh_num_vertices; i++)
+				{
+					vertices[num_vertices_written + i].set(mesh_vertex_array[i]);
+					normals[num_normals_written + i].set(mesh_normal_array[i]);
+				}
+
 				std::copy(mesh_uv_array, mesh_uv_array + mesh_num_uvs, uvs + num_uvs_written);
 
 				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)

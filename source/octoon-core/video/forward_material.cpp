@@ -70,14 +70,6 @@ vec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 poi
 	return lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) ) + pointOnLine;
 }
 
-mat3 transpose( const in mat3 v ) {
-	mat3 tmp;
-	tmp[0] = vec3(v[0].x, v[1].x, v[2].x);
-	tmp[1] = vec3(v[0].y, v[1].y, v[2].y);
-	tmp[2] = vec3(v[0].z, v[1].z, v[2].z);
-
-	return tmp;
-}
 )";
 static char* packing = R"(
 vec3 packNormalToRGB( const in vec3 normal ) {

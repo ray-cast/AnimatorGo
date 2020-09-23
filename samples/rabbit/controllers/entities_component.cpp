@@ -236,9 +236,13 @@ namespace rabbit
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
-		obj->getComponent<TransformComponent>()->setQuaternion(math::Quaternion(-pmm.camera.rotation));
-		obj->getComponent<TransformComponent>()->setTranslate(pmm.camera.eye);
-		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(math::Quaternion(pmm.camera.rotation), -math::float3::Forward) * math::distance(pmm.camera.eye, pmm.camera.target));
+		auto eye = octoon::math::float3(pmm.camera.eye.x, pmm.camera.eye.y, pmm.camera.eye.z);
+		auto target = octoon::math::float3(pmm.camera.target.x, pmm.camera.target.y, pmm.camera.target.z);
+		auto quat = math::Quaternion(-math::float3(pmm.camera.rotation.x, pmm.camera.rotation.y, pmm.camera.rotation.z));
+
+		obj->getComponent<TransformComponent>()->setQuaternion(quat);
+		obj->getComponent<TransformComponent>()->setTranslate(eye);
+		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(quat, math::float3::Forward) * math::distance(eye, target));
 		obj->addComponent<AnimatorComponent>(animation::Animation(clip));
 		obj->addComponent<FirstPersonCameraComponent>();
 
@@ -353,7 +357,7 @@ namespace rabbit
 			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
 			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 127.0f, key.interpolation_rotation[2] / 127.0f, key.interpolation_rotation[1] / 127.0f, key.interpolation_rotation[3] / 127.0f);
 
-			auto euler = math::eulerAngles(key.quaternion);
+			auto euler = math::eulerAngles(math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w));
 
 			translateX[i].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
 			translateY[i].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
@@ -377,8 +381,11 @@ namespace rabbit
 
 			for (std::size_t j = 1; j <= (key.frame - keyLast.frame) * 20; j++)
 			{
+				auto qkeyLast = math::Quaternion(keyLast.quaternion.x, keyLast.quaternion.y, keyLast.quaternion.z, keyLast.quaternion.w);
+				auto qkey = math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w);
+
 				auto t = j / ((key.frame - keyLast.frame) * 20.0f);
-				auto euler = math::eulerAngles(math::slerp(keyLast.quaternion, key.quaternion, interpolationRotation->interpolator(t)));
+				auto euler = math::eulerAngles(math::slerp(qkeyLast, qkey, interpolationRotation->interpolator(t)));
 				auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 20.0f) * j;
 
 				rotationX[index].emplace_back((float)frame / 30.0f, euler.x);

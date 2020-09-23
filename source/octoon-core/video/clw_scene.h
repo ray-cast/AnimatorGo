@@ -30,8 +30,8 @@ namespace octoon::video
 
         bool dirty;
 
-        CLWBuffer<math::float3> vertices;
-        CLWBuffer<math::float3> normals;
+        CLWBuffer<math::float4> vertices;
+        CLWBuffer<math::float4> normals;
         CLWBuffer<math::float2> uvs;
         CLWBuffer<int> indices;
 

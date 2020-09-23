@@ -336,8 +336,8 @@ namespace octoon
 		, frame(0)
 		, pre_index(-1)
 		, next_index(-1)
-		, translation(PmmVector3::Zero)
-		, quaternion(PmmQuaternion::Zero)
+		, translation(PmmVector3(0, 0, 0))
+		, quaternion(PmmQuaternion(0.0f, 0.0f, 0.0f, 0.0f))
 		, is_selected(0)
 		, is_physics_disabled(0)
 	{
@@ -506,7 +506,9 @@ namespace octoon
 		reader.read((char*)& data.fov, sizeof(data.fov));
 		reader.read((char*)& data.is_selected, sizeof(data.is_selected));
 
-		data.rotation = -data.rotation;
+		data.rotation.x = -data.rotation.x;
+		data.rotation.y = -data.rotation.y;
+		data.rotation.z = -data.rotation.z;
 
 		return data;
 	}

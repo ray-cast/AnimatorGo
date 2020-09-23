@@ -58,10 +58,20 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::enableComponents() noexcept
+	RabbitBehaviour::enableComponents() noexcept(false)
 	{
+		auto feature = this->tryGetFeature<octoon::GameBaseFeature>();
+
 		for (auto& it : components_)
+		{
+			if (feature)
+				feature->log("Initialize :" + std::string(it->type_info().name()));
+			
 			it->onEnable();
+		}
+
+		if (feature)
+			feature->log("End of the components initialization process.");
 	}
 
 	void
@@ -72,7 +82,7 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::onActivate() noexcept
+	RabbitBehaviour::onActivate() noexcept(false)
 	{
 		if (!profile_)
 			profile_ = RabbitProfile::load("sys:config/config.conf");

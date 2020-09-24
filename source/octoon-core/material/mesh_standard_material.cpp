@@ -119,8 +119,6 @@ namespace octoon::material
 	{
 		this->setColor(color);
 		this->setOpacity(1.0f);
-		this->setOffset(math::float2::Zero);
-		this->setRepeat(math::float2::One);
 		this->setEmissive(math::float3::Zero);
 		this->setSmoothness(0.0f);
 		this->setAnisotropy(0.0f);
@@ -132,6 +130,9 @@ namespace octoon::material
 		this->setClearCoatRoughness(0.0f);
 		this->setSubsurface(0.0f);
 		this->setGamma(2.2f);
+		this->setOffset(math::float2::Zero);
+		this->setRepeat(math::float2::One);
+		this->setNormalScale(math::float2::One);
 		this->setShader(std::make_shared<Shader>(standard_vert, standard_frag));
 	}
 
@@ -249,6 +250,14 @@ namespace octoon::material
 		this->repeat_ = repeat;
 		this->setDirty(false);
 		this->set("offsetRepeat", math::float4(this->offset_, this->repeat_));
+	}
+
+	void
+	MeshStandardMaterial::setNormalScale(const math::float2& normalScale) noexcept
+	{
+		this->normalScale_ = normalScale;
+		this->setDirty(false);
+		this->set("normalScale", normalScale);
 	}
 
 	void
@@ -439,6 +448,12 @@ namespace octoon::material
 	MeshStandardMaterial::getRepeat() const noexcept
 	{
 		return this->repeat_;
+	}
+
+	const math::float2&
+	MeshStandardMaterial::getNormalScale() const noexcept
+	{
+		return this->normalScale_;
 	}
 
 	const hal::GraphicsTexturePtr&

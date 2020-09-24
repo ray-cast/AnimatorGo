@@ -193,7 +193,7 @@ namespace rabbit
 		MaterialListPanel() noexcept(false);
 		~MaterialListPanel() noexcept;
 
-		void showEvent(QShowEvent* event) noexcept override;
+		void resizeEvent(QResizeEvent* e) noexcept override;
 
 	public:
 		QLabel* title_;

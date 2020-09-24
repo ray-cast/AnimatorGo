@@ -43,6 +43,7 @@ namespace octoon::material
 		void setLightTexture(const hal::GraphicsTexturePtr& map) noexcept;
 		void setOffset(const math::float2& offset) noexcept;
 		void setRepeat(const math::float2& repeat) noexcept;
+		void setNormalScale(const math::float2& repeat) noexcept;
 		void setGamma(float gamma) noexcept;
 
 		const math::float3& getColor() const noexcept;
@@ -78,6 +79,7 @@ namespace octoon::material
 
 		const math::float2& getOffset() const noexcept;
 		const math::float2& getRepeat() const noexcept;
+		const math::float2& getNormalScale() const noexcept;
 
 		std::shared_ptr<Material> clone() const noexcept override;
 
@@ -101,6 +103,7 @@ namespace octoon::material
 		float emissiveIntensity_;
 		math::float2 offset_;
 		math::float2 repeat_;
+		math::float2 normalScale_;
 		math::float3 color_;
 		math::float3 emissive_;
 		hal::GraphicsTexturePtr colorMap_;

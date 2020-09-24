@@ -1225,7 +1225,7 @@ namespace rabbit
 	}
 
 	void
-	MaterialListPanel::showEvent(QShowEvent* event) noexcept
+	MaterialListPanel::resizeEvent(QResizeEvent* e) noexcept
 	{
 		QMargins margins = mainLayout_->contentsMargins();
 		listWidget_->setMinimumHeight(this->height() - title_->height() * 2 - margins.top() - margins.bottom());
@@ -1297,8 +1297,8 @@ namespace rabbit
 		QMargins margins = mainLayout_->contentsMargins();
 		modifyMaterialArea_->hide();
 		modifyMaterialArea_->setMinimumSize(this->size());
-		listPanel_->show();
 		listPanel_->setMinimumSize(this->size());
+		listPanel_->show();
 		this->updateList();
 	}
 

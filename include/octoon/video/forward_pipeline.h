@@ -25,7 +25,7 @@ namespace octoon::video
 
 		void prepareShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
-		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept;
+		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 		void renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 		void render(const CompiledScene& scene) override;
@@ -45,10 +45,16 @@ namespace octoon::video
 		hal::GraphicsContextPtr context_;
 
 		hal::GraphicsFramebufferPtr fbo_;
+		hal::GraphicsFramebufferPtr fbo2_;
 		hal::GraphicsTexturePtr colorTexture_;
 		hal::GraphicsTexturePtr depthTexture_;
+		hal::GraphicsTexturePtr colorTexture2_;
+		hal::GraphicsTexturePtr depthTexture2_;
+
+		std::shared_ptr<geometry::Geometry> screenGeometry_;
 
 		std::shared_ptr<ForwardBuffer> currentBuffer_;
+		std::shared_ptr<material::Material> copyMaterial_;
 		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
 

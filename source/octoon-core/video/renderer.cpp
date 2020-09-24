@@ -4,18 +4,6 @@
 #include <octoon/video/forward_material.h>
 #include <octoon/video/forward_renderer.h>
 
-#include <octoon/light/ambient_light.h>
-#include <octoon/light/directional_light.h>
-#include <octoon/light/point_light.h>
-#include <octoon/light/spot_light.h>
-#include <octoon/light/disk_light.h>
-#include <octoon/light/rectangle_light.h>
-#include <octoon/light/environment_light.h>
-#include <octoon/light/tube_light.h>
-
-#include <octoon/material/mesh_depth_material.h>
-#include <octoon/material/mesh_standard_material.h>
-
 #include <octoon/runtime/except.h>
 
 #include "rtx_manager.h"

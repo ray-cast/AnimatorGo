@@ -16,6 +16,8 @@ SET(MATERIAL_LIST
 	${SOURCE_PATH}/mesh_standard_material.cpp
 	${HEADER_PATH}/mesh_depth_material.h
 	${SOURCE_PATH}/mesh_depth_material.cpp
+	${HEADER_PATH}/mesh_copy_material.h
+	${SOURCE_PATH}/mesh_copy_material.cpp
 	${HEADER_PATH}/lambert_material.h
 	${SOURCE_PATH}/lambert_material.cpp
 )

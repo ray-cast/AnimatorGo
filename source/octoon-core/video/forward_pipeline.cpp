@@ -19,6 +19,9 @@
 #include <octoon/light/environment_light.h>
 #include <octoon/light/tube_light.h>
 
+#include <octoon/mesh/plane_mesh.h>
+
+#include <octoon/material/mesh_copy_material.h>
 #include <octoon/material/mesh_depth_material.h>
 #include <octoon/material/mesh_standard_material.h>
 
@@ -26,8 +29,12 @@ namespace octoon::video
 {
 	ForwardPipeline::ForwardPipeline(const hal::GraphicsContextPtr& context) noexcept
 		: context_(context)
+		, copyMaterial_(material::MeshCopyMaterial::create())
 		, depthMaterial_(material::MeshDepthMaterial::create())
 	{
+		screenGeometry_ = std::make_shared<geometry::Geometry>();
+		screenGeometry_->setMesh(octoon::mesh::PlaneMesh::create(2, 2));
+		screenGeometry_->setMaterial(copyMaterial_);
 	}
 
 	ForwardPipeline::~ForwardPipeline() noexcept
@@ -158,25 +165,51 @@ namespace octoon::video
 		this->prepareShadowMaps(*compiled, compiled->lights, compiled->geometries);
 
 		auto camera = compiled->camera;
-		auto framebuffer = camera->getFramebuffer();
-		this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+		auto& framebuffer = camera->getFramebuffer();
+		auto& swapFramebuffer = camera->getSwapFramebuffer();
+
+		auto fbo = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
+		this->context_->setFramebuffer(fbo);
 		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 		this->context_->setViewport(0, camera->getPixelViewport());
 
 		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 
-		if (camera->getRenderToScreen())
-		{
-			auto& v = camera->getPixelViewport();
-			this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
-		}
-
-		auto& swapFramebuffer = camera->getSwapFramebuffer();
 		if (framebuffer && swapFramebuffer)
 		{
 			math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
 			math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
 			this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+		}
+
+		if (camera->getRenderToScreen())
+		{
+			this->context_->setFramebuffer(nullptr);
+			this->context_->clearFramebuffer(0, hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
+
+			if (!fbo->getFramebufferDesc().getColorAttachments().empty())
+			{
+				auto texture = fbo->getFramebufferDesc().getColorAttachment().getBindingTexture();
+				if (texture->getTextureDesc().getTexDim()  == hal::GraphicsTextureDim::Texture2DMultisample)
+				{
+					auto& v = camera->getPixelViewport();
+					if (framebuffer && swapFramebuffer)
+					{
+						this->context_->blitFramebuffer(swapFramebuffer, v, nullptr, v);
+					}
+					else if (fbo == fbo_)
+					{
+						auto fbo = framebuffer ? framebuffer : fbo_;
+						this->context_->blitFramebuffer(fbo, v, fbo2_, v);
+						this->context_->blitFramebuffer(fbo2_, v, nullptr, v);
+					}
+				}
+				else
+				{
+					auto& v = camera->getPixelViewport();
+					this->context_->blitFramebuffer(fbo, v, nullptr, v);
+				}
+			}
 		}
 	}
 
@@ -223,6 +256,35 @@ namespace octoon::video
 
 			fbo_ = this->context_->getDevice()->createFramebuffer(framebufferDesc);
 			if (!fbo_)
+				throw runtime::runtime_error::create("createFramebuffer() failed");
+
+			hal::GraphicsTextureDesc colorTextureDesc2;
+			colorTextureDesc2.setWidth(w);
+			colorTextureDesc2.setHeight(h);
+			colorTextureDesc2.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			colorTextureDesc2.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
+			colorTexture2_ = this->context_->getDevice()->createTexture(colorTextureDesc2);
+			if (!colorTexture2_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsTextureDesc depthTextureDesc2;
+			depthTextureDesc2.setWidth(w);
+			depthTextureDesc2.setHeight(h);
+			depthTextureDesc2.setTexDim(hal::GraphicsTextureDim::Texture2D);
+			depthTextureDesc2.setTexFormat(hal::GraphicsFormat::X8_D24UNormPack32);
+			depthTexture2_ = this->context_->getDevice()->createTexture(depthTextureDesc2);
+			if (!depthTexture2_)
+				throw runtime::runtime_error::create("createTexture() failed");
+
+			hal::GraphicsFramebufferDesc framebufferDesc2;
+			framebufferDesc2.setWidth(w);
+			framebufferDesc2.setHeight(h);
+			framebufferDesc2.setFramebufferLayout(this->context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc2.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture2_, 0, 0));
+			framebufferDesc2.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture2_, 0, 0));
+
+			fbo2_ = this->context_->getDevice()->createFramebuffer(framebufferDesc2);
+			if (!fbo2_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 		}
 		catch (...)

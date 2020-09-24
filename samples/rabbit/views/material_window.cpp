@@ -1147,7 +1147,7 @@ namespace rabbit
 		this->setViewMode(QListView::IconMode);
 		this->setMovement(QListView::Static);
 		this->setDefaultDropAction(Qt::DropAction::MoveAction);
-		this->setSpacing(10);
+		this->setSpacing(12);
 		this->setStyleSheet("background:transparent;");
 		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
@@ -1241,8 +1241,7 @@ namespace rabbit
 		this->setMouseTracking(true);
 
 		listPanel_ = new MaterialListPanel();
-		listPanel_->listWidget_->setMinimumSize(QSize(this->width(), this->height()));
-		listPanel_->setMinimumSize(QSize(this->width(), this->height()));
+		listPanel_->listWidget_->setFixedWidth(340);
 
 		modifyWidget_ = new MaterialEditWindow(this, behaviour);
 		modifyWidget_->setFixedWidth(340);

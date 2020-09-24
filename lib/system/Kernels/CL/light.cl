@@ -423,8 +423,6 @@ float3 Light_GetLe(// Light index
     {
         case kIbl:
             return EnvironmentLight_GetLe(&light, scene, dg, bxdf_flags, interaction_type, wo, TEXTURE_ARGS);
-        case kArea:
-            return AreaLight_GetLe(&light, scene, dg, wo, TEXTURE_ARGS);
         case kDirectional:
             return DirectionalLight_GetLe(&light, scene, dg, wo, TEXTURE_ARGS);
         case kPoint:
@@ -499,8 +497,6 @@ float Light_GetPdf(// Light index
     {
         case kIbl:
             return EnvironmentLight_GetPdf(&light, scene, dg, bxdf_flags, interaction_type, wo, TEXTURE_ARGS);
-        case kArea:
-            return AreaLight_GetPdf(&light, scene, dg, wo, TEXTURE_ARGS);
         case kDirectional:
             return DirectionalLight_GetPdf(&light, scene, dg, wo, TEXTURE_ARGS);
         case kPoint:
@@ -536,8 +532,6 @@ float3 Light_SampleVertex(
 
     switch (light.type)
     {
-        case kArea:
-            return AreaLight_SampleVertex(&light, scene, TEXTURE_ARGS, sample0, sample1, p, n, wo, pdf);
         case kPoint:
             return PointLight_SampleVertex(&light, scene, TEXTURE_ARGS, sample0, sample1, p, n, wo, pdf);
     }

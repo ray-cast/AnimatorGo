@@ -93,13 +93,6 @@ namespace octoon::video
 		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
-		void prepareShadowMaps(const std::vector<light::Light*>& light, const std::vector<geometry::Geometry*>& geometries) noexcept;
-
-	private:
-		bool setBuffer(const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
-		bool setProgram(const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
-
-	private:
 		Renderer(const Renderer&) = delete;
 		Renderer& operator=(const Renderer&) = delete;
 
@@ -111,17 +104,10 @@ namespace octoon::video
 
 		hal::GraphicsContextPtr context_;
 
-		ForwardScene profile_;
 		std::unique_ptr<class RtxManager> rtxManager_;
 		std::unique_ptr<class ForwardRenderer> forwardRenderer_;
 
-		std::shared_ptr<ForwardBuffer> currentBuffer_;
-		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
-
-		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardBuffer>> buffers_;
-		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardMaterial>> materials_;
-		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }
 

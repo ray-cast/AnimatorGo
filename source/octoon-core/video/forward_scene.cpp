@@ -26,5 +26,7 @@ namespace octoon::video
 		this->environmentShadows.clear();
 
 		this->directionalShadowMatrix.clear();
+
+		this->lights.clear();
 	}
 }

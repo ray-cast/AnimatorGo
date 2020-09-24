@@ -22,6 +22,8 @@ namespace octoon::video
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 		void render(RenderScene* scene) noexcept;
+		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
+		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
 		void prepareScene(RenderScene* scene) noexcept;
@@ -34,6 +36,7 @@ namespace octoon::video
 		std::uint32_t width_;
 		std::uint32_t height_;
 
+		ForwardScene profile_;
 		hal::GraphicsContextPtr context_;
 		std::unique_ptr<ForwardPipeline> pipeline_;
 		std::unique_ptr<ForwardSceneController> controller_;

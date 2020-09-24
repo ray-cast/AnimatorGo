@@ -3,6 +3,7 @@
 
 #include <octoon/hal/graphics_context.h>
 #include <octoon/camera/camera.h>
+#include <octoon/light/light.h>
 #include <octoon/geometry/geometry.h>
 #include "compiled_scene.h"
 
@@ -103,6 +104,7 @@ namespace octoon::video
 		hal::GraphicsDataPtr rectangleLightBuffer;
 		hal::GraphicsDataPtr directionLightBuffer;
 
+		std::vector<light::Light*> lights;
 		std::vector<geometry::Geometry*> geometries;
 	};
 }

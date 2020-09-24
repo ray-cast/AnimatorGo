@@ -41,7 +41,6 @@ namespace octoon::video
 	Renderer::setup(const hal::GraphicsContextPtr& context, std::uint32_t w, std::uint32_t h) except
 	{
 		context_ = context;
-		depthMaterial_ = material::MeshDepthMaterial::create();
 		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
 
 		this->setFramebufferSize(w, h);
@@ -50,12 +49,9 @@ namespace octoon::video
 	void
 	Renderer::close() noexcept
 	{
-		this->profile_.reset();
-		this->buffers_.clear();
-		this->materials_.clear();
 		this->rtxManager_.reset();
-		currentBuffer_.reset();
-		context_.reset();
+		this->forwardRenderer_.reset();
+		this->context_.reset();
 	}
 
 	void
@@ -234,103 +230,15 @@ namespace octoon::video
 	void
 	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
-		if (camera.getLayer() != geometry.getLayer())
-			return;
-
-		if (geometry.getVisible())
-		{
-			for (std::size_t i = 0; i < geometry.getMaterials().size(); i++)
-			{
-				if (!this->setProgram(overrideMaterial ? overrideMaterial : geometry.getMaterials()[i], camera, geometry))
-					return;
-
-				if (!this->setBuffer(geometry.getMesh(), i))
-					return;
-
-				auto indices = currentBuffer_->getNumIndices(i);
-				if (indices > 0)
-					this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
-				else
-					this->context_->draw((std::uint32_t)currentBuffer_->getNumVertices(), 1, 0, 0);
-			}
-		}
+		if (this->forwardRenderer_)
+			this->forwardRenderer_->renderObject(geometry, camera, overrideMaterial);
 	}
 
 	void
 	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
 	{
-		for (auto& geometry : geometries)
-			this->renderObject(*geometry, camera, overrideMaterial);
-	}
-
-	void
-	Renderer::prepareShadowMaps(const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
-	{
-		for (auto& light : lights)
-		{
-			if (!light->getVisible())
-				continue;
-
-			std::uint32_t faceCount = 0;
-			std::shared_ptr<camera::Camera> camera;
-
-			if (light->isA<light::DirectionalLight>())
-			{
-				auto directionalLight = light->cast<light::DirectionalLight>();
-				if (directionalLight->getShadowEnable())
-				{
-					faceCount = 1;
-					camera = directionalLight->getCamera();
-				}
-			}
-			else if (light->isA<light::SpotLight>())
-			{
-				auto spotLight = light->cast<light::SpotLight>();
-				if (spotLight->getShadowEnable())
-				{
-					faceCount = 1;
-					camera = spotLight->getCamera();
-				}
-			}
-			else if (light->isA<light::PointLight>())
-			{
-				auto pointLight = light->cast<light::PointLight>();
-				if (pointLight->getShadowEnable())
-				{
-					faceCount = 6;
-					camera = pointLight->getCamera();
-				}
-			}
-
-			for (std::uint32_t face = 0; face < faceCount; face++)
-			{
-				auto framebuffer = camera->getFramebuffer();
-
-				this->context_->setFramebuffer(framebuffer);
-				this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-				this->context_->setViewport(0, camera->getPixelViewport());
-
-				for (auto& geometry : geometries)
-				{
-					if (geometry->getMaterial()->getPrimitiveType() == this->depthMaterial_->getPrimitiveType())
-						this->renderObject(*geometry, *camera, this->depthMaterial_);
-				}
-
-				if (camera->getRenderToScreen())
-				{
-					auto& v = camera->getPixelViewport();
-					this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
-				}
-
-				auto& swapFramebuffer = camera->getSwapFramebuffer();
-				if (swapFramebuffer && framebuffer)
-				{
-					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-				}
-			}
-		}
+		if (this->forwardRenderer_)
+			this->forwardRenderer_->renderObjects(geometries, camera, overrideMaterial);
 	}
 
 	void
@@ -341,8 +249,6 @@ namespace octoon::video
 			scene.sortCameras();
 			scene.sortGeometries();
 		}
-
-		this->prepareShadowMaps(scene.getLights(), scene.getGeometries());
 
 		for (auto& camera : scene.getCameras())
 		{
@@ -408,50 +314,6 @@ namespace octoon::video
 
 			camera->onRenderAfter(*camera);
 			camera->setDirty(false);
-		}
-	}
-
-	bool
-	Renderer::setBuffer(const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
-	{
-		if (mesh)
-		{
-			auto& buffer = buffers_[((std::intptr_t)mesh.get())];
-			if (!buffer)
-				buffer = std::make_shared<ForwardBuffer>(mesh);
-
-			this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-			this->context_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
-
-			this->currentBuffer_ = buffer;
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool
-	Renderer::setProgram(const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
-	{
-		if (material)
-		{
-			auto& pipeline = materials_[((std::intptr_t)material.get())];
-			if (!pipeline)
-				pipeline = std::make_shared<ForwardMaterial>(material, this->profile_);
-
-			pipeline->update(camera, geometry, this->profile_);
-
-			this->context_->setRenderPipeline(pipeline->getPipeline());
-			this->context_->setDescriptorSet(pipeline->getDescriptorSet());
-
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 }

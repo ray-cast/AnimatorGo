@@ -188,6 +188,8 @@ namespace octoon::video
 				}
 
 				light->onRenderAfter(*out.camera);
+
+				out.lights.push_back(light);
 			}
 		}
 

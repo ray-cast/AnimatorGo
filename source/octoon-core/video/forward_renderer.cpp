@@ -14,6 +14,7 @@ namespace octoon::video
 
 	ForwardRenderer::~ForwardRenderer() noexcept
 	{
+		this->profile_.reset();
 	}
 
 	void
@@ -51,5 +52,17 @@ namespace octoon::video
 	{
 		this->prepareScene(scene);
 		this->pipeline_->render(this->controller_->getCachedScene(scene));
+	}
+
+	void
+	ForwardRenderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	{
+		this->pipeline_->renderObject(profile_, geometry, camera, overrideMaterial);
+	}
+
+	void
+	ForwardRenderer::renderObjects(const std::vector<geometry::Geometry*>& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	{
+		this->pipeline_->renderObjects(profile_, geometry, camera, overrideMaterial);
 	}
 }

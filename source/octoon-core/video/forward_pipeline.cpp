@@ -78,7 +78,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::prepareShadowMaps(ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
+	ForwardPipeline::prepareShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
 	{
 		for (auto& light : lights)
 		{
@@ -151,14 +151,17 @@ namespace octoon::video
 	ForwardPipeline::render(const CompiledScene& scene)
 	{
 		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
+	
+		for (auto& it : buffers_)
+			it.second.second = true;
+
+		this->prepareShadowMaps(*compiled, compiled->lights, compiled->geometries);
+
 		auto camera = compiled->camera;
 		auto framebuffer = camera->getFramebuffer();
 		this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
 		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 		this->context_->setViewport(0, camera->getPixelViewport());
-
-		for (auto& it : buffers_)
-			it.second.second = true;
 
 		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 

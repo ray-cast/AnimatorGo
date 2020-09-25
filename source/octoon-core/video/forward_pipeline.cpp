@@ -196,21 +196,21 @@ namespace octoon::video
 					if (framebuffer && swapFramebuffer)
 					{
 						this->context_->blitFramebuffer(swapFramebuffer, v, nullptr, v);
+						this->context_->discardFramebuffer(swapFramebuffer, hal::GraphicsClearFlagBits::AllBit);
 					}
 					else if (fbo == fbo_)
 					{
 						this->context_->blitFramebuffer(fbo, v, fbo2_, v);
-						this->context_->discardFramebuffer(fbo, 0);
-						this->context_->discardFramebuffer(fbo, 1);
+						this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
 						this->context_->blitFramebuffer(fbo2_, v, nullptr, v);
-						this->context_->discardFramebuffer(fbo2_, 0);
-						this->context_->discardFramebuffer(fbo2_, 1);
+						this->context_->discardFramebuffer(fbo2_, hal::GraphicsClearFlagBits::AllBit);
 					}
 				}
 				else
 				{
 					auto& v = camera->getPixelViewport();
 					this->context_->blitFramebuffer(fbo, v, nullptr, v);
+					this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
 				}
 			}
 		}

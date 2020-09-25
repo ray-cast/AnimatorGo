@@ -51,7 +51,7 @@ namespace octoon
 
 			void setFramebuffer(const GraphicsFramebufferPtr& target) noexcept;
 			void clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept;
-			void discardFramebuffer(const GraphicsFramebufferPtr& src, std::uint32_t i) noexcept;
+			void discardFramebuffer(const GraphicsFramebufferPtr& src, GraphicsClearFlags flags) noexcept;
 			void blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept;
 			void readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept;
 			void readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept;
@@ -83,6 +83,8 @@ namespace octoon
 			GL45DeviceContext& operator=(const GL45DeviceContext&) noexcept = delete;
 
 		private:
+			std::vector<GLenum> _attachments;
+
 			GL33SwapchainPtr _glcontext;
 			GL33ProgramPtr _program;
 			GL45GraphicsDataPtr _indexBuffer;

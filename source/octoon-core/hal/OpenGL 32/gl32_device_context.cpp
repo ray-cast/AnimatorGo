@@ -569,7 +569,7 @@ namespace octoon
 		}
 
 		void
-		GL32DeviceContext::discardFramebuffer(const GraphicsFramebufferPtr& framebuffer, std::uint32_t i) noexcept
+		GL32DeviceContext::discardFramebuffer(const GraphicsFramebufferPtr& framebuffer, GraphicsClearFlags flags) noexcept
 		{
 			assert(framebuffer);
 			assert(_glcontext->getActive());
@@ -584,43 +584,42 @@ namespace octoon
 				else if (fbo == _drawFramebuffer)
 					target = GL_DRAW_FRAMEBUFFER;
 
+				_attachments.clear();
+
 				const auto& layoutDesc = fbo->getFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
-				if (layoutDesc.getComponents().size() > i)
+				auto count = layoutDesc.getComponents().size();
+				for (GLenum i = 0; i < count; i++)
 				{
 					auto& attachment = layoutDesc.getComponents().at(i);
-					switch (attachment.getAttachType())
+					if (attachment.getAttachType() == GraphicsImageLayout::ColorAttachmentOptimal)
 					{
-					case GraphicsImageLayout::ColorAttachmentOptimal:
-					{
-						GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
-						glInvalidateFramebuffer(target, 1, &attachments);
+						if (flags & GraphicsClearFlagBits::ColorBit)
+							_attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
 					}
-					break;
-					case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
-					case GraphicsImageLayout::DepthStencilAttachmentOptimal:
+					else if (attachment.getAttachType() == GraphicsImageLayout::DepthStencilReadOnlyOptimal ||
+						attachment.getAttachType() == GraphicsImageLayout::DepthStencilAttachmentOptimal)
 					{
 						auto format = attachment.getAttachFormat();
 						if (format == GraphicsFormat::S8UInt)
 						{
-							GLenum attachments = GL_STENCIL_ATTACHMENT;
-							glInvalidateFramebuffer(target, 1, &attachments);
+							if (flags & GraphicsClearFlagBits::StencilBit)
+								_attachments.push_back(GL_STENCIL_ATTACHMENT);
 						}
 						else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
 						{
-							GLenum attachments = GL_DEPTH_ATTACHMENT;
-							glInvalidateFramebuffer(target, 1, &attachments);
+							if (flags & GraphicsClearFlagBits::DepthBit)
+								_attachments.push_back(GL_DEPTH_ATTACHMENT);
 						}
 						else
 						{
-							GLenum attachments = GL_DEPTH_STENCIL_ATTACHMENT;
-							glInvalidateFramebuffer(target, 1, &attachments);
+							if (flags & GraphicsClearFlagBits::DepthStencilBit)
+								_attachments.push_back(GL_DEPTH_STENCIL_ATTACHMENT);
 						}
 					}
-					break;
-					default:
-						break;
-					}
 				}
+
+				if (!_attachments.empty())
+					glInvalidateFramebuffer(target, (GLsizei)_attachments.size(), _attachments.data());
 			}
 		}
 

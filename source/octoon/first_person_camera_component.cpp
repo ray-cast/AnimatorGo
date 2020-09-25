@@ -140,10 +140,10 @@ namespace octoon
 					upCamera(step);
 
 				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
-					moveCamera(step * wheelSpeed_);
+					moveCamera(wheelSpeed_);
 
 				if (input->isButtonDown(input::InputButton::Code::MouseWheel))
-					moveCamera(-step * wheelSpeed_);
+					moveCamera(-wheelSpeed_);
 
 				if (input->isButtonPressed(input::InputButton::Code::Middle))
 				{

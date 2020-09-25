@@ -62,7 +62,7 @@ namespace octoon
 
 			virtual void setFramebuffer(const GraphicsFramebufferPtr& target) noexcept = 0;
 			virtual void clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept = 0;
-			virtual void discardFramebuffer(std::uint32_t i) noexcept = 0;
+			virtual void discardFramebuffer(const GraphicsFramebufferPtr& src, std::uint32_t i = 0) noexcept = 0;
 			virtual void blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept = 0;
 			virtual void readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept = 0;
 			virtual void readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept = 0;

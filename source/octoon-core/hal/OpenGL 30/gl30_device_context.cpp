@@ -550,8 +550,11 @@ namespace octoon
 			assert(!dest || (dest && dest->isInstanceOf<GL30Framebuffer>()));
 			assert(_glcontext->getActive());
 
-			auto readFramebuffer = src->downcast<GL30Framebuffer>()->getInstanceID();
-			auto drawFramebuffer = dest ? dest->downcast<GL30Framebuffer>()->getInstanceID() : GL_NONE;
+			this->_readFramebuffer = src ? src->downcast_pointer<GL30Framebuffer>() : nullptr;
+			this->_drawFramebuffer = dest ? dest->downcast_pointer<GL30Framebuffer>() : nullptr;
+
+			auto readFramebuffer = this->_readFramebuffer->getInstanceID();
+			auto drawFramebuffer = this->_drawFramebuffer ? this->_drawFramebuffer->getInstanceID() : GL_NONE;
 
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFramebuffer);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFramebuffer);
@@ -565,46 +568,57 @@ namespace octoon
 		}
 
 		void
-		GL30DeviceContext::discardFramebuffer(std::uint32_t i) noexcept
+		GL30DeviceContext::discardFramebuffer(const GraphicsFramebufferPtr& framebuffer, std::uint32_t i) noexcept
 		{
-			assert(_framebuffer);
+			assert(framebuffer);
 			assert(_glcontext->getActive());
 
-			const auto& layoutDesc = _framebuffer->getFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
-			if (layoutDesc.getComponents().size() > i)
+			if (framebuffer)
 			{
-				auto& attachment = layoutDesc.getComponents().at(i);
-				switch (attachment.getAttachType())
+				auto fbo = framebuffer->downcast_pointer<GL30Framebuffer>();
+
+				GLenum target = GL_FRAMEBUFFER;
+				if (fbo == _readFramebuffer)
+					target = GL_READ_FRAMEBUFFER;
+				else if (fbo == _drawFramebuffer)
+					target = GL_DRAW_FRAMEBUFFER;
+
+				const auto& layoutDesc = fbo->getFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
+				if (layoutDesc.getComponents().size() > i)
 				{
-				case GraphicsImageLayout::ColorAttachmentOptimal:
-				{
-					GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
-					glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
-				}
-				break;
-				case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
-				case GraphicsImageLayout::DepthStencilAttachmentOptimal:
-				{
-					auto format = attachment.getAttachFormat();
-					if (format == GraphicsFormat::S8UInt)
+					auto& attachment = layoutDesc.getComponents().at(i);
+					switch (attachment.getAttachType())
 					{
-						GLenum attachments = GL_STENCIL_ATTACHMENT;
-						glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
-					}
-					else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
+					case GraphicsImageLayout::ColorAttachmentOptimal:
 					{
-						GLenum attachments = GL_DEPTH_ATTACHMENT;
-						glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
+						GLenum attachments = GL_COLOR_ATTACHMENT0 + i;
+						glInvalidateFramebuffer(target, 1, &attachments);
 					}
-					else
-					{
-						GLenum attachments = GL_DEPTH_STENCIL_ATTACHMENT;
-						glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attachments);
-					}
-				}
-				break;
-				default:
 					break;
+					case GraphicsImageLayout::DepthStencilReadOnlyOptimal:
+					case GraphicsImageLayout::DepthStencilAttachmentOptimal:
+					{
+						auto format = attachment.getAttachFormat();
+						if (format == GraphicsFormat::S8UInt)
+						{
+							GLenum attachments = GL_STENCIL_ATTACHMENT;
+							glInvalidateFramebuffer(target, 1, &attachments);
+						}
+						else if (format == GraphicsFormat::D16UNorm || format == GraphicsFormat::X8_D24UNormPack32 || format == GraphicsFormat::D32_SFLOAT)
+						{
+							GLenum attachments = GL_DEPTH_ATTACHMENT;
+							glInvalidateFramebuffer(target, 1, &attachments);
+						}
+						else
+						{
+							GLenum attachments = GL_DEPTH_STENCIL_ATTACHMENT;
+							glInvalidateFramebuffer(target, 1, &attachments);
+						}
+					}
+					break;
+					default:
+						break;
+					}
 				}
 			}
 		}

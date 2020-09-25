@@ -543,7 +543,7 @@ namespace octoon
 		}
 
 		void
-		GL20DeviceContext::discardFramebuffer(std::uint32_t i) noexcept
+		GL20DeviceContext::discardFramebuffer(const GraphicsFramebufferPtr& src, std::uint32_t i) noexcept
 		{
 		}
 

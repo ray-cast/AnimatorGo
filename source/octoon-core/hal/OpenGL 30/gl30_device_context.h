@@ -51,7 +51,7 @@ namespace octoon
 
 			void setFramebuffer(const GraphicsFramebufferPtr& target) noexcept override;
 			void clearFramebuffer(std::uint32_t i, GraphicsClearFlags flags, const float4& color, float depth, std::int32_t stencil) noexcept override;
-			void discardFramebuffer(std::uint32_t i) noexcept override;
+			void discardFramebuffer(const GraphicsFramebufferPtr& src, std::uint32_t i) noexcept override;
 			void blitFramebuffer(const GraphicsFramebufferPtr& src, const float4& v1, const GraphicsFramebufferPtr& dest, const float4& v2) noexcept override;
 			void readFramebuffer(std::uint32_t i, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept override;
 			void readFramebufferToCube(std::uint32_t i, std::uint32_t face, const GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept override;
@@ -98,6 +98,8 @@ namespace octoon
 			GL30PipelinePtr _pipeline;
 			GL30DescriptorSetPtr _descriptorSet;
 			GL30FramebufferPtr _framebuffer;
+			GL30FramebufferPtr _readFramebuffer;
+			GL30FramebufferPtr _drawFramebuffer;
 			GL30VertexBuffers _vertexBuffers;
 			GL30GraphicsDataPtr _indexBuffer;
 			GL30ProgramPtr _program;

@@ -62,7 +62,7 @@ namespace rabbit
 		this->titleLayout->setContentsMargins(0, 2, 0, 0);
 
 		auto textLayout = new QHBoxLayout;
-		textLayout->setSpacing(0);
+		textLayout->setSpacing(2);
 		textLayout->setContentsMargins(0, 2, 0, 0);
 		textLayout->addWidget(this->path, 0, Qt::AlignLeft | Qt::AlignCenter);
 		textLayout->addStretch(300);
@@ -70,7 +70,7 @@ namespace rabbit
 		if (flags & CreateFlags::ColorBit)
 		{
 			this->color = new QPushButton;
-			this->color->setIconSize(QSize(50, 22));
+			this->color->setIconSize(QSize(50, 30));
 
 			textLayout->addWidget(this->color, 0, Qt::AlignRight);
 		}

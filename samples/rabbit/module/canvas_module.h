@@ -14,7 +14,7 @@ namespace rabbit
 		virtual ~CanvasModule() noexcept;
 
 		virtual void reset() noexcept override;
-		virtual void resize(std::uint32_t width, std::uint32_t height) noexcept override;
+		virtual void resize(std::uint32_t width, std::uint32_t height) noexcept;
 
 		virtual void load(octoon::runtime::json& reader) noexcept override;
 		virtual void save(octoon::runtime::json& reader) noexcept override;

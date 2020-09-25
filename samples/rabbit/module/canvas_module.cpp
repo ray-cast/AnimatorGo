@@ -24,10 +24,10 @@ namespace rabbit
 	}
 
 	void
-	CanvasModule::resize(std::uint32_t width, std::uint32_t height) noexcept
+	CanvasModule::resize(std::uint32_t w, std::uint32_t h) noexcept
 	{
-		this->width = width;
-		this->height = height;
+		this->width = w;
+		this->height = h;
 
 		this->albedoBuffer.resize(this->width * this->height);
 		this->normalBuffer.resize(this->width * this->height);

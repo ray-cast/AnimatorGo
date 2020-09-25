@@ -1049,8 +1049,11 @@ namespace rabbit
 	void
 	MainWindow::keyReleaseEvent(QKeyEvent* event) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
-			gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
+		if (!event->isAutoRepeat())
+		{
+			if (gameApp_ && !profile_->timeModule->playing_)
+				gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
+		}
 	}
 
 	bool

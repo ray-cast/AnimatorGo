@@ -42,6 +42,7 @@ namespace octoon
 
 	private:
 		float speed_;
+		float accelerationSpeed_;
 		float wheelSpeed_;
 		float gravity_;
 		float maxVelocityChange_;

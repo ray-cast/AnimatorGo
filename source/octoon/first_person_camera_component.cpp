@@ -3,13 +3,16 @@
 #include <octoon/transform_component.h>
 #include <octoon/input/input.h>
 #include <octoon/input_feature.h>
+#include <octoon/timer_feature.h>
+#include <iostream>
 
 namespace octoon
 {
 	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCamera")
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
-		: speed_(0.25f)
+		: speed_(50.0f)
+		, accelerationSpeed_(1.0f)
 		, wheelSpeed_(2.0f)
 		, gravity_(15)
 		, maxVelocityChange_(1.0)
@@ -110,7 +113,11 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onUpdate() noexcept
 	{
-		float step = speed_;
+		float step = std::min(1.0f, math::pow(accelerationSpeed_ / 10, 2)) * speed_;
+
+		auto timerFeature = this->getFeature<TimerFeature>();
+		if (timerFeature)
+			step *= timerFeature->frameTime();
 
 		auto inputFeature = this->getFeature<InputFeature>();
 		if (inputFeature)
@@ -118,26 +125,48 @@ namespace octoon
 			auto input = inputFeature->getInput();
 			if (input)
 			{
-				if (input->isKeyPressed(input::InputKey::Code::LeftShift))
-					step *= 3;
+				bool useAcceleratonSpeed = false;
 
 				if (input->isKeyPressed(input::InputKey::Code::W))
+				{
 					moveCamera(step);
+					useAcceleratonSpeed = true;
+				}
 
 				if (input->isKeyPressed(input::InputKey::Code::S))
+				{
 					moveCamera(-step);
+					useAcceleratonSpeed = true;
+				}
 
 				if (input->isKeyPressed(input::InputKey::Code::A))
+				{
 					yawCamera(-step);
+					useAcceleratonSpeed = true;
+				}
 
 				if (input->isKeyPressed(input::InputKey::Code::D))
+				{
 					yawCamera(step);
+					useAcceleratonSpeed = true;
+				}
 
 				if (input->isKeyPressed(input::InputKey::Code::Q))
+				{
 					upCamera(-step);
+					useAcceleratonSpeed = true;
+				}
 
 				if (input->isKeyPressed(input::InputKey::Code::E))
+				{
 					upCamera(step);
+					useAcceleratonSpeed = true;
+				}
+
+				if (useAcceleratonSpeed)
+					accelerationSpeed_ += timerFeature->frameTime();
+				else
+					accelerationSpeed_ = 1.0f;
 
 				if (input->isButtonUp(input::InputButton::Code::MouseWheel))
 					moveCamera(wheelSpeed_);
@@ -147,8 +176,8 @@ namespace octoon
 
 				if (input->isButtonPressed(input::InputButton::Code::Middle))
 				{
-					auto x = input->getAxis(input::InputAxis::MouseX) * step;
-					auto y = input->getAxis(input::InputAxis::MouseY) * step;
+					auto x = input->getAxis(input::InputAxis::MouseX) * 0.025;
+					auto y = input->getAxis(input::InputAxis::MouseY) * 0.025;
 					upCamera(y);
 					yawCamera(-x);
 				}

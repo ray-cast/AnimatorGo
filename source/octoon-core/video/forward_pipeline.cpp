@@ -158,20 +158,29 @@ namespace octoon::video
 	ForwardPipeline::render(const CompiledScene& scene)
 	{
 		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
-	
+		auto vp = compiled->camera->getPixelViewport();
+		this->renderTile(scene, math::int2(vp.x, vp.y), math::int2(vp.width, vp.height));
+	}
+
+	void
+	ForwardPipeline::renderTile(const CompiledScene& scene, const math::int2& tileOrigin, const math::int2& tileSize)
+	{
+		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
+
 		for (auto& it : buffers_)
 			it.second.second = true;
 
 		this->prepareShadowMaps(*compiled, compiled->lights, compiled->geometries);
 
 		auto camera = compiled->camera;
+		auto viewport = math::float4(tileOrigin.x, tileOrigin.y, tileSize.x, tileSize.y);
 		auto& framebuffer = camera->getFramebuffer();
 		auto& swapFramebuffer = camera->getSwapFramebuffer();
 
 		auto fbo = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
 		this->context_->setFramebuffer(fbo);
+		this->context_->setViewport(0, viewport);
 		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-		this->context_->setViewport(0, camera->getPixelViewport());
 
 		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 
@@ -190,35 +199,28 @@ namespace octoon::video
 			if (!fbo->getFramebufferDesc().getColorAttachments().empty())
 			{
 				auto texture = fbo->getFramebufferDesc().getColorAttachment().getBindingTexture();
-				if (texture->getTextureDesc().getTexDim()  == hal::GraphicsTextureDim::Texture2DMultisample)
+				if (texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2DMultisample)
 				{
-					auto& v = camera->getPixelViewport();
 					if (framebuffer && swapFramebuffer)
 					{
-						this->context_->blitFramebuffer(swapFramebuffer, v, nullptr, v);
+						this->context_->blitFramebuffer(swapFramebuffer, viewport, nullptr, viewport);
 						this->context_->discardFramebuffer(swapFramebuffer, hal::GraphicsClearFlagBits::AllBit);
 					}
 					else if (fbo == fbo_)
 					{
-						this->context_->blitFramebuffer(fbo, v, fbo2_, v);
+						this->context_->blitFramebuffer(fbo, viewport, fbo2_, viewport);
 						this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
-						this->context_->blitFramebuffer(fbo2_, v, nullptr, v);
+						this->context_->blitFramebuffer(fbo2_, viewport, nullptr, viewport);
 						this->context_->discardFramebuffer(fbo2_, hal::GraphicsClearFlagBits::AllBit);
 					}
 				}
 				else
 				{
-					auto& v = camera->getPixelViewport();
-					this->context_->blitFramebuffer(fbo, v, nullptr, v);
+					this->context_->blitFramebuffer(fbo, viewport, nullptr, viewport);
 					this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
 				}
 			}
 		}
-	}
-
-	void
-	ForwardPipeline::renderTile(const CompiledScene& scene, const math::int2& tileOrigin, const math::int2& tileSize)
-	{
 	}
 
 	void

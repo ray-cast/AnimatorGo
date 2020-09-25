@@ -9,13 +9,13 @@ namespace octoon
 	OctoonImplementSubClass(FirstPersonCameraComponent, GameComponent, "FirstPersonCamera")
 
 	FirstPersonCameraComponent::FirstPersonCameraComponent() noexcept
-		: speed_(0.5f)
+		: speed_(0.25f)
 		, wheelSpeed_(2.0f)
 		, gravity_(15)
 		, maxVelocityChange_(1.0)
 		, jumpHeight_(10)
-		, sensitivityX_(0.25f)
-		, sensitivityY_(0.25f)
+		, sensitivityX_(0.20f)
+		, sensitivityY_(0.20f)
 	{
 	}
 
@@ -154,7 +154,7 @@ namespace octoon
 				}
 
 				if (input->isButtonPressed(input::InputButton::Code::Right))
-					rotateCamera(input->getAxis(input::InputAxis::MouseX) * step, input->getAxis(input::InputAxis::MouseY) * step);
+					rotateCamera(input->getAxis(input::InputAxis::MouseX), input->getAxis(input::InputAxis::MouseY));
 			}
 		}
 	}

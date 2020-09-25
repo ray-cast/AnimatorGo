@@ -33,7 +33,7 @@ namespace octoon::video
 		, depthMaterial_(material::MeshDepthMaterial::create())
 	{
 		screenGeometry_ = std::make_shared<geometry::Geometry>();
-		screenGeometry_->setMesh(octoon::mesh::PlaneMesh::create(2, 2));
+		screenGeometry_->setMesh(octoon::mesh::PlaneMesh::create(2.0f, 2.0f));
 		screenGeometry_->setMaterial(copyMaterial_);
 	}
 
@@ -125,9 +125,9 @@ namespace octoon::video
 
 			for (std::uint32_t face = 0; face < faceCount; face++)
 			{
-				auto framebuffer = camera->getFramebuffer();
+				auto framebuffer = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
 
-				this->context_->setFramebuffer(framebuffer ? framebuffer : fbo_);
+				this->context_->setFramebuffer(framebuffer);
 				this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 				this->context_->setViewport(0, camera->getPixelViewport());
 
@@ -140,7 +140,7 @@ namespace octoon::video
 				if (camera->getRenderToScreen())
 				{
 					auto& v = camera->getPixelViewport();
-					this->context_->blitFramebuffer(framebuffer ? framebuffer : fbo_, v, nullptr, v);
+					this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
 				}
 
 				auto& swapFramebuffer = camera->getSwapFramebuffer();
@@ -150,6 +150,8 @@ namespace octoon::video
 					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
 					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 				}
+
+				this->context_->discardFramebuffer(framebuffer, hal::GraphicsClearFlagBits::DepthStencilBit);
 			}
 		}
 	}
@@ -159,7 +161,7 @@ namespace octoon::video
 	{
 		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
 		auto vp = compiled->camera->getPixelViewport();
-		this->renderTile(scene, math::int2(vp.x, vp.y), math::int2(vp.width, vp.height));
+		this->renderTile(scene, math::int2((int)vp.x, (int)vp.y), math::int2((int)vp.width, (int)vp.height));
 	}
 
 	void
@@ -173,7 +175,7 @@ namespace octoon::video
 		this->prepareShadowMaps(*compiled, compiled->lights, compiled->geometries);
 
 		auto camera = compiled->camera;
-		auto viewport = math::float4(tileOrigin.x, tileOrigin.y, tileSize.x, tileSize.y);
+		auto viewport = math::float4((float)tileOrigin.x, (float)tileOrigin.y, (float)tileSize.x, (float)tileSize.y);
 		auto& framebuffer = camera->getFramebuffer();
 		auto& swapFramebuffer = camera->getSwapFramebuffer();
 

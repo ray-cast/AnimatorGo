@@ -552,12 +552,6 @@ namespace octoon
 			{
 				auto fbo = framebuffer->downcast_pointer<GL45Framebuffer>();
 
-				GLenum target = GL_FRAMEBUFFER;
-				if (fbo == _readFramebuffer)
-					target = GL_READ_FRAMEBUFFER;
-				else if (fbo == _drawFramebuffer)
-					target = GL_DRAW_FRAMEBUFFER;
-
 				_attachments.clear();
 
 				const auto& layoutDesc = fbo->getFramebufferDesc().getFramebufferLayout()->getFramebufferLayoutDesc();
@@ -593,7 +587,7 @@ namespace octoon
 				}
 
 				if (!_attachments.empty())
-					glInvalidateFramebuffer(target, (GLsizei)_attachments.size(), _attachments.data());
+					glInvalidateNamedFramebufferData(fbo->getInstanceID(), (GLsizei)_attachments.size(), _attachments.data());
 			}
 		}
 

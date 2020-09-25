@@ -88,8 +88,10 @@ namespace octoon
 		case input::InputEvent::MouseWheelDown:
 			break;
 		case input::InputEvent::SizeChange:
+			GameObjectManager::instance()->sendMessage("feature:input:event", event);
 			break;
 		case input::InputEvent::SizeChangeDPI:
+			GameObjectManager::instance()->sendMessage("feature:input:event", event);
 			break;
 		case input::InputEvent::Drop:
 			{

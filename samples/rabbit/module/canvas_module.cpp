@@ -23,6 +23,18 @@ namespace rabbit
 		this->outputBuffer.resize(this->width * this->height);
 	}
 
+	void
+	CanvasModule::resize(std::uint32_t width, std::uint32_t height) noexcept
+	{
+		this->width = width;
+		this->height = height;
+
+		this->albedoBuffer.resize(this->width * this->height);
+		this->normalBuffer.resize(this->width * this->height);
+		this->colorBuffer.resize(this->width * this->height);
+		this->outputBuffer.resize(this->width * this->height);
+	}
+
 	void 
 	CanvasModule::load(octoon::runtime::json& reader) noexcept
 	{

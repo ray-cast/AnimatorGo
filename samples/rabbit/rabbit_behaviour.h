@@ -66,6 +66,9 @@ namespace rabbit
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
 	private:
+		void onInputEvent(const std::any& data) noexcept;
+
+	private:
 		void onActivate() noexcept(false) override;
 		void onDeactivate() noexcept override;
 

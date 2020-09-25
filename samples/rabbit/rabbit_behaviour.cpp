@@ -138,7 +138,10 @@ namespace rabbit
 		{
 			auto gameObjectManager = baseFeature->getGameObjectManager();
 			if (gameObjectManager)
+			{
 				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:event", std::bind(&RabbitBehaviour::onInputEvent, this, std::placeholders::_1));
+			}
 		}
 	}
 
@@ -369,6 +372,22 @@ namespace rabbit
 		}
 
 		return std::nullopt;
+	}
+
+	void
+	RabbitBehaviour::onInputEvent(const std::any& data) noexcept
+	{
+		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		switch (event.event)
+		{
+		case octoon::input::InputEvent::SizeChange:
+		case octoon::input::InputEvent::SizeChangeDPI:
+			if (event.change.w > 0 && event.change.h > 0)
+				this->profile_->canvasModule->resize(event.change.w, event.change.h);
+			break;
+		default:
+			return;
+		}
 	}
 
 	octoon::GameComponentPtr

@@ -131,11 +131,11 @@ namespace rabbit
 		summary_ = std::make_unique<QLabel>();
 		summary_->setContentsMargins(20, 0, 0, 0);
 
+		currentFrame_ = std::make_unique<QLabel>();
+		currentFrame_->setContentsMargins(20, 0, 0, 0);
+
 		timeTotal_ = std::make_unique<QLabel>();
 		timeTotal_->setContentsMargins(20, 0, 0, 0);
-
-		warning_ = std::make_unique<QLabel>();
-		warning_->setContentsMargins(20, 0, 0, 0);
 
 		backButton_ = std::make_unique<QToolButton>();
 		backButton_->setObjectName("render");
@@ -182,9 +182,8 @@ namespace rabbit
 		mainLayout_->addSpacing(10);
 		mainLayout_->addWidget(animation_.get());
 		mainLayout_->addWidget(summary_.get());
+		mainLayout_->addWidget(currentFrame_.get());
 		mainLayout_->addWidget(timeTotal_.get());
-		mainLayout_->addSpacing(10);
-		mainLayout_->addWidget(warning_.get());
 		mainLayout_->addStretch(100);
 		mainLayout_->addWidget(backButton_.get(), 0, Qt::AlignCenter);
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
@@ -219,7 +218,7 @@ namespace rabbit
 		videoRatioLayout_.reset();
 		backButton_.reset();
 		summary_.reset();
-		warning_.reset();
+		currentFrame_.reset();
 		frame_.reset();
 		start_.reset();
 		end_.reset();
@@ -375,7 +374,10 @@ namespace rabbit
 	{
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
+		{
 			behaviour->getProfile()->timeModule->startFrame = value;
+			this->update();
+		}
 	}
 
 	void
@@ -383,7 +385,10 @@ namespace rabbit
 	{
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
+		{
 			behaviour->getProfile()->timeModule->endFrame = value;
+			this->update();
+		}
 	}
 
 	void
@@ -393,11 +398,11 @@ namespace rabbit
 		if (behaviour)
 		{
 			auto playerComponent = behaviour->getComponent<PlayerComponent>();
-			auto time = std::max<int>(0, std::round(playerComponent->time() * 30.0f));
-			auto timeLength = std::max<int>(0, playerComponent->timeLength() * 30.0f);
-
-			start_->setValue(time);
-			end_->setValue(timeLength);
+			if (playerComponent)
+			{
+				auto time = std::max<int>(0, std::round(playerComponent->time() * 30.0f));
+				currentFrame_->setText(QString(u8"当前视频渲染帧数：%1").arg(time));
+			}
 		}
 	}
 
@@ -412,10 +417,12 @@ namespace rabbit
 
 			auto startFrame = start_->value();
 			auto endFrame = end_->value();
+			auto time = std::max<int>(0, std::round(playerComponent->time() * 30.0f));
 			auto timeLength = std::max<int>(1, (endFrame - startFrame) / 30.0f * behaviour->getProfile()->timeModule->recordFps);
 
 			animation_->setText(QString(u8"视频动作帧数：%1").arg(animLength));
-			summary_->setText(QString(u8"视频渲染帧数：%1").arg(timeLength));				
+			summary_->setText(QString(u8"视频渲染帧数：%1").arg(timeLength));	
+			currentFrame_->setText(QString(u8"当前视频渲染帧数：%1").arg(time));
 
 			if (select1_->isChecked())
 			{
@@ -425,7 +432,6 @@ namespace rabbit
 			{
 				backButton_->setEnabled(true);
 				timeTotal_->setText(QString(u8"视频渲染预估时间：%1分钟").arg((timeLength / 15 / 60)));
-				warning_->setText(QString(u8"总计消耗兔币：%1个").arg(0));
 			}
 		}
 	}

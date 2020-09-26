@@ -137,10 +137,10 @@ namespace rabbit
 		warning_ = std::make_unique<QLabel>();
 		warning_->setContentsMargins(20, 0, 0, 0);
 
-		okButton_ = std::make_unique<QToolButton>();
-		okButton_->setObjectName("render");
-		okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
-		okButton_->setContentsMargins(0, 0, 0, 10);
+		backButton_ = std::make_unique<QToolButton>();
+		backButton_->setObjectName("render");
+		backButton_->setText(u8"¿ªÊ¼äÖÈ¾");
+		backButton_->setContentsMargins(0, 0, 0, 10);
 
 		layout_ = std::make_unique<QHBoxLayout>();
 		layout_->addWidget(title_.get(), 0, Qt::AlignLeft);
@@ -186,11 +186,11 @@ namespace rabbit
 		mainLayout_->addSpacing(10);
 		mainLayout_->addWidget(warning_.get());
 		mainLayout_->addStretch(100);
-		mainLayout_->addWidget(okButton_.get(), 0, Qt::AlignCenter);
+		mainLayout_->addWidget(backButton_.get(), 0, Qt::AlignCenter);
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 
 		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
-		connect(okButton_.get(), SIGNAL(clicked()), this, SLOT(clickEvent()));
+		connect(backButton_.get(), SIGNAL(clicked()), this, SLOT(clickEvent()));
 		connect(select1_.get(), SIGNAL(toggled(bool)), this, SLOT(select1Event(bool)));
 		connect(select2_.get(), SIGNAL(toggled(bool)), this, SLOT(select2Event(bool)));
 		connect(speed1_.get(), SIGNAL(toggled(bool)), this, SLOT(speed1Event(bool)));
@@ -217,7 +217,7 @@ namespace rabbit
 		speed4_.reset();
 		speedGroup_.reset();
 		videoRatioLayout_.reset();
-		okButton_.reset();
+		backButton_.reset();
 		summary_.reset();
 		warning_.reset();
 		frame_.reset();
@@ -237,7 +237,7 @@ namespace rabbit
 				start_->setEnabled(false);
 				end_->setEnabled(false);
 				timer_->start();
-				okButton_->setText(u8"Í£Ö¹äÖÈ¾");
+				backButton_->setText(u8"Í£Ö¹äÖÈ¾");
 			}
 			else
 			{
@@ -261,7 +261,7 @@ namespace rabbit
 			timer_->stop();
 			start_->setEnabled(true);
 			end_->setEnabled(true);
-			okButton_->setText(u8"¿ªÊ¼äÖÈ¾");
+			backButton_->setText(u8"¿ªÊ¼äÖÈ¾");
 			behaviour->stopRecord();
 		}
 	}
@@ -293,7 +293,7 @@ namespace rabbit
 		{
 			behaviour->getProfile()->h265Module->setVideoQuality(quality);
 
-			if (okButton_->text() != u8"Í£Ö¹äÖÈ¾")
+			if (backButton_->text() != u8"Í£Ö¹äÖÈ¾")
 			{
 				QString fileName = QFileDialog::getSaveFileName(this, u8"Â¼ÖÆÊÓÆµ", "", tr("HDRi Files (*.mp4)"));
 				if (!fileName.isEmpty())
@@ -423,7 +423,7 @@ namespace rabbit
 			}
 			else
 			{
-				okButton_->setEnabled(true);
+				backButton_->setEnabled(true);
 				timeTotal_->setText(QString(u8"ÊÓÆµäÖÈ¾Ô¤¹ÀÊ±¼ä£º%1·ÖÖÓ").arg((timeLength / 15 / 60)));
 				warning_->setText(QString(u8"×Ü¼ÆÏûºÄÍÃ±Ò£º%1¸ö").arg(0));
 			}

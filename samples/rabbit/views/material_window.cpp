@@ -163,18 +163,20 @@ namespace rabbit
 		: QWidget(widget)
 		, behaviour_(behaviour)
 	{
-		okButton_ = new QToolButton;
-		okButton_->setText(u8"返回");
+		backButton_ = new QToolButton;
+		backButton_->setIcon(QIcon::fromTheme(":res/icons/back.png"));
+		backButton_->setIconSize(QSize(24, 24));
 
 		title_ = new QLabel();
-		title_->setText(u8"材质");
+		title_->setText(u8"材质属性");
 
 		closeButton_ = new QToolButton();
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"关闭");
 
 		titleLayout_ = new QHBoxLayout();
-		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
+		titleLayout_->addWidget(backButton_, 0, Qt::AlignLeft);
+		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
@@ -205,22 +207,33 @@ namespace rabbit
 		this->albedoColor_.setWindowModality(Qt::ApplicationModal);
 		this->emissiveColor_.setWindowModality(Qt::ApplicationModal);
 
+		auto contentLayout = new QVBoxLayout();
+		contentLayout->addWidget(this->albedo_.spoiler, 0,Qt::AlignTop);
+		contentLayout->addWidget(this->opacity_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->normal_.spoiler, 0,  Qt::AlignTop);
+		contentLayout->addWidget(this->roughness_.spoiler, 0,  Qt::AlignTop);
+		contentLayout->addWidget(this->specular_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->metalness_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->anisotropy_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addStretch(500);
+
+		auto contentWidget = new QWidget;
+		contentWidget->setLayout(contentLayout);
+
+		auto contentWidgetArea = new QScrollArea();
+		contentWidgetArea->setWidget(contentWidget);
+		contentWidgetArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		contentWidgetArea->setWidgetResizable(true);
+
 		auto mainLayout = new QVBoxLayout(this);
 		mainLayout->addLayout(titleLayout_);
-		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignTop);
-		mainLayout->addWidget(this->albedo_.spoiler, 0,Qt::AlignTop);
-		mainLayout->addWidget(this->opacity_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->normal_.spoiler, 0,  Qt::AlignTop);
-		mainLayout->addWidget(this->roughness_.spoiler, 0,  Qt::AlignTop);
-		mainLayout->addWidget(this->specular_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->metalness_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->anisotropy_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
-		mainLayout->addStretch(500);
-		mainLayout->addWidget(okButton_, 0, Qt::AlignBottom | Qt::AlignRight);
+		mainLayout->addWidget(this->createSummary(), 0, Qt::AlignCenter);
+		mainLayout->addWidget(contentWidgetArea);
+		mainLayout->setSpacing(5);
 		mainLayout->setContentsMargins(10, 10, 10, 10);
 
 		connect(albedo_.image, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
@@ -841,7 +854,7 @@ namespace rabbit
 
 		QVBoxLayout* summaryLayout = new QVBoxLayout;
 		summaryLayout->setMargin(0);
-		summaryLayout->setSpacing(2);
+		summaryLayout->setSpacing(4);
 		summaryLayout->addWidget(imageLabel_, 0, Qt::AlignCenter);
 		summaryLayout->addWidget(textLabel_, 0, Qt::AlignCenter);
 		summaryLayout->setContentsMargins(0, 0, 10, 0);
@@ -1246,19 +1259,13 @@ namespace rabbit
 		modifyWidget_ = new MaterialEditWindow(this, behaviour);
 		modifyWidget_->setFixedWidth(340);
 
-		modifyMaterialArea_ = new QScrollArea();
-		modifyMaterialArea_->setWidget(modifyWidget_);
-		modifyMaterialArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		modifyMaterialArea_->setWidgetResizable(true);
-		modifyMaterialArea_->hide();
-
 		mainLayout_ = new QVBoxLayout(this);
 		mainLayout_->addWidget(listPanel_, 0, Qt::AlignTop | Qt::AlignCenter);
-		mainLayout_->addWidget(modifyMaterialArea_, 0, Qt::AlignTop | Qt::AlignCenter);
+		mainLayout_->addWidget(modifyWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addStretch(500);
 		mainLayout_->setContentsMargins(0, 0, 0, 0);
 
-		connect(modifyWidget_->okButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
+		connect(modifyWidget_->backButton_, SIGNAL(clicked()), this, SLOT(okEvent()));
 		connect(listPanel_->closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(modifyWidget_->closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(listPanel_->listWidget_, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
@@ -1294,8 +1301,8 @@ namespace rabbit
 	MaterialWindow::showEvent(QShowEvent* event) noexcept
 	{
 		QMargins margins = mainLayout_->contentsMargins();
-		modifyMaterialArea_->hide();
-		modifyMaterialArea_->setMinimumSize(this->size());
+		modifyWidget_->hide();
+		modifyWidget_->setMinimumSize(this->size());
 		listPanel_->setMinimumSize(this->size());
 		listPanel_->show();
 		this->updateList();
@@ -1311,7 +1318,7 @@ namespace rabbit
 	void
 	MaterialWindow::okEvent()
 	{
-		modifyMaterialArea_->hide();
+		modifyWidget_->hide();
 		listPanel_->show();
 	}
 
@@ -1352,7 +1359,7 @@ namespace rabbit
 				{
 					listPanel_->hide();
 					modifyWidget_->setMaterial(material);
-					modifyMaterialArea_->show();
+					modifyWidget_->show();
 				}
 			}
 		}

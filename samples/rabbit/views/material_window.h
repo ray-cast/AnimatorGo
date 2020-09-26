@@ -167,7 +167,7 @@ namespace rabbit
 		QLabel* imageLabel_;
 		QColorDialog albedoColor_;
 		QColorDialog emissiveColor_;
-		QToolButton* okButton_;
+		QToolButton* backButton_;
 		std::shared_ptr<octoon::material::MeshStandardMaterial> material_;
 		octoon::GameObjectPtr behaviour_;
 	};

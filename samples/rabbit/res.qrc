@@ -42,6 +42,7 @@
 			<file>res/icons/environment-on.png</file>
 			<file>res/icons/handle.png</file>
 			<file>res/icons/material.png</file>
+			<file>res/icons/back.png</file>
 			<file>res/qss/default.qss</file>
     </qresource>
 </RCC>

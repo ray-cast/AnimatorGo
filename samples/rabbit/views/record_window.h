@@ -67,7 +67,7 @@ namespace rabbit
 		std::unique_ptr<QToolButton> speed2_;
 		std::unique_ptr<QToolButton> speed3_;
 		std::unique_ptr<QToolButton> speed4_;
-		std::unique_ptr<QToolButton> okButton_;
+		std::unique_ptr<QToolButton> backButton_;
 		std::unique_ptr<QLabel> startLabel_;
 		std::unique_ptr<QLabel> endLabel_;
 		std::unique_ptr<QSpinBox> start_;

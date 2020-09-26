@@ -14,6 +14,8 @@
 
 namespace rabbit
 {
+	constexpr auto imageFormat = "All Files(*.jpeg *.jpg *.png *.tga );; JPEG Files (*.jpeg *.jpg);; PNG Files (*.png);; TGA Files (*.tga)";
+
 	class DoubleSpinBox final : public QDoubleSpinBox
 	{
 	public:
@@ -30,7 +32,7 @@ namespace rabbit
 		}
 	};
 
-	QIcon createColorIcon(QColor color, int w = 50, int h = 25)
+	QIcon createColorIcon(QColor color, int w = 50, int h = 26)
 	{
 		QPixmap pixmap(w, h);
 		QPainter painter(&pixmap);
@@ -586,7 +588,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::colorMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setAlbedoMap(path);
 	}
@@ -594,7 +596,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::opacityMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setOpacityMap(path);
 	}
@@ -602,7 +604,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::normalMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setNormalMap(path);
 	}
@@ -610,7 +612,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::specularMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setSpecularMap(path);
 	}
@@ -618,7 +620,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::smoothnessMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setRoughnessMap(path);
 	}
@@ -626,7 +628,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::metalnessMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setMetalnessMap(path);
 	}
@@ -634,7 +636,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::anisotropyMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setAnisotropyMap(path);
 	}
@@ -642,7 +644,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::sheenMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setSheenMap(path);
 	}
@@ -650,7 +652,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::clearcoatMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setClearCoatMap(path);
 	}
@@ -658,7 +660,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::clearcoatRoughnessMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setClearCoatRoughnessMap(path);
 	}
@@ -666,7 +668,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::subsurfaceMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setSubsurfaceMap(path);
 	}
@@ -674,7 +676,7 @@ namespace rabbit
 	void
 	MaterialEditWindow::emissiveMapClickEvent()
 	{
-		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("All Files(*.jpeg *.jpg *.png)"));
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setEmissiveMap(path);
 	}

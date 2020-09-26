@@ -120,10 +120,12 @@ namespace rabbit
 		if (!context->profile->entitiesModule->objects.empty())
 		{
 			context->profile->entitiesModule->objects.clear();
+			context->profile->entitiesModule->rigidbodies.clear();
 			context->profile->entitiesModule->camera.reset();
 		}
 
 		octoon::GameObjects objects;
+		octoon::GameObjects rigidbodies;
 
 		auto stream = octoon::io::ifstream(std::string(path));
 		auto pmm = octoon::PMMFile::load(stream).value();
@@ -144,7 +146,9 @@ namespace rabbit
 
 		for (auto& it : pmm.model)
 		{
-			auto model = octoon::MeshLoader::load(it.path);
+			GameObjects rigidbody;
+
+			auto model = octoon::MeshLoader::load(it.path, rigidbody);
 			if (model)
 			{
 				AnimationClips<float> boneClips;
@@ -158,6 +162,12 @@ namespace rabbit
 				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
 
 				objects.emplace_back(std::move(model));
+
+				for (auto& it : rigidbody)
+				{
+					if (!it->getParent())
+						rigidbodies.emplace_back(std::move(it));
+				}
 			}
 			else
 			{
@@ -168,6 +178,7 @@ namespace rabbit
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = camera;
 		context->profile->entitiesModule->objects = objects;
+		context->profile->entitiesModule->rigidbodies = rigidbodies;
 
 		this->sendMessage("rabbit:project:open");
 	}
@@ -175,9 +186,18 @@ namespace rabbit
 	bool
 	EntitiesComponent::importModel(std::string_view path) noexcept
 	{
-		auto model = octoon::MeshLoader::load(path);
+		GameObjects rigidbody;
+
+		auto model = octoon::MeshLoader::load(path, rigidbody);
 		if (model)
 		{
+			auto& rigidbodies = this->getContext()->profile->entitiesModule->rigidbodies;
+			for (auto& it : rigidbody)
+			{
+				if (!it->getParent())
+					rigidbodies.emplace_back(std::move(it));
+			}
+
 			this->getContext()->profile->entitiesModule->objects.push_back(model);
 			return true;
 		}

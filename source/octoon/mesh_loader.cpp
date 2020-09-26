@@ -331,7 +331,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	MeshLoader::load(std::string_view filepath, bool cache) noexcept(false)
+	MeshLoader::load(std::string_view filepath, GameObjects& rigidbody, bool cache) noexcept(false)
 	{
 		model::Model model;
 
@@ -343,7 +343,6 @@ namespace octoon
 			GameObjectPtr actor;
 
 			GameObjects bones;
-			GameObjects rigidbody;
 			GameObjects joints;
 
 			createBones(model, bones);

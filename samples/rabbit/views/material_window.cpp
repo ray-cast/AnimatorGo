@@ -1162,7 +1162,7 @@ namespace rabbit
 		this->setViewMode(QListView::IconMode);
 		this->setMovement(QListView::Static);
 		this->setDefaultDropAction(Qt::DropAction::MoveAction);
-		this->setSpacing(0);
+		this->setSpacing(2);
 		this->setStyleSheet("background:transparent;");
 		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
@@ -1226,6 +1226,7 @@ namespace rabbit
 		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
 		titleLayout_->addStretch(100);
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
+		titleLayout_->setContentsMargins(10, 0, 10, 0);
 
 		listWidget_ = new MaterialListWindow;
 		listWidget_->setIconSize(QSize(100, 100));
@@ -1394,7 +1395,7 @@ namespace rabbit
 
 				QListWidgetItem* item = new QListWidgetItem;
 				item->setData(Qt::UserRole, QString::fromStdString(mat["uuid"]));
-				item->setSizeHint(QSize(110, 130));
+				item->setSizeHint(QSize(106, 130));
 
 				QLabel* imageLabel = new QLabel;
 				if (textureName.empty())

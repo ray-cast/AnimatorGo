@@ -703,7 +703,7 @@ vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in Geometri
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) ) + 1e-5;
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotVH = saturate( dot( geometry.viewDir, halfDir ) );
 
@@ -784,7 +784,7 @@ vec3 BRDF_Specular_Sheen( const in IncidentLight incidentLight, const in Geometr
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) ) + 1e-5;
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
@@ -807,7 +807,7 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) ) + 1e-5;
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
@@ -831,7 +831,7 @@ vec3 BRDF_Specular_GGX_Aniso( const in IncidentLight incidentLight, const in Geo
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
+	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) ) + 1e-5;
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 
@@ -1010,8 +1010,6 @@ vec3 BRDF_Specular_BlinnPhong( const in IncidentLight incidentLight, const in Ge
 
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
-	//float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	//float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 

@@ -164,8 +164,8 @@ namespace rabbit
 		, behaviour_(behaviour)
 	{
 		backButton_ = new QToolButton;
-		backButton_->setIcon(QIcon::fromTheme(":res/icons/back.png"));
-		backButton_->setIconSize(QSize(24, 24));
+		backButton_->setObjectName("back");
+		backButton_->setIconSize(QSize(20, 20));
 
 		title_ = new QLabel();
 		title_->setText(u8"材质属性");
@@ -176,7 +176,9 @@ namespace rabbit
 
 		titleLayout_ = new QHBoxLayout();
 		titleLayout_->addWidget(backButton_, 0, Qt::AlignLeft);
+		titleLayout_->addStretch(100);
 		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
+		titleLayout_->addStretch(100);
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
@@ -1220,7 +1222,9 @@ namespace rabbit
 		closeButton_->setToolTip(u8"关闭");
 
 		titleLayout_ = new QHBoxLayout();
-		titleLayout_->addWidget(title_, 0, Qt::AlignLeft);
+		titleLayout_->addStretch(100);
+		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
+		titleLayout_->addStretch(100);
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		listWidget_ = new MaterialListWindow;

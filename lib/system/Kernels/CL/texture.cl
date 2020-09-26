@@ -113,6 +113,25 @@ float4 Texture_Sample2D(float2 uv, TEXTURE_ARG_LIST_IDX(texidx))
             return lerp(lerp(val00, val01, wx), lerp(val10, val11, wx), wy);
         }
 
+        case BGRA8:
+        {
+            __global uchar4 const* mydatac = (__global uchar4 const*)mydata;
+
+            // Get 4 values and convert to float
+            uchar4 valu00 = *(mydatac + width * y0 + x0);
+            uchar4 valu01 = *(mydatac + width * y0 + x1);
+            uchar4 valu10 = *(mydatac + width * y1 + x0);
+            uchar4 valu11 = *(mydatac + width * y1 + x1);
+
+            float4 val00 = make_float4((float)valu00.z / 255.f, (float)valu00.y / 255.f, (float)valu00.x / 255.f, (float)valu00.w / 255.f);
+            float4 val01 = make_float4((float)valu01.z / 255.f, (float)valu01.y / 255.f, (float)valu01.x / 255.f, (float)valu01.w / 255.f);
+            float4 val10 = make_float4((float)valu10.z / 255.f, (float)valu10.y / 255.f, (float)valu10.x / 255.f, (float)valu10.w / 255.f);
+            float4 val11 = make_float4((float)valu11.z / 255.f, (float)valu11.y / 255.f, (float)valu11.x / 255.f, (float)valu11.w / 255.f);
+
+            // Filter and return the result
+            return lerp(lerp(val00, val01, wx), lerp(val10, val11, wx), wy);
+        }
+
         default:
         {
             return make_float4(0.f, 0.f, 0.f, 0.f);

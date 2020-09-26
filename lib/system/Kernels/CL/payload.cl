@@ -254,6 +254,7 @@ typedef struct _Volume
 enum TextureFormat
 {
     UNKNOWN,
+    BGRA8,
     RGBA8,
     RGBA16,
     RGBA32

@@ -35,10 +35,16 @@ namespace octoon::video
 	{
 		switch (desc.getTexFormat())
 		{
+		case hal::GraphicsFormat::B8G8R8SRGB:
+		case hal::GraphicsFormat::B8G8R8SNorm:
+		case hal::GraphicsFormat::B8G8R8UNorm:
 		case hal::GraphicsFormat::R8G8B8SRGB:
 		case hal::GraphicsFormat::R8G8B8SNorm:
 		case hal::GraphicsFormat::R8G8B8UNorm:
 			return align16(desc.getWidth() * desc.getHeight() * sizeof(math::uchar4));
+		case hal::GraphicsFormat::B8G8R8A8SRGB:
+		case hal::GraphicsFormat::B8G8R8A8SNorm:
+		case hal::GraphicsFormat::B8G8R8A8UNorm:
 		case hal::GraphicsFormat::R8G8B8A8SRGB:
 		case hal::GraphicsFormat::R8G8B8A8SNorm:
 		case hal::GraphicsFormat::R8G8B8A8UNorm:
@@ -59,6 +65,13 @@ namespace octoon::video
 	{
 		switch (texture)
 		{
+		case hal::GraphicsFormat::B8G8R8SRGB:
+		case hal::GraphicsFormat::B8G8R8SNorm:
+		case hal::GraphicsFormat::B8G8R8UNorm:
+		case hal::GraphicsFormat::B8G8R8A8SRGB:
+		case hal::GraphicsFormat::B8G8R8A8SNorm:
+		case hal::GraphicsFormat::B8G8R8A8UNorm:
+			return ClwScene::TextureFormat::BGRA8;
 		case hal::GraphicsFormat::R8G8B8SRGB:
 		case hal::GraphicsFormat::R8G8B8SNorm:
 		case hal::GraphicsFormat::R8G8B8UNorm:
@@ -302,6 +315,8 @@ namespace octoon::video
 		
 		switch (desc.getTexFormat())
 		{
+		case hal::GraphicsFormat::B8G8R8A8SRGB:
+		case hal::GraphicsFormat::B8G8R8A8UNorm:
 		case hal::GraphicsFormat::R8G8B8A8SRGB:
 		case hal::GraphicsFormat::R8G8B8A8UNorm:
 		case hal::GraphicsFormat::R16G16B16A16SFloat:
@@ -315,6 +330,9 @@ namespace octoon::video
 			}
 		}
 		break;
+		case hal::GraphicsFormat::B8G8R8SRGB:
+		case hal::GraphicsFormat::B8G8R8SNorm:
+		case hal::GraphicsFormat::B8G8R8UNorm:
 		case hal::GraphicsFormat::R8G8B8SRGB:
 		case hal::GraphicsFormat::R8G8B8SNorm:
 		case hal::GraphicsFormat::R8G8B8UNorm:

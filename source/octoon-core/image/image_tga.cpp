@@ -48,6 +48,14 @@ namespace octoon
 
 		enum : std::uint8_t
 		{
+			TGA_BottomLeft = 0,
+			TGA_BottomRight = 1 << 3,
+			TGA_TopLeft = 1 << 4,
+			TGA_TopRight = 1 << 3 | 1 << 4,
+		};
+
+		enum : std::uint8_t
+		{
 			TGA_TYPE_PALETTE = 1,
 			TGA_TYPE_RGB = 2,
 			TGA_TYPE_GRAY = 3,
@@ -143,15 +151,124 @@ namespace octoon
 
 				if (hdr.pixel_size == TGA_BPP_24)
 				{
-					auto data = (char*)image.data();
-					for (std::size_t i = 0; i < streamLength; i += 3)
-						std::swap(data[i], data[i+2]);
+					auto origin = hdr.attributes & (1 << 3 | 1 << 4);
+
+					if (origin == TGA_TopLeft)
+					{
+						auto data = (char*)image.data();
+						for (std::size_t i = 0; i < streamLength; i += 3)
+							std::swap(data[i], data[i + 2]);
+					}
+					else if (origin == TGA_TopRight)
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows; y++)
+						{
+							for (std::uint32_t x = 0; x < columns / 2; x++)
+							{
+								auto src = (y * columns + x) * 3;
+								auto dst = (y * columns + (columns - x - 1)) * 3;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+							}
+						}
+					}
+					else if (origin == TGA_BottomRight)
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows / 2; y++)
+						{
+							for (std::uint32_t x = 0; x < columns; x++)
+							{
+								auto src = (y * columns + x) * 3;
+								auto dst = ((rows - y - 1) * columns + (columns - x - 1)) * 3;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+							}
+						}
+					}
+					else
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows / 2; y++)
+						{
+							for (std::uint32_t x = 0; x < columns; x++)
+							{
+								auto src = (y * columns + x) * 3;
+								auto dst = ((rows - y - 1) * columns + x) * 3;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+							}
+						}
+					}
 				}
 				else if (hdr.pixel_size == TGA_BPP_32)
 				{
-					auto data = (char*)image.data();
-					for (std::size_t i = 0; i < streamLength; i += 4)
-						std::swap(data[i], data[i + 2]);
+					auto origin = hdr.attributes & (1 << 3 | 1 << 4);
+
+					if (origin == TGA_TopLeft)
+					{
+						auto data = (char*)image.data();
+						for (std::size_t i = 0; i < streamLength; i += 4)
+							std::swap(data[i], data[i + 2]);
+					}
+					else if (origin == TGA_TopRight)
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows; y++)
+						{
+							for (std::uint32_t x = 0; x < columns / 2; x++)
+							{
+								auto src = (y * columns + x) * 4;
+								auto dst = (y * columns + (columns - x - 1)) * 4;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+								std::swap(data[src + 3], data[dst + 3]);
+							}
+						}
+					}
+					else if (origin == TGA_BottomRight)
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows / 2; y++)
+						{
+							for (std::uint32_t x = 0; x < columns; x++)
+							{
+								auto src = (y * columns + x) * 4;
+								auto dst = ((rows - y - 1) * columns + (columns - x - 1)) * 4;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+								std::swap(data[src + 3], data[dst + 3]);
+							}
+						}
+					}
+					else
+					{
+						auto data = (char*)image.data();
+						for (std::uint32_t y = 0; y < rows / 2; y++)
+						{
+							for (std::uint32_t x = 0; x < columns; x++)
+							{
+								auto src = (y * columns + x) * 4;
+								auto dst = ((rows - y - 1) * columns + x) * 4;
+
+								std::swap(data[src], data[dst + 2]);
+								std::swap(data[src + 1], data[dst + 1]);
+								std::swap(data[src + 2], data[dst]);
+								std::swap(data[src + 3], data[dst + 3]);
+							}
+						}
+					}
 				}
 			}
 			break;

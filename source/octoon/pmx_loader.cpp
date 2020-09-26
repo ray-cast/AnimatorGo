@@ -606,10 +606,16 @@ namespace octoon
 			else if (pmx.header.sizeOfTexture == 4)
 				limits = std::numeric_limits<PmxUInt32>::max();
 
-			if (it.TextureIndex < limits)
+			try
 			{
-				std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
-				material->setColorMap(TextureLoader::load(rootPath + "/" + u8_conv));
+				if (it.TextureIndex < limits)
+				{
+					std::string u8_conv = cv.to_bytes(pmx.textures[it.TextureIndex].name);
+					material->setColorMap(TextureLoader::load(rootPath + "/" + u8_conv));
+				}
+			}
+			catch (...)
+			{
 			}
 
 			bool hasAlphaTexture = it.TextureIndex < limits ? std::wstring_view(pmx.textures[it.TextureIndex].name).find(L".png") != std::string::npos : false;

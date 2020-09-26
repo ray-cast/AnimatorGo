@@ -113,7 +113,7 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onUpdate() noexcept
 	{
-		float step = std::min(1.0f, math::pow(accelerationSpeed_ / 10, 2)) * speed_;
+		float step = std::min(1.0f, math::pow(accelerationSpeed_ / 6, 2)) * speed_;
 
 		auto timerFeature = this->getFeature<TimerFeature>();
 		if (timerFeature)
@@ -176,8 +176,8 @@ namespace octoon
 
 				if (input->isButtonPressed(input::InputButton::Code::Middle))
 				{
-					auto x = input->getAxis(input::InputAxis::MouseX) * 0.025;
-					auto y = input->getAxis(input::InputAxis::MouseY) * 0.025;
+					auto x = input->getAxis(input::InputAxis::MouseX) * 0.025f;
+					auto y = input->getAxis(input::InputAxis::MouseY) * 0.025f;
 					upCamera(y);
 					yawCamera(-x);
 				}

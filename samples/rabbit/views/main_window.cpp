@@ -1025,10 +1025,6 @@ namespace rabbit
 	void
 	MainWindow::onUpdateSignal() noexcept
 	{
-#if defined(_WINDOWS) && !defined(_DEBUG)
-		if (IsDebuggerPresent())
-			std::exit(0);
-#endif
 		if (!init_flag)
 		{
 			init_flag = true;

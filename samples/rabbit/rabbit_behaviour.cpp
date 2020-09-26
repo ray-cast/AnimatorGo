@@ -6,19 +6,11 @@ namespace rabbit
 
 	RabbitBehaviour::RabbitBehaviour() noexcept
 	{
-#if defined(_WINDOWS) && !defined(_DEBUG)
-		if (IsDebuggerPresent())
-			std::exit(0);
-#endif
 	}
 
 	RabbitBehaviour::RabbitBehaviour(const std::shared_ptr<RabbitProfile>& profile) noexcept
 		: profile_(profile)
 	{
-#if defined(_WINDOWS) && !defined(_DEBUG)
-		if (IsDebuggerPresent())
-			std::exit(0);
-#endif
 	}
 
 	RabbitBehaviour::~RabbitBehaviour() noexcept

@@ -2373,9 +2373,9 @@ namespace octoon::video
 		else
 		{
 			octoon::hal::GraphicsTexturePtr texture;
-			if (material->get("map", texture))
+			if (material->get("map", texture) && texture)
 				fragmentShader += "#define USE_MAP\n";
-			if (material->get("opacityMap", texture))
+			if (material->get("opacityMap", texture) && texture)
 				fragmentShader += "#define USE_OPACITYMAP\n";
 		}
 

@@ -4,6 +4,7 @@
 #include <regex>
 #include <map>
 #include <thread>
+#include <filesystem>
 
 #ifdef MI_PLATFORM_WINDOWS
 #	ifdef UNICODE
@@ -505,12 +506,9 @@ namespace octoon
 		for (Material::iterator it = out_material.begin(); it != out_material.end(); ++it)
 		{
 			Material_parameter& param = it->second;
-
-			// Do not attempt to bake empty paths
 			if (param.bake_path.empty())
 				continue;
 
-			// Create baker for current path
 			mi::base::Handle<const mi::neuraylib::IBaker> baker(distiller_api->create_baker(cm, param.bake_path.c_str(), baker_resource));
 			if (!baker.is_valid_interface())
 				continue;
@@ -520,26 +518,22 @@ namespace octoon
 				mi::base::Handle<mi::IData> value;
 				if (param.value_type == "Rgb_fp")
 				{
-					mi::base::Handle<mi::IColor> v(
-						transaction->create<mi::IColor>());
+					mi::base::Handle<mi::IColor> v(transaction->create<mi::IColor>());
 					value = v->get_interface<mi::IData>();
 				}
 				else if (param.value_type == "Float32<3>")
 				{
-					mi::base::Handle<mi::IFloat32_3> v(
-						transaction->create<mi::IFloat32_3>());
+					mi::base::Handle<mi::IFloat32_3> v(transaction->create<mi::IFloat32_3>());
 					value = v->get_interface<mi::IData>();
 				}
 				else if (param.value_type == "Float32")
 				{
-					mi::base::Handle<mi::IFloat32> v(
-						transaction->create<mi::IFloat32>());
+					mi::base::Handle<mi::IFloat32> v(transaction->create<mi::IFloat32>());
 					value = v->get_interface<mi::IData>();
 				}
 				else
 				{
-					std::cout << "Ignoring unsupported value type '" << param.value_type
-						<< "'" << std::endl;
+					std::cout << "Ignoring unsupported value type '" << param.value_type << "'" << std::endl;
 					continue;
 				}
 
@@ -564,7 +558,7 @@ namespace octoon
 	class Canvas_exporter
 	{
 		bool m_in_parallel = true;
-		std::map<std::string/*filename*/, mi::base::Handle<const mi::neuraylib::ICanvas>> m_canvases;
+		std::map<std::string, mi::base::Handle<const mi::neuraylib::ICanvas>> m_canvases;
 
 	public:
 		Canvas_exporter(bool parallel)
@@ -637,11 +631,10 @@ namespace octoon
 			{
 				std::cout << "texture." << std::endl;
 
-				// write texture to disc
 				std::stringstream file_name;
-				file_name << material_name << "-" << param_name << ".png";
+				file_name << "cache/textures/" << material_name << "-" << param_name << ".png";
 
-				if (save_baked_textures)
+				if (!std::filesystem::exists(file_name.str()) && save_baked_textures)
 					canvas_exporter.add_canvas(file_name.str(), param.texture.get());
 			}
 			else if (param.value)
@@ -875,7 +868,7 @@ namespace octoon
 	{
 		mi::neuraylib::Baker_resource   baker_resource = mi::neuraylib::BAKE_ON_CPU;
 		mi::Uint32                      baking_samples = 4;
-		mi::Uint32                      baking_resolution = 1024;
+		mi::Uint32                      baking_resolution = 512;
 		bool save_baked_textures = true;
 		bool                            parallel = true;
 
@@ -947,12 +940,14 @@ namespace octoon
 						auto& param_name = it.first;
 						auto& param = it.second;
 
+						std::stringstream file_name;
+						if (param.texture)
+							file_name << "cache/textures/" << simple_name << "-" << param_name << ".png";
+
 						if (param_name == "base_color")
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setColor(math::float3(1.0f, 1.0f, 1.0f));
 								material->setColorMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -970,8 +965,6 @@ namespace octoon
 
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setOpacity(1.0f);
 								material->setOpacityMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -999,8 +992,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setNormalMap(octoon::TextureLoader::load(file_name.str()));
 							}
 						}
@@ -1008,8 +999,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setRoughness(1.0f);
 								material->setRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1025,8 +1014,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setMetalness(1.0f);
 								material->setMetalnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1042,8 +1029,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setAnisotropy(1.0f);
 								material->setAnisotropyMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1059,8 +1044,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setSpecular(1.0f);
 								material->setSpecularMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1076,8 +1059,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setClearCoat(1.0f);
 								material->setClearCoatMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1093,8 +1074,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setClearCoatRoughness(1.0f);
 								material->setClearCoatRoughnessMap(octoon::TextureLoader::load(file_name.str()));
 							}
@@ -1110,8 +1089,6 @@ namespace octoon
 						{
 							if (param.texture)
 							{
-								std::stringstream file_name;
-								file_name << simple_name << "-" << param_name << ".png";
 								material->setEmissive(math::float3(1.0f, 1.0f, 1.0f));
 								material->setEmissiveMap(octoon::TextureLoader::load(file_name.str()));
 							}

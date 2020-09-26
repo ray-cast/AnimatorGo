@@ -340,7 +340,7 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap)
+	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap, int w, int h)
 	{
 		assert(material);
 
@@ -384,7 +384,7 @@ namespace rabbit
 				}
 
 				pixmap.convertFromImage(image);
-				pixmap = pixmap.scaled(128, 128, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+				pixmap = pixmap.scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
 				colorTexture->unmap();
 			}

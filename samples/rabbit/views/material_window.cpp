@@ -30,7 +30,7 @@ namespace rabbit
 		}
 	};
 
-	QIcon createColorIcon(QColor color, int w = 50, int h = 22)
+	QIcon createColorIcon(QColor color, int w = 50, int h = 25)
 	{
 		QPixmap pixmap(w, h);
 		QPainter painter(&pixmap);
@@ -69,7 +69,7 @@ namespace rabbit
 
 		if (flags & CreateFlags::ColorBit)
 		{
-			this->color = new QPushButton;
+			this->color = new QToolButton;
 			this->color->setIconSize(QSize(50, 30));
 
 			textLayout->addWidget(this->color, 0, Qt::AlignRight);
@@ -875,7 +875,7 @@ namespace rabbit
 		{
 			auto materialComponent = behaviour->getComponent<MaterialComponent>();
 			QPixmap pixmap;
-			materialComponent->repaintMaterial(this->material_, pixmap);
+			materialComponent->repaintMaterial(this->material_, pixmap, imageLabel_->width(), imageLabel_->height());
 			this->material_->setDirty(true);
 			imageLabel_->setPixmap(pixmap);
 		}
@@ -1162,7 +1162,7 @@ namespace rabbit
 		this->setViewMode(QListView::IconMode);
 		this->setMovement(QListView::Static);
 		this->setDefaultDropAction(Qt::DropAction::MoveAction);
-		this->setSpacing(12);
+		this->setSpacing(0);
 		this->setStyleSheet("background:transparent;");
 		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
@@ -1228,13 +1228,13 @@ namespace rabbit
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		listWidget_ = new MaterialListWindow;
-		listWidget_->setIconSize(QSize(210, 210));
+		listWidget_->setIconSize(QSize(100, 100));
 
 		mainLayout_ = new QVBoxLayout(this);
 		mainLayout_->addLayout(titleLayout_);
 		mainLayout_->addWidget(listWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addStretch(500);
-		mainLayout_->setContentsMargins(10, 10, 10, 10);
+		mainLayout_->setContentsMargins(0, 10, 0, 5);
 	}
 
 	MaterialListPanel::~MaterialListPanel() noexcept
@@ -1394,7 +1394,7 @@ namespace rabbit
 
 				QListWidgetItem* item = new QListWidgetItem;
 				item->setData(Qt::UserRole, QString::fromStdString(mat["uuid"]));
-				item->setSizeHint(QSize(130, 160));
+				item->setSizeHint(QSize(110, 130));
 
 				QLabel* imageLabel = new QLabel;
 				if (textureName.empty())
@@ -1403,7 +1403,7 @@ namespace rabbit
 					if (material)
 					{
 						QPixmap pixmap;
-						materialComponent->repaintMaterial(material, pixmap);
+						materialComponent->repaintMaterial(material, pixmap, 100, 100);
 						imageLabel->setPixmap(pixmap);
 					}
 				}
@@ -1418,6 +1418,7 @@ namespace rabbit
 
 				QLabel* txtLabel = new QLabel(QString::fromStdString(mat["name"]));
 				txtLabel->setFixedHeight(30);
+				txtLabel->setToolTip(txtLabel->text());
 
 				QVBoxLayout* widgetLayout = new QVBoxLayout;
 				widgetLayout->setMargin(0);

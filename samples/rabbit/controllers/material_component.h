@@ -32,7 +32,7 @@ namespace rabbit
 		void importMtl(std::string_view path) noexcept(false);
 		void importMdl(std::string_view path) noexcept(false);
 
-		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap);
+		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap, int w, int h);
 
 		std::optional<std::string> getSelectedMaterial();
 

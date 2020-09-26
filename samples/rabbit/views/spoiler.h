@@ -13,7 +13,7 @@ namespace rabbit
 	{
 		Q_OBJECT
 	public:
-		explicit Spoiler(const QString& title = "", const int animationDuration = 200, QWidget* parent = 0);
+		explicit Spoiler(const QString& title = "", const int animationDuration = 100, QWidget* parent = 0);
 		void setContentLayout(QLayout& contentLayout);
 
 	private:

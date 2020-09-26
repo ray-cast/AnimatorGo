@@ -128,7 +128,7 @@ namespace rabbit
 			QLabel* title;
 			QLabel* path;
 			QLabel* label_;
-			QPushButton* color;
+			QToolButton* color;
 			QSlider* slider;
 			QDoubleSpinBox* spinBox;
 

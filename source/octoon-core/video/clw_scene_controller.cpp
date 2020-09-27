@@ -755,6 +755,6 @@ namespace octoon::video
 			context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 		}
 
-		this->updateIntersector(scene, out);
+		this->updateShapes(scene, out);
 	}
 }

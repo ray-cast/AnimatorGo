@@ -4,7 +4,9 @@
 #include <octoon/hal/graphics_context.h>
 #include <octoon/camera/camera.h>
 #include <octoon/light/light.h>
-#include <octoon/geometry/geometry.h>
+#include <octoon/video/forward_buffer.h>
+#include <octoon/video/forward_material.h>
+#include <octoon/video/collector.h>
 #include "compiled_scene.h"
 
 namespace octoon::video
@@ -12,6 +14,8 @@ namespace octoon::video
 	class OCTOON_EXPORT ForwardScene final : public CompiledScene
 	{
 	public:
+		ForwardScene() noexcept;
+
 		struct HemisphereLight
 		{
 			math::float3 direction;
@@ -106,6 +110,18 @@ namespace octoon::video
 
 		std::vector<light::Light*> lights;
 		std::vector<geometry::Geometry*> geometries;
+
+		std::unique_ptr<Bundle> material_bundle;
+		std::unique_ptr<Bundle> volume_bundle;
+		std::unique_ptr<Bundle> texture_bundle;
+		std::unique_ptr<Bundle> input_map_leafs_bundle;
+		std::unique_ptr<Bundle> input_map_bundle;
+
+		std::shared_ptr<material::Material> depthMaterial;
+		std::shared_ptr<material::Material> overrideMaterial;
+
+		std::unordered_map<void*, std::shared_ptr<ForwardBuffer>> buffers_;
+		std::unordered_map<void*, std::shared_ptr<ForwardMaterial>> materials_;
 	};
 }
 

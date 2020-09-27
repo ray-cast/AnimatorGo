@@ -29,284 +29,273 @@ THE SOFTWARE.
 // Matrix
 typedef struct
 {
-    float4 m0;
-    float4 m1;
-    float4 m2;
-    float4 m3;
+	float4 m0;
+	float4 m1;
+	float4 m2;
+	float4 m3;
 } matrix4x4;
 
 // Camera
 typedef struct
 {
-    // Coordinate frame
-    float3 forward;
-    float3 right;
-    float3 up;
-    // Position
-    float3 p;
+	// Coordinate frame
+	float3 forward;
+	float3 right;
+	float3 up;
+	// Position
+	float3 p;
 
-    // Image plane width & height in current units
-    float2 dim;
-    // Near and far Z
-    float2 zcap;
-    // Focal lenght
-    float focal_length;
-    // Camera aspect_ratio ratio
-    float aspect_ratio;
-    float focus_distance;
-    float aperture;
+	// Image plane width & height in current units
+	float2 dim;
+	// Near and far Z
+	float2 zcap;
+	// Focal lenght
+	float focal_length;
+	// Camera aspect_ratio ratio
+	float aspect_ratio;
+	float focus_distance;
+	float aperture;
 } Camera;
 
 enum BxdfFlags
 {
-    kBxdfFlagsSingular = (1 << 0),
-    kBxdfFlagsBrdf = (1 << 1),
-    kBxdfFlagsEmissive = (1 << 2),
-    kBxdfFlagsTransparency = (1 << 3),
-    kBxdfFlagsDiffuse = (1 << 4),
-    kBxdfFlagsAll = (kBxdfFlagsSingular | kBxdfFlagsBrdf | kBxdfFlagsEmissive | kBxdfFlagsTransparency | kBxdfFlagsDiffuse)
+	kBxdfFlagsSingular = (1 << 0),
+	kBxdfFlagsBrdf = (1 << 1),
+	kBxdfFlagsEmissive = (1 << 2),
+	kBxdfFlagsTransparency = (1 << 3),
+	kBxdfFlagsDiffuse = (1 << 4),
+	kBxdfFlagsAll = (kBxdfFlagsSingular | kBxdfFlagsBrdf | kBxdfFlagsEmissive | kBxdfFlagsTransparency | kBxdfFlagsDiffuse)
 };
 
 enum UberMaterialLayers
 {
-    kEmissionLayer = 0x1,
-    kTransparencyLayer = 0x2,
-    kCoatingLayer = 0x4,
-    kReflectionLayer = 0x8,
-    kDiffuseLayer = 0x10,
-    kRefractionLayer = 0x20,
-    kSSSLayer = 0x40,
-    kShadingNormalLayer = 0x80
+	kEmissionLayer = 0x1,
+	kTransparencyLayer = 0x2,
+	kCoatingLayer = 0x4,
+	kReflectionLayer = 0x8,
+	kDiffuseLayer = 0x10,
+	kRefractionLayer = 0x20,
+	kSSSLayer = 0x40,
+	kShadingNormalLayer = 0x80
 };
 
 typedef struct
 {
-    float3 base_color;
-    float3 emissive;
-    float opacity;
-    float metallic;
-    float roughness;
-    float anisotropy;
-    float specular;
-    float specular_tint;
-    float sheen;
-    float sheen_tint;
-    float clearcoat;
-    float clearcoat_roughness;
-    float subsurface;
-    int base_color_map_idx;
-    int opacity_map_idx;
-    int normal_map_idx;
-    int metallic_map_idx;
-    int specular_map_idx;
-    int anisotropy_map_idx;
-    int roughness_map_idx;
-    int specular_tint_map_idx;
-    int sheen_tint_map_idx;
-    int sheen_map_idx;
-    int clearcoat_map_idx;
-    int clearcoat_roughness_map_idx;
-    int emissive_map_idx;
+	float3 base_color;
+	float3 emissive;
+	float opacity;
+	float metallic;
+	float roughness;
+	float anisotropy;
+	float specular;
+	float specular_tint;
+	float sheen;
+	float sheen_tint;
+	float clearcoat;
+	float clearcoat_roughness;
+	float subsurface;
+	int base_color_map_idx;
+	int opacity_map_idx;
+	int normal_map_idx;
+	int metallic_map_idx;
+	int specular_map_idx;
+	int anisotropy_map_idx;
+	int roughness_map_idx;
+	int specular_tint_map_idx;
+	int sheen_tint_map_idx;
+	int sheen_map_idx;
+	int clearcoat_map_idx;
+	int clearcoat_roughness_map_idx;
+	int emissive_map_idx;
 } Disney;
 
 typedef struct
 {
-    int offset;
-    int layers;
-    int flags;
-    int padding;
-    Disney disney;
+	int offset;
+	int layers;
+	int flags;
+	int padding;
+	Disney disney;
 } Material;
 
 // Shape description
 typedef struct
 {
-    // Shape starting index
-    int startidx;
-    // Start vertex
-    int startvtx;
-    // Number of primitives in the shape
-    int volume_idx;
-    // unique shape id
-    int id;
-    // Linear motion vector
-    float3 linearvelocity;
-    // Angular velocity
-    float4 angularvelocity;
-    // Transform in row major format
-    matrix4x4 transform;
-    Material material;
+	// Shape starting index
+	int startidx;
+	// Start vertex
+	int startvtx;
+	// Number of primitives in the shape
+	int volume_idx;
+	// unique shape id
+	int id;
+	// Linear motion vector
+	float3 linearvelocity;
+	// Angular velocity
+	float4 angularvelocity;
+	// Transform in row major format
+	matrix4x4 transform;
+	Material material;
 } Shape;
 
 typedef struct
 {
-    int group_id;
-    int padding[3];
+	int group_id;
+	int padding[3];
 } ShapeAdditionalData;
 
 typedef enum
 {
-    kFloat3 = 0,
-    kFloat = 1,
-    kInt = 2
+	kFloat3 = 0,
+	kFloat = 1,
+	kInt = 2
 } InputMapDataType;
 
 // Input data for input maps
 typedef struct _InputMapData
 {
-    union
-    {
-        struct
-        {
-            float3 value;
-        } float_value;
-        struct
-        {
-            int idx;
-            int placeholder[2];
-            int type; //We can use it since float3 is actually float4
-        } int_values;
-    };
+	union
+	{
+		struct
+		{
+			float3 value;
+		} float_value;
+		struct
+		{
+			int idx;
+			int placeholder[2];
+			int type; //We can use it since float3 is actually float4
+		} int_values;
+	};
 } InputMapData;
 
 enum Bxdf
 {
-    kZero,
-    kUberV2
+	kZero,
+	kUberV2
 };
 
 enum LightType
 {
-    kPoint = 0x1,
-    kDirectional,
-    kSpot,
-    kArea,
-    kIbl
+	kPoint = 0x1,
+	kDirectional,
+	kSpot,
+	kArea,
+	kIbl
 };
 
 typedef struct
 {
-    union
-    {
-        // Area light
-        struct
-        {
-            int id;
-            int shapeidx;
-            int primidx;
-            int padding0;
-        };
+	union
+	{
+		// Area light
+		struct
+		{
+			int id;
+			int shapeidx;
+			int primidx;
+			int padding0;
+		};
 
-        // IBL
-        struct
-        {
-            int tex;
-            int tex_reflection;
-            int tex_refraction;
-            int tex_transparency;
-        };
+		// IBL
+		struct
+		{
+			int tex;
+			int tex_reflection;
+			int tex_refraction;
+			int tex_transparency;
+		};
 
-        // Spot
-        struct
-        {
-            float ia;
-            float oa;
-            float f;
-            int padding1;
-        };
-    };
+		// Spot
+		struct
+		{
+			float ia;
+			float oa;
+			float f;
+			int padding1;
+		};
+	};
 
-    float3 p;
-    float3 d;
-    float3 intensity;
-    int type;
-    float multiplier;
-    int tex_background;
-    bool ibl_mirror_x;
+	float3 p;
+	float3 d;
+	float3 intensity;
+	int type;
+	float multiplier;
+	int tex_background;
+	bool ibl_mirror_x;
 } Light;
 
 typedef enum
-    {
-        kEmpty,
-        kHomogeneous,
-        kHeterogeneous
-    } VolumeType;
-
+{
+	kEmpty,
+	kHomogeneous,
+	kHeterogeneous
+} VolumeType;
 
 typedef struct _Volume
 {
-    VolumeType type;
-    float g;
+	VolumeType type;
+	float g;
 
-    // Id of volume data if present
-    int data;
-    int extra;
+	// Id of volume data if present
+	int data;
+	int extra;
 
-    // Absorbtion
-    TEXTURED_INPUT(sigma_a);
-    // Scattering
-    TEXTURED_INPUT(sigma_s);
-    // Emission
-    TEXTURED_INPUT(sigma_e);
+	// Absorbtion
+	TEXTURED_INPUT(sigma_a);
+	// Scattering
+	TEXTURED_INPUT(sigma_s);
+	// Emission
+	TEXTURED_INPUT(sigma_e);
 } Volume;
 
 /// Supported formats
 enum TextureFormat
 {
-    UNKNOWN,
-    BGRA8,
-    RGBA8,
-    RGBA16,
-    RGBA32
+	UNKNOWN,
+	BGRA8,
+	RGBA8,
+	RGBA16,
+	RGBA32
 };
 
 /// Texture description
-typedef
-struct _Texture
+typedef struct _Texture
 {
-    // Width, height and depth
-    int w;
-    int h;
-    int d;
-    // Offset in texture data array
-    int dataoffset;
-    // Format
-    int fmt;
-    int extra;
+	// Width, height and depth
+	int w;
+	int h;
+	int d;
+	// Offset in texture data array
+	int dataoffset;
+	// Format
+	int fmt;
+	int extra;
 } Texture;
 
 // Hit data
 typedef struct _DifferentialGeometry
 {
-    // World space position
-    float3 p;
-    // Shading normal
-    float3 n;
-    // Geo normal
-    float3 ng;
-    // UVs
-    float2 uv;
-    // Derivatives
-    float3 dpdu;
-    float3 dpdv;
+	// World space position
+	float3 p;
+	// Shading normal
+	float3 n;
+	// Geo normal
+	float3 ng;
+	// UVs
+	float2 uv;
+	// Derivatives
+	float3 dpdu;
+	float3 dpdv;
 
-    matrix4x4 world_to_tangent;
-    matrix4x4 tangent_to_world;
+	matrix4x4 world_to_tangent;
+	matrix4x4 tangent_to_world;
 
-    // Material
-    Material mat;
-    float  area;
-    int transfer_mode;
-    int padding[2];
+	// Material
+	Material mat;
+	float  area;
+	int transfer_mode;
+	int padding[2];
 } DifferentialGeometry;
-
-
-
-
-
-
-
-
-
 
 #endif // PAYLOAD_CL

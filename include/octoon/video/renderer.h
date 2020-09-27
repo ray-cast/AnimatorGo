@@ -82,15 +82,8 @@ namespace octoon::video
 		hal::GraphicsDescriptorSetLayoutPtr createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept;
 		hal::GraphicsDescriptorPoolPtr createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept;
 
-		void setViewport(const math::float4& viewport) noexcept(false);
-		void setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false);
-		void clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color = math::float4::Zero, float depth = 1.0f, std::int32_t stencil = 0) noexcept;
-
 		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
-
 		void render(RenderScene& scene) noexcept(false);
-		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
 		Renderer(const Renderer&) = delete;

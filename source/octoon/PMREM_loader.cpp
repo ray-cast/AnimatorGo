@@ -273,15 +273,18 @@ void main()
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{
+				video::RenderScene scene;
+				scene.addCamera(&camera);
+
+				camera.setFramebuffer(framebuffers[i]);
 				radiance->set("roughness", float(i) / (mipNums - 1));
 
-				video::Renderer::instance()->setFramebuffer(framebuffers[i]);
-				video::Renderer::instance()->clearFramebuffer(0, hal::GraphicsClearFlagBits::ColorDepthBit);
-
 				if (i == 0)
-					video::Renderer::instance()->renderObject(copyGeometry, camera);
+					scene.addGeometry(&copyGeometry);
 				else
-					video::Renderer::instance()->renderObject(radianceGeometry, camera);
+					scene.addGeometry(&radianceGeometry);
+
+				video::Renderer::instance()->render(scene);
 			}
 
 			return colorTexture;

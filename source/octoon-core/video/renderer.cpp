@@ -192,41 +192,9 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::setViewport(const math::float4& viewport) noexcept(false)
-	{
-		this->context_->setViewport(0, viewport);
-	}
-
-	void
-	Renderer::setFramebuffer(const hal::GraphicsFramebufferPtr& framebuffer) noexcept(false)
-	{
-		this->context_->setFramebuffer(framebuffer);
-	}
-
-	void
-	Renderer::clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept
-	{
-		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
-	}
-
-	void
 	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
 	{
 		this->context_->generateMipmap(texture);
-	}
-
-	void
-	Renderer::renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
-	{
-		if (this->forwardRenderer_)
-			this->forwardRenderer_->renderObject(geometry, camera, overrideMaterial);
-	}
-
-	void
-	Renderer::renderObjects(const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
-	{
-		if (this->forwardRenderer_)
-			this->forwardRenderer_->renderObjects(geometries, camera, overrideMaterial);
 	}
 
 	void
@@ -246,10 +214,10 @@ namespace octoon::video
 
 			for (auto& it : scene.getGeometries())
 			{
-				if (camera->getLayer() != it->getLayer())
+				if (!it->getVisible())
 					continue;
 
-				if (it->getVisible())
+				if (camera->getLayer() == it->getLayer())
 					it->onRenderBefore(*camera);
 			}
 
@@ -273,31 +241,34 @@ namespace octoon::video
 
 			for (auto& it : scene.getLights())
 			{
-				if (camera->getLayer() != it->getLayer())
+				if (!it->getVisible())
 					continue;
 
-				it->setDirty(false);
+				if (camera->getLayer() == it->getLayer())
+					it->setDirty(false);
 			}
 
 			for (auto& it : scene.getGeometries())
 			{
-				if (camera->getLayer() != it->getLayer())
+				if (!it->getVisible())
 					continue;
 
-				if (it->getVisible())
+				if (camera->getLayer() == it->getLayer())
+				{
 					it->onRenderAfter(*camera);
 
-				auto mesh = it->getMesh();
-				if (mesh)
-					mesh->setDirty(false);
+					auto mesh = it->getMesh();
+					if (mesh)
+						mesh->setDirty(false);
 
-				for (auto& material : it->getMaterials())
-				{
-					if (material)
-						material->setDirty(false);
+					for (auto& material : it->getMaterials())
+					{
+						if (material)
+							material->setDirty(false);
+					}
+
+					it->setDirty(false);
 				}
-
-				it->setDirty(false);
 			}
 
 			camera->onRenderAfter(*camera);

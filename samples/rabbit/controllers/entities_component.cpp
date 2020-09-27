@@ -146,9 +146,9 @@ namespace rabbit
 
 		for (auto& it : pmm.model)
 		{
-			GameObjects rigidbody;
+			GameObjects modelRigidbodies;
 
-			auto model = octoon::MeshLoader::load(it.path, rigidbody);
+			auto model = octoon::MeshLoader::load(it.path, modelRigidbodies);
 			if (model)
 			{
 				AnimationClips<float> boneClips;
@@ -163,10 +163,10 @@ namespace rabbit
 
 				objects.emplace_back(std::move(model));
 
-				for (auto& it : rigidbody)
+				for (auto& body : modelRigidbodies)
 				{
-					if (!it->getParent())
-						rigidbodies.emplace_back(std::move(it));
+					if (!body->getParent())
+						rigidbodies.emplace_back(std::move(body));
 				}
 			}
 			else

@@ -2,6 +2,7 @@
 #define OCTOON_VIDEO_FORWARD_SCENE_CONTROLLER_H_
 
 #include <octoon/hal/graphics_context.h>
+#include <octoon/video/collector.h>
 #include <unordered_map>
 
 #include "forward_scene.h"
@@ -19,14 +20,17 @@ namespace octoon::video
 
 	private:
 		void updateCamera(const RenderScene* scene, ForwardScene& out) const;
-		void updateIntersector(const RenderScene* scene, ForwardScene& out) const;
-		void updateLights(const RenderScene* scene, ForwardScene& out) noexcept;
+		void updateLights(const RenderScene* scene, ForwardScene& out) const;
+		void updateMaterials(const RenderScene* scene, ForwardScene& out, bool force = false) const;
+		void updateShapes(const RenderScene* scene, ForwardScene& out) const;
 
 	private:
 		ForwardSceneController(const ForwardSceneController&) = delete;
 		ForwardSceneController& operator=(const ForwardSceneController&) = delete;
 
 	private:
+		Collector materialCollector;
+
 		hal::GraphicsContextPtr context_;
 		std::unordered_map<const RenderScene*, std::unique_ptr<ForwardScene>> sceneCache_;
 	};

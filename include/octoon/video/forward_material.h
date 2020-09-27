@@ -5,10 +5,9 @@
 #include <octoon/geometry/geometry.h>
 #include <octoon/material/material.h>
 
-#include "forward_scene.h"
-
 namespace octoon::video
 {
+	class ForwardScene;
 	class OCTOON_EXPORT ForwardMaterial final
 	{
 	public:
@@ -22,7 +21,7 @@ namespace octoon::video
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-		void update(const camera::Camera& camera, const geometry::Geometry& geometry, const ForwardScene& context) noexcept;
+		void update(const ForwardScene& context, const geometry::Geometry& geometry) noexcept;
 
 	private:
 		void updateParameters(bool force = false) noexcept;

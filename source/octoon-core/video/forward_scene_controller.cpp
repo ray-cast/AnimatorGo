@@ -24,20 +24,79 @@ namespace octoon::video
 	void
 	ForwardSceneController::compileScene(RenderScene* scene) noexcept
 	{
-		auto iter = sceneCache_.find(scene);
-		if (iter != sceneCache_.cend())
+		materialCollector.Clear();
+
+		for (auto& geometry : scene->getGeometries())
 		{
-			this->updateCamera(scene, *(*iter).second);
-			this->updateLights(scene, *(*iter).second);
-			this->updateIntersector(scene, *(*iter).second);
+			if (!geometry->getVisible()) {
+				continue;
+			}
+
+			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
+			{
+				auto& mat = geometry->getMaterial(i);
+				materialCollector.Collect(mat);
+			}
 		}
-		else
+
+		materialCollector.Commit();
+
+		auto iter = sceneCache_.find(scene);
+		if (iter == sceneCache_.cend())
 		{
 			auto out = std::make_unique<ForwardScene>();
 			this->updateCamera(scene, *out);
 			this->updateLights(scene, *out);
-			this->updateIntersector(scene, *out);
+			this->updateMaterials(scene, *out, true);
+			this->updateShapes(scene, *out);
 			sceneCache_[scene] = std::move(out);
+		}
+		else
+		{
+			auto& out = (*iter).second;
+
+			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
+				[](runtime::RttiInterface* ptr)->bool
+			{
+				auto mat = ptr->downcast<material::Material>();
+				return mat->isDirty();
+			});
+
+			bool should_update_lights = false;
+			for (auto& light : scene->getLights())
+			{
+				if (light->isDirty())
+				{
+					should_update_lights = true;
+					break;
+				}
+			}
+
+			bool should_update_shapes = false;
+			for (auto& geometry : scene->getGeometries())
+			{
+				if (!geometry->getVisible())
+					continue;
+
+				if (geometry->isDirty())
+				{
+					should_update_shapes = true;
+					break;
+				}
+			}
+
+			auto camera = scene->getMainCamera();
+			if (camera->isDirty())
+				this->updateCamera(scene, *(*iter).second);
+			
+			if (should_update_lights)
+				this->updateLights(scene, *(*iter).second);
+
+			if (should_update_materials)
+				this->updateMaterials(scene, *(*iter).second);
+
+			if (should_update_shapes)
+				this->updateShapes(scene, *(*iter).second);
 		}
 	}
 
@@ -58,14 +117,8 @@ namespace octoon::video
 		out.camera = scene->getMainCamera();
 	}
 
-    void
-    ForwardSceneController::updateIntersector(const RenderScene* scene, ForwardScene& out) const
-    {
-		out.geometries = scene->getGeometries();
-    }
-
 	void
-	ForwardSceneController::updateLights(const RenderScene* scene, ForwardScene& out) noexcept
+	ForwardSceneController::updateLights(const RenderScene* scene, ForwardScene& out) const
 	{
 		out.reset();
 
@@ -325,4 +378,52 @@ namespace octoon::video
 			}
 		}
 	}
+
+	void
+	ForwardSceneController::updateMaterials(const RenderScene* scene, ForwardScene& out, bool force) const
+	{
+		out.material_bundle.reset(materialCollector.CreateBundle());
+
+		if (out.depthMaterial->isDirty())
+		{
+			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(out.depthMaterial, out);
+			out.depthMaterial->setDirty(false);
+		}
+
+		if (out.overrideMaterial)
+		{
+			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(out.depthMaterial, out);
+			out.overrideMaterial->setDirty(false);
+		}
+
+		std::unique_ptr<Iterator> mat_iter(materialCollector.CreateIterator());
+		for (std::size_t i = 0; mat_iter->IsValid(); mat_iter->Next(), i++)
+		{
+			auto mat = mat_iter->ItemAs<material::Material>();
+			if (mat->isDirty() || force)
+			{
+				auto material = mat->downcast_pointer<material::Material>();
+				out.materials_[material.get()] = std::make_shared<ForwardMaterial>(material, out);
+			}
+		}
+	}
+
+    void
+    ForwardSceneController::updateShapes(const RenderScene* scene, ForwardScene& out) const
+    {
+		out.geometries = scene->getGeometries();
+
+		for (auto& geometry : scene->getGeometries())
+		{
+			if (!geometry->getVisible()) {
+				continue;
+			}
+
+			if (geometry->isDirty())
+			{
+				auto mesh = geometry->getMesh();
+				out.buffers_[mesh.get()] = std::make_shared<ForwardBuffer>(mesh);
+			}
+		}
+    }
 }

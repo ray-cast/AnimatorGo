@@ -1,7 +1,13 @@
 #include <octoon/video/forward_scene.h>
+#include <octoon/material/mesh_depth_material.h>
 
 namespace octoon::video
 {
+	ForwardScene::ForwardScene() noexcept
+		:depthMaterial(material::MeshDepthMaterial::create())
+	{
+	}
+
 	void
 	ForwardScene::reset() noexcept
 	{

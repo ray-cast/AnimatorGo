@@ -23,19 +23,18 @@ namespace octoon::video
 
 		void clear(const math::float4& val) override;
 
-		void prepareShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
-
-		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-		void renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-
 		void render(const CompiledScene& scene) override;
 		void renderTile(const CompiledScene& scene, const math::int2& tileOrigin, const math::int2& tileSize) override;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
-		bool setBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& geometry, std::size_t subset);
-		bool setProgram(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
+		void setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const geometry::Geometry& geometry);
+
+		void renderBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset);
+		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
+		void renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
+		void renderShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
 
 	private:
 		ForwardPipeline(const ForwardPipeline&) = delete;
@@ -52,14 +51,8 @@ namespace octoon::video
 		hal::GraphicsTexturePtr depthTexture2_;
 
 		std::shared_ptr<geometry::Geometry> screenGeometry_;
-
-		std::shared_ptr<ForwardBuffer> currentBuffer_;
-		std::shared_ptr<material::Material> copyMaterial_;
-		std::shared_ptr<material::Material> depthMaterial_;
 		std::shared_ptr<material::Material> overrideMaterial_;
 
-		std::unordered_map<std::intptr_t, std::pair<std::shared_ptr<ForwardBuffer>, bool>> buffers_;
-		std::unordered_map<std::intptr_t, std::shared_ptr<ForwardMaterial>> materials_;
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }

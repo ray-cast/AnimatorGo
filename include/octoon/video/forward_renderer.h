@@ -22,8 +22,6 @@ namespace octoon::video
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 		void render(RenderScene* scene) noexcept;
-		void renderObject(const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-		void renderObjects(const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
 
 	private:
 		void prepareScene(RenderScene* scene) noexcept;

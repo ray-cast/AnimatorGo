@@ -335,11 +335,11 @@ namespace octoon::video
 	{
 		auto& buffer = scene.buffers_.at(mesh.get());
 		this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-		this->context_->setIndexBufferData(buffer->getIndexBuffer(subset), 0, hal::GraphicsIndexType::UInt32);
+		this->context_->setIndexBufferData(buffer->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
 
 		auto indices = buffer->getNumIndices(subset);
 		if (indices > 0)
-			this->context_->drawIndexed((std::uint32_t)indices, 1, 0, 0, 0);
+			this->context_->drawIndexed((std::uint32_t)indices, 1, buffer->getStartIndices(subset), 0, 0);
 		else
 			this->context_->draw((std::uint32_t)buffer->getNumVertices(), 1, 0, 0);
 	}

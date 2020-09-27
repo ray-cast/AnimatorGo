@@ -39,9 +39,9 @@ namespace octoon::video
 	}
 
 	const hal::GraphicsDataPtr&
-	ForwardBuffer::getIndexBuffer(std::size_t n) const noexcept
+	ForwardBuffer::getIndexBuffer() const noexcept
 	{
-		return indices_[n];
+		return indices_;
 	}
 
 	std::size_t
@@ -54,6 +54,12 @@ namespace octoon::video
 	ForwardBuffer::getNumIndices(std::size_t n) const noexcept
 	{
 		return mesh_->getIndicesArray(n).size();
+	}
+
+	std::size_t
+	ForwardBuffer::getStartIndices(std::size_t n) const noexcept
+	{
+		return this->startIndice_[n];
 	}
 
 	void
@@ -76,76 +82,112 @@ namespace octoon::video
 
 			auto vertexSize = inputLayout.getVertexSize() / sizeof(float);
 
-			std::uint32_t offset = 0;
-			std::vector<float> data(vertices.size() * vertexSize);
-
-			auto dst = data.data() + offset;
-			auto numVertices = vertices.size();
-
-			for (std::size_t i = 0; i< numVertices; i++, dst += vertexSize)
+			auto vertexCount = vertices.size() * vertexSize;
+			if (vertexCount > 0)
 			{
-				if (!vertices.empty())
+				auto vertexBuffer = std::make_unique<float[]>(vertices.size() * vertexSize);
+
+				auto dst = vertexBuffer.get();
+				auto numVertices = vertices.size();
+
+				for (std::size_t i = 0; i < numVertices; i++, dst += vertexSize)
 				{
-					auto& v = vertices[i];
-					dst[0] = v.x;
-					dst[1] = v.y;
-					dst[2] = v.z;
+					if (!vertices.empty())
+					{
+						auto& v = vertices[i];
+						dst[0] = v.x;
+						dst[1] = v.y;
+						dst[2] = v.z;
+					}
+
+					if (!normals.empty())
+					{
+						auto& n = normals[i];
+						dst[3] = n.x;
+						dst[4] = n.y;
+						dst[5] = n.z;
+					}
+
+					if (!texcoord.empty())
+					{
+						auto& uv = texcoord[i];
+						dst[6] = uv.x;
+						dst[7] = uv.y;
+					}
+
+					if (!texcoord1.empty())
+					{
+						auto& uv = texcoord1[i];
+						dst[8] = uv.x;
+						dst[9] = uv.y;
+					}
 				}
 
-				if (!normals.empty())
-				{
-					auto& n = normals[i];
-					dst[3] = n.x;
-					dst[4] = n.y;
-					dst[5] = n.z;
-				}
+				hal::GraphicsDataDesc dataDesc;
+				dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
+				dataDesc.setStream((std::uint8_t*)vertexBuffer.get());
+				dataDesc.setStreamSize(vertexCount * sizeof(float));
+				dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-				if (!texcoord.empty())
-				{
-					auto& uv = texcoord[i];
-					dst[6] = uv.x;
-					dst[7] = uv.y;
-				}
-
-				if (!texcoord1.empty())
-				{
-					auto& uv = texcoord1[i];
-					dst[8] = uv.x;
-					dst[9] = uv.y;
-				}
+				this->vertices_ = video::Renderer::instance()->createGraphicsData(dataDesc);
 			}
 
-			hal::GraphicsDataDesc dataDesc;
-			dataDesc.setType(hal::GraphicsDataType::StorageVertexBuffer);
-			dataDesc.setStream((std::uint8_t*)data.data());
-			dataDesc.setStreamSize(data.size() * sizeof(float));
-			dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
-
-			this->vertices_ = video::Renderer::instance()->createGraphicsData(dataDesc);
-
-			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+			if (mesh->getNumSubsets() == 1)
 			{
-				auto& indices = mesh->getIndicesArray(i);
-				if (!indices.empty())
+				auto& indices = mesh->getIndicesArray(0);
+
+				hal::GraphicsDataDesc indiceDesc;
+				indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
+				indiceDesc.setStream((std::uint8_t*)indices.data());
+				indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
+				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
+
+				this->startIndice_.push_back(0);
+				this->indices_ = video::Renderer::instance()->createGraphicsData(indiceDesc);
+			}
+			else
+			{
+				std::size_t streamsize = 0;
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 				{
+					auto& indices = mesh->getIndicesArray(i);
+					if (!indices.empty())
+						streamsize += indices.size();
+				}
+
+				if (streamsize > 0)
+				{
+					auto indicesBuffer = std::make_unique<std::uint32_t[]>(streamsize);
+
+					for (std::size_t i = 0, streamOffset = 0; i < mesh->getNumSubsets(); i++)
+					{
+						auto& indices = mesh->getIndicesArray(i);
+						if (!indices.empty())
+						{
+							std::memcpy(indicesBuffer.get() + streamOffset, indices.data(), indices.size() * sizeof(std::uint32_t));
+							this->startIndice_.push_back(streamOffset);
+							streamOffset += indices.size();
+						}
+						else
+						{
+							this->startIndice_.push_back(streamOffset);
+						}
+					}
+
 					hal::GraphicsDataDesc indiceDesc;
 					indiceDesc.setType(hal::GraphicsDataType::StorageIndexBuffer);
-					indiceDesc.setStream((std::uint8_t*)indices.data());
-					indiceDesc.setStreamSize(indices.size() * sizeof(std::uint32_t));
+					indiceDesc.setStream((std::uint8_t*)indicesBuffer.get());
+					indiceDesc.setStreamSize(streamsize * sizeof(std::uint32_t));
 					indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-					this->indices_.emplace_back(video::Renderer::instance()->createGraphicsData(indiceDesc));
-				}
-				else
-				{
-					this->indices_.emplace_back(nullptr);
+					this->indices_ = video::Renderer::instance()->createGraphicsData(indiceDesc);
 				}
 			}
 		}
 		else
 		{
 			this->vertices_.reset();
-			this->indices_.shrink_to_fit();
+			this->indices_.reset();
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace octoon::video
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-		void update(const ForwardScene& context, const geometry::Geometry& geometry) noexcept;
+		void update(const ForwardScene& context, const camera::Camera& camera, const geometry::Geometry& geometry) noexcept;
 
 	private:
 		void updateParameters(bool force = false) noexcept;

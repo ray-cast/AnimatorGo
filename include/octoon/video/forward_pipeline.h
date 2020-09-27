@@ -29,7 +29,7 @@ namespace octoon::video
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
-		void setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const geometry::Geometry& geometry);
+		void setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
 
 		void renderBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset);
 		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;

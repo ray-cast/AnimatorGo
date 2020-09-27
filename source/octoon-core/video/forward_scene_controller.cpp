@@ -91,7 +91,7 @@ namespace octoon::video
 			if (camera->isDirty())
 				this->updateCamera(scene, *(*iter).second);
 			
-			if (should_update_lights)
+			if (should_update_lights || camera->isDirty())
 				this->updateLights(scene, *(*iter).second);
 
 			if (should_update_materials)

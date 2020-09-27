@@ -150,12 +150,12 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const geometry::Geometry& geometry)
+	ForwardPipeline::setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
 	{
 		assert(material);
 		
 		auto& pipeline = scene.materials_.at(material.get());
-		pipeline->update(scene, geometry);
+		pipeline->update(scene, camera, geometry);
 
 		this->context_->setRenderPipeline(pipeline->getPipeline());
 		this->context_->setDescriptorSet(pipeline->getDescriptorSet());
@@ -175,7 +175,7 @@ namespace octoon::video
 				auto material = geometry.getMaterials()[i];
 				if (mesh && material)
 				{
-					this->setMaterial(scene, overrideMaterial ? overrideMaterial : material, geometry);
+					this->setMaterial(scene, overrideMaterial ? overrideMaterial : material, camera, geometry);
 					this->renderBuffer(scene, mesh, i);
 				}
 			}

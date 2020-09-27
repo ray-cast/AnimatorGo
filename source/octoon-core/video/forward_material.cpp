@@ -2196,7 +2196,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardMaterial::update(const ForwardScene& context, const geometry::Geometry& geometry) noexcept
+	ForwardMaterial::update(const ForwardScene& context, const camera::Camera& camera, const geometry::Geometry& geometry) noexcept
 	{
 		if (this->material_)
 		{
@@ -2204,19 +2204,19 @@ namespace octoon::video
 				this->modelMatrix_->uniform4fmat(geometry.getTransform());
 			
 			if (this->viewMatrix_)
-				this->viewMatrix_->uniform4fmat(context.camera->getView());
+				this->viewMatrix_->uniform4fmat(camera.getView());
 
 			if (this->viewProjMatrix_)
-				this->viewProjMatrix_->uniform4fmat(context.camera->getViewProjection());
+				this->viewProjMatrix_->uniform4fmat(camera.getViewProjection());
 
 			if (this->modelViewMatrix_)
-				this->modelViewMatrix_->uniform4fmat(context.camera->getView() * geometry.getTransform());
+				this->modelViewMatrix_->uniform4fmat(camera.getView() * geometry.getTransform());
 			
 			if (this->projectionMatrix_)
-				this->projectionMatrix_->uniform4fmat(context.camera->getProjection());
+				this->projectionMatrix_->uniform4fmat(camera.getProjection());
 			
 			if (this->normalMatrix_)
-				this->normalMatrix_->uniform3fmat((math::float3x3)context.camera->getView() * (math::float3x3)geometry.getTransform());
+				this->normalMatrix_->uniform3fmat((math::float3x3)camera.getView() * (math::float3x3)geometry.getTransform());
 
 			if (this->ambientLightColor_)
 				this->ambientLightColor_->uniform3f(context.ambientLightColors);
@@ -2256,7 +2256,7 @@ namespace octoon::video
 				}
 			}
 
-			this->updateParameters();
+			this->updateParameters(true);
 		}
 	}
 

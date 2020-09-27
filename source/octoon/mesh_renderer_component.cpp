@@ -119,12 +119,19 @@ namespace octoon
 	{
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		this->addMessageListener("octoon:mesh:update", std::bind(&MeshRendererComponent::onMeshReplace, this, std::placeholders::_1));
-		
-		this->onMaterialReplace(this->getMaterials());
+
+		this->geometry_ = std::make_shared<geometry::Geometry>();
+		this->geometry_->setOwnerListener(this);
+		this->geometry_->setVisible(this->getVisible());
+		this->geometry_->setGlobalIllumination(this->getGlobalIllumination());
+		this->geometry_->setRenderOrder(this->getRenderOrder());
+
 		this->onMoveAfter();
 		this->onLayerChangeAfter();
+		this->onMaterialReplace(this->getMaterials());
 
 		this->sendMessage("octoon:mesh:get");
+		this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(geometry_.get());
 	}
 
 	void
@@ -172,23 +179,9 @@ namespace octoon
 	MeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		if (mesh)
-		{
-			if (!geometry_)
-			{
-				geometry_ = std::make_shared<geometry::Geometry>();
-				this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(geometry_.get());
-			}
-
-			geometry_->setOwnerListener(this);
-			geometry_->setVisible(this->getVisible());
-			geometry_->setGlobalIllumination(this->getGlobalIllumination());
-			geometry_->setRenderOrder(this->getRenderOrder());
-			geometry_->setBoundingBox(mesh->getBoundingBoxAll());
+		{			
 			geometry_->setMesh(mesh);
 			geometry_->setMaterials(this->getMaterials());
-
-			this->onMoveAfter();
-			this->onLayerChangeAfter();
 		}
 		else
 		{

@@ -59,6 +59,7 @@ namespace octoon::geometry
 	{
 		this->setDirty(true);
 		this->mesh_ = std::move(mesh);
+		this->setBoundingBox(mesh ? mesh->getBoundingBoxAll() : math::BoundingBox::Empty);
 	}
 
 	void
@@ -66,6 +67,7 @@ namespace octoon::geometry
 	{
 		this->setDirty(true);
 		this->mesh_ = mesh;
+		this->setBoundingBox(mesh ? mesh->getBoundingBoxAll() : math::BoundingBox::Empty);
 	}
 
 	const std::shared_ptr<mesh::Mesh>&

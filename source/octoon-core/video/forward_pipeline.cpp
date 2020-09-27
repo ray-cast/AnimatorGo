@@ -173,6 +173,12 @@ namespace octoon::video
 			{
 				auto mesh = geometry.getMesh();
 				auto material = geometry.getMaterials()[i];
+				if (material && overrideMaterial)
+				{
+					if (material->getPrimitiveType() == overrideMaterial->getPrimitiveType())
+						material = overrideMaterial;
+				}
+
 				if (mesh && material)
 				{
 					this->setMaterial(scene, overrideMaterial ? overrideMaterial : material, camera, geometry);
@@ -237,10 +243,7 @@ namespace octoon::video
 				this->context_->setViewport(0, camera->getPixelViewport());
 
 				for (auto& geometry : geometries)
-				{
-					if (geometry->getMaterial()->getPrimitiveType() == scene.depthMaterial->getPrimitiveType())
-						this->renderObject(scene, *geometry, *camera, scene.depthMaterial);
-				}
+					this->renderObject(scene, *geometry, *camera, scene.depthMaterial);
 
 				if (camera->getRenderToScreen())
 				{

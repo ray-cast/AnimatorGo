@@ -217,8 +217,11 @@ TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbb.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbbmalloc.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/OpenImageDenoise.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} Qt5::Core Qt5::Widgets Qt5::QuickWidgets)
+
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x264")
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug "../../vcpkg_installed/x64-windows/debug/lib/x265-static")
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} general "../../vcpkg_installed/x64-windows/lib/x264")
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} general "../../vcpkg_installed/x64-windows/lib/x265-static")
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-windows/lib/x264")
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} optimized "../../vcpkg_installed/x64-windows/lib/x265-static")
 

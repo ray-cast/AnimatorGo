@@ -350,7 +350,7 @@ namespace rabbit
 
 			auto renderer = this->getFeature<octoon::VideoFeature>()->getRenderer();
 			if (renderer)
-				renderer->render(*scene_);
+				renderer->render(scene_);
 
 			auto framebufferDesc = framebuffer_->getFramebufferDesc();
 			auto width = framebufferDesc.getWidth();

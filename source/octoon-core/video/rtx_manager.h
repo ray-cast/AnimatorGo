@@ -51,10 +51,10 @@ namespace octoon::video
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const;
 
-		void render(RenderScene* scene);
+		void render(const std::shared_ptr<RenderScene>& scene);
 
 	private:
-		void prepareScene(RenderScene* scene) noexcept;
+		void prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept;
 		void generateWorkspace(std::uint32_t width, std::uint32_t height);
 
 	private:

@@ -198,21 +198,21 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::render(RenderScene& scene) noexcept(false)
+	Renderer::render(const std::shared_ptr<RenderScene>& scene) noexcept(false)
 	{
 		if (this->sortObjects_)
 		{
-			scene.sortCameras();
-			scene.sortGeometries();
+			scene->sortCameras();
+			scene->sortGeometries();
 		}
 
-		for (auto& camera : scene.getCameras())
+		for (auto& camera : scene->getCameras())
 		{
-			scene.setMainCamera(camera);
+			scene->setMainCamera(camera);
 
 			camera->onRenderBefore(*camera);
 
-			for (auto& it : scene.getGeometries())
+			for (auto& it : scene->getGeometries())
 			{
 				if (!it->getVisible())
 					continue;
@@ -222,9 +222,9 @@ namespace octoon::video
 			}
 
 			if (this->sortObjects_)
-				scene.sortGeometries();
+				scene->sortGeometries();
 
-			if (scene.getGlobalIllumination())
+			if (scene->getGlobalIllumination())
 			{
 				if (!rtxManager_)
 				{
@@ -232,14 +232,14 @@ namespace octoon::video
 					rtxManager_->setGraphicsContext(this->context_);
 				}
 
-				this->rtxManager_->render(&scene);
+				this->rtxManager_->render(scene);
 			}
 			else
 			{
-				forwardRenderer_->render(&scene);
+				forwardRenderer_->render(scene);
 			}
 
-			for (auto& it : scene.getLights())
+			for (auto& it : scene->getLights())
 			{
 				if (!it->getVisible())
 					continue;
@@ -248,7 +248,7 @@ namespace octoon::video
 					it->setDirty(false);
 			}
 
-			for (auto& it : scene.getGeometries())
+			for (auto& it : scene->getGeometries())
 			{
 				if (!it->getVisible())
 					continue;

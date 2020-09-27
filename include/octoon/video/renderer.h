@@ -83,7 +83,7 @@ namespace octoon::video
 		hal::GraphicsDescriptorPoolPtr createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept;
 
 		void generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept;
-		void render(RenderScene& scene) noexcept(false);
+		void render(const std::shared_ptr<RenderScene>& scene) noexcept(false);
 
 	private:
 		Renderer(const Renderer&) = delete;

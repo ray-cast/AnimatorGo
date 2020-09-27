@@ -15,14 +15,15 @@ namespace octoon::video
 	public:
 		ForwardSceneController(const hal::GraphicsContextPtr& context);
 
-		void compileScene(RenderScene* scene) noexcept override;
-		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
+		void cleanCache() noexcept override;
+		void compileScene(const std::shared_ptr<RenderScene>& scene) noexcept override;
+		CompiledScene& getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false);
 
 	private:
-		void updateCamera(const RenderScene* scene, ForwardScene& out) const;
-		void updateLights(const RenderScene* scene, ForwardScene& out) const;
-		void updateMaterials(const RenderScene* scene, ForwardScene& out, bool force = false) const;
-		void updateShapes(const RenderScene* scene, ForwardScene& out) const;
+		void updateCamera(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force = false) const;
+		void updateLights(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force = false) const;
+		void updateMaterials(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force = false) const;
+		void updateShapes(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force = false) const;
 
 	private:
 		ForwardSceneController(const ForwardSceneController&) = delete;
@@ -32,7 +33,7 @@ namespace octoon::video
 		Collector materialCollector;
 
 		hal::GraphicsContextPtr context_;
-		std::unordered_map<const RenderScene*, std::unique_ptr<ForwardScene>> sceneCache_;
+		std::unordered_map<std::shared_ptr<RenderScene>, std::unique_ptr<ForwardScene>> sceneCache_;
 	};
 }
 

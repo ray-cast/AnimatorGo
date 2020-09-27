@@ -104,7 +104,19 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::compileScene(RenderScene* scene) noexcept
+	ClwSceneController::cleanCache() noexcept
+	{
+		for (auto it = sceneCache_.begin(); it != sceneCache_.end();)
+		{
+			if ((*it).first.use_count() == 1)
+				it = sceneCache_.erase(it);
+			else
+				++it;
+		}
+	}
+
+	void
+	ClwSceneController::compileScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		textureCollector.Clear();
 		materialCollector.Clear();
@@ -238,7 +250,7 @@ namespace octoon::video
 	}
 
 	CompiledScene&
-	ClwSceneController::getCachedScene(const RenderScene* scene) const noexcept(false)
+	ClwSceneController::getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false)
 	{
 		auto iter = sceneCache_.find(scene);
 		if (iter != sceneCache_.cend())
@@ -258,7 +270,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::updateCamera(const RenderScene* scene, ClwScene& out) const
+	ClwSceneController::updateCamera(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const
 	{
 		if (out.camera.GetElementCount() == 0)
 			out.camera = context_.CreateBuffer<ClwScene::Camera>(scene->getCameras().size(), CL_MEM_READ_ONLY);
@@ -365,7 +377,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::updateTextures(const RenderScene* scene, ClwScene& out)
+	ClwSceneController::updateTextures(const std::shared_ptr<RenderScene>& scene, ClwScene& out)
 	{
 		out.texture_bundle.reset(textureCollector.CreateBundle());
 
@@ -412,7 +424,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::WriteLight(const RenderScene* scene, const light::Light& light, void* data) const
+	ClwSceneController::WriteLight(const std::shared_ptr<RenderScene>& scene, const light::Light& light, void* data) const
 	{
 		auto clwLight = reinterpret_cast<ClwScene::Light*>(data);
 
@@ -457,7 +469,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::updateLights(const RenderScene* scene, ClwScene& out)
+	ClwSceneController::updateLights(const std::shared_ptr<RenderScene>& scene, ClwScene& out)
 	{
 		int numLightsWritten = 0;
 		std::size_t numLights = scene->getLights().size();
@@ -518,7 +530,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::updateMaterials(const RenderScene* scene, ClwScene& out)
+	ClwSceneController::updateMaterials(const std::shared_ptr<RenderScene>& scene, ClwScene& out)
 	{
 		out.material_bundle.reset(materialCollector.CreateBundle());
 
@@ -572,7 +584,7 @@ namespace octoon::video
 	}
 
     void
-    ClwSceneController::updateIntersector(const RenderScene* scene, ClwScene& out) const
+    ClwSceneController::updateIntersector(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const
     {
 		api_->DetachAll();
 
@@ -632,7 +644,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::updateShapes(const RenderScene* scene, ClwScene& out) const
+	ClwSceneController::updateShapes(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const
 	{
 		std::size_t num_vertices = 0;
 		std::size_t num_indices = 0;
@@ -755,6 +767,6 @@ namespace octoon::video
 			context_.UnmapBuffer(0, out.shapesAdditional, shapesAdditional).Wait();
 		}
 
-		this->updateShapes(scene, out);
+		this->updateIntersector(scene, out);
 	}
 }

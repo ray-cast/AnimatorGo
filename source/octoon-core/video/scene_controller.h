@@ -11,8 +11,9 @@ namespace octoon::video
 	public:
 		SceneController();
 
-		virtual void compileScene(RenderScene* scene) noexcept = 0;
-		virtual CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false) = 0;
+		virtual void cleanCache() noexcept = 0;
+		virtual void compileScene(const std::shared_ptr<RenderScene>& scene) noexcept = 0;
+		virtual CompiledScene& getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false) = 0;
 	};
 }
 

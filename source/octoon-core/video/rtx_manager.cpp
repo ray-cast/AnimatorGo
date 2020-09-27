@@ -332,14 +332,17 @@ namespace octoon::video
 	}
 
 	void
-	RtxManager::prepareScene(RenderScene* scene) noexcept
+	RtxManager::prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		for (auto& c : configs_)
+		{
+			c.controller->cleanCache();
 			c.controller->compileScene(scene);
+		}
 	}
 
 	void
-	RtxManager::render(RenderScene* scene)
+	RtxManager::render(const std::shared_ptr<RenderScene>& scene)
 	{
 		this->prepareScene(scene);
 

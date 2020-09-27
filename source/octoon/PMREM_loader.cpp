@@ -273,16 +273,16 @@ void main()
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{
-				video::RenderScene scene;
-				scene.addCamera(&camera);
+				auto scene = std::make_shared<video::RenderScene>();
+				scene->addCamera(&camera);
 
 				camera.setFramebuffer(framebuffers[i]);
 				radiance->set("roughness", float(i) / (mipNums - 1));
 
 				if (i == 0)
-					scene.addGeometry(&copyGeometry);
+					scene->addGeometry(&copyGeometry);
 				else
-					scene.addGeometry(&radianceGeometry);
+					scene->addGeometry(&radianceGeometry);
 
 				video::Renderer::instance()->render(scene);
 			}

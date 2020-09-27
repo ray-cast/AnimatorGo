@@ -216,7 +216,7 @@ namespace octoon
 		{
 			auto scene = this->getRenderScene();
 			if (scene)
-				video::Renderer::instance()->render(*scene);
+				video::Renderer::instance()->render(scene);
 		}
 		catch (const std::exception& e)
 		{

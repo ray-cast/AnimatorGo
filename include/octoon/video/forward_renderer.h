@@ -21,10 +21,10 @@ namespace octoon::video
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
-		void render(RenderScene* scene) noexcept;
+		void render(const std::shared_ptr<RenderScene>& scene) noexcept;
 
 	private:
-		void prepareScene(RenderScene* scene) noexcept;
+		void prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept;
 
 	private:
 		ForwardRenderer(const ForwardRenderer&) = delete;

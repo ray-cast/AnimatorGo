@@ -42,13 +42,14 @@ namespace octoon::video
 	}
 
 	void
-	ForwardRenderer::prepareScene(RenderScene* scene) noexcept
+	ForwardRenderer::prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
+		this->controller_->cleanCache();
 		this->controller_->compileScene(scene);
 	}
 
 	void
-	ForwardRenderer::render(RenderScene* scene) noexcept
+	ForwardRenderer::render(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		this->prepareScene(scene);
 		this->pipeline_->render(this->controller_->getCachedScene(scene));

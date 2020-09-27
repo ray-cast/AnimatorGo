@@ -22,15 +22,14 @@ namespace octoon::video
 	}
 
 	void
-	ForwardSceneController::compileScene(RenderScene* scene) noexcept
+	ForwardSceneController::compileScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		materialCollector.Clear();
 
 		for (auto& geometry : scene->getGeometries())
 		{
-			if (!geometry->getVisible()) {
+			if (!geometry->getVisible())
 				continue;
-			}
 
 			for (std::size_t i = 0; i < geometry->getMaterials().size(); ++i)
 			{
@@ -45,10 +44,10 @@ namespace octoon::video
 		if (iter == sceneCache_.cend())
 		{
 			auto out = std::make_unique<ForwardScene>();
-			this->updateCamera(scene, *out);
-			this->updateLights(scene, *out);
+			this->updateCamera(scene, *out, true);
+			this->updateLights(scene, *out, true);
 			this->updateMaterials(scene, *out, true);
-			this->updateShapes(scene, *out);
+			this->updateShapes(scene, *out, true);
 			sceneCache_[scene] = std::move(out);
 		}
 		else
@@ -100,11 +99,22 @@ namespace octoon::video
 		}
 	}
 
+	void
+	ForwardSceneController::cleanCache() noexcept
+	{
+		for (auto it = sceneCache_.begin(); it != sceneCache_.end();)
+		{
+			if ((*it).first.use_count() == 1)
+				it = sceneCache_.erase(it);
+			else
+				++it;
+		}
+	}
+
 	CompiledScene&
-	ForwardSceneController::getCachedScene(const RenderScene* scene) const noexcept(false)
+	ForwardSceneController::getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false)
 	{
 		auto iter = sceneCache_.find(scene);
-
 		if (iter != sceneCache_.cend())
 			return *iter->second.get();
 		else
@@ -112,138 +122,138 @@ namespace octoon::video
 	}
 
 	void
-	ForwardSceneController::updateCamera(const RenderScene* scene, ForwardScene& out) const
+	ForwardSceneController::updateCamera(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
 	{
 		out.camera = scene->getMainCamera();
 	}
 
 	void
-	ForwardSceneController::updateLights(const RenderScene* scene, ForwardScene& out) const
+	ForwardSceneController::updateLights(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
 	{
 		out.reset();
 
 		for (auto& light : scene->getLights())
 		{
-			if (out.camera->getLayer() != light->getLayer())
+			if (!light->getVisible())
 				continue;
 
-			if (light->getVisible())
+			if (light->getLayer() != out.camera->getLayer())
+				continue;
+			
+			light->onRenderBefore(*out.camera);
+
+			if (light->isA<light::AmbientLight>())
 			{
-				light->onRenderBefore(*out.camera);
-
-				if (light->isA<light::AmbientLight>())
-				{
-					out.ambientLightColors += light->getColor() * light->getIntensity();
-				}
-				else if (light->isA<light::EnvironmentLight>())
-				{
-					auto it = light->downcast<light::EnvironmentLight>();
-					ForwardScene::EnvironmentLight environmentLight;
-					environmentLight.intensity = it->getIntensity();
-					environmentLight.radiance = it->getEnvironmentMap();
-					if (!it->getEnvironmentMap())
-						out.ambientLightColors += light->getColor() * light->getIntensity();
-					out.environmentLights.emplace_back(environmentLight);
-					out.numEnvironment++;
-				}
-				else if (light->isA<light::DirectionalLight>())
-				{
-					auto it = light->downcast<light::DirectionalLight>();
-					auto color = it->getColor() * it->getIntensity();
-					ForwardScene::DirectionalLight directionLight;
-					directionLight.direction = math::float4(math::float3x3(out.camera->getView()) * -it->getForward(), 0);
-					directionLight.color[0] = color.x;
-					directionLight.color[1] = color.y;
-					directionLight.color[2] = color.z;
-					directionLight.shadow = it->getShadowEnable();
-
-					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer && directionLight.shadow)
-					{
-						directionLight.shadow = it->getShadowEnable();
-						directionLight.shadowBias = it->getShadowBias();
-						directionLight.shadowRadius = it->getShadowRadius();
-						directionLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
-
-						math::float4x4 viewport;
-						viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
-						viewport.translate(math::float3(0.5f, 0.5f, 0.5f));
-
-						out.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
-						out.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
-					}
-
-					out.numDirectional++;
-					out.directionalLights.emplace_back(directionLight);
-				}
-				else if (light->isA<light::SpotLight>())
-				{
-					auto it = light->downcast<light::SpotLight>();
-					ForwardScene::SpotLight spotLight;
-					spotLight.color.set(it->getColor() * it->getIntensity());
-					spotLight.direction.set(math::float3x3(out.camera->getView()) * it->getForward());
-					spotLight.position.set(it->getTranslate());
-					spotLight.distance = 0;
-					spotLight.decay = 0;
-					spotLight.coneCos = it->getInnerCone().y;
-					spotLight.penumbraCos = it->getOuterCone().y;
-					spotLight.shadow = it->getShadowEnable();
-
-					auto framebuffer = it->getCamera()->getFramebuffer();
-					if (framebuffer && spotLight.shadow)
-					{						
-						spotLight.shadowBias = it->getShadowBias();
-						spotLight.shadowRadius = it->getShadowRadius();
-						spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
-
-						out.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
-					}
-
-					out.spotLights.emplace_back(spotLight);
-					out.numSpot++;
-				}
-				else if (light->isA<light::PointLight>())
-				{
-					auto it = light->downcast<light::PointLight>();
-					ForwardScene::PointLight pointLight;
-					pointLight.color.set(it->getColor() * it->getIntensity());
-					pointLight.position.set(it->getTranslate());
-					pointLight.distance = 0;
-					pointLight.decay = 0;
-					pointLight.shadow = it->getShadowEnable();
-
-					if (pointLight.shadow)
-					{
-						auto framebuffer = it->getCamera()->getFramebuffer();
-						if (framebuffer && pointLight.shadow)
-						{
-							pointLight.shadowBias = it->getShadowBias();
-							pointLight.shadowRadius = it->getShadowRadius();
-							pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
-
-							out.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
-						}
-					}
-
-					out.pointLights.emplace_back(pointLight);
-					out.numPoint++;
-				}
-				else if (light->isA<light::RectangleLight>())
-				{
-					auto it = light->downcast<light::RectangleLight>();
-					ForwardScene::RectAreaLight rectangleLight;
-					rectangleLight.color.set(it->getColor() * it->getIntensity());
-					rectangleLight.position.set(it->getTranslate());
-					rectangleLight.halfWidth.set(math::float3::One);
-					rectangleLight.halfHeight.set(math::float3::One);
-					out.rectangleLights.emplace_back(rectangleLight);
-					out.numRectangle++;
-				}
-
-				light->onRenderAfter(*out.camera);
-
-				out.lights.push_back(light);
+				out.ambientLightColors += light->getColor() * light->getIntensity();
 			}
+			else if (light->isA<light::EnvironmentLight>())
+			{
+				auto it = light->downcast<light::EnvironmentLight>();
+				ForwardScene::EnvironmentLight environmentLight;
+				environmentLight.intensity = it->getIntensity();
+				environmentLight.radiance = it->getEnvironmentMap();
+				if (!it->getEnvironmentMap())
+					out.ambientLightColors += light->getColor() * light->getIntensity();
+				out.environmentLights.emplace_back(environmentLight);
+				out.numEnvironment++;
+			}
+			else if (light->isA<light::DirectionalLight>())
+			{
+				auto it = light->downcast<light::DirectionalLight>();
+				auto color = it->getColor() * it->getIntensity();
+				ForwardScene::DirectionalLight directionLight;
+				directionLight.direction = math::float4(math::float3x3(out.camera->getView()) * -it->getForward(), 0);
+				directionLight.color[0] = color.x;
+				directionLight.color[1] = color.y;
+				directionLight.color[2] = color.z;
+				directionLight.shadow = it->getShadowEnable();
+
+				auto framebuffer = it->getCamera()->getFramebuffer();
+				if (framebuffer && directionLight.shadow)
+				{
+					directionLight.shadow = it->getShadowEnable();
+					directionLight.shadowBias = it->getShadowBias();
+					directionLight.shadowRadius = it->getShadowRadius();
+					directionLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+
+					math::float4x4 viewport;
+					viewport.makeScale(math::float3(0.5f, 0.5f, 0.5f));
+					viewport.translate(math::float3(0.5f, 0.5f, 0.5f));
+
+					out.directionalShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+					out.directionalShadowMatrix.push_back(viewport * it->getCamera()->getViewProjection());
+				}
+
+				out.numDirectional++;
+				out.directionalLights.emplace_back(directionLight);
+			}
+			else if (light->isA<light::SpotLight>())
+			{
+				auto it = light->downcast<light::SpotLight>();
+				ForwardScene::SpotLight spotLight;
+				spotLight.color.set(it->getColor() * it->getIntensity());
+				spotLight.direction.set(math::float3x3(out.camera->getView()) * it->getForward());
+				spotLight.position.set(it->getTranslate());
+				spotLight.distance = 0;
+				spotLight.decay = 0;
+				spotLight.coneCos = it->getInnerCone().y;
+				spotLight.penumbraCos = it->getOuterCone().y;
+				spotLight.shadow = it->getShadowEnable();
+
+				auto framebuffer = it->getCamera()->getFramebuffer();
+				if (framebuffer && spotLight.shadow)
+				{						
+					spotLight.shadowBias = it->getShadowBias();
+					spotLight.shadowRadius = it->getShadowRadius();
+					spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+
+					out.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+				}
+
+				out.spotLights.emplace_back(spotLight);
+				out.numSpot++;
+			}
+			else if (light->isA<light::PointLight>())
+			{
+				auto it = light->downcast<light::PointLight>();
+				ForwardScene::PointLight pointLight;
+				pointLight.color.set(it->getColor() * it->getIntensity());
+				pointLight.position.set(it->getTranslate());
+				pointLight.distance = 0;
+				pointLight.decay = 0;
+				pointLight.shadow = it->getShadowEnable();
+
+				if (pointLight.shadow)
+				{
+					auto framebuffer = it->getCamera()->getFramebuffer();
+					if (framebuffer && pointLight.shadow)
+					{
+						pointLight.shadowBias = it->getShadowBias();
+						pointLight.shadowRadius = it->getShadowRadius();
+						pointLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+
+						out.pointShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+					}
+				}
+
+				out.pointLights.emplace_back(pointLight);
+				out.numPoint++;
+			}
+			else if (light->isA<light::RectangleLight>())
+			{
+				auto it = light->downcast<light::RectangleLight>();
+				ForwardScene::RectAreaLight rectangleLight;
+				rectangleLight.color.set(it->getColor() * it->getIntensity());
+				rectangleLight.position.set(it->getTranslate());
+				rectangleLight.halfWidth.set(math::float3::One);
+				rectangleLight.halfHeight.set(math::float3::One);
+				out.rectangleLights.emplace_back(rectangleLight);
+				out.numRectangle++;
+			}
+
+			light->onRenderAfter(*out.camera);
+
+			out.lights.push_back(light);
 		}
 
 		if (out.numSpot)
@@ -380,7 +390,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardSceneController::updateMaterials(const RenderScene* scene, ForwardScene& out, bool force) const
+	ForwardSceneController::updateMaterials(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
 	{
 		out.material_bundle.reset(materialCollector.CreateBundle());
 
@@ -409,17 +419,16 @@ namespace octoon::video
 	}
 
     void
-    ForwardSceneController::updateShapes(const RenderScene* scene, ForwardScene& out) const
+    ForwardSceneController::updateShapes(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
     {
 		out.geometries = scene->getGeometries();
 
 		for (auto& geometry : scene->getGeometries())
 		{
-			if (!geometry->getVisible()) {
+			if (!geometry->getVisible())
 				continue;
-			}
 
-			if (geometry->isDirty())
+			if (geometry->isDirty() || force)
 			{
 				auto mesh = geometry->getMesh();
 				out.buffers_[mesh.get()] = std::make_shared<ForwardBuffer>(mesh);

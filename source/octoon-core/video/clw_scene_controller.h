@@ -18,18 +18,19 @@ namespace octoon::video
 	public:
 		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager);
 
-		void compileScene(RenderScene* scene) noexcept override;
-		CompiledScene& getCachedScene(const RenderScene* scene) const noexcept(false);
+		void cleanCache() noexcept;
+		void compileScene(const std::shared_ptr<RenderScene>& scene) noexcept override;
+		CompiledScene& getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false);
 
 	private:
-		void updateCamera(const RenderScene* scene, ClwScene& out) const;
-		void updateTextures(const RenderScene* scene, ClwScene& out);
-		void updateMaterials(const RenderScene* scene, ClwScene& out);
-		void updateShapes(const RenderScene* scene, ClwScene& out) const;
-		void updateIntersector(const RenderScene* scene, ClwScene& out) const;
-		void updateLights(const RenderScene* scene, ClwScene& out);
+		void updateCamera(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const;
+		void updateTextures(const std::shared_ptr<RenderScene>& scene, ClwScene& out);
+		void updateMaterials(const std::shared_ptr<RenderScene>& scene, ClwScene& out);
+		void updateShapes(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const;
+		void updateIntersector(const std::shared_ptr<RenderScene>& scene, ClwScene& out) const;
+		void updateLights(const std::shared_ptr<RenderScene>& scene, ClwScene& out);
 
-		void WriteLight(const RenderScene* scene, light::Light const& light, void* data) const;
+		void WriteLight(const std::shared_ptr<RenderScene>& scene, light::Light const& light, void* data) const;
 		void WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const;
 		void WriteTextureData(hal::GraphicsTexture& texture, void* data) const;
 
@@ -41,7 +42,7 @@ namespace octoon::video
 		std::shared_ptr<RadeonRays::IntersectionApi> api_;
 		std::unordered_map<void*, std::int32_t> textureToOffset_;
 		std::unordered_map<void*, ClwScene::Material> materialidToOffset_;
-		std::unordered_map<const RenderScene*, std::unique_ptr<ClwScene>> sceneCache_;
+		std::unordered_map<std::shared_ptr<RenderScene>, std::unique_ptr<ClwScene>> sceneCache_;
 
 		Collector textureCollector;
 		Collector materialCollector;

@@ -87,11 +87,11 @@ namespace octoon
 				physics_scene->fetchResults();
 			}
 
+			if (iterationCounts_ > 0)
+				physics_scene->fetchFinish();
+
 			needUpdate_ = false;
 		}
-
-		if (iterationCounts_ > 0)
-			physics_scene->fetchFinish();
     }
 
     void

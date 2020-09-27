@@ -302,7 +302,7 @@ QWidget#ToolWindow{
 	min-width:50;
 	max-width:50;
 }
-QWidget#ToolWindow > QToolButton{
+QWidget#ToolWindow QToolButton{
 	min-width:50px;
 	max-width:50px;
 	min-height:46px;
@@ -310,63 +310,63 @@ QWidget#ToolWindow > QToolButton{
 	font-size:14px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#ToolWindow > QToolButton#hide{
+QWidget#ToolWindow QToolButton#hide{
 	qproperty-icon: url(":res/icons/hide.png");
 }
-QWidget#ToolWindow > QToolButton#import{
+QWidget#ToolWindow QToolButton#import{
 	qproperty-icon: url(":res/icons/append.png");
 }
-QWidget#ToolWindow > QToolButton#play{
+QWidget#ToolWindow QToolButton#play{
 	qproperty-icon: url(":res/icons/play.png");
 }
-QWidget#ToolWindow > QToolButton#play-on{
+QWidget#ToolWindow QToolButton#play-on{
 	qproperty-icon: url(":res/icons/play-on.png");
 }
-QWidget#ToolWindow > QToolButton#pause{
+QWidget#ToolWindow QToolButton#pause{
 	qproperty-icon: url(":res/icons/pause.png");
 }
-QWidget#ToolWindow > QToolButton#stop{
+QWidget#ToolWindow QToolButton#stop{
 	qproperty-icon: url(":res/icons/stop.png");
 }
-QWidget#ToolWindow > QToolButton#reset{
+QWidget#ToolWindow QToolButton#reset{
 	qproperty-icon: url(":res/icons/reset.png");
 }
-QWidget#ToolWindow > QToolButton#shot{
+QWidget#ToolWindow QToolButton#shot{
 	qproperty-icon: url(":res/icons/shot.png");
 }
-QWidget#ToolWindow > QToolButton#left{
+QWidget#ToolWindow QToolButton#left{
 	qproperty-icon: url(":res/icons/left.png");
 }
-QWidget#ToolWindow > QToolButton#right{
+QWidget#ToolWindow QToolButton#right{
 	qproperty-icon: url(":res/icons/right.png");
 }
-QWidget#ToolWindow > QToolButton#record{
+QWidget#ToolWindow QToolButton#record{
 	qproperty-icon: url(":res/icons/record.png");
 }
-QWidget#ToolWindow > QToolButton#record-on{
+QWidget#ToolWindow QToolButton#record-on{
 	qproperty-icon: url(":res/icons/record-on.png");
 }
-QWidget#ToolWindow > QToolButton#gpu{
+QWidget#ToolWindow QToolButton#gpu{
 	qproperty-icon: url(":res/icons/gpu.png");
 }
-QWidget#ToolWindow > QToolButton#gpu-on{
+QWidget#ToolWindow QToolButton#gpu-on{
 	qproperty-icon: url(":res/icons/gpu-on.png");
 }
-QWidget#ToolWindow > QToolButton#hdr{
+QWidget#ToolWindow QToolButton#hdr{
 	qproperty-icon: url(":res/icons/hdr.png");
 }
-QWidget#ToolWindow > QToolButton#cleanup{
+QWidget#ToolWindow QToolButton#cleanup{
 	qproperty-icon: url(":res/icons/cleanup.png");
 }
-QWidget#ToolWindow > QToolButton#environment{
+QWidget#ToolWindow QToolButton#environment{
 	qproperty-icon: url(":res/icons/environment.png");
 	qproperty-iconSize: 22px 22px;
 }
-QWidget#ToolWindow > QToolButton#sun{
+QWidget#ToolWindow QToolButton#sun{
 	qproperty-icon: url(":res/icons/sun.png");
 	qproperty-iconSize: 27px 27px;
 }
-QWidget#ToolWindow > QToolButton#material{
+QWidget#ToolWindow QToolButton#material{
 	qproperty-icon: url(":res/icons/material.png");
 }
 QWidget#showWidget{

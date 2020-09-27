@@ -110,8 +110,6 @@ namespace rabbit
 		QToolButton environmentButton;
 		QToolButton materialButton;
 
-		QVBoxLayout layout;
-
 		octoon::GameObjectPtr behaviour_;
 	};
 }

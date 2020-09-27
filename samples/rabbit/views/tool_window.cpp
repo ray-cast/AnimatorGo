@@ -1,4 +1,5 @@
 #include "tool_window.h"
+#include <qscrollarea.h>
 
 namespace rabbit
 {
@@ -97,25 +98,39 @@ namespace rabbit
 		environmentButton.setToolTip(u8"环境光设置");
 		environmentButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		layout.addSpacing(1);
-		layout.addWidget(&hideButton, 0, Qt::AlignCenter);
-		layout.addWidget(&importButton, 0, Qt::AlignCenter);
-		layout.addWidget(&playButton, 0, Qt::AlignCenter);
-		layout.addWidget(&resetButton, 0, Qt::AlignCenter);
-		layout.addWidget(&leftButton, 0, Qt::AlignCenter);
-		layout.addWidget(&rightButton, 0, Qt::AlignCenter);
-		layout.addWidget(&recordButton, 0, Qt::AlignCenter);
-		layout.addWidget(&shotButton, 0, Qt::AlignCenter);
-		layout.addWidget(&gpuButton, 0, Qt::AlignCenter);
-		layout.addWidget(&materialButton, 0, Qt::AlignCenter);
-		layout.addWidget(&hdrButton, 0, Qt::AlignCenter);
-		layout.addWidget(&sunButton, 0, Qt::AlignCenter);
-		layout.addWidget(&environmentButton, 0, Qt::AlignCenter);
-		layout.addWidget(&cleanupButton, 0, Qt::AlignCenter);
-		layout.addStretch();
-		layout.setSpacing(4);
-		layout.setContentsMargins(0, 0, 0, 0);
-		setLayout(&layout);
+		auto layout = new QVBoxLayout;
+		layout->setSpacing(4);
+		layout->setContentsMargins(0, 0, 0, 0);
+		layout->addSpacing(1);
+		layout->addWidget(&hideButton, 0, Qt::AlignCenter);
+		layout->addWidget(&importButton, 0, Qt::AlignCenter);
+		layout->addWidget(&playButton, 0, Qt::AlignCenter);
+		layout->addWidget(&resetButton, 0, Qt::AlignCenter);
+		layout->addWidget(&leftButton, 0, Qt::AlignCenter);
+		layout->addWidget(&rightButton, 0, Qt::AlignCenter);
+		layout->addWidget(&recordButton, 0, Qt::AlignCenter);
+		layout->addWidget(&shotButton, 0, Qt::AlignCenter);
+		layout->addWidget(&gpuButton, 0, Qt::AlignCenter);
+		layout->addWidget(&materialButton, 0, Qt::AlignCenter);
+		layout->addWidget(&hdrButton, 0, Qt::AlignCenter);
+		layout->addWidget(&sunButton, 0, Qt::AlignCenter);
+		layout->addWidget(&environmentButton, 0, Qt::AlignCenter);
+		layout->addWidget(&cleanupButton, 0, Qt::AlignCenter);
+		layout->addStretch();
+
+		auto contentWidget = new QWidget;
+		contentWidget->setLayout(layout);
+
+		auto contentWidgetArea = new QScrollArea();
+		contentWidgetArea->setWidget(contentWidget);
+		contentWidgetArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		contentWidgetArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		contentWidgetArea->setWidgetResizable(true);
+
+		auto mainLayout = new QVBoxLayout(this);
+		mainLayout->setSpacing(0);
+		mainLayout->setContentsMargins(0, 0, 0, 0);
+		mainLayout->addWidget(contentWidgetArea);
 
 		this->connect(&hideButton, SIGNAL(clicked()), this, SLOT(hideEvent()));
 		this->connect(&importButton, SIGNAL(clicked()), this, SLOT(importEvent()));

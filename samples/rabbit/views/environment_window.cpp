@@ -73,7 +73,7 @@ namespace rabbit
 		mainLayout_->addWidget(colorDialog_.get(), 0, Qt::AlignHCenter | Qt::AlignTop);
 		mainLayout_->addLayout(layoutIntensity_.get(), 0);
 		mainLayout_->addWidget(sliderIntensity_.get(), 0, Qt::AlignHCenter);
-		mainLayout_->addStretch(100);
+		mainLayout_->addStretch();
 		mainLayout_->addWidget(resetButton_.get(), 0, Qt::AlignBottom | Qt::AlignRight);
 		mainLayout_->setContentsMargins(0, 10, 10, 10);
 

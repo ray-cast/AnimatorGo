@@ -59,7 +59,7 @@ namespace rabbit
 		this->titleLayout = new QHBoxLayout;
 		this->titleLayout->addWidget(check, 0, Qt::AlignLeft);
 		this->titleLayout->addWidget(title, 0, Qt::AlignLeft);
-		this->titleLayout->addStretch(300);
+		this->titleLayout->addStretch();
 		this->titleLayout->setSpacing(0);
 		this->titleLayout->setContentsMargins(0, 2, 0, 0);
 
@@ -67,7 +67,7 @@ namespace rabbit
 		textLayout->setSpacing(2);
 		textLayout->setContentsMargins(0, 2, 0, 0);
 		textLayout->addWidget(this->path, 0, Qt::AlignLeft | Qt::AlignCenter);
-		textLayout->addStretch(300);
+		textLayout->addStretch();
 
 		if (flags & CreateFlags::ColorBit)
 		{
@@ -86,7 +86,7 @@ namespace rabbit
 		this->rightLayout->setContentsMargins(0, 0, 0, 0);
 		this->rightLayout->addLayout(this->titleLayout);
 		this->rightLayout->addLayout(textLayout);
-		this->rightLayout->addStretch(100);
+		this->rightLayout->addStretch();
 
 		this->mapLayout = new QHBoxLayout;
 		this->mapLayout->addWidget(image);
@@ -178,9 +178,9 @@ namespace rabbit
 
 		titleLayout_ = new QHBoxLayout();
 		titleLayout_->addWidget(backButton_, 0, Qt::AlignLeft);
-		titleLayout_->addStretch(100);
+		titleLayout_->addStretch();
 		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
-		titleLayout_->addStretch(100);
+		titleLayout_->addStretch();
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
@@ -223,7 +223,7 @@ namespace rabbit
 		contentLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
-		contentLayout->addStretch(500);
+		contentLayout->addStretch();
 
 		auto contentWidget = new QWidget;
 		contentWidget->setLayout(contentLayout);
@@ -1224,9 +1224,9 @@ namespace rabbit
 		closeButton_->setToolTip(u8"关闭");
 
 		titleLayout_ = new QHBoxLayout();
-		titleLayout_->addStretch(100);
+		titleLayout_->addStretch();
 		titleLayout_->addWidget(title_, 0, Qt::AlignCenter);
-		titleLayout_->addStretch(100);
+		titleLayout_->addStretch();
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 		titleLayout_->setContentsMargins(10, 0, 10, 0);
 
@@ -1236,7 +1236,7 @@ namespace rabbit
 		mainLayout_ = new QVBoxLayout(this);
 		mainLayout_->addLayout(titleLayout_);
 		mainLayout_->addWidget(listWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
-		mainLayout_->addStretch(500);
+		mainLayout_->addStretch();
 		mainLayout_->setContentsMargins(0, 10, 0, 5);
 	}
 
@@ -1269,7 +1269,7 @@ namespace rabbit
 		mainLayout_ = new QVBoxLayout(this);
 		mainLayout_->addWidget(listPanel_, 0, Qt::AlignTop | Qt::AlignCenter);
 		mainLayout_->addWidget(modifyWidget_, 0, Qt::AlignTop | Qt::AlignCenter);
-		mainLayout_->addStretch(500);
+		mainLayout_->addStretch();
 		mainLayout_->setContentsMargins(0, 0, 0, 0);
 
 		connect(modifyWidget_->backButton_, SIGNAL(clicked()), this, SLOT(okEvent()));

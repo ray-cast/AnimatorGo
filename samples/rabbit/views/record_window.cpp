@@ -120,7 +120,7 @@ namespace rabbit
 		frameLayout_->addWidget(start_.get(), 0, Qt::AlignLeft);
 		frameLayout_->addWidget(endLabel_.get(), 0, Qt::AlignLeft);
 		frameLayout_->addWidget(end_.get(), 0, Qt::AlignLeft);
-		frameLayout_->addStretch(50);
+		frameLayout_->addStretch();
 
 		infomation_ = std::make_unique<QLabel>();
 		infomation_->setText(u8"ÊÓÆµÐÅÏ¢");
@@ -151,12 +151,12 @@ namespace rabbit
 		selectLayout_->addWidget(select2_.get(), 0, Qt::AlignVCenter);
 
 		videoRatioLayout_ = std::make_unique<QHBoxLayout>();
-		videoRatioLayout_->addStretch(100);
+		videoRatioLayout_->addStretch();
 		videoRatioLayout_->addWidget(speed1_.get(), 0, Qt::AlignRight);
 		videoRatioLayout_->addWidget(speed2_.get(), 0, Qt::AlignVCenter);
 		videoRatioLayout_->addWidget(speed3_.get(), 0, Qt::AlignVCenter);
 		videoRatioLayout_->addWidget(speed4_.get(), 0, Qt::AlignLeft);
-		videoRatioLayout_->addStretch(100);
+		videoRatioLayout_->addStretch();
 		videoRatioLayout_->setContentsMargins(20, 0, 20, 0);
 
 		mainLayout_ = std::make_unique<QVBoxLayout>(this);
@@ -184,7 +184,7 @@ namespace rabbit
 		mainLayout_->addWidget(summary_.get());
 		mainLayout_->addWidget(currentFrame_.get());
 		mainLayout_->addWidget(timeTotal_.get());
-		mainLayout_->addStretch(100);
+		mainLayout_->addStretch();
 		mainLayout_->addWidget(backButton_.get(), 0, Qt::AlignCenter);
 		mainLayout_->setContentsMargins(10, 10, 10, 10);
 

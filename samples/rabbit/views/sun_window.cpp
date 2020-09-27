@@ -147,7 +147,7 @@ namespace rabbit
 		scrollLayout_->addWidget(sliderRotationY_.get(), 0, Qt::AlignHCenter);
 		scrollLayout_->addLayout(layoutRotationZ_.get(), 0);
 		scrollLayout_->addWidget(sliderRotationZ_.get(), 0, Qt::AlignHCenter);
-		scrollLayout_->addStretch(100);
+		scrollLayout_->addStretch();
 
 		scrollArea_ = std::make_unique<QScrollArea>();
 		scrollArea_->setWidget(scrollWidget_.get());
@@ -161,7 +161,7 @@ namespace rabbit
 		mainLayout_ = std::make_unique<QVBoxLayout>(this);
 		mainLayout_->addLayout(layout_.get());
 		mainLayout_->addWidget(scrollArea_.get());
-		mainLayout_->addStretch(100);
+		mainLayout_->addStretch();
 		mainLayout_->addWidget(resetButton_.get(), 0, Qt::AlignBottom | Qt::AlignRight);
 		mainLayout_->setContentsMargins(0, 10, 10, 10);
 

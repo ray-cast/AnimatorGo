@@ -24,6 +24,9 @@ namespace octoon
 		void setQuaternionAccum(const math::Quaternion& quat) noexcept;
 		const math::Quaternion& getQuaternion() const noexcept;
 
+		void setEulerAngles(const math::float3& euler) noexcept;
+		const math::float3& getEulerAngles() const noexcept;
+
 		void setTransform(const math::float4x4& transform) noexcept;
 		void setTransform(const math::float3& translate, const math::Quaternion& quat, const math::float3& scale = math::float3::One) noexcept;
 		void setTransformOnlyRotate(const math::float4x4& transform) noexcept;
@@ -46,6 +49,9 @@ namespace octoon
 		void setLocalQuaternion(const math::Quaternion& quat) noexcept;
 		void setLocalQuaternionAccum(const math::Quaternion& quat) noexcept;
 		const math::Quaternion& getLocalQuaternion() const noexcept;
+
+		void setLocalEulerAngles(const math::float3& euler) noexcept;
+		const math::float3& getLocalEulerAngles() const noexcept;
 
 		void setLocalTransform(const math::float4x4& transform) noexcept;
 		void setLocalTransformOnlyRotate(const math::float4x4& transform) noexcept;
@@ -82,10 +88,12 @@ namespace octoon
 	private:
 		mutable math::float3 translate_;
 		mutable math::float3 scaling_;
+		mutable math::float3 euler_angles_;
 		mutable math::Quaternion rotation_;
 
 		mutable math::float3 local_translate_;
 		mutable math::float3 local_scaling_;
+		mutable math::float3 local_euler_angles_;
 		mutable math::Quaternion local_rotation_;
 
 		mutable math::float4x4 transform_;

@@ -7,9 +7,11 @@ namespace octoon
 	TransformComponent::TransformComponent() noexcept
 		: scaling_(math::float3::One)
 		, translate_(math::float3::Zero)
+		, euler_angles_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
 		, local_scaling_(math::float3::One)
 		, local_translate_(math::float3::Zero)
+		, local_euler_angles_(math::float3::Zero)
 		, local_rotation_(math::Quaternion::Zero)
 		, local_need_updates_(true)
 		, world_need_updates_(true)
@@ -86,6 +88,7 @@ namespace octoon
 			this->onMoveBefore();
 
 			rotation_ = quat;
+			euler_angles_ = math::eulerAngles(quat);
 			world_need_updates_ = true;
 
 			this->updateWorldChildren();
@@ -105,6 +108,29 @@ namespace octoon
 	{
 		updateWorldTransform();
 		return rotation_;
+	}
+
+	void
+	TransformComponent::setEulerAngles(const math::float3& euler) noexcept
+	{
+		if (euler_angles_ != euler)
+		{
+			this->onMoveBefore();
+
+			euler_angles_ = euler;
+			rotation_ = math::normalize(math::Quaternion(euler));
+			world_need_updates_ = true;
+
+			this->updateWorldChildren();
+			this->onMoveAfter();
+		}
+	}
+	
+	const math::float3&
+	TransformComponent::getEulerAngles() const noexcept
+	{
+		updateWorldTransform();
+		return euler_angles_;
 	}
 
 	void
@@ -261,6 +287,7 @@ namespace octoon
 			this->onMoveBefore();
 
 			local_rotation_ = quat;
+			local_euler_angles_ = math::eulerAngles(quat);
 			local_need_updates_ = true;
 
 			this->updateLocalChildren();
@@ -273,7 +300,7 @@ namespace octoon
 	{
 		assert(math::abs(math::length(quat) - 1) < 1e-2f);
 
-		this->setLocalQuaternion(math::cross(quat, local_rotation_));
+		this->setLocalQuaternion(this->getLocalQuaternion() * quat);
 	}
 
 	const math::Quaternion&
@@ -281,6 +308,29 @@ namespace octoon
 	{
 		updateLocalTransform();
 		return local_rotation_;
+	}
+
+	void
+	TransformComponent::setLocalEulerAngles(const math::float3& euler) noexcept
+	{
+		if (this->local_euler_angles_ != euler)
+		{
+			this->onMoveBefore();
+
+			local_euler_angles_ = euler;
+			local_rotation_ = math::normalize(math::Quaternion(euler));
+			local_need_updates_ = true;
+
+			this->updateLocalChildren();
+			this->onMoveAfter();
+		}		
+	}
+	
+	const math::float3&
+	TransformComponent::getLocalEulerAngles() const noexcept
+	{
+		updateLocalTransform();
+		return this->local_euler_angles_;
 	}
 
 	void
@@ -445,11 +495,13 @@ namespace octoon
 				transform_ = math::transformMultiply(baseTransform, this->getLocalTransform());
 				transform_.getTransform(translate_, rotation_, scaling_);
 				transform_inverse_ = math::transformInverse(transform_);
+				euler_angles_ = math::eulerAngles(rotation_);
 			}
 			else
 			{
 				translate_ = local_translate_;
 				scaling_ = local_scaling_;
+				euler_angles_ = local_euler_angles_;
 				rotation_ = local_rotation_;
 
 				transform_.makeTransform(translate_, rotation_, scaling_);
@@ -476,12 +528,14 @@ namespace octoon
 			auto& baseTransformInverse = parent->getComponent<TransformComponent>()->getTransformInverse();
 			local_transform_ = math::transformMultiply(baseTransformInverse, transform_);
 			local_transform_.getTransform(local_translate_, local_rotation_, local_scaling_);
+			local_euler_angles_ = math::eulerAngles(local_rotation_);
 		}
 		else
 		{
 			local_scaling_ = scaling_;
 			local_rotation_ = rotation_;
 			local_translate_ = translate_;
+			local_euler_angles_ = euler_angles_;
 		}
 	}
 }

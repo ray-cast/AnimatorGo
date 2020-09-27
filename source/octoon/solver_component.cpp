@@ -211,6 +211,11 @@ namespace octoon
 
 				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
 
+				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
+				float deltaAngle = math::safe_acos(cosDeltaAngle);
+				if (std::abs(deltaAngle) < math::EPSILON_E5)
+					continue;
+
 				if (this->enableAxisLimit_)
 				{
 					auto limit = bone->getComponent<RotationLimitComponent>();
@@ -219,75 +224,30 @@ namespace octoon
 						auto& low = limit->getMinimumAxis();
 						auto& upper = limit->getMaximumAxis();
 
-						if ((low.x != 0 || upper.x != 0) && low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
+						if (limit->getMininumAngle() != 0 || limit->getMaximumAngle() != 0)
+							deltaAngle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
+
+						if (low.x != 0 || upper.x != 0 || low.y != 0 || upper.y != 0 || low.z != 0 || upper.z != 0)
 						{
-							float cosDeltaAngle = localJointTarget.y * localJointEnd.y + localJointTarget.z * localJointEnd.z;
-							float deltaAngle = math::clamp(math::safe_acos(cosDeltaAngle), limit->getMininumAngle(), limit->getMaximumAngle());
+							auto spin = transform->getLocalEulerAngles();
+							auto rotation = math::eulerAngles(math::normalize(math::Quaternion(axis, deltaAngle)));
+							rotation = math::clamp(rotation, low - spin, upper - spin) + spin;
 
-							if (std::abs(deltaAngle) > math::EPSILON_E5)
-							{
-								auto spin = transform->getLocalQuaternion() * math::Quaternion(math::float3::UnitX, math::sign(axis.x) * deltaAngle);
-								spin = math::Quaternion(math::float3::UnitX, math::clamp(math::sign(axis.x) * math::angle(spin), low.x, upper.x));
-
-								transform->setLocalQuaternion(math::normalize(spin));
-							}
-						}
-						else if ((low.y != 0 || upper.y != 0) && low.x == 0 && upper.x == 0 && low.z == 0 && upper.z == 0)
-						{
-							float cosDeltaAngle = localJointTarget.x * localJointEnd.x + localJointTarget.z * localJointEnd.z;
-							float deltaAngle = math::clamp(math::safe_acos(cosDeltaAngle), limit->getMininumAngle(), limit->getMaximumAngle());
-
-							if (std::abs(deltaAngle) > math::EPSILON_E5)
-							{
-								auto spin = transform->getLocalQuaternion() * math::Quaternion(math::float3::UnitY, math::sign(axis.y) * deltaAngle);
-								spin = math::Quaternion(math::float3::UnitY, math::clamp(math::sign(axis.y) * math::angle(spin), low.y, upper.y));
-
-								transform->setLocalQuaternion(math::normalize(spin));
-							}
-						}
-						else if ((low.z != 0 || upper.z != 0) && low.x == 0 && upper.x == 0 && low.y == 0 && upper.y == 0)
-						{
-							float cosDeltaAngle = localJointTarget.x * localJointEnd.x + localJointTarget.y * localJointEnd.y;
-							float deltaAngle = math::clamp(math::safe_acos(cosDeltaAngle), limit->getMininumAngle(), limit->getMaximumAngle());
-
-							if (std::abs(deltaAngle) > math::EPSILON_E5)
-							{
-								auto spin = transform->getLocalQuaternion() * math::Quaternion(math::float3::UnitZ, math::sign(axis.z) * deltaAngle);
-								spin = math::Quaternion(math::float3::UnitZ, math::clamp(math::sign(axis.z) * math::angle(spin), low.z, upper.z));
-
-								transform->setLocalQuaternion(math::normalize(spin));
-							}
+							transform->setLocalEulerAngles(rotation);
 						}
 						else
-						{
-							float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-							float deltaAngle = math::safe_acos(cosDeltaAngle);
-
-							if (std::abs(deltaAngle) > math::EPSILON_E5)
-							{
-								auto angle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
-								auto spin = transform->getLocalQuaternion() * math::Quaternion(axis, angle);
-
-								transform->setLocalQuaternion(math::normalize(spin));
-							}
+						{						
+							transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::normalize(math::Quaternion(axis, deltaAngle))));
 						}
 					}
 					else
 					{
-						float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-						float deltaAngle = math::safe_acos(cosDeltaAngle);
-
-						if (std::abs(deltaAngle) > math::EPSILON_E5)
-							transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
+						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
 					}
 				}
 				else
 				{
-					float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
-					float deltaAngle = math::safe_acos(cosDeltaAngle);
-
-					if (std::abs(deltaAngle) > math::EPSILON_E5)
-						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
+					transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
 				}
 			}
 		}

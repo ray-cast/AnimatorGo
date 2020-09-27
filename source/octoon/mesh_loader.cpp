@@ -265,7 +265,7 @@ namespace octoon
 				if (child.rotateLimited)
 					bones[child.boneIndex]->addComponent<RotationLimitComponent>(-child.angleRadian, child.angleRadian, child.minimumRadian, child.maximumRadian);
 				else
-					bones[child.boneIndex]->addComponent<RotationLimitComponent>(-child.angleRadian, child.angleRadian, math::float3(-math::PI), math::float3(math::PI));
+					bones[child.boneIndex]->addComponent<RotationLimitComponent>(-child.angleRadian, child.angleRadian, math::float3::Zero, math::float3::Zero);
 
 				iksolver->addBone(bones[child.boneIndex]);
 			}

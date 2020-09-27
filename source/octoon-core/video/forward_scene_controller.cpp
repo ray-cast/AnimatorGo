@@ -54,13 +54,6 @@ namespace octoon::video
 		{
 			auto& out = (*iter).second;
 
-			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
-				[](runtime::RttiInterface* ptr)->bool
-			{
-				auto mat = ptr->downcast<material::Material>();
-				return mat->isDirty();
-			});
-
 			bool should_update_lights = false;
 			for (auto& light : scene->getLights())
 			{
@@ -79,10 +72,20 @@ namespace octoon::video
 
 				if (geometry->isDirty())
 				{
+					for (auto& it : geometry->getMaterials())
+						it->setDirty(true);
+
 					should_update_shapes = true;
 					break;
 				}
 			}
+
+			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
+				[](runtime::RttiInterface* ptr)->bool
+			{
+				auto mat = ptr->downcast<material::Material>();
+				return mat->isDirty();
+			});
 
 			auto camera = scene->getMainCamera();
 			if (camera->isDirty())

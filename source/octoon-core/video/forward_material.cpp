@@ -2571,7 +2571,7 @@ namespace octoon::video
 					}
 				}
 
-				this->updateParameters();
+				this->updateParameters(true);
 			}
 		}
 		else

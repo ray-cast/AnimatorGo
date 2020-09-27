@@ -72,9 +72,6 @@ namespace octoon::video
 
 				if (geometry->isDirty())
 				{
-					for (auto& it : geometry->getMaterials())
-						it->setDirty(true);
-
 					should_update_shapes = true;
 					break;
 				}

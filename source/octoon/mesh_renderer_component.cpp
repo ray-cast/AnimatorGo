@@ -173,10 +173,12 @@ namespace octoon
 	{
 		if (mesh)
 		{
-			if (geometry_)
-				this->getFeature<VideoFeature>()->getMainScene()->removeRenderObject(geometry_.get());
+			if (!geometry_)
+			{
+				geometry_ = std::make_shared<geometry::Geometry>();
+				this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(geometry_.get());
+			}
 
-			geometry_ = std::make_shared<geometry::Geometry>();
 			geometry_->setOwnerListener(this);
 			geometry_->setVisible(this->getVisible());
 			geometry_->setGlobalIllumination(this->getGlobalIllumination());
@@ -185,7 +187,6 @@ namespace octoon
 			geometry_->setMesh(mesh);
 			geometry_->setMaterials(this->getMaterials());
 
-			this->getFeature<VideoFeature>()->getMainScene()->addRenderObject(geometry_.get());
 			this->onMoveAfter();
 			this->onLayerChangeAfter();
 		}

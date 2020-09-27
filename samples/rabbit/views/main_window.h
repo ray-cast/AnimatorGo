@@ -75,6 +75,7 @@ namespace rabbit
 
 		void keyPressEvent(QKeyEvent* event) noexcept override;
 		void keyReleaseEvent(QKeyEvent* event) noexcept override;
+		void showEvent(QShowEvent* event) noexcept override;
 
 		void hideSliderWindow() noexcept;
 

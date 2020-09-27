@@ -4,6 +4,9 @@
 #include <qfiledialog.h>
 #include <qcolordialog.h>
 #include <qsplashscreen.h>
+#include <qapplication.h>
+#include <qdesktopwidget.h>
+#include <qscreen.h>
 #include <qmessagebox.h>
 #include <fstream>
 #include <filesystem>
@@ -1050,6 +1053,14 @@ namespace rabbit
 			if (gameApp_ && !profile_->timeModule->playing_)
 				gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 		}
+	}
+
+	void
+	MainWindow::showEvent(QShowEvent* event) noexcept
+	{
+		int currentScreen = QApplication::desktop()->screenNumber(this);
+		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
+		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
 	}
 
 	bool

@@ -1,4 +1,7 @@
 ﻿#include "splash_screen.h"
+#include <qapplication.h>
+#include <qdesktopwidget.h>
+#include <qscreen.h>
 
 namespace rabbit
 {
@@ -56,5 +59,13 @@ namespace rabbit
 
 	SplashScreen::~SplashScreen()
 	{
+	}
+
+	void
+	SplashScreen::showEvent(QShowEvent* event) noexcept
+	{
+		int currentScreen = QApplication::desktop()->screenNumber(this);
+		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
+		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
 	}
 }

@@ -77,6 +77,7 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterial(std::shared_ptr<material::Material>&& material) noexcept
 	{
+		material->setDirty(true);
 		this->setDirty(true);
 		this->materials_.clear();
 		this->materials_.push_back(std::move(material));
@@ -85,6 +86,7 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
+		material->setDirty(true);
 		this->setDirty(true);
 		this->materials_.clear();
 		this->materials_.push_back(material);
@@ -100,6 +102,8 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterials(std::vector<std::shared_ptr<material::Material>>&& materials) noexcept
 	{
+		for (auto& it : materials)
+			it->setDirty(true);
 		this->setDirty(true);
 		materials_ = std::move(materials);
 	}
@@ -107,6 +111,8 @@ namespace octoon::geometry
 	void
 	Geometry::setMaterials(const std::vector<std::shared_ptr<material::Material>>& materials) noexcept
 	{
+		for (auto& it : materials)
+			it->setDirty(true);
 		this->setDirty(true);
 		materials_ = materials;
 	}

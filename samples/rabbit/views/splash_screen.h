@@ -15,6 +15,10 @@ namespace rabbit
 		SplashScreen();
 		~SplashScreen();
 
+	private Q_SLOTS:
+		void showEvent(QShowEvent* event) noexcept override;
+
+	public:
 		QPushButton* logo;
 		QWidget* widget;
 		QLabel* englishName;

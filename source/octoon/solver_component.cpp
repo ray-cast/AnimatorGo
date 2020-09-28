@@ -242,12 +242,12 @@ namespace octoon
 					}
 					else
 					{
-						transform->setLocalQuaternionAccum(math::Quaternion(axis, deltaAngle));
+						transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
 					}
 				}
 				else
 				{
-					transform->setLocalQuaternionAccum(math::Quaternion(axis, deltaAngle));
+					transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
 				}
 			}
 		}

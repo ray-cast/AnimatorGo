@@ -289,6 +289,7 @@ KERNEL void ShadeSurface(
         int hit_idx = hit_indices[global_id];
         int pixel_idx = pixel_indices[global_id];
         Intersection isect = isects[hit_idx];
+        int shape_idx = isect.shapeid - 1;
 
         GLOBAL Path* path = paths + pixel_idx;
         if (Path_IsScattered(path))
@@ -407,8 +408,11 @@ KERNEL void ShadeSurface(
             float shadow_ray_length = length(temp);
             int shadow_ray_mask = VISIBILITY_MASK_BOUNCE_SHADOW(bounce);
 
-            Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
-            Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
+            if (diffgeo.mat.shadow > 0)
+            {
+                Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
+                Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
+            }
 
             light_samples[global_id] = REASONABLE_RADIANCE(radiance);
         }

@@ -179,6 +179,9 @@ QComboBox{
 QComboBox:editable{
     background: white;
 }
+QCheckBox{
+	color:rgb(200, 200, 200);
+}
 QColorDialog{
 	color:rgb(48,48,48);
 	background-color:rgb(48,48,48);

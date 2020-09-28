@@ -207,6 +207,16 @@ namespace rabbit
 		this->clearCoatSpoiler_ = new Spoiler(u8"清漆");
 		this->clearCoatSpoiler_->setContentLayout(*clearlayout);
 
+		this->receiveShadowCheck_ = new QCheckBox;
+		this->receiveShadowCheck_->setText(u8"接收阴影");
+
+		auto otherslayout = new QVBoxLayout();
+		otherslayout->addWidget(this->receiveShadowCheck_, 0, Qt::AlignLeft);
+		otherslayout->setContentsMargins(20, 5, 50, 0);
+
+		this->othersSpoiler_ = new Spoiler(u8"其它");
+		this->othersSpoiler_->setContentLayout(*otherslayout);
+
 		this->emissive_.spinBox->setMaximum(100.f);
 		this->albedoColor_.setWindowModality(Qt::ApplicationModal);
 		this->emissiveColor_.setWindowModality(Qt::ApplicationModal);
@@ -223,6 +233,7 @@ namespace rabbit
 		contentLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->othersSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addStretch();
 
 		auto contentWidget = new QWidget;
@@ -288,6 +299,7 @@ namespace rabbit
 		connect(emissive_.check, SIGNAL(stateChanged(int)), this, SLOT(emissiveMapCheckEvent(int)));
 		connect(emissive_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(emissiveEditEvent(double)));
 		connect(emissive_.slider, SIGNAL(valueChanged(int)), this, SLOT(emissiveSliderEvent(int)));
+		connect(receiveShadowCheck_, SIGNAL(stateChanged(int)), this, SLOT(shadowCheckEvent(int)));
 	}
 
 	MaterialEditWindow::~MaterialEditWindow()
@@ -918,6 +930,7 @@ namespace rabbit
 			this->subsurface_.spinBox->setValue(material_->getSubsurface());
 			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(emissiveColor.x, emissiveColor.y, emissiveColor.z)));
 			this->emissive_.spinBox->setValue(material_->getEmissiveIntensity());
+			this->receiveShadowCheck_->setChecked(material_->getReceiveShadow());
 
 			auto colorMap = material_->getColorMap();
 			if (colorMap)
@@ -1150,6 +1163,13 @@ namespace rabbit
 	MaterialEditWindow::subsurfaceSliderEvent(int value)
 	{
 		this->subsurface_.spinBox->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialEditWindow::shadowCheckEvent(int state)
+	{
+		if (this->material_)
+			material_->setReceiveShadow(state == Qt::Checked ? true : false);
 	}
 
 	void 

@@ -111,6 +111,8 @@ namespace rabbit
 		void emissiveEditEvent(double);
 		void emissiveSliderEvent(int);
 
+		void shadowCheckEvent(int);
+
 		void closeEvent();
 
 	public:
@@ -159,6 +161,7 @@ namespace rabbit
 		MaterialUi emissive_;
 
 		Spoiler* clearCoatSpoiler_;
+		Spoiler* othersSpoiler_;
 
 		QLabel* title_;
 		QToolButton* closeButton_;
@@ -167,6 +170,7 @@ namespace rabbit
 		QLabel* imageLabel_;
 		QColorDialog albedoColor_;
 		QColorDialog emissiveColor_;
+		QCheckBox* receiveShadowCheck_;
 		QToolButton* backButton_;
 		std::shared_ptr<octoon::material::MeshStandardMaterial> material_;
 		octoon::GameObjectPtr behaviour_;

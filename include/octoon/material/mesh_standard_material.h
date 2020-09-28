@@ -81,6 +81,9 @@ namespace octoon::material
 		const math::float2& getRepeat() const noexcept;
 		const math::float2& getNormalScale() const noexcept;
 
+		void setReceiveShadow(bool enable) noexcept;
+		bool getReceiveShadow() const noexcept;
+
 		std::shared_ptr<Material> clone() const noexcept override;
 
 	private:
@@ -88,6 +91,7 @@ namespace octoon::material
 		MeshStandardMaterial& operator=(const MeshStandardMaterial&) = delete;
 
 	private:
+		bool receiveShadow_;
 		float gamma_;
 		float opacity_;
 		float metalness_;

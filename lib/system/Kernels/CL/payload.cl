@@ -114,7 +114,7 @@ typedef struct
 	int offset;
 	int layers;
 	int flags;
-	int padding;
+	int shadow;
 	Disney disney;
 } Material;
 

@@ -339,7 +339,7 @@ namespace octoon::video
 
 		auto indices = buffer->getNumIndices(subset);
 		if (indices > 0)
-			this->context_->drawIndexed((std::uint32_t)indices, 1, buffer->getStartIndices(subset), 0, 0);
+			this->context_->drawIndexed((std::uint32_t)indices, 1, (std::uint32_t)buffer->getStartIndices(subset), 0, 0);
 		else
 			this->context_->draw((std::uint32_t)buffer->getNumVertices(), 1, 0, 0);
 	}

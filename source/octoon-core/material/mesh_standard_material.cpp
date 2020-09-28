@@ -133,6 +133,7 @@ namespace octoon::material
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);
 		this->setNormalScale(math::float2::One);
+		this->setReceiveShadow(true);
 		this->setShader(std::make_shared<Shader>(standard_vert, standard_frag));
 	}
 
@@ -574,6 +575,19 @@ namespace octoon::material
 	MeshStandardMaterial::getGamma() const noexcept
 	{
 		return this->gamma_;
+	}
+
+	void
+	MeshStandardMaterial::setReceiveShadow(bool enable) noexcept
+	{
+		this->setDirty(true);
+		this->receiveShadow_ = enable;
+	}
+
+	bool
+	MeshStandardMaterial::getReceiveShadow() const noexcept
+	{
+		return this->receiveShadow_;
 	}
 
 	std::shared_ptr<Material>

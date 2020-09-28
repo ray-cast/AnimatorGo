@@ -549,6 +549,7 @@ namespace octoon::video
 
 			auto& material = materials[i];
 			material.offset = 0;
+			material.shadow = mat->getReceiveShadow();
 			material.flags = ClwScene::BxdfFlags::kBxdfFlagsDiffuse | ClwScene::BxdfFlags::kBxdfFlagsBrdf;
 			material.disney.base_color = RadeonRays::float3(mat->getColor().x, mat->getColor().y, mat->getColor().z);
 			material.disney.base_color_map_idx = GetTextureIndex(textureCollector, mat->getColorMap());

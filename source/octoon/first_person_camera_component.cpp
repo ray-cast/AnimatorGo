@@ -210,7 +210,8 @@ namespace octoon
 	FirstPersonCameraComponent::rotateCamera(float angle, const math::float3& axis) noexcept
 	{
 		math::Quaternion quat(axis, math::radians(angle));
-		this->getGameObject()->getComponent<TransformComponent>()->setLocalQuaternionAccum(quat);
+		auto transform = this->getGameObject()->getComponent<TransformComponent>();
+		transform->setLocalQuaternion(quat * transform->getLocalQuaternion());
 	}
 
 	void

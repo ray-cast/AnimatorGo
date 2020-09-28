@@ -51,12 +51,14 @@ namespace octoon
 	SkinnedMeshRendererComponent::setTransforms(const GameObjects& transforms) noexcept
 	{
 		transforms_ = transforms;
+		quaternions_.resize(transforms.size());
 	}
 
 	void
 	SkinnedMeshRendererComponent::setTransforms(GameObjects&& transforms) noexcept
 	{
 		transforms_ = std::move(transforms);
+		quaternions_.resize(transforms.size());
 	}
 
 	const GameObjects&
@@ -179,7 +181,17 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
-		//needUpdate_ = true;
+		for (std::size_t i = 0; i < quaternions_.size(); i++ )
+		{
+			auto& quat = quaternions_[i];
+			auto transform = transforms_[i]->getComponent<TransformComponent>();
+
+			if (transform->getQuaternion() != quat)
+			{
+				needUpdate_ = true;
+				break;
+			}
+		}
 	}
 
 	void
@@ -241,18 +253,22 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::updateJointData() noexcept
 	{
-		joints_.resize(skinnedMesh_->getBindposes().size());
-
 		auto& bindposes = skinnedMesh_->getBindposes();
-		if (bindposes.size() != transforms_.size())
+		auto boneSize = std::min(bindposes.size(), transforms_.size());
+
+		joints_.resize(bindposes.size());
+		
+		for (std::size_t i = 0; i < boneSize; ++i)
 		{
-			for (std::size_t i = 0; i < transforms_.size(); ++i)
-				joints_[i].makeIdentity();
+			auto transform = transforms_[i]->getComponent<TransformComponent>();
+			quaternions_[i] = transform->getQuaternion();
+			joints_[i] = math::transformMultiply(transform->getTransform(), bindposes[i]);
 		}
-		else
+
+		for (std::size_t i = boneSize; i < joints_.size(); ++i)
 		{
-			for (std::size_t i = 0; i < transforms_.size(); ++i)
-				joints_[i] = math::transformMultiply(transforms_[i]->getComponent<TransformComponent>()->getTransform(), bindposes[i]);
+			quaternions_[i].identity();
+			joints_[i].makeIdentity();
 		}
 
 		/*if (!jointData_)

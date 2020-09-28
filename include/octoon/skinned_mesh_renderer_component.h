@@ -78,6 +78,7 @@ namespace octoon
 		mesh::MeshPtr mesh_;
 		mesh::MeshPtr skinnedMesh_;
 
+		std::vector<math::Quaternion> quaternions_;
 		std::vector<class ClothComponent*> clothComponents_;
 		std::vector<class SkinnedMorphComponent*> morphComponents_;
 		std::vector<class SkinnedTextureComponent*> textureComponents_;

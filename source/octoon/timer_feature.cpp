@@ -7,8 +7,8 @@ namespace octoon
 
 	TimerFeature::TimerFeature() noexcept
 		: time_(0.0f)
-		, timeStep_(0.02f)
-		, timeInterval_(0.02f)
+		, timeStep_(1.0f / 60.f)
+		, timeInterval_(1.0f / 60.f)
 	{
 	}
 

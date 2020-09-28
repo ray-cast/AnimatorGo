@@ -219,9 +219,9 @@ namespace octoon
 				friend Quaternion<T> operator*(const Quaternion<T>& q1, const Quaternion<T>& q2) noexcept
 				{
 					return Quaternion<T>(
-						q1.w * q2.x + q1.x * q2.w + q1.z * q2.y - q1.y * q2.z,
-						q1.w * q2.y + q1.y * q2.w + q1.x * q2.z - q1.z * q2.x,
-						q1.w * q2.z + q1.z * q2.w + q1.y * q2.x - q1.x * q2.y,
+						q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+						q1.w * q2.y + q1.y * q2.w + q1.z * q2.x - q1.x * q2.z,
+						q1.w * q2.z + q1.z * q2.w + q1.x * q2.y - q1.y * q2.x,
 						q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
 				}
 
@@ -342,9 +342,9 @@ namespace octoon
 		inline detail::Quaternion<T> cross(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
 		{
 			return detail::Quaternion<T>(
-				q1.w * q2.x + q1.x * q2.w + q1.z * q2.y - q1.y * q2.z,
-				q1.w * q2.y + q1.y * q2.w + q1.x * q2.z - q1.z * q2.x,
-				q1.w * q2.z + q1.z * q2.w + q1.y * q2.x - q1.x * q2.y,
+				q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+				q1.w * q2.y + q1.y * q2.w + q1.z * q2.x - q1.x * q2.z,
+				q1.w * q2.z + q1.z * q2.w + q1.x * q2.y - q1.y * q2.x,
 				q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z);
 		}
 

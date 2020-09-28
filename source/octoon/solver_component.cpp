@@ -237,17 +237,17 @@ namespace octoon
 						}
 						else
 						{						
-							transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::normalize(math::Quaternion(axis, deltaAngle))));
+							transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
 						}
 					}
 					else
 					{
-						transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
+						transform->setLocalQuaternionAccum(math::Quaternion(axis, deltaAngle));
 					}
 				}
 				else
 				{
-					transform->setLocalQuaternion(math::normalize(transform->getLocalQuaternion() * math::Quaternion(axis, deltaAngle)));
+					transform->setLocalQuaternionAccum(math::Quaternion(axis, deltaAngle));
 				}
 			}
 		}
@@ -278,12 +278,12 @@ namespace octoon
 							if (rotationLimit->getAdditiveRotationRatio() > 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotation * rotationLimit->getLocalQuaternion());
+								transform->setLocalQuaternion(rotationLimit->getLocalQuaternion() * rotation);
 							}
 							else if (rotationLimit->getAdditiveRotationRatio() < 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotation * rotationLimit->getLocalQuaternion());
+								transform->setLocalQuaternion(rotationLimit->getLocalQuaternion() * rotation);
 							}
 						}
 					}

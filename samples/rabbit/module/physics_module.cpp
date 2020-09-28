@@ -14,7 +14,7 @@ namespace rabbit
 	void
 	PhysicsModule::reset() noexcept
 	{
-		this->gravity = octoon::math::float3(0.0, -98.0f, 0.0f);
+		this->gravity = octoon::math::float3(0.0, -9.8f * 10.f, 0.0f);
 		this->playSolverIterationCounts = 10;
 		this->recordSolverIterationCounts = 10;
 		this->previewSolverIterationCounts = 1;

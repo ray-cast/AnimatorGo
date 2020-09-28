@@ -100,7 +100,7 @@ namespace octoon
 	TransformComponent::setQuaternionAccum(const math::Quaternion& quat) noexcept
 	{
 		assert(math::abs(math::length(quat) - 1) < 1e-2f);
-		this->setLocalQuaternion(math::cross(quat, rotation_));
+		this->setQuaternion(math::normalize(this->getQuaternion() * quat));
 	}
 
 	const math::Quaternion&
@@ -300,7 +300,7 @@ namespace octoon
 	{
 		assert(math::abs(math::length(quat) - 1) < 1e-2f);
 
-		this->setLocalQuaternion(this->getLocalQuaternion() * quat);
+		this->setLocalQuaternion(math::normalize(this->getLocalQuaternion() * quat));
 	}
 
 	const math::Quaternion&

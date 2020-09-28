@@ -130,7 +130,7 @@ namespace octoon
 
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
-			component->setMass(std::clamp(it->mass, 0.1f, 10.0f));
+			component->setMass(it->mass);
 			component->setGroupMask(it->groupMask);
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction * 1.5f);
@@ -138,9 +138,8 @@ namespace octoon
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
-			component->setSleepThreshold(0.0f);
+			component->setSleepThreshold(0.01f);
 			component->setSolverIterationCounts(12, 3);
-			//component->setEnableCCD(!component->getIsKinematic());
 
 			gameObject->addComponent(component);
 
@@ -173,8 +172,8 @@ namespace octoon
 					joint->setXMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowXLimit(std::max(it->movementLowerLimit.x, -10.0f));
-					joint->setHighXLimit(std::min(it->movementUpperLimit.x, 10.0f));
+					joint->setLowXLimit(it->movementLowerLimit.x);
+					joint->setHighXLimit(it->movementUpperLimit.x);
 					joint->setXMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -184,8 +183,8 @@ namespace octoon
 					joint->setYMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowYLimit(std::max(it->movementLowerLimit.y, -10.0f));
-					joint->setHighYLimit(std::min(it->movementUpperLimit.y, 10.0f));
+					joint->setLowYLimit(it->movementLowerLimit.y);
+					joint->setHighYLimit(it->movementUpperLimit.y);
 					joint->setYMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -195,8 +194,8 @@ namespace octoon
 					joint->setZMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowZLimit(std::max(it->movementLowerLimit.z, -10.0f));
-					joint->setHighZLimit(std::min(it->movementUpperLimit.z, 10.0f));
+					joint->setLowZLimit(it->movementLowerLimit.z);
+					joint->setHighZLimit(it->movementUpperLimit.z);
 					joint->setZMotion(ConfigurableJointMotion::Limited);
 				}
 

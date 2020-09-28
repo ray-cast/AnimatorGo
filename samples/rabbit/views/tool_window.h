@@ -8,6 +8,7 @@
 #include <qtoolButton.h>
 #include <qlabel.h>
 #include <qdialog.h>
+#include <qscrollarea.h>
 #include <QtGui/qevent.h>
 #include <qdockwidget.h>
 #include "rabbit_profile.h"
@@ -62,6 +63,7 @@ namespace rabbit
 		void mouseReleaseEvent(QMouseEvent* e) noexcept override;
 		void mouseMoveEvent(QMouseEvent* e) noexcept override;
 		void showEvent(QShowEvent* e) noexcept override;
+		void resizeEvent(QResizeEvent* e) noexcept override;
 
 	public:
 		bool allowMove_;
@@ -109,6 +111,9 @@ namespace rabbit
 		QToolButton sunButton;
 		QToolButton environmentButton;
 		QToolButton materialButton;
+
+		QWidget* contentWidget;
+		QScrollArea* contentWidgetArea;
 
 		octoon::GameObjectPtr behaviour_;
 	};

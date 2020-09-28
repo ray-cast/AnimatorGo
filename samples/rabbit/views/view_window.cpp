@@ -12,7 +12,7 @@ namespace rabbit
 		this->setMouseTracking(true);
 		this->setUpdatesEnabled(false);
 		this->setAcceptDrops(true);
-		this->setMinimumSize(profile->canvasModule->width, profile->canvasModule->height);
+		this->setFixedSize(profile->canvasModule->width, profile->canvasModule->height);
 		this->setFocusPolicy(Qt::StrongFocus);
 
 		this->connect(&timer, SIGNAL(timeout()), this, SLOT(updateEvent()));

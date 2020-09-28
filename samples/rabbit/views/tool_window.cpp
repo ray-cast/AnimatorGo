@@ -118,10 +118,10 @@ namespace rabbit
 		layout->addWidget(&cleanupButton, 0, Qt::AlignCenter);
 		layout->addStretch();
 
-		auto contentWidget = new QWidget;
+		contentWidget = new QWidget;
 		contentWidget->setLayout(layout);
 
-		auto contentWidgetArea = new QScrollArea();
+		contentWidgetArea = new QScrollArea();
 		contentWidgetArea->setWidget(contentWidget);
 		contentWidgetArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		contentWidgetArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -182,6 +182,11 @@ namespace rabbit
 
 	void
 	ToolWindow::showEvent(QShowEvent* e) noexcept
+	{
+	}
+
+	void
+	ToolWindow::resizeEvent(QResizeEvent* e) noexcept
 	{
 	}
 

@@ -341,7 +341,7 @@ namespace rabbit
 	SettingContextPlane::onResetButton()
 	{
 		mainPlane2_->speedCombo->setCurrentIndex(0);
-		mainPlane2_->resolutionCombo->setCurrentIndex(4);
+		mainPlane2_->resolutionCombo->setCurrentIndex(3);
 	}
 
 	void

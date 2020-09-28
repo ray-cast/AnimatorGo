@@ -20,6 +20,7 @@ namespace rabbit
 
 		maximizeButton_.setObjectName("maximize");
 		maximizeButton_.setToolTip(u8"最大化");
+		maximizeButton_.setEnabled(false);
 
 		closeButton_.setObjectName("close");
 		closeButton_.setToolTip(u8"关闭");

@@ -188,16 +188,15 @@ namespace rabbit
 		recordWindow_ = std::make_unique<RecordWindow>(this, behaviour_);
 		materialWindow_ = std::make_unique<MaterialWindow>(this, behaviour_);
 
-		mainLayout_ = std::make_unique<QHBoxLayout>(this);
-		mainLayout_->setMargin(0);
-		mainLayout_->setSpacing(0);
-
 		contextLayout_ = std::make_unique<QVBoxLayout>();
 		contextLayout_->addWidget(titleBar_.get());
 		contextLayout_->addWidget(viewPanel_.get());
 		contextLayout_->setMargin(0);
 		contextLayout_->setSpacing(0);
 
+		mainLayout_ = std::make_unique<QHBoxLayout>(this);
+		mainLayout_->setMargin(0);
+		mainLayout_->setSpacing(0);
 		mainLayout_->addLayout(contextLayout_.get());
 		mainLayout_->addWidget(toolBar_.get());
 		mainLayout_->addWidget(hideBar_.get());
@@ -1061,6 +1060,12 @@ namespace rabbit
 		int currentScreen = QApplication::desktop()->screenNumber(this);
 		QRect rect = QGuiApplication::screens().at(currentScreen)->geometry();
 		this->move((rect.width() - this->width()) / 2, (rect.height() - this->height()) / 2);
+	}
+
+	void
+	MainWindow::resizeEvent(QResizeEvent* event) noexcept
+	{
+		this->resize(this->viewPanel_->size());
 	}
 
 	bool

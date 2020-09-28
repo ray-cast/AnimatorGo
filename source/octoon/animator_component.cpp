@@ -308,7 +308,7 @@ namespace octoon
 			auto scale = transform->getLocalScale();
 			auto quat = transform->getLocalQuaternion();
 			auto translate = transform->getLocalTranslate();
-			auto euler = math::eulerAngles(quat);
+			auto euler = transform->getLocalEulerAngles();
 			auto move = 0.0f;
 
 			for (auto& curve : clip.curves)
@@ -345,11 +345,18 @@ namespace octoon
 					this->sendMessage(curve.first, curve.second.value);
 			}
 
-			auto rotation = math::Quaternion(euler);
-
-			transform->setLocalScale(scale);
-			transform->setLocalTranslate(translate + math::rotate(rotation, math::float3::Forward) * move);
-			transform->setLocalQuaternion(rotation);
+			if (move != 0.0f)
+			{
+				transform->setLocalScale(scale);
+				transform->setLocalTranslate(translate + math::rotate(math::Quaternion(euler), math::float3::Forward) * move);
+				transform->setLocalEulerAngles(euler);
+			}
+			else
+			{
+				transform->setLocalScale(scale);
+				transform->setLocalTranslate(translate);
+				transform->setLocalEulerAngles(euler);
+			}
 		}
 
 		this->sendMessage("octoon:animation:update");

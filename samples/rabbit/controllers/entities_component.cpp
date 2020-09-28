@@ -348,6 +348,7 @@ namespace rabbit
 			key_to_array_index[index] = i;
 		}
 
+#		pragma omp parallel for num_threads(4)
 		for (int i = 0; i < it.bone_key_frame.size(); i++)
 		{
 			auto index = it.bone_key_frame[i].pre_index;
@@ -452,6 +453,7 @@ namespace rabbit
 			key_to_array_index[index] = i;
 		}
 
+#		pragma omp parallel for num_threads(4)
 		for (int i = 0; i < it.morph_key_frame.size(); i++)
 		{
 			auto index = it.morph_key_frame[i].pre_index;

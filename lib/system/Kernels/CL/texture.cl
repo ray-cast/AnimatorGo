@@ -22,10 +22,8 @@ THE SOFTWARE.
 #ifndef TEXTURE_CL
 #define TEXTURE_CL
 
-
 #include <../../system/Kernels/CL/payload.cl>
 #include <../../system/Kernels/CL/utils.cl>
-
 
 /// To simplify a bit
 #define TEXTURE_ARG_LIST __global Texture const* textures, __global char const* texturedata
@@ -343,7 +341,7 @@ float3 Texture_SampleBump(float2 uv, TEXTURE_ARG_LIST_IDX(texidx))
     {
     case RGBA32:
     {
-        __global float3 const* mydataf = (__global float3 const*)mydata;
+        __global float4 const* mydataf = (__global float4 const*)mydata;
 
 		float3 n00 = TextureData_SampleNormalFromBump_float4(mydataf, width, height, t0, s0);
 		float3 n01 = TextureData_SampleNormalFromBump_float4(mydataf, width, height, t0, s1);
@@ -381,6 +379,20 @@ float3 Texture_SampleBump(float2 uv, TEXTURE_ARG_LIST_IDX(texidx))
 		float3 n = lerp3(lerp3(n00, n01, wx), lerp3(n10, n11, wx), wy);
 
 		return 0.5f * normalize(n) + make_float3(0.5f, 0.5f, 0.5f);
+    }
+
+    case BGRA8:
+    {
+        __global uchar4 const* mydatac = (__global uchar4 const*)mydata;
+
+        float3 n00 = TextureData_SampleNormalFromBump_uchar4(mydatac, width, height, t0, s0);
+        float3 n01 = TextureData_SampleNormalFromBump_uchar4(mydatac, width, height, t0, s1);
+        float3 n10 = TextureData_SampleNormalFromBump_uchar4(mydatac, width, height, t1, s0);
+        float3 n11 = TextureData_SampleNormalFromBump_uchar4(mydatac, width, height, t1, s1);
+
+        float3 n = lerp3(lerp3(n00, n01, wx), lerp3(n10, n11, wx), wy);
+
+        return 0.5f * normalize(n) + make_float3(0.5f, 0.5f, 0.5f);
     }
 
     default:

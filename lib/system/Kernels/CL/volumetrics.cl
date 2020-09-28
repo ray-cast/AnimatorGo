@@ -70,9 +70,11 @@ float3 Volume_Transmittance(GLOBAL Volume const* volume, GLOBAL ray const* ray, 
                              TEXTURED_INPUT_GET_COLOR(volume->sigma_s);
             return native_exp(-sigma_t * dist);
         }
+        default:
+        {
+            return 1.f;
+        }
     }
-    
-    return 1.f;
 }
 
 // Evaluate volume selfemission along the ray [0, dist] segment
@@ -84,9 +86,11 @@ float3 Volume_Emission(GLOBAL Volume const* volume, GLOBAL ray const* ray, float
         {
             return TEXTURED_INPUT_GET_COLOR(volume->sigma_e) * dist;
         }
+        default:
+        {
+            return 0.f;
+        }
     }
-    
-    return 0.f;
 }
 
 // Sample volume in order to find next scattering event
@@ -109,9 +113,11 @@ float Volume_SampleDistance(GLOBAL Volume const* volume, GLOBAL ray const* ray, 
             *pdf = sigma > 0.f ? temp : 0.f;
             return d;
         }
+        default:
+        {
+            return -1.f;
+        }
     }
-    
-    return -1.f;
 }
 
 // Sample volume in order to find next scattering event
@@ -119,16 +125,18 @@ float Volume_GetDistancePdf(GLOBAL Volume const* volume, float dist)
 {
     switch (volume->type)
     {
-    case kHomogeneous:
-    {
-        float3 sigma_s = TEXTURED_INPUT_GET_COLOR(volume->sigma_s);
-        return (1.f / 3.f) * (native_exp(-sigma_s.x * dist)
-                            + native_exp(-sigma_s.y * dist)
-                            + native_exp(-sigma_s.z * dist));
+        case kHomogeneous:
+        {
+            float3 sigma_s = TEXTURED_INPUT_GET_COLOR(volume->sigma_s);
+            return (1.f / 3.f) * (native_exp(-sigma_s.x * dist)
+                                + native_exp(-sigma_s.y * dist)
+                                + native_exp(-sigma_s.z * dist));
+        }
+        default:
+        {
+            return 0.f;
+        }
     }
-    }
-
-    return 0.f;
 }
 
 // Apply volume effects (absorbtion and emission) and scatter if needed.

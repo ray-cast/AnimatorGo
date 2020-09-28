@@ -28,6 +28,7 @@ THE SOFTWARE.
 enum TextureFormat
 {
     UNKNOWN,
+    BGRA8,
     RGBA8,
     RGBA16,
     RGBA32
@@ -116,7 +117,7 @@ float3 Sample2D(Texture const* texture, __global char const* texturedata, float2
 
         return make_float3(valx, valy, valz);
     }
-    else
+    else if (texture->fmt == RGBA8)
     {
         __global uchar4 const* mydatac = (__global uchar4 const*)mydata;
 
@@ -124,6 +125,18 @@ float3 Sample2D(Texture const* texture, __global char const* texturedata, float2
         uchar4 valx = *(mydatac + width * y + x);
 
         float3 valxf = make_float3((float)valx.x / 255.f, (float)valx.y / 255.f, (float)valx.z / 255.f);
+
+        // Filter and return the result
+        return valxf;
+    }
+    else
+    {
+        __global uchar4 const* mydatac = (__global uchar4 const*)mydata;
+
+        // Get 4 values
+        uchar4 valx = *(mydatac + width * y + x);
+
+        float3 valxf = make_float3((float)valx.z / 255.f, (float)valx.y / 255.f, (float)valx.x / 255.f);
 
         // Filter and return the result
         return valxf;

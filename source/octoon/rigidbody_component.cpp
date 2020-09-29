@@ -345,12 +345,16 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			if (transform)
 			{
+				this->position_ = rigidbody_->getPosition();
+				this->rotation_ = rigidbody_->getRotation();
+
 				auto parent = this->getGameObject()->getParent();
 				if (parent)
-				{
-					this->position_ = rigidbody_->getPosition();
-					this->rotation_ = rigidbody_->getRotation();
 					parent->getComponent<TransformComponent>()->setTransform(math::float4x4(this->rotation_, this->position_) * transform->getLocalTransformInverse());
+				else
+				{
+					transform->setTranslate(this->position_);
+					transform->setQuaternion(this->rotation_);
 				}
 			}
 		}

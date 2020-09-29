@@ -259,7 +259,7 @@ namespace rabbit
 		auto pathLimits = this->profile_->fileModule->PATHLIMIT;
 		std::vector<std::string::value_type> filepath(pathLimits);
 		if (!entitiesComponent_->showFileSaveBrowse(filepath.data(), pathLimits, this->profile_->fileModule->modelExtensions[0]))
-			return;
+			entitiesComponent_->exportModel(filepath.data());
 	}
 
 	void

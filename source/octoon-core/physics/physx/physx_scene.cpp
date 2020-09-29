@@ -31,8 +31,6 @@ namespace octoon
 			if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)
 				return physx::PxFilterFlag::eSUPPRESS;
 
-			pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT;
-
 			return physx::PxFilterFlag::eDEFAULT;
 		};
 

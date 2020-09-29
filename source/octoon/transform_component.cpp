@@ -113,6 +113,8 @@ namespace octoon
 	void
 	TransformComponent::setEulerAngles(const math::float3& euler) noexcept
 	{
+		assert(math::isfinite(euler));
+
 		if (euler_angles_ != euler)
 		{
 			this->onMoveBefore();
@@ -140,6 +142,7 @@ namespace octoon
 
 		transform_ = transform.getTransform(translate_, rotation_, scaling_);
 		transform_inverse_ = math::transformInverse(transform_);
+		euler_angles_ = math::eulerAngles(rotation_);
 		world_need_updates_ = false;
 
 		this->updateWorldChildren();
@@ -158,6 +161,7 @@ namespace octoon
 			scaling_ = scale;
 			rotation_ = quat;
 			translate_ = translate;
+			euler_angles_ = math::eulerAngles(rotation_);
 			world_need_updates_ = true;
 
 			this->updateWorldChildren();
@@ -173,7 +177,7 @@ namespace octoon
 		transform_ = transform.getTransformWithoutScaler(translate_, rotation_);
 		transform_.scale(scaling_);
 		transform_inverse_ = math::transformInverse(transform_);
-
+		euler_angles_ = math::eulerAngles(rotation_);
 		world_need_updates_ = false;
 
 		this->updateWorldChildren();
@@ -313,6 +317,8 @@ namespace octoon
 	void
 	TransformComponent::setLocalEulerAngles(const math::float3& euler) noexcept
 	{
+		assert(math::isfinite(euler));
+
 		if (this->local_euler_angles_ != euler)
 		{
 			this->onMoveBefore();
@@ -341,6 +347,8 @@ namespace octoon
 		local_transform_ = transform.getTransform(local_translate_, local_rotation_, local_scaling_);
 		local_need_updates_ = false;
 
+		euler_angles_ = math::eulerAngles(rotation_);
+
 		this->updateLocalChildren();
 		this->onMoveAfter();
 	}
@@ -353,6 +361,8 @@ namespace octoon
 		local_transform_ = transform.getTransformWithoutScaler(local_translate_, local_rotation_);
 		local_transform_.scale(local_scaling_);
 		local_need_updates_ = false;
+
+		euler_angles_ = math::eulerAngles(rotation_);
 
 		this->updateLocalChildren();
 		this->onMoveAfter();

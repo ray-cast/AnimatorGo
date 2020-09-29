@@ -19,7 +19,7 @@ namespace octoon
 	{
 		assert(entity);
 
-		std::lock_guard<std::mutex> guard_lock(lock_);
+		std::unique_lock<std::shared_mutex> guard_lock(lock_);
 		if (emptyLists_.empty())
 		{
 			instanceLists_.push_back(entity);
@@ -38,7 +38,7 @@ namespace octoon
 	GameObjectManager::_unsetObject(GameObject* entity) noexcept
 	{
 		assert(entity);
-		std::lock_guard<std::mutex> guard_lock(lock_);
+		std::unique_lock<std::shared_mutex> guard_lock(lock_);
 		auto instanceID = entity->id();
 		instanceLists_[instanceID - 1] = nullptr;
 		emptyLists_.push(instanceID);
@@ -67,7 +67,7 @@ namespace octoon
 	GameObjectPtr
 	GameObjectManager::find(std::string_view name) noexcept
 	{
-		std::lock_guard<std::mutex> guard_lock(lock_);
+		std::shared_lock<std::shared_mutex> guard_lock(lock_);
 
 		for (auto& it : instanceLists_)
 		{

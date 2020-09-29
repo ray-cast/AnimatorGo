@@ -120,11 +120,11 @@ namespace octoon
 			gameObject->getComponent<TransformComponent>()->setTransform(it->position, math::Quaternion(it->rotation));
 
 			if (it->shape == model::ShapeType::ShapeTypeSphere)
-				gameObject->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, 0.2f, -0.01);
+				gameObject->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, 0.2f, -0.01f);
 			else if (it->shape == model::ShapeType::ShapeTypeSquare)
-				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001, 0.001, 0.001), it->scale * 2.0f), 0.2f, -0.01);
+				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001, 0.001, 0.001), it->scale * 2.0f), 0.2f, -0.01f);
 			else if (it->shape == model::ShapeType::ShapeTypeCapsule)
-				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, it->scale.y, 0.2f, -0.01);
+				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, it->scale.y, 0.2f, -0.01f);
 			else
 				assert(false);
 

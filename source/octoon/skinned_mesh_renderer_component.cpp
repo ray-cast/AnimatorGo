@@ -181,15 +181,18 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
-		for (std::size_t i = 0; i < quaternions_.size(); i++ )
+		if (!needUpdate_)
 		{
-			auto& quat = quaternions_[i];
-			auto transform = transforms_[i]->getComponent<TransformComponent>();
-
-			if (transform->getQuaternion() != quat)
+			for (std::size_t i = 0; i < quaternions_.size(); i++)
 			{
-				needUpdate_ = true;
-				break;
+				auto& quat = quaternions_[i];
+				auto transform = transforms_[i]->getComponent<TransformComponent>();
+
+				if (transform->getQuaternion() != quat)
+				{
+					needUpdate_ = true;
+					break;
+				}
 			}
 		}
 	}

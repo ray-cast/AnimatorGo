@@ -2,7 +2,7 @@
 #define OCTOON_GAME_OBJECT_MANAGER_H_
 
 #include <stack>
-#include <mutex>
+#include <shared_mutex>
 #include <octoon/game_object.h>
 #include <octoon/runtime/singleton.h>
 
@@ -42,7 +42,7 @@ namespace octoon
 		GameObjectRaws instanceLists_;
 		GameObjectRaws activeActors_;
 
-		std::mutex lock_;
+		std::shared_mutex lock_;
 		std::stack<std::size_t> emptyLists_;
 
 		std::vector<GameComponentRaws> dispatchComponents_;

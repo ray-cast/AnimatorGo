@@ -8,7 +8,7 @@
 #include <octoon/audio/common/audio_source.h>
 #include <octoon/audio/common/audio_listener.h>
 
-namespace octoon::audio
+namespace octoon
 {
     class OCTOON_EXPORT AudioDevice
     {
@@ -29,4 +29,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_DEVICE_H_
+#endif

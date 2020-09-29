@@ -5,8 +5,7 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/mathfwd.h>
 
-
-namespace octoon::audio
+namespace octoon
 {
     class OCTOON_EXPORT AudioListener
     {
@@ -30,4 +29,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_LISTENER_H_
+#endif

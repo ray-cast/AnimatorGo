@@ -17,6 +17,7 @@
     "x264",
     "x265",
     "zlib",
-    "qt5"
+    "qt5",
+    "libvorbis"
   ]
 }

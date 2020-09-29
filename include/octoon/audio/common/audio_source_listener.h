@@ -12,7 +12,7 @@
 #include <octoon/audio/common/audio_types.h>
 #include <octoon/audio/common/audio_reader.h>
 
-namespace octoon::audio
+namespace octoon
 {
     class OCTOON_EXPORT AudioSourceListener
     {
@@ -24,4 +24,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_SOURCE_LISTENER_H_
+#endif

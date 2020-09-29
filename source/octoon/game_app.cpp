@@ -45,6 +45,10 @@
 #	include <octoon/cloth_feature.h>
 #endif
 
+#if OCTOON_FEATURE_AUDIO_ENABLE
+#	include <octoon/audio_feature.h>
+#endif
+
 namespace octoon
 {
 	class GameAppListener final : public GameListener
@@ -139,6 +143,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_UI_ENABLE
 		this->addFeature(std::make_unique<GuiFeature>(hwnd, w, h, framebuffer_w, framebuffer_h));
+#endif
+
+#if OCTOON_FEATURE_AUDIO_ENABLE
+		this->addFeature(std::make_unique<AudioFeature>());
 #endif
 	}
 

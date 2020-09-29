@@ -1,6 +1,6 @@
 #include <octoon/audio/common/audio_source_listener.h>
 
-namespace octoon::audio
+namespace octoon
 {
     AudioSourceListener::AudioSourceListener() noexcept
     {

@@ -1,7 +1,6 @@
 #ifndef OCTOON_AUDIO_SOURCE_H_
 #define OCTOON_AUDIO_SOURCE_H_
 
-
 #include <memory>
 #include <cstdint>
 #include <cstddef>
@@ -13,7 +12,7 @@
 #include <octoon/audio/common/audio_reader.h>
 #include <octoon/audio/common/audio_source_listener.h>
 
-namespace octoon::audio
+namespace octoon
 {
     struct OCTOON_EXPORT AudioClip
     {
@@ -72,4 +71,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_SOURCE_H_
+#endif

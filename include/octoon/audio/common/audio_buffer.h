@@ -5,12 +5,13 @@
 #include <cstdint>
 #include <cstddef>
 
+#include <octoon/io/iostream.h>
 #include <octoon/runtime/platform.h>
 #include <octoon/audio/common/audio_types.h>
 
-namespace octoon::audio
+namespace octoon
 {
-    class OCTOON_EXPORT AudioBuffer
+    class OCTOON_EXPORT AudioBuffer : public io::stream_buf
     {
     public:
         AudioBuffer() noexcept;
@@ -28,4 +29,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_BUFFER_H_
+#endif

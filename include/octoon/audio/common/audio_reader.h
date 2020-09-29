@@ -7,14 +7,15 @@
 #include <cstddef>
 
 #include <octoon/runtime/platform.h>
+#include <octoon/io/iostream.h>
 
 #include <octoon/audio/common/audio_buffer.h>
 #include <octoon/audio/common/audio_types.h>
 #include <octoon/audio/common/audio_reader.h>
 
-namespace octoon::audio
+namespace octoon
 {
-    class OCTOON_EXPORT AudioReader
+    class OCTOON_EXPORT AudioReader : public io::istream
     {
     public:
         AudioReader(AudioBuffer* buf) noexcept;
@@ -36,4 +37,4 @@ namespace octoon::audio
     };
 }
 
-#endif // OCTOON_AUDIO_READER_H_
+#endif

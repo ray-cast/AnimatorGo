@@ -1,6 +1,6 @@
 #include <octoon/audio/common/audio_device.h>
 
-namespace octoon::audio
+namespace octoon
 {
     AudioDevice::AudioDevice() noexcept
     {

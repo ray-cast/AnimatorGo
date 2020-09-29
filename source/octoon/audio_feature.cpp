@@ -1,14 +1,12 @@
-#include <octoon/game_feature.h>
-#include <octoon/game_server.h>
-#include <octoon/game_scene.h>
 #include <octoon/audio_feature.h>
+#include <octoon/audio/openal/audio_device_al.h>
 
 namespace octoon
 {
-	OctoonImplementSubInterface(AudioFeature, runtime::RttiInterface, "AudioFeature")
+	OctoonImplementSubInterface(AudioFeature, GameFeature, "AudioFeature")
 
 	AudioFeature::AudioFeature() noexcept
-		:device(std::make_shared<audio::AudioDeviceAL>())
+		:device(std::make_shared<AudioDeviceAL>())
 	{
 	}
 
@@ -16,37 +14,30 @@ namespace octoon
 	{
 	}
 
-	void AudioFeature::on_activate() except
+	void
+	AudioFeature::onActivate() except
 	{
 		device->open();
 	}
 
-	void AudioFeature::on_deactivate() noexcept
+	void
+	AudioFeature::onDeactivate() noexcept
 	{
 		device->close();
 	}
 
-	void AudioFeature::on_open_scene(const GameScenePtr& scene) except
+	void
+	AudioFeature::onFrameBegin() noexcept
 	{
 	}
 
-	void AudioFeature::on_close_scene(const GameScenePtr& scene) noexcept
+	void
+	AudioFeature::onFrame() noexcept
 	{
 	}
 
-	void on_input_event(const input::InputEvent& event) noexcept
-	{
-	}
-
-	void on_frame_begin() except
-	{
-	}
-
-	void on_frame() except
-	{
-	}
-
-	void on_frame_end() except
+	void
+	AudioFeature::onFrameEnd() noexcept
 	{
 	}
 }

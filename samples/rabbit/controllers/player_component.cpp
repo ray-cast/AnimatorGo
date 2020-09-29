@@ -311,25 +311,7 @@ namespace rabbit
 		}
 		else
 		{
-			try
-			{
-				if (profile->offlineModule->offlineEnable)
-				{
-					if (profile->h265Module->quality == VideoQuality::High)
-					{
-						auto clientComponent_ = dynamic_cast<ClientComponent*>(context->behaviour->getComponent<ClientComponent>());
-						if (clientComponent_)
-							clientComponent_->coin((int)std::round(this->time() * profile->timeModule->recordFps));
-					}
-				}
-
-				context->behaviour->stopRecord();
-
-				this->sendMessage("rabbit:player:finish");
-			}
-			catch (...)
-			{
-			}
+			this->sendMessage("rabbit:player:finish");
 		}
 	}
 }

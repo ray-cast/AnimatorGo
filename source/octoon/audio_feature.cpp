@@ -6,12 +6,24 @@ namespace octoon
 	OctoonImplementSubInterface(AudioFeature, GameFeature, "AudioFeature")
 
 	AudioFeature::AudioFeature() noexcept
-		:device(std::make_shared<AudioDeviceAL>())
+		: device(std::make_shared<AudioDeviceAL>())
 	{
 	}
 
 	AudioFeature::~AudioFeature() noexcept
 	{
+	}
+
+	void
+	AudioFeature::setDistanceModel(bool enable) noexcept
+	{
+		device->setDistanceModel(enable);
+	}
+
+	bool
+	AudioFeature::getDistanceModel() const noexcept
+	{
+		return device->getDistanceModel();
 	}
 
 	void

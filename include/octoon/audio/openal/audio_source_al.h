@@ -24,43 +24,43 @@ namespace octoon
         virtual void open() noexcept override;
         virtual void close() noexcept override;
 
-        virtual void set_audio_reader(std::shared_ptr<AudioReader> ptr) noexcept override;
-        virtual std::shared_ptr<AudioReader> get_audio_buffer() const noexcept override;
+        virtual void setAudioReader(std::shared_ptr<AudioReader> ptr) noexcept override;
+        virtual std::shared_ptr<AudioReader> getAudioReader() const noexcept override;
 
-        virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept override;
-        virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept override;
+        virtual void addAudioSourceListener(AudioSourceListener* listener) noexcept override;
+        virtual void removeAudioSourceListener(AudioSourceListener* listener) noexcept override;
 
         virtual void setVolume(float volume) noexcept override;
-        virtual void set_min_volume(float volume) noexcept override;
-        virtual void set_max_volume(float volume) noexcept override;
+        virtual void setMinVolume(float volume) noexcept override;
+        virtual void setMaxVolume(float volume) noexcept override;
         virtual void setTranslate(const math::float3& translate) noexcept override;
         virtual void setVelocity(const math::float3& velocity) noexcept override;
         virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept override;
-        virtual void set_pitch(float pitch) noexcept override;
-        virtual void set_max_distance(float maxdis) noexcept override;
-        virtual void set_min_distance(float mindis) noexcept override;
-        virtual void set_audio_clip(const AudioClip& clip) noexcept override;
+        virtual void setPitch(float pitch) noexcept override;
+        virtual void setMaxDistance(float maxdis) noexcept override;
+        virtual void setMinDistance(float mindis) noexcept override;
+        virtual void setAudioClip(const AudioClip& clip) noexcept override;
 
         virtual void getTranslate(math::float3& translate) noexcept override;
         virtual void getVelocity(math::float3& velocity) noexcept override;
         virtual void getOrientation(math::float3& forward, math::float3& up) noexcept override;
-        virtual void get_audio_clip(AudioClip& clip) const noexcept override;
+        virtual void getAudioClip(AudioClip& clip) const noexcept override;
 
         virtual float getVolume() const noexcept override;
-        virtual float get_min_volume() const noexcept override;
-        virtual float get_max_volume() const noexcept override;
-        virtual float get_pitch() const noexcept override;
-        virtual float get_max_distance() const noexcept override;
-        virtual float get_min_distance() const noexcept override;
+        virtual float getMinVolume() const noexcept override;
+        virtual float getMaxVolume() const noexcept override;
+        virtual float getPitch() const noexcept override;
+        virtual float getMaxDistance() const noexcept override;
+        virtual float getMinDistance() const noexcept override;
 
         virtual void play(bool play) noexcept override;
         virtual void loop(bool loop) noexcept override;
         virtual void pause() noexcept override;
 
-        virtual bool is_playing() const noexcept override;
-        virtual bool is_stopped() const noexcept override;
-        virtual bool is_paused() const noexcept override;
-        virtual bool is_loop() const noexcept override;
+        virtual bool isPlaying() const noexcept override;
+        virtual bool isStopped() const noexcept override;
+        virtual bool isPaused() const noexcept override;
+        virtual bool isLoop() const noexcept override;
 
     private:
         void _play_start() noexcept;
@@ -79,15 +79,15 @@ namespace octoon
 		std::uint32_t _al_buffer[2];
         std::uint32_t  _al_format;
 
-		std::streamsize _al_buffer_size;
-		std::streamsize _al_sample_length;
-		std::streamsize _al_sample_length_total;
+		std::streamsize bufferSize_;
+		std::streamsize sampleLength_;
+		std::streamsize sampleLengthTotal_;
 
-        std::vector<char> _data;
-        std::vector<AudioSourceListener*> _listeners;
+        std::vector<char> data_;
+        std::vector<AudioSourceListener*> listeners_;
 
-        AudioClip _audio_clip;
-        std::shared_ptr<AudioReader> _audio_reader;
+        AudioClip audioClip_;
+        std::shared_ptr<AudioReader> audioReader_;
     };
 }
 

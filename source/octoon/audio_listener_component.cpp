@@ -1,50 +1,82 @@
-#include <octoon/game_feature.h>
-#include <octoon/game_server.h>
-#include <octoon/game_scene.h>
 #include <octoon/audio_listener_component.h>
+#include <octoon/transform_component.h>
+#include <octoon/audio/openal/audio_listener_al.h>
 
 namespace octoon
 {
-	OctoonImplementSubInterface(AudioListenerComponent, runtime::RttiInterface, "AudioListenerComponent")
+	OctoonImplementSubInterface(AudioListenerComponent, GameComponent, "AudioListenerComponent")
 
 	AudioListenerComponent::AudioListenerComponent() noexcept
-		:audio_listener(std::make_shared<audio::AudioListenerAL>())
+		: audioListener_(std::make_unique<AudioListenerAL>())
 	{
-		audio_listener->open();
 	}
 
 	AudioListenerComponent::~AudioListenerComponent() noexcept
 	{
-		audio_listener->close();
 	}
 
-	void AudioListenerComponent::set_volume(float volume) noexcept
+	void
+	AudioListenerComponent::setVolume(float volume) noexcept
 	{
-		audio_listener->set_volume(volume);
+		audioListener_->setVolume(volume);
 	}
 
-	float AudioListenerComponent::get_volume() const noexcept
+	float
+	AudioListenerComponent::getVolume() const noexcept
 	{
-		return audio_listener->get_volume();
+		return audioListener_->getVolume();
 	}
 
-	void AudioListenerComponent::set_velocity(const math::float3 &velocity) noexcept
+	void
+	AudioListenerComponent::setVelocity(const math::float3 &velocity) noexcept
 	{
-		audio_listener->set_velocity(velocity);
+		audioListener_->setVelocity(velocity);
 	}
 
-	void AudioListenerComponent::set_orientation(const math::float3 &forward, const math::float3 &up) noexcept
+	void
+	AudioListenerComponent::getVelocity(math::float3 &velocity) const noexcept
 	{
-		audio_listener->set_orientation(forward, up);
+		audioListener_->getVelocity(velocity);
 	}
 
-	void AudioListenerComponent::get_velocity(math::float3 &velocity) noexcept
+	GameComponentPtr
+	AudioListenerComponent::clone() const noexcept
 	{
-		audio_listener->get_velocity(velocity);
+		math::float3 velocity;
+		this->getVelocity(velocity);
+
+		auto instance = std::make_shared<AudioListenerComponent>();
+		instance->setVelocity(velocity);
+		instance->setVolume(this->getVolume());
+		return instance;
 	}
 
-	void AudioListenerComponent::get_orientation(math::float3 &forward, math::float3 &up) noexcept
+	void
+	AudioListenerComponent::onActivate() noexcept
 	{
-		audio_listener->get_orientation(forward, up);
+		auto transformComponent = this->getComponent<TransformComponent>();
+		if (transformComponent)
+		{
+			auto transform = transformComponent->getTransform();
+			this->audioListener_->setTranslate(transformComponent->getTranslate());
+			this->audioListener_->setOrientation(transform.getForward(), transform.getUp());
+		}
+
+		this->addComponentDispatch(GameDispatchType::MoveAfter);
+	}
+
+	void
+	AudioListenerComponent::onDeactivate() noexcept
+	{
+		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+	}
+
+	void
+	AudioListenerComponent::onMoveAfter() noexcept
+	{
+		auto transformComponent = this->getComponent<TransformComponent>();
+		auto transform = transformComponent->getTransform();
+		this->audioListener_->setTranslate(transformComponent->getTranslate());
+		this->audioListener_->setOrientation(transform.getForward(), transform.getUp());
 	}
 }

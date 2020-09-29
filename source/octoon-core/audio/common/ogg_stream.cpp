@@ -189,20 +189,20 @@ namespace octoon
 	io::streamoff
 	OggStreamBuffer::tellg() noexcept
 	{
-		assert(this->is_open());
+		assert(this->isOpen());
 		return ::ov_pcm_tell(oggVorbisFile_);
 	}
 
 	io::streamsize
 	OggStreamBuffer::size() const noexcept
 	{
-		assert(this->is_open());
+		assert(this->isOpen());
 		auto info = ::ov_info(oggVorbisFile_, -1);
 		return ::ov_pcm_total(oggVorbisFile_, -1) * info->channels * 2;
 	}
 
 	bool
-	OggStreamBuffer::is_open() const noexcept
+	OggStreamBuffer::isOpen() const noexcept
 	{
 		return oggVorbisFile_ ? true : false;
 	}

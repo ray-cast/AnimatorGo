@@ -1,147 +1,210 @@
-#include <octoon/game_feature.h>
-#include <octoon/game_server.h>
-#include <octoon/game_scene.h>
 #include <octoon/audio_source_component.h>
+#include <octoon/audio/openal/audio_source_al.h>
+#include <octoon/transform_component.h>
 
 namespace octoon
 {
-	OctoonImplementSubInterface(AudioSourceComponent, runtime::RttiInterface, "AudioSourceComponent")
+	OctoonImplementSubInterface(AudioSourceComponent, GameComponent, "AudioSourceComponent")
 
 	AudioSourceComponent::AudioSourceComponent() noexcept
-		:audio_source(std::make_shared<audio::AudioSourceAL>())
+		:source_(std::make_shared<AudioSourceAL>())
 	{
-		audio_source->open();
+		source_->open();
 	}
 
 	AudioSourceComponent::~AudioSourceComponent() noexcept
 	{
-		audio_source->close();
+		source_->close();
 	}
 
-	void AudioSourceComponent::set_volume(float volume) noexcept
+	void
+	AudioSourceComponent::setAudioReader(std::shared_ptr<AudioReader> reader) noexcept
 	{
-		audio_source->set_volume(volume);
+		source_->setAudioReader(reader);
 	}
 
-	void AudioSourceComponent::set_min_volume(float volume) noexcept 
+	std::shared_ptr<AudioReader>
+	AudioSourceComponent::getAudioReader() const noexcept
 	{
-		audio_source->set_min_volume(volume);
+		return source_->getAudioReader();
 	}
 
-	void AudioSourceComponent::set_max_volume(float volume) noexcept 
+	void
+	AudioSourceComponent::setVolume(float volume) noexcept
 	{
-		audio_source->set_max_volume(volume);
+		source_->setVolume(volume);
 	}
 
-	void AudioSourceComponent::set_translate(const math::float3 &translate) noexcept 
+	void
+	AudioSourceComponent::setMinVolume(float volume) noexcept 
 	{
-		audio_source->set_translate(translate);
+		source_->setMinVolume(volume);
 	}
 
-	void AudioSourceComponent::set_velocity(const math::float3 &velocity) noexcept 
+	void
+	AudioSourceComponent::setMaxVolume(float volume) noexcept 
 	{
-		audio_source->set_velocity(velocity);
+		source_->setMaxVolume(volume);
 	}
 
-	void AudioSourceComponent::set_orientation(const math::float3 &forward, const math::float3 &up) noexcept 
+	void
+	AudioSourceComponent::setVelocity(const math::float3 &velocity) noexcept 
 	{
-		audio_source->set_orientation(forward, up);
+		source_->setVelocity(velocity);
 	}
 
-	void AudioSourceComponent::set_pitch(float pitch) noexcept 
+	void
+	AudioSourceComponent::setPitch(float pitch) noexcept 
 	{
-		audio_source->set_pitch(pitch);
+		source_->setPitch(pitch);
 	}
 
-	void AudioSourceComponent::set_max_distance(float maxdis) noexcept 
+	void
+	AudioSourceComponent::setMaxDistance(float maxdis) noexcept 
 	{
-		audio_source->set_max_distance(maxdis);
+		source_->setMaxDistance(maxdis);
 	}
 
-	void AudioSourceComponent::set_min_distance(float mindis) noexcept 
+	void
+	AudioSourceComponent::setMinDistance(float mindis) noexcept 
 	{
-		audio_source->set_min_distance(mindis);
+		source_->setMinDistance(mindis);
 	}
-	// void set_audio_clip(const AudioClip &clip) noexcept{}
-
-	void AudioSourceComponent::get_translate(math::float3 &translate) noexcept 
+	
+	void
+	AudioSourceComponent::setAudioClip(const AudioClip &clip) noexcept
 	{
-		audio_source->get_translate(translate);
-	}
-
-	void AudioSourceComponent::get_velocity(math::float3 &velocity) noexcept 
-	{
-		audio_source->get_velocity(velocity);
+		source_->setAudioClip(clip);
 	}
 
-	void AudioSourceComponent::get_orientation(math::float3 &forward, math::float3 &up) noexcept 
+	void
+	AudioSourceComponent::getVelocity(math::float3 &velocity) const noexcept 
 	{
-		audio_source->get_orientation(forward, up);
-	}
-	// void get_audio_clip(AudioClip &clip) const noexcept{}
-
-	float AudioSourceComponent::get_volume() const noexcept 
-	{
-		return audio_source->get_volume();
+		source_->getVelocity(velocity);
 	}
 
-	float AudioSourceComponent::get_min_volume() const noexcept 
+	void
+	AudioSourceComponent::getAudioClip(AudioClip &clip) const noexcept
 	{
-		return audio_source->get_min_volume();
+		source_->getAudioClip(clip);
 	}
 
-	float AudioSourceComponent::get_max_volume() const noexcept 
+	float
+	AudioSourceComponent::getVolume() const noexcept 
 	{
-		return audio_source->get_max_volume();
+		return source_->getVolume();
 	}
 
-	float AudioSourceComponent::get_pitch() const noexcept 
+	float
+	AudioSourceComponent::getMinVolume() const noexcept 
 	{
-		return audio_source->get_pitch();
+		return source_->getMinVolume();
 	}
 
-	float AudioSourceComponent::get_max_distance() const noexcept 
+	float
+	AudioSourceComponent::getMaxVolume() const noexcept 
 	{
-		return audio_source->get_max_distance();
+		return source_->getMaxVolume();
 	}
 
-	float AudioSourceComponent::get_min_distance() const noexcept 
+	float
+	AudioSourceComponent::getPitch() const noexcept 
 	{
-		return audio_source->get_min_distance();
+		return source_->getPitch();
 	}
 
-	void AudioSourceComponent::play(bool play) noexcept 
+	float
+	AudioSourceComponent::getMaxDistance() const noexcept 
 	{
-		audio_source->play(play);
+		return source_->getMaxDistance();
 	}
 
-	void AudioSourceComponent::loop(bool loop) noexcept 
+	float
+	AudioSourceComponent::getMinDistance() const noexcept 
 	{
-		audio_source->loop(loop);
+		return source_->getMinDistance();
 	}
 
-	void AudioSourceComponent::pause() noexcept 
+	void
+	AudioSourceComponent::play(bool play) noexcept 
 	{
-		audio_source->pause();
+		source_->play(play);
 	}
 
-	bool AudioSourceComponent::is_playing() const noexcept 
+	void
+	AudioSourceComponent::loop(bool loop) noexcept 
 	{
-		return audio_source->is_playing();
+		source_->loop(loop);
 	}
 
-	bool AudioSourceComponent::is_stopped() const noexcept 
+	void
+	AudioSourceComponent::pause() noexcept 
 	{
-		return audio_source->is_stopped();
+		source_->pause();
 	}
 
-	bool AudioSourceComponent::is_paused() const noexcept 
+	bool
+	AudioSourceComponent::isPlaying() const noexcept 
 	{
-		return audio_source->is_paused();
+		return source_->isPlaying();
 	}
 
-	bool AudioSourceComponent::is_loop() const noexcept 
+	bool
+	AudioSourceComponent::isStopped() const noexcept 
 	{
-		return audio_source->is_loop();
+		return source_->isStopped();
+	}
+
+	bool
+	AudioSourceComponent::isPaused() const noexcept 
+	{
+		return source_->isPaused();
+	}
+
+	bool
+	AudioSourceComponent::isLoop() const noexcept 
+	{
+		return source_->isLoop();
+	}
+
+	GameComponentPtr
+	AudioSourceComponent::clone() const noexcept
+	{
+		math::float3 velocity;
+		this->getVelocity(velocity);
+
+		auto instance = std::make_shared<AudioSourceComponent>();
+		instance->setVelocity(velocity);
+		instance->setVolume(this->getVolume());
+		return instance;
+	}
+
+	void
+	AudioSourceComponent::onActivate() noexcept
+	{
+		auto transformComponent = this->getComponent<TransformComponent>();
+		if (transformComponent)
+		{
+			auto transform = transformComponent->getTransform();
+			this->source_->setTranslate(transformComponent->getTranslate());
+			this->source_->setOrientation(transform.getForward(), transform.getUp());
+		}
+
+		this->addComponentDispatch(GameDispatchType::MoveAfter);
+	}
+
+	void
+	AudioSourceComponent::onDeactivate() noexcept
+	{
+		this->removeComponentDispatch(GameDispatchType::MoveAfter);
+	}
+
+	void
+	AudioSourceComponent::onMoveAfter() noexcept
+	{
+		auto transformComponent = this->getComponent<TransformComponent>();
+		auto transform = transformComponent->getTransform();
+		this->source_->setTranslate(transformComponent->getTranslate());
+		this->source_->setOrientation(transform.getForward(), transform.getUp());
 	}
 }

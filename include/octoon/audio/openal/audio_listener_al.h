@@ -18,11 +18,11 @@
 
 namespace octoon
 {
-	class AudioListenerAL final : public AudioListener
+	class OCTOON_EXPORT AudioListenerAL final : public AudioListener
 	{
 	public:
 		AudioListenerAL() noexcept;
-		~AudioListenerAL() noexcept;
+		virtual ~AudioListenerAL() noexcept;
 
 		virtual void setVolume(float volume) noexcept override;
 		virtual float getVolume() const noexcept override;

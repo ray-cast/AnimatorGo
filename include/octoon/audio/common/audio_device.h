@@ -19,13 +19,10 @@ namespace octoon
         virtual bool open() noexcept = 0;
         virtual void close() noexcept = 0;
 
-        virtual bool is_open() const noexcept = 0;
+        virtual bool isOpen() const noexcept = 0;
 
-        virtual void set_distance_model(bool enable) noexcept = 0;
-        virtual bool get_distance_model() const noexcept = 0;
-
-        virtual std::shared_ptr<AudioSource> create_audio_source() = 0;
-        virtual std::shared_ptr<AudioListener> get_audio_listener() noexcept = 0;
+        virtual void setDistanceModel(bool enable) noexcept = 0;
+        virtual bool getDistanceModel() const noexcept = 0;
     };
 }
 

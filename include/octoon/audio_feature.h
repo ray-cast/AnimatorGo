@@ -13,6 +13,9 @@ namespace octoon
 		AudioFeature() noexcept;
 		virtual ~AudioFeature() noexcept;
 
+		void setDistanceModel(bool enable) noexcept;
+		bool getDistanceModel() const noexcept;
+
 	private:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;

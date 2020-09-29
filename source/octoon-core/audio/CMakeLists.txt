@@ -6,8 +6,6 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 SET(COMMON_LIST
 	${HEADER_PATH}/common/audio_buffer.h
 	${SOURCE_PATH}/common/audio_buffer.cpp
-	${HEADER_PATH}/common/ogg_audio_buffer.h
-	${SOURCE_PATH}/common/ogg_audio_buffer.cpp
 	${HEADER_PATH}/common/audio_device.h
 	${SOURCE_PATH}/common/audio_device.cpp
 	${HEADER_PATH}/common/audio_listener.h
@@ -19,6 +17,8 @@ SET(COMMON_LIST
 	${HEADER_PATH}/common/audio_source_listener.h
 	${SOURCE_PATH}/common/audio_source_listener.cpp
 	${HEADER_PATH}/common/audio_types.h
+	${HEADER_PATH}/common/ogg_stream.h
+	${SOURCE_PATH}/common/ogg_stream.cpp
 )
 SOURCE_GROUP("audio" FILES ${COMMON_LIST})
 

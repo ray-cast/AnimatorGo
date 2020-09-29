@@ -43,6 +43,10 @@ SOURCE_GROUP("system\\base" FILES ${BASE_FEATURES_LIST})
 SET(AUDIO_FEATURES_LIST
 	${HEADER_PATH}/audio_feature.h
 	${SOURCE_PATH}/audio_feature.cpp
+	${HEADER_PATH}/audio_listener_component.h
+	${SOURCE_PATH}/audio_listener_component.cpp
+	${HEADER_PATH}/audio_source_component.h
+	${SOURCE_PATH}/audio_source_component.cpp
 )
 SOURCE_GROUP("system\\audio" FILES ${AUDIO_FEATURES_LIST})
 

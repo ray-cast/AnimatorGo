@@ -54,13 +54,13 @@ namespace octoon
 	}
 
 	bool
-	AudioDeviceAL::is_open() const noexcept
+	AudioDeviceAL::isOpen() const noexcept
 	{
 		return _device ? true : false;
 	}
 
 	void
-	AudioDeviceAL::set_distance_model(bool enable) noexcept
+	AudioDeviceAL::setDistanceModel(bool enable) noexcept
 	{
 		if (_distance_model != enable)
 		{
@@ -73,20 +73,8 @@ namespace octoon
 	}
 
 	bool
-	AudioDeviceAL::get_distance_model() const noexcept
+	AudioDeviceAL::getDistanceModel() const noexcept
 	{
 		return _distance_model;
-	}
-
-	std::shared_ptr<AudioSource>
-	AudioDeviceAL::create_audio_source()
-	{
-		return std::make_shared<AudioSourceAL>();
-	}
-
-	std::shared_ptr<AudioListener>
-	AudioDeviceAL::get_audio_listener() noexcept
-	{
-		return _audio_listener;
 	}
 }

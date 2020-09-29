@@ -24,7 +24,7 @@ namespace octoon
 
 		virtual io::streamsize size() const noexcept;
 
-		virtual bool is_open() const noexcept;
+		virtual bool isOpen() const noexcept;
 
 		virtual int flush() noexcept;
 

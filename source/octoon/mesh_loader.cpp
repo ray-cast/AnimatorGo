@@ -172,8 +172,8 @@ namespace octoon
 					joint->setXMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowXLimit(it->movementLowerLimit.x);
-					joint->setHighXLimit(it->movementUpperLimit.x);
+					joint->setLowXLimit(it->movementLowerLimit.x * 10);
+					joint->setHighXLimit(it->movementUpperLimit.x * 10);
 					joint->setXMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -183,8 +183,8 @@ namespace octoon
 					joint->setYMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowYLimit(it->movementLowerLimit.y);
-					joint->setHighYLimit(it->movementUpperLimit.y);
+					joint->setLowYLimit(it->movementLowerLimit.y * 10);
+					joint->setHighYLimit(it->movementUpperLimit.y * 10);
 					joint->setYMotion(ConfigurableJointMotion::Limited);
 				}
 
@@ -194,8 +194,8 @@ namespace octoon
 					joint->setZMotion(ConfigurableJointMotion::Free);
 				else
 				{
-					joint->setLowZLimit(it->movementLowerLimit.z);
-					joint->setHighZLimit(it->movementUpperLimit.z);
+					joint->setLowZLimit(it->movementLowerLimit.z * 10);
+					joint->setHighZLimit(it->movementUpperLimit.z * 10);
 					joint->setZMotion(ConfigurableJointMotion::Limited);
 				}
 

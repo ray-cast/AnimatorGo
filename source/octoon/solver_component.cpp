@@ -278,12 +278,12 @@ namespace octoon
 							if (rotationLimit->getAdditiveRotationRatio() > 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, additiveRotation, rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotationLimit->getLocalQuaternion() * rotation);
+								transform->setLocalQuaternion(math::normalize(rotationLimit->getLocalQuaternion() * rotation));
 							}
 							else if (rotationLimit->getAdditiveRotationRatio() < 0.0f)
 							{
 								auto rotation = math::slerp(math::Quaternion::Zero, math::inverse(additiveRotation), -rotationLimit->getAdditiveRotationRatio());
-								transform->setLocalQuaternion(rotationLimit->getLocalQuaternion() * rotation);
+								transform->setLocalQuaternion(math::normalize(rotationLimit->getLocalQuaternion() * rotation));
 							}
 						}
 					}

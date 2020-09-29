@@ -24,26 +24,26 @@ namespace octoon
 	}
 
 	std::uint8_t
-	AudioReader::get_buffer_channel_count() const noexcept
+	AudioReader::channel_count() const noexcept
 	{
-		return this->_buf->get_buffer_channel_count();
+		return this->_buf->channel_count();
 	}
 
 	std::size_t
-	AudioReader::get_buffer_total_samples() const noexcept
+	AudioReader::total_samples() const noexcept
 	{
-		return this->_buf->get_buffer_total_samples();
+		return this->_buf->total_samples();
 	}
 
 	AudioFormat
-	AudioReader::get_buffer_type() const noexcept
+	AudioReader::type() const noexcept
 	{
-		return this->_buf->get_buffer_type();
+		return this->_buf->type();
 	}
 
 	AudioFrequency
-	AudioReader::get_buffer_frequency() const noexcept
+	AudioReader::frequency() const noexcept
 	{
-		return this->_buf->get_buffer_frequency();
+		return this->_buf->frequency();
 	}
 }

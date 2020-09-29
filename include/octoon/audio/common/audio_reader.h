@@ -24,11 +24,11 @@ namespace octoon
         bool open(std::shared_ptr<std::istream> stream) noexcept;
         bool access(std::istream& stream) const noexcept;
 
-        std::uint8_t get_buffer_channel_count() const noexcept;
-        std::size_t get_buffer_total_samples() const noexcept;
+        std::uint8_t channel_count() const noexcept;
+        std::size_t total_samples() const noexcept;
 
-        AudioFormat get_buffer_type() const noexcept;
-        AudioFrequency get_buffer_frequency() const noexcept;
+        AudioFormat type() const noexcept;
+        AudioFrequency frequency() const noexcept;
 
         virtual std::shared_ptr<AudioReader> clone() const noexcept = 0;
 

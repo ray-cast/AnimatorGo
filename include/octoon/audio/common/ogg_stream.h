@@ -30,18 +30,17 @@ namespace octoon
 
 		virtual bool close() noexcept;
 
-		virtual std::uint32_t getBufferChannelCount() const noexcept;
-		virtual std::size_t getBufferTotalSamples() const noexcept;
+		virtual std::uint8_t channel_count() const noexcept override;
+		virtual std::size_t total_samples() const noexcept override;
 
-		virtual AudioFormat getBufferType() const noexcept;
-		virtual AudioFrequency getBufferFrequency() const noexcept;
+		virtual AudioFormat type() const noexcept override;
+		virtual AudioFrequency frequency() const noexcept override;
 
 	private:
+		std::streamoff next_;
+		std::shared_ptr<io::istream> stream_;
 
-		std::streamoff _next;
-		std::shared_ptr<io::istream> _stream;
-
-		OggVorbis_File* _oggVorbisFile;
+		OggVorbis_File* oggVorbisFile_;
 	};
 }
 

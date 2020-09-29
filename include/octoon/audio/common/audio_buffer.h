@@ -21,11 +21,11 @@ namespace octoon
 
         virtual bool access(std::istream& stream) const noexcept = 0;
 
-        virtual std::uint8_t get_buffer_channel_count() const noexcept = 0;
-        virtual std::size_t get_buffer_total_samples() const noexcept = 0;
+        virtual std::uint8_t channel_count() const noexcept = 0;
+        virtual std::size_t total_samples() const noexcept = 0;
 
-        virtual AudioFormat get_buffer_type() const noexcept = 0;
-        virtual AudioFrequency get_buffer_frequency() const noexcept = 0;
+        virtual AudioFormat type() const noexcept = 0;
+        virtual AudioFrequency frequency() const noexcept = 0;
     };
 }
 

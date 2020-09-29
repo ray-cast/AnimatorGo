@@ -79,7 +79,7 @@ namespace octoon
 
             if (buffer)
             {
-                auto soundType = buffer->get_buffer_type();
+                auto soundType = buffer->type();
                 _al_format = AL_NONE;
                 if (soundType == AudioFormat::Mono8)
                     _al_format = AL_FORMAT_MONO8;
@@ -96,9 +96,9 @@ namespace octoon
 
                 AudioClip clip;
                 clip.length = 0;
-                clip.samples = buffer->get_buffer_total_samples();
-                clip.channels = buffer->get_buffer_channel_count();
-                clip.freq = buffer->get_buffer_frequency();
+                clip.samples = buffer->total_samples();
+                clip.channels = buffer->channel_count();
+                clip.freq = buffer->frequency();
 
                 this->set_audio_clip(clip);
             }

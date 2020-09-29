@@ -1,4 +1,4 @@
-#include <octoon/audio/common/ogg_audio_buffer.h>
+#include <octoon/audio/common/ogg_stream.h>
 #include <vorbis/vorbisfile.h>
 
 namespace octoon
@@ -50,8 +50,8 @@ namespace octoon
 	}
 
 	OggStreamBuffer::OggStreamBuffer() noexcept
-		: _oggVorbisFile(nullptr)
-		, _next(0)
+		: oggVorbisFile_(nullptr)
+		, next_(0)
 	{
 	}
 
@@ -80,7 +80,7 @@ namespace octoon
 	bool
 	OggStreamBuffer::open(std::shared_ptr<io::istream> stream) noexcept
 	{
-		assert(!_oggVorbisFile);
+		assert(!oggVorbisFile_);
 
 		OggVorbis_File ogg;
 
@@ -90,18 +90,18 @@ namespace octoon
 		callbacks.tell_func = &ogg_stream_tellg;
 		callbacks.close_func = &ogg_stream_close;
 
-		_next = 0;
-		_stream = stream;
+		next_ = 0;
+		stream_ = stream;
 
-		auto err = ::ov_open_callbacks(_stream.get(), &ogg, nullptr, 0, callbacks);
+		auto err = ::ov_open_callbacks(stream_.get(), &ogg, nullptr, 0, callbacks);
 		if (err < 0)
 		{
 			::ov_clear(&ogg);
 			return false;
 		}
 
-		_oggVorbisFile = new OggVorbis_File;
-		std::memcpy(_oggVorbisFile, &ogg, sizeof(OggVorbis_File));
+		oggVorbisFile_ = new OggVorbis_File;
+		std::memcpy(oggVorbisFile_, &ogg, sizeof(OggVorbis_File));
 
 		return true;
 	}
@@ -109,7 +109,7 @@ namespace octoon
 	io::streamsize
 	OggStreamBuffer::read(char* str, std::streamsize cnt) noexcept
 	{
-		assert(_oggVorbisFile);
+		assert(oggVorbisFile_);
 
 		int bitstream = 0;
 		io::streamsize bytes = 0;
@@ -117,13 +117,13 @@ namespace octoon
 
 		do
 		{
-			bytes = ::ov_read(_oggVorbisFile, str + offset, int(cnt - offset), 0, 2, 1, &bitstream);
+			bytes = ::ov_read(oggVorbisFile_, str + offset, int(cnt - offset), 0, 2, 1, &bitstream);
 			offset += bytes;
 		} while (bytes && offset < cnt);
 
 		if (bytes > 0)
 		{
-			auto info = ::ov_info(_oggVorbisFile, -1);
+			auto info = ::ov_info(oggVorbisFile_, -1);
 			if (info->channels == 6)
 			{
 				short* samples = (short*)str;
@@ -153,21 +153,21 @@ namespace octoon
 
 		if (dir == io::ios_base::beg)
 		{
-			_next = pos;
+			next_ = pos;
 
-			::ov_pcm_seek(_oggVorbisFile, pos);
+			::ov_pcm_seek(oggVorbisFile_, pos);
 			return pos;
 		}
 		else if (dir == io::ios_base::cur)
 		{
-			_next = _next + pos;
-			if (_next > this->size())
+			next_ = next_ + pos;
+			if (next_ > this->size())
 			{
-				pos = this->size() - _next;
-				_next = this->size();
+				pos = this->size() - next_;
+				next_ = this->size();
 			}
 
-			::ov_pcm_seek(_oggVorbisFile, pos);
+			::ov_pcm_seek(oggVorbisFile_, pos);
 			return pos;
 		}
 		else if (dir == io::ios_base::end)
@@ -175,11 +175,11 @@ namespace octoon
 			std::size_t size = this->size();
 			pos = size + pos;
 			if (pos > size)
-				_next = size;
+				next_ = size;
 			else
-				_next = pos;
+				next_ = pos;
 
-			::ov_pcm_seek(_oggVorbisFile, pos);
+			::ov_pcm_seek(oggVorbisFile_, pos);
 			return pos;
 		}
 
@@ -190,27 +190,27 @@ namespace octoon
 	OggStreamBuffer::tellg() noexcept
 	{
 		assert(this->is_open());
-		return ::ov_pcm_tell(_oggVorbisFile);
+		return ::ov_pcm_tell(oggVorbisFile_);
 	}
 
 	io::streamsize
 	OggStreamBuffer::size() const noexcept
 	{
 		assert(this->is_open());
-		auto info = ::ov_info(_oggVorbisFile, -1);
-		return ::ov_pcm_total(_oggVorbisFile, -1) * info->channels * 2;
+		auto info = ::ov_info(oggVorbisFile_, -1);
+		return ::ov_pcm_total(oggVorbisFile_, -1) * info->channels * 2;
 	}
 
 	bool
 	OggStreamBuffer::is_open() const noexcept
 	{
-		return _oggVorbisFile ? true : false;
+		return oggVorbisFile_ ? true : false;
 	}
 
 	int
 	OggStreamBuffer::flush() noexcept
 	{
-		if (_stream->flush())
+		if (stream_->flush())
 			return 0;
 		return -1;
 	}
@@ -218,12 +218,12 @@ namespace octoon
 	bool
 	OggStreamBuffer::close() noexcept
 	{
-		if (_oggVorbisFile)
+		if (oggVorbisFile_)
 		{
-			::ov_clear(_oggVorbisFile);
+			::ov_clear(oggVorbisFile_);
 
-			delete _oggVorbisFile;
-			_oggVorbisFile = nullptr;
+			delete oggVorbisFile_;
+			oggVorbisFile_ = nullptr;
 
 			return true;
 		}
@@ -231,28 +231,27 @@ namespace octoon
 		return false;
 	}
 
-	std::uint32_t
-	OggStreamBuffer::getBufferChannelCount() const noexcept
+	std::uint8_t
+	OggStreamBuffer::channel_count() const noexcept
 	{
-		assert(_oggVorbisFile);
-		auto info = ::ov_info(_oggVorbisFile, -1);
+		assert(oggVorbisFile_);
+		auto info = ::ov_info(oggVorbisFile_, -1);
 		return info->channels;
 	}
 
 	std::size_t
-	OggStreamBuffer::getBufferTotalSamples() const noexcept
+	OggStreamBuffer::total_samples() const noexcept
 	{
-		assert(_oggVorbisFile);
-		return ::ov_pcm_total(_oggVorbisFile, -1);
+		assert(oggVorbisFile_);
+		return ::ov_pcm_total(oggVorbisFile_, -1);
 	}
 
 	AudioFormat
-	OggStreamBuffer::getBufferType() const noexcept
+	OggStreamBuffer::type() const noexcept
 	{
-		assert(_oggVorbisFile);
+		assert(oggVorbisFile_);
 
-		auto info = ::ov_info(_oggVorbisFile, -1);
-
+		auto info = ::ov_info(oggVorbisFile_, -1);
 		if (info->channels == 1)
 			return AudioFormat::Mono16;
 		else if (info->channels == 2)
@@ -266,10 +265,10 @@ namespace octoon
 	}
 
 	AudioFrequency
-	OggStreamBuffer::getBufferFrequency() const noexcept
+	OggStreamBuffer::frequency() const noexcept
 	{
-		assert(_oggVorbisFile);
-		auto info = ::ov_info(_oggVorbisFile, -1);
+		assert(oggVorbisFile_);
+		auto info = ::ov_info(oggVorbisFile_, -1);
 		return static_cast<AudioFrequency>(info->rate);
 	}
 }

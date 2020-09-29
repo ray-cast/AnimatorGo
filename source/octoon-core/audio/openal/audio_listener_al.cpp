@@ -13,49 +13,45 @@ namespace octoon
 
 	AudioListenerAL::~AudioListenerAL() noexcept
 	{
-		this->close();
 	}
 
-	bool AudioListenerAL::open() noexcept
-	{
-		return true;
-	}
-
-	void AudioListenerAL::close() noexcept
-	{
-	}
-
-	void AudioListenerAL::set_volume(float volume) noexcept
+	void
+	AudioListenerAL::setVolume(float volume) noexcept
 	{
 		alListenerf(AL_GAIN, volume);
 	}
 
-	float AudioListenerAL::get_volume() const noexcept
+	float
+	AudioListenerAL::getVolume() const noexcept
 	{
 		float volume = -1.0f;
 		alGetListenerf(AL_GAIN, &volume);
 		return volume;
 	}
 
-	void AudioListenerAL::set_translate(const math::float3& translate) noexcept
+	void
+	AudioListenerAL::setTranslate(const math::float3& translate) noexcept
 	{
 		ALfloat pos[] = { translate.x, translate.y, translate.z };
 		alListenerfv(AL_POSITION, pos);
 	}
 
-	void AudioListenerAL::set_velocity(const math::float3& velocity) noexcept
+	void
+	AudioListenerAL::setVelocity(const math::float3& velocity) noexcept
 	{
 		ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
 		alListenerfv(AL_VELOCITY, vel);
 	}
 
-	void AudioListenerAL::set_orientation(const math::float3& forward, const math::float3& up) noexcept
+	void
+	AudioListenerAL::setOrientation(const math::float3& forward, const math::float3& up) noexcept
 	{
 		ALfloat dir[] = { forward.x, forward.y, forward.z, up.x, up.y, up.z };
 		alListenerfv(AL_ORIENTATION, dir);
 	}
 
-	void AudioListenerAL::get_translate(math::float3& translate) noexcept
+	void
+	AudioListenerAL::getTranslate(math::float3& translate) noexcept
 	{
 		ALfloat pos[3];
 		alGetListenerfv(AL_POSITION, pos);
@@ -64,7 +60,8 @@ namespace octoon
 		translate.z = pos[2];
 	}
 
-	void AudioListenerAL::get_velocity(math::float3& velocity) noexcept
+	void
+	AudioListenerAL::getVelocity(math::float3& velocity) noexcept
 	{
 		ALfloat pos[3];
 		alGetListenerfv(AL_VELOCITY, pos);
@@ -73,7 +70,8 @@ namespace octoon
 		velocity.z = pos[2];
 	}
 
-	void AudioListenerAL::get_orientation(math::float3& forward, math::float3& up) noexcept
+	void
+	AudioListenerAL::getOrientation(math::float3& forward, math::float3& up) noexcept
 	{
 		ALfloat dir[6];
 		alGetListenerfv(AL_ORIENTATION, dir);

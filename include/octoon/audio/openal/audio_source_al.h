@@ -30,23 +30,23 @@ namespace octoon
         virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept override;
         virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept override;
 
-        virtual void set_volume(float volume) noexcept override;
+        virtual void setVolume(float volume) noexcept override;
         virtual void set_min_volume(float volume) noexcept override;
         virtual void set_max_volume(float volume) noexcept override;
-        virtual void set_translate(const math::float3& translate) noexcept override;
-        virtual void set_velocity(const math::float3& velocity) noexcept override;
-        virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept override;
+        virtual void setTranslate(const math::float3& translate) noexcept override;
+        virtual void setVelocity(const math::float3& velocity) noexcept override;
+        virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept override;
         virtual void set_pitch(float pitch) noexcept override;
         virtual void set_max_distance(float maxdis) noexcept override;
         virtual void set_min_distance(float mindis) noexcept override;
         virtual void set_audio_clip(const AudioClip& clip) noexcept override;
 
-        virtual void get_translate(math::float3& translate) noexcept override;
-        virtual void get_velocity(math::float3& velocity) noexcept override;
-        virtual void get_orientation(math::float3& forward, math::float3& up) noexcept override;
+        virtual void getTranslate(math::float3& translate) noexcept override;
+        virtual void getVelocity(math::float3& velocity) noexcept override;
+        virtual void getOrientation(math::float3& forward, math::float3& up) noexcept override;
         virtual void get_audio_clip(AudioClip& clip) const noexcept override;
 
-        virtual float get_volume() const noexcept override;
+        virtual float getVolume() const noexcept override;
         virtual float get_min_volume() const noexcept override;
         virtual float get_max_volume() const noexcept override;
         virtual float get_pitch() const noexcept override;

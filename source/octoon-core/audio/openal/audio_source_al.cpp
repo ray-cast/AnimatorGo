@@ -111,7 +111,7 @@ namespace octoon
         alSourcef(_al_source, AL_PITCH, pitch);
     }
 
-    void AudioSourceAL::set_volume(float volume) noexcept
+    void AudioSourceAL::setVolume(float volume) noexcept
     {
         assert(_al_source != AL_NONE);
         alSourcef(_al_source, AL_GAIN, volume);
@@ -129,21 +129,21 @@ namespace octoon
         alSourcef(_al_source, AL_MAX_GAIN, volume);
     }
 
-    void AudioSourceAL::set_translate(const math::float3& translate) noexcept
+    void AudioSourceAL::setTranslate(const math::float3& translate) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat pos[] = { translate.x, translate.y, translate.z };
         alSourcefv(_al_source, AL_POSITION, pos);
     }
 
-    void AudioSourceAL::set_velocity(const math::float3& velocity) noexcept
+    void AudioSourceAL::setVelocity(const math::float3& velocity) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
         alSourcefv(_al_source, AL_VELOCITY, vel);
     }
 
-    void AudioSourceAL::set_orientation(const math::float3& forward, const math::float3& up) noexcept
+    void AudioSourceAL::setOrientation(const math::float3& forward, const math::float3& up) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat dir[] = { forward.x, forward.y, forward.z, up.x, up.y, up.z };
@@ -208,7 +208,7 @@ namespace octoon
         return _audio_reader;
     }
 
-    float AudioSourceAL::get_volume() const noexcept
+    float AudioSourceAL::getVolume() const noexcept
     {
         assert(_al_source != AL_NONE);
         float volume = -1.0f;
@@ -232,7 +232,7 @@ namespace octoon
         return volume;
     }
 
-    void AudioSourceAL::get_translate(math::float3& translate) noexcept
+    void AudioSourceAL::getTranslate(math::float3& translate) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat pos[3];
@@ -242,7 +242,7 @@ namespace octoon
         translate.z = pos[2];
     }
 
-    void AudioSourceAL::get_velocity(math::float3& velocity) noexcept
+    void AudioSourceAL::getVelocity(math::float3& velocity) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat pos[3];
@@ -252,7 +252,7 @@ namespace octoon
         velocity.z = pos[2];
     }
 
-    void AudioSourceAL::get_orientation(math::float3& forward, math::float3& up) noexcept
+    void AudioSourceAL::getOrientation(math::float3& forward, math::float3& up) noexcept
     {
         assert(_al_source != AL_NONE);
         ALfloat dir[6];

@@ -13,19 +13,16 @@ namespace octoon
         AudioListener() noexcept;
         ~AudioListener() noexcept;
 
-        virtual bool open() noexcept = 0;
-        virtual void close() noexcept = 0;
+        virtual void setVolume(float volume) noexcept = 0;
+        virtual float getVolume() const noexcept = 0;
 
-        virtual void set_volume(float volume) noexcept = 0;
-        virtual float get_volume() const noexcept = 0;
+        virtual void setTranslate(const math::float3& translate) noexcept = 0;
+        virtual void setVelocity(const math::float3& velocity) noexcept = 0;
+        virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept = 0;
 
-        virtual void set_translate(const math::float3& translate) noexcept = 0;
-        virtual void set_velocity(const math::float3& velocity) noexcept = 0;
-        virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept = 0;
-
-        virtual void get_translate(math::float3& translate) noexcept = 0;
-        virtual void get_velocity(math::float3& velocity) noexcept = 0;
-        virtual void get_orientation(math::float3& forward, math::float3& up) noexcept = 0;
+        virtual void getTranslate(math::float3& translate) noexcept = 0;
+        virtual void getVelocity(math::float3& velocity) noexcept = 0;
+        virtual void getOrientation(math::float3& forward, math::float3& up) noexcept = 0;
     };
 }
 

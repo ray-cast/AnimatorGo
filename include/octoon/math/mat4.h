@@ -970,7 +970,7 @@ namespace octoon
 			auto& right = m.getRight();
 			auto& up = m.getUp();
 			auto& forward = m.getForward();
-			auto translate = -invRotateVector3(m, m.get_translate());
+			auto translate = -invRotateVector3(m, m.getTranslate());
 
 			return detail::Matrix4x4<T>(
 				right.x, up.x, forward.x, 0.0f,

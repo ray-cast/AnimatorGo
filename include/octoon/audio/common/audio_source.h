@@ -37,23 +37,23 @@ namespace octoon
         virtual void add_audio_source_listener(AudioSourceListener* listener) noexcept = 0;
         virtual void remove_audio_source_listener(AudioSourceListener* listener) noexcept = 0;
 
-        virtual void set_volume(float volume) noexcept = 0;
+        virtual void setVolume(float volume) noexcept = 0;
         virtual void set_min_volume(float volume) noexcept = 0;
         virtual void set_max_volume(float volume) noexcept = 0;
-        virtual void set_translate(const math::float3& translate) noexcept = 0;
-        virtual void set_velocity(const math::float3& velocity) noexcept = 0;
-        virtual void set_orientation(const math::float3& forward, const math::float3& up) noexcept = 0;
+        virtual void setTranslate(const math::float3& translate) noexcept = 0;
+        virtual void setVelocity(const math::float3& velocity) noexcept = 0;
+        virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept = 0;
         virtual void set_pitch(float pitch) noexcept = 0;
         virtual void set_max_distance(float maxdis) noexcept = 0;
         virtual void set_min_distance(float mindis) noexcept = 0;
         virtual void set_audio_clip(const AudioClip& clip) noexcept = 0;
 
-        virtual void get_translate(math::float3& translate) noexcept = 0;
-        virtual void get_velocity(math::float3& velocity) noexcept = 0;
-        virtual void get_orientation(math::float3& forward, math::float3& up) noexcept = 0;
+        virtual void getTranslate(math::float3& translate) noexcept = 0;
+        virtual void getVelocity(math::float3& velocity) noexcept = 0;
+        virtual void getOrientation(math::float3& forward, math::float3& up) noexcept = 0;
         virtual void get_audio_clip(AudioClip& clip) const noexcept = 0;
 
-        virtual float get_volume() const noexcept = 0;
+        virtual float getVolume() const noexcept = 0;
         virtual float get_min_volume() const noexcept = 0;
         virtual float get_max_volume() const noexcept = 0;
         virtual float get_pitch() const noexcept = 0;

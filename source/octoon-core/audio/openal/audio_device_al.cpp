@@ -32,16 +32,12 @@ namespace octoon
 		if (!::alcMakeContextCurrent(_context))
 			return false;
 
-		_audio_listener->open();
-
 		return true;
 	}
 
 	void
 	AudioDeviceAL::close() noexcept
 	{
-		_audio_listener->close();
-
 		::alcMakeContextCurrent(AL_NONE);
 
 		if (_context)

@@ -16,9 +16,6 @@ namespace octoon
 		void setGravity(const math::float3& gravity) noexcept;
 		const math::float3& getGravity() const noexcept;
 
-		void setSolverIterationCounts(std::uint32_t iterationCounts) noexcept;
-		std::uint32_t getSolverIterationCounts() const noexcept;
-
 	public:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
@@ -43,7 +40,6 @@ namespace octoon
 		bool needUpdate_;
 
 		float timeInterval_;
-		std::uint32_t iterationCounts_;
 
 		math::float3 gravity_;
 

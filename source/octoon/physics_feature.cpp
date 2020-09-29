@@ -9,7 +9,6 @@ namespace octoon
 		: physics_context(nullptr)
 		, physics_scene(nullptr)
 		, needUpdate_(false)
-		, iterationCounts_(1)
 		, timeInterval_(0.02f)
 		, gravity_(0.0f, -9.8f, 0.0f)
 	{
@@ -31,18 +30,6 @@ namespace octoon
 	PhysicsFeature::getGravity() const noexcept
 	{
 		return gravity_;
-	}
-
-	void
-	PhysicsFeature::setSolverIterationCounts(std::uint32_t iterationCounts) noexcept
-	{
-		iterationCounts_ = iterationCounts;
-	}
-
-	std::uint32_t
-	PhysicsFeature::getSolverIterationCounts() const noexcept
-	{
-		return iterationCounts_;
 	}
 
     void
@@ -81,14 +68,9 @@ namespace octoon
     {
 		if (needUpdate_)
 		{
-			for (std::uint8_t i = 0; i < iterationCounts_; i++)
-			{
-				physics_scene->simulate(timeInterval_ / iterationCounts_);
-				physics_scene->fetchResults();
-			}
-
-			if (iterationCounts_ > 0)
-				physics_scene->fetchFinish();
+			physics_scene->simulate(timeInterval_);
+			physics_scene->fetchResults();
+			physics_scene->fetchFinish();
 
 			needUpdate_ = false;
 		}

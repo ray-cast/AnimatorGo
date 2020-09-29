@@ -38,7 +38,7 @@ namespace rabbit
 		if (physicsFeature)
 		{
 			physicsFeature->setGravity(context->physicsModule->gravity);
-			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
+			//physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
 		}
 
 		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
@@ -66,9 +66,9 @@ namespace rabbit
 		this->timeStep_ = model->playTimeStep;
 		this->timeInterval_ = 1.0f / model->playFps;
 
-		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->playSolverIterationCounts);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->playSolverIterationCounts);*/
 
 		model->playing_ = true;
 	}
@@ -77,9 +77,9 @@ namespace rabbit
 	PlayerComponent::stop() noexcept
 	{
 		auto& context = this->getContext()->profile;
-		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);*/
 
 		this->getModel()->playing_ = false;
 	}
@@ -107,9 +107,9 @@ namespace rabbit
 		}
 
 		auto& context = this->getContext()->profile;
-		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);*/
 
 		this->getModel()->playing_ = false;
 		this->sendMessage("rabbit:player:start");
@@ -145,9 +145,9 @@ namespace rabbit
 			this->timeInterval_ = 1.0f / model->recordFps;
 		}
 
-		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->recordSolverIterationCounts);
+			physicsFeature->setSolverIterationCounts(context->physicsModule->recordSolverIterationCounts);*/
 
 		this->getModel()->playing_ = true;
 		this->sendMessage("rabbit:player:start");

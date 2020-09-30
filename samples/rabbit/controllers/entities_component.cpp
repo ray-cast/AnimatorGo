@@ -253,6 +253,7 @@ namespace rabbit
 
 		auto mainCamera = GameObject::create("MainCamera");
 		mainCamera->addComponent<FirstPersonCameraComponent>();
+		mainCamera->addComponent<AudioListenerComponent>();
 		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
 
 		auto camera = mainCamera->addComponent<PerspectiveCameraComponent>();

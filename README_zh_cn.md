@@ -8,6 +8,16 @@ Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 E
 <img style="vertical-align: top;" src="./screenshot1.png" alt="logo">
 <img style="vertical-align: top;" src="./screenshot2.png" alt="logo">
 
+系统需求：
+------
+1. 支持SSE4.1的CPU，如i5，用于AI 降噪
+2. NVIDIA的独显用于GPGPU的光线追踪 
+3. NVIDIA's OpenCL 驱动 
+4. Visual Studio 2019 runtimes ：软件根目录/_Redist/VC_redist.x64.exe
+5. 当前程序只在64位系统下测试过，32尚且不知道是否可以支持
+6. 参与测试过的CPU，Intel i3, i5, i7, AMD 2600, 2600X
+7. 参与测试过的显卡，GeFroce GTX 650, 1050, 1060, 2060
+
 支持的编译器:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)

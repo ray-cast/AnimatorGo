@@ -17,9 +17,9 @@ namespace octoon
         AudioBuffer() noexcept;
         virtual ~AudioBuffer() noexcept;
 
-        virtual bool open(std::shared_ptr<std::istream> stream) noexcept = 0;
+        virtual bool open(std::shared_ptr<io::istream> stream) noexcept = 0;
 
-        virtual bool access(std::istream& stream) const noexcept = 0;
+        virtual bool access(io::istream& stream) const noexcept = 0;
 
         virtual std::uint8_t channel_count() const noexcept = 0;
         virtual std::size_t total_samples() const noexcept = 0;

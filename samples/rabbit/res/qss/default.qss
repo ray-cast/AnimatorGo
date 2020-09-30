@@ -349,6 +349,9 @@ QWidget#ToolWindow QToolButton#record{
 QWidget#ToolWindow QToolButton#record-on{
 	qproperty-icon: url(":res/icons/record-on.png");
 }
+QWidget#ToolWindow QToolButton#audio{
+	qproperty-icon: url(":res/icons/music.png");
+}
 QWidget#ToolWindow QToolButton#gpu{
 	qproperty-icon: url(":res/icons/gpu.png");
 }

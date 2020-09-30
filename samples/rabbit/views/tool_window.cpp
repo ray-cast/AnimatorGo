@@ -7,6 +7,7 @@ namespace rabbit
 		: QWidget(parent)
 		, gpuEnable_(false)
 		, playEnable_(false)
+		, audioEnable_(false)
 		, recordEnable_(false)
 		, hdrEnable_(false)
 		, sunEnable_(false)
@@ -18,6 +19,8 @@ namespace rabbit
 		, gpuOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/gpu-on.png")))
 		, recordIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record.png")))
 		, recordOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record-on.png")))
+		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.png")))
+		, audioOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music-on.png")))
 		, hdrIcon_(QIcon::fromTheme("res", QIcon(":res/icons/hdr.png")))
 		, hdrOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/hdr-on.png")))
 		, sunIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun.png")))
@@ -62,6 +65,11 @@ namespace rabbit
 		recordButton.setText(u8"Â¼ÖÆ");
 		recordButton.setToolTip(u8"Â¼ÖÆÊÓÆµ");
 		recordButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+		audioButton.setObjectName("audio");
+		audioButton.setText(u8"ÒôÆµ");
+		audioButton.setToolTip(u8"¼ÓÔØÒôÆµ");
+		audioButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		shotButton.setObjectName("shot");
 		shotButton.setText(u8"½ØÍ¼");
@@ -109,6 +117,7 @@ namespace rabbit
 		layout->addWidget(&leftButton, 0, Qt::AlignCenter);
 		layout->addWidget(&rightButton, 0, Qt::AlignCenter);
 		layout->addWidget(&recordButton, 0, Qt::AlignCenter);
+		layout->addWidget(&audioButton, 0, Qt::AlignCenter);
 		layout->addWidget(&shotButton, 0, Qt::AlignCenter);
 		layout->addWidget(&gpuButton, 0, Qt::AlignCenter);
 		layout->addWidget(&materialButton, 0, Qt::AlignCenter);
@@ -139,6 +148,7 @@ namespace rabbit
 		this->connect(&rightButton, SIGNAL(clicked()), this, SLOT(rightEvent()));
 		this->connect(&resetButton, SIGNAL(clicked()), this, SLOT(resetEvent()));
 		this->connect(&recordButton, SIGNAL(clicked()), this, SLOT(recordEvent()));
+		this->connect(&audioButton, SIGNAL(clicked()), this, SLOT(audioEvent()));
 		this->connect(&shotButton, SIGNAL(clicked()), this, SLOT(shotEvent()));
 		this->connect(&gpuButton, SIGNAL(clicked()), this, SLOT(gpuEvent()));
 		this->connect(&hdrButton, SIGNAL(clicked()), this, SLOT(hdrEvent()));
@@ -265,6 +275,27 @@ namespace rabbit
 			{
 				recordButton.setIcon(recordIcon_);
 				recordEnable_ = false;
+			}
+		}
+	}
+
+	void 
+	ToolWindow::audioEvent() noexcept
+	{
+		if (!audioEnable_)
+		{
+			if (audioSignal(true))
+			{
+				audioButton.setIcon(audioOnIcon_);
+				audioEnable_ = true;
+			}
+		}
+		else
+		{
+			if (audioSignal(false))
+			{
+				audioButton.setIcon(audioIcon_);
+				audioEnable_ = false;
 			}
 		}
 	}

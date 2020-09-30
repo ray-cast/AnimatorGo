@@ -20,7 +20,7 @@ namespace octoon
         AudioSourceListener() noexcept;
         virtual ~AudioSourceListener() noexcept;
 
-        virtual void on_play_end() noexcept = 0;
+        virtual void onPlayEnd() noexcept = 0;
     };
 }
 

@@ -1,12 +1,12 @@
-#ifndef OCTOON_VMD_H_
-#define OCTOON_VMD_H_
+#ifndef OCTOON_VMD_LOADER_H_
+#define OCTOON_VMD_LOADER_H_
 
 #include <octoon/io/iostream.h>
 #include <octoon/animation/animation.h>
 
 namespace octoon
 {
-	class VMDLoader final
+	class OCTOON_EXPORT VMDLoader final
 	{
 	public:
 		VMDLoader() noexcept;

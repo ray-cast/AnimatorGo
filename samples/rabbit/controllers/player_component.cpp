@@ -61,26 +61,20 @@ namespace rabbit
 	PlayerComponent::play() noexcept
 	{
 		auto& model = this->getModel();
-		auto& context = this->getContext()->profile;
 
 		this->timeStep_ = model->playTimeStep;
 		this->timeInterval_ = 1.0f / model->playFps;
 
-		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
-		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->playSolverIterationCounts);*/
-
 		model->playing_ = true;
+
+		auto sound = this->getContext()->profile->entitiesModule->sound;
+		if (sound)
+			sound->getComponent<octoon::AudioSourceComponent>()->play(true);
 	}
 
 	void
 	PlayerComponent::stop() noexcept
 	{
-		auto& context = this->getContext()->profile;
-		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
-		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);*/
-
 		this->getModel()->playing_ = false;
 	}
 
@@ -106,11 +100,6 @@ namespace rabbit
 			}
 		}
 
-		auto& context = this->getContext()->profile;
-		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
-		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);*/
-
 		this->getModel()->playing_ = false;
 		this->sendMessage("rabbit:player:start");
 	}
@@ -119,7 +108,6 @@ namespace rabbit
 	PlayerComponent::render() noexcept
 	{
 		auto& model = this->getModel();
-		auto& context = this->getContext()->profile;
 
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
@@ -144,10 +132,6 @@ namespace rabbit
 			this->timeStep_ = model->playTimeStep;
 			this->timeInterval_ = 1.0f / model->recordFps;
 		}
-
-		/*auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
-		if (physicsFeature)
-			physicsFeature->setSolverIterationCounts(context->physicsModule->recordSolverIterationCounts);*/
 
 		this->getModel()->playing_ = true;
 		this->sendMessage("rabbit:player:start");

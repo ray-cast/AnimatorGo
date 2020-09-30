@@ -47,6 +47,7 @@ namespace rabbit
 		void onLeftSignal() noexcept;
 		void onRightSignal() noexcept;
 		void onImportSignal() noexcept;
+		bool onAudioSignal(bool enable) noexcept;
 		bool onRecordSignal(bool enable) noexcept;
 		void onScreenShotSignal() noexcept;
 		bool onOfflineModeSignal(bool enable) noexcept;

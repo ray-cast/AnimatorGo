@@ -28,8 +28,8 @@ namespace octoon
     {
         assert(source_ == AL_NONE);
         ::alGenSources(1, &source_);
-        ::alSourcei(source_, AL_SOURCE_TYPE, AL_STREAMING);
         ::alSourcei(source_, AL_LOOPING, AL_FALSE);
+        ::alSourcei(source_, AL_SOURCE_TYPE, AL_STREAMING);
         ::alSourcei(source_, AL_SOURCE_RELATIVE, AL_TRUE);
 
         ::alGenBuffers(1, &buffer_[0]);
@@ -446,7 +446,7 @@ namespace octoon
 	AudioSourceAL::playEnd() noexcept
     {
         for (auto& it : listeners_)
-            it->on_play_end();
+            it->onPlayEnd();
 
         this->clearAudioQueue();
 

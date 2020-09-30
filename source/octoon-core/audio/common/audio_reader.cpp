@@ -2,9 +2,15 @@
 
 namespace octoon
 {
-    AudioReader::AudioReader(AudioBuffer* buf) noexcept
-		: io::istream(this->_buf)
+	AudioReader::AudioReader() noexcept
+		: io::istream(&this->_buf)
+	{
+	}
+
+    AudioReader::AudioReader(std::shared_ptr<io::istream> stream) noexcept
+		: io::istream(&this->_buf)
     {
+		this->open(stream);
     }
 
     AudioReader::~AudioReader() noexcept
@@ -12,38 +18,44 @@ namespace octoon
     }
 
 	bool
-	AudioReader::open(std::shared_ptr<std::istream> stream) noexcept
+	AudioReader::open(std::shared_ptr<io::istream> stream) noexcept
 	{
-		return this->_buf->open(stream);
+		return this->_buf.open(stream);
 	}
 
 	bool
-	AudioReader::access(std::istream& stream) const noexcept
+	AudioReader::access(io::istream& stream) const noexcept
 	{
-		return this->_buf->access(stream);
+		return this->_buf.access(stream);
 	}
 
 	std::uint8_t
 	AudioReader::channel_count() const noexcept
 	{
-		return this->_buf->channel_count();
+		return this->_buf.channel_count();
 	}
 
 	std::size_t
 	AudioReader::total_samples() const noexcept
 	{
-		return this->_buf->total_samples();
+		return this->_buf.total_samples();
 	}
 
 	AudioFormat
 	AudioReader::type() const noexcept
 	{
-		return this->_buf->type();
+		return this->_buf.type();
 	}
 
 	AudioFrequency
 	AudioReader::frequency() const noexcept
 	{
-		return this->_buf->frequency();
+		return this->_buf.frequency();
+	}
+
+	std::shared_ptr<AudioReader>
+	AudioReader::clone() const noexcept
+	{
+		return std::make_shared<AudioReader>();
 	}
 }

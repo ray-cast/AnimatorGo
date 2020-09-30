@@ -37,6 +37,7 @@ namespace rabbit
 		void shotEvent() noexcept;
 		void gpuEvent() noexcept;
 		void hdrEvent() noexcept;
+		void audioEvent() noexcept;
 		void cleanupEvent() noexcept;
 		void sunEvent() noexcept;
 		void materialEvent() noexcept;
@@ -53,6 +54,7 @@ namespace rabbit
 		void shotSignal();
 		bool gpuSignal(bool enable);
 		bool hdrSignal(bool enable);
+		bool audioSignal(bool enable);
 		void cleanupSignal();
 		void sunSignal();
 		void materialSignal();
@@ -76,6 +78,7 @@ namespace rabbit
 		bool gpuEnable_;
 		bool playEnable_;
 		bool recordEnable_;
+		bool audioEnable_;
 		bool hdrEnable_;
 		bool sunEnable_;
 		bool environmentEnable_;
@@ -89,6 +92,8 @@ namespace rabbit
 		QIcon gpuOnIcon_;
 		QIcon recordIcon_;
 		QIcon recordOnIcon_;
+		QIcon audioIcon_;
+		QIcon audioOnIcon_;
 		QIcon hdrIcon_;
 		QIcon hdrOnIcon_;
 		QIcon sunIcon_;
@@ -107,6 +112,7 @@ namespace rabbit
 		QToolButton shotButton;
 		QToolButton gpuButton;
 		QToolButton hdrButton;
+		QToolButton audioButton;
 		QToolButton cleanupButton;
 		QToolButton sunButton;
 		QToolButton environmentButton;

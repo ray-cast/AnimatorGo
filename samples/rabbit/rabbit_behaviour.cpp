@@ -223,6 +223,8 @@ namespace rabbit
 			entitiesComponent_->importHDRi(path);
 		else if (ext == ".abc")
 			entitiesComponent_->importAbc(path);
+		else if (ext == ".ogg")
+			entitiesComponent_->importOgg(path);
 		else if (ext == ".mtl")
 			materialComponent_->importMtl(path);
 		else if (ext == ".mdl")

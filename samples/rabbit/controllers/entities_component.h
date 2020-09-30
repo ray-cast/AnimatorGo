@@ -20,6 +20,7 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 		
+		bool importOgg(std::string_view path) noexcept;
 		bool importAbc(std::string_view path) noexcept;
 		void importPMM(std::string_view path) noexcept(false);
 		bool importModel(std::string_view path) noexcept;

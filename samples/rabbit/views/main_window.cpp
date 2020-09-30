@@ -216,6 +216,7 @@ namespace rabbit
 		connect(toolBar_.get(), &ToolWindow::resetSignal, this, &MainWindow::onResetSignal);
 		connect(toolBar_.get(), &ToolWindow::leftSignal, this, &MainWindow::onLeftSignal);
 		connect(toolBar_.get(), &ToolWindow::rightSignal, this, &MainWindow::onRightSignal);
+		connect(toolBar_.get(), &ToolWindow::audioSignal, this, &MainWindow::onAudioSignal);
 		connect(toolBar_.get(), &ToolWindow::recordSignal, this, &MainWindow::onRecordSignal);
 		connect(toolBar_.get(), &ToolWindow::shotSignal, this, &MainWindow::onScreenShotSignal);
 		connect(toolBar_.get(), &ToolWindow::gpuSignal, this, &MainWindow::onOfflineModeSignal);
@@ -479,6 +480,39 @@ namespace rabbit
 
 			msg.exec();
 		}
+	}
+
+	bool
+	MainWindow::onAudioSignal(bool enable) noexcept
+	{
+		if (behaviour_ && (!profile_->timeModule->playing_ || profile_->h265Module->enable))
+		{
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour)
+			{
+				QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.ogg)"));
+				if (!fileName.isEmpty())
+				{
+					try
+					{
+						behaviour->open(fileName.toUtf8().data());
+						return true;
+					}
+					catch (const std::exception & e)
+					{
+						QMessageBox msg(this);
+						msg.setWindowTitle(u8"错误");
+						msg.setText(e.what());
+						msg.setIcon(QMessageBox::Information);
+						msg.setStandardButtons(QMessageBox::Ok);
+
+						msg.exec();
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	bool

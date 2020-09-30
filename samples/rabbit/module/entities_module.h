@@ -25,6 +25,7 @@ namespace rabbit
 		octoon::GameObjects objects;
 		octoon::GameObjects rigidbodies;
 		octoon::GameObjectPtr camera;
+		octoon::GameObjectPtr sound;
 		octoon::GameObjectPtr sunLight;
 		octoon::GameObjectPtr enviromentLight;
 	};

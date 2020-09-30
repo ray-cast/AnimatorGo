@@ -55,12 +55,9 @@ namespace octoon
 	AudioListenerComponent::onActivate() noexcept
 	{
 		auto transformComponent = this->getComponent<TransformComponent>();
-		if (transformComponent)
-		{
-			auto transform = transformComponent->getTransform();
-			this->audioListener_->setTranslate(transformComponent->getTranslate());
-			this->audioListener_->setOrientation(transform.getForward(), transform.getUp());
-		}
+		auto transform = transformComponent->getTransform();
+		this->audioListener_->setTranslate(transformComponent->getTranslate());
+		this->audioListener_->setOrientation(transform.getForward(), transform.getUp());
 
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 	}

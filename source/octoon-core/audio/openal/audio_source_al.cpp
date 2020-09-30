@@ -8,13 +8,14 @@
 namespace octoon
 {
     AudioSourceAL::AudioSourceAL() noexcept
-        : _al_source(AL_NONE)
-        , _al_format(AL_NONE)
-        , _is_playing(false)
-        , _is_play_end(false)
-        , _is_loop(false)
+        : source_(AL_NONE)
+        , format_(AL_NONE)
+        , isPlaying_(false)
+        , isPlayEnd_(false)
+        , isLoop_(false)
     {
-        std::memset(_al_buffer, 0, sizeof(_al_buffer));
+		buffer_[0] = 0;
+		buffer_[1] = 0;
     }
 
     AudioSourceAL::~AudioSourceAL() noexcept
@@ -25,28 +26,28 @@ namespace octoon
     void
 	AudioSourceAL::open() noexcept
     {
-        assert(_al_source == AL_NONE);
-        ::alGenSources(1, &_al_source);
-        ::alSourcei(_al_source, AL_SOURCE_TYPE, AL_STREAMING);
-        ::alSourcei(_al_source, AL_LOOPING, AL_FALSE);
-        ::alSourcei(_al_source, AL_SOURCE_RELATIVE, AL_TRUE);
+        assert(source_ == AL_NONE);
+        ::alGenSources(1, &source_);
+        ::alSourcei(source_, AL_SOURCE_TYPE, AL_STREAMING);
+        ::alSourcei(source_, AL_LOOPING, AL_FALSE);
+        ::alSourcei(source_, AL_SOURCE_RELATIVE, AL_TRUE);
 
-        ::alGenBuffers(1, &_al_buffer[0]);
-        ::alGenBuffers(1, &_al_buffer[1]);
+        ::alGenBuffers(1, &buffer_[0]);
+        ::alGenBuffers(1, &buffer_[1]);
     }
 
     void
 	AudioSourceAL::close() noexcept
     {
-        if (_al_source != AL_NONE)
+        if (source_ != AL_NONE)
         {
             this->play(false);
 
-            ::alDeleteSources(1, &_al_source);
-            _al_source = AL_NONE;
+            ::alDeleteSources(1, &source_);
+            source_ = AL_NONE;
         }
 
-        for (auto& it : _al_buffer)
+        for (auto& it : buffer_)
         {
             if (it != AL_NONE)
             {
@@ -83,19 +84,19 @@ namespace octoon
             if (buffer)
             {
                 auto soundType = buffer->type();
-                _al_format = AL_NONE;
+                format_ = AL_NONE;
                 if (soundType == AudioFormat::Mono8)
-                    _al_format = AL_FORMAT_MONO8;
+                    format_ = AL_FORMAT_MONO8;
                 else if (soundType == AudioFormat::Mono16)
-                    _al_format = AL_FORMAT_MONO16;
+                    format_ = AL_FORMAT_MONO16;
                 else if (soundType == AudioFormat::Stereo8)
-                    _al_format = AL_FORMAT_STEREO8;
+                    format_ = AL_FORMAT_STEREO8;
                 else if (soundType == AudioFormat::Stereo16)
-                    _al_format = AL_FORMAT_STEREO16;
+                    format_ = AL_FORMAT_STEREO16;
                 else if (soundType == AudioFormat::Quad16)
-                    _al_format = AL_FORMAT_QUAD16;
+                    format_ = AL_FORMAT_QUAD16;
                 else if (soundType == AudioFormat::Chn16)
-                    _al_format = AL_FORMAT_51CHN16;
+                    format_ = AL_FORMAT_51CHN16;
 
                 AudioClip clip;
                 clip.length = 0;
@@ -111,53 +112,53 @@ namespace octoon
     void
 	AudioSourceAL::setPitch(float pitch) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_PITCH, pitch);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_PITCH, pitch);
     }
 
     void
 	AudioSourceAL::setVolume(float volume) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_GAIN, volume);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_GAIN, volume);
     }
 
     void
 	AudioSourceAL::setMinVolume(float volume) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_MIN_GAIN, volume);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_MIN_GAIN, volume);
     }
 
     void
 	AudioSourceAL::setMaxVolume(float volume) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_MAX_GAIN, volume);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_MAX_GAIN, volume);
     }
 
     void
 	AudioSourceAL::setTranslate(const math::float3& translate) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat pos[] = { translate.x, translate.y, translate.z };
-        alSourcefv(_al_source, AL_POSITION, pos);
+        alSourcefv(source_, AL_POSITION, pos);
     }
 
     void
 	AudioSourceAL::setVelocity(const math::float3& velocity) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat vel[] = { velocity.x, velocity.y, velocity.z };
-        alSourcefv(_al_source, AL_VELOCITY, vel);
+        alSourcefv(source_, AL_VELOCITY, vel);
     }
 
     void
 	AudioSourceAL::setOrientation(const math::float3& forward, const math::float3& up) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat dir[] = { forward.x, forward.y, forward.z, up.x, up.y, up.z };
-        alSourcefv(_al_source, AL_DIRECTION, dir);
+        alSourcefv(source_, AL_DIRECTION, dir);
     }
 
     void
@@ -202,59 +203,59 @@ namespace octoon
     void
 	AudioSourceAL::setMaxDistance(float maxdis) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_MAX_DISTANCE, maxdis);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_MAX_DISTANCE, maxdis);
     }
 
     void
 	AudioSourceAL::setMinDistance(float mindis) noexcept
     {
-        assert(_al_source != AL_NONE);
-        alSourcef(_al_source, AL_REFERENCE_DISTANCE, mindis);
+        assert(source_ != AL_NONE);
+        alSourcef(source_, AL_REFERENCE_DISTANCE, mindis);
     }
 
     std::shared_ptr<AudioReader>
 	AudioSourceAL::getAudioReader() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALint bufferData = 0;
-        ::alGetSourceiv(_al_source, AL_BUFFER, &bufferData);
+        ::alGetSourceiv(source_, AL_BUFFER, &bufferData);
         return audioReader_;
     }
 
     float
 	AudioSourceAL::getVolume() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float volume = -1.0f;
-        alGetSourcef(_al_source, AL_GAIN, &volume);
+        alGetSourcef(source_, AL_GAIN, &volume);
         return volume;
     }
 
     float
 	AudioSourceAL::getMinVolume() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float volume = -1.0f;
-        alGetSourcef(_al_source, AL_MIN_GAIN, &volume);
+        alGetSourcef(source_, AL_MIN_GAIN, &volume);
         return volume;
     }
 
     float
 	AudioSourceAL::getMaxVolume() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float volume = -1.0f;
-        alGetSourcef(_al_source, AL_MAX_GAIN, &volume);
+        alGetSourcef(source_, AL_MAX_GAIN, &volume);
         return volume;
     }
 
     void
 	AudioSourceAL::getTranslate(math::float3& translate) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat pos[3];
-        alGetSourcefv(_al_source, AL_POSITION, pos);
+        alGetSourcefv(source_, AL_POSITION, pos);
         translate.x = pos[0];
         translate.y = pos[1];
         translate.z = pos[2];
@@ -263,9 +264,9 @@ namespace octoon
     void
 	AudioSourceAL::getVelocity(math::float3& velocity) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat pos[3];
-        alGetSourcefv(_al_source, AL_VELOCITY, pos);
+        alGetSourcefv(source_, AL_VELOCITY, pos);
         velocity.x = pos[0];
         velocity.y = pos[1];
         velocity.z = pos[2];
@@ -274,9 +275,9 @@ namespace octoon
     void
 	AudioSourceAL::getOrientation(math::float3& forward, math::float3& up) noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         ALfloat dir[6];
-        alGetSourcefv(_al_source, AL_DIRECTION, dir);
+        alGetSourcefv(source_, AL_DIRECTION, dir);
         forward.x = dir[0];
         forward.y = dir[1];
         forward.z = dir[2];
@@ -288,27 +289,27 @@ namespace octoon
     float
 	AudioSourceAL::getPitch(void) const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float pitch = -1.0f;
-        alGetSourcef(_al_source, AL_PITCH, &pitch);
+        alGetSourcef(source_, AL_PITCH, &pitch);
         return pitch;
     }
 
     float
 	AudioSourceAL::getMaxDistance() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float distance = false;
-        alGetSourcef(_al_source, AL_MAX_DISTANCE, &distance);
+        alGetSourcef(source_, AL_MAX_DISTANCE, &distance);
         return distance;
     }
 
     float
 	AudioSourceAL::getMinDistance() const noexcept
     {
-        assert(_al_source != AL_NONE);
+        assert(source_ != AL_NONE);
         float distance = false;
-        alGetSourcef(_al_source, AL_REFERENCE_DISTANCE, &distance);
+        alGetSourcef(source_, AL_REFERENCE_DISTANCE, &distance);
         return distance;
     }
 
@@ -321,57 +322,57 @@ namespace octoon
     void
 	AudioSourceAL::play(bool play) noexcept
     {
-        assert(_al_source != AL_NONE);
-        assert(_al_buffer != AL_NONE);
-        assert(_al_format != AL_NONE);
+        assert(source_ != AL_NONE);
+        assert(buffer_ != AL_NONE);
+        assert(format_ != AL_NONE);
 
         if (play)
         {
-            if (_is_play_end)
+            if (isPlayEnd_)
                 return;
 
-            this->_update_audio_queue();
+            this->updateAudioQueue();
 
             if (!this->isPlaying())
             {
-                if (_is_playing || sampleLengthTotal_ > audioClip_.samples || audioReader_->eof())
+                if (isPlaying_ || sampleLengthTotal_ > audioClip_.samples || audioReader_->eof())
                 {
-                    if (!_is_loop)
+                    if (!isLoop_)
                     {
-                        this->_play_end();
+                        this->playEnd();
                         return;
                     }
                 }
 
-                this->_play_start();
+                this->playStart();
             }
         }
         else
         {
-            ::alSourceStop(_al_source);
+            ::alSourceStop(source_);
         }
     }
 
     void
 	AudioSourceAL::loop(bool loop) noexcept
     {
-        _is_loop = loop;
+        isLoop_ = loop;
     }
 
     void
 	AudioSourceAL::pause() noexcept
     {
-        assert(_al_source != AL_NONE);
-        ::alSourcePause(_al_source);
+        assert(source_ != AL_NONE);
+        ::alSourcePause(source_);
     }
 
     bool
 	AudioSourceAL::isPlaying() const noexcept
     {
-        if (_al_source != AL_NONE)
+        if (source_ != AL_NONE)
         {
             ALint state = AL_NONE;
-            alGetSourcei(_al_source, AL_SOURCE_STATE, &state);
+            alGetSourcei(source_, AL_SOURCE_STATE, &state);
             return state == AL_PLAYING;
         }
 
@@ -381,10 +382,10 @@ namespace octoon
     bool
 	AudioSourceAL::isStopped() const noexcept
     {
-        if (_al_source != AL_NONE)
+        if (source_ != AL_NONE)
         {
             ALint state = AL_NONE;
-            alGetSourcei(_al_source, AL_SOURCE_STATE, &state);
+            alGetSourcei(source_, AL_SOURCE_STATE, &state);
             return state == AL_STOPPED || state == AL_INITIAL;
         }
 
@@ -394,10 +395,10 @@ namespace octoon
     bool
 	AudioSourceAL::isPaused() const noexcept
     {
-        if (_al_source != AL_NONE)
+        if (source_ != AL_NONE)
         {
             ALint state = AL_NONE;
-            alGetSourcei(_al_source, AL_SOURCE_STATE, &state);
+            alGetSourcei(source_, AL_SOURCE_STATE, &state);
             return state == AL_PAUSED;
         }
 
@@ -407,75 +408,75 @@ namespace octoon
     bool
 	AudioSourceAL::isLoop() const noexcept
     {
-        return _is_loop;
+        return isLoop_;
     }
 
     void
-	AudioSourceAL::_init_audio_stream() noexcept
+	AudioSourceAL::initAudioStream() noexcept
     {
         sampleLengthTotal_ = audioClip_.length;
         audioReader_->seekg((io::ios_base::off_type)audioClip_.length, io::ios_base::beg);
     }
 
     void
-	AudioSourceAL::_play_start() noexcept
+	AudioSourceAL::playStart() noexcept
     {
-        this->_init_audio_stream();
-        this->_clear_audio_queue();
+        this->initAudioStream();
+        this->clearAudioQueue();
 
-        for (auto it : _al_buffer)
+        for (auto it : buffer_)
         {
             audioReader_->read(data_.data(), data_.size());
             if (audioReader_->gcount() > 0)
             {
-                ::alBufferData(it, _al_format, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
-                ::alSourceQueueBuffers(_al_source, 1, &it);
+                ::alBufferData(it, format_, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
+                ::alSourceQueueBuffers(source_, 1, &it);
 
                 sampleLengthTotal_ += sampleLength_;
             }
         }
 
-        ::alSourcePlay(_al_source);
+        ::alSourcePlay(source_);
 
-        _is_playing = true;
-        _is_play_end = false;
+        isPlaying_ = true;
+        isPlayEnd_ = false;
     }
 
     void
-	AudioSourceAL::_play_end() noexcept
+	AudioSourceAL::playEnd() noexcept
     {
         for (auto& it : listeners_)
             it->on_play_end();
 
-        this->_clear_audio_queue();
+        this->clearAudioQueue();
 
-        _is_play_end = true;
-        _is_playing = false;
+        isPlayEnd_ = true;
+        isPlaying_ = false;
     }
 
     void
-	AudioSourceAL::_clear_audio_queue() noexcept
+	AudioSourceAL::clearAudioQueue() noexcept
     {
         ALint processed = 0;
-        ::alGetSourcei(_al_source, AL_BUFFERS_PROCESSED, &processed);
+        ::alGetSourcei(source_, AL_BUFFERS_PROCESSED, &processed);
 
         while (processed--)
         {
             ALuint buff;
-            ::alSourceUnqueueBuffers(_al_source, 1, &buff);
+            ::alSourceUnqueueBuffers(source_, 1, &buff);
         }
     }
 
     void
-	AudioSourceAL::_update_audio_queue() noexcept
+	AudioSourceAL::updateAudioQueue() noexcept
     {
         ALint processed = 0;
-        ::alGetSourcei(_al_source, AL_BUFFERS_PROCESSED, &processed);
+        ::alGetSourcei(source_, AL_BUFFERS_PROCESSED, &processed);
 
         while (processed--)
         {
             ALuint buff;
-            ::alSourceUnqueueBuffers(_al_source, 1, &buff);
+            ::alSourceUnqueueBuffers(source_, 1, &buff);
 
             if (sampleLengthTotal_ > audioClip_.samples || audioReader_->eof())
                 break;
@@ -483,8 +484,8 @@ namespace octoon
             audioReader_->read(data_.data(), data_.size());
             if (audioReader_->gcount() > 0)
             {
-                ::alBufferData(buff, _al_format, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
-                ::alSourceQueueBuffers(_al_source, 1, &buff);
+                ::alBufferData(buff, format_, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
+                ::alSourceQueueBuffers(source_, 1, &buff);
 
                 sampleLengthTotal_ += sampleLength_;
             }

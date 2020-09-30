@@ -16,6 +16,7 @@
 #include <octoon/physics_feature.h>
 #include <octoon/video_feature.h>
 #include <octoon/timer_feature.h>
+#include <octoon/audio_feature.h>
 
 #include <octoon/io/fstream.h>
 
@@ -77,6 +78,9 @@
 #include <octoon/path_component.h>
 #include <octoon/text_component.h>
 #include <octoon/guizmo_component.h>
+
+#include <octoon/audio_listener_component.h>
+#include <octoon/audio_source_component.h>
 
 #include <octoon/editor_camera_component.h>
 #include <octoon/first_person_camera_component.h>

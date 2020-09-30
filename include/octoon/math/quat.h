@@ -96,6 +96,8 @@ namespace octoon
 
 				Quaternion<T>& makeRotation(const Vector3<T>& axis, T theta) noexcept
 				{
+					assert(std::abs(1.0f - axis.length2()) < 1e-3f);
+
 					T thetaOver2 = theta * 0.5f;
 
 					T sin_a = std::sin(thetaOver2);
@@ -256,6 +258,16 @@ namespace octoon
 		}
 
 		template<typename T>
+		inline bool equal(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
+		{
+			return
+				equal<T>(q1.x, q2.x) &&
+				equal<T>(q1.y, q2.y) &&
+				equal<T>(q1.z, q2.z) &&
+				equal<T>(q1.w, q2.w);
+		}
+
+		template<typename T>
 		inline T dot(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
 		{
 			return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
@@ -299,13 +311,55 @@ namespace octoon
 		}
 
 		template<typename T>
-		inline bool equal(const detail::Quaternion<T>& q1, const detail::Quaternion<T>& q2) noexcept
+		inline detail::Vector3<T> basicVector0(const detail::Quaternion<T>& q) noexcept
 		{
-			return
-				equal<T>(q1.x, q2.x) &&
-				equal<T>(q1.y, q2.y) &&
-				equal<T>(q1.z, q2.z) &&
-				equal<T>(q1.w, q2.w);
+			const float x2 = x * 2.0f;
+			const float w2 = w * 2.0f;
+			return detail::Vector3<T>((w * w2) - 1.0f + x * x2, (z * w2) + y * x2, (-y * w2) + z * x2);
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> basicVector1(const detail::Quaternion<T>& q) noexcept
+		{
+			const float y2 = y * 2.0f;
+			const float w2 = w * 2.0f;
+			return detail::Vector3<T>((-z * w2) + x * y2, (w * w2) - 1.0f + y * y2, (x * w2) + z * y2);
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> basicVector2(const detail::Quaternion<T>& q) noexcept
+		{
+			const float z2 = z * 2.0f;
+			const float w2 = w * 2.0f;
+			return detail::Vector3<T>((y * w2) + x * z2, (-x * w2) + y * z2, (w * w2) - 1.0f + z * z2);
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> rotate(const detail::Quaternion<T>& q, const detail::Vector3<T>& v) noexcept
+		{
+			const float vx = 2.0f * v.x;
+			const float vy = 2.0f * v.y;
+			const float vz = 2.0f * v.z;
+			const float w2 = q.w * q.w - 0.5f;
+			const float dot2 = (q.x * vx + q.y * vy + q.z * vz);
+			return detail::Vector3(
+				(vx * w2 + (q.y * vz - q.z * vy) * q.w + q.x * dot2),
+				(vy * w2 + (q.z * vx - q.x * vz) * q.w + q.y * dot2),
+				(vz * w2 + (q.x * vy - q.y * vx) * q.w + q.z * dot2));
+		}
+
+		template<typename T>
+		inline detail::Vector3<T> rotateInv(const detail::Quaternion<T>& q, const detail::Vector3<T>& v) noexcept
+		{
+			const float vx = 2.0f * v.x;
+			const float vy = 2.0f * v.y;
+			const float vz = 2.0f * v.z;
+			const float w2 = q.w * q.w - 0.5f;
+			const float dot2 = (q.x * vx + q.y * vy + q.z * vz);
+			return detail::Vector3(
+				(vx * w2 - (q.y * vz - q.z * vy) * q.w + q.x * dot2),
+				(vy * w2 - (q.z * vx - q.x * vz) * q.w + q.y * dot2),
+				(vz * w2 - (q.x * vy - q.y * vx) * q.w + q.z * dot2));
 		}
 
 		template<typename T>
@@ -414,29 +468,6 @@ namespace octoon
 				result.w = c0 * q1.w + c1 * q2.w;
 				return result;
 			}
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> rotate(const detail::Quaternion<T>& q, const detail::Vector3<T>& v) noexcept
-		{
-			const float vx = 2.0f * v.x;
-			const float vy = 2.0f * v.y;
-			const float vz = 2.0f * v.z;
-			const float w2 = q.w * q.w - 0.5f;
-			const float dot2 = (q.x * vx + q.y * vy + q.z * vz);
-			return detail::Vector3(
-				(vx * w2 + (q.y * vz - q.z * vy) * q.w + q.x * dot2),
-				(vy * w2 + (q.z * vx - q.x * vz) * q.w + q.y * dot2),
-				(vz * w2 + (q.x * vy - q.y * vx) * q.w + q.z * dot2));
-		}
-
-		template<typename T>
-		inline detail::Vector3<T> rotate(const detail::Vector3<T>& v, const detail::Quaternion<T>& q) noexcept
-		{
-			detail::Quaternion<T> q1(v.x, v.y, v.z, 0.f);
-			detail::Quaternion<T> qinv = inverse(q);
-			detail::Quaternion<T> q2 = cross(q, cross(qinv, q1));
-			return detail::Vector3<T>(q2.x, q2.y, q2.z);
 		}
 
 		template<typename T>

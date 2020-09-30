@@ -418,7 +418,7 @@ namespace octoon
 		template<typename T>
 		inline bool isfinite(const detail::Vector3<T>& v) noexcept
 		{
-			return std::isfinite(v.x) || std::isfinite(v.y) || std::isfinite(v.z);
+			return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);
 		}
 
 		template<typename T>

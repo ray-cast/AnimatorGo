@@ -247,31 +247,29 @@ namespace rabbit
 		AnimationClip<float> clip;
 		this->setupCameraAnimation(pmm.camera_keyframes, clip);
 
-		auto obj = GameObject::create("MainCamera");
+		auto eye = octoon::math::float3(pmm.camera.eye.x, pmm.camera.eye.y, pmm.camera.eye.z);
+		auto target = octoon::math::float3(pmm.camera.target.x, pmm.camera.target.y, pmm.camera.target.z);
+		auto quat = math::Quaternion(-math::float3(pmm.camera.rotation.x, pmm.camera.rotation.y, pmm.camera.rotation.z));
 
-		auto camera = obj->addComponent<PerspectiveCameraComponent>();
+		auto mainCamera = GameObject::create("MainCamera");
+		mainCamera->addComponent<FirstPersonCameraComponent>();
+		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
+
+		auto camera = mainCamera->addComponent<PerspectiveCameraComponent>();
 		camera->setFar(2000.0f);
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 
-		auto eye = octoon::math::float3(pmm.camera.eye.x, pmm.camera.eye.y, pmm.camera.eye.z);
-		auto target = octoon::math::float3(pmm.camera.target.x, pmm.camera.target.y, pmm.camera.target.z);
-		auto quat = math::Quaternion(-math::float3(pmm.camera.rotation.x, pmm.camera.rotation.y, pmm.camera.rotation.z));
+		auto transform = mainCamera->getComponent<TransformComponent>();
+		transform->setQuaternion(quat);
+		transform->setTranslate(eye);
+		transform->setTranslateAccum(math::rotate(quat, math::float3::Forward) * math::distance(eye, target));
 
-		obj->getComponent<TransformComponent>()->setQuaternion(quat);
-		obj->getComponent<TransformComponent>()->setTranslate(eye);
-		obj->getComponent<TransformComponent>()->setTranslateAccum(math::rotate(quat, math::float3::Forward) * math::distance(eye, target));
-		obj->addComponent<AnimatorComponent>(animation::Animation(clip));
-		obj->addComponent<FirstPersonCameraComponent>();
+		this->getContext()->behaviour->sendMessage("editor:camera:set", mainCamera);
 
-		auto active = this->getContext()->profile->offlineModule->offlineEnable;
-		obj->getComponent<octoon::PerspectiveCameraComponent>()->setActive(!active);
-
-		this->getContext()->behaviour->sendMessage("editor:camera:set", obj);
-
-		return obj;
+		return mainCamera;
 	}
 
 	void
@@ -514,7 +512,6 @@ namespace rabbit
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
-		camera->setActive(!this->getContext()->profile->offlineModule->offlineEnable);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 

@@ -63,21 +63,21 @@ namespace octoon
         virtual bool isLoop() const noexcept override;
 
     private:
-        void _play_start() noexcept;
-        void _play_end() noexcept;
+        void playStart() noexcept;
+        void playEnd() noexcept;
 
-        void _init_audio_stream() noexcept;
-        void _clear_audio_queue() noexcept;
-        void _update_audio_queue() noexcept;
+        void initAudioStream() noexcept;
+        void clearAudioQueue() noexcept;
+        void updateAudioQueue() noexcept;
 
     private:
-        bool _is_loop;
-        bool _is_playing;
-        bool _is_play_end;
+        bool isLoop_;
+        bool isPlaying_;
+        bool isPlayEnd_;
 
-        std::uint32_t _al_source;
-		std::uint32_t _al_buffer[2];
-        std::uint32_t  _al_format;
+        std::uint32_t source_;
+		std::uint32_t buffer_[2];
+        std::uint32_t  format_;
 
 		std::streamsize bufferSize_;
 		std::streamsize sampleLength_;

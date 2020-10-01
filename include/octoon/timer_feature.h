@@ -16,9 +16,6 @@ namespace octoon
 		void setTimeStep(float timeStep) noexcept;
 		float getTimeStep() const noexcept;
 
-		void setIterationCounts(std::uint32_t iterationCounts) noexcept;
-		std::uint32_t getIterationCounts() const noexcept;
-
 		float fps() const noexcept;
 		float averageFps() const noexcept;
 

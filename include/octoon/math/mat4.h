@@ -479,6 +479,8 @@ namespace octoon
 					if (scaling.z != T(0.0)) forward_ /= scaling.z;
 
 					rotation.makeRotation(forward_, up_, right_);
+					rotation = normalize(rotation);
+
 					return *this;
 				}
 

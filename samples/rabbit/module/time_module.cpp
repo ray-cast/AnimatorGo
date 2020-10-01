@@ -18,8 +18,8 @@ namespace rabbit
 		this->spp = 100;
 		this->recordFps = 30.0f;
 		this->playFps = 30.0f;
-		this->playIterationCounts = 4;
-		this->normalIterationCounts = 1;
+		this->playTimeStep = 1.0f / 200.f;
+		this->normalTimeStep = 1.0f / 50.f;
 		this->endFrame = 0;
 		this->startFrame = 0;
 		this->timeLength = 0;
@@ -35,10 +35,10 @@ namespace rabbit
 			this->recordFps = reader["recordFps"];
 		if (reader.find("playFps") != reader.end())
 			this->playFps = reader["playFps"];
-		if (reader.find("playIterationCounts") != reader.end())
-			this->playIterationCounts = reader["playIterationCounts"];
-		if (reader.find("normalIterationCounts") != reader.end())
-			this->normalIterationCounts = reader["normalIterationCounts"];
+		if (reader.find("playTimeStep") != reader.end())
+			this->playTimeStep = reader["playTimeStep"];
+		if (reader.find("normalTimeStep") != reader.end())
+			this->normalTimeStep = reader["normalTimeStep"];
 	}
 
 	void 
@@ -47,7 +47,7 @@ namespace rabbit
 		writer["spp"] = this->spp;
 		writer["recordFps"] = this->recordFps;
 		writer["playFps"] = this->playFps;
-		writer["playIterationCounts"] = this->playIterationCounts;
-		writer["normalIterationCounts"] = this->normalIterationCounts;
+		writer["playTimeStep"] = this->playTimeStep;
+		writer["normalTimeStep"] = this->normalTimeStep;
 	}
 }

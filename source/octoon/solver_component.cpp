@@ -170,7 +170,7 @@ namespace octoon
 			auto feature = this->getFeature<TimerFeature>();
 			if (feature)
 			{
-				time_ += feature->delta();
+				time_ += feature->getTimeStep();
 
 				if (time_ > timeStep_)
 				{

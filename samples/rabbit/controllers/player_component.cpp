@@ -60,7 +60,7 @@ namespace rabbit
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setIterationCounts(model->playIterationCounts);
+			timeFeature->setTimeStep(model->playTimeStep);
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
@@ -82,7 +82,7 @@ namespace rabbit
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setIterationCounts(model->normalIterationCounts);
+			timeFeature->setTimeStep(model->normalTimeStep);
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
@@ -99,7 +99,7 @@ namespace rabbit
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setIterationCounts(model->playIterationCounts);
+			timeFeature->setTimeStep(model->playTimeStep);
 	}
 
 	void

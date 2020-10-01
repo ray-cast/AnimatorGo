@@ -64,7 +64,6 @@ namespace octoon
 	private:
 		bool isLoop_;
 		bool isPlaying_;
-		bool isPlayEnd_;
 
 		std::uint32_t source_;
 		std::uint32_t buffer_;

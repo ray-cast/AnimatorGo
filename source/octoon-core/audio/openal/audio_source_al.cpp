@@ -11,7 +11,6 @@ namespace octoon
 		: source_(AL_NONE)
 		, format_(AL_NONE)
 		, isPlaying_(false)
-		, isPlayEnd_(false)
 		, isLoop_(false)
 	{
 		buffer_ = 0;
@@ -269,15 +268,10 @@ namespace octoon
 
 		isLoop_ = loop;
 
-		if (isPlayEnd_)
-			return;
-
 		if (!this->isPlaying())
 		{
 			::alSourcePlay(source_);
-
 			isPlaying_ = true;
-			isPlayEnd_ = false;
 		} 
 	}
 

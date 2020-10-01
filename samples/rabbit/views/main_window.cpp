@@ -494,7 +494,7 @@ namespace rabbit
 				{
 					if (enable)
 					{
-						QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.wav *.mp3 *.flac *.ogg)"));
+						QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.wav *.mp3 *.flac *.ogg);; Wav Files (*.wav);; MP3 Files (*.mp3);; FLAC Files (*.flac);; OGG Files (*.ogg);;"));
 						if (!fileName.isEmpty())
 						{
 							behaviour->loadAudio(fileName.toUtf8().data());

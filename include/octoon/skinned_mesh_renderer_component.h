@@ -23,6 +23,9 @@ namespace octoon
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
 
+		void setFixedUpdateEnable(bool enable) noexcept;
+		bool getFixedUpdateEnable() noexcept;
+
 		void setClothBlendEnable(bool enable) noexcept;
 		bool getClothBlendEnable() const noexcept;
 
@@ -34,6 +37,7 @@ namespace octoon
 
 		const mesh::MeshPtr& getSkinnedMesh() const noexcept;
 
+		void updateMeshData() noexcept;
 		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
@@ -53,7 +57,6 @@ namespace octoon
 		void onPreRender(const camera::Camera& camera) noexcept override;
 
 	private:
-		void updateMeshData() noexcept;
 		void updateJointData() noexcept;
 		void updateBoneData() noexcept;
 		void updateClothBlendData() noexcept;
@@ -69,6 +72,7 @@ namespace octoon
 		bool clothEnable_;
 		bool morphEnable_;
 		bool textureEnable_;
+		bool fixedUpdateEnable_;
 
 		GameObjects transforms_;
 

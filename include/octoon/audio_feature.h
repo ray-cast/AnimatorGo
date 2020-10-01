@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-	class AudioFeature final : public GameFeature
+	class OCTOON_EXPORT AudioFeature final : public GameFeature
 	{
 		OctoonDeclareSubClass(AudioFeature, GameFeature)
 	public:

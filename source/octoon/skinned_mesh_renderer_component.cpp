@@ -12,6 +12,7 @@ namespace octoon
 		, clothEnable_(true)
 		, morphEnable_(true)
 		, textureEnable_(true)
+		, fixedUpdateEnable_(true)
 	{
 	}
 
@@ -68,6 +69,18 @@ namespace octoon
 	}
 
 	void
+	SkinnedMeshRendererComponent::setFixedUpdateEnable(bool enable) noexcept
+	{
+		this->fixedUpdateEnable_ = enable;
+	}
+
+	bool
+	SkinnedMeshRendererComponent::getFixedUpdateEnable() noexcept
+	{
+		return fixedUpdateEnable_;
+	}
+
+	void
 	SkinnedMeshRendererComponent::setClothBlendEnable(bool enable) noexcept
 	{
 		clothEnable_ = enable;
@@ -113,8 +126,7 @@ namespace octoon
 	SkinnedMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
 	{
 		mesh_ = mesh;
-		needUpdate_ = false;
-		this->updateMeshData();
+		needUpdate_ = true;
 	}
 
 	void
@@ -181,7 +193,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onFixedUpdate() noexcept
 	{
-		if (!needUpdate_)
+		if (!needUpdate_ && this->fixedUpdateEnable_)
 		{
 			for (std::size_t i = 0; i < quaternions_.size(); i++)
 			{

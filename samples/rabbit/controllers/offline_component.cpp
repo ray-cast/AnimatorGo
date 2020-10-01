@@ -18,8 +18,16 @@ namespace rabbit
 	{
 		if (this->getModel()->offlineEnable != active)
 		{
+			for (auto& object : this->getContext()->profile->entitiesModule->objects)
+			{
+				auto smr = object->getComponent<octoon::SkinnedMeshRendererComponent>();
+				if (smr)
+					smr->setFixedUpdateEnable(!active);
+			}
+
 			this->getFeature<octoon::VideoFeature>()->setGlobalIllumination(active);
 			this->getModel()->offlineEnable = active;
+
 			this->sendMessage("rabbit:offline", active);
 		}
 	}

@@ -67,8 +67,8 @@ namespace rabbit
 		recordButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		audioButton.setObjectName("audio");
-		audioButton.setText(u8"音频");
-		audioButton.setToolTip(u8"加载音频");
+		audioButton.setText(u8"音乐");
+		audioButton.setToolTip(u8"设置用于播放背景音乐的音频文件");
 		audioButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 		shotButton.setObjectName("shot");

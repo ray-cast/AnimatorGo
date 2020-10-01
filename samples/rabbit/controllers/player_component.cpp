@@ -36,10 +36,7 @@ namespace rabbit
 		auto& context = this->getContext()->profile;
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
-		{
 			physicsFeature->setGravity(context->physicsModule->gravity);
-			//physicsFeature->setSolverIterationCounts(context->physicsModule->previewSolverIterationCounts);
-		}
 
 		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
 		{

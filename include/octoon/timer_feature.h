@@ -14,10 +14,10 @@ namespace octoon
 		~TimerFeature() noexcept;
 
 		void setTimeStep(float timeStep) noexcept;
-		void setTimeInterval(float timeInterval) noexcept;
-
 		float getTimeStep() const noexcept;
-		float getTimeInterval() const noexcept;
+
+		void setIterationCounts(std::uint32_t iterationCounts) noexcept;
+		std::uint32_t getIterationCounts() const noexcept;
 
 		float fps() const noexcept;
 		float averageFps() const noexcept;
@@ -47,7 +47,7 @@ namespace octoon
 	private:
 		float time_;
 		float timeStep_;
-		float timeInterval_;
+		std::uint32_t iterationCounts_;
 
 		std::unique_ptr<runtime::Timer> timer_;
 	};

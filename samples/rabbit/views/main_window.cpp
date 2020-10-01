@@ -498,6 +498,7 @@ namespace rabbit
 						if (!fileName.isEmpty())
 						{
 							behaviour->loadAudio(fileName.toUtf8().data());
+							return true;
 						}
 					}
 					else
@@ -505,8 +506,6 @@ namespace rabbit
 						behaviour->clearAudio();
 						return true;
 					}
-
-					return true;
 				}
 				catch (const std::exception & e)
 				{

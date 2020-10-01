@@ -7,8 +7,8 @@ namespace octoon
 
 	TimerFeature::TimerFeature() noexcept
 		: time_(0.0f)
-		, timeStep_(0.01f)
-		, timeInterval_(0.01f)
+		, timeStep_(0.02f)
+		, iterationCounts_(1)
 	{
 	}
 
@@ -30,17 +30,17 @@ namespace octoon
 	}
 
 	void
-	TimerFeature::setTimeInterval(float timeInterval) noexcept
+	TimerFeature::setIterationCounts(std::uint32_t iterationCounts) noexcept
 	{
-		timeInterval_ = timeInterval;
+		this->iterationCounts_ = iterationCounts;
 	}
 	
-	float
-	TimerFeature::getTimeInterval() const noexcept
+	std::uint32_t 
+	TimerFeature::getIterationCounts() const noexcept
 	{
-		return timeInterval_;
+		return this->iterationCounts_;
 	}
-
+	
 	float
 	TimerFeature::fps() const noexcept
 	{
@@ -74,7 +74,7 @@ namespace octoon
 	float
 	TimerFeature::delta() const noexcept
 	{
-		return timeInterval_;
+		return timeStep_ / iterationCounts_;
 	}
 
 	float
@@ -122,7 +122,9 @@ namespace octoon
 
 		while (time_ > timeStep_)
 		{
-			this->sendMessage("feature:timer:fixed", timeInterval_);
+			for (std::uint32_t i = 0; i < iterationCounts_; i++)
+				this->sendMessage("feature:timer:fixed", timeStep_ / iterationCounts_);
+
 			time_  -= timeStep_;
 		}
 	}

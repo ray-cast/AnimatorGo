@@ -222,7 +222,7 @@ namespace octoon
 			auto timeFeature = this->getFeature<TimerFeature>();
 			if (timeFeature)
 			{
-				auto delta = timeFeature->getTimeInterval();
+				auto delta = timeFeature->delta();
 				if (delta != 0.0f)
 					animation_.evaluate(delta);
 

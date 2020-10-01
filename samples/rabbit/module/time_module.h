@@ -28,8 +28,8 @@ namespace rabbit
 		std::uint32_t timeLength;
 
 		float playFps;
-		float playTimeStep;
-		float normalTimeStep;
+		float playIterationCounts;
+		float normalIterationCounts;
 		float recordFps;
 		float curTime;
 	};

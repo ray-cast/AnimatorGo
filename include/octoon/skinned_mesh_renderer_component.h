@@ -37,7 +37,7 @@ namespace octoon
 
 		const mesh::MeshPtr& getSkinnedMesh() const noexcept;
 
-		void updateMeshData() noexcept;
+		void updateMeshData(bool force = false) noexcept;
 		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
 
 		GameComponentPtr clone() const noexcept override;

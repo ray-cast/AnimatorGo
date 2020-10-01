@@ -130,34 +130,41 @@ namespace octoon
 	}
 
 	void
-	SkinnedMeshRendererComponent::updateMeshData() noexcept
+	SkinnedMeshRendererComponent::updateMeshData(bool force) noexcept
 	{
-		if (mesh_)
+		if (!force)
 		{
-			if (this->skinnedMesh_)
+			if (mesh_)
 			{
-				this->skinnedMesh_->setVertexArray(mesh_->getVertexArray());
-				this->skinnedMesh_->setNormalArray(mesh_->getNormalArray());
+				if (this->skinnedMesh_)
+				{
+					this->skinnedMesh_->setVertexArray(mesh_->getVertexArray());
+					this->skinnedMesh_->setNormalArray(mesh_->getNormalArray());
+				}
+				else
+				{
+					skinnedMesh_ = mesh_->clone();
+				}
+
+				this->updateJointData();
+				this->updateClothBlendData();
+				this->updateMorphBlendData();
+				this->updateTextureBlendData();
+				this->updateBoneData();
+
+				skinnedMesh_->computeBoundingBox();
+				skinnedMesh_->setDirty(true);
+
+				MeshRendererComponent::uploadMeshData(skinnedMesh_);
 			}
 			else
 			{
-				skinnedMesh_ = mesh_->clone();
+				MeshRendererComponent::uploadMeshData(nullptr);
 			}
-
-			this->updateJointData();
-			this->updateClothBlendData();
-			this->updateMorphBlendData();
-			this->updateTextureBlendData();
-			this->updateBoneData();
-
-			skinnedMesh_->computeBoundingBox();
-			skinnedMesh_->setDirty(true);
-
-			MeshRendererComponent::uploadMeshData(skinnedMesh_);
 		}
 		else
 		{
-			MeshRendererComponent::uploadMeshData(nullptr);
+			needUpdate_ = true;
 		}
 	}
 

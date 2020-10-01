@@ -18,6 +18,8 @@ namespace octoon
 		void pause() noexcept;
 
 		void setTime(float time) noexcept;
+		float getTime() const noexcept;
+
 		float getTimeLength() const noexcept;
 
 		void setAudioReader(std::shared_ptr<AudioReader> ptr) noexcept;

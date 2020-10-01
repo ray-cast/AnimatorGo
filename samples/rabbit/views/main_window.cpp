@@ -330,7 +330,7 @@ namespace rabbit
 					if (enable)
 						behaviour->play();
 					else
-						behaviour->stop();
+						behaviour->pause();
 
 					return true;
 				}

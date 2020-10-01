@@ -181,12 +181,9 @@ namespace rabbit
 	{
 		if (playEnable_)
 		{
-			if (playSignal(false))
-			{
-				playButton.setIcon(playIcon_);
-				playButton.setToolTip(u8"²¥·Å");
-				playEnable_ = false;
-			}
+			playButton.setIcon(playIcon_);
+			playButton.setToolTip(u8"²¥·Å");
+			playEnable_ = false;
 		}
 	}
 

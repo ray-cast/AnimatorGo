@@ -14,19 +14,76 @@ namespace octoon
 
 	AudioSourceComponent::~AudioSourceComponent() noexcept
 	{
+		audioReader_.reset();
 		source_->close();
+	}
+
+	void
+	AudioSourceComponent::play(bool play) noexcept 
+	{
+		source_->play(play);
+	}
+
+	void
+	AudioSourceComponent::reset() noexcept 
+	{
+		source_->reset();
+	}
+
+	void
+	AudioSourceComponent::pause() noexcept 
+	{
+		source_->pause();
+	}
+
+	void
+	AudioSourceComponent::setTime(float time) noexcept
+	{
+		source_->setSampleOffset(time * audioReader_->frequency());
+	}
+
+	float
+	AudioSourceComponent::getTimeLength() const noexcept
+	{
+		return audioReader_->samples() / float(audioReader_->frequency());
 	}
 
 	void
 	AudioSourceComponent::setAudioReader(std::shared_ptr<AudioReader> reader) noexcept
 	{
-		source_->setAudioReader(reader);
+		if (audioReader_ != reader)
+		{
+			AudioClip clip;
+
+			if (reader)
+			{
+				clip.samples = reader->samples();
+				clip.channels = reader->channels();
+				clip.freq = reader->frequency();
+				clip.length = clip.samples / float(clip.freq);
+				clip.data.resize(reader->size());
+
+				reader->seekg(0, io::ios_base::beg);
+				reader->read(clip.data.data(), clip.data.size());
+			}
+			else
+			{
+				clip.samples = 0;
+				clip.channels = 0;
+				clip.freq = 0;
+				clip.length = 0;
+			}
+
+			source_->setAudioClip(clip);
+
+			audioReader_ = reader;
+		}
 	}
 
 	std::shared_ptr<AudioReader>
 	AudioSourceComponent::getAudioReader() const noexcept
 	{
-		return source_->getAudioReader();
+		return audioReader_;
 	}
 
 	void
@@ -83,10 +140,10 @@ namespace octoon
 		source_->getVelocity(velocity);
 	}
 
-	void
-	AudioSourceComponent::getAudioClip(AudioClip &clip) const noexcept
+	const AudioClip&
+	AudioSourceComponent::getAudioClip() const noexcept
 	{
-		source_->getAudioClip(clip);
+		return source_->getAudioClip();
 	}
 
 	float
@@ -123,24 +180,6 @@ namespace octoon
 	AudioSourceComponent::getMinDistance() const noexcept 
 	{
 		return source_->getMinDistance();
-	}
-
-	void
-	AudioSourceComponent::play(bool play) noexcept 
-	{
-		source_->play(play);
-	}
-
-	void
-	AudioSourceComponent::loop(bool loop) noexcept 
-	{
-		source_->loop(loop);
-	}
-
-	void
-	AudioSourceComponent::pause() noexcept 
-	{
-		source_->pause();
 	}
 
 	bool

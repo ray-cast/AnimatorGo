@@ -16,10 +16,11 @@ namespace octoon
 {
     struct OCTOON_EXPORT AudioClip
     {
-        std::uint64_t length;
+        float length;
         std::uint64_t samples;
         std::uint32_t channels;
         std::uint32_t freq;
+        std::vector<char> data;
     };
 
     class OCTOON_EXPORT AudioSource
@@ -31,8 +32,9 @@ namespace octoon
         virtual void open() noexcept = 0;
         virtual void close() noexcept = 0;
 
-        virtual void setAudioReader(std::shared_ptr<AudioReader> ptr) noexcept = 0;
-        virtual std::shared_ptr<AudioReader> getAudioReader() const noexcept = 0;
+        virtual void play(bool loop) noexcept = 0;
+        virtual void reset() noexcept = 0;
+        virtual void pause() noexcept = 0;
 
         virtual void addAudioSourceListener(AudioSourceListener* listener) noexcept = 0;
         virtual void removeAudioSourceListener(AudioSourceListener* listener) noexcept = 0;
@@ -47,11 +49,14 @@ namespace octoon
         virtual void setMaxDistance(float maxdis) noexcept = 0;
         virtual void setMinDistance(float mindis) noexcept = 0;
         virtual void setAudioClip(const AudioClip& clip) noexcept = 0;
+        virtual void setSampleOffset(std::uint64_t sample) noexcept = 0;
 
         virtual void getTranslate(math::float3& translate) noexcept = 0;
         virtual void getVelocity(math::float3& velocity) noexcept = 0;
         virtual void getOrientation(math::float3& forward, math::float3& up) noexcept = 0;
-        virtual void getAudioClip(AudioClip& clip) const noexcept = 0;
+        virtual const AudioClip& getAudioClip() const noexcept = 0;
+
+        virtual std::uint64_t getSampleOffset() const noexcept = 0;
 
         virtual float getVolume() const noexcept = 0;
         virtual float getMinVolume() const noexcept = 0;
@@ -59,10 +64,6 @@ namespace octoon
         virtual float getPitch() const noexcept = 0;
         virtual float getMaxDistance() const noexcept = 0;
         virtual float getMinDistance() const noexcept = 0;
-
-        virtual void play(bool play) noexcept = 0;
-        virtual void loop(bool loop) noexcept = 0;
-        virtual void pause() noexcept = 0;
 
         virtual bool isPlaying() const noexcept = 0;
         virtual bool isStopped() const noexcept = 0;

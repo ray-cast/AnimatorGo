@@ -16,16 +16,14 @@ namespace rabbit
 		bool getActive() const noexcept override;
 
 		void play() noexcept;
-		void stop() noexcept;
+		void pause() noexcept;
+		void render() noexcept;
 		void reset() noexcept;
 		
 		void sample(float delta = 0.0f) noexcept;
 		void evaluate(float delta) noexcept;
 
-		float time() const noexcept;
 		float timeLength() const noexcept;
-
-		void render() noexcept;
 
 		virtual const std::type_info& type_info() const noexcept
 		{

@@ -22,6 +22,7 @@ namespace rabbit
 		this->endFrame = 0;
 		this->startFrame = 0;
 		this->timeLength = 0;
+		this->curTime = 0;
 	}
 
 	void 

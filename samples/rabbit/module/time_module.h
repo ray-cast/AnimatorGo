@@ -30,6 +30,7 @@ namespace rabbit
 		float playFps;
 		float playTimeStep;
 		float recordFps;
+		float curTime;
 	};
 }
 

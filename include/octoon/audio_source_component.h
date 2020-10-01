@@ -13,6 +13,13 @@ namespace octoon
 		AudioSourceComponent() noexcept;
 		virtual ~AudioSourceComponent();
 
+		void play(bool isLoop = false) noexcept;
+		void reset() noexcept;
+		void pause() noexcept;
+
+		void setTime(float time) noexcept;
+		float getTimeLength() const noexcept;
+
 		void setAudioReader(std::shared_ptr<AudioReader> ptr) noexcept;
 		std::shared_ptr<AudioReader> getAudioReader() const noexcept;
 
@@ -26,7 +33,7 @@ namespace octoon
 		void setAudioClip(const AudioClip &clip) noexcept;
 
 		void getVelocity(math::float3 &velocity) const noexcept;
-		void getAudioClip(AudioClip &clip) const noexcept;
+		const AudioClip& getAudioClip() const noexcept;
 
 		float getVolume() const noexcept;
 		float getPitch() const noexcept;
@@ -34,10 +41,6 @@ namespace octoon
 		float getMaxVolume() const noexcept;
 		float getMaxDistance() const noexcept;
 		float getMinDistance() const noexcept;
-
-		void play(bool play) noexcept;
-		void loop(bool loop) noexcept;
-		void pause() noexcept;
 
 		bool isPlaying() const noexcept;
 		bool isStopped() const noexcept;
@@ -54,6 +57,7 @@ namespace octoon
 
 	private:
 		std::shared_ptr<AudioSource> source_;
+		std::shared_ptr<AudioReader> audioReader_;
 	};
 }
 

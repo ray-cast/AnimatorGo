@@ -66,58 +66,30 @@ namespace rabbit
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
-			sound->getComponent<octoon::AudioSourceComponent>()->play(true);
-	}
-
-	void
-	PlayerComponent::stop() noexcept
-	{
-		this->getModel()->playing_ = false;
-	}
-
-	void
-	PlayerComponent::reset() noexcept
-	{
-		auto& model = this->getModel();
-
-		auto camera = this->getContext()->profile->entitiesModule->camera;
-		camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 0));
-		camera->getComponent<octoon::TransformComponent>()->setQuaternion(octoon::math::Quaternion(0, 0, 0, 1));
-
-		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
-			for (auto& component : it->getComponents())
+			auto source = sound->getComponent<octoon::AudioSourceComponent>();
+			if (source)
 			{
-				if (component->isA<octoon::AnimationComponent>())
-				{
-					auto animation = component->downcast<octoon::AnimationComponent>();
-					animation->setTime(model->startFrame / 30.0f);
-					animation->sample();
-				}
+				source->setTime(model->curTime);
+				source->play();
 			}
 		}
+	}
 
+	void
+	PlayerComponent::pause() noexcept
+	{
 		this->getModel()->playing_ = false;
-		this->sendMessage("rabbit:player:start");
+
+		auto sound = this->getContext()->profile->entitiesModule->sound;
+		if (sound)
+			sound->getComponent<octoon::AudioSourceComponent>()->pause();
 	}
 
 	void
 	PlayerComponent::render() noexcept
 	{
 		auto& model = this->getModel();
-
-		for (auto& it : this->getContext()->profile->entitiesModule->objects)
-		{
-			for (auto& component : it->getComponents())
-			{
-				if (component->isA<octoon::AnimationComponent>())
-				{
-					auto animation = component->downcast<octoon::AnimationComponent>();
-					animation->setTime(model->startFrame / 30.0f);
-					animation->sample();
-				}
-			}
-		}
 
 		if (this->getContext()->profile->offlineModule->offlineEnable)
 		{
@@ -131,12 +103,42 @@ namespace rabbit
 		}
 
 		this->getModel()->playing_ = true;
-		this->sendMessage("rabbit:player:start");
 	}
 
 	void
-	PlayerComponent::sample(float delta) noexcept
+	PlayerComponent::reset() noexcept
 	{
+		auto& model = this->getModel();
+		model->curTime = model->startFrame / 30.0f;
+		model->playing_ = false;
+
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto animation = camera->getComponent<octoon::AnimationComponent>();
+			if (animation)
+			{
+				animation->setTime(model->curTime);
+				animation->sample();
+			}
+			else
+			{
+				camera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 0));
+				camera->getComponent<octoon::TransformComponent>()->setQuaternion(octoon::math::Quaternion(0, 0, 0, 1));
+			}
+		}
+
+		auto sound = this->getContext()->profile->entitiesModule->sound;
+		if (sound)
+		{
+			auto soundComponent = sound->getComponent<octoon::AudioSourceComponent>();
+			if (soundComponent)
+			{
+				soundComponent->setTime(model->curTime);
+				soundComponent->reset();
+			}
+		}
+
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
 			for (auto& component : it->getComponents())
@@ -144,8 +146,58 @@ namespace rabbit
 				if (component->isA<octoon::AnimationComponent>())
 				{
 					auto animation = component->downcast<octoon::AnimationComponent>();
-					animation->sample(delta);
+					animation->setTime(model->curTime);
+					animation->sample();
 				}
+			}
+		}
+	}
+
+	void
+	PlayerComponent::sample(float delta) noexcept
+	{
+		auto& model = this->getModel();
+		model->curTime += delta;
+
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto animation = camera->getComponent<octoon::AnimationComponent>();
+			if (animation)
+			{
+				animation->setTime(model->curTime);
+				animation->sample();
+			}
+		}
+
+		auto sound = this->getContext()->profile->entitiesModule->sound;
+		if (sound)
+		{
+			auto source = sound->getComponent<octoon::AudioSourceComponent>();
+			if (source)
+				source->setTime(model->curTime);
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
+		{
+			for (auto& component : it->getComponents())
+			{
+				if (component->isA<octoon::AnimationComponent>())
+				{
+					auto animation = component->downcast<octoon::AnimationComponent>();
+					animation->setTime(model->curTime);
+					animation->sample();
+				}
+			}
+		}
+
+		if (this->getContext()->profile->offlineModule->offlineEnable)
+		{
+			for (auto& it : this->getContext()->profile->entitiesModule->objects)
+			{
+				auto smr = it->getComponent<octoon::SkinnedMeshRendererComponent>();
+				if (smr)
+					smr->updateMeshData();
 			}
 		}
 	}
@@ -153,6 +205,28 @@ namespace rabbit
 	void
 	PlayerComponent::evaluate(float delta) noexcept
 	{
+		auto& model = this->getModel();
+		model->curTime += delta;
+
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto animation = camera->getComponent<octoon::AnimationComponent>();
+			if (animation)
+			{
+				animation->setTime(model->curTime);
+				animation->evaluate();
+			}
+		}
+
+		auto sound = this->getContext()->profile->entitiesModule->sound;
+		if (sound)
+		{
+			auto source = sound->getComponent<octoon::AudioSourceComponent>();
+			if (source)
+				source->setTime(model->curTime);
+		}
+
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
 			for (auto& component : it->getComponents())
@@ -160,32 +234,21 @@ namespace rabbit
 				if (component->isA<octoon::AnimationComponent>())
 				{
 					auto animation = component->downcast<octoon::AnimationComponent>();
-					animation->evaluate(delta);
+					animation->setTime(model->curTime);
+					animation->evaluate();
 				}
 			}
 		}
-	}
 
-	float
-	PlayerComponent::time() const noexcept
-	{
-		float time = 0;
-
-		for (auto& it : octoon::GameObjectManager::instance()->instances())
+		if (this->getContext()->profile->offlineModule->offlineEnable)
 		{
-			if (!it) continue;
-
-			for (auto& component : it->getComponents())
+			for (auto& it : this->getContext()->profile->entitiesModule->objects)
 			{
-				if (component->isA<octoon::AnimationComponent>())
-				{
-					auto animation = component->downcast<octoon::AnimationComponent>();
-					time = std::max(time, animation->getTime());
-				}
+				auto smr = it->getComponent<octoon::SkinnedMeshRendererComponent>();
+				if (smr)
+					smr->updateMeshData();
 			}
 		}
-
-		return time;
 	}
 
 	float
@@ -193,7 +256,15 @@ namespace rabbit
 	{
 		float timeLength = 0;
 
-		for (auto& it : octoon::GameObjectManager::instance()->instances())
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto animation = camera->getComponent<octoon::AnimationComponent>();
+			if (animation)
+				timeLength = std::max(timeLength, animation->getCurrentAnimatorStateInfo().timeLength);
+		}
+
+		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
 			if (!it) continue;
 
@@ -251,23 +322,7 @@ namespace rabbit
 			return;
 		}
 
-		bool finish = true;
-		float time = 0;
-		for (auto& it : profile->entitiesModule->objects)
-		{
-			auto animation = it->getComponent<octoon::AnimationComponent>();
-			if (animation)
-			{
-				auto stateInfo = animation->getCurrentAnimatorStateInfo();
-				finish &= stateInfo.finish;
-				time = std::max(time, stateInfo.time);
-			}
-		}
-
-		if (time >= model->endFrame / 30.0f)
-			finish = true;
-
-		if (!finish)
+		if (model->curTime < model->endFrame / 30.0f)
 		{
 			if (profile->h265Module->enable)
 			{
@@ -292,6 +347,7 @@ namespace rabbit
 		}
 		else
 		{
+			this->reset();
 			this->sendMessage("rabbit:player:finish");
 		}
 	}

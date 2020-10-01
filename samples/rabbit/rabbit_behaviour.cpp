@@ -235,7 +235,6 @@ namespace rabbit
 	RabbitBehaviour::close() noexcept
 	{
 		this->profile_->entitiesModule->objects.clear();
-		this->profile_->entitiesModule->objects.push_back(this->profile_->entitiesModule->camera);
 		this->profile_->entitiesModule->objects.push_back(this->profile_->entitiesModule->sunLight);
 		this->profile_->entitiesModule->objects.push_back(this->profile_->entitiesModule->enviromentLight);
 	}
@@ -272,9 +271,9 @@ namespace rabbit
 	}
 
 	void
-	RabbitBehaviour::stop() noexcept
+	RabbitBehaviour::pause() noexcept
 	{
-		playerComponent_->stop();
+		playerComponent_->pause();
 		dragComponent_->setActive(true);
 	}
 
@@ -314,7 +313,7 @@ namespace rabbit
 		denoiseComponent_->setActive(false);
 		h265Component_->setActive(false);
 		dragComponent_->setActive(true);
-		playerComponent_->stop();
+		playerComponent_->pause();
 	}
 
 	void

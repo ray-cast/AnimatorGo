@@ -400,7 +400,7 @@ namespace rabbit
 			auto playerComponent = behaviour->getComponent<PlayerComponent>();
 			if (playerComponent)
 			{
-				auto time = std::max<int>(0, std::round(playerComponent->time() * 30.0f));
+				auto time = std::max<int>(0, std::round(behaviour->getProfile()->timeModule->curTime * 30.0f));
 				currentFrame_->setText(QString(u8"当前视频渲染帧数：%1").arg(time));
 			}
 		}
@@ -417,7 +417,7 @@ namespace rabbit
 
 			auto startFrame = start_->value();
 			auto endFrame = end_->value();
-			auto time = std::max<int>(0, std::round(playerComponent->time() * 30.0f));
+			auto time = std::max<int>(0, std::round(behaviour->getProfile()->timeModule->curTime * 30.0f));
 			auto timeLength = std::max<int>(1, (endFrame - startFrame) / 30.0f * behaviour->getProfile()->timeModule->recordFps);
 
 			animation_->setText(QString(u8"视频动作帧数：%1").arg(animLength));

@@ -23,8 +23,8 @@ namespace octoon
 		void setTransforms(GameObjects&& transforms) noexcept;
 		const GameObjects& getTransforms() const noexcept;
 
-		void setFixedUpdateEnable(bool enable) noexcept;
-		bool getFixedUpdateEnable() noexcept;
+		void setAutomaticUpdate(bool enable) noexcept;
+		bool getAutomaticUpdate() noexcept;
 
 		void setClothBlendEnable(bool enable) noexcept;
 		bool getClothBlendEnable() const noexcept;
@@ -72,7 +72,7 @@ namespace octoon
 		bool clothEnable_;
 		bool morphEnable_;
 		bool textureEnable_;
-		bool fixedUpdateEnable_;
+		bool automaticUpdate_;
 
 		GameObjects transforms_;
 

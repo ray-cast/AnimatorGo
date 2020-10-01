@@ -140,10 +140,6 @@ namespace rabbit
 		auto stream = octoon::io::ifstream(std::string(path));
 		auto pmm = octoon::PMMFile::load(stream).value();
 
-		auto camera = this->createCamera(pmm);
-		if (camera)
-			objects.emplace_back(camera);
-
 		auto rotation = math::Quaternion(math::float3(-0.1, math::PI + 0.5f, 0.0f));
 
 		auto& mainLight = this->getContext()->profile->entitiesModule->sunLight;
@@ -186,7 +182,7 @@ namespace rabbit
 		}
 
 		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
-		context->profile->entitiesModule->camera = camera;
+		context->profile->entitiesModule->camera = this->createCamera(pmm);
 		context->profile->entitiesModule->objects = objects;
 		context->profile->entitiesModule->rigidbodies = rigidbodies;
 

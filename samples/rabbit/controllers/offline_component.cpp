@@ -22,7 +22,7 @@ namespace rabbit
 			{
 				auto smr = object->getComponent<octoon::SkinnedMeshRendererComponent>();
 				if (smr)
-					smr->setFixedUpdateEnable(!active);
+					smr->setAutomaticUpdate(!active);
 			}
 
 			this->getFeature<octoon::VideoFeature>()->setGlobalIllumination(active);

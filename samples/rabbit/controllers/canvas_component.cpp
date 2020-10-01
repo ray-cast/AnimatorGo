@@ -64,12 +64,18 @@ namespace rabbit
 					if (desc.getTexFormat() == octoon::hal::GraphicsFormat::R32G32B32A32SFloat)
 					{
 						auto& colorBuffer = this->getModel()->colorBuffer;
+						auto& outputBuffer = this->getModel()->outputBuffer;
+
 						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
 							colorBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
+
+						for (std::size_t i = 0; i < desc.getWidth() * desc.getHeight(); ++i)
+							outputBuffer[i] = (((octoon::math::float4*)data) + i)->xyz();
 					}
 					else
 					{
 						std::memcpy(this->getModel()->colorBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
+						std::memcpy(this->getModel()->outputBuffer.data(), data, desc.getWidth() * desc.getHeight() * 3 * sizeof(float));
 					}
 
 					colorTexture->unmap();

@@ -105,6 +105,7 @@ namespace rabbit
 	EntitiesComponent::importAudio(std::string_view path) noexcept
 	{
 		auto model = octoon::GameObject::create();
+		model->setName(path);
 		model->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
 
 		this->getContext()->profile->entitiesModule->sound = model;

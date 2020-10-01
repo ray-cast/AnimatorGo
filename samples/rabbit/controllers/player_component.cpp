@@ -102,6 +102,7 @@ namespace rabbit
 			this->timeInterval_ = 1.0f / model->recordFps;
 		}
 
+		this->reset();
 		this->getModel()->playing_ = true;
 	}
 

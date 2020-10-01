@@ -294,7 +294,7 @@ namespace rabbit
 
 			if (backButton_->text() != u8"Í£Ö¹äÖÈ¾")
 			{
-				QString fileName = QFileDialog::getSaveFileName(this, u8"Â¼ÖÆÊÓÆµ", "", tr("HDRi Files (*.mp4)"));
+				QString fileName = QFileDialog::getSaveFileName(this, u8"Â¼ÖÆÊÓÆµ", "", tr("MP4 Files (*.mp4)"));
 				if (!fileName.isEmpty())
 					this->startRecord(fileName);
 			}

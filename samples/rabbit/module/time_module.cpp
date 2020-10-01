@@ -18,7 +18,8 @@ namespace rabbit
 		this->spp = 100;
 		this->recordFps = 30.0f;
 		this->playFps = 30.0f;
-		this->playTimeStep = 1.0f / 30.0f;
+		this->playTimeStep = 1.0f / 200.0f;
+		this->normalTimeStep = 1.0f / 50.0f;
 		this->endFrame = 0;
 		this->startFrame = 0;
 		this->timeLength = 0;
@@ -36,6 +37,8 @@ namespace rabbit
 			this->playFps = reader["playFps"];
 		if (reader.find("playTimeStep") != reader.end())
 			this->playTimeStep = reader["playTimeStep"];
+		if (reader.find("normalTimeStep") != reader.end())
+			this->normalTimeStep = reader["normalTimeStep"];
 	}
 
 	void 
@@ -45,5 +48,6 @@ namespace rabbit
 		writer["recordFps"] = this->recordFps;
 		writer["playFps"] = this->playFps;
 		writer["playTimeStep"] = this->playTimeStep;
+		writer["normalTimeStep"] = this->normalTimeStep;
 	}
 }

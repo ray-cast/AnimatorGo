@@ -41,10 +41,7 @@ namespace rabbit
 		bool needUpdate_;
 
 		float time_;
-		float timeStep_;
-		float timeInterval_;
-
-		std::uint32_t timeCount_;
+		float timeCount_;
 	};
 }
 

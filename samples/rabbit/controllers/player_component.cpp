@@ -8,8 +8,6 @@ namespace rabbit
 {
 	PlayerComponent::PlayerComponent() noexcept
 		: time_(0)
-		, timeStep_(0.0f)
-		, timeInterval_(0.0f)
 		, timeCount_(0)
 		, needUpdate_(false)
 	{
@@ -58,11 +56,14 @@ namespace rabbit
 	PlayerComponent::play() noexcept
 	{
 		auto& model = this->getModel();
-
-		this->timeStep_ = model->playTimeStep;
-		this->timeInterval_ = 1.0f / model->playFps;
-
 		model->playing_ = true;
+
+		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+		if (timeFeature)
+		{
+			timeFeature->setTimeStep(model->playTimeStep);
+			timeFeature->setTimeInterval(model->playTimeStep);
+		}
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
@@ -79,7 +80,15 @@ namespace rabbit
 	void
 	PlayerComponent::pause() noexcept
 	{
-		this->getModel()->playing_ = false;
+		auto& model = this->getModel();
+		model->playing_ = false;
+
+		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+		if (timeFeature)
+		{
+			timeFeature->setTimeStep(model->normalTimeStep);
+			timeFeature->setTimeInterval(model->normalTimeStep);
+		}
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
@@ -89,21 +98,17 @@ namespace rabbit
 	void
 	PlayerComponent::render() noexcept
 	{
-		auto& model = this->getModel();
-
-		if (this->getContext()->profile->offlineModule->offlineEnable)
-		{
-			this->timeStep_ = model->playTimeStep;
-			this->timeInterval_ = 1.0f / model->recordFps;
-		}
-		else
-		{
-			this->timeStep_ = model->playTimeStep;
-			this->timeInterval_ = 1.0f / model->recordFps;
-		}
-
 		this->reset();
-		this->getModel()->playing_ = true;
+
+		auto& model = this->getModel();
+		model->playing_ = true;
+
+		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+		if (timeFeature)
+		{
+			timeFeature->setTimeStep(model->playTimeStep);
+			timeFeature->setTimeInterval(model->playTimeStep);
+		}
 	}
 
 	void
@@ -335,7 +340,7 @@ namespace rabbit
 							it->onPostProcess();
 					}
 
-					this->evaluate(timeInterval_);
+					this->evaluate(1.0f / model->recordFps);
 					needUpdate_ = false;
 				}
 			}

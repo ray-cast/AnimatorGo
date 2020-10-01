@@ -9,11 +9,11 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/mathfwd.h>
 
-#include <octoon/audio/common/audio_device.h>
-#include <octoon/audio/common/audio_reader.h>
-#include <octoon/audio/common/audio_source.h>
-#include <octoon/audio/common/audio_listener.h>
-#include <octoon/audio/common/audio_source_listener.h>
+#include <octoon/audio/audio_device.h>
+#include <octoon/audio/audio_reader.h>
+#include <octoon/audio/audio_source.h>
+#include <octoon/audio/audio_listener.h>
+#include <octoon/audio/audio_source_listener.h>
 #include <octoon/audio/openal/audio_source_al.h>
 
 namespace octoon

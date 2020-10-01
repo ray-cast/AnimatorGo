@@ -1,7 +1,8 @@
 #ifndef OCTOON_OGG_AUDIO_BUFFER_H_
 #define OCTOON_OGG_AUDIO_BUFFER_H_
 
-#include <octoon/audio/common/audio_buffer.h>
+#include <octoon/audio/audio_buffer.h>
+#include <octoon/audio/audio_reader.h>
 
 struct OggVorbis_File;
 
@@ -30,17 +31,30 @@ namespace octoon
 
 		virtual bool close() noexcept;
 
-		virtual std::uint8_t channel_count() const noexcept override;
-		virtual std::size_t total_samples() const noexcept override;
-
-		virtual AudioFormat type() const noexcept override;
-		virtual AudioFrequency frequency() const noexcept override;
+		virtual std::uint32_t channels() const noexcept override;
+		virtual std::uint64_t samples() const noexcept override;
+		virtual std::uint32_t frequency() const noexcept override;
 
 	private:
-		std::streamoff next_;
+		std::streamoff pos_;
 		std::shared_ptr<io::istream> stream_;
 
 		OggVorbis_File* oggVorbisFile_;
+	};
+
+	class OCTOON_EXPORT OggAudioReader final : public AudioReader
+	{
+	public:
+		OggAudioReader() noexcept;
+		OggAudioReader(std::shared_ptr<io::istream> buf) noexcept;
+		virtual ~OggAudioReader() noexcept;
+
+		bool open(std::shared_ptr<io::istream> stream) noexcept;
+
+		std::shared_ptr<AudioReader> clone() const noexcept override;
+
+	private:
+		OggStreamBuffer buf_;
 	};
 }
 

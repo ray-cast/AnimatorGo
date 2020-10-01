@@ -6,7 +6,6 @@
 namespace octoon
 {
 	typedef int AUDIO_FORMAT_TYPE;
-	typedef std::uint16_t AudioFrequency;
 
 	enum class AudioFormat : AUDIO_FORMAT_TYPE
 	{

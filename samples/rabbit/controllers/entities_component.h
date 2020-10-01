@@ -20,14 +20,16 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 		
-		bool importOgg(std::string_view path) noexcept;
+		bool importAudio(std::string_view path) noexcept;
 		bool importAbc(std::string_view path) noexcept;
 		void importPMM(std::string_view path) noexcept(false);
 		bool importModel(std::string_view path) noexcept;
 		void importHDRi(std::string_view path) noexcept;
 
 		bool exportModel(std::string_view path) noexcept;
+
 		void clearHDRi() noexcept;
+		void clearAudio() noexcept;
 
 		bool showFileOpenBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;
 		bool showFileSaveBrowse(std::string::pointer buffer, std::uint32_t max_length, std::string::const_pointer ext_name) noexcept;

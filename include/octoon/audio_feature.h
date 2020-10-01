@@ -2,7 +2,7 @@
 #define OCTOON_AUDIO_FEATURE_H_
 
 #include <octoon/game_feature.h>
-#include <octoon/audio/common/audio_device.h>
+#include <octoon/audio/audio_device.h>
 
 namespace octoon
 {

@@ -4,21 +4,27 @@ SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_OUTNAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 
 SET(COMMON_LIST
-	${HEADER_PATH}/common/audio_buffer.h
-	${SOURCE_PATH}/common/audio_buffer.cpp
-	${HEADER_PATH}/common/audio_device.h
-	${SOURCE_PATH}/common/audio_device.cpp
-	${HEADER_PATH}/common/audio_listener.h
-	${SOURCE_PATH}/common/audio_listener.cpp
-	${HEADER_PATH}/common/audio_reader.h
-	${SOURCE_PATH}/common/audio_reader.cpp
-	${HEADER_PATH}/common/audio_source.h
-	${SOURCE_PATH}/common/audio_source.cpp
-	${HEADER_PATH}/common/audio_source_listener.h
-	${SOURCE_PATH}/common/audio_source_listener.cpp
-	${HEADER_PATH}/common/audio_types.h
-	${HEADER_PATH}/common/ogg_stream.h
-	${SOURCE_PATH}/common/ogg_stream.cpp
+	${HEADER_PATH}/audio_buffer.h
+	${SOURCE_PATH}/audio_buffer.cpp
+	${HEADER_PATH}/audio_device.h
+	${SOURCE_PATH}/audio_device.cpp
+	${HEADER_PATH}/audio_listener.h
+	${SOURCE_PATH}/audio_listener.cpp
+	${HEADER_PATH}/audio_reader.h
+	${SOURCE_PATH}/audio_reader.cpp
+	${HEADER_PATH}/audio_source.h
+	${SOURCE_PATH}/audio_source.cpp
+	${HEADER_PATH}/audio_source_listener.h
+	${SOURCE_PATH}/audio_source_listener.cpp
+	${HEADER_PATH}/audio_types.h
+	${HEADER_PATH}/ogg_stream.h
+	${SOURCE_PATH}/ogg_stream.cpp
+	${HEADER_PATH}/mp3_stream.h
+	${SOURCE_PATH}/mp3_stream.cpp
+	${HEADER_PATH}/wav_stream.h
+	${SOURCE_PATH}/wav_stream.cpp
+	${HEADER_PATH}/flac_stream.h
+	${SOURCE_PATH}/flac_stream.cpp
 )
 SOURCE_GROUP("audio" FILES ${COMMON_LIST})
 

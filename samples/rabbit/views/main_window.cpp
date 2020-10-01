@@ -490,24 +490,33 @@ namespace rabbit
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
 			{
-				QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.ogg)"));
-				if (!fileName.isEmpty())
+				try
 				{
-					try
+					if (enable)
 					{
-						behaviour->open(fileName.toUtf8().data());
+						QString fileName = QFileDialog::getOpenFileName(this, u8"打开项目", "", tr("All Files(*.wav *.mp3 *.flac *.ogg)"));
+						if (!fileName.isEmpty())
+						{
+							behaviour->loadAudio(fileName.toUtf8().data());
+						}
+					}
+					else
+					{
+						behaviour->clearAudio();
 						return true;
 					}
-					catch (const std::exception & e)
-					{
-						QMessageBox msg(this);
-						msg.setWindowTitle(u8"错误");
-						msg.setText(e.what());
-						msg.setIcon(QMessageBox::Information);
-						msg.setStandardButtons(QMessageBox::Ok);
 
-						msg.exec();
-					}
+					return true;
+				}
+				catch (const std::exception & e)
+				{
+					QMessageBox msg(this);
+					msg.setWindowTitle(u8"错误");
+					msg.setText(e.what());
+					msg.setIcon(QMessageBox::Information);
+					msg.setStandardButtons(QMessageBox::Ok);
+
+					msg.exec();
 				}
 			}
 		}

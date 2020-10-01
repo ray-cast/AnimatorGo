@@ -2,7 +2,7 @@
 #define OCTOON_AUDIO_LISTENER_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/audio/common/audio_listener.h>
+#include <octoon/audio/audio_listener.h>
 
 namespace octoon
 {

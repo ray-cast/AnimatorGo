@@ -2,7 +2,7 @@
 #define OCTOON_AUDIO_SOURCE_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/audio/common/audio_source.h>
+#include <octoon/audio/audio_source.h>
 
 namespace octoon
 {

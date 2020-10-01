@@ -7,7 +7,7 @@
 
 #include <octoon/io/iostream.h>
 #include <octoon/runtime/platform.h>
-#include <octoon/audio/common/audio_types.h>
+#include <octoon/audio/audio_types.h>
 
 namespace octoon
 {
@@ -17,15 +17,11 @@ namespace octoon
         AudioBuffer() noexcept;
         virtual ~AudioBuffer() noexcept;
 
-        virtual bool open(std::shared_ptr<io::istream> stream) noexcept = 0;
-
         virtual bool access(io::istream& stream) const noexcept = 0;
 
-        virtual std::uint8_t channel_count() const noexcept = 0;
-        virtual std::size_t total_samples() const noexcept = 0;
-
-        virtual AudioFormat type() const noexcept = 0;
-        virtual AudioFrequency frequency() const noexcept = 0;
+        virtual std::uint32_t channels() const noexcept = 0;
+        virtual std::uint64_t samples() const noexcept = 0;
+        virtual std::uint32_t frequency() const noexcept = 0;
     };
 }
 

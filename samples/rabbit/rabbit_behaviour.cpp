@@ -223,8 +223,8 @@ namespace rabbit
 			entitiesComponent_->importHDRi(path);
 		else if (ext == ".abc")
 			entitiesComponent_->importAbc(path);
-		else if (ext == ".ogg")
-			entitiesComponent_->importOgg(path);
+		else if (ext == ".ogg" || ext == ".mp3" || ext == ".wav" || ext == ".flac")
+			entitiesComponent_->importAudio(path);
 		else if (ext == ".mtl")
 			materialComponent_->importMtl(path);
 		else if (ext == ".mdl")
@@ -315,6 +315,18 @@ namespace rabbit
 		h265Component_->setActive(false);
 		dragComponent_->setActive(true);
 		playerComponent_->stop();
+	}
+
+	void
+	RabbitBehaviour::loadAudio(std::string_view filepath) noexcept
+	{
+		entitiesComponent_->importAudio(filepath);
+	}
+
+	void
+	RabbitBehaviour::clearAudio() noexcept
+	{
+		entitiesComponent_->clearAudio();
 	}
 
 	void

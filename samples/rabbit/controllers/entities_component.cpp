@@ -102,14 +102,12 @@ namespace rabbit
 	}
 
 	bool
-	EntitiesComponent::importOgg(std::string_view path) noexcept
+	EntitiesComponent::importAudio(std::string_view path) noexcept
 	{
 		auto model = octoon::GameObject::create();
 		model->addComponent<octoon::AudioSourceComponent>()->setAudioReader(AudioLoader::load(path));
 
 		this->getContext()->profile->entitiesModule->sound = model;
-
-		this->sendMessage("rabbit:project:open");
 		return true;
 	}
 
@@ -221,6 +219,12 @@ namespace rabbit
 	EntitiesComponent::exportModel(std::string_view path) noexcept
 	{
 		return false;
+	}
+
+	void
+	EntitiesComponent::clearAudio() noexcept
+	{
+		this->getContext()->profile->entitiesModule->sound = nullptr;
 	}
 
 	void

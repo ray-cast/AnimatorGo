@@ -44,6 +44,9 @@ namespace rabbit
 		bool startRecord(std::string_view path) noexcept;
 		void stopRecord() noexcept;
 
+		void loadAudio(std::string_view filepath) noexcept;
+		void clearAudio() noexcept;
+
 		void loadHDRi(std::string_view path) noexcept;
 		void clearHDRi() noexcept;
 

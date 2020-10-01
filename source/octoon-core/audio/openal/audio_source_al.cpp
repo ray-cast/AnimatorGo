@@ -14,8 +14,7 @@ namespace octoon
         , isPlayEnd_(false)
         , isLoop_(false)
     {
-		buffer_[0] = 0;
-		buffer_[1] = 0;
+		buffer_ = 0;
     }
 
     AudioSourceAL::~AudioSourceAL() noexcept
@@ -32,8 +31,7 @@ namespace octoon
         ::alSourcei(source_, AL_SOURCE_TYPE, AL_STREAMING);
         ::alSourcei(source_, AL_SOURCE_RELATIVE, AL_TRUE);
 
-        ::alGenBuffers(1, &buffer_[0]);
-        ::alGenBuffers(1, &buffer_[1]);
+        ::alGenBuffers(1, &buffer_);
     }
 
     void
@@ -47,13 +45,10 @@ namespace octoon
             source_ = AL_NONE;
         }
 
-        for (auto& it : buffer_)
+        if (buffer_ != AL_NONE)
         {
-            if (it != AL_NONE)
-            {
-                ::alDeleteBuffers(1, &it);
-                it = AL_NONE;
-            }
+            ::alDeleteBuffers(1, &buffer_);
+            buffer_ = AL_NONE;
         }
 
         audioReader_ = nullptr;
@@ -83,25 +78,10 @@ namespace octoon
 
             if (buffer)
             {
-                auto soundType = buffer->type();
-                format_ = AL_NONE;
-                if (soundType == AudioFormat::Mono8)
-                    format_ = AL_FORMAT_MONO8;
-                else if (soundType == AudioFormat::Mono16)
-                    format_ = AL_FORMAT_MONO16;
-                else if (soundType == AudioFormat::Stereo8)
-                    format_ = AL_FORMAT_STEREO8;
-                else if (soundType == AudioFormat::Stereo16)
-                    format_ = AL_FORMAT_STEREO16;
-                else if (soundType == AudioFormat::Quad16)
-                    format_ = AL_FORMAT_QUAD16;
-                else if (soundType == AudioFormat::Chn16)
-                    format_ = AL_FORMAT_51CHN16;
-
                 AudioClip clip;
                 clip.length = 0;
-                clip.samples = buffer->total_samples();
-                clip.channels = buffer->channel_count();
+                clip.samples = buffer->samples();
+                clip.channels = buffer->channels();
                 clip.freq = buffer->frequency();
 
                 this->setAudioClip(clip);
@@ -164,40 +144,33 @@ namespace octoon
     void
 	AudioSourceAL::setAudioClip(const AudioClip& clip) noexcept
     {
-        if (clip.channels == 1)
-        {
-            bufferSize_ = clip.freq >> 1;
-            bufferSize_ -= (bufferSize_ % 2);
-        }
-        else if (clip.channels == 2)
-        {
-            bufferSize_ = clip.freq;
-            bufferSize_ -= (bufferSize_ % 4);
-        }
-        else if (clip.channels == 4)
-        {
-            bufferSize_ = clip.freq * 2;
-            bufferSize_ -= (bufferSize_ % 8);
-        }
-        else if (clip.channels == 6)
-        {
-            bufferSize_ = clip.freq * 3;
-            bufferSize_ -= (bufferSize_ % 12);
-        }
-
-        if (data_.size() < bufferSize_)
-            data_.resize(bufferSize_);
-
-        std::size_t size = audioReader_->size();
-
         audioClip_ = clip;
-        audioClip_.length = std::min(clip.length, size);
-        audioClip_.samples = std::min(clip.samples, size);
+        audioClip_.length = clip.length;
+        audioClip_.samples = clip.samples;
+
+        format_ = AL_NONE;
+        if (audioClip_.channels == 1)
+            format_ = AL_FORMAT_MONO16;
+        else if (audioClip_.channels == 2)
+            format_ = AL_FORMAT_STEREO16;
+        else if (audioClip_.channels == 4)
+            format_ = AL_FORMAT_QUAD16;
+        else if (audioClip_.channels == 6)
+            format_ = AL_FORMAT_51CHN16;
+
+        sampleLength_ = audioReader_->size();
+        sampleLengthTotal_ = 0;
+
+        data_.resize(sampleLength_);
 
         audioReader_->seekg((io::ios_base::off_type)audioClip_.length, io::ios_base::beg);
+        audioReader_->read(data_.data(), data_.size());
 
-        sampleLength_ = audioClip_.samples / (audioReader_->size() / bufferSize_);
-        sampleLengthTotal_ = 0;
+        if (audioReader_->gcount() == (io::streamsize)data_.size())
+        {
+            ::alBufferData(buffer_, format_, data_.data(), (ALsizei)data_.size(), audioClip_.freq);
+            ::alSourceQueueBuffers(source_, 1, &buffer_);
+        }
     }
 
     void
@@ -331,11 +304,9 @@ namespace octoon
             if (isPlayEnd_)
                 return;
 
-            this->updateAudioQueue();
-
             if (!this->isPlaying())
             {
-                if (isPlaying_ || sampleLengthTotal_ > audioClip_.samples || audioReader_->eof())
+                if (isPlaying_)
                 {
                     if (!isLoop_)
                     {
@@ -412,29 +383,11 @@ namespace octoon
     }
 
     void
-	AudioSourceAL::initAudioStream() noexcept
-    {
-        sampleLengthTotal_ = audioClip_.length;
-        audioReader_->seekg((io::ios_base::off_type)audioClip_.length, io::ios_base::beg);
-    }
-
-    void
 	AudioSourceAL::playStart() noexcept
     {
-        this->initAudioStream();
+        sampleLengthTotal_ = audioClip_.length;
+
         this->clearAudioQueue();
-
-        for (auto it : buffer_)
-        {
-            audioReader_->read(data_.data(), data_.size());
-            if (audioReader_->gcount() > 0)
-            {
-                ::alBufferData(it, format_, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
-                ::alSourceQueueBuffers(source_, 1, &it);
-
-                sampleLengthTotal_ += sampleLength_;
-            }
-        }
 
         ::alSourcePlay(source_);
 
@@ -464,31 +417,6 @@ namespace octoon
         {
             ALuint buff;
             ::alSourceUnqueueBuffers(source_, 1, &buff);
-        }
-    }
-
-    void
-	AudioSourceAL::updateAudioQueue() noexcept
-    {
-        ALint processed = 0;
-        ::alGetSourcei(source_, AL_BUFFERS_PROCESSED, &processed);
-
-        while (processed--)
-        {
-            ALuint buff;
-            ::alSourceUnqueueBuffers(source_, 1, &buff);
-
-            if (sampleLengthTotal_ > audioClip_.samples || audioReader_->eof())
-                break;
-
-            audioReader_->read(data_.data(), data_.size());
-            if (audioReader_->gcount() > 0)
-            {
-                ::alBufferData(buff, format_, data_.data(), (ALsizei)audioReader_->gcount(), audioClip_.freq);
-                ::alSourceQueueBuffers(source_, 1, &buff);
-
-                sampleLengthTotal_ += sampleLength_;
-            }
         }
     }
 }

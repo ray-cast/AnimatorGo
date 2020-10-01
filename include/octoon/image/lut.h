@@ -160,7 +160,7 @@ namespace octoon
 				* @param[in] channel 通道数量， RGB 为 3， RGBA 为 4
 				* @details 创建默认的 3D lut 查找表, 用于自定义滤镜效果
 				*/
-				explicit basic_lut(std::uint32_t size, std::uint8_t channel_ = 3) noexcept { this->create(size, channel_); }
+				explicit basic_lut(std::uint32_t size, std::uint8_t channels_ = 3) noexcept { this->create(size, channels_); }
 
 				/*
 				* @brief 创建3D lut 查找表
@@ -175,11 +175,11 @@ namespace octoon
 				* @param[in] channel 通道数量， RGB 为 3， RGBA 为 4
 				* @details 创建默认的 3D lut 查找表, 用于自定义滤镜效果
 				*/
-				void create(std::uint32_t size, std::uint8_t channel_) noexcept
+				void create(std::uint32_t size, std::uint8_t channels_) noexcept
 				{
 					width = size * size;
 					height = size;
-					channel = channel_;
+					channel = channels_;
 					data = std::make_unique<T[]>(width * height * channel);
 
 					for (std::uint32_t x = 0; x < width; x++)

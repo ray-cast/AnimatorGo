@@ -1,5 +1,8 @@
 #include <octoon/audio_loader.h>
-#include <octoon/audio/common/ogg_stream.h>
+#include <octoon/audio/ogg_stream.h>
+#include <octoon/audio/mp3_stream.h>
+#include <octoon/audio/wav_stream.h>
+#include <octoon/audio/flac_stream.h>
 #include <octoon/io/vstream.h>
 
 namespace octoon
@@ -27,14 +30,22 @@ namespace octoon
 	std::shared_ptr<AudioReader>
 	AudioLoader::load(std::shared_ptr<io::istream> stream) noexcept(false)
 	{
-		return std::make_shared<AudioReader>(stream);
+		return nullptr;
 	}
 
 	std::shared_ptr<AudioReader>
 	AudioLoader::load(std::string_view filepath) noexcept(false)
 	{
-		auto stream = std::make_shared<io::ivstream>(std::string(filepath));
-		return load(stream);
+		if (filepath.find(".ogg") != std::string::npos)
+			return load(std::make_shared<io::ivstream>(std::string(filepath)));
+		else if (filepath.find(".mp3") != std::string::npos)
+			return std::make_shared<Mp3AudioReader>(std::string(filepath).c_str());
+		else if (filepath.find(".wav") != std::string::npos)
+			return std::make_shared<WavAudioReader>(std::string(filepath).c_str());
+		else if (filepath.find(".flac") != std::string::npos)
+			return std::make_shared<FlacAudioReader>(std::string(filepath).c_str());
+
+		return nullptr;
 	}
 
 	void

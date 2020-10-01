@@ -8,9 +8,9 @@
 
 #include <octoon/runtime/platform.h>
 
-#include <octoon/audio/common/audio_buffer.h>
-#include <octoon/audio/common/audio_types.h>
-#include <octoon/audio/common/audio_reader.h>
+#include <octoon/audio/audio_buffer.h>
+#include <octoon/audio/audio_types.h>
+#include <octoon/audio/audio_reader.h>
 
 namespace octoon
 {

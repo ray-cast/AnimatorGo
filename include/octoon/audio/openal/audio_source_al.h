@@ -9,9 +9,9 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/mathfwd.h>
 
-#include <octoon/audio/common/audio_reader.h>
-#include <octoon/audio/common/audio_source.h>
-#include <octoon/audio/common/audio_source_listener.h>
+#include <octoon/audio/audio_reader.h>
+#include <octoon/audio/audio_source.h>
+#include <octoon/audio/audio_source_listener.h>
 
 namespace octoon
 {
@@ -66,9 +66,7 @@ namespace octoon
         void playStart() noexcept;
         void playEnd() noexcept;
 
-        void initAudioStream() noexcept;
         void clearAudioQueue() noexcept;
-        void updateAudioQueue() noexcept;
 
     private:
         bool isLoop_;
@@ -76,7 +74,7 @@ namespace octoon
         bool isPlayEnd_;
 
         std::uint32_t source_;
-		std::uint32_t buffer_[2];
+		std::uint32_t buffer_;
         std::uint32_t  format_;
 
 		std::streamsize bufferSize_;

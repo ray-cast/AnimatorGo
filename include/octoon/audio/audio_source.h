@@ -9,17 +9,17 @@
 #include <octoon/math/vector3.h>
 #include <octoon/math/mathfwd.h>
 
-#include <octoon/audio/common/audio_reader.h>
-#include <octoon/audio/common/audio_source_listener.h>
+#include <octoon/audio/audio_reader.h>
+#include <octoon/audio/audio_source_listener.h>
 
 namespace octoon
 {
     struct OCTOON_EXPORT AudioClip
     {
-        std::size_t length;
-        std::size_t samples;
-        std::uint16_t channels;
-        std::uint16_t freq;
+        std::uint64_t length;
+        std::uint64_t samples;
+        std::uint32_t channels;
+        std::uint32_t freq;
     };
 
     class OCTOON_EXPORT AudioSource

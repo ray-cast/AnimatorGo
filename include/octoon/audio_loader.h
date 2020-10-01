@@ -2,7 +2,7 @@
 #define OCTOON_AUDIO_LOADER_H_
 
 #include <octoon/io/iostream.h>
-#include <octoon/audio/common/audio_reader.h>
+#include <octoon/audio/audio_reader.h>
 
 namespace octoon
 {

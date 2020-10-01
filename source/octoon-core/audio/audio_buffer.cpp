@@ -1,4 +1,4 @@
-#include <octoon/audio/common/audio_buffer.h>
+#include <octoon/audio/audio_buffer.h>
 
 namespace octoon
 {

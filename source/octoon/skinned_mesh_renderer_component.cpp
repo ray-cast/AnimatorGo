@@ -268,10 +268,7 @@ namespace octoon
 	SkinnedMeshRendererComponent::onPreRender(const camera::Camera& camera) noexcept
 	{
 		if (needUpdate_)
-		{
 			this->updateMeshData(true);
-			needUpdate_ = false;
-		}
 	}
 
 	void

@@ -23,14 +23,14 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 # We define the CXX flags for this CMakeLists and all others that are included afterwards. This is a GLOBAL setting. 
 # If/when the solutions go standalone (say, samples and visual tests) - those CMakeLists will need to be fixed.
 
 STRING(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWERCASE)
 
-SET(PHYSX_WARNING_DISABLES "-Wno-invalid-offsetof -Wno-maybe-uninitialized  -Wno-unused-variable -Wno-variadic-macros -Wno-array-bounds")
+SET(PHYSX_WARNING_DISABLES "-Wno-invalid-offsetof -Wno-maybe-uninitialized  -Wno-unused-variable -Wno-variadic-macros -Wno-array-bounds -Wno-strict-aliasing")
 
 IF(${ANDROID_ABI} STREQUAL "armeabi-v7a")
 	SET(PHYSX_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -Wpedantic -std=c++11 -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections -funwind-tables -fomit-frame-pointer -funswitch-loops -finline-limit=300 -fno-strict-aliasing -fstack-protector ${PHYSX_WARNING_DISABLES}" CACHE INTERAL "PhysX CXX")
@@ -62,8 +62,12 @@ SET(CMAKE_CXX_FLAGS_RELEASE ${PHYSX_CXX_FLAGS_RELEASE})
 # Controls PX_NVTX for all projects
 SET(NVTX_FLAG "PX_NVTX=0")
 
+IF(PX_SCALAR_MATH)
+	SET(SCALAR_MATH_FLAG "PX_SIMD_DISABLED")
+ENDIF()
+
 # Disable cuda and dx for all projects on Android
-SET(PHYSX_ANDROID_COMPILE_DEFS "__STDC_LIMIT_MACROS;${PHYSX_AUTOBUILD};${PHYSX_AUTOBUILDNUMBER}" CACHE INTERNAL "Base PhysX preprocessor definitions")
+SET(PHYSX_ANDROID_COMPILE_DEFS "__STDC_LIMIT_MACROS;${SCALAR_MATH_FLAG};${PHYSX_AUTOBUILD}" CACHE INTERNAL "Base PhysX preprocessor definitions")
 SET(PHYSX_ANDROID_DEBUG_COMPILE_DEFS "_DEBUG;PX_DEBUG=1;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Debug PhysX preprocessor definitions")
 SET(PHYSX_ANDROID_CHECKED_COMPILE_DEFS "NDEBUG;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Checked PhysX preprocessor definitions")
 SET(PHYSX_ANDROID_PROFILE_COMPILE_DEFS "NDEBUG;PX_PROFILE=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Profile PhysX preprocessor definitions")
@@ -92,3 +96,19 @@ INCLUDE(SceneQuery.cmake)
 INCLUDE(SimulationController.cmake)
 INCLUDE(FastXml.cmake)
 
+# Set folder PhysX SDK to all common SDK source projects
+SET_PROPERTY(TARGET PhysX PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCharacterKinematic PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCommon PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCooking PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXExtensions PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXVehicle PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevel PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevelAABB PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevelDynamics PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET SceneQuery PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET SimulationController PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET FastXml PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXPvdSDK PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXTask PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXFoundation PROPERTY FOLDER "PhysX SDK")

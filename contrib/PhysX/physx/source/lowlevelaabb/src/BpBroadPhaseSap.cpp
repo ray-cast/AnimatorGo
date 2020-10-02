@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -273,7 +273,7 @@ PX_FORCE_INLINE static void testPostShiftOrder(const ValType prevVal, ValType& c
 	}
 }
 
-void BroadPhaseSap::shiftOrigin(const PxVec3& shift)
+void BroadPhaseSap::shiftOrigin(const PxVec3& shift, const PxBounds3* /*boundsArray*/, const PxReal* /*contactDistances*/)
 {
 	//
 	// Note: shifting the bounds does not necessarily preserve the order of the broadphase interval endpoints. The encoding of the float bounds is a lossy

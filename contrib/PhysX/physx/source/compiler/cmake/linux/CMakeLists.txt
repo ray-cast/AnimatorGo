@@ -23,12 +23,12 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 STRING(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWERCASE)
 
 #TODO: Fix warnings
-SET(CLANG_WARNINGS "-ferror-limit=0 -Wall -Wextra -Werror -Wstrict-aliasing=2 -Weverything -Wno-documentation-deprecated-sync -Wno-documentation-unknown-command -Wno-gnu-anonymous-struct -Wno-undef -Wno-unused-function -Wno-nested-anon-types -Wno-float-equal -Wno-padded -Wno-weak-vtables -Wno-cast-align -Wno-conversion -Wno-missing-noreturn -Wno-missing-variable-declarations -Wno-shift-sign-overflow -Wno-covered-switch-default -Wno-exit-time-destructors -Wno-global-constructors -Wno-missing-prototypes -Wno-unreachable-code -Wno-unused-macros -Wno-unused-member-function -Wno-used-but-marked-unused -Wno-weak-template-vtables -Wno-deprecated -Wno-non-virtual-dtor -Wno-invalid-noreturn -Wno-return-type-c-linkage -Wno-reserved-id-macro -Wno-c++98-compat-pedantic -Wno-unused-local-typedef -Wno-old-style-cast -Wno-newline-eof -Wno-unused-private-field -Wno-format-nonliteral -Wno-implicit-fallthrough -Wno-undefined-reinterpret-cast -Wno-disabled-macro-expansion -Wno-zero-as-null-pointer-constant -Wno-shadow -Wno-unknown-warning-option")
+SET(CLANG_WARNINGS "-ferror-limit=0 -Wall -Wextra -Werror -Wstrict-aliasing=2 -Weverything -Wno-documentation-deprecated-sync -Wno-documentation-unknown-command -Wno-gnu-anonymous-struct -Wno-undef -Wno-unused-function -Wno-nested-anon-types -Wno-float-equal -Wno-padded -Wno-weak-vtables -Wno-cast-align -Wno-conversion -Wno-missing-noreturn -Wno-missing-variable-declarations -Wno-shift-sign-overflow -Wno-covered-switch-default -Wno-exit-time-destructors -Wno-global-constructors -Wno-missing-prototypes -Wno-unreachable-code -Wno-unused-macros -Wno-unused-member-function -Wno-used-but-marked-unused -Wno-weak-template-vtables -Wno-deprecated -Wno-non-virtual-dtor -Wno-invalid-noreturn -Wno-return-type-c-linkage -Wno-reserved-id-macro -Wno-c++98-compat-pedantic -Wno-unused-local-typedef -Wno-old-style-cast -Wno-newline-eof -Wno-unused-private-field -Wno-format-nonliteral -Wno-implicit-fallthrough -Wno-undefined-reinterpret-cast -Wno-disabled-macro-expansion -Wno-zero-as-null-pointer-constant -Wno-shadow -Wno-unknown-warning-option -Wno-atomic-implicit-seq-cst -Wno-extra-semi-stmt")
 SET(GCC_WARNINGS "-Wall -Werror -Wno-invalid-offsetof -Wno-uninitialized")
 
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -60,27 +60,21 @@ IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
 	SET(CUDA_FLAG "DISABLE_CUDA_PHYSX")
 ENDIF()
 
-SET(PHYSX_LINUX_COMPILE_DEFS "${CUDA_FLAG};${PHYSX_AUTOBUILD};${PHYSX_AUTOBUILDNUMBER}" CACHE INTERNAL "Base PhysX preprocessor definitions")
+SET(PHYSX_LINUX_COMPILE_DEFS "${CUDA_FLAG};${PHYSX_AUTOBUILD}" CACHE INTERNAL "Base PhysX preprocessor definitions")
 
 SET(PHYSX_LINUX_DEBUG_COMPILE_DEFS   "NDEBUG;PX_DEBUG=1;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1"  CACHE INTERNAL "Debug PhysX preprocessor definitions")
 SET(PHYSX_LINUX_CHECKED_COMPILE_DEFS "NDEBUG;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Checked PhysX preprocessor definitions")
 SET(PHYSX_LINUX_PROFILE_COMPILE_DEFS "NDEBUG;PX_PROFILE=1;${NVTX_FLAG};PX_SUPPORT_PVD=1"  CACHE INTERNAL "Profile PhysX preprocessor definitions")
 SET(PHYSX_LINUX_RELEASE_COMPILE_DEFS "NDEBUG;PX_SUPPORT_PVD=0" CACHE INTERNAL "Release PhysX preprocessor definitions")
 
-SET(GENERATED_GPU_CUDA_FILES "")
 
 # Include all of the projects
 IF(PX_GENERATE_GPU_PROJECTS_ONLY)
 	INCLUDE(PhysXCommon.cmake)
-	INCLUDE(PhysXBroadphaseGpu.cmake)
-	INCLUDE(PhysXCommonGpu.cmake)
-	INCLUDE(PhysXNarrowphaseGpu.cmake)
-	INCLUDE(PhysXSimulationControllerGpu.cmake)
-	INCLUDE(PhysXSolverGpu.cmake)
-	INCLUDE(CloudGpu.cmake)
-	INCLUDE(PhysXCudaContextManager.cmake)
-	INCLUDE(PhysXArticulationGpu.cmake)
-	INCLUDE(PhysXGpu.cmake)	 # must be last
+	INCLUDE(PhysXFoundation.cmake)
+
+	SET_PROPERTY(TARGET PhysXCommon PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXFoundation PROPERTY FOLDER "PhysX SDK")
 ELSE()
 	INCLUDE(PhysXFoundation.cmake)
 	INCLUDE(LowLevel.cmake)
@@ -97,22 +91,25 @@ ELSE()
 	INCLUDE(FastXml.cmake)
 	INCLUDE(PhysXPvdSDK.cmake)
 	INCLUDE(PhysXTask.cmake)
+
+	# Set folder PhysX SDK to all common SDK source projects
+	SET_PROPERTY(TARGET PhysX PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXCharacterKinematic PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXCommon PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXCooking PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXExtensions PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXVehicle PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET LowLevel PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET LowLevelAABB PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET LowLevelDynamics PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET SceneQuery PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET SimulationController PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET FastXml PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXPvdSDK PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXTask PROPERTY FOLDER "PhysX SDK")
+	SET_PROPERTY(TARGET PhysXFoundation PROPERTY FOLDER "PhysX SDK")	
 	
 	SET(PHYSXDISTRO_LIBS PhysXFoundation PhysX PhysXCharacterKinematic PhysXPvdSDK PhysXCommon PhysXCooking PhysXExtensions PhysXVehicle)
-	
-	IF(PX_GENERATE_GPU_PROJECTS)
-			INCLUDE(PhysXBroadphaseGpu.cmake)
-			INCLUDE(PhysXCommonGpu.cmake)
-			INCLUDE(PhysXNarrowphaseGpu.cmake)
-			INCLUDE(PhysXSimulationControllerGpu.cmake)
-			INCLUDE(PhysXSolverGpu.cmake)
-			INCLUDE(CloudGpu.cmake)
-			INCLUDE(PhysXCudaContextManager.cmake)
-			INCLUDE(PhysXArticulationGpu.cmake)
-			INCLUDE(PhysXGpu.cmake)		# must be last
-			
-			LIST(APPEND PHYSXDISTRO_LIBS PhysXGpu)
-	ENDIF()
 	
 	INSTALL(
 		TARGETS ${PHYSXDISTRO_LIBS}

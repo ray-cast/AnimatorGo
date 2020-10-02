@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -144,6 +144,20 @@ public:
 	\param[in] f The solver batch size
 	*/
  	PX_FORCE_INLINE void				setSolverBatchSize(PxU32 f)				{ mSolverBatchSize = f;		}
+
+	/**
+	\brief Returns the solver batch size
+	\return The solver batch size.
+	*/
+	PX_FORCE_INLINE PxU32				getSolverArticBatchSize()				const { return mSolverArticBatchSize; }
+	/**
+	\brief Sets the solver batch size
+	\param[in] f The solver batch size
+	*/
+	PX_FORCE_INLINE void				setSolverArticBatchSize(PxU32 f) { mSolverArticBatchSize = f; }
+
+
+
 	/**
 	\brief Returns the maximum solver constraint size
 	\return The maximum solver constraint size in this island in bytes.
@@ -344,6 +358,11 @@ protected:
 	\brief The minimum size of an island to generate a solver task chain.
 	*/
 	PxU32						mSolverBatchSize;
+
+	/**
+	\brief The minimum number of articulations required to generate a solver task chain.
+	*/
+	PxU32						mSolverArticBatchSize;
 
 	/**
 	\brief The current friction model being used

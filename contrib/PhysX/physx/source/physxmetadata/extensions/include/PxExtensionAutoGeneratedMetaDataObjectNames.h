@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -52,14 +52,6 @@ PxJoint_Name,
 PxJoint_Scene,
 PxJoint_UserData,
 PxJoint_PropertiesStop,
-PxContactJoint_PropertiesStart,
-PxContactJoint_Contact,
-PxContactJoint_ContactNormal,
-PxContactJoint_Penetration,
-PxContactJoint_Resititution,
-PxContactJoint_BounceThreshold,
-PxContactJoint_ConcreteTypeName,
-PxContactJoint_PropertiesStop,
 PxD6Joint_PropertiesStart,
 PxD6Joint_Motion,
 PxD6Joint_TwistAngle,
@@ -87,6 +79,14 @@ PxDistanceJoint_Damping,
 PxDistanceJoint_DistanceJointFlags,
 PxDistanceJoint_ConcreteTypeName,
 PxDistanceJoint_PropertiesStop,
+PxContactJoint_PropertiesStart,
+PxContactJoint_Contact,
+PxContactJoint_ContactNormal,
+PxContactJoint_Penetration,
+PxContactJoint_Resititution,
+PxContactJoint_BounceThreshold,
+PxContactJoint_ConcreteTypeName,
+PxContactJoint_PropertiesStop,
 PxFixedJoint_PropertiesStart,
 PxFixedJoint_ProjectionLinearTolerance,
 PxFixedJoint_ProjectionAngularTolerance,

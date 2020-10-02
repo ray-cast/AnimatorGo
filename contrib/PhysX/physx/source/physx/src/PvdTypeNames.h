@@ -23,15 +23,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 #ifndef PVD_TYPE_NAMES_H
 #define PVD_TYPE_NAMES_H
 #if PX_SUPPORT_PVD
+#include "geometry/PxHeightFieldSample.h"
 #include "PxPvdObjectModelBaseTypes.h"
 #include "PxMetaDataObjects.h"
-#include "PxHeightFieldSample.h"
 
 namespace physx
 {
@@ -137,6 +137,8 @@ DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationBase)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationBaseGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulation)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationGeneratedValues)
+DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationReducedCoordinate)
+DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationReducedCoordinateGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationLink)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationLinkGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJointBase)
@@ -144,6 +146,7 @@ DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJointBaseGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJoint)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJointGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJointReducedCoordinate)
+DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxArticulationJointReducedCoordinateGeneratedValues)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxAggregate)
 DEFINE_NATIVE_PVD_PHYSX3_TYPE_MAP(PxAggregateGeneratedValues)
 

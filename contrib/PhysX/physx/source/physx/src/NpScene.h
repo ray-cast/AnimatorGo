@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -47,7 +47,6 @@
 
 namespace physx
 {
-
 class PhysicsThread;
 class PxBatchQueryDesc;
 class NpMaterial;
@@ -74,18 +73,6 @@ class NpShapeManager;
 class NpBatchQuery;
 
 class PxBatchQuery;
-
-enum NpProfileZones
-{
-	NpScene_checkResults,
-	NpScene_reportContacts,
-	NpScene_reportProfiling,
-	NpScene_reportTriggers,
-	NpScene_stats,
-
-	NpPrNumZones
-};
-
 
 class NpContactCallbackTask : public physx::PxLightCpuTask
 {
@@ -191,6 +178,8 @@ class NpScene : public NpSceneQueries, public Ps::UserAllocated
 	virtual			PxSimulationFilterCallback*		getFilterCallback() const;
 	virtual			void							resetFiltering(PxActor& actor);
 	virtual			void							resetFiltering(PxRigidActor& actor, PxShape*const* shapes, PxU32 shapeCount);
+	virtual			PxPairFilteringMode::Enum		getKinematicKinematicFilteringMode()	const;
+	virtual			PxPairFilteringMode::Enum		getStaticKinematicFilteringMode()		const;
 
 	// Get Physics SDK
 	virtual			PxPhysics&						getPhysics();
@@ -206,8 +195,6 @@ class NpScene : public NpSceneQueries, public Ps::UserAllocated
 	virtual			bool							fetchResultsStart(const PxContactPairHeader*& contactPairs, PxU32& nbContactPairs, bool block = false);
 	virtual			void							processCallbacks(physx::PxBaseTask* continuation);
 	virtual			void							fetchResultsFinish(PxU32* errorState = 0);
-
-
 
 	virtual			void							flush(bool sendPendingReports) { flushSimulation(sendPendingReports); }
 	virtual			void							flushSimulation(bool sendPendingReports);
@@ -228,6 +215,9 @@ class NpScene : public NpSceneQueries, public Ps::UserAllocated
 	virtual			void							setSolverBatchSize(PxU32 solverBatchSize);
 	virtual			PxU32							getSolverBatchSize(void) const;
 
+	virtual			void							setSolverArticulationBatchSize(PxU32 solverBatchSize);
+	virtual			PxU32							getSolverArticulationBatchSize(void) const;
+
 	virtual			bool							setVisualizationParameter(PxVisualizationParameter::Enum param, PxReal value);
 	virtual			PxReal							getVisualizationParameter(PxVisualizationParameter::Enum param) const;
 
@@ -236,6 +226,8 @@ class NpScene : public NpSceneQueries, public Ps::UserAllocated
 
 	virtual			PxTaskManager*					getTaskManager()	{ return mTaskManager; }
 					void							checkBeginWrite() const {}
+
+	virtual			PxCudaContextManager*			getCudaContextManager() { return mCudaContextManager; }
 					
 	virtual         void							setNbContactDataBlocks(PxU32 numBlocks);
 	virtual         PxU32							getNbContactDataBlocksUsed() const;
@@ -247,7 +239,7 @@ class NpScene : public NpSceneQueries, public Ps::UserAllocated
 	virtual			PxU32							getSceneQueryStaticTimestamp()	const;
 
 	virtual			PxCpuDispatcher*				getCpuDispatcher() const;
-	virtual			PxGpuDispatcher*				getGpuDispatcher() const;
+	virtual			PxCudaContextManager*			getCudaContextManager() const;
 
 	virtual			PxPruningStructureType::Enum	getStaticStructure() const;
 	virtual			PxPruningStructureType::Enum	getDynamicStructure() const;
@@ -369,8 +361,6 @@ private:
 					void							fetchResultsPreContactCallbacks();
 					void							fetchResultsPostContactCallbacks();
 
-
-
 					void							updateScbStateAndSetupSq(const PxRigidActor& rigidActor, Scb::Actor& actor, NpShapeManager& shapeManager, bool actorDynamic, const PxBounds3* bounds, bool hasPrunerStructure);
 	PX_FORCE_INLINE	void							updateScbStateAndSetupSq(const PxRigidActor& rigidActor, Scb::Body& body, NpShapeManager& shapeManager, bool actorDynamic, const PxBounds3* bounds, bool hasPrunerStructure);
 
@@ -391,13 +381,11 @@ private:
 					Ps::Sync						mCollisionDone;		// physics thread signals this when all collisions ready
 					Ps::Sync						mSceneQueriesDone;	// physics thread signals this when all scene queries update ready
 
-
 		//legacy timing settings:
 					PxReal							mElapsedTime;		//needed to transfer the elapsed time param from the user to the sim thread.
 
 					PxU32							mNbClients;		// Tracks reserved clients for multiclient support.
 					Ps::Array<PxU32>				mClientBehaviorFlags;// Tracks behavior bits for clients.
-
 
 					struct SceneCompletion : public Cm::Task
 					{
@@ -433,8 +421,8 @@ private:
 					typedef Cm::DelegateTask<NpScene, &NpScene::executeCollide> SceneCollide;
 					typedef Cm::DelegateTask<NpScene, &NpScene::executeAdvance> SceneAdvance;
 					
-
 					PxTaskManager*					mTaskManager;
+					PxCudaContextManager*			mCudaContextManager;
 					SceneCompletion					mSceneCompletion;
 					SceneCompletion					mCollisionCompletion;
 					SceneCompletion					mSceneQueriesCompletion;
@@ -461,12 +449,10 @@ private:
 					bool							mBuildFrozenActors;
 };
 
-
 PX_FORCE_INLINE	void NpScene::addToConstraintList(PxConstraint& constraint)
 {
 	mConstraints.insert(&constraint);
 }
-
 
 PX_FORCE_INLINE	void NpScene::removeFromConstraintList(PxConstraint& constraint)
 {
@@ -475,14 +461,12 @@ PX_FORCE_INLINE	void NpScene::removeFromConstraintList(PxConstraint& constraint)
 	PX_UNUSED(exists);
 }
 
-
 PX_FORCE_INLINE void NpScene::removeFromArticulationList(PxArticulationBase& articulation)
 {
 	const bool exists = mArticulations.erase(&articulation);
 	PX_ASSERT(exists);
 	PX_UNUSED(exists);
 }
-
 
 PX_FORCE_INLINE void NpScene::removeFromAggregateList(PxAggregate& aggregate)
 {

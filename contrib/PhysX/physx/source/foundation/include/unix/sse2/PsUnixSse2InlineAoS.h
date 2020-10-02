@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -172,12 +172,12 @@ PX_FORCE_INLINE PxU32 FiniteTestEq(const Vec4V a, const Vec4V b)
 #if !PX_EMSCRIPTEN
 const PX_ALIGN(16, PxF32 gMaskXYZ[4]) = { physx::PxUnionCast<PxF32>(0xffffffff), physx::PxUnionCast<PxF32>(0xffffffff),
 	                                      physx::PxUnionCast<PxF32>(0xffffffff), 0 };
-}
 #else
 // emscripten doesn't like the PxUnionCast data structure
 // the following is what windows and xbox does -- using these for emscripten
 const PX_ALIGN(16, PxU32 gMaskXYZ[4]) = { 0xffffffff, 0xffffffff, 0xffffffff, 0 }; }
 #endif
+}
 
 namespace _VecMathTests
 {

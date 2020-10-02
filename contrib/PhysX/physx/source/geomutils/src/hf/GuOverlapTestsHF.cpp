@@ -23,17 +23,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#include "geometry/PxSphereGeometry.h"
+#include "geometry/PxBoxGeometry.h"
+#include "geometry/PxCapsuleGeometry.h"
+#include "geometry/PxPlaneGeometry.h"
+#include "geometry/PxConvexMeshGeometry.h"
+
 #include "PsIntrinsics.h"
 #include "PsAllocator.h"
-#include "GuOverlapTests.h"
-
 #include "PsUtilities.h"
 #include "PsVecMath.h"
 
+#include "GuOverlapTests.h"
 #include "GuHeightFieldUtil.h"
 #include "GuIntersectionBoxBox.h"
 #include "GuIntersectionTriangleBox.h"
@@ -41,20 +46,11 @@
 #include "GuDistanceSegmentBox.h"
 #include "GuDistanceSegmentSegment.h"
 #include "GuDistanceSegmentSegmentSIMD.h"
-
-#include "PxSphereGeometry.h"
-#include "PxBoxGeometry.h"
-#include "PxCapsuleGeometry.h"
-#include "PxPlaneGeometry.h"
-#include "PxConvexMeshGeometry.h"
-
 #include "GuCapsule.h"
 #include "GuEdgeCache.h"
 #include "GuBoxConversion.h"
-
 #include "GuInternal.h"
 #include "GuConvexUtilsInternal.h"
-
 #include "GuVecTriangle.h"
 #include "GuVecSphere.h"
 #include "GuVecCapsule.h"

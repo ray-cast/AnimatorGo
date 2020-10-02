@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -119,16 +119,20 @@ template<typename T>
 PxU32 getConnectors(NpConnectorType::Enum type, T** userBuffer, PxU32 bufferSize, PxU32 startIndex=0) const
 {
 	PxU32 nbConnectors = 0;
+	PxU32 virtualIndex = 0;
 
 	if(mConnectorArray)
 	{
 		for(PxU32 i=0; i < mConnectorArray->size(); i++)
 		{
 			NpConnector& c = (*mConnectorArray)[i];
-			if (c.mType == type && nbConnectors < bufferSize && i>=startIndex)
+			if (c.mType == type && nbConnectors < bufferSize)
 			{
-				userBuffer[nbConnectors] = static_cast<T*>(c.mObject);
-				nbConnectors++;
+				if (virtualIndex++ >= startIndex)
+				{
+					userBuffer[nbConnectors] = static_cast<T*>(c.mObject);
+					nbConnectors++;
+				}
 			}
 		}
 	}

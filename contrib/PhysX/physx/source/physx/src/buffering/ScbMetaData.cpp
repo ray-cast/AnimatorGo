@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -42,7 +42,6 @@ using namespace physx;
 
 void Scb::Base::getBinaryMetaData(PxOutputStream& stream)
 {
-	// 28 => 12 bytes
 	PX_DEF_BIN_METADATA_TYPEDEF(stream,	ScbType::Enum, PxU32)
 
 	PX_DEF_BIN_METADATA_CLASS(stream,	Scb::Base)
@@ -56,7 +55,6 @@ void Scb::Base::getBinaryMetaData(PxOutputStream& stream)
 
 void Scb::Shape::getBinaryMetaData(PxOutputStream& stream)
 {
-	// 176 => 160 bytes
 	PX_DEF_BIN_METADATA_CLASS(stream,		Scb::Shape)
 	PX_DEF_BIN_METADATA_BASE_CLASS(stream,	Scb::Shape, Scb::Base)
 	PX_DEF_BIN_METADATA_ITEM(stream,		Scb::Shape, ShapeCore,	mShape,	0)
@@ -82,7 +80,6 @@ void Scb::RigidObject::getBinaryMetaData(PxOutputStream& stream)
 
 void Scb::Body::getBinaryMetaData(PxOutputStream& stream)
 {
-	// 240 => 224 bytes
 	PX_DEF_BIN_METADATA_CLASS(stream,		Scb::Body)
 	PX_DEF_BIN_METADATA_BASE_CLASS(stream,	Scb::Body, Scb::RigidObject)
 
@@ -135,7 +132,6 @@ void Scb::ArticulationJoint::getBinaryMetaData(PxOutputStream& stream)
 
 void Scb::Constraint::getBinaryMetaData(PxOutputStream& stream)
 {
-	// 120 => 108 bytes
 	PX_DEF_BIN_METADATA_CLASS(stream,		Scb::Constraint)
 	PX_DEF_BIN_METADATA_BASE_CLASS(stream,	Scb::Constraint, Scb::Base)
 

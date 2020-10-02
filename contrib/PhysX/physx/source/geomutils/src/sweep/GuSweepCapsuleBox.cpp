@@ -23,20 +23,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxBounds3.h"
 #include "foundation/PxTransform.h"
+#include "geometry/PxTriangle.h"
+
 #include "GuSweepCapsuleBox.h"
 #include "GuSweepSphereTriangle.h"
 #include "GuCapsule.h"
-#include "PxTriangle.h"
 #include "GuDistanceSegmentBox.h"
 #include "GuInternal.h"
-#include "PsAlloca.h"
 #include "GuSIMDHelpers.h"
+#include "PsAlloca.h"
 
 using namespace physx;
 using namespace Gu;

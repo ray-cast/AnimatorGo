@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -34,7 +34,7 @@
 
 #if PX_WINDOWS && !PX_NEON
 #include "windows/PsWindowsAoS.h"
-#elif(PX_UNIX_FAMILY || PX_PS4 || PX_SWITCH)
+#elif(PX_UNIX_FAMILY || PX_PS4 || PX_SWITCH || (PX_UWP && PX_NEON))
 #include "unix/PsUnixAoS.h"
 #elif PX_XBOXONE
 #include "XboxOne/PsXboxOneAoS.h"

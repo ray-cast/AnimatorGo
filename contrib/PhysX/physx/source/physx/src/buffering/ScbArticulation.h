@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -91,7 +91,7 @@ public:
 private:
 
 public:
-	PX_INLINE									Articulation();
+	PX_INLINE									Articulation(bool reducedCoordinate);
 	PX_INLINE									~Articulation() {}
 
 	//---------------------------------------------------------------------------------
@@ -134,8 +134,7 @@ public:
 	PX_INLINE		PxArticulationFlags		getArticulationFlags() const { return mBufferedArticulationFlags; }
 	PX_INLINE		void					setArticulationFlags(PxArticulationFlags flags);
 
-	PX_INLINE		PxArticulationBase::Enum		getArticulationType() const { return mArticulation.getArticulationType(); }
-	PX_INLINE		void							setArticulationType(PxArticulationBase::Enum type) { mArticulation.setArticulationType(type); }
+	PX_INLINE		bool		isReducedCoordinate() const { return mArticulation.isReducedCoordinate(); }
 
 	PX_FORCE_INLINE	void		wakeUp();
 	PX_FORCE_INLINE	void		putToSleep();
@@ -183,7 +182,8 @@ private:
 #endif
 };
 
-Articulation::Articulation()
+Articulation::Articulation(bool reducedCoordinate)
+	: mArticulation(reducedCoordinate)
 {
 	setScbType(ScbType::eARTICULATION);
 	mBufferedWakeCounter = mArticulation.getWakeCounter();

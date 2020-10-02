@@ -23,18 +23,19 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "GuIntersectionRayBox.h"
-#include "PxGeometryQuery.h"
+#include "common/PxProfileZone.h"
+#include "geometry/PxGeometryQuery.h"
+
 #include "NpRigidDynamic.h"
 #include "NpQueryShared.h"
 #include "SqPruner.h"
+#include "GuIntersectionRayBox.h"
 #include "GuBounds.h"
 #include "GuIntersectionRay.h"
-#include "common/PxProfileZone.h"
 
 // Synchronous scene queries
 
@@ -681,8 +682,6 @@ bool NpSceneQueries::multiQuery(
 	const PxQueryFilterData& filterData, PxQueryFilterCallback* filterCall, BatchQueryFilterData* bfd) const
 {
 	const bool anyHit = (filterData.flags & PxQueryFlag::eANY_HIT) == PxQueryFlag::eANY_HIT;
-
-	PxI32 retval = 0; PX_UNUSED(retval);
 
 	if(HitTypeSupport<HitType>::IsRaycast == 0)
 	{

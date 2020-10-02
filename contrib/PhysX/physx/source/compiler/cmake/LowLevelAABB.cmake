@@ -23,7 +23,7 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 #
 # Build LowLevelAABB common
@@ -78,9 +78,6 @@ TARGET_INCLUDE_DIRECTORIES(LowLevelAABB
 	PRIVATE ${PHYSXFOUNDATION_INCLUDES}
 
 	PRIVATE ${PHYSX_ROOT_DIR}/include
-	PRIVATE ${PHYSX_ROOT_DIR}/include/common
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geometry
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geomutils
 
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/include
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/src

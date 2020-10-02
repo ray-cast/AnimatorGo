@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -42,7 +42,7 @@ ThreadContext::ThreadContext(PxcNpMemBlockPool* memBlockPool):
 	mConstraintBlockStream	(*memBlockPool),
 	mNumDifferentBodyConstraints(0),
 	mNumSelfConstraints(0),
-	mNumSelfConstraintBlocks(0),
+	mNumStaticConstraints(0),
 	mConstraintsPerPartition(PX_DEBUG_EXP("ThreadContext::mConstraintsPerPartition")),
 	mFrictionConstraintsPerPartition(PX_DEBUG_EXP("ThreadContext::frictionsConstraintsPerPartition")),
 	mPartitionNormalizationBitmap(PX_DEBUG_EXP("ThreadContext::mPartitionNormalizationBitmap")),
@@ -101,8 +101,8 @@ void ThreadContext::reset()
 	mMaxSolverVelocityIterations = 0;
 	mNumDifferentBodyConstraints = 0;
 	mNumSelfConstraints = 0;
+	mNumStaticConstraints = 0;
 	mSelfConstraintBlocks = NULL;
-	mNumSelfConstraintBlocks = 0;
 	mConstraintSize = 0;
 }
 

@@ -23,33 +23,34 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 
 #include "foundation/PxErrorCallback.h"
+#include "common/PxPhysicsInsertionCallback.h"
+#include "geometry/PxSimpleTriangleMesh.h"
+#include "geometry/PxHeightFieldDesc.h"
+#include "cooking/PxTriangleMeshDesc.h"
+#include "cooking/PxConvexMeshDesc.h"
+#include "cooking/PxCooking.h"
+#include "PxPhysXConfig.h"
+
 #include "PsFoundation.h"
 #include "PsUtilities.h"
 #include "PsFPU.h"
 #include "CmPhysXCommon.h"
-#include "PxPhysXConfig.h"
-#include "PxSimpleTriangleMesh.h"
-#include "PxTriangleMeshDesc.h"
-#include "PxConvexMeshDesc.h"
-#include "PxCooking.h"
+#include "CmIO.h"
+#include "CmUtils.h"
 #include "Cooking.h"
 #include "mesh/TriangleMeshBuilder.h"
 #include "GuConvexMesh.h"
+#include "GuHeightField.h"
 #include "ConvexMeshBuilder.h"
 #include "BVHStructureBuilder.h"
 #include "QuickHullConvexHullLib.h"
-#include "CmIO.h"
-#include "PxHeightFieldDesc.h"
-#include "GuHeightField.h"
 #include "HeightFieldCooking.h"
-#include "common/PxPhysicsInsertionCallback.h"
-#include "CmUtils.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -341,12 +342,11 @@ PxConvexMesh* Cooking::createConvexMesh(const PxConvexMeshDesc& desc_, PxPhysics
 	
 	// copy the constructed data into the new mesh
 
-	PxU32 nb = 0;
-	Gu::ConvexHullData meshData;
-	meshBuilder.copy(meshData, nb);
+	Gu::ConvexHullInitData meshData;
+	meshBuilder.copy(meshData);
 
 	// insert into physics
-	Gu::ConvexMesh* convexMesh = static_cast<Gu::ConvexMesh*>(insertionCallback.buildObjectFromData(PxConcreteType::eCONVEX_MESH, &meshData));
+	PxConvexMesh* convexMesh = static_cast<PxConvexMesh*>(insertionCallback.buildObjectFromData(PxConcreteType::eCONVEX_MESH, &meshData));
 	if (!convexMesh)
 	{
 		if(condition)
@@ -354,15 +354,6 @@ PxConvexMesh* Cooking::createConvexMesh(const PxConvexMeshDesc& desc_, PxPhysics
 		if (hullLib)
 			PX_DELETE(hullLib);
 		return NULL;
-	}
-
-	convexMesh->setNb(nb);
-	convexMesh->setMass(meshBuilder.getMass());
-	convexMesh->setInertia(meshBuilder.getInertia());
-	if(meshBuilder.getBigConvexData())
-	{
-		convexMesh->setBigConvexData(meshBuilder.getBigConvexData());
-		meshBuilder.setBigConvexData(NULL);
 	}
 
 	if(hullLib)

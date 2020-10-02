@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -427,7 +427,7 @@ public:
 	DEFINE_PVD_PROPERTY_NOP( PxContactModifyCallback * )
 	DEFINE_PVD_PROPERTY_NOP( PxCCDContactModifyCallback * )
 	DEFINE_PVD_PROPERTY_NOP( PxSimulationEventCallback * )
-	DEFINE_PVD_PROPERTY_NOP( physx::PxGpuDispatcher* )
+	DEFINE_PVD_PROPERTY_NOP( physx::PxCudaContextManager* )
 	DEFINE_PVD_PROPERTY_NOP( physx::PxCpuDispatcher * )
 	DEFINE_PVD_PROPERTY_NOP( PxRigidActor )
 	DEFINE_PVD_PROPERTY_NOP( const PxRigidActor )
@@ -439,8 +439,8 @@ public:
 	DEFINE_PVD_PROPERTY_NOP( PxConstraint& )
 	DEFINE_PVD_PROPERTY_NOP( const PxConstraint& )
 	DEFINE_PVD_PROPERTY_NOP( PxAggregate * )
-	DEFINE_PVD_PROPERTY_NOP( PxArticulation& )
 	DEFINE_PVD_PROPERTY_NOP( PxArticulationBase& )
+	DEFINE_PVD_PROPERTY_NOP( PxArticulation& )
 	DEFINE_PVD_PROPERTY_NOP( PxArticulationReducedCoordinate&)
 	DEFINE_PVD_PROPERTY_NOP( const PxArticulationLink * )
 	DEFINE_PVD_PROPERTY_NOP( const PxRigidDynamic * )

@@ -23,16 +23,17 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PxController.h"
-#include "CctBoxController.h"
-#include "CctCharacterControllerManager.h"
-#include "PxBoxGeometry.h"
+#include "geometry/PxBoxGeometry.h"
+#include "characterkinematic/PxController.h"
 #include "PxRigidDynamic.h"
 #include "PxShape.h"
+
+#include "CctBoxController.h"
+#include "CctCharacterControllerManager.h"
 
 using namespace physx;
 using namespace Cct;

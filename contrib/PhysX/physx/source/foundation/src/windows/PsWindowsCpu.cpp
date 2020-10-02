@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -42,7 +42,7 @@ namespace physx
 namespace shdfnd
 {
 
-#if PX_ARM
+#if PX_ARM || PX_A64
 #define cpuid(reg) reg[0] = reg[1] = reg[2] = reg[3] = 0;
 
 uint8_t Cpu::getCpuId()

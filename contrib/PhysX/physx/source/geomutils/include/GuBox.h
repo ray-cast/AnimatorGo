@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -34,11 +34,11 @@
 @{
 */
 
-#include "PxPhysXCommonConfig.h"
-#include "CmPhysXCommon.h"
-#include "CmScaling.h"
 #include "foundation/PxTransform.h"
 #include "foundation/PxMat33.h"
+#include "common/PxPhysXCommonConfig.h"
+#include "CmPhysXCommon.h"
+#include "CmScaling.h"
 
 namespace physx
 {

@@ -23,25 +23,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #ifndef PX_PHYSICS_SCB_SHAPE
 #define PX_PHYSICS_SCB_SHAPE
 
+#include "common/PxSerialFramework.h"
+#include "PsUtilities.h"
 #include "NpMaterial.h"
 #include "NpPhysics.h"
 #include "ScbNpDeps.h"
 #include "ScShapeCore.h"
 #include "ScRigidCore.h"
-
-#include "PsUtilities.h"
-
-// PX_SERIALIZATION
-#include "PxSerialFramework.h"
-//~PX_SERIALIZATION
-
 #include "ScbDefs.h"
 
 namespace physx

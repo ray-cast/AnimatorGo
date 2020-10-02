@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -51,6 +51,38 @@ class PxVehicleTireForceCalculator;
 class PxShape;
 class PxPhysics;
 class PxMaterial;
+
+/**
+\brief Flags to configure the vehicle wheel simulation.
+
+@see PxVehicleWheelsSimData::setFlags(), PxVehicleWheelsSimData::getFlags()
+*/
+struct PxVehicleWheelsSimFlag
+{
+	enum Enum
+	{
+		/**
+		\brief Limit the suspension expansion velocity.
+
+		For extreme damping ratios, large damping forces might result in the vehicle sticking to the ground where
+		one would rather expect to see the vehicle lift off. While it is highly recommended to use somewhat realistic 
+		damping ratios, this flag can be used to limit the velocity of the suspension. In more detail, the simulation 
+		will check whether the suspension can extend to the target length in the given simulation time step. If that 
+		is the case, the suspension force will be computed as usual, else the force will be set to zero. Enabling 
+		this feature gives a slightly more realisitic behavior at the potential cost of more easily losing control 
+		when steering the vehicle.
+		*/
+		eLIMIT_SUSPENSION_EXPANSION_VELOCITY = (1 << 0)
+	};
+};
+
+/**
+\brief Collection of set bits defined in #PxVehicleWheelsSimFlag.
+
+@see PxVehicleWheelsSimFlag
+*/
+typedef PxFlags<PxVehicleWheelsSimFlag::Enum, PxU32> PxVehicleWheelsSimFlags;
+PX_FLAGS_OPERATORS(PxVehicleWheelsSimFlag::Enum, PxU32)
 
 /**
 \brief Data structure describing configuration data of a vehicle with up to 20 wheels.
@@ -408,6 +440,26 @@ public:
 	*/
 	void setMinLongSlipDenominator(const PxReal minLongSlipDenominator);
 
+	/**
+	\brief Set the vehicle wheel simulation flags.
+
+	\param[in] flags The flags to set (see #PxVehicleWheelsSimFlags).
+
+	<b>Default:</b> no flag set
+
+	@see PxVehicleWheelsSimFlag
+	*/
+	void setFlags(PxVehicleWheelsSimFlags flags);
+
+	/**
+	\brief Return the vehicle wheel simulation flags.
+
+	\return The values of the flags.
+
+	@see PxVehicleWheelsSimFlag
+	*/
+	PxVehicleWheelsSimFlags getFlags() const;
+
 private:
 
 	/**
@@ -476,9 +528,14 @@ private:
 	*/
 	PxF32 mMinLongSlipDenominator;
 
+	/**
+	\brief The vehicle wheel simulation flags.
+
+	@see PxVehicleWheelsSimFlags
+	*/
+	PxU32 mFlags;
+
 #if PX_P64_FAMILY
-	PxU32 mPad[2];
-#else 
 	PxU32 mPad[1];
 #endif
 
@@ -749,6 +806,11 @@ protected:
 	*/
 	void free();
 
+	/*
+	\brief Deferred deletion.
+	*/
+	void onConstraintRelease();
+
 	/**
 	@see PxVehicleDrive4W::setup, PxVehicleDriveTank::setup
 	*/
@@ -790,6 +852,7 @@ public:
 	virtual		void			requiresObjects(PxProcessPxBaseCallback& c);
 	virtual		const char*		getConcreteTypeName() const				{	return "PxVehicleWheels"; }
 	virtual		bool			isKindOf(const char* name)	const		{	return !::strcmp("PxVehicleWheels", name) || PxBase::isKindOf(name); }
+	virtual		void			preExportDataReset() {}
 	virtual		void			exportExtraData(PxSerializationContext&);	
 				void			importExtraData(PxDeserializationContext&);
 				void			resolveReferences(PxDeserializationContext&);

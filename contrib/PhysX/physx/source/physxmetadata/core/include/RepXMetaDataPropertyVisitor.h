@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -150,6 +150,13 @@ namespace physx {
 			mFilter.mOperator.popName();
 		}
 
+		void operator()( const PxRigidActorGlobalPosePropertyInfo& inProp, PxU32 ) 
+		{
+			mFilter.mOperator.pushName( inProp.mName );
+			mFilter.mOperator.handleRigidActorGlobalPose( inProp );
+			mFilter.mOperator.popName();
+		}
+
 		void operator()( const PxRigidActorShapeCollection& inProp, PxU32 )
 		{
 			mFilter.mOperator.pushName( "Shapes" );
@@ -194,7 +201,7 @@ namespace physx {
 		DEFINE_REPX_PROPERTY_NOP( PxContactModifyCallback * )
 		DEFINE_REPX_PROPERTY_NOP( PxCCDContactModifyCallback * )
 		DEFINE_REPX_PROPERTY_NOP( PxSimulationEventCallback * )
-		DEFINE_REPX_PROPERTY_NOP( physx::PxGpuDispatcher* )
+		DEFINE_REPX_PROPERTY_NOP( physx::PxCudaContextManager* )
 		DEFINE_REPX_PROPERTY_NOP( physx::PxCpuDispatcher * )
 		DEFINE_REPX_PROPERTY_NOP( PxRigidActor )
 		DEFINE_REPX_PROPERTY_NOP( const PxRigidActor )
@@ -203,6 +210,7 @@ namespace physx {
 		DEFINE_REPX_PROPERTY_NOP( PxScene* )
 		DEFINE_REPX_PROPERTY_NOP( PxAggregate * )
 		DEFINE_REPX_PROPERTY_NOP( PxArticulation& )
+		DEFINE_REPX_PROPERTY_NOP( PxArticulationReducedCoordinate& )
 		DEFINE_REPX_PROPERTY_NOP( const PxArticulationLink * )
 		DEFINE_REPX_PROPERTY_NOP( const PxRigidDynamic * )
 		DEFINE_REPX_PROPERTY_NOP( const PxRigidStatic * )

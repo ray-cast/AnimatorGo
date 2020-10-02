@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -33,8 +33,9 @@
 /* Exclude from documentation */
 /** \cond */
 
+#include "characterkinematic/PxCapsuleController.h"
+
 #include "CctController.h"
-#include "PxCapsuleController.h"
 
 namespace physx
 {
@@ -65,7 +66,7 @@ namespace Cct
 		virtual	bool								setFootPosition(const PxExtendedVec3& position);
 		virtual	PxExtendedVec3						getFootPosition()					const;
 		virtual	PxRigidDynamic*						getActor()							const					{ return mKineActor;					}
-		virtual	void								setStepOffset(const float offset)							{ if(offset>0.0f)
+		virtual	void								setStepOffset(const float offset)							{ if(offset>=0.0f)
 																													mUserParams.mStepOffset = offset;	}
 		virtual	PxF32								getStepOffset()						const					{ return mUserParams.mStepOffset;		}
 		virtual	void								setNonWalkableMode(PxControllerNonWalkableMode::Enum flag)	{ mUserParams.mNonWalkableMode = flag;	}

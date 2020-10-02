@@ -23,18 +23,19 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxVec4.h"
 #include "foundation/PxMemory.h"
+#include "geometry/PxTriangle.h"
+
 #include "GuBV4Build.h"
 #include "GuBV4.h"
-#include "PxTriangle.h"
+#include "GuCenterExtents.h"
 #include "CmPhysXCommon.h"
 #include "PsBasicTemplates.h"
-#include "GuCenterExtents.h"
 #include <stdio.h>
 
 using namespace physx;

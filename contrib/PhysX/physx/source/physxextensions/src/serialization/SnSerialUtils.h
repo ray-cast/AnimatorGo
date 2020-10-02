@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -33,6 +33,8 @@
 
 #include "CmPhysXCommon.h"
 
+#define SN_BINARY_VERSION_GUID_NUM_CHARS 32
+
 namespace physx
 {
 
@@ -41,8 +43,8 @@ namespace Sn
 	PxU32 getBinaryPlatformTag();
 	bool isBinaryPlatformTagValid(PxU32 platformTag);
 	const char* getBinaryPlatformName(PxU32 platformTag);
-	bool checkCompatibility(const PxU32 version, const PxU32 binaryVersion);
-	void getCompatibilityVersionsStr(char* buffer, PxU32 lenght);
+	const char* getBinaryVersionGuid();
+	bool checkCompatibility(const char* binaryVersionGuidCandidate);
 }
 
 }

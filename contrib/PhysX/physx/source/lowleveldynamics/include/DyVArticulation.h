@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -35,6 +35,7 @@
 #include "foundation/PxQuat.h"
 #include "foundation/PxTransform.h"
 #include "PsVecMath.h"
+#include "PsUtilities.h"
 #include "CmUtils.h"
 #include "CmSpatialVector.h"
 #include "PxArticulationJoint.h"
@@ -43,33 +44,27 @@
 #include "DyArticulationCore.h"
 #include "DyArticulationJointCore.h"
 
-
 namespace physx
 {
-
-	class PxcRigidBody;
 	struct PxsBodyCore;
-
-	class PxcConstraintBlockStream;
-	class PxcRigidBody;
 	class PxsConstraintBlockManager;
+	class PxsContactManagerOutputIterator;
 	struct PxSolverConstraintDesc;
-	
-
-	namespace Sc
-	{
-		class ArticulationSim;
-	}
-
+	struct PxSolverBodyData;
+	class PxContactJoint;
+	struct PxTGSSolverBodyData;
+	struct PxTGSSolverBodyTxInertia;
+	struct PxSolverConstraintDesc;
 
 	namespace Dy
 	{
-
-		struct PxcFsScratchAllocator;
-		struct PxTGSSolverConstraintDesc;
+		
+		struct SpatialSubspaceMatrix;
+		
+		struct ConstraintWriteback;
+		class ThreadContext;
 
 		static const size_t DY_ARTICULATION_MAX_SIZE = 64;
-		struct ArticulationJointTransforms;
 		class ArticulationJointCoreData;
 		struct Constraint;
 		class Context;
@@ -119,8 +114,8 @@ namespace physx
 				//Cm::markSerializedMem(this, sizeof(ArticulationJointCore));
 				parentPose = PxTransform(PxIdentity);
 				childPose = PxTransform(PxIdentity);
-				internalCompliance = 0;
-				externalCompliance = 0;
+				internalCompliance = 0.0f;
+				externalCompliance = 0.0f;
 				swingLimitContactDistance = 0.05f;
 				twistLimitContactDistance = 0.05f;
 
@@ -128,22 +123,15 @@ namespace physx
 
 				jointType = PxArticulationJointType::eFIX;
 
-				for (PxU32 i = 0; i < 6; ++i)
-				{
+				for(PxU32 i=0; i<PxArticulationAxis::eCOUNT; i++)
 					motion[i] = PxArticulationMotion::eLOCKED;
-				}
 
 				dirtyFlag = ArticulationJointCoreDirtyFlag::eMOTION;
 
-				//initial parent to child
-				relativeQuat = PxQuat(PxIdentity);
-
 				jointOffset = 0;
-
 			}
 
-			ArticulationJointCore(const PxTransform& parentFrame,
-				const PxTransform& childFrame)
+			ArticulationJointCore(const PxTransform& parentFrame, const PxTransform& childFrame)
 			{
 				parentPose = parentFrame;
 				childPose = childFrame;
@@ -157,7 +145,7 @@ namespace physx
 				internalCompliance = 1.0f;
 				externalCompliance = 1.0f;
 
-				for (PxU32 i = 0; i < 6; ++i)
+				for(PxU32 i=0; i<PxArticulationAxis::eCOUNT; i++)
 				{
 					limits[i].low = 0.f;
 					limits[i].high = 0.f;
@@ -166,11 +154,11 @@ namespace physx
 					drives[i].maxForce = 0.f;
 					targetP[i] = 0.f;
 					targetV[i] = 0.f;
+					motion[i] = PxArticulationMotion::eLOCKED;
 				}
 
-
-				PxReal swingYLimit = PxPi / 4;
-				PxReal swingZLimit = PxPi / 4;
+				const PxReal swingYLimit = PxPi / 4.0f;
+				const PxReal swingZLimit = PxPi / 4.0f;
 
 				limits[PxArticulationAxis::eSWING1].low = swingYLimit;
 				limits[PxArticulationAxis::eSWING2].low = swingZLimit;
@@ -180,48 +168,34 @@ namespace physx
 				tangentialStiffness = 0.0f;
 				tangentialDamping = 0.0f;
 
-				PxReal twistLimitLow = -PxPi / 4;
-				PxReal twistLimitHigh = PxPi / 4;
+				const PxReal twistLimitLow = -PxPi / 4.0f;
+				const PxReal twistLimitHigh = PxPi / 4.0f;
 				limits[PxArticulationAxis::eTWIST].low = twistLimitLow;
 				limits[PxArticulationAxis::eTWIST].high = twistLimitHigh;
 				twistLimitContactDistance = 0.05f;
 				twistLimited = false;
 
+				tanQSwingY = PxTan(swingYLimit / 4.0f);
+				tanQSwingZ = PxTan(swingZLimit / 4.0f);
+				tanQSwingPad = PxTan(swingLimitContactDistance / 4.0f);
 
-				tanQSwingY = PxTan(swingYLimit / 4);
-				tanQSwingZ = PxTan(swingZLimit / 4);
-				tanQSwingPad = PxTan(swingLimitContactDistance / 4);
-
-				tanQTwistHigh = PxTan(twistLimitHigh / 4);
-				tanQTwistLow = PxTan(twistLimitLow / 4);
-				tanQTwistPad = PxTan(twistLimitContactDistance / 4);
-
-				
-
-				prismaticLimited = false;
+				tanQTwistHigh = PxTan(twistLimitHigh / 4.0f);
+				tanQTwistLow = PxTan(twistLimitLow / 4.0f);
+				tanQTwistPad = PxTan(twistLimitContactDistance / 4.0f);
 
 				frictionCoefficient = 0.f;
 
-				for (PxU32 i = 0; i < 6; ++i)
-				{
-					motion[i] = PxArticulationMotion::eLOCKED;
-				}
-
 				dirtyFlag = ArticulationJointCoreDirtyFlag::eMOTION;
 
-				//initial parent to child
-				relativeQuat = (childFrame.q * (parentFrame.q.getConjugate())).getNormalized();
-
 				jointOffset = 0;
-
 			}
 
-			void setJointPose(ArticulationJointCoreData& jointDatum);
+			void setJointPose(ArticulationJointCoreData& jointDatum, SpatialSubspaceMatrix& motionMatrix, bool forceUpdate,
+				PxQuat& relativeRot);
 
 			// PX_SERIALIZATION
-			ArticulationJointCore(const PxEMPTY&) {}
+			ArticulationJointCore(const PxEMPTY&) : ArticulationJointCoreBase(PxEmpty) {}
 			//~PX_SERIALIZATION
-
 		};
 
 		struct ArticulationLoopConstraint
@@ -230,7 +204,6 @@ namespace physx
 			PxU32 linkIndex0;
 			PxU32 linkIndex1;
 			Dy::Constraint* constraint;
-
 		};
 
 #define DY_ARTICULATION_LINK_NONE 0xffffffff
@@ -239,12 +212,11 @@ namespace physx
 
 		struct ArticulationLink
 		{
-			ArticulationBitField			children;		// child bitmap
-			ArticulationBitField			pathToRoot;		// path to root, including link and root
-			PxcRigidBody*					body;
-			PxsBodyCore*					bodyCore;
-			ArticulationJointCore*			inboundJoint;
-			PxU32							parent;
+			ArticulationBitField		children;		// child bitmap
+			ArticulationBitField		pathToRoot;		// path to root, including link and root			
+			PxsBodyCore*				bodyCore;
+			ArticulationJointCore*		inboundJoint;
+			PxU32						parent;
 		};
 
 		typedef size_t ArticulationLinkHandle;
@@ -253,6 +225,26 @@ namespace physx
 
 		struct ArticulationSolverDesc
 		{
+			void	initData(const ArticulationCore* core_, const PxArticulationFlags* flags_)
+			{
+				articulation			= NULL;
+				links					= NULL;
+				motionVelocity			= NULL;
+				acceleration			= NULL;
+				poses					= NULL;
+				deltaQ					= NULL;
+				externalLoads			= NULL;
+				internalLoads			= NULL;
+				core					= core_;
+				flags					= flags_;
+				scratchMemory			= NULL;
+				totalDataSize			= 0;
+				solverDataSize			= 0;
+				linkCount				= 0;
+				numInternalConstraints	= 0;
+				scratchMemorySize		= 0;
+			}
+
 			ArticulationV*				articulation;
 			ArticulationLink*			links;
 			Cm::SpatialVectorV*			motionVelocity;
@@ -262,6 +254,7 @@ namespace physx
 			physx::shdfnd::aos::Mat33V* externalLoads;
 			physx::shdfnd::aos::Mat33V* internalLoads;
 			const ArticulationCore*		core;
+			const PxArticulationFlags*	flags;	// PT: PX-1399
 			char*						scratchMemory;
 			PxU16						totalDataSize;
 			PxU16						solverDataSize;
@@ -293,7 +286,6 @@ namespace physx
 			}
 		};
 
-
 		static const size_t DY_ARTICULATION_IDMASK = DY_ARTICULATION_MAX_SIZE - 1;
 
 #if PX_VC 
@@ -303,110 +295,117 @@ namespace physx
 		PX_ALIGN_PREFIX(64)
 		class ArticulationV
 		{
+													PX_NOCOPY(ArticulationV)
 		public:
-
-			// public interface
-
-			ArticulationV(Sc::ArticulationSim* sim, PxArticulationBase::Enum type) : mArticulationSim(sim),
-				mContext(NULL),
-				mType(type),
-				mUpdateSolverData(true),
-				mDirty(false),
-				mMaxDepth(0)
-			{}
-
-			virtual ~ArticulationV() {}
-
-			virtual	void onUpdateSolverDesc()
+				
+			enum Enum
 			{
-			}
+				eReducedCoordinate = 0,
+				eMaximumCoordinate = 1
+			};
 
-			virtual bool resize(const PxU32 linkCount);
+													ArticulationV(void* userData, Enum type) :
+														mUserData			(userData),
+														mContext			(NULL),
+														mType				(type),
+														mUpdateSolverData	(true),
+														mDirty				(false),
+														mMaxDepth			(0)
+																			{}
 
-			virtual void addBody()
-			{
-				mAcceleration.pushBack(Cm::SpatialVector(PxVec3(0.f), PxVec3(0.f)));
-				mUpdateSolverData = true;    
-			}
+			virtual									~ArticulationV()		{}
 
-			virtual void removeBody()
-			{
-				mUpdateSolverData = true;
-			}
+			virtual			void					onUpdateSolverDesc()	{}
 
-			bool updateSolverData() {return mUpdateSolverData;}
+			virtual			bool					resize(const PxU32 linkCount);
 
-			void setDirty(const bool dirty) { mDirty = dirty; }
-			bool getDirty() { return mDirty; }
+			virtual			void					addBody()
+													{
+														mAcceleration.pushBack(Cm::SpatialVector(PxVec3(0.f), PxVec3(0.f)));
+														mUpdateSolverData = true;    
+													}
 
-			PX_FORCE_INLINE PxU32	getMaxDepth() { return mMaxDepth; }
-			PX_FORCE_INLINE void	setMaxDepth(const PxU32	depth) { mMaxDepth = depth; }
+			virtual			void					removeBody()
+													{
+														mUpdateSolverData = true;
+													}
+
+			PX_FORCE_INLINE	bool					updateSolverData()									{ return mUpdateSolverData;							}
+
+			PX_FORCE_INLINE void					setDirty(const bool dirty)							{ mDirty = dirty;									}
+			PX_FORCE_INLINE bool					getDirty()									const	{ return mDirty;									}
+
+			PX_FORCE_INLINE PxU32					getMaxDepth()								const	{ return mMaxDepth;									}
+			PX_FORCE_INLINE void					setMaxDepth(const PxU32	depth)						{ mMaxDepth = depth;								}
 
 			// solver methods
-			PX_FORCE_INLINE PxU32					getLinkIndex(ArticulationLinkHandle handle)	const { return PxU32(handle&DY_ARTICULATION_IDMASK); }
-			PX_FORCE_INLINE PxU32					getBodyCount()									const { return mSolverDesc.linkCount; }
-			PX_FORCE_INLINE PxU32					getSolverDataSize()								const { return mSolverDesc.solverDataSize; }
-			PX_FORCE_INLINE PxU32					getTotalDataSize()								const { return mSolverDesc.totalDataSize; }
-			PX_FORCE_INLINE void					getSolverDesc(ArticulationSolverDesc& d)		const { d = mSolverDesc; }
-			PX_FORCE_INLINE ArticulationSolverDesc& getSolverDesc()										  { return mSolverDesc; }
+			PX_FORCE_INLINE PxU32					getBodyCount()								const	{ return mSolverDesc.linkCount;						}
+			PX_FORCE_INLINE PxU32					getSolverDataSize()							const	{ return mSolverDesc.solverDataSize;				}
+			PX_FORCE_INLINE PxU32					getTotalDataSize()							const	{ return mSolverDesc.totalDataSize;					}
+			PX_FORCE_INLINE void					getSolverDesc(ArticulationSolverDesc& d)	const	{ d = mSolverDesc;									}
+			PX_FORCE_INLINE ArticulationSolverDesc& getSolverDesc()										{ return mSolverDesc;								}
 
-			PX_FORCE_INLINE const ArticulationCore*	getCore()										const { return mSolverDesc.core; }
-			PX_FORCE_INLINE PxU16					getIterationCounts()							const { return mSolverDesc.core->solverIterationCounts; }
+			PX_FORCE_INLINE const ArticulationCore*	getCore()									const	{ return mSolverDesc.core;							}
+			PX_FORCE_INLINE PxU16					getIterationCounts()						const	{ return mSolverDesc.core->solverIterationCounts;	}
 
-			PX_FORCE_INLINE Sc::ArticulationSim*	getArticulationSim()							const { return mArticulationSim; }
+			PX_FORCE_INLINE void*					getUserData()								const	{ return mUserData;									}
 
-			PX_FORCE_INLINE PxU32			getType() const { return mType; }
+			PX_FORCE_INLINE PxU32					getType()									const	{ return mType;										}
+
+			PX_FORCE_INLINE void					setDyContext(Dy::Context* context)					{ mContext = context;								}
 
 			// get data sizes for allocation at higher levels
-			virtual void		getDataSizes(PxU32 linkCount,
-				PxU32 &solverDataSize,
-				PxU32& totalSize,
-				PxU32& scratchSize) = 0;
+			virtual			void					getDataSizes(PxU32 linkCount, PxU32& solverDataSize, PxU32& totalSize, PxU32& scratchSize) = 0;
 
-			virtual PxU32	getDofs() { return 0; }
+			virtual			PxU32					getDofs() { return 0; }
 
-			virtual PxU32	getDof(const PxU32 /*linkID*/) { return 0;  }
+			virtual			PxU32					getDof(const PxU32 /*linkID*/) { return 0;  }
 
-			virtual void	applyCache(PxArticulationCache& /*cache*/, const PxArticulationCacheFlags /*flag*/) {}
+			virtual			bool					applyCache(PxArticulationCache& /*cache*/, const PxArticulationCacheFlags /*flag*/) {return false;}
 
-			virtual void	copyInternalStateToCache(PxArticulationCache&/* cache*/, const PxArticulationCacheFlags /*flag*/) {}
+			virtual			void					copyInternalStateToCache(PxArticulationCache&/* cache*/, const PxArticulationCacheFlags /*flag*/) {}
 
-			virtual	void	packJointData(const PxReal* /*maximum*/, PxReal* /*reduced*/) {}
+			virtual			void					packJointData(const PxReal* /*maximum*/, PxReal* /*reduced*/) {}
 
-			virtual void	unpackJointData(const PxReal* /*reduced*/, PxReal* /*maximum*/) {}
+			virtual			void					unpackJointData(const PxReal* /*reduced*/, PxReal* /*maximum*/) {}
 
-			virtual void	initializeCommonData() {}
+			virtual			void					initializeCommonData() {}
 
-			virtual void	getGeneralizedGravityForce(const PxVec3& /*gravity*/, PxArticulationCache& /*cache*/) {}
+			virtual			void					getGeneralizedGravityForce(const PxVec3& /*gravity*/, PxArticulationCache& /*cache*/) {}
 
-			virtual void	getCoriolisAndCentrifugalForce(PxArticulationCache& /*cache*/) {}
+			virtual			void					getCoriolisAndCentrifugalForce(PxArticulationCache& /*cache*/) {}
 
-			virtual void	getGeneralizedExternalForce(PxArticulationCache& /*cache*/) {}
+			virtual			void					getGeneralizedExternalForce(PxArticulationCache& /*cache*/) {}
 
-			virtual void	getJointAcceleration(const PxVec3& /*gravity*/, PxArticulationCache& /*cache*/){}
+			virtual			void					getJointAcceleration(const PxVec3& /*gravity*/, PxArticulationCache& /*cache*/){}
 
-			virtual void	getJointForce(PxArticulationCache& /*cache*/){}
+			virtual			void					getJointForce(PxArticulationCache& /*cache*/){}
 
-			virtual void	getKinematicJacobian(const PxU32 /*linkID*/, PxArticulationCache& /*cache*/){}
+			virtual			void					getCoefficientMatrix(const PxReal /*dt*/, const PxU32 /*linkID*/, const PxContactJoint* /*joints*/, const PxU32 /*nbContacts*/, PxArticulationCache& /*cache*/){}
 
-			virtual void	getCoefficentMatrix(const PxReal /*dt*/, const PxU32 /*linkID*/, const PxContactJoint* /*joints*/, const PxU32 /*nbContacts*/, PxArticulationCache& /*cache*/){}
+			virtual 		void					getDenseJacobian(PxArticulationCache& /*cache*/, PxU32&, PxU32&) {}
 
-			virtual void	getCoefficentMatrixWithLoopJoints(ArticulationLoopConstraint* /*lConstraints*/, const PxU32 /*nbJoints*/, PxArticulationCache& /*cache*/) {}
+			virtual			void					getCoefficientMatrixWithLoopJoints(ArticulationLoopConstraint* /*lConstraints*/, const PxU32 /*nbJoints*/, PxArticulationCache& /*cache*/) {}
 			
-			virtual bool	getLambda(ArticulationLoopConstraint* /*lConstraints*/, const PxU32 /*nbJoints*/, 
-				PxArticulationCache& /*cache*/, PxArticulationCache& /*initialState*/, const PxReal* /*jointTorque*/, 
-				const PxVec3& /*gravity*/, const PxU32 /*maxIter*/) { return false;  }
+			virtual			bool					getLambda(	ArticulationLoopConstraint* /*lConstraints*/, const PxU32 /*nbJoints*/, 
+																PxArticulationCache& /*cache*/, PxArticulationCache& /*initialState*/, const PxReal* /*jointTorque*/, 
+																const PxVec3& /*gravity*/, const PxU32 /*maxIter*/) { return false;  }
 
-			virtual void	getGeneralizedMassMatrix(PxArticulationCache& /*cache*/){}
-			virtual void	getGeneralizedMassMatrixCRB(PxArticulationCache& /*cache*/){}
+			virtual			void					getGeneralizedMassMatrix(PxArticulationCache& /*cache*/){}
+			virtual			void					getGeneralizedMassMatrixCRB(PxArticulationCache& /*cache*/){}
 
-			virtual void	teleportRootLink(){}
+			virtual			void					teleportRootLink(){}
+
+			virtual			void					getImpulseResponse(	PxU32 linkID,
+																		Cm::SpatialVectorF* Z,
+																		const Cm::SpatialVector& impulse,
+																		Cm::SpatialVector& deltaV) const = 0;
 
 			virtual	void	getImpulseResponse(
 				PxU32 linkID,
-				Cm::SpatialVectorF* Z,
-				const Cm::SpatialVector& impulse,
-				Cm::SpatialVector& deltaV) const = 0;
+				Cm::SpatialVectorV* Z,
+				const Cm::SpatialVectorV& impulse,
+				Cm::SpatialVectorV& deltaV) const = 0;
 
 			virtual	void	getImpulseSelfResponse(
 				PxU32 linkID0,
@@ -417,57 +416,84 @@ namespace physx
 				Cm::SpatialVector& deltaV0,
 				Cm::SpatialVector& deltaV1) const = 0;
 
+			virtual			Cm::SpatialVectorV		getLinkVelocity(const PxU32 linkID) const = 0;
 
-			virtual Cm::SpatialVectorV getLinkVelocity(const PxU32 linkID) const = 0;
+			virtual			Cm::SpatialVectorV		getLinkMotionVector(const PxU32 linkID) const = 0;
 
-			virtual Cm::SpatialVectorV getLinkMotionVector(const PxU32 linkID) const = 0;
+			virtual			PxReal					getLinkMaxPenBias(const PxU32 linkID) const = 0;
 
-			virtual PxReal getLinkMaxPenBias(const PxU32 linkID) const = 0;
+			virtual			void					pxcFsApplyImpulse(	PxU32 linkID, Ps::aos::Vec3V linear, 
+																		Ps::aos::Vec3V angular, Cm::SpatialVectorF* Z, Cm::SpatialVectorF* deltaV) = 0;
 
-			virtual void pxcFsApplyImpulse(PxU32 linkID, Ps::aos::Vec3V linear, 
-				Ps::aos::Vec3V angular, Cm::SpatialVectorF* Z, Cm::SpatialVectorF* deltaV) = 0;
-
-			virtual void pxcFsApplyImpulses(PxU32 linkID, const Ps::aos::Vec3V& linear,
-				const Ps::aos::Vec3V& angular, PxU32 linkID2, const Ps::aos::Vec3V& linear2,
-				const Ps::aos::Vec3V& angular2, Cm::SpatialVectorF* Z, Cm::SpatialVectorF* deltaV) = 0;
+			virtual			void					pxcFsApplyImpulses(	PxU32 linkID, const Ps::aos::Vec3V& linear,
+																		const Ps::aos::Vec3V& angular, PxU32 linkID2, const Ps::aos::Vec3V& linear2,
+																		const Ps::aos::Vec3V& angular2, Cm::SpatialVectorF* Z, Cm::SpatialVectorF* deltaV) = 0;
 
 			virtual void solveInternalConstraints(const PxReal dt, const PxReal invDt, Cm::SpatialVectorF* impulses, Cm::SpatialVectorF* DeltaV,
-				bool velIteration) = 0;
+				bool velIteration, bool isTGS, const PxReal elapsedTime) = 0;
+
+			virtual void writebackInternalConstraints(bool isTGS) = 0;
+
+			virtual void prepareStaticConstraints(const PxReal /*dt*/, const PxReal /*invDt*/, PxsContactManagerOutputIterator& /*outputs*/,
+				ThreadContext& /*threadContext*/, PxReal /*correlationDist*/, PxReal /*bounceThreshold*/, PxReal /*frictionOffsetThreshold*/, PxReal /*solverOffsetSlop*/,
+				PxReal /*ccdMaxSeparation*/, PxSolverBodyData* /*solverBodyData*/, PxsConstraintBlockManager& /*blockManager*/,
+				Dy::ConstraintWriteback* /*constraintWritebackPool*/) {}
+
+			virtual void prepareStaticConstraintsTGS(const PxReal /*stepDt*/, const PxReal /*totalDt*/, const PxReal /*invStepDt*/, const PxReal /*invTotalDt*/, 
+				PxsContactManagerOutputIterator& /*outputs*/, ThreadContext& /*threadContext*/, PxReal /*correlationDist*/, PxReal /*bounceThreshold*/, 
+				PxReal /*frictionOffsetThreshold*/, PxTGSSolverBodyData* /*solverBodyData*/, 
+				PxTGSSolverBodyTxInertia* /*txInertia*/, PxsConstraintBlockManager& /*blockManager*/, Dy::ConstraintWriteback* /*constraintWritebackPool*/,
+				const PxU32 /*nbSubsteps*/, const PxReal /*lengthScale*/) {}
+
+			virtual			void					pxcFsGetVelocities(PxU32 linkID, PxU32 linkID1, Cm::SpatialVectorV& v0, Cm::SpatialVectorV& v1) = 0;
 
 			virtual Cm::SpatialVectorV pxcFsGetVelocity(PxU32 linkID) = 0;
 
-			virtual void pxcFsGetVelocities(PxU32 linkID, PxU32 linkID1, Cm::SpatialVectorV& v0, Cm::SpatialVectorV& v1) = 0;
+			virtual			Cm::SpatialVectorV		pxcFsGetVelocityTGS(PxU32 linkID) = 0;
 
-			virtual Cm::SpatialVectorV pxcFsGetVelocityTGS(PxU32 linkID) = 0;
-
-			virtual const PxTransform& getCurrentTransform(PxU32 linkID) const= 0;
+			virtual			const PxTransform&		getCurrentTransform(PxU32 linkID) const= 0;
 			
-			virtual const PxQuat& getDeltaQ(PxU32 linkID) const = 0;
+			virtual			const PxQuat&			getDeltaQ(PxU32 linkID) const = 0;
+
+			virtual bool storeStaticConstraint(const PxSolverConstraintDesc& /*desc*/) { return false; }
+
+			virtual bool willStoreStaticConstraint()		{ return false; }
 
 			//this is called by island gen to determine whether the articulation should be awake or sleep
-			virtual Cm::SpatialVector getMotionVelocity(const PxU32 linkID) const = 0;
+			virtual			Cm::SpatialVector		getMotionVelocity(const PxU32 linkID) const = 0;
 
-			void	setDyContext(Dy::Context* context) { mContext = context;  }
+			virtual			Cm::SpatialVector		getMotionAcceleration(const PxU32 linkID) const = 0;
+
+							void					setupLinks(PxU32 nbLinks, Dy::ArticulationLink* links)
+													{
+														//if this is needed, we need to re-allocated the link data
+														resize(nbLinks);
+	
+														getSolverDesc().links		= links;
+														getSolverDesc().linkCount	= Ps::to8(nbLinks);
+
+														//if this is needed, we need to re-allocated the joint data
+														onUpdateSolverDesc();
+													}
+			virtual		void						fillIndexedManager(const PxU32 linkId, Dy::ArticulationLinkHandle& handle, PxU8& indexType) = 0;
+
 			//These variables are used in the constraint partition
-			PxU16 maxSolverFrictionProgress;
-			PxU16 maxSolverNormalProgress;
-			PxU32 solverProgress;
-			PxU8  numTotalConstraints;
-
+							PxU16					maxSolverFrictionProgress;
+							PxU16					maxSolverNormalProgress;
+							PxU32					solverProgress;
+							PxU8					numTotalConstraints;
 		protected:
-			Sc::ArticulationSim*				mArticulationSim;
-			Dy::Context*						mContext;
-			PxU32								mType;
-			ArticulationSolverDesc				mSolverDesc;
+							void*					mUserData;
+							Dy::Context*			mContext;
+							PxU32					mType;
+							ArticulationSolverDesc	mSolverDesc;
 
-			Ps::Array<Cm::SpatialVector>		mAcceleration;		// supplied by Sc-layer to feed into articulations
+					Ps::Array<Cm::SpatialVector>	mAcceleration;		// supplied by Sc-layer to feed into articulations
 
-			bool								mUpdateSolverData;
-			bool								mDirty; //any of links update configulations, the boolean will be set to true
-			PxU32								mMaxDepth;
-			
-			private:
-				PX_NOCOPY(ArticulationV)
+							bool					mUpdateSolverData;
+							bool					mDirty;				//any of links update configulations, the boolean will be set to true
+							PxU32					mMaxDepth;
+		
 		} PX_ALIGN_SUFFIX(64);
 
 #if PX_VC 
@@ -479,12 +505,15 @@ namespace physx
 			return reinterpret_cast<ArticulationV*>(handle & ~DY_ARTICULATION_IDMASK);
 		}
 
-		PX_FORCE_INLINE bool isArticulationRootLink(ArticulationLinkHandle handle)
+		PX_FORCE_INLINE bool	isArticulationRootLink(ArticulationLinkHandle handle)
 		{
 			return !(handle & DY_ARTICULATION_IDMASK);
 		}
 
-
+		PX_FORCE_INLINE PxU32	getLinkIndex(ArticulationLinkHandle handle)
+		{
+			return PxU32(handle&DY_ARTICULATION_IDMASK);
+		}
 	}
 
 }

@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -408,7 +408,10 @@ void IncrementalAABBPruner::visualize(Cm::RenderOutput& out, PxU32 color) const
 			{
 				PxBounds3 bounds;
 				V4StoreU(node->mBVMin, &bounds.minimum.x);
-				V4StoreU(node->mBVMax, &bounds.maximum.x);
+				PX_ALIGN(16, PxVec4) max4;
+				V4StoreA(node->mBVMax, &max4.x);
+				bounds.maximum = PxVec3(max4.x, max4.y, max4.z);
+
 				out_ << Cm::DebugBox(bounds, true);
 				if (node->isLeaf())
 					return;

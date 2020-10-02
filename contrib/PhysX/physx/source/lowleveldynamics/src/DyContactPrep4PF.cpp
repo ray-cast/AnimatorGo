@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
      
@@ -966,10 +966,10 @@ SolverConstraintPrepState::Enum createFinalizeSolverContacts4Coulomb(
 		blockDesc.numContactPatches = PxU16(c.contactPatchCount - blockDesc.startContactPatchIndex);
 		blockDesc.numFrictionPatches = c.frictionPatchCount - blockDesc.startFrictionPatchIndex;
 
-		invMassScale0[a] *= blockDesc.mInvMassScales.linear0;
-		invMassScale1[a] *= blockDesc.mInvMassScales.linear1;
-		invInertiaScale0[a] *= blockDesc.mInvMassScales.angular0;
-		invInertiaScale1[a] *= blockDesc.mInvMassScales.angular1;
+		invMassScale0[a] *= blockDesc.invMassScales.linear0;
+		invMassScale1[a] *= blockDesc.invMassScales.linear1;
+		invInertiaScale0[a] *= blockDesc.invMassScales.angular0;
+		invInertiaScale1[a] *= blockDesc.invMassScales.angular1;
 
 	}
 

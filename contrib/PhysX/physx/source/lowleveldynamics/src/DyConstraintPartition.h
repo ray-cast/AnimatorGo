@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -42,26 +42,22 @@ namespace Dy
 {
 struct ConstraintPartitionArgs
 {
-	enum
-	{
-		eMAX_NUM_BODIES = 8192
-	};   
 
 	//Input
-	PxSolverBody*							mBodies;
+	PxU8*									mBodies;
 	PxU32									mNumBodies;
-	ArticulationSolverDesc*				mArticulationPtrs;
+	PxU32									mStride;
+	ArticulationSolverDesc*					mArticulationPtrs;
 	PxU32									mNumArticulationPtrs;
-	PxSolverConstraintDesc*				mContactConstraintDescriptors;
+	PxSolverConstraintDesc*					mContactConstraintDescriptors;
 	PxU32									mNumContactConstraintDescriptors;
 	//output
-	PxSolverConstraintDesc*				mOrderedContactConstraintDescriptors;
-	PxSolverConstraintDesc*				mTempContactConstraintDescriptors;
-	PxU32									mNumSelfConstraintBlocks;
+	PxSolverConstraintDesc*					mOrderedContactConstraintDescriptors;
+	PxSolverConstraintDesc*					mTempContactConstraintDescriptors;
 	PxU32									mNumDifferentBodyConstraints;
 	PxU32									mNumSelfConstraints;
+	PxU32									mNumStaticConstraints;
 	Ps::Array<PxU32>*						mConstraintsPerPartition;
-	//Ps::Array<PxU32>*						mStartIndices;
 	Ps::Array<PxU32>*						mBitField;
 
 	bool									enhancedDeterminism;

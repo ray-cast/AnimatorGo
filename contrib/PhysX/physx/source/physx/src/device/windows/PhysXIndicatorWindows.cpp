@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -74,7 +74,7 @@ physx::PhysXIndicator::PhysXIndicator(bool isGpu)
 	else
 		NvPhysXToDrv_Build_SectionName(GetCurrentProcessId(), configName);
 	
-	mFileHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
+	mFileHandle = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL,
 		PAGE_READWRITE, 0, sizeof(NvPhysXToDrv_Data_V1), configName);
 
 	if (!mFileHandle || mFileHandle == INVALID_HANDLE_VALUE)

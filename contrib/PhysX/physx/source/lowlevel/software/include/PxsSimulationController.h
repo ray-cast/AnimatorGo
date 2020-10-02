@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -45,6 +45,8 @@ namespace physx
 		class Context;
 		struct Constraint;
 		class ArticulationV;
+		class FeatherstoneArticulation;
+		struct ArticulationJointCore;
 	}
 
 	namespace Cm
@@ -65,7 +67,6 @@ namespace physx
 		class NodeIndex;
 	}
 
-	class PxGpuDispatcher;
 	class PxsTransformCache;
 	class PxvNphaseImplementationContext;
 	class PxBaseTask;
@@ -96,21 +97,23 @@ namespace physx
 		PxsSimulationController(PxsSimulationControllerCallback* callback): mCallback(callback){}
 		virtual ~PxsSimulationController(){}
 
-		virtual void addJoint(const PxU32 edgeIndex, Dy::Constraint* constraint, IG::IslandSim& islandSim, Ps::Array<PxU32, Ps::VirtualAllocator>& jointIndices, 
+		virtual void addJoint(const PxU32 edgeIndex, Dy::Constraint* constraint, IG::IslandSim& islandSim, Ps::Array<PxU32>& jointIndices, 
 			Ps::Array<PxgSolverConstraintManagerConstants, Ps::VirtualAllocator>& managerIter, PxU32 uniqueId) = 0;
-		virtual void removeJoint(const PxU32 edgeIndex, Dy::Constraint* constraint, Ps::Array<PxU32, Ps::VirtualAllocator>& jointIndices, IG::IslandSim& islandSim) = 0;
+		virtual void removeJoint(const PxU32 edgeIndex, Dy::Constraint* constraint, Ps::Array<PxU32>& jointIndices, IG::IslandSim& islandSim) = 0;
 		virtual void addShape(PxsShapeSim* shapeSim, const PxU32 index) = 0;
 		virtual void removeShape(const PxU32 index) = 0;
 		virtual void addDynamic(PxsRigidBody* rigidBody, const IG::NodeIndex& nodeIndex) = 0;
 		virtual void addDynamics(PxsRigidBody** rigidBody, const PxU32* nodeIndex, PxU32 nbToProcess) = 0;
 		virtual void addArticulation(Dy::ArticulationV* articulation, const IG::NodeIndex& nodeIndex) = 0;
-		virtual void releaseArticulation(Dy::ArticulationV* articulation) = 0;
+		virtual void releaseArticulation(Dy::ArticulationV* articulation, const IG::NodeIndex& nodeIndex) = 0;
 		virtual void releaseDeferredArticulationIds() = 0;
 		virtual void updateDynamic(const bool isArticulationLink, const IG::NodeIndex&) = 0;
 		virtual void updateJoint(const PxU32 edgeIndex, Dy::Constraint* constraint) = 0;
 		virtual void updateBodies(PxsRigidBody** rigidBodies, PxU32* nodeIndices, const PxU32 nbBodies) = 0;
 		virtual void updateBodiesAndShapes(PxBaseTask* continuation) = 0;
 		virtual void update(const PxU32 bitMapWordCounts) = 0;
+		virtual void updateArticulation(Dy::ArticulationV* articulation, const IG::NodeIndex& nodeIndex) = 0;
+		virtual void updateArticulationJoint(Dy::ArticulationV* articulation, const IG::NodeIndex& nodeIndex) = 0;
 		virtual void gpuDmabackData(PxsTransformCache& cache, Bp::BoundsArray& boundArray, Cm::BitMapPinned&  changedAABBMgrHandles) = 0;
 		virtual void udpateScBodyAndShapeSim(PxsTransformCache& cache, Bp::BoundsArray& boundArray, PxBaseTask* continuation) = 0;
 		virtual PxU32* getActiveBodies() = 0;
@@ -127,6 +130,8 @@ namespace physx
 		virtual void	clear() = 0;
 		virtual void	setBounds(Bp::BoundsArray* boundArray) = 0;
 		virtual void	reserve(const PxU32 nbBodies) = 0;
+
+		virtual PxU32   getArticulationRemapIndex(const PxU32 nodeIndex) = 0;
 
 	protected:
 		PxsSimulationControllerCallback* mCallback;

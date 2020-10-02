@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -39,19 +39,17 @@
 #include "foundation/PxTransform.h"
 #include "foundation/PxIO.h"
 #include "geometry/PxGeometryHelpers.h"
-#include "PxVehicleComponents.h"
+#include "vehicle/PxVehicleComponents.h"
 #include "PxBatchQueryDesc.h"
+#include "PxVehicleSuspLimitConstraintShader.h"
 
 #if !PX_DOXYGEN
 namespace physx
 {
 #endif
 
-class PxVehicleConstraintShader;
 class PxMaterial;
 class PxShape;
-
-
 
 class PxVehicleWheels4SimData
 {
@@ -196,12 +194,15 @@ public:
 	{
 		for(PxU32 i=0;i<4;i++)
 		{
-			mWheelSpeeds[i]=0.0f;
-			mCorrectedWheelSpeeds[i]=0.0f;
-			mWheelRotationAngles[i]=0.0f;
-			mTireLowForwardSpeedTimers[i]=0.0f;
-			mTireLowSideSpeedTimers[i]=0.0f;
+			mWheelSpeeds[i] = 0.0f;
+			mCorrectedWheelSpeeds[i] = 0.0f;
+			mWheelRotationAngles[i] = 0.0f;
+			mTireLowForwardSpeedTimers[i] = 0.0f;
+			mTireLowSideSpeedTimers[i] = 0.0f;
 			mJounces[i] = PX_MAX_F32;
+			mVehicleConstraints->mData.mStickyTireForwardData.mActiveFlags[i] = false;
+			mVehicleConstraints->mData.mStickyTireSideData.mActiveFlags[i] = false;
+			mVehicleConstraints->mData.mSuspLimitData.mActiveFlags[i] = false;
 		}
 		PxMemZero(mQueryOrCachedHitResults, sizeof(SuspLineSweep));
 

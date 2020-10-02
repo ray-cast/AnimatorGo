@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -49,50 +49,18 @@ static void updateBodySim(Sc::BodyCore& bodyCore)
 		updateBodySim(bodySim);
 }
 
-Sc::BodyCore::BodyCore(PxActorType::Enum type, const PxTransform& bodyPose) 
-:	RigidCore(type)
+Sc::BodyCore::BodyCore(PxActorType::Enum type, const PxTransform& bodyPose) :
+	RigidCore		(type),
+	mSimStateData	(NULL)
 {
 	const PxTolerancesScale& scale = Physics::getInstance().getTolerancesScale();
-	// sizeof(BodyCore) = 176 => 160 => 144 => 160 bytes
 
-	mCore.wakeCounter				= Sc::Physics::sWakeCounterOnCreation;
-	mCore.inverseInertia			= PxVec3(1.0f);
-	mCore.inverseMass				= 1.0f;
-	mCore.body2World				= bodyPose;
+	const bool isDynamic = type == PxActorType::eRIGID_DYNAMIC;
+	const float linearDamping = isDynamic ? 0.0f : 0.05f;
+	const float maxLinearVelocitySq = isDynamic ? 1e32f /*PX_MAX_F32*/ : 100.f * 100.f * scale.length * scale.length;
+	const float maxAngularVelocitySq = isDynamic ? 100.0f * 100.0f : 50.0f * 50.0f;
 
-	PX_ASSERT(mCore.body2World.p.isFinite());
-	PX_ASSERT(mCore.body2World.q.isFinite());
-
-	mCore.sleepThreshold			= 5e-5f * scale.speed * scale.speed;
-	mCore.freezeThreshold			= 2.5e-5f * scale.speed * scale.speed;
-	mSimStateData					= NULL;
-	mCore.maxPenBias				= -1e32f;//-PX_MAX_F32;
-	mCore.mFlags					= PxRigidBodyFlags();
-	mCore.linearVelocity			= PxVec3(0.0f);
-	mCore.angularVelocity			= PxVec3(0.0f);
-	mCore.linearDamping				= 0.0f;
-	mCore.solverIterationCounts		= (1 << 8) | 4;	
-	mCore.contactReportThreshold	= PX_MAX_F32;	
-	mCore.setBody2Actor(PxTransform(PxIdentity));
-	mCore.ccdAdvanceCoefficient		= 0.15f;
-	mCore.maxContactImpulse			= 1e32f;// PX_MAX_F32;
-	mCore.isFastMoving				= false;
-	mCore.lockFlags					= PxRigidDynamicLockFlags(0);
-
-	if(type == PxActorType::eRIGID_DYNAMIC)
-	{
-		mCore.angularDamping		= 0.05f;
-		mCore.maxAngularVelocitySq	= 100.0f * 100.0f;
-//		mCore.maxAngularVelocitySq	= 7.0f * 7.0f;
-		mCore.maxLinearVelocitySq	= 1e32f; //PX_MAX_F32;
-	}
-	else
-	{
-		mCore.linearDamping				= 0.05f;
-		mCore.angularDamping			= 0.05f;
-		mCore.maxAngularVelocitySq		= 50.0f * 50.0f;
-		mCore.maxLinearVelocitySq		= 100.f * 100.f * scale.length * scale.length;
-	}
+	mCore.init(bodyPose, PxVec3(1.0f), 1.0f, Sc::Physics::sWakeCounterOnCreation, scale.speed, linearDamping, 0.05f, maxLinearVelocitySq, maxAngularVelocitySq);
 }
 
 Sc::BodyCore::~BodyCore()
@@ -106,20 +74,10 @@ Sc::BodySim* Sc::BodyCore::getSim() const
 	return static_cast<BodySim*>(Sc::ActorCore::getSim());
 }
 
-size_t Sc::BodyCore::getSerialCore(PxsBodyCore& serialCore)
+void Sc::BodyCore::restoreDynamicData()
 {
-	serialCore = mCore;
-	if(mSimStateData && mSimStateData->isKine())
-	{	
-		const Kinematic* kine			= mSimStateData->getKinematicData();
-		serialCore.inverseMass			= kine->backupInvMass;
-		serialCore.inverseInertia		= kine->backupInverseInertia;
-		serialCore.linearDamping		= kine->backupLinearDamping;
-		serialCore.angularDamping		= kine->backupAngularDamping;
-		serialCore.maxAngularVelocitySq	= kine->backupMaxAngVelSq;
-		serialCore.maxLinearVelocitySq	= kine->backupMaxLinVelSq;
-	}
-	return reinterpret_cast<size_t>(&mCore);
+	PX_ASSERT(mSimStateData && mSimStateData->isKine());
+	restore();
 }
 
 //--------------------------------------------------------------
@@ -411,16 +369,20 @@ void Sc::BodyCore::setFlags(Ps::Pool<SimStateData>* simStateDataPool, PxRigidBod
 					else
 						sim->getScene().resetSpeculativeCCDRigidBody(sim->getNodeIndex().index());
 
-					sim->getLowLevelBody().mInternalFlags &= (~PxcRigidBody::eSPECULATIVE_CCD);
+					sim->getLowLevelBody().mInternalFlags &= (~PxsRigidBody::eSPECULATIVE_CCD);
 				}
 				else
 				{
-					if(sim->isArticulationLink())
-						sim->getScene().setSpeculativeCCDArticulationLink(sim->getNodeIndex().index());
-					else
-						sim->getScene().setSpeculativeCCDRigidBody(sim->getNodeIndex().index());
+					//Kinematic body switch puts the body to sleep, so we do not mark the speculative CCD bitmap for this actor to true in this case.
+					if (!switchToKinematic)
+					{
+						if (sim->isArticulationLink())
+							sim->getScene().setSpeculativeCCDArticulationLink(sim->getNodeIndex().index());
+						else
+							sim->getScene().setSpeculativeCCDRigidBody(sim->getNodeIndex().index());
+					}
 
-					sim->getLowLevelBody().mInternalFlags |= (PxcRigidBody::eSPECULATIVE_CCD);
+					sim->getLowLevelBody().mInternalFlags |= (PxsRigidBody::eSPECULATIVE_CCD);
 				}
 			}			
 		}
@@ -466,7 +428,7 @@ void Sc::BodyCore::setWakeCounter(PxReal wakeCounter, bool forceWakeUp)
 	{
 		//wake counter change, we need to trigger dma pxgbodysim data again
 		updateBodySim(sim);
-		if((wakeCounter > 0.0f) || forceWakeUp)
+		if ((wakeCounter > 0.0f) || forceWakeUp)
 			sim->wakeUp();
 		sim->postSetWakeCounter(wakeCounter, forceWakeUp);
 	}
@@ -712,6 +674,14 @@ void Sc::BodyCore::invalidateKinematicTarget()
 { 
 	PX_ASSERT(mSimStateData && mSimStateData->isKine()); 
 	mSimStateData->getKinematicData()->targetValid = 0; 
+}
+
+void Sc::BodyCore::setKinematicLink(const bool value)
+{
+	BodySim* sim = getSim();
+
+	if (sim)
+		sim->getLowLevelBody().mCore->kinematicLink = PxU8(value);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

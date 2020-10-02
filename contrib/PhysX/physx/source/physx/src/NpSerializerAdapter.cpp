@@ -23,58 +23,49 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
+
+#include "common/PxBase.h"
+#include "common/PxSerialFramework.h"
+#include "common/PxSerializer.h"
+#include "PxPhysicsSerialization.h"
 
 #include "GuHeightField.h"
 #include "GuConvexMesh.h"
 #include "GuTriangleMesh.h"
 #include "GuTriangleMeshBV4.h"
 #include "GuTriangleMeshRTree.h"
-
+#include "GuHeightFieldData.h"
+#include "SqPruningStructure.h"
 #include "NpRigidStatic.h"
 #include "NpRigidDynamic.h"
 #include "NpArticulation.h"
+#include "NpArticulationReducedCoordinate.h"
 #include "NpArticulationLink.h"
 #include "NpArticulationJoint.h"
 #include "NpMaterial.h"
 #include "NpAggregate.h"
-#include "GuHeightFieldData.h"
-
-#include "SqPruningStructure.h"
-
-#include "PxBase.h"
-#include "PxSerialFramework.h"
-#include "PxSerializer.h"
-#include "PxPhysicsSerialization.h"
 
 namespace physx
 {
 	using namespace physx::Gu;
 
 	template<>
-	void PxSerializerDefaultAdapter<NpRigidDynamic>::exportData(PxBase& obj, PxSerializationContext& s)   const 
+	void PxSerializerDefaultAdapter<NpMaterial>::registerReferences(PxBase& obj, PxSerializationContext& context) const
 	{
-		PxU32 classSize = sizeof(NpRigidDynamic);
-		NpRigidDynamic& dynamic = static_cast<NpRigidDynamic&>(obj);
-
-		PxsBodyCore serialCore;
-		size_t address = dynamic.getScbBodyFast().getScBody().getSerialCore(serialCore);
-		PxU32 offset =  PxU32(address - reinterpret_cast<size_t>(&dynamic));
-		PX_ASSERT(offset + sizeof(serialCore) <= classSize);
-		s.writeData(&dynamic, offset); 
-		s.writeData(&serialCore, sizeof(serialCore));
-		void* tail = reinterpret_cast<PxU8*>(&dynamic) + offset + sizeof(serialCore);
-		s.writeData(tail, classSize - offset - sizeof(serialCore));
+		NpMaterial& t = static_cast<NpMaterial&>(obj);
+		context.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
+		context.registerReference(obj, PX_SERIAL_REF_KIND_MATERIAL_IDX, size_t(t.getHandle()));
 	}
 
 	template<>
-	void PxSerializerDefaultAdapter<NpRigidDynamic>::registerReferences(PxBase& obj, PxSerializationContext& s)   const 
+	void PxSerializerDefaultAdapter<NpRigidDynamic>::registerReferences(PxBase& obj, PxSerializationContext& context) const 
 	{
 		NpRigidDynamic& dynamic = static_cast<NpRigidDynamic&>(obj);
 
-		s.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
+		context.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
 
 		struct RequiresCallback : public PxProcessPxBaseCallback
 		{
@@ -87,16 +78,22 @@ namespace physx
 			PxSerializationContext& context;
 		};
 
-		RequiresCallback callback(s);
+		RequiresCallback callback(context);
 		dynamic.requiresObjects(callback);
 	}
 
 	template<>
-	void PxSerializerDefaultAdapter<NpShape>::registerReferences(PxBase& obj, PxSerializationContext& s)   const 
+	bool PxSerializerDefaultAdapter<NpArticulationLink>::isSubordinate() const
+	{
+		return true;
+	}
+
+	template<>
+	void PxSerializerDefaultAdapter<NpShape>::registerReferences(PxBase& obj, PxSerializationContext& context) const 
 	{	
 		NpShape& shape = static_cast<NpShape&>(obj);
 
-		s.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
+		context.registerReference(obj, PX_SERIAL_REF_KIND_PXBASE, size_t(&obj));
 
 		struct RequiresCallback : public PxProcessPxBaseCallback
 		{
@@ -112,14 +109,14 @@ namespace physx
 				else
 				{
 					//ideally we would move this part to ScShapeCore but we don't yet have a MaterialManager available there.
-					PxU32 index = static_cast<NpMaterial*>(pxMaterial)->getHandle();
+					PxU16 index = static_cast<NpMaterial*>(pxMaterial)->getHandle();
 					context.registerReference(base, PX_SERIAL_REF_KIND_MATERIAL_IDX, size_t(index));
 				}
 			}
 			PxSerializationContext& context;
 		};
 
-		RequiresCallback callback(s);
+		RequiresCallback callback(context);
 		shape.requiresObjects(callback);
 	}
 
@@ -135,31 +132,28 @@ namespace physx
 		return true;
 	}
 
-	template<>
-	bool PxSerializerDefaultAdapter<NpArticulationLink>::isSubordinate() const
-	{
-		return true;
-	}
 }
 
 using namespace physx;
 
 void PxRegisterPhysicsSerializers(PxSerializationRegistry& sr)
 {
-	sr.registerSerializer(PxConcreteType::eCONVEX_MESH,			PX_NEW_SERIALIZER_ADAPTER(ConvexMesh));
-	sr.registerSerializer(PxConcreteType::eTRIANGLE_MESH_BVH33,	PX_NEW_SERIALIZER_ADAPTER(RTreeTriangleMesh));
-	sr.registerSerializer(PxConcreteType::eTRIANGLE_MESH_BVH34,	PX_NEW_SERIALIZER_ADAPTER(BV4TriangleMesh));
-	sr.registerSerializer(PxConcreteType::eHEIGHTFIELD,			PX_NEW_SERIALIZER_ADAPTER(HeightField));
-	sr.registerSerializer(PxConcreteType::eRIGID_DYNAMIC,		PX_NEW_SERIALIZER_ADAPTER(NpRigidDynamic));
-	sr.registerSerializer(PxConcreteType::eRIGID_STATIC,		PX_NEW_SERIALIZER_ADAPTER(NpRigidStatic));
-	sr.registerSerializer(PxConcreteType::eSHAPE,				PX_NEW_SERIALIZER_ADAPTER(NpShape));
-	sr.registerSerializer(PxConcreteType::eMATERIAL,			PX_NEW_SERIALIZER_ADAPTER(NpMaterial));
-	sr.registerSerializer(PxConcreteType::eCONSTRAINT,			PX_NEW_SERIALIZER_ADAPTER(NpConstraint));
-	sr.registerSerializer(PxConcreteType::eAGGREGATE,			PX_NEW_SERIALIZER_ADAPTER(NpAggregate));
-	sr.registerSerializer(PxConcreteType::eARTICULATION,		PX_NEW_SERIALIZER_ADAPTER(NpArticulation));
-	sr.registerSerializer(PxConcreteType::eARTICULATION_LINK,	PX_NEW_SERIALIZER_ADAPTER(NpArticulationLink));
-	sr.registerSerializer(PxConcreteType::eARTICULATION_JOINT,	PX_NEW_SERIALIZER_ADAPTER(NpArticulationJoint));
-	sr.registerSerializer(PxConcreteType::ePRUNING_STRUCTURE,	PX_NEW_SERIALIZER_ADAPTER(Sq::PruningStructure));
+	sr.registerSerializer(PxConcreteType::eCONVEX_MESH,								PX_NEW_SERIALIZER_ADAPTER(ConvexMesh));
+	sr.registerSerializer(PxConcreteType::eTRIANGLE_MESH_BVH33,						PX_NEW_SERIALIZER_ADAPTER(RTreeTriangleMesh));
+	sr.registerSerializer(PxConcreteType::eTRIANGLE_MESH_BVH34,						PX_NEW_SERIALIZER_ADAPTER(BV4TriangleMesh));
+	sr.registerSerializer(PxConcreteType::eHEIGHTFIELD,								PX_NEW_SERIALIZER_ADAPTER(HeightField));
+	sr.registerSerializer(PxConcreteType::eRIGID_DYNAMIC,							PX_NEW_SERIALIZER_ADAPTER(NpRigidDynamic));
+	sr.registerSerializer(PxConcreteType::eRIGID_STATIC,							PX_NEW_SERIALIZER_ADAPTER(NpRigidStatic));
+	sr.registerSerializer(PxConcreteType::eSHAPE,									PX_NEW_SERIALIZER_ADAPTER(NpShape));
+	sr.registerSerializer(PxConcreteType::eMATERIAL,								PX_NEW_SERIALIZER_ADAPTER(NpMaterial));
+	sr.registerSerializer(PxConcreteType::eCONSTRAINT,								PX_NEW_SERIALIZER_ADAPTER(NpConstraint));
+	sr.registerSerializer(PxConcreteType::eAGGREGATE,								PX_NEW_SERIALIZER_ADAPTER(NpAggregate));
+	sr.registerSerializer(PxConcreteType::eARTICULATION,							PX_NEW_SERIALIZER_ADAPTER(NpArticulation));
+	sr.registerSerializer(PxConcreteType::eARTICULATION_REDUCED_COORDINATE,			PX_NEW_SERIALIZER_ADAPTER(NpArticulationReducedCoordinate));
+	sr.registerSerializer(PxConcreteType::eARTICULATION_LINK,						PX_NEW_SERIALIZER_ADAPTER(NpArticulationLink));
+	sr.registerSerializer(PxConcreteType::eARTICULATION_JOINT,						PX_NEW_SERIALIZER_ADAPTER(NpArticulationJoint));
+	sr.registerSerializer(PxConcreteType::eARTICULATION_JOINT_REDUCED_COORDINATE,	PX_NEW_SERIALIZER_ADAPTER(NpArticulationJointReducedCoordinate));
+	sr.registerSerializer(PxConcreteType::ePRUNING_STRUCTURE,						PX_NEW_SERIALIZER_ADAPTER(Sq::PruningStructure));
 }
 
 
@@ -176,7 +170,9 @@ void PxUnregisterPhysicsSerializers(PxSerializationRegistry& sr)
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eCONSTRAINT));
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eAGGREGATE));
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eARTICULATION));
+	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eARTICULATION_REDUCED_COORDINATE));
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eARTICULATION_LINK));
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eARTICULATION_JOINT));
+	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::eARTICULATION_JOINT_REDUCED_COORDINATE));
 	PX_DELETE_SERIALIZER_ADAPTER(sr.unregisterSerializer(PxConcreteType::ePRUNING_STRUCTURE));
 }

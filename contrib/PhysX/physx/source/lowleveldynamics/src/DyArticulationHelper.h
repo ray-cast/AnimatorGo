@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -37,10 +37,7 @@
 namespace physx
 {
 struct PxsBodyCore;
-
-class PxcConstraintBlockStream;
-class PxcRigidBody;
-class PxsConstraintBlockManager;
+struct PxSolverConstraintDesc;
 struct PxSolverConstraintDesc;
 
 namespace Dy
@@ -51,14 +48,12 @@ namespace Dy
 	struct ArticulationSolverDesc;
 	struct SolverConstraint1DExtStep;
 	struct PxcFsScratchAllocator;
-	struct PxTGSSolverConstraintDesc;
-
 
 struct ArticulationJointTransforms
 {
-	PxTransform		cA2w;				// joint parent frame in world space 
-	PxTransform		cB2w;				// joint child frame in world space
-	PxTransform		cB2cA;				// joint relative pose in world space
+	PxTransform		cA2w;	// joint parent frame in world space 
+	PxTransform		cB2w;	// joint child frame in world space
+	PxTransform		cB2cA;	// joint relative pose in world space
 };
 
 class ArticulationHelper

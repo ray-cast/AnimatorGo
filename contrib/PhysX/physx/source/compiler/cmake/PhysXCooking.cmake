@@ -23,7 +23,7 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 #
 # Build PhysXCooking common
@@ -124,10 +124,6 @@ TARGET_INCLUDE_DIRECTORIES(PhysXCooking
 	PRIVATE ${PHYSXCOOKING_PLATFORM_INCLUDES}
 
 	PRIVATE ${PHYSX_ROOT_DIR}/include
-	PRIVATE ${PHYSX_ROOT_DIR}/include/common
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geometry
-	PRIVATE ${PHYSX_ROOT_DIR}/include/cooking
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geomutils
 
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/include
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/src
@@ -154,7 +150,11 @@ TARGET_INCLUDE_DIRECTORIES(PhysXCooking
 	
 )
 
-TARGET_LINK_LIBRARIES(PhysXCooking PUBLIC PhysXCommon PhysXFoundation)
+TARGET_LINK_LIBRARIES(PhysXCooking 
+	PUBLIC PhysXCommon 
+	PUBLIC PhysXFoundation
+	PRIVATE ${PHYSXCOOKING_PLATFORM_LINKED_LIBS}
+)
 
 # Use generator expressions to set config specific preprocessor definitions
 TARGET_COMPILE_DEFINITIONS(PhysXCooking 

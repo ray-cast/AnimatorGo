@@ -23,19 +23,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 
-#include "PxDefaultSimulationFilterShader.h"
-#include "PsIntrinsics.h"
+#include "extensions/PxDefaultSimulationFilterShader.h"
 #include "PxRigidActor.h"
 #include "PxShape.h"
+
+#include "PsIntrinsics.h"
 #include "PsAllocator.h"
-#include "CmPhysXCommon.h"
 #include "PsInlineArray.h"
 #include "PsFoundation.h"
+#include "CmPhysXCommon.h"
 
 using namespace physx;
 

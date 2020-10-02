@@ -23,19 +23,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "GuContactBuffer.h"
+#include "geomutils/GuContactBuffer.h"
+
 #include "GuIntersectionRayBox.h"
 #include "GuDistanceSegmentBox.h"
 #include "GuInternal.h"
 #include "GuContactMethodImpl.h"
-#include "PsMathUtils.h"
-#include "PsUtilities.h"
 #include "GuGeometryUnion.h"
 #include "GuBoxConversion.h"
+
+#include "PsMathUtils.h"
+#include "PsUtilities.h"
 
 using namespace physx;
 using namespace Gu;

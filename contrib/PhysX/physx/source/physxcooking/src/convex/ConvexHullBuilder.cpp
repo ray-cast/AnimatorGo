@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,10 +31,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "foundation/PxMemory.h"
+#include "cooking/PxCooking.h"
+
 #include "EdgeList.h"
 #include "GuTriangle32.h"
 #include "GuConvexMesh.h"
-#include "PxCooking.h"
 #include "CookingUtils.h"
 #include "ConvexHullBuilder.h"
 #include "ConvexHullLib.h"
@@ -47,7 +48,8 @@
 
 // 7: added mHullDataFacesByVertices8
 // 8: added mEdges
-static const physx::PxU32 gVersion = 8;
+// 9: removed duplicite 'C', 'V', 'H', 'L' header
+static const physx::PxU32 gVersion = 9;
 
 using namespace physx;
 using namespace Gu;
@@ -378,10 +380,6 @@ bool ConvexHullBuilder::save(PxOutputStream& stream, bool platformMismatch) cons
 {
 	// Export header
 	if(!WriteHeader('C', 'L', 'H', 'L', gVersion, platformMismatch, stream))
-		return false;
-
-	// Export header
-	if(!WriteHeader('C', 'V', 'H', 'L', gVersion, platformMismatch, stream))
 		return false;
 
 	// Export figures

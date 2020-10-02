@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -48,11 +48,6 @@
 #include "ScConstraintSim.h"
 #include "CmCollection.h"
 #include "CmUtils.h"
-
-
-#if PX_SUPPORT_GPU_PHYSX
-#include "task/PxGpuDispatcher.h"
-#endif
 
 #include "extensions/PxJoint.h"
 
@@ -138,6 +133,8 @@ NpScene::NpScene(const PxSceneDesc& desc) :
 	mSceneAdvance.setObject(this);
 
 	mTaskManager = mScene.getScScene().getTaskManagerPtr();
+	mCudaContextManager = mScene.getScScene().getCudaContextManager();
+
 	mThreadReadWriteDepth = Ps::TlsAlloc();
 
 	updatePhysXIndicator();
@@ -813,13 +810,13 @@ void NpScene::addArticulation(PxArticulationBase& articulation)
 	PX_CHECK_AND_RETURN(articulation.getNbLinks()>0, "PxScene::addArticulation: empty articulations may not be added to simulation.");
 	PX_SIMD_GUARD;
 
-	if (this->getFlags() & PxSceneFlag::eENABLE_GPU_DYNAMICS)
+	if (this->getFlags() & PxSceneFlag::eENABLE_GPU_DYNAMICS && articulation.getConcreteType() != PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
 	{
-		Ps::getFoundation().error(PxErrorCode::eINVALID_OPERATION, __FILE__, __LINE__, "PxScene::addArticulation(): Articulations are not currently supported when PxSceneFlag::eENABLE_GPU_DYNAMICS is set!");
+		Ps::getFoundation().error(PxErrorCode::eINVALID_OPERATION, __FILE__, __LINE__, "PxScene::addArticulation(): Only Reduced coordinate articulations are currently supported when PxSceneFlag::eENABLE_GPU_DYNAMICS is set!");
 		return;
 	}
 
-	if (getSimulationStage() != Sc::SimulationStage::eCOMPLETE && articulation.getType() == PxArticulationBase::eReducedCoordinate)
+	if (getSimulationStage() != Sc::SimulationStage::eCOMPLETE && articulation.getConcreteType() == PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
 	{
 		Ps::getFoundation().error(PxErrorCode::eINVALID_OPERATION, __FILE__, __LINE__, "PxScene::addArticulation(): this call is not allowed while the simulation is running. Call will be ignored!");
 		return;
@@ -827,7 +824,7 @@ void NpScene::addArticulation(PxArticulationBase& articulation)
 
 	PxArticulationImpl& npa = *reinterpret_cast<PxArticulationImpl*>(articulation.getImpl());
 
-	Scb::Articulation& art = npa.getArticulation();
+	Scb::Articulation& art = npa.getScbArticulation();
 	const Scb::ControlState::Enum cs = art.getControlState();
 	if ((cs == Scb::ControlState::eNOT_IN_SCENE) || ((cs == Scb::ControlState::eREMOVE_PENDING) && (art.getScbScene()->getPxScene() == this)))
 		addArticulationInternal(articulation);
@@ -835,39 +832,44 @@ void NpScene::addArticulation(PxArticulationBase& articulation)
 		Ps::getFoundation().error(PxErrorCode::eINVALID_OPERATION, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation already assigned to a scene. Call will be ignored!");
 }
 
+static void checkArticulationLink(NpScene* scene, NpArticulationLink* link)
+{
+#if PX_CHECKED
+	scene->checkPositionSanity(*link, link->getGlobalPose(), "PxScene::addArticulation or PxScene::addAggregate");
+#else
+	PX_UNUSED(scene);
+#endif
+	if(link->getMass()==0.0f)
+	{
+		Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero mass added to scene; defaulting mass to 1");
+		link->setMass(1.0f);
+	}
+
+	const PxVec3 inertia0 = link->getMassSpaceInertiaTensor();
+	if(inertia0.x == 0.0f || inertia0.y == 0.0f || inertia0.z == 0.0f)
+	{
+		Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero moment of inertia added to scene; defaulting inertia to (1,1,1)");
+		link->setMassSpaceInertiaTensor(PxVec3(1.0f, 1.0f, 1.0f));
+	}
+}
+
 void NpScene::addArticulationInternal(PxArticulationBase& npa)
 {
-
 	// Add root link first
 	PxU32 nbLinks = npa.getNbLinks();
 	PX_ASSERT(nbLinks > 0);
 	PxArticulationImpl* impl = reinterpret_cast<PxArticulationImpl*>(npa.getImpl());
 	NpArticulationLink* rootLink = static_cast<NpArticulationLink*>(impl->getRoot());
 
-#if PX_CHECKED
-	checkPositionSanity(*rootLink, rootLink->getGlobalPose(), "PxScene::addArticulation or PxScene::addAggregate");
-#endif
-	if(rootLink->getMass()==0)
-	{
-		Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero mass added to scene; defaulting mass to 1");
-		rootLink->setMass(1.0f);
-	}
-
-	PxVec3 inertia0 = rootLink->getMassSpaceInertiaTensor();		
-	if(inertia0.x == 0.0f || inertia0.y == 0.0f || inertia0.z == 0.0f)
-	{
-		Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero moment of inertia added to scene; defaulting inertia to (1,1,1)");
-		rootLink->setMassSpaceInertiaTensor(PxVec3(1.0f, 1.0f, 1.0f));
-	}
+	checkArticulationLink(this, rootLink);
 
 	bool linkTriggersWakeUp = !rootLink->getScbBodyFast().checkSleepReadinessBesidesWakeCounter();
 	
 	addArticulationLinkBody(*rootLink);
 
 	// Add articulation
-	PxArticulationImpl* npaImpl = reinterpret_cast<PxArticulationImpl*>(npa.getImpl());
-	Scb::Articulation& scbArt = npaImpl->getArticulation();
-	scbArt.setArticulationType(npa.getType());
+	PxArticulationImpl* npaImpl = npa.getImpl();
+	Scb::Articulation& scbArt = npaImpl->getScbArticulation();
 	mScene.addArticulation(scbArt);
 
 	Sc::ArticulationCore& scArtCore = scbArt.getScArticulation();
@@ -897,30 +899,12 @@ void NpScene::addArticulationInternal(PxArticulationBase& npa)
 		{
 			NpArticulationLink* child = children[i];
 
-#if PX_CHECKED
-			checkPositionSanity(*child, child->getGlobalPose(), "PxScene::addArticulation");
-#endif
-			if(child->getMass()==0)
-			{
-				Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero mass added to scene; defaulting mass to 1");
-				child->setMass(1.0f);
-			}
-
-			PxVec3 inertia = child->getMassSpaceInertiaTensor();		
-			if(inertia.x == 0.0f || inertia.y == 0.0f || inertia.z == 0.0f)
-			{
-				Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): Articulation link with zero moment of inertia added to scene; defaulting inertia to (1,1,1)");
-				child->setMassSpaceInertiaTensor(PxVec3(1.0f, 1.0f, 1.0f));
-			}
+			checkArticulationLink(this, child);
 
 			linkTriggersWakeUp = linkTriggersWakeUp || (!child->getScbBodyFast().checkSleepReadinessBesidesWakeCounter());
 
 			addArticulationLink(*child);  // Adds joint too
-			if (scArtSim)
-			{
-				PxU32 cHandle = scArtSim->findBodyIndex(*child->getScbBodyFast().getScBody().getSim());
-				child->setLLIndex(cHandle);
-			}
+			
 			//child->setInboundJointDof(scArtSim->getDof(cHandle));
 
 			linkStack[stackSize] = child;
@@ -955,7 +939,43 @@ void NpScene::addArticulationInternal(PxArticulationBase& npa)
 			for (PxU32 i = 0; i < l->getNbChildren(); i++)
 			{
 				NpArticulationLink* child = children[i];
+
 				child->setInboundJointDof(scArtSim->getDof(child->getLinkIndex()));
+
+				if (npa.getConcreteType() == PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
+				{
+					PxArticulationJointReducedCoordinate* joint = static_cast<PxArticulationJointReducedCoordinate*>(child->getInboundJoint());
+					PxArticulationJointType::Enum jointType = joint->getJointType();
+
+					if (jointType == PxArticulationJointType::eUNDEFINED)
+					{
+						Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): The application need to set joint type. defaulting joint type to eFix");
+						joint->setJointType(PxArticulationJointType::eFIX);
+						child->setInboundJointDof(0);
+					}
+
+					if (jointType != PxArticulationJointType::eFIX)
+					{
+
+						PxArticulationMotion::Enum motionX = joint->getMotion(PxArticulationAxis::eX);
+						PxArticulationMotion::Enum motionY = joint->getMotion(PxArticulationAxis::eY);
+						PxArticulationMotion::Enum motionZ = joint->getMotion(PxArticulationAxis::eZ);
+
+						PxArticulationMotion::Enum motionSwing1 = joint->getMotion(PxArticulationAxis::eSWING1);
+						PxArticulationMotion::Enum motionSwing2 = joint->getMotion(PxArticulationAxis::eSWING2);
+						PxArticulationMotion::Enum motionTwist = joint->getMotion(PxArticulationAxis::eTWIST);
+
+						//PxArticulationMotion::eLOCKED is 0 
+						if (!(motionX | motionY | motionZ | motionSwing1 | motionSwing2 | motionTwist))
+						{
+							//if all axis are locked, which means the user doesn't set the motion. In this case, we should change the joint type to be
+							//fix to avoid crash in the solver
+							Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, "PxScene::addArticulation(): The application need to set joint motion. defaulting joint type to eFix");
+							joint->setJointType(PxArticulationJointType::eFIX);
+							child->setInboundJointDof(0);
+						}
+					}
+				}
 
 				linkStack[stackSize] = child;
 				stackSize++;
@@ -966,8 +986,13 @@ void NpScene::addArticulationInternal(PxArticulationBase& npa)
 	}
 
 	//add loop joints
-	if (npa.getType() == PxArticulationBase::eReducedCoordinate)
+	if (npa.getConcreteType() == PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
 	{
+
+		if ((scbArt.getScArticulation().getArticulationFlags() & PxArticulationFlag::eFIX_BASE))
+		{
+			rootLink->setKinematicLink(true);
+		}
 		//This method will prepare link data for the gpu 
 		mScene.getScScene().addArticulationSimControl(scbArt.getScArticulation());
 
@@ -990,8 +1015,7 @@ void NpScene::removeArticulation(PxArticulationBase& articulation, bool wakeOnLo
 
 	if (removeFromSceneCheck(this, articulation.getScene(), "PxScene::removeArticulation(): Articulation"))
 	{
-		NpArticulation& npa = static_cast<NpArticulation&>(articulation);
-		removeArticulationInternal(npa, wakeOnLostTouch, true);
+		removeArticulationInternal(articulation, wakeOnLostTouch, true);
 	}
 }
 
@@ -1012,7 +1036,7 @@ void NpScene::removeArticulationInternal(PxArticulationBase& npa, bool wakeOnLos
 
 	// Remove links & joints
 	PX_ALLOCA(linkStack, NpArticulationLink*, nbLinks);
-	linkStack[0] = reinterpret_cast<PxArticulationImpl*>(npa.getImpl())->getLinks()[0];
+	linkStack[0] = npa.getImpl()->getLinks()[0];
 	PxU32 curLink = 0, stackSize = 1;
 
 	while(curLink < (nbLinks-1))
@@ -1039,15 +1063,14 @@ void NpScene::removeArticulationInternal(PxArticulationBase& npa, bool wakeOnLos
 
 	if (flag & PxRigidBodyFlag::eENABLE_SPECULATIVE_CCD)
 	{
-		PxArticulationImpl* impl = reinterpret_cast<PxArticulationImpl*>(npa.getImpl());
+		PxArticulationImpl* impl = npa.getImpl();
 		IG::NodeIndex index = impl->getScbArticulation().getScArticulation().getIslandNodeIndex();
 		if (index.isValid())
 			mScene.getScScene().resetSpeculativeCCDArticulationLink(index.index());
 	}
+
 	// Remove articulation
-	mScene.removeArticulation(reinterpret_cast<PxArticulationImpl*>(npa.getImpl())->getArticulation());
-
-
+	mScene.removeArticulation(npa.getImpl()->getScbArticulation());
 	removeFromArticulationList(npa);
 }
 
@@ -1075,6 +1098,15 @@ void NpScene::addArticulationLink(NpArticulationLink& link)
 {
 	addArticulationLinkBody(link);
 	addArticulationLinkConstraint(link);
+
+	Sc::ArticulationCore& scArtCore = link.getArticulation().getImpl()->getScbArticulation().getScArticulation();
+	Sc::ArticulationSim* scArtSim = scArtCore.getSim();
+
+	if (scArtSim)
+	{
+		PxU32 cHandle = scArtSim->findBodyIndex(*link.getScbBodyFast().getScBody().getSim());
+		link.setLLIndex(cHandle);
+	}
 }
 
 void NpScene::removeArticulationLink(NpArticulationLink& link, bool wakeOnLostTouch)
@@ -1267,10 +1299,15 @@ void NpScene::addCollection(const PxCollection& collection)
 			NpArticulation* np = static_cast<NpArticulation*>(s);
 			if (!np->getAggregate()) // The actor will be added when the aggregate is added
 			{
-				if (np->mType == PxArticulationBase::eMaximumCoordinate)
-					addArticulation(static_cast<PxArticulation&>(*np));
-				/*else
-					addArticulation(static_cast<PxArticulationReducedCoordinate&>(*np));*/
+				addArticulation(static_cast<PxArticulationBase&>(*np));
+			}
+		}
+		else if (serialType == PxConcreteType::eARTICULATION_REDUCED_COORDINATE)
+		{
+			NpArticulationReducedCoordinate* np = static_cast<NpArticulationReducedCoordinate*>(s);
+			if (!np->getAggregate()) // The actor will be added when the aggregate is added
+			{
+				addArticulation(static_cast<PxArticulationBase&>(*np));
 			}
 		}
 		else if(serialType==PxConcreteType::eAGGREGATE)
@@ -1767,6 +1804,18 @@ void NpScene::resetFiltering(PxRigidActor& actor, PxShape*const* shapes, PxU32 s
 	}
 }
 
+PxPairFilteringMode::Enum NpScene::getKinematicKinematicFilteringMode() const
+{
+	NP_READ_CHECK(this);
+	return mScene.getScScene().getKineKineFilteringMode();
+}
+
+PxPairFilteringMode::Enum NpScene::getStaticKinematicFilteringMode() const
+{
+	NP_READ_CHECK(this);
+	return mScene.getScScene().getStaticKineFilteringMode();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 PxPhysics& NpScene::getPhysics()
@@ -1871,20 +1920,15 @@ void NpScene::simulateOrCollide(PxReal elapsedTime, physx::PxBaseTask* completio
 			mSceneCollide.setContinuation(&mCollisionCompletion);
 			//Initialize scene completion task
 			mSceneCompletion.setContinuation(*mTaskManager, NULL);
-		}
-		else
-		{
-			mSceneCompletion.setContinuation(*mTaskManager, completionTask);
-			mSceneExecution.setContinuation(*mTaskManager, &mSceneCompletion);
-		}
 
-		if (simStage == Sc::SimulationStage::eCOLLIDE)
-		{
 			mCollisionCompletion.removeReference();
 			mSceneCollide.removeReference();
 		}
 		else
 		{
+			mSceneCompletion.setContinuation(*mTaskManager, completionTask);
+			mSceneExecution.setContinuation(*mTaskManager, &mSceneCompletion);
+
 			mSceneCompletion.removeReference();
 			mSceneExecution.removeReference();
 		}
@@ -2276,15 +2320,8 @@ void NpScene::flushQueryUpdates()
 {
 	// DS: how do we profile const methods??????
 	PX_PROFILE_ZONE("API.flushQueryUpdates", getContextId());
-	NP_READ_CHECK(this);
+	NP_WRITE_CHECK(this);
 	PX_SIMD_GUARD;
-
-	if (getSimulationStage() != Sc::SimulationStage::eCOMPLETE)
-	{
-		Ps::getFoundation().error(PxErrorCode::eDEBUG_WARNING, __FILE__, __LINE__, 
-			"PxScene::flushQueryUpdates(): This call is not allowed while the simulation is running. Call will be ignored");
-		return;
-	}
 
 	mSQManager.flushUpdates();
 }
@@ -2415,6 +2452,19 @@ PxU32 NpScene::getSolverBatchSize(void) const
 	return mScene.getSolverBatchSize();
 }
 
+void NpScene::setSolverArticulationBatchSize(PxU32 solverBatchSize)
+{
+	NP_WRITE_CHECK(this);
+	mScene.setSolverArticulationBatchSize(solverBatchSize);
+}
+
+PxU32 NpScene::getSolverArticulationBatchSize(void) const
+{
+	NP_READ_CHECK(this);
+	// get from our local copy
+	return mScene.getSolverArticulationBatchSize();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 bool NpScene::setVisualizationParameter(PxVisualizationParameter::Enum param, PxReal value)
@@ -2503,9 +2553,9 @@ PxCpuDispatcher* NpScene::getCpuDispatcher() const
 	return getTaskManager()->getCpuDispatcher();
 }
 
-PxGpuDispatcher* NpScene::getGpuDispatcher() const
+PxCudaContextManager* NpScene::getCudaContextManager() const
 {
-	return getTaskManager()->getGpuDispatcher();
+	return mCudaContextManager;
 }
 
 PxPruningStructureType::Enum NpScene::getStaticStructure() const
@@ -3020,3 +3070,4 @@ void NpScene::releaseBatchQuery(PxBatchQuery* sq)
 	PX_UNUSED(found); PX_ASSERT(found);
 	PX_DELETE_AND_RESET(npsq);
 }
+

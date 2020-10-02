@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -92,8 +92,8 @@ static bool sweepSphereTriangle(const PxTriangle& tri,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SweepShapeMeshHitCallback::SweepShapeMeshHitCallback(CallbackMode::Enum mode, const PxHitFlags& hitFlags, bool flipNormal, float distCoef) :
-	MeshHitCallback<PxRaycastHit>	(mode),
+SweepShapeMeshHitCallback::SweepShapeMeshHitCallback(CallbackMode::Enum inMode, const PxHitFlags& hitFlags, bool flipNormal, float distCoef) :
+	MeshHitCallback<PxRaycastHit>	(inMode),
 	mHitFlags						(hitFlags),
 	mStatus							(false),
 	mInitialOverlap					(false),

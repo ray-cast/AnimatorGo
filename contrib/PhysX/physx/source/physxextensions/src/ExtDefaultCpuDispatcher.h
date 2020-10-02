@@ -23,21 +23,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #ifndef PX_PHYSICS_EXTENSIONS_NP_DEFAULT_CPU_DISPATCHER_H
 #define PX_PHYSICS_EXTENSIONS_NP_DEFAULT_CPU_DISPATCHER_H
 
+#include "common/PxProfileZone.h"
+#include "task/PxTask.h"
+#include "extensions/PxDefaultCpuDispatcher.h"
+
 #include "CmPhysXCommon.h"
 #include "PsUserAllocated.h"
 #include "PsSync.h"
 #include "PsSList.h"
-#include "PxDefaultCpuDispatcher.h"
 #include "ExtSharedQueueEntryPool.h"
-#include "task/PxTask.h"
-#include "common/PxProfileZone.h"
 
 namespace physx
 {

@@ -23,21 +23,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#include "geomutils/GuContactBuffer.h"
+
 #include "GuDistancePointTriangle.h"
 #include "GuContactMethodImpl.h"
-#include "GuContactBuffer.h"
 #include "GuGeometryUnion.h"
 #include "GuFeatureCode.h"
 #include "GuMidphaseInterface.h"
 #include "GuEntityReport.h"
 #include "GuHeightFieldUtil.h"
 #include "GuBox.h"
-#include "PsSort.h"
 
+#include "PsSort.h"
 #include "CmRenderOutput.h"
 
 #define DEBUG_RENDER_MESHCONTACTS	0

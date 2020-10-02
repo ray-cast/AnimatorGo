@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -35,7 +35,6 @@
 
 #if PX_SUPPORT_GPU_PHYSX
 #include "PxPhysXGpu.h"
-#include "task/PxGpuDispatcher.h"
 #endif
 
 #include "PxsContactManagerState.h"
@@ -670,6 +669,7 @@ void PxsNphaseImplementationContext::removeContactManagersFallback(PxsContactMan
 {
 	if (mRemovedContactManagers.size())
 	{
+		lock();
 		Ps::sort(mRemovedContactManagers.begin(), mRemovedContactManagers.size(), Ps::Greater<PxU32>());
 
 		for (PxU32 a = 0; a < mRemovedContactManagers.size(); ++a)
@@ -682,6 +682,7 @@ void PxsNphaseImplementationContext::removeContactManagersFallback(PxsContactMan
 		}
 
 		mRemovedContactManagers.forceSize_Unsafe(0);
+		unlock();
 	}
 }
 
@@ -922,6 +923,7 @@ void PxsNphaseImplementationContext::unregisterContactManagerInternal(PxU32 npIn
 	managers.mContactManagerMapping[index] = replaceManager;
 	managers.mCaches[index] = managers.mCaches[replaceIndex];
 	cmOutputs[index] = cmOutputs[replaceIndex];
+	managers.mCaches[replaceIndex].reset();
 
 	PxU32* edgeNodeIndices = mIslandSim->getEdgeNodeIndexPtr();
 

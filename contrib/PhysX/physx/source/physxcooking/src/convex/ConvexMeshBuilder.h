@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,8 +31,9 @@
 #ifndef PX_COLLISION_CONVEXMESHBUILDER
 #define PX_COLLISION_CONVEXMESHBUILDER
 
+#include "cooking/PxCooking.h"
+
 #include "GuConvexMeshData.h"
-#include "PxCooking.h"
 #include "ConvexPolygonsBuilder.h"
 
 namespace physx
@@ -53,7 +54,7 @@ namespace physx
 				bool				save(PxOutputStream& stream, bool platformMismatch)		const;
 
 				// copy the convex mesh into internal convex mesh, which can be directly used then
-				bool				copy(Gu::ConvexHullData& convexData, PxU32& nb);
+				bool				copy(Gu::ConvexHullInitData& convexData);
 
 				// loads the convex mesh from given polygons
 				bool				loadConvexHull(const PxConvexMeshDesc&, ConvexHullLib* hullLib);
@@ -71,15 +72,6 @@ namespace physx
 				// internal objects
 				void				computeInternalObjects();
 //~TEST_INTERNAL_OBJECTS
-
-				// return computed mass
-				PxReal				getMass() const { return mMass; }
-
-				// return computed inertia tensor
-				const PxMat33&		getInertia() const { return mInertia; }
-
-				// return big convex data
-				BigConvexData*		getBigConvexData() const  { return mBigConvexData; }
 
 				// set big convex data
 				void				setBigConvexData(BigConvexData* data) { mBigConvexData = data; }

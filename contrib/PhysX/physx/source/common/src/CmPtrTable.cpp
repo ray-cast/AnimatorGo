@@ -23,15 +23,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxAssert.h"
 #include "foundation/PxMemory.h"
+#include "common/PxMetaData.h"
 #include "CmPtrTable.h"
 #include "CmUtils.h"
-#include "PxMetaData.h"
 #include "PsBitUtils.h"
 
 using namespace physx;

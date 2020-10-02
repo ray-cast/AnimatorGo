@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -56,7 +56,7 @@
 
 #include <float.h>
 // do not include for ARM target
-#if !PX_ARM
+#if !PX_ARM && !PX_A64
 #include <mmintrin.h>
 #endif
 
@@ -118,7 +118,7 @@ PX_FORCE_INLINE uint32_t countLeadingZeros(uint32_t v)
 /*!
 Prefetch aligned cache size around \c ptr+offset.
 */
-#if !PX_ARM
+#if !PX_ARM && !PX_A64
 PX_FORCE_INLINE void prefetchLine(const void* ptr, uint32_t offset = 0)
 {
 	// cache line on X86/X64 is 64-bytes so a 128-byte prefetch would require 2 prefetches.

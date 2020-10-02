@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,16 +31,14 @@
 #define GU_COLLISION_CONVEXMESH_H
 
 #include "foundation/PxBitAndData.h"
-#include "PxConvexMesh.h"
-#include "CmPhysXCommon.h"
+#include "common/PxMetaData.h"
+#include "geometry/PxConvexMesh.h"
 #include "PsUserAllocated.h"
+#include "CmPhysXCommon.h"
 #include "CmRefCountable.h"
+#include "CmRenderOutput.h"
 #include "GuConvexMeshData.h"
 
-// PX_SERIALIZATION
-#include "PxMetaData.h"
-#include "CmRenderOutput.h"
-//~PX_SERIALIZATION
 
 namespace physx
 {
@@ -70,6 +68,16 @@ namespace Gu
 		return bytesNeeded;
 	}
 
+	struct ConvexHullInitData
+	{
+		ConvexHullData	mHullData;
+		PxU32			mNb;
+		PxReal			mMass;		
+		PxMat33			mInertia;
+		BigConvexData*	mBigConvexData;
+	};
+
+
 	// 0: includes raycast map
 	// 1: discarded raycast map
 	// 2: support map not always there
@@ -97,11 +105,12 @@ namespace Gu
 	//==================================================================================================
 	public:
 	// PX_SERIALIZATION
-		PX_PHYSX_COMMON_API 						ConvexMesh(PxBaseFlags baseFlags) : PxConvexMesh(baseFlags), Cm::RefCountable(PxEmpty), mHullData(PxEmpty), mNb(PxEmpty) 
+							 						ConvexMesh(PxBaseFlags baseFlags) : PxConvexMesh(baseFlags), Cm::RefCountable(PxEmpty), mHullData(PxEmpty), mNb(PxEmpty) 
 													{
 														mNb.setBit();
 													}									
 
+		PX_PHYSX_COMMON_API			void			preExportDataReset() { Cm::RefCountable::preExportDataReset(); }
 		PX_PHYSX_COMMON_API virtual	void			exportExtraData(PxSerializationContext& stream);
 		PX_PHYSX_COMMON_API			void			importExtraData(PxDeserializationContext& context);
 		PX_PHYSX_COMMON_API virtual	void			onRefCountZero();
@@ -112,7 +121,7 @@ namespace Gu
 	//~PX_SERIALIZATION
 		PX_PHYSX_COMMON_API 						ConvexMesh();
 
-													ConvexMesh(GuMeshFactory& factory, ConvexHullData& data);
+		PX_PHYSX_COMMON_API							ConvexMesh(GuMeshFactory& factory, ConvexHullInitData& data);
 
 		PX_PHYSX_COMMON_API bool					load(PxInputStream& stream);
 

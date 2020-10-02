@@ -23,22 +23,23 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxBounds3.h"
 #include "foundation/PxMemory.h"
+#include "common/PxTolerancesScale.h"
+
 #include "CmPhysXCommon.h"
-#include "RTreeCooking.h"
 #include "PsSort.h"
 #include "PsMathUtils.h"
 #include "PsAllocator.h"
 #include "PsVecMath.h"
-#include "PxTolerancesScale.h"
-#include "QuickSelect.h"
 #include "PsInlineArray.h"
 #include "GuRTree.h"
+#include "RTreeCooking.h"
+#include "QuickSelect.h"
 
 #define PRINT_RTREE_COOKING_STATS 0 // AP: keeping this frequently used macro for diagnostics/benchmarking
 

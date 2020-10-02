@@ -36,6 +36,7 @@
 #pragma once
 #include <foundation/PxPreprocessor.h>
 #include <foundation/PxProfiler.h>
+#include <foundation/PxAssert.h>
 #include <foundation/PxAllocatorCallback.h>
 #ifndef NV_CLOTH_IMPORT
 #define NV_CLOTH_IMPORT PX_DLL_IMPORT

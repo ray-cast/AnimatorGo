@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -33,23 +33,13 @@
 
 #include "DyArticulationCore.h"
 #include "PxArticulationJoint.h"
+#include "solver/PxSolverDefs.h"
+#include "PxArticulationJointReducedCoordinate.h"
 
 namespace physx
 {
 	namespace Dy
 	{
-
-		struct ArticulationLimit
-		{
-			PxReal low, high;
-		};
-
-		struct ArticulationDrive
-		{
-			PxReal stiffness, damping, maxForce;
-			bool isAcceleration;
-		};
-
 		struct ArticulationJointCoreBase
 		{
 			//= ATTENTION! =====================================================================================
@@ -60,7 +50,7 @@ namespace physx
 			//==================================================================================================
 		public:
 
-			PX_CUDA_CALLABLE PX_FORCE_INLINE bool setJointPose()
+			PX_CUDA_CALLABLE bool setJointPose(PxQuat& relativeQuat)
 			{
 				if (dirtyFlag & ArticulationJointCoreDirtyFlag::ePOSE)
 				{
@@ -83,10 +73,8 @@ namespace physx
 
 				dirtyFlag = other.dirtyFlag;
 
-				prismaticLimited = other.prismaticLimited;
-
 				//KS - temp place to put reduced coordinate limit and drive values
-				for (PxU32 i = 0; i < 6; ++i)
+				for(PxU32 i=0; i<PxArticulationAxis::eCOUNT; i++)
 				{
 					limits[i] = other.limits[i];
 					drives[i] = other.drives[i];
@@ -98,45 +86,41 @@ namespace physx
 				}
 
 				frictionCoefficient = other.frictionCoefficient;
-				relativeQuat = other.relativeQuat;
+				//relativeQuat = other.relativeQuat;
 				jointType = other.jointType;
 				jointOffset = other.jointOffset; //this is the dof offset for the joint in the cache
-
 			}
 
 			// attachment points, don't change the order, otherwise it will break GPU code
-			PxTransform							parentPose;			//28			28
-			PxTransform							childPose;			//28			56
+			PxTransform						parentPose;								//28		28
+			PxTransform						childPose;								//28		56
 
 			//KS - temp place to put reduced coordinate limit and drive values
-			ArticulationLimit					limits[6];			//48			104
-			ArticulationDrive					drives[6];			//96			200
-			PxReal								targetP[6];			//24			224
-			PxReal								targetV[6];			//24			248
+			PxArticulationLimit				limits[PxArticulationAxis::eCOUNT];		//48		104
+			PxArticulationDrive				drives[PxArticulationAxis::eCOUNT];		//96		200
+			PxReal							targetP[PxArticulationAxis::eCOUNT];	//24		224
+			PxReal							targetV[PxArticulationAxis::eCOUNT];	//24		248
 			
-			// initial parent to child rotation
-			PxQuat								relativeQuat;			//16		264
-			PxReal								frictionCoefficient;	//4			268
-			//this is the dof offset for the joint in the cache
-			PxU32								jointOffset;			//4			272
+			// initial parent to child rotation. Could be 
+			//PxQuat							relativeQuat;							//16		264
+			PxReal							frictionCoefficient;					//4			268
 
-			PxU8								dofIds[6];				//6			278
-			PxArticulationMotions				motion[6];				//6			284
+			PxU8							dofIds[PxArticulationAxis::eCOUNT];		//6			274
+			PxU8							motion[PxArticulationAxis::eCOUNT];		//6			280
 
-			PxReal								maxJointVelocity;		//4			288
+			PxReal							maxJointVelocity;						//4			284
 
-			ArticulationJointCoreDirtyFlags		dirtyFlag;				//1			289
-			bool								prismaticLimited;		//1			290
-			PxU8								jointType;				//1			291
-			PxU8								pad[13];				//13		304
-
-
+			//Currently, jointOffset can't exceed 64*3 so we can use a PxU8 here! This brings mem footprint to exactly a multiple of 16 bytes
+			//this is the dof offset for the joint in the cache. 
+			PxU8							jointOffset;							//1			285
+			ArticulationJointCoreDirtyFlags	dirtyFlag;								//1			286
+			PxU8							jointType;								//1			287
+			PxU8							pad[1];
 
 			ArticulationJointCoreBase() { maxJointVelocity = 100.f; }
 			// PX_SERIALIZATION
-			ArticulationJointCoreBase(const PxEMPTY&) {}
+			ArticulationJointCoreBase(const PxEMPTY&) : dirtyFlag(PxEmpty) { PX_COMPILE_TIME_ASSERT(sizeof(PxArticulationMotions) == sizeof(PxU8)); }
 			//~PX_SERIALIZATION
-
 		};
 	}
 }

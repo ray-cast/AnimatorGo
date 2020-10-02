@@ -23,13 +23,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PsIntrinsics.h"
+#include "geometry/PxHeightFieldDesc.h"
+
 #include "GuMeshFactory.h"
-#include "PxHeightFieldDesc.h"
 #include "GuTriangleMesh.h"
 #include "GuTriangleMeshBV4.h"
 #include "GuTriangleMeshRTree.h"
@@ -37,8 +37,9 @@
 #include "GuBVHStructure.h"
 #include "GuHeightField.h"
 #include "GuConvexMeshData.h"
-#include "CmUtils.h"
 #include "GuMeshData.h"
+#include "CmUtils.h"
+#include "PsIntrinsics.h"
 #include "PsFoundation.h"
 
 using namespace physx;
@@ -504,10 +505,10 @@ void GuMeshFactory::addConvexMesh(ConvexMesh* np, bool lock)
 // data injected by cooking lib for runtime cooking
 PxConvexMesh* GuMeshFactory::createConvexMesh(void* data)
 {
-	return createConvexMesh(*reinterpret_cast<Gu::ConvexHullData*>(data));
+	return createConvexMesh(*reinterpret_cast<Gu::ConvexHullInitData*>(data));
 }
 
-PxConvexMesh* GuMeshFactory::createConvexMesh(Gu::ConvexHullData& data)
+PxConvexMesh* GuMeshFactory::createConvexMesh(Gu::ConvexHullInitData& data)
 {
 	Gu::ConvexMesh *np;
 	PX_NEW_SERIALIZED(np, Gu::ConvexMesh)(*this, data);

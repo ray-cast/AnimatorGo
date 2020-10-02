@@ -23,9 +23,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
+
+#include "geomutils/GuContactBuffer.h"
 
 #include "GuGJKPenetration.h"
 #include "GuEPA.h"
@@ -36,7 +38,6 @@
 #include "GuContactMethodImpl.h"
 #include "GuPCMShapeConvex.h"
 #include "GuPCMContactGen.h"
-#include "GuContactBuffer.h"
 
 
 namespace physx
@@ -251,10 +252,16 @@ bool pcmContactConvexConvex(GU_CONTACT_METHOD_ARGS)
 	//ML: after refreshContactPoints, we might lose some contacts
 	const bool bLostContacts = (manifold.mNumContacts != initialContacts);
 
-	if(bLostContacts || manifold.invalidate_BoxConvex(curRTrans, minMargin))
-	{
-		manifold.setRelativeTransform(curRTrans);
+	const Vec3V extent0 = V3Mul(V3LoadU(hullData0->mInternal.mExtents), vScale0);
+	const Vec3V extent1 = V3Mul(V3LoadU(hullData0->mInternal.mExtents), vScale1);
 
+	const FloatV radiusA = V3Length(extent0);
+	const FloatV radiusB = V3Length(extent1);
+
+	if(bLostContacts || manifold.invalidate_BoxConvex(curRTrans, transf0.q, transf1.q, minMargin, radiusA, radiusB))
+	{
+		manifold.setRelativeTransform(curRTrans, transf0.q, transf1.q);
+		
 		const bool idtScale0 = shapeConvex0.scale.isIdentity();
 		const bool idtScale1 = shapeConvex1.scale.isIdentity();
 		const QuatV vQuat0 = QuatVLoadU(&shapeConvex0.scale.rotation.x);

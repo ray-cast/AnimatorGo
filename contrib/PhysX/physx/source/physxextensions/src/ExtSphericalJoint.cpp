@@ -23,20 +23,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "ExtSphericalJoint.h"
 #include "ExtConstraintHelper.h"
 #include "CmConeLimitHelper.h"
-#include "CmRenderOutput.h"
-#include "CmVisualization.h"
-
-#include "common/PxSerialFramework.h"
+#include "PxPhysics.h"
 
 using namespace physx;
 using namespace Ext;
+using namespace shdfnd;
 
 PxSphericalJoint* physx::PxSphericalJointCreate(PxPhysics& physics, PxRigidActor* actor0, const PxTransform& localFrame0, PxRigidActor* actor1, const PxTransform& localFrame1)
 {

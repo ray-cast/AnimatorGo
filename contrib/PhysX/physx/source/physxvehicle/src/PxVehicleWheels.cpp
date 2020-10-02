@@ -23,20 +23,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PxVehicleWheels.h"
+#include "vehicle/PxVehicleWheels.h"
+#include "PxRigidDynamic.h"
+#include "PxShape.h"
+#include "PxPhysics.h"
+
 #include "PxVehicleSuspWheelTire4.h"
 #include "PxVehicleSuspLimitConstraintShader.h"
 #include "PxVehicleDefaults.h"
-#include "PxRigidDynamic.h"
-#include "PxShape.h"
-#include "PsUtilities.h"
 #include "CmPhysXCommon.h"
 #include "CmBitMap.h"
-#include "PxPhysics.h"
+#include "PsUtilities.h"
 #include "PsIntrinsics.h"
 #include "PsFoundation.h"
 
@@ -123,6 +124,8 @@ PxVehicleWheelsSimData::PxVehicleWheelsSimData(const PxU32 numWheels)
 	mLowForwardSpeedSubStepCount = gLowLongSpeedSubstepCount;
 	mHighForwardSpeedSubStepCount = gHighLongSpeedSubstepCount;
 	mMinLongSlipDenominator = gMinLongSlipDenominator*gToleranceScaleLength;
+
+	mFlags = 0;
 }
 
 PxVehicleWheelsSimData* PxVehicleWheelsSimData::allocate(const PxU32 numWheels)
@@ -197,6 +200,8 @@ PxVehicleWheelsSimData& PxVehicleWheelsSimData::operator=(const PxVehicleWheelsS
 	mLowForwardSpeedSubStepCount = src.mLowForwardSpeedSubStepCount;
 	mHighForwardSpeedSubStepCount = src.mHighForwardSpeedSubStepCount;
 	mMinLongSlipDenominator = src.mMinLongSlipDenominator;
+
+	mFlags = src.mFlags;
 
 	PxMemCopy(mActiveWheelsBitmapBuffer, src.mActiveWheelsBitmapBuffer, sizeof(PxU32)* (((PX_MAX_NB_WHEELS + 31) & ~31) >> 5));
 
@@ -443,6 +448,16 @@ void PxVehicleWheelsSimData::setMinLongSlipDenominator(const PxReal minLongSlipD
 	mMinLongSlipDenominator=minLongSlipDenominator;
 }
 
+void PxVehicleWheelsSimData::setFlags(PxVehicleWheelsSimFlags flags)
+{
+	mFlags = flags;
+}
+
+PxVehicleWheelsSimFlags PxVehicleWheelsSimData::getFlags() const
+{
+	return PxVehicleWheelsSimFlags(mFlags);
+}
+
 
 
 /////////////////////////////
@@ -636,6 +651,15 @@ void PxVehicleWheels::free()
 	for(PxU32 i=0;i<numSuspWheelTire4;i++)
 	{
 		mWheelsDynData.mWheels4DynData[i].getVehicletConstraintShader().release();
+	}
+}
+
+void PxVehicleWheels::onConstraintRelease()
+{
+	mOnConstraintReleaseCounter--;
+	if (0 == mOnConstraintReleaseCounter)
+	{
+		PX_FREE(this);
 	}
 }
 

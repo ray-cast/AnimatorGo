@@ -23,12 +23,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
 #ifndef PSFOUNDATION_PSUNIXTRIGCONSTANTS_H
 #define PSFOUNDATION_PSUNIXTRIGCONSTANTS_H
+
+#include "foundation/PxPreprocessor.h"
 
 namespace physx
 {
@@ -37,8 +39,11 @@ namespace shdfnd
 namespace aos
 {
 
-//#define PX_GLOBALCONST extern const __declspec(selectany)
+#if PX_UWP
+#define PX_GLOBALCONST extern const __declspec(selectany)
+#else
 #define PX_GLOBALCONST extern const __attribute__((weak))
+#endif
 
 PX_ALIGN_PREFIX(16)
 struct PX_VECTORF32

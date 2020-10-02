@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -121,6 +121,9 @@ public:
 
 	void						startNarrowPhaseTasks() {}
 
+	virtual void				lock() { mContactManagerMutex.lock(); }
+	virtual void				unlock() { mContactManagerMutex.unlock(); }
+
 	
 
 	Ps::Array<PxU32>			mRemovedContactManagers;
@@ -130,6 +133,8 @@ public:
 	PxContactModifyCallback*	mModifyCallback;
 
 	IG::IslandSim*				mIslandSim;
+
+	Ps::Mutex					mContactManagerMutex;
 
 private:
 

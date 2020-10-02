@@ -23,13 +23,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #ifndef PX_PHYSICS_NP_SCENEQUERIES
 #define PX_PHYSICS_NP_SCENEQUERIES
-
 
 #include "PxQueryReport.h"
 #include "PsIntrinsics.h"
@@ -218,17 +217,6 @@ bool NpSceneQueries::multiQuery<PxOverlapHit>(const MultiQueryInput&, PxHitCallb
 
 extern template
 bool NpSceneQueries::multiQuery<PxSweepHit>(const MultiQueryInput&, PxHitCallback<PxSweepHit>&, PxHitFlags, const PxQueryCache*, const PxQueryFilterData&, PxQueryFilterCallback*, BatchQueryFilterData*) const;
-#endif
-
-namespace Sq { class AABBPruner; class AABBTreeRuntimeNode; class AABBTree; }
-
-#if PX_VC 
-    #pragma warning(push)
-	#pragma warning( disable : 4324 ) // Padding was added at the end of a structure because of a __declspec(align) value.
-#endif
-
-#if PX_VC 
-     #pragma warning(pop) 
 #endif
 
 } // namespace physx, sq

@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -132,6 +132,9 @@ namespace Sc
 																   const ArticulationDriveCache& driveCache,
 																   const PxVec3& force,
 																   const PxVec3& torque) const;
+
+
+					void					setKinematicLink(const bool value);
 					//external reduced coordinate implementation
 					PxU32					getDofs() const;
 
@@ -141,8 +144,6 @@ namespace Sc
 					PxArticulationCache*	createCache() const;
 
 					PxU32					getCacheDataSize() const;
-
-					PxU32					getCacheConstantDataSize() const;
 
 					PxU32					getScratchMemorySize() const;
 
@@ -172,13 +173,20 @@ namespace Sc
 
 					void					computeKinematicJacobian(const PxU32 linkID, PxArticulationCache& cache);
 
-					void					computeCoefficentMatrix(PxArticulationCache& cache);
+					void					computeDenseJacobian(PxArticulationCache& cache, PxU32& nRows, PxU32& nCols);
+
+					void					computeCoefficientMatrix(PxArticulationCache& cache);
 
 					bool					computeLambda(PxArticulationCache& cache, PxArticulationCache& rollBackCache, const PxReal* jointTorque, const PxVec3 gravity, const PxU32 maxIter);
 
 					void					computeGeneralizedMassMatrix(PxArticulationCache& cache);
 
-					PxU32					getCoefficentMatrixSize() const;
+					PxU32					getCoefficientMatrixSize() const;
+
+					PxSpatialVelocity		getLinkVelocity(const PxU32 linkId) const;
+
+					PxSpatialVelocity		getLinkAcceleration(const PxU32 linkId) const;
+
 					//internal method implementation
 					PX_FORCE_INLINE IG::NodeIndex		getIslandNodeIndex() const { return mIslandNodeIndex; }
 
@@ -186,6 +194,8 @@ namespace Sc
 
 					void					setDirty(const bool dirty);
 					PxU32					findBodyIndex(BodySim &body) const;
+
+					void					setJointDirty(Dy::ArticulationJointCore& jointCore);
 
 					void					addLoopConstraint(ConstraintSim* constraint);
 					void					removeLoopConstraint(ConstraintSim* constraint);

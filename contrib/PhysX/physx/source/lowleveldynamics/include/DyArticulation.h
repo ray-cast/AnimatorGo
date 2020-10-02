@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -43,12 +43,15 @@
 namespace physx
 {
 	class PxConstraintAllocator;
-
+	class PxcConstraintBlockStream;
+	struct PxSolverConstraintDesc;
+	class PxsConstraintBlockManager;
 
 #define DY_DEBUG_ARTICULATION 0
 
 namespace Dy
 {
+	struct ArticulationJointTransforms;
 	struct FsInertia;
 	struct FsData;
 
@@ -64,7 +67,7 @@ class Articulation : public ArticulationV
 public:
 	// public interface
 
-	Articulation(Sc::ArticulationSim*);
+	Articulation(void*);
 	~Articulation();
 
 	virtual bool resize(const PxU32 linkCount);
@@ -79,16 +82,19 @@ public:
 	//void					setFsDataPtr(FsData* data) { mFsData = data; }
 
 	// get data sizes for allocation at higher levels
-	virtual void		getDataSizes(PxU32 linkCount, 
-								 PxU32 &solverDataSize, 
-								 PxU32& totalSize, 
-								 PxU32& scratchSize);
+	virtual void		getDataSizes(PxU32 linkCount, PxU32& solverDataSize, PxU32& totalSize, PxU32& scratchSize);
 
 	virtual	void	getImpulseResponse(
 		PxU32 linkID,
 		Cm::SpatialVectorF* Z,
 		const Cm::SpatialVector& impulse,
 		Cm::SpatialVector& deltaV) const;
+
+	virtual	void	getImpulseResponse(
+		PxU32 linkID,
+		Cm::SpatialVectorV* Z,
+		const Cm::SpatialVectorV& impulse,
+		Cm::SpatialVectorV& deltaV) const;
 
 	virtual	void	getImpulseSelfResponse(
 		PxU32 linkID0,
@@ -105,6 +111,10 @@ public:
 
 	//this is called by island gen to determine whether the articulation should be awake or sleep
 	virtual Cm::SpatialVector getMotionVelocity(const PxU32 linkID) const;
+
+	virtual Cm::SpatialVector getMotionAcceleration(const PxU32 linkID) const;
+
+	virtual	void fillIndexedManager(const PxU32 linkId, Dy::ArticulationLinkHandle& handle, PxU8& indexType);
 
 	virtual PxReal getLinkMaxPenBias(const PxU32 linkID) const;
 
@@ -125,7 +135,7 @@ public:
 
 	static PxU32 setupSolverConstraintsTGS(const ArticulationSolverDesc& articDesc,
 		PxcConstraintBlockStream& stream,
-		PxTGSSolverConstraintDesc* constraintDesc,
+		PxSolverConstraintDesc* constraintDesc,
 		PxReal dt,
 		PxReal invDt,
 		PxReal totalDt,
@@ -151,7 +161,9 @@ public:
 		const Ps::aos::Vec3V& angular2, Cm::SpatialVectorF* Z, Cm::SpatialVectorF* deltaV);
 
 	virtual void solveInternalConstraints(const PxReal dt, const PxReal invDt, Cm::SpatialVectorF* impulses, Cm::SpatialVectorF* DeltaV,
-		bool velIteration);
+		bool velIteration, bool isTGS, const PxReal elapsedTime);
+
+	virtual void writebackInternalConstraints(bool /*isTGS*/) {}
 	
 	virtual Cm::SpatialVectorV pxcFsGetVelocity(PxU32 linkID);
 	virtual void pxcFsGetVelocities(PxU32 linkID, PxU32 linkID1, Cm::SpatialVectorV& v0, Cm::SpatialVectorV& v1);

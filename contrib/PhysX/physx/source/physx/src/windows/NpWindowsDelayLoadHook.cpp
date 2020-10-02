@@ -23,39 +23,38 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 
-#include "windows/PxWindowsDelayLoadHook.h"
+#include "common/windows/PxWindowsDelayLoadHook.h"
+
 #include "windows/PsWindowsInclude.h"
 #include "windows/CmWindowsLoadLibrary.h"
+
+namespace physx
+{
+	static const PxDelayLoadHook* gPhysXDelayLoadHook = NULL;
+	
+	void PxSetPhysXDelayLoadHook(const PxDelayLoadHook* hook)
+	{
+		gPhysXDelayLoadHook = hook;
+	}
+}
+
+// delay loading is enabled only for non static configuration
+#if !defined PX_PHYSX_STATIC_LIB 
 
 // Prior to Visual Studio 2015 Update 3, these hooks were non-const.
 #define DELAYIMP_INSECURE_WRITABLE_HOOKS
 #include <delayimp.h>
 
-namespace physx
-{
-	static const PxDelayLoadHook* gDelayLoadHook = NULL;
-	
-	void PxSetPhysXDelayLoadHook(const PxDelayLoadHook* hook)
-	{
-		gDelayLoadHook = hook;
-	}
-
-	const PxDelayLoadHook* PxGetPhysXDelayLoadHook()
-	{
-		return gDelayLoadHook;
-	}
-}
-
 using namespace physx;
 
 #pragma comment(lib, "delayimp")
 
-FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli)
+FARPROC WINAPI physxDelayHook(unsigned dliNotify, PDelayLoadInfo pdli)
 {
 	switch (dliNotify) {
 	case dliStartProcessing :
@@ -63,7 +62,7 @@ FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli)
 
 	case dliNotePreLoadLibrary :
 		{
-			return Cm::physXCommonDliNotePreLoadLibrary(pdli->szDll,gDelayLoadHook);
+			return Cm::physXCommonDliNotePreLoadLibrary(pdli->szDll,gPhysXDelayLoadHook);
 		}
 		break;
 
@@ -87,4 +86,6 @@ FARPROC WINAPI delayHook(unsigned dliNotify, PDelayLoadInfo pdli)
 	return NULL;
 }
 
-PfnDliHook __pfnDliNotifyHook2 = delayHook;
+PfnDliHook __pfnDliNotifyHook2 = physxDelayHook;
+
+#endif

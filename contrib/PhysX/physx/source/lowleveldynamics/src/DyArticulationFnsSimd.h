@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -414,7 +414,11 @@ public:
 
 
 
-	static PX_FORCE_INLINE Mat33V computeDriveInertia(const FsInertia &I0, 
+	static
+#if !(PX_ANDROID && PX_DEBUG) // Not inlining for Android Debug to avoid "conditional branch out of range" compilation error on arm64-v8a ABI
+	PX_FORCE_INLINE
+#endif
+	Mat33V computeDriveInertia(const FsInertia &I0, 
 													  const FsInertia &I1, 
 													  const Cm::SpatialVectorV S[3])
 	{

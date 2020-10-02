@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,16 +31,15 @@
 #define GU_MESH_FACTORY_H
 
 #include "foundation/PxIO.h"
-#include "PxTriangleMesh.h"
-#include "PxConvexMesh.h"
-#include "PxHeightField.h"
-#include "PxBVHStructure.h"
+#include "geometry/PxTriangleMesh.h"
+#include "geometry/PxConvexMesh.h"
+#include "geometry/PxHeightField.h"
+#include "geometry/PxBVHStructure.h"
+#include "PxPhysXConfig.h"
 
 #include "CmPhysXCommon.h"
-#include "PxPhysXConfig.h"
 #include "PsMutex.h"
 #include "PsArray.h"
-
 #include "PsUserAllocated.h"
 #include "PsHashSet.h"
 
@@ -56,7 +55,7 @@ namespace Gu
 	class TriangleMesh;
 	class TriangleMeshData;
 	class BVHStructure;
-	struct ConvexHullData;
+	struct ConvexHullInitData;
 	struct BVHStructureData;
 }
 
@@ -122,7 +121,7 @@ public:
 protected:
 
 	PxTriangleMesh*					createTriangleMesh(Gu::TriangleMeshData& data);
-	PxConvexMesh*					createConvexMesh(Gu::ConvexHullData& data);
+	PxConvexMesh*					createConvexMesh(Gu::ConvexHullInitData& data);
 	PxBVHStructure*					createBVHStructure(Gu::BVHStructureData& data);
 
 	mutable Ps::Mutex				mTrackingMutex;

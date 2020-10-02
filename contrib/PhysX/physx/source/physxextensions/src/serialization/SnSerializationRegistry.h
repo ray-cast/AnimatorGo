@@ -23,15 +23,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #ifndef PX_PHYSICS_SN_SERIALIZATION_REGISTRY
 #define PX_PHYSICS_SN_SERIALIZATION_REGISTRY
 
-#include "PxSerialization.h"
-#include "PxRepXSerializer.h"
+#include "extensions/PxSerialization.h"
+#include "extensions/PxRepXSerializer.h"
+
 #include "CmPhysXCommon.h"
 #include "PsUserAllocated.h"
 #include "PsArray.h"

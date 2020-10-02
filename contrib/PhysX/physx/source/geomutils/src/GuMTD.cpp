@@ -23,9 +23,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
+
+#include "geometry/PxMeshScale.h"
+#include "geometry/PxConvexMeshGeometry.h"
+#include "geomutils/GuContactBuffer.h"
 
 #include "GuMTD.h"
 #include "GuSphere.h"
@@ -42,7 +46,6 @@
 #include "GuInternal.h"
 
 #include "GuContactMethodImpl.h"
-#include "GuContactBuffer.h"
 #include "GuBoxConversion.h"
 #include "GuGeometryUnion.h"
 #include "GuShapeConvex.h"
@@ -54,8 +57,6 @@
 #include "PsUtilities.h"
 #include "PsVecTransform.h"
 #include "PsMathUtils.h"
-#include "PxMeshScale.h"
-#include "PxConvexMeshGeometry.h"
 
 using namespace physx;
 using namespace Gu;

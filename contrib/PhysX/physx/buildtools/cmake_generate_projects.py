@@ -20,7 +20,7 @@ def cmakeExt():
 
 
 def filterPreset(presetName):
-    winPresetFilter = ['win','ps4','switch','xboxone','android','crosscompile']
+    winPresetFilter = ['win','uwp','ps4','switch','xboxone','android','crosscompile']
     if sys.platform == 'win32':        
         if any(presetName.find(elem) != -1 for elem in winPresetFilter):
             return True
@@ -151,6 +151,8 @@ class CMakePreset:
             outString = outString + '-G \"Visual Studio 14 2015\"'
         elif self.compiler == 'vc15':
             outString = outString + '-G \"Visual Studio 15 2017\"'
+        elif self.compiler == 'vc16':
+            outString = outString + '-G \"Visual Studio 16 2019\"'
         elif self.compiler == 'xcode':
             outString = outString + '-G Xcode'
         elif self.targetPlatform == 'android':
@@ -169,6 +171,34 @@ class CMakePreset:
             outString = outString + ' -Ax64'
             outString = outString + ' -DTARGET_BUILD_PLATFORM=windows'
             outString = outString + ' -DPX_OUTPUT_ARCH=x86'
+            return outString
+        elif self.targetPlatform == 'uwp64':
+            outString = outString + ' -Ax64'
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=uwp'
+            outString = outString + ' -DPX_OUTPUT_ARCH=x86'
+            outString = outString + ' -DCMAKE_SYSTEM_NAME=WindowsStore'
+            outString = outString + ' -DCMAKE_SYSTEM_VERSION=10.0'            
+            return outString
+        elif self.targetPlatform == 'uwp32':
+            outString = outString + ' -AWin32'
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=uwp'
+            outString = outString + ' -DPX_OUTPUT_ARCH=x86'
+            outString = outString + ' -DCMAKE_SYSTEM_NAME=WindowsStore'
+            outString = outString + ' -DCMAKE_SYSTEM_VERSION=10.0'            
+            return outString
+        elif self.targetPlatform == 'uwparm32':
+            outString = outString + ' -AARM'
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=uwp'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            outString = outString + ' -DCMAKE_SYSTEM_NAME=WindowsStore'
+            outString = outString + ' -DCMAKE_SYSTEM_VERSION=10.0'            
+            return outString
+        elif self.targetPlatform == 'uwparm64':
+            outString = outString + ' -AARM64'
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=uwp'
+            outString = outString + ' -DPX_OUTPUT_ARCH=arm'
+            outString = outString + ' -DCMAKE_SYSTEM_NAME=WindowsStore'
+            outString = outString + ' -DCMAKE_SYSTEM_VERSION=10.0'            
             return outString
         elif self.targetPlatform == 'ps4':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=ps4'
@@ -192,6 +222,13 @@ class CMakePreset:
                     os.environ['VS150PATH']
             outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=Durango'
             outString = outString + ' -DSUPPRESS_SUFFIX=ON'
+            return outString
+        elif self.targetPlatform == 'switch32':
+            outString = outString + ' -DTARGET_BUILD_PLATFORM=switch'
+            outString = outString + ' -DCMAKE_TOOLCHAIN_FILE=' + \
+                os.environ['PM_CMakeModules_PATH'] + \
+                '/switch/NX32Toolchain.txt'
+            outString = outString + ' -DCMAKE_GENERATOR_PLATFORM=NX32'
             return outString
         elif self.targetPlatform == 'switch64':
             outString = outString + ' -DTARGET_BUILD_PLATFORM=switch'
@@ -305,20 +342,20 @@ def presetProvided(pName):
         cmakeMasterDir = 'public'
     if parsedPreset.isMultiConfigPlatform():
         # cleanup and create output directory
-        outputDir = 'compiler\\' + parsedPreset.presetName
+        outputDir = os.path.join('compiler', parsedPreset.presetName)
         cleanupCompilerDir(outputDir)
 
         # run the cmake script
         #print('Cmake params:' + cmakeParams)
         os.chdir(os.path.join(os.environ['PHYSX_ROOT_DIR'], outputDir))
-        os.system(cmakeExec + ' ' +
-                  os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + cmakeParams)
+        os.system(cmakeExec + ' \"' +
+                  os.environ['PHYSX_ROOT_DIR'] + '/compiler/' + cmakeMasterDir + '\"' + cmakeParams)
         os.chdir(os.environ['PHYSX_ROOT_DIR'])
     else:
         configs = ['debug', 'checked', 'profile', 'release']
         for config in configs:
             # cleanup and create output directory
-            outputDir = 'compiler\\' + parsedPreset.presetName + '-' + config
+            outputDir = os.path.join('compiler', parsedPreset.presetName + '-' + config)
             cleanupCompilerDir(outputDir)
 
             # run the cmake script

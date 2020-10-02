@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -32,7 +32,7 @@
 #define CM_WINDOWS_LOADLIBRARY_H
 
 #include "foundation/PxPreprocessor.h"
-#include "windows/PxWindowsDelayLoadHook.h"
+#include "common/windows/PxWindowsDelayLoadHook.h"
 #include "windows/PsWindowsInclude.h"
 
 #ifdef PX_SECURE_LOAD_LIBRARY

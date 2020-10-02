@@ -23,19 +23,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxMath.h"
-#include "PxVehicleUtilSetup.h"
-#include "PxVehicleDrive4W.h"
-#include "PxVehicleDriveNW.h"
-#include "PxVehicleDriveTank.h"
-#include "PxVehicleNoDrive.h"
-#include "PxVehicleWheels.h"
-#include "PxVehicleUtil.h"
-#include "PxVehicleUpdate.h"
+#include "vehicle/PxVehicleUtilSetup.h"
+#include "vehicle/PxVehicleDrive4W.h"
+#include "vehicle/PxVehicleDriveNW.h"
+#include "vehicle/PxVehicleDriveTank.h"
+#include "vehicle/PxVehicleNoDrive.h"
+#include "vehicle/PxVehicleWheels.h"
+#include "vehicle/PxVehicleUtil.h"
+#include "vehicle/PxVehicleUpdate.h"
+
 #include "PsFoundation.h"
 #include "CmPhysXCommon.h"
 

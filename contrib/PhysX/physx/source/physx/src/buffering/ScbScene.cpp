@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -656,6 +656,7 @@ void Scb::Scene::addArticulation(Scb::Articulation& articulation)
 
 void Scb::Scene::removeArticulation(Scb::Articulation& articulation)
 {
+	mScene.removeArticulationSimControl(articulation.getScArticulation());
 	remove<Scb::Articulation>(articulation, mArticulationManager);
 	articulation.clearBufferedState();
 }
@@ -818,6 +819,9 @@ void Scb::Scene::syncState()
 
 		if(isBuffered(BF_SOLVER_BATCH_SIZE))
 			mScene.setSolverBatchSize(mBufferedData.mSolverBatchSize);
+
+		if(isBuffered(BF_SOLVER_ARTIC_BATCH_SIZE))
+			mScene.setSolverArticBatchSize(mBufferedData.mSolverArticulationBatchSize);
 
 		if(isBuffered(BF_VISUALIZATION))
 		{

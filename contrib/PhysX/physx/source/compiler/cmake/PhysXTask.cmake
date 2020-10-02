@@ -23,7 +23,7 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 #
 # Build PhysXTask common
@@ -37,8 +37,6 @@ include(${PHYSX_ROOT_DIR}/${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/Ph
 
 SET(PHYSXTASK_HEADERS
 	${PHYSX_ROOT_DIR}/include/task/PxCpuDispatcher.h
-	${PHYSX_ROOT_DIR}/include/task/PxGpuDispatcher.h
-	${PHYSX_ROOT_DIR}/include/task/PxGpuTask.h
 	${PHYSX_ROOT_DIR}/include/task/PxTask.h
 	${PHYSX_ROOT_DIR}/include/task/PxTaskDefine.h
 	${PHYSX_ROOT_DIR}/include/task/PxTaskManager.h

@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -56,7 +56,7 @@ namespace Gu
 
 	//full contact gen code for capsule vs box
 	bool generateCapsuleBoxFullContactManifold(const Gu::CapsuleV& capsule, Gu::PolygonalData& polyData, Gu::SupportLocal* map, const Ps::aos::PsMatTransformV& aToB, Gu::PersistentContact* manifoldContacts, PxU32& numContacts,
-		const Ps::aos::FloatVArg contactDist, Ps::aos::Vec3V& normal, const Ps::aos::Vec3VArg closest, const PxReal boxMargin, const bool doOverlapTest, const PxReal toeranceScale);
+		const Ps::aos::FloatVArg contactDist, Ps::aos::Vec3V& normal, const Ps::aos::Vec3VArg closest, const PxReal boxMargin, const bool doOverlapTest, const PxReal toeranceScale, Cm::RenderOutput* renderOutput);
 
 	//based on the gjk status to decide whether we should do full contact gen with GJK/EPA normal. Also, this method store
 	//GJK/EPA point to the manifold in case full contact gen doesn't generate any contact

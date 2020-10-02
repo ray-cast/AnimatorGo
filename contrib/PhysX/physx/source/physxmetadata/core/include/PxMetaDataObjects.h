@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -536,6 +536,8 @@ struct PxShapeMaterialsProperty : public PxReadOnlyCollectionPropertyInfo<PxProp
 	}
 };
 
+typedef PxPropertyInfo<PxPropertyInfoName::PxRigidActor_GlobalPose, PxRigidActor, const PxTransform &, PxTransform > PxRigidActorGlobalPosePropertyInfo;
+
 struct PxRigidActorShapeCollectionHelper
 {
 	PX_PHYSX_CORE_API PxShape* createShape(PxRigidActor* inActor, const PxGeometry& geometry, PxMaterial& material, PxShapeFlags shapeFlags = PxShapeFlag::eVISUALIZATION | PxShapeFlag::eSCENE_QUERY_SHAPE | PxShapeFlag::eSIMULATION_SHAPE) const;
@@ -556,6 +558,11 @@ struct PxRigidActorShapeCollection : public PxReadOnlyCollectionPropertyInfo<PxP
 struct PxArticulationLinkCollectionPropHelper
 {
 	PX_PHYSX_CORE_API PxArticulationLink*	createLink(PxArticulation* inArticulation, PxArticulationLink* parent, const PxTransform& pose) const;
+};
+
+struct PxArticulationReducedCoordinateLinkCollectionPropHelper
+{
+	PX_PHYSX_CORE_API PxArticulationLink*	createLink(PxArticulationReducedCoordinate* inArticulation, PxArticulationLink* parent, const PxTransform& pose) const;
 };
 
 struct PxArticulationLinkCollectionProp : public PxReadOnlyCollectionPropertyInfo<PxPropertyInfoName::PxArticulationBase_Links, PxArticulationBase, PxArticulationLink*>

@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,10 +31,10 @@
 #ifndef PX_PHYSICS_NP_RIGIDDYNAMIC
 #define PX_PHYSICS_NP_RIGIDDYNAMIC
 
-#include "NpRigidBodyTemplate.h"
+#include "common/PxMetaData.h"
 #include "PxRigidDynamic.h"
+#include "NpRigidBodyTemplate.h"
 #include "ScbBody.h"
-#include "PxMetaData.h"
 
 namespace physx
 {
@@ -54,6 +54,7 @@ public:
 // PX_SERIALIZATION
 									NpRigidDynamic(PxBaseFlags baseFlags) : NpRigidDynamicT(baseFlags) {}
 
+				void				preExportDataReset();
 	virtual		void				requiresObjects(PxProcessPxBaseCallback& c);
 
 	static		NpRigidDynamic*		createObject(PxU8*& address, PxDeserializationContext& context);

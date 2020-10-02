@@ -23,10 +23,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+
+#include "geomutils/GuContactBuffer.h"
 
 #include "GuGJKPenetration.h"
 #include "GuEPA.h"
@@ -34,9 +36,7 @@
 #include "GuVecConvexHull.h"
 #include "GuVecConvexHullNoScale.h"
 #include "GuGeometryUnion.h"
-
 #include "GuContactMethodImpl.h"
-#include "GuContactBuffer.h"
 #include "GuPCMContactGen.h"
 #include "GuPCMShapeConvex.h"
 

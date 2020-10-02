@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -39,6 +39,7 @@
 #include "CmSpatialVector.h"
 #include "DyVArticulation.h"
 #include "DyFeatherstoneArticulationUtils.h"
+#include "DyArticulationJointCore.h"
 #include <stdio.h>
 
 namespace physx
@@ -47,21 +48,17 @@ namespace physx
 	{
 
 	
-		class ArticulationJointCoreData
+		class PX_ALIGN_PREFIX(16) ArticulationJointCoreData
 		{
 		public:
 
 			ArticulationJointCoreData() : jointOffset(0xffffffff), dofInternalConstraintMask(0)
 			{
-				for (PxU32 i = 0; i < 6; ++i)
-				{
-					targetJointPosition[i] = 0.f;
-					targetJointVelocity[i] = 0.f;
-				}
 			}
 
 
-			PX_CUDA_CALLABLE PX_FORCE_INLINE void computeMotionMatrix(ArticulationJointCoreBase* joint)
+			PX_CUDA_CALLABLE PX_FORCE_INLINE void computeMotionMatrix(ArticulationJointCoreBase* joint,
+				SpatialSubspaceMatrix& motionMatrix)
 			{
 				const PxVec3 childOffset = -joint->childPose.p;
 
@@ -71,9 +68,8 @@ namespace physx
 				{
 				case PxArticulationJointType::ePRISMATIC:
 				{
-					PxReal* jJointAxis = jointAxis[0];
-					PxVec3 tJointAxis(jJointAxis[3], jJointAxis[4], jJointAxis[5]);
-					const PxVec3 u = (joint->childPose.rotate(tJointAxis)).getNormalized();
+					const Cm::UnAlignedSpatialVector& jJointAxis = jointAxis[0];
+					const PxVec3 u = (joint->childPose.rotate(jJointAxis.bottom)).getNormalized();
 
 					motionMatrix.setNumColumns(1);
 					motionMatrix.setColumn(0, PxVec3(0.f), u);
@@ -84,9 +80,8 @@ namespace physx
 				}
 				case PxArticulationJointType::eREVOLUTE:
 				{
-					PxReal* jJointAxis = jointAxis[0];
-					PxVec3 tJointAxis(jJointAxis[0], jJointAxis[1], jJointAxis[2]);
-					const PxVec3 u = (joint->childPose.rotate(tJointAxis)).getNormalized();
+					const Cm::UnAlignedSpatialVector& jJointAxis = jointAxis[0];
+					const PxVec3 u = (joint->childPose.rotate(jJointAxis.top)).getNormalized();
 					const PxVec3 uXd = u.cross(childOffset);
 
 					motionMatrix.setNumColumns(1);
@@ -100,9 +95,8 @@ namespace physx
 
 					for (PxU32 ind = 0; ind <dof; ++ind)
 					{
-						PxReal* jJointAxis = jointAxis[ind];
-						PxVec3 tJointAxis = PxVec3(jJointAxis[0], jJointAxis[1], jJointAxis[2]);
-						const PxVec3 u = (joint->childPose.rotate(tJointAxis)).getNormalized();
+						const Cm::UnAlignedSpatialVector& jJointAxis = jointAxis[ind];
+						const PxVec3 u = (joint->childPose.rotate(jJointAxis.top)).getNormalized();
 
 						const PxVec3 uXd = u.cross(childOffset);
 						motionMatrix.setColumn(ind, u, uXd);
@@ -145,10 +139,9 @@ namespace physx
 					dof = 0;
 					lockedAxes = 0;
 					limitedAxes = 0;
-
-					joint->prismaticLimited = false;
-
-					memset(jointAxis, 0, sizeof(PxReal) * 6 * 6);
+					
+					//KS - no need to zero memory here.
+					//PxMemZero(jointAxis, sizeof(jointAxis));
 
 					for (PxU8 i = 0; i < DY_MAX_DOF; ++i)
 					{
@@ -159,12 +152,6 @@ namespace physx
 
 							if (joint->motion[i] == PxArticulationMotion::eLIMITED)
 							{
-							
-								if(i == PxArticulationAxis::eX 
-									|| i == PxArticulationAxis::eY
-									||i == PxArticulationAxis::eZ)
-									joint->prismaticLimited = true;
-
 								limitedAxes++;
 							}
 
@@ -174,6 +161,7 @@ namespace physx
 
 					lockedAxes = 0;
 
+#if 1
 					//Spherical joints treat locked axes as free axes with a constraint. This produces better
 					//results for spherical joints with 2 dofs free, where keeping the 3rd axis locked can lead to
 					//an over-consrtained behaviour that is undesirable. However, the drawback is that there will be
@@ -191,10 +179,42 @@ namespace physx
 							}
 						}
 					}
+#endif
 
 					joint->dirtyFlag &= (~ArticulationJointCoreDirtyFlag::eMOTION);
 				}
 
+			}
+
+			//in the joint space
+			Cm::UnAlignedSpatialVector			jointAxis[3];					//72
+			//this is the dof offset for the joint in the cache
+			PxU32								jointOffset;					//76
+			//degree of freedom
+			PxU8								dof;							//77
+			PxU8								limitedAxes;					//78
+			PxU8								dofInternalConstraintMask;		//79
+			PxU8								lockedAxes;						//80		
+
+		} PX_ALIGN_SUFFIX(16);
+
+		struct PX_ALIGN_PREFIX(16) ArticulationJointTargetData
+		{
+			PxReal								targetJointVelocity[3];			//12
+			PxReal								targetJointPosition[3];			//24
+			Cm::UnAlignedSpatialVector			worldJointAxis[3];			//96
+			//PxU32								pad[2];
+			
+
+
+
+			ArticulationJointTargetData()
+			{
+				for (PxU32 i = 0; i < 3; ++i)
+				{
+					targetJointPosition[i] = 0.f;
+					targetJointVelocity[i] = 0.f;
+				}
 			}
 
 
@@ -233,27 +253,7 @@ namespace physx
 				}
 			}
 
-			//in the joint space
-			PxReal								jointAxis[6][6];				//144		144
-
-			//this is in child body space(S)
-			SpatialSubspaceMatrix				motionMatrix;					//196		340
-			PxReal								targetJointVelocity[6];			//24		364
-			PxReal								targetJointPosition[6];			//24		388
-			PxReal								maxDriveForce[6];				//24		412
-
-			//this is the dof offset for the joint in the cache
-			PxU32								jointOffset;					//4			416
-			//degree of freedom
-			PxU8								dof;							//1			417
-			PxU8								limitedAxes;					//1			418
-			PxU8								dofInternalConstraintMask;		//1			419
-			PxU8								lockedAxes;						//1			420
-			PxU8								padding[12];					//12		432
-
-			
-
-		};
+		} PX_ALIGN_SUFFIX(16);
 
 	}//namespace Dy
 }

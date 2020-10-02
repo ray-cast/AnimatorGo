@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -450,6 +450,19 @@ namespace physx {
 		visitAllProperties<PxArticulation>( theOp );
 	}
 	PxArticulation* PxArticulationRepXSerializer::allocateObject( PxRepXInstantiationArgs& inArgs ) { return inArgs.physics.createArticulation(); }
+
+	//*************************************************************
+	//	Actual RepXSerializer implementations for PxArticulationReducedCoordinate
+	//*************************************************************
+	void PxArticulationReducedCoordinateRepXSerializer::objectToFileImpl(const PxArticulationReducedCoordinate* inObj, PxCollection* inCollection, XmlWriter& inWriter, MemoryBuffer& inTempBuffer, PxRepXInstantiationArgs& /*inArgs*/)
+	{
+		TNameStack nameStack(inTempBuffer.mManager->mWrapper);
+		Sn::TArticulationLinkLinkMap linkMap(inTempBuffer.mManager->mWrapper);
+		RepXVisitorWriter<PxArticulationReducedCoordinate> writer(nameStack, inWriter, inObj, inTempBuffer, *inCollection, &linkMap);
+		RepXPropertyFilter<RepXVisitorWriter<PxArticulationReducedCoordinate> > theOp(writer);
+		visitAllProperties<PxArticulationReducedCoordinate>(theOp);
+	}
+	PxArticulationReducedCoordinate* PxArticulationReducedCoordinateRepXSerializer::allocateObject(PxRepXInstantiationArgs& inArgs) { return inArgs.physics.createArticulationReducedCoordinate(); }
 
 	//*************************************************************
 	//	Actual RepXSerializer implementations for PxAggregate

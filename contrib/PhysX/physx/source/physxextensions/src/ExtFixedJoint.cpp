@@ -23,15 +23,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "ExtFixedJoint.h"
 #include "ExtConstraintHelper.h"
-#include "CmVisualization.h"
-
-#include "common/PxSerialFramework.h"
+#include "PxPhysics.h"
 
 using namespace physx;
 using namespace Ext;
@@ -170,7 +168,6 @@ static PxU32 FixedJointSolverPrep(Px1DConstraint* constraints,
 	ch.prepareLockedAxes(cA2w.q, cB2w.q, cA2w.transformInv(cB2w.p), 7, 7, ra, rb);
 	cA2wOut = ra + bA2w.p;
 	cB2wOut = rb + bB2w.p;
-
 
 	return ch.getCount();
 }

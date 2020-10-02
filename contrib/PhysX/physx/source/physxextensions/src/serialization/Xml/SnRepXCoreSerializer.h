@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 #ifndef SN_REPX_CORE_SERIALIZER_H
@@ -105,6 +105,13 @@ namespace physx
 		PxArticulationRepXSerializer( PxAllocatorCallback& inCallback ) : RepXSerializerImpl<PxArticulation>( inCallback ) {}
 		virtual void objectToFileImpl( const PxArticulation*, PxCollection*, XmlWriter&, MemoryBuffer&, PxRepXInstantiationArgs& );
 		virtual PxArticulation* allocateObject( PxRepXInstantiationArgs& );
+	};
+
+	struct PxArticulationReducedCoordinateRepXSerializer : public RepXSerializerImpl<PxArticulationReducedCoordinate>
+	{
+		PxArticulationReducedCoordinateRepXSerializer(PxAllocatorCallback& inCallback) : RepXSerializerImpl<PxArticulationReducedCoordinate>(inCallback) {}
+		virtual void objectToFileImpl(const PxArticulationReducedCoordinate*, PxCollection*, XmlWriter&, MemoryBuffer&, PxRepXInstantiationArgs&);
+		virtual PxArticulationReducedCoordinate* allocateObject(PxRepXInstantiationArgs&);
 	};
 	
 	struct PxAggregateRepXSerializer :  public RepXSerializerImpl<PxAggregate>

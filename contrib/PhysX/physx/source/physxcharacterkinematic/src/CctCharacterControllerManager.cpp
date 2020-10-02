@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,7 +31,6 @@
 #include "CctBoxController.h"
 #include "CctCapsuleController.h"
 #include "CctObstacleContext.h"
-#include "CmBoxPruning.h"
 #include "GuDistanceSegmentSegment.h"
 #include "GuDistanceSegmentBox.h"
 #include "PsUtilities.h"
@@ -40,6 +39,7 @@
 #include "PxScene.h"
 #include "PxPhysics.h"
 #include "PsFoundation.h"
+#include "CmRadixSortBuffered.h"
 
 using namespace physx;
 using namespace Cct;
@@ -66,11 +66,7 @@ CharacterControllerManager::CharacterControllerManager(PxScene& scene, bool lock
 
 CharacterControllerManager::~CharacterControllerManager()
 {
-	if(mRenderBuffer)
-	{
-		delete mRenderBuffer;
-		mRenderBuffer = 0;
-	}
+	PX_DELETE_AND_RESET(mRenderBuffer);
 }
 
 void CharacterControllerManager::release() 
@@ -109,11 +105,7 @@ void CharacterControllerManager::setDebugRenderingFlags(PxControllerDebugRenderF
 
 	if(!flags)
 	{
-		if(mRenderBuffer)
-		{
-			delete mRenderBuffer;
-			mRenderBuffer = 0;
-		}
+		PX_DELETE_AND_RESET(mRenderBuffer);
 	}
 }
 
@@ -142,7 +134,10 @@ PxController* CharacterControllerManager::getController(PxU32 index)
 PxController* CharacterControllerManager::createController(const PxControllerDesc& desc)
 {
 	if(!desc.isValid())
+	{
+		Ps::getFoundation().error(PxErrorCode::eINVALID_PARAMETER, __FILE__, __LINE__, "PxControllerManager::createController(): desc.isValid() fails.");
 		return NULL;
+	}
 
 	Controller* newController = NULL;
 
@@ -231,7 +226,7 @@ void CharacterControllerManager::onRelease(const PxBase* observed, void* , PxDel
 
 	if(releaseEntry)
 	{
-		for (PxU32 i = 0; i < mControllers.size(); i++)
+		for(PxU32 i = 0; i < mControllers.size(); i++)
 		{
 			Controller* controller = mControllers[i];
 			if(mLockingEnabled)
@@ -329,7 +324,6 @@ void CharacterControllerManager::onObstacleAdded(ObstacleHandle index, const PxO
 	}
 }
 
-
 // PT: TODO: move to array class?
 template <class T> 
 void resetOrClear(T& a)
@@ -395,7 +389,7 @@ void CharacterControllerManager::shiftOrigin(const PxVec3& shift)
 		mObstacleContexts[i]->onOriginShift(shift);
 	}
 
-	if (mRenderBuffer)
+	if(mRenderBuffer)
 		mRenderBuffer->shift(-shift);
 
 	// assumption is that these are just used for temporary stuff
@@ -606,6 +600,49 @@ static void InteractionCharacterCharacter(Controller* entity0, Controller* entit
 	}
 }
 
+// PT: TODO: this is the very old version, revisit with newer one
+static void completeBoxPruning(const PxBounds3* bounds, PxU32 nb, Ps::Array<PxU32>& pairs)
+{
+	if(!nb)
+		return;
+
+	pairs.clear();
+
+	float* PosList = reinterpret_cast<float*>(PX_ALLOC_TEMP(sizeof(float)*nb, "completeBoxPruning"));
+
+	for(PxU32 i=0;i<nb;i++)
+		PosList[i] = bounds[i].minimum.x;
+
+	/*static*/ Cm::RadixSortBuffered RS;	// Static for coherence
+	const PxU32* Sorted = RS.Sort(PosList, nb).GetRanks();
+
+	const PxU32* const LastSorted = &Sorted[nb];
+	const PxU32* RunningAddress = Sorted;
+	PxU32 Index0, Index1;
+	while(RunningAddress<LastSorted && Sorted<LastSorted)
+	{
+		Index0 = *Sorted++;
+
+		while(RunningAddress<LastSorted && PosList[*RunningAddress++]<PosList[Index0]);
+
+		const PxU32* RunningAddress2 = RunningAddress;
+
+		while(RunningAddress2<LastSorted && PosList[Index1 = *RunningAddress2++]<=bounds[Index0].maximum.x)
+		{
+			if(Index0!=Index1)
+			{
+				if(bounds[Index0].intersects(bounds[Index1]))
+				{
+					pairs.pushBack(Index0);
+					pairs.pushBack(Index1);
+				}
+			}
+		}
+	}
+
+	PX_FREE(PosList);
+}
+
 void CharacterControllerManager::computeInteractions(PxF32 elapsedTime, PxControllerFilterCallback* cctFilterCb)
 {
 	PxU32 nbControllers = mControllers.size();
@@ -629,7 +666,7 @@ void CharacterControllerManager::computeInteractions(PxF32 elapsedTime, PxContro
 	const PxU32 nbEntities = PxU32(runningBoxes - boxes);
 
 	Ps::Array<PxU32> pairs;	// PT: TODO: get rid of alloc
-	Cm::CompleteBoxPruning(boxes, nbEntities, pairs, Gu::Axes(physx::Gu::AXES_XZY));	// PT: TODO: revisit for variable up axis
+	completeBoxPruning(boxes, nbEntities, pairs);
 
 	PxU32 nbPairs = pairs.size()>>1;
 	const PxU32* indices = pairs.begin();
@@ -654,7 +691,7 @@ void CharacterControllerManager::computeInteractions(PxF32 elapsedTime, PxContro
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Public factory methods
 
-PX_C_EXPORT PX_PHYSX_CHARACTER_API PxControllerManager* PX_CALL_CONV PxCreateControllerManager(PxScene& scene, bool lockingEnabled)
+PX_C_EXPORT PxControllerManager* PX_CALL_CONV PxCreateControllerManager(PxScene& scene, bool lockingEnabled)
 {
 	Ps::Foundation::incRefCount();
 	return PX_NEW(CharacterControllerManager)(scene, lockingEnabled);

@@ -23,18 +23,10 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
-OPTION(PX_32BIT "Specifies 32bit compilation flags." OFF)
-OPTION(PX_64BIT "Specifies 64bit compilation flags." OFF)
-
-IF (PX_32BIT)
-	SET(OSX_BITNESS "-arch i386")
-ELSE()
-	SET(OSX_BITNESS "-arch x86_64")
-	SET(CMAKE_OSX_ARCHITECTURES "x86_64")
-ENDIF()
-
+SET(OSX_BITNESS "-arch x86_64")
+SET(CMAKE_OSX_ARCHITECTURES "x86_64")
 
 SET(PHYSX_CXX_FLAGS "${OSX_BITNESS} -msse2 -std=c++11 -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections -Werror -ferror-limit=0 -Wall -Wextra -fstrict-aliasing -Wstrict-aliasing=2 -Weverything -Wno-unknown-warning-option -Wno-documentation-deprecated-sync -Wno-documentation-unknown-command -Wno-float-equal -Wno-padded -Wno-weak-vtables -Wno-cast-align -Wno-conversion -Wno-missing-noreturn -Wno-missing-variable-declarations -Wno-shift-sign-overflow -Wno-covered-switch-default -Wno-exit-time-destructors -Wno-global-constructors -Wno-missing-prototypes -Wno-unreachable-code -Wno-unused-macros -Wno-unused-member-function -Wno-used-but-marked-unused -Wno-weak-template-vtables -Wno-deprecated -Wno-non-virtual-dtor -Wno-invalid-noreturn -Wno-return-type-c-linkage -Wno-reserved-id-macro -Wno-c++98-compat-pedantic -Wno-unused-local-typedef -Wno-old-style-cast -Wno-newline-eof -Wno-unused-private-field -Wno-undefined-reinterpret-cast -Wno-invalid-offsetof -Wno-zero-as-null-pointer-constant -gdwarf-2" CACHE INTERAL "PhysX CXX")
 
@@ -65,7 +57,7 @@ SET(CMAKE_OSX_DEPLOYMENT_TARGET "10.9")
 SET(NVTX_FLAG "PX_NVTX=0")
 
 # Disable cuda for all projects
-SET(PHYSX_MAC_COMPILE_DEFS "DISABLE_CUDA_PHYSX;${PHYSX_AUTOBUILD};${PHYSX_AUTOBUILDNUMBER}" CACHE INTERNAL "Base PhysX preprocessor definitions")
+SET(PHYSX_MAC_COMPILE_DEFS "DISABLE_CUDA_PHYSX;${PHYSX_AUTOBUILD}" CACHE INTERNAL "Base PhysX preprocessor definitions")
 SET(PHYSX_MAC_DEBUG_COMPILE_DEFS "_DEBUG;PX_DEBUG=1;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Debug PhysX preprocessor definitions")
 SET(PHYSX_MAC_CHECKED_COMPILE_DEFS "NDEBUG;PX_CHECKED=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Checked PhysX preprocessor definitions")
 SET(PHYSX_MAC_PROFILE_COMPILE_DEFS "NDEBUG;PX_PROFILE=1;${NVTX_FLAG};PX_SUPPORT_PVD=1" CACHE INTERNAL "Profile PhysX preprocessor definitions")
@@ -89,4 +81,19 @@ INCLUDE(SceneQuery.cmake)
 INCLUDE(SimulationController.cmake)
 INCLUDE(FastXml.cmake)
 
-
+# Set folder PhysX SDK to all common SDK source projects
+SET_PROPERTY(TARGET PhysX PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCharacterKinematic PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCommon PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXCooking PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXExtensions PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXVehicle PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevel PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevelAABB PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET LowLevelDynamics PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET SceneQuery PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET SimulationController PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET FastXml PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXPvdSDK PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXTask PROPERTY FOLDER "PhysX SDK")
+SET_PROPERTY(TARGET PhysXFoundation PROPERTY FOLDER "PhysX SDK")

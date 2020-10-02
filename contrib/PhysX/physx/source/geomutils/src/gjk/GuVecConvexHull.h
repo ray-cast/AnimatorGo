@@ -23,14 +23,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #ifndef GU_VEC_CONVEXHULL_H
 #define GU_VEC_CONVEXHULL_H
 
-#include "PxPhysXCommonConfig.h"
+#include "common/PxPhysXCommonConfig.h"
+#include "geometry/PxMeshScale.h"
+
 #include "GuVecConvex.h"
 #include "GuConvexMeshData.h"
 #include "GuBigConvexData.h"
@@ -39,7 +41,6 @@
 #include "PsFPU.h"
 #include "GuGeometryUnion.h"
 #include "PsVecQuat.h"
-#include "PxMeshScale.h"
 
 namespace physx
 {

@@ -23,14 +23,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 #include "foundation/PxMemory.h"
+#include "geomutils/GuContactBuffer.h"
+
 #include "GuContactPolygonPolygon.h"
 #include "GuShapeConvex.h"
-#include "GuContactBuffer.h"
 #include "PsMathUtils.h"
 #include "PsAllocator.h"
 #include "PsFPU.h"

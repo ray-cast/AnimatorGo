@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 #ifndef PX_PHYSICS_NXPHYSICSWITHEXTENSIONS_API
@@ -51,12 +51,13 @@ static DisabledPropertyEntry gDisabledProperties[] = {
 	DisabledPropertyEntry( "PxArticulationJointBase", "ChildArticulationLink" ),
 	DisabledPropertyEntry( "PxArticulationBase", "Impl" ),
 	DisabledPropertyEntry( "PxArticulationJointBase", "Impl" ),
+	DisabledPropertyEntry( "PxArticulationReducedCoordinate", "LoopJoints"),
 	DisabledPropertyEntry( "PxRigidActor", "IsRigidActor" ),
 	DisabledPropertyEntry( "PxRigidActor", "ClassName" ),
 	DisabledPropertyEntry( "PxRigidStatic", "ClassName" ),
 	DisabledPropertyEntry( "PxRigidDynamic", "ClassName" ),
 	DisabledPropertyEntry( "PxRigidBody", "IsRigidBody" ),
-	DisabledPropertyEntry("PxRigidBody", "InternalIslandNodeIndex"),
+	DisabledPropertyEntry( "PxRigidBody", "InternalIslandNodeIndex"),
 	DisabledPropertyEntry( "PxActor", "IsRigidStatic" ),
 	DisabledPropertyEntry( "PxActor", "Type" ),
 	DisabledPropertyEntry( "PxActor", "ClassName" ),
@@ -116,6 +117,7 @@ static const char* gImportantPhysXTypes[] =
 	"PxRigidDynamic",
 	"PxShape",
 	"PxArticulation",
+	"PxArticulationReducedCoordinate",
 	"PxArticulationLink",
 	"PxMaterial",
 	"PxArticulationJointBase",
@@ -175,7 +177,6 @@ static const char* gAvoidedPhysXTypes[] =
 	"PxSerializable",
     "PxObservable",
 	"PxBase",
-	"PxArticulationReducedCoordinate",
 	"PxLowLevelArticulationFactory",
     "PxBaseFlag::Enum",
 };

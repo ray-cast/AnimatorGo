@@ -23,20 +23,21 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
 
-#include "GuVecTriangle.h"
-#include "GuVecCapsule.h"
-#include "GuGeometryUnion.h"
+#include "geometry/PxTriangleMesh.h"
+#include "geomutils/GuContactBuffer.h"
+
 #include "PsVecMath.h"
 #include "PsVecTransform.h"
 
+#include "GuVecTriangle.h"
+#include "GuVecCapsule.h"
+#include "GuGeometryUnion.h"
 #include "GuContactMethodImpl.h"
-#include "PxTriangleMesh.h"
-#include "GuContactBuffer.h"
 #include "GuPCMContactConvexCommon.h"
 #include "GuSegment.h"
 #include "GuVecCapsule.h"

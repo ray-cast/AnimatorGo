@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -427,21 +427,26 @@ static PX_FORCE_INLINE bool filterJointedBodies(const Sc::BodySim* b0, const Sc:
 	return false;
 }
 
-static PX_FORCE_INLINE bool filterKinematics(const Sc::BodySim* b0, const Sc::BodySim* b1, bool kine0, bool kine1, const PxSceneFlags& sceneFlags)
+static PX_FORCE_INLINE bool filterKinematics(const Sc::BodySim* b0, const Sc::BodySim* b1, bool kine0, bool kine1, /*const PxSceneFlags& sceneFlags*/
+	const PxPairFilteringMode::Enum kineKineFilteringMode, const PxPairFilteringMode::Enum staticKineFilteringMode)
 {
 	// if at least one object is kinematic
 	const bool kinematicPair = kine0 | kine1;
 	if(kinematicPair)
 	{
+		const bool keepStaticKine = staticKineFilteringMode == PxPairFilteringMode::eKEEP;
+
 		// ...then ignore kinematic vs. static pairs
-		if(!(sceneFlags & PxSceneFlag::eENABLE_KINEMATIC_STATIC_PAIRS))
+		if(!keepStaticKine)
 		{
 			if(!b0 || !b1)
 				return true;
 		}
 
+		const bool keepKineKine = kineKineFilteringMode == PxPairFilteringMode::eKEEP;
+
 		// ...and ignore kinematic vs. kinematic pairs
-		if(!(sceneFlags & PxSceneFlag::eENABLE_KINEMATIC_PAIRS))
+		if(!keepKineKine)
 		{
 			if(kine0 && kine1)
 				return true;
@@ -468,7 +473,7 @@ static PxFilterInfo filterRbCollisionPair(const FilteringContext& context, const
 		const bool kine0 = b0 ? b0->isKinematic() : false;
 		const bool kine1 = b1 ? b1->isKinematic() : false;
 
-		if(filterKinematics(b0, b1, kine0, kine1, context.mSceneFlags))
+		if(filterKinematics(b0, b1, kine0, kine1, context.mKineKineFilteringMode, context.mStaticKineFilteringMode))
 			return filterOutRbCollisionPair(context.mFilterPairManager, filterPairIndex, PxFilterFlag::eSUPPRESS);
 
 		const ActorSim& rbActor0 = s0.getActor();
@@ -535,14 +540,40 @@ static PX_FORCE_INLINE PxFilterInfo filterRbCollisionPair(const FilteringContext
 	PX_ASSERT(!(s0.getFlags() & PxShapeFlag::eTRIGGER_SHAPE));
 	PX_ASSERT(!(s1.getFlags() & PxShapeFlag::eTRIGGER_SHAPE));
 
-	if(filterKinematics(b0, b1, kine0, kine1, context.mSceneFlags))
+	if(filterKinematics(b0, b1, kine0, kine1, context.mKineKineFilteringMode, context.mStaticKineFilteringMode))
+//	if(filterKinematics(b0, b1, kine0, kine1, context.mSceneFlags))
 		return PxFilterInfo(PxFilterFlag::eSUPPRESS);
 
 	if(filterJointedBodies(b0, b1, rbActor0, rbActor1))
 		return PxFilterInfo(PxFilterFlag::eSUPPRESS);
 
+	if ((actorType0 == PxActorType::eARTICULATION_LINK) ^ (actorType1 == PxActorType::eARTICULATION_LINK))
+	{
+		if (b0)
+		{
+			const PxU8 kinematicLink = b0->getLowLevelBody().mCore->kinematicLink;
+			const bool isStaticOrKinematic = (actorType1 == PxActorType::eRIGID_STATIC) || kine1;
+			if (kinematicLink && isStaticOrKinematic)
+				return PxFilterInfo(PxFilterFlag::eSUPPRESS);
+		}
+		
+		if (b1)
+		{
+			const PxU8 kinematicLink = b1->getLowLevelBody().mCore->kinematicLink;
+			const bool isStaticOrKinematic = (actorType0 == PxActorType::eRIGID_STATIC) || kine0;
+			if (kinematicLink && isStaticOrKinematic)
+				return PxFilterInfo(PxFilterFlag::eSUPPRESS);
+		}
+	}
+
 	if((actorType0 == PxActorType::eARTICULATION_LINK) && (actorType1 == PxActorType::eARTICULATION_LINK))
 	{
+
+		const PxU8 kinematicLink0 = b0->getLowLevelBody().mCore->kinematicLink;
+		const PxU8 kinematicLink1 = b1->getLowLevelBody().mCore->kinematicLink;
+		if (kinematicLink0 && kinematicLink1)
+			return PxFilterInfo(PxFilterFlag::eSUPPRESS);
+
 		if(filterArticulationLinks(rbActor0, rbActor1))
 			return PxFilterInfo(PxFilterFlag::eKILL);
 	}
@@ -798,8 +829,23 @@ Sc::ShapeInteraction* Sc::NPhaseCore::createShapeInteraction(ShapeSim& s0, Shape
 
 		const PxActorType::Enum actorType0 = rs0.getActorType();
 		const PxActorType::Enum actorType1 = rs1.getActorType();
+
+		bool articulationLinkSwap = false;
+		if (actorType0 == PxActorType::eARTICULATION_LINK && actorType1 == PxActorType::eARTICULATION_LINK)
+		{
+			Sc::BodySim* bodySim0 = s0.getBodySim();
+
+			const PxU8 kinematicLink0 = bodySim0->getLowLevelBody().mCore->kinematicLink;
+
+			if (kinematicLink0)
+			{
+				articulationLinkSwap = true;
+			}
+		}
+
 		if( actorType0 == PxActorType::eRIGID_STATIC
-			 || (actorType0 == PxActorType::eRIGID_DYNAMIC && actorType1 == PxActorType::eARTICULATION_LINK)
+			 || (actorType1 == PxActorType::eRIGID_DYNAMIC && actorType0 == PxActorType::eARTICULATION_LINK)
+			 || articulationLinkSwap
 			 || ((actorType0 == PxActorType::eRIGID_DYNAMIC && actorType1 == PxActorType::eRIGID_DYNAMIC) && s0.getBodySim()->isKinematic())
 			 || (actorType0 == actorType1 && rs0.getRigidID() < rs1.getRigidID()))
 			Ps::swap(_s0, _s1);
@@ -951,7 +997,12 @@ Sc::ElementSimInteraction* Sc::NPhaseCore::refilterInteraction(ElementSimInterac
 							{
 								// for this actor pair there was no shape pair that requested contact reports but now there is one
 								// -> all the existing shape pairs need to get re-adjusted to point to an ActorPairReport instance instead.
-								findActorPair(&s0, &s1, Ps::IntTrue);
+								Sc::ActorPair* actorPair = findActorPair(&s0, &s1, Ps::IntTrue);
+								if (si->getActorPair() == NULL)
+								{
+									actorPair->incRefCount();
+									si->setActorPair(*actorPair);
+								}
 							}
 
 							if(si->readFlag(ShapeInteraction::IN_PERSISTENT_EVENT_LIST) && (!(newPairFlags & PxPairFlag::eNOTIFY_TOUCH_PERSISTS)))
@@ -1844,7 +1895,8 @@ void Sc::NPhaseCore::lostTouchReports(ShapeInteraction* si, PxU32 flags, PxU32 c
 
 		if(flags & PairReleaseFlag::eWAKE_ON_LOST_TOUCH)
 		{
-			if(!b0 || !b1)
+			//If we removed a shape, then we wake up the objects!
+			if(!b0 || !b1)// || (flags & PairReleaseFlag::eBP_VOLUME_REMOVED))
 			{
 				if(b0)
 					b0->internalWakeUp();

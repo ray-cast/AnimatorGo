@@ -23,7 +23,7 @@
 ## (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
-## Copyright (c) 2018 NVIDIA Corporation. All rights reserved.
+## Copyright (c) 2018-2019 NVIDIA Corporation. All rights reserved.
 
 #
 # Build PhysXCharacterKinematic common
@@ -39,7 +39,6 @@ include(${PHYSX_ROOT_DIR}/${PROJECT_CMAKE_FILES_DIR}/${TARGET_BUILD_PLATFORM}/Ph
 SET(PHYSXCCT_HEADERS
 	${PHYSX_ROOT_DIR}/include/characterkinematic/PxBoxController.h
 	${PHYSX_ROOT_DIR}/include/characterkinematic/PxCapsuleController.h
-	${PHYSX_ROOT_DIR}/include/characterkinematic/PxCharacter.h
 	${PHYSX_ROOT_DIR}/include/characterkinematic/PxController.h
 	${PHYSX_ROOT_DIR}/include/characterkinematic/PxControllerBehavior.h
 	${PHYSX_ROOT_DIR}/include/characterkinematic/PxControllerManager.h
@@ -85,11 +84,6 @@ TARGET_INCLUDE_DIRECTORIES(PhysXCharacterKinematic
 	PRIVATE ${PHYSXCHARACTERKINEMATICS_PLATFORM_INCLUDES}
 
 	PRIVATE ${PHYSX_ROOT_DIR}/include
-	PRIVATE ${PHYSX_ROOT_DIR}/include/common
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geometry
-	PRIVATE ${PHYSX_ROOT_DIR}/include/characterkinematic
-	PRIVATE ${PHYSX_ROOT_DIR}/include/extensions
-	PRIVATE ${PHYSX_ROOT_DIR}/include/geomutils
 	
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/include
 	PRIVATE ${PHYSX_SOURCE_DIR}/common/src

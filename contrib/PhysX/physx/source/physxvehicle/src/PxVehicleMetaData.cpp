@@ -23,20 +23,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PxVehicleComponents.h"
-#include "PxVehicleDrive.h"
-#include "PxVehicleNoDrive.h"
-#include "PxVehicleDrive4W.h"
-#include "PxVehicleDriveNW.h"
-#include "PxVehicleDriveTank.h"
+#include "common/PxMetaData.h"
+#include "vehicle/PxVehicleComponents.h"
+#include "vehicle/PxVehicleDrive.h"
+#include "vehicle/PxVehicleNoDrive.h"
+#include "vehicle/PxVehicleDrive4W.h"
+#include "vehicle/PxVehicleDriveNW.h"
+#include "vehicle/PxVehicleDriveTank.h"
+
 #include "PxVehicleSuspWheelTire4.h"
 #include "PxVehicleSuspLimitConstraintShader.h"
 
-#include "PxMetaData.h"
+#include "PsAllocator.h"
 
 using namespace physx;
 
@@ -337,10 +339,9 @@ void PxVehicleWheelsSimData::getBinaryMetaData(PxOutputStream& stream)
 	PX_DEF_BIN_METADATA_ITEM(stream,		PxVehicleWheelsSimData, 	PxU32, 							mLowForwardSpeedSubStepCount,	0)
 	PX_DEF_BIN_METADATA_ITEM(stream,		PxVehicleWheelsSimData, 	PxU32, 							mHighForwardSpeedSubStepCount,	0)
     PX_DEF_BIN_METADATA_ITEM(stream,		PxVehicleWheelsSimData, 	PxU32, 							mMinLongSlipDenominator,		0)
+	PX_DEF_BIN_METADATA_ITEM(stream,		PxVehicleWheelsSimData, 	PxU32, 							mFlags,							0)
 
 #if PX_P64_FAMILY
-	PX_DEF_BIN_METADATA_ITEMS_AUTO(stream, PxVehicleWheelsSimData, PxU32, mPad, PxMetaDataFlag::ePADDING)
-#else
 	PX_DEF_BIN_METADATA_ITEMS_AUTO(stream, PxVehicleWheelsSimData, PxU32, mPad, PxMetaDataFlag::ePADDING)
 #endif
 

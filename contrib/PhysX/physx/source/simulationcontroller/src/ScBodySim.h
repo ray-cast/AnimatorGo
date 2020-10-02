@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -60,6 +60,11 @@ namespace Sc
 	class ArticulationSim;
 
 	static const PxReal ScInternalWakeCounterResetValue = 20.0f*0.02f;
+
+#if PX_VC 
+    #pragma warning(push)   
+	#pragma warning( disable : 4324 ) // Padding was added at the end of a structure because of a __declspec(align) value.
+#endif
 
 	class BodySim : public RigidSim
 	{
@@ -273,6 +278,10 @@ namespace Sc
 		// note: the link of the root body is not necces. the root link due to the re-rooting of the articulation!
 						ConstraintGroupNode*	mConstraintGroup;
 	};
+
+#if PX_VC 
+     #pragma warning(pop) 
+#endif
 
 } // namespace Sc
 

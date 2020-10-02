@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -31,11 +31,10 @@
 #ifndef PX_PHYSICS_NP_RIGIDSTATIC
 #define PX_PHYSICS_NP_RIGIDSTATIC
 
-#include "NpRigidActorTemplate.h"
+#include "common/PxMetaData.h"
 #include "PxRigidStatic.h"
+#include "NpRigidActorTemplate.h"
 #include "ScbRigidStatic.h"
-
-#include "PxMetaData.h"
 
 namespace physx
 {
@@ -59,6 +58,7 @@ class NpRigidStatic : public NpRigidStaticT
 public:
 // PX_SERIALIZATION
 											NpRigidStatic(PxBaseFlags baseFlags) : NpRigidStaticT(baseFlags), mRigidStatic(PxEmpty) {}
+					void					preExportDataReset() { NpRigidStaticT::preExportDataReset(); }
 	virtual			void					requiresObjects(PxProcessPxBaseCallback& c);
 	static			NpRigidStatic*			createObject(PxU8*& address, PxDeserializationContext& context);
 	static			void					getBinaryMetaData(PxOutputStream& stream);

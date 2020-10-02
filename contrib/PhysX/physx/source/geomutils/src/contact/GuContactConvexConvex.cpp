@@ -23,18 +23,20 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PsMathUtils.h"
+#include "geomutils/GuContactBuffer.h"
+
 #include "GuContactPolygonPolygon.h"
 #include "GuGeometryUnion.h"
 #include "GuConvexHelper.h"
 #include "GuInternal.h"
 #include "GuSeparatingAxes.h"
 #include "GuContactMethodImpl.h"
-#include "GuContactBuffer.h"
+
+#include "PsMathUtils.h"
 #include "PsFPU.h"
 
 // csigg: the single reference of gEnableOptims (below) has been

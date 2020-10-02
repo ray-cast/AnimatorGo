@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -47,30 +47,20 @@ namespace physx
 
 		class ArticulationLinkData
 		{
+			const static PxU32 MaxJointRows = 3;
 		public:
 			ArticulationLinkData()
 			{
 				maxPenBias = 0.f;
 			}
 
-			Cm::SpatialVectorF				Is[6];//stI is the transpose of Is
-			Cm::SpatialVectorF				IsInvD[6];
-			SpatialMatrix					spatialInertia;
-			SpatialMatrix					spatialArticulatedInertia;
-			SpatialTransform				childToParent;
-			SpatialTransform				childToBase;
+			Cm::SpatialVectorF				IsW[MaxJointRows];//stI is the transpose of Is
+			PxVec3							childToBase;
 			PxVec3							r; //vector from parent com to child com
 			PxVec3							rw; //vector from parent com to child com
-			PxReal							qstZIc[6];//jointForce - stZIc
-			PxReal							invStIs[6][6];
+			PxReal							qstZIc[MaxJointRows];//jointForce - stZIc
 			PxReal							maxPenBias;
 
-		};
-
-		struct ArticSolverData
-		{
-			SpatialTransform				childToParent;
-			PxReal							invStIs[6][6];
 		};
 
 	}//namespace Dy

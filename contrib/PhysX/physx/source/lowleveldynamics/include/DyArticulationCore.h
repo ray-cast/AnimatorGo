@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -65,7 +65,10 @@ namespace physx
 				eMOTION = 1 << 0,
 				ePOSE = 1 << 1,
 				eTARGETPOSE = 1 << 2,
-				eTARGETVELOCITY = 1 << 3
+				eTARGETVELOCITY = 1 << 3,
+				eLIMIT = 1 << 4,
+				eDRIVE = 1 << 5,
+				eALL = eMOTION | ePOSE | eTARGETPOSE | eTARGETVELOCITY
 			};
 		};
 

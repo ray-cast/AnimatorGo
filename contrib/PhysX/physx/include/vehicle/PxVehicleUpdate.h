@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
@@ -90,6 +90,8 @@ namespace physx
 		/**
 		\brief If suspension travel limits forbid the wheel from touching the drivable surface then isInAir is true.
 		\note If the wheel can be placed on the contact plane of the most recent suspension line raycast/sweep then isInAir is false.
+		\note If #PxVehicleWheelsSimFlag::eLIMIT_SUSPENSION_EXPANSION_VELOCITY is set, then isInAir will also be true if the suspension
+		force is not large enough to expand to the target length in the given simulation time step.
 		\note If no raycast/sweep for the corresponding suspension was performed immediately prior to PxVehicleUpdates then isInAir
 		is computed using the contact plane that was hit by the most recent suspension line raycast/sweep.
 		*/

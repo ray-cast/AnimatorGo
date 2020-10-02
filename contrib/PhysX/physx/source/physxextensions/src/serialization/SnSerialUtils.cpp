@@ -23,14 +23,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
+#include "extensions/PxSerialization.h"
+#include "PxPhysicsVersion.h"
+
 #include "SnSerialUtils.h"
 #include "PsString.h"
-#include "PxSerialization.h"
-#include "PxPhysicsVersion.h"
 #include "PsBasicTemplates.h"
 
 using namespace physx;
@@ -38,7 +39,7 @@ using namespace physx;
 namespace
 {
 
-#define SN_NUM_BINARY_PLATFORMS 13
+#define SN_NUM_BINARY_PLATFORMS 16
 const PxU32 sBinaryPlatformTags[SN_NUM_BINARY_PLATFORMS] =
 {
 	PX_MAKE_FOURCC('W','_','3','2'),
@@ -53,7 +54,10 @@ const PxU32 sBinaryPlatformTags[SN_NUM_BINARY_PLATFORMS] =
 	PX_MAKE_FOURCC('A','A','6','4'),
 	PX_MAKE_FOURCC('X','O','N','E'),
 	PX_MAKE_FOURCC('N','X','3','2'),
-	PX_MAKE_FOURCC('N','X','6','4')
+	PX_MAKE_FOURCC('N','X','6','4'),
+	PX_MAKE_FOURCC('L','A','6','4'),
+	PX_MAKE_FOURCC('W','A','3','2'),
+	PX_MAKE_FOURCC('W','A','6','4')
 };
 
 const char* sBinaryPlatformNames[SN_NUM_BINARY_PLATFORMS] =
@@ -62,25 +66,18 @@ const char* sBinaryPlatformNames[SN_NUM_BINARY_PLATFORMS] =
 	"win64",
 	"linux32",
 	"linux64",
-	"macOSX32",
-	"macOSX64",
+	"mac32",
+	"mac64",
 	"ps4",
 	"android",
 	"ios",
 	"ios64",
 	"xboxone",
 	"switch32",
-	"switch64"
-};
-
-#define SN_NUM_BINARY_COMPATIBLE_VERSIONS 1
-
-//
-// Important: if you adjust the following structure, please adjust the comment for PX_BINARY_SERIAL_VERSION as well
-//
-const Ps::Pair<PxU32, PxU32> sBinaryCompatibleVersions[SN_NUM_BINARY_COMPATIBLE_VERSIONS] =
-{
-	Ps::Pair<PxU32, PxU32>(PX_PHYSICS_VERSION, PX_BINARY_SERIAL_VERSION)	
+	"switch64",
+	"linuxaarch64",
+	"uwparm",
+	"uwparm64"
 };
 
 }
@@ -93,9 +90,9 @@ PxU32 getBinaryPlatformTag()
 	return sBinaryPlatformTags[0];
 #elif PX_WINDOWS && PX_X64
 	return sBinaryPlatformTags[1];
-#elif PX_LINUX && (PX_X86 || PX_ARM)
+#elif PX_LINUX && PX_X86
 	return sBinaryPlatformTags[2];
-#elif PX_LINUX && (PX_X64 || PX_A64)
+#elif PX_LINUX && PX_X64
 	return sBinaryPlatformTags[3];
 #elif PX_OSX && PX_X86
 	return sBinaryPlatformTags[4];
@@ -115,6 +112,12 @@ PxU32 getBinaryPlatformTag()
 	return sBinaryPlatformTags[11];
 #elif PX_SWITCH && PX_A64
 	return sBinaryPlatformTags[12];
+#elif PX_LINUX && PX_A64
+	return sBinaryPlatformTags[13];
+#elif PX_UWP && PX_ARM
+	return sBinaryPlatformTags[14];
+#elif PX_UWP && PX_A64
+	return sBinaryPlatformTags[15];
 #else
 	#error Unknown binary platform
 #endif
@@ -134,24 +137,22 @@ const char* getBinaryPlatformName(physx::PxU32 platformTag)
 	return (platformIndex == SN_NUM_BINARY_PLATFORMS) ? "unknown" : sBinaryPlatformNames[platformIndex];
 }
 
-bool checkCompatibility(const PxU32 version, const PxU32 binaryVersion)
-{		
-	for(PxU32 i =0; i<SN_NUM_BINARY_COMPATIBLE_VERSIONS; i++)
-	{
-		if(version == sBinaryCompatibleVersions[i].first && binaryVersion == sBinaryCompatibleVersions[i].second)
-			return true;
-	}
-	return false;
+const char* getBinaryVersionGuid()
+{
+	PX_COMPILE_TIME_ASSERT(sizeof(PX_BINARY_SERIAL_VERSION) == SN_BINARY_VERSION_GUID_NUM_CHARS + 1);
+	return PX_BINARY_SERIAL_VERSION;
 }
 
-void getCompatibilityVersionsStr(char* buffer, PxU32 lenght)
+bool checkCompatibility(const char* binaryVersionGuidCandidate)
 {
-	size_t len = 0;
-	for(PxU32 i =0; i<SN_NUM_BINARY_COMPATIBLE_VERSIONS; i++)
+	for(PxU32 i=0; i<SN_BINARY_VERSION_GUID_NUM_CHARS; i++)
 	{
-		physx::shdfnd::snprintf(buffer + len,  lenght - len, "%x-%d\n", sBinaryCompatibleVersions[i].first, sBinaryCompatibleVersions[i].second);	
-		len = strlen(buffer);
-	}	
+		if (binaryVersionGuidCandidate[i] != PX_BINARY_SERIAL_VERSION[i])
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 } // Sn

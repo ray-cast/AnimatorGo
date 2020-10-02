@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -32,7 +32,7 @@
 
 PX_INLINE physx::shdfnd::SIMDGuard::SIMDGuard()
 {
-#if !PX_ARM
+#if !PX_ARM && !PX_A64
 	mControlWord = _mm_getcsr();
 	// set default (disable exceptions: _MM_MASK_MASK) and FTZ (_MM_FLUSH_ZERO_ON), DAZ (_MM_DENORMALS_ZERO_ON: (1<<6))
 	_mm_setcsr(_MM_MASK_MASK | _MM_FLUSH_ZERO_ON | (1 << 6));
@@ -41,7 +41,7 @@ PX_INLINE physx::shdfnd::SIMDGuard::SIMDGuard()
 
 PX_INLINE physx::shdfnd::SIMDGuard::~SIMDGuard()
 {
-#if !PX_ARM
+#if !PX_ARM && !PX_A64
 	// restore control word and clear any exception flags
 	// (setting exception state flags cause exceptions on the first following fp operation)
 	_mm_setcsr(mControlWord & ~_MM_EXCEPT_MASK);

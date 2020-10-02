@@ -23,13 +23,13 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 
 #include "PxPhysXConfig.h"
 
 #if PX_SUPPORT_GPU_PHYSX
 
-#include "PxGpu.h"
+#include "gpu/PxGpu.h"
 
 #ifndef PX_PHYSX_GPU_STATIC
 namespace grid
@@ -42,7 +42,7 @@ namespace physx
 {
 	//forward declare stuff from PxPhysXGpuModuleLoader.cpp
 	void PxLoadPhysxGPUModule(const char* appGUID);
-	typedef physx::PxCudaContextManager* (PxCreateCudaContextManager_FUNC)(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc);
+	typedef physx::PxCudaContextManager* (PxCreateCudaContextManager_FUNC)(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc, physx::PxProfilerCallback* profilerCallback);
 	typedef int (PxGetSuggestedCudaDeviceOrdinal_FUNC)(physx::PxErrorCallback& errc);
 	typedef grid::ClientContextPredictionManager* (PxCreateClientContextManager_FUNC)(grid::Server* server, physx::PxU32 maxNbSleepMsg);
 	extern PxCreateCudaContextManager_FUNC*  g_PxCreateCudaContextManager_Func;
@@ -53,13 +53,13 @@ namespace physx
 
 
 
-physx::PxCudaContextManager* PxCreateCudaContextManager(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc)
+physx::PxCudaContextManager* PxCreateCudaContextManager(physx::PxFoundation& foundation, const physx::PxCudaContextManagerDesc& desc, physx::PxProfilerCallback* profilerCallback)
 {
 	if (!physx::g_PxCreateCudaContextManager_Func)
 		physx::PxLoadPhysxGPUModule(desc.appGUID);
 
 	if (physx::g_PxCreateCudaContextManager_Func)
-		return physx::g_PxCreateCudaContextManager_Func(foundation, desc);
+		return physx::g_PxCreateCudaContextManager_Func(foundation, desc, profilerCallback);
 	else
 		return NULL;
 }

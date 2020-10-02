@@ -23,24 +23,25 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2019 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "PxVehicleSDK.h"
+#include "common/PxTolerancesScale.h"
+#include "common/PxSerializer.h"
+#include "vehicle/PxVehicleSDK.h"
+#include "vehicle/PxVehicleDrive4W.h"
+#include "vehicle/PxVehicleDriveTank.h"
+#include "vehicle/PxVehicleNoDrive.h"
+#include "vehicle/PxVehicleDriveNW.h"
 #include "PxPhysics.h"
-#include "PxTolerancesScale.h"
+
 #include "CmPhysXCommon.h"
 #include "PsFoundation.h"
 #include "PsUtilities.h"
-#include "PxVehicleDrive4W.h"
 #include "PxVehicleMetaDataObjects.h"
 #include "PxVehicleSerialization.h"
 #include "SnRepXSerializerImpl.h"
-#include "PxSerializer.h"
-#include "PxVehicleDriveTank.h"
-#include "PxVehicleNoDrive.h"
-#include "PxVehicleDriveNW.h"
 
 namespace physx
 {

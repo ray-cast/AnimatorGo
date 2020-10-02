@@ -152,10 +152,7 @@ namespace octoon
 			if (it->physicsOperation == 0)
 				component->setIsKinematic(it->physicsOperation == 0);
 			else
-			{
 				component->setSleepThreshold(0.0f);
-				component->setSolverIterationCounts(12, 1);
-			}
 
 			gameObject->addComponent(component);
 

@@ -111,17 +111,6 @@ namespace octoon
 	{
 		rigidbodys.reserve(model.rigidbodies.size());
 
-		float massMin = std::numeric_limits<float>::max();
-		float massMax = std::numeric_limits<float>::min();
-
-		for (auto& it : model.rigidbodies)
-		{
-			massMin = std::min(massMin, it->mass);
-			massMax = std::max(massMax, it->mass);
-		}
-
-		float massTotal = std::min(100.0f, massMax / massMin);
-
 		for (auto& it : model.rigidbodies)
 		{
 			auto gameObject = GameObject::create();
@@ -142,7 +131,7 @@ namespace octoon
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
 			component->setGroupMask(it->groupMask);
-			component->setMass(math::lerp(massMin, massMin * massTotal, it->mass / massMax));
+			component->setMass(std::min(it->mass, 5.f));
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction * 1.5f);
 			component->setDynamicFriction(it->friction);

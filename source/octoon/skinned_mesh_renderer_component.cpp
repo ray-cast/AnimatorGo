@@ -161,6 +161,8 @@ namespace octoon
 			{
 				MeshRendererComponent::uploadMeshData(nullptr);
 			}
+
+			needUpdate_ = false;
 		}
 		else
 		{

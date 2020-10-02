@@ -36,12 +36,14 @@ namespace octoon
 		void setBones(const GameObjects& bones) noexcept;
 		const GameObjects& getBones() const noexcept;
 
+		void solve() noexcept;
+
 		GameComponentPtr clone() const noexcept;
 	private:
 		void onActivate() noexcept override;
 		void onDeactivate() noexcept override;
 
-		void onLateUpdate() noexcept override;
+		void onFixedUpdate() noexcept override;
 
 	private:
 		void evaluateIK() noexcept;

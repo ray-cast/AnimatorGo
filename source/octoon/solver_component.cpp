@@ -134,6 +134,13 @@ namespace octoon
 		return bones_;
 	}
 
+	void
+	CCDSolverComponent::solve() noexcept
+	{
+		this->evaluateIK();
+		this->evaluateRotationLink();
+	}
+
 	GameComponentPtr
 	CCDSolverComponent::clone() const noexcept
 	{
@@ -153,17 +160,17 @@ namespace octoon
 	CCDSolverComponent::onActivate() noexcept
 	{
 		if (this->getTarget())
-			this->addComponentDispatch(GameDispatchType::LateUpdate);
+			this->addComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
 	CCDSolverComponent::onDeactivate() noexcept
 	{
-		this->removeComponentDispatch(GameDispatchType::LateUpdate);
+		this->removeComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 
 	void
-	CCDSolverComponent::onLateUpdate() noexcept
+	CCDSolverComponent::onFixedUpdate() noexcept
 	{
 		if (timeStep_ > 0)
 		{
@@ -174,16 +181,14 @@ namespace octoon
 
 				if (time_ > timeStep_)
 				{
-					this->evaluateIK();
-					this->evaluateRotationLink();
+					this->solve();
 					time_ = 0;
 				}
 			}
 		}
 		else
 		{
-			this->evaluateIK();
-			this->evaluateRotationLink();
+			this->solve();
 		}
 	}
 

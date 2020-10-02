@@ -138,7 +138,7 @@ namespace octoon
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
-			component->setSleepThreshold(0.01f);
+			component->setSleepThreshold(1e-5f);
 			component->setSolverIterationCounts(12, 3);
 
 			gameObject->addComponent(component);

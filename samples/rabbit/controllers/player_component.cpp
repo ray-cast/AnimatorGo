@@ -43,7 +43,7 @@ namespace rabbit
 			model->startFrame = 0;
 			model->endFrame = this->getModel()->timeLength * 30;
 
-			this->sample();
+			this->reset();
 		});
 	}
 

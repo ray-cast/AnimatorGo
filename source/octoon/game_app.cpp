@@ -113,10 +113,6 @@ namespace octoon
 		this->addFeature(std::make_unique<IOFeature>());
 #endif
 
-#if OCTOON_FEATURE_TIMER_ENABLE
-		this->addFeature(std::make_unique<TimerFeature>());
-#endif
-
 #if OCTOON_FEATURE_INPUT_ENABLE
 		this->addFeature(std::make_unique<InputFeature>(hwnd));
 #endif
@@ -147,6 +143,10 @@ namespace octoon
 
 #if OCTOON_FEATURE_AUDIO_ENABLE
 		this->addFeature(std::make_unique<AudioFeature>());
+#endif
+
+#if OCTOON_FEATURE_TIMER_ENABLE
+		this->addFeature(std::make_unique<TimerFeature>());
 #endif
 	}
 

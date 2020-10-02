@@ -18,7 +18,7 @@ namespace octoon
 		, linearDamping_(0.5f)
 		, angularDamping_(0.5f)
 		, groupMask_(0)
-		, sleepThreshold_(0.05)
+		, sleepThreshold_(0.005)
 		, minPositionIters_(4)
 		, minVelocityIters_(1)
 		, enableCCD_(false)

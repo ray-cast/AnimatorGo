@@ -44,7 +44,6 @@ namespace octoon
 	private:
 		float time_;
 		float timeStep_;
-		std::uint32_t iterationCounts_;
 
 		std::unique_ptr<runtime::Timer> timer_;
 	};

@@ -37,14 +37,10 @@ namespace octoon
 		PhysicsFeature& operator=(const PhysicsFeature&) = delete;
 
     private:
-		bool needUpdate_;
-
-		float timeInterval_;
-
 		math::float3 gravity_;
 
-		std::shared_ptr<physics::PhysicsContext> physics_context;
-		std::shared_ptr<physics::PhysicsScene> physics_scene;
+		std::shared_ptr<physics::PhysicsContext> physicsContext;
+		std::shared_ptr<physics::PhysicsScene> physicsScene;
     };
 }
 

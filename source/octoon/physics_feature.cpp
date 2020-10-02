@@ -6,10 +6,8 @@ namespace octoon
     OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
 
 	PhysicsFeature::PhysicsFeature() except
-		: physics_context(nullptr)
-		, physics_scene(nullptr)
-		, needUpdate_(false)
-		, timeInterval_(0.02f)
+		: physicsContext(nullptr)
+		, physicsScene(nullptr)
 		, gravity_(0.0f, -9.8f, 0.0f)
 	{
 	}
@@ -21,8 +19,8 @@ namespace octoon
 	void
 	PhysicsFeature::setGravity(const math::float3& gravity) noexcept
 	{
-		if (physics_scene)
-			physics_scene->setGravity(gravity);
+		if (physicsScene)
+			physicsScene->setGravity(gravity);
 		gravity_ = gravity;
 	}
 
@@ -40,8 +38,8 @@ namespace octoon
 		physics::PhysicsSceneDesc physicsSceneDesc;
 		physicsSceneDesc.gravity = gravity_;
 
-		physics_context = physics::PhysicsSystem::instance()->createContext();
-		physics_scene = physics_context->createScene(physicsSceneDesc);
+		physicsContext = physics::PhysicsSystem::instance()->createContext();
+		physicsScene = physicsContext->createScene(physicsSceneDesc);
     }
 
     void
@@ -49,8 +47,8 @@ namespace octoon
     {
 		this->removeMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
-		physics_scene.reset();
-		physics_context.reset();
+		physicsScene.reset();
+		physicsContext.reset();
     }
 
     void
@@ -66,14 +64,6 @@ namespace octoon
     void
 	PhysicsFeature::onFrame() except
     {
-		if (needUpdate_)
-		{
-			physics_scene->simulate(timeInterval_);
-			physics_scene->fetchResults();
-			physics_scene->fetchFinish();
-
-			needUpdate_ = false;
-		}
     }
 
     void
@@ -86,21 +76,25 @@ namespace octoon
 	{
 		if (data.type() == typeid(float))
 		{
-			timeInterval_ = std::any_cast<float>(data);
-			if (timeInterval_ > 0.0f)
-				needUpdate_ = true;
+			auto timeInterval = std::any_cast<float>(data);
+			if (timeInterval > 0.0f)
+			{
+				physicsScene->simulate(timeInterval);
+				physicsScene->fetchResults();
+				physicsScene->fetchFinish();
+			}
 		}
 	}
 
 	std::shared_ptr<physics::PhysicsContext>
 	PhysicsFeature::getContext()
 	{
-		return physics_context;
+		return physicsContext;
 	}
 
 	std::shared_ptr<physics::PhysicsScene> 
 	PhysicsFeature::getScene()
 	{
-		return physics_scene;
+		return physicsScene;
 	}
 }

@@ -74,7 +74,7 @@ namespace octoon::camera
 		{
 			this->setDirty(true);
 			needUpdateViewProject_ = true;
-			aperture_ = math::degress(std::atan(canvasWidth_ / zoom * 0.5f)) * 2.0f;
+			aperture_ = math::degrees(std::atan(canvasWidth_ / zoom * 0.5f)) * 2.0f;
 			zoom_ = zoom;
 		}
 	}
@@ -86,7 +86,7 @@ namespace octoon::camera
 		{
 			this->setDirty(true);
 			needUpdateViewProject_ = true;
-			aperture_ = math::degress(std::atan(width / zoom_ * 0.5f)) * 2.0f;
+			aperture_ = math::degrees(std::atan(width / zoom_ * 0.5f)) * 2.0f;
 			canvasWidth_ = width;
 		}
 	}

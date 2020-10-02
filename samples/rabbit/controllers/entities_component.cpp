@@ -182,7 +182,7 @@ namespace rabbit
 			}
 		}
 
-		context->profile->sunModule->rotation = octoon::math::degress(octoon::math::eulerAngles(rotation));
+		context->profile->sunModule->rotation = octoon::math::degrees(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = this->createCamera(pmm);
 		context->profile->entitiesModule->objects = objects;
 		context->profile->entitiesModule->rigidbodies = rigidbodies;

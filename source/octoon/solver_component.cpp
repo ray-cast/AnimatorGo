@@ -7,6 +7,14 @@
 
 namespace octoon
 {
+	enum class SolveAxis
+	{
+		X,
+		Y,
+		Z,
+		None
+	};
+
 	OctoonImplementSubClass(CCDSolverComponent, GameComponent, "CCDSolver")
 
 	CCDSolverComponent::CCDSolverComponent() noexcept
@@ -141,6 +149,108 @@ namespace octoon
 		this->evaluateRotationLink();
 	}
 
+	/*void
+	CCDSolverComponent::solvePlane(const GameObjectPtr& bone, std::uint32_t iteration, SolveAxis solveAxis)
+	{
+		int RotateAxisIndex = 0; // X axis
+		math::float3 RotateAxis = math::float3(1, 0, 0);
+		math::float3 Plane = math::float3(0, 1, 1);
+
+		switch (solveAxis)
+		{
+		case SolveAxis::X:
+			RotateAxisIndex = 0; // X axis
+			RotateAxis = math::float3(1, 0, 0);
+			Plane = math::float3(0, 1, 1);
+			break;
+		case SolveAxis::Y:
+			RotateAxisIndex = 1; // Y axis
+			RotateAxis = math::float3(0, 1, 0);
+			Plane = math::float3(1, 0, 1);
+			break;
+		case SolveAxis::Z:
+			RotateAxisIndex = 2; // Z axis
+			RotateAxis = math::float3(0, 0, 1);
+			Plane = math::float3(1, 1, 0);
+			break;
+		default:
+			break;
+		}
+
+		auto end = this->getComponent<TransformComponent>();
+		auto target = this->getTarget()->getComponent<TransformComponent>();
+
+		auto& jointEnd = end->getTranslate();
+		auto& jointTarget = target->getTranslate();
+
+		auto transform = bone->getComponent<TransformComponent>();
+		math::Vector3 localJointEnd = math::rotate(math::inverse(transform->getQuaternion()), jointEnd - transform->getTranslate());
+		math::Vector3 localJointTarget = math::rotate(math::inverse(transform->getQuaternion()), jointTarget - transform->getTranslate());
+
+		localJointEnd = math::normalize(localJointEnd);
+		localJointTarget = math::normalize(localJointTarget);
+
+		float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
+		float deltaAngle = math::safe_acos(cosDeltaAngle);
+
+		auto rot1 = math::Quaternion(RotateAxis, deltaAngle);
+		auto targetVec1 = math::rotate(rot1, localJointTarget);
+		auto dot1 = math::dot(targetVec1, localJointEnd);
+
+		auto rot2 = math::Quaternion(RotateAxis, -deltaAngle);
+		auto targetVec2 = math::rotate(rot2, localJointTarget);
+		auto dot2 = math::dot(targetVec2, localJointEnd);
+
+		math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
+
+		auto newAngle = transform->getLocalEulerAngles()[RotateAxisIndex];
+
+		auto limit = bone->getComponent<RotationLimitComponent>();
+		if (limit)
+		{
+			auto& low = limit->getMinimumAxis();
+			auto& upper = limit->getMaximumAxis();
+
+			if (dot1 > dot2)
+				newAngle += deltaAngle;
+			else
+				newAngle -= deltaAngle;
+
+			if (iteration == 0)
+			{
+				if (newAngle < low[RotateAxisIndex] || newAngle > upper[RotateAxisIndex])
+				{
+					if (-newAngle > low[RotateAxisIndex] && -newAngle < upper[RotateAxisIndex])
+					{
+						newAngle *= -1;
+					}
+					else
+					{
+						auto halfRad = (low[RotateAxisIndex] + upper[RotateAxisIndex]) * 0.5f;
+						if (math::abs(halfRad - newAngle) > math::abs(halfRad + newAngle))
+						{
+							newAngle *= -1;
+						}
+					}
+				}
+			}
+
+			if ((low.x != 0 || upper.x != 0) && low.y == 0 && upper.y == 0 && low.z == 0 && upper.z == 0)
+			{
+				if (limit->getMininumAngle() != 0 || limit->getMaximumAngle() != 0)
+					newAngle = math::clamp(newAngle, limit->getMininumAngle(), limit->getMaximumAngle());
+
+				if (std::abs(deltaAngle) > math::EPSILON_E5)
+				{
+					auto spin = newAngle;
+					auto rotation = math::clamp(spin, low.x, upper.x);
+
+					transform->setLocalEulerAngles(math::float3(rotation, 0, 0));
+				}
+			}
+		}
+	}*/
+
 	GameComponentPtr
 	CCDSolverComponent::clone() const noexcept
 	{
@@ -198,10 +308,13 @@ namespace octoon
 		auto end = this->getComponent<TransformComponent>();
 		auto target = this->getTarget()->getComponent<TransformComponent>();
 
-		for (std::uint32_t i = 0; i < this->getIterations(); i++)
+		for (std::uint32_t iteration = 0; iteration < this->getIterations(); iteration++)
 		{
 			for (auto& bone : bones_)
 			{
+				if (bone == this->getTarget())
+					continue;
+
 				auto& jointEnd = end->getTranslate();
 				auto& jointTarget = target->getTranslate();
 				if (math::sqrDistance(jointEnd, jointTarget) < tolerance_)
@@ -214,24 +327,98 @@ namespace octoon
 				localJointEnd = math::normalize(localJointEnd);
 				localJointTarget = math::normalize(localJointTarget);
 
-				math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
-
 				float cosDeltaAngle = math::dot(localJointTarget, localJointEnd);
 				float deltaAngle = math::safe_acos(cosDeltaAngle);
-				if (std::abs(deltaAngle) < math::EPSILON_E5)
+				if (deltaAngle < 1e-5f)
 					continue;
 
+				SolveAxis solvePlane = SolveAxis::None;
+
+				std::shared_ptr<RotationLimitComponent> limitComponent = nullptr;
 				if (this->enableAxisLimit_)
 				{
-					auto limit = bone->getComponent<RotationLimitComponent>();
-					if (limit)
+					limitComponent = bone->getComponent<RotationLimitComponent>();
+					if (limitComponent)
 					{
-						auto& low = limit->getMinimumAxis();
-						auto& upper = limit->getMaximumAxis();
+						auto& low = limitComponent->getMinimumAxis();
+						auto& upper = limitComponent->getMaximumAxis();
 
-						if (limit->getMininumAngle() != 0 || limit->getMaximumAngle() != 0)
-							deltaAngle = math::clamp(deltaAngle, limit->getMininumAngle(), limit->getMaximumAngle());
+						if ((low.x != 0 || upper.x != 0) && (low.y == 0 || upper.y == 0) && (low.z == 0 || upper.z == 0))
+							solvePlane = SolveAxis::X;
+						else if ((low.y != 0 || upper.y != 0) && (low.x == 0 || upper.x == 0) && (low.z == 0 || upper.z == 0))
+							solvePlane = SolveAxis::Y;
+						else if ((low.z != 0 || upper.z != 0) && (low.x == 0 || upper.x == 0) && (low.y == 0 || upper.y == 0))
+							solvePlane = SolveAxis::Z;
+					}
+				}
 
+				if (solvePlane != SolveAxis::None)
+				{
+					std::uint8_t component = 0;
+					math::float3 axis(1, 0, 0);
+
+					switch (solvePlane)
+					{
+					case SolveAxis::X:
+						component = 0;
+						axis = math::float3(1, 0, 0);
+						break;
+					case SolveAxis::Y:
+						component = 1;
+						axis = math::float3(0, 1, 0);
+						break;
+					case SolveAxis::Z:
+						component = 2;
+						axis = math::float3(0, 0, 1);
+						break;
+					default:
+						break;
+					}
+
+					auto targetPositive = math::rotate(math::Quaternion(axis, deltaAngle), localJointTarget);
+					auto targetNegative = math::rotate(math::Quaternion(axis, -deltaAngle), localJointTarget);
+
+					auto dot1 = math::dot(targetPositive, localJointEnd);
+					auto dot2 = math::dot(targetNegative, localJointEnd);
+
+					auto newAngle = transform->getLocalEulerAngles()[component];
+					newAngle += dot1 > dot2 ? deltaAngle : -deltaAngle;
+
+					if (limitComponent)
+					{
+						auto& low = limitComponent->getMinimumAxis();
+						auto& upper = limitComponent->getMaximumAxis();
+
+						if (iteration == 0)
+						{
+							if (newAngle < low[component] || newAngle > upper[component])
+							{
+								if (-newAngle > low[component] && -newAngle < upper[component])
+									newAngle *= -1;
+								else
+								{
+									auto halfAngle = (low[component] + upper[component]) * 0.5f;
+									if (math::abs(halfAngle - newAngle) > math::abs(halfAngle + newAngle))
+										newAngle *= -1;
+								}
+							}
+						}
+
+						newAngle = math::clamp(newAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());
+						transform->setLocalEulerAngles(math::float3(math::clamp(newAngle, low.x, upper.x), 0, 0));
+					}
+				}
+				else
+				{
+					math::Vector3 axis = math::normalize(math::cross(localJointTarget, localJointEnd));
+
+					if (limitComponent)
+					{
+						if (limitComponent->getMininumAngle() != 0 || limitComponent->getMaximumAngle() != 0)
+							deltaAngle = math::clamp(deltaAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());
+
+						auto& low = limitComponent->getMinimumAxis();
+						auto& upper = limitComponent->getMaximumAxis();
 						if (low.x != 0 || upper.x != 0 || low.y != 0 || upper.y != 0 || low.z != 0 || upper.z != 0)
 						{
 							auto spin = transform->getLocalEulerAngles();
@@ -241,7 +428,7 @@ namespace octoon
 							transform->setLocalEulerAngles(rotation);
 						}
 						else
-						{						
+						{
 							transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
 						}
 					}
@@ -249,11 +436,7 @@ namespace octoon
 					{
 						transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
 					}
-				}
-				else
-				{
-					transform->setLocalQuaternionAccum(math::normalize(math::Quaternion(axis, deltaAngle)));
-				}
+				}				
 			}
 		}
 	}

@@ -172,7 +172,7 @@ namespace octoon
 		}
 
 		template<typename T>
-		constexpr auto degress(T x) noexcept
+		constexpr auto degrees(T x) noexcept
 		{
 			return (x * 180.0f / math::PI);
 		}

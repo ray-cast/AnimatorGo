@@ -223,7 +223,7 @@ namespace octoon
 		auto transform = this->getGameObject()->getComponent<TransformComponent>();
 		math::float3 euler(math::eulerAngles(transform->getLocalQuaternion()));
 
-		float angle = angleX + math::degress(euler.x);
+		float angle = angleX + math::degrees(euler.x);
 
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
 			rotateCamera(angleX, transform->getLocalRight());

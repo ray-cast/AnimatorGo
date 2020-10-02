@@ -111,6 +111,17 @@ namespace octoon
 	{
 		rigidbodys.reserve(model.rigidbodies.size());
 
+		float massMin = std::numeric_limits<float>::max();
+		float massMax = std::numeric_limits<float>::min();
+
+		for (auto& it : model.rigidbodies)
+		{
+			massMin = std::min(massMin, it->mass);
+			massMax = std::max(massMax, it->mass);
+		}
+
+		float massTotal = std::min(100.0f, massMax / massMin);
+
 		for (auto& it : model.rigidbodies)
 		{
 			auto gameObject = GameObject::create();
@@ -130,16 +141,21 @@ namespace octoon
 
 			auto component = std::make_shared<RigidbodyComponent>();
 			component->setName(it->name);
-			component->setMass(it->mass);
 			component->setGroupMask(it->groupMask);
+			component->setMass(math::lerp(massMin, massMin * massTotal, it->mass / massMax));
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction * 1.5f);
 			component->setDynamicFriction(it->friction);
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
-			component->setIsKinematic(it->physicsOperation == 0);
-			component->setSleepThreshold(0.0f);
-			component->setSolverIterationCounts(12, 3);
+
+			if (it->physicsOperation == 0)
+				component->setIsKinematic(it->physicsOperation == 0);
+			else
+			{
+				component->setSleepThreshold(0.0f);
+				component->setSolverIterationCounts(12, 1);
+			}
 
 			gameObject->addComponent(component);
 
@@ -234,7 +250,7 @@ namespace octoon
 					joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 				}
 
-				/*if (it->springMovementConstant.x != 0.0f)
+				if (it->springMovementConstant.x != 0.0f)
 					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.x));
 				if (it->springMovementConstant.y != 0.0f)
 					joint->setDriveMotionY(std::max(0.0f, it->springMovementConstant.y));
@@ -244,7 +260,7 @@ namespace octoon
 				if (it->springRotationConstant.x != 0.0f)
 					joint->setDriveAngularX(std::max(0.0f, it->springRotationConstant.x));
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
-					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));*/
+					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
 
 				joints.emplace_back(std::move(bodyA));
 			}

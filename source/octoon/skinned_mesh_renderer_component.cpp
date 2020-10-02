@@ -132,7 +132,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::updateMeshData(bool force) noexcept
 	{
-		if (!force)
+		if (force)
 		{
 			if (mesh_)
 			{
@@ -269,7 +269,7 @@ namespace octoon
 	{
 		if (needUpdate_)
 		{
-			this->updateMeshData();
+			this->updateMeshData(true);
 			needUpdate_ = false;
 		}
 	}

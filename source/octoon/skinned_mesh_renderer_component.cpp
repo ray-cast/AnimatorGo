@@ -2,6 +2,7 @@
 #include <octoon/skinned_morph_component.h>
 #include <octoon/skinned_texture_component.h>
 #include <octoon/transform_component.h>
+#include <omp.h>
 
 namespace octoon
 {
@@ -311,8 +312,9 @@ namespace octoon
 		auto& weights = skinnedMesh_->getWeightArray();
 
 		auto numVertices = skinnedMesh_->getNumVertices();
+		auto numProcs = omp_get_num_procs() / 3;
 
-#		pragma omp parallel for num_threads(4)
+#		pragma omp parallel for num_threads(numProcs)
 		for (std::int32_t i = 0; i < numVertices; i++)
 		{
 			auto& blend = weights[i];

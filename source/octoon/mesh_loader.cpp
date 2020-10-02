@@ -138,7 +138,7 @@ namespace octoon
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
 			component->setIsKinematic(it->physicsOperation == 0);
-			component->setSleepThreshold(1e-5f);
+			component->setSleepThreshold(0.0f);
 			component->setSolverIterationCounts(12, 3);
 
 			gameObject->addComponent(component);
@@ -234,7 +234,7 @@ namespace octoon
 					joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 				}
 
-				if (it->springMovementConstant.x != 0.0f)
+				/*if (it->springMovementConstant.x != 0.0f)
 					joint->setDriveMotionX(std::max(0.0f, it->springMovementConstant.x));
 				if (it->springMovementConstant.y != 0.0f)
 					joint->setDriveMotionY(std::max(0.0f, it->springMovementConstant.y));
@@ -244,7 +244,7 @@ namespace octoon
 				if (it->springRotationConstant.x != 0.0f)
 					joint->setDriveAngularX(std::max(0.0f, it->springRotationConstant.x));
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
-					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
+					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));*/
 
 				joints.emplace_back(std::move(bodyA));
 			}

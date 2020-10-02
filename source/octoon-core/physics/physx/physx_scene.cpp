@@ -2,6 +2,7 @@
 #include "physx_rigidbody.h"
 #include "physx_context.h"
 
+#include <omp.h>
 #include <PxPhysicsAPI.h>
 
 namespace octoon
@@ -69,7 +70,7 @@ namespace octoon
 		{
 			physx::PxSceneDesc sceneDesc(context->getPxPhysics()->getTolerancesScale());
 			sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
-			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
+			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(omp_get_num_procs() / 2);
 			sceneDesc.filterShader = DefaultSimulationFilterShader;
 			sceneDesc.simulationEventCallback = simulationEventCallback_.get();
 			sceneDesc.ccdMaxPasses = 4;

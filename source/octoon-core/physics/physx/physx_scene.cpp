@@ -74,8 +74,8 @@ namespace octoon
 			sceneDesc.filterShader = DefaultSimulationFilterShader;
 			sceneDesc.simulationEventCallback = simulationEventCallback_.get();
 			sceneDesc.ccdMaxPasses = 4;
-			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
+			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
+			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS | physx::PxSceneFlag::eEXCLUDE_KINEMATICS_FROM_ACTIVE_ACTORS;
 			px_scene = context->getPxPhysics()->createScene(sceneDesc);
 
 			auto pvdClient = px_scene->getScenePvdClient();

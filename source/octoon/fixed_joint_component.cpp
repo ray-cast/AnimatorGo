@@ -55,7 +55,8 @@ namespace octoon
 		target_ = component;
 	}
 
-	void FixedJointComponent::setupFixedJoint()
+	void
+	FixedJointComponent::setupFixedJoint()
 	{
 		if (!thisBody.expired() && !target_.expired())
 		{

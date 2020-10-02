@@ -18,7 +18,7 @@ namespace rabbit
 		this->spp = 100;
 		this->recordFps = 30.0f;
 		this->playFps = 30.0f;
-		this->playTimeStep = 1.0f / 150.f;
+		this->playTimeStep = 1.0f / 200.f;
 		this->normalTimeStep = 1.0f / 50.f;
 		this->endFrame = 0;
 		this->startFrame = 0;

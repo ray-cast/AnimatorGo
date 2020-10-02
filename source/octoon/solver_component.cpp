@@ -349,6 +349,8 @@ namespace octoon
 							solvePlane = SolveAxis::Y;
 						else if ((low.z != 0 || upper.z != 0) && (low.x == 0 || upper.x == 0) && (low.y == 0 || upper.y == 0))
 							solvePlane = SolveAxis::Z;
+
+						deltaAngle = math::clamp(deltaAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());
 					}
 				}
 
@@ -404,8 +406,10 @@ namespace octoon
 							}
 						}
 
-						newAngle = math::clamp(newAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());
-						transform->setLocalEulerAngles(math::float3(math::clamp(newAngle, low.x, upper.x), 0, 0));
+						math::float3 eular = math::float3::Zero;
+						eular[component] = math::clamp(newAngle, low.x, upper.x);
+
+						transform->setLocalEulerAngles(eular);
 					}
 				}
 				else
@@ -414,14 +418,11 @@ namespace octoon
 
 					if (limitComponent)
 					{
-						if (limitComponent->getMininumAngle() != 0 || limitComponent->getMaximumAngle() != 0)
-							deltaAngle = math::clamp(deltaAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());
-
 						auto& low = limitComponent->getMinimumAxis();
 						auto& upper = limitComponent->getMaximumAxis();
 						if (low.x != 0 || upper.x != 0 || low.y != 0 || upper.y != 0 || low.z != 0 || upper.z != 0)
 						{
-							auto spin = transform->getLocalEulerAngles();
+							auto& spin = transform->getLocalEulerAngles();
 							auto rotation = math::eulerAngles(math::normalize(math::Quaternion(axis, deltaAngle)));
 							rotation = math::clamp(rotation, low - spin, upper - spin) + spin;
 

@@ -20,7 +20,8 @@ namespace octoon
         std::uint64_t samples;
         std::uint32_t channels;
         std::uint32_t freq;
-        std::vector<char> data;
+        std::uint16_t bitsPerSample;
+        std::vector<std::uint8_t> data;
     };
 
     class OCTOON_EXPORT AudioSource

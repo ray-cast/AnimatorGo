@@ -28,6 +28,7 @@ namespace octoon
 
 		virtual bool close() noexcept;
 
+		virtual std::uint16_t bitsPerSample() const noexcept override;
 		virtual std::uint32_t channels() const noexcept override;
 		virtual std::uint64_t samples() const noexcept override;
 		virtual std::uint32_t frequency() const noexcept override;

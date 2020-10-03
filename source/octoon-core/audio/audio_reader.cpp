@@ -35,4 +35,10 @@ namespace octoon
 	{
 		return this->buf_->frequency();
 	}
+
+	std::uint16_t
+	AudioReader::bitsPerSample() const noexcept
+	{
+		return this->buf_->bitsPerSample();
+	}
 }

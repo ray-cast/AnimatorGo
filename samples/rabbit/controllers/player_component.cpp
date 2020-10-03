@@ -216,14 +216,6 @@ namespace rabbit
 			}
 		}
 
-		auto sound = this->getContext()->profile->entitiesModule->sound;
-		if (sound)
-		{
-			auto source = sound->getComponent<octoon::AudioSourceComponent>();
-			if (source)
-				source->setTime(model->curTime);
-		}
-
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
 			for (auto& component : it->getComponents())

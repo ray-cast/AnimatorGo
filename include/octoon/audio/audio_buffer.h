@@ -19,6 +19,7 @@ namespace octoon
 
         virtual bool access(io::istream& stream) const noexcept = 0;
 
+        virtual std::uint16_t bitsPerSample() const noexcept = 0;
         virtual std::uint32_t channels() const noexcept = 0;
         virtual std::uint64_t samples() const noexcept = 0;
         virtual std::uint32_t frequency() const noexcept = 0;

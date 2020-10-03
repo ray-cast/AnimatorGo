@@ -66,11 +66,12 @@ namespace octoon
 				clip.samples = reader->samples();
 				clip.channels = reader->channels();
 				clip.freq = reader->frequency();
+				clip.bitsPerSample = reader->bitsPerSample();
 				clip.length = clip.samples / float(clip.freq);
 				clip.data.resize(reader->size());
 
 				reader->seekg(0, io::ios_base::beg);
-				reader->read(clip.data.data(), clip.data.size());
+				reader->read((char*)clip.data.data(), clip.data.size());
 			}
 			else
 			{
@@ -78,6 +79,7 @@ namespace octoon
 				clip.channels = 0;
 				clip.freq = 0;
 				clip.length = 0;
+				clip.bitsPerSample = 0;
 			}
 
 			source_->setAudioClip(clip);

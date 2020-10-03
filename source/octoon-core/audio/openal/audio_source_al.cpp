@@ -127,9 +127,9 @@ namespace octoon
 		{
 			format_ = AL_NONE;
 			if (audioClip_.channels == 1)
-				format_ = AL_FORMAT_MONO16;
+				format_ = audioClip_.bitsPerSample == 8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
 			else if (audioClip_.channels == 2)
-				format_ = AL_FORMAT_STEREO16;
+				format_ = audioClip_.bitsPerSample == 8 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16;
 			else if (audioClip_.channels == 4)
 				format_ = AL_FORMAT_QUAD16;
 			else if (audioClip_.channels == 6)

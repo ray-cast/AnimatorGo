@@ -244,6 +244,12 @@ namespace octoon
 		return static_cast<std::uint32_t>(info->rate);
 	}
 
+	std::uint16_t
+	OggStreamBuffer::bitsPerSample() const noexcept
+	{
+		return 16;
+	}
+
 	OggAudioReader::OggAudioReader() noexcept
 		: AudioReader(&buf_)
 	{

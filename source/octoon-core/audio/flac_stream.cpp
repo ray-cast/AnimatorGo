@@ -37,9 +37,9 @@ namespace octoon
 					this->hz_ = flac->sampleRate;
 					this->channels_ = flac->channels;
 					this->samples_= flac->totalPCMFrameCount;
-					this->buffer_.resize(this->samples_ * this->channels_ * sizeof(drflac_int32));
+					this->buffer_.resize(this->samples_ * this->channels_ * sizeof(drflac_int16));
 
-					drflac_read_pcm_frames_s32(flac, this->samples_, (drflac_int32*)buffer_.data());
+					drflac_read_pcm_frames_s16(flac, this->samples_, (drflac_int16*)buffer_.data());
 					drflac_close(flac);
 				}
 				else
@@ -139,6 +139,12 @@ namespace octoon
 	{
 		this->buffer_.shrink_to_fit();
 		return true;
+	}
+
+	std::uint16_t
+	FlacStreamBuffer::bitsPerSample() const noexcept
+	{
+		return 16;
 	}
 
 	std::uint32_t

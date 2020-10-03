@@ -25,6 +25,7 @@ namespace octoon
         std::uint32_t channels() const noexcept;
         std::uint64_t samples() const noexcept;
         std::uint32_t frequency() const noexcept;
+        std::uint16_t bitsPerSample() const noexcept;
 
         virtual std::shared_ptr<AudioReader> clone() const noexcept = 0;
 

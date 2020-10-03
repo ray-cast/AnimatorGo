@@ -159,6 +159,12 @@ namespace octoon
 		return this->hz_;
 	}
 
+	std::uint16_t
+	Mp3StreamBuffer::bitsPerSample() const noexcept
+	{
+		return 16;
+	}
+
 	Mp3AudioReader::Mp3AudioReader() noexcept
 		: AudioReader(&buf_)
 	{

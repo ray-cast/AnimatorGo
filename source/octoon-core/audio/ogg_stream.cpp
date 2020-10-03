@@ -1,4 +1,5 @@
 #include <octoon/audio/ogg_stream.h>
+#include <octoon/io/vstream.h>
 #include <vorbis/vorbisfile.h>
 
 namespace octoon
@@ -77,8 +78,8 @@ namespace octoon
 		return (err < 0) ? false : true;
 	}
 
-	bool
-	OggStreamBuffer::open(std::shared_ptr<io::istream> stream) noexcept
+	void
+	OggStreamBuffer::open(const char* filepath) noexcept(false)
 	{
 		assert(!oggVorbisFile_);
 
@@ -91,19 +92,19 @@ namespace octoon
 		callbacks.close_func = &ogg_stream_close;
 
 		pos_ = 0;
-		stream_ = stream;
+		stream_ = std::make_shared<io::ifstream>(filepath);
 
 		auto err = ::ov_open_callbacks(stream_.get(), &ogg, nullptr, 0, callbacks);
 		if (err < 0)
 		{
 			::ov_clear(&ogg);
-			return false;
+			return;
 		}
 
 		oggVorbisFile_ = new OggVorbis_File;
 		std::memcpy(oggVorbisFile_, &ogg, sizeof(OggVorbis_File));
 
-		return true;
+		return;
 	}
 
 	io::streamsize
@@ -255,20 +256,20 @@ namespace octoon
 	{
 	}
 
-	OggAudioReader::OggAudioReader(std::shared_ptr<io::istream> buf) noexcept
+	OggAudioReader::OggAudioReader(const char* filepath) noexcept
 		: AudioReader(&buf_)
 	{
-		this->open(buf);
+		this->open(filepath);
 	}
 	
 	OggAudioReader::~OggAudioReader() noexcept
 	{
 	}
 
-	bool
-	OggAudioReader::open(std::shared_ptr<io::istream> stream) noexcept
+	void
+	OggAudioReader::open(const char* filepath) noexcept(false)
 	{
-		return this->buf_.open(stream);
+		buf_.open(filepath);
 	}
 
 	std::shared_ptr<AudioReader>

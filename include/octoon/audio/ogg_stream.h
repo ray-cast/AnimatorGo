@@ -14,7 +14,7 @@ namespace octoon
 		OggStreamBuffer() noexcept;
 		~OggStreamBuffer() noexcept;
 
-		virtual bool open(std::shared_ptr<io::istream> stream) noexcept;
+		virtual void open(const char* filepath) noexcept(false);
 		virtual bool access(io::istream& stream) const noexcept;
 
 		virtual io::streamsize read(char* str, io::streamsize cnt) noexcept;
@@ -47,10 +47,10 @@ namespace octoon
 	{
 	public:
 		OggAudioReader() noexcept;
-		OggAudioReader(std::shared_ptr<io::istream> buf) noexcept;
+		OggAudioReader(const char* filepath) noexcept;
 		virtual ~OggAudioReader() noexcept;
 
-		bool open(std::shared_ptr<io::istream> stream) noexcept;
+		void open(const char* filepath) noexcept(false);
 
 		std::shared_ptr<AudioReader> clone() const noexcept override;
 

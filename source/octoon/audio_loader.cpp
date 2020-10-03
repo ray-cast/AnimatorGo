@@ -37,7 +37,7 @@ namespace octoon
 	AudioLoader::load(std::string_view filepath) noexcept(false)
 	{
 		if (filepath.find(".ogg") != std::string::npos)
-			return load(std::make_shared<io::ivstream>(std::string(filepath)));
+			return std::make_shared<OggAudioReader>(std::string(filepath).c_str());
 		else if (filepath.find(".mp3") != std::string::npos)
 			return std::make_shared<Mp3AudioReader>(std::string(filepath).c_str());
 		else if (filepath.find(".wav") != std::string::npos)

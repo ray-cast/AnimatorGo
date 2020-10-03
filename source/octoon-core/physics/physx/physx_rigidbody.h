@@ -13,57 +13,64 @@ namespace octoon
 {
 	namespace physics
 	{
-		class OCTOON_EXPORT PhysxRigidbody : public PhysicsRigidbody
+		class OCTOON_EXPORT PhysxRigidbody final : public PhysicsRigidbody
 		{
 		public:
 			PhysxRigidbody(PhysxContext* context, PhysicsRigidbodyDesc desc);
-			virtual ~PhysxRigidbody();
+			~PhysxRigidbody() override;
 
-			virtual void setGroup(std::uint8_t group) override;
-			virtual void setGroupMask(std::uint16_t groupMask) override;
+			void attachShape(std::shared_ptr<PhysicsShape> shape) override;
+			void detachShape(std::shared_ptr<PhysicsShape> shape) override;
 
-			virtual void setEnableCCD(bool enable) override;
+			void setGroup(std::uint8_t group) override;
+			void setGroupMask(std::uint16_t groupMask) override;
 
-			virtual void setOwnerListener(PhysicsListener* listener) override;
+			void setEnableCCD(bool enable) override;
 
-			virtual void setKinematic(bool kinematic) noexcept override;
-			virtual void setSleepThreshold(float threshold) noexcept override;
-			virtual void setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters = 1) noexcept override;
+			void setOwnerListener(PhysicsListener* listener) override;
 
-			virtual void setPosition(math::float3 postion) override;
-			virtual void setRotation(math::Quaternion rotation) override;
-			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) override;
+			void setKinematic(bool kinematic) noexcept override;
+			void setSleepThreshold(float threshold) noexcept override;
+			void setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters = 1) noexcept override;
 
-			virtual void setMass(float f) override;
-			virtual void setDynamicFriction(float f) override;
-			virtual void setStaticFriction(float f) override;
-			virtual void setRestitution(float f) override;
+			void setPosition(const math::float3& postion) override;
+			void setRotation(const math::Quaternion& rotation) override;
+			void setPositionAndRotation(const math::float3& postion, const math::Quaternion& rotation) override;
 
-			virtual void setLinearDamping(float value) override;
-			virtual void setAngularDamping(float value) override;
+			void setMass(float f) override;
+			void setDynamicFriction(float f) override;
+			void setStaticFriction(float f) override;
+			void setRestitution(float f) override;
 
-			virtual float getDynamicFriction() const override;
-			virtual float getStaticFriction() const override;
-			virtual float getRestitution() const override;
+			void setLinearDamping(float value) override;
+			void setAngularDamping(float value) override;
 
-			virtual math::float3 getPosition() override;
-			virtual math::Quaternion getRotation() override;
+			void setLinearVelocity(const math::float3& value) override;
+			void setAngularVelocity(const math::float3& value) override;
 
-			virtual void wakeUp() override;
-			virtual void clearForce() noexcept override;
-			virtual void clearTorque() noexcept override;			
+			float getMass() const override;
+			float getDynamicFriction() const override;
+			float getStaticFriction() const override;
+			float getRestitution() const override;
 
-			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) override;
-			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) override;
+			math::float3 getPosition() override;
+			math::Quaternion getRotation() override;
+
+			void wakeUp() override;
+			void clearForce() noexcept override;
+			void clearTorque() noexcept override;			
+
+			bool updateMassAndInertia(float density) override;
 
 			physx::PxRigidActor* getPxRigidbody();
 
 		private:
 			PhysxRigidbody(const PhysxRigidbody&) noexcept = delete;
 			PhysxRigidbody& operator=(const PhysxRigidbody&) noexcept = delete;
+
 		private:
 			PhysxContext* context;
-			physx::PxRigidDynamic* px_rigidbody;
+			physx::PxRigidDynamic* rigidbody_;
 
 			std::shared_ptr<PhysxShape> shape_;
 		};

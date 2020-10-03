@@ -56,9 +56,9 @@ namespace octoon
 			virtual void setSleepThreshold(float threshold) noexcept = 0;
 			virtual void setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters = 1) noexcept = 0;
 
-			virtual void setPosition(math::float3 postion) = 0;
-			virtual void setRotation(math::Quaternion rotation) = 0;
-			virtual void setPositionAndRotation(math::float3 postion, math::Quaternion rotation) = 0;
+			virtual void setPosition(const math::float3& postion) = 0;
+			virtual void setRotation(const math::Quaternion& rotation) = 0;
+			virtual void setPositionAndRotation(const math::float3& postion, const math::Quaternion& rotation) = 0;
 
 			virtual void setMass(float f) = 0;
 			virtual void setDynamicFriction(float f) = 0;
@@ -68,9 +68,13 @@ namespace octoon
 			virtual void setLinearDamping(float value) = 0;
 			virtual void setAngularDamping(float value) = 0;
 
+			virtual void setLinearVelocity(const math::float3& value) = 0;
+			virtual void setAngularVelocity(const math::float3& value) = 0;
+
 			virtual math::float3 getPosition() = 0;
 			virtual math::Quaternion getRotation() = 0;
 
+			virtual float getMass() const = 0;
 			virtual float getDynamicFriction() const = 0;
 			virtual float getStaticFriction() const = 0;
 			virtual float getRestitution() const = 0;
@@ -81,6 +85,8 @@ namespace octoon
 
 			virtual void attachShape(std::shared_ptr<PhysicsShape> shape) = 0;
 			virtual void detachShape(std::shared_ptr<PhysicsShape> shape) = 0;
+
+			virtual bool updateMassAndInertia(float density) = 0;
 
 		private:
 			PhysicsRigidbody(const PhysicsRigidbody&) noexcept = delete;

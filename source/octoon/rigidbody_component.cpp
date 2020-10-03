@@ -274,6 +274,16 @@ namespace octoon
 			rigidbody_->clearTorque();
 	}
 
+	void
+	RigidbodyComponent::updateMassAndInertia(float density) noexcept
+	{
+		if (rigidbody_)
+		{
+			rigidbody_->updateMassAndInertia(density);
+			this->mass_ = rigidbody_->getMass();
+		}
+	}
+
 	GameComponentPtr
 	RigidbodyComponent::clone() const noexcept
     {

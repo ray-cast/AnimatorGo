@@ -23,7 +23,7 @@ namespace octoon
 
 		private:
 			PhysxContext* context;
-			physx::PxRigidDynamic* px_rigidbody;
+			physx::PxRigidDynamic* rigidbody_;
 
 			std::shared_ptr<PhysxShape> shape_;
 		};

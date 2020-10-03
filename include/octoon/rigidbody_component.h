@@ -53,6 +53,8 @@ namespace octoon
 		void rotation(const math::Quaternion& quat) noexcept;
 		void movePosition(const math::float3& position) noexcept;
 
+        void updateMassAndInertia(float density) noexcept;
+
 		void clearForce() noexcept;
 		void clearTorque() noexcept;
 

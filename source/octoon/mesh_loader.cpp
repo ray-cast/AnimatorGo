@@ -128,10 +128,10 @@ namespace octoon
 			else
 				assert(false);
 
-			auto component = std::make_shared<RigidbodyComponent>();
+			auto component = gameObject->addComponent<RigidbodyComponent>();
 			component->setName(it->name);
+			component->setMass(it->mass);
 			component->setGroupMask(it->groupMask);
-			component->setMass(std::min(it->mass, 5.f));
 			component->setRestitution(it->elasticity);
 			component->setStaticFriction(it->friction * 1.5f);
 			component->setDynamicFriction(it->friction);
@@ -141,9 +141,10 @@ namespace octoon
 			if (it->physicsOperation == 0)
 				component->setIsKinematic(it->physicsOperation == 0);
 			else
+			{
 				component->setSleepThreshold(0.0f);
-
-			gameObject->addComponent(component);
+				component->updateMassAndInertia(it->mass * 0.3f);
+			}
 
 			rigidbodys.emplace_back(std::move(gameObject));
 		}

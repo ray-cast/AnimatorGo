@@ -13,7 +13,7 @@ namespace octoon
 	{
 		PhysxRigidbody::PhysxRigidbody(PhysxContext * context, PhysicsRigidbodyDesc desc)
 			: context(nullptr)
-			, px_rigidbody(nullptr)
+			, rigidbody_(nullptr)
 		{
 			physx::PxTransform pose;
 			pose.p = physx::PxVec3(desc.translate.x, desc.translate.y, desc.translate.z);
@@ -24,7 +24,7 @@ namespace octoon
 			{
 				rigidbody->setMass(desc.mass);
 				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
-				px_rigidbody = rigidbody;
+				rigidbody_ = rigidbody;
 			}
 			else
 			{
@@ -34,74 +34,95 @@ namespace octoon
 
 		PhysxRigidbody::~PhysxRigidbody()
 		{
-			if (px_rigidbody)
+			if (rigidbody_)
 			{
-				px_rigidbody->release();
-				px_rigidbody = nullptr;
+				rigidbody_->release();
+				rigidbody_ = nullptr;
 			}
 		}
 
-		math::float3 PhysxRigidbody::getPosition()
+		void
+		PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 		{
-			auto pxGlobalPose = px_rigidbody->getGlobalPose();
+			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
+			rigidbody_->attachShape(*pxshape->getPxShape());
+			shape_ = pxshape;
+		}
+
+		void
+		PhysxRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
+		{
+			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
+			rigidbody_->detachShape(*pxshape->getPxShape());
+			shape.reset();
+			shape = nullptr;
+		}
+
+		void
+		PhysxRigidbody::setPosition(const math::float3& postion)
+		{
+			auto pxGlobalPose = rigidbody_->getGlobalPose();
+			pxGlobalPose.p = physx::PxVec3(postion.x, postion.y, postion.z);
+			rigidbody_->setGlobalPose(pxGlobalPose);
+		}
+
+		void
+		PhysxRigidbody::setRotation(const math::Quaternion& rotation)
+		{
+			auto pxGlobalPose = rigidbody_->getGlobalPose();
+			pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+			rigidbody_->setGlobalPose(pxGlobalPose);
+		}
+
+		void
+		PhysxRigidbody::setPositionAndRotation(const math::float3& postion, const math::Quaternion& rotation)
+		{
+			auto pxGlobalPose = rigidbody_->getGlobalPose();
+			pxGlobalPose.p = physx::PxVec3(postion.x, postion.y, postion.z);
+			pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+			rigidbody_->setGlobalPose(pxGlobalPose);
+		}
+
+		math::float3
+		PhysxRigidbody::getPosition()
+		{
+			auto pxGlobalPose = rigidbody_->getGlobalPose();
 			return math::float3(pxGlobalPose.p.x, pxGlobalPose.p.y, pxGlobalPose.p.z);
 		}
-		void PhysxRigidbody::setPosition(math::float3 postion)
+
+		math::Quaternion
+		PhysxRigidbody::getRotation()
 		{
-			auto pxGlobalPose = px_rigidbody->getGlobalPose();
-			pxGlobalPose.p = physx::PxVec3(postion.x, postion.y, postion.z);
-			px_rigidbody->setGlobalPose(pxGlobalPose);
-		}
-		math::Quaternion PhysxRigidbody::getRotation()
-		{
-			auto pxGlobalPose = px_rigidbody->getGlobalPose();
+			auto pxGlobalPose = rigidbody_->getGlobalPose();
 			return math::Quaternion(pxGlobalPose.q.x, pxGlobalPose.q.y, pxGlobalPose.q.z, pxGlobalPose.q.w);
-		}
-
-		void PhysxRigidbody::setRotation(math::Quaternion rotation)
-		{
-			auto pxGlobalPose = px_rigidbody->getGlobalPose();
-			pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
-			px_rigidbody->setGlobalPose(pxGlobalPose);
-		}
-
-		void PhysxRigidbody::setPositionAndRotation(math::float3 postion, math::Quaternion rotation)
-		{
-			auto pxGlobalPose = px_rigidbody->getGlobalPose();
-			pxGlobalPose.p = physx::PxVec3(postion.x, postion.y, postion.z);
-			pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
-			px_rigidbody->setGlobalPose(pxGlobalPose);
 		}
 
 		void
 		PhysxRigidbody::wakeUp()
 		{
-			px_rigidbody->wakeUp();
+			rigidbody_->wakeUp();
 		}
 
 		void
 		PhysxRigidbody::clearForce() noexcept
 		{
-			px_rigidbody->clearForce();
+			rigidbody_->clearForce();
 		}
 
 		void
 		PhysxRigidbody::clearTorque() noexcept
 		{
-			px_rigidbody->clearTorque();
+			rigidbody_->clearTorque();
 		}
 
-		void PhysxRigidbody::setDynamicFriction(float f)
+		void
+		PhysxRigidbody::setDynamicFriction(float f)
 		{
 			shape_->getPxMaterial()->setDynamicFriction(f);
 		}
 
-		float PhysxRigidbody::getDynamicFriction() const
-		{
-			return shape_->getPxMaterial()->getDynamicFriction();
-		}
-
-		void PhysxRigidbody::setStaticFriction(float f)
+		void
+		PhysxRigidbody::setStaticFriction(float f)
 		{
 			shape_->getPxMaterial()->setStaticFriction(f);
 		}
@@ -123,83 +144,105 @@ namespace octoon
 		}
 
 		void
+		PhysxRigidbody::setRestitution(float f)
+		{
+			shape_->getPxMaterial()->setRestitution(f);
+		}
+
+		float
+		PhysxRigidbody::getMass() const
+		{
+			return rigidbody_->getMass();
+		}
+
+		float
+		PhysxRigidbody::getRestitution() const
+		{
+			return shape_->getPxMaterial()->getRestitution();
+		}
+
+		float
+		PhysxRigidbody::getStaticFriction() const
+		{
+			return shape_->getPxMaterial()->getStaticFriction();
+		}
+
+		float
+		PhysxRigidbody::getDynamicFriction() const
+		{
+			return shape_->getPxMaterial()->getDynamicFriction();
+		}
+
+		void
+		PhysxRigidbody::setMass(float f)
+		{
+			rigidbody_->setMass(f);
+		}
+
+		void
+		PhysxRigidbody::setLinearDamping(float value)
+		{
+			rigidbody_->setLinearDamping(value);
+		}
+
+		void
+		PhysxRigidbody::setAngularDamping(float value)
+		{
+			rigidbody_->setAngularDamping(value);
+		}
+
+		void
+		PhysxRigidbody::setLinearVelocity(const math::float3& value)
+		{
+			rigidbody_->setLinearVelocity(physx::PxVec3(value.x, value.y, value.z));
+		}
+
+		void
+		PhysxRigidbody::setAngularVelocity(const math::float3& value)
+		{
+			rigidbody_->setAngularVelocity(physx::PxVec3(value.x, value.y, value.z));
+		}
+
+		void
 		PhysxRigidbody::setEnableCCD(bool enable)
 		{
-			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enable);
+			rigidbody_->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enable);
 		}
 
 		void
 		PhysxRigidbody::setOwnerListener(PhysicsListener* listener)
 		{
-			px_rigidbody->userData = listener;
+			rigidbody_->userData = listener;
 		}
 
 		void 
 		PhysxRigidbody::setKinematic(bool kinematic) noexcept
 		{
-			px_rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, kinematic);
+			rigidbody_->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, kinematic);
 		}
 
 		void
 		PhysxRigidbody::setSleepThreshold(float threshold) noexcept
 		{
-			px_rigidbody->setSleepThreshold(threshold);
+			rigidbody_->setSleepThreshold(threshold);
 		}
 
 		void
 		PhysxRigidbody::setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept
 		{
-			px_rigidbody->setSolverIterationCounts(minPositionIters, minVelocityIters);
+			rigidbody_->setSolverIterationCounts(minPositionIters, minVelocityIters);
 		}
 
-		void PhysxRigidbody::setMass(float f)
+		bool
+		PhysxRigidbody::updateMassAndInertia(float density)
 		{
-			px_rigidbody->setMass(f);
+			return physx::PxRigidBodyExt::updateMassAndInertia(*rigidbody_, density);
 		}
 
-		void PhysxRigidbody::setLinearDamping(float value)
+		physx::PxRigidActor*
+		PhysxRigidbody::getPxRigidbody()
 		{
-			px_rigidbody->setLinearDamping(value);
-		}
-
-		void PhysxRigidbody::setAngularDamping(float value)
-		{
-			px_rigidbody->setAngularDamping(value);
-		}
-
-		float PhysxRigidbody::getStaticFriction() const
-		{
-			return shape_->getPxMaterial()->getStaticFriction();
-		}
-
-		void PhysxRigidbody::setRestitution(float f)
-		{
-			shape_->getPxMaterial()->setRestitution(f);
-		}
-
-		float PhysxRigidbody::getRestitution() const
-		{
-			return shape_->getPxMaterial()->getRestitution();
-		}
-
-		void PhysxRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
-		{
-			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
-			px_rigidbody->attachShape(*pxshape->getPxShape());
-			shape_ = pxshape;
-		}
-
-		void PhysxRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
-		{
-			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
-			px_rigidbody->detachShape(*pxshape->getPxShape());
-			shape.reset();
-			shape = nullptr;
-		}
-
-		physx::PxRigidActor * PhysxRigidbody::getPxRigidbody()
-		{
-			return px_rigidbody;
+			return rigidbody_;
 		}
 	}
 }

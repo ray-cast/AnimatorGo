@@ -361,7 +361,8 @@ namespace octoon::video
 				clwscene.dirty = false;
 			}
 
-			c.pipeline->render(compiledScene);
+			if (clwscene.shapes.GetElementCount() > 0)
+				c.pipeline->render(compiledScene);
 		}
 
 		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));

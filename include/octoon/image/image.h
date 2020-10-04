@@ -6,7 +6,7 @@
 
 namespace octoon
 {
-		class OCTOON_EXPORT Image final
+	class OCTOON_EXPORT Image final
 	{
 	public:
 		Image() noexcept;
@@ -15,7 +15,6 @@ namespace octoon
 		Image(Format format, std::uint32_t width, std::uint32_t height) except;
 		Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth) except;
 		Image(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth, std::uint32_t mipLevel, std::uint32_t layerLevel, std::uint32_t mipBase = 0, std::uint32_t layerBase = 0) except;
-		Image(Format format, const Image& src) except;
 		explicit Image(istream& stream, const char* type = nullptr) noexcept;
 		explicit Image(const char* filepath, const char* type = nullptr) noexcept;
 		explicit Image(const std::string& filepath, const char* type = nullptr) noexcept;
@@ -24,7 +23,6 @@ namespace octoon
 		bool create(Format format, std::uint32_t width, std::uint32_t height) except;
 		bool create(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth) except;
 		bool create(Format format, std::uint32_t width, std::uint32_t height, std::uint32_t depth, std::uint32_t mipLevel, std::uint32_t layerLevel, std::uint32_t mipBase = 0, std::uint32_t layerBase = 0) except;
-		bool create(Format format, const Image& src) except;
 
 		bool empty() const noexcept;
 
@@ -44,6 +42,8 @@ namespace octoon
 
 		const std::uint8_t* data() const noexcept;
 		const std::uint8_t* data(std::size_t i) const noexcept;
+
+		Image convert(Format format) noexcept(false);
 
 	public:
 		bool load(istream& stream, const char* type = nullptr) noexcept;

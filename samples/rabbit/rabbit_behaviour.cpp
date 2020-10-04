@@ -349,6 +349,12 @@ namespace rabbit
 		entitiesComponent_->importHDRi(path);
 	}
 
+	void
+	RabbitBehaviour::loadHDRi(const octoon::hal::GraphicsTexturePtr& texture) noexcept
+	{
+		entitiesComponent_->importHDRi(texture);
+	}
+
 	void 
 	RabbitBehaviour::clearHDRi() noexcept
 	{

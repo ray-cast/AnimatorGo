@@ -145,6 +145,7 @@ namespace rabbit
 
 			void init(const QString& name, std::uint32_t flags);
 			void resetState();
+			octoon::hal::GraphicsTexturePtr setImage(const QString& path);
 		};
 
 		MaterialUi albedo_;

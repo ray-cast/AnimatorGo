@@ -77,8 +77,8 @@ namespace octoon
 
 	void rgb32f_to_rgb8uint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R32G32B32SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8UInt);
+		assert(srcImage.format() == Format::R32G32B32SFloat);
+		assert(dstImage.format() == Format::R8G8B8UInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -102,8 +102,8 @@ namespace octoon
 
 	void rgb64f_to_rgb8uint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8UInt);
+		assert(srcImage.format() == Format::R64G64B64SFloat);
+		assert(dstImage.format() == Format::R8G8B8UInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -127,8 +127,8 @@ namespace octoon
 
 	void rgba32f_to_rgba8uint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R32G32B32A32SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8UInt);
+		assert(srcImage.format() == Format::R32G32B32A32SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8UInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -152,8 +152,8 @@ namespace octoon
 
 	void rgba64f_to_rgba8uint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64A64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8UInt);
+		assert(srcImage.format() == Format::R64G64B64A64SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8UInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -172,8 +172,8 @@ namespace octoon
 
 	void rgb32f_to_rgb8sint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64A64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8SInt);
+		assert(srcImage.format() == Format::R64G64B64A64SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8SInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -197,8 +197,8 @@ namespace octoon
 
 	void rgb64f_to_rgb8sint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64A64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8SInt);
+		assert(srcImage.format() == Format::R64G64B64A64SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8SInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -222,8 +222,8 @@ namespace octoon
 
 	void rgba32f_to_rgba8sint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64A64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8SInt);
+		assert(srcImage.format() == Format::R64G64B64A64SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8SInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());
@@ -247,8 +247,8 @@ namespace octoon
 
 	void rgba64f_to_rgba8sint(const Image& srcImage, Image& dstImage) noexcept
 	{
-		assert(srcImage.format() == image::Format::R64G64B64A64SFloat);
-		assert(dstImage.format() == image::Format::R8G8B8A8SInt);
+		assert(srcImage.format() == Format::R64G64B64A64SFloat);
+		assert(dstImage.format() == Format::R8G8B8A8SInt);
 
 		assert(dstImage.width() == srcImage.width());
 		assert(dstImage.height() == srcImage.height());

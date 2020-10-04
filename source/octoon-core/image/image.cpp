@@ -65,12 +65,6 @@ namespace octoon
 		this->create(format, width, height, depth, mipLevel, layerLevel, mipBase, layerBase);
 	}
 
-	Image::Image(Format format, const Image& src) except
-		: Image()
-	{
-		this->create(format, src);
-	}
-
 	Image::Image(istream& stream, const char* type) noexcept
 		: Image()
 	{
@@ -199,48 +193,6 @@ namespace octoon
 	}
 
 	bool
-	Image::create(Format format, const Image& image) except
-	{
-		assert(format != Format::Undefined);
-		assert(format >= Format::BeginRange && format <= Format::EndRange);
-
-		if (format_ != format)
-		{
-			if (!this->create(format, image.width(), image.height(), image.depth(), image.mipLevel(), image.layerLevel(), image.mipBase(), image.layerBase()))
-				return false;
-
-			if (format_ == Format::R32G32B32SFloat && format == Format::R8G8B8UInt)
-				rgb32f_to_rgb8uint(image, *this);
-			else if (format_ == Format::R32G32B32A32SFloat && format == Format::R8G8B8A8UInt)
-				rgba32f_to_rgba8uint(image, *this);
-			else if (format_ == Format::R64G64B64A64SFloat && format == Format::R8G8B8UInt)
-				rgb64f_to_rgb8uint(image, *this);
-			else if (format_ == Format::R64G64B64A64SFloat && format == Format::R8G8B8A8UInt)
-				rgba64f_to_rgba8uint(image, *this);
-			else if (format_ == Format::R32G32B32SFloat && format == Format::R8G8B8SInt)
-				rgb32f_to_rgb8sint(image, *this);
-			else if (format_ == Format::R32G32B32A32SFloat && format == Format::R8G8B8A8SInt)
-				rgba32f_to_rgba8sint(image, *this);
-			else if (format_ == Format::R64G64B64A64SFloat && format == Format::R8G8B8SInt)
-				rgb64f_to_rgb8sint(image, *this);
-			else if (format_ == Format::R64G64B64A64SFloat && format == Format::R8G8B8A8SInt)
-				rgba64f_to_rgba8sint(image, *this);
-			else
-				throw runtime::not_implemented::create("not supported yet.");
-
-			return true;
-		}
-		else
-		{
-			if (!this->create(image.format(), image.width(), image.height(), image.depth(), image.mipLevel(), image.layerLevel(), image.mipBase(), image.layerBase()))
-				return false;
-
-			memcpy((char*)this->data(), image.data(), image.size());
-			return true;
-		}
-	}
-
-	bool
 	Image::empty() const noexcept
 	{
 		return data_.empty();
@@ -310,6 +262,62 @@ namespace octoon
 	Image::data(std::size_t i = 0) const noexcept
 	{
 		return data_.data() + i;
+	}
+
+	Image
+	Image::convert(Format format) noexcept(false)
+	{
+		assert(format != Format::Undefined);
+		assert(format >= Format::BeginRange && format <= Format::EndRange);
+
+		if (format_ != format)
+		{
+			Image image(format, this->width(), this->height(), this->depth(), this->mipLevel(), this->layerLevel(), this->mipBase(), this->layerBase());
+
+			switch (format_)
+			{
+			case Format::R32G32B32SFloat:
+			{
+				if (format == Format::R8G8B8UInt)
+					rgb32f_to_rgb8uint(*this, image);
+				else if (format == Format::R8G8B8SInt)
+					rgb32f_to_rgb8sint(*this, image);
+			}
+			break;
+			case Format::R32G32B32A32SFloat:
+			{
+				if (format == Format::R8G8B8A8UInt)
+					rgba32f_to_rgba8uint(*this, image);
+				else if (format == Format::R8G8B8A8SInt)
+					rgba32f_to_rgba8sint(*this, image);
+			}
+			break;
+			case Format::R64G64B64SFloat:
+			{
+				if (format == Format::R8G8B8A8UInt)
+					rgb64f_to_rgb8uint(*this, image);
+				else if (format == Format::R8G8B8A8SInt)
+					rgb64f_to_rgb8sint(*this, image);
+			}
+			break;
+			case Format::R64G64B64A64SFloat:
+			{
+				if (format == Format::R8G8B8A8UInt)
+					rgba64f_to_rgba8uint(*this, image);
+				else if (format == Format::R8G8B8A8SInt)
+					rgba64f_to_rgba8sint(*this, image);
+			}
+			break;
+			default:
+				throw runtime::not_implemented::create("not supported yet.");
+			}
+
+			return image;
+		}
+		else
+		{
+			return Image(*this);
+		}
 	}
 
 	bool

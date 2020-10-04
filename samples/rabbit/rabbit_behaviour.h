@@ -48,6 +48,7 @@ namespace rabbit
 		void clearAudio() noexcept;
 
 		void loadHDRi(std::string_view path) noexcept;
+		void loadHDRi(const octoon::hal::GraphicsTexturePtr& texture) noexcept;
 		void clearHDRi() noexcept;
 
 		void loadMaterial(std::string_view path) noexcept(false);

@@ -161,6 +161,99 @@ namespace rabbit
 		if (this->image) this->image->setIcon(QIcon::fromTheme(":res/icons/append2.png"));
 	}
 
+	octoon::hal::GraphicsTexturePtr
+	MaterialEditWindow::MaterialUi::setImage(const QString& path)
+	{
+		auto texture = octoon::TextureLoader::load(path.toStdString());
+		auto width = texture->getTextureDesc().getWidth();
+		auto height = texture->getTextureDesc().getHeight();
+
+		QImage qimage;
+
+		switch (texture->getTextureDesc().getTexFormat())
+		{
+		case octoon::hal::GraphicsFormat::R8G8B8SNorm:
+		case octoon::hal::GraphicsFormat::R8G8B8UNorm:
+		case octoon::hal::GraphicsFormat::R8G8B8SRGB:
+		{
+			std::uint8_t* data_ = nullptr;
+			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			{
+				qimage = QImage(data_, width, height, QImage::Format::Format_RGB888);
+				texture->unmap();
+			}
+		}
+		break;
+		case octoon::hal::GraphicsFormat::R8G8B8A8SNorm:
+		case octoon::hal::GraphicsFormat::R8G8B8A8UNorm:
+		case octoon::hal::GraphicsFormat::R8G8B8A8SRGB:
+		{
+			std::uint8_t* data_ = nullptr;
+			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			{
+				qimage = QImage(data_, width, height, QImage::Format::Format_RGBA8888);
+				texture->unmap();
+			}
+		}
+		break;
+		case octoon::hal::GraphicsFormat::B8G8R8SNorm:
+		case octoon::hal::GraphicsFormat::B8G8R8UNorm:
+		case octoon::hal::GraphicsFormat::B8G8R8SRGB:
+		{
+			std::uint8_t* data_ = nullptr;
+			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			{
+				auto size = width * height * 3;
+				auto pixels = std::make_unique<std::uint8_t[]>(size);
+
+				for (std::size_t i = 0; i < size; i += 3) {
+					pixels[i] = data_[i + 2];
+					pixels[i + 1] = data_[i + 1];
+					pixels[i + 2] = data_[i];
+				}
+
+				qimage = QImage(pixels.get(), width, height, QImage::Format::Format_RGB888);
+				texture->unmap();
+			}
+		}
+		break;
+		case octoon::hal::GraphicsFormat::B8G8R8A8SNorm:
+		case octoon::hal::GraphicsFormat::B8G8R8A8UNorm:
+		case octoon::hal::GraphicsFormat::B8G8R8A8SRGB:
+		{
+			std::uint8_t* data_ = nullptr;
+			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			{
+				auto size = width * height * 4;
+				auto pixels = std::make_unique<std::uint8_t[]>(size);
+
+				for (std::size_t i = 0; i < size; i += 4) {
+					pixels[i] = data_[i + 2];
+					pixels[i + 1] = data_[i + 1];
+					pixels[i + 2] = data_[i];
+					pixels[i + 3] = data_[i + 3];
+				}
+
+				qimage = QImage(pixels.get(), width, height, QImage::Format::Format_RGBA8888);
+				texture->unmap();
+			}
+		}
+		break;
+		default:
+			throw std::runtime_error("Failed to open file :" + path.toStdString());
+		}
+
+		QFontMetrics metrics(this->path->font());
+		auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->path->width());
+
+		this->path->setText(name);
+		this->check->setCheckState(Qt::CheckState::Checked);
+		this->image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 48)))));
+		this->texture = texture;
+
+		return texture;
+	}
+
 	MaterialEditWindow::MaterialEditWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour)
 		: QWidget(widget)
 		, behaviour_(behaviour)
@@ -309,237 +402,263 @@ namespace rabbit
 	void
 	MaterialEditWindow::setAlbedoMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->albedo_.setImage(path);
+				if (texture)
+					this->material_->setColorMap(texture);
+			}
+			else
+			{
+				this->material_->setColorMap(nullptr);
+			}
 
-			this->albedo_.path->setText(name);
-			this->albedo_.check->setCheckState(Qt::CheckState::Checked);
-			this->albedo_.image->setIcon(QIcon(path));
-			this->albedo_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->material_->setColorMap(this->albedo_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setColorMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setNormalMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->normal_.setImage(path);
+				if (texture)
+					this->material_->setNormalMap(texture);
+			}
+			else
+			{
+				this->material_->setNormalMap(nullptr);
+			}
 
-			this->normal_.path->setText(name);
-			this->normal_.check->setCheckState(Qt::CheckState::Checked);
-			this->normal_.image->setIcon(QIcon(path));
-			this->normal_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->material_->setNormalMap(this->normal_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setNormalMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setOpacityMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->opacity_.setImage(path);
+				if (texture)
+				{
+					this->opacity_.spinBox->setValue(1.0f);
+					this->material_->setOpacity(1.0f);
+					this->material_->setOpacityMap(this->opacity_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setOpacityMap(nullptr);
+			}
 
-			this->opacity_.path->setText(name);
-			this->opacity_.check->setCheckState(Qt::CheckState::Checked);
-			this->opacity_.image->setIcon(QIcon(path));
-			this->opacity_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->opacity_.spinBox->setValue(1.0f);
-			this->material_->setOpacity(1.0f);
-			this->material_->setOpacityMap(this->opacity_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setOpacityMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setRoughnessMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->roughness_.setImage(path);
+				if (texture)
+				{
+					this->roughness_.spinBox->setValue(1.0f);
+					this->material_->setRoughness(1.0f);
+					this->material_->setRoughnessMap(this->roughness_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setRoughnessMap(nullptr);
+			}
 
-			this->roughness_.path->setText(name);
-			this->roughness_.check->setCheckState(Qt::CheckState::Checked);
-			this->roughness_.image->setIcon(QIcon(path));
-			this->roughness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->roughness_.spinBox->setValue(1.0f);
-			this->material_->setRoughness(1.0f);
-			this->material_->setRoughnessMap(this->roughness_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setRoughnessMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setSpecularMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->specular_.setImage(path);
+				if (texture)
+				{
+					this->specular_.spinBox->setValue(1.0f);
+					this->material_->setSpecular(1.0f);
+					this->material_->setSpecularMap(this->specular_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setSpecularMap(nullptr);
+			}
 
-			this->specular_.path->setText(name);
-			this->specular_.check->setCheckState(Qt::CheckState::Checked);
-			this->specular_.image->setIcon(QIcon(path));
-			this->specular_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->specular_.spinBox->setValue(1.0f);
-			this->material_->setSpecular(1.0f);
-			this->material_->setSpecularMap(this->specular_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setSpecularMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setMetalnessMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->metalness_.setImage(path);
+				if (texture)
+				{
+					this->metalness_.spinBox->setValue(1.0f);
+					this->material_->setMetalness(1.0f);
+					this->material_->setMetalnessMap(this->metalness_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setMetalnessMap(nullptr);
+			}
 
-			this->metalness_.path->setText(name);
-			this->metalness_.check->setCheckState(Qt::CheckState::Checked);
-			this->metalness_.image->setIcon(QIcon(path));
-			this->metalness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->metalness_.spinBox->setValue(1.0f);
-			this->material_->setMetalness(1.0f);
-			this->material_->setMetalnessMap(this->metalness_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setMetalnessMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setAnisotropyMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->anisotropy_.setImage(path);
+				if (texture)
+				{
+					this->anisotropy_.spinBox->setValue(1.0f);
+					this->material_->setAnisotropy(1.0f);
+					this->material_->setAnisotropyMap(this->anisotropy_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setAnisotropyMap(nullptr);
+			}
 
-			this->anisotropy_.path->setText(name);
-			this->anisotropy_.check->setCheckState(Qt::CheckState::Checked);
-			this->anisotropy_.image->setIcon(QIcon(path));
-			this->anisotropy_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->anisotropy_.spinBox->setValue(1.0f);
-			this->material_->setAnisotropy(1.0f);
-			this->material_->setAnisotropyMap(this->anisotropy_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setAnisotropyMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setSheenMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->sheen_.setImage(path);
+				if (texture)
+				{
+					this->sheen_.spinBox->setValue(1.0f);
+					this->material_->setSheen(1.0f);
+					this->material_->setSheenMap(this->sheen_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setSheenMap(nullptr);
+			}
 
-			this->sheen_.path->setText(name);
-			this->sheen_.check->setCheckState(Qt::CheckState::Checked);
-			this->sheen_.image->setIcon(QIcon(path));
-			this->sheen_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->sheen_.spinBox->setValue(1.0f);
-			this->material_->setSheen(1.0f);
-			this->material_->setSheenMap(this->sheen_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setSheenMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setClearCoatMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->clearcoat_.setImage(path);
+				if (texture)
+				{
+					this->clearcoat_.spinBox->setValue(1.0f);
+					this->material_->setClearCoat(1.0f);
+					this->material_->setClearCoatMap(this->clearcoat_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setClearCoatMap(nullptr);
+			}
 
-			this->clearcoat_.path->setText(name);
-			this->clearcoat_.check->setCheckState(Qt::CheckState::Checked);
-			this->clearcoat_.image->setIcon(QIcon(path));
-			this->clearcoat_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->clearcoat_.spinBox->setValue(1.0f);
-			this->material_->setClearCoat(1.0f);
-			this->material_->setClearCoatMap(this->clearcoat_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setClearCoatMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
 	MaterialEditWindow::setClearCoatRoughnessMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->clearcoatRoughness_.setImage(path);
+				if (texture)
+				{
+					this->clearcoatRoughness_.spinBox->setValue(1.0f);
+					this->material_->setClearCoatRoughness(1.0f);
+					this->material_->setClearCoatRoughnessMap(this->clearcoatRoughness_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setClearCoatRoughnessMap(nullptr);
+			}
 
-			this->clearcoatRoughness_.path->setText(name);
-			this->clearcoatRoughness_.check->setCheckState(Qt::CheckState::Checked);
-			this->clearcoatRoughness_.image->setIcon(QIcon(path));
-			this->clearcoatRoughness_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->clearcoatRoughness_.spinBox->setValue(1.0f);
-			this->material_->setClearCoatRoughness(1.0f);
-			this->material_->setClearCoatRoughnessMap(this->clearcoatRoughness_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setClearCoatRoughnessMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void
@@ -550,23 +669,27 @@ namespace rabbit
 	void
 	MaterialEditWindow::setEmissiveMap(const QString& path)
 	{
-		if (!path.isEmpty())
+		try
 		{
-			QFontMetrics metrics(this->albedo_.path->font());
-			auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->albedo_.path->width());
+			if (!path.isEmpty())
+			{
+				auto texture = this->emissive_.setImage(path);
+				if (texture)
+				{
+					this->emissive_.spinBox->setValue(1.0f);
+					this->material_->setEmissiveMap(this->emissive_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setEmissiveMap(nullptr);
+			}
 
-			this->emissive_.path->setText(name);
-			this->emissive_.check->setCheckState(Qt::CheckState::Checked);
-			this->emissive_.image->setIcon(QIcon(path));
-			this->emissive_.texture = octoon::TextureLoader::load(path.toStdString());
-			this->material_->setEmissiveMap(this->emissive_.texture);
+			this->repaint();
 		}
-		else
+		catch (...)
 		{
-			this->material_->setEmissiveMap(nullptr);
 		}
-
-		this->repaint();
 	}
 
 	void

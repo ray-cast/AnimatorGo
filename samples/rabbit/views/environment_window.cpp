@@ -271,19 +271,43 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					QString fileName = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
-					if (!fileName.isEmpty())
+					QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
+					if (!path.isEmpty())
 					{
-						QFontMetrics metrics(this->colorMap_.path->font());
-						auto name = metrics.elidedText(QFileInfo(fileName).fileName(), Qt::ElideRight, this->colorMap_.path->width());
+						auto texture = octoon::TextureLoader::load(path.toStdString());
+						if (texture)
+						{
+							auto width = texture->getTextureDesc().getWidth();
+							auto height = texture->getTextureDesc().getHeight();
+							float* data = nullptr;
 
-						this->colorMap_.path->setText(name);
-						this->colorMap_.check->setCheckState(Qt::CheckState::Checked);
-						this->colorMap_.image->setIcon(QIcon(fileName));
-						this->colorMap_.texture = fileName;
-						behaviour->loadHDRi(fileName.toUtf8().data());
-						this->colorChangeEvent(QColor::fromRgbF(1, 1, 1));
-						this->repaint();
+							if (texture->map(0, 0, width, height, 0, (void**)&data))
+							{
+								auto size = width * height * 3;
+								auto pixels = std::make_unique<std::uint8_t[]>(size);
+
+								for (std::size_t i = 0; i < size; i += 3) {
+									pixels[i] = std::clamp<std::uint8_t>(data[i] * 255.0f, 0, 255);
+									pixels[i + 1] = std::clamp<std::uint8_t>(data[i + 1] * 255.0f, 0, 255);
+									pixels[i + 2] = std::clamp<std::uint8_t>(data[i + 2] * 255.0f, 0, 255);
+								}
+
+								texture->unmap();
+
+								QImage qimage(pixels.get(), width, height, QImage::Format::Format_RGB888);
+
+								QFontMetrics metrics(this->colorMap_.path->font());
+								auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->colorMap_.path->width());
+
+								this->colorMap_.path->setText(name);
+								this->colorMap_.check->setCheckState(Qt::CheckState::Checked);
+								this->colorMap_.image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(50, 30)))));
+								this->colorMap_.texture = texture;
+								behaviour->loadHDRi(texture);
+								this->colorChangeEvent(QColor::fromRgbF(1, 1, 1));
+								this->repaint();
+							}
+						}
 					}
 				}
 				else
@@ -323,9 +347,9 @@ namespace rabbit
 					behaviour->clearHDRi();
 					this->repaint();
 				}
-				else if (!this->colorMap_.texture.isEmpty())
+				else if (this->colorMap_.texture)
 				{
-					behaviour->loadHDRi(this->colorMap_.texture.toUtf8().data());
+					behaviour->loadHDRi(this->colorMap_.texture);
 					this->repaint();
 				}
 			}

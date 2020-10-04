@@ -60,7 +60,7 @@ namespace rabbit
 
 			Spoiler* spoiler;
 
-			QString texture;
+			octoon::hal::GraphicsTexturePtr texture;
 
 			void init(const QString& name, std::uint32_t flags);
 			void resetState();

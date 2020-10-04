@@ -224,23 +224,28 @@ namespace rabbit
 		this->getContext()->profile->entitiesModule->sound = nullptr;
 	}
 
-	void
-	EntitiesComponent::importHDRi(std::string_view filepath) noexcept
+	void 
+	EntitiesComponent::importHDRi(const octoon::hal::GraphicsTexturePtr& texture) noexcept
 	{
 		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
 		if (environmentLight)
 		{
-			auto texture = TextureLoader::load(filepath);
-			if (texture)
-			{
-				auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
-				if (envLight)
-					envLight->setEnvironmentMap(PMREMLoader::load(texture));
 
-				auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
-				material->setColorMap(texture);
-			}
+			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+			if (envLight)
+				envLight->setEnvironmentMap(PMREMLoader::load(texture));
+
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			material->setColorMap(texture);
 		}
+	}
+
+	void
+	EntitiesComponent::importHDRi(std::string_view filepath) noexcept
+	{
+		auto texture = TextureLoader::load(filepath);
+		if (texture)
+			this->importHDRi(texture);
 	}
 
 	void

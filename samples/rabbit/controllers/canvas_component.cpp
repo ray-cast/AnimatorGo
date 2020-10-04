@@ -92,9 +92,9 @@ namespace rabbit
 		auto height = canvas->height;
 		auto output = this->getContext()->profile->offlineModule->offlineEnable ? canvas->outputBuffer.data() : canvas->colorBuffer.data();
 
-		octoon::image::Image image;
+		octoon::Image image;
 
-		if (image.create(octoon::image::Format::R8G8B8SRGB, width, height))
+		if (image.create(octoon::Format::R8G8B8SRGB, width, height))
 		{
 			auto data = (char*)image.data();
 

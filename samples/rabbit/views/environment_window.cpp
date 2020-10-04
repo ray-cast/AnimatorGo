@@ -1,6 +1,7 @@
 ﻿#include "environment_window.h"
 #include <octoon/environment_light_component.h>
 #include <octoon/mesh_renderer_component.h>
+#include <octoon/image/image.h>
 
 #include <qpainter.h>
 #include <qmessagebox.h>

@@ -32,313 +32,310 @@ typedef std::int32_t LONG;
 
 namespace octoon
 {
-	namespace image
+	enum
 	{
-		enum
-		{
-			BMP_32BPP = 32,        // default, do not need to set
-			BMP_24BPP = 24,
-			BMP_16BPP = 16,        // 8bpp, quantized colors
-			BMP_8BPP = 8,          // 8bpp, rgb averaged to greys
-			BMP_8BPP_GREY = 9,     // 8bpp, rgb averaged to grays
-			BMP_8BPP_GRAY = 9,     // 8bpp, red used as greyscale
-			BMP_8BPP_RED = 10,     // 8bpp, use the wxImage's palette
-			BMP_8BPP_PALETTE = 11, // 4bpp, quantized colors
-			BMP_4BPP = 4,          // 1bpp, quantized "colors"
-			BMP_1BPP = 1,          // 1bpp, black & white from red
-			BMP_1BPP_BW = 2
-		};
+		BMP_32BPP = 32,        // default, do not need to set
+		BMP_24BPP = 24,
+		BMP_16BPP = 16,        // 8bpp, quantized colors
+		BMP_8BPP = 8,          // 8bpp, rgb averaged to greys
+		BMP_8BPP_GREY = 9,     // 8bpp, rgb averaged to grays
+		BMP_8BPP_GRAY = 9,     // 8bpp, red used as greyscale
+		BMP_8BPP_RED = 10,     // 8bpp, use the wxImage's palette
+		BMP_8BPP_PALETTE = 11, // 4bpp, quantized colors
+		BMP_4BPP = 4,          // 1bpp, quantized "colors"
+		BMP_1BPP = 1,          // 1bpp, black & white from red
+		BMP_1BPP_BW = 2
+	};
 
-		#pragma pack(push)
-		#pragma pack(1)
+	#pragma pack(push)
+	#pragma pack(1)
 
-		struct BITMAPFILEHEADER
-		{
-			WORD type;
-			DWORD size;
-			WORD reserved1;
-			WORD reserved2;
-			DWORD off_bits;
-		};
+	struct BITMAPFILEHEADER
+	{
+		WORD type;
+		DWORD size;
+		WORD reserved1;
+		WORD reserved2;
+		DWORD off_bits;
+	};
 
-		struct BITMAPINFOHEADER
-		{
-			DWORD size;
-			LONG width;
-			LONG height;
-			WORD planes;
-			WORD bpp;
-			DWORD comp;
-			DWORD size_image;
-			LONG pels_per_mater_x;
-			LONG pels_per_mater_y;
-			DWORD clr_used;
-			DWORD clr_important;
-		};
+	struct BITMAPINFOHEADER
+	{
+		DWORD size;
+		LONG width;
+		LONG height;
+		WORD planes;
+		WORD bpp;
+		DWORD comp;
+		DWORD size_image;
+		LONG pels_per_mater_x;
+		LONG pels_per_mater_y;
+		DWORD clr_used;
+		DWORD clr_important;
+	};
 
-		struct BITMAPMASK
-		{
-			DWORD r;
-			DWORD g;
-			DWORD b;
-		};
+	struct BITMAPMASK
+	{
+		DWORD r;
+		DWORD g;
+		DWORD b;
+	};
 
-		struct BITMAPINFO
-		{
-			BITMAPFILEHEADER header;
-			BITMAPINFOHEADER info;
-		};
+	struct BITMAPINFO
+	{
+		BITMAPFILEHEADER header;
+		BITMAPINFOHEADER info;
+	};
 
-		#pragma pack(pop)
+	#pragma pack(pop)
 
-		struct RGB
-		{
-			std::uint8_t r, g, b;
+	struct RGB
+	{
+		std::uint8_t r, g, b;
 
-			RGB() noexcept : r(0), g(0), b(0) {};
-		};
+		RGB() noexcept : r(0), g(0), b(0) {};
+	};
 
-		bool
-		BMPHandler::doCanRead(istream& stream) const noexcept
-		{
-			std::uint8_t hdr[2];
+	bool
+	BMPHandler::doCanRead(istream& stream) const noexcept
+	{
+		std::uint8_t hdr[2];
 
-			if (stream.read((char*)hdr, sizeof(hdr)))
-				return hdr[0] == 'B' && hdr[1] == 'M';
+		if (stream.read((char*)hdr, sizeof(hdr)))
+			return hdr[0] == 'B' && hdr[1] == 'M';
+		return false;
+	}
+
+	bool
+	BMPHandler::doCanRead(const char* type_name) const noexcept
+	{
+		return std::strncmp(type_name, "bmp", 3) == 0;
+	}
+
+	bool
+	BMPHandler::doLoad(istream& stream, Image& image) except
+	{
+		stream.seekg(0, std::ios_base::end);
+		auto size = stream.tellg();
+		stream.seekg(0, std::ios_base::beg);
+
+		BITMAPINFO info;
+		if (!stream.read((char*)&info, sizeof(info)))
 			return false;
-		}
 
-		bool
-		BMPHandler::doCanRead(const char* type_name) const noexcept
-		{
-			return std::strncmp(type_name, "bmp", 3) == 0;
-		}
-
-		bool
-		BMPHandler::doLoad(istream& stream, Image& image) except
-		{
-			stream.seekg(0, std::ios_base::end);
-			auto size = stream.tellg();
-			stream.seekg(0, std::ios_base::beg);
-
-			BITMAPINFO info;
-			if (!stream.read((char*)&info, sizeof(info)))
-				return false;
-
-			if (info.header.size != size ||
-				info.info.size != sizeof(BITMAPINFOHEADER) ||
-				info.header.reserved1 != 0 ||
-				info.header.reserved2 != 0 ||
-				info.info.width == 0 ||
-				info.info.height == 0 ||
-				info.info.planes != 1 ||
-				info.info.bpp != 1 && info.info.bpp != 4 &&
-				info.info.bpp != 8 && info.info.bpp != 16 &&
-				info.info.bpp != 24 && info.info.bpp != 32)
-			{
-				return false;
-			}
-
-			if (info.info.comp == BI_RGB)
-			{
-				return this->loadDIB(stream, image, info);
-			}
-			else
-			{
-				if (info.info.comp == BI_RLE4 && info.info.bpp != 4 ||
-					info.info.comp == BI_RLE8 && info.info.bpp != 8 ||
-					info.info.comp == BI_BITFIELDS && info.info.bpp != 16 && info.info.bpp != 32)
-				{
-					return false;
-				}
-
-				return this->decode(stream, image, info);
-			}
-		}
-
-		bool
-		BMPHandler::doSave(ostream&, const Image&) except
+		if (info.header.size != size ||
+			info.info.size != sizeof(BITMAPINFOHEADER) ||
+			info.header.reserved1 != 0 ||
+			info.header.reserved2 != 0 ||
+			info.info.width == 0 ||
+			info.info.height == 0 ||
+			info.info.planes != 1 ||
+			info.info.bpp != 1 && info.info.bpp != 4 &&
+			info.info.bpp != 8 && info.info.bpp != 16 &&
+			info.info.bpp != 24 && info.info.bpp != 32)
 		{
 			return false;
 		}
 
-		bool
-		BMPHandler::decode(istream&, Image&, const BITMAPINFO&)
+		if (info.info.comp == BI_RGB)
+		{
+			return this->loadDIB(stream, image, info);
+		}
+		else
+		{
+			if (info.info.comp == BI_RLE4 && info.info.bpp != 4 ||
+				info.info.comp == BI_RLE8 && info.info.bpp != 8 ||
+				info.info.comp == BI_BITFIELDS && info.info.bpp != 16 && info.info.bpp != 32)
+			{
+				return false;
+			}
+
+			return this->decode(stream, image, info);
+		}
+	}
+
+	bool
+	BMPHandler::doSave(ostream&, const Image&) except
+	{
+		return false;
+	}
+
+	bool
+	BMPHandler::decode(istream&, Image&, const BITMAPINFO&)
+	{
+		return false;
+	}
+
+	bool
+	BMPHandler::encode(istream&, Image&, const BITMAPINFO&)
+	{
+		return false;
+	}
+
+	bool
+	BMPHandler::loadDIB(istream& stream, Image& image, const BITMAPINFO& info)
+	{
+		std::uint32_t columns = (std::uint32_t)info.info.width;
+		std::uint32_t rows = (std::uint32_t)(info.info.height < 0 ? -info.info.height : info.info.height);
+		std::uint32_t nums = columns * rows;
+
+		std::size_t length = (std::size_t)(nums * info.info.bpp / 8);
+		std::size_t padding = std::max<std::size_t>(0, info.info.size_image - length) / rows;
+
+		std::vector<std::uint8_t> buffers(length);
+		std::uint8_t* buf = (std::uint8_t*)buffers.data();
+
+		if (!stream.read((char*)buf, (std::streamsize)length))
+			return false;
+
+		if (info.info.bpp == BMP_32BPP)
+		{
+			if (!image.create(Format::R8G8B8A8SRGB, columns, rows))
+				return false;
+		}
+		else if (info.info.bpp == BMP_24BPP)
+		{
+			if (!image.create(Format::R8G8B8SRGB, columns, rows))
+				return false;
+		}
+		else if (info.info.bpp == BMP_16BPP)
+		{
+			if (!image.create(Format::R8G8B8SRGB, columns, rows))
+				return false;
+		}
+		else
 		{
 			return false;
 		}
 
-		bool
-		BMPHandler::encode(istream&, Image&, const BITMAPINFO&)
+		if (info.info.bpp == BMP_24BPP)
 		{
+			std::uint8_t* rgb = (std::uint8_t*)image.data();
+			std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
+
+			for (std::size_t i = 0; i < rows; i++)
+			{
+				for (std::size_t j = 0; j < columns; j++)
+				{
+					auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
+					auto dst = (i * columns + j) * channel;
+
+					auto b = buf[src];
+					auto g = buf[src + 1];
+					auto r = buf[src + 2];
+
+					rgb[dst] = r;
+					rgb[dst + 1] = g;
+					rgb[dst + 2] = b;
+				}
+			}
+		}
+		else if (info.info.bpp == BMP_32BPP)
+		{
+			std::uint8_t* rgb = (std::uint8_t*)image.data();
+			std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
+
+			for (std::size_t i = 0; i < rows; i++)
+			{
+				for (std::size_t j = 0; j < columns; j++)
+				{
+					auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
+					auto dst = (i * columns + j) * channel;
+
+					auto b = buf[src];
+					auto g = buf[src + 1];
+					auto r = buf[src + 2];
+					auto a = buf[src + 3];
+
+					rgb[dst] = r;
+					rgb[dst + 1] = g;
+					rgb[dst + 2] = b;
+					rgb[dst + 3] = a;
+				}
+			}
+		}
+		else if (info.info.bpp == BMP_16BPP)
+		{
+			char* data = (char*)image.data();
+			switch (info.info.comp)
+			{
+			case BI_RGB:
+			{
+				std::size_t pos = 0;
+				for (std::uint32_t i = 0; i < nums; i++)
+				{
+					WORD word = *buf;
+
+					buf += sizeof(WORD);
+
+					data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_R) >> BI_RGB5_SHIFT_R) << BI_RGB5_BIT_R);
+					data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_G) >> BI_RGB5_SHIFT_G) << BI_RGB5_BIT_G);
+					data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_B) >> BI_RGB5_SHIFT_B) << BI_RGB5_BIT_B);
+
+					pos += padding;
+				}
+			}
+			break;
+			case BI_BITFIELDS:
+			{
+				BITMAPMASK mask = (BITMAPMASK&)*buf;
+
+				buf += sizeof(BITMAPMASK);
+
+				RGB shift;
+				for (std::uint8_t bit = (std::uint8_t)(info.info.bpp - 1); bit >= 0; bit--)
+				{
+					if (mask.b & (1 << bit))
+						shift.b = bit;
+					if (mask.g & (1 << bit))
+						shift.g = bit;
+					if (mask.r & (1 << bit))
+						shift.r = bit;
+				}
+
+				RGB bits;
+				for (std::uint8_t bit = 0; bit < info.info.bpp; bit++)
+				{
+					if (mask.b & (1 << bit))
+						bits.b = bit - shift.b + 1;
+					if (mask.g & (1 << bit))
+						bits.g = bit - shift.g + 1;
+					if (mask.r & (1 << bit))
+						bits.r = bit - shift.r + 1;
+				}
+
+				std::size_t pos = 0;
+				for (std::uint32_t i = 0; i < nums; i++)
+				{
+					WORD word;
+					stream.read((char*)&word, sizeof(word));
+
+					data[pos++] = (std::uint8_t)(((word & mask.r) >> shift.r) << (8 - bits.r));
+					data[pos++] = (std::uint8_t)(((word & mask.g) >> shift.g) << (8 - bits.g));
+					data[pos++] = (std::uint8_t)(((word & mask.b) >> shift.b) << (8 - bits.b));
+				}
+			}
+			break;
+			}
+		}
+		else
+		{
+			if (info.info.bpp == BMP_8BPP ||
+				info.info.bpp == BMP_4BPP ||
+				info.info.bpp == BMP_1BPP)
+			{
+				DWORD colors = info.info.clr_used;
+				if (colors == 0)
+					colors = (DWORD)1 << info.info.bpp;
+
+				for (std::size_t i = 0; i < colors; i++)
+				{
+				}
+			}
+
 			return false;
 		}
 
-		bool
-		BMPHandler::loadDIB(istream& stream, Image& image, const BITMAPINFO& info)
-		{
-			std::uint32_t columns = (std::uint32_t)info.info.width;
-			std::uint32_t rows = (std::uint32_t)(info.info.height < 0 ? -info.info.height : info.info.height);
-			std::uint32_t nums = columns * rows;
-
-			std::size_t length = (std::size_t)(nums * info.info.bpp / 8);
-			std::size_t padding = std::max<std::size_t>(0, info.info.size_image - length) / rows;
-
-			std::vector<std::uint8_t> buffers(length);
-			std::uint8_t* buf = (std::uint8_t*)buffers.data();
-
-			if (!stream.read((char*)buf, (std::streamsize)length))
-				return false;
-
-			if (info.info.bpp == BMP_32BPP)
-			{
-				if (!image.create(Format::R8G8B8A8SRGB, columns, rows))
-					return false;
-			}
-			else if (info.info.bpp == BMP_24BPP)
-			{
-				if (!image.create(Format::R8G8B8SRGB, columns, rows))
-					return false;
-			}
-			else if (info.info.bpp == BMP_16BPP)
-			{
-				if (!image.create(Format::R8G8B8SRGB, columns, rows))
-					return false;
-			}
-			else
-			{
-				return false;
-			}
-
-			if (info.info.bpp == BMP_24BPP)
-			{
-				std::uint8_t* rgb = (std::uint8_t*)image.data();
-				std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
-
-				for (std::size_t i = 0; i < rows; i++)
-				{
-					for (std::size_t j = 0; j < columns; j++)
-					{
-						auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
-						auto dst = (i * columns + j) * channel;
-
-						auto b = buf[src];
-						auto g = buf[src + 1];
-						auto r = buf[src + 2];
-
-						rgb[dst] = r;
-						rgb[dst + 1] = g;
-						rgb[dst + 2] = b;
-					}
-				}
-			}
-			else if (info.info.bpp == BMP_32BPP)
-			{
-				std::uint8_t* rgb = (std::uint8_t*)image.data();
-				std::uint8_t channel = (std::uint8_t)info.info.bpp / 8;
-
-				for (std::size_t i = 0; i < rows; i++)
-				{
-					for (std::size_t j = 0; j < columns; j++)
-					{
-						auto src = (rows - i - 1) * (columns * channel + padding) + j * channel;
-						auto dst = (i * columns + j) * channel;
-
-						auto b = buf[src];
-						auto g = buf[src + 1];
-						auto r = buf[src + 2];
-						auto a = buf[src + 3];
-
-						rgb[dst] = r;
-						rgb[dst + 1] = g;
-						rgb[dst + 2] = b;
-						rgb[dst + 3] = a;
-					}
-				}
-			}
-			else if (info.info.bpp == BMP_16BPP)
-			{
-				char* data = (char*)image.data();
-				switch (info.info.comp)
-				{
-				case BI_RGB:
-				{
-					std::size_t pos = 0;
-					for (std::uint32_t i = 0; i < nums; i++)
-					{
-						WORD word = *buf;
-
-						buf += sizeof(WORD);
-
-						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_R) >> BI_RGB5_SHIFT_R) << BI_RGB5_BIT_R);
-						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_G) >> BI_RGB5_SHIFT_G) << BI_RGB5_BIT_G);
-						data[pos++] = (std::uint8_t)(((word & BI_RGB5_MASK_B) >> BI_RGB5_SHIFT_B) << BI_RGB5_BIT_B);
-
-						pos += padding;
-					}
-				}
-				break;
-				case BI_BITFIELDS:
-				{
-					BITMAPMASK mask = (BITMAPMASK&)*buf;
-
-					buf += sizeof(BITMAPMASK);
-
-					RGB shift;
-					for (std::uint8_t bit = (std::uint8_t)(info.info.bpp - 1); bit >= 0; bit--)
-					{
-						if (mask.b & (1 << bit))
-							shift.b = bit;
-						if (mask.g & (1 << bit))
-							shift.g = bit;
-						if (mask.r & (1 << bit))
-							shift.r = bit;
-					}
-
-					RGB bits;
-					for (std::uint8_t bit = 0; bit < info.info.bpp; bit++)
-					{
-						if (mask.b & (1 << bit))
-							bits.b = bit - shift.b + 1;
-						if (mask.g & (1 << bit))
-							bits.g = bit - shift.g + 1;
-						if (mask.r & (1 << bit))
-							bits.r = bit - shift.r + 1;
-					}
-
-					std::size_t pos = 0;
-					for (std::uint32_t i = 0; i < nums; i++)
-					{
-						WORD word;
-						stream.read((char*)&word, sizeof(word));
-
-						data[pos++] = (std::uint8_t)(((word & mask.r) >> shift.r) << (8 - bits.r));
-						data[pos++] = (std::uint8_t)(((word & mask.g) >> shift.g) << (8 - bits.g));
-						data[pos++] = (std::uint8_t)(((word & mask.b) >> shift.b) << (8 - bits.b));
-					}
-				}
-				break;
-				}
-			}
-			else
-			{
-				if (info.info.bpp == BMP_8BPP ||
-					info.info.bpp == BMP_4BPP ||
-					info.info.bpp == BMP_1BPP)
-				{
-					DWORD colors = info.info.clr_used;
-					if (colors == 0)
-						colors = (DWORD)1 << info.info.bpp;
-
-					for (std::size_t i = 0; i < colors; i++)
-					{
-					}
-				}
-
-				return false;
-			}
-
-			return true;
-		}
+		return true;
 	}
 }

@@ -5,25 +5,22 @@
 
 namespace octoon
 {
-	namespace image
+	class PNGHandler final : public ImageLoader
 	{
-		class PNGHandler final : public ImageLoader
-		{
-		public:
-			PNGHandler() noexcept = default;
-			virtual ~PNGHandler() = default;
+	public:
+		PNGHandler() noexcept = default;
+		virtual ~PNGHandler() = default;
 
-			bool doCanRead(istream& stream) const noexcept override;
-			bool doCanRead(const char* type_name) const noexcept override;
+		bool doCanRead(istream& stream) const noexcept override;
+		bool doCanRead(const char* type_name) const noexcept override;
 
-			bool doLoad(istream& stream, Image& image) noexcept override;
-			bool doSave(ostream& stream, const Image& image) noexcept override;
+		bool doLoad(istream& stream, Image& image) noexcept override;
+		bool doSave(ostream& stream, const Image& image) noexcept override;
 
-		private:
-			PNGHandler(const PNGHandler&) noexcept = delete;
-			PNGHandler& operator=(const PNGHandler&) noexcept = delete;
-		};
-	}
+	private:
+		PNGHandler(const PNGHandler&) noexcept = delete;
+		PNGHandler& operator=(const PNGHandler&) noexcept = delete;
+	};
 }
 
 #endif

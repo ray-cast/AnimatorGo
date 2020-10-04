@@ -464,6 +464,7 @@ namespace octoon::video
 			clwLight->tex_refraction = -1;			
 			clwLight->tex_transparency = -1;			
 			clwLight->tex_background = -1;
+			clwLight->offset = RadeonRays::float2(ibl.getOffset().x, ibl.getOffset().y);
 			clwLight->ibl_mirror_x = true;
 		}
 	}

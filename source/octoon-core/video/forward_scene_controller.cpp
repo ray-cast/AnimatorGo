@@ -151,6 +151,7 @@ namespace octoon::video
 				auto it = light->downcast<light::EnvironmentLight>();
 				ForwardScene::EnvironmentLight environmentLight;
 				environmentLight.intensity = it->getIntensity();
+				environmentLight.offset = it->getOffset();
 				environmentLight.radiance = it->getEnvironmentMap();
 				if (!it->getEnvironmentMap())
 					out.ambientLightColors += light->getColor() * light->getIntensity();

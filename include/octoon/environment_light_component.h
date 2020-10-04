@@ -16,6 +16,9 @@ namespace octoon
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
 
+		void setOffset(const math::float2& value) noexcept;
+		const math::float2&  getOffset() const noexcept;
+
 		void setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept;
 		const hal::GraphicsTexturePtr& getEnvironmentMap() const noexcept;
 
@@ -34,6 +37,7 @@ namespace octoon
 		EnvironmentLightComponent& operator=(const EnvironmentLightComponent&) = delete;
 
 	private:
+		math::float2 offset_;
 		hal::GraphicsTexturePtr radiance_;
 		hal::GraphicsTexturePtr environmentMap_;
 		std::shared_ptr<light::EnvironmentLight> environmentLight_;

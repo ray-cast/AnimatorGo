@@ -223,6 +223,9 @@ typedef struct
 	float multiplier;
 	int tex_background;
 	bool ibl_mirror_x;
+	float2 offset;
+	float padding2;
+	float padding3;
 } Light;
 
 typedef enum

@@ -5,11 +5,28 @@ namespace octoon::light
 	OctoonImplementSubClass(EnvironmentLight, Light, "EnvironmentLight")
 
 	EnvironmentLight::EnvironmentLight() noexcept
+		: offset_(0, 0)
 	{
 	}
 
 	EnvironmentLight::~EnvironmentLight() noexcept
 	{
+	}
+
+	void
+	EnvironmentLight::setOffset(const math::float2& offset) noexcept
+	{
+		if (this->offset_ != offset)
+		{
+			this->setDirty(true);
+			this->offset_ = offset;
+		}
+	}
+
+	const math::float2&
+	EnvironmentLight::getOffset() const noexcept
+	{
+		return this->offset_;
 	}
 
 	void

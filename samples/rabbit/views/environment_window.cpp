@@ -91,19 +91,42 @@ namespace rabbit
 
 			this->spinBox = new DoubleSpinBox;
 			this->spinBox->setFixedWidth(50);
-			this->spinBox->setMaximum(1.0f);
+			this->spinBox->setMaximum(10.0f);
 			this->spinBox->setSingleStep(0.03f);
 			this->spinBox->setAlignment(Qt::AlignRight);
 			this->spinBox->setValue(0.0f);
+
+			this->rotationLabel_ = new QLabel;
+			this->rotationLabel_->setText(u8"旋转");
+
+			this->rotationSlider = new QSlider(Qt::Horizontal);
+			this->rotationSlider->setObjectName("Value");
+			this->rotationSlider->setMinimum(0);
+			this->rotationSlider->setMaximum(100);
+			this->rotationSlider->setValue(0);
+			this->rotationSlider->setFixedWidth(270);
+
+			this->rotationSpinBox = new DoubleSpinBox;
+			this->rotationSpinBox->setFixedWidth(50);
+			this->rotationSpinBox->setMaximum(1.0f);
+			this->rotationSpinBox->setSingleStep(0.03f);
+			this->rotationSpinBox->setAlignment(Qt::AlignRight);
+			this->rotationSpinBox->setValue(0.0f);
 
 			auto HLayout = new QHBoxLayout();
 			HLayout->addWidget(this->label_, 0, Qt::AlignLeft);
 			HLayout->addWidget(this->spinBox, 0, Qt::AlignRight);
 
+			auto rotationLayout = new QHBoxLayout();
+			rotationLayout->addWidget(this->rotationLabel_, 0, Qt::AlignLeft);
+			rotationLayout->addWidget(this->rotationSpinBox, 0, Qt::AlignRight);
+
 			auto layout = new QVBoxLayout();
 			layout->addLayout(this->mapLayout);
 			layout->addLayout(HLayout);
 			layout->addWidget(this->slider);
+			layout->addLayout(rotationLayout);
+			layout->addWidget(this->rotationSlider);
 			layout->setContentsMargins(20, 5, 50, 0);
 			this->mainLayout = layout;
 
@@ -220,6 +243,8 @@ namespace rabbit
 		connect(colorMap_.color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(colorMap_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
 		connect(colorMap_.slider, SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
+		connect(colorMap_.rotationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(rotationEditEvent(double)));
+		connect(colorMap_.rotationSlider, SIGNAL(valueChanged(int)), this, SLOT(rotationSliderEvent(int)));
 		connect(&mapColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(colorChangeEvent(const QColor&)));
 	}
 
@@ -396,13 +421,13 @@ namespace rabbit
 	{
 		if (color.isValid())
 		{
-			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
 			this->profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
 
+			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 			if (environmentLight)
 				environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
 
+			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
 			if (meshRenderer)
 				meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
 
@@ -429,6 +454,34 @@ namespace rabbit
 			environmentLight->setIntensity(value);
 		this->colorMap_.slider->setValue(value * 10.0f);
 		this->profile_->environmentModule->intensity = value * 10.0f;
+	}
+
+	void
+	EnvironmentWindow::rotationSliderEvent(int value)
+	{
+		this->colorMap_.rotationSpinBox->setValue(value / 100.0f);
+		//this->profile_->environmentModule->intensity = value / 10.0f;
+	}
+	
+	void
+	EnvironmentWindow::rotationEditEvent(double value)
+	{
+		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
+		if (meshRenderer)
+		{
+			auto material = meshRenderer->getMaterial();
+			if (material->isInstanceOf<octoon::material::MeshBasicMaterial>())
+			{
+				auto basicMaterial = material->downcast<octoon::material::MeshBasicMaterial>();
+				basicMaterial->setOffset(octoon::math::float2(value, 0));
+			}
+		}
+
+		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
+		if (environmentLight)
+			environmentLight->setOffset(octoon::math::float2(value, 0));
+
+		this->colorMap_.rotationSlider->setValue(value * 100.0f);
 	}
 
 	void

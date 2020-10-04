@@ -13,6 +13,9 @@ namespace octoon::light
 		EnvironmentLight() noexcept;
 		virtual ~EnvironmentLight() noexcept;
 
+		void setOffset(const math::float2& offset) noexcept;
+		const math::float2& getOffset() const noexcept;
+
 		void setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept;
 		const hal::GraphicsTexturePtr& getEnvironmentMap() const noexcept;
 
@@ -23,6 +26,7 @@ namespace octoon::light
 		EnvironmentLight& operator=(const EnvironmentLight&) noexcept = delete;
 
 	private:
+		math::float2 offset_;
 		hal::GraphicsTexturePtr radiance_;
 		hal::GraphicsTexturePtr environmentMap_;
 	};

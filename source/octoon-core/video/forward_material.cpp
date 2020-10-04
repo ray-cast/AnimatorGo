@@ -325,10 +325,10 @@ vec4 textureCubeUV(sampler2D texture, vec3 reflectedDirection, float roughness )
 }
 #endif
 
-vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, float roughness)
+vec4 textureLatlongUV(sampler2D texture, vec3 reflectedDirection, vec2 offset, float roughness)
 {
 	vec2 uv = vec2((atan(reflectedDirection.x, reflectedDirection.z) * RECIPROCAL_PI * 0.5f + 0.5f), acos(reflectedDirection.y) * RECIPROCAL_PI);
-	return LinearToLinear(textureLod(texture, uv, roughness * 7));
+	return LinearToLinear(textureLod(texture, uv + offset, roughness * 7));
 }
 
 )";
@@ -637,6 +637,7 @@ static char* envmap_pars_fragment = R"(
 		uniform sampler2D envMap;
 	#endif
 	uniform float flipEnvMap;
+	uniform vec2 offsetEnvMap;
 
 	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) || defined( PHYSICAL )
 		uniform float refractionRatio;
@@ -1234,7 +1235,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		#elif defined( ENVMAP_TYPE_LATLONG_UV )
 
 			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-			vec4 envMapColor = textureLatlongUV(envMap, queryVec, 1.0);
+			vec4 envMapColor = textureLatlongUV(envMap, queryVec, offsetEnvMap, 1.0);
 
 		#else
 
@@ -1297,7 +1298,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		#elif defined( ENVMAP_TYPE_LATLONG_UV )
 
 			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-			vec4 envMapColor = textureLatlongUV(envMap, queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
+			vec4 envMapColor = textureLatlongUV(envMap, queryReflectVec, offsetEnvMap, BlinnExponentToGGXRoughness(blinnShininessExponent));
 
 		#elif defined( ENVMAP_TYPE_EQUIREC )
 
@@ -1387,7 +1388,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		#elif defined( ENVMAP_TYPE_LATLONG_UV )
 
 			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-			vec4 envMapColor = textureLatlongUV(envMap, queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
+			vec4 envMapColor = textureLatlongUV(envMap, queryReflectVec, offsetEnvMap, BlinnExponentToGGXRoughness(blinnShininessExponent));
 
 		#elif defined( ENVMAP_TYPE_EQUIREC )
 
@@ -2242,6 +2243,9 @@ namespace octoon::video
 			if (this->envMapIntensity_&& context.environmentLights.size())
 				this->envMapIntensity_->uniform1f(context.environmentLights.front().intensity);
 
+			if (this->envMapOffset_ && context.environmentLights.size())
+				this->envMapOffset_->uniform2f(context.environmentLights.front().offset);
+
 			if (this->directionalShadowMaps_.size() > 0)
 			{
 				for (std::size_t i = 0, j = 0; i < context.directionalLights.size(); i++)
@@ -2548,6 +2552,10 @@ namespace octoon::video
 				auto flipEnvMap = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "flipEnvMap"; });
 				if (flipEnvMap != end)
 					flipEnvMap_ = *flipEnvMap;
+
+				auto envmapOffset_ = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "offsetEnvMap"; });
+				if (envmapOffset_ != end)
+					envMapOffset_ = *envmapOffset_;
 
 				auto envmap = std::find_if(begin, end, [](const hal::GraphicsUniformSetPtr& set) { return set->getName() == "envMap"; });
 				if (envmap != end)

@@ -54,6 +54,7 @@ namespace octoon::video
 		hal::GraphicsUniformSetPtr flipEnvMap_;
 		hal::GraphicsUniformSetPtr envMap_;
 		hal::GraphicsUniformSetPtr envMapIntensity_;
+		hal::GraphicsUniformSetPtr envMapOffset_;
 
 		hal::GraphicsUniformSetPtr viewMatrix_;
 		hal::GraphicsUniformSetPtr viewProjMatrix_;

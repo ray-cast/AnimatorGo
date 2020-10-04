@@ -50,6 +50,7 @@ namespace octoon::video
 		struct EnvironmentLight
 		{
 			float intensity;
+			math::float2 offset;
 			hal::GraphicsTextureWeakPtr radiance;
 		};
 

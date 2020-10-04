@@ -112,7 +112,7 @@ float3 EnvironmentLight_GetLe(// Light
         return 0.f;
     }
 
-    return light->multiplier * Texture_SampleEnvMap(normalize(*wo), TEXTURE_ARGS_IDX(tex), light->ibl_mirror_x);
+    return light->multiplier * Texture_SampleEnvMap(normalize(*wo), TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
 }
 
 /// Sample direction to the light
@@ -160,7 +160,7 @@ float3 EnvironmentLight_Sample(// Light
     }
 
     // Sample envmap
-    return light->multiplier * Texture_SampleEnvMap(d, TEXTURE_ARGS_IDX(tex), light->ibl_mirror_x);
+    return light->multiplier * Texture_SampleEnvMap(d, TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
 }
 
 /// Get PDF for a given direction

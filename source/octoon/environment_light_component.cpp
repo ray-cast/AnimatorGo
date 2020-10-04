@@ -7,6 +7,7 @@ namespace octoon
 	OctoonImplementSubInterface(EnvironmentLightComponent, LightComponent, "EnvironmentLight")
 
 	EnvironmentLightComponent::EnvironmentLightComponent() noexcept
+		: offset_(0, 0)
 	{
 	}
 
@@ -28,6 +29,20 @@ namespace octoon
 		if (environmentLight_)
 			environmentLight_->setColor(value);
 		LightComponent::setColor(value);
+	}
+
+	void
+	EnvironmentLightComponent::setOffset(const math::float2& value) noexcept
+	{
+		this->offset_ = value;
+		if (environmentLight_)
+			environmentLight_->setOffset(value);
+	}
+
+	const math::float2&
+	EnvironmentLightComponent::getOffset() const noexcept
+	{
+		return this->offset_;
 	}
 
 	void

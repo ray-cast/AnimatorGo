@@ -211,7 +211,7 @@ namespace octoon
 	{
 		math::Quaternion quat(axis, math::radians(angle));
 		auto transform = this->getGameObject()->getComponent<TransformComponent>();
-		transform->setLocalQuaternion(quat * transform->getLocalQuaternion());
+		transform->setLocalQuaternion(math::normalize(quat) * transform->getLocalQuaternion());
 	}
 
 	void
@@ -225,10 +225,11 @@ namespace octoon
 
 		float angle = angleX + math::degrees(euler.x);
 
-		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle))
+		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle) && angleX != 0)
 			rotateCamera(angleX, transform->getLocalRight());
 
-		rotateCamera(angleY, math::float3::UnitY);
+		if (angleY != 0)
+			rotateCamera(angleY, math::float3::UnitY);
 	}
 
 	GameComponentPtr

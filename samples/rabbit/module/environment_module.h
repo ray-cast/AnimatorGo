@@ -2,6 +2,7 @@
 #define RABBIT_ENVIRONMENT_MODULE_H_
 
 #include <rabbit_model.h>
+#include <octoon/math/vector2.h>
 #include <octoon/math/vector3.h>
 
 namespace rabbit
@@ -25,6 +26,7 @@ namespace rabbit
 		bool enable;
 
 		float intensity;
+		octoon::math::float2 offset;
 		octoon::math::float3 color;
 	};
 }

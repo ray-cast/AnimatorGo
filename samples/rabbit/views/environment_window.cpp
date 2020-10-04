@@ -258,6 +258,7 @@ namespace rabbit
 		auto w = this->imageLabel_->width();
 		auto h = this->imageLabel_->height();
 		auto c = QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z);
+		auto offset = this->profile_->environmentModule->offset;
 
 		if (this->colorMap_.texture)
 		{
@@ -273,10 +274,14 @@ namespace rabbit
 				{
 					for (std::size_t x = 0; x < w; x++)
 					{
-						auto u = int(x / float(w) * srcWidth);
-						auto v = int(y / float(h) * srcHeight);
+						auto u = x / float(w) - offset.x;
+						auto v = y / float(h) - offset.y;
+						u -= std::floor(u);
+						v -= std::floor(v);
+						auto ui = int(u * srcWidth);
+						auto vi = int(v * srcHeight);
 
-						auto src = (v * srcWidth + u) * 3;
+						auto src = (vi * srcWidth + ui) * 3;
 						auto dst = (y * w + x) * 3;
 
 						pixels[dst] = std::clamp<float>(pow(data_[src], 1.f / 2.2f) * c.red(), 0, 255);
@@ -304,6 +309,7 @@ namespace rabbit
 	EnvironmentWindow::showEvent(QShowEvent* event)
 	{
 		this->colorMap_.spinBox->setValue(profile_->environmentModule->intensity);
+		this->colorMap_.rotationSpinBox->setValue(profile_->environmentModule->offset.x);
 		this->colorMap_.setColor(QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z));
 
 		this->repaint();
@@ -460,7 +466,6 @@ namespace rabbit
 	EnvironmentWindow::rotationSliderEvent(int value)
 	{
 		this->colorMap_.rotationSpinBox->setValue(value / 100.0f);
-		//this->profile_->environmentModule->intensity = value / 10.0f;
 	}
 	
 	void
@@ -481,7 +486,9 @@ namespace rabbit
 		if (environmentLight)
 			environmentLight->setOffset(octoon::math::float2(value, 0));
 
+		this->profile_->environmentModule->offset = octoon::math::float2(value, 0);
 		this->colorMap_.rotationSlider->setValue(value * 100.0f);
+		this->repaint();
 	}
 
 	void

@@ -16,6 +16,7 @@ namespace rabbit
 	{
 		this->enable = false;
 		this->intensity = 1.0f;
+		this->offset = octoon::math::float2(0.f, 0.f);
 		this->color = octoon::math::float3(0.90196078f, 0.90196078f, 0.925490196f);
 	}
 

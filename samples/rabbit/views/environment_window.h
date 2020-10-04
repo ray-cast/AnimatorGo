@@ -80,6 +80,7 @@ namespace rabbit
 		QVBoxLayout* mainLayout_;
 		QToolButton* resetButton_;
 		QColorDialog mapColor_;
+		std::shared_ptr<QImage> image_;
 
 		octoon::GameObjectPtr behaviour_;
 		std::shared_ptr<rabbit::RabbitProfile> profile_;

@@ -250,6 +250,7 @@ namespace rabbit
 
 	EnvironmentWindow::~EnvironmentWindow()
 	{
+		this->image_.reset();
 	}
 
 	void
@@ -260,40 +261,35 @@ namespace rabbit
 		auto c = QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z);
 		auto offset = this->profile_->environmentModule->offset;
 
-		if (this->colorMap_.texture)
+		if (this->image_)
 		{
 			float* data_ = nullptr;
-			auto srcWidth = this->colorMap_.texture->getTextureDesc().getWidth();
-			auto srcHeight = this->colorMap_.texture->getTextureDesc().getHeight();
+			auto srcWidth = this->image_->width();
+			auto srcHeight = this->image_->height();
+			auto pixels = std::make_unique<std::uint8_t[]>(w * h * 3);
 
-			if (this->colorMap_.texture->map(0, 0, srcWidth, srcHeight, 0, (void**)&data_))
+			for (std::size_t y = 0; y < h; y++)
 			{
-				auto pixels = std::make_unique<std::uint8_t[]>(w * h * 3);
-
-				for (std::size_t y = 0; y < h; y++)
+				for (std::size_t x = 0; x < w; x++)
 				{
-					for (std::size_t x = 0; x < w; x++)
-					{
-						auto u = x / float(w) - offset.x;
-						auto v = y / float(h) - offset.y;
-						u -= std::floor(u);
-						v -= std::floor(v);
-						auto ui = int(u * srcWidth);
-						auto vi = int(v * srcHeight);
+					auto u = x / float(w) - offset.x;
+					auto v = y / float(h) - offset.y;
+					u -= std::floor(u);
+					v -= std::floor(v);
+					auto ui = int(u * srcWidth);
+					auto vi = int(v * srcHeight);
 
-						auto src = (vi * srcWidth + ui) * 3;
-						auto dst = (y * w + x) * 3;
+					auto src = (vi * srcWidth + ui) * 3;
+					auto dst = (y * w + x) * 3;
+					auto color = this->image_->pixelColor(ui, vi);
 
-						pixels[dst] = std::clamp<float>(pow(data_[src], 1.f / 2.2f) * c.red(), 0, 255);
-						pixels[dst + 1] = std::clamp<float>(pow(data_[src + 1], 1.f / 2.2f) * c.green(), 0, 255);
-						pixels[dst + 2] = std::clamp<float>(pow(data_[src + 2], 1.f / 2.2f) * c.blue(), 0, 255);
-					}
+					pixels[dst] = std::clamp<float>(color.redF() * c.red(), 0, 255);
+					pixels[dst + 1] = std::clamp<float>(color.greenF() * c.green(), 0, 255);
+					pixels[dst + 2] = std::clamp<float>(color.blueF() * c.blue(), 0, 255);
 				}
-
-				this->colorMap_.texture->unmap();
-
-				imageLabel_->setPixmap(QPixmap::fromImage(QImage(pixels.get(), w, h, QImage::Format::Format_RGB888)));
 			}
+
+			imageLabel_->setPixmap(QPixmap::fromImage(QImage(pixels.get(), w, h, QImage::Format::Format_RGB888)));
 		}
 		else
 		{
@@ -362,9 +358,9 @@ namespace rabbit
 								this->colorMap_.check->setCheckState(Qt::CheckState::Checked);
 								this->colorMap_.image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
 								this->colorMap_.texture = texture;
+								this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
 								behaviour->loadHDRi(texture);
 								this->colorChangeEvent(QColor::fromRgbF(1, 1, 1));
-								this->repaint();
 							}
 						}
 					}

@@ -21,8 +21,6 @@ namespace rabbit
 		, recordOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/record-on.png")))
 		, audioIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music.png")))
 		, audioOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/music-on.png")))
-		, hdrIcon_(QIcon::fromTheme("res", QIcon(":res/icons/hdr.png")))
-		, hdrOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/hdr-on.png")))
 		, sunIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun.png")))
 		, sunOnIcon_(QIcon::fromTheme("res", QIcon(":res/icons/sun-on.png")))
 		, environmentIcon_(QIcon::fromTheme("res", QIcon(":res/icons/environment.png")))
@@ -91,11 +89,6 @@ namespace rabbit
 		materialButton.setToolTip(u8"打开材质库面板");
 		materialButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-		hdrButton.setObjectName("hdr");
-		hdrButton.setText(u8"全局光");
-		hdrButton.setToolTip(u8"加载高动态图像用于全局光照");
-		hdrButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
 		sunButton.setObjectName("sun");
 		sunButton.setText(u8"主光源");
 		sunButton.setToolTip(u8"主光源设置");
@@ -121,7 +114,6 @@ namespace rabbit
 		layout->addWidget(&shotButton, 0, Qt::AlignCenter);
 		layout->addWidget(&gpuButton, 0, Qt::AlignCenter);
 		layout->addWidget(&materialButton, 0, Qt::AlignCenter);
-		layout->addWidget(&hdrButton, 0, Qt::AlignCenter);
 		layout->addWidget(&sunButton, 0, Qt::AlignCenter);
 		layout->addWidget(&environmentButton, 0, Qt::AlignCenter);
 		layout->addWidget(&cleanupButton, 0, Qt::AlignCenter);
@@ -151,7 +143,6 @@ namespace rabbit
 		this->connect(&audioButton, SIGNAL(clicked()), this, SLOT(audioEvent()));
 		this->connect(&shotButton, SIGNAL(clicked()), this, SLOT(shotEvent()));
 		this->connect(&gpuButton, SIGNAL(clicked()), this, SLOT(gpuEvent()));
-		this->connect(&hdrButton, SIGNAL(clicked()), this, SLOT(hdrEvent()));
 		this->connect(&cleanupButton, SIGNAL(clicked()), this, SLOT(cleanupEvent()));
 		this->connect(&sunButton, SIGNAL(clicked()), this, SLOT(sunEvent()));
 		this->connect(&environmentButton, SIGNAL(clicked()), this, SLOT(environmentEvent()));
@@ -320,27 +311,6 @@ namespace rabbit
 			{
 				gpuButton.setIcon(gpuIcon_);
 				gpuEnable_ = false;
-			}
-		}
-	}
-
-	void
-	ToolWindow::hdrEvent() noexcept
-	{
-		if (!hdrEnable_)
-		{
-			if (hdrSignal(true))
-			{
-				hdrButton.setIcon(hdrOnIcon_);
-				hdrEnable_ = true;
-			}
-		}
-		else
-		{
-			if (hdrSignal(false))
-			{
-				hdrButton.setIcon(hdrIcon_);
-				hdrEnable_ = false;
 			}
 		}
 	}

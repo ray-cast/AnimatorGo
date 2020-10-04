@@ -193,9 +193,8 @@ void main()
 )";
 
 	hal::GraphicsTexturePtr
-	PMREMLoader::load(std::string_view filepath, std::uint8_t mipNums, bool cache) noexcept(false)
+	PMREMLoader::load(const hal::GraphicsTexturePtr& environmentMap, std::uint8_t mipNums, bool cache) noexcept(false)
 	{
-		auto environmentMap = TextureLoader::load(filepath, true, cache);
 		if (environmentMap)
 		{
 			std::uint32_t width = 64 << (mipNums - 1);
@@ -293,5 +292,11 @@ void main()
 		{
 			return nullptr;
 		}
+	}
+
+	hal::GraphicsTexturePtr
+	PMREMLoader::load(std::string_view filepath, std::uint8_t mipNums, bool cache) noexcept(false)
+	{
+		return load(TextureLoader::load(filepath, true, cache), mipNums, cache);
 	}
 }

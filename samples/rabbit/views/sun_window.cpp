@@ -155,7 +155,10 @@ namespace rabbit
 		scrollArea_->setWidgetResizable(true);
 
 		layout_ = std::make_unique<QHBoxLayout>();
+		layout_->addSpacing(this->closeButton_->iconSize().width());
+		layout_->addStretch();
 		layout_->addWidget(title_.get(), 0, Qt::AlignLeft);
+		layout_->addStretch();
 		layout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
 
 		mainLayout_ = std::make_unique<QVBoxLayout>(this);
@@ -167,8 +170,8 @@ namespace rabbit
 
 		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(resetButton_.get(), SIGNAL(clicked()), this, SLOT(resetEvent()));
-		connect(editIntensity_.get(), SIGNAL(valueChanged(double)), this, SLOT(editIntensityEvent(double)));
-		connect(sliderIntensity_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderIntensityEvent(int)));
+		connect(editIntensity_.get(), SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
+		connect(sliderIntensity_.get(), SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
 		connect(editRotationX_.get(), SIGNAL(valueChanged(double)), this, SLOT(editRotationXEvent(double)));
 		connect(sliderRotationX_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderRotationXEvent(int)));
 		connect(editRotationY_.get(), SIGNAL(valueChanged(double)), this, SLOT(editRotationYEvent(double)));
@@ -280,7 +283,7 @@ namespace rabbit
 	}
 
 	void
-	SunWindow::sliderIntensityEvent(int value)
+	SunWindow::intensitySliderEvent(int value)
 	{
 		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (envLight)
@@ -289,7 +292,7 @@ namespace rabbit
 	}
 
 	void
-	SunWindow::editIntensityEvent(double value)
+	SunWindow::intensityEditEvent(double value)
 	{
 		auto envLight = profile_->entitiesModule->sunLight->getComponent<octoon::DirectionalLightComponent>();
 		if (envLight)

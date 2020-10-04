@@ -27,8 +27,8 @@ namespace rabbit
 		void currentColorChanged(QColor);
 		void resetEvent();
 		void closeEvent();
-		void sliderIntensityEvent(int);
-		void editIntensityEvent(double value);
+		void intensitySliderEvent(int);
+		void intensityEditEvent(double value);
 		void sliderRotationXEvent(int);
 		void editRotationXEvent(double value);
 		void sliderRotationYEvent(int);

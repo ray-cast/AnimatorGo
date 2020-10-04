@@ -16,7 +16,7 @@ namespace rabbit
 		explicit Spoiler(const QString& title = "", const int animationDuration = 100, QWidget* parent = 0);
 		void setContentLayout(QLayout& contentLayout);
 
-	private:
+	public:
 		QGridLayout mainLayout;
 		QToolButton toggleButton;
 		QFrame headerLine;

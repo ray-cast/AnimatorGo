@@ -9,6 +9,7 @@ namespace octoon
 	{
 	public:
 		static hal::GraphicsTexturePtr load(std::string_view path, std::uint8_t mipNums = 8, bool cache = true) noexcept(false);
+		static hal::GraphicsTexturePtr load(const hal::GraphicsTexturePtr& texture, std::uint8_t mipNums = 8, bool cache = true) noexcept(false);
 	};
 }
 

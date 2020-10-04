@@ -51,7 +51,6 @@ namespace rabbit
 		bool onRecordSignal(bool enable) noexcept;
 		void onScreenShotSignal() noexcept;
 		bool onOfflineModeSignal(bool enable) noexcept;
-		bool onImportHdriSignal(bool enable) noexcept;
 		void onSettingSignal() noexcept;
 		void onCleanupSignal() noexcept;
 		void onProfileSignal(const rabbit::RabbitProfile& profile) noexcept;

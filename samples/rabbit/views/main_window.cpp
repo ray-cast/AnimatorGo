@@ -184,7 +184,7 @@ namespace rabbit
 		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_);
 		viewPanel_ = std::make_unique<ViewWidget>(this, profile_);
 		sunWindow_ = std::make_unique<SunWindow>(profile_);
-		environmentWindow_ = std::make_unique<EnvironmentWindow>(this, profile_);
+		environmentWindow_ = std::make_unique<EnvironmentWindow>(this, behaviour_, profile_);
 		recordWindow_ = std::make_unique<RecordWindow>(this, behaviour_);
 		materialWindow_ = std::make_unique<MaterialWindow>(this, behaviour_);
 
@@ -220,7 +220,6 @@ namespace rabbit
 		connect(toolBar_.get(), &ToolWindow::recordSignal, this, &MainWindow::onRecordSignal);
 		connect(toolBar_.get(), &ToolWindow::shotSignal, this, &MainWindow::onScreenShotSignal);
 		connect(toolBar_.get(), &ToolWindow::gpuSignal, this, &MainWindow::onOfflineModeSignal);
-		connect(toolBar_.get(), &ToolWindow::hdrSignal, this, &MainWindow::onImportHdriSignal);
 		connect(toolBar_.get(), &ToolWindow::cleanupSignal, this, &MainWindow::onCleanupSignal);
 		connect(toolBar_.get(), &ToolWindow::sunSignal, this, &MainWindow::onSunSignal);
 		connect(toolBar_.get(), &ToolWindow::environmentSignal, this, &MainWindow::onEnvironmentSignal);
@@ -650,59 +649,6 @@ namespace rabbit
 			{
 				return false;
 			}
-		}
-		catch (const std::exception& e)
-		{
-			QMessageBox msg(this);
-			msg.setWindowTitle(u8"错误");
-			msg.setText(e.what());
-			msg.setIcon(QMessageBox::Information);
-			msg.setStandardButtons(QMessageBox::Ok);
-
-			msg.exec();
-
-			return false;
-		}
-	}
-
-	bool
-	MainWindow::onImportHdriSignal(bool enable) noexcept
-	{
-		try
-		{
-			if (behaviour_ && !profile_->timeModule->playing_)
-			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-				if (behaviour->isOpen())
-				{
-					if (enable)
-					{
-						QString fileName = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
-						if (!fileName.isEmpty())
-						{
-							behaviour->loadHDRi(fileName.toUtf8().data());
-							return true;
-						}
-					}
-					else
-					{
-						behaviour->clearHDRi();
-						return true;
-					}
-				}
-				else
-				{
-					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
-					msg.setIcon(QMessageBox::Information);
-					msg.setStandardButtons(QMessageBox::Ok);
-
-					msg.exec();
-				}
-			}
-
-			return false;
 		}
 		catch (const std::exception& e)
 		{

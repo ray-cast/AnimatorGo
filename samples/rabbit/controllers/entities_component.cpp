@@ -230,12 +230,16 @@ namespace rabbit
 		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
 		if (environmentLight)
 		{
-			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
-			if (envLight)
-				envLight->setEnvironmentMap(PMREMLoader::load(filepath));
+			auto texture = TextureLoader::load(filepath);
+			if (texture)
+			{
+				auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+				if (envLight)
+					envLight->setEnvironmentMap(PMREMLoader::load(texture));
 
-			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
-			material->setColorMap(TextureLoader::load(filepath));
+				auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+				material->setColorMap(texture);
+			}
 		}
 	}
 

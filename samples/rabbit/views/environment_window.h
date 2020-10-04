@@ -2,8 +2,13 @@
 #define RABBIT_ENVIRONMENT_WINDOW_H_
 
 #include <qwidget.h>
+#include <qcheckbox.h>
+#include <qcolordialog.h>
+#include "spoiler.h"
 #include "color_dialog.h"
 #include "rabbit_profile.h"
+#include "rabbit_behaviour.h"
+#include <octoon/hal/graphics.h>
 
 namespace rabbit
 {
@@ -11,7 +16,7 @@ namespace rabbit
 	{
 		Q_OBJECT
 	public:
-		EnvironmentWindow(QWidget* widget, const std::shared_ptr<rabbit::RabbitProfile>& profile);
+		EnvironmentWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour, const std::shared_ptr<rabbit::RabbitProfile>& profile);
 		~EnvironmentWindow();
 
 		void repaint();
@@ -20,23 +25,58 @@ namespace rabbit
 		virtual void closeEvent(QCloseEvent* event) override;
 
 	public Q_SLOTS:
-		void currentColorChanged(QColor);
+		void colorMapClickEvent();
+		void colorMapCheckEvent(int state);
+		void colorClickEvent();
+		void colorChangeEvent(const QColor&);
 		void closeEvent();
 		void resetEvent();
-		void sliderIntensityEvent(int);
-		void editIntensityEvent(double value);
+		void intensitySliderEvent(int);
+		void intensityEditEvent(double value);
 
 	private:
-		std::unique_ptr<QLabel> title_;
-		std::unique_ptr<QToolButton> closeButton_;
-		std::unique_ptr<ColorDialog> colorDialog_;
-		std::unique_ptr<QDoubleSpinBox> editIntensity_;
-		std::unique_ptr<QLabel> labelIntensity_;
-		std::unique_ptr<QSlider> sliderIntensity_;
-		std::unique_ptr<QHBoxLayout> layout_;
-		std::unique_ptr<QHBoxLayout> layoutIntensity_;
-		std::unique_ptr<QVBoxLayout> mainLayout_;
-		std::unique_ptr<QToolButton> resetButton_;
+		enum CreateFlags
+		{
+			SpoilerBit = 1 << 0,
+			ColorBit = 1 << 1,
+			ValueBit = 1 << 2,
+		};
+
+		struct MaterialUi
+		{
+			QToolButton* image;
+			QCheckBox* check;
+			QLabel* title;
+			QLabel* path;
+			QLabel* label_;
+			QToolButton* color;
+			QSlider* slider;
+			QDoubleSpinBox* spinBox;
+
+			QHBoxLayout* titleLayout;
+			QVBoxLayout* rightLayout;
+			QHBoxLayout* mapLayout;
+			QLayout* mainLayout;
+
+			Spoiler* spoiler;
+
+			QString texture;
+
+			void init(const QString& name, std::uint32_t flags);
+			void resetState();
+			void setColor(const QColor& c, int w = 50, int h = 26);
+		};
+
+		QLabel* path;
+		MaterialUi colorMap_;
+		QLabel* title_;
+		QLabel* imageLabel_;
+		QToolButton* closeButton_;
+		QVBoxLayout* mainLayout_;
+		QToolButton* resetButton_;
+		QColorDialog mapColor_;
+
+		octoon::GameObjectPtr behaviour_;
 		std::shared_ptr<rabbit::RabbitProfile> profile_;
 	};
 }

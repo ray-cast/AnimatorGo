@@ -173,7 +173,7 @@ namespace rabbit
 		this->closeButton_->setToolTip(u8"关闭");
 
 		this->imageLabel_ = new QLabel();
-		this->imageLabel_->setFixedSize(QSize(128, 128));
+		this->imageLabel_->setFixedSize(QSize(256, 144));
 
 		this->path = new QLabel;
 		this->path->setText(u8"未命名");
@@ -230,20 +230,48 @@ namespace rabbit
 	void
 	EnvironmentWindow::repaint()
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-		if (behaviour)
-		{
-			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-			if (meshRenderer)
-			{
-				auto material = meshRenderer->getMaterial();
+		auto w = this->imageLabel_->width();
+		auto h = this->imageLabel_->height();
+		auto c = QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z);
 
-				auto materialComponent = behaviour->getComponent<MaterialComponent>();
-				QPixmap pixmap;
-				materialComponent->repaintMaterial(material, pixmap, imageLabel_->width(), imageLabel_->height());
-				material->setDirty(true);
-				imageLabel_->setPixmap(pixmap);
+		if (this->colorMap_.texture)
+		{
+			float* data_ = nullptr;
+			auto srcWidth = this->colorMap_.texture->getTextureDesc().getWidth();
+			auto srcHeight = this->colorMap_.texture->getTextureDesc().getHeight();
+
+			if (this->colorMap_.texture->map(0, 0, srcWidth, srcHeight, 0, (void**)&data_))
+			{
+				auto pixels = std::make_unique<std::uint8_t[]>(w * h * 3);
+
+				for (std::size_t y = 0; y < h; y++)
+				{
+					for (std::size_t x = 0; x < w; x++)
+					{
+						auto u = int(x / float(w) * srcWidth);
+						auto v = int(y / float(h) * srcHeight);
+
+						auto src = (v * srcWidth + u) * 3;
+						auto dst = (y * w + x) * 3;
+
+						pixels[dst] = std::clamp<float>(pow(data_[src], 1.f / 2.2f) * c.red(), 0, 255);
+						pixels[dst + 1] = std::clamp<float>(pow(data_[src + 1], 1.f / 2.2f) * c.green(), 0, 255);
+						pixels[dst + 2] = std::clamp<float>(pow(data_[src + 2], 1.f / 2.2f) * c.blue(), 0, 255);
+					}
+				}
+
+				this->colorMap_.texture->unmap();
+
+				imageLabel_->setPixmap(QPixmap::fromImage(QImage(pixels.get(), w, h, QImage::Format::Format_RGB888)));
 			}
+		}
+		else
+		{
+			QPixmap pixmap(w, h);
+			QPainter painter(&pixmap);
+			painter.setPen(Qt::NoPen);
+			painter.fillRect(QRect(0, 0, w, h), c);
+			imageLabel_->setPixmap(pixmap);
 		}
 	}
 
@@ -271,25 +299,25 @@ namespace rabbit
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
 				{
-					QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
-					if (!path.isEmpty())
+					QString filepath = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
+					if (!filepath.isEmpty())
 					{
-						auto texture = octoon::TextureLoader::load(path.toStdString());
+						auto texture = octoon::TextureLoader::load(filepath.toStdString());
 						if (texture)
 						{
 							auto width = texture->getTextureDesc().getWidth();
 							auto height = texture->getTextureDesc().getHeight();
-							float* data = nullptr;
+							float* data_ = nullptr;
 
-							if (texture->map(0, 0, width, height, 0, (void**)&data))
+							if (texture->map(0, 0, width, height, 0, (void**)&data_))
 							{
 								auto size = width * height * 3;
 								auto pixels = std::make_unique<std::uint8_t[]>(size);
 
 								for (std::size_t i = 0; i < size; i += 3) {
-									pixels[i] = std::clamp<std::uint8_t>(data[i] * 255.0f, 0, 255);
-									pixels[i + 1] = std::clamp<std::uint8_t>(data[i + 1] * 255.0f, 0, 255);
-									pixels[i + 2] = std::clamp<std::uint8_t>(data[i + 2] * 255.0f, 0, 255);
+									pixels[i] = std::clamp<float>(std::pow(data_[i], 1 / 2.2) * 255.0f, 0, 255);
+									pixels[i + 1] = std::clamp<float>(std::pow(data_[i + 1], 1 / 2.2) * 255.0f, 0, 255);
+									pixels[i + 2] = std::clamp<float>(std::pow(data_[i + 2], 1 / 2.2) * 255.0f, 0, 255);
 								}
 
 								texture->unmap();
@@ -297,11 +325,11 @@ namespace rabbit
 								QImage qimage(pixels.get(), width, height, QImage::Format::Format_RGB888);
 
 								QFontMetrics metrics(this->colorMap_.path->font());
-								auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->colorMap_.path->width());
+								auto name = metrics.elidedText(QFileInfo(filepath).fileName(), Qt::ElideRight, this->colorMap_.path->width());
 
 								this->colorMap_.path->setText(name);
 								this->colorMap_.check->setCheckState(Qt::CheckState::Checked);
-								this->colorMap_.image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(50, 30)))));
+								this->colorMap_.image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
 								this->colorMap_.texture = texture;
 								behaviour->loadHDRi(texture);
 								this->colorChangeEvent(QColor::fromRgbF(1, 1, 1));

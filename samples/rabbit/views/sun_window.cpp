@@ -29,33 +29,33 @@ namespace rabbit
 		this->grabKeyboard();
 		this->hide();
 
-		title_ = std::make_unique<QLabel>();
+		title_ = new QLabel();
 		title_->setText(u8"主光源");
 
-		closeButton_ = std::make_unique<QToolButton>();
+		closeButton_ = new QToolButton();
 		closeButton_->setObjectName("close");
 		closeButton_->setToolTip(u8"关闭");
 
-		scrollWidget_ = std::make_unique<QWidget>(this);
+		scrollWidget_ = new QWidget(this);
 		scrollWidget_->setMinimumWidth(340);
 
-		colorDialog_ = std::make_unique<ColorDialog>();
-		colorDialog_->setCurrentColor(QColor(profile->sunModule->color.x * 255.0f, profile->sunModule->color.y * 255.0f, profile->sunModule->color.z * 255.0f));
+		colorDialog_ = new ColorDialog();
+		colorDialog_->setCurrentColor(QColor::fromRgbF(profile->sunModule->color.x, profile->sunModule->color.y, profile->sunModule->color.z));
 
-		resetButton_ = std::make_unique<QToolButton>();
+		resetButton_ = new QToolButton();
 		resetButton_->setText(u8"重置");
 
-		labelIntensity_ = std::make_unique<QLabel>();
+		labelIntensity_ = new QLabel();
 		labelIntensity_->setText(u8"光强");
 
-		editIntensity_ = std::make_unique<DoubleSpinBox>();
+		editIntensity_ = new DoubleSpinBox();
 		editIntensity_->setFixedWidth(50);
 		editIntensity_->setMaximum(10.0f);
 		editIntensity_->setSingleStep(0.1f);
 		editIntensity_->setAlignment(Qt::AlignRight);
 		editIntensity_->setValue(profile->sunModule->intensity);
 
-		sliderIntensity_ = std::make_unique<QSlider>();
+		sliderIntensity_ = new QSlider();
 		sliderIntensity_->setObjectName("Intensity");
 		sliderIntensity_->setOrientation(Qt::Horizontal);
 		sliderIntensity_->setMinimum(0);
@@ -63,22 +63,22 @@ namespace rabbit
 		sliderIntensity_->setValue(profile->sunModule->intensity * 10.0f);
 		sliderIntensity_->setFixedWidth(250);
 
-		layoutIntensity_ = std::make_unique<QHBoxLayout>();
-		layoutIntensity_->addWidget(labelIntensity_.get(), 0, Qt::AlignLeft);
-		layoutIntensity_->addWidget(editIntensity_.get(), 0, Qt::AlignRight);
+		layoutIntensity_ = new QHBoxLayout();
+		layoutIntensity_->addWidget(labelIntensity_, 0, Qt::AlignLeft);
+		layoutIntensity_->addWidget(editIntensity_, 0, Qt::AlignRight);
 		layoutIntensity_->setContentsMargins(40, 5, 35, 0);
 
-		labelRotationX_ = std::make_unique<QLabel>();
+		labelRotationX_ = new QLabel();
 		labelRotationX_->setText(u8"旋转 X");
 
-		editRotationX_ = std::make_unique<DoubleSpinBox>();
+		editRotationX_ = new DoubleSpinBox();
 		editRotationX_->setFixedWidth(50);
 		editRotationX_->setMaximum(360.0f);
 		editRotationX_->setSingleStep(1.0f);
 		editRotationX_->setAlignment(Qt::AlignRight);
 		editRotationX_->setValue(profile->sunModule->rotation.x);
 
-		sliderRotationX_ = std::make_unique<QSlider>();
+		sliderRotationX_ = new QSlider();
 		sliderRotationX_->setObjectName("RotationX");
 		sliderRotationX_->setOrientation(Qt::Horizontal);
 		sliderRotationX_->setMinimum(0);
@@ -86,22 +86,22 @@ namespace rabbit
 		sliderRotationX_->setValue(profile->sunModule->rotation.x);
 		sliderRotationX_->setFixedWidth(250);
 
-		layoutRotationX_ = std::make_unique<QHBoxLayout>();
-		layoutRotationX_->addWidget(labelRotationX_.get(), 0, Qt::AlignLeft);
-		layoutRotationX_->addWidget(editRotationX_.get(), 0, Qt::AlignRight);
+		layoutRotationX_ = new QHBoxLayout();
+		layoutRotationX_->addWidget(labelRotationX_, 0, Qt::AlignLeft);
+		layoutRotationX_->addWidget(editRotationX_, 0, Qt::AlignRight);
 		layoutRotationX_->setContentsMargins(40, 5, 35, 0);
 
-		labelRotationY_ = std::make_unique<QLabel>();
+		labelRotationY_ = new QLabel();
 		labelRotationY_->setText(u8"旋转 Y");
 
-		editRotationY_ = std::make_unique<DoubleSpinBox>();
+		editRotationY_ = new DoubleSpinBox();
 		editRotationY_->setFixedWidth(50);
 		editRotationY_->setMaximum(360.0f);
 		editRotationY_->setSingleStep(1.0f);
 		editRotationY_->setAlignment(Qt::AlignRight);
 		editRotationY_->setValue(profile->sunModule->rotation.y);
 
-		sliderRotationY_ = std::make_unique<QSlider>();
+		sliderRotationY_ = new QSlider();
 		sliderRotationY_->setObjectName("RotationY");
 		sliderRotationY_->setOrientation(Qt::Horizontal);
 		sliderRotationY_->setMinimum(0);
@@ -109,22 +109,22 @@ namespace rabbit
 		sliderRotationY_->setValue(profile->sunModule->rotation.x);
 		sliderRotationY_->setFixedWidth(250);
 
-		layoutRotationY_ = std::make_unique<QHBoxLayout>();
-		layoutRotationY_->addWidget(labelRotationY_.get(), 0, Qt::AlignLeft);
-		layoutRotationY_->addWidget(editRotationY_.get(), 0, Qt::AlignRight);
+		layoutRotationY_ = new QHBoxLayout();
+		layoutRotationY_->addWidget(labelRotationY_, 0, Qt::AlignLeft);
+		layoutRotationY_->addWidget(editRotationY_, 0, Qt::AlignRight);
 		layoutRotationY_->setContentsMargins(40, 5, 35, 0);
 
-		labelRotationZ_ = std::make_unique<QLabel>();
+		labelRotationZ_ = new QLabel();
 		labelRotationZ_->setText(u8"旋转 Z");
 
-		editRotationZ_ = std::make_unique<DoubleSpinBox>();
+		editRotationZ_ = new DoubleSpinBox();
 		editRotationZ_->setFixedWidth(50);
 		editRotationZ_->setMaximum(360.0f);
 		editRotationZ_->setSingleStep(1.0f);
 		editRotationZ_->setAlignment(Qt::AlignRight);
 		editRotationZ_->setValue(profile->sunModule->rotation.x);
 
-		sliderRotationZ_ = std::make_unique<QSlider>();
+		sliderRotationZ_ = new QSlider();
 		sliderRotationZ_->setObjectName("RotationZ");
 		sliderRotationZ_->setOrientation(Qt::Horizontal);
 		sliderRotationZ_->setMinimum(0);
@@ -132,80 +132,57 @@ namespace rabbit
 		sliderRotationZ_->setValue(profile->sunModule->rotation.x);
 		sliderRotationZ_->setFixedWidth(250);
 
-		layoutRotationZ_ = std::make_unique<QHBoxLayout>();
-		layoutRotationZ_->addWidget(labelRotationZ_.get(), 0, Qt::AlignLeft);
-		layoutRotationZ_->addWidget(editRotationZ_.get(), 0, Qt::AlignRight);
+		layoutRotationZ_ = new QHBoxLayout();
+		layoutRotationZ_->addWidget(labelRotationZ_, 0, Qt::AlignLeft);
+		layoutRotationZ_->addWidget(editRotationZ_, 0, Qt::AlignRight);
 		layoutRotationZ_->setContentsMargins(40, 5, 35, 0);
 
-		scrollLayout_ = std::make_unique<QVBoxLayout>(scrollWidget_.get());
-		scrollLayout_->addWidget(colorDialog_.get(), 0, Qt::AlignHCenter | Qt::AlignTop);
-		scrollLayout_->addLayout(layoutIntensity_.get(), 0);
-		scrollLayout_->addWidget(sliderIntensity_.get(), 0, Qt::AlignHCenter);
-		scrollLayout_->addLayout(layoutRotationX_.get(), 0);
-		scrollLayout_->addWidget(sliderRotationX_.get(), 0, Qt::AlignHCenter);
-		scrollLayout_->addLayout(layoutRotationY_.get(), 0);
-		scrollLayout_->addWidget(sliderRotationY_.get(), 0, Qt::AlignHCenter);
-		scrollLayout_->addLayout(layoutRotationZ_.get(), 0);
-		scrollLayout_->addWidget(sliderRotationZ_.get(), 0, Qt::AlignHCenter);
+		scrollLayout_ = new QVBoxLayout(scrollWidget_);
+		scrollLayout_->addWidget(colorDialog_, 0, Qt::AlignHCenter | Qt::AlignTop);
+		scrollLayout_->addLayout(layoutIntensity_, 0);
+		scrollLayout_->addWidget(sliderIntensity_, 0, Qt::AlignHCenter);
+		scrollLayout_->addLayout(layoutRotationX_, 0);
+		scrollLayout_->addWidget(sliderRotationX_, 0, Qt::AlignHCenter);
+		scrollLayout_->addLayout(layoutRotationY_, 0);
+		scrollLayout_->addWidget(sliderRotationY_, 0, Qt::AlignHCenter);
+		scrollLayout_->addLayout(layoutRotationZ_, 0);
+		scrollLayout_->addWidget(sliderRotationZ_, 0, Qt::AlignHCenter);
 		scrollLayout_->addStretch();
 
-		scrollArea_ = std::make_unique<QScrollArea>();
-		scrollArea_->setWidget(scrollWidget_.get());
+		scrollArea_ = new QScrollArea();
+		scrollArea_->setWidget(scrollWidget_);
 		scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		scrollArea_->setWidgetResizable(true);
 
-		layout_ = std::make_unique<QHBoxLayout>();
+		layout_ = new QHBoxLayout();
 		layout_->addSpacing(this->closeButton_->iconSize().width());
 		layout_->addStretch();
-		layout_->addWidget(title_.get(), 0, Qt::AlignLeft);
+		layout_->addWidget(title_, 0, Qt::AlignLeft);
 		layout_->addStretch();
-		layout_->addWidget(closeButton_.get(), 0, Qt::AlignRight);
+		layout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
-		mainLayout_ = std::make_unique<QVBoxLayout>(this);
-		mainLayout_->addLayout(layout_.get());
-		mainLayout_->addWidget(scrollArea_.get());
+		mainLayout_ = new QVBoxLayout(this);
+		mainLayout_->addLayout(layout_);
+		mainLayout_->addWidget(scrollArea_);
 		mainLayout_->addStretch();
-		mainLayout_->addWidget(resetButton_.get(), 0, Qt::AlignBottom | Qt::AlignRight);
-		mainLayout_->setContentsMargins(0, 10, 10, 10);
+		mainLayout_->addWidget(resetButton_, 0, Qt::AlignBottom | Qt::AlignRight);
+		mainLayout_->setContentsMargins(0, 10, 2, 10);
 
-		connect(closeButton_.get(), SIGNAL(clicked()), this, SLOT(closeEvent()));
-		connect(resetButton_.get(), SIGNAL(clicked()), this, SLOT(resetEvent()));
-		connect(editIntensity_.get(), SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
-		connect(sliderIntensity_.get(), SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
-		connect(editRotationX_.get(), SIGNAL(valueChanged(double)), this, SLOT(editRotationXEvent(double)));
-		connect(sliderRotationX_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderRotationXEvent(int)));
-		connect(editRotationY_.get(), SIGNAL(valueChanged(double)), this, SLOT(editRotationYEvent(double)));
-		connect(sliderRotationY_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderRotationYEvent(int)));
-		connect(editRotationZ_.get(), SIGNAL(valueChanged(double)), this, SLOT(editRotationZEvent(double)));
-		connect(sliderRotationZ_.get(), SIGNAL(valueChanged(int)), this, SLOT(sliderRotationZEvent(int)));
-		connect(colorDialog_.get(), SIGNAL(currentColorChanged(QColor)), this, SLOT(currentColorChanged(QColor)));
+		connect(closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
+		connect(resetButton_, SIGNAL(clicked()), this, SLOT(resetEvent()));
+		connect(editIntensity_, SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
+		connect(sliderIntensity_, SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
+		connect(editRotationX_, SIGNAL(valueChanged(double)), this, SLOT(editRotationXEvent(double)));
+		connect(sliderRotationX_, SIGNAL(valueChanged(int)), this, SLOT(sliderRotationXEvent(int)));
+		connect(editRotationY_, SIGNAL(valueChanged(double)), this, SLOT(editRotationYEvent(double)));
+		connect(sliderRotationY_, SIGNAL(valueChanged(int)), this, SLOT(sliderRotationYEvent(int)));
+		connect(editRotationZ_, SIGNAL(valueChanged(double)), this, SLOT(editRotationZEvent(double)));
+		connect(sliderRotationZ_, SIGNAL(valueChanged(int)), this, SLOT(sliderRotationZEvent(int)));
+		connect(colorDialog_, SIGNAL(currentColorChanged(QColor)), this, SLOT(currentColorChanged(QColor)));
 	}
 
 	SunWindow::~SunWindow()
 	{
-		title_.reset();
-		closeButton_.reset();
-		layout_.reset();
-		colorDialog_.reset();
-		sliderIntensity_.reset();
-		labelIntensity_.reset();
-		editIntensity_.reset();
-		layoutIntensity_.reset();
-		labelRotationX_.reset();
-		editRotationX_.reset();
-		layoutRotationX_.reset();
-		sliderRotationX_.reset();
-		labelRotationY_.reset();
-		editRotationY_.reset();
-		sliderRotationY_.reset();
-		layoutRotationY_.reset();
-		labelRotationZ_.reset();
-		editRotationZ_.reset();
-		sliderRotationZ_.reset();
-		layoutRotationZ_.reset();
-		scrollLayout_.reset();
-		scrollWidget_.reset();
-		scrollArea_.reset();
 	}
 
 	void

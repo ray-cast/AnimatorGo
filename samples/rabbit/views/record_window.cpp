@@ -173,7 +173,7 @@ namespace rabbit
 		recordButton_ = new QToolButton();
 		recordButton_->setObjectName("render");
 		recordButton_->setText(u8"¿ªÊ¼äÖÈ¾");
-		recordButton_->setContentsMargins(0, 0, 0, 10);
+		recordButton_->setContentsMargins(0, 0, 0, 0);
 
 		auto titleLayout = new QHBoxLayout();
 		titleLayout->addSpacing(closeButton_->iconSize().width());
@@ -212,7 +212,7 @@ namespace rabbit
 		videoLayout->addSpacing(10);
 		videoLayout->addWidget(crfLabel);
 		videoLayout->addWidget(crfSpinbox);
-		//videoLayout->setContentsMargins(20, 0, 0, 0);
+		videoLayout->setContentsMargins(20, 10, 0, 0);
 
 		auto markLayout = new QVBoxLayout;
 		markLayout->addWidget(markButton_, 0, Qt::AlignCenter);
@@ -251,7 +251,7 @@ namespace rabbit
 		mainLayout_->addWidget(contentWidgetArea_);
 		mainLayout_->addStretch();
 		mainLayout_->addWidget(recordButton_, 0, Qt::AlignCenter);
-		mainLayout_->setContentsMargins(0, 10, 10, 10);
+		mainLayout_->setContentsMargins(0, 10, 2, 10);
 
 		connect(closeButton_, SIGNAL(clicked()), this, SLOT(closeEvent()));
 		connect(recordButton_, SIGNAL(clicked()), this, SLOT(clickEvent()));

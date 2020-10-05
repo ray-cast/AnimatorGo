@@ -567,7 +567,7 @@ QWidget#RecordWindow QToolButton#select2:checked{
 	border:2px solid #009ACC;
 }
 QWidget#RecordWindow QToolButton#speed1{
-	min-width:70;
+	min-width:66;
 	min-height:25;
 	border:1px solid #a5a5a5;
 	border-radius:5px;
@@ -577,14 +577,14 @@ QWidget#RecordWindow QToolButton#speed1{
 	font-family: "Microsoft YaHei";
 }
 QWidget#RecordWindow QToolButton#speed2,QToolButton#speed3{
-	min-width:70;
+	min-width:66;
 	min-height:25;
 	border:1px solid #a5a5a5;
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
 QWidget#RecordWindow QToolButton#speed4{
-	min-width:70;
+	min-width:66;
 	min-height:25;
 	border:1px solid #a5a5a5;
 	border-radius:5px;

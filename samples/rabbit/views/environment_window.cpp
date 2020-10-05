@@ -214,6 +214,16 @@ namespace rabbit
 	void
 	EnvironmentWindow::setColor(const QColor& c, int w, int h)
 	{
+		this->profile_->environmentModule->color = octoon::math::float3(c.redF(), c.greenF(), c.blueF());
+
+		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
+		if (environmentLight)
+			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
+
+		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
+		if (meshRenderer)
+			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
+
 		QPixmap pixmap(w, h);
 		QPainter painter(&pixmap);
 		painter.setPen(Qt::NoPen);
@@ -328,8 +338,9 @@ namespace rabbit
 								this->thumbnail->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
 								this->texture = texture;
 								this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
+								this->setColor(QColor::fromRgbF(1, 1, 1));
+
 								behaviour->loadHDRi(texture);
-								this->colorChangeEvent(QColor::fromRgbF(1, 1, 1));
 							}
 						}
 					}
@@ -390,21 +401,8 @@ namespace rabbit
 	void 
 	EnvironmentWindow::colorChangeEvent(const QColor& color)
 	{
-		if (color.isValid())
-		{
-			this->profile_->environmentModule->color = octoon::math::float3(color.redF(), color.greenF(), color.blueF());
-
-			auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-			if (environmentLight)
-				environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-
-			auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-			if (meshRenderer)
-				meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
-
-			this->setColor(color);
-			this->repaint();
-		}
+		this->setColor(color);
+		this->repaint();
 	}
 
 	void

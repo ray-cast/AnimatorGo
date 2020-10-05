@@ -110,10 +110,10 @@ namespace rabbit
 		layout->addWidget(&leftButton, 0, Qt::AlignCenter);
 		layout->addWidget(&rightButton, 0, Qt::AlignCenter);
 		layout->addWidget(&recordButton, 0, Qt::AlignCenter);
-		layout->addWidget(&audioButton, 0, Qt::AlignCenter);
 		layout->addWidget(&shotButton, 0, Qt::AlignCenter);
-		layout->addWidget(&gpuButton, 0, Qt::AlignCenter);
+		layout->addWidget(&audioButton, 0, Qt::AlignCenter);
 		layout->addWidget(&materialButton, 0, Qt::AlignCenter);
+		layout->addWidget(&gpuButton, 0, Qt::AlignCenter);
 		layout->addWidget(&sunButton, 0, Qt::AlignCenter);
 		layout->addWidget(&environmentButton, 0, Qt::AlignCenter);
 		layout->addWidget(&cleanupButton, 0, Qt::AlignCenter);

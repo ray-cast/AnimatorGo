@@ -110,6 +110,14 @@ QScrollArea{
 	border:none;
 	background-color:rgb(40,40,40);
 }
+QScrollBar
+{
+	width:8px;
+    background:rgb(45,45,45);
+    margin:0px,0px,0px,0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}
 QScrollBar:vertical{
     background:rgb(45,45,45);
     margin:0px,0px,0px,0px;
@@ -524,19 +532,19 @@ QWidget#infoWindow > QPushButton#qrcode{
 	max-height:180;
 	background-color: rgb(255,255,255);
 }
-QWidget#recordWindow{
+QWidget#RecordWindow{
 	min-width:340;
 }
-QWidget#recordWindow > QRadioButton{
+QWidget#RecordWindow QRadioButton{
 	color:rgb(200,200,200);
 }
-QWidget#recordWindow > QToolButton#render{
+QWidget#RecordWindow QToolButton#render{
 	width:240;
 	height:35;
 	color:rgb(150,150,150);
 	background-color:rgb(60,60,64);
 }
-QWidget#recordWindow > QToolButton#select1{
+QWidget#RecordWindow QToolButton#select1{
 	min-width:120;
 	min-height:35;
 	border:1px solid #a5a5a5;
@@ -544,7 +552,7 @@ QWidget#recordWindow > QToolButton#select1{
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#recordWindow > QToolButton#select2{
+QWidget#RecordWindow QToolButton#select2{
 	min-width:120;
 	min-height:35;
 	border:1px solid #a5a5a5;
@@ -552,13 +560,13 @@ QWidget#recordWindow > QToolButton#select2{
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#recordWindow > QToolButton#select1:checked{
+QWidget#RecordWindow QToolButton#select1:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QToolButton#select2:checked{
+QWidget#RecordWindow QToolButton#select2:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QToolButton#speed1{
+QWidget#RecordWindow QToolButton#speed1{
 	min-width:70;
 	min-height:25;
 	border:1px solid #a5a5a5;
@@ -568,14 +576,14 @@ QWidget#recordWindow > QToolButton#speed1{
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#recordWindow > QToolButton#speed2,QToolButton#speed3{
+QWidget#RecordWindow QToolButton#speed2,QToolButton#speed3{
 	min-width:70;
 	min-height:25;
 	border:1px solid #a5a5a5;
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#recordWindow > QToolButton#speed4{
+QWidget#RecordWindow QToolButton#speed4{
 	min-width:70;
 	min-height:25;
 	border:1px solid #a5a5a5;
@@ -585,19 +593,19 @@ QWidget#recordWindow > QToolButton#speed4{
 	font-size:18px;
 	font-family: "Microsoft YaHei";
 }
-QWidget#recordWindow > QToolButton#speed1:checked{
+QWidget#RecordWindow QToolButton#speed1:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QToolButton#speed2:checked{
+QWidget#RecordWindow QToolButton#speed2:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QToolButton#speed3:checked{
+QWidget#RecordWindow QToolButton#speed3:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QToolButton#speed4:checked{
+QWidget#RecordWindow QToolButton#speed4:checked{
 	border:2px solid #009ACC;
 }
-QWidget#recordWindow > QLineEdit{
+QWidget#RecordWindow QLineEdit{
 	max-width:60;
 	max-height:25;
 	border:1px solid #959595;

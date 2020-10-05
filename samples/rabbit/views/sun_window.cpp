@@ -61,7 +61,7 @@ namespace rabbit
 		sliderIntensity_->setMinimum(0);
 		sliderIntensity_->setMaximum(100);
 		sliderIntensity_->setValue(profile->sunModule->intensity * 10.0f);
-		sliderIntensity_->setFixedWidth(240);
+		sliderIntensity_->setFixedWidth(250);
 
 		layoutIntensity_ = std::make_unique<QHBoxLayout>();
 		layoutIntensity_->addWidget(labelIntensity_.get(), 0, Qt::AlignLeft);
@@ -84,7 +84,7 @@ namespace rabbit
 		sliderRotationX_->setMinimum(0);
 		sliderRotationX_->setMaximum(360);
 		sliderRotationX_->setValue(profile->sunModule->rotation.x);
-		sliderRotationX_->setFixedWidth(240);
+		sliderRotationX_->setFixedWidth(250);
 
 		layoutRotationX_ = std::make_unique<QHBoxLayout>();
 		layoutRotationX_->addWidget(labelRotationX_.get(), 0, Qt::AlignLeft);
@@ -107,7 +107,7 @@ namespace rabbit
 		sliderRotationY_->setMinimum(0);
 		sliderRotationY_->setMaximum(360);
 		sliderRotationY_->setValue(profile->sunModule->rotation.x);
-		sliderRotationY_->setFixedWidth(240);
+		sliderRotationY_->setFixedWidth(250);
 
 		layoutRotationY_ = std::make_unique<QHBoxLayout>();
 		layoutRotationY_->addWidget(labelRotationY_.get(), 0, Qt::AlignLeft);
@@ -130,7 +130,7 @@ namespace rabbit
 		sliderRotationZ_->setMinimum(0);
 		sliderRotationZ_->setMaximum(360);
 		sliderRotationZ_->setValue(profile->sunModule->rotation.x);
-		sliderRotationZ_->setFixedWidth(240);
+		sliderRotationZ_->setFixedWidth(250);
 
 		layoutRotationZ_ = std::make_unique<QHBoxLayout>();
 		layoutRotationZ_->addWidget(labelRotationZ_.get(), 0, Qt::AlignLeft);

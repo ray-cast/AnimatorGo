@@ -276,7 +276,7 @@ namespace rabbit
 		this->setObjectName("ColorDialog");
 
 		label_ = std::make_unique<ColorPlane>();
-		label_->setMinimumSize(248, 248);
+		label_->setMinimumSize(258, 258);
 
 		labelH_ = std::make_unique<QLabel>();
 		labelH_->setText(u8"色相");
@@ -303,21 +303,21 @@ namespace rabbit
 		sliderH_->setOrientation(Qt::Horizontal);
 		sliderH_->setMinimum(0);
 		sliderH_->setMaximum(360);
-		sliderH_->setFixedWidth(240);
+		sliderH_->setFixedWidth(250);
 
 		sliderS_ = std::make_unique<QSlider>();
 		sliderS_->setObjectName("S");
 		sliderS_->setOrientation(Qt::Horizontal);
 		sliderS_->setMinimum(0);
 		sliderS_->setMaximum(255);
-		sliderS_->setFixedWidth(240);
+		sliderS_->setFixedWidth(250);
 
 		sliderV_ = std::make_unique<QSlider>();
 		sliderV_->setObjectName("Value");
 		sliderV_->setOrientation(Qt::Horizontal);
 		sliderV_->setMinimum(0);
 		sliderV_->setMaximum(255);
-		sliderV_->setFixedWidth(240);
+		sliderV_->setFixedWidth(250);
 
 		layoutH_ = std::make_unique<QHBoxLayout>();
 		layoutH_->addWidget(labelH_.get(), 0, Qt::AlignLeft);

@@ -21,10 +21,8 @@ namespace rabbit
 
 		void repaint();
 
-		void setColor(const QColor& c, int w = 50, int h = 26);
-
-		virtual void showEvent(QShowEvent* event) override;
-		virtual void closeEvent(QCloseEvent* event) override;
+		void showEvent(QShowEvent* event) override;
+		void closeEvent(QCloseEvent* event) override;
 
 	public Q_SLOTS:
 		void colorMapClickEvent();
@@ -39,32 +37,38 @@ namespace rabbit
 		void horizontalRotationEditEvent(double value);
 		void verticalRotationSliderEvent(int);
 		void verticalRotationEditEvent(double value);
+
+	private:
+		void setColor(const QColor& c, int w = 50, int h = 26);
 		
 	private:
 		QLabel* title_;
 		QLabel* imageLabel_;
 		QLabel* imageName_;
-
-		QToolButton* thumbnail;
-		QCheckBox* thumbnailToggle;
 		QLabel* thumbnailTitle;
 		QLabel* thumbnailPath;
 		QLabel* intensityLabel_;
-		QToolButton* color;
-		QSlider* intensitySlider;
-		QDoubleSpinBox* intensitySpinBox;
 		QLabel* horizontalRotationLabel_;
-		QSlider* horizontalRotationSlider;
-		QDoubleSpinBox* horizontalRotationSpinBox;
 		QLabel* verticalRotationLabel_;
-		QSlider* verticalRotationSlider;
-		QDoubleSpinBox* verticalRotationSpinBox;
 
-		Spoiler* spoiler;
-
+		QToolButton* color;
+		QToolButton* thumbnail;
 		QToolButton* closeButton_;
 		QToolButton* resetButton_;
+
+		QCheckBox* thumbnailToggle;
+
+		QSlider* intensitySlider;
+		QSlider* horizontalRotationSlider;
+		QSlider* verticalRotationSlider;
+
+		QDoubleSpinBox* intensitySpinBox;
+		QDoubleSpinBox* horizontalRotationSpinBox;
+		QDoubleSpinBox* verticalRotationSpinBox;
+
 		QColorDialog colorSelector_;
+
+		Spoiler* spoiler;
 
 		octoon::GameObjectPtr behaviour_;
 		octoon::hal::GraphicsTexturePtr texture;

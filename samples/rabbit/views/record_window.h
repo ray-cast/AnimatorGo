@@ -14,6 +14,7 @@
 #include <qspinbox.h>
 #include <qtimer.h>
 #include "rabbit_behaviour.h"
+#include "spoiler.h"
 #include <octoon/game_object.h>
 
 namespace rabbit
@@ -25,15 +26,17 @@ namespace rabbit
 		RecordWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept;
 		~RecordWindow() noexcept;
 
-		virtual void showEvent(QShowEvent* event) override;
-
 		void update();
 		void repaint();
 
 		void startRecord(QString fileName);
 		void stopRecord();
 
+		void showEvent(QShowEvent* event) override;
+		void resizeEvent(QResizeEvent* e) noexcept override;
+
 	private Q_SLOTS:
+
 		void closeEvent();
 		void clickEvent();
 		void select1Event(bool checked);
@@ -45,39 +48,50 @@ namespace rabbit
 		void startEvent(int);
 		void endEvent(int);
 		void timeEvent();
+		void onSppChanged(int);
+		void onCrfChanged(double);
 
 	public:
-		std::unique_ptr<QLabel> title_;
-		std::unique_ptr<QToolButton> closeButton_;
-		std::unique_ptr<QLabel> mark_;
-		std::unique_ptr<QToolButton> markButton_;
-		std::unique_ptr<QLabel> quality_;
-		std::unique_ptr<QLabel> videoRatio_;
-		std::unique_ptr<QLabel> infomation_;
-		std::unique_ptr<QLabel> frame_;
-		std::unique_ptr<QLabel> animation_;
-		std::unique_ptr<QLabel> summary_;
-		std::unique_ptr<QLabel> currentFrame_;
-		std::unique_ptr<QLabel> timeTotal_;
-		std::unique_ptr<QButtonGroup> group_;
-		std::unique_ptr<QButtonGroup> speedGroup_;
-		std::unique_ptr<QToolButton> select1_;
-		std::unique_ptr<QToolButton> select2_;
-		std::unique_ptr<QToolButton> speed1_;
-		std::unique_ptr<QToolButton> speed2_;
-		std::unique_ptr<QToolButton> speed3_;
-		std::unique_ptr<QToolButton> speed4_;
-		std::unique_ptr<QToolButton> backButton_;
-		std::unique_ptr<QLabel> startLabel_;
-		std::unique_ptr<QLabel> endLabel_;
-		std::unique_ptr<QSpinBox> start_;
-		std::unique_ptr<QSpinBox> end_;
-		std::unique_ptr<QHBoxLayout> layout_;
-		std::unique_ptr<QHBoxLayout> selectLayout_;
-		std::unique_ptr<QHBoxLayout> videoRatioLayout_;
-		std::unique_ptr<QHBoxLayout> frameLayout_;
-		std::unique_ptr<QVBoxLayout> mainLayout_;
-		std::unique_ptr<QTimer> timer_;
+		QLabel* title_;
+		QLabel* quality_;
+		QLabel* videoRatio_;
+		QLabel* frame_;
+		QLabel* animation_;
+		QLabel* summary_;
+		QLabel* currentFrame_;
+		QLabel* timeTotal_;
+		QLabel* sppLabel;
+		QLabel* crfLabel;
+		QLabel* startLabel_;
+		QLabel* endLabel_;
+
+		QButtonGroup* group_;
+		QButtonGroup* speedGroup_;
+		QToolButton* select1_;
+		QToolButton* select2_;
+		QToolButton* speed1_;
+		QToolButton* speed2_;
+		QToolButton* speed3_;
+		QToolButton* speed4_;
+		QToolButton* recordButton_;
+		QToolButton* closeButton_;
+		QToolButton* markButton_;
+
+		QSpinBox* start_;
+		QSpinBox* end_;
+		QSpinBox* sppSpinbox_;
+		
+		QDoubleSpinBox* crfSpinbox;
+		QHBoxLayout* videoRatioLayout_;
+		QHBoxLayout* frameLayout_;
+		QVBoxLayout* mainLayout_;
+		QTimer* timer_;
+
+		Spoiler* markSpoiler_;
+		Spoiler* videoSpoiler_;
+		Spoiler* infoSpoiler_;
+		QScrollArea* contentWidgetArea_;
+
 		octoon::GameObjectPtr behaviour_;
 	};
 }

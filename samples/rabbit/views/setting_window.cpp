@@ -134,58 +134,13 @@ namespace rabbit
 		resolutionCombo->setStyleSheet("color: rgb(200,200,200);");
 		resolutionCombo->setFont(QFont("Microsoft YaHei", 9, 50));
 
-		speedLabel = std::make_unique<QLabel>();
-		speedLabel->setText(u8"帧速率");
-		speedLabel->setStyleSheet("color: rgb(200,200,200);");
-
-		speedCombo = std::make_unique<QComboBox>();
-		speedCombo->addItem(u8"24");
-		speedCombo->addItem(u8"25");
-		speedCombo->addItem(u8"30");
-		speedCombo->addItem(u8"60");
-		speedCombo->setStyleSheet("color: rgb(200,200,200);");
-		speedCombo->setFont(QFont("Microsoft YaHei", 9, 50));
-
-		sppLabel = std::make_unique<QLabel>();
-		sppLabel->setText(u8"每像素采样数");
-		sppLabel->setStyleSheet("color: rgb(200,200,200);");
-
-		sppSpinbox = std::make_unique<SpinBox>();
-		sppSpinbox->setMinimum(0);
-		sppSpinbox->setMaximum(9999);
-		sppSpinbox->setValue(0);
-		sppSpinbox->setAlignment(Qt::AlignRight);
-		sppSpinbox->setFixedWidth(100);
-
-		crfSpinbox = std::make_unique<DoubleSpinBox>();
-		crfSpinbox->setMinimum(0);
-		crfSpinbox->setMaximum(63.0);
-		crfSpinbox->setValue(0);
-		crfSpinbox->setAlignment(Qt::AlignRight);
-		crfSpinbox->setFixedWidth(100);
-
-		crfLabel = std::make_unique<QLabel>();
-		crfLabel->setText(u8"压制质量(CRF)");
-		crfLabel->setStyleSheet("color: rgb(200,200,200);");
-
 		layout_ = std::make_unique<QVBoxLayout>(this);
 		layout_->addWidget(renderLabel.get());
 		layout_->addSpacing(10);
 		layout_->addWidget(resolutionLabel.get());
 		layout_->addSpacing(10);
 		layout_->addWidget(resolutionCombo.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(speedLabel.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(speedCombo.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(sppLabel.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(sppSpinbox.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(crfLabel.get());
-		layout_->addSpacing(10);
-		layout_->addWidget(crfSpinbox.get());
+		layout_->addSpacing(200);
 	}
 
 	SettingMainPlane3::SettingMainPlane3(QWidget* parent)
@@ -260,26 +215,11 @@ namespace rabbit
 		else if (profile->canvasModule->width == 1080 && profile->canvasModule->height == 1920)
 			mainPlane2_->resolutionCombo->setCurrentIndex(7);
 
-		if (profile->timeModule->recordFps == 24)
-			mainPlane2_->speedCombo->setCurrentIndex(0);
-		else if (profile->timeModule->recordFps == 25)
-			mainPlane2_->speedCombo->setCurrentIndex(1);
-		else if (profile->timeModule->recordFps == 30)
-			mainPlane2_->speedCombo->setCurrentIndex(2);
-		else if (profile->timeModule->recordFps == 60)
-			mainPlane2_->speedCombo->setCurrentIndex(3);
-
-		mainPlane2_->sppSpinbox->setValue(profile->timeModule->spp);
-		mainPlane2_->crfSpinbox->setValue(profile->h265Module->crf);
-
 		connect(scrollArea_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(valueChanged(int)));
 		connect(listWidget_.get(), SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(itemClicked(QListWidgetItem*)));
 		connect(mainPlane_->resetButton.get(), SIGNAL(clicked()), this, SLOT(onResetButton()));
 		connect(mainPlane_->infoButton.get(), SIGNAL(clicked()), this, SLOT(onCheckVersion()));
 		connect(mainPlane2_->resolutionCombo.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(onResolutionCombo(int)));
-		connect(mainPlane2_->speedCombo.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(onVideoRatioCombo(int)));
-		connect(mainPlane2_->sppSpinbox.get(), SIGNAL(valueChanged(int)), this, SLOT(onSppChanged(int)));
-		connect(mainPlane2_->crfSpinbox.get(), SIGNAL(valueChanged(double)), this, SLOT(onCrfChanged(double)));
 	}
 
 	SettingContextPlane::~SettingContextPlane()
@@ -340,7 +280,6 @@ namespace rabbit
 	void
 	SettingContextPlane::onResetButton()
 	{
-		mainPlane2_->speedCombo->setCurrentIndex(0);
 		mainPlane2_->resolutionCombo->setCurrentIndex(3);
 	}
 
@@ -402,32 +341,11 @@ namespace rabbit
 	}
 
 	void
-	SettingContextPlane::onVideoRatioCombo(int)
-	{
-		auto& profile = behaviour_->getProfile();
-		switch (mainPlane2_->speedCombo->currentIndex())
-		{
-		case 0:
-			profile->timeModule->recordFps = 24;
-			break;
-		case 1:
-			profile->timeModule->recordFps = 25;
-			break;
-		case 2:
-			profile->timeModule->recordFps = 30;
-			break;
-		case 3:
-			profile->timeModule->recordFps = 60;
-			break;
-		}
-	}
-
-	void
 	SettingContextPlane::onCheckVersion()
 	{
-		auto client = dynamic_cast<ClientComponent*>(behaviour_->getComponent<ClientComponent>());
-		auto version = client->version();
-		if (version == behaviour_->getProfile()->clientModule->version)
+		//auto client = dynamic_cast<ClientComponent*>(behaviour_->getComponent<ClientComponent>());
+		//auto version = client->version();
+		//if (version == behaviour_->getProfile()->clientModule->version)
 		{
 			QMessageBox msg(this);
 			msg.setWindowTitle(QString::fromUtf8(u8"提示"));
@@ -437,18 +355,6 @@ namespace rabbit
 
 			msg.exec();
 		}
-	}
-
-	void
-	SettingContextPlane::onSppChanged(int value)
-	{
-		behaviour_->getProfile()->timeModule->spp = value;
-	}
-
-	void
-	SettingContextPlane::onCrfChanged(double value)
-	{
-		behaviour_->getProfile()->h265Module->crf = value;
 	}
 
 	SettingWindow::SettingWindow(const std::shared_ptr<rabbit::RabbitBehaviour>& behaviour) noexcept

@@ -46,12 +46,6 @@ namespace rabbit
 		std::unique_ptr<QLabel> renderLabel;
 		std::unique_ptr<QLabel> resolutionLabel;
 		std::unique_ptr<QComboBox> resolutionCombo;
-		std::unique_ptr<QLabel> speedLabel;
-		std::unique_ptr<QLabel> sppLabel;
-		std::unique_ptr<QComboBox> speedCombo;
-		std::unique_ptr<QSpinBox> sppSpinbox;
-		std::unique_ptr<QLabel> crfLabel;
-		std::unique_ptr<QDoubleSpinBox> crfSpinbox;
 
 	private:
 		std::unique_ptr<QVBoxLayout> layout_;
@@ -77,10 +71,7 @@ namespace rabbit
 
 		void onResetButton();
 		void onResolutionCombo(int index);
-		void onVideoRatioCombo(int index);
 		void onCheckVersion();
-		void onSppChanged(int);
-		void onCrfChanged(double);
 
 	private:
 		bool m_sign;

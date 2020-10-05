@@ -248,8 +248,10 @@ namespace rabbit
 
 		this->path->setText(name);
 		this->check->setCheckState(Qt::CheckState::Checked);
-		this->image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 48)))));
 		this->texture = texture;
+
+		if (!qimage.isNull())
+			this->image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(this->image->iconSize()))));
 
 		return texture;
 	}

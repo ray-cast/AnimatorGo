@@ -441,11 +441,7 @@ namespace rabbit
 	void
 	EnvironmentWindow::intensitySliderEvent(int value)
 	{
-		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-		if (environmentLight)
-			environmentLight->setIntensity(value / 10.0f);
 		this->colorMap_.spinBox->setValue(value / 10.0f);
-		this->profile_->environmentModule->intensity = value / 10.0f;
 	}
 
 	void
@@ -497,8 +493,6 @@ namespace rabbit
 	void
 	EnvironmentWindow::resetEvent()
 	{
-		this->repaint();
-
 		profile_->environmentModule->intensity = 1.f;
 		profile_->environmentModule->color = octoon::math::float3(229.f, 229.f, 235.f) / 255.f;
 
@@ -513,6 +507,7 @@ namespace rabbit
 		if (meshRenderer)
 			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
 
+		this->colorMap_.setColor(QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z));
 		this->repaint();
 	}
 }

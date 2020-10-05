@@ -1,6 +1,7 @@
 #include "rtx_manager.h"
 #include <radeon_rays.h>
 #include <octoon/runtime/except.h>
+#include "monte_carlo_renderer.h"
 
 #ifdef __APPLE__
 #include <OpenCL/OpenCL.h>
@@ -31,6 +32,7 @@ namespace octoon::video
 	RtxManager::RtxManager()
 		: width_(0)
 		, height_(0)
+		, dirty_(true)
 	{
 		std::vector<CLWPlatform> platforms;
 
@@ -195,6 +197,22 @@ namespace octoon::video
 	}
 
 	void
+	RtxManager::setMaxBounces(std::uint32_t num_bounces)
+	{
+		for (auto& it : configs_)
+			return dynamic_cast<MonteCarloRenderer*>(it.pipeline.get())->setMaxBounces(num_bounces);
+		this->dirty_ = true;
+	}
+
+	std::uint32_t
+	RtxManager::getMaxBounces() const
+	{
+		for (auto& it : configs_)
+			return dynamic_cast<MonteCarloRenderer*>(it.pipeline.get())->getMaxBounces();
+		return 0;
+	}
+
+	void
 	RtxManager::readColorBuffer(math::float3 colorBuffer[])
 	{
 		auto& desc = colorTexture_->getTextureDesc();
@@ -355,10 +373,10 @@ namespace octoon::video
 			CompiledScene& compiledScene = c.controller->getCachedScene(scene);
 
 			auto& clwscene = dynamic_cast<ClwScene&>(compiledScene);
-			if (clwscene.dirty)
+			if (clwscene.dirty || this->dirty_)
 			{
 				c.pipeline->clear(math::float4::Zero);
-				clwscene.dirty = false;
+				this->dirty_ = clwscene.dirty = false;
 			}
 
 			if (clwscene.shapes.GetElementCount() > 0)

@@ -11,8 +11,8 @@
 #include "clw_render_factory.h"
 
 #include <octoon/camera/camera.h>
-#include <octoon/video/render_scene.h>
 #include <octoon/hal/graphics.h>
+#include <octoon/video/render_scene.h>
 
 namespace octoon::video
 {
@@ -45,6 +45,9 @@ namespace octoon::video
 		void setOutput(OutputType type, Output* output);
 		Output* getOutput(OutputType type) const;
 
+		void setMaxBounces(std::uint32_t num_bounces);
+		std::uint32_t getMaxBounces() const;
+
 		void readColorBuffer(math::float3 data[]);
 		void readAlbedoBuffer(math::float3 data[]);
 		void readNormalBuffer(math::float3 data[]);
@@ -69,6 +72,8 @@ namespace octoon::video
 		};
 
 		RenderScene* scene_;
+
+		bool dirty_;
 
 		std::uint32_t width_;
 		std::uint32_t height_;

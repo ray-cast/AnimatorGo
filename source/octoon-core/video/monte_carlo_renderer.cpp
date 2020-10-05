@@ -29,6 +29,18 @@ namespace octoon::video
 	}
 
 	void
+	MonteCarloRenderer::setMaxBounces(std::uint32_t num_bounces)
+	{
+		estimator_->setMaxBounces(num_bounces);
+	}
+	
+	std::uint32_t
+	MonteCarloRenderer::getMaxBounces() const
+	{
+		return estimator_->getMaxBounces();
+	}
+
+	void
 	MonteCarloRenderer::clear(const math::float4& val)
 	{
 		std::uint32_t start_index = 0;

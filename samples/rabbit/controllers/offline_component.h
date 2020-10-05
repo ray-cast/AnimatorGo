@@ -15,6 +15,9 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
+		void setMaxBounces(std::uint32_t num_bounces);
+		std::uint32_t getMaxBounces() const;
+
 		virtual const std::type_info& type_info() const noexcept
 		{
 			return typeid(OfflineComponent);

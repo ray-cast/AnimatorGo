@@ -93,6 +93,18 @@ namespace octoon
 	}
 
 	void
+	VideoFeature::setMaxBounces(std::uint32_t num_bounces)
+	{
+		video::Renderer::instance()->setMaxBounces(num_bounces);
+	}
+
+	std::uint32_t
+	VideoFeature::getMaxBounces() const
+	{
+		return video::Renderer::instance()->getMaxBounces();
+	}
+
+	void
 	VideoFeature::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
 	{
 		video::Renderer::instance()->setOverrideMaterial(material);

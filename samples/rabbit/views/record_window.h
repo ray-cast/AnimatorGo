@@ -49,6 +49,7 @@ namespace rabbit
 		void endEvent(int);
 		void timeEvent();
 		void onSppChanged(int);
+		void onBouncesChanged(int);
 		void onCrfChanged(double);
 
 	public:
@@ -61,6 +62,7 @@ namespace rabbit
 		QLabel* currentFrame_;
 		QLabel* timeTotal_;
 		QLabel* sppLabel;
+		QLabel* bouncesLabel_;
 		QLabel* crfLabel;
 		QLabel* startLabel_;
 		QLabel* endLabel_;
@@ -80,6 +82,7 @@ namespace rabbit
 		QSpinBox* start_;
 		QSpinBox* end_;
 		QSpinBox* sppSpinbox_;
+		QSpinBox* bouncesSpinbox_;
 		
 		QDoubleSpinBox* crfSpinbox;
 		QHBoxLayout* videoRatioLayout_;

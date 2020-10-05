@@ -17,6 +17,7 @@ namespace octoon::video
 		, height_(0)
 		, sortObjects_(true)
 		, enableGlobalIllumination_(false)
+		, numBounces_(3)
 	{
 	}
 
@@ -99,6 +100,21 @@ namespace octoon::video
 	Renderer::getSortObject() const noexcept
 	{
 		return this->sortObjects_;
+	}
+
+	void
+	Renderer::setMaxBounces(std::uint32_t num_bounces)
+	{
+		numBounces_ = num_bounces;
+
+		if (rtxManager_)
+			rtxManager_->setMaxBounces(num_bounces);
+	}
+
+	std::uint32_t
+	Renderer::getMaxBounces() const
+	{
+		return numBounces_;
 	}
 
 	void
@@ -230,6 +246,7 @@ namespace octoon::video
 				{
 					rtxManager_ = std::make_unique<RtxManager>();
 					rtxManager_->setGraphicsContext(this->context_);
+					rtxManager_->setMaxBounces(this->getMaxBounces());
 				}
 
 				this->rtxManager_->render(scene);

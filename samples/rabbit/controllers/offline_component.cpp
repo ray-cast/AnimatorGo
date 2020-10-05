@@ -37,4 +37,21 @@ namespace rabbit
 	{
 		return this->getModel()->offlineEnable;
 	}
+
+
+	void
+	OfflineComponent::setMaxBounces(std::uint32_t num_bounces)
+	{
+		if (this->getModel()->bounces != num_bounces)
+		{
+			this->getFeature<octoon::VideoFeature>()->setMaxBounces(num_bounces);
+			this->getModel()->bounces = num_bounces;
+		}		
+	}
+
+	std::uint32_t
+	OfflineComponent::getMaxBounces() const
+	{
+		return this->getModel()->bounces;
+	}
 }

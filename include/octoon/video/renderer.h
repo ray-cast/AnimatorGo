@@ -59,6 +59,9 @@ namespace octoon::video
 		void setSortObjects(bool sortObject) noexcept;
 		bool getSortObject() const noexcept;
 
+		void setMaxBounces(std::uint32_t num_bounces);
+		std::uint32_t getMaxBounces() const;
+
 		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
 		const std::shared_ptr<material::Material>& getOverrideMaterial() const noexcept;
 
@@ -93,6 +96,7 @@ namespace octoon::video
 		bool sortObjects_;
 		bool enableGlobalIllumination_;
 
+		std::uint32_t numBounces_;
 		std::uint32_t width_, height_;
 
 		hal::GraphicsContextPtr context_;

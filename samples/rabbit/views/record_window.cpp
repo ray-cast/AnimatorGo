@@ -128,6 +128,17 @@ namespace rabbit
 		end_->setMinimum(0);
 		end_->setMaximum(99999);
 
+		bouncesLabel_ = new QLabel();
+		bouncesLabel_->setText(u8"每像素光线递归深度:");
+		bouncesLabel_->setStyleSheet("color: rgb(200,200,200);");
+
+		bouncesSpinbox_ = new SpinBox();
+		bouncesSpinbox_->setMinimum(1);
+		bouncesSpinbox_->setMaximum(16);
+		bouncesSpinbox_->setValue(0);
+		bouncesSpinbox_->setAlignment(Qt::AlignRight);
+		bouncesSpinbox_->setFixedWidth(100);
+
 		sppLabel = new QLabel();
 		sppLabel->setText(u8"每像素采样数:");
 		sppLabel->setStyleSheet("color: rgb(200,200,200);");
@@ -210,6 +221,9 @@ namespace rabbit
 		videoLayout->addWidget(sppLabel);
 		videoLayout->addWidget(sppSpinbox_);
 		videoLayout->addSpacing(10);
+		videoLayout->addWidget(bouncesLabel_);
+		videoLayout->addWidget(bouncesSpinbox_);
+		videoLayout->addSpacing(10);
 		videoLayout->addWidget(crfLabel);
 		videoLayout->addWidget(crfSpinbox);
 		videoLayout->setContentsMargins(20, 10, 0, 0);
@@ -226,7 +240,7 @@ namespace rabbit
 		markSpoiler_ = new Spoiler(u8"水印");
 		markSpoiler_->setContentLayout(*markLayout);
 
-		videoSpoiler_ = new Spoiler(u8"输出设置");
+		videoSpoiler_ = new Spoiler(u8"渲染设置");
 		videoSpoiler_->setContentLayout(*videoLayout);
 
 		infoSpoiler_ = new Spoiler(u8"视频信息");
@@ -264,6 +278,7 @@ namespace rabbit
 		connect(start_, SIGNAL(valueChanged(int)), this, SLOT(startEvent(int)));
 		connect(end_, SIGNAL(valueChanged(int)), this, SLOT(endEvent(int)));
 		connect(sppSpinbox_, SIGNAL(valueChanged(int)), this, SLOT(onSppChanged(int)));
+		connect(bouncesSpinbox_, SIGNAL(valueChanged(int)), this, SLOT(onBouncesChanged(int)));
 		connect(crfSpinbox, SIGNAL(valueChanged(double)), this, SLOT(onCrfChanged(double)));
 		connect(timer_, SIGNAL(timeout()), this, SLOT(timeEvent()));
 	}
@@ -318,6 +333,14 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 			behaviour->getProfile()->timeModule->spp = value;
+	}
+
+	void
+	RecordWindow::onBouncesChanged(int value)
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+			behaviour->getComponent<rabbit::OfflineComponent>()->setMaxBounces(value);
 	}
 
 	void
@@ -531,6 +554,10 @@ namespace rabbit
 				speed3_->click();
 			else if (profile->timeModule->recordFps == 60)
 				speed4_->click();
+
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour)
+				bouncesSpinbox_->setValue(behaviour->getComponent<rabbit::OfflineComponent>()->getMaxBounces());
 
 			sppSpinbox_->setValue(profile->timeModule->spp);
 			crfSpinbox->setValue(profile->h265Module->crf);

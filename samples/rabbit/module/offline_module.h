@@ -22,6 +22,7 @@ namespace rabbit
 
 	public:
 		bool offlineEnable;
+		std::uint32_t bounces;
 	};
 }
 

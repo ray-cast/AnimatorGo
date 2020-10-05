@@ -32,6 +32,9 @@ namespace octoon
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
 
+		void setMaxBounces(std::uint32_t num_bounces);
+		std::uint32_t getMaxBounces() const;
+
 		void readColorBuffer(math::float3 data[]);
 		void readAlbedoBuffer(math::float3 data[]);
 		void readNormalBuffer(math::float3 data[]);

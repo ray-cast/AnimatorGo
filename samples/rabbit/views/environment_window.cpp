@@ -308,7 +308,7 @@ namespace rabbit
 					QString filepath = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
 					if (!filepath.isEmpty())
 					{
-						auto texture = octoon::TextureLoader::load(filepath.toStdString());
+						auto texture = octoon::TextureLoader::load(filepath.toStdString(), true);
 						if (texture)
 						{
 							auto width = texture->getTextureDesc().getWidth();
@@ -320,7 +320,8 @@ namespace rabbit
 								auto size = width * height * 3;
 								auto pixels = std::make_unique<std::uint8_t[]>(size);
 
-								for (std::size_t i = 0; i < size; i += 3) {
+								for (std::size_t i = 0; i < size; i += 3)
+								{
 									pixels[i] = std::clamp<float>(std::pow(data_[i], 1 / 2.2) * 255.0f, 0, 255);
 									pixels[i + 1] = std::clamp<float>(std::pow(data_[i + 1], 1 / 2.2) * 255.0f, 0, 255);
 									pixels[i + 2] = std::clamp<float>(std::pow(data_[i + 2], 1 / 2.2) * 255.0f, 0, 255);
@@ -418,7 +419,7 @@ namespace rabbit
 		if (environmentLight)
 			environmentLight->setIntensity(value);
 		this->intensitySlider->setValue(value * 10.0f);
-		this->profile_->environmentModule->intensity = value * 10.0f;
+		this->profile_->environmentModule->intensity = value;
 	}
 
 	void

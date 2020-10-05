@@ -33,9 +33,11 @@ namespace rabbit
 		void resetEvent();
 		void intensitySliderEvent(int);
 		void intensityEditEvent(double value);
-		void rotationSliderEvent(int);
-		void rotationEditEvent(double value);
-
+		void horizontalRotationSliderEvent(int);
+		void horizontalRotationEditEvent(double value);
+		void verticalRotationSliderEvent(int);
+		void verticalRotationEditEvent(double value);
+		
 	private:
 		enum CreateFlags
 		{
@@ -54,9 +56,12 @@ namespace rabbit
 			QToolButton* color;
 			QSlider* slider;
 			QDoubleSpinBox* spinBox;
-			QLabel* rotationLabel_;
-			QSlider* rotationSlider;
-			QDoubleSpinBox* rotationSpinBox;
+			QLabel* horizontalRotationLabel_;
+			QSlider* horizontalRotationSlider;
+			QDoubleSpinBox* horizontalRotationSpinBox;
+			QLabel* verticalRotationLabel_;
+			QSlider* verticalRotationSlider;
+			QDoubleSpinBox* verticalRotationSpinBox;			
 
 			QHBoxLayout* titleLayout;
 			QVBoxLayout* rightLayout;

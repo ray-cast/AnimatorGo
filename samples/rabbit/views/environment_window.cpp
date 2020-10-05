@@ -92,41 +92,66 @@ namespace rabbit
 			this->spinBox = new DoubleSpinBox;
 			this->spinBox->setFixedWidth(50);
 			this->spinBox->setMaximum(10.0f);
-			this->spinBox->setSingleStep(0.03f);
+			this->spinBox->setSingleStep(0.1f);
 			this->spinBox->setAlignment(Qt::AlignRight);
 			this->spinBox->setValue(0.0f);
 
-			this->rotationLabel_ = new QLabel;
-			this->rotationLabel_->setText(u8"旋转");
+			auto intensityLayout = new QHBoxLayout();
+			intensityLayout->addWidget(this->label_, 0, Qt::AlignLeft);
+			intensityLayout->addWidget(this->spinBox, 0, Qt::AlignRight);
 
-			this->rotationSlider = new QSlider(Qt::Horizontal);
-			this->rotationSlider->setObjectName("Value");
-			this->rotationSlider->setMinimum(0);
-			this->rotationSlider->setMaximum(100);
-			this->rotationSlider->setValue(0);
-			this->rotationSlider->setFixedWidth(270);
+			this->horizontalRotationLabel_ = new QLabel;
+			this->horizontalRotationLabel_->setText(u8"水平旋转");
 
-			this->rotationSpinBox = new DoubleSpinBox;
-			this->rotationSpinBox->setFixedWidth(50);
-			this->rotationSpinBox->setMaximum(1.0f);
-			this->rotationSpinBox->setSingleStep(0.03f);
-			this->rotationSpinBox->setAlignment(Qt::AlignRight);
-			this->rotationSpinBox->setValue(0.0f);
+			this->horizontalRotationSlider = new QSlider(Qt::Horizontal);
+			this->horizontalRotationSlider->setObjectName("Value");
+			this->horizontalRotationSlider->setMinimum(-100);
+			this->horizontalRotationSlider->setMaximum(100);
+			this->horizontalRotationSlider->setValue(0);
+			this->horizontalRotationSlider->setFixedWidth(270);
 
-			auto HLayout = new QHBoxLayout();
-			HLayout->addWidget(this->label_, 0, Qt::AlignLeft);
-			HLayout->addWidget(this->spinBox, 0, Qt::AlignRight);
+			this->horizontalRotationSpinBox = new DoubleSpinBox;
+			this->horizontalRotationSpinBox->setFixedWidth(50);
+			this->horizontalRotationSpinBox->setMinimum(-1.0f);
+			this->horizontalRotationSpinBox->setMaximum(1.0f);
+			this->horizontalRotationSpinBox->setSingleStep(0.03f);
+			this->horizontalRotationSpinBox->setAlignment(Qt::AlignRight);
+			this->horizontalRotationSpinBox->setValue(0.0f);
 
-			auto rotationLayout = new QHBoxLayout();
-			rotationLayout->addWidget(this->rotationLabel_, 0, Qt::AlignLeft);
-			rotationLayout->addWidget(this->rotationSpinBox, 0, Qt::AlignRight);
+			this->verticalRotationLabel_= new QLabel;
+			this->verticalRotationLabel_->setText(u8"垂直旋转");
+
+			this->verticalRotationSlider = new QSlider(Qt::Horizontal);
+			this->verticalRotationSlider->setObjectName("Value");
+			this->verticalRotationSlider->setMinimum(-100);
+			this->verticalRotationSlider->setMaximum(100);
+			this->verticalRotationSlider->setValue(0);
+			this->verticalRotationSlider->setFixedWidth(270);
+
+			this->verticalRotationSpinBox = new DoubleSpinBox;
+			this->verticalRotationSpinBox->setFixedWidth(50);
+			this->verticalRotationSpinBox->setMinimum(-1.0f);
+			this->verticalRotationSpinBox->setMaximum(1.0f);
+			this->verticalRotationSpinBox->setSingleStep(0.03f);
+			this->verticalRotationSpinBox->setAlignment(Qt::AlignRight);
+			this->verticalRotationSpinBox->setValue(0.0f);
+
+			auto horizontalRotationLayout = new QHBoxLayout();
+			horizontalRotationLayout->addWidget(this->horizontalRotationLabel_, 0, Qt::AlignLeft);
+			horizontalRotationLayout->addWidget(this->horizontalRotationSpinBox, 0, Qt::AlignRight);
+
+			auto verticalRotationLayout = new QHBoxLayout();
+			verticalRotationLayout->addWidget(this->verticalRotationLabel_, 0, Qt::AlignLeft);
+			verticalRotationLayout->addWidget(this->verticalRotationSpinBox, 0, Qt::AlignRight);
 
 			auto layout = new QVBoxLayout();
 			layout->addLayout(this->mapLayout);
-			layout->addLayout(HLayout);
+			layout->addLayout(intensityLayout);
 			layout->addWidget(this->slider);
-			layout->addLayout(rotationLayout);
-			layout->addWidget(this->rotationSlider);
+			layout->addLayout(horizontalRotationLayout);
+			layout->addWidget(this->horizontalRotationSlider);
+			layout->addLayout(verticalRotationLayout);
+			layout->addWidget(this->verticalRotationSlider);
 			layout->setContentsMargins(20, 5, 50, 0);
 			this->mainLayout = layout;
 
@@ -204,12 +229,12 @@ namespace rabbit
 		resetButton_ = new QToolButton();
 		resetButton_->setText(u8"重置");
 
-		auto layout = new QHBoxLayout();
-		layout->addSpacing(this->closeButton_->iconSize().width());
-		layout->addStretch();
-		layout->addWidget(title_, 0, Qt::AlignCenter);
-		layout->addStretch();
-		layout->addWidget(closeButton_, 0, Qt::AlignRight);
+		auto titleLayout = new QHBoxLayout();
+		titleLayout->addSpacing(this->closeButton_->iconSize().width());
+		titleLayout->addStretch();
+		titleLayout->addWidget(title_, 0, Qt::AlignCenter);
+		titleLayout->addStretch();
+		titleLayout->addWidget(closeButton_, 0, Qt::AlignRight);
 
 		auto imageLayout = new QHBoxLayout();
 		imageLayout->addStretch();
@@ -218,17 +243,12 @@ namespace rabbit
 
 		this->colorMap_.init(u8"环境", CreateFlags::SpoilerBit | CreateFlags::ColorBit | CreateFlags::ValueBit);
 		this->colorMap_.setColor(QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z));
-		this->colorMap_.spinBox->setMaximum(10.0f);
-		this->colorMap_.spinBox->setSingleStep(0.1f);
-		this->colorMap_.spinBox->setAlignment(Qt::AlignRight);
 		this->colorMap_.spinBox->setValue(profile->environmentModule->intensity);
-		this->colorMap_.slider->setMinimum(0);
-		this->colorMap_.slider->setMaximum(100);
 		this->colorMap_.slider->setValue(profile->environmentModule->intensity * 10.0f);
 		this->colorMap_.spoiler->toggleButton.click();
 
 		mainLayout_ = new QVBoxLayout(this);
-		mainLayout_->addLayout(layout);
+		mainLayout_->addLayout(titleLayout);
 		mainLayout_->addLayout(imageLayout);
 		mainLayout_->addWidget(path, 0, Qt::AlignCenter);
 		mainLayout_->addWidget(colorMap_.spoiler);
@@ -243,8 +263,10 @@ namespace rabbit
 		connect(colorMap_.color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(colorMap_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
 		connect(colorMap_.slider, SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
-		connect(colorMap_.rotationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(rotationEditEvent(double)));
-		connect(colorMap_.rotationSlider, SIGNAL(valueChanged(int)), this, SLOT(rotationSliderEvent(int)));
+		connect(colorMap_.horizontalRotationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(horizontalRotationEditEvent(double)));
+		connect(colorMap_.horizontalRotationSlider, SIGNAL(valueChanged(int)), this, SLOT(horizontalRotationSliderEvent(int)));
+		connect(colorMap_.verticalRotationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(verticalRotationEditEvent(double)));
+		connect(colorMap_.verticalRotationSlider, SIGNAL(valueChanged(int)), this, SLOT(verticalRotationSliderEvent(int)));
 		connect(&mapColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(colorChangeEvent(const QColor&)));
 	}
 
@@ -261,7 +283,7 @@ namespace rabbit
 		auto c = QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z);
 		auto offset = this->profile_->environmentModule->offset;
 
-		if (this->image_)
+		if (this->image_ && this->colorMap_.check->isChecked())
 		{
 			float* data_ = nullptr;
 			auto srcWidth = this->image_->width();
@@ -305,7 +327,8 @@ namespace rabbit
 	EnvironmentWindow::showEvent(QShowEvent* event)
 	{
 		this->colorMap_.spinBox->setValue(profile_->environmentModule->intensity);
-		this->colorMap_.rotationSpinBox->setValue(profile_->environmentModule->offset.x);
+		this->colorMap_.horizontalRotationSpinBox->setValue(profile_->environmentModule->offset.x);
+		this->colorMap_.verticalRotationSpinBox->setValue(profile_->environmentModule->offset.y);
 		this->colorMap_.setColor(QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z));
 
 		this->repaint();
@@ -455,14 +478,16 @@ namespace rabbit
 	}
 
 	void
-	EnvironmentWindow::rotationSliderEvent(int value)
+	EnvironmentWindow::horizontalRotationSliderEvent(int value)
 	{
-		this->colorMap_.rotationSpinBox->setValue(value / 100.0f);
+		this->colorMap_.horizontalRotationSpinBox->setValue(value / 100.0f);
 	}
 	
 	void
-	EnvironmentWindow::rotationEditEvent(double value)
+	EnvironmentWindow::horizontalRotationEditEvent(double value)
 	{
+		this->profile_->environmentModule->offset = octoon::math::float2(value, this->profile_->environmentModule->offset.y);
+
 		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
 		if (meshRenderer)
 		{
@@ -470,16 +495,45 @@ namespace rabbit
 			if (material->isInstanceOf<octoon::material::MeshBasicMaterial>())
 			{
 				auto basicMaterial = material->downcast<octoon::material::MeshBasicMaterial>();
-				basicMaterial->setOffset(octoon::math::float2(value, 0));
+				basicMaterial->setOffset(this->profile_->environmentModule->offset);
 			}
 		}
 
 		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
 		if (environmentLight)
-			environmentLight->setOffset(octoon::math::float2(value, 0));
+			environmentLight->setOffset(this->profile_->environmentModule->offset);
 
-		this->profile_->environmentModule->offset = octoon::math::float2(value, 0);
-		this->colorMap_.rotationSlider->setValue(value * 100.0f);
+		this->colorMap_.horizontalRotationSlider->setValue(value * 100.0f);
+		this->repaint();
+	}
+
+	void
+	EnvironmentWindow::verticalRotationSliderEvent(int value)
+	{
+		this->colorMap_.verticalRotationSpinBox->setValue(value / 100.0f);
+	}
+	
+	void
+	EnvironmentWindow::verticalRotationEditEvent(double value)
+	{
+		this->profile_->environmentModule->offset = octoon::math::float2(this->profile_->environmentModule->offset.x, value);
+
+		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
+		if (meshRenderer)
+		{
+			auto material = meshRenderer->getMaterial();
+			if (material->isInstanceOf<octoon::material::MeshBasicMaterial>())
+			{
+				auto basicMaterial = material->downcast<octoon::material::MeshBasicMaterial>();
+				basicMaterial->setOffset(this->profile_->environmentModule->offset);
+			}
+		}
+
+		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
+		if (environmentLight)
+			environmentLight->setOffset(this->profile_->environmentModule->offset);
+		
+		this->colorMap_.verticalRotationSlider->setValue(value * 100.0f);
 		this->repaint();
 	}
 
@@ -493,21 +547,11 @@ namespace rabbit
 	void
 	EnvironmentWindow::resetEvent()
 	{
-		profile_->environmentModule->intensity = 1.f;
-		profile_->environmentModule->color = octoon::math::float3(229.f, 229.f, 235.f) / 255.f;
-
-		auto environmentLight = profile_->entitiesModule->enviromentLight->getComponent<octoon::EnvironmentLightComponent>();
-		if (environmentLight)
-		{
-			environmentLight->setColor(octoon::math::srgb2linear(profile_->environmentModule->color));
-			environmentLight->setIntensity(profile_->environmentModule->intensity);
-		}
-
-		auto meshRenderer = profile_->entitiesModule->enviromentLight->getComponent<octoon::MeshRendererComponent>();
-		if (meshRenderer)
-			meshRenderer->getMaterial()->set("diffuse", octoon::math::srgb2linear(profile_->environmentModule->color));
-
-		this->colorMap_.setColor(QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z));
+		this->colorMap_.spinBox->setValue(1.0f);
+		this->colorMap_.check->setChecked(false);
+		this->colorMap_.horizontalRotationSpinBox->setValue(0.0f);
+		this->colorMap_.verticalRotationSpinBox->setValue(0.0f);
+		this->colorMap_.setColor(QColor::fromRgb(229, 229, 235));
 		this->repaint();
 	}
 }

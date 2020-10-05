@@ -395,8 +395,7 @@ KERNEL void ShadeSurface(
             if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && (!Bxdf_IsSingular(&diffgeo) || isLightSingular))
             {
                 wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
-                float ndotwo = fabs(dot(diffgeo.n, normalize(wo)));
-                radiance = PI * le * ndotwo * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
+                radiance = PI * le * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
             }
         }
 
@@ -431,7 +430,7 @@ KERNEL void ShadeSurface(
             Path_MulThroughput(path, 1.f / q);
         }
 
-        float3 t = bxdf * fabs(dot(diffgeo.n, bxdf_wo));
+        float3 t = bxdf;
         if (NON_BLACK(t) && bxdf_pdf > 0 && !rr_stop)
         {
             Path_MulThroughput(path, t / bxdf_pdf);

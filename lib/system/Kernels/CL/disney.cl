@@ -144,11 +144,11 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, DisneyShaderData cons
 	return mix(c_pdf * clearcoat + (1.f - clearcoat) * (cs_w * r_pdf + (1.f - cs_w) * d_pdf), 0.f, shader_data->transparency);
 }
 
-INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float ndotwi, float ir, float3 transmission)
+INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float ndotwi, float ir, float3 transmittance)
 {
 	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
 	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
-	float3 sss = ss + transmission * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
+	float3 sss = ss + transmittance * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
 
 	return sss;
 }

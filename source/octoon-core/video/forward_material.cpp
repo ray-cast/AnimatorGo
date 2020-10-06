@@ -736,7 +736,7 @@ vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in Geometri
 	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
 	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
 	float ir = 0.5;
-	vec3 sss = ss + subsurfaceColor * pndl * pndl * pow(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
+	vec3 sss = Fd + subsurfaceColor * pndl * pndl * pow(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
 
 	return RECIPROCAL_PI * diffuseColor * mix(vec3(Fd), sss, subsurface);
 } // validated

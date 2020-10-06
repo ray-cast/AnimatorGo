@@ -148,7 +148,7 @@ INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float
 {
 	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
 	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
-	float3 sss = ss + transmittance * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
+	float3 sss = clamp( ndotwi, 0.f, 1.f) + transmittance * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
 
 	return sss;
 }

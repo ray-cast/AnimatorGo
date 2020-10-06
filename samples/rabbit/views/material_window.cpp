@@ -763,6 +763,8 @@ namespace rabbit
 	void
 	MaterialEditWindow::colorClickEvent()
 	{
+		auto srgb = octoon::math::linear2srgb(this->material_->getColor());
+		albedoColor_.setCurrentColor(QColor::fromRgbF(srgb.x, srgb.y, srgb.z));
 		albedoColor_.show();
 	}
 
@@ -777,6 +779,8 @@ namespace rabbit
 	void
 	MaterialEditWindow::emissiveClickEvent()
 	{
+		auto srgb = octoon::math::linear2srgb(this->material_->getEmissive());
+		emissiveColor_.setCurrentColor(QColor::fromRgbF(srgb.x, srgb.y, srgb.z));
 		emissiveColor_.show();
 	}
 
@@ -1398,6 +1402,8 @@ namespace rabbit
 	void
 	MaterialEditWindow::subsurfaceColorClickEvent()
 	{
+		auto srgb = octoon::math::linear2srgb(this->material_->getSubsurfaceColor());
+		subsurfaceColor_.setCurrentColor(QColor::fromRgbF(srgb.x, srgb.y, srgb.z));
 		subsurfaceColor_.show();
 	}
 

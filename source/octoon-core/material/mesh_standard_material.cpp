@@ -54,6 +54,7 @@ static const char* standard_frag = R"(
 
 uniform vec3 diffuse;
 uniform vec3 emissive;
+uniform vec3 subsurfaceColor;
 uniform float opacity;
 uniform float roughness;
 uniform float metalness;
@@ -129,6 +130,7 @@ namespace octoon::material
 		this->setClearCoat(0.0f);
 		this->setClearCoatRoughness(0.0f);
 		this->setSubsurface(0.0f);
+		this->setSubsurfaceColor(math::float3(1.0f, 0.2f, 0.05f));
 		this->setGamma(2.2f);
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);
@@ -230,6 +232,14 @@ namespace octoon::material
 	}
 
 	void
+	MeshStandardMaterial::setSubsurfaceColor(const math::float3& subsurfaceColor) noexcept
+	{
+		this->subsurfaceColor_ = subsurfaceColor;
+		this->setDirty(false);
+		this->set("subsurfaceColor", subsurfaceColor);
+	}
+
+	void
 	MeshStandardMaterial::setGamma(float gamma) noexcept
 	{
 		this->gamma_ = gamma;
@@ -299,6 +309,22 @@ namespace octoon::material
 		this->alphaMap_ = map;
 		this->set("alphaMap", map);
 		this->set("alphaMapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setSubsurfaceMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->subsurfaceMap_ = map;
+		this->set("subsurfaceMap", map);
+		this->set("subsurfaceMapEnable", map ? true : false);
+	}
+
+	void
+	MeshStandardMaterial::setSubsurfaceColorMap(const hal::GraphicsTexturePtr& map) noexcept
+	{
+		this->subsurfaceMap_ = map;
+		this->set("subsurfaceColorMap", map);
+		this->set("subsurfaceColorMapEnable", map ? true : false);
 	}
 
 	void
@@ -396,16 +422,22 @@ namespace octoon::material
 		return this->color_;
 	}
 
-	float
-	MeshStandardMaterial::getOpacity() const noexcept
+	const math::float3&
+	MeshStandardMaterial::getSubsurfaceColor()const noexcept
 	{
-		return opacity_;
+		return this->subsurfaceColor_;
 	}
 
 	const math::float3&
 	MeshStandardMaterial::getEmissive()const noexcept
 	{
 		return this->emissive_;
+	}
+
+	float
+	MeshStandardMaterial::getOpacity() const noexcept
+	{
+		return opacity_;
 	}
 
 	float
@@ -455,12 +487,6 @@ namespace octoon::material
 	MeshStandardMaterial::getNormalScale() const noexcept
 	{
 		return this->normalScale_;
-	}
-
-	const hal::GraphicsTexturePtr&
-	MeshStandardMaterial::getEmissiveMap() const noexcept
-	{
-		return this->emissiveMap_;
 	}
 
 	const hal::GraphicsTexturePtr&
@@ -527,6 +553,24 @@ namespace octoon::material
 	MeshStandardMaterial::getLightTexture() const noexcept
 	{
 		return this->lightMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getSubsurfaceMap() const noexcept
+	{
+		return this->subsurfaceMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getSubsurfaceColorMap() const noexcept
+	{
+		return this->subsurfaceColorMap_;
+	}
+
+	const hal::GraphicsTexturePtr&
+	MeshStandardMaterial::getEmissiveMap() const noexcept
+	{
+		return this->emissiveMap_;
 	}
 
 	float

@@ -164,6 +164,10 @@ namespace octoon::video
 						textureCollector.Collect(standard->getClearCoatMap());
 					if (standard->getClearCoatRoughnessMap())
 						textureCollector.Collect(standard->getClearCoatRoughnessMap());
+					if (standard->getSubsurfaceMap())
+						textureCollector.Collect(standard->getSubsurfaceMap());
+					if (standard->getSubsurfaceColorMap())
+						textureCollector.Collect(standard->getSubsurfaceColorMap());
 					if (standard->getEmissiveMap())
 						textureCollector.Collect(standard->getEmissiveMap());
 				}
@@ -576,6 +580,9 @@ namespace octoon::video
 			material.disney.clearcoat_roughness = mat->getClearCoatRoughness();
 			material.disney.clearcoat_roughness_map_idx = GetTextureIndex(textureCollector, mat->getClearCoatRoughnessMap());
 			material.disney.subsurface = mat->getSubsurface();
+			material.disney.subsurface_map_idx = GetTextureIndex(textureCollector, mat->getSubsurfaceMap());
+			material.disney.subsurface_color = RadeonRays::float3(mat->getSubsurfaceColor().x, mat->getSubsurfaceColor().y, mat->getSubsurfaceColor().z);
+			material.disney.subsurface_color_map_idx = GetTextureIndex(textureCollector, mat->getSubsurfaceColorMap());
 			material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * mat->getEmissiveIntensity();
 			material.disney.emissive_map_idx = GetTextureIndex(textureCollector, mat->getEmissiveMap());
 

@@ -47,6 +47,7 @@ namespace rabbit
 		void setClearCoatMap(const QString& fileName);
 		void setClearCoatRoughnessMap(const QString& fileName);
 		void setSubsurfaceMap(const QString& fileName);
+		void setSubsurfaceColorMap(const QString& fileName);
 		void setEmissiveMap(const QString& fileName);
 
 	public Q_SLOTS:
@@ -66,6 +67,7 @@ namespace rabbit
 		void clearcoatRoughnessMapClickEvent();
 		void sheenMapClickEvent();
 		void subsurfaceMapClickEvent();
+		void subsurfaceColorMapClickEvent();
 		void emissiveMapClickEvent();
 
 		void colorMapCheckEvent(int);
@@ -79,6 +81,7 @@ namespace rabbit
 		void clearcoatRoughnessMapCheckEvent(int);
 		void sheenMapCheckEvent(int);
 		void subsurfaceMapCheckEvent(int);
+		void subsurfaceColorMapCheckEvent(int);
 		void emissiveMapCheckEvent(int);
 
 		void opacityEditEvent(double);
@@ -107,6 +110,8 @@ namespace rabbit
 
 		void subsurfaceEditEvent(double);
 		void subsurfaceSliderEvent(int);
+		void subsurfaceColorClickEvent();
+		void subsurfaceColorChangeEvent(const QColor& color);
 
 		void emissiveEditEvent(double);
 		void emissiveSliderEvent(int);
@@ -159,9 +164,11 @@ namespace rabbit
 		MaterialUi clearcoatRoughness_;
 		MaterialUi sheen_;
 		MaterialUi subsurface_;
+		MaterialUi subsurfaceValue_;
 		MaterialUi emissive_;
 
 		Spoiler* clearCoatSpoiler_;
+		Spoiler* subsurfaceSpoiler_;
 		Spoiler* othersSpoiler_;
 
 		QLabel* title_;
@@ -171,6 +178,7 @@ namespace rabbit
 		QLabel* imageLabel_;
 		QColorDialog albedoColor_;
 		QColorDialog emissiveColor_;
+		QColorDialog subsurfaceColor_;
 		QCheckBox* receiveShadowCheck_;
 		QToolButton* backButton_;
 		std::shared_ptr<octoon::material::MeshStandardMaterial> material_;

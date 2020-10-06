@@ -28,6 +28,7 @@ namespace octoon::material
 		void setClearCoat(float clearCoat) noexcept;
 		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
 		void setSubsurface(float subsurface) noexcept;
+		void setSubsurfaceColor(const math::float3& subsurfaceCOlor) noexcept;
 		void setLightMapIntensity(float intensity) noexcept;
 		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setOpacityMap(const hal::GraphicsTexturePtr& map) noexcept;
@@ -40,6 +41,8 @@ namespace octoon::material
 		void setClearCoatMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setClearCoatRoughnessMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setEmissiveMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setSubsurfaceMap(const hal::GraphicsTexturePtr& map) noexcept;
+		void setSubsurfaceColorMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setLightTexture(const hal::GraphicsTexturePtr& map) noexcept;
 		void setOffset(const math::float2& offset) noexcept;
 		void setRepeat(const math::float2& repeat) noexcept;
@@ -47,6 +50,7 @@ namespace octoon::material
 		void setGamma(float gamma) noexcept;
 
 		const math::float3& getColor() const noexcept;
+		const math::float3& getSubsurfaceColor() const noexcept;
 		const math::float3& getEmissive() const noexcept;
 
 		float getEmissiveIntensity() const noexcept;
@@ -74,6 +78,8 @@ namespace octoon::material
 		const hal::GraphicsTexturePtr& getSheenMap() const noexcept;
 		const hal::GraphicsTexturePtr& getClearCoatMap() const noexcept;
 		const hal::GraphicsTexturePtr& getClearCoatRoughnessMap() const noexcept;		
+		const hal::GraphicsTexturePtr& getSubsurfaceMap() const noexcept;
+		const hal::GraphicsTexturePtr& getSubsurfaceColorMap() const noexcept;
 		const hal::GraphicsTexturePtr& getEmissiveMap() const noexcept;
 		const hal::GraphicsTexturePtr& getLightTexture() const noexcept;
 
@@ -110,6 +116,7 @@ namespace octoon::material
 		math::float2 normalScale_;
 		math::float3 color_;
 		math::float3 emissive_;
+		math::float3 subsurfaceColor_;
 		hal::GraphicsTexturePtr colorMap_;
 		hal::GraphicsTexturePtr alphaMap_;
 		hal::GraphicsTexturePtr normalMap_;
@@ -121,6 +128,8 @@ namespace octoon::material
 		hal::GraphicsTexturePtr clearcoatMap_;
 		hal::GraphicsTexturePtr clearcoatRoughnessMap_;
 		hal::GraphicsTexturePtr lightMap_;
+		hal::GraphicsTexturePtr subsurfaceMap_;
+		hal::GraphicsTexturePtr subsurfaceColorMap_;
 		hal::GraphicsTexturePtr emissiveMap_;
 	};
 }

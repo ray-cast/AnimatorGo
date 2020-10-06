@@ -37,453 +37,453 @@ THE SOFTWARE.
 
 KERNEL
 void InitPathData(
-    GLOBAL int const* restrict src_index,
-    GLOBAL int* restrict dst_index,
-    GLOBAL int const* restrict num_elements, 
-    int world_volume_idx,
-    GLOBAL Path* restrict paths
+	GLOBAL int const* restrict src_index,
+	GLOBAL int* restrict dst_index,
+	GLOBAL int const* restrict num_elements, 
+	int world_volume_idx,
+	GLOBAL Path* restrict paths
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < *num_elements)
-    {
-        dst_index[global_id] = src_index[global_id];
+	int global_id = get_global_id(0);
+	if (global_id < *num_elements)
+	{
+		dst_index[global_id] = src_index[global_id];
 
-        GLOBAL Path* path = paths + global_id;
-        path->throughput = make_float3(1.f, 1.f, 1.f);
-        path->volume = world_volume_idx;
-        path->flags = 0;
-        path->active = 0xFF;
-    }
+		GLOBAL Path* path = paths + global_id;
+		path->throughput = make_float3(1.f, 1.f, 1.f);
+		path->volume = world_volume_idx;
+		path->flags = 0;
+		path->active = 0xFF;
+	}
 }
 
 KERNEL void FilterPathStream(
-    GLOBAL Intersection const* restrict isects,
-    GLOBAL int const* restrict num_elements,
-    GLOBAL int const* restrict pixel_indices,
-    GLOBAL Path* restrict paths,
-    GLOBAL int* restrict predicate
+	GLOBAL Intersection const* restrict isects,
+	GLOBAL int const* restrict num_elements,
+	GLOBAL int const* restrict pixel_indices,
+	GLOBAL Path* restrict paths,
+	GLOBAL int* restrict predicate
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < *num_elements)
-    {
-        int pixel_idx = pixel_indices[global_id];
+	int global_id = get_global_id(0);
+	if (global_id < *num_elements)
+	{
+		int pixel_idx = pixel_indices[global_id];
 
-        GLOBAL Path* path = paths + pixel_idx;
-        if (Path_IsAlive(path))
-        {
-            bool kill = (length(Path_GetThroughput(path)) < CRAZY_LOW_THROUGHPUT) || (isects[global_id].shapeid < 0);
-            if (!kill)
-            {
-                predicate[global_id] = 1;
-            }
-            else
-            {
-                Path_Kill(path);
-                predicate[global_id] = 0;
-            }
-        }
-        else
-        {
-            predicate[global_id] = 0;
-        }
-    }
+		GLOBAL Path* path = paths + pixel_idx;
+		if (Path_IsAlive(path))
+		{
+			bool kill = (length(Path_GetThroughput(path)) < CRAZY_LOW_THROUGHPUT) || (isects[global_id].shapeid < 0);
+			if (!kill)
+			{
+				predicate[global_id] = 1;
+			}
+			else
+			{
+				Path_Kill(path);
+				predicate[global_id] = 0;
+			}
+		}
+		else
+		{
+			predicate[global_id] = 0;
+		}
+	}
 }
 
 KERNEL void RestorePixelIndices(
-    GLOBAL int const* restrict compacted_indices,
-    GLOBAL int* restrict num_elements,
-    GLOBAL int const* restrict prev_indices,
-    GLOBAL int* restrict new_indices
+	GLOBAL int const* restrict compacted_indices,
+	GLOBAL int* restrict num_elements,
+	GLOBAL int const* restrict prev_indices,
+	GLOBAL int* restrict new_indices
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < *num_elements)
-    {
-        new_indices[global_id] = prev_indices[compacted_indices[global_id]];
-    }
+	int global_id = get_global_id(0);
+	if (global_id < *num_elements)
+	{
+		new_indices[global_id] = prev_indices[compacted_indices[global_id]];
+	}
 }
 
 KERNEL void AdvanceIterationCount(
-    GLOBAL int const* restrict pixel_indices,
-    GLOBAL int const*  restrict output_indices,
-    int num_rays,
-    GLOBAL float4* restrict output
+	GLOBAL int const* restrict pixel_indices,
+	GLOBAL int const*  restrict output_indices,
+	int num_rays,
+	GLOBAL float4* restrict output
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < num_rays)
-    {
-        int pixel_idx = pixel_indices[global_id];
-        int output_index = output_indices[pixel_idx];
+	int global_id = get_global_id(0);
+	if (global_id < num_rays)
+	{
+		int pixel_idx = pixel_indices[global_id];
+		int output_index = output_indices[pixel_idx];
 
-        float4 v = make_float4(0.f, 0.f, 0.f, 1.f);
-        ADD_FLOAT4(&output[output_index], v);
-    }
+		float4 v = make_float4(0.f, 0.f, 0.f, 1.f);
+		ADD_FLOAT4(&output[output_index], v);
+	}
 }
 
 ///< Illuminate missing rays
 KERNEL void ShadeMiss(
-    // Ray batch
-    GLOBAL ray const* restrict rays,
-    // Intersection data
-    GLOBAL Intersection const* restrict isects,
-    // Pixel indices
-    GLOBAL int const* restrict pixel_indices,
-    // Output indices
-    GLOBAL int const*  restrict output_indices,
-    // Number of rays
-    GLOBAL int const* restrict num_rays,
-    GLOBAL Light const* restrict lights,
-    // Light distribution
-    GLOBAL int const* restrict light_distribution,
-    // Number of emissive objects
-    int num_lights,
-    int env_light_idx,
-    // Textures
-    TEXTURE_ARG_LIST,
-    GLOBAL Path const* restrict paths,
-    GLOBAL Volume const* restrict volumes,
-    // Output values
-    GLOBAL float4* restrict output
+	// Ray batch
+	GLOBAL ray const* restrict rays,
+	// Intersection data
+	GLOBAL Intersection const* restrict isects,
+	// Pixel indices
+	GLOBAL int const* restrict pixel_indices,
+	// Output indices
+	GLOBAL int const*  restrict output_indices,
+	// Number of rays
+	GLOBAL int const* restrict num_rays,
+	GLOBAL Light const* restrict lights,
+	// Light distribution
+	GLOBAL int const* restrict light_distribution,
+	// Number of emissive objects
+	int num_lights,
+	int env_light_idx,
+	// Textures
+	TEXTURE_ARG_LIST,
+	GLOBAL Path const* restrict paths,
+	GLOBAL Volume const* restrict volumes,
+	// Output values
+	GLOBAL float4* restrict output
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < *num_rays)
-    {
-        int pixel_idx = pixel_indices[global_id];
-        int output_index = output_indices[pixel_idx];
+	int global_id = get_global_id(0);
+	if (global_id < *num_rays)
+	{
+		int pixel_idx = pixel_indices[global_id];
+		int output_index = output_indices[pixel_idx];
 
-        GLOBAL Path const* path = paths + pixel_idx;
+		GLOBAL Path const* path = paths + pixel_idx;
 
-        // In case of a miss
-        if (isects[global_id].shapeid < 0 && Path_IsAlive(path))
-        {
-            Light light = lights[env_light_idx];
+		// In case of a miss
+		if (isects[global_id].shapeid < 0 && Path_IsAlive(path))
+		{
+			Light light = lights[env_light_idx];
 
-            // Apply MIS
-            int bxdf_flags = Path_GetBxdfFlags(path);
-            float selection_pdf = Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
-            float light_pdf = EnvironmentLight_GetPdf(&light, 0, 0, bxdf_flags, kLightInteractionSurface, rays[global_id].d.xyz, TEXTURE_ARGS);
-            float2 extra = Ray_GetExtra(&rays[global_id]);
-            float weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, light_pdf * selection_pdf) : 1.f;
+			// Apply MIS
+			int bxdf_flags = Path_GetBxdfFlags(path);
+			float selection_pdf = Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
+			float light_pdf = EnvironmentLight_GetPdf(&light, 0, 0, bxdf_flags, kLightInteractionSurface, rays[global_id].d.xyz, TEXTURE_ARGS);
+			float2 extra = Ray_GetExtra(&rays[global_id]);
+			float weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, light_pdf * selection_pdf) : 1.f;
 
-            float3 t = Path_GetThroughput(path);
-            float4 v = 0.f;
+			float3 t = Path_GetThroughput(path);
+			float4 v = 0.f;
 
-            int tex = EnvironmentLight_GetTexture(&light, bxdf_flags);
-            if (tex != -1)
-            {
-                v.xyz = weight * light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.offset, light.ibl_mirror_x) * t;
-                v.xyz = REASONABLE_RADIANCE(v.xyz);
-            }
-            else
-            {
-                v.xyz = REASONABLE_RADIANCE(weight * light.intensity * t);
-            }
+			int tex = EnvironmentLight_GetTexture(&light, bxdf_flags);
+			if (tex != -1)
+			{
+				v.xyz = weight * light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.offset, light.ibl_mirror_x) * t;
+				v.xyz = REASONABLE_RADIANCE(v.xyz);
+			}
+			else
+			{
+				v.xyz = REASONABLE_RADIANCE(weight * light.intensity * t);
+			}
 
-            ADD_FLOAT4(&output[output_index], v);
-        }
-    }
+			ADD_FLOAT4(&output[output_index], v);
+		}
+	}
 }
 
 KERNEL void ShadeBackgroundEnvMap(
-    GLOBAL ray const* restrict rays,
-    GLOBAL Intersection const* restrict isects,
-    GLOBAL int const* restrict pixel_indices,
-    GLOBAL int const*  restrict output_indices,
-    int num_rays,
-    GLOBAL Light const* restrict lights,
-    int env_light_idx,
-    TEXTURE_ARG_LIST,
-    GLOBAL Path const* restrict paths,
-    GLOBAL Volume const* restrict volumes,
-    GLOBAL float4* restrict output
+	GLOBAL ray const* restrict rays,
+	GLOBAL Intersection const* restrict isects,
+	GLOBAL int const* restrict pixel_indices,
+	GLOBAL int const*  restrict output_indices,
+	int num_rays,
+	GLOBAL Light const* restrict lights,
+	int env_light_idx,
+	TEXTURE_ARG_LIST,
+	GLOBAL Path const* restrict paths,
+	GLOBAL Volume const* restrict volumes,
+	GLOBAL float4* restrict output
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < num_rays)
-    {
-        int pixel_idx = pixel_indices[global_id];
-        int output_index = output_indices[pixel_idx];
+	int global_id = get_global_id(0);
+	if (global_id < num_rays)
+	{
+		int pixel_idx = pixel_indices[global_id];
+		int output_index = output_indices[pixel_idx];
 
-        float4 v = make_float4(0.f, 0.f, 0.f, 1.f);
+		float4 v = make_float4(0.f, 0.f, 0.f, 1.f);
 
-        if (isects[global_id].shapeid < 0 && env_light_idx != -1)
-        {
-            int volume_idx = paths[pixel_idx].volume;
+		if (isects[global_id].shapeid < 0 && env_light_idx != -1)
+		{
+			int volume_idx = paths[pixel_idx].volume;
 
-            Light light = lights[env_light_idx];
+			Light light = lights[env_light_idx];
 
-            int tex = EnvironmentLight_GetBackgroundTexture(&light);
-            if (tex != -1)
-            {
-                v.xyz = light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.offset, light.ibl_mirror_x);
-            }
-            else
-            {
-                v.xyz = light.intensity;
-            }
-        }
+			int tex = EnvironmentLight_GetBackgroundTexture(&light);
+			if (tex != -1)
+			{
+				v.xyz = light.multiplier * Texture_SampleEnvMap(rays[global_id].d.xyz, TEXTURE_ARGS_IDX(tex), light.offset, light.ibl_mirror_x);
+			}
+			else
+			{
+				v.xyz = light.intensity;
+			}
+		}
 
-        ADD_FLOAT4(&output[output_index], v);
-    }
+		ADD_FLOAT4(&output[output_index], v);
+	}
 }
 
 KERNEL void ShadeSurface(
-    GLOBAL ray const* restrict rays,
-    GLOBAL Intersection const* restrict isects,
-    GLOBAL int const* restrict hit_indices,
-    GLOBAL int const* restrict pixel_indices,
-    GLOBAL int const*  restrict output_indices,
-    GLOBAL int const* restrict hit_count,
+	GLOBAL ray const* restrict rays,
+	GLOBAL Intersection const* restrict isects,
+	GLOBAL int const* restrict hit_indices,
+	GLOBAL int const* restrict pixel_indices,
+	GLOBAL int const*  restrict output_indices,
+	GLOBAL int const* restrict hit_count,
 
-    GLOBAL float3 const* restrict vertices,
-    GLOBAL float3 const* restrict normals,
-    GLOBAL float2 const* restrict uvs,
-    GLOBAL int const* restrict indices,
-    GLOBAL Shape const* restrict shapes,
-    GLOBAL int const* restrict material_attributes,
-    GLOBAL InputMapData const* restrict input_map_values,
-    GLOBAL Light const* restrict lights,
-    GLOBAL int const* restrict light_distribution,
-    int env_light_idx,
-    int num_lights,
+	GLOBAL float3 const* restrict vertices,
+	GLOBAL float3 const* restrict normals,
+	GLOBAL float2 const* restrict uvs,
+	GLOBAL int const* restrict indices,
+	GLOBAL Shape const* restrict shapes,
+	GLOBAL int const* restrict material_attributes,
+	GLOBAL InputMapData const* restrict input_map_values,
+	GLOBAL Light const* restrict lights,
+	GLOBAL int const* restrict light_distribution,
+	int env_light_idx,
+	int num_lights,
 
-    TEXTURE_ARG_LIST,
+	TEXTURE_ARG_LIST,
 
-    uint rng_seed,
-    GLOBAL uint* restrict random,
-    GLOBAL uint const* restrict sobol_mat,
+	uint rng_seed,
+	GLOBAL uint* restrict random,
+	GLOBAL uint const* restrict sobol_mat,
 
-    int bounce,
-    int frame,
+	int bounce,
+	int frame,
 
-    GLOBAL ray* restrict shadow_rays,
-    GLOBAL float3* restrict light_samples,
+	GLOBAL ray* restrict shadow_rays,
+	GLOBAL float3* restrict light_samples,
 
-    GLOBAL Path* restrict paths,
-    GLOBAL ray* restrict indirect_rays,
-    GLOBAL float3* restrict output
+	GLOBAL Path* restrict paths,
+	GLOBAL ray* restrict indirect_rays,
+	GLOBAL float3* restrict output
 )
 {
-    Scene scene =
-    {
-        vertices,
-        normals,
-        uvs,
-        indices,
-        shapes,
-        material_attributes,
-        input_map_values,
-        lights,
-        env_light_idx,
-        num_lights,
-        light_distribution
-    };
+	Scene scene =
+	{
+		vertices,
+		normals,
+		uvs,
+		indices,
+		shapes,
+		material_attributes,
+		input_map_values,
+		lights,
+		env_light_idx,
+		num_lights,
+		light_distribution
+	};
 
-    int global_id = get_global_id(0);
-    if (global_id < *hit_count)
-    {
-        int hit_idx = hit_indices[global_id];
-        int pixel_idx = pixel_indices[global_id];
-        Intersection isect = isects[hit_idx];
-        int shape_idx = isect.shapeid - 1;
+	int global_id = get_global_id(0);
+	if (global_id < *hit_count)
+	{
+		int hit_idx = hit_indices[global_id];
+		int pixel_idx = pixel_indices[global_id];
+		Intersection isect = isects[hit_idx];
+		int shape_idx = isect.shapeid - 1;
 
-        GLOBAL Path* path = paths + pixel_idx;
-        if (Path_IsScattered(path))
-        {
-            return;
-        }
+		GLOBAL Path* path = paths + pixel_idx;
+		if (Path_IsScattered(path))
+		{
+			return;
+		}
 
-        Sampler sampler;
+		Sampler sampler;
 #if SAMPLER == SOBOL
-        uint scramble = random[pixel_idx] * 0x1fe3434f;
-        Sampler_Init(&sampler, frame, SAMPLE_DIM_SURFACE_OFFSET + bounce * SAMPLE_DIMS_PER_BOUNCE, scramble);
+		uint scramble = random[pixel_idx] * 0x1fe3434f;
+		Sampler_Init(&sampler, frame, SAMPLE_DIM_SURFACE_OFFSET + bounce * SAMPLE_DIMS_PER_BOUNCE, scramble);
 #elif SAMPLER == RANDOM
-        uint scramble = pixel_idx * rng_seed;
-        Sampler_Init(&sampler, scramble);
+		uint scramble = pixel_idx * rng_seed;
+		Sampler_Init(&sampler, scramble);
 #elif SAMPLER == CMJ
-        uint rnd = random[pixel_idx];
-        uint scramble = rnd * 0x1fe3434f * ((frame + 331 * rnd) / (CMJ_DIM * CMJ_DIM));
-        Sampler_Init(&sampler, frame % (CMJ_DIM * CMJ_DIM), SAMPLE_DIM_SURFACE_OFFSET + bounce * SAMPLE_DIMS_PER_BOUNCE, scramble);
+		uint rnd = random[pixel_idx];
+		uint scramble = rnd * 0x1fe3434f * ((frame + 331 * rnd) / (CMJ_DIM * CMJ_DIM));
+		Sampler_Init(&sampler, frame % (CMJ_DIM * CMJ_DIM), SAMPLE_DIM_SURFACE_OFFSET + bounce * SAMPLE_DIMS_PER_BOUNCE, scramble);
 #endif
 
-        DifferentialGeometry diffgeo;
-        Scene_FillDifferentialGeometry(&scene, &isect, &diffgeo);
+		DifferentialGeometry diffgeo;
+		Scene_FillDifferentialGeometry(&scene, &isect, &diffgeo);
 
-        DisneyShaderData shader_data;
-        Disney_PrepareInputs(&diffgeo, TEXTURE_ARGS, &shader_data);
-        Disney_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS);
+		DisneyShaderData shader_data;
+		Disney_PrepareInputs(&diffgeo, TEXTURE_ARGS, &shader_data);
+		Disney_ApplyShadingNormal(&diffgeo, TEXTURE_ARGS);
 
-        DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
+		DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
 
-        Path_SetFlags(&diffgeo, path);
+		Path_SetFlags(&diffgeo, path);
 
-        float3 wi = -normalize(rays[hit_idx].d.xyz);
+		float3 wi = -normalize(rays[hit_idx].d.xyz);
 
-        float ngdotwi = dot(diffgeo.ng, wi);
-        bool backfacing = ngdotwi < 0.f;
+		float ngdotwi = dot(diffgeo.ng, wi);
+		bool backfacing = ngdotwi < 0.f;
 
-        if (!(shader_data.transparency > 0.f))
-        {
-            Path_SetOpacityFlag(path);
-        }
+		if (!(shader_data.transparency > 0.f))
+		{
+			Path_SetOpacityFlag(path);
+		}
 
-        if (NON_BLACK(shader_data.emissive))
-        {
-            if (!backfacing)
-            {
-                float weight = 1.f;
+		if (NON_BLACK(shader_data.emissive))
+		{
+			if (!backfacing)
+			{
+				float weight = 1.f;
 
-                if (bounce > 0 && !Path_IsSpecular(path))
-                {
-                    float2 extra = Ray_GetExtra(&rays[hit_idx]);
-                    float ld = isect.uvwt.w;
-                    float denom = fabs(dot(diffgeo.n, wi)) * diffgeo.area;
-                    float bxdf_light_pdf = denom > 0.f ? (ld * ld / denom / num_lights) : 0.f;
-                    weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, bxdf_light_pdf) : 1.f;
-                }
+				if (bounce > 0 && !Path_IsSpecular(path))
+				{
+					float2 extra = Ray_GetExtra(&rays[hit_idx]);
+					float ld = isect.uvwt.w;
+					float denom = fabs(dot(diffgeo.n, wi)) * diffgeo.area;
+					float bxdf_light_pdf = denom > 0.f ? (ld * ld / denom / num_lights) : 0.f;
+					weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, bxdf_light_pdf) : 1.f;
+				}
 
-                float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * shader_data.emissive * weight);
-                ADD_FLOAT3(&output[output_indices[pixel_idx]], v);
-            }
+				float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * shader_data.emissive * weight);
+				ADD_FLOAT3(&output[output_indices[pixel_idx]], v);
+			}
 
-            Path_Kill(path);
-            Ray_SetInactive(shadow_rays + global_id);
-            Ray_SetInactive(indirect_rays + global_id);
+			Path_Kill(path);
+			Ray_SetInactive(shadow_rays + global_id);
+			Ray_SetInactive(indirect_rays + global_id);
 
-            light_samples[global_id] = 0.f;
-            return;
-        }
+			light_samples[global_id] = 0.f;
+			return;
+		}
 
-        float s = (shader_data.transparency > 0.0f) ? (-sign(ngdotwi)) : 1.f;
-        if (backfacing && !(shader_data.transparency > 0.0f))
-        {
-            diffgeo.n = -diffgeo.n;
-            diffgeo.dpdu = -diffgeo.dpdu;
-            diffgeo.dpdv = -diffgeo.dpdv;
-            s = -s;
-        }
+		float s = (shader_data.transparency > 0.0f) ? (-sign(ngdotwi)) : 1.f;
+		if (backfacing && !(shader_data.transparency > 0.0f))
+		{
+			diffgeo.n = -diffgeo.n;
+			diffgeo.dpdu = -diffgeo.dpdu;
+			diffgeo.dpdv = -diffgeo.dpdv;
+			s = -s;
+		}
 
-        wi = matrix_mul_vector3(diffgeo.world_to_tangent, wi);
+		wi = matrix_mul_vector3(diffgeo.world_to_tangent, wi);
 
-        float3 throughput = Path_GetThroughput(path);
-        float3 bxdf_wo;
-        float bxdf_pdf = 0.f;
-        float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
-        bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
+		float3 throughput = Path_GetThroughput(path);
+		float3 bxdf_wo;
+		float bxdf_pdf = 0.f;
+		float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
+		bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
 
-        float3 radiance = 0.f;
-        float3 wo;
+		float3 radiance = 0.f;
+		float3 wo;
 
-        float selection_pdf = 1.f;
-        int light_idx = Scene_SampleLight(&scene, Sampler_Sample1D(&sampler, SAMPLER_ARGS), &selection_pdf);
-        if (light_idx > -1)
-        {
-            int bxdf_flags = Path_GetBxdfFlags(path);
-            
-            float light_pdf = 0.f;
-            float3 lightwo;
-            float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
-            lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
-            float light_bxdf_pdf = Disney_GetPdf(&diffgeo, &shader_data, wi, normalize(lightwo));
-            bool isLightSingular = Light_IsSingular(&scene.lights[light_idx]);
-            float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
+		float selection_pdf = 1.f;
+		int light_idx = Scene_SampleLight(&scene, Sampler_Sample1D(&sampler, SAMPLER_ARGS), &selection_pdf);
+		if (light_idx > -1)
+		{
+			int bxdf_flags = Path_GetBxdfFlags(path);
+			
+			float light_pdf = 0.f;
+			float3 lightwo;
+			float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
+			lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
+			float light_bxdf_pdf = Disney_GetPdf(&diffgeo, &shader_data, wi, normalize(lightwo));
+			bool isLightSingular = Light_IsSingular(&scene.lights[light_idx]);
+			float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
 
-            if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && (!Bxdf_IsSingular(&diffgeo) || isLightSingular))
-            {
-                wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
-                radiance = PI * le * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
-            }
-        }
+			if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && (!Bxdf_IsSingular(&diffgeo) || isLightSingular))
+			{
+				wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
+				radiance = PI * le * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
+			}
+		}
 
-        if (NON_BLACK(radiance))
-        {
-            float3 shadow_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
-            float3 temp = diffgeo.p + wo - shadow_ray_o;
-            float3 shadow_ray_dir = normalize(temp);
-            float shadow_ray_length = length(temp);
-            int shadow_ray_mask = VISIBILITY_MASK_BOUNCE_SHADOW(bounce);
+		if (NON_BLACK(radiance))
+		{
+			if (diffgeo.mat.shadow > 0)
+			{
+				float3 shadow_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+				float3 temp = diffgeo.p + wo - shadow_ray_o;
+				float3 shadow_ray_dir = normalize(temp);
+				float shadow_ray_length = length(temp);
+				int shadow_ray_mask = VISIBILITY_MASK_BOUNCE_SHADOW(bounce);
 
-            if (diffgeo.mat.shadow > 0)
-            {
-                Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
-                Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
-            }
+				Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
+				Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
+			}
 
-            light_samples[global_id] = REASONABLE_RADIANCE(radiance);
-        }
-        else
-        {
-            Ray_SetInactive(shadow_rays + global_id);
-            light_samples[global_id] = 0;
-        }
+			light_samples[global_id] = REASONABLE_RADIANCE(radiance);
+		}
+		else
+		{
+			Ray_SetInactive(shadow_rays + global_id);
+			light_samples[global_id] = 0;
+		}
 
-        float q = max(min(0.5f, 0.2126f * throughput.x + 0.7152f * throughput.y + 0.0722f * throughput.z), 0.01f);
-        bool rr_apply = bounce > 3;
-        bool rr_stop = Sampler_Sample1D(&sampler, SAMPLER_ARGS) > q && rr_apply;
+		float q = max(min(0.5f, 0.2126f * throughput.x + 0.7152f * throughput.y + 0.0722f * throughput.z), 0.01f);
+		bool rr_apply = bounce > 3;
+		bool rr_stop = Sampler_Sample1D(&sampler, SAMPLER_ARGS) > q && rr_apply;
 
-        if (rr_apply)
-        {
-            Path_MulThroughput(path, 1.f / q);
-        }
+		if (rr_apply)
+		{
+			Path_MulThroughput(path, 1.f / q);
+		}
 
-        float3 t = bxdf;
-        if (NON_BLACK(t) && bxdf_pdf > 0 && !rr_stop)
-        {
-            Path_MulThroughput(path, t / bxdf_pdf);
+		float3 t = bxdf;
+		if (NON_BLACK(t) && bxdf_pdf > 0 && !rr_stop)
+		{
+			Path_MulThroughput(path, t / bxdf_pdf);
 
-            float3 indirect_ray_dir = bxdf_wo;
-            float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
-            int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
+			float3 indirect_ray_dir = bxdf_wo;
+			float3 indirect_ray_o = diffgeo.p + CRAZY_LOW_DISTANCE * s * diffgeo.ng;
+			int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
-            Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-            Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
+			Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
+			Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
 
-            if (shader_data.transparency > 0.0f)
-            {
-                if (backfacing)
-                {
-                    Path_SetVolumeIdx(path, INVALID_IDX);
-                }
-                else
-                {
-                    Path_SetVolumeIdx(path, Scene_GetVolumeIndex(&scene, isect.shapeid - 1));
-                }
-            }
-        }
-        else
-        {
-            Path_Kill(path);
-            Ray_SetInactive(indirect_rays + global_id);
-        }
-    }
+			if (shader_data.transparency > 0.0f)
+			{
+				if (backfacing)
+				{
+					Path_SetVolumeIdx(path, INVALID_IDX);
+				}
+				else
+				{
+					Path_SetVolumeIdx(path, Scene_GetVolumeIndex(&scene, isect.shapeid - 1));
+				}
+			}
+		}
+		else
+		{
+			Path_Kill(path);
+			Ray_SetInactive(indirect_rays + global_id);
+		}
+	}
 }
 
 KERNEL void GatherLightSamples(
-    GLOBAL int const* restrict pixel_indices,
-    GLOBAL int const*  restrict output_indices,
-    GLOBAL int* restrict num_rays,
-    GLOBAL int const* restrict shadow_hits,
-    GLOBAL float3 const* restrict light_samples,
-    GLOBAL float4* restrict output
+	GLOBAL int const* restrict pixel_indices,
+	GLOBAL int const*  restrict output_indices,
+	GLOBAL int* restrict num_rays,
+	GLOBAL int const* restrict shadow_hits,
+	GLOBAL float3 const* restrict light_samples,
+	GLOBAL float4* restrict output
 )
 {
-    int global_id = get_global_id(0);
-    if (global_id < *num_rays)
-    {
-        int pixel_idx = pixel_indices[global_id];
-        int output_index = output_indices[pixel_idx];
+	int global_id = get_global_id(0);
+	if (global_id < *num_rays)
+	{
+		int pixel_idx = pixel_indices[global_id];
+		int output_index = output_indices[pixel_idx];
 
-        if (shadow_hits[global_id] == -1)
-        {
-            float4 radiance = 0.f;
-            radiance.xyz += light_samples[global_id];
-            ADD_FLOAT4(&output[output_index], radiance);
-        }
-    }
+		if (shadow_hits[global_id] == -1)
+		{
+			float4 radiance = 0.f;
+			radiance.xyz += light_samples[global_id];
+			ADD_FLOAT4(&output[output_index], radiance);
+		}
+	}
 }
 
 #endif

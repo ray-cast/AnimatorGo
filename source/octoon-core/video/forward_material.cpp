@@ -557,12 +557,20 @@ static char* subsurfacemap_pars_fragment = R"(
 #ifdef USE_SUBSURFACEMAP
 	uniform sampler2D subsurfaceMap;
 #endif
+#ifdef USE_SUBSURFACECOLORMAP
+	uniform sampler2D subsurfaceColorMap;
+#endif
 )";
 static char* subsurfacemap_fragment = R"(
 float subsurfaceFactor = subsurface;
 #ifdef USE_SUBSURFACEMAP
 	vec4 texelSubsurface = texture2D( subsurfaceMap, vUv );
 	subsurfaceFactor *= texelSubsurface.r;
+#endif
+vec3 subsurfaceColorFactor = subsurfaceColor;
+#ifdef USE_SUBSURFACECOLORMAP
+	vec4 texelSubsurfaceColor = texture2D( subsurfaceColorMap, vUv );
+	subsurfaceColorFactor *= texelSubsurface.rgb;
 #endif
 )";
 static char* clearcoatmap_pars_fragment = R"(
@@ -701,7 +709,7 @@ vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
 
 } // validated
 
-vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 diffuseColor, const in float roughness, const in float subsurface) {
+vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 diffuseColor, const in float roughness, const in float subsurface, const in vec3 subsurfaceColor) {
 	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
 
 	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
@@ -724,7 +732,13 @@ vec3 BRDF_Diffuse_Burley(const in IncidentLight incidentLight, const in Geometri
     float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
     float ss = 1.25f * (fss * (1.f / (dotNV + dotNL) - 0.5f) + 0.5f);
 
-	return RECIPROCAL_PI * diffuseColor * mix(Fd, ss, subsurface);
+	float ndotwi = dot( geometry.normal, incidentLight.direction );
+	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
+	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
+	float ir = 0.5;
+	vec3 sss = ss + subsurfaceColor * pndl * pndl * pow(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
+
+	return RECIPROCAL_PI * diffuseColor * mix(vec3(Fd), sss, subsurface);
 } // validated
 
 vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
@@ -1443,6 +1457,7 @@ struct PhysicalMaterial {
 	#ifndef STANDARD
 		float sheen;
 		float subsurface;
+		vec3  subsurfaceColor;
 		float clearCoat;
 		float clearCoatRoughness;
 	#endif
@@ -1522,7 +1537,7 @@ void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricC
 		reflectedLight.directSpecular += ( 1.0 - clearCoatDHR ) * irradiance * spec;
 	#endif
 
-	reflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Burley(directLight, geometry, material.diffuseColor, material.roughness, material.subsurface );
+	reflectedLight.directDiffuse += ( 1.0 - clearCoatDHR ) * irradiance * BRDF_Diffuse_Burley(directLight, geometry, material.diffuseColor, material.roughness, material.subsurface, material.subsurfaceColor );
 }
 
 void RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
@@ -1584,6 +1599,7 @@ material.roughness = clamp( roughnessFactor, 0.04, 1.0 );
 	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( specularFactor ) ), diffuseColor.rgb, metalnessFactor );
 	material.sheen = sheenFactor;
 	material.subsurface = subsurfaceFactor;
+	material.subsurfaceColor = subsurfaceColorFactor;
 	material.anisotropy = anisotropyFactor;
 	material.clearCoat = saturate( clearCoatFactor ); // Burley clearcoat model
 	material.clearCoatRoughness = clamp( clearCoatRoughnessFactor, 0.04, 1.0 );

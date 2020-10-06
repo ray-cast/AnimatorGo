@@ -83,6 +83,7 @@ typedef struct
 {
 	float3 base_color;
 	float3 emissive;
+	float3 subsurface_color;
 	float opacity;
 	float metallic;
 	float roughness;
@@ -107,6 +108,10 @@ typedef struct
 	int clearcoat_map_idx;
 	int clearcoat_roughness_map_idx;
 	int emissive_map_idx;
+	int subsurface_map_idx;
+	int subsurface_color_map_idx;
+	int padding0;
+	int padding1;
 } Disney;
 
 typedef struct

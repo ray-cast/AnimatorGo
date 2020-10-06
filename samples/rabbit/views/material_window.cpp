@@ -139,6 +139,7 @@ namespace rabbit
 			this->slider = nullptr;
 			this->spinBox = nullptr;
 			this->mapLayout->setContentsMargins(20, 5, 50, 0);
+			this->mainLayout = this->mapLayout;
 
 			if (flags & CreateFlags::SpoilerBit)
 			{
@@ -288,7 +289,8 @@ namespace rabbit
 		this->sheen_.init(u8"布料", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
 		this->clearcoat_.init(u8"清漆", CreateFlags::ValueBit);
 		this->clearcoatRoughness_.init(u8"清漆粗糙度", CreateFlags::ValueBit);
-		this->subsurface_.init(u8"次表面散射", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
+		this->subsurface_.init(u8"散射程度", CreateFlags::ValueBit);
+		this->subsurfaceValue_.init(u8"散射颜色", CreateFlags::ColorBit);
 		this->emissive_.init(u8"自发光", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::ColorBit);
 
 		this->clearcoat_.mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -301,6 +303,17 @@ namespace rabbit
 
 		this->clearCoatSpoiler_ = new Spoiler(u8"清漆");
 		this->clearCoatSpoiler_->setContentLayout(*clearlayout);
+
+		this->subsurface_.mainLayout->setContentsMargins(0, 0, 0, 0);
+		this->subsurfaceValue_.mainLayout->setContentsMargins(0, 0, 0, 0);
+
+		auto subsurfaceLayout = new QVBoxLayout();
+		subsurfaceLayout->addLayout(this->subsurface_.mainLayout);
+		subsurfaceLayout->addLayout(this->subsurfaceValue_.mainLayout);
+		subsurfaceLayout->setContentsMargins(20, 5, 50, 0);
+
+		this->subsurfaceSpoiler_ = new Spoiler(u8"次表面散射");
+		this->subsurfaceSpoiler_->setContentLayout(*subsurfaceLayout);
 
 		this->receiveShadowCheck_ = new QCheckBox;
 		this->receiveShadowCheck_->setText(u8"接收阴影");
@@ -326,7 +339,7 @@ namespace rabbit
 		contentLayout->addWidget(this->anisotropy_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
-		contentLayout->addWidget(this->subsurface_.spoiler, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->subsurfaceSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->othersSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addStretch();
@@ -351,6 +364,7 @@ namespace rabbit
 		connect(albedo_.color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(&albedoColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(colorChangeEvent(const QColor&)));
 		connect(&emissiveColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(emissiveChangeEvent(const QColor&)));
+		connect(&subsurfaceColor_, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(subsurfaceColorChangeEvent(const QColor&)));
 		connect(opacity_.image, SIGNAL(clicked()), this, SLOT(opacityMapClickEvent()));
 		connect(opacity_.check, SIGNAL(stateChanged(int)), this, SLOT(opacityMapCheckEvent(int)));
 		connect(opacity_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(opacityEditEvent(double)));
@@ -389,6 +403,9 @@ namespace rabbit
 		connect(subsurface_.check, SIGNAL(stateChanged(int)), this, SLOT(subsurfaceMapCheckEvent(int)));
 		connect(subsurface_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(subsurfaceEditEvent(double)));
 		connect(subsurface_.slider, SIGNAL(valueChanged(int)), this, SLOT(subsurfaceSliderEvent(int)));
+		connect(subsurfaceValue_.image, SIGNAL(clicked()), this, SLOT(subsurfaceColorMapClickEvent()));
+		connect(subsurfaceValue_.check, SIGNAL(stateChanged(int)), this, SLOT(subsurfaceColorMapCheckEvent(int)));
+		connect(subsurfaceValue_.color, SIGNAL(clicked()), this, SLOT(subsurfaceColorClickEvent()));
 		connect(emissive_.image, SIGNAL(clicked()), this, SLOT(emissiveMapClickEvent()));
 		connect(emissive_.color, SIGNAL(clicked()), this, SLOT(emissiveClickEvent()));
 		connect(emissive_.check, SIGNAL(stateChanged(int)), this, SLOT(emissiveMapCheckEvent(int)));
@@ -666,6 +683,55 @@ namespace rabbit
 	void
 	MaterialEditWindow::setSubsurfaceMap(const QString& path)
 	{
+		try
+		{
+			if (!path.isEmpty())
+			{
+				auto texture = this->subsurface_.setImage(path);
+				if (texture)
+				{
+					this->subsurface_.spinBox->setValue(1.0f);
+					this->material_->setSubsurface(1.0f);
+					this->material_->setSubsurfaceMap(this->subsurface_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setSubsurfaceMap(nullptr);
+			}
+
+			this->repaint();
+		}
+		catch (...)
+		{
+		}
+	}
+
+	void
+	MaterialEditWindow::setSubsurfaceColorMap(const QString& path)
+	{
+		try
+		{
+			if (!path.isEmpty())
+			{
+				auto texture = this->subsurfaceValue_.setImage(path);
+				if (texture)
+				{
+					this->subsurfaceValue_.spinBox->setValue(1.0f);
+					this->material_->setSubsurfaceColor(octoon::math::float3::One);
+					this->material_->setSubsurfaceColorMap(this->subsurfaceValue_.texture);
+				}
+			}
+			else
+			{
+				this->material_->setSubsurfaceMap(nullptr);
+			}
+
+			this->repaint();
+		}
+		catch (...)
+		{
+		}
 	}
 
 	void
@@ -808,6 +874,14 @@ namespace rabbit
 		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
 		if (!path.isEmpty())
 			this->setSubsurfaceMap(path);
+	}
+
+	void
+	MaterialEditWindow::subsurfaceColorMapClickEvent()
+	{
+		QString path = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr(imageFormat));
+		if (!path.isEmpty())
+			this->setSubsurfaceColorMap(path);
 	}
 
 	void
@@ -967,6 +1041,22 @@ namespace rabbit
 		}
 		else if (this->subsurface_.texture)
 		{
+			this->material_->setSubsurfaceMap(this->subsurface_.texture);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::subsurfaceColorMapCheckEvent(int state)
+	{
+		if (state == Qt::Unchecked)
+		{
+			this->setSubsurfaceMap("");
+		}
+		else if (this->subsurfaceValue_.texture)
+		{
+			this->material_->setSubsurfaceColorMap(this->subsurfaceValue_.texture);
+			this->repaint();
 		}
 	}
 
@@ -1037,10 +1127,12 @@ namespace rabbit
 			this->clearcoat_.resetState();
 			this->clearcoatRoughness_.resetState();
 			this->subsurface_.resetState();
+			this->subsurfaceValue_.resetState();
 			this->emissive_.resetState();
 
 			auto albedoColor = octoon::math::linear2srgb(material_->getColor());
 			auto emissiveColor = octoon::math::linear2srgb(material_->getEmissive());
+			auto subsurfaceColor = octoon::math::linear2srgb(material_->getSubsurfaceColor());
 
 			this->textLabel_->setText(QString::fromStdString(material_->getName()));
 			this->albedo_.color->setIcon(createColorIcon(QColor::fromRgbF(albedoColor.x, albedoColor.y, albedoColor.z)));
@@ -1053,6 +1145,7 @@ namespace rabbit
 			this->clearcoat_.spinBox->setValue(material_->getClearCoat());
 			this->clearcoatRoughness_.spinBox->setValue(material_->getClearCoatRoughness());
 			this->subsurface_.spinBox->setValue(material_->getSubsurface());
+			this->subsurfaceValue_.color->setIcon(createColorIcon(QColor::fromRgbF(subsurfaceColor.x, subsurfaceColor.y, subsurfaceColor.z)));
 			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(emissiveColor.x, emissiveColor.y, emissiveColor.z)));
 			this->emissive_.spinBox->setValue(material_->getEmissiveIntensity());
 			this->receiveShadowCheck_->setChecked(material_->getReceiveShadow());
@@ -1088,6 +1181,18 @@ namespace rabbit
 			auto clearcoatRoughnessMap = material_->getClearCoatRoughnessMap();
 			if (clearcoatRoughnessMap)
 				this->setClearCoatRoughnessMap(QString::fromStdString(clearcoatRoughnessMap->getTextureDesc().getName()));
+
+			auto subsurfaceMap = material_->getSubsurfaceMap();
+			if (subsurfaceMap)
+				this->setSubsurfaceMap(QString::fromStdString(subsurfaceMap->getTextureDesc().getName()));
+
+			auto subsurfaceColorMap = material_->getSubsurfaceColorMap();
+			if (subsurfaceColorMap)
+				this->setSubsurfaceColorMap(QString::fromStdString(subsurfaceColorMap->getTextureDesc().getName()));
+
+			auto emissiveColorMap = material_->getEmissiveMap();
+			if (emissiveColorMap)
+				this->setEmissiveMap(QString::fromStdString(emissiveColorMap->getTextureDesc().getName()));
 
 			this->repaint();
 		}
@@ -1288,6 +1393,20 @@ namespace rabbit
 	MaterialEditWindow::subsurfaceSliderEvent(int value)
 	{
 		this->subsurface_.spinBox->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialEditWindow::subsurfaceColorClickEvent()
+	{
+		subsurfaceColor_.show();
+	}
+
+	void
+	MaterialEditWindow::subsurfaceColorChangeEvent(const QColor &color)
+	{
+		this->subsurfaceValue_.color->setIcon(createColorIcon(color));
+		this->material_->setSubsurfaceColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
+		this->repaint();
 	}
 
 	void

@@ -14,6 +14,7 @@ typedef struct DisneyShaderData
 {
 	float3 base_color;
 	float3 emissive;
+	float3 subsurface_color;
 	float transparency;
 	float metallic;
 	float roughness;
@@ -90,7 +91,8 @@ INLINE void Disney_PrepareInputs(DifferentialGeometry const* dg, TEXTURE_ARG_LIS
 	shader_data->sheen = Texture_GetValue1f(dg->mat.disney.sheen, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.sheen_map_idx));
 	shader_data->clearcoat_roughness = Texture_GetValue1f(dg->mat.disney.clearcoat_roughness, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_roughness_map_idx));
 	shader_data->clearcoat = Texture_GetValue1f(dg->mat.disney.clearcoat, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.clearcoat_map_idx));
-	shader_data->subsurface = dg->mat.disney.subsurface;
+	shader_data->subsurface = Texture_GetValue1f(dg->mat.disney.subsurface, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.subsurface_map_idx));
+	shader_data->subsurface_color = Texture_GetValue3f(dg->mat.disney.subsurface_color, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.subsurface_color_map_idx));
 	shader_data->emissive = Texture_GetValue3f(dg->mat.disney.emissive.xyz, dg->uv, TEXTURE_ARGS_IDX(dg->mat.disney.emissive_map_idx));
 }
 
@@ -142,11 +144,11 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, DisneyShaderData cons
 	return mix(c_pdf * clearcoat + (1.f - clearcoat) * (cs_w * r_pdf + (1.f - cs_w) * d_pdf), 0.f, shader_data->transparency);
 }
 
-INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float ndotwi, float ir)
+INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float ndotwi, float ir, float3 transmission)
 {
-	float pndl = clamp( ndotwi, 0.f, 1.f);
-	float nndl = clamp(-ndotwi, 0.f, 1.f);
-	float3 sss = ss + make_float3(1.0f,0.2f,0.05f) * (1.0f - pndl) * (1.0f - pndl) * native_powr(1.0f-nndl,3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
+	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
+	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
+	float3 sss = ss + transmission * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
 
 	return sss;
 }
@@ -164,6 +166,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	float clearcoat_roughness = shader_data->clearcoat_roughness;
 	float clearcoat = shader_data->clearcoat;
 	float subsurface = shader_data->subsurface;
+	float3 subsurface_color = shader_data->subsurface_color;
 	
 	float ndotwi = fabs(wi.y);
 	float ndotwo = fabs(wo.y);
@@ -171,7 +174,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	float3 h = normalize(wi + wo);
 	float ndoth = fabs(h.y);
 	float hdotwo = fabs(dot(h, wo));
-	float visiability = fabs(wo.y);
+	float visiability = clamp(wo.y, 0.0f, 1.0f);
 	
 	float3 cd_lin = base_color;
 	float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
@@ -184,7 +187,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	float f_wi = SchlickFresnelReflectance(ndotwi);
 	
 	float fd90 = 0.5f + 2 * hdotwo * hdotwo * roughness;
-	float fd = mix(1.f, fd90, f_wo) * mix(1.f, fd90, f_wi) * visiability;
+	float fd = mix(1.f, fd90, f_wo) * mix(1.f, fd90, f_wi) * ndotwo;
 	
 	float fss90 = hdotwo * hdotwo * roughness;
 	float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
@@ -193,7 +196,7 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	float alpha = roughness * roughness;
 	float ax = max(0.001f, alpha * ( 1.f + anisotropy));
 	float ay = max(0.001f, alpha * ( 1.f - anisotropy));
-	float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay) * visiability;
+	float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay) * ndotwo;
 	float fh = SchlickFresnelReflectance(hdotwo);
 	float3 fs = mix(c_spec0, WHITE, fh);
 	
@@ -201,13 +204,13 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	gs  = SmithGGX_G_Aniso(ndotwo, wo.x, wo.z, ax, ay);
 	gs *= SmithGGX_G_Aniso(ndotwi, wi.x, wi.z, ax, ay);
 	
-	float3 f_sheen = fh * sheen * c_sheen * visiability;
+	float3 f_sheen = fh * sheen * c_sheen * ndotwo;
 	
-	float dr = GTR1(ndoth, mix(0.001f, 0.1f, clearcoat_roughness)) * visiability;
+	float dr = GTR1(ndoth, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwo;
 	float fr = mix(0.04f, 1.f, fh);
 	float gr = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
 
-	return mix(((1.f / PI) * (mix(fd, Diffuse_PennerSkin(dg, ss, wo.y, 0.5f), subsurface) * cd_lin) + f_sheen) * (1.f - metallic) + gs * fs * ds + clearcoat * gr * fr * dr, 0.f, shader_data->transparency);
+	return mix(((1.f / PI) * (mix(fd, Diffuse_PennerSkin(dg, ss, wo.y, 0.5f, subsurface_color), subsurface) * cd_lin) + f_sheen) * (1.f - metallic) + gs * fs * ds + clearcoat * gr * fr * dr, 0.f, shader_data->transparency);
 }
 
 float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)

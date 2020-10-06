@@ -340,7 +340,7 @@ namespace rabbit
 								this->texture = texture;
 								this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
 								this->setColor(QColor::fromRgbF(1, 1, 1));
-
+								this->repaint();
 								behaviour->loadHDRi(texture);
 							}
 						}

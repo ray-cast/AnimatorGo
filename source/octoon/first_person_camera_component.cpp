@@ -113,7 +113,7 @@ namespace octoon
 	void
 	FirstPersonCameraComponent::onUpdate() noexcept
 	{
-		float step = std::min(1.0f, math::pow(accelerationSpeed_ / 6, 2)) * speed_;
+		float step = std::min(1.0f, math::pow(accelerationSpeed_ / 5, 2)) * speed_;
 
 		auto timerFeature = this->getFeature<TimerFeature>();
 		if (timerFeature)

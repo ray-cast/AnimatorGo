@@ -199,9 +199,9 @@ namespace octoon::video
 	void
 	RtxManager::setMaxBounces(std::uint32_t num_bounces)
 	{
+		this->dirty_ = true;
 		for (auto& it : configs_)
 			return dynamic_cast<MonteCarloRenderer*>(it.pipeline.get())->setMaxBounces(num_bounces);
-		this->dirty_ = true;
 	}
 
 	std::uint32_t

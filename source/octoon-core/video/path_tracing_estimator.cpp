@@ -153,65 +153,84 @@ namespace octoon::video
 		this->getContext().CopyBuffer(0u, renderData_->iota, renderData_->pixelindices[0], 0, 0, num_estimates);
 		this->getContext().CopyBuffer(0u, renderData_->iota, renderData_->pixelindices[1], 0, 0, num_estimates);
 
-		for (std::uint32_t pass = 0; pass < this->getMaxBounces(); ++pass)
+		if (scene.shapes.GetElementCount() == 0)
 		{
 			this->getContext().FillBuffer(
 				0,
-				renderData_->hits,
-				0,
-				renderData_->hits.GetElementCount()
+				renderData_->intersections,
+				RadeonRays::Intersection(),
+				renderData_->intersections.GetElementCount()
 			);
 
-			this->getIntersector()->QueryIntersection(
-				renderData_->fr_rays[pass & 0x1],
-				renderData_->fr_hitcount, (std::uint32_t)num_estimates,
-				renderData_->fr_intersections,
-				nullptr,
-				nullptr
-			);
-
-			bool has_some_environment = scene.envmapidx > -1;
-
-			if ((pass > 0) && has_some_environment)
-			{
-				ShadeMiss(scene, pass, num_estimates, output, use_output_indices);
-			}
-
-			this->filterPathStream(pass, num_estimates);
-
-			renderData_->pp.Compact(
-				0,
-				renderData_->hits,
-				renderData_->iota,
-				renderData_->compacted_indices,
-				(std::uint32_t)num_estimates,
-				renderData_->hitcount
-			);
-
-			this->restorePixelIndices(pass, num_estimates);
-
-			if (pass == 0)
-			{
-				if (scene.envmapidx > 0)
-					this->shadeBackground(scene, 0, num_estimates, output, use_output_indices);
-				else
-					this->advanceIterationCount(0, num_estimates, output, use_output_indices);
-			}
-
-			this->shadeSurface(scene, pass, num_estimates, output, use_output_indices);
-
-			this->getIntersector()->QueryOcclusion(
-				renderData_->fr_shadowrays,
-				renderData_->fr_hitcount,
-				(std::uint32_t)num_estimates,
-				renderData_->fr_shadowhits,
-				nullptr,
-				nullptr
-			);
-
-			this->gatherLightSamples(scene, pass, num_estimates, output, use_output_indices);
+			if (scene.envmapidx > 0)
+				this->shadeBackground(scene, 0, num_estimates, output, use_output_indices);
+			else
+				this->advanceIterationCount(0, num_estimates, output, use_output_indices);
 
 			this->getContext().Flush(0);
+		}
+		else
+		{
+			for (std::uint32_t pass = 0; pass < this->getMaxBounces(); ++pass)
+			{
+				this->getContext().FillBuffer(
+					0,
+					renderData_->hits,
+					0,
+					renderData_->hits.GetElementCount()
+				);
+
+				this->getIntersector()->QueryIntersection(
+					renderData_->fr_rays[pass & 0x1],
+					renderData_->fr_hitcount, (std::uint32_t)num_estimates,
+					renderData_->fr_intersections,
+					nullptr,
+					nullptr
+				);
+
+				bool has_some_environment = scene.envmapidx > -1;
+
+				if ((pass > 0) && has_some_environment)
+				{
+					ShadeMiss(scene, pass, num_estimates, output, use_output_indices);
+				}
+
+				this->filterPathStream(pass, num_estimates);
+
+				renderData_->pp.Compact(
+					0,
+					renderData_->hits,
+					renderData_->iota,
+					renderData_->compacted_indices,
+					(std::uint32_t)num_estimates,
+					renderData_->hitcount
+				);
+
+				this->restorePixelIndices(pass, num_estimates);
+
+				if (pass == 0)
+				{
+					if (scene.envmapidx > 0)
+						this->shadeBackground(scene, 0, num_estimates, output, use_output_indices);
+					else
+						this->advanceIterationCount(0, num_estimates, output, use_output_indices);
+				}
+
+				this->shadeSurface(scene, pass, num_estimates, output, use_output_indices);
+
+				this->getIntersector()->QueryOcclusion(
+					renderData_->fr_shadowrays,
+					renderData_->fr_hitcount,
+					(std::uint32_t)num_estimates,
+					renderData_->fr_shadowhits,
+					nullptr,
+					nullptr
+				);
+
+				this->gatherLightSamples(scene, pass, num_estimates, output, use_output_indices);
+
+				this->getContext().Flush(0);
+			}
 		}
 
 		sampleCounter_++;

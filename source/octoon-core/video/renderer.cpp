@@ -38,7 +38,8 @@ namespace octoon::video
 	void
 	Renderer::close() noexcept
 	{
-		this->rtxManager_.reset();
+		if (this->rtxManager_)
+			this->rtxManager_.reset();
 		this->forwardRenderer_.reset();
 		this->context_.reset();
 	}

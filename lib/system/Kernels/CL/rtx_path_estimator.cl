@@ -212,8 +212,6 @@ KERNEL void ShadeBackgroundEnvMap(
 
 		if (isects[global_id].shapeid < 0 && env_light_idx != -1)
 		{
-			int volume_idx = paths[pixel_idx].volume;
-
 			Light light = lights[env_light_idx];
 
 			int tex = EnvironmentLight_GetBackgroundTexture(&light);

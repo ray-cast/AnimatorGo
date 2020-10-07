@@ -199,16 +199,18 @@ namespace octoon::video
 	void
 	RtxManager::setMaxBounces(std::uint32_t num_bounces)
 	{
-		this->dirty_ = true;
-		for (auto& it : configs_)
-			return dynamic_cast<MonteCarloRenderer*>(it.pipeline.get())->setMaxBounces(num_bounces);
+		if (!configs_.empty())
+		{
+			this->dirty_ = true;
+			dynamic_cast<MonteCarloRenderer*>(configs_.front().pipeline.get())->setMaxBounces(num_bounces);
+		}
 	}
 
 	std::uint32_t
 	RtxManager::getMaxBounces() const
 	{
-		for (auto& it : configs_)
-			return dynamic_cast<MonteCarloRenderer*>(it.pipeline.get())->getMaxBounces();
+		if (!configs_.empty())
+			return dynamic_cast<MonteCarloRenderer*>(configs_.front().pipeline.get())->getMaxBounces();
 		return 0;
 	}
 
@@ -379,8 +381,7 @@ namespace octoon::video
 				this->dirty_ = clwscene.dirty = false;
 			}
 
-			if (clwscene.shapes.GetElementCount() > 0)
-				c.pipeline->render(compiledScene);
+			c.pipeline->render(compiledScene);
 		}
 
 		math::float4 viewport(0, 0, static_cast<float>(this->width_), static_cast<float>(this->height_));

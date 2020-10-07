@@ -216,7 +216,10 @@ namespace octoon::video
 
 		auto num_rays = tile_size.x * tile_size.y;
 
-		estimator_->traceFirstHit(*clwScene, num_rays);
+		if (clwScene->shapes.GetElementCount() > 0)
+		{
+			estimator_->traceFirstHit(*clwScene, num_rays);
+		}
 
 		auto argc = 0U;
 		fillKernel_.SetArg(argc++, estimator_->getRayBuffer());

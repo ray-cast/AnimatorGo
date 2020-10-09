@@ -28,7 +28,7 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * 多个视频编码（x264、x265）
 * 图像文件（PNG、BMP、TGA、JPEG、DDS，HDR）
 * 音频播放（OpenAL，Wav, Flac, Mp3, Ogg）
-* [NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk) 支持
+* 材质文件支持（[NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk)）
 
 系统需求：
 ------

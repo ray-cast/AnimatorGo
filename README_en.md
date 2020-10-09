@@ -1,49 +1,40 @@
-Octoon
+Rabbit Toolbox
 ======
 ###### [English](https://github.com/octoon/octoon/blob/master/README.md) &nbsp; [中文](https://github.com/octoon/octoon/blob/master/README_zh_cn.md)
-Octoon是一个免费和开源的跨平台图形引擎，采用MIT协议。 用户可以使用一组统一的API轻松创建图形应用程序。 应用程序可以导出到许多平台，包括Linux，Mac OSX，Windows，Android和HTML5。
+Rabbit Toolbox is a cross-platform graphic engine. It is free and open-source under MIT lisence.  Users can easily create graphic applications by using a set of unified API. Applications can be exported to lots of platforms, including Linux, Mac OSX, Windows, Android and HTML5.
 
-Octoon提供了一个现代化和强大的ECS框架，使开发变得简单。 ECS系统的形式支持许多功能，如图形，物理，音频和视频。 通过附加各种组件，对象可以灵活地执行不同的任务。
+Rabbit Toolbox provides a modern and powerful ECS framework to make development simple. A number of features are supported as the form of ECS system such as graphic, physics, audio and video. By attaching various component, objects can perform different tasks flexibly.
 
 <img style="vertical-align: top;" src="./screenshot.png" alt="logo">
 
-系统需求：
-------
-1. 支持SSE4.1的CPU，如i5，用于AI 降噪
-2. NVIDIA的独显用于GPGPU的光线追踪 
-3. NVIDIA's OpenCL 驱动 
-4. Visual Studio 2019 runtimes ：软件根目录/_Redist/VC_redist.x64.exe
-5. 当前程序只在64位系统下测试过，32尚且不知道是否可以支持
-6. 参与测试过的CPU，Intel i3, i5, i7, AMD 2600, 2600X
-7. 参与测试过的显卡，GeFroce GTX 650, 1050, 1060, 2060
-
-支持的编译器:
+Supported compilers:
 ------
 * Visual Studio 2017 (Only tested on 15.5.7 version)
 * GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
 * Emscripten (Only tested on 1.37.40)
 
-支持的平台:
+Support platforms:
 ------
 * Windows (Only tested on XP, Vista, 7, 8, 10)
-* Linux (Only tested on Ubuntu, Centos)
-* HTML5
-* Android (future)
-* ios (future)
-* mac (future)
+* Linux (Only tested on Ubuntu 16.10, Ubuntu 18.04, Centos 7.3)
+* HTML5 (Only tested on Google chrome with WebGL 2.0)
+* Android (Future)
+* ios (Future)
+* mac (Future)
 
-支持的渲染后端:
+Support rendering backends:
 ------
 * OpenGL 330
 * OpenGL 450
 * OpenGL ES 2.0
 * OpenGL ES 3.0
 * OpenGL ES 3.2
+* OpenCL 2.0
 
-贡献
+Contribution
 ------
-这个项目还在开发中，您可以请求合并提交代码，或者通过电子邮件随时与我们联系。 欢迎向我们提出任何问题或好的建议。 我们非常感谢您的贡献。
+This project is still under development. You can submit code by using Pull Requests or Feel free to contact us via e-mail or issues. Any questions or good suggestions are welcomed to be addressed to us in Issues. We would be grateful for your contribution.
 
 [License (MIT)](https://github.com/octoon/octoon/blob/master/LICENSE)
 -------------------------------------------------------------------------------

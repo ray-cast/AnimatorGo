@@ -5,7 +5,9 @@ Rabbit Toolbox 是一个开源的动画渲染软件。为更多喜好 [MikuMikud
 
 Rabbit Toolbox 提供了一个现代化和强大的ECS框架，使该项目开发变得简单。 系统以ECS的形式支持许多功能，如：前向和逆向运动学的骨骼动画，实时渲染，全局照明渲染器，物理演算，布料演算，音频播放和视频输出。 通过附加各种组件，对象可以灵活地执行不同的任务。 
 
-Rabbit Toolbox 拥有一个快速高效的全局照明渲染器，基于分离内核架构以避免VGPR占用瓶颈，并广泛使用GPU优化的并行图元来重构工作，以更好地适应大规模并行GPU架构，渲染器是为渐进式预览设计的，此模型允许在进行渲染时控制延迟并操纵场景和摄影机，具有同步性。 在所有供应商中保持着高水平的性能，全局照明渲染器使用OpenCL依赖于 AMD® [RadeonRays](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonRays_SDK) 光线求交引擎，同时针对AMD®GPU和APU进行了优化。
+Rabbit Toolbox 拥有一个快速高效的全局照明渲染器，基于分离内核架构以避免VGPR占用瓶颈，并广泛使用GPU优化的并行图元来重构工作，以更好地适应大规模并行GPU架构，渲染器是为渐进式预览设计的，具有同步性，允许在进行渲染时控制延迟并操纵场景和摄影机。 在所有供应商中保持着高水平的性能，全局照明渲染器使用OpenCL依赖于 AMD® [RadeonRays](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonRays_SDK) 光线求交引擎，同时针对AMD®GPU和APU进行了优化。
+
+Rabbit Toolbox 有一套基于双向散射分布函数（bsdf）的多层材质描述，能够很好的引入[NVDIA'MDL]((https://developer.nvidia.com/mdl-sdk))材质定义语言所带来的生态系统，如程序纹理，木材，织物，半透明塑料等。
 
 <img style="vertical-align: top;" src="./screenshot.png" alt="logo">
 

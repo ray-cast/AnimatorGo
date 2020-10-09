@@ -1,7 +1,7 @@
 Rabbit Toolbox
 ======
 ###### [English](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md) &nbsp; [中文](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md)
-Rabbit Toolbox 是一个开源的动画渲染软件。为更多喜好 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的用户提供高质量的物理演算以及渲染质量和性能。用户可以轻松的迁移 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的项目到本软件中制作成视频，同时编码为各大门户视频网站支持的视频编码格式。
+Rabbit Toolbox 是一个开源的动画渲染软件，本项目以[CC BY NC](http://creativecommons.org/licenses/by-nc-sa/4.0/)授权。为更多喜好 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的用户提供高质量的物理演算以及渲染质量和性能。用户可以轻松的迁移 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的项目到本软件中制作成视频，同时编码为各大门户视频网站支持的视频编码格式。
 
 Rabbit Toolbox 提供了一个现代化和强大的ECS框架，使该项目开发变得简单。 系统以ECS的形式支持许多功能，如：前向和逆向运动学的骨骼动画，实时渲染，全局照明渲染器，物理演算，布料演算，音频播放和视频输出。 通过附加各种组件，对象可以灵活地执行不同的任务。 
 
@@ -69,7 +69,7 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 
 [协议](https://github.com/ray-cast/RabbitToolbox/blob/master/LICENSE)
 -------------------------------------------------------------------------------
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。
 
 	您可以自由地：
 	共享 — 在任何媒介以任何形式复制、发行本作品

@@ -1,4 +1,4 @@
-Rabbit-Toolbox
+Rabbit Toolbox
 ======
 ###### [English](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md) &nbsp; [中文](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md)
 Rabbit Toolbox 是一个开源的动画渲染软件。为更多喜好 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的用户提供高质量的物理演算以及渲染质量和性能。用户可以轻松的迁移 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的项目到本软件中制作成视频，同时编码为各大门户视频网站支持的视频编码格式。
@@ -69,9 +69,9 @@ Rabbit Toolbox 有一套基于双向散射分布函数（bsdf）的多层材质�
 
 [License (MIT)](https://github.com/ray-cast/RabbitToolbox/blob/master/LICENSE)
 -------------------------------------------------------------------------------
-	Copyright (C) 2018-2019 Octoon Developers. All rights reserved.
+	Copyright (C) 2018-2019 Rabbit Toolbox Developers. All rights reserved.
 
-	https://github.com/octoon/octoon
+	https://github.com/ray-cast/RabbitToolbox
 
 	Permission is hereby granted, free of charge, to any person obtaining a
 	copy of this software and associated documentation files (the "Software"),

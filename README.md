@@ -3,7 +3,7 @@ Rabbit Toolbox
 ###### [English](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md) &nbsp; [中文](https://github.com/ray-cast/RabbitToolbox/blob/master/README_en.md)
 Rabbit Toolbox 是一个开源的商业动画渲染软件，本项目源码采用[知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-sa/4.0/)进行许可。提倡以简单、易用，高质量的物理演算以及渲染质量和性能。为喜爱二次元动画的用户降低动画视频制作门槛，用户可以轻松的迁移 [MikuMikudance](http://www.geocities.jp/higuchuu4/index_e.htm) 的项目到本软件中制作成视频，同时编码为各大门户视频网站支持的视频编码格式。
 
-Rabbit Toolbox 提供了一个现代化和强大的ECS框架，使该项目开发变得简单。 系统以ECS的形式支持许多功能，如：前向和逆向运动学的骨骼动画，实时渲染，全局照明渲染器，物理演算，布料演算，音频播放和视频输出。 通过附加各种组件，对象可以灵活地执行不同的任务。 
+Rabbit Toolbox 提供了一个现代化和强大的ECS框架，使该项目开发变得简单。 系统以ECS的形式支持许多功能，如：前向和逆向运动学的骨骼动画，实时渲染，全局照明渲染器，AI降噪，物理演算，布料演算，音频播放和视频输出。 通过附加各种组件，对象可以灵活地执行不同的任务。 
 
 Rabbit Toolbox 拥有一个快速高效的全局照明渲染器，基于分离内核架构以避免VGPR占用瓶颈，并广泛使用GPU优化的并行图元来重构工作，以更好地适应大规模并行GPU架构，渲染器是为渐进式预览设计的，具有同步性，允许在进行渲染时控制延迟并操纵场景和摄影机。 在所有供应商中保持着高水平的性能，全局照明渲染器使用OpenCL依赖于 AMD® [RadeonRays](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonRays_SDK) 光线求交引擎，同时针对AMD®GPU和APU进行了优化。
 
@@ -13,13 +13,13 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 
 特性：
 ------
-* 完整的物理多层材质描述（金属，光滑，布料，清漆，次表面散射，自发光，等）
+* 完整的多层物理材质描述（金属，光滑，布料，清漆，次表面散射，自发光，等）
 * 基于图像的照明
 * 物理的灯光单元
 * 相机景深控制
 * 多光源支持
 * 基于物理的实时渲染
-* 全局照明光追渲染
+* 全局照明光线追踪渲染
 * 基于深度学习的后处理降噪
 * 前向、逆向运动学的骨骼动画
 * 模型文件支持（PMX、PMD）

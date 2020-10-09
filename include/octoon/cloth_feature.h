@@ -28,8 +28,6 @@ namespace octoon
 		ClothFeature() except;
 		virtual ~ClothFeature() noexcept;
 
-		bool fetchResulting() const { return needUpdate_; }
-
 	public:
 		void onActivate() except override;
 		void onDeactivate() noexcept override;
@@ -51,9 +49,7 @@ namespace octoon
 		ClothFeature& operator=(const ClothFeature&) = delete;
 
 	private:
-		bool needUpdate_;
 		float timeInterval_;
-		std::uint32_t iterationCounts_;
 
 		nv::cloth::Solver* solver_;
 		nv::cloth::Factory* factory_;

@@ -32,9 +32,7 @@ namespace octoon
 
 	ClothFeature::ClothFeature() except
 		: factory_(nullptr)
-		, needUpdate_(false)
 		, timeInterval_(0.02f)
-		, iterationCounts_(6)
 		, defaultAllocatorCallback(std::make_unique<physx::PxDefaultAllocator>())
 		, defaultErrorCallback(std::make_unique<physx::PxDefaultErrorCallback>())
 		, profileCallback_(std::make_unique<ProfilerCallback>())
@@ -82,20 +80,6 @@ namespace octoon
     void
 	ClothFeature::onFrame() except
     {
-		if (needUpdate_)
-		{
-			for (std::size_t i = 0; i < iterationCounts_; i++)
-			{
-				if (solver_->beginSimulation(timeInterval_ / iterationCounts_))
-				{
-					for (int j = 0; j < solver_->getSimulationChunkCount(); j++)
-						solver_->simulateChunk(j);
-					solver_->endSimulation();
-				}
-			}
-
-			needUpdate_ = false;
-		}
     }
 
     void
@@ -110,7 +94,14 @@ namespace octoon
 		{
 			timeInterval_ = std::any_cast<float>(data);
 			if (timeInterval_ > 0.0f)
-				needUpdate_ = true;
+			{
+				if (solver_->beginSimulation(timeInterval_))
+				{
+					for (int j = 0; j < solver_->getSimulationChunkCount(); j++)
+						solver_->simulateChunk(j);
+					solver_->endSimulation();
+				}
+			}
 		}
 	}
 

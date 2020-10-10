@@ -197,6 +197,8 @@ namespace rabbit
 		apertureSpinbox_->setSingleStep(0.1f);
 		apertureSpinbox_->setAlignment(Qt::AlignRight);
 		apertureSpinbox_->setFixedWidth(100);
+		apertureSpinbox_->setPrefix(u8"f/");
+		apertureSpinbox_->setDecimals(1);
 
 		focalDistanceLabel_ = new QLabel();
 		focalDistanceLabel_->setText(u8"½¹¾à:");
@@ -209,6 +211,7 @@ namespace rabbit
 		focalDistanceSpinbox_->setSingleStep(1.0f);
 		focalDistanceSpinbox_->setAlignment(Qt::AlignRight);
 		focalDistanceSpinbox_->setFixedWidth(100);
+		focalDistanceSpinbox_->setSuffix(u8"m");
 
 		auto titleLayout = new QHBoxLayout();
 		titleLayout->addSpacing(closeButton_->iconSize().width());

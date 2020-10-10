@@ -6,9 +6,9 @@ namespace octoon::light
 	OctoonImplementSubClass(Light, video::RenderObject, "Light")
 
 	Light::Light() noexcept
-		: _lightIntensity(1.0f)
-		, _lightRange(10.0f)
-		, _lightColor(math::float3::One)
+		: lightIntensity_(1.0f)
+		, lightRange_(10.0f)
+		, lightColor_(math::float3::One)
 	{
 	}
 
@@ -19,40 +19,49 @@ namespace octoon::light
 	void
 	Light::setIntensity(float intensity) noexcept
 	{
-		this->setDirty(true);
-		_lightIntensity = intensity;
+		if (lightIntensity_ != intensity)
+		{
+			lightIntensity_ = intensity;
+			this->setDirty(true);
+		}
 	}
 
 	void
 	Light::setRange(float range) noexcept
 	{
-		this->setDirty(true);
-		_lightRange = range;
+		if (lightRange_ != range)
+		{
+			lightRange_ = range;
+			this->setDirty(true);
+		}
 	}
 
 	void
 	Light::setColor(const math::float3& color) noexcept
 	{
-		this->setDirty(true);
-		_lightColor = color;
+		if (lightColor_ != color)
+		{
+			lightColor_ = color;
+			this->setDirty(true);
+		}
 	}
 
 	float
 	Light::getIntensity() const noexcept
 	{
-		return _lightIntensity;
+		return lightIntensity_;
 	}
 
 	float
 	Light::getRange() const noexcept
 	{
-		return _lightRange;
+		return lightRange_;
 	}
 
 	const math::float3&
 	Light::getColor() const noexcept
 	{
-		return _lightColor;
+		return lightColor_;
 	}
 
 	void

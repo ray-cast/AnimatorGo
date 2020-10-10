@@ -186,6 +186,10 @@ namespace rabbit
 		recordButton_->setText(u8"开始渲染");
 		recordButton_->setContentsMargins(0, 0, 0, 0);
 
+		dofInfoLabel_ = new QLabel();
+		dofInfoLabel_->setText(u8"* 以下参数可在开启渲染后预览");
+		dofInfoLabel_->setStyleSheet("color: rgb(100,100,100);");
+
 		apertureLabel_ = new QLabel();
 		apertureLabel_->setText(u8"光圈:");
 		apertureLabel_->setStyleSheet("color: rgb(200,200,200);");
@@ -208,10 +212,11 @@ namespace rabbit
 		focalDistanceSpinbox_->setMinimum(0);
 		focalDistanceSpinbox_->setMaximum(std::numeric_limits<float>::infinity());
 		focalDistanceSpinbox_->setValue(0);
-		focalDistanceSpinbox_->setSingleStep(1.0f);
+		focalDistanceSpinbox_->setSingleStep(0.1f);
 		focalDistanceSpinbox_->setAlignment(Qt::AlignRight);
 		focalDistanceSpinbox_->setFixedWidth(100);
 		focalDistanceSpinbox_->setSuffix(u8"m");
+		focalDistanceSpinbox_->setSpecialValueText(u8"自动");
 
 		auto titleLayout = new QHBoxLayout();
 		titleLayout->addSpacing(closeButton_->iconSize().width());
@@ -273,6 +278,7 @@ namespace rabbit
 		focalDistanceLayout->addWidget(focalDistanceSpinbox_);
 
 		auto cameraLayout = new QVBoxLayout;
+		cameraLayout->addWidget(dofInfoLabel_, 0, Qt::AlignLeft);
 		cameraLayout->addLayout(apertureLayout);
 		cameraLayout->addLayout(focalDistanceLayout);
 
@@ -281,17 +287,19 @@ namespace rabbit
 
 		cameraSpoiler_ = new Spoiler(u8"相机设置");
 		cameraSpoiler_->setContentLayout(*cameraLayout);
+		cameraSpoiler_->toggleButton.click();
 
 		videoSpoiler_ = new Spoiler(u8"渲染设置");
 		videoSpoiler_->setContentLayout(*videoLayout);
+		videoSpoiler_->toggleButton.click();
 
 		infoSpoiler_ = new Spoiler(u8"视频信息");
 		infoSpoiler_->setContentLayout(*infoLayout);
 
 		auto contentLayout = new QVBoxLayout(this);
-		contentLayout->addWidget(markSpoiler_);
 		contentLayout->addWidget(cameraSpoiler_);
 		contentLayout->addWidget(videoSpoiler_);
+		contentLayout->addWidget(markSpoiler_);
 		contentLayout->addWidget(infoSpoiler_);
 		contentLayout->addStretch();
 

@@ -18,8 +18,19 @@ namespace octoon::light
 	{
 		if (this->offset_ != offset)
 		{
-			this->setDirty(true);
 			this->offset_ = offset;
+			this->setDirty(true);
+		}
+	}
+
+	void
+	EnvironmentLight::setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		if (environmentMap_ != texture)
+		{
+			environmentMap_ = texture;
+			this->setDirty(true);
 		}
 	}
 
@@ -27,14 +38,6 @@ namespace octoon::light
 	EnvironmentLight::getOffset() const noexcept
 	{
 		return this->offset_;
-	}
-
-	void
-	EnvironmentLight::setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept
-	{
-		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
-		environmentMap_ = texture;
-		this->setDirty(true);
 	}
 
 	const hal::GraphicsTexturePtr&

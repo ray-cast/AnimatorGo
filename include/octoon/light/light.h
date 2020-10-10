@@ -32,10 +32,10 @@ namespace octoon::light
 		Light& operator=(const Light&) noexcept = delete;
 
 	private:
-		float _lightRange;
-		float _lightIntensity;
+		float lightRange_;
+		float lightIntensity_;
 
-		math::float3 _lightColor;
+		math::float3 lightColor_;
 	};
 }
 

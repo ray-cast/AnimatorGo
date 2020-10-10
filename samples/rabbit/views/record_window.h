@@ -68,6 +68,7 @@ namespace rabbit
 		QLabel* crfLabel;
 		QLabel* startLabel_;
 		QLabel* endLabel_;
+		QLabel* dofInfoLabel_;
 		QLabel* apertureLabel_;
 		QLabel* focalDistanceLabel_;
 

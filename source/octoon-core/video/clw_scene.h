@@ -56,6 +56,7 @@ namespace octoon::video
         std::unique_ptr<Bundle> input_map_bundle;
 
         int numLights;
+        int numGeometries;
         int numVolumes;
         int envmapidx;
         int backgroundIdx;

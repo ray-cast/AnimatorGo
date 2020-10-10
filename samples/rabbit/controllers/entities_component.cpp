@@ -541,7 +541,6 @@ namespace rabbit
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;
 		this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
-		this->getContext()->profile->entitiesModule->objects.push_back(mainCamera);
 
 		this->sendMessage("editor:camera:set", mainCamera);
 	}

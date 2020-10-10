@@ -128,14 +128,16 @@ namespace rabbit
 				if (data.has_value())
 				{
 					auto hit = std::any_cast<octoon::RaycastHit>(data);
+					if (!hit.object.lock())
+						return;
 
 					octoon::material::Materials materials;
-					auto renderComponent = hit.object->getComponent<octoon::MeshRendererComponent>();
+					auto renderComponent = hit.object.lock()->getComponent<octoon::MeshRendererComponent>();
 					if (renderComponent)
 						materials = renderComponent->getMaterials();
 					else
 					{
-						auto smr = hit.object->getComponent<octoon::SkinnedMeshRendererComponent>();
+						auto smr = hit.object.lock()->getComponent<octoon::SkinnedMeshRendererComponent>();
 						if (smr)
 							materials = smr->getMaterials();
 					}

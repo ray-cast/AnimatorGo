@@ -299,8 +299,6 @@ namespace rabbit
 	RabbitBehaviour::close() noexcept
 	{
 		this->profile_->entitiesModule->objects.clear();
-		this->profile_->entitiesModule->objects.push_back(this->profile_->entitiesModule->sunLight);
-		this->profile_->entitiesModule->objects.push_back(this->profile_->entitiesModule->enviromentLight);
 	}
 
 	bool

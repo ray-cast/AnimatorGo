@@ -1614,7 +1614,7 @@ namespace rabbit
 					auto materialComponent = behaviour->getComponent<MaterialComponent>();
 					auto material = materialComponent->getMaterial(item->data(Qt::UserRole).toString().toStdString());
 
-					auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
+					auto meshRenderer = hit.object.lock()->getComponent<octoon::MeshRendererComponent>();
 					if (meshRenderer)
 						meshRenderer->setMaterial(material, hit.mesh);
 				}

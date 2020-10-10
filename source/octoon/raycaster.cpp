@@ -59,7 +59,7 @@ namespace octoon
 
 			for (auto& it : result) {
 				RaycastHit hit;
-				hit.object = &object;
+				hit.object = object.downcast_pointer<GameObject>();
 				hit.distance = it.distance;
 				hit.mesh = it.mesh;
 				hit.point = it.point * transform->getTransform();
@@ -106,7 +106,7 @@ namespace octoon
 
 				for (auto& it : result) {
 					RaycastHit hit;
-					hit.object = object.get();
+					hit.object = object;
 					hit.distance = it.distance;
 					hit.mesh = it.mesh;
 					hit.point = it.point * transform->getTransform();
@@ -147,7 +147,7 @@ namespace octoon
 
 					for (auto& it : hitObjects) {
 						RaycastHit hit;
-						hit.object = object;
+						hit.object = object->downcast_pointer<GameObject>();
 						hit.distance = it.distance;
 						hit.mesh = it.mesh;
 						hit.point = it.point * transform->getTransform();

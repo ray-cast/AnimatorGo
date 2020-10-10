@@ -153,7 +153,7 @@ namespace octoon::video
 		this->getContext().CopyBuffer(0u, renderData_->iota, renderData_->pixelindices[0], 0, 0, num_estimates);
 		this->getContext().CopyBuffer(0u, renderData_->iota, renderData_->pixelindices[1], 0, 0, num_estimates);
 
-		if (scene.shapes.GetElementCount() == 0)
+		if (scene.numGeometries == 0)
 		{
 			this->getContext().FillBuffer(
 				0,

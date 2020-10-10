@@ -7,7 +7,7 @@ namespace octoon
 {
 	struct RaycastHit
 	{
-		const GameObject* object;
+		std::weak_ptr<const octoon::GameObject> object;
 		std::size_t mesh;
 		float distance;
 		math::float3 point;
@@ -15,12 +15,12 @@ namespace octoon
 
 	inline bool operator==(const RaycastHit& a, const RaycastHit& b)
 	{
-		return a.object == a.object && a.mesh == b.mesh;
+		return a.object.lock() == a.object.lock() && a.mesh == b.mesh;
 	}
 
 	inline bool operator!=(const RaycastHit& a, const RaycastHit& b)
 	{
-		return a.object != a.object || a.mesh != b.mesh;
+		return a.object.lock() != a.object.lock() || a.mesh != b.mesh;
 	}
 
 	class OCTOON_EXPORT Raycaster final

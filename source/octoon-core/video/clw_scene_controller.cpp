@@ -226,11 +226,15 @@ namespace octoon::video
 			bool should_update_shapes = should_update_materials;
 			if (!should_update_shapes)
 			{
+				std::size_t num_geometries = 0;
+
 				for (auto& geometry : scene->getGeometries())
 				{
 					if (!geometry->getVisible() || !geometry->getGlobalIllumination()) {
 						continue;
 					}
+
+					num_geometries++;
 
 					if (geometry->isDirty())
 					{
@@ -238,6 +242,8 @@ namespace octoon::video
 						break;
 					}
 				}
+
+				should_update_shapes |= (num_geometries != out->numGeometries);
 			}
 
 			auto camera = scene->getMainCamera();
@@ -676,6 +682,7 @@ namespace octoon::video
 		std::size_t num_vertices = 0;
 		std::size_t num_indices = 0;
 		std::size_t num_shapes = 0;
+		std::size_t num_geometries = 0;
 
 		std::size_t num_vertices_written = 0;
 		std::size_t num_normals_written = 0;
@@ -691,6 +698,7 @@ namespace octoon::video
 
 			auto& mesh = geometry->getMesh();
 			num_vertices += mesh->getVertexArray().size();
+			num_geometries++;
 
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
@@ -795,5 +803,7 @@ namespace octoon::video
 		}
 
 		this->updateIntersector(scene, out);
+
+		out.numGeometries = static_cast<int>(num_geometries);
 	}
 }

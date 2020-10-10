@@ -619,7 +619,7 @@ namespace rabbit
 			if (behaviour_ && !profile_->h265Module->enable)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-				if (behaviour->isOpen())
+				if (behaviour)
 				{
 					auto offline = behaviour->getComponent<OfflineComponent>();
 					if (offline)
@@ -628,27 +628,13 @@ namespace rabbit
 							offline->setActive(true);
 						else
 							offline->setActive(false);
-
 					}
 
 					return true;
 				}
-				else
-				{
-					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
-					msg.setIcon(QMessageBox::Information);
-					msg.setStandardButtons(QMessageBox::Ok);
-
-					msg.exec();
-					return false;
-				}
 			}
-			else
-			{
-				return false;
-			}
+			
+			return false;
 		}
 		catch (const std::exception& e)
 		{
@@ -996,7 +982,7 @@ namespace rabbit
 						auto materialComponent = behaviour->getComponent<MaterialComponent>();
 						auto material = materialComponent->getMaterial(mineData.toStdString());
 
-						auto meshRenderer = hit.object->getComponent<octoon::MeshRendererComponent>();
+						auto meshRenderer = hit.object.lock()->getComponent<octoon::MeshRendererComponent>();
 						if (meshRenderer)
 							meshRenderer->setMaterial(material, hit.mesh);
 					}

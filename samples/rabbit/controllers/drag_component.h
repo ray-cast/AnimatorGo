@@ -31,6 +31,11 @@ namespace rabbit
 		}
 
 	private:
+		void handleMouseDown(const octoon::input::InputEvent& event) noexcept;
+		void handleMouseMove(const octoon::input::InputEvent& event) noexcept;
+		void handleMouseHover(const octoon::input::InputEvent& event) noexcept;
+
+	private:
 		void onEnable() noexcept override;
 		void onDisable() noexcept override;
 

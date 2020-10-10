@@ -280,7 +280,6 @@ namespace rabbit
 
 		auto camera = mainCamera->addComponent<PerspectiveCameraComponent>();
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
-		camera->setFar(10000.f);
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -527,16 +526,14 @@ namespace rabbit
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setColor(octoon::math::srgb2linear(this->getContext()->profile->environmentModule->color));
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setIntensity(this->getContext()->profile->environmentModule->intensity);
 		enviromentLight->getComponent<octoon::EnvironmentLightComponent>()->setOffset(this->getContext()->profile->environmentModule->offset);
-		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(9900, 32, 24, math::PI * 0.5));
-		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial);
-		enviromentLight->getComponent<octoon::MeshRendererComponent>()->setRenderOrder(-2);
+		enviromentLight->addComponent<octoon::MeshFilterComponent>(octoon::mesh::SphereMesh(10000, 32, 24, math::PI * 0.5));
+		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial)->setRenderOrder(-2);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
 		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
-		camera->setFar(10000.0f);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 

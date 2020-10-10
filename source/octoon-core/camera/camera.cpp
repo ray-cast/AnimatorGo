@@ -135,7 +135,6 @@ namespace octoon::camera
 	Camera::screenToWorld(const math::float3& pos) const noexcept
 	{
 		math::float4 viewport = this->getPixelViewport();
-
 		math::float4 v(pos, 1.0);
 
 		v.y = viewport.w - v.y; // opengl
@@ -144,7 +143,7 @@ namespace octoon::camera
 		v.y = ((v.y - viewport.y) / viewport.w) * 2.0f - 1.0f;
 
 		v = this->getViewProjectionInverse() * v;
-		if (v.w != 0)
+		if (v.w != 0.0f)
 			v /= v.w;
 
 		return math::float3(v.x, v.y, v.z);

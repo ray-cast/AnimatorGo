@@ -220,7 +220,11 @@ namespace rabbit
 		for (auto& it : components_)
 		{
 			if (it->getActive())
+			{
 				it->onMouseMotion(event);
+				if (it->isCapture())
+					break;
+			}
 		}
 	}
 
@@ -231,7 +235,11 @@ namespace rabbit
 		for (auto& it : components_)
 		{
 			if (it->getActive())
+			{
 				it->onMouseDown(event);
+				if (it->isCapture())
+					break;
+			}
 		}
 	}
 	
@@ -242,7 +250,11 @@ namespace rabbit
 		for (auto& it : components_)
 		{
 			if (it->getActive())
+			{
 				it->onMouseUp(event);
+				if (it->isCapture())
+					break;
+			}
 		}
 	}
 

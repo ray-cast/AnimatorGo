@@ -131,9 +131,10 @@ namespace octoon
 	math::Raycast
 	CameraComponent::screenToRay(const math::float2& pos) const noexcept
 	{
-		auto worldPos = camera_->screenToWorld(octoon::math::float3(pos, 0));
-		auto worldPos2 = camera_->screenToWorld(octoon::math::float3(pos, 1));
-		return octoon::math::Raycast(worldPos, worldPos2);
+		auto cameraPos = camera_->getTransform().getTranslate();
+		auto worldPos = camera_->screenToWorld(octoon::math::float3(pos, 0.5));
+		auto ray = octoon::math::Raycast(cameraPos, math::normalize(worldPos - cameraPos));
+		return ray;
 	}
 
 	const math::float4&

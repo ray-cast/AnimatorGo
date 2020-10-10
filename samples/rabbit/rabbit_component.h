@@ -16,6 +16,8 @@ namespace rabbit
 		virtual void setActive(bool active) noexcept = 0;
 		virtual bool getActive() const noexcept = 0;
 
+		virtual bool isCapture() const = 0;
+
 		virtual std::shared_ptr<RabbitModule> model() const noexcept = 0;
 
 		virtual void onEnable() noexcept(false);
@@ -38,7 +40,11 @@ namespace rabbit
 	class RabbitComponent : public IRabbitComponent
 	{
 	public:
-		RabbitComponent() noexcept = default;
+		RabbitComponent() noexcept
+			: handEvent_(false)
+		{
+		}
+
 		virtual ~RabbitComponent() noexcept = default;
 
 		virtual void setActive(bool active) noexcept override
@@ -48,6 +54,29 @@ namespace rabbit
 		virtual bool getActive() const noexcept
 		{
 			return true;
+		}
+
+		virtual void captureEvent()
+		{
+			if (!this->handEvent_)
+			{
+				this->handEvent_ = true;
+				this->onCaptureMouse();
+			}
+		}
+
+		virtual void releaseEvent()
+		{
+			if (this->handEvent_)
+			{
+				this->handEvent_ = false;
+				this->onReleaseMouse();
+			}
+		}
+
+		virtual bool isCapture() const override
+		{
+			return this->handEvent_;
 		}
 
 		virtual void setContext(const std::shared_ptr<RabbitContext>& context) noexcept
@@ -113,6 +142,14 @@ namespace rabbit
 			context_->behaviour->removeMessageListener(event, listener);
 		}
 
+		void onCaptureMouse() noexcept
+		{
+		}
+
+		void onReleaseMouse() noexcept
+		{
+		}
+
 		void onMouseDown(const octoon::input::InputEvent& event) noexcept
 		{
 		}
@@ -130,6 +167,7 @@ namespace rabbit
 		}
 	
 	private:
+		bool handEvent_;
 		std::shared_ptr<T> model_;
 		std::shared_ptr<RabbitContext> context_;
 	};

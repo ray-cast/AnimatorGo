@@ -32,6 +32,48 @@ namespace octoon
 	}
 
 	const std::vector<RaycastHit>&
+	Raycaster::intersectObject(const GameObject& object) noexcept
+	{
+		this->hits.clear();
+
+		std::vector<mesh::RaycastHit> result;
+
+		mesh::MeshPtr mesh = nullptr;
+
+		auto skinnedMesh = object.getComponent<SkinnedMeshRendererComponent>();
+		if (skinnedMesh)
+			mesh = skinnedMesh->getSkinnedMesh();
+		else
+		{
+			auto meshFilter = object.getComponent<MeshFilterComponent>();
+			if (meshFilter)
+				mesh = meshFilter->getMesh();
+		}
+
+		if (mesh)
+		{
+			auto transform = object.getComponent<TransformComponent>();
+			ray.transform(transform->getTransformInverse());
+
+			mesh->raycastAll(ray, result);
+
+			for (auto& it : result) {
+				RaycastHit hit;
+				hit.object = &object;
+				hit.distance = it.distance;
+				hit.mesh = it.mesh;
+				hit.point = it.point * transform->getTransform();
+
+				this->hits.emplace_back(hit);
+			}
+		}
+
+		std::sort(this->hits.begin(), this->hits.end(), [](const RaycastHit& a, const RaycastHit& b) { return a.distance < b.distance; });
+
+		return this->hits;
+	}
+
+	const std::vector<RaycastHit>&
 	Raycaster::intersectObjects(const GameObjects& entities) noexcept
 	{
 		this->hits.clear();
@@ -60,7 +102,6 @@ namespace octoon
 				auto transform = object->getComponent<TransformComponent>();
 				ray.transform(transform->getTransformInverse());
 
-				result.clear();
 				mesh->raycastAll(ray, result);
 
 				for (auto& it : result) {

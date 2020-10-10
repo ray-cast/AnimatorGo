@@ -25,12 +25,11 @@ namespace octoon
 				{
 				}
 
-				Raycast(const Vector3<T>& pt1, const Vector3<T>& pt2) noexcept
+				Raycast(const Vector3<T>& pos, const Vector3<T>& n) noexcept
 				{
-					origin = pt1;
-					normal = pt2 - pt1;
-					maxDistance = math::length(normal);
-					normal /= maxDistance;
+					origin = pos;
+					normal = n;
+					maxDistance = std::numeric_limits<float>::infinity();
 				}
 
 				void setNormal(const Vector3<T>& n) noexcept

@@ -91,9 +91,9 @@ namespace rabbit
 	}
 
 	void
-	DragComponent::onMouseDown(float x, float y) noexcept
+	DragComponent::onMouseDown(const octoon::input::InputEvent& event) noexcept
 	{
-		auto selected = this->intersectObjects(x, y);
+		auto selected = this->intersectObjects(event.button.x, event.button.y);
 		if (this->selectedItem_ != selected)
 		{
 			this->selectedItem_ = selected;
@@ -106,32 +106,12 @@ namespace rabbit
 	}
 
 	void
-	DragComponent::onMouseUp(float x, float y) noexcept
+	DragComponent::onMouseUp(const octoon::input::InputEvent& event) noexcept
 	{
 	}
 
 	void
-	DragComponent::onMousePress(float x, float y) noexcept
-	{
-	}
-
-	void
-	DragComponent::onMouseMotion(float x, float y) noexcept
-	{
-		auto hover = this->intersectObjects(x, y);
-		if (this->selectedItemHover_ != hover)
-		{
-			this->selectedItemHover_ = hover;
-
-			if (hover)
-				this->sendMessage("editor:hover", hover.value());
-			else
-				this->sendMessage("editor:hover");
-		}
-	}
-
-	void
-	DragComponent::onUpdate() noexcept
+	DragComponent::onMouseMotion(const octoon::input::InputEvent& event) noexcept
 	{
 		auto inputFeature = this->getFeature<octoon::InputFeature>();
 		if (inputFeature)
@@ -139,25 +119,28 @@ namespace rabbit
 			auto input = inputFeature->getInput();
 			if (input)
 			{
-				float x, y;
-				input->getMousePos(x, y);
+				if (!input->isButtonPressed(octoon::input::InputButton::Left) &&
+					!input->isButtonPressed(octoon::input::InputButton::Right) &&
+					!input->isButtonPressed(octoon::input::InputButton::Middle))
+				{
+					auto hover = this->intersectObjects(event.motion.x, event.motion.y);
+					if (this->selectedItemHover_ != hover)
+					{
+						this->selectedItemHover_ = hover;
 
-				if (input->isButtonDown(octoon::input::InputButton::Left)) {
-					this->onMouseDown(x, y);
-				}
-
-				if (input->isButtonUp(octoon::input::InputButton::Left)) {
-					this->onMouseUp(x, y);
-				}
-
-				if (input->isButtonPressed(octoon::input::InputButton::Left)) {
-					this->onMousePress(x, y);
-				} else if (!input->isButtonPressed(octoon::input::InputButton::Right) && !input->isButtonPressed(octoon::input::InputButton::Middle)) {
-					this->onMouseMotion(x, y);
+						if (hover)
+							this->sendMessage("editor:hover", hover.value());
+						else
+							this->sendMessage("editor:hover");
+					}
 				}
 			}
 		}
+	}
 
+	void
+	DragComponent::onUpdate() noexcept
+	{
 		if (this->selectedItem_)
 		{
 			auto hit = this->selectedItem_.value();

@@ -4,6 +4,7 @@
 #include <rabbit_model.h>
 #include <rabbit_context.h>
 #include <any>
+#include <octoon/input/input_event.h>
 
 namespace rabbit
 {
@@ -23,6 +24,12 @@ namespace rabbit
 		virtual void onFixedUpdate() noexcept(false);
 		virtual void onUpdate() noexcept(false);
 		virtual void onLateUpdate() noexcept(false);
+
+		virtual void onMouseDown(const octoon::input::InputEvent& event) noexcept = 0;
+		virtual void onMouseMotion(const octoon::input::InputEvent& event) noexcept = 0;
+		virtual void onMouseUp(const octoon::input::InputEvent& event) noexcept = 0;
+
+		virtual void onResize(const octoon::input::InputEvent& event) noexcept = 0;
 
 		virtual void onPostProcess() noexcept(false);
 	};
@@ -104,6 +111,22 @@ namespace rabbit
 		void removeMessageListener(const std::string& event, std::function<void(const std::any&)> listener) noexcept
 		{
 			context_->behaviour->removeMessageListener(event, listener);
+		}
+
+		void onMouseDown(const octoon::input::InputEvent& event) noexcept
+		{
+		}
+
+		void onMouseMotion(const octoon::input::InputEvent& event) noexcept
+		{
+		}
+
+		void onMouseUp(const octoon::input::InputEvent& event) noexcept
+		{
+		}
+
+		void onResize(const octoon::input::InputEvent& event) noexcept
+		{
 		}
 	
 	private:

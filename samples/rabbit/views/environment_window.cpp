@@ -48,8 +48,8 @@ namespace rabbit
 		this->imageName_ = new QLabel;
 		this->imageName_->setText(u8"未命名");
 
-		this->color = new QToolButton;
-		this->color->setIconSize(QSize(50, 30));
+		this->colorButton = new QToolButton;
+		this->colorButton->setIconSize(QSize(50, 30));
 
 		this->thumbnail = new QToolButton;
 		this->thumbnail->setIcon(QIcon::fromTheme(":res/icons/append2.png"));
@@ -131,7 +131,7 @@ namespace rabbit
 		thumbnailTextLayout->setContentsMargins(0, 2, 0, 0);
 		thumbnailTextLayout->addWidget(this->thumbnailPath, 0, Qt::AlignLeft | Qt::AlignCenter);
 		thumbnailTextLayout->addStretch();
-		thumbnailTextLayout->addWidget(this->color, 0, Qt::AlignRight);
+		thumbnailTextLayout->addWidget(this->colorButton, 0, Qt::AlignRight);
 
 		auto thumbnailRightLayout = new QVBoxLayout;
 		thumbnailRightLayout->setSpacing(0);
@@ -196,7 +196,7 @@ namespace rabbit
 		connect(resetButton_, SIGNAL(clicked()), this, SLOT(resetEvent()));
 		connect(thumbnail, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
 		connect(thumbnailToggle, SIGNAL(stateChanged(int)), this, SLOT(colorMapCheckEvent(int)));
-		connect(color, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
+		connect(colorButton, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(intensitySpinBox, SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
 		connect(intensitySlider, SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
 		connect(horizontalRotationSpinBox, SIGNAL(valueChanged(double)), this, SLOT(horizontalRotationEditEvent(double)));
@@ -228,7 +228,7 @@ namespace rabbit
 		QPainter painter(&pixmap);
 		painter.setPen(Qt::NoPen);
 		painter.fillRect(QRect(0, 0, w, h), c);
-		this->color->setIcon(QIcon(pixmap));
+		this->colorButton->setIcon(QIcon(pixmap));
 	}
 
 	void
@@ -241,7 +241,6 @@ namespace rabbit
 
 		if (this->image_ && this->thumbnailToggle->isChecked())
 		{
-			float* data_ = nullptr;
 			auto srcWidth = this->image_->width();
 			auto srcHeight = this->image_->height();
 			auto pixels = std::make_unique<std::uint8_t[]>(w * h * 3);
@@ -257,7 +256,6 @@ namespace rabbit
 					auto ui = int(u * srcWidth);
 					auto vi = int(v * srcHeight);
 
-					auto src = (vi * srcWidth + ui) * 3;
 					auto dst = (y * w + x) * 3;
 					auto color = this->image_->pixelColor(ui, vi);
 

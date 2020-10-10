@@ -28,6 +28,8 @@ namespace rabbit
 
 		virtual void onPostProcess() noexcept override;
 
+		virtual void onResize(const octoon::input::InputEvent& event) noexcept override;
+
 	private:
 		bool active_;
 	};

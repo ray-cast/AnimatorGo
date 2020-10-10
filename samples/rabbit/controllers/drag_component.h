@@ -36,10 +36,9 @@ namespace rabbit
 
 		void onUpdate() noexcept override;
 
-		void onMouseDown(float x, float y) noexcept;
-		void onMouseUp(float x, float y) noexcept;
-		void onMousePress(float x, float y) noexcept;
-		void onMouseMotion(float x, float y) noexcept;
+		void onMouseDown(const octoon::input::InputEvent& event) noexcept;
+		void onMouseMotion(const octoon::input::InputEvent& event) noexcept;
+		void onMouseUp(const octoon::input::InputEvent& event) noexcept;
 
 	private:
 		std::optional<octoon::RaycastHit> intersectObjects(float x, float y) noexcept;

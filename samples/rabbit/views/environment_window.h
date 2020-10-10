@@ -51,7 +51,7 @@ namespace rabbit
 		QLabel* horizontalRotationLabel_;
 		QLabel* verticalRotationLabel_;
 
-		QToolButton* color;
+		QToolButton* colorButton;
 		QToolButton* thumbnail;
 		QToolButton* closeButton_;
 		QToolButton* resetButton_;

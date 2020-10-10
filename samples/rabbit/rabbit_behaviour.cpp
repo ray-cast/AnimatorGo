@@ -131,8 +131,11 @@ namespace rabbit
 			auto gameObjectManager = baseFeature->getGameObjectManager();
 			if (gameObjectManager)
 			{
+				gameObjectManager->addMessageListener("feature:input:mousemove", std::bind(&RabbitBehaviour::onMouseMotion, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:mousedown", std::bind(&RabbitBehaviour::onMouseDown, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:mouseup", std::bind(&RabbitBehaviour::onMouseUp, this, std::placeholders::_1));
 				gameObjectManager->addMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
-				gameObjectManager->addMessageListener("feature:input:event", std::bind(&RabbitBehaviour::onInputEvent, this, std::placeholders::_1));
+				gameObjectManager->addMessageListener("feature:input:resize", std::bind(&RabbitBehaviour::onResize, this, std::placeholders::_1));
 			}
 		}
 	}
@@ -160,7 +163,12 @@ namespace rabbit
 		{
 			auto gameObjectManager = baseFeature->getGameObjectManager();
 			if (gameObjectManager)
+			{
+				gameObjectManager->removeMessageListener("feature:input:mousemove", std::bind(&RabbitBehaviour::onMouseMotion, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:mousedown", std::bind(&RabbitBehaviour::onMouseDown, this, std::placeholders::_1));
+				gameObjectManager->removeMessageListener("feature:input:mouseup", std::bind(&RabbitBehaviour::onMouseUp, this, std::placeholders::_1));
 				gameObjectManager->removeMessageListener("feature:input:drop", std::bind(&RabbitBehaviour::onDrop, this, std::placeholders::_1));
+			}
 		}
 	}
 
@@ -202,6 +210,50 @@ namespace rabbit
 			auto files = std::any_cast<std::vector<const char*>>(data);
 			for (auto& path : files)
 				this->open(path);
+		}
+	}
+
+	void
+	RabbitBehaviour::onMouseMotion(const std::any& data) noexcept
+	{
+		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+				it->onMouseMotion(event);
+		}
+	}
+
+	void
+	RabbitBehaviour::onMouseDown(const std::any& data) noexcept
+	{
+		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+				it->onMouseDown(event);
+		}
+	}
+	
+	void
+	RabbitBehaviour::onMouseUp(const std::any& data) noexcept
+	{
+		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+				it->onMouseUp(event);
+		}
+	}
+
+	void
+	RabbitBehaviour::onResize(const std::any& data) noexcept
+	{
+		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+				it->onResize(event);
 		}
 	}
 
@@ -383,22 +435,6 @@ namespace rabbit
 		}
 
 		return std::nullopt;
-	}
-
-	void
-	RabbitBehaviour::onInputEvent(const std::any& data) noexcept
-	{
-		auto event = std::any_cast<octoon::input::InputEvent>(data);
-		switch (event.event)
-		{
-		case octoon::input::InputEvent::SizeChange:
-		case octoon::input::InputEvent::SizeChangeDPI:
-			if (event.change.w > 0 && event.change.h > 0)
-				this->profile_->canvasModule->resize(event.change.w, event.change.h);
-			break;
-		default:
-			return;
-		}
 	}
 
 	octoon::GameComponentPtr

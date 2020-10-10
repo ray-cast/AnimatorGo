@@ -85,6 +85,13 @@ namespace rabbit
 	}
 
 	void
+	CanvasComponent::onResize(const octoon::input::InputEvent& event) noexcept
+	{
+		if (event.change.w > 0 && event.change.h > 0)
+			this->getModel()->resize(event.change.w, event.change.h);
+	}
+
+	void
 	CanvasComponent::save(std::string_view filepath) noexcept
 	{
 		auto canvas = this->getContext()->profile->canvasModule;

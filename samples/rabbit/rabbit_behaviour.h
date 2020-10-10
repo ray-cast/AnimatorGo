@@ -69,8 +69,6 @@ namespace rabbit
 
 		virtual octoon::GameComponentPtr clone() const noexcept override;
 
-	private:
-		void onInputEvent(const std::any& data) noexcept;
 
 	private:
 		void onActivate() noexcept(false) override;
@@ -81,6 +79,12 @@ namespace rabbit
 		void onLateUpdate() noexcept override;
 
 		void onDrop(const std::any& data) noexcept;
+
+		void onMouseDown(const std::any& event) noexcept;
+		void onMouseMotion(const std::any& event) noexcept;
+		void onMouseUp(const std::any& event) noexcept;
+
+		void onResize(const std::any& data) noexcept;
 
 	private:
 		std::shared_ptr<RabbitProfile> profile_;

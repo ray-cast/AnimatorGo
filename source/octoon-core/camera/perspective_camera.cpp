@@ -11,7 +11,7 @@ namespace octoon::camera
 	}
 
 	PerspectiveCamera::PerspectiveCamera(float fov, float znear, float zfar) noexcept
-		: aperture_(fov)
+		: fov_(fov)
 		, znear_(znear)
 		, zfar_(zfar)
 		, sensorSize_(math::float2::One)
@@ -26,20 +26,20 @@ namespace octoon::camera
 	}
 
 	void
-	PerspectiveCamera::setAperture(float aperture) noexcept
+	PerspectiveCamera::setFov(float aperture) noexcept
 	{
-		if (aperture_ != aperture)
+		if (fov_ != aperture)
 		{
 			this->setDirty(true);
 			needUpdateViewProject_= true;
-			aperture_ = aperture;
+			fov_ = aperture;
 		}
 	}
 
 	float
-	PerspectiveCamera::getAperture() const noexcept
+	PerspectiveCamera::getFov() const noexcept
 	{
-		return aperture_;
+		return fov_;
 	}
 
 	void
@@ -148,7 +148,7 @@ namespace octoon::camera
 			sensorSize.x = sensorSize_.x * ((float)width / height);
 			sensorSize.y = sensorSize_.y;
 
-			project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
+			project_ = math::makePerspectiveFovLH(fov_, sensorSize, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 
 			viewProject_ = project_ * this->getView();

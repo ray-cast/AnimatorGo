@@ -33,9 +33,9 @@ namespace octoon
 	}
 	
 	void
-	FilmCameraComponent::setAperture(float fov) noexcept
+	FilmCameraComponent::setFov(float fov) noexcept
 	{
-		camera_->setAperture(fov);
+		camera_->setFov(fov);
 	}
 
 	void 
@@ -45,9 +45,21 @@ namespace octoon
 	}
 
 	void
+	FilmCameraComponent::setAperture(float aperture) noexcept
+	{
+		camera_->setAperture(aperture);
+	}
+
+	void
 	FilmCameraComponent::setFocalLength(float length) noexcept
 	{
 		camera_->setFocalLength(length);
+	}
+
+	void
+	FilmCameraComponent::setFocalDistance(float distance) noexcept
+	{
+		camera_->setFocalDistance(distance);
 	}
 
 	void
@@ -75,9 +87,9 @@ namespace octoon
 	}
 
 	float
-	FilmCameraComponent::getAperture() const noexcept
+	FilmCameraComponent::getFov() const noexcept
 	{
-		return camera_->getAperture();
+		return camera_->getFov();
 	}
 
 	float
@@ -87,15 +99,21 @@ namespace octoon
 	}
 
 	float
+	FilmCameraComponent::getAperture() const noexcept
+	{
+		return camera_->getAperture();
+	}
+
+	float
 	FilmCameraComponent::getFocalLength() const noexcept
 	{
 		return camera_->getFocalLength();
 	}
 
 	float
-	FilmCameraComponent::getCanvasWidth() const noexcept
+	FilmCameraComponent::getFocalDistance() const noexcept
 	{
-		return camera_->getCanvasWidth();
+		return camera_->getFocalDistance();
 	}
 
 	void
@@ -117,7 +135,7 @@ namespace octoon
 		instance->setName(this->getName());
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());
-		instance->setAperture(this->getAperture());
+		instance->setFov(this->getFov());
 		instance->setSensorSize(this->getSensorSize());
 		instance->setClearColor(this->getClearColor());
 		instance->setViewport(this->getViewport());
@@ -125,5 +143,26 @@ namespace octoon
 		instance->setClearFlags(this->getClearFlags());
 
 		return instance;
+	}
+
+	void 
+	FilmCameraComponent::onActivate() noexcept
+	{
+		CameraComponent::onActivate();		
+		this->addMessageListener("Camera:fov", std::bind(&FilmCameraComponent::onFovChange, this, std::placeholders::_1));
+	}
+
+	void
+	FilmCameraComponent::onDeactivate() noexcept
+	{
+		CameraComponent::onDeactivate();
+		this->removeMessageListener("Camera:fov", std::bind(&FilmCameraComponent::onFovChange, this, std::placeholders::_1));
+	}
+
+	void
+	FilmCameraComponent::onFovChange(const std::any& data) noexcept
+	{
+		if (data.type() == typeid(float))
+			this->setFov(std::any_cast<float>(data));
 	}
 }

@@ -6,22 +6,109 @@ namespace octoon::camera
 	OctoonImplementSubClass(FilmCamera, Camera, "FilmCamera")
 
 	FilmCamera::FilmCamera() noexcept
-		: aperture_(45.0f)
+		: fov_(45.0f)
+		, aperture_(0.0f)
+		, filmSize_(36.0f) // 35mm
+		, focalLength_(50.0f) // 50mm
+		, focalDistance_(10.0f) // 50mm
+		, zoom_(0.0f)
+		, sensorSize_(math::float2::One)
 		, znear_(0.1f)
 		, zfar_(std::numeric_limits<float>::max())
 		, width_(0)
 		, height_(0)
-		, zoom_(0)
-		, filmSize_(36.0f) // 35mm
-		, focalLength_(50.0f) // 50mm
-		, sensorSize_(math::float2::One)
-		, canvasWidth_(720.0f)
 		, needUpdateViewProject_(true)
 	{
 	}
 
 	FilmCamera::~FilmCamera() noexcept
 	{
+	}
+
+	void
+	FilmCamera::setFov(float aperture) noexcept
+	{
+		if (fov_ != aperture)
+		{
+			auto ratio = std::tan(math::radians(aperture) * 0.5f) * 2.0f;
+			auto length = filmSize_ / ratio;
+			this->setFocalLength(length);
+			fov_ = aperture;
+		}
+	}
+
+	void
+	FilmCamera::setFilmSize(float filmSize) noexcept
+	{
+		if (filmSize_ != filmSize)
+		{
+			auto viewport = this->getPixelViewport();
+			this->setZoom(focalLength_ / filmSize * viewport.width);
+			filmSize_ = filmSize;
+		}
+	}
+
+	void
+	FilmCamera::setAperture(float aperture) noexcept
+	{
+		this->setDirty(true);
+		this->aperture_ = aperture;
+	}
+
+	void
+	FilmCamera::setFocalLength(float length) noexcept
+	{
+		if (focalLength_ != length)
+		{
+			float comp = this->getPixelViewport().width;
+			float zoom = length / filmSize_ * comp;
+			this->setZoom(zoom);
+			focalLength_ = length;
+		}
+	}
+
+	void
+	FilmCamera::setFocalDistance(float distance) noexcept
+	{
+		if (focalDistance_ != distance)
+		{
+			this->setDirty(true);
+			focalDistance_ = distance;
+		}
+	}
+
+	void
+	FilmCamera::setZoom(float zoom) noexcept
+	{
+		if (zoom_ != zoom)
+		{
+			this->setDirty(true);
+			needUpdateViewProject_ = true;
+			fov_ = math::degrees(std::atan(this->getPixelViewport().width / zoom * 0.5f)) * 2.0f;
+			zoom_ = zoom;
+		}
+	}
+
+	void
+	FilmCamera::setCanvasWidth(float width) noexcept
+	{
+		if (this->getPixelViewport().width != width)
+		{
+			this->setDirty(true);
+			needUpdateViewProject_ = true;
+			fov_ = math::degrees(std::atan(width / zoom_ * 0.5f)) * 2.0f;
+		}
+	}
+
+	void
+	FilmCamera::setSensorSize(const math::float2& sensorSize) noexcept
+	{
+		if (sensorSize_ != sensorSize)
+		{
+			this->setDirty(true);
+			needUpdateViewProject_= true;
+			sensorSize_ = sensorSize;
+		}
 	}
 
 	void
@@ -46,85 +133,10 @@ namespace octoon::camera
 		}
 	}
 
-	void
-	FilmCamera::setSensorSize(const math::float2& sensorSize) noexcept
-	{
-		if (sensorSize_ != sensorSize)
-		{
-			this->setDirty(true);
-			needUpdateViewProject_= true;
-			sensorSize_ = sensorSize;
-		}
-	}
-
-	void
-	FilmCamera::setFilmSize(float filmSize) noexcept
-	{
-		if (filmSize_ != filmSize)
-		{
-			this->setZoom(focalLength_ / filmSize * canvasWidth_);
-			filmSize_ = filmSize;
-		}
-	}
-
-	void
-	FilmCamera::setZoom(float zoom) noexcept
-	{
-		if (zoom_ != zoom)
-		{
-			this->setDirty(true);
-			needUpdateViewProject_ = true;
-			aperture_ = math::degrees(std::atan(canvasWidth_ / zoom * 0.5f)) * 2.0f;
-			zoom_ = zoom;
-		}
-	}
-
-	void
-	FilmCamera::setCanvasWidth(float width) noexcept
-	{
-		if (canvasWidth_ != width)
-		{
-			this->setDirty(true);
-			needUpdateViewProject_ = true;
-			aperture_ = math::degrees(std::atan(width / zoom_ * 0.5f)) * 2.0f;
-			canvasWidth_ = width;
-		}
-	}
-
-	void
-	FilmCamera::setFocalLength(float length) noexcept
-	{
-		if (focalLength_ != length)
-		{
-			float comp = canvasWidth_;
-			float zoom = length / filmSize_ * comp;
-			this->setZoom(zoom);
-			focalLength_ = length;
-		}
-	}
-
-	void
-	FilmCamera::setAperture(float aperture) noexcept
-	{
-		if (aperture_ != aperture)
-		{
-			auto ratio = std::tan(math::radians(aperture) * 0.5f) * 2.0f;
-			auto length = filmSize_ / ratio;
-			this->setFocalLength(length);
-			aperture_ = aperture;
-		}
-	}
-
 	float
-	FilmCamera::getAperture() const noexcept
+	FilmCamera::getFov() const noexcept
 	{
-		return aperture_;
-	}
-
-	float
-	FilmCamera::getZoom() const noexcept
-	{
-		return aperture_;
+		return fov_;
 	}
 
 	float
@@ -134,15 +146,27 @@ namespace octoon::camera
 	}
 
 	float
+	FilmCamera::getAperture() const noexcept
+	{
+		return this->aperture_;
+	}
+
+	float
 	FilmCamera::getFocalLength() const noexcept
 	{
 		return focalLength_;
 	}
 
 	float
-	FilmCamera::getCanvasWidth() const noexcept
+	FilmCamera::getFocalDistance() const noexcept
 	{
-		return canvasWidth_;
+		return this->focalDistance_;
+	}
+
+	float
+	FilmCamera::getZoom() const noexcept
+	{
+		return zoom_;
 	}
 
 	float
@@ -204,7 +228,7 @@ namespace octoon::camera
 			height = fbo_[0]->getFramebufferDesc().getHeight();
 		}
 
-		if (width_ != width || height_ != height)
+		if (width_ != width || height_ != height || this->isDirty())
 		{
 			width_ = width;
 			height_ = height;
@@ -214,14 +238,11 @@ namespace octoon::camera
 
 		if (needUpdateViewProject_)
 		{
-			math::float4x4 adjustment;
-			adjustment.makeScale(1.0, -1.0, 1.0);
-
 			math::float2 sensorSize;
-			sensorSize.x = sensorSize_.x;
-			sensorSize.y = sensorSize_.y * ((float)width / height);
+			sensorSize.x = sensorSize_.x * ((float)width / height);
+			sensorSize.y = sensorSize_.y;
 
-			project_ = math::makePerspectiveFovLH(aperture_, sensorSize, znear_, zfar_);
+			project_ = math::makePerspectiveFovLH(fov_, sensorSize, znear_, zfar_);
 			projectInverse_ = math::inverse(project_);
 
 			viewProject_ = project_ * this->getView();

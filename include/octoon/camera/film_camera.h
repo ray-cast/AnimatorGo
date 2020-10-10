@@ -12,21 +12,24 @@ namespace octoon::camera
 		FilmCamera() noexcept;
 		virtual ~FilmCamera() noexcept;
 
+		void setFov(float fov) noexcept;
+		void setFilmSize(float width) noexcept;
+		void setAperture(float aperture) noexcept;
+		void setFocalLength(float length) noexcept;
+		void setFocalDistance(float distance) noexcept;
+		void setZoom(float zoom) noexcept;
+		void setCanvasWidth(float width) noexcept;
 		void setNear(float znear) noexcept;
 		void setFar(float zfar) noexcept;
-		void setFilmSize(float width) noexcept;
-		void setCanvasWidth(float width) noexcept;
-		void setFocalLength(float length) noexcept;
-		void setZoom(float zoom) noexcept;
-		void setAperture(float fov) noexcept;
 
+		float getFov() const noexcept;
+		float getFilmSize() const noexcept;
+		float getAperture() const noexcept;
+		float getFocalLength() const noexcept;
+		float getFocalDistance() const noexcept;
+		float getZoom() const noexcept;
 		float getNear() const noexcept;
 		float getFar() const noexcept;
-		float getZoom() const noexcept;
-		float getAperture() const noexcept;
-		float getFilmSize() const noexcept;
-		float getCanvasWidth() const noexcept;
-		float getFocalLength() const noexcept;
 
 		void setSensorSize(const math::float2& ratio) noexcept;
 		const math::float2& getSensorSize() const noexcept;
@@ -43,13 +46,14 @@ namespace octoon::camera
 		void _updateViewProject() const noexcept;
 
 	private:
+		float fov_;
+		float filmSize_;
+		float aperture_;
+		float focalLength_;
+		float focalDistance_;
+		float zoom_;
 		float znear_;
 		float zfar_;
-		float filmSize_;
-		float focalLength_;
-		float aperture_;
-		float zoom_;
-		float canvasWidth_;
 
 		math::float2 sensorSize_;
 

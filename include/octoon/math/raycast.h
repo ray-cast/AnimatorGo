@@ -62,9 +62,8 @@ namespace octoon
 
 				void transform(const Matrix4x4<T>& m) noexcept
 				{
-					this->normal = (this->normal + this->origin) * m;
 					this->origin = this->origin * m;
-					this->normal = math::normalize(this->normal - this->origin);
+					this->normal = math::normalize(this->normal * m);
 				}
 			};
 		}

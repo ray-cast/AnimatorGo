@@ -1,4 +1,5 @@
 #include "clw_scene_controller.h"
+#include <octoon/camera/film_camera.h>
 #include <octoon/camera/perspective_camera.h>
 #include <octoon/camera/ortho_camera.h>
 #include <octoon/light/point_light.h>
@@ -19,7 +20,13 @@ namespace octoon::video
 		auto perspective = dynamic_cast<const camera::PerspectiveCamera*>(&camera);
 		if (perspective)
 		{
-			return perspective->getAperture() > 0.f ? CameraType::kPhysicalPerspective : CameraType::kPerspective;
+			return CameraType::kPerspective;
+		}
+
+		auto film = dynamic_cast<const camera::FilmCamera*>(&camera);
+		if (film)
+		{
+			return film->getAperture() > 0.f ? CameraType::kPhysicalPerspective : CameraType::kPerspective;
 		}
 
 		auto ortho = dynamic_cast<const camera::OrthographicCamera*>(&camera);
@@ -295,7 +302,7 @@ namespace octoon::video
 		{
 			auto filmSize_ = 36.0f;
 			auto perspective = camera->downcast<camera::PerspectiveCamera>();
-			auto ratio = std::tan(math::radians(perspective->getAperture()) * 0.5f) * 2.0f;
+			auto ratio = std::tan(math::radians(perspective->getFov()) * 0.5f) * 2.0f;
 			auto focalLength = filmSize_ / ratio;
 
 			data[0].aperture = 0;
@@ -303,6 +310,17 @@ namespace octoon::video
 			data[0].focus_distance = 1.0f;
 			data[0].dim = RadeonRays::float2(filmSize_ * viewport.width / viewport.height, filmSize_);
 			data[0].zcap = RadeonRays::float2(perspective->getNear(), perspective->getFar());
+		}
+		else if (camera->isA<camera::FilmCamera>())
+		{
+			auto film = camera->downcast<camera::FilmCamera>();
+			auto filmSize_ = film->getFilmSize();
+
+			data[0].aperture = film->getAperture();
+			data[0].focal_length = film->getFocalLength();
+			data[0].focus_distance = film->getFocalDistance();
+			data[0].dim = RadeonRays::float2(filmSize_ * viewport.width / viewport.height, filmSize_);
+			data[0].zcap = RadeonRays::float2(film->getNear(), film->getFar());
 		}
 
 		context_.UnmapBuffer(0, out.camera, data);

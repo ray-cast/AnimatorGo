@@ -14,11 +14,11 @@ namespace octoon
 		explicit PerspectiveCameraComponent(float fov, const math::float2& sensorSize = math::float2::One, float znear = 0.01f, float zfar = 65535.0f) noexcept;
 		virtual ~PerspectiveCameraComponent() noexcept;
 
-		void setAperture(float fov) noexcept;
+		void setFov(float fov) noexcept;
 		void setNear(float znear) noexcept;
 		void setFar(float zfar) noexcept;
 
-		float getAperture() const noexcept;
+		float getFov() const noexcept;
 		float getNear() const noexcept;
 		float getFar() const noexcept;
 

@@ -186,6 +186,30 @@ namespace rabbit
 		recordButton_->setText(u8"开始渲染");
 		recordButton_->setContentsMargins(0, 0, 0, 0);
 
+		apertureLabel_ = new QLabel();
+		apertureLabel_->setText(u8"光圈:");
+		apertureLabel_->setStyleSheet("color: rgb(200,200,200);");
+
+		apertureSpinbox_ = new DoubleSpinBox();
+		apertureSpinbox_->setMinimum(0);
+		apertureSpinbox_->setMaximum(64.0);
+		apertureSpinbox_->setValue(0);
+		apertureSpinbox_->setSingleStep(0.1f);
+		apertureSpinbox_->setAlignment(Qt::AlignRight);
+		apertureSpinbox_->setFixedWidth(100);
+
+		focalDistanceLabel_ = new QLabel();
+		focalDistanceLabel_->setText(u8"焦距:");
+		focalDistanceLabel_->setStyleSheet("color: rgb(200,200,200);");
+
+		focalDistanceSpinbox_ = new DoubleSpinBox();
+		focalDistanceSpinbox_->setMinimum(0);
+		focalDistanceSpinbox_->setMaximum(std::numeric_limits<float>::infinity());
+		focalDistanceSpinbox_->setValue(0);
+		focalDistanceSpinbox_->setSingleStep(1.0f);
+		focalDistanceSpinbox_->setAlignment(Qt::AlignRight);
+		focalDistanceSpinbox_->setFixedWidth(100);
+
 		auto titleLayout = new QHBoxLayout();
 		titleLayout->addSpacing(closeButton_->iconSize().width());
 		titleLayout->addStretch();
@@ -237,8 +261,23 @@ namespace rabbit
 		infoLayout->addWidget(currentFrame_);
 		infoLayout->addWidget(timeTotal_);
 
+		auto apertureLayout = new QHBoxLayout;
+		apertureLayout->addWidget(apertureLabel_);
+		apertureLayout->addWidget(apertureSpinbox_);
+
+		auto focalDistanceLayout = new QHBoxLayout;
+		focalDistanceLayout->addWidget(focalDistanceLabel_);
+		focalDistanceLayout->addWidget(focalDistanceSpinbox_);
+
+		auto cameraLayout = new QVBoxLayout;
+		cameraLayout->addLayout(apertureLayout);
+		cameraLayout->addLayout(focalDistanceLayout);
+
 		markSpoiler_ = new Spoiler(u8"水印");
 		markSpoiler_->setContentLayout(*markLayout);
+
+		cameraSpoiler_ = new Spoiler(u8"相机设置");
+		cameraSpoiler_->setContentLayout(*cameraLayout);
 
 		videoSpoiler_ = new Spoiler(u8"渲染设置");
 		videoSpoiler_->setContentLayout(*videoLayout);
@@ -248,6 +287,7 @@ namespace rabbit
 
 		auto contentLayout = new QVBoxLayout(this);
 		contentLayout->addWidget(markSpoiler_);
+		contentLayout->addWidget(cameraSpoiler_);
 		contentLayout->addWidget(videoSpoiler_);
 		contentLayout->addWidget(infoSpoiler_);
 		contentLayout->addStretch();
@@ -280,6 +320,8 @@ namespace rabbit
 		connect(sppSpinbox_, SIGNAL(valueChanged(int)), this, SLOT(onSppChanged(int)));
 		connect(bouncesSpinbox_, SIGNAL(valueChanged(int)), this, SLOT(onBouncesChanged(int)));
 		connect(crfSpinbox, SIGNAL(valueChanged(double)), this, SLOT(onCrfChanged(double)));
+		connect(apertureSpinbox_, SIGNAL(valueChanged(double)), this, SLOT(onApertureChanged(double)));
+		connect(focalDistanceSpinbox_, SIGNAL(valueChanged(double)), this, SLOT(onFocalDistanceChanged(double)));
 		connect(timer_, SIGNAL(timeout()), this, SLOT(timeEvent()));
 	}
 
@@ -349,6 +391,22 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 			behaviour->getProfile()->h265Module->crf = value;
+	}
+
+	void
+	RecordWindow::onApertureChanged(double value)
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+			behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setAperture(value);
+	}
+
+	void
+	RecordWindow::onFocalDistanceChanged(double value)
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+			behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setFocalDistance(value);
 	}
 
 	void
@@ -555,12 +613,11 @@ namespace rabbit
 			else if (profile->timeModule->recordFps == 60)
 				speed4_->click();
 
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-			if (behaviour)
-				bouncesSpinbox_->setValue(behaviour->getComponent<rabbit::OfflineComponent>()->getMaxBounces());
-
 			sppSpinbox_->setValue(profile->timeModule->spp);
 			crfSpinbox->setValue(profile->h265Module->crf);
+			bouncesSpinbox_->setValue(behaviour->getComponent<rabbit::OfflineComponent>()->getMaxBounces());
+			apertureSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getAperture());
+			focalDistanceSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getFocalDistance());
 
 			this->update();
 		}

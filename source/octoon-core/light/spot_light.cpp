@@ -13,7 +13,7 @@ namespace octoon::light
 		, shadowRadius_(1.0f)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
-		shadowCamera->setAperture(outerCone_.x);
+		shadowCamera->setFov(outerCone_.x);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
 		shadowCamera->setOwnerListener(this);

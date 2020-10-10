@@ -278,8 +278,8 @@ namespace rabbit
 		mainCamera->addComponent<AudioListenerComponent>();
 		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
 
-		auto camera = mainCamera->addComponent<PerspectiveCameraComponent>();
-		camera->setAperture((float)pmm.camera_keyframes[0].fov);
+		auto camera = mainCamera->addComponent<FilmCameraComponent>();
+		camera->setFov((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
 		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -530,10 +530,10 @@ namespace rabbit
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial)->setRenderOrder(-2);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
-		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
-		auto camera = mainCamera->addComponent<octoon::PerspectiveCameraComponent>(60.0f);
+		auto camera = mainCamera->addComponent<octoon::FilmCameraComponent>();
+		camera->setFov(50.0f);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
 

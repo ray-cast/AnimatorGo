@@ -13,7 +13,7 @@ namespace octoon
 	PerspectiveCameraComponent::PerspectiveCameraComponent(float fov, const math::float2& sensorSize, float znear, float zfar) noexcept
 		: PerspectiveCameraComponent()
 	{
-		this->setAperture(fov);
+		this->setFov(fov);
 		this->setSensorSize(sensorSize);
 		this->setNear(znear);
 		this->setFar(zfar);
@@ -36,9 +36,9 @@ namespace octoon
 	}
 
 	void
-	PerspectiveCameraComponent::setAperture(float fov) noexcept
+	PerspectiveCameraComponent::setFov(float fov) noexcept
 	{
-		camera_->setAperture(fov);
+		camera_->setFov(fov);
 	}
 
 	float
@@ -54,9 +54,9 @@ namespace octoon
 	}
 
 	float
-	PerspectiveCameraComponent::getAperture() const noexcept
+	PerspectiveCameraComponent::getFov() const noexcept
 	{
-		return camera_->getAperture();
+		return camera_->getFov();
 	}
 
 	void
@@ -78,7 +78,7 @@ namespace octoon
 		instance->setName(this->getName());
 		instance->setNear(this->getNear());
 		instance->setFar(this->getFar());
-		instance->setAperture(this->getAperture());
+		instance->setFov(this->getFov());
 		instance->setSensorSize(this->getSensorSize());
 		instance->setClearColor(this->getClearColor());
 		instance->setViewport(this->getViewport());
@@ -91,8 +91,7 @@ namespace octoon
 	void 
 	PerspectiveCameraComponent::onActivate() noexcept
 	{
-		CameraComponent::onActivate();
-		
+		CameraComponent::onActivate();	
 		this->addMessageListener("Camera:fov", std::bind(&PerspectiveCameraComponent::onFovChange, this, std::placeholders::_1));
 	}
 
@@ -100,7 +99,6 @@ namespace octoon
 	PerspectiveCameraComponent::onDeactivate() noexcept
 	{
 		CameraComponent::onDeactivate();
-
 		this->removeMessageListener("Camera:fov", std::bind(&PerspectiveCameraComponent::onFovChange, this, std::placeholders::_1));
 	}
 
@@ -108,6 +106,6 @@ namespace octoon
 	PerspectiveCameraComponent::onFovChange(const std::any& data) noexcept
 	{
 		if (data.type() == typeid(float))
-			this->setAperture(std::any_cast<float>(data));
+			this->setFov(std::any_cast<float>(data));
 	}
 }

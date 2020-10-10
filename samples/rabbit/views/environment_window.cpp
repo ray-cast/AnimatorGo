@@ -64,7 +64,7 @@ namespace rabbit
 		this->thumbnailPath->setMinimumSize(QSize(160, 20));
 
 		this->intensityLabel_ = new QLabel;
-		this->intensityLabel_->setText(u8"环境");
+		this->intensityLabel_->setText(u8"光强");
 
 		this->intensitySlider = new QSlider(Qt::Horizontal);
 		this->intensitySlider->setObjectName("Value");
@@ -79,6 +79,8 @@ namespace rabbit
 		this->intensitySpinBox->setSingleStep(0.1f);
 		this->intensitySpinBox->setAlignment(Qt::AlignRight);
 		this->intensitySpinBox->setValue(0.0f);
+		this->intensitySpinBox->setDecimals(1);
+		this->intensitySpinBox->setSuffix(u8"cd");
 
 		this->horizontalRotationLabel_ = new QLabel;
 		this->horizontalRotationLabel_->setText(u8"水平旋转");
@@ -306,14 +308,14 @@ namespace rabbit
 					QString filepath = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
 					if (!filepath.isEmpty())
 					{
-						auto texture = octoon::TextureLoader::load(filepath.toStdString(), true);
-						if (texture)
+						auto texel = octoon::TextureLoader::load(filepath.toStdString(), true);
+						if (texel)
 						{
-							auto width = texture->getTextureDesc().getWidth();
-							auto height = texture->getTextureDesc().getHeight();
+							auto width = texel->getTextureDesc().getWidth();
+							auto height = texel->getTextureDesc().getHeight();
 							float* data_ = nullptr;
 
-							if (texture->map(0, 0, width, height, 0, (void**)&data_))
+							if (texel->map(0, 0, width, height, 0, (void**)&data_))
 							{
 								auto size = width * height * 3;
 								auto pixels = std::make_unique<std::uint8_t[]>(size);
@@ -325,7 +327,7 @@ namespace rabbit
 									pixels[i + 2] = std::clamp<float>(std::pow(data_[i + 2], 1 / 2.2) * 255.0f, 0, 255);
 								}
 
-								texture->unmap();
+								texel->unmap();
 
 								QImage qimage(pixels.get(), width, height, QImage::Format::Format_RGB888);
 
@@ -335,11 +337,11 @@ namespace rabbit
 								this->thumbnailPath->setText(name);
 								this->thumbnailToggle->setCheckState(Qt::CheckState::Checked);
 								this->thumbnail->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
-								this->texture = texture;
+								this->texture = texel;
 								this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
 								this->setColor(QColor::fromRgbF(1, 1, 1));
 								this->repaint();
-								behaviour->loadHDRi(texture);
+								behaviour->loadHDRi(texel);
 							}
 						}
 					}

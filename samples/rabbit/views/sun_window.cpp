@@ -54,6 +54,8 @@ namespace rabbit
 		editIntensity_->setSingleStep(0.1f);
 		editIntensity_->setAlignment(Qt::AlignRight);
 		editIntensity_->setValue(profile->sunModule->intensity);
+		editIntensity_->setDecimals(1);
+		editIntensity_->setSuffix(u8"cd");
 
 		sliderIntensity_ = new QSlider();
 		sliderIntensity_->setObjectName("Intensity");
@@ -77,6 +79,8 @@ namespace rabbit
 		editRotationX_->setSingleStep(1.0f);
 		editRotationX_->setAlignment(Qt::AlignRight);
 		editRotationX_->setValue(profile->sunModule->rotation.x);
+		editRotationX_->setDecimals(1);
+		editRotationX_->setSuffix(u8"°");
 
 		sliderRotationX_ = new QSlider();
 		sliderRotationX_->setObjectName("RotationX");
@@ -100,6 +104,8 @@ namespace rabbit
 		editRotationY_->setSingleStep(1.0f);
 		editRotationY_->setAlignment(Qt::AlignRight);
 		editRotationY_->setValue(profile->sunModule->rotation.y);
+		editRotationY_->setDecimals(1);
+		editRotationY_->setSuffix(u8"°");
 
 		sliderRotationY_ = new QSlider();
 		sliderRotationY_->setObjectName("RotationY");
@@ -123,6 +129,8 @@ namespace rabbit
 		editRotationZ_->setSingleStep(1.0f);
 		editRotationZ_->setAlignment(Qt::AlignRight);
 		editRotationZ_->setValue(profile->sunModule->rotation.x);
+		editRotationZ_->setDecimals(1);
+		editRotationZ_->setSuffix(u8"°");
 
 		sliderRotationZ_ = new QSlider();
 		sliderRotationZ_->setObjectName("RotationZ");

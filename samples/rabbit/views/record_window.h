@@ -51,6 +51,8 @@ namespace rabbit
 		void onSppChanged(int);
 		void onBouncesChanged(int);
 		void onCrfChanged(double);
+		void onApertureChanged(double);
+		void onFocalDistanceChanged(double);
 
 	public:
 		QLabel* title_;
@@ -66,9 +68,12 @@ namespace rabbit
 		QLabel* crfLabel;
 		QLabel* startLabel_;
 		QLabel* endLabel_;
+		QLabel* apertureLabel_;
+		QLabel* focalDistanceLabel_;
 
 		QButtonGroup* group_;
 		QButtonGroup* speedGroup_;
+
 		QToolButton* select1_;
 		QToolButton* select2_;
 		QToolButton* speed1_;
@@ -85,12 +90,16 @@ namespace rabbit
 		QSpinBox* bouncesSpinbox_;
 		
 		QDoubleSpinBox* crfSpinbox;
+		QDoubleSpinBox* apertureSpinbox_;
+		QDoubleSpinBox* focalDistanceSpinbox_;
+
 		QHBoxLayout* videoRatioLayout_;
 		QHBoxLayout* frameLayout_;
 		QVBoxLayout* mainLayout_;
 		QTimer* timer_;
 
 		Spoiler* markSpoiler_;
+		Spoiler* cameraSpoiler_;
 		Spoiler* videoSpoiler_;
 		Spoiler* infoSpoiler_;
 		QScrollArea* contentWidgetArea_;

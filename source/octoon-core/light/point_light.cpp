@@ -12,7 +12,7 @@ namespace octoon::light
 		, shadowSize_(512, 512)
 	{
 		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
-		shadowCamera->setAperture(90.0f);
+		shadowCamera->setFov(90.0f);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
 		shadowCamera->setOwnerListener(this);

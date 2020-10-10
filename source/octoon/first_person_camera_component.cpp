@@ -226,7 +226,7 @@ namespace octoon
 		float angle = angleX + math::degrees(euler.x);
 
 		if (angle > -89.0f && angle < 89.0f && !std::isinf(angle) && angleX != 0)
-			rotateCamera(angleX, transform->getLocalRight());
+			rotateCamera(angleX, math::normalize(transform->getLocalRight()));
 
 		if (angleY != 0)
 			rotateCamera(angleY, math::float3::UnitY);

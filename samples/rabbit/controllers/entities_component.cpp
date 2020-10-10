@@ -279,7 +279,6 @@ namespace rabbit
 		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
 
 		auto camera = mainCamera->addComponent<PerspectiveCameraComponent>();
-		camera->setFar(2000.0f);
 		camera->setAperture((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);

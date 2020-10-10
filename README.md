@@ -22,12 +22,14 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * 全局照明光线追踪渲染
 * 基于深度学习的后处理降噪
 * 前向、逆向运动学的骨骼动画
+* 物理演算
+* 布料演算
 * 模型文件支持（PMX、PMD，ABC）
 * 动画文件支持（VMD）
 * 场景文件支持（PMM）
-* 多个视频编码（x264、x265）
-* 图像文件（PNG、BMP、TGA、JPEG、DDS，HDR）
-* 音频播放（OpenAL，Wav, Flac, Mp3, Ogg）
+* 视频编码（x264、x265）
+* 图像文件（PNG、BMP、TGA、JPEG、DDS、HDR）
+* 音频播放（OpenAL、Wav、Flac、Mp3、Ogg）
 * 材质文件支持（[NVIDIA's Material Definition Language](https://developer.nvidia.com/mdl-sdk)）
 
 系统需求：

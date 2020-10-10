@@ -530,6 +530,7 @@ namespace rabbit
 		enviromentLight->addComponent<octoon::MeshRendererComponent>(envMaterial)->setRenderOrder(-2);
 
 		auto mainCamera = octoon::GameObject::create("MainCamera");
+		mainCamera->addComponent<octoon::FirstPersonCameraComponent>();
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::FilmCameraComponent>();

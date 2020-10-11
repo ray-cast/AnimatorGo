@@ -19,6 +19,20 @@
 
 namespace rabbit
 {
+	class FocalTargetWindow final : public QToolButton
+	{
+		Q_OBJECT
+	public:
+		FocalTargetWindow() noexcept;
+		~FocalTargetWindow() noexcept;
+
+		void mouseMoveEvent(QMouseEvent* event) override;
+		void mousePressEvent(QMouseEvent* event) override;
+
+	private:
+		QPoint startPos;
+	};
+	
 	class RecordWindow final : public QWidget
 	{
 		Q_OBJECT
@@ -31,6 +45,8 @@ namespace rabbit
 
 		void startRecord(QString fileName);
 		void stopRecord();
+
+		void updateTarget();
 
 		void showEvent(QShowEvent* event) override;
 		void resizeEvent(QResizeEvent* e) noexcept override;
@@ -70,6 +86,7 @@ namespace rabbit
 		QLabel* endLabel_;
 		QLabel* dofInfoLabel_;
 		QLabel* apertureLabel_;
+		QLabel* focalDistanceName_;
 		QLabel* focalDistanceLabel_;
 
 		QButtonGroup* group_;
@@ -84,6 +101,7 @@ namespace rabbit
 		QToolButton* recordButton_;
 		QToolButton* closeButton_;
 		QToolButton* markButton_;
+		QToolButton* focalTargetButton_;
 
 		QSpinBox* start_;
 		QSpinBox* end_;

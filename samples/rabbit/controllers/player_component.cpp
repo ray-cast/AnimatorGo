@@ -3,6 +3,7 @@
 #include "rabbit_behaviour.h"
 #include <octoon/timer_feature.h>
 #include <octoon/physics_feature.h>
+#include <iostream>
 
 namespace rabbit
 {
@@ -165,6 +166,8 @@ namespace rabbit
 				animation->setTime(model->curTime);
 				animation->sample();
 			}
+
+			this->updateDofTarget();
 		}
 
 		auto sound = this->getContext()->profile->entitiesModule->sound;
@@ -214,6 +217,8 @@ namespace rabbit
 				animation->setTime(model->curTime);
 				animation->evaluate();
 			}
+
+			this->updateDofTarget();
 		}
 
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
@@ -271,6 +276,37 @@ namespace rabbit
 	}
 
 	void
+	PlayerComponent::updateDofTarget() noexcept
+	{
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto cameraPos = camera->getComponent<octoon::TransformComponent>()->getTranslate();
+			auto filmCamera = camera->getComponent<octoon::FilmCameraComponent>();
+
+			auto& model = this->getModel();
+			if (model->dofTarget)
+			{
+				auto hitObject = model->dofTarget->object.lock();
+				if (hitObject)
+				{
+					auto meshFilter = hitObject->getComponent<octoon::MeshFilterComponent>();
+					auto mesh = meshFilter->getMesh();
+					auto& aabb = mesh->getBoundingBox(model->dofTarget->mesh);
+					auto center = hitObject->getComponent<octoon::TransformComponent>()->getTransform() * aabb.center();
+
+					octoon::Raycaster raycaster(octoon::math::Raycast(cameraPos, octoon::math::normalize(center - cameraPos)));
+					auto& intersects = raycaster.intersectObjects(this->getContext()->profile->entitiesModule->objects);
+					if (!intersects.empty())
+						filmCamera->setFocalDistance(intersects[0].distance);
+					else
+						filmCamera->setFocalDistance(octoon::math::distance(center, cameraPos));
+				}
+			}
+		}
+	}
+
+	void
 	PlayerComponent::onLateUpdate() noexcept
 	{
 		auto& model = this->getModel();
@@ -304,6 +340,7 @@ namespace rabbit
 		auto& model = this->getModel();
 		auto& context = this->getContext();
 		auto& profile = context->profile;
+		this->updateDofTarget();
 
 		if (!model->playing_)
 		{

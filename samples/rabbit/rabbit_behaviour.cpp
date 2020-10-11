@@ -98,7 +98,7 @@ namespace rabbit
 		canvasComponent_->init(context_, profile_->canvasModule);
 		entitiesComponent_->init(context_, profile_->entitiesModule);
 		offlineComponent_->init(context_, profile_->offlineModule);
-		playerComponent_->init(context_, profile_->timeModule);
+		playerComponent_->init(context_, profile_->playerModule);
 		denoiseComponent_->init(context_, profile_->denoiseModule);
 		h265Component_->init(context_, profile_->h265Module);
 		uiComponent_->init(context_, profile_->canvasModule);

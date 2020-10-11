@@ -6,7 +6,6 @@
 #include <qdrag.h>
 #include <qmimedata.h>
 #include <qapplication.h>
-#include <fstream>
 #include <codecvt>
 #include <qpainter.h>
 #include <qcolordialog.h>

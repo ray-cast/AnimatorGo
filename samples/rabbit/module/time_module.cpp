@@ -2,17 +2,17 @@
 
 namespace rabbit
 {
-	TimeModule::TimeModule() noexcept
+	PlayerModule::PlayerModule() noexcept
 	{
 		this->reset();
 	}
 
-	TimeModule::~TimeModule() noexcept
+	PlayerModule::~PlayerModule() noexcept
 	{
 	}
 
 	void
-	TimeModule::reset() noexcept
+	PlayerModule::reset() noexcept
 	{
 		this->playing_ = false;
 		this->spp = 100;
@@ -27,7 +27,7 @@ namespace rabbit
 	}
 
 	void 
-	TimeModule::load(octoon::runtime::json& reader) noexcept
+	PlayerModule::load(octoon::runtime::json& reader) noexcept
 	{
 		if (reader.find("spp") != reader.end())
 			this->spp = reader["spp"];
@@ -42,7 +42,7 @@ namespace rabbit
 	}
 
 	void 
-	TimeModule::save(octoon::runtime::json& writer) noexcept
+	PlayerModule::save(octoon::runtime::json& writer) noexcept
 	{
 		writer["spp"] = this->spp;
 		writer["recordFps"] = this->recordFps;

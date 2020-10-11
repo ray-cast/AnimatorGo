@@ -2,14 +2,17 @@
 #define RABBIT_TIME_MODULE_H_
 
 #include <rabbit_model.h>
+#include <octoon/raycaster.h>
+#include <octoon/game_object.h>
+#include <optional>
 
 namespace rabbit
 {
-	class TimeModule final : public RabbitModule
+	class PlayerModule final : public RabbitModule
 	{
 	public:
-		TimeModule() noexcept;
-		virtual ~TimeModule() noexcept;
+		PlayerModule() noexcept;
+		virtual ~PlayerModule() noexcept;
 
 		virtual void reset() noexcept override;
 
@@ -17,8 +20,8 @@ namespace rabbit
 		virtual void save(octoon::runtime::json& reader) noexcept override;
 
 	private:
-		TimeModule(const TimeModule&) = delete;
-		TimeModule& operator=(const TimeModule&) = delete;
+		PlayerModule(const PlayerModule&) = delete;
+		PlayerModule& operator=(const PlayerModule&) = delete;
 
 	public:
 		bool playing_;
@@ -32,6 +35,8 @@ namespace rabbit
 		float normalTimeStep;
 		float recordFps;
 		float curTime;
+
+		std::optional<octoon::RaycastHit> dofTarget;
 	};
 }
 

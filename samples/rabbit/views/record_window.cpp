@@ -2,6 +2,9 @@
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qevent.h>
+#include <qdrag.h>
+#include <qmimedata.h>
+#include <qapplication.h>
 
 namespace rabbit
 {
@@ -36,6 +39,45 @@ namespace rabbit
 			QDoubleSpinBox::focusOutEvent(event);
 		}
 	};
+
+	FocalTargetWindow::FocalTargetWindow() noexcept
+	{
+	}
+
+	FocalTargetWindow::~FocalTargetWindow() noexcept
+	{
+	}
+
+	void
+	FocalTargetWindow::mouseMoveEvent(QMouseEvent *event)
+	{
+		if (event->buttons() & Qt::LeftButton)
+		{
+			QPoint length = event->pos() - startPos;
+			if (length.manhattanLength() > QApplication::startDragDistance())
+			{
+				auto mimeData = new QMimeData;
+				mimeData->setData("object/dof", "Automatic");
+
+				auto drag = new QDrag(this);
+				drag->setMimeData(mimeData);
+				drag->setPixmap(QPixmap(":res/icons/target.png"));
+				drag->setHotSpot(QPoint(drag->pixmap().width() / 2, drag->pixmap().height() / 2));
+				drag->exec(Qt::MoveAction);
+			}
+		}
+
+		QToolButton::mouseMoveEvent(event);
+	}
+
+	void
+	FocalTargetWindow::mousePressEvent(QMouseEvent *event)
+	{
+		if (event->button() == Qt::LeftButton)
+			startPos = event->pos();
+
+		QToolButton::mousePressEvent(event);
+	}
 
 	RecordWindow::RecordWindow(QWidget* parent, const octoon::GameObjectPtr& behaviour) noexcept
 		: behaviour_(behaviour)
@@ -187,7 +229,7 @@ namespace rabbit
 		recordButton_->setContentsMargins(0, 0, 0, 0);
 
 		dofInfoLabel_ = new QLabel();
-		dofInfoLabel_->setText(u8"* 以下参数可在开启渲染后预览");
+		dofInfoLabel_->setText(u8"* 以下参数设置需开启渲染");
 		dofInfoLabel_->setStyleSheet("color: rgb(100,100,100);");
 
 		apertureLabel_ = new QLabel();
@@ -208,6 +250,15 @@ namespace rabbit
 		focalDistanceLabel_->setText(u8"焦距:");
 		focalDistanceLabel_->setStyleSheet("color: rgb(200,200,200);");
 
+		focalDistanceName_ = new QLabel();
+		focalDistanceName_->setText(u8"目标：无");
+		focalDistanceName_->setStyleSheet("color: rgb(200,200,200);");
+
+		focalTargetButton_ = new FocalTargetWindow();
+		focalTargetButton_->setIcon(QIcon(":res/icons/target.png"));
+		focalTargetButton_->setIconSize(QSize(48, 48));
+		focalTargetButton_->setToolTip(u8"通过拖拽该图标到目标模型可绑定模型并开启自动测距");
+
 		focalDistanceSpinbox_ = new DoubleSpinBox();
 		focalDistanceSpinbox_->setMinimum(0);
 		focalDistanceSpinbox_->setMaximum(std::numeric_limits<float>::infinity());
@@ -216,7 +267,6 @@ namespace rabbit
 		focalDistanceSpinbox_->setAlignment(Qt::AlignRight);
 		focalDistanceSpinbox_->setFixedWidth(100);
 		focalDistanceSpinbox_->setSuffix(u8"m");
-		focalDistanceSpinbox_->setSpecialValueText(u8"自动");
 
 		auto titleLayout = new QHBoxLayout();
 		titleLayout->addSpacing(closeButton_->iconSize().width());
@@ -273,13 +323,22 @@ namespace rabbit
 		apertureLayout->addWidget(apertureLabel_);
 		apertureLayout->addWidget(apertureSpinbox_);
 
+		auto focalNameLayout = new QVBoxLayout;
+		focalNameLayout->addWidget(focalDistanceName_, 0, Qt::AlignLeft);
+		focalNameLayout->addStretch();
+		focalNameLayout->setSpacing(0);
+		focalNameLayout->setContentsMargins(0, 2, 0, 0);
+
 		auto focalDistanceLayout = new QHBoxLayout;
-		focalDistanceLayout->addWidget(focalDistanceLabel_);
-		focalDistanceLayout->addWidget(focalDistanceSpinbox_);
+		focalDistanceLayout->addWidget(focalTargetButton_, 0, Qt::AlignLeft);
+		focalDistanceLayout->addLayout(focalNameLayout);
+		focalDistanceLayout->addStretch();
+		focalDistanceLayout->addWidget(focalDistanceSpinbox_, 0, Qt::AlignRight | Qt::AlignBottom);
 
 		auto cameraLayout = new QVBoxLayout;
 		cameraLayout->addWidget(dofInfoLabel_, 0, Qt::AlignLeft);
 		cameraLayout->addLayout(apertureLayout);
+		cameraLayout->addWidget(focalDistanceLabel_);
 		cameraLayout->addLayout(focalDistanceLayout);
 
 		markSpoiler_ = new Spoiler(u8"水印");
@@ -381,11 +440,39 @@ namespace rabbit
 	}
 
 	void
+	RecordWindow::updateTarget()
+	{
+		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+		if (behaviour)
+		{
+			auto hit = behaviour->getComponent<DragComponent>()->getHoverItem();
+			if (hit)
+			{
+				behaviour->getProfile()->playerModule->dofTarget = hit;
+
+				auto object = hit->object.lock();
+				auto renderer = object->getComponent<octoon::MeshRendererComponent>();
+				auto& materials = renderer->getMaterials();
+
+				focalDistanceName_->setText(QString::fromStdString(u8"目标：" + materials[hit->mesh]->getName()));
+				focalDistanceSpinbox_->setValue(0);
+				focalDistanceSpinbox_->setSpecialValueText(u8"自动测距");
+			}
+			else
+			{
+				focalDistanceName_->setText(QString::fromStdString(u8"目标：无"));
+				focalDistanceSpinbox_->setValue(10);
+				focalDistanceSpinbox_->setSpecialValueText(QString());
+			}
+		}
+	}
+
+	void
 	RecordWindow::onSppChanged(int value)
 	{
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
-			behaviour->getProfile()->timeModule->spp = value;
+			behaviour->getProfile()->playerModule->spp = value;
 	}
 
 	void
@@ -415,9 +502,20 @@ namespace rabbit
 	void
 	RecordWindow::onFocalDistanceChanged(double value)
 	{
-		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-		if (behaviour)
-			behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setFocalDistance(value);
+		if (!focalDistanceSpinbox_->specialValueText().isEmpty())
+		{
+			focalDistanceSpinbox_->setSpecialValueText(QString());
+
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour)
+				focalDistanceSpinbox_->setValue(behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getFocalDistance());
+		}
+		else
+		{
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour)
+				behaviour->getProfile()->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->setFocalDistance(value);
+		}
 	}
 
 	void
@@ -490,7 +588,7 @@ namespace rabbit
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
-				behaviour->getProfile()->timeModule->recordFps = 24;
+				behaviour->getProfile()->playerModule->recordFps = 24;
 
 			this->update();
 		}
@@ -503,7 +601,7 @@ namespace rabbit
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
-				behaviour->getProfile()->timeModule->recordFps = 25;
+				behaviour->getProfile()->playerModule->recordFps = 25;
 
 			this->update();
 		}
@@ -516,7 +614,7 @@ namespace rabbit
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
-				behaviour->getProfile()->timeModule->recordFps = 30;
+				behaviour->getProfile()->playerModule->recordFps = 30;
 
 			this->update();
 		}
@@ -529,7 +627,7 @@ namespace rabbit
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
-				behaviour->getProfile()->timeModule->recordFps = 60;
+				behaviour->getProfile()->playerModule->recordFps = 60;
 
 			this->update();
 		}
@@ -541,7 +639,7 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 		{
-			behaviour->getProfile()->timeModule->startFrame = value;
+			behaviour->getProfile()->playerModule->startFrame = value;
 			this->update();
 		}
 	}
@@ -552,7 +650,7 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 		{
-			behaviour->getProfile()->timeModule->endFrame = value;
+			behaviour->getProfile()->playerModule->endFrame = value;
 			this->update();
 		}
 	}
@@ -566,7 +664,7 @@ namespace rabbit
 			auto playerComponent = behaviour->getComponent<PlayerComponent>();
 			if (playerComponent)
 			{
-				auto time = std::max<int>(0, std::round(behaviour->getProfile()->timeModule->curTime * 30.0f));
+				auto time = std::max<int>(0, std::round(behaviour->getProfile()->playerModule->curTime * 30.0f));
 				currentFrame_->setText(QString(u8"当前视频渲染帧数：%1").arg(time));
 			}
 		}
@@ -583,8 +681,8 @@ namespace rabbit
 
 			auto startFrame = start_->value();
 			auto endFrame = end_->value();
-			auto time = std::max<int>(0, std::round(behaviour->getProfile()->timeModule->curTime * 30.0f));
-			auto timeLength = std::max<int>(1, (endFrame - startFrame) / 30.0f * behaviour->getProfile()->timeModule->recordFps);
+			auto time = std::max<int>(0, std::round(behaviour->getProfile()->playerModule->curTime * 30.0f));
+			auto timeLength = std::max<int>(1, (endFrame - startFrame) / 30.0f * behaviour->getProfile()->playerModule->recordFps);
 
 			animation_->setText(QString(u8"视频动作帧数：%1").arg(animLength));
 			summary_->setText(QString(u8"视频渲染帧数：%1").arg(timeLength));	
@@ -615,20 +713,22 @@ namespace rabbit
 			end_->setValue(timeLength);
 
 			auto profile = behaviour->getProfile();
-			if (profile->timeModule->recordFps == 24)
+			if (profile->playerModule->recordFps == 24)
 				speed1_->click();
-			else if (profile->timeModule->recordFps == 25)
+			else if (profile->playerModule->recordFps == 25)
 				speed2_->click();
-			else if (profile->timeModule->recordFps == 30)
+			else if (profile->playerModule->recordFps == 30)
 				speed3_->click();
-			else if (profile->timeModule->recordFps == 60)
+			else if (profile->playerModule->recordFps == 60)
 				speed4_->click();
 
-			sppSpinbox_->setValue(profile->timeModule->spp);
+			sppSpinbox_->setValue(profile->playerModule->spp);
 			crfSpinbox->setValue(profile->h265Module->crf);
 			bouncesSpinbox_->setValue(behaviour->getComponent<rabbit::OfflineComponent>()->getMaxBounces());
 			apertureSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getAperture());
-			focalDistanceSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getFocalDistance());
+
+			if (!behaviour->getProfile()->playerModule->dofTarget)
+				focalDistanceSpinbox_->setValue(profile->entitiesModule->camera->getComponent<octoon::FilmCameraComponent>()->getFocalDistance());
 
 			this->update();
 		}

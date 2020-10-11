@@ -278,7 +278,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour)
@@ -366,7 +366,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -410,7 +410,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -448,7 +448,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -484,7 +484,7 @@ namespace rabbit
 	bool
 	MainWindow::onAudioSignal(bool enable) noexcept
 	{
-		if (behaviour_ && (!profile_->timeModule->playing_ || profile_->h265Module->enable))
+		if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour)
@@ -527,7 +527,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && (!profile_->timeModule->playing_ || profile_->h265Module->enable))
+			if (behaviour_ && (!profile_->playerModule->playing_ || profile_->h265Module->enable))
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -578,7 +578,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -658,7 +658,7 @@ namespace rabbit
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour->isOpen())
 			{
-				if (profile_->entitiesModule->sunLight && !profile_->timeModule->playing_)
+				if (profile_->entitiesModule->sunLight && !profile_->playerModule->playing_)
 				{
 					if (sunWindow_->isHidden())
 					{
@@ -704,7 +704,7 @@ namespace rabbit
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour->isOpen())
 			{
-				if (profile_->entitiesModule->enviromentLight && !profile_->timeModule->playing_)
+				if (profile_->entitiesModule->enviromentLight && !profile_->playerModule->playing_)
 				{
 					if (environmentWindow_->isHidden())
 					{
@@ -750,7 +750,7 @@ namespace rabbit
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour->isOpen())
 			{
-				if (!profile_->timeModule->playing_)
+				if (!profile_->playerModule->playing_)
 				{
 					if (materialWindow_->isHidden())
 					{
@@ -793,7 +793,7 @@ namespace rabbit
 	{
 		try
 		{
-			if (behaviour_ && !profile_->timeModule->playing_)
+			if (behaviour_ && !profile_->playerModule->playing_)
 			{
 				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 				if (behaviour->isOpen())
@@ -880,14 +880,14 @@ namespace rabbit
 	void
 	MainWindow::onMouseMoveSignal(QMouseEvent* e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowMouseMotion((octoon::WindHandle)viewPanel_->winId(), e->pos().x(), e->pos().y());
 	}
 
 	void
 	MainWindow::onMousePressSignal(QMouseEvent* e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 		{
 			if (e->button() == Qt::LeftButton)
 				gameApp_->doWindowMouseButtonDown((octoon::WindHandle)viewPanel_->winId(), octoon::input::InputButton::Left, e->x(), e->y());
@@ -901,7 +901,7 @@ namespace rabbit
 	void
 	MainWindow::onMouseReleaseSignal(QMouseEvent* e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 		{
 			if (e->button() == Qt::LeftButton)
 				gameApp_->doWindowMouseButtonUp((octoon::WindHandle)viewPanel_->winId(), octoon::input::InputButton::Left, e->x(), e->y());
@@ -915,7 +915,7 @@ namespace rabbit
 	void
 	MainWindow::onMouseDoubleClickSignal(QMouseEvent* e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 		{
 			if (e->button() == Qt::LeftButton)
 				gameApp_->doWindowMouseButtonDoubleClick((octoon::WindHandle)viewPanel_->winId(), octoon::input::InputButton::Left, e->x(), e->y());
@@ -929,7 +929,7 @@ namespace rabbit
 	void
 	MainWindow::onWheelSignal(QWheelEvent* e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowScrool((octoon::WindHandle)viewPanel_->winId(), e->angleDelta().x(), e->angleDelta().y());
 	}
 
@@ -942,7 +942,7 @@ namespace rabbit
 	void
 	MainWindow::onDragEnterSignal(QDragEnterEvent* event) noexcept
 	{
-		if (!profile_->timeModule->playing_)
+		if (!profile_->playerModule->playing_)
 			event->acceptProposedAction();
 	}
 
@@ -971,8 +971,8 @@ namespace rabbit
 			}
 			else
 			{
-				auto mineData = event->mimeData()->data("object/material");
-				if (!mineData.isEmpty())
+				auto materialData = event->mimeData()->data("object/material");
+				if (!materialData.isEmpty())
 				{
 					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 					auto selectedItem = behaviour->getComponent<DragComponent>()->getHoverItem();
@@ -980,12 +980,18 @@ namespace rabbit
 					{
 						auto hit = selectedItem.value();
 						auto materialComponent = behaviour->getComponent<MaterialComponent>();
-						auto material = materialComponent->getMaterial(mineData.toStdString());
+						auto material = materialComponent->getMaterial(materialData.toStdString());
 
 						auto meshRenderer = hit.object.lock()->getComponent<octoon::MeshRendererComponent>();
 						if (meshRenderer)
 							meshRenderer->setMaterial(material, hit.mesh);
 					}
+				}
+
+				auto dofData = event->mimeData()->data("object/dof");
+				if (!dofData.isEmpty())
+				{
+					recordWindow_->updateTarget();
 				}
 			}
 		}
@@ -994,7 +1000,7 @@ namespace rabbit
 	void
 	MainWindow::onDragMoveSignal(QDragMoveEvent *e) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowMouseMotion((octoon::WindHandle)viewPanel_->winId(), e->pos().x(), e->pos().y());
 	}
 
@@ -1014,7 +1020,7 @@ namespace rabbit
 	void
 	MainWindow::keyPressEvent(QKeyEvent* event) noexcept
 	{
-		if (gameApp_ && !profile_->timeModule->playing_)
+		if (gameApp_ && !profile_->playerModule->playing_)
 			gameApp_->doWindowKeyDown((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 	}
 	
@@ -1023,7 +1029,7 @@ namespace rabbit
 	{
 		if (!event->isAutoRepeat())
 		{
-			if (gameApp_ && !profile_->timeModule->playing_)
+			if (gameApp_ && !profile_->playerModule->playing_)
 				gameApp_->doWindowKeyUp((octoon::WindHandle)viewPanel_->winId(), KeyCodetoInputKey(event->key()), 0, 0);
 		}
 	}

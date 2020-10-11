@@ -6,7 +6,7 @@
 
 namespace rabbit
 {
-	class PlayerComponent final : public RabbitComponent<TimeModule>
+	class PlayerComponent final : public RabbitComponent<PlayerModule>
 	{
 	public:
 		PlayerComponent() noexcept;
@@ -36,6 +36,9 @@ namespace rabbit
 
 		void onFixedUpdate() noexcept override;
 		void onLateUpdate() noexcept override;
+
+	private:
+		void updateDofTarget() noexcept;
 
 	private:
 		bool needUpdate_;

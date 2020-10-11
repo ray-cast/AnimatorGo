@@ -189,7 +189,7 @@ namespace rabbit
 
 					auto gizmoTransform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
 					gizmoTransform->setLocalScale(box.size());
-					gizmoTransform->setLocalTranslate(hitObject->getComponent<octoon::TransformComponent>()->getTransform() * box.center());
+					gizmoTransform->setLocalTranslate(box.center() * hitObject->getComponent<octoon::TransformComponent>()->getTransform());
 
 					this->gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
 				}

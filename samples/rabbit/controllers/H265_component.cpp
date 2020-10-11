@@ -72,7 +72,7 @@ namespace rabbit
 
 			try
 			{
-				auto& timeModule = this->getContext()->profile->timeModule;
+				auto& playerModule = this->getContext()->profile->playerModule;
 			
 				auto inFilename = filepath_ + ".h265";
 				if (avformat_open_input(&videoFormat, inFilename.c_str(), 0, 0) < 0)
@@ -130,7 +130,7 @@ namespace rabbit
 
 						if (packet->pts == AV_NOPTS_VALUE)
 						{
-							auto calc_duration = (double)AV_TIME_BASE / av_q2d(av_make_q(timeModule->recordFps, 1));
+							auto calc_duration = (double)AV_TIME_BASE / av_q2d(av_make_q(playerModule->recordFps, 1));
 							packet->pts = (double)(frame_index * calc_duration) / (double)(av_q2d(istream->time_base) * AV_TIME_BASE);
 							packet->dts = packet->pts;
 							packet->duration = (double)calc_duration / (double)(av_q2d(istream->time_base) * AV_TIME_BASE);
@@ -222,7 +222,7 @@ namespace rabbit
 		param_->internalCsp = X265_CSP_I420;
 		param_->sourceWidth = this->width_;
 		param_->sourceHeight = this->height_;
-		param_->fpsNum = context->profile->timeModule->recordFps;
+		param_->fpsNum = context->profile->playerModule->recordFps;
 		param_->fpsDenom = 1;
 
 		encoder_ = x265_encoder_open(param_);

@@ -9,7 +9,7 @@ namespace rabbit
 		: denoiseModule(std::make_shared<DenoiseModule>())
 		, physicsModule(std::make_shared<PhysicsModule>())
 		, h265Module(std::make_shared<H265Module>())
-		, timeModule(std::make_shared<TimeModule>())
+		, playerModule(std::make_shared<PlayerModule>())
 		, fileModule(std::make_shared<FileModule>())
 		, entitiesModule(std::make_shared<EntitiesModule>())
 		, offlineModule(std::make_shared<OfflineModule>())
@@ -34,7 +34,7 @@ namespace rabbit
 			this->denoiseModule->load(json["denoise"]);
 			this->physicsModule->load(json["physics"]);
 			this->h265Module->load(json["h265"]);
-			this->timeModule->load(json["time"]);
+			this->playerModule->load(json["time"]);
 			this->fileModule->load(json["file"]);
 			this->entitiesModule->load(json["entities"]);
 			this->offlineModule->load(json["offline"]);
@@ -69,7 +69,7 @@ namespace rabbit
 			profile.denoiseModule->save(json["denoise"]);
 			profile.physicsModule->save(json["physics"]);
 			profile.h265Module->save(json["h265"]);
-			profile.timeModule->save(json["time"]);
+			profile.playerModule->save(json["time"]);
 			profile.fileModule->save(json["file"]);
 			profile.entitiesModule->save(json["entities"]);
 			profile.offlineModule->save(json["offline"]);

@@ -43,7 +43,7 @@ namespace rabbit
 		std::shared_ptr<DenoiseModule> denoiseModule;
 		std::shared_ptr<H265Module> h265Module;
 		std::shared_ptr<PhysicsModule> physicsModule;
-		std::shared_ptr<TimeModule> timeModule;
+		std::shared_ptr<PlayerModule> playerModule;
 		std::shared_ptr<OfflineModule> offlineModule;
 		std::shared_ptr<MarkModule> markModule;
 		std::shared_ptr<ClientModule> clientModule;

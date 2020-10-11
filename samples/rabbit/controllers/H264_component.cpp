@@ -90,7 +90,7 @@ namespace rabbit
 
 			try
 			{
-				auto& timeModule = this->getContext()->profile->timeModule;
+				auto& playerModule = this->getContext()->profile->playerModule;
 
 				auto inFilename = filepath_ + ".tmp";
 				auto outFilename = filepath_;
@@ -145,7 +145,7 @@ namespace rabbit
 
 						if (packet.pts == AV_NOPTS_VALUE)
 						{
-							auto calc_duration = (double)AV_TIME_BASE / av_q2d(av_make_q(timeModule->recordFps, 1));
+							auto calc_duration = (double)AV_TIME_BASE / av_q2d(av_make_q(playerModule->recordFps, 1));
 							packet.pts = (double)(frame_index * calc_duration) / (double)(av_q2d(istream->time_base) * AV_TIME_BASE);
 							packet.dts = packet.pts;
 							packet.duration = (double)calc_duration / (double)(av_q2d(istream->time_base) * AV_TIME_BASE);
@@ -227,7 +227,7 @@ namespace rabbit
 		encode_param_.i_width = this->width_;
 		encode_param_.i_height = this->height_;
 		encode_param_.i_threads = 1;
-		encode_param_.i_fps_num = context->profile->timeModule->recordFps;
+		encode_param_.i_fps_num = context->profile->playerModule->recordFps;
 		encode_param_.i_fps_den = 1;
 		encode_param_.analyse.b_psnr = 1;
 		encode_param_.analyse.f_psy_rd = 0.3;

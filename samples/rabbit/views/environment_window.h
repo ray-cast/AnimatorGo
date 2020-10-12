@@ -27,6 +27,7 @@ namespace rabbit
 	public Q_SLOTS:
 		void colorMapClickEvent();
 		void colorMapCheckEvent(int state);
+		void backgroundMapCheckEvent(int state);
 		void colorClickEvent();
 		void colorChangeEvent(const QColor&);
 		void closeEvent();
@@ -45,7 +46,6 @@ namespace rabbit
 		QLabel* title_;
 		QLabel* imageLabel_;
 		QLabel* imageName_;
-		QLabel* thumbnailTitle;
 		QLabel* thumbnailPath;
 		QLabel* intensityLabel_;
 		QLabel* horizontalRotationLabel_;
@@ -57,6 +57,7 @@ namespace rabbit
 		QToolButton* resetButton_;
 
 		QCheckBox* thumbnailToggle;
+		QCheckBox* backgroundToggle;
 
 		QSlider* intensitySlider;
 		QSlider* horizontalRotationSlider;

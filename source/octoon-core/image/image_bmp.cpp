@@ -180,7 +180,7 @@ namespace octoon
 		std::uint32_t nums = columns * rows;
 
 		std::size_t length = (std::size_t)(nums * info.info.bpp / 8);
-		std::size_t padding = std::max<std::size_t>(0, info.info.size_image - length) / rows;
+		std::size_t padding = std::max<int>(0, info.info.size_image - length) / rows;
 
 		std::vector<std::uint8_t> buffers(length);
 		std::uint8_t* buf = (std::uint8_t*)buffers.data();

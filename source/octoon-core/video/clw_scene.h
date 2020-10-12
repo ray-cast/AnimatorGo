@@ -29,6 +29,7 @@ namespace octoon::video
         #include "../../lib/system/Kernels/CL/payload.cl"
 
         bool dirty;
+        bool showBackground;
 
         CLWBuffer<math::float4> vertices;
         CLWBuffer<math::float4> normals;

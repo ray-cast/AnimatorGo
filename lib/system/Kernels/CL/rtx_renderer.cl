@@ -1172,9 +1172,6 @@ KERNEL void FillAOVs(
 
             if (albedo_enabled)
             {
-                float ngdotwi = dot(diffgeo.ng, wi);
-                bool backfacing = ngdotwi < 0.f;
-
                 float3 base_color = Texture_GetValue3f(diffgeo.mat.disney.base_color.xyz, diffgeo.uv, TEXTURE_ARGS_IDX(diffgeo.mat.disney.base_color_map_idx));
                 aov_albedo[idx].xyz += base_color;
                 aov_albedo[idx].w += 1.f;

@@ -162,7 +162,7 @@ namespace octoon::video
 				renderData_->intersections.GetElementCount()
 			);
 
-			if (scene.envmapidx > 0)
+			if (scene.showBackground)
 				this->shadeBackground(scene, 0, num_estimates, output, use_output_indices);
 			else
 				this->advanceIterationCount(0, num_estimates, output, use_output_indices);
@@ -210,7 +210,7 @@ namespace octoon::video
 
 				if (pass == 0)
 				{
-					if (scene.envmapidx > 0)
+					if (scene.showBackground)
 						this->shadeBackground(scene, 0, num_estimates, output, use_output_indices);
 					else
 						this->advanceIterationCount(0, num_estimates, output, use_output_indices);

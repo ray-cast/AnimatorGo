@@ -6,6 +6,7 @@ namespace octoon::light
 
 	EnvironmentLight::EnvironmentLight() noexcept
 		: offset_(0, 0)
+		, showBackground_(true)
 	{
 	}
 
@@ -23,6 +24,45 @@ namespace octoon::light
 		}
 	}
 
+	const math::float2&
+	EnvironmentLight::getOffset() const noexcept
+	{
+		return this->offset_;
+	}
+
+	void
+	EnvironmentLight::setShowBackground(bool show) noexcept
+	{
+		if (this->showBackground_ != show)
+		{
+			this->showBackground_ = show;
+			this->setDirty(true);
+		}
+	}
+
+	bool
+	EnvironmentLight::getShowBackground() const noexcept
+	{
+		return this->showBackground_;
+	}
+
+	void
+	EnvironmentLight::setBackgroundMap(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		if (backgroundMap_ != texture)
+		{
+			backgroundMap_ = texture;
+			this->setDirty(true);
+		}
+	}
+
+	const hal::GraphicsTexturePtr&
+	EnvironmentLight::getBackgroundMap() const noexcept
+	{
+		return this->backgroundMap_;
+	}
+
 	void
 	EnvironmentLight::setEnvironmentMap(const hal::GraphicsTexturePtr& texture) noexcept
 	{
@@ -32,12 +72,6 @@ namespace octoon::light
 			environmentMap_ = texture;
 			this->setDirty(true);
 		}
-	}
-
-	const math::float2&
-	EnvironmentLight::getOffset() const noexcept
-	{
-		return this->offset_;
 	}
 
 	const hal::GraphicsTexturePtr&

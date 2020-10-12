@@ -8,6 +8,7 @@ namespace octoon
 
 	EnvironmentLightComponent::EnvironmentLightComponent() noexcept
 		: offset_(0, 0)
+		, showBackground_(true)
 	{
 	}
 
@@ -60,6 +61,36 @@ namespace octoon
 		return environmentMap_;
 	}
 
+	void
+	EnvironmentLightComponent::setShowBackground(bool show) noexcept
+	{
+		if (environmentLight_)
+			environmentLight_->setShowBackground(show);
+		this->showBackground_ = show;
+	}
+
+	bool
+	EnvironmentLightComponent::getShowBackground() const noexcept
+	{
+		return this->showBackground_;
+	}
+
+	void
+	EnvironmentLightComponent::setBackgroundMap(const hal::GraphicsTexturePtr& texture) noexcept
+	{
+		assert(!texture || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Cube || texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2D);
+		if (environmentLight_)
+			environmentLight_->setBackgroundMap(texture);
+		this->backgroundMap_ = texture;
+		
+	}
+
+	const hal::GraphicsTexturePtr&
+	EnvironmentLightComponent::getBackgroundMap() const noexcept
+	{
+		return this->backgroundMap_;
+	}
+
 	GameComponentPtr
 	EnvironmentLightComponent::clone() const noexcept
 	{
@@ -78,6 +109,8 @@ namespace octoon
 		environmentLight_->setLayer(this->getGameObject()->getLayer());
 		environmentLight_->setColor(this->getColor());
 		environmentLight_->setIntensity(this->getIntensity());
+		environmentLight_->setShowBackground(this->showBackground_);
+		environmentLight_->setBackgroundMap(this->backgroundMap_);
 		environmentLight_->setEnvironmentMap(this->environmentMap_);
 		environmentLight_->setTransform(transform->getTransform(), transform->getTransformInverse());
 

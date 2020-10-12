@@ -702,7 +702,7 @@ namespace rabbit
 		try
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-			if (behaviour->isOpen())
+			if (behaviour)
 			{
 				if (profile_->entitiesModule->enviromentLight && !profile_->playerModule->playing_)
 				{
@@ -723,7 +723,7 @@ namespace rabbit
 			{
 				QMessageBox msg(this);
 				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"请加载一个.pmm工程");
+				msg.setText(u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -748,7 +748,7 @@ namespace rabbit
 		try
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-			if (behaviour->isOpen())
+			if (behaviour)
 			{
 				if (!profile_->playerModule->playing_)
 				{
@@ -769,7 +769,7 @@ namespace rabbit
 			{
 				QMessageBox msg(this);
 				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"请加载一个.pmm工程");
+				msg.setText(u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 

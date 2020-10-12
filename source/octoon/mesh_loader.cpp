@@ -117,7 +117,10 @@ namespace octoon
 			gameObject->setName(it->name);
 			gameObject->setParent(it->bone < bones.size() ? bones[it->bone] : nullptr);
 			gameObject->setLayer(it->group);
-			gameObject->getComponent<TransformComponent>()->setTransform(it->position, math::Quaternion(it->rotation));
+
+			auto transform = gameObject->getComponent<TransformComponent>();
+			transform->setTranslate(it->position);
+			transform->setQuaternion(math::isfinite(it->rotation) ? math::Quaternion(it->rotation) : math::Quaternion::Zero);
 
 			if (it->shape == model::ShapeType::ShapeTypeSphere)
 				gameObject->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, 0.2f, -0.01f);

@@ -79,7 +79,7 @@ INLINE int EnvironmentLight_GetTexture(Light const* light, int bxdf_flags)
 
 INLINE int EnvironmentLight_GetBackgroundTexture(Light const* light)
 {
-    return light->tex_background == -1 ? light->tex : light->tex_background;
+    return light->tex_background;
 }
 
 /*
@@ -112,7 +112,7 @@ float3 EnvironmentLight_GetLe(// Light
         return 0.f;
     }
 
-    return light->multiplier * Texture_SampleEnvMap(normalize(*wo), TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
+    return light->intensity * Texture_SampleEnvMap(normalize(*wo), TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
 }
 
 /// Sample direction to the light
@@ -160,7 +160,7 @@ float3 EnvironmentLight_Sample(// Light
     }
 
     // Sample envmap
-    return light->multiplier * Texture_SampleEnvMap(d, TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
+    return light->intensity * Texture_SampleEnvMap(d, TEXTURE_ARGS_IDX(tex), light->offset, light->ibl_mirror_x);
 }
 
 /// Get PDF for a given direction

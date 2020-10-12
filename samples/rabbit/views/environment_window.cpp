@@ -2,6 +2,7 @@
 #include <octoon/environment_light_component.h>
 #include <octoon/mesh_renderer_component.h>
 #include <octoon/image/image.h>
+#include <octoon/PMREM_loader.h>
 
 #include <qpainter.h>
 #include <qmessagebox.h>
@@ -56,9 +57,11 @@ namespace rabbit
 		this->thumbnail->setIconSize(QSize(48, 48));
 
 		this->thumbnailToggle = new QCheckBox;
+		this->thumbnailToggle->setText(u8"环境贴图");
 
-		this->thumbnailTitle = new QLabel;
-		this->thumbnailTitle->setText(u8"环境贴图");
+		this->backgroundToggle = new QCheckBox;
+		this->backgroundToggle->setText(u8"显示背景");
+		this->backgroundToggle->setChecked(true);
 
 		this->thumbnailPath = new QLabel;
 		this->thumbnailPath->setMinimumSize(QSize(160, 20));
@@ -123,7 +126,8 @@ namespace rabbit
 
 		auto thumbnailTitleLayout = new QHBoxLayout();
 		thumbnailTitleLayout->addWidget(thumbnailToggle, 0, Qt::AlignLeft);
-		thumbnailTitleLayout->addWidget(thumbnailTitle, 0, Qt::AlignLeft);
+		thumbnailTitleLayout->addSpacing(4);
+		thumbnailTitleLayout->addWidget(backgroundToggle, 0, Qt::AlignLeft);
 		thumbnailTitleLayout->addStretch();
 		thumbnailTitleLayout->setSpacing(0);
 		thumbnailTitleLayout->setContentsMargins(0, 2, 0, 0);
@@ -198,6 +202,7 @@ namespace rabbit
 		connect(resetButton_, SIGNAL(clicked()), this, SLOT(resetEvent()));
 		connect(thumbnail, SIGNAL(clicked()), this, SLOT(colorMapClickEvent()));
 		connect(thumbnailToggle, SIGNAL(stateChanged(int)), this, SLOT(colorMapCheckEvent(int)));
+		connect(backgroundToggle, SIGNAL(stateChanged(int)), this, SLOT(backgroundMapCheckEvent(int)));
 		connect(colorButton, SIGNAL(clicked()), this, SLOT(colorClickEvent()));
 		connect(intensitySpinBox, SIGNAL(valueChanged(double)), this, SLOT(intensityEditEvent(double)));
 		connect(intensitySlider, SIGNAL(valueChanged(int)), this, SLOT(intensitySliderEvent(int)));
@@ -302,59 +307,44 @@ namespace rabbit
 		{
 			if (behaviour_)
 			{
-				auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-				if (behaviour->isOpen())
+				QString filepath = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
+				if (!filepath.isEmpty())
 				{
-					QString filepath = QFileDialog::getOpenFileName(this, u8"打开图像", "", tr("HDRi Files (*.hdr)"));
-					if (!filepath.isEmpty())
+					auto texel = octoon::TextureLoader::load(filepath.toStdString(), true);
+					if (texel)
 					{
-						auto texel = octoon::TextureLoader::load(filepath.toStdString(), true);
-						if (texel)
+						auto width = texel->getTextureDesc().getWidth();
+						auto height = texel->getTextureDesc().getHeight();
+						float* data_ = nullptr;
+
+						if (texel->map(0, 0, width, height, 0, (void**)&data_))
 						{
-							auto width = texel->getTextureDesc().getWidth();
-							auto height = texel->getTextureDesc().getHeight();
-							float* data_ = nullptr;
+							auto size = width * height * 3;
+							auto pixels = std::make_unique<std::uint8_t[]>(size);
 
-							if (texel->map(0, 0, width, height, 0, (void**)&data_))
+							for (std::size_t i = 0; i < size; i += 3)
 							{
-								auto size = width * height * 3;
-								auto pixels = std::make_unique<std::uint8_t[]>(size);
-
-								for (std::size_t i = 0; i < size; i += 3)
-								{
-									pixels[i] = std::clamp<float>(std::pow(data_[i], 1 / 2.2) * 255.0f, 0, 255);
-									pixels[i + 1] = std::clamp<float>(std::pow(data_[i + 1], 1 / 2.2) * 255.0f, 0, 255);
-									pixels[i + 2] = std::clamp<float>(std::pow(data_[i + 2], 1 / 2.2) * 255.0f, 0, 255);
-								}
-
-								texel->unmap();
-
-								QImage qimage(pixels.get(), width, height, QImage::Format::Format_RGB888);
-
-								QFontMetrics metrics(this->thumbnailPath->font());
-								auto name = metrics.elidedText(QFileInfo(filepath).fileName(), Qt::ElideRight, this->thumbnailPath->width());
-
-								this->thumbnailPath->setText(name);
-								this->thumbnailToggle->setCheckState(Qt::CheckState::Checked);
-								this->thumbnail->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
-								this->texture = texel;
-								this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
-								this->setColor(QColor::fromRgbF(1, 1, 1));
-								this->repaint();
-								behaviour->loadHDRi(texel);
+								pixels[i] = std::clamp<float>(std::pow(data_[i], 1 / 2.2) * 255.0f, 0, 255);
+								pixels[i + 1] = std::clamp<float>(std::pow(data_[i + 1], 1 / 2.2) * 255.0f, 0, 255);
+								pixels[i + 2] = std::clamp<float>(std::pow(data_[i + 2], 1 / 2.2) * 255.0f, 0, 255);
 							}
+
+							texel->unmap();
+
+							QImage qimage(pixels.get(), width, height, QImage::Format::Format_RGB888);
+
+							QFontMetrics metrics(this->thumbnailPath->font());
+							auto name = metrics.elidedText(QFileInfo(filepath).fileName(), Qt::ElideRight, this->thumbnailPath->width());
+
+							this->thumbnailPath->setText(name);
+							this->thumbnailToggle->setChecked(false);
+							this->thumbnail->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
+							this->texture = texel;
+							this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
+							this->setColor(QColor::fromRgbF(1, 1, 1));
+							this->thumbnailToggle->setChecked(true);
 						}
 					}
-				}
-				else
-				{
-					QMessageBox msg(this);
-					msg.setWindowTitle(u8"提示");
-					msg.setText(u8"请加载一个.pmm工程");
-					msg.setIcon(QMessageBox::Information);
-					msg.setStandardButtons(QMessageBox::Ok);
-
-					msg.exec();
 				}
 			}
 		}
@@ -373,22 +363,34 @@ namespace rabbit
 	void
 	EnvironmentWindow::colorMapCheckEvent(int state)
 	{
-		if (behaviour_)
+		auto& environmentLight = this->profile_->entitiesModule->enviromentLight;
+		if (environmentLight)
 		{
-			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-			if (behaviour->isOpen())
+			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+			if (envLight)
 			{
-				if (state == Qt::Unchecked)
-				{
-					behaviour->clearHDRi();
-					this->repaint();
-				}
-				else if (this->texture)
-				{
-					behaviour->loadHDRi(this->texture);
-					this->repaint();
-				}
+				envLight->setBackgroundMap(state == Qt::Checked ? this->texture : nullptr);
+				envLight->setEnvironmentMap(state == Qt::Checked ? octoon::PMREMLoader::load(this->texture) : nullptr);
 			}
+
+			auto material = environmentLight->getComponent<octoon::MeshRendererComponent>()->getMaterial()->downcast<octoon::material::MeshBasicMaterial>();
+			material->setColorMap(state == Qt::Checked && backgroundToggle->isChecked() ? this->texture : nullptr);
+		}
+
+		this->repaint();
+	}
+
+	void
+	EnvironmentWindow::backgroundMapCheckEvent(int state)
+	{
+		auto& environmentLight = this->profile_->entitiesModule->enviromentLight;
+		if (environmentLight)
+		{
+			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
+			if (envLight)
+				envLight->setShowBackground(state == Qt::Checked);
+
+			environmentLight->getComponent<octoon::MeshRendererComponent>()->setActive(state == Qt::Checked);
 		}
 	}
 

@@ -230,7 +230,6 @@ namespace rabbit
 		auto& environmentLight = this->getContext()->profile->entitiesModule->enviromentLight;
 		if (environmentLight)
 		{
-
 			auto envLight = environmentLight->getComponent<octoon::EnvironmentLightComponent>();
 			if (envLight)
 				envLight->setEnvironmentMap(PMREMLoader::load(texture));
@@ -282,7 +281,7 @@ namespace rabbit
 		camera->setFov((float)pmm.camera_keyframes[0].fov);
 		camera->setCameraType(CameraType::Main);
 		camera->setClearFlags(hal::GraphicsClearFlagBits::AllBit);
-		camera->setClearColor(math::float4(0.1f, 0.1f, 0.1f, 1.0f));
+		camera->setClearColor(math::float4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		auto transform = mainCamera->getComponent<TransformComponent>();
 		transform->setQuaternion(quat);
@@ -536,7 +535,7 @@ namespace rabbit
 		auto camera = mainCamera->addComponent<octoon::FilmCameraComponent>();
 		camera->setFov(50.0f);
 		camera->setCameraType(octoon::CameraType::Main);
-		camera->setClearColor(octoon::math::float4(0.1f, 0.1f, 0.1f, 1.0f));
+		camera->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;

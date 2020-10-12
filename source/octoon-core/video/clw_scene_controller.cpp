@@ -134,6 +134,8 @@ namespace octoon::video
 				auto env = light->downcast<light::EnvironmentLight>();
 				if (env->getEnvironmentMap())
 					textureCollector.Collect(env->getEnvironmentMap());
+				if (env->getBackgroundMap())
+					textureCollector.Collect(env->getBackgroundMap());
 			}
 		}
 
@@ -488,10 +490,10 @@ namespace octoon::video
 			clwLight->multiplier = ibl.getIntensity();
 			clwLight->intensity = RadeonRays::float3(power.x, power.y, power.z);
 			clwLight->tex = GetTextureIndex(textureCollector, ibl.getEnvironmentMap());
-			clwLight->tex_reflection = -1;			
-			clwLight->tex_refraction = -1;			
-			clwLight->tex_transparency = -1;			
-			clwLight->tex_background = -1;
+			clwLight->tex_reflection = -1;
+			clwLight->tex_refraction = -1;
+			clwLight->tex_transparency = -1;
+			clwLight->tex_background = GetTextureIndex(textureCollector, ibl.getBackgroundMap());
 			clwLight->offset = RadeonRays::float2(ibl.getOffset().x, ibl.getOffset().y);
 			clwLight->ibl_mirror_x = true;
 		}
@@ -516,6 +518,7 @@ namespace octoon::video
 			context_.MapBuffer(0, out.lights, CL_MAP_WRITE, &lights).Wait();
 
 			out.envmapidx = -1;
+			out.showBackground = false;
 
 			std::vector<float> lightPower(numLights);
 
@@ -524,7 +527,10 @@ namespace octoon::video
 				WriteLight(scene, *light, lights + numLightsWritten);
 
 				if (light->isA<light::EnvironmentLight>())
+				{
 					out.envmapidx = numLightsWritten;
+					out.showBackground = light->downcast<light::EnvironmentLight>()->getShowBackground();
+				}
 
 				auto power = light->getColor() * light->getIntensity();
 				lightPower[numLightsWritten] = 0.2126f * power.x + 0.7152f * power.y + 0.0722f * power.z;

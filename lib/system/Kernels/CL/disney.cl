@@ -294,8 +294,19 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 				bxdf_flags |= kBxdfFlagsBrdf;
 				Bxdf_SetFlags(dg, bxdf_flags);
 				
-				float3 n = sample.y < subsurface ? make_float3(0.f, -1.f, 0.f) :  make_float3(0.f, 1.f, 0.f);
-				*wo = Sample_MapToHemisphere(sample, n , 1.f);
+				if (sample.y < subsurface)
+				{
+					sample.y /= subsurface;
+
+					*wo = Sample_MapToHemisphere(sample, make_float3(0.f, -1.f, 0.f) , 1.f);
+				}
+				else
+				{
+					sample.y -= subsurface;
+					sample.y /= (1.f - subsurface);
+
+					*wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
+				}				
 			}
 		}
 		

@@ -181,10 +181,8 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 
 	if (wo.y < 0.0f && subsurface > 0.0f)
 	{
-		float fss90 = hdotwo * hdotwo * roughness;
-		float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
-		float Fss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
-
+		float fss90 = 0.5;
+		float Fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
 		return (1.f / PI) * Fss * subsurface_color * subsurface * (1.0f - metallic);
 	}
 	else

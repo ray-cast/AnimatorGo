@@ -88,6 +88,7 @@ namespace octoon
 					material.emission = math::float3::Zero;
 					material.metallic = 0;
 					material.roughness = 0;
+					material.materialType = 0.0f;
 					material.ior = 1.5f;
 
 					char albedoTexName[100] = "None";
@@ -125,6 +126,7 @@ namespace octoon
 						standard->setRoughness(material.roughness);
 						standard->setMetalness(material.metallic);
 						standard->setIor(material.ior);
+						standard->setTransmission(material.materialType);
 
 						if (!material.albedoTex.empty())
 							standard->setColorMap(TextureLoader::load(material.albedoTex));

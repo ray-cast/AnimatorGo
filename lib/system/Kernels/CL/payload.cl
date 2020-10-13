@@ -95,6 +95,8 @@ typedef struct
 	float clearcoat;
 	float clearcoat_roughness;
 	float subsurface;
+	float transmission;
+	float refraction_ior;
 	int base_color_map_idx;
 	int opacity_map_idx;
 	int normal_map_idx;
@@ -110,8 +112,6 @@ typedef struct
 	int emissive_map_idx;
 	int subsurface_map_idx;
 	int subsurface_color_map_idx;
-	int padding0;
-	int padding1;
 } Disney;
 
 typedef struct

@@ -132,6 +132,7 @@ namespace octoon::material
 		this->setSubsurface(0.0f);
 		this->setSubsurfaceColor(math::float3(1.0f, 0.2f, 0.05f) * 0.5f);
 		this->setIor(1.5f);
+		this->setTransmission(1.0f);
 		this->setGamma(2.2f);
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);
@@ -246,6 +247,14 @@ namespace octoon::material
 		this->ior_ = ior;
 		this->setDirty(false);
 		this->set("ior", ior);
+	}
+
+	void
+	MeshStandardMaterial::setTransmission(float transmission) noexcept
+	{
+		this->transmission_ = transmission;
+		this->setDirty(false);
+		this->set("transmission", transmission);
 	}
 
 	void
@@ -478,6 +487,12 @@ namespace octoon::material
 	{
 		return this->ior_;
 	}
+
+	float
+	MeshStandardMaterial::getTransmission() const noexcept
+	{
+		return this->transmission_;
+	}	
 
 	float
 	MeshStandardMaterial::getLightMapIntensity() const noexcept

@@ -364,8 +364,8 @@ KERNEL void ShadeSurface(
 		float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
 		bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
 
-		float s = Bxdf_IsTransparency(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
-		if (backfacing && !Bxdf_IsTransparency(&diffgeo))
+		float s = Bxdf_IsBtdf(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
+		if (backfacing && !Bxdf_IsBtdf(&diffgeo))
 		{
 			diffgeo.n = -diffgeo.n;
 			diffgeo.dpdu = -diffgeo.dpdu;

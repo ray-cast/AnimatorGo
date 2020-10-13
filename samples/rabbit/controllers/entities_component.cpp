@@ -141,7 +141,12 @@ namespace rabbit
 			if (it->getComponent<CameraComponent>())
 				context->profile->entitiesModule->camera = it;
 			else
+			{
+				auto renderer = it->getComponent<MeshRendererComponent>();
+				if (renderer)
+					renderer->setGlobalIllumination(true);
 				context->profile->entitiesModule->objects.push_back(it);
+			}
 		}
 
 		this->sendMessage("rabbit:project:open");

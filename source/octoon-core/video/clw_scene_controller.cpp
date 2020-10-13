@@ -615,6 +615,8 @@ namespace octoon::video
 			material.disney.subsurface_color_map_idx = GetTextureIndex(textureCollector, mat->getSubsurfaceColorMap());
 			material.disney.emissive = RadeonRays::float3(mat->getEmissive().x, mat->getEmissive().y, mat->getEmissive().z) * mat->getEmissiveIntensity();
 			material.disney.emissive_map_idx = GetTextureIndex(textureCollector, mat->getEmissiveMap());
+			material.disney.refraction_ior = mat->getIor();
+			material.disney.transmission = mat->getTransmission();
 
 			this->materialidToOffset_[mat] = material;
 		}
@@ -669,7 +671,7 @@ namespace octoon::video
 					transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
 
 				shape->SetId(id++);
-				shape->SetTransform(m, inverse(m));
+				shape->SetTransform(m, minv);
 
 				this->api_->AttachShape(shape);
 

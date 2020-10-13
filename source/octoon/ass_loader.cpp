@@ -9,25 +9,19 @@
 
 namespace octoon
 {
-	static const int kMaxLineLength = 2048;
-
 	struct ASS_Material
 	{
 		math::float3 albedo;
 		float materialType;
 		math::float3 emission;
 
-		float unused;
-
 		float metallic;
 		float roughness;
 		float ior;
-		float unused2;
 
-		std::string albedoTexID;
-		std::string metallicRoughnessTexID;
-		std::string normalmapTexID;
-		float unused3;
+		std::string albedoTex;
+		std::string metallicRoughnessTex;
+		std::string normalmapTex;
 	};
 
 	struct ASS_Light
@@ -58,12 +52,14 @@ namespace octoon
 	bool
 	ASSLoader::doCanRead(const char* type) noexcept
 	{
-		return std::strncmp(type, "vmd", 3) == 0;
+		return std::strncmp(type, "ass", 3) == 0;
 	}
 
 	GameObjects
 	ASSLoader::load(std::string_view filepath) noexcept(false)
 	{
+		static constexpr int kMaxLineLength = 2048;
+
 		FILE* file = fopen(std::string(filepath).c_str(), "r");
 
 		GameObjects objects;
@@ -111,9 +107,9 @@ namespace octoon
 						sscanf(line, " normalTexture %s", normalTexName);
 					}
 
-					if (strcmp(albedoTexName, "None") != 0) material.albedoTexID = path + albedoTexName;
-					if (strcmp(metallicRoughnessTexName, "None") != 0) material.metallicRoughnessTexID = path + metallicRoughnessTexName;
-					if (strcmp(normalTexName, "None") != 0) material.normalmapTexID = path + normalTexName;
+					if (strcmp(albedoTexName, "None") != 0) material.albedoTex = path + albedoTexName;
+					if (strcmp(metallicRoughnessTexName, "None") != 0) material.metallicRoughnessTex = path + metallicRoughnessTexName;
+					if (strcmp(normalTexName, "None") != 0) material.normalmapTex = path + normalTexName;
 
 					if (materialMap.find(name) == materialMap.end())
 					{
@@ -124,14 +120,14 @@ namespace octoon
 						standard->setMetalness(material.metallic);
 						standard->setIor(material.ior);
 
-						if (!material.albedoTexID.empty())
-							standard->setColorMap(TextureLoader::load(material.albedoTexID));
+						if (!material.albedoTex.empty())
+							standard->setColorMap(TextureLoader::load(material.albedoTex));
 
-						if (!material.normalmapTexID.empty())
-							standard->setNormalMap(TextureLoader::load(material.normalmapTexID));
+						if (!material.normalmapTex.empty())
+							standard->setNormalMap(TextureLoader::load(material.normalmapTex));
 
-						if (!material.metallicRoughnessTexID.empty())
-							standard->setMetalnessMap(TextureLoader::load(material.metallicRoughnessTexID));
+						if (!material.metallicRoughnessTex.empty())
+							standard->setMetalnessMap(TextureLoader::load(material.metallicRoughnessTex));
 
 						materialMap[name] = standard;
 					}
@@ -246,7 +242,12 @@ namespace octoon
 
 							mesh->setName(instanceName);
 							mesh->getComponent<TransformComponent>()->setTransform(pos, math::Quaternion::Zero, scale);
-							mesh->getComponent<MeshRendererComponent>()->setMaterial(material);
+							
+							auto renderer = mesh->getComponent<MeshRendererComponent>();
+							if (renderer)
+								renderer->setMaterial(material);
+							else
+								mesh->addComponent<MeshRendererComponent>(material);
 						}
 					}
 				}

@@ -289,8 +289,6 @@ namespace rabbit
 			entitiesComponent_->importAbc(path);
 		else if (ext == ".ogg" || ext == ".mp3" || ext == ".wav" || ext == ".flac")
 			entitiesComponent_->importAudio(path);
-		else if (ext == ".mtl")
-			materialComponent_->importMtl(path);
 		else if (ext == ".mdl")
 			materialComponent_->importMdl(path);
 	}
@@ -403,30 +401,6 @@ namespace rabbit
 		}
 
 		canvasComponent_->save(filepath);
-	}
-
-	void
-	RabbitBehaviour::loadHDRi(std::string_view path) noexcept
-	{
-		entitiesComponent_->importHDRi(path);
-	}
-
-	void
-	RabbitBehaviour::loadHDRi(const octoon::hal::GraphicsTexturePtr& texture) noexcept
-	{
-		entitiesComponent_->importHDRi(texture);
-	}
-
-	void 
-	RabbitBehaviour::clearHDRi() noexcept
-	{
-		entitiesComponent_->clearHDRi();
-	}
-
-	void
-	RabbitBehaviour::loadMaterial(std::string_view path) noexcept(false)
-	{
-		materialComponent_->importMtl(path);
 	}
 
 	std::optional<octoon::RaycastHit>

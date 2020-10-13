@@ -18,6 +18,7 @@
     "x265",
     "zlib",
     "qt5",
-    "libvorbis"
+    "libvorbis",
+    "tinyobjloader"
   ]
 }

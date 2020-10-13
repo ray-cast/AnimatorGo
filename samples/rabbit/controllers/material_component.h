@@ -3,7 +3,6 @@
 
 #include "../rabbit_component.h"
 #include "../module/material_module.h"
-#include "../libs/tinyobj/tiny_obj_loader.h"
 
 #include <set>
 #include <map>
@@ -29,7 +28,6 @@ namespace rabbit
 			return typeid(MaterialComponent);
 		}
 
-		void importMtl(std::string_view path) noexcept(false);
 		void importMdl(std::string_view path) noexcept(false);
 
 		void repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap, int w, int h);

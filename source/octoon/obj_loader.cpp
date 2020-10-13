@@ -9,9 +9,18 @@
 #include <octoon/mesh_renderer_component.h>
 #include <tiny_obj_loader.h>
 #include <fstream>
+#include <set>
+#include <unordered_map>
 
 namespace octoon
 {
+	struct Index
+	{
+		std::uint32_t v;
+		std::uint32_t n;
+		std::uint32_t uv;
+	};
+
 	OBJLoader::OBJLoader() noexcept
 	{
 	}
@@ -46,7 +55,6 @@ namespace octoon
 		bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, std::string(filepath).c_str());
 		if (ret)
 		{
-			std::size_t index_offset = 0;
 			auto defaultMaterial = std::make_shared<material::MeshStandardMaterial>();
 
 			std::vector<std::shared_ptr<material::MeshStandardMaterial>> standardMaterials;
@@ -83,30 +91,73 @@ namespace octoon
 
 			for (auto& shape : shapes)
 			{
-				auto vertices = math::float3s(shape.mesh.num_face_vertices.size() * 3);
-				auto normals = math::float3s(shape.mesh.num_face_vertices.size() * 3);
-				auto texcoords = math::float2s(shape.mesh.num_face_vertices.size() * 3);
+				std::set<std::tuple<int,int,int>> vertexSet;
 
-				for (std::size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
+				for (std::size_t f = 0, index_offset = 0; f < shape.mesh.num_face_vertices.size(); f++)
 				{
 					std::size_t fnum = shape.mesh.num_face_vertices[f];
 
 					for (std::size_t v = 0; v < fnum; v++)
 					{
-						auto vertex_index = shape.mesh.indices[index_offset + v].vertex_index * 3;
-						vertices[f * fnum + v].set(attrib.vertices[vertex_index], attrib.vertices[vertex_index + 1], attrib.vertices[vertex_index + 2]);
+						auto index = shape.mesh.indices[index_offset + v];
+						vertexSet.insert(std::make_tuple(index.vertex_index, index.normal_index, index.texcoord_index));
 					}
+
+					index_offset += fnum;
+				}
+
+				auto vertices = math::float3s(vertexSet.size());
+				auto normals = math::float3s(vertexSet.size());
+				auto texcoords = math::float2s(vertexSet.size());
+				auto indices = math::uint32s(shape.mesh.num_face_vertices.size() * 3);
+
+				std::uint32_t idx = 0;
+
+				std::map<std::tuple<int, int, int>, std::uint32_t> vertexMap;
+				for (auto& index : vertexSet)
+					vertexMap[index] = idx++;
+
+				if (!attrib.vertices.empty())
+				{
+					idx = 0;
+
+					for (auto& index : vertexSet)
+					{
+						auto v = std::get<0>(index) * 3;
+						vertices[idx++].set(attrib.vertices[v], attrib.vertices[v + 1], attrib.vertices[v + 2]);
+					}
+				}
+
+				if (!attrib.normals.empty())
+				{
+					idx = 0;
+
+					for (auto& index : vertexSet)
+					{
+						auto v = std::get<1>(index) * 3;
+						normals[idx++].set(attrib.normals[v], attrib.normals[v + 1], attrib.normals[v + 2]);
+					}
+				}
+
+				if (!attrib.texcoords.empty())
+				{
+					idx = 0;
+
+					for (auto& index : vertexSet)
+					{
+						auto v = std::get<2>(index) * 2;
+						texcoords[idx++].set(attrib.texcoords[v], attrib.texcoords[v + 1]);
+					}
+				}
+
+				for (std::size_t f = 0, index_offset = 0; f < shape.mesh.num_face_vertices.size(); f++)
+				{
+					std::size_t fnum = shape.mesh.num_face_vertices[f];
 
 					for (std::size_t v = 0; v < fnum; v++)
 					{
-						auto index = shape.mesh.indices[index_offset + v].normal_index * 3;
-						normals[f * fnum + v].set(attrib.normals[index], attrib.normals[index + 1], attrib.normals[index + 2]);
-					}
-
-					for (std::size_t v = 0; v < fnum; v++)
-					{
-						auto index = shape.mesh.indices[index_offset + v].texcoord_index * 2;
-						texcoords[f * fnum + v].set(attrib.normals[index], attrib.normals[index + 1]);
+						auto index = shape.mesh.indices[index_offset + v];
+						indices[index_offset + v] = vertexMap.at(std::make_tuple(index.vertex_index, index.normal_index, index.texcoord_index));
 					}
 
 					index_offset += fnum;
@@ -117,6 +168,7 @@ namespace octoon
 				mesh->setVertexArray(std::move(vertices));
 				mesh->setNormalArray(std::move(normals));
 				mesh->setTexcoordArray(std::move(texcoords));
+				mesh->setIndicesArray(std::move(indices));
 				mesh->computeBoundingBox();
 
 				auto object = GameObject::create();

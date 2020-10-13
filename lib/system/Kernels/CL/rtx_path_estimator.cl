@@ -356,15 +356,6 @@ KERNEL void ShadeSurface(
 			return;
 		}
 
-		float s = (shader_data.transparency > 0.0f) ? (-sign(ngdotwi)) : 1.f;
-		if (backfacing && !(shader_data.transparency > 0.0f))
-		{
-			diffgeo.n = -diffgeo.n;
-			diffgeo.dpdu = -diffgeo.dpdu;
-			diffgeo.dpdv = -diffgeo.dpdv;
-			s = -s;
-		}
-
 		wi = matrix_mul_vector3(diffgeo.world_to_tangent, wi);
 
 		float3 throughput = Path_GetThroughput(path);
@@ -372,6 +363,15 @@ KERNEL void ShadeSurface(
 		float bxdf_pdf = 0.f;
 		float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
 		bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
+
+		float s = Bxdf_IsTransparency(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
+		if (backfacing && !Bxdf_IsTransparency(&diffgeo))
+		{
+			diffgeo.n = -diffgeo.n;
+			diffgeo.dpdu = -diffgeo.dpdu;
+			diffgeo.dpdv = -diffgeo.dpdv;
+			s = -s;
+		}
 
 		float3 radiance = 0.f;
 		float3 wo;

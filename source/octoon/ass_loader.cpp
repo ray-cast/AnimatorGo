@@ -84,7 +84,7 @@ namespace octoon
 				if (sscanf(line, " material %s", name) == 1)
 				{
 					ASS_Material material;
-					material.albedo = math::float3::Zero;
+					material.albedo = math::float3::One;
 					material.emission = math::float3::Zero;
 					material.metallic = 0;
 					material.roughness = 0;
@@ -133,7 +133,10 @@ namespace octoon
 							standard->setNormalMap(TextureLoader::load(material.normalmapTex));
 
 						if (!material.metallicRoughnessTex.empty())
+						{
+							standard->setMetalness(1.0f);
 							standard->setMetalnessMap(TextureLoader::load(material.metallicRoughnessTex));
+						}
 
 						materialMap[name] = standard;
 					}

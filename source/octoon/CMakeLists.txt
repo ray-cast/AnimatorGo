@@ -163,6 +163,8 @@ SET(LOADER_LIST
 	${SOURCE_PATH}/mdl_loader.cpp
 	${HEADER_PATH}/PMREM_loader.h
 	${SOURCE_PATH}/PMREM_loader.cpp
+	${HEADER_PATH}/ass_loader.h
+	${SOURCE_PATH}/ass_loader.cpp
 	${HEADER_PATH}/audio_loader.h
 	${SOURCE_PATH}/audio_loader.cpp
 )

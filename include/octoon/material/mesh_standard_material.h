@@ -28,7 +28,8 @@ namespace octoon::material
 		void setClearCoat(float clearCoat) noexcept;
 		void setClearCoatRoughness(float clearCoatRoughness) noexcept;
 		void setSubsurface(float subsurface) noexcept;
-		void setSubsurfaceColor(const math::float3& subsurfaceCOlor) noexcept;
+		void setSubsurfaceColor(const math::float3& subsurfaceColor) noexcept;
+		void setIor(float ior) noexcept;
 		void setLightMapIntensity(float intensity) noexcept;
 		void setColorMap(const hal::GraphicsTexturePtr& map) noexcept;
 		void setOpacityMap(const hal::GraphicsTexturePtr& map) noexcept;
@@ -65,6 +66,7 @@ namespace octoon::material
 		float getClearCoat() const noexcept;
 		float getClearCoatRoughness() const noexcept;
 		float getSubsurface() const noexcept;
+		float getIor() const noexcept;
 		float getLightMapIntensity() const noexcept;
 		float getGamma() const noexcept;
 
@@ -109,6 +111,7 @@ namespace octoon::material
 		float clearCoat_;
 		float clearCoatRoughness_;
 		float subsurface_;
+		float ior_;
 		float lightMapIntensity_;
 		float emissiveIntensity_;
 		math::float2 offset_;

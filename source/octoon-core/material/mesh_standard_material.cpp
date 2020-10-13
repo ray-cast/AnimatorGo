@@ -131,6 +131,7 @@ namespace octoon::material
 		this->setClearCoatRoughness(0.0f);
 		this->setSubsurface(0.0f);
 		this->setSubsurfaceColor(math::float3(1.0f, 0.2f, 0.05f) * 0.5f);
+		this->setIor(1.5f);
 		this->setGamma(2.2f);
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);
@@ -237,6 +238,14 @@ namespace octoon::material
 		this->subsurfaceColor_ = subsurfaceColor;
 		this->setDirty(false);
 		this->set("subsurfaceColor", subsurfaceColor);
+	}
+
+	void
+	MeshStandardMaterial::setIor(float ior) noexcept
+	{
+		this->ior_ = ior;
+		this->setDirty(false);
+		this->set("ior", ior);
 	}
 
 	void
@@ -462,6 +471,12 @@ namespace octoon::material
 	MeshStandardMaterial::getMetalness() const noexcept
 	{
 		return this->metalness_;
+	}
+
+	float
+	MeshStandardMaterial::getIor() const noexcept
+	{
+		return this->ior_;
 	}
 
 	float

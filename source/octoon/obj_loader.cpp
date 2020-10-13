@@ -47,6 +47,7 @@ namespace octoon
 		if (ret)
 		{
 			std::size_t index_offset = 0;
+			auto defaultMaterial = std::make_shared<material::MeshStandardMaterial>();
 
 			std::vector<std::shared_ptr<material::MeshStandardMaterial>> standardMaterials;
 			for (auto& material : materials)
@@ -82,9 +83,9 @@ namespace octoon
 
 			for (auto& shape : shapes)
 			{
-				auto vertices = math::float3s(shape.mesh.num_face_vertices.size());
-				auto normals = math::float3s(shape.mesh.num_face_vertices.size());
-				auto texcoords = math::float2s(shape.mesh.num_face_vertices.size());
+				auto vertices = math::float3s(shape.mesh.num_face_vertices.size() * 3);
+				auto normals = math::float3s(shape.mesh.num_face_vertices.size() * 3);
+				auto texcoords = math::float2s(shape.mesh.num_face_vertices.size() * 3);
 
 				for (std::size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
 				{
@@ -116,12 +117,15 @@ namespace octoon
 				mesh->setVertexArray(std::move(vertices));
 				mesh->setNormalArray(std::move(normals));
 				mesh->setTexcoordArray(std::move(texcoords));
+				mesh->computeBoundingBox();
 
 				auto object = GameObject::create();
 				object->addComponent<MeshFilterComponent>(std::move(mesh));
 
 				if (shape.mesh.material_ids.empty())
 					object->addComponent<MeshRendererComponent>()->setMaterial(standardMaterials[shape.mesh.material_ids.front()]);
+				else
+					object->addComponent<MeshRendererComponent>()->setMaterial(defaultMaterial);
 
 				objects.emplace_back(std::move(object));
 			}

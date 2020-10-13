@@ -265,6 +265,8 @@ namespace octoon::mesh
 	const BoundingBox&
 	Mesh::getBoundingBox(std::size_t n) const noexcept
 	{
+		if (_boundingBoxs.empty() && n == 0)
+			return _boundingBox;
 		return _boundingBoxs[n];
 	}
 
@@ -323,31 +325,55 @@ namespace octoon::mesh
 		if (!math::intersect(ray, this->getBoundingBoxAll().box()))
 			return false;
 
-		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+		if (this->_indices.empty())
 		{
-			if (math::intersect(ray, this->getBoundingBox(i).box()))
+			for (std::size_t i = 0; i < _vertices.size(); i += 3)
 			{
-				auto& indices = _indices[i];
+				auto& v0 = _vertices[i];
+				auto& v1 = _vertices[i + 1];
+				auto& v2 = _vertices[i + 2];
 
-				for (std::size_t j = 0; j < _indices[i].size(); j += 3)
+				RaycastHit hit;
+				if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
 				{
-					std::size_t f1 = indices[j];
-					std::size_t f2 = indices[j + 1];
-					std::size_t f3 = indices[j + 2];
-
-					auto& v0 = _vertices[f1];
-					auto& v1 = _vertices[f2];
-					auto& v2 = _vertices[f3];
-
-					RaycastHit hit;
-					if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
+					if (hit.distance > 0 && hit.distance < ray.maxDistance)
 					{
-						if (hit.distance > 0 && hit.distance < ray.maxDistance)
-						{
-							hit.mesh = i;
-							hit.object = this;
+						hit.mesh = 0;
+						hit.object = this;
 
-							hits.emplace_back(hit);
+						hits.emplace_back(hit);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (std::size_t i = 0; i < this->getNumSubsets(); i++)
+			{
+				if (math::intersect(ray, this->getBoundingBox(i).box()))
+				{
+					auto& indices = _indices[i];
+
+					for (std::size_t j = 0; j < _indices[i].size(); j += 3)
+					{
+						std::size_t f1 = indices[j];
+						std::size_t f2 = indices[j + 1];
+						std::size_t f3 = indices[j + 2];
+
+						auto& v0 = _vertices[f1];
+						auto& v1 = _vertices[f2];
+						auto& v2 = _vertices[f3];
+
+						RaycastHit hit;
+						if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
+						{
+							if (hit.distance > 0 && hit.distance < ray.maxDistance)
+							{
+								hit.mesh = i;
+								hit.object = this;
+
+								hits.emplace_back(hit);
+							}
 						}
 					}
 				}
@@ -898,13 +924,21 @@ namespace octoon::mesh
 		_boundingBox.reset();
 		_boundingBoxs.resize(_indices.size());
 
-		for (std::size_t i = 0; i < _indices.size(); i++)
+		if (_indices.empty())
 		{
-			auto& indices = _indices[i];
-			for (auto& index : indices)
-				_boundingBoxs[i].encapsulate(_vertices[index]);
+			for (std::size_t i = 0; i < _vertices.size(); i++)
+				_boundingBox.encapsulate(_vertices[i]);
+		}
+		else
+		{
+			for (std::size_t i = 0; i < _indices.size(); i++)
+			{
+				auto& indices = _indices[i];
+				for (auto& index : indices)
+					_boundingBoxs[i].encapsulate(_vertices[index]);
 
-			_boundingBox.encapsulate(_boundingBoxs[i]);
+				_boundingBox.encapsulate(_boundingBoxs[i]);
+			}
 		}
 	}
 

@@ -22,6 +22,7 @@ namespace rabbit
 		
 		bool importAudio(std::string_view path) noexcept;
 		bool importAbc(std::string_view path) noexcept;
+		void importAss(std::string_view path) noexcept(false);
 		void importPMM(std::string_view path) noexcept(false);
 		bool importModel(std::string_view path) noexcept;
 		void importHDRi(std::string_view path) noexcept;

@@ -1,7 +1,7 @@
 #include "entities_component.h"
 #include "../rabbit_profile.h"
 #include "../rabbit_behaviour.h"
-
+#include <octoon/ass_loader.h>
 #pragma warning(push)
 #pragma warning(disable:4245)
 #include "../libs/nativefiledialog/nfd.h"
@@ -122,6 +122,30 @@ namespace rabbit
 
 		this->sendMessage("rabbit:project:open");
 		return true;
+	}
+
+	void
+	EntitiesComponent::importAss(std::string_view path) noexcept(false)
+	{
+		auto& context = this->getContext();
+		if (!context->profile->entitiesModule->objects.empty())
+		{
+			context->profile->entitiesModule->objects.clear();
+			context->profile->entitiesModule->rigidbodies.clear();
+			context->profile->entitiesModule->camera.reset();
+		}
+
+		octoon::GameObjects objects = octoon::ASSLoader::load(path);
+
+		for (auto& it : objects)
+		{
+			if (it->getComponent<CameraComponent>())
+				context->profile->entitiesModule->camera = it;
+			else
+				context->profile->entitiesModule->objects.push_back(it);
+		}
+
+		this->sendMessage("rabbit:project:open");
 	}
 
 	void

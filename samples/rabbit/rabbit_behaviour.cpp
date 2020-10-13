@@ -281,6 +281,8 @@ namespace rabbit
 		auto ext = path.substr(path.find_last_of("."));
 		if (ext == ".pmm")
 			entitiesComponent_->importPMM(path);
+		else if (ext == ".scene")
+			entitiesComponent_->importAss(path);
 		else if (ext == ".pmx")
 			entitiesComponent_->importModel(path);
 		else if (ext == ".hdr")

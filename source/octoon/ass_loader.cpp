@@ -1,5 +1,5 @@
 #include <octoon/ass_loader.h>
-#include <octoon/mesh_loader.h>
+#include <octoon/obj_loader.h>
 #include <octoon/texture_loader.h>
 #include <octoon/material/mesh_standard_material.h>
 #include <octoon/transform_component.h>
@@ -84,6 +84,12 @@ namespace octoon
 				if (sscanf(line, " material %s", name) == 1)
 				{
 					ASS_Material material;
+					material.albedo = math::float3::Zero;
+					material.emission = math::float3::Zero;
+					material.metallic = 0;
+					material.roughness = 0;
+					material.ior = 1.5f;
+
 					char albedoTexName[100] = "None";
 					char normalTexName[100] = "None";
 					char metallicRoughnessTexName[100] = "None";
@@ -180,7 +186,7 @@ namespace octoon
 				{
 					math::float3 position;
 					math::float3 lookAt;
-					float fov;
+					float fov = 45;
 					float aperture = 0, focalDist = 1;
 
 					while (fgets(line, kMaxLineLength, file))
@@ -202,7 +208,7 @@ namespace octoon
 					filmCamera->setAperture(aperture);
 					filmCamera->setFocalDistance(focalDist);
 
-					objects.emplace_back(std::move(object));
+					//objects.emplace_back(std::move(object));
 				}
 
 				if (strstr(line, "mesh"))
@@ -218,15 +224,15 @@ namespace octoon
 						if (strchr(line, '}'))
 							break;
 
-						char file[2048];
+						char name[2048];
 						char matName[100];
 
 						sscanf(line, " name %[^\t\n]s", meshName);
 						sscanf(line, " position %f %f %f", &pos.x, &pos.y, &pos.z);
 						sscanf(line, " scale %f %f %f", &scale.x, &scale.y, &scale.z);
 
-						if (sscanf(line, " file %s", file) == 1)
-							filename = path + file;
+						if (sscanf(line, " file %s", name) == 1)
+							filename = path + name;
 
 						if (sscanf(line, " material %s", matName) == 1)
 							material = materialMap.find(matName) != materialMap.end() ? materialMap[matName] : defaultMaterial;
@@ -234,20 +240,21 @@ namespace octoon
 
 					if (!filename.empty())
 					{
-						octoon::GameObjects rigidbodies;
-						auto mesh = MeshLoader::load(filename, rigidbodies);
-						if (mesh)
+						auto meshes = OBJLoader::load(filename);
+						if (!meshes.empty())
 						{
-							std::string instanceName = strcmp(meshName, "None") != 0 ? meshName : filename.substr(filename.find_last_of("/\\") + 1);
+							for (auto& mesh : meshes)
+							{
+								mesh->getComponent<TransformComponent>()->setTransform(pos, math::Quaternion::Zero, scale);
 
-							mesh->setName(instanceName);
-							mesh->getComponent<TransformComponent>()->setTransform(pos, math::Quaternion::Zero, scale);
-							
-							auto renderer = mesh->getComponent<MeshRendererComponent>();
-							if (renderer)
-								renderer->setMaterial(material);
-							else
-								mesh->addComponent<MeshRendererComponent>(material);
+								auto renderer = mesh->getComponent<MeshRendererComponent>();
+								if (renderer)
+									renderer->setMaterial(material);
+								else
+									mesh->addComponent<MeshRendererComponent>(material);
+
+								objects.push_back(mesh);
+							}
 						}
 					}
 				}

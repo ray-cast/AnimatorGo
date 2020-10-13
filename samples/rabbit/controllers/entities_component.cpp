@@ -132,7 +132,6 @@ namespace rabbit
 		{
 			context->profile->entitiesModule->objects.clear();
 			context->profile->entitiesModule->rigidbodies.clear();
-			context->profile->entitiesModule->camera.reset();
 		}
 
 		octoon::GameObjects objects = octoon::ASSLoader::load(path);

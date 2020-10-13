@@ -91,9 +91,10 @@ namespace octoon
 
 			for (auto& shape : shapes)
 			{
+				std::size_t index_offset = 0;
 				std::set<std::tuple<int,int,int>> vertexSet;
 
-				for (std::size_t f = 0, index_offset = 0; f < shape.mesh.num_face_vertices.size(); f++)
+				for (std::size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++)
 				{
 					std::size_t fnum = shape.mesh.num_face_vertices[f];
 
@@ -109,7 +110,7 @@ namespace octoon
 				auto vertices = math::float3s(vertexSet.size());
 				auto normals = math::float3s(vertexSet.size());
 				auto texcoords = math::float2s(vertexSet.size());
-				auto indices = math::uint32s(shape.mesh.num_face_vertices.size() * 3);
+				auto indices = math::uint32s(index_offset);
 
 				std::uint32_t idx = 0;
 

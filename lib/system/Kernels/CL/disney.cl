@@ -121,36 +121,37 @@ INLINE float Disney_GetPdf(DifferentialGeometry const* dg, DisneyShaderData cons
 	float clearcoat = shader_data->clearcoat;
 	float subsurface = shader_data->subsurface;
 
-	float alpha = roughness * roughness;
-	float ax = max(0.001f, alpha * ( 1.f + anisotropy));
-	float ay = max(0.001f, alpha * ( 1.f - anisotropy));
-	float3 wh = normalize(wo + wi);
-	float ndotwh = fabs(wh.y);
-	float hdotwo = fabs(dot(wh, wo));
+	if (wo.y <= 0.0f)
+	{
+		float bsdfPdf = 0.0f;
+		float brdfPdf = (1.0f / (PI * 2)) * subsurface * 0.5f;
 
-	float d_pdf = fabs(wo.y) / PI;
-	float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
-	float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
-	
-	float3 cd_lin = native_powr(base_color, 2.2f);
-	float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
-	float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
-   
-	float3 c_spec0 = mix(specular * 0.1f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);
-	
-	float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));    
-	float cs_w = cs_lum / (cs_lum + (1.f - metallic) * cd_lum);
-	
-	return mix(c_pdf * clearcoat + (1.f - clearcoat) * (cs_w * r_pdf + (1.f - cs_w) * d_pdf), 0.f, shader_data->transparency);
-}
+		return mix(brdfPdf, bsdfPdf, shader_data->transparency);
+	}
+	else
+	{
+		float alpha = roughness * roughness;
+		float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+		float ay = max(0.001f, alpha * ( 1.f - anisotropy));
+		float3 wh = normalize(wo + wi);
+		float ndotwh = fabs(wh.y);
+		float hdotwo = fabs(dot(wh, wo));
 
-INLINE float3 Diffuse_PennerSkin(DifferentialGeometry const* dg, float ss, float ndotwi, float ir, float3 transmittance)
-{
-	float pndl = 1.0f - clamp( ndotwi, 0.f, 1.f);
-	float nndl = 1.0f - clamp(-ndotwi, 0.f, 1.f);
-	float3 sss = clamp( ndotwi, 0.f, 1.f) + transmittance * pndl * pndl * native_powr(nndl, 3.0f / (ir + 0.001f)) * clamp(ir - 0.04f, 0.f, 1.f);
-
-	return sss;
+		float d_pdf = fabs(wo.y) / PI * (1.0f - subsurface);
+		float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
+		float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
+		
+		float3 cd_lin = native_powr(base_color, 2.2f);
+		float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
+		float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
+	   
+		float3 c_spec0 = mix(specular * 0.1f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);
+		
+		float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));    
+		float cs_w = cs_lum / (cs_lum + (1.f - metallic) * cd_lum);
+		
+		return mix(c_pdf * clearcoat + (1.f - clearcoat) * (cs_w * r_pdf + (1.f - cs_w) * d_pdf), 0.f, shader_data->transparency);
+	}
 }
 
 INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData const* shader_data, float3 wi, float3 wo)
@@ -170,47 +171,53 @@ INLINE float3 Disney_Evaluate(DifferentialGeometry const* dg, DisneyShaderData c
 	
 	float ndotwi = fabs(wi.y);
 	float ndotwo = fabs(wo.y);
-	
+
 	float3 h = normalize(wi + wo);
 	float ndoth = fabs(h.y);
 	float hdotwo = fabs(dot(h, wo));
-	float visiability = clamp(wo.y, 0.0f, 1.0f);
-	
-	float3 cd_lin = base_color;
-	float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
-	
-	float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;    
-	float3 c_spec0 = mix(specular * 0.1f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);    
-	float3 c_sheen = mix(WHITE, c_tint, sheen_tint);
-	
+
 	float f_wo = SchlickFresnelReflectance(ndotwo);
 	float f_wi = SchlickFresnelReflectance(ndotwi);
-	
-	float fd90 = 0.5f + 2 * hdotwo * hdotwo * roughness;
-	float fd = mix(1.f, fd90, f_wo) * mix(1.f, fd90, f_wi) * ndotwo;
-	
-	float fss90 = hdotwo * hdotwo * roughness;
-	float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
-	float ss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f) * visiability;
-	
-	float alpha = roughness * roughness;
-	float ax = max(0.001f, alpha * ( 1.f + anisotropy));
-	float ay = max(0.001f, alpha * ( 1.f - anisotropy));
-	float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay) * ndotwo;
-	float fh = SchlickFresnelReflectance(hdotwo);
-	float3 fs = mix(c_spec0, WHITE, fh);
-	
-	float gs;
-	gs  = SmithGGX_G_Aniso(ndotwo, wo.x, wo.z, ax, ay);
-	gs *= SmithGGX_G_Aniso(ndotwi, wi.x, wi.z, ax, ay);
-	
-	float3 f_sheen = fh * sheen * c_sheen * ndotwo;
-	
-	float dr = GTR1(ndoth, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwo;
-	float fr = mix(0.04f, 1.f, fh);
-	float gr = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
 
-	return mix(((1.f / PI) * (mix(fd, Diffuse_PennerSkin(dg, ss, wo.y, 0.5f, subsurface_color), subsurface) * cd_lin) + f_sheen) * (1.f - metallic) + gs * fs * ds + clearcoat * gr * fr * dr, 0.f, shader_data->transparency);
+	if (wo.y < 0.0f && subsurface > 0.0f)
+	{
+		float fss90 = hdotwo * hdotwo * roughness;
+		float fss = mix(1.f, fss90, f_wo) * mix(1.f, fss90, f_wi);
+		float Fss = 1.25f * (fss * (1.f / (ndotwo + ndotwi) - 0.5f) + 0.5f);
+
+		return (1.f / PI) * Fss * subsurface_color * subsurface * (1.0f - metallic);
+	}
+	else
+	{		
+		float3 cd_lin = base_color;
+		float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
+		
+		float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;    
+		float3 c_spec0 = mix(specular * 0.1f * mix(WHITE, c_tint, specular_tint), cd_lin, metallic);    
+		float3 c_sheen = mix(WHITE, c_tint, sheen_tint);
+		
+		float fd90 = 0.5f + 2 * hdotwo * hdotwo * roughness;
+		float fd = mix(1.f, fd90, f_wo) * mix(1.f, fd90, f_wi) * ndotwo;
+			
+		float alpha = roughness * roughness;
+		float ax = max(0.001f, alpha * ( 1.f + anisotropy));
+		float ay = max(0.001f, alpha * ( 1.f - anisotropy));
+		float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay) * ndotwo;
+		float fh = SchlickFresnelReflectance(hdotwo);
+		float3 fs = mix(c_spec0, WHITE, fh);
+		
+		float gs;
+		gs  = SmithGGX_G_Aniso(ndotwo, wo.x, wo.z, ax, ay);
+		gs *= SmithGGX_G_Aniso(ndotwi, wi.x, wi.z, ax, ay);
+		
+		float3 f_sheen = fh * sheen * c_sheen * ndotwo;
+		
+		float dr = GTR1(ndoth, mix(0.001f, 0.1f, clearcoat_roughness)) * ndotwo;
+		float fr = mix(0.04f, 1.f, fh);
+		float gr = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
+
+		return mix(((1.f / PI) * (fd * cd_lin + f_sheen) * (1.f - metallic) * (1.f - subsurface) + gs * fs * ds + clearcoat * gr * fr * dr, 0.f, shader_data->transparency);
+	}
 }
 
 float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
@@ -232,8 +239,6 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 	}
 	else
 	{
-		float3 wh;
-
 		int bxdf_flags = kBxdfFlagsBrdf;
 		if (sample.x < shader_data->clearcoat)
 		{
@@ -242,7 +247,7 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 			float a = mix(0.001f, 0.1f, shader_data->clearcoat_roughness);
 			float ndotwh = native_sqrt((1.f - native_powr(a*a, 1.f - sample.y)) / (1.f - a*a));
 			float sintheta = native_sqrt(1.f - ndotwh * ndotwh);
-			wh = normalize(make_float3(native_cos(2.f * PI * sample.x) * sintheta,
+			float3 wh = normalize(make_float3(native_cos(2.f * PI * sample.x) * sintheta,
 									   ndotwh,
 									   native_sin(2.f * PI * sample.x) * sintheta));
 
@@ -274,10 +279,10 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 				float ax = max(0.001f, alpha * ( 1.f + shader_data->anisotropy));
 				float ay = max(0.001f, alpha * ( 1.f - shader_data->anisotropy));
 				float t = native_sqrt(sample.y / (1.f - sample.y));
-				wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
+				float3 wh = normalize(make_float3(t * ax * native_cos(2.f * PI * sample.x), 1.f, t * ay * native_sin(2.f * PI * sample.x)));
 				
-				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-				bxdf_flags |= kBxdfFlagsSingular;
+				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleDiffuse);
+				bxdf_flags |= kBxdfFlagsBrdf;
 				Bxdf_SetFlags(dg, bxdf_flags);
 
 				*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
@@ -291,7 +296,8 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 				bxdf_flags |= kBxdfFlagsBrdf;
 				Bxdf_SetFlags(dg, bxdf_flags);
 				
-				*wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
+				float3 n = sample.y < subsurface ? make_float3(0.f, -1.f, 0.f) :  make_float3(0.f, 1.f, 0.f);
+				*wo = Sample_MapToHemisphere(sample, n , 1.f);
 			}
 		}
 		

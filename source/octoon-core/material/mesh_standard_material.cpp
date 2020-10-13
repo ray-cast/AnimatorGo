@@ -132,7 +132,7 @@ namespace octoon::material
 		this->setSubsurface(0.0f);
 		this->setSubsurfaceColor(math::float3(1.0f, 0.2f, 0.05f) * 0.5f);
 		this->setIor(1.5f);
-		this->setTransmission(1.0f);
+		this->setTransmission(0.0f);
 		this->setGamma(2.2f);
 		this->setOffset(math::float2::Zero);
 		this->setRepeat(math::float2::One);

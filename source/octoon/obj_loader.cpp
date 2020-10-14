@@ -61,7 +61,6 @@ namespace octoon
 			for (auto& material : materials)
 			{
 				auto standard = std::make_shared<material::MeshStandardMaterial>();
-				standard->setIor(material.ior);
 				standard->setColor(math::float3(material.diffuse[0], material.diffuse[1], material.diffuse[2]));
 				standard->setRoughness(material.roughness);
 				standard->setMetalness(material.metallic);
@@ -69,6 +68,7 @@ namespace octoon
 				standard->setClearCoat(material.clearcoat_thickness);
 				standard->setClearCoatRoughness(material.clearcoat_roughness);
 				standard->setAnisotropy(material.anisotropy);
+				standard->setRefractionRatio(material.ior);
 
 				if (!material.diffuse_texname.empty())
 					standard->setColorMap(TextureLoader::load(material.diffuse_texname));
@@ -151,17 +151,17 @@ namespace octoon
 					}
 				}
 
-				for (std::size_t f = 0, index_offset = 0; f < shape.mesh.num_face_vertices.size(); f++)
+				for (std::size_t f = 0, offset = 0; f < shape.mesh.num_face_vertices.size(); f++)
 				{
 					std::size_t fnum = shape.mesh.num_face_vertices[f];
 
 					for (std::size_t v = 0; v < fnum; v++)
 					{
-						auto index = shape.mesh.indices[index_offset + v];
-						indices[index_offset + v] = vertexMap.at(std::make_tuple(index.vertex_index, index.normal_index, index.texcoord_index));
+						auto index = shape.mesh.indices[offset + v];
+						indices[offset + v] = vertexMap.at(std::make_tuple(index.vertex_index, index.normal_index, index.texcoord_index));
 					}
 
-					index_offset += fnum;
+					offset += fnum;
 				}
 
 				auto mesh = std::make_shared<mesh::Mesh>();

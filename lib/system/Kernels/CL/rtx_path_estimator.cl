@@ -386,14 +386,14 @@ KERNEL void ShadeSurface(
 			float3 lightwo;
 			float3 le = Light_Sample(light_idx, &scene, &diffgeo, TEXTURE_ARGS, Sampler_Sample2D(&sampler, SAMPLER_ARGS), bxdf_flags, kLightInteractionSurface, &lightwo, &light_pdf);
 			lightwo = matrix_mul_vector3(diffgeo.world_to_tangent, lightwo);
-			float light_bxdf_pdf = Disney_GetPdf(&diffgeo, &shader_data, wi, normalize(lightwo));
+			float light_bxdf_pdf = Disney_GetPdf(&shader_data, wi, normalize(lightwo));
 			bool isLightSingular = Light_IsSingular(&scene.lights[light_idx]);
 			float light_weight = Light_IsSingular(&scene.lights[light_idx]) ? 1.f : BalanceHeuristic(1, light_pdf * selection_pdf, 1, light_bxdf_pdf);
 
 			if (NON_BLACK(le) && (light_pdf > 0.0f) && (selection_pdf > 0.0f) && (!Bxdf_IsSingular(&diffgeo) || isLightSingular))
 			{
 				wo = matrix_mul_vector3(diffgeo.tangent_to_world, lightwo);
-				radiance = PI * le * Disney_Evaluate(&diffgeo, &shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
+				radiance = PI * le * Disney_Evaluate(&shader_data, wi, normalize(lightwo)) * throughput * light_weight / light_pdf / selection_pdf;
 			}
 		}
 

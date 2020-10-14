@@ -43,53 +43,62 @@ namespace rabbit
 	void
 	MaterialEditWindow::MaterialUi::init(const QString& name, std::uint32_t flags)
 	{
-		this->image = new QToolButton;
-		this->image->setIcon(QIcon::fromTheme(":res/icons/append2.png"));
-		this->image->setIconSize(QSize(48, 48));
+		this->path = nullptr;
+		this->image = nullptr;
+		this->check = nullptr;
+		this->mapLayout = nullptr;
+		this->spoiler = nullptr;
+		this->label_ = nullptr;
+		this->slider = nullptr;
+		this->spinBox = nullptr;
+		this->color = nullptr;
 
-		this->check = new QCheckBox;
-
-		this->title = new QLabel;
-		this->title->setText(name + u8"贴图");
-
-		this->path = new QLabel;
-		this->path->setMinimumSize(QSize(160, 20));
-
-		this->titleLayout = new QHBoxLayout;
-		this->titleLayout->addWidget(check, 0, Qt::AlignLeft);
-		this->titleLayout->addWidget(title, 0, Qt::AlignLeft);
-		this->titleLayout->addStretch();
-		this->titleLayout->setSpacing(0);
-		this->titleLayout->setContentsMargins(0, 2, 0, 0);
-
-		auto textLayout = new QHBoxLayout;
-		textLayout->setSpacing(2);
-		textLayout->setContentsMargins(0, 2, 0, 0);
-		textLayout->addWidget(this->path, 0, Qt::AlignLeft | Qt::AlignCenter);
-		textLayout->addStretch();
-
-		if (flags & CreateFlags::ColorBit)
+		if (flags & CreateFlags::TextureBit)
 		{
-			this->color = new QToolButton;
-			this->color->setIconSize(QSize(50, 30));
+			this->image = new QToolButton;
+			this->image->setIcon(QIcon::fromTheme(":res/icons/append2.png"));
+			this->image->setIconSize(QSize(48, 48));
 
-			textLayout->addWidget(this->color, 0, Qt::AlignRight);
+			this->check = new QCheckBox;
+
+			this->title = new QLabel;
+			this->title->setText(name + u8"贴图");
+
+			this->path = new QLabel;
+			this->path->setMinimumSize(QSize(160, 20));
+
+			this->titleLayout = new QHBoxLayout;
+			this->titleLayout->addWidget(check, 0, Qt::AlignLeft);
+			this->titleLayout->addWidget(title, 0, Qt::AlignLeft);
+			this->titleLayout->addStretch();
+			this->titleLayout->setSpacing(0);
+			this->titleLayout->setContentsMargins(0, 2, 0, 0);
+
+			auto textLayout = new QHBoxLayout;
+			textLayout->setSpacing(2);
+			textLayout->setContentsMargins(0, 2, 0, 0);
+			textLayout->addWidget(this->path, 0, Qt::AlignLeft | Qt::AlignCenter);
+			textLayout->addStretch();
+
+			if (flags & CreateFlags::ColorBit)
+			{
+				this->color = new QToolButton;
+				this->color->setIconSize(QSize(50, 30));
+
+				textLayout->addWidget(this->color, 0, Qt::AlignRight);
+			}
+
+			this->rightLayout = new QVBoxLayout;
+			this->rightLayout->setSpacing(0);
+			this->rightLayout->setContentsMargins(0, 0, 0, 0);
+			this->rightLayout->addLayout(this->titleLayout);
+			this->rightLayout->addLayout(textLayout);
+			this->rightLayout->addStretch();
+
+			this->mapLayout = new QHBoxLayout;
+			this->mapLayout->addWidget(image);
+			this->mapLayout->addLayout(rightLayout);
 		}
-		else
-		{
-			this->color = nullptr;
-		}		
-
-		this->rightLayout = new QVBoxLayout;
-		this->rightLayout->setSpacing(0);
-		this->rightLayout->setContentsMargins(0, 0, 0, 0);
-		this->rightLayout->addLayout(this->titleLayout);
-		this->rightLayout->addLayout(textLayout);
-		this->rightLayout->addStretch();
-
-		this->mapLayout = new QHBoxLayout;
-		this->mapLayout->addWidget(image);
-		this->mapLayout->addLayout(rightLayout);
 
 		if (flags & CreateFlags::ValueBit)
 		{
@@ -115,7 +124,8 @@ namespace rabbit
 			HLayout->addWidget(this->spinBox, 0, Qt::AlignRight);
 
 			auto layout = new QVBoxLayout();
-			layout->addLayout(this->mapLayout);
+			if (this->mapLayout)
+				layout->addLayout(this->mapLayout);
 			layout->addLayout(HLayout);
 			layout->addWidget(this->slider);
 			layout->setContentsMargins(20, 5, 50, 0);
@@ -127,28 +137,20 @@ namespace rabbit
 				this->spoiler->setFixedWidth(340);
 				this->spoiler->setContentLayout(*this->mainLayout);
 			}
-			else
-			{
-				this->spoiler = nullptr;
-			}
 		}
 		else
 		{
-			this->label_ = nullptr;
-			this->slider = nullptr;
-			this->spinBox = nullptr;
-			this->mapLayout->setContentsMargins(20, 5, 50, 0);
-			this->mainLayout = this->mapLayout;
+			if (this->mapLayout)
+			{
+				this->mapLayout->setContentsMargins(20, 5, 50, 0);
+				this->mainLayout = this->mapLayout;
+			}
 
 			if (flags & CreateFlags::SpoilerBit)
 			{
 				this->spoiler = new Spoiler(name);
 				this->spoiler->setFixedWidth(340);
 				this->spoiler->setContentLayout(*mapLayout);
-			}
-			else
-			{
-				this->spoiler = nullptr;
 			}
 		}
 	}
@@ -162,25 +164,25 @@ namespace rabbit
 	}
 
 	octoon::hal::GraphicsTexturePtr
-	MaterialEditWindow::MaterialUi::setImage(const QString& path)
+	MaterialEditWindow::MaterialUi::setImage(const QString& filepath)
 	{
-		auto texture = octoon::TextureLoader::load(path.toStdString());
-		auto width = texture->getTextureDesc().getWidth();
-		auto height = texture->getTextureDesc().getHeight();
+		auto textureData = octoon::TextureLoader::load(filepath.toStdString());
+		auto width = textureData->getTextureDesc().getWidth();
+		auto height = textureData->getTextureDesc().getHeight();
 
 		QImage qimage;
 
-		switch (texture->getTextureDesc().getTexFormat())
+		switch (textureData->getTextureDesc().getTexFormat())
 		{
 		case octoon::hal::GraphicsFormat::R8G8B8SNorm:
 		case octoon::hal::GraphicsFormat::R8G8B8UNorm:
 		case octoon::hal::GraphicsFormat::R8G8B8SRGB:
 		{
 			std::uint8_t* data_ = nullptr;
-			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			if (textureData->map(0, 0, width, height, 0, (void**)&data_))
 			{
 				qimage = QImage(data_, width, height, QImage::Format::Format_RGB888);
-				texture->unmap();
+				textureData->unmap();
 			}
 		}
 		break;
@@ -189,10 +191,10 @@ namespace rabbit
 		case octoon::hal::GraphicsFormat::R8G8B8A8SRGB:
 		{
 			std::uint8_t* data_ = nullptr;
-			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			if (textureData->map(0, 0, width, height, 0, (void**)&data_))
 			{
 				qimage = QImage(data_, width, height, QImage::Format::Format_RGBA8888);
-				texture->unmap();
+				textureData->unmap();
 			}
 		}
 		break;
@@ -201,7 +203,7 @@ namespace rabbit
 		case octoon::hal::GraphicsFormat::B8G8R8SRGB:
 		{
 			std::uint8_t* data_ = nullptr;
-			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			if (textureData->map(0, 0, width, height, 0, (void**)&data_))
 			{
 				auto size = width * height * 3;
 				auto pixels = std::make_unique<std::uint8_t[]>(size);
@@ -213,7 +215,7 @@ namespace rabbit
 				}
 
 				qimage = QImage(pixels.get(), width, height, QImage::Format::Format_RGB888);
-				texture->unmap();
+				textureData->unmap();
 			}
 		}
 		break;
@@ -222,7 +224,7 @@ namespace rabbit
 		case octoon::hal::GraphicsFormat::B8G8R8A8SRGB:
 		{
 			std::uint8_t* data_ = nullptr;
-			if (texture->map(0, 0, width, height, 0, (void**)&data_))
+			if (textureData->map(0, 0, width, height, 0, (void**)&data_))
 			{
 				auto size = width * height * 4;
 				auto pixels = std::make_unique<std::uint8_t[]>(size);
@@ -235,25 +237,25 @@ namespace rabbit
 				}
 
 				qimage = QImage(pixels.get(), width, height, QImage::Format::Format_RGBA8888);
-				texture->unmap();
+				textureData->unmap();
 			}
 		}
 		break;
 		default:
-			throw std::runtime_error("Failed to open file :" + path.toStdString());
+			throw std::runtime_error("Failed to open file :" + filepath.toStdString());
 		}
 
 		QFontMetrics metrics(this->path->font());
-		auto name = metrics.elidedText(QFileInfo(path).fileName(), Qt::ElideRight, this->path->width());
+		auto name = metrics.elidedText(QFileInfo(filepath).fileName(), Qt::ElideRight, this->path->width());
 
 		this->path->setText(name);
 		this->check->setCheckState(Qt::CheckState::Checked);
-		this->texture = texture;
+		this->texture = textureData;
 
 		if (!qimage.isNull())
 			this->image->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(this->image->iconSize()))));
 
-		return texture;
+		return textureData;
 	}
 
 	MaterialEditWindow::MaterialEditWindow(QWidget* widget, const octoon::GameObjectPtr& behaviour)
@@ -278,41 +280,56 @@ namespace rabbit
 		titleLayout_->addStretch();
 		titleLayout_->addWidget(closeButton_, 0, Qt::AlignRight);
 
-		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit);
-		this->opacity_.init(u8"不透明度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->normal_.init(u8"法线", CreateFlags::SpoilerBit);
-		this->roughness_.init(u8"粗糙度", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->metalness_.init(u8"金属", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->specular_.init(u8"反射", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->anisotropy_.init(u8"各向异性", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->sheen_.init(u8"布料", CreateFlags::SpoilerBit | CreateFlags::ValueBit);
-		this->clearcoat_.init(u8"清漆", CreateFlags::ValueBit);
-		this->clearcoatRoughness_.init(u8"清漆粗糙度", CreateFlags::ValueBit);
-		this->subsurface_.init(u8"散射程度", CreateFlags::ValueBit);
-		this->subsurfaceValue_.init(u8"散射颜色", CreateFlags::ColorBit);
-		this->emissive_.init(u8"自发光", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::ColorBit);
+		this->albedo_.init(u8"基本颜色", CreateFlags::SpoilerBit | CreateFlags::ColorBit | CreateFlags::TextureBit);
+		this->opacity_.init(u8"不透明度", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->normal_.init(u8"法线", CreateFlags::SpoilerBit | CreateFlags::TextureBit);
+		this->roughness_.init(u8"粗糙度", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->metalness_.init(u8"金属", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->specular_.init(u8"反射", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->anisotropy_.init(u8"各向异性", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->sheen_.init(u8"布料", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->clearcoat_.init(u8"清漆", CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->clearcoatRoughness_.init(u8"清漆粗糙度", CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->subsurface_.init(u8"散射程度", CreateFlags::ValueBit | CreateFlags::TextureBit);
+		this->subsurfaceValue_.init(u8"散射颜色", CreateFlags::ColorBit | CreateFlags::TextureBit);
+		this->refraction_.init(u8"透过程度", CreateFlags::ValueBit);
+		this->refractionIor_.init(u8"折射率", CreateFlags::ValueBit);
+		this->emissive_.init(u8"自发光", CreateFlags::SpoilerBit | CreateFlags::ValueBit | CreateFlags::ColorBit | CreateFlags::TextureBit);
 
 		this->clearcoat_.mainLayout->setContentsMargins(0, 0, 0, 0);
 		this->clearcoatRoughness_.mainLayout->setContentsMargins(0, 0, 0, 0);
+
+		this->subsurface_.mainLayout->setContentsMargins(0, 0, 0, 0);
+		this->subsurfaceValue_.mainLayout->setContentsMargins(0, 0, 0, 0);
+
+		this->refraction_.mainLayout->setContentsMargins(0, 0, 0, 0);
+		this->refractionIor_.mainLayout->setContentsMargins(0, 0, 0, 0);
+		this->refractionIor_.spinBox->setMinimum(1.0f);
+		this->refractionIor_.spinBox->setMaximum(10.0f);
 
 		auto clearlayout = new QVBoxLayout();
 		clearlayout->addLayout(this->clearcoat_.mainLayout);
 		clearlayout->addLayout(this->clearcoatRoughness_.mainLayout);
 		clearlayout->setContentsMargins(20, 5, 50, 0);
 
-		this->clearCoatSpoiler_ = new Spoiler(u8"清漆");
-		this->clearCoatSpoiler_->setContentLayout(*clearlayout);
-
-		this->subsurface_.mainLayout->setContentsMargins(0, 0, 0, 0);
-		this->subsurfaceValue_.mainLayout->setContentsMargins(0, 0, 0, 0);
-
 		auto subsurfaceLayout = new QVBoxLayout();
 		subsurfaceLayout->addLayout(this->subsurface_.mainLayout);
 		subsurfaceLayout->addLayout(this->subsurfaceValue_.mainLayout);
 		subsurfaceLayout->setContentsMargins(20, 5, 50, 0);
 
+		auto refractionLayout = new QVBoxLayout();
+		refractionLayout->addLayout(this->refraction_.mainLayout);
+		refractionLayout->addLayout(this->refractionIor_.mainLayout);
+		refractionLayout->setContentsMargins(20, 5, 50, 0);
+
+		this->clearCoatSpoiler_ = new Spoiler(u8"清漆");
+		this->clearCoatSpoiler_->setContentLayout(*clearlayout);
+
 		this->subsurfaceSpoiler_ = new Spoiler(u8"次表面散射");
 		this->subsurfaceSpoiler_->setContentLayout(*subsurfaceLayout);
+
+		this->refractionSpoiler_ = new Spoiler(u8"透射");
+		this->refractionSpoiler_->setContentLayout(*refractionLayout);
 
 		this->receiveShadowCheck_ = new QCheckBox;
 		this->receiveShadowCheck_->setText(u8"接收阴影");
@@ -339,6 +356,7 @@ namespace rabbit
 		contentLayout->addWidget(this->sheen_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->clearCoatSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->subsurfaceSpoiler_, 0, Qt::AlignTop);
+		contentLayout->addWidget(this->refractionSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->emissive_.spoiler, 0, Qt::AlignTop);
 		contentLayout->addWidget(this->othersSpoiler_, 0, Qt::AlignTop);
 		contentLayout->addStretch();
@@ -405,6 +423,10 @@ namespace rabbit
 		connect(subsurfaceValue_.image, SIGNAL(clicked()), this, SLOT(subsurfaceColorMapClickEvent()));
 		connect(subsurfaceValue_.check, SIGNAL(stateChanged(int)), this, SLOT(subsurfaceColorMapCheckEvent(int)));
 		connect(subsurfaceValue_.color, SIGNAL(clicked()), this, SLOT(subsurfaceColorClickEvent()));
+		connect(refraction_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(refractionEditEvent(double)));
+		connect(refraction_.slider, SIGNAL(valueChanged(int)), this, SLOT(refractionSliderEvent(int)));
+		connect(refractionIor_.spinBox, SIGNAL(valueChanged(double)), this, SLOT(refractionIorEditEvent(double)));
+		connect(refractionIor_.slider, SIGNAL(valueChanged(int)), this, SLOT(refractionIorSliderEvent(int)));
 		connect(emissive_.image, SIGNAL(clicked()), this, SLOT(emissiveMapClickEvent()));
 		connect(emissive_.color, SIGNAL(clicked()), this, SLOT(emissiveClickEvent()));
 		connect(emissive_.check, SIGNAL(stateChanged(int)), this, SLOT(emissiveMapCheckEvent(int)));
@@ -1131,6 +1153,8 @@ namespace rabbit
 			this->clearcoatRoughness_.resetState();
 			this->subsurface_.resetState();
 			this->subsurfaceValue_.resetState();
+			this->refraction_.resetState();
+			this->refractionIor_.resetState();
 			this->emissive_.resetState();
 
 			auto albedoColor = octoon::math::linear2srgb(material_->getColor());
@@ -1149,6 +1173,8 @@ namespace rabbit
 			this->clearcoatRoughness_.spinBox->setValue(material_->getClearCoatRoughness());
 			this->subsurface_.spinBox->setValue(material_->getSubsurface());
 			this->subsurfaceValue_.color->setIcon(createColorIcon(QColor::fromRgbF(subsurfaceColor.x, subsurfaceColor.y, subsurfaceColor.z)));
+			this->refraction_.spinBox->setValue(material_->getTransmission());
+			this->refractionIor_.spinBox->setValue(material_->getRefractionRatio());
 			this->emissive_.color->setIcon(createColorIcon(QColor::fromRgbF(emissiveColor.x, emissiveColor.y, emissiveColor.z)));
 			this->emissive_.spinBox->setValue(material_->getEmissiveIntensity());
 			this->receiveShadowCheck_->setChecked(material_->getReceiveShadow());
@@ -1412,6 +1438,42 @@ namespace rabbit
 		this->subsurfaceValue_.color->setIcon(createColorIcon(color));
 		this->material_->setSubsurfaceColor(octoon::math::srgb2linear(octoon::math::float3(color.redF(), color.greenF(), color.blueF())));
 		this->repaint();
+	}
+
+	void
+	MaterialEditWindow::refractionEditEvent(double value)
+	{
+		this->refraction_.slider->setValue(value * 100.f);
+
+		if (this->material_)
+		{
+			material_->setTransmission(value);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::refractionSliderEvent(int value)
+	{
+		this->refraction_.spinBox->setValue(value / 100.0f);
+	}
+
+	void
+	MaterialEditWindow::refractionIorEditEvent(double value)
+	{
+		this->refractionIor_.slider->setValue(value * 10.f);
+
+		if (this->material_)
+		{
+			material_->setRefractionRatio(value);
+			this->repaint();
+		}
+	}
+
+	void
+	MaterialEditWindow::refractionIorSliderEvent(int value)
+	{
+		this->refractionIor_.spinBox->setValue(value / 10.0f);
 	}
 
 	void

@@ -126,12 +126,12 @@ namespace octoon::material
 		this->setSheen(0.0f);
 		this->setMetalness(0.0f);
 		this->setSpecular(0.5f);
-		this->setRefractionRatio(1.0f);
+		this->setReflectionRatio(1.0f);
+		this->setRefractionRatio(1.5f);
 		this->setClearCoat(0.0f);
 		this->setClearCoatRoughness(0.0f);
 		this->setSubsurface(0.0f);
 		this->setSubsurfaceColor(math::float3(1.0f, 0.2f, 0.05f) * 0.5f);
-		this->setIor(1.5f);
 		this->setTransmission(0.0f);
 		this->setGamma(2.2f);
 		this->setOffset(math::float2::Zero);
@@ -242,9 +242,9 @@ namespace octoon::material
 	}
 
 	void
-	MeshStandardMaterial::setIor(float ior) noexcept
+	MeshStandardMaterial::setReflectionRatio(float ior) noexcept
 	{
-		this->ior_ = ior;
+		this->reflectionRatio_ = ior;
 		this->setDirty(false);
 		this->set("ior", ior);
 	}
@@ -483,9 +483,9 @@ namespace octoon::material
 	}
 
 	float
-	MeshStandardMaterial::getIor() const noexcept
+	MeshStandardMaterial::getReflectionRatio() const noexcept
 	{
-		return this->ior_;
+		return this->reflectionRatio_;
 	}
 
 	float

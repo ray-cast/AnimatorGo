@@ -113,6 +113,11 @@ namespace rabbit
 		void subsurfaceColorClickEvent();
 		void subsurfaceColorChangeEvent(const QColor& color);
 
+		void refractionEditEvent(double);
+		void refractionSliderEvent(int);
+		void refractionIorEditEvent(double);
+		void refractionIorSliderEvent(int);
+
 		void emissiveEditEvent(double);
 		void emissiveSliderEvent(int);
 
@@ -126,6 +131,7 @@ namespace rabbit
 			SpoilerBit = 1 << 0,
 			ColorBit = 1 << 1,
 			ValueBit = 1 << 2,
+			TextureBit = 1 << 3,
 		};
 
 		struct MaterialUi
@@ -165,10 +171,13 @@ namespace rabbit
 		MaterialUi sheen_;
 		MaterialUi subsurface_;
 		MaterialUi subsurfaceValue_;
+		MaterialUi refraction_;
+		MaterialUi refractionIor_;
 		MaterialUi emissive_;
 
 		Spoiler* clearCoatSpoiler_;
 		Spoiler* subsurfaceSpoiler_;
+		Spoiler* refractionSpoiler_;
 		Spoiler* othersSpoiler_;
 
 		QLabel* title_;

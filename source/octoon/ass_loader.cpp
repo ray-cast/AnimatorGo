@@ -125,7 +125,7 @@ namespace octoon
 						standard->setEmissive(material.emission);
 						standard->setRoughness(material.roughness);
 						standard->setMetalness(material.metallic);
-						standard->setIor(material.ior);
+						standard->setRefractionRatio(material.ior);
 						standard->setTransmission(material.materialType);
 
 						if (!material.albedoTex.empty())

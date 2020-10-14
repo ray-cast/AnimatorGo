@@ -312,7 +312,6 @@ INLINE float3 MicrofacetRefractionGGX_Sample(DisneyShaderData const* shader_data
 	float etat = shader_data->refraction_ior;
 	float s = 1.f;
 
-	// Revert normal and eta if needed
 	if (ndotwi < 0.f)
 	{
 		float tmp = etai;
@@ -464,10 +463,10 @@ INLINE float3 Disney_Evaluate(DisneyShaderData const* shader_data, float3 wi, fl
 		{
 			if (shader_data->subsurface > 0.0f)
 			{
-				float3 s = shader_data->diffuseColor;
-    			float Fd = (1.0f - 0.5f * f_wo) * (1.0f - 0.5f * f_wi);
+				float fd90 = 0.5f;
+    			float Fd = mix(1.f, fd90, f_wo) * mix(1.f, fd90, f_wi);
 
-				brdf = (1.f / PI) * s * shader_data->subsurface_color * Fd * (1.0f - shader_data->metallic);
+				brdf = (1.f / PI) * native_sqrt(shader_data->diffuseColor) * shader_data->subsurface * Fd * (1.0f - shader_data->metallic);
 			}
 		}
 		else
@@ -602,7 +601,7 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 						Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleDiffuse);
 						Bxdf_SetFlags(dg, kBxdfFlagsDiffuse);
 						
-						*wo = Sample_MapToHemisphere(sample, make_float3(0.f, -1.f, 0.f) , 1.f);
+						*wo = Sample_MapToHemisphere(sample, make_float3(0.f, -1.f, 0.f) , 0.f);
 					}
 					else
 					{

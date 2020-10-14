@@ -83,7 +83,6 @@ namespace rabbit
 		this->intensitySpinBox->setAlignment(Qt::AlignRight);
 		this->intensitySpinBox->setValue(0.0f);
 		this->intensitySpinBox->setDecimals(1);
-		this->intensitySpinBox->setSuffix(u8"cd");
 
 		this->horizontalRotationLabel_ = new QLabel;
 		this->horizontalRotationLabel_->setText(u8"水平旋转");

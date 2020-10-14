@@ -139,7 +139,7 @@ float MicrofacetReflectionGGX_G(float roughness, float3 wi, float3 wo)
 
 float MicrofacetReflectionGGX_GetPdf(DisneyShaderData const* shader_data, float3 wi, float3 wo)
 {
-	float3 cd_lin = native_powr(shader_data->base_color, 2.2f);
+	float3 cd_lin = shader_data->base_color;
 	float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
 	float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
    
@@ -431,10 +431,9 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 		float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
 		float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, shader_data->clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
 		
-		float3 cd_lin = native_powr(shader_data->base_color, 2.2f);
+		float3 cd_lin = shader_data->base_color;
 		float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
 		float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
-	   
 		float3 c_spec0 = mix(shader_data->specular * 0.1f * mix(WHITE, c_tint, shader_data->specular_tint), cd_lin, shader_data->metallic);
 		
 		float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));    
@@ -443,7 +442,7 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 		float bsdf = mix(cs_w * r_pdf, c_pdf, shader_data->clearcoat);
 		float brdf = mix(cs_w * r_pdf + d_pdf * (1.f - cs_w), c_pdf, shader_data->clearcoat);
 
-		return mix(mix(brdf, bsdf, shader_data->transmission), 0.f, shader_data->transparency);
+		return mix(mix(brdf, 0.f, shader_data->transparency), bsdf, shader_data->transmission);
 	}
 }
 
@@ -534,7 +533,36 @@ INLINE float3 Disney_Evaluate( DisneyShaderData const* shader_data, float3 wi, f
 
 float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
 {
-	if (sample.y < shader_data->transparency)
+	if (sample.y < shader_data->transmission)
+	{
+		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, wi.y);
+		if (sample.y > fresnel)
+		{
+			sample.y -= fresnel;
+			sample.y /= (1 - fresnel);
+
+			Bxdf_SetFlags(dg, kBxdfFlagsSingular);
+			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
+
+			return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);
+		}
+		else
+		{
+			sample.y /= fresnel;
+
+			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+
+			float3 wh;
+			MicrofacetReflectionGGX_SampleNormal(shader_data->roughness, sample, &wh);
+
+			*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
+			*pdf = MicrofacetReflectionGGX_GetPdf(shader_data, wi, *wo);
+
+			return MicrofacetReflectionGGX_Evaluate(shader_data, wi, *wo);
+		}
+	}
+	else if (sample.y < shader_data->transparency)
 	{
 		sample.y -= shader_data->transparency;
 		sample.y /= (1 - shader_data->transparency);
@@ -550,94 +578,62 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 	}
 	else
 	{
-		if (sample.y < shader_data->transmission)
+		float3 wh;
+
+		int bxdf_flags = kBxdfFlagsBrdf;
+		if (sample.x < shader_data->clearcoat)
 		{
-			float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, wi.y);
-			if (sample.y > fresnel)
-			{
-				sample.y -= fresnel;
-				sample.y /= (1 - fresnel);
+			sample.x /= (shader_data->clearcoat);
 
-				Bxdf_SetFlags(dg, kBxdfFlagsSingular);
-				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
+			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+			
+			float3 wh;
+			MicrofacetReflectionGGX_SampleNormal(mix(0.001f, 0.1f, shader_data->clearcoat_roughness), sample, &wh);
 
-				return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);
-			}
-			else
-			{
-				sample.y /= fresnel;
-
-				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
-				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-
-				float3 wh;
-				MicrofacetReflectionGGX_SampleNormal(shader_data->roughness, sample, &wh);
-
-				*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
-				*pdf = MicrofacetReflectionGGX_GetPdf(shader_data, wi, *wo);
-
-				return MicrofacetReflectionGGX_Evaluate(shader_data, wi, *wo);
-			}
+			*wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
 		}
 		else
 		{
-			float3 wh;
+			sample.x -= (shader_data->clearcoat);
+			sample.x /= (1.f - shader_data->clearcoat);
 
-			int bxdf_flags = kBxdfFlagsBrdf;
-			if (sample.x < shader_data->clearcoat)
+			float3 cd_lin = shader_data->base_color;
+			float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
+
+			float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
+			float3 c_spec0 = mix(shader_data->specular * 0.3f * mix(WHITE, c_tint, shader_data->specular_tint), cd_lin, shader_data->metallic);
+
+			float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));
+			float cs_w = cs_lum / (cs_lum + (1.f - shader_data->metallic) * cd_lum);
+			
+			if (sample.y < cs_w)
 			{
-				sample.x /= (shader_data->clearcoat);
+				sample.y /= cs_w;
 
-				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
-				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+				MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample, &wh);
 				
-				float3 wh;
-				MicrofacetReflectionGGX_SampleNormal(mix(0.001f, 0.1f, shader_data->clearcoat_roughness), sample, &wh);
+				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
 
-				*wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
+				*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
 			}
 			else
 			{
-				sample.x -= (shader_data->clearcoat);
-				sample.x /= (1.f - shader_data->clearcoat);
+				sample.y -= cs_w;
+				sample.y /= (1.f - cs_w);
 
-				float3 cd_lin = shader_data->base_color;
-				float cd_lum = dot(cd_lin, make_float3(0.3f, 0.6f, 0.1f));
-
-				float3 c_tint = cd_lum > 0.f ? (cd_lin / cd_lum) : WHITE;
-				float3 c_spec0 = mix(shader_data->specular * 0.3f * mix(WHITE, c_tint, shader_data->specular_tint), cd_lin, shader_data->metallic);
-
-				float cs_lum = dot(c_spec0, make_float3(0.3f, 0.6f, 0.1f));
-				float cs_w = cs_lum / (cs_lum + (1.f - shader_data->metallic) * cd_lum);
+				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleDiffuse);
+				Bxdf_SetFlags(dg, kBxdfFlagsBrdf);
 				
-				if (sample.y < cs_w)
-				{
-					sample.y /= cs_w;
-
-					MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample, &wh);
-					
-					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-					Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
-
-					*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
-				}
-				else
-				{
-					sample.y -= cs_w;
-					sample.y /= (1.f - cs_w);
-
-					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleDiffuse);
-					Bxdf_SetFlags(dg, kBxdfFlagsBrdf);
-					
-					*wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
-				}
+				*wo = Sample_MapToHemisphere(sample, make_float3(0.f, 1.f, 0.f) , 1.f);
 			}
-			
-			*wo = normalize(*wo);
-			*pdf = Disney_GetPdf(shader_data, wi, *wo);
-			
-			return Disney_Evaluate(shader_data, wi, *wo);
 		}
+		
+		*wo = normalize(*wo);
+		*pdf = Disney_GetPdf(shader_data, wi, *wo);
+		
+		return Disney_Evaluate(shader_data, wi, *wo);
 	}
 }
 

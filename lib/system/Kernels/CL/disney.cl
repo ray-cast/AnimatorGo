@@ -194,7 +194,7 @@ INLINE float3 MicrofacetReflectionGGX_Evaluate(DisneyShaderData const* shader_da
 
 	float ds = GTR2(ndotwh, alpha) * ndotwo;
 	float gs = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
-	float3 fs = mix(shader_data->specularColor, WHITE, CalculateFresnel(1.0, shader_data->refraction_ior, hdotwo));
+	float3 fs = mix(shader_data->specularColor, WHITE, SchlickFresnelReflectance(hdotwo));
 
 	return ds * fs * gs;
 }
@@ -424,7 +424,7 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 		float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, shader_data->clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
 		
 		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, ndotwi);
-		float bsdf = mix(r_pdf * fresnel * shader_data->cs_w, c_pdf, shader_data->clearcoat);
+		float bsdf = mix(r_pdf * fresnel, c_pdf, shader_data->clearcoat);
 		float brdf = mix(mix(d_pdf, r_pdf, shader_data->cs_w), c_pdf, shader_data->clearcoat);
 
 		return mix(mix(brdf, 0.f, shader_data->transparency), bsdf, shader_data->transmission);

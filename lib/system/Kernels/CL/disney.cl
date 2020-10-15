@@ -194,7 +194,7 @@ INLINE float3 MicrofacetReflectionGGX_Evaluate(DisneyShaderData const* shader_da
 
 	float ds = GTR2(ndotwh, alpha) * ndotwo;
 	float gs = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
-	float3 fs = mix(shader_data->specularColor, WHITE, SchlickFresnelReflectance(hdotwo));
+	float3 fs = mix(shader_data->specularColor, WHITE, CalculateFresnel(1.0, shader_data->refraction_ior, hdotwo));
 
 	return ds * fs * gs;
 }
@@ -416,13 +416,14 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 		float ay = max(0.001f, alpha * ( 1.f - shader_data->anisotropy));
 		float3 wh = normalize(wo + wi);
 		float ndotwh = fabs(wh.y);
+		float ndotwi = fabs(wi.y);
 		float hdotwo = fabs(dot(wh, wo));
 
 		float d_pdf = Lambert_GetPdf(shader_data, wi, wo) * (1.f - shader_data->subsurface);
 		float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
 		float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, shader_data->clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
 		
-		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, wi.y);
+		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, ndotwi);
 		float bsdf = mix(r_pdf * fresnel * shader_data->cs_w, c_pdf, shader_data->clearcoat);
 		float brdf = mix(mix(d_pdf, r_pdf, shader_data->cs_w), c_pdf, shader_data->clearcoat);
 
@@ -432,6 +433,13 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 
 INLINE float3 Disney_Evaluate(DisneyShaderData const* shader_data, float3 wi, float3 wo)
 {
+	float ndotwi = fabs(wi.y);
+	float ndotwo = fabs(wo.y);
+
+	float3 h = normalize(wi + wo);
+	float ndoth = fabs(h.y);
+	float hdotwo = fabs(dot(h, wo));
+
 	float3 bsdf = 0;
 	if (shader_data->transmission > 0.0f)
 	{
@@ -441,20 +449,24 @@ INLINE float3 Disney_Evaluate(DisneyShaderData const* shader_data, float3 wi, fl
 		}
 		else
 		{
-			bsdf = MicrofacetReflectionGGX_Evaluate(shader_data, wi, wo);
+			float alpha = shader_data->roughness * shader_data->roughness;
+			float ax = max(0.001f, alpha * (1.f + shader_data->anisotropy));
+			float ay = max(0.001f, alpha * (1.f - shader_data->anisotropy));
+			float ds = GTR2_Aniso(ndoth, h.x, h.z, ax, ay) * ndotwo;
+			float fh = CalculateFresnel(1.0, shader_data->refraction_ior, hdotwo);
+			float3 fs = mix(shader_data->specularColor, WHITE, fh);
+			
+			float gs;
+			gs  = SmithGGX_G_Aniso(ndotwo, wo.x, wo.z, ax, ay);
+			gs *= SmithGGX_G_Aniso(ndotwi, wi.x, wi.z, ax, ay);
+
+			bsdf = gs * fs * ds;
 		}
 	}
 
 	float3 brdf = 0;
 	if (shader_data->transmission < 1.0f)
 	{
-		float ndotwi = fabs(wi.y);
-		float ndotwo = fabs(wo.y);
-
-		float3 h = normalize(wi + wo);
-		float ndoth = fabs(h.y);
-		float hdotwo = fabs(dot(h, wo));
-
 		float f_wo = SchlickFresnelReflectance(ndotwo);
 		float f_wi = SchlickFresnelReflectance(ndotwi);
 
@@ -512,7 +524,7 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 	{
 		sample.y /= shader_data->transmission;
 
-		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, wi.y);
+		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, fabs(wi.y));
 		if (sample.x < fresnel)
 		{
 			sample.x /= fresnel;
@@ -523,9 +535,6 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 			float3 wh = MicrofacetReflectionGGX_SampleNormal(shader_data->roughness, sample);
 
 			*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
-			*pdf = MicrofacetReflectionGGX_GetPdf(shader_data, wi, *wo);
-
-			return MicrofacetReflectionGGX_Evaluate(shader_data, wi, *wo);
 		}
 		else
 		{
@@ -614,13 +623,13 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 					}
 				}
 			}
-			
-			*wo = normalize(*wo);
-			*pdf = Disney_GetPdf(shader_data, wi, *wo);
-			
-			return Disney_Evaluate(shader_data, wi, *wo);
 		}
 	}
+
+	*wo = normalize(*wo);
+	*pdf = Disney_GetPdf(shader_data, wi, *wo);
+	
+	return Disney_Evaluate(shader_data, wi, *wo);
 }
 
 #endif

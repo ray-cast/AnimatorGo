@@ -264,7 +264,7 @@ float3 Sample_MapToHemisphere(
     float sintheta = sqrt(1.f - costheta * costheta);
     
     // Return the result
-    return normalize(u * sintheta * cospsi + v * sintheta * sinpsi + n * costheta);
+    return u * sintheta * cospsi + v * sintheta * sinpsi + n * costheta;
 }
 
 float2 Sample_MapToDisk(

@@ -146,7 +146,7 @@ namespace octoon
 			else
 			{
 				component->setSleepThreshold(0.0f);
-				component->updateMassAndInertia(std::min(it->mass, 33.f) * 0.3f);
+				component->updateMassAndInertia(std::min(it->mass, 10.f) * 0.3f);
 			}
 
 			rigidbodys.emplace_back(std::move(gameObject));

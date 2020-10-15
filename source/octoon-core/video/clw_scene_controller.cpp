@@ -150,35 +150,38 @@ namespace octoon::video
 				auto& mat = geometry->getMaterial(i);
 				if (mat->isInstanceOf<material::MeshStandardMaterial>())
 				{
-					materialCollector.Collect(mat);
-
 					auto standard = mat->downcast<material::MeshStandardMaterial>();
-					if (standard->getColorMap())
-						textureCollector.Collect(standard->getColorMap());
-					if (standard->getOpacityMap())
-						textureCollector.Collect(standard->getOpacityMap());
-					if (standard->getNormalMap())
-						textureCollector.Collect(standard->getNormalMap());
-					if (standard->getRoughnessMap())
-						textureCollector.Collect(standard->getRoughnessMap());
-					if (standard->getMetalnessMap())
-						textureCollector.Collect(standard->getMetalnessMap());
-					if (standard->getAnisotropyMap())
-						textureCollector.Collect(standard->getAnisotropyMap());
-					if (standard->getSpecularMap())
-						textureCollector.Collect(standard->getSpecularMap());
-					if (standard->getSheenMap())
-						textureCollector.Collect(standard->getSheenMap());
-					if (standard->getClearCoatMap())
-						textureCollector.Collect(standard->getClearCoatMap());
-					if (standard->getClearCoatRoughnessMap())
-						textureCollector.Collect(standard->getClearCoatRoughnessMap());
-					if (standard->getSubsurfaceMap())
-						textureCollector.Collect(standard->getSubsurfaceMap());
-					if (standard->getSubsurfaceColorMap())
-						textureCollector.Collect(standard->getSubsurfaceColorMap());
-					if (standard->getEmissiveMap())
-						textureCollector.Collect(standard->getEmissiveMap());
+					if (standard->getOpacity() > 0)
+					{
+						if (standard->getColorMap())
+							textureCollector.Collect(standard->getColorMap());
+						if (standard->getOpacityMap())
+							textureCollector.Collect(standard->getOpacityMap());
+						if (standard->getNormalMap())
+							textureCollector.Collect(standard->getNormalMap());
+						if (standard->getRoughnessMap())
+							textureCollector.Collect(standard->getRoughnessMap());
+						if (standard->getMetalnessMap())
+							textureCollector.Collect(standard->getMetalnessMap());
+						if (standard->getAnisotropyMap())
+							textureCollector.Collect(standard->getAnisotropyMap());
+						if (standard->getSpecularMap())
+							textureCollector.Collect(standard->getSpecularMap());
+						if (standard->getSheenMap())
+							textureCollector.Collect(standard->getSheenMap());
+						if (standard->getClearCoatMap())
+							textureCollector.Collect(standard->getClearCoatMap());
+						if (standard->getClearCoatRoughnessMap())
+							textureCollector.Collect(standard->getClearCoatRoughnessMap());
+						if (standard->getSubsurfaceMap())
+							textureCollector.Collect(standard->getSubsurfaceMap());
+						if (standard->getSubsurfaceColorMap())
+							textureCollector.Collect(standard->getSubsurfaceColorMap());
+						if (standard->getEmissiveMap())
+							textureCollector.Collect(standard->getEmissiveMap());
+
+						materialCollector.Collect(mat);
+					}
 				}
 			}
 		}
@@ -278,14 +281,14 @@ namespace octoon::video
 			throw std::runtime_error("Scene has not been compiled");
 	}
 
-	ClwScene::Material
+	std::optional<ClwScene::Material>
 	ClwSceneController::getMaterialIndex(const material::MaterialPtr& material) const
 	{
 		auto it = materialidToOffset_.find(material.get());
 		if (it != materialidToOffset_.end())
 			return it->second;
 		else
-			throw std::runtime_error("Cannot find the material");
+			return std::nullopt;
 	}
 
 	void
@@ -645,6 +648,10 @@ namespace octoon::video
 			auto& mesh = geometry->getMesh();
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
+				auto material = this->getMaterialIndex(geometry->getMaterial(i));
+				if (!material)
+					continue;
+
 				auto shape = this->api_->CreateMesh(
 					(float*)mesh->getVertexArray().data(),
 					static_cast<int>(mesh->getVertexArray().size()),
@@ -772,6 +779,10 @@ namespace octoon::video
 
 				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 				{
+					auto material = this->getMaterialIndex(geometry->getMaterial(i));
+					if (!material)
+						continue;
+
 					ClwScene::Shape shape;
 					shape.id = id++;
 					shape.startvtx = static_cast<int>(num_vertices_written);
@@ -785,7 +796,7 @@ namespace octoon::video
 
 					shape.linearvelocity = float3(0.0f, 0.f, 0.f);
 					shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);
-					shape.material = this->getMaterialIndex(geometry->getMaterial(i));
+					shape.material = material.value();
 					shape.volume_idx = 0;
 
 					auto mesh_index_array = mesh->getIndicesArray(i).data();

@@ -525,7 +525,7 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 		sample.y /= shader_data->transmission;
 
 		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, fabs(wi.y));
-		if (sample.x < fresnel)
+		if (sample.x <= fresnel)
 		{
 			sample.x /= fresnel;
 

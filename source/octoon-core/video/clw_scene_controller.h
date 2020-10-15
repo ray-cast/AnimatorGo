@@ -3,6 +3,7 @@
 
 #include <CLW.h>
 #include <map>
+#include <optional>
 
 #include <octoon/video/collector.h>
 #include <octoon/material/mesh_standard_material.h>
@@ -34,7 +35,7 @@ namespace octoon::video
 		void WriteTexture(const hal::GraphicsTexture& texture, std::size_t data_offset, void* data) const;
 		void WriteTextureData(hal::GraphicsTexture& texture, void* data) const;
 
-		ClwScene::Material getMaterialIndex(const material::MaterialPtr& material) const;
+		std::optional<ClwScene::Material> getMaterialIndex(const material::MaterialPtr& material) const;
 
 	private:
 		CLWContext context_;

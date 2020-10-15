@@ -71,10 +71,8 @@ INLINE float SchlickFresnelReflectance(float u)
 	return m2 * m2 * m;
 }
 
-INLINE float CalculateFresnel(float top_ior, float bottom_ior, float ndotwi)
+INLINE float CalculateFresnel(float etai, float etat, float ndotwi)
 {
-	float etai = top_ior;
-	float etat = bottom_ior;
 	float cosi = ndotwi;
 
 	// Revert normal and eta if needed
@@ -320,7 +318,7 @@ INLINE float3 MicrofacetRefractionGGX_Sample(DisneyShaderData const* shader_data
 		s = -s;
 	}
 
-	float3 wh = MicrofacetReflectionGGX_SampleNormal(shader_data->roughness, sample);
+	float3 wh = MicrofacetReflectionGGX_SampleNormal(roughness, sample);
 
 	float c = dot(wi, wh);
 	float eta = etai / etat;
@@ -379,7 +377,7 @@ INLINE float3 IdealRefract_Sample(DisneyShaderData const* shader_data, float2 sa
 	*wo = normalize(make_float3(eta * -wi.x, entering ? -cost : cost, eta * -wi.z));
 	*pdf = 1.f;
 
-	return cost > DENOM_EPS ? (eta * eta * shader_data->base_color / cost) : 0.f;
+	return cost > DENOM_EPS ? (eta * eta * shader_data->diffuseColor / cost) : 0.f;
 }
 
 INLINE float3 Diffuse_PennerSkin(float ss, float ndotwi, float ir, float3 transmittance)
@@ -424,7 +422,8 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 		float r_pdf = GTR2_Aniso(ndotwh, wh.x, wh.z, ax, ay) * ndotwh / (4.f * hdotwo);
 		float c_pdf = GTR1(ndotwh, mix(0.001f, 0.1f, shader_data->clearcoat_roughness)) * ndotwh / (4.f * hdotwo);
 		
-		float bsdf = mix(r_pdf * shader_data->cs_w, c_pdf, shader_data->clearcoat);
+		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, wi.y);
+		float bsdf = mix(r_pdf * fresnel * shader_data->cs_w, c_pdf, shader_data->clearcoat);
 		float brdf = mix(mix(d_pdf, r_pdf, shader_data->cs_w), c_pdf, shader_data->clearcoat);
 
 		return mix(mix(brdf, 0.f, shader_data->transparency), bsdf, shader_data->transmission);

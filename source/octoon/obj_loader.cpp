@@ -147,7 +147,8 @@ namespace octoon
 					for (auto& index : vertexSet)
 					{
 						auto v = std::get<2>(index) * 2;
-						texcoords[idx++].set(attrib.texcoords[v], attrib.texcoords[v + 1]);
+						v = v < 0 ? attrib.texcoords.size() + v : v;
+						texcoords[idx++].set(attrib.texcoords[v], 1.f - attrib.texcoords[v + 1]);
 					}
 				}
 

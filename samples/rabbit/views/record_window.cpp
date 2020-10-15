@@ -176,7 +176,7 @@ namespace rabbit
 
 		bouncesSpinbox_ = new SpinBox();
 		bouncesSpinbox_->setMinimum(1);
-		bouncesSpinbox_->setMaximum(16);
+		bouncesSpinbox_->setMaximum(32);
 		bouncesSpinbox_->setValue(0);
 		bouncesSpinbox_->setAlignment(Qt::AlignRight);
 		bouncesSpinbox_->setFixedWidth(100);

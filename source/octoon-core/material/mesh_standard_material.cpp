@@ -121,7 +121,7 @@ namespace octoon::material
 		this->setColor(color);
 		this->setOpacity(1.0f);
 		this->setEmissive(math::float3::Zero);
-		this->setSmoothness(0.0f);
+		this->setRoughness(1.0f);
 		this->setAnisotropy(0.0f);
 		this->setSheen(0.0f);
 		this->setMetalness(0.0f);

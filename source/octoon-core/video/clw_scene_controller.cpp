@@ -108,6 +108,16 @@ namespace octoon::video
 		, api_(api)
 		, programManager_(program_manager)
 	{
+		auto acc_type = "fatbvh";
+		auto builder_type = "sah";
+
+#ifdef ENABLE_RAYMASK
+		api_->SetOption("bvh.force2level", 1.f);
+#endif
+
+		api_->SetOption("acc.type", acc_type);
+		api_->SetOption("bvh.builder", builder_type);
+		api_->SetOption("bvh.sah.num_bins", 16.f);
 	}
 
 	void
@@ -655,7 +665,7 @@ namespace octoon::video
 				auto shape = this->api_->CreateMesh(
 					(float*)mesh->getVertexArray().data(),
 					static_cast<int>(mesh->getVertexArray().size()),
-					3 * sizeof(float),
+					sizeof(math::float3),
 					reinterpret_cast<int const*>(mesh->getIndicesArray(i).data()),
 					0,
 					nullptr,
@@ -666,16 +676,16 @@ namespace octoon::video
 				auto transformInverse = geometry->getTransformInverse();
 
 				RadeonRays::matrix m(
-					transform.a1, transform.a2, transform.a3, transform.a4,
-					transform.b1, transform.b2, transform.b3, transform.b4,
-					transform.c1, transform.c2, transform.c3, transform.c4,
-					transform.d1, transform.d2, transform.d3, transform.d4);
+					transform.a1, transform.b1, transform.c1, transform.d1,
+					transform.a2, transform.b2, transform.c2, transform.d2,
+					transform.a3, transform.b3, transform.c3, transform.d3,
+					transform.a4, transform.b4, transform.c4, transform.d4);
 
 				RadeonRays::matrix minv(
-					transformInverse.a1, transformInverse.a2, transformInverse.a3, transformInverse.a4,
-					transformInverse.b1, transformInverse.b2, transformInverse.b3, transformInverse.b4,
-					transformInverse.c1, transformInverse.c2, transformInverse.c3, transformInverse.c4,
-					transformInverse.d1, transformInverse.d2, transformInverse.d3, transformInverse.d4);
+					transformInverse.a1, transformInverse.b1, transformInverse.c1, transformInverse.d1,
+					transformInverse.a2, transformInverse.b2, transformInverse.c2, transformInverse.d2,
+					transformInverse.a3, transformInverse.b3, transformInverse.c3, transformInverse.d3,
+					transformInverse.a4, transformInverse.b4, transformInverse.c4, transformInverse.d4);
 
 				shape->SetId(id++);
 				shape->SetTransform(m, minv);
@@ -789,10 +799,10 @@ namespace octoon::video
 					shape.startidx = static_cast<int>(num_indices_written);
 
 					auto transform = geometry->getTransform();
-					shape.transform.m0 = { transform.a1, transform.a2, transform.a3, transform.a4 };
-					shape.transform.m1 = { transform.b1, transform.b2, transform.b3, transform.b4 };
-					shape.transform.m2 = { transform.c1, transform.c2, transform.c3, transform.c4 };
-					shape.transform.m3 = { transform.d1, transform.d2, transform.d3, transform.d4 };
+					shape.transform.m0 = { transform.a1, transform.b1, transform.c1, transform.d1 };
+					shape.transform.m1 = { transform.a2, transform.b2, transform.c2, transform.d2 };
+					shape.transform.m2 = { transform.a3, transform.b3, transform.c3, transform.d3 };
+					shape.transform.m3 = { transform.a4, transform.b4, transform.c4, transform.d4 };
 
 					shape.linearvelocity = float3(0.0f, 0.f, 0.f);
 					shape.angularvelocity = float3(0.f, 0.f, 0.f, 1.f);

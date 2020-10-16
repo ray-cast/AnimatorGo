@@ -359,7 +359,7 @@ KERNEL void ShadeSurface(
 
 		Path_SetFlags(&diffgeo, path);
 
-		if (!Bxdf_IsBtdf(&diffgeo))
+		if (!Bxdf_IsTransparency(&diffgeo))
 		{
 			Path_SetOpacityFlag(path);
 		}

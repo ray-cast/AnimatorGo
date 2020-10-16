@@ -532,7 +532,7 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
 			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
 
-			float3 wh = MicrofacetReflectionGGX_SampleNormal(shader_data->roughness, sample);
+			float3 wh = MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample);
 
 			*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
 		}

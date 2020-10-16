@@ -317,17 +317,10 @@ KERNEL void ShadeSurface(
 
 		DifferentialGeometry_CalculateTangentTransforms(&diffgeo);
 
-		Path_SetFlags(&diffgeo, path);
-
 		float3 wi = -normalize(rays[hit_idx].d.xyz);
 
 		float ngdotwi = dot(diffgeo.ng, wi);
 		bool backfacing = ngdotwi < 0.f;
-
-		if (!(shader_data.transparency > 0.f))
-		{
-			Path_SetOpacityFlag(path);
-		}
 
 		if (NON_BLACK(shader_data.emissive))
 		{
@@ -363,6 +356,13 @@ KERNEL void ShadeSurface(
 		float bxdf_pdf = 0.f;
 		float3 bxdf = Disney_Sample(&diffgeo, &shader_data, Sampler_Sample2D(&sampler, SAMPLER_ARGS), wi, &bxdf_wo, &bxdf_pdf);
 		bxdf_wo = matrix_mul_vector3(diffgeo.tangent_to_world, bxdf_wo);
+
+		Path_SetFlags(&diffgeo, path);
+
+		if (!Bxdf_IsBtdf(&diffgeo))
+		{
+			Path_SetOpacityFlag(path);
+		}
 
 		float s = Bxdf_IsBtdf(&diffgeo) ? (-sign(ngdotwi)) : 1.f;
 		if (backfacing && !Bxdf_IsBtdf(&diffgeo))

@@ -102,6 +102,7 @@ namespace octoon
 				auto transform = object->getComponent<TransformComponent>();
 				ray.transform(transform->getTransformInverse());
 
+				result.clear();
 				mesh->raycastAll(ray, result);
 
 				for (auto& it : result) {

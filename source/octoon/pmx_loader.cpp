@@ -705,6 +705,7 @@ namespace octoon
 			startIndices += pmx.materials[i].FaceCount;
 		}
 
+		mesh->computeBoundingBox();
 		model.meshes.emplace_back(std::move(mesh));
 
 		for (std::size_t i = 0; i < pmx.bones.size(); i++)

@@ -520,87 +520,69 @@ INLINE float3 Disney_Evaluate(DisneyShaderData const* shader_data, float3 wi, fl
 
 float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
 {
-	if (sample.y <= shader_data->transmission)
+	if (sample.y <= shader_data->transparency)
 	{
-		sample.y /= shader_data->transmission;
+		sample.y /= shader_data->transparency;
 
-		float fresnel = CalculateFresnel(1.0, shader_data->refraction_ior, fabs(wi.y));
-		if (sample.x <= fresnel)
-		{
-			sample.x /= fresnel;
+		Bxdf_SetFlags(dg, kBxdfFlagsTransparency | kBxdfFlagsSingular);
+		Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleTransparency);
+		
+		*wo = -wi;
+		*pdf = 1.f;
 
-			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
-			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-
-			float3 wh = MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample);
-
-			*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
-		}
-		else
-		{
-			sample.x -= fresnel;
-			sample.x /= (1 - fresnel);
-
-			Bxdf_SetFlags(dg, kBxdfFlagsSingular);
-			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
-
-			return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);
-		}
+		float coswo = fabs((*wo).y);
+		return coswo > 1e-5f ? (1.f / coswo) : 0.f;
 	}
 	else
 	{
-		sample.y -= shader_data->transmission;
-		sample.y /= (1.f - shader_data->transmission);
+		sample.y -= shader_data->transparency;
+		sample.y /= (1 - shader_data->transparency);
 
-		if (sample.y <= shader_data->transparency)
+		int bxdf_flags = kBxdfFlagsBrdf;
+		if (sample.x <= shader_data->clearcoat)
 		{
-			sample.y /= shader_data->transparency;
+			sample.x /= (shader_data->clearcoat);
 
-			Bxdf_SetFlags(dg, kBxdfFlagsTransparency | kBxdfFlagsSingular);
-			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleTransparency);
+			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
 			
-			*wo = -wi;
-			*pdf = 1.f;
+			float3 wh = MicrofacetReflectionGGX_SampleNormal(mix(0.001f, 0.1f, shader_data->clearcoat_roughness), sample);
 
-			float coswo = fabs((*wo).y);
-			return coswo > 1e-5f ? (1.f / coswo) : 0.f;
+			*wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
 		}
 		else
 		{
-			sample.y -= shader_data->transparency;
-			sample.y /= (1 - shader_data->transparency);
+			sample.x -= (shader_data->clearcoat);
+			sample.x /= (1.f - shader_data->clearcoat);
 
-			int bxdf_flags = kBxdfFlagsBrdf;
-			if (sample.x <= shader_data->clearcoat)
+			if (sample.y < shader_data->cs_w)
 			{
-				sample.x /= (shader_data->clearcoat);
+				sample.y /= shader_data->cs_w;
 
-				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
 				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-				
-				float3 wh = MicrofacetReflectionGGX_SampleNormal(mix(0.001f, 0.1f, shader_data->clearcoat_roughness), sample);
+				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
 
-				*wo = -wi + 2.f*fabs(dot(wi, wh)) * wh;
+				float3 wh = MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample);
+				*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
 			}
 			else
 			{
-				sample.x -= (shader_data->clearcoat);
-				sample.x /= (1.f - shader_data->clearcoat);
+				sample.y -= shader_data->cs_w;
+				sample.y /= (1.f - shader_data->cs_w);
 
-				if (sample.y < shader_data->cs_w)
+				if (sample.y <= shader_data->transmission)
 				{
-					sample.y /= shader_data->cs_w;
+					sample.y /= shader_data->transmission;
 
-					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-					Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+					Bxdf_SetFlags(dg, kBxdfFlagsSingular);
+					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
 
-					float3 wh = MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample);
-					*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
+					return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);
 				}
 				else
 				{
-					sample.y -= shader_data->cs_w;
-					sample.y /= (1.f - shader_data->cs_w);
+					sample.y -= shader_data->transmission;
+					sample.y /= (1.f - shader_data->transmission);
 
 					if (sample.y <= shader_data->subsurface)
 					{

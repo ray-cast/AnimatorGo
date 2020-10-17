@@ -574,7 +574,8 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 				{
 					sample.y /= shader_data->transmission;
 
-					Bxdf_SetFlags(dg, kBxdfFlagsSingular);
+					int bxdf_flags = shader_data->roughness < ROUGHNESS_EPS ? kBxdfFlagsSingular : 0;
+					Bxdf_SetFlags(dg, bxdf_flags);
 					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
 
 					return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);

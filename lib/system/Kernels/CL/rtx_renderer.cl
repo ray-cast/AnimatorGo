@@ -673,7 +673,7 @@ KERNEL void ApplyGammaAndCopyData(
 #endif
 
         v /= v.w;
-        v.xyz = ACES(v.xyz);
+        // v.xyz = ACES(v.xyz);
         // v.xyz *= 2.0f;
         // v.w = 4.0f;
         // v = Hable(v);

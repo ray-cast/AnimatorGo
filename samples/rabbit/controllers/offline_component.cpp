@@ -41,15 +41,6 @@ namespace rabbit
 	void
 	OfflineComponent::onEnable() noexcept
 	{
-		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
-		{
-			for (auto& object : this->getContext()->profile->entitiesModule->objects)
-			{
-				auto smr = object->getComponent<octoon::SkinnedMeshRendererComponent>();
-				if (smr)
-					smr->setAutomaticUpdate(!this->getModel()->offlineEnable);
-			}
-		});
 	}
 
 	void

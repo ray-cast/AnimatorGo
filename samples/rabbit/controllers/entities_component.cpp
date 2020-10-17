@@ -196,6 +196,10 @@ namespace rabbit
 				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
 				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
 
+				auto smr = model->getComponent<octoon::SkinnedMeshRendererComponent>();
+				if (smr)
+					smr->setAutomaticUpdate(!this->getContext()->profile->offlineModule->offlineEnable);
+
 				objects.emplace_back(std::move(model));
 
 				for (auto& body : modelRigidbodies)
@@ -232,6 +236,10 @@ namespace rabbit
 				if (!it->getParent())
 					rigidbodies.emplace_back(std::move(it));
 			}
+
+			auto smr = model->getComponent<octoon::SkinnedMeshRendererComponent>();
+			if (smr)
+				smr->setAutomaticUpdate(!this->getContext()->profile->offlineModule->offlineEnable);
 
 			this->getContext()->profile->entitiesModule->objects.push_back(model);
 			return true;
@@ -561,7 +569,7 @@ namespace rabbit
 		mainCamera->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 10, -10));
 
 		auto camera = mainCamera->addComponent<octoon::FilmCameraComponent>();
-		camera->setFov(50.0f);
+		camera->setFov(60.0f);
 		camera->setCameraType(octoon::CameraType::Main);
 		camera->setClearColor(octoon::math::float4(0.0f, 0.0f, 0.0f, 1.0f));
 

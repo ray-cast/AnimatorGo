@@ -182,23 +182,6 @@ INLINE float MicrofacetReflectionGGX_GetPdf(DisneyShaderData const* shader_data,
 	return pdf * shader_data->cs_w;
 }
 
-INLINE float3 MicrofacetReflectionGGX_Evaluate(DisneyShaderData const* shader_data, float3 wi, float3 wo)
-{
-	float3 wh = normalize(wo + wi);
-
-	float ndotwi = fabs(wi.y);
-	float ndotwo = fabs(wo.y);
-	float ndotwh = fabs(wh.y);
-	float hdotwo = fabs(dot(wh, wo));
-	float alpha = shader_data->roughness * shader_data->roughness;
-
-	float ds = GTR2(ndotwh, alpha) * ndotwo;
-	float gs = SmithGGX_G(ndotwo, 0.25f) * SmithGGX_G(ndotwi, 0.25f);
-	float3 fs = mix(shader_data->specularColor, WHITE, SchlickFresnelReflectance(hdotwo));
-
-	return ds * fs * gs;
-}
-
 INLINE float3 MicrofacetReflectionGGX_SampleNormal(float roughness, float2 sample)
 {
 	float r1 = sample.x;
@@ -252,7 +235,7 @@ INLINE float MicrofacetRefractionGGX_GetPdf(DisneyShaderData const* shader_data,
 	float3 wh = normalize(ht);
 
 	float wodotwh = fabs(dot(wo, wh));
-	float whpdf = MicrofacetReflectionGGX_D(roughness, wh) * fabs(wh.y);
+	float whpdf = MicrofacetReflectionGGX_D(roughness * roughness, wh) * fabs(wh.y);
 	float whwo = wodotwh * etat * etat;
 	float denom = dot(ht, ht);
 
@@ -261,7 +244,7 @@ INLINE float MicrofacetRefractionGGX_GetPdf(DisneyShaderData const* shader_data,
 
 INLINE float3 MicrofacetRefractionGGX_Evaluate(DisneyShaderData const* shader_data, float3 wi, float3 wo)
 {
-	const float3 ks = shader_data->base_color;
+	const float3 ks = shader_data->diffuseColor;
 	const float roughness = max(shader_data->roughness, ROUGHNESS_EPS);
 
 	float ndotwi = wi.y;
@@ -288,10 +271,12 @@ INLINE float3 MicrofacetRefractionGGX_Evaluate(DisneyShaderData const* shader_da
 	float widotwh = fabs(dot(wh, wi));
 	float wodotwh = fabs(dot(wh, wo));
 
-	float denom = dot(ht, ht);
-	denom *= (fabs(ndotwi) * fabs(ndotwo));
+	float alpha = roughness * roughness;
+	float denom = dot(ht, ht) * (fabs(ndotwi) * fabs(ndotwo));
+	float ds = MicrofacetReflectionGGX_D(alpha, wh);
+	float gs = MicrofacetReflectionGGX_G(alpha, wi, wo);
 
-	return denom > DENOM_EPS ? (shader_data->base_color * (widotwh * wodotwh)  * (etat)* (etat) * MicrofacetReflectionGGX_G(roughness, wi, wo) * MicrofacetReflectionGGX_D(roughness, wh) / denom) : 0.f;
+	return denom > DENOM_EPS ? (shader_data->diffuseColor * (widotwh * wodotwh)  * (etat) * (etat) * gs * ds / denom) : 0.f;
 }
 
 INLINE float3 MicrofacetRefractionGGX_Sample(DisneyShaderData const* shader_data, float2 sample, float3 wi, float3* wo, float* pdf)
@@ -543,8 +528,9 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 		{
 			sample.x /= (shader_data->clearcoat);
 
-			Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+			int bxdf_flags = shader_data->roughness < ROUGHNESS_EPS ? kBxdfFlagsSingular : 0;
 			Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
+			Bxdf_SetFlags(dg, bxdf_flags | kBxdfFlagsBrdf);
 			
 			float3 wh = MicrofacetReflectionGGX_SampleNormal(mix(0.001f, 0.1f, shader_data->clearcoat_roughness), sample);
 
@@ -559,8 +545,9 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 			{
 				sample.y /= shader_data->cs_w;
 
+				int bxdf_flags = shader_data->roughness < ROUGHNESS_EPS ? kBxdfFlagsSingular : 0;
 				Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleReflection);
-				Bxdf_SetFlags(dg, kBxdfFlagsBrdf | kBxdfFlagsSingular);
+				Bxdf_SetFlags(dg, bxdf_flags | kBxdfFlagsBrdf);
 
 				float3 wh = MicrofacetReflectionGGX_Aniso_SampleNormal(shader_data->roughness, shader_data->anisotropy, sample);
 				*wo = -wi + 2.f * fabs(dot(wi, wh)) * wh;
@@ -578,7 +565,9 @@ float3 Disney_Sample(DifferentialGeometry* dg, DisneyShaderData const* shader_da
 					Bxdf_SetFlags(dg, bxdf_flags);
 					Bxdf_UberV2_SetSampledComponent(dg, kBxdfUberV2SampleRefraction);
 
-					return IdealRefract_Sample(shader_data, sample, wi, wo, pdf);
+					return bxdf_flags == kBxdfFlagsSingular ?
+						IdealRefract_Sample(shader_data, sample, wi, wo, pdf) :
+						MicrofacetRefractionGGX_Sample(shader_data, sample, wi, wo, pdf);
 				}
 				else
 				{

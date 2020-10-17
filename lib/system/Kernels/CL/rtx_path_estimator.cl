@@ -164,7 +164,7 @@ KERNEL void ShadeMiss(
 
 			// Apply MIS
 			int bxdf_flags = Path_GetBxdfFlags(path);
-			float selection_pdf = Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
+			float selection_pdf = num_lights;//Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
 			float light_pdf = EnvironmentLight_GetPdf(&light, 0, 0, bxdf_flags, kLightInteractionSurface, rays[global_id].d.xyz, TEXTURE_ARGS);
 			float extra = Ray_GetExtra(&rays[global_id]);
 			float weight = extra > 0.f ? BalanceHeuristic(1, extra, 1, light_pdf * selection_pdf) : 1.f;

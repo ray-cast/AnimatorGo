@@ -121,7 +121,8 @@ void PerspectiveCamera_GeneratePaths(
         // Set ray max
         my_ray->extra.x = 0xFFFFFFFF;
         my_ray->extra.y = 0xFFFFFFFF;
-        Ray_SetExtra(my_ray, 1.f);
+        Ray_SetDoBackCulling(my_ray, 1);
+        Ray_SetExtra(my_ray, 0);
         Ray_SetMask(my_ray, VISIBILITY_MASK_ALL);
     }
 }
@@ -217,7 +218,8 @@ KERNEL void PerspectiveCameraDof_GeneratePaths(
         // Set ray max
         my_ray->extra.x = 0xFFFFFFFF;
         my_ray->extra.y = 0xFFFFFFFF;
-        Ray_SetExtra(my_ray, 1.f);
+        Ray_SetDoBackCulling(my_ray, 1);
+        Ray_SetExtra(my_ray, 0);
         Ray_SetMask(my_ray, VISIBILITY_MASK_ALL);
     }
 }
@@ -312,7 +314,8 @@ void PerspectiveCamera_GenerateVertices(
         // Set ray max
         my_ray->extra.x = 0xFFFFFFFF;
         my_ray->extra.y = 0xFFFFFFFF;
-        Ray_SetExtra(my_ray, 1.f);
+        Ray_SetDoBackCulling(my_ray, 1);
+        Ray_SetExtra(my_ray, 0);
 
         PathVertex v;
         PathVertex_Init(&v,
@@ -433,7 +436,8 @@ void PerspectiveCameraDof_GenerateVertices(
         // Set ray max
         my_ray->extra.x = 0xFFFFFFFF;
         my_ray->extra.y = 0xFFFFFFFF;
-        Ray_SetExtra(my_ray, 1.f);
+        Ray_SetDoBackCulling(my_ray, 1);
+        Ray_SetExtra(my_ray, 0);
 
         PathVertex v;
         PathVertex_Init(&v,
@@ -885,7 +889,8 @@ void  OrthographicCamera_GeneratePaths(
         // Set ray max
         my_ray->extra.x = 0xFFFFFFFF;
         my_ray->extra.y = 0xFFFFFFFF;
-        Ray_SetExtra(my_ray, 1.f);
+        Ray_SetDoBackCulling(my_ray, 1);
+        Ray_SetExtra(my_ray, 0);
         Ray_SetMask(my_ray, VISIBILITY_MASK_ALL);
     }
 }

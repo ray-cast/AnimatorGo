@@ -166,8 +166,8 @@ KERNEL void ShadeMiss(
 			int bxdf_flags = Path_GetBxdfFlags(path);
 			float selection_pdf = Distribution1D_GetPdfDiscreet(env_light_idx, light_distribution);
 			float light_pdf = EnvironmentLight_GetPdf(&light, 0, 0, bxdf_flags, kLightInteractionSurface, rays[global_id].d.xyz, TEXTURE_ARGS);
-			float2 extra = Ray_GetExtra(&rays[global_id]);
-			float weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, light_pdf * selection_pdf) : 1.f;
+			float extra = Ray_GetExtra(&rays[global_id]);
+			float weight = extra > 0.f ? BalanceHeuristic(1, extra, 1, light_pdf * selection_pdf) : 1.f;
 
 			float3 t = Path_GetThroughput(path);
 			float4 v = 0.f;
@@ -330,11 +330,11 @@ KERNEL void ShadeSurface(
 
 				if (bounce > 0 && !Path_IsSpecular(path))
 				{
-					float2 extra = Ray_GetExtra(&rays[hit_idx]);
+					float extra = Ray_GetExtra(&rays[hit_idx]);
 					float ld = isect.uvwt.w;
 					float denom = fabs(dot(diffgeo.n, wi)) * diffgeo.area;
 					float bxdf_light_pdf = denom > 0.f ? (ld * ld / denom / num_lights) : 0.f;
-					weight = extra.x > 0.f ? BalanceHeuristic(1, extra.x, 1, bxdf_light_pdf) : 1.f;
+					weight = extra > 0.f ? BalanceHeuristic(1, extra, 1, bxdf_light_pdf) : 1.f;
 				}
 
 				float3 v = REASONABLE_RADIANCE(Path_GetThroughput(path) * shader_data.emissive * weight);
@@ -408,7 +408,8 @@ KERNEL void ShadeSurface(
 				int shadow_ray_mask = VISIBILITY_MASK_BOUNCE_SHADOW(bounce);
 
 				Ray_Init(shadow_rays + global_id, shadow_ray_o, shadow_ray_dir, shadow_ray_length, 0.f, shadow_ray_mask);
-				Ray_SetExtra(shadow_rays + global_id, make_float2(1.f, 0.f));
+				Ray_SetDoBackCulling(shadow_rays + global_id, 0);
+				Ray_SetExtra(shadow_rays + global_id, 0.f);
 			}
 
 			light_samples[global_id] = REASONABLE_RADIANCE(radiance);
@@ -438,7 +439,8 @@ KERNEL void ShadeSurface(
 			int indirect_ray_mask = VISIBILITY_MASK_BOUNCE(bounce + 1);
 
 			Ray_Init(indirect_rays + global_id, indirect_ray_o, indirect_ray_dir, CRAZY_HIGH_DISTANCE, 0.f, indirect_ray_mask);
-			Ray_SetExtra(indirect_rays + global_id, make_float2(Bxdf_IsSingular(&diffgeo) ? 0.f : bxdf_pdf, 0.f));
+			Ray_SetDoBackCulling(indirect_rays + global_id, Bxdf_IsBtdf(&diffgeo) ? 0 : 1);
+			Ray_SetExtra(indirect_rays + global_id,(Bxdf_IsBtdf(&diffgeo) || Bxdf_IsSingular(&diffgeo)) ? 0.f : bxdf_pdf);
 
 			if (shader_data.transparency > 0.0f)
 			{

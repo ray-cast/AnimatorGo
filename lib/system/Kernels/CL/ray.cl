@@ -33,8 +33,10 @@ typedef struct
     float4 d;
     // x - ray mask, y - activity flag
     int2 extra;
+    // back culling
+    int doBackCulling;
     // Padding
-    float2 padding;
+    float padding;
 } ray;
 
 // Set ray activity flag
@@ -49,7 +51,13 @@ INLINE bool Ray_IsActive(GLOBAL ray* r)
 }
 
 // Set extra data for ray
-INLINE void Ray_SetExtra(GLOBAL ray* r, float2 extra)
+INLINE void Ray_SetDoBackCulling(GLOBAL ray* r, int culling)
+{
+    r->doBackCulling = culling;
+}
+
+// Set extra data for ray
+INLINE void Ray_SetExtra(GLOBAL ray* r, float extra)
 {
     r->padding = extra;
 }
@@ -65,8 +73,13 @@ INLINE int Ray_GetMask(GLOBAL ray* r)
     return r->extra.x;
 }
 
+INLINE int Ray_GetDoBackCulling(GLOBAL ray* r)
+{
+    return r->doBackCulling;
+}
+
 // Get extra data for ray
-INLINE float2 Ray_GetExtra(GLOBAL ray const* r)
+INLINE float Ray_GetExtra(GLOBAL ray const* r)
 {
     return r->padding;
 }

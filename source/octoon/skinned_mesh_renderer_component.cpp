@@ -222,7 +222,7 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onAnimationUpdate(const std::any& mesh) noexcept
 	{
-		needUpdate_ = automaticUpdate_ ? true : false;
+		if (automaticUpdate_) needUpdate_ = true;
 	}
 
 	void

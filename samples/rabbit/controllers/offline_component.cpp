@@ -38,6 +38,25 @@ namespace rabbit
 		return this->getModel()->offlineEnable;
 	}
 
+	void
+	OfflineComponent::onEnable() noexcept
+	{
+		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
+		{
+			for (auto& object : this->getContext()->profile->entitiesModule->objects)
+			{
+				auto smr = object->getComponent<octoon::SkinnedMeshRendererComponent>();
+				if (smr)
+					smr->setAutomaticUpdate(!this->getModel()->offlineEnable);
+			}
+		});
+	}
+
+	void
+	OfflineComponent::onDisable() noexcept
+	{
+	}
+
 
 	void
 	OfflineComponent::setMaxBounces(std::uint32_t num_bounces)

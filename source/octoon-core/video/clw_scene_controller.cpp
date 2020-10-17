@@ -656,6 +656,9 @@ namespace octoon::video
 			}
 
 			auto& mesh = geometry->getMesh();
+			if (!mesh)
+				continue;
+
 			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
 			{
 				auto material = this->getMaterialIndex(geometry->getMaterial(i));
@@ -722,13 +725,16 @@ namespace octoon::video
 			}
 
 			auto& mesh = geometry->getMesh();
-			num_vertices += mesh->getVertexArray().size();
-			num_geometries++;
-
-			for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+			if (mesh)
 			{
-				num_indices += mesh->getIndicesArray(i).size();
-				num_shapes++;
+				num_vertices += mesh->getVertexArray().size();
+				num_geometries++;
+
+				for (std::size_t i = 0; i < mesh->getNumSubsets(); i++)
+				{
+					num_indices += mesh->getIndicesArray(i).size();
+					num_shapes++;
+				}
 			}
 		}
 
@@ -769,6 +775,9 @@ namespace octoon::video
 				}
 
 				auto& mesh = geometry->getMesh();
+				if (!mesh) {
+					continue;
+				}
 
 				auto mesh_vertex_array = mesh->getVertexArray().data();
 				auto mesh_num_vertices = mesh->getVertexArray().size();

@@ -24,6 +24,10 @@ namespace rabbit
 		}
 
 	private:
+		void onEnable() noexcept override;
+		void onDisable() noexcept override;
+
+	private:
 		OfflineComponent(const OfflineComponent&) = delete;
 		OfflineComponent& operator=(const OfflineComponent&) = delete;
 	};

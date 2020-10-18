@@ -303,7 +303,7 @@ INLINE float3 MicrofacetRefractionGGX_Sample(DisneyShaderData const* shader_data
 		s = -s;
 	}
 
-	float3 wh = MicrofacetReflectionGGX_SampleNormal(roughness, sample);
+	float3 wh = MicrofacetReflectionGGX_SampleNormal(roughness * roughness, sample);
 
 	float c = dot(wi, wh);
 	float eta = etai / etat;
@@ -389,7 +389,7 @@ INLINE float Disney_GetPdf(DisneyShaderData const* shader_data, float3 wi, float
 {
 	if (wo.y <= 0.0f)
 	{
-		float bsdfPdf = IdealRefract_GetPdf(shader_data, wi, wo);
+		float bsdfPdf = shader_data->roughness < ROUGHNESS_EPS ? IdealRefract_GetPdf(shader_data, wi, wo) : MicrofacetRefractionGGX_GetPdf(shader_data, wi, wo);
 		float brdfPdf = (1.0f / (2 * PI)) * shader_data->subsurface * 0.5f;
 
 		return mix(brdfPdf, bsdfPdf, shader_data->transmission);
@@ -430,7 +430,7 @@ INLINE float3 Disney_Evaluate(DisneyShaderData const* shader_data, float3 wi, fl
 	{
 		if (wo.y <= 0.0f)
 		{
-			bsdf = IdealRefract_Evaluate(shader_data, wi, wo);
+			bsdf = shader_data->roughness < ROUGHNESS_EPS ? IdealRefract_Evaluate(shader_data, wi, wo) : MicrofacetRefractionGGX_Evaluate(shader_data, wi, wo);
 		}
 		else
 		{

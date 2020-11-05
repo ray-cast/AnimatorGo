@@ -22,11 +22,11 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * 相机景深控制
 * 多光源支持
 * 基于物理的实时渲染
-* 全局照明光线追踪渲染
+* 全局照明光线追踪渲染（OpenCL，AMD® RadeonRays）
 * 基于深度学习的后处理降噪 (Intel® Open Image Denoise)
-* 前向、逆向运动学的骨骼动画
-* 物理演算
-* 布料演算
+* 前向、逆向运动学的骨骼动画（Cyclic Coordinate Descent Method）
+* 物理演算（Physx）
+* 布料演算（NVCloth）
 * 模型文件支持（PMX、PMD，ABC）
 * 动画文件支持（VMD）
 * 场景文件支持（PMM）

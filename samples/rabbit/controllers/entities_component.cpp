@@ -390,7 +390,7 @@ namespace rabbit
 		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size());
 
 		std::vector<uint32_t> key_to_animation_count(it.bone_init_frame.size());
-		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() << 1);
+		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() + it.bone_init_frame.size());
 		std::vector<uint32_t> key_to_data_index(it.bone_key_frame.size());
 
 		std::size_t numBone = it.bone_name.size();
@@ -403,14 +403,18 @@ namespace rabbit
 			key_to_array_index[index] = i;
 		}
 
-#		pragma omp parallel for num_threads(4)
-		for (int i = 0; i < it.bone_key_frame.size(); i++)
+		for (int i = 0; i < it.bone_init_frame.size(); i++)
 		{
-			auto index = it.bone_key_frame[i].pre_index;
-			while (index >= numBone)
-				index = it.bone_key_frame[key_to_array_index[index]].pre_index;
-			key_to_data_index[i] = index;
-			key_to_animation_count[index]++;
+			key_to_animation_count[i]++;
+
+			auto next_index = it.bone_init_frame[i].next_index;
+			while (next_index > 0)
+			{
+				next_index -= it.bone_init_frame.size();
+				key_to_animation_count[i]++;
+				key_to_data_index[next_index] = i;
+				next_index = it.bone_key_frame[next_index].next_index;
+			}
 		}
 
 		for (std::size_t i = 0; i < key_to_animation_count.size(); i++)
@@ -495,7 +499,7 @@ namespace rabbit
 		std::vector<Keyframes<float>> keyframes(it.morph_name.size());
 
 		std::vector<uint32_t> key_to_animation_count(it.morph_init_frame.size());
-		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() << 1);
+		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() + it.morph_init_frame.size());
 		std::vector<uint32_t> key_to_data_index(it.morph_key_frame.size());
 
 		std::size_t numMorph = it.morph_name.size();
@@ -508,14 +512,18 @@ namespace rabbit
 			key_to_array_index[index] = i;
 		}
 
-#		pragma omp parallel for num_threads(4)
-		for (int i = 0; i < it.morph_key_frame.size(); i++)
+		for (int i = 0; i < it.morph_init_frame.size(); i++)
 		{
-			auto index = it.morph_key_frame[i].pre_index;
-			while (index >= numMorph)
-				index = it.morph_key_frame[key_to_array_index[index]].pre_index;
-			key_to_data_index[i] = index;
-			key_to_animation_count[index]++;
+			key_to_animation_count[i]++;
+
+			auto next_index = it.morph_init_frame[i].next_index;
+			while (next_index > 0)
+			{
+				next_index -= it.morph_init_frame.size();
+				key_to_animation_count[i]++;
+				key_to_data_index[next_index] = i;
+				next_index = it.morph_key_frame[next_index].next_index;
+			}
 		}
 
 		for (std::size_t i = 0; i < it.morph_name.size(); i++)

@@ -23,6 +23,7 @@ namespace octoon
 		, time_(0)
 		, timeStep_(0)
 		, enableAxisLimit_(true)
+		, enableAutomaticUpdate_(true)
 	{
 	}
 
@@ -49,10 +50,10 @@ namespace octoon
 	{
 		if (target_ != target)
 		{
-			if (target)
-				this->tryAddComponentDispatch(GameDispatchType::LateUpdate);
+			if (target && this->getAutomaticUpdate())
+				this->tryAddComponentDispatch(GameDispatchType::FixedUpdate);
 			else
-				this->tryRemoveComponentDispatch(GameDispatchType::LateUpdate);
+				this->tryRemoveComponentDispatch(GameDispatchType::FixedUpdate);
 
 			target_ = target;
 		}
@@ -113,6 +114,26 @@ namespace octoon
 	}
 
 	void
+	CCDSolverComponent::setAutomaticUpdate(bool enable) noexcept
+	{
+		if (this->enableAutomaticUpdate_ != enable)
+		{
+			this->enableAutomaticUpdate_ = enable;
+
+			if (this->enableAutomaticUpdate_)
+				this->tryAddComponentDispatch(GameDispatchType::FixedUpdate);
+			else
+				this->tryRemoveComponentDispatch(GameDispatchType::FixedUpdate);
+		}
+	}
+
+	bool
+	CCDSolverComponent::getAutomaticUpdate() noexcept
+	{
+		return this->enableAutomaticUpdate_;
+	}
+
+	void
 	CCDSolverComponent::addBone(GameObjectPtr&& bone) noexcept
 	{
 		bones_.emplace_back(std::move(bone));
@@ -167,7 +188,7 @@ namespace octoon
 	void
 	CCDSolverComponent::onActivate() noexcept
 	{
-		if (this->getTarget())
+		if (this->getTarget() && this->getAutomaticUpdate())
 			this->addComponentDispatch(GameDispatchType::FixedUpdate);
 	}
 

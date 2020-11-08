@@ -42,6 +42,7 @@ namespace rabbit
 
 	private:
 		bool needUpdate_;
+		std::uint32_t animationLerp_;
 
 		float time_;
 		float timeCount_;

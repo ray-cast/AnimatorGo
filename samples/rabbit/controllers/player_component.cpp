@@ -11,6 +11,7 @@ namespace rabbit
 		: time_(0)
 		, timeCount_(0)
 		, needUpdate_(false)
+		, animationLerp_(0)
 	{
 	}
 
@@ -36,6 +37,10 @@ namespace rabbit
 		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
 		if (physicsFeature)
 			physicsFeature->setGravity(context->physicsModule->gravity);
+
+		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+		if (timeFeature)
+			timeFeature->setTimeStep(this->getModel()->normalTimeStep);
 
 		this->addMessageListener("rabbit:project:open", [this](const std::any& data)
 		{
@@ -63,6 +68,10 @@ namespace rabbit
 		if (timeFeature)
 			timeFeature->setTimeStep(model->playTimeStep);
 
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+			physicsFeature->setEnableSimulate(false);
+
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
 		{
@@ -85,6 +94,10 @@ namespace rabbit
 		if (timeFeature)
 			timeFeature->setTimeStep(model->normalTimeStep);
 
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+			physicsFeature->setEnableSimulate(true);
+
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
 			sound->getComponent<octoon::AudioSourceComponent>()->pause();
@@ -100,7 +113,11 @@ namespace rabbit
 
 		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
 		if (timeFeature)
-			timeFeature->setTimeStep(model->playTimeStep);
+			timeFeature->setTimeStep(1.0f / model->recordFps / 5.0f);
+
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+			physicsFeature->setEnableSimulate(false);
 	}
 
 	void
@@ -109,6 +126,14 @@ namespace rabbit
 		auto& model = this->getModel();
 		model->curTime = model->startFrame / 30.0f;
 		model->playing_ = false;
+
+		auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+		if (timeFeature)
+			timeFeature->setTimeStep(model->normalTimeStep);
+
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+			physicsFeature->setEnableSimulate(true);
 
 		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (camera)
@@ -157,19 +182,6 @@ namespace rabbit
 		auto& model = this->getModel();
 		model->curTime += delta;
 
-		auto camera = this->getContext()->profile->entitiesModule->camera;
-		if (camera)
-		{
-			auto animation = camera->getComponent<octoon::AnimationComponent>();
-			if (animation)
-			{
-				animation->setTime(model->curTime);
-				animation->sample();
-			}
-
-			this->updateDofTarget();
-		}
-
 		auto sound = this->getContext()->profile->entitiesModule->sound;
 		if (sound)
 		{
@@ -200,13 +212,6 @@ namespace rabbit
 					smr->updateMeshData();
 			}
 		}
-	}
-
-	void
-	PlayerComponent::evaluate(float delta) noexcept
-	{
-		auto& model = this->getModel();
-		model->curTime += delta;
 
 		auto camera = this->getContext()->profile->entitiesModule->camera;
 		if (camera)
@@ -215,11 +220,18 @@ namespace rabbit
 			if (animation)
 			{
 				animation->setTime(model->curTime);
-				animation->evaluate();
+				animation->sample();
 			}
 
 			this->updateDofTarget();
 		}
+	}
+
+	void
+	PlayerComponent::evaluate(float delta) noexcept
+	{
+		auto& model = this->getModel();
+		model->curTime += delta;
 
 		for (auto& it : this->getContext()->profile->entitiesModule->objects)
 		{
@@ -242,6 +254,26 @@ namespace rabbit
 				if (smr)
 					smr->updateMeshData();
 			}
+		}
+
+		auto camera = this->getContext()->profile->entitiesModule->camera;
+		if (camera)
+		{
+			auto animation = camera->getComponent<octoon::AnimationComponent>();
+			if (animation)
+			{
+				animation->setTime(model->curTime);
+				animation->evaluate();
+			}
+
+			this->updateDofTarget();
+		}
+
+		auto physicsFeature = this->getContext()->behaviour->getFeature<octoon::PhysicsFeature>();
+		if (physicsFeature)
+		{
+			if (!physicsFeature->getEnableSimulate())
+				physicsFeature->simulate();
 		}
 	}
 
@@ -320,12 +352,15 @@ namespace rabbit
 
 		if (profile->offlineModule->offlineEnable)
 		{
-			timeCount_++;
-
-			if (timeCount_ >= model->spp)
+			if (animationLerp_ == 0)
 			{
-				needUpdate_ = true;
-				timeCount_ = 0;
+				timeCount_++;
+
+				if (timeCount_ >= model->spp)
+				{
+					needUpdate_ = true;
+					timeCount_ = 0;
+				}
 			}
 		}
 		else
@@ -360,8 +395,17 @@ namespace rabbit
 							it->onPostProcess();
 					}
 
-					this->evaluate(1.0f / model->recordFps);
 					needUpdate_ = false;
+					animationLerp_ = 5;
+				}
+
+				if (animationLerp_ > 0)
+				{
+					auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();
+					if (timeFeature)
+						this->evaluate(timeFeature->delta());
+
+					animationLerp_--;
 				}
 			}
 			else

@@ -29,6 +29,9 @@ namespace octoon
 		void setAxisLimitEnable(bool enable) noexcept;
 		bool getAxisLimitEnable() const noexcept;
 
+		void setAutomaticUpdate(bool enable) noexcept;
+		bool getAutomaticUpdate() noexcept;
+
 		void addBone(GameObjectPtr&& bone) noexcept;
 		void addBone(const GameObjectPtr& bone) noexcept;
 
@@ -59,6 +62,7 @@ namespace octoon
 		float tolerance_;
 
 		bool enableAxisLimit_;
+		bool enableAutomaticUpdate_;
 
 		std::uint32_t maxIterations_;
 

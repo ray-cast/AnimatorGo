@@ -3,17 +3,31 @@
 
 namespace octoon
 {
-    OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
+	OctoonImplementSubClass(PhysicsFeature, GameFeature, "PhysicsFeature")
 
 	PhysicsFeature::PhysicsFeature() except
 		: physicsContext(nullptr)
 		, physicsScene(nullptr)
 		, gravity_(0.0f, -9.8f, 0.0f)
+		, enableSimulate_(true)
+		, forceSimulate_(false)
 	{
 	}
 
 	PhysicsFeature::~PhysicsFeature() noexcept
 	{
+	}
+
+	void
+	PhysicsFeature::setEnableSimulate(bool simulate) noexcept
+	{
+		this->enableSimulate_ = simulate;
+	}
+
+	bool
+	PhysicsFeature::getEnableSimulate() const noexcept
+	{
+		return this->enableSimulate_;
 	}
 
 	void
@@ -30,9 +44,15 @@ namespace octoon
 		return gravity_;
 	}
 
-    void
+	void
+	PhysicsFeature::simulate() noexcept
+	{
+		this->forceSimulate_ = true;
+	}
+
+	void
 	PhysicsFeature::onActivate() except
-    {
+	{
 		this->addMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
 		PhysicsSceneDesc physicsSceneDesc;
@@ -40,36 +60,36 @@ namespace octoon
 
 		physicsContext = PhysicsSystem::instance()->createContext();
 		physicsScene = physicsContext->createScene(physicsSceneDesc);
-    }
+	}
 
-    void
+	void
 	PhysicsFeature::onDeactivate() noexcept
-    {
+	{
 		this->removeMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
 		physicsScene.reset();
 		physicsContext.reset();
-    }
+	}
 
-    void
+	void
 	PhysicsFeature::onReset() noexcept
-    {
-    }
+	{
+	}
 
-    void
+	void
 	PhysicsFeature::onFrameBegin() noexcept
-    {
-    }
+	{
+	}
 	
-    void
+	void
 	PhysicsFeature::onFrame() except
-    {
-    }
+	{
+	}
 
-    void
+	void
 	PhysicsFeature::onFrameEnd() noexcept
-    {
-    }
+	{
+	}
 
 	void
 	PhysicsFeature::onFixedUpdate(const std::any& data) noexcept
@@ -79,9 +99,13 @@ namespace octoon
 			auto timeInterval = std::any_cast<float>(data);
 			if (timeInterval > 0.0f)
 			{
-				physicsScene->simulate(timeInterval);
-				physicsScene->fetchResults();
-				physicsScene->fetchFinish();
+				if (this->getEnableSimulate() || forceSimulate_)
+				{
+					physicsScene->simulate(timeInterval);
+					physicsScene->fetchResults();
+					physicsScene->fetchFinish();
+					forceSimulate_ = false;
+				}				
 			}
 		}
 	}

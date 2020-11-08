@@ -6,15 +6,20 @@
 
 namespace octoon
 {
-    class OCTOON_EXPORT PhysicsFeature final : public GameFeature
+	class OCTOON_EXPORT PhysicsFeature final : public GameFeature
 	{
-        OctoonDeclareSubClass(PhysicsFeature, GameFeature)
+		OctoonDeclareSubClass(PhysicsFeature, GameFeature)
 	public:
 		PhysicsFeature() except;
 		virtual ~PhysicsFeature() noexcept;
 
+		void setEnableSimulate(bool simulate) noexcept;
+		bool getEnableSimulate() const noexcept;
+
 		void setGravity(const math::float3& gravity) noexcept;
 		const math::float3& getGravity() const noexcept;
+
+		void simulate() noexcept;
 
 	public:
 		void onActivate() except override;
@@ -23,7 +28,7 @@ namespace octoon
 		void onReset() noexcept override;
 
 		void onFrameBegin() noexcept override;
-        void onFrame() except;
+		void onFrame() except;
 		void onFrameEnd() noexcept override;
 
 		void onFixedUpdate(const std::any& data) noexcept;
@@ -36,12 +41,15 @@ namespace octoon
 		PhysicsFeature(const PhysicsFeature&) = delete;
 		PhysicsFeature& operator=(const PhysicsFeature&) = delete;
 
-    private:
+	private:
+		bool forceSimulate_;
+		bool enableSimulate_;
+
 		math::float3 gravity_;
 
 		std::shared_ptr<PhysicsContext> physicsContext;
 		std::shared_ptr<PhysicsScene> physicsScene;
-    };
+	};
 }
 
 #endif

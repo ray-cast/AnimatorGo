@@ -15,6 +15,11 @@ namespace octoon
 	}
 
 	void
+	BulletFixedJoint::enableProjection(bool enable) noexcept
+	{
+	}
+
+	void
 	BulletFixedJoint::enablePreprocessing(bool enable) noexcept
 	{
 	}

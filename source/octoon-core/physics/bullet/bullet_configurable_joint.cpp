@@ -178,6 +178,11 @@ namespace octoon
 	}
 
 	void
+	BulletConfigurableJoint::enableProjection(bool enable) noexcept
+	{
+	}
+
+	void
 	BulletConfigurableJoint::enablePreprocessing(bool enable) noexcept
 	{
 	}

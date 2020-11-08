@@ -21,6 +21,7 @@ namespace octoon
 		PhysicsJoint() noexcept;
 		virtual ~PhysicsJoint() noexcept;
 
+		virtual void enableProjection(bool enable) noexcept = 0;
 		virtual void enablePreprocessing(bool enable) noexcept = 0;
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 

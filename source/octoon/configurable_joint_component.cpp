@@ -7,13 +7,14 @@ namespace octoon
 	OctoonImplementSubInterface(ConfigurableJointComponent, JointComponent, "ConfigurableJointComponent")
 
 	ConfigurableJointComponent::ConfigurableJointComponent() noexcept
-		: enablePreprocessing_(true)
-		, motionX_(ConfigurableJointMotion::Free)
-		, motionY_(ConfigurableJointMotion::Free)
-		, motionZ_(ConfigurableJointMotion::Free)
-		, angularMotionX_(ConfigurableJointMotion::Free)
-		, angularMotionY_(ConfigurableJointMotion::Free)
-		, angularMotionZ_(ConfigurableJointMotion::Free)
+		: enableProjection_(true)
+		, enablePreprocessing_(true)
+		, motionX_(ConfigurableJointMotion::Locked)
+		, motionY_(ConfigurableJointMotion::Locked)
+		, motionZ_(ConfigurableJointMotion::Locked)
+		, angularMotionX_(ConfigurableJointMotion::Locked)
+		, angularMotionY_(ConfigurableJointMotion::Locked)
+		, angularMotionZ_(ConfigurableJointMotion::Locked)
 		, lowX_(0)
 		, lowY_(0)
 		, lowZ_(0)
@@ -307,6 +308,14 @@ namespace octoon
 	}
 
 	void
+	ConfigurableJointComponent::enableProjection(bool enable) noexcept
+	{
+		if (joint_)
+			joint_->enableProjection(enable);
+		enableProjection_ = enable;
+	}
+
+	void
 	ConfigurableJointComponent::enablePreprocessing(bool enable) noexcept
 	{
 		if (joint_)
@@ -326,6 +335,7 @@ namespace octoon
 			if (physicsFeature)
 			{
 				joint_ = physicsFeature->getContext()->createConfigurableJoint(bodyA->getRigidbody(), another_.lock()->getRigidbody());
+				joint_->enableProjection(this->enableProjection_);
 				joint_->enablePreprocessing(this->enablePreprocessing_);
 				joint_->setXMotion(motionX_);
 				joint_->setYMotion(motionY_);

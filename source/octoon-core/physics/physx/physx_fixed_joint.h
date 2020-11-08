@@ -20,6 +20,7 @@ namespace octoon
 		PhysxFixedJoint(PhysxContext* context) noexcept;
 		virtual ~PhysxFixedJoint() noexcept;
 
+		virtual void enableProjection(bool enable) noexcept override;
 		virtual void enablePreprocessing(bool enable) noexcept override;
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 

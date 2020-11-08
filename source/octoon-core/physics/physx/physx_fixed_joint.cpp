@@ -17,6 +17,12 @@ namespace octoon
 	}
 
 	void
+	PhysxFixedJoint::enableProjection(bool enable) noexcept
+	{
+		joint_->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, enable);
+	}
+
+	void
 	PhysxFixedJoint::enablePreprocessing(bool enable) noexcept
 	{
 		joint_->setConstraintFlag(physx::PxConstraintFlag::eDISABLE_PREPROCESSING, enable);

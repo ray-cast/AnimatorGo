@@ -34,6 +34,9 @@ namespace octoon
 		{
 			auto idensity = physx::PxTransform(0.f, 0.f, 0.f);
 			joint_ = physx::PxD6JointCreate(*context_->getPxPhysics(), px_lhs->getPxRigidbody(), idensity, px_rhs->getPxRigidbody(), idensity);
+			joint_->setConstraintFlag(physx::PxConstraintFlag::eIMPROVED_SLERP, true);
+			
+			joint_->setProjectionLinearTolerance(0.01f);
 		}
 	}
 
@@ -348,6 +351,12 @@ namespace octoon
 			drive.stiffness = motion;
 			joint_->setDrive(physx::PxD6Drive::eSLERP, drive);
 		}
+	}
+
+	void
+	PhysxConfigurableJoint::enableProjection(bool enable) noexcept
+	{
+		joint_->setConstraintFlag(physx::PxConstraintFlag::ePROJECTION, enable);
 	}
 
 	void

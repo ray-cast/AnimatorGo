@@ -61,6 +61,7 @@ namespace octoon
 		void setDriveAngularY(float motion) noexcept;
 		void setDriveAngularZ(float motion) noexcept;
 
+		void enableProjection(bool enable) noexcept;
 		void enablePreprocessing(bool enable) noexcept;
 
 		std::shared_ptr<RigidbodyComponent> getTarget() noexcept;
@@ -80,6 +81,7 @@ namespace octoon
 		void setupConfigurableTransform(const math::float3& position, const math::Quaternion& rotation);
 
 	private:
+		bool enableProjection_;
 		bool enablePreprocessing_;
 
 		float lowX_;

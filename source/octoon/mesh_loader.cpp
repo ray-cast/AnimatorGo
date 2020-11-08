@@ -233,8 +233,8 @@ namespace octoon
 
 				if (it->rotationLowerLimit.y < it->rotationUpperLimit.y || it->rotationLowerLimit.z < it->rotationUpperLimit.z)
 				{
-					auto rotationLimitY = math::clamp(std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y)), math::EPSILON_E5, math::radians(120.0f));
-					auto rotationLimitZ = math::clamp(std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z)), math::EPSILON_E5, math::radians(120.0f));
+					auto rotationLimitY = math::clamp(std::max(std::abs(it->rotationLowerLimit.y), std::abs(it->rotationUpperLimit.y)), math::radians(5.0f), math::radians(120.0f));
+					auto rotationLimitZ = math::clamp(std::max(std::abs(it->rotationLowerLimit.z), std::abs(it->rotationUpperLimit.z)), math::radians(5.0f), math::radians(120.0f));
 					joint->setSwingLimit(rotationLimitY, rotationLimitZ);
 				}
 

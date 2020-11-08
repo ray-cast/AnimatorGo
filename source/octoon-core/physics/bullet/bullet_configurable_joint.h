@@ -62,6 +62,7 @@ namespace octoon
 		virtual void setDriveAngularY(float motion);
 		virtual void setDriveAngularZ(float motion);
 
+		virtual void enableProjection(bool enable) noexcept override;
 		virtual void enablePreprocessing(bool enable) noexcept override;
 
 	private:

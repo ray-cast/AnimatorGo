@@ -367,6 +367,21 @@ namespace rabbit
 		{
 			needUpdate_ = true;
 		}
+
+		if (profile->h265Module->enable)
+		{
+			if (needUpdate_)
+			{
+				for (auto& it : this->getContext()->behaviour->getComponents())
+				{
+					if (it->getActive())
+						it->onPostProcess();
+				}
+
+				needUpdate_ = false;
+				animationLerp_ = 5;
+			}
+		}
 	}
 
 	void
@@ -387,18 +402,6 @@ namespace rabbit
 		{
 			if (profile->h265Module->enable)
 			{
-				if (needUpdate_)
-				{
-					for (auto& it : context->behaviour->getComponents())
-					{
-						if (it->getActive())
-							it->onPostProcess();
-					}
-
-					needUpdate_ = false;
-					animationLerp_ = 5;
-				}
-
 				if (animationLerp_ > 0)
 				{
 					auto timeFeature = this->getContext()->behaviour->getFeature<octoon::TimerFeature>();

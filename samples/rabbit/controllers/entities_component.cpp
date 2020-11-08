@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <unordered_map>
+#include <omp.h>
 
 using namespace octoon;
 using namespace octoon::math;
@@ -382,170 +383,122 @@ namespace rabbit
 	void
 	EntitiesComponent::setupBoneAnimation(const PmmModel& it, animation::AnimationClips<float>& clips) noexcept
 	{
-		std::vector<Keyframes<float>> translateX(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> translateY(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> translateZ(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationX(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationY(it.bone_init_frame.size());
-		std::vector<Keyframes<float>> rotationZ(it.bone_init_frame.size());
+		std::size_t numBone = it.bone_init_frame.size();
 
-		std::vector<uint32_t> key_to_animation_count(it.bone_init_frame.size());
-		std::vector<uint32_t> key_to_array_index(it.bone_key_frame.size() + it.bone_init_frame.size());
-		std::vector<uint32_t> key_to_data_index(it.bone_key_frame.size());
+		clips.resize(numBone);
 
-		std::size_t numBone = it.bone_name.size();
-
-		for (int i = 0; i < it.bone_key_frame.size(); i++)
+#		pragma omp parallel for num_threads(omp_get_num_procs() / 2)
+		for (std::int32_t i = 0; i < numBone; i++)
 		{
-			auto index = it.bone_key_frame[i].data_index;
-			if (index >= key_to_array_index.size())
-				key_to_array_index.resize(index + 1);
-			key_to_array_index[index] = i;
-		}
-
-		for (int i = 0; i < it.bone_init_frame.size(); i++)
-		{
-			key_to_animation_count[i]++;
-
+			auto keyframeCount = 1u;
 			auto next_index = it.bone_init_frame[i].next_index;
+			auto final_frame = it.bone_init_frame[i].frame;
 			while (next_index > 0)
 			{
+				keyframeCount++;
 				next_index -= it.bone_init_frame.size();
-				key_to_animation_count[i]++;
-				key_to_data_index[next_index] = i;
+				final_frame = it.bone_key_frame[next_index].frame;
 				next_index = it.bone_key_frame[next_index].next_index;
 			}
-		}
 
-		for (std::size_t i = 0; i < key_to_animation_count.size(); i++)
-		{
-			auto count = key_to_animation_count[i] + 1;
-			translateX[i].reserve(count);
-			translateY[i].reserve(count);
-			translateZ[i].reserve(count);
-			rotationX[i].reserve(count * 20);
-			rotationY[i].reserve(count * 20);
-			rotationZ[i].reserve(count * 20);
-		}
+			Keyframes<float> translateX;
+			Keyframes<float> translateY;
+			Keyframes<float> translateZ;
+			Keyframes<float> rotationX;
+			Keyframes<float> rotationY;
+			Keyframes<float> rotationZ;
 
-		for (std::size_t i = 0; i < it.bone_init_frame.size(); i++)
-		{
-			auto& key = it.bone_init_frame[i];
+			translateX.reserve(keyframeCount);
+			translateY.reserve(keyframeCount);
+			translateZ.reserve(keyframeCount);
+			rotationX.reserve(final_frame * 20u + 1u);
+			rotationY.reserve(final_frame * 20u + 1u);
+			rotationZ.reserve(final_frame * 20u + 1u);
 
-			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
-			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
-			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(key.interpolation_rotation[0] / 127.0f, key.interpolation_rotation[2] / 127.0f, key.interpolation_rotation[1] / 127.0f, key.interpolation_rotation[3] / 127.0f);
+			auto& initKey = it.bone_init_frame[i];
+			auto interpolationX = std::make_shared<PathInterpolator<float>>(initKey.interpolation_x[0] / 127.0f, initKey.interpolation_x[2] / 127.0f, initKey.interpolation_x[1] / 127.0f, initKey.interpolation_x[3] / 127.0f);
+			auto interpolationY = std::make_shared<PathInterpolator<float>>(initKey.interpolation_y[0] / 127.0f, initKey.interpolation_y[2] / 127.0f, initKey.interpolation_y[1] / 127.0f, initKey.interpolation_y[3] / 127.0f);
+			auto interpolationZ = std::make_shared<PathInterpolator<float>>(initKey.interpolation_z[0] / 127.0f, initKey.interpolation_z[2] / 127.0f, initKey.interpolation_z[1] / 127.0f, initKey.interpolation_z[3] / 127.0f);
+			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(initKey.interpolation_rotation[0] / 127.0f, initKey.interpolation_rotation[2] / 127.0f, initKey.interpolation_rotation[1] / 127.0f, initKey.interpolation_rotation[3] / 127.0f);
 
-			auto euler = math::eulerAngles(math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w));
+			auto euler = math::eulerAngles(math::Quaternion(initKey.quaternion.x, initKey.quaternion.y, initKey.quaternion.z, initKey.quaternion.w));
 
-			translateX[i].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
-			translateY[i].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
-			translateZ[i].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-			rotationX[i].emplace_back((float)key.frame / 30.0f, euler.x, interpolationRotation);
-			rotationY[i].emplace_back((float)key.frame / 30.0f, euler.y, interpolationRotation);
-			rotationZ[i].emplace_back((float)key.frame / 30.0f, euler.z, interpolationRotation);
-		}
+			translateX.emplace_back((float)initKey.frame / 30.0f, initKey.translation.x, interpolationX);
+			translateY.emplace_back((float)initKey.frame / 30.0f, initKey.translation.y, interpolationY);
+			translateZ.emplace_back((float)initKey.frame / 30.0f, initKey.translation.z, interpolationZ);
+			rotationX.emplace_back((float)initKey.frame / 30.0f, euler.x, interpolationRotation);
+			rotationY.emplace_back((float)initKey.frame / 30.0f, euler.y, interpolationRotation);
+			rotationZ.emplace_back((float)initKey.frame / 30.0f, euler.z, interpolationRotation);
 
-		for (int i = 0; i < it.bone_key_frame.size(); i++)
-		{
-			auto& key = it.bone_key_frame[i];
-			auto& keyLast = key.pre_index < numBone ? it.bone_init_frame[key.pre_index] : it.bone_key_frame[key_to_array_index[key.pre_index]];
-
-			auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
-			auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
-			auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
-			auto interpolationRotation = std::make_shared<PathInterpolator<float>>(keyLast.interpolation_rotation[0] / 127.0f, keyLast.interpolation_rotation[2] / 127.0f, keyLast.interpolation_rotation[1] / 127.0f, keyLast.interpolation_rotation[3] / 127.0f);
-
-			auto index = key_to_data_index[i];
-
-			for (std::size_t j = 1; j <= (key.frame - keyLast.frame) * 20; j++)
+			auto next = it.bone_init_frame[i].next_index;
+			while (next > 0)
 			{
-				auto qkeyLast = math::Quaternion(keyLast.quaternion.x, keyLast.quaternion.y, keyLast.quaternion.z, keyLast.quaternion.w);
-				auto qkey = math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w);
+				auto& key = it.bone_key_frame[next - numBone];
+				auto& keyLast = key.pre_index < numBone ? it.bone_init_frame[key.pre_index] : it.bone_key_frame[key.pre_index - numBone];
 
-				auto t = j / ((key.frame - keyLast.frame) * 20.0f);
-				auto euler = math::eulerAngles(math::slerp(qkeyLast, qkey, interpolationRotation->interpolator(t)));
-				auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 20.0f) * j;
+				auto interpolationX = std::make_shared<PathInterpolator<float>>(key.interpolation_x[0] / 127.0f, key.interpolation_x[2] / 127.0f, key.interpolation_x[1] / 127.0f, key.interpolation_x[3] / 127.0f);
+				auto interpolationY = std::make_shared<PathInterpolator<float>>(key.interpolation_y[0] / 127.0f, key.interpolation_y[2] / 127.0f, key.interpolation_y[1] / 127.0f, key.interpolation_y[3] / 127.0f);
+				auto interpolationZ = std::make_shared<PathInterpolator<float>>(key.interpolation_z[0] / 127.0f, key.interpolation_z[2] / 127.0f, key.interpolation_z[1] / 127.0f, key.interpolation_z[3] / 127.0f);
+				auto interpolationRotation = std::make_shared<PathInterpolator<float>>(keyLast.interpolation_rotation[0] / 127.0f, keyLast.interpolation_rotation[2] / 127.0f, keyLast.interpolation_rotation[1] / 127.0f, keyLast.interpolation_rotation[3] / 127.0f);
 
-				rotationX[index].emplace_back((float)frame / 30.0f, euler.x);
-				rotationY[index].emplace_back((float)frame / 30.0f, euler.y);
-				rotationZ[index].emplace_back((float)frame / 30.0f, euler.z);
+				for (std::size_t j = 1; j <= (key.frame - keyLast.frame) * 20; j++)
+				{
+					auto qkeyLast = math::Quaternion(keyLast.quaternion.x, keyLast.quaternion.y, keyLast.quaternion.z, keyLast.quaternion.w);
+					auto qkey = math::Quaternion(key.quaternion.x, key.quaternion.y, key.quaternion.z, key.quaternion.w);
+
+					auto t = j / ((key.frame - keyLast.frame) * 20.0f);
+					auto euler = math::eulerAngles(math::slerp(qkeyLast, qkey, interpolationRotation->interpolator(t)));
+					auto frame = keyLast.frame + (key.frame - keyLast.frame) / ((key.frame - keyLast.frame) * 20.0f) * j;
+
+					rotationX.emplace_back((float)frame / 30.0f, euler.x);
+					rotationY.emplace_back((float)frame / 30.0f, euler.y);
+					rotationZ.emplace_back((float)frame / 30.0f, euler.z);
+				}
+
+				translateX.emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
+				translateY.emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
+				translateZ.emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
+
+				next = key.next_index;
 			}
 
-			translateX[index].emplace_back((float)key.frame / 30.0f, key.translation.x, interpolationX);
-			translateY[index].emplace_back((float)key.frame / 30.0f, key.translation.y, interpolationY);
-			translateZ[index].emplace_back((float)key.frame / 30.0f, key.translation.z, interpolationZ);
-		}
-
-		clips.resize(it.bone_init_frame.size());
-
-		for (std::size_t i = 0; i < clips.size(); i++)
-		{
 			auto& clip = clips[i];
 			clip.setName(it.bone_name[i]);
-			clip.setCurve("LocalPosition.x", AnimationCurve(std::move(translateX[i])));
-			clip.setCurve("LocalPosition.y", AnimationCurve(std::move(translateY[i])));
-			clip.setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ[i])));
-			clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX[i])));
-			clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY[i])));
-			clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ[i])));
-		}
+			clip.setCurve("LocalPosition.x", AnimationCurve(std::move(translateX)));
+			clip.setCurve("LocalPosition.y", AnimationCurve(std::move(translateY)));
+			clip.setCurve("LocalPosition.z", AnimationCurve(std::move(translateZ)));
+			clip.setCurve("LocalEulerAnglesRaw.x", AnimationCurve(std::move(rotationX)));
+			clip.setCurve("LocalEulerAnglesRaw.y", AnimationCurve(std::move(rotationY)));
+			clip.setCurve("LocalEulerAnglesRaw.z", AnimationCurve(std::move(rotationZ)));
+		}		
 	}
 
 	void
 	EntitiesComponent::setupMorphAnimation(const PmmModel& it, animation::AnimationClip<float>& clip) noexcept
 	{
-		std::vector<Keyframes<float>> keyframes(it.morph_name.size());
-
-		std::vector<uint32_t> key_to_animation_count(it.morph_init_frame.size());
-		std::vector<uint32_t> key_to_array_index(it.morph_key_frame.size() + it.morph_init_frame.size());
-		std::vector<uint32_t> key_to_data_index(it.morph_key_frame.size());
-
-		std::size_t numMorph = it.morph_name.size();
-
-		for (int i = 0; i < it.morph_key_frame.size(); i++)
+		for (std::size_t i = 0, keyframeCount = 1; i < it.morph_init_frame.size(); i++)
 		{
-			auto index = it.morph_key_frame[i].data_index;
-			if (index >= key_to_array_index.size())
-				key_to_array_index.resize(index + 1);
-			key_to_array_index[index] = i;
-		}
-
-		for (int i = 0; i < it.morph_init_frame.size(); i++)
-		{
-			key_to_animation_count[i]++;
-
-			auto next_index = it.morph_init_frame[i].next_index;
-			while (next_index > 0)
+			auto index = it.morph_init_frame[i].next_index;
+			while (index > 0)
 			{
-				next_index -= it.morph_init_frame.size();
-				key_to_animation_count[i]++;
-				key_to_data_index[next_index] = i;
-				next_index = it.morph_key_frame[next_index].next_index;
+				keyframeCount++;
+				index = it.morph_key_frame[index - it.morph_init_frame.size()].next_index;
 			}
-		}
 
-		for (std::size_t i = 0; i < it.morph_name.size(); i++)
-		{
-			keyframes[i].reserve(key_to_animation_count[i] + 1);
-		}
+			Keyframes<float> keyframes;
+			keyframes.reserve(keyframeCount);
+			keyframes.emplace_back((float)it.morph_init_frame[i].frame / 30.0f, it.morph_init_frame[i].value);
 
-		for (std::size_t i = 0; i < it.morph_init_frame.size(); i++)
-		{
-			auto& key = it.morph_init_frame[i];
-			keyframes[i].emplace_back((float)key.frame / 30.0f, key.value);
-		}
+			auto next = it.morph_init_frame[i].next_index;
+			while (next > 0)
+			{
+				next -= it.morph_init_frame.size();
+				auto& frame = it.morph_key_frame[next];
+				keyframes.emplace_back((float)frame.frame / 30.0f, frame.value);
+				next = frame.next_index;
+			}
 
-		for (int i = 0; i < it.morph_key_frame.size(); i++)
-		{
-			auto& key = it.morph_key_frame[i];
-			keyframes[key_to_data_index[i]].emplace_back((float)key.frame / 30.0f, key.value);
-		}
-
-		for (std::size_t i = 0; i < it.morph_name.size(); i++)
-		{
-			clip.setCurve(it.morph_name[i], AnimationCurve(std::move(keyframes[i])));
+			clip.setCurve(it.morph_name[i], AnimationCurve(std::move(keyframes)));
 		}
 	}
 

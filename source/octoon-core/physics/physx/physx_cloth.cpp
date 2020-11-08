@@ -3,14 +3,11 @@
 
 namespace octoon
 {
-	namespace physics
+	PhysxCloth::PhysxCloth(PhysxContext* context, PhysicsRigidbodyDesc desc)
 	{
-		PhysxCloth::PhysxCloth(PhysxContext* context, PhysicsRigidbodyDesc desc)
-		{
-		}
+	}
 
-		PhysxCloth::~PhysxCloth()
-		{
-		}
+	PhysxCloth::~PhysxCloth()
+	{
 	}
 }

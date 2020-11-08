@@ -2,14 +2,11 @@
 
 namespace octoon
 {
-	namespace physics
+	PhysicsScene::PhysicsScene() noexcept
 	{
-		PhysicsScene::PhysicsScene() noexcept
-		{
-		}
+	}
 
-		PhysicsScene::~PhysicsScene() noexcept
-		{
-		}
+	PhysicsScene::~PhysicsScene() noexcept
+	{
 	}
 }

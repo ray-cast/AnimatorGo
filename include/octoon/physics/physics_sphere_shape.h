@@ -9,33 +9,30 @@
 
 namespace octoon
 {
-	namespace physics
+	struct OCTOON_EXPORT PhysicsSphereShapeDesc
 	{
-		struct OCTOON_EXPORT PhysicsSphereShapeDesc
+	public:
+		float radius;
+	public:
+		PhysicsSphereShapeDesc()
+			:radius(1.f)
 		{
-		public:
-			float radius;
-		public:
-			PhysicsSphereShapeDesc()
-				:radius(1.f)
-			{
-			}
-		};
+		}
+	};
 
-		class OCTOON_EXPORT PhysicsSphereShape: public PhysicsShape
-		{
-		public:
-			PhysicsSphereShape() noexcept;
-			virtual ~PhysicsSphereShape();
+	class OCTOON_EXPORT PhysicsSphereShape : public PhysicsShape
+	{
+	public:
+		PhysicsSphereShape() noexcept;
+		virtual ~PhysicsSphereShape();
 
-			virtual float getRadius() = 0;
-			virtual void setRadius(float radius) = 0;
+		virtual float getRadius() = 0;
+		virtual void setRadius(float radius) = 0;
 
-		private:
-			PhysicsSphereShape(const PhysicsSphereShape&) noexcept = delete;
-			PhysicsSphereShape& operator=(const PhysicsSphereShape&) noexcept = delete;
-		};
-	}
+	private:
+		PhysicsSphereShape(const PhysicsSphereShape&) noexcept = delete;
+		PhysicsSphereShape& operator=(const PhysicsSphereShape&) noexcept = delete;
+	};
 }
 
 #endif

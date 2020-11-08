@@ -9,25 +9,22 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxCloth
 	{
-		class OCTOON_EXPORT PhysxCloth
-		{
-		public:
-			PhysxCloth(PhysxContext* context, PhysicsRigidbodyDesc desc);
-			virtual ~PhysxCloth();
+	public:
+		PhysxCloth(PhysxContext* context, PhysicsRigidbodyDesc desc);
+		virtual ~PhysxCloth();
 
-		private:
-			PhysxCloth(const PhysxCloth&) noexcept = delete;
-			PhysxCloth& operator=(const PhysxCloth&) noexcept = delete;
+	private:
+		PhysxCloth(const PhysxCloth&) noexcept = delete;
+		PhysxCloth& operator=(const PhysxCloth&) noexcept = delete;
 
-		private:
-			PhysxContext* context;
-			physx::PxRigidDynamic* rigidbody_;
+	private:
+		PhysxContext* context;
+		physx::PxRigidDynamic* rigidbody_;
 
-			std::shared_ptr<PhysxShape> shape_;
-		};
-	}
+		std::shared_ptr<PhysxShape> shape_;
+	};
 }
 
 #endif

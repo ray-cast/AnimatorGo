@@ -27,7 +27,7 @@ namespace octoon
 	
 	private:
 		friend class RigidbodyComponent;
-		virtual std::shared_ptr<physics::PhysicsShape> getShape() noexcept = 0;
+		virtual std::shared_ptr<PhysicsShape> getShape() noexcept = 0;
 	};
 }
 

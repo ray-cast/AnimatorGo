@@ -2,7 +2,7 @@
 #include "bullet_rigidbody.h"
 #include <bullet/btBulletDynamicsCommon.h>
 
-namespace octoon::physics
+namespace octoon
 {
 	BulletFixedJoint::BulletFixedJoint() noexcept
 		: joint(nullptr)
@@ -11,6 +11,11 @@ namespace octoon::physics
 	}
 
 	BulletFixedJoint::~BulletFixedJoint() noexcept
+	{
+	}
+
+	void
+	BulletFixedJoint::enablePreprocessing(bool enable) noexcept
 	{
 	}
 

@@ -4,21 +4,18 @@
 
 namespace octoon
 {
-	namespace physics
+	OctoonImplementSingleton(PhysicsSystem)
+
+	PhysicsSystem::PhysicsSystem() noexcept
 	{
-		OctoonImplementSingleton(PhysicsSystem)
+	}
 
-		PhysicsSystem::PhysicsSystem() noexcept
-		{
-		}
+	PhysicsSystem::~PhysicsSystem() noexcept
+	{
+	}
 
-		PhysicsSystem::~PhysicsSystem() noexcept
-		{
-		}
-
-		std::shared_ptr<PhysicsContext> PhysicsSystem::createContext()
-		{
-			return std::make_shared<PhysxContext>();
-		}
+	std::shared_ptr<PhysicsContext> PhysicsSystem::createContext()
+	{
+		return std::make_shared<PhysxContext>();
 	}
 }

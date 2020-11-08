@@ -2,11 +2,8 @@
 
 namespace octoon
 {
-	namespace physics
+	void
+	PhysicsListener::onFetchResult() noexcept
 	{
-		void
-		PhysicsListener::onFetchResult() noexcept
-		{
-		}
 	}
 }

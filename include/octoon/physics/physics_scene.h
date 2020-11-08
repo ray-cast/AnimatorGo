@@ -11,36 +11,33 @@
 
 namespace octoon
 {
-    namespace physics
-    {
-		struct OCTOON_EXPORT PhysicsSceneDesc
-		{
-		public:
-			math::float3 gravity;
-			PhysicsSceneDesc()
-				:gravity (0.f, -9.8f, 0.f) {}
-		};
+	struct OCTOON_EXPORT PhysicsSceneDesc
+	{
+	public:
+		math::float3 gravity;
+		PhysicsSceneDesc()
+			:gravity(0.f, -9.8f, 0.f) {}
+	};
 
-        class OCTOON_EXPORT PhysicsScene
-        {
-        public:
-			PhysicsScene() noexcept;
-			~PhysicsScene() noexcept;
+	class OCTOON_EXPORT PhysicsScene
+	{
+	public:
+		PhysicsScene() noexcept;
+		~PhysicsScene() noexcept;
 
-			virtual void setGravity(const math::float3& gravity) noexcept = 0;
-			virtual math::float3 getGravity() const noexcept = 0;
+		virtual void setGravity(const math::float3& gravity) noexcept = 0;
+		virtual math::float3 getGravity() const noexcept = 0;
 
-			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
-			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
-			virtual void simulate(float time) = 0;
-			virtual void fetchResults() = 0;
-			virtual void fetchFinish() = 0;
+		virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
+		virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
+		virtual void simulate(float time) = 0;
+		virtual void fetchResults() = 0;
+		virtual void fetchFinish() = 0;
 
-		private:
-			PhysicsScene(const PhysicsScene&) = delete;
-			PhysicsScene& operator=(const PhysicsScene&) = delete;
-        };
-    }
+	private:
+		PhysicsScene(const PhysicsScene&) = delete;
+		PhysicsScene& operator=(const PhysicsScene&) = delete;
+	};
 }
 
 #endif

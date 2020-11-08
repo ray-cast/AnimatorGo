@@ -2,17 +2,14 @@
 
 namespace octoon
 {
-    namespace physics
-    {
-		class PhysxContext;
-		class PhysxScene;
-		class PhysxRigidbody;
-		class PhysxShape;
-		class PhysxSphereShape;
-		class PhysxJoint;
-		class PhysxFixedJoint;
-		class PhysxConfigurableJoint;
-    }
+	class PhysxContext;
+	class PhysxScene;
+	class PhysxRigidbody;
+	class PhysxShape;
+	class PhysxSphereShape;
+	class PhysxJoint;
+	class PhysxFixedJoint;
+	class PhysxConfigurableJoint;
 }
 
 namespace physx

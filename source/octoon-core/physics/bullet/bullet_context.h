@@ -17,27 +17,24 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT BulletContext : public PhysicsContext
 	{
-		class OCTOON_EXPORT BulletContext : public PhysicsContext
-		{
-		public:
-			BulletContext();
-			virtual ~BulletContext();
+	public:
+		BulletContext();
+		virtual ~BulletContext();
 
-			virtual std::shared_ptr<PhysicsScene> createScene(PhysicsSceneDesc desc) override;
-			virtual std::shared_ptr<PhysicsRigidbody> createRigidbody(PhysicsRigidbodyDesc desc) override;
-			virtual std::shared_ptr<PhysicsBoxShape> createBoxShape(PhysicsBoxShapeDesc desc) override;
-			virtual std::shared_ptr<PhysicsSphereShape> createSphereShape(PhysicsSphereShapeDesc desc) override;
-			virtual std::shared_ptr<PhysicsCapsuleShape> createCapsuleShape(PhysicsCapsuleShapeDesc desc) override;
-			virtual std::shared_ptr<PhysicsFixedJoint> createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
-			virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
+		virtual std::shared_ptr<PhysicsScene> createScene(PhysicsSceneDesc desc) override;
+		virtual std::shared_ptr<PhysicsRigidbody> createRigidbody(PhysicsRigidbodyDesc desc) override;
+		virtual std::shared_ptr<PhysicsBoxShape> createBoxShape(PhysicsBoxShapeDesc desc) override;
+		virtual std::shared_ptr<PhysicsSphereShape> createSphereShape(PhysicsSphereShapeDesc desc) override;
+		virtual std::shared_ptr<PhysicsCapsuleShape> createCapsuleShape(PhysicsCapsuleShapeDesc desc) override;
+		virtual std::shared_ptr<PhysicsFixedJoint> createFixedJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
+		virtual std::shared_ptr<PhysicsConfigurableJoint> createConfigurableJoint(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
-		private:
-			BulletContext(const BulletContext&) noexcept = delete;
-			BulletContext& operator=(const BulletContext&) noexcept = delete;
-		};
-	}
+	private:
+		BulletContext(const BulletContext&) noexcept = delete;
+		BulletContext& operator=(const BulletContext&) noexcept = delete;
+	};
 }
 
 #endif

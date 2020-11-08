@@ -254,7 +254,7 @@ namespace octoon
 		return isKinematic_;
 	}
 
-	std::shared_ptr<physics::PhysicsRigidbody>
+	std::shared_ptr<PhysicsRigidbody>
 	RigidbodyComponent::getRigidbody()
 	{
 		return rigidbody_;
@@ -272,16 +272,6 @@ namespace octoon
 	{
 		if (rigidbody_ && !isKinematic_)
 			rigidbody_->clearTorque();
-	}
-
-	void
-	RigidbodyComponent::updateMassAndInertia(float density) noexcept
-	{
-		if (rigidbody_)
-		{
-			rigidbody_->updateMassAndInertia(density);
-			this->mass_ = rigidbody_->getMass();
-		}
 	}
 
 	GameComponentPtr
@@ -397,8 +387,8 @@ namespace octoon
 		{
 			auto transform = this->getComponent<TransformComponent>();
 
-			physics::PhysicsRigidbodyDesc desc;
-			desc.type = isKinematic_ ? physics::PhysicsRigidbodyType::Static : physics::PhysicsRigidbodyType::Dynamic;
+			PhysicsRigidbodyDesc desc;
+			desc.type = isKinematic_ ? PhysicsRigidbodyType::Static : PhysicsRigidbodyType::Dynamic;
 			desc.translate = position_ = transform->getTranslate();
 			desc.rotation = rotation_ = transform->getQuaternion();
 			desc.mass = mass_;

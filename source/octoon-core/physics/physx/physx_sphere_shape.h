@@ -15,40 +15,37 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxSphereShape: public PhysicsSphereShape, public PhysxShape
 	{
-		class OCTOON_EXPORT PhysxSphereShape: public PhysicsSphereShape, public PhysxShape
-		{
-		public:
-			PhysxSphereShape(PhysxContext* context, float radius);
-			virtual ~PhysxSphereShape() noexcept;
+	public:
+		PhysxSphereShape(PhysxContext* context, float radius);
+		virtual ~PhysxSphereShape() noexcept;
 
-			virtual math::float3 getCenter() override;
-			virtual void setCenter(const math::float3& center) override;
+		virtual math::float3 getCenter() override;
+		virtual void setCenter(const math::float3& center) override;
 
-			virtual math::Quaternion getQuaternion() override;
-			virtual void setQuaternion(const math::Quaternion& center) override;
+		virtual math::Quaternion getQuaternion() override;
+		virtual void setQuaternion(const math::Quaternion& center) override;
 
-			virtual void setContactOffset(float offset) override;
-			virtual float getContactOffset() const override;
+		virtual void setContactOffset(float offset) override;
+		virtual float getContactOffset() const override;
 
-			virtual void setRestOffset(float offset) override;
-			virtual float getRestOffset() const override;
+		virtual void setRestOffset(float offset) override;
+		virtual float getRestOffset() const override;
 
-			virtual float getRadius() override;
-			virtual void setRadius(float radius) override;
+		virtual float getRadius() override;
+		virtual void setRadius(float radius) override;
 
-			virtual physx::PxShape* getPxShape() override;
-			virtual physx::PxMaterial* getPxMaterial() override;
+		virtual physx::PxShape* getPxShape() override;
+		virtual physx::PxMaterial* getPxMaterial() override;
 
-		private:
-			PhysxSphereShape(const PhysxSphereShape&) noexcept = delete;
-			PhysxSphereShape& operator=(const PhysxSphereShape&) noexcept = delete;
-		private:
-			physx::PxShape* px_shape;
-			physx::PxMaterial* px_material;
-		};
-	}
+	private:
+		PhysxSphereShape(const PhysxSphereShape&) noexcept = delete;
+		PhysxSphereShape& operator=(const PhysxSphereShape&) noexcept = delete;
+	private:
+		physx::PxShape* px_shape;
+		physx::PxMaterial* px_material;
+	};
 }
 
 #endif

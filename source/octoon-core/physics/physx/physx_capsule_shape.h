@@ -11,47 +11,44 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxCapsuleShape : public PhysicsCapsuleShape, public PhysxShape
 	{
-		class OCTOON_EXPORT PhysxCapsuleShape : public PhysicsCapsuleShape, public PhysxShape
-		{
-		public:
-			PhysxCapsuleShape(PhysxContext* context, float radius, float height);
-			virtual ~PhysxCapsuleShape() noexcept;
+	public:
+		PhysxCapsuleShape(PhysxContext* context, float radius, float height);
+		virtual ~PhysxCapsuleShape() noexcept;
 
-			virtual math::float3 getCenter() override;
-			virtual void setCenter(const math::float3& center) override;
+		virtual math::float3 getCenter() override;
+		virtual void setCenter(const math::float3& center) override;
 
-			virtual math::Quaternion getQuaternion() override;
-			virtual void setQuaternion(const math::Quaternion& center) override;
+		virtual math::Quaternion getQuaternion() override;
+		virtual void setQuaternion(const math::Quaternion& center) override;
 
-			virtual void setContactOffset(float offset) override;
-			virtual float getContactOffset() const override;
+		virtual void setContactOffset(float offset) override;
+		virtual float getContactOffset() const override;
 
-			virtual void setRestOffset(float offset) override;
-			virtual float getRestOffset() const override;
+		virtual void setRestOffset(float offset) override;
+		virtual float getRestOffset() const override;
 
-			virtual void setRadius(float width) override;
-			virtual void setHeight(float height) override;
+		virtual void setRadius(float width) override;
+		virtual void setHeight(float height) override;
 
-			virtual float getRadius() const override;
-			virtual float getHeight() const override;
+		virtual float getRadius() const override;
+		virtual float getHeight() const override;
 
-			virtual physx::PxShape* getPxShape() override;
-			virtual physx::PxMaterial* getPxMaterial() override;
+		virtual physx::PxShape* getPxShape() override;
+		virtual physx::PxMaterial* getPxMaterial() override;
 
-		private:
-			PhysxCapsuleShape(const PhysxCapsuleShape&) noexcept = delete;
-			PhysxCapsuleShape& operator=(const PhysxCapsuleShape&) noexcept = delete;
+	private:
+		PhysxCapsuleShape(const PhysxCapsuleShape&) noexcept = delete;
+		PhysxCapsuleShape& operator=(const PhysxCapsuleShape&) noexcept = delete;
 
-		private:
-			float radius_;
-			float height_;
+	private:
+		float radius_;
+		float height_;
 
-			physx::PxShape* px_shape;
-			physx::PxMaterial* px_material;
-		};
-	}
+		physx::PxShape* px_shape;
+		physx::PxMaterial* px_material;
+	};
 }
 
 #endif

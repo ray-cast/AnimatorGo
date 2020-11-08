@@ -2,14 +2,11 @@
 
 namespace octoon
 {
-    namespace physics
-    {
-        PhysicsSphereShape::PhysicsSphereShape() noexcept
-		{
-		}
+	PhysicsSphereShape::PhysicsSphereShape() noexcept
+	{
+	}
 
-		PhysicsSphereShape::~PhysicsSphereShape()
-		{
-		}
-    }
+	PhysicsSphereShape::~PhysicsSphereShape()
+	{
+	}
 }

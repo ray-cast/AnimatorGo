@@ -11,50 +11,47 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxBoxShape final : public PhysicsBoxShape, public PhysxShape
 	{
-		class OCTOON_EXPORT PhysxBoxShape : public PhysicsBoxShape, public PhysxShape
-		{
-		public:
-			PhysxBoxShape(PhysxContext* context, float hx, float hy, float hz);
-			virtual ~PhysxBoxShape() noexcept;
+	public:
+		PhysxBoxShape(PhysxContext* context, float hx, float hy, float hz);
+		virtual ~PhysxBoxShape() noexcept;
 
-			virtual math::float3 getCenter() override;
-			virtual void setCenter(const math::float3& center) override;
+		virtual math::float3 getCenter() override;
+		virtual void setCenter(const math::float3& center) override;
 
-			virtual math::Quaternion getQuaternion() override;
-			virtual void setQuaternion(const math::Quaternion& center) override;
+		virtual math::Quaternion getQuaternion() override;
+		virtual void setQuaternion(const math::Quaternion& center) override;
 
-			virtual void setContactOffset(float offset) override;
-			virtual float getContactOffset() const override;
+		virtual void setContactOffset(float offset) override;
+		virtual float getContactOffset() const override;
 
-			virtual void setRestOffset(float offset) override;
-			virtual float getRestOffset() const override;
+		virtual void setRestOffset(float offset) override;
+		virtual float getRestOffset() const override;
 
-			virtual void setWidth(float width) override;
-			virtual void setHeight(float height) override;
-			virtual void setDepth(float depth) override;
+		virtual void setWidth(float width) override;
+		virtual void setHeight(float height) override;
+		virtual void setDepth(float depth) override;
 
-			virtual float getWidth() const override;
-			virtual float getHeight() const override;
-			virtual float getDepth() const override;
+		virtual float getWidth() const override;
+		virtual float getHeight() const override;
+		virtual float getDepth() const override;
 
-			virtual physx::PxShape* getPxShape() override;
-			virtual physx::PxMaterial* getPxMaterial() override;
+		virtual physx::PxShape* getPxShape() override;
+		virtual physx::PxMaterial* getPxMaterial() override;
 
-		private:
-			PhysxBoxShape(const PhysxBoxShape&) noexcept = delete;
-			PhysxBoxShape& operator=(const PhysxBoxShape&) noexcept = delete;
+	private:
+		PhysxBoxShape(const PhysxBoxShape&) noexcept = delete;
+		PhysxBoxShape& operator=(const PhysxBoxShape&) noexcept = delete;
 
-		private:
-			float width_;
-			float height_;
-			float depth_;
+	private:
+		float width_;
+		float height_;
+		float depth_;
 
-			physx::PxShape* px_shape;
-			physx::PxMaterial* px_material;
-		};
-	}
+		physx::PxShape* px_shape;
+		physx::PxMaterial* px_material;
+	};
 }
 
 #endif

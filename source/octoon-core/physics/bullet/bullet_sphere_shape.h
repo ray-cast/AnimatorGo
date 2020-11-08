@@ -12,39 +12,36 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT BulletSphereShape final : public PhysicsSphereShape, public BulletShape
 	{
-		class OCTOON_EXPORT BulletSphereShape final : public PhysicsSphereShape, public BulletShape
-		{
-		public:
-			BulletSphereShape(float radius);
-			virtual ~BulletSphereShape() noexcept;
+	public:
+		BulletSphereShape(float radius);
+		virtual ~BulletSphereShape() noexcept;
 
-			virtual math::float3 getCenter() override;
-			virtual void setCenter(const math::float3& center) override;
+		virtual math::float3 getCenter() override;
+		virtual void setCenter(const math::float3& center) override;
 
-			virtual math::Quaternion getQuaternion() override;
-			virtual void setQuaternion(const math::Quaternion& center) override;
+		virtual math::Quaternion getQuaternion() override;
+		virtual void setQuaternion(const math::Quaternion& center) override;
 
-			virtual void setContactOffset(float offset) override;
-			virtual float getContactOffset() const override;
+		virtual void setContactOffset(float offset) override;
+		virtual float getContactOffset() const override;
 
-			virtual void setRestOffset(float offset) override;
-			virtual float getRestOffset() const override;
+		virtual void setRestOffset(float offset) override;
+		virtual float getRestOffset() const override;
 
-			virtual float getRadius() override;
-			virtual void setRadius(float radius) override;
+		virtual float getRadius() override;
+		virtual void setRadius(float radius) override;
 
-			virtual btCollisionShape* getPxShape() const override;
+		virtual btCollisionShape* getPxShape() const override;
 
-		private:
-			BulletSphereShape(const BulletSphereShape&) noexcept = delete;
-			BulletSphereShape& operator=(const BulletSphereShape&) noexcept = delete;
+	private:
+		BulletSphereShape(const BulletSphereShape&) noexcept = delete;
+		BulletSphereShape& operator=(const BulletSphereShape&) noexcept = delete;
 
-		private:
-			std::unique_ptr<btSphereShape> shape_;
-		};
-	}
+	private:
+		std::unique_ptr<btSphereShape> shape_;
+	};
 }
 
 #endif

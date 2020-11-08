@@ -11,21 +11,18 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT BulletShape : public PhysicsShape
 	{
-		class OCTOON_EXPORT BulletShape : public PhysicsShape
-		{
-		public:
-			BulletShape() noexcept;
-			virtual ~BulletShape() noexcept;
+	public:
+		BulletShape() noexcept;
+		virtual ~BulletShape() noexcept;
 
-			virtual btCollisionShape* getPxShape() const = 0;
+		virtual btCollisionShape* getPxShape() const = 0;
 
-		private:
-			BulletShape(const BulletShape&) noexcept = delete;
-			BulletShape& operator=(const BulletShape&) noexcept = delete;
-		};
-	}
+	private:
+		BulletShape(const BulletShape&) noexcept = delete;
+		BulletShape& operator=(const BulletShape&) noexcept = delete;
+	};
 }
 
 #endif

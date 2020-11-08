@@ -10,21 +10,18 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT BulletJoint : public PhysicsJoint
 	{
-		class OCTOON_EXPORT BulletJoint : public PhysicsJoint
-		{
-		public:
-			BulletJoint() noexcept;
-			virtual ~BulletJoint() noexcept;
+	public:
+		BulletJoint() noexcept;
+		virtual ~BulletJoint() noexcept;
 
-			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
+		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 
-		private:
-			BulletJoint(const BulletJoint&) = delete;
-			BulletJoint& operator=(const BulletJoint&) = delete;
-		};
-	}
+	private:
+		BulletJoint(const BulletJoint&) = delete;
+		BulletJoint& operator=(const BulletJoint&) = delete;
+	};
 }
 
 #endif

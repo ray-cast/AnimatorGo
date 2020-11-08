@@ -6,21 +6,18 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysicsListener
 	{
-		class OCTOON_EXPORT PhysicsListener
-		{
-		public:
-			PhysicsListener() noexcept = default;
-			virtual ~PhysicsListener() noexcept = default;
+	public:
+		PhysicsListener() noexcept = default;
+		virtual ~PhysicsListener() noexcept = default;
 
-			virtual void onFetchResult() noexcept;
+		virtual void onFetchResult() noexcept;
 
-		private:
-			PhysicsListener(const PhysicsListener&) = delete;
-			PhysicsListener& operator=(const PhysicsListener&) = delete;
-		};
-	}
+	private:
+		PhysicsListener(const PhysicsListener&) = delete;
+		PhysicsListener& operator=(const PhysicsListener&) = delete;
+	};
 }
 
 #endif

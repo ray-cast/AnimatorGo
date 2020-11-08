@@ -9,38 +9,35 @@
 
 namespace octoon
 {
-	namespace physics
+	struct OCTOON_EXPORT PhysicsCapsuleShapeDesc
 	{
-		struct OCTOON_EXPORT PhysicsCapsuleShapeDesc
+	public:
+		float radius;
+		float height;
+	public:
+		PhysicsCapsuleShapeDesc()
+			: radius(1.f)
+			, height(1.f)
 		{
-		public:
-			float radius;
-			float height;
-		public:
-			PhysicsCapsuleShapeDesc()
-				: radius(1.f)
-				, height(1.f)
-			{
-			}
-		};
+		}
+	};
 
-		class OCTOON_EXPORT PhysicsCapsuleShape : public PhysicsShape
-		{
-		public:
-			PhysicsCapsuleShape() noexcept;
-			virtual ~PhysicsCapsuleShape();
+	class OCTOON_EXPORT PhysicsCapsuleShape : public PhysicsShape
+	{
+	public:
+		PhysicsCapsuleShape() noexcept;
+		virtual ~PhysicsCapsuleShape();
 
-			virtual void setRadius(float width) = 0;
-			virtual void setHeight(float height) = 0;
+		virtual void setRadius(float width) = 0;
+		virtual void setHeight(float height) = 0;
 
-			virtual float getRadius() const = 0;
-			virtual float getHeight() const = 0;
+		virtual float getRadius() const = 0;
+		virtual float getHeight() const = 0;
 
-		private:
-			PhysicsCapsuleShape(const PhysicsCapsuleShape&) noexcept = delete;
-			PhysicsCapsuleShape& operator=(const PhysicsCapsuleShape&) noexcept = delete;
-		};
-	}
+	private:
+		PhysicsCapsuleShape(const PhysicsCapsuleShape&) noexcept = delete;
+		PhysicsCapsuleShape& operator=(const PhysicsCapsuleShape&) noexcept = delete;
+	};
 }
 
 #endif

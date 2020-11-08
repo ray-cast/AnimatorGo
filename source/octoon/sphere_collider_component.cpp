@@ -99,7 +99,7 @@ namespace octoon
 		return this->restOffset_;
 	}
 
-	std::shared_ptr<physics::PhysicsShape>
+	std::shared_ptr<PhysicsShape>
 	SphereColliderComponent::getShape() noexcept
 	{
 		return this->shape_;
@@ -121,7 +121,7 @@ namespace octoon
 		auto physicsFeature = this->getFeature<PhysicsFeature>();
 		if (physicsFeature)
 		{
-			physics::PhysicsSphereShapeDesc sphereDesc;
+			PhysicsSphereShapeDesc sphereDesc;
 			sphereDesc.radius = radius_;
 			shape_ = physicsFeature->getContext()->createSphereShape(sphereDesc);
 			shape_->setCenter(this->center_);

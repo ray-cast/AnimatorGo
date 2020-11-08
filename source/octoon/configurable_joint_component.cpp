@@ -7,7 +7,8 @@ namespace octoon
 	OctoonImplementSubInterface(ConfigurableJointComponent, JointComponent, "ConfigurableJointComponent")
 
 	ConfigurableJointComponent::ConfigurableJointComponent() noexcept
-		: motionX_(ConfigurableJointMotion::Free)
+		: enablePreprocessing_(true)
+		, motionX_(ConfigurableJointMotion::Free)
 		, motionY_(ConfigurableJointMotion::Free)
 		, motionZ_(ConfigurableJointMotion::Free)
 		, angularMotionX_(ConfigurableJointMotion::Free)
@@ -232,7 +233,7 @@ namespace octoon
 	ConfigurableJointComponent::setTwistLimit(float min, float max) noexcept
 	{
 		if (joint_)
-			joint_->setTwistLimit(min ,max);
+			joint_->setTwistLimit(min, max);
 		lowAngleXLimit_ = min;
 		highAngleXLimit_ = max;
 	}
@@ -306,6 +307,14 @@ namespace octoon
 	}
 
 	void
+	ConfigurableJointComponent::enablePreprocessing(bool enable) noexcept
+	{
+		if (joint_)
+			joint_->enablePreprocessing(enable);
+		enablePreprocessing_ = enable;
+	}
+
+	void
 	ConfigurableJointComponent::setupConfigurableJoint()
 	{
 		if (joint_) return;
@@ -317,7 +326,8 @@ namespace octoon
 			if (physicsFeature)
 			{
 				joint_ = physicsFeature->getContext()->createConfigurableJoint(bodyA->getRigidbody(), another_.lock()->getRigidbody());
-				/*joint_->setXMotion(motionX_);
+				joint_->enablePreprocessing(this->enablePreprocessing_);
+				joint_->setXMotion(motionX_);
 				joint_->setYMotion(motionY_);
 				joint_->setZMotion(motionZ_);
 				joint_->setLowXLimit(lowX_);
@@ -329,18 +339,14 @@ namespace octoon
 				joint_->setAngularXMotion(angularMotionX_);
 				joint_->setAngularYMotion(angularMotionY_);
 				joint_->setAngularZMotion(angularMotionZ_);
-				joint_->setLowAngularXLimit(lowAngleXLimit_);
-				joint_->setLowAngularYLimit(lowAngleYLimit_);
-				joint_->setLowAngularZLimit(lowAngleZLimit_);
-				joint_->setHighAngularXLimit(highAngleXLimit_);
-				joint_->setHighAngularYLimit(highAngleYLimit_);
-				joint_->setHighAngularZLimit(highAngleZLimit_);
 				joint_->setDriveMotionX(driveMotion_.x);
 				joint_->setDriveMotionY(driveMotion_.y);
 				joint_->setDriveMotionZ(driveMotion_.z);
 				joint_->setDriveAngularX(driveAngular_.x);
 				joint_->setDriveAngularY(driveAngular_.y);
-				joint_->setDriveAngularZ(driveAngular_.z);*/
+				joint_->setDriveAngularZ(driveAngular_.z);
+
+				this->setupConfigurableTransform(this->targetPosition_, this->targetRotation_);
 			}
 		}
 	}

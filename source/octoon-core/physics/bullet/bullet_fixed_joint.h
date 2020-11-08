@@ -12,7 +12,7 @@
 #include "bullet_joint.h"
 #include "bullet_type.h"
 
-namespace octoon::physics
+namespace octoon
 {
 	class OCTOON_EXPORT BulletFixedJoint final : public PhysicsFixedJoint, public BulletJoint
 	{
@@ -20,6 +20,7 @@ namespace octoon::physics
 		BulletFixedJoint() noexcept;
 		virtual ~BulletFixedJoint() noexcept;
 
+		virtual void enablePreprocessing(bool enable) noexcept override;
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
 	private:

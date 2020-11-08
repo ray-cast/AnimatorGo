@@ -14,24 +14,23 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxFixedJoint: public PhysicsFixedJoint, public PhysxJoint
 	{
-		class OCTOON_EXPORT PhysxFixedJoint: public PhysicsFixedJoint, public PhysxJoint
-		{
-		public:
-			PhysxFixedJoint(PhysxContext* context) noexcept;
-			virtual ~PhysxFixedJoint() noexcept;
+	public:
+		PhysxFixedJoint(PhysxContext* context) noexcept;
+		virtual ~PhysxFixedJoint() noexcept;
 
-			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
+		virtual void enablePreprocessing(bool enable) noexcept override;
+		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
-		private:
-			PhysxFixedJoint(const PhysxFixedJoint&) = delete;
-			PhysxFixedJoint& operator=(const PhysxFixedJoint&) = delete;
-		private:
-			PhysxContext* context;
-			physx::PxFixedJoint* joint;
-		};
-	}
+	private:
+		PhysxFixedJoint(const PhysxFixedJoint&) = delete;
+		PhysxFixedJoint& operator=(const PhysxFixedJoint&) = delete;
+
+	private:
+		PhysxContext* context_;
+		physx::PxFixedJoint* joint_;
+	};
 }
 
 #endif

@@ -1,20 +1,3 @@
-
-
-namespace octoon
-{
-    namespace physics
-    {
-		class BulletContext;
-		class BulletScene;
-		class BulletRigidbody;
-		class BulletShape;
-		class BulletSphereShape;
-		class BulletJoint;
-		class BulletFixedJoint;
-		class BulletConfigurableJoint;
-    }
-}
-
 struct btDefaultMotionState;
 class btBoxShape;
 class btSphereShape;
@@ -37,40 +20,14 @@ class btActionInterface;
 class btPairCachingGhostObject;
 class btGeneric6DofSpringConstraint;
 
-namespace physx
+namespace octoon
 {
-	class PxProfilerCallback;
-	class PxErrorCallback;
-	class PxDefaultAllocator;
-	class PxFoundation;
-	class PxPvd;
-	class PxPhysics;
-	class PxCooking;
-	class PxDefaultCpuDispatcher;
-	class PxPvdTransport;
-
-	class PxScene;
-	class PxRigidActor;
-	class PxRigidBody;
-	class PxRigidStatic;
-	class PxRigidDynamic;
-	class PxMaterial;
-
-	class PxTransform;
-	class PxVec3;
-	class PxQuat;
-	class PxShape;
-	
-
-	class PxFixedJoint;
-	class PxD6Joint;
-} // namespace physx
-
-namespace nv
-{
-	namespace cloth
-	{
-		class DxContextManagerCallback;
-		class Factory;
-	}
+	class BulletContext;
+	class BulletScene;
+	class BulletRigidbody;
+	class BulletShape;
+	class BulletSphereShape;
+	class BulletJoint;
+	class BulletFixedJoint;
+	class BulletConfigurableJoint;
 }

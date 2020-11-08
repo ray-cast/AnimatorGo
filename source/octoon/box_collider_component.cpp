@@ -166,7 +166,7 @@ namespace octoon
 		return instance;
     }
 
-	std::shared_ptr<physics::PhysicsShape>
+	std::shared_ptr<PhysicsShape>
 	BoxColliderComponent::getShape() noexcept
 	{
 		return this->shape_;
@@ -178,7 +178,7 @@ namespace octoon
 		auto physicsFeature = this->getFeature<PhysicsFeature>();
 		if (physicsFeature)
 		{
-			physics::PhysicsBoxShapeDesc boxDesc;
+			PhysicsBoxShapeDesc boxDesc;
 			boxDesc.width = size_.x;
 			boxDesc.height = size_.y;
 			boxDesc.depth = size_.z;

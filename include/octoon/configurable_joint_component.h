@@ -13,7 +13,6 @@
 
 namespace octoon
 {
-	using physics::ConfigurableJointMotion;
 	class OCTOON_EXPORT ConfigurableJointComponent final : public JointComponent
 	{
 		OctoonDeclareSubInterface(ConfigurableJointComponent, GameComponent)
@@ -62,6 +61,8 @@ namespace octoon
 		void setDriveAngularY(float motion) noexcept;
 		void setDriveAngularZ(float motion) noexcept;
 
+		void enablePreprocessing(bool enable) noexcept;
+
 		std::shared_ptr<RigidbodyComponent> getTarget() noexcept;
 		void setTarget(std::shared_ptr<RigidbodyComponent> component) noexcept;
 
@@ -79,12 +80,7 @@ namespace octoon
 		void setupConfigurableTransform(const math::float3& position, const math::Quaternion& rotation);
 
 	private:
-		math::float3 targetPosition_;
-		math::float3 targetVelocity_;
-		math::Quaternion targetRotation_;
-
-		math::float3 driveMotion_;
-		math::float3 driveAngular_;
+		bool enablePreprocessing_;
 
 		float lowX_;
 		float lowY_;
@@ -104,6 +100,13 @@ namespace octoon
 		float highAngleYLimit_;
 		float highAngleZLimit_;
 
+		math::float3 targetPosition_;
+		math::float3 targetVelocity_;
+		math::Quaternion targetRotation_;
+
+		math::float3 driveMotion_;
+		math::float3 driveAngular_;
+
 		ConfigurableJointMotion motionX_;
 		ConfigurableJointMotion motionY_;
 		ConfigurableJointMotion motionZ_;
@@ -111,7 +114,7 @@ namespace octoon
 		ConfigurableJointMotion angularMotionY_;
 		ConfigurableJointMotion angularMotionZ_;
 
-		std::shared_ptr<physics::PhysicsConfigurableJoint> joint_;
+		std::shared_ptr<PhysicsConfigurableJoint> joint_;
 		std::weak_ptr<RigidbodyComponent> another_;
 	};
 }

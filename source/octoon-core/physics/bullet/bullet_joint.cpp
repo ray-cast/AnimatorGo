@@ -2,15 +2,11 @@
 
 namespace octoon
 {
-	namespace physics
+	BulletJoint::BulletJoint() noexcept
 	{
-		BulletJoint::BulletJoint() noexcept
-		{
-		}
+	}
 
-		BulletJoint::~BulletJoint() noexcept
-		{
-		}
-
+	BulletJoint::~BulletJoint() noexcept
+	{
 	}
 }

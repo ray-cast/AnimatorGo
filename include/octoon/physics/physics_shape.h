@@ -8,31 +8,28 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysicsShape
 	{
-		class OCTOON_EXPORT PhysicsShape
-		{
-		public:
-			PhysicsShape() noexcept;
-			virtual ~PhysicsShape() noexcept;
+	public:
+		PhysicsShape() noexcept;
+		virtual ~PhysicsShape() noexcept;
 
-			virtual math::float3 getCenter() = 0;
-			virtual void setCenter(const math::float3& center) = 0;
+		virtual math::float3 getCenter() = 0;
+		virtual void setCenter(const math::float3& center) = 0;
 
-			virtual math::Quaternion getQuaternion() = 0;
-			virtual void setQuaternion(const math::Quaternion& center) = 0;
+		virtual math::Quaternion getQuaternion() = 0;
+		virtual void setQuaternion(const math::Quaternion& center) = 0;
 
-			virtual void setContactOffset(float offset) = 0;
-			virtual float getContactOffset() const = 0;
+		virtual void setContactOffset(float offset) = 0;
+		virtual float getContactOffset() const = 0;
 
-			virtual void setRestOffset(float offset) = 0;
-			virtual float getRestOffset() const = 0;
+		virtual void setRestOffset(float offset) = 0;
+		virtual float getRestOffset() const = 0;
 
-		private:
-			PhysicsShape(const PhysicsShape&) noexcept = delete;
-			PhysicsShape& operator=(const PhysicsShape&) noexcept = delete;
-		};
-	}
+	private:
+		PhysicsShape(const PhysicsShape&) noexcept = delete;
+		PhysicsShape& operator=(const PhysicsShape&) noexcept = delete;
+	};
 }
 
 #endif

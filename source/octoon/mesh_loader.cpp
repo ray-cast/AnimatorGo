@@ -168,6 +168,7 @@ namespace octoon
 				joint->setTarget(bodyB->getComponent<RigidbodyComponent>());
 				joint->setTargetPosition(it->position);
 				joint->setTargetRotation(math::Quaternion(it->rotation));
+				joint->enablePreprocessing(false);
 
 				if (it->movementLowerLimit.x == 0.0f && it->movementUpperLimit.x == 0.0f)
 					joint->setXMotion(ConfigurableJointMotion::Locked);

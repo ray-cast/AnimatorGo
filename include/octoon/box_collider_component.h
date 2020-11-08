@@ -40,7 +40,7 @@ namespace octoon
 
 	private:
 		friend class RigidbodyComponent;
-		std::shared_ptr<physics::PhysicsShape> getShape() noexcept override;
+		std::shared_ptr<PhysicsShape> getShape() noexcept override;
 
 	private:
 		void onActivate() except override;
@@ -54,7 +54,7 @@ namespace octoon
 		math::float3 center_;
 		math::Quaternion rotation_;
 
-		std::shared_ptr<physics::PhysicsBoxShape> shape_;
+		std::shared_ptr<PhysicsBoxShape> shape_;
 	};
 }
 

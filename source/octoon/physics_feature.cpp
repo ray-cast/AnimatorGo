@@ -35,10 +35,10 @@ namespace octoon
     {
 		this->addMessageListener("feature:timer:fixed", std::bind(&PhysicsFeature::onFixedUpdate, this, std::placeholders::_1));
 
-		physics::PhysicsSceneDesc physicsSceneDesc;
+		PhysicsSceneDesc physicsSceneDesc;
 		physicsSceneDesc.gravity = gravity_;
 
-		physicsContext = physics::PhysicsSystem::instance()->createContext();
+		physicsContext = PhysicsSystem::instance()->createContext();
 		physicsScene = physicsContext->createScene(physicsSceneDesc);
     }
 
@@ -86,13 +86,13 @@ namespace octoon
 		}
 	}
 
-	std::shared_ptr<physics::PhysicsContext>
+	std::shared_ptr<PhysicsContext>
 	PhysicsFeature::getContext()
 	{
 		return physicsContext;
 	}
 
-	std::shared_ptr<physics::PhysicsScene> 
+	std::shared_ptr<PhysicsScene> 
 	PhysicsFeature::getScene()
 	{
 		return physicsScene;

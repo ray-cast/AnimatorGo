@@ -13,7 +13,7 @@ namespace octoon
         StartAsleep, //RigidbodyComponent is initially asleep.
     };
 
-    class OCTOON_EXPORT RigidbodyComponent final : public GameComponent, public physics::PhysicsListener
+    class OCTOON_EXPORT RigidbodyComponent final : public GameComponent, public PhysicsListener
 	{
 		OctoonDeclareSubClass(RigidbodyComponent, GameComponent)
     public:
@@ -53,8 +53,6 @@ namespace octoon
 		void rotation(const math::Quaternion& quat) noexcept;
 		void movePosition(const math::float3& position) noexcept;
 
-        void updateMassAndInertia(float density) noexcept;
-
 		void clearForce() noexcept;
 		void clearTorque() noexcept;
 
@@ -62,7 +60,7 @@ namespace octoon
 
 		bool getIsKinematic() const noexcept;
 
-		std::shared_ptr<physics::PhysicsRigidbody> getRigidbody();
+		std::shared_ptr<PhysicsRigidbody> getRigidbody();
 
     private:
         void onActivate() except override;
@@ -101,7 +99,7 @@ namespace octoon
 
         RigidbodySleepMode sleepMode_;
 
-		std::shared_ptr<physics::PhysicsRigidbody> rigidbody_;
+		std::shared_ptr<PhysicsRigidbody> rigidbody_;
     };
 }
 

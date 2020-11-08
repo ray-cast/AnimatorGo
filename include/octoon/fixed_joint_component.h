@@ -29,7 +29,7 @@ namespace octoon
 		void setupFixedJoint();
 
 	private:
-		std::shared_ptr<physics::PhysicsFixedJoint> joint;
+		std::shared_ptr<PhysicsFixedJoint> joint;
 		std::weak_ptr<RigidbodyComponent> thisBody;
 		std::weak_ptr<RigidbodyComponent> target_;
 	};

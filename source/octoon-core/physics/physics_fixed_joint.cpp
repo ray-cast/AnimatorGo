@@ -2,15 +2,11 @@
 
 namespace octoon
 {
-	namespace physics
+	PhysicsFixedJoint::PhysicsFixedJoint() noexcept
 	{
-		PhysicsFixedJoint::PhysicsFixedJoint() noexcept
-		{
-		}
+	}
 
-		PhysicsFixedJoint::~PhysicsFixedJoint() noexcept
-		{
-		}
-
+	PhysicsFixedJoint::~PhysicsFixedJoint() noexcept
+	{
 	}
 }

@@ -3,20 +3,17 @@
 
 namespace octoon
 {
-    namespace physics
-    {
-        class PhysicsSystem;
-        class PhysicsScene;
-        class PhysicsContext;
-        class PhysicsRigidbody;
-		class PhysicsShape;
-		class PhysicsSphereShape;
-		struct PhysicsSphereShapeDesc;
+	class PhysicsSystem;
+	class PhysicsScene;
+	class PhysicsContext;
+	class PhysicsRigidbody;
+	class PhysicsShape;
+	class PhysicsSphereShape;
+	struct PhysicsSphereShapeDesc;
 
-		class PhysicsJoint;
-		class PhysicsFixedJoint;
-		class PhysicsConfigurableJoint;
-    }
+	class PhysicsJoint;
+	class PhysicsFixedJoint;
+	class PhysicsConfigurableJoint;
 }
 
 #endif

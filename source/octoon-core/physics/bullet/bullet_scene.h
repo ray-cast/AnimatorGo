@@ -13,37 +13,34 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT BulletScene : public PhysicsScene
 	{
-		class OCTOON_EXPORT BulletScene : public PhysicsScene
-		{
-		public:
-			BulletScene(PhysicsSceneDesc desc);
-			virtual ~BulletScene();
+	public:
+		BulletScene(PhysicsSceneDesc desc);
+		virtual ~BulletScene();
 
-			virtual void setGravity(const math::float3& gravity) noexcept override;
-			virtual math::float3 getGravity() const noexcept override;
+		virtual void setGravity(const math::float3& gravity) noexcept override;
+		virtual math::float3 getGravity() const noexcept override;
 
-			virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
-			virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
+		virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
+		virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 
-			virtual void simulate(float time) override;
+		virtual void simulate(float time) override;
 			
-			virtual void fetchResults() override;
-			virtual void fetchFinish() override;
+		virtual void fetchResults() override;
+		virtual void fetchFinish() override;
 
-		private:
-			BulletScene(const BulletScene&) noexcept = delete;
-			BulletScene& operator=(const BulletScene&) noexcept = delete;
+	private:
+		BulletScene(const BulletScene&) noexcept = delete;
+		BulletScene& operator=(const BulletScene&) noexcept = delete;
 
-        private:
-			std::unique_ptr<btBroadphaseInterface> broadphase_;
-			std::unique_ptr<btCollisionDispatcher> dispatcher_;
-			std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration_;
-			std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
-			std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld_;
-		};
-	}
+    private:
+		std::unique_ptr<btBroadphaseInterface> broadphase_;
+		std::unique_ptr<btCollisionDispatcher> dispatcher_;
+		std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration_;
+		std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
+		std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld_;
+	};
 }
 
 #endif

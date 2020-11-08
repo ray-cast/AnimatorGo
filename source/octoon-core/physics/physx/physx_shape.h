@@ -11,22 +11,19 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxShape: public PhysicsShape
 	{
-		class OCTOON_EXPORT PhysxShape: public PhysicsShape
-		{
-		public:
-			PhysxShape() noexcept;
-			virtual ~PhysxShape() noexcept;
+	public:
+		PhysxShape() noexcept;
+		virtual ~PhysxShape() noexcept;
 
-			virtual physx::PxShape* getPxShape() = 0;
-			virtual physx::PxMaterial* getPxMaterial() = 0;
+		virtual physx::PxShape* getPxShape() = 0;
+		virtual physx::PxMaterial* getPxMaterial() = 0;
 
-		private:
-			PhysxShape(const PhysxShape&) noexcept = delete;
-			PhysxShape& operator=(const PhysxShape&) noexcept = delete;
-		};
-	}
+	private:
+		PhysxShape(const PhysxShape&) noexcept = delete;
+		PhysxShape& operator=(const PhysxShape&) noexcept = delete;
+	};
 }
 
 #endif

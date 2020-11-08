@@ -11,21 +11,18 @@
 
 namespace octoon
 {
-	namespace physics
+	class OCTOON_EXPORT PhysxJoint : public PhysicsJoint
 	{
-		class OCTOON_EXPORT PhysxJoint :public PhysicsJoint
-		{
-		public:
-			PhysxJoint() noexcept;
-			virtual ~PhysxJoint() noexcept;
+	public:
+		PhysxJoint() noexcept;
+		virtual ~PhysxJoint() noexcept;
 
-			virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
+		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 
-		private:
-			PhysxJoint(const PhysxJoint&) = delete;
-			PhysxJoint& operator=(const PhysxJoint&) = delete;
-		};
-	}
+	private:
+		PhysxJoint(const PhysxJoint&) = delete;
+		PhysxJoint& operator=(const PhysxJoint&) = delete;
+	};
 }
 
 #endif

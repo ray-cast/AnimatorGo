@@ -29,8 +29,8 @@ namespace octoon
 		void onFixedUpdate(const std::any& data) noexcept;
 
 	public:
-		std::shared_ptr<physics::PhysicsContext> getContext();
-		std::shared_ptr<physics::PhysicsScene> getScene();
+		std::shared_ptr<PhysicsContext> getContext();
+		std::shared_ptr<PhysicsScene> getScene();
 
 	private:
 		PhysicsFeature(const PhysicsFeature&) = delete;
@@ -39,8 +39,8 @@ namespace octoon
     private:
 		math::float3 gravity_;
 
-		std::shared_ptr<physics::PhysicsContext> physicsContext;
-		std::shared_ptr<physics::PhysicsScene> physicsScene;
+		std::shared_ptr<PhysicsContext> physicsContext;
+		std::shared_ptr<PhysicsScene> physicsScene;
     };
 }
 

@@ -2,14 +2,11 @@
 
 namespace octoon
 {
-	namespace physics
+	PhysicsCapsuleShape::PhysicsCapsuleShape() noexcept
 	{
-		PhysicsCapsuleShape::PhysicsCapsuleShape() noexcept
-		{
-		}
+	}
 
-		PhysicsCapsuleShape::~PhysicsCapsuleShape()
-		{
-		}
+	PhysicsCapsuleShape::~PhysicsCapsuleShape()
+	{
 	}
 }

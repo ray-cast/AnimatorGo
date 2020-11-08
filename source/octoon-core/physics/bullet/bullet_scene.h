@@ -1,5 +1,5 @@
-#ifndef OCTOON_PHYSX_SCENE_H_
-#define OCTOON_PHYSX_SCENE_H_
+#ifndef OCTOON_BULLET_SCENE_H_
+#define OCTOON_BULLET_SCENE_H_
 
 #include <memory>
 #include <vector>
@@ -8,19 +8,18 @@
 #include <octoon/physics/physics_scene.h>
 #include <octoon/physics/physics_listener.h>
 
-#include "physx_rigidbody.h"
-
-#include "physx_type.h"
+#include "bullet_rigidbody.h"
+#include "bullet_type.h"
 
 namespace octoon
 {
 	namespace physics
 	{
-		class OCTOON_EXPORT PhysxScene : public PhysicsScene
+		class OCTOON_EXPORT BulletScene : public PhysicsScene
 		{
 		public:
-			PhysxScene(PhysxContext* context, PhysicsSceneDesc desc);
-			virtual ~PhysxScene();
+			BulletScene(PhysicsSceneDesc desc);
+			virtual ~BulletScene();
 
 			virtual void setGravity(const math::float3& gravity) noexcept override;
 			virtual math::float3 getGravity() const noexcept override;
@@ -34,13 +33,15 @@ namespace octoon
 			virtual void fetchFinish() override;
 
 		private:
-			PhysxScene(const PhysxScene&) noexcept = delete;
-			PhysxScene& operator=(const PhysxScene&) noexcept = delete;
+			BulletScene(const BulletScene&) noexcept = delete;
+			BulletScene& operator=(const BulletScene&) noexcept = delete;
 
-		private:
-			PhysxContext* context;
-			physx::PxScene* px_scene;
-			std::unique_ptr<class SimulationEventCallback> simulationEventCallback_;
+        private:
+			std::unique_ptr<btBroadphaseInterface> broadphase_;
+			std::unique_ptr<btCollisionDispatcher> dispatcher_;
+			std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration_;
+			std::unique_ptr<btSequentialImpulseConstraintSolver> solver_;
+			std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld_;
 		};
 	}
 }

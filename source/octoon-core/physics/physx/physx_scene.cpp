@@ -9,7 +9,7 @@ namespace octoon
 {
 	namespace physics
 	{
-		physx::PxFilterFlags DefaultSimulationFilterShader(
+		physx::PxFilterFlags DefaultPhysXSimulationFilterShader(
 			physx::PxFilterObjectAttributes attributes0,
 			physx::PxFilterData filterData0,
 			physx::PxFilterObjectAttributes attributes1,
@@ -71,7 +71,7 @@ namespace octoon
 			physx::PxSceneDesc sceneDesc(context->getPxPhysics()->getTolerancesScale());
 			sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
 			sceneDesc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(omp_get_num_procs() / 2);
-			sceneDesc.filterShader = DefaultSimulationFilterShader;
+			sceneDesc.filterShader = DefaultPhysXSimulationFilterShader;
 			sceneDesc.simulationEventCallback = simulationEventCallback_.get();
 			sceneDesc.ccdMaxPasses = 4;
 			sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;

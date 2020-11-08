@@ -136,7 +136,7 @@ namespace octoon
 			component->setMass(it->mass);
 			component->setGroupMask(it->groupMask);
 			component->setRestitution(it->elasticity);
-			component->setStaticFriction(it->friction * 1.5f);
+			component->setStaticFriction(it->friction);
 			component->setDynamicFriction(it->friction);
 			component->setLinearDamping(it->movementDecay);
 			component->setAngularDamping(it->rotationDecay);
@@ -144,10 +144,7 @@ namespace octoon
 			if (it->physicsOperation == 0)
 				component->setIsKinematic(it->physicsOperation == 0);
 			else
-			{
 				component->setSleepThreshold(0.0f);
-				component->updateMassAndInertia(std::min(it->mass, 10.f) * 0.3f);
-			}
 
 			rigidbodys.emplace_back(std::move(gameObject));
 		}

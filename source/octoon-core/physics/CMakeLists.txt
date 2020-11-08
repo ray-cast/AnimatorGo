@@ -67,4 +67,31 @@ SET(PHYSX_SOURCE_LIST
 )
 SOURCE_GROUP("physics\\PhysX" FILES ${PHYSX_SOURCE_LIST})
 
-LIST(APPEND PHYSICS_LIST ${SOURCE_LIST} ${PHYSX_SOURCE_LIST})
+SET(BULLET_SOURCE_LIST
+	${SOURCE_PATH}/bullet/bullet_type.h
+	${SOURCE_PATH}/bullet/bullet_context.h
+	${SOURCE_PATH}/bullet/bullet_context.cpp
+	${SOURCE_PATH}/bullet/bullet_scene.h
+	${SOURCE_PATH}/bullet/bullet_scene.cpp
+	${SOURCE_PATH}/bullet/bullet_rigidbody.h
+	${SOURCE_PATH}/bullet/bullet_rigidbody.cpp
+
+	${SOURCE_PATH}/bullet/bullet_shape.h
+	${SOURCE_PATH}/bullet/bullet_shape.cpp
+	${SOURCE_PATH}/bullet/bullet_sphere_shape.h
+	${SOURCE_PATH}/bullet/bullet_sphere_shape.cpp
+	${SOURCE_PATH}/bullet/bullet_box_shape.h
+	${SOURCE_PATH}/bullet/bullet_box_shape.cpp
+	${SOURCE_PATH}/bullet/bullet_capsule_shape.h
+	${SOURCE_PATH}/bullet/bullet_capsule_shape.cpp
+
+	${SOURCE_PATH}/bullet/bullet_joint.h
+	${SOURCE_PATH}/bullet/bullet_joint.cpp
+	${SOURCE_PATH}/bullet/bullet_fixed_joint.h
+	${SOURCE_PATH}/bullet/bullet_fixed_joint.cpp
+	${SOURCE_PATH}/bullet/bullet_configurable_joint.h
+	${SOURCE_PATH}/bullet/bullet_configurable_joint.cpp
+)
+SOURCE_GROUP("physics\\Bullet" FILES ${BULLET_SOURCE_LIST})
+
+LIST(APPEND PHYSICS_LIST ${SOURCE_LIST} ${PHYSX_SOURCE_LIST} ${BULLET_SOURCE_LIST})

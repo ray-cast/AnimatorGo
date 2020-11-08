@@ -22,7 +22,7 @@ namespace octoon
 			auto rigidbody = context->getPxPhysics()->createRigidDynamic(pose);
 			if (rigidbody)
 			{
-				rigidbody->setMass(desc.mass);
+				physx::PxRigidBodyExt::setMassAndUpdateInertia(*rigidbody, desc.mass);
 				rigidbody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, desc.type == PhysicsRigidbodyType::Static);
 				rigidbody_ = rigidbody;
 			}
@@ -46,6 +46,7 @@ namespace octoon
 		{
 			auto pxshape = std::dynamic_pointer_cast<PhysxShape>(shape);
 			rigidbody_->attachShape(*pxshape->getPxShape());
+			physx::PxRigidBodyExt::setMassAndUpdateInertia(*rigidbody_, rigidbody_->getMass());
 			shape_ = pxshape;
 		}
 
@@ -174,9 +175,9 @@ namespace octoon
 		}
 
 		void
-		PhysxRigidbody::setMass(float f)
+		PhysxRigidbody::setMass(float mass)
 		{
-			rigidbody_->setMass(f);
+			physx::PxRigidBodyExt::setMassAndUpdateInertia(*rigidbody_, mass);
 		}
 
 		void

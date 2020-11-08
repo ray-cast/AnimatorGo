@@ -26,15 +26,16 @@ namespace octoon
 		{
 			std::shared_ptr<PhysxRigidbody> px_lhs = std::dynamic_pointer_cast<PhysxRigidbody>(lhs);
 			std::shared_ptr<PhysxRigidbody> px_rhs = std::dynamic_pointer_cast<PhysxRigidbody>(rhs);
+
 			if (joint_)
 			{
 				joint_->setActors(px_lhs->getPxRigidbody(), px_rhs->getPxRigidbody());
 			}
 			else
 			{
-				joint_ = physx::PxD6JointCreate(*context_->getPxPhysics(), 
-					px_lhs->getPxRigidbody(), physx::PxTransform(0.f, 0.f, 0.f), 
-					px_rhs->getPxRigidbody(), physx::PxTransform(0.f, 0.f, 0.f));
+				auto idensity = physx::PxTransform(0.f, 0.f, 0.f);
+				joint_ = physx::PxD6JointCreate(*context_->getPxPhysics(), px_lhs->getPxRigidbody(), idensity, px_rhs->getPxRigidbody(), idensity);
+				joint_->setConstraintFlag(physx::PxConstraintFlag::eIMPROVED_SLERP, true);
 			}
 		}
 

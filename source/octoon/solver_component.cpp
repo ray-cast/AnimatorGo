@@ -284,31 +284,28 @@ namespace octoon
 					auto newAngle = transform->getLocalEulerAngles()[component];
 					newAngle += dot1 > dot2 ? deltaAngle : -deltaAngle;
 
-					if (limitComponent)
-					{
-						auto& low = limitComponent->getMinimumAxis();
-						auto& upper = limitComponent->getMaximumAxis();
+					auto& low = limitComponent->getMinimumAxis();
+					auto& upper = limitComponent->getMaximumAxis();
 
-						if (iteration == 0)
+					if (iteration == 0)
+					{
+						if (newAngle < low[component] || newAngle > upper[component])
 						{
-							if (newAngle < low[component] || newAngle > upper[component])
+							if (-newAngle > low[component] && -newAngle < upper[component])
+								newAngle *= -1;
+							else
 							{
-								if (-newAngle > low[component] && -newAngle < upper[component])
+								auto halfAngle = (low[component] + upper[component]) * 0.5f;
+								if (math::abs(halfAngle - newAngle) > math::abs(halfAngle + newAngle))
 									newAngle *= -1;
-								else
-								{
-									auto halfAngle = (low[component] + upper[component]) * 0.5f;
-									if (math::abs(halfAngle - newAngle) > math::abs(halfAngle + newAngle))
-										newAngle *= -1;
-								}
 							}
 						}
-
-						math::float3 eular = math::float3::Zero;
-						eular[component] = math::clamp(newAngle, low.x, upper.x);
-
-						transform->setLocalEulerAngles(eular);
 					}
+
+					math::float3 eular = math::float3::Zero;
+					eular[component] = math::clamp(newAngle, low.x, upper.x);
+
+					transform->setLocalEulerAngles(eular);
 				}
 				else
 				{

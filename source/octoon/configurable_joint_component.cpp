@@ -178,6 +178,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setLowXLimit(float limit) noexcept
 	{
+		assert(this->highX_ > this->lowX_);
+
 		if (joint_)
 			joint_->setLowXLimit(limit);
 		this->lowX_ = limit;
@@ -186,6 +188,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setLowYLimit(float limit) noexcept
 	{
+		assert(this->highY_ > this->lowY_);
+
 		if (joint_)
 			joint_->setLowYLimit(limit);
 		this->lowY_ = limit;
@@ -194,6 +198,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setLowZLimit(float limit) noexcept
 	{
+		assert(this->highZ_ > this->lowZ_);
+
 		if (joint_)
 			joint_->setLowZLimit(limit);
 		this->lowZ_ = limit;
@@ -202,6 +208,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setHighXLimit(float limit) noexcept
 	{
+		assert(this->highX_ > this->lowX_);
+
 		if (joint_)
 			joint_->setHighXLimit(limit);
 		this->highX_ = limit;
@@ -210,6 +218,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setHighYLimit(float limit) noexcept
 	{
+		assert(this->highY_ > this->lowY_);
+
 		if (joint_)
 			joint_->setHighYLimit(limit);
 		this->highY_ = limit;
@@ -217,6 +227,8 @@ namespace octoon
 	void 
 	ConfigurableJointComponent::setHighZLimit(float limit) noexcept
 	{
+		assert(this->highZ_ > this->lowZ_);
+
 		if (joint_)
 			joint_->setHighZLimit(limit);
 		this->highZ_ = limit;

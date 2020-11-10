@@ -61,7 +61,7 @@ namespace octoon
 		VMD_uint32_t frame;
 		VMD_Vector3 location;
 		VMD_Quaternion rotate;
-		VMD_uint8_t interpolation[64];
+		VMD_int8_t interpolation[64];
 	};
 
 	struct VMDMorph
@@ -77,7 +77,7 @@ namespace octoon
 		VMD_Float length;
 		VMD_Vector3 location;
 		VMD_Vector3 rotation;
-		VMD_uint8_t interpolation[24];
+		VMD_int8_t interpolation[24];
 		VMD_uint32_t viewingAngle;
 		VMD_uint8_t perspective;
 	};

@@ -11,6 +11,17 @@
 
 namespace rabbit
 {
+	class TransformGizmo
+	{
+	public:
+		void init();
+
+		octoon::GameObjectPtr activePlane;
+		std::map<std::string, octoon::GameObjectPtr> planes;
+		std::map<std::string, octoon::GameObjects> handleGizmos;
+		std::map<std::string, octoon::GameObjects> pickerGizmos;
+	};
+
 	class GizmoComponent final : public RabbitComponent<DragModule>
 	{
 	public:
@@ -23,8 +34,16 @@ namespace rabbit
 		}
 
 	private:
+		void onEnable() noexcept;
+		void onDisable() noexcept;
+
+	private:
 		GizmoComponent(const GizmoComponent&) = delete;
 		GizmoComponent& operator=(const GizmoComponent&) = delete;
+
+	private:
+		std::unique_ptr<TransformGizmo> translateGizmo_;
+		octoon::GameObjectPtr transformGizmo_;
 	};
 }
 

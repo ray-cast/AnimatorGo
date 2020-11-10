@@ -115,15 +115,27 @@ namespace rabbit
 		auto material = std::make_shared<octoon::material::MeshBasicMaterial>();
 		material->setCullMode(octoon::hal::GraphicsCullMode::None);
 
-		auto planeObject = octoon::GameObject::create();
-		planeObject->addComponent<octoon::MeshFilterComponent>(planeGeometry);
-		planeObject->addComponent<octoon::MeshRendererComponent>(material);
+		auto XY = octoon::GameObject::create();
+		XY->addComponent<octoon::MeshFilterComponent>(planeGeometry);
+		XY->addComponent<octoon::MeshRendererComponent>(material);
+
+		auto YZ = octoon::GameObject::create();
+		YZ->addComponent<octoon::MeshFilterComponent>(planeGeometry);
+		YZ->addComponent<octoon::MeshRendererComponent>(material);
+
+		auto XZ = octoon::GameObject::create();
+		XZ->addComponent<octoon::MeshFilterComponent>(planeGeometry);
+		XZ->addComponent<octoon::MeshRendererComponent>(material);
+
+		auto XYZE = octoon::GameObject::create();
+		XYZE->addComponent<octoon::MeshFilterComponent>(planeGeometry);
+		XYZE->addComponent<octoon::MeshRendererComponent>(material);
 
 		this->planes = {
-			{ "XY", planeObject },
-			{ "YZ", planeObject },
-			{ "XZ", planeObject },
-			{ "XYZE", planeObject }
+			{ "XY", XY },
+			{ "YZ", YZ },
+			{ "XZ", XZ },
+			{ "XYZE", XYZE }
 		};
 
 		this->activePlane = this->planes["XYZE"];

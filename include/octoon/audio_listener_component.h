@@ -2,7 +2,6 @@
 #define OCTOON_AUDIO_LISTENER_COMPONENT_H_
 
 #include <octoon/game_component.h>
-#include <octoon/audio/audio_listener.h>
 
 namespace octoon
 {
@@ -28,7 +27,7 @@ namespace octoon
 		void onMoveAfter() noexcept override;
 
 	private:
-		std::unique_ptr<AudioListener> audioListener_;
+		std::unique_ptr<class AudioListener> audioListener_;
 	};
 }
 

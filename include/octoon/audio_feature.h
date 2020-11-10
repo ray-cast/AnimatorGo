@@ -2,7 +2,6 @@
 #define OCTOON_AUDIO_FEATURE_H_
 
 #include <octoon/game_feature.h>
-#include <octoon/audio/audio_device.h>
 
 namespace octoon
 {
@@ -25,7 +24,7 @@ namespace octoon
 		void onFrameEnd() noexcept override;
 
 	private:
-		std::shared_ptr<AudioDevice> device;		
+		std::shared_ptr<class AudioDevice> device;
 	};
 }
 

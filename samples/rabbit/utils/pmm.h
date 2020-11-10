@@ -200,12 +200,12 @@ namespace octoon
 		PmmVector3 rotation;
 		std::int32_t looking_model_index;
 		std::int32_t looking_bone_index;
-		std::uint8_t interpolation_x[4];
-		std::uint8_t interpolation_y[4];
-		std::uint8_t interpolation_z[4];
-		std::uint8_t interpolation_rotation[4];
-		std::uint8_t interpolation_distance[4];
-		std::uint8_t interpolation_angleview[4];
+		std::int8_t interpolation_x[4];
+		std::int8_t interpolation_y[4];
+		std::int8_t interpolation_z[4];
+		std::int8_t interpolation_rotation[4];
+		std::int8_t interpolation_distance[4];
+		std::int8_t interpolation_angleview[4];
 		std::uint8_t is_parse;
 		std::uint32_t fov;
 		std::uint8_t is_selected;

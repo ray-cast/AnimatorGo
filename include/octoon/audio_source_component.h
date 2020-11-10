@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(AudioSourceComponent, GameComponent)
 	public:
 		AudioSourceComponent() noexcept;
-		virtual ~AudioSourceComponent();
+		virtual ~AudioSourceComponent() noexcept;
 
 		void play(bool isLoop = false) noexcept;
 		void reset() noexcept;

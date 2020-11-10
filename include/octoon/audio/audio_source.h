@@ -50,14 +50,14 @@ namespace octoon
         virtual void setMaxDistance(float maxdis) noexcept = 0;
         virtual void setMinDistance(float mindis) noexcept = 0;
         virtual void setAudioClip(const AudioClip& clip) noexcept = 0;
-        virtual void setSampleOffset(std::uint64_t sample) noexcept = 0;
+        virtual void setSampleOffset(std::int32_t sample) noexcept = 0;
 
         virtual void getTranslate(math::float3& translate) noexcept = 0;
         virtual void getVelocity(math::float3& velocity) noexcept = 0;
         virtual void getOrientation(math::float3& forward, math::float3& up) noexcept = 0;
         virtual const AudioClip& getAudioClip() const noexcept = 0;
 
-        virtual std::uint64_t getSampleOffset() const noexcept = 0;
+        virtual std::int32_t getSampleOffset() const noexcept = 0;
 
         virtual float getVolume() const noexcept = 0;
         virtual float getMinVolume() const noexcept = 0;

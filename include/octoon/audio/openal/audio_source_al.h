@@ -34,7 +34,7 @@ namespace octoon
 		virtual void setVolume(float volume) noexcept override;
 		virtual void setMinVolume(float volume) noexcept override;
 		virtual void setMaxVolume(float volume) noexcept override;
-		virtual void setSampleOffset(std::uint64_t sample) noexcept override;
+		virtual void setSampleOffset(std::int32_t sample) noexcept override;
 		virtual void setTranslate(const math::float3& translate) noexcept override;
 		virtual void setVelocity(const math::float3& velocity) noexcept override;
 		virtual void setOrientation(const math::float3& forward, const math::float3& up) noexcept override;
@@ -47,7 +47,7 @@ namespace octoon
 		virtual void getVelocity(math::float3& velocity) noexcept override;
 		virtual void getOrientation(math::float3& forward, math::float3& up) noexcept override;
 		virtual const AudioClip& getAudioClip() const noexcept override;
-		virtual std::uint64_t getSampleOffset() const noexcept override;
+		virtual std::int32_t getSampleOffset() const noexcept override;
 
 		virtual float getVolume() const noexcept override;
 		virtual float getMinVolume() const noexcept override;

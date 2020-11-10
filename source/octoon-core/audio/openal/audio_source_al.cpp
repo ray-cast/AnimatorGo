@@ -290,12 +290,12 @@ namespace octoon
 	}
 
 	void
-	AudioSourceAL::setSampleOffset(std::uint64_t offset) noexcept
+	AudioSourceAL::setSampleOffset(std::int32_t offset) noexcept
 	{
 		alSourcei(source_, AL_SAMPLE_OFFSET, offset);
 	}
 
-	std::uint64_t
+	std::int32_t
 	AudioSourceAL::getSampleOffset() const noexcept
 	{
 		ALint value;

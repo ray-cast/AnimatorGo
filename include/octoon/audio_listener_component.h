@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(AudioListenerComponent, GameComponent)
 	public:
 		AudioListenerComponent() noexcept;
-		virtual ~AudioListenerComponent();
+		virtual ~AudioListenerComponent() noexcept;
 
 		void setVolume(float volume) noexcept;
         float getVolume() const noexcept;

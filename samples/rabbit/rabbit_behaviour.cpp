@@ -93,6 +93,7 @@ namespace rabbit
 		markComponent_ = std::make_unique<MarkComponent>();
 		materialComponent_ = std::make_unique<MaterialComponent>();
 		dragComponent_ = std::make_unique<DragComponent>();
+		gizmoComponent_ = std::make_unique<GizmoComponent>();
 		gridComponent_ = std::make_unique<GridComponent>();
 
 		canvasComponent_->init(context_, profile_->canvasModule);
@@ -105,6 +106,7 @@ namespace rabbit
 		markComponent_->init(context_, profile_->markModule);
 		materialComponent_->init(context_, profile_->materialModule);
 		dragComponent_->init(context_, profile_->dragModule);
+		gizmoComponent_->init(context_, profile_->dragModule);
 		gridComponent_->init(context_, profile_->gridModule);
 
 		this->addComponent(canvasComponent_.get());
@@ -117,6 +119,7 @@ namespace rabbit
 		this->addComponent(uiComponent_.get());
 		this->addComponent(materialComponent_.get());
 		this->addComponent(dragComponent_.get());
+		this->addComponent(gizmoComponent_.get());
 		this->addComponent(gridComponent_.get());
 
 		this->enableComponents();

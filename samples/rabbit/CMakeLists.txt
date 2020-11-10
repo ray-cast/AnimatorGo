@@ -123,6 +123,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/drag_component.cpp
 	${SOURCE_PATH}/controllers/grid_component.h
 	${SOURCE_PATH}/controllers/grid_component.cpp
+	${SOURCE_PATH}/controllers/gizmo_component.h
+	${SOURCE_PATH}/controllers/gizmo_component.cpp
 )
 SOURCE_GROUP("rabbit\\controllers" FILES ${CONTROLLERS_LIST})
 

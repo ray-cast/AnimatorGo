@@ -299,7 +299,7 @@ namespace rabbit
 			if ((bool)json["success"])
 			{
 				std::string qr_code = json["qr_code"];
-				trade_no_ = json["trade_no"];
+				trade_no_ = json["trade_no"].get<nlohmann::json::string_t>();
 
 				std::uint8_t qr0[qrcodegen_BUFFER_LEN_MAX];
 				std::uint8_t tempBuffer[qrcodegen_BUFFER_LEN_MAX];

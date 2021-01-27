@@ -50,6 +50,7 @@ Rabbit Toolbox 的多层材质描述基于双向散射分布函数（bsdf），�
 * GNU GCC (Only tested on 5.4.0, 6.2.0, 7.3.0, 8.1.0 version)
 * Clang & LLVM (Only tested on 5.0.0 version)
 * Emscripten (Only tested on 1.37.40)
+* Vcpkg (2020-11-1)
 
 支持的平台:
 ------

@@ -393,7 +393,7 @@ namespace octoon
 
 			PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? PhysicsRigidbodyType::Static : PhysicsRigidbodyType::Dynamic;
-			desc.translate = position_ = transform->getTranslate();
+			desc.position = position_ = transform->getTranslate();
 			desc.rotation = rotation_ = transform->getQuaternion();
 			desc.mass = mass_;
 

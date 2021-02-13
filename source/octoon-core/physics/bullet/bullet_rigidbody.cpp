@@ -7,16 +7,13 @@ namespace octoon
 {
 	BulletRigidbody::BulletRigidbody(PhysicsRigidbodyDesc desc)
 	{
-		btVector3 btv3LocalInertia(0.0f, 0.0f, 0.0f);
+		btVector3 localInertia(0.0f, 0.0f, 0.0f);
+		btVector3 position(desc.position.x, desc.position.y, desc.position.z);
+		btQuaternion quaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w);
 
-		auto _motion = new btDefaultMotionState();
-
-		rigidbody_ = std::make_unique<btRigidBody>(1.0f, _motion, nullptr, btv3LocalInertia);
+		rigidbody_ = std::make_unique<btRigidBody>(1.0f, new btDefaultMotionState(btTransform(quaternion, position)), nullptr, localInertia);
 		rigidbody_->setUserPointer(this);
-
-		this->setPosition(desc.translate);
-		this->setRotation(desc.rotation);
-		this->setMass(desc.mass);
+		rigidbody_->setMassProps(desc.mass, localInertia);
 	}
 
 	BulletRigidbody::~BulletRigidbody()
@@ -113,13 +110,13 @@ namespace octoon
 	void
 	BulletRigidbody::setDynamicFriction(float f)
 	{
-		rigidbody_->setFriction(f);
+		rigidbody_->setHitFraction(f);
 	}
 
 	void
 	BulletRigidbody::setStaticFriction(float f)
 	{
-		rigidbody_->setHitFraction(f);
+		rigidbody_->setFriction(f);
 	}
 
 	void

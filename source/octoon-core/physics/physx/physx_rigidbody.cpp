@@ -14,7 +14,7 @@ namespace octoon
 		, rigidbody_(nullptr)
 	{
 		physx::PxTransform pose;
-		pose.p = physx::PxVec3(desc.translate.x, desc.translate.y, desc.translate.z);
+		pose.p = physx::PxVec3(desc.position.x, desc.position.y, desc.position.z);
 		pose.q = physx::PxQuat(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w);
 
 		auto rigidbody = context->getPxPhysics()->createRigidDynamic(pose);

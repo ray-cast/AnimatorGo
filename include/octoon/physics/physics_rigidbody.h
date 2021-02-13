@@ -23,16 +23,16 @@ namespace octoon
 	struct OCTOON_EXPORT PhysicsRigidbodyDesc
 	{
 	public:
-		math::float3 translate;
+		math::float3 position;
 		math::Quaternion rotation;
 		PhysicsRigidbodyType type;
 		float mass;
 	public:
 		PhysicsRigidbodyDesc()
-			:translate(0.f, 0.f, 0.f),
-			rotation(1.f, 0.f, 0.f, 0.f),
-			type(PhysicsRigidbodyType::Dynamic),
-			mass(1.f)
+			: position(math::float3::Zero)
+			, rotation(math::Quaternion::Zero)
+			, type(PhysicsRigidbodyType::Dynamic)
+			, mass(1.f)
 		{
 		}
 	};

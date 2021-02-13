@@ -52,7 +52,8 @@ namespace octoon
 		_joint->calculateTransforms(transformA_, transformB_);
 	}
 
-	void BulletConfigurableJoint::setXMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setXMotion(ConfigurableJointMotion motion)
 	{
 		auto limit = _joint->getTranslationalLimitMotor();
 		
@@ -64,7 +65,8 @@ namespace octoon
 			_joint->setLimit(0, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	void BulletConfigurableJoint::setYMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setYMotion(ConfigurableJointMotion motion)
 	{
 		auto limit = _joint->getTranslationalLimitMotor();
 
@@ -76,7 +78,8 @@ namespace octoon
 			_joint->setLimit(1, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	void BulletConfigurableJoint::setZMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setZMotion(ConfigurableJointMotion motion)
 	{
 		auto limit = _joint->getTranslationalLimitMotor();
 
@@ -88,7 +91,8 @@ namespace octoon
 			_joint->setLimit(2, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	void BulletConfigurableJoint::setAngularXMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setAngularXMotion(ConfigurableJointMotion motion)
 	{
 		btVector3 lowerLimit;
 		_joint->getAngularLowerLimit(lowerLimit);
@@ -104,7 +108,8 @@ namespace octoon
 			_joint->setLimit(3, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	void BulletConfigurableJoint::setAngularYMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setAngularYMotion(ConfigurableJointMotion motion)
 	{
 		btVector3 lowerLimit;
 		_joint->getAngularLowerLimit(lowerLimit);
@@ -120,7 +125,8 @@ namespace octoon
 			_joint->setLimit(4, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	void BulletConfigurableJoint::setAngularZMotion(ConfigurableJointMotion motion)
+	void
+	BulletConfigurableJoint::setAngularZMotion(ConfigurableJointMotion motion)
 	{
 		btVector3 lowerLimit;
 		_joint->getAngularLowerLimit(lowerLimit);
@@ -136,32 +142,38 @@ namespace octoon
 			_joint->setLimit(5, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getXMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getXMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getYMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getYMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getZMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getZMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getAngularXMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getAngularXMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getAngularYMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getAngularYMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
 
-	ConfigurableJointMotion BulletConfigurableJoint::getAngularZMotion()
+	ConfigurableJointMotion
+	BulletConfigurableJoint::getAngularZMotion()
 	{
 		return ConfigurableJointMotion::Locked;
 	}
@@ -240,6 +252,13 @@ namespace octoon
 	{
 		_joint->setAngularLowerLimit(btVector3(0, min_y, min_z));
 		_joint->setAngularUpperLimit(btVector3(0, max_y, max_z));
+	}
+
+	void
+	BulletConfigurableJoint::setAngularLimit(float min_x, float max_x, float min_y, float max_y, float min_z, float max_z)
+	{
+		_joint->setAngularLowerLimit(btVector3(min_x, min_y, min_z));
+		_joint->setAngularUpperLimit(btVector3(min_y, max_y, max_z));
 	}
 
 	void

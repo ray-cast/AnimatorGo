@@ -55,6 +55,7 @@ namespace octoon
 		virtual void setTwistLimit(float min, float max);
 		virtual void setSwingLimit(float limit_y, float limit_z);
 		virtual void setPyramidSwingLimit(float min_y, float max_y, float min_z, float max_z);
+		virtual void setAngularLimit(float min_x, float max_x, float min_y, float max_y, float min_z, float max_z);
 
 		virtual void setDriveMotionX(float motion);
 		virtual void setDriveMotionY(float motion);

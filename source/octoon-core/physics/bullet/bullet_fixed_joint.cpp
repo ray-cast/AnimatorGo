@@ -31,6 +31,6 @@ namespace octoon
 		transform.setIdentity();
 		auto A = std::dynamic_pointer_cast<BulletRigidbody>(lhs);
 		auto B = std::dynamic_pointer_cast<BulletRigidbody>(rhs);
-		joint = new btFixedConstraint(*A->getPxRigidbody(), *B->getPxRigidbody(), transform, transform);
+		joint = new btFixedConstraint(*A->getRigidbody(), *B->getRigidbody(), transform, transform);
 	}
 }

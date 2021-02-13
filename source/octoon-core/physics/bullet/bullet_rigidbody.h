@@ -56,7 +56,7 @@ namespace octoon
 		void clearForce() noexcept override;
 		void clearTorque() noexcept override;			
 
-		btRigidBody* getPxRigidbody();
+		btRigidBody* getRigidbody();
 
 	private:
 		BulletRigidbody(const BulletRigidbody&) noexcept = delete;

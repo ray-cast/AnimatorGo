@@ -13,6 +13,10 @@ namespace octoon
 
 		rigidbody_ = std::make_unique<btRigidBody>(1.0f, _motion, nullptr, btv3LocalInertia);
 		rigidbody_->setUserPointer(this);
+
+		this->setPosition(desc.translate);
+		this->setRotation(desc.rotation);
+		this->setMass(desc.mass);
 	}
 
 	BulletRigidbody::~BulletRigidbody()
@@ -24,7 +28,8 @@ namespace octoon
 	BulletRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 	{
 		auto pxshape = std::dynamic_pointer_cast<BulletShape>(shape);
-		rigidbody_->setCollisionShape(pxshape->getPxShape());
+		rigidbody_->setCollisionShape(pxshape->getShape());
+		this->setMass(this->getMass());
 	}
 
 	void
@@ -165,7 +170,7 @@ namespace octoon
 		btVector3 inertia(0.0f, 0.0f, 0.0f);
 
 		btCollisionShape* collision = rigidbody_->getCollisionShape();
-		if (mass != 0.0f)
+		if (collision)
 			collision->calculateLocalInertia(mass, inertia);
 
 		rigidbody_->setMassProps(mass, inertia);
@@ -229,7 +234,7 @@ namespace octoon
 	}
 
 	btRigidBody*
-	BulletRigidbody::getPxRigidbody()
+	BulletRigidbody::getRigidbody()
 	{
 		return rigidbody_.get();
 	}

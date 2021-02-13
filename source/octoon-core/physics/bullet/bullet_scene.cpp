@@ -14,6 +14,7 @@ namespace octoon
 		solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
 		dynamicsWorld_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(), broadphase_.get(), solver_.get(), collisionConfiguration_.get());
+		dynamicsWorld_->setGravity(btVector3(desc.gravity.x, desc.gravity.y, desc.gravity.z));
 	}
 
 	BulletScene::~BulletScene()
@@ -39,14 +40,14 @@ namespace octoon
 	BulletScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
 		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody);
-		this->dynamicsWorld_->addRigidBody(bulletRigidbody->getPxRigidbody());
+		this->dynamicsWorld_->addRigidBody(bulletRigidbody->getRigidbody());
 	}
 
 	void
 	BulletScene::removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
 		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody);
-		this->dynamicsWorld_->removeRigidBody(bulletRigidbody->getPxRigidbody());
+		this->dynamicsWorld_->removeRigidBody(bulletRigidbody->getRigidbody());
 	}
 
 	void

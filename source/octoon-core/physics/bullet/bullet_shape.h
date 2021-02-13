@@ -17,7 +17,7 @@ namespace octoon
 		BulletShape() noexcept;
 		virtual ~BulletShape() noexcept;
 
-		virtual btCollisionShape* getPxShape() const = 0;
+		virtual btCollisionShape* getShape() const = 0;
 
 	private:
 		BulletShape(const BulletShape&) noexcept = delete;

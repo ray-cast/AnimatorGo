@@ -102,7 +102,7 @@ namespace octoon
 	}
 
 	btCollisionShape*
-	BulletBoxShape::getPxShape() const
+	BulletBoxShape::getShape() const
 	{
 		return shape_.get();
 	}

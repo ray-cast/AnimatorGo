@@ -15,8 +15,8 @@ namespace octoon
 	void
 	BulletConfigurableJoint::connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
 	{
-		auto bodyA = std::dynamic_pointer_cast<BulletRigidbody>(lhs)->getPxRigidbody();
-		auto bodyB = std::dynamic_pointer_cast<BulletRigidbody>(rhs)->getPxRigidbody();
+		auto bodyA = std::dynamic_pointer_cast<BulletRigidbody>(lhs)->getRigidbody();
+		auto bodyB = std::dynamic_pointer_cast<BulletRigidbody>(rhs)->getRigidbody();
 
 		btTransform	 bttrTransform;
 		bttrTransform.setIdentity();

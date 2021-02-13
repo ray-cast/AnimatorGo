@@ -113,9 +113,13 @@ namespace octoon
 	void
 	RigidbodyComponent::setMass(float mass) noexcept
 	{
-		if (rigidbody_)
-			rigidbody_->setMass(mass);
-		mass_ = mass;
+		if (mass_ != mass)
+		{
+			if (rigidbody_)
+				rigidbody_->setMass(mass);
+
+			mass_ = mass;
+		}
 	}
 
 	void
@@ -307,7 +311,7 @@ namespace octoon
 		if (rigidbody_)
 		{
 			auto physicsFeature = this->getFeature<PhysicsFeature>();
-			if (physicsFeature && !rigidbody_)
+			if (physicsFeature && rigidbody_)
 				physicsFeature->getScene()->removeRigidbody(rigidbody_);
 
 			rigidbody_->setOwnerListener(nullptr);

@@ -35,7 +35,7 @@ namespace octoon
 		virtual float getRadius() const override;
 		virtual float getHeight() const override;
 
-		virtual btCollisionShape* getPxShape() const override;
+		virtual btCollisionShape* getShape() const override;
 
 	private:
 		BulletCapsuleShape(const BulletCapsuleShape&) noexcept = delete;

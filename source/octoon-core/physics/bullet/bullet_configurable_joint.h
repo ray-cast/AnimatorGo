@@ -9,6 +9,8 @@
 #include <octoon/physics/physics_context.h>
 #include <octoon/physics/physics_configurable_joint.h>
 
+#include <bullet/btBulletDynamicsCommon.h>
+
 #include "bullet_joint.h"
 #include "bullet_type.h"
 
@@ -71,6 +73,11 @@ namespace octoon
 
 	private:
 		BulletContext* context_;
+		math::float3 translate_;
+		math::Quaternion quaternion_;
+		btTransform	 transform_;
+		btTransform	 transformA_;
+		btTransform	 transformB_;
 		std::unique_ptr<btGeneric6DofSpringConstraint> _joint;
 	};
 }

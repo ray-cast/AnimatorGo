@@ -203,7 +203,6 @@ namespace octoon
 	void
 	BulletRigidbody::setEnableCCD(bool enable)
 	{
-		//rigidbody_->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enable);
 	}
 
 	void

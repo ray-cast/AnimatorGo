@@ -37,13 +37,13 @@ namespace rabbit
 		this->gizmo_->addComponent<octoon::MeshFilterComponent>(octoon::mesh::PlaneMesh::create(100.0f, 100.0f, 20, 20, true));
 		this->gizmo_->addComponent<octoon::MeshRendererComponent>(material)->setRenderOrder(-1);
 
-		auto rigidbody = this->gizmo_->addComponent<octoon::RigidbodyComponent>();
-		rigidbody->setIsKinematic(true);
-		rigidbody->setGroupMask(0xFFFF);
-
 		auto transform = this->gizmo_->getComponent<octoon::TransformComponent>();
 		transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(octoon::math::PI * 0.5f, 0, 0)));
 		transform->setTranslate(octoon::math::float3(0, -1, 0));
+
+		auto rigidbody = this->gizmo_->addComponent<octoon::RigidbodyComponent>();
+		rigidbody->setIsKinematic(true);
+		rigidbody->setGroupMask(0xFFFF);
 	}
 
 	void

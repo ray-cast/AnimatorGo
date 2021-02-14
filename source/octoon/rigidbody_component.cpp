@@ -133,8 +133,12 @@ namespace octoon
 	{
 		if (isKinematic_ != isKinematic)
 		{
+			if (isKinematic)
+				this->setMass(0.0f);
+
 			if (rigidbody_)
 				rigidbody_->setKinematic(isKinematic);
+
 			isKinematic_ = isKinematic;
 		}
 	}

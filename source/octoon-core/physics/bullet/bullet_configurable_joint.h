@@ -24,8 +24,7 @@ namespace octoon
 
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
-		virtual void setRigidATransform(const math::float3& position, const math::Quaternion& rotation) noexcept;
-		virtual void setRigidBTransform(const math::float3& position, const math::Quaternion& rotation) noexcept;
+		virtual void setFrames(const math::float3& positionA, const math::Quaternion& rotationA, const math::float3& positionB, const math::Quaternion& rotationB) override;
 
 		virtual void setXMotion(ConfigurableJointMotion motion) override;
 		virtual void setYMotion(ConfigurableJointMotion motion) override;
@@ -74,11 +73,10 @@ namespace octoon
 
 	private:
 		BulletContext* context_;
-		math::float3 translate_;
-		math::Quaternion quaternion_;
-		btTransform	 transform_;
 		btTransform	 transformA_;
 		btTransform	 transformB_;
+		std::shared_ptr<BulletRigidbody> frameA_;
+		std::shared_ptr<BulletRigidbody> frameB_;
 		std::unique_ptr<btGeneric6DofSpringConstraint> _joint;
 	};
 }

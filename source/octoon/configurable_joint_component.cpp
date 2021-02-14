@@ -390,8 +390,7 @@ namespace octoon
 			transformA.getTransform(translateA, rotationA, scaleA);
 			transformB.getTransform(translateB, rotationB, scaleB);
 
-			joint_->setRigidATransform(translateA, rotationA);
-			joint_->setRigidBTransform(translateB, rotationB);
+			joint_->setFrames(translateA, rotationA, translateB, rotationB);
 		}
 	}
 

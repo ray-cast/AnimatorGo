@@ -24,8 +24,7 @@ namespace octoon
 
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 
-		virtual void setRigidATransform(const math::float3& position, const math::Quaternion& rotation) noexcept = 0;
-		virtual void setRigidBTransform(const math::float3& position, const math::Quaternion& rotation) noexcept = 0;
+		virtual void setFrames(const math::float3& positionA, const math::Quaternion& rotationA, const math::float3& positionB, const math::Quaternion& rotationB) = 0;
 
 		virtual void setAngularXMotion(ConfigurableJointMotion motion) = 0;
 		virtual ConfigurableJointMotion getAngularXMotion() = 0;

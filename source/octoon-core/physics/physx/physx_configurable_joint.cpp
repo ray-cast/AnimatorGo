@@ -34,30 +34,24 @@ namespace octoon
 		{
 			auto idensity = physx::PxTransform(0.f, 0.f, 0.f);
 			joint_ = physx::PxD6JointCreate(*context_->getPxPhysics(), px_lhs->getPxRigidbody(), idensity, px_rhs->getPxRigidbody(), idensity);
-			joint_->setConstraintFlag(physx::PxConstraintFlag::eIMPROVED_SLERP, true);
-			
+			joint_->setConstraintFlag(physx::PxConstraintFlag::eIMPROVED_SLERP, true);			
 			joint_->setProjectionLinearTolerance(0.01f);
 		}
 	}
 
 	void
-	PhysxConfigurableJoint::setRigidATransform(const math::float3& position, const math::Quaternion& rotation) noexcept
+	PhysxConfigurableJoint::setFrames(const math::float3& positionA, const math::Quaternion& rotationA, const math::float3& positionB, const math::Quaternion& rotationB)
 	{
-		physx::PxTransform pxGlobalPose;
-		pxGlobalPose.p = physx::PxVec3(position.x, position.y, position.z);
-		pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
+		physx::PxTransform pxGlobalPoseA;
+		pxGlobalPoseA.p = physx::PxVec3(positionA.x, positionA.y, positionA.z);
+		pxGlobalPoseA.q = physx::PxQuat(rotationA.x, rotationA.y, rotationA.z, rotationA.w);
 
-		joint_->setLocalPose(physx::PxJointActorIndex::eACTOR0, pxGlobalPose);
-	}
+		physx::PxTransform pxGlobalPoseB;
+		pxGlobalPoseB.p = physx::PxVec3(positionB.x, positionB.y, positionB.z);
+		pxGlobalPoseB.q = physx::PxQuat(rotationB.x, rotationB.y, rotationB.z, rotationB.w);
 
-	void
-	PhysxConfigurableJoint::setRigidBTransform(const math::float3& position, const math::Quaternion& rotation) noexcept
-	{
-		physx::PxTransform pxGlobalPose;
-		pxGlobalPose.p = physx::PxVec3(position.x, position.y, position.z);
-		pxGlobalPose.q = physx::PxQuat(rotation.x, rotation.y, rotation.z, rotation.w);
-
-		joint_->setLocalPose(physx::PxJointActorIndex::eACTOR1, pxGlobalPose);
+		joint_->setLocalPose(physx::PxJointActorIndex::eACTOR0, pxGlobalPoseA);
+		joint_->setLocalPose(physx::PxJointActorIndex::eACTOR1, pxGlobalPoseB);
 	}
 
 	void PhysxConfigurableJoint::setXMotion(ConfigurableJointMotion motion)

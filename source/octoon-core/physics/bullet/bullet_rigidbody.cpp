@@ -6,9 +6,11 @@
 namespace octoon
 {
 	BulletRigidbody::BulletRigidbody(PhysicsRigidbodyDesc desc)
+		: position_(desc.position.x, desc.position.y, desc.position.z)
+		, quaternion_(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w)
 	{
 		btVector3 localInertia(0.0f, 0.0f, 0.0f);
-		btVector3 position(desc.position.x, desc.position.y, desc.position.z);
+		btVector3 position(position_.x, position_.y, position_.z);
 		btQuaternion quaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w);
 
 		rigidbody_ = std::make_unique<btRigidBody>(1.0f, new btDefaultMotionState(btTransform(quaternion, position)), nullptr, localInertia);
@@ -171,6 +173,7 @@ namespace octoon
 			collision->calculateLocalInertia(mass, inertia);
 
 		rigidbody_->setMassProps(mass, inertia);
+		rigidbody_->updateInertiaTensor();
 	}
 
 	void

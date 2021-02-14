@@ -5,51 +5,47 @@
 namespace octoon
 {
 	BulletConfigurableJoint::BulletConfigurableJoint() noexcept
-		: translate_(math::float3::Zero)
-		, quaternion_(math::Quaternion::Zero)
 	{
 	}
 
 	BulletConfigurableJoint::~BulletConfigurableJoint() noexcept
 	{
+		if (this->frameA_)
+			this->frameA_->getRigidbody()->removeConstraintRef(_joint.get());
+		if (this->frameB_)
+			this->frameB_->getRigidbody()->removeConstraintRef(_joint.get());
 	}
 
 	void
 	BulletConfigurableJoint::connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs)
 	{
-		auto bodyA = std::dynamic_pointer_cast<BulletRigidbody>(lhs)->getRigidbody();
-		auto bodyB = std::dynamic_pointer_cast<BulletRigidbody>(rhs)->getRigidbody();
+		this->frameA_ = std::dynamic_pointer_cast<BulletRigidbody>(lhs);
+		this->frameB_ = std::dynamic_pointer_cast<BulletRigidbody>(rhs);
 
-		transform_.setIdentity();
-		transform_.setOrigin(btVector3(translate_.x, translate_.y, translate_.z));
-		transform_.setRotation(btQuaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w));
+		auto bodyA = frameA_->getRigidbody();
+		auto bodyB = frameB_->getRigidbody();
 
-		transformA_ = bodyA->getWorldTransform().inverse() * transform_;
-		transformB_ = bodyB->getWorldTransform().inverse() * transform_;
+		transformA_ = bodyA->getWorldTransform().inverse();
+		transformB_ = bodyB->getWorldTransform().inverse();
 
 		_joint = std::make_unique<btGeneric6DofSpringConstraint>(*bodyA, *bodyB, transformA_, transformB_, true);
+
+		bodyA->addConstraintRef(_joint.get());
+		bodyB->addConstraintRef(_joint.get());
 	}
 
 	void
-	BulletConfigurableJoint::setRigidATransform(const math::float3& position, const math::Quaternion& rotation) noexcept
+	BulletConfigurableJoint::setFrames(const math::float3& positionA, const math::Quaternion& rotationA, const math::float3& positionB, const math::Quaternion& rotationB)
 	{
 		transformA_.setIdentity();
-		transformA_.setOrigin(btVector3(position.x, position.y, position.z));
-		transformA_.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
-		transformA_ *= transform_;
+		transformA_.setOrigin(btVector3(positionA.x, positionA.y, positionA.z));
+		transformA_.setRotation(btQuaternion(rotationA.x, rotationA.y, rotationA.z, rotationA.w));
 
-		_joint->calculateTransforms(transformA_, transformB_);
-	}
-
-	void
-	BulletConfigurableJoint::setRigidBTransform(const math::float3& position, const math::Quaternion& rotation) noexcept
-	{
 		transformB_.setIdentity();
-		transformB_.setOrigin(btVector3(position.x, position.y, position.z));
-		transformB_.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
-		transformB_ *= transform_;
+		transformB_.setOrigin(btVector3(positionB.x, positionB.y, positionB.z));
+		transformB_.setRotation(btQuaternion(rotationB.x, rotationB.y, rotationB.z, rotationB.w));
 
-		_joint->calculateTransforms(transformA_, transformB_);
+		_joint->setFrames(transformA_, transformB_);
 	}
 
 	void

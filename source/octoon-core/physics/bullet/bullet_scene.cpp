@@ -7,10 +7,11 @@ namespace octoon
 {
 	BulletScene::BulletScene(PhysicsSceneDesc desc)
 	{
+		broadphase_ = std::make_unique<btDbvtBroadphase>();
+
 		collisionConfiguration_ = std::make_unique<btDefaultCollisionConfiguration>();
 		dispatcher_ = std::make_unique<btCollisionDispatcher>(collisionConfiguration_.get());
 
-		broadphase_ = std::make_unique<btDbvtBroadphase>();
 		solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
 		dynamicsWorld_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(), broadphase_.get(), solver_.get(), collisionConfiguration_.get());
@@ -64,13 +65,11 @@ namespace octoon
 	void
 	BulletScene::fetchFinish()
 	{
-		auto& collisionArray = this->dynamicsWorld_->getCollisionObjectArray();
+		auto& rigidbodies = this->dynamicsWorld_->getNonStaticRigidBodies();
 
-		for (int i = 0; i < this->dynamicsWorld_->getNumCollisionObjects(); ++i)
+		for (int i = 0; i < rigidbodies.size(); ++i)
 		{
-			btRigidBody* body = btRigidBody::upcast(collisionArray[i]);
-
-			PhysicsListener* listener = static_cast<PhysicsListener*>(body->getUserPointer());
+			PhysicsListener* listener = static_cast<PhysicsListener*>(rigidbodies[i]->getUserPointer());
 			if (listener)
 				listener->onFetchResult();
 		}

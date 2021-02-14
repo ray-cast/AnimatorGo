@@ -24,12 +24,14 @@ namespace octoon
 		virtual void enablePreprocessing(bool enable) noexcept override;
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) override;
 
+		virtual btTypedConstraint* getConstraint() const override;
+
 	private:
 		BulletFixedJoint(const BulletFixedJoint&) = delete;
 		BulletFixedJoint& operator=(const BulletFixedJoint&) = delete;
 
 	private:
-		btFixedConstraint* joint;
+		btFixedConstraint* joint_;
 	};
 }
 

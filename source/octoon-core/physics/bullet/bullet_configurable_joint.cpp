@@ -12,6 +12,7 @@ namespace octoon
 	{
 		if (this->frameA_)
 			this->frameA_->getRigidbody()->removeConstraintRef(_joint.get());
+
 		if (this->frameB_)
 			this->frameB_->getRigidbody()->removeConstraintRef(_joint.get());
 	}
@@ -349,5 +350,11 @@ namespace octoon
 	void
 	BulletConfigurableJoint::enablePreprocessing(bool enable) noexcept
 	{
+	}
+
+	btTypedConstraint*
+	BulletConfigurableJoint::getConstraint() const
+	{
+		return _joint.get();
 	}
 }

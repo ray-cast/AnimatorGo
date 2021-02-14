@@ -30,7 +30,12 @@ namespace octoon
 
 		virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
 		virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) = 0;
+
+		virtual void addConstraint(std::shared_ptr<PhysicsJoint> joint) = 0;
+		virtual void removeConstraint(std::shared_ptr<PhysicsJoint> joint) = 0;
+
 		virtual void simulate(float time) = 0;
+
 		virtual void fetchResults() = 0;
 		virtual void fetchFinish() = 0;
 

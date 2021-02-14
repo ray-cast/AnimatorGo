@@ -315,7 +315,7 @@ namespace octoon
 		if (rigidbody_)
 		{
 			auto physicsFeature = this->getFeature<PhysicsFeature>();
-			if (physicsFeature && rigidbody_)
+			if (physicsFeature)
 				physicsFeature->getScene()->removeRigidbody(rigidbody_);
 
 			rigidbody_->setOwnerListener(nullptr);

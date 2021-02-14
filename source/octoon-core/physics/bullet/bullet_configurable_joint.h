@@ -67,6 +67,8 @@ namespace octoon
 		virtual void enableProjection(bool enable) noexcept override;
 		virtual void enablePreprocessing(bool enable) noexcept override;
 
+		virtual btTypedConstraint* getConstraint() const override;
+
 	private:
 		BulletConfigurableJoint(const BulletConfigurableJoint&) = delete;
 		BulletConfigurableJoint& operator=(const BulletConfigurableJoint&) = delete;

@@ -104,19 +104,32 @@ namespace octoon
 		return math::float3(gravity.x, gravity.y, gravity.z);
 	}
 
-	void PhysxScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
+	void
+	PhysxScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
 		std::shared_ptr<PhysxRigidbody> physx_rigidbody = std::dynamic_pointer_cast<PhysxRigidbody>(rigidbody);
 		px_scene->addActor(*physx_rigidbody->getPxRigidbody());
 	}
 
-	void PhysxScene::removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
+	void
+	PhysxScene::removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
 		std::shared_ptr<PhysxRigidbody> physx_rigidbody = std::dynamic_pointer_cast<PhysxRigidbody>(rigidbody);
 		px_scene->removeActor(*physx_rigidbody->getPxRigidbody());
 	}
 
-	void PhysxScene::simulate(float time)
+	void
+	PhysxScene::addConstraint(std::shared_ptr<PhysicsJoint> joint)
+	{
+	}
+
+	void
+	PhysxScene::removeConstraint(std::shared_ptr<PhysicsJoint> joint)
+	{
+	}
+
+	void
+	PhysxScene::simulate(float time)
 	{
 		px_scene->simulate(time);
 	}

@@ -16,6 +16,7 @@ namespace octoon
 		rigidbody_ = std::make_unique<btRigidBody>(1.0f, new btDefaultMotionState(btTransform(quaternion, position)), nullptr, localInertia);
 		rigidbody_->setUserPointer(this);
 		rigidbody_->setMassProps(desc.mass, localInertia);
+		rigidbody_->setNewBroadphaseProxy(new btBroadphaseProxy);
 	}
 
 	BulletRigidbody::~BulletRigidbody()
@@ -47,8 +48,8 @@ namespace octoon
 		groundTransform.setOrigin(btVector3(position.x, position.y, position.z));
 		groundTransform.setRotation(btQuaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w));
 
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 		this->position_ = position;
+		this->rigidbody_->setWorldTransform(groundTransform);
 	}
 
 	void
@@ -59,8 +60,8 @@ namespace octoon
 		groundTransform.setOrigin(btVector3(position_.x, position_.y, position_.z));
 		groundTransform.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 		this->quaternion_ = quaternion;
+		this->rigidbody_->setWorldTransform(groundTransform);
 	}
 
 	void
@@ -71,24 +72,24 @@ namespace octoon
 		groundTransform.setOrigin(btVector3(position.x, position.y, position.z));
 		groundTransform.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 		this->position_ = position;
 		this->quaternion_ = quaternion;
+		this->rigidbody_->setWorldTransform(groundTransform);
 	}
 
 	math::float3
 	BulletRigidbody::getPosition()
 	{
-		auto pose = rigidbody_->getWorldTransform();
-		auto origin = pose.getOrigin();
+		auto origin = rigidbody_->getWorldTransform().getOrigin();
+		this->position_.set(origin.x(), origin.y(), origin.z());
 		return math::float3(origin.x(), origin.y(), origin.z());
 	}
 
 	math::Quaternion
 	BulletRigidbody::getRotation()
 	{
-		auto pose = rigidbody_->getWorldTransform();
-		auto rotation = pose.getRotation();
+		auto rotation = rigidbody_->getWorldTransform().getRotation();
+		this->quaternion_.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
 		return math::Quaternion(rotation.x(), rotation.y(), rotation.z(), rotation.w());
 	}
 
@@ -215,9 +216,14 @@ namespace octoon
 	BulletRigidbody::setKinematic(bool kinematic) noexcept
 	{
 		if (kinematic)
+		{
 			rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			rigidbody_->setActivationState(DISABLE_DEACTIVATION);
+		}
 		else
+		{
 			rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+		}
 	}
 
 	void

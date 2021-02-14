@@ -25,6 +25,9 @@ namespace octoon
 		virtual void addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 		virtual void removeRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody) override;
 
+		virtual void addConstraint(std::shared_ptr<PhysicsJoint> joint) override;
+		virtual void removeConstraint(std::shared_ptr<PhysicsJoint> joint) override;
+
 		virtual void simulate(float time) override;
 			
 		virtual void fetchResults() override;

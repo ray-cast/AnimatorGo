@@ -8,6 +8,8 @@
 #include <octoon/physics/physics_joint.h>
 #include <octoon/physics/physics_type.h>
 
+#include "bullet_type.h"
+
 namespace octoon
 {
 	class OCTOON_EXPORT BulletJoint : public PhysicsJoint
@@ -15,6 +17,8 @@ namespace octoon
 	public:
 		BulletJoint() noexcept;
 		virtual ~BulletJoint() noexcept;
+
+		virtual btTypedConstraint* getConstraint() const = 0;
 
 		virtual void connect(std::shared_ptr<PhysicsRigidbody> lhs, std::shared_ptr<PhysicsRigidbody> rhs) = 0;
 

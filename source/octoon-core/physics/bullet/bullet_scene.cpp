@@ -1,10 +1,23 @@
 #include "bullet_scene.h"
 #include "bullet_rigidbody.h"
+#include "bullet_joint.h"
 
 #include <bullet/btBulletDynamicsCommon.h>
 
 namespace octoon
 {
+	struct FilterCallback : public btOverlapFilterCallback
+	{
+		virtual bool needBroadphaseCollision(btBroadphaseProxy* proxy0, btBroadphaseProxy* proxy1) const
+		{
+			if ((1 << proxy0->m_collisionFilterGroup) & ~proxy1->m_collisionFilterMask || 
+				(1 << proxy1->m_collisionFilterGroup) & ~proxy0->m_collisionFilterMask)
+				return false;
+
+			return true;
+		}
+	};
+
 	BulletScene::BulletScene(PhysicsSceneDesc desc)
 	{
 		broadphase_ = std::make_unique<btDbvtBroadphase>();
@@ -12,10 +25,13 @@ namespace octoon
 		collisionConfiguration_ = std::make_unique<btDefaultCollisionConfiguration>();
 		dispatcher_ = std::make_unique<btCollisionDispatcher>(collisionConfiguration_.get());
 
+		btOverlapFilterCallback* filterCallback = new FilterCallback();
+
 		solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
 		dynamicsWorld_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(), broadphase_.get(), solver_.get(), collisionConfiguration_.get());
 		dynamicsWorld_->setGravity(btVector3(desc.gravity.x, desc.gravity.y, desc.gravity.z));
+		dynamicsWorld_->getPairCache()->setOverlapFilterCallback(filterCallback);
 	}
 
 	BulletScene::~BulletScene()
@@ -40,8 +56,8 @@ namespace octoon
 	void
 	BulletScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
-		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody);
-		this->dynamicsWorld_->addRigidBody(bulletRigidbody->getRigidbody());
+		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody)->getRigidbody();
+		this->dynamicsWorld_->addRigidBody(bulletRigidbody, bulletRigidbody->getUserIndex(), bulletRigidbody->getUserIndex2());
 	}
 
 	void
@@ -49,6 +65,20 @@ namespace octoon
 	{
 		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody);
 		this->dynamicsWorld_->removeRigidBody(bulletRigidbody->getRigidbody());
+	}
+
+	void
+	BulletScene::addConstraint(std::shared_ptr<PhysicsJoint> joint)
+	{
+		auto constraint = std::dynamic_pointer_cast<BulletJoint>(joint);
+		this->dynamicsWorld_->addConstraint(constraint->getConstraint());
+	}
+
+	void
+	BulletScene::removeConstraint(std::shared_ptr<PhysicsJoint> joint)
+	{
+		auto constraint = std::dynamic_pointer_cast<BulletJoint>(joint);
+		this->dynamicsWorld_->removeConstraint(constraint->getConstraint());
 	}
 
 	void

@@ -5,7 +5,7 @@
 namespace octoon
 {
 	BulletFixedJoint::BulletFixedJoint() noexcept
-		: joint(nullptr)
+		: joint_(nullptr)
 	{
 
 	}
@@ -31,6 +31,12 @@ namespace octoon
 		transform.setIdentity();
 		auto A = std::dynamic_pointer_cast<BulletRigidbody>(lhs);
 		auto B = std::dynamic_pointer_cast<BulletRigidbody>(rhs);
-		joint = new btFixedConstraint(*A->getRigidbody(), *B->getRigidbody(), transform, transform);
+		joint_ = new btFixedConstraint(*A->getRigidbody(), *B->getRigidbody(), transform, transform);
+	}
+
+	btTypedConstraint*
+	BulletFixedJoint::getConstraint() const
+	{
+		return joint_;
 	}
 }

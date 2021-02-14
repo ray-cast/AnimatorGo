@@ -369,6 +369,8 @@ namespace octoon
 				joint_->setDriveAngularZ(driveAngular_.z);
 
 				this->setupConfigurableTransform(this->targetPosition_, this->targetRotation_);
+
+				physicsFeature->getScene()->addConstraint(joint_);
 			}
 		}
 	}
@@ -417,7 +419,14 @@ namespace octoon
 	void
 	ConfigurableJointComponent::onDeactivate() noexcept
 	{
-		joint_.reset();
+		if (joint_)
+		{
+			auto physicsFeature = this->tryGetFeature<PhysicsFeature>();
+			if (physicsFeature)
+				physicsFeature->getScene()->removeConstraint(joint_);
+
+			joint_ = nullptr;
+		}
 	}
 
 	void
@@ -431,6 +440,6 @@ namespace octoon
 	ConfigurableJointComponent::onDetachComponent(const GameComponentPtr& component) noexcept
 	{
 		if (component->isA<RigidbodyComponent>())
-			joint_.reset();
+			this->onDeactivate();
 	}
 }

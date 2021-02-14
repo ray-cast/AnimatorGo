@@ -6,7 +6,9 @@ class btConvexShape;
 class btCollisionShape;
 class btCollisionObject;
 
+class btTypedConstraint;
 class btFixedConstraint;
+class btGeneric6DofSpringConstraint;
 
 class btRigidBody;
 
@@ -15,10 +17,8 @@ class btCollisionDispatcher;
 class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
-class btTypedConstraint;
 class btActionInterface;
 class btPairCachingGhostObject;
-class btGeneric6DofSpringConstraint;
 
 namespace octoon
 {

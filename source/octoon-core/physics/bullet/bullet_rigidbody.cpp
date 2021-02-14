@@ -8,6 +8,7 @@ namespace octoon
 	BulletRigidbody::BulletRigidbody(PhysicsRigidbodyDesc desc)
 		: position_(desc.position.x, desc.position.y, desc.position.z)
 		, quaternion_(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w)
+		, needUpdateGroup_(false)
 	{
 		btVector3 localInertia(0.0f, 0.0f, 0.0f);
 		btVector3 position(position_.x, position_.y, position_.z);
@@ -49,7 +50,7 @@ namespace octoon
 		groundTransform.setRotation(btQuaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w));
 
 		this->position_ = position;
-		this->rigidbody_->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 	}
 
 	void
@@ -61,7 +62,7 @@ namespace octoon
 		groundTransform.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
 		this->quaternion_ = quaternion;
-		this->rigidbody_->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 	}
 
 	void
@@ -74,7 +75,7 @@ namespace octoon
 
 		this->position_ = position;
 		this->quaternion_ = quaternion;
-		this->rigidbody_->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
 	}
 
 	math::float3
@@ -125,13 +126,23 @@ namespace octoon
 	void
 	BulletRigidbody::setGroup(std::uint8_t group)
 	{
+		needUpdateGroup_ = true;
 		rigidbody_->setUserIndex(group);
+		rigidbody_->setUserIndex3(true);
 	}
 
 	void
 	BulletRigidbody::setGroupMask(std::uint16_t groupMask)
 	{
+		needUpdateGroup_ = true;
 		rigidbody_->setUserIndex2(groupMask);
+		rigidbody_->setUserIndex3(true);
+	}
+
+	bool
+	BulletRigidbody::isNeedUpdateGroup() const noexcept
+	{
+		return this->needUpdateGroup_;
 	}
 
 	void

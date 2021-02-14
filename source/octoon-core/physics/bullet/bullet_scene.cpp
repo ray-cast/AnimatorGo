@@ -71,7 +71,7 @@ namespace octoon
 	BulletScene::addConstraint(std::shared_ptr<PhysicsJoint> joint)
 	{
 		auto constraint = std::dynamic_pointer_cast<BulletJoint>(joint);
-		this->dynamicsWorld_->addConstraint(constraint->getConstraint());
+		this->dynamicsWorld_->addConstraint(constraint->getConstraint(), true);
 	}
 
 	void
@@ -90,11 +90,29 @@ namespace octoon
 	void
 	BulletScene::fetchResults()
 	{
+		this->dynamicsWorld_->synchronizeMotionStates();
 	}
 
 	void
 	BulletScene::fetchFinish()
 	{
+		auto collision = this->dynamicsWorld_->getCollisionObjectArray();
+		auto collisionNums = this->dynamicsWorld_->getNumCollisionObjects();
+
+		for (int i = 0; i < collisionNums; ++i)
+		{
+			btCollisionObject* obj = this->dynamicsWorld_->getCollisionObjectArray()[i];
+			btRigidBody* body = btRigidBody::upcast(obj);
+
+			if (body->getUserIndex3())
+			{
+				this->dynamicsWorld_->removeRigidBody(body);
+				this->dynamicsWorld_->addRigidBody(body, body->getUserIndex(), body->getUserIndex2());
+
+				body->setUserIndex3(false);
+			}
+		}
+
 		auto& rigidbodies = this->dynamicsWorld_->getNonStaticRigidBodies();
 
 		for (int i = 0; i < rigidbodies.size(); ++i)

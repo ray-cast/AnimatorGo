@@ -25,13 +25,13 @@ namespace octoon
 		collisionConfiguration_ = std::make_unique<btDefaultCollisionConfiguration>();
 		dispatcher_ = std::make_unique<btCollisionDispatcher>(collisionConfiguration_.get());
 
-		btOverlapFilterCallback* filterCallback = new FilterCallback();
+		filterCallback_ = std::make_unique<FilterCallback>();
 
 		solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
 		dynamicsWorld_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(), broadphase_.get(), solver_.get(), collisionConfiguration_.get());
 		dynamicsWorld_->setGravity(btVector3(desc.gravity.x, desc.gravity.y, desc.gravity.z));
-		dynamicsWorld_->getPairCache()->setOverlapFilterCallback(filterCallback);
+		dynamicsWorld_->getPairCache()->setOverlapFilterCallback(filterCallback_.get());
 	}
 
 	BulletScene::~BulletScene()

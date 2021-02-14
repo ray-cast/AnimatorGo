@@ -19,6 +19,7 @@ class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
 class btActionInterface;
 class btPairCachingGhostObject;
+class btOverlapFilterCallback;
 
 namespace octoon
 {

@@ -38,6 +38,7 @@ namespace octoon
 		BulletScene& operator=(const BulletScene&) noexcept = delete;
 
     private:
+		std::unique_ptr<btOverlapFilterCallback> filterCallback_;
 		std::unique_ptr<btBroadphaseInterface> broadphase_;
 		std::unique_ptr<btCollisionDispatcher> dispatcher_;
 		std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration_;

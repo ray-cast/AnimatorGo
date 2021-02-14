@@ -27,10 +27,10 @@ namespace octoon
 		if (!physx::PxGetGroupCollisionFlag((physx::PxU16)filterData0.word0, (physx::PxU16)filterData1.word0))
 			return physx::PxFilterFlag::eSUPPRESS;
 
-		if ((1 << filterData0.word0) & ~filterData1.word2 || (1 << filterData1.word0) & ~filterData0.word2)
-			return physx::PxFilterFlag::eSUPPRESS;
+		bool collides = ((1 << filterData0.word0) & filterData1.word2) != 0;
+		collides = collides && ((1 << filterData1.word0) & filterData0.word2);
 
-		return physx::PxFilterFlag::eDEFAULT;
+		return collides ? physx::PxFilterFlag::eDEFAULT : physx::PxFilterFlag::eSUPPRESS;
 	};
 
 	class SimulationEventCallback : public physx::PxSimulationEventCallback

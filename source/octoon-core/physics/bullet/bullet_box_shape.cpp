@@ -5,7 +5,7 @@ namespace octoon
 {
     BulletBoxShape::BulletBoxShape(float hx, float hy, float hz) noexcept
 	{
-		shape_ = std::make_unique<btBoxShape>(btVector3(1.0f, 1.0f, 1.0f));
+		shape_ = std::make_unique<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
 		shape_->setLocalScaling(btVector3(hx, hy, hz));
 		shape_->setUserPointer(this);
 	}

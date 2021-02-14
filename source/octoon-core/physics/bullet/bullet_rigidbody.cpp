@@ -180,9 +180,12 @@ namespace octoon
 	{
 		btVector3 inertia(0.0f, 0.0f, 0.0f);
 
-		btCollisionShape* collision = rigidbody_->getCollisionShape();
-		if (collision)
-			collision->calculateLocalInertia(mass, inertia);
+		if (mass != 0.0f)
+		{
+			btCollisionShape* collision = rigidbody_->getCollisionShape();
+			if (collision)
+				collision->calculateLocalInertia(mass, inertia);
+		}
 
 		rigidbody_->setMassProps(mass, inertia);
 		rigidbody_->updateInertiaTensor();

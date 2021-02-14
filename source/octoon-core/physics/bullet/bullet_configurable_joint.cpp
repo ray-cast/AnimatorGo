@@ -10,11 +10,6 @@ namespace octoon
 
 	BulletConfigurableJoint::~BulletConfigurableJoint() noexcept
 	{
-		if (this->frameA_)
-			this->frameA_->getRigidbody()->removeConstraintRef(_joint.get());
-
-		if (this->frameB_)
-			this->frameB_->getRigidbody()->removeConstraintRef(_joint.get());
 	}
 
 	void
@@ -30,9 +25,6 @@ namespace octoon
 		transformB_ = bodyB->getWorldTransform().inverse();
 
 		_joint = std::make_unique<btGeneric6DofSpringConstraint>(*bodyA, *bodyB, transformA_, transformB_, true);
-
-		bodyA->addConstraintRef(_joint.get());
-		bodyB->addConstraintRef(_joint.get());
 	}
 
 	void

@@ -6,6 +6,7 @@ namespace octoon
     BulletCapsuleShape::BulletCapsuleShape(float radius, float height)
 	{
 		shape_ = std::make_unique<btCapsuleShape>(1, 1);
+		shape_->setLocalScaling(btVector3(radius, height, 1));
 		shape_->setUserPointer(this);
 	}
 

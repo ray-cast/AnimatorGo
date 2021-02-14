@@ -10,11 +10,9 @@ namespace octoon
 	{
 		virtual bool needBroadphaseCollision(btBroadphaseProxy* proxy0, btBroadphaseProxy* proxy1) const
 		{
-			if ((1 << proxy0->m_collisionFilterGroup) & ~proxy1->m_collisionFilterMask || 
-				(1 << proxy1->m_collisionFilterGroup) & ~proxy0->m_collisionFilterMask)
-				return false;
-
-			return true;
+			bool collides = (proxy0->m_collisionFilterGroup & proxy1->m_collisionFilterMask) != 0;
+			collides = collides && (proxy1->m_collisionFilterGroup & proxy0->m_collisionFilterMask);
+			return collides;
 		}
 	};
 
@@ -57,7 +55,7 @@ namespace octoon
 	BulletScene::addRigidbody(std::shared_ptr<PhysicsRigidbody> rigidbody)
 	{
 		auto bulletRigidbody = std::dynamic_pointer_cast<BulletRigidbody>(rigidbody)->getRigidbody();
-		this->dynamicsWorld_->addRigidBody(bulletRigidbody, bulletRigidbody->getUserIndex(), bulletRigidbody->getUserIndex2());
+		this->dynamicsWorld_->addRigidBody(bulletRigidbody, 1 << bulletRigidbody->getUserIndex(), bulletRigidbody->getUserIndex2());
 	}
 
 	void
@@ -107,7 +105,7 @@ namespace octoon
 			if (body->getUserIndex3())
 			{
 				this->dynamicsWorld_->removeRigidBody(body);
-				this->dynamicsWorld_->addRigidBody(body, body->getUserIndex(), body->getUserIndex2());
+				this->dynamicsWorld_->addRigidBody(body, 1 << body->getUserIndex(), body->getUserIndex2());
 
 				body->setUserIndex3(false);
 			}

@@ -165,9 +165,9 @@ namespace octoon
 			if (bodyA != bodyB)
 			{
 				auto joint = bodyA->addComponent<ConfigurableJointComponent>();
-				joint->setTarget(bodyB->getComponent<RigidbodyComponent>());
 				joint->setTargetPosition(it->position);
 				joint->setTargetRotation(math::Quaternion(it->rotation));
+				joint->setTarget(bodyB->getComponent<RigidbodyComponent>());
 				joint->enablePreprocessing(false);
 
 				if (it->movementLowerLimit.x == 0.0f && it->movementUpperLimit.x == 0.0f)

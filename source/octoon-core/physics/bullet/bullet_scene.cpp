@@ -64,10 +64,11 @@ namespace octoon
 	void
 	BulletScene::fetchFinish()
 	{
+		auto& collisionArray = this->dynamicsWorld_->getCollisionObjectArray();
+
 		for (int i = 0; i < this->dynamicsWorld_->getNumCollisionObjects(); ++i)
 		{
-			btCollisionObject* obj = this->dynamicsWorld_->getCollisionObjectArray()[i];
-			btRigidBody* body = btRigidBody::upcast(obj);
+			btRigidBody* body = btRigidBody::upcast(collisionArray[i]);
 
 			PhysicsListener* listener = static_cast<PhysicsListener*>(body->getUserPointer());
 			if (listener)

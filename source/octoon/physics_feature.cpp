@@ -58,7 +58,7 @@ namespace octoon
 		PhysicsSceneDesc physicsSceneDesc;
 		physicsSceneDesc.gravity = gravity_;
 
-		physicsContext = PhysicsSystem::instance()->createContext(PhysicsDevice::Bullet);
+		physicsContext = PhysicsSystem::instance()->createContext(PhysicsDevice::Physx);
 		physicsScene = physicsContext->createScene(physicsSceneDesc);
 	}
 

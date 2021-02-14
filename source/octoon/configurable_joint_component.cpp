@@ -256,8 +256,10 @@ namespace octoon
 	{
 		if (joint_)
 			joint_->setSwingLimit(y, z);
-		lowAngleYLimit_ = y;
-		lowAngleZLimit_ = z;
+		lowAngleYLimit_ = -y;
+		lowAngleZLimit_ = -z;
+		highAngleYLimit_ = y;
+		highAngleZLimit_ = z;
 	}
 
 	void

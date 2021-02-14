@@ -117,10 +117,8 @@ namespace octoon
 	void
 	BulletConfigurableJoint::setAngularZMotion(ConfigurableJointMotion motion)
 	{
-		btVector3 lowerLimit;
+		btVector3 lowerLimit, upperLimit;
 		_joint->getAngularLowerLimit(lowerLimit);
-
-		btVector3 upperLimit;
 		_joint->getAngularUpperLimit(upperLimit);
 
 		if (motion == ConfigurableJointMotion::Locked)
@@ -225,22 +223,34 @@ namespace octoon
 	void
 	BulletConfigurableJoint::setTwistLimit(float min, float max)
 	{
-		_joint->setAngularLowerLimit(btVector3(min, min, min));
-		_joint->setAngularUpperLimit(btVector3(max, max, max));
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		_joint->setAngularLowerLimit(btVector3(min, lowerLimit.y(), lowerLimit.z()));
+		_joint->setAngularUpperLimit(btVector3(max, upperLimit.y(), upperLimit.z()));
 	}
 
 	void
 	BulletConfigurableJoint::setSwingLimit(float limit_y, float limit_z)
 	{
-		_joint->setAngularLowerLimit(btVector3(0, -limit_y, -limit_z));
-		_joint->setAngularUpperLimit(btVector3(0, limit_y, limit_z));
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		_joint->setAngularLowerLimit(btVector3(lowerLimit.x(), -limit_y, -limit_z));
+		_joint->setAngularUpperLimit(btVector3(upperLimit.y(), limit_y, limit_z));
 	}
 
 	void
 	BulletConfigurableJoint::setPyramidSwingLimit(float min_y, float max_y, float min_z, float max_z)
 	{
-		_joint->setAngularLowerLimit(btVector3(0, min_y, min_z));
-		_joint->setAngularUpperLimit(btVector3(0, max_y, max_z));
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		_joint->setAngularLowerLimit(btVector3(lowerLimit.x(), min_y, min_z));
+		_joint->setAngularUpperLimit(btVector3(upperLimit.y(), max_y, max_z));
 	}
 
 	void

@@ -20,7 +20,6 @@ namespace octoon
 
 		void setGroup(std::uint8_t group) override;
 		void setGroupMask(std::uint16_t groupMask) override;
-		bool isNeedUpdateGroup() const noexcept;
 
 		void setEnableCCD(bool enable) override;
 

@@ -11,6 +11,7 @@ namespace octoon
 		, gravity_(0.0f, -9.8f, 0.0f)
 		, enableSimulate_(true)
 		, forceSimulate_(false)
+		, maxSubSteps_(10)
 	{
 	}
 
@@ -60,6 +61,7 @@ namespace octoon
 
 		physicsContext = PhysicsSystem::instance()->createContext(PhysicsDevice::Bullet);
 		physicsScene = physicsContext->createScene(physicsSceneDesc);
+		physicsScene->setMaxSubStepCount(maxSubSteps_);
 	}
 
 	void

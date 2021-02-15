@@ -146,6 +146,8 @@ namespace octoon
 			else
 				component->setSleepThreshold(0.0f);
 
+			component->wakeUp();
+
 			rigidbodys.emplace_back(std::move(gameObject));
 		}
 	}

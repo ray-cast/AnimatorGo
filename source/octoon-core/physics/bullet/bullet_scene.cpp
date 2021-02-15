@@ -17,15 +17,13 @@ namespace octoon
 	};
 
 	BulletScene::BulletScene(PhysicsSceneDesc desc)
+		: broadphase_(std::make_unique<btDbvtBroadphase>())
+		, collisionConfiguration_(std::make_unique<btDefaultCollisionConfiguration>())
+		, filterCallback_(std::make_unique<FilterCallback>())
+		, solver_(std::make_unique<btSequentialImpulseConstraintSolver>())
+		, maxSubSteps_(1)
 	{
-		broadphase_ = std::make_unique<btDbvtBroadphase>();
-
-		collisionConfiguration_ = std::make_unique<btDefaultCollisionConfiguration>();
 		dispatcher_ = std::make_unique<btCollisionDispatcher>(collisionConfiguration_.get());
-
-		filterCallback_ = std::make_unique<FilterCallback>();
-
-		solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
 		dynamicsWorld_ = std::make_unique<btDiscreteDynamicsWorld>(dispatcher_.get(), broadphase_.get(), solver_.get(), collisionConfiguration_.get());
 		dynamicsWorld_->setGravity(btVector3(desc.gravity.x, desc.gravity.y, desc.gravity.z));
@@ -80,9 +78,21 @@ namespace octoon
 	}
 
 	void
+	BulletScene::setMaxSubStepCount(int numSubSteps) noexcept
+	{
+		maxSubSteps_ = numSubSteps;
+	}
+
+	int
+	BulletScene::getMaxSubStepCount() noexcept
+	{
+		return maxSubSteps_;
+	}
+
+	void
 	BulletScene::simulate(float time)
 	{
-		this->dynamicsWorld_->stepSimulation(time);
+		this->dynamicsWorld_->stepSimulation(time, maxSubSteps_, time);
 	}
 
 	void

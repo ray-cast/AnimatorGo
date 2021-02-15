@@ -28,6 +28,9 @@ namespace octoon
 		virtual void addConstraint(std::shared_ptr<PhysicsJoint> joint) override;
 		virtual void removeConstraint(std::shared_ptr<PhysicsJoint> joint) override;
 
+		virtual void setMaxSubStepCount(int numSubSteps) noexcept override;
+		virtual int getMaxSubStepCount() noexcept override;
+
 		virtual void simulate(float time) override;
 			
 		virtual void fetchResults() override;
@@ -38,6 +41,7 @@ namespace octoon
 		BulletScene& operator=(const BulletScene&) noexcept = delete;
 
     private:
+		int maxSubSteps_;
 		std::unique_ptr<btOverlapFilterCallback> filterCallback_;
 		std::unique_ptr<btBroadphaseInterface> broadphase_;
 		std::unique_ptr<btCollisionDispatcher> dispatcher_;

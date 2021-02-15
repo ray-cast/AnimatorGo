@@ -283,17 +283,18 @@ namespace octoon
 	RigidbodyComponent::clone() const noexcept
     {
 		auto instance = std::make_shared<RigidbodyComponent>();
-		instance->setMass(instance->getMass());
-		instance->setDynamicFriction(instance->getDynamicFriction());
-		instance->setStaticFriction(instance->getStaticFriction());
-		instance->setRestitution(instance->getRestitution());
-		instance->setAngularVelocity(instance->getAngularVelocity());
-		instance->setGravityScale(instance->getGravityScale());
-		instance->setIsKinematic(instance->getIsKinematic());
-		instance->setSleepThreshold(instance->getSleepThreshold());
-		instance->setEnableCCD(instance->getEnableCCD());
+		instance->setMass(this->getMass());
+		instance->setGroupMask(this->getGroupMask());
+		instance->setDynamicFriction(this->getDynamicFriction());
+		instance->setStaticFriction(this->getStaticFriction());
+		instance->setRestitution(this->getRestitution());
+		instance->setAngularVelocity(this->getAngularVelocity());
+		instance->setGravityScale(this->getGravityScale());
+		instance->setIsKinematic(this->getIsKinematic());
+		instance->setSleepThreshold(this->getSleepThreshold());
+		instance->setEnableCCD(this->getEnableCCD());
 		return instance;
-    }
+	}
 
     void
 	RigidbodyComponent::onActivate() except
@@ -301,8 +302,8 @@ namespace octoon
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
-			this->setupRigidbody(*collider);
-    }
+			this->initializeRigidbody(*collider);
+	}
 
     void
 	RigidbodyComponent::onDeactivate() noexcept
@@ -327,9 +328,9 @@ namespace octoon
 		{
 			auto collider = component->downcast_pointer<ColliderComponent>();
 			if (collider)
-				this->setupRigidbody(*collider);
+				this->initializeRigidbody(*collider);
 		}
-    }
+	}
 
     void 
 	RigidbodyComponent::onDetachComponent(const GameComponentPtr& component) noexcept
@@ -385,7 +386,7 @@ namespace octoon
 	}
 
 	void
-	RigidbodyComponent::setupRigidbody(ColliderComponent& collider) noexcept
+	RigidbodyComponent::initializeRigidbody(ColliderComponent& collider) noexcept
 	{
 		auto physicsFeature = this->tryGetFeature<PhysicsFeature>();
 		if (physicsFeature && !rigidbody_)

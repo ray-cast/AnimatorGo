@@ -65,6 +65,7 @@ namespace octoon
 		: context(nullptr)
 		, px_scene(nullptr)
 		, simulationEventCallback_(std::make_unique<SimulationEventCallback>())
+		, maxSubSteps_(1)
 	{
 		physx::PxSceneDesc sceneDesc(context->getPxPhysics()->getTolerancesScale());
 		sceneDesc.gravity = physx::PxVec3(desc.gravity.x, desc.gravity.y, desc.gravity.z);
@@ -129,9 +130,22 @@ namespace octoon
 	}
 
 	void
+	PhysxScene::setMaxSubStepCount(int numSubSteps) noexcept
+	{
+		maxSubSteps_ = numSubSteps;
+	}
+
+	int
+	PhysxScene::getMaxSubStepCount() noexcept
+	{
+		return maxSubSteps_;
+	}
+
+	void
 	PhysxScene::simulate(float time)
 	{
-		px_scene->simulate(time);
+		for (int i = 0; i < maxSubSteps_; i++)
+			px_scene->simulate(time / maxSubSteps_);
 	}
 
 	void
@@ -145,6 +159,7 @@ namespace octoon
 	{
 		physx::PxU32 nbActiveActors;
 		physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);
+
 		for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
 		{
 			PhysicsListener* listener = static_cast<PhysicsListener*>(activeActors[i]->userData);

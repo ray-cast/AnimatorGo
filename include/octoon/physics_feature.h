@@ -45,6 +45,7 @@ namespace octoon
 		bool forceSimulate_;
 		bool enableSimulate_;
 
+		int maxSubSteps_;
 		math::float3 gravity_;
 
 		std::shared_ptr<PhysicsContext> physicsContext;

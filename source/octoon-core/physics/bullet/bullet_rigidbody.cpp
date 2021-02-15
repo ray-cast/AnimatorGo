@@ -18,6 +18,9 @@ namespace octoon
 		rigidbody_->setUserPointer(this);
 		rigidbody_->setMassProps(desc.mass, localInertia);
 		rigidbody_->updateInertiaTensor();
+
+		if (desc.type == PhysicsRigidbodyType::Static)
+			this->setKinematic(true);
 	}
 
 	BulletRigidbody::~BulletRigidbody()
@@ -137,12 +140,6 @@ namespace octoon
 	{
 		rigidbody_->setUserIndex2(groupMask);
 		rigidbody_->setUserIndex3(true);
-	}
-
-	bool
-	BulletRigidbody::isNeedUpdateGroup() const noexcept
-	{
-		return rigidbody_->getUserIndex3();
 	}
 
 	void

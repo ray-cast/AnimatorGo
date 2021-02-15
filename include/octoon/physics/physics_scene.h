@@ -25,6 +25,9 @@ namespace octoon
 		PhysicsScene() noexcept;
 		~PhysicsScene() noexcept;
 
+		virtual void setMaxSubStepCount(int numSubSteps) noexcept = 0;
+		virtual int getMaxSubStepCount() noexcept = 0;
+
 		virtual void setGravity(const math::float3& gravity) noexcept = 0;
 		virtual math::float3 getGravity() const noexcept = 0;
 

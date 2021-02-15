@@ -127,6 +127,12 @@ namespace octoon
 	}
 
 	void
+	PhysxRigidbody::setRestitution(float f)
+	{
+		shape_->getPxMaterial()->setRestitution(f);
+	}
+
+	void
 	PhysxRigidbody::setGroup(std::uint8_t group)
 	{
 		physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
@@ -140,12 +146,6 @@ namespace octoon
 		physx::PxFilterData data = shape_->getPxShape()->getSimulationFilterData();
 		data.word2 = groupMask;
 		shape_->getPxShape()->setSimulationFilterData(data);
-	}
-
-	void
-	PhysxRigidbody::setRestitution(float f)
-	{
-		shape_->getPxMaterial()->setRestitution(f);
 	}
 
 	float

@@ -75,9 +75,9 @@ namespace octoon
 		void onMoveAfter() noexcept;
 
 	private:
-		void setupRigidbody(class ColliderComponent& collder) noexcept;
+		void initializeRigidbody(class ColliderComponent& collder) noexcept;
 
-    private:
+	private:
         bool isKinematic_;
 		bool enableCCD_;
 

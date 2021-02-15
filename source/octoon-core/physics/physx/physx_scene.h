@@ -28,6 +28,9 @@ namespace octoon
 		virtual void addConstraint(std::shared_ptr<PhysicsJoint> joint) override;
 		virtual void removeConstraint(std::shared_ptr<PhysicsJoint> joint) override;
 
+		virtual void setMaxSubStepCount(int numSubSteps) noexcept override;
+		virtual int getMaxSubStepCount() noexcept override;
+
 		virtual void simulate(float time) override;
 			
 		virtual void fetchResults() override;
@@ -39,6 +42,7 @@ namespace octoon
 
 	private:
 		PhysxContext* context;
+		int maxSubSteps_;
 		physx::PxScene* px_scene;
 		std::unique_ptr<class SimulationEventCallback> simulationEventCallback_;
 	};

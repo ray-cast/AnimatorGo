@@ -498,13 +498,16 @@ namespace octoon
 	{
 		if (world_need_updates_)
 		{
+			this->updateLocalTransform();
+
 			auto parent = this->getGameObject()->getParent();
 			if (parent)
 			{
 				auto& baseTransform = parent->getComponent<TransformComponent>()->getTransform();
-				transform_ = math::transformMultiply(baseTransform, this->getLocalTransform());
+				transform_ = math::transformMultiply(baseTransform, local_transform_);
 				transform_.getTransform(translate_, rotation_, scaling_);
 				transform_inverse_ = math::transformInverse(transform_);
+
 				euler_angles_ = math::eulerAngles(rotation_);
 			}
 			else
@@ -514,8 +517,8 @@ namespace octoon
 				euler_angles_ = local_euler_angles_;
 				rotation_ = local_rotation_;
 
-				transform_.makeTransform(translate_, rotation_, scaling_);
-				transform_inverse_ = math::transformInverse(transform_);
+				transform_ = local_transform_;
+				transform_inverse_ = local_transform_inverse_;
 			}
 
 			world_need_updates_ = false;
@@ -538,6 +541,7 @@ namespace octoon
 			auto& baseTransformInverse = parent->getComponent<TransformComponent>()->getTransformInverse();
 			local_transform_ = math::transformMultiply(baseTransformInverse, transform_);
 			local_transform_.getTransform(local_translate_, local_rotation_, local_scaling_);
+			local_transform_inverse_ = math::transformInverse(local_transform_);
 			local_euler_angles_ = math::eulerAngles(local_rotation_);
 		}
 		else
@@ -546,6 +550,8 @@ namespace octoon
 			local_rotation_ = rotation_;
 			local_translate_ = translate_;
 			local_euler_angles_ = euler_angles_;
+			local_transform_ = transform_;
+			local_transform_inverse_ = transform_inverse_;
 		}
 	}
 }

@@ -170,10 +170,7 @@ namespace octoon
 				if (it->physicsOperation == 0)
 					component->setIsKinematic(it->physicsOperation == 0);
 				else
-				{
 					component->setSleepThreshold(0.0f);
-					bone->getComponent<TransformComponent>()->setTransformMode(TransformMode::Absolute);
-				}
 
 				component->wakeUp();
 			}

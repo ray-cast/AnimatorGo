@@ -15,7 +15,7 @@ namespace octoon
 		, local_rotation_(math::Quaternion::Zero)
 		, local_need_updates_(true)
 		, world_need_updates_(true)
-		, transformMode_(TransformMode::Relative)
+		, allowRelativeMotion_(true)
 	{
 	}
 
@@ -405,18 +405,6 @@ namespace octoon
 	}
 
 	void
-	TransformComponent::setTransformMode(TransformMode mode) noexcept
-	{
-		transformMode_ = mode;
-	}
-	
-	TransformMode
-	TransformComponent::getTransformMode() const noexcept
-	{
-		return transformMode_;
-	}
-
-	void
 	TransformComponent::up(float speed) noexcept
 	{
 		this->setLocalTranslateAccum(this->getLocalUp() * speed);
@@ -450,6 +438,18 @@ namespace octoon
 	TransformComponent::move(const math::float3& speed) noexcept
 	{
 		this->setLocalTranslateAccum(this->getLocalForward() * speed);
+	}
+
+	void
+	TransformComponent::setAllowRelativeMotion(bool enable) noexcept
+	{
+		allowRelativeMotion_ = enable;
+	}
+
+	bool
+	TransformComponent::isAllowRelativeMotion() const noexcept
+	{
+		return allowRelativeMotion_;
 	}
 
 	GameComponentPtr
@@ -511,7 +511,7 @@ namespace octoon
 	{
 		if (world_need_updates_)
 		{
-			if (transformMode_ == TransformMode::Relative)
+			if (this->isAllowRelativeMotion())
 			{
 				this->updateLocalTransform();
 

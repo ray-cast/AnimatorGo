@@ -149,7 +149,12 @@ namespace octoon
 		if (isKinematic_ != isKinematic)
 		{
 			if (rigidbody_)
+			{
 				rigidbody_->setKinematic(isKinematic);
+
+				auto transform = this->getComponent<TransformComponent>();
+				transform->setAllowRelativeMotion(isKinematic);
+			}
 
 			isKinematic_ = isKinematic;
 		}
@@ -315,6 +320,7 @@ namespace octoon
 	RigidbodyComponent::onActivate() except
     {
 		this->addComponentDispatch(GameDispatchType::MoveAfter);
+
 		auto collider = this->getComponent<ColliderComponent>();
 		if (collider)
 			this->initializeRigidbody(*collider);
@@ -402,6 +408,7 @@ namespace octoon
 		if (physicsFeature && !rigidbody_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
+			transform->setAllowRelativeMotion(this->getIsKinematic());
 
 			PhysicsRigidbodyDesc desc;
 			desc.type = isKinematic_ ? PhysicsRigidbodyType::Static : PhysicsRigidbodyType::Dynamic;

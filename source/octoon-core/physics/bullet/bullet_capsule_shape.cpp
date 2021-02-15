@@ -14,6 +14,11 @@ namespace octoon
 	{
 	}
 
+	void
+	BulletCapsuleShape::setCenter(const math::float3& center)
+	{
+	}
+
 	math::float3
 	BulletCapsuleShape::getCenter()
 	{
@@ -21,7 +26,7 @@ namespace octoon
 	}
 
 	void
-	BulletCapsuleShape::setCenter(const math::float3& center)
+	BulletCapsuleShape::setQuaternion(const math::Quaternion& q)
 	{
 	}
 
@@ -32,31 +37,26 @@ namespace octoon
 	}
 
 	void
-	BulletCapsuleShape::setQuaternion(const math::Quaternion& q)
-	{
-	}
-
-	void
 	BulletCapsuleShape::setContactOffset(float offset)
 	{
+		shape_->setMargin(offset);
 	}
 
 	float
 	BulletCapsuleShape::getContactOffset() const
 	{
-		return 0.0f;
+		return shape_->getMargin();
 	}
 
 	void
 	BulletCapsuleShape::setRestOffset(float offset)
 	{
-		shape_->setMargin(offset);
 	}
 
 	float 
 	BulletCapsuleShape::getRestOffset() const
 	{
-		return shape_->getMargin();
+		return 0.0f; 
 	}
 
 	void

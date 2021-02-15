@@ -3,10 +3,10 @@
 
 namespace octoon
 {
-    BulletBoxShape::BulletBoxShape(float hx, float hy, float hz) noexcept
+    BulletBoxShape::BulletBoxShape(float width, float height, float depth) noexcept
 	{
 		shape_ = std::make_unique<btBoxShape>(btVector3(0.5f, 0.5f, 0.5f));
-		shape_->setLocalScaling(btVector3(hx, hy, hz));
+		shape_->setLocalScaling(btVector3(width, height, depth));
 		shape_->setUserPointer(this);
 	}
 
@@ -38,25 +38,25 @@ namespace octoon
 
 	void
 	BulletBoxShape::setContactOffset(float offset)
-	{			
+	{
+		shape_->setMargin(offset);
 	}
 
 	float
 	BulletBoxShape::getContactOffset() const
 	{
-		return 0.0f;
+		return shape_->getMargin();
 	}
 
 	void
 	BulletBoxShape::setRestOffset(float offset)
 	{
-		shape_->setMargin(offset);
 	}
 
 	float 
 	BulletBoxShape::getRestOffset() const
 	{
-		return shape_->getMargin();
+		return 0.0f;
 	}
 
 	void

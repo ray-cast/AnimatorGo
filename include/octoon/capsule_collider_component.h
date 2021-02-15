@@ -11,7 +11,8 @@ namespace octoon
 		OctoonDeclareSubClass(CapsuleColliderComponent, ColliderComponent)
 	public:
 		CapsuleColliderComponent() noexcept;
-		CapsuleColliderComponent(float radius, float height, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
+		CapsuleColliderComponent(float radius, float height) noexcept;
+		CapsuleColliderComponent(float radius, float height, float contactOffset, float restOffset) noexcept;
 		virtual ~CapsuleColliderComponent();
 
 		void setRadius(float radius) noexcept;

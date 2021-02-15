@@ -51,7 +51,7 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(0, limit->m_lowerLimit.x(), limit->m_upperLimit.x());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(0, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(0, 1, -1);
 	}
 
 	void
@@ -64,7 +64,7 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(1, limit->m_lowerLimit.y(), limit->m_upperLimit.y());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(1, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(1, 1, -1);
 	}
 
 	void
@@ -77,7 +77,7 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(2, limit->m_lowerLimit.z(), limit->m_upperLimit.z());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(2, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(2, 1, -1);
 	}
 
 	void
@@ -94,7 +94,7 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(3, lowerLimit.x(), upperLimit.x());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(3, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(3, 1, -1);
 	}
 
 	void
@@ -111,7 +111,7 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(4, lowerLimit.y(), upperLimit.y());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(4, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(4, 1, -1);
 	}
 
 	void
@@ -126,43 +126,91 @@ namespace octoon
 		else if (motion == ConfigurableJointMotion::Limited)
 			_joint->setLimit(5, lowerLimit.z(), upperLimit.z());
 		else if (motion == ConfigurableJointMotion::Free)
-			_joint->setLimit(5, std::numeric_limits<btScalar>::max(), std::numeric_limits<btScalar>::lowest());
+			_joint->setLimit(5, 1, -1);
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getXMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		auto limit = _joint->getTranslationalLimitMotor();
+
+		if (limit->m_lowerLimit.x() == limit->m_upperLimit.x())
+			return ConfigurableJointMotion::Locked;
+		else if (limit->m_lowerLimit.x() < limit->m_upperLimit.x())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getYMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		auto limit = _joint->getTranslationalLimitMotor();
+
+		if (limit->m_lowerLimit.y() == limit->m_upperLimit.y())
+			return ConfigurableJointMotion::Locked;
+		else if (limit->m_lowerLimit.y() < limit->m_upperLimit.y())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getZMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		auto limit = _joint->getTranslationalLimitMotor();
+
+		if (limit->m_lowerLimit.z() == limit->m_upperLimit.z())
+			return ConfigurableJointMotion::Locked;
+		else if (limit->m_lowerLimit.z() < limit->m_upperLimit.z())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getAngularXMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		if (lowerLimit.x() == upperLimit.x())
+			return ConfigurableJointMotion::Locked;
+		else if (lowerLimit.x() < upperLimit.x())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getAngularYMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		if (lowerLimit.y() == upperLimit.y())
+			return ConfigurableJointMotion::Locked;
+		else if (lowerLimit.y() < upperLimit.y())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	ConfigurableJointMotion
 	BulletConfigurableJoint::getAngularZMotion()
 	{
-		return ConfigurableJointMotion::Locked;
+		btVector3 lowerLimit, upperLimit;
+		_joint->getAngularLowerLimit(lowerLimit);
+		_joint->getAngularUpperLimit(upperLimit);
+
+		if (lowerLimit.z() == upperLimit.z())
+			return ConfigurableJointMotion::Locked;
+		else if (lowerLimit.z() < upperLimit.z())
+			return ConfigurableJointMotion::Limited;
+		else
+			return ConfigurableJointMotion::Free;
 	}
 
 	void

@@ -3,15 +3,15 @@
 
 namespace octoon
 {
-    OctoonImplementSubClass(BoxColliderComponent, ColliderComponent, "BoxCollider")
+	OctoonImplementSubClass(BoxColliderComponent, ColliderComponent, "BoxColliderComponent")
 
 	BoxColliderComponent::BoxColliderComponent() noexcept
 		: size_(math::float3::One)
 		, center_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
-		, contactOffset_(0.2f)
+		, contactOffset_(0.04f)
 		, restOffset_(0.0f)
-    {
+	{
     }
 
 	BoxColliderComponent::BoxColliderComponent(const math::float3& size, float contactOffset, float restOffset) noexcept
@@ -22,6 +22,15 @@ namespace octoon
 		, restOffset_(restOffset)
 	{
 		assert(contactOffset > restOffset);
+	}
+
+	BoxColliderComponent::BoxColliderComponent(float width, float height, float depth) noexcept
+		: size_(math::float3(width, height, depth))
+		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, contactOffset_(0.04f)
+		, restOffset_(0.0f)
+	{
 	}
 
 	BoxColliderComponent::BoxColliderComponent(float x, float y, float z, float contactOffset, float restOffset) noexcept
@@ -67,7 +76,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setCenter(center);
-		this->center_ = center;
+		this->center_ = shape_->getCenter();
 	}
 
 	void
@@ -87,7 +96,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setQuaternion(rotation);
-		this->rotation_ = rotation;
+		this->rotation_ = shape_->getQuaternion();
 	}
 
 	const math::float3&
@@ -131,7 +140,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setContactOffset(offset);
-		this->contactOffset_ = offset;
+		this->contactOffset_ = shape_->getContactOffset();
 	}
 
 	float
@@ -145,7 +154,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setRestOffset(offset);
-		this->restOffset_ = offset;
+		this->restOffset_ = shape_->getRestOffset();
 	}
 
 	float
@@ -187,8 +196,13 @@ namespace octoon
 			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
+
+			this->center_ = shape_->getCenter();
+			this->rotation_ = shape_->getQuaternion();
+			this->restOffset_ = shape_->getRestOffset();
+			this->contactOffset_ = shape_->getContactOffset();
 		}
-    }
+	}
 
     void
 	BoxColliderComponent::onDeactivate() noexcept

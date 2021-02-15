@@ -39,24 +39,24 @@ namespace octoon
 	void
 	BulletSphereShape::setContactOffset(float offset)
 	{
+		shape_->setMargin(offset);
 	}
 
 	float
 	BulletSphereShape::getContactOffset() const
 	{
-		return 0.0f;
+		return shape_->getMargin();
 	}
 
 	void
 	BulletSphereShape::setRestOffset(float offset)
 	{
-		shape_->setMargin(offset);
 	}
 
 	float 
 	BulletSphereShape::getRestOffset() const
 	{
-		return shape_->getMargin();
+		return 0.0f;
 	}
 
 	float

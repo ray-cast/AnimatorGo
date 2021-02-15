@@ -64,7 +64,7 @@ namespace octoon
 		BulletRigidbody& operator=(const BulletRigidbody&) noexcept = delete;
 
 	private:
-		bool needUpdateGroup_;
+		float mass_;
 
 		math::float3 position_;
 		math::Quaternion quaternion_;

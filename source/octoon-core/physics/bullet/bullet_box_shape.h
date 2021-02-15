@@ -14,7 +14,7 @@ namespace octoon
 	class OCTOON_EXPORT BulletBoxShape final : public PhysicsBoxShape, public BulletShape
 	{
 	public:
-		BulletBoxShape(float hx, float hy, float hz) noexcept;
+		BulletBoxShape(float width, float height, float depth) noexcept;
 		virtual ~BulletBoxShape() noexcept;
 
 		virtual math::float3 getCenter() override;

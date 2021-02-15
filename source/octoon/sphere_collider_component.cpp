@@ -4,16 +4,25 @@
 
 namespace octoon
 {
-    OctoonImplementSubClass(SphereColliderComponent, ColliderComponent, "SphereCollider")
+    OctoonImplementSubClass(SphereColliderComponent, ColliderComponent, "SphereColliderComponent")
 
 	SphereColliderComponent::SphereColliderComponent() noexcept
 		: radius_(1.0)
 		, center_(math::float3::Zero)
 		, rotation_(math::Quaternion::Zero)
-		, contactOffset_(0.2f)
+		, contactOffset_(1.0f)
 		, restOffset_(0.0f)
-    {
+	{
     }
+
+	SphereColliderComponent::SphereColliderComponent(float radius) noexcept
+		: radius_(radius)
+		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, contactOffset_(radius)
+		, restOffset_(0.0f)
+	{
+	}
 
 	SphereColliderComponent::SphereColliderComponent(float radius, float contactOffset, float restOffset) noexcept
 		: radius_(radius)
@@ -22,7 +31,7 @@ namespace octoon
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
 	{
-		assert(contactOffset > restOffset);
+		assert(contactOffset >= restOffset);
 	}
 
     SphereColliderComponent::~SphereColliderComponent()
@@ -42,7 +51,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setCenter(center);
-		this->center_ = center;
+		this->center_ = shape_->getCenter();
 	}
 
 	void
@@ -50,7 +59,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setQuaternion(rotation);
-		this->rotation_ = rotation;
+		this->rotation_ = shape_->getQuaternion();
 	}
 
 	void
@@ -58,7 +67,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setContactOffset(offset);
-		this->contactOffset_ = offset;
+		this->contactOffset_ = shape_->getContactOffset();
 	}
 
 	void
@@ -66,7 +75,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setRestOffset(offset);
-		this->restOffset_ = offset;
+		this->restOffset_ = shape_->getRestOffset();
 	}
 
     float
@@ -128,8 +137,13 @@ namespace octoon
 			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
+
+			this->center_ = shape_->getCenter();
+			this->rotation_ = shape_->getQuaternion();
+			this->restOffset_ = shape_->getRestOffset();
+			this->contactOffset_ = shape_->getContactOffset();
 		}
-    }
+	}
 
     void
 	SphereColliderComponent::onDeactivate() noexcept

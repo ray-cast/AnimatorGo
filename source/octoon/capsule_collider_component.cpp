@@ -15,6 +15,16 @@ namespace octoon
     {
     }
 
+	CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height) noexcept
+		: radius_(radius)
+		, height_(height)
+		, center_(math::float3::Zero)
+		, rotation_(math::Quaternion::Zero)
+		, contactOffset_(radius)
+		, restOffset_(0)
+	{
+	}
+
 	CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height, float contactOffset, float restOffset) noexcept
 		: radius_(radius)
 		, height_(height)
@@ -51,7 +61,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setCenter(center);
-		this->center_ = center;
+		this->center_ = shape_->getCenter();
 	}
 
 	void
@@ -59,7 +69,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setQuaternion(rotation);
-		this->rotation_ = rotation;
+		this->rotation_ = shape_->getQuaternion();
 	}
 
 	float
@@ -91,7 +101,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setContactOffset(offset);
-		this->contactOffset_ = offset;
+		this->contactOffset_ = shape_->getContactOffset();
 	}
 
 	float
@@ -105,7 +115,7 @@ namespace octoon
 	{
 		if (shape_)
 			shape_->setRestOffset(offset);
-		this->restOffset_ = offset;
+		this->restOffset_ = shape_->getRestOffset();
 	}
 
 	float
@@ -145,8 +155,13 @@ namespace octoon
 			shape_->setQuaternion(this->getQuaternion());
 			shape_->setContactOffset(this->contactOffset_);
 			shape_->setRestOffset(this->restOffset_);
+
+			this->center_ = shape_->getCenter();
+			this->rotation_ = shape_->getQuaternion();
+			this->restOffset_ = shape_->getRestOffset();
+			this->contactOffset_ = shape_->getContactOffset();
 		}
-    }
+	}
 
     void
 	CapsuleColliderComponent::onDeactivate() noexcept

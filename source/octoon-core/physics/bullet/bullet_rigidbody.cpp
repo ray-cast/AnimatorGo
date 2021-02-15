@@ -8,7 +8,7 @@ namespace octoon
 	BulletRigidbody::BulletRigidbody(PhysicsRigidbodyDesc desc)
 		: position_(desc.position.x, desc.position.y, desc.position.z)
 		, quaternion_(desc.rotation.x, desc.rotation.y, desc.rotation.z, desc.rotation.w)
-		, needUpdateGroup_(false)
+		, mass_(desc.mass)
 	{
 		btVector3 localInertia(0.0f, 0.0f, 0.0f);
 		btVector3 position(position_.x, position_.y, position_.z);
@@ -17,7 +17,7 @@ namespace octoon
 		rigidbody_ = std::make_unique<btRigidBody>(1.0f, new btDefaultMotionState(btTransform(quaternion, position)), nullptr, localInertia);
 		rigidbody_->setUserPointer(this);
 		rigidbody_->setMassProps(desc.mass, localInertia);
-		rigidbody_->setNewBroadphaseProxy(new btBroadphaseProxy);
+		rigidbody_->updateInertiaTensor();
 	}
 
 	BulletRigidbody::~BulletRigidbody()
@@ -28,17 +28,15 @@ namespace octoon
 	void
 	BulletRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 	{
-		auto pxshape = std::dynamic_pointer_cast<BulletShape>(shape);
-		rigidbody_->setCollisionShape(pxshape->getShape());
+		rigidbody_->setCollisionShape(std::dynamic_pointer_cast<BulletShape>(shape)->getShape());
 		this->setMass(this->getMass());
 	}
 
 	void
 	BulletRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
 	{
-		auto pxshape = std::dynamic_pointer_cast<BulletShape>(shape);
 		rigidbody_->setCollisionShape(nullptr);
-		shape = nullptr;
+		this->setMass(this->getMass());
 	}
 
 	void
@@ -81,17 +79,21 @@ namespace octoon
 	math::float3
 	BulletRigidbody::getPosition()
 	{
-		auto origin = rigidbody_->getWorldTransform().getOrigin();
+		btTransform transform;
+		rigidbody_->getMotionState()->getWorldTransform(transform);
+		auto origin = transform.getOrigin();
 		this->position_.set(origin.x(), origin.y(), origin.z());
-		return math::float3(origin.x(), origin.y(), origin.z());
+		return this->position_;
 	}
 
 	math::Quaternion
 	BulletRigidbody::getRotation()
 	{
-		auto rotation = rigidbody_->getWorldTransform().getRotation();
+		btTransform transform;
+		rigidbody_->getMotionState()->getWorldTransform(transform);
+		auto rotation = transform.getRotation();
 		this->quaternion_.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
-		return math::Quaternion(rotation.x(), rotation.y(), rotation.z(), rotation.w());
+		return this->quaternion_;
 	}
 
 	void
@@ -126,7 +128,6 @@ namespace octoon
 	void
 	BulletRigidbody::setGroup(std::uint8_t group)
 	{
-		needUpdateGroup_ = true;
 		rigidbody_->setUserIndex(group);
 		rigidbody_->setUserIndex3(true);
 	}
@@ -134,7 +135,6 @@ namespace octoon
 	void
 	BulletRigidbody::setGroupMask(std::uint16_t groupMask)
 	{
-		needUpdateGroup_ = true;
 		rigidbody_->setUserIndex2(groupMask);
 		rigidbody_->setUserIndex3(true);
 	}
@@ -142,7 +142,7 @@ namespace octoon
 	bool
 	BulletRigidbody::isNeedUpdateGroup() const noexcept
 	{
-		return this->needUpdateGroup_;
+		return rigidbody_->getUserIndex3();
 	}
 
 	void
@@ -187,8 +187,9 @@ namespace octoon
 				collision->calculateLocalInertia(mass, inertia);
 		}
 
-		rigidbody_->setMassProps(mass, inertia);
-		rigidbody_->updateInertiaTensor();
+		this->mass_ = mass;
+		this->rigidbody_->setMassProps(mass, inertia);
+		this->rigidbody_->updateInertiaTensor();
 	}
 
 	void
@@ -231,12 +232,14 @@ namespace octoon
 	{
 		if (kinematic)
 		{
-			rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-			rigidbody_->setActivationState(DISABLE_DEACTIVATION);
+			this->setMass(0.0f);
+			this->rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			this->rigidbody_->setActivationState(DISABLE_DEACTIVATION);
 		}
 		else
 		{
-			rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+			this->setMass(mass_);
+			this->rigidbody_->setCollisionFlags(rigidbody_->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
 		}
 	}
 
@@ -249,7 +252,6 @@ namespace octoon
 	void
 	BulletRigidbody::setSolverIterationCounts(std::uint32_t minPositionIters, std::uint32_t minVelocityIters) noexcept
 	{
-		//rigidbody_->setSolverIterationCounts(minPositionIters, minVelocityIters);
 	}
 
 	btRigidBody*

@@ -11,7 +11,8 @@ namespace octoon
 		OctoonDeclareSubClass(SphereColliderComponent, ColliderComponent)
 	public:
 		SphereColliderComponent() noexcept;
-		explicit SphereColliderComponent(float radius, float contactOffset = 0.2f, float restOffset = 0.0f) noexcept;
+		explicit SphereColliderComponent(float radius) noexcept;
+		explicit SphereColliderComponent(float radius, float contactOffset, float restOffset) noexcept;
 		virtual ~SphereColliderComponent();
 
 		void setRadius(float r) noexcept;

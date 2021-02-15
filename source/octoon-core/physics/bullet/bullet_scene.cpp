@@ -123,7 +123,7 @@ namespace octoon
 			btCollisionObject* obj = this->dynamicsWorld_->getCollisionObjectArray()[i];
 			btRigidBody* rigidbody = btRigidBody::upcast(obj);
 
-			if (rigidbody->isActive() && (rigidbody->getCollisionFlags() & btCollisionObject::CF_KINEMATIC_OBJECT))
+			if (rigidbody->isActive() && !(rigidbody->getCollisionFlags() & btCollisionObject::CF_KINEMATIC_OBJECT))
 			{
 				PhysicsListener* listener = static_cast<PhysicsListener*>(rigidbody->getUserPointer());
 				if (listener)

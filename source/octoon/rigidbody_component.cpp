@@ -343,29 +343,6 @@ namespace octoon
 		}
     }
 
-	void 
-	RigidbodyComponent::onFetchResult() noexcept
-	{
-		if (rigidbody_)
-		{
-			auto transform = this->getComponent<TransformComponent>();
-			if (transform)
-			{
-				this->position_ = rigidbody_->getPosition();
-				this->rotation_ = rigidbody_->getRotation();
-
-				auto parent = this->getGameObject()->getParent();
-				if (parent)
-					parent->getComponent<TransformComponent>()->setTransform(math::float4x4(this->rotation_, this->position_) * transform->getLocalTransformInverse());
-				else
-				{
-					transform->setTranslate(this->position_);
-					transform->setQuaternion(this->rotation_);
-				}
-			}
-		}
-	}
-
 	void
 	RigidbodyComponent::onLayerChangeAfter() noexcept
 	{
@@ -381,7 +358,32 @@ namespace octoon
 			auto transform = this->getComponent<TransformComponent>();
 			rotation_ = transform->getQuaternion();
 			position_ = transform->getTranslate();
-			rigidbody_->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
+			rigidbody_->setPositionAndRotation(position_, rotation_);
+		}
+	}
+
+	void 
+	RigidbodyComponent::onFetchResult() noexcept
+	{
+		if (rigidbody_ && !isKinematic_)
+		{
+			auto transform = this->getComponent<TransformComponent>();
+			if (transform)
+			{
+				this->position_ = rigidbody_->getPosition();
+				this->rotation_ = rigidbody_->getRotation();
+
+				auto parent = this->getGameObject()->getParent();
+				if (parent)
+				{
+					parent->getComponent<TransformComponent>()->setTransform(math::float4x4(this->rotation_, this->position_) * transform->getLocalTransformInverse());
+				}
+				else
+				{
+					transform->setTranslate(this->position_);
+					transform->setQuaternion(this->rotation_);
+				}
+			}
 		}
 	}
 

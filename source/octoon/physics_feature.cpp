@@ -105,7 +105,7 @@ namespace octoon
 				{
 					physicsScene->simulate(timeInterval);
 					physicsScene->fetchResults();
-					physicsScene->fetchFinish();
+
 					forceSimulate_ = false;
 				}				
 			}

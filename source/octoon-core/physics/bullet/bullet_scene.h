@@ -34,7 +34,6 @@ namespace octoon
 		virtual void simulate(float time) override;
 			
 		virtual void fetchResults() override;
-		virtual void fetchFinish() override;
 
 	private:
 		BulletScene(const BulletScene&) noexcept = delete;

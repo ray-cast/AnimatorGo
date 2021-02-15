@@ -92,18 +92,6 @@ namespace octoon
 	void
 	BulletScene::simulate(float time)
 	{
-		this->dynamicsWorld_->stepSimulation(time, maxSubSteps_, time);
-	}
-
-	void
-	BulletScene::fetchResults()
-	{
-		this->dynamicsWorld_->synchronizeMotionStates();
-	}
-
-	void
-	BulletScene::fetchFinish()
-	{
 		auto collision = this->dynamicsWorld_->getCollisionObjectArray();
 		auto collisionNums = this->dynamicsWorld_->getNumCollisionObjects();
 
@@ -121,13 +109,26 @@ namespace octoon
 			}
 		}
 
-		auto& rigidbodies = this->dynamicsWorld_->getNonStaticRigidBodies();
+		this->dynamicsWorld_->stepSimulation(time, maxSubSteps_, time);
+	}
 
-		for (int i = 0; i < rigidbodies.size(); ++i)
+	void
+	BulletScene::fetchResults()
+	{
+		auto collision = this->dynamicsWorld_->getCollisionObjectArray();
+		auto collisionNums = this->dynamicsWorld_->getNumCollisionObjects();
+
+		for (int i = 0; i < collisionNums; ++i)
 		{
-			PhysicsListener* listener = static_cast<PhysicsListener*>(rigidbodies[i]->getUserPointer());
-			if (listener)
-				listener->onFetchResult();
+			btCollisionObject* obj = this->dynamicsWorld_->getCollisionObjectArray()[i];
+			btRigidBody* rigidbody = btRigidBody::upcast(obj);
+
+			if (rigidbody->isActive() && (rigidbody->getCollisionFlags() & btCollisionObject::CF_KINEMATIC_OBJECT))
+			{
+				PhysicsListener* listener = static_cast<PhysicsListener*>(rigidbody->getUserPointer());
+				if (listener)
+					listener->onFetchResult();
+			}
 		}
 	}
 }

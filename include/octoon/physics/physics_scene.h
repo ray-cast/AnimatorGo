@@ -40,7 +40,6 @@ namespace octoon
 		virtual void simulate(float time) = 0;
 
 		virtual void fetchResults() = 0;
-		virtual void fetchFinish() = 0;
 
 	private:
 		PhysicsScene(const PhysicsScene&) = delete;

@@ -145,17 +145,14 @@ namespace octoon
 	PhysxScene::simulate(float time)
 	{
 		for (int i = 0; i < maxSubSteps_; i++)
+		{
 			px_scene->simulate(time / maxSubSteps_);
+			px_scene->fetchResults(true);
+		}
 	}
 
 	void
 	PhysxScene::fetchResults()
-	{
-		px_scene->fetchResults(true);
-	}
-
-	void
-	PhysxScene::fetchFinish()
 	{
 		physx::PxU32 nbActiveActors;
 		physx::PxActor** activeActors = px_scene->getActiveActors(nbActiveActors);

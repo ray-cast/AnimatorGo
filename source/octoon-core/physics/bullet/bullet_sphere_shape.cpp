@@ -17,23 +17,25 @@ namespace octoon
 	void
 	BulletSphereShape::setCenter(const math::float3& center)
 	{
+		this->center_ = center;
 	}
 
 	math::float3
 	BulletSphereShape::getCenter()
 	{
-		return math::float3::Zero;
+		return center_;
 	}
 
 	void
 	BulletSphereShape::setQuaternion(const math::Quaternion& q)
 	{
+		this->rotation_ = q;
 	}
 
 	math::Quaternion
 	BulletSphereShape::getQuaternion()
 	{
-		return math::Quaternion::Zero;
+		return rotation_;
 	}
 
 	void

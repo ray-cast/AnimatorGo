@@ -48,6 +48,9 @@ namespace octoon
 		float height_;
 		float depth_;
 
+		math::float3 center_;
+		math::Quaternion rotation_;
+
 		std::unique_ptr<btBoxShape> shape_;
 	};
 }

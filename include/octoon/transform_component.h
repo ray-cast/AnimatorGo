@@ -5,6 +5,12 @@
 
 namespace octoon
 {
+	enum class TransformMode
+	{
+		Absolute,
+		Relative
+	};
+
 	class OCTOON_EXPORT TransformComponent final : public GameComponent
 	{
 		OctoonDeclareSubClass(TransformComponent, GameComponent)
@@ -61,6 +67,9 @@ namespace octoon
 		const math::float3& getLocalRight() const noexcept;
 		const math::float3& getLocalUp() const noexcept;
 		const math::float3& getLocalForward() const noexcept;
+		
+		void setTransformMode(TransformMode mode) noexcept;
+		TransformMode getTransformMode() const noexcept;
 
 		void up(float speed) noexcept;
 		void up(const math::float3& speed) noexcept;
@@ -86,6 +95,8 @@ namespace octoon
 		void updateParentTransform() const noexcept;
 
 	private:
+		TransformMode transformMode_;
+
 		mutable math::float3 translate_;
 		mutable math::float3 scaling_;
 		mutable math::float3 euler_angles_;

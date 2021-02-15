@@ -11,6 +11,8 @@ namespace octoon
 		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(0.04f)
 		, restOffset_(0.0f)
+		, needUpdatePose_(false)
+		, localPose_(math::float4x4::One)
 	{
     }
 
@@ -20,6 +22,8 @@ namespace octoon
 		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
+		, needUpdatePose_(false)
+		, localPose_(math::float4x4::One)
 	{
 		assert(contactOffset > restOffset);
 	}
@@ -30,6 +34,8 @@ namespace octoon
 		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(0.04f)
 		, restOffset_(0.0f)
+		, needUpdatePose_(false)
+		, localPose_(math::float4x4::One)
 	{
 	}
 
@@ -39,6 +45,8 @@ namespace octoon
 		, rotation_(math::Quaternion::Zero)
 		, contactOffset_(contactOffset)
 		, restOffset_(restOffset)
+		, needUpdatePose_(false)
+		, localPose_(math::float4x4::One)
 	{
 		assert(contactOffset > restOffset);
 	}
@@ -72,14 +80,6 @@ namespace octoon
 	}
 
 	void
-	BoxColliderComponent::setCenter(const math::float3& center) noexcept
-	{
-		if (shape_)
-			shape_->setCenter(center);
-		this->center_ = shape_->getCenter();
-	}
-
-	void
 	BoxColliderComponent::setSize(const math::float3& sz) noexcept
 	{
 		if (shape_)
@@ -92,11 +92,29 @@ namespace octoon
 	}
 
 	void
+	BoxColliderComponent::setCenter(const math::float3& center) noexcept
+	{
+		if (this->center_ != center)
+		{
+			if (shape_)
+				shape_->setCenter(center);
+
+			this->center_ = center;
+			this->needUpdatePose_ = true;
+		}
+	}
+
+	void
 	BoxColliderComponent::setQuaternion(const math::Quaternion& rotation) noexcept
 	{
-		if (shape_)
-			shape_->setQuaternion(rotation);
-		this->rotation_ = shape_->getQuaternion();
+		if (this->rotation_ != rotation)
+		{
+			if (shape_)
+				shape_->setQuaternion(rotation);
+
+			this->rotation_ = rotation;
+			this->needUpdatePose_ = true;
+		}
 	}
 
 	const math::float3&
@@ -133,6 +151,18 @@ namespace octoon
 	BoxColliderComponent::getQuaternion() const noexcept
 	{
 		return this->rotation_;
+	}
+
+	const math::float4x4&
+	BoxColliderComponent::getLocalPose() const noexcept
+	{
+		if (needUpdatePose_)
+		{
+			localPose_.makeRotation(this->rotation_, this->center_);
+			needUpdatePose_ = false;
+		}
+
+		return localPose_;
 	}
 
 	void

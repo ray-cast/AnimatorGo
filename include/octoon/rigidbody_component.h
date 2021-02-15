@@ -52,6 +52,7 @@ namespace octoon
 
 		void rotation(const math::Quaternion& quat) noexcept;
 		void movePosition(const math::float3& position) noexcept;
+		void setPositionAndRotation(const math::float3& position, const math::Quaternion& quat) noexcept;
 
 		void clearForce() noexcept;
 		void clearTorque() noexcept;
@@ -97,7 +98,10 @@ namespace octoon
 		math::float3 position_;
 		math::Quaternion rotation_;
 
-        RigidbodySleepMode sleepMode_;
+		math::float3 center_;
+		math::Quaternion quaternion_;
+
+		RigidbodySleepMode sleepMode_;
 
 		std::shared_ptr<PhysicsRigidbody> rigidbody_;
     };

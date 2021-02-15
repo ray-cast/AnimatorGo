@@ -70,13 +70,13 @@ namespace octoon
 		}
 	}
 
-	void createClothes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, GameObjects& rigidbodies) noexcept(false)
+	void createClothes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones) noexcept(false)
 	{
 		for (auto& it : model.softbodies)
 		{
 			GameObjects collider;
 
-			for (auto& body : rigidbodies)
+			for (auto& body : bones)
 			{
 				auto rigidbody = body->getComponent<RigidbodyComponent>();
 				if ((1 << rigidbody->getGroup()) & ~it->groupMask)
@@ -95,7 +95,7 @@ namespace octoon
 
 			if (!it->anchorRigidbodies.empty())
 			{
-				auto rigidbody = rigidbodies[it->anchorRigidbodies.front()];
+				auto rigidbody = bones[it->anchorRigidbodies.front()];
 				if (rigidbody)
 				{
 					if (rigidbody->getParent())
@@ -107,64 +107,96 @@ namespace octoon
 		}
 	}
 
-	void createRigidbodies(const model::Model& model, GameObjects& bones, GameObjects& rigidbodys) noexcept(false)
+	void createColliders(const model::Model& model, GameObjects& bones) noexcept(false)
 	{
-		rigidbodys.reserve(model.rigidbodies.size());
-
 		for (auto& it : model.rigidbodies)
 		{
-			auto gameObject = GameObject::create();
-			gameObject->setName(it->name);
-			gameObject->setParent(it->bone < bones.size() ? bones[it->bone] : nullptr);
-			gameObject->setLayer(it->group);
+			if (it->bone >= bones.size())
+				continue;
 
-			auto transform = gameObject->getComponent<TransformComponent>();
-			transform->setTranslate(it->position);
-			transform->setQuaternion(math::isfinite(it->rotation) ? math::Quaternion(it->rotation) : math::Quaternion::Zero);
+			auto bone = bones[it->bone];
+			auto baseTransformInverse = bone->getComponent<TransformComponent>()->getTransformInverse();
+			auto localTransform = math::transformMultiply(baseTransformInverse, math::makeRotation(math::Quaternion(it->rotation), it->position));
+
+			math::float3 translate;
+			math::float3 scale;
+			math::Quaternion rotation;
+			localTransform.getTransform(translate, rotation, scale);
 
 			if (it->shape == model::ShapeType::ShapeTypeSphere)
-				gameObject->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3);
+			{
+				auto collider = bone->addComponent<SphereColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3);
+				collider->setCenter(translate);
+				collider->setQuaternion(rotation);
+			}
 			else if (it->shape == model::ShapeType::ShapeTypeSquare)
-				gameObject->addComponent<BoxColliderComponent>(math::max(math::float3(0.001, 0.001, 0.001), it->scale * 2.0f));
+			{
+				auto collider = bone->addComponent<BoxColliderComponent>(math::max(math::float3(0.001, 0.001, 0.001), it->scale * 2.0f));
+				collider->setCenter(translate);
+				collider->setQuaternion(rotation);
+			}
 			else if (it->shape == model::ShapeType::ShapeTypeCapsule)
-				gameObject->addComponent<CapsuleColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, it->scale.y);
-			else
-				assert(false);
-
-			auto component = gameObject->addComponent<RigidbodyComponent>();
-			component->setName(it->name);
-			component->setMass(it->mass);
-			component->setGroupMask(it->groupMask);
-			component->setRestitution(it->elasticity);
-			component->setStaticFriction(it->friction);
-			component->setDynamicFriction(it->friction);
-			component->setLinearDamping(it->movementDecay);
-			component->setAngularDamping(it->rotationDecay);
-
-			if (it->physicsOperation == 0)
-				component->setIsKinematic(it->physicsOperation == 0);
-			else
-				component->setSleepThreshold(0.0f);
-
-			component->wakeUp();
-
-			rigidbodys.emplace_back(std::move(gameObject));
+			{
+				auto collider = bone->addComponent<CapsuleColliderComponent>(it->scale.x > 0.0f ? it->scale.x : math::EPSILON_E3, it->scale.y);
+				collider->setCenter(translate);
+				collider->setQuaternion(rotation);
+			}
 		}
 	}
 
-	void createJoints(const model::Model& model, const GameObjects& rigidbodys, GameObjects& joints) noexcept(false)
+	void createRigidbodies(const model::Model& model, GameObjects& bones) noexcept(false)
 	{
-		joints.reserve(model.joints.size());
-
-		for (auto& it : model.joints)
+		for (auto& it : model.rigidbodies)
 		{
-			if (rigidbodys.size() <= it->bodyIndexA || rigidbodys.size() <= it->bodyIndexB)
+			if (it->bone >= bones.size())
 				continue;
 
-			auto bodyA = rigidbodys[it->bodyIndexA];
-			auto bodyB = rigidbodys[it->bodyIndexB];
+			auto bone = bones[it->bone];
 
-			if (bodyA != bodyB)
+			if (!bone->getComponent<RigidbodyComponent>())
+			{
+				bone->setLayer(it->group);
+
+				auto component = bone->addComponent<RigidbodyComponent>();
+				component->setName(it->name);
+				component->setMass(it->mass);
+				component->setGroupMask(it->groupMask);
+				component->setRestitution(it->elasticity);
+				component->setStaticFriction(it->friction);
+				component->setDynamicFriction(it->friction);
+				component->setLinearDamping(it->movementDecay);
+				component->setAngularDamping(it->rotationDecay);
+
+				if (it->physicsOperation == 0)
+					component->setIsKinematic(it->physicsOperation == 0);
+				else
+				{
+					component->setSleepThreshold(0.0f);
+					bone->getComponent<TransformComponent>()->setTransformMode(TransformMode::Absolute);
+				}
+
+				component->wakeUp();
+			}
+		}
+	}
+
+	void createJoints(const model::Model& model, GameObjects& bones) noexcept(false)
+	{
+		for (auto& it : model.joints)
+		{
+			if (it->bodyIndexA  >= model.rigidbodies.size()|| it->bodyIndexB >= model.rigidbodies.size())
+				continue;
+
+			auto boneA = model.rigidbodies[it->bodyIndexA]->bone;
+			auto boneB = model.rigidbodies[it->bodyIndexB]->bone;
+
+			if (boneA >= model.bones.size() || boneB >= model.bones.size())
+				continue;
+
+			auto& bodyA = bones[boneA];
+			auto& bodyB = bones[boneB];
+
+			if (bodyA != bodyB && bodyA && bodyB)
 			{
 				auto joint = bodyA->addComponent<ConfigurableJointComponent>();
 				joint->setTargetPosition(it->position);
@@ -269,8 +301,6 @@ namespace octoon
 					joint->setDriveAngularX(std::max(0.0f, it->springRotationConstant.x));
 				if (it->springRotationConstant.y != 0.0f || it->springRotationConstant.z != 0.0f)
 					joint->setDriveAngularZ(std::max(0.0f, (it->springRotationConstant.y + it->springRotationConstant.z) * 0.5f));
-
-				joints.emplace_back(std::move(bodyA));
 			}
 		}
 	}
@@ -354,7 +384,7 @@ namespace octoon
 	}
 
 	GameObjectPtr
-	MeshLoader::load(std::string_view filepath, GameObjects& rigidbody, bool cache) noexcept(false)
+	MeshLoader::load(std::string_view filepath, bool cache) noexcept(false)
 	{
 		model::Model model;
 
@@ -366,16 +396,16 @@ namespace octoon
 			GameObjectPtr actor;
 
 			GameObjects bones;
-			GameObjects joints;
 
 			createBones(model, bones);
 			createSolver(model, bones);
-			createRigidbodies(model, bones, rigidbody);
-			createJoints(model, rigidbody, joints);
+			createColliders(model, bones);
+			createRigidbodies(model, bones);
+			createJoints(model, bones);
 			
 			createMeshes(model, actor, bones, std::string(filepath));
 			createMorph(model, actor);
-			createClothes(model, actor, bones, rigidbody);
+			createClothes(model, actor, bones);
 
 			return actor;
 		}

@@ -132,7 +132,6 @@ namespace rabbit
 		if (!context->profile->entitiesModule->objects.empty())
 		{
 			context->profile->entitiesModule->objects.clear();
-			context->profile->entitiesModule->rigidbodies.clear();
 		}
 
 		octoon::GameObjects objects = octoon::ASSLoader::load(path);
@@ -160,7 +159,6 @@ namespace rabbit
 		if (!context->profile->entitiesModule->objects.empty())
 		{
 			context->profile->entitiesModule->objects.clear();
-			context->profile->entitiesModule->rigidbodies.clear();
 			context->profile->entitiesModule->camera.reset();
 		}
 
@@ -182,9 +180,7 @@ namespace rabbit
 
 		for (auto& it : pmm.model)
 		{
-			GameObjects modelRigidbodies;
-
-			auto model = octoon::MeshLoader::load(it.path, modelRigidbodies);
+			auto model = octoon::MeshLoader::load(it.path);
 			if (model)
 			{
 				AnimationClips<float> boneClips;
@@ -202,12 +198,6 @@ namespace rabbit
 					smr->setAutomaticUpdate(!this->getContext()->profile->offlineModule->offlineEnable);
 
 				objects.emplace_back(std::move(model));
-
-				for (auto& body : modelRigidbodies)
-				{
-					if (!body->getParent())
-						rigidbodies.emplace_back(std::move(body));
-				}
 			}
 			else
 			{
@@ -218,7 +208,6 @@ namespace rabbit
 		context->profile->sunModule->rotation = octoon::math::degrees(octoon::math::eulerAngles(rotation));
 		context->profile->entitiesModule->camera = this->createCamera(pmm);
 		context->profile->entitiesModule->objects = objects;
-		context->profile->entitiesModule->rigidbodies = rigidbodies;
 
 		this->sendMessage("rabbit:project:open");
 	}
@@ -226,18 +215,9 @@ namespace rabbit
 	bool
 	EntitiesComponent::importModel(std::string_view path) noexcept
 	{
-		GameObjects rigidbody;
-
-		auto model = octoon::MeshLoader::load(path, rigidbody);
+		auto model = octoon::MeshLoader::load(path);
 		if (model)
 		{
-			auto& rigidbodies = this->getContext()->profile->entitiesModule->rigidbodies;
-			for (auto& it : rigidbody)
-			{
-				if (!it->getParent())
-					rigidbodies.emplace_back(std::move(it));
-			}
-
 			auto smr = model->getComponent<octoon::SkinnedMeshRendererComponent>();
 			if (smr)
 				smr->setAutomaticUpdate(!this->getContext()->profile->offlineModule->offlineEnable);

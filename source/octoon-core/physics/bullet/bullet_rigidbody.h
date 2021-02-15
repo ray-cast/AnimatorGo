@@ -4,8 +4,7 @@
 #include <memory>
 #include <octoon/runtime/platform.h>
 #include <octoon/physics/physics_rigidbody.h>
-
-#include "bullet_type.h"
+#include <bullet/btBulletDynamicsCommon.h>
 
 namespace octoon
 {
@@ -67,6 +66,11 @@ namespace octoon
 
 		math::float3 position_;
 		math::Quaternion quaternion_;
+
+		btTransform transform_;
+
+		btTransform localTransform_;
+		btTransform localTransformInverse_;
 
 		std::unique_ptr<btRigidBody> rigidbody_;
 	};

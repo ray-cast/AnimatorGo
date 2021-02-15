@@ -18,6 +18,7 @@ namespace octoon
 		rigidbody_->setUserPointer(this);
 		rigidbody_->setMassProps(desc.mass, localInertia);
 		rigidbody_->updateInertiaTensor();
+		rigidbody_->getMotionState()->getWorldTransform(transform_);
 
 		if (desc.type == PhysicsRigidbodyType::Static)
 			this->setKinematic(true);
@@ -31,52 +32,58 @@ namespace octoon
 	void
 	BulletRigidbody::attachShape(std::shared_ptr<PhysicsShape> shape)
 	{
-		rigidbody_->setCollisionShape(std::dynamic_pointer_cast<BulletShape>(shape)->getShape());
+		auto center = shape->getCenter();
+		auto rotation = shape->getQuaternion();
+
+		this->localTransform_.setIdentity();
+		this->localTransform_.setOrigin(btVector3(center.x, center.y, center.z));
+		this->localTransform_.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w));
+
+		this->localTransformInverse_ = this->localTransform_.inverse();
+
+		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
+		this->rigidbody_->setCollisionShape(std::dynamic_pointer_cast<BulletShape>(shape)->getShape());
+
 		this->setMass(this->getMass());
 	}
 
 	void
 	BulletRigidbody::detachShape(std::shared_ptr<PhysicsShape> shape)
 	{
-		rigidbody_->setCollisionShape(nullptr);
+		this->rigidbody_->setCollisionShape(nullptr);
+		this->rigidbody_->getMotionState()->setWorldTransform(transform_);
+
 		this->setMass(this->getMass());
 	}
 
 	void
 	BulletRigidbody::setPosition(const math::float3& position)
 	{
-		btTransform groundTransform;
-		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(position.x, position.y, position.z));
-		groundTransform.setRotation(btQuaternion(quaternion_.x, quaternion_.y, quaternion_.z, quaternion_.w));
+		transform_.setOrigin(btVector3(position.x, position.y, position.z));
 
 		this->position_ = position;
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
 	}
 
 	void
 	BulletRigidbody::setRotation(const math::Quaternion& quaternion)
 	{
-		btTransform groundTransform;
-		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(position_.x, position_.y, position_.z));
-		groundTransform.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+		transform_.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
 		this->quaternion_ = quaternion;
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
 	}
 
 	void
 	BulletRigidbody::setPositionAndRotation(const math::float3& position, const math::Quaternion& quaternion)
 	{
-		btTransform groundTransform;
-		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(position.x, position.y, position.z));
-		groundTransform.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+		transform_.setIdentity();
+		transform_.setOrigin(btVector3(position.x, position.y, position.z));
+		transform_.setRotation(btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
 
 		this->position_ = position;
 		this->quaternion_ = quaternion;
-		this->rigidbody_->getMotionState()->setWorldTransform(groundTransform);
+		this->rigidbody_->getMotionState()->setWorldTransform(transform_ * localTransform_);
 	}
 
 	math::float3
@@ -84,7 +91,10 @@ namespace octoon
 	{
 		btTransform transform;
 		rigidbody_->getMotionState()->getWorldTransform(transform);
+
 		auto origin = transform.getOrigin();
+		origin += transform.getBasis() * localTransformInverse_.getOrigin();
+
 		this->position_.set(origin.x(), origin.y(), origin.z());
 		return this->position_;
 	}
@@ -94,7 +104,13 @@ namespace octoon
 	{
 		btTransform transform;
 		rigidbody_->getMotionState()->getWorldTransform(transform);
-		auto rotation = transform.getRotation();
+		
+		auto basis = transform.getBasis();
+		basis *= localTransformInverse_.getBasis();
+
+		btQuaternion rotation;
+		basis.getRotation(rotation);
+
 		this->quaternion_.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
 		return this->quaternion_;
 	}

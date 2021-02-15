@@ -115,15 +115,14 @@ namespace octoon
 	void
 	BulletScene::fetchResults()
 	{
-		auto collision = this->dynamicsWorld_->getCollisionObjectArray();
-		auto collisionNums = this->dynamicsWorld_->getNumCollisionObjects();
+		auto rigidbodies = this->dynamicsWorld_->getNonStaticRigidBodies();
+		auto rigidbodiesNums = rigidbodies.size();
 
-		for (int i = 0; i < collisionNums; ++i)
+		for (int i = 0; i < rigidbodiesNums; ++i)
 		{
-			btCollisionObject* obj = this->dynamicsWorld_->getCollisionObjectArray()[i];
-			btRigidBody* rigidbody = btRigidBody::upcast(obj);
+			btRigidBody* rigidbody = rigidbodies[i];
 
-			if (rigidbody->isActive() && !(rigidbody->getCollisionFlags() & btCollisionObject::CF_KINEMATIC_OBJECT))
+			if (rigidbody->isActive())
 			{
 				PhysicsListener* listener = static_cast<PhysicsListener*>(rigidbody->getUserPointer());
 				if (listener)

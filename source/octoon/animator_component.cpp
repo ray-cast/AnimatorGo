@@ -124,8 +124,7 @@ namespace octoon
 					if (rigidbody)
 					{
 						auto transform = child->getComponent<octoon::TransformComponent>();
-						rigidbody->movePosition(transform->getTranslate());
-						rigidbody->rotation(transform->getQuaternion());
+						rigidbody->setPositionAndRotation(transform->getTranslate(), transform->getQuaternion());
 					}
 				}
 			}

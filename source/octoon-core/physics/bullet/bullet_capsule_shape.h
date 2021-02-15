@@ -45,6 +45,9 @@ namespace octoon
 		float radius_;
 		float height_;
 
+		math::float3 center_;
+		math::Quaternion rotation_;
+
 		std::unique_ptr<btCapsuleShape> shape_;
 	};
 }

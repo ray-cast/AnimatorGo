@@ -8,7 +8,7 @@ namespace octoon
 	class OCTOON_EXPORT MeshLoader final
 	{
 	public:
-		static GameObjectPtr load(std::string_view path, GameObjects& rigidbody, bool cache = true) noexcept(false);
+		static GameObjectPtr load(std::string_view path, bool cache = true) noexcept(false);
 	};
 }
 

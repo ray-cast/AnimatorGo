@@ -413,9 +413,9 @@ namespace octoon
 
 				Quaternion<T> getRotate() const noexcept
 				{
-					const Vector3<T>& right = this->getRight();
-					const Vector3<T>& up = this->getUp();
-					const Vector3<T>& forward = this->getForward();
+					Vector3<T> right = this->getRight();
+					Vector3<T> up = this->getUp();
+					Vector3<T> forward = this->getForward();
 
 					Vector3<T> scaling;
 					scaling.x = length(right);
@@ -616,7 +616,7 @@ namespace octoon
 
 				friend Matrix4x4<T>& operator*=(Matrix4x4<T>& m1, const Matrix4x4<T>& m2) noexcept
 				{
-					m1.makeMatrix(m1, m2);
+					m1 = Matrix4x4<T>(m1, m2);
 					return m1;
 				}
 			};

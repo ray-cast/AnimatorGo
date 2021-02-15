@@ -15,6 +15,7 @@ namespace octoon
 		, local_rotation_(math::Quaternion::Zero)
 		, local_need_updates_(true)
 		, world_need_updates_(true)
+		, transformMode_(TransformMode::Relative)
 	{
 	}
 
@@ -404,6 +405,18 @@ namespace octoon
 	}
 
 	void
+	TransformComponent::setTransformMode(TransformMode mode) noexcept
+	{
+		transformMode_ = mode;
+	}
+	
+	TransformMode
+	TransformComponent::getTransformMode() const noexcept
+	{
+		return transformMode_;
+	}
+
+	void
 	TransformComponent::up(float speed) noexcept
 	{
 		this->setLocalTranslateAccum(this->getLocalUp() * speed);
@@ -498,27 +511,34 @@ namespace octoon
 	{
 		if (world_need_updates_)
 		{
-			this->updateLocalTransform();
-
-			auto parent = this->getGameObject()->getParent();
-			if (parent)
+			if (transformMode_ == TransformMode::Relative)
 			{
-				auto& baseTransform = parent->getComponent<TransformComponent>()->getTransform();
-				transform_ = math::transformMultiply(baseTransform, local_transform_);
-				transform_.getTransform(translate_, rotation_, scaling_);
-				transform_inverse_ = math::transformInverse(transform_);
+				this->updateLocalTransform();
 
-				euler_angles_ = math::eulerAngles(rotation_);
+				auto parent = this->getGameObject()->getParent();
+				if (parent)
+				{
+					auto& baseTransform = parent->getComponent<TransformComponent>()->getTransform();
+					transform_ = math::transformMultiply(baseTransform, local_transform_);
+					transform_.getTransform(translate_, rotation_, scaling_);
+					transform_inverse_ = math::transformInverse(transform_);
+
+					euler_angles_ = math::eulerAngles(rotation_);
+				}
+				else
+				{
+					translate_ = local_translate_;
+					scaling_ = local_scaling_;
+					euler_angles_ = local_euler_angles_;
+					rotation_ = local_rotation_;
+
+					transform_ = local_transform_;
+					transform_inverse_ = local_transform_inverse_;
+				}
 			}
 			else
 			{
-				translate_ = local_translate_;
-				scaling_ = local_scaling_;
-				euler_angles_ = local_euler_angles_;
-				rotation_ = local_rotation_;
-
-				transform_ = local_transform_;
-				transform_inverse_ = local_transform_inverse_;
+				this->updateParentTransform();
 			}
 
 			world_need_updates_ = false;

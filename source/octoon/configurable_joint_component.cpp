@@ -1,6 +1,7 @@
 #include <octoon/configurable_joint_component.h>
 #include <octoon/physics_feature.h>
 #include <octoon/transform_component.h>
+#include <octoon/collider_component.h>
 
 namespace octoon
 {
@@ -79,15 +80,8 @@ namespace octoon
 		{
 			another_ = component;
 
-			if (joint_)
-			{
-				auto bodyA = this->getComponent<RigidbodyComponent>();
-				joint_->connect(bodyA->getRigidbody(), another_.lock()->getRigidbody());
-			}
-			else if (component)
-			{
+			if (component)
 				this->setupConfigurableJoint();
-			}
 		}		
 	}
 
@@ -371,10 +365,15 @@ namespace octoon
 		if (joint_)
 		{
 			math::float4x4 transform;
-			transform.makeTransform(position, math::Quaternion(rotation));
+			transform.makeTransform(position, rotation);
 
-			auto transformA = this->getComponent<TransformComponent>()->getTransformInverse() * transform;
-			auto transformB = another_.lock()->getComponent<TransformComponent>()->getTransformInverse() * transform;
+			auto transformA = math::transformMultiply(this->getComponent<TransformComponent>()->getTransform(), this->getComponent<ColliderComponent>()->getLocalPose());
+			transformA = math::transformInverse(transformA);
+			transformA = math::transformMultiply(transformA, transform);
+
+			auto transformB = math::transformMultiply(another_.lock()->getComponent<TransformComponent>()->getTransform(), another_.lock()->getComponent<ColliderComponent>()->getLocalPose());
+			transformB = math::transformInverse(transformB);
+			transformB = math::transformMultiply(transformB, transform);
 
 			math::float3 scaleA, scaleB;
 			math::float3 translateA, translateB;

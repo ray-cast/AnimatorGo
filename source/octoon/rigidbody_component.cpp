@@ -48,6 +48,7 @@ namespace octoon
 		{
 			if (rigidbody_)
 				rigidbody_->setPosition(position);
+
 			position_ = position;
 		}
 	}
@@ -59,7 +60,21 @@ namespace octoon
 		{
 			if (rigidbody_)
 				rigidbody_->setRotation(quat);
+
 			rotation_ = quat;
+		}
+	}
+
+	void
+	RigidbodyComponent::setPositionAndRotation(const math::float3& position, const math::Quaternion& quat) noexcept
+	{
+		if (position_ != position || rotation_ != quat)
+		{
+			if (rigidbody_)
+				rigidbody_->setPositionAndRotation(position_, rotation_);
+			
+			rotation_ = quat;
+			position_ = position;
 		}
 	}
 
@@ -356,8 +371,10 @@ namespace octoon
 		if (rigidbody_ && isKinematic_)
 		{
 			auto transform = this->getComponent<TransformComponent>();
-			rotation_ = transform->getQuaternion();
+
 			position_ = transform->getTranslate();
+			rotation_ = transform->getQuaternion();
+
 			rigidbody_->setPositionAndRotation(position_, rotation_);
 		}
 	}
@@ -372,17 +389,8 @@ namespace octoon
 			{
 				this->position_ = rigidbody_->getPosition();
 				this->rotation_ = rigidbody_->getRotation();
-
-				auto parent = this->getGameObject()->getParent();
-				if (parent)
-				{
-					parent->getComponent<TransformComponent>()->setTransform(math::float4x4(this->rotation_, this->position_) * transform->getLocalTransformInverse());
-				}
-				else
-				{
-					transform->setTranslate(this->position_);
-					transform->setQuaternion(this->rotation_);
-				}
+				
+				transform->setTransform(this->position_, this->rotation_);
 			}
 		}
 	}

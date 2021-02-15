@@ -14,26 +14,28 @@ namespace octoon
 	{
 	}
 
-	math::float3
-	BulletBoxShape::getCenter()
-	{
-		return math::float3(0,0,0);
-	}
-
 	void
 	BulletBoxShape::setCenter(const math::float3& center)
 	{
+		this->center_ = center;
 	}
 
-	math::Quaternion
-	BulletBoxShape::getQuaternion()
+	math::float3
+	BulletBoxShape::getCenter()
 	{
-		return math::Quaternion::Zero;
+		return center_;
 	}
 
 	void
 	BulletBoxShape::setQuaternion(const math::Quaternion& q)
 	{
+		this->rotation_ = q;
+	}
+
+	math::Quaternion
+	BulletBoxShape::getQuaternion()
+	{
+		return rotation_;
 	}
 
 	void

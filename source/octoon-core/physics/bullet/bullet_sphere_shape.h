@@ -40,6 +40,9 @@ namespace octoon
 		BulletSphereShape& operator=(const BulletSphereShape&) noexcept = delete;
 
 	private:
+		math::float3 center_;
+		math::Quaternion rotation_;
+
 		std::unique_ptr<btSphereShape> shape_;
 	};
 }

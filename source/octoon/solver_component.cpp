@@ -262,11 +262,15 @@ namespace octoon
 						auto& low = limitComponent->getMinimumAxis();
 						auto& upper = limitComponent->getMaximumAxis();
 
-						if ((low.x != 0 || upper.x != 0) && (low.y == 0 || upper.y == 0) && (low.z == 0 || upper.z == 0))
+						bool fuzzyZeroX = (low.x == 0 && upper.x == 0) ? true : false;
+						bool fuzzyZeroY = (low.y == 0 && upper.y == 0) ? true : false;
+						bool fuzzyZeroZ = (low.z == 0 && upper.z == 0) ? true : false;
+
+						if	(	 (low.x != 0 || upper.x != 0) && fuzzyZeroY && fuzzyZeroZ)
 							solvePlane = SolveAxis::X;
-						else if ((low.y != 0 || upper.y != 0) && (low.x == 0 || upper.x == 0) && (low.z == 0 || upper.z == 0))
+						else if ((low.y != 0 || upper.y != 0) && fuzzyZeroX && fuzzyZeroZ)
 							solvePlane = SolveAxis::Y;
-						else if ((low.z != 0 || upper.z != 0) && (low.x == 0 || upper.x == 0) && (low.y == 0 || upper.y == 0))
+						else if ((low.z != 0 || upper.z != 0) && fuzzyZeroX && fuzzyZeroY)
 							solvePlane = SolveAxis::Z;
 
 						deltaAngle = math::clamp(deltaAngle, limitComponent->getMininumAngle(), limitComponent->getMaximumAngle());

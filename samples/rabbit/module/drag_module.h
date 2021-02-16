@@ -2,6 +2,8 @@
 #define RABBIT_DRAG_MODULE_H_
 
 #include <rabbit_model.h>
+#include <optional>
+#include <octoon/raycaster.h>
 
 namespace rabbit
 {
@@ -20,6 +22,9 @@ namespace rabbit
 		DragModule(const DragModule&) = delete;
 		DragModule& operator=(const DragModule&) = delete;
 
+	public:
+		std::optional<octoon::RaycastHit> selectedItem_;
+		std::optional<octoon::RaycastHit> selectedItemHover_;
 	};
 }
 

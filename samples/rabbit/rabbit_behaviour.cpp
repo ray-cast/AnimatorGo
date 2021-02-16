@@ -105,8 +105,8 @@ namespace rabbit
 		uiComponent_->init(context_, profile_->canvasModule);
 		markComponent_->init(context_, profile_->markModule);
 		materialComponent_->init(context_, profile_->materialModule);
-		dragComponent_->init(context_, profile_->dragModule);
 		gizmoComponent_->init(context_, profile_->dragModule);
+		dragComponent_->init(context_, profile_->dragModule);
 		gridComponent_->init(context_, profile_->gridModule);
 
 		this->addComponent(canvasComponent_.get());
@@ -118,8 +118,8 @@ namespace rabbit
 		this->addComponent(h265Component_.get());
 		this->addComponent(uiComponent_.get());
 		this->addComponent(materialComponent_.get());
-		this->addComponent(dragComponent_.get());
 		this->addComponent(gizmoComponent_.get());
+		this->addComponent(dragComponent_.get());
 		this->addComponent(gridComponent_.get());
 
 		this->enableComponents();
@@ -224,6 +224,18 @@ namespace rabbit
 		{
 			if (it->getActive())
 			{
+				if (it->isCapture())
+				{
+					it->onMouseMotion(event);
+					return;
+				}
+			}
+		}
+
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+			{
 				it->onMouseMotion(event);
 				if (it->isCapture())
 					break;
@@ -239,6 +251,18 @@ namespace rabbit
 		{
 			if (it->getActive())
 			{
+				if (it->isCapture())
+				{
+					it->onMouseDown(event);
+					return;
+				}
+			}
+		}
+
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+			{
 				it->onMouseDown(event);
 				if (it->isCapture())
 					break;
@@ -250,6 +274,18 @@ namespace rabbit
 	RabbitBehaviour::onMouseUp(const std::any& data) noexcept
 	{
 		auto event = std::any_cast<octoon::input::InputEvent>(data);
+		for (auto& it : components_)
+		{
+			if (it->getActive())
+			{
+				if (it->isCapture())
+				{
+					it->onMouseUp(event);
+					return;
+				}
+			}
+		}
+
 		for (auto& it : components_)
 		{
 			if (it->getActive())

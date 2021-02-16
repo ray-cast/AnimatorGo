@@ -46,6 +46,7 @@ namespace octoon
 		std::size_t getChildCount() const noexcept;
 		GameObjects& getChildren() noexcept;
 		const GameObjects& getChildren() const noexcept;
+		GameObjectPtr findChild(std::string_view name) const noexcept;
 
 		template<typename T, typename ...Args, typename = std::enable_if_t<std::is_base_of<GameComponent, T>::value>>
 		std::shared_ptr<T> addComponent(Args&&... args) noexcept(false) { auto t = std::make_shared<T>(std::forward<Args>(args)...); this->addComponent(t); return t; }

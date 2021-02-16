@@ -9,17 +9,28 @@
 
 #include <module/drag_module.h>
 
+#include <optional>
+
 namespace rabbit
 {
 	class TransformGizmo
 	{
 	public:
-		void init();
+		TransformGizmo();
+		virtual ~TransformGizmo() = default;
+
+		void highlight(std::string_view axis) noexcept;
+
+		virtual void setActivePlane(const std::string& axis, const octoon::math::float3& eye) = 0;
 
 		octoon::GameObjectPtr activePlane;
-		std::map<std::string, octoon::GameObjectPtr> planes;
-		std::map<std::string, octoon::GameObjects> handleGizmos;
-		std::map<std::string, octoon::GameObjects> pickerGizmos;
+		octoon::GameObjectPtr planes;
+		octoon::GameObjectPtr handleGizmos;
+		octoon::GameObjectPtr pickerGizmos;
+
+	private:
+		TransformGizmo(const TransformGizmo&) = delete;
+		TransformGizmo& operator=(const TransformGizmo&) = delete;
 	};
 
 	class GizmoComponent final : public RabbitComponent<DragModule>
@@ -34,16 +45,40 @@ namespace rabbit
 		}
 
 	private:
+
+		void handleMouseDown(const octoon::input::InputEvent& event) noexcept;
+		void handleMouseUp(const octoon::input::InputEvent& event) noexcept;
+		void handleMouseMove(const octoon::input::InputEvent& event) noexcept;
+		void handleMouseHover(const octoon::input::InputEvent& event) noexcept;
+
+	private:
 		void onEnable() noexcept;
 		void onDisable() noexcept;
+
+		void onMouseDown(const octoon::input::InputEvent& event) noexcept override;
+		void onMouseUp(const octoon::input::InputEvent& event) noexcept override;
+		void onMouseMotion(const octoon::input::InputEvent& event) noexcept override;
+
+		void onLateUpdate() noexcept override;
+
+	private:
+		std::optional<octoon::RaycastHit> intersectObjects(float x, float y, octoon::GameObjects& pickerGizmos) noexcept;
+		std::optional<octoon::RaycastHit> intersectObjects(float x, float y, octoon::GameObjectPtr& pickerGizmos) noexcept;
 
 	private:
 		GizmoComponent(const GizmoComponent&) = delete;
 		GizmoComponent& operator=(const GizmoComponent&) = delete;
 
 	private:
-		std::unique_ptr<TransformGizmo> translateGizmo_;
-		octoon::GameObjectPtr transformGizmo_;
+		std::string axis_;
+		std::string gizmoMode_;
+		octoon::math::float3 offset_;
+
+		octoon::math::float3 oldScale_;
+		octoon::math::float3 oldPosition_;
+		octoon::math::Quaternion oldRotation_;
+
+		std::map<std::string, std::unique_ptr<TransformGizmo>> gizmo_;
 	};
 }
 

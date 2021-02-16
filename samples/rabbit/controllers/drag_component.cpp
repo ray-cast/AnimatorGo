@@ -33,18 +33,7 @@ namespace rabbit
 		return this->getModel()->getEnable();
 	}
 
-	const std::optional<octoon::RaycastHit>&
-	DragComponent::getHoverItem() const noexcept
-	{
-		return this->selectedItemHover_;
-	}
 
-	const std::optional<octoon::RaycastHit>&
-	DragComponent::getSelectedItem() const noexcept
-	{
-		return this->selectedItem_;
-	}
-	
 	std::optional<octoon::RaycastHit>
 	DragComponent::intersectObjects(float x, float y) noexcept
 	{
@@ -68,9 +57,9 @@ namespace rabbit
 	DragComponent::handleMouseDown(const octoon::input::InputEvent& event) noexcept
 	{
 		auto selected = this->intersectObjects(event.button.x, event.button.y);
-		if (this->selectedItem_ != selected)
+		if (this->getModel()->selectedItem_ != selected)
 		{
-			this->selectedItem_ = selected;
+			this->getModel()->selectedItem_ = selected;
 
 			if (selected)
 			{
@@ -87,7 +76,7 @@ namespace rabbit
 	void
 	DragComponent::handleMouseMove(const octoon::input::InputEvent& event) noexcept
 	{
-		if (this->selectedItem_)
+		if (this->getModel()->selectedItem_)
 		{
 			auto selected = this->intersectObjects(event.button.x, event.button.y);
 		}
@@ -97,9 +86,9 @@ namespace rabbit
 	DragComponent::handleMouseHover(const octoon::input::InputEvent& event) noexcept
 	{
 		auto hover = this->intersectObjects(event.motion.x, event.motion.y);
-		if (this->selectedItemHover_ != hover)
+		if (this->getModel()->selectedItemHover_ != hover)
 		{
-			this->selectedItemHover_ = hover;
+			this->getModel()->selectedItemHover_ = hover;
 
 			if (hover)
 				this->sendMessage("editor:hover", hover.value());
@@ -166,9 +155,9 @@ namespace rabbit
 	void
 	DragComponent::onUpdate() noexcept
 	{
-		if (this->selectedItem_)
+		if (this->getModel()->selectedItem_)
 		{
-			auto hit = this->selectedItem_.value();
+			auto hit = this->getModel()->selectedItem_.value();
 			auto hitObject = hit.object.lock();
 			if (hitObject)
 			{
@@ -189,14 +178,14 @@ namespace rabbit
 
 					auto gizmoTransform = this->gizmoSelected_->getComponent<octoon::TransformComponent>();
 					gizmoTransform->setLocalScale(box.size());
-					gizmoTransform->setLocalTranslate(box.center() * hitObject->getComponent<octoon::TransformComponent>()->getTransform());
+					gizmoTransform->setLocalTranslate(hitObject->getComponent<octoon::TransformComponent>()->getTransform() * box.center());
 
 					this->gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(true);
 				}
 			}
 			else
 			{
-				this->selectedItem_.emplace();
+				this->getModel()->selectedItem_.emplace();
 				this->gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(false);
 			}
 		}
@@ -205,9 +194,9 @@ namespace rabbit
 			gizmoSelected_->getComponent<octoon::MeshRendererComponent>()->setVisible(false);
 		}
 
-		if (this->selectedItemHover_ && this->selectedItem_ != this->selectedItemHover_)
+		if (this->getModel()->selectedItemHover_ && this->getModel()->selectedItem_ != this->getModel()->selectedItemHover_)
 		{
-			auto hit = this->selectedItemHover_.value();
+			auto hit = this->getModel()->selectedItemHover_.value();
 			auto hitObject = hit.object.lock();
 			if (hitObject)
 			{
@@ -235,7 +224,7 @@ namespace rabbit
 			}
 			else
 			{
-				this->selectedItemHover_.emplace();
+				this->getModel()->selectedItemHover_.emplace();
 				this->gizmoHover_->getComponent<octoon::MeshRendererComponent>()->setVisible(false);
 			}
 		}

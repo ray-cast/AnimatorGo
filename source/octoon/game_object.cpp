@@ -290,6 +290,16 @@ namespace octoon
 		return children_;
 	}
 
+	GameObjectPtr
+	GameObject::findChild(std::string_view name) const noexcept
+	{
+		for (auto& it : children_)
+		{
+			if (it->getName() == name)
+				return it;
+		}
+	}
+
 	void
 	GameObject::addComponent(const GameComponentPtr& gameComponent) except
 	{

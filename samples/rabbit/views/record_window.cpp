@@ -445,7 +445,7 @@ namespace rabbit
 		auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 		if (behaviour)
 		{
-			auto hit = behaviour->getComponent<DragComponent>()->getHoverItem();
+			auto hit = behaviour->getProfile()->dragModule->selectedItemHover_;
 			if (hit)
 			{
 				behaviour->getProfile()->playerModule->dofTarget = hit;

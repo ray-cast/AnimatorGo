@@ -5,7 +5,7 @@
 
 namespace octoon::material
 {
-	class OCTOON_EXPORT MeshBasicMaterial final : public Material
+	class OCTOON_EXPORT MeshBasicMaterial : public Material
 	{
 		OctoonDeclareSubClass(MeshBasicMaterial, Material);
 	public:

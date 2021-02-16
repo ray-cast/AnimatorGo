@@ -975,7 +975,7 @@ namespace rabbit
 				if (!materialData.isEmpty())
 				{
 					auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-					auto selectedItem = behaviour->getComponent<DragComponent>()->getHoverItem();
+					auto selectedItem = behaviour->getProfile()->dragModule->selectedItemHover;
 					if (selectedItem)
 					{
 						auto hit = selectedItem.value();

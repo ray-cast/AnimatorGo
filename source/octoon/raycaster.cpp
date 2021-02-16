@@ -53,7 +53,8 @@ namespace octoon
 		if (mesh)
 		{
 			auto transform = object.getComponent<TransformComponent>();
-			ray.transform(transform->getTransformInverse());
+			auto localRay = ray;
+			localRay.transform(transform->getTransformInverse());
 
 			mesh->raycastAll(ray, result);
 
@@ -62,7 +63,7 @@ namespace octoon
 				hit.object = object.downcast_pointer<GameObject>();
 				hit.distance = it.distance;
 				hit.mesh = it.mesh;
-				hit.point = it.point * transform->getTransform();
+				hit.point = ((math::float3x3)transform->getTransform()) * it.point;
 
 				this->hits.emplace_back(hit);
 			}
@@ -100,17 +101,18 @@ namespace octoon
 			if (mesh)
 			{
 				auto transform = object->getComponent<TransformComponent>();
-				ray.transform(transform->getTransformInverse());
+				auto localRay = ray;
+				localRay.transform(transform->getTransformInverse());
 
 				result.clear();
-				mesh->raycastAll(ray, result);
+				mesh->raycastAll(localRay, result);
 
 				for (auto& it : result) {
 					RaycastHit hit;
 					hit.object = object;
 					hit.distance = it.distance;
 					hit.mesh = it.mesh;
-					hit.point = it.point * transform->getTransform();
+					hit.point = ((math::float3x3)transform->getTransform()) * it.point;
 
 					this->hits.emplace_back(hit);
 				}
@@ -141,7 +143,8 @@ namespace octoon
 				if (mesh)
 				{
 					auto transform = object->getComponent<TransformComponent>();
-					ray.transform(transform->getTransformInverse());
+					auto localRay = ray;
+					localRay.transform(transform->getTransformInverse());
 
 					hitObjects.clear();
 					mesh->raycastAll(ray, hitObjects);
@@ -151,7 +154,7 @@ namespace octoon
 						hit.object = object->downcast_pointer<GameObject>();
 						hit.distance = it.distance;
 						hit.mesh = it.mesh;
-						hit.point = it.point * transform->getTransform();
+						hit.point = ((math::float3x3)transform->getTransform()) * it.point;
 
 						this->hits.emplace_back(hit);
 					}

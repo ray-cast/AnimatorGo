@@ -22,9 +22,6 @@ namespace rabbit
 		void setActive(bool active) noexcept override;
 		bool getActive() const noexcept override;
 
-		const std::optional<octoon::RaycastHit>& getHoverItem() const noexcept;
-		const std::optional<octoon::RaycastHit>& getSelectedItem() const noexcept;
-
 		virtual const std::type_info& type_info() const noexcept
 		{
 			return typeid(DragComponent);
@@ -54,9 +51,6 @@ namespace rabbit
 
 		octoon::material::MaterialPtr gizmoHoverMtl_;
 		octoon::material::MaterialPtr gizmoSelectedMtl_;
-
-		std::optional<octoon::RaycastHit> selectedItem_;
-		std::optional<octoon::RaycastHit> selectedItemHover_;
 	};
 }
 

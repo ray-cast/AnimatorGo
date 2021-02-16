@@ -1668,7 +1668,7 @@ namespace rabbit
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
 			if (behaviour->isOpen())
 			{
-				auto selectedItem = behaviour->getComponent<DragComponent>()->getSelectedItem();
+				auto selectedItem = behaviour->getProfile()->dragModule->selectedItem_;
 				if (selectedItem)
 				{
 					auto hit = selectedItem.value();

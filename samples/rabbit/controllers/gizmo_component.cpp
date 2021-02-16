@@ -3,7 +3,7 @@
 
 namespace rabbit
 {
-	class GizmoMaterial final
+	class GizmoMaterial final : public octoon::material::MeshBasicMaterial
 	{
 	public:
 		GizmoMaterial(const octoon::math::float3& color, const octoon::math::float3& highlight)
@@ -16,135 +16,79 @@ namespace rabbit
 			std::vector<octoon::hal::GraphicsColorBlend> blends;
 			blends.push_back(blend);
 
-			this->color_ = octoon::math::srgb2linear(color);
 			this->opacity_ = 0.7f;
-			this->highlightColor = octoon::math::srgb2linear(highlight);
+			this->color_ = octoon::math::srgb2linear(color);
+			this->highlightColor_ = octoon::math::srgb2linear(highlight);
 
-			this->material_ = std::make_shared<octoon::material::MeshBasicMaterial>();
-			this->material_->setColor(this->color_);
-			this->material_->setDepthEnable(false);
-			this->material_->setDepthWriteEnable(false);
-			this->material_->setCullMode(octoon::hal::GraphicsCullMode::None);
-			this->material_->setColorBlends(std::move(blends));
-			this->material_->setOpacity(this->opacity_);
+			this->setColor(this->color_);
+			this->setDepthEnable(false);
+			this->setDepthWriteEnable(false);
+			this->setCullMode(octoon::hal::GraphicsCullMode::None);
+			this->setColorBlends(std::move(blends));
+			this->setOpacity(this->opacity_);
 		}
 
 		void highlight(bool highlighted)
 		{
 			if (highlighted)
 			{
-				this->material_->setColor(this->highlightColor);
-				this->material_->setOpacity(1.0f);
+				this->setColor(this->highlightColor_);
+				this->setOpacity(1.0f);
 			}
 			else
 			{
-				this->material_->setColor(this->color_);
-				this->material_->setOpacity(this->opacity_);
+				this->setColor(this->color_);
+				this->setOpacity(this->opacity_);
 			}
 		}
 
-		operator std::shared_ptr<octoon::material::Material>()
-		{
-			return this->material_;
-		}
+	private:
+		GizmoMaterial(const GizmoMaterial&) = delete;
+		GizmoMaterial& operator=(const GizmoMaterial&) = delete;
 
 	private:
 		float opacity_;
 		octoon::math::float3 color_;
-		octoon::math::float3 highlightColor;
-		std::shared_ptr<octoon::material::MeshBasicMaterial> material_;
+		octoon::math::float3 highlightColor_;
 	};
 
-	class GizmoLineMaterial final
+	TransformGizmo::TransformGizmo()
 	{
-	public:
-		GizmoLineMaterial(const octoon::math::float3& color, const octoon::math::float3& highlight)
-		{
-			octoon::hal::GraphicsColorBlend blend;
-			blend.setBlendEnable(true);
-			blend.setBlendSrc(octoon::hal::GraphicsBlendFactor::SrcAlpha);
-			blend.setBlendDest(octoon::hal::GraphicsBlendFactor::OneMinusSrcAlpha);
-
-			std::vector<octoon::hal::GraphicsColorBlend> blends;
-			blends.push_back(blend);
-
-			this->material_ = std::make_shared<octoon::material::LineBasicMaterial>();
-			this->material_->setColor(color);
-			this->material_->setDepthEnable(false);
-			this->material_->setDepthWriteEnable(false);
-			this->material_->setCullMode(octoon::hal::GraphicsCullMode::None);
-			this->material_->setColorBlends(std::move(blends));
-			this->material_->setOpacity(0.7f);
-
-			this->color_ = color;
-			this->opacity_ = this->material_->getOpacity();
-			this->highlightColor = highlight;
-		}
-
-		void highlight(bool highlighted)
-		{
-			if (highlighted)
-			{
-				this->material_->setColor(this->highlightColor);
-				this->material_->setOpacity(1.0f);
-			}
-			else
-			{
-				this->material_->setColor(this->color_);
-				this->material_->setOpacity(this->opacity_);
-			}
-		}
-
-		operator std::shared_ptr<octoon::material::Material>()
-		{
-			return this->material_;
-		}
-
-	private:
-		float opacity_;
-		octoon::math::float3 color_;
-		octoon::math::float3 highlightColor;
-		std::shared_ptr<octoon::material::LineBasicMaterial> material_;
-	};
-
-	void
-	TransformGizmo::init()
-	{
-		auto planeGeometry = octoon::mesh::PlaneMesh::create(50, 50, 2, 2);
+		auto planeGeometry = octoon::mesh::PlaneMesh::create(50, 50);
 
 		auto material = std::make_shared<octoon::material::MeshBasicMaterial>();
 		material->setCullMode(octoon::hal::GraphicsCullMode::None);
 
-		auto XY = octoon::GameObject::create();
+		auto XY = octoon::GameObject::create("XY");
 		XY->addComponent<octoon::MeshFilterComponent>(planeGeometry);
-		XY->addComponent<octoon::MeshRendererComponent>(material);
 
-		auto YZ = octoon::GameObject::create();
+		auto YZ = octoon::GameObject::create("YZ");
 		YZ->addComponent<octoon::MeshFilterComponent>(planeGeometry);
-		YZ->addComponent<octoon::MeshRendererComponent>(material);
+		YZ->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(0, octoon::math::PI / 2, 0));
 
-		auto XZ = octoon::GameObject::create();
+		auto XZ = octoon::GameObject::create("XZ");
 		XZ->addComponent<octoon::MeshFilterComponent>(planeGeometry);
-		XZ->addComponent<octoon::MeshRendererComponent>(material);
+		XZ->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(-octoon::math::PI / 2, 0, 0));
+		//XZ->addComponent<octoon::MeshRendererComponent>(material);
 
-		auto XYZE = octoon::GameObject::create();
-		XYZE->addComponent<octoon::MeshFilterComponent>(planeGeometry);
-		XYZE->addComponent<octoon::MeshRendererComponent>(material);
+		this->planes = octoon::GameObject::create();
+		this->planes->addChild(XY);
+		this->planes->addChild(YZ);
+		this->planes->addChild(XZ);
 
-		this->planes = {
-			{ "XY", XY },
-			{ "YZ", YZ },
-			{ "XZ", XZ },
-			{ "XYZE", XYZE }
-		};
+		this->activePlane = this->planes->findChild("XY");
+	}
 
-		this->activePlane = this->planes["XYZE"];
-
-		planes["YZ"]->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(0, octoon::math::PI / 2, 0));
-		planes["XZ"]->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(-octoon::math::PI / 2, 0, 0));
-
-		for (auto plane : planes) {
-			plane.second->setName(plane.first);
+	void
+	TransformGizmo::highlight(std::string_view axis) noexcept
+	{
+		for (auto& handle : this->handleGizmos->getChildren())
+		{
+			for (auto& child : handle->getChildren())
+			{
+				auto material = std::dynamic_pointer_cast<GizmoMaterial>(child->getComponent<octoon::MeshRendererComponent>()->getMaterial());
+				material->highlight(handle->getName() == axis);
+			}
 		}
 	}
 
@@ -153,76 +97,49 @@ namespace rabbit
 	public:
 		TransformGizmoTranslate()
 		{
+			auto gizmoXMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(255, 162, 115) / 255.f, octoon::math::float3(1.0f, 1.0f, 0));
+			auto gizmoYMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(156, 239, 108) / 255.f, octoon::math::float3(1.0f, 1.0f, 0));
+			auto gizmoZMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(104, 156, 210) / 255.f, octoon::math::float3(1.0f, 1.0f, 0));
+
 			octoon::math::float3s arrowVertices = {
-				octoon::math::float3( 0.5f, 1.f, 0),
-				octoon::math::float3(  0.f, 2.f, 0),
-				octoon::math::float3(-0.5f, 1.f, 0),
+				octoon::math::float3(  0.5f, 1.f, 0),
+				octoon::math::float3(  0.f,  2.f, 0),
+				octoon::math::float3(-0.5f,  1.f, 0),
 				octoon::math::float3( 0.25f, 0.f, 0),
 				octoon::math::float3( 0.25f, 1.f, 0),
 				octoon::math::float3(-0.25f, 1.f, 0),
 				octoon::math::float3( 0.25f, 0.f, 0),
 				octoon::math::float3(-0.25f, 1.f, 0),
-				octoon::math::float3(-0.25f, 0.f, 0),
+				octoon::math::float3(-0.25f, 0.f, 0)
 			};
 
 			for (auto& vertices : arrowVertices) {
 				vertices *= 0.35f;
 			}
 
-			auto cylinderGizmos = octoon::ConeHelper::create(0.03, 1.0, 4, 1, false);
-			auto cylinderGeometry = octoon::ConeHelper::create(0.2, 1.0, 4, 1, false);
-
 			auto arrowGeometry = std::make_shared<octoon::mesh::Mesh>();
 			arrowGeometry->setVertexArray(arrowVertices);
 
-			auto lineXGeometry = std::make_shared<octoon::mesh::Mesh>();
-			auto lineYGeometry = std::make_shared<octoon::mesh::Mesh>();
-			auto lineZGeometry = std::make_shared<octoon::mesh::Mesh>();
-
-			lineXGeometry->setVertexArray({ octoon::math::float3(0,0,0), octoon::math::float3(1,0,0) });
-			lineYGeometry->setVertexArray({ octoon::math::float3(0,0,0), octoon::math::float3(0,1,0) });
-			lineZGeometry->setVertexArray({ octoon::math::float3(0,0,0), octoon::math::float3(0,0,1) });
-
-			auto gizmoXMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(255 / 255.f, 162 / 255.f, 115 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-			auto gizmoYMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(156 / 255.f, 239 / 255.f, 108 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-			auto gizmoZMaterial = std::make_shared<GizmoMaterial>(octoon::math::float3(104 / 255.f, 156 / 255.f, 210 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-
-			auto gizmoLineXMaterial = std::make_shared<GizmoLineMaterial>(octoon::math::float3(255 / 255.f, 162 / 255.f, 115 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-			auto gizmoLineYMaterial = std::make_shared<GizmoLineMaterial>(octoon::math::float3(156 / 255.f, 239 / 255.f, 108 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-			auto gizmoLineZMaterial = std::make_shared<GizmoLineMaterial>(octoon::math::float3(104 / 255.f, 156 / 255.f, 210 / 255.f), octoon::math::float3(1.0f, 1.0f, 0));
-
 			auto handleX = octoon::GameObject::create();
 			handleX->addComponent<octoon::MeshFilterComponent>(arrowGeometry);
-			handleX->addComponent<octoon::MeshRendererComponent>(*gizmoXMaterial);
-			handleX->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(1, 0, 0));
+			handleX->addComponent<octoon::MeshRendererComponent>(gizmoXMaterial);
+			handleX->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(1.0, 0, 0));
 			handleX->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(-octoon::math::PI / 2, 0, -octoon::math::PI / 2));
 			
 			auto handleY = octoon::GameObject::create();
 			handleY->addComponent<octoon::MeshFilterComponent>(arrowGeometry);
-			handleY->addComponent<octoon::MeshRendererComponent>(*gizmoYMaterial);
-			handleY->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 1, 0));
+			handleY->addComponent<octoon::MeshRendererComponent>(gizmoYMaterial);
+			handleY->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 1.0, 0));
 
 			auto handleZ = octoon::GameObject::create();
 			handleZ->addComponent<octoon::MeshFilterComponent>(arrowGeometry);
-			handleZ->addComponent<octoon::MeshRendererComponent>(*gizmoZMaterial);
-			handleZ->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 1));
+			handleZ->addComponent<octoon::MeshRendererComponent>(gizmoZMaterial);
+			handleZ->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 1.0));
 			handleZ->getComponent<octoon::TransformComponent>()->setEulerAngles(octoon::math::float3(octoon::math::PI / 2, 0, 0));
 
-			auto handleLineX = octoon::GameObject::create();
-			handleLineX->addComponent<octoon::MeshFilterComponent>(lineXGeometry);
-			handleLineX->addComponent<octoon::MeshRendererComponent>(*gizmoLineXMaterial);
-
-			auto handleLineY = octoon::GameObject::create();
-			handleLineY->addComponent<octoon::MeshFilterComponent>(lineYGeometry);
-			handleLineY->addComponent<octoon::MeshRendererComponent>(*gizmoLineYMaterial);
-
-			auto handleLineZ = octoon::GameObject::create();
-			handleLineZ->addComponent<octoon::MeshFilterComponent>(lineZGeometry);
-			handleLineZ->addComponent<octoon::MeshRendererComponent>(*gizmoLineZMaterial);
-
 			octoon::math::float3s rotateVertices = {
-				octoon::math::float3(0.5f, 1.f, 0),
-				octoon::math::float3(0.f, 0.f, 0),
+				octoon::math::float3( 0.5f, 1.f, 0),
+				octoon::math::float3( 0.0f, 0.f, 0),
 				octoon::math::float3(-0.5f, 1.f, 0),
 			};
 
@@ -230,44 +147,65 @@ namespace rabbit
 				vertices *= 0.25f;
 			}
 
-			auto rotateGeometry = std::make_shared<octoon::mesh::Mesh>();
-			rotateGeometry->setVertexArray(rotateVertices);
+			auto lineXGeometry = octoon::mesh::CubeMesh::create(1.0f, 0.0f, 0.05f);
+			auto lineYGeometry = octoon::mesh::CubeMesh::create(0.05f, 1.0f, 0.0f);
+			auto lineZGeometry = octoon::mesh::CubeMesh::create(0.05f, 0.0f, 1.0f);
 
-			this->handleGizmos = {
-				{ "X", { handleX, handleLineX } },
-				{ "Y", { handleY, handleLineY }  },
-				{ "Z", { handleZ, handleLineY }  }
-			};
+			auto handleLineX = octoon::GameObject::create();
+			handleLineX->addComponent<octoon::MeshFilterComponent>(lineXGeometry);
+			handleLineX->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0.5, 0, 0));
+			handleLineX->addComponent<octoon::MeshRendererComponent>(gizmoXMaterial);
 
-			this->pickerGizmos = {
-				{ "X", { handleX, handleLineX } },
-				{ "Y", { handleY, handleLineY }  },
-				{ "Z", { handleZ, handleLineY }  }
-			};
+			auto handleLineY = octoon::GameObject::create();
+			handleLineY->addComponent<octoon::MeshFilterComponent>(lineYGeometry);
+			handleLineY->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0.5, 0));
+			handleLineY->addComponent<octoon::MeshRendererComponent>(gizmoYMaterial);
 
-			//this->init();
+			auto handleLineZ = octoon::GameObject::create();
+			handleLineZ->addComponent<octoon::MeshFilterComponent>(lineZGeometry);
+			handleLineZ->getComponent<octoon::TransformComponent>()->setTranslate(octoon::math::float3(0, 0, 0.5));
+			handleLineZ->addComponent<octoon::MeshRendererComponent>(gizmoZMaterial);
+
+			auto X = octoon::GameObject::create("X");
+			X->addChild(handleX);
+			X->addChild(handleLineX);
+
+			auto Y = octoon::GameObject::create("Y");
+			Y->addChild(handleY);
+			Y->addChild(handleLineY);
+
+			auto Z = octoon::GameObject::create("Z");
+			Z->addChild(handleZ);
+			Z->addChild(handleLineZ);
+
+			this->handleGizmos = octoon::GameObject::create();
+			this->handleGizmos->addChild(X);
+			this->handleGizmos->addChild(Y);
+			this->handleGizmos->addChild(Z);
+
+			this->pickerGizmos = this->handleGizmos;
 		}
 
 		void setActivePlane(const std::string& axis, const octoon::math::float3& eye)
 		{
-			auto q = this->planes["XY"]->getComponent<octoon::TransformComponent>()->getQuaternion();
+			auto q = this->planes->findChild("XY")->getComponent<octoon::TransformComponent>()->getQuaternion();
 			auto qinv = octoon::math::inverse(q);
 			auto localEye = octoon::math::rotate(qinv, eye);
 
 			if (axis == "X") {
-				this->activePlane = this->planes["XY"];
-				if (std::abs(localEye.y) > std::abs(localEye.z)) this->activePlane = this->planes["XZ"];
+				this->activePlane = this->planes->findChild("XY");
+				if (std::abs(localEye.y) > std::abs(localEye.z)) this->activePlane = this->planes->findChild("XZ");
 			}
 			else if (axis == "Y") {
-				this->activePlane = this->planes["XY"];
-				if (std::abs(localEye.x) > std::abs(localEye.z)) this->activePlane = this->planes["YZ"];
+				this->activePlane = this->planes->findChild("XY");
+				if (std::abs(localEye.x) > std::abs(localEye.z)) this->activePlane = this->planes->findChild("YZ");
 			}
 			else if (axis == "Z") {
-				this->activePlane = this->planes["XZ"];
-				if (std::abs(localEye.x) > std::abs(localEye.y)) this->activePlane = this->planes["YZ"];
+				this->activePlane = this->planes->findChild("XZ");
+				if (std::abs(localEye.x) > std::abs(localEye.y)) this->activePlane = this->planes->findChild("YZ");
 			}
 			else if (axis == "RY") {
-				this->activePlane = this->planes["XZ"];
+				this->activePlane = this->planes->findChild("XZ");
 			}
 		}
 
@@ -276,6 +214,8 @@ namespace rabbit
 	};
 
 	GizmoComponent::GizmoComponent() noexcept
+		: gizmoMode_("translate")
+		, offset_(octoon::math::float3::Zero)
 	{
 	}
 
@@ -283,14 +223,190 @@ namespace rabbit
 	{
 	}
 
+	std::optional<octoon::RaycastHit>
+	GizmoComponent::intersectObjects(float x, float y, octoon::GameObjects& pickerGizmos) noexcept
+	{
+		auto preofile = this->getContext()->profile;
+		if (preofile->entitiesModule->camera)
+		{
+			auto cameraComponent = preofile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
+			if (cameraComponent)
+			{
+				octoon::Raycaster raycaster(cameraComponent->screenToRay(octoon::math::float2(x, y)));
+
+				for (auto& axis : pickerGizmos)
+				{
+					auto& intersects = raycaster.intersectObjects(axis->getChildren());
+					if (!intersects.empty())
+						return intersects.front();
+				}
+			}
+		}
+
+		return std::nullopt;
+	}
+
+	std::optional<octoon::RaycastHit>
+	GizmoComponent::intersectObjects(float x, float y, octoon::GameObjectPtr& pickerGizmos) noexcept
+	{
+		auto preofile = this->getContext()->profile;
+		if (preofile->entitiesModule->camera)
+		{
+			auto cameraComponent = preofile->entitiesModule->camera->getComponent<octoon::CameraComponent>();
+			if (cameraComponent)
+			{
+				octoon::Raycaster raycaster(cameraComponent->screenToRay(octoon::math::float2(x, y)));
+
+				auto& intersects = raycaster.intersectObject(*pickerGizmos);
+				if (!intersects.empty())
+					return intersects.front();
+			}
+		}
+
+		return std::nullopt;
+	}
+
+	void
+	GizmoComponent::handleMouseDown(const octoon::input::InputEvent& event) noexcept
+	{
+		auto pickerObject = this->getContext()->profile->dragModule->selectedItem_.value().object.lock();
+		if (!pickerObject)
+			return;
+
+		auto intersect = this->intersectObjects(event.button.x, event.button.y, gizmo_[gizmoMode_]->pickerGizmos->getChildren());
+		if (intersect)
+		{
+			this->axis_ = intersect.value().object.lock()->getParent()->getName();
+
+			auto camera = this->getContext()->profile->entitiesModule->camera;
+
+			auto eye = camera->getComponent<octoon::TransformComponent>()->getTranslate();
+			eye -= pickerObject->getComponent<octoon::TransformComponent>()->getTranslate();
+
+			this->gizmo_[this->gizmoMode_]->highlight(this->axis_);
+			this->gizmo_[this->gizmoMode_]->setActivePlane(this->axis_, eye);
+
+			this->oldScale_ = pickerObject->getComponent<octoon::TransformComponent>()->getScale();
+			this->oldRotation_ = pickerObject->getComponent<octoon::TransformComponent>()->getQuaternion();
+			this->oldPosition_ = pickerObject->getComponent<octoon::TransformComponent>()->getTranslate();
+
+			auto planeIntersect = this->intersectObjects(event.button.x, event.button.y, gizmo_[gizmoMode_]->activePlane);
+			if (planeIntersect)
+			{
+				this->offset_ = planeIntersect.value().point;
+				std::cout << offset_ << std::endl;
+				this->captureEvent();
+			}
+		}
+	}
+
+	void
+	GizmoComponent::handleMouseUp(const octoon::input::InputEvent& event) noexcept
+	{
+		this->releaseEvent();
+	}
+
+	void
+	GizmoComponent::handleMouseMove(const octoon::input::InputEvent& event) noexcept
+	{
+		auto pickerObject = this->getContext()->profile->dragModule->selectedItem_.value().object.lock();
+		if (!pickerObject)
+			return;
+
+		auto intersect = this->intersectObjects(event.motion.x, event.motion.y, gizmo_[gizmoMode_]->activePlane);
+		if (intersect)
+		{
+			auto point = intersect.value().point;
+
+			if (this->axis_ == "X" || this->axis_ == "Y" || this->axis_ == "Z")
+			{
+				auto offset = point - this->offset_;
+				offset.z *= -1;
+
+				if (this->axis_ != "X") offset.x = 0;
+				if (this->axis_ != "Y") offset.y = 0;
+				if (this->axis_ != "Z") offset.z = 0;
+
+				std::cout << point << std::endl;
+
+				gizmo_[gizmoMode_]->handleGizmos->getComponent<octoon::TransformComponent>()->setTranslate(oldPosition_ + offset);
+				gizmo_[gizmoMode_]->planes->getComponent<octoon::TransformComponent>()->setTranslate(oldPosition_ + offset);
+				pickerObject->getComponent<octoon::TransformComponent>()->setTranslate(oldPosition_ + offset);
+			}
+		}
+	}
+
+	void
+	GizmoComponent::handleMouseHover(const octoon::input::InputEvent& event) noexcept
+	{
+		auto intersect = this->intersectObjects(event.motion.x, event.motion.y, gizmo_[gizmoMode_]->pickerGizmos->getChildren());
+
+		std::string axis = "";
+		if (intersect.has_value())
+			axis = intersect.value().object.lock()->getParent()->getName();
+
+		if (this->axis_ != axis)
+		{
+			this->axis_ = axis;
+			gizmo_[gizmoMode_]->highlight(this->axis_);
+		}
+	}
+
 	void
 	GizmoComponent::onEnable() noexcept
 	{
-		//translateGizmo_ = std::make_unique<TransformGizmoTranslate>();
+		gizmo_["translate"] = std::make_unique<TransformGizmoTranslate>();
 	}
 
 	void
 	GizmoComponent::onDisable() noexcept
 	{
+	}
+
+	void
+	GizmoComponent::onMouseDown(const octoon::input::InputEvent& event) noexcept
+	{
+		if (this->getContext()->profile->dragModule->selectedItem_)
+		{
+			if (event.button.button == octoon::input::InputButton::Code::Left)
+				this->handleMouseDown(event);
+		}
+	}
+
+	void
+	GizmoComponent::onMouseUp(const octoon::input::InputEvent& event) noexcept
+	{
+		this->handleMouseUp(event);
+	}
+
+	void
+	GizmoComponent::onMouseMotion(const octoon::input::InputEvent& event) noexcept
+	{
+		if (this->getContext()->profile->dragModule->selectedItem_)
+		{
+			if (this->isCapture())
+				this->handleMouseMove(event);
+			else
+				this->handleMouseHover(event);
+		}
+	}
+
+	void
+	GizmoComponent::onLateUpdate() noexcept
+	{
+		auto selected = this->getContext()->profile->dragModule->selectedItem_;
+
+		if (selected)
+		{
+			auto item = selected->object.lock();
+			if (item)
+				gizmo_[gizmoMode_]->handleGizmos->setActiveDownwards(true);
+			else
+				gizmo_[gizmoMode_]->handleGizmos->setActiveDownwards(false);
+		}
+		else
+		{
+			gizmo_[gizmoMode_]->handleGizmos->setActiveDownwards(false);
+		}
 	}
 }

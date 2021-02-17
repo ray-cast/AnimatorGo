@@ -39,7 +39,7 @@ namespace rabbit
 
 		auto transform = this->gizmo_->getComponent<octoon::TransformComponent>();
 		transform->setQuaternion(octoon::math::Quaternion(octoon::math::float3(octoon::math::PI * 0.5f, 0, 0)));
-		transform->setTranslate(octoon::math::float3(0, -1, 0));
+		transform->setTranslate(octoon::math::float3::Zero);
 
 		auto rigidbody = this->gizmo_->addComponent<octoon::RigidbodyComponent>();
 		rigidbody->setIsKinematic(true);

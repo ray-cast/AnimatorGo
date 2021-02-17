@@ -61,6 +61,8 @@ SET(VIEWS_LIST
 	${SOURCE_PATH}/views/view_window.cpp
 	${SOURCE_PATH}/views/sun_window.h
 	${SOURCE_PATH}/views/sun_window.cpp
+	${SOURCE_PATH}/views/light_window.h
+	${SOURCE_PATH}/views/light_window.cpp
 	${SOURCE_PATH}/views/environment_window.h
 	${SOURCE_PATH}/views/environment_window.cpp
 	${SOURCE_PATH}/views/splash_screen.h
@@ -125,6 +127,8 @@ SET(CONTROLLERS_LIST
 	${SOURCE_PATH}/controllers/grid_component.cpp
 	${SOURCE_PATH}/controllers/gizmo_component.h
 	${SOURCE_PATH}/controllers/gizmo_component.cpp
+	${SOURCE_PATH}/controllers/light_component.h
+	${SOURCE_PATH}/controllers/light_component.cpp
 )
 SOURCE_GROUP("rabbit\\controllers" FILES ${CONTROLLERS_LIST})
 
@@ -210,7 +214,7 @@ TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${FFMPEG_LIBRARIES})
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbb.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/tbbmalloc.lib)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} ${SOURCE_PATH}/libs/oidn-1.2.3/lib/OpenImageDenoise.lib)
-TARGET_LINK_LIBRARIES(${LIB_OUTNAME} Qt5::Core Qt5::Widgets Qt5::QuickWidgets)
+TARGET_LINK_LIBRARIES(${LIB_OUTNAME} Qt5::Core Qt5::Widgets Qt5::QuickWidgets Qt5::Quick Qt5::Qml Qt5::QmlModels)
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} unofficial::iconv::libiconv unofficial::iconv::libcharset)
 
 TARGET_LINK_LIBRARIES(${LIB_OUTNAME} debug ${_VCPKG_INSTALLED_DIR}/x64-windows/debug/lib/libx264.lib)

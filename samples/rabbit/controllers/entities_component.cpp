@@ -517,6 +517,11 @@ namespace rabbit
 		this->getContext()->profile->entitiesModule->camera = mainCamera;
 		this->getContext()->profile->entitiesModule->sunLight = mainLight;
 		this->getContext()->profile->entitiesModule->enviromentLight = enviromentLight;
+		
+		auto planeGeometry = octoon::mesh::CubeMesh::create(1, 1, 1);
+
+		auto material = std::make_shared<octoon::material::MeshStandardMaterial>();
+		material->setCullMode(octoon::hal::GraphicsCullMode::None);
 
 		this->sendMessage("editor:camera:set", mainCamera);
 	}

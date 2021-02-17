@@ -43,11 +43,11 @@ namespace rabbit
 		this->closeButton_->setObjectName("close");
 		this->closeButton_->setToolTip(u8"关闭");
 
-		this->imageLabel_ = new QLabel();
-		this->imageLabel_->setFixedSize(QSize(256, 144));
+		this->previewButton_ = new QToolButton();
+		this->previewButton_->setFixedSize(QSize(256, 144));
 
-		this->imageName_ = new QLabel;
-		this->imageName_->setText(u8"未命名");
+		this->previewName_ = new QLabel;
+		this->previewName_->setText(u8"未命名");
 
 		this->colorButton = new QToolButton;
 		this->colorButton->setIconSize(QSize(50, 30));
@@ -185,13 +185,13 @@ namespace rabbit
 
 		auto imageLayout = new QHBoxLayout();
 		imageLayout->addStretch();
-		imageLayout->addWidget(imageLabel_, 0, Qt::AlignCenter);
+		imageLayout->addWidget(previewButton_, 0, Qt::AlignCenter);
 		imageLayout->addStretch();
 
 		auto mainLayout = new QVBoxLayout(this);
 		mainLayout->addLayout(titleLayout);
 		mainLayout->addLayout(imageLayout);
-		mainLayout->addWidget(imageName_, 0, Qt::AlignCenter);
+		mainLayout->addWidget(previewName_, 0, Qt::AlignCenter);
 		mainLayout->addWidget(spoiler);
 		mainLayout->addStretch();
 		mainLayout->addWidget(resetButton_, 0, Qt::AlignBottom | Qt::AlignRight);
@@ -240,8 +240,8 @@ namespace rabbit
 	void
 	EnvironmentWindow::repaint()
 	{
-		auto w = this->imageLabel_->width();
-		auto h = this->imageLabel_->height();
+		auto w = this->previewButton_->width();
+		auto h = this->previewButton_->height();
 		auto c = QColor::fromRgbF(profile_->environmentModule->color.x, profile_->environmentModule->color.y, profile_->environmentModule->color.z);
 		auto offset = this->profile_->environmentModule->offset;
 
@@ -271,7 +271,8 @@ namespace rabbit
 				}
 			}
 
-			imageLabel_->setPixmap(QPixmap::fromImage(QImage(pixels.get(), w, h, QImage::Format::Format_RGB888)));
+			previewButton_->setIcon(QPixmap::fromImage(QImage(pixels.get(), w, h, QImage::Format::Format_RGB888)));
+			previewButton_->setIconSize(QSize(w, h));
 		}
 		else
 		{
@@ -279,7 +280,8 @@ namespace rabbit
 			QPainter painter(&pixmap);
 			painter.setPen(Qt::NoPen);
 			painter.fillRect(QRect(0, 0, w, h), c);
-			imageLabel_->setPixmap(pixmap);
+			previewButton_->setIcon(pixmap);
+			previewButton_->setIconSize(QSize(w, h));
 		}
 	}
 
@@ -339,7 +341,7 @@ namespace rabbit
 							this->thumbnailToggle->setChecked(false);
 							this->thumbnail->setIcon(QIcon(QPixmap::fromImage(qimage.scaled(QSize(48, 30)))));
 							this->texture = texel;
-							this->image_ = std::make_shared<QImage>(qimage.scaled(imageLabel_->size()));
+							this->image_ = std::make_shared<QImage>(qimage.scaled(previewButton_->size()));
 							this->setColor(QColor::fromRgbF(1, 1, 1));
 							this->thumbnailToggle->setChecked(true);
 						}

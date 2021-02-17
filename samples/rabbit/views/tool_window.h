@@ -38,6 +38,7 @@ namespace rabbit
 		void gpuEvent() noexcept;
 		void audioEvent() noexcept;
 		void cleanupEvent() noexcept;
+		void lightEvent() noexcept;
 		void sunEvent() noexcept;
 		void materialEvent() noexcept;
 		void environmentEvent() noexcept;
@@ -54,6 +55,7 @@ namespace rabbit
 		bool gpuSignal(bool enable);
 		bool audioSignal(bool enable);
 		void cleanupSignal();
+		void lightSignal();
 		void sunSignal();
 		void materialSignal();
 		void environmentSignal();
@@ -109,6 +111,7 @@ namespace rabbit
 		QToolButton gpuButton;
 		QToolButton audioButton;
 		QToolButton cleanupButton;
+		QToolButton lightButton;
 		QToolButton sunButton;
 		QToolButton environmentButton;
 		QToolButton materialButton;

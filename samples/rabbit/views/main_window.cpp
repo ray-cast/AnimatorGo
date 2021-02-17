@@ -183,6 +183,7 @@ namespace rabbit
 		hideBar_ = std::make_unique<HideBar>(this);
 		toolBar_ = std::make_unique<ToolWindow>(this, behaviour_);
 		viewPanel_ = std::make_unique<ViewWidget>(this, profile_);
+		lightWindow_ = std::make_unique<LightWindow>(profile_);
 		sunWindow_ = std::make_unique<SunWindow>(profile_);
 		environmentWindow_ = std::make_unique<EnvironmentWindow>(this, behaviour_, profile_);
 		recordWindow_ = std::make_unique<RecordWindow>(this, behaviour_);
@@ -200,6 +201,7 @@ namespace rabbit
 		mainLayout_->addLayout(contextLayout_.get());
 		mainLayout_->addWidget(toolBar_.get());
 		mainLayout_->addWidget(hideBar_.get());
+		mainLayout_->addWidget(lightWindow_.get());
 		mainLayout_->addWidget(sunWindow_.get());
 		mainLayout_->addWidget(environmentWindow_.get());
 		mainLayout_->addWidget(recordWindow_.get());
@@ -221,6 +223,7 @@ namespace rabbit
 		connect(toolBar_.get(), &ToolWindow::shotSignal, this, &MainWindow::onScreenShotSignal);
 		connect(toolBar_.get(), &ToolWindow::gpuSignal, this, &MainWindow::onOfflineModeSignal);
 		connect(toolBar_.get(), &ToolWindow::cleanupSignal, this, &MainWindow::onCleanupSignal);
+		connect(toolBar_.get(), &ToolWindow::lightSignal, this, &MainWindow::onLightSignal);
 		connect(toolBar_.get(), &ToolWindow::sunSignal, this, &MainWindow::onSunSignal);
 		connect(toolBar_.get(), &ToolWindow::environmentSignal, this, &MainWindow::onEnvironmentSignal);
 		connect(toolBar_.get(), &ToolWindow::materialSignal, this, &MainWindow::onMaterialSignal);		
@@ -244,6 +247,7 @@ namespace rabbit
 		viewPanel_.reset();
 		loginWindow_.reset();
 		settingWindow_.reset();
+		lightWindow_.reset();
 		sunWindow_.reset();
 		environmentWindow_.reset();
 		titleBar_.reset();
@@ -651,12 +655,58 @@ namespace rabbit
 	}
 
 	void
+	MainWindow::onLightSignal() noexcept
+	{
+		try
+		{
+			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
+			if (behaviour)
+			{
+				if (profile_->entitiesModule->sunLight && !profile_->playerModule->playing_)
+				{
+					if (lightWindow_->isHidden())
+					{
+						this->hideSliderWindow();
+						this->setFixedWidth(this->width() + lightWindow_->minimumWidth());
+						lightWindow_->show();
+					}
+					else
+					{
+						lightWindow_->close();
+						this->setFixedWidth(this->width() - lightWindow_->width());
+					}
+				}
+			}
+			else
+			{
+				QMessageBox msg(this);
+				msg.setWindowTitle(u8"提示");
+				msg.setText(u8"获取核心组件失败");
+				msg.setIcon(QMessageBox::Information);
+				msg.setStandardButtons(QMessageBox::Ok);
+
+				msg.exec();
+			}
+		}
+		catch (const std::exception& e)
+		{
+			QMessageBox msg(this);
+			msg.setWindowTitle(u8"错误");
+			msg.setText(e.what());
+			msg.setIcon(QMessageBox::Information);
+			msg.setStandardButtons(QMessageBox::Ok);
+
+			msg.exec();
+		}
+	}
+
+	void
 	MainWindow::onSunSignal() noexcept
 	{
 		try
 		{
 			auto behaviour = behaviour_->getComponent<rabbit::RabbitBehaviour>();
-			if (behaviour->isOpen())
+			if (behaviour)
 			{
 				if (profile_->entitiesModule->sunLight && !profile_->playerModule->playing_)
 				{
@@ -677,7 +727,7 @@ namespace rabbit
 			{
 				QMessageBox msg(this);
 				msg.setWindowTitle(u8"提示");
-				msg.setText(u8"请加载一个.pmm工程");
+				msg.setText(u8"获取核心组件失败");
 				msg.setIcon(QMessageBox::Information);
 				msg.setStandardButtons(QMessageBox::Ok);
 
@@ -971,6 +1021,24 @@ namespace rabbit
 			}
 			else
 			{
+				auto lightData = event->mimeData()->data("object/light");
+				if (!lightData.isEmpty())
+				{
+					auto behaviour = behaviour_->getComponent<RabbitBehaviour>();
+					auto lightComponent = behaviour->getComponent<LightComponent>();
+
+					if (!lightComponent->createLight((LightType)lightData.toInt()))
+					{
+						QMessageBox msg(this);
+						msg.setWindowTitle(u8"错误");
+						msg.setText(u8"不支持的光源类型");
+						msg.setIcon(QMessageBox::Information);
+						msg.setStandardButtons(QMessageBox::Ok);
+
+						msg.exec();
+					}
+				}
+
 				auto materialData = event->mimeData()->data("object/material");
 				if (!materialData.isEmpty())
 				{
@@ -1134,6 +1202,11 @@ namespace rabbit
 		{
 			recordWindow_->close();
 			this->setFixedWidth(this->width() - recordWindow_->width());
+		}
+		if (!lightWindow_->isHidden())
+		{
+			lightWindow_->close();
+			this->setFixedWidth(this->width() - lightWindow_->width());
 		}
 		if (!sunWindow_->isHidden())
 		{

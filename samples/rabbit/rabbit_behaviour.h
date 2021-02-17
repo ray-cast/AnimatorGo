@@ -17,6 +17,7 @@
 #include "controllers/drag_component.h"
 #include "controllers/grid_component.h"
 #include "controllers/gizmo_component.h"
+#include "controllers/light_component.h"
 
 #include <octoon/octoon.h>
 
@@ -97,6 +98,7 @@ namespace rabbit
 		std::unique_ptr<DragComponent> dragComponent_;
 		std::unique_ptr<GridComponent> gridComponent_;
 		std::unique_ptr<GizmoComponent> gizmoComponent_;
+		std::unique_ptr<LightComponent> lightComponent_;
 
 		std::vector<IRabbitComponent*> components_;
 	};

@@ -9,6 +9,7 @@
 #include "color_dialog.h"
 #include "rabbit_profile.h"
 #include "splash_screen.h"
+#include "light_window.h"
 #include "sun_window.h"
 #include "environment_window.h"
 #include "login_window.h"
@@ -54,6 +55,7 @@ namespace rabbit
 		void onSettingSignal() noexcept;
 		void onCleanupSignal() noexcept;
 		void onProfileSignal(const rabbit::RabbitProfile& profile) noexcept;
+		void onLightSignal() noexcept;
 		void onSunSignal() noexcept;
 		void onEnvironmentSignal() noexcept;
 		void onVipSignal() noexcept;
@@ -99,6 +101,7 @@ namespace rabbit
 		std::unique_ptr<ViewWidget> viewPanel_;
 		std::unique_ptr<HideBar> hideBar_;
 		std::unique_ptr<SettingWindow> settingWindow_;
+		std::unique_ptr<LightWindow> lightWindow_;
 		std::unique_ptr<SunWindow> sunWindow_;
 		std::unique_ptr<EnvironmentWindow> environmentWindow_;
 		std::unique_ptr<LoginWindow> loginWindow_;

@@ -89,6 +89,11 @@ namespace rabbit
 		materialButton.setToolTip(u8"打开材质库面板");
 		materialButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+		lightButton.setObjectName("sun");
+		lightButton.setText(u8"光源");
+		lightButton.setToolTip(u8"光源设置");
+		lightButton.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
 		sunButton.setObjectName("sun");
 		sunButton.setText(u8"主光源");
 		sunButton.setToolTip(u8"主光源设置");
@@ -114,6 +119,7 @@ namespace rabbit
 		layout->addWidget(&shotButton, 0, Qt::AlignCenter);
 		layout->addWidget(&audioButton, 0, Qt::AlignCenter);
 		layout->addWidget(&materialButton, 0, Qt::AlignCenter);
+		layout->addWidget(&lightButton, 0, Qt::AlignCenter);
 		layout->addWidget(&sunButton, 0, Qt::AlignCenter);
 		layout->addWidget(&environmentButton, 0, Qt::AlignCenter);
 		layout->addWidget(&cleanupButton, 0, Qt::AlignCenter);
@@ -144,6 +150,7 @@ namespace rabbit
 		this->connect(&shotButton, SIGNAL(clicked()), this, SLOT(shotEvent()));
 		this->connect(&gpuButton, SIGNAL(clicked()), this, SLOT(gpuEvent()));
 		this->connect(&cleanupButton, SIGNAL(clicked()), this, SLOT(cleanupEvent()));
+		this->connect(&lightButton, SIGNAL(clicked()), this, SLOT(lightEvent()));
 		this->connect(&sunButton, SIGNAL(clicked()), this, SLOT(sunEvent()));
 		this->connect(&environmentButton, SIGNAL(clicked()), this, SLOT(environmentEvent()));
 		this->connect(&materialButton, SIGNAL(clicked()), this, SLOT(materialEvent()));
@@ -319,6 +326,12 @@ namespace rabbit
 	ToolWindow::cleanupEvent() noexcept
 	{
 		emit cleanupSignal();
+	}
+
+	void
+	ToolWindow::lightEvent() noexcept
+	{
+		emit lightSignal();
 	}
 
 	void

@@ -286,15 +286,15 @@ namespace rabbit
 			this->gizmo_[this->gizmoMode_]->highlight(this->axis_);
 			this->gizmo_[this->gizmoMode_]->setActivePlane(this->axis_, eye);
 
-			this->oldScale_ = pickerObject->getComponent<octoon::TransformComponent>()->getScale();
-			this->oldRotation_ = pickerObject->getComponent<octoon::TransformComponent>()->getQuaternion();
-			this->oldPosition_ = pickerObject->getComponent<octoon::TransformComponent>()->getTranslate();
-
 			auto planeIntersect = this->intersectObjects(event.button.x, event.button.y, gizmo_[gizmoMode_]->activePlane);
 			if (planeIntersect)
 			{
+				this->oldScale_ = pickerObject->getComponent<octoon::TransformComponent>()->getScale();
+				this->oldRotation_ = pickerObject->getComponent<octoon::TransformComponent>()->getQuaternion();
+				this->oldPosition_ = pickerObject->getComponent<octoon::TransformComponent>()->getTranslate();
+
 				this->offset_ = planeIntersect.value().point;
-				std::cout << offset_ << std::endl;
+
 				this->captureEvent();
 			}
 		}
@@ -326,8 +326,6 @@ namespace rabbit
 				if (this->axis_ != "X") offset.x = 0;
 				if (this->axis_ != "Y") offset.y = 0;
 				if (this->axis_ != "Z") offset.z = 0;
-
-				std::cout << point << std::endl;
 
 				gizmo_[gizmoMode_]->handleGizmos->getComponent<octoon::TransformComponent>()->setTranslate(oldPosition_ + offset);
 				gizmo_[gizmoMode_]->planes->getComponent<octoon::TransformComponent>()->setTranslate(oldPosition_ + offset);

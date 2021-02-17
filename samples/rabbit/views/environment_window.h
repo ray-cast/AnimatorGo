@@ -44,13 +44,13 @@ namespace rabbit
 		
 	private:
 		QLabel* title_;
-		QLabel* imageLabel_;
-		QLabel* imageName_;
+		QLabel* previewName_;
 		QLabel* thumbnailPath;
 		QLabel* intensityLabel_;
 		QLabel* horizontalRotationLabel_;
 		QLabel* verticalRotationLabel_;
 
+		QToolButton* previewButton_;
 		QToolButton* colorButton;
 		QToolButton* thumbnail;
 		QToolButton* closeButton_;

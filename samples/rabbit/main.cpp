@@ -1,5 +1,6 @@
 #include <qapplication.h>
 #include <qdesktopwidget.h>
+#include <QQmlApplicationEngine>
 
 #include "views/main_window.h"
 #include "views/splash_screen.h"

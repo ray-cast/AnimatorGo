@@ -87,6 +87,8 @@ namespace rabbit
 
 		listWidget_ = new LightListWindow;
 
+		std::vector<char*> lights = { u8"点光源", u8"聚光灯", u8"平行光" };
+
 		for (int i = 0; i < 3; i++)
 		{
 			QListWidgetItem* item = new QListWidgetItem;
@@ -96,7 +98,7 @@ namespace rabbit
 			QLabel* imageLabel = new QLabel;
 			imageLabel->setPixmap(QPixmap(":res/icons/sun.png").scaled(100, 100));
 
-			QLabel* txtLabel = new QLabel(u8"点光源");
+			QLabel* txtLabel = new QLabel(lights[i]);
 
 			QVBoxLayout* widgetLayout = new QVBoxLayout;
 			widgetLayout->setMargin(0);

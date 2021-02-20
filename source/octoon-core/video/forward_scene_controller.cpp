@@ -201,14 +201,17 @@ namespace octoon::video
 				spotLight.penumbraCos = it->getOuterCone().y;
 				spotLight.shadow = it->getShadowEnable();
 
-				auto framebuffer = it->getCamera()->getFramebuffer();
-				if (framebuffer && spotLight.shadow)
-				{						
-					spotLight.shadowBias = it->getShadowBias();
-					spotLight.shadowRadius = it->getShadowRadius();
-					spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
+				if (spotLight.shadow)
+				{
+					auto framebuffer = it->getCamera()->getFramebuffer();
+					if (framebuffer)
+					{
+						spotLight.shadowBias = it->getShadowBias();
+						spotLight.shadowRadius = it->getShadowRadius();
+						spotLight.shadowMapSize = math::float2(float(framebuffer->getFramebufferDesc().getWidth()), float(framebuffer->getFramebufferDesc().getHeight()));
 
-					out.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+						out.spotShadows.emplace_back(framebuffer->getFramebufferDesc().getColorAttachment().getBindingTexture());
+					}
 				}
 
 				out.spotLights.emplace_back(spotLight);

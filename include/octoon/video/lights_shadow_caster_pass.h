@@ -8,7 +8,7 @@ namespace octoon
 	class LightsShadowCasterPass : public ScriptableRenderPass
 	{
 	public:
-		void Execute(ScriptableRenderContext& context, RenderingData& renderingData) noexcept(false) override;
+		void Execute(ScriptableRenderContext& context, const RenderingData& renderingData) noexcept(false) override;
 	};
 }
 

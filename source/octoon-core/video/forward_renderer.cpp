@@ -33,6 +33,8 @@ namespace octoon
 	{
 		screenGeometry_ = std::make_shared<Geometry>();
 		screenGeometry_->setMesh(octoon::PlaneMesh::create(2.0f, 2.0f));
+
+		lightsShadowCasterPass_ = std::make_unique<LightsShadowCasterPass>();
 	}
 
 	ForwardRenderer::~ForwardRenderer() noexcept
@@ -152,83 +154,13 @@ namespace octoon
 	}
 
 	void
-	ForwardRenderer::renderShadowMaps(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& scene, const std::vector<Light*>& lights, const std::vector<Geometry*>& geometries) noexcept
-	{
-		for (auto& light : lights)
-		{
-			if (!light->getVisible())
-				continue;
-
-			std::uint32_t faceCount = 0;
-			std::shared_ptr<Camera> camera;
-
-			if (light->isA<DirectionalLight>())
-			{
-				auto directionalLight = light->cast<DirectionalLight>();
-				if (directionalLight->getShadowEnable())
-				{
-					faceCount = 1;
-					camera = directionalLight->getCamera();
-				}
-			}
-			else if (light->isA<SpotLight>())
-			{
-				auto spotLight = light->cast<SpotLight>();
-				if (spotLight->getShadowEnable())
-				{
-					faceCount = 1;
-					camera = spotLight->getCamera();
-				}
-			}
-			else if (light->isA<PointLight>())
-			{
-				auto pointLight = light->cast<PointLight>();
-				if (pointLight->getShadowEnable())
-				{
-					faceCount = 6;
-					camera = pointLight->getCamera();
-				}
-			}
-
-			for (std::uint32_t face = 0; face < faceCount; face++)
-			{
-				auto framebuffer = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
-
-				context->setFramebuffer(framebuffer);
-				context->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-				context->setViewport(0, camera->getPixelViewport());
-				context->drawRenderers(geometries, *camera, scene.depthMaterial);
-
-				if (camera->getRenderToScreen())
-				{
-					auto& v = camera->getPixelViewport();
-					context->blitFramebuffer(framebuffer, v, nullptr, v);
-				}
-
-				auto& swapFramebuffer = camera->getSwapFramebuffer();
-				if (swapFramebuffer && framebuffer)
-				{
-					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-					context->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-				}
-
-				context->discardFramebuffer(framebuffer, hal::GraphicsClearFlagBits::DepthStencilBit);
-			}
-		}
-	}
-
-	void
 	ForwardRenderer::render(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& renderingData)
 	{
-		auto vp = renderingData.camera->getPixelViewport();
-		
-		this->renderShadowMaps(context, renderingData, renderingData.lights, renderingData.geometries);
-
 		auto camera = renderingData.camera;
-		auto viewport = math::float4((float)vp.x, (float)vp.y, (float)vp.width, (float)vp.height);
 		auto& framebuffer = camera->getFramebuffer();
 		auto& swapFramebuffer = camera->getSwapFramebuffer();
+
+		lightsShadowCasterPass_->Execute(*context, renderingData);
 
 		auto fbo = camera->getFramebuffer();
 		if (!fbo)
@@ -251,6 +183,9 @@ namespace octoon
 
 		if (camera->getRenderToScreen())
 		{
+			auto vp = renderingData.camera->getPixelViewport();
+			auto viewport = math::float4((float)vp.x, (float)vp.y, (float)vp.width, (float)vp.height);
+
 			context->setFramebuffer(nullptr);
 			context->clearFramebuffer(0, hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
 

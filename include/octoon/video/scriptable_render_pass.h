@@ -11,7 +11,7 @@ namespace octoon
 	public:
 		ScriptableRenderPass();
 
-		virtual void Execute(ScriptableRenderContext& context, RenderingData& renderingData) noexcept(false) = 0;
+		virtual void Execute(ScriptableRenderContext& context, const RenderingData& renderingData) noexcept(false) = 0;
 	};
 }
 

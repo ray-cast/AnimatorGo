@@ -2,7 +2,7 @@
 #define OCTOON_VIDEO_FORWARD_RENDERER_H_
 
 #include <octoon/video/render_scene.h>
-#include <octoon/video/scriptable_render_context.h>
+#include <octoon/video/lights_shadow_caster_pass.h>
 
 namespace octoon
 {
@@ -18,7 +18,6 @@ namespace octoon
 
 	private:
 		void setupFramebuffers(const std::shared_ptr<ScriptableRenderContext>& context, std::uint32_t w, std::uint32_t h) except;
-		void renderShadowMaps(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& scene, const std::vector<Light*>& lights, const std::vector<Geometry*>& geometries) noexcept;
 
 	private:
 		ForwardRenderer(const ForwardRenderer&) = delete;
@@ -27,6 +26,8 @@ namespace octoon
 	private:
 		std::uint32_t width_;
 		std::uint32_t height_;
+
+		std::unique_ptr<LightsShadowCasterPass> lightsShadowCasterPass_;
 
 		hal::GraphicsFramebufferPtr fbo_;
 		hal::GraphicsFramebufferPtr fbo2_;

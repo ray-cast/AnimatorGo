@@ -3,7 +3,7 @@
 namespace octoon
 {
 	void
-	DrawObjectPass::Execute(ScriptableRenderContext& context, RenderingData& renderingData) noexcept(false)
+	DrawObjectPass::Execute(ScriptableRenderContext& context, const RenderingData& renderingData) noexcept(false)
 	{
 	}
 }

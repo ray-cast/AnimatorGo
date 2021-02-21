@@ -3,6 +3,8 @@
 
 #include <octoon/video/render_scene.h>
 #include <octoon/video/lights_shadow_caster_pass.h>
+#include <octoon/video/draw_object_pass.h>
+#include <octoon/video/draw_skybox_pass.h>
 
 namespace octoon
 {
@@ -28,6 +30,9 @@ namespace octoon
 		std::uint32_t height_;
 
 		std::unique_ptr<LightsShadowCasterPass> lightsShadowCasterPass_;
+		std::unique_ptr<DrawObjectPass> drawOpaquePass_;
+		std::unique_ptr<DrawObjectPass> drawTranparentPass_;
+		std::unique_ptr<DrawSkyboxPass> drawSkyboxPass_;
 
 		hal::GraphicsFramebufferPtr fbo_;
 		hal::GraphicsFramebufferPtr fbo2_;
@@ -36,7 +41,6 @@ namespace octoon
 		hal::GraphicsTexturePtr colorTexture2_;
 		hal::GraphicsTexturePtr depthTexture2_;
 
-		std::shared_ptr<Geometry> screenGeometry_;
 		std::shared_ptr<Material> overrideMaterial_;
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;

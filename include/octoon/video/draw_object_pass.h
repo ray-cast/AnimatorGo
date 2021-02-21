@@ -8,7 +8,12 @@ namespace octoon
 	class DrawObjectPass : public ScriptableRenderPass
 	{
 	public:
+		DrawObjectPass(bool opaque) noexcept;
+
 		void Execute(ScriptableRenderContext& context, const RenderingData& renderingData) noexcept(false) override;
+
+	private:
+		bool opaque_;
 	};
 }
 

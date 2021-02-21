@@ -231,15 +231,15 @@ namespace octoon
 	}
 
 	void
-	ScriptableRenderContext::setFramebuffer(const hal::GraphicsFramebufferPtr& target) noexcept
+	ScriptableRenderContext::configureTarget(const hal::GraphicsFramebufferPtr& target) noexcept
 	{
 		this->context_->setFramebuffer(target);
 	}
 
 	void
-	ScriptableRenderContext::clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept
+	ScriptableRenderContext::configureClear(hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept
 	{
-		this->context_->clearFramebuffer(i, flags, color, depth, stencil);
+		this->context_->clearFramebuffer(0, flags, color, depth, stencil);
 	}
 
 	void

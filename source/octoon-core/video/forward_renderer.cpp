@@ -31,10 +31,10 @@ namespace octoon
 		: width_(0)
 		, height_(0)
 	{
-		screenGeometry_ = std::make_shared<Geometry>();
-		screenGeometry_->setMesh(octoon::PlaneMesh::create(2.0f, 2.0f));
-
 		lightsShadowCasterPass_ = std::make_unique<LightsShadowCasterPass>();
+		drawOpaquePass_ = std::make_unique<DrawObjectPass>(true);
+		drawTranparentPass_ = std::make_unique<DrawObjectPass>(false);
+		drawSkyboxPass_ = std::make_unique<DrawSkyboxPass>();
 	}
 
 	ForwardRenderer::~ForwardRenderer() noexcept
@@ -156,50 +156,28 @@ namespace octoon
 	void
 	ForwardRenderer::render(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& renderingData)
 	{
-		auto camera = renderingData.camera;
-		auto& framebuffer = camera->getFramebuffer();
-		auto& swapFramebuffer = camera->getSwapFramebuffer();
-
 		lightsShadowCasterPass_->Execute(*context, renderingData);
+		drawOpaquePass_->Execute(*context, renderingData);
+		drawTranparentPass_->Execute(*context, renderingData);
+		drawSkyboxPass_->Execute(*context, renderingData);
+
+		auto& camera = renderingData.camera;
 
 		auto fbo = camera->getFramebuffer();
-		if (!fbo)
+		if (fbo && camera->getRenderToScreen())
 		{
-			auto vp = renderingData.camera->getPixelViewport();
-			this->setupFramebuffers(context, (int)vp.width, (int)vp.height);
-			fbo = fbo_;
-		}
-
-		context->setFramebuffer(fbo);
-		context->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-		context->drawRenderers(renderingData.geometries, *camera, this->overrideMaterial_);
-
-		if (framebuffer && swapFramebuffer)
-		{
-			math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-			math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-			context->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
-		}
-
-		if (camera->getRenderToScreen())
-		{
-			auto vp = renderingData.camera->getPixelViewport();
+			auto vp = camera->getPixelViewport();
 			auto viewport = math::float4((float)vp.x, (float)vp.y, (float)vp.width, (float)vp.height);
 
-			context->setFramebuffer(nullptr);
-			context->clearFramebuffer(0, hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
+			context->configureTarget(nullptr);
+			context->configureClear(hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
 
 			if (!fbo->getFramebufferDesc().getColorAttachments().empty())
 			{
 				auto texture = fbo->getFramebufferDesc().getColorAttachment().getBindingTexture();
 				if (texture->getTextureDesc().getTexDim() == hal::GraphicsTextureDim::Texture2DMultisample)
 				{
-					if (framebuffer && swapFramebuffer)
-					{
-						context->blitFramebuffer(swapFramebuffer, viewport, nullptr, viewport);
-						context->discardFramebuffer(swapFramebuffer, hal::GraphicsClearFlagBits::AllBit);
-					}
-					else if (fbo == fbo_)
+					if (fbo == fbo_)
 					{
 						context->blitFramebuffer(fbo, viewport, fbo2_, viewport);
 						context->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);

@@ -50,23 +50,14 @@ namespace octoon
 				auto framebuffer = camera->getFramebuffer();
 				if (framebuffer)
 				{
-					context.setFramebuffer(framebuffer);
-					context.clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-					context.setViewport(0, camera->getPixelViewport());
+					context.configureTarget(framebuffer);
+					context.configureClear(camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 					context.drawRenderers(renderingData.geometries, *camera, renderingData.depthMaterial);
 
 					if (camera->getRenderToScreen())
 					{
 						auto& v = camera->getPixelViewport();
 						context.blitFramebuffer(framebuffer, v, nullptr, v);
-					}
-
-					auto& swapFramebuffer = camera->getSwapFramebuffer();
-					if (swapFramebuffer && framebuffer)
-					{
-						math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
-						math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-						context.blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 					}
 
 					context.discardFramebuffer(framebuffer, hal::GraphicsClearFlagBits::DepthStencilBit);

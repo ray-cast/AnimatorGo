@@ -64,8 +64,8 @@ namespace octoon
 		void setIndexBufferData(const hal::GraphicsDataPtr& data, std::intptr_t offset, hal::GraphicsIndexType indexType) noexcept;
 		hal::GraphicsDataPtr getIndexBufferData() const noexcept;
 
-		void setFramebuffer(const hal::GraphicsFramebufferPtr& target) noexcept;
-		void clearFramebuffer(std::uint32_t i, hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept;
+		void configureTarget(const hal::GraphicsFramebufferPtr& target) noexcept;
+		void configureClear(hal::GraphicsClearFlags flags, const math::float4& color, float depth, std::int32_t stencil) noexcept;
 		void discardFramebuffer(const hal::GraphicsFramebufferPtr& src, hal::GraphicsClearFlags flags = hal::GraphicsClearFlagBits::AllBit) noexcept;
 		void blitFramebuffer(const hal::GraphicsFramebufferPtr& src, const math::float4& v1, const hal::GraphicsFramebufferPtr& dest, const math::float4& v2) noexcept;
 		void readFramebuffer(std::uint32_t i, const hal::GraphicsTexturePtr& texture, std::uint32_t miplevel, std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) noexcept;

@@ -96,14 +96,6 @@ namespace octoon
 		return nullptr;
 	}
 
-	hal::GraphicsFramebufferPtr
-	CameraComponent::getSwapFramebuffer() const noexcept
-	{
-		if (camera_->getSwapFramebuffer())
-			return camera_->getSwapFramebuffer();
-		return nullptr;
-	}
-
 	math::float3
 	CameraComponent::worldToScreen(const math::float3& pos) const noexcept
 	{
@@ -195,12 +187,6 @@ namespace octoon
 	CameraComponent::setupFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
 	{
 		camera_->setupFramebuffers(w, h, multisample, format, depthStencil);
-	}
-
-	void
-	CameraComponent::setupSwapFramebuffers(std::uint32_t w, std::uint32_t h, std::uint8_t multisample, hal::GraphicsFormat format, hal::GraphicsFormat depthStencil) except
-	{
-		camera_->setupSwapFramebuffers(w, h, multisample, format, depthStencil);
 	}
 
 	void

@@ -1,6 +1,6 @@
 #include "clw_class.h"
 
-namespace octoon::video
+namespace octoon
 {
     ClwClass::ClwClass(CLWContext context, const CLProgramManager *program_manager, std::string const& cl_file, std::string const& opts)
         : context_(context)

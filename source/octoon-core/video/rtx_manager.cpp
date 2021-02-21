@@ -27,7 +27,7 @@
 #define RPR_CREATION_FLAGS_ENABLE_GPU7 (1 << 9) 
 #define RPR_CREATION_FLAGS_ENABLE_METAL (1 << 10) 
 
-namespace octoon::video
+namespace octoon
 {
 	RtxManager::RtxManager()
 		: width_(0)

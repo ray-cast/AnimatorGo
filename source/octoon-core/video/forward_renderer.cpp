@@ -1,7 +1,7 @@
 #include <octoon/video/forward_renderer.h>
 #include <octoon/video/forward_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardRenderer::ForwardRenderer() noexcept
 		: pipeline_(std::make_unique<ForwardPipeline>())

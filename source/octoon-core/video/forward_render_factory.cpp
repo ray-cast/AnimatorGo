@@ -3,7 +3,7 @@
 #include <octoon/video/forward_pipeline.h>
 #include <octoon/video/forward_scene_controller.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardRenderFactory::ForwardRenderFactory(const hal::GraphicsContextPtr& context, std::string_view cache_path) noexcept
 		: context_(context)

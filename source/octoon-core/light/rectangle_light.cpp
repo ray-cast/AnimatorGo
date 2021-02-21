@@ -12,7 +12,7 @@ namespace octoon
 	{
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	RectangleLight::clone() const noexcept
 	{
 		auto light = std::make_shared<RectangleLight>();

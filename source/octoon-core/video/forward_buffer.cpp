@@ -1,7 +1,7 @@
 #include <octoon/video/forward_buffer.h>
 #include <octoon/video/renderer.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardBuffer::ForwardBuffer() noexcept
 	{

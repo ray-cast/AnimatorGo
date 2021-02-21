@@ -2,7 +2,7 @@
 #include <octoon/hal/graphics_context.h>
 #include <octoon/hal/graphics_device.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ScriptableRenderContext::ScriptableRenderContext()
 	{

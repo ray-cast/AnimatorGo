@@ -8,7 +8,7 @@
 #include <octoon/light/environment_light.h>
 #include <set>
 
-namespace octoon::video
+namespace octoon
 {
 	static std::size_t align16(std::size_t value)
 	{

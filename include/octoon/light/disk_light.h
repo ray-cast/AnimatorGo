@@ -12,7 +12,7 @@ namespace octoon
 		DiskLight() noexcept;
 		virtual ~DiskLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		DiskLight(const DiskLight&) noexcept = delete;

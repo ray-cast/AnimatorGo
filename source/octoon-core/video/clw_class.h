@@ -12,7 +12,7 @@
 #include "CLW.h"
 #include "cl_program_manager.h"
 
-namespace octoon::video
+namespace octoon
 {
     class ClwClass
     {

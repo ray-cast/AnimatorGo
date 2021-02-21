@@ -3,7 +3,7 @@
 
 #include <octoon/hal/graphics_context.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ScriptableRenderContext
 	{

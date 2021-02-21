@@ -2,7 +2,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(Geometry, video::RenderObject, "Geometry")
+	OctoonImplementSubClass(Geometry, RenderObject, "Geometry")
 
 	Geometry::Geometry() noexcept
 		: isCastShadow_(true)

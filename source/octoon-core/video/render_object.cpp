@@ -1,7 +1,7 @@
 #include <octoon/video/render_object.h>
 #include <octoon/video/render_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
 	OctoonImplementSubInterface(RenderObject, runtime::RttiInterface, "RenderObject")
 

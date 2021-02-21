@@ -20,14 +20,14 @@ namespace octoon
 		void setMainCamera(CameraComponent* camera) noexcept;
 		CameraComponent* getMainCamera() const noexcept;
 
-		void setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
-		const std::shared_ptr<video::RenderScene>& getMainScene() const noexcept;
+		void setMainScene(const std::shared_ptr<RenderScene>& scene) noexcept;
+		const std::shared_ptr<RenderScene>& getMainScene() const noexcept;
 
-		void setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept;
-		const std::shared_ptr<video::RenderScene>& getRenderScene() const noexcept;
+		void setRenderScene(const std::shared_ptr<RenderScene>& scene) noexcept;
+		const std::shared_ptr<RenderScene>& getRenderScene() const noexcept;
 
-		video::Renderer* getRenderer() noexcept;
-		const video::Renderer* getRenderer() const noexcept;
+		Renderer* getRenderer() noexcept;
+		const Renderer* getRenderer() const noexcept;
 
 		void setGlobalIllumination(bool enable) noexcept;
 		bool getGlobalIllumination() const noexcept;
@@ -65,9 +65,9 @@ namespace octoon
 
 		CameraComponent* camera_;
 
-		std::shared_ptr<video::RenderScene> mainScene_;
-		std::shared_ptr<video::RenderScene> mainSceneDefault_;
-		std::shared_ptr<video::RenderScene> renderScene_;
+		std::shared_ptr<RenderScene> mainScene_;
+		std::shared_ptr<RenderScene> mainSceneDefault_;
+		std::shared_ptr<RenderScene> renderScene_;
 	};
 }
 

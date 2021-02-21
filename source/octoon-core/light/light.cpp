@@ -3,7 +3,7 @@
 
 namespace octoon
 {
-	OctoonImplementSubClass(Light, video::RenderObject, "Light")
+	OctoonImplementSubClass(Light, RenderObject, "Light")
 
 	Light::Light() noexcept
 		: lightIntensity_(1.0f)
@@ -74,7 +74,7 @@ namespace octoon
 	{
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	Light::clone() const noexcept
 	{
 		auto light = std::make_shared<Light>();

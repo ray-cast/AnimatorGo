@@ -3,7 +3,7 @@
 
 #include <octoon/math/math.h>
 
-namespace octoon::video
+namespace octoon
 {
     enum class OutputType
     {

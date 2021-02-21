@@ -80,7 +80,7 @@ namespace octoon
 		return environmentMap_;
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	EnvironmentLight::clone() const noexcept
 	{
 		return std::make_shared<EnvironmentLight>();

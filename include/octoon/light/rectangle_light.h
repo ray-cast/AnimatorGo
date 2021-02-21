@@ -12,7 +12,7 @@ namespace octoon
 		RectangleLight() noexcept;
 		virtual ~RectangleLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		RectangleLight(const RectangleLight&) noexcept = delete;

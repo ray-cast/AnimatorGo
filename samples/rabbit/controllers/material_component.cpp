@@ -100,7 +100,7 @@ namespace rabbit
 				envlight_ = std::make_shared<octoon::EnvironmentLight>();
 				envlight_->setEnvironmentMap(octoon::PMREMLoader::load("../../system/hdri/Ditch-River_2k.hdr"));
 
-				scene_ = std::make_unique<octoon::video::RenderScene>();
+				scene_ = std::make_unique<octoon::RenderScene>();
 				scene_->addRenderObject(camera_.get());
 				scene_->addRenderObject(light_.get());
 				scene_->addRenderObject(envlight_.get());

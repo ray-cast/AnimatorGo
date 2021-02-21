@@ -1,6 +1,6 @@
 #include <octoon/video/render_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
 	RenderScene::RenderScene() noexcept
 		: mainCamera_(nullptr)
@@ -166,7 +166,7 @@ namespace octoon::video
 	void
 	RenderScene::sortGeometries() noexcept
 	{
-		std::sort(renderables_.begin(), renderables_.end(), [](const video::RenderObject* a, const video::RenderObject* b)
+		std::sort(renderables_.begin(), renderables_.end(), [](const RenderObject* a, const RenderObject* b)
 		{
 			return a->getRenderOrder() < b->getRenderOrder();
 		});

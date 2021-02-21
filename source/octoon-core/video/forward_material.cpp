@@ -2147,7 +2147,7 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 	{"shadowmap_pars_fragment", shadowmap_pars_fragment},
 };
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardMaterial::ForwardMaterial() noexcept
 	{

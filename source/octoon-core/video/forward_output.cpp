@@ -1,6 +1,6 @@
 #include <octoon/video/forward_output.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardOutput::ForwardOutput(hal::GraphicsContextPtr context, std::uint32_t w, std::uint32_t h)
 		: Output(w, h)

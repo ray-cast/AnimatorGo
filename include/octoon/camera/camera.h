@@ -6,9 +6,9 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT Camera : public video::RenderObject
+	class OCTOON_EXPORT Camera : public RenderObject
 	{
-		OctoonDeclareSubClass(Camera, video::RenderObject)
+		OctoonDeclareSubClass(Camera, RenderObject)
 	public:
 		Camera() noexcept;
 		virtual ~Camera() noexcept;

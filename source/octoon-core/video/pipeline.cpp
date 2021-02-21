@@ -1,7 +1,7 @@
 #include "pipeline.h"
 #include <stdexcept>
 
-namespace octoon::video
+namespace octoon
 {
 	Pipeline::Pipeline() noexcept
 	{

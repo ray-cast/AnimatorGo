@@ -8,7 +8,7 @@
 #include <octoon/video/collector.h>
 #include <octoon/video/compiled_scene.h>
 
-namespace octoon::video
+namespace octoon
 {
     enum class CameraType
     {

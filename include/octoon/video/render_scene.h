@@ -5,7 +5,7 @@
 #include <octoon/camera/camera.h>
 #include <octoon/geometry/geometry.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT RenderScene final
 	{

@@ -1,6 +1,6 @@
 #include "output.h"
 
-namespace octoon::video
+namespace octoon
 {
 	Output::Output(std::uint32_t w, std::uint32_t h) noexcept
 		: width_(w)

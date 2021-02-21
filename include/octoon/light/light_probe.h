@@ -16,7 +16,7 @@ namespace octoon
 		void setCoeff(const math::SH9& sh) noexcept;
 		const math::SH9& getCoeff() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		LightProbe(const LightProbe&) noexcept = delete;

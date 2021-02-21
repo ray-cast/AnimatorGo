@@ -8,7 +8,7 @@
 
 #include "rtx_manager.h"
 
-namespace octoon::video
+namespace octoon
 {
 	OctoonImplementSingleton(Renderer)
 

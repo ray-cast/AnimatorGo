@@ -61,20 +61,20 @@ namespace octoon
 			framebuffer_w_ = w;
 			framebuffer_h_ = h;
 
-			video::Renderer::instance()->setFramebufferSize(w, h);
+			Renderer::instance()->setFramebufferSize(w, h);
 		}
 	}
 
 	void
 	VideoFeature::getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept
 	{
-		video::Renderer::instance()->getFramebufferSize(w, h);
+		Renderer::instance()->getFramebufferSize(w, h);
 	}
 
 	const hal::GraphicsFramebufferPtr&
 	VideoFeature::getFramebuffer() const noexcept
 	{
-		return video::Renderer::instance()->getFramebuffer();
+		return Renderer::instance()->getFramebuffer();
 	}
 
 	void
@@ -95,80 +95,80 @@ namespace octoon
 	void
 	VideoFeature::setMaxBounces(std::uint32_t num_bounces)
 	{
-		video::Renderer::instance()->setMaxBounces(num_bounces);
+		Renderer::instance()->setMaxBounces(num_bounces);
 	}
 
 	std::uint32_t
 	VideoFeature::getMaxBounces() const
 	{
-		return video::Renderer::instance()->getMaxBounces();
+		return Renderer::instance()->getMaxBounces();
 	}
 
 	void
 	VideoFeature::setOverrideMaterial(const std::shared_ptr<Material>& material) noexcept
 	{
-		video::Renderer::instance()->setOverrideMaterial(material);
+		Renderer::instance()->setOverrideMaterial(material);
 	}
 
 	std::shared_ptr<Material>
 	VideoFeature::getOverrideMaterial() const noexcept
 	{
-		return video::Renderer::instance()->getOverrideMaterial();
+		return Renderer::instance()->getOverrideMaterial();
 	}
 
 	void
-	VideoFeature::setMainScene(const std::shared_ptr<video::RenderScene>& scene) noexcept
+	VideoFeature::setMainScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		this->mainScene_ = scene ? scene : this->mainSceneDefault_;
 		this->mainScene_->setGlobalIllumination(this->enableGlobalIllumination_);
 	}
 	
-	const std::shared_ptr<video::RenderScene>&
+	const std::shared_ptr<RenderScene>&
 	VideoFeature::getMainScene() const noexcept
 	{
 		return this->mainScene_;
 	}
 
 	void
-	VideoFeature::setRenderScene(const std::shared_ptr<video::RenderScene>& scene) noexcept
+	VideoFeature::setRenderScene(const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		this->renderScene_ = scene;
 	}
 
-	const std::shared_ptr<video::RenderScene>&
+	const std::shared_ptr<RenderScene>&
 	VideoFeature::getRenderScene() const noexcept
 	{
 		return this->renderScene_;
 	}
 
-	video::Renderer*
+	Renderer*
 	VideoFeature::getRenderer() noexcept
 	{
-		return video::Renderer::instance();
+		return Renderer::instance();
 	}
 
-	const video::Renderer*
+	const Renderer*
 	VideoFeature::getRenderer() const noexcept
 	{
-		return video::Renderer::instance();
+		return Renderer::instance();
 	}
 
 	void
 	VideoFeature::readColorBuffer(math::float3 data[])
 	{
-		return video::Renderer::instance()->readColorBuffer(data);
+		return Renderer::instance()->readColorBuffer(data);
 	}
 
 	void
 	VideoFeature::readAlbedoBuffer(math::float3 data[])
 	{
-		return video::Renderer::instance()->readAlbedoBuffer(data);
+		return Renderer::instance()->readAlbedoBuffer(data);
 	}
 
 	void
 	VideoFeature::readNormalBuffer(math::float3 data[])
 	{
-		return video::Renderer::instance()->readNormalBuffer(data);
+		return Renderer::instance()->readNormalBuffer(data);
 	}
 
 	void
@@ -177,9 +177,9 @@ namespace octoon
 		auto graphics = this->getFeature<GraphicsFeature>();
 		if (graphics)
 		{
-			video::Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
+			Renderer::instance()->setup(graphics->getContext(), framebuffer_w_, framebuffer_h_);
 			
-			this->mainSceneDefault_ = std::make_shared<video::RenderScene>();
+			this->mainSceneDefault_ = std::make_shared<RenderScene>();
 			this->mainSceneDefault_->setGlobalIllumination(this->enableGlobalIllumination_);
 
 			this->setMainScene(this->mainSceneDefault_);
@@ -197,7 +197,7 @@ namespace octoon
 	{
 		this->setMainScene(nullptr);
 		this->removeMessageListener("feature:input:event", std::bind(&VideoFeature::onInputEvent, this, std::placeholders::_1));
-		video::Renderer::instance()->close();
+		Renderer::instance()->close();
 	}
 
 	void
@@ -209,7 +209,7 @@ namespace octoon
 		case input::InputEvent::SizeChange:
 		case input::InputEvent::SizeChangeDPI:
 			if (event.change.w > 0 && event.change.h > 0)
-				video::Renderer::instance()->setFramebufferSize(event.change.w, event.change.h);
+				Renderer::instance()->setFramebufferSize(event.change.w, event.change.h);
 			break;
 		default:
 			return;
@@ -228,7 +228,7 @@ namespace octoon
 		{
 			auto scene = this->getRenderScene();
 			if (scene)
-				video::Renderer::instance()->render(scene);
+				Renderer::instance()->render(scene);
 		}
 		catch (const std::exception& e)
 		{

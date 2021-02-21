@@ -7,7 +7,7 @@
 #include "clw_class.h"
 #include "cl_program_manager.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class MonteCarloRenderer : public Pipeline, protected ClwClass
 	{

@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT Geometry final : public video::RenderObject
+	class OCTOON_EXPORT Geometry final : public RenderObject
 	{
 		OctoonDeclareSubClass(Geometry, RenderObject)
 	public:

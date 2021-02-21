@@ -8,7 +8,7 @@
 #include "forward_pipeline.h"
 #include "forward_scene_controller.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardRenderer final
 	{

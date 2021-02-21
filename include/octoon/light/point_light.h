@@ -24,7 +24,7 @@ namespace octoon
 		void setShadowMapSize(const math::uint2& size) noexcept;
 		const math::uint2& getShadowMapSize() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 		const std::shared_ptr<Camera>& getCamera() const noexcept;
 

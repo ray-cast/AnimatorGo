@@ -4,7 +4,7 @@
 #include <octoon/hal/graphics_context.h>
 #include "render_factory.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardRenderFactory final : public RenderFactory
 	{

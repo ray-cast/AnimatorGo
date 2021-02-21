@@ -27,7 +27,7 @@ namespace octoon
 		void setCamera(const std::shared_ptr<Camera>& camera) noexcept;
 		const std::shared_ptr<Camera>& getCamera() const noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		void onMoveAfter() noexcept override;

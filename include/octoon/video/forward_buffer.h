@@ -5,7 +5,7 @@
 #include <octoon/hal/graphics_data.h>
 #include <octoon/video/scriptable_render_context.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardBuffer final
 	{
@@ -20,7 +20,6 @@ namespace octoon::video
 
 		const hal::GraphicsDataPtr& getVertexBuffer() const noexcept;
 		const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
-
 
 	private:
 		void updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);

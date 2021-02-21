@@ -20,7 +20,7 @@
 
 #include <unordered_map>
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT Renderer final
 	{

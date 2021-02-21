@@ -12,7 +12,7 @@ namespace octoon
 		AmbientLight() noexcept;
 		virtual ~AmbientLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		AmbientLight(const AmbientLight&) noexcept = delete;

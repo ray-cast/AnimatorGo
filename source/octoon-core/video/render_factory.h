@@ -8,7 +8,7 @@
 #include "pipeline.h"
 #include "scene_controller.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class RenderFactory
 	{

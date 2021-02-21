@@ -200,7 +200,7 @@ void main()
 			std::uint32_t width = 64 << (mipNums - 1);
 			std::uint32_t height = 32 << (mipNums - 1);
 
-			auto renderContext = video::Renderer::instance()->getScriptableRenderContext();
+			auto renderContext = Renderer::instance()->getScriptableRenderContext();
 
 			hal::GraphicsTextureDesc textureDesc;
 			textureDesc.setSize(width, height);
@@ -274,7 +274,7 @@ void main()
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{
-				auto scene = std::make_shared<video::RenderScene>();
+				auto scene = std::make_shared<RenderScene>();
 				scene->addCamera(&camera);
 
 				camera.setFramebuffer(framebuffers[i]);
@@ -285,7 +285,7 @@ void main()
 				else
 					scene->addGeometry(&radianceGeometry);
 
-				video::Renderer::instance()->render(scene);
+				Renderer::instance()->render(scene);
 			}
 
 			return colorTexture;

@@ -62,7 +62,7 @@ namespace rabbit
 		std::shared_ptr<octoon::Geometry> geometry_;
 		std::shared_ptr<octoon::DirectionalLight> light_;
 		std::shared_ptr<octoon::EnvironmentLight> envlight_;
-		std::shared_ptr<octoon::video::RenderScene> scene_;
+		std::shared_ptr<octoon::RenderScene> scene_;
 	};
 }
 

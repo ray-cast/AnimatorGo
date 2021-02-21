@@ -87,12 +87,12 @@ namespace octoon
 			textureDesc.setMipNums(image.mipLevel());
 		}
 
-		auto texture = video::Renderer::instance()->getScriptableRenderContext()->createTexture(textureDesc);
+		auto texture = Renderer::instance()->getScriptableRenderContext()->createTexture(textureDesc);
 		if (!texture)
 			return nullptr;
 
 		if (generateMipmap)
-			video::Renderer::instance()->getScriptableRenderContext()->generateMipmap(texture);
+			Renderer::instance()->getScriptableRenderContext()->generateMipmap(texture);
 
 		if (cache)
 			textureCaches_[path] = texture;

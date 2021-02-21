@@ -7,7 +7,7 @@
 #include "forward_scene.h"
 #include "scene_controller.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardSceneController final : public SceneController
 	{

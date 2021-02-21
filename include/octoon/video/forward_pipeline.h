@@ -10,7 +10,7 @@
 #include "pipeline.h"
 #include "forward_scene.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class ForwardPipeline : public Pipeline
 	{

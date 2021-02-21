@@ -13,7 +13,7 @@ namespace octoon
 		UI
 	};
 
-	class OCTOON_EXPORT CameraComponent : public GameComponent, public video::RenderListener
+	class OCTOON_EXPORT CameraComponent : public GameComponent, public RenderListener
 	{
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
 	public:

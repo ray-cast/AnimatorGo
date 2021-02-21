@@ -3,7 +3,7 @@
 #include "clw_texture_output.h"
 #include "clw_scene.h"
 
-namespace octoon::video
+namespace octoon
 {
 	int constexpr kTileSizeX = 2560;
 	int constexpr kTileSizeY = 1440;

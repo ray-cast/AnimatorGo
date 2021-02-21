@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace octoon::video
+namespace octoon
 {
     class CLProgramManager;
     class CLProgram final

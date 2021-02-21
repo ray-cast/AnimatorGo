@@ -6,7 +6,7 @@
 #include <octoon/material/material.h>
 #include <octoon/video/scriptable_render_context.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class ForwardScene;
 	class OCTOON_EXPORT ForwardMaterial final

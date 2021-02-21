@@ -3,7 +3,7 @@
 #include <fstream>
 #include <regex>
 
-namespace octoon::video
+namespace octoon
 {
 	std::uint32_t CLProgramManager::nextProgramId_ = 0;
 

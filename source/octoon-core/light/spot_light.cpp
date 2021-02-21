@@ -124,7 +124,7 @@ namespace octoon
 		return this->shadowCamera_;
 	}
 
-	std::shared_ptr<video::RenderObject>
+	std::shared_ptr<RenderObject>
 	SpotLight::clone() const noexcept
 	{
 		auto light = std::make_shared<SpotLight>();

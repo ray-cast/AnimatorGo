@@ -12,7 +12,7 @@ namespace octoon
 		TubeLight() noexcept;
 		virtual ~TubeLight() noexcept;
 
-		std::shared_ptr<video::RenderObject> clone() const noexcept;
+		std::shared_ptr<RenderObject> clone() const noexcept;
 
 	private:
 		TubeLight(const TubeLight&) noexcept = delete;

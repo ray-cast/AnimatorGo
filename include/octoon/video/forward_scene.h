@@ -9,7 +9,7 @@
 #include <octoon/video/collector.h>
 #include "compiled_scene.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardScene final : public CompiledScene
 	{

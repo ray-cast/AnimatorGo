@@ -10,7 +10,7 @@ namespace octoon
 	class Camera;
 }
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT RenderListener
 	{

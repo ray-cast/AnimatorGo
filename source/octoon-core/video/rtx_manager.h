@@ -15,7 +15,7 @@
 #include <octoon/video/render_scene.h>
 #include <octoon/video/scriptable_render_context.h>
 
-namespace octoon::video
+namespace octoon
 {
 	enum DeviceType
 	{
@@ -62,9 +62,9 @@ namespace octoon::video
 		struct Config
 		{
 			DeviceType type;
-			std::unique_ptr<octoon::video::Pipeline> pipeline;
-			std::unique_ptr<octoon::video::SceneController> controller;
-			std::unique_ptr<octoon::video::RenderFactory> factory;
+			std::unique_ptr<octoon::Pipeline> pipeline;
+			std::unique_ptr<octoon::SceneController> controller;
+			std::unique_ptr<octoon::RenderFactory> factory;
 			CLWContext context;
 			bool caninterop;
 		};

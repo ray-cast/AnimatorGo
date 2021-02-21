@@ -7,7 +7,7 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT RenderComponent : public GameComponent, public video::RenderListener
+	class OCTOON_EXPORT RenderComponent : public GameComponent, public RenderListener
 	{
 		OctoonDeclareSubInterface(RenderComponent, GameComponent)
 	public:

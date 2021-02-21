@@ -25,7 +25,7 @@
 #include <octoon/material/mesh_depth_material.h>
 #include <octoon/material/mesh_standard_material.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardPipeline::ForwardPipeline() noexcept
 		: width_(0)

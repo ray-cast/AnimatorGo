@@ -12,7 +12,7 @@
 #include "cl_program_manager.h"
 #include "scene_controller.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class ClwSceneController : public SceneController
 	{

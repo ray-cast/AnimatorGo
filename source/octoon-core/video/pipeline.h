@@ -7,7 +7,7 @@
 #include <octoon/video/compiled_scene.h>
 #include <octoon/video/scriptable_render_context.h>
 
-namespace octoon::video
+namespace octoon
 {
 	class Pipeline
 	{

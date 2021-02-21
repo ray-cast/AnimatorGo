@@ -14,7 +14,7 @@
 #include <octoon/hal/graphics_framebuffer.h>
 #include <octoon/hal/graphics_data.h>
 
-namespace octoon::video
+namespace octoon
 {
 	ForwardSceneController::ForwardSceneController()
 	{

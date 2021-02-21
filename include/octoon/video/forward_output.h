@@ -4,7 +4,7 @@
 #include <octoon/hal/graphics_context.h>
 #include "output.h"
 
-namespace octoon::video
+namespace octoon
 {
 	class OCTOON_EXPORT ForwardOutput final : public Output
 	{

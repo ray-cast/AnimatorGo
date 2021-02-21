@@ -221,7 +221,7 @@ namespace octoon
 		std::uint32_t width = 1920, height = 1080;
 
 		if (!fbo_[0])
-			video::Renderer::instance()->getFramebufferSize(width, height);
+			Renderer::instance()->getFramebufferSize(width, height);
 		else
 		{
 			width = fbo_[0]->getFramebufferDesc().getWidth();

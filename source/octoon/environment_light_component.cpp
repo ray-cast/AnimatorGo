@@ -105,7 +105,7 @@ namespace octoon
 	{
 		auto transform = this->getComponent<TransformComponent>();
 
-		environmentLight_ = std::make_shared<light::EnvironmentLight>();
+		environmentLight_ = std::make_shared<EnvironmentLight>();
 		environmentLight_->setLayer(this->getGameObject()->getLayer());
 		environmentLight_->setColor(this->getColor());
 		environmentLight_->setIntensity(this->getIntensity());

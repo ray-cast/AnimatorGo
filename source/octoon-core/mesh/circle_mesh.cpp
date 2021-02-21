@@ -1,6 +1,6 @@
 #include <octoon/mesh/circle_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(CircleMesh, Mesh, "CircleMesh");
 

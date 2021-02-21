@@ -2,7 +2,7 @@
 #include <octoon/hal/graphics_texture.h>
 #include <functional>
 
-namespace octoon::material
+namespace octoon
 {
 	OctoonImplementSubClass(Material, runtime::RttiInterface, "Material");
 	

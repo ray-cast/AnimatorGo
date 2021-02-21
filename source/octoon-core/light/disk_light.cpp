@@ -1,6 +1,6 @@
 #include <octoon/light/disk_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(DiskLight, Light, "DiskLight")
 

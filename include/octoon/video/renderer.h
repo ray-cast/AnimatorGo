@@ -38,8 +38,8 @@ namespace octoon::video
 		void setMaxBounces(std::uint32_t num_bounces);
 		std::uint32_t getMaxBounces() const;
 
-		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
-		const std::shared_ptr<material::Material>& getOverrideMaterial() const noexcept;
+		void setOverrideMaterial(const std::shared_ptr<Material>& material) noexcept;
+		const std::shared_ptr<Material>& getOverrideMaterial() const noexcept;
 
 		void readColorBuffer(math::float3 data[]);
 		void readAlbedoBuffer(math::float3 data[]);
@@ -52,12 +52,12 @@ namespace octoon::video
 		void render(const std::shared_ptr<RenderScene>& scene) noexcept(false);
 
 	private:
-		void beginFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept;
-		void endFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept;
+		void beginFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<Camera*>& camera) noexcept;
+		void endFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<Camera*>& camera) noexcept;
 
-		void beginCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept;
-		void endCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept;
-		void renderSingleCamera(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept;
+		void beginCameraRendering(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept;
+		void endCameraRendering(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept;
+		void renderSingleCamera(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept;
 
 	private:
 		Renderer(const Renderer&) = delete;
@@ -74,7 +74,7 @@ namespace octoon::video
 		std::unique_ptr<class RtxManager> rtxManager_;
 		std::unique_ptr<class ForwardRenderer> forwardRenderer_;
 
-		std::shared_ptr<material::Material> overrideMaterial_;
+		std::shared_ptr<Material> overrideMaterial_;
 	};
 }
 

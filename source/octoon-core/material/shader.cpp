@@ -1,6 +1,6 @@
 #include <octoon/material/shader.h>
 
-namespace octoon::material
+namespace octoon
 {
 	Shader::Shader()
 		: lightMode("Forward")

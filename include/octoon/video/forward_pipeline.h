@@ -28,12 +28,12 @@ namespace octoon::video
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
 	private:
-		void setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry);
+		void setMaterial(const ForwardScene& scene, const std::shared_ptr<Material>& material, const Camera& camera, const Geometry& geometry);
 
-		void renderBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset);
-		void renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-		void renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& objects, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial = nullptr) noexcept;
-		void renderShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept;
+		void renderBuffer(const ForwardScene& scene, const std::shared_ptr<Mesh>& mesh, std::size_t subset);
+		void renderObject(const ForwardScene& scene, const Geometry& geometry, const Camera& camera, const std::shared_ptr<Material>& overrideMaterial = nullptr) noexcept;
+		void renderObjects(const ForwardScene& scene, const std::vector<Geometry*>& objects, const Camera& camera, const std::shared_ptr<Material>& overrideMaterial = nullptr) noexcept;
+		void renderShadowMaps(const ForwardScene& scene, const std::vector<Light*>& lights, const std::vector<Geometry*>& geometries) noexcept;
 
 	private:
 		ForwardPipeline(const ForwardPipeline&) = delete;
@@ -50,8 +50,8 @@ namespace octoon::video
 		hal::GraphicsTexturePtr colorTexture2_;
 		hal::GraphicsTexturePtr depthTexture2_;
 
-		std::shared_ptr<geometry::Geometry> screenGeometry_;
-		std::shared_ptr<material::Material> overrideMaterial_;
+		std::shared_ptr<Geometry> screenGeometry_;
+		std::shared_ptr<Material> overrideMaterial_;
 		std::shared_ptr<ScriptableRenderContext> cmd_;
 
 		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;

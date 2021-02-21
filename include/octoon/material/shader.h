@@ -4,7 +4,7 @@
 #include <octoon/runtime/platform.h>
 #include <string>
 
-namespace octoon::material
+namespace octoon
 {
 	class OCTOON_EXPORT Shader
 	{

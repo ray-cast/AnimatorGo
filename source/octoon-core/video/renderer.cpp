@@ -108,30 +108,30 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
+	Renderer::setOverrideMaterial(const std::shared_ptr<Material>& material) noexcept
 	{
 		this->overrideMaterial_ = material;
 	}
 
-	const std::shared_ptr<material::Material>&
+	const std::shared_ptr<Material>&
 	Renderer::getOverrideMaterial() const noexcept
 	{
 		return this->overrideMaterial_;
 	}
 
 	void
-	Renderer::beginFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept
+	Renderer::beginFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<Camera*>& camera) noexcept
 	{
 		scene->sortCameras();
 	}
 
 	void 
-	Renderer::endFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept
+	Renderer::endFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<Camera*>& camera) noexcept
 	{
 	}
 
 	void
-	Renderer::beginCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
+	Renderer::beginCameraRendering(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept
 	{
 		scene->setMainCamera(camera);
 
@@ -148,7 +148,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::endCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
+	Renderer::endCameraRendering(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept
 	{
 		for (auto& it : scene->getLights())
 		{
@@ -187,7 +187,7 @@ namespace octoon::video
 	}
 
 	void
-	Renderer::renderSingleCamera(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
+	Renderer::renderSingleCamera(const std::shared_ptr<RenderScene>& scene, Camera* camera) noexcept
 	{		
 		scene->sortGeometries();
 

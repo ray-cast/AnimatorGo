@@ -1,6 +1,6 @@
 #include <octoon/light/tube_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(TubeLight, Light, "TubeLight")
 

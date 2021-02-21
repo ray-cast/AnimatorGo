@@ -44,7 +44,7 @@ namespace octoon
 	private:
 		bool isSharedText_;
 		std::string u8str_;
-		mesh::MeshPtr mesh_;
+		MeshPtr mesh_;
 		font::TextAlign align_;
 		std::shared_ptr<font::TextMeshing> meshing_;
 	};

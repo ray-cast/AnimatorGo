@@ -1,7 +1,7 @@
 #include <octoon/light/point_light.h>
 #include <octoon/camera/perspective_camera.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(PointLight, Light, "PointLight")
 
@@ -11,7 +11,7 @@ namespace octoon::light
 		, shadowRadius_(1.0f)
 		, shadowSize_(512, 512)
 	{
-		auto shadowCamera = std::make_shared<camera::PerspectiveCamera>();
+		auto shadowCamera = std::make_shared<PerspectiveCamera>();
 		shadowCamera->setFov(90.0f);
 		shadowCamera->setNear(0.1f);
 		shadowCamera->setSensorSize(math::float2::One);
@@ -84,7 +84,7 @@ namespace octoon::light
 		return this->shadowSize_;
 	}
 
-	const std::shared_ptr<camera::Camera>&
+	const std::shared_ptr<Camera>&
 	PointLight::getCamera() const noexcept
 	{
 		return this->shadowCamera_;

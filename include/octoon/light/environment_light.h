@@ -4,7 +4,7 @@
 #include <octoon/light/light.h>
 #include <octoon/hal/graphics_texture.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT EnvironmentLight final : public Light
 	{

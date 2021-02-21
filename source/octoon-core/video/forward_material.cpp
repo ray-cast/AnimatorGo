@@ -2153,7 +2153,7 @@ namespace octoon::video
 	{
 	}
 
-	ForwardMaterial::ForwardMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene) noexcept
+	ForwardMaterial::ForwardMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept
 	{
 		this->material_ = material;
 		this->updateMaterial(context, material, scene);
@@ -2198,7 +2198,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardMaterial::update(const ForwardScene& context, const camera::Camera& camera, const geometry::Geometry& geometry) noexcept
+	ForwardMaterial::update(const ForwardScene& context, const Camera& camera, const Geometry& geometry) noexcept
 	{
 		if (this->material_)
 		{
@@ -2310,7 +2310,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardMaterial::setupProgram(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene)
+	ForwardMaterial::setupProgram(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene)
 	{
 		auto shader = material->getShader();
 
@@ -2348,9 +2348,9 @@ namespace octoon::video
 		fragmentShader += "#define USE_ENVMAP\n";
 		fragmentShader += "#define USE_SHADOWMAP\n";
 
-		if (material->isInstanceOf<material::MeshStandardMaterial>())
+		if (material->isInstanceOf<MeshStandardMaterial>())
 		{
-			auto standard = material->downcast<material::MeshStandardMaterial>();
+			auto standard = material->downcast<MeshStandardMaterial>();
 			if (standard->getColorMap())
 				fragmentShader += "#define USE_MAP\n";
 			if (standard->getOpacityMap())
@@ -2398,7 +2398,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardMaterial::setupRenderState(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material)
+	ForwardMaterial::setupRenderState(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material)
 	{
 		hal::GraphicsStateDesc stateDesc;
 		stateDesc.setColorBlends(material->getColorBlends());
@@ -2467,7 +2467,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardMaterial::updateMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene) noexcept(false)
+	ForwardMaterial::updateMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept(false)
 	{
 		if (material) {
 			this->setupRenderState(context, material);
@@ -2605,13 +2605,13 @@ namespace octoon::video
 					auto uniform = *it;
 					switch (prop.type)
 					{
-					case material::PropertyTypeInfoBool:
+					case PropertyTypeInfo::PropertyTypeInfoBool:
 					{
 						auto value = (bool*)prop.data;
 						uniform->uniform1b(*value);
 					}
 					break;
-					case material::PropertyTypeInfoInt | material::PropertyTypeInfoBuffer:
+					case PropertyTypeInfo::PropertyTypeInfoInt | PropertyTypeInfo::PropertyTypeInfoBuffer:
 					{
 						auto value = (int*)prop.data;
 						if (prop.length == 4)
@@ -2624,31 +2624,31 @@ namespace octoon::video
 							uniform->uniform4i(value[0], value[1], value[2], value[3]);
 					}
 					break;
-					case material::PropertyTypeInfoFloat:
+					case PropertyTypeInfo::PropertyTypeInfoFloat:
 					{
 						auto value = (float*)prop.data;
 						uniform->uniform1f(value[0]);
 					}
 					break;
-					case material::PropertyTypeInfoFloat2:
+					case PropertyTypeInfo::PropertyTypeInfoFloat2:
 					{
 						auto value = (float*)prop.data;
 						uniform->uniform2f(value[0], value[1]);
 					}
 					break;
-					case material::PropertyTypeInfoFloat3:
+					case PropertyTypeInfo::PropertyTypeInfoFloat3:
 					{
 						auto value = (float*)prop.data;
 						uniform->uniform3f(value[0], value[1], value[2]);
 					}
 					break;
-					case material::PropertyTypeInfoFloat4:
+					case PropertyTypeInfo::PropertyTypeInfoFloat4:
 					{
 						auto value = (float*)prop.data;
 						uniform->uniform4f(value[0], value[1], value[2], value[3]);
 					}
 					break;
-					case material::PropertyTypeInfoTexture:
+					case PropertyTypeInfo::PropertyTypeInfoTexture:
 					{
 						uniform->uniformTexture(prop.texture);
 					}

@@ -81,7 +81,7 @@ namespace octoon::video
 			bool should_update_materials = !out->material_bundle || materialCollector.NeedsUpdate(out->material_bundle.get(),
 				[](runtime::RttiInterface* ptr)->bool
 			{
-				auto mat = ptr->downcast<material::Material>();
+				auto mat = ptr->downcast<Material>();
 				return mat->isDirty();
 			});
 
@@ -143,13 +143,13 @@ namespace octoon::video
 			
 			light->onRenderBefore(*out.camera);
 
-			if (light->isA<light::AmbientLight>())
+			if (light->isA<AmbientLight>())
 			{
 				out.ambientLightColors += light->getColor() * light->getIntensity();
 			}
-			else if (light->isA<light::EnvironmentLight>())
+			else if (light->isA<EnvironmentLight>())
 			{
-				auto it = light->downcast<light::EnvironmentLight>();
+				auto it = light->downcast<EnvironmentLight>();
 				ForwardScene::EnvironmentLight environmentLight;
 				environmentLight.intensity = it->getIntensity();
 				environmentLight.offset = it->getOffset();
@@ -159,9 +159,9 @@ namespace octoon::video
 				out.environmentLights.emplace_back(environmentLight);
 				out.numEnvironment++;
 			}
-			else if (light->isA<light::DirectionalLight>())
+			else if (light->isA<DirectionalLight>())
 			{
-				auto it = light->downcast<light::DirectionalLight>();
+				auto it = light->downcast<DirectionalLight>();
 				auto color = it->getColor() * it->getIntensity();
 				ForwardScene::DirectionalLight directionLight;
 				directionLight.direction = math::float4(math::float3x3(out.camera->getView()) * -it->getForward(), 0);
@@ -189,9 +189,9 @@ namespace octoon::video
 				out.numDirectional++;
 				out.directionalLights.emplace_back(directionLight);
 			}
-			else if (light->isA<light::SpotLight>())
+			else if (light->isA<SpotLight>())
 			{
-				auto it = light->downcast<light::SpotLight>();
+				auto it = light->downcast<SpotLight>();
 				ForwardScene::SpotLight spotLight;
 				spotLight.color.set(it->getColor() * it->getIntensity());
 				spotLight.direction.set(math::float3x3(out.camera->getView()) * it->getForward());
@@ -218,9 +218,9 @@ namespace octoon::video
 				out.spotLights.emplace_back(spotLight);
 				out.numSpot++;
 			}
-			else if (light->isA<light::PointLight>())
+			else if (light->isA<PointLight>())
 			{
-				auto it = light->downcast<light::PointLight>();
+				auto it = light->downcast<PointLight>();
 				ForwardScene::PointLight pointLight;
 				pointLight.color.set(it->getColor() * it->getIntensity());
 				pointLight.position.set(it->getTranslate());
@@ -244,9 +244,9 @@ namespace octoon::video
 				out.pointLights.emplace_back(pointLight);
 				out.numPoint++;
 			}
-			else if (light->isA<light::RectangleLight>())
+			else if (light->isA<RectangleLight>())
 			{
-				auto it = light->downcast<light::RectangleLight>();
+				auto it = light->downcast<RectangleLight>();
 				ForwardScene::RectAreaLight rectangleLight;
 				rectangleLight.color.set(it->getColor() * it->getIntensity());
 				rectangleLight.position.set(it->getTranslate());
@@ -414,10 +414,10 @@ namespace octoon::video
 		std::unique_ptr<Iterator> mat_iter(materialCollector.CreateIterator());
 		for (std::size_t i = 0; mat_iter->IsValid(); mat_iter->Next(), i++)
 		{
-			auto mat = mat_iter->ItemAs<material::Material>();
+			auto mat = mat_iter->ItemAs<Material>();
 			if (mat->isDirty() || force)
 			{
-				auto material = mat->downcast_pointer<material::Material>();
+				auto material = mat->downcast_pointer<Material>();
 				out.materials_[material.get()] = std::make_shared<ForwardMaterial>(context, material, out);
 			}
 		}

@@ -11,7 +11,7 @@ namespace octoon::video
 	{
 	public:
 		ForwardBuffer() noexcept;
-		ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
 		virtual ~ForwardBuffer() noexcept;
 
 		std::size_t getNumVertices() const noexcept;
@@ -23,7 +23,7 @@ namespace octoon::video
 
 
 	private:
-		void updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		void updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
 
 	private:
 		ForwardBuffer(const ForwardBuffer&) = delete;
@@ -37,7 +37,7 @@ namespace octoon::video
 		hal::GraphicsDataPtr vertices_;
 		hal::GraphicsDataPtr indices_;
 
-		std::shared_ptr<mesh::Mesh> mesh_;
+		std::shared_ptr<Mesh> mesh_;
 	};
 }
 

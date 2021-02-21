@@ -5,7 +5,7 @@
 #include <octoon/material/shader.h>
 #include <octoon/hal/graphics_state.h>
 
-namespace octoon::material
+namespace octoon
 {
 	enum PropertyTypeInfo
 	{

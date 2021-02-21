@@ -13,8 +13,8 @@ namespace octoon
 		OctoonDeclareSubClass(SkinnedJointRendererComponent, RenderComponent)
 	public:
 		SkinnedJointRendererComponent() noexcept;
-		SkinnedJointRendererComponent(material::MaterialPtr&& material) noexcept;
-		SkinnedJointRendererComponent(const material::MaterialPtr& material) noexcept;
+		SkinnedJointRendererComponent(MaterialPtr&& material) noexcept;
+		SkinnedJointRendererComponent(const MaterialPtr& material) noexcept;
 		virtual ~SkinnedJointRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;
@@ -31,7 +31,7 @@ namespace octoon
 
 		void onAnimationUpdate(const std::any& data) noexcept;
 
-		void onPreRender(const camera::Camera& camera) noexcept override;
+		void onPreRender(const Camera& camera) noexcept override;
 
 	private:
 		SkinnedJointRendererComponent(const SkinnedJointRendererComponent&) = delete;

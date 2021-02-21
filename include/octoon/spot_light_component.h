@@ -45,7 +45,7 @@ namespace octoon
 		float shadowBias_;
 		float shadowRadius_;
 		math::uint2 shadowMapSize_;
-		std::shared_ptr<light::SpotLight> spotLight_;
+		std::shared_ptr<SpotLight> spotLight_;
 	};
 }
 

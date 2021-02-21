@@ -1,7 +1,7 @@
 #include <octoon/light/light.h>
 #include <octoon/camera/perspective_camera.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(Light, video::RenderObject, "Light")
 
@@ -65,12 +65,12 @@ namespace octoon::light
 	}
 
 	void
-	Light::onPreRender(const camera::Camera& camera) noexcept
+	Light::onPreRender(const Camera& camera) noexcept
 	{
 	}
 
 	void
-	Light::onPostRender(const camera::Camera& camera) noexcept
+	Light::onPostRender(const Camera& camera) noexcept
 	{
 	}
 

@@ -79,7 +79,7 @@ namespace octoon::video
 
 		void reset() noexcept;
 
-		const camera::Camera* camera;
+		const Camera* camera;
 
 		std::size_t numDirectional;
 		std::size_t numSpot;
@@ -109,8 +109,8 @@ namespace octoon::video
 		hal::GraphicsDataPtr rectangleLightBuffer;
 		hal::GraphicsDataPtr directionLightBuffer;
 
-		std::vector<light::Light*> lights;
-		std::vector<geometry::Geometry*> geometries;
+		std::vector<Light*> lights;
+		std::vector<Geometry*> geometries;
 
 		std::unique_ptr<Bundle> material_bundle;
 		std::unique_ptr<Bundle> volume_bundle;
@@ -118,8 +118,8 @@ namespace octoon::video
 		std::unique_ptr<Bundle> input_map_leafs_bundle;
 		std::unique_ptr<Bundle> input_map_bundle;
 
-		std::shared_ptr<material::Material> depthMaterial;
-		std::shared_ptr<material::Material> overrideMaterial;
+		std::shared_ptr<Material> depthMaterial;
+		std::shared_ptr<Material> overrideMaterial;
 
 		std::unordered_map<void*, std::shared_ptr<ForwardBuffer>> buffers_;
 		std::unordered_map<void*, std::shared_ptr<ForwardMaterial>> materials_;

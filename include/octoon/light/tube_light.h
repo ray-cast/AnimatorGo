@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT TubeLight final : public Light
 	{

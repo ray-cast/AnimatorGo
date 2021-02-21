@@ -104,7 +104,7 @@ namespace octoon
 	{
 		auto transform = this->getComponent<TransformComponent>();
 
-		directionalLight_ = std::make_shared<light::DirectionalLight>();
+		directionalLight_ = std::make_shared<DirectionalLight>();
 		directionalLight_->setLayer(this->getGameObject()->getLayer());
 		directionalLight_->setColor(this->getColor());
 		directionalLight_->setIntensity(this->getIntensity());

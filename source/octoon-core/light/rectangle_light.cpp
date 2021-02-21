@@ -1,6 +1,6 @@
 #include <octoon/light/rectangle_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(RectangleLight, Light, "RectangleLight")
 

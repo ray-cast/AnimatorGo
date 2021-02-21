@@ -31,8 +31,8 @@ namespace octoon::video
 		: width_(0)
 		, height_(0)
 	{
-		screenGeometry_ = std::make_shared<geometry::Geometry>();
-		screenGeometry_->setMesh(octoon::mesh::PlaneMesh::create(2.0f, 2.0f));
+		screenGeometry_ = std::make_shared<Geometry>();
+		screenGeometry_->setMesh(octoon::PlaneMesh::create(2.0f, 2.0f));
 	}
 
 	ForwardPipeline::~ForwardPipeline() noexcept
@@ -157,7 +157,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::setMaterial(const ForwardScene& scene, const std::shared_ptr<material::Material>& material, const camera::Camera& camera, const geometry::Geometry& geometry)
+	ForwardPipeline::setMaterial(const ForwardScene& scene, const std::shared_ptr<Material>& material, const Camera& camera, const Geometry& geometry)
 	{
 		assert(material);
 		
@@ -169,7 +169,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::renderObject(const ForwardScene& scene, const geometry::Geometry& geometry, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	ForwardPipeline::renderObject(const ForwardScene& scene, const Geometry& geometry, const Camera& camera, const std::shared_ptr<Material>& overrideMaterial) noexcept
 	{
 		if (camera.getLayer() != geometry.getLayer())
 			return;
@@ -196,14 +196,14 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::renderObjects(const ForwardScene& scene, const std::vector<geometry::Geometry*>& geometries, const camera::Camera& camera, const std::shared_ptr<material::Material>& overrideMaterial) noexcept
+	ForwardPipeline::renderObjects(const ForwardScene& scene, const std::vector<Geometry*>& geometries, const Camera& camera, const std::shared_ptr<Material>& overrideMaterial) noexcept
 	{
 		for (auto& geometry : geometries)
 			this->renderObject(scene , *geometry, camera, overrideMaterial);
 	}
 
 	void
-	ForwardPipeline::renderShadowMaps(const ForwardScene& scene, const std::vector<light::Light*>& lights, const std::vector<geometry::Geometry*>& geometries) noexcept
+	ForwardPipeline::renderShadowMaps(const ForwardScene& scene, const std::vector<Light*>& lights, const std::vector<Geometry*>& geometries) noexcept
 	{
 		for (auto& light : lights)
 		{
@@ -211,29 +211,29 @@ namespace octoon::video
 				continue;
 
 			std::uint32_t faceCount = 0;
-			std::shared_ptr<camera::Camera> camera;
+			std::shared_ptr<Camera> camera;
 
-			if (light->isA<light::DirectionalLight>())
+			if (light->isA<DirectionalLight>())
 			{
-				auto directionalLight = light->cast<light::DirectionalLight>();
+				auto directionalLight = light->cast<DirectionalLight>();
 				if (directionalLight->getShadowEnable())
 				{
 					faceCount = 1;
 					camera = directionalLight->getCamera();
 				}
 			}
-			else if (light->isA<light::SpotLight>())
+			else if (light->isA<SpotLight>())
 			{
-				auto spotLight = light->cast<light::SpotLight>();
+				auto spotLight = light->cast<SpotLight>();
 				if (spotLight->getShadowEnable())
 				{
 					faceCount = 1;
 					camera = spotLight->getCamera();
 				}
 			}
-			else if (light->isA<light::PointLight>())
+			else if (light->isA<PointLight>())
 			{
-				auto pointLight = light->cast<light::PointLight>();
+				auto pointLight = light->cast<PointLight>();
 				if (pointLight->getShadowEnable())
 				{
 					faceCount = 6;
@@ -346,7 +346,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardPipeline::renderBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
+	ForwardPipeline::renderBuffer(const ForwardScene& scene, const std::shared_ptr<Mesh>& mesh, std::size_t subset)
 	{
 		auto& buffer = scene.buffers_.at(mesh.get());
 		this->cmd_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);

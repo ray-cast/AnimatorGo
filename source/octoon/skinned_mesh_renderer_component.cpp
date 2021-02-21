@@ -17,28 +17,28 @@ namespace octoon
 	{
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(material::Materials&& materials, GameObjects&& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(Materials&& materials, GameObjects&& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(std::move(materials));
 		this->setTransforms(std::move(transforms));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(MaterialPtr&& material, GameObjects&& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(std::move(material));
 		this->setTransforms(std::move(transforms));
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const material::Materials& materials, const GameObjects& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const Materials& materials, const GameObjects& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterials(materials);
 		this->setTransforms(transforms);
 	}
 
-	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept
+	SkinnedMeshRendererComponent::SkinnedMeshRendererComponent(const MaterialPtr& material, const GameObjects& transforms) noexcept
 		: SkinnedMeshRendererComponent()
 	{
 		this->setMaterial(material);
@@ -117,14 +117,14 @@ namespace octoon
 		return textureEnable_;
 	}
 
-	const mesh::MeshPtr&
+	const MeshPtr&
 	SkinnedMeshRendererComponent::getSkinnedMesh() const noexcept
 	{
 		return this->skinnedMesh_;
 	}
 
 	void
-	SkinnedMeshRendererComponent::uploadMeshData(const mesh::MeshPtr& mesh) noexcept
+	SkinnedMeshRendererComponent::uploadMeshData(const MeshPtr& mesh) noexcept
 	{
 		mesh_ = mesh;
 		needUpdate_ = true;
@@ -262,11 +262,11 @@ namespace octoon
 	void
 	SkinnedMeshRendererComponent::onMeshReplace(const std::any& data) noexcept
 	{
-		this->uploadMeshData(std::any_cast<mesh::MeshPtr>(data));
+		this->uploadMeshData(std::any_cast<MeshPtr>(data));
 	}
 
 	void
-	SkinnedMeshRendererComponent::onPreRender(const camera::Camera& camera) noexcept
+	SkinnedMeshRendererComponent::onPreRender(const Camera& camera) noexcept
 	{
 		if (needUpdate_)
 			this->updateMeshData(true);

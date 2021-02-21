@@ -3,7 +3,7 @@
 #include <octoon/runtime/except.h>
 #include <octoon/hal/graphics.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	OctoonImplementSubClass(Camera, runtime::RttiInterface, "Camera")
 

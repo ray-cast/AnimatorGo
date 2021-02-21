@@ -1,7 +1,7 @@
 #include <octoon/light/directional_light.h>
 #include <octoon/camera/ortho_camera.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(DirectionalLight, Light, "DirectionalLight")
 
@@ -11,7 +11,7 @@ namespace octoon::light
 		, shadowEnable_(false)
 		, shadowSize_(512, 512)
 	{
-		this->shadowCamera_ = std::make_shared<camera::OrthographicCamera>(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 1000.f);
+		this->shadowCamera_ = std::make_shared<OrthographicCamera>(-20.0f, 20.0f, -20.0f, 20.0f, 0.01f, 1000.f);
 		this->shadowCamera_->setOwnerListener(this);
 	}
 
@@ -81,13 +81,13 @@ namespace octoon::light
 	}
 
 	void
-	DirectionalLight::setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept
+	DirectionalLight::setCamera(const std::shared_ptr<Camera>& camera) noexcept
 	{
 		this->setDirty(true);
 		this->shadowCamera_ = camera;
 	}
 
-	const std::shared_ptr<camera::Camera>&
+	const std::shared_ptr<Camera>&
 	DirectionalLight::getCamera() const noexcept
 	{
 		return this->shadowCamera_;

@@ -36,9 +36,9 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<mesh::RaycastHit> result;
+		std::vector<MeshHit> result;
 
-		mesh::MeshPtr mesh = nullptr;
+		MeshPtr mesh = nullptr;
 
 		auto skinnedMesh = object.getComponent<SkinnedMeshRendererComponent>();
 		if (skinnedMesh)
@@ -79,14 +79,14 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<mesh::RaycastHit> result;
+		std::vector<MeshHit> result;
 
 		for (auto& object : entities)
 		{
 			if (!object)
 				continue;
 
-			mesh::MeshPtr mesh = nullptr;
+			MeshPtr mesh = nullptr;
 
 			auto skinnedMesh = object->getComponent<SkinnedMeshRendererComponent>();
 			if (skinnedMesh)
@@ -129,7 +129,7 @@ namespace octoon
 	{
 		this->hits.clear();
 
-		std::vector<mesh::RaycastHit> hitObjects;
+		std::vector<MeshHit> hitObjects;
 
 		for (auto& object : entities)
 		{

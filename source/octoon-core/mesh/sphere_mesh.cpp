@@ -1,6 +1,6 @@
 #include <octoon/mesh/sphere_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(SphereMesh, Mesh, "SphereMesh");
 

@@ -344,7 +344,7 @@ namespace octoon
 		}
 	}
 
-	void createMaterials(const model::Model& model, material::Materials& materials) noexcept(false)
+	void createMaterials(const model::Model& model, Materials& materials) noexcept(false)
 	{
 		materials.reserve(model.materials.size());
 
@@ -354,7 +354,7 @@ namespace octoon
 
 	void createMeshes(const model::Model& model, GameObjectPtr& meshes, const GameObjects& bones, std::string_view path) noexcept(false)
 	{
-		material::Materials materials;
+		Materials materials;
 		createMaterials(model, materials);
 
 		auto mesh = model.meshes[0];

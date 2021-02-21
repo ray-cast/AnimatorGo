@@ -11,10 +11,10 @@ namespace octoon
 		OctoonDeclareSubClass(MeshRendererComponent, RenderComponent)
 	public:
 		MeshRendererComponent() noexcept;
-		explicit MeshRendererComponent(material::Materials&& materials) noexcept;
-		explicit MeshRendererComponent(material::MaterialPtr&& material) noexcept;
-		explicit MeshRendererComponent(const material::Materials& materials) noexcept;
-		explicit MeshRendererComponent(const material::MaterialPtr& material) noexcept;
+		explicit MeshRendererComponent(Materials&& materials) noexcept;
+		explicit MeshRendererComponent(MaterialPtr&& material) noexcept;
+		explicit MeshRendererComponent(const Materials& materials) noexcept;
+		explicit MeshRendererComponent(const MaterialPtr& material) noexcept;
 		virtual ~MeshRendererComponent() noexcept;
 
 		virtual void setVisible(bool visable) noexcept override;
@@ -26,8 +26,8 @@ namespace octoon
 		virtual void setGlobalIllumination(bool enable) noexcept;
 		virtual bool getGlobalIllumination() const noexcept;
 
-		virtual void uploadMeshData(const mesh::MeshPtr& mesh) noexcept;
-		virtual void uploadMaterialData(const material::Materials& material) noexcept;
+		virtual void uploadMeshData(const MeshPtr& mesh) noexcept;
+		virtual void uploadMaterialData(const Materials& material) noexcept;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -38,7 +38,7 @@ namespace octoon
 		virtual void onMoveAfter() noexcept override;
 
 		virtual void onMeshReplace(const std::any& mesh) noexcept;
-		virtual void onMaterialReplace(const material::Materials& materials) noexcept override;
+		virtual void onMaterialReplace(const Materials& materials) noexcept override;
 
 		virtual void onLayerChangeAfter() noexcept override;
 
@@ -51,7 +51,7 @@ namespace octoon
 		bool globalIllumination_;
 
 		std::int32_t renderOrder_;
-		std::shared_ptr<geometry::Geometry> geometry_;
+		std::shared_ptr<Geometry> geometry_;
 	};
 }
 

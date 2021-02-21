@@ -242,35 +242,35 @@ void main()
 					throw runtime::runtime_error::create("createFramebuffer() failed");
 			}
 
-			auto irradiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, irradiance_frag));
+			auto irradiance = Material::create(std::make_shared<Shader>(pmrem_vert, irradiance_frag));
 			irradiance->set("environmentMap", environmentMap);
 			irradiance->setDepthEnable(false);
 			irradiance->setDepthWriteEnable(false);
 
-			auto radiance = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, radiance_frag));
+			auto radiance = Material::create(std::make_shared<Shader>(pmrem_vert, radiance_frag));
 			radiance->set("environmentMap", environmentMap);
 			radiance->set("environmentSize", (float)environmentMap->getTextureDesc().getWidth() * environmentMap->getTextureDesc().getHeight());
 			radiance->setDepthEnable(false);
 			radiance->setDepthWriteEnable(false);
 
-			auto copyMaterial = material::Material::create(std::make_shared<material::Shader>(pmrem_vert, copy_frag));
+			auto copyMaterial = Material::create(std::make_shared<Shader>(pmrem_vert, copy_frag));
 			copyMaterial->set("environmentMap", environmentMap);
 			copyMaterial->setDepthEnable(false);
 			copyMaterial->setDepthWriteEnable(false);
 
-			geometry::Geometry irradianceGeometry;
-			irradianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry irradianceGeometry;
+			irradianceGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			irradianceGeometry.setMaterial(irradiance);
 
-			geometry::Geometry radianceGeometry;
-			radianceGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry radianceGeometry;
+			radianceGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			radianceGeometry.setMaterial(radiance);
 
-			geometry::Geometry copyGeometry;
-			copyGeometry.setMesh(mesh::PlaneMesh::create(2.0f, 2.0f));
+			Geometry copyGeometry;
+			copyGeometry.setMesh(PlaneMesh::create(2.0f, 2.0f));
 			copyGeometry.setMaterial(copyMaterial);
 
-			camera::OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
+			OrthographicCamera camera(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.f);
 
 			for (std::uint8_t i = 0; i < mipNums; i++)
 			{

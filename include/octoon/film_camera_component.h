@@ -48,7 +48,7 @@ namespace octoon
 		FilmCameraComponent& operator=(const FilmCameraComponent&) = delete;
 
 	private:
-		camera::FilmCamera* camera_;
+		FilmCamera* camera_;
 	};
 }
 

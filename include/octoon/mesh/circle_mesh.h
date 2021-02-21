@@ -3,7 +3,7 @@
 
 #include <octoon/mesh/mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	class OCTOON_EXPORT CircleMesh final : public Mesh
 	{

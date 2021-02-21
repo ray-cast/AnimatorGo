@@ -38,7 +38,7 @@ namespace octoon
 		PerspectiveCameraComponent& operator=(const PerspectiveCameraComponent&) = delete;
 
 	private:
-		camera::PerspectiveCamera* camera_;
+		PerspectiveCamera* camera_;
 	};
 }
 

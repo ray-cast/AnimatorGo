@@ -42,8 +42,8 @@ namespace octoon
 		void setFramebufferScale(std::uint32_t w, std::uint32_t h) noexcept;
 		void getFramebufferScale(std::uint32_t& w, std::uint32_t& h) noexcept;
 
-		void setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept;
-		std::shared_ptr<material::Material> getOverrideMaterial() const noexcept;
+		void setOverrideMaterial(const std::shared_ptr<Material>& material) noexcept;
+		std::shared_ptr<Material> getOverrideMaterial() const noexcept;
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 

@@ -3,7 +3,7 @@
 
 #include <octoon/video/render_object.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT Light : public video::RenderObject, public video::RenderListener
 	{
@@ -24,8 +24,8 @@ namespace octoon::light
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
 	private:
-		void onPreRender(const camera::Camera& camera) noexcept;
-		void onPostRender(const camera::Camera& camera) noexcept;
+		void onPreRender(const Camera& camera) noexcept;
+		void onPostRender(const Camera& camera) noexcept;
 
 	private:
 		Light(const Light&) noexcept = delete;

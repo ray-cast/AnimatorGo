@@ -16,7 +16,7 @@ void main() {
 	fragColor = packDepthToRGBA( gl_FragCoord.z );
 })";
 
-namespace octoon::material
+namespace octoon
 {
 	OctoonImplementSubClass(MeshDepthMaterial, Material, "MeshDepthMaterial");
 

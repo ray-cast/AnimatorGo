@@ -9,9 +9,9 @@
 
 #define TEXTURE_ARRAY_COUNT 4
 
-namespace octoon::mesh
+namespace octoon
 {
-	struct RaycastHit
+	struct MeshHit
 	{
 		class Mesh* object;
 		std::size_t mesh;
@@ -74,7 +74,7 @@ namespace octoon::mesh
 		void mergeVertices() noexcept;
 
 		bool mergeMeshes(const Mesh& mesh, bool force = false) noexcept;
-		bool mergeMeshes(const mesh::CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
+		bool mergeMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept;
 		bool mergeMeshes(const std::vector<CombineMesh>& instances, bool merge) noexcept;
 
 		void computeFaceNormals(std::vector<math::float3s>& faceNormals) noexcept;
@@ -93,8 +93,8 @@ namespace octoon::mesh
 		void setDirty(bool dirty) noexcept;
 		bool isDirty() const noexcept;
 
-		bool raycast(const math::Raycast& ray, RaycastHit& hit) noexcept;
-		bool raycastAll(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept;
+		bool raycast(const math::Raycast& ray, MeshHit& hit) noexcept;
+		bool raycastAll(const math::Raycast& ray, std::vector<MeshHit>& hits) noexcept;
 
 		void clear() noexcept;
 		std::shared_ptr<Mesh> clone() const noexcept;

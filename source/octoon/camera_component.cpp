@@ -7,12 +7,12 @@ namespace octoon
 	OctoonImplementSubInterface(CameraComponent, GameComponent, "CameraComponent")
 
 	CameraComponent::CameraComponent() noexcept
-		: camera_(std::make_shared<camera::Camera>())
+		: camera_(std::make_shared<Camera>())
 	{
 		camera_->setOwnerListener(this);
 	}
 
-	CameraComponent::CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept
+	CameraComponent::CameraComponent(std::shared_ptr<Camera>&& camera) noexcept
 		: camera_(camera)
 	{
 		camera_->setOwnerListener(this);
@@ -248,12 +248,12 @@ namespace octoon
 	}
 
 	void
-	CameraComponent::onPreRender(const camera::Camera& camera) noexcept
+	CameraComponent::onPreRender(const Camera& camera) noexcept
 	{
 	}
 
 	void
-	CameraComponent::onPostRender(const camera::Camera& camera) noexcept
+	CameraComponent::onPostRender(const Camera& camera) noexcept
 	{
 	}
 

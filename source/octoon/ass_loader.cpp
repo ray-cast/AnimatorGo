@@ -68,11 +68,11 @@ namespace octoon
 
 		try
 		{
-			std::map<std::string, std::shared_ptr<material::MeshStandardMaterial>> materialMap;
+			std::map<std::string, std::shared_ptr<MeshStandardMaterial>> materialMap;
 			std::string path = std::string(filepath.substr(0, filepath.find_last_of("/\\"))) + "/";
 
 			char line[kMaxLineLength];
-			auto defaultMaterial = std::make_shared<material::MeshStandardMaterial>();
+			auto defaultMaterial = std::make_shared<MeshStandardMaterial>();
 
 			while (fgets(line, kMaxLineLength, file))
 			{
@@ -120,7 +120,7 @@ namespace octoon
 
 					if (materialMap.find(name) == materialMap.end())
 					{
-						auto standard = std::make_shared<material::MeshStandardMaterial>(name);
+						auto standard = std::make_shared<MeshStandardMaterial>(name);
 						standard->setColor(material.albedo);
 						standard->setEmissive(material.emission);
 						standard->setRoughness(material.roughness);
@@ -221,7 +221,7 @@ namespace octoon
 					std::string filename;
 					math::float3 pos = math::float3::Zero;
 					math::float3 scale = math::float3::One;
-					std::shared_ptr<material::MeshStandardMaterial> material;
+					std::shared_ptr<MeshStandardMaterial> material;
 					char meshName[200] = "None";
 
 					while (fgets(line, kMaxLineLength, file))

@@ -18,7 +18,7 @@ namespace octoon
 		OctoonDeclareSubClass(CameraComponent, GameComponent)
 	public:
 		CameraComponent() noexcept;
-		CameraComponent(std::shared_ptr<camera::Camera>&& camera) noexcept;
+		CameraComponent(std::shared_ptr<Camera>&& camera) noexcept;
 		virtual ~CameraComponent() noexcept;
 
 		void setClearColor(const math::float4& color) noexcept;
@@ -59,8 +59,8 @@ namespace octoon
 		void onMoveBefore() noexcept override;
 		void onMoveAfter() noexcept override;
 
-		void onPreRender(const camera::Camera& camera) noexcept override;
-		void onPostRender(const camera::Camera& camera) noexcept override;
+		void onPreRender(const Camera& camera) noexcept override;
+		void onPostRender(const Camera& camera) noexcept override;
 
 		void onLayerChangeAfter() noexcept override;
 
@@ -70,7 +70,7 @@ namespace octoon
 
 	protected:
 		CameraType cameraType_;
-		std::shared_ptr<camera::Camera> camera_;
+		std::shared_ptr<Camera> camera_;
 	};
 }
 

@@ -4,7 +4,7 @@
 namespace octoon::video
 {
 	ForwardScene::ForwardScene() noexcept
-		:depthMaterial(material::MeshDepthMaterial::create())
+		:depthMaterial(MeshDepthMaterial::create())
 	{
 	}
 

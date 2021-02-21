@@ -6,7 +6,7 @@
 
 using namespace octoon::math;
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(Mesh, runtime::RttiInterface, "Mesh");
 
@@ -289,7 +289,7 @@ namespace octoon::mesh
 	}
 
 	bool
-	Mesh::raycast(const math::Raycast& ray, RaycastHit& hit) noexcept
+	Mesh::raycast(const math::Raycast& ray, MeshHit& hit) noexcept
 	{
 		for (std::size_t i = 0; i < this->getNumSubsets(); i++)
 		{
@@ -320,7 +320,7 @@ namespace octoon::mesh
 	}
 
 	bool
-	Mesh::raycastAll(const math::Raycast& ray, std::vector<RaycastHit>& hits) noexcept
+	Mesh::raycastAll(const math::Raycast& ray, std::vector<MeshHit>& hits) noexcept
 	{
 		if (!math::intersect(ray, this->getBoundingBoxAll().box()))
 			return false;
@@ -333,7 +333,7 @@ namespace octoon::mesh
 				auto& v1 = _vertices[i + 1];
 				auto& v2 = _vertices[i + 2];
 
-				RaycastHit hit;
+				MeshHit hit;
 				if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
 				{
 					if (hit.distance > 0 && hit.distance < ray.maxDistance)
@@ -364,7 +364,7 @@ namespace octoon::mesh
 						auto& v1 = _vertices[f2];
 						auto& v2 = _vertices[f3];
 
-						RaycastHit hit;
+						MeshHit hit;
 						if (math::intersect(ray, math::Triangle(v0, v1, v2), hit.point, hit.distance))
 						{
 							if (hit.distance > 0 && hit.distance < ray.maxDistance)
@@ -458,7 +458,7 @@ namespace octoon::mesh
 	}
 
 	bool
-	Mesh::mergeMeshes(const mesh::CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
+	Mesh::mergeMeshes(const CombineMesh instances[], std::size_t numInstance, bool merge) noexcept
 	{
 		this->clear();
 

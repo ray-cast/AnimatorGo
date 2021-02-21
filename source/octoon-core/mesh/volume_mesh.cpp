@@ -1,6 +1,6 @@
 #include <octoon/mesh/volume_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(VolumeMesh, Mesh, "VolumeMesh");
 

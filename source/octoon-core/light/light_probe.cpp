@@ -1,6 +1,6 @@
 #include <octoon/light/light_probe.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(LightProbe, Light, "LightProbe")
 

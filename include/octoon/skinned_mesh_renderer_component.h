@@ -13,10 +13,10 @@ namespace octoon
 		OctoonDeclareSubClass(SkinnedMeshRendererComponent, MeshRendererComponent)
 	public:
 		SkinnedMeshRendererComponent() noexcept;
-		SkinnedMeshRendererComponent(material::Materials&& materials, GameObjects&& transforms) noexcept;
-		SkinnedMeshRendererComponent(material::MaterialPtr&& material, GameObjects&& transforms) noexcept;
-		SkinnedMeshRendererComponent(const material::Materials& materials, const GameObjects& transforms) noexcept;
-		SkinnedMeshRendererComponent(const material::MaterialPtr& material, const GameObjects& transforms) noexcept;
+		SkinnedMeshRendererComponent(Materials&& materials, GameObjects&& transforms) noexcept;
+		SkinnedMeshRendererComponent(MaterialPtr&& material, GameObjects&& transforms) noexcept;
+		SkinnedMeshRendererComponent(const Materials& materials, const GameObjects& transforms) noexcept;
+		SkinnedMeshRendererComponent(const MaterialPtr& material, const GameObjects& transforms) noexcept;
 		virtual ~SkinnedMeshRendererComponent() noexcept;
 
 		void setTransforms(const GameObjects& transforms) noexcept;
@@ -35,10 +35,10 @@ namespace octoon
 		void setTextureBlendEnable(bool enable) noexcept;
 		bool getTextureBlendEnable() const noexcept;
 
-		const mesh::MeshPtr& getSkinnedMesh() const noexcept;
+		const MeshPtr& getSkinnedMesh() const noexcept;
 
 		void updateMeshData(bool force = false) noexcept;
-		void uploadMeshData(const mesh::MeshPtr& mesh) noexcept override;
+		void uploadMeshData(const MeshPtr& mesh) noexcept override;
 
 		GameComponentPtr clone() const noexcept override;
 
@@ -54,7 +54,7 @@ namespace octoon
 
 		void onMeshReplace(const std::any& mesh) noexcept;
 
-		void onPreRender(const camera::Camera& camera) noexcept override;
+		void onPreRender(const Camera& camera) noexcept override;
 
 	private:
 		void updateJointData() noexcept;
@@ -79,8 +79,8 @@ namespace octoon
 		math::float4x4s joints_;
 		hal::GraphicsDataPtr jointData_;
 
-		mesh::MeshPtr mesh_;
-		mesh::MeshPtr skinnedMesh_;
+		MeshPtr mesh_;
+		MeshPtr skinnedMesh_;
 
 		std::vector<math::Quaternion> quaternions_;
 		std::vector<class ClothComponent*> clothComponents_;

@@ -1,7 +1,7 @@
 #include <octoon/mesh/noise_mesh.h>
 #include <octoon/math/perlin_noise.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(NoiseMesh, Mesh, "NoiseMesh");
 

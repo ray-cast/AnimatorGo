@@ -1,6 +1,6 @@
 #include <octoon/mesh/ring_mesh.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	OctoonImplementSubClass(RingMesh, Mesh, "RingMesh");
 

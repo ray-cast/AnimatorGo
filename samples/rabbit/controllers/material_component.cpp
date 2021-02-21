@@ -79,25 +79,25 @@ namespace rabbit
 				if (!framebuffer_)
 					throw std::runtime_error("createFramebuffer() failed");
 
-				camera_ = std::make_shared<octoon::camera::PerspectiveCamera>(60, 1, 100);
+				camera_ = std::make_shared<octoon::PerspectiveCamera>(60, 1, 100);
 				camera_->setClearColor(octoon::math::float4::Zero);
 				camera_->setClearFlags(octoon::hal::GraphicsClearFlagBits::AllBit);
 				camera_->setFramebuffer(framebuffer_);
 				camera_->setTransform(octoon::math::makeLookatRH(octoon::math::float3(0, 0, 1), octoon::math::float3::Zero, octoon::math::float3::UnitY));
 
-				geometry_ = std::make_shared<octoon::geometry::Geometry>();
-				geometry_->setMesh(octoon::mesh::SphereMesh::create(0.5));
+				geometry_ = std::make_shared<octoon::Geometry>();
+				geometry_->setMesh(octoon::SphereMesh::create(0.5));
 
 				octoon::math::Quaternion q1;
 				q1.makeRotation(octoon::math::float3::UnitX, octoon::math::PI / 2.75);
 				octoon::math::Quaternion q2;
 				q2.makeRotation(octoon::math::float3::UnitY, octoon::math::PI / 4.6);
 
-				light_ = std::make_shared<octoon::light::DirectionalLight>();
+				light_ = std::make_shared<octoon::DirectionalLight>();
 				light_->setColor(octoon::math::float3(1, 1, 1));
 				light_->setTransform(octoon::math::float4x4(q1 * q2));
 
-				envlight_ = std::make_shared<octoon::light::EnvironmentLight>();
+				envlight_ = std::make_shared<octoon::EnvironmentLight>();
 				envlight_->setEnvironmentMap(octoon::PMREMLoader::load("../../system/hdri/Ditch-River_2k.hdr"));
 
 				scene_ = std::make_unique<octoon::video::RenderScene>();
@@ -131,7 +131,7 @@ namespace rabbit
 					if (!hit.object.lock())
 						return;
 
-					octoon::material::Materials materials;
+					octoon::Materials materials;
 					auto renderComponent = hit.object.lock()->getComponent<octoon::MeshRendererComponent>();
 					if (renderComponent)
 						materials = renderComponent->getMaterials();
@@ -149,7 +149,7 @@ namespace rabbit
 						if (this->materialSets_.find((void*)mat.get()) != this->materialSets_.end())
 							continue;
 
-						auto standard = mat->downcast<octoon::material::MeshStandardMaterial>();
+						auto standard = mat->downcast<octoon::MeshStandardMaterial>();
 
 						auto id = QUuid::createUuid().toString();
 						auto uuid = id.toStdString().substr(1, id.length() - 2);
@@ -251,7 +251,7 @@ namespace rabbit
 		}
 	}
 
-	const std::shared_ptr<octoon::material::Material>
+	const std::shared_ptr<octoon::Material>
 	MaterialComponent::getMaterial(std::string_view uuid) noexcept
 	{
 		auto material = this->materials_.find(uuid);
@@ -262,7 +262,7 @@ namespace rabbit
 			{
 				auto mat = (*it).second;
 
-				auto standard = std::make_shared<octoon::material::MeshStandardMaterial>();
+				auto standard = std::make_shared<octoon::MeshStandardMaterial>();
 				standard->setName(mat["name"].get<nlohmann::json::string_t>());
 				standard->setColor(octoon::math::float3::One);
 				standard->setColorMap(octoon::TextureLoader::load(mat["map"].get<nlohmann::json::string_t>()));
@@ -283,7 +283,7 @@ namespace rabbit
 	}
 
 	void
-	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::material::Material>& material, QPixmap& pixmap, int w, int h)
+	MaterialComponent::repaintMaterial(const std::shared_ptr<octoon::Material>& material, QPixmap& pixmap, int w, int h)
 	{
 		assert(material);
 

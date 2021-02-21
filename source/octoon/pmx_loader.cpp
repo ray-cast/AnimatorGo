@@ -590,7 +590,7 @@ namespace octoon
 
 		for (auto& it : pmx.materials)
 		{
-			auto material = std::make_shared<material::MeshStandardMaterial>();
+			auto material = std::make_shared<MeshStandardMaterial>();
 			if (it.name.length > 0)
 				material->setName(cv.to_bytes(it.name.name));
 			else
@@ -674,7 +674,7 @@ namespace octoon
 			}
 		}
 
-		auto mesh = std::make_shared<mesh::Mesh>();
+		auto mesh = std::make_shared<Mesh>();
 		mesh->setBindposes(std::move(bindposes));
 		mesh->setVertexArray(std::move(vertices_));
 		mesh->setNormalArray(std::move(normals_));

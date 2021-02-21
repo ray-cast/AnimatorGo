@@ -112,9 +112,9 @@ namespace octoon::model
 		return *contours_[index];
 	}
 
-	mesh::Mesh makeMesh(const Contours& contours, float thickness) noexcept
+	Mesh makeMesh(const Contours& contours, float thickness) noexcept
 	{
-		mesh::Mesh mesh;
+		Mesh mesh;
 
 		math::float3s tris(max_count(contours) * 6);
 		math::float3* trisData = tris.data();
@@ -147,34 +147,34 @@ namespace octoon::model
 		return mesh;
 	}
 	
-	mesh::Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
+	Mesh makeMesh(const Contours& contours, float thickness, bool hollow) noexcept
 	{
 		if (hollow) 
 			return makeMesh(contours, thickness);
 		else
-			return mesh::ShapeMesh(contours, thickness);
+			return ShapeMesh(contours, thickness);
 	}
 
-	mesh::Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
+	Mesh makeMesh(const ContourGroup& group, float thickness, bool hollow) noexcept
 	{
 		return makeMesh(group.getContours(), thickness, hollow);
 	}
 
-	mesh::Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
+	Mesh makeMesh(const ContourGroups& groups, float thickness, bool hollow) noexcept
 	{
-		mesh::Mesh mesh;
+		Mesh mesh;
 
 		for (auto& group : groups)
 		{
 			mesh.mergeMeshes(makeMesh(group->getContours(), thickness));
-			if (!hollow) mesh.mergeMeshes(mesh::ShapeMesh(group->getContours(), thickness));
+			if (!hollow) mesh.mergeMeshes(ShapeMesh(group->getContours(), thickness));
 		}
 		return mesh;
 	}
 
-	mesh::Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
+	Mesh makeMeshWireframe(const Contours& contours, float thickness) noexcept
 	{
-		mesh::Mesh mesh;
+		Mesh mesh;
 
 		math::float3s& tris = mesh.getVertexArray();
 		math::uint1s& indices = mesh.getIndicesArray();
@@ -213,14 +213,14 @@ namespace octoon::model
 		return mesh;
 	}
 
-	mesh::Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
+	Mesh makeMeshWireframe(const ContourGroup& group, float thickness) noexcept
 	{
 		return makeMeshWireframe(group.getContours(), thickness);
 	}
 
-	mesh::Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
+	Mesh makeMeshWireframe(const ContourGroups& groups, float thickness) noexcept
 	{
-		mesh::Mesh mesh;
+		Mesh mesh;
 
 		math::float3s& tris = mesh.getVertexArray();
 		math::uint1s& indices = mesh.getIndicesArray();

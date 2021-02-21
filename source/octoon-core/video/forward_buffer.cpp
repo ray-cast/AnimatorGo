@@ -7,7 +7,7 @@ namespace octoon::video
 	{
 	}
 
-	ForwardBuffer::ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
 	{
 		this->updateData(context, mesh);
 		this->mesh_ = mesh;
@@ -48,7 +48,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardBuffer::updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
 	{
 		if (mesh)
 		{

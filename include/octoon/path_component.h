@@ -40,7 +40,7 @@ namespace octoon
 	private:
 		bool isSharedPath_;
 		model::Paths paths_;
-		mesh::MeshPtr mesh_;
+		MeshPtr mesh_;
 	};
 }
 

@@ -3,7 +3,7 @@
 
 #include <octoon/light/light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	class OCTOON_EXPORT DirectionalLight final : public Light
 	{
@@ -24,8 +24,8 @@ namespace octoon::light
 		void setShadowMapSize(const math::uint2& size) noexcept;
 		const math::uint2& getShadowMapSize() const noexcept;
 
-		void setCamera(const std::shared_ptr<camera::Camera>& camera) noexcept;
-		const std::shared_ptr<camera::Camera>& getCamera() const noexcept;
+		void setCamera(const std::shared_ptr<Camera>& camera) noexcept;
+		const std::shared_ptr<Camera>& getCamera() const noexcept;
 
 		std::shared_ptr<video::RenderObject> clone() const noexcept;
 
@@ -43,7 +43,7 @@ namespace octoon::light
 		float shadowRadius_;
 		math::uint2 shadowSize_;
 
-		std::shared_ptr<camera::Camera> shadowCamera_;
+		std::shared_ptr<Camera> shadowCamera_;
 	};
 }
 

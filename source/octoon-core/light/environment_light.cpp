@@ -1,6 +1,6 @@
 #include <octoon/light/environment_light.h>
 
-namespace octoon::light
+namespace octoon
 {
 	OctoonImplementSubClass(EnvironmentLight, Light, "EnvironmentLight")
 

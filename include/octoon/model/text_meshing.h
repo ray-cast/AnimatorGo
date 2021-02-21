@@ -48,8 +48,8 @@ namespace octoon::font
 	OCTOON_EXPORT model::ContourGroups makeTextContours(const model::PathGroups& paths, std::uint16_t bezierSteps = 8) noexcept(false);
 	OCTOON_EXPORT model::ContourGroups makeTextContours(const std::wstring& string, const TextMeshing& params, std::uint16_t bezierSteps = 8, TextAlign align = TextAlign::Left) noexcept(false);
 
-	OCTOON_EXPORT mesh::Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
-	OCTOON_EXPORT mesh::Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
+	OCTOON_EXPORT Mesh makeText(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
+	OCTOON_EXPORT Mesh makeTextWireframe(const std::wstring& string, const TextMeshing& params, float thickness = 1.0f, std::uint16_t bezierSteps = 8) noexcept(false);
 }
 
 #endif

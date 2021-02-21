@@ -13,12 +13,12 @@ namespace octoon::video
 	}
 
 	void
-	RenderScene::setMainCamera(camera::Camera* camera) noexcept
+	RenderScene::setMainCamera(Camera* camera) noexcept
 	{
 		this->mainCamera_ = camera;
 	}
 	
-	const camera::Camera*
+	const Camera*
 	RenderScene::getMainCamera() const noexcept
 	{
 		return this->mainCamera_;
@@ -51,7 +51,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderScene::addCamera(camera::Camera* camera) noexcept
+	RenderScene::addCamera(Camera* camera) noexcept
 	{
 		assert(camera);
 
@@ -61,7 +61,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderScene::removeCamera(camera::Camera* camera) noexcept
+	RenderScene::removeCamera(Camera* camera) noexcept
 	{
 		assert(camera);
 
@@ -70,14 +70,14 @@ namespace octoon::video
 			cameras_.erase(it);
 	}
 
-	const std::vector<camera::Camera*>&
+	const std::vector<Camera*>&
 	RenderScene::getCameras() const noexcept
 	{
 		return cameras_;
 	}
 
 	void
-	RenderScene::addLight(light::Light* light) noexcept
+	RenderScene::addLight(Light* light) noexcept
 	{
 		assert(light);
 
@@ -87,7 +87,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderScene::removeLight(light::Light* light) noexcept
+	RenderScene::removeLight(Light* light) noexcept
 	{
 		assert(light);
 
@@ -96,14 +96,14 @@ namespace octoon::video
 			lights_.erase(it);
 	}
 
-	const std::vector<light::Light*>&
+	const std::vector<Light*>&
 	RenderScene::getLights() const noexcept
 	{
 		return lights_;
 	}
 
 	void
-	RenderScene::addGeometry(geometry::Geometry* geometry) noexcept
+	RenderScene::addGeometry(Geometry* geometry) noexcept
 	{
 		assert(geometry);
 
@@ -113,7 +113,7 @@ namespace octoon::video
 	}
 
 	void
-	RenderScene::removeGeometry(geometry::Geometry* geometry) noexcept
+	RenderScene::removeGeometry(Geometry* geometry) noexcept
 	{
 		assert(geometry);
 
@@ -122,7 +122,7 @@ namespace octoon::video
 			renderables_.erase(it);
 	}
 
-	const std::vector<geometry::Geometry*>&
+	const std::vector<Geometry*>&
 	RenderScene::getGeometries() const noexcept
 	{
 		return this->renderables_;
@@ -133,12 +133,12 @@ namespace octoon::video
 	{
 		assert(object);
 
-		if (object->isA<camera::Camera>())
-			this->addCamera(object->downcast<camera::Camera>());
-		else if (object->isA<light::Light>())
-			this->addLight(object->downcast<light::Light>());
-		else if (object->isA<geometry::Geometry>())
-			this->addGeometry(object->downcast<geometry::Geometry>());
+		if (object->isA<Camera>())
+			this->addCamera(object->downcast<Camera>());
+		else if (object->isA<Light>())
+			this->addLight(object->downcast<Light>());
+		else if (object->isA<Geometry>())
+			this->addGeometry(object->downcast<Geometry>());
 	}
 
 	void
@@ -146,18 +146,18 @@ namespace octoon::video
 	{
 		assert(object);
 
-		if (object->isA<camera::Camera>())
-			this->removeCamera(object->downcast<camera::Camera>());
-		else if (object->isA<light::Light>())
-			this->removeLight(object->downcast<light::Light>());
-		else if (object->isA<geometry::Geometry>())
-			this->removeGeometry(object->downcast<geometry::Geometry>());
+		if (object->isA<Camera>())
+			this->removeCamera(object->downcast<Camera>());
+		else if (object->isA<Light>())
+			this->removeLight(object->downcast<Light>());
+		else if (object->isA<Geometry>())
+			this->removeGeometry(object->downcast<Geometry>());
 	}
 
 	void
 	RenderScene::sortCameras() noexcept
 	{
-		std::sort(cameras_.begin(), cameras_.end(), [](const camera::Camera* a, const camera::Camera* b)
+		std::sort(cameras_.begin(), cameras_.end(), [](const Camera* a, const Camera* b)
 		{
 			return a->getRenderOrder() < b->getRenderOrder();
 		});

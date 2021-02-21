@@ -16,14 +16,14 @@ namespace octoon
 		void setIntensity(float value) noexcept override;
 		void setColor(const math::float3& value) noexcept override;
 
+		void setRadius(float radius) noexcept;
+		float getRadius() const noexcept;
+
 		void setShadowEnable(bool enable) noexcept;
 		bool getShadowEnable() const noexcept;
 
 		void setShadowBias(float bias) noexcept;
 		float getShadowBias() const noexcept;
-
-		void setShadowRadius(float radius) noexcept;
-		float getShadowRadius() const noexcept;
 
 		void setShadowMapSize(const math::uint2& size) noexcept;
 		const math::uint2& getShadowMapSize() const noexcept;
@@ -48,7 +48,7 @@ namespace octoon
 		float shadowBias_;
 		float shadowRadius_;
 		math::uint2 shadowMapSize_;
-		std::shared_ptr<light::PointLight> pointLight_;
+		std::shared_ptr<PointLight> pointLight_;
 	};
 }
 

@@ -1136,11 +1136,11 @@ namespace rabbit
 	}
 
 	void
-	MaterialEditWindow::setMaterial(const std::shared_ptr<octoon::material::Material>& material)
+	MaterialEditWindow::setMaterial(const std::shared_ptr<octoon::Material>& material)
 	{
 		if (this->material_ != material)
 		{
-			this->material_ = material->downcast_pointer<octoon::material::MeshStandardMaterial>();
+			this->material_ = material->downcast_pointer<octoon::MeshStandardMaterial>();
 
 			this->opacity_.resetState();
 			this->normal_.resetState();

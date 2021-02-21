@@ -4,7 +4,7 @@
 #include <octoon/video/render_object.h>
 #include <octoon/hal/graphics_types.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	class OCTOON_EXPORT Camera : public video::RenderObject
 	{

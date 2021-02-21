@@ -178,13 +178,13 @@ namespace octoon::model
 
 	struct Model final
 	{
-		using mesh_array_t = std::vector<std::shared_ptr<mesh::Mesh>>;
+		using mesh_array_t = std::vector<std::shared_ptr<Mesh>>;
 		using bone_array_t = std::vector<skelecton::BonePtr>;
 		using ik_array_t = std::vector<IKAttrPtr>;
 		using rigidbody_array_t = std::vector<std::shared_ptr<Rigidbody>>;
 		using softbody_array_t = std::vector<std::shared_ptr<Softbody>>;
 		using joint_array_t = std::vector<std::shared_ptr<Joint>>;
-		using material_array_t = std::vector<material::MaterialPtr>;
+		using material_array_t = std::vector<MaterialPtr>;
 		using texture_array_t = std::vector<std::shared_ptr<Texture>>;
 		using morph_array_t = std::vector<std::shared_ptr<Morph>>;
 

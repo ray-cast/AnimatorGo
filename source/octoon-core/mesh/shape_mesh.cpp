@@ -1,7 +1,7 @@
 #include <octoon/mesh/shape_mesh.h>
 #include <GL/glu.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	static std::vector<math::float3> g_tris;
 

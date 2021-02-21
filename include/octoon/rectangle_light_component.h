@@ -31,7 +31,7 @@ namespace octoon
 		RectangleLightComponent& operator=(const RectangleLightComponent&) = delete;
 
 	private:
-		std::shared_ptr<light::RectangleLight> rectangleLight_;
+		std::shared_ptr<RectangleLight> rectangleLight_;
 	};
 }
 

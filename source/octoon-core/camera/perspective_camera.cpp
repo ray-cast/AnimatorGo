@@ -1,7 +1,7 @@
 #include <octoon/camera/perspective_camera.h>
 #include <octoon/video/renderer.h>
 
-namespace octoon::camera
+namespace octoon
 {
 	OctoonImplementSubClass(PerspectiveCamera, Camera, "PerspectiveCamera")
 

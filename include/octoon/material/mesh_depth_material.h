@@ -3,7 +3,7 @@
 
 #include <octoon/material/material.h>
 
-namespace octoon::material
+namespace octoon
 {
 	class OCTOON_EXPORT MeshDepthMaterial final : public Material
 	{

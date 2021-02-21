@@ -1,6 +1,6 @@
 #include <octoon/material/lambert_material.h>
 
-namespace octoon::material
+namespace octoon
 {
 	OctoonImplementSubClass(LambertMaterial, Material, "LambertMaterial");
 

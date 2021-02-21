@@ -49,8 +49,8 @@ namespace rabbit
 		octoon::GameObjectPtr gizmoHover_;
 		octoon::GameObjectPtr gizmoSelected_;
 
-		octoon::material::MaterialPtr gizmoHoverMtl_;
-		octoon::material::MaterialPtr gizmoSelectedMtl_;
+		octoon::MaterialPtr gizmoHoverMtl_;
+		octoon::MaterialPtr gizmoSelectedMtl_;
 	};
 }
 

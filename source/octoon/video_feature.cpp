@@ -105,12 +105,12 @@ namespace octoon
 	}
 
 	void
-	VideoFeature::setOverrideMaterial(const std::shared_ptr<material::Material>& material) noexcept
+	VideoFeature::setOverrideMaterial(const std::shared_ptr<Material>& material) noexcept
 	{
 		video::Renderer::instance()->setOverrideMaterial(material);
 	}
 
-	std::shared_ptr<material::Material>
+	std::shared_ptr<Material>
 	VideoFeature::getOverrideMaterial() const noexcept
 	{
 		return video::Renderer::instance()->getOverrideMaterial();

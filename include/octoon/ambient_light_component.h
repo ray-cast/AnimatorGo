@@ -31,7 +31,7 @@ namespace octoon
 		AmbientLightComponent& operator=(const AmbientLightComponent&) = delete;
 
 	private:
-		std::shared_ptr<light::AmbientLight> ambientLight_;
+		std::shared_ptr<AmbientLight> ambientLight_;
 	};
 }
 

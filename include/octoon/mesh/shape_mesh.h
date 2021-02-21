@@ -4,7 +4,7 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/model/contour.h>
 
-namespace octoon::mesh
+namespace octoon
 {
 	class OCTOON_EXPORT ShapeMesh final : public Mesh
 	{

@@ -18,7 +18,7 @@ void main() {
 	fragColor = texture2D( map, vUv );
 })";
 
-namespace octoon::material
+namespace octoon
 {
 	OctoonImplementSubClass(MeshCopyMaterial, Material, "MeshCopyMaterial");
 

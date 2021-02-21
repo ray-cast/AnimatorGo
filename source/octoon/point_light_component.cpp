@@ -34,6 +34,20 @@ namespace octoon
 	}
 
 	void
+	PointLightComponent::setRadius(float radius) noexcept
+	{
+		if (pointLight_)
+			pointLight_->setRange(radius);
+		shadowRadius_ = radius;
+	}
+
+	float
+	PointLightComponent::getRadius() const noexcept
+	{
+		return shadowRadius_;
+	}
+
+	void
 	PointLightComponent::setShadowEnable(bool enable) noexcept
 	{
 		if (this->pointLight_)
@@ -89,7 +103,7 @@ namespace octoon
 	{
 		auto transform = this->getComponent<TransformComponent>();
 
-		pointLight_ = std::make_shared<light::PointLight>();
+		pointLight_ = std::make_shared<PointLight>();
 		pointLight_->setLayer(this->getGameObject()->getLayer());
 		pointLight_->setColor(this->getColor());
 		pointLight_->setIntensity(this->getIntensity());

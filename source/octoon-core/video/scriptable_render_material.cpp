@@ -1,5 +1,5 @@
-﻿#include <octoon/video/forward_material.h>
-#include <octoon/video/forward_scene.h>
+﻿#include <octoon/video/scriptable_render_material.h>
+#include <octoon/video/rendering_data.h>
 #include <octoon/video/renderer.h>
 #include <octoon/material/mesh_standard_material.h>
 #include <octoon/hal/graphics.h>
@@ -2149,17 +2149,17 @@ static std::unordered_map<std::string, std::string_view> ShaderChunk = {
 
 namespace octoon
 {
-	ForwardMaterial::ForwardMaterial() noexcept
+	ScriptableRenderMaterial::ScriptableRenderMaterial() noexcept
 	{
 	}
 
-	ForwardMaterial::ForwardMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept
+	ScriptableRenderMaterial::ScriptableRenderMaterial(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene) noexcept
 	{
 		this->material_ = material;
 		this->updateMaterial(context, material, scene);
 	}
 
-	ForwardMaterial::~ForwardMaterial() noexcept
+	ScriptableRenderMaterial::~ScriptableRenderMaterial() noexcept
 	{
 		material_.reset();
 
@@ -2186,19 +2186,19 @@ namespace octoon
 	}
 
 	const hal::GraphicsPipelinePtr&
-	ForwardMaterial::getPipeline() const noexcept
+	ScriptableRenderMaterial::getPipeline() const noexcept
 	{
 		return pipeline_;
 	}
 
 	const hal::GraphicsDescriptorSetPtr&
-	ForwardMaterial::getDescriptorSet() const noexcept
+	ScriptableRenderMaterial::getDescriptorSet() const noexcept
 	{
 		return descriptorSet_;
 	}
 
 	void
-	ForwardMaterial::update(const ForwardScene& context, const Camera& camera, const Geometry& geometry) noexcept
+	ScriptableRenderMaterial::update(const RenderingData& context, const Camera& camera, const Geometry& geometry) noexcept
 	{
 		if (this->material_)
 		{
@@ -2266,7 +2266,7 @@ namespace octoon
 	}
 
 	void
-	ForwardMaterial::parseIncludes(std::string& str)
+	ScriptableRenderMaterial::parseIncludes(std::string& str)
 	{
 		std::regex pattern("#include +<([^<>]*)>");
 		std::smatch m;
@@ -2290,7 +2290,7 @@ namespace octoon
 	}
 
 	void
-	ForwardMaterial::replaceLightNums(std::string& str, const ForwardScene& parameters)
+	ScriptableRenderMaterial::replaceLightNums(std::string& str, const RenderingData& parameters)
 	{
 		auto replace = [](std::string& str, std::string_view patten, std::string_view right)
 		{
@@ -2310,7 +2310,7 @@ namespace octoon
 	}
 
 	void
-	ForwardMaterial::setupProgram(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene)
+	ScriptableRenderMaterial::setupProgram(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene)
 	{
 		auto shader = material->getShader();
 
@@ -2392,13 +2392,13 @@ namespace octoon
 		this->replaceLightNums(fragmentShader, scene);
 
 		hal::GraphicsProgramDesc programDesc;
-		programDesc.addShader(context->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vertexShader, "main", hal::GraphicsShaderLang::GLSL)));
-		programDesc.addShader(context->createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, fragmentShader, "main", hal::GraphicsShaderLang::GLSL)));
-		this->program_ = context->createProgram(programDesc);
+		programDesc.addShader(context.createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::VertexBit, vertexShader, "main", hal::GraphicsShaderLang::GLSL)));
+		programDesc.addShader(context.createShader(hal::GraphicsShaderDesc(hal::GraphicsShaderStageFlagBits::FragmentBit, fragmentShader, "main", hal::GraphicsShaderLang::GLSL)));
+		this->program_ = context.createProgram(programDesc);
 	}
 
 	void
-	ForwardMaterial::setupRenderState(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material)
+	ScriptableRenderMaterial::setupRenderState(ScriptableRenderContext& context, const MaterialPtr& material)
 	{
 		hal::GraphicsStateDesc stateDesc;
 		stateDesc.setColorBlends(material->getColorBlends());
@@ -2463,11 +2463,11 @@ namespace octoon
 		stateDesc.setStencilBackFail(material->getStencilBackFail());
 		stateDesc.setStencilBackZFail(material->getStencilBackZFail());
 		stateDesc.setStencilBackPass(material->getStencilBackPass());
-		this->renderState_ = context->createRenderState(stateDesc);
+		this->renderState_ = context.createRenderState(stateDesc);
 	}
 
 	void
-	ForwardMaterial::updateMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept(false)
+	ScriptableRenderMaterial::updateMaterial(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene) noexcept(false)
 	{
 		if (material) {
 			this->setupRenderState(context, material);
@@ -2485,17 +2485,17 @@ namespace octoon
 			descriptor_set_layout.setUniformComponents(this->program_->getActiveParams());
 
 			hal::GraphicsPipelineDesc pipeline;
-			pipeline.setGraphicsInputLayout(context->createInputLayout(layoutDesc));
+			pipeline.setGraphicsInputLayout(context.createInputLayout(layoutDesc));
 			pipeline.setGraphicsState(this->renderState_);
 			pipeline.setGraphicsProgram(this->program_);
-			pipeline.setGraphicsDescriptorSetLayout(context->createDescriptorSetLayout(descriptor_set_layout));
+			pipeline.setGraphicsDescriptorSetLayout(context.createDescriptorSetLayout(descriptor_set_layout));
 
-			pipeline_ = context->createRenderPipeline(pipeline);
+			pipeline_ = context.createRenderPipeline(pipeline);
 			if (pipeline_)
 			{
 				hal::GraphicsDescriptorSetDesc descriptorSet;
 				descriptorSet.setGraphicsDescriptorSetLayout(pipeline.getDescriptorSetLayout());
-				descriptorSet_ = context->createDescriptorSet(descriptorSet);
+				descriptorSet_ = context.createDescriptorSet(descriptorSet);
 				if (!descriptorSet_)
 					return;
 
@@ -2590,7 +2590,7 @@ namespace octoon
 	}
 
 	void
-	ForwardMaterial::updateParameters(bool force) noexcept
+	ScriptableRenderMaterial::updateParameters(bool force) noexcept
 	{
 		if (this->material_->isDirty() || force)
 		{

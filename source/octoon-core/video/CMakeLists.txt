@@ -6,12 +6,46 @@ SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 SET(VIDEO_GRAPHICS_LIST
 	${HEADER_PATH}/renderer.h
 	${SOURCE_PATH}/renderer.cpp
+	${HEADER_PATH}/rendering_data.h
+	${SOURCE_PATH}/rendering_data.cpp
+	${HEADER_PATH}/scriptable_render_buffer.h
+	${SOURCE_PATH}/scriptable_render_buffer.cpp
+	${HEADER_PATH}/scriptable_render_material.h
+	${SOURCE_PATH}/scriptable_render_material.cpp
+	${HEADER_PATH}/scriptable_render_context.h
+	${SOURCE_PATH}/scriptable_render_context.cpp
+	${HEADER_PATH}/scriptable_render_pass.h
+	${SOURCE_PATH}/scriptable_render_pass.cpp
+	${HEADER_PATH}/render_scene.h
+	${SOURCE_PATH}/render_scene.cpp
+	${HEADER_PATH}/render_object.h
+	${SOURCE_PATH}/render_object.cpp
 )
 SOURCE_GROUP(renderer FILES ${VIDEO_GRAPHICS_LIST})
 
-SET(VIDEO_COMMON_LIST
+SET(VIDEO_UTILS_LIST
 	${HEADER_PATH}/collector.h
 	${SOURCE_PATH}/collector.cpp
+)
+SOURCE_GROUP(renderer\\utils FILES ${VIDEO_UTILS_LIST})
+
+SET(VIDEO_FORWARE_LIST
+	${HEADER_PATH}/forward_renderer.h
+	${SOURCE_PATH}/forward_renderer.cpp
+)
+SOURCE_GROUP(renderer\\forward FILES ${VIDEO_FORWARE_LIST})
+
+SET(VIDEO_PASS_LIST
+	${HEADER_PATH}/draw_object_pass.h
+	${SOURCE_PATH}/draw_object_pass.cpp
+	${HEADER_PATH}/draw_skybox_pass.h
+	${SOURCE_PATH}/draw_skybox_pass.cpp
+	${HEADER_PATH}/lights_shadow_caster_pass.h
+	${SOURCE_PATH}/lights_shadow_caster_pass.cpp
+)
+SOURCE_GROUP(renderer\\pass FILES ${VIDEO_PASS_LIST})
+
+SET(VIDEO_OPENCL_LIST
 	${SOURCE_PATH}/output.h
 	${SOURCE_PATH}/output.cpp
 	${SOURCE_PATH}/estimator.h
@@ -20,38 +54,10 @@ SET(VIDEO_COMMON_LIST
 	${SOURCE_PATH}/pipeline.cpp
 	${SOURCE_PATH}/scene_controller.h
 	${SOURCE_PATH}/scene_controller.cpp
-	${HEADER_PATH}/render_scene.h
-	${SOURCE_PATH}/render_scene.cpp
-	${HEADER_PATH}/render_object.h
-	${SOURCE_PATH}/render_object.cpp
 	${HEADER_PATH}/compiled_scene.h
 	${SOURCE_PATH}/compiled_scene.cpp
 	${SOURCE_PATH}/render_factory.h
 	${SOURCE_PATH}/render_factory.cpp
-)
-SOURCE_GROUP(renderer\\common FILES ${VIDEO_COMMON_LIST})
-
-SET(VIDEO_FORWARE_LIST
-	${HEADER_PATH}/forward_buffer.h
-	${SOURCE_PATH}/forward_buffer.cpp
-	${HEADER_PATH}/forward_output.h
-	${SOURCE_PATH}/forward_output.cpp
-	${HEADER_PATH}/forward_pipeline.h
-	${SOURCE_PATH}/forward_pipeline.cpp
-	${HEADER_PATH}/forward_scene.h
-	${SOURCE_PATH}/forward_scene.cpp
-	${HEADER_PATH}/forward_scene_controller.h
-	${SOURCE_PATH}/forward_scene_controller.cpp
-	${HEADER_PATH}/forward_render_factory.h
-	${SOURCE_PATH}/forward_render_factory.cpp
-	${HEADER_PATH}/forward_renderer.h
-	${SOURCE_PATH}/forward_renderer.cpp
-	${HEADER_PATH}/forward_material.h
-	${SOURCE_PATH}/forward_material.cpp
-)
-SOURCE_GROUP(renderer\\forward FILES ${VIDEO_FORWARE_LIST})
-
-SET(VIDEO_OPENCL_LIST
 	${SOURCE_PATH}/clw_output.h
 	${SOURCE_PATH}/clw_output.cpp
 	${SOURCE_PATH}/clw_texture_output.h
@@ -77,4 +83,4 @@ SET(VIDEO_OPENCL_LIST
 )
 SOURCE_GROUP(renderer\\opencl FILES ${VIDEO_OPENCL_LIST})
 
-LIST(APPEND VIDEO_LIST ${VIDEO_COMMON_LIST} ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST} ${VIDEO_OPENCL_LIST})
+LIST(APPEND VIDEO_LIST ${VIDEO_UTILS_LIST} ${VIDEO_GRAPHICS_LIST} ${VIDEO_FORWARE_LIST} ${VIDEO_PASS_LIST} ${VIDEO_OPENCL_LIST})

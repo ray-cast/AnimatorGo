@@ -1,15 +1,15 @@
-#include <octoon/video/forward_scene.h>
+#include <octoon/video/rendering_data.h>
 #include <octoon/material/mesh_depth_material.h>
 
 namespace octoon
 {
-	ForwardScene::ForwardScene() noexcept
+	RenderingData::RenderingData() noexcept
 		:depthMaterial(MeshDepthMaterial::create())
 	{
 	}
 
 	void
-	ForwardScene::reset() noexcept
+	RenderingData::reset() noexcept
 	{
 		this->numDirectional = 0;
 		this->numSpot = 0;

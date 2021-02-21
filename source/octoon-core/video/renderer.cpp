@@ -1,7 +1,5 @@
 #include <octoon/video/renderer.h>
 #include <octoon/video/render_scene.h>
-
-#include <octoon/video/forward_material.h>
 #include <octoon/video/forward_renderer.h>
 
 #include <octoon/runtime/except.h>
@@ -203,7 +201,10 @@ namespace octoon
 		}
 		else
 		{
-			forwardRenderer_->render(this->context_, scene);
+			context_->cleanCache();
+			context_->compileScene(scene);
+
+			forwardRenderer_->render(this->context_, this->context_->getRenderingData());
 		}
 	}
 

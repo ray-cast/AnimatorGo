@@ -1,54 +1,54 @@
-#include <octoon/video/forward_buffer.h>
+#include <octoon/video/scriptable_render_buffer.h>
 #include <octoon/video/renderer.h>
 
 namespace octoon
 {
-	ForwardBuffer::ForwardBuffer() noexcept
+	ScriptableRenderBuffer::ScriptableRenderBuffer() noexcept
 	{
 	}
 
-	ForwardBuffer::ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
+	ScriptableRenderBuffer::ScriptableRenderBuffer(ScriptableRenderContext& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
 	{
 		this->updateData(context, mesh);
 		this->mesh_ = mesh;
 	}
 
-	ForwardBuffer::~ForwardBuffer() noexcept
+	ScriptableRenderBuffer::~ScriptableRenderBuffer() noexcept
 	{
 	}
 
 	const hal::GraphicsDataPtr&
-	ForwardBuffer::getVertexBuffer() const noexcept
+	ScriptableRenderBuffer::getVertexBuffer() const noexcept
 	{
 		return vertices_;
 	}
 
 	const hal::GraphicsDataPtr&
-	ForwardBuffer::getIndexBuffer() const noexcept
+	ScriptableRenderBuffer::getIndexBuffer() const noexcept
 	{
 		return indices_;
 	}
 
 	std::size_t
-	ForwardBuffer::getNumVertices() const noexcept
+	ScriptableRenderBuffer::getNumVertices() const noexcept
 	{
 		return mesh_->getVertexArray().size();
 	}
 
 	std::size_t
-	ForwardBuffer::getNumIndices(std::size_t n) const noexcept
+	ScriptableRenderBuffer::getNumIndices(std::size_t n) const noexcept
 	{
 		return mesh_->getIndicesArray(n).size();
 	}
 
 	std::size_t
-	ForwardBuffer::getStartIndices(std::size_t n) const noexcept
+	ScriptableRenderBuffer::getStartIndices(std::size_t n) const noexcept
 	{
 		return this->startIndice_[n];
 	}
 
 	void
-	ForwardBuffer::updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
+	ScriptableRenderBuffer::updateData(ScriptableRenderContext& context, const std::shared_ptr<Mesh>& mesh) noexcept(false)
 	{
 		if (mesh)
 		{
@@ -114,7 +114,7 @@ namespace octoon
 				dataDesc.setStreamSize(vertexCount * sizeof(float));
 				dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-				this->vertices_ = context->createGraphicsData(dataDesc);
+				this->vertices_ = context.createGraphicsData(dataDesc);
 			}
 
 			if (mesh->getNumSubsets() == 1)
@@ -128,7 +128,7 @@ namespace octoon
 				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
 				this->startIndice_.push_back(0);
-				this->indices_ = context->createGraphicsData(indiceDesc);
+				this->indices_ = context.createGraphicsData(indiceDesc);
 			}
 			else
 			{
@@ -165,7 +165,7 @@ namespace octoon
 					indiceDesc.setStreamSize(streamsize * sizeof(std::uint32_t));
 					indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-					this->indices_ = context->createGraphicsData(indiceDesc);
+					this->indices_ = context.createGraphicsData(indiceDesc);
 				}
 			}
 		}

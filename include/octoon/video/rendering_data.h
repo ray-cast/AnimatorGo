@@ -1,20 +1,17 @@
 #ifndef OCTOON_VIDEO_FORWARD_SCENE_H_
 #define OCTOON_VIDEO_FORWARD_SCENE_H_
 
-#include <octoon/hal/graphics_context.h>
 #include <octoon/camera/camera.h>
 #include <octoon/light/light.h>
-#include <octoon/video/forward_buffer.h>
-#include <octoon/video/forward_material.h>
+#include <octoon/geometry/geometry.h>
 #include <octoon/video/collector.h>
-#include "compiled_scene.h"
 
 namespace octoon
 {
-	class OCTOON_EXPORT ForwardScene final : public CompiledScene
+	class OCTOON_EXPORT RenderingData final
 	{
 	public:
-		ForwardScene() noexcept;
+		RenderingData() noexcept;
 
 		struct HemisphereLight
 		{
@@ -120,9 +117,6 @@ namespace octoon
 
 		std::shared_ptr<Material> depthMaterial;
 		std::shared_ptr<Material> overrideMaterial;
-
-		std::unordered_map<void*, std::shared_ptr<ForwardBuffer>> buffers_;
-		std::unordered_map<void*, std::shared_ptr<ForwardMaterial>> materials_;
 	};
 }
 

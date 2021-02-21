@@ -8,32 +8,32 @@
 
 namespace octoon
 {
-	class ForwardScene;
-	class OCTOON_EXPORT ForwardMaterial final
+	class RenderingData;
+	class OCTOON_EXPORT ScriptableRenderMaterial final
 	{
 	public:
-		ForwardMaterial() noexcept;
-		ForwardMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept;
-		virtual ~ForwardMaterial() noexcept;
+		ScriptableRenderMaterial() noexcept;
+		ScriptableRenderMaterial(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene) noexcept;
+		virtual ~ScriptableRenderMaterial() noexcept;
 
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
 
-		void update(const ForwardScene& context, const Camera& camera, const Geometry& geometry) noexcept;
+		void update(const RenderingData& context, const Camera& camera, const Geometry& geometry) noexcept;
 
 	private:
 		void updateParameters(bool force = false) noexcept;
-		void updateMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene) noexcept(false);
+		void updateMaterial(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene) noexcept(false);
 
-		void setupProgram(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material, const ForwardScene& scene);
-		void setupRenderState(const std::shared_ptr<ScriptableRenderContext>& context, const MaterialPtr& material);
+		void setupProgram(ScriptableRenderContext& context, const MaterialPtr& material, const RenderingData& scene);
+		void setupRenderState(ScriptableRenderContext& context, const MaterialPtr& material);
 
 		void parseIncludes(std::string& shader);
-		void replaceLightNums(std::string& shader, const ForwardScene& parameters);
+		void replaceLightNums(std::string& shader, const RenderingData& parameters);
 
 	private:
-		ForwardMaterial(const ForwardMaterial&) = delete;
-		ForwardMaterial& operator=(const ForwardMaterial&) = delete;
+		ScriptableRenderMaterial(const ScriptableRenderMaterial&) = delete;
+		ScriptableRenderMaterial& operator=(const ScriptableRenderMaterial&) = delete;
 
 	private:
 		MaterialPtr material_;

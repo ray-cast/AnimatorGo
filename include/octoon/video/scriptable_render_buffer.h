@@ -7,12 +7,12 @@
 
 namespace octoon
 {
-	class OCTOON_EXPORT ForwardBuffer final
+	class OCTOON_EXPORT ScriptableRenderBuffer final
 	{
 	public:
-		ForwardBuffer() noexcept;
-		ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
-		virtual ~ForwardBuffer() noexcept;
+		ScriptableRenderBuffer() noexcept;
+		ScriptableRenderBuffer(ScriptableRenderContext& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
+		virtual ~ScriptableRenderBuffer() noexcept;
 
 		std::size_t getNumVertices() const noexcept;
 		std::size_t getNumIndices(std::size_t n) const noexcept;
@@ -22,11 +22,11 @@ namespace octoon
 		const hal::GraphicsDataPtr& getIndexBuffer() const noexcept;
 
 	private:
-		void updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
+		void updateData(ScriptableRenderContext& context, const std::shared_ptr<Mesh>& mesh) noexcept(false);
 
 	private:
-		ForwardBuffer(const ForwardBuffer&) = delete;
-		ForwardBuffer& operator=(const ForwardBuffer&) = delete;
+		ScriptableRenderBuffer(const ScriptableRenderBuffer&) = delete;
+		ScriptableRenderBuffer& operator=(const ScriptableRenderBuffer&) = delete;
 
 	private:
 		std::uint32_t numVertices_;

@@ -4,10 +4,6 @@
 #include <octoon/video/render_scene.h>
 #include <octoon/video/scriptable_render_context.h>
 
-#include "forward_output.h"
-#include "forward_pipeline.h"
-#include "forward_scene_controller.h"
-
 namespace octoon
 {
 	class OCTOON_EXPORT ForwardRenderer final
@@ -16,18 +12,33 @@ namespace octoon
 		ForwardRenderer() noexcept;
 		virtual ~ForwardRenderer() noexcept;
 
+		void render(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& scene);
+
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const noexcept;
 
-		void render(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept;
+	private:
+		void setupFramebuffers(const std::shared_ptr<ScriptableRenderContext>& context, std::uint32_t w, std::uint32_t h) except;
+		void renderShadowMaps(const std::shared_ptr<ScriptableRenderContext>& context, const RenderingData& scene, const std::vector<Light*>& lights, const std::vector<Geometry*>& geometries) noexcept;
 
 	private:
 		ForwardRenderer(const ForwardRenderer&) = delete;
 		ForwardRenderer& operator=(const ForwardRenderer&) = delete;
 
 	private:
-		ForwardScene profile_;
-		std::unique_ptr<ForwardPipeline> pipeline_;
-		std::unique_ptr<ForwardSceneController> controller_;
+		std::uint32_t width_;
+		std::uint32_t height_;
+
+		hal::GraphicsFramebufferPtr fbo_;
+		hal::GraphicsFramebufferPtr fbo2_;
+		hal::GraphicsTexturePtr colorTexture_;
+		hal::GraphicsTexturePtr depthTexture_;
+		hal::GraphicsTexturePtr colorTexture2_;
+		hal::GraphicsTexturePtr depthTexture2_;
+
+		std::shared_ptr<Geometry> screenGeometry_;
+		std::shared_ptr<Material> overrideMaterial_;
+
+		std::unordered_map<std::intptr_t, std::shared_ptr<hal::GraphicsTexture>> lightTextures_;
 	};
 }
 

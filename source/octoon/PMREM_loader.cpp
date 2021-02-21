@@ -200,13 +200,15 @@ void main()
 			std::uint32_t width = 64 << (mipNums - 1);
 			std::uint32_t height = 32 << (mipNums - 1);
 
+			auto renderContext = video::Renderer::instance()->getScriptableRenderContext();
+
 			hal::GraphicsTextureDesc textureDesc;
 			textureDesc.setSize(width, height);
 			textureDesc.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			textureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
 			textureDesc.setMipBase(0);
 			textureDesc.setMipNums(8);
-			auto colorTexture = video::Renderer::instance()->createTexture(textureDesc);
+			auto colorTexture = renderContext->createTexture(textureDesc);
 			if (!colorTexture)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -216,7 +218,7 @@ void main()
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::D16UNorm);
 			depthTextureDesc.setMipBase(0);
 			depthTextureDesc.setMipNums(8);
-			auto depthTexture = video::Renderer::instance()->createTexture(depthTextureDesc);
+			auto depthTexture = renderContext->createTexture(depthTextureDesc);
 			if (!depthTexture)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -231,11 +233,11 @@ void main()
 				hal::GraphicsFramebufferDesc framebufferDesc;
 				framebufferDesc.setWidth(width >> i);
 				framebufferDesc.setHeight(height >> i);
-				framebufferDesc.setFramebufferLayout(video::Renderer::instance()->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDesc.setFramebufferLayout(renderContext->createFramebufferLayout(framebufferLayoutDesc));
 				framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture, i, 0));
 				framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture, i, 0));
 
-				framebuffers[i] = video::Renderer::instance()->createFramebuffer(framebufferDesc);
+				framebuffers[i] = renderContext->createFramebuffer(framebufferDesc);
 				if (!framebuffers[i])
 					throw runtime::runtime_error::create("createFramebuffer() failed");
 			}

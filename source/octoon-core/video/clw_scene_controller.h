@@ -20,7 +20,7 @@ namespace octoon::video
 		ClwSceneController(const CLWContext& context, const std::shared_ptr<RadeonRays::IntersectionApi>& api, const CLProgramManager* program_manager);
 
 		void cleanCache() noexcept;
-		void compileScene(const std::shared_ptr<RenderScene>& scene) noexcept override;
+		void compileScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept override;
 		CompiledScene& getCachedScene(const std::shared_ptr<RenderScene>& scene) const noexcept(false);
 
 	private:

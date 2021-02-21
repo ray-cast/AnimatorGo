@@ -4,6 +4,7 @@
 #include <octoon/camera/camera.h>
 #include <octoon/geometry/geometry.h>
 #include <octoon/material/material.h>
+#include <octoon/video/scriptable_render_context.h>
 
 namespace octoon::video
 {
@@ -12,11 +13,8 @@ namespace octoon::video
 	{
 	public:
 		ForwardMaterial() noexcept;
-		ForwardMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept;
+		ForwardMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene) noexcept;
 		virtual ~ForwardMaterial() noexcept;
-
-		void setMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept;
-		const material::MaterialPtr& getMaterial() const noexcept;
 
 		const hal::GraphicsPipelinePtr& getPipeline() const noexcept;
 		const hal::GraphicsDescriptorSetPtr& getDescriptorSet() const noexcept;
@@ -25,10 +23,10 @@ namespace octoon::video
 
 	private:
 		void updateParameters(bool force = false) noexcept;
-		void updateMaterial(const material::MaterialPtr& material, const ForwardScene& context) noexcept(false);
+		void updateMaterial(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene) noexcept(false);
 
-		void setupProgram(const material::MaterialPtr& material, const ForwardScene& context);
-		void setupRenderState(const material::MaterialPtr& material);
+		void setupProgram(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material, const ForwardScene& scene);
+		void setupRenderState(const std::shared_ptr<ScriptableRenderContext>& context, const material::MaterialPtr& material);
 
 		void parseIncludes(std::string& shader);
 		void replaceLightNums(std::string& shader, const ForwardScene& parameters);

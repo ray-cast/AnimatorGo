@@ -7,29 +7,14 @@ namespace octoon::video
 	{
 	}
 
-	ForwardBuffer::ForwardBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
-		this->setMesh(mesh);
+		this->updateData(context, mesh);
+		this->mesh_ = mesh;
 	}
 
 	ForwardBuffer::~ForwardBuffer() noexcept
 	{
-	}
-
-	void
-	ForwardBuffer::setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
-	{
-		if (this->mesh_ != mesh)
-		{
-			this->updateData(mesh);
-			this->mesh_ = mesh;
-		}
-	}
-
-	const std::shared_ptr<mesh::Mesh>&
-	ForwardBuffer::getMesh() const noexcept
-	{
-		return this->mesh_;
 	}
 
 	const hal::GraphicsDataPtr&
@@ -63,7 +48,7 @@ namespace octoon::video
 	}
 
 	void
-	ForwardBuffer::updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
+	ForwardBuffer::updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false)
 	{
 		if (mesh)
 		{
@@ -129,7 +114,7 @@ namespace octoon::video
 				dataDesc.setStreamSize(vertexCount * sizeof(float));
 				dataDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-				this->vertices_ = video::Renderer::instance()->createGraphicsData(dataDesc);
+				this->vertices_ = context->createGraphicsData(dataDesc);
 			}
 
 			if (mesh->getNumSubsets() == 1)
@@ -143,7 +128,7 @@ namespace octoon::video
 				indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
 				this->startIndice_.push_back(0);
-				this->indices_ = video::Renderer::instance()->createGraphicsData(indiceDesc);
+				this->indices_ = context->createGraphicsData(indiceDesc);
 			}
 			else
 			{
@@ -180,7 +165,7 @@ namespace octoon::video
 					indiceDesc.setStreamSize(streamsize * sizeof(std::uint32_t));
 					indiceDesc.setUsage(hal::GraphicsUsageFlagBits::ReadBit);
 
-					this->indices_ = video::Renderer::instance()->createGraphicsData(indiceDesc);
+					this->indices_ = context->createGraphicsData(indiceDesc);
 				}
 			}
 		}

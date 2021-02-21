@@ -5,4 +5,8 @@ namespace octoon::video
 	SceneController::SceneController()
 	{
 	}
+
+	SceneController::~SceneController()
+	{
+	}
 }

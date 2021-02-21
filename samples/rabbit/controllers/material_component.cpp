@@ -52,7 +52,7 @@ namespace rabbit
 				textureDesc.setSize(width, height);
 				textureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
 				textureDesc.setTexFormat(octoon::hal::GraphicsFormat::R8G8B8A8UNorm);
-				auto colorTexture = renderer->createTexture(textureDesc);
+				auto colorTexture = renderer->getScriptableRenderContext()->createTexture(textureDesc);
 				if (!colorTexture)
 					throw std::runtime_error("createTexture() failed");
 
@@ -60,7 +60,7 @@ namespace rabbit
 				depthTextureDesc.setSize(width, height);
 				depthTextureDesc.setTexDim(octoon::hal::GraphicsTextureDim::Texture2D);
 				depthTextureDesc.setTexFormat(octoon::hal::GraphicsFormat::D16UNorm);
-				auto depthTexture = renderer->createTexture(depthTextureDesc);
+				auto depthTexture = renderer->getScriptableRenderContext()->createTexture(depthTextureDesc);
 				if (!depthTexture)
 					throw std::runtime_error("createTexture() failed");
 
@@ -71,11 +71,11 @@ namespace rabbit
 				octoon::hal::GraphicsFramebufferDesc framebufferDesc;
 				framebufferDesc.setWidth(width);
 				framebufferDesc.setHeight(height);
-				framebufferDesc.setFramebufferLayout(renderer->createFramebufferLayout(framebufferLayoutDesc));
+				framebufferDesc.setFramebufferLayout(renderer->getScriptableRenderContext()->createFramebufferLayout(framebufferLayoutDesc));
 				framebufferDesc.setDepthStencilAttachment(octoon::hal::GraphicsAttachmentBinding(depthTexture, 0, 0));
 				framebufferDesc.addColorAttachment(octoon::hal::GraphicsAttachmentBinding(colorTexture, 0, 0));
 
-				framebuffer_ = renderer->createFramebuffer(framebufferDesc);
+				framebuffer_ = renderer->getScriptableRenderContext()->createFramebuffer(framebufferDesc);
 				if (!framebuffer_)
 					throw std::runtime_error("createFramebuffer() failed");
 

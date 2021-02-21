@@ -13,6 +13,7 @@
 #include <octoon/camera/camera.h>
 #include <octoon/hal/graphics.h>
 #include <octoon/video/render_scene.h>
+#include <octoon/video/scriptable_render_context.h>
 
 namespace octoon::video
 {
@@ -39,9 +40,6 @@ namespace octoon::video
 		void setRenderScene(RenderScene* scene) noexcept;
 		const RenderScene* getRenderScene() const noexcept;
 
-		void setGraphicsContext(const hal::GraphicsContextPtr& context) noexcept(false);
-		const hal::GraphicsContextPtr& getGraphicsContext() const noexcept(false);
-
 		void setOutput(OutputType type, Output* output);
 		Output* getOutput(OutputType type) const;
 
@@ -54,10 +52,10 @@ namespace octoon::video
 
 		const hal::GraphicsFramebufferPtr& getFramebuffer() const;
 
-		void render(const std::shared_ptr<RenderScene>& scene);
+		void render(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene);
 
 	private:
-		void prepareScene(const std::shared_ptr<RenderScene>& scene) noexcept;
+		void prepareScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept;
 		void generateWorkspace(std::uint32_t width, std::uint32_t height);
 
 	private:

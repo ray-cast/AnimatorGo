@@ -27,8 +27,9 @@
 
 namespace octoon::video
 {
-	ForwardPipeline::ForwardPipeline(const hal::GraphicsContextPtr& context) noexcept
-		: context_(context)
+	ForwardPipeline::ForwardPipeline() noexcept
+		: width_(0)
+		, height_(0)
 	{
 		screenGeometry_ = std::make_shared<geometry::Geometry>();
 		screenGeometry_->setMesh(octoon::mesh::PlaneMesh::create(2.0f, 2.0f));
@@ -52,6 +53,12 @@ namespace octoon::video
 	void
 	ForwardPipeline::setupFramebuffers(std::uint32_t w, std::uint32_t h) except
 	{
+		if (width_ == w && height_ == h)
+			return;
+
+		this->width_ = w;
+		this->height_ = h;
+
 		hal::GraphicsFramebufferLayoutDesc framebufferLayoutDesc;
 		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(0, hal::GraphicsImageLayout::ColorAttachmentOptimal, hal::GraphicsFormat::R32G32B32SFloat));
 		framebufferLayoutDesc.addComponent(hal::GraphicsAttachmentLayout(1, hal::GraphicsImageLayout::DepthStencilAttachmentOptimal, hal::GraphicsFormat::X8_D24UNormPack32));
@@ -64,7 +71,7 @@ namespace octoon::video
 			colorTextureDesc.setTexMultisample(4);
 			colorTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2DMultisample);
 			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
-			colorTexture_ = this->context_->getDevice()->createTexture(colorTextureDesc);
+			colorTexture_ = this->cmd_->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -74,18 +81,18 @@ namespace octoon::video
 			depthTextureDesc.setTexMultisample(4);
 			depthTextureDesc.setTexDim(hal::GraphicsTextureDim::Texture2DMultisample);
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::X8_D24UNormPack32);
-			depthTexture_ = this->context_->getDevice()->createTexture(depthTextureDesc);
+			depthTexture_ = this->cmd_->createTexture(depthTextureDesc);
 			if (!depthTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
 			hal::GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(w);
 			framebufferDesc.setHeight(h);
-			framebufferDesc.setFramebufferLayout(this->context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(this->cmd_->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-			fbo_ = this->context_->getDevice()->createFramebuffer(framebufferDesc);
+			fbo_ = this->cmd_->createFramebuffer(framebufferDesc);
 			if (!fbo_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 
@@ -94,7 +101,7 @@ namespace octoon::video
 			colorTextureDesc2.setHeight(h);
 			colorTextureDesc2.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			colorTextureDesc2.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
-			colorTexture2_ = this->context_->getDevice()->createTexture(colorTextureDesc2);
+			colorTexture2_ = this->cmd_->createTexture(colorTextureDesc2);
 			if (!colorTexture2_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -103,18 +110,18 @@ namespace octoon::video
 			depthTextureDesc2.setHeight(h);
 			depthTextureDesc2.setTexDim(hal::GraphicsTextureDim::Texture2D);
 			depthTextureDesc2.setTexFormat(hal::GraphicsFormat::X8_D24UNormPack32);
-			depthTexture2_ = this->context_->getDevice()->createTexture(depthTextureDesc2);
+			depthTexture2_ = this->cmd_->createTexture(depthTextureDesc2);
 			if (!depthTexture2_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
 			hal::GraphicsFramebufferDesc framebufferDesc2;
 			framebufferDesc2.setWidth(w);
 			framebufferDesc2.setHeight(h);
-			framebufferDesc2.setFramebufferLayout(this->context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc2.setFramebufferLayout(this->cmd_->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc2.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture2_, 0, 0));
 			framebufferDesc2.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture2_, 0, 0));
 
-			fbo2_ = this->context_->getDevice()->createFramebuffer(framebufferDesc2);
+			fbo2_ = this->cmd_->createFramebuffer(framebufferDesc2);
 			if (!fbo2_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 		}
@@ -124,7 +131,7 @@ namespace octoon::video
 			colorTextureDesc.setWidth(w);
 			colorTextureDesc.setHeight(h);
 			colorTextureDesc.setTexFormat(hal::GraphicsFormat::R32G32B32SFloat);
-			colorTexture_ = this->context_->getDevice()->createTexture(colorTextureDesc);
+			colorTexture_ = this->cmd_->createTexture(colorTextureDesc);
 			if (!colorTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
@@ -132,18 +139,18 @@ namespace octoon::video
 			depthTextureDesc.setWidth(w);
 			depthTextureDesc.setHeight(h);
 			depthTextureDesc.setTexFormat(hal::GraphicsFormat::X8_D24UNormPack32);
-			depthTexture_ = this->context_->getDevice()->createTexture(depthTextureDesc);
+			depthTexture_ = this->cmd_->createTexture(depthTextureDesc);
 			if (!depthTexture_)
 				throw runtime::runtime_error::create("createTexture() failed");
 
 			hal::GraphicsFramebufferDesc framebufferDesc;
 			framebufferDesc.setWidth(w);
 			framebufferDesc.setHeight(h);
-			framebufferDesc.setFramebufferLayout(this->context_->getDevice()->createFramebufferLayout(framebufferLayoutDesc));
+			framebufferDesc.setFramebufferLayout(this->cmd_->createFramebufferLayout(framebufferLayoutDesc));
 			framebufferDesc.setDepthStencilAttachment(hal::GraphicsAttachmentBinding(depthTexture_, 0, 0));
 			framebufferDesc.addColorAttachment(hal::GraphicsAttachmentBinding(colorTexture_, 0, 0));
 
-			fbo_ = this->context_->getDevice()->createFramebuffer(framebufferDesc);
+			fbo_ = this->cmd_->createFramebuffer(framebufferDesc);
 			if (!fbo_)
 				throw runtime::runtime_error::create("createFramebuffer() failed");
 		}
@@ -157,8 +164,8 @@ namespace octoon::video
 		auto& pipeline = scene.materials_.at(material.get());
 		pipeline->update(scene, camera, geometry);
 
-		this->context_->setRenderPipeline(pipeline->getPipeline());
-		this->context_->setDescriptorSet(pipeline->getDescriptorSet());
+		this->cmd_->setRenderPipeline(pipeline->getPipeline());
+		this->cmd_->setDescriptorSet(pipeline->getDescriptorSet());
 	}
 
 	void
@@ -238,9 +245,9 @@ namespace octoon::video
 			{
 				auto framebuffer = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
 
-				this->context_->setFramebuffer(framebuffer);
-				this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
-				this->context_->setViewport(0, camera->getPixelViewport());
+				this->cmd_->setFramebuffer(framebuffer);
+				this->cmd_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+				this->cmd_->setViewport(0, camera->getPixelViewport());
 
 				for (auto& geometry : geometries)
 					this->renderObject(scene, *geometry, *camera, scene.depthMaterial);
@@ -248,7 +255,7 @@ namespace octoon::video
 				if (camera->getRenderToScreen())
 				{
 					auto& v = camera->getPixelViewport();
-					this->context_->blitFramebuffer(framebuffer, v, nullptr, v);
+					this->cmd_->blitFramebuffer(framebuffer, v, nullptr, v);
 				}
 
 				auto& swapFramebuffer = camera->getSwapFramebuffer();
@@ -256,17 +263,18 @@ namespace octoon::video
 				{
 					math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
 					math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-					this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+					this->cmd_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 				}
 
-				this->context_->discardFramebuffer(framebuffer, hal::GraphicsClearFlagBits::DepthStencilBit);
+				this->cmd_->discardFramebuffer(framebuffer, hal::GraphicsClearFlagBits::DepthStencilBit);
 			}
 		}
 	}
 
 	void
-	ForwardPipeline::render(const CompiledScene& scene)
+	ForwardPipeline::render(const std::shared_ptr<ScriptableRenderContext>& context, const CompiledScene& scene)
 	{
+		cmd_ = context;
 		auto compiled = dynamic_cast<const ForwardScene*>(&scene);
 		auto vp = compiled->camera->getPixelViewport();
 		this->renderTile(scene, math::int2((int)vp.x, (int)vp.y), math::int2((int)vp.width, (int)vp.height));
@@ -284,10 +292,17 @@ namespace octoon::video
 		auto& framebuffer = camera->getFramebuffer();
 		auto& swapFramebuffer = camera->getSwapFramebuffer();
 
-		auto fbo = camera->getFramebuffer() ? camera->getFramebuffer() : fbo_;
-		this->context_->setFramebuffer(fbo);
-		this->context_->setViewport(0, viewport);
-		this->context_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
+		auto fbo = camera->getFramebuffer();
+		if (!fbo)
+		{
+			auto vp = compiled->camera->getPixelViewport();
+			this->setupFramebuffers((int)vp.width, (int)vp.height);
+			fbo = fbo_;
+		}
+
+		this->cmd_->setFramebuffer(fbo);
+		this->cmd_->setViewport(0, viewport);
+		this->cmd_->clearFramebuffer(0, camera->getClearFlags(), camera->getClearColor(), 1.0f, 0);
 
 		this->renderObjects(*compiled, compiled->geometries, *camera, this->overrideMaterial_);
 
@@ -295,13 +310,13 @@ namespace octoon::video
 		{
 			math::float4 v1(0, 0, (float)framebuffer->getFramebufferDesc().getWidth(), (float)framebuffer->getFramebufferDesc().getHeight());
 			math::float4 v2(0, 0, (float)swapFramebuffer->getFramebufferDesc().getWidth(), (float)swapFramebuffer->getFramebufferDesc().getHeight());
-			this->context_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
+			this->cmd_->blitFramebuffer(framebuffer, v1, swapFramebuffer, v2);
 		}
 
 		if (camera->getRenderToScreen())
 		{
-			this->context_->setFramebuffer(nullptr);
-			this->context_->clearFramebuffer(0, hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
+			this->cmd_->setFramebuffer(nullptr);
+			this->cmd_->clearFramebuffer(0, hal::GraphicsClearFlagBits::AllBit, math::float4::Zero, 1.0f, 0);
 
 			if (!fbo->getFramebufferDesc().getColorAttachments().empty())
 			{
@@ -310,21 +325,21 @@ namespace octoon::video
 				{
 					if (framebuffer && swapFramebuffer)
 					{
-						this->context_->blitFramebuffer(swapFramebuffer, viewport, nullptr, viewport);
-						this->context_->discardFramebuffer(swapFramebuffer, hal::GraphicsClearFlagBits::AllBit);
+						this->cmd_->blitFramebuffer(swapFramebuffer, viewport, nullptr, viewport);
+						this->cmd_->discardFramebuffer(swapFramebuffer, hal::GraphicsClearFlagBits::AllBit);
 					}
 					else if (fbo == fbo_)
 					{
-						this->context_->blitFramebuffer(fbo, viewport, fbo2_, viewport);
-						this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
-						this->context_->blitFramebuffer(fbo2_, viewport, nullptr, viewport);
-						this->context_->discardFramebuffer(fbo2_, hal::GraphicsClearFlagBits::AllBit);
+						this->cmd_->blitFramebuffer(fbo, viewport, fbo2_, viewport);
+						this->cmd_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
+						this->cmd_->blitFramebuffer(fbo2_, viewport, nullptr, viewport);
+						this->cmd_->discardFramebuffer(fbo2_, hal::GraphicsClearFlagBits::AllBit);
 					}
 				}
 				else
 				{
-					this->context_->blitFramebuffer(fbo, viewport, nullptr, viewport);
-					this->context_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
+					this->cmd_->blitFramebuffer(fbo, viewport, nullptr, viewport);
+					this->cmd_->discardFramebuffer(fbo, hal::GraphicsClearFlagBits::AllBit);
 				}
 			}
 		}
@@ -334,12 +349,12 @@ namespace octoon::video
 	ForwardPipeline::renderBuffer(const ForwardScene& scene, const std::shared_ptr<mesh::Mesh>& mesh, std::size_t subset)
 	{
 		auto& buffer = scene.buffers_.at(mesh.get());
-		this->context_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
-		this->context_->setIndexBufferData(buffer->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
+		this->cmd_->setVertexBufferData(0, buffer->getVertexBuffer(), 0);
+		this->cmd_->setIndexBufferData(buffer->getIndexBuffer(), 0, hal::GraphicsIndexType::UInt32);
 
 		if (buffer->getIndexBuffer())
-			this->context_->drawIndexed((std::uint32_t)buffer->getNumIndices(subset), 1, (std::uint32_t)buffer->getStartIndices(subset), 0, 0);
+			this->cmd_->drawIndexed((std::uint32_t)buffer->getNumIndices(subset), 1, (std::uint32_t)buffer->getStartIndices(subset), 0, 0);
 		else
-			this->context_->draw((std::uint32_t)buffer->getNumVertices(), 1, 0, 0);
+			this->cmd_->draw((std::uint32_t)buffer->getNumVertices(), 1, 0, 0);
 	}
 }

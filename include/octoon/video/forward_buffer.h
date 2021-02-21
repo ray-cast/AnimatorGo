@@ -3,6 +3,7 @@
 
 #include <octoon/mesh/mesh.h>
 #include <octoon/hal/graphics_data.h>
+#include <octoon/video/scriptable_render_context.h>
 
 namespace octoon::video
 {
@@ -10,11 +11,8 @@ namespace octoon::video
 	{
 	public:
 		ForwardBuffer() noexcept;
-		ForwardBuffer(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		ForwardBuffer(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 		virtual ~ForwardBuffer() noexcept;
-
-		void setMesh(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
-		const std::shared_ptr<mesh::Mesh>& getMesh() const noexcept;
 
 		std::size_t getNumVertices() const noexcept;
 		std::size_t getNumIndices(std::size_t n) const noexcept;
@@ -25,7 +23,7 @@ namespace octoon::video
 
 
 	private:
-		void updateData(const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
+		void updateData(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<mesh::Mesh>& mesh) noexcept(false);
 
 	private:
 		ForwardBuffer(const ForwardBuffer&) = delete;

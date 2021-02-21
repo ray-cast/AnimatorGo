@@ -15,7 +15,6 @@ namespace octoon::video
 	Renderer::Renderer() noexcept
 		: width_(0)
 		, height_(0)
-		, sortObjects_(true)
 		, enableGlobalIllumination_(false)
 		, numBounces_(3)
 	{
@@ -29,10 +28,10 @@ namespace octoon::video
 	void
 	Renderer::setup(const hal::GraphicsContextPtr& context, std::uint32_t w, std::uint32_t h) except
 	{
-		context_ = context;
-		forwardRenderer_ = std::make_unique<ForwardRenderer>(context);
-
-		this->setFramebufferSize(w, h);
+		width_ = w;
+		height_ = h;
+		context_ = std::make_shared<ScriptableRenderContext>(context);
+		forwardRenderer_ = std::make_unique<ForwardRenderer>();
 	}
 
 	void
@@ -47,12 +46,8 @@ namespace octoon::video
 	void
 	Renderer::setFramebufferSize(std::uint32_t w, std::uint32_t h) noexcept
 	{
-		if (width_ != w || height_ != h)
-		{
-			width_ = w;
-			height_ = h;
-			this->forwardRenderer_->setFramebufferSize(w, h);
-		}
+		width_ = w;
+		height_ = h;
 	}
 
 	void
@@ -91,16 +86,10 @@ namespace octoon::video
 			return this->forwardRenderer_->getFramebuffer();
 	}
 
-	void
-	Renderer::setSortObjects(bool sortObject) noexcept
+	const std::shared_ptr<ScriptableRenderContext>&
+	Renderer::getScriptableRenderContext() const noexcept
 	{
-		this->sortObjects_ = sortObject;
-	}
-
-	bool
-	Renderer::getSortObject() const noexcept
-	{
-		return this->sortObjects_;
+		return this->context_;
 	}
 
 	void
@@ -130,167 +119,108 @@ namespace octoon::video
 		return this->overrideMaterial_;
 	}
 
-	hal::GraphicsInputLayoutPtr
-	Renderer::createInputLayout(const hal::GraphicsInputLayoutDesc& desc) noexcept
+	void
+	Renderer::beginFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept
 	{
-		return this->context_->getDevice()->createInputLayout(desc);
+		scene->sortCameras();
 	}
 
-	hal::GraphicsDataPtr
-	Renderer::createGraphicsData(const hal::GraphicsDataDesc& desc) noexcept
+	void 
+	Renderer::endFrameRendering(const std::shared_ptr<RenderScene>& scene, const std::vector<camera::Camera*>& camera) noexcept
 	{
-		return this->context_->getDevice()->createGraphicsData(desc);
-	}
-
-	hal::GraphicsTexturePtr
-	Renderer::createTexture(const hal::GraphicsTextureDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createTexture(desc);
-	}
-
-	hal::GraphicsSamplerPtr
-	Renderer::createSampler(const hal::GraphicsSamplerDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createSampler(desc);
-	}
-
-	hal::GraphicsFramebufferPtr
-	Renderer::createFramebuffer(const hal::GraphicsFramebufferDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createFramebuffer(desc);
-	}
-
-	hal::GraphicsFramebufferLayoutPtr
-	Renderer::createFramebufferLayout(const hal::GraphicsFramebufferLayoutDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createFramebufferLayout(desc);
-	}
-
-	hal::GraphicsShaderPtr
-	Renderer::createShader(const hal::GraphicsShaderDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createShader(desc);
-	}
-
-	hal::GraphicsProgramPtr
-	Renderer::createProgram(const hal::GraphicsProgramDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createProgram(desc);
-	}
-
-	hal::GraphicsStatePtr
-	Renderer::createRenderState(const hal::GraphicsStateDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createRenderState(desc);
-	}
-
-	hal::GraphicsPipelinePtr
-	Renderer::createRenderPipeline(const hal::GraphicsPipelineDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createRenderPipeline(desc);
-	}
-
-	hal::GraphicsDescriptorSetPtr
-	Renderer::createDescriptorSet(const hal::GraphicsDescriptorSetDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createDescriptorSet(desc);
-	}
-
-	hal::GraphicsDescriptorSetLayoutPtr
-	Renderer::createDescriptorSetLayout(const hal::GraphicsDescriptorSetLayoutDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createDescriptorSetLayout(desc);
-	}
-
-	hal::GraphicsDescriptorPoolPtr
-	Renderer::createDescriptorPool(const hal::GraphicsDescriptorPoolDesc& desc) noexcept
-	{
-		return this->context_->getDevice()->createDescriptorPool(desc);
 	}
 
 	void
-	Renderer::generateMipmap(const hal::GraphicsTexturePtr& texture) noexcept
+	Renderer::beginCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
 	{
-		this->context_->generateMipmap(texture);
+		scene->setMainCamera(camera);
+
+		camera->onRenderBefore(*camera);
+
+		for (auto& it : scene->getGeometries())
+		{
+			if (!it->getVisible())
+				continue;
+
+			if (camera->getLayer() == it->getLayer())
+				it->onRenderBefore(*camera);
+		}
+	}
+
+	void
+	Renderer::endCameraRendering(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
+	{
+		for (auto& it : scene->getLights())
+		{
+			if (!it->getVisible())
+				continue;
+
+			if (camera->getLayer() == it->getLayer())
+				it->setDirty(false);
+		}
+
+		for (auto& it : scene->getGeometries())
+		{
+			if (!it->getVisible())
+				continue;
+
+			if (camera->getLayer() == it->getLayer())
+			{
+				it->onRenderAfter(*camera);
+
+				auto mesh = it->getMesh();
+				if (mesh)
+					mesh->setDirty(false);
+
+				for (auto& material : it->getMaterials())
+				{
+					if (material)
+						material->setDirty(false);
+				}
+
+				it->setDirty(false);
+			}
+		}
+
+		camera->onRenderAfter(*camera);
+		camera->setDirty(false);
+	}
+
+	void
+	Renderer::renderSingleCamera(const std::shared_ptr<RenderScene>& scene, camera::Camera* camera) noexcept
+	{		
+		scene->sortGeometries();
+
+		if (scene->getGlobalIllumination())
+		{
+			if (!rtxManager_)
+			{
+				rtxManager_ = std::make_unique<RtxManager>();
+				rtxManager_->setMaxBounces(this->getMaxBounces());
+			}
+
+			this->rtxManager_->render(this->context_, scene);
+		}
+		else
+		{
+			forwardRenderer_->render(this->context_, scene);
+		}
 	}
 
 	void
 	Renderer::render(const std::shared_ptr<RenderScene>& scene) noexcept(false)
 	{
-		if (this->sortObjects_)
-		{
-			scene->sortCameras();
-			scene->sortGeometries();
-		}
+		this->beginFrameRendering(scene, scene->getCameras());
 
 		for (auto& camera : scene->getCameras())
 		{
-			scene->setMainCamera(camera);
+			this->beginCameraRendering(scene, camera);
 
-			camera->onRenderBefore(*camera);
+			this->renderSingleCamera(scene, camera);
 
-			for (auto& it : scene->getGeometries())
-			{
-				if (!it->getVisible())
-					continue;
-
-				if (camera->getLayer() == it->getLayer())
-					it->onRenderBefore(*camera);
-			}
-
-			if (this->sortObjects_)
-				scene->sortGeometries();
-
-			if (scene->getGlobalIllumination())
-			{
-				if (!rtxManager_)
-				{
-					rtxManager_ = std::make_unique<RtxManager>();
-					rtxManager_->setGraphicsContext(this->context_);
-					rtxManager_->setMaxBounces(this->getMaxBounces());
-				}
-
-				this->rtxManager_->render(scene);
-			}
-			else
-			{
-				forwardRenderer_->render(scene);
-			}
-
-			for (auto& it : scene->getLights())
-			{
-				if (!it->getVisible())
-					continue;
-
-				if (camera->getLayer() == it->getLayer())
-					it->setDirty(false);
-			}
-
-			for (auto& it : scene->getGeometries())
-			{
-				if (!it->getVisible())
-					continue;
-
-				if (camera->getLayer() == it->getLayer())
-				{
-					it->onRenderAfter(*camera);
-
-					auto mesh = it->getMesh();
-					if (mesh)
-						mesh->setDirty(false);
-
-					for (auto& material : it->getMaterials())
-					{
-						if (material)
-							material->setDirty(false);
-					}
-
-					it->setDirty(false);
-				}
-			}
-
-			camera->onRenderAfter(*camera);
-			camera->setDirty(false);
+			this->endCameraRendering(scene, camera);
 		}
+
+		this->endFrameRendering(scene, scene->getCameras());
 	}
 }

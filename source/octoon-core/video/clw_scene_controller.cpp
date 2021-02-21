@@ -133,7 +133,7 @@ namespace octoon::video
 	}
 
 	void
-	ClwSceneController::compileScene(const std::shared_ptr<RenderScene>& scene) noexcept
+	ClwSceneController::compileScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept
 	{
 		textureCollector.Clear();
 		materialCollector.Clear();

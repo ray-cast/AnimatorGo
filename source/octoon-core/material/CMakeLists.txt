@@ -4,6 +4,8 @@ SET(HEADER_PATH ${OCTOON_PATH_HEADER}/${LIB_OUTNAME})
 SET(SOURCE_PATH ${OCTOON_PATH_SOURCE}/octoon-core/${LIB_OUTNAME})
 
 SET(MATERIAL_LIST
+	${HEADER_PATH}/shader.h
+	${SOURCE_PATH}/shader.cpp
 	${HEADER_PATH}/material.h
 	${SOURCE_PATH}/material.cpp
 	${HEADER_PATH}/points_material.h

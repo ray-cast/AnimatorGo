@@ -229,15 +229,15 @@ namespace octoon
 						if (strchr(line, '}'))
 							break;
 
-						char name[2048];
 						char matName[100];
 
 						sscanf(line, " name %[^\t\n]s", meshName);
 						sscanf(line, " position %f %f %f", &pos.x, &pos.y, &pos.z);
 						sscanf(line, " scale %f %f %f", &scale.x, &scale.y, &scale.z);
 
-						if (sscanf(line, " file %s", name) == 1)
-							filename = path + name;
+						char fileName[2048];
+						if (sscanf(line, " file %s", fileName) == 1)
+							filename = path + fileName;
 
 						if (sscanf(line, " material %s", matName) == 1)
 							material = materialMap.find(matName) != materialMap.end() ? materialMap[matName] : defaultMaterial;

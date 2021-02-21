@@ -16,14 +16,15 @@
 
 namespace octoon::video
 {
-	ForwardSceneController::ForwardSceneController(const hal::GraphicsContextPtr& context)
-		: context_(context)
+	ForwardSceneController::ForwardSceneController()
 	{
 	}
 
 	void
-	ForwardSceneController::compileScene(const std::shared_ptr<RenderScene>& scene) noexcept
+	ForwardSceneController::compileScene(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene) noexcept
 	{
+		this->context_ = context;
+
 		materialCollector.Clear();
 
 		for (auto& geometry : scene->getGeometries())
@@ -46,8 +47,8 @@ namespace octoon::video
 			auto out = std::make_unique<ForwardScene>();
 			this->updateCamera(scene, *out, true);
 			this->updateLights(scene, *out, true);
-			this->updateMaterials(scene, *out, true);
-			this->updateShapes(scene, *out, true);
+			this->updateMaterials(context, scene, *out, true);
+			this->updateShapes(context, scene, *out, true);
 			sceneCache_[scene] = std::move(out);
 		}
 		else
@@ -92,10 +93,10 @@ namespace octoon::video
 				this->updateLights(scene, *(*iter).second);
 
 			if (should_update_materials)
-				this->updateMaterials(scene, *(*iter).second);
+				this->updateMaterials(context, scene, *(*iter).second);
 
 			if (should_update_shapes)
-				this->updateShapes(scene, *(*iter).second);
+				this->updateShapes(context, scene, *(*iter).second);
 		}
 	}
 
@@ -264,7 +265,7 @@ namespace octoon::video
 		{
 			if (!out.spotLightBuffer)
 			{
-				out.spotLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+				out.spotLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.spotLights.data(),
@@ -276,7 +277,7 @@ namespace octoon::video
 				auto desc = out.spotLightBuffer->getDataDesc();
 				if (desc.getStreamSize() < out.spotLights.size() * sizeof(ForwardScene::SpotLight))
 				{
-					out.spotLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+					out.spotLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.spotLights.data(),
@@ -297,7 +298,7 @@ namespace octoon::video
 		{
 			if (!out.pointLightBuffer)
 			{
-				out.pointLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+				out.pointLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.pointLights.data(),
@@ -309,7 +310,7 @@ namespace octoon::video
 				auto desc = out.pointLightBuffer->getDataDesc();
 				if (desc.getStreamSize() < out.pointLights.size() * sizeof(ForwardScene::PointLight))
 				{
-					out.pointLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+					out.pointLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.pointLights.data(),
@@ -330,7 +331,7 @@ namespace octoon::video
 		{
 			if (!out.rectangleLightBuffer)
 			{
-				out.rectangleLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+				out.rectangleLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.rectangleLights.data(),
@@ -342,7 +343,7 @@ namespace octoon::video
 				auto desc = out.rectangleLightBuffer->getDataDesc();
 				if (desc.getStreamSize() < out.rectangleLights.size() * sizeof(ForwardScene::RectAreaLight))
 				{
-					out.rectangleLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+					out.rectangleLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.rectangleLights.data(),
@@ -363,7 +364,7 @@ namespace octoon::video
 		{
 			if (!out.directionLightBuffer)
 			{
-				out.directionLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+				out.directionLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 					hal::GraphicsDataType::UniformBuffer,
 					hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 					out.directionalLights.data(),
@@ -375,7 +376,7 @@ namespace octoon::video
 				auto desc = out.directionLightBuffer->getDataDesc();
 				if (desc.getStreamSize() < out.directionalLights.size() * sizeof(ForwardScene::DirectionalLight))
 				{
-					out.directionLightBuffer = this->context_->getDevice()->createGraphicsData(hal::GraphicsDataDesc(
+					out.directionLightBuffer = this->context_->createGraphicsData(hal::GraphicsDataDesc(
 						hal::GraphicsDataType::UniformBuffer,
 						hal::GraphicsUsageFlagBits::ReadBit | hal::GraphicsUsageFlagBits::WriteBit,
 						out.directionalLights.data(),
@@ -394,19 +395,19 @@ namespace octoon::video
 	}
 
 	void
-	ForwardSceneController::updateMaterials(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
+	ForwardSceneController::updateMaterials(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
 	{
 		out.material_bundle.reset(materialCollector.CreateBundle());
 
 		if (out.depthMaterial->isDirty())
 		{
-			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(out.depthMaterial, out);
+			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(context, out.depthMaterial, out);
 			out.depthMaterial->setDirty(false);
 		}
 
 		if (out.overrideMaterial)
 		{
-			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(out.depthMaterial, out);
+			out.materials_[out.depthMaterial.get()] = std::make_shared<ForwardMaterial>(context, out.depthMaterial, out);
 			out.overrideMaterial->setDirty(false);
 		}
 
@@ -417,13 +418,13 @@ namespace octoon::video
 			if (mat->isDirty() || force)
 			{
 				auto material = mat->downcast_pointer<material::Material>();
-				out.materials_[material.get()] = std::make_shared<ForwardMaterial>(material, out);
+				out.materials_[material.get()] = std::make_shared<ForwardMaterial>(context, material, out);
 			}
 		}
 	}
 
     void
-    ForwardSceneController::updateShapes(const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
+    ForwardSceneController::updateShapes(const std::shared_ptr<ScriptableRenderContext>& context, const std::shared_ptr<RenderScene>& scene, ForwardScene& out, bool force) const
     {
 		out.geometries = scene->getGeometries();
 
@@ -435,7 +436,7 @@ namespace octoon::video
 			if (geometry->isDirty() || force)
 			{
 				auto mesh = geometry->getMesh();
-				out.buffers_[mesh.get()] = std::make_shared<ForwardBuffer>(mesh);
+				out.buffers_[mesh.get()] = std::make_shared<ForwardBuffer>(context, mesh);
 			}
 		}
     }

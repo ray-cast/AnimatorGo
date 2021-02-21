@@ -298,6 +298,8 @@ namespace octoon
 			if (it->getName() == name)
 				return it;
 		}
+
+		return nullptr;
 	}
 
 	void

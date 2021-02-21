@@ -23,12 +23,12 @@ namespace octoon::video
 	std::unique_ptr<SceneController>
 	ForwardRenderFactory::createSceneController() const
 	{
-		return std::make_unique<ForwardSceneController>(context_);
+		return std::make_unique<ForwardSceneController>();
 	}
 
 	std::unique_ptr<Pipeline>
 	ForwardRenderFactory::createPipeline() const
 	{
-		return std::make_unique<ForwardPipeline>(context_);
+		return std::make_unique<ForwardPipeline>();
 	}
 }

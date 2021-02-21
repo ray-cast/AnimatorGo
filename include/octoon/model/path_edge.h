@@ -4,7 +4,7 @@
 #include <octoon/model/modtypes.h>
 #include <functional>
 
-namespace octoon::model
+namespace octoon
 {
 	struct PathPoint
 	{

@@ -3,7 +3,7 @@
 
 #include <octoon/model/path_edge.h>
 
-namespace octoon::model
+namespace octoon
 {
 	class OCTOON_EXPORT Path final
 	{

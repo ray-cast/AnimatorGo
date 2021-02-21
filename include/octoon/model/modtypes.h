@@ -9,7 +9,7 @@
 #include <octoon/runtime/platform.h>
 #include <octoon/io/iostream.h>
 
-namespace octoon::model
+namespace octoon
 {
 	struct IKAttr;
 

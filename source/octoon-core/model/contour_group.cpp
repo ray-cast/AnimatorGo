@@ -6,7 +6,7 @@
 #include <iostream>
 #include <GL/glu.h>
 
-namespace octoon::model
+namespace octoon
 {
 	ContourGroup::ContourGroup() noexcept
 	{

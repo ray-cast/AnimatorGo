@@ -5,7 +5,7 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/model/contour.h>
 
-namespace octoon::model
+namespace octoon
 {
 	class OCTOON_EXPORT ContourGroup final
 	{

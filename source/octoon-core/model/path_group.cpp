@@ -1,6 +1,6 @@
 #include <octoon/model/path_group.h>
 
-namespace octoon::model
+namespace octoon
 {
 	PathGroup::PathGroup() noexcept
 	{

@@ -3,7 +3,7 @@
 
 #include <octoon/model/modtypes.h>
 
-namespace octoon::model
+namespace octoon
 {
 	class OCTOON_EXPORT Contour final
 	{

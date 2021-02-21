@@ -102,7 +102,7 @@ namespace octoon
 	}
 
 	void
-	Mesh::setWeightArray(const std::vector<skelecton::VertexWeight>& array) noexcept
+	Mesh::setWeightArray(const std::vector<VertexWeight>& array) noexcept
 	{
 		_weights = array;
 	}
@@ -147,7 +147,7 @@ namespace octoon
 	}
 
 	void
-	Mesh::setWeightArray(skelecton::VertexWeights&& array) noexcept
+	Mesh::setWeightArray(VertexWeights&& array) noexcept
 	{
 		_weights = std::move(array);
 	}
@@ -189,7 +189,7 @@ namespace octoon
 		return _texcoords[n];
 	}
 
-	skelecton::VertexWeights&
+	VertexWeights&
 	Mesh::getWeightArray() noexcept
 	{
 		return _weights;
@@ -238,7 +238,7 @@ namespace octoon
 		return _texcoords[n];
 	}
 
-	const skelecton::VertexWeights&
+	const VertexWeights&
 	Mesh::getWeightArray() const noexcept
 	{
 		return _weights;
@@ -250,8 +250,8 @@ namespace octoon
 		return _bindposes;
 	}
 
-	const skelecton::Bones&
-	Mesh::getBoneArray(const skelecton::Bones& array) const noexcept
+	const Bones&
+	Mesh::getBoneArray(const Bones& array) const noexcept
 	{
 		return _bones;
 	}

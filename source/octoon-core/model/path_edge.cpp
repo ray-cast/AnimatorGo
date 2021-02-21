@@ -1,6 +1,6 @@
 #include <octoon/model/path_edge.h>
 
-namespace octoon::model
+namespace octoon
 {
 	PathEdge::PathEdge() noexcept
 	{
@@ -65,14 +65,14 @@ namespace octoon::model
 	{
 		switch (type)
 		{
-		case octoon::model::PathEdge::Point:
+		case octoon::PathEdge::Point:
 		{
 			auto v = func(point.pt.xy());
 			point.pt.x = v.x;
 			point.pt.y = v.y;
 		}
 		break;
-		case octoon::model::PathEdge::Line:
+		case octoon::PathEdge::Line:
 		{
 			auto v1 = func(line.pt1.xy());
 			auto v2 = func(line.pt2.xy());
@@ -84,7 +84,7 @@ namespace octoon::model
 			line.pt2.y = v2.y;
 		}
 		break;
-		case octoon::model::PathEdge::Quadratic:
+		case octoon::PathEdge::Quadratic:
 		{
 			auto v1 = func(quad.pt1.xy());
 			auto v2 = func(quad.pt2.xy());
@@ -100,7 +100,7 @@ namespace octoon::model
 			quad.control.y = c1.y;
 		}
 		break;
-		case octoon::model::PathEdge::Cubic:
+		case octoon::PathEdge::Cubic:
 		{
 			auto v1 = func(cubic.pt1.xy());
 			auto v2 = func(cubic.pt2.xy());
@@ -132,25 +132,25 @@ namespace octoon::model
 	{
 		switch (type)
 		{
-		case octoon::model::PathEdge::Point:
+		case octoon::PathEdge::Point:
 		{
 			point.pt = func(point.pt);
 		}
 		break;
-		case octoon::model::PathEdge::Line:
+		case octoon::PathEdge::Line:
 		{
 			line.pt1 = func(line.pt1);
 			line.pt2 = func(line.pt2);
 		}
 		break;
-		case octoon::model::PathEdge::Quadratic:
+		case octoon::PathEdge::Quadratic:
 		{
 			quad.pt1 = func(quad.pt1);
 			quad.pt2 = func(quad.pt2);
 			quad.control = func(quad.control);
 		}
 		break;
-		case octoon::model::PathEdge::Cubic:
+		case octoon::PathEdge::Cubic:
 		{
 			cubic.pt1 = func(cubic.pt1);
 			cubic.pt2 = func(cubic.pt2);

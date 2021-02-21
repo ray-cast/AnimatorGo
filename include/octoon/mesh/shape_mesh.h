@@ -11,7 +11,7 @@ namespace octoon
 		OctoonDeclareSubClass(ShapeMesh, Mesh)
 	public:
 		ShapeMesh() noexcept;
-		ShapeMesh(const model::Contours& contours, float thickness) noexcept;
+		ShapeMesh(const Contours& contours, float thickness) noexcept;
 	};
 }
 

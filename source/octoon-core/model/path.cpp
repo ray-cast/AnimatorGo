@@ -1,7 +1,7 @@
 #include <octoon/model/path.h>
 #include <octoon/math/math.h>
 
-namespace octoon::model
+namespace octoon
 {
 	Path::Path() noexcept
 	{

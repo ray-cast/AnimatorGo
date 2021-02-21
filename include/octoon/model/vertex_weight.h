@@ -1,9 +1,9 @@
-#ifndef OCTOON_SKELECTON_VERTEX_WEIGHT_H_
-#define OCTOON_SKELECTON_VERTEX_WEIGHT_H_
+#ifndef OCTOON_VERTEX_WEIGHT_H_
+#define OCTOON_VERTEX_WEIGHT_H_
 
 #include <vector>
 
-namespace octoon::skelecton
+namespace octoon
 {
 	namespace detail
 	{

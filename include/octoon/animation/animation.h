@@ -3,7 +3,7 @@
 
 #include <octoon/animation/animation_clip.h>
 
-namespace octoon::animation
+namespace octoon
 {
 	template<typename _Time = float>
 	struct AnimatorStateInfo

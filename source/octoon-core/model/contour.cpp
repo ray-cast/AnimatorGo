@@ -1,7 +1,7 @@
 #include <octoon/model/contour.h>
 #include <octoon/model/path.h>
 
-namespace octoon::model
+namespace octoon
 {
 	Contour::Contour() noexcept
 	{

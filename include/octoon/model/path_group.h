@@ -3,7 +3,7 @@
 
 #include <octoon/model/path.h>
 
-namespace octoon::model
+namespace octoon
 {
 	class OCTOON_EXPORT PathGroup final
 	{

@@ -39,9 +39,9 @@ namespace octoon
 	{
 	}
 
-	ShapeMesh::ShapeMesh(const model::Contours& contours, float thickness) noexcept
+	ShapeMesh::ShapeMesh(const Contours& contours, float thickness) noexcept
 	{
-		std::vector<math::double3> vertices(model::sum(contours) * 2);
+		std::vector<math::double3> vertices(sum(contours) * 2);
 
 		GLUtesselator* tobj = gluNewTess();
 

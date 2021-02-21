@@ -411,7 +411,7 @@ namespace octoon
 		return mesh_;
 	}
 
-	const animation::AnimatorStateInfo<float>&
+	const AnimatorStateInfo<float>&
 	MeshAnimationComponent::getCurrentAnimatorStateInfo() const noexcept
 	{
 		return animationState_;

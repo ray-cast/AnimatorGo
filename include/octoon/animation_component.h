@@ -23,7 +23,7 @@ namespace octoon
 		virtual void sample(float delta = 0.0f) noexcept = 0;
 		virtual void evaluate(float delta = 0.0f) noexcept = 0;
 
-		virtual const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept = 0;
+		virtual const AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept = 0;
 
 	private:
 		AnimationComponent(const AnimationComponent&) noexcept = delete;

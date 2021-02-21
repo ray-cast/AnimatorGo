@@ -10,12 +10,12 @@ namespace octoon
 		OctoonDeclareSubClass(AnimatorComponent, AnimationComponent)
 	public:
 		AnimatorComponent() noexcept;
-		AnimatorComponent(animation::Animation<float>&& animation, GameObjects&& avatar) noexcept;
-		AnimatorComponent(animation::Animation<float>&& animation, const GameObjects& avatar) noexcept;
-		AnimatorComponent(const animation::Animation<float>& animation, GameObjects&& avatar) noexcept;
-		AnimatorComponent(const animation::Animation<float>& animation, const GameObjects& avatar) noexcept;
-		explicit AnimatorComponent(animation::Animation<float>&& animation) noexcept;
-		explicit AnimatorComponent(const animation::Animation<float>& animation) noexcept;
+		AnimatorComponent(Animation<float>&& animation, GameObjects&& avatar) noexcept;
+		AnimatorComponent(Animation<float>&& animation, const GameObjects& avatar) noexcept;
+		AnimatorComponent(const Animation<float>& animation, GameObjects&& avatar) noexcept;
+		AnimatorComponent(const Animation<float>& animation, const GameObjects& avatar) noexcept;
+		explicit AnimatorComponent(Animation<float>&& animation) noexcept;
+		explicit AnimatorComponent(const Animation<float>& animation) noexcept;
 		explicit AnimatorComponent(GameObjects&& avatar) noexcept;
 		explicit AnimatorComponent(const GameObjects& avatar) noexcept;
 		~AnimatorComponent() noexcept;
@@ -34,11 +34,11 @@ namespace octoon
 		void setAvatar(const GameObjects& avatar) noexcept;
 		const GameObjects& getAvatar() const noexcept;
 
-		void setAnimation(animation::Animation<float>&& animation) noexcept;
-		void setAnimation(const animation::Animation<float>& animation) noexcept;
+		void setAnimation(Animation<float>&& animation) noexcept;
+		void setAnimation(const Animation<float>& animation) noexcept;
 		
-		const animation::Animation<float>& getAnimation() const noexcept;
-		const animation::AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
+		const Animation<float>& getAnimation() const noexcept;
+		const AnimatorStateInfo<float>& getCurrentAnimatorStateInfo() const noexcept override;
 
 		GameComponentPtr clone() const noexcept;
 
@@ -59,7 +59,7 @@ namespace octoon
 		bool enableAnimation_;
 		bool enableAnimOnVisableOnly_;
 
-		animation::Animation<float> animation_;
+		Animation<float> animation_;
 		math::float3s bindpose_;
 
 		GameObjects avatar_;

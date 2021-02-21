@@ -34,7 +34,7 @@ namespace octoon
 		void setColorArray(const math::float4s& array) noexcept;
 		void setTangentArray(const math::float4s& array) noexcept;
 		void setTexcoordArray(const math::float2s& array, std::uint8_t n = 0) noexcept;
-		void setWeightArray(const skelecton::VertexWeights& array) noexcept;
+		void setWeightArray(const VertexWeights& array) noexcept;
 		void setIndicesArray(const math::uint1s& array, std::size_t n = 0) noexcept;
 		void setBindposes(const math::float4x4s& array) noexcept;
 
@@ -43,7 +43,7 @@ namespace octoon
 		void setColorArray(math::float4s&& array) noexcept;
 		void setTangentArray(math::float4s&& array) noexcept;
 		void setTexcoordArray(math::float2s&& array, std::uint8_t n = 0) noexcept;
-		void setWeightArray(skelecton::VertexWeights&& array) noexcept;
+		void setWeightArray(VertexWeights&& array) noexcept;
 		void setIndicesArray(math::uint1s&& array, std::size_t n = 0) noexcept;
 		void setBindposes(math::float4x4s&& array) noexcept;
 
@@ -52,7 +52,7 @@ namespace octoon
 		math::float4s& getTangentArray() noexcept;
 		math::float4s& getColorArray() noexcept;
 		math::float2s& getTexcoordArray(std::uint8_t n = 0) noexcept;
-		skelecton::VertexWeights& getWeightArray() noexcept;
+		VertexWeights& getWeightArray() noexcept;
 		math::uint1s& getIndicesArray(std::size_t n = 0) noexcept;
 		math::float4x4s& getBindposes() noexcept;
 
@@ -61,10 +61,10 @@ namespace octoon
 		const math::float4s& getTangentArray() const noexcept;
 		const math::float4s& getColorArray() const noexcept;
 		const math::float2s& getTexcoordArray(std::uint8_t n = 0) const noexcept;
-		const skelecton::VertexWeights& getWeightArray() const noexcept;
+		const VertexWeights& getWeightArray() const noexcept;
 		const math::uint1s& getIndicesArray(std::size_t n = 0) const noexcept;
 
-		const skelecton::Bones& getBoneArray(const skelecton::Bones& array) const noexcept;
+		const Bones& getBoneArray(const Bones& array) const noexcept;
 		const math::float4x4s& getBindposes() const noexcept;
 
 		std::size_t getNumVertices() const noexcept;
@@ -111,8 +111,8 @@ namespace octoon
 		math::float4x4s _bindposes;
 		math::BoundingBox _boundingBox;
 
-		std::vector<skelecton::Bone> _bones;
-		std::vector<skelecton::VertexWeight> _weights;
+		std::vector<Bone> _bones;
+		std::vector<VertexWeight> _weights;
 
 		std::vector<math::uint1s> _indices;
 		std::vector<math::BoundingBox> _boundingBoxs;

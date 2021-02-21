@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-namespace octoon::animation
+namespace octoon
 {
 	template<typename _Elem = float, typename _Time = float>
 	class Keyframe final

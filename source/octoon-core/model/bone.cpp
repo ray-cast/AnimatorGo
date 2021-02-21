@@ -1,6 +1,6 @@
 #include <octoon/model/bone.h>
 
-namespace octoon::skelecton
+namespace octoon
 {
 	Bone::Bone() noexcept
 		: _parent(-1)

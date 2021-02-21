@@ -13,7 +13,6 @@
 
 using namespace octoon;
 using namespace octoon::math;
-using namespace octoon::animation;
 
 namespace rabbit
 {
@@ -190,8 +189,8 @@ namespace rabbit
 				this->setupMorphAnimation(it, morphClip);
 
 				model->setName(it.name);
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
-				model->addComponent<AnimatorComponent>(animation::Animation(std::move(morphClip)));
+				model->addComponent<AnimatorComponent>(Animation(std::move(boneClips)), model->getComponent<SkinnedMeshRendererComponent>()->getTransforms());
+				model->addComponent<AnimatorComponent>(Animation(std::move(morphClip)));
 
 				auto smr = model->getComponent<octoon::SkinnedMeshRendererComponent>();
 				if (smr)
@@ -292,7 +291,7 @@ namespace rabbit
 		auto mainCamera = GameObject::create("MainCamera");
 		mainCamera->addComponent<FirstPersonCameraComponent>();
 		mainCamera->addComponent<AudioListenerComponent>();
-		mainCamera->addComponent<AnimatorComponent>(animation::Animation(clip));
+		mainCamera->addComponent<AnimatorComponent>(Animation(clip));
 
 		auto camera = mainCamera->addComponent<FilmCameraComponent>();
 		camera->setFov((float)pmm.camera_keyframes[0].fov);
@@ -361,7 +360,7 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::setupBoneAnimation(const PmmModel& it, animation::AnimationClips<float>& clips) noexcept
+	EntitiesComponent::setupBoneAnimation(const PmmModel& it, AnimationClips<float>& clips) noexcept
 	{
 		std::size_t numBone = it.bone_init_frame.size();
 
@@ -454,7 +453,7 @@ namespace rabbit
 	}
 
 	void
-	EntitiesComponent::setupMorphAnimation(const PmmModel& it, animation::AnimationClip<float>& clip) noexcept
+	EntitiesComponent::setupMorphAnimation(const PmmModel& it, AnimationClip<float>& clip) noexcept
 	{
 		for (std::size_t i = 0, keyframeCount = 1; i < it.morph_init_frame.size(); i++)
 		{

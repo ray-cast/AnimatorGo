@@ -578,7 +578,7 @@ namespace octoon
 		return true;
 	}
 
-	bool PmxLoader::doLoad(std::string_view filepath, model::Model& model) noexcept
+	bool PmxLoader::doLoad(std::string_view filepath, Model& model) noexcept
 	{
 		PMX pmx;
 		if (!this->doLoad(filepath, pmx))
@@ -641,7 +641,7 @@ namespace octoon
 		math::float3s vertices_;
 		math::float3s normals_;
 		math::float2s texcoords_;
-		skelecton::VertexWeights weights;
+		VertexWeights weights;
 
 		vertices_.resize(pmx.numVertices);
 		normals_.resize(pmx.numVertices);
@@ -660,7 +660,7 @@ namespace octoon
 
 			if (pmx.numBones)
 			{
-				skelecton::VertexWeight weight;
+				VertexWeight weight;
 				weight.weight1 = v.weight.weight1;
 				weight.weight2 = v.weight.weight2;
 				weight.weight3 = v.weight.weight3;
@@ -712,7 +712,7 @@ namespace octoon
 		{
 			auto& it = pmx.bones[i];
 
-			skelecton::Bone bone;
+			Bone bone;
 			bone.setName(cv.to_bytes(it.name.name));
 			bone.setPosition(math::float3(it.position.x, it.position.y, it.position.z));
 			bone.setParent(it.Parent);
@@ -725,11 +725,11 @@ namespace octoon
 			if (it.Flag & PMX_BONE_ADD_ROTATION)
 				bone.setAdditiveRotationRatio(it.ProvidedRatio);
 
-			model.bones.emplace_back(std::make_shared<skelecton::Bone>(bone));
+			model.bones.emplace_back(std::make_shared<Bone>(bone));
 
 			if (it.Flag & PMX_BONE_IK)
 			{
-				model::IKAttr attr;
+				IKAttr attr;
 				attr.boneIndex = static_cast<uint16_t>(i);
 				attr.targetBoneIndex = it.IKTargetBoneIndex;
 				attr.chainLength = it.IKLinkCount;
@@ -737,7 +737,7 @@ namespace octoon
 
 				for (auto& ik : it.IKList)
 				{
-					model::IKChild child;
+					IKChild child;
 					child.boneIndex = ik.BoneIndex;
 					child.angleRadian = it.IKLimitedRadian;
 					child.minimumRadian.set(ik.minimumRadian.x, ik.minimumRadian.y, ik.minimumRadian.z);
@@ -747,7 +747,7 @@ namespace octoon
 					attr.child.push_back(child);
 				}
 
-				model.iks.emplace_back(std::make_shared<model::IKAttr>(attr));
+				model.iks.emplace_back(std::make_shared<IKAttr>(attr));
 			}
 		}
 
@@ -757,7 +757,7 @@ namespace octoon
 			{
 			case PmxMorphType::PMX_MorphTypeVertex:
 			{
-				auto morph = std::make_shared<model::Morph>();
+				auto morph = std::make_shared<Morph>();
 				morph->name = cv.to_bytes(it.name.name);
 				morph->morphType = it.morphType;
 				morph->control = it.control;
@@ -766,7 +766,7 @@ namespace octoon
 
 				for (auto& v : it.vertices)
 				{
-					model::MorphVertex vertex;
+					MorphVertex vertex;
 					vertex.index = v.index;
 					vertex.offset.set(v.offset.x, v.offset.y, v.offset.z);
 					morph->vertices.push_back(vertex);
@@ -780,12 +780,12 @@ namespace octoon
 
 		for (auto& it : pmx.rigidbodies)
 		{
-			auto body = std::make_shared<model::Rigidbody>();
+			auto body = std::make_shared<Rigidbody>();
 			body->name = cv.to_bytes(it.name.name);
 			body->bone = it.bone;
 			body->group = it.group;
 			body->groupMask = it.groupMask;
-			body->shape = (model::ShapeType)it.shape;
+			body->shape = (ShapeType)it.shape;
 			body->scale.set(it.scale.x, it.scale.y, it.scale.z);
 			body->position.set(it.position.x, it.position.y, it.position.z);
 			body->rotation.set(it.rotate.x, it.rotate.y, it.rotate.z);
@@ -796,15 +796,15 @@ namespace octoon
 			body->friction = it.friction;
 			body->physicsOperation = it.physicsOperation;
 
-			if (body->shape == model::ShapeType::ShapeTypeCapsule && body->scale.y == 0.0f)
-				body->shape = model::ShapeType::ShapeTypeSphere;
+			if (body->shape == ShapeType::ShapeTypeCapsule && body->scale.y == 0.0f)
+				body->shape = ShapeType::ShapeTypeSphere;
 
 			model.rigidbodies.emplace_back(std::move(body));
 		}
 
 		for (auto& it : pmx.joints)
 		{
-			auto joint = std::make_shared<model::Joint>();
+			auto joint = std::make_shared<Joint>();
 			joint->name = cv.to_bytes(it.name.name);
 			joint->type = it.type;
 			joint->bodyIndexA = it.relatedRigidBodyIndexA;
@@ -823,7 +823,7 @@ namespace octoon
 
 		for (auto& it : pmx.softbodies)
 		{
-			auto softbody = std::make_shared<model::Softbody>();
+			auto softbody = std::make_shared<Softbody>();
 			softbody->name = cv.to_bytes(it.name.name);
 			softbody->materialIndex = it.materialIndex;
 			softbody->group = it.group;
@@ -1244,7 +1244,7 @@ namespace octoon
 		return true;
 	}
 
-	bool PmxLoader::doSave(io::ostream& stream, const model::Model& model) noexcept
+	bool PmxLoader::doSave(io::ostream& stream, const Model& model) noexcept
 	{
 		return false;
 	}

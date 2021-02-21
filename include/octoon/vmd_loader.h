@@ -15,8 +15,8 @@ namespace octoon
 		static bool doCanRead(io::istream& stream) noexcept;
 		static bool doCanRead(const char* type) noexcept;
 
-		static animation::Animation<float> load(io::istream& stream) noexcept(false);
-		static void save(io::ostream& stream, const animation::Animation<float>& animation) noexcept(false);
+		static Animation<float> load(io::istream& stream) noexcept(false);
+		static void save(io::ostream& stream, const Animation<float>& animation) noexcept(false);
 
 	private:
 		VMDLoader(const VMDLoader&) = delete;

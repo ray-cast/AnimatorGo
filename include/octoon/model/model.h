@@ -5,7 +5,7 @@
 #include <octoon/mesh/mesh.h>
 #include <octoon/material/material.h>
 
-namespace octoon::model
+namespace octoon
 {
 	enum MorphType : std::uint8_t
 	{
@@ -179,7 +179,7 @@ namespace octoon::model
 	struct Model final
 	{
 		using mesh_array_t = std::vector<std::shared_ptr<Mesh>>;
-		using bone_array_t = std::vector<skelecton::BonePtr>;
+		using bone_array_t = std::vector<BonePtr>;
 		using ik_array_t = std::vector<IKAttrPtr>;
 		using rigidbody_array_t = std::vector<std::shared_ptr<Rigidbody>>;
 		using softbody_array_t = std::vector<std::shared_ptr<Softbody>>;
